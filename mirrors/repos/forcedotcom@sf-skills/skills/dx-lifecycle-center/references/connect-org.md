@@ -89,7 +89,7 @@ This step **requires a human** (authorization code with PKCE, stored per user). 
 
 > **Connect `<name>`**
 >
-> **[Sign in to `<name>` →](<redirectUrl>)**
+> **[Sign in to `<name>` →]({{redirectUrl}})**
 >
 > 1. Sign in with the user DX Inspector should act as, and approve access.
 > 2. Come back here and reply **done**.
@@ -98,8 +98,19 @@ This step **requires a human** (authorization code with PKCE, stored per user). 
 
 Hub mode uses the same layout with the heading **Connect the Lifecycle Center org** and the button text **Connect to Lifecycle Center org →**.
 
+**Hub mode, as a card.** Only when the `render_widget` tool is available. Without it, use the layout above and skip this. Run, with the `redirectUrl` after the `&amp;` fix, unmodified:
+
+```bash
+bash <skill_dir>/scripts/widget.sh connect-sign-in '{"signInUrl":"<redirectUrl>"}'
+```
+
+It prints one line. The card has the heading **Sign in to Lifecycle Center**, the steps (sign in as a user with the **DevOps Center User** permission set, allow access, confirm access in the working org, then reply **done**), and a **Connect to Lifecycle Center org** button that opens the URL in a new tab.
+
+- `CARD_JSON <json>`: call `render_widget` once with `<json>` as its arguments, exactly as printed. The card holds the heading, the steps, and the link, so write no other text about the sign-in. Never put the card JSON or the URL in your message.
+- `CARD_UNAVAILABLE <reason>`, any other output or an error, or `render_widget` answers `{rendered: false, reason}`: use the layout above. Never edit the URL or the card JSON to make a card fit.
+
 Rules for the link:
-- Use the full `redirectUrl` after the `&amp;` fix, unmodified, as the Markdown link, and again in the "Link not working?" line. Show the sign-in once; do not repeat it in other words.
+- Use the full `redirectUrl` after the `&amp;` fix, unmodified, as the Markdown link, and again in the "Link not working?" line. Show the sign-in once, as the layout or as the card; do not repeat it in other words.
 - Only the newest link works. Each new Step 1 run (hub) or `GET /connect/devops/environment/<id>` (deploy) replaces the previous one, so never run one while the user is still signing in, and never show an older link again. If the user reports it expired or failed, get a fresh one the same way.
 - The user should open it in a browser that is signed in to the dev org as the same user the CLI uses (the final confirmation happens on the dev org). Otherwise the browser lands on that org's login page: tell them to sign in there, then use the link again.
 - Right after showing the layout, wait for the user to reply **done**. Do not run other steps in between.
@@ -170,6 +181,14 @@ Success returns `{"namedCredentialName": "...", "calloutUrl": "https://<org>.my.
    > | `<host of calloutUrl>` | Core or Managed package | Connected |
 
    Say "Sandbox" for a scratch org too. If the status check in item 1 did not return `Configured`, do not show this layout: say the sign-in is not complete and offer a fresh link.
+
+   **Hub mode, as a card.** Only when item 1 passed and the `render_widget` tool is available. Without it, use the layout above and skip this. Run, with the `calloutUrl` host and the hub type from item 2:
+
+   ```bash
+   bash <skill_dir>/scripts/widget.sh connect-connected '{"hubHost":"<host of calloutUrl>","hasHubType":true,"hubTypeLabel":"<Core or Managed package>"}'
+   ```
+
+   When the type call was skipped or unknown, send `"hasHubType":false,"hubTypeLabel":""`. On `CARD_JSON <json>`, call `render_widget` once with `<json>` as its arguments, exactly as printed, in place of the layout above; the card shows the org host and the hub type, so do not repeat them in text. On `CARD_UNAVAILABLE <reason>`, any other output or an error, or `{rendered: false, reason}`, use the layout above.
 4. **Deploy mode:** re-run the environment lookup (`list-orgs.md`) and confirm the row with the `id` from Step 1 is listed, `selectable`, with its `NamedCredential`. Carry that `id` and `namedCredential` forward. If it is missing, do not deploy and do not invent an id; report that the credential is connected but the row was not found.
 5. **If this connect started from a deploy request** (`deploy.md`, Step 2): tell the user in one sentence that `<name>` is connected and that you are continuing the deploy of the components they gave. Then go to `deploy.md`, Step 3 and Step 4. The deploy confirmation is theirs to give; do not submit anything before it. If the connect did not start from a deploy, end here and do not offer anything beyond the result.
 

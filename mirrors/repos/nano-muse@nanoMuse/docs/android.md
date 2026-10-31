@@ -120,17 +120,63 @@ the date, language and available-model count in its final runtime-context sectio
 or crossing into a new day therefore leaves the static prefix available to providers that support
 prefix caching.
 
-The phone also keeps what one call carries within a budget of its own (1.0.8, `io.github.nanomuse.chat`).
-Over the hosted model's last week the time to the first token grew with the prompt (4.7 s at
-the median under 12k tokens, 25 s between 24k and 40k, 54 s above), so `ContextBudget` pulls
-the compaction line down to 32k tokens on every window from 64k up (it was 108k on the 128k
-window the hosted model is read as) and moves old big tool results to disk from 28k; the
-compaction itself, and the recent exchanges it keeps whole, are upstream's. `PromptDiet`
-rewrites the two fattest parts of the baseline densely without taking anything away: the
-`browser_use` schema (every action and parameter kept, the paragraphs on cookies, viewport and
-infinite scroll shortened) and the `minis-*` paragraphs of the Android tools section (each
-CLI's `--help` has the rest). Together about 5k characters, roughly an eighth of what every
-call carried before a single message.
+The phone budgets each request against the active model's context window, including a smaller
+window configured for its model group. `ContextBudget` reserves the smaller of the requested
+output limit and `max(4096, 15% of the window)`, bounded by the window itself. It then subtracts
+system instructions and tool definitions to find the space available for conversation history.
+Old tool content is eligible for offloading at 75% of that space; summarization starts at 90%,
+and maintenance aims for 50%. The fixed prompt is added back to each threshold. These are
+maintenance watermarks: the actual output limit is calculated separately from the space left
+by the outgoing request. There is no universal 32k compaction limit.
+
+Context checks include ordinary message text, structured content, summaries, reasoning sent
+back to the provider, system instructions, tool definitions and images. Non-ASCII text has its
+own estimate. Successful responses calibrate that estimate up or down gradually; calibration
+is saved separately for each provider configuration and model and survives **Continue** or an
+app restart. For an unchanged request prefix, the latest reported input usage takes precedence,
+with an estimate added for new messages. Changing the provider, instructions, tool definitions
+or old content invalidates that usage anchor. Invalid usage samples are ignored. Estimates for
+new or rewritten input are still heuristics, not the model's own tokenizer. Native audio uses provider-reported accounting rather than treating its base64
+transport as text. Requests are measured again after offloading or summarization.
+
+Before requesting a summary, the phone can remove older reasoning from the outgoing request
+and move older tool results and large tool arguments to files the model can read. It protects
+the latest user request and, normally, the latest three tool iterations; under tighter pressure,
+it keeps at least the latest iteration. A single oversized result in that latest completed
+iteration can be saved to a file while its call, reasoning and result reference remain paired. A failed file write
+leaves the original content in place. If summarization cannot make enough room, eligible older
+tool steps can also be archived with a file reference. Saved conversation history retains its
+original messages. Removing reasoning and replacing older history with a summary are lossy:
+the model no longer receives every original detail on each call.
+
+An early summary that fails or does not shrink the request does not stop a turn below its
+capacity reserve, and does not run again after every tool result. Each agent run has at most
+three automatic summary attempts. If only the calibration multiplier puts a request over the
+reserve while its uncalibrated estimate still fits, the run permits one provider request to
+check that estimate. Otherwise a request that cannot be reduced enough stops. A summary
+stream times out after 120 seconds without a chunk; its complete operation, including segments
+and retries, has a 900-second deadline. Stopping the turn cancels the summary request.
+
+A summary separates background and completed work from the current request, its unfinished
+steps and the next action. When no task is active, those task sections say so instead of
+reviving old requests. After summarization, optional older turns are replayed only within the
+budget left by the fixed prompt, summary and protected current turn. That budget changes with
+the active model and request rather than staying at 8k. For a very long single task, the
+checkpoint replaces covered older steps while the full user request and recent complete tool
+iterations remain. The latest question and retained tool pairs stay intact even when that
+protected tail alone is too large; the context guard then
+decides whether it can be sent. Structured follow-ups and attachments also carry the summary.
+Notices follow the app language. This Android loop is independent of the Python runtime's
+task budgets.
+
+`PromptDiet` shortens the `browser_use` schema descriptions while keeping every action and
+parameter, and condenses the `minis-*` paragraphs in the Android tools section. Each CLI's
+`--help` provides its full usage instructions.
+
+With the default thinking rules, Qwen3.8-Max summary requests explicitly send `enable_thinking: false`. Omitting that
+field leaves the provider's default in control even though the app requested thinking off.
+The switch is documented in [Alibaba Cloud's thinking guide](https://help.aliyun.com/zh/model-studio/deep-thinking).
+A timeout still does not identify whether the delay was in the network or at the provider.
 
 While a turn has no first token yet, a small line sits under the typing dots (`NmWaitLine`):
 nothing for ten seconds, then *The model is busy, 15 s so far* with *Cancel*; and when

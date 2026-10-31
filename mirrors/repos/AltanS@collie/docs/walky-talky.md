@@ -70,7 +70,7 @@ receiver read it or answered it.
 
 ## Addresses
 
-An address names one pane, one machine's panes, or every pane.
+An address names one pane, one machine's panes, every pane, or the panes of one folder.
 
 | Address | Who receives it |
 | --- | --- |
@@ -78,6 +78,9 @@ An address names one pane, one machine's panes, or every pane.
 | `<member>/<pane>` | Whatever pane holds that id now. On a machine with no crew the member is `local` |
 | `<member>/all` | Every agent pane on that machine. From the phone only |
 | `all` | Every agent pane you can reach. From the phone only |
+| `<repo>` | Every agent pane in a folder of that name, on every machine of the crew, on any branch. `<repo>` is the last part of the folder path, as `who` shows it before the `#` in the LABEL column, for example `collie-workspace` |
+| `<repo>#<branch>` | The same, on one branch, for example `collie-workspace#main` |
+| `here` | The sender's own folder, on every machine of the crew, without the sender's own pane |
 
 A terminal may give a closed pane's id to the next pane. Herdr's `w6:p3`, tmux's `%7` and zellij's
 `terminal_3` only count up, but Collie does not rely on that. So Collie gives every pane a token,
@@ -97,7 +100,66 @@ binary. The installed skill pins the binary of the instance that installed it. S
 instance's panes.
 
 A shell pane never receives a message. Only panes the bridge sees as an agent do. An agent may
-message one pane at a time; only you may broadcast.
+message one pane, or the panes of one folder; only you may broadcast to `all` or `<member>/all`.
+
+### Send to a workspace
+
+A workspace is a folder name. The same folder name on two machines is one workspace, so one
+message can reach the agents of a project on every machine of the crew. The lead reads the
+LABEL column of its merged `who` list, picks every agent pane whose `<repo>` matches, and makes one
+delivery per pane. The sender's own pane is never one of them. Each delivery has its own receipt.
+
+Check the scope first. `who --workspace` lists only the panes a send to that word would reach, and
+`who --here` does the same for your own folder. `--here` needs a pane. The two flags are not
+allowed together.
+
+```sh
+collie walky who --workspace collie-workspace
+```
+
+```text
+ADDRESS                     MACHINE   HARNESS  LABEL                  STATE
+collie-04rj6a/w54:p1B#sx56  bluefin   claude   collie-workspace#main  working  (you)
+bluefin/t1#4kd2             bluefin   claude   collie-workspace#main  idle
+minibuch-hc/t1#9m3x         minibuch  claude   collie-workspace#main  idle
+```
+
+`who --workspace collie-workspace#main` keeps one branch. A folder with no agent pane prints
+`no agent panes in <scope>`.
+
+Then send to the word. This send runs in the pane marked `(you)` above, and reaches the other two
+panes, one on each machine:
+
+```sh
+collie walky send collie-workspace "Rebased on main. Pull before you push."
+```
+
+```text
+wt_p4t8c2r6h0ze
+to collie-workspace
+bluefin/t1: typed into the pane
+minibuch-hc/t1: typed into the pane
+```
+
+`here` does the same without naming the folder: `collie walky send here "..."` reaches your
+siblings in your own folder. `status <id>` prints the lines again, each with how this machine knew
+the sender, and ends with a totals line, here `2 deliveries: delivered 2`.
+
+A machine the lead cannot reach has one line for all its panes, `<member>/all: not sent: unreachable`.
+Collie does not retry it. `status --json` carries `deliveries` and `totals` as the lead counted
+them.
+
+A scope send counts as one message against your 30 in 10 minutes, and as one message per delivery
+against the limits of each machine. A scope that holds more than 50 panes is refused with the
+count. A word that is a member id, such as `bluefin`, is refused, and the refusal names
+`bluefin/all`. `here` from the phone is refused: a phone has no workspace, so name the folder.
+A scope with no agent pane is refused with `no panes in scope`, and the refusal names
+`collie walky who`.
+
+Each delivery is one send into one pane, so it follows the rules of
+[Into a busy pane](#into-a-busy-pane). A pane with a draft in its box, or a running turn, holds its
+delivery, and `status <id>` shows that line as held. Before it types, the member that holds the
+pane reads the pane's label again. A pane that left the scope is refused `out of scope`.
 
 ## What the target pane receives
 
@@ -213,10 +275,13 @@ collie walky cancel wt_n2d8s1v7c4b9
 - `inbox` prints this pane's unread messages and marks them read. `--keep` leaves them unread.
 - `inbox --all` prints the last 50 that reached the pane. Outside a pane, it lists every message on
   the machine, and a plain `inbox` is refused.
+- `who --workspace <repo>[#<branch>]` and `who --here` list only the panes of one workspace
+  ([Send to a workspace](#send-to-a-workspace)).
 - `status <id>` prints the id, then one line per pane. Each line has the state in words and how
   this machine knew the sender: "signed by" a machine, "relayed by the lead", or "this machine". A
   machine that refused a whole broadcast, for example with walky talky off, has one line for all
-  its panes, `<member>/all`.
+  its panes, `<member>/all`. A send to a workspace adds `to <scope>` under the id and a totals
+  line at the end.
 - `cancel <id>` takes back a message you sent while it is held. Run it in the pane that sent the
   message. The message stays in the inbox, not typed, and the receipt reads
   `waiting in the inbox, not typed: cancelled by sender`. A message that was already typed prints

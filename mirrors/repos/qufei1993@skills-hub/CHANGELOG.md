@@ -1,0 +1,404 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+### Added
+
+- **Project management**: Filter My Skills by a specific project and manage its deployment targets while preserving global and unrelated project deployments. The project picker supports search, readable names and complete paths; preset editing and saving are centralized in Skill Presets.
+- **Skill presets**: Save reusable combinations with per-Skill tool assignments, then apply them to global or project locations from one dialog. Saved assignments are reused by default, with optional adjustments and automatic conflict checks. Editing or deleting a preset does not change existing deployments.
+- **Application history and undo**: Record actual outcomes, retry unfinished items and undo eligible additions while preserving modified or subsequently reused targets. Keep the 100 most recent finished records plus in-progress and interrupted runs; discard cancelled, unexecuted previews. Removing old records does not remove installed Skills, but ends undo access through those records.
+- **Updates, recovery and repair**: List confirmed source changes, update all or selected Skills, and optionally review highlighted file differences and affected deployments. Each Skill keeps its latest pre-update recovery snapshot. Source rebinding and missing-target repair preserve central identity and unrelated deployments; recovery also works for disabled Skills without re-enabling them.
+
+### Improved
+
+- **Update checking**: Compare sources without building full previews, refresh each Git repository and branch once per check, and restore the last summary after restart without automatically checking on page entry. Rechecks retain the previous list and finish with persistent counts, timestamps and measured duration; full previews are prepared when needed for review or execution.
+- **Focused, accessible interfaces**: Separate library management, preset configuration and update scheduling; keep setup and discovery tips outside Skill results and independently dismissible, with discovery still available from Add Skills. Use compact member/tool summaries, expandable paths and history, responsive layouts, keyboard focus handling, and English, Simplified Chinese and Korean copy.
+
+### Fixed
+
+- **Discovered Skill imports**: Exclude already managed source folders from scans and safely skip them in stale import selections. Skip sync targets that overlap protected source folders, continue syncing to other tools, and report skipped counts without changing existing content or deployments. ([#208](https://github.com/qufei1993/skills-hub/issues/208))
+- **Conflict and recovery handling**: Show the tool, path and reason for blocked applications, preserve selections when returning to adjust them, and avoid repeating completed work. Protect concurrent preset edits and stale plans, retain progress after partial undo or display-refresh failures, and preserve recoverable backups when recycling removed deployments fails.
+- **Git update reliability**: Stop helper processes on timeout or cancellation, isolate individual source-check failures, and keep internal cache metadata out of root-level Skills so stalled or broken sources do not block healthy checks.
+
+## [1.0.1]
+
+### Added
+
+- **Status and tool filters for Skills**: Filter the library by enabled or disabled state and by the tools each Skill is currently synced to (match any). Counts reflect the other active filters, and Clear filters resets them together with search, scope, and tags. ([PR #197](https://github.com/qufei1993/skills-hub/pull/197))
+
+### Improved
+
+- **Tool sync icons on Skill cards**: Show the tool name and sync state immediately when hovering or focusing an icon, instead of waiting for the delayed native tooltip. Icons no longer overlap, so each one has its full click area. ([PR #198](https://github.com/qufei1993/skills-hub/pull/198))
+
+### Fixed
+
+- Keep open Skill tooltips in sync with the latest tool sync state, and hide them when the Skill is disabled or the tool is removed. ([PR #202](https://github.com/qufei1993/skills-hub/pull/202))
+
+- Successful batch updates, including batches with no changes, now show a brief completion notification instead of leaving a result panel open. Failed, skipped, cancelled and pending-tool results remain available until dismissed. ([PR #203](https://github.com/qufei1993/skills-hub/pull/203))
+
+- Collection installs now resolve the latest default-branch commit once per repository and keep it consistent across the batch and retries. New installs track the default branch for future updates; existing same-source Skills are preserved. Website links and published collection data remain compatible. ([PR #199](https://github.com/qufei1993/skills-hub/pull/199))
+
+- Windows junction deployment now uses the upstream fix for canonical `\\?\` paths, preventing broken links from failing during execution after a successful preview. CLI local source paths retain their literal path characters, and deployment errors include safe stage and system-error diagnostics. ([#196](https://github.com/qufei1993/skills-hub/issues/196)) ([PR #201](https://github.com/qufei1993/skills-hub/pull/201))
+- Git subdirectory discovery and selected installation now avoid checking out unrelated repository assets, preventing unrelated Git LFS failures from blocking Skill installation. LFS failures are no longer reported as missing repositories, and Git discovery errors remain visible in the source dialog. ([#195](https://github.com/qufei1993/skills-hub/issues/195)) ([PR #200](https://github.com/qufei1993/skills-hub/pull/200))
+
+## [1.0.0]
+
+### Added
+
+- **Selected Skill batch updates**: Update multiple selected Skills from the library's bulk action bar using their existing Git or local sources and saved deployment settings. Show per-Skill progress, stop after the current Skill on cancellation, continue after individual failures, and keep result counts and failure details available until dismissed. Skip disabled Skills and unbound local sources; retain failed and unprocessed selections for retry.
+- **Collection discovery**: Browse the website's published collection catalog and details in the desktop app, with matching collections and skills.sh results in one search. Git and local import remain available from the page header. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Website collection installation**: Open a collection from the website, review its Skills and pinned GitHub sources, and confirm installation into the shared library. Choose individual Skills, tags, tools, and global or project deployment; preserve existing same-source content and retry failed items. ([PR #185](https://github.com/qufei1993/skills-hub/pull/185), [PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Independent website release data**: Stable desktop releases publish installer links and bilingual notes to a dedicated Cloudflare Pages data source without rebuilding the website. Preparation failures stop deployment; previous production deployments remain available for rollback. ([PR #184](https://github.com/qufei1993/skills-hub/pull/184))
+
+### Improved
+
+- **Unified installation flow**: Git, local, and collection sources share “Select Skills → Installation settings,” including single-Skill sources. Search, selection rows, expandable descriptions, tags, tool choices, and scope controls use a consistent layout with visible footer actions and clear disabled states. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Collection browsing and caching**: Replace the Top 300 feed and legacy collection endpoint with the website's versioned catalog. Load 12 cards at a time while scrolling, preserve loaded batches on detail return, and reuse validated index/detail caches from the same snapshot. Search matches collection metadata; category colors, icons, and consolidated repository labels clarify details. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+
+### Fixed
+
+- **Re-enabling Skills after disable**: Restore saved tool selections for individual and bulk enable operations while skipping tools disabled in Tools and unavailable global tools. A failed tool no longer stops other saved targets from restoring. Restore removed disabled targets at updated tool paths while preserving existing content and active historical deployments. Refresh individual Skill state even after an error, and translate batch error codes separately from their titles; changed tool paths no longer report nonexistent directory conflicts.
+
+- **Headless Skill updates**: Prevent scheduled updates and “Update now” workers from creating extra windows or briefly appearing as an `exec` icon in the macOS Dock. Background updates continue independently of the main window. (fixes [#152](https://github.com/qufei1993/skills-hub/issues/152), [PR #193](https://github.com/qufei1993/skills-hub/pull/193))
+- **Source-mirrored Skill updates**: Apply source file deletions and renames during single, batch, and same-source Git updates instead of blocking them. Reject update sources without `SKILL.md` before replacing the library copy.
+- **Windows scheduled update errors**: Decode localized Task Scheduler output with the system OEM code page instead of displaying garbled errors when creating, deleting, querying, or running tasks. (fixes [#181](https://github.com/qufei1993/skills-hub/issues/181), [PR #188](https://github.com/qufei1993/skills-hub/pull/188))
+- **Windows subdirectory Skill updates**: Fix `path not found in repo` for backslash-separated source paths. Normalize new paths, retain compatibility with existing installations, and refresh caches missing the selected directory without reinstallation or database migration. (fixes [#182](https://github.com/qufei1993/skills-hub/issues/182), [PR #189](https://github.com/qufei1993/skills-hub/pull/189))
+- **Interrupted Skill updates**: Recover persisted running status after an update worker terminates, preserve completed progress, and make Update now available again. A shared operation lock protects active workers and concurrent manual triggers. (fixes [#183](https://github.com/qufei1993/skills-hub/issues/183), [PR #192](https://github.com/qufei1993/skills-hub/pull/192))
+- **CLI adoption with excluded entries**: Fix false `PLAN_STALE` errors from `skills adopt --yes` when noncanonical source paths contain excluded entries. Preview and confirmation use the same canonical root while retaining content-change and path-escape checks. (fixes [#186](https://github.com/qufei1993/skills-hub/issues/186), [PR #191](https://github.com/qufei1993/skills-hub/pull/191))
+- **Large collection installation**: Validate native collection manifests directly, supporting up to 2,000 Skills without applying external deep-link size limits. Source, revision, duplicate, and path checks remain enforced. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Website collection link validation**: Remove the outdated 100-Skill limit that rejected valid collections such as Aaron's 120-Skill marketing collection. Website and native manifests share the same Skill and source limits; the 30,000-byte external link limit and all source, revision, duplicate, and path checks remain enforced.
+- **Clearer website installation failures**: Explain whether the installation list is too large, unsupported, empty, duplicated, or contains incorrect installation information, with a recovery action for each case. Error explanations remain open until dismissed and are available in English, Simplified Chinese, and Korean; internal error details are not displayed.
+- **Pinned repository-root sources**: Accept valid `/tree/<ref>` repository-root URLs so fixed-commit collection items reach download instead of failing source validation. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Collection conflicts and completion**: Preview existing sources and name conflicts before installation, disable conflicting rows, and restrict counts, installation, and retries to eligible selections. Revalidate before execution; close the dialog after all selected items succeed and retain failures for retry. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Installation dialog state and website launch**: Preserve inputs, selections, settings, and retry progress when returning or temporarily deferring confirmation; ignore late results from cancelled scans. Website requests reveal collection confirmation over an idle manual form, and valid macOS links restore and focus the window. Windows candidate paths are matched across directory separators. ([PR #185](https://github.com/qufei1993/skills-hub/pull/185), [PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+- **Linux collection link registration**: Include Debian utilities required for protocol registration and keep desktop startup available if registration fails. Package startup verification uses an isolated desktop bus session. ([PR #185](https://github.com/qufei1993/skills-hub/pull/185))
+- **Project scope layout**: Align expanded project directories and recent paths with installation controls, including narrow windows. ([PR #187](https://github.com/qufei1993/skills-hub/pull/187))
+
+## [0.11.0]
+
+### Added
+
+- **Linux desktop installers**: Linux x64 and ARM64 builds provide `.deb` and `.AppImage` packages. Each release generates its bilingual download table from actual installer assets; signed updates preserve the installed Linux package format.
+- **AI Skill management**: Enable the official `manage-skills-hub` Skill in Settings. Use AI conversations to search, install, import, update, deploy, tag, and safely remove Skills from the desktop's shared library.
+- **Smaller installers and on-demand CLI**: Production desktop installers no longer include the CLI. Enabling AI management downloads and verifies the matching version and configures the terminal command. Open a new terminal to use it. First setup requires a connection; verified installations work offline and after the desktop closes. Update the CLI and official Skill explicitly in Settings, with download progress and retry. Failures preserve the working CLI. CLI files share the desktop release; Node.js and npm are not required.
+- **Standalone CLI installer**: Install or upgrade the CLI with one command on macOS, Linux, or Windows x64, with checksum verification and user-level PATH setup.
+
+### Improved
+
+- **Focused desktop update notes**: Download tables are generated only for the GitHub release page. Changelogs and updater notes contain version changes; desktop update dialogs also omit download sections from fetched release-page notes.
+- **Release build reuse**: Native validation and tests share one target directory. Signing reuses the verified release CLI instead of compiling it again; native CI and desktop jobs share per-platform release dependency caches while ordinary Rust CI keeps a separate debug cache; desktop packaging downloads only its matching CLI manifest. Native verification, signatures and draft publication gates remain enforced.
+
+- **AI management guidance and Settings**: A dismissible My Skills notice leads to the AI management card before the official Skill is installed. Installation details are collapsed by default; background checks retain the current status and View Skill action. Network and storage settings can also collapse while retaining summaries.
+- **Default tool sync**: AI installations sync to detected, enabled tools by default. Explicit tool choices, library-only requests, and project scope take precedence. Incomplete sync is reported separately.
+- **Shared library refresh**: Returning to the app, entering library or tag pages, or opening tag filters refreshes Skills and tags while preserving filters. AI changes appear without restarting.
+
+### Fixed
+
+- **AI management updates and rollback**: Same-version official Skill changes now offer an update. Enable repairs the managed official central copy directly, while preserving tool-target and path protections. Failed CLI replacement preserves the previous verified installation; switching between development and production restores the correct terminal command priority. Bridge operations explicitly unlock on completion to prevent child processes from briefly retaining the lock between fork and exec. CLI staging cannot publish an incomplete release. Linux packages declare the glibc 2.39 minimum and verify actual installation and package upgrade.
+
+- **AI management recovery**: Explain that draft releases cannot provide automatic CLI downloads, and show the installation failure alongside local CLI status. Keep terminal repair available with a PATH conflict, ignore inactive historical targets when determining readiness, and distinguish successful setup from a failed library refresh. Correct the official Skill guidance to require explicit updates.
+
+- Preserve generated release notes and download tables when CLI resources pre-create a shared draft.
+
+- **Independent Linux ARM64 CLI**: Release linking removes unused desktop-library dependencies. Linux CLI binaries are checked for GUI dependencies and started in a minimal Ubuntu container before publication.
+
+- **Windows release validation**: Run multiline release-test scripts from files to preserve shell quoting on Windows, and check these scripts in pull-request CI before packaging.
+
+- **AI management after device sync**: Device sync now records the local directory checksum instead of the portable sync checksum. Enabling or updating AI management safely repairs the old official Skill record when unchanged content matches its recorded sync checksum, while preserving genuine edits. CLI recovery instructions now point to Enable.
+
+- **DeepSeek Harness custom home**: Global deployment, discovery, and installation detection now honor `DSH_HOME`, including blank-value fallback and current-user tilde expansion. Existing deployments can be safely unsynced from their recorded directory before redeploying to the new home; modified copies remain protected (fixes [#166](https://github.com/qufei1993/skills-hub/issues/166)).
+- **Incremental Git installation**: Reinstalling a repository updates same-source Skills, skips unchanged content, and installs new Skills while preserving settings and local edits. The picker distinguishes new Skills, update checks, and conflicts. Conflicting items are disabled without blocking other selections; long descriptions can be expanded.
+- **Cline desktop support**: Cline now uses `~/.cline/skills` for global Skills and `.cline/skills` for project Skills, with installation detection through `~/.cline`. Cline is no longer incorrectly grouped with tools using `.agents/skills`.
+- **Windows AI management setup**: Preparing the managed CLI can now replace its files while retaining protection against directory replacement.
+- **Skill update sync**: Tool detection and update destinations now use the same runtime home as deployment, so installed copies refresh correctly in isolated environments.
+- **Shared tool directories**: Deployment previews list all tools affected by a shared directory. One-click AI setup stops when it would affect tools outside the selected scope, without registering disabled tools as sync targets.
+- **Ambiguous legacy sources**: Checks and updates stop when an older multi-Skill record cannot be matched to a unique source, preserving installed content.
+
+### Usage notes
+
+- **Scope and safety**: Compatible tools support project-level deployment on macOS and Linux; Windows supports global scope only. Destructive operations require confirmation. Conflicts, concurrent writes, and unsafe updates do not force overwrites. Deleted Skills remain recoverable through the desktop recycle bin.
+- **Desktop settings**: Device sync, scheduled tasks, credentials, app settings, app updates, recycle-bin restoration, and permanent deletion remain desktop-only. The shared library remains compatible with v0.10.1.
+
+### Developer notes
+
+- **Local installation testing**: New cross-platform local test build commands use the CLI prepared for the current build, development credentials, and CLI directories. Production packaging still requires a matching CLI manifest and provides guidance when it is missing. See [local test builds](https://github.com/qufei1993/skills-hub/blob/main/docs/releases/v0.11.0/local-test-builds.md).
+- **Shared data boundary**: Development and local test builds share the production Skill library, settings, cache, recycle bin, and write lock. Operations affect real data and tool directories. Credentials and CLI files remain separate; previous development data is preserved without automatic merging.
+
+## [0.10.1] - 2026-09-13
+
+### Fixed
+- **Windows command-window flashing**: Automatic-update progress refreshes now read runtime data without querying the operating-system scheduler every five seconds. Windows scheduler and system Git child processes also start without a console window, preventing repeated command-window flashes while preserving background progress updates (fixes [#150](https://github.com/qufei1993/skills-hub/issues/150)).
+
+## [0.10.0]
+
+### Added
+- **ZCode tool adapter**: Added ZCode as the 48th built-in tool, with global and project-level Skill sync through `~/.zcode/skills` and `.zcode/skills`, installation detection through `~/.zcode`, and the Z.ai product icon across tool management and sync flows (fixes [#144](https://github.com/qufei1993/skills-hub/issues/144), [PR #146](https://github.com/qufei1993/skills-hub/pull/146)).
+- **Multi-device Skill library sync**: Delivered the multi-device synchronization requested in [#56](https://github.com/qufei1993/skills-hub/issues/56). Skill content, descriptions, and tags can sync through a GitHub, GitLab, or Gitee repository, with browser authorization when configured, Token/SSH fallback, repository selection, read-only checks, manual sync, optional startup sync, and interval or daily schedules ([PR #127](https://github.com/qufei1993/skills-hub/pull/127)).
+- **Standalone recycle bin**: Deleted Skills remain recoverable on the current device for 30 days. Restore brings back files and saved local configuration, while startup and daily cleanup remove expired entries ([PR #140](https://github.com/qufei1993/skills-hub/pull/140)).
+- **Empty recycle bin action**: Added a one-click action for permanently removing every recycle bin item, protected by a GitHub-style typed confirmation and localized failure recovery.
+- **Korean interface language**: Added Korean translations, a three-language selector, and persistent language preferences. Korean users receive English release notes in the updater ([PR #135](https://github.com/qufei1993/skills-hub/pull/135)).
+
+### Changed
+- **Safer, clearer device sync**: Three-way reconciliation automatically combines independent edits and keeps real conflicts isolated per Skill. Device-local source bindings stay private, same-name downloads remain separate, failures and per-Skill changes are inspectable, device names are shared, and history is limited to 100 meaningful runs ([PR #134](https://github.com/qufei1993/skills-hub/pull/134), [PR #137](https://github.com/qufei1993/skills-hub/pull/137), [PR #139](https://github.com/qufei1993/skills-hub/pull/139), [PR #140](https://github.com/qufei1993/skills-hub/pull/140)).
+- **Safer Skill lifecycle operations**: Storage migration, automatic replacement, deletion, custom-tool removal, and cache cleanup now protect original sources, overlapping paths, independently edited copies, and rollback data. This extends the fix for [#123](https://github.com/qufei1993/skills-hub/issues/123) ([PR #125](https://github.com/qufei1993/skills-hub/pull/125), [PR #128](https://github.com/qufei1993/skills-hub/pull/128)).
+- **Streamlined management workspace**: My Skills uses compact scope filters and accurate counts, bulk actions apply only to visible selections, Skill warnings open on demand, and Management Center now places device sync first and recycle bin last ([PR #133](https://github.com/qufei1993/skills-hub/pull/133), [PR #136](https://github.com/qufei1993/skills-hub/pull/136), [PR #140](https://github.com/qufei1993/skills-hub/pull/140)).
+- **Local desktop OAuth configuration**: `npm run tauri:dev` and local `npm run tauri:build*` commands now require and inject both `SKILLS_HUB_GITHUB_CLIENT_ID` and `SKILLS_HUB_GITLAB_CLIENT_ID`, using each process-environment value first and otherwise reading only the two allowlisted fields from the repository-root `.env` or an explicit configuration file. This makes configured GitLab browser authorization available in development and packaged builds. Launch stops before compilation when either public Client ID is missing or malformed; Client Secrets, user tokens, and unrelated fields are never imported.
+
+### Fixed
+- **Sync credential recovery and development isolation**: Development builds now use a separate application data directory as well as a separate credential namespace, preventing them from replacing packaged-app sync configuration. Missing credentials are distinguished from inaccessible secure storage, and sync failures offer a user-triggered credential setup entry without disconnecting. Background failures never automatically open authorization, and settings display does not read tokens.
+- **Gitee manual Token setup**: Entering a personal access token now exposes repository loading and passes that one-time value to the provider API, allowing Skills Hub to identify repository visibility before the first sync even when Gitee browser authorization is unavailable. Repository loading uses Gitee's supported `visibility=all` filter, accepts its real response shape where the HTTPS Git URL is returned in `html_url` while `clone_url` is null, automatically matches typed repository URLs with or without the `.git` suffix, and supports the first sync to an empty repository before its configured branch exists.
+- **Unified network proxy routing**: Device-sync Git clone, fetch, and push operations; GitHub, GitLab, and Gitee provider APIs; OAuth authorization and token refresh; system Git; and the libgit2 fallback now all use the proxy configured in the app. Disabling the app proxy also prevents inherited process or global Git proxy settings from silently changing network routing, and an automated boundary check blocks future direct network clients outside the shared transport module.
+- **Windows Rust build compatibility**: Fixed MSVC-only type and lint failures that prevented `cargo clippy --all-targets` and Rust test targets from compiling on Windows. The separate pre-existing `STATUS_ENTRYPOINT_NOT_FOUND` test-runtime failure remains outside this fix (fixes [#142](https://github.com/qufei1993/skills-hub/issues/142), [PR #143](https://github.com/qufei1993/skills-hub/pull/143)).
+- **Consistent source and tool issue status**: Source-update failures now survive unrelated device syncs, current status refreshes across pages, and tool-copy failures no longer fail central-library synchronization. Skill details remain usable when the original source is missing ([PR #136](https://github.com/qufei1993/skills-hub/pull/136), [PR #138](https://github.com/qufei1993/skills-hub/pull/138)).
+- **Accurate filtered installation**: Add actions remain disabled until a source is provided, and multi-Skill Git or local imports install only checked candidates visible in the current search results ([PR #124](https://github.com/qufei1993/skills-hub/pull/124), [PR #132](https://github.com/qufei1993/skills-hub/pull/132)).
+- **Nested Git Skill discovery**: Repository root and standard `skills/` URLs now discover `skills/<category>/<skill>/SKILL.md` layouts within bounded, safe scan rules (fixes [#129](https://github.com/qufei1993/skills-hub/issues/129), [PR #131](https://github.com/qufei1993/skills-hub/pull/131)).
+- **Kimi Code CLI paths and identity**: Corrected global, project, and detection paths to use `.kimi-code`, added `KIMI_CODE_HOME` support, and adopted the official product icon without removing legacy-path content (fixes [#122](https://github.com/qufei1993/skills-hub/issues/122), [PR #126](https://github.com/qufei1993/skills-hub/pull/126)).
+
+### Security
+- **Protected credentials and portable sync boundary**: HTTPS tokens stay in the operating system credential store and SSH uses the system agent. Public reads avoid credentials, public uploads require confirmation, private-key content is rejected, and tool targets, project paths, settings, caches, and credentials remain device-local ([PR #127](https://github.com/qufei1993/skills-hub/pull/127), [PR #134](https://github.com/qufei1993/skills-hub/pull/134)).
+
+## [0.9.1] - 2026-08-29
+
+### Changed
+- **Bilingual GitHub release notes**: The release workflow now extracts both Chinese and English changelog entries, including localized platform installation notes in GitHub Releases and app updater metadata. In-app update dialogs display only the section matching the current interface language, while legacy and incomplete release-note formats continue to display in full.
+- **App update completion flow**: Available updates now use a prominent title-bar action that expands from an icon to a localized label on hover or keyboard focus. After installation, users can restart immediately from the completion dialog or close it and restart later from the persistent title-bar action.
+
+### Fixed
+- **Skill detail compatibility on older macOS versions**: Opening a Skill Markdown file no longer blanks the entire app in WKWebView versions that do not support regular-expression lookbehind. The detail renderer now detects this capability and falls back to standard Markdown while preserving full GFM rendering on supported systems ([#108](https://github.com/qufei1993/skills-hub/issues/108)).
+- **Tag rename dialogs in Tauri WebView**: Tag rename now uses an in-app input dialog instead of the unsupported browser `window.prompt`, restoring tag renaming on macOS. The remaining shared-directory confirmation also uses the existing in-app dialog instead of `window.confirm` ([#109](https://github.com/qufei1993/skills-hub/issues/109)).
+- **Responsive Skill detail workspace**: Replaced the fixed-width detail drawer with a full workspace view that adapts to the main window, keeps the file tree and Markdown content readable, and presents scope, synced tools, tags, source, update time, and file count in a compact responsive header. Source paths can be copied directly, while duplicated `name` and `description` frontmatter fields are omitted from the Markdown metadata table ([#111](https://github.com/qufei1993/skills-hub/issues/111)).
+- **Accurate Skill status**: Skill details, cards, and dashboard summaries now distinguish source errors, healthy syncs, partial failures, failed syncs, and not-yet-synced states. Source update and target sync failures are persisted, the dashboard links active issues to their update details, and clicking a failed tool retries the sync instead of attempting to disable it. Skill cards and details now use the same currently detected tool set, with cards showing the synchronized count explicitly.
+- **Windows junction cleanup and existing Skill imports**: Disabling, unsyncing, or deleting a Skill now removes Windows directory junctions without touching their targets. Discovery can also import byte-identical copies that already exist in central storage by reusing the managed record, while normal duplicate local installs and conflicting content remain rejected ([#110](https://github.com/qufei1993/skills-hub/pull/110)).
+- **Windows automatic update schedules**: The default 24-hour interval and other whole-day intervals now register with `schtasks` as daily schedules instead of invalid hourly modifiers above 23. Supported minute and hourly intervals retain their native schedule types, while unsupported long non-whole-day intervals are rejected before task creation ([#102](https://github.com/qufei1993/skills-hub/issues/102)).
+
+## [0.9.0] - 2026-08-23
+
+### Added
+- **DeepSeek Harness tool adapter**: Added global and project-level Skill sync through `~/.dsh/skills` and `.dsh/skills`. Skills Hub detects a default DeepSeek Harness installation through `~/.dsh` and displays the DeepSeek product icon throughout tool management and sync flows.
+- **Discovery scan settings**: Added persistent per-directory scan source controls with a permanent Settings entry and a contextual shortcut beside discovered Skills. Saving refreshes discovery results without changing managed or synced Skills.
+
+### Changed
+- **Built-in tool catalog**: Increased the built-in adapter count to 47 and documented DeepSeek Harness path rules in the English and Chinese support matrices.
+- **Discovery validation**: Tool directories are now reported as importable Skills only when they contain a `SKILL.md` file, reducing unrelated discovery results.
+
+## [0.8.1] - 2026-08-06
+
+### Fixed
+- **Central storage guidance**: When a local Skill import conflicts with a folder placed directly in the Skills Hub-managed central storage directory, the error now explains that the directory is managed by the app and tells the user how to move and re-import the Skill ([#103](https://github.com/qufei1993/skills-hub/issues/103)).
+
+## [0.8.0] - 2026-07-17
+
+### Added
+- **Card and list views**: My Skills can switch between responsive card and compact list layouts while preserving selection and filtering state.
+- **Collapsible desktop navigation**: The sidebar can collapse to icon-only navigation, giving the workspace more room at smaller window sizes.
+- **Recognizable tool identities**: Built-in AI coding tools use their product icons consistently across tool management, installation, and Skill sync status.
+- **Custom tool identity and sync modes**: Custom tools support avatars and explicit automatic, symbolic link, Windows junction, or copy modes. Legacy configurations default to no avatar and automatic mode.
+- **Custom tool editing**: Existing custom tools can update their name, avatar, global/project directories, and sync mode. Active targets migrate to the new directory or representation.
+- **Title bar update status**: The app checks for updates after startup and shows an actionable icon when a new version is available, reusing the existing release notes and installation flow.
+
+### Changed
+- **Desktop UI redesign**: My Skills, Explore, Tags, Tools, Updates, Settings, and installation flows now share a consistent desktop layout, spacing system, scrolling behavior, and responsive rules.
+- **Installation workflow**: Online, Git repository, and local folder installation use a unified structure with visible tag, tool, scope, summary, and action areas.
+- **Skills Hub branding**: Replaced the application logo and generated desktop icons with the new balanced Skills Hub mark for consistent use in the app, installer, and operating system launcher.
+- **Tool card action hierarchy**: Custom tool cards keep enable/disable in the top-right corner and move edit/delete actions into a separate footer.
+- **GitHub project entry**: The open-source project link moved to the GitHub & network settings section and opens in the system default browser.
+- **Skill card column sizing**: Card view keeps a stable column width instead of stretching a single filtered result across the content area.
+
+### Fixed
+- **Startup loading overlay**: Initial discovery of importable skills now runs silently in the background instead of briefly showing the “Installing Skills” dialog.
+- **Safe custom target migration**: Directory and sync-mode changes protect shared physical targets and reject invalid configuration when a destination conflicts or migration fails.
+- **External link permission**: Added a Tauri opener permission scoped to the Skills Hub repository, fixing the GitHub project page failing to open.
+
+## [0.7.1] - 2026-07-10
+
+### Fixed
+- **Unified network proxy**: App update checks, update downloads and installation, release notes, and Explore online search now honor the configured network proxy ([PR #91](https://github.com/qufei1993/skills-hub/pull/91)).
+
+## [0.7.0] - 2026-07-05
+
+### Added
+- **Install scope selection**: Choose global or project-level sync before installing a skill, including batch installs from local folders and Git repositories.
+- **Bulk skill management**: Select multiple skills from My Skills and apply batch operations for tags, target tools, enable/disable, and delete.
+- **Skill enable/disable controls**: Temporarily disable a skill without deleting it, then re-enable it later with its previous tool sync settings restored.
+- **Management Center**: Manage tags, tool configuration, and Skills auto update from one dedicated area.
+- **Tool management**: Enable or disable built-in tool targets so unused tools no longer appear in skill cards, install flows, or sync actions.
+- **Custom tool directories**: Add custom tool targets with global skills directories and optional project-level skills directories.
+- **Scheduled Skills auto update**: Configure system-level background updates for managed skills, trigger an immediate update, and review run results in the Management Center.
+- **GitHub network proxy settings**: Configure a local proxy for GitHub API requests, featured skills, GitHub downloads, and Git update flows.
+
+### Changed
+- **Settings page organization**: Settings now focuses on application preferences such as interface language, appearance, storage, cache, GitHub access, network proxy, and app updates.
+- **Management UI layout**: Tags, tools, and update pages now share consistent workspace spacing and tab navigation.
+- **Bulk tool sync behavior**: Batch tool changes now apply the selected tool list as the final target state for the selected skills.
+- **Auto update results**: Update status, counts, failures, start time, finish time, and duration are now shown inline instead of relying on a separate progress dialog.
+- **Install modal layout**: The add-skill flow uses a compact install scope selector and keeps modal actions visible when candidate lists are long.
+
+### Fixed
+- **Local batch install review**: Fixed local skill directory batch installation and candidate selection edge cases.
+- **Project scope grouping**: Tools that share the same project skills directory are grouped by target directory so project sync remains consistent.
+- **Modal overlap**: Fixed cases where long modal content could overlap or hide footer actions.
+- **Scheduler lint stability**: Cleaned up platform-specific scheduler code paths so all Rust lint checks pass across targets.
+
+## [0.6.3] - 2026-06-27
+
+### Fixed
+- **Antigravity global sync path**: Updated Antigravity 2.0 global skill sync to `~/.gemini/config/skills` so synced skills are discovered by current Antigravity versions ([#79](https://github.com/qufei1993/skills-hub/issues/79)).
+- **Windows updater metadata**: Added Windows updater signatures and `windows-x86_64` / `windows-aarch64` platform entries to `updater.json`, fixing update checks on Windows ([#78](https://github.com/qufei1993/skills-hub/issues/78), [PR #82](https://github.com/qufei1993/skills-hub/pull/82)).
+
+## [0.6.2] - 2026-06-19
+
+### Added
+- **WorkBuddy tool adapter**: Added global skill sync support via `~/.workbuddy/skills/` ([PR #73](https://github.com/qufei1993/skills-hub/pull/73)).
+- **CodeWhale tool adapter**: Added global and project-level skill sync via `~/.codewhale/skills/` and `.codewhale/skills/` ([#70](https://github.com/qufei1993/skills-hub/issues/70), [PR #74](https://github.com/qufei1993/skills-hub/pull/74)).
+- **Claude Code plugin skill discovery**: Existing user-level Claude Code plugin skills can now be discovered and imported, including custom skill paths declared in `.claude-plugin/plugin.json` ([#69](https://github.com/qufei1993/skills-hub/issues/69), [PR #75](https://github.com/qufei1993/skills-hub/pull/75)).
+
+## [0.6.1] - 2026-05-16
+
+### Fixed
+- **Window close behavior**: Closing the main window now exits the app instead of hiding it in the background, fixing cases where the app kept running but could not be reopened from the Dock or taskbar ([PR #68](https://github.com/qufei1993/skills-hub/pull/68)).
+
+## [0.6.0] - 2026-05-05
+
+### Added
+- **Skill tags**: Add custom tags to managed skills for easier organization and filtering.
+- **Tags page**: Manage tags from a dedicated Tags page, including create, rename, delete, and quick navigation back to filtered My Skills views.
+- **Tag filtering**: Filter My Skills by one or more tags with OR matching, including a virtual `Untagged` filter for skills without tags.
+- **Per-skill tag editor**: Edit a skill's tag assignments directly from the skill card.
+- **Import search**: Search discovered skill candidates by name, description, or path before importing from a local directory or Git repository.
+
+### Changed
+- **My Skills filter bar**: Removed the manual refresh button; install, delete, sync, and tag-edit flows already refresh the list automatically.
+
+### Fixed
+- **Chinese filter bar layout**: Removing the refresh button fixes the cramped button layout in Chinese.
+- **Discovered skills review**: The discovered skills review dialog now supports search and keeps selection counts aligned with filtered results.
+
+## [0.5.0] - 2026-04-16
+
+### Added
+- **Project-level skill sync**: Skills can now be synced to selected project directories instead of only global tool directories.
+- **Skill scope controls**: My Skills cards now show a scope badge (`Global` / project count) and include a scope modal for switching between global and project sync.
+- **Scope filtering**: My Skills can be filtered by All / Global / Project scope.
+- **Hermes Agent adapter**: Added global sync support for Hermes Agent via `~/.hermes/skills` ([#54](https://github.com/qufei1993/skills-hub/issues/54)).
+
+### Changed
+- **My Skills filter bar**: The section title now displays the total skill count, search is more compact, and filter controls stay on one line in the default window.
+- **Default window size**: Increased the default desktop window from `800x600` to `960x680`.
+- **macOS close behavior**: Closing the main window now hides it instead of quitting the app; reopening from the Dock restores and focuses the window.
+- **Project sync support matrix**: Project-level sync is now treated as an explicit per-tool capability; tools without a confirmed project skills directory are global-only.
+
+### Fixed
+- **Import takeover for identical skills**: Importing an existing skill can now safely take over same-name targets when the content hash matches.
+- **Unsynced tool re-enable entry**: Tool buttons that were unsynced from a skill remain visible so they can be re-enabled.
+- **SKILL.md metadata parsing**: YAML block scalar descriptions in frontmatter now render correctly in skill cards and detail views.
+
+## [0.4.3] - 2026-04-11
+
+### Added
+- **Copaw tool adapter**: Support for Copaw AI coding tool (thanks @LeonDevLifeLog [PR#50](https://github.com/qufei1993/skills-hub/pull/50)).
+
+### Fixed
+- **Git skill install & frontmatter rendering**: Fixed issues with Git-based skill installation and frontmatter metadata rendering.
+- **Git skill discovery for container paths**: Fixed skill discovery failing when repository uses container-style directory paths.
+
+## [0.4.2] - 2026-04-06
+
+### Fixed
+- **New tools modal style**: "New tools detected" dialog now uses consistent header/footer structure (`modal-header` + `modal-footer`) matching all other modals, fixing missing padding and border separators ([#46](https://github.com/qufei1993/skills-hub/issues/46)).
+- **Git skill name derivation**: Installing a Git skill from a repo root (subpath `"."`) now correctly derives the name from the repository URL instead of using `"."` as the display name.
+
+## [0.4.1] - 2026-03-21
+
+### Added
+- **Frontmatter metadata table**: Markdown files with YAML frontmatter now render a GitHub-style metadata table at the top of the skill detail view.
+
+## [0.4.0] - 2026-03-20
+
+### Added
+- **In-app update check**: Check for updates directly within Settings, download and install without leaving the app ([#33](https://github.com/qufei1993/skills-hub/issues/33)).
+- **QoderWork tool adapter**: Support for QoderWork desktop AI agent (`~/.qoderwork/skills/`) ([#34](https://github.com/qufei1993/skills-hub/issues/34)).
+
+### Changed
+- **Settings promoted to full page**: Settings moved from a modal dialog to a dedicated page view, consistent with My Skills / Explore navigation pattern.
+- **Curated skills aggregation**: Explore page now sources skills from a curated list of 7 high-quality repositories.
+
+### Fixed
+- Language toggle briefly flashing "Installing Skills..." loading overlay on Explore page.
+
+## [0.3.0] - 2026-03-15
+
+### Added
+- **Explore page**: Explore promoted from a modal tab to an independent page with My Skills / Explore top-level navigation.
+- **Featured skills**: Explore page displays curated skills from ClawHub API (updated daily via GitHub Actions) with frontend filtering and one-click install.
+- **Online skill search**: Real-time search via skills.sh API (triggered at 2+ characters, 500ms debounce), results deduplicated against the featured list and shown in separate sections.
+- **Skill detail view**: Click a skill name to browse its files with a file tree, Markdown rendering (GFM + frontmatter stripping), and syntax highlighting (40+ languages, light/dark theme adaptive).
+- **Skill description field**: Description extracted from SKILL.md frontmatter at install time, stored in database, and displayed on My Skills cards.
+- **GitHub Token setting**: Optional GitHub Token input in settings to increase API rate limit from 60 to 5,000 requests/hour.
+- **MoltBot tool adapter**: Added standalone MoltBot tool support after OpenClaw rename/split.
+
+### Fixed
+- Git install deriving skill name as "skills" when URL points to a `skills/` subdirectory, causing duplicated sync paths ([#28](https://github.com/qufei1993/skills-hub/issues/28)).
+- GitHub API rate-limit errors now display the exact reset time instead of a generic message.
+- Windows "Access Denied" OS error 5 when syncing to tools ([#20](https://github.com/qufei1993/skills-hub/issues/20)).
+- Git repo directory structures not correctly recognized as skills ([#18](https://github.com/qufei1993/skills-hub/issues/18), [#8](https://github.com/qufei1993/skills-hub/issues/8)).
+- Repos using `.claude/skills/` directory format not detected ([#27](https://github.com/qufei1993/skills-hub/issues/27)).
+- OpenClaw path updated from `.moltbot/skills` to `.openclaw/skills` ([#29](https://github.com/qufei1993/skills-hub/issues/29)).
+
+### Changed
+- My Skills list: tool badges now only show synced tools, collapsing to `+N more` beyond 5.
+- Manual Add modal simplified to Local Directory / Git Repository tabs only (Explore tab removed).
+- Multi-skill repo online install now auto-matches target skill (exact → unique-contains → fallback to manual picker).
+
+## [0.2.0] - 2026-02-01
+
+### Added
+- **Windows platform support**: Full support for Windows build and release (thanks @jrtxio [PR#6](https://github.com/qufei1993/skills-hub/pull/6)).
+- Support and display for many new tools (e.g., Kimi Code CLI, Augment, OpenClaw, Cline, CodeBuddy, Command Code, Continue, Crush, Junie, iFlow CLI, Kiro CLI, Kode, MCPJam, Mistral Vibe, Mux, OpenClaude IDE, OpenHands, Pi, Qoder, Qwen Code, Trae/Trae CN, Zencoder, Neovate, Pochi, AdaL).
+- UI confirmation and linked selection for tools that share the same global skills directory.
+- Local import multi-skill discovery aligned with Git rules, with a selection list and invalid-item reasons.
+- New local import commands for listing candidates and installing a selected subpath with SKILL.md validation.
+
+### Changed
+- Antigravity global skills directory updated to `~/.gemini/antigravity/global_skills`.
+- OpenCode global skills directory corrected to `~/.config/opencode/skills`.
+- Tool status now includes `skills_dir`; frontend tool list/sync is driven by backend data and deduped by directory.
+- Sync/unsync now updates records across tools sharing a skills directory to avoid duplicate filesystem work and inconsistent state.
+- Local import flow now scans candidates first; single valid candidate installs directly, multi-candidate opens selection.
+
+## [0.1.1] - 2026-01-26
+
+### Changed
+- GitHub Actions release workflow for macOS packaging and uploading `updater.json` (`.github/workflows/release.yml`).
+- Cursor sync now always uses directory copy due to Cursor not following symlinks when discovering skills: https://forum.cursor.com/t/cursor-doesnt-follow-symlinks-to-discover-skills/149693/4
+- Managed skill update now re-syncs copy-mode targets using copy-only overwrite, and forces Cursor targets to copy to avoid accidental relinking.
+
+## [0.1.0] - 2026-01-25
+
+### Added
+- Initial release of Skills Hub desktop app (Tauri + React).
+- Central repository for Skills; sync to multiple AI coding tools (symlink/junction preferred, copy fallback).
+- Local import from folders.
+- Git import via repository URL or folder URL (`/tree/<branch>/<path>`), with multi-skill selection and batch install.
+- Sync and update: copy-mode targets can be refreshed; managed skills can be updated from source.
+- Migration intake: scan existing tool directories, import into central repo, and one‑click sync.
+- New tool detection and optional sync.
+- Basic settings: storage path, language, and theme.
+- Git cache with cleanup (days) and freshness window (seconds).
+
+### Build & Release
+- Local packaging scripts for macOS (dmg), Windows (msi/nsis), Linux (deb/appimage).
+- GitHub Actions build validation and tag-based draft releases (release notes pulled from `CHANGELOG.md`).
+
+### Performance
+- Git import and batch install optimizations: cached clones reduce repeated fetches; timeouts and non‑interactive git improve stability.
+
+[Unreleased]: https://github.com/qufei1993/skills-hub/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/qufei1993/skills-hub/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/qufei1993/skills-hub/compare/v0.9.1...v0.10.0
+[0.9.1]: https://github.com/qufei1993/skills-hub/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/qufei1993/skills-hub/compare/v0.8.1...v0.9.0
+[0.8.1]: https://github.com/qufei1993/skills-hub/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/qufei1993/skills-hub/compare/v0.7.1...v0.8.0
+[0.7.1]: https://github.com/qufei1993/skills-hub/compare/v0.7.0...v0.7.1

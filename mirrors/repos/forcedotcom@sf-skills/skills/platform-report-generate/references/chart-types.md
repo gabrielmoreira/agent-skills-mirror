@@ -26,6 +26,30 @@ Charts can only be added to Summary or Matrix reports. A Tabular report with a `
 
 ## legendPosition
 
-Only use `legendPosition` with grouped/stacked chart types (e.g., `VerticalColumnGrouped`, `HorizontalBarStacked`). Do NOT include it for simple single-series charts like `VerticalColumn`, `HorizontalBar`, `Pie`, `Donut`.
+`legendPosition` is only accepted on some chart types. On the others, ANY value fails with `chart-legendPosition: Invalid value specified: Right` — omit the element.
 
-Valid values: `Right`, `Bottom`, `OnChart`
+| Chart types | Accepted `legendPosition` |
+|-------------|---------------------------|
+| Single-series `HorizontalBar`, `VerticalColumn`, `Line`, `LineCumulative` | None — omit it |
+| Grouped/stacked (`VerticalColumnGrouped`, `HorizontalBarStacked`, …) | `Right`, `Bottom` (`OnChart` fails) |
+| `Pie`, `Donut`, `Funnel`, `Scatter` | `Right`, `Bottom`, `OnChart` |
+
+## Allowed `<chart>` Child Elements
+
+Use only these elements inside `<chart>`. Anything else (e.g. `<summaryAxisManualRangeEnabled>`, `<showInlineChart>`) fails with `Element ... invalid at this location in type ReportChart`.
+
+`backgroundColor1`, `backgroundColor2`, `backgroundFadeDir`, `chartSummaries` (`aggregate`, `axisBinding`, `column`), `chartType`, `enableHoverLabels`, `expandOthers`, `groupingColumn`, `legendPosition`, `location`, `secondaryGroupingColumn`, `showAxisLabels`, `showPercentage`, `showTotal`, `showValues`, `size`, `summaryAxisRange` (`Auto` or `Manual`), `textColor`, `textSize`, `title`, `titleColor`, `titleSize`.
+
+A minimal chart needs only `chartType`, `groupingColumn`, `chartSummaries`, and `location`.
+
+## Record Count Charts
+
+To chart a record count, `<chartSummaries>` holds ONLY `<column>RowCount</column>` — no `<aggregate>`. `Sum` with `RowCount` fails with `aggregate type cannot be specified with RowCount summary`, and `Count` is not a valid aggregate at all.
+
+```xml
+<chartSummaries>
+    <column>RowCount</column>
+</chartSummaries>
+```
+
+For any other column, `<aggregate>` is required and must be `Sum`, `Average`, `Maximum`, or `Minimum`.

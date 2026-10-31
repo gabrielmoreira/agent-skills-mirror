@@ -4,12 +4,37 @@ description: "Network device automation via pyATS - run show commands, ping, app
 license: Apache-2.0
 user-invocable: true
 metadata:
-  { "openclaw": { "requires": { "bins": ["python3"], "env": ["PYATS_TESTBED_PATH"] } } }
+  { "openclaw": { "requires": { "bins": ["python3"], "env": ["PYATS_MCP_SCRIPT"] } } }
 ---
 
 # pyATS Network Device Tool
 
+Dynamic-inventory note (Spec160): for `NETCLAW_TESTBED_MODE=dynamic`, use the
+persistent native pyATS MCP session that composed, validated and explicitly activated
+the reviewed candidate. Separate MCP_CALL processes do not share dynamic inventory.
+Use `scripts/pyats-testbed-session.py` only for bounded preview/activate/list; it does
+not perform device operations. The static examples below apply to static mode.
+See `docs/DYNAMIC-TESTBEDS.md`; all existing device/change-control requirements apply.
+
+
 Installer note: native registration and the documented MCP_CALL invocation share the installed component launcher. Check `readiness.json` before first use; failed discovery is not device state. Existing write approvals still apply.
+
+## Managed dynamic tools
+
+The managed server has 35 tools: 34 pinned upstream tools and
+`netclaw_testbed_compose`. New upstream names are `pyats_testbed_sources`,
+`pyats_testbed_source_inventories`, `pyats_testbed_build`, `pyats_testbed_validate`,
+`pyats_testbed_activate`, `pyats_testbed_list`, `pyats_testbed_get`, and
+`pyats_testbed_delete`. Discover actual schemas before use.
+
+Select Dynamic and explicit sources in setup first. Read source inventory with its
+existing MCP (or an explicitly obtained export), record scope/completeness/freshness,
+then call compose with the documented envelope. Review the preview, validate without
+reachability, and explicitly activate. Only completed schema/credential validation
+permits activation. Native raw fetch/static merge are disabled in the managed wrapper;
+source discovery explains the equivalent composition route. Console ports, controller
+status and inventory membership never prove SSH access or device health. Restart
+requires rebuilding, validating and activating in the new process.
 
 ## Server & Testbed
 
@@ -32,7 +57,7 @@ Use the `$MCP_CALL` protocol handler to invoke MCP tools:
 PYATS_TESTBED_PATH=$PYATS_TESTBED_PATH python3 $MCP_CALL "${PYATS_PYTHON:-python3} -u $PYATS_MCP_SCRIPT" TOOL_NAME 'ARGS_JSON'
 ```
 
-## All 8 Available Tools
+## Selected device tools
 
 ### 1. `pyats_list_devices`
 
@@ -42,7 +67,7 @@ List all devices in the testbed with their properties: name, alias, type, OS, pl
 PYATS_TESTBED_PATH=$PYATS_TESTBED_PATH python3 $MCP_CALL "${PYATS_PYTHON:-python3} -u $PYATS_MCP_SCRIPT" pyats_list_devices '{}'
 ```
 
-**Use when:** Starting any session — always list devices first to confirm connectivity and inventory.
+**Use when:** Starting any session — always list devices first to observe the selected inventory; this does not prove connectivity.
 
 ### 2. `pyats_run_show_command`
 

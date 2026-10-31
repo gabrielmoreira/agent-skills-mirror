@@ -943,6 +943,8 @@ A take to film again: where a part pops on the loop as it plays, the report's to
 
 `--unfixed refuse` refuses a loop with such a `retake`, whatever `--repair` says (the repair makes no frame for a part pop and the cut stays, so whatever `--repair` says the pop plays as filmed). `--unfixed warn` (the default) keeps it with a warning line.
 
+A take to film again where the walk starts or stops: where the clip shows its steps, it stands still somewhere (`stands`), and the cut kept is not counted two steps (its `verdict` is not `two`), no cut of two steps closes between the stands: `loop.stand_retake` sets the report's `retake` to `{reason: "start-stop", reasons: ["start-stop"], start_stop: {stands, run_limit, crossings, cut, verdict, code, why}, remedy: "retake"}`. Where a part also pops, one `retake` names both: the first reason's record, `reasons` lists both (`["part-pop", "start-stop"]`), and each reason's numbers sit under its own key (`part_pop`, `start_stop`) (`loop.retakes`). The cut is kept as cut (nothing else changes in the loop). `--unfixed refuse` does not refuse a `start-stop` loop (it refuses jump-repair leftovers and `part-pop` only, as before); the loop is kept and named.
+
 A loop is cut to the same bytes whether a part pops in it or not (`cycle/`, the strip, the GIF, the WebP); every walk and run report gains `part_pop` and `retake` (`retake` is `null` where no part pops).
 
 Cost: the reading is NumPy on the CPU, about a second a loop; nothing else is read.
@@ -1266,7 +1268,9 @@ crossings, joined at the wrap where the walk itself goes on, is one cycle (`cros
 | `unconfirmed` | frames no reading confirms: a run of feet together cut by the clip's first or last frame that its twin does not confirm, the frames before the first side is seen, a change the clip ends on |
 | `step_range` | the clip's own step (the median between crossings) and the range a step must lie in, a factor of √2 either way |
 | `readable`, `why`, `alternation` | whether the clip shows its steps: three crossings or more, and in sign mode a lean that turns over a step on (correlation one step on at most **−0.7**, `crossings.ALTERNATION_MAX`) |
-| `cut`, `search` | the cut taken and the pixel search's own cut (or why it found none), each with its `verdict`, `code`, `k` (steps covered), `phase` and `ring`; the search's cut counted an odd number of steps where a pass can hide also with `same_picture` (the clip a cut on, in its playback steps, and `overlap`, the feet together at a pass over the step) |
+| `cut`, `search` | the cut taken and the pixel search's own cut (or why it found none), each with its `verdict`, `code`, `k` (steps covered), `phase` and `ring` |
+| `cycles` | whether crossings mark cycles: `asked`, `interval`, `overlap`, `half`, `one`, `two`, `slack`, `cue` (`range`, `floor`, `swapped`, `one`, `says`, `why`; only with a view; `one` absent where `"alike"`; `says` is `"steps"`, `"alike"` or null), `bob` (`swing`, `rows`, `floor`, `twice`, `half`, `quarter`, `says`, `why`; `says` is `"cycles"` or null), `cycles` (`true` or `false`), `unwitnessed` (`true` only where nothing witnessed), and `why`; absent where not asked |
+| `stands`, `run_limit` | gap mode, the runs of the feet together longer than any pass (over `run_limit`, √2 times the median run the clip shows whole: whole, or cut by the first or last frame), recorded as pairs of frames; only where there is one |
 | `chosen_by` | `search` (kept), `two steps` (chosen on the count), and the search again where the count refutes its cut (`searched_again`) |
 | `declined` | the best two-step cut, where none closed and the search's cut stood: its `cut`, `phase`, whether it passed the gates (`gated`) and its `seam` |
 
@@ -1283,32 +1287,363 @@ with the loop as played showing exactly two crossings as well (`ring`); **refute
 seen (`one step`, `three steps`); anything else is **uncertain** and never taken as two. `phase` is how
 far the wrap is from joining the same point of the walk, in frames, the worst over the bounds.
 
+**Crossings that mark cycles.** In gap mode (side and diagonal views) the step count reads a crossing
+where the feet meet on the screen, taking one crossing interval to be one step. That is wrong where the
+feet do not meet on the screen at every pass: the far foot passes hidden behind the near one (seen from
+behind on a diagonal), or a foot steps toward or away from the camera and passes the other apart (a front
+diagonal, a front view). There the feet meet once a cycle, the engine called a cycle one step, and two
+steps were two cycles: a loop twice as long as the walk's cycle, which then plays at half the walk's
+speed beside the rest of a set. Before any cut is judged,
+`local_cycle.read_cycles(reading, distances, view=None, cue=None, cue_step=None, signals=None)` asks
+whether the crossings mark cycles instead of steps. It is asked only in gap mode, on a readable reading,
+and only where a pass can hide (`reading.overlap` over `crossings.HIDE_SHARE`, 0.5: the feet seen
+together over half the interval at a pass) or where the clip's view is given
+(`--view front|back|side|front_diagonal|back_diagonal`, default none) and is not `side`. From the side
+the legs a step on are one silhouette, as near as a cycle on, and the picture cannot tell; so a side clip
+with brief passes, or a clip with no view and brief passes, is not asked (the count stands exactly as
+before). `repeat_at(distances, span)` measures how far the clip lies from itself `span` frames on: the
+mean distance of every frame to the one a lag on, over the clip's mean step from one frame to the next,
+the nearer of the two whole lags about `span` (none where the clip holds under half a lag of frames past
+it). It is read at half the crossing interval (`half`), one interval (`one`) and two intervals (`two`).
+The picture passes where `one < half` (one interval on is nearer than the pose a half interval on) and
+`one <= two + CYCLE_SLACK` (`CYCLE_SLACK` = 0.5 of the mean step: one interval on is as near as two on).
+But the picture is the same a step on as a cycle on wherever the legs are drawn alike, so the picture
+cannot witness that an interval holds two steps. Neither can a foot cue's turn half an interval on: a
+light fixed on the screen shades the feet by how far apart they are drawn, whichever leg leads, so a walk
+whose crossings are its steps, its legs drawn alike, turns its cue over half an interval on just as a
+walk whose other leg leads a step on does; and a cue that merely moves (the no-view shade) says nothing
+about which leg leads. Read that way, a walk whose crossings are its steps was cut one step long and
+counted two steps: a half-cycle loop, with no warning. The crossings mark cycles only where a witness
+that reads no leg says the interval holds two steps: the body's top line (`legs.strike_signals` `top`,
+one row per frame) rising and falling twice an interval. The body rises and falls once a step whichever
+leg leads, so two rises an interval are two steps an interval.
+`local_cycle.bob_word(signals, interval)` reads the body's top line less its flow
+(`off_flow(top, interval)`), not the raw line. `local_cycle.off_flow(values, interval)` returns `values`
+(per frame) less their flow: each frame minus the mean of the interval about it (a moving average one
+interval long, its two end frames weighted by the part of a frame the interval covers), kept only over
+the frames the interval fits about (the first and last `ceil(interval/2 - 0.5)` frames drop out), and
+what is left minus its least-squares straight line. A rise and fall once or twice an interval averages to
+nothing over one interval and is left whole. A flow slower than the interval is taken out: wholly where
+it bends no more than a cubic (a constant, a straight drift, an arc, a cubic), in part where it is a slow
+sway a few intervals long. Its record: `swing` is the range of the line left over the body's median
+height; `rows` is that range in pixel rows. Where the clip is under an interval long so nothing is left:
+`says` null, `why` says its top line less its flow is not read. Where `swing` is under `BOB_FLOOR`
+(`0.005`) or `rows` is under `BOB_ROWS` (`2`): `says` null, `why` says the line's range less its flow is
+under 0.5 % of the body's height or 2 rows, so it does not rise and fall; `half` and `quarter` are not
+read. The top line is read in whole pixel rows, so a picture drifting up or down makes the line step a
+row up and down as it rounds, and that rounding, less its own mean over an interval, stays under 2 rows.
+Otherwise it reads the line left's correlation half an interval on (`half`) and a quarter of an interval
+on (`quarter`), both with `crossings.correlation_on` (each the larger of the two whole lags about the
+span). It says `"cycles"` only where `half` is `BOB_TWICE` (`0.28`) or more and `quarter` is `-BOB_TWICE`
+(`-0.28`) or less: the line is as it was half an interval on and turned over a quarter on, which is a
+rise and fall twice an interval. Otherwise null, and `why` gives both values. A rise and fall twice an
+interval is as it was half an interval on and turned over a quarter on; a step's bob (once an interval)
+is turned over half an interval on; any flow left over (slower than the interval) is as it was at both
+half and a quarter of an interval on, so it cannot pass the quarter test. A sway of the whole picture as
+large as the bob or larger, between about one and three intervals long, can hide a true bob, and then
+the crossings stay on steps with the warning (two intervals, named), not one cycle. It next reads `edge`,
+the number of frames whose lowest solid row is the frame's last row (`legs.body_signals` `edge`). Where
+any frame's is: `says` null, `why`: "its lowest row is the frame's last row in {n} of {N} frames: the
+feet may run off the frame, and the picture moving is not read off them". There the lowest row is the
+frame's, not the feet's. `local_cycle.twice_an_interval(values, interval)`: `values` (per frame) less
+their flow (`off_flow`), then a least-squares fit of a mean, the harmonic twice an interval (cos and sin
+of 4 pi k / `interval`) and the harmonic once an interval (cos and sin of 2 pi k / `interval`), k the
+frames left counted from the first; it returns the twice-an-interval harmonic as a complex amplitude
+(its cos coefficient less i times its sin coefficient), in the values' units: a line rising and falling
+a rows either way twice an interval reads a in magnitude. Lines read so over the same frames and
+interval subtract as they move. None where fewer than `BEAT_FRAMES` (`8`) frames are left. Where none:
+`says` null, `why`: "its top line's rise and fall twice an interval is not read against its lowest row
+and upper body: under 8 frames are left less the flow". `local_cycle.own_beat(signals, interval)` reads
+the top line (`top`), the lowest solid row (`reach`) and the lowest opaque row (`sole`) with
+`twice_an_interval`. What is left of the top line's rise and fall against the lowest row (`less_lowest`,
+the top line's less the lowest solid row's or less the lowest opaque row's, whichever leaves less) gives
+the zoom that would make it: the median frame zoomed in by 1 + `less_lowest` / the body's median height
+(`legs.zoomed`). Each band's `zoom` is how far that moves the band's width, in pixels, measured on the
+body as it is drawn, not assumed of its outline: a band whose sides run straight down moves by the zoom's
+whole part, a band across a top that widens as it goes down (a pointed head, an ear's tip, a hat's point)
+by less, a band under a point by none. A band is seen where its `zoom` is `BAND_FLOOR` or more. Each
+band's `beat` is its width's rise and fall twice an interval (`twice_an_interval`), in pixels up and
+down. `reads`, for a band seen, is the band's `beat` over its `zoom` (its width's rise and fall twice an
+interval, in pixels up and down, over how far the zoom moves its width). It is read whatever its turn:
+a zoom moves a band's width in step with the line it lifts, but the band's own parts swinging across it
+(arms, a cape) move it too, in step with the line, against it, or a quarter of the beat off, and the
+zoom's part is not told from theirs. As much of the zoom as a band reads is taken out whatever its turn,
+so a band whose width moves against the line adds nothing to what is left. `less`, for a band seen, is
+what is left of the top line's rise and fall twice an interval less as much of the zoom as the band
+reads: `less_lowest` times (1 - `reads`), and nothing where `reads` is 1 or more. It returns `beat`,
+`lowest`, `sole`, `less_lowest`, `bands` (`{rows, width, zoom, beat, reads, less}`, per band: its rows
+below the first solid row, its width in the median frame and `zoom`, in pixels, `beat` in pixels,
+`reads` and `less` null where the band is not seen), `less_bands` (the least `less`, null where no band
+is seen), `still_bands` (the number of bands seen whose `reads` is at most 1 - `BOB_SCALE`, 0.4: they
+hold still on the beat), and `own`, the smaller of `less_lowest` and `less_bands`. None where a line
+is not read. The floor is the larger of `BOB_ROWS` and `BOB_FLOOR` of the body's median height. Where
+`less_lowest` is under the larger of `BOB_OWN` (`0.3`) times `beat` and the floor: `says` null, `why`:
+"its lowest row rises and falls with it: less the lowest row's, its top line's rise and fall twice an
+interval is {x} rows of {beat} ({percent}; at least 30% and {floor} rows): the picture moves with the
+body, and the body's own is not told from it". Where no band is seen (`less_bands` null): `says` null,
+`why`: "no band of its upper body would show the picture zooming: zoomed in as far as its top line rises
+and falls twice an interval against its lowest row ({less_lowest} rows of {height}), no band's width
+moves 1 px (at most {largest zoom}): the picture zooming with the body is not told from the body's
+own". Where `less_bands` is under the largest of `BOB_OWN` (0.3) times `beat`, the floor, and
+`BOB_SCALE` (0.6) times `less_lowest`: `says` null, `why`: "its upper body's width changes with it:
+less as much of the zoom as its band {a}% to {b}% of its height below its top reads, its top line's
+rise and fall twice an interval is {x} rows of {beat} ({percent}), {ratio} of the {less_lowest} left
+against the lowest row (at least 30%, {floor} rows and 0.6): the picture may zoom with the body, and the
+body's own is not told from it". Where `beat` is under `BEAT_STILL` (`1e-9` rows), as for a body whose top line holds still on the
+screen while only its lowest row rises and falls (a body that does not rise and fall whose foot drawn
+nearer is drawn lower each step), `{percent}` now reads "its top line holding still"
+(`local_cycle._share`). The test is against `BEAT_STILL` rather than zero because a top line that does
+not rise and fall fits to round-off, which is 0 under one machine's numpy and a tiny nonzero value under
+another's. What the witness says is unchanged; before, `video-loop` stopped there on a division by zero.
+Since every band's `less` is `less_lowest` times (1 - `reads`), this
+hold catches every band seen that moves on the beat (its `reads` over 0.4): the body's own is witnessed
+only where every band seen holds still on the beat and what is left is still at least 30% of `beat` and
+over the floor. Otherwise `says` `"cycles"`. A body rising and falling on its legs leaves its planted
+foot, the lowest solid row, on the ground, and carries its upper body's bands whole, leaving their
+widths. The picture moved up and down carries the lowest row with the top line by the same rows, so
+nothing is left of the line's rise against it. The picture zoomed in and out widens each band as it
+lifts the line, as far as the band's outline lets it. Where no band would show the zoom, or any band
+that would moves on the beat (arms swinging across it, a cape, or the picture zooming), nothing tells
+the picture zooming from the body's own, and nothing is witnessed. One band holding still says only that
+no zoom shows in that band: a head drawn narrower as the picture zooms in holds still so. A body rising
+and falling so little that no band would move a pixel is not told from a zoom either. Two cases this
+does not tell apart: (a) a picture zoomed on the beat with every band seen drawn against the zoom,
+so that each band holds still: its band widths are those of an upper body rising whole on its legs with
+no zoom (measured on one such drawing, every band within 0.78 px of such a body), and it is read as the
+body's own; (b) a body that rises and falls twice a step on its own legs: the witness rests on a body
+rising and falling once a step, and such a body reads as two steps an interval of one. A walk whose arms
+swing past its sides on the beat is not witnessed where a band seen moves on the beat (its `reads` over
+0.4). Where a walk is not witnessed, its crossings stay on steps, or its cut is held, and either way it
+is named, never handed out as a cycle unnamed.
+`legs.body_signals(frames)`: `bands` (per frame, each band's mean width in alpha, in pixels, read on the same
+rows in every frame, those of the clip's median body height), `band_rows`, `median_frame` (the alpha of the
+frame whose body height is nearest the clip's median), `edge`, 1 where the lowest solid row is the frame's
+last row, else 0, and `sole`, the lowest row with a fully opaque pixel (alpha `legs.OPAQUE` = 255), or the
+lowest solid row where a frame has none, because a shadow drawn translucent under the feet is solid to the
+legs' reading (alpha 128 or more) and, drawn fixed on the screen, stays while the picture moves, so a
+picture shaken twice an interval would otherwise be read as the body's own rise against it; the feet are
+drawn opaque and move with the picture. `signals` are the frames' `legs.strike_signals` merged with
+`legs.body_signals`; the body's median height is the median of `signals["height"]`. Only the step count's
+witness reads them: `loop.read_steps` merges them into the signals it passes to `local_cycle.read_cycles`.
+`legs.strike_signals` is unchanged, so the loop report's `gait.silhouette.signals` is unchanged. The
+view's foot cue can only refuse cycles (`local_cycle.cue_word(cue, interval, step=None)`):
+`legs.shade_cue` from the side or a diagonal, `legs.depth_cue` from the front or back, per frame. A cue
+whose range over the clip is under `CUE_FLOOR` (0.5) of the step it is drawn in (`legs.TONE` of luma, or
+one pixel row of the body's median height) does not move: it says `"alike"`, its correlation is not read
+(`one` absent), and `why` gives its range and the step. Otherwise its correlation one interval on (`one`)
+is read with `crossings.correlation_on` (trend removed): the cue says `"steps"` where it turns over one
+interval on (correlation at `CUE_SWAPPED`, `-0.2`, or under: the other leg leads there, so the interval
+is a step); and null otherwise (`why`: it does not turn over one interval on). It no longer reads its
+correlation half an interval on and never says `"cycles"`. With no view given, no cue is read at all: the
+shade of the feet's two halves is no longer read. Where the picture passes, the view's cue is checked
+first: where it says `"steps"`, `cycles` is false, the count stands (two steps), `why` says the view's
+foot cue turns over there: the other leg leads, a step, and no warning is given. Else where the bob says
+`"cycles"`, `cycles` is true, and `why` says the body's top line less its flow rises and falls twice an
+interval (its `half`, at least `BOB_TWICE`; its `quarter`, at most `-BOB_TWICE`), the body's own ({own}
+rows of {beat} left against its lowest row and upper body, {share}; at least 30%): two steps an interval, the
+feet meet once a cycle. Else `cycles` is false and `unwitnessed` is true: the crossings stay on
+steps, as from the side; `why` says nothing that reads no leg witnesses two steps an interval (the bob's
+own `why` in parentheses, or "no top line read"): a step on draws as a cycle on, as from the side, and
+the crossings mark steps; and the loop's warnings (`jolt.warnings`, from `local_cycle.step_verdict`) gain
+this line (`s/L` being the cut): "the clip one interval on is the same picture, as a walk whose feet meet
+once a cycle draws it, but nothing that reads no leg witnesses it (<the bob's why>): its crossings are
+counted as steps, as from the side", where its feet do meet once a cycle, each step counted in the cut
+`s/L` is a cycle (`cycle-unwitnessed`). Where the picture fails, `cycles` is false and `why` says the
+crossings mark steps, and neither `cue` nor `bob` is recorded. Where they mark cycles the reading holds
+two steps an interval (`Reading.mark_cycles`: `per` 2, `step` half the interval, `step_range` halved): a
+cut one interval long is two steps (one cycle) and is taken as such (`steps: {count: 2, by: crossings}`
+written). Recorded in `cycle.step_count.cycles`:
+`{asked, interval, overlap, half, one, two, slack, cue, bob, cycles, unwitnessed, why}`;
+`cue: {range, floor, swapped, one, says, why}` (only with a view; `one` absent where `says` is `"alike"`;
+`says` is `"steps"`, `"alike"` or null); `bob: {swing, rows, floor, twice, half, quarter, edge, body, says, why}`
+(`half`, `quarter`, `edge` (frames whose lowest row is their last) and `body` are absent under the floors;
+`body` is also absent where under 8 frames are left; `body` is `{beat, lowest, sole, less_lowest, less_bands,
+still_bands, own, bands: {rows, width, zoom, beat, reads, less}, share, scale, least, scale_least,
+band_floor}`: `share` = `own` / `beat`, `scale` = `less_bands` / `less_lowest` (`share` and `scale` read 0.0
+where the value they are divided by is under `BEAT_STILL`, null where no band is seen),
+`least` = `BOB_OWN`, `scale_least` = `BOB_SCALE`, `band_floor` = `BAND_FLOOR`; values rounded to 0.01; `why` absent
+where it says `"cycles"`; `says` is `"cycles"` or null); `unwitnessed` true only where nothing witnessed; absent where not asked. `cue` and
+`bob` are recorded only where the picture passes. The same reading is used for the search's cut
+(`--anchor motion-auto`), a fixed cut
+(`--cycle fixed`, `fixed_count`), and the loop as it plays round (`ring_steps`, told the clip's `cycles`
+since a loop alone is too short to read two intervals on). `video-set` passes each item's view. On the
+synthetic walkers of `tests/video/test_walk_steps.py` (bodies rising and falling 3 px either way once a
+step on legs whose soles stay on the ground unless held still or drawn carried whole; the walkers that
+are cut one cycle swing their arms within the body's sides: each arm 8 px either way of the body's middle
+(`ARMS_IN` in the tests), the body's sides 28 px apart, so every band of the upper body a zoom would move
+holds still on the beat; the other walkers of the passage swing them 16 px either way, past the body's
+sides), a walker seen from behind whose far foot hides behind the near one (feet together over half the
+interval) has a cycle of 20 frames drawn on twos, 24 on threes, and 17.5 and 18.5 frames on ones: its top
+line rises and falls twice an interval; cut one cycle (within a frame of it), `cycles` true, `steps` 2;
+with no view no cue is read. The same walker with its far leg drawn as the near one (legs alike), with no
+view and with `--view back_diagonal`, is still cut one cycle (the view's cue says `"alike"`, which no
+longer refuses, and the bob witnesses). A front-diagonal walker whose near foot steps out toward the
+camera and passes the far one apart (feet together under half the interval), cycle 16 and 18 frames: with
+`--view front_diagonal` cut one cycle (16, 18 frames); its foot cue moves over the floor and does not
+turn over one interval on (`says` null), and its top line rises and falls twice an interval; without a
+view it is not asked and is cut as before (32, 36 frames: two cycles). The walker seen from behind (17.5
+on ones; no view and `--view back_diagonal`) and the front-diagonal walker (16, `--view front_diagonal`)
+with their bodies held still have their top line not rising and falling (the line left (less its flow)
+ranges under `BOB_FLOOR` of the body's height and under `BOB_ROWS` rows): two intervals (two cycles),
+`cycles` false, `unwitnessed` true, and the warning naming the cut. The walker seen from behind whose far
+foot hides (17.5 on ones, no view) and the front-diagonal walker whose near foot steps out (16,
+`--view front_diagonal`), rising and falling 3 px on their legs once a step as the walkers cut one cycle
+do, their arms swinging 16 px either way of the body's middle, past its sides (the upper body widens and
+narrows twice an interval across the bands the arms swing over): cut two intervals, `unwitnessed`, the
+warning; the bob's `half` is `0.28` or more and its `quarter` `-0.28` or less, its `body.less_lowest` is
+at least `BOB_OWN` of `body.beat`, its `body.scale` is under `0.6`, its largest band `reads` is over
+`0.4`, `body.still_bands` is fewer than the bands seen, and its `why` says its upper body's width changes
+with it and the picture may zoom with the body. The walkers the tests witness, or whose cut the cut's
+witness reads one step, drawn instead with their arms swinging 16 px either way of the body's middle,
+past its sides (nineteen forms, `PAST_ITS_SIDES`): none is a silent half cycle. A walk whose feet meet
+once a cycle (the walker whose far foot hides, 18.5 frames on ones, 20 on twos and 24 on threes; the same
+with its legs drawn alike, 17.5 and 20, with no view and with `--view back_diagonal`; the front-diagonal
+walker whose near foot steps out, 18, `--view front_diagonal`; the walker whose far foot hides, legs
+alike, carried along the arc and the cubic; the same walker turned 15 degrees about its feet over the
+clip) is cut two intervals, `unwitnessed`, the warning, its bob's `why` naming the upper body's width.
+Any other cut is held as chosen (`cut_witness.held` `"unwitnessed"`, its word null, the warning): 46
+frames for the wide walker with its far leg four tones off (`--view side` and `--view front_diagonal`),
+23 for the sliding foot and for the walker held still over a shadow on a picture shaken twice a step, 30
+for the limp, and a cycle for the walks on a picture swaying once a cycle or slower. A side walker whose
+two steps are one silhouette (46-frame cycle, near and far a tone or four apart), passes brief, is not
+asked with no view or with `--view side`, and is cut two steps (46 frames) as before, its cut held and
+named by the cut's witness. The same 46-frame walker filmed as a front diagonal, its far leg four tones
+off the near one, is asked with `--view front_diagonal`: the picture passes, but the foot cue turns over
+one interval on (`says: "steps"`): two steps, 46 frames, its cut held and named by the cut's witness. The
+same 46-frame walker with its legs drawn alike (arms still four tones apart), asked with `--view` set to
+`front`, `front_diagonal`, `back` and `back_diagonal`: the picture passes, the cue says `"alike"`, and
+its top line rises and falls once an interval (a step), so its `half` correlation is negative: nothing
+witnesses, two steps, 46 frames, `unwitnessed`, and the warning. The same with its legs drawn alike and
+each leg twice as wide (10 px either side of its line instead of 5), so the feet are seen together over
+half the interval at each pass and a pass could hide: asked with no view and with `--view` set to `side`,
+`front_diagonal` and `back`: two steps, 46 frames, `unwitnessed`, warning; with a view the cue says
+`"alike"`, with no view no cue is read. The wide alike walker lit by a light fixed on the screen, lighter
+to the right (up to 12 tones across the feet), asked with no view and with `--view` set to `side`,
+`front_diagonal` and `back_diagonal`: the shade of the feet moves with how far apart they are drawn and
+turns over half an interval on; nothing witnesses: two steps, 46 frames, warning. The alike walker (legs
+5 px) with the leg swinging forward lifted 6 px at its pass and a light fixed on the screen varying top
+to bottom (12 tones), asked with `--view` set to `front`, `front_diagonal`, `back` and `back_diagonal`:
+the cue moves with the swing whichever leg swings and turns over half an interval on; nothing witnesses:
+46 frames, warning. The wide walker with its far leg four tones off the near one (a pass can hide): with
+`--view side` or `front_diagonal` the cue turns over one interval on (`"steps"`): two steps, 46 frames,
+no warning; with no view no cue is read and nothing witnesses: 46 frames, `unwitnessed`, warning. The
+wide legs-alike side walker (46-frame cycle, crossings every 23 frames, a pass can hide), carried up and
+down with the whole picture along a smooth arc 24 px deep, and, with its body held still, along the same
+arc, along a sway 12 px either way, four intervals long (92 frames), and down a ramp 24 px over the clip,
+a row every three frames: each is cut two steps, 46 frames, with `unwitnessed` and the warning. For the
+bobbing walker its `half` is `-0.28` or less (less its flow its line rises and falls once an interval);
+for the still one its `rows` is under `BOB_ROWS`. Before this change every one of the four was cut one
+step, counted two, and no warning said so. The walker seen from behind whose far foot hides behind the
+near one (cycle 17.5 frames on ones, legs drawn alike), carried along the arc and the cubic: cut one
+cycle; the bob says `"cycles"` with its `quarter` at `-0.28` or less. The walker seen from behind whose
+far foot hides behind the near one (a cycle of 20 frames drawn on twos, 24 on threes, and 17.5 and 18.5
+frames on ones) also has `body.share` at least `0.3`, `body.scale` at least `0.6`, `edge` 0, every band
+seen holds still on the beat (`body.still_bands` equals the number of bands seen), and its `why` names
+the body's own. The walker seen from behind whose far foot hides (cycle 17.5 frames on ones, no view) and
+the front-diagonal walker whose near foot steps out (cycle 16, `--view front_diagonal`), their bodies
+rising and falling twice an interval carried whole, feet and all: cut two intervals, `unwitnessed`, the
+warning; the bob's `half` is `0.28` or more and its `quarter` `-0.28` or less (the top line alone rises
+and falls twice an interval), its `body.share` is under `0.3`, and its `why` says its lowest row rises
+and falls with it. The wide legs-alike side walker (46-frame cycle, its crossings its steps every 23
+frames, a pass can hide), held still or rising and falling on its legs once a step, on a picture shaken
+up and down 3 px twice an interval (dy = round(3 sin(4 pi k / 23))): two steps, 46 frames, `unwitnessed`,
+the warning; held still, its bob's `half` is `0.28` or more and `quarter` `-0.28` or less, and its `why`
+says its lowest row rises and falls with it. The walker seen from behind (17.5, rising and falling twice
+an interval on its legs), its frames cut at the soles' row so the lowest row is each frame's last: two
+intervals, `unwitnessed`, the warning, `edge` over 0 and a `why` naming the frame's last row. Read off
+drawn frames with `legs.strike_signals` and `legs.body_signals`, five walkers that do not rise and fall
+twice an interval on their legs (the wide legs-alike side walker, interval 23, held still, carried whole
+bobbing once a step, or rising and falling on its legs once a step; the walker seen from behind, legs
+alike, interval 17.5, held still or carried whole rising and falling twice an interval), each moved up
+and down with the whole picture 3, 6 or 12 px either way every d/4, d/2, d or 2d frames (d its interval)
+at four phases: none is witnessed. Three of them (the side walker held still and on its legs, the walker
+from behind held still) zoomed in and out 0.5, 1, 2 or 4 % either way every d/4, d/2 or d frames about
+the feet, the middle or the head, at two phases: none is witnessed. The walker with its head drawn flat,
+round, pointed or with ears (held still or rising and falling on its legs once a step), zoomed in and out
+4 % either way with the picture about its feet, middle or head every quarter, half or whole cycle (11.5,
+23 or 46 frames): none is witnessed two steps an interval of a step (23 frames), nor a cut of a step said
+to be a cycle or two, nor a cut of two cycles (92) said to be one. The wide walker held still on its
+legs, zoomed in and out 4 % either way with the picture about its feet twice a step (every 11.5 frames),
+its head drawn narrower as the picture zooms in (so the bands across its head hold still on the screen)
+and the body under it swinging on the beat: either its torso, whose half width swings 4 px either way a
+quarter of the beat off the zoom, in step with it, or against it; or a crown 13 rows deep drawn narrower
+as the picture zooms in, over a cape widening and narrowing 4 px either way a quarter of the beat before
+the zoom. Through the loop nothing witnesses it (`unwitnessed`, the warning), and it is never cut 23
+frames (half a cycle) as two steps unnamed; read off its frames at an interval of 23 frames, its top line
+rises and falls twice an interval (`half` `0.28` or more, `quarter` `-0.28` or less), at least one band
+holds still on the beat, and nothing is witnessed, the `why` naming the upper body's width. Read off
+drawn frames (128 frames) at an interval of 16 frames: a column 20 px wide on feet planted at row 140,
+its top rising and falling 3 rows either way twice an interval, its crown (11 rows) and the column under
+its shoulders holding still, its shoulders (the 41 rows under the crown) widening and narrowing 2 px
+either way a quarter of the beat on: five bands are seen, one holds still on the beat and four move on
+it; nothing is witnessed, the `why` naming the upper body's width. The side walker rising and falling on
+its legs once a step (its crossings its steps), running: both soles lifted up to 1, 2, 3 or 6 px off the
+ground while the body is high; still or on a picture moved 6 px either way every d/2 (two phases) or
+every d frames: never witnessed. The side walker drawn as a view from behind or a diagonal draws feet,
+each sole up to 6, 12 or 24 px lower the further back its foot is, the foot moving forward lifted 8 px
+(the lowest row is the planted foot, sliding down the screen through its step); still, or on a picture
+moved 3, 6 (four phases) or 12 px either way every d/2 frames, or 6 px every d: never witnessed.
+
+**The order the feet are drawn in.** `legs.feet_order(frame)` reads the order a frame draws its two feet in.
+`ground` records the first and last column of each run of solid pixels within `legs.CONTACT` (0.005 of the body's
+height, at least one row) of the frame's lowest row, and `height` records the body height. The feet are seen
+`apart` when the foot band (the lowest `legs.FOOT_BAND`, 0.08, of the height) parts at its widest empty run, and
+that run spans at least `legs.FEET_APART` (0.02) of the height. Where they are apart, `depth` measures how many
+rows lower the right foot's lowest solid row is drawn than the left's, `left` and `right` record each foot's
+contact columns within `CONTACT` of its own lowest row, and `sway` records how far right of the middle of that
+empty run the mean column of the upper half of the body lies. From the front, the back, or a diagonal, the foot
+nearer the viewer is drawn lower, and the nearer foot changes sides once a step, twice a cycle. Counted over a
+crossing interval or a cut, those changes say how many steps it holds. The view's label is not taken for it,
+because a generated walk's label may be wrong: the clip must show that its two sides of feet are its two legs, or
+nothing is witnessed. Before its gates, `local_cycle.order_word(order, span)` leaves out
+(`local_cycle._off_ground(order)`) every frame whose feet are read apart but either of whose two sides (its `left` or
+`right` contact columns) shares or touches no column of anything standing on the lowest row (`ground`, the runs on
+the lowest rows) in any frame of the clip, treating those frames as not seen apart. A foot is drawn over the ground
+the walk stands on; a tail whose tip dips into the foot band beside the feet parts the band at its widest gap from
+both feet and, read as a foot, puts the foot drawn lower on the side it is not and back again, changes of side that
+no foot makes and that could count half a cycle as a whole where previously only subsequent gates held it by chance.
+A foot lifted over columns where nothing ever stands is left out with those frames; the order then reads fewer
+frames, never more.
+`local_cycle.order_word(order, span)` tests the frames across a span through a sequence of
+gates in order: the feet must be seen apart in at least `legs.FEET_APART_SHARE` (20 %) of the frames; the depth's
+swing (10th to 90th percentile) must reach at least `ORDER_ROWS` (2) rows and `legs.REACH_MIN` (0.015) of the
+height, or the feet are drawn level; each frame's lower side is read where one foot is at least an eighth of the
+swing (at least one row) lower; no change of side may have the lower foot's contact before it and the other
+side's contact after it share or touch a column, which marks one foot sliding under the body from one side to the
+other as seen from the side; nothing standing on the lowest row may slide along it `ORDER_TRAVEL` (0.8) of the
+feet's median distance apart or more (`_travel` follows each run frame to frame while it touches exactly one run
+of the next frame, starting afresh where runs meet or part); and the upper body's sway (10th to 90th percentile)
+must stay under `ORDER_SWAY` (0.5) of what a tilt about the feet would need to draw one foot that much lower (the
+swing times `ORDER_REACH`, 0.75, of the height, over the feet's distance apart), because a picture rocking on its
+feet draws one foot lower and then the other. Then at least three changes are required, and their rate over the
+span (the span over the mean distance between changes) must fall within `ORDER_SLACK` (0.2) of two, four, or one,
+with no two changes more than twice their mean apart (`ORDER_WORDS`), giving `"two steps"`, `"four steps"`, or
+`"one step"`, or null with `why`. The record keeps `apart` (the share of frames seen apart after leaving those frames
+out), `swing`, `floor`, `changes`, `slides`, `spacing`, `travel`, `sway`, `tilt`, `per`, `says`, `why`, and
+`off_ground` (the list of frames left out, present only where any frame is left out).
+It is not read from the side (`--view side`,
+`local_cycle.SIDE_VIEW`), where the two sides of the feet are the front foot and the back foot rather than two
+legs. In `local_cycle.read_cycles(..., order=None)`, `video-loop` passes `order=[legs.feet_order(f) for f in
+frames]`. After the foot cue's refusal and the body's word, where the body does not witness two steps an interval
+and the order says `"two steps"` over the crossing interval, the crossings mark cycles: `cycles` is true, and
+`why` records that the foot drawn nearer changes sides `<per>` times an interval, the clip's two sides of feet
+its two legs (none slides from one to the other, the upper body sways `<sway>` px of the `<tilt>` a tilt would
+need): two steps an interval, the feet meet once a cycle. The record is kept as `cycle.step_count.cycles.order`.
+Where nothing witnesses, `why` adds the order's own reason ("the order of the feet is not read from the side"
+from the side). A diagonal walk whose feet pass each other on the screen, one foot always drawn lower and the
+other passing it on either side, shows the same changes a side walk does (a planted foot sliding under the body
+past the other), and the order does not witness it: its crossings stay on steps or its cut is held, named. A side
+walk is never read on the order, and reading which foot passes in front of which on the screen is not done here.
+As a named limit, a tail hanging over the columns the feet stand on is still read as a foot; the gates after the
+reading (the sliding check, the ground travelled, the upper body's sway) are what hold it.
+
 **Choosing the cut.**
 
 - The clip does not show its steps (no feet seen, a legless body, a lean that does not turn over, under
-  three crossings): the search's cut, exactly as before. Only `cycle.step_count` is new.
+  three crossings): the search's cut is kept as the search cut it, and then held to the body's word like
+  every other cut (see "The cut's witness" below); `cycle.step_count` and `cycle.cut_witness` are recorded.
 - The search's cut is a two within **1.5** frames of phase (`crossings.PHASE_TOLERANCE`): kept, every
   image and frame as the search alone cuts it.
-- The count says the search's cut is an odd number of steps — one or three, the legs swapped a cut on —
-  where a pass can hide, and the clip a cut on is the same picture. A pass is brief; seen from behind on
-  a diagonal the far foot stands hidden behind the near one through part of the step, so the feet are
-  seen together for most of it, its pass among them, and apart once a cycle. Gap mode, the feet seen
-  together at a pass over more than **0.5** of a step (`crossings.Reading.overlap`, the median of the runs
-  the clip shows whole over the step; `crossings.HIDE_SHARE`), and frame by frame along the cut its frame
-  a cut on at most **1.0** of the cut's playback steps off (`local_cycle.same_picture`,
-  `SAME_PICTURE_MAX`; both in `step_count.search.same_picture`): a step on, the legs are swapped, and a
-  swap that draws nearer than the next frame is none — the count missed a crossing, and proves nothing.
-  The search's cut is kept, every image as the search alone cuts it, its count `uncertain`
-  (`same-picture`), and no `steps` is written: the set alignment screens it as any loop. Both are asked
-  because neither tells alone: from the side, with the legs drawn alike, a step on can draw as near as
-  the next frame — the very half step the count was made for — but there the feet pass briefly and the
-  count stands; where the feet stand together through a step, a lookalike step a cut on still draws
-  further off than a frame. On the synthetic walkers of `tests/video/test_walk_steps.py` the frame a cut
-  on lies 0.03 and 0.27 playback steps off where the far foot hides (on twos and on threes, the feet
-  together 0.60 and 0.63 of a step), and 2.12 on the half step drawn with a tail on its own beat. The side
-  walker whose two steps are one silhouette, near and far a tone apart, reads 0.89 a step on — under the
-  bound, so the picture alone kept its half step — and 1.04 at two tones; its feet pass briefly, and it is
-  cut two steps.
 - Otherwise the cut is among the cuts that cover two steps — any start, any length the count allows,
   inside an explicit `--min-len`/`--max-len` but not the state's window, half the clip or the gait
   fallback's ceiling (a walk slower than the window is cut two steps long). Those in phase, if any, are
@@ -1360,24 +1695,130 @@ screen below then has its word only where the count does not: its pixel suspicio
 `pixel_suspect`, `suspect` false. A count given (`--steps`) is the word on the search's cut, and the
 crossings are not asked.
 
+**The cut's witness.** In `video-loop --anchor motion-auto` (a walk or run whose cycle is searched: `--cycle auto`
+or `periodic`), right after the step count (`loop._by_steps`) has chosen the cut and before any frame is cut,
+`loop._witnessed(cycle, frames=...)` holds the chosen cut s/L to the body's word, whichever way it was chosen:
+the pixel search's cut, two steps by the clip's crossings, crossings read or not read; it does not run for a count
+given (`--steps`), a fixed cut, `--anchor none`, or any state that is not a walk or a run (motion-auto refuses
+those). This witness is needed because legs drawn alike loop as well on one step as on two; crossings read off
+feet that slide down the screen through their step (as a view from behind or a diagonal draws a planted foot),
+or off a shadow under the feet on a picture that moves, count half steps or quarter steps; and a shadow under the
+feet can leave the step count no feet to read, handing out the search's one-step cut with nothing named.
+`local_cycle.cut_word(signals, length)` reads the body's top line on two lines, `local_cycle.CUT_LINES` =
+`{'screen': 'on the screen', 'feet': 'over its feet'}`: the top line on the screen, less its flow
+(`bob_word(signals, L)`), and the top line over its feet (`bob_word(..., feet=True)`, `local_cycle.over_feet`,
+taking the top line less the lowest solid row, `reach`, or less the lowest opaque row, `sole`, whichever leaves
+less of its rise and fall twice an interval). Read on the screen alone, a picture swaying up and down once a cut
+or slower hides that rise and fall instead (the flow taken out at the cut's length leaves such a sway whole, and
+the feet move with the picture), and the line over the feet reads it; read over the feet alone, a walk turned
+slowly about its feet as it goes (a lean changing on them) tilts the ground under the feet, and the line over
+them takes in the two feet's heights by turns. Each line (`local_cycle._cut_line`) reads `local_cycle.bob_word`
+(the body's own rise and fall twice an interval) on the cut L, on half of it (L/2) and on twice it (2L), and says
+the first it rises and falls twice on: `"two steps"` on L (the cut is a cycle); `"four steps"` on L/2 (two
+cycles); `"one step"` on 2L (once in the cut); null where none, with the reading's `why`. The cut's word is the
+first either line says, in the order `local_cycle.CUT_WORDS` = `("two steps", "four steps", "one step", None)`.
+It returns `{says, by, lines, on, why, mark}`: `by`, the lines that said the word (`"screen"`, `"feet"`, or
+both), only where it says one; `lines`, each line's own word, `{screen: {...}, feet: {...}}`, each
+`{says, bob, on, why}` (`bob` that line's reading on the cut, `on` its reading at L/2 or 2L that said four
+steps or one step, with its `interval`, only for four steps or one step, `why` only where that line's `says` is
+null; the feet line's `bob` and `on` record `over`, the row it was read over, `reach` or `sole`); `on`, for four
+steps or one step, the first line in `by`'s reading that said it, with its `line` and `interval`; `why`, only
+where neither line says a word: each line's why, joined by "; "; `mark`, only where marked. Where the cut
+stands (two steps or four steps) and its lowest row (the one the line over the feet is read over: `sole` where
+the feet line was read over `sole`, else the lowest solid row) rises and falls twice the cut more than its top
+line does on the screen (`local_cycle.own_beat`'s `sole` or `lowest` greater than its `beat`, both rounded to two
+places), the record carries `mark: {over, feet, beat}` (`local_cycle._feet_mark`), in rows up and down to two
+places. The line over the feet is then the feet's as much as the body's: a foot hidden behind the other shakes it
+so once a cycle, and a cut of two cycles could be stood on it as one. A mark holds nothing: the cut stands as its
+word says, and nothing is warned or left out for it. Two steps or four steps: the cut stands, and
+`cycle.cut_witness` records `{cut: [s, L], ...cut_word's record}`.
+`local_cycle.cut_word(signals, length, order=None, declined=None)` reads the order on the cut: `loop._witnessed`
+passes it the order (none from the side, none where the frames give no top line) and the step count's `declined`
+record. Where neither line says two steps or four steps, the order is read on the cut: if it says two steps or
+four steps, the cut stands, `by` records `["order"]`, and the record is placed under `order`. Otherwise the
+lines' word stands, the order's record is kept under `order`, and its reason is joined to the cut's why. A cut of
+four steps read on the order is two cycles exactly as one read by the body: `local_cycle.four_steps` is true,
+`video-set` leaves it out (`cycle-four-steps`), and the `video-set` warning reads "its body rises and falls, or
+its foot drawn nearer changes sides, four times in its cut (cycle-four-steps)". Because the order counts the
+changes in a cut rather than whether the cut's length closes them, a cut a sixth short of a cycle still reads two
+steps. Where the cut is the search's, kept because none of the clip's two-step cuts closes (`declined`, the step
+count's record of the best of them), the order does not stand a length the closing refused: `order.says` is null,
+`order.read` keeps the word it read, its why says the order "counts its steps, not whether its length closes, and
+does not stand a length the closing refused", and the cut is held (`cut_witness.held` "unwitnessed",
+`cycle-unwitnessed`). The body's word on such a cut is unchanged.
+A cut of four steps (two cycles) still has its strip counting two steps (`steps: 2`), which `video-cycle-align`
+reads as one cycle; so `local_cycle.four_steps(cycle)` is true and `video-set` leaves the item out of its state's
+cycle alignment (`left_out` `["cycle-four-steps"]`, `local_cycle.FOUR_STEPS`), its loop as cut.
+`video-cycle-align` run on its own reads the cut report beside each loop through `align.held_cut(loop_dir,
+meta_path, meta)`. Where nothing witnessed the cut whole cycles (`cycle-unwitnessed`) or the cut spans four steps
+(`cycle-four-steps`), the loop is named under `held` and the aligner stops under `--multi-cycle fail` before
+rewriting any files, adding "and nothing witnessed some of the cuts whole cycles". Under `--multi-cycle warn` it
+aligns the loop with a warning, matching `video-set` instead of aligning held loops as one cycle without a word.
+Anything else: the cut is held: kept exactly as it was chosen (two of the clip's crossing intervals where the
+step count counted them, else the search's cut), `cut_witness.held` is `"unwitnessed"`, a warning line names
+`cycle-unwitnessed` (`local_cycle.held_verdict(cycle)`, said through `local_cycle.step_verdict`), and
+`local_cycle.unwitnessed(cycle)` is true, so `video-set` leaves the item out of its state's cycle alignment
+(`left_out` `["cycle-unwitnessed"]`); its warning says nothing witnesses its cut whole cycles, so it may hold
+half a cycle or two, and, where its step screen suspects the cut is one step, adds what settles that
+(`video-loop --steps 1`); a cut the step count had already held (crossings left on steps,
+`step_count.cycles.unwitnessed`) is recorded `{cut, held: "step count"}` and named as before.
+A cut two lengths long comes only from the picture read before this step (`loop._two_lengths`,
+docs/video-pipeline.md), and the cut read here is the one that step handed on, so `"one step"` is held,
+never cut again two of its lengths long: a body that rises and falls once in the cut may be one step of a
+walk whose legs are drawn alike (half its cycle), or a whole cycle of a body that rises and falls once a
+cycle: a limp, or a legless body bouncing as it goes (the walk window already admits a legless body's fast
+bounce); nothing that reads no leg tells the two apart, and cutting again two long would loop two cycles of
+the second.
+The warning of a cut held on one step names the line or lines its body's top line rose and fell once on
+("the body's top line on the screen", "over its feet", or "on the screen and over its feet") and, for the other
+line, that it says nothing, with that line's why. `local_cycle.held_verdict` refuses by name, with a `ValueError`,
+a cut held on one step whose record names no line it was read on (no `by` or `lines`), and `step_verdict` with it;
+no engine path hands it one, its one caller saying the record the same run has just written. The loop report's
+`cycle.cut_witness` records `{cut, says, by, lines, on, why, held, mark}` (`by` only where it says a word,
+`on` only for four steps or one step, `why` only where `says` is null, `held` only where held, `mark` only where
+marked); the printed summary's `cycle.cut_witness` records `{cut, says, by, held, mark}` (each where present).
+The feet line's `bob` and `on` record `over`, the row it was read over (`reach` or `sole`).
+
 **What crossings cannot see**: a hold the step range absorbs (a 13-frame step held to 17), a still run of
 the feet together inside the clip as long as a pass, and a wobble that reaches the reading's sides at a
-step's beat read as steps; a narrow step that opens the feet only just past the reading's threshold
-reads at that threshold. A pass hidden behind the other foot leaves one crossing a cycle, and the count
-reads a cycle as one step: the clip's own repeat overrules it where the pixel search found it and the feet
-stand together through most of a step (the same picture a cut on, above); where the search found no cycle,
-the cut is two cycles long and says `steps: 2`. A pass that falls between two drawings with the feet seen
-together only briefly is not overruled: from there the same picture a cut on is what a side walk with its
-legs drawn alike does. And a walk whose feet do stand together through most of a step, its two steps drawn
-nearer than a frame apart, is cut as the search cuts it — one step long, as before the count: neither the
-pixels nor the crossings tell its step from its cycle there, and only someone who counts the steps (`--steps`)
-settles it. Four-legged gaits are read as one foot band (`legs.strike_signals`), as before.
+step's beat read as steps; a narrow step that opens the feet only just past the reading's threshold reads
+at that threshold. Where a pass is hidden behind the other foot, or where the view is given and is not
+`side`, the cycles reading (`local_cycle.read_cycles`) sees whether the crossings mark cycles: where the
+clip repeats one interval on as near as two on, the crossings mark cycles only where the body's top line
+rises and falls twice an interval of the body's own (against its lowest row and upper body) unless the
+view's foot cue says `"steps"`; where they mark cycles, the reading cuts one cycle as two steps. What it
+still cannot tell: a side walk with brief passes whose two steps are one silhouette is not asked, because
+from the side the legs a step on are one silhouette, as near as a cycle on, and the picture cannot tell; a
+clip with no view and brief passes is not asked, so a front diagonal whose near foot steps out apart is then
+cut two cycles, so give `--view`; a walk whose feet do meet once a cycle but whose body's top line does not
+rise and fall twice an interval of the body's own (a body held still, a figure carried up and down whole, a
+picture moved with the body so that less than `BOB_OWN` of the rise is left against its lowest row, or zoomed
+with it so that taking out, band by band, as much of the zoom as each band's width reads, whatever its turn,
+leaves too little of the rise (`less_bands` under the largest of `BOB_OWN` times `beat`, the floor, and
+`BOB_SCALE` times `less_lowest`), a walk with no band of the upper body that a zoom as far as the rise would
+move a pixel or more (`BAND_FLOOR`), as for a body rising and falling so little, or one narrowing from a point
+at its top all the way down (a cone), a walk with any such band moving on the beat, as where its arms
+swing past its sides (one such band is enough), a run whose feet leave the ground so far with the body that
+too little of the rise is its own, feet at the frame's last row, or a top line that a part held over the head
+moves on a beat of its own) has its crossings left on steps: cut two cycles long, with the warning, and
+`video-set` leaves it out of the cycle alignment (`video-cycle-align` run on its own reads such a loop's
+`steps: 2` as one cycle; through `video-set` it is left out); a picture zoomed on the beat with every band
+seen drawn against the zoom, so that each band holds still on the screen, is read as the body's own: its band
+widths are those of an upper body rising whole on its legs (measured on one such drawing, every band within
+0.78 px of such a body); and a walk whose crossings are its steps, whose legs are drawn alike so its picture
+repeats a step on, and whose top line rises and falls twice a step (a part over the head on a beat twice
+the step's, or a body rising and falling twice a step on its own legs) would still be read as cycles (the
+witness rests on a body rising and falling once a step, and nothing that reads no leg tells the two apart).
+A walk whose body rises and falls once a cycle (a limp) and a legless body bouncing once in its cut are held
+and named even where the cut is a whole cycle, and a walk carried up and down whole, feet and all, with no
+rise of its own, is held. The witness never lengthens or shortens a cut.
+Four-legged gaits are read as one foot band (`legs.strike_signals`), as before.
 
 ### The step gate: every step between drawings, and a fixed cut's count
 
 On every walk or run loop that plays round (not a single play cut), after the seam gate passes, the strip cells are read between their drawings: a loop drawn on twos or threes shows each drawing for two or three frames (`repair.flow_drawings` finds them), so read frame by frame it steps nothing and then two or three steps at each drawing, making its largest step two or three times its mean even when playing evenly. Each drawing first cell is read on analysis features the seam gate reads (`loop._small_features`), taking the step from each drawing to the next and from the last drawing into the first across the wrap. The largest of these steps, wrap included, over the mean of the others must be at most `STEP_RATIO_MAX` (2.5) (`loop.drawing_steps`). Because a pixel of jitter can look large against a tiny mean step, a step over 2.5 is exempt from the bound when it is a pixel's jitter (`loop.step_jitter`): the move that aligns its drawing with the previous drawing while producing the least coverage difference (`stop.register`, read on alpha so colour has no effect) is at most `STEP_JITTER_PX` (1.5) pixels of the frames as filmed. Each such pixel is the strip's `scale` in cell pixels, and the allowed move is never less than one cell pixel. With that move taken back, the step must also be within 2.5 of the mean. The gate holds the largest step that is not a pixel's jitter to the bound. On synthetic frames, a walk going away from the camera has a step where the feet rise a whole crop row that measures 2.5 to 3.6 times the mean as drawn, black or grey. Its move is one pixel, the step taken back is at most 1.3 times the mean, and the loop passes. A frame of a walk cut 400 px tall moved 2 px and back moves 6 cell pixels, or 2.0 pixels of the frames as filmed, and fails in every colour. Measured instead as a mean RGBA difference, that jump reads 0.057 in colour, 0.025 in a grey near the backdrop and 0.021 in black. Past the bound, the loop fails with `video-loop: loop step ratio <ratio> exceeds 2.5 (<kind> length <L> frames from <start>, into frame <frame>, read between its <n> drawings); the loop jumps inside — regenerate the clip`. Where jump repair says why the step jumps, the line says it before ` — regenerate the clip`: `: frame <frame> lies off the walk's flow, and the jump repair's frame there was refused (<faults>), so it plays as filmed`, or `: frame <frame> lies off the walk's flow, and no group of up to 2 drawings brings it back`. The report records `step_gate` on every walk or run loop, passed or failed: `read` (`drawings`), `drawings`, `hold`, `mean_step`, `largest_ratio`, `largest_from` and `largest_into` (the cut frames from and into which the largest step that is not a pixel's jitter runs, each the first frame of its drawing), `wrap_ratio`, `max` (the bound used), `jitter` for steps over 2.5 that are a pixel's jitter (each step's `from` and `into` frames, its `ratio`, its `move` in cell pixels and `ratio_moved_back`, with the larger first), `lifted`, and `kept` when a lifted gate kept a loop over 2.5; a loop with fewer than three drawings records `skipped` instead.
 
-`--cycle fixed --start S --length L` of a walk or run now reads clip foot crossings (`crossings.read`) and judges the cut (`Reading.judge`), as `--anchor motion-auto` already does for the cut it takes. The report records this as `cycle.step_count` (the reading record, `chosen_by: caller`, and `cut` with `verdict`, `code`, `k`, `phase`, `ring`). A walk loops on two steps; a cut whose crossings count an odd number of steps (one, three) swaps legs at the wrap however close frames look, failing with `video-loop: loop step count refutes the fixed cut <start>/<L> — the clip's crossings count one step, each seen where a walk loops on two, and an odd count swaps the legs at the wrap; cut it again two steps long (about <2 steps> frames)`. An even count of four steps is not refused. The exemption from `--anchor motion-auto` applies (`local_cycle.same_picture_count`, shared by both now): where feet are seen together over half a step at a pass (`crossings.HIDE_SHARE`) and the clip one cut on is the same picture (at most `local_cycle.SAME_PICTURE_MAX`, 1.0 playback steps along the cut), the count missed a crossing; verdict reads `uncertain`, code `same-picture`, recorded with `same_picture`, and the cut is not refused. A fixed cut gets no `steps` field and leaves its strip unchanged.
+`--cycle fixed --start S --length L` of a walk or run now reads clip foot crossings (`crossings.read`) and judges the cut (`Reading.judge`), as `--anchor motion-auto` already does for the cut it takes. The report records this as `cycle.step_count` (the reading record, `chosen_by: caller`, and `cut` with `verdict`, `code`, `k`, `phase`, `ring`). A walk loops on two steps; a cut whose crossings count an odd number of steps (one, three) swaps legs at the wrap however close frames look, failing with `video-loop: loop step count refutes the fixed cut <start>/<L> — the clip's crossings count one step, each seen where a walk loops on two, and an odd count swaps the legs at the wrap; cut it again two steps long (about <2 steps> frames)`. An even count of four steps is not refused. The fixed cut's count reads the same cycles reading (`fixed_count`, with the view), so a cut one interval long where the crossings mark cycles counts two steps and is not refused. A fixed cut gets no `steps` field and leaves its strip unchanged.
 
 The step gate stands where the seam gate does. Its bound is the larger of 2.5 and `--seam-max`. Setting `--seam-max` past 2.5 lifts it with the seam: every step bound is then `--seam-max`, a loop whose largest step is over 2.5 is kept with the warning line `video-loop: warning: the loop's largest step between drawings is <ratio>x their mean (into frame <frame>), over 2.5: it jumps inside — kept, as --seam-max <seam-max> lifts the step gate` (and `step_gate.kept`, `step_gate.lifted: true`), and a fixed cut counted an odd number of steps is kept with `video-loop: warning: the clip's crossings count the fixed cut <start>/<L> one step, each seen: a walk loops on two steps, and an odd count swaps the legs at the wrap — kept, as --seam-max <seam-max> lifts the step gate` (and `cycle.step_count.lifted`, which records `seam_max`). A forced delivery with `--seam-max 1000` therefore passes as before, with these lines.
 
@@ -1504,6 +1945,22 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   cut it again with `video-loop … --steps 1` (the arguments are in its report) and align the set
   anew; if it is two, `--cycles <loop>=1` aligns it as it is. A loop with no report beside it is not
   screened this way.
+  In `video-set`, a walk whose cut its cut witness held is left out of the alignment
+  (`cycle-unwitnessed`) before it is screened, and where its step screen suspects one step, its
+  warning gives the same advice (cut it again with `video-loop --steps 1` if it is one).
+  `video-cycle-align` run on its own reads the cut report beside each loop through
+  `align.held_cut(loop_dir, meta_path, meta)` (using `align.cut_report` in the loop's directory or
+  the directory above it, matching the strip metadata). When nothing witnessed the cut whole cycles
+  (`local_cycle.unwitnessed`, reason `cycle-unwitnessed`) or a loop with two strip steps was cut two
+  cycles long (`local_cycle.four_steps`, reason `cycle-four-steps`), `held` records `{reason,
+  report}`. Under `--multi-cycle fail` (the default), the command stops before anything is rewritten,
+  adding "and nothing witnessed some of the cuts whole cycles". A loop counted two steps whose cut is
+  held receives no `steps` status and its return half way is not read as its second step; `settle`
+  offers `--cycles <loop>=1` to align it as one cycle and `--cycles <loop>=2` to take one cycle out
+  of two, and a held loop that may be one step is cut again with `video-loop ... --steps 1`. Under
+  `--multi-cycle warn`, it is aligned and warned that "at the set's length it plays half or twice as
+  fast as the rest, if it is not one cycle" where no return was found, bringing standalone alignment
+  into agreement with `video-set` instead of aligning held loops as one cycle without a word.
 - **Two cycles in one loop are stopped, and counted by whoever looks**: one length for the set is
   one beat only if every loop holds one cycle. A loop that holds two strides, resampled to the
   set's length, walks twice as fast as the rest, arms and legs alike — and pixels cannot tell it
@@ -2788,7 +3245,8 @@ plays the clip's filmed frames, none made between two others, and names a run it
 | Kept: a loop's last cells | A run that ends on a loop's last cell | Its next pose is across the wrap: made, the last cell would change and with it the wrap. A run that opens a loop is made (its first cell stays). A periodic cut chooses its wrap where the steps either side read alike, so a held run seldom closes it; a fixed cut whose last cells are held keeps them, and its wrap then steps from a held picture (cut it elsewhere, or `--fill-held off` to keep the whole cut as filmed). |
 | A frame made, judged | `align.measure_made` and `interpolation_quality.faults` (smear, outline, ghost, hole, doubled), the alignment's own | One acceptance policy for every frame RIFE makes (section 4). |
 | A part standing still, kept still (`still_kept`) | The outline pixels both frames draw in one place in one colour (solid at alpha 128, within 24 levels) must be drawn there in the frame made, within a pixel, for at least `STILL_KEPT_MIN` 0.8 of them in every window a tenth of the body high that holds 12 or more; else the fault `contact` | A foot planted or a hand on a ledge stays where it stood. A synthetic in-between that drags a planted foot 3 px along the floor keeps 0.50 of its window; one off by a pixel, 1.00. |
-| A frame refused | Made again at the fraction of `RETIME_T` nearest its own within half a cell of it, its ghost band under `RETIME_WINDOW_MAX` (section 4's bar for a frame made off its time); else the run is kept as filmed, with a warning naming the cells and the faults | A frame half way that RIFE cannot draw is often clean nearer one side. |
+| A picture of its own (`same_picture`) | The frame made must not read as the same picture (the reading above) as either frame it is made between or as the cell delivered before it (in a run of three, at `--out-fps` or in an air retimed with `--air-retime`, that can be a frame made too); else the fault `held` | An interpolator that gives back a frame it was handed, or one picture at two times, makes no frame between. Taken, the cell would be counted as made and still show the picture beside it. On a synthetic stalled walk (runs of two and three cells) whose interpolator gives back the frame before, both runs are kept as filmed (24/27 poses/cells). Each first cell is tried at its own time and then only later within half a cell (0.5 to 0.7, and 0.3333 to 0.45). `warning:` lines name cells 5-6 and 14-16. A synthetic fall that sinks less than a pixel in half a frame shows the frame before it again at 0.5 and 0.55, and is made at 0.6. |
+| A frame refused | Made again at the fraction of `RETIME_T` nearest its own within half a cell of it, its ghost band under `RETIME_WINDOW_MAX` (section 4's bar for a frame made off its time). One refused as `held` is made again only on the side away from the picture it showed (later where it showed the frame before or the cell before it, earlier where it showed the frame after), and not again where it showed both. Else the run is kept as filmed, with a warning naming the cells and the faults | A frame half way that RIFE cannot draw is often clean nearer one side. The frames between run from one pose to the next, so a fraction nearer a picture a frame showed again shows it too. On the cuts of eight tests that reach the binary through the default fill, trying every fraction within half a cell ran the binary 214 times. The side rule runs it 124 times and makes the same cells (3.10.0, which took such frames, ran it 90 times). |
 | Whole or not at all | A run is made whole or kept whole | Half made, it would step back to the held picture and on again. |
 | Order | After the anchor and `source_projection`, before the ghost screen, the wrap blend, the part pop and the jump repair | Everything that reads the flow and the wrap reads the cut as it will play. |
 | No RIFE | The held cells are delivered as filmed, the cut passes, and a `warning:` line names the motion, the cells and `sprite-gen rife install`; `held_fill.unmade` records them | Never a failure, never silent. |
@@ -2805,12 +3263,15 @@ its drawings on its own cells, not on the clip's hold.
 time of its own, made by RIFE between the frames beside it, judged as the fill's frames are, never showing a frame
 again. A loop has round(L x F / fps) cells over its cycle's seconds, at times k x L / cells; a cut played once runs
 from its first frame to its last, round((L - 1) x F / fps) + 1 cells, each 1/F. A cell on a frame's time is that
-frame; one between two frames showing one picture (a hold kept) is that picture; one no frame made is taken for is
-the nearer frame, named (`out_fps.shown_again`). `cycle/` holds every cell; the strip holds them up to its cell and
-width caps, subsampled past them as any strip is (`subsampled`). The strip metadata says `out_fps` and `source_fps`,
-and `source_cut.times` in place of `samples`. With no RIFE the cut is delivered at its own rate with a `warning:` line
-and `out_fps.applied` false. `video-cycle-align` and `video-stop` refuse such a loop (each makes its own frames
-between from the cut at the clip's rate), and restoration reads it as `source-processing-unsupported`.
+frame; one between two frames showing one picture (a hold kept) is that picture; one no frame made is taken for (a
+fault, or `held`: the frame shows the picture of a frame beside it, or of the cell before it, again) is the nearer
+frame, listed in `out_fps.shown_again` and named in a `warning:` line. The record's `out_fps.source_frames` gives the
+frame each cell is (null where it was made), which the strip record's `cell_record` reads for its `source_frame`
+(`docs/video-pipeline.md` section 6). `cycle/` holds every cell; the strip holds them
+up to its cell and width caps, subsampled past them as any strip is (`subsampled`). The strip metadata says `out_fps`
+and `source_fps`, and `source_cut.times` in place of `samples`. With no RIFE the cut is delivered at its own rate with
+a `warning:` line and `out_fps.applied` false. `video-cycle-align` and `video-stop` refuse such a loop (each makes its
+own frames between from the cut at the clip's rate), and restoration reads it as `source-processing-unsupported`.
 
 Where sprite-gen gives frames at a higher rate than it was given them:
 
@@ -2836,6 +3297,7 @@ Where sprite-gen gives frames at a higher rate than it was given them:
 | Solid pixels | `legs.LOW_ALPHA` | |
 | The window a tenth of the body high | `rife.GHOST_BAND` | |
 | The same picture (`same_steps`) | New | A distance over the mass (`nonloop.STABLE_MAX`, `held.measure`'s steps) reads a one-pixel move of a small part as held; `held.measure` reads a rhythm of redrawn drawings, not a frame shown again. |
+| Whether a frame made shows a picture of its own (`same_picture`, the fault `held`) | `same_steps`, the reading above, on each pair | |
 | A part standing still (`still_kept`) | New | `rife.hole` reads a hole through a limb, `inspect-motion` a foot's place in spans a person marks; neither reads whether an in-between keeps what both its frames hold still. |
 | The times of a higher rate (`times`, `upsample`) | New | `align.resample` resamples a loop as a ring to a length; a cut played once runs from its first frame to its last. |
 

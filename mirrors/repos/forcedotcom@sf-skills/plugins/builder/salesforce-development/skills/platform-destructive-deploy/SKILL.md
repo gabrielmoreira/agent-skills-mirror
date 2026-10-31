@@ -100,7 +100,7 @@ Confirm whether the target is production before executing. The reliable check is
 `unknown` means the org type could not be confirmed (usually an incomplete org record). Say so plainly: the deploy gate still allows the deploy, auto-deploy on save stays off for that org, and re-authenticating with `sf org login web` usually restores the classification.
 
 If the classifier returns `production`:
-1. Display destructive confirmation banner (mirroring `platform-quick-deploy`)
+1. Display destructive confirmation banner (mirroring `platform-metadata-deploy`'s production confirmation banner)
 2. List EVERY component that will be deleted
 3. Require explicit "yes, delete from PRODUCTION" confirmation
 4. Reject `--purge-on-delete` unless the user types it explicitly

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 15 file(s) materialized.
+Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 15 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,12 +69,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
 | 8 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
 | 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`docs/KEEPING_PORTALS_LIVE.md`](docs/KEEPING_PORTALS_LIVE.md) |
-| 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 13 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 14 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 15 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 10 | ✓ | [`antigravity-directory/skills/career-ops/SKILL.md`](antigravity-directory/skills/career-ops/SKILL.md) |
+| 11 | ✓ | [`claude-directory/skills/career-ops/SKILL.md`](claude-directory/skills/career-ops/SKILL.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`cursor-directory/skills/career-ops/SKILL.md`](cursor-directory/skills/career-ops/SKILL.md) |
+| 14 | ✓ | [`docs/KEEPING_PORTALS_LIVE.md`](docs/KEEPING_PORTALS_LIVE.md) |
+| 15 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 16 | ✓ | [`openai-directory/skills/career-ops/SKILL.md`](openai-directory/skills/career-ops/SKILL.md) |
+| 17 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 18 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 19 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

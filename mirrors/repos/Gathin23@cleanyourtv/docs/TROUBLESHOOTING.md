@@ -53,6 +53,15 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   as `_adb-tls-connect._tcp` while it is open: note it before switching Wireless debugging off, and
   run `tools/adb-closed.py <tv ip> <port>` straight after, before the reboot. After the reboot the old
   number reads closed either way, because Wireless debugging takes a new port each time it starts.
+- **After `adb_enabled` was switched off from the shell, the menu says USB debugging is on and port 5555
+  stays closed.** On an [Aurzen BOOM Air projector (BOOMAIR, Android 11, `RTMA.250416.043`)](https://github.com/Gathin23/cleanyourtv/issues/2632)
+  `settings put global adb_enabled 0` had closed the port as it should, and when ADB was wanted again
+  Developer options showed USB debugging as on, through a restart, while `tools/adb-closed.py <tv ip>`
+  kept answering closed. The port came back only after USB debugging was switched off and on again in
+  that menu and the projector was restarted once more. A menu that reads on after the flag was cleared
+  from the shell is therefore no evidence that the port is open: check with `tools/adb-closed.py <tv ip>`
+  before and after cycling the toggle, and trust what the TV answers rather than the screen. Do that
+  first; the bullet below is for a set whose firmware opens no port at all.
 - **Port 5555 stays closed and there is no Wireless debugging entry either**, so the pair-once recipe
   above has nothing to pair with: a [Philips 58PUS8505/62 The One, Android TV 12,
   `STT2.230526.001`](https://github.com/Gathin23/cleanyourtv/issues/1489) reported USB debugging on, no
@@ -169,9 +178,9 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   and returns once the request is accepted. The TV is still restarting at that point, so let it
   answer again (`tools/tv.py --probe`) before the next command.
 - **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
-  skips every package in the list with "the TV's dumpsys shows neither a requested nor a granted permission
-  block". That message names Android 5.x, but the cause here is another one: Android's watchdog turns service
-  dumps off once it has seen `system_server` hang, and they stay off until `system_server` restarts.
+  skips every package in the list and says to reboot first (older copies of the script said "the TV's dumpsys
+  shows neither a requested nor a granted permission block" and named Android 5.x instead). Android's watchdog
+  turns service dumps off once it has seen `system_server` hang, and they stay off until `system_server` restarts.
   `dumpsys activity` and `dumpsys connectivity` print nothing useful either, so the Home check cannot read the
   focused app. On a Xiaomi Mi TV 4A (MiTV-MOOQ1, Android TV 11, `RTM4.220307.164.8277`) that had been up for
   almost eight days, the load average was around 62 and `logcat` held repeated watchdog lines from
@@ -704,10 +713,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   that restarts it (a crash, a force-stop, an update) needs the same sequence. Re-enabling the
   wizard is not always enough after a reboot: on a Chromecast with Google TV 4K (`sabrina`,
   UTTC.250917.004) no `ClientAuthSigner` line came within 3 minutes and phones did not even list the
-  device. Restart the receiver while setupwraith is enabled instead: `am force-stop
-  com.google.android.apps.mediashell`, then `am start-foreground-service -n
-  com.google.android.apps.mediashell/.CastReceiverService` (after a force-stop nothing starts it
-  again), and the signer line and `MdnsAppFilter: Done announcing.` follow within seconds. Reported on Google's
+  device. Restart the receiver while setupwraith is enabled instead: `pm enable
+  com.google.android.tungsten.setupwraith`, `logcat -c`, then `am crash com.google.android.apps.mediashell`.
+  The system starts the receiver again with a new pid, and `Created singleton instance of ClientAuthSigner`
+  follows within seconds. Before trusting that line, check the pid (`pidof
+  com.google.android.apps.mediashell`) is still the same 30 s later, then `pm disable-user --user 0
+  com.google.android.tungsten.setupwraith`; with no `No private key` line after that, casting works
+  ([#2615](https://github.com/Gathin23/cleanyourtv/issues/2615)). Do not restart it with `am force-stop`
+  plus `am start-foreground-service -n com.google.android.apps.mediashell/.CastReceiverService`: started
+  that way the receiver never calls `startForeground()`, Android kills it after 30 s
+  (`ForegroundServiceDidNotStartInTimeException`), and the copy that comes back once setupwraith is off
+  has no credentials, although the killed one had logged the signer line. `am kill` leaves it running
+  with the same pid. Reported on Google's
   own Chromecast hardware (`boreal`) and, with the same log lines, on a Google TV Streamer
   (`kirkwood`, `UTTK.260317.003`), where the `CastInfoProvider` also lives inside the setupwraith
   APK; the Xiaomi Mi Box S 2nd gen list says casting from a Pixel still works there with
@@ -768,7 +785,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   themed before and did nothing on a fresh install or right after a reinstall. `theme.sh` now removes the
   shell's copy and writes through the `ThemeProvider` first (the provider cannot truncate a file the shell
   owns); on an older checkout, pushing the theme again after `launcher/build-and-install.sh` has written
-  the files once also fixes the ownership.
+  the files once also fixes the ownership. The `wallpapers/` folder went the same way, seen on a Vestel
+  BODRUM (Android 14, `UKNV.260428.001`): `theme.sh` made it with `mkdir`, so it belonged to the shell
+  (`drwxrws--- shell ext_data_rw`) and the provider got EACCES writing the pictures into it, while the
+  config still landed. `theme.sh` now leaves that folder to the provider. A set that already has one from an
+  older checkout needs it removed once (it is empty), then push the theme again:
+  `tools/tv.py 'rmdir /sdcard/Android/data/com.gathin.tvhome/files/wallpapers'`.
 - **Google TV comes back after a few remote presses**, seen on XGIMI (MoGo 3 Pro, Google TV 14). The
   remote's app buttons (YouTube, Netflix, Prime Video), the programmable button, the profile button and power
   all send F keys that the system hands to `com.xgimi.xrmservice/.XgimiGlobalKeyBroadcast` as global keys
@@ -1036,8 +1058,15 @@ running back on the list the next time it starts; a helper turned off in Setting
   button opened Google TV. `restore_key_services` does not repair this state: `ServiceRepair` writes
   `accessibility_enabled 1` only on the path that also puts a missing helper back on the list, and here
   the list was complete. Write the flag back, then read the dump again; toggling the service off and on
-  in Accessibility, which is what the owner did, brought the redirect back for that session. Whether the
-  flag survives the next reboot was not retested on that set, and what cleared it is not established.
+  in Accessibility, which is what the owner did, brought the redirect back for that session. Whether
+  that manual flag change survived the next reboot was not retested; the cold-boot follow-up below
+  tests the fork's separate opt-in startup repair. In one cold-boot test of that repair, TCL had reset
+  `AUTO_START` to `ignore`; the boot log showed the firmware blocking both the accessibility-service
+  bind and the boot receiver. After allowing `AUTO_START` for `com.gathin.tvhome` and persisting app-op settings with
+  `appops write-settings`, the next cold boot left `accessibility_enabled` at `1`, HomeKeyService
+  bound, and CleanYourTV in the foreground about eight seconds after Google TV started. The owner
+  confirmed this one run; it does not establish that the upstream launcher starts at boot or guarantee
+  every reboot. Google TV was left enabled. What first reset either setting is not established.
   On a TCL 65C655 Pro (`G03`, Android 11, [`examples/tcl-55c725`](../examples/tcl-55c725/README.md)) every
   one of three reboots left the same state, and there writing the flag back alone bound nothing; clearing
   `enabled_accessibility_services` and writing it back, as `build-and-install` does, did:
@@ -1571,3 +1600,68 @@ boot-time calls go out (about two minutes in, here). Keep `always_on_vpn_lockdow
 drops every packet until the VPN is up, and a TV whose app fails to start stays offline, with no screen
 that says why. Undo:
 `tools/tv.py 'settings delete secure always_on_vpn_app; settings delete secure always_on_vpn_lockdown'`.
+
+## The home screen reads about 40 ms and every tuning change lands inside the noise
+
+**Seen on:** the Wanbo X5 Pro's built-in stick (`4K Google TV Stick`, Skyworth `HP4609-Skyworth`,
+Amlogic, Google TV 14, `UKG3.260128.001.C3.3.5_20260723`), 1920×1080 at 60 Hz, with a third-party
+launcher as Home.
+
+`dumpsys gfxinfo` reported a 50th-percentile frame of 42 ms and roughly 14% janky frames, and it stayed
+within a couple of milliseconds across changes that should each have helped: a release build with R8, a
+decode sampled to the panel size, hardware bitmaps, a pre-rendered glow and a hardware layer on the
+backdrop. Read the phases before changing anything.
+
+**The app is probably idle and innocent.** Two numbers settle it:
+
+```
+$ adb shell dumpsys gfxinfo <pkg> reset; sleep 3; adb shell dumpsys gfxinfo <pkg> | grep "Total frames"
+Total frames rendered: 0
+```
+
+and in `dumpsys gfxinfo <pkg> framestats`, the UI thread span (`DrawStart - PerformTraversalsStart`) was
+0.1 ms. If the app draws nothing when idle and its UI thread is near zero, the remaining time is the
+render and present path, and no Java change reaches it.
+
+**Frames slip in whole vsync intervals.** At 60 Hz a frame that misses its deadline does not land at
+17 ms, it lands at 33 ms. A p50 around 40 ms means "usually two ticks, sometimes three", not "slow by
+40 ms". Shaving a third off anything does nothing; the frame has to cross back under 16.7 ms.
+
+**Check whether the device is the ceiling before touching the app:**
+
+```
+$ adb shell dumpsys SurfaceFlinger | grep -E "HWC missed|GPU missed"
+HWC missed frame count: 3494
+GPU missed frame count: 9
+```
+
+`HWC missed` counts frames the hardware composer failed to present. When it dwarfs `GPU missed`, the
+display pipeline is dropping the frames, and app-side work is spent. Confirm the panel really is 60 Hz
+first, because a 24 Hz mode with a 42 ms frame looks identical to jank:
+
+```
+$ adb shell dumpsys display | grep mUserPreferredMode
+ mUserPreferredMode={id=-1, width=1920, height=1080, fps=60.000004, ...}
+```
+
+**If `GPU missed` is the larger number,** the cost is pixels, not code. A smaller source texture does not
+help: the budget is destination pixels, so 4K artwork decoded to 720p still writes 1920×1080. Count the
+full-screen layers instead, and look for two of them stacked — a wallpaper plus a scrim, or two bitmaps
+crossfading — because pre-compositing them into one bitmap on a worker thread is the only change of that
+kind that moved anything here.
+
+**The one lever that moved it** was the Skia backend:
+
+```
+$ adb shell setprop debug.hwui.renderer skiavk
+$ adb shell am force-stop <pkg>      # then press Home
+```
+
+42 ms → 34 ms p50 and 13.7% → 10.5% janky on this stick. It is a **debug property**: it resets on every
+reboot, so it is something to re-apply, not to ship. Confirm with
+`dumpsys gfxinfo <pkg> | grep Pipeline` (`Pipeline=Skia (Vulkan)`); revert with
+`setprop debug.hwui.renderer opengl`.
+
+Three changes that did **nothing** here, so they are not worth an evening: decoding the backdrop at 720p,
+a hardware layer on a view that invalidates every frame (the layer is re-recorded each frame and costs
+more), and shortening a 1.5 s backdrop crossfade to 0.6 s.

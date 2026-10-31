@@ -1,0 +1,48 @@
+{
+  "_comment": "Machine-readable source of truth for the project. The team keeps this in sync with the prose bibles (characters/, world-bible.md) so scripts/continuity_check.py can verify consistency. Update it after each chapter; re-read it when resuming a session. Copy this file to <story-slug>/canon.json and fill it in. The _comment fields are ignored by the checker and may be deleted.",
+  "title": "Working Title",
+
+  "characters": [
+    {
+      "name": "Mara",
+      "aliases": ["the Archivist's daughter"],
+      "attributes": {
+        "eyes": "green",
+        "hair": "black",
+        "age": "24",
+        "_note": "eyes/hair colour are auto-checked against the manuscript; other attributes are stored for the LLM continuity pass"
+      },
+      "voice": "clipped; avoids speaking about her mother"
+    },
+    {
+      "name": "Davin",
+      "aliases": [],
+      "attributes": { "eyes": "brown", "hair": "grey" },
+      "voice": "formal, oath-bound"
+    }
+  ],
+
+  "places": [
+    { "name": "Vellmoor", "aliases": [] },
+    { "name": "the Archive", "aliases": ["the flooded archive"] }
+  ],
+
+  "timeline": [
+    { "id": "t1", "when": "Year of the Flood, spring", "event": "Mara steals the ledger" }
+  ],
+
+  "rules": [
+    { "id": "r1", "rule": "Reading a memory costs the reader one of their own." }
+  ],
+
+  "setups": [
+    {
+      "id": "s1",
+      "setup": "Davin hands Mara a forged ledger",
+      "chapter": 2,
+      "payoff": "Mara discovers the forgery",
+      "payoff_chapter": 9,
+      "status": "unpaid"
+    }
+  ]
+}

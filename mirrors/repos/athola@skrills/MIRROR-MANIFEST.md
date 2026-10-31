@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`assets/demo-skills/debug-helper/SKILL.md`](assets/demo-skills/debug-helper/SKILL.md) |
 | 5 | ✓ | [`assets/demo-skills/git-workflow/SKILL.md`](assets/demo-skills/git-workflow/SKILL.md) |
 | 6 | ✓ | [`assets/demo-skills/test-writer/SKILL.md`](assets/demo-skills/test-writer/SKILL.md) |
-| 7 | ✓ | [`crates/server/AGENTS.md`](crates/server/AGENTS.md) |
+| 7 | ✓ | [`crates/sync/AGENTS.md`](crates/sync/AGENTS.md) |
 | 8 | ✓ | [`skills/html-portal-generator/SKILL.md`](skills/html-portal-generator/SKILL.md) |
 
 ---

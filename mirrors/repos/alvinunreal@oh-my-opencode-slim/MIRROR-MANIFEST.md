@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 38 followed patterns, 61 file(s) materialized.
+Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 37 followed patterns, 58 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 38 followed
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 38 |
-| Files         | 61 |
+| Followed pats | 37 |
+| Files         | 58 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,7 +68,6 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 38 followed
 - `src/hooks/tool-loop-guard/codemap.md`
 - `src/hooks/cache-monitor/codemap.md`
 - `src/hooks/orchestrator-wake/codemap.md`
-- `src/hooks/loop-command/codemap.md`
 - `src/interview/codemap.md`
 - `src/mcp/codemap.md`
 - `src/multiplexer/codemap.md`
@@ -104,59 +103,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs/skills.md`](docs/skills.md) |
 | 7 | ✓ | [`docs/worktrees.md`](docs/worktrees.md) |
 | 8 | ✓ | [`src/hooks/council-seats/codemap.md`](src/hooks/council-seats/codemap.md) |
-| 9 | ✓ | [`src/hooks/deepwork-guard/codemap.md`](src/hooks/deepwork-guard/codemap.md) |
-| 10 | ✓ | [`src/hooks/deepwork/codemap.md`](src/hooks/deepwork/codemap.md) |
-| 11 | ✓ | [`src/hooks/reflect/codemap.md`](src/hooks/reflect/codemap.md) |
-| 12 | ✓ | [`src/skills/ai-estimates/SKILL.md`](src/skills/ai-estimates/SKILL.md) |
-| 13 | ✓ | [`src/skills/clonedeps/SKILL.md`](src/skills/clonedeps/SKILL.md) |
-| 14 | ✓ | [`src/skills/codemap/SKILL.md`](src/skills/codemap/SKILL.md) |
-| 15 | ✓ | [`src/skills/deanchor/SKILL.md`](src/skills/deanchor/SKILL.md) |
-| 16 | ✓ | [`src/skills/deepwork/SKILL.md`](src/skills/deepwork/SKILL.md) |
-| 17 | ✓ | [`src/skills/loop-engineering/SKILL.md`](src/skills/loop-engineering/SKILL.md) |
-| 18 | ✓ | [`src/skills/oh-my-opencode-slim/SKILL.md`](src/skills/oh-my-opencode-slim/SKILL.md) |
-| 19 | ✓ | [`src/skills/reflect/SKILL.md`](src/skills/reflect/SKILL.md) |
-| 20 | ✓ | [`src/skills/simplify/SKILL.md`](src/skills/simplify/SKILL.md) |
-| 21 | ✓ | [`src/skills/step-back/SKILL.md`](src/skills/step-back/SKILL.md) |
-| 22 | ✓ | [`src/skills/verification-planning/SKILL.md`](src/skills/verification-planning/SKILL.md) |
-| 23 | ✓ | [`src/skills/worktrees/SKILL.md`](src/skills/worktrees/SKILL.md) |
-| 24 | → | [`codemap.md`](codemap.md) |
-| 25 | → | [`docs/runtime-efficiency.md`](docs/runtime-efficiency.md) |
-| 26 | → | [`scripts/codemap.md`](scripts/codemap.md) |
-| 27 | → | [`src/agents/codemap.md`](src/agents/codemap.md) |
-| 28 | → | [`src/cli/codemap.md`](src/cli/codemap.md) |
-| 29 | → | [`src/codemap.md`](src/codemap.md) |
-| 30 | → | [`src/companion/codemap.md`](src/companion/codemap.md) |
-| 31 | → | [`src/config/codemap.md`](src/config/codemap.md) |
-| 32 | → | [`src/generated/codemap.md`](src/generated/codemap.md) |
-| 33 | → | [`src/hooks/absolute-path-rescue/codemap.md`](src/hooks/absolute-path-rescue/codemap.md) |
-| 34 | → | [`src/hooks/apply-patch/codemap.md`](src/hooks/apply-patch/codemap.md) |
-| 35 | → | [`src/hooks/auto-update-checker/codemap.md`](src/hooks/auto-update-checker/codemap.md) |
-| 36 | → | [`src/hooks/cache-monitor/codemap.md`](src/hooks/cache-monitor/codemap.md) |
-| 37 | → | [`src/hooks/codemap.md`](src/hooks/codemap.md) |
-| 38 | → | [`src/hooks/foreground-fallback/codemap.md`](src/hooks/foreground-fallback/codemap.md) |
-| 39 | → | [`src/hooks/json-error-recovery/codemap.md`](src/hooks/json-error-recovery/codemap.md) |
-| 40 | → | [`src/hooks/loop-command/codemap.md`](src/hooks/loop-command/codemap.md) |
-| 41 | → | [`src/hooks/orchestrator-wake/codemap.md`](src/hooks/orchestrator-wake/codemap.md) |
-| 42 | → | [`src/hooks/phase-reminder/codemap.md`](src/hooks/phase-reminder/codemap.md) |
-| 43 | → | [`src/hooks/search-path-guard/codemap.md`](src/hooks/search-path-guard/codemap.md) |
-| 44 | → | [`src/hooks/task-session-manager/codemap.md`](src/hooks/task-session-manager/codemap.md) |
-| 45 | → | [`src/hooks/tool-loop-guard/codemap.md`](src/hooks/tool-loop-guard/codemap.md) |
-| 46 | → | [`src/interview/codemap.md`](src/interview/codemap.md) |
-| 47 | → | [`src/mcp/codemap.md`](src/mcp/codemap.md) |
-| 48 | → | [`src/multiplexer/client/codemap.md`](src/multiplexer/client/codemap.md) |
-| 49 | → | [`src/multiplexer/codemap.md`](src/multiplexer/codemap.md) |
-| 50 | → | [`src/multiplexer/herdr/codemap.md`](src/multiplexer/herdr/codemap.md) |
-| 51 | → | [`src/multiplexer/tmux/codemap.md`](src/multiplexer/tmux/codemap.md) |
-| 52 | → | [`src/multiplexer/zellij/codemap.md`](src/multiplexer/zellij/codemap.md) |
-| 53 | → | [`src/skills/clonedeps/codemap.md`](src/skills/clonedeps/codemap.md) |
-| 54 | → | [`src/skills/codemap.md`](src/skills/codemap.md) |
-| 55 | → | [`src/skills/codemap/codemap.md`](src/skills/codemap/codemap.md) |
-| 56 | → | [`src/skills/simplify/codemap.md`](src/skills/simplify/codemap.md) |
-| 57 | → | [`src/tools/ast-grep/codemap.md`](src/tools/ast-grep/codemap.md) |
-| 58 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
-| 59 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
-| 60 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
-| 61 | → | [`src/v2/codemap.md`](src/v2/codemap.md) |
+| 9 | ✓ | [`src/hooks/deepwork/codemap.md`](src/hooks/deepwork/codemap.md) |
+| 10 | ✓ | [`src/hooks/reflect/codemap.md`](src/hooks/reflect/codemap.md) |
+| 11 | ✓ | [`src/skills/ai-estimates/SKILL.md`](src/skills/ai-estimates/SKILL.md) |
+| 12 | ✓ | [`src/skills/clonedeps/SKILL.md`](src/skills/clonedeps/SKILL.md) |
+| 13 | ✓ | [`src/skills/codemap/SKILL.md`](src/skills/codemap/SKILL.md) |
+| 14 | ✓ | [`src/skills/deanchor/SKILL.md`](src/skills/deanchor/SKILL.md) |
+| 15 | ✓ | [`src/skills/deepwork/SKILL.md`](src/skills/deepwork/SKILL.md) |
+| 16 | ✓ | [`src/skills/oh-my-opencode-slim/SKILL.md`](src/skills/oh-my-opencode-slim/SKILL.md) |
+| 17 | ✓ | [`src/skills/reflect/SKILL.md`](src/skills/reflect/SKILL.md) |
+| 18 | ✓ | [`src/skills/simplify/SKILL.md`](src/skills/simplify/SKILL.md) |
+| 19 | ✓ | [`src/skills/step-back/SKILL.md`](src/skills/step-back/SKILL.md) |
+| 20 | ✓ | [`src/skills/verification-planning/SKILL.md`](src/skills/verification-planning/SKILL.md) |
+| 21 | ✓ | [`src/skills/worktrees/SKILL.md`](src/skills/worktrees/SKILL.md) |
+| 22 | → | [`codemap.md`](codemap.md) |
+| 23 | → | [`docs/runtime-efficiency.md`](docs/runtime-efficiency.md) |
+| 24 | → | [`scripts/codemap.md`](scripts/codemap.md) |
+| 25 | → | [`src/agents/codemap.md`](src/agents/codemap.md) |
+| 26 | → | [`src/cli/codemap.md`](src/cli/codemap.md) |
+| 27 | → | [`src/codemap.md`](src/codemap.md) |
+| 28 | → | [`src/companion/codemap.md`](src/companion/codemap.md) |
+| 29 | → | [`src/config/codemap.md`](src/config/codemap.md) |
+| 30 | → | [`src/generated/codemap.md`](src/generated/codemap.md) |
+| 31 | → | [`src/hooks/absolute-path-rescue/codemap.md`](src/hooks/absolute-path-rescue/codemap.md) |
+| 32 | → | [`src/hooks/apply-patch/codemap.md`](src/hooks/apply-patch/codemap.md) |
+| 33 | → | [`src/hooks/auto-update-checker/codemap.md`](src/hooks/auto-update-checker/codemap.md) |
+| 34 | → | [`src/hooks/cache-monitor/codemap.md`](src/hooks/cache-monitor/codemap.md) |
+| 35 | → | [`src/hooks/codemap.md`](src/hooks/codemap.md) |
+| 36 | → | [`src/hooks/foreground-fallback/codemap.md`](src/hooks/foreground-fallback/codemap.md) |
+| 37 | → | [`src/hooks/json-error-recovery/codemap.md`](src/hooks/json-error-recovery/codemap.md) |
+| 38 | → | [`src/hooks/orchestrator-wake/codemap.md`](src/hooks/orchestrator-wake/codemap.md) |
+| 39 | → | [`src/hooks/phase-reminder/codemap.md`](src/hooks/phase-reminder/codemap.md) |
+| 40 | → | [`src/hooks/search-path-guard/codemap.md`](src/hooks/search-path-guard/codemap.md) |
+| 41 | → | [`src/hooks/task-session-manager/codemap.md`](src/hooks/task-session-manager/codemap.md) |
+| 42 | → | [`src/hooks/tool-loop-guard/codemap.md`](src/hooks/tool-loop-guard/codemap.md) |
+| 43 | → | [`src/interview/codemap.md`](src/interview/codemap.md) |
+| 44 | → | [`src/mcp/codemap.md`](src/mcp/codemap.md) |
+| 45 | → | [`src/multiplexer/client/codemap.md`](src/multiplexer/client/codemap.md) |
+| 46 | → | [`src/multiplexer/codemap.md`](src/multiplexer/codemap.md) |
+| 47 | → | [`src/multiplexer/herdr/codemap.md`](src/multiplexer/herdr/codemap.md) |
+| 48 | → | [`src/multiplexer/tmux/codemap.md`](src/multiplexer/tmux/codemap.md) |
+| 49 | → | [`src/multiplexer/zellij/codemap.md`](src/multiplexer/zellij/codemap.md) |
+| 50 | → | [`src/skills/clonedeps/codemap.md`](src/skills/clonedeps/codemap.md) |
+| 51 | → | [`src/skills/codemap.md`](src/skills/codemap.md) |
+| 52 | → | [`src/skills/codemap/codemap.md`](src/skills/codemap/codemap.md) |
+| 53 | → | [`src/skills/simplify/codemap.md`](src/skills/simplify/codemap.md) |
+| 54 | → | [`src/tools/ast-grep/codemap.md`](src/tools/ast-grep/codemap.md) |
+| 55 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
+| 56 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
+| 57 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
+| 58 | → | [`src/v2/codemap.md`](src/v2/codemap.md) |
 
 ---
 

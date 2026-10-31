@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `moonlight-lupin/agent-skills` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `moonlight-lupin/agent-skills` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moonlight-lupin/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 45 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,31 +79,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`plugins/dev-pipeline/skills/test-evals/SKILL.md`](plugins/dev-pipeline/skills/test-evals/SKILL.md) |
 | 19 | ✓ | [`plugins/lumen/skills/curator/SKILL.md`](plugins/lumen/skills/curator/SKILL.md) |
 | 20 | ✓ | [`plugins/lumen/skills/wiki/SKILL.md`](plugins/lumen/skills/wiki/SKILL.md) |
-| 21 | ✓ | [`plugins/skill-retrieval/SKILL.md`](plugins/skill-retrieval/SKILL.md) |
-| 22 | ✓ | [`productivity/decision-log/SKILL.md`](productivity/decision-log/SKILL.md) |
-| 23 | ✓ | [`productivity/file-organizer/SKILL.md`](productivity/file-organizer/SKILL.md) |
-| 24 | ✓ | [`productivity/fill-template/SKILL.md`](productivity/fill-template/SKILL.md) |
-| 25 | ✓ | [`productivity/marp-deck/SKILL.md`](productivity/marp-deck/SKILL.md) |
-| 26 | ✓ | [`productivity/pdf2epub-calibration/SKILL.md`](productivity/pdf2epub-calibration/SKILL.md) |
-| 27 | ✓ | [`productivity/pdf2epub/SKILL.md`](productivity/pdf2epub/SKILL.md) |
-| 28 | ✓ | [`productivity/receipt-compiler/SKILL.md`](productivity/receipt-compiler/SKILL.md) |
-| 29 | ✓ | [`productivity/scheduled-summary/SKILL.md`](productivity/scheduled-summary/SKILL.md) |
-| 30 | ✓ | [`productivity/task-brief/SKILL.md`](productivity/task-brief/SKILL.md) |
-| 31 | ✓ | [`productivity/travel-itinerary/SKILL.md`](productivity/travel-itinerary/SKILL.md) |
-| 32 | ✓ | [`research/deep-research/SKILL.md`](research/deep-research/SKILL.md) |
-| 33 | ✓ | [`research/endpoint-probe/SKILL.md`](research/endpoint-probe/SKILL.md) |
-| 34 | ✓ | [`research/entity-research/SKILL.md`](research/entity-research/SKILL.md) |
-| 35 | ✓ | [`research/fact-checker/SKILL.md`](research/fact-checker/SKILL.md) |
-| 36 | ✓ | [`research/library-rag/SKILL.md`](research/library-rag/SKILL.md) |
-| 37 | ✓ | [`research/media-analyzer/SKILL.md`](research/media-analyzer/SKILL.md) |
-| 38 | ✓ | [`research/news-monitoring/SKILL.md`](research/news-monitoring/SKILL.md) |
-| 39 | ✓ | [`research/notebooklm-mode/SKILL.md`](research/notebooklm-mode/SKILL.md) |
-| 40 | ✓ | [`research/people-enrichment/SKILL.md`](research/people-enrichment/SKILL.md) |
-| 41 | ✓ | [`research/source-tracker/SKILL.md`](research/source-tracker/SKILL.md) |
-| 42 | ✓ | [`research/youtube-topic-research/SKILL.md`](research/youtube-topic-research/SKILL.md) |
-| 43 | ✓ | [`software-development/skill-quality-review/SKILL.md`](software-development/skill-quality-review/SKILL.md) |
-| 44 | ✓ | [`tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md`](tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md) |
-| 45 | ✓ | [`web-scraping/website-scraping/SKILL.md`](web-scraping/website-scraping/SKILL.md) |
+| 21 | ✓ | [`plugins/skill-governance/skills/contrastive-refinement/SKILL.md`](plugins/skill-governance/skills/contrastive-refinement/SKILL.md) |
+| 22 | ✓ | [`plugins/skill-retrieval/SKILL.md`](plugins/skill-retrieval/SKILL.md) |
+| 23 | ✓ | [`productivity/decision-log/SKILL.md`](productivity/decision-log/SKILL.md) |
+| 24 | ✓ | [`productivity/file-organizer/SKILL.md`](productivity/file-organizer/SKILL.md) |
+| 25 | ✓ | [`productivity/fill-template/SKILL.md`](productivity/fill-template/SKILL.md) |
+| 26 | ✓ | [`productivity/marp-deck/SKILL.md`](productivity/marp-deck/SKILL.md) |
+| 27 | ✓ | [`productivity/pdf2epub-calibration/SKILL.md`](productivity/pdf2epub-calibration/SKILL.md) |
+| 28 | ✓ | [`productivity/pdf2epub/SKILL.md`](productivity/pdf2epub/SKILL.md) |
+| 29 | ✓ | [`productivity/receipt-compiler/SKILL.md`](productivity/receipt-compiler/SKILL.md) |
+| 30 | ✓ | [`productivity/scheduled-summary/SKILL.md`](productivity/scheduled-summary/SKILL.md) |
+| 31 | ✓ | [`productivity/task-brief/SKILL.md`](productivity/task-brief/SKILL.md) |
+| 32 | ✓ | [`productivity/travel-itinerary/SKILL.md`](productivity/travel-itinerary/SKILL.md) |
+| 33 | ✓ | [`research/deep-research/SKILL.md`](research/deep-research/SKILL.md) |
+| 34 | ✓ | [`research/endpoint-probe/SKILL.md`](research/endpoint-probe/SKILL.md) |
+| 35 | ✓ | [`research/entity-research/SKILL.md`](research/entity-research/SKILL.md) |
+| 36 | ✓ | [`research/fact-checker/SKILL.md`](research/fact-checker/SKILL.md) |
+| 37 | ✓ | [`research/library-rag/SKILL.md`](research/library-rag/SKILL.md) |
+| 38 | ✓ | [`research/media-analyzer/SKILL.md`](research/media-analyzer/SKILL.md) |
+| 39 | ✓ | [`research/news-monitoring/SKILL.md`](research/news-monitoring/SKILL.md) |
+| 40 | ✓ | [`research/notebooklm-mode/SKILL.md`](research/notebooklm-mode/SKILL.md) |
+| 41 | ✓ | [`research/people-enrichment/SKILL.md`](research/people-enrichment/SKILL.md) |
+| 42 | ✓ | [`research/source-tracker/SKILL.md`](research/source-tracker/SKILL.md) |
+| 43 | ✓ | [`research/youtube-topic-research/SKILL.md`](research/youtube-topic-research/SKILL.md) |
+| 44 | ✓ | [`software-development/skill-quality-review/SKILL.md`](software-development/skill-quality-review/SKILL.md) |
+| 45 | ✓ | [`tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md`](tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md) |
+| 46 | ✓ | [`web-scraping/website-scraping/SKILL.md`](web-scraping/website-scraping/SKILL.md) |
 
 ---
 

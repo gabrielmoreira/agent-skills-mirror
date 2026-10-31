@@ -39,22 +39,26 @@ DECODE / CRYPTO (pure, no traffic):
   `.forge(alg_none=True | secret="s" | claims={...}) -> str` (HS256 / alg:none).
 
 ACTIVE (LIVE TRAFFIC — see LIMITS below):
-- `redamon.replay(id, mutate=None) -> Response` — resend a captured request with
-  fields changed. mutate keys: method, path, query, param:{k:v}, headers:{k:v},
-  dropHeaders:[..], cookie, body. **host/scheme/port are PINNED to the origin and
-  CANNOT be changed** — a replay can only ever hit the origin host.
+- `redamon.replay(id, mutate=None, anonymous=False) -> Response` — resend a captured
+  request with fields changed. mutate keys: method, path, query, param:{k:v},
+  headers:{k:v}, dropHeaders:[..], cookie, body. **host/scheme/port are PINNED to the
+  origin and CANNOT be changed** — a replay can only ever hit the origin host.
   AUTHENTICATED IDENTITY: if the project has an auth profile and the origin host
   is in scope, the profile's session (cookie/bearer/headers) is attached
   automatically UNDER the origin request's own headers and your `mutate`. So a
   plain `replay` already carries the logged-in identity, while an explicit
-  `mutate` (a different `cookie`, `dropHeaders:["Cookie","Authorization"]`, or a
-  swapped `headers`) still wins — IDOR/BOLA/priv-esc testing is unaffected.
-- `redamon.batch(id, mutations, parallel=False) -> [Response]` — replay once per
-  mutation. `parallel=True` fires them CONCURRENTLY (real race window).
-- `redamon.fuzz(id, insertion_point, payloads) -> [Response]` — iterate payloads
-  over ONE query-param name; one Response per payload (server caps the count).
-  (For header/body/path/cookie fuzzing, loop `replay` yourself.)
-- `redamon.browser(id) -> Browser` — a real chromium PINNED to the host of txn
+  `mutate` (a different `cookie`, or a swapped `headers`) still wins.
+  `anonymous=True` sends it with NO credential at all: no profile, and the origin's
+  Cookie, Authorization, Proxy-Authorization and every header the profile sets
+  (custom API-key headers included) are removed. Use it for every "does this work
+  logged out?" check; `dropHeaders` only removes the names you remember.
+  Every Response carries `.identity` ("anonymous" or "session").
+- `redamon.batch(id, mutations, parallel=False, anonymous=False) -> [Response]` —
+  replay once per mutation. `parallel=True` fires them CONCURRENTLY (real race window).
+- `redamon.fuzz(id, insertion_point, payloads, anonymous=False) -> [Response]` —
+  iterate payloads over ONE query-param name; one Response per payload (server caps
+  the count). (For header/body/path/cookie fuzzing, loop `replay` yourself.)
+- `redamon.browser(id, anonymous=False) -> Browser` — a real chromium PINNED to the host of txn
   `id`, for signals that only exist AFTER JavaScript runs (DOM XSS, SPA routes,
   JS-minted CSRF). Drive it: `.goto(path)` `.click(sel)` `.fill(sel,val)`
   `.submit(sel)` `.eval(js)` (budgeted actions); read `.dom()` `.text(sel)`
@@ -247,7 +251,7 @@ for t in redamon.search(session="sess_owner"):
     base = redamon.replay(t.id, {})                        # owner baseline (a Response — same shape as below)
     if base.status not in (200, 201):
         continue                                           # only test requests that actually returned data
-    unauth = redamon.replay(t.id, {"dropHeaders": ["Cookie", "Authorization"]})
+    unauth = redamon.replay(t.id, {}, anonymous=True)        # no credential of any kind
     low    = redamon.replay(t.id, {"cookie": "session=<low_priv_cookie>"})
     for who, r in (("unauth", unauth), ("lowpriv", low)):
         if r.status == base.status and r.body == base.body:  # weaker identity got the SAME data
@@ -530,6 +534,10 @@ if acao == "https://evil.example" and acac.lower() == "true":
 r = redamon.replay(t.id, {"headers": {"Origin": "null"}})                          # sandboxed-iframe/data: trick
 if r.headers.get("access-control-allow-origin") == "null":
     redamon.finding("cors-null-origin", t.id, evidence=r, severity="medium")
+# A reflected origin only matters when the logged-in answer holds data the
+# anonymous one does not: compare the two before reporting.
+anon = redamon.replay(t.id, {"headers": {"Origin": "https://evil.example"}}, anonymous=True)
+print("personal" if anon.body != r.body else "same for everyone")
 ```
 
 ## xxe — XML external entity (in-band file read)
@@ -606,8 +614,19 @@ b.close()
 r = redamon.replay(t.id, {"param": {"csrf": token, "email": "attacker@evil.tld"}})
 ```
 
+```python
+# Client-side gating: render the SPA with NO session; a route the app hides
+# client-side whose API still answers is the finding.
+b = redamon.browser(t.id, anonymous=True)
+b.goto("/admin/dashboard")
+print(b.text("main")[:400])
+b.close()
+```
+
 Notes: a `.goto` off the pinned host is refused server-side; a click that navigates
-off-host aborts the run. Sub-resources the page loads are egress-guarded, not
-host-pinned. Everything the browser fetches is re-captured as
+off-host aborts the run. The session (when not anonymous) is sent to the pinned
+host only: cookies are scoped to it and auth headers are added only to its
+requests, never to a third-party script or image the page loads. Sub-resources are
+egress-guarded, not host-pinned. Everything the browser fetches is re-captured as
 `tool=proxy_brain_browser`, so you can `search(tool="proxy_brain_browser")` to see
 exactly what it generated and then `replay` any of it.

@@ -2,7 +2,7 @@
 name: planning-with-files
 description: "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls."
 metadata:
-  version: "3.26.0"
+  version: "3.27.0"
   hermes:
     tags: [planning, long-running-tasks, context-engineering, workflow]
 ---
@@ -227,6 +227,8 @@ Helper scripts bundled with this Hermes skill:
 The adapter plugin does not need any other script: plan resolution, injection, attestation checks, the completion gate and the `/pwf` initialization run in Python inside the plugin. The full canonical script surface (attestation helper, ledger, phase status, plan-doctor) ships with the canonical skill for hosts that dispatch shell hooks.
 
 ### List saved plans
+
+For agent-readable paths and state, add `--json` (PowerShell: `-Json`) to the listing command. This optional read-only mode includes root files, selection uncertainty and bounded paging. See [the inventory schema and worker handoff](plan-inventory.md). It never runs during ordinary activation.
 
 To find a task before resuming it, run `sh "<skill-dir>/scripts/set-active-plan.sh" --list` or, in Windows PowerShell, `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Replace `<skill-dir>` with this installed skill directory and keep your current directory at the project root.
 

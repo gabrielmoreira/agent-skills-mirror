@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AltanS/collie` — 26 default patterns, 107 followed patterns, 185 file(s) materialized.
+Mirror of `AltanS/collie` — 26 default patterns, 108 followed patterns, 186 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 107 followed patterns, 185 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 107 |
-| Files         | 185 |
+| Followed pats | 108 |
+| Files         | 186 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -155,6 +155,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 107 followed patterns, 185 fi
 - `.adr/0014-promote-is-a-confirm-on-the-lead.md`
 - `.adr/0101-a-control-on-a-screenless-pane-names-the-turn-it-saw.md`
 - `.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`
+- `HC_API.md`
 - `.adr/0099-a-durable-program-is-a-mux-with-no-screen.md`
 - `.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`
 - `.adr/0003-one-shared-seen.md`
@@ -233,15 +234,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`examples/durable-harness/README.md`](examples/durable-harness/README.md) |
 | 67 | ✓ | [`examples/durable-member/README.md`](examples/durable-member/README.md) |
 | 68 | ✓ | [`experiments/durable-member-cloudflare/README.md`](experiments/durable-member-cloudflare/README.md) |
-| 69 | ✓ | [`packages/durable-sdk/CHANGELOG.md`](packages/durable-sdk/CHANGELOG.md) |
-| 70 | ✓ | [`packages/durable-sdk/README.md`](packages/durable-sdk/README.md) |
-| 71 | ✓ | [`packaging/aur/README.md`](packaging/aur/README.md) |
-| 72 | ✓ | [`packaging/omarchy/README.md`](packaging/omarchy/README.md) |
-| 73 | ✓ | [`scripts/harness-canary/README.md`](scripts/harness-canary/README.md) |
-| 74 | ✓ | [`web/e2e/manual/README.md`](web/e2e/manual/README.md) |
-| 75 | ✓ | [`web/e2e/rig/README.md`](web/e2e/rig/README.md) |
-| 76 | ✓ | [`web/src/fixtures/traces/README.md`](web/src/fixtures/traces/README.md) |
-| 77 | ✓ | [`web/src/lib/harness/grok/MODEL_PICKER_NOTES.md`](web/src/lib/harness/grok/MODEL_PICKER_NOTES.md) |
+| 69 | ✓ | [`herdr-app-mod/collie/README.md`](herdr-app-mod/collie/README.md) |
+| 70 | ✓ | [`packages/durable-sdk/CHANGELOG.md`](packages/durable-sdk/CHANGELOG.md) |
+| 71 | ✓ | [`packages/durable-sdk/README.md`](packages/durable-sdk/README.md) |
+| 72 | ✓ | [`packaging/aur/README.md`](packaging/aur/README.md) |
+| 73 | ✓ | [`packaging/omarchy/README.md`](packaging/omarchy/README.md) |
+| 74 | ✓ | [`scripts/harness-canary/README.md`](scripts/harness-canary/README.md) |
+| 75 | ✓ | [`web/e2e/manual/README.md`](web/e2e/manual/README.md) |
+| 76 | ✓ | [`web/e2e/rig/README.md`](web/e2e/rig/README.md) |
+| 77 | ✓ | [`web/src/fixtures/traces/README.md`](web/src/fixtures/traces/README.md) |
 | 78 | ✓ | [`web/src/lib/surface/profiles/README.md`](web/src/lib/surface/profiles/README.md) |
 | 79 | → | [`.adr/0001-one-managed-front-door.md`](.adr/0001-one-managed-front-door.md) |
 | 80 | → | [`.adr/0002-invert-the-light-terminal-mirror.md`](.adr/0002-invert-the-light-terminal-mirror.md) |
@@ -340,16 +341,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 173 | → | [`docs/walky-talky.md`](docs/walky-talky.md) |
 | 174 | → | [`docs/windows.md`](docs/windows.md) |
 | 175 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
-| 176 | → | [`HERDR_API.md`](HERDR_API.md) |
-| 177 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
-| 178 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
-| 179 | → | [`README.md`](README.md) |
-| 180 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
-| 181 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
-| 182 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
-| 183 | → | [`web/src/lib/grammar/ASK_FIELD_NOTES.md`](web/src/lib/grammar/ASK_FIELD_NOTES.md) |
-| 184 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
-| 185 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
+| 176 | → | [`HC_API.md`](HC_API.md) |
+| 177 | → | [`HERDR_API.md`](HERDR_API.md) |
+| 178 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
+| 179 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
+| 180 | → | [`README.md`](README.md) |
+| 181 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
+| 182 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 183 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
+| 184 | → | [`web/src/lib/grammar/ASK_FIELD_NOTES.md`](web/src/lib/grammar/ASK_FIELD_NOTES.md) |
+| 185 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
+| 186 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
 
 ---
 

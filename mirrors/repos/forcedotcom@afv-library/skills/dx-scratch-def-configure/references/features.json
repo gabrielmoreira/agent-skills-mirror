@@ -1,0 +1,3270 @@
+{
+  "fetchedAt": "2026-10-07",
+  "sourceUrl": "https://developer.salesforce.com/docs/platform/sfdx-dev/guide/sfdx-dev-scratch-orgs-def-file-config-values.md",
+  "version": "scrape-2026-10-07",
+  "featureCount": 328,
+  "features": {
+    "AccountingSubledgerGrowthEdition": {
+      "name": "AccountingSubledgerGrowthEdition",
+      "description": "Provides three permission sets that enable access to Accounting Subledger Growth features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "AccountingSubledgerStarterEdition": {
+      "name": "AccountingSubledgerStarterEdition",
+      "description": "Provides three permission sets that enable access to Accounting Subledger Starter features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AccountingSubledgerUser": {
+      "name": "AccountingSubledgerUser",
+      "description": "Enables organization-wide access to Accounting Subledger Growth features when the package is installed.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AccountInspection": {
+      "name": "AccountInspection",
+      "description": "Enables the Account Intelligence view. The Account Intelligence view is a consolidated dashboard showing account metrics, activities, and related opportunities and cases.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AddCustomApps": {
+      "name": "AddCustomApps",
+      "description": "Increases the maximum number of custom apps allowed in an org. Indicate a value from 1\u201330.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [
+        "custom apps",
+        "add custom apps"
+      ],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 30,
+        "multiplier": 1
+      }
+    },
+    "AddCustomObjects": {
+      "name": "AddCustomObjects",
+      "description": "Increases the maximum number of custom objects allowed in the org. Indicate a value from 1\u201330.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 30,
+        "multiplier": 1
+      }
+    },
+    "AddCustomRelationships": {
+      "name": "AddCustomRelationships",
+      "description": "Increases the maximum number of custom relationships allowed on an object. Indicate a value from 1\u201310.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 10,
+        "multiplier": 5
+      }
+    },
+    "AddCustomTabs": {
+      "name": "AddCustomTabs",
+      "description": "Increases the maximum number of custom tabs allowed in an org. Indicate a value from 1\u201330.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 30,
+        "multiplier": 1
+      }
+    },
+    "AddDataComCRMRecordCredit": {
+      "name": "AddDataComCRMRecordCredit",
+      "description": "Increases record import credits assigned to a user in your scratch org. Indicate a value from 1\u201330.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 30,
+        "multiplier": 1
+      }
+    },
+    "AddInsightsQueryLimit": {
+      "name": "AddInsightsQueryLimit",
+      "description": "Increases the size of your CRM Analytics query results. Indicate a value from 1\u201330 (multiplier is 10). Setting the quantity to 6 increases the query results to 60.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 30,
+        "multiplier": 10
+      }
+    },
+    "AdditionalFieldHistory": {
+      "name": "AdditionalFieldHistory",
+      "description": "Increases the number of fields you can track history for beyond the default, which is 20 fields. Indicate a value between 1\u201340.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 40,
+        "multiplier": 1
+      }
+    },
+    "AdmissionsConnectUser": {
+      "name": "AdmissionsConnectUser",
+      "description": "Enables the Admissions Connect components. Without this scratch org feature parameter, the custom Admissions Connect components render as blank.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "AdvisorLinkFeature": {
+      "name": "AdvisorLinkFeature",
+      "description": "Enables the Student Success Hub components. Without this scratch org feature parameter, the custom Student Success Hub components render as blank.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 2
+    },
+    "AdvisorLinkPathwaysFeature": {
+      "name": "AdvisorLinkPathwaysFeature",
+      "description": "Enables the Pathways components. Without this scratch org feature parameter, the custom Pathways components render as blank.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "AgentforceVibesIDEForDE": {
+      "name": "AgentforceVibesIDEForDE",
+      "description": "Enables Agentforce Vibes access specifically tailored for Developer Edition (DE) environments and IDE-based development workflows. This feature enables developers to build, test, and iterate on Agentforce-driven AI experiences directly within integrated development environment (IDE) tools in a designated scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AgentforceVibesUnmeteredAccess": {
+      "name": "AgentforceVibesUnmeteredAccess",
+      "description": "Provides unmetered access to Agentforce Vibes with included AI models for standard prompting and development workflows. Enables teams to build, iterate, and experiment with AI-assisted experiences without per-interaction credit consumption.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AIAttribution": {
+      "name": "AIAttribution",
+      "description": "Provides access to Einstein Attribution for Marketing Cloud Account Engagement. Einstein Attribution uses AI modeling to dynamically assign attribution percentages to multiple campaign touchpoints.",
+      "quantified": false,
+      "editionNotes": "available in Account Engagement Advanced and Premium editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AllUserIdServiceAccess": {
+      "name": "AllUserIdServiceAccess",
+      "description": "Enables all users to access all users\u2019 information via the user ID service.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AnalyticsAdminPerms": {
+      "name": "AnalyticsAdminPerms",
+      "description": "Enables all permissions required to administer the CRM Analytics platform, including permissions to enable creating CRM Analytics templated apps and CRM Analytics Apps.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AnalyticsAppEmbedded": {
+      "name": "AnalyticsAppEmbedded",
+      "description": "Provides one CRM Analytics Embedded App license for the CRM Analytics platform.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ApexGuruCodeAnalyzer": {
+      "name": "ApexGuruCodeAnalyzer",
+      "description": "Enables ApexGuru\u2019s generative AI-powered runtime insights in Salesforce Code Analyzer, which delivers Apex code quality recommendations directly in developer IDEs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ApexIntegrationTests": {
+      "name": "ApexIntegrationTests",
+      "description": "Enables you to run end-to-end Apex tests that make callouts to Agentforce and Data 360. Integration tests relax callout restrictions and transaction rollback semantics, so you can validate real service interactions and assert on actual side effects in your scratch org, without mock callouts.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "API": {
+      "name": "API",
+      "description": "Even in the editions (Professional, Group) that don\u2019t provide API access, REST API is enabled by default. Use this scratch org feature to access additional APIs (SOAP, Streaming, Bulk, Bulk 2.0).",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [
+        "api access",
+        "enable api"
+      ],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ArcGraphCommunity": {
+      "name": "ArcGraphCommunity",
+      "description": "Lets you add Actionable Relationship Center (ARC) components to Experience Cloud pages so your users can view ARC Relationship Graphs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Assessments": {
+      "name": "Assessments",
+      "description": "Enables dynamic Assessments features, which enables both Assessment Questions and Assessment Question Sets.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "AssetScheduling": {
+      "name": "AssetScheduling",
+      "description": "Enables Asset Scheduling license. Asset Scheduling makes it easier to book rooms and equipments. Indicate a value between 1\u201310.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 10,
+        "multiplier": 1
+      }
+    },
+    "AssociationEngine": {
+      "name": "AssociationEngine",
+      "description": "Enables the Association Engine, which automatically associates new accounts with the user\u2019s current branch by creating branch unit customer records.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "AuthorApex": {
+      "name": "AuthorApex",
+      "description": "Enables you to access and modify Apex code in a scratch org. Enabled by default in Enterprise and Developer Editions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [
+        "apex",
+        "author apex"
+      ],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "B2BCommerce": {
+      "name": "B2BCommerce",
+      "description": "Provides the B2B License. B2BCommerce enables business-to-business (B2B) commerce in your org. Create and update B2B stores. Create and manage buyer accounts. Sell products to other businesses.",
+      "quantified": false,
+      "editionNotes": "Not available in Professional, Partner Professional, Group, or Partner Group Edition orgs.",
+      "synonyms": [],
+      "dependsOnFeatures": [
+        "Communities"
+      ],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "B2BLoyaltyManagement": {
+      "name": "B2BLoyaltyManagement",
+      "description": "Enables the B2B Loyalty Management license. Create loyalty programs and set up loyalty program-specific processes that allow you to recognize, rewards, and retain customers.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "B2CCommerceGMV": {
+      "name": "B2CCommerceGMV",
+      "description": "Provides the B2B2C Commerce License. B2B2C Commerce allows you to quickly stand up an ecommerce site to promote brands and sell products into multiple digital channels. You can create and update retail storefronts in your org, and create and manage person accounts.",
+      "quantified": false,
+      "editionNotes": "Not available in Professional, Partner Professional, Group, or Partner Group Edition orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "B2CLoyaltyManagement": {
+      "name": "B2CLoyaltyManagement",
+      "description": "Enables the Loyalty Management - Growth license. Create loyalty programs and set up loyalty program-specific processes that allow you to recognize, rewards, and retain customers.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "B2CLoyaltyManagementPlus": {
+      "name": "B2CLoyaltyManagementPlus",
+      "description": "Enables the Loyalty Management - Advanced license. Create loyalty programs and set up loyalty program-specific processes that allow you to recognize, rewards, and retain customers.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "BatchManagement": {
+      "name": "BatchManagement",
+      "description": "Enables the Batch Management license. Batch Management allows you to process a high volume of records in manageable batches.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "BenefitManagement": {
+      "name": "BenefitManagement",
+      "description": "Enables the objects, features, and permissions for managing benefits programs, benefit disbursements, and benefit applicant tracking in Public Sector Solutions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "BigObjectsBulkAPI": {
+      "name": "BigObjectsBulkAPI",
+      "description": "Enables the scratch org to use BigObjects in the Bulk API.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "BillingAdvanced": {
+      "name": "BillingAdvanced",
+      "description": "Enables access to all the Billing features and objects that are available with the Revenue Cloud Billing license in the scratch org.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise, Unlimited, and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "Briefcase": {
+      "name": "Briefcase",
+      "description": "Enables the use of Briefcase Builder in a scratch org, which allows you to create offline briefcases that make selected records available for viewing offline.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "BudgetManagement": {
+      "name": "BudgetManagement",
+      "description": "Gives users access to budget management features and objects. To enable budget management, add this feature to your scratch org definition file.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "BusinessRulesEngine": {
+      "name": "BusinessRulesEngine",
+      "description": "Enables Business Rules Engine, which enables both expression sets and lookup tables.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "BYOCCaaS": {
+      "name": "BYOCCaaS",
+      "description": "Enables you to set up and test a partner contact center that integrates with supported Contact Center as a Service (CCaaS) providers in your scratch org.",
+      "quantified": false,
+      "editionNotes": "Available in Salesforce Enterprise and Developer Editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "BYOOTT": {
+      "name": "BYOOTT",
+      "description": "Enables you to set up and test a Bring Your Own Channel for Messaging channel that integrates with supported Messaging providers in your scratch org.",
+      "quantified": false,
+      "editionNotes": "Available in Salesforce Enterprise and Developer Editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CacheOnlyKeys": {
+      "name": "CacheOnlyKeys",
+      "description": "Enables the cache-only keys service. This feature allows you to store your key material outside of Salesforce, and have the Cache-Only Key Service fetch your key on demand from a key service that you control.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CalloutSizeMB": {
+      "name": "CalloutSizeMB",
+      "description": "Increases the maximum size of an Apex callout. Indicate a value between 3\u201312.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 3,
+        "max": 12,
+        "multiplier": 1
+      }
+    },
+    "CampaignInfluence2": {
+      "name": "CampaignInfluence2",
+      "description": "Provides access to Customizable Campaign Influence for Sales Cloud and Marketing Cloud Account Engagement. Customizable Campaign Influence can auto-associate or allow manual creation of relationships among campaigns and opportunities to track attribution.",
+      "quantified": false,
+      "editionNotes": "available in Salesforce Enterprise, Performance, Unlimited, and Developer Editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CascadeDelete": {
+      "name": "CascadeDelete",
+      "description": "Provides lookup relationships with the same cascading delete functionality previously only available to master-detail relationships. To prevent records from being accidentally deleted, cascade-delete is disabled by default.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CaseClassification": {
+      "name": "CaseClassification",
+      "description": "Enables Einstein Case Classification. Case Classification offers recommendations to your agents so they can select the best value. You can also automatically save the best recommendation and route the case to the right agent.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CaseWrapUp": {
+      "name": "CaseWrapUp",
+      "description": "Enables Einstein Case Wrap-Up. To help agents complete cases quickly, Einstein Case Wrap-Up recommends case field values based on past chat transcripts.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CGAnalytics": {
+      "name": "CGAnalytics",
+      "description": "Enables the Consumer Goods Analytics org perm in scratch orgs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ChangeDataCapture": {
+      "name": "ChangeDataCapture",
+      "description": "Enables Change Data Capture, if the scratch org edition doesn\u2019t automatically enable it.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Chatbot": {
+      "name": "Chatbot",
+      "description": "Enables deployment of Bot metadata into a scratch org, and allows you to create and edit bots.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ChatterEmailFooterLogo": {
+      "name": "ChatterEmailFooterLogo",
+      "description": "ChatterEmailFooterLogo allows you to use the Document ID of a logo image, which you can use to customize chatter emails.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ChatterEmailFooterText": {
+      "name": "ChatterEmailFooterText",
+      "description": "ChatterEmailFooterText allows you to use footer text in customized Chatter emails.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ChatterEmailSenderName": {
+      "name": "ChatterEmailSenderName",
+      "description": "ChatterEmailSenderName allows you to customize the name that appears as the sender\u2019s name in the email notification. For example, your company\u2019s name.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CleanEnergyProgramManagement": {
+      "name": "CleanEnergyProgramManagement",
+      "description": "Enables Clean Energy Program Management capabilities in your scratch org. This feature provisions the licenses required for setting up, targeting, deploying, and managing clean energy, energy efficiency, and low-income programs. It includes Omnistudio, Business Rules Engine (BRE), Product Catalog Management, Action Plans, Program Management, Outcome Management, and platform access for the Program Management Console and Contractor Portal.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "CloneApplication": {
+      "name": "CloneApplication",
+      "description": "CloneApplication allows you to clone an existing custom Lightning app and make required customizations to the new app. This way, you don\u2019t have to start from scratch, especially when you want to create apps with simple variations.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CMSMaxContType": {
+      "name": "CMSMaxContType",
+      "description": "Limits the number of distinct content types you can create within Salesforce CMS to 21.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CMSMaxNodesPerContType": {
+      "name": "CMSMaxNodesPerContType",
+      "description": "Limits the maximum number of child nodes (fields) you can create for a particular content type to 15.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CMSUnlimitedUse": {
+      "name": "CMSUnlimitedUse",
+      "description": "Enables unlimited content records, content types, and bandwidth usage in Salesforce CMS.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Communities": {
+      "name": "Communities",
+      "description": "Allows the org to create an Experience Cloud site. Experience Cloud uses the term Communities in its configuration. To use Communities, you must also include communitiesSettings > enableNetworksEnabled in the settings section of your scratch org definition file.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [
+        "community",
+        "experience cloud",
+        "sites",
+        "experience cloud site"
+      ],
+      "settingsCoverage": "known",
+      "exampleCount": 4
+    },
+    "CompareReportsOrgPerm": {
+      "name": "CompareReportsOrgPerm",
+      "description": "Enables the org permission to allow for comparison of Lightning Reports.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ConAppPluginExecuteAsUser": {
+      "name": "ConAppPluginExecuteAsUser",
+      "description": "Enables the pluginExecutionUser field in the ConnectedApp Metadata API object.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ConcStreamingClients": {
+      "name": "ConcStreamingClients",
+      "description": "Increases the maximum number of concurrent clients (subscribers) across all channels and for all event types for API version 36.0 and earlier. Indicate a value between 20\u20134,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 20,
+        "max": 4000,
+        "multiplier": 1
+      }
+    },
+    "ConnectedAppCustomNotifSubscription": {
+      "name": "ConnectedAppCustomNotifSubscription",
+      "description": "Enables connected apps to subscribe to custom notification types, which are used to send custom desktop and mobile notifications.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ConnectedAppToolingAPI": {
+      "name": "ConnectedAppToolingAPI",
+      "description": "Enables the use of connected apps with the Tooling API.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ConsentEventStream": {
+      "name": "ConsentEventStream",
+      "description": "Enables the Consent Event Stream permission for the org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ConsolePersistenceInterval": {
+      "name": "ConsolePersistenceInterval",
+      "description": "Increases how often console data is saved, in minutes. Indicate a value between 0\u2013500. To disable auto save, set the value to 0.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 500,
+        "multiplier": 1
+      }
+    },
+    "ContactsToMultipleAccounts": {
+      "name": "ContactsToMultipleAccounts",
+      "description": "Enables the contacts to multiple accounts feature. This feature lets you relate a contact to two or more accounts.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ContractApprovals": {
+      "name": "ContractApprovals",
+      "description": "Enables contract approvals, which allow you to track contracts through an approval process.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ContractManagement": {
+      "name": "ContractManagement",
+      "description": "Enables the Contract Lifecycle (CLM) Management features in the org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ContractMgmtInd": {
+      "name": "ContractMgmtInd",
+      "description": "Enables the Contract Lifecycle Management (CLM) features for Industries.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CoreCpq": {
+      "name": "CoreCpq",
+      "description": "Enables read-write access to Revenue Cloud features and objects. To use Revenue Cloud, you must also include revenueManagementSettings > enableCoreCPQ in the settings section of your scratch org definition file.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [
+        "revenue cloud",
+        "revenuecloud",
+        "core cpq",
+        "cpq"
+      ],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "CPQ": {
+      "name": "CPQ",
+      "description": "Enables the licensed features required to install the Salesforce CPQ managed package but doesn\u2019t install the package automatically.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CustomerDataPlatform": {
+      "name": "CustomerDataPlatform",
+      "description": "Enables the CustomerDataPlatform license in scratch orgs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "CustomerDataPlatformLite": {
+      "name": "CustomerDataPlatformLite",
+      "description": "Enables the Data Cloud license in scratch orgs. You must also include the CustomerDataPlatform feature and enableCustomerDataPlatform Metadata API setting in your scratch org definition.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "dependsOnFeatures": [
+        "CustomerDataPlatform"
+      ],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "CustomerExperienceAnalytics": {
+      "name": "CustomerExperienceAnalytics",
+      "description": "Enables the Customer Lifecycle Analytics org perm in scratch orgs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CustomFieldDataTranslation": {
+      "name": "CustomFieldDataTranslation",
+      "description": "Enables translation of custom field data for Work Type Group, Service Territory, and Service Resource objects. You can enable data translation for custom fields with Text, Text Area, Text Area (Long), Text Area (Rich), and URL types.",
+      "quantified": false,
+      "editionNotes": "Not available in Professional, Partner Professional, Group, or Partner Group Edition orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "CustomNotificationType": {
+      "name": "CustomNotificationType",
+      "description": "Allows the org to create custom notification types, which are used to send custom desktop and mobile notifications.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DataComDnbAccounts": {
+      "name": "DataComDnbAccounts",
+      "description": "Provides a license to Data.com account features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DataComFullClean": {
+      "name": "DataComFullClean",
+      "description": "Provides a license to Data.com cleaning features, and allows users to turn on auto fill clean settings for jobs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DataMaskUser": {
+      "name": "DataMaskUser",
+      "description": "Provides 30 Data Mask permission set licenses. This permission set enables access to an installed Salesforce Data Mask package.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DataProcessingEngine": {
+      "name": "DataProcessingEngine",
+      "description": "Enables the Data Processing Engine license. Data Processing Engine helps transform data that\u2019s available in your Salesforce org and write back the transformation results as new or updated records.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DebugApex": {
+      "name": "DebugApex",
+      "description": "Enables Apex Interactive Debugger. You can use it to debug Apex code by setting breakpoints and checkpoints, and inspecting your code to find bugs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DecisionTable": {
+      "name": "DecisionTable",
+      "description": "Enables Decision Table license. Decision tables read business rules and decide the outcome for records in your Salesforce org or for the values that you specify.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DefaultWorkflowUser": {
+      "name": "DefaultWorkflowUser",
+      "description": "Sets the scratch org admin as the default workflow user.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DeferSharingCalc": {
+      "name": "DeferSharingCalc",
+      "description": "Allows admins to suspend group membership and sharing rule calculations and to resume them later.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DevelopmentWave": {
+      "name": "DevelopmentWave",
+      "description": "Enables CRM Analytics development in a scratch org. It assigns five platform licenses and five CRM Analytics platform licenses to the org, along with assigning the permission set license to the admin user. It also enables the CRM Analytics Templates and Einstein Discovery features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "DeviceTrackingEnabled": {
+      "name": "DeviceTrackingEnabled",
+      "description": "Enables Device Tracking.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DevOpsCenter": {
+      "name": "DevOpsCenter",
+      "description": "Enables DevOps Center in scratch orgs so that partners can create second-generation managed packages that extend or enhance the functionality in the DevOps Center application (base) package.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "DisableManageIdConfAPI": {
+      "name": "DisableManageIdConfAPI",
+      "description": "Limits access to the LoginIP and ClientBrowser API objects to allow view or delete only.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DisclosureFramework": {
+      "name": "DisclosureFramework",
+      "description": "Provides the permission set licenses and permission sets required to configure Disclosure and Compliance Hub.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "Division": {
+      "name": "Division",
+      "description": "Turns on the Manage Divisions feature under Company Settings. Divisions let you segment your organization\u2019s data into logical sections, making searches, reports, and list views more meaningful to users. Divisions are useful for organizations with extremely large amounts of data.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DocGen": {
+      "name": "DocGen",
+      "description": "Enables the Document Generation Feature in the Org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 2
+    },
+    "DocGenDesigner": {
+      "name": "DocGenDesigner",
+      "description": "Enables the designers to create and configure document templates.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "DocGenInd": {
+      "name": "DocGenInd",
+      "description": "Enables the Industry Document Generation features in the org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "DocumentChecklist": {
+      "name": "DocumentChecklist",
+      "description": "Enables Document Tracking and Approval features, and adds the Document Checklist permission set. Document tracking features let you define documents to upload and approve, which supports processes like loan applications or action plans.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DocumentReaderPageLimit": {
+      "name": "DocumentReaderPageLimit",
+      "description": "Limits the number of pages sent for data extraction to 5.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DSARPortability": {
+      "name": "DSARPortability",
+      "description": "Enables an org to access the DSARPortability feature in Privacy Center. Also, provides one seat each of the PrivacyCenter and PrivacyCenterAddOn licenses.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DurableClassicStreamingAPI": {
+      "name": "DurableClassicStreamingAPI",
+      "description": "Enables Durable PushTopic Streaming API for API version 37.0 and later.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DurableGenericStreamingAPI": {
+      "name": "DurableGenericStreamingAPI",
+      "description": "Enables Durable Generic Streaming API for API version 37.0 and later.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "DynamicClientCreationLimit": {
+      "name": "DynamicClientCreationLimit",
+      "description": "Allows the org to register up to 100 OAuth 2.0 connected apps through the dynamic client registration endpoint.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EAndUAgentforce": {
+      "name": "EAndUAgentforce",
+      "description": "Enables access to Energy & Utilities Agentforce features in your scratch org. This feature provisions the licenses required for AI-powered agent capabilities specific to the energy and utilities industry, including Einstein GPT Platform, Prompt Builder, Copilot, Field Generation, Formulas, Einstein for Service Innovations, Generative Services, Agentforce Service Agent, Agentforce Employee Agent, and Agentforce Field Service Timesheet capabilities.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAndUCoreSales": {
+      "name": "EAndUCoreSales",
+      "description": "Enables Energy & Utilities Core Sales features in your scratch org. This feature provisions the licenses required for core sales capabilities, including Revenue Lifecycle Management, CSV import, and Commerce configurations (B2B and B2C). Use this feature to develop and test sales workflows for energy and utilities companies on the Salesforce platform.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAndUCoreSelfServicePortal": {
+      "name": "EAndUCoreSelfServicePortal",
+      "description": "Enables the Energy & Utilities Core Self Service Portal capabilities in your scratch org. This is a comprehensive feature that provisions licenses required for the Salesforce platform-based self-service portal, including Omnistudio, Business Rules Engine (BRE), Product Catalog Management, Action Plans, Program Management, Service Excellence, Experience Cloud (Customer Community), and platform experience capabilities. It also includes platform licenses for Self Service Portal access, Agent Console access, and Programs features.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAndUCoreService": {
+      "name": "EAndUCoreService",
+      "description": "Enables Energy & Utilities Core Service capabilities in your scratch org. This feature provisions the licenses required for the EU Cloud core data model, service excellence, Omnistudio, Product Catalog Management, Knowledge, and the Agent Console platform access. Use this feature when you need the full core Energy & Utilities data model and service reps capabilities.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 7
+    },
+    "EAndUCoreTimeSheetService": {
+      "name": "EAndUCoreTimeSheetService",
+      "description": "Enables Energy & Utilities Core Time Sheet Service capabilities in your scratch org. This feature provisions the licenses required for field service time sheet management, including Business Rules Engine (BRE), Field Service (with mobile, scheduling, and labor cost optimization), and Context Service capabilities. Use this feature to develop and test time sheet workflows for energy and utilities field service reps.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAndUDataKits": {
+      "name": "EAndUDataKits",
+      "description": "Enables Energy & Utilities Data features in your scratch org. This feature provisions the licenses required for using Commodity Data Kits, including Data 360 (CDP) capabilities, Data Spaces, segments and activations, and additional data storage. Use this feature to connect, harmonize, and analyze customer energy use data for sales and service at scale.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAndUDigitalSales": {
+      "name": "EAndUDigitalSales",
+      "description": "Enables the Energy & Utilities Digital Sales org permission in your scratch org. This feature provisions the sales add-on license required for Energy & Utilities digital sales capabilities, including guided selling flows and sales-specific configurations for energy and utilities companies.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAndUSelfServicePortal": {
+      "name": "EAndUSelfServicePortal",
+      "description": "Enables the Energy & Utilities Self Service Portal org permission in your scratch org. This feature provisions the licenses required for building customer-facing self-service portals, including Omnistudio, Business Rules Engine (BRE), Product Catalog Management, Action Plans, Program Management, and Experience Cloud (Customer Community) capabilities. Use this feature to develop and test self-service digital experiences for energy and utilities customers.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EAOutputConnectors": {
+      "name": "EAOutputConnectors",
+      "description": "Enable CRM Analytics Output Connectors.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EASyncOut": {
+      "name": "EASyncOut",
+      "description": "Enable CRM Analytics SyncOut.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EdPredictionM3Threshold": {
+      "name": "EdPredictionM3Threshold",
+      "description": "Sets the number of records in the payload to 10, after which the Einstein Discovery prediction service uses M3.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EdPredictionTimeout": {
+      "name": "EdPredictionTimeout",
+      "description": "Sets the maximum duration of a single Einstein Discovery prediction to 100 milliseconds.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EdPredictionTimeoutBulk": {
+      "name": "EdPredictionTimeoutBulk",
+      "description": "Sets the maximum duration of a single Einstein Discovery prediction when it runs in bulk to 10 milliseconds.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EdPredictionTimeoutByomBulk": {
+      "name": "EdPredictionTimeoutByomBulk",
+      "description": "Sets the maximum duration of a single Bring Your Own Model (BYOM) Einstein Discovery prediction to 100 milliseconds.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EducationCloud": {
+      "name": "EducationCloud",
+      "description": "Enables use of Education Cloud.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Einstein1AIPlatform": {
+      "name": "Einstein1AIPlatform",
+      "description": "Provides access to Einstein generative AI features such as Agentforce, Prompt Builder, Model Builder, and the Models API. To use generative AI features, you must also include einsteinGptSettings > enableEinsteinGptPlatform in the settings section of your scratch org definition file.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "EinsteinAnalyticsPlus": {
+      "name": "EinsteinAnalyticsPlus",
+      "description": "Provides one CRM Analytics Plus license for the CRM Analytics platform.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinArticleRecommendations": {
+      "name": "EinsteinArticleRecommendations",
+      "description": "Provides licenses for Einstein Article Recommendations. Einstein Article Recommendations uses data from past cases to identify Knowledge articles that are most likely to help your customer service agents address customer inquiries.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinDocReader": {
+      "name": "EinsteinDocReader",
+      "description": "Provides the license required to enable and use Intelligent Form Reader in a scratch org. Intelligent Form Reader uses optical character recognition to automatically extract data with Amazon Textract.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinRecommendationBuilder": {
+      "name": "EinsteinRecommendationBuilder",
+      "description": "Provides a license to create recommendations with Einstein Recommendation Builder. Einstein Recommendation Builder lets you build custom AI recommendations.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinSalesRepFdbk": {
+      "name": "EinsteinSalesRepFdbk",
+      "description": "Enables the Agentforce Sales Coach feature in an org. This scratch org feature also includes a large number of Einstein for Sales Generative AI features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinSearch": {
+      "name": "EinsteinSearch",
+      "description": "Provides the license required to use and enable Einstein Search features in a scratch org.",
+      "quantified": false,
+      "editionNotes": "Available in Professional and Enterprise Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinVisits": {
+      "name": "EinsteinVisits",
+      "description": "Enables Consumer Goods Cloud. With Consumer Goods cloud, transform the way you collaborate with your retail channel partners. Empower your sales managers to plan visits and analyze your business\u2019s health across stores. Also, allow your field reps to track inventory, take orders, and capture visit details using the Retail Execution mobile app.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EinsteinVisitsED": {
+      "name": "EinsteinVisitsED",
+      "description": "Enables Einstein Discovery, which can be used to get store visit recommendations. With Einstein Visits ED, you can create a visit frequency strategy that allows Einstein to provide optimal store visit recommendations.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EmbeddedLoginForIE": {
+      "name": "EmbeddedLoginForIE",
+      "description": "Provides JavaScript files that support Embedded Login in IE11.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EmergencyManagement": {
+      "name": "EmergencyManagement",
+      "description": "Enables Emergency Management objects in your Energy & Utilities scratch org. This feature provisions the licenses required for emergency and incident management capabilities, including Field Service (with scheduling, dispatcher, and mobile), and incident management. Use this feature to develop and test emergency response workflows for energy and utilities companies.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "EmpPublishRateLimit": {
+      "name": "EmpPublishRateLimit",
+      "description": "Increases the maximum number of standard-volume platform event notifications published per hour. Indicate a value between 1,000\u201310,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1000,
+        "max": 10000,
+        "multiplier": 1
+      }
+    },
+    "EnableManageIdConfUI": {
+      "name": "EnableManageIdConfUI",
+      "description": "Enables access to the LoginIP and ClientBrowser API objects to verify a user\u2019s identity in the UI.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Enablement": {
+      "name": "Enablement",
+      "description": "Enables features for creating, taking, and tracking sales programs with Enablement. Business operations experts and sales leaders identify the revenue outcomes they want sales reps to achieve, such as increased average deal sizes or shorter ramp times. Then, they create programs that help sales reps work towards those outcomes as part of their daily work.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EnablePRM": {
+      "name": "EnablePRM",
+      "description": "Enables the partner relationship management permissions for the org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EnableSetPasswordInApi": {
+      "name": "EnableSetPasswordInApi",
+      "description": "Enables you to use `sf org generate password` to change a password without providing the old password.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 2
+    },
+    "EncryptionStatisticsInterval": {
+      "name": "EncryptionStatisticsInterval",
+      "description": "Defines the interval (in seconds) between encryption statistics gathering processes. The maximum value is 604,800 seconds (7 days). The default is once per 86,400 seconds (24 hours).",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 604800,
+        "multiplier": 1
+      }
+    },
+    "EncryptionSyncInterval": {
+      "name": "EncryptionSyncInterval",
+      "description": "Defines how frequently (in seconds) the org can synchronize data with the active key material. The default and maximum value is 604,800 seconds (7 days). To synchronize data more frequently, indicate a value, in seconds, equal to or larger than 0.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 604800,
+        "multiplier": 1
+      }
+    },
+    "EnergyAndUtilitiesCloud": {
+      "name": "EnergyAndUtilitiesCloud",
+      "description": "Enables the Energy & Utilities org permission in your scratch org. This feature provides the base Energy & Utilities capabilities, including the core service add-on license. Use this feature to develop and test Energy & Utilities solutions.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 11
+    },
+    "Entitlements": {
+      "name": "Entitlements",
+      "description": "Enables entitlements. Entitlements are units of customer support in Salesforce, such as phone support or web support that represent terms in service agreements.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EntityTranslation": {
+      "name": "EntityTranslation",
+      "description": "Enables translation of field data for Work Type Group, Service Territory, and Service Resource objects.",
+      "quantified": false,
+      "editionNotes": "Not available in Professional, Partner Professional, Group, or Partner Group Edition orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ERMAnalytics": {
+      "name": "ERMAnalytics",
+      "description": "Enables the ERM Analytics org perm in your scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "EventLogFile": {
+      "name": "EventLogFile",
+      "description": "Enables API access to your org\u2019s event log files. The event log files contain information about your org\u2019s operational events that you can use to analyze usage trends and user behavior.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ExcludeSAMLSessionIndex": {
+      "name": "ExcludeSAMLSessionIndex",
+      "description": "Excludes Session Index in SAML sign-on (SSO) and single logout (SLO) flows.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Explainability": {
+      "name": "Explainability",
+      "description": "Enables an org to use Decision Explainer features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ExpressionSetMaxExecPerHour": {
+      "name": "ExpressionSetMaxExecPerHour",
+      "description": "Enables an org to run a maximum of 500,000 expression sets per hour by using Connect REST API.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ExternalIdentityLogin": {
+      "name": "ExternalIdentityLogin",
+      "description": "Allows the scratch org to use Salesforce Customer Identity features associated with your External Identity license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FieldAuditTrail": {
+      "name": "FieldAuditTrail",
+      "description": "Enables Field Audit Trail for the org and allows a total 60 tracked fields. By default, 20 fields are tracked for all orgs, and 40 more are tracked with Field Audit Trail.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FieldService": {
+      "name": "FieldService",
+      "description": "Provides the Field Service license. Indicate a value between 1\u201325.",
+      "quantified": true,
+      "editionNotes": "Available in Enterprise Edition.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25,
+        "multiplier": 1
+      }
+    },
+    "FieldServiceAppointmentAssistantUser": {
+      "name": "FieldServiceAppointmentAssistantUser",
+      "description": "Adds the Field Service Appointment Assistant permission set license. Indicate a value between 1\u201325.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25,
+        "multiplier": 1
+      }
+    },
+    "FieldServiceDispatcherUser": {
+      "name": "FieldServiceDispatcherUser",
+      "description": "Adds the Field Service Dispatcher permission set license. Indicate a value between 1\u201325.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25,
+        "multiplier": 1
+      }
+    },
+    "FieldServiceLastMileUser": {
+      "name": "FieldServiceLastMileUser",
+      "description": "Adds the Field Service Last Mile permission set license. Indicate a value between 1\u201325.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25,
+        "multiplier": 1
+      }
+    },
+    "FieldServiceMobileExtension": {
+      "name": "FieldServiceMobileExtension",
+      "description": "Adds the Field Service Mobile Extension permission set license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FieldServiceMobileUser": {
+      "name": "FieldServiceMobileUser",
+      "description": "Adds the Field Service Mobile permission set license. Indicate a value between 1\u201325.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25,
+        "multiplier": 1
+      }
+    },
+    "FieldServiceSchedulingUser": {
+      "name": "FieldServiceSchedulingUser",
+      "description": "Adds the Field Service Scheduling permission set license. Indicate a value between 1\u201325.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25,
+        "multiplier": 1
+      }
+    },
+    "FinanceLogging": {
+      "name": "FinanceLogging",
+      "description": "Adds Finance Logging objects to a scratch org. This feature is required for Finance Logging.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FinancialServicesCommunityUser": {
+      "name": "FinancialServicesCommunityUser",
+      "description": "Adds the Financial Services Insurance Community permission set license, and enables access to Financial Services insurance community components and objects. Indicate a value between 1\u201310.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 10,
+        "multiplier": 1
+      }
+    },
+    "FinancialServicesInsuranceUser": {
+      "name": "FinancialServicesInsuranceUser",
+      "description": "Adds the Financial Services Insurance permission set license, and enables access to Financial Services insurance components and objects.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FinancialServicesUser": {
+      "name": "FinancialServicesUser",
+      "description": "Adds the Financial Services Cloud Standard permission set license. This permission set enables access to Lightning components and the standard version of Financial Services Cloud. Also provides access to the standard Salesforce objects and custom Financial Services Cloud objects. Indicate a value between 1\u201310.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 10,
+        "multiplier": 1
+      }
+    },
+    "FlowSites": {
+      "name": "FlowSites",
+      "description": "Enables the use of flows in Salesforce Sites and customer portals.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ForceComPlatform": {
+      "name": "ForceComPlatform",
+      "description": "Adds one Salesforce Platform user license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ForecastEnableCustomField": {
+      "name": "ForecastEnableCustomField",
+      "description": "Enables custom currency and customer number fields for use as measures in forecasts based on opportunities.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise Edition and Unlimited Edition scratch orgs, and requires enabling Salesforce Forecasting in Setup.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FSCAlertFramework": {
+      "name": "FSCAlertFramework",
+      "description": "Makes Financial Services Cloud Record Alert entities accessible in the scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "FSCServiceProcess": {
+      "name": "FSCServiceProcess",
+      "description": "Enables the Service Process Studio feature of Financial Service Cloud. Provides 10 seats each of the IndustriesServiceExcellenceAddOn and FinancialServicesCloudStardardAddOn licenses. To enable the feature, you must also turn on the StandardServiceProcess setting in Setup and grant users the AccessToServiceProcess permission.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Fundraising": {
+      "name": "Fundraising",
+      "description": "Gives users access to Nonprofit Cloud for Fundraising features and objects in Salesforce.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "GenericStreaming": {
+      "name": "GenericStreaming",
+      "description": "Enables Generic Streaming API for API version 36.0 and earlier.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "GenStreamingEventsPerDay": {
+      "name": "GenStreamingEventsPerDay",
+      "description": "Increases the maximum number of delivered event notifications within a 24-hour period, shared by all CometD clients, with generic streaming for API version 36.0 and earlier. Indicate a value between 10,000\u201350,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 10000,
+        "max": 50000,
+        "multiplier": 1
+      }
+    },
+    "Grantmaking": {
+      "name": "Grantmaking",
+      "description": "Gives users access to Grantmaking features and objects in Salesforce and Experience Cloud.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "GuidanceHubAllowed": {
+      "name": "GuidanceHubAllowed",
+      "description": "Enables the Guidance Center panel in Lightning Experience. The Guidance Center shows suggested and assigned content in the user\u2019s flow of work. Suggested content is related to the app or page where the user is working. Assigned content includes guidance sets for Salesforce admins, links or Trailhead modules assigned to users with Learning Paths, and Enablement programs for sales reps.",
+      "quantified": false,
+      "editionNotes": "Not available in Group Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HealthCloudAddOn": {
+      "name": "HealthCloudAddOn",
+      "description": "Enables use of Health Cloud.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HealthCloudEOLOverride": {
+      "name": "HealthCloudEOLOverride",
+      "description": "Salesforce retired the Health Cloud CandidatePatient object in Spring \u201822 to focus on the more robust Lead object. This scratch org feature allows you to override that retirement and access the object.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HealthCloudForCmty": {
+      "name": "HealthCloudForCmty",
+      "description": "Enables use of Health Cloud for Experience Cloud Sites.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HealthCloudMedicationReconciliation": {
+      "name": "HealthCloudMedicationReconciliation",
+      "description": "Allows Medication Management to support Medication Reconciliation.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HealthCloudPNMAddOn": {
+      "name": "HealthCloudPNMAddOn",
+      "description": "Enables use of Provider Network Management.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HealthCloudUser": {
+      "name": "HealthCloudUser",
+      "description": "This enables the scratch org to use the Health Cloud objects and features equivalent to the Health Cloud permission set license for one user.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HighVelocitySales": {
+      "name": "HighVelocitySales",
+      "description": "Provides Sales Engagement licenses and enables Salesforce Inbox. Sales Engagement optimizes the inside sales process with a high-productivity workspace. Sales managers can create custom sales processes that guide reps through handling different types of prospects. And sales reps can rapidly handle prospects with a prioritized list and other productivity-boosting features. The Sales Engagement feature can be deployed in scratch orgs, but the settings for the feature can\u2019t be updated through the s",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HighVolumePlatformEventAddOn": {
+      "name": "HighVolumePlatformEventAddOn",
+      "description": "Increases the daily delivery allocation of high-volume platform events or change data capture events by 100,000 events. This scratch org feature simulates the purchase of an add-on. If the org has the `HighVolumePlatformEventAddOn`, the daily allocation is flexible and isn\u2019t enforced strictly to allow for usage peaks.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HLSAnalytics": {
+      "name": "HLSAnalytics",
+      "description": "Enables the HLS Analytics org perm in scratch orgs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "HoursBetweenCoverageJob": {
+      "name": "HoursBetweenCoverageJob",
+      "description": "The frequency in hours when the sharing inheritance coverage report can be run for an object. Indicate a value between 1\u201324.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 24,
+        "multiplier": 1
+      }
+    },
+    "IdentityProvisioningFeatures": {
+      "name": "IdentityProvisioningFeatures",
+      "description": "Enables use of Salesforce Identity User Provisioning.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IgnoreQueryParamWhitelist": {
+      "name": "IgnoreQueryParamWhitelist",
+      "description": "Ignores allowlisting rules for query parameter filter rules. If enabled, you can add any query parameter to the URL.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesActionPlan": {
+      "name": "IndustriesActionPlan",
+      "description": "Provides a license for Action Plans. Action Plans allow you to define the tasks or document checklist items for completing a business process.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "IndustriesBranchManagement": {
+      "name": "IndustriesBranchManagement",
+      "description": "Branch Management lets branch managers and administrators track the work output of branches, employees, and customer segments in Financial Services Cloud.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesCompliantDataSharing": {
+      "name": "IndustriesCompliantDataSharing",
+      "description": "Grants users access to participant management and advanced configuration for data sharing to improve compliance with regulations and company policies.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesManufacturingCmty": {
+      "name": "IndustriesManufacturingCmty",
+      "description": "Provides the Manufacturing Sales Agreement for the Community permission set license, which is intended for the usage of partner community users. It also provides access to the Manufacturing community template for admins users to create communities.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesMfgAccountForecast": {
+      "name": "IndustriesMfgAccountForecast",
+      "description": "Enables Account Forecast. With Account Forecast, you can generate forecasts for your accounts based on orders, opportunities, and sales agreements. You can also create formulas to calculate your forecasts per the requirements of your company.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesMfgAdvncdAccFrcs": {
+      "name": "IndustriesMfgAdvncdAccFrcs",
+      "description": "Enables Advanced Account Forecasting. With Advanced Account Forecasting, generate comprehensive, multi-horizon forecasts for sales, operations, inventory, service, and other aspects of your business. Tailor your forecasting configurations to your objectives to generate accurate, relevant forecasts.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesMfgPartnerVisitMgmt": {
+      "name": "IndustriesMfgPartnerVisitMgmt",
+      "description": "Enables Partner Visit Management. Partner Visit Management helps sales managers in your company schedule visits to partner and distributor locations. Sales managers can use those visits to monitor performance, arrange for periodic check-ins, conduct trainings, upsell and cross-sell products, and follow up on sales agreement renewals and warranty expiration.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesMfgProgram": {
+      "name": "IndustriesMfgProgram",
+      "description": "Enables Program Based Business. With Program Based Business, program managers can manage the end-to-end lifecycle of a program where they derive forecasts based on their customers\u2019 forecasts, transform these forecasts into business opportunities, and convert those opportunities into run-rate business. Program based business is common across multiple industries such as process, aerospace, defense, automotive, engineer-to-order, and make-to-order environments.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesMfgRebates": {
+      "name": "IndustriesMfgRebates",
+      "description": "Enables Rebate Management. Manage incentive programs, track rebate attainment, automate payouts, and gain insights into sales performance and program effectiveness.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IndustriesMfgTargets": {
+      "name": "IndustriesMfgTargets",
+      "description": "Enables Sales Agreements. With Sales Agreements, you can negotiate purchase and sale of products over a continued period. You can also get insights into products, prices, discounts, and quantities. And you can track your planned and actual quantities and revenues with real-time updates from orders and contracts.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "InsightsPlatform": {
+      "name": "InsightsPlatform",
+      "description": "Enables the CRM Analytics Plus license for CRM Analytics.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "InsuranceCalculationUser": {
+      "name": "InsuranceCalculationUser",
+      "description": "Enables the calculation feature of Insurance. Provides 10 seats each of the BRERuntimeAddOn and OmniStudioRuntime licenses. Also, provides one seat each of the OmniStudio and BREPlatformAccess licenses.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "InsuranceClaimMgmt": {
+      "name": "InsuranceClaimMgmt",
+      "description": "Enables claim management features. Provides one seat of the InsuranceClaimMgmtAddOn license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "InsurancePolicyAdmin": {
+      "name": "InsurancePolicyAdmin",
+      "description": "Enables policy administration features. Provides one seat of the InsurancePolicyAdministrationAddOn license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IntelligentDocumentReader": {
+      "name": "IntelligentDocumentReader",
+      "description": "Provides the license required to enable and use Intelligent Document Reader in a scratch org. Intelligent Document Reader uses optical character recognition to automatically extract data with Amazon Textract by using your AWS account.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Interaction": {
+      "name": "Interaction",
+      "description": "Enables flows. A flow is the part of Salesforce Flow that collects data and performs actions in your Salesforce org or an external system. Salesforce Flow provides two types of flows: screen flows and autolaunched flows.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "InvestigativeCaseManagement": {
+      "name": "InvestigativeCaseManagement",
+      "description": "Enables the objects, features, and permissions for managing investigative cases, including evidence management and case proceedings, in Public Sector Solutions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "InvocableActionExt": {
+      "name": "InvocableActionExt",
+      "description": "Enables the use of InvocableActionExtension metadata to customize how Apex invocable action inputs appear in Flow Builder.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "InvoiceManagement": {
+      "name": "InvoiceManagement",
+      "description": "Enables access to all the Billing features and objects that are available with the Revenue Cloud Advanced license in the scratch org.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise, Unlimited, and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "IoT": {
+      "name": "IoT",
+      "description": "Enables IoT so the scratch org can consume platform events to perform business and service workflows using orchestrations and contexts.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "JigsawUser": {
+      "name": "JigsawUser",
+      "description": "Provides one license to Jigsaw features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Knowledge": {
+      "name": "Knowledge",
+      "description": "Enables Salesforce Knowledge and gives your website visitors, clients, partners, and service agents the ultimate support tool. Create and manage a knowledge base with your company information, and securely share it when and where it\u2019s needed. Build a knowledge base of articles that can include information on process, like how to reset your product to its defaults, or frequently asked questions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LegacyLiveAgentRouting": {
+      "name": "LegacyLiveAgentRouting",
+      "description": "Enables legacy Live Agent routing for Chat. Use Live Agent routing to chat in Salesforce Classic. Chats in Lightning Experience must be routed using Omni-Channel.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LifeSciencesCloudForCustomerEngagement": {
+      "name": "LifeSciencesCloudForCustomerEngagement",
+      "description": "Enables use of Life Sciences Cloud for Customer Engagement.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LightningSalesConsole": {
+      "name": "LightningSalesConsole",
+      "description": "Adds one Lighting Sales Console user license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LightningScheduler": {
+      "name": "LightningScheduler",
+      "description": "Enables Lightning Scheduler. Lightning Scheduler gives you tools to simplify appointment scheduling in Salesforce. Create a personalized experience by scheduling customer appointments\u2014in person, by phone, or by video\u2014with the right person at the right place and time.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LightningServiceConsole": {
+      "name": "LightningServiceConsole",
+      "description": "Assigns the Lightning Service Console License to your scratch org so you can use the Lightning Service Console and access features that help manage cases faster.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LiveAgent": {
+      "name": "LiveAgent",
+      "description": "Enables Chat for Service Cloud. Use web-based chat to quickly connect customers to agents for real-time support.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LiveMessage": {
+      "name": "LiveMessage",
+      "description": "Enables Messaging for Service Cloud. Use Messaging to quickly support customers using apps such as SMS text messaging and Facebook Messenger.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LongLayoutSectionTitles": {
+      "name": "LongLayoutSectionTitles",
+      "description": "Allows page layout section titles to be up to 80 characters.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LoyaltyAnalytics": {
+      "name": "LoyaltyAnalytics",
+      "description": "Enables Analytics for Loyalty license. The Analytics for Loyalty app gives you actionable insights into your loyalty programs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LoyaltyEngine": {
+      "name": "LoyaltyEngine",
+      "description": "Enables Loyalty Management Promotion Setup license. Promotion setup allows loyalty program managers to create loyalty program processes. Loyalty program processes help you decide how incoming and new Accrual and Redemption-type transactions are processed.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LoyaltyManagementStarter": {
+      "name": "LoyaltyManagementStarter",
+      "description": "Enables the Loyalty Management - Starter license. Create loyalty programs and set up loyalty program-specific processes that allow you to recognize, rewards, and retain customers.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "LoyaltyMaximumPartners": {
+      "name": "LoyaltyMaximumPartners",
+      "description": "Increases the number of loyalty program partners that can be associated with a loyalty program in an org where the Loyalty Management - Starter license is enabled. The default and maximum value is 1.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 1,
+        "multiplier": 1
+      }
+    },
+    "LoyaltyMaximumPrograms": {
+      "name": "LoyaltyMaximumPrograms",
+      "description": "Increases the number of loyalty programs that can be created in an org where the Loyalty Management - Starter license is enabled. The default and maximum value is 1.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 1,
+        "multiplier": 1
+      }
+    },
+    "LoyaltyMaxOrderLinePerHour": {
+      "name": "LoyaltyMaxOrderLinePerHour",
+      "description": "Increases the number of order lines that can be cumulatively processed per hour by loyalty program processes. Indicate a value between 1\u20133,500,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 3500000,
+        "multiplier": 1
+      }
+    },
+    "LoyaltyMaxProcExecPerHour": {
+      "name": "LoyaltyMaxProcExecPerHour",
+      "description": "Increases the number of transaction journals that can be processed by loyalty program processes per hour. Indicate a value between 1\u2013500,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 500000,
+        "multiplier": 1
+      }
+    },
+    "LoyaltyMaxTransactions": {
+      "name": "LoyaltyMaxTransactions",
+      "description": "Increases the number of Transaction Journal records that can be processed. Indicate a value between 1\u201350,000,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 50000000,
+        "multiplier": 1
+      }
+    },
+    "LoyaltyMaxTrxnJournals": {
+      "name": "LoyaltyMaxTrxnJournals",
+      "description": "Increases the number of Transaction Journal records that can be stored in an org that has the Loyalty Management - Start license enabled.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 25000000,
+        "multiplier": 1
+      }
+    },
+    "Macros": {
+      "name": "Macros",
+      "description": "Enables macros in your scratch org. After enabling macros, add the macro browser to the Lightning Console so you can configure predefined instructions for commonly used actions and apply them to multiple posts at the same time.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MarketingCloud": {
+      "name": "MarketingCloud",
+      "description": "Provides licenses for Marketing Cloud Advanced edition. These licenses provide access to campaigns, flows, emails, forms, landing pages, and consent management features. You can send up to 20 emails per day from a scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MarketingUser": {
+      "name": "MarketingUser",
+      "description": "Provides access to the Campaigns object. Without this setting, Campaigns are read-only.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "MaterialityAssessment": {
+      "name": "MaterialityAssessment",
+      "description": "Provides the permission set licenses and permission sets required to configure materiality assessment in Net Zero Cloud.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "MaxActiveDPEDefs": {
+      "name": "MaxActiveDPEDefs",
+      "description": "Increases the number of Data Processing Engine definitions that can be activated in the org. Indicate a value between 1\u201350.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 50,
+        "multiplier": 1
+      }
+    },
+    "MaxApexCodeSize": {
+      "name": "MaxApexCodeSize",
+      "description": "Limits the non-test, unmanaged Apex code size (in MB). To use a value greater than the default value of 10, contact Salesforce Customer Support.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MaxAudTypeCriterionPerAud": {
+      "name": "MaxAudTypeCriterionPerAud",
+      "description": "Limits the number of audience type criteria available per audience. The default value is 10.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MaxCustomLabels": {
+      "name": "MaxCustomLabels",
+      "description": "Limits the number of custom labels (measured in thousands). Setting the limit to 10 enables the scratch org to have 10,000 custom labels. Indicate a value between 1\u201315.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 15,
+        "multiplier": 1
+      }
+    },
+    "MaxDatasetLinksPerDT": {
+      "name": "MaxDatasetLinksPerDT",
+      "description": "Increases the number of dataset links that can be associated with a decision table. Indicate a value between 1\u20133.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 3,
+        "multiplier": 1
+      }
+    },
+    "MaxDataSourcesPerDPE": {
+      "name": "MaxDataSourcesPerDPE",
+      "description": "Increases the number of Source Object nodes a Data Processing Engine definition can contain. Indicate a value between 1\u201350.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 50,
+        "multiplier": 1
+      }
+    },
+    "MaxDecisionTableAllowed": {
+      "name": "MaxDecisionTableAllowed",
+      "description": "Increases the number of decision tables rules that can be created in the org. Indicate a value between 1\u201330.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 30,
+        "multiplier": 1
+      }
+    },
+    "MaxFavoritesAllowed": {
+      "name": "MaxFavoritesAllowed",
+      "description": "Increases the number of Favorites allowed. Favorites allow users to create a shortcut to a Salesforce Page. Users can view their Favorites by clicking the Favorites list dropdown in the header. Indicate a value between 0\u2013200.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 200,
+        "multiplier": 1
+      }
+    },
+    "MaxFieldsPerNode": {
+      "name": "MaxFieldsPerNode",
+      "description": "Increases the number of fields a node in a Data Processing Engine definition can contain. Indicate a value between 1\u2013500.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 500,
+        "multiplier": 1
+      }
+    },
+    "MaxInputColumnsPerDT": {
+      "name": "MaxInputColumnsPerDT",
+      "description": "Increases the number of input fields a decision table can contain. Indicate a value between 1\u201310.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 10,
+        "multiplier": 1
+      }
+    },
+    "MaxLoyaltyProcessRules": {
+      "name": "MaxLoyaltyProcessRules",
+      "description": "Increases the number of loyalty program process rules that can be created in the org. Indicate a value between 1\u201320.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 20,
+        "multiplier": 1
+      }
+    },
+    "MaxNodesPerDPE": {
+      "name": "MaxNodesPerDPE",
+      "description": "Increases the number of nodes that a Data Processing Engine definition can contain. Indicate a value between 1\u2013500.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 500,
+        "multiplier": 1
+      }
+    },
+    "MaxNoOfLexThemesAllowed": {
+      "name": "MaxNoOfLexThemesAllowed",
+      "description": "Increases the number of Themes allowed. Themes allow users to configure colors, fonts, images, sizes, and more. Access the list of Themes in Setup, under Themes and Branding. Indicate a value between 0\u2013300.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 300,
+        "multiplier": 1
+      }
+    },
+    "MaxOutputColumnsPerDT": {
+      "name": "MaxOutputColumnsPerDT",
+      "description": "Increases the number of output fields a decision table can contain. Indicate a value between 1\u20135.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 5,
+        "multiplier": 1
+      }
+    },
+    "MaxSourceObjectPerDSL": {
+      "name": "MaxSourceObjectPerDSL",
+      "description": "Increases the number of source objects that can be selected in a dataset link of a decision table. Indicate a value between 1\u20135.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 5,
+        "multiplier": 1
+      }
+    },
+    "MaxStreamingTopics": {
+      "name": "MaxStreamingTopics",
+      "description": "Increases the maximum number of delivered PushTopic event notifications within a 24-hour period, shared by all CometD clients. Indicate a value between 40\u2013100.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 40,
+        "max": 100,
+        "multiplier": 1
+      }
+    },
+    "MaxUserNavItemsAllowed": {
+      "name": "MaxUserNavItemsAllowed",
+      "description": "Increases the number of navigation items a user can add to the navigation bar. Indicate a value between 0\u2013500.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 0,
+        "max": 500,
+        "multiplier": 1
+      }
+    },
+    "MaxUserStreamingChannels": {
+      "name": "MaxUserStreamingChannels",
+      "description": "Increases the maximum number of user-defined channels for generic streaming. Indicate a value between 20\u20131,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 20,
+        "max": 1000,
+        "multiplier": 1
+      }
+    },
+    "MaxWishlistsItemsPerWishlist": {
+      "name": "MaxWishlistsItemsPerWishlist",
+      "description": "Limits the number of wishlist items per wishlist. The default value is 500.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MaxWishlistsPerStoreAccUsr": {
+      "name": "MaxWishlistsPerStoreAccUsr",
+      "description": "Limits the number of wishlists allowed per store, account, and user. The default value is 100.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MaxWritebacksPerDPE": {
+      "name": "MaxWritebacksPerDPE",
+      "description": "Increases the number of Writeback Object nodes a Data Processing Engine definition can contain. Indicate a value between 1\u201350.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 50,
+        "multiplier": 1
+      }
+    },
+    "MedVisDescriptorLimit": {
+      "name": "MedVisDescriptorLimit",
+      "description": "Increases the number of sharing definitions allowed per record for sharing inheritance to be applied to an object. Indicate a value between 150\u20131,600.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 150,
+        "max": 1600,
+        "multiplier": 1
+      }
+    },
+    "MinKeyRotationInterval": {
+      "name": "MinKeyRotationInterval",
+      "description": "Sets the encryption key material rotation interval at once per 60 seconds. If this feature isn\u2019t specified, the rotation interval defaults to once per 604,800 seconds (7 days) for Search Index key material, and once per 86,400 seconds (24 hours) for all other key material.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MobileExtMaxFileSizeMB": {
+      "name": "MobileExtMaxFileSizeMB",
+      "description": "Increases the file size (in megabytes) for Field Service Mobile extensions. Indicate a value between 1\u20132,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 2000,
+        "multiplier": 1
+      }
+    },
+    "MobileSecurity": {
+      "name": "MobileSecurity",
+      "description": "Enables Enhanced Mobile Security. With Enhanced Mobile Security, you can control a range of policies to create a security solution tailored to your org\u2019s needs. You can limit user access based on operating system versions, app versions, and device and network security. You can also specify the severity of a violation.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MobileVoiceAndLLM": {
+      "name": "MobileVoiceAndLLM",
+      "description": "Allows mobile apps to download large language models (LLMs) and voice models for offline use from the model store service. Normally, mobile apps have access to the model store service when Einstein is enabled, but the MobileVoiceAndLLM scratch org feature enables offline voice without requiring orgs to fully enable Einstein.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "MultiLevelMasterDetail": {
+      "name": "MultiLevelMasterDetail",
+      "description": "Allows the creation a special type of parent-child relationship between one object, the child, or detail, and another object, the parent, or master.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MutualAuthentication": {
+      "name": "MutualAuthentication",
+      "description": "Requires client certificates to verify inbound requests for mutual authentication.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "MyTrailhead": {
+      "name": "MyTrailhead",
+      "description": "Enables access to a myTrailhead enablement site in a scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "NonprofitCloudCaseManagementUser": {
+      "name": "NonprofitCloudCaseManagementUser",
+      "description": "Provides the permission set license required to use and configure the Salesforce.org Nonprofit Cloud Case Management managed package. You can then install the package in the scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "NumPlatformEvents": {
+      "name": "NumPlatformEvents",
+      "description": "Increases the maximum number of platform event definitions that can be created. Indicate a value between 5\u201320.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 5,
+        "max": 20,
+        "multiplier": 1
+      }
+    },
+    "ObjectLinking": {
+      "name": "ObjectLinking",
+      "description": "Create rules to quickly link channel interactions to objects such as contacts, leads, or person accounts for customers (Beta).",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "OmnistudioDesigner": {
+      "name": "OmnistudioDesigner",
+      "description": "Enables administrator or developer to create new OmniScripts/ DataMappers / Integration Procedures instances.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "OmnistudioMetadata": {
+      "name": "OmnistudioMetadata",
+      "description": "Enables Omnistudio metadata API. Using this API, customers can deploy and retrieve Omnistudio components programmatically.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "OmnistudioRuntime": {
+      "name": "OmnistudioRuntime",
+      "description": "Enables business users to execute OmniScripts, DataMappers, FlexCards, and so on in the employee facing applications.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "OrderManagement": {
+      "name": "OrderManagement",
+      "description": "Provides the Salesforce Order Management license. Order Management is your central hub for handling all aspects of the order lifecycle, including order capture, fulfillment, shipping, payment processing, and servicing.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "OrderSaveBehaviorBoth": {
+      "name": "OrderSaveBehaviorBoth",
+      "description": "Enables scratch org support for both New Order Save Behavior and Old Order Save Behavior.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "OrderSaveLogicEnabled": {
+      "name": "OrderSaveLogicEnabled",
+      "description": "Enables scratch org support for New Order Save Behavior. OrderSaveLogicEnabled supports only New Order Save Behavior. If your scratch org needs both Old and New Order Save Behavior, use OrderSaveBehaviorBoth.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "OutboundMessageHTTPSession": {
+      "name": "OutboundMessageHTTPSession",
+      "description": "Enables using HTTP endpoint URLs in outbound message definitions that have the Send Session ID option selected.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "OutcomeManagement": {
+      "name": "OutcomeManagement",
+      "description": "Gives users access to Outcome Management features and objects in Salesforce\u00a0and Experience Cloud.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "PardotScFeaturesCampaignInfluence": {
+      "name": "PardotScFeaturesCampaignInfluence",
+      "description": "Enables additional campaign influence models, first touch, last touch, and even distribution for Pardot users.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "PersonAccounts": {
+      "name": "PersonAccounts",
+      "description": "Enables person accounts in your scratch org.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [
+        "person accounts",
+        "person account"
+      ],
+      "settingsCoverage": "unknown",
+      "exampleCount": 2
+    },
+    "PipelineInspection": {
+      "name": "PipelineInspection",
+      "description": "Enables Pipeline Inspection. Pipeline Inspection is a consolidated pipeline view with metrics, opportunities, and highlights of recent changes.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "PlatformCache": {
+      "name": "PlatformCache",
+      "description": "Enables Platform Cache and allocates a 3 MB cache. The Lightning Platform Cache layer provides faster performance and better reliability when caching Salesforce session and org data.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "PlatformConnect": {
+      "name": "PlatformConnect",
+      "description": "Enables Salesforce Connect and allows your users to view, search, and modify data that\u2019s stored outside your Salesforce org. Indicate a value from 1\u20135.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 5,
+        "multiplier": 1
+      }
+    },
+    "PlatformEncryption": {
+      "name": "PlatformEncryption",
+      "description": "Shield Platform Encryption encrypts data at rest. You can manage key material and encrypt fields, files, and other data.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "PlatformEventsPerDay": {
+      "name": "PlatformEventsPerDay",
+      "description": "Increases the maximum number of delivered standard-volume platform event notifications within a 24-hour period, shared by all CometD clients. Indicate a value between 10,000\u201350,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 10000,
+        "max": 50000,
+        "multiplier": 1
+      }
+    },
+    "ProcessBuilder": {
+      "name": "ProcessBuilder",
+      "description": "Enables Process Builder, a Salesforce Flow tool that helps you automate your business processes.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ProductCatalogManagementAddOn": {
+      "name": "ProductCatalogManagementAddOn",
+      "description": "Enables read-write access to Product Catalog Management features and objects.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ProductCatalogManagementPCAddOn": {
+      "name": "ProductCatalogManagementPCAddOn",
+      "description": "Enables read access to Product Catalog Management features and objects for Partner Community Users in scratch orgs.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "ProductCatalogManagementViewerAddOn": {
+      "name": "ProductCatalogManagementViewerAddOn",
+      "description": "Enables read access to Product Catalog Management features and objects.",
+      "quantified": false,
+      "editionNotes": "Available in Developer and Enterprise scratch org editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ProductsAndSchedules": {
+      "name": "ProductsAndSchedules",
+      "description": "Enables product schedules in your scratch org. Enabling this feature lets you create default product schedules on products. Users can also create schedules for individual products on opportunities.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ProgramManagement": {
+      "name": "ProgramManagement",
+      "description": "Enables access to all Program Management and Case Management features and objects.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "ProviderFreePlatformCache": {
+      "name": "ProviderFreePlatformCache",
+      "description": "Provides 3 MB of free Platform Cache capacity for security-reviewed managed packages. This feature is made available through a capacity type called Provider Free capacity and is automatically enabled in Developer Edition orgs. Allocate the Provider Free capacity to a Platform Cache partition and add it to your managed package.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ProviderManagement": {
+      "name": "ProviderManagement",
+      "description": "Enables the objects, features, and permissions for managing provider networks, care plans, and service delivery in Public Sector Solutions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "PSSAssetManagement": {
+      "name": "PSSAssetManagement",
+      "description": "Enables the objects, features, and permissions for managing assets in Public Sector Solutions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "PublicSectorAccess": {
+      "name": "PublicSectorAccess",
+      "description": "Enables access to all Public Sector features and objects.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "PublicSectorApplicationUsageCreditsAddOn": {
+      "name": "PublicSectorApplicationUsageCreditsAddOn",
+      "description": "Enables additional usage of Public Sector applications based on their pricing.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "PublicSectorSiteTemplate": {
+      "name": "PublicSectorSiteTemplate",
+      "description": "Allows Public Sector users access to build an Experience Cloud site from the templates available.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "RateManagement": {
+      "name": "RateManagement",
+      "description": "Enables Rate Management that allows you to set, manage, and optimize rates for usage-based products.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "RecordTypes": {
+      "name": "RecordTypes",
+      "description": "Enables Record Type functionality. Record Types let you offer different business processes, picklist values, and page layouts to different users.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "RefreshOnInvalidSession": {
+      "name": "RefreshOnInvalidSession",
+      "description": "Enables automatic refreshes of Lightning pages when the user\u2019s session is invalid. If, however, the page detects a new token, it tries to set that token and continue without a refresh.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "RevSubscriptionManagement": {
+      "name": "RevSubscriptionManagement",
+      "description": "Enables Subscription Management. Subscription Management is an API-first, product-to-cash solution for B2B subscriptions and one-time sales.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "S1ClientComponentCacheSize": {
+      "name": "S1ClientComponentCacheSize",
+      "description": "Allows the org to have up to 5 pages of caching for Lightning Components.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SalesCloudEinstein": {
+      "name": "SalesCloudEinstein",
+      "description": "Enables Sales Cloud Einstein features and Salesforce Inbox. Sales Cloud Einstein brings AI to every step of the sales process.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SalesforceContentUser": {
+      "name": "SalesforceContentUser",
+      "description": "Enables access to Salesforce content features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SalesforceFeedbackManagementStarter": {
+      "name": "SalesforceFeedbackManagementStarter",
+      "description": "Provides a license to use the Salesforce Feedback Management - Starter features.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SalesforceHostedMCP": {
+      "name": "SalesforceHostedMCP",
+      "description": "Enables hosted MCP servers on the scratch org. With this scratch org feature parameter, MCP clients can connect to available hosted MCP servers.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SalesforceIdentityForCommunities": {
+      "name": "SalesforceIdentityForCommunities",
+      "description": "Adds Salesforce Identity components, including login and self-registration, to Experience Builder. This feature is required for Aura components.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SalesforcePricing": {
+      "name": "SalesforcePricing",
+      "description": "Enables Salesforce Pricing, which allows you to set, manage, and optimize prices across your entire product portfolio",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "SalesUser": {
+      "name": "SalesUser",
+      "description": "Provides a license for Sales Cloud features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SAML20SingleLogout": {
+      "name": "SAML20SingleLogout",
+      "description": "Enables usage of SAML 2.0 single logout.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SCIMProtocol": {
+      "name": "SCIMProtocol",
+      "description": "Enables access support for the SCIM protocol base API.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ScvMultipartyAndConsult": {
+      "name": "ScvMultipartyAndConsult",
+      "description": "Enables you to set up and test multiparty calls and consult calls for Service Cloud Voice with Partner Telephony.",
+      "quantified": false,
+      "editionNotes": "Available in Salesforce Enterprise, Unlimited, and Developer Editions.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SecurityEventEnabled": {
+      "name": "SecurityEventEnabled",
+      "description": "Enables access to security events in Event Monitoring.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SentimentInsightsFeature": {
+      "name": "SentimentInsightsFeature",
+      "description": "Provides the license required to enable and use Sentiment Insights in a scratch org. Use Sentiment Insights to analyze the sentiment of your customers and get actionable insights to improve it.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ServiceCatalog": {
+      "name": "ServiceCatalog",
+      "description": "Enables Employee Service Catalog so you can create a catalog of products and services for your employees. It can also turn your employees\u2019 requests for these products and services into approved and documented orders.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ServiceCloud": {
+      "name": "ServiceCloud",
+      "description": "Assigns the Service Cloud license to your scratch org, so you can choose how your customers can reach you, such as by email, phone, social media, online communities, chat, and text.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [
+        "service cloud"
+      ],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "ServiceCloudVoicePartnerTelephony": {
+      "name": "ServiceCloudVoicePartnerTelephony",
+      "description": "Assigns the Service Cloud Voice with Partner Telephony add-on license to your scratch org, so you can set up a Service Cloud Voice contact center that integrates with supported telephony providers. Indicate a value from 1\u201350.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 1,
+        "max": 50,
+        "multiplier": 1
+      }
+    },
+    "ServiceUser": {
+      "name": "ServiceUser",
+      "description": "Adds one Service Cloud User license, and allows access to Service Cloud features.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SessionIdInLogEnabled": {
+      "name": "SessionIdInLogEnabled",
+      "description": "Enables Apex debug logs to include session IDs. If disabled, session IDs are replaced with \u201cSESSION_ID_REMOVED\u201d in debug logs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SFDOInsightsDataIntegrityUser": {
+      "name": "SFDOInsightsDataIntegrityUser",
+      "description": "Provides a license to Salesforce.org Insights Platform Data Integrity managed package. You can then install the package in the scratch org.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SharedActivities": {
+      "name": "SharedActivities",
+      "description": "Allow users to relate multiple contacts to tasks and events.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Sites": {
+      "name": "Sites",
+      "description": "Enables Salesforce Sites, which allows you to create public websites and applications that are directly integrated with your Salesforce org. Users aren\u2019t required to log in with a username and password.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "SocialCustomerService": {
+      "name": "SocialCustomerService",
+      "description": "Enables Social Customer Service, sets post defaults, and either activates the Starter Pack or signs into your Social Studio account.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "StateAndCountryPicklist": {
+      "name": "StateAndCountryPicklist",
+      "description": "Enables state and country/territory picklists. State and country/territory picklists let users select states and countries from predefined, standardized lists, instead of entering state, country, and territory data into text fields.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "StreamingAPI": {
+      "name": "StreamingAPI",
+      "description": "Enables Streaming API.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer Edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "StreamingEventsPerDay": {
+      "name": "StreamingEventsPerDay",
+      "description": "Increases the maximum number of delivered PushTopic event notifications within a 24-hour period, shared by all CometD clients (API version 36.0 and earlier). Indicate a value between 10,000\u201350,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 10000,
+        "max": 50000,
+        "multiplier": 1
+      }
+    },
+    "SubPerStreamingChannel": {
+      "name": "SubPerStreamingChannel",
+      "description": "Increases the maximum number of concurrent clients (subscribers) per generic streaming channel (API version 36.0 and earlier). Indicate a value between 20\u20134,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 20,
+        "max": 4000,
+        "multiplier": 1
+      }
+    },
+    "SubPerStreamingTopic": {
+      "name": "SubPerStreamingTopic",
+      "description": "Increases the maximum number of concurrent clients (subscribers) per PushTopic streaming channel (API version 36.0 and earlier). Indicate a value between 20\u20134,000.",
+      "quantified": true,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0,
+      "quantity": {
+        "min": 20,
+        "max": 4000,
+        "multiplier": 1
+      }
+    },
+    "SurveyAdvancedFeatures": {
+      "name": "SurveyAdvancedFeatures",
+      "description": "Enables a license for the features available with the Salesforce Feedback Management - Growth license.",
+      "quantified": false,
+      "editionNotes": "Available in Enterprise and Developer edition scratch orgs.",
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "SustainabilityApp": {
+      "name": "SustainabilityApp",
+      "description": "Provides the permission set licenses and permission sets required to configure Net Zero Cloud. To enable or use Tableau CRM and Tableau CRM templates, include the DevelopmentWave scratch org feature.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 2
+    },
+    "SustainabilityCloud": {
+      "name": "SustainabilityCloud",
+      "description": "Provides the permission set licenses and permission sets required to install and configure Sustainability Cloud. To enable or use CRM Analytics and CRM Analytics templates, include the DevelopmentWave scratch org feature.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "TalentRecruitmentManagement": {
+      "name": "TalentRecruitmentManagement",
+      "description": "Enables the objects, features, and permissions for managing the talent recruitment and hiring process in Public Sector Solutions.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "TCRMforSustainability": {
+      "name": "TCRMforSustainability",
+      "description": "Enables all permissions required to manage the Net Zero Analytics app by enabling Tableau CRM. You can create and share the analytics app for your users to bring your environmental accounting in line with your financial accounting.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "TimelineConditionsLimit": {
+      "name": "TimelineConditionsLimit",
+      "description": "Limits the number of timeline record display conditions per event type to 3.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "TimelineEventLimit": {
+      "name": "TimelineEventLimit",
+      "description": "Limits the number of event types displayed on a timeline to 5.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "TimelineRecordTypeLimit": {
+      "name": "TimelineRecordTypeLimit",
+      "description": "Limits the number of related object record types per event type to 3.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "TimeSheetTemplateSettings": {
+      "name": "TimeSheetTemplateSettings",
+      "description": "Time Sheet Templates let you configure settings to create time sheets automatically. For example, you can create a template that sets start and end dates. Assign templates to user profiles so that time sheets are created for the right users.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "TransactionFinalizers": {
+      "name": "TransactionFinalizers",
+      "description": "Enables you to implement and attach Apex Finalizers to Queueable Apex jobs.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "UsageManagement": {
+      "name": "UsageManagement",
+      "description": "Enables Usage Management. Using Usage Management, you can setup, track, and manage the consumption of usage-based products.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "known",
+      "exampleCount": 1
+    },
+    "VolunteerManagement": {
+      "name": "VolunteerManagement",
+      "description": "Gives users access to Volunteer Management features and objects in Salesforce.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 1
+    },
+    "WaveMaxCurrency": {
+      "name": "WaveMaxCurrency",
+      "description": "Increases the maximum number of supported currencies for CRM Analytics. Indicate a value between 1\u20135.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "WavePlatform": {
+      "name": "WavePlatform",
+      "description": "Enables the Wave Platform license.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "Workflow": {
+      "name": "Workflow",
+      "description": "Enables Workflow so you can automate standard internal procedures and processes.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "WorkflowFlowActionFeature": {
+      "name": "WorkflowFlowActionFeature",
+      "description": "Allows you to launch a flow from a workflow action.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "WorkplaceCommandCenterUser": {
+      "name": "WorkplaceCommandCenterUser",
+      "description": "Enables access to Workplace Command Center features including access to objects such as Employee, Crisis, and EmployeeCrisisAssessment.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    },
+    "WorkThanksPref": {
+      "name": "WorkThanksPref",
+      "description": "Enables the give thanks feature in Chatter.",
+      "quantified": false,
+      "editionNotes": null,
+      "synonyms": [],
+      "settingsCoverage": "unknown",
+      "exampleCount": 0
+    }
+  }
+}

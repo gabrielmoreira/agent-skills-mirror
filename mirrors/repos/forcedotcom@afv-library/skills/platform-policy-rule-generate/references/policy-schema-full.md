@@ -4,7 +4,7 @@
 
 ## Path Enums
 
-> **Surface principle.** The MDAPI surface is a narrower set of `*Type` enums (`RulePrincipalPathType`, `RuleResourcePathType`, `RuleContextPathType`) than what the runtime honors at evaluation time. Values that appear at runtime but are not in the MDAPI `*Type` enums are **not authorable via MDAPI** — use a runtime RuleProvider for those.
+> **Surface principle.** Prefer shapes that have been retrieved and round-trip validated at the target API version. Enum lists alone do not establish authorability.
 
 ### `<principalPath>` / `<valuePrincipalPath>` — `RulePrincipalPathType` (6 values)
 
@@ -17,7 +17,7 @@
 | `USER_ROLE_ID` | Principal role ID |
 | `RBAC_TAGS` | Principal RBAC tags |
 
-Outside contract (not in `RulePrincipalPathType`): `IS_INTERNAL`, `CONTACT_ID`, `SCALAR_ATTRIBUTE`, `PLURAL_ATTRIBUTE`, `PLACEHOLDER`. Use a runtime RuleProvider for these.
+`SCALAR_ATTRIBUTE` is not listed in the six-value table above, but it is a confirmed, deployable, Policy Builder-compatible principal path: it is how the Data Governance UI itself creates principal scalar-attribute conditions, which is why it appears throughout retrieved API 69.0 OLS, FLS, masking, and RLS evidence when paired with `SOQLTARGETLISTEXPR`. Generate it directly in normal author mode whenever the request needs a principal-attribute comparison. The other unpublished values — `IS_INTERNAL`, `CONTACT_ID`, `PLURAL_ATTRIBUTE`, `PLACEHOLDER` — remain unconfirmed; do not generate those unless the target release publishes them or a separate approved creation path establishes authorability.
 
 ### `<resourcePath>` / `<valueResourcePath>` — `RuleResourcePathType` (16 values)
 
@@ -26,7 +26,7 @@ Outside contract (not in `RulePrincipalPathType`): `IS_INTERNAL`, `CONTACT_ID`, 
 | `NAMESPACE` | Resource namespace |
 | `ENTITY` | Entity (object) reference |
 | `FIELD` | Field reference |
-| `ENTITYTYPE` | Entity type — pair with `IS` operator and `{"t":"Text","v":"FIELD"}` literal |
+| `ENTITYTYPE` | Entity type — pair with `IS` and `valueText` set to `OBJECT` or `FIELD` as shown in retrieved examples |
 | `ENTITYKIND` | Entity kind bits |
 | `FIELDKIND` | Field kind bits |
 | `DATASPACE` | Resource dataspace |
@@ -48,7 +48,7 @@ Outside contract (not in `RulePrincipalPathType`): `IS_INTERNAL`, `CONTACT_ID`, 
 
 Outside contract: `SESSION_CONSUMER_ID`, `CONTEXT_AGENT_ID`, `CONTEXT_AGENT_VERSION_ID` (IDENTIFIED_RECORD / agentic — runtime RuleProvider only).
 
-> `SCALAR_ATTRIBUTE` / `PLURAL_ATTRIBUTE` in `<valuePrincipalPath>` are outside `RulePrincipalPathType` — not authorable via MDAPI for new work.
+`SCALAR_ATTRIBUTE` is confirmed deployable and UI-compatible per DG UI source (this is how the builder itself authors the condition, not established by a per-shape round-trip) for principal scalar-attribute comparisons even though it is absent from the published enum table above; generate it directly in normal author mode.
 
 ---
 
@@ -96,9 +96,16 @@ Outside contract: `SESSION_CONSUMER_ID`, `CONTEXT_AGENT_ID`, `CONTEXT_AGENT_VERS
 
 Three fields (all optional at schema level, but a non-empty value set needs at least one):
 
-### Literal values — `<valueString>`
+### Literal values — `<valueText>` and `<valueString>`
 
-For typed literals, embed JSON (escape `"` to `&quot;`):
+Retrieved API 69.0 policies use `valueText` for entity type and scalar text:
+
+```xml
+<valueText>FIELD</valueText>
+<valueText>Toxico</valueText>
+```
+
+Older fixture-only typed literals use JSON in `valueString` (escape `"` to `&quot;`):
 ```xml
 <valueString>{&quot;t&quot;:&quot;Text&quot;,&quot;v&quot;:&quot;FIELD&quot;}</valueString>
 <valueString>{&quot;t&quot;:&quot;Boolean&quot;,&quot;v&quot;:true}</valueString>
@@ -122,7 +129,7 @@ For plain string equality:
 | `CUSTOM_PERMISSION` | Custom permission | `principalPath=ASSIGNED_PERMISSIONS_PATH` |
 | `DATASPACE` | Dataspace | `resourcePath=DATASPACE` or `contextPath=SESSION_DATASPACE` |
 
-> **Tag/classification dev names are NOT free-form.** The deploy-time validator checks `<valueReference>` against the org's taxonomy. To find the exact string: `sf project retrieve start --target-org <alias> --metadata "PolicyRuleDefinition:<existing-rule-name>"` and copy `<valueReference>` verbatim.
+> **Tag/classification dev names are NOT free-form.** The deploy-time validator checks `<valueReference>` against the org's taxonomy. Build the `<valueReference>` from a Data 360 MCP tag/classification lookup per `reference-resolution.md#constructing-valuereference-for-standard_tag--standard_classification`, or read a known-good rule back with `dispatch_readonly` GET `/headless/metadata?type=PolicyRuleDefinition&fullName=<existing-rule-name>` and copy `<valueReference>` from the returned `xmlRep`. Never use the `sf` CLI.
 
 Multiple `<policyRuleValueSet>` siblings inside one condition are OR-combined.
 
@@ -146,14 +153,14 @@ Multiple `<policyRuleValueSet>` siblings inside one condition are OR-combined.
     <version>1</version>
     <transformExpression>
         <argument>
-            <type>NUMBER</type>
+            <type>STRING</type>
             <value>4</value>
         </argument>
     </transformExpression>
 </resourceExpression>
 ```
 
-`TransformExpressionArgumentType` = `STRING` or `NUMBER`. Use when `<resourceTransform>` takes parameters (e.g. `LAST_N_CHARS_RESOURCE_TRANSFORM` needs N).
+`TransformExpressionArgumentType` = `STRING` or `NUMBER`. The retrieved `LAST_N_CHARS_RESOURCE_TRANSFORM` evidence uses `STRING` even for numeric text. Other transforms may use a different type; require a retrieved or documented shape rather than inferring it.
 
 ### PROJECTION — RLS join
 
@@ -207,7 +214,7 @@ Plural (use a set operator: `CONTAINS_ANY` / `CONTAINS_NONE` / `CONTAINS_ALL`):
 </principalExpression>
 ```
 
-> `SCALAR_ATTRIBUTE` / `PLURAL_ATTRIBUTE` principal expressions are outside MDAPI contract. Fixture-only.
+The retrieved API 69.0 examples persist `SCALAR_ATTRIBUTE` with `SOQLTARGETLISTEXPR`. Treat plural targets as unsupported until a real-org policy is retrieved and round-trip validated.
 
 ---
 

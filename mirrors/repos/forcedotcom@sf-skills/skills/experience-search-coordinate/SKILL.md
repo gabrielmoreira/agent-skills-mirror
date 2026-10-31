@@ -14,6 +14,7 @@ metadata:
       tools:
         - get_content_types_for_workspace
         - search_content_cms_channels
+        - search_digital_content
         - search_electronic_media
         - search_media_cms_channels
       semver: ">=1.0.0"
@@ -113,13 +114,18 @@ Routes search requests to the correct sub-workflow — structured CMS content or
 
 Follow this sequence for each intent Step 2 routed here. The content type FQN(s) are already known from Step 2.
 
-1. **Build the search query:**
-   - **Extract keywords** — concrete nouns and named subjects that would appear in the content's title or body. Use domain-specific synonyms, max 10 terms, joined with ` OR `. E.g. "blog posts about sustainable business practices" → `sustainable OR sustainability OR business OR environmental`.
-   - **Extract taxonomies** — descriptive qualities, categories, or topical tags only (adjectives, categories, attributes — not concrete nouns). Stringify as `{"OR": ["term1", "term2"]}`, or `"{}"` if none apply. E.g. "sustainable business practices and environmental responsibility" → `{"OR": ["Business", "Corporate", "Environment", "Responsibility"]}`; "FAQs about password resets" → `"{}"` (no descriptive/categorical terms).
-   - Load `assets/search-payload-template.json` for the request payload structure. Set `contentTypeFqn` to the comma-separated FQN list collected in Step 2. `contentAccessScope` and `channelIds` are **mutually exclusive** — never send both in the same call — so they're set per-call in point 3 below, not here.
-2. **Confirm with the user** — required two-message pattern (labeled-parameters chat message, then `ask_followup_question` with `Yes - search now` / `Edit search` / `Cancel`). Never put the labeled list inside `ask_followup_question`'s text — it strips formatting. → Read `references/content-route.md` § "Confirming the query before searching" for templates.
-3. **Execute the search call(s)** per the scope from Step 1 — one call for public-only scope, two (public + channel-scoped) when a `channelId` is in scope. → Read `references/content-route.md` § "Executing the search call(s)" before parsing results — array/merge rules.
-4. **Present up to 5 unique results total** (de-duplicated by `managedContentKey` for display only — an item found under more than one channel still appears once here), grouped by content type, with a `Load More` option if more remain. Each item shows its **Channel** as a per-item field — never the grouping key:
+1. **Present search sources via `ask_followup_question` before any tool call** — only sources whose tools you have, plus "Other"; wait for the choice. → Read `references/content-route.md` § "Presenting available search sources".
+2. **Build the query, then confirm before searching:**
+   - **Search using keywords** (`search_content_cms_channels`):
+     - **Extract keywords** — concrete nouns and named subjects likely in the title or body, plus domain synonyms; max 10, joined with ` OR `. E.g. "blog posts about sustainable business practices" → `sustainable OR sustainability OR business OR environmental`.
+     - **Extract taxonomies** — descriptive qualities, categories, or topical tags only (not concrete nouns), stringified as `{"OR": ["term1", "term2"]}`, or `"{}"` if none.
+     - Payload: `assets/search-payload-template.json`, `contentTypeFqn` = the comma-separated FQN list from Step 2. `contentAccessScope` and `channelIds` are **mutually exclusive** — never both in one call — so they're set per call in point 3.
+   - **Search using Data 360 hybrid search** (`search_digital_content`): verbatim `searchQuery`; bare ISO `searchLanguage` only if the schema lists it. On zero results or a language error, ask the user before one retry without it → `references/content-route.md`.
+   - **Other** — ask for a direct URL, asset library path, or system to check (no tool call, no confirmation).
+
+   Confirm via the two-message pattern (`Yes - search now` / `Edit search` / `Cancel`). → Read `references/content-route.md` § "Confirming the query before searching".
+3. **Execute the search call(s)** — keyword search: one call for public-only scope, two (public + channel-scoped) when a `channelId` is in scope. Hybrid: one call, no channel scope. → Read `references/content-route.md` § "Executing the search call(s)" (keyword) or the hybrid section (field mapping) before parsing results.
+4. **Present up to 5 unique results total** (de-duplicated by `managedContentKey` for display only — an item found under more than one channel still appears once here), grouped by content type, with a `Load More` option if more remain (keyword search only). Each item shows its **Channel** as a per-item field — never the grouping key:
 
    ```text
    I found 3 content items:
@@ -162,7 +168,7 @@ Follow this sequence for each intent Step 2 routed here. The media content type 
 When a request mixes media and content intents, run the two routes **sequentially, each to full completion, not interleaved and not merged into one combined presentation**:
 
 1. **Media Route first** — for every media intent, run Step 4 in full: present sources, build/confirm the query, search, present results, let the user select, and (point 6) offer the `experience-cms-content-render` hand-off (Yes/No). Finish this entire route — including the offer — before starting the Content Route.
-2. **Content Route second** — for every content intent, run Step 3 in full: build/confirm the query, search, present results grouped by content type (channel shown per-item), let the user select, and (point 6) offer the `experience-cms-content-render` hand-off if a uiBundle channel is in scope.
+2. **Content Route second** — for every content intent, run Step 3 in full: present sources, build/confirm the query, search, present results grouped by content type (channel shown per-item), let the user select, and (point 6) offer the `experience-cms-content-render` hand-off if a uiBundle channel is in scope.
 
 Each route's results are labeled and presented on their own (e.g. "Images:" for the Media Route's output, then "Articles:" for the Content Route's) — never merge the two into one undifferentiated list, and never hold Media Route's results back to present alongside Content Route's.
 
@@ -170,12 +176,12 @@ Each route's results are labeled and presented on their own (e.g. "Images:" for 
 
 | Error | Response |
 |---|---|
-| No `search_content_cms_channels`/`search_media_cms_channels` tools found via introspection | "No content search connection is configured. Please connect a content-readonly MCP server." |
+| No content or media search tools (keyword or hybrid) found via introspection | "No content search connection is configured. Please connect a content-readonly MCP server." |
 | Neither media tool available | "No automated media search sources are currently configured. Please provide a direct URL or asset library path." |
 | `metadata-grounding` unavailable or no content types match | Apply the fallback chain in `references/content-type-discovery.md` — do not block or ask for an FQN |
 | No search results (either route) | "No [content/media] found. Try broader keywords, removing descriptive terms, or a different [content type/source]." |
 | Invalid user selection | Re-display options and ask again |
-| Tool returns error (invalid input, missing argument, or otherwise) | Show error message, offer retry with corrected parameters **on that same tool — never fall through to the other route's search tool as a workaround** (see Key Principle 3); hybrid language errors: offer one no-language retry, with the user's OK (see media route) |
+| Tool returns error (invalid input, missing argument, or otherwise) | Show error message, offer retry with corrected parameters **on that same tool — never fall through to the other route's search tool as a workaround** (see Key Principle 3); hybrid language errors: offer one no-language retry, with the user's OK (see each route's reference) |
 | Search tool on the connected server returns a server error (5xx, timeout, connection failure — not "no results") | **Fail the call — do NOT silently retry against a different server.** Tell the user to check that server's connection/session and wait before retrying. |
 
 **Never silently fail on a route the user asked for.** If one route in a mixed request comes up empty, still present the other route's results and say so explicitly. This does not mean substituting a different server when the connected one errors — see the server-error row above.
@@ -186,7 +192,7 @@ Each route's results are labeled and presented on their own (e.g. "Images:" for 
 2. **Search first, route second** — `search_metadata` + `query_metadata` decide the route; fall back to `get_content_types_for_workspace`, then intent wording, only when that comes up empty (Step 2)
 3. **Never cross-route, including on failure** — content requests never hit media search tools and vice versa; if a route's search tool errors for any reason, fix and retry that same tool or stop and report the error — never fall through to the other route's tool as a workaround
 4. **Metadata grounding is mandatory for content** — discover content type FQNs dynamically, never hardcode them
-5. **Media route starts text-only** — present sources and wait before any tool call
+5. **Both routes start text-only** — present sources and wait before any tool call
 6. **Confirm before searching (both routes)** — user approves query parameters before execution
 7. **Never auto-select** — always wait for user choice, across channel scope and both routes
 8. **Run mixed requests sequentially, Media Route first** — complete it fully (including the render offer) before starting the Content Route; present each route's results as its own labeled set, never merged
@@ -195,4 +201,4 @@ Each route's results are labeled and presented on their own (e.g. "Images:" for 
 11. **Never fail over to a different server on a server error** — fail the call and tell the user to check that server's session; don't silently retry elsewhere
 12. **Group by content type, never by channel** — in both routes, channel is always a per-item field, never the group heading
 13. **Disambiguate channel at selection, not before** — an item is shown once at presentation regardless of its delivery-details array length; only after selection do you ask which channel's copy to use, one option per entry by `managedContentChannelDetails.name`, in both routes
-14. **Unauthenticated URL is public-channel-only** — `PUBLIC_UNAUTHENTICATED`/`COMMUNITY` entries only; never a `WEB_APP` (uiBundle) entry's `contentUrl`, in either route
+14. **Unauthenticated URL is public-channel-only** — `PUBLIC_UNAUTHENTICATED`/`COMMUNITY` entries only; never a `WEB_APP` (uiBundle) entry's `contentUrl`, in either route. A hybrid entry on a Step 1 uiBundle `channelId` counts as `WEB_APP`

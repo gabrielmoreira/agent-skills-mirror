@@ -46,6 +46,16 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
   skill cannot be turned on. Write project rows that change toggles through
   Prisma, never raw SQL, so `updatedAt` moves and an open form gets a stale
   save instead of reverting the change.
+- **NEVER answer a failure with the exception's text, and never let the
+  browser drop its cause.** A route's catch answers `internalError(err,
+  '<fixed sentence>')` ([routeErrors.ts](src/lib/routeErrors.ts)): `{error,
+  code}`, where `code` is the Prisma or Neo4j code, the errno or the class,
+  because `error.message` can quote query values, target data or keys. A handler
+  without try/catch is wrapped in `withRouteErrors` (Next's own 500 has no body);
+  a service that failed answers `upstreamFailureResponse` /
+  `upstreamErrorResponse`. The browser reads a failure with `readApiError` /
+  `fetchJson` ([apiError.ts](src/lib/apiError.ts)), whose message carries the
+  code and HTTP status, so a screenshot is enough to tell the causes apart.
 
 ---
 

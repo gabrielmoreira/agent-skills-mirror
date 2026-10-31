@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.26.0"
+  version: "3.27.0"
 ---
 
 # Sistema de Planificación con Archivos
@@ -250,6 +250,9 @@ Scripts auxiliares de automatización:
 - `scripts/session-catchup.py`: sin opciones no accede al historial; `--metadata` inspecciona solo metadatos locales del mismo proyecto y `--replay` reproduce extractos limitados y enmarcados cuando el usuario lo solicita de forma explícita
 
 ### Listar planes guardados
+
+
+Para agentes, añade `--json` (PowerShell: `-Json`) al comando de listado para obtener rutas, estado y límites de selección. Consulta el esquema y la asignación a otro agente en [plan-inventory.md](plan-inventory.md). Esta consulta opcional no se ejecuta al activar el skill normalmente.
 
 Para encontrar una tarea antes de retomarla, ejecuta `sh "<skill-dir>/scripts/set-active-plan.sh" --list` o, en Windows PowerShell, `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Sustituye `<skill-dir>` por el directorio de instalación de este skill y mantén la raíz del proyecto como directorio de trabajo actual.
 

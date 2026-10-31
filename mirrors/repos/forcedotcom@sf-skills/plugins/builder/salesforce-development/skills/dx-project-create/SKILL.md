@@ -23,7 +23,7 @@ allowed-tools:
 
 Walk the user through a wizard that scaffolds a new Salesforce DX project, relocates this session into the new project, connects it to an org, and configures it for development. Run each step in order, confirming with the user before any environment-changing action.
 
-The `salesforce-development` plugin's MCP servers (`salesforce-api-context`, `salesforce-metadata-experts`, `salesforce-lsp`) are provided by the **installed plugin**, not by the project — so they stay available in the new project automatically once the session relocates. There is no per-project `.mcp.json` to copy.
+The `salesforce-development` plugin's MCP servers (`salesforce-metadata-experts`, `salesforce-lsp`) are provided by the **installed plugin**, not by the project — so they stay available in the new project automatically once the session relocates. There is no per-project `.mcp.json` to copy.
 
 ## Step 1: Choose a Project Template
 

@@ -52,10 +52,10 @@ Mirror of `qualcomm/nexa-sdk` — 26 default patterns, 9 followed patterns, 14 f
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
-- `notes/AI.md`
-- `.claude/commands/release.md`
-- `notes/release.md`
 - `notes/build.md`
+- `notes/release.md`
+- `notes/run.md`
+- `notes/bench.md`
 - `bindings/python/README.md`
 - `tests/README.md`
 - `SECURITY.md`
@@ -67,18 +67,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/commands/build.md`](.claude/commands/build.md) |
-| 2 | ✓ | [`.claude/skills/coverage/SKILL.md`](.claude/skills/coverage/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/reshape-pr-commits/SKILL.md`](.claude/skills/reshape-pr-commits/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/build/SKILL.md`](.claude/skills/build/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/geniex/SKILL.md`](.claude/skills/geniex/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
 | 4 | ✓ | [`bindings/python/BUILD.md`](bindings/python/BUILD.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | → | [`.claude/commands/release.md`](.claude/commands/release.md) |
-| 7 | → | [`bindings/python/README.md`](bindings/python/README.md) |
-| 8 | → | [`CODE-OF-CONDUCT.md`](CODE-OF-CONDUCT.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`notes/AI.md`](notes/AI.md) |
-| 11 | → | [`notes/build.md`](notes/build.md) |
-| 12 | → | [`notes/release.md`](notes/release.md) |
+| 6 | → | [`bindings/python/README.md`](bindings/python/README.md) |
+| 7 | → | [`CODE-OF-CONDUCT.md`](CODE-OF-CONDUCT.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`notes/bench.md`](notes/bench.md) |
+| 10 | → | [`notes/build.md`](notes/build.md) |
+| 11 | → | [`notes/release.md`](notes/release.md) |
+| 12 | → | [`notes/run.md`](notes/run.md) |
 | 13 | → | [`SECURITY.md`](SECURITY.md) |
 | 14 | → | [`tests/README.md`](tests/README.md) |
 

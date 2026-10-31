@@ -1,6 +1,6 @@
 # GenAI Agents
 
-> A community-driven collection of 59 runnable Jupyter notebooks implementing Generative AI agents, from a single conversational bot to multi-agent systems, self-improving agents and complete applications. Each notebook is a self-contained tutorial covering the problem, the agent design, the implementation and a working run. Frameworks include LangGraph, AutoGen, PydanticAI and from-scratch agent loops. This is a teaching repository rather than a framework, so there is no package to install. Authored by Nir Diamant. Licensed under a custom non-commercial license.
+> A community-driven collection of 64 agent tutorials, nearly all runnable Jupyter notebooks, implementing Generative AI agents, from a single conversational bot to multi-agent systems, self-improving agents and complete applications. Each notebook is a self-contained tutorial covering the problem, the agent design, the implementation and a working run. Frameworks include LangGraph, AutoGen, PydanticAI and from-scratch agent loops. This is a teaching repository rather than a framework, so there is no package to install. Authored by Nir Diamant. Licensed under a custom non-commercial license.
 
 ## Core Documents
 
@@ -60,8 +60,7 @@
 - [Customer Support Agent](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/customer_support_agent_langgraph.ipynb): Routing, resolving and escalating support requests.
 - [Sales Call Analyzer](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/sales_call_analyzer_agent.ipynb): Analyzing sales conversations.
 - [Project Manager Assistant](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/project_manager_assistant_agent.ipynb): Planning and tracking project work.
-- [HR AI Agent](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/Hr_AI_Agent.ipynb): An agent over HR processes.
-- [HR AI Assistant](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/HR_AI-Assistant.ipynb): A second take on the HR assistant.
+- [HR AI Assistant](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/HR_AI-Assistant.ipynb): A recruitment pipeline: requirements gathering, job description generation, LinkedIn candidate search and CV analysis.
 - [Document Intake Agent](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/document_intake_agent_langgraph.ipynb): Ingesting, classifying and routing documents.
 - [ClauseAI](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/ClauseAI.ipynb): Contract clause analysis.
 - [EU Green Compliance FAQ Bot](https://github.com/NirDiamant/GenAI_Agents/blob/main/all_agents_tutorials/EU_Green_Compliance_FAQ_Bot.ipynb): A compliance question-answering agent.
@@ -100,3 +99,4 @@
 - [Prompt_Engineering](https://github.com/NirDiamant/Prompt_Engineering): 22 prompt engineering techniques.
 - [Newsletter](https://newsletter.diamant-ai.com): Weekly deep dives on GenAI engineering.
 - [Community Discord](https://discord.gg/cA6Aa4uyDX): Questions, contributions and discussion.
+- [YouTube](https://www.youtube.com/@DiamantAI): Short one-idea explainers on agents and LLMs.

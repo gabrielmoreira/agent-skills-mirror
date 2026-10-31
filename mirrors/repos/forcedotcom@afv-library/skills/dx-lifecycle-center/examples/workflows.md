@@ -9,7 +9,7 @@ Worked prompts, grouped by operation (`SKILL.md`, Operations). Listing, status c
 **A1. "Show the list of connected orgs I can deploy to."**
 
 ```bash
-bash scripts/resolve-environment.sh my-dev-org
+bash <skill_dir>/scripts/resolve-environment.sh my-dev-org
 ```
 
 Reply with only the table and the closing sentence (`references/list-orgs.md`, section 4). The Lifecycle Center org is not in it and is not mentioned.
@@ -79,7 +79,7 @@ Connected (Step 5):
 > |---|---|---|
 > | `mydomain--qa.sandbox.my.salesforce.com` | Sandbox | Ready to deploy to |
 
-The Lifecycle Center org uses the same two layouts with its own heading, button text, and a Hub type column.
+The Lifecycle Center org uses the same two layouts with its own heading, button text, and a Hub type column. When the `render_widget` tool is available, it shows them as cards instead (C7).
 
 ---
 
@@ -111,6 +111,20 @@ Make no API call. Ask: "Do you mean the Lifecycle Center org, or a different org
 
 Say it is the Lifecycle Center hub, kept separate from deploy targets, and is never part of the deploy list.
 
+**C7. "Connect the Lifecycle Center org", in a chat that has the `render_widget` tool.**
+
+1. Check the credential and, after confirming, create it as in C1. With the `redirectUrl` from the POST after the `&amp;` fix, run:
+
+   ```bash
+   bash <skill_dir>/scripts/widget.sh connect-sign-in '{"signInUrl":"https://<dev-org-host>/services/oauth2/authorize?..."}'
+   ```
+
+   It prints `CARD_JSON {"nodes":{"definition":"tile/widget","children":[...]}}`.
+2. Call `render_widget` once with the JSON after `CARD_JSON`, exactly as printed, and write no other text about the sign-in. The chat shows a **Sign in to Lifecycle Center** card with the steps and a **Connect to Lifecycle Center org** button.
+3. After **done**, run Steps 3 to 5. The status check passes and the type call answers Core, so run `bash <skill_dir>/scripts/widget.sh connect-connected '{"hubHost":"<hub-host>","hasHubType":true,"hubTypeLabel":"Core"}'` and call `render_widget` once with its JSON. The card reads "Connected to Lifecycle Center", the org host, and "Hub type: Core".
+
+If `widget.sh` prints `CARD_UNAVAILABLE <reason>` or fails, or `render_widget` answers `{rendered: false, reason}`, use the Markdown layouts of B6 in hub form instead.
+
 ---
 
 ## D. Deploy
@@ -118,7 +132,7 @@ Say it is the Lifecycle Center hub, kept separate from deploy targets, and is ne
 **D1. "Deploy AccountService to https://mydomain--mysandbox.sandbox.my.salesforce.com."**
 
 ```bash
-bash scripts/resolve-environment.sh my-dev-org https://mydomain--mysandbox.sandbox.my.salesforce.com
+bash <skill_dir>/scripts/resolve-environment.sh my-dev-org https://mydomain--mysandbox.sandbox.my.salesforce.com
 ```
 
 - `matched` and `selectable`: confirm the row back with name, URL, and org id, build the request, show the Step 4 confirmation, then submit.
@@ -143,7 +157,7 @@ Make no API call. Ask one question: which components to deploy. Then ask for the
 State what you will validate, then submit with `"isCheckDeploy": true` (`references/request-body.md`), then:
 
 ```bash
-bash scripts/poll-deploy-status.sh <requestId> my-dev-org 10 100
+bash <skill_dir>/scripts/poll-deploy-status.sh <requestId> my-dev-org 10 100
 # Exit codes: 0 succeeded, 2 failed or not found, 3 timeout, 1 usage or call error (4 only with --once)
 ```
 
@@ -154,13 +168,13 @@ On success, report the validation id from `metadata.deployId` and offer a quick 
 Skip the component and target steps. Poll once:
 
 ```bash
-bash scripts/poll-deploy-status.sh --once <requestId> my-dev-org
+bash <skill_dir>/scripts/poll-deploy-status.sh --once <requestId> my-dev-org
 # Exit 4 means still processing: report the status and step
 ```
 
 **D9. The deploy takes more than 2 minutes.**
 
-The poll exits `3`. Reply: "Your deploy is still running. Request id: `<requestId>`. Send me this id and I'll check its status." Stop polling. When the user sends the id, run `bash scripts/poll-deploy-status.sh --once <requestId> my-dev-org` and report the status in plain language.
+The poll exits `3`. Reply: "Your deploy is still running. Request id: `<requestId>`. Send me this id and I'll check its status." Stop polling. When the user sends the id, run `bash <skill_dir>/scripts/poll-deploy-status.sh --once <requestId> my-dev-org` and report the status in plain language.
 
 **D8. The user gives only an id starting `0Af`.**
 

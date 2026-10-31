@@ -1,10 +1,12 @@
-# Advanced Templates — Multi-Condition, Hierarchy, Unauthorable
+# Advanced Templates — API-only Multi-Condition, Hierarchy, Unauthorable
 
 Each template is a verified shape from a passing test fixture. Copy, then change names/values.
 
 ---
 
-## Multi-Condition with Custom Conjunction (AND/OR mix)
+> These examples are API-only exceptions. Do not copy them for the default UI-compatible output without explicit operator confirmation.
+
+## API-only Multi-Condition with Custom Conjunction (AND/OR mix)
 
 Source: `conjunctionExpressionSteelthread`
 

@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Crate Structure
-description: "Xberg workspace layout: version source, members and excluded crates, packages/, tools/, ignore allowlists. Use when placing code or adding a crate."
+description: "Place code or crates: workspace members, versions, package paths and ignore rules."
 x-ai-rulez:
   kind: skill
   id: crate-structure

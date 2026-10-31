@@ -1,0 +1,403 @@
+# 更新日志
+
+本文件记录项目的重要变更（中文版本）。
+
+## [Unreleased]
+
+### 新增
+
+- **项目管理**：“我的 Skills”支持按具体项目筛选和管理部署目标，同时保留全局及其他项目部署。项目选择支持搜索、易读名称和完整路径；预设编辑与保存集中到“技能预设”。
+- **技能预设**：保存可复用的 Skill 组合及逐项工具分配，在一个窗口中选择全局或项目位置后应用。默认沿用已保存的分配，可按需调整，并自动检查冲突；编辑或删除预设不会改变已有部署。
+- **应用历史与撤销**：记录实际执行结果，支持重试未完成项及撤销符合条件的新增目标，保留已修改或后续复用的目标。保留最近 100 条已结束记录，进行中及中断记录额外保留；取消未执行的预检查时清理临时记录。清理旧记录不会删除已安装 Skills，但无法再通过这些记录撤销。
+- **更新、恢复与修复**：仅列出确认有来源变化的 Skills，支持全部或所选更新，也可先查看高亮文件差异及部署影响。每个 Skill 保留最近一次更新前的恢复快照；重新绑定来源和修复缺失目标时保留中央身份及无关部署，停用的 Skill 也可恢复内容并保持停用。
+
+### 优化
+
+- **更新检查**：先轻量比较来源，同一 Git 仓库与分支每轮只刷新一次，重启后恢复上次摘要，进入页面不自动检查。再次检查时保留原列表，完成后持续展示数量、时间和实际耗时；需要查看差异或执行更新时才生成完整预览。
+- **清晰且易操作的界面**：区分技能库管理、预设配置与更新计划；设置和发现提示独立于 Skill 结果，可分别关闭，关闭后仍能从“添加 Skills”进入本机发现。成员与工具采用紧凑摘要，路径和历史按需展开，布局支持窗口缩放、键盘焦点操作及英文、简体中文和韩文。
+
+### 修复
+
+- **本机发现导入**：扫描时排除已管理的来源目录，旧扫描结果中的已管理项也会安全跳过；同步时跳过与受保护来源目录重叠的目标，继续同步到其他工具，并显示跳过数量，保留已有内容和部署。（[#208](https://github.com/qufei1993/skills-hub/issues/208)）
+- **冲突与恢复处理**：应用受阻时显示具体工具、路径和原因，返回调整时保留选择，避免重复执行已完成项。保护并发编辑和失效计划，部分撤销或结果刷新失败后保留已完成进度，移除部署的回收失败时保留可恢复备份。
+- **Git 更新可靠性**：超时或取消时一并停止辅助进程，隔离单项来源检查失败，避免内部缓存元数据混入仓库根目录 Skill，防止卡住或故障来源阻塞其他正常检查。
+
+## [1.0.1]
+
+### 新增
+
+- **Skills 状态与工具筛选**：技能库可按已启用／已停用筛选，也可按当前已同步到的工具筛选（任意匹配）。各项计数随其他筛选条件联动，「清除筛选」会与搜索、范围、标签一起重置。 ([PR #197](https://github.com/qufei1993/skills-hub/pull/197))
+
+### 优化
+
+- **Skill 卡片的工具同步图标**：悬停或键盘聚焦时立即显示工具名称和同步状态，不再等待延迟出现的系统提示；图标不再相互重叠，每个图标都有完整的点击区域。 ([PR #198](https://github.com/qufei1993/skills-hub/pull/198))
+
+### 修复
+
+- 工具同步状态变化后，已打开的 Skill 提示会即时更新；停用 Skill 或移除工具时隐藏提示。 ([PR #202](https://github.com/qufei1993/skills-hub/pull/202))
+
+- 批量更新全部成功或无变化时改为短暂完成提示，不再留下需要手动关闭的结果面板；失败、跳过、取消和待同步工具的结果继续保留供查看。 ([PR #203](https://github.com/qufei1993/skills-hub/pull/203))
+
+- 合集安装改为按仓库解析默认分支最新提交，同一批安装和重试保持版本一致。新安装项跟随默认分支以支持后续更新，保留已安装的同源 Skills，兼容现有官网链接及合集数据。 ([PR #199](https://github.com/qufei1993/skills-hub/pull/199))
+
+- Windows junction 部署采用上游对规范化 `\\?\` 路径的修复，避免预览通过后因损坏链接而执行失败。CLI 本地来源路径保留原有路径字符，部署错误补充安全的失败阶段和系统错误诊断。（[#196](https://github.com/qufei1993/skills-hub/issues/196)） ([PR #201](https://github.com/qufei1993/skills-hub/pull/201))
+- Git 子目录扫描和所选 Skill 安装不再检出仓库内无关资源，避免无关 Git LFS 文件失败阻断安装。Git LFS 错误不再误报为仓库不存在，Git 扫描错误会持续显示在来源弹窗中。（[#195](https://github.com/qufei1993/skills-hub/issues/195)） ([PR #200](https://github.com/qufei1993/skills-hub/pull/200))
+
+## [1.0.0]
+
+### 新增
+
+- **所选 Skills 批量更新**：在技能库的批量操作栏更新多个选中的 Skills，复用原有 Git／本地来源和分发设置。显示逐项进度，取消时在当前 Skill 更新结束后停止，单项失败不影响其他项；结果数量和错误详情保留到用户关闭。跳过停用或未绑定本地来源的项，失败和未执行项继续选中，方便重试。
+- **合集探索**：桌面端浏览官网发布的合集及详情，在同页搜索相关合集和 skills.sh 单个 Skill；页头保留 Git 与本地导入入口（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **官网合集安装**：从官网唤起桌面端，查看 Skills 和固定提交版本的 GitHub 来源，确认后安装到技能库。支持逐项选择、标签、工具及全局／项目分发，保留已有同源内容，并可重试失败项（[PR #185](https://github.com/qufei1993/skills-hub/pull/185)、[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **官网版本数据独立发布**：桌面正式发版后，将安装包链接和中英文日志更新到独立 Cloudflare Pages 数据源，无需重建官网。数据准备失败时停止部署，支持回滚到之前的生产部署（[PR #184](https://github.com/qufei1993/skills-hub/pull/184)）。
+
+### 优化
+
+- **统一安装流程**：Git、本地与合集共用「选择 Skills → 安装设置」两步，单个 Skill 也先确认。统一搜索、选择列表、简介展开、标签、工具和范围控件，底部操作保持可见，不可用条目明确显示禁用状态（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **合集浏览与缓存**：使用官网版本化目录替代 Top 300 和旧合集数据源，每批展示 12 项，滚动自动加载，返回详情前的列表时保留已展开批次。索引与详情绑定同一快照并复用已校验缓存；搜索匹配合集自身信息，详情统一分类配色、图标和重复仓库来源展示（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+
+### 修复
+
+- **停用后重新启用 Skills**：单项及批量启用时恢复原先保存的工具选择，跳过「工具」页已关闭的工具和当前不可用的全局工具。单个工具失败不再中断其他目标恢复；已停用且旧目录已移除的目标可恢复到工具新版路径，保留已有内容和仍在使用的旧同步记录。单项操作出错后也会刷新状态，批量错误标题和错误原因分别处理，不再直接显示内部错误代码，也不再把工具路径变更误报为同名目录冲突。
+
+- **后台更新不显示窗口**：修复系统定时更新和「立即更新」的后台进程创建额外窗口、在 macOS Dock 短暂显示 `exec` 图标的问题，更新继续独立于主窗口运行（修复 [#152](https://github.com/qufei1993/skills-hub/issues/152)，[PR #193](https://github.com/qufei1993/skills-hub/pull/193)）。
+- **技能更新与来源一致**：单个更新、批量更新及同源 Git 重复安装允许同步来源的文件删除和重命名，不再因此拦截；来源缺少 `SKILL.md` 时拒绝覆盖中央技能目录。
+- **Windows 定时更新错误乱码**：按系统 OEM 代码页解码任务计划程序的本地语言输出，修复创建、删除、查询和立即运行任务时错误提示乱码的问题（修复 [#181](https://github.com/qufei1993/skills-hub/issues/181)，[PR #188](https://github.com/qufei1993/skills-hub/pull/188)）。
+- **Windows 子目录技能更新**：修复来源路径含反斜杠时更新报 `path not found in repo` 的问题。新路径统一格式，已有记录继续可用，缺少目标目录的缓存自动刷新，无需重新安装或迁移数据库（修复 [#182](https://github.com/qufei1993/skills-hub/issues/182)，[PR #189](https://github.com/qufei1993/skills-hub/pull/189)）。
+- **Skill 更新中断恢复**：更新进程终止后恢复一直显示运行中的状态，保留已完成进度并重新开放「立即更新」。通过共享操作锁保护仍在运行的任务及并发手动触发（修复 [#183](https://github.com/qufei1993/skills-hub/issues/183)，[PR #192](https://github.com/qufei1993/skills-hub/pull/192)）。
+- **CLI 导入误报过期计划**：修复来源路径未规范化且含排除项时，`skills adopt --yes` 误报 `PLAN_STALE` 的问题。预览与确认统一使用规范化根目录，保留内容变化与路径越界检查（修复 [#186](https://github.com/qufei1993/skills-hub/issues/186)，[PR #191](https://github.com/qufei1993/skills-hub/pull/191)）。
+- **大型合集安装**：桌面内直接校验合集清单，支持最多 2,000 个 Skills，避免误用外部深链长度限制；来源、固定版本、重复项和路径检查继续生效（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **官网合集链接校验**：移除导致 Aaron 的 120 项营销技能合集等有效清单被误报为无效链接的旧 100 项限制。官网与桌面内清单共用 Skills 和来源数量上限，保留外部链接 30,000 字节长度限制及来源、固定版本、重复项和路径检查。
+- **更明确的官网安装错误提示**：区分清单太大、版本不支持、未选择 Skills、重名或重复项目及安装信息有误，分别说明处理方法。错误说明保留到用户关闭，提供中英韩文案，不直接显示内部错误内容。
+- **固定版本仓库根来源**：允许有效的 `/tree/<ref>` 仓库根链接，修复合集固定提交版本在下载前就被来源校验拒绝的问题（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **合集冲突与完成状态**：安装前识别已有来源和名称冲突，禁选冲突项，计数、安装及重试仅处理可安装的选中项；执行前再次校验。全部成功后关闭确认并提示，失败项保留供重试（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **安装状态保留与官网唤起**：返回或临时让出确认窗口时保留输入、勾选、设置及重试进度，取消检测后忽略迟到结果。官网请求会收起空闲的手动安装界面并显示合集确认；macOS 有效链接会恢复并置前窗口。兼容 Windows 候选路径分隔符（[PR #185](https://github.com/qufei1993/skills-hub/pull/185)、[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+- **Linux 合集链接注册**：Debian 安装包补齐协议注册所需的桌面工具依赖，注册失败不再阻止桌面启动；包启动验证使用独立桌面会话（[PR #185](https://github.com/qufei1993/skills-hub/pull/185)）。
+- **项目范围布局**：修复展开项目目录后的控件对齐与最近路径排列，窄窗口同步适配（[PR #187](https://github.com/qufei1993/skills-hub/pull/187)）。
+
+## [0.11.0]
+
+### 新增
+
+- **Linux 桌面安装包**：提供 Linux x64、ARM64 的 `.deb` 和 `.AppImage` 安装包。每次发布按实际安装包自动生成中英文下载表格，应用更新按安装格式使用带签名的 `.deb` 或 AppImage。
+- **AI 管理 Skills**：在「设置 → AI 管理」一键启用官方 `manage-skills-hub` Skill，通过 AI 对话搜索、安装、导入、更新、同步、管理标签和安全删除 Skills，与桌面端共用技能库。
+- **更轻的安装包与按需 CLI**：正式桌面安装包不再内置 CLI，启用 AI 管理时下载并校验对应版本，同时配置终端命令，重新打开终端即可使用。首次启用需要联网；已校验的对应版本可离线使用，关闭桌面端后仍可运行。CLI 和官方 Skill 更新由设置中的按钮触发，支持下载进度与失败重试，失败保留原来可用的 CLI。CLI 文件与桌面安装包放在同一个 Release 中，无需 Node.js 或 npm。
+- **独立 CLI 安装脚本**：macOS、Linux 和 Windows x64 可用一条命令安装或升级 CLI，自动校验下载文件并配置用户命令路径。
+
+### 优化
+
+- **更清晰的桌面更新说明**：下载表格仅在发布时动态生成到 GitHub 发布页。更新日志和更新清单保留版本变更内容；桌面升级弹窗也会过滤从发布页读取的下载区块。
+- **发布构建复用**：原生验证与测试统一使用同一构建目录；签名阶段复用已验证的正式 CLI，不再重复编译。原生 CI 与桌面构建共享本平台正式依赖缓存，普通 Rust CI 使用独立调试缓存；桌面打包仅下载对应平台的 CLI 清单。原生验证、签名和草稿发布检查保持不变。
+
+- **AI 管理引导与设置**：官方 Skill 尚未安装时，「我的 Skills」显示可关闭的提示，可直接定位到设置中的 AI 管理卡片。安装详情默认折叠，后台检查保留当前状态和「查看 Skill」入口；网络与存储设置也支持折叠并保留摘要。
+- **默认同步到工具**：AI 安装的 Skills 默认同步到已检测、已启用的工具。用户指定的工具、仅入库或项目范围优先；同步未完成时会单独提示。
+- **技能库自动刷新**：切回应用、进入技能列表或标签管理、打开标签筛选时，刷新 Skills 和标签并保留筛选条件，无需重启即可看到 AI 操作结果。
+
+### 修复
+
+- **AI 管理更新与失败恢复**：同版本官方 Skill 内容更新也会显示更新入口，一键启用可直接恢复受管理的官方中央副本，保留工具目标与路径保护。CLI 替换失败时保留旧版本的有效记录，正式版与开发版切换后恢复正确的终端命令优先级。 桥接操作结束时显式释放文件锁，避免子进程在 fork 到 exec 的短暂窗口内继续持锁。CLI 资源准备脚本不能公开不完整版本；Linux 安装包声明 glibc 2.39 最低要求，并验证实际安装和包升级。
+
+- **AI 管理恢复与提示**：明确说明草稿版本无法自动下载 CLI，将安装失败原因与本机 CLI 状态连起来；终端未配置且存在 PATH 冲突时保留修复入口，已停用或卸载工具的历史同步记录不再阻塞就绪状态。启用成功后的列表刷新失败单独提示，并修正官方 Skill 中关于启动自动更新的说明。
+
+- 修复 CLI 资源提前创建共享草稿时，发布说明及下载表格未更新的问题。
+
+- **Linux ARM64 CLI 独立运行**：发布链接移除不使用的桌面库依赖。Linux CLI 发布前检查动态依赖，并在仅有基础运行库的 Ubuntu 容器中实际启动，保证从普通终端运行无需桌面环境。
+
+- **Windows 发布验证**：多行发布测试脚本先写入文件再执行，保留 Windows 下的引号和转义；PR 阶段提前验证发布脚本，避免打包时才发现失败。
+
+- **设备同步后的 AI 一键管理**：设备同步正确记录本机目录校验值，不再误写跨设备同步校验值。启用或更新 AI 管理时，官方 Skill 内容与旧同步校验值一致的错误记录可安全恢复；真正修改过的文件仍受保护。CLI 修复提示改为通过一键启用安装匹配版本。
+
+- **DeepSeek Harness 自定义目录**：全局同步、扫描和安装检测支持 `DSH_HOME`，兼容空白值回退及当前用户 `~` 展开。已有部署可按记录中的旧目录安全取消同步，再重新同步到新目录；用户修改过的副本仍受保护（修复 [#166](https://github.com/qufei1993/skills-hub/issues/166)）。
+- **Git 仓库增量安装**：再次安装同一仓库时，同源技能原位更新、无变化跳过、新技能正常安装，保留已有配置并保护本地修改。选择列表区分新增、更新与冲突，禁用冲突项而不阻断其他选中项；长描述可展开查看。
+- **Cline 桌面版支持**：Cline 全局 Skills 目录修正为 `~/.cline/skills`，项目目录修正为 `.cline/skills`，通过 `~/.cline` 检测安装状态，不再误归入使用 `.agents/skills` 的工具组。
+- **Windows AI 管理启用**：准备管理组件时可正常替换文件，同时保留防止目录被替换的保护。
+- **Skill 更新同步**：更新时的工具检测和目标路径与部署使用同一运行目录，避免隔离环境中跳过已安装副本或误建工具目录。
+- **工具共享目录提示**：同步预览展示共享目录影响的全部工具。一键启用 AI 管理时，若会影响所选范围之外的工具，会停止并提示调整配置，不会将停用工具登记为同步目标。
+- **旧版来源匹配**：旧版多 Skill 记录无法唯一匹配来源时，停止检查和更新，保留已安装内容。
+
+### 使用说明
+
+- **操作范围与安全**：macOS 和 Linux 支持向兼容工具同步项目级 Skills；Windows 暂仅支持全局范围。危险操作需要确认；冲突、并发写入或不安全更新不会强制覆盖。删除的 Skills 可通过桌面端回收站恢复。
+- **桌面端管理范围**：设备同步、定时任务、凭据、应用设置、应用更新、回收站恢复和永久删除仍由桌面端管理。共享技能库保持与 v0.10.1 兼容。
+
+### 开发者说明
+
+- **本地安装测试**：新增跨平台本地测试打包命令，使用本次构建的 CLI、开发凭据及 CLI 目录。正式打包仍需匹配的 CLI 清单，缺少时给出明确指引。详见[本地测试构建](https://github.com/qufei1993/skills-hub/blob/main/docs/releases/v0.11.0/local-test-builds.zh.md)。
+- **共享数据边界**：开发版和本地测试版与正式版共用技能库、配置、缓存、回收站和写锁，操作会影响真实数据及工具目录。凭据和 CLI 文件保持独立；旧开发数据保留，不自动合并。
+
+## [0.10.1] - 2026-09-13
+
+### 修复
+- **Windows 命令窗口闪烁**：自动更新进度刷新改为直接读取运行数据，不再每 5 秒查询操作系统计划任务；Windows 下的计划任务及系统 Git 子进程也会以无控制台窗口方式启动，在保留后台进度更新的同时避免命令窗口反复闪现（修复 [#150](https://github.com/qufei1993/skills-hub/issues/150)）。
+
+## [0.10.0]
+
+### 新增
+- **ZCode 工具适配**：新增第 48 个内置工具 ZCode，通过 `~/.zcode/skills` 和 `.zcode/skills` 支持全局及项目级 Skill 同步，通过 `~/.zcode` 检测安装，并在工具管理和同步流程中展示 Z.ai 产品图标（修复 [#144](https://github.com/qufei1993/skills-hub/issues/144)，[PR #146](https://github.com/qufei1993/skills-hub/pull/146)）。
+- **多设备 Skill 库同步**：实现 [#56](https://github.com/qufei1993/skills-hub/issues/56) 提出的多设备同步需求。现在可通过 GitHub、GitLab 或 Gitee 仓库同步 Skill 文件、描述和标签，并支持已配置的浏览器授权、Token/SSH 备用连接、仓库选择、只读检查、手动同步、可选的启动同步及按间隔或每日定时同步（[PR #127](https://github.com/qufei1993/skills-hub/pull/127)）。
+- **独立回收站**：删除的 Skill 在当前设备保留 30 天，可恢复文件和已保存的本机配置；应用启动时及运行期间每天自动清理过期项目（[PR #140](https://github.com/qufei1993/skills-hub/pull/140)）。
+- **一键清空回收站**：新增永久删除回收站全部项目的快捷操作，并通过类似 GitHub 的输入确认及本地化错误提示防止误操作。
+- **韩文界面语言**：新增韩文翻译、三语言选择器及语言偏好持久化；韩文用户在应用更新界面中查看英文更新日志（[PR #135](https://github.com/qufei1993/skills-hub/pull/135)）。
+
+### 优化
+- **更安全、清晰的设备同步**：三方比较会自动合并独立修改，并将真实冲突限制在对应 Skill。每台设备的来源绑定留在本机，同名 Skill 分别存放；同步失败和逐项变化可查看，设备名称可共享，历史仅保留最近 100 条有效记录（[PR #134](https://github.com/qufei1993/skills-hub/pull/134)、[PR #137](https://github.com/qufei1993/skills-hub/pull/137)、[PR #139](https://github.com/qufei1993/skills-hub/pull/139)、[PR #140](https://github.com/qufei1993/skills-hub/pull/140)）。
+- **更安全的 Skill 生命周期操作**：存储迁移、自动替换、删除、自定义工具移除和缓存清理会保护本地原始来源、重叠路径、被独立修改的副本及回滚数据；该能力延续了 [#123](https://github.com/qufei1993/skills-hub/issues/123) 的修复（[PR #125](https://github.com/qufei1993/skills-hub/pull/125)、[PR #128](https://github.com/qufei1993/skills-hub/pull/128)）。
+- **精简管理工作区**：My Skills 使用紧凑的范围筛选和准确数量，批量操作只处理当前可见选择；Skill 异常按需展开，管理中心将设备同步置于首位、回收站置于末位（[PR #133](https://github.com/qufei1993/skills-hub/pull/133)、[PR #136](https://github.com/qufei1993/skills-hub/pull/136)、[PR #140](https://github.com/qufei1993/skills-hub/pull/140)）。
+- **本地桌面 OAuth 配置**：`npm run tauri:dev` 和本地 `npm run tauri:build*` 命令现在会同时校验并注入 `SKILLS_HUB_GITHUB_CLIENT_ID` 与 `SKILLS_HUB_GITLAB_CLIENT_ID`；每个字段优先使用进程环境中的值，否则仅从仓库根目录 `.env` 或显式配置文件读取这两个白名单字段。已配置的 GitLab 浏览器授权因此可在开发版和安装版中使用。任一公开 Client ID 缺失或格式不合法时会在编译前停止，且不会导入 Client Secret、用户 Token 或其他字段。
+
+### 修复
+- **同步凭据恢复与开发环境隔离**：开发版现在同时隔离应用数据目录和凭据命名空间，避免覆盖正式版同步配置。区分凭据缺失与安全存储无法访问，并在同步失败后提供用户主动打开的凭据配置入口，无需断开连接。后台失败不会自动弹出授权，设置展示不读取 Token。
+- **Gitee 手动 Token 配置**：填写个人访问令牌后会显示仓库加载入口，并仅在用户主动加载时将该令牌传给平台 API；即使当前版本不支持 Gitee 浏览器授权，也能在首次同步前识别仓库可见性。仓库加载使用 Gitee 支持的 `visibility=all` 筛选，兼容其真实响应中 `clone_url` 为 null、HTTPS Git 地址位于 `html_url` 的数据结构，会自动匹配带或不带 `.git` 后缀的已填写仓库地址，并支持在空仓库尚无目标分支时完成首次同步。
+- **统一网络代理链路**：设备同步的 Git 克隆、拉取和推送，GitHub、GitLab 与 Gitee 平台接口，OAuth 授权及令牌刷新，系统 Git 和 libgit2 备用链路现在都使用应用内配置的代理。关闭应用代理时也会阻止进程环境或 Git 全局代理悄悄改变网络路径，并通过自动边界检查防止后续代码绕过统一网络模块。
+- **Windows Rust 构建兼容性**：修复仅在 MSVC 下出现的类型与 lint 错误，使 `cargo clippy --all-targets` 和 Rust 测试目标能够在 Windows 上完成编译。既有的 `STATUS_ENTRYPOINT_NOT_FOUND` 测试程序启动问题不在本次修复范围内（修复 [#142](https://github.com/qufei1993/skills-hub/issues/142)，[PR #143](https://github.com/qufei1993/skills-hub/pull/143)）。
+- **来源及工具异常状态一致**：来源更新错误不再被无关设备同步清除，各页面会刷新当前状态；工具副本异常不再导致中央库同步失败，本地原始来源缺失时仍可查看托管副本（[PR #136](https://github.com/qufei1993/skills-hub/pull/136)、[PR #138](https://github.com/qufei1993/skills-hub/pull/138)）。
+- **筛选安装范围准确**：未填写来源时禁用添加操作；从多 Skill Git 仓库或本地目录导入时，只安装当前搜索结果中可见且已勾选的项目（[PR #124](https://github.com/qufei1993/skills-hub/pull/124)、[PR #132](https://github.com/qufei1993/skills-hub/pull/132)）。
+- **嵌套 Git Skill 发现**：从仓库根地址或标准 `skills/` 目录链接添加时，可在受限且安全的扫描范围内识别 `skills/<分类>/<技能>/SKILL.md` 结构（修复 [#129](https://github.com/qufei1993/skills-hub/issues/129)，[PR #131](https://github.com/qufei1993/skills-hub/pull/131)）。
+- **Kimi Code CLI 路径与图标**：将全局、项目和检测目录修正为 `.kimi-code`，支持 `KIMI_CODE_HOME` 并使用官方产品图标，同时保留旧路径中的已有内容（修复 [#122](https://github.com/qufei1993/skills-hub/issues/122)，[PR #126](https://github.com/qufei1993/skills-hub/pull/126)）。
+
+### 安全
+- **凭据保护与可移植同步边界**：HTTPS Token 保存在操作系统凭据存储中，SSH 使用系统 Agent；公开读取不访问凭据，公开上传需要确认，私钥内容会被拒绝。工具目标、项目路径、设置、缓存和凭据始终留在本机（[PR #127](https://github.com/qufei1993/skills-hub/pull/127)、[PR #134](https://github.com/qufei1993/skills-hub/pull/134)）。
+
+## [0.9.1] - 2026-08-29
+
+### 变更
+- **双语 GitHub Release 说明**：发布工作流现在会同时截取中英文更新日志，并在 GitHub Release 与应用更新元数据中依次提供中文、英文更新内容及对应的平台安装提示。应用内更新弹窗只展示与当前界面语言匹配的分段，同时继续完整展示旧格式或不完整的发布说明。
+- **应用更新完成流程**：发现新版本时，标题栏会显示更醒目的更新入口，并在鼠标悬停或键盘聚焦时从图标展开为本地化文案。安装完成后可以在完成弹窗中立即重启，也可以先关闭弹窗，稍后通过标题栏持续显示的“重启”入口完成重启。
+
+### 修复
+- **旧版 macOS 的 Skill 详情兼容性**：修复不支持正则后行断言的 WKWebView 在打开 Skill Markdown 文件时导致应用整页白屏的问题。详情渲染器现在会检测该能力，在不支持时降级为标准 Markdown，并在支持的系统上继续提供完整 GFM 渲染（[#108](https://github.com/qufei1993/skills-hub/issues/108)）。
+- **Tauri WebView 标签重命名弹窗**：标签重命名改用应用内输入弹窗，不再调用 macOS 上无法显示的浏览器 `window.prompt`；剩余的共享目录确认也改用现有应用内弹窗，不再调用 `window.confirm`（[#109](https://github.com/qufei1993/skills-hub/issues/109)）。
+- **响应式 Skill 详情工作区**：将固定宽度的详情抽屉改为随主窗口伸缩的完整工作区，保证文件树与 Markdown 内容拥有可读空间，并在紧凑的响应式头部展示范围、已同步工具、标签、来源、更新时间和文件数。来源路径支持直接复制，Markdown 元数据表不再重复展示 `name` 和 `description` 字段（[#111](https://github.com/qufei1993/skills-hub/issues/111)）。
+- **准确的 Skill 状态**：Skill 详情、卡片和仪表盘摘要现在可以区分来源错误、同步正常、部分失败、同步失败和尚未同步等状态。来源更新与目标同步失败会被持久化；仪表盘可跳转到对应更新详情；点击同步失败的工具会重试同步，而不是尝试停用。Skill 卡片与详情使用相同的当前工具检测结果，并明确展示已同步工具数量。
+- **Windows 目录联接清理与已有 Skill 导入**：停用、取消同步或删除 Skill 时，现在可以正确移除 Windows 目录联接且不会影响其目标目录。发现流程也可以复用中央存储中内容完全相同的托管记录，同时继续拒绝普通本地重复安装和内容冲突（[#110](https://github.com/qufei1993/skills-hub/pull/110)）。
+- **Windows 自动更新计划**：默认 24 小时间隔及其他整天间隔现在会通过 `schtasks` 注册为按天执行，不再生成超过 Windows 上限的小时修饰值。受支持的分钟和小时间隔继续使用原有计划类型，无法精确表达的非整天长间隔会在创建任务前返回明确错误（[#102](https://github.com/qufei1993/skills-hub/issues/102)）。
+
+## [0.9.0] - 2026-08-23
+
+### 新增
+- **DeepSeek Harness 工具适配**：新增通过 `~/.dsh/skills` 和 `.dsh/skills` 进行全局及项目级 Skill 同步的支持。Skills Hub 会通过默认的 `~/.dsh` 目录检测 DeepSeek Harness，并在工具管理和同步流程中展示 DeepSeek 产品图标。
+- **发现扫描设置**：新增按实际目录持久化的扫描来源开关，在设置页提供永久入口，并在发现提示旁提供快捷入口。保存后会刷新发现结果，不改变已托管或已同步的 Skills。
+
+### 变更
+- **内置工具目录**：内置适配器数量更新为 47，并在中英文支持矩阵中补充 DeepSeek Harness 路径规则。
+- **发现结果校验**：工具目录下的子目录只有包含 `SKILL.md` 时才会作为可导入 Skill 展示，减少无关扫描结果。
+
+## [0.8.1] - 2026-08-06
+
+### 修复
+- **中心存储目录提示**：从本地目录添加 Skill 时，如果与用户直接放入 Skills Hub 中心存储目录的文件夹冲突，错误提示现在会说明该目录由应用自动管理，并指引用户将 Skill 移出后重新导入（[#103](https://github.com/qufei1993/skills-hub/issues/103)）。
+
+## [0.8.0] - 2026-07-17
+
+### 新增
+- **卡片与列表视图**：My Skills 支持在响应式卡片和紧凑列表布局之间切换，并在切换后保留选择和筛选状态。
+- **可折叠桌面导航**：侧边栏可以折叠为纯图标导航，在较小窗口尺寸下为工作区释放更多空间。
+- **易识别的工具身份**：内置 AI 编程工具在工具管理、安装流程和 Skill 同步状态中统一使用对应产品图标。
+- **自定义工具身份与同步模式**：自定义工具支持头像，并可选择自动、软链接、Windows 目录联接或复制模式；旧配置自动沿用无头像和自动模式。
+- **自定义工具编辑**：创建后可以修改名称、头像、全局/项目目录和同步模式，已有同步目标会迁移到新目录或按新模式重建。
+- **标题栏更新状态**：应用启动后在标题栏检查新版本，发现更新时显示可点击图标并复用现有更新说明与安装流程。
+
+### 变更
+- **桌面 UI 重构**：My Skills、Explore、标签、工具、更新、设置和安装流程统一桌面布局、间距体系、滚动行为和响应式规则。
+- **安装流程重构**：在线、Git 仓库和本地目录安装使用统一结构，标签、工具、范围、摘要和操作区域始终清晰可见。
+- **Skills Hub 品牌视觉**：替换应用 Logo 并重新生成桌面图标，使新 Skills Hub 标志在应用、安装包和操作系统启动器中保持一致。
+- **工具卡片操作层级**：自定义工具卡片右上角只保留启停开关，编辑和删除移动到底部管理操作区。
+- **GitHub 项目入口**：开源项目链接移动到设置页“GitHub 与网络”区域，并通过系统默认浏览器打开。
+- **Skills 卡片列宽**：卡片视图使用稳定列宽，筛选结果只有一个时不再横向撑满内容区。
+
+### 修复
+- **首次启动加载遮罩**：可导入 Skills 的启动扫描改为后台静默执行，不再短暂显示“正在安装技能”弹窗。
+- **自定义工具目标安全迁移**：目录和同步模式变化时保护共享物理目标，并在新路径冲突或迁移失败时拒绝保存无效配置。
+- **外链打开权限**：补充限制到 Skills Hub 仓库的 Tauri opener 权限，修复 GitHub 项目页面无法打开的问题。
+
+## [0.7.1] - 2026-07-10
+
+### 修复
+- **统一网络代理**：应用更新检查、更新下载与安装、更新说明以及 Explore 在线搜索现在都会使用已配置的网络代理（[PR #91](https://github.com/qufei1993/skills-hub/pull/91)）。
+
+## [0.7.0] - 2026-07-05
+
+### 新增
+- **安装范围选择**：安装 Skill 前即可选择全局同步或项目级同步，本地目录和 Git 仓库的批量安装流程也会复用该范围选择。
+- **批量 Skill 管理**：在 My Skills 中选择多个 Skill 后，可批量设置标签、目标工具、启用/停用和删除。
+- **Skill 启用/停用**：可以临时停用 Skill 而不删除配置；重新启用后会按之前的工具同步设置恢复。
+- **管理中心**：将标签、工具配置和 Skills 自动更新集中到独立的管理区域。
+- **工具管理**：可启用或停用内置工具目标；停用后的工具不会继续出现在 Skill 卡片、安装流程和同步操作中。
+- **自定义工具目录**：支持添加自定义工具目标，配置全局 skills 目录和可选的项目级 skills 目录。
+- **Skills 定时自动更新**：支持配置系统级后台更新任务，手动触发立即更新，并在管理中心查看运行结果。
+- **GitHub 网络代理设置**：可为 GitHub API、精选 Skills、GitHub 下载和 Git 更新流程配置本地代理。
+
+### 变更
+- **设置页组织方式**：设置页聚焦应用偏好，包括界面语言、外观、存储、缓存、GitHub 访问、网络代理和应用更新。
+- **管理页面布局**：标签、工具和更新页面统一工作区边距和 tab 切换体验。
+- **批量工具同步行为**：批量设置工具时，以当前勾选的工具列表作为所选 Skills 的最终目标状态。
+- **自动更新结果展示**：更新状态、检查数量、更新数量、失败数量、开始时间、完成时间和耗时改为页面内展示，不再依赖独立进度弹窗。
+- **安装弹窗布局**：新增 Skill 流程使用更紧凑的安装范围选择器，候选列表较长时底部操作仍保持可见。
+
+### 修复
+- **本地批量安装审核**：修复本地 Skill 目录批量安装和候选选择中的边界问题。
+- **项目范围分组**：共享同一项目 skills 目录的工具按目标目录分组，保持项目同步状态一致。
+- **弹窗遮挡**：修复弹窗内容过长时可能遮挡或隐藏底部操作的问题。
+- **定时任务 lint 稳定性**：清理平台相关的调度代码路径，确保 Rust lint 在各目标平台检查通过。
+
+## [0.6.3] - 2026-06-27
+
+### 修复
+- **Antigravity 全局同步路径**：将 Antigravity 2.0 的全局 Skill 同步目录更新为 `~/.gemini/config/skills`，确保当前版本 Antigravity 可以发现已同步的 Skill（[#79](https://github.com/qufei1993/skills-hub/issues/79)）。
+- **Windows 自动更新元数据**：为 Windows 发布产物补充 updater 签名，并在 `updater.json` 中新增 `windows-x86_64` / `windows-aarch64` 平台条目，修复 Windows 检查更新失败的问题（[#78](https://github.com/qufei1993/skills-hub/issues/78)、[PR #82](https://github.com/qufei1993/skills-hub/pull/82)）。
+
+## [0.6.2] - 2026-06-19
+
+### 新增
+- **WorkBuddy 工具适配**：新增全局 Skill 同步支持，目录为 `~/.workbuddy/skills/`（[PR #73](https://github.com/qufei1993/skills-hub/pull/73)）。
+- **CodeWhale 工具适配**：新增全局和项目级 Skill 同步支持，目录分别为 `~/.codewhale/skills/` 和 `.codewhale/skills/`（[#70](https://github.com/qufei1993/skills-hub/issues/70)、[PR #74](https://github.com/qufei1993/skills-hub/pull/74)）。
+- **Claude Code 插件 Skill 自动发现**：支持发现并导入用户级 Claude Code 插件中的 Skill，包括 `.claude-plugin/plugin.json` 声明的自定义 Skill 路径（[#69](https://github.com/qufei1993/skills-hub/issues/69)、[PR #75](https://github.com/qufei1993/skills-hub/pull/75)）。
+
+## [0.6.1] - 2026-05-16
+
+### 修复
+- **窗口关闭行为**：点击主窗口关闭按钮现在会直接退出应用，不再隐藏到后台，修复应用仍在运行但无法从 Dock 或任务栏重新打开的问题（[PR #68](https://github.com/qufei1993/skills-hub/pull/68)）。
+
+## [0.6.0] - 2026-05-05
+
+### 新增
+- **Skill 标签**：可为已托管 Skill 添加自定义标签，方便整理和筛选。
+- **标签页面**：新增独立 Tags / 标签页面，支持新建、重命名、删除标签，并可快速跳回已筛选的 My Skills 视图。
+- **标签筛选**：My Skills 支持按一个或多个标签筛选，使用 OR 匹配；同时提供虚拟 `Untagged` / `无标签` 筛选项。
+- **单个 Skill 标签编辑**：可直接从 Skill 卡片打开标签编辑入口，调整该 Skill 的标签关联。
+- **导入搜索**：从本地目录或 Git 仓库导入前，可按名称、描述或路径搜索候选 Skill。
+
+### 变更
+- **My Skills 筛选栏**：移除手动刷新按钮；安装、删除、同步和编辑标签等流程已自动刷新列表。
+
+### 修复
+- **中文筛选栏布局**：移除刷新按钮后，修复中文界面下按钮区域拥挤和样式错乱问题。
+- **发现 Skill 审核弹窗**：查看已发现 Skills 时支持搜索，并让选择数量与筛选结果保持一致。
+
+## [0.5.0] - 2026-04-16
+
+### 新增
+- **项目级 Skill 同步**：Skill 现在可以同步到指定项目目录，不再只支持同步到各工具的全局目录。
+- **同步范围控制**：My Skills 卡片新增范围徽标（全局 / 项目数量），并提供范围弹窗用于切换全局同步和项目同步。
+- **范围筛选**：My Skills 支持按全部 / 全局 / 项目范围筛选。
+- **Hermes Agent 工具适配**：新增 Hermes Agent 全局同步支持，目录为 `~/.hermes/skills`（[#54](https://github.com/qufei1993/skills-hub/issues/54)）。
+
+### 变更
+- **My Skills 筛选栏**：标题现在显示 Skill 总数，搜索框更紧凑，默认窗口下筛选控件保持单行展示。
+- **默认窗口尺寸**：桌面端默认窗口从 `800x600` 调整为 `960x680`。
+- **macOS 关闭行为**：点击主窗口关闭按钮现在隐藏窗口而不是退出应用；从 Dock 重新打开时会恢复并聚焦窗口。
+- **项目级同步支持矩阵**：项目级同步改为按工具显式声明；未确认项目级 skills 目录的工具仅作为全局同步目标。
+
+### 修复
+- **同名同内容 Skill 导入接管**：导入已有 Skill 时，如果目标同名目录内容一致，现在可以安全接管同步状态。
+- **取消同步后的工具重新启用入口**：从 Skill 取消同步的工具按钮会继续显示，便于重新启用。
+- **SKILL.md 元数据解析**：正确解析 frontmatter 中的 YAML block scalar 描述，并在卡片和详情页正常展示。
+
+## [0.4.3] - 2026-04-11
+
+### 新增
+- **Copaw 工具适配**：新增 Copaw AI 编程工具支持（感谢 @LeonDevLifeLog [PR#50](https://github.com/qufei1993/skills-hub/pull/50)）。
+
+### 修复
+- **Git 技能安装与 frontmatter 渲染**：修复 Git 技能安装及 frontmatter 元数据渲染问题。
+- **Git 技能发现（容器路径）**：修复仓库使用容器风格目录路径时技能发现失败的问题。
+
+## [0.4.2] - 2026-04-06
+
+### 修复
+- **检测到新工具弹窗样式**：「New tools detected」弹窗改用与其他弹窗一致的 `modal-header` + `modal-footer` 结构，修复标题缺少内边距和分隔线的问题（[#46](https://github.com/qufei1993/skills-hub/issues/46)）。
+- **Git 技能名称推导**：从仓库根目录（subpath 为 `"."`）安装 Git 技能时，现在正确从仓库 URL 推导名称，不再以 `"."` 作为展示名称。
+
+## [0.4.1] - 2026-03-21
+
+### 新增
+- **Frontmatter 元数据表格**：包含 YAML frontmatter 的 Markdown 文件在技能详情页顶部以 GitHub 风格的表格展示元数据。
+
+## [0.4.0] - 2026-03-20
+
+### 新增
+- **应用内检查更新**：在设置页内直接检查新版本，支持下载安装，无需手动访问 GitHub Releases（[#33](https://github.com/qufei1993/skills-hub/issues/33)）。
+- **QoderWork 工具适配**：新增 QoderWork 桌面 AI 代理支持（`~/.qoderwork/skills/`）（[#34](https://github.com/qufei1993/skills-hub/issues/34)）。
+
+### 变更
+- **设置页面化**：设置从模态弹窗升级为独立页面视图，与 My Skills / Explore 导航风格一致。
+- **精选技能聚合**：Explore 数据源改为 7 个精选高质量仓库。
+
+### 修复
+- 切换语言时 Explore 页面短暂闪现「Installing Skills...」加载遮罩。
+
+## [0.3.0] - 2026-03-15
+
+### 新增
+- **Explore 页面**：探索功能从弹窗提升为独立页面，顶部导航新增 My Skills / Explore 两个页面级 Tab 切换。
+- **精选技能推荐**：Explore 页展示由 ClawHub API 预生成的热门技能列表（GitHub Actions 每日更新），支持前端筛选和一键安装。
+- **在线技能搜索**：输入 ≥ 2 字符后通过 skills.sh API 实时搜索，500ms 防抖，搜索结果与精选列表自动去重、分区展示。
+- **技能详情页**：点击技能名称进入详情视图，支持文件树浏览、Markdown 渲染（GFM + frontmatter 剥离）和代码语法高亮（40+ 语言，亮/暗主题自适应）。
+- **技能描述字段**：安装时从 SKILL.md frontmatter 提取 description 存入数据库，My Skills 卡片展示描述文本。
+- **GitHub Token 配置**：设置页新增可选的 GitHub Token 输入，认证后 API 限额从 60 提升至 5000 次/小时。
+- **MoltBot 工具适配**：OpenClaw 更名拆分后新增独立的 MoltBot 工具支持。
+
+### 修复
+- Git 安装时 skill 名称为 "skills" 导致同步路径重复（[#28](https://github.com/qufei1993/skills-hub/issues/28)）。
+- GitHub API 限流错误未提示重置时间，现在显示具体重置时间。
+- Windows 同步时拒绝访问 OS error 5（[#20](https://github.com/qufei1993/skills-hub/issues/20)）。
+- Git 仓库目录结构无法被正确识别为 skill（[#18](https://github.com/qufei1993/skills-hub/issues/18)、[#8](https://github.com/qufei1993/skills-hub/issues/8)）。
+- 不支持 `.claude/skills/` 目录格式的仓库（[#27](https://github.com/qufei1993/skills-hub/issues/27)）。
+- OpenClaw 路径更新（`.moltbot/skills` → `.openclaw/skills`）（[#29](https://github.com/qufei1993/skills-hub/issues/29)）。
+
+### 变更
+- My Skills 列表优化：工具徽章只显示已同步的工具，超过 5 个折叠为 `+N more`。
+- 添加技能弹窗（Manual Add）精简为仅保留 Local Directory / Git Repository 两个 Tab。
+- 多技能仓库在线安装时支持自动匹配（精确 → 唯一包含 → 回退手动选择）。
+
+## [0.2.0] - 2026-02-01
+### 新增
+- **Windows 平台支持**：支持 Windows 构建与发布（感谢 @jrtxio [PR#6](https://github.com/qufei1993/skills-hub/pull/6)）。
+- 新增多款工具适配与显示（如 Kimi Code CLI、Augment、OpenClaw、Cline、CodeBuddy、Command Code、Continue、Crush、Junie、iFlow CLI、Kiro CLI、Kode、MCPJam、Mistral Vibe、Mux、OpenClaude IDE、OpenHands、Pi、Qoder、Qwen Code、Trae/Trae CN、Zencoder、Neovate、Pochi、AdaL 等）。
+- 前端新增共享技能目录提示与联动选择：同一全局 skills 目录的工具勾选/同步/取消同步会一起生效，并弹窗确认。
+- 本地导入对齐 Git 规则的 multi-skill 发现，支持批量选择并展示无效项原因。
+- 新增本地导入候选列表/按子路径安装的命令，并在安装前校验 SKILL.md。
+
+### 变更
+- Antigravity 默认全局技能目录更新为 `~/.gemini/antigravity/global_skills`。
+- OpenCode 全局技能目录修正为 `~/.config/opencode/skills`。
+- 工具状态接口增加 `skills_dir` 字段，前端列表与同步逻辑改为后端驱动并按目录去重。
+- 同一 skills 目录的工具在同步/取消同步时统一写入与清理记录，避免重复文件操作与状态不一致。
+- 本地导入流程改为先扫描候选：单个有效候选直接安装，多个候选进入选择列表。
+
+## [0.1.1] - 2026-01-26
+
+### 变更
+- GitHub Actions 发版工作流：macOS 打包并上传 `updater.json`（`.github/workflows/release.yml`）。
+- Cursor 同步固定使用 Copy：因为 Cursor 在发现 skills 时不会跟随 symlink：https://forum.cursor.com/t/cursor-doesnt-follow-symlinks-to-discover-skills/149693/4
+- 托管技能更新时：对 copy 模式目标使用“纯 copy 覆盖回灌”；并对 Cursor 目标强制回灌为 copy，避免误创建软链导致不可用。
+
+## [0.1.0] - 2026-01-24
+
+### 新增
+- Skills Hub 桌面应用（Tauri + React）初始发布。
+- Skills 中心仓库：统一托管并同步到多种 AI 编程工具（优先 symlink/junction，失败回退 copy）。
+- 本地导入：支持从本地文件夹导入 Skill。
+- Git 导入：支持仓库 URL/文件夹 URL（`/tree/<branch>/<path>`），支持多 Skill 候选选择与批量安装。
+- 同步与更新：copy 模式目标支持回灌更新；托管技能支持从来源更新。
+- 迁移接管：扫描工具目录中已有 Skills，导入中心仓库并可一键同步。
+- 新工具检测并可选择同步。
+- 基础设置：存储路径、界面语言、主题模式。
+- Git 缓存：支持按天清理与新鲜期（秒）配置。
+
+### 构建与发布
+- 本地打包脚本：macOS（dmg）、Windows（msi/nsis）、Linux（deb/appimage）。
+- GitHub Actions 跨平台构建验证与 tag 发布 Draft Release（从 `CHANGELOG.md` 自动提取发布说明）。
+
+### 性能
+- Git 导入/批量安装优化：缓存 clone 减少重复拉取；增加超时与无交互提示提升稳定性。
+
+[Unreleased]: https://github.com/qufei1993/skills-hub/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/qufei1993/skills-hub/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/qufei1993/skills-hub/compare/v0.9.1...v0.10.0
+[0.9.1]: https://github.com/qufei1993/skills-hub/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/qufei1993/skills-hub/compare/v0.8.1...v0.9.0
+[0.8.1]: https://github.com/qufei1993/skills-hub/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/qufei1993/skills-hub/compare/v0.7.1...v0.8.0
+[0.7.1]: https://github.com/qufei1993/skills-hub/compare/v0.7.0...v0.7.1

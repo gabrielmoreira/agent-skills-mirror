@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MessagingChannel xmlns="http://soap.sforce.com/2006/04/metadata">
     <!-- Automated Responses (optional, repeat per response) -->
+    <!-- Shape depends on type — see references/channel_settings.md "Automated Responses" -->
+    <!-- TextResponse shape: OptOutConfirmation, HelpResponse only -->
     <!--
     <automatedResponses>
         <autoResponseContentType>TextResponse</autoResponseContentType>
         <language>en_US</language>
         <response>{RESPONSE_TEXT}</response>
         <type>{OptOutConfirmation|HelpResponse}</type>
+    </automatedResponses>
+    -->
+
+    <!-- MessageDefinition shape: InitialResponse, AgentEngagedResponse, AgentEndEngagementResponse, EndUserInactiveResponse, EndUserIdleResponse, RerouteResponse, RoutingUnavailableResponse -->
+    <!-- messageDefinitionName must reference an existing ConversationMessageDefinition (build via conversation-message-definition-builder first) -->
+    <!-- Do NOT include language or response on this shape -->
+    <!-- Optional responseTimeoutInMins (4-30): only for EndUserIdleResponse / EndUserInactiveResponse -->
+    <!--
+    <automatedResponses>
+        <autoResponseContentType>MessageDefinition</autoResponseContentType>
+        <messageDefinitionName>{CONVERSATION_MESSAGE_DEFINITION_DEV_NAME}</messageDefinitionName>
+        <type>{InitialResponse|AgentEngagedResponse|AgentEndEngagementResponse|EndUserInactiveResponse|EndUserIdleResponse|RerouteResponse|RoutingUnavailableResponse}</type>
     </automatedResponses>
     -->
 
@@ -58,10 +72,29 @@
         <isFileAttachmentExtUnrestricted>{true|false}</isFileAttachmentExtUnrestricted>
         <isSaveTranscriptEnabled>{true|false}</isSaveTranscriptEnabled>
         <maxFileSize>{SIZE_IN_MB}</maxFileSize>
+
+        <!-- Messaging Authorizations (only when authMode is Auth; omit entirely for UnAuth) -->
+        <!--
+        <messagingAuthorizations>
+            <authIdentifier>{AUTH_IDENTIFIER}</authIdentifier>
+            <authorizationType>PublicKeyCertificateSet</authorizationType>
+            <enabled>{true|false}</enabled>
+            <publicKeyCertificateSetName>{KEYSET_NAME}</publicKeyCertificateSetName>
+        </messagingAuthorizations>
+        -->
     </embeddedConfig>
 
     <!-- Session Settings -->
     <endUserIdleTimeOut>{IDLE_TIMEOUT_MINUTES}</endUserIdleTimeOut>
+
+    <!-- Session Inactivity (optional) — top-level siblings of embeddedConfig, not nested inside it -->
+    <!-- endUserIdleAction must be Inactivate, End, or InactivateAndEnd -->
+    <!--
+    <endUserIdleAction>{Inactivate|End|InactivateAndEnd}</endUserIdleAction>
+    <endInactiveSessionTimeOut>{MINUTES_AFTER_IDLE_ACTION}</endInactiveSessionTimeOut>
+    <isAgentMessageResetInactivityEnabled>{true|false}</isAgentMessageResetInactivityEnabled>
+    -->
+
     <isEstimatedWaitTimeEnabled>{true|false}</isEstimatedWaitTimeEnabled>
     <isQueuePositionEnabled>{true|false}</isQueuePositionEnabled>
     <isSynchronousChatEnabled>{true|false}</isSynchronousChatEnabled>

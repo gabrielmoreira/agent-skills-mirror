@@ -7,7 +7,6 @@ metadata:
     - "platform-metadata-deploy"
     - "platform-metadata-retrieve"
     - "platform-destructive-deploy"
-    - "platform-deploy-validate"
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
@@ -36,7 +35,7 @@ Use `platform-manifest-generate` when the work involves any of:
 
 Delegate elsewhere when the user is:
 - Running the deploy itself → `platform-metadata-deploy`
-- Validating before a prod release → `platform-deploy-validate`
+- Validating before a prod release → `platform-metadata-deploy` (production path)
 - Executing the destructive deploy → `platform-destructive-deploy` (that skill **uses** the manifest this skill **generates**)
 - Retrieving metadata to local → `platform-metadata-retrieve`
 
@@ -289,7 +288,7 @@ After generation, hand off to `platform-destructive-deploy` to validate and exec
 | Need | Delegate to | Reason |
 |---|---|---|
 | Run a deploy with the generated manifest | `platform-metadata-deploy` | This skill stops at file generation |
-| Validate before a prod release | `platform-deploy-validate` | Pre-flight test against prod |
+| Validate before a prod release | `platform-metadata-deploy` | Its production path validates, then quick-deploys |
 | Actually delete the components in the destructive manifest | `platform-destructive-deploy` | That skill validates and executes the destructive deploy |
 | Retrieve metadata listed in the manifest | `platform-metadata-retrieve` | Pulls org metadata to local |
 | Author the metadata being listed in the manifest | Other `platform-*` generators (e.g. `platform-custom-object-generate`) | The manifest just lists what already exists on disk |
@@ -304,5 +303,5 @@ Input mode: <source-dir | metadata list | from-org | hand-built>
 Output: <path/to/manifest.xml>
 API version: <value> (source: sfdx-project.json | --api-version | CLI default)
 Component count: <N> across <M> metadata types
-Next step: <platform-metadata-deploy | platform-deploy-validate | platform-destructive-deploy>
+Next step: <platform-metadata-deploy | platform-destructive-deploy>
 ```

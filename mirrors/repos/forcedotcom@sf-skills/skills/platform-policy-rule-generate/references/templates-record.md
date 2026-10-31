@@ -1,14 +1,16 @@
 # RECORD Templates
 
-Each template is a verified shape from a passing test fixture. Copy, then change names/values.
+These examples are distilled from retrieved policies. Use them to understand persisted structure, but generate only values published by the target release's MDAPI contract.
 
 ---
 
 ## RECORD — Basic RLS (record field = user attribute)
 
-Source: `conditionRLSValidSteelthread` (first condition), `conditionStandardIdRLSValidSteelthread`
+Source: `references/examples/PrincipalFieldMatchRLS/`
 
-> **RLS MDAPI round-trip is fragile in real orgs.** Deploy/retrieve can fail with opaque gacks if a DMO field in `<valueDomain>` is not mapped in the org's data streams. Build the rule in the UI first; use MDAPI templates as verification shapes, not first-try authoring. See §8.3 of policy.md.
+> **RLS MDAPI round-trip is fragile in real orgs.** Deploy/retrieve can fail with opaque gacks if a DMO field in `<valueDomain>` is not mapped in the org's data streams. Use read-only metadata inspection to verify the field mapping before generating XML; do not create or edit the rule in Policy Builder from this skill.
+
+> `SCALAR_ATTRIBUTE` is a confirmed, deployable, Policy Builder-compatible principal path for record-field-to-principal-attribute comparisons, per DG UI source (this is how the builder itself authors the condition, not established by a per-shape round-trip). Use this template directly in normal author mode.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -16,10 +18,10 @@ Source: `conditionRLSValidSteelthread` (first condition), `conditionStandardIdRL
     <action>Read</action>
     <category>RECORD_POLICY_RULE_DEFINITION</category>
     <effect>Permit</effect>
-    <label>Rule1</label>
-    <policyRuleDefinitionSetName>StandardFieldSet3</policyRuleDefinitionSetName>
+    <label>Rule 1</label>
+    <policyRuleDefinitionSetName>EXACT_SET_NAME</policyRuleDefinitionSetName>
     <policyRuleResourceDomains>
-        <resourceDomain>testDMO__dlm</resourceDomain>
+        <resourceDomain>EXACT_DMO</resourceDomain>
     </policyRuleResourceDomains>
     <principalAuthenticationLevel>INTERNAL</principalAuthenticationLevel>
     <principalScopeType>ANY</principalScopeType>
@@ -30,46 +32,59 @@ Source: `conditionRLSValidSteelthread` (first condition), `conditionStandardIdRL
         <conditions>
             <clause>WHEN</clause>
             <operator>EQUALS</operator>
+            <principalExpression>
+                <soqlTarget>
+                    <select>EXACT_USER_FIELD</select>
+                </soqlTarget>
+                <type>SOQLTARGETLISTEXPR</type>
+                <version>1</version>
+            </principalExpression>
             <resourcePath>RECORDFIELD</resourcePath>
-            <valueDomain>testDMO__dlm:name__c</valueDomain>
-            <valuePrincipalPath>USER_ID</valuePrincipalPath>
+            <valueDomain>EXACT_DMO:EXACT_FIELD</valueDomain>
+            <valuePrincipalPath>SCALAR_ATTRIBUTE</valuePrincipalPath>
         </conditions>
-        <conjunctionExpression>1</conjunctionExpression>
+        <conjunctionExpression>(AND 1)</conjunctionExpression>
     </whenPolicyRuleDefinitionClauseConjunction>
 </PolicyRuleDefinition>
 ```
 
-For literal-value RLS (e.g. `record.field == 'X'`), use `<policyRuleValueSet><valueString>X</valueString></policyRuleValueSet>` instead of `<valuePrincipalPath>`.
-
----
-
 ## RECORD — RLS via PROJECTION Join
 
-Source: `conditionRLSValidSteelthread` (second condition)
+Source: `references/examples/ExistsJoinRLS/`
 
 ```xml
 <conditions>
     <clause>WHEN</clause>
     <operator>EXISTS</operator>
-    <resourcePath>EXPRESSION</resourcePath>
+    <policyRuleDefinitionCondition>
+        <clause>WHEN</clause>
+        <operator>EQUALS</operator>
+        <policyRuleValueSet>
+            <valueText>${User.Email}</valueText>
+        </policyRuleValueSet>
+        <resourcePath>RECORDFIELD</resourcePath>
+        <valueDomain>RESOURCE_DMO:RESOURCE_FIELD</valueDomain>
+    </policyRuleDefinitionCondition>
     <resourceExpression>
-        <type>PROJECTION</type>
-        <version>1</version>
         <projection>
             <join>
-                <schema>testDMO__dlm</schema>
-                <alias>test 1</alias>
+                <alias>JOIN_ALIAS</alias>
                 <predicate>
+                    <attribute>JOIN_DMO:JOIN_FIELD</attribute>
                     <comparator>EQUALS</comparator>
-                    <attribute>testDMO__dlm:name__c</attribute>
                     <on>
+                        <field>RESOURCE_FIELD</field>
                         <resourceAlias>resource</resourceAlias>
-                        <schema>testDMO__dlm</schema>
-                        <field>age__c</field>
+                        <schema>RESOURCE_DMO</schema>
                     </on>
                 </predicate>
+                <schema>JOIN_DMO</schema>
             </join>
         </projection>
+        <type>PROJECTION</type>
+        <version>1</version>
     </resourceExpression>
+    <resourcePath>EXPRESSION</resourcePath>
+    <whereClauseConjunction>1</whereClauseConjunction>
 </conditions>
 ```

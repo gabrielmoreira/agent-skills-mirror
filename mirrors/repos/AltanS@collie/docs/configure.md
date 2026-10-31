@@ -791,6 +791,11 @@ Collie saves the file under `<state-dir>/uploads` with owner-only permissions an
 absolute path to your draft. The agent reads it from that path, because a terminal cannot take a
 pasted file. Uploads are swept 48 hours after they are written.
 
+A picked or pasted photo opens a sheet with a preview first. **Attach** sends the original file,
+untouched. **Edit** opens the tools Crop, Draw, Circle and Arrow, and a photo you changed goes up as
+a PNG. A tap on a photo's thumbnail in the composer opens the same tools, and the edited photo takes
+its place. A photo the browser cannot show attaches as it is, with no error.
+
 | Setting | Default | What it does |
 | --- | --- | --- |
 | `COLLIE_MAX_UPLOAD_MB` | `10` | Largest file accepted, in whole megabytes. Out of range or not a whole number falls back to the default and logs a warning. |
@@ -1186,6 +1191,14 @@ not pass its session on, so Collie asks the kernel which session lock (`session.
 `$DSH_HOME/sessions`, or `~/.dsh/sessions`, compressed or plain. This works on Linux only, where
 `/proc/locks` lists every lock and who holds it; elsewhere a dsh-tui pane keeps its terminal view.
 Set `dsh_root` when dsh keeps its sessions somewhere else.
+
+Antigravity CLI (`agy`, which Herdr may also call `antigravity`) needs no Herdr integration for Chat
+either. Collie asks `lsof` which `presence/<uuid>.lock` file the pane's foreground agy process holds,
+and reads that conversation from `conversations/<uuid>.db` under `~/.gemini/antigravity-cli`,
+read-only, or from its `transcript.jsonl` when the database is empty. It never guesses the newest
+conversation in a folder. This needs `lsof` on the machine, so it works on Linux and macOS, not on
+Windows; without it an agy pane keeps its terminal view. Set `agy_root`, or `COLLIE_AGY_ROOT`, when
+Antigravity keeps its home somewhere else.
 
 `herdr integration status` shows which integrations are installed. A hook is read when the agent
 starts, so an agent that was already running when you installed it needs a restart. Oh My Pi is the

@@ -99,15 +99,25 @@ Prefer reusing an existing policy (fastest, no deploy):
 sf data query --use-tooling-api --target-org <alias> \
   --query "SELECT Id, DeveloperName, MasterLabel FROM DataMaskPolicy"
 ```
-If none targets the Contact PII you need, author one with the **two-step** recipe (the
+If none targets the object and fields you need, choose the fields first (below), then author one.
+
+**Choose the fields from Core's classification, not from field names alone.** Before inserting any
+`DataMaskPolicyField` row, call the field-classification operation once per target object and map each
+`recommendedPiiType` to a treatment. The steps are in `references/policy-authoring.md` ("Choosing the
+fields from Core's classification"). Any recommendation with no verified `MaskValue` token is reported
+as unmapped; never guess a `MaskValue`. Use the static table only if the call fails, and say so in the
+report.
+
+Then author one with the **two-step** recipe (the
 `DataMaskPolicy` Metadata shape is a thin shell; membership is Tooling-inserted):
 1. **Metadata-deploy the thin shell** in **mdapi format** (`--metadata-dir` + `package.xml`; a
    source-format `--source-dir` deploy fails "Could not infer a metadata type"). The shell carries
    only `<label>`, `<description>`, `<runOnRefresh>`. This creates the policy *with an active
-   revision*, which A2 requires.
+   revision*, which the Tooling inserts in the next step require.
 2. **Tooling-insert** the `DataMaskPolicyObject` (one per object) then its `DataMaskPolicyField`
-   rows. Each field row's treatment is `MaskingCategory` (`library`) + `MaskValue` (a snake_case
-   token like `first_name`, `email`, `phone`). There is **no `MaskingRuleType` column**.
+   rows. Each field row's treatment is `MaskingCategory` + `MaskValue`. For `library`, `MaskValue` is a
+   snake_case token like `first_name`, `email`, `phone`. For `characters` and `replaceRandom`, `MaskValue`
+   is the field's Salesforce type (`Text`, `Date`). There is **no `MaskingRuleType` column**.
 
 > Insert order matters: a Tooling-created parent (no active revision) makes the child insert fail
 > `INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY`. Metadata-deploy the shell first.
@@ -150,36 +160,36 @@ mid-run status as final.
 
 **Jobs are slow — expect several minutes, and poll with the bundled script.** Data Mask runs on a
 backend pool/scheduler with a **~5–10 minute floor**: even a tiny (20-row) job usually does **not**
-reach a terminal state or emit detail rows for several minutes after the run starts. This is fixed
-overhead, **not** proportional to row count. Plan the run around it — the single biggest failure mode
-is treating the job as instant, polling on a tight interval, and either timing out or writing a
-"still pending" report.
+reach a terminal state or emit detail rows for several minutes. This is fixed overhead, **not**
+proportional to row count. The biggest failure mode is treating the job as instant, polling tightly,
+and either timing out or writing a "still pending" report.
 
 Run `scripts/poll-job.sh` as a **single command** — do **not** hand-roll a SOQL poll loop:
 ```bash
 bash scripts/poll-job.sh <alias> <jobRunId>        # defaults: cap 600s (10 min), 20s interval
 ```
-It sleeps on a low-frequency interval, short-circuits the instant a ground-truth detail row appears,
-prints the terminal signal (`completed`/`failed`/`canceled`) on stdout, and exits `0` (or `1` on
-timeout). **Call it once and read its result — do not wrap it in your own retry loop**, and do not
-poll on a sub-10s interval (it just burns tool calls against a job that cannot finish sooner).
+It sleeps on a low-frequency interval, prints the terminal status (`completed` /
+`completed_with_errors` / `failed` / `canceled`) on stdout, and exits `0` (or `1` on timeout).
+**Call it once and read its result — do not wrap it in your own retry loop**, and do not poll on a
+sub-10s interval (it just burns tool calls against a job that cannot finish sooner).
 
-**Ground truth is the detail rows, not the parent status.** The parent `DataMaskPolicyJobRun.Status`
-can **lag** — it may read `pending`/`running` for a while after masking actually finished. Once a
-`total_records_masked` (or `completed`) `DataMaskPolicyJobRunDtl` row exists, the masking is done.
-`poll-job.sh` already encodes all of this — the bounded interval and timeout, the short-circuit on
-the ground-truth detail row, and the terminal-signal exit code — so you do **not** re-implement any
-of it inline. Run the poller once, read its exit signal, then update `report.md` (the stub you wrote
-before polling) with the terminal status and the masked count from A5.
+**The job is done only when the parent `DataMaskPolicyJobRun.Status` is terminal.** A
+`DataMaskPolicyJobRunDtl` row is not a completion signal: a `total_records_masked` row can already
+exist, reading `0`, while the parent is still `running`, so a count read mid-run is wrong. Wait for
+the poller to exit `0`, then read the detail rows (A5) and update the `report.md` stub with the
+terminal status and the masked count.
 
 ### A5. Report results from the job DETAIL object
 The parent job carries an overall status; **per-object masked counts live on the child**
-`DataMaskPolicyJobRunDtl` (linked by `DataMaskPolicyJobRunId`). Report a concrete count, not a
-fabricated one:
+`DataMaskPolicyJobRunDtl` (linked by `DataMaskPolicyJobRunId`). `DataMaskPolicyJobRunDtl` has **no
+`Status` column** — the status lives in `Type`/`Subtype`, with the count itself in `Value` (a
+string). Report a concrete count, not a fabricated one:
 ```bash
 sf data query --target-org <alias> \
-  --query "SELECT Id, DataMaskPolicyJobRunId, Status FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '<jobRunId>'"
+  --query "SELECT ObjectReference, Type, Subtype, Value FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '<jobRunId>' ORDER BY Timestamp"
 ```
+Expect one `status_update` row per `Subtype` (`loaded`, `completed`, `total_records_masked`) for
+each target object; `total_records_masked`'s `Value` is the masked count.
 
 **Report only what the rows literally show — do not overstate granularity.** The detail rows are
 **object-level** status_update entries (`loaded`, `completed`, `total_records_masked` for the object,
@@ -199,45 +209,28 @@ just to cancel it. Steps B1–B4 are all required.
 
 ### B1. Confirm sandbox + identify the run to cancel
 Confirm the org is a sandbox (`sf org display`) and get the `jobRunId` of the run to abort — the one
-the user is asking to cancel. **Capture its `DataMaskPolicyId` too** — you need it to start a
-replacement run if the abort window is missed (B2 exit 3 / exit 1). If they just started it, use that
-id; otherwise query for the active run:
+the user is asking to cancel. **Capture its policy Id too** — you need it to start a replacement run
+if the abort window is missed (B2 exit 3 / exit 1). If they just started it, use that policy id
+directly; otherwise query for the active run:
 ```bash
 sf data query --target-org <alias> \
-  --query "SELECT Id, Status, DataMaskPolicyId FROM DataMaskPolicyJobRun ORDER BY CreatedDate DESC LIMIT 5"
+  --query "SELECT Id, Status, PolicyName FROM DataMaskPolicyJobRun ORDER BY CreatedDate DESC LIMIT 5"
 ```
-Note the `DataMaskPolicyId` (`8dm` prefix) of the run you pick — that is the `<policyId>` A3 needs.
+`DataMaskPolicyJobRun` has **no `DataMaskPolicyId` lookup field** — the only link back to the policy
+is the human-readable `PolicyName` (`MasterLabel`). Resolve the Id from it via the Tooling API:
+```bash
+sf data query --use-tooling-api --target-org <alias> \
+  --query "SELECT Id, DeveloperName FROM DataMaskPolicy WHERE MasterLabel = '<PolicyName>'"
+```
+That `Id` (`8dm` prefix) is the `<policyId>` A3 needs.
 
 ### B2. Wait for the job to be `running` (the only abortable state)
-You can only abort while `DataMaskPolicyJobRun.Status` is `running`. A `pending`/`scheduled` job
-`409`s; a terminal one is already done. Poll for the `running` window with the bundled poller in its
-**`running` mode** — it exits the instant the status reads `running` (unlike the default mode, which
-waits for a terminal state), so it will not block past the abortable window:
-```bash
-POLL_MODE=running bash scripts/poll-job.sh <alias> <jobRunId> 900 15
-```
-The cap is **900s (15 min)**, above the ~5–10 min scheduling floor so a slow-to-start job still gets
-caught. Handle every exit:
-- **Exit `0`** (prints `running`) → go straight to B3.
-- **Exit `3`** → the job raced to a terminal state before `running` was caught; the abort window is
-  gone. Start a fresh run against the policy you captured in B1 (A3 with that `<policyId>`), then
-  return here and poll the **new** `jobRunId`.
-- **Exit `1`** (timeout — the cap expired) → re-query the job's status:
-  ```bash
-  sf data query --target-org <alias> \
-    --query "SELECT Id, Status FROM DataMaskPolicyJobRun WHERE Id = '<jobRunId>'"
-  ```
-  If it is still non-terminal (`pending`/`scheduled`/`running`), re-run the poller **once** more (same
-  command) to continue waiting. If it is `running`, go to B3. If it is terminal, treat it like exit 3
-  — start a fresh run (A3 with the B1 `<policyId>`) and poll the new job.
+Poll with `POLL_MODE=running` (cap 900s, 15s interval). Full command, exit-code handling (0 / 3 / 1),
+and the re-query-on-timeout steps are in `references/run-and-abort.md` section 5. A `pending` or
+`scheduled` job `409`s on abort, so do not abort until the poller exits `0`.
 
-Because of the ~5–10 min pool floor the `running` window is usually minutes wide, so there is time to
-catch it; do not poll with no delay.
-
-> **If no run is currently in progress** (the job already completed, or you must reproduce a
-> run→cancel flow end to end), start one first with A3, then return here — poll it to `running` and
-> abort **that** live job. Never substitute an older, already-terminal job to "show" a cancel; the
-> abort must target the run that is actually live.
+If no run is in progress, start one with A3 and abort **that** live job. Never substitute an older,
+already-terminal job to "show" a cancel.
 
 ### B3. Abort via the run API
 Abort via the run API — **not** by DML/delete on the job record:
@@ -263,14 +256,8 @@ Cancellation is asynchronous. **Re-query** `DataMaskPolicyJobRun` and confirm `S
 | Rule | Rationale |
 |------|-----------|
 | Run each `sf` command **bare** — never add a pipe or redirect of any kind (`\|`, `\| python3`, `\| grep`, `2>&1`, `2>/dev/null`, `> file`) | `sf ... --json` already prints clean JSON on stdout; read it directly. A redirect/pipe trips an unbypassable shell-safety guard that silently stalls the whole run to timeout. Never post-process with `python3`/`grep`/`jq`, and never suppress stderr — even if a command prints a warning, the `--json` payload on stdout is still valid; just parse it as-is |
-| Never use standard SOQL / `sobject describe` on `DataMaskPolicy*` config objects | They return `INVALID_TYPE` / `NOT_FOUND` — use Tooling API or MDAPI |
-| Read masked counts from `DataMaskPolicyJobRunDtl`, never invent them | The child detail is the source of truth for per-object results |
-| Only `completed` / `completed_with_errors` / `failed` are terminal | Reporting `running`/`scheduled` as final is wrong |
 | Abort only via the run-API abort endpoint | DML/delete on the job record is not a real abort and corrupts state |
-| Always re-query status after abort and confirm `canceled` | An abort call returning 200 is not proof the job stopped |
-| Data Mask runs on sandboxes only | Run/abort endpoints `403` on production |
 | Use API version `v67.0` or later, and no `/connect/` segment | The run/abort endpoints are `/services/data/v67.0/platform/data-resilience/data-mask/...` — a `connect` segment or a pre-v67 version returns `NOT_FOUND` |
-| Poll via `scripts/poll-job.sh` (one call), never a hand-rolled SOQL loop | The script caps attempts and short-circuits on the ground-truth detail row; a manual loop against the lagging parent status is the #1 cause of a run timing out with no report |
 
 ---
 
@@ -278,15 +265,9 @@ Cancellation is asynchronous. **Re-query** `DataMaskPolicyJobRun` and confirm `S
 
 | Issue | Resolution |
 |-------|------------|
-| `sf sobject describe DataMaskPolicy` → `NOT_FOUND` | It's a Tooling/MDAPI entity — query with `--use-tooling-api`, don't retry standard API |
-| `SELECT ... FROM DataMaskPolicy` → `INVALID_TYPE` | Same cause — use Tooling API for the policy; standard API only for `DataMaskPolicyJobRun`/`Dtl` |
-| Run start returns `409` | A run is already in progress for that policy — poll the existing one or wait for it to finish |
-| Abort returns `409` "status=PENDING" | The job is still `pending`/`scheduled`, not yet `running` — keep polling and abort only once it reads `running`; don't give up on the abort |
 | Small job finishes before you can abort it | The `running` window is seconds on a small sandbox — start a fresh run and poll tightly; never substitute a previously-aborted job to fake the flow |
-| Abort returns `200` but SOQL status still `running` | Cancellation is async — keep polling the SOQL status until `canceled`; don't report success early |
-| Run API says `CANCELED` but SOQL says `running` | Case + surface differ: the run API is UPPERCASE, SOQL picklist is lowercase. Trust the SOQL value for terminal state |
-| Job "finished" instantly | Re-check: `scheduled` is not terminal. Poll until a terminal value actually appears |
-| Run/abort endpoint `NOT_FOUND` | The path must be `/services/data/v67.0/platform/data-resilience/data-mask/...` — no `/connect/` segment, and version `v67.0`+ (Core 262). See `references/api-surface.md` |
+| Run API says `CANCELED` but SOQL says `running` | Case + surface differ (run API UPPERCASE, SOQL lowercase). Trust the SOQL value for terminal state |
+| Run start returns `409` or abort `409` | Run start: a run is already active for that policy. Abort: the job is not `running` yet. Details in `references/run-and-abort.md` failure table |
 
 ---
 

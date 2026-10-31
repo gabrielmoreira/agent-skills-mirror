@@ -3,7 +3,7 @@ name: experience-design-validate
 description: "Use this skill to run a visual-craft audit of a rendered UI and produce an evidence-grounded Craft Report across Useful, Usable, Reliable, Coherent, and Well-Crafted. Invoke it for craft audits, visual critiques, design comparisons, felt-quality reviews, or visual-craft readiness checks on screenshots (.png, .jpg, .jpeg, .webp, .gif), Figma frames, rendered prototypes, and live URLs. Do not use it for source-code review, SLDS compliance (use design-systems-slds-validate), or accessibility compliance (use experience-accessibility-validate)."
 metadata:
   version: "1.0"
-  domains: ["Experience"]
+  domains: ["Experience", "Design Systems"]
   relatedSkills:
     - "design-systems-slds-validate"
     - "experience-accessibility-validate"

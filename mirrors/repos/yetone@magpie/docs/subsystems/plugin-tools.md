@@ -32,13 +32,19 @@ A tool's answer goes back to the agent that called it, on this computer or on a 
 - A plugin's tool runs in the plugin host with the user's rights, as its provider code does. Installing a plugin is trusting it.
 - One host serves every plugin. A tool that never answers is answered at `ToolTimeout`, and its call's slot in the host is left for its own abort to end; the host goes on serving (`TestPluginTools`).
 - Names are stable for a given set of plugins on. Turning on a plugin earlier in plugins.json that gives a tool of the same MCP name renumbers the later one.
-- Wiring is the user's: the Plugins page copies the address, and magpie writes no agent's MCP config for it. There is no Library entry yet. The Library's own servers have an endpoint of the same kind beside this one, `/mcp/magpie/hub/<agent>`, which magpie does write into agents ([MCP hub](mcp-hub.md)); plugin tools aren't in it.
+- Each plugin that is on and gives tools is also a [Library](library.md) server of its own (chenxiang0010 on Discord: Search1API's tools in the MCP router), so magpie wires it like any other ([`plugin_tools.go`](../../internal/library/plugin_tools.go)):
+  - Once the host has noted the plugin's tools (plugin-tools.json, `plugin.ToolsNoted`), the library adds an `http` server named by the plugin's short name (`search1api`, `search1api-plugin` when a server has that name), with `plugin` set to the plugin's name and its URL `/mcp/magpie/tools/<short>` (`ToolsMCPOne`), which serves that plugin's tools alone, each by its own name.
+  - Added with the MCP router on, it is on for the agents given the router's entry, so its tools are in their router at once as `<short>__<tool>`; with the router off it is on for none until the user switches it on. Per agent and per tool it is then switched like any server.
+  - The router runs its tools in this process (`gateway.PluginToolsOf`, `RunPluginToolOf`), under the same Plugin tools gate. With the router off an agent is given the gateway's address of the plugin's tools as it reaches the gateway (`through`), with a key from another machine.
+  - It is `local`: a carry or backup never takes it to a computer that may lack the plugin. It is offered once (`pluginsOffered`): a server the user removed comes back only when the plugin is removed and added again. The plugin removed takes its server out; turned off, the server stays and lists nothing. A plugins.json that can't be read changes nothing.
+  - `/mcp/magpie/tools`, every plugin's tools under one server, stays for agents wired to it by hand.
 
 ## Verification
 
 ```sh
 go test ./internal/plugin/ -run Tool
 go test ./internal/gateway/ -run 'ToolsMCP|ServingGates|OwnMCPRejects' -timeout 45m
+go test ./internal/library/ -run PluginTools
 go test ./plugins/tools/ ./internal/pluginrt/
 go test ./internal/gui/ -run 'Builtin|Plugins'
 node --test internal/gui/tests/plugin-tools.test.cjs internal/gui/tests/builtins.test.cjs

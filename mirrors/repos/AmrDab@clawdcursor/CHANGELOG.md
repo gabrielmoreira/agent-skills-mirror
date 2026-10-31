@@ -61,7 +61,9 @@ All notable changes to Clawd Cursor will be documented in this file.
   check was skipped and screenshots and OCR still returned the wallpaper and
   menu bar. With no helper, macOS's own permission check
   (`CGPreflightScreenCaptureAccess`) is now asked through `osascript`, which
-  needs no Command Line Tools and captures nothing (no prompt, no flash). A
+  needs no Command Line Tools and captures nothing (no prompt, no flash). The
+  function is bound by hand: CoreGraphics' scripting bridge does not declare
+  it, and on macOS 26.5 the plain call failed, so the check never answered. A
   denial is `CAPTURE_DENIED`. A grant is remembered for the process, so
   captures no longer each start a check. A denial, a check that could not
   answer, and a helper that would not run are never remembered, and a failed
@@ -102,6 +104,17 @@ All notable changes to Clawd Cursor will be documented in this file.
   batch step that would return an image. Accessibility and OCR still work. The unused
   `CLAWD_DISABLE_VERIFIER` / `disableVerifier` setting is removed; the
   verifier it switched off no longer exists.
+- **The destructive-label rule checks every element `invoke_element` may act
+  on.** The gate took the first non-empty of target/name/text/label/title/
+  selector. It never looked at `automationId`, and it only looked at an
+  `element_id` ref when no name was given. `invoke_element` acts on the ref
+  first, then `name`, then `automationId`. So `{automationId:"Send"}`, or
+  `{name:"Reply", element_id:<the Send button>}`, pressed Send with no
+  confirmation. The MCP gate, the agent loop and its `batch` now check every
+  selector present, each on its own, and the strictest decision wins: any one
+  that matches (Send, Delete, Pay…) asks for confirmation, unless the user's
+  task asked for that same action.
+
 - **macOS: `window list` says which apps have windows on another desktop
   Space (#278).** The accessibility API only sees the windows of the Space on
   screen. With one hop to a full-screen Space, the list read "Windows (2)"

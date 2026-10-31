@@ -1,0 +1,682 @@
+{
+  "fetchedAt": "2026-10-07",
+  "sourceUrl": "https://developer.salesforce.com/docs/platform/sfdx-dev/guide/sfdx-dev-scratch-orgs-def-file-config-values.md",
+  "version": "scrape-2026-10-07",
+  "byFeature": {
+    "Assessments": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableIndustriesAssessment",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDiscoveryFrameworkMetadata",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "BenefitManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "lightningExperienceSettings.enableS1DesktopEnabled",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "mobileSettings.enableS1EncryptedStoragePref2",
+          "type": "boolean",
+          "example": false,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableIndustriesAssessment",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDiscoveryFrameworkMetadata",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableInteractionSummaryPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableBenefitManagementPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGroupMembershipPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCaseReferralPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "omniStudioSettings.enableOmniStudioMetadata",
+          "type": "boolean",
+          "example": false,
+          "source": "public-docs example"
+        },
+        {
+          "path": "documentChecklistSettings.deleteDCIWithFiles",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "Communities": {
+      "required": [
+        {
+          "path": "communitiesSettings.enableNetworksEnabled",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs prose"
+        }
+      ],
+      "common": [
+        {
+          "path": "experienceBundleSettings.enableExperienceBundleMetadata",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "communitiesSettings.enableOotbProfExtUserOpsEnable",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "CoreCpq": {
+      "required": [
+        {
+          "path": "revenueManagementSettings.enableCoreCPQ",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs prose"
+        }
+      ],
+      "common": []
+    },
+    "CustomerDataPlatform": {
+      "required": [
+        {
+          "path": "customerDataPlatformSettings.enableCustomerDataPlatform",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs prose"
+        }
+      ],
+      "common": []
+    },
+    "CustomerDataPlatformLite": {
+      "required": [
+        {
+          "path": "customerDataPlatformSettings.enableCustomerDataPlatform",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs prose"
+        }
+      ],
+      "common": []
+    },
+    "DevOpsCenter": {
+      "required": [],
+      "common": [
+        {
+          "path": "devHubSettings.enableDevOpsCenterGA",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "DisclosureFramework": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableGnrcDisclsFrmwrk",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableIndustriesAssessment",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "Einstein1AIPlatform": {
+      "required": [
+        {
+          "path": "einsteinGptSettings.enableEinsteinGptPlatform",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs prose"
+        }
+      ],
+      "common": []
+    },
+    "EnergyAndUtilitiesCloud": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.energyAndUtilitiesSettings.enableEnergyAndUtilities",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "Grantmaking": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableGrantmaking",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "IndustriesActionPlan": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableFundraising",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGiftEntryGrid",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGroupMembershipPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "IndustriesSalesExcellenceAddOn": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableFundraising",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGiftEntryGrid",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGroupMembershipPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "IndustriesServiceExcellenceAddOn": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableFundraising",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGiftEntryGrid",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGroupMembershipPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "InvestigativeCaseManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "lightningExperienceSettings.enableS1DesktopEnabled",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "mobileSettings.enableS1EncryptedStoragePref2",
+          "type": "boolean",
+          "example": false,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCarePlansPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableBenefitManagementPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableTimelinePref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableGroupMembershipPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableIndustriesAssessment",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDiscoveryFrameworkMetadata",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableInteractionSummaryPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableEnhancedUIForISPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableInteractionCstmSharingPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCaseProceedingsPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableEvidenceManagementPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableInvestigativeCaseMgmntPrf",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDisbursementPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCaseReferralPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "MobileVoiceAndLLM": {
+      "required": [],
+      "common": [
+        {
+          "path": "lightningExperienceSettings.enableS1DesktopEnabled",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "mobileSettings.enableS1EncryptedStoragePref2",
+          "type": "boolean",
+          "example": false,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "MyTrailhead": {
+      "required": [],
+      "common": [
+        {
+          "path": "trailheadSettings.enableMyTrailheadPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "OrderManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "orderManagementSettings.enableOrderManagement",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "orderSettings.enableOrders",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "orderSettings.enableEnhancedCommerceOrders",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "orderSettings.enableOrderEvents",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "orderSettings.enableOptionalPricebook",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "orderSettings.enableZeroQuantity",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "orderSettings.enableNegativeQuantity",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "OrderSaveBehaviorBoth": {
+      "required": [],
+      "common": [
+        {
+          "path": "orderSettings.enableOrders",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "OrderSaveLogicEnabled": {
+      "required": [],
+      "common": [
+        {
+          "path": "orderSettings.enableOrders",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "OutcomeManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableOutcomes",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "ProgramManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableBenefitManagementPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableBenefitAndGoalSharingPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCarePlansPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "ProviderManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "lightningExperienceSettings.enableS1DesktopEnabled",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "mobileSettings.enableS1EncryptedStoragePref2",
+          "type": "boolean",
+          "example": false,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableBenefitAndGoalSharingPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableBenefitManagementPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCarePlansPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCaseReferralPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableProviderManagementPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableProviderMgmtSharingPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDisbursementPreference",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "PSSAssetManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableIndustriesAssessment",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDiscoveryFrameworkMetadata",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "SalesforcePricing": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesPricingSettings.enableSalesforcePricing",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "SustainabilityApp": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesSettings.enableSustainabilityCloud",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableSCCarbonAccounting",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "TalentRecruitmentManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "lightningExperienceSettings.enableS1DesktopEnabled",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "mobileSettings.enableS1EncryptedStoragePref2",
+          "type": "boolean",
+          "example": false,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enablePositionRecruitmentPref",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableIndustriesAssessment",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableDiscoveryFrameworkMetadata",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesSettings.enableCriteriaBasedSearchAndFilter",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "documentChecklistSettings.deleteDCIWithFiles",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    },
+    "UsageManagement": {
+      "required": [],
+      "common": [
+        {
+          "path": "industriesRatingSettings.enableRating",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesRatingSettings.enableRatingWaterfall",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        },
+        {
+          "path": "industriesRatingSettings.enableRatingWaterfallPersistence",
+          "type": "boolean",
+          "example": true,
+          "source": "public-docs example"
+        }
+      ]
+    }
+  }
+}

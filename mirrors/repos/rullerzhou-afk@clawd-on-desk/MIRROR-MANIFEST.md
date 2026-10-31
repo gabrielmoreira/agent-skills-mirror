@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,37 +64,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`agents/claude-code.js`](agents/claude-code.js) |
 | 4 | ✓ | [`agents/codebuddy.js`](agents/codebuddy.js) |
 | 5 | ✓ | [`agents/codewhale.js`](agents/codewhale.js) |
-| 6 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
-| 7 | ✓ | [`agents/codex-subagent-classifier.js`](agents/codex-subagent-classifier.js) |
-| 8 | ✓ | [`agents/codex.js`](agents/codex.js) |
-| 9 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
-| 10 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
-| 11 | ✓ | [`agents/deepseek-harness.js`](agents/deepseek-harness.js) |
-| 12 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
-| 13 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
-| 14 | ✓ | [`agents/grok-build.js`](agents/grok-build.js) |
-| 15 | ✓ | [`agents/hermes.js`](agents/hermes.js) |
-| 16 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
-| 17 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
-| 18 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
-| 19 | ✓ | [`agents/kirocrew.js`](agents/kirocrew.js) |
-| 20 | ✓ | [`agents/mimocode.js`](agents/mimocode.js) |
-| 21 | ✓ | [`agents/minimax.js`](agents/minimax.js) |
-| 22 | ✓ | [`agents/omp.js`](agents/omp.js) |
-| 23 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
-| 24 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
-| 25 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 26 | ✓ | [`agents/pi.js`](agents/pi.js) |
-| 27 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
-| 28 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
-| 29 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
-| 30 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
-| 31 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
-| 32 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 33 | ✓ | [`agents/traecode.js`](agents/traecode.js) |
-| 34 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
-| 35 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
-| 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`agents/codex-delegated-child.js`](agents/codex-delegated-child.js) |
+| 7 | ✓ | [`agents/codex-log-monitor.js`](agents/codex-log-monitor.js) |
+| 8 | ✓ | [`agents/codex-subagent-classifier.js`](agents/codex-subagent-classifier.js) |
+| 9 | ✓ | [`agents/codex.js`](agents/codex.js) |
+| 10 | ✓ | [`agents/copilot-cli.js`](agents/copilot-cli.js) |
+| 11 | ✓ | [`agents/cursor-agent.js`](agents/cursor-agent.js) |
+| 12 | ✓ | [`agents/deepseek-harness.js`](agents/deepseek-harness.js) |
+| 13 | ✓ | [`agents/gemini-cli.js`](agents/gemini-cli.js) |
+| 14 | ✓ | [`agents/gemini-log-monitor.js`](agents/gemini-log-monitor.js) |
+| 15 | ✓ | [`agents/grok-build.js`](agents/grok-build.js) |
+| 16 | ✓ | [`agents/hermes.js`](agents/hermes.js) |
+| 17 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
+| 18 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
+| 19 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
+| 20 | ✓ | [`agents/kirocrew.js`](agents/kirocrew.js) |
+| 21 | ✓ | [`agents/mimocode.js`](agents/mimocode.js) |
+| 22 | ✓ | [`agents/minimax.js`](agents/minimax.js) |
+| 23 | ✓ | [`agents/omp.js`](agents/omp.js) |
+| 24 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
+| 25 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
+| 26 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 27 | ✓ | [`agents/pi.js`](agents/pi.js) |
+| 28 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
+| 29 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
+| 30 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
+| 31 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
+| 32 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
+| 33 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 34 | ✓ | [`agents/traecode.js`](agents/traecode.js) |
+| 35 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
+| 36 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
+| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

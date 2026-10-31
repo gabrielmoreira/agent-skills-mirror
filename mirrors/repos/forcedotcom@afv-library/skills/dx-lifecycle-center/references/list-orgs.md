@@ -7,7 +7,7 @@ The targets are the DX Inspector environments, **not** the orgs authorized on th
 ## 1. Run the resolver
 
 ```bash
-bash scripts/resolve-environment.sh <source-org-alias> [identifier]
+bash <skill_dir>/scripts/resolve-environment.sh <source-org-alias> [identifier]
 ```
 
 `<source-org-alias>` is the alias the user named, else the default org from `sf org display --json`. Pass `identifier` exactly as the user gave it. It accepts:

@@ -2,6 +2,9 @@
 
 Run through these checks before deploying any generated report metadata.
 
+## Before Writing the XML
+- [ ] Check every `<field>` in `<columns>`, `<groupingsDown>`, and `<groupingsAcross>`, every filter `<column>`, and the chart `<groupingColumn>` against the column table for the report type in `references/column-names.md` (or the MCP column list). No bare `NAME` or `USERS.NAME` — use the report type's name column (e.g. `OPPORTUNITY_NAME`, `FULL_NAME`, `OWNER`, `FIRST_NAME` + `LAST_NAME`)
+
 ## Universal Checks
 - [ ] File extension is `.report-meta.xml`
 - [ ] File is placed under `<sourceDir>/reports/<FolderName>/` (check sfdx-project.json for source path)
@@ -13,6 +16,8 @@ Run through these checks before deploying any generated report metadata.
 - [ ] `<description>` explains the business purpose (max 255 chars)
 - [ ] All column `<field>` values use correct platform column names
 - [ ] Custom field columns use `<ObjectApiName>.<FieldApiName__c>` format
+- [ ] Each `<columns>` contains exactly one `<field>`
+- [ ] Custom report type: `<reportType>` ends in `__c` and every column uses a `<table>$<field>` path from the report type's sections
 
 ## Format-Specific Checks
 - [ ] Tabular: no `<groupingsDown>`, no `<groupingsAcross>`, no `<chart>`, no `<aggregateTypes>`
@@ -28,6 +33,7 @@ Run through these checks before deploying any generated report metadata.
 - [ ] `<timeFrameFilter>` uses a valid `<interval>` value from `references/date-intervals.md`
 - [ ] Date columns use platform column names (e.g. `CLOSE_DATE`, not `CloseDate`)
 - [ ] Multi-value picklist uses ONE criteriaItem with comma-separated values
+- [ ] No `<params>` the request didn't ask for; Opportunity `probability` param is only `>0`
 
 ## Grouping Checks
 - [ ] `<dateGranularity>` is set for every grouping (use `None` for non-date fields)
@@ -38,8 +44,10 @@ Run through these checks before deploying any generated report metadata.
 - [ ] Chart is only on Summary or Matrix report
 - [ ] `<chartType>` is a valid type from `references/chart-types.md`
 - [ ] `<groupingColumn>` matches a grouping field
-- [ ] `<chartSummaries>` contains valid `<aggregate>` + `<column>` (or just `<column>RowCount</column>`)
-- [ ] `legendPosition` only used with grouped/stacked charts
+- [ ] `<chartSummaries>` contains valid `<aggregate>` + `<column>`, or ONLY `<column>RowCount</column>` with no `<aggregate>`
+- [ ] No `<columns><field>RowCount</field></columns>` — `RowCount` is only valid in `<chartSummaries><column>`, `<sortByName>`, or a `<calculatedFormula>`
+- [ ] `legendPosition` omitted on single-series `HorizontalBar`/`VerticalColumn`/`Line`; on grouped/stacked charts only `Right` or `Bottom` (see `references/chart-types.md`)
+- [ ] Every `<chart>` child element is in the allowed list in `references/chart-types.md`
 
 ## Cross-Filter Checks (if applicable)
 - [ ] Maximum 3 cross-filters per report

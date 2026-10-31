@@ -1,6 +1,6 @@
 # TRANSFORM Templates
 
-Each template is a verified shape from a passing test fixture. Copy, then change names/values.
+The `LAST_N_CHARS_RESOURCE_TRANSFORM` shape is MDAPI persistence-validated in `references/examples/LastCharactersFieldMasking/`. Other transforms in this file are older fixture-only references.
 
 ---
 
@@ -28,7 +28,7 @@ Source: `conditionClassificationValidDataMaskingSteelthread`
             <operator>IS</operator>
             <resourcePath>ENTITYTYPE</resourcePath>
             <policyRuleValueSet>
-                <valueString>{&quot;t&quot;:&quot;Text&quot;,&quot;v&quot;:&quot;FIELD&quot;}</valueString>
+                <valueText>FIELD</valueText>
             </policyRuleValueSet>
         </conditions>
         <conditions>
@@ -54,17 +54,19 @@ Source: `conditionClassificationValidDataMaskingSteelthread`
 </PolicyRuleDefinition>
 ```
 
-For parameterized masking (e.g. mask all but first 4 chars):
+Validated `LAST_N_CHARS_RESOURCE_TRANSFORM` argument shape:
 ```xml
-<resourceTransform>ALL_BUT_FIRST_N_CHARS_RESOURCE_TRANSFORM</resourceTransform>
 <resourceExpression>
-    <type>ARGLIST</type>
-    <version>1</version>
     <transformExpression>
         <argument>
-            <type>NUMBER</type>
-            <value>4</value>
+            <type>STRING</type>
+            <value>12</value>
         </argument>
     </transformExpression>
+    <type>ARGLIST</type>
+    <version>1</version>
 </resourceExpression>
+<resourceTransform>LAST_N_CHARS_RESOURCE_TRANSFORM</resourceTransform>
 ```
+
+Do not infer argument type or count for another transform.

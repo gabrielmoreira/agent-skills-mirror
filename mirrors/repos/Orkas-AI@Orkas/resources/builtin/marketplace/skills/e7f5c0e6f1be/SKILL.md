@@ -1,0 +1,144 @@
+---
+name: social-data
+description_zh: "抓取小红书、X/Twitter、Reddit、YouTube、Bilibili 公开帖子，或分析给定社媒/活动数据中的舆情、参与率、CTR、ROI、内容对比与实验；不负责账号发布。"
+description_en: "Fetch public Xiaohongshu, X/Twitter, Reddit, YouTube and Bilibili posts, or analyze supplied social/campaign data for sentiment, engagement, CTR, ROI, comparisons and experiments; not publishing."
+---
+
+# Social Data
+
+Use this skill for two related jobs:
+
+- `fetch`: collect public social posts from a specified platform and return structured, deduplicated items.
+- `analyze`: calculate and interpret metrics from user-provided social posts, campaign exports, or fetched social samples.
+
+Keep the two steps distinct. Fetching returns evidence samples; analysis turns user-provided or fetched data into metrics and recommendations.
+
+## When To Use
+
+- The user asks what people are saying about a brand, product, competitor, topic, or pain point on Xiaohongshu, X/Twitter, Reddit, YouTube, or Bilibili.
+- The user provides social post/campaign data and asks for engagement rate, CTR, ROI, ROAS, CPC, CPE, CPM, CPA, top/bottom posts, platform comparison, or content recommendations.
+- The user wants social evidence for reputation, buzz, user complaints, market feedback, campaign performance, or next content experiments.
+
+Do not use for:
+
+- Private messages, login-gated content, paid API bypassing, scraping restricted pages, or non-public data.
+- Claiming that zero fetched results means no discussion exists.
+- Treating benchmark comparisons as facts without user-provided or current benchmark context.
+- Replacing platform analytics exports when the user needs complete official reporting.
+
+## How To Call
+
+1. Choose the mode:
+   - `fetch`: user needs public posts or discussion samples.
+   - `analyze`: user already has post/campaign data or wants metrics/recommendations from fetched samples.
+   - `fetch_then_analyze`: user asks for a topic analysis and no data is provided.
+
+2. For fetch mode:
+   - Follow the [fetching guide](references/fetching.md).
+   - One platform per script call: `xhs`, `twitter`, `reddit`, `youtube`, or `bilibili`.
+   - Expand the user's topic into 3-8 short divergent keyword groups unless the user explicitly restricts keywords.
+   - Run the normal `run-skill.cjs` command directly. On the first fetch it automatically installs the pinned Python packages from `requirements.fetch.txt` into a workspace-local isolated environment, then continues the same request. Do not preflight with ad-hoc imports or ask the user to repair missing Python packages.
+   - Twitter/X uses an installed `xreach` first and otherwise falls back to the pinned `xreach-cli` through Orkas' bundled npx.
+   - If automatic dependency installation itself fails, report that bootstrap failure distinctly and stop that platform attempt. Do not misclassify it as a platform connectivity or empty-results issue.
+   - Report `diag.status`, failures, empty results, and platform dependency limits.
+   - Browser cookies are off by default. Before adding `--use-browser-cookies` for Reddit or Bilibili, explicitly ask the user for permission and disclose that the script will inspect installed browser cookie stores for that platform domain. Continue anonymously when permission is absent or declined.
+
+3. For analysis mode:
+   - Follow the [metrics guide](references/metrics.md).
+   - Validate fields before calculating.
+   - Label evidence as direct calculation, limited inference, or assumption.
+   - Separate organic and paid performance when possible.
+
+4. Use scripts only when useful:
+   - Fetch public samples (anonymous by default):
+     `$ORKAS_NODE $ORKAS_PC_DIR/bin/run-skill.cjs social-data fetch -- <platform> <keywords> [options]`
+     Run or quote it as one contiguous command; do not split the runner, skill,
+     and operation across prose. In PowerShell use the call operator so the
+     example stays directly runnable:
+     `& $env:ORKAS_NODE "$env:ORKAS_PC_DIR/bin/run-skill.cjs" social-data fetch -- <platform> <keywords>`
+   - Calculate metrics from JSON:
+     `$ORKAS_NODE $ORKAS_PC_DIR/bin/run-skill.cjs social-data calculate_metrics -- data.json`
+   - Analyze performance from JSON:
+     `$ORKAS_NODE $ORKAS_PC_DIR/bin/run-skill.cjs social-data analyze_performance -- data.json`
+
+5. Return traceable conclusions.
+   - Tie claims back to item URLs, post IDs, comments, or user-provided rows.
+   - Include data quality warnings and next tests.
+   - Do not synthesize sample posts when fetch fails.
+
+## Default Output
+
+For fetched discussion:
+
+```markdown
+# Social Data Fetch Result
+
+## Scope
+- Platform:
+- Topic:
+- Keywords:
+- Status:
+
+## Sample Summary
+- Items:
+- Top repeated themes:
+- Notable examples:
+
+## Diagnostics
+- Raw hits:
+- Deduplicated:
+- Failed:
+- Limits:
+
+## Next Analysis
+- ...
+```
+
+For performance analysis:
+
+```markdown
+# Social Performance Analysis
+
+## Bottom Line
+
+## Data Quality
+- Sample size:
+- Missing fields:
+- Abnormal values:
+- Confidence:
+
+## Key Metrics
+| Metric | Value | Meaning | Evidence |
+|---|---:|---|---|
+
+## Top / Bottom Content
+| Rank | Post | Platform | Format | Metric | Possible reason |
+|---|---|---|---|---:|---|
+
+## ROI And Cost
+- Spend:
+- Revenue / value:
+- ROI:
+- ROAS:
+- CPC / CPE / CPA:
+
+## Recommendations
+1. ...
+```
+
+## External Dependencies
+
+- Python 3 for bundled scripts.
+- `requests`, `browser_cookie3`, `curl_cffi`, and `yt-dlp` are pinned in `requirements.fetch.txt`; `run-skill.cjs` installs them once into the workspace dependency cache before first fetch. Analysis-only scripts do not install fetch dependencies.
+- Twitter/X uses `xreach` when already installed, otherwise pinned `xreach-cli@0.3.3` via bundled npx.
+- Xiaohongshu still requires the external local proxy service at `http://localhost:18060`; this service is not auto-installed or auto-started.
+- Analysis mode needs user-provided JSON, table data, or exported platform/campaign metrics.
+
+## Limits And Known Issues
+
+- Fetch coverage varies by platform, login state, rate limits, anti-bot behavior, and external service availability.
+- Public fetches are samples, not complete platform analytics.
+- Anonymous Reddit/Bilibili recall can be weak; browser login cookies may improve results only after explicit user permission and the `--use-browser-cookies` flag.
+- Xiaohongshu requires an external local proxy service at `http://localhost:18060`.
+- ROI estimates based on engagement value are assumptions unless the user provides real revenue, conversion value, or lead value.
+- Benchmark values can become stale and should be treated as rough context, not a pass/fail truth.

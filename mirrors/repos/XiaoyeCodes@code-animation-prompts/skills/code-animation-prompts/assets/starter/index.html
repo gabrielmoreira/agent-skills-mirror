@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code Animation · 渲染接口示例</title>
+<style>
+  * { box-sizing: border-box; } html, body { margin: 0; background: #080d18; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+</style>
+<canvas id="scene"></canvas>
+<script>
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+const config = {title: '让代码动起来', subtitle: 'CODE → MOTION', duration: 12};
+function draw(t) {
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  const w = canvas.width, h = canvas.height, scale = Math.min(w / 1280, h / 720);
+  ctx.fillStyle = '#080d18'; ctx.fillRect(0, 0, w, h);
+  ctx.save(); ctx.translate(w / 2, h / 2); ctx.scale(scale, scale);
+  for (let i = 0; i < 120; i++) {
+    const a = i * 2.399963 + t * 0.16;
+    const r = 130 + Math.sqrt(i / 120) * 330;
+    const x = Math.cos(a) * r, y = Math.sin(a) * r * 0.57;
+    ctx.fillStyle = i % 3 === 0 ? '#b8f777' : '#7f9fff';
+    ctx.globalAlpha = 0.25 + 0.6 * (0.5 + 0.5 * Math.sin(t * 1.2 + i));
+    ctx.beginPath(); ctx.arc(x, y, 1.5 + i % 3, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1; ctx.textAlign = 'center'; ctx.fillStyle = '#b8f777';
+  ctx.font = '18px Arial'; ctx.fillText(config.subtitle, 0, -54);
+  ctx.fillStyle = '#f3f5fb'; ctx.font = 'bold 58px "Microsoft YaHei", "PingFang SC", sans-serif';
+  ctx.fillText(config.title, 0, 24);
+  ctx.fillStyle = '#8290aa'; ctx.font = '16px Arial';
+  ctx.fillText('EDITABLE HTML  /  DETERMINISTIC FRAMES', 0, 72);
+  ctx.fillStyle = '#b8f777'; ctx.fillRect(-160, 116, 320 * ((t % config.duration) / config.duration), 2);
+  ctx.restore();
+}
+window.renderAt = t => draw(t);
+const query = new URLSearchParams(location.search);
+if (query.has('t')) draw(Number(query.get('t')) || 0);
+else if (query.has('export')) draw(0);
+else {
+  const start = performance.now();
+  function loop(now) { draw((now - start) / 1000); requestAnimationFrame(loop); }
+  requestAnimationFrame(loop);
+}
+</script>
+</html>

@@ -1,88 +1,53 @@
 #!/usr/bin/env python3
-"""
-Generate a self-contained HTML offline-analysis report from replay results JSON.
-Adapted from hawking/ai-agent-backtesting PR #53 (build_failure_report.py).
+"""Self-contained HTML report for one replay run.
 
-Usage:
-    python build_report.py [replay_results.json] [output.html]
+    python3 scripts/build_report.py <run dir | results.jsonl> [report.html]
+
+Reads results.jsonl, plus units.jsonl (transcripts, offered tools) and summary.json (run
+config) when they sit next to it. Writes <run dir>/report.html by default. Every value is
+HTML-escaped and redacted; the report shows user utterances, so share it like the run dir.
+
+Scorecards follow the step kinds: router decisions (topic = the go_to_* call), sub-agent
+tool calls, sub-agent text replies, and overall agreement (mean unit score: 1 match,
+0.5 right tools with different arguments, 0 otherwise) next to the strict score. Infra
+errors are counted on their own card and never scored.
 """
-import json, sys, html as _html, textwrap
-from pathlib import Path
+
+import json
+import os
+import sys
+import html as _html
 from collections import Counter
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-def _calls(ans_json):
-    """Extract [(name, args_dict), ...] from a structured answer JSON string."""
-    try:
-        ans = json.loads(ans_json) if isinstance(ans_json, str) else ans_json
-    except (json.JSONDecodeError, TypeError):
-        return []
-    tcs = ans.get("tool_calls") or []
-    out = []
-    for tc in tcs:
-        name = tc.get("name", "")
-        args = tc.get("arguments", {})
-        if isinstance(args, str):
-            try:
-                args = json.loads(args)
-            except Exception:
-                args = {"raw": args}
-        out.append((name, args))
-    return out
+from btlib import SCHEMA_RESULT  # noqa: E402
+from btlib import results as resultslib  # noqa: E402
+from btlib.redact import redact  # noqa: E402
+from btlib.scoring import MATCH_BUCKETS  # noqa: E402
 
-
-def _is_router(d):
-    golden = _calls(d.get("GoldenAnswer", "{}"))
-    if d.get("GoldenType") == "topic":
-        return True
-    for name, _ in golden:
-        if any(name.lower().startswith(p) for p in ("route_to", "go_to", "transfer_to")):
-            return True
-    return False
+BUCKET_LABELS = {
+    "wrong_args": "same tool, different arguments",
+    "wrong_tool": "called a different tool",
+    "missed_call": "missed a tool call",
+    "extra_call": "extra tool call",
+    "tool_to_text": "replied with text instead of a tool call",
+    "text_to_tool": "called a tool instead of replying",
+    "text_divergence": "text reply not equivalent",
+    "equivalent_tool": "equivalent tool (lenient match only)",
+    "transition_args": "arguments on a transition that takes none (lenient match only)",
+}
+KIND_TITLES = [("router", "Routing", "router steps; topic = the go_to_* call"),
+               ("subagent_tool", "Sub-agent tool calls", "steps where production called a tool"),
+               ("subagent_text", "Sub-agent text replies", "steps where production replied with text")]
 
 
-def _bucket(d, name_hit):
-    """Categorize a failing row into a failure bucket."""
-    if d.get("ScoringError"):
-        err = d["ScoringError"].lower()
-        if "expected tool call" in err and "got text" in err:
-            return "no tool call emitted"
-        if "expected text" in err and "got tool call" in err:
-            return "unexpected tool call"
-        return "infra error"
-    if d.get("ToolAltReason"):
-        return "used functionally similar tool"
-    if not name_hit:
-        return "called a different tool"
-    if d.get("SchemaViolationNotes"):
-        return "args violate tool schema"
-    return "args mismatch (values differ)"
+def _esc(text):
+    return _html.escape(redact(text)) if text not in (None, "") else ""
 
 
-def _score_topic(routers):
-    if not routers:
-        return None
-    hits = sum(1 for d in routers if d.get("FunctionNameAgreementLenient"))
-    return round(100 * hits / len(routers), 1)
-
-
-def _score_action_strict(actions):
-    if not actions:
-        return None
-    hits = sum(1 for d in actions if d.get("PassStrict") or d.get("FunctionArgsAgreement"))
-    return round(100 * hits / len(actions), 1)
-
-
-def _score_action_lenient(actions):
-    """Count a row as passing if it passes strict OR used a functionally equivalent tool."""
-    if not actions:
-        return None
-    hits = sum(1 for d in actions
-               if d.get("PassStrict") or d.get("FunctionArgsAgreement") or d.get("FunctionNameAgreementLenient"))
-    return round(100 * hits / len(actions), 1)
+def _json_pretty(obj):
+    return _esc(json.dumps(obj, indent=2, ensure_ascii=False))
 
 
 def _rating(score, safe_min=85, review_min=60):
@@ -95,139 +60,320 @@ def _rating(score, safe_min=85, review_min=60):
     return "UNSAFE", "#dc2626"
 
 
-def _esc(text):
-    return _html.escape(str(text)) if text else ""
+def _pct(x):
+    return None if x is None else round(100 * x, 1)
 
 
-def _json_pretty(obj):
-    if isinstance(obj, str):
-        try:
-            obj = json.loads(obj)
-        except Exception:
-            return _esc(obj)
-    return _esc(json.dumps(obj, indent=2))
+def _fmt_pct(x):
+    return "N/A" if x is None else f"{x}%"
 
 
-# ---------------------------------------------------------------------------
-# Card rendering
-# ---------------------------------------------------------------------------
+LEGACY_HINT = ("This report reads the run dir of the step-level replay (sfap_replay.py --out-dir); "
+               "a replay_results.json from the old replay is not comparable: re-run the replay.")
 
-def _card(d, rec, idx):
-    """Render an expandable card for a single failing row."""
-    golden = _calls(d.get("GoldenAnswer", "{}"))
-    predicted = _calls(d.get("PredictedAnswer", "{}"))
-    g_names = [n for n, _ in golden]
-    p_names = [n for n, _ in predicted]
 
-    name_hit = d.get("FunctionNameAgreement", False)
-    bucket = _bucket(d, name_hit)
+def load_run(path):
+    """(records, units_by_id, summary or None, run_dir) from a run dir or a results.jsonl path."""
+    run_dir = path if os.path.isdir(path) else os.path.dirname(os.path.abspath(path))
+    results_path = os.path.join(path, "results.jsonl") if os.path.isdir(path) else path
+    if not os.path.exists(results_path):
+        raise SystemExit(f"{results_path} not found. {LEGACY_HINT}")
+    try:
+        records = resultslib.read_jsonl(results_path)
+    except (ValueError, UnicodeDecodeError):  # JSONDecodeError is a ValueError
+        records = None
+    if records is None or not all(isinstance(r, dict) and r.get("schema") == SCHEMA_RESULT for r in records):
+        raise SystemExit(f"{results_path} is not a results.jsonl ({SCHEMA_RESULT}). {LEGACY_HINT}")
+    units_path = os.path.join(run_dir, "units.jsonl")
+    units = {u["unit_id"]: u for u in resultslib.read_jsonl(units_path)} if os.path.exists(units_path) else {}
+    summary_path = os.path.join(run_dir, "summary.json")
+    summary = None
+    if os.path.exists(summary_path):
+        with open(summary_path, encoding="utf-8") as f:
+            summary = json.load(f)
+    return records, units, summary, run_dir
 
-    flags = []
-    if d.get("ScoringError"):
-        flags.append(f'<span class="flag flag-error">{_esc(d["ScoringError"][:80])}</span>')
-    if d.get("ToolAltReason"):
-        flags.append(f'<span class="flag flag-warn">{_esc(d["ToolAltReason"])}</span>')
-    if d.get("FunctionArgsScoreReason"):
-        flags.append(f'<span class="flag flag-info">Args: {_esc(str(d["FunctionArgsScoreReason"])[:120])}</span>')
 
-    # Status badge
-    if d.get("PassStrict") or d.get("FunctionArgsAgreement"):
-        status_cls = "badge-pass"
-        status_txt = "PASS"
-    elif d.get("FunctionNameAgreementLenient"):
-        status_cls = "badge-warn"
-        status_txt = "PARTIAL"
+def failure_category(rec):
+    """Bucket for the failure breakdown; None for a strict match."""
+    if rec["bucket"] == "match":
+        return "equivalent_tool" if rec["strict"] < 1.0 else None
+    return rec["bucket"]
+
+
+def _calls_html(calls):
+    return "".join(f'<div class="tool-call"><span class="tool-name">{_esc(c.get("name"))}</span>'
+                   f'<pre class="tool-args">{_json_pretty(c.get("args") if "args_raw" not in c else c["args_raw"])}</pre></div>'
+                   for c in calls)
+
+
+def _answer_html(calls, text):
+    if calls:
+        return _calls_html(calls) + (f'<div class="text-resp">{_esc(text)}</div>' if text else "")
+    return f'<div class="text-resp">{_esc(text)}</div>' if text else "<em>empty</em>"
+
+
+def _transcript_html(unit):
+    if not unit:
+        return "<em>no units.jsonl next to results.jsonl</em>", 0
+    msgs = unit["request"]["messages"]
+    parts = []
+    for m in msgs:
+        role = m.get("role", "unknown")
+        if m.get("tool_invocations"):
+            body = "; ".join(f'{(c.get("function") or {}).get("name")}({(c.get("function") or {}).get("arguments")})'
+                             for c in m["tool_invocations"])
+            said = f'{_esc(m.get("content"))}<br>' if m.get("content") else ""
+            parts.append(f'<div class="msg msg-assistant"><strong>assistant → tool</strong>: {said}<code>{_esc(body)}</code></div>')
+        elif role == "tool":
+            parts.append(f'<div class="msg msg-info"><strong>tool result ({_esc(m.get("tool_call_name") or "")})</strong>: '
+                         f'{_esc(m.get("content"))}</div>')
+        elif role == "system":
+            content = m.get("content") or ""
+            parts.append(f'<details class="msg msg-system"><summary><strong>system</strong> ({len(content)} chars)'
+                         f'</summary><pre class="tool-args">{_esc(content)}</pre></details>')
+        else:
+            parts.append(f'<div class="msg msg-{_esc(role)}"><strong>{_esc(role)}</strong>: {_esc(m.get("content"))}</div>')
+    return "".join(parts), len(msgs)
+
+
+def _card(rec, unit, idx, transcript=True):
+    ok = rec["status"] == "ok"
+    if not ok:
+        badge, badge_txt = "badge-fail", "INFRA"
+    elif rec["bucket"] == "match" and rec["strict"] == 1.0:
+        badge, badge_txt = "badge-pass", "PASS"
+    elif rec["score"] and rec["score"] > 0:
+        badge, badge_txt = "badge-warn", "PARTIAL"
     else:
-        status_cls = "badge-fail"
-        status_txt = "FAIL"
+        badge, badge_txt = "badge-fail", "FAIL"
+    category = (failure_category(rec) if ok else rec["error_kind"]) or "match"
+    flags = []
+    if not ok:
+        flags.append(f'<span class="flag flag-error">{_esc(rec["error"])}</span>')
+    if ok and rec["detail"]:
+        flags.append(f'<span class="flag flag-warn">{_esc(rec["detail"])}</span>')
+    for note in rec.get("schema_violations") or []:
+        flags.append(f'<span class="flag flag-error">schema: {_esc(note)}</span>')
+    for j in rec.get("judge") or []:
+        flags.append(f'<span class="flag flag-info">judge ({_esc(j.get("for"))}): '
+                     f'{"equivalent" if j.get("equivalent") else "not equivalent"}: {_esc(j.get("reasoning"))}</span>')
+    g = rec["golden"]
+    resp = rec["response"] or {}
 
-    # Golden vs Predicted comparison
-    golden_html = ""
-    for name, args in golden:
-        golden_html += f'<div class="tool-call"><span class="tool-name">{_esc(name)}</span>'
-        golden_html += f'<pre class="tool-args">{_json_pretty(args)}</pre></div>'
-    if not golden:
-        try:
-            ga = json.loads(d.get("GoldenAnswer", "{}"))
-            if ga.get("content"):
-                golden_html = f'<div class="text-resp">{_esc(ga["content"][:300])}</div>'
-        except Exception:
-            pass
+    def yn(v):
+        return "N/A" if v is None else ("Yes" if v else "No")
 
-    predicted_html = ""
-    for name, args in predicted:
-        predicted_html += f'<div class="tool-call"><span class="tool-name">{_esc(name)}</span>'
-        predicted_html += f'<pre class="tool-args">{_json_pretty(args)}</pre></div>'
-    if not predicted:
-        try:
-            pa = json.loads(d.get("PredictedAnswer", "{}"))
-            if pa.get("content"):
-                predicted_html = f'<div class="text-resp">{_esc(pa["content"][:300])}</div>'
-        except Exception:
-            pass
-
-    # Tools offered
-    tools_offered = rec.get("tools", []) if rec else []
-    tools_html = ", ".join(f'<code>{_esc(t)}</code>' for t in tools_offered) if tools_offered else "<em>none</em>"
-
-    # Transcript (all messages, full content)
-    messages = rec.get("messages", []) if rec else []
-    transcript_html = ""
-    for msg in messages:
-        role = msg.get("role", "unknown")
-        content = str(msg.get("content", ""))
-        transcript_html += f'<div class="msg msg-{_esc(role)}"><strong>{_esc(role)}</strong>: {_esc(content)}</div>'
-
+    rows = [("Decision (tool vs text)", yn(rec["decision"])), ("Tool names (lenient)", yn(rec["names"])),
+            ("Tool names (exact)", yn(rec["names_strict"])), ("Arguments", yn(rec["args"])),
+            ("Text equivalent", yn(rec["text"])), ("Unit score", "N/A" if rec["score"] is None else rec["score"]),
+            ("Strict", "N/A" if rec["strict"] is None else rec["strict"])]
+    if rec["step_kind"] == "router":
+        rows.append(("Topic (go_to) match", yn(rec["topic_match"])))
+    if rec.get("proxies"):
+        p = rec["proxies"]
+        rows.append(("Length ratio (candidate/golden)", p["len_ratio"]))
+        rows.append(("Ends with a question (golden / candidate)",
+                     f'{yn(p["golden_ends_with_question"])} / {yn(p["candidate_ends_with_question"])}'))
+        if p["candidate_raw_ids"] > p["golden_raw_ids"]:
+            rows.append(("Raw record ids in reply", p["candidate_raw_ids"]))
+    score_rows = "".join(f"<tr><td>{_esc(k)}</td><td>{_esc(str(v))}</td></tr>" for k, v in rows)
+    tools = [(t.get("function") or {}).get("name") for t in unit["request"]["tools"]] if unit else []
+    tools_html = ", ".join(f"<code>{_esc(t)}</code>" for t in tools) or "<em>none</em>"
+    if transcript:
+        body, n_msgs = _transcript_html(unit)
+        request_html = f'''<details class="transcript-toggle">
+          <summary>Request sent ({n_msgs} messages)</summary>
+          <div class="transcript">{body}</div>
+        </details>'''
+    else:  # matching steps: keep the report small; the request is in units.jsonl
+        request_html = f'<div class="scorecard-detail">request: units.jsonl, unit_id <code>{_esc(rec["unit_id"])}</code></div>'
     return f'''
     <details class="card">
       <summary class="card-header">
         <span class="card-idx">#{idx}</span>
-        <span class="{status_cls}">{status_txt}</span>
-        <span class="card-bucket">{_esc(bucket)}</span>
-        <span class="card-utterance">{_esc(d.get("Utterance", "")[:80])}</span>
-        <span class="card-session">{_esc(d.get("AiAgentSessionId", "")[:12])}...</span>
+        <span class="{badge}">{badge_txt}</span>
+        <span class="card-bucket">{_esc(BUCKET_LABELS.get(category, category))}</span>
+        <span class="card-bucket">{_esc(rec["node"])}</span>
+        <span class="card-utterance">{_esc((rec.get("user_utterance") or "")[:100])}</span>
+        <span class="card-session">r{rec["repeat"]} · {_esc(rec["unit_id"][-24:])}</span>
       </summary>
       <div class="card-body">
         <div class="flags">{" ".join(flags)}</div>
-
         <div class="comparison">
-          <div class="comp-col">
-            <h4>Golden (Expected)</h4>
-            {golden_html or "<em>none</em>"}
-          </div>
-          <div class="comp-col">
-            <h4>Predicted (Replay)</h4>
-            {predicted_html or "<em>none</em>"}
-          </div>
+          <div class="comp-col"><h4>Golden ({_esc(rec.get("golden_model"))})</h4>{_answer_html(g["tool_calls"], g["text"])}</div>
+          <div class="comp-col"><h4>Candidate ({_esc(rec.get("model"))})</h4>{_answer_html(resp.get("tool_calls") or [], resp.get("text")) if ok else "<em>no answer (infra error)</em>"}</div>
         </div>
-
-        <div class="section">
-          <h4>Scores</h4>
-          <table class="score-table">
-            <tr><td>Function Name Match</td><td>{"Yes" if d.get("FunctionNameAgreement") else "No"}</td></tr>
-            <tr><td>Function Name Match (Lenient)</td><td>{"Yes" if d.get("FunctionNameAgreementLenient") else "No"}</td></tr>
-            <tr><td>Args Agreement</td><td>{"Yes" if d.get("FunctionArgsAgreement") else "No"}</td></tr>
-            <tr><td>Args Score</td><td>{d.get("FunctionArgsScore", "N/A")}</td></tr>
-            <tr><td>Pass Strict</td><td>{"Yes" if d.get("PassStrict") else "No"}</td></tr>
-          </table>
-        </div>
-
-        <div class="section">
-          <h4>Tools Offered</h4>
-          <div>{tools_html}</div>
-        </div>
-
-        <details class="transcript-toggle">
-          <summary>Transcript ({len(messages)} messages)</summary>
-          <div class="transcript">{transcript_html or "<em>no transcript captured</em>"}</div>
-        </details>
+        <div class="section"><h4>Scores</h4><table class="score-table">{score_rows}</table></div>
+        <div class="section"><h4>Tools offered</h4><div>{tools_html}</div></div>
+        {request_html}
       </div>
     </details>'''
 
 
-# ---------------------------------------------------------------------------
-# Main HTML builder
-# ---------------------------------------------------------------------------
+def _scorecard(title, value_pct, label, details):
+    verdict, color = _rating(value_pct)
+    detail_html = "".join(f'<div class="scorecard-detail">{d}</div>' for d in details)
+    return f'''
+<div class="scorecard">
+  <h3>{_esc(title)}</h3>
+  <div class="scorecard-value" style="color:{color}">{_fmt_pct(value_pct)}</div>
+  <div class="scorecard-label">{_esc(label)}</div>
+  {detail_html}
+  <div class="scorecard-detail">{verdict}</div>
+</div>'''
+
+
+def _production_html(summary):
+    """What production's own checks said of the replayed turns; '' when STDM recorded none."""
+    p = summary["production"]
+    if not (set(p["groundedness"]) - {"(none)"} or p["guardrails"] or p["turns_with_step_errors"]
+            or set(p["end_type"]) - {"(none)"} or p["sessions_with_action_errors"]):
+        return ""
+    by_cat = summary["by_groundedness"]
+    rows = "".join(
+        f'<tr><td>{"no check recorded" if cat == "(none)" else f"<code>{_esc(cat)}</code>"}</td>'
+        f'<td>{p["groundedness"].get(cat, 0)}</td><td>{by_cat.get(cat, {}).get("n", 0)}</td>'
+        f'<td>{_fmt_pct(_pct(by_cat.get(cat, {}).get("agreement")))}</td>'
+        f'<td>{_fmt_pct(_pct(by_cat.get(cat, {}).get("strict")))}</td></tr>'
+        for cat in list(p["groundedness"]) + [c for c in by_cat if c not in p["groundedness"]])
+    lines = [f'<code>{_esc(name)}</code>: {_esc(", ".join(f"{v} {n}" for v, n in values.items()))}'
+             for name, values in p["guardrails"].items()]
+    end_types = ", ".join(f'{"not recorded" if t == "(none)" else _esc(t)} {n}' for t, n in p["end_type"].items())
+    lines.append(f'{p["sessions"]} sessions &middot; end type: {end_types} &middot; with action errors: '
+                 f'{p["sessions_with_action_errors"]} &middot; turns with a failed step: {p["turns_with_step_errors"]}')
+    details = "".join(f'<div class="scorecard-detail">{line}</div>' for line in lines)
+    return f'''<div class="buckets"><h3>Production's own checks (report only)</h3>
+<div class="scorecard-detail">What production's groundedness check and trust guardrails said of its own replies. They never change a score: agreement with production is not correctness.</div>
+<table class="score-table node-table">
+<tr><th>groundedness of the turn</th><th>turns</th><th>steps</th><th>agreement</th><th>strict</th></tr>{rows}</table>
+{details}</div>'''
+
+
+def build(records, units, summary=None):
+    saved = summary or {}
+    config = saved.get("config") or {}
+    counts = saved.get("counts") or {}
+    summary = resultslib.summarize(records, config, counts.get("skipped_steps"), counts.get("units"))
+    ok = [r for r in records if r["status"] == "ok"]
+    infra = [r for r in records if r["status"] != "ok"]
+    overall = _pct(summary["overall"]["agreement"])
+    verdict, verdict_color = _rating(overall)
+
+    def meta(label, value):
+        return f'<div><dt>{_esc(label)}</dt><dd>{_esc(str(value)) if value not in (None, "", []) else "N/A"}</dd></div>'
+
+    code = config.get("code") or {}
+    head = [
+        meta("Candidate model", ", ".join(sorted({r["model"] for r in records if r.get("model")}))),
+        meta("Golden (production) model", ", ".join(sorted({r["golden_model"] for r in records if r.get("golden_model")}))),
+        meta("Judge model", config.get("judge_model")),
+        meta("Org", config.get("org") or next((r["org"] for r in records if r.get("org")), None)),
+        meta("Agent", config.get("agent") or next((r["agent"] for r in records if r.get("agent")), None)),
+        meta("Units x repeats", f'{summary["counts"]["units"]} x {config.get("k", 1)}'),
+        meta("Finished", config.get("finished")),
+        meta("Code", f'{code.get("git") or "?"}{"+dirty" if code.get("git_dirty") else ""} / btlib {code.get("btlib_sha256", "?")}'),
+    ]
+    parts = [f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Offline Analysis Report</title>
+<style>{CSS}</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+  <h1>Offline Analysis Report</h1>
+  <div class="verdict" style="background:{verdict_color}">{verdict}</div>
+  <dl class="header-meta">{"".join(head)}</dl>
+</div>
+<div class="scorecards">''']
+
+    for prefix, title, label in KIND_TITLES:
+        a = resultslib.aggregate([r for r in ok if r["kind"] == prefix or r["kind"].startswith(prefix + "_")])
+        if not a["n"]:
+            continue
+        details = [f'{a["n"]} steps &middot; {a["match"]} match &middot; strict {_fmt_pct(_pct(a["strict"]))}']
+        if prefix == "router" and summary["topic"]["n"]:
+            details.append(f'topic {summary["topic"]["match"]}/{summary["topic"]["n"]}')
+        if prefix == "subagent_text" and summary["text"]["n"]:
+            t = summary["text"]
+            details.append(f'median length ratio {t["median_len_ratio"]} &middot; raw-id leaks {t["raw_id_leaks"]}')
+        parts.append(_scorecard(title, _pct(a["agreement"]), label, details))
+    o = summary["overall"]
+    parts.append(_scorecard("Overall", overall, "Agreement with production (mean unit score)",
+                            [f'{o["n"]} scored &middot; {o["match"]} match &middot; strict {_fmt_pct(_pct(o["strict"]))}']))
+    c = summary["counts"]
+    infra_kinds = ", ".join(f"{_esc(k)} {v}" for k, v in c["infra_by_kind"].items()) or "none"
+    skipped = ", ".join(f"{_esc(k)} {v}" for k, v in c["skipped_steps"].items()) or "none"
+    timed_out = (f'\n  <div class="scorecard-detail">{c["timed_out_units"]} units timed out on every repeat: the model '
+                 f'may not finish them</div>' if c.get("timed_out_units") else "")
+    parts.append(f'''
+<div class="scorecard">
+  <h3>Infra errors (not scored)</h3>
+  <div class="scorecard-value" style="color:{"#dc2626" if c["infra_rate"] > 0.1 else "#475569"}">{c["infra_error"]}</div>
+  <div class="scorecard-label">{100 * c["infra_rate"]:.1f}% of {c["records"]} calls</div>
+  <div class="scorecard-detail">by kind: {infra_kinds}</div>{timed_out}
+  <div class="scorecard-detail">steps not replayed: {skipped}</div>
+</div>''')
+    parts.append("</div>")
+
+    # per-node table
+    node_rows = "".join(
+        f'<tr><td><code>{_esc(node)}</code></td><td>{a["n"]}</td><td>{_fmt_pct(_pct(a["agreement"]))}</td>'
+        f'<td>{_fmt_pct(_pct(a["strict"]))}</td><td>{_esc(", ".join(f"{BUCKET_LABELS.get(b, b)} {k}" for b, k in a["buckets"].items() if b not in MATCH_BUCKETS))}</td></tr>'
+        for node, a in summary["by_node"].items())
+    if node_rows:
+        parts.append(f'''<div class="buckets"><h3>By node</h3><table class="score-table node-table">
+<tr><th>node</th><th>steps</th><th>agreement</th><th>strict</th><th>non-matches</th></tr>{node_rows}</table></div>''')
+    parts.append(_production_html(summary))
+
+    # failure breakdown
+    cats = Counter(cat for cat in (failure_category(r) for r in ok) if cat)
+    if cats:
+        top = max(cats.values())
+        parts.append('<div class="buckets"><h3>Failure breakdown</h3>')
+        for cat, n in cats.most_common():
+            parts.append(f'''
+<div class="bucket-row">
+  <span class="bucket-name">{_esc(BUCKET_LABELS.get(cat, cat))}</span>
+  <div class="bucket-bar-wrap"><div class="bucket-bar" style="width:{round(100 * n / top)}%"></div></div>
+  <span class="bucket-count">{n}</span>
+</div>''')
+        violations = summary["schema_violations"]["records"]
+        if violations:
+            parts.append(f'<div class="scorecard-detail">{violations} candidate answer(s) violate the offered tool schema</div>')
+        parts.append("</div>")
+    if summary["confusion"]:
+        conf_rows = "".join(f'<tr><td><code>{_esc(x["golden"])}</code></td><td><code>{_esc(x["candidate"])}</code></td><td>{x["n"]}</td></tr>'
+                            for x in summary["confusion"][:15])
+        parts.append(f'''<div class="buckets"><h3>Tool confusions (golden → candidate)</h3><table class="score-table node-table">
+<tr><th>golden</th><th>candidate</th><th>n</th></tr>{conf_rows}</table></div>''')
+
+    failing = [(i, r) for i, r in enumerate(records) if r["status"] == "ok" and failure_category(r)]
+    passing = [(i, r) for i, r in enumerate(records) if r["status"] == "ok" and not failure_category(r)]
+    if passing:
+        parts.append(f'<div class="pass-summary">{len(passing)} step(s) matched production exactly</div>')
+    if failing:
+        parts.append(f"<h2>Not an exact match ({len(failing)})</h2>")
+        parts.extend(_card(r, units.get(r["unit_id"]), i) for i, r in failing)
+    if infra:
+        parts.append(f"<h2>Infra errors ({len(infra)})</h2>")
+        parts.extend(_card(r, units.get(r["unit_id"]), i) for i, r in enumerate(records) if r["status"] != "ok")
+    if passing:
+        parts.append(f'''
+<details style="margin-top:1.5rem">
+  <summary style="cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--slate-500);font-size:1.1rem;padding:0.5rem 0">
+    Matching ({len(passing)})
+  </summary>
+  <div style="margin-top:0.5rem">''')
+        parts.extend(_card(r, units.get(r["unit_id"]), i, transcript=False) for i, r in passing)
+        parts.append("</div></details>")
+    parts.append("\n</div>\n</body>\n</html>")
+    return "\n".join(parts)
+
 
 CSS = '''
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -602,195 +748,37 @@ code {
   color: var(--safe);
   font-weight: 500;
 }
+
+/* Multi-row tables (by node, confusions) */
+.node-table td:first-child { width: auto; color: var(--slate-700); }
+.node-table th {
+  text-align: left;
+  padding: 0.3rem 0.5rem;
+  font-weight: 600;
+  color: var(--slate-600);
+  border-bottom: 2px solid var(--slate-200);
+}
+.node-table td:last-child { font-family: inherit; font-weight: 400; color: var(--slate-600); }
+details.msg > summary { cursor: pointer; }
+.msg pre.tool-args { white-space: pre-wrap; margin-top: 0.4rem; }
 '''
 
 
-def build(data):
-    """Build HTML report from replay results JSON data."""
-    meta = data.get("metadata", {})
-    rows = data.get("rows", [])
-    recs = data.get("recs", {})
-
-    routers = [d for d in rows if _is_router(d)]
-    actions = [d for d in rows if not _is_router(d)]
-
-    topic_score = _score_topic(routers)
-    action_strict = _score_action_strict(actions)
-    action_lenient = _score_action_lenient(actions)
-
-    # Overall verdict uses lenient action score (functionally equivalent tools count)
-    action_score = action_lenient
-    if topic_score is not None and action_score is not None:
-        overall = round(0.3 * topic_score + 0.7 * action_score, 1)
-    elif action_score is not None:
-        overall = action_score
-    elif topic_score is not None:
-        overall = topic_score
-    else:
-        overall = None
-
-    verdict_text, verdict_color = _rating(overall)
-
-    # A row passes if strict pass, args agreement, OR lenient name match (equivalent tool)
-    def _row_passes(d):
-        return d.get("PassStrict") or d.get("FunctionArgsAgreement") or d.get("FunctionNameAgreementLenient")
-
-    failing = [d for d in rows if not _row_passes(d)]
-    bucket_counts = Counter()
-    for d in failing:
-        name_hit = d.get("FunctionNameAgreement", False)
-        bucket_counts[_bucket(d, name_hit)] += 1
-    max_bucket = max(bucket_counts.values()) if bucket_counts else 1
-
-    passing = [d for d in rows if _row_passes(d)]
-
-    # Build HTML
-    parts = []
-    parts.append(f'''<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Offline Analysis Report</title>
-<style>{CSS}</style>
-</head>
-<body>
-<div class="container">
-''')
-
-    # Header
-    parts.append(f'''
-<div class="header">
-  <h1>Offline Analysis Report</h1>
-  <div class="verdict" style="background:{verdict_color}">{verdict_text}</div>
-  <dl class="header-meta">
-    <div><dt>Baseline Model</dt><dd>{_esc(meta.get("baseline_model", "N/A"))}</dd></div>
-    <div><dt>Replay Model</dt><dd>{_esc(meta.get("replay_model", "N/A"))}</dd></div>
-    <div><dt>Org ID</dt><dd>{_esc(meta.get("org_id", "N/A"))}</dd></div>
-    <div><dt>Agent</dt><dd>{_esc(meta.get("agent_api_name", "N/A") or "N/A")}</dd></div>
-    <div><dt>Total Rows</dt><dd>{meta.get("total_rows", len(rows))}</dd></div>
-    <div><dt>Timestamp</dt><dd>{_esc(meta.get("timestamp", ""))}</dd></div>
-  </dl>
-</div>
-''')
-
-    # Scorecards
-    parts.append('<div class="scorecards">')
-
-    if routers:
-        t_verdict, t_color = _rating(topic_score)
-        parts.append(f'''
-<div class="scorecard">
-  <h3>Routing</h3>
-  <div class="scorecard-value" style="color:{t_color}">{topic_score}%</div>
-  <div class="scorecard-label">Topic Agreement (Lenient)</div>
-  <div class="scorecard-detail">{len(routers)} routing rows &middot; {t_verdict}</div>
-</div>''')
-
-    if actions:
-        a_verdict, a_color = _rating(action_lenient)
-        as_verdict, as_color = _rating(action_strict)
-        strict_pass = sum(1 for d in actions if d.get("PassStrict"))
-        args_agree = sum(1 for d in actions if d.get("FunctionArgsAgreement"))
-        name_exact = sum(1 for d in actions if d.get("FunctionNameAgreement"))
-        name_lenient = sum(1 for d in actions if d.get("FunctionNameAgreementLenient"))
-        parts.append(f'''
-<div class="scorecard">
-  <h3>Action Tools (Lenient)</h3>
-  <div class="scorecard-value" style="color:{a_color}">{action_lenient}%</div>
-  <div class="scorecard-label">Includes functionally equivalent tools</div>
-  <div class="scorecard-detail">{len(actions)} action rows &middot; {a_verdict}</div>
-  <div class="scorecard-detail">{name_lenient}/{len(actions)} tool match (lenient) &middot; {name_exact}/{len(actions)} exact</div>
-</div>''')
-        parts.append(f'''
-<div class="scorecard">
-  <h3>Action Tools (Strict)</h3>
-  <div class="scorecard-value" style="color:{as_color}">{action_strict}%</div>
-  <div class="scorecard-label">Exact name + args agreement</div>
-  <div class="scorecard-detail">{strict_pass} strict pass &middot; {args_agree} args agree</div>
-</div>''')
-
-    # Overall scorecard
-    o_verdict, o_color = _rating(overall)
-    parts.append(f'''
-<div class="scorecard">
-  <h3>Overall</h3>
-  <div class="scorecard-value" style="color:{o_color}">{overall if overall is not None else "N/A"}%</div>
-  <div class="scorecard-label">Weighted Score</div>
-  <div class="scorecard-detail">{len(rows)} total rows &middot; {len(passing)} pass &middot; {len(failing)} fail</div>
-</div>''')
-
-    parts.append('</div>')  # end scorecards
-
-    # Failure buckets
-    if bucket_counts:
-        parts.append('<div class="buckets"><h3>Failure Breakdown</h3>')
-        for bucket_name, count in bucket_counts.most_common():
-            pct = round(100 * count / max_bucket)
-            parts.append(f'''
-<div class="bucket-row">
-  <span class="bucket-name">{_esc(bucket_name)}</span>
-  <div class="bucket-bar-wrap"><div class="bucket-bar" style="width:{pct}%"></div></div>
-  <span class="bucket-count">{count}</span>
-</div>''')
-        parts.append('</div>')
-
-    # Passing rows summary
-    if passing:
-        parts.append(f'<div class="pass-summary">{len(passing)} row(s) passed (strict pass or args agreement)</div>')
-
-    # Failing row cards
-    if failing:
-        parts.append(f'<h2>Failing Rows ({len(failing)})</h2>')
-        for d in failing:
-            idx = d.get("SessionRowIndex", "?")
-            rec = recs.get(str(idx), {})
-            parts.append(_card(d, rec, idx))
-
-    # All passing row cards (collapsed section)
-    if passing:
-        parts.append(f'''
-<details style="margin-top:1.5rem">
-  <summary style="cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--slate-500);font-size:1.1rem;padding:0.5rem 0">
-    Passing Rows ({len(passing)})
-  </summary>
-  <div style="margin-top:0.5rem">''')
-        for d in passing:
-            idx = d.get("SessionRowIndex", "?")
-            rec = recs.get(str(idx), {})
-            parts.append(_card(d, rec, idx))
-        parts.append('</div></details>')
-
-    parts.append('''
-</div>
-</body>
-</html>''')
-
-    return "\n".join(parts)
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-def main():
-    input_path = sys.argv[1] if len(sys.argv) > 1 else "replay_results.json"
-    output_path = sys.argv[2] if len(sys.argv) > 2 else "offline_analysis_report.html"
-
-    with open(input_path) as f:
-        data = json.load(f)
-
-    html = build(data)
-
-    with open(output_path, "w") as f:
-        f.write(html)
-
-    rows = data.get("rows", [])
-    passing = sum(1 for d in rows
-                  if d.get("PassStrict") or d.get("FunctionArgsAgreement") or d.get("FunctionNameAgreementLenient"))
-    print(f"Report generated: {output_path}")
-    print(f"  {len(rows)} rows, {passing} passing, {len(rows) - passing} failing")
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else argv
+    if not argv or argv[0] in ("-h", "--help"):
+        print(__doc__)
+        return 0 if argv else 2
+    records, units, summary, run_dir = load_run(argv[0])
+    out = argv[1] if len(argv) > 1 else os.path.join(run_dir, "report.html")
+    with resultslib.open_private(out) as f:  # the report quotes user utterances
+        f.write(build(records, units, summary))
+    ok = sum(1 for r in records if r["status"] == "ok")
+    matched = sum(1 for r in records if r["status"] == "ok" and not failure_category(r))
+    print(f"Report generated: {out}")
+    print(f"  {len(records)} results: {matched} match, {ok - matched} differ, {len(records) - ok} infra errors")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

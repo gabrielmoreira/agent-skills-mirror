@@ -48,28 +48,35 @@ Capture `jobRunId`. A `409`/`CONFLICT` means a run is already active for this po
 ## 3. Poll to terminal
 ```bash
 sf data query --target-org <alias> \
-  --query "SELECT Id, Status, Type, TotalRecords FROM DataMaskPolicyJobRun WHERE Id = '<jobRunId>'"
+  --query "SELECT Id, Status, Type FROM DataMaskPolicyJobRun WHERE Id = '<jobRunId>'"
 ```
-Repeat on a bounded interval until `Status` is one of `completed`, `completed_with_errors`,
-`failed`. `scheduled`/`running` are NOT terminal. `scripts/poll-job.sh` automates this with a
-timeout.
+`DataMaskPolicyJobRun` has **no `TotalRecords` field** — there is no record-count column on the
+parent; the masked count lives on the child detail rows (step 4). Repeat the status query on a
+bounded interval until `Status` is one of `completed`, `completed_with_errors`, `failed`.
+`scheduled`/`running` are NOT terminal. `scripts/poll-job.sh` automates this with a timeout.
 
 ## 4. Report from the detail object
-Per-object masked results live on the child, not the parent:
+Per-object masked results live on the child, not the parent. `DataMaskPolicyJobRunDtl` has **no
+`Status` column** — the status lives in `Type`/`Subtype`, with the count itself in `Value` (a
+string):
 ```bash
 sf data query --target-org <alias> \
-  --query "SELECT Id, DataMaskPolicyJobRunId, Status FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '<jobRunId>'"
+  --query "SELECT ObjectReference, Type, Subtype, Value FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '<jobRunId>' ORDER BY Timestamp"
 ```
-Report the concrete masked-record count and per-object success/failure from these rows. Do not
-report a number you did not read from here.
+Expect one `status_update` row per `Subtype` (`loaded`, `completed`, `total_records_masked`) for
+each target object; `total_records_masked`'s `Value` is the masked count. Report the concrete
+masked-record count and per-object success/failure from these rows. Do not report a number you did
+not read from here.
 
 ## 5. Abort the currently-running job — ONLY when the user asked to cancel
 Steps 5–7 are the **abort** flow. Run them **only when the prompt explicitly asks to cancel/abort**
 a run — a "create and run" or "edit and run" task is complete after step 4.
 
 Aborting is an **on-demand action against a job that is already in progress**: take that job's
-`jobRunId` (and note its `DataMaskPolicyId` — you need it to start a replacement run if the window is
-missed), wait for `DataMaskPolicyJobRun.Status = running`, and go straight to the abort (step 6).
+`jobRunId` (and note its policy Id — you need it to start a replacement run if the window is
+missed; `DataMaskPolicyJobRun` has no direct policy lookup field, so resolve it from the job's
+`PolicyName` via `SELECT Id FROM DataMaskPolicy WHERE MasterLabel = '<PolicyName>'` against the
+Tooling API), wait for `DataMaskPolicyJobRun.Status = running`, and go straight to the abort (step 6).
 You can only abort a running job. Do **not** use the terminal poll from step 3 here — it waits until
 the job is *done*. Use the poller's `running` mode, which returns the instant the job is abortable:
 ```bash

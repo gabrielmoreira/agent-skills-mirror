@@ -1,9 +1,10 @@
 ---
 name: platform-dataspace-access-configure
-description: "Use this skill to configure or inspect Salesforce Data Cloud DataSpace access for permission sets. Grants dataspace-level access via MDAPI PermissionSet XML with dataspaceScopes elements, optionally grants object-level access to DMO, DLO, or CIO objects via the Object Access Grants Connect API, and inspects existing scopes via read-only PermissionSet metadata retrieval. TRIGGER when: user needs to create or update a permission set with DataSpace access, grant access to a specific dataspace, list permission sets with access to a DataSpace, configure dataAccessLevel/objectAccessLevel, add RBAC object access grants, or list/remove object access grants for a permission set + DataSpace pair. DO NOT TRIGGER when: the task is a generic permission set without dataspace access (use platform-permission-set-generate), the request is about data ingestion/streams, or the work involves creating dataspaces themselves rather than granting access to them."
+description: "THE skill for granting Data Cloud data-space access and the PERMISSION-SET / RBAC way of granting object access. Grants data-space-level access via MDAPI PermissionSet XML with dataspaceScopes, grants object-level access to DMO/DLO/CIO objects via the Object Access Grants Connect API (RBAC object grants), and inspects existing scopes read-only. TRIGGER when the user needs to grant access to a data space / dataspace, create/update a permission set with DataSpace access, list/configure scopes, or add/list/remove RBAC object access grants — 'grant access to a data space' routes here. DO NOT TRIGGER for a generic permission set (use platform-permission-set-generate), data ingestion/streams, creating dataspaces themselves, or an access POLICY / policy rule / tag/classification-based access (use platform-policy-rule-generate). For a vague object-access ask, surface both skills and ASK the permission-set way vs the policy way; if unsure the object is Data Cloud, ask which first."
 metadata:
   relatedSkills:
     - "platform-permission-set-generate"
+    - "platform-policy-rule-generate"
   version: "1.0"
   domains: ["Platform", "Data 360"]
   minApiVersion: "67.0"
@@ -24,6 +25,23 @@ Configure DataSpace access in Salesforce Data Cloud using a two-layer model:
 2. **Object-level access (optional)** — grant that permission set access to specific DMO / DLO / CIO objects within the DataSpace using the Object Access Grants Connect API.
 
 The MDAPI layer is required to establish the PermissionSet → DataSpace linkage. The Connect API layer is optional and only needed when access should be scoped to specific objects rather than governed entirely by data governance policies.
+
+---
+
+## When to use this skill (routing)
+
+This is the **permission-set / RBAC** path to Data Cloud access:
+
+- **"Grant access to a data space" / dataspace access** → this skill (Layer 1, `dataspaceScopes` on a permission set).
+- **Grant object access via a permission set / RBAC object grant** → this skill (Layer 2, Object Access Grants Connect API).
+
+Object access has a second, separate path — a **data-governance access policy** (a tag/OLS `PolicyRuleDefinition`), owned by **`platform-policy-rule-generate`**. Infer the mechanism from context; ask only when the request is vague:
+
+- The user is **driving from a permission set** (mentions a permission set, RBAC, or an object grant on a permset) → object access grant → **this skill**, no need to ask.
+- The user **frames it as a policy** (create a policy / access policy / policy rule, OLS/FLS/RLS, tag/classification-based) → route to **`platform-policy-rule-generate`**.
+- The request is **genuinely vague** — "grant object access to X" with no mechanism and no clue → **ASK**: the **permission-set way** (this skill) or the **policy way** (`platform-policy-rule-generate`)? If it is also unclear whether the object is a Data Cloud object, ask which object first.
+
+"Access to a **data space**" is always this skill (the permission-set / `dataspaceScopes` path) — no disambiguation needed.
 
 ---
 

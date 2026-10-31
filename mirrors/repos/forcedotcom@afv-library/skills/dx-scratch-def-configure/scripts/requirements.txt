@@ -1,0 +1,3 @@
+# Optional. Draft-07 extra checks (country maxLength, types) when installed.
+# Preview/apply/map run without it.
+jsonschema>=4.18.0

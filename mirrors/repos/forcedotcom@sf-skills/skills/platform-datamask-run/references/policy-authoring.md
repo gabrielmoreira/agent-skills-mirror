@@ -91,13 +91,62 @@ Each `DataMaskPolicyField` carries a `MaskingCategory` plus a `MaskValue` — th
 `MaskingRuleType` column** (older docs claiming values like `RandomEmail` / `RandomPhoneNumber`
 were wrong; that column does not exist).
 
-- `MaskingCategory` — `library` (pick a value from the built-in library, the common case) or
-  `replaceRandom` (random replacement).
-- `MaskValue` — a snake_case library token identifying the value set. Verified tokens include:
-  `first_name`, `last_name`, `email`, `phone`, `street`, `city`, `state`, `postal_code`,
-  `country`, `account_name`, `URL`.
+- `MaskingCategory` — `library` (pick a value from the built-in library, the common case),
+  `characters` (random characters), or `replaceRandom` (random replacement).
+- `MaskValue` depends on the category:
+  - `library` — a snake_case library token identifying the value set. Verified tokens include:
+    `first_name`, `last_name`, `email`, `phone`, `street`, `city`, `state`, `postal_code`,
+    `country`, `account_name`, `URL`.
+  - `characters` and `replaceRandom` — the field's Salesforce type (for example `Text`, `Date`).
+    Left empty, the run fails with `UNKNOWN_EXCEPTION` ("Mask Value is required for Replace Random
+    field").
 
-## Choosing treatments
+## Choosing the fields from Core's classification
+
+The Data Mask UI's "Automatic PII rules" are driven by a per-field `recommendedPiiType` that Core's
+classifier computes. Use the same source here so the skill and the UI recommend the same fields. Do
+this once per target object, before inserting any `DataMaskPolicyField` row.
+
+1. **Call the classification operation** through the `project-codey` server's `dispatch_readonly`
+   tool. It takes a `path`, not an operationId: `path`
+   `/headless/invoke/platform/datamask/data-mask-policy/get-object-fields-with-masking-info`, `method`
+   `GET`, and `query_params` `{objectApiName: <object>, includePicklistValues: false,
+   includeFilterOnlyFields: false}` (for example `objectApiName: "Contact"`). Omit `policyObjectId` (a
+   new object has no `DataMaskPolicyObject` row yet). If this path 404s, re-resolve it with `find_route`
+   rather than guessing. The `.../data-mask-policy-builder/...` route serves the same operation but does
+   not take the two picklist/filter params.
+2. **Read the response.** The result is `{status_code, body}`, where `body` is an array with one entry
+   per field. Each entry carries `apiName`, `label`, `type`, and `recommendedPiiType` (`null` when Core
+   has no recommendation). Any other shape counts as a failed call (step 4).
+3. **Map each recommendation to a treatment.** Core returns tokens such as `last_name`, `street`,
+   `phone`, `characters`, and `replaceRandom`. Compare `recommendedPiiType` case-insensitively with the
+   verified `MaskValue` tokens in "Field treatment columns" above. `characters` and `text` are the same
+   category.
+   - A verified token → `MaskingCategory=library`, `MaskValue=<that token>`.
+   - `characters`/`text` → `MaskingCategory=characters`. `replaceRandom` → `MaskingCategory=replaceRandom`.
+     Both also require `MaskValue` = the field's Salesforce type as Core reports it in `type` (for example
+     `Text`, `Date`). The UI's "Mask With" menu offers `Random Characters` for `characters`.
+   - Any other recommendation (for example `title`, `full_name`, `full_address`, `credit_card`, `ssn`,
+     `password`, `date`, `numberRange`) has no `MaskingCategory` or verified token here. **Report it as
+     unmapped. Do not guess a `MaskValue`.**
+   - A field with no `recommendedPiiType` is not masked. List it in the report.
+4. **Fall back only when the call fails** (refused, errored, the `project-codey` server is unavailable,
+   or the response shape is unrecognized). Then use the static table below and state in the report that
+   the field list came from the static table, not from Core. When the call succeeds, Core's answer is
+   authoritative. Do not add fields from the static table.
+
+## Fallback treatments (static table)
+
+Use this table **only** when the classification call in "Choosing the fields from Core's classification"
+fails. When the call succeeds, use Core's `recommendedPiiType` and skip this table. The table is narrower than Core:
+
+- It covers only the standard fields listed below. It does not apply Core's label, type, or encryption
+  rules, so it misses fields Core does recommend (for Contact: the Other* address fields, `Fax`,
+  `HomePhone`, `OtherPhone`, `AssistantPhone`).
+- Core's type-based fallback classifies some text fields as `characters` (for Contact, `AssistantName`)
+  and some date fields as `replaceRandom` (for Contact, `Birthdate`). Both map to their `MaskingCategory`
+  value with `MaskValue` set to the field's Salesforce type (`Text` for AssistantName, `Date` for
+  Birthdate), so they are masked, not reported as unmapped.
 
 Match the `MaskValue` to the field's semantics — do **not** apply one blanket replacement:
 

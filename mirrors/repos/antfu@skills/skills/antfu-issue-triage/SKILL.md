@@ -41,6 +41,7 @@ Go through the open issues and PRs of the **current repo** (`gh repo view --json
    - Run one issue per command (comment, label, and close for that issue chained with `&&`). Do not batch many issues in one script or loop: bulk write commands can be blocked by the permission classifier. If a command is blocked, do not work around it. Split it into smaller per-issue commands, and tell the user.
    - Create approved new labels first, in their own command.
    - For rows the user adds after the tables (for example "also close #4"), write a short fresh comment in the same style and show it in the final report.
+7. **Offer a digest issue.** Ask whether to create an optional digest issue (see Digest Issue). Do not create it without approval.
 
 ## Recommended Labels
 
@@ -119,3 +120,26 @@ Include `low hanging fruit` rows here. For a label the repo does not have, add a
 Put the most recommended check-them-first items at the top, ranked by importance: high demand, regressions or build-breaking bugs, security reports, security-sensitive or long-waiting PRs, and items with active unanswered discussion. Say why in `Note`. Low hanging fruits go here too, after those, with the reason it is quick.
 
 Do not close PRs for being stale unless asked; label or flag them instead.
+
+## Digest Issue (optional)
+
+After the actions are applied (or when the user only wants a report), **offer** to create a digest issue that records the Needs attention results, so later triage runs can pick up from it. Creating an issue is a write action: ask first, show the full title and body, and create it only after approval. Skip the offer if the user declined or the list is empty.
+
+- **Title:** `Triage digest (YYYY-MM-DD)`. If an earlier digest exists (`gh issue list --state all --search "Triage digest in:title"`), offer to update it (`gh issue edit`) instead of opening a new one, and keep checked items checked.
+- **Overview:** start the body with a short `Status` paragraph (2-4 sentences): the overall state of open issues and PRs (rough counts, main themes or clusters, how healthy the backlog is, what is stale or blocked), then a `Recommended start` line naming the 1-3 items to do first and why.
+- **Items:** one task-list line per item: `- [ ] #134 - <concise recommendation>`. Mark items already handled as `- [x]`. Keep each line to one short sentence: what to do and why (for example `review and merge, CI green, small change`).
+- **Groups:** use these headings, in order, omitting empty ones:
+  1. `Prioritized` - high demand, regressions, security, long-waiting items. Most important first.
+  2. `Low hanging fruit` - quick wins, with the reason it is quick.
+  3. `Other` - worth a look but neither urgent nor quick.
+- **Metadata:** end the body with a block that lets a future run continue without redoing the scan:
+  ```md
+  ---
+  - Scanned: <repo>, open issues and PRs (<filters used, or "all">)
+  - Date: <YYYY-MM-DD>
+  - Model: <model name or id>
+  - Newest item scanned: #<n> (<createdAt>)
+  - Counts: <n> issues, <n> PRs scanned; <n> closed, <n> labeled in this run
+  ```
+- Add the same `🤖 *Automated by an agent.*` last line. Do not add labels or assignees unless asked.
+- On the next run, read the digest first: skip items already checked, re-check the rest, and only scan items newer than the recorded range plus items with new activity since the recorded date.

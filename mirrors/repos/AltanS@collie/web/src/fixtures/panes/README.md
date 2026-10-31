@@ -803,7 +803,7 @@ Grok's composer is a rounded box at the tail: `╭─…─╮` / `│ ❯ … �
 | `grok--draft-scrollbar.txt` | Grok Build 1.0.46 on macOS, 2026-10-08: byte-faithful composer tail from the live Collie API after pasting a 40-line test draft without submitting. Only lines 21–40 are visible, with a separately styled `█` scrollbar inside the right frame. That rail is not message text; a literal typed block glyph must remain. The prompt row is outside the bridge's six-row binding window, so the existing `composerPrompt` returns null while `composerReady` stays true | `idle` |
 | `grok--draft-scrollbar-partial.txt` | Grok Build 1.0.46 on macOS, 2026-10-08: byte-faithful composer tail from an isolated live bridge after the real guarded reply path pastes 40 numbered lines and a final instruction. Lines 26–40 and the instruction remain visible; the separately styled rail begins with `▁` and continues with `█`. The original full-block-only reader returns stalled without submitting. The prompt lies outside the existing bridge binding window | `done` |
 | `grok--draft-wrapped.txt` | Draft wrapped onto a continuation row inside the box | `idle` |
-| `grok--model-picker.txt` | Grok Build 1.0.46, macOS, 2026-10-08: byte-faithful `/model` completion-list tail, with the pointer on Grok 4.7, the four-row counter, composer and Enter hint. No identifying paths. The verified recipe is in [MODEL_PICKER_NOTES.md](/web/src/lib/harness/grok/MODEL_PICKER_NOTES.md) | `idle` |
+| `grok--model-picker.txt` | Grok Build 1.0.46, macOS, 2026-10-08: byte-faithful `/model` completion-list tail, with the pointer on Grok 4.7, the four-row counter, composer and Enter hint. No identifying paths. The verified recipe is in [MODEL_PICKER_NOTES.md](../../lib/harness/grok/MODEL_PICKER_NOTES.md) | `idle` |
 | `grok--model-picker-moved.txt` | Same live list after Down moves the pointer to Grok 4.7 Fast, without choosing a model | `idle` |
 | `grok--model-window.txt` | Second `/model` stage, 256k pointed, two visible rows; Enter on the model inserted its name and opened this list | `idle` |
 | `grok--model-window-moved.txt` | Same live window list after Down points at 500k, without submitting | `idle` |
@@ -2834,6 +2834,8 @@ Inherent to vanilla Claude Code: the model writes AskUserQuestion's question tex
 | `claude--v2304-ask-no-question-mark-plain--w135.txt` | **Derived** from a plain `claude` 2.1.304 capture (lab, 135 columns, escapes kept, line endings LF): the transcript above the dialog's rule, the lab prompts included, replaced by neutral words of the same width. The dialog is as captured: ` ☐ Ship it`, `The release branch has passed every check. Pick how to proceed with the merge.`, `Merge now (Recommended)`, `Hold the merge`, `3. Type something.`, `4. Chat about this` and the footer. Lifts a `select` card. Labelled `dialog` |
 | `claude--v2304-ask-chip-question-mark.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 120 columns, read through `readPane` and trimmed to the prompt bubble and the dialog: the chip ` ☐ Deploy?` ends in `?` while the question row `The staging build passed every check. Pick how to proceed with the rollout.` ends in `.`. `singleSelectChipUnderRule` anchors on the `☐` chip under the top rule and `questionUnderChip` reads only the rows below that chip, so the question is the row under the chip and never `☐ Deploy?`. Labelled `dialog` |
 | `claude--v2304-ask-two-paragraph--w80.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 80 columns, trimmed to the prompt bubble and the dialog: ` ☐ Release`, a two-paragraph question across seven `│` gutter rows (paragraph 1 carries `https://ci.example.test/runs/42?tab=checks`, a bare `│` row separates the paragraphs, and paragraph 2 ends in `?`), pointer on `1. Production`. `questionUnderChip` joins all non-empty rows below `☐ Release` so the first row is neither dropped at `MAX_QUESTION_ROWS = 6` nor leaked into `model.subject`, and the bare `│` row does not insert a double space. Labelled `dialog` |
+| `claude--v2312-draft-upload-path--w100.txt` | Claude Code 2.1.312 in tmux at 100 columns (lab 2026-10-30, after the field case of 2026-10-29): one bracketed paste of a two-paragraph message whose first paragraph ends with a Collie upload path (`/uploads/w7C_pF-mvtrpn7j-e4f81595.png`, an existing file). 2.1.312 keeps the path as TEXT on a row of its own after the space and drops the blank line; 2.1.305 attached it as `[Image #1]`. The box reads as a draft of all four rows joined, and `boxMatches` takes this literal form beside the image form (`WholePaste.literal`). A path that is the whole paste still becomes `[Image #1]` on 2.1.312. Labelled `draft` |
+| `claude--v2312-weekly-limit-row--w120.txt` | Claude Code 2.1.312 in tmux at 120 columns (live check 2026-10-30, release 1.25.0, a scratch bridge's watch read, plain text): a fresh pane on Haiku with an empty box, the footer `⏸ manual mode on · ? for shortcuts`, and under it the usage row `You've used 75% of your weekly limit · resets Nov 4, 2am (…) · /usage-credits to keep using Claude Code`. Claude Code drops the row once the box holds two rows, so the rows under the box went from 2 to 1 and a send ended typed_not_submitted (changed). The profile names the row a hint (`idle.volatile.below.hints`), so the Send Protocol leaves it out of that count. The time zone was replaced with `Europe/Lisbon`, same width. Reads idle, no dialog, the composer empty. Labelled `idle` |
 | `claude--v2304-select-preview-cjk.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 120 columns, trimmed to the prompt bubble and the dialog: single-question preview AskUserQuestion (` ☐ デザイン`, `どのウィジェットのデザインにしますか？`), pointer on `1. カード型`, options `2. コンパクト` and `3. ミニマル` left of the boxed preview at display column 34. `splitAtDisplayColumn` splits by terminal display width so double-width CJK option labels do not shift the cut into the preview box's left border. Labelled `dialog` |
 | `claude--v2304-select-preview-cjk-moved.txt` | The same live pane after sending one `Down` key (`herdr pane send-keys <pane> Down`): pointer moved onto `2. コンパクト`, right-hand preview updated to option 2's compact box. Labelled `dialog` |
 
@@ -3543,9 +3545,81 @@ same characters, so no rule or box width moves.
 
 ## Codex Ultra prompt glyph (derived 2026-10-29, issue 615)
 
-Codex 0.164.0 and 0.165.0 draw the composer prompt as `»` (U+00BB) at Ultra effort and `›` (U+203A) at Max. The reporter's capture is not attached, so these two are **derived, not captured**: each is a copy of the named original with ONLY the composer row's leading `›` swapped for `»`. Every other byte is unchanged. Replace them with the reporter's capture when it arrives.
+Codex 0.164.0 and 0.165.0 draw the composer prompt as `»` (U+00BB) at Ultra effort and `›` (U+203A) at Max. The first two fixtures below are **derived, not captured**: each is a copy of the named original with ONLY the composer row's leading `›` swapped for `»`. Every other byte is unchanged. They stay because the tests pair each with its `›` original and prove the glyph is the only difference. The last two are the reporter's real captures from the issue (see below).
 
 | Fixture | State | What it shows |
 | --- | --- | --- |
 | `codex--v0165-ultra-empty--w120.txt` | `idle` | Derived from `codex--v0164-queue-done--w120.txt`: the empty dim `» Ask Codex to do anything` composer under a finished turn (the `› ` echoes in the transcript stay as they were), status row and hint row. Both readers must find the box and report it empty and free |
 | `codex--v0165-ultra-draft.txt` | `draft` | Derived from `codex--v0156-headless-draft.txt`: the draft `» hello from the phone probe` over the status row. The draft must read back |
+| `codex--v0165-ultra-empty--w170.txt` | `idle` | **Real capture.** The reporter's Codex 0.165.0 pane on issue 615 (GPT Ultra, model `GPT-6.1-Sol ultra fast`, purple `»` prompt): empty dim `» Ask Codex to do anything` composer on a filled grey band, the long status row (`GPT-6.1-Sol ultra fast · ~ · Context 1% used · weekly 90% left ...`), and a hint row with `? for shortcuts` and `⚠ 2 warnings · f2 to view`, under the welcome header and blank rows. Both readers must find the box and report it empty and free |
+| `codex--v0165-ultra-draft--w170.txt` | `draft` | **Real capture.** The same pane with the draft `» Hello, test draft` typed and not sent; the hint row shows only the `⚠ 2 warnings · f2 to view` notice. The draft must read back as `Hello, test draft` |
+
+The two `--w170` files came from the reporter of issue 615 (@Skydev0h): `herdr pane read --source visible --format ansi`, 170 columns by 82 rows, the working directory `~`, nothing sensitive. They are stored as read, with the transport CRLF line ends and the SGR bytes untouched.
+
+## Codex 0.166.0 logo and warning row (captured 2026-10-29, harness lab drift, scratch tmux, 120 by 40)
+
+Codex 0.166.0 draws a 17-row braille logo over an EMPTY box when the pane has 32 rows or more. It goes at the first
+character in the box and comes back after Backspace, on a fresh start and on plain `codex`, and it is absent at 31 rows
+or fewer. Any `-c` override also adds `⚠ 1 warning · f2 to view` to the footer ("command-line configuration overrides
+... requires embedded mode"); once the box holds text, the `? for shortcuts` hint goes and the warning stays alone on
+its row. The harness lab's probed send was refused `probe_failed` until `idle.volatile.below.hints` named that row. A
+message's probe on Codex reads only the box and the rows under it, so the logo never reached it; a command's probe also
+compares the rows above, where `idle.volatile.above.losesText` already lets the logo go.
+
+Taken with `tmux capture-pane -p -e` in a private tmux server (`tmux -L`), isolated `HOME` and `CODEX_HOME`, no Herdr.
+The `art-*` and `warning-*` files come from the lab's manual run; `art-backspace` from a second session of the same
+version, read right after the probe's Backspace (only its colour depth differs from `art-empty`). The lab's folder was
+replaced with `/home/demo/sandbox/collie-labs/codex-v0166-logo-arts/project`, a path of the same length.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `codex--v0166-art-empty--w120.txt` | `idle` | Header, the logo, the empty dim `› Ask Codex to do anything` box, the status row and `← for agents · ? for shortcuts` |
+| `codex--v0166-art-typed--w120.txt` | `draft` | `x` typed: the logo and the hint row are gone, the box and the status row stand where they were |
+| `codex--v0166-art-backspace--w120.txt` | `idle` | After Backspace: the logo and the hint row are back |
+| `codex--v0166-warning-art-empty--w120.txt` | `idle` | Started with a `-c` override: the logo, the empty box, and `? for shortcuts` with `⚠ 1 warning · f2 to view` after wide spacing |
+| `codex--v0166-warning-typed--w120.txt` | `draft` | `x` typed: the logo is gone, and `⚠ 1 warning · f2 to view` stands alone on the footer row |
+
+## herdr-core corpus (captured 2026-10-30, M78 spec 04, hc 0.1.14, Claude Code 2.1.314, pi 1.3.0, omp 18.6.1)
+
+The first captures taken through a bridge on `COLLIE_MUX=herdr-core`: a scratch core (`HC_SESSION=m78-lab`,
+its own `HC_SOCKET`), a scratch bridge from the worktree, and each harness in a named core terminal,
+read with `scripts/capture-fixture.sh` (`/api/pane/:id?lines=300`). **Plain text, no escape byte at all**:
+the core's `terminal.read` hands out text only (HC_API.md), so a grey hint, a ghost completion or an
+inverse selection looks like any other text here. The core's history keeps a screen the harness redrew,
+so several files start with an older screen (an earlier slash list, a repeated welcome banner) above the
+live one; that is what the phone reads on a core, and it is kept.
+
+Width: a terminal started over the API is 200 x 120, and the last ACTIVE viewer sets the size, so each
+capture ran while a viewer of the named size (`--w120`: 120 x 40, `--w60`: 60 x 40) was attached from a
+pty; after the viewer leaves the core puts the terminal back to 200 x 120. Claude ran on Haiku with
+`--permission-mode default` and a scratch `CLAUDE_CONFIG_DIR`; pi and omp called a local fake model (no
+spend). pi carries its stock `examples/extensions/question.ts`. Drafts were typed through the bridge's
+reply route (`submit: false`, the core's framed attach), the two paragraphs with `ctrl+j` between.
+Privacy: the user name in the lab paths became `alice` (same length), and omp's `…n/.cache` the
+matching `…e/.cache`; no other private text was on screen. The lab is
+`experiments/herdr-core-coverage/lab/` in the workspace, the findings `04-live-lab.md` there.
+
+| Fixture | State | Reads as (current reader) |
+| --- | --- | --- |
+| `claude--v21314-core-idle--w120.txt` | A fresh session, empty box, no `Try "…"` hint (the hint did not come up in the lab) | composer, empty, free |
+| `claude--v21314-core-idle--w60.txt` | The same at 60 columns, after a cleared draft | composer, empty, free |
+| `claude--v21314-core-draft--w120.txt` | `collie core draft probe` typed | composer, draft read back |
+| `claude--v21314-core-draft--w60.txt` | The same at 60 columns; the banner's path is shortened to `/…/` | composer, draft read back |
+| `claude--v21314-core-draft-two-paragraphs--w120.txt` | Two paragraphs with an empty row between, `ctrl+g to edit in nano` on the status row | composer, draft (both paragraphs, joined) |
+| `claude--v21314-core-working--w120.txt` | One second into a turn, `✽ Synthesizing… (1s · thinking)`, a tip row, `esc to interrupt` | running |
+| `claude--v21314-core-permission--w120.txt` | `Bash command` card for `touch probe.txt`, four options, `Esc to cancel · Tab to amend`; history above holds an older slash list | permission ask, four options |
+| `claude--v21314-core-permission--w60.txt` | The same card at 60 columns, option 2 and 3 wrapped | permission ask, four options |
+| `claude--v21314-core-ask--w120.txt` | AskUserQuestion `Which colour do you prefer?`, Red, Green, Blue, `Type something.`, `Chat about this` | question ask, four options |
+| `claude--v21314-core-menu-model--w120.txt` | `/model` menu, `❯ 5. Haiku ✔`, effort row, `Enter to set as default · s to use this session only · Esc to cancel` | menu ask |
+| `claude--v21314-core-slash-list--w120.txt` | `/` typed: the whole command list under the box, `❯` on `/add-dir` | draft `/`, modal unreadable (the TUI's slash-all captures read unknown or none) |
+| `pi--v130-core-idle--w120.txt` | Empty editor; pi's two offline warnings (no `fd`, no `rg` on the lab PATH) above | composer, empty, free |
+| `pi--v130-core-draft--w120.txt` | `collie core draft probe` typed | composer, draft read back |
+| `pi--v130-core-working--w120.txt` | A held turn, `── ⠧ Working ──` on the top rule | running |
+| `pi--v130-core-question--w120.txt` | The stock `question` tool: Red, Green, Blue, `4. Type something.`, `>` on 1, `↑↓ navigate • Enter to select • Esc to cancel` | question ask with three options, walk (M78 spec 07: read by text on a read with no styling; it read unreadable before) |
+| `pi--v130-core-question-moved--w120.txt` | The same question after two Down presses through the bridge's keys route: `>` on 3 (M78 spec 07 lab, the lab path's user name replaced) | question ask with three options, walk from 3, pair |
+| `omp--v1861-core-idle--w120.txt` | Banner, update notice, the status rule and the empty `╰─` row | composer, empty, free |
+| `omp--v1861-core-draft--w120.txt` | `collie core draft probe` typed; omp draws a grey ghost completion `s` after it, which the plain text cannot tell apart | composer, draft `collie core draft probes` (**wrong text**: the true draft ends in `probe`) |
+| `omp--v1861-core-working--w120.txt` | A held turn, `⎋ Working…`, the spinner in the status rule | running |
+
+On the bridge itself omp 18.6.1 reads as a **shell** on herdr-core: it sends no OSC 7501 status, and
+the core adapter names an agent only from that report, so the omp profile above is not applied live.

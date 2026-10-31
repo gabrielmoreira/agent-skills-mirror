@@ -99,10 +99,20 @@ Load `.agents/skills/communication-style/SKILL.md` and run its pattern scan over
 Determine the base and read everything through `HEAD`:
 
 ```bash
-BASE=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
+BASE=$(git describe --tags --match 'v*' --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
 git log --oneline "$BASE"..HEAD
 git diff --stat "$BASE"..HEAD
 ```
+
+A hotfix ships from a `release/X.Y` branch, so its tag is not in `main`'s history and `BASE` stays at the release before it. Its changes already reached users: leave out every commit a hotfix since `BASE` cherry-picked. The hotfix tags are the `v*` tags newer than `BASE` that are not ancestors of `HEAD`, and each picked commit carries a `(cherry picked from commit <sha>)` line:
+
+```bash
+for tag in $(git tag --list 'v*' --no-merged HEAD); do
+  git log --format=%B "$BASE".."$tag" | grep -oE 'cherry picked from commit [0-9a-f]+' | awk '{print $NF}'
+done
+```
+
+On a release branch, writing a hotfix's own notes, the range is `BASE..HEAD` of that branch: only the picked changes.
 
 A squashed merge (subject ending in `(#123)`) or a `Merge pull request #123` commit hides the real change behind a terse subject. Read the PR: `gh pr view <number> --json number,title,body,author,mergedAt`. Distill its intent into the bullet shape above; the body's own wording is reviewer-facing and stays there. When `gh` cannot fetch it, use the commit and diff and say what remains uncertain.
 

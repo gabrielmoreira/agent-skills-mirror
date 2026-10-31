@@ -5,9 +5,13 @@
 #
 # Dev Hub is the org feature that lets you create and manage scratch orgs and
 # second-generation (2GP)/unlocked packages. This script reports whether Dev Hub
-# is enabled, ENABLES it (or configures its sub-preferences) via a Metadata API
-# deploy, shows the org's scratch org ALLOCATION (Active/Daily limits and how
-# many remain), and lists the active scratch orgs created from the Dev Hub.
+# is enabled, shows the org's scratch org ALLOCATION (Active/Daily limits and how
+# many remain, with pre-flight warnings), reports the org EDITION, reads the
+# current DevHubSettings PREFERENCES, ENABLES Dev Hub (or configures its
+# sub-preferences) via a Metadata API deploy, and lists the active scratch orgs
+# created from the Dev Hub. It can also list the authenticated orgs on this
+# machine. It does NOT authenticate new orgs — that is a precondition; the script
+# only prints the login command as guidance.
 #
 # How enablement works: the Dev Hub master switch is the deployable metadata
 # field DevHubSettings.enableScratchOrgManagementPref (there is NO "enableDevHub"
@@ -25,29 +29,30 @@
 # reliable enablement test.)
 #
 # Usage:
-#   devhub.sh [org]                     # status: is Dev Hub on? + allocation
-#   devhub.sh [org] --allocation        # scratch org allocation only
+#   devhub.sh [org]                     # status: is Dev Hub on? + edition + allocation
+#   devhub.sh [org] --allocation        # scratch org allocation only (with warnings)
+#   devhub.sh [org] --show-settings     # read current DevHubSettings preferences
 #   devhub.sh [org] --list-scratch      # list this Dev Hub's active scratch orgs
+#   devhub.sh --list-orgs               # list authenticated orgs on this machine
 #   devhub.sh [org] --enable            # validate enabling Dev Hub (dry run)
 #   devhub.sh [org] --enable --apply    # actually enable Dev Hub (irreversible)
 #   devhub.sh [org] --enable --packaging --apply       # enable + turn on 2GP
 #   devhub.sh [org] --configure --snapshots --apply    # set a sub-pref (Dev Hub already on)
 #   devhub.sh [org] --json              # machine-readable status
 #   devhub.sh --fail-if-disabled        # exit 3 if Dev Hub is not enabled (CI gate)
-#   devhub.sh [alias] --instance-url https://my-domain.my.salesforce.com --enable --apply
-#                                       # log in to that instance, then enable Dev Hub
-#   devhub.sh https://my-domain.my.salesforce.com      # bare URL: log in to that instance
-#   devhub.sh myalias --login           # just authenticate an org via the browser
 #
-# "org" is an alias or username. If omitted, the default target-org is used,
-# and if that is unset, the default target-dev-hub. With --login/--instance-url,
-# a supplied positional is used as the CLI alias for the org being logged in to.
-# A bare positional that looks like a URL (contains "://") is treated as an
-# --instance-url to log in to, not as an org alias.
+# "org" is an alias or username. If omitted, the default target-org is used, and
+# if that is unset, the default target-dev-hub. If neither is set, the script
+# lists the authenticated orgs and asks you to pass one or set a default.
 #
 # Options:
-#   --allocation, -A        Show only the scratch org allocation (Active/Daily).
+#   --allocation, -A        Show only the scratch org allocation (Active/Daily),
+#                           with a WARN when <2 remain and a NOTE above 80% usage.
+#   --show-settings, -s     Read and show which DevHubSettings preferences are
+#                           currently enabled/disabled (Tooling API). Dev Hub must
+#                           be on.
 #   --list-scratch, -l      List active scratch orgs created from this Dev Hub.
+#   --list-orgs             List the orgs authenticated with the Salesforce CLI.
 #   --enable, -e            Enable Dev Hub (deploys enableScratchOrgManagementPref
 #                           =true). Defaults to a validate-only dry run; add
 #                           --apply to actually enable. May be combined with the
@@ -63,14 +68,13 @@
 #                             "enable"; VALUE is true|false). Repeatable.
 #   --apply                 Actually deploy (default for --enable/--configure is a
 #                           validate-only dry run).
-#   --login                 Authenticate an org first via `sf org login web`
-#                           (opens a browser). Runs before the requested action.
-#   --instance-url URL      Log in to a Salesforce instance (My Domain, sandbox,
-#                           or pre-release/scratch instance) with
-#                           `sf org login web --instance-url URL`. Implies --login.
 #   --json                  Emit machine-readable JSON.
 #   --fail-if-disabled      Exit 3 if Dev Hub is not enabled on the target org.
 #   --help, -h              Show this help.
+#
+# Authentication is a precondition. If an org is not authenticated, the script
+# prints the exact `sf org login web` command to run — it never opens a browser
+# or logs in for you.
 #
 # Exit codes:
 #   0  success
@@ -98,21 +102,21 @@ command -v jq >/dev/null 2>&1 || die "'jq' not found on PATH."
 export SF_AUTOUPDATE_DISABLE=true
 
 # --- constants -----------------------------------------------------------
-SETTINGS_API_VERSION="47.0"          # DevHubSettings requires API >= 47.0
+SETTINGS_API_VERSION="62.0"          # DevHubSettings: base fields >=47.0, but
+                                     # enableShapeExportPref needs >=55.0 and
+                                     # enableScratchOrgSnapshotPref needs >=61.0,
+                                     # so read/deploy at a version that has them all.
 DEVHUB_SWITCH="enableScratchOrgManagementPref"
 
 # --- option state --------------------------------------------------------
 TARGET=""                   # org alias/username (positional or resolved default)
 TARGET_EXPLICIT=0            # 1 when the caller supplied an org alias/username
-MODE="status"               # status | allocation | list | deploy
-MODE_EXPLICIT=0              # 1 when the caller selected an operation
+MODE="status"               # status | allocation | settings | list | listorgs | deploy
 ENABLING=0                  # 1 when --enable was passed (seeds the master switch)
 OUTPUT="human"              # human | json
 APPLY=0                     # deploy: 0 = dry run (validate only), 1 = real deploy
 FAIL_IF_DISABLED=0
 PREFS=()                    # requested DevHubSettings prefs (KEY=VALUE)
-DO_LOGIN=0                  # 1 when --login or --instance-url requests a browser login
-LOGIN_INSTANCE_URL=""       # instance URL for `sf org login web --instance-url`
 
 # --- run state -----------------------------------------------------------
 DEVHUB_STATE=""             # enabled | disabled | auth_error
@@ -120,6 +124,9 @@ DEVHUB_ERRNAME=""           # error .name when auth_error
 DEVHUB_ERRMSG=""
 SCRATCH_COUNT=""            # ScratchOrgInfo count when enabled
 INSTANCE_URL=""             # resolved org instance URL (for the Setup deep link)
+ORG_EDITION=""              # Organization.OrganizationType (best effort)
+ORG_IS_SANDBOX=""           # true|false (best effort)
+ORG_FACTS_DONE=0            # 1 once org_facts has run
 
 usage() {
   sed -n '2,/^set -uo/p' "$0" | sed '/^set -uo/d; s/^# \{0,1\}//; s/^#//'
@@ -128,7 +135,7 @@ usage() {
 # Set MODE, rejecting a second conflicting mode selection.
 set_mode() {
   if [ "$MODE" != "status" ] && [ "$MODE" != "$1" ]; then
-    die "Choose only one of --allocation, --list-scratch, --enable/--configure."
+    die "Choose only one of --allocation, --show-settings, --list-scratch, --list-orgs, --enable/--configure."
   fi
   MODE="$1"
 }
@@ -174,44 +181,31 @@ add_pref() {
 # --- argument parsing ----------------------------------------------------
 while [ $# -gt 0 ]; do
   case "$1" in
-    --allocation|-A)      MODE_EXPLICIT=1; set_mode allocation; shift ;;
-    --list-scratch|-l)    MODE_EXPLICIT=1; set_mode list; shift ;;
-    --enable|-e)          MODE_EXPLICIT=1; ENABLING=1; set_mode deploy; shift ;;
-    --configure|-c)       MODE_EXPLICIT=1; set_mode deploy; shift ;;
-    --packaging)          MODE_EXPLICIT=1; add_pref "enablePackaging2=true"; set_mode deploy; shift ;;
-    --snapshots)          MODE_EXPLICIT=1; add_pref "enableScratchOrgSnapshotPref=true"; set_mode deploy; shift ;;
-    --shape)              MODE_EXPLICIT=1; add_pref "enableShapeExportPref=true"; set_mode deploy; shift ;;
-    --scratch-management) MODE_EXPLICIT=1; add_pref "$DEVHUB_SWITCH=true"; set_mode deploy; shift ;;
+    --allocation|-A)      set_mode allocation; shift ;;
+    --show-settings|-s)   set_mode settings; shift ;;
+    --list-scratch|-l)    set_mode list; shift ;;
+    --list-orgs)          set_mode listorgs; shift ;;
+    --enable|-e)          ENABLING=1; set_mode deploy; shift ;;
+    --configure|-c)       set_mode deploy; shift ;;
+    --packaging)          add_pref "enablePackaging2=true"; set_mode deploy; shift ;;
+    --snapshots)          add_pref "enableScratchOrgSnapshotPref=true"; set_mode deploy; shift ;;
+    --shape)              add_pref "enableShapeExportPref=true"; set_mode deploy; shift ;;
+    --scratch-management) add_pref "$DEVHUB_SWITCH=true"; set_mode deploy; shift ;;
     --pref)
       shift
       [ $# -gt 0 ] || die "--pref requires a KEY=VALUE argument (e.g. --pref enablePackaging2=true)."
       case "$1" in *=*) : ;; *) die "--pref expects KEY=VALUE (got: '$1')." ;; esac
-      MODE_EXPLICIT=1; add_pref "$1"; set_mode deploy; shift ;;
+      add_pref "$1"; set_mode deploy; shift ;;
     --pref=*)
       kv="${1#*=}"
       case "$kv" in *=*) : ;; *) die "--pref expects KEY=VALUE (got: '$kv')." ;; esac
-      MODE_EXPLICIT=1; add_pref "$kv"; set_mode deploy; shift ;;
+      add_pref "$kv"; set_mode deploy; shift ;;
     --apply)              APPLY=1; shift ;;
-    --login)              DO_LOGIN=1; shift ;;
-    --instance-url)
-      shift
-      [ $# -gt 0 ] || die "--instance-url requires a URL (e.g. --instance-url https://my-domain.my.salesforce.com)."
-      [ -n "$LOGIN_INSTANCE_URL" ] && die "Specify only one instance URL. Got extra: $1"
-      LOGIN_INSTANCE_URL="$1"; DO_LOGIN=1; shift ;;
-    --instance-url=*)
-      [ -n "$LOGIN_INSTANCE_URL" ] && die "Specify only one instance URL. Got extra: ${1#*=}"
-      LOGIN_INSTANCE_URL="${1#*=}"; DO_LOGIN=1; shift ;;
     --json)               OUTPUT="json"; shift ;;
     --fail-if-disabled)   FAIL_IF_DISABLED=1; shift ;;
     --help|-h)            usage; exit 0 ;;
     --)                   shift; break ;;
     -*)                   die "Unknown option: $1 (try --help)" ;;
-    *://*)
-      # A bare URL positional is an instance URL to log in to (My Domain,
-      # sandbox, or pre-release/scratch instance), not an org alias — an alias or
-      # username never contains "://". Route it to the login path.
-      [ -n "$LOGIN_INSTANCE_URL" ] && die "Specify only one instance URL. Got extra: $1"
-      LOGIN_INSTANCE_URL="$1"; DO_LOGIN=1; shift ;;
     *)
       [ -n "$TARGET" ] && die "Specify only one org. Got extra: $1"
       TARGET="$1"; TARGET_EXPLICIT=1; shift ;;
@@ -235,13 +229,63 @@ if [ "$APPLY" -eq 1 ] && [ "$TARGET_EXPLICIT" -ne 1 ]; then
   die "--apply requires an explicit org alias or username; refusing to mutate an implicit default org."
 fi
 
-# A supplied instance URL must use an HTTPS Salesforce-owned hostname.
-if [ -n "$LOGIN_INSTANCE_URL" ]; then
-  case "$LOGIN_INSTANCE_URL" in
-    https://*.salesforce.com|https://*.force.com|https://*.salesforce.mil) : ;;
-    *) die "--instance-url must use an https:// Salesforce hostname (got: '$LOGIN_INSTANCE_URL')." ;;
-  esac
-fi
+# Bound one Salesforce CLI call. `sf org list` can wait on a keychain or
+# network prompt longer than the eval harness tool timeout, and the agent
+# then stops before it writes report.md. A parent-side wait is used because
+# an alarm set before exec is not reliable on every platform.
+sf_bounded() {
+  local out_file pid i
+  out_file="$(mktemp)"
+  sf "$@" >"$out_file" 2>/dev/null &
+  pid=$!
+  i=0
+  while [ "$i" -lt 20 ]; do
+    if ! kill -0 "$pid" 2>/dev/null; then
+      wait "$pid"
+      local rc=$?
+      cat "$out_file"
+      rm -f "$out_file"
+      return "$rc"
+    fi
+    sleep 1
+    i=$((i + 1))
+  done
+  kill "$pid" 2>/dev/null || true
+  pkill -P "$pid" 2>/dev/null || true
+  wait "$pid" 2>/dev/null || true
+  rm -f "$out_file"
+  return 142
+}
+
+# --- org discovery -------------------------------------------------------
+# List the orgs authenticated with the Salesforce CLI. Handles both the newer
+# {result:{nonScratchOrgs,scratchOrgs}} shape and the older {result:[...]}.
+list_orgs() {
+  local out
+  out="$(sf_bounded org list --json 2>/dev/null)" || { echo "Could not list authenticated orgs (is the Salesforce CLI installed and working?)." >&2; return 1; }
+  local norm
+  norm="$(printf '%s' "$out" | jq -c '
+    [ ((.result.nonScratchOrgs // []) + (.result.scratchOrgs // []) + (.result.other // []) +
+       (if (.result|type)=="array" then .result else [] end))[]
+      | {alias:(.alias // null), username:(.username // null),
+         connectedStatus:(.connectedStatus // .status // null),
+         isDefault:((.isDefaultUsername // .isDefault) // false)} ]' 2>/dev/null)"
+  if [ "$OUTPUT" = "json" ]; then
+    printf '%s\n' "${norm:-[]}"
+    return 0
+  fi
+  local n
+  n="$(printf '%s' "${norm:-[]}" | jq 'length' 2>/dev/null)"
+  if [ -z "$n" ] || [ "$n" = "0" ]; then
+    echo "No orgs are authenticated with the Salesforce CLI."
+    echo "  Log in with:  sf org login web --alias <my-alias>"
+    return 0
+  fi
+  echo "Authenticated orgs:"
+  printf '%s' "$norm" | jq -r '.[]
+    | "  \(.alias // .username // "?")\t\(.username // "?")\t\(.connectedStatus // "?")\(if .isDefault then "  (default)" else "" end)"' \
+    | while IFS=$'\t' read -r a u s; do printf "  %-24s %-32s %s\n" "$a" "$u" "$s"; done
+}
 
 # --- org resolution ------------------------------------------------------
 resolve_target() {
@@ -252,54 +296,14 @@ resolve_target() {
   [ -n "$TARGET" ] && return 0
   echo "No org specified and no default target-org / target-dev-hub is set." >&2
   echo >&2
+  if [ "$OUTPUT" != "json" ]; then
+    list_orgs >&2 || true
+    echo >&2
+  fi
   echo "Pass an org alias/username, or set a default:" >&2
   echo "    sf org login web --alias <my-alias>      # authenticate an org" >&2
   echo "    sf config set target-org <my-alias>      # make it the default" >&2
   exit 2
-}
-
-# --- interactive login ---------------------------------------------------
-# Authenticate an org with `sf org login web`, honoring an optional
-# --instance-url (My Domain, sandbox, or pre-release/scratch instance) and, when
-# an org identifier was supplied, using it as the CLI alias. Opens a browser for
-# the OAuth flow; returns non-zero if the login fails or times out.
-do_login() {
-  local args=(org login web)
-  [ -n "$LOGIN_INSTANCE_URL" ] && args+=(--instance-url "$LOGIN_INSTANCE_URL")
-  [ -n "$TARGET" ] && args+=(--alias "$TARGET")
-
-  if [ "$OUTPUT" != "json" ]; then
-    echo "Authenticating with the Salesforce CLI (a browser window will open)..."
-    [ -n "$LOGIN_INSTANCE_URL" ] && echo "  instance URL: $LOGIN_INSTANCE_URL"
-    [ -n "$TARGET" ] && echo "  alias:        $TARGET"
-    echo "  Complete the login in the browser promptly (the session times out)."
-    echo
-  fi
-
-  local out ok
-  out="$(sf "${args[@]}" --json 2>/dev/null)"
-  ok="$(printf '%s' "$out" | jq -r 'if .status==0 then "true" else "false" end' 2>/dev/null)"
-
-  if [ "$ok" != "true" ]; then
-    local msg
-    msg="$(printf '%s' "$out" | jq -r '.message // empty' 2>/dev/null)"
-    if [ "$OUTPUT" = "json" ]; then
-      jq -n --arg msg "${msg:-login failed}" '{status:"login_failed", error:$msg}'
-    else
-      echo "Login failed: ${msg:-unknown error}." >&2
-      echo "  Retry in your own terminal, or use the device flow if the browser flow keeps timing out:" >&2
-      echo "    sf org login device${LOGIN_INSTANCE_URL:+ --instance-url $(shell_quote "$LOGIN_INSTANCE_URL")}${TARGET:+ --alias $(shell_quote "$TARGET")}" >&2
-    fi
-    return 1
-  fi
-
-  # Adopt the authenticated username as the target when none was supplied, so the
-  # rest of the run operates on the org the user just logged in to.
-  if [ -z "$TARGET" ]; then
-    TARGET="$(printf '%s' "$out" | jq -r '.result.username // empty' 2>/dev/null)"
-  fi
-  [ "$OUTPUT" != "json" ] && echo "Authenticated: ${TARGET:-(org)}" && echo
-  return 0
 }
 
 # Render one dynamic value as a safe, copy-pasteable shell argument.
@@ -332,6 +336,61 @@ detect_devhub() {
   esac
 }
 
+# --- org facts (edition / sandbox) ---------------------------------------
+# Best effort: populate ORG_EDITION, ORG_IS_SANDBOX. Never aborts.
+org_facts() {
+  [ "$ORG_FACTS_DONE" -eq 1 ] && return 0
+  ORG_FACTS_DONE=1
+  local out
+  out="$(sf data query --query "SELECT OrganizationType, IsSandbox FROM Organization" \
+          --target-org "$TARGET" --json 2>/dev/null)" || return 0
+  ORG_EDITION="$(printf '%s' "$out" | jq -r '.result.records[0].OrganizationType // empty' 2>/dev/null)"
+  # Use an explicit null-check rather than `// empty`: IsSandbox is a boolean, and
+  # `false // empty` would drop a legitimate `false`, reporting a non-sandbox org
+  # as "unknown" (isSandbox:null) instead of false.
+  ORG_IS_SANDBOX="$(printf '%s' "$out" | jq -r '(.result.records[0].IsSandbox) as $s | if $s==null then empty else ($s|tostring) end' 2>/dev/null)"
+  return 0
+}
+
+# --- DevHubSettings preferences read -------------------------------------
+# Reads the current DevHubSettings via the Tooling API and echoes TSV rows
+# "key<TAB>true|false" for each enable* preference. Returns non-zero on failure.
+read_devhub_settings() {
+  local out
+  out="$(sf api request rest "/services/data/v${SETTINGS_API_VERSION}/tooling/sobjects/DevHubSettings/DevHub" \
+          --target-org "$TARGET" --json 2>/dev/null)" || return 1
+  # `sf api request rest --json` returns the raw REST body; be robust to a
+  # possible {result:{...}} wrapper too.
+  printf '%s' "$out" | jq -r '
+    (.Metadata // .result.Metadata // {})
+    | to_entries[]? | select(.key|startswith("enable"))
+    | [.key, (.value|tostring)] | @tsv' 2>/dev/null
+}
+
+render_settings() {
+  local rows
+  rows="$(read_devhub_settings)"
+  if [ -z "$rows" ]; then
+    if [ "$OUTPUT" = "json" ]; then
+      jq -n --arg org "$TARGET" '{org:$org, settings:{}, note:"Could not read DevHubSettings (Dev Hub may be off, or you lack access)."}'
+    else
+      echo "Could not read DevHubSettings for '$TARGET' — Dev Hub may be off, or you may lack access." >&2
+    fi
+    return 1
+  fi
+  if [ "$OUTPUT" = "json" ]; then
+    printf '%s\n' "$rows" | jq -R -s --arg org "$TARGET" '
+      {org:$org,
+       settings:( [ split("\n")[] | select(length>0) | split("\t") | {(.[0]): (.[1]=="true")} ] | add // {} )}'
+    return 0
+  fi
+  echo "DevHub preferences for '$TARGET':"
+  printf '%s\n' "$rows" | while IFS=$'\t' read -r k v; do
+    [ -n "$k" ] || continue
+    if [ "$v" = "true" ]; then printf "  %-34s ON\n" "$k"; else printf "  %-34s OFF\n" "$k"; fi
+  done
+}
+
 # Echoes TSV rows "name<TAB>remaining<TAB>max" for the two scratch org limits,
 # or nothing if the org could not be queried.
 allocation_rows() {
@@ -343,6 +402,13 @@ allocation_rows() {
     | [.name, (.remaining|tostring), (.max|tostring)] | @tsv'
 }
 
+# Integer percentage used = (max-rem)*100/max, or empty when max is empty/0.
+pct_used() {
+  local max="$1" rem="$2"
+  { [ -n "$max" ] && [ "$max" -gt 0 ] 2>/dev/null; } || { echo ""; return; }
+  echo $(( (max - rem) * 100 / max ))
+}
+
 # Resolve the org instance URL for the Setup deep link (best effort).
 resolve_instance_url() {
   [ -n "$INSTANCE_URL" ] && return 0
@@ -351,6 +417,7 @@ resolve_instance_url() {
 }
 
 # --- auth error reporting ------------------------------------------------
+# Guidance only: print the exact login command to run. Never logs in.
 print_auth_error() {
   if [ "$OUTPUT" = "json" ]; then
     jq -n --arg org "$TARGET" --arg name "$DEVHUB_ERRNAME" --arg msg "$DEVHUB_ERRMSG" \
@@ -360,22 +427,11 @@ print_auth_error() {
   printf "  %-30s  could not query org (%s)\n" "$TARGET" "${DEVHUB_ERRNAME:-error}"
   [ -n "$DEVHUB_ERRMSG" ] && printf "  %-30s  (%s)\n" "" "$DEVHUB_ERRMSG"
   echo
-  if [ -n "$LOGIN_INSTANCE_URL" ]; then
-    # An instance URL was provided — show the exact command for it, and offer to
-    # let the script run it directly via --login.
-    echo "  To authenticate against $LOGIN_INSTANCE_URL, run:"
-    echo "    sf org login web --instance-url $(shell_quote "$LOGIN_INSTANCE_URL")${TARGET:+ --alias $(shell_quote "$TARGET")}"
-    echo "  Or let this script log you in and continue in one step:"
-    echo "    devhub.sh ${TARGET:+$(shell_quote "$TARGET") }--instance-url $(shell_quote "$LOGIN_INSTANCE_URL") --login"
-  else
-    echo "  To authenticate, run one of:"
-    echo "    sf org login web --alias $(shell_quote "$TARGET")                                             # interactive browser login"
-    echo "    sf org login web --alias <my-alias> --instance-url https://MYDOMAIN.my.salesforce.com   # sandbox/My Domain"
-    echo "  Or let this script log you in and continue in one step:"
-    echo "    devhub.sh $(shell_quote "$TARGET") --login                                                    # prod/DE/trial"
-    echo "    devhub.sh <my-alias> --instance-url https://MYDOMAIN.my.salesforce.com --login  # sandbox/My Domain"
-  fi
-  echo "  Then re-run. List existing logins with:  sf org list"
+  echo "  This org is not authenticated (or the session expired). Authentication is"
+  echo "  a precondition for this skill — run one of these yourself, then re-run:"
+  echo "    sf org login web --alias $(shell_quote "$TARGET")                                             # prod / DE / trial"
+  echo "    sf org login web --alias <my-alias> --instance-url https://MYDOMAIN.my.salesforce.com   # sandbox / My Domain"
+  echo "  List existing logins with:  sf org list"
 }
 
 # --- Setup UI fallback text ----------------------------------------------
@@ -391,22 +447,36 @@ print_ui_fallback() {
 
 # --- allocation rendering ------------------------------------------------
 render_allocation() {
-  local rows a_max a_rem d_max d_rem
+  local rows a_max a_rem d_max d_rem a_pct d_pct
   rows="$(allocation_rows)" || { echo "Could not read org limits for '$TARGET'." >&2; return 1; }
   a_rem="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="ActiveScratchOrgs"{print $2}')"
   a_max="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="ActiveScratchOrgs"{print $3}')"
   d_rem="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="DailyScratchOrgs"{print $2}')"
   d_max="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="DailyScratchOrgs"{print $3}')"
+  a_pct="$(pct_used "$a_max" "$a_rem")"
+  d_pct="$(pct_used "$d_max" "$d_rem")"
 
   if [ "$OUTPUT" = "json" ]; then
+    local warns=()
+    if [ -n "$a_max" ] && [ "$a_max" -gt 0 ] 2>/dev/null && [ "$a_rem" -lt 2 ] 2>/dev/null; then
+      warns+=("only $a_rem active scratch org(s) remaining")
+    fi
+    { [ -n "$a_pct" ] && [ "$a_pct" -gt 80 ] 2>/dev/null; } && warns+=("Active scratch org usage at ${a_pct}%")
+    { [ -n "$d_pct" ] && [ "$d_pct" -gt 80 ] 2>/dev/null; } && warns+=("Daily scratch org usage at ${d_pct}%")
+    local warn_json="[]"
+    if [ "${#warns[@]}" -gt 0 ]; then
+      warn_json="$(printf '%s\n' "${warns[@]}" | jq -R . | jq -s .)"
+    fi
     jq -n --arg org "$TARGET" \
-      --argjson am "${a_max:-null}" --argjson ar "${a_rem:-null}" \
-      --argjson dm "${d_max:-null}" --argjson dr "${d_rem:-null}" '
+      --argjson am "${a_max:-null}" --argjson ar "${a_rem:-null}" --argjson ap "${a_pct:-null}" \
+      --argjson dm "${d_max:-null}" --argjson dr "${d_rem:-null}" --argjson dp "${d_pct:-null}" \
+      --argjson warnings "$warn_json" '
       {org:$org,
        allocation:{
-         activeScratchOrgs:{max:$am, remaining:$ar, used:(if $am!=null and $ar!=null then ($am-$ar) else null end)},
-         dailyScratchOrgs:{max:$dm, remaining:$dr, used:(if $dm!=null and $dr!=null then ($dm-$dr) else null end)}
-       }}'
+         activeScratchOrgs:{max:$am, remaining:$ar, used:(if $am!=null and $ar!=null then ($am-$ar) else null end), usedPct:$ap},
+         dailyScratchOrgs:{max:$dm, remaining:$dr, used:(if $dm!=null and $dr!=null then ($dm-$dr) else null end), usedPct:$dp}
+       },
+       warnings:$warnings}'
     return 0
   fi
 
@@ -418,6 +488,12 @@ render_allocation() {
   printf "  %-22s %10s %10s %10s\n" "Limit" "Used" "Remaining" "Max"
   [ -n "$a_max" ] && printf "  %-22s %10s %10s %10s\n" "Active scratch orgs" "$(( a_max - a_rem ))" "$a_rem" "$a_max"
   [ -n "$d_max" ] && printf "  %-22s %10s %10s %10s\n" "Daily scratch orgs" "$(( d_max - d_rem ))" "$d_rem" "$d_max"
+  # Pre-flight warnings.
+  if [ -n "$a_max" ] && [ "$a_max" -gt 0 ] 2>/dev/null && [ "$a_rem" -lt 2 ] 2>/dev/null; then
+    echo "  WARN: only $a_rem active scratch org(s) remaining."
+  fi
+  { [ -n "$a_pct" ] && [ "$a_pct" -gt 80 ] 2>/dev/null; } && echo "  NOTE: Active scratch org usage at ${a_pct}% ($(( a_max - a_rem ))/$a_max)."
+  { [ -n "$d_pct" ] && [ "$d_pct" -gt 80 ] 2>/dev/null; } && echo "  NOTE: Daily scratch org usage at ${d_pct}% ($(( d_max - d_rem ))/$d_max)."
   echo
   echo "  Active = orgs alive right now; Daily = successful creations in a rolling 24h window."
   echo "  Allocation is set by the Dev Hub's edition (e.g. Developer/trial 3 & 6;"
@@ -459,6 +535,23 @@ cleanup_deploy_temp() {
 }
 
 render_deploy() {
+  # Enabling Dev Hub cannot happen on a sandbox. When actually applying an
+  # enablement, verify eligibility first and refuse before touching the org.
+  if [ "$ENABLING" -eq 1 ] && [ "$APPLY" -eq 1 ]; then
+    org_facts
+    if [ "$ORG_IS_SANDBOX" = "true" ]; then
+      if [ "$OUTPUT" = "json" ]; then
+        jq -n --arg org "$TARGET" '{applied:false, enabling:true, success:false, message:"Refused: Dev Hub cannot be enabled on a sandbox. Use a production, Developer Edition, or trial org."}'
+      else
+        echo "Refused — '$TARGET' is a sandbox, and Dev Hub cannot be enabled on a sandbox."
+        echo "  Dev Hub must be a production/business org (or a Developer Edition / trial org)."
+        echo
+        print_ui_fallback
+      fi
+      return 1
+    fi
+  fi
+
   # Sub-prefs (packaging, snapshots, shape) require Dev Hub to be on. If the
   # user is configuring one without also enabling, and Dev Hub is off, warn.
   if [ "$ENABLING" -eq 0 ] && [ "$DEVHUB_STATE" = "disabled" ] && [ "$OUTPUT" != "json" ]; then
@@ -572,13 +665,17 @@ render_status() {
     a_max="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="ActiveScratchOrgs"{print $3}')"
     d_rem="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="DailyScratchOrgs"{print $2}')"
     d_max="$(printf '%s\n' "$rows" | awk -F'\t' '$1=="DailyScratchOrgs"{print $3}')"
+    org_facts
     jq -n --arg org "$TARGET" --arg state "$DEVHUB_STATE" \
       --argjson count "${SCRATCH_COUNT:-null}" \
+      --arg edition "${ORG_EDITION}" --arg sandbox "${ORG_IS_SANDBOX}" \
       --argjson am "${a_max:-null}" --argjson ar "${a_rem:-null}" \
       --argjson dm "${d_max:-null}" --argjson dr "${d_rem:-null}" '
       {org:$org,
        devHubEnabled:($state=="enabled"),
        status:$state,
+       edition:(if $edition=="" then null else $edition end),
+       isSandbox:(if $sandbox=="" then null else ($sandbox=="true") end),
        activeScratchOrgSignups:$count,
        allocation:{
          activeScratchOrgs:{max:$am, remaining:$ar},
@@ -587,42 +684,56 @@ render_status() {
     return 0
   fi
 
+  org_facts
   echo "Dev Hub status for '$TARGET':"
   if [ "$DEVHUB_STATE" = "enabled" ]; then
     echo "  Dev Hub: ENABLED  (ScratchOrgInfo is queryable)"
+    echo "  Detection: ScratchOrgInfo is queryable only when Dev Hub is on. A successful count means ENABLED. An INVALID_TYPE error means NOT ENABLED. Scratch org limits are not used as the enablement check."
+    [ -n "$ORG_EDITION" ] && echo "  Edition: $ORG_EDITION"
+    [ "$ORG_IS_SANDBOX" = "true" ] && echo "  (Sandbox org)"
     [ -n "$SCRATCH_COUNT" ] && echo "  Scratch org signup records: $SCRATCH_COUNT"
+    # Best-effort current-preference summary; never let it break status.
+    local prefs
+    prefs="$(read_devhub_settings 2>/dev/null | awk -F'\t' '$2=="true"{printf "%s ", $1}')"
+    [ -n "$prefs" ] && echo "  Enabled preferences: $prefs"
     echo
     render_allocation
   else
     echo "  Dev Hub: NOT ENABLED"
+    echo "  Detection: ScratchOrgInfo is queryable only when Dev Hub is on. A successful count means ENABLED. An INVALID_TYPE error means NOT ENABLED. Scratch org limits are not used, because they are reported even when Dev Hub is off."
+    [ -n "$ORG_EDITION" ] && echo "  Edition: $ORG_EDITION"
+    [ "$ORG_IS_SANDBOX" = "true" ] && echo "  (Sandbox org — cannot host Dev Hub)"
     echo
-    echo "  Enable it (deploys $DEVHUB_SWITCH=true; irreversible):"
-    echo "    devhub.sh \"$TARGET\" --enable            # validate first (dry run)"
-    echo "    devhub.sh \"$TARGET\" --enable --apply    # actually enable"
-    echo "  Requires ModifyAllData or ModifyMetadata (System Administrator);"
-    echo "  not allowed in a sandbox or an org with a registered namespace."
+    echo "  Scratch org allocation, Dev Hub preferences, and the scratch org list are not available until Dev Hub is enabled. An empty allocation or a failed exit from those modes means Dev Hub is off, not that the org is unauthenticated."
     echo
+    if [ "$ORG_IS_SANDBOX" = "true" ]; then
+      echo "  This is a sandbox — Dev Hub cannot be enabled here. Use a production,"
+      echo "  Developer Edition, or trial org instead."
+      echo
+    else
+      echo "  Enable it (deploys $DEVHUB_SWITCH=true; irreversible):"
+      echo "    devhub.sh \"$TARGET\" --enable            # validate first (dry run)"
+      echo "    devhub.sh \"$TARGET\" --enable --apply    # actually enable"
+      echo "  Requires ModifyAllData or ModifyMetadata (System Administrator);"
+      echo "  not allowed in a sandbox or an org with a registered namespace."
+      echo
+    fi
     print_ui_fallback
   fi
 }
 
 # --- dispatch ------------------------------------------------------------
-# Authenticate first when requested. Login can supply the org, so it runs before
-# resolve_target's "no org" guard; a bare positional (no other mode) with
-# --login/--instance-url is treated as the alias to log in under.
-if [ "$DO_LOGIN" -eq 1 ]; then
-  do_login || exit 1
-  if [ "$MODE_EXPLICIT" -eq 0 ] && [ "$FAIL_IF_DISABLED" -eq 0 ]; then
-    exit 0
-  fi
+# --list-orgs needs no target and no auth check — handle it first.
+if [ "$MODE" = "listorgs" ]; then
+  list_orgs; exit $?
 fi
 
 resolve_target
 
-# status/deploy need the enablement state; allocation and list query the org
-# directly and surface their own errors.
+# status/deploy/settings need the enablement state; allocation and list query
+# the org directly and surface their own errors.
 case "$MODE" in
-  status|deploy)
+  status|deploy|settings)
     if ! detect_devhub && [ "$DEVHUB_STATE" = "auth_error" ]; then
       print_auth_error
       exit 1
@@ -630,10 +741,24 @@ case "$MODE" in
     ;;
 esac
 
+# --show-settings requires Dev Hub to be on.
+if [ "$MODE" = "settings" ] && [ "$DEVHUB_STATE" != "enabled" ]; then
+  if [ "$OUTPUT" = "json" ]; then
+    jq -n --arg org "$TARGET" '{org:$org, settings:{}, note:"Dev Hub is not enabled; there are no DevHubSettings to read."}'
+  else
+    echo "Dev Hub is not enabled on '$TARGET' — there are no DevHubSettings to read." >&2
+    echo "  Packaging (enablePackaging2), org shape export (enableShapeExportPref), and scratch org snapshots (enableScratchOrgSnapshotPref) cannot be read until Dev Hub is enabled. Do not guess ON or OFF." >&2
+    echo "  Validate with a dry run first. Enabling is irreversible and needs a System Administrator (ModifyAllData or ModifyMetadata)." >&2
+    echo "  Enable it first with:  devhub.sh \"$TARGET\" --enable --apply" >&2
+  fi
+  exit 1
+fi
+
 rc=0
 case "$MODE" in
   status)     render_status || rc=1 ;;
   allocation) render_allocation || rc=1 ;;
+  settings)   render_settings || rc=1 ;;
   list)       render_list || rc=1 ;;
   deploy)     render_deploy || rc=1 ;;
 esac

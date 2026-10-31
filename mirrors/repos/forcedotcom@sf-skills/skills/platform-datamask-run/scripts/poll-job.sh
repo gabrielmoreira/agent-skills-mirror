@@ -17,10 +17,10 @@
 # so the default cap is 600s (10 min) with a 20s interval to keep the query volume low. Do NOT poll
 # on a tight (sub-10s) interval — it just burns tool calls against a job that cannot finish sooner.
 #
-# TERMINAL MODE: The parent DataMaskPolicyJobRun.Status can LAG the real job state (it may read
-# `pending`/`running` for a while after masking finished). So this poller ALSO checks
-# DataMaskPolicyJobRunDtl: once a `total_records_masked` detail row exists, the job is effectively
-# done and we stop, even if the parent status hasn't caught up. Ground truth is the detail rows.
+# TERMINAL MODE: exits only on a terminal PARENT status. A `total_records_masked` detail row is NOT a
+# completion signal: it can already exist, reading `0`, while the parent is still `running`, so
+# stopping on the first row reports a count for a job that has not finished. Read the detail rows
+# only AFTER this script exits.
 #
 # RUNNING MODE (for abort): exits the instant the parent status reads `running` — the only state in
 # which the abort endpoint accepts the request (a `pending`/`scheduled` job 409s). Because the pool
@@ -30,7 +30,7 @@
 # start a fresh run rather than abort a job that already finished.
 #
 # Exit codes:
-#   terminal mode: 0 = terminal status OR masked-count detail row observed (signal on stdout);
+#   terminal mode: 0 = terminal parent status observed (printed on stdout);
 #                  1 = timed out; 2 = bad args.
 #   running mode:  0 = `running` observed (prints `running`); 1 = timed out; 2 = bad args;
 #                  3 = job reached a terminal state before `running` was seen (prints that status).
@@ -63,12 +63,15 @@ is_terminal() {
 
 elapsed=0
 while (( elapsed < MAX_SECONDS )); do
-  status="$(
-    sf data query --target-org "$ORG" \
-      --query "SELECT Status FROM DataMaskPolicyJobRun WHERE Id = '${JOB_ID}'" \
-      --json 2>/dev/null \
-    | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',{}).get('records',[]); print(r[0]['Status'] if r else 'UNKNOWN')"
-  )"
+  # CSV is a header line then one value per row, so bash can read it with no pipe and no
+  # post-processor. stderr is left attached so an auth or alias failure is visible; a failed
+  # query only skips this tick, it does not end the poll.
+  csv="$(sf data query --target-org "$ORG" \
+    --query "SELECT Status FROM DataMaskPolicyJobRun WHERE Id = '${JOB_ID}'" \
+    --result-format csv)" || csv=""
+  status=""
+  { IFS= read -r _; IFS= read -r status; } <<< "$csv" || true
+  status="${status:-UNKNOWN}"
   echo "[poll-job] ${JOB_ID} status=${status} (${elapsed}s/${MAX_SECONDS}s) mode=${POLL_MODE}"
 
   if [[ "$POLL_MODE" == "running" ]]; then
@@ -88,19 +91,6 @@ while (( elapsed < MAX_SECONDS )); do
       echo "$status"
       exit 0
     fi
-
-    # Ground-truth check: a masked-count detail row means the job finished even if the parent lags.
-    masked="$(
-      sf data query --target-org "$ORG" \
-        --query "SELECT Value FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '${JOB_ID}' AND Subtype = 'total_records_masked'" \
-        --json 2>/dev/null \
-      | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',{}).get('records',[]); print(r[0]['Value'] if r else '')"
-    )"
-    if [[ -n "$masked" ]]; then
-      echo "[poll-job] detail row total_records_masked=${masked} — job effectively complete (parent status=${status})"
-      echo "completed"
-      exit 0
-    fi
   fi
 
   sleep "$INTERVAL"
@@ -110,6 +100,6 @@ done
 if [[ "$POLL_MODE" == "running" ]]; then
   echo "[poll-job] TIMEOUT after ${MAX_SECONDS}s — job never reached 'running'" >&2
 else
-  echo "[poll-job] TIMEOUT after ${MAX_SECONDS}s — neither terminal status nor masked-count detail row observed" >&2
+  echo "[poll-job] TIMEOUT after ${MAX_SECONDS}s — job never reached a terminal status" >&2
 fi
 exit 1

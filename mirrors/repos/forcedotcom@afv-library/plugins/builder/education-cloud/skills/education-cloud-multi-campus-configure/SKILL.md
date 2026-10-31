@@ -8,7 +8,7 @@ metadata:
     - "Education"
   relatedSkills:
     - "education-cloud-domain-configure"
-  accessCheck: "License.EducationCloud"
+  accessCheck: "OrgPermissions.EducationCloud"
   mcpTools:
     headless-360:
       tools: ["describe", "discover", "dispatch", "dispatch_readonly"]

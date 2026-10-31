@@ -51,7 +51,7 @@ A Herdr plugin is still the same `collie` binary; the actions forward to it
 the verbs that have no action (`pair`, `qr`, `logs`, `link`, `devices`, `stt`, `config`) run from
 the plugin's directory as `bin/collie <verb>`.
 
-Herdr is also one of the five multiplexers Collie can mirror (Herdr, tmux, zellij, tuios and tern). Which one you mirror is a separate
+Herdr is also one of the multiplexers Collie can mirror (Herdr, the Herdr core, tmux, zellij, tuios and tern). Which one you mirror is a separate
 choice ([Name your multiplexer](#name-your-multiplexer)): a standalone Collie can mirror Herdr, and
 a Herdr plugin can mirror tmux.
 
@@ -94,6 +94,7 @@ Find your system below, run its commands, then go on to [Start it](#start-it).
 | macOS, Apple Silicon or Intel | [The install script](#macos) |
 | Windows 11 (x64, with Herdr) | [`install.ps1`, experimental](#windows-support-experimental) |
 | Any of these, inside Herdr | [Herdr plugin](#herdr-plugin) |
+| A machine that runs herdr-app and the Herdr core, with no Herdr TUI | [The binary and `hc`](#herdr-app-and-the-herdr-core) |
 
 ### Linux
 
@@ -275,6 +276,33 @@ bin/collie link
 A source build requires Bun and git. Start it with `bin/collie start`, or `collie start` after
 linking.
 
+### herdr-app and the Herdr core
+
+herdr-app and the Herdr core (`hc`) need no Herdr plugin and no `herdr` command. Install Collie as a
+binary, with the [install script](#standalone) or a package, and make sure the core runs:
+
+```bash
+curl -fsSL https://colliepwa.dev/install.sh | sh
+hc server status      # or open herdr-app, which starts the core
+collie start
+```
+
+When you name no multiplexer, the Herdr TUI is not installed on this machine and the core's socket
+is there, Collie picks the core on its own. A machine with the Herdr TUI installed keeps `herdr`
+even while the TUI is not running, so name the core there with `COLLIE_MUX=herdr-core collie start`.
+When it picks the core, `collie start` says so and writes `COLLIE_MUX=herdr-core` to
+`~/.config/collie/.env`, which is Collie's own config folder on this install. The service unit
+carries the same choice. `collie update` then runs no `herdr plugin` command. To drive one named
+core session, export `HC_SESSION` or `HC_SOCKET` before `collie start`; the unit keeps them. Install
+the Claude hooks with `collie hooks install claude` for History. What the core can and cannot do is
+in [herdr-core notes](multiplexers.md#herdr-core-notes).
+
+A Collie that already drives the Herdr TUI keeps it, because its `.env` names `herdr` and wins over
+the shell. To mirror the core on that machine too, run a second instance beside it:
+[Two Collies on one machine](multiplexers.md#two-collies-on-one-machine). herdr-app can also show a
+Collie panel that pairs a phone. It is experimental and you copy it in by hand:
+[The Collie panel for herdr-app](multiplexers.md#the-collie-panel-for-herdr-app).
+
 ### Herdr plugin
 
 ```bash
@@ -313,10 +341,10 @@ your package manager manages this tree.
 
 ## Name your multiplexer
 
-Collie mirrors one backend: `COLLIE_MUX=herdr` (default), `tmux`, or `zellij`.
+Collie mirrors one backend: `COLLIE_MUX=herdr` (default), `herdr-core`, `tmux`, or `zellij`.
 
-You do not need to set it before the first start. `start` looks for a live Herdr socket, a running
-tmux server and zellij sessions, prints what it found, and writes your choice to the config `.env`,
+You do not need to set it before the first start. `start` looks for a live Herdr socket, a Herdr
+core socket without a Herdr socket, a running tmux server and zellij sessions, prints what it found, and writes your choice to the config `.env`,
 creating the file if needed.
 
 Without a terminal prompt, `start` picks the single backend it found and reports it. If it finds
@@ -408,10 +436,13 @@ $ collie status
     local     http://127.0.0.1:8787
     tailnet   https://myhost.tail1234.ts.net
 
-  serve config:
-    https://myhost.tail1234.ts.net (tailnet only)
-    |-- / proxy http://127.0.0.1:8787
+  crew      no crew, this install is solo
+  devices   1 paired (Pixel)
+  sessions  3 agents  working 1  blocked 0  idle 2  done 0  unknown 0  (3 report a session id)
 ```
+
+`collie status --verbose` adds what `tailscale serve` publishes, and `collie serve status` prints
+that alone.
 
 ```console
 $ collie logs        # journal timestamps trimmed here

@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Xberg Release
-description: "Xberg release on top of the shared release-workflow: mise run version:sync to bindings and chart, CI/Publish/Benchmarks readiness. Use before a release."
+description: "Prepare Xberg releases: version sync, generated bindings, chart and CI gates."
 x-ai-rulez:
   kind: skill
   id: xberg-release
@@ -38,7 +38,7 @@ a version in a package manifest.
    (`mise run plugin:verify`).
 
 Bump/set helpers chain both automatically:
-`mise run version:bump:major|minor|patch`, `mise run version:set <version>`.
+`mise run version:bump:major|minor|patch`.
 `mise run version:check` prints the Cargo version and runs `sync_integration_versions.py --check`,
 failing on integration drift. It does not dry-run `alef sync-versions`.
 
@@ -72,7 +72,7 @@ The llama-index dev aggregator (`integrations/python/llama-index/pyproject.toml`
 
 ### Do
 
-- Bump via `mise run version:bump:*` / `mise run version:set`, then commit the synced manifests
+- Bump via `mise run version:bump:*`, then commit the synced manifests
   together with the Cargo.toml change (atomic).
 
 ### Don't

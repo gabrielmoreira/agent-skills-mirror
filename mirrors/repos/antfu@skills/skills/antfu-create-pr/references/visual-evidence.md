@@ -28,7 +28,7 @@ Remove the temporary worktree after the PR is created: `git worktree remove /tmp
 
 ## Attach
 
-GitHub CLI 2.99+ uploads local images and videos with `--attach` and rewrites matching local paths in the body to the uploaded URL. Write the body with ordinary local paths, then pass each file:
+Newer GitHub CLI (2.99+) can attach files directly from the command line: it uploads local images and videos with `--attach` ([docs](https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli)) and rewrites matching local paths in the body to the uploaded URL. Write the body with ordinary local paths, then pass each file:
 
 ```markdown
 ## Visual changes

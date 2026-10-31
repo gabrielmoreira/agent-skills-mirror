@@ -1,54 +1,42 @@
 # Deploy Error Reference
 
-When `sf project deploy start` fails, it prints a per-component status table. Below are the most common error families for `PolicyRuleDefinition` / `PolicyRuleDefinitionSet` metadata.
-
-For verbose output when scripting:
-```bash
-sf project deploy start --target-org <alias> --source-dir … --json --verbose \
-  | jq '.result.details.componentFailures'
-```
+Create/update run over headless-360 `dispatch`/`/headless/metadata`; delete runs over the Data 360 MCP `d360_data_governance_access_policy_delete` tool (Core has no real metadata delete). There is no CLI fallback on either path. This file documents the server-side error taxonomy; the create/update/read errors below surface directly on the `dispatch` path.
 
 ---
 
-## Error Table
+## Headless Dispatch Errors
 
 | Error fragment | Likely cause | Fix |
 |---|---|---|
-| `Not available for deploy for this organization` | Org has `EnforceOMatic` perm (entities visible) but lacks `PolicyRuleMDAPI` org perm | Internal license/feature provisioning — surface to the operator. Both `EnforceOMatic` AND `PolicyRuleMDAPI` are required (see §11.1 of policy.md). |
-| `Cannot find … PolicyRuleDefinition` (older orgs) | Org missing `EnforceOMatic` entirely, or API version too low | Confirm both `EnforceOMatic` and `PolicyRuleMDAPI` perms; ensure `<version>` ≥ 64.0 in package.xml |
-| `INVALIDFORCATEGORY` / `Resource scope … not valid for category …` | Scope × category mismatch (e.g., ACCESS/GOVERNANCE + RECORD scope, or TRANSFORM + ANY scope) | Match scope to category per the §4 matrix in SKILL.md. For OLS/FLS on tagged objects: use `ANY`/`FIELD` scope + tag/classification condition — **not** `<resourceDomain>`. |
+| `400 FIELD_INTEGRITY_EXCEPTION "Not available for deploy for this organization"` | Type/op is on the MD-CRUD allowlist, but the org lacks the feature/perm provisioning to deploy this metadata type | Org setup gap — surface it to the operator; do not fall back to CLI on this error alone, since the CLI path hits the same org gate. |
+| `400 UNSUPPORTED_OPERATION` | The type/op is genuinely not on the MD-CRUD allowlist | Onboarding gap — surface it to the operator; there is no CLI fallback. |
+| `'body' must be a JSON object, got an unexpected type` | A client/transport let a raw unescaped newline reach the JSON body, or a transient tool-arg serialization glitch (NOT the server rejecting multi-line XML — a properly-escaped multi-line `xmlRep` persists fine) | Flatten `xmlRep` to one line as a defensive default; if it still fails, retry once before concluding the shape is unsupported. |
+| `404` (on GET) | Type/op is allowlisted; the named member does not exist | Expected for a not-yet-created component, not an error. |
+| `405` / no-op `200` (on a `/headless/metadata` DELETE) | Core has no real metadata delete — the verb 405s, and the interim delete is a no-op 200 that removes nothing | Do not delete via `/headless/metadata`. Delete the whole policy over the Data 360 MCP `d360_data_governance_access_policy_delete` tool (removes the Access Policy and its embedded rules by developer name). |
+| DC-connectivity error (on the Data 360 Access Policy delete) | The off-core Data Cloud delete path failed on DC connectivity | Provisioning gap — surface it to the operator; there is no `sf` CLI fallback. Confirm removal via `d360_data_governance_access_policy_get` by name (not-found = success). |
+
+See `references/headless-transport.md` for the full request/response contract.
+
+---
+
+## Server-Side Validation Errors
+
+These deploy-time validation errors are raised by the same metadata deploy engine behind `/headless/metadata`, so they surface directly in the `dispatch` response for `PolicyRuleDefinition` / `PolicyRuleDefinitionSet`. They are shape or org-provisioning problems, not transport problems — fix the authored XML or surface the org gap to the operator; there is no CLI to fall back to.
+
+| Error fragment | Likely cause | Fix |
+|---|---|---|
+| `Not available for deploy for this organization` | Policy-rule metadata deployment is not enabled for the org | Surface the missing org capability to the operator; do not attempt to bypass the server gate. |
+| `Cannot find … PolicyRuleDefinition` (older orgs) | Policy-rule metadata is unavailable, or the API version is too low | Confirm the org supports policy-rule metadata and ensure the resolved org API version meets the skill's `minApiVersion`. |
+| `INVALIDFORCATEGORY` / `Resource scope … not valid for category …` | Scope × category mismatch (e.g., GOVERNANCE + RECORD scope, or TRANSFORM + ANY scope) | Match a persistence-validated combination in `policy-shapes.md`; do not infer a new category/scope pairing. |
 | `Identified record category should use record field …` | Attempted to author an `IDENTIFIED_RECORD` policy with a non-`RECORDFIELD` resource path | Do not author `IDENTIFIED_RECORD` via MDAPI — use a runtime `RuleProvider` instead. |
 | `Invalid resource domain - <name>` | `<resourceDomain>` references an entity that doesn't exist in the target org | Pre-deploy the DMO/entity, or remove the rule until the target is available. Namespaced DMOs (e.g. `ssot__Account__dlm`) need the namespace prefix in the XML. |
-| `An unexpected error occurred. Please include this ErrorId… (-116061062)` (opaque gack on RLS deploy) | RLS rule references a `<valueDomain>` DMO field that exists in metadata but is **not mapped** in the target org's data streams. Server-side NPE instead of a clean validation error. | Verify each `<valueDomain>` field is mapped in Setup → Data Cloud → Data Explorer. Build the rule in the UI first — the UI surfaces field-mapping issues with usable errors where MDAPI doesn't. |
-| `Metadata API received improper input. … Load of metadata from db failed for metadata of type:PolicyRuleDefinition and file name:<name>` (on **retrieve**) | UI-saved RLS rules can fail to round-trip back through MDAPI retrieve in some org states | No clean fix. Use the UI as source of truth for that rule, or hand-author from a known-deployable RLS template. |
+| Unexpected server error on RLS deploy | RLS rule may reference a `<valueDomain>` DMO field that exists in metadata but is not mapped in the target org's data streams | Verify each `<valueDomain>` field is mapped using a read-only Data 360 MCP / `dispatch_readonly` inspection, then re-issue the create. |
+| `Metadata API received improper input. … Load of metadata from db failed for metadata of type:PolicyRuleDefinition and file name:<name>` (on **GET read-back**) | UI-saved RLS rules can fail to round-trip back through the MD-CRUD read in some org states | No clean fix. Use the UI as source of truth for that rule, or hand-author from a known-deployable RLS template. |
 | `Use the principal … with external record category.` | `EXTERNAL_RECORD` rule used a non-`IS_AUTHENTICATED`/`IS_INTERNAL` `principalPath` | Switch principal path or change category |
 | `Unsupported … contextPath` | Used a context path outside `RuleContextPathType.SESSION_DATASPACE` | Not authorable via MDAPI XML — use a runtime `RuleProvider` |
 
 ---
 
-## OrgPerm Gating
+## Validate Before You Persist
 
-Two org permissions are **both** required for MDAPI authoring:
-
-| Permission | Gate | Effect if missing |
-|---|---|---|
-| `EnforceOMatic` | `@WsdlGuard` master switch | Entities not visible in UI/Tooling API at all |
-| `PolicyRuleMDAPI` | `orgCanUsePolicyRuleMDAPI` WSDL layer | Deploy fails with `Not available for deploy for this organization` |
-
-`EnforcOMaticMDAPI` is a separate **packaging** gate (`isMdAPIAllowedInternal`) — only required for packaging/change sets, not for DX CLI deploys. After PR #98647 (merged 2026-06-08) the predicate is `DBContext.get().isDoingPackageInstall()`, so DX CLI deploys work with just the two perms above.
-
----
-
-## Dry-Run First
-
-Always validate before deploying to a long-lived org:
-
-```bash
-sf project deploy start \
-  --target-org <alias> \
-  --source-dir force-app/main/default \
-  --dry-run \
-  --wait 10
-```
-
-A `--dry-run` failure runs the full server-side validation (including the `IDENTIFIED_RECORD` constraint) without persisting. This catches all of the errors in the table above before they affect a real org.
+There is no dry-run on the MD-CRUD path — a `POST create` persists. Front-load correctness instead: resolve every reference in the target org (Data 360 MCP, or a read-only `dispatch_readonly` sObject describe for a custom `__dlm` DMO), match a persistence-validated scope × category combination from `policy-shapes.md`, and GET the component back after the write to confirm it persisted as authored. The same deploy-time server validation (including the `IDENTIFIED_RECORD` constraint) runs inline on the create and returns in the `dispatch` response.

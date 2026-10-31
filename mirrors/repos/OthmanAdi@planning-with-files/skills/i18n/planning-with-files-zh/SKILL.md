@@ -37,7 +37,7 @@ hooks:
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-zh/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
 
-  version: "3.26.0"
+  version: "3.27.0"
 
 ---
 
@@ -246,6 +246,9 @@ if 操作失败:
 - `scripts/session-catchup.py`：显式查看同项目会话元数据或有限摘录；无参数运行不会访问会话存储
 
 ### 列出已保存的计划
+
+
+为代理提供结构化路径和状态时，在列表命令后添加 `--json`（PowerShell：`-Json`）。字段说明和代理任务交接示例见 [plan-inventory.md](plan-inventory.md)。此查询是可选操作，正常启用技能时不会自动运行。
 
 恢复任务前，可运行 `sh "<skill-dir>/scripts/set-active-plan.sh" --list` 查找计划；在 Windows PowerShell 中运行 `& "<skill-dir>/scripts/set-active-plan.ps1" -List`。将 `<skill-dir>` 替换为此技能的安装目录，并将当前工作目录保持在项目根目录。
 

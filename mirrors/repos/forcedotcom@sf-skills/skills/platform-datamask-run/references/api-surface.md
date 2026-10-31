@@ -30,8 +30,9 @@ authoritative map.
 > then (2) Tooling-insert the object + field rows against it. The Metadata deploy must come first:
 > it creates the policy with an active revision, without which the Tooling child insert fails
 > `INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY`. See `policy-authoring.md` for the full recipe.
-> `DataMaskPolicyField` treatment columns are `MaskingCategory` (`library` / `replaceRandom`) +
-> `MaskValue` (a snake_case library token) — there is **no `MaskingRuleType` column**.
+> `DataMaskPolicyField` treatment columns are `MaskingCategory` (`library` / `characters` /
+> `replaceRandom`) + `MaskValue` (a snake_case library token for `library`, or the field's Salesforce
+> type such as `Text` / `Date` for `characters` / `replaceRandom`) — there is **no `MaskingRuleType` column**.
 
 > **Schedule fields live ON the policy** — there is no separate schedule entity. `RunFrequency`
 > (`once` / `daily` / `weekly` / `monthly`), `ScheduledStart`, and `RunOnRefresh` are fields on
@@ -64,10 +65,15 @@ sf data query --use-tooling-api --target-org <alias> \
 
 # RIGHT — job + job-detail via standard API:
 sf data query --target-org <alias> \
-  --query "SELECT Id, Status, Type, TotalRecords FROM DataMaskPolicyJobRun ORDER BY CreatedDate DESC LIMIT 5"
+  --query "SELECT Id, Status, Type, PolicyName FROM DataMaskPolicyJobRun ORDER BY CreatedDate DESC LIMIT 5"
 sf data query --target-org <alias> \
-  --query "SELECT Id, DataMaskPolicyJobRunId, Status FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '<jobRunId>'"
+  --query "SELECT ObjectReference, Type, Subtype, Value FROM DataMaskPolicyJobRunDtl WHERE DataMaskPolicyJobRunId = '<jobRunId>' ORDER BY Timestamp"
 ```
+
+`DataMaskPolicyJobRun` has **no `TotalRecords`** and **no `DataMaskPolicyId`** lookup field —
+resolve the policy from `PolicyName` (`MasterLabel`) via the Tooling API instead.
+`DataMaskPolicyJobRunDtl` has **no `Status`** column — status lives in `Type`/`Subtype`, and the
+masked count is `Value` on the row where `Subtype = 'total_records_masked'`.
 
 ## Status picklist values (`DataMaskPolicyJobRun.Status`)
 

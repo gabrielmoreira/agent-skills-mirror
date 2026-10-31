@@ -152,7 +152,12 @@ come from it, and `parameters` is `PLANNOTATOR_TOOL_INPUT_SCHEMA` itself
 (plain JSON Schema, which Pi validates without a TypeBox Kind since 0.79.1,
 the peer floor; `plannotator-tool.test.ts` runs the installed Pi's
 `validateToolArguments` against it). `executionMode: "sequential"` (#1622: an
-"edit, then open" batch opens the edited file).
+"edit, then open" batch opens the edited file). The parser reads an optional
+field sent empty (`null`, `""`, `[]`, `{}`, also inside `options`) as absent
+(#2292): GitHub Copilot's Responses models treat the function as strict and
+fill every field they mean to omit, e.g. `{"action":"list","target":"",
+"gate":false,"options":{"base":"","markdown":false},"session":""}`. A required
+field sent empty is still missing (annotate's `target`, close's `session`).
 
 **Registration and activation are decided once per session.** The tool is
 OFF by default on Pi and registered only when the agent tool switch turns it on

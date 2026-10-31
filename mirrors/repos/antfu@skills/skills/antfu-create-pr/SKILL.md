@@ -19,7 +19,7 @@ Open a PR that a reviewer can understand from the body alone. Explain the change
 5. Run the checks that match the changed surfaces (focused tests, typecheck, lint). Record the exact commands and results.
 6. If the diff changes user-visible UI, capture before/after evidence. See [visual-evidence](references/visual-evidence.md).
 7. Review the commit history and reshape it into atomic Conventional Commits. See [Commits](#commits).
-8. Write the body to a temporary file. Push the branch. Create the PR with `gh pr create --title ... --body-file ...` (add `--attach` for each screenshot). Use `--draft` when checks are still running or the work is not review-ready.
+8. Write the body to a temporary file. Push the branch. Create the PR with `gh pr create --title ... --body-file ...` (add `--attach` for each screenshot; newer `gh` can upload local images and videos from the CLI, see [Attaching files with GitHub CLI](https://docs.github.com/en/github-cli/github-cli/attaching-files-with-github-cli)). Use `--draft` when checks are still running or the work is not review-ready.
 9. Open the created PR and verify title, base, head, rendered tables, diagrams, and images.
 10. Address review comments: fix each confirmed issue, run focused checks, push, reply with evidence, and resolve the thread.
 
@@ -84,5 +84,5 @@ If the repo has a PR template, keep its headings and fill them; add sections abo
 - Use plain hyphens; never em dashes (U+2014) or en dashes (U+2013).
 - No filler ("This PR aims to...", "comprehensive", "robust"). Start sentences with the fact.
 - Do not paste tokens, secrets, user records, or full payloads into the body.
-- Do not commit screenshots or other PR-only artifacts to the repo; attach them with `gh --attach`.
+- Do not commit screenshots or other PR-only artifacts to the repo; attach them with `gh --attach` (supported by newer `gh`, no manual upload needed).
 - If the PR was written with the help of an agent, say so in one line at the end of the body.

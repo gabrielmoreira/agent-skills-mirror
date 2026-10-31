@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `loopx-project/loopx` — 26 default patterns, 108 followed patterns, 470 file(s) materialized.
+Mirror of `loopx-project/loopx` — 26 default patterns, 111 followed patterns, 473 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 108 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 108 |
-| Files         | 470 |
+| Followed pats | 111 |
+| Files         | 473 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 108 followed patterns, 
 - `docs/architecture/rfcs/typescript-control-plane-migration-v0.md`
 - `docs/development/good-smokes.md`
 - `README.zh-CN.md`
+- `docs/guides/installing-loopx.md`
 - `docs/product/releases/v2.0.0.md`
 - `docs/product/use-cases/cross-runtime/README.md`
 - `docs/development/control-plane-course/00-concept-primer.md`
@@ -67,8 +68,9 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 108 followed patterns, 
 - `demo/workspace/README.md`
 - `docs/guides/personal-workspace-user-guide.md`
 - `docs/guides/personal-workspace-trial-guide.md`
+- `docs/guides/first-bugfix-loop.md`
+- `docs/guides/long-running-coding-agents.md`
 - `packages/dsh-loopx-plugin/README.md`
-- `docs/guides/installing-loopx.md`
 - `loopx/dsh_goal_mode/README.md`
 - `docs/guides/getting-started.md`
 - `docs/reference/protocols/codex-app-host-command-registry-v0.md`
@@ -141,6 +143,7 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 108 followed patterns, 
 - `.github/SUPPORT.md`
 - `CODE_OF_CONDUCT.md`
 - `docs/project/licensing.md`
+- `docs/guides/first-bugfix-loop.zh-CN.md`
 - `docs/guides/kunluncode-adapter.zh-CN.md`
 - `docs/guides/minimal-custom-runtime-example.zh-CN.md`
 - `docs/guides/custom-agent-runner-integration.zh-CN.md`
@@ -557,85 +560,88 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 389 | → | [`docs/development/testing-and-quality.md`](docs/development/testing-and-quality.md) |
 | 390 | → | [`docs/guides/custom-agent-runner-integration.md`](docs/guides/custom-agent-runner-integration.md) |
 | 391 | → | [`docs/guides/custom-agent-runner-integration.zh-CN.md`](docs/guides/custom-agent-runner-integration.zh-CN.md) |
-| 392 | → | [`docs/guides/getting-started.md`](docs/guides/getting-started.md) |
-| 393 | → | [`docs/guides/installing-loopx.md`](docs/guides/installing-loopx.md) |
-| 394 | → | [`docs/guides/kunluncode-adapter.zh-CN.md`](docs/guides/kunluncode-adapter.zh-CN.md) |
-| 395 | → | [`docs/guides/minimal-custom-runtime-example.md`](docs/guides/minimal-custom-runtime-example.md) |
-| 396 | → | [`docs/guides/minimal-custom-runtime-example.zh-CN.md`](docs/guides/minimal-custom-runtime-example.zh-CN.md) |
-| 397 | → | [`docs/guides/personal-workspace-trial-guide.md`](docs/guides/personal-workspace-trial-guide.md) |
-| 398 | → | [`docs/guides/personal-workspace-user-guide.md`](docs/guides/personal-workspace-user-guide.md) |
-| 399 | → | [`docs/heartbeat-automation-prompt.md`](docs/heartbeat-automation-prompt.md) |
-| 400 | → | [`docs/integration.md`](docs/integration.md) |
-| 401 | → | [`docs/integrations/lark-kanban-control-plane-adapter.md`](docs/integrations/lark-kanban-control-plane-adapter.md) |
-| 402 | → | [`docs/integrations/README.md`](docs/integrations/README.md) |
-| 403 | → | [`docs/integrations/worker-bridge-install-contract.md`](docs/integrations/worker-bridge-install-contract.md) |
-| 404 | → | [`docs/operations/long-task-cadence-policy.md`](docs/operations/long-task-cadence-policy.md) |
-| 405 | → | [`docs/operations/README.md`](docs/operations/README.md) |
-| 406 | → | [`docs/product/foundations/beginner-loop-presets.md`](docs/product/foundations/beginner-loop-presets.md) |
-| 407 | → | [`docs/product/foundations/project-level-reward-model.md`](docs/product/foundations/project-level-reward-model.md) |
-| 408 | → | [`docs/product/foundations/README.md`](docs/product/foundations/README.md) |
-| 409 | → | [`docs/product/release-readiness.md`](docs/product/release-readiness.md) |
-| 410 | → | [`docs/product/releases/v2.0.0.md`](docs/product/releases/v2.0.0.md) |
-| 411 | → | [`docs/product/runtimes/codex-cli/codex-cli-packaged-install.md`](docs/product/runtimes/codex-cli/codex-cli-packaged-install.md) |
-| 412 | → | [`docs/product/runtimes/codex-cli/loopx-turn-codex-cli-quickstart.md`](docs/product/runtimes/codex-cli/loopx-turn-codex-cli-quickstart.md) |
-| 413 | → | [`docs/product/surfaces/intelligent-management-surface.md`](docs/product/surfaces/intelligent-management-surface.md) |
-| 414 | → | [`docs/product/surfaces/session-dash-panel-design.md`](docs/product/surfaces/session-dash-panel-design.md) |
-| 415 | → | [`docs/product/use-cases/cross-runtime/README.md`](docs/product/use-cases/cross-runtime/README.md) |
-| 416 | → | [`docs/product/vision.md`](docs/product/vision.md) |
-| 417 | → | [`docs/project/adopters.zh-CN.md`](docs/project/adopters.zh-CN.md) |
-| 418 | → | [`docs/project/authors.md`](docs/project/authors.md) |
-| 419 | → | [`docs/project/brand-guide.md`](docs/project/brand-guide.md) |
-| 420 | → | [`docs/project/brand-guide.zh-CN.md`](docs/project/brand-guide.zh-CN.md) |
-| 421 | → | [`docs/project/history.md`](docs/project/history.md) |
-| 422 | → | [`docs/project/licensing.md`](docs/project/licensing.md) |
-| 423 | → | [`docs/project/technical-directions.md`](docs/project/technical-directions.md) |
-| 424 | → | [`docs/project/technical-directions.zh-CN.md`](docs/project/technical-directions.zh-CN.md) |
-| 425 | → | [`docs/project/trademarks.md`](docs/project/trademarks.md) |
-| 426 | → | [`docs/public-private-boundary.md`](docs/public-private-boundary.md) |
-| 427 | → | [`docs/quota-allocation.md`](docs/quota-allocation.md) |
-| 428 | → | [`docs/README.md`](docs/README.md) |
-| 429 | → | [`docs/reference/extensions.md`](docs/reference/extensions.md) |
-| 430 | → | [`docs/reference/protocols/codex-app-host-command-registry-v0.md`](docs/reference/protocols/codex-app-host-command-registry-v0.md) |
-| 431 | → | [`docs/reference/protocols/lark-manager-context-authority-v0.md`](docs/reference/protocols/lark-manager-context-authority-v0.md) |
-| 432 | → | [`docs/reference/protocols/loopx-turn-v0.md`](docs/reference/protocols/loopx-turn-v0.md) |
-| 433 | → | [`docs/reference/protocols/README.md`](docs/reference/protocols/README.md) |
-| 434 | → | [`docs/reference/README.md`](docs/reference/README.md) |
-| 435 | → | [`docs/reference/trajectory-assessment.md`](docs/reference/trajectory-assessment.md) |
-| 436 | → | [`docs/reference/usage-ping.md`](docs/reference/usage-ping.md) |
-| 437 | → | [`docs/reference/usage-ping.zh-CN.md`](docs/reference/usage-ping.zh-CN.md) |
-| 438 | → | [`docs/research/README.md`](docs/research/README.md) |
-| 439 | → | [`docs/showcases/cases/dsh-loopx-replan-demo.md`](docs/showcases/cases/dsh-loopx-replan-demo.md) |
-| 440 | → | [`docs/showcases/cases/independent-cpp-accuracy-long-run.md`](docs/showcases/cases/independent-cpp-accuracy-long-run.md) |
-| 441 | → | [`docs/showcases/cases/independent-four-day-unattended-agent.md`](docs/showcases/cases/independent-four-day-unattended-agent.md) |
-| 442 | → | [`docs/showcases/cases/independent-public-engine-refactor.md`](docs/showcases/cases/independent-public-engine-refactor.md) |
-| 443 | → | [`docs/showcases/cases/independent-vllm-long-context-optimization.md`](docs/showcases/cases/independent-vllm-long-context-optimization.md) |
-| 444 | → | [`docs/showcases/README.md`](docs/showcases/README.md) |
-| 445 | → | [`docs/state-interaction-model.md`](docs/state-interaction-model.md) |
-| 446 | → | [`docs/status-data-contract.md`](docs/status-data-contract.md) |
-| 447 | → | [`docs/update-notes/README.md`](docs/update-notes/README.md) |
-| 448 | → | [`examples/collaboration-delivery/README.md`](examples/collaboration-delivery/README.md) |
-| 449 | → | [`loopx/capabilities/change_quality/README.md`](loopx/capabilities/change_quality/README.md) |
-| 450 | → | [`loopx/capabilities/decision_context/README.md`](loopx/capabilities/decision_context/README.md) |
-| 451 | → | [`loopx/capabilities/decision_context/README.zh-CN.md`](loopx/capabilities/decision_context/README.zh-CN.md) |
-| 452 | → | [`loopx/capabilities/explore/README.md`](loopx/capabilities/explore/README.md) |
-| 453 | → | [`loopx/capabilities/explore/README.zh-CN.md`](loopx/capabilities/explore/README.zh-CN.md) |
-| 454 | → | [`loopx/capabilities/integration_branch/README.md`](loopx/capabilities/integration_branch/README.md) |
-| 455 | → | [`loopx/capabilities/issue_fix/README.md`](loopx/capabilities/issue_fix/README.md) |
-| 456 | → | [`loopx/capabilities/issue_fix/README.zh-CN.md`](loopx/capabilities/issue_fix/README.zh-CN.md) |
-| 457 | → | [`loopx/capabilities/periodic_report/README.md`](loopx/capabilities/periodic_report/README.md) |
-| 458 | → | [`loopx/capabilities/progress_review/README.md`](loopx/capabilities/progress_review/README.md) |
-| 459 | → | [`loopx/capabilities/progress_review/README.zh-CN.md`](loopx/capabilities/progress_review/README.zh-CN.md) |
-| 460 | → | [`loopx/capabilities/README.md`](loopx/capabilities/README.md) |
-| 461 | → | [`loopx/capabilities/reward_memory/README.md`](loopx/capabilities/reward_memory/README.md) |
-| 462 | → | [`loopx/capabilities/reward_memory/README.zh-CN.md`](loopx/capabilities/reward_memory/README.zh-CN.md) |
-| 463 | → | [`loopx/claude_goal_mode/README.md`](loopx/claude_goal_mode/README.md) |
-| 464 | → | [`loopx/dsh_goal_mode/README.md`](loopx/dsh_goal_mode/README.md) |
-| 465 | → | [`loopx/experiments/README.md`](loopx/experiments/README.md) |
-| 466 | → | [`loopx/kiro_cli_goal_mode/README.md`](loopx/kiro_cli_goal_mode/README.md) |
-| 467 | → | [`loopx/kunluncode_goal_mode/README.md`](loopx/kunluncode_goal_mode/README.md) |
-| 468 | → | [`packages/dsh-loopx-plugin/README.md`](packages/dsh-loopx-plugin/README.md) |
-| 469 | → | [`README.md`](README.md) |
-| 470 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 392 | → | [`docs/guides/first-bugfix-loop.md`](docs/guides/first-bugfix-loop.md) |
+| 393 | → | [`docs/guides/first-bugfix-loop.zh-CN.md`](docs/guides/first-bugfix-loop.zh-CN.md) |
+| 394 | → | [`docs/guides/getting-started.md`](docs/guides/getting-started.md) |
+| 395 | → | [`docs/guides/installing-loopx.md`](docs/guides/installing-loopx.md) |
+| 396 | → | [`docs/guides/kunluncode-adapter.zh-CN.md`](docs/guides/kunluncode-adapter.zh-CN.md) |
+| 397 | → | [`docs/guides/long-running-coding-agents.md`](docs/guides/long-running-coding-agents.md) |
+| 398 | → | [`docs/guides/minimal-custom-runtime-example.md`](docs/guides/minimal-custom-runtime-example.md) |
+| 399 | → | [`docs/guides/minimal-custom-runtime-example.zh-CN.md`](docs/guides/minimal-custom-runtime-example.zh-CN.md) |
+| 400 | → | [`docs/guides/personal-workspace-trial-guide.md`](docs/guides/personal-workspace-trial-guide.md) |
+| 401 | → | [`docs/guides/personal-workspace-user-guide.md`](docs/guides/personal-workspace-user-guide.md) |
+| 402 | → | [`docs/heartbeat-automation-prompt.md`](docs/heartbeat-automation-prompt.md) |
+| 403 | → | [`docs/integration.md`](docs/integration.md) |
+| 404 | → | [`docs/integrations/lark-kanban-control-plane-adapter.md`](docs/integrations/lark-kanban-control-plane-adapter.md) |
+| 405 | → | [`docs/integrations/README.md`](docs/integrations/README.md) |
+| 406 | → | [`docs/integrations/worker-bridge-install-contract.md`](docs/integrations/worker-bridge-install-contract.md) |
+| 407 | → | [`docs/operations/long-task-cadence-policy.md`](docs/operations/long-task-cadence-policy.md) |
+| 408 | → | [`docs/operations/README.md`](docs/operations/README.md) |
+| 409 | → | [`docs/product/foundations/beginner-loop-presets.md`](docs/product/foundations/beginner-loop-presets.md) |
+| 410 | → | [`docs/product/foundations/project-level-reward-model.md`](docs/product/foundations/project-level-reward-model.md) |
+| 411 | → | [`docs/product/foundations/README.md`](docs/product/foundations/README.md) |
+| 412 | → | [`docs/product/release-readiness.md`](docs/product/release-readiness.md) |
+| 413 | → | [`docs/product/releases/v2.0.0.md`](docs/product/releases/v2.0.0.md) |
+| 414 | → | [`docs/product/runtimes/codex-cli/codex-cli-packaged-install.md`](docs/product/runtimes/codex-cli/codex-cli-packaged-install.md) |
+| 415 | → | [`docs/product/runtimes/codex-cli/loopx-turn-codex-cli-quickstart.md`](docs/product/runtimes/codex-cli/loopx-turn-codex-cli-quickstart.md) |
+| 416 | → | [`docs/product/surfaces/intelligent-management-surface.md`](docs/product/surfaces/intelligent-management-surface.md) |
+| 417 | → | [`docs/product/surfaces/session-dash-panel-design.md`](docs/product/surfaces/session-dash-panel-design.md) |
+| 418 | → | [`docs/product/use-cases/cross-runtime/README.md`](docs/product/use-cases/cross-runtime/README.md) |
+| 419 | → | [`docs/product/vision.md`](docs/product/vision.md) |
+| 420 | → | [`docs/project/adopters.zh-CN.md`](docs/project/adopters.zh-CN.md) |
+| 421 | → | [`docs/project/authors.md`](docs/project/authors.md) |
+| 422 | → | [`docs/project/brand-guide.md`](docs/project/brand-guide.md) |
+| 423 | → | [`docs/project/brand-guide.zh-CN.md`](docs/project/brand-guide.zh-CN.md) |
+| 424 | → | [`docs/project/history.md`](docs/project/history.md) |
+| 425 | → | [`docs/project/licensing.md`](docs/project/licensing.md) |
+| 426 | → | [`docs/project/technical-directions.md`](docs/project/technical-directions.md) |
+| 427 | → | [`docs/project/technical-directions.zh-CN.md`](docs/project/technical-directions.zh-CN.md) |
+| 428 | → | [`docs/project/trademarks.md`](docs/project/trademarks.md) |
+| 429 | → | [`docs/public-private-boundary.md`](docs/public-private-boundary.md) |
+| 430 | → | [`docs/quota-allocation.md`](docs/quota-allocation.md) |
+| 431 | → | [`docs/README.md`](docs/README.md) |
+| 432 | → | [`docs/reference/extensions.md`](docs/reference/extensions.md) |
+| 433 | → | [`docs/reference/protocols/codex-app-host-command-registry-v0.md`](docs/reference/protocols/codex-app-host-command-registry-v0.md) |
+| 434 | → | [`docs/reference/protocols/lark-manager-context-authority-v0.md`](docs/reference/protocols/lark-manager-context-authority-v0.md) |
+| 435 | → | [`docs/reference/protocols/loopx-turn-v0.md`](docs/reference/protocols/loopx-turn-v0.md) |
+| 436 | → | [`docs/reference/protocols/README.md`](docs/reference/protocols/README.md) |
+| 437 | → | [`docs/reference/README.md`](docs/reference/README.md) |
+| 438 | → | [`docs/reference/trajectory-assessment.md`](docs/reference/trajectory-assessment.md) |
+| 439 | → | [`docs/reference/usage-ping.md`](docs/reference/usage-ping.md) |
+| 440 | → | [`docs/reference/usage-ping.zh-CN.md`](docs/reference/usage-ping.zh-CN.md) |
+| 441 | → | [`docs/research/README.md`](docs/research/README.md) |
+| 442 | → | [`docs/showcases/cases/dsh-loopx-replan-demo.md`](docs/showcases/cases/dsh-loopx-replan-demo.md) |
+| 443 | → | [`docs/showcases/cases/independent-cpp-accuracy-long-run.md`](docs/showcases/cases/independent-cpp-accuracy-long-run.md) |
+| 444 | → | [`docs/showcases/cases/independent-four-day-unattended-agent.md`](docs/showcases/cases/independent-four-day-unattended-agent.md) |
+| 445 | → | [`docs/showcases/cases/independent-public-engine-refactor.md`](docs/showcases/cases/independent-public-engine-refactor.md) |
+| 446 | → | [`docs/showcases/cases/independent-vllm-long-context-optimization.md`](docs/showcases/cases/independent-vllm-long-context-optimization.md) |
+| 447 | → | [`docs/showcases/README.md`](docs/showcases/README.md) |
+| 448 | → | [`docs/state-interaction-model.md`](docs/state-interaction-model.md) |
+| 449 | → | [`docs/status-data-contract.md`](docs/status-data-contract.md) |
+| 450 | → | [`docs/update-notes/README.md`](docs/update-notes/README.md) |
+| 451 | → | [`examples/collaboration-delivery/README.md`](examples/collaboration-delivery/README.md) |
+| 452 | → | [`loopx/capabilities/change_quality/README.md`](loopx/capabilities/change_quality/README.md) |
+| 453 | → | [`loopx/capabilities/decision_context/README.md`](loopx/capabilities/decision_context/README.md) |
+| 454 | → | [`loopx/capabilities/decision_context/README.zh-CN.md`](loopx/capabilities/decision_context/README.zh-CN.md) |
+| 455 | → | [`loopx/capabilities/explore/README.md`](loopx/capabilities/explore/README.md) |
+| 456 | → | [`loopx/capabilities/explore/README.zh-CN.md`](loopx/capabilities/explore/README.zh-CN.md) |
+| 457 | → | [`loopx/capabilities/integration_branch/README.md`](loopx/capabilities/integration_branch/README.md) |
+| 458 | → | [`loopx/capabilities/issue_fix/README.md`](loopx/capabilities/issue_fix/README.md) |
+| 459 | → | [`loopx/capabilities/issue_fix/README.zh-CN.md`](loopx/capabilities/issue_fix/README.zh-CN.md) |
+| 460 | → | [`loopx/capabilities/periodic_report/README.md`](loopx/capabilities/periodic_report/README.md) |
+| 461 | → | [`loopx/capabilities/progress_review/README.md`](loopx/capabilities/progress_review/README.md) |
+| 462 | → | [`loopx/capabilities/progress_review/README.zh-CN.md`](loopx/capabilities/progress_review/README.zh-CN.md) |
+| 463 | → | [`loopx/capabilities/README.md`](loopx/capabilities/README.md) |
+| 464 | → | [`loopx/capabilities/reward_memory/README.md`](loopx/capabilities/reward_memory/README.md) |
+| 465 | → | [`loopx/capabilities/reward_memory/README.zh-CN.md`](loopx/capabilities/reward_memory/README.zh-CN.md) |
+| 466 | → | [`loopx/claude_goal_mode/README.md`](loopx/claude_goal_mode/README.md) |
+| 467 | → | [`loopx/dsh_goal_mode/README.md`](loopx/dsh_goal_mode/README.md) |
+| 468 | → | [`loopx/experiments/README.md`](loopx/experiments/README.md) |
+| 469 | → | [`loopx/kiro_cli_goal_mode/README.md`](loopx/kiro_cli_goal_mode/README.md) |
+| 470 | → | [`loopx/kunluncode_goal_mode/README.md`](loopx/kunluncode_goal_mode/README.md) |
+| 471 | → | [`packages/dsh-loopx-plugin/README.md`](packages/dsh-loopx-plugin/README.md) |
+| 472 | → | [`README.md`](README.md) |
+| 473 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

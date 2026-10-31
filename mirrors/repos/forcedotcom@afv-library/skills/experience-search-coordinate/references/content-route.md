@@ -1,5 +1,22 @@
 # Content Route — Full Reference
 
+## Presenting available search sources
+
+Before any tool call, dispatch `ask_followup_question` offering only the sources whose tools you actually have (via introspection), plus "Other". Each is its own option — never numbered lines inside the question text:
+
+```text
+question: "How would you like to search for content?"
+options:
+  - "Search using keywords — Search Salesforce CMS by keywords and taxonomies"
+  - "Search using Data 360 hybrid search — Semantic (vector + keyword) search across Salesforce CMS and connected DAMs"
+  - "Other — Provide your own URL, asset library path, or system to check"
+```
+
+Wait for the user's selection. Do not call any tool before this point. Then follow the matching branch:
+- **Search using keywords** → `search_content_cms_channels` (build keywords + taxonomies, confirm, execute per scope — see below).
+- **Search using Data 360 hybrid search** → `search_digital_content` (verbatim query + bare ISO `searchLanguage` when the schema lists it — see "Search using Data 360 hybrid search" below).
+- **Other** → ask for a direct URL, asset library path, or specific system to check. No confirmation step, since no tool is called.
+
 ## Confirming the query before searching
 
 Required two-message pattern, same turn:
@@ -69,6 +86,67 @@ Even though `contentUrl` is present, this item's only entry is `WEB_APP` — the
 
 The multi-channel case is not "one entry from the public call, one from the channel-scoped call" — it's whatever the array actually contains, however many entries that is.
 
+## Search using Data 360 hybrid search (`search_digital_content`)
+
+Chosen when the user picked "Search using Data 360 hybrid search" at the source step. Data 360 hybrid search (vector + keyword) runs across Salesforce CMS and any connected third-party CMS/DAM.
+
+1. Pass `searchQuery` **verbatim** — same language, same script as the user wrote it. No translation, no keyword extraction, no ` OR `-joining, no `taxonomyExpression`, no `contentTypeFqn`/`contentAccessScope`/`channelIds`, no pagination. Translating first only makes step 2 harder, since you'd be detecting the language of your own translation instead of the user's actual words.
+2. **Determine language** — a short ISO code read directly off the user's literal wording, before any translation happens in your reasoning. Bare 2-letter codes (`en`, `fr`, `de`, `es`, `ja`, ...) cover most languages and are the validated, simpler form; a few regional splits need a country suffix instead (`pt_BR`, `zh_CN`, `zh_TW`, ...). Default to `en` only when the message is genuinely ambiguous (e.g. a bare product name) — never because translating felt natural. Use the bare 2-letter form whenever one exists — the backend accepts only the platform's own language codes, so `fr` works but `fr_FR` is rejected as invalid (`en` and `en_US` both work because `en_US` is itself a platform code).
+3. **Data 360 hybrid search ignores channel scope entirely** — there is no public vs. channel-scoped split. Make a **single call** regardless of whether a `channelId` is in scope from Step 1: `search_digital_content(searchQuery="<verbatim query>", searchLanguage="<language code>")`. **Only send `searchLanguage` if the tool's input schema actually lists it** — orgs without language-variant search enabled don't declare the input at all. When it's absent, call with `searchQuery` alone, skip the language line in the confirmation message, and skip steps 4–5 (the backend searches primary-language content only).
+4. **Offer one retry with `searchLanguage` omitted entirely — ask the user first, never retry silently — but only when the first call either:**
+   - returns **zero results**, **or**
+   - fails with an **input-validation error about the language value itself** — an unrecognized language code errors the whole call (for example, `INVALID_API_INPUT` / "Specify a valid language code, such as en_US, fr, or de.") rather than returning an empty list.
+
+   **Do NOT offer this retry on a server or transport error (5xx, timeout, connection failure).** Those must fail per `SKILL.md`'s Error Handling table — omitting the language cannot fix them and would mask the real failure. The retry exists only for the two language-specific cases above.
+
+   Offer it before concluding nothing exists and before suggesting broader keywords: tell the user what happened in plain chat text (e.g. "No results found in French."), then `ask_followup_question` with options `Yes - search without language filter` / `No - stop here`. The retry is a second backend call the user didn't confirm, so they decide whether it runs. Skip the question only if the user already said, in this conversation, to fall back to any language when nothing matches theirs — then retry directly. This is the same policy as the Media Route's hybrid search (`media-route.md`). Omitting the field makes the backend fall back to each item's own primary/default language variant instead of the requested one — so an item that only has, say, a French variant still surfaces on the retry even when the user asked in English. Only fall through to "no results" / broadening suggestions if the user declines, or the retry also comes back empty.
+5. **Read each result item's `language` field to know which language variant you actually got** (a locale string such as `en_US` or `fr`). If it differs from the language the user asked for — typically after the retry — say so explicitly when presenting that item, e.g. "No French version exists for this item — here's the original in English." Never present a fallback-language result as if it were the requested-language match; the user needs to know a substitution happened.
+
+   If `language` is **absent** on the results of a call that sent `searchLanguage`, the backend couldn't apply the language filter (for example, the org's search index predates language-variant support) and silently returned primary-language content instead — even on the first call, with no error and no empty list. Don't claim the results are in the requested language; tell the user the search couldn't be restricted to that language.
+
+This is a **strict** filter, not soft ranking like the keyword route: the backend only returns items carrying that exact language variant, and it does **not** fall back to English (or any other language) per item on its own — that's why step 4's retry exists as an explicit, user-approved second call, not something the backend does silently.
+
+Example — French input "trouve-moi un article sur les pinceaux depuis le CMS" → `search_digital_content(searchQuery="trouve-moi un article sur les pinceaux depuis le CMS", searchLanguage="fr")`.
+
+Example of the retry — English input "give me a blog post about a snowboard from the CMS" → first call `search_digital_content(searchQuery="give me a blog post about a snowboard from the CMS", searchLanguage="en")` returns zero results (the only snowboard article in the org has a French variant, not English) → tell the user "No results found in English." and ask whether to search without the language filter → user picks `Yes - search without language filter` → retry `search_digital_content(searchQuery="give me a blog post about a snowboard from the CMS")` with `searchLanguage` omitted → the item surfaces with `language: "fr"` → tell the user: "No English version exists for this item — here's the original in French."
+
+Still confirm first via the two-message pattern — Message 1 surfaces the detected language so the user can catch a mis-detection before the search runs (language detection is the most error-prone step of this route):
+
+```text
+I'll search Data 360 hybrid search with:
+
+  Query: trouve-moi un article sur les pinceaux depuis le CMS
+  Language: fr   (auto-detected — tell me if this is wrong)
+```
+
+Show `Query` exactly as the user wrote it (verbatim) and `Language` as the bare code you'll send. This route has no `Content Type` / `Keywords` / `Taxonomies` / `Channels` lines — it ignores channel scope and does its own semantic matching. Then `ask_followup_question` with `Yes - search now` / `Edit search` / `Cancel`, exactly as for keyword search.
+
+### Parsing the `search_digital_content` response
+
+The response shape differs from `search_content_cms_channels`. Map each result to the same content-route fields the rest of this reference uses, so "Disambiguating channel at selection", display, and the render hand-off all work unchanged:
+
+| `search_digital_content` field | Content-route equivalent |
+|---|---|
+| `contentName` | `title` |
+| `contentId` | `managedContentId` |
+| `contentKey` | `managedContentKey` |
+| `contentTypeFqn` | `contentType` |
+| `contentUrls[]` → each `{ channelName, channelId, url }` | `managedContentChannelDeliveryDetails[]` → each `{ contentUrl: url, managedContentChannelDetails: { id: channelId, name: channelName } }` |
+| `language` | `language` — present when language-variant search applied; use it per step 5 above |
+| `searchScore` | _(extra — hybrid-only relevance score; optional to surface)_ |
+
+**Omissions to account for:** if `language` is absent, omit the Language line for that item (and, if the call sent `searchLanguage`, tell the user the search couldn't be restricted to the requested language — see step 5).
+
+**Classifying channel type.** The hybrid response carries **no channel `type`** on its delivery entries, and because hybrid search ignores channel scope it can return an item delivered to a uiBundle channel. Fill in `managedContentChannelDetails.type` yourself so the public-channel-only URL rule in "Executing the search call(s)" above still holds:
+- An entry whose `channelId` matches any uiBundle `channelId` found in Step 1 (any `uiBundles/*/public/content-metadata.json` channel, or the named uiBundle's resolved channel) → `WEB_APP`. Its `url` is **never** surfaced as the Unauthenticated URL, and the render hand-off passes `contentKey` instead of a URL for it. Compare on the first 15 characters — Salesforce IDs appear in both 15- and 18-character forms.
+- Every other entry → treat as a public channel (`PUBLIC_UNAUTHENTICATED`), so its `url` is the Unauthenticated URL.
+
+A `WEB_APP`-classified entry is still a selectable channel option at disambiguation, exactly as in the keyword case — it just never produces a displayed URL.
+
+**Filter to the Step 2 content types.** The hybrid call takes no `contentTypeFqn`, so results can include types outside what Step 2 discovered. Keep only results whose `contentTypeFqn` is one of Step 2's FQN(s), so both sources answer the same question. If that filter removes every result from a non-empty response, don't report "no results" — tell the user which other content types came back and ask whether to show them.
+
+After mapping, the `managedContentChannelDeliveryDetails` array behaves identically to the keyword case (zero / one / many entries), so everything downstream — channel disambiguation, display, and the render hand-off — is reused as-is.
+
 ## Disambiguating channel at selection
 
 Reached at Step 3 point 5, only for a selected item whose (merged, per "Executing the search call(s)" above) `managedContentChannelDeliveryDetails` array has more than one entry. Build one option per entry, using that entry's `managedContentChannelDetails.name`, in the order the array returns them — not a fixed two-option choice. **Call `ask_followup_question` with these as its actual `question` and `options` parameters — never concatenate the channel list into the question string itself**, the same rule every other question in this skill follows:
@@ -111,7 +189,7 @@ I can render the following in the <uiBundle> app:
 
 ## Building the search query
 
-Keyword/taxonomy extraction rule: see `SKILL.md` Step 3 point 1 (the Media Route uses the same split — see `media-route.md` for media-specific examples). Additional worked examples for content:
+Keyword/taxonomy extraction rule: see `SKILL.md` Step 3 point 2 (the Media Route uses the same split — see `media-route.md` for media-specific examples). Additional worked examples for content:
 - "press release about our product launch" → keywords: launch, announcement, release, product launch; taxonomies: Launch, Announcement, News
 - "FAQs about password resets" → keywords: password, reset, login, account; taxonomies: _(empty — no descriptive/categorical terms)_
 

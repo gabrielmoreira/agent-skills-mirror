@@ -254,9 +254,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 189 | ✓ | [`packages/os/android/releases/README.md`](packages/os/android/releases/README.md) |
 | 190 | ✓ | [`packages/os/android/sense/README.md`](packages/os/android/sense/README.md) |
 | 191 | ✓ | [`packages/os/android/signing/README.md`](packages/os/android/signing/README.md) |
-| 192 | ✓ | [`packages/os/android/vendor/eliza/bootanimation/README.md`](packages/os/android/vendor/eliza/bootanimation/README.md) |
-| 193 | ✓ | [`packages/os/android/vendor/eliza/sepolicy/README.md`](packages/os/android/vendor/eliza/sepolicy/README.md) |
-| 194 | ✓ | [`packages/os/android/vendor/eliza/sepolicy/system_ext/README.md`](packages/os/android/vendor/eliza/sepolicy/system_ext/README.md) |
+| 192 | ✓ | [`packages/os/android/vendor/eliza/apps/Eliza/README.md`](packages/os/android/vendor/eliza/apps/Eliza/README.md) |
+| 193 | ✓ | [`packages/os/android/vendor/eliza/bootanimation/README.md`](packages/os/android/vendor/eliza/bootanimation/README.md) |
+| 194 | ✓ | [`packages/os/android/vendor/eliza/sepolicy/README.md`](packages/os/android/vendor/eliza/sepolicy/README.md) |
 | 195 | ✓ | [`packages/os/browser/CLAUDE.md`](packages/os/browser/CLAUDE.md) |
 | 196 | ✓ | [`packages/os/browser/README.md`](packages/os/browser/README.md) |
 | 197 | ✓ | [`packages/os/browser/scripts/chromium/autofill/README.md`](packages/os/browser/scripts/chromium/autofill/README.md) |

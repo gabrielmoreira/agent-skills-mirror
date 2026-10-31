@@ -106,16 +106,21 @@ class Txn:
 
 
 class Response:
-    """A replayed request's response (parsed from curl -i)."""
-    def __init__(self, status: Optional[int], headers: Dict[str, str], body: str, payload: Optional[str] = None):
+    """A replayed request's response (parsed from curl -i). `identity` is
+    "anonymous" for a send with no credentials, else "session"."""
+    def __init__(self, status: Optional[int], headers: Dict[str, str], body: str, payload: Optional[str] = None,
+                 identity: str = "session"):
         self.status = status
         self.headers = headers
         self.body = body
         self.length = len(body or "")
         self.payload = payload
+        self.identity = identity
 
     def __repr__(self):
-        return f"<Response {self.status} {self.length}b" + (f" payload={self.payload!r}>" if self.payload is not None else ">")
+        tag = " anonymous" if self.identity == "anonymous" else ""
+        return (f"<Response {self.status} {self.length}b{tag}"
+                + (f" payload={self.payload!r}>" if self.payload is not None else ">"))
 
 
 # --------------------------------------------------------------------------
@@ -278,57 +283,65 @@ def _b64u_bytes(b: bytes) -> str:
 # --------------------------------------------------------------------------
 # ACTIVE — host-pinned, egress-guarded, re-captured, per-send gated server-side.
 # --------------------------------------------------------------------------
-def replay(id: str, mutate: Optional[Dict[str, Any]] = None) -> Response:
+def replay(id: str, mutate: Optional[Dict[str, Any]] = None, anonymous: bool = False) -> Response:
     """Resend a captured request with fields changed (method/path/query/param/
     headers/dropHeaders/cookie/body). Host/scheme/port are PINNED to the origin
-    by the agent — they cannot be changed here. Returns the parsed Response."""
-    data = _post("/traffic/replay", {"op": "replay", "id": id, "mutate": mutate or {}})
+    by the agent — they cannot be changed here. With anonymous=True the request
+    carries no credential at all (no session, and the origin's Cookie,
+    Authorization and profile headers removed): the pair to an authenticated
+    replay for an authorization check. Returns the parsed Response."""
+    data = _post("/traffic/replay", {"op": "replay", "id": id, "mutate": mutate or {},
+                                     "anonymous": bool(anonymous)})
     sends = data.get("sends") or []
     ctx = data.get("ctx", "")
     if not sends:
         _die("replay produced no request")
-    return _run(sends[0]["curl_args"], ctx)
+    return _run(sends[0]["curl_args"], ctx, identity=data.get("identity", "session"))
 
 
-def batch(id: str, mutations: List[Dict[str, Any]], parallel: bool = False) -> List[Response]:
+def batch(id: str, mutations: List[Dict[str, Any]], parallel: bool = False,
+          anonymous: bool = False) -> List[Response]:
     """Replay one origin request once per mutation. With parallel=True the curls
     are fired CONCURRENTLY (real race-condition window: limit-overrun, double-spend,
     coupon/voucher reuse) — the agent prepares every request first, then releases
     them together. Each send is host-pinned + egress-guarded + re-captured."""
     if not parallel:
-        return [replay(id, m) for m in mutations]
+        return [replay(id, m, anonymous=anonymous) for m in mutations]
     # Prepare all requests (host-pinned curls) up front, then release the curls at
     # once so they collide in the same server-side window.
     prepared = []
     for m in mutations:
-        data = _post("/traffic/replay", {"op": "replay", "id": id, "mutate": m or {}})
+        data = _post("/traffic/replay", {"op": "replay", "id": id, "mutate": m or {},
+                                         "anonymous": bool(anonymous)})
         sends = data.get("sends") or []
         if sends:
-            prepared.append((sends[0]["curl_args"], data.get("ctx", "")))
+            prepared.append((sends[0]["curl_args"], data.get("ctx", ""), data.get("identity", "session")))
     import concurrent.futures
     results: List[Optional[Response]] = [None] * len(prepared)
     workers = min(30, len(prepared) or 1)
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
-        futs = {ex.submit(_run, ca, ctx): i for i, (ca, ctx) in enumerate(prepared)}
+        futs = {ex.submit(_run, ca, ctx, None, ident): i for i, (ca, ctx, ident) in enumerate(prepared)}
         for fut in concurrent.futures.as_completed(futs):
             results[futs[fut]] = fut.result()
     return [r for r in results if r is not None]
 
 
-def fuzz(id: str, insertion_point: str, payloads: List[str]) -> List[Response]:
+def fuzz(id: str, insertion_point: str, payloads: List[str], anonymous: bool = False) -> List[Response]:
     """Iterate `payloads` over the query param `insertion_point` on one captured
     request. Returns one Response per payload (server caps the count)."""
     data = _post("/traffic/replay", {"op": "fuzz", "id": id,
                                      "insertion_point": insertion_point,
-                                     "payloads": [str(p) for p in payloads]})
+                                     "payloads": [str(p) for p in payloads],
+                                     "anonymous": bool(anonymous)})
     ctx = data.get("ctx", "")
+    identity = data.get("identity", "session")
     out: List[Response] = []
     for s in (data.get("sends") or []):
-        out.append(_run(s["curl_args"], ctx, payload=s.get("payload")))
+        out.append(_run(s["curl_args"], ctx, payload=s.get("payload"), identity=identity))
     return out
 
 
-def _run(curl_args: str, ctx: str, payload: Optional[str] = None) -> Response:
+def _run(curl_args: str, ctx: str, payload: Optional[str] = None, identity: str = "session") -> Response:
     """Execute a prepared, host-pinned curl locally, routed through the capture
     proxy (so it is egress-guarded + re-captured) exactly like execute_curl."""
     args = shlex.split(curl_args)
@@ -345,10 +358,12 @@ def _run(curl_args: str, ctx: str, payload: Optional[str] = None) -> Response:
         proc = subprocess.run(["curl", *args], capture_output=True, text=True, timeout=_CURL_TIMEOUT)
         raw = proc.stdout
     except subprocess.TimeoutExpired:
-        return Response(None, {}, "[timeout]", payload)
+        return Response(None, {}, "[timeout]", payload, identity)
     except Exception as e:  # noqa: BLE001
-        return Response(None, {}, f"[curl error: {e}]", payload)
-    return _parse_curl(raw, payload)
+        return Response(None, {}, f"[curl error: {e}]", payload, identity)
+    response = _parse_curl(raw, payload)
+    response.identity = identity
+    return response
 
 
 def _parse_curl(raw: str, payload: Optional[str]) -> Response:
@@ -370,6 +385,30 @@ def _parse_curl(raw: str, payload: Optional[str]) -> Response:
                 k, v = ln.split(":", 1)
                 headers[k.strip().lower()] = v.strip()
     return Response(status, headers, body, payload)
+
+
+def _split_auth(auth_headers: Dict[str, str]):
+    """(cookie (name, value) pairs, the other headers) of a profile's headers."""
+    cookies, headers = [], {}
+    for name, value in (auth_headers or {}).items():
+        if str(name).lower() == "cookie":
+            for part in str(value).split(";"):
+                key, sep, val = part.strip().partition("=")
+                if sep and key:
+                    cookies.append((key, val))
+        else:
+            headers[str(name)] = str(value)
+    return cookies, headers
+
+
+def _pinned_auth(request_url: str, pinned_host: str, auth: Dict[str, str]) -> Dict[str, str]:
+    """The session headers a request may carry: all of them to the pinned host,
+    none to any other (a third-party script, image or API the page loads)."""
+    try:
+        host = urllib.parse.urlsplit(request_url).hostname
+    except ValueError:
+        return {}
+    return dict(auth) if host and pinned_host and host == pinned_host.lower() else {}
 
 
 # --------------------------------------------------------------------------
@@ -394,7 +433,7 @@ class Browser:
     _live = 0
     _MAX_LIVE = 3
 
-    def __init__(self, origin_id: str):
+    def __init__(self, origin_id: str, anonymous: bool = False):
         # _closed starts True so a mid-init failure (or an early atexit) never
         # decrements _live for a browser that was never counted.
         self._closed = True
@@ -402,7 +441,9 @@ class Browser:
             _die(f"browser: {Browser._live} browsers already open in this run "
                  f"(max {Browser._MAX_LIVE}); call .close() on one before opening another")
         self._origin_id = str(origin_id)
-        data = _post("/traffic/browser", {"action": "open", "origin_id": self._origin_id})
+        data = _post("/traffic/browser", {"action": "open", "origin_id": self._origin_id,
+                                          "anonymous": bool(anonymous)})
+        self.identity = data.get("identity", "anonymous" if anonymous else "session")
         self._host = data.get("origin_host")
         self._scheme = data.get("scheme") or "http"
         self._port = data.get("port")
@@ -419,9 +460,11 @@ class Browser:
             _die(f"browser: Playwright is unavailable in this sandbox: {e}")
         from browser_launch import BROWSER_ARGS, CHROME_UA, capture_kwargs
         proxy, headers = capture_kwargs(_ctx(), header_tag=cap_tag)
-        # Auth headers are the profile's; the capture tag (X-Redamon-Ctx) stays
-        # authoritative — build_auth_headers refuses that name, so no collision.
-        headers = {**auth_headers, **(headers or {})}
+        # The session never goes in extra_http_headers: Playwright sends those on
+        # EVERY request, third-party sub-resources included. Cookies are scoped
+        # to the pinned origin and the other auth headers are added per request,
+        # only to the pinned host.
+        cookies, auth_only = _split_auth(auth_headers)
         self._alerts: List[str] = []
         self._console: List[str] = []
         self._pw = sync_playwright().start()
@@ -434,6 +477,20 @@ class Browser:
                 ignore_https_errors=bool(proxy),  # trust the capture proxy MITM CA
                 extra_http_headers=headers or {},
             )
+            if cookies:
+                port = f":{self._port}" if self._port not in (None, 80, 443) else ""
+                origin = f"{self._scheme}://{self._host}{port}"
+                self._context.add_cookies([{"name": n, "value": v, "url": origin} for n, v in cookies])
+            if auth_only:
+                pinned = self._host
+
+                def _attach(route, request):
+                    extra = _pinned_auth(request.url, pinned, auth_only)
+                    if extra:
+                        route.continue_(headers={**request.headers, **extra})
+                    else:
+                        route.continue_()
+                self._context.route("**/*", _attach)
             self._page = self._context.new_page()
         except Exception as e:  # noqa: BLE001
             self._pw.stop()
@@ -569,12 +626,14 @@ class Browser:
         return f"<Browser pinned={self._host} url={getattr(self._page, 'url', '?')}>"
 
 
-def browser(id: str) -> Browser:
+def browser(id: str, anonymous: bool = False) -> Browser:
     """Open a live chromium PINNED to the host of captured transaction `id` (find
     one with search()). Exploitation-phase only, per-session action-budgeted, and
-    re-captured. Use it to confirm bugs whose signal only appears after JS runs:
-    read redamon.manual("browser") first."""
-    return Browser(id)
+    re-captured. The project's session is sent to the pinned host only, never to
+    a third-party sub-resource; anonymous=True opens it with no session at all.
+    Use it to confirm bugs whose signal only appears after JS runs: read
+    redamon.manual("browser") first."""
+    return Browser(id, anonymous=anonymous)
 
 
 # --------------------------------------------------------------------------

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alirezarezvani/claude-skills` — 26 default patterns, 6 followed patterns, 650 file(s) materialized.
+Mirror of `alirezarezvani/claude-skills` — 26 default patterns, 6 followed patterns, 654 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alirezarezvani/claude-skills` — 26 default patterns, 6 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 650 |
+| Files         | 654 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -657,63 +657,67 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 591 | ✓ | [`ra-qm-team/access-lifecycle/README.md`](ra-qm-team/access-lifecycle/README.md) |
 | 592 | ✓ | [`ra-qm-team/access-lifecycle/skills/access-lifecycle/SKILL.md`](ra-qm-team/access-lifecycle/skills/access-lifecycle/SKILL.md) |
 | 593 | ✓ | [`ra-qm-team/CLAUDE.md`](ra-qm-team/CLAUDE.md) |
-| 594 | ✓ | [`ra-qm-team/compliance-team-eu-ai-act/README.md`](ra-qm-team/compliance-team-eu-ai-act/README.md) |
-| 595 | ✓ | [`ra-qm-team/compliance-team-eu-ai-act/skills/eu-ai-act-specialist/SKILL.md`](ra-qm-team/compliance-team-eu-ai-act/skills/eu-ai-act-specialist/SKILL.md) |
-| 596 | ✓ | [`ra-qm-team/compliance-team-iso42001/README.md`](ra-qm-team/compliance-team-iso42001/README.md) |
-| 597 | ✓ | [`ra-qm-team/compliance-team-iso42001/skills/iso42001-specialist/SKILL.md`](ra-qm-team/compliance-team-iso42001/skills/iso42001-specialist/SKILL.md) |
-| 598 | ✓ | [`ra-qm-team/README.md`](ra-qm-team/README.md) |
-| 599 | ✓ | [`ra-qm-team/skills/access-lifecycle/SKILL.md`](ra-qm-team/skills/access-lifecycle/SKILL.md) |
-| 600 | ✓ | [`ra-qm-team/skills/agent-decision-receipts/SKILL.md`](ra-qm-team/skills/agent-decision-receipts/SKILL.md) |
-| 601 | ✓ | [`ra-qm-team/skills/capa-officer/SKILL.md`](ra-qm-team/skills/capa-officer/SKILL.md) |
-| 602 | ✓ | [`ra-qm-team/skills/eu-ai-act-specialist/SKILL.md`](ra-qm-team/skills/eu-ai-act-specialist/SKILL.md) |
-| 603 | ✓ | [`ra-qm-team/skills/fda-consultant-specialist/SKILL.md`](ra-qm-team/skills/fda-consultant-specialist/SKILL.md) |
-| 604 | ✓ | [`ra-qm-team/skills/gdpr-dsgvo-expert/SKILL.md`](ra-qm-team/skills/gdpr-dsgvo-expert/SKILL.md) |
-| 605 | ✓ | [`ra-qm-team/skills/information-security-manager-iso27001/SKILL.md`](ra-qm-team/skills/information-security-manager-iso27001/SKILL.md) |
-| 606 | ✓ | [`ra-qm-team/skills/isms-audit-expert/SKILL.md`](ra-qm-team/skills/isms-audit-expert/SKILL.md) |
-| 607 | ✓ | [`ra-qm-team/skills/iso42001-specialist/SKILL.md`](ra-qm-team/skills/iso42001-specialist/SKILL.md) |
-| 608 | ✓ | [`ra-qm-team/skills/mdr-745-specialist/SKILL.md`](ra-qm-team/skills/mdr-745-specialist/SKILL.md) |
-| 609 | ✓ | [`ra-qm-team/skills/qms-audit-expert/SKILL.md`](ra-qm-team/skills/qms-audit-expert/SKILL.md) |
-| 610 | ✓ | [`ra-qm-team/skills/quality-documentation-manager/SKILL.md`](ra-qm-team/skills/quality-documentation-manager/SKILL.md) |
-| 611 | ✓ | [`ra-qm-team/skills/quality-manager-qmr/SKILL.md`](ra-qm-team/skills/quality-manager-qmr/SKILL.md) |
-| 612 | ✓ | [`ra-qm-team/skills/quality-manager-qms-iso13485/SKILL.md`](ra-qm-team/skills/quality-manager-qms-iso13485/SKILL.md) |
-| 613 | ✓ | [`ra-qm-team/skills/ra-qm-skills/SKILL.md`](ra-qm-team/skills/ra-qm-skills/SKILL.md) |
-| 614 | ✓ | [`ra-qm-team/skills/regulatory-affairs-head/SKILL.md`](ra-qm-team/skills/regulatory-affairs-head/SKILL.md) |
-| 615 | ✓ | [`ra-qm-team/skills/risk-management-specialist/SKILL.md`](ra-qm-team/skills/risk-management-specialist/SKILL.md) |
-| 616 | ✓ | [`ra-qm-team/skills/soc2-compliance/SKILL.md`](ra-qm-team/skills/soc2-compliance/SKILL.md) |
-| 617 | ✓ | [`research-ops/CLAUDE.md`](research-ops/CLAUDE.md) |
-| 618 | ✓ | [`research-ops/skills/clinical-research/SKILL.md`](research-ops/skills/clinical-research/SKILL.md) |
-| 619 | ✓ | [`research-ops/skills/interview-mapper/SKILL.md`](research-ops/skills/interview-mapper/SKILL.md) |
-| 620 | ✓ | [`research-ops/skills/market-research/SKILL.md`](research-ops/skills/market-research/SKILL.md) |
-| 621 | ✓ | [`research-ops/skills/product-research/SKILL.md`](research-ops/skills/product-research/SKILL.md) |
-| 622 | ✓ | [`research-ops/skills/research-finance/SKILL.md`](research-ops/skills/research-finance/SKILL.md) |
-| 623 | ✓ | [`research-ops/skills/research-ops-skills/SKILL.md`](research-ops/skills/research-ops-skills/SKILL.md) |
-| 624 | ✓ | [`research/deep-research/README.md`](research/deep-research/README.md) |
-| 625 | ✓ | [`research/deep-research/skills/deep-research/SKILL.md`](research/deep-research/skills/deep-research/SKILL.md) |
-| 626 | ✓ | [`research/deepread/SKILL.md`](research/deepread/SKILL.md) |
-| 627 | ✓ | [`research/dossier/README.md`](research/dossier/README.md) |
-| 628 | ✓ | [`research/dossier/skills/dossier/SKILL.md`](research/dossier/skills/dossier/SKILL.md) |
-| 629 | ✓ | [`research/grants/README.md`](research/grants/README.md) |
-| 630 | ✓ | [`research/grants/skills/grants/SKILL.md`](research/grants/skills/grants/SKILL.md) |
-| 631 | ✓ | [`research/litreview/README.md`](research/litreview/README.md) |
-| 632 | ✓ | [`research/litreview/skills/litreview/SKILL.md`](research/litreview/skills/litreview/SKILL.md) |
-| 633 | ✓ | [`research/notebooklm/README.md`](research/notebooklm/README.md) |
-| 634 | ✓ | [`research/notebooklm/skills/notebooklm/SKILL.md`](research/notebooklm/skills/notebooklm/SKILL.md) |
-| 635 | ✓ | [`research/patent/README.md`](research/patent/README.md) |
-| 636 | ✓ | [`research/patent/skills/patent/SKILL.md`](research/patent/skills/patent/SKILL.md) |
-| 637 | ✓ | [`research/pulse/README.md`](research/pulse/README.md) |
-| 638 | ✓ | [`research/pulse/skills/pulse/SKILL.md`](research/pulse/skills/pulse/SKILL.md) |
-| 639 | ✓ | [`research/research/README.md`](research/research/README.md) |
-| 640 | ✓ | [`research/research/skills/research/SKILL.md`](research/research/skills/research/SKILL.md) |
-| 641 | ✓ | [`research/syllabus/README.md`](research/syllabus/README.md) |
-| 642 | ✓ | [`research/syllabus/skills/syllabus/SKILL.md`](research/syllabus/skills/syllabus/SKILL.md) |
-| 643 | ✓ | [`standards/CLAUDE.md`](standards/CLAUDE.md) |
-| 644 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
-| 645 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 646 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 647 | → | [`CONVENTIONS.md`](CONVENTIONS.md) |
-| 648 | → | [`orchestration/ORCHESTRATION.md`](orchestration/ORCHESTRATION.md) |
-| 649 | → | [`README.md`](README.md) |
-| 650 | → | [`standards/git/git-workflow-standards.md`](standards/git/git-workflow-standards.md) |
+| 594 | ✓ | [`ra-qm-team/cmmc-readiness/README.md`](ra-qm-team/cmmc-readiness/README.md) |
+| 595 | ✓ | [`ra-qm-team/cmmc-readiness/skills/cmmc-readiness/SKILL.md`](ra-qm-team/cmmc-readiness/skills/cmmc-readiness/SKILL.md) |
+| 596 | ✓ | [`ra-qm-team/compliance-team-eu-ai-act/README.md`](ra-qm-team/compliance-team-eu-ai-act/README.md) |
+| 597 | ✓ | [`ra-qm-team/compliance-team-eu-ai-act/skills/eu-ai-act-specialist/SKILL.md`](ra-qm-team/compliance-team-eu-ai-act/skills/eu-ai-act-specialist/SKILL.md) |
+| 598 | ✓ | [`ra-qm-team/compliance-team-iso42001/README.md`](ra-qm-team/compliance-team-iso42001/README.md) |
+| 599 | ✓ | [`ra-qm-team/compliance-team-iso42001/skills/iso42001-specialist/SKILL.md`](ra-qm-team/compliance-team-iso42001/skills/iso42001-specialist/SKILL.md) |
+| 600 | ✓ | [`ra-qm-team/README.md`](ra-qm-team/README.md) |
+| 601 | ✓ | [`ra-qm-team/skills/access-lifecycle/SKILL.md`](ra-qm-team/skills/access-lifecycle/SKILL.md) |
+| 602 | ✓ | [`ra-qm-team/skills/agent-decision-receipts/SKILL.md`](ra-qm-team/skills/agent-decision-receipts/SKILL.md) |
+| 603 | ✓ | [`ra-qm-team/skills/capa-officer/SKILL.md`](ra-qm-team/skills/capa-officer/SKILL.md) |
+| 604 | ✓ | [`ra-qm-team/skills/cmmc-readiness/SKILL.md`](ra-qm-team/skills/cmmc-readiness/SKILL.md) |
+| 605 | ✓ | [`ra-qm-team/skills/eu-ai-act-specialist/SKILL.md`](ra-qm-team/skills/eu-ai-act-specialist/SKILL.md) |
+| 606 | ✓ | [`ra-qm-team/skills/fda-consultant-specialist/SKILL.md`](ra-qm-team/skills/fda-consultant-specialist/SKILL.md) |
+| 607 | ✓ | [`ra-qm-team/skills/gdpr-dsgvo-expert/SKILL.md`](ra-qm-team/skills/gdpr-dsgvo-expert/SKILL.md) |
+| 608 | ✓ | [`ra-qm-team/skills/information-security-manager-iso27001/SKILL.md`](ra-qm-team/skills/information-security-manager-iso27001/SKILL.md) |
+| 609 | ✓ | [`ra-qm-team/skills/isms-audit-expert/SKILL.md`](ra-qm-team/skills/isms-audit-expert/SKILL.md) |
+| 610 | ✓ | [`ra-qm-team/skills/iso42001-specialist/SKILL.md`](ra-qm-team/skills/iso42001-specialist/SKILL.md) |
+| 611 | ✓ | [`ra-qm-team/skills/mdr-745-specialist/SKILL.md`](ra-qm-team/skills/mdr-745-specialist/SKILL.md) |
+| 612 | ✓ | [`ra-qm-team/skills/qms-audit-expert/SKILL.md`](ra-qm-team/skills/qms-audit-expert/SKILL.md) |
+| 613 | ✓ | [`ra-qm-team/skills/quality-documentation-manager/SKILL.md`](ra-qm-team/skills/quality-documentation-manager/SKILL.md) |
+| 614 | ✓ | [`ra-qm-team/skills/quality-manager-qmr/SKILL.md`](ra-qm-team/skills/quality-manager-qmr/SKILL.md) |
+| 615 | ✓ | [`ra-qm-team/skills/quality-manager-qms-iso13485/SKILL.md`](ra-qm-team/skills/quality-manager-qms-iso13485/SKILL.md) |
+| 616 | ✓ | [`ra-qm-team/skills/ra-qm-skills/SKILL.md`](ra-qm-team/skills/ra-qm-skills/SKILL.md) |
+| 617 | ✓ | [`ra-qm-team/skills/regulatory-affairs-head/SKILL.md`](ra-qm-team/skills/regulatory-affairs-head/SKILL.md) |
+| 618 | ✓ | [`ra-qm-team/skills/risk-management-specialist/SKILL.md`](ra-qm-team/skills/risk-management-specialist/SKILL.md) |
+| 619 | ✓ | [`ra-qm-team/skills/soc2-compliance/SKILL.md`](ra-qm-team/skills/soc2-compliance/SKILL.md) |
+| 620 | ✓ | [`research-ops/CLAUDE.md`](research-ops/CLAUDE.md) |
+| 621 | ✓ | [`research-ops/skills/clinical-research/SKILL.md`](research-ops/skills/clinical-research/SKILL.md) |
+| 622 | ✓ | [`research-ops/skills/interview-mapper/SKILL.md`](research-ops/skills/interview-mapper/SKILL.md) |
+| 623 | ✓ | [`research-ops/skills/market-research/SKILL.md`](research-ops/skills/market-research/SKILL.md) |
+| 624 | ✓ | [`research-ops/skills/product-research/SKILL.md`](research-ops/skills/product-research/SKILL.md) |
+| 625 | ✓ | [`research-ops/skills/research-finance/SKILL.md`](research-ops/skills/research-finance/SKILL.md) |
+| 626 | ✓ | [`research-ops/skills/research-ops-skills/SKILL.md`](research-ops/skills/research-ops-skills/SKILL.md) |
+| 627 | ✓ | [`research/deep-research/README.md`](research/deep-research/README.md) |
+| 628 | ✓ | [`research/deep-research/skills/deep-research/SKILL.md`](research/deep-research/skills/deep-research/SKILL.md) |
+| 629 | ✓ | [`research/deepread/SKILL.md`](research/deepread/SKILL.md) |
+| 630 | ✓ | [`research/dossier/README.md`](research/dossier/README.md) |
+| 631 | ✓ | [`research/dossier/skills/dossier/SKILL.md`](research/dossier/skills/dossier/SKILL.md) |
+| 632 | ✓ | [`research/grants/README.md`](research/grants/README.md) |
+| 633 | ✓ | [`research/grants/skills/grants/SKILL.md`](research/grants/skills/grants/SKILL.md) |
+| 634 | ✓ | [`research/litreview/README.md`](research/litreview/README.md) |
+| 635 | ✓ | [`research/litreview/skills/litreview/SKILL.md`](research/litreview/skills/litreview/SKILL.md) |
+| 636 | ✓ | [`research/notebooklm/README.md`](research/notebooklm/README.md) |
+| 637 | ✓ | [`research/notebooklm/skills/notebooklm/SKILL.md`](research/notebooklm/skills/notebooklm/SKILL.md) |
+| 638 | ✓ | [`research/patent/README.md`](research/patent/README.md) |
+| 639 | ✓ | [`research/patent/skills/patent/SKILL.md`](research/patent/skills/patent/SKILL.md) |
+| 640 | ✓ | [`research/pulse/README.md`](research/pulse/README.md) |
+| 641 | ✓ | [`research/pulse/skills/pulse/SKILL.md`](research/pulse/skills/pulse/SKILL.md) |
+| 642 | ✓ | [`research/research/README.md`](research/research/README.md) |
+| 643 | ✓ | [`research/research/skills/research/SKILL.md`](research/research/skills/research/SKILL.md) |
+| 644 | ✓ | [`research/syllabus/README.md`](research/syllabus/README.md) |
+| 645 | ✓ | [`research/syllabus/skills/syllabus/SKILL.md`](research/syllabus/skills/syllabus/SKILL.md) |
+| 646 | ✓ | [`scripts/evals/README.md`](scripts/evals/README.md) |
+| 647 | ✓ | [`standards/CLAUDE.md`](standards/CLAUDE.md) |
+| 648 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 649 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 650 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 651 | → | [`CONVENTIONS.md`](CONVENTIONS.md) |
+| 652 | → | [`orchestration/ORCHESTRATION.md`](orchestration/ORCHESTRATION.md) |
+| 653 | → | [`README.md`](README.md) |
+| 654 | → | [`standards/git/git-workflow-standards.md`](standards/git/git-workflow-standards.md) |
 
 ---
 

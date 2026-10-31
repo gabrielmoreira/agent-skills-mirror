@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,14 +87,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`packages/cli-v3/skills/trigger-cost-savings/SKILL.md`](packages/cli-v3/skills/trigger-cost-savings/SKILL.md) |
 | 27 | ✓ | [`packages/cli-v3/skills/trigger-getting-started/SKILL.md`](packages/cli-v3/skills/trigger-getting-started/SKILL.md) |
 | 28 | ✓ | [`packages/cli-v3/skills/trigger-realtime-and-frontend/SKILL.md`](packages/cli-v3/skills/trigger-realtime-and-frontend/SKILL.md) |
-| 29 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
-| 30 | ✓ | [`packages/redis-worker/AGENTS.md`](packages/redis-worker/AGENTS.md) |
-| 31 | ✓ | [`packages/trigger-sdk/AGENTS.md`](packages/trigger-sdk/AGENTS.md) |
-| 32 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md) |
-| 33 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md) |
-| 34 | ✓ | [`packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md`](packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md) |
-| 35 | ✓ | [`packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md`](packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md) |
-| 36 | ✓ | [`packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md`](packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md) |
+| 29 | ✓ | [`packages/convex/skills/trigger-convex/SKILL.md`](packages/convex/skills/trigger-convex/SKILL.md) |
+| 30 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
+| 31 | ✓ | [`packages/redis-worker/AGENTS.md`](packages/redis-worker/AGENTS.md) |
+| 32 | ✓ | [`packages/trigger-sdk/AGENTS.md`](packages/trigger-sdk/AGENTS.md) |
+| 33 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md) |
+| 34 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md) |
+| 35 | ✓ | [`packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md`](packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md) |
+| 36 | ✓ | [`packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md`](packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md) |
+| 37 | ✓ | [`packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md`](packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md) |
 
 ---
 

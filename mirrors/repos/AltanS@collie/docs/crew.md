@@ -9,7 +9,7 @@ other machine is a member, and the deputy is the one member allowed to take over
 | `collie crew invite` | Mint a single-use, 10-minute enrollment token (**on the lead**) |
 | `collie crew add <ssh-host>` | Install and enroll a peer over **your own SSH** (on the lead) |
 | `collie crew update <member>… \| --all` | Preflight every machine, then the lead, then each peer one at a time over **your own SSH**; the first failure stops the run ([details](upgrading.md#updating-the-rest-of-the-crew)) |
-| `collie crew status` | Mode, members, reachability, secret pickup, and why a link is refused |
+| `collie crew status` | Mode, members, reachability, each member's version, mux and pane count, secret pickup, and why a link is refused (`--json` for a program) |
 | `collie crew rotate` | Reissue the crew secret and hand it to every reachable peer |
 | `collie crew rename <name>` | Give the crew a new name (**on the lead**) |
 | `collie crew remove <member>` | Unpin and forget a member (on the lead) |
@@ -86,10 +86,11 @@ Collie installed and running.
 1. On the lead, mint the token.
 
    ```bash
-   collie crew invite        # prints the token, then the join command to run
+   collie crew invite        # prints the token, and the join command to run on stderr
    ```
 
-   The token is one line: `<token>.<lead-fingerprint>`.
+   The token is one line: `<token>.<lead-fingerprint>`. It is the only thing on stdout. The restart
+   lines and the join command go to stderr, so `collie crew invite | ssh member 'collie crew join <address> -'` works.
 
 2. On the joining machine, join the crew and paste the token when it asks.
 
@@ -112,8 +113,13 @@ Collie installed and running.
    ```
 
 Tokens are single-use, valid for ten minutes, and displayed once. The lead stores only the hash.
-Running `invite` restarts the lead process so it can accept the incoming enrollment, and it prints
-the join line with the lead name included.
+Running `invite` restarts the lead process so it can accept the incoming enrollment. It waits until
+the restarted lead answers, for up to 30 seconds, and only then prints the token and the join line
+with the lead name included. If the lead does not answer in that time, `invite` says so and prints no
+join line, because a `join` would be refused while the lead is down. Check `collie logs`, then run
+`invite` again. The token is the first line of stdout, and the restart notice goes to stderr, so a
+script can read the token from the first line. A `join` that is refused with "the lead refused the
+token" shortly after an `invite` can also mean the lead is still restarting.
 
 Step 3 is a second restart, and `join` says so on the way out. `invite` restarted the lead so it
 could accept the enrollment. `join` then wrote the new member to disk, and the running process does
@@ -131,11 +137,13 @@ prints a warning, because process listings expose arguments to all local users
 ([`CREW_PROTOCOL.md` §8.3](../CREW_PROTOCOL.md)).
 
 Set the lead address to any hostname or `host:port` reachable from this node. An address without a
-scheme and port resolves to `https://<host>:8787`, the port Collie's own listener binds.
+scheme and port resolves to `https://<host>:8787`, the port Collie's own listener binds. A port you
+type is kept: `host:443` dials `https://host` on port 443, and `host:8788` dials port 8788.
 
 What `crew invite` prints depends on how the lead is published. In the default HTTPS mode, the lead
 listens on loopback and `tailscale serve` publishes it on port 443. So `invite` prints
-`https://<full-tailnet-name>`, which dials port 443. If you moved the front door with
+`https://<full-tailnet-name>`, which dials port 443. A lead published on 443 through
+`COLLIE_PUBLIC_URL` prints `https://<host>` the same way. If you moved the front door with
 `COLLIE_SERVE_PORT`, it prints `<name>:<port>`. With `COLLIE_SERVE_MODE=http` the lead's own
 listener answers on port 8787 over plain HTTP, and `invite` prints the short name, with the port
 only if you changed it. `join` prompts once before sending the token over plain HTTP, and
@@ -148,6 +156,25 @@ would mean port 8787, which a lead behind `tailscale serve` does not open to the
 `--address` on `crew join` is the address the lead dials this machine at, and it needs a port:
 `--address <host>:8787`. `join` refuses one without a port, because the lead would dial port 443.
 An `https://host:8787` address is still accepted and stored as `host:8787`.
+
+**A second instance on the same host** joins with `--address 127.0.0.1:<port>`, where `<port>` is that
+instance's own port:
+
+```bash
+collie crew join https://lead.tail1234.ts.net - --address 127.0.0.1:8788
+```
+
+**Every machine has its own name.** `--label <name>` is the name a member shows in the crew. Without it, a
+member takes the host name. A named instance (`COLLIE_INSTANCE=hc`) takes `<hostname>-<instance>`, so a
+second instance on the lead's host joins as `bluefin-hc`, not as a second `bluefin`. The lead refuses a
+name that is its own, or one that another member already has, with a reason like `the name "bluefin" is
+already taken by the lead. Pass --label <another name>.` The match ignores capital letters. The lead has
+spent the invite by then, so run `collie crew invite` again and join with another `--label`. A member that
+joins again under its own name is not refused. This needs a lead on 1.25.0 or later. An older lead
+still adds a random suffix to a name that is taken.
+
+A member's listener is pinned mutual TLS, so a browser or `curl` cannot reach it directly. You reach
+that member only through the lead.
 
 **Multiplexer selection is local to each node.** Configure `COLLIE_MUX` in that node's own `.env`,
 at `~/.config/collie/.env` on a binary install or in Herdr's plugin config dir on a Herdr install.
@@ -252,8 +279,9 @@ collie crew join <lead-address> --label desk-agents
 
 One Collie carries one terminal multiplexer and every durable agent attached to it, so a Herdr instance
 and its durable agents are one peer, and it needs no label of its own. A durable-only instance
-(`COLLIE_MUX=durable`) is a peer of its own. It joins under the host name unless you pass `--label`,
-so give it a name when another peer already uses that host.
+(`COLLIE_MUX=durable`) is a peer of its own. It joins under the host name unless you pass `--label` (a named
+instance joins as `<hostname>-<instance>`), and the lead refuses a name that is taken, so give it a name when
+another peer already uses that host.
 
 | What | Where it happens |
 | --- | --- |
@@ -291,6 +319,38 @@ list from that member's log, so the cards and the Messages sheet look the same o
 > **Note.** A member needs Collie 1.23.0 to take a message and to show its messages on the phone. A
 > message to an older member is refused `not sent: older member`, and a member under an older lead
 > gets `not sent: older lead`. Run `collie crew update --all` to level the crew ([Update a crew](upgrading.md#updating-the-rest-of-the-crew)).
+
+## A machine can run several Collies
+
+A crew member is one Collie instance: one bridge and one multiplexer. One machine can run more than
+one, for example the Herdr TUI and the Herdr core side by side, and each is its own member. A member
+that is not the default instance joins as `<hostname>-<instance>` unless you pass `--label`.
+[Two Collies on one machine](multiplexers.md#two-collies-on-one-machine) has the steps.
+
+Each member sends its host name with its status. The app groups members that report the same host
+into one machine. The Crew page draws one card per machine, with a line for each instance, and the
+Machines sheet shows one row per machine. A member that sends no host, because it is older than
+1.25.0, is a machine of its own.
+
+A machine has a health that sums its instances:
+
+| Health | What it means |
+| --- | --- |
+| ok | Every instance answers |
+| degraded | Some instances answer and some do not. The card names the ones that do not |
+| down | No instance answers |
+
+When a machine runs two instances, a pane's chip reads `<host> · <mux>`, for example
+`bluefin · herdr-core`. On a crew where every machine runs one instance, the chip shows the member
+name as before. `collie status` and `collie crew status` group members under their host in the same
+way.
+
+Only the view is grouped. The member id stays the key: it is what a walky talky address, the
+`--member` filters and the `?h=` link in the app use.
+
+`collie crew status --json` carries the same facts for a program. Each member has `id`, `role`,
+`address`, `link`, `version`, `mux`, `panes` and `host`. `link` is never `null`. `mux`, `panes`, `host` and `version` are `null` when the member did not
+report them, never `0`, and a member with no `host` is a machine of its own.
 
 ## Machines
 

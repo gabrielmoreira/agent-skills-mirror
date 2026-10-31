@@ -1848,8 +1848,20 @@ status = await client.artifacts.generate_quiz(
     instructions="...",
     quantity=QuizQuantity.MORE,  # FEWER, STANDARD, MORE
     difficulty=QuizDifficulty.MEDIUM,  # EASY, MEDIUM, HARD
+    language="vi",  # optional output language; None (default) omits it
+    question_types=[QuizQuestionType.MULTIPLE_CHOICE, QuizQuestionType.SHORT_ANSWER],
+    # MULTIPLE_CHOICE, MULTIPLE_SELECT, FILL_IN_THE_BLANK, SHORT_ANSWER; None = all
+    include_images=False,  # text only; None (default) keeps the server default (images)
 )
 ```
+
+`question_types` must be a non-empty list when given; the Web backend sends the
+complement as the request's "avoid" list. The Android backend does not honor it, so
+`generate_quiz(question_types=...)` raises `UnsupportedOperationError` there (unless the
+selection includes every type, which is the default and sends nothing).
+`generate_flashcards` accepts the same optional `language` and `include_images`.
+`include_images` must be a `bool` or `None`, and `language` must be a non-empty string
+or `None`; anything else raises `ValidationError`.
 
 `later=True` is a keyword-only option on `generate_audio`, `generate_video`,
 `generate_report`, `generate_study_guide`, `generate_quiz`, `generate_flashcards`,

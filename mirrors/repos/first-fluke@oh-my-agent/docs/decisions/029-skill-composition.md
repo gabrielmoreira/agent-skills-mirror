@@ -217,57 +217,70 @@ oma-image
 
 ## oma-voice
 
-근거: [SKILL.md](../../skills/oma-voice/SKILL.md), [음성 처리](../../skills/oma-voice/resources/audio-processing.md), [생성·전사 절차](../../skills/oma-voice/resources/execution-protocol.md).
+근거: [SKILL.md](../../skills/oma-voice/SKILL.md), [음성 처리](../../skills/oma-voice/resources/audio-processing.md), [생성·전사 절차](../../skills/oma-voice/resources/execution-protocol.md), [VoiceStudio 백엔드](../../skills/oma-voice/resources/voicestudio.md), [upstream VoiceStudio](https://github.com/debpalash/VoiceStudio).
 
 ```text
 oma-voice
 ├── skills
-│   └── none delegated in the current scope
+│   └── debpalash/VoiceStudio@voicestudio: conditional VoiceStudio backend
 ├── CLI
+│   ├── bunx skills use debpalash/VoiceStudio@voicestudio: catalog fallback
 │   └── ffmpeg / ffprobe: existing-audio processing
 ├── MCP
-│   └── Voicebox: TTS / STT / profile discovery
+│   ├── Voicebox: TTS / STT / profile discovery
+│   └── VoiceStudio: optional already-connected, discovered tool surface
 ├── API / host
-│   └── Voicebox REST: health and generated-audio retrieval
+│   ├── Voicebox REST: health and generated-audio retrieval
+│   └── VoiceStudio REST: health, OpenAI-compatible speech / transcription
 └── OMA-owned specs
     ├── execution-protocol.md / audio-processing.md
+    ├── voicestudio.md: voice.backend resolution, routing, consent
     ├── config/voice-config.yaml / checklist.md
     └── audio and transcript manifest contracts
 ```
+
+음성 백엔드는 `voice.backend`(`auto`·`voicebox`·`voicestudio`)로 고른다. `auto`는 Voicebox를 먼저, 꺼져 있으면 VoiceStudio를 사용하며, 명시한 백엔드는 다른 백엔드로 넘어가지 않는다. VoiceStudio의 엔드포인트·인증·클로닝·더빙 절차는 upstream `voicestudio` skill이 소유하고, OMA는 모드·길이 제한·출력 경로·manifest와 클로닝·모델 다운로드 동의를 관리한다. oma-video 나레이션 provider도 같은 설정을 읽는다.
 
 기존 음성 가공은 Voicebox 없이 수행할 수 있다. TTS·STT와 기존 파일 가공을 분리한다. MCP tool 이름은 실제 discovery 결과로 해결한다.
 
 ## oma-video
 
-근거: [SKILL.md](../../skills/oma-video/SKILL.md), [기존 영상 처리](../../skills/oma-video/resources/existing-media.md), [script 규약](../../skills/oma-video/resources/script-schema.md), [upstream ffmpeg-skill](https://github.com/kajisho5/ffmpeg-skill).
+근거: [SKILL.md](../../skills/oma-video/SKILL.md), [기존 영상 처리](../../skills/oma-video/resources/existing-media.md), [효과음·사운드 청취](../../skills/oma-video/resources/sound-design.md), [script 규약](../../skills/oma-video/resources/script-schema.md), [upstream ffmpeg-skill](https://github.com/kajisho5/ffmpeg-skill), [upstream earshot](https://github.com/Leonxlnx/earshot).
 
 ```text
 oma-video
 ├── skills
 │   ├── kajisho5/ffmpeg-skill: conditional supplied / rendered-video processing
+│   ├── Leonxlnx/earshot@earshot: conditional bank SFX / kit and audio listening
+│   ├── Leonxlnx/earshot@real-sound: conditional licensed-recording soundtrack
 │   ├── oma-image: conditional stills / diagrams
 │   ├── oma-slide: conditional explainer frames
 │   ├── oma-voice: conditional transcription / TTS / duration fitting
 │   └── oma-translation: conditional spoken-text translation
 ├── CLI
 │   ├── bunx skills use kajisho5/ffmpeg-skill@ffmpeg-skill: catalog fallback
+│   ├── bunx skills use Leonxlnx/earshot@earshot / @real-sound: catalog fallback
+│   ├── earshot runtime (resolved checkout / PATH / EARSHOT_PYTHON): sfx, kit, timeline, sheet, critique
 │   ├── python3 <support_dir>/scripts/<selected>.py: upstream operations
 │   ├── oma video generate / compose / render / doctor / provider list
 │   ├── selected HyperFrames / MPT compositor toolchain
 │   └── ffmpeg / ffprobe: upstream runtime and OMA render validation
 ├── MCP
 │   ├── ffmpeg-skill: optional already-connected, discovered tool surface
-│   └── Voicebox: indirect through oma-voice
+│   ├── earshot: optional already-connected, discovered tool surface
+│   └── Voicebox / VoiceStudio: indirect through oma-voice (voice.backend)
 ├── API / host
 │   └── selected asset providers; host vision for actual extracted images
 ├── OMA-owned specs
 │   ├── script-schema.md: creation script input
 │   ├── script.json / timing.json / render-spec.json / manifest.json contracts
 │   ├── existing-media.md: routing, source timeline, vision and speech intent
+│   ├── sound-design.md: earshot routing, cue times, composition placement, listening evidence
 │   ├── vendor-matrix.md: creation providers
 │   └── hyperframes-authoring/: creation composition rules
 └── Upstream-owned specs
     ├── SKILL.md: mechanical editing and probe / check / look workflow
+    ├── earshot SKILL.md / real-sound SKILL.md: sound bank, kit schema, levels, listening loops
     ├── scripts/ and complete _common/ package: flags and execution contract
     └── templates/ and project.json: upstream edit format
 ```
@@ -276,34 +289,51 @@ oma-video
 
 OMA는 원본 PTS·VFR·A/V offset의 근거, 샘플링 정의, 비전 해석, speech와 amplitude에 따른 편집 의도, 자막·더빙의 공통 타임라인을 관리한다. upstream이 정확한 프레임·PTS 근거를 제공하지 않으면 한계를 기록한다. contact sheet 시각이나 명목 FPS로 정확한 PTS를 만들어내지 않는다. 음성만의 작업은 `oma-voice`로 유지한다.
 
+효과음·사운드 디자인·영상 오디오 청취는 earshot이 지원하는 기능이면 upstream으로 라우팅한다. 생성된 영상의 효과음은 `earshot` skill의 내장 뱅크 `sfx`/`kit`을, 실제 녹음이 필요하면 `real-sound`를, 싱크·라우드니스 검토는 `timeline`/`sheet`/`critique`를 사용한다. skill은 runtime skill catalog를 우선하고 없으면 `bunx skills use`로 불러오되, earshot Python runtime은 사용자 동의 없이 설치하지 않는다. OMA는 render-spec과 composition에서 cue 시각을 정하고, `kit.lock.json`의 측정 싱크 지점으로 HyperFrames `<audio>`를 배치하며, 측정값 기반 보고를 담당한다. 효과음 take는 CLI manifest에 들어가지 않으므로 `cues.json`·`kit.json`·`kit.lock.json`을 출처 기록으로 둔다.
+
 새 영상 생성은 기존 OMA CLI와 asset bus를 사용한다. OMA `render-spec.json`과 upstream `project.json`은 별도 규약이다. 외부 스킬의 script·flag·template·검증 cookbook을 OMA 리소스에 복제하지 않는다. 사용자가 출력 형식을 지정하면 그 형식 안에서 실제 probe/check/look 근거와 미검증 범위를 전달한다.
 
 생성용 하위 연결은 [생성 절차](../../skills/oma-video/resources/execution-protocol.md)에 선언되어 있으며, [provider 매트릭스](../../skills/oma-video/resources/vendor-matrix.md)의 deferred 표시와 실제 설치·동작 여부를 함께 확인해야 한다. Pexels·Pixelle·Cap·Strudel과 `oma-captions`를 현재 설치되거나 완성된 하위 스킬로 표시하지 않는다. HyperFrames·MPT는 구성 가능한 compositor 경로이며 설치 완료를 뜻하지 않는다.
 
 ## oma-slide
 
-근거: [SKILL.md](../../skills/oma-slide/SKILL.md), [stage 규약](../../skills/oma-slide/resources/fixed-stage.md), [Canva 연결](../../skills/oma-slide/resources/canva-integration.md).
+근거: [SKILL.md](../../skills/oma-slide/SKILL.md), [stage 규약](../../skills/oma-slide/resources/fixed-stage.md), [Canva 연결](../../skills/oma-slide/resources/canva-integration.md), [native PPTX route](../../skills/oma-slide/resources/native-pptx.md), [upstream ppt-master](https://github.com/hugohe3/ppt-master).
 
 ```text
 oma-slide
 ├── skills
-│   └── oma-image: conditional generated-image assets
+│   ├── hugohe3/ppt-master: conditional native-pptx route (load-and-follow)
+│   ├── oma-image: conditional generated-image assets; upstream Path B on the native-pptx route
+│   └── oma-hwp / oma-pdf: optional native-pptx source pre-conversion
 ├── CLI
-│   └── oma slide: create / validate / preview / bundle / export / style
+│   ├── oma slide: create / validate / preview / bundle / export / style
+│   ├── bunx skills use hugohe3/ppt-master@ppt-master: catalog fallback
+│   ├── python3 <support_dir>/scripts/<selected>.py: upstream operations
+│   └── uv venv / uv pip install -r <support_dir>/requirements.txt: consented only
 ├── MCP
 │   ├── Canva: optional import / export
 │   └── chrome-devtools: optional aesthetic screenshot review
 ├── API / host
 │   ├── remote style templates: conditional design.md retrieval
 │   └── font CDN resources: conditional validation / export access
-└── OMA-owned specs
-    ├── fixed-stage.md: 1920 x 1080 and validator contract
-    ├── generation-protocol.md / design-doctrine.md
-    ├── style-presets.md / selection-index.json / animation-patterns.md
-    └── canva-integration.md / checklist.md
+├── OMA-owned specs
+│   ├── fixed-stage.md: 1920 x 1080 and validator contract
+│   ├── generation-protocol.md: route selection / design-doctrine.md
+│   ├── style-presets.md / selection-index.json / animation-patterns.md
+│   ├── native-pptx.md: upstream loading, substitutions, delivery
+│   └── canva-integration.md / checklist.md
+└── Upstream-owned specs (native-pptx)
+    ├── SKILL.md / workflows/routing.md: routes, BLOCKING gates, Confirm UI
+    ├── workflows/ and references/: route procedures and authoring rules
+    ├── scripts/: SVG → DrawingML export, quality checks, attribution guard
+    └── templates/: brand / style / layout / deck / chart / icon catalogs
 ```
 
 외부 출처의 preset은 현재 vendored 리소스다. 원본 스킬을 런타임에 설치·호출하는 연결과 구분한다. Canva와 시각 검토 도구는 선택적 연결이다.
+
+편집 가능한 PPTX, 기존 PPTX 수정, 문서→덱, 템플릿 생성, 나레이션 덱 요청은 `native-pptx` route로 보낸다. runtime skill catalog의 `ppt-master`를 우선 사용하고, 없거나 지원 파일이 불완전하면 `bunx skills use`를 `--agent` 없이 실행해 반환된 전체 지침과 지원 디렉터리를 사용한다. `scripts/`, `workflows/`, `references/`, `templates/`, `LICENSE`, `SPONSORS*`를 함께 유지하며 OMA에 vendoring하거나 수정하지 않는다. upstream attribution guard가 통과해야 실행한다.
+
+OMA는 route 선택, 인터프리터·`init --dir`·이미지 경로·원본 전처리 치환, 전달 요약만 관리한다. AI 이미지는 upstream Path B(host-native)로 기록하고 `oma-image`로 생성한다. Python 패키지는 사용자 동의 후에만 설치한다. 그 밖의 절차와 게이트는 upstream이 소유한다.
 
 ## oma-explanation
 

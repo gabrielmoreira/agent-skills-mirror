@@ -30,3 +30,20 @@ Closing or reloading the owning editor requests a pause at the next safe checkpo
 Live model turns can incur provider charges. Every channel test separately reviews its exact destination and fixed message. Device verification selects one inventory device and reviews `show version`; setup never configures network devices. Default report export removes private identifiers structurally. Detailed local export needs its own review and still excludes secrets.
 
 Production currently remains blocked without qualified installation-bound evidence for every mandatory control. Two legacy native components (`in2n-production`, `computer-use`), compatible Webex onboarding, complete on-demand service qualification and some safe-canary profiles remain open; see the evidence document before attempting a real installation. The scoped certificate adapter creates a private pinned-trust keypair; it does not register an ACME account or prove peer trust. Cleanup separately reviews owned services and files. It stops verified services before removing their journaled definitions and enable links, then removes unchanged run-created files. Uncertain service ownership retains the installation; shared or changed files, directories and audit evidence are retained.
+
+## Static or dynamic pyATS inventory (Spec160)
+
+Select pyATS, then choose **Testbed mode & sources** in the VS Code setup wizard
+or static/dynamic in the terminal plan. Existing-runtime `scripts/setup.sh --testbed-only`
+configures the selected home. Dynamic mode stores selected sources privately and
+creates no dummy YAML; setup performs no inventory fetch or device operation.
+Source service credentials and device login references remain separate.
+
+The managed MCP requires scoped, complete, fresh records, then actual schema and
+credential validation before explicit activation. Inventory belongs to one MCP
+process; separate one-shot calls do not share it. Use a persistent client or the
+bounded session helper. The HUD static editor and collector grants are separate.
+Readiness reports source access, candidate, activation and execution independently.
+See [Dynamic testbeds](DYNAMIC-TESTBEDS.md) for all source contracts, unavailable
+reader gaps, restart behavior and feasible qualification. Existing runtimes require
+an explicit reviewed component upgrade; source selection alone does not install it.

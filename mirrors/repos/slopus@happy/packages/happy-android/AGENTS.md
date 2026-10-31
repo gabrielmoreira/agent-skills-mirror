@@ -23,6 +23,25 @@ architectures comparable (local store, delta sync, crypto layer).
   push, tablet layouts, purchases and voice. Experimental and social surfaces
   remain excluded. Store validation needs the existing signing identity,
   EAS build number and RevenueCat Google SDK key.
+- **Happy Protocol V2**: a Happy Agent connected straight to the phone
+  over Tailcat, with no relay account. Each pairing is an **agent
+  connection**, an account of its own beside relay Happy accounts, shown by
+  the agent's own name and avatar (see "Happy Protocol V2" below). It is
+  added with the same **"Add"** as a Happy account (scan, routed by the
+  code); the pairing screen is titled "Connect Agent". Never
+  call these "computer" (relay "machine" wording is a separate, legacy
+  concept and stays). Call the protocol Happy Protocol V2 in strings, docs
+  and prose; never "direct" or "direct mode", except where the wire itself
+  says it (`happy://direct?`, endpoints, JSON keys).
+- **Naming in code:** current code has no prefix; old relay code that
+  clashes is `Legacy*`; never `V2`, `New`, `Direct` or feature prefixes.
+  `Legacy*` = used only by the legacy relay protocol or its UI. Shared
+  components are main-app code with plain names, and legacy reuses them.
+- **Excluded:** Stories, Stem Cells (and its spaces, sidebars,
+  Prioritizing, Artifacts and Surfaces rows), and every experimental or social
+  surface.
+- `packages/happy-ios` is the reference for Steve's design decisions below;
+  happy-app stays the reference for everything else.
 
 ## Rules
 
@@ -63,6 +82,12 @@ architectures comparable (local store, delta sync, crypto layer).
    `HeaderBackButton` renders nothing. Tablet tests use
    `w1280dp-h800dp-xhdpi`; without `ProvideWindowLayout` a composable lays
    out as an unlimited phone.
+   **Moving between screens:** the one NavHost takes `ui/NavMotion`'s four
+   transitions, Material's shared X axis (300 ms, 30 dp whatever the pane's
+   width, mirrored by Back and by right-to-left, none with animations off).
+   Never leave a NavHost on navigation-compose's defaults: those are a 700 ms
+   crossfade. The back gesture keeps the library's predictive animation. An
+   account or agent switch remounts the stack at once; it is not a push.
 4. **The local store is SQLite through the framework API**
    (`SQLiteOpenHelper`, WAL, hand-written SQL in `data/`). Why not a library:
    the schema is a handful of tables whose rows are mostly JSON documents
@@ -71,6 +96,79 @@ architectures comparable (local store, delta sync, crypto layer).
    generated code and a migration framework for no query we need; SQLDelight
    adds a build plugin. The framework API costs no dependency and no startup
    time, and `HappyStore` keeps it typed.
+
+5. **Every screen has the standard top app bar** (`Header`, through
+   `Screen`/`StackHeader` where it can), and its back button does what the
+   system back does. Never hide it, or replace it with a custom or floating
+   bar, without Steve's explicit OK. Steve made two exceptions: the
+   first screen (`ui/start`): no bar, only a floating ⋮ over the
+   full-window gradient; and the QR scanner: no bar, the camera full
+   window with a floating close (✕) top right.
+6. **System back works on every screen, predictive back included**
+   (`enableOnBackInvokedCallback`). A `BackHandler` may close something open
+   on the screen (a sheet, the focused dock) and then let back through; it
+   never swallows back for good.
+
+### Design decisions that override happy-app
+
+Steve made these for the native apps. Where happy-app does otherwise, they
+win:
+
+- **Top app bar, back:** rules 5 and 6. happy-app's first-run Link Your
+  Computer page swallows back; here back leaves the app as on any root.
+- **Home's top bar:** the current account's avatar on the left opens a
+  drop-down of the relay accounts and agent connections (avatar and
+  name each, a check on the open one), then one "Add"
+  (`ui/home/AccountMenu.kt`); picking one switches
+  (`AppGraph.open`). Settings and then compose (far right) on the right.
+  No logo, filter menu (grouping is in Appearance) or centred "Sessions"
+  title; an unhealthy connection shows centred. One account is open at a
+  time: a Happy account or an agent connection (`openAgentId`); each has
+  its own back stack. **Add** opens the scanner straight away (the
+  app's one `LocalAddFlow`, the same as the first screen's Connect;
+  without a scanner it asks for the link): a terminal code adds a Happy
+  account that approves it, a pairing code adds an agent connection. The
+  open account stays signed in. A Happy account added while one is open
+  goes to that account's server; with an agent connection open, to the
+  server chosen on the first screen.
+- **First screen** (`ui/start`), a splash shown only while the phone has
+  no Happy account and no agent connection; never again once one is
+  added. Deliberately not iOS's:
+  Paper's Grain Gradient (AGSL port, Apache-2.0, attribution in
+  `GrainGradient.kt`) behind everything, edge to edge; the logotype
+  centred; one centred "Start" that scans, 48 above the bottom inset. The code is routed
+  (`ConnectKind.Add`): `happy://terminal?` creates a Happy account and
+  approves that terminal in one step (`AuthRepository.createAccount`'s
+  `prepare`; a failed approval keeps no account), `happy:///account?`
+  says it needs a signed-in phone, `happy://direct?` pairs an agent. The
+  ⋮ drop-down holds Enter link manually (same routing), Restore Legacy
+  Account and Legacy Server, and nothing else: no "Get help", and no
+  "Create account" because a Happy account is only ever made by a
+  terminal code. A pasted link routes exactly as the scanned code does
+  (`ConnectFlow.connectWithUrl` through `route`); only a link of no known
+  kind reads differently, as "Invalid authentication URL". Dialogs are Material 3
+  (`HappyAlert`, `PromptModal`), not happy-app's iOS-style card, and only
+  screens with a text field of their own move for the keyboard
+  (`Screen(avoidKeyboard = true)`); the first screen never does. Palette: blue and violet
+  over near-black (dark) or their tints over lavender white (light), no
+  green or orange, text AA or better. The shader runs on Android 13+
+  (`RuntimeShader`), about 30 frames a second while resumed, still with
+  animations removed; older Android draws a still gradient in the same
+  colours.
+- **Compose:** from home it opens an empty new chat; from a chat it
+  replaces that chat with an empty one, animated, with Back going to home.
+  The empty chat becomes the real session in place on the first send, with
+  no route change (not happy-app's draft route then navigate).
+- **Fonts:** the system font for all text, the platform monospace
+  (`FontFamily.Monospace`) for code. Not IBM Plex.
+- **Home rows** have strict, precomputed heights, per row kind and font
+  scale. Idle updates (time ago, presence, working) never change a height,
+  and neither home nor chat scrolls by itself while nothing changed.
+- **Settings cards** look the same everywhere and come from one component
+  (`ItemGroup`).
+- **QR codes:** every scan is classified (terminal, account, agent
+  connection, or not ours) and routed. A code the screen can't use shows an
+  error; nothing is silently ignored. Scanning works while signed in.
 
 ## Layout
 
@@ -89,7 +187,8 @@ app/
   net/      HappyHttp (OkHttp + kotlinx.serialization, X-Happy-Client header),
             SocketIoClient (the /v1/updates socket)
   ui/       theme, components (Item, ItemGroup, RoundButton, Header, ...), screens
-            onboarding/ welcome, restore, Link Your Computer, onboarding settings
+            start/      the first screen, its ⋮ menu, GrainGradient (AGSL)
+            onboarding/ restore, Link Your Computer, onboarding settings
             connect/    QR scanner and codes, connect flows, terminal screens, deep links
             troubleshoot/
   AppGraph  hand-wired object graph; owns the signed-in sync loop
@@ -224,12 +323,31 @@ session is deleted (`ON DELETE CASCADE`), and only chats that were opened
 are stored, each from its newest page back as far as the reader scrolled
 plus the five-page background budget. That is the bound, recorded rather
 than enforced; a chat's rows are one contiguous run of seqs, so trimming
-the middle would break paging. Migrations keep everything from schema 1 on
-(`DatabaseMigrationTest`, one test per hop). Logout (`AppGraph.logout`):
+the middle would break paging. **No migrations:** the native app hasn't
+shipped, so a database from any other schema version is dropped and created
+again, and storage keys and preferences are renamed outright, without
+fallbacks. The one exception is importing the React Native app's account:
+its credential item and its MMKV `server-config` (below).
+
+**Accounts** (`accounts/`, iOS's AccountController and AccountRegistry):
+several Happy (relay) accounts and agent connections, switched from Home's
+avatar menu. `AccountStore` keeps the registry (no secrets: id = the
+account's anon id, server, added order, cached name and avatar, the open
+id). The first account keeps the React Native credential item (`Shared`),
+so an upgrade stays signed in; the rest have items of their own (`Own`,
+keychain service `account`). The first reconcile that finds the shared
+item reads React Native's server with `RnServerConfigImporter` (read-only;
+an unreadable file marks the account unconfirmed and no request is sent
+with its token). Each account has its own database, `account-<id>.db`;
+`HappyStore.use` points the one store at the open account's. Switching
+keeps every account signed in (`MultipleAccountsTest`).
+
+Logout (`AppGraph.logout`) signs out the open account only:
 the `beforeLogout` hooks first, while signed in (the push unregister); then
-the database, local settings, the What's New marker, the new-session draft
-(stored and in memory, `afterLogoutWipe`), picked-image copies and the
-image loader's caches; then the credentials. The server choice stays
+its database and credentials; the next account by added order opens. With
+the last account also go local settings, the What's New marker, the
+new-session draft (stored and in memory, `afterLogoutWipe`), picked-image
+copies and the image loader's caches. The server choice stays
 (`LogoutWipeTest`).
 
 **Large sessions** (`perf/LargeDataTest`, `perf/ChatDisplayTimingTest`).
@@ -349,7 +467,8 @@ graph over the same database and keys for process death.
   chat's composer draft (the session composer's mirror is in the
   database), the chat list's scroll position, the home dock's text and
   focus (`rememberSaveable`), and an open composer or dock picker.
-- Kept through a recreation only: Restore's QR request (a ViewModel).
+- Kept through a recreation only: Restore's QR request (a ViewModel), or
+  its failure with Retry; a recreation never starts a new request.
 - Lost, as in happy-app: pending chats (memory only), open alerts and
   confirmations, an in-flight Resume or Stop spinner, Restore's QR request
   after process death.
@@ -457,18 +576,31 @@ Entry points other screens call (all in `ui/onboarding` and `ui/connect`):
 
 ### QR codes
 
-happy-app scans with expo-camera's `CameraView.launchScanner`, which on
-Android is **Google Code Scanner** (`play-services-code-scanner`): Play
-services draws its own full-screen camera, so the app holds no CAMERA
-permission and shows no preview, and `useCheckCameraPermissions.ts` returns
-true on Android. `GmsQrScanner` does the same, behind the `QrScanner`
-interface (one call, decoded text out) so the flows are tested with a fake.
-Without the Play Store, or when the module fails, the scan returns
-`Failed` and nothing is shown, as in happy-app, whose scan listeners never
-see a rejected `launchScanner`; the paste-link and secret-key paths still
-work. The module is downloaded by Play services on first use, so devices
-without Play services (some Huawei, de-Googled ROMs) can't scan in either
-app. The merged manifest has no CAMERA permission.
+Deliberately not happy-app's (expo-camera's `launchScanner`, which is
+Google Code Scanner on Android): we scan in our own screen, so it works
+without Play services. Everything goes through the `QrScanner` interface
+(one call, decoded text out; `LocalQrScanner`, `rememberQrScanner()`), so
+the flows are tested with a fake.
+
+- `CameraQrScanner` starts `QrScannerActivity` for a result
+  (`QrScannerActivity.Contract`). A phone without a camera returns
+  `Failed` at once, and the flows ask for the link instead.
+- The activity asks for CAMERA when it opens (the manifest declares it,
+  and `android.hardware.camera` as not required). Refused, the screen says
+  so (`modals_camera_permissions_required_to_scan_qr`) with Open Settings;
+  returning with it granted starts the camera.
+- CameraX (`camera-camera2`, `camera-lifecycle`, `camera-compose`'s
+  `CameraXViewfinder`): a preview plus an `ImageAnalysis` (~720p, latest
+  frame only) whose `QrAnalyzer` feeds the Y plane to ZXing (`QrDecoder`,
+  QR only, inverted codes too). The first decoded text finishes the
+  activity, with a confirm haptic.
+- `QrScannerScreen`, always dark: Steve's exception to rule 5, no header;
+  the camera fills the window under transparent system bars, a floating ✕
+  top right (= back), a scrim with a centred square viewfinder, a hint
+  under it, and a torch toggle when the camera has a flash. Close and
+  system back return `Cancelled`.
+- `QrDecoderTest` decodes ZXing-encoded luminance frames; `QrScannerTest`
+  covers the result contract, the refused permission and the layout.
 
 The restore screen draws its code with ZXing's encoder (`zxing-core`, no
 Android or camera parts), in QRCode.tsx's rounded style; `QrCodeTest`
@@ -646,6 +778,42 @@ interface (200 until reported, capped at 600). Where there is no WebView
 (Robolectric, devices without a provider) `LocalMermaidWebView` is false and
 MarkdownView's code block shows instead; layout tests see the code block
 unless they provide `true`.
+
+## Happy Protocol V2
+
+A Happy Agent connected straight to the phone (an agent connection;
+"Add" in the UI, never "computer"). The source of truth is happy-agent's
+`API.md`, "Mobile connector" (pairing, credentials, the QR code); iOS's port
+is `packages/happy-ios`. The wire keeps its own names
+(`happy://direct?`, `/v0/mobile-connector/…`).
+
+- **Pairing crypto** (`crypto/PairingCrypto.kt`): X25519, the
+  length-prefixed transcript, HKDF-SHA-256 keys, HMAC confirmations and the
+  333-emoji table (`resources/pairing/emoji.txt`, copied from API.md).
+  `PairingCryptoTest` pins API.md's vectors and the table's SHA-256.
+- **Link, handshake, identity** (`app/…/connection/`):
+  `PairingLink` validates the code (a malformed `happy://direct?`
+  never falls back to relay approval); `PairingService` commits,
+  reveals, returns the emoji and on confirm waits for the agent and
+  checks its MAC before anything is kept; `AgentIdentity` reads health
+  (protocol 27 or later) and `config.node`; `AgentConnections` keeps each
+  connection's credentials Keystore-encrypted, apart from relay credentials.
+- **Transport** (`TailcatTransport`): tailcat-kotlin, one client
+  per agent connection and a fresh TCP stream to `server.tailcat:<port>` per
+  HTTP/1.1 request, framed by `HttpResponseParser`. It uses
+  tailcat-kotlin's default DERP map (`https://tailcat.dev/derpmap.json`),
+  cached in `noBackupFilesDir/tailcat/derpmap.json` (`FileDerpMapCache`):
+  with no network and no cached map, connecting fails.
+- **tailcat-kotlin** has no published artifact. `tools/tailcat/build.sh`
+  builds its pinned commit's JVM jar (the same sources as its Android
+  variant) into `vendor/maven`, which `settings.gradle.kts` reads for the
+  `io.tailcat` group only; the catalog pins the version. When it is
+  published, switch the catalog and delete both.
+- **Live check:** `LivePairingTest` pairs with a real Happy Agent
+  when `HAPPY_PAIRING_LINK` holds a fresh code, writes the emoji for the
+  person confirming in Happy Agent, then reads health and config with the
+  new device token over a new tunnel. Remove the test device in Happy Agent
+  afterwards.
 
 ## Autocomplete
 

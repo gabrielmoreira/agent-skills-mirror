@@ -126,15 +126,15 @@ model_preset: auto
 # antigravity external dispatch is unreliable in this environment (prompts do
 # not reach the model; see spawn artifact guard notes). Add your own entries
 # alongside it, e.g.
-#   backend: { model: openai/gpt-5.5, effort: high }
+#   backend: { model: openai/gpt-6.1-terra, effort: high }
 agents:
   eval:
-    model: anthropic/claude-sonnet-4-6
+    model: anthropic/claude-sonnet-5-5
 
 # Inline custom model slugs (optional) — the home for any slug not in the
 # built-in registry. `cli_model` must be the exact id the CLI itself accepts:
 # for antigravity that is an `agy models` display name, not a slug
-# (`gemini-3.6-flash` is rejected).
+# (`gemini-3.8-flash` is rejected).
 #
 # Replaces `.agents/config/models.yaml`, which `oma uninstall` deletes along
 # with the rest of `.agents/config/`. That file is no longer read; `oma update`
@@ -143,7 +143,7 @@ agents:
 # models:
 #   my-fast:
 #     cli: antigravity
-#     cli_model: "Gemini 3.6 Flash (Medium)"
+#     cli_model: "Gemini 3.8 Flash (Medium)"
 #     supports:
 #       native_dispatch_from: [antigravity]
 
@@ -154,7 +154,7 @@ agents:
 #     extends: claude
 #     description: "Team A — sonnet base, codex backend"
 #     agent_defaults:
-#       backend: { model: openai/gpt-5.5, effort: high }
+#       backend: { model: openai/gpt-6.1-terra, effort: high }
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 3. Vendor selection & pi (Earendil) transport runtime
@@ -456,10 +456,13 @@ scm:
 #     single_folder_pattern: "{timestamp}-{shortid}"
 
 # ── voice (oma-voice) ────────────────────────────────────────────────────────
-# Local TTS / STT via the Voicebox MCP server. Profile names come from
-# `voicebox_list_profiles`; both ship as null and must be set per machine, so
+# Local TTS / STT via Voicebox or VoiceStudio. `backend: auto` uses the first
+# healthy one (Voicebox, then VoiceStudio); oma-video narration follows the
+# same setting. Profile names come from
+# the selected backend; both ship as null and must be set per machine, so
 # this is the section most worth filling in.
 # voice:
+#   backend: auto                   # auto | voicebox | voicestudio
 #   notification_profile: null
 #   asset_profile: null
 #   output_dir: .agents/results/voice

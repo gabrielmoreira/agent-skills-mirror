@@ -5,7 +5,9 @@
 1. Create `themes/<name>/config.json` using only keys from the table in `themes/README.md`;
    `themes/default/config.json` is the starting point.
 2. Add `wallpaper.jpg` or a `wallpapers/` folder if it uses them: dark, 1920x1080, under about 300 KB each,
-   and art you have the right to use.
+   and art you have the right to use. `tests/test_theme_wallpapers.py` holds every picture to those numbers
+   (a smaller 16:9 picture is fine, the launcher scales it) and names one the launcher would never draw: a
+   `wallpapers/` file that is not a JPEG, PNG or WebP, or a single picture not called `wallpaper.jpg`.
 3. Push it to a real TV with `TV_HOST=<tv ip> tools/theme.sh themes/<name>` and take `screenshot.jpg` of
    Home with the focus on the dock: a JPEG at 1280x720 (16:9), at most 300 KB. Not a mock-up, not an
    emulator. `tests/test_themes.py` fails without it.

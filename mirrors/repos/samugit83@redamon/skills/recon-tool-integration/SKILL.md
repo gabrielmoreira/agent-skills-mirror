@@ -55,8 +55,9 @@ For the graph write, use `graph-db-writes`. For the settings, use
   `graph-db-writes`.
 - **NEVER add a tool setting without updating BOTH preset layers.** Add it to the
   Zod [recon-preset-schema.ts](../../webapp/src/lib/recon-preset-schema.ts) and to
-  `RECON_PARAMETER_CATALOG` in
-  [webapp/src/app/api/presets/generate/route.ts](../../webapp/src/app/api/presets/generate/route.ts).
+  `RECON_PARAMETER_CATALOG`, both in
+  [recon-preset-schema.ts](../../webapp/src/lib/recon-preset-schema.ts) (the generate
+  route only imports the catalog).
   Miss the Zod schema and AI-generated presets **silently strip** the setting;
   miss the catalog and the preset LLM never knows the tool exists.
 - **ALWAYS prefix every `print()` log** `[symbol][ToolName]` (`[*]` progress,

@@ -43,3 +43,15 @@ Starter intents:
 Contradictory intents stay unresolved: two harnesses for one claw require a choice; a reused home requires a separate empty home or the existing-management workflow; production without verified controls stays blocked. “Install everything” does not supply missing provider/model, channel, posture or credential decisions. The repository's `docs/INTENT-PROMPTS.md` provides the shared examples and `tests/fixtures/setup/intent-matrix.json` records expected draft behavior. Those protocol fixtures do not certify an assistant's natural-language interpretation.
 
 The deployment Spec Kit **implement** step means submitting the exact canonical plan for human review and recording the resulting typed report. It never means running unattended installer commands.
+
+### pyATS inventory selection (Spec160)
+
+For each selected pyATS claw, ask static or dynamic and select sources using the
+canonical `config/pyats-testbed-sources.json`. Store optional `claw.testbed` with
+`mode` and `sources`; absence means static compatibility. Dynamic requires at least
+one source and cannot coexist with that owner's top-level static inventory import.
+Never put credentials or source records into a Claw Plan. Installation configures
+the policy only; source MCP access, composition, validation and explicit activation
+are later operations. No empty YAML is needed in dynamic mode. Explain source gaps
+and session lifetime from `docs/DYNAMIC-TESTBEDS.md`; never infer SSH from consoles
+or claim fixture qualification as live access. HUD static inventory is separate.

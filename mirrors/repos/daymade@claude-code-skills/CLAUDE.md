@@ -60,6 +60,10 @@ For capability extraction or reuse across business callers, follow its
 
 Operational or code-bearing Skill edits complete directly affected document alignment
 before the first candidate freeze; follow skill-creator's Edit workflow.
+When data-visualization delivery-gate text changes, use the
+[repository generator](scripts/sync_delivery_gates.py) and
+[CI validation step](.github/workflows/ci.yml) to refresh its shipped resource;
+do not edit the generated resource independently.
 For project instruction-entry maintenance, enter
 [claude-md-progressive-disclosurer](daymade-claude-code/claude-md-progressive-disclosurer/SKILL.md).
 Its verification reference owns dual-entry reconciliation and native-host readback;
@@ -114,6 +118,8 @@ For evidence-based improvement of an existing application, enter
 [app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
 load its [Skill composition route](app-evolver/references/skill-composition.md);
 keep specialist selection and handoff boundaries in that owner.
+Before collecting Mobbin screens or flows or selecting an adaptation, follow its
+[Mobbin evidence recipe](app-evolver/references/mobbin-evidence.md).
 For domain-role extraction or scattered policy, use its
 [consumer-adoption recipe](app-evolver/references/implementation-and-acceptance.md#extract-a-domain-role-through-its-consumers).
 When the user corrects premises, research focus or scope, return first to its
@@ -155,6 +161,11 @@ DOCX delivery follows docx-creator's
 including refused/unavailable checks and reviewable handoff. DOCX comparison follows
 [the input-identity and coverage procedure](daymade-docs/read-docx-review/references/full-comparison.md);
 keep sending evidence, revision-view selection and comparison limits with that owner.
+
+For PDF → Markdown manuals or question banks, enter
+[docs-router](daymade-docs/docs-router/SKILL.md) and follow
+[PDF acceptance](daymade-docs/doc-to-markdown/references/pdf-acceptance.md).
+Keep that procedure authoritative for conversion and recipient acceptance.
 
 For saved HTML batches, follow [the conversion owner](daymade-docs/doc-to-markdown/references/html-conversion.md#gate-a-batch-through-the-existing-recipe)
 and its actual-reader pilot before expansion. Keep conversion evidence and reader
@@ -204,6 +215,8 @@ owns concrete plans, cost boundaries and next-verification choices; do not turn 
 shortlist into purchase or deployment approval.
 For filtered evidence inspection, follow its
 [interactive-analysis recipe](report-with-html/references/interactive-analysis.md).
+Before updating an accepted report's facts or content, follow its
+[incremental maintenance recipe](report-with-html/references/long-lived-report-maintenance.md#63-已验收报告的有界增量更新).
 For transcript speaker-label updates, later reconciliation and consumer readback,
 follow its [maintenance contract](report-with-html/references/long-lived-report-maintenance.md).
 
@@ -293,7 +306,8 @@ For timed-out screenshots or blank hidden-window captures, follow its
 For changed contribution views or multi-item reads, use that same journey contract
 for source-derived coverage and partial-result recovery; keep the detailed recipe
 with the Skill.
-Before designing or judging monitoring, availability or certificate matrices, enter
+Before laying out spatial, role or port-constrained relationship diagrams,
+or designing monitoring, availability or certificate matrices, enter
 [data-visualization-discipline](data-visualization-discipline/SKILL.md).
 Observation and risk semantics follow its data-validation route.
 For incomplete observations, unknown counts or confirmed zero, use its
@@ -355,6 +369,8 @@ recovery, or capacity checks before necessary backup/copy/extraction, use
 [macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
 [necessary-copy capacity preflight](daymade-macos/macos-cleaner/references/safety_rules.md#necessary-copy-capacity-preflight).
 When changing measurement, run the SOP's targeted regression suite before shipping.
+For OrbStack image discovery and physical-release diagnosis, use its
+[Docker reference](daymade-macos/macos-cleaner/references/docker_analysis.md#step-2b-orbstack-specific-analysis).
 For uv cache diagnosis or retirement, enter
 [macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
 [uv target semantics](daymade-macos/macos-cleaner/references/cleanup_targets.md#uv-cache-retirement).
@@ -481,28 +497,32 @@ Its
 owns discussion capture and interpretation; the bundled helper owns the CLI
 interface. Before permanent filing or choosing an authorized archive destination,
 follow the [destination handoff](feishu-doc-scraper/references/archive-destination-handoff.md).
+Use that handoff for authorized source access instructions alongside original links.
 For storage decisions, use its
 [archive storage contract](feishu-doc-scraper/references/archive-storage-contract.md)
 alongside the destination repository's storage SOP.
+Keep generated manifest metadata aligned with that contract's on-demand statistics rule.
 For local originals, Obsidian delivery or a personal source-catalog handoff, follow the Skill's
 [original-media and reader SOP](feishu-doc-scraper/references/original-media-and-reader.md).
 
 ### Prior Work Retrieval Boundary
 
-`prior-work-retrieval` creates an obligation only for an explicit prior-work,
-reuse, or history request. Ordinary implementation, reports, and read-only
-inspection do not arm it; PreToolUse and Stop may enforce only a requirement
-already created by the current prompt. Artifact selection and runtime-read
-comparison are owned by that Skill; a receipt about a locator is not proof of
-the delivered artifact. For retrieval freshness, changed-source recovery and
-receipt lifetime, follow the [Prior Work operating contract](daymade-claude-code/prior-work-retrieval/SKILL.md).
-Requests to repeat a previously successful method enter its
+For an explicit prior-work, reuse or history request, follow the
+[Prior Work operating contract](daymade-claude-code/prior-work-retrieval/SKILL.md).
+Requests to repeat a previously successful method or reuse/improve an older rendered artifact enter its
 [candidate verification](daymade-claude-code/prior-work-retrieval/SKILL.md#4-verify-candidates-at-authority).
 
 For CLI/hook manifest selection or continuation in an already-running host, read
 [the manifest-selection contract](daymade-claude-code/prior-work-retrieval/SKILL.md#2-validate-the-explicit-source-manifest).
 
+For an existing hook integration or a blocked read-only discovery command, use its
+[companion-hook procedure](daymade-claude-code/prior-work-retrieval/SKILL.md#companion-hooks)
+and [discovery boundaries](daymade-claude-code/prior-work-retrieval/SKILL.md#boundaries).
+
 ### Local Conversation History Boundary
+
+For missing Codex terminals, including ToDesk/headless sessions, enter
+[terminal-session recovery](daymade-claude-code/read-codex-history/references/terminal-session-recovery.md).
 
 For reconciliation of an already-resumed native Goal, read
 [native Goal reconciliation](daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md)
@@ -544,9 +564,8 @@ For Claude history discovery without a known Session, use
 [read-claude-code-history's indexed search entry](daymade-claude-code/read-claude-code-history/SKILL.md#indexed-content-search).
 Keep executable examples and coverage requirements in that owner.
 
-Codex inventory must use the index-only command in
-`daymade-claude-code/read-codex-history/SKILL.md`. If its state database is
-unavailable, report an unknown inventory; do not substitute a raw rollout scan.
+For Codex session inventory, use
+[the inventory route](daymade-claude-code/read-codex-history/SKILL.md#route-by-the-requested-result).
 Edit shared reader code in `daymade-claude-code/_conversation_core/`, then run
 `python3 daymade-claude-code/sync_core.py sync` and `check` before shipping;
 bundled `scripts/_core/` copies are generated projections.
@@ -592,16 +611,18 @@ Skill links.
 
 ### Ghostty Terminal Sessions
 
-For snapshotting, restoring or reconciling Claude Code / Codex sessions in Ghostty
-across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Unmanaged/legacy manual Codex account
-switches and blocked/delegated reopening enter its
-[account-switch SOP](ghostty-use/references/codex-account-switch.md), including
-the original-set handoff and actual-continuation acceptance. Minions `native_runtime`
-rows use the owning Account Manager instead. Its bundled script owns
-liveness classification and the paste-restore + auto-reconciliation loop; keep the
-storage-layout facts and macOS Ghostty limits in its references rather than here.
+For snapshotting, restoring or reconciling Claude Code / Codex sessions confirmed
+to run in Ghostty across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Unmanaged/legacy manual Codex account
+switches start at its
+[account-owner selection](ghostty-use/references/codex-account-switch.md#choose-the-account-owner-first).
+For blocked/delegated reopening, follow its
+[original-set route](ghostty-use/references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session).
+When a snapshot looks too large or recovery is limited to an activity window, use
+[time-window selection](ghostty-use/references/session_liveness.md#select-recovery-candidates-by-a-time-window).
 Before a restore or retry, follow its
 [current-set reconciliation](ghostty-use/references/restore_mechanics.md#reconcile-the-current-wanted-set).
+After process reconciliation, follow
+[history-readiness acceptance](ghostty-use/references/restore_mechanics.md#verify-history-readiness-after-process-reconciliation).
 For change-only automatic backups, use its
 [automatic workflow](ghostty-use/references/automatic-snapshots.md).
 
@@ -614,14 +635,16 @@ For selected-site Cookie copying between local profiles of the same macOS Chrome
 enter [cookie-copy](cookie-copy/SKILL.md). For its quota-query caller, follow
 [Tibo's Cookie Copy handoff](tibo-reset-codex/references/browser-session-migration.md).
 
-For a remote Codex sign-in prompt or terminal refresh rejection, start at
+For an existing Codex session failing after login changes, start at
+[Local Codex existing-owner recovery](daymade-codex/local-codex/references/oauth-guide.md#existing-native-owner-recovery).
+For a remote Codex sign-in prompt or independent-grant recovery, start at
 [Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
-That owner defines project-authorization recovery, credential-store selection and usable-access verification; quota checks below remain a separate route.
+Keep quota checks on the separate route below.
 
 For Codex reset announcements or account quota questions, enter
 [tibo-reset-codex](tibo-reset-codex/SKILL.md). Follow its
-[account usage SOP](tibo-reset-codex/references/account-usage.md) for authentication,
-per-account verification, adjacent-reset attribution and browser restoration.
+[account usage SOP](tibo-reset-codex/references/account-usage.md) before authentication,
+per-account queries, saving a live reading, adjacent-reset attribution or browser restoration.
 For unused quota, reset gains or avoidable waste, follow
 [waste and added capacity](tibo-reset-codex/references/account-usage.md#浪费与新增容量).
 Treat
@@ -643,8 +666,9 @@ For recurring community queries, follow
 when preparing the next monitor invocation, follow
 [handoff carry-forward](tibo-reset-codex/references/forecast-feedback.md#交接结转).
 [Next-reset forecast](tibo-reset-codex/references/next-reset-forecast.md) owns
-date judgments; [forecast feedback](tibo-reset-codex/references/forecast-feedback.md)
-owns recording, review and withdrawal, with
+date judgments. Before paged journal reads, original lookup, handoff correction,
+or recording, reviewing or withdrawing a forecast, load
+[forecast feedback](tibo-reset-codex/references/forecast-feedback.md), with
 [forecast_log.py](tibo-reset-codex/scripts/forecast_log.py) as the executable
 authority for CLI and local journal layout. Keep detailed commands and changing
 account or forecast state out of this file.
@@ -697,9 +721,12 @@ and generated watch paths are owned by `sync-local-skill-sources.py`; derive the
 from its constants/functions and `--print-watch-paths` output instead of copying
 their current members or counts into instructions or references.
 
-For context-window setting changes, keep the executable configuration and the
+For Claude Code context-window setting changes, keep the executable configuration and
 [context request probe](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md)
 aligned. That reference owns the request fields and probe commands.
+
+For Codex context inspection, threshold-only changes or full expansion, follow
+[the Codex context workflow](daymade-codex/codex-1m-context-window-setup/SKILL.md#route-the-request).
 
 In Claude Code, use `/plugin ...` slash commands. In your terminal, use `claude plugin ...`.
 

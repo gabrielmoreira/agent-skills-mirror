@@ -56,7 +56,29 @@ listed, read and deleted as Pi's (one file to the trash, nothing beside
 it; Raft starts afresh without it), with no resume command, no carry and
 no trace export (the gateway's Pi identity has those calls). Verification:
 `TestRaftSessions`, `TestRaftIsPiToTheGateway`, `TestRaftDeleteRestore`,
-`TestRaftSlockHome`. On `/api/sessions/manage`, in its
+`TestRaftSlockHome`. An omp session stands for its subagents and advisor
+too (`Session.Subs`, `subIDs` in
+[`sessions.go`](../../internal/sessions/sessions.go)): each one's file in
+the session's artifacts folder (`Kid.jsonl`, `__advisor.jsonl`) has a
+header id of its own, and omp sends that id, not the main session's, in
+`x-session-affinity`. The file's calls are counted in the main session, so
+the gateway's `omp|<sub id>` is its own in the same places as Raft's `pi|`
+key, and is never a second session counted again (Jumy, Discord 10-30:
+`TestOmpSubagentsAreTheSessionsToTheGateway`,
+`TestOmpSubagentCountedOnceWithTheGateway`). A Claude Code session's
+copies (`Copies`) are among its keys the same way. A Claude Code
+session Claude Desktop's Code tab ran is in Claude Code's folder, and only its lines' `entrypoint`
+(`claude-desktop`, `claude-desktop-3p`) tells it apart: its parse keeps the
+entrypoint of the line its folder came from (`state.Entry`), and the
+session is listed under `claude` with `App` `claude-desktop`. It is the
+gateway's `claude-desktop|<id>` too, as the gateway knows the Code tab by
+Desktop's user agent, in `MergeExternal`, the stats' native keys, the GUI's
+list and Via. Usage counts it under Desktop, as its calls are: the stats'
+rows and its summary carry `claude-desktop`, its key stays `claude:<id>`,
+and Usage › Sessions files it under its `app` (`TestStatsDesktopCodeTab`,
+`usage-sessions-desktop-app.test.cjs`). `NativeIDs` for `claude-desktop`
+doesn't read Claude Code's files yet (#4333). On `/api/sessions/manage`,
+in its
 counts as in its list, and on `/api/sessions/delete`, a native session is any
 session file the agent keeps, one nothing was said in too, with no limit
 (`sessions.NativeIDs`); one pass over the agents' files (`sessions.Manage`)
@@ -630,6 +652,51 @@ however old, so a client's history can be backfilled.
 `TestUsageIngest*` and `TestIngestReported*` cover these, including
 concurrent posts beside the gateway's own writes, and a backfill of a full
 5000-record batch landing on the right 7d/30d/all days.
+
+### Calls to magpie's own MCP tools
+
+An agent's call to a tool of one of magpie's own MCP servers is a row of
+`usage.jsonl` too (ferock on Discord): the image server's
+`generate_image`, `generate_video` and `generation_result`, vision, web
+search, plugin tools and the router's. The row has `source: "mcp"`,
+`kind: "mcp"`, operation `execute_tool`, the tool's name as `req`, the
+server's name as `host` (`magpie-image`, `magpie-vision`,
+`magpie-web-search`, `magpie-tools`, or the Library server a router tool is
+of), the agent, the provider and model of the last gateway request the
+call made, its duration, its endpoint (the server's path, `stdio` for the
+Magpie Image server an agent runs) and, when it failed, the JSON-RPC
+error or the `isError` result's first text, clipped by `keepMsg`. Its
+arguments are never kept, not even masked.
+
+- **Written by:** `serveMCP` for every `tools/call` (`callMCPTool` in
+  [`mcp_calls.go`](../../internal/gateway/mcp_calls.go)). The call's
+  context carries an `mcpUse`, which `appendUsage` fills with each model
+  row's provider and model; the image server's jobs keep it, so a
+  `generation_result` names the model of the job it waited on. A drawing
+  still running when its call answers leaves that call's row without a
+  model. The stdio Magpie Image server calls the gateway's `/v1/images`
+  and `/v1/videos` itself, so it reports each call it answered to the
+  gateway's image MCP server with the JSON-RPC method `magpie/toolCalled`
+  (`gateway.MCPCalledMethod`, params `MCPCalled`: tool, ms, model,
+  error); a tool not Magpie Image's is -32602. Behind the [MCP router](mcp-router.md) it sends none: the router's `tools/call` is the row. An older gateway that
+  doesn't know the method just leaves the call unlisted.
+- **Counted nowhere:** `Record.IsProbe` is true for these rows, so they
+  ride the probe lane above: listed (`probeChunk`, kept as they are),
+  never in a total, chart, budget (`budget.counts`) or `Load`. The model
+  requests a call made are rows of their own and count as any. The
+  index's provider hosts skip them (`sawHost`), as their host is a
+  server's name.
+- **On the page:** the Requests row has an `MCP` badge (`.src.mcp`,
+  muted, no stripe) whose tooltip names the agent, tool and server and
+  says the arguments are not kept; the Where cell is the provider and the
+  server, the Requested cell the tool, and the status Succeeded or
+  Failed. The Purpose filter names `kind:mcp` "MCP tool"
+  (`purposeKinds`, `purposes.js`).
+
+`TestMCPToolCallIsARequestRow`, `TestMCPHubCallIsARequestRow`,
+`TestMCPCalledFromStdioIsARow` and the others in `mcp_calls_test.go`,
+`TestToolCallsAreReported` (imagemcp), `TestMCPCallRowsListedNotCounted`
+(usage) and `usage-ledger-mcp.test.cjs` cover it.
 
 ### Requests magpie sends on its own
 

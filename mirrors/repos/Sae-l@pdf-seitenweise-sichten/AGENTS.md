@@ -32,4 +32,5 @@ Details und Grenzen (Cloud ohne lokale Laufwerke, Updates): [docs/installation.m
 - Danach `python scripts/pruefsummen.py --fix`. Das Skript erneuert `SHA256SUMS` und `skill_sha256` in `ARCHIVE.json`. Neue Dateien zuerst als Zeile in `SHA256SUMS` eintragen.
 - `.gitattributes` setzt `* -text`: Zeilenenden jeder Datei unverändert lassen (`CHANGELOG.md` hat CRLF, die Skripte haben LF). Steuerzeichen wie `U+FFFE` im Quelltext als Escape `\ufffe` schreiben, nie als echtes Zeichen.
 - Lehrmaterialien, Kurs-PDFs und erzeugte Sichtungen gehören nicht ins Repository (siehe `.gitignore`); für Tests synthetische PDFs mit `reportlab` erzeugen.
+- `README.en.md` inhaltlich parallel zu `README.md` halten, auch Versionsnummern bei Releases.
 - Einträge in `CHANGELOG.md` unter „Unveröffentlicht“; Commit-Titel kurz, z. B. `fix: …`, `feat: …`, `docs: …`. Weiteres in [CONTRIBUTING.md](CONTRIBUTING.md).

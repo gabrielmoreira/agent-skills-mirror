@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,6 +80,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`skills/html/references/documents-and-presentations.md`](skills/html/references/documents-and-presentations.md) |
 | 20 | ✓ | [`skills/html/references/interfaces.md`](skills/html/references/interfaces.md) |
 | 21 | ✓ | [`skills/html/SKILL.md`](skills/html/SKILL.md) |
+| 22 | ✓ | [`skills/one-pager/agents/openai.yaml`](skills/one-pager/agents/openai.yaml) |
+| 23 | ✓ | [`skills/one-pager/SKILL.md`](skills/one-pager/SKILL.md) |
 
 ---
 

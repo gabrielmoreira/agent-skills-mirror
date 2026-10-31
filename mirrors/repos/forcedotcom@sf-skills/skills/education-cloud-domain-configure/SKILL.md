@@ -17,7 +17,7 @@ metadata:
     - "platform-metadata-deploy"
     - "platform-permission-set-generate"
     - "platform-validation-rule-generate"
-  accessCheck: "License.EducationCloud"
+  accessCheck: "OrgPermissions.EducationCloud"
 ---
 
 # Configuring Education Cloud Domains

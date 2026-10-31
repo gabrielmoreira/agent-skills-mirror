@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 9
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 108 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,48 +115,58 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`packages/sandbox/AGENTS.md`](packages/sandbox/AGENTS.md) |
 | 55 | ✓ | [`packages/sandbox/CLAUDE.md`](packages/sandbox/CLAUDE.md) |
 | 56 | ✓ | [`packages/trpc/AGENTS.md`](packages/trpc/AGENTS.md) |
-| 57 | ✓ | [`packages/trpc/src/lib/sandbox/AGENTS.md`](packages/trpc/src/lib/sandbox/AGENTS.md) |
-| 58 | ✓ | [`packages/trpc/src/lib/sandbox/CLAUDE.md`](packages/trpc/src/lib/sandbox/CLAUDE.md) |
-| 59 | ✓ | [`plugins/circleback/skills/find-in-circleback/SKILL.md`](plugins/circleback/skills/find-in-circleback/SKILL.md) |
-| 60 | ✓ | [`plugins/circleback/skills/prep-with-circleback/SKILL.md`](plugins/circleback/skills/prep-with-circleback/SKILL.md) |
-| 61 | ✓ | [`plugins/circleback/skills/work-circleback-action-items/SKILL.md`](plugins/circleback/skills/work-circleback-action-items/SKILL.md) |
-| 62 | ✓ | [`plugins/github/skills/ci-triage/SKILL.md`](plugins/github/skills/ci-triage/SKILL.md) |
-| 63 | ✓ | [`plugins/github/skills/issue-triage/SKILL.md`](plugins/github/skills/issue-triage/SKILL.md) |
-| 64 | ✓ | [`plugins/granola/skills/find-in-granola/SKILL.md`](plugins/granola/skills/find-in-granola/SKILL.md) |
-| 65 | ✓ | [`plugins/granola/skills/follow-up-from-granola/SKILL.md`](plugins/granola/skills/follow-up-from-granola/SKILL.md) |
-| 66 | ✓ | [`plugins/linear/skills/duplicate-sweep/SKILL.md`](plugins/linear/skills/duplicate-sweep/SKILL.md) |
-| 67 | ✓ | [`plugins/linear/skills/file-issue/SKILL.md`](plugins/linear/skills/file-issue/SKILL.md) |
-| 68 | ✓ | [`plugins/linear/skills/project-status/SKILL.md`](plugins/linear/skills/project-status/SKILL.md) |
-| 69 | ✓ | [`plugins/notion/skills/find-in-notion/SKILL.md`](plugins/notion/skills/find-in-notion/SKILL.md) |
-| 70 | ✓ | [`plugins/notion/skills/write-to-notion/SKILL.md`](plugins/notion/skills/write-to-notion/SKILL.md) |
-| 71 | ✓ | [`plugins/peec/skills/diagnose-ai-visibility/SKILL.md`](plugins/peec/skills/diagnose-ai-visibility/SKILL.md) |
-| 72 | ✓ | [`plugins/peec/skills/work-peec-actions/SKILL.md`](plugins/peec/skills/work-peec-actions/SKILL.md) |
-| 73 | ✓ | [`plugins/resend/skills/debug-resend-delivery/SKILL.md`](plugins/resend/skills/debug-resend-delivery/SKILL.md) |
-| 74 | ✓ | [`plugins/resend/skills/send-with-resend/SKILL.md`](plugins/resend/skills/send-with-resend/SKILL.md) |
-| 75 | ✓ | [`plugins/sentry/skills/debug-with-sentry/SKILL.md`](plugins/sentry/skills/debug-with-sentry/SKILL.md) |
-| 76 | ✓ | [`plugins/sentry/skills/find-in-sentry/SKILL.md`](plugins/sentry/skills/find-in-sentry/SKILL.md) |
-| 77 | ✓ | [`plugins/stripe/skills/build-a-stripe-integration/SKILL.md`](plugins/stripe/skills/build-a-stripe-integration/SKILL.md) |
-| 78 | ✓ | [`plugins/stripe/skills/refund-and-dispute/SKILL.md`](plugins/stripe/skills/refund-and-dispute/SKILL.md) |
-| 79 | ✓ | [`plugins/stripe/skills/trace-a-payment/SKILL.md`](plugins/stripe/skills/trace-a-payment/SKILL.md) |
-| 80 | ✓ | [`plugins/superhuman/skills/find-in-superhuman/SKILL.md`](plugins/superhuman/skills/find-in-superhuman/SKILL.md) |
-| 81 | ✓ | [`plugins/superhuman/skills/reply-from-superhuman/SKILL.md`](plugins/superhuman/skills/reply-from-superhuman/SKILL.md) |
-| 82 | ✓ | [`plugins/superhuman/skills/schedule-with-superhuman/SKILL.md`](plugins/superhuman/skills/schedule-with-superhuman/SKILL.md) |
-| 83 | ✓ | [`plugins/superhuman/skills/triage-superhuman-inbox/SKILL.md`](plugins/superhuman/skills/triage-superhuman-inbox/SKILL.md) |
-| 84 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
-| 85 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
-| 86 | ✓ | [`plugins/superset/skills/browser/SKILL.md`](plugins/superset/skills/browser/SKILL.md) |
-| 87 | ✓ | [`plugins/superset/skills/computer/SKILL.md`](plugins/superset/skills/computer/SKILL.md) |
-| 88 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
-| 89 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
-| 90 | ✓ | [`plugins/superset/skills/environment/SKILL.md`](plugins/superset/skills/environment/SKILL.md) |
-| 91 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
-| 92 | ✓ | [`plugins/superset/skills/integrations/SKILL.md`](plugins/superset/skills/integrations/SKILL.md) |
-| 93 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
-| 94 | ✓ | [`plugins/superset/skills/page/SKILL.md`](plugins/superset/skills/page/SKILL.md) |
-| 95 | ✓ | [`plugins/superset/skills/panes/SKILL.md`](plugins/superset/skills/panes/SKILL.md) |
-| 96 | ✓ | [`plugins/superset/skills/plugins/SKILL.md`](plugins/superset/skills/plugins/SKILL.md) |
-| 97 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
-| 98 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
+| 57 | ✓ | [`packages/trpc/src/lib/channel-router/scripts/evalChannelRouter/AGENTS.md`](packages/trpc/src/lib/channel-router/scripts/evalChannelRouter/AGENTS.md) |
+| 58 | ✓ | [`packages/trpc/src/lib/channel-router/scripts/evalChannelRouter/CLAUDE.md`](packages/trpc/src/lib/channel-router/scripts/evalChannelRouter/CLAUDE.md) |
+| 59 | ✓ | [`packages/trpc/src/lib/sandbox/AGENTS.md`](packages/trpc/src/lib/sandbox/AGENTS.md) |
+| 60 | ✓ | [`packages/trpc/src/lib/sandbox/CLAUDE.md`](packages/trpc/src/lib/sandbox/CLAUDE.md) |
+| 61 | ✓ | [`plugins/circleback/skills/find-in-circleback/SKILL.md`](plugins/circleback/skills/find-in-circleback/SKILL.md) |
+| 62 | ✓ | [`plugins/circleback/skills/prep-with-circleback/SKILL.md`](plugins/circleback/skills/prep-with-circleback/SKILL.md) |
+| 63 | ✓ | [`plugins/circleback/skills/work-circleback-action-items/SKILL.md`](plugins/circleback/skills/work-circleback-action-items/SKILL.md) |
+| 64 | ✓ | [`plugins/github/skills/ci-triage/SKILL.md`](plugins/github/skills/ci-triage/SKILL.md) |
+| 65 | ✓ | [`plugins/github/skills/issue-triage/SKILL.md`](plugins/github/skills/issue-triage/SKILL.md) |
+| 66 | ✓ | [`plugins/granola/skills/find-in-granola/SKILL.md`](plugins/granola/skills/find-in-granola/SKILL.md) |
+| 67 | ✓ | [`plugins/granola/skills/follow-up-from-granola/SKILL.md`](plugins/granola/skills/follow-up-from-granola/SKILL.md) |
+| 68 | ✓ | [`plugins/linear/skills/duplicate-sweep/SKILL.md`](plugins/linear/skills/duplicate-sweep/SKILL.md) |
+| 69 | ✓ | [`plugins/linear/skills/file-issue/SKILL.md`](plugins/linear/skills/file-issue/SKILL.md) |
+| 70 | ✓ | [`plugins/linear/skills/project-status/SKILL.md`](plugins/linear/skills/project-status/SKILL.md) |
+| 71 | ✓ | [`plugins/notion/skills/find-in-notion/SKILL.md`](plugins/notion/skills/find-in-notion/SKILL.md) |
+| 72 | ✓ | [`plugins/notion/skills/write-to-notion/SKILL.md`](plugins/notion/skills/write-to-notion/SKILL.md) |
+| 73 | ✓ | [`plugins/peec/skills/diagnose-ai-visibility/SKILL.md`](plugins/peec/skills/diagnose-ai-visibility/SKILL.md) |
+| 74 | ✓ | [`plugins/peec/skills/work-peec-actions/SKILL.md`](plugins/peec/skills/work-peec-actions/SKILL.md) |
+| 75 | ✓ | [`plugins/resend/skills/debug-resend-delivery/SKILL.md`](plugins/resend/skills/debug-resend-delivery/SKILL.md) |
+| 76 | ✓ | [`plugins/resend/skills/send-with-resend/SKILL.md`](plugins/resend/skills/send-with-resend/SKILL.md) |
+| 77 | ✓ | [`plugins/sazabi/skills/add-logging/SKILL.md`](plugins/sazabi/skills/add-logging/SKILL.md) |
+| 78 | ✓ | [`plugins/sazabi/skills/build-a-dashboard/SKILL.md`](plugins/sazabi/skills/build-a-dashboard/SKILL.md) |
+| 79 | ✓ | [`plugins/sazabi/skills/instrument-with-sazabi/SKILL.md`](plugins/sazabi/skills/instrument-with-sazabi/SKILL.md) |
+| 80 | ✓ | [`plugins/sazabi/skills/investigate-production/SKILL.md`](plugins/sazabi/skills/investigate-production/SKILL.md) |
+| 81 | ✓ | [`plugins/sazabi/skills/send-agent-telemetry/SKILL.md`](plugins/sazabi/skills/send-agent-telemetry/SKILL.md) |
+| 82 | ✓ | [`plugins/sazabi/skills/triage-issues/SKILL.md`](plugins/sazabi/skills/triage-issues/SKILL.md) |
+| 83 | ✓ | [`plugins/sazabi/skills/use-project-memory/SKILL.md`](plugins/sazabi/skills/use-project-memory/SKILL.md) |
+| 84 | ✓ | [`plugins/sazabi/skills/verify-a-deploy/SKILL.md`](plugins/sazabi/skills/verify-a-deploy/SKILL.md) |
+| 85 | ✓ | [`plugins/sentry/skills/debug-with-sentry/SKILL.md`](plugins/sentry/skills/debug-with-sentry/SKILL.md) |
+| 86 | ✓ | [`plugins/sentry/skills/find-in-sentry/SKILL.md`](plugins/sentry/skills/find-in-sentry/SKILL.md) |
+| 87 | ✓ | [`plugins/stripe/skills/build-a-stripe-integration/SKILL.md`](plugins/stripe/skills/build-a-stripe-integration/SKILL.md) |
+| 88 | ✓ | [`plugins/stripe/skills/refund-and-dispute/SKILL.md`](plugins/stripe/skills/refund-and-dispute/SKILL.md) |
+| 89 | ✓ | [`plugins/stripe/skills/trace-a-payment/SKILL.md`](plugins/stripe/skills/trace-a-payment/SKILL.md) |
+| 90 | ✓ | [`plugins/superhuman/skills/find-in-superhuman/SKILL.md`](plugins/superhuman/skills/find-in-superhuman/SKILL.md) |
+| 91 | ✓ | [`plugins/superhuman/skills/reply-from-superhuman/SKILL.md`](plugins/superhuman/skills/reply-from-superhuman/SKILL.md) |
+| 92 | ✓ | [`plugins/superhuman/skills/schedule-with-superhuman/SKILL.md`](plugins/superhuman/skills/schedule-with-superhuman/SKILL.md) |
+| 93 | ✓ | [`plugins/superhuman/skills/triage-superhuman-inbox/SKILL.md`](plugins/superhuman/skills/triage-superhuman-inbox/SKILL.md) |
+| 94 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
+| 95 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
+| 96 | ✓ | [`plugins/superset/skills/browser/SKILL.md`](plugins/superset/skills/browser/SKILL.md) |
+| 97 | ✓ | [`plugins/superset/skills/computer/SKILL.md`](plugins/superset/skills/computer/SKILL.md) |
+| 98 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
+| 99 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
+| 100 | ✓ | [`plugins/superset/skills/environment/SKILL.md`](plugins/superset/skills/environment/SKILL.md) |
+| 101 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
+| 102 | ✓ | [`plugins/superset/skills/integrations/SKILL.md`](plugins/superset/skills/integrations/SKILL.md) |
+| 103 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
+| 104 | ✓ | [`plugins/superset/skills/page/SKILL.md`](plugins/superset/skills/page/SKILL.md) |
+| 105 | ✓ | [`plugins/superset/skills/panes/SKILL.md`](plugins/superset/skills/panes/SKILL.md) |
+| 106 | ✓ | [`plugins/superset/skills/plugins/SKILL.md`](plugins/superset/skills/plugins/SKILL.md) |
+| 107 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
+| 108 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
 
 ---
 

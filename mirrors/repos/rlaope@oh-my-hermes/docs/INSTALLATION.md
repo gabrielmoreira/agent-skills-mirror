@@ -429,7 +429,9 @@ run and approval decision stays Hermes'; the screen is OMH's.
   under that, always expanded (below). A blank row stands between the reply and
   the working row, between the working row's tip and the plan, and between
   the plan and the composer's top rule, wherever the terminal has a row to
-  spare for it. Your sent prompt runs on a band to the right edge, a quiet
+  spare for it. The one over the working row stays when a long turn's rows
+  are cut short, and the oldest of them goes instead, as long as six of them
+  still show above it; on a shorter terminal it gives way first. Your sent prompt runs on a band to the right edge, a quiet
   tint of the launch look's card edge. On a terminal 6 rows tall the composer keeps its
   top rule and drops its bottom one, so the slot above it still gets its
   two rows; from 7 rows it has both, and under 6 rows (or 20
@@ -482,13 +484,25 @@ run and approval decision stays Hermes'; the screen is OMH's.
   only when not zero; a detached HEAD by its short sha; nothing outside a
   repository, or on a terminal too small for the rules), read by `git status`
   off the screen's thread after each tool, each turn and every 15 seconds,
-  then the input mode or the keys that matter right now; on the right it says
+  then, while the session owns a process Hermes runs in the background, its
+  row: `✳ background  terminal(<command>)  8s`, its clock ticking each second,
+  and after the turn who will be told when it ends (`🔔 will ping you when
+  done`, or `🔕 Hermes won't be pinged · OMH is watching it`); once one ends
+  unreported, `✓ background  terminal(<command>)  finished 0:12 ago  ↵ report
+  result`, and Enter on an empty composer asks the session for the results.
+  A question, a picker or the history search hides the row while it has the
+  keys. Then the input mode or the keys that matter right now; on the right it says
   the session's title once Hermes names it, the model, how full the context
   is and the reasoning effort, as `Fix the login bug ·
-  deepseek/deepseek-v4.1-flash · ctx 5% · effort medium` (the context in the warning colour from 80 % full
-  and the error colour from 95 %; `ctrl+t effort` while no level is
-  known). As the line narrows, the right side's fields shorten and then go
-  first; then the branch's name is cut to `…` (24, then 12 cells); then the
+  deepseek/deepseek-v4.1-flash · ctx ━━━━──────── 37% 74k/200k · effort medium`
+  (the context as a twelve-cell gauge, its percent, and the tokens it holds of
+  the most it can; the filled cells and the percent in the warning colour from
+  80 % full and the error colour from 95 %; `ctrl+t effort` while no level is
+  known). As the line narrows, the session's title goes first; then the
+  background row cuts its command to 8 cells, drops who will be told, drops
+  the command, and goes; then the right side's other fields shorten and then
+  go, the context last: its token counts, then its gauge, leaving `ctx 37%`;
+  then the branch's name is cut to `…` (24, then 12 cells); then the
   badge shortens to `[⚚ OMH]`, then `⚚`, then goes, and then the branch;
   the mode's label, the agent count and what the next key does (a question's
   or a picker's way out) keep their words until all of those are gone. Room
@@ -714,8 +728,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   Hermes does not take comes back to the composer, and so does one Hermes
   has not answered in 120 s, which is never sent again; its row says which,
   with Hermes' reason when it gave one. Its row reads as the main
-  steer's does, naming the agent before the text (`↪ steer · <agent>:
-  <text>`, then `↪ steer queued by Hermes · …`), and it and what `x` reports
+  steer's does, a prompt row naming the agent before the text (`❯ <agent>:
+  <text>`), and it and what `x` reports
   wait under the running call and are written at the next block boundary,
   so neither cuts that call off nor splits a reply.
 - The OMH TUI asks the terminal for click reports only while the agent list
@@ -764,10 +778,10 @@ run and approval decision stays Hermes'; the screen is OMH's.
   sent (terminal may not support OSC 52)` (under tmux, that tmux passes it on
   only with `set-clipboard on`). On the main screen the terminal's own
   selection is the only one: the transcript is in its scrollback, and taking
-  the mouse there would take the wheel and that scrollback away. Each rail is
-  a painted cell holding a space, so what it copies there has no bar in it,
-  only two leading spaces on each row (four on a reply's rows, with its
-  margin), and the terminal shows no copy notice of its own.
+  the mouse there would take the wheel and that scrollback away, so what it
+  copies there keeps each row's rail (`┃ ` in front of each row, and a
+  reply's margin after it), and the terminal shows no copy notice of its
+  own.
 - The composer takes a paste whole when the terminal brackets it, as most
   terminals do. A paste of more than 3 lines or 800 characters shows as one
   chip, `[Pasted text #1 +60 lines]` (or `· 1,204 chars` for one long line):
@@ -883,7 +897,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   pixel halo, soft tile clouds and sparkle stars; sakura a dusky plum with
   blossom clusters and falling petals; aurora deep teal with ribbons of
   scattered tiles; ember a dark warm brown with a flame flickering in a
-  warm glow and rising embers; gold a sun in a breathing glow; violet
+  warm glow and rising embers; kanagawa-wave deep sumi-ink with rolling ocean
+  swell ribbons and sea spray sparkles; gold a sun in a breathing glow; violet
   pastel jellyfish with pulsing bells; graphite a cloud raining into a
   rippling puddle. A terminal with a
   light background gets each look's pale ground instead.
@@ -926,7 +941,7 @@ run and approval decision stays Hermes'; the screen is OMH's.
   colour, with a blank row between two calls and no header over a turn's
   calls: its state's mark (below), its name, and what it ran on (a path, a
   command, a query) in parentheses, cut with `…` where the row is too narrow
-  (`● terminal(rm -rf ./tmp-cache)  1.9s`). Under it (`  ⎿  `) it shows the first three lines of what the tool
+  (`┃ ● terminal(rm -rf ./tmp-cache)  1.9s`). Under it (`  ⎿  `) it shows the first three lines of what the tool
   printed and counts the rest (`… +5 lines · ctrl+o shows all`). A read says
   in one line what it read instead: `Read 715 lines` for
   `read_file`, `12 matches` for
@@ -1000,11 +1015,9 @@ run and approval decision stays Hermes'; the screen is OMH's.
   on you; on exit the title you had comes back where the terminal keeps a
   title stack.
 - Motion and colour follow one rule set, so scrollback reads at a glance:
-  - Each block hangs on a continuous rail with no fill behind it, one cell
-    painted in the rail's colour that holds a space, so selecting the text
-    in the terminal copies no bar with it (only the two leading spaces;
-    with `NO_COLOR` set only a reply's and a call's rail is painted, so your
-    prompt is told apart by its `❯` and no bar): grey
+  - Each block hangs on a continuous thin `┃` rail with no fill behind it
+    (with `NO_COLOR` set your prompt's is the light `│`, so it is told apart
+    from a reply's): grey
     for your prompt, the theme's accent for what Hermes said (which opens
     with a header row, `⚚ Hermes · <model>`, bold in the rail's colour and
     the model the reply was written under muted), and a tool call's state colour for
@@ -1037,11 +1050,11 @@ run and approval decision stays Hermes'; the screen is OMH's.
     across its verb, beside the elapsed time and the tokens written.
   - Your prompt reads as in Claude Code, the composer's dim `❯` and dim text with no
     band behind it, on a grey rail; a prompt the queue sent says `⧗ from queue`. A command
-    you run is echoed the same way, on the same rail (`❯ /model`), so a
+    you run is echoed the same way, on the same rail (`┃ ❯ /model`), so a
     bare `❯` on the left edge is only ever the composer.
-  - A steer shows as `↪ steer · <text>` under what is running until Hermes
-    answers, then becomes `↪ steer queued by Hermes · <text>`, or the amber
-    refusal, at the next boundary in the transcript (see below).
+  - A steer shows as the prompt it is, dim under what is running until the
+    turn takes it in, then as any prompt you sent; a refused one is the amber
+    refusal (see below).
   - Each turn closes with its done line, dim and with no rule after it
     (`✻ 34s · 3 tools · ↓1.2k`), so the start of the next one is easy to
     find when you scroll back.
@@ -1115,7 +1128,7 @@ run and approval decision stays Hermes'; the screen is OMH's.
   one, its `❯` mark turns the shell family's amber and the info line says
   `! shell (not sent to the model)`. Sending it runs it through Hermes'
   `shell.exec` (Hermes' own limit of 30 s, its refusal of dangerous commands,
-  and its redaction of what the command printed) and shows `❯ !command` on the rail
+  and its redaction of what the command printed) and shows `┃ ❯ !command`
   with what it printed (its stdout, then its stderr, in the same colour) and
   its exit code when that is not 0 (`exit 0` when it printed nothing; a
   failure's lines are red on the red band with that exit line), or
@@ -1214,7 +1227,7 @@ Esc closes it):
 | ↑ / ↓, PageUp / PageDown, Enter, Esc | In the `/sessions`, `/rewind` or `/model` list, move, take the highlighted row (switch to that session, put that prompt in the composer to send again, or switch this session to that model), or close it; typing filters the list |
 | ↑ / ↓, Enter, Esc, ←, q, Ctrl+C | In the agent list, move, open the highlighted agent's log (on main, only leave), or go back; any other key does nothing there |
 | x, s | In the agent list, on an agent: x twice interrupts it; s steers it with the next line you send (Esc cancels) |
-| ↑ / ↓ or a click, Enter, Esc | In the `/theme` picker, preview a launch look (spectrum, violet, gold, graphite, sakura, moonlit, aurora, ember) on the logo, the card and the chrome, keep it, or put the one in use back; `/theme <look>` keeps one at once |
+| ↑ / ↓ or a click, Enter, Esc | In the `/theme` picker, preview a launch look (spectrum, violet, gold, graphite, sakura, moonlit, aurora, ember, kanagawa-wave) on the logo, the card and the chrome, keep it, or put the one in use back; `/theme <look>` keeps one at once |
 | Click | On a row of the agent list, opens that agent's log (on main, only leaves the list) |
 | ← / →, q or Esc | In an agent's log, show the agent before or after, or go back; the pager's keys scroll it |
 | Tab / n, Shift+Tab / p, Space / Enter, d | In `/dag`, highlight the next or the previous box, fold or unfold the highlighted one, or show or hide Node details; ↑ / ↓, PageUp / PageDown and g / G scroll, q or Esc leaves |
@@ -1287,11 +1300,14 @@ was and says so.
 A steer adds what you typed to the turn that is running, without interrupting
 it: Hermes reads it after its next tool call, or, while it is compressing the
 context, queues it and sends it as the next prompt once compression is done.
-Hermes gives the same answer for both, so the transcript notes
-`↪ steer queued by Hermes` for either. Until Hermes answers, the steer shows
-as `↪ steer · <text>` under what is running, and its row is written into the
-transcript at the next boundary after the answer, never between calls that
-are still running or inside a streaming reply. If Hermes does not take the steer
+Hermes gives the same answer for both. The steer shows as a dim prompt row
+(`❯ <text>`) right above the working row, as Claude Code shows one, until the
+turn takes it in: the first tool that finishes carries it to the model, or the
+turn ends first (Hermes then read it before a later model call, or sends it as
+the next prompt). It then reads as any prompt you sent and is written into the
+transcript at the next boundary, never between calls that are still running
+or inside a streaming reply. A turn you stop before taking it in says so
+(`⧗ not read — the turn stopped first`). If Hermes does not take the steer
 while the turn still runs (an agent still starting, or one that takes no
 steer), the text joins the OMH TUI's own queue (`⧗`) and goes when the turn
 ends, whatever `display.busy_input_mode` says, so it never interrupts the
@@ -1310,7 +1326,7 @@ says so; for an agent's steer it names the agent and the session you left. The O
 steers only with text you typed and sent this way: a queued prompt is never
 turned into a steer.
 
-A slash command you run is echoed in the transcript as `❯ /name arg` on the prompt's rail (but
+A slash command you run is echoed in the transcript as `┃ ❯ /name arg` (but
 `/steer`, whose own row is its echo, and a bare `/sessions`, `/rewind`,
 `/model`, `/keys`, `/history`, `/logs`, `/dag`, `/bots` or `/redraw`, which only open a picker
 or a pager, or repaint, and print nothing to attribute), and what it prints stays there, under it after `⎿`, in the terminal's scrollback
@@ -1500,13 +1516,14 @@ The OMH TUI opens with the theme `omh theme use` saved under the OMH home
 (see [TUI Themes](#tui-themes)); `/theme <name>` switches the open session only.
 
 A fresh session's launch draws the block logo, the banner's title and a
-launch card in one of eight launch looks: `spectrum` (the logo swept through
+launch card in one of nine launch looks: `spectrum` (the logo swept through
 the tool kind hues, a box per section, the default), `violet` (one box),
 `gold` (one box in two columns), `graphite` (grey and white with turquoise
 hyphens, a rule above and below), `sakura` (pastel pink, sky blue and cream,
 one box), `moonlit` (moonlight yellow and silver over navy, a rule above and
-below), `aurora` (emerald and teal into violet, a box per section) or `ember`
-(amber through orange to crimson, one box in two columns). The look also
+below), `aurora` (emerald and teal into violet, a box per section), `ember`
+(amber through orange to crimson, one box in two columns) or `kanagawa-wave`
+(indigo, spring teal and violet over sumi-ink, rules without side edges). The look also
 tints the chrome: the composer's rules and the frames drawn like them take
 its card-edge colour, and a tool call's rail and the working row's spinner
 its label colour (a failed or denied call's rail stays red), as do a sent
@@ -1719,8 +1736,12 @@ the bundle carries its files, and `plugin_enabled` for local Hermes config;
 neither check proves Desktop copied, enabled or mounted the half. Rescan in
 Desktop (Capabilities -> Plugins -> Rescan, or restart the app), inspect the
 Plugins page, and verify the pane/backend in that runtime before reporting
-it ready. The pane is intended to show the plan checklist, agent rows and active
-fanout DAG. `omh uninstall --registration-only` does not disable the plugin or
+it ready. The pane shows OMH catches, the plan checklist, the active delegation
+graph, board or route summaries, and the active fanout DAG as they become
+available. It reads idle when nothing is running, keeps the plan and status bar
+in agreement, and leaves individual subagent rows to Desktop's Agents panel.
+It uses calmer colours and follows Desktop's language when Korean is selected.
+`omh uninstall --registration-only` does not disable the plugin or
 change `plugins.enabled`. Desktop mounting must be observed separately.
 
 An explicit `--source` or `--from-skills-dir` remains a workflow-content-only
@@ -1854,14 +1875,45 @@ installing `omh` from Hermes' plugin catalog places the same bundle there.
 Hermes loads it with **its own** interpreter. Every documented install —
 Homebrew, bun, npm, the universal installer, `uv tool install`,
 `pip install --user` — puts the `omh` **package** in OMH's environment, not
-Hermes'. On most machines the Hermes interpreter therefore cannot import `omh`
-at all.
+Hermes'. On a Hermes install its package manager prepares (`hermes pm`),
+nothing a person may do puts it in Hermes' environment either: the package
+manager admits only dependencies a plugin declares from a package index, it
+takes its interpreter's own `site-packages` off `sys.path` when Hermes starts,
+and `oh-my-hermes` is not on an index.
 
-That is a supported state, not a broken one. Hermes still registers every tool
-and hook of the plugin. Every module of the bundle imports without the package:
-the imports that need it are guarded, and the features it carries report their
-own absence instead of failing. These features live in the package rather than
-the bundle, so absence turns them off:
+So the bundle reaches the package where OMH installed it. When `omh setup` or
+`omh update` copies the bundle, it records the directory its own `omh` package
+is installed in — the `site-packages` of the installer venv, the Homebrew
+libexec venv, a `uv tool` or `pip` environment, or the npm/Bun launcher's
+extracted cache — as `package_site` in the bundle's
+`.omh-plugin-manifest.json`. When the interpreter Hermes runs has no `omh` of
+its own, the bundle imports `omh` from that directory, under these limits:
+
+- Only `omh` and its submodules are imported from it. `sys.path` is not
+  changed, so nothing else in that directory (the venv's `pip`, anything else
+  an installer added) becomes importable or can shadow a module Hermes uses.
+- Only when the directory holds a wheel install of oh-my-hermes at **the same
+  version as the bundle**. A stale, moved, or mismatched install is reported
+  and never imported.
+- An `omh` the interpreter can already import (a Hermes environment you manage
+  yourself with the package installed in it, a source checkout) always wins;
+  the recorded directory is not consulted.
+- No bytecode is written into that directory. It belongs to OMH's installer,
+  and the npm/Bun launcher treats any extra file in its cache as tampering.
+
+On an ordinary install, then, the package-backed features below work after
+`omh setup` or `omh update` and a Hermes restart, with nothing else to do. A
+bundle copied before this change records no package; `omh update` rewrites
+its manifest, and `omh doctor` reports a bundle whose recorded package is
+missing or out of date as stale.
+
+When the bundle still cannot import `omh` — no `omh setup` has recorded a
+package yet, the recorded package was removed, or it is another version —
+Hermes still registers every tool and hook of the plugin. Every module of the
+bundle imports without the package: the imports that need it are guarded, and
+the features it carries report their own absence instead of failing. These
+features live in the package rather than the bundle, so absence turns them
+off:
 
 | Feature | Behavior when Hermes cannot import `omh` |
 | --- | --- |
@@ -1880,7 +1932,8 @@ it disagrees with `omh chat route-hint`: it hints a different workflow, hints
 none where `omh chat route-hint` hints one, or hints one where it hints none.
 
 `omh_probe` reports which state a host is in, apart from registration: its
-`package_backend` row reads `available`; `absent` (the interpreter has no
+`package_backend` row reads `available` (and names the recorded directory when
+the package came from there); `absent` (the interpreter cannot import an
 `omh` package, the state above); `incompatible` (an `omh` that does not provide
 what this bundle imports: an oh-my-hermes of another version, or an `omh`
 module that is not an installed oh-my-hermes package at all); or `broken`
@@ -1888,28 +1941,38 @@ module that is not an installed oh-my-hermes package at all); or `broken`
 `ImportError`). When the package's own probe cannot be imported, `omh_probe`
 answers from the bundle and adds a `package_probe` row whose `absent`,
 `incompatible` or `broken` says why that import failed; the `package_backend`
-row still reports the Loop backend, which can import while the probe does not. `omh_loop` and
-`omh_decision_gate` carry the same block, with the plugin's own version beside
-the package's, whenever they refuse for one of these; the other tools in the
-table above keep their own refusals.
+row still reports the Loop backend, which can import while the probe does not.
+`omh_loop` and `omh_decision_gate` carry the same block, with the plugin's own
+version beside the package's, whenever they refuse for one of these, and
+`omh_interact` carries it beside its `package_backend_unavailable` reason when
+chat/session recording falls back; the other tools in the table above keep
+their own refusals. The block's `package_site` says what the bundle found at
+the recorded directory (`added`, `not_recorded`, `missing`,
+`version_mismatch`, `unreadable`, or `already_importable` when the
+interpreter had its own `omh`). An `absent` block also carries
+`off_path_install`: the directory, when there is one, where an oh-my-hermes
+install sits in the interpreter's own site directory while that directory is
+not on the import path the plugin runs with.
 
-To turn these features on, the interpreter Hermes runs must be able to import
-`omh`. Whether there is a supported way to arrange that depends on who owns
-that environment:
+Every `absent` refusal names the same repair: run `omh update` (or
+`omh setup`) with the `omh` command you installed, then restart Hermes. That
+records the package the command runs from beside the bundle.
 
-- **An environment you manage yourself**, one Hermes' package manager does not
-  prepare: install `oh-my-hermes` there as well, at the version of the plugin
-  bundle, so `omh` is importable from both. Nothing else changes: the bundle,
-  the configuration, and every doctor check stay the same.
-- **An environment Hermes' package manager prepares** (`hermes pm`, which
-  admits a plugin's Python dependencies when the plugin is installed or
-  enabled): there is no supported way yet. Hermes admits only the
-  dependencies a plugin declares and does not manage direct-URL requirements,
-  and `oh-my-hermes` is not published to a package index, so the bundle
-  declares none. Do not add the package to that environment with `pip` or
-  `uv` by hand: Hermes' rules forbid it, and its developer guide says
-  "Dependencies installed manually with pip are not durable PM declarations".
-  Until then, the `omh loop` CLI is the way to drive a Loop from that host.
+Do not add the package to an environment Hermes' package manager prepares with
+`pip` or `uv` by hand: Hermes' rules forbid it, and its developer guide says
+"Dependencies installed manually with pip are not durable PM declarations".
+Copying it into the managed interpreter's own `site-packages` does not work
+either. Hermes runs on a Python the package manager keeps in the Hermes root's
+`tools/` directory (`~/.hermes/tools/python-<version>/` on a default install),
+and when Hermes starts it takes that interpreter's own `site-packages` off
+`sys.path` and imports from the dependency environment it prepared instead
+(under the root's `installs/`). Such a copy imports when you run that
+interpreter yourself, even with the same `-I` flag Hermes' launcher uses, and
+is still absent for the plugin (#2415); the refusal's `off_path_install` names
+it. A check run outside Hermes cannot show what the plugin sees: ask Hermes to
+call `omh_probe` and read its `package_backend` row. Delete such a copy (the
+`omh` directory and the `oh_my_hermes-*.dist-info` beside it) so a later
+reader does not mistake it for the install the plugin uses.
 
 What is **not** supported is a bundle module that imports `omh.*` at module
 level without a guard. Hermes' memory-provider lane execs every top-level file
@@ -2456,6 +2519,19 @@ wrong. A provider neither recorded nor linked, a model the catalog never
 described, and a multi-vendor relay (which serves every family) all leave
 the answer unknown, and unknown dispatches unchanged.
 
+A relay stops being unknown when its `providers.<name>` block in
+`config.yaml` lists models: Hermes reads that same `models:` list to find
+the block serving a model, so a block that lists models and omits this one
+cannot serve it. A session on `custom:<name>` is the same provider as the
+`<name>` OMH records, whichever spelling either side uses. When the
+inherited provider cannot serve the model and exactly one provider you
+configured is known to serve it (a vendor family the catalog names, never
+a relay), the route pins that provider instead of refusing, on `set` and on
+`fallback` alike, and its result carries `provider_pinned` naming both the
+inherited and the pinned provider. With none or several such providers the
+route is refused as before, and the providers it names leave out any listed
+block that does not list the model.
+
 A route is also refused when Hermes would not send the child where the route
 says. OMH reads `config.yaml` and Hermes' managed config
 (`$HERMES_MANAGED_DIR/config.yaml`, otherwise `/etc/hermes/config.yaml`),
@@ -2946,7 +3022,7 @@ same write.
 
 ### TUI Themes
 
-OMH ships four palettes for the OMH TUI. They are part of the package, so
+OMH ships five palettes for the OMH TUI. They are part of the package, so
 switching is instant and offline, and nothing is installed into Hermes.
 
 | Theme | Skin name | Look |
@@ -2955,6 +3031,7 @@ switching is instant and offline, and nothing is installed into Hermes.
 | `amber` | `omh-amber` | Amber gold on deep bronze. |
 | `crimson` | `omh-crimson` | Ember red-orange on deep crimson. |
 | `mono` | `omh-mono` | Neutral grayscale with white accents. |
+| `kanagawa` | `omh-kanagawa` | Kanagawa Wave: indigo, warm ivory, muted blue and violet. |
 
 ```sh
 omh theme                    # arrow-key picker with a live colour preview
@@ -4075,7 +4152,7 @@ planning, and specialist review flows, see
 [Application Cases](APPLICATION_CASES.md).
 
 The public project site at
-`https://rlaope.github.io/oh-my-hermes/` is a short entry point. Treat
+`https://omher.app/` is a short entry point. Treat
 this `docs/` directory and the root README as the source of truth for operating
 details.
 

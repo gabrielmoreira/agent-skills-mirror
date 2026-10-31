@@ -4,10 +4,18 @@ description: "Network security audit - ACLs, AAA, control plane policing, manage
 license: Apache-2.0
 user-invocable: true
 metadata:
-  { "openclaw": { "requires": { "bins": ["python3"], "env": ["PYATS_TESTBED_PATH"] } } }
+  { "openclaw": { "requires": { "bins": ["python3"], "env": ["PYATS_MCP_SCRIPT"] } } }
 ---
 
 # Network Security Audit
+
+Dynamic-inventory note (Spec160): for `NETCLAW_TESTBED_MODE=dynamic`, use the
+persistent native pyATS MCP session that composed, validated and explicitly activated
+the reviewed candidate. Separate MCP_CALL processes do not share dynamic inventory.
+Use `scripts/pyats-testbed-session.py` only for bounded preview/activate/list; it does
+not perform device operations. The static examples below apply to static mode.
+See `docs/DYNAMIC-TESTBEDS.md`; all existing device/change-control requirements apply.
+
 
 ## When to Use
 

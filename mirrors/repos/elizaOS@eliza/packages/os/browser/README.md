@@ -348,6 +348,11 @@ The Android overlay includes full-origin Autofill transport (including ports and
 per-field origins). The original patch provenance is in `scripts/chromium/autofill`.
 The Java regression requires JDK 21. Consumers must not apply a second Autofill patch.
 
+The Android overlay also sets the profile's font scale factor when Android's font size
+changes while the browser is open (`scripts/chromium/font-scale-on-change.mjs`). Chromium
+otherwise sets it only when a foreground session starts, so a Custom Tab beside another app
+could keep the old text size until the browser was closed.
+
 Products may add the complete reviewed protection resource set exposed by
 `protectionAssetNames`. This opts the component into `declarativeNetRequest` and
 exposes only `warning.html`; partial inventories, extra permissions and other
@@ -436,9 +441,12 @@ reportable when they finish afterward. Synthetic page events do not end the
 interval, and a new helper action starts a new interval. This observation rule
 does not grant permission to execute payment or sign-in controls.
 
-The protection builder accepts optional `advisory: {referenceDomains, copy}`.
-It renders a nonblocking yellow in-page bar for unavailable lists and local
-lookalike signals. The default is disabled. The engine exposes
+The protection builder accepts optional
+`advisory: {referenceDomains, copy, unscanned}`. It renders a nonblocking yellow
+in-page bar for unavailable lists and local lookalike signals. The default is
+disabled. `unscanned: false` keeps the lookalike bar and draws nothing when the
+lists are unavailable, for a consumer that warns only on a blacklist hit or a
+lookalike; it defaults to `true`. The engine exposes
 `advisory.setOwner(opaqueOwnerOrNull)` only to trusted worker composition. An
 owner is required before an acknowledgement can be saved. Hosts must set or
 retire that context on every account transition and transport loss. This is
@@ -448,12 +456,15 @@ and the shared browser-control worker. It advertises `protection-owner`; older
 or disabled peers reject this capability. Trusted hosts call
 `NativeSocketBrowserTarget.setProtectionOwner(opaqueOwnerOrNull)` after profile
 registration and each account transition. Disconnect and worker recovery retire
-the context. The receipt counts updated and unavailable tabs; it is not a task
+the context. Setting the owner it already has changes no page and counts no tabs.
+The receipt counts updated and unavailable tabs; it is not a task
 permission. Consumer account-lifecycle and Android qualification remain required.
 
 Acknowledgements stay in worker memory, scoped to exact origin and evidence;
 owner changes, worker restart and a later blacklist warning clear them.
-Undo is available. Messages bind the extension, main frame, document and display
+Undo is available. A refresh keeps the drawn bar and rewrites only text that
+changed, so a screen reader announces the advice again only when it changes and
+focus stays on the bar. Messages bind the extension, main frame, document and display
 nonce, and only trusted clicks submit. No exception rule or task binding is
 changed. The closed shadow tree keeps warning text out of ordinary page reads;
 it is an in-page advisory, not tamper-proof browser chrome. The existing DNR

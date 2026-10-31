@@ -7,6 +7,7 @@ metadata:
   minApiVersion: "66.0"
   relatedSkills:
     - "platform-apex-generate"
+    - "integration-apex-symbol-table-query"
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
@@ -51,7 +52,7 @@ Always wrap the code under test in `Test.startTest()` / `Test.stopTest()`:
 
 Before generating or fixing tests, identify:
 
-- the target production class(es) under test
+- the target production class(es) under test; use the `integration-apex-symbol-table-query` skill to get their exact method signatures, fields, and inner types rather than inferring them. If the org does not support it (API v67.0+ required) or the call fails, read the source instead
 - existing test classes, test data factories, and setup helpers
 - desired test scope (single class, specific methods, suite, or local tests)
 - coverage threshold (75% minimum for deploy, 90%+ recommended)

@@ -61,7 +61,7 @@ The `<summaryColumn>` in a chart uses a special syntax for aggregate references:
 - `a!AMOUNT` — Average of Amount
 - `m!AMOUNT` — Max of Amount
 - `x!AMOUNT` — Min of Amount
-- `RowCount` — Record count
+- `RowCount` — Record count (valid only here, in `<sortByName>`, and in a `<calculatedFormula>`; never as a `<columns><field>`)
 
 ### Pitfall 5: Joined Report Restrictions
 

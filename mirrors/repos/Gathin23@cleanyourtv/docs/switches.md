@@ -18,7 +18,9 @@ repo that shows the key at work also counts) and add a row below:
 - Blur anything personal: Wi-Fi names, people, addresses.
 
 `tests/test_switches.py` checks that every new key has a row here with an image that exists and
-fits the rules; keys from before the rule sit on its wanted list until a screenshot arrives.
+fits the rules. A row may show more than one picture - `vpn_pill` carries the pill up and the pill at
+rest - and every picture in a row is held to those rules, not only the last one. Keys from before the
+rule sit on its wanted list until a screenshot arrives.
 
 ## Screenshots
 
@@ -32,6 +34,7 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `seasonal_skin` | <img src="../themes/halloween/screenshot.jpg" width="320" alt="seasonal_skin on a TV"> |
 | `settings_key_panel` | <img src="quick-settings-panel.jpg" width="320" alt="settings_key_panel on a TV"> |
 | `home_idle_clock_minutes` | <img src="clock-screensaver.png" width="320" alt="home_idle_clock_minutes on a TV"> |
+| `back_opens_clock` | <img src="switches/back_opens_clock.jpg" width="320" alt="back_opens_clock on a TV"> |
 | `gamepad_passthrough` | <img src="switches/gamepad_passthrough.jpg" width="320" alt="gamepad_passthrough on a TV"> |
 | `consume_volume_keys` | <img src="switches/consume_volume_keys.jpg" width="320" alt="consume_volume_keys on a TV"> |
 | `wifi_status_warnings` | <img src="switches/wifi_status_warnings.jpg" width="320" alt="wifi_status_warnings on a TV"> |
@@ -61,3 +64,4 @@ fits the rules; keys from before the rule sit on its wanted list until a screens
 | `inputs_connected_only` | <img src="switches/inputs_connected_only.jpg" width="320" alt="inputs_connected_only on a TV"> |
 | `icon_tiles` | <img src="switches/icon_tiles.jpg" width="320" alt="icon_tiles: an app drawn from its icon in the grid on a TV"> |
 | `game_day` | <img src="switches/game_day.jpg" width="320" alt="game_day: Minnesota Vikings at Detroit Lions, Kickoff in 5d 13h, with four dots, under the clock on a TV"> |
+| `clock_format` | <img src="switches/clock_format.jpg" width="320" alt="clock_format on a TV"> |

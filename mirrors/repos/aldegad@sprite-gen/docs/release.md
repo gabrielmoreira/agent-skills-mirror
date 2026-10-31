@@ -32,6 +32,8 @@ RIFE 가 닿는 곳이 하나도 없는 상태로 스위트 전체를 돌려 그
 시험(`pytest --full -m "real_rife and not torch_rife"`, 아래 torch 단계가 나머지)을 돌린다 — 하나라도 건너뛰거나, 표시된 시험이 없으면 실패다. 그래서 새
 실제-RIFE 시험은 표시만 붙이면 `--rife-only` 가 저절로 걷는다.
 
+컷의 기본 채움(`--fill-held auto`)으로 바이너리에 닿고 CPU 의 Vulkan 드라이버에서 기본 120 s 제한을 넘길 만큼 자주 실행하는 시험은 `real_rife` 표시 여부와 관계없이 긴 바이너리 시험처럼 `@pytest.mark.timeout(900)` 과 바이너리 호출 수 주석을 달고 `tests/conftest.py` 의 `rife_runs` 로 요청하는 RIFE 실행 수를 고정한다(`rife_located()` 가 바이너리를 못 찾으면 0). 바이너리를 몇 번만 실행하고 기본 제한 안에서 여유 있게 끝나는 시험은 둘 다 두지 않는다. CPU 의 Vulkan 드라이버에서는 실행 하나에 몇 초씩 걸리므로, 실행을 더 요구하는 변경이 시간 초과가 아니라 호출 수에서 걸린다.
+
 RIFE 의 torch 백엔드(`SPRITE_GEN_RIFE_BACKEND=torch`, docs/loop-repair.md 1절)를 돌리는 시험은
 `torch_rife` 표시를 단다(`pyproject.toml` 이 등록한다). `tests/conftest.py` 는 PyTorch 가 import 되지
 않거나, `rife.locate_model()` 이 모델을 못 찾거나, `SPRITE_GEN_RIFE_DEVICE` 가 이름 댄 장치가

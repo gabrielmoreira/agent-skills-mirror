@@ -8,7 +8,8 @@
 2. Update the counts in every place `tests/test_press_counts.py` checks: the `docs/PRESS.md` intro line, its
    index line, the card's alt text in every `README*.md` that shows `docs/card.jpg` - today `README.md` ("and N
    more: N articles from N countries"), the Dutch `README.nl.md` ("nog N media: N artikelen uit N landen") and
-   the German `README.de.md` ("und N weitere: N Artikel aus N Ländern") - and `MORE` in
+   the German `README.de.md` ("und N weitere: N Artikel aus N Ländern") and the Ukrainian
+   `README.uk.md` ("та ще N видань: N статей із N країн") - and `MORE` in
    `tools/readme_featured.py`. Every page shows the same picture, so a translation that copies it states the
    same numbers in its own words: the three named here are the pages that carry it today, not the rule.
    Redrawing `docs/featured.png` and `docs/card.jpg` needs Pillow, which the performance requirements install:

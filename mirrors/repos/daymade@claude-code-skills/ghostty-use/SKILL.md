@@ -39,12 +39,9 @@ until the missing bounded authorization is supplied. Host denials remain binding
 
 ## Entry decision tree
 
-Bind the terminal host before selecting a snapshot. For ToDesk-created or other
-headless Codex terminals without evidence of Ghostty ownership, use the maintained
-`read-codex-history` Skill's terminal-session recovery recipe. Its index and exact
-reader identify saved work; a similarly sized Ghostty snapshot does not establish
-that it contains the missing terminals. Resume this workflow only for confirmed
-Ghostty surfaces.
+For missing Codex terminals without confirmed Ghostty ownership, load the installed
+`read-codex-history` Skill and follow its
+[terminal-session recovery recipe](https://github.com/daymade/claude-code-skills/blob/main/daymade-claude-code/read-codex-history/references/terminal-session-recovery.md).
 
 | You just said / want | Run |
 |---|---|
@@ -52,53 +49,22 @@ Ghostty surfaces.
 | Periodic backup, save only changes ("定期增量快照") | Read automatic-snapshots.md, then `ghostty_watch.py install --apply` |
 | Rebooted, want tabs back ("恢复之前的窗口") | Use a suitable snapshot; if absent or outdated, `reconstruct`, then `restore --all` on the selected manifest |
 | "Was anything lost?" / suspicion after restore | `check` |
+| Snapshot looks too large, or "which sessions were active after <time>?" | Follow [time-window selection](references/session_liveness.md#select-recovery-candidates-by-a-time-window) before choosing a restore set |
 | One specific session to bring back | `restore --only <id-prefix>` |
-| Minions `native_runtime` session or managed account-adoption error | Do not use the manual switch route; use the owning Account Manager's native session flow |
-| Unmanaged/legacy Codex quota running out; manually switching account, keeping all Codex work | Read codex-account-switch.md; `switch-prepare [--only <unmanaged-uuid>...]` → manual exit/login → `switch-restore` |
-| After a switch, want the same sessions back ("换号后恢复原会话"); opening blocked or delegated | Same SOP's original-set route: deliver the fixed manifest's exact per-SID commands with per-item status; a blank tab is not a recovery |
+| Minions `native_runtime` session or managed account-adoption error | Follow [account-owner selection](references/codex-account-switch.md#choose-the-account-owner-first) |
+| Unmanaged/legacy Codex quota running out; manually switching account, keeping all Codex work | Start with [account-owner selection](references/codex-account-switch.md#choose-the-account-owner-first) |
+| After a switch, want the same sessions back ("换号后恢复原会话"); opening blocked or delegated | Follow [the original-set recovery route](references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session) |
 
 ## Codex account switch
 
-Preserve unmanaged/legacy Ghostty Codex sessions before the user manually switches
-ChatGPT accounts, then reopen the original session IDs in one batch. Exclude Claude
-Code and Minions `native_runtime` sessions; those managed rows use the owning Account
-Manager, not this route's manual logout/login or batch restore.
-Read [codex-account-switch.md](references/codex-account-switch.md) before this route.
-Use `scripts/ghostty_session.py switch-prepare` and `switch-restore`; the bundled
-`scripts/ghostty_switch.py` owns fixed-manifest selection, account/process checks,
-duplicate-safe retries and separate authentication reporting.
-If login already changed before capture, use the explicit `switch-restore
---after-login` branch. For a controlled exit sequence including the executing
-session, use `switch-plan --current-session <full-uuid>` first; it defers that
-session until an independent executor exists. Save its recovery inputs outside the
-exiting terminal with `switch-handoff`, then recheck them with
-`switch-handoff-check`; these commands preserve the host-adapter gap rather than
-authorize an exit. The reference specifies the exact commands and durable
-literal-control receipt.
-
-```bash
-python3 <skill-dir>/scripts/ghostty_session.py switch-prepare
-# Mixed managed/unmanaged inventory: capture only the eligible unmanaged/legacy UUIDs.
-python3 <skill-dir>/scripts/ghostty_session.py switch-prepare --only <unmanaged-uuid> [...]
-# User: finish work, exit the saved Codex TUIs and manually switch account.
-python3 <skill-dir>/scripts/ghostty_session.py switch-restore
-```
-
-Default to tabs in one window; use `--layout windows` only when independent windows are requested.
-Keep the printed fixed manifest through the handoff. Treat unresolved capture,
-unverified original processes and missing sessions as incomplete. Recovery means
-reopening the fixed manifest's original IDs; when reopening is blocked or
-delegated (kept old processes, user-managed locks, denied UI automation), follow
-[the original-set route](references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session)
-and deliver the complete exact per-session commands with per-item status — a
-blank tab is never a recovery. Mode selection,
-account preconditions and partial-restore readiness belong to
-[the switch SOP](references/codex-account-switch.md). Never send process-termination
-signals or switch credentials through this route; normal local exit controls use
-that SOP's authorized-host protocol. Apply the foreground
-conditions above before actual opening; ask only when the required authorization is missing. `--dry-run` and `--check`
-remain read-only. Distinguish reopened IDs from new-account requests that worked:
-the script reports authentication as `not_checked` and sends no test prompt.
+Start with [account-owner selection](references/codex-account-switch.md#choose-the-account-owner-first).
+For the selected independent-TUI workflow, follow
+[save before switching](references/codex-account-switch.md#save-before-switching)
+and [restore or resume the batch](references/codex-account-switch.md#restore-and-resume-an-interrupted-batch).
+For blocked or delegated reopening, follow
+[the original-set route](references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session).
+Keep command examples, handoff, authorization and acceptance in that SOP.
+Implementation: [ghostty_switch.py](scripts/ghostty_switch.py).
 
 ## Quick start
 
@@ -134,6 +100,8 @@ missing IDs. Read that result before declaring success; per-tab `SENT (unverifie
 is a paste acknowledgement, not proof that a session reopened. Re-running the same
 manifest opens only the IDs still missing. `--dry-run` prints commands without GUI actions.
 Repeat current-set reconciliation after a manual handoff or any change in selection.
+After process reconciliation, follow [history-readiness acceptance](references/restore_mechanics.md#verify-history-readiness-after-process-reconciliation)
+before claiming that the selected conversations are ready to read.
 
 ## Automatic change-only backups
 
@@ -155,7 +123,7 @@ or state index fails explicitly; do not replace it with a rollout corpus scan.
 ```bash
 # Review candidates without writing state or opening tabs:
 python3 <skill-dir>/scripts/ghostty_session.py reconstruct \
-  --history-reader <reader-skill-dir> --recent-hours 72 --limit 100 --dry-run
+  --history-reader <reader-skill-dir> --dry-run
 
 # Build one chosen set in a NEW file; --only accepts unambiguous ID prefixes:
 python3 <skill-dir>/scripts/ghostty_session.py reconstruct \
@@ -204,8 +172,9 @@ or unavailable evidence. Dry-run output is JSON for inspection.
   per TUI; an undecidable race (equidistant claims) refuses to the unresolved
   section rather than guessing. Live TUIs matching neither way are persisted as
   unresolved rows and printed in the snapshot report — visible, never silently dropped.
-- **Liveness**: last real interaction time read from the *content* of the session file —
-  not the file mtime, which can change without real interaction.
+- **Liveness**: last timestamp read from the *content* of the session file — not
+  its mtime, which can change without real interaction. Use the time-window recipe
+  above to qualify actual work rather than treating every record as interaction.
 - **Channel health**: `dead-channel` when a Claude transcript's tail carries a
   structured `isApiErrorMessage` with "Login expired" — restoring such a tab reopens
   history but the session stops at `/login`; the snapshot marks it so you can skip it.
@@ -233,8 +202,10 @@ or unavailable evidence. Dry-run output is JSON for inspection.
   then reconcile after permitted execution. Reboot recovery uses read-only
   `check --snapshot <manifest> --strict`; account switching uses
   [the mode-bound switch check](references/codex-account-switch.md#restore-and-resume-an-interrupted-batch).
-- Window grouping is **not** restorable — Ghostty's macOS accessibility surface exposes
-  no tab→window mapping. All tabs reopen into one window; reorder manually if needed.
+- The batch restore does not reconstruct original window grouping or splits; it
+  opens missing sessions as tabs in the active window. Captured grouping remains
+  unknown. Do not infer a platform-wide AX limitation from this script boundary;
+  use the [current native observations](references/restore_mechanics.md#current-native-observation-boundary).
 - Rollout files that codex itself cannot find anymore print `no-artifact`; restoring
   them replays the same `codex resume <id>` and stays a best effort.
 
@@ -302,10 +273,8 @@ snapshots and restores. Keep the following evidence boundaries:
 
 ## Deeper details
 
-- [references/session_liveness.md](references/session_liveness.md) — storage layouts
-  (Claude projects / Codex sessions), transcript structures, resume-fork naming,
-  liveness rules and the misclassification cases behind them. Read when a liveness
-  result looks wrong or layouts changed after an app update.
-- [references/restore_mechanics.md](references/restore_mechanics.md) — why Ghostty
-  offers no CLI/AX restore path, the keystroke-paste protocol, reconciliation design,
-  and the window-grouping boundary. Read before modifying the restore path.
+- [references/session_liveness.md](references/session_liveness.md) — Read before
+  filtering recovery by activity, investigating a liveness result, or adapting to a
+  changed transcript layout.
+- [references/restore_mechanics.md](references/restore_mechanics.md) — Read before
+  restoring sessions, investigating a restore result, or modifying the restore path.

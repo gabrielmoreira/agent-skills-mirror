@@ -53,8 +53,8 @@ Mirror of `facebook/react-native` — 26 default patterns, 4 followed patterns, 
 
 - `__docs__/README.md`
 - `private/react-native-fantom/__docs__/README.md`
-- `packages/rn-tester/README.md`
 - `scripts/build/README.md`
+- `packages/rn-tester/README.md`
 
 ## File Index
 

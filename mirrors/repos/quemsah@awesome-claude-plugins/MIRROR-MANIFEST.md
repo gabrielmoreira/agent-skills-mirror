@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `quemsah/awesome-claude-plugins` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `quemsah/awesome-claude-plugins` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `quemsah/awesome-claude-plugins` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`ui/src/app/llms.txt/route.ts`](ui/src/app/llms.txt/route.ts) |
-| 2 | ✓ | [`ui/src/app/SKILL.md/route.ts`](ui/src/app/SKILL.md/route.ts) |
+| 1 | ✓ | [`awesomeclaudeplugins.com/ui/src/app/llms.txt/route.ts`](awesomeclaudeplugins.com/ui/src/app/llms.txt/route.ts) |
+| 2 | ✓ | [`awesomeclaudeplugins.com/ui/src/app/SKILL.md/route.test.ts`](awesomeclaudeplugins.com/ui/src/app/SKILL.md/route.test.ts) |
+| 3 | ✓ | [`awesomeclaudeplugins.com/ui/src/app/SKILL.md/route.ts`](awesomeclaudeplugins.com/ui/src/app/SKILL.md/route.ts) |
 
 ---
 

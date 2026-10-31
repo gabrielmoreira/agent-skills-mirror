@@ -133,12 +133,24 @@ Configures the authorization settings for verified user identity in the messagin
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `endUserIdleTimeOut` | Integer | `5` | Minutes of user inactivity before idle warning |
+| `endUserIdleTimeOut` | Integer | `5` | Minutes of user inactivity before idle warning (range 5-30) |
+| `endUserIdleAction` | Enum | — | Action taken when the idle timeout elapses: `Inactivate`, `End`, or `InactivateAndEnd` |
+| `endInactiveSessionTimeOut` | Integer | — | Minutes after `endUserIdleAction` fires before the inactive session itself ends |
+| `isAgentMessageResetInactivityEnabled` | Boolean | — | Restart the customer's inactivity timer when a rep sends a message (Setup label: "Rep messages reset customer's inactivity timer"). Only takes effect when `endUserIdleTimeOut` is set; it is forced to `false` otherwise |
 | `isEstimatedWaitTimeEnabled` | Boolean | `false` | Show estimated wait time |
 | `isQueuePositionEnabled` | Boolean | `false` | Show queue position to user |
 | `isSynchronousChatEnabled` | Boolean | `false` | Enable real-time synchronous chat |
 | `isVoiceModeEnabled` | Boolean | `false` | Enable voice mode capability |
 
+Setup UI (Customer Inactivity card): `endUserIdleTimeOut` is "Minutes to Inactivate Session" / "Minutes to End Session" (5-30); `endUserIdleAction` is "Choose action when customer is idle" with values "Inactivate Session" (`Inactivate`), "End Session" (`End`), and "Inactivate & End Session" (`InactivateAndEnd`); `endInactiveSessionTimeOut` is "Minutes to End Session After Inactivation" (5-30, only meaningful with `InactivateAndEnd`).
+
+`endUserIdleTimeOut`, `endUserIdleAction`, `endInactiveSessionTimeOut`, and `isAgentMessageResetInactivityEnabled` are **MIAW (EmbeddedMessaging) only** — not applicable to SMS/WhatsApp/LINE. These can be deployed together with `isAbandonedChatsEnabled`/`chatAbandonmentTimeout` with no conflict.
+
+```xml
+<endUserIdleTimeOut>5</endUserIdleTimeOut>
+<endUserIdleAction>InactivateAndEnd</endUserIdleAction>
+<endInactiveSessionTimeOut>10</endInactiveSessionTimeOut>
+```
 
 ---
 
@@ -237,30 +249,76 @@ A parameter still used by a pre-chat form can't be deleted ("can't be deleted as
 
 ## Automated Responses (`<automatedResponses>`)
 
-Repeatable element — automated messages sent at specific events.
+Repeatable element — automated messages sent at specific events. There are two mutually exclusive content shapes, and **which shape applies depends on the `type`** (EmbeddedMessaging channel).
+
+### Shape 1 — `TextResponse` (inline text)
+
+Applies only to `OptOutConfirmation` and `HelpResponse`.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `autoResponseContentType` | Enum | Yes | `TextResponse` or `MessageDefinition` |
+| `autoResponseContentType` | Enum | Yes | `TextResponse` |
 | `language` | String | Yes | Locale code (e.g., `en_US`) |
 | `response` | String | Yes | The response message text (XML-escape special chars) |
-| `type` | Enum | Yes | The event type — see table below |
+| `type` | Enum | Yes | `OptOutConfirmation` or `HelpResponse` |
+
+### Shape 2 — `MessageDefinition` (reference to a Messaging Component)
+
+Applies to `InitialResponse`, `AgentEngagedResponse`, `AgentEndEngagementResponse`, `EndUserInactiveResponse`, `EndUserIdleResponse`, `RerouteResponse`, and `RoutingUnavailableResponse` — the "Conversation Acknowledgement," "Start Conversation," "End Conversation," "Inactive Conversation," "Warning Message," "Reroute Conversation," and "Routing Unavailable" fields in the Setup UI, all backed by a "Messaging Components" (`ConversationMessageDefinition`) picker.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `autoResponseContentType` | Enum | Yes | `MessageDefinition` |
+| `messageDefinitionName` | String | Yes | `DeveloperName` of an existing `ConversationMessageDefinition`. Must already exist in the org — build it with the `conversation-message-definition-builder` skill before deploying this reference (see Cross-Skill Integration in SKILL.md) |
+| `type` | Enum | Yes | `InitialResponse`, `AgentEngagedResponse`, `AgentEndEngagementResponse`, `EndUserInactiveResponse`, `EndUserIdleResponse`, `RerouteResponse`, or `RoutingUnavailableResponse` |
+| `responseTimeoutInMins` | Integer | No | **Only** on `EndUserIdleResponse` and `EndUserInactiveResponse` (range 4-30). Minutes before the idle action fires at which the message is shown (Setup label "Minutes to Show Warning"; Help: "select 4 to show the message 4 minutes before the session inactivates"). On `EndUserIdleResponse` it must be less than `endUserIdleTimeOut` (Setup caps it at `endUserIdleTimeOut` - 1). Rejected on every other type and on `TextResponse` |
+
+**Do not include `<language>` or `<response>` on a `MessageDefinition`-shaped block.** The language comes from the referenced CMD's own `<language>` field. Including `<language>` here causes the deploy to fail — with `"unexpected metadata"` for `InitialResponse`/`AgentEngagedResponse`/`AgentEndEngagementResponse`, and with an internal server error for `EndUserInactiveResponse`. Omitting it is the fix, not a schema quirk to work around another way.
+
+```xml
+<!-- TextResponse shape -->
+<automatedResponses>
+    <autoResponseContentType>TextResponse</autoResponseContentType>
+    <language>en_US</language>
+    <response>Text STOP to opt out of further messages.</response>
+    <type>HelpResponse</type>
+</automatedResponses>
+
+<!-- MessageDefinition shape -->
+<automatedResponses>
+    <autoResponseContentType>MessageDefinition</autoResponseContentType>
+    <messageDefinitionName>Customer_Inactive_Message</messageDefinitionName>
+    <type>EndUserInactiveResponse</type>
+</automatedResponses>
+
+<!-- Idle warning with responseTimeoutInMins (only valid on EndUserIdleResponse / EndUserInactiveResponse) -->
+<automatedResponses>
+    <autoResponseContentType>MessageDefinition</autoResponseContentType>
+    <messageDefinitionName>Idle_Warning_Message</messageDefinitionName>
+    <responseTimeoutInMins>4</responseTimeoutInMins>
+    <type>EndUserIdleResponse</type>
+</automatedResponses>
+```
 
 ### Response Types
 
-| `type` Value | When Sent |
-|-------------|-----------|
-| `OptOutConfirmation` | When user opts out of receiving messages |
-| `HelpResponse` | When user sends a help keyword |
-| `InitialResponse` | Let a customer know that their initial message was received |
-| `AgentEngagedResponse` | Let a customer know that their messaging session was accepted by a service rep |
-| `AgentEndEngagementResponse` | Let a customer know that their messaging session ended, and optionally provide a post-chat URL. This auto-response is sent when the service rep or end user ends the session |
-| `EndUserInactiveResponse` | Let a customer know that their messaging conversation has ended because they stopped responding |
-| `EndUserIdleResponse` | When end user idle response |
+| `type` Value | Content Shape | When Sent |
+|-------------|---------------|-----------|
+| `OptOutConfirmation` | `TextResponse` | When user opts out of receiving messages |
+| `HelpResponse` | `TextResponse` | When user sends a help keyword |
+| `InitialResponse` | `MessageDefinition` | Let a customer know that their initial message was received |
+| `AgentEngagedResponse` | `MessageDefinition` | Let a customer know that their messaging session was accepted by a service rep |
+| `AgentEndEngagementResponse` | `MessageDefinition` | Let a customer know that their messaging session ended, and optionally provide a post-chat URL. Sent when the service rep or end user ends the session |
+| `EndUserInactiveResponse` | `MessageDefinition` | Let a customer know that their messaging conversation has ended because they stopped responding |
+| `EndUserIdleResponse` | `MessageDefinition` | Warn a customer that their conversation will be inactivated or ended because they are idle. Set in the Customer Inactivity card ("Warning Message"); `responseTimeoutInMins` is how many minutes before the idle action it is shown |
+| `RerouteResponse` | `MessageDefinition` | Sent when a conversation is rerouted to a different queue or agent ("Reroute Conversation") |
+| `RoutingUnavailableResponse` | `MessageDefinition` | Sent when no routing target is available ("Routing Unavailable") |
+
+Only `OptOutConfirmation` and `HelpResponse` use the `TextResponse` shape; every other type is `MessageDefinition`-only. `OptIn*` and `CustomResponse` types are not used for EmbeddedMessaging channels.
 
 ### XML Escaping
 
-Special characters in `response` must be XML-escaped:
+Special characters in a `TextResponse` block's `response` must be XML-escaped:
 - `'` → `&apos;`
 - `"` → `&quot;`
 - `&` → `&amp;`
@@ -303,3 +361,41 @@ Repeatable element — keyword groups that trigger automated responses. Each key
     <language>en_US</language>
 </messagingKeywords>
 ```
+
+---
+
+## Setup Prompts: Session Inactivity
+
+Ask using the Setup labels (Customer Inactivity card), with the field in parentheses:
+
+- "Inactivate or end a session after a period of customer inactivity?" If yes, "Minutes to Inactivate Session / End Session?" (`endUserIdleTimeOut`, 5-30).
+- "Choose action when customer is idle": **Inactivate Session** (`Inactivate`), **End Session** (`End`), or **Inactivate & End Session** (`InactivateAndEnd`) (`endUserIdleAction` — no other values). **Validate before editing or deploying:** if the user names any other value (e.g. `EndChatSession`, "close", "terminate"), do not write it; say it is not an option, list the three, and ask which one. Never deploy to see whether it is accepted. For Inactivate & End Session also ask "Minutes to End Session After Inactivation?" (`endInactiveSessionTimeOut`, 5-30).
+- "Should rep messages reset the customer's inactivity timer?" (`isAgentMessageResetInactivityEnabled`; needs `endUserIdleTimeOut`).
+- Optional idle warning: the **Warning Message** prompt under Automated Responses below.
+
+Set all of these as **top-level fields, siblings of `<embeddedConfig>`** (not nested inside it). MIAW (EmbeddedMessaging) only.
+
+Checks:
+- [ ] `endUserIdleAction`/`endInactiveSessionTimeOut` are top-level siblings of `<embeddedConfig>`, not nested inside it.
+- [ ] `endUserIdleAction` is one of `Inactivate`, `End`, `InactivateAndEnd`, checked before the file is edited (free text such as `EndChatSession` fails with "not a valid value for the enum").
+- [ ] `endUserIdleTimeOut` is in range 5-30.
+
+## Setup Prompts: Automated Responses
+
+Ask which messages the user wants, using the Setup labels (Automated Responses card), with the `type` in parentheses. Two content shapes, chosen by `type`:
+
+- Consent text — **Opt-Out Confirmation** (`OptOutConfirmation`) and **Help Response** (`HelpResponse`): `TextResponse` shape; generate elements with `autoResponseContentType: TextResponse`, `language`, and XML-escaped `response` text.
+- Messaging Components — `MessageDefinition` shape; the referenced `ConversationMessageDefinition` must exist first. If it doesn't, delegate to `conversation-message-definition-builder` to create it, then generate the element with `autoResponseContentType: MessageDefinition` and `messageDefinitionName` (no `language`, no `response`):
+  - **Conversation Acknowledgement** (`InitialResponse`), **Start Conversation** (`AgentEngagedResponse`), **End Conversation** (`AgentEndEngagementResponse`), **Inactive Conversation** (`EndUserInactiveResponse`), **Reroute Conversation** (`RerouteResponse`), **Routing Unavailable** (`RoutingUnavailableResponse`).
+  - **Warning Message** (`EndUserIdleResponse`) — the idle warning; ask "How many minutes before the session inactivates/ends should the warning show?" (Setup: "Minutes to Show Warning"; `responseTimeoutInMins`, 4-30, less than `endUserIdleTimeOut`). `responseTimeoutInMins` is allowed only on `EndUserIdleResponse` and `EndUserInactiveResponse`.
+
+Offer **every** type above (nine in all), never a subset. A question tool that allows only four options means asking in several rounds; do not merge types into buckets or drop any. If the user says only "automated responses", ask round by round until each type is accepted or declined. Ask for the `TextResponse` wording (Opt-Out, Help) instead of inventing it. Create any missing component by **invoking the `conversation-message-definition-builder` skill** (Skill tool) and deploying what it produces. Never write, copy, or adapt a `ConversationMessageDefinition` by hand, including by copying the shape of an existing one: the builder owns the required layout, `AutoResponse` type, and `Title` constant. If the builder skill is not available, stop and tell the user; do not fall back to hand-writing.
+
+When adding to an existing channel, retrieve it first and keep **one** `automatedResponses` block per `type`. A second block of the same type fails the deploy with `duplicate value found: MessagingChannelId`; the cause is the duplicate block, not the component.
+
+Checks:
+- [ ] Every type was offered, and each answer (accepted or declined) was recorded.
+- [ ] `OptOutConfirmation`/`HelpResponse`: `TextResponse` shape with `language` + `response`, special characters XML-escaped.
+- [ ] Every other type: `MessageDefinition` shape with `messageDefinitionName` set and `language`/`response` both absent.
+- [ ] `messageDefinitionName` references a `ConversationMessageDefinition` that already exists in the org (otherwise: "reference not found" — build it with `conversation-message-definition-builder` first).
+- [ ] `responseTimeoutInMins` (4-30) appears only on `EndUserIdleResponse`/`EndUserInactiveResponse`, and on `EndUserIdleResponse` is less than `endUserIdleTimeOut`.

@@ -53,6 +53,8 @@ to use an http:// proxy. The `settings.json` env that magpie writes for the
 user's own Claude Code sessions leaves a SOCKS proxy out (see
 [Providers and accounts](providers-accounts.md)).
 
+A saved account added by a setup-token (see [Providers and accounts](providers-accounts.md)) has no sign-in in its config directory. `inClaudeDir`, which builds the env of every run in a saved account's directory (a turn's run, the warm-up, `askClaude`, `/usage`), drops any `CLAUDE_CODE_OAUTH_TOKEN` it was given and sets it to `provider.ClaudeDirToken(configDir)` when that directory is a token account's: the token reaches the real Claude Code there and nowhere else, never on its command line, never in a log, and never to Claude Code's own account. magpie asks Anthropic nothing with it; the entrypoint and everything else about the run are as for any account.
+
 The helper offers each of the client's tools under `bridgeToolName`
 (`bridgeTools`), which Claude Code calls `mcp__magpie__<name>`. Claude Code
 keeps only `[A-Za-z0-9_-]` of an MCP tool's name, so a name it would change
@@ -83,6 +85,132 @@ is judged as any other. Without it the call was refused 401, never
 reached the run, and every turn with tool results found no run waiting and
 started a new Claude Code told the whole conversation (#1546).
 
+## Claude Code's interactive mode (`claudePrintMode`)
+
+By default a run on macOS, Linux and Windows is Claude Code's
+interactive mode, not `claude -p`. Anthropic counts a request by its
+entrypoint, and a `-p` run's `sdk-cli` costs about twice the plan's allowance of the interactive
+mode's `cli` (anthropics/claude-code#97074). The run is the real
+interactive Claude Code: nothing sets `CLAUDE_CODE_ENTRYPOINT`.
+
+The bridge starts `magpie claude-tui-helper <claude> <the -p arguments>`
+(`internal/claudetui`) in place of `claude` when `claudeTUI` says so, and
+talks to it as it talks to `-p`: stream-json in and out. The helper:
+
+- turns the arguments into the interactive mode's (`interactiveArgs`):
+  `-p`, the stream-json formats, `--verbose`,
+  `--include-partial-messages`, `--thinking-display`,
+  `--dangerously-skip-permissions` and `--no-session-persistence` go;
+  `--permission-mode default --allowedTools mcp__magpie[,WebSearch]
+  --no-chrome` come. Permissions are not skipped: only magpie's MCP tools
+  (and the web search `-p` was given) are allowed, and nothing else is
+  offered (`--tools ""`). A new session is given `--session-id`;
+- starts Claude Code in a pseudo-terminal of its own (200x50), no tmux,
+  and answers what it asks of the terminal. On macOS and Linux it is a
+  pty in a session of its own (`child_unix.go`). On Windows it is a
+  pseudo console (ConPTY, `child_windows.go`): `CreatePseudoConsole` on
+  two pipes, and `CreateProcess` with the console as an attribute and
+  `STARTF_USESTDHANDLES` with no handles, since without it a child
+  took the helper's own standard handles (the bridge's pipes) and drew
+  into them rather than the console (tried on Windows 11 26200). An npm
+  install's `claude.cmd` is run by cmd.exe with its arguments quoted as
+  the `-p` run's (`proc.Command`). Ending, the helper closes the console
+  (Claude Code is told as a closed window tells it) and kills it after
+  3s. Its `-p` fallback runs Claude Code as a child, since Windows has no
+  exec;
+- pastes each user message into the prompt (bracketed paste) and presses
+  Enter. A message opening with `/`, `!`, `#` or `&` is pasted after a
+  line break, so it is words, not a command (`pasteable`);
+- pastes a message's images as files (`userPieces`, `writeImage`): each
+  base64 image is written to `image-N.<ext>` (0600) in a
+  `magpie-claude-images-*` temp folder, and its path is pasted alone,
+  which Claude Code reads into the message as `[Image #N]` (a path inside
+  other words stays words). Claude Code reads the file after the paste
+  returns, so the helper waits for `[Image #N]` with N past the last
+  before pasting the next piece; without that wait the second of two
+  images was lost. The transcript holds real image blocks, and Claude Code
+  notes each one's path to the model (`[Image: source: …]`). The folder
+  is removed once its message is sent (Claude Code has read the files
+  by then), and when the helper ends, on SIGINT, SIGTERM and SIGHUP too:
+  magpie's own handler (`endProbesOnSignal`) let go of the signals for
+  this command (`leaveSignals`), since it re-raised SIGTERM and killed the
+  helper before it could end Claude Code and remove its files. Windows
+  ends a run by killing its job, which no handler hears, so a helper
+  starting removes such folders over an hour old (`dropLeftImages`);
+- tails `<CLAUDE_CONFIG_DIR>/projects/*/<session>.jsonl` and tells each
+  row as `-p` would (`translator`): assistant messages whole (no partial
+  stream), a tool's result, a `<synthetic>` API error as the turn's error
+  result with its `rate_limit_info`, and `turn_duration` as the result.
+
+The transcript has a message only once it ends, and Claude Code doesn't
+always write the message calling a client's tool before that call is
+answered: on a real account, 4 runs of 8 wrote it after its MCP call
+returned. The call can only be answered by the client, which hasn't been
+told of it. So in an interactive run, `mcpCall` hands each call to the
+reader (`run.onCall`). Not shown from the transcript within `callFirst`
+(500ms; a message written before its call is read 118 to 162ms after
+it), the call is a reply of its own: a message with that one `tool_use`
+(Claude Code makes its MCP calls one at a time, a message's parallel
+calls too). The first message written after such a call is the one that
+made it. Its rows are left out (`lateID`), and its usage is told with the
+next reply. A call in that message that wasn't made yet becomes its own
+reply when it is made (`written`). A reply told this way has no words or
+thinking: the model's text before its call is lost to the client.
+
+The user's own `~/.claude.json` and `~/.claude` are never written. Claude
+Code asks whether to trust a folder it has not run in; the helper answers
+yes only when the bridge sets `MAGPIE_CLAUDE_TUI_TRUST=1`, which it does
+for magpie's own working folder or a saved account's config directory,
+both magpie's. In the caller's folder under the account Claude Code is
+signed in to, the question is the user's: a folder the user has not
+trusted makes that run `-p`. The question opens on "No, exit", and a key
+sent as it is first drawn can be lost to its being drawn again, so the
+helper presses ↓ until "Yes" is the last choice drawn and Enter only once
+it has stayed so for 300ms (`ready`, `trustSettle`). Pressing Enter blind
+chose "No, exit" in the real gateway, and every run went `-p`.
+
+A run is `-p`, as before, when (`claudeTUI`):
+
+- Settings › Models › Replies › Claude Code's interactive mode is Off
+  (`claudePrintMode`);
+- it is Claude Code in WSL;
+- the request has safeguards, client cache marks, a JSON schema, an image
+  known only by its URL (`urlImages`: the helper pastes files, and has no
+  bytes of it), or words over 400KB (`tuiPromptMost`, images not counted),
+  which a paste can't carry as `-p` does.
+
+The gateway's log says which (`claude: this run is -p: …`,
+`claudePrintWhy`), and the helper's own line when it becomes `-p` (below)
+is logged from the run's stderr (`lockedWriter`).
+
+A turn the interactive mode can't take ends the run, and the next starts
+anew: a turn with an image known by its URL, one that takes earlier turns
+back, an effort change. A run given up on (`letGo`) is not taken back, since the
+interactive mode can't answer a control request to stop a turn.
+
+If the interactive Claude Code doesn't start or show its prompt within 45
+seconds (`claudetui.ReadyWait`), or asks how to sign in (`signIn`: a
+Claude Code signed in for `-p` only, as in a container given
+`CLAUDE_CODE_OAUTH_TOKEN`), the helper becomes `claude -p` with the same
+arguments (`printMode`, `exec` on the same pid, its input still unread),
+so the turn is answered all the same, and it writes
+`<cache>/magpie/claude-tui-broken`, which holds the number of failed
+starts in a row. For 30 minutes after one, doubled with each one after
+to a day (`brokenFor`), every run goes to `-p` at once: the helper is
+not started (`claudePrintWhy`, "the interactive mode failed to start
+lately"). A start that shows its prompt removes the mark. A folder not
+trusted goes to `-p` without the mark.
+
+The helper answers the bridge's `initialize` only once the prompt is
+shown, or as `-p` after the fallback, so the bridge waits for it
+`tuiInitWait` (`ReadyWait` and twice a control request's 10s), not the
+10s of any other control request. With 10s, a Claude Code slower than
+that to start (2 vCPU in Docker) was ended as the helper waited, before
+it could become `-p`, and every try was answered 502 "Claude Code has
+not answered magpie's initialize request in 10s" (#4504). A helper that
+answers nothing even then is ended, the mark is written, and `start`
+starts the turn again as `-p`.
+
 ## Why turns go on in one run
 
 A run started anew is told the whole conversation in one user message
@@ -105,7 +233,10 @@ cache.
 
 A client can send `X-Magpie-Cache-Marks: client` on a `/v1/messages`
 request to a Claude subscription. Without that header, the bridge behaves
-as before. Chat Completions and Responses ignore the header. The mode is
+as before — except Claude Code's auto mode classifier, whose own marks are
+kept like an opted-in client's when they are valid, and dropped as before when
+they are not (#3835). Chat Completions and Responses
+ignore the header. The mode is
 part of the run's identity, including rewritten conversations and tool-result
 handoffs: opted-in and ordinary requests never share a run.
 
@@ -120,6 +251,7 @@ to the client. `claude_cache.go` validates the marks before run selection;
 | Top-level `cache_control` | Sets the request-level tail through `CLAUDE_CODE_EXTRA_BODY`. |
 | Last message block | Sets the same request-level tail. |
 | Earlier message block, new run | Ends a block at that point in the rendered history with the same TTL. |
+| Earlier message block without a mark, new run | Ends a block there too, so a mark that moved on with the conversation's growth leaves the old boundary in place for Anthropic's prefix check (#3835). |
 | Earlier message block, running or saved run | Dropped and reported; the existing history cannot be edited. |
 | Tool definition | Dropped and reported; Claude Code owns the tools. |
 | Bridge history-chunk mark | Uses only a free slot and never a longer TTL than a preceding mark. |
@@ -600,6 +732,18 @@ in its system prompt (`leanSystem`), the named-folder note worded as
 `envElsewhereLeanNote` since the environment comes after it there
 (`envNote` picks the note).
 
+Claude Code 2.1.296 and later, as a client, give their own environment
+the same way: a `{role: "system"}` message after the user's first, not
+in the system prompt. For such a caller (`Request.envInTurns`, from
+`clientNamedWorkPlace`) "the environment these instructions describe"
+pointed at instructions that describe none, while the caller's came
+after them as a message (packinggoods again, after v0.1.2093). Its
+instructions, or a lean run's system prompt, end with `envTurnsNote`
+instead: of the environments the conversation gives, the last one is
+where every tool runs. The run's own is always the first, at the start
+of its first message, so the last is the caller's. Not measured: whether
+a real model on a Windows gateway then stops writing PowerShell.
+
 Nothing else of the folder reaches the run. `--setting-sources ""` loads
 no CLAUDE.md, settings or skills from it. Auto memory is off, and
 `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` keeps the repository's status out
@@ -790,6 +934,8 @@ and the next turn starts a run in the new one, as after any restart.
 ```sh
 go test -tags nogui ./internal/gateway/ -run '^TestClaudeClientCache' -count=1
 go test -tags nogui ./internal/gateway/ -run '^TestClaudeLeanPrompt' -count=1
+go test -tags nogui ./internal/gateway/ -run '^TestClaudeTUIChosen$' -count=1
+go test ./internal/claudetui/ -count=1
 go test -tags nogui ./internal/claudecode/ -count=1
 go test -tags nogui ./internal/gateway/ -run '^TestClaudeCodeGivenTheBridgeForASOCKSProxy$' -count=1
 go test -tags nogui ./internal/provider/ -run '^TestClaudeSignInBridgesASOCKSProxy$' -count=1

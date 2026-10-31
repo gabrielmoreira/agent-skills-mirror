@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 4 followed patterns, 47 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 4 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 4 followed patterns, 47 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 47 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,14 +101,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/difyctl/references/operations.md`](skills/difyctl/references/operations.md) |
 | 38 | ✓ | [`skills/difyctl/references/plugins.md`](skills/difyctl/references/plugins.md) |
 | 39 | ✓ | [`skills/difyctl/references/setup.md`](skills/difyctl/references/setup.md) |
-| 40 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
-| 41 | ✓ | [`skills/README.md`](skills/README.md) |
-| 42 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 43 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
-| 44 | → | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
-| 45 | → | [`docs/BACKEND_DATABASE_SCHEMA.md`](docs/BACKEND_DATABASE_SCHEMA.md) |
-| 46 | → | [`docs/BACKEND_REPOSITORIES.md`](docs/BACKEND_REPOSITORIES.md) |
-| 47 | → | [`docs/BACKEND_SQLALCHEMY.md`](docs/BACKEND_SQLALCHEMY.md) |
+| 40 | ✓ | [`skills/difyctl/references/workspace-skills.md`](skills/difyctl/references/workspace-skills.md) |
+| 41 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
+| 42 | ✓ | [`skills/README.md`](skills/README.md) |
+| 43 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 44 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
+| 45 | → | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
+| 46 | → | [`docs/BACKEND_DATABASE_SCHEMA.md`](docs/BACKEND_DATABASE_SCHEMA.md) |
+| 47 | → | [`docs/BACKEND_REPOSITORIES.md`](docs/BACKEND_REPOSITORIES.md) |
+| 48 | → | [`docs/BACKEND_SQLALCHEMY.md`](docs/BACKEND_SQLALCHEMY.md) |
 
 ---
 

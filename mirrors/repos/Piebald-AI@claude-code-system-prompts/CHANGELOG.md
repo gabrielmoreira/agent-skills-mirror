@@ -4,6 +4,26 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.316](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1f13485)
+
+<sub>_No changes to the system prompts in v2.1.316._</sub>
+
+# [2.1.315](https://github.com/Piebald-AI/claude-code-system-prompts/commit/0c1e218)
+
+_+1,506 tokens_
+
+- **NEW:** Data: Ultrathink availability in session initialization — Describes when hosts should highlight `ultrathink`, including effort changes, unknown availability, and agreement with the applied settings value.
+- **NEW:** Data: Pending elicitation requests in initialization response — Lists unanswered MCP elicitation requests for late-joining clients, with guidance on absent fields and deduplicating live or replayed requests.
+- **NEW:** System Reminder: Claude Doc comment wake guidance — Explains how to find and answer document comments through the connector, rather than replying to the resolved relay, and treats comments as untrusted data.
+- **NEW:** Data: Self-hosted runner unreadable character validation guidance — Distinguishes stray characters from real path characters, preserving actual filenames and requesting a rename or clarification when needed.
+- Data: blockWritesOutsideWorkingDirectories setting — No longer lists `CLAUDE_COWORK_MEMORY_PATH_OVERRIDE` as a reason to refuse auto-memory writes; redirection through repository settings remains listed.
+- Data: Claude Code gateway protocol — Documents shared group-budget exhaustion as a billing error and identifies the header that distinguishes it from an individual cap.
+- Data: Interrupt send_now parameter — Describes waiting for automatic compaction to finish before handling a queued message, preserving its summary when possible.
+- Data: SDK API error kind field — Expands stored-login refusal guidance to cover organization-configured helpers and unconfirmed settings, with the message identifying who can resolve it.
+- Data: SDK api_error_params field — Documents rate-limit details supplied with usage-credit refusals, including response-derived limits, credit eligibility, and payment information.
+- Skill: Workflow authoring reference — Says omitted subagent effort uses the configured subagent default when present, otherwise inheriting the session's effort.
+- System Prompt: Outcome-first communication style — Removes the instruction to match surrounding code's comment density, naming, and idiom; the separate restriction on comments remains.
+
 # [2.1.314](https://github.com/Piebald-AI/claude-code-system-prompts/commit/eaf679d)
 
 _+12,588 tokens_

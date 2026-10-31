@@ -32,7 +32,21 @@
    `README.md`, `README.nl.md` and `README.de.md`, and the counts (the `TV models` number in the card's alt text)
    are generated from every `tv.json` by `tools/gen_tables.py`, which a maintainer runs after merging; CI compares
    them only on `main`.
-6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. That
+6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
+   free prose; three things in a README are read back, two of them against the list beside it.
+   A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
+   compared with what `tools/disable.sh` would send for the list, so a line added or commented out later moves
+   the number in the README with it: `tests/test_example_list_count.py` answers
+   `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. Its undo
+   is the other: the restore command a README shows passes the same stock launcher as the list's own Undo line,
+   or none where the list passes none, because those two are where an owner looks for the way back and the copy
+   that passes a different package leaves the stock home disabled. `tests/test_folder_undo_agrees.py` names each
+   difference (the Skyworth 7S60_A5 README passed the Coocaa home while its list passed nothing). The third is
+   a path from the repository root written in backticks, which is what a reader copies into a terminal: the
+   file `launcher/build-and-install.sh` with its suffix, never the bare name, and
+   `tests/test_example_readme_paths.py` reads every folder's README and names each path this tree does not have
+   (a Windows twin written with backslashes, a placeholder such as `examples/<your tv>/debloat.txt` and the
+   folders `.gitignore` lists are not read as paths). That
    `config.json` takes only the keys `themes/README.md`'s Keys table says a theme can set: the rows it marks
    `config.xml` only - the vendor settings screens, the icon tiles - are never read out of a pushed file, so
    `theme.sh` drops them without a word and the launcher keeps its own value. A set that needs one wants that
@@ -49,9 +63,10 @@ list at the end of `examples/README.md`. A folder in `examples/` must have packa
 ## Update an existing list
 
 Keep the header accurate: add the second unit's model, firmware and region rather than replacing the first.
-Explain each added or re-enabled package in a comment. A list that disables the firmware updater says why in the
-header; keeping it enabled is preferred. `pm hide` or `pm block` needs the matching undo in the header. Edits to
-someone else's list are judgement calls, so say in the PR which TV you tested on and for how long. If the row
-should say something new, change the folder's `tv.json`, not the tables.
+Explain each added or re-enabled package in a comment. If the folder's README says how many packages the list
+holds, that number moves with the list in the same edit (step 6). A list that disables the firmware updater says
+why in the header; keeping it enabled is preferred. `pm hide` or `pm block` needs the matching undo in the header.
+Edits to someone else's list are judgement calls, so say in the PR which TV you tested on and for how long. If the
+row should say something new, change the folder's `tv.json`, not the tables.
 
 Then run the tests: `python3 -m unittest discover -s tests -v`.

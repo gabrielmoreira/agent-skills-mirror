@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 42 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,17 +90,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.agents/skills/triaging-issues/labels.json`](.agents/skills/triaging-issues/labels.json) |
 | 30 | ✓ | [`.agents/skills/triaging-issues/pt2-triage-rubric.md`](.agents/skills/triaging-issues/pt2-triage-rubric.md) |
 | 31 | ✓ | [`.agents/skills/triaging-issues/README.md`](.agents/skills/triaging-issues/README.md) |
-| 32 | ✓ | [`.agents/skills/triaging-issues/scripts/validate_issue_target.py`](.agents/skills/triaging-issues/scripts/validate_issue_target.py) |
-| 33 | ✓ | [`.agents/skills/triaging-issues/scripts/validate_labels.py`](.agents/skills/triaging-issues/scripts/validate_labels.py) |
-| 34 | ✓ | [`.agents/skills/triaging-issues/SKILL.md`](.agents/skills/triaging-issues/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/triaging-issues/templates.json`](.agents/skills/triaging-issues/templates.json) |
-| 36 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 38 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 39 | ✓ | [`docs/source/distributed/elastic/examples.md`](docs/source/distributed/elastic/examples.md) |
-| 40 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
-| 41 | ✓ | [`torch/distributed/AGENTS.md`](torch/distributed/AGENTS.md) |
-| 42 | ✓ | [`torch/distributed/CLAUDE.md`](torch/distributed/CLAUDE.md) |
+| 32 | ✓ | [`.agents/skills/triaging-issues/SKILL.md`](.agents/skills/triaging-issues/SKILL.md) |
+| 33 | ✓ | [`.agents/skills/triaging-issues/templates.json`](.agents/skills/triaging-issues/templates.json) |
+| 34 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 37 | ✓ | [`docs/source/distributed/elastic/examples.md`](docs/source/distributed/elastic/examples.md) |
+| 38 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
+| 39 | ✓ | [`torch/distributed/AGENTS.md`](torch/distributed/AGENTS.md) |
+| 40 | ✓ | [`torch/distributed/CLAUDE.md`](torch/distributed/CLAUDE.md) |
 
 ---
 

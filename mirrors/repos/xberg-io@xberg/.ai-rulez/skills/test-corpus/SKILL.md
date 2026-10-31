@@ -1,7 +1,7 @@
 ---
 type: Playbook
 title: Test Corpus
-description: "The test_documents corpus (submodule, bucket-fetched): read_test_fixture, missing fixtures, A/B controls. Use on a fresh clone or a missing fixture."
+description: "Fetch test_documents fixtures or use read_test_fixture and A/B corpus controls."
 x-ai-rulez:
   kind: skill
   id: test-corpus

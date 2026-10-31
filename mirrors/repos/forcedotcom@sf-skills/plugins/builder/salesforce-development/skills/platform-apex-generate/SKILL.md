@@ -7,6 +7,8 @@ metadata:
   minApiVersion: "66.0"
   relatedSkills:
     - "platform-apex-test-generate"
+    - "dx-code-analyzer-run"
+    - "integration-apex-symbol-table-query"
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
@@ -47,6 +49,7 @@ All steps are sequential. Do not skip, merge, or reorder. If blocked, stop and a
    - Service-Selector-Domain layering, logging utilities
    - Existing classes/triggers and current trigger framework or handler pattern
    - Whether Trigger Actions Framework (TAF) is already in use
+   - Signatures of classes and built-in types you will call or extend: use `integration-apex-symbol-table-query` (API v67.0+); if unavailable, read the source
 
 2. **Choose the smallest correct pattern** (see Type-Specific Guidance below)
 
@@ -57,22 +60,22 @@ All steps are sequential. Do not skip, merge, or reorder. If blocked, stop and a
 
 4. **Author with guardrails** -- apply every rule in the Rules section below
    - Generate `{ClassName}.cls` with ApexDoc
-   - Generate `{ClassName}.cls-meta.xml`   
+   - Generate `{ClassName}.cls-meta.xml`
 
-5. **Generate test classes** -- Load the skill `platform-apex-test-generate` to create `{ClassName}Test.cls` and `{ClassName}Test.cls-meta.xml`.  Apex tests are always required to be generated to deploy. No test file creation or edits can occur without loading the  `platform-apex-test-generate` skill to generate tests.
+5. **Generate test classes** -- Load the skill `platform-apex-test-generate` to create `{ClassName}Test.cls` and `{ClassName}Test.cls-meta.xml`. Apex tests are required to deploy; never create or edit test files without loading it.
 
 ### Phase 2 — Validate (required before reporting)
 
-Writing files is the midpoint, not the finish line. Steps 6 and 7 each require a tool invocation and produce output that must appear in the Step 8 report. Do not summarize or present the report until both steps have run and their output is captured.
+Steps 6 and 7 each require a tool invocation and produce output that must appear in the Step 8 report. Do not present the report until both have run and their output is captured.
 
 6. **Run code analyzer**
-   - Invoke MCP `run_code_analyzer` on all generated/updated `.cls` files.
+   - Use the `dx-code-analyzer-run` skill on all generated/updated `.cls` files.
    - Remediate all `sev0`, `sev1`, and `sev2` violations; re-run until clean.
-   - Capture the final tool output verbatim for the report.
-   - Fallback: `sf code-analyzer run --target <target>`. If both are unavailable, record `run_code_analyzer=unavailable: <error>` in the report.
+   - Keep the final tool output verbatim for the report.
+   - Fallback: `sf code-analyzer run --target <target>`. If both are unavailable, record `code_analyzer=unavailable: <error>` in the report.
 
 7. **Execute Apex tests**
-   - Run org tests including `{ClassName}Test` via `sf apex run test` or MCP.
+   - Run org tests including `{ClassName}Test` via `sf apex run test`.
    - Delegate all test generation/fixes/coverage work to `platform-apex-test-generate`; iterate until the tests pass.
    - Capture pass/fail counts and coverage percentage for the report.
    - If unavailable, record `test_execution=unavailable: <error>` in the report.
@@ -80,9 +83,9 @@ Writing files is the midpoint, not the finish line. Steps 6 and 7 each require a
 ### Phase 3 — Report
 
 8. **Report** -- use the output format at the bottom of this file.
-   - The `Analyzer` line must contain the actual Step 6 tool output (or `run_code_analyzer=unavailable: <reason>` after attempting invocation).
-   - The `Testing` line must contain the actual Step 7 results (or `test_execution=unavailable: <reason>` after attempting invocation).
-   - A report missing either line is incomplete. Always attempt the tool invocation before recording unavailable.
+   - The `Analyzer` line must contain the actual Step 6 tool output (or `code_analyzer=unavailable: <reason>` after attempting it).
+   - The `Testing` line must contain the actual Step 7 results (or `test_execution=unavailable: <reason>` after attempting it).
+   - A report missing either line is incomplete; always attempt the invocation before recording unavailable.
 
 ---
 
@@ -392,7 +395,7 @@ Files: <paths>
 Design: <pattern / framework choices>
 Workflow: all steps completed (1-8); any N/A justified
 Risks: <security, bulkification, async, dependency notes>
-Analyzer: <REQUIRED -- paste actual run_code_analyzer output or state "run_code_analyzer=unavailable: <reason>">
+Analyzer: <REQUIRED -- paste actual code analyzer output or state "code_analyzer=unavailable: <reason>">
 Testing: <REQUIRED -- paste actual test execution results (pass/fail, coverage) or state "test_execution=unavailable: <reason>">
 Deploy: <dry-run or next step>
 ```

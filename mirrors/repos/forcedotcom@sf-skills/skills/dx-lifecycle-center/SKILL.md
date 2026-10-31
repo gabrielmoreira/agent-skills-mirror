@@ -38,7 +38,7 @@ Connect (B) and deploy or quick deploy (D) change an org, so they wait for the u
 
 ## Routing (deterministic)
 
-Scripts and references are paths inside this skill's folder (the folder that holds this file). This skill owns every request below. Pick the operation by these rules **in order; the first match wins**. Do not hand these requests to another skill, and do not answer them from general knowledge.
+Scripts, references, and assets are paths inside this skill's folder, `<skill_dir>`: the location given for this skill when it was listed or loaded, without the trailing `/SKILL.md`. Run every script as `bash <skill_dir>/scripts/<script>` from the current folder. Do not `cd` first (the current folder sets the default org for `sf`), and never guess another folder or search the filesystem for the skill. This skill owns every request below. Pick the operation by these rules **in order; the first match wins**. Do not hand these requests to another skill, and do not answer them from general knowledge.
 
 | # | The request | Operation |
 |---|---|---|
@@ -83,6 +83,7 @@ A bare "deploy" with no DX Inspector context is a question, not a deploy.
 - Make one attempt per API call. Never retry in a loop, resubmit after a timeout, or invent an id, credential name, or status.
 - Never ask for, print, or pass an access token. Never show row ids or credential names.
 - Never say a browser was opened. Give the login link and wait for the user to reply **done**.
+- Pass `render_widget` only a `CARD_JSON` line that `scripts/widget.sh` printed, exactly as printed. Never write, invent, or edit a card.
 - Do not guess a missing input. Ask one question for the first missing input.
 - Ask the user to confirm an org type that the URL host does not decide. Never infer it from an environment name.
 
@@ -93,7 +94,7 @@ A bare "deploy" with no DX Inspector context is a question, not a deploy.
 | **A** list | Only the table and the closing sentence (`list-orgs.md`, section 4). No raw JSON, no extra offers. |
 | **A** not enabled | The one-sentence message in `list-orgs.md`, section 2. Nothing else. |
 | **B** connect | The sign-in layout with a button-style link (`connect-org.md`, Step 2), then after **done** the connected layout: environment name, org host, type, and status (`connect-org.md`, Step 5). |
-| **C** | The exact sentences in `hub-org.md`. When connecting, the same sign-in and connected layouts as B, in hub form. |
+| **C** | The exact sentences in `hub-org.md`. When connecting, the same sign-in and connected layouts as B, in hub form, or the sign-in and connected cards when the `render_widget` tool is available (`connect-org.md`, Steps 2 and 5). |
 | **D** | A plain-language report: what was deployed, from where, to where, and the outcome (`deploy.md`, Step 7). No raw JSON. If the deploy is still running after about 2 minutes: the `requestId`, a note that it is in progress, and a request to send the id back to get the status (`deploy.md`, Step 6). |
 
 ## If something fails
@@ -118,3 +119,5 @@ A bare "deploy" with no DX Inspector context is a question, not a deploy.
 - `examples/workflows.md`: worked prompts for each operation.
 - `scripts/resolve-environment.sh`: read-only list and identifier resolver.
 - `scripts/poll-deploy-status.sh`: read-only status poller. Reads the Simple Deploy endpoint and `DevopsRequestInfo`, and reports component errors on failure.
+- `scripts/widget.sh`: Operation C, Steps 2 and 5, only when the `render_widget` tool is available. Fills a card from `assets/widgets/` with `scripts/fill-widget.jq`, checks it with `scripts/card-policy.jq`, and prints `CARD_JSON <json>` or `CARD_UNAVAILABLE <reason>`. Makes no API call.
+- `assets/widgets/<name>/`: the HXL chat cards (`connect-sign-in`, `connect-connected`), each a tile tree `<name>.json` and the `schema.json` of its values.

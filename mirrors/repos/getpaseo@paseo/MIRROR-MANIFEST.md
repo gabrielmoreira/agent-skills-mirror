@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 47 followed patterns, 65 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 48 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 47 followed patterns, 65 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 47 |
-| Files         | 65 |
+| Followed pats | 48 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,6 +80,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 47 followed patterns, 65 fil
 - `docs/connected-hosts.md`
 - `docs/permissions.md`
 - `docs/terminal-performance.md`
+- `docs/terminal-rendering.md`
 - `docs/agent-stream-performance.md`
 - `docs/markdown-renderer.md`
 - `docs/native-text-selection.md`
@@ -164,12 +165,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
 | 58 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
 | 59 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 60 | → | [`docs/terminal-worker.md`](docs/terminal-worker.md) |
-| 61 | → | [`docs/testing.md`](docs/testing.md) |
-| 62 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 63 | → | [`docs/website-i18n.md`](docs/website-i18n.md) |
-| 64 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
-| 65 | → | [`SECURITY.md`](SECURITY.md) |
+| 60 | → | [`docs/terminal-rendering.md`](docs/terminal-rendering.md) |
+| 61 | → | [`docs/terminal-worker.md`](docs/terminal-worker.md) |
+| 62 | → | [`docs/testing.md`](docs/testing.md) |
+| 63 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 64 | → | [`docs/website-i18n.md`](docs/website-i18n.md) |
+| 65 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
+| 66 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

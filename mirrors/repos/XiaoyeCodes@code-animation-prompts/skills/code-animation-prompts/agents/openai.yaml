@@ -1,0 +1,4 @@
+interface:
+  display_name: "代码动画 · 341 种风格"
+  short_description: "从 341 种风格中挑选视觉语言，制作可编辑代码动画与视频"
+  default_prompt: "使用 $code-animation-prompts，帮我选一种适合内容的风格，并制作可编辑的代码动画。"

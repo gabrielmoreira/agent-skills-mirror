@@ -162,9 +162,12 @@ sprite-gen video-loop --frames-dir frames/keyed/ --out-dir loop/ \
   --state walk --fps <measured-source-fps> --anchor motion-auto
 ```
 
-`video-set --states walk,run --anchor motion-auto` uses the same path. Other
-states and fixed/manual cuts are rejected before generation. The defaults above
-remain unchanged. This mode accepts no supplied regions or frame indices.
+`video-set` takes the same path by default: each walk or run item whose loop is
+searched is cut with `motion-auto` and its view, every other item with `none`,
+and `--anchor none` cuts every item as before. Given explicitly,
+`--anchor motion-auto` is used for every item, and other states and fixed/manual
+cuts are rejected before generation. The defaults above remain unchanged. This
+mode accepts no supplied regions or frame indices.
 
 The script searches a grid in the upper part of the foreground for two separated,
 textured regions. It ranks their normalized cross-correlation across time and
@@ -222,11 +225,12 @@ A walk whose two steps look alike — its legs drawn alike, from the side or a d
 one step long (or, past a tail on its own beat, three), and the search has nothing to refuse it on:
 the step repeats. Where the clip shows its feet pass, the cut is counted on those crossings and is
 two steps long — any length the count allows, past the window for a slow walk — joined at the walk's
-own point (`cycle.step_count`; [loop repair](loop-repair.md) section 3, "The step count"). The search's
-cut stands where the clip a cut on is the same picture though the count says one step and the feet stand
-together through most of a step (a pass hidden behind the other foot), and where no cut of two steps closes in
-its place. Where it
-does not, the cut is screened the other way, over the whole clip (`cycle.step_screen`): where twice it
+own point (`cycle.step_count`; [loop repair](loop-repair.md) section 3, "The step count"). Where the far
+foot passes hidden behind the near one, or the clip's view is given (`--view`) and is not `side`, the
+crossings are asked whether they mark cycles instead of steps (`local_cycle.read_cycles`); where they do,
+one crossing interval is two steps and the cut is one cycle long. The search's cut stands where no cut of
+two steps closes in its place. Where the clip does not show its feet pass, the cut is screened the other
+way, over the whole clip (`cycle.step_screen`): where twice it
 repeats better than it, the report names it a suspect and nothing else changes. Look at the loop and
 count its steps (how often each foot lands); `video-loop --steps 1` cuts it again two of its lengths
 long, `--steps 2` keeps it and says so ([loop repair](loop-repair.md) section 3, "The step screen").

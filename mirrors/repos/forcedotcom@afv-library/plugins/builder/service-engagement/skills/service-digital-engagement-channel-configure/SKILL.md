@@ -138,6 +138,8 @@ All steps are sequential. Do not skip or reorder.
    - `isSaveTranscriptEnabled` — save conversation transcripts
    - `maxFileSize` — maximum attachment size in MB
 
+9a. **Configure session inactivity (optional)** — ask using the Setup labels and set the top-level fields per `references/channel_settings.md` → "Setup Prompts: Session Inactivity".
+
 10. **Configure messaging keywords** — generate `<messagingKeywords>` elements:
     - `OptOut` type with individual `<keyword>` elements: cancel, end, quit, stop, stopall, unsubscribe
     - `Help` type with `<keyword>`: help
@@ -176,7 +178,7 @@ All steps are sequential. Do not skip or reorder.
 17. **Report** — delegated: return the contract §5 result and stop. Standalone: continue.
 
 18. **Present output** (standalone) — show the generated file to the user with a summary of configured settings and confirm activation status. Offer next steps:
-    - **Automated responses** — ask if the user wants to configure `<automatedResponses>` (OptOutConfirmation, HelpResponse). If yes, generate elements with `autoResponseContentType: TextResponse`, `language`, and XML-escaped `response` text, then redeploy.
+    - **Automated responses** — ask which messages the user wants using the Setup labels per `references/channel_settings.md` → "Setup Prompts: Automated Responses", then redeploy.
 
 ---
 
@@ -219,7 +221,7 @@ All steps are sequential. Do not skip or reorder.
 | Custom parameters not collected | `name` must be unique per channel |
 | `<customParameters>` deploy fails: "bad value for restricted picklist field" | `parameterDataType` was set to something other than `String`. Channel custom parameters are always `String`; set the field's actual type (Number, Checkbox, dropdown) at the deployment level, not here |
 | Removing a custom parameter: "can't be deleted as it is referenced elsewhere" | **Check before deploying, not after.** Every deployment on this channel whose pre-chat form uses the param must first drop that field and be published (user-approved); remove the param's `actionParameterMappings` in a separate deploy first. See `references/channel_settings.md` §Removing a Custom Parameter |
-| Automated responses not showing | Use exact `type` values (`OptOutConfirmation`, `HelpResponse`); XML-escape special characters |
+| Automated response / session-inactivity deploy fails | See `references/channel_settings.md` → "Automated Responses", "Session Settings" |
 | Channel deployed but messages not routing | Channel must be activated after deployment — it defaults to inactive |
 | "You can't enable Session-Based Chat for verified users" | Set `isSynchronousChatEnabled` to `false` for Auth channels — session-based chat is only valid for UnAuth |
 
@@ -252,9 +254,8 @@ All steps are sequential. Do not skip or reorder.
 - [ ] If UnAuth, is `anonymousUserJwtExpirationTime` set (default 360, range 60-4320)?
 - [ ] If Auth, is `verifiedUserJwtExpirationTime` set (default 60, range 60-240)?
 
-### Automated Response Checks (only if user requested)
-- [ ] Do all `type` values use valid IDs (`OptOutConfirmation`, `HelpResponse`)?
-- [ ] Are special characters XML-escaped in `response` text?
+### Session Inactivity / Automated Response Checks (only if user requested)
+- [ ] Checked against `references/channel_settings.md` (Session Settings, Automated Responses)?
 
 ### Keyword Checks
 - [ ] Is there at least an `OptOut` keyword type defined?
@@ -283,6 +284,7 @@ File structure follows the template in `assets/messaging_channel_template.xml`.
 | Creating the Omni-Channel Flow for routing | `automation-flow-generate` skill |
 | Creating permission sets for messaging agents | `platform-permission-set-generate` skill |
 | Creating the Embedded Service Deployment | `service-digital-engagement-deployment-configure` skill |
+| Creating the `ConversationMessageDefinition` an automated response references | `conversation-message-definition-builder` skill |
 
 ---
 

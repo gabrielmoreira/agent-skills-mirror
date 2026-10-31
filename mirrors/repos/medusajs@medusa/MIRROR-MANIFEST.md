@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 180 file(s) materialized.
+Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 182 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 180 fi
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 180 |
+| Files         | 182 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -202,43 +202,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 141 | ✓ | [`packages/modules/providers/notification-local/CLAUDE.md`](packages/modules/providers/notification-local/CLAUDE.md) |
 | 142 | ✓ | [`packages/modules/providers/notification-sendgrid/AGENTS.md`](packages/modules/providers/notification-sendgrid/AGENTS.md) |
 | 143 | ✓ | [`packages/modules/providers/notification-sendgrid/CLAUDE.md`](packages/modules/providers/notification-sendgrid/CLAUDE.md) |
-| 144 | ✓ | [`packages/modules/providers/payment-stripe/AGENTS.md`](packages/modules/providers/payment-stripe/AGENTS.md) |
-| 145 | ✓ | [`packages/modules/providers/payment-stripe/CLAUDE.md`](packages/modules/providers/payment-stripe/CLAUDE.md) |
-| 146 | ✓ | [`packages/modules/providers/search-postgres/AGENTS.md`](packages/modules/providers/search-postgres/AGENTS.md) |
-| 147 | ✓ | [`packages/modules/providers/search-postgres/CLAUDE.md`](packages/modules/providers/search-postgres/CLAUDE.md) |
-| 148 | ✓ | [`packages/modules/rbac/AGENTS.md`](packages/modules/rbac/AGENTS.md) |
-| 149 | ✓ | [`packages/modules/rbac/CLAUDE.md`](packages/modules/rbac/CLAUDE.md) |
-| 150 | ✓ | [`packages/modules/region/AGENTS.md`](packages/modules/region/AGENTS.md) |
-| 151 | ✓ | [`packages/modules/region/CLAUDE.md`](packages/modules/region/CLAUDE.md) |
-| 152 | ✓ | [`packages/modules/sales-channel/AGENTS.md`](packages/modules/sales-channel/AGENTS.md) |
-| 153 | ✓ | [`packages/modules/sales-channel/CLAUDE.md`](packages/modules/sales-channel/CLAUDE.md) |
-| 154 | ✓ | [`packages/modules/search/AGENTS.md`](packages/modules/search/AGENTS.md) |
-| 155 | ✓ | [`packages/modules/search/CLAUDE.md`](packages/modules/search/CLAUDE.md) |
-| 156 | ✓ | [`packages/modules/settings/AGENTS.md`](packages/modules/settings/AGENTS.md) |
-| 157 | ✓ | [`packages/modules/settings/CLAUDE.md`](packages/modules/settings/CLAUDE.md) |
-| 158 | ✓ | [`packages/modules/stock-location/AGENTS.md`](packages/modules/stock-location/AGENTS.md) |
-| 159 | ✓ | [`packages/modules/stock-location/CLAUDE.md`](packages/modules/stock-location/CLAUDE.md) |
-| 160 | ✓ | [`packages/modules/store/AGENTS.md`](packages/modules/store/AGENTS.md) |
-| 161 | ✓ | [`packages/modules/store/CLAUDE.md`](packages/modules/store/CLAUDE.md) |
-| 162 | ✓ | [`packages/modules/tax/AGENTS.md`](packages/modules/tax/AGENTS.md) |
-| 163 | ✓ | [`packages/modules/tax/CLAUDE.md`](packages/modules/tax/CLAUDE.md) |
-| 164 | ✓ | [`packages/modules/translation/AGENTS.md`](packages/modules/translation/AGENTS.md) |
-| 165 | ✓ | [`packages/modules/translation/CLAUDE.md`](packages/modules/translation/CLAUDE.md) |
-| 166 | ✓ | [`packages/modules/user/AGENTS.md`](packages/modules/user/AGENTS.md) |
-| 167 | ✓ | [`packages/modules/user/CLAUDE.md`](packages/modules/user/CLAUDE.md) |
-| 168 | ✓ | [`packages/modules/workflow-engine-inmemory/AGENTS.md`](packages/modules/workflow-engine-inmemory/AGENTS.md) |
-| 169 | ✓ | [`packages/modules/workflow-engine-inmemory/CLAUDE.md`](packages/modules/workflow-engine-inmemory/CLAUDE.md) |
-| 170 | ✓ | [`packages/modules/workflow-engine-redis/AGENTS.md`](packages/modules/workflow-engine-redis/AGENTS.md) |
-| 171 | ✓ | [`packages/modules/workflow-engine-redis/CLAUDE.md`](packages/modules/workflow-engine-redis/CLAUDE.md) |
-| 172 | ✓ | [`packages/plugins/draft-order/AGENTS.md`](packages/plugins/draft-order/AGENTS.md) |
-| 173 | ✓ | [`packages/plugins/draft-order/CLAUDE.md`](packages/plugins/draft-order/CLAUDE.md) |
-| 174 | ✓ | [`packages/plugins/loyalty/AGENTS.md`](packages/plugins/loyalty/AGENTS.md) |
-| 175 | ✓ | [`packages/plugins/loyalty/CLAUDE.md`](packages/plugins/loyalty/CLAUDE.md) |
-| 176 | ✓ | [`www/apps/api-reference/CLAUDE.md`](www/apps/api-reference/CLAUDE.md) |
-| 177 | ✓ | [`www/apps/book/CLAUDE.md`](www/apps/book/CLAUDE.md) |
-| 178 | ✓ | [`www/apps/book/public/llms.txt`](www/apps/book/public/llms.txt) |
-| 179 | ✓ | [`www/apps/resources/.cursorrules`](www/apps/resources/.cursorrules) |
-| 180 | ✓ | [`www/apps/resources/CLAUDE.md`](www/apps/resources/CLAUDE.md) |
+| 144 | ✓ | [`packages/modules/providers/payment-adyen/AGENTS.md`](packages/modules/providers/payment-adyen/AGENTS.md) |
+| 145 | ✓ | [`packages/modules/providers/payment-adyen/CLAUDE.md`](packages/modules/providers/payment-adyen/CLAUDE.md) |
+| 146 | ✓ | [`packages/modules/providers/payment-stripe/AGENTS.md`](packages/modules/providers/payment-stripe/AGENTS.md) |
+| 147 | ✓ | [`packages/modules/providers/payment-stripe/CLAUDE.md`](packages/modules/providers/payment-stripe/CLAUDE.md) |
+| 148 | ✓ | [`packages/modules/providers/search-postgres/AGENTS.md`](packages/modules/providers/search-postgres/AGENTS.md) |
+| 149 | ✓ | [`packages/modules/providers/search-postgres/CLAUDE.md`](packages/modules/providers/search-postgres/CLAUDE.md) |
+| 150 | ✓ | [`packages/modules/rbac/AGENTS.md`](packages/modules/rbac/AGENTS.md) |
+| 151 | ✓ | [`packages/modules/rbac/CLAUDE.md`](packages/modules/rbac/CLAUDE.md) |
+| 152 | ✓ | [`packages/modules/region/AGENTS.md`](packages/modules/region/AGENTS.md) |
+| 153 | ✓ | [`packages/modules/region/CLAUDE.md`](packages/modules/region/CLAUDE.md) |
+| 154 | ✓ | [`packages/modules/sales-channel/AGENTS.md`](packages/modules/sales-channel/AGENTS.md) |
+| 155 | ✓ | [`packages/modules/sales-channel/CLAUDE.md`](packages/modules/sales-channel/CLAUDE.md) |
+| 156 | ✓ | [`packages/modules/search/AGENTS.md`](packages/modules/search/AGENTS.md) |
+| 157 | ✓ | [`packages/modules/search/CLAUDE.md`](packages/modules/search/CLAUDE.md) |
+| 158 | ✓ | [`packages/modules/settings/AGENTS.md`](packages/modules/settings/AGENTS.md) |
+| 159 | ✓ | [`packages/modules/settings/CLAUDE.md`](packages/modules/settings/CLAUDE.md) |
+| 160 | ✓ | [`packages/modules/stock-location/AGENTS.md`](packages/modules/stock-location/AGENTS.md) |
+| 161 | ✓ | [`packages/modules/stock-location/CLAUDE.md`](packages/modules/stock-location/CLAUDE.md) |
+| 162 | ✓ | [`packages/modules/store/AGENTS.md`](packages/modules/store/AGENTS.md) |
+| 163 | ✓ | [`packages/modules/store/CLAUDE.md`](packages/modules/store/CLAUDE.md) |
+| 164 | ✓ | [`packages/modules/tax/AGENTS.md`](packages/modules/tax/AGENTS.md) |
+| 165 | ✓ | [`packages/modules/tax/CLAUDE.md`](packages/modules/tax/CLAUDE.md) |
+| 166 | ✓ | [`packages/modules/translation/AGENTS.md`](packages/modules/translation/AGENTS.md) |
+| 167 | ✓ | [`packages/modules/translation/CLAUDE.md`](packages/modules/translation/CLAUDE.md) |
+| 168 | ✓ | [`packages/modules/user/AGENTS.md`](packages/modules/user/AGENTS.md) |
+| 169 | ✓ | [`packages/modules/user/CLAUDE.md`](packages/modules/user/CLAUDE.md) |
+| 170 | ✓ | [`packages/modules/workflow-engine-inmemory/AGENTS.md`](packages/modules/workflow-engine-inmemory/AGENTS.md) |
+| 171 | ✓ | [`packages/modules/workflow-engine-inmemory/CLAUDE.md`](packages/modules/workflow-engine-inmemory/CLAUDE.md) |
+| 172 | ✓ | [`packages/modules/workflow-engine-redis/AGENTS.md`](packages/modules/workflow-engine-redis/AGENTS.md) |
+| 173 | ✓ | [`packages/modules/workflow-engine-redis/CLAUDE.md`](packages/modules/workflow-engine-redis/CLAUDE.md) |
+| 174 | ✓ | [`packages/plugins/draft-order/AGENTS.md`](packages/plugins/draft-order/AGENTS.md) |
+| 175 | ✓ | [`packages/plugins/draft-order/CLAUDE.md`](packages/plugins/draft-order/CLAUDE.md) |
+| 176 | ✓ | [`packages/plugins/loyalty/AGENTS.md`](packages/plugins/loyalty/AGENTS.md) |
+| 177 | ✓ | [`packages/plugins/loyalty/CLAUDE.md`](packages/plugins/loyalty/CLAUDE.md) |
+| 178 | ✓ | [`www/apps/api-reference/CLAUDE.md`](www/apps/api-reference/CLAUDE.md) |
+| 179 | ✓ | [`www/apps/book/CLAUDE.md`](www/apps/book/CLAUDE.md) |
+| 180 | ✓ | [`www/apps/book/public/llms.txt`](www/apps/book/public/llms.txt) |
+| 181 | ✓ | [`www/apps/resources/.cursorrules`](www/apps/resources/.cursorrules) |
+| 182 | ✓ | [`www/apps/resources/CLAUDE.md`](www/apps/resources/CLAUDE.md) |
 
 ---
 

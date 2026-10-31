@@ -270,6 +270,12 @@ Standalone volumes additionally use `m20261029_000001_volume_creation`: nullable
 
 The existing unknown-migration admission rule still applies: older SDKs and CLIs refuse to reopen this upgraded home. Use a supporting SDK and CLI, a supported downgrade, or a separate `MSB_HOME`. Already-running older VMs retain their existing sandbox/run tables and SQL; their continued operation must be validated separately from catalog reopening. No stop-all-sandboxes upgrade gate is added. The recovery ordering covers launcher/process interruption; it does not strengthen the catalog's existing host-power-loss durability settings.
 
+### Protected sandbox state
+
+The protected-layout security exception requires a patched SDK/CLI and a runtime advertising `protected_guest_state` for every new VM launch, including restart and restore. Missing capability or a failed probe produces an upgrade-required error before layout migration. The existing catalog admission rule excludes old SDKs/CLIs from an upgraded home; old tools remain usable in eligible unupgraded homes. Stop old SDK/CLI applications sharing a home during its upgrade. Already-running VMs retain their existing database contract and gain the new boundary only after restart. New SDKs refuse live storage capture and maintenance until that restart; exec and stop remain available.
+
+Only `sbx/guest-state/` is exported as `/.msb`; authoritative root/owned-disk journals, checkpoints, object stores, and growth/compaction staging live in the host-managed sandbox namespace. Simple legacy state is reconstructed from host configuration under lifecycle ownership; ambiguous chains and checkpoints require recovery. A host-side preparation record supports crash-forward retry. Catalog protection is recorded before filesystem admission, and downgrade refuses while any protected or preparing sandbox remains. Legacy journal and heartbeat guards reject old runtime startup; they do not isolate an already-exploited process running as the same host user.
+
 ## 7. Home and Runtime Path Layout
 
 Directory names under `MSB_HOME` and the runtime directory are durable locators used by binaries from different releases. This includes the database, cache, sandboxes, volumes, snapshots, logs, secrets, TLS material, SSH state, sockets, locks, journals, and configuration files.

@@ -1,273 +1,125 @@
 ---
 name: platform-policy-rule-generate
-description: "Use this skill when authoring PolicyRuleDefinition and PolicyRuleDefinitionSet metadata XML for Salesforce Data Cloud governance policies, or when editing *.policyRuleDefinition / *.policyRuleDefinitionSet files. Covers the category decision tree, full schema for all policy variants (ACCESS, GOVERNANCE, RECORD, TRANSFORM), UI-compatibility rules for the Data Governance Policy Builder, output hygiene for user-facing agent responses, and validation guardrails. Do NOT use this skill for UserAccessPolicy, AccessPolicy, SharingRules, PermissionSet, or any other access-control metadata type — those have their own types and live outside the PolicyRuleDefinition schema."
+description: "THE skill for creating a Data Cloud / Data Governance access policy — authors and deploys a PolicyRuleDefinitionSet + PolicyRuleDefinition pair (CRUD) covering OLS, FLS, RLS, masking/transform, and tag/classification-based access for the DATACLOUD or ALL consumer. TRIGGER when the user wants to create/write/author a Data Cloud or Data Governance policy, access policy, or policy rule, or to grant access to a Data Cloud object THROUGH A POLICY — a Data Cloud policy-create request routes here, not to the tag/classification surface. Resolves every reference via Data 360 MCP. SCOPE: Data Cloud policies only (not Security Center, DSAR, or User Access Policies). DO NOT TRIGGER to create tags/classifications, or to grant object/dataspace access via a PERMISSION SET / RBAC grant (use platform-dataspace-access-configure). For a vague object-access ask, surface both skills and ASK the permission-set way vs the policy way; if unsure the object is Data Cloud, ask which first."
 metadata:
-  version: "1.0"
+  relatedSkills:
+    - "platform-dataspace-access-configure"
+  version: "2.0"
   domains: ["Platform", "Data 360"]
-  minApiVersion: "64.0"
+  minApiVersion: "66.0"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6.0"
-    - tool: ["sf"]
-      semver: ">=2.0.0"
+  mcpTools:
+    data360:
+      tools: ["execute", "payload_examples", "search"]
+      semver: ">=1.0.0"
+    headless-360:
+      tools: ["discover", "describe", "dispatch", "dispatch_readonly"]
+      semver: ">=1.0.0"
 ---
 
-# Authoring Policy Rule Definitions
+# Generate Policy Rule Metadata
 
-**Gating:** requires the `EnforceOMatic` and `PolicyRuleMDAPI` org permissions. 
-**Min API version:** 64.0 (66.0 for conditions using `PolicyJsonExpression`).
+This skill generates H360 policy metadata for the explicit `DATACLOUD` or `ALL` consumer. OLS, FLS, RLS, and Transform are shared policy shapes; `DATACLOUD` additionally requires the Data Governance Policy Builder contract. `ALL` uses the general metadata/runtime contract and does not inherit DG UI restrictions.
 
-This skill covers the **on-disk metadata XML format** for authoring policies. Use it whenever a task asks to write a `*.policyRuleDefinition` or `*.policyRuleDefinitionSet` file, or ship a metadata package containing them. The runtime side (RuleProvider, hooks) is out of scope.
+## When to use this skill (routing)
 
----
+This is the single entry point for **creating a Data Cloud / Data Governance access policy** (a `PolicyRuleDefinitionSet` + `PolicyRuleDefinition` pair). Any request to *create / write / author a policy, an access policy, a data governance policy, a Data Cloud policy, or a policy rule* (OLS / FLS / RLS / masking / tag- or classification-based object access) **whose target is Data Cloud** routes here — **do not** hand a Data Cloud policy-create request to the Data Governance tag/classification surface; that surface owns tags and classifications, not policy authoring.
 
-> **Eval coverage:** This skill is exercised by the team's ADK eval framework, not by `tests/evals/` under the skill directory. Five datasets covering the ACCESS / GOVERNANCE / RECORD / TRANSFORM variants live in `packages/adk-eval/eval/domains/platform-policy-rule-generate/datasets/`.
+**Scope today: Data Cloud policies only.** This skill covers Data Cloud / Data Governance access policies. It does **not** yet cover core administrative policies, CMDB policies, or other non-Data-Cloud policy types (those are a planned future extension), and it is **not** the route for Security Center security policies, DSAR policies, or User Access Policies — leave those to their own core surfaces. If a policy-create request does not name Data Cloud and it is unclear whether the target object is a Data Cloud object, **ask which object first** (or whether it is Data Cloud) before routing here; core access-control surfaces (e.g. `scoped-access`) surfacing for a non-Data-Cloud request is legitimate.
 
-## 1. Package Layout
+Two adjacent skills, and how this one relates:
 
-A deployable package always contains:
+- **Data Governance tags / classifications** (create a tag, create/assign a classification, list governance tags): that is a *different* surface (`data360` Data Governance). This skill only *consumes* already-existing tags/classifications as policy references — it does not create them.
+- **`platform-dataspace-access-configure`** — the **permission-set / RBAC** way to grant object or dataspace access (PermissionSet `dataspaceScopes` + the Object Access Grants Connect API). Data-space access grants go there.
+
+**Object access can be granted two ways — infer from context, ask only when vague.** For a Data Cloud / Data Governance object-access request, read the framing before acting:
+
+- The user is **driving from a permission set** (mentions a permission set, RBAC, or an object grant on a permset) → this is an **object access grant** → route to `platform-dataspace-access-configure`, no need to ask.
+- The user **frames it as a policy** (says policy, access policy, policy rule, OLS/FLS/RLS, tag/classification-based) → **create the policy here**, no need to ask.
+- The request is **genuinely vague** — "grant object access to X" with no mechanism and no clue → **ASK** whether they want the **permission-set way** (`platform-dataspace-access-configure`) or the **access-policy way** (this skill). If it is also unclear whether the object is Data Cloud, ask which object first.
+
+"Access to a **data space**" is the permission-set path — route it to `platform-dataspace-access-configure`.
+
+H360 policy **create / read / update** run over the headless-360 MCP `/headless/metadata` MD-CRUD path via `dispatch`: `discover`/`describe` the operation, then `dispatch` a POST create / PUT update of the generated XML and `dispatch_readonly` GET it back to verify. See `references/headless-transport.md` for the exact request/response shapes. There is **no `sf`/MDAPI fallback** — if the headless-360 MCP session is unavailable, or the type/op is not yet on the MD-CRUD allowlist (`400 UNSUPPORTED_OPERATION`), or the org lacks feature provisioning (`400 FIELD_INTEGRITY_EXCEPTION`), surface that gap to the operator rather than routing around it. This skill covers **create, read, update, and delete (CRUD)**. **Delete does NOT run over `/headless/metadata`** — Core has no real metadata delete (a metadata DELETE 405s, and the interim delete is a no-op 200 that removes nothing), so a policy is deleted over the Data 360 MCP **Data Governance Access Policy** surface (`d360_data_governance_access_policy_delete`), which removes the Access Policy and every embedded rule by developer name. See the "Deleting a Policy" section below. Use the Data 360 MCP tools to resolve exact org references before writing XML — `search`/`payload_examples`/`execute` against read-only lookup operations (tag, classification, dataspace, and every resource object: custom/derived DMO via `d360_dmo_list`/`d360_dmo_get`, standard DMO via `d360_data_model_objects_list`/`d360_data_model_object_get`, DLO via `d360_dlo_list`/`d360_dlo_get`, calculated insight object via `d360_ci_list`/`d360_ci_get`). Only when no Data 360 MCP session is reachable, resolve a custom `__dlm` DMO's fields by a read-only headless-360 `dispatch_readonly` sObject describe as a last resort (it can miss `__dlm` objects — see `references/reference-resolution.md`). Author **creates and updates only** over `/headless/metadata` MD-CRUD — never via a Data 360 MCP `_create`/`_update` operation; the Data 360 MCP mutation surface is used only for **delete** (`access_policy_delete`, whole-policy) and, to remove a single rule while keeping the policy, `access_policy_rule_replace`. All tag/classification/dataspace/DMO/DLO/CIO lookups stay read-only. Never resolve a reference through an `sf` CLI command.
+
+## Deterministic Workflow
+
+1. Require `consumer`: accept only `DATACLOUD` or `ALL`; do not infer or default it.
+2. Select the operating mode. Use normal author mode unless the request explicitly says to recreate a named retrieved evidence package exactly. In explicit evidence-recreation mode, the named API 69.0 example is authoritative: preserve its condition order, exact conjunctions, persisted `SCALAR_ATTRIBUTE`/`SOQLTARGETLISTEXPR` operands, and evidence values, while omitting `builderCompatible` and `builderValidated`. Exact recreation takes precedence over normal authoring rewrites and target-org re-resolution. It proves only evidence fidelity, not current-org authorability, runtime enforcement, or Policy Builder validation.
+3. Identify the policy set developer name and rule developer name.
+4. Choose the shared policy shape, category, effect, action, and resource scope **deterministically from the request signal** — do not ask the user "is this OLS/RLS/FLS?" when the signal is clear (read of a specific named object → RLS; hide a field → FLS; mask a field value → Transform; tag/classification tenant-wide → OLS). See `references/policy-shapes.md#selecting-the-shape-deterministic--do-not-ask-the-user`. Every renderable rule MUST carry **at least one resource condition** (principal conditions are optional; a zero-conditions or principal-only rule is not deployable/renderable) — if the shape has no valid resource condition (e.g. object-wide read with no row filter), obtain a resource condition or route object-wide read to the permission-set path (`platform-dataspace-access-configure`) rather than authoring an unrenderable rule.
+5. In normal author mode, resolve every tag, classification, custom permission, DMO/DLO, field, resource domain, join field, and principal field in the target org through MCP — never through an `sf` CLI command. Resolve tags, classifications, dataspaces, and every resource object's schema and fields through the Data 360 MCP read-only lookup operations from `references/reference-resolution.md#data-360-mcp-lookup-operations`. Resource objects are not only DMOs — resolve custom/derived DMOs (the `__dlm` suffix that most `resourceDomains` entries target) via `d360_dmo_list`/`d360_dmo_get` (family `DataModelObject`), standard/canonical DMOs via `d360_data_model_objects_list`/`d360_data_model_object_get` (family `DataModelObjectCatalog`), raw ingested DLOs via `d360_dlo_list`/`d360_dlo_get`, and calculated insight objects (CIOs) via `d360_ci_list`/`d360_ci_get`. `d360_dmo_get` returns the DMO with all field definitions; pass `includeFields:"true"` to `d360_dmo_list`. Only when no Data 360 MCP session is reachable, resolve a custom `__dlm` DMO's field API names with a read-only headless-360 `dispatch_readonly` sObject describe as a last resort — it can miss `__dlm` objects that are absent from the sObjects surface, so prefer `d360_dmo_get` whenever Data 360 MCP is available. For custom permissions and ID-valued principal comparisons (e.g. `ProfileId`), for which no Data 360 MCP lookup exists, resolve read-only through `dispatch_readonly` (a SOQL `/query` or metadata read). The MCP path addresses the org implicitly and `/headless/metadata` resolves the API version server-side, so no `ORG_ID`/`ORG_API_VERSION` resolution is needed; evidence-recreation fixtures retain the `{API_VERSION}` placeholder for the eval harness. User-provided values may be developer names, fully qualified names, labels, or partial descriptions: resolve each to the exact target-org developer/API name before generating XML. A Data 360 MCP lookup result's `id` is not the value to persist unless the field itself is ID-valued (e.g. `ProfileId`). For STANDARD_TAG/STANDARD_CLASSIFICATION `<valueReference>` values, construct the dotted path per `references/reference-resolution.md#constructing-valuereference-for-standard_tag--standard_classification` — it is not a single-field copy from the lookup record. For other `<valueDomain>`/`<select>` values, take the resolved developer/API name from the same record. When a label or description matches a reference, retain the resolved developer/API name in the metadata and do not emit the label unless the schema explicitly requires a label. Never invent reference names, infer a developer name from a label, or reuse evidence-package values.
+6. Construct the shared policy model from `references/condition-model.md`; reject `PLACEHOLDER` because it is internal-only.
+7. In normal author mode, if `consumer=DATACLOUD`, apply `references/consumer-datacloud-ui.md`: build a typed custom-conjunction plan for the API/UI projection, serialize it as nested MDAPI `conjunctionExpression` `AND`/`OR` groups, enforce one action and one resource domain, reject plural principal attributes, and validate directional scalar/RLS capabilities. If `consumer=ALL`, apply only `references/consumer-all.md` and base validation; make no UI-renderability claim. In evidence-recreation mode, preserve the named example's exact conjunction instead of recompiling it.
+8. Number conditions only after grouping is complete, validate complete conjunction coverage, then render XML. For evidence recreation, retain the evidence condition order and validate its existing numbering without rewriting it.
+9. Author the set XML and the definition XML as two components, omitting `builderCompatible` and `builderValidated`. The MD-CRUD path takes each component's XML directly as `xmlRep` (see step 10) — no `package.xml`/manifest or `ORG_API_VERSION` interpolation is required. Eval fixtures retain the `{API_VERSION}` placeholder for the harness.
+10. **Preview and confirm before writing.** The deterministic routing means no mid-flow clarifying questions; the single human checkpoint is here. Show the operator the resolved shape, target object/references, and the concrete rule (conditions + effect) and get an explicit go-ahead before the create/update dispatch. Then verify via the transport: flatten the generated `.policyRuleDefinitionSet`/`.policyRuleDefinition` XML to a single-line string (a defensive default — a properly-escaped multi-line `xmlRep` also persists, but single-line sidesteps any client that mangles newlines), `dispatch` a POST create (PUT for an update) to `/headless/metadata` for the set and then the rule, and `dispatch_readonly` GET each back to confirm a 2xx response. See `references/headless-transport.md` for the exact request/response shapes, the `xmlRep` newline guidance, and the transient-retry note. **UI-renderable-contract check:** the set read-back must carry server-added `<builderCompatible>false</builderCompatible>` and `<builderValidated>false</builderValidated>` even though neither was authored — `false` is EXPECTED for a hand-authored create ("not yet builder-validated," not "not renderable") and is the concrete signal the policy was accepted as a DG-builder-class object. Both flags remain server-managed; never author either one.
+
+## Deleting a Policy
+
+Delete a policy over the Data 360 MCP **Data Governance Access Policy** surface, **not** `/headless/metadata` — Core has no real metadata delete (a metadata DELETE 405s or no-ops), so it never belongs on that transport. A `PolicyRuleDefinitionSet` authored by this skill surfaces there as an **Access Policy** addressable by its developer name. Because hand-authored sets land `builderCompatible: false`, an `access_policy_list` needs `includeIncompatible: true` to show them, but `access_policy_get` and `access_policy_delete` work by name regardless of builder-compatibility.
+
+`d360_data_governance_access_policy_delete` takes a single `name` (the set's developer name) and is a **whole-policy delete**: one call removes the Access Policy **and every embedded rule** (its `PolicyRuleDefinition` members). There is therefore **no leaf-before-parent ordering** and **no discrete single-rule delete** — to drop one rule while keeping the policy, re-author the surviving rule set via `d360_data_governance_access_policy_rule_replace` instead. Confirm the delete by reading the policy back with `d360_data_governance_access_policy_get` by name: a not-found result (or the policy being absent from an `includeIncompatible` list) is the success signal. There is **no `sf` CLI fallback**.
+
+## Validated Policy Shapes
+
+For an object-level security policy with tags/classifications and principal conditions, begin with `references/examples/TaggedObjectAccess/`. Select the conjunction contract from the explicit consumer: `DATACLOUD` requires the UI custom-conjunction form; `ALL` uses the general form.
+
+The real example has:
+
+- One `PolicyRuleDefinitionSet`: `TaggedObjectAccess`.
+- One `PolicyRuleDefinition`: `TaggedObjectAccess_Rule_1`.
+- `GOVERNANCE_POLICY_RULE_DEFINITION`.
+- `Permit` and `TupleRead`.
+- `ANY` resource scope.
+- Two entity-type conditions, one principal-permission condition, one principal-expression condition, and two tag conditions.
+- A grouped conjunction expression: `(AND (OR 1 2) (AND 3 4) (AND 5 6))`.
+
+For the validated field-level security deny shape, use `references/examples/FieldReadDeny/`: `GOVERNANCE_POLICY_RULE_DEFINITION`, `Forbid`, `Read`, and one entity-type discriminator whose right operand is `FIELD`. This example validates the deny shape; it does not establish that every other FLS shape is invalid.
+
+For the validated field-masking shape, use `references/examples/LastCharactersFieldMasking/`: `TRANSFORM_POLICY_RULE_DEFINITION`, `Transform`, `Read`, `FIELD` scope, an explicit `resourceTransform`, and one entity-type discriminator whose right operand is `FIELD`. The retrieved `LAST_N_CHARS_RESOURCE_TRANSFORM` uses a top-level `resourceExpression` of type `ARGLIST`; do not generalize its argument shape to other transforms.
+
+For the validated row-level security shapes, use `references/examples/PrincipalFieldMatchRLS/` for direct record-field comparisons and `references/examples/ExistsJoinRLS/` for an `EXISTS` join block. Both use `RECORD_POLICY_RULE_DEFINITION`, `Permit`, `Read`, `RECORD` scope, and an exact target DMO in `policyRuleResourceDomains`. Resolve every DMO and field in the target org before authoring.
+
+Dataspace-scoped OLS is parked and unsupported because the UI-retrieved references did not pass MDAPI validation in the source org. Do not construct it until a separately validated real-org shape is available.
+
+## Required References
+
+- `references/condition-model.md`: how to construct a condition as left operand, operator, and right operand.
+- `references/condition-templates.md`: copyable condition shapes.
+- `references/resource-expression.md`: resource-side projections, joins, aliases, and predicates.
+- `references/policy-shapes.md`: deterministic OLS, FLS, and masking top-level fields.
+- `references/principal-expression.md`: principal-side `SOQLTARGETLISTEXPR` expressions.
+- `references/conjunction-expression.md`: one-indexed boolean grouping.
+- `references/reference-resolution.md`: exact target-org reference resolution.
+- `references/headless-transport.md`: the `dispatch`/`dispatch_readonly` `/headless/metadata` request/response shapes (the sole transport; no CLI fallback).
+- `references/consumer-datacloud-ui.md`: Data Governance UI grouping, cardinality, scalar attributes, and RLS field capabilities.
+- `references/consumer-all.md`: general `ALL` consumer contract.
+- `references/runtime-context.md`: `MIN_API_VERSION`, `ORG_API_VERSION`, and evidence-version handling.
+- `references/conjunction-compiler.md`: deterministic bucket, index, and custom-conjunction construction.
+- `references/examples/TaggedObjectAccess/`: semantic OLS evidence package.
+- `references/examples/FieldReadDeny/`: semantic FLS deny evidence package.
+- `references/examples/LastCharactersFieldMasking/`: semantic field-masking evidence package.
+- `references/examples/PrincipalFieldMatchRLS/`: semantic direct-comparison RLS evidence package.
+- `references/examples/ExistsJoinRLS/`: semantic projection-join RLS evidence package.
+
+The semantic examples are derived from retrieved server output and retain source-org-specific values. Whether a given example also retains the server-managed compatibility flags depends on when it was captured, not on a contract — `TaggedObjectAccess`'s set, for instance, carries only `<label>` and no compatibility flags, while the other four examples do carry them. They prove persisted metadata shapes, not Policy Builder open/save compatibility or a public MDAPI enum contract. Treat them as evidence, not directly deployable templates. Do not copy persisted compatibility fields, IDs, references, or undocumented enum values into authored packages; resolve every org-specific value again, change component identities and requested policy values, and validate the result in the target org.
+
+## Package Contract
 
 ```text
-<fixture>/
+<policy>/
   package.xml
   policyRuleDefinitionSets/<setName>.policyRuleDefinitionSet
   policyRuleDefinitions/<ruleName>.policyRuleDefinition
 ```
 
-`package.xml` template (use `<version>[ftest]</version>` for ftests, `64.0` or higher for real orgs):
+The rule must contain `<policyRuleDefinitionSetName>` equal to the set filename without its extension. The package must list both metadata types.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>Rule0</members>
-        <name>PolicyRuleDefinition</name>
-    </types>
-    <types>
-        <members>Set1</members>
-        <name>PolicyRuleDefinitionSet</name>
-    </types>
-    <version>64.0</version>
-</Package>
-```
+Both the set and the rule take a human-readable `<label>`. The set's `<label>` conventionally matches its developer name (`TaggedObjectAccess`'s set uses `<label>TaggedObjectAccess</label>`); the rule's `<label>` conventionally identifies its position within the set (`TaggedObjectAccess_Rule_1` uses `<label>Rule 1</label>`). This is a plain descriptive label, distinct from the reference-resolution rule against emitting a *resolved-reference* label (see `references/reference-resolution.md`): never substitute a tag/classification/permission's display label for its resolved developer/API name, but the set's and rule's own `<label>` are always fine to author.
 
----
+The MD-CRUD path sends each component's XML as `xmlRep` and resolves the API version server-side, so no `package.xml`/manifest `<version>` and no `ORG_API_VERSION` interpolation are required. The `package.xml` shown above and the `<version>{API_VERSION}</version>` placeholder are retained only for the eval fixtures and as the logical component set. Historical evidence versions are provenance only. Never modify the caller's `sfdx-project.json` to set an operation-specific version.
 
-## 2. PolicyRuleDefinitionSet Schema
-
-```xml
-<PolicyRuleDefinitionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>Set1</label>
-    <description>Optional free text</description>
-    <replicated>false</replicated>             <!-- MinAppVersion 260 -->
-    <builderCompatible>true</builderCompatible> <!-- MinAppVersion 262, author-settable -->
-    <!-- builderValidated: server-managed — do not set in authored XML -->
-</PolicyRuleDefinitionSet>
-```
-
-| Element | Req | Notes |
-|---------|-----|-------|
-| `<label>` | yes | Master label. File basename (devName) is the MDAPI identifier, not the label. |
-| `<description>` | no | Free text. |
-| `<replicated>` | no | `true` triggers placeholder transformation across companion orgs. Omit for null/false. |
-| `<builderCompatible>` | no | `true` = rules audited per §7 checklist. `false` = API-only. Omit = unaudited. Informational only — no deploy/runtime effect. |
-| `<builderValidated>` | no | **Server-managed. Never set in authored XML.** Server overwrites on validation. |
-
----
-
-## 3. PolicyRuleDefinition — Core Fields
-
-| Element | Req | Notes |
-|---------|-----|-------|
-| `<label>` | yes | MasterLabel. |
-| `<category>` | yes | See §4. Drives `resourceScopeType` and whether `policyRuleResourceDomains`/`resourceTransform` are required. **Does NOT constrain `effect` outside of TRANSFORM.** |
-| `<effect>` | yes | `Permit`, `Forbid`, or `Transform`. The only category-coupling enforced by core: `effect=Transform ↔ category=TRANSFORM_POLICY_RULE_DEFINITION` (bidirectional). All other categories accept Permit and Forbid freely. |
-| `<action>` | yes (≥1) | `Read`, `TupleRead`, `Create`, etc. Multiple elements OR-combine. |
-| `<policyRuleDefinitionSetName>` | yes | Developer name of parent set. |
-| `<principalScopeType>` | yes | Always `ANY`. |
-| `<resourceScopeType>` | yes | `ANY`, `FIELD`, `RECORD`, `DATASPACE`, or `SPAN`. Must match category (§4). |
-| `<principalAuthenticationLevel>` | no | `INTERNAL`, `AUTHENTICATED`, `UNIDENTIFIED`, `IDENTIFIED`. |
-| `<ruleConsumer>` | no | `ALL`, `DATACLOUD`, `MULESOFT`, `TABLEAU`, `CORE`. |
-| `<policyRuleResourceDomains>` | no | Required for RECORD (RLS) and FIELD-scope TRANSFORM rules only. Forbidden on ACCESS/GOVERNANCE. |
-| `<resourceTransform>` | no | Required (and only valid) when `category=TRANSFORM`. |
-| `<whenPolicyRuleDefinitionClauseConjunction>` | no | WHEN conditions. |
-| `<unlessPolicyRuleDefinitionClauseConjunction>` | no | UNLESS conditions. Not UI-editable — prefer WHEN + negated operator. |
-
----
-
-## 4. Category Decision Tree
-
-**Category names a domain (where in the platform's enforcement layers the rule applies). Effect names the action (allow / deny / transform). They are independent except for TRANSFORM.**
-
-The **only** Category × Effect rule the platform validates:
-
-- `effect=Transform` ⇔ `category=TRANSFORM_POLICY_RULE_DEFINITION` (bidirectional; mismatched throws `INVALIDFORCATEGORY`).
-- All other categories (`ACCESS`, `GOVERNANCE`, `RECORD`, `IDENTIFIED_RECORD`) accept either `Permit` or `Forbid`.
-
-> **Note on the platform's auto-fill default:** When `<category>` is omitted from authored XML, the server fills it in from `effect`: `Permit→ACCESS`, `Forbid→GOVERNANCE`, `Transform→TRANSFORM`. **This is a default-fill, not a validation.** If you author an explicit category that contradicts this default, it is accepted and persisted as-is.
-
-### Picking the category
-
-```text
-What kind of policy?
-│
-├── OLS/FLS allow/deny on tagged or classified resources
-│     category = ACCESS_POLICY_RULE_DEFINITION (allow/deny attestation in the access plane)
-│              | GOVERNANCE_POLICY_RULE_DEFINITION (governance-audited)
-│     effect = Permit | Forbid (chosen independently from category)
-│     resourceScopeType = ANY | FIELD | DATASPACE
-│     NO <policyRuleResourceDomains>
-│     condition: resourcePath=TAG|CLASSIFICATION CONTAINS_ANY <ref>
-│     For "objects AND all their fields" → action=TupleRead + OR-of-ENTITYTYPE clause (§7)
-│     Note: "Block access to Foo object" → tag Foo with <yourTag>, write rule on tag
-│        Do NOT use <resourceDomain>Foo</resourceDomain> — forbidden for ACCESS/GOVERNANCE
-│
-├── Row-level filter on a DMO/DLO
-│     category = RECORD_POLICY_RULE_DEFINITION
-│     effect = Permit | Forbid
-│     resourceScopeType = RECORD
-│     <policyRuleResourceDomains> = the DMO/DLO API name  ← entity targeting allowed here
-│
-├── Identified-Guest record access
-│     NOT authorable via MDAPI — SESSION_CONSUMER_ID is not in RuleContextPathType
-│        Must be implemented as a runtime RuleProvider.
-│
-└── Field masking
-      category = TRANSFORM_POLICY_RULE_DEFINITION   ← required by RuleBuilder validator
-      effect = Transform                            ← required by RuleBuilder validator
-      resourceScopeType = FIELD (structured) or SPAN (unstructured)
-      <policyRuleResourceDomains> = the DMO whose field is masked
-      <resourceTransform> required (e.g. NULL_RESOURCE_TRANSFORM, LAST_N_CHARS_RESOURCE_TRANSFORM)
-```
-
-### ACCESS vs GOVERNANCE — how to choose
-
-Both legally accept Permit and Forbid. Pick by *which enforcement layer should record/audit the rule* and **what the prompt literally asks for**:
-
-| Use case | Pick | Reason |
-|---|---|---|
-| The prompt names "ACCESS policy rule" / "access rule" / "OLS/FLS" explicitly | `ACCESS_POLICY_RULE_DEFINITION` | Matches the prompt's vocabulary; sits in the data-access enforcement layer. |
-| The prompt names "governance" / "audit" / "policy framework" / data-residency or compliance language | `GOVERNANCE_POLICY_RULE_DEFINITION` | Matches the prompt's vocabulary; rules surface in governance reporting. |
-| Prompt is ambiguous and only describes allow/deny semantics | Default to `ACCESS` for Permit, `GOVERNANCE` for Forbid (mirrors the platform's auto-fill default; safe and deployable, but **not required**) |
-
-> **Important — honor the explicit category in the prompt.** If the prompt says "ACCESS policy rule that denies …" or "GOVERNANCE policy rule that permits …", emit exactly that category. Do not silently swap to the auto-fill default just because effect is Forbid (or Permit). The platform accepts both. The agent must not override the user's stated intent.
-
-**Scope × category compatibility** — any combination outside this matrix throws `INVALIDFORCATEGORY`:
-
-|            | `ACCESS` | `GOVERNANCE` | `TRANSFORM` | `RECORD` |
-|------------|:--------:|:------------:|:-----------:|:--------:|
-| `ANY`      | Yes | Yes | No  | No  |
-| `DATASPACE`| Yes | Yes | No  | No  |
-| `FIELD`    | Yes | Yes | Yes | No  |
-| `RECORD`   | No  | No  | No  | Yes |
-| `SPAN`     | No  | No  | Yes | No  |
-
----
-
-## 5. Condition Patterns (Quick Reference)
-
-Every `<conditions>` block needs **all four**: `<clause>`, `<operator>`, one path element, and the value.
-
-| Goal | path element | operator | value |
-|------|-------------|----------|-------|
-| Resource has tag | `<resourcePath>TAG</resourcePath>` | `CONTAINS_ANY` | `<valueReferenceType>CUSTOM_TAG` \| `STANDARD_TAG</valueReferenceType>` |
-| Resource has classification | `<resourcePath>CLASSIFICATION</resourcePath>` | `CONTAINS_ANY` | `CUSTOM_CLASSIFICATION` \| `STANDARD_CLASSIFICATION` |
-| Principal has permission | `<principalPath>ASSIGNED_PERMISSIONS_PATH</principalPath>` | `CONTAINS_ANY` \| `CONTAINS_NONE` | `<valueReferenceType>CUSTOM_PERMISSION</valueReferenceType>` |
-| Session in dataspace | `<contextPath>SESSION_DATASPACE</contextPath>` | `CONTAINS_ANY` | `<valueReferenceType>DATASPACE</valueReferenceType>` |
-| Record field = user attribute | `<resourcePath>RECORDFIELD</resourcePath>` + `<valueDomain>Schema:field</valueDomain>` | `EQUALS` | `<valuePrincipalPath>USER_ID` \| `ORGANIZATION_ID` \| `USER_ROLE_ID</valuePrincipalPath>` |
-| Entity type check | `<resourcePath>ENTITYTYPE</resourcePath>` | `IS` | `<valueString>{"t":"Text","v":"FIELD"}</valueString>` |
-
-`<conjunctionExpression>` is 1-indexed prefix notation: `1`, `(AND 1 2)`, `(OR 1 2)`, `(AND (OR 1 2) (AND 3))`. A bare top-level index like `1` is valid for **deploy** but **crashes the Data Governance Policy Builder UI** — see §7 if UI editability matters.
-
-For full path enums (`RulePrincipalPathType`, `RuleResourcePathType`, `RuleContextPathType`), operators, and JSON expressions (PROJECTION / ARGLIST / SOQLTARGETLISTEXPR), see [`references/policy-schema-full.md`](references/policy-schema-full.md). 
-For copy-paste templates for all policy variants, see [`references/templates.md`](references/templates.md).
-
----
-
-## 6. Validation Guardrails
-
-1. Every `<conditions>` needs an `<operator>`. Missing operator → reject.
-2. Every `<conditions>` needs at least one path element (`<resourcePath>`, `<principalPath>`, `<contextPath>`, or `<valueDomain>`).
-3. `<contextPath>` is exclusively `SESSION_DATASPACE`. Never put a resource path value there.
-4. Scope × category must be in the §4 matrix. Common offenders: ACCESS/GOVERNANCE + RECORD scope; RECORD + ANY/FIELD scope; TRANSFORM + ANY/RECORD scope. (Effect is independent of category except for TRANSFORM — see §4.)
-5. `<resourceTransform>` and `effect=Transform` are coupled. Transform effect needs a resourceTransform. Permit/Forbid must not have one.
-6. `<policyRuleResourceDomains>` is **required** for RECORD (RLS) and FIELD-scope TRANSFORM; **forbidden** on ACCESS/GOVERNANCE.
-7. `<conjunctionExpression>` indices must match actual `<conditions>` count. Off-by-one → reject.
-8. `<clause>` inside `<conditions>` must match the wrapper (`WHEN` inside `<when…>`, `UNLESS` inside `<unless…>`).
-9. JSON literals in `<valueString>` must escape `"` to `&quot;`. Wrong escaping silently corrupts the literal.
-10. Reference targets (`<valueReference>`, `<resourceDomain>`) must exist in the target org at deploy time.
-11. `SCALAR_ATTRIBUTE` / `PLURAL_ATTRIBUTE` are not in `RulePrincipalPathType` — not in MDAPI contract. Use a runtime RuleProvider for those shapes.
-12. `IDENTIFIED_RECORD` is not authorable via MDAPI — `SESSION_CONSUMER_ID` not in `RuleContextPathType`.
-13. Standard tag/classification dev names are fully-qualified dotted paths (e.g. `DataGovernanceTags.ExternalData.Visibility.Public`). Retrieve an existing rule to get the exact string before authoring.
-14. Min API versions: `PolicyRuleDefinition` = 64.0; `PolicyJsonExpression` conditions = 66.0; `<replicated>` = 260+; `<builderCompatible>` / `<builderValidated>` = 262+.
-
-> **Note on `<conjunctionExpression>` shape:** A bare top-level index (e.g. `<conjunctionExpression>1</conjunctionExpression>`) deploys cleanly — the server-side parser accepts bare tokens at the top level. It is **not** a deploy-time validation error. It does, however, crash the Data Governance Policy Builder UI on load — see §7.
-
----
-
-## 7. UI Compatibility — Core Rules
-
-The Data Governance Policy Builder edits a **strict subset** of the MDAPI. Default goal: produce UI-compatible policies. Always confirm with the operator before producing API-only XML.
-
-**Hard blockers** — any of these make the policy uneditable (and several crash the builder on load):
-
-- **Missing OR-of-ENTITYTYPE clause on ACCESS/GOVERNANCE rules** → hard crash: `Cannot use 'in' operator to search for 'Permit' in undefined`. Required even when paired with `TupleRead` (where it's functionally redundant at runtime). Must include `IS` conditions for `{"t":"Text","v":"OBJECT"}` and `{"t":"Text","v":"FIELD"}`.
-- **Bare top-level condition index** in `<conjunctionExpression>` (e.g. `1`, or `(AND (OR 1 2) 3)`) → crash on builder load in `buildCriteria`. Deploy is unaffected, but the policy is uneditable in the UI. Always wrap: `(AND 1)` for a single condition; `(AND (OR 1 2) (AND 3))` instead of `(AND (OR 1 2) 3)`.
-- `category = ACCESS_POLICY_RULE_DEFINITION` + `effect = Forbid` → the **Data Governance Policy Builder UI** (not MDAPI) collapses it to GOVERNANCE on save; round-trip via the builder will rewrite the category. MDAPI deploy is unaffected — the original ACCESS+Forbid combination is valid and deploys without modification. If your goal is UI round-trippability, prefer GOVERNANCE for Forbid; if the source of truth is MDAPI, ACCESS+Forbid is fine.
-- Any `<unlessPolicyRuleDefinitionClauseConjunction>` block → silently dropped on first UI save.
-- More than one `<action>` → only the first is kept.
-- `ruleConsumer` ≠ `DATACLOUD` → UI hardcodes DATACLOUD on save.
-- Top-level `(OR 1 2)` conjunction → triggers `// ERROR: Unsupported rule!` path, rule silently dropped.
-
-**UI-compatible "unless" rewrite:**
-
-| Author intent | UI-compatible shape |
-|---|---|
-| `unless principal has permission X` | `WHEN ASSIGNED_PERMISSIONS_PATH CONTAINS_NONE X` |
-| `unless resource has tag X` | `WHEN TAG CONTAINS_NONE X` |
-| `unless record field = value` | `WHEN RECORDFIELD NOT_EQUALS value` |
-
-For the full UI-compatibility checklist, round-trip rules, and operator support matrix, see [`references/ui-compatibility.md`](references/ui-compatibility.md).
-
----
-
-## 8. Authoring Workflow
-
-1. **Start from the closest template** in [`references/templates.md`](references/templates.md) — modify from there, don't start blank.
-2. **Pick category first** (§4). Category fixes effect, resourceScopeType, and whether policyRuleResourceDomains/resourceTransform are required.
-3. **Lay out the bare rule**: top-level fields only, no conditions. Match the category template in [`references/templates.md`](references/templates.md).
-4. **Add conditions one at a time**, each with all four anchors: `<clause>`, `<operator>`, one path element, and the value.
-5. **Update `<conjunctionExpression>`** — 1-indexed prefix notation. Bare top-level index (e.g. `1`) deploys but breaks the UI; wrap as `(AND 1)` if UI editability matters (§7).
-6. **Run the UI-compatibility check** (§7 / [`references/ui-compatibility.md`](references/ui-compatibility.md)). If any item trips, attempt the "unless" rewrite first; if not possible, get explicit operator confirmation before continuing.
-7. **Update `package.xml`** — list each `<members>` for both types.
-8. **Set `<builderCompatible>`** on the set to `true` if §7 checklist passes; `false` if intentionally API-only.
-9. **Sanity-check against §6 (guardrails)** before considering done.
-10. **Validate with dry-run** before any non-dry deploy to a persistent org. Surface errors using the error reference in [`references/deploy-errors.md`](references/deploy-errors.md).
-
-**Three-layer correctness check** before done:
-- **Runtime enforcement** — does the rule enforce what's intended? (action choice, condition shape)
-- **MDAPI deploy validity** — does it deploy? (§6 guardrails, scope×category, tag dev names, org perms)
-- **UI editability** — can the builder render and re-save it? (§7 checklist, OR-of-ENTITYTYPE requirement)
-
----
-
-## 9. Output Hygiene — What the Agent Must NOT Say to the User
-
-The agent's user-facing chat response accompanies every generated file. Customers should never see internal engine or implementation details.
-
-- **Do NOT name the internal evaluation engine** in user-facing text — including but not limited to `Cedar`, `policy engine`, `AuthZ engine`, `evaluation engine`, `Rego`, `OPA`, or similar. The customer-facing surface is *Data Governance*, *Policy Builder*, *Data Cloud Governance* — use those terms only.
-- **Do NOT emit trailing "How it works at runtime" narratives** that describe evaluation flow, principal-resource matching semantics, or engine-internal condition ordering. The generated file is the artifact; a one-line summary of what deployed is enough. If the user explicitly asks how enforcement works, describe it in product terms (e.g. "Data Governance denies the read when …"), never in engine terms.
-- **Do NOT name internal packages, source directories, Java class names, method names, or line-number references** in user-facing text. Internal implementation identifiers are not customer-facing; refer to platform behavior in product terms only ("the server validates …", "Data Governance rejects …").
-- **Do NOT explain auto-fill / default-fill / fallback semantics** unless the user asks. Ship the rule; surface constraints only when they affect what the user has to do next (e.g. "the DMO tag must exist before deploy").
-
-If the user needs more context, they'll ask — respond then, in product language.
-
----
-
-## Reference Docs
-
-| Detail | File |
-|--------|------|
-| Full path enums, operators, value sets, JSON expressions (PROJECTION / ARGLIST / SOQLTARGETLISTEXPR) | [`references/policy-schema-full.md`](references/policy-schema-full.md) |
-| Copy-paste templates — index at [`references/templates.md`](references/templates.md); per-variant: [`templates-access.md`](references/templates-access.md), [`templates-record.md`](references/templates-record.md), [`templates-transform.md`](references/templates-transform.md), [`templates-advanced.md`](references/templates-advanced.md) |
-| Full UI-compatibility checklist, round-trip rules, operator/path support matrix | [`references/ui-compatibility.md`](references/ui-compatibility.md) |
+Do not author `builderCompatible` or `builderValidated`. Both appear in persisted metadata, and neither is part of the generated package contract until a separately defined Policy Builder validation workflow exists.

@@ -1,10 +1,12 @@
 # ACCESS / GOVERNANCE Templates
 
-Each template is a verified shape from a passing test fixture. Copy, then change names/values.
+The GOVERNANCE TupleRead shape is MDAPI persistence-validated. Policy Builder open/save compatibility is not yet validated. The ACCESS examples are older fixture-only shapes retained for explicitly requested API-only metadata.
+
+Prefer the complete semantic OLS evidence under `examples/TaggedObjectAccess/` and resolve every target-org value again.
 
 ---
 
-## ACCESS — Simple Permit (no conditions)
+## API-only ACCESS — Simple Permit (no conditions)
 
 Source: `baseSteelthread`
 
@@ -26,9 +28,9 @@ Source: `baseSteelthread`
 
 ---
 
-## ACCESS / GOVERNANCE — "Objects AND all their fields" via TupleRead (UI-compatible)
+## GOVERNANCE — "Objects AND all their fields" via TupleRead
 
-Source: see §8.2.1 of policy.md
+Source: `references/examples/TaggedObjectAccess/`
 
 Three required pieces:
 1. `<action>TupleRead</action>` — cascades object-level condition to fields
@@ -54,7 +56,7 @@ Three required pieces:
             <clause>WHEN</clause>
             <operator>IS</operator>
             <policyRuleValueSet>
-                <valueString>{&quot;t&quot;:&quot;Text&quot;,&quot;v&quot;:&quot;OBJECT&quot;}</valueString>
+                <valueText>OBJECT</valueText>
             </policyRuleValueSet>
             <resourcePath>ENTITYTYPE</resourcePath>
         </conditions>
@@ -62,7 +64,7 @@ Three required pieces:
             <clause>WHEN</clause>
             <operator>IS</operator>
             <policyRuleValueSet>
-                <valueString>{&quot;t&quot;:&quot;Text&quot;,&quot;v&quot;:&quot;FIELD&quot;}</valueString>
+                <valueText>FIELD</valueText>
             </policyRuleValueSet>
             <resourcePath>ENTITYTYPE</resourcePath>
         </conditions>
@@ -82,11 +84,11 @@ Three required pieces:
 </PolicyRuleDefinition>
 ```
 
-For **deny semantics**: `<effect>Forbid</effect>`. To add "deny unless permission Y", insert a 4th condition with `ASSIGNED_PERMISSIONS_PATH CONTAINS_NONE Y` and use `(AND (OR 1 2) (AND 3) (AND 4))`.
+Do not infer deny semantics from this Permit example. Use a separately retrieved and target-org-validated shape.
 
 ---
 
-## ACCESS — Gated by Tag / Classification / Permission
+## API-only ACCESS — Gated by Tag / Classification / Permission
 
 Source: `conditionTagValidSteelthread`, `conditionClassificationValidClauseSteelthread`, `conditionAssignedPermPathValidSteelthread`
 
@@ -113,7 +115,7 @@ Source: `conditionTagValidSteelthread`, `conditionClassificationValidClauseSteel
                 <valueReferenceType>CUSTOM_TAG</valueReferenceType>
             </policyRuleValueSet>
         </conditions>
-        <conjunctionExpression>1</conjunctionExpression>
+        <conjunctionExpression>(AND 1)</conjunctionExpression>
     </whenPolicyRuleDefinitionClauseConjunction>
 </PolicyRuleDefinition>
 ```
