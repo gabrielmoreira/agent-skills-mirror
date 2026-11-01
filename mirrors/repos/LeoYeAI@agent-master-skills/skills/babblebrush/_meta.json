@@ -1,0 +1,11 @@
+{
+  "owner": "kivs",
+  "slug": "babblebrush",
+  "displayName": "babbleBrush",
+  "latest": {
+    "version": "1.4.1",
+    "publishedAt": 1772390052818,
+    "commit": "https://github.com/openclaw/skills/commit/0870785aaadd8a1f50529fb1c45c6728ef57169e"
+  },
+  "history": []
+}

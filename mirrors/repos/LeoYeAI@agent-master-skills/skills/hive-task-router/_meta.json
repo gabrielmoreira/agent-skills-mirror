@@ -1,0 +1,11 @@
+{
+  "owner": "qiongqiongcaocao",
+  "slug": "hive-task-router",
+  "displayName": "Hive Task Router",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1773315783260,
+    "commit": "https://github.com/openclaw/skills/commit/70b98179270b6d4eac40af448f00da9295e363ac"
+  },
+  "history": []
+}

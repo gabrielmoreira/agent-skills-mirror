@@ -1,0 +1,17 @@
+{
+  "owner": "dorayo",
+  "slug": "orchestrix-guide",
+  "displayName": "Orchestrix Guide",
+  "latest": {
+    "version": "2.0.0",
+    "publishedAt": 1773830679214,
+    "commit": "https://github.com/openclaw/skills/commit/7795598636baf503ed559a23cd0b07110b1b4381"
+  },
+  "history": [
+    {
+      "version": "1.2.0",
+      "publishedAt": 1773410144231,
+      "commit": "https://github.com/openclaw/skills/commit/f8a0ca3b80c26792431f08ef890317ec9a73b791"
+    }
+  ]
+}

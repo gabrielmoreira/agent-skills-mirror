@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agavra/tuicr` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
+Mirror of `agavra/tuicr` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agavra/tuicr` — 26 default patterns, 1 followed patterns, 9 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/tuicr/SKILL.md`](skills/tuicr/SKILL.md) |
 | 5 | ✓ | [`skills/tuicr/tuicr-wrapper-cmux.sh`](skills/tuicr/tuicr-wrapper-cmux.sh) |
 | 6 | ✓ | [`skills/tuicr/tuicr-wrapper-herdr.sh`](skills/tuicr/tuicr-wrapper-herdr.sh) |
-| 7 | ✓ | [`skills/tuicr/tuicr-wrapper-zellij.sh`](skills/tuicr/tuicr-wrapper-zellij.sh) |
-| 8 | ✓ | [`skills/tuicr/tuicr-wrapper.sh`](skills/tuicr/tuicr-wrapper.sh) |
-| 9 | → | [`docs/CONFIG.md`](docs/CONFIG.md) |
+| 7 | ✓ | [`skills/tuicr/tuicr-wrapper-rex.sh`](skills/tuicr/tuicr-wrapper-rex.sh) |
+| 8 | ✓ | [`skills/tuicr/tuicr-wrapper-zellij.sh`](skills/tuicr/tuicr-wrapper-zellij.sh) |
+| 9 | ✓ | [`skills/tuicr/tuicr-wrapper.sh`](skills/tuicr/tuicr-wrapper.sh) |
+| 10 | → | [`docs/CONFIG.md`](docs/CONFIG.md) |
 
 ---
 

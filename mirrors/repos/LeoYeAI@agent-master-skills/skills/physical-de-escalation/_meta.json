@@ -1,0 +1,11 @@
+{
+  "owner": "howtousehumans",
+  "slug": "physical-de-escalation",
+  "displayName": "Physical De Escalation",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1774557324203,
+    "commit": "https://github.com/openclaw/skills/commit/be296f4d3ea6d782f0ced470230ca8ce7c416376"
+  },
+  "history": []
+}

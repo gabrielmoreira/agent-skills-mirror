@@ -1,0 +1,22 @@
+{
+  "owner": "guifav",
+  "slug": "gcp-fullstack",
+  "displayName": "Gcp Fullstack",
+  "latest": {
+    "version": "0.1.4",
+    "publishedAt": 1774230939533,
+    "commit": "https://github.com/openclaw/skills/commit/ea7e8dffe4c8b0df7799339f3e9019c5aaa6f4fe"
+  },
+  "history": [
+    {
+      "version": "0.1.1",
+      "publishedAt": 1772109451907,
+      "commit": "https://github.com/openclaw/skills/commit/1c4a74b8414c45528ed3f3e650302b95a3aadead"
+    },
+    {
+      "version": "0.1.0",
+      "publishedAt": 1771449008862,
+      "commit": "https://github.com/openclaw/skills/commit/a7b854f7959471dbc36ebb106566e54f4ae607dc"
+    }
+  ]
+}

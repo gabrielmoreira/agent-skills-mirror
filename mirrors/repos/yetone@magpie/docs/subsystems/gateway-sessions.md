@@ -170,6 +170,25 @@ capabilities to a gateway row. Verification: `TestDesktopSessionTitles`,
 `TestDesktopSessionTitleInStats`, `TestDesktopTitlesReadOncePerList`,
 `TestDesktopSessionTitlesOnPages`.
 
+Routing's stage names the session an account is serving (connor_yang on
+Discord): a row answering, or that answered, the request shown adds that
+request's session title after its status, on one line cut short with the
+whole line under the pointer. The title is what the list's By session heads
+use, from the same `/api/gateway/session-titles`: `sessions.Titles` by
+agent:id for every agent but Codex, Codex's name index by thread id (its
+parent's, for a subagent Codex names one for). The page keeps both by session
+id (`otherTitles`, `codexNames` in
+[`client.js`](../../internal/gui/assets/plugins/routing/client.js)), since each
+trace update brings its routes anew; a session not seen yet is asked about
+once (`askUnnamed`, skipped when a read since has taken it), and the rest
+with the list's 15-second refresh, never on the stage's per-second passes. A
+names reply silent on a Codex session (unknown to the index, or the index
+unread) leaves the title the trace brought, and only a reply that names it
+changes it. A session with no title says nothing more, and
+neither does a Codex request whose parent was only matched by its prompt
+(`parentMatched`), since that match is a guess. Verification:
+`routing-session-title.test.cjs`.
+
 A gateway projection can be deleted (lc on Discord). `sessions.DeleteGateway`
 moves its recorded text folders (`gateway-conversations/<date>/<identity hash>`)
 into magpie's session trash under `trash/sessions/gateway/`, with a note

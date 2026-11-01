@@ -1,0 +1,11 @@
+{
+  "owner": "xiao1804",
+  "slug": "agent-teams-simplify-and-harden",
+  "displayName": "Agent Teams Simplify And Harden",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1772726697295,
+    "commit": "https://github.com/openclaw/skills/commit/cee516282b9552b19f575e1b6282e2223f1fe383"
+  },
+  "history": []
+}

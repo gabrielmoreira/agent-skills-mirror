@@ -1,0 +1,17 @@
+{
+  "owner": "andaltan",
+  "slug": "threshold-keel",
+  "displayName": "Threshold Keel",
+  "latest": {
+    "version": "0.2.7",
+    "publishedAt": 1774534888523,
+    "commit": "https://github.com/openclaw/skills/commit/f1281ebcd6d51e222ae1c55f57bd54416d821bc3"
+  },
+  "history": [
+    {
+      "version": "0.2.5",
+      "publishedAt": 1774304607816,
+      "commit": "https://github.com/openclaw/skills/commit/08e4a5a2156d7a6dc4fbdaf12f4bec48c900d5fd"
+    }
+  ]
+}

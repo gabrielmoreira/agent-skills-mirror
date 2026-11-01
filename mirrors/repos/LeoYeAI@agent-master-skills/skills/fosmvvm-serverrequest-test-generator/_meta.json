@@ -1,0 +1,11 @@
+{
+  "owner": "foscomputerservices",
+  "slug": "fosmvvm-serverrequest-test-generator",
+  "displayName": "FOSMVVM ServerRequest Test Generator",
+  "latest": {
+    "version": "2.0.6",
+    "publishedAt": 1771086549364,
+    "commit": "https://github.com/openclaw/skills/commit/79565e1d4a597494f73bf3b6e30ff6a28c04d38d"
+  },
+  "history": []
+}

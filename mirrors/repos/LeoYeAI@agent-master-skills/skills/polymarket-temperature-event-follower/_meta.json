@@ -1,0 +1,11 @@
+{
+  "owner": "stefantaylor5",
+  "slug": "polymarket-temperature-event-follower",
+  "displayName": "Polymarket Temperature Event Follower",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1774488747386,
+    "commit": "https://github.com/openclaw/skills/commit/48df7ea0c17fe027712bdc752851c2710d3dab07"
+  },
+  "history": []
+}

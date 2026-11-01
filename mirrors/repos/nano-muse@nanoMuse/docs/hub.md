@@ -66,7 +66,12 @@ Two kinds of request travel over the hub:
   for a conversation that is already running one fails at once with `busy`
   (the runtime): the caller waits for the first to answer, or stops it, and
   asks again. A task that has not answered within the hub's limit fails with
-  `timeout`, one the target's Muse could not run with `failed`.
+  `timeout`, one the target's Muse could not run with `failed`. A task that reached its
+  conversation but never started (the step was refused before the model was asked) fails
+  too, with `failed`, rather than answering with no words: the asking device shows that
+  sentence and not an empty result. On nanoMuse Desktop a chat of the conversation that
+  was archived since the last delivery is brought back when a task arrives, as opening the
+  chat and typing in it does.
   `stream: true` says the caller draws each `text` in place of the text since the last `tool`;
   nanoMuse Desktop then also sends `text {text, interim, partial: true}` with the text of the
   message the model is writing, at most every 250 ms, and the finished message as before. A

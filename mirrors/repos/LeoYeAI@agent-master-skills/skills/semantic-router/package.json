@@ -1,0 +1,8 @@
+{
+  "name": "semantic-router",
+  "version": "8.0.0",
+  "description": "Intelligent semantic routing system. Layer2/Layer1/Layer3 parallel architecture: Layer2 (multi-word trigger_groups_all) and Layer1 (single-keyword fallback) independently determine the target pool; Layer3 (embedding) always runs in parallel to decide session continuity. B+ consecutive drift counter with 3-strike warn and 4-strike forced C-auto. soft_keywords for ambiguous terms.",
+  "main": "semantic_check.py",
+  "author": "halfmoon82",
+  "license": "MIT"
+}

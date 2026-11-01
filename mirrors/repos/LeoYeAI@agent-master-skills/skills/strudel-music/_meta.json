@@ -1,0 +1,42 @@
+{
+  "owner": "karmafeast",
+  "slug": "strudel-music",
+  "displayName": "Strudel Music",
+  "latest": {
+    "version": "1.2.1",
+    "publishedAt": 1772424919919,
+    "commit": "https://github.com/openclaw/skills/commit/3d93c4dba796703659654fd160bfd9b58a8c2cbc"
+  },
+  "history": [
+    {
+      "version": "0.3.1",
+      "publishedAt": 1772115873207,
+      "commit": "https://github.com/openclaw/skills/commit/dea15c92fd66e20728667a73f4aed4a32584e9b2"
+    },
+    {
+      "version": "2.0.0",
+      "publishedAt": 1772090335496,
+      "commit": "https://github.com/openclaw/skills/commit/46471ede356f9b90b26603adf162e1a0130a85ab"
+    },
+    {
+      "version": "1.0.4",
+      "publishedAt": 1771920513673,
+      "commit": "https://github.com/openclaw/skills/commit/a6dd1bfe43ca7e3ee717c1f5bf63b3b862d745f0"
+    },
+    {
+      "version": "1.0.3",
+      "publishedAt": 1771779219387,
+      "commit": "https://github.com/openclaw/skills/commit/f7b139c4218d0ac960ed9535239e44aa1c21525e"
+    },
+    {
+      "version": "0.1.0-dev+6efed04",
+      "publishedAt": 1771721807001,
+      "commit": "https://github.com/openclaw/skills/commit/02a2826c8d9b356c194985d4981b6e561b832938"
+    },
+    {
+      "version": "0.1.0",
+      "publishedAt": 1771705472770,
+      "commit": "https://github.com/openclaw/skills/commit/6b39b2c3734f5e48bfe6946731155f7fccaa6b24"
+    }
+  ]
+}

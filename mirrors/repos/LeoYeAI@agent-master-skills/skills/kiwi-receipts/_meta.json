@@ -1,0 +1,17 @@
+{
+  "owner": "maxazure",
+  "slug": "kiwi-receipts",
+  "displayName": "Kiwi Receipts",
+  "latest": {
+    "version": "2.0.1",
+    "publishedAt": 1773921363409,
+    "commit": "https://github.com/openclaw/skills/commit/52964f3a01cf365e10d031f92fe5248175641a4b"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1773911818632,
+      "commit": "https://github.com/openclaw/skills/commit/3aa9c9dcd638ec8b6e577732d0f945c7cfdee160"
+    }
+  ]
+}

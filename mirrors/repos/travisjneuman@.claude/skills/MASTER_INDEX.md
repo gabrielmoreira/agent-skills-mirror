@@ -16,6 +16,7 @@ Full cross-reference (skills, agents, commands, rules, docs, marketplaces): [`IN
 | `agent-blockchain-developer` | Desktop, systems & languages | name-only | Specialist subagent: Solidity, smart contracts, Web3, EVM, DeFi protocols, and blockchain development specialist. Use when writing smart co… |
 | `agent-brand-strategist` | Creative & content | name-only | Specialist subagent: Expert brand strategist for brand identity, positioning, naming, and brand guidelines |
 | `agent-browser-extension-developer` | Frontend, UI & UX | name-only | Specialist subagent: Chrome, Firefox, and cross-browser extension development specialist. Manifest V3, service workers, content scripts, an… |
+| `agent-browser` | Workflow & toolkit | name-only | Read-only browser source intake through agent-browser on approved hosts after recorded CamoFox blockers; dedicated Chrome profile and task-… |
 | `agent-cli-developer` | Desktop, systems & languages | name-only | Specialist subagent: Command-line tool development, argument parsing, interactive prompts, and terminal UI specialist. Use when building CL… |
 | `agent-cloud-architect` | DevOps, cloud & observability | name-only | Specialist subagent: Multi-cloud architecture, cost optimization, serverless vs containers, disaster recovery, and infrastructure design sp… |
 | `agent-code-explainer` | Quality, testing & maintenance | name-only | Specialist subagent: Explains complex code in clear, understandable terms. Use when onboarding to a codebase, understanding unfamiliar patt… |
@@ -24,6 +25,7 @@ Full cross-reference (skills, agents, commands, rules, docs, marketplaces): [`IN
 | `agent-data-engineer` | Data, ML & AI | name-only | Specialist subagent: ETL pipelines, data warehousing, stream processing, and data infrastructure specialist. Use when building data pipelin… |
 | `agent-database-expert` | Backend, APIs & data stores | name-only | Specialist subagent: Expert database architect and engineer for PostgreSQL, MongoDB, Redis, and all major databases. Use when designing sch… |
 | `agent-desktop-developer` | Desktop, systems & languages | name-only | Specialist subagent: Expert desktop application developer for Electron, Tauri, and native desktop development |
+| `agent-desktop` | Desktop, systems & languages | name-only | Control native desktop apps with agent-desktop accessibility snapshots and actions on macOS, Windows, or Linux. Use for desktop UI tasks, n… |
 | `agent-devops-engineer` | DevOps, cloud & observability | name-only | Specialist subagent: |
 | `agent-devsecops-engineer` | Security & compliance | name-only | Specialist subagent: CI/CD security, SAST/DAST pipelines, supply chain security, container scanning, and security automation specialist. Us… |
 | `agent-django-fastapi-expert` | Backend, APIs & data stores | name-only | Specialist subagent: Django ORM, Django REST Framework, FastAPI async patterns, and Pydantic v2 specialist. Use when building Python web ap… |
@@ -133,6 +135,7 @@ Full cross-reference (skills, agents, commands, rules, docs, marketplaces): [`IN
 | `health-wellness` | Research, learning & life | name-only | Workplace health and wellness expertise for employee wellness programs, mental health initiatives, ergonomics and safety, healthcare benefi… |
 | `hr-talent` | Business & product | name-only | HR and talent management expertise for talent acquisition, performance management, compensation strategy, organizational design, culture bu… |
 | `i18n-localization` | Frontend, UI & UX | name-only | Internationalization and localization for global applications. Use when adding multi-language support, handling regional formats, or prepar… |
+| `image-studio` | Other | core | Create, edit, find, or reuse images, logos, icons, illustrations, and visual assets through a private Image Studio library and MCP workflow. |
 | `impact-report-writer` | Creative & content | name-only | Nonprofit/NGO impact report generation with data visualization suggestions, outcome metrics, narrative structure, and program data presenta… |
 | `innovation` | Business & product | name-only | Innovation management expertise for innovation frameworks (Design Thinking, Stage-Gate), ideation processes, innovation portfolio managemen… |
 | `investment-memo-generator` | Business & product | name-only | Investment memo creation combining financial analysis, document generation, and structured templates. Use when creating investment memos, p… |

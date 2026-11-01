@@ -1,0 +1,35 @@
+{
+  "Highspeed": {
+    "description": "信息检索、网页搜索、协调沟通",
+    "primary": "custom-llmapi-lovbrowser-com/gpt-5.1-codex-mini",
+    "fallback_1": "custom-llmapi-lovbrowser-com/google/gemini-2.5-flash",
+    "fallback_2": "custom-llmapi-lovbrowser-com/gpt-5.3-codex",
+    "fallback_3": "zai/glm-4.7",
+    "name": "高速池"
+  },
+  "Intelligence": {
+    "description": "开发、自动化、系统运维",
+    "primary": "custom-llmapi-lovbrowser-com/gpt-5.3-codex",
+    "fallback_1": "custom-llmapi-lovbrowser-com/anthropic/claude-sonnet-4.6",
+    "fallback_2": "custom-llmapi-lovbrowser-com/anthropic/claude-opus-4.6",
+    "fallback_3": "zai/glm-5",
+    "name": "智能池"
+  },
+  "Humanities": {
+    "description": "内容生成、问答、培训、人文社科",
+    "primary": "custom-llmapi-lovbrowser-com/gpt-5.2",
+    "fallback_1": "custom-llmapi-lovbrowser-com/google/gemini-2.5-pro",
+    "fallback_2": "custom-llmapi-lovbrowser-com/gpt-5.4",
+    "fallback_3": "custom-llmapi-lovbrowser-com/anthropic/claude-sonnet-4.6",
+    "name": "人文池"
+  },
+  "Agentic": {
+    "name": "代理池",
+    "description": "长上下文代理任务、Computer Use、复杂多工具调用、专业知识工作（文档/表格）",
+    "primary": "custom-llmapi-lovbrowser-com/gpt-5.4",
+    "fallback_1": "custom-llmapi-lovbrowser-com/gpt-5.3-codex",
+    "fallback_2": "custom-llmapi-lovbrowser-com/anthropic/claude-opus-4.6",
+    "fallback_3": "kimi-coding/k2p5"
+  },
+  "version": "2.4.0"
+}

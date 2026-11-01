@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 495 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 496 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 495 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 495 |
+| Files         | 496 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -494,69 +494,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 430 | ✓ | [`.agents/skills/version-release/references/changelog-example/db-migration.md`](.agents/skills/version-release/references/changelog-example/db-migration.md) |
 | 431 | ✓ | [`.agents/skills/version-release/references/changelog-example/hotfix.md`](.agents/skills/version-release/references/changelog-example/hotfix.md) |
 | 432 | ✓ | [`.agents/skills/version-release/references/changelog-example/weekly-release.md`](.agents/skills/version-release/references/changelog-example/weekly-release.md) |
-| 433 | ✓ | [`.agents/skills/version-release/references/minor-release.md`](.agents/skills/version-release/references/minor-release.md) |
-| 434 | ✓ | [`.agents/skills/version-release/references/patch-release-scenarios.md`](.agents/skills/version-release/references/patch-release-scenarios.md) |
-| 435 | ✓ | [`.agents/skills/version-release/references/release-notes-style.md`](.agents/skills/version-release/references/release-notes-style.md) |
-| 436 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
-| 437 | ✓ | [`.agents/skills/write-landing-docs/references/self-hosting.md`](.agents/skills/write-landing-docs/references/self-hosting.md) |
-| 438 | ✓ | [`.agents/skills/write-landing-docs/SKILL.md`](.agents/skills/write-landing-docs/SKILL.md) |
-| 439 | ✓ | [`.agents/skills/zustand/references/data-structures.md`](.agents/skills/zustand/references/data-structures.md) |
-| 440 | ✓ | [`.agents/skills/zustand/references/data-structures/reducer.md`](.agents/skills/zustand/references/data-structures/reducer.md) |
-| 441 | ✓ | [`.agents/skills/zustand/references/data-structures/types.md`](.agents/skills/zustand/references/data-structures/types.md) |
-| 442 | ✓ | [`.agents/skills/zustand/references/legacy-slices.md`](.agents/skills/zustand/references/legacy-slices.md) |
-| 443 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
-| 444 | ✓ | [`.agents/ux/components.md`](.agents/ux/components.md) |
-| 445 | ✓ | [`.agents/ux/lobe-design-rules.md`](.agents/ux/lobe-design-rules.md) |
-| 446 | ✓ | [`.agents/ux/product.md`](.agents/ux/product.md) |
-| 447 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 448 | ✓ | [`apps/cli/README.md`](apps/cli/README.md) |
-| 449 | ✓ | [`apps/desktop/README.md`](apps/desktop/README.md) |
-| 450 | ✓ | [`apps/desktop/README.zh-CN.md`](apps/desktop/README.zh-CN.md) |
-| 451 | ✓ | [`apps/desktop/scripts/core-ota-test/README.md`](apps/desktop/scripts/core-ota-test/README.md) |
-| 452 | ✓ | [`apps/desktop/scripts/update-test/README.md`](apps/desktop/scripts/update-test/README.md) |
-| 453 | ✓ | [`apps/server/src/routers/lambda/__tests__/integration/README.md`](apps/server/src/routers/lambda/__tests__/integration/README.md) |
-| 454 | ✓ | [`apps/server/src/services/aiAgent/shareGate/README.md`](apps/server/src/services/aiAgent/shareGate/README.md) |
-| 455 | ✓ | [`apps/server/src/services/channel/README.md`](apps/server/src/services/channel/README.md) |
-| 456 | ✓ | [`apps/server/src/services/email/README.md`](apps/server/src/services/email/README.md) |
-| 457 | ✓ | [`apps/server/src/services/goal/supervisor/README.md`](apps/server/src/services/goal/supervisor/README.md) |
-| 458 | ✓ | [`apps/server/src/services/redis/README.md`](apps/server/src/services/redis/README.md) |
-| 459 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
-| 460 | ✓ | [`e2e/README.md`](e2e/README.md) |
-| 461 | ✓ | [`e2e/src/features/page/README.md`](e2e/src/features/page/README.md) |
-| 462 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 463 | ✓ | [`packages/achaos/README.md`](packages/achaos/README.md) |
-| 464 | ✓ | [`packages/agent-mock/README.md`](packages/agent-mock/README.md) |
-| 465 | ✓ | [`packages/agent-signal/README.md`](packages/agent-signal/README.md) |
-| 466 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 467 | ✓ | [`packages/alint/README.md`](packages/alint/README.md) |
-| 468 | ✓ | [`packages/builtin-agents/src/agents/page-agent/README.md`](packages/builtin-agents/src/agents/page-agent/README.md) |
-| 469 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 470 | ✓ | [`packages/builtin-tool-auv/README.md`](packages/builtin-tool-auv/README.md) |
-| 471 | ✓ | [`packages/database/src/repositories/channel/README.md`](packages/database/src/repositories/channel/README.md) |
-| 472 | ✓ | [`packages/database/src/repositories/ftsSearchDocument/migration/README.md`](packages/database/src/repositories/ftsSearchDocument/migration/README.md) |
-| 473 | ✓ | [`packages/electron-client-ipc/README.md`](packages/electron-client-ipc/README.md) |
-| 474 | ✓ | [`packages/electron-client-ipc/README.zh-CN.md`](packages/electron-client-ipc/README.zh-CN.md) |
-| 475 | ✓ | [`packages/electron-mac-notifications/README.md`](packages/electron-mac-notifications/README.md) |
-| 476 | ✓ | [`packages/electron-mac-permission-guide/README.md`](packages/electron-mac-permission-guide/README.md) |
-| 477 | ✓ | [`packages/electron-mac-sidebar-glass/README.md`](packages/electron-mac-sidebar-glass/README.md) |
-| 478 | ✓ | [`packages/electron-server-ipc/README.md`](packages/electron-server-ipc/README.md) |
-| 479 | ✓ | [`packages/electron-server-ipc/README.zh-CN.md`](packages/electron-server-ipc/README.zh-CN.md) |
-| 480 | ✓ | [`packages/file-loaders/README.md`](packages/file-loaders/README.md) |
-| 481 | ✓ | [`packages/file-loaders/README.zh-CN.md`](packages/file-loaders/README.zh-CN.md) |
-| 482 | ✓ | [`packages/heterogeneous-agents/src/codex/protocol/README.md`](packages/heterogeneous-agents/src/codex/protocol/README.md) |
-| 483 | ✓ | [`packages/i18n-extractor/README.md`](packages/i18n-extractor/README.md) |
-| 484 | ✓ | [`packages/memory-user-memory/benchmarks/locomo/README.md`](packages/memory-user-memory/benchmarks/locomo/README.md) |
-| 485 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 486 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
-| 487 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
-| 488 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
-| 489 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
-| 490 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
-| 491 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
-| 492 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 493 | → | [`DESIGN.md`](DESIGN.md) |
-| 494 | → | [`README.md`](README.md) |
-| 495 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 433 | ✓ | [`.agents/skills/version-release/references/desktop-stable-sources.md`](.agents/skills/version-release/references/desktop-stable-sources.md) |
+| 434 | ✓ | [`.agents/skills/version-release/references/minor-release.md`](.agents/skills/version-release/references/minor-release.md) |
+| 435 | ✓ | [`.agents/skills/version-release/references/patch-release-scenarios.md`](.agents/skills/version-release/references/patch-release-scenarios.md) |
+| 436 | ✓ | [`.agents/skills/version-release/references/release-notes-style.md`](.agents/skills/version-release/references/release-notes-style.md) |
+| 437 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
+| 438 | ✓ | [`.agents/skills/write-landing-docs/references/self-hosting.md`](.agents/skills/write-landing-docs/references/self-hosting.md) |
+| 439 | ✓ | [`.agents/skills/write-landing-docs/SKILL.md`](.agents/skills/write-landing-docs/SKILL.md) |
+| 440 | ✓ | [`.agents/skills/zustand/references/data-structures.md`](.agents/skills/zustand/references/data-structures.md) |
+| 441 | ✓ | [`.agents/skills/zustand/references/data-structures/reducer.md`](.agents/skills/zustand/references/data-structures/reducer.md) |
+| 442 | ✓ | [`.agents/skills/zustand/references/data-structures/types.md`](.agents/skills/zustand/references/data-structures/types.md) |
+| 443 | ✓ | [`.agents/skills/zustand/references/legacy-slices.md`](.agents/skills/zustand/references/legacy-slices.md) |
+| 444 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
+| 445 | ✓ | [`.agents/ux/components.md`](.agents/ux/components.md) |
+| 446 | ✓ | [`.agents/ux/lobe-design-rules.md`](.agents/ux/lobe-design-rules.md) |
+| 447 | ✓ | [`.agents/ux/product.md`](.agents/ux/product.md) |
+| 448 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 449 | ✓ | [`apps/cli/README.md`](apps/cli/README.md) |
+| 450 | ✓ | [`apps/desktop/README.md`](apps/desktop/README.md) |
+| 451 | ✓ | [`apps/desktop/README.zh-CN.md`](apps/desktop/README.zh-CN.md) |
+| 452 | ✓ | [`apps/desktop/scripts/core-ota-test/README.md`](apps/desktop/scripts/core-ota-test/README.md) |
+| 453 | ✓ | [`apps/desktop/scripts/update-test/README.md`](apps/desktop/scripts/update-test/README.md) |
+| 454 | ✓ | [`apps/server/src/routers/lambda/__tests__/integration/README.md`](apps/server/src/routers/lambda/__tests__/integration/README.md) |
+| 455 | ✓ | [`apps/server/src/services/aiAgent/shareGate/README.md`](apps/server/src/services/aiAgent/shareGate/README.md) |
+| 456 | ✓ | [`apps/server/src/services/channel/README.md`](apps/server/src/services/channel/README.md) |
+| 457 | ✓ | [`apps/server/src/services/email/README.md`](apps/server/src/services/email/README.md) |
+| 458 | ✓ | [`apps/server/src/services/goal/supervisor/README.md`](apps/server/src/services/goal/supervisor/README.md) |
+| 459 | ✓ | [`apps/server/src/services/redis/README.md`](apps/server/src/services/redis/README.md) |
+| 460 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
+| 461 | ✓ | [`e2e/README.md`](e2e/README.md) |
+| 462 | ✓ | [`e2e/src/features/page/README.md`](e2e/src/features/page/README.md) |
+| 463 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 464 | ✓ | [`packages/achaos/README.md`](packages/achaos/README.md) |
+| 465 | ✓ | [`packages/agent-mock/README.md`](packages/agent-mock/README.md) |
+| 466 | ✓ | [`packages/agent-signal/README.md`](packages/agent-signal/README.md) |
+| 467 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
+| 468 | ✓ | [`packages/alint/README.md`](packages/alint/README.md) |
+| 469 | ✓ | [`packages/builtin-agents/src/agents/page-agent/README.md`](packages/builtin-agents/src/agents/page-agent/README.md) |
+| 470 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 471 | ✓ | [`packages/builtin-tool-auv/README.md`](packages/builtin-tool-auv/README.md) |
+| 472 | ✓ | [`packages/database/src/repositories/channel/README.md`](packages/database/src/repositories/channel/README.md) |
+| 473 | ✓ | [`packages/database/src/repositories/ftsSearchDocument/migration/README.md`](packages/database/src/repositories/ftsSearchDocument/migration/README.md) |
+| 474 | ✓ | [`packages/electron-client-ipc/README.md`](packages/electron-client-ipc/README.md) |
+| 475 | ✓ | [`packages/electron-client-ipc/README.zh-CN.md`](packages/electron-client-ipc/README.zh-CN.md) |
+| 476 | ✓ | [`packages/electron-mac-notifications/README.md`](packages/electron-mac-notifications/README.md) |
+| 477 | ✓ | [`packages/electron-mac-permission-guide/README.md`](packages/electron-mac-permission-guide/README.md) |
+| 478 | ✓ | [`packages/electron-mac-sidebar-glass/README.md`](packages/electron-mac-sidebar-glass/README.md) |
+| 479 | ✓ | [`packages/electron-server-ipc/README.md`](packages/electron-server-ipc/README.md) |
+| 480 | ✓ | [`packages/electron-server-ipc/README.zh-CN.md`](packages/electron-server-ipc/README.zh-CN.md) |
+| 481 | ✓ | [`packages/file-loaders/README.md`](packages/file-loaders/README.md) |
+| 482 | ✓ | [`packages/file-loaders/README.zh-CN.md`](packages/file-loaders/README.zh-CN.md) |
+| 483 | ✓ | [`packages/heterogeneous-agents/src/codex/protocol/README.md`](packages/heterogeneous-agents/src/codex/protocol/README.md) |
+| 484 | ✓ | [`packages/i18n-extractor/README.md`](packages/i18n-extractor/README.md) |
+| 485 | ✓ | [`packages/memory-user-memory/benchmarks/locomo/README.md`](packages/memory-user-memory/benchmarks/locomo/README.md) |
+| 486 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 487 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
+| 488 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
+| 489 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
+| 490 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
+| 491 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
+| 492 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
+| 493 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 494 | → | [`DESIGN.md`](DESIGN.md) |
+| 495 | → | [`README.md`](README.md) |
+| 496 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

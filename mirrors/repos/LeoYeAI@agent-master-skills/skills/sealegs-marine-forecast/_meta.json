@@ -1,0 +1,11 @@
+{
+  "owner": "sealegs-ai-coder",
+  "slug": "sealegs-marine-forecast",
+  "displayName": "SeaLegs AI Marine Forecast API",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1770683356798,
+    "commit": "https://github.com/openclaw/skills/commit/e85b7ea699f99d6a8228bc9662dbddb4c0eda456"
+  },
+  "history": []
+}

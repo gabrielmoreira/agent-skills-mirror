@@ -1,0 +1,17 @@
+{
+  "owner": "robbyczgw-cla",
+  "slug": "roundtable",
+  "displayName": "Roundtable",
+  "latest": {
+    "version": "0.4.1",
+    "publishedAt": 1772544879166,
+    "commit": "https://github.com/openclaw/skills/commit/2774a72f522183f2fec16386c0d0c74aa446051e"
+  },
+  "history": [
+    {
+      "version": "0.4.0-beta",
+      "publishedAt": 1771351623743,
+      "commit": "https://github.com/openclaw/skills/commit/71aa2cdb85a64363aaf7e4fe623b65721ecca085"
+    }
+  ]
+}

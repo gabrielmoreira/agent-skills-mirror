@@ -32,6 +32,7 @@ Rules for library demos only (a user's film follows `DIRECTOR.md`, not these):
 
 - **Human:** approve the style frame before production, and the finished film.
 - **Machine:** `asr_check.py` passes on every line; `mux.sh` reports about −14 LUFS and no warning; `readcheck.mjs` passes; `python3 tools/release.py check --strict <slug>` is clean (it needs the Register steps above). It also stops images under `styles/` that no committed file names (by name or pattern), demo files that nothing reached from the style's entries (STYLE.md, DEMO.md, build.sh, index.html…) loads, and process wording (`PRODUCTION_LOG`, review notes; the list is `PROCESS_WORDS` in the script) in any committed text.
+- **Maps:** library demos follow DIRECTOR.md §13 like any film: every map shot checked enlarged, the map data and its view named in `CREDITS`.
 - **Real events and products:** every fact on screen and in the voice-over comes from an official source, kept in `demo/FACTS.md` (claim, URL, quoted wording); check the final script against it before the last render.
 
 ## Publish

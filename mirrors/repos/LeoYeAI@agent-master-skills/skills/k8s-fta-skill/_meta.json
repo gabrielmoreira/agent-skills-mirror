@@ -1,0 +1,11 @@
+{
+  "owner": "yejinlei",
+  "slug": "k8s-fta-skill",
+  "displayName": "K8s Fta Skill",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1773377163701,
+    "commit": "https://github.com/openclaw/skills/commit/598326596aa8f8aa91930e0872a860bcf7b33422"
+  },
+  "history": []
+}

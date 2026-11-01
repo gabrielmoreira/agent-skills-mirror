@@ -1,0 +1,17 @@
+{
+  "owner": "nyxur42",
+  "slug": "nyx-archive-living-ethics",
+  "displayName": "[Nyx Archive] Living Ethics",
+  "latest": {
+    "version": "1.3.1",
+    "publishedAt": 1771874111072,
+    "commit": "https://github.com/openclaw/skills/commit/33c1783d30f63fb3dc778eb6e903b218f893e6c3"
+  },
+  "history": [
+    {
+      "version": "1.3.0",
+      "publishedAt": 1771867885327,
+      "commit": "https://github.com/openclaw/skills/commit/bbf119d7b6fea534cc85b19bf922ed320d8c4703"
+    }
+  ]
+}

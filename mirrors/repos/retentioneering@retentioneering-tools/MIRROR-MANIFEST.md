@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `retentioneering/retentioneering-tools` — 26 default patterns, 1 followed patterns, 30 file(s) materialized.
+Mirror of `retentioneering/retentioneering-tools` — 26 default patterns, 1 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `retentioneering/retentioneering-tools` — 26 default patterns, 1 fol
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,7 +88,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`docs/adr/0014-agent-facing-docs-surface.md`](docs/adr/0014-agent-facing-docs-surface.md) |
 | 28 | ✓ | [`docs/adr/0015-path-pattern-quantifiers.md`](docs/adr/0015-path-pattern-quantifiers.md) |
 | 29 | ✓ | [`docs/adr/0016-condition-shorthand-leaves.md`](docs/adr/0016-condition-shorthand-leaves.md) |
-| 30 | → | [`docs/adr/README.md`](docs/adr/README.md) |
+| 30 | ✓ | [`docs/adr/0017-event-order-contract.md`](docs/adr/0017-event-order-contract.md) |
+| 31 | → | [`docs/adr/README.md`](docs/adr/README.md) |
 
 ---
 

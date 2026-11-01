@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A second Claude plugin in the xerj marketplace, `xerj-knowledge`, for
+  document search rather than code: a skill and `/xerj-knowledge:index` and
+  `/xerj-knowledge:find` commands that search local folders, notes, PDFs,
+  Office files and mail exports and cite the file and page. Same `xerj mcp`
+  server; the existing `xerj` plugin is unchanged. Untested in Claude Cowork
+  so far. (#2646)
 - A Nix flake: `nix run github:xerj-org/xerj` builds and runs `xerj` from
   source, `nix build` produces it, and `nix develop` opens a shell with the
   Rust toolchain. The package builds the engine and embeds the Console assets
@@ -61,13 +67,122 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   existing index gains the fields as each skill changes, or all at once with
   `xerj autoindex --fresh`. Part of #2644.
 
+- `xerj init` teaches agents to find an installed skill by task: index the
+  skills folder once with `xerj autoindex <skills folder> --prefix skills`, then
+  run `xerj search --prefix skills "<what you want to do>"`. The generated
+  `SKILL.md` and the `AGENTS.md` section it writes both say so, and say the
+  match is on words, not meaning. The init files version moves to 7, so a
+  re-run upgrades a `SKILL.md` (and `.cursor/rules/xerj.mdc`) that an earlier
+  init stamped and nobody edited. An existing `AGENTS.md` that already mentions
+  `xerj search` or `xerj def`, which includes every one an earlier init wrote,
+  is kept as it is, so only an `AGENTS.md` without XERJ text gets the new
+  lines. A new recipe, `docs/recipes/find-a-skill.md`, walks the loop with
+  measured output.
+  Part of #2644.
+
+- `xerj autoindex --skills` finds the folders agents keep installed skills
+  in (`.claude/skills`, `.codex/skills` and `.agents/skills` in the home
+  directory, and `.claude/skills` in the current folder), skips the ones that
+  do not exist, and indexes each under its own prefix below one stem
+  (`skills-claude`, `skills-codex`, `skills-agents`, `skills-project`; pick
+  the stem with `--prefix`). `xerj search --prefix skills "<what you want to
+  do>"` searches them all, and when the hits come from several folders each
+  prints its full path. `--watch` watches every folder. One prefix still owns
+  one folder. `xerj init` writes teaching files version 8, which name
+  `--skills`, and the recipe `docs/recipes/find-a-skill.md` uses it. Part of
+  #2644.
+
+- `bash scripts/bench/skills-intent.sh` is the eval #2644 asks for: it installs
+  388 skills from a pinned MIT library into a throwaway home, runs
+  `xerj autoindex --skills`, and ranks the right skill for 26 labelled task
+  queries written blind. On 2026-10-31 the right skill was first for 13 and in
+  the top 3 for 22; every rank, misses included, is in
+  `benchmarks/skills-intent/results/`. Part of #2644.
+
 ### Fixed
 
+- `weighted_avg` now executes field-based requests (`value` / `weight`, each
+  with a `field` and optional numeric `missing`) instead of returning HTTP 200
+  with an `unsupported aggregation type` error in the aggregations body. A
+  `script` on either side, a malformed side, a missing `field`, and a
+  non-numeric `missing` return a 400 naming the side. Multi-index searches
+  recombine by weighted sum, not by averaging the per-index values. A
+  multi-valued weight field is skipped rather than refused, because the
+  aggregation evaluator has no error channel; that case stays in
+  `catch-lenient.txt` (#204).
+
+- Re-indexing the same doc ids no longer grows `hnsw/graph.bin` without
+  bound. Each overwrite tombstoned the old graph node and nothing ever
+  removed one, so the graph (on disk and in memory) kept every vector ever
+  written: 87.7 MB for 1,000 live vectors. The graph save now compacts the
+  graph once dead nodes reach the live count (and at least 1,024): it
+  rebuilds from the live vectors off-lock, replays writes that land during
+  the rebuild, and swaps the result in, so the graph stays within about
+  twice the live set. (#2796)
+
+- Code-extraction size skips now report exact file/limit byte counts and
+  explain that `--max-file-gb` / `--max-file-mb` / `--max-file-bytes` do not
+  raise the separate fixed 2 MiB AST source-file cap. The reason no longer
+  assumes that an oversized file must be generated. Help and Perl boundary
+  regressions cover this diagnostic follow-up to #2666 (Refs #2745); the cap
+  and skipped-file outcomes are unchanged.
+
+- The version map takes about 23% less memory per document (#2427). A
+  32-character lowercase hex id (what `xerj autoindex` writes) or a lowercase
+  UUID is now packed into 16 bytes inside its bucket instead of paying a
+  separate 48 B heap allocation, other ids up to 24 bytes are stored inline,
+  and the tombstone flag shares the version word. On the 2.46 M-entry perf-gate
+  corpus the map drops from about 347 MB to 268 MB.
+- A `_delete_by_query` whose matches fit in one scroll page no longer flushes
+  the whole memtable before deleting. `autoindex --fresh` sends one such
+  delete-before-replace per file, and each one used to cut a new tiny segment
+  out of every other worker's pending bulks (about 1,050 segments on the
+  #2640 corpus). Larger deletes keep the flush-then-page path (#2640).
+- A search no longer hangs forever when a cold segment's stored fields are
+  being warmed in the background. A search-pool thread that waited for the
+  warm's decode could block the decode it waited for, so every later search
+  of that segment timed out at 30 s after ingest stopped. Search-pool threads
+  now wait at most 200 ms and then decode the segment themselves (#2427).
 - A small merge write admitted after a run of merge yields is now checked
   against the memory watermark instead of the process limit, so it can no
   longer take a node from below the watermark into the parent breaker band and
   turn ingest into HTTP 429s. The relief for a search node resting between the
   merge-pool ceiling and the watermark is kept (#2427).
+- The HNSW doc-id maps now share one allocation per graphed document between
+  the forward and reverse maps, instead of storing every id as two `String`s,
+  and their bucket arrays and id bytes count toward the `vector_graph` ingest
+  memory category, so the breaker budget sees them. On the cap-2048 ingest
+  run these maps held about 110 MB of live heap that no category reported
+  (Refs #2427).
+- `xerj autoindex` no longer stalls for up to 10 minutes per large dataset in
+  `finalize-count`. The dataset time range was read with `min`/`max`
+  aggregations, which make the node copy every document first; on a
+  393 k-record dataset that priced at 768 MB against the 512 MB
+  `limits.max_query_memory_mb` default and the client re-asked for its full
+  600 s patience. The bounds now come from two sorted size-1 searches, and a
+  429 from the per-query memory guard is no longer retried, since the same
+  query is refused again (#2427).
+- The `xerj-autoindex` corpus-lock tests no longer fail at random in CI
+  (#2520, Refs #2427). One test put `-c core.fsmonitor=false` after the git
+  subcommand, so git exited 129 at once and the test only passed by winning a
+  race against that exit; and under the test harness a lock another test just
+  released can stay held for 10-30 ms by a sibling test's forked child until it
+  execs. Test builds now wait out a busy lock for up to 500 ms; a real
+  `corpus add` still refuses at once.
+- A search that decodes a segment's doc-values sidecar the segment cache has
+  no room to keep now reserves the decoded size in the read transient budget
+  before decoding, and holds it until the query drops the columns. Before,
+  such decodes were neither cached nor reserved, so concurrent searches during
+  heavy ingest could stack decoded sidecars (about 100 MB late in the
+  cap-2048 run) that no memory budget counted (Refs #2427).
+- **A memory-pressure drain no longer spikes RSS past the cap while it
+  flushes** (#2427). The breaker drain and the cache-release path
+  flushed each index with every non-empty memtable shard building its
+  segment at once, and that working set (parsed documents, columns,
+  postings, stored blocks) is not charged to the memtable budget. On a
+  1,536 MB-capped node one drain took RSS from 1,460 MB to 2,323 MB in
+  about a second. Memory-release flushes now build one shard at a time;
+  ordinary flushes still run in parallel.
 
 - The per-index document version map is smaller and now visible in the
   ingest memory trace. Its keys are `Box<str>` instead of `String`, which
@@ -75,6 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in from the incoming id. The map's estimated heap (hash tables plus key
   bytes) is reported as the new `version_map` category. On the 1 GB gate's
   search node the map held ~0.5 GB that no budget saw. (#2427)
+- `xerj autoindex`: Vue (`.vue`) and Svelte (`.svelte`) single-file components are indexed as code instead of being junk-filed as malformed XML. Their `<script>` blocks are parsed with the TypeScript or JavaScript grammar (by `lang`), so their declarations are symbols on the component's own lines, and the record's `language` is `vue` or `svelte`. (#2732)
 - `_reindex` applies `source._source` field filtering to the documents it
   copies, so an excluded secret or large field no longer reaches the
   destination. `_source:false` is refused with ES's sentence, and a `script`
@@ -113,6 +229,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   200-580 MB of warmed stored slices between 40 breaker engages. Queries
   still hydrate a segment on first read. (Refs #2427)
 
+- A cold full-text query no longer starts one background whole-section
+  stored decode per cold segment at once (refs #2427). On the 1 GB gate's
+  `pg-docs` (54 cold segments) one 5-hit query drove anon RSS from ~1.0 to
+  ~4.7 GB after it had returned, with most decodes refused by the hydration
+  budget at publish and thrown away. One background warm per index now runs
+  at a time and the others are skipped. Query answers are unchanged.
+
 - `simple_query_string` with `"fields": ["*"]` is answered from the inverted
   index instead of a stored-document scan of every segment (refs #2427). The
   bare `*` pattern lowered to a literal `"*"` field that has no index
@@ -133,6 +256,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   restart, while it was serving reads under the memory breaker. This
   supersedes the 120 s open quiet period in #2492, which only delayed the
   same merges (Refs #2427).
+
+- Vector ingest no longer runs on one core per index: the HNSW construction
+  search (greedy descent, `ef_construction` beam and neighbour selection) now
+  runs under a shared lock, and only the link writes take the graph's write
+  lock. A bulk batch plans its inserts in parallel on the ingest pool, and
+  concurrent batches into one index no longer queue behind each other's
+  inserts (#2427).
 
 - `_bulk` requests of ordinary text and code are no longer refused with a
   429 while the node has memory to spare. Each raw bulk reserved 28 bytes
@@ -332,6 +462,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   XML, including `.xml`, `.xaml` and `.svg`, is unchanged. An index built
   before this fix keeps its junked files until each one changes or the folder
   is indexed again with `--fresh` (#2740).
+- When the server refuses a record or a graph edge, `xerj autoindex` now
+  names the file it came from and does not mark that file done. It used to
+  mark every file in the same bulk done, so the rerun the abort message asks
+  for resumed past the file, reported success and never sent the refused
+  record (#2807).
+- A file whose record the server refuses as over its 8 MiB per-document
+  limit is now set aside as junk, with its file name and the server's reason,
+  and the run completes with exit 3. Its other records are removed and it is
+  retried on the next run. It used to abort the whole run, every rerun, until
+  `--fresh`. On a `semantic_text` field the vectors the server adds count
+  toward that limit: a 2 MB generated `.d.ts` file grew to 16.6 MB this way.
+  `--no-semantic` may index such a file (#2807).
+- `xerj corpus index` and `xerj autoindex --no-graph` now name the file a
+  refused record came from, and for a size refusal they say how to index the
+  rest: under a new `--prefix` and `--state-dir`, with the file left out
+  (`--exclude`) or with `--no-semantic`. That route fixes its file list before
+  it sends anything, so it cannot set the file aside, and a rerun repeats the
+  refusal. It used to say only "prepared bulk contained 1 rejected items"
+  (#2807).
 
 ## [1.0.0-rc.100] - 2026-10-26
 

@@ -1,0 +1,11 @@
+{
+  "owner": "axdlee",
+  "slug": "toutiao-publish",
+  "displayName": "Toutiao Publish",
+  "latest": {
+    "version": "6.1.0",
+    "publishedAt": 1772617585572,
+    "commit": "https://github.com/openclaw/skills/commit/fa375d73a294ddd494113195fcf90a08d94634cc"
+  },
+  "history": []
+}

@@ -127,24 +127,26 @@ Prefer the one-command path:
 
 ```sh
 node scripts/post-idd-marker.mjs --type watermark --from-pr {pr-number} \
-  --expected-head-sha {head-SHA} --agent-id <id> --claim-id <id> \
+  --expected-head-sha {head-SHA} --prior-base-ref {base-ref-name} \
+  --agent-id <id> --claim-id <id> \
   --trusted-marker-logins "<trusted-login-1>,<trusted-login-2>" \
   --operation-local --prior-head-sha {head-SHA} \
   --prior-total-item-count {total-item-count} \
   --prior-max-activity-at {max-activity-updatedAt} --apply
 ```
 
-Add `--global-only` if needed. Use the exact Step 1 HEAD and all
-three boundaries. `refuse` or moved HEAD: do not post; repeat Step 1 and
+Add `--global-only` if needed. Use the exact Step 1 HEAD, base ref, and
+all three boundaries. `refuse` or moved HEAD: do not post; repeat Step 1 and
 re-triage. `defer`: do not post; follow the CI-incomplete route and
 refresh Step 1.
 
-Manual six-field fallback cannot use `--operation-local`. Capture
-Step 1's `baseRefName` with HEAD. Before posting, require a complete
-read to match both refs, item count, and max activity time, with no new
-uncovered items; any mismatch or uncertainty means no post — repeat
-Step 1 and re-triage. Require producer-aware passing CI; names alone
-are insufficient.
+Manual six-field: omit `--operation-local`; operator-selected. Run the
+[query](../idd-review-snapshot.instructions.md#manual-ci-fallback) and
+apply its page, ref, producer, and latest-pass rules. Post only if Step 1
+refs/activity/count match and the latest passing CI timestamp equals
+Step 1's `{latest-ci-completed-at}`, no new uncovered items exist, and CI
+passes; otherwise repeat Step 1 and re-triage.
+
 Otherwise skip Step 2 and use E15/E14.
 
 Exact body: `<!-- review-watermark: {agent-id} {claim-id} {head-SHA}
@@ -155,8 +157,7 @@ in the PR's language (English if ambiguous). Nothing follows the note.
 
 After watermark verification, re-fetch all review pages before cleanup
 or Step 3. Compare human rows to Step 1 by ID, author, state, commit,
-submission time, and body; any change restarts E1. The operation-local
-helper guard does not classify human rows.
+submission time, and body; any change restarts E1.
 
 On resume, restore only the latest trusted same-claim watermark.
 Missing/legacy means rerun E1; never use or hide another claim's marker.
@@ -170,10 +171,9 @@ Skip this cleanup (not a stop condition) when the watermark is
 unverified, no candidate exists, or the helper is unavailable; F4 catches
 leftovers. Never hide a different-claim watermark here.
 
-Do not touch the PR live status digest after posting this watermark
-unless the next route is E1, an F3-blocked reroute to F1/D4, a
-hold/stop, or post-merge cleanup — a digest edit after the watermark
-counts as new activity, forcing a fresh E1 snapshot before F2.
+Do not edit the live status digest after this watermark unless the next
+route is E1, an F3-blocked reroute to F1/D4, a hold/stop, or post-merge
+cleanup; an edit counts as new activity and forces a fresh E1 snapshot.
 
 ### Step 3 — Filter into ReviewItems_snapshot
 

@@ -83,3 +83,6 @@ cd web && npm run build             # type-checks and rebuilds the app
 ```
 
 `tests/test_server.py` 用一个写好脚本的 `MockLLM` 把 App 服务器从头到尾跑一遍：发消息、审批卡片、提问、目标、记忆、文件、设置。
+
+[GUI 回归](gui-regression.md)介绍固定模拟场景、独立状态校验和离线及真实模型入口；
+其用量记录不依赖任务预算功能。

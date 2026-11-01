@@ -1,0 +1,11 @@
+{
+  "owner": "roryyu",
+  "slug": "workspace-zip-backup",
+  "displayName": "Workspace Zip Backup",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1773720306611,
+    "commit": "https://github.com/openclaw/skills/commit/0d0abfb45b68fa6fa73f318f5efc96574f38fff7"
+  },
+  "history": []
+}

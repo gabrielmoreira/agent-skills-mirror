@@ -79,7 +79,7 @@ Yuxi 是知识库、知识图谱与 Agent 开发平台，界面应保持克制�
 
 Yuxi 通过 `:root.dark` 覆盖同名 token。新增 UI 必须使用 CSS 变量，禁止固定浅色值，并检查浅色、暗色两套表现。
 
-暗色优先使用页面底与低阶灰表面区分区域，普通卡片、输入区不使用装饰阴影；背景已能区分时不增加描边。`--gray-10` 到 `--gray-50` 提供较细的背景与交互过渡，普通卡片使用 `--border-surface` 和 `--border-surface-hover` 适配描边。键盘焦点、错误和拖拽提示保留明确反馈。聊天输入框通过背景变化表达悬停与聚焦，发送按钮使用白底深色图标，禁用时降低不透明度。
+暗色优先使用页面底与低阶灰表面区分区域，普通卡片、输入区不使用装饰阴影；背景已能区分时不增加描边。`--gray-10` 到 `--gray-50` 提供较细的背景与交互过渡，普通卡片使用 `--border-surface` 和 `--border-surface-hover` 适配描边。暗色边框使用与相邻表面有区分度的深灰色，键盘焦点、错误和拖拽提示保留明确反馈。聊天输入框通过背景变化表达悬停与聚焦，发送按钮使用白底深色图标，禁用时降低不透明度。
 
 新增组件时至少检查：
 
@@ -359,12 +359,12 @@ AI agent 修改或生成 Yuxi UI 时，优先按这一节执行。
 
 ## 头像组件
 
-Agent 与 User 使用共享 [FallbackAvatar](https://github.com/xerrors/Yuxi/blob/main/frontend/src/shared/ui/FallbackAvatar.vue)。调用方传入 kind、稳定实体 seed、自定义图片 src 与展示尺寸；自定义图片优先。Agent 默认 Clay，User 默认 Glyphs。生成器随前端本地交付，不请求外部头像 API，Gaze 保持透明背景。
+智能体、会话与用户使用共享 [FallbackAvatar](https://github.com/xerrors/Yuxi/blob/main/frontend/src/shared/ui/FallbackAvatar.vue)。调用方传入 kind、稳定实体 seed、自定义图片 src 与展示尺寸；自定义图片优先。agent 默认 Lorelei 配合 soft 背景预设，user 默认 Notionists；会话树、协作工具结果和会话面板标签使用 session 类型及 Gaze 风格，以会话 ID 作为 seed。输入框、正文与候选列表中的会话引用使用描边的对话气泡加标题，沿用普通引用图标尺寸；会话树、协作结果与面板标签保持 18px。生成器随前端本地交付，不请求外部头像 API，Gaze 保持透明背景。
 
-组件支持 style 为 glyphs、clay、shape-grid、gaze；preset 默认为 default，也支持 studio、heritage、soft，每套色卡都有日间与夜间版本。明暗共用主体色，底纸与墨色可独立调整；default 保留各风格上游主体与对比色，夜间仅调整 Glyphs 与 Clay 的底纸，Shape Grid 保留彩色背景。dark 为 on、off、auto，auto 跟随 Yuxi 的主题 Store；circle、square、rounded 分别提供圆形、直角方形和圆角方形。颜色配置由 [共享色卡](https://github.com/xerrors/Yuxi/blob/main/frontend/src/shared/lib/avatar/presets.js) 拥有，几何与表情随稳定 seed 固定。
+组件支持 style 为 lorelei、notionists、gaze、glyphs、clay、shape-grid；preset 缺省时，智能体使用 soft，用户与会话使用 default；调用方可显式选择 default、studio、heritage、soft，每套色卡都有日间与夜间版本。Notionists 从预设背景色组中稳定选色，人物底纸、墨色与背景在深浅主题下保持一致；Lorelei 只应用预设背景色组，脸色、头发与线条保留上游黑白原色，深浅主题使用相同颜色。其他风格明暗共用主体色，底纸与墨色可独立调整；default 保留各风格上游主体与对比色，夜间仅调整 Glyphs 与 Clay 的底纸，Shape Grid 保留彩色背景。dark 为 on、off、auto，auto 跟随 Yuxi 的主题 Store；circle、square、rounded 分别提供圆形、直角方形和圆角方形。颜色配置由 [共享色卡](https://github.com/xerrors/Yuxi/blob/main/frontend/src/shared/lib/avatar/presets.js) 拥有，几何与表情随稳定 seed 固定。
 
-图片加载或本地生成失败时，Agent 使用 Lucide Bot、User 使用 Lucide User，浅色背景 token 在深浅主题下保持相同。组件通过 fallback 事件提供 image 或 generation 原因。图片地址改变后重新加载；网络恢复只重试失败图片。装饰头像传 decorative，独立头像使用 alt 或 name 提供可访问名称。
+图片加载或本地生成失败时，智能体使用 Lucide Bot、用户使用 Lucide User、会话使用 Lucide Workflow，浅色背景 token 在深浅主题下保持相同。组件通过 fallback 事件提供 image 或 generation 原因。图片地址改变后重新加载；网络恢复只重试失败图片。装饰头像传 decorative，独立头像使用 alt 或 name 提供可访问名称。
 
-Glyphs 使用 Matt Houser 原作的 CC BY 4.0 授权，组件保留 SVG 署名与许可元数据，应用配色、夜间底纸及画布裁切适配；发布包含 [头像第三方声明](https://github.com/xerrors/Yuxi/blob/main/frontend/public/avatar-licenses.txt)。Clay、Shape Grid、Gaze 美术为 CC0 1.0，DiceBear 核心为 MIT。固定依赖与色卡更新需要核验输出和许可。
+Glyphs 使用 Matt Houser 原作的 CC BY 4.0 授权，组件保留 SVG 署名与许可元数据，应用配色、夜间底纸及画布裁切适配；发布包含 [头像第三方声明](https://github.com/xerrors/Yuxi/blob/main/frontend/public/avatar-licenses.txt)。Lorelei、Notionists、Clay、Shape Grid、Gaze 美术为 CC0 1.0，DiceBear 核心为 MIT。固定依赖与色卡更新需要核验输出和许可。
 
 知识库、Skill 和工具的图标色由 `shared/lib/extensionIconColor.js` 按稳定资源身份从预设色卡中选择；浅色底使用当前主题背景混色。知识库使用 `kb_id`，Skill 使用 `slug`，图标与颜色在目录卡片和 @ 候选中保持一致。飞书使用本地品牌图标。

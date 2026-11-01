@@ -1,0 +1,17 @@
+{
+  "owner": "nemovideonemo",
+  "slug": "auto-subtitle-generator-online",
+  "displayName": "Auto Subtitle Generator Online",
+  "latest": {
+    "version": "1.0.2",
+    "publishedAt": 1774636542725,
+    "commit": "https://github.com/openclaw/skills/commit/974492c20a34108b618614b99c5097a82261d8b6"
+  },
+  "history": [
+    {
+      "version": "1.0.1",
+      "publishedAt": 1774622400889,
+      "commit": "https://github.com/openclaw/skills/commit/c869b2499bb0bc36dc74b6c54c3433ae383fb6c2"
+    }
+  ]
+}

@@ -147,3 +147,4 @@ So that every headline maps to a runnable thing from one place:
 | ES-YAML conformance badge (1444/1454) | the CI suite itself: `engine/tests/es-compat-yaml/` |
 | 55 W / 26 T / 4 L vs Elasticsearch (all 88 cells) | `demo/playbooks/bench-matrix.mjs` -> `demo/playbooks/SCORECARD.md` |
 | int8 quantization recall@10 ~ 0.998 | `docs/examples/vector-quantization/quant_demo.py` (docs in `docs/recipes/vector-quantization.md`) |
+| `xerj autoindex --skills` finds the right skill by task among 388 (#2644; top 1 and top 3 counts in its README, every rank in its results file) | `bash scripts/bench/skills-intent.sh` -> `benchmarks/skills-intent/` (pinned MIT skill library, labelled queries, every rank kept) |

@@ -70,7 +70,8 @@ Its verification reference owns dual-entry reconciliation and native-host readba
 keep the detailed procedure there.
 For a valid check that emits warnings, follow its
 [warning interpretation](daymade-skill/skill-creator/references/knowledge-skill-grounding.md#interpret-validation-warnings).
-For local/remote ASR selection, speed comparison and speech-content acceptance, enter
+For course/original-video uploads, ASR input preparation, local/remote ASR selection,
+speed comparison and speech-content acceptance, enter
 [asr-transcribe-to-text](daymade-audio/asr-transcribe-to-text/SKILL.md) and its
 [execution SOP](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md).
 For Scrapling browser-cache diagnosis, follow
@@ -132,6 +133,8 @@ For discovery-task changes, follow its [task-pivot and return-context cases](app
 
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
+For resumable writes to human-edited state, use its
+[interrupted-write controls](daymade-skill/skill-creator/references/stateful-script-verification.md#interrupted-writes-and-later-human-changes).
 
 For its audit, release, source-contract or materialization commands from another
 working directory, use the [fixed command entry](daymade-skill/skill-creator/references/fixed-command-entry.md).
@@ -245,6 +248,8 @@ For hook creation, consolidation, Skill-entry enforcement, registration or recov
 and follow its Build order and installer-owned recovery contract. Follow that
 Skill's loop and reminder contract; keep current thresholds in the
 owning implementation.
+For shared selection, source refresh, deadlines, status or rollback changes, load
+the Skill's [lifecycle regression template](daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md).
 For hook model-context delivery claims or ordinary-interface notification visibility, use
 [hook_pitfalls.md #66](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md);
 for current-version/partial-structure SQLite upgrades, use that file's #59.
@@ -327,6 +332,8 @@ For a visible permission or Keychain dialog, enter
 [macos-permissions' observation and classification route](daymade-macos/macos-permissions/SKILL.md#observe-and-classify-the-reported-problem-first).
 For an authorized desktop view, use
 [capture-screen's full-screen observation route](daymade-macos/capture-screen/SKILL.md#observe-an-unidentified-dialog-or-the-full-desktop).
+For application-specific recurring prompts, follow
+[the credential-backend boundary](daymade-macos/macos-permissions/references/keychain-dialog-recovery.md#distinguish-application-credential-storage-from-permission-repair).
 Keep detailed diagnosis and cancellation procedures with those Skills.
 
 ### Background protected-data access
@@ -455,7 +462,8 @@ For company slots or a short match inside a longer name, follow
 For wording supported by a parallel transcript, follow
 [written wording evidence](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#written-evidence-for-ordinary-wording).
 Use the [CLI reference](daymade-audio/transcript-fixer/references/script_parameters.md#fix_transcriptionpy)
-to select the command; the argument parser owns accepted combinations.
+to select the command; `fix_transcription.py` dispatch and command-combination
+checks own accepted combinations.
 For domain-context location, configuration-directory selection or homophone-veto
 authoring, enter the [Domain Context Guide](daymade-audio/transcript-fixer/references/domain_context_guide.md).
 For remaining pending rows or a received occurrence-specific human verdict on an
@@ -485,6 +493,11 @@ Context-veto CLI regressions live in
 
 To find an existing Feishu recording by date, enter
 [lark-cli-router's recording lookup](daymade-claude-code/lark-cli-router/SKILL.md#find-an-existing-recording-by-date).
+
+### Feishu Document Layout
+
+For updates that preserve manual formatting or change table/page width, enter
+[lark-cli-router's layout workflow](daymade-claude-code/lark-cli-router/SKILL.md#preserve-document-layout).
 
 ### Feishu Document Capture
 
@@ -807,8 +820,12 @@ Before diagnosing conflicts or differing local and hosted merge results, use its
 [fresh-base verification](github-ops/references/pr_operations.md#fresh-base-verification).
 When the same verified objects still yield different local and hosted results, use
 [the merge-semantics diagnostic](github-review-pr/SKILL.md#when-local-and-hosted-merge-results-disagree).
-Before a merge or selecting `--auto`, enter its
-[merge preflight](github-ops/references/pr_operations.md#merging-prs).
+When individual approvals disagree with effective merge requirements, use
+[the landing diagnosis](github-review-pr/references/remediation_and_landing.md#merge-with-the-reviewed-head-guard).
+For archive/ingestion repair publication, enter
+[the repair and publication preflight](github-review-pr/references/remediation_and_landing.md#prepare-an-isolated-repair-environment).
+For direct, queued or separately authorized bypass merges and landed-rule readback,
+follow the [checked-merge workflow](github-ops/references/pr_operations.md#merging-prs).
 For hosted-state writes through `gh`, follow its
 [identity, host and target binding](github-ops/SKILL.md#2-bind-identity-host-and-target)
 before using an operation recipe. For historical account or connector attribution,

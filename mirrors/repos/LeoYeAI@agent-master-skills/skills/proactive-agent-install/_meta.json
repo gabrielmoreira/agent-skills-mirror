@@ -1,0 +1,11 @@
+{
+  "owner": "makaronz",
+  "slug": "proactive-agent-install",
+  "displayName": "Proactive Agent Install",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1774240206994,
+    "commit": "https://github.com/openclaw/skills/commit/727c4ec2790c8e56654dbf1d2fa39138c4224e23"
+  },
+  "history": []
+}

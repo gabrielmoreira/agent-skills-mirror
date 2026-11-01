@@ -1,0 +1,17 @@
+{
+  "owner": "ryan-srp",
+  "slug": "amazon-analysis-skill",
+  "displayName": "Amazon-analysis-skill",
+  "latest": {
+    "version": "0.1.6",
+    "publishedAt": 1773927101469,
+    "commit": "https://github.com/openclaw/skills/commit/259fb6296d174f58aa1cdde0404231bbee43142b"
+  },
+  "history": [
+    {
+      "version": "0.1.3",
+      "publishedAt": 1773497192492,
+      "commit": "https://github.com/openclaw/skills/commit/497a884554009e389c199996509147cd5cd4fb7c"
+    }
+  ]
+}

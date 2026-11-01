@@ -1,0 +1,17 @@
+{
+  "owner": "ryan-srp",
+  "slug": "apiclaw-analysis-skill",
+  "displayName": "Apiclaw Analysis",
+  "latest": {
+    "version": "0.1.6",
+    "publishedAt": 1773977174234,
+    "commit": "https://github.com/openclaw/skills/commit/789834e2aaa20b94aa0ac7ad3802d7637e56afe0"
+  },
+  "history": [
+    {
+      "version": "0.1.2",
+      "publishedAt": 1773458568368,
+      "commit": "https://github.com/openclaw/skills/commit/b198a525577b54f70bd70e75770967f8300cc728"
+    }
+  ]
+}

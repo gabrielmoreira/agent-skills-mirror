@@ -1,0 +1,11 @@
+{
+  "owner": "nullnaveen",
+  "slug": "odoo-erp-connector",
+  "displayName": "Clawhub Package Full",
+  "latest": {
+    "version": "1.1.0",
+    "publishedAt": 1770660302552,
+    "commit": "https://github.com/openclaw/skills/commit/1cdde3a5ddb4d2fda36ee3a432f63249a8b81644"
+  },
+  "history": []
+}

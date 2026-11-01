@@ -1,0 +1,17 @@
+{
+  "owner": "lai3d",
+  "slug": "qfc",
+  "displayName": "Qfc Openclaw Skill",
+  "latest": {
+    "version": "3.4.0",
+    "publishedAt": 1773214363563,
+    "commit": "https://github.com/openclaw/skills/commit/839303b522ab94ef3817d510fe1a1e49316c0103"
+  },
+  "history": [
+    {
+      "version": "3.0.3",
+      "publishedAt": 1772932425061,
+      "commit": "https://github.com/openclaw/skills/commit/4f7c4a6806644ece876cdd8cb8a3e7b0af521990"
+    }
+  ]
+}

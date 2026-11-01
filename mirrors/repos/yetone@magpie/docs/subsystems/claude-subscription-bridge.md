@@ -117,7 +117,23 @@ talks to it as it talks to `-p`: stream-json in and out. The helper:
   the `-p` run's (`proc.Command`). Ending, the helper closes the console
   (Claude Code is told as a closed window tells it) and kills it after
   3s. Its `-p` fallback runs Claude Code as a child, since Windows has no
-  exec;
+  exec. A Claude Code in WSL is run the same way, through `wsl.exe` in
+  the console: the gateway hands the helper `MAGPIE_CLAUDE_TUI_WSL`
+  (`claudetui.WSL`, `claudeCLI.tuiWSL`), wsl.exe's arguments up to
+  Claude Code's (`wslrun.Tool.Args`, `MAGPIE_WSL_RUN` among them), the
+  distro's mount of the drives, and the projects folder as Windows reads
+  it: the account's config directory (handed in as
+  `CLAUDE_CONFIG_DIR/p`), or the distro user's own `~/.claude/projects`
+  through `\\wsl$\<distro>` (`wslrun.Tool.Home`, from the probe). `TERM` is
+  added to `WSLENV`, and an image's path is pasted as the distro reads
+  it (`/mnt/c/…`, `shim.path`). The helper itself is the Windows
+  magpie.exe, not the `/mnt/c/…` path the MCP helper is started at.
+  In the distro user's own folder the run is `-p` when Windows can't
+  stat `\\wsl$\<distro>\<home>` (`tuiWSLUnread`), since the helper
+  would wait for a transcript it can't see: a session with no 9P
+  redirector, as one over ssh, reads nothing there.
+  Killing the gateway ended the distro's Claude Code with wsl.exe (tried
+  on Windows 11 26200, magpie-desktop, Claude Code 2.1.289);
 - pastes each user message into the prompt (bracketed paste) and presses
   Enter. A message opening with `/`, `!`, `#` or `&` is pasted after a
   line break, so it is words, not a command (`pasteable`);
@@ -136,11 +152,59 @@ talks to it as it talks to `-p`: stream-json in and out. The helper:
   this command (`leaveSignals`), since it re-raised SIGTERM and killed the
   helper before it could end Claude Code and remove its files. Windows
   ends a run by killing its job, which no handler hears, so a helper
-  starting removes such folders over an hour old (`dropLeftImages`);
+  starting removes such folders, and the tap's, over an hour old
+  (`dropLeft`);
 - tails `<CLAUDE_CONFIG_DIR>/projects/*/<session>.jsonl` and tells each
-  row as `-p` would (`translator`): assistant messages whole (no partial
-  stream), a tool's result, a `<synthetic>` API error as the turn's error
-  result with its `rate_limit_info`, and `turn_duration` as the result.
+  row as `-p` would (`translator`): assistant messages whole, a tool's
+  result, a `<synthetic>` API error as the turn's error result with its
+  `rate_limit_info`, and `turn_duration` as the result;
+- streams each reply as it comes, through the tap (`tap.go`, `tap.js`).
+
+The transcript has a message only once it ends, so the tap streams it.
+Claude Code is a Bun program, and Bun loads first what `BUN_OPTIONS`
+names with `--preload`. The helper writes `tap.js` and an empty
+`tap.jsonl` to a `magpie-claude-tap-*` temp folder, and starts Claude
+Code with `BUN_OPTIONS` set to the user's own value followed by
+`--preload <tap.js>`, and `MAGPIE_CLAUDE_TAP` set to the file. Claude Code
+in WSL gets both through `WSLENV`, with the paths as WSL reads them, and
+not the user's Windows `BUN_OPTIONS`. `BUN_OPTIONS` has no quoting, so on
+Windows a path with a space takes its short name. A path that still has
+whitespace gets no tap.
+
+`tap.js` takes itself out of `BUN_OPTIONS`, `process.execArgv` and the
+environment, so nothing Claude Code runs loads it. Claude Code sends its
+API requests through `Bun.FetchSession`, and the tap puts a subclass in
+its place. That subclass calls the real fetch, with the request,
+connection and TLS left as they were, and tees the body of each reply to
+a request with `x-claude-code-request-class: main`, a `/v1/messages` path
+and a `text/event-stream` reply. Claude Code reads one branch as before.
+The tap parses the other and writes one JSON line per event to the file:
+`{s, open}` when a stream starts, `{s, e}` for each event other than
+`ping`, and `{s, end: "done"|"cut"}` when it ends. At load it writes
+`{tap: "on"}`, or `{tap: "none"}` when there is no `FetchSession` to
+replace.
+
+The helper reads the file every time round the tail loop, every 10ms
+while a stream is open, and tells each event as `-p` does: a
+`stream_event` line. Order is kept two ways:
+
+- Before an assistant message `X` from the transcript is told,
+  `tap.before` waits up to 1s (`tapWait`) for a stream with no
+  `message_start` yet to start as `X`. If none does, `X` is told whole,
+  and when its stream comes late it is left out (`dropped`).
+- Before a turn's result, `tap.settle` waits up to 1s for the open
+  streams to end, and ends the rest there.
+
+A stream cut short gets a `message_stop` with no `message_delta`, as `-p`
+ends such a stream, and the bridge counts it as an attempt and asks
+again. In the bridge, a message that was streamed (`streamed`, by id) has
+its whole rows left out, a late one too. A client's `tool_use` that was
+streamed is marked `told`, so `onCall` doesn't tell it a second time.
+
+A Claude Code that isn't Bun, or doesn't load the tap, writes nothing to
+the file. Its messages are told whole, with no wait, as before. Claude
+Code 2.1.281 on Windows doesn't send through `FetchSession`. 2.1.289 (WSL)
+and 2.1.316 (macOS, Windows) do.
 
 The transcript has a message only once it ends, and Claude Code doesn't
 always write the message calling a client's tool before that call is
@@ -172,8 +236,10 @@ chose "No, exit" in the real gateway, and every run went `-p`.
 A run is `-p`, as before, when (`claudeTUI`):
 
 - Settings › Models › Replies › Claude Code's interactive mode is Off
-  (`claudePrintMode`);
-- it is Claude Code in WSL;
+  (`claudePrintMode`); (with Interactive only, each case below fails instead:
+  see [Interactive only](#interactive-only-claudetuionly));
+- it is Claude Code in WSL whose home the probe didn't find, or, in
+  the distro user's own folder, one Windows can't read;
 - the request has safeguards, client cache marks, a JSON schema, an image
   known only by its URL (`urlImages`: the helper pastes files, and has no
   bytes of it), or words over 400KB (`tuiPromptMost`, images not counted),
@@ -183,6 +249,20 @@ The gateway's log says which (`claude: this run is -p: …`,
 `claudePrintWhy`), and the helper's own line when it becomes `-p` (below)
 is logged from the run's stderr (`lockedWriter`).
 
+The Claude Code provider page says under its accounts whether runs are
+the interactive mode (TUI) or `-p` (CLI), with why when every run is
+`-p`, and opens what tells the two apart (`claudeModeRow` in app.js, drawn by
+claudemode.js, which it loads with its first read).
+It reads `GET /api/claude/mode` (`gateway.ClaudeModeNow`) as the page
+opens, kept 30 seconds and dropped when the setting changes, not in
+`/api/providers`' polls. What decides it for every run on the machine is
+`claudeMachineWhy`, whose codes the page words: `off` (the setting),
+`broken` (failed to start lately), `wsl-home`, `missing` (no Claude Code
+found), `os` and `no-shim`. What only a request decides (safeguards and
+the rest above) the page names as still `-p`; the WSL folder Windows
+can't read is per account, so the page doesn't know it. A subscription
+with Only switch serves nothing through magpie and shows no row.
+
 A turn the interactive mode can't take ends the run, and the next starts
 anew: a turn with an image known by its URL, one that takes earlier turns
 back, an effort change. A run given up on (`letGo`) is not taken back, since the
@@ -191,7 +271,8 @@ interactive mode can't answer a control request to stop a turn.
 If the interactive Claude Code doesn't start or show its prompt within 45
 seconds (`claudetui.ReadyWait`), or asks how to sign in (`signIn`: a
 Claude Code signed in for `-p` only, as in a container given
-`CLAUDE_CODE_OAUTH_TOKEN`), the helper becomes `claude -p` with the same
+`CLAUDE_CODE_OAUTH_TOKEN`), or shows its first-run notes (`firstRun`:
+"Security notes", a config folder whose onboarding isn't done), the helper becomes `claude -p` with the same
 arguments (`printMode`, `exec` on the same pid, its input still unread),
 so the turn is answered all the same, and it writes
 `<cache>/magpie/claude-tui-broken`, which holds the number of failed
@@ -210,6 +291,35 @@ it could become `-p`, and every try was answered 502 "Claude Code has
 not answered magpie's initialize request in 10s" (#4504). A helper that
 answers nothing even then is ended, the mark is written, and `start`
 starts the turn again as `-p`.
+
+### Interactive only (`claudeTUIOnly`)
+
+The setting has a third choice, Interactive only, for users who would
+rather a request fail than go out as `-p`. With it (`claudeTUIOnly()`,
+which `claudePrintMode` set too overrides):
+
+- a run that `claudeTUI` would make `-p` (any reason above) is not
+  started; the request gets an error naming the reason and the setting
+  (`claudeOnlyErr`, `claudeNotTUIWhy`);
+- the helper is handed `MAGPIE_CLAUDE_TUI_ONLY=1` (`claudetui.OnlyEnv`,
+  `claudeCLI.tuiEnv`). Where it would become `-p` (no start, `ready`'s
+  sign-in, first-run notes, untrusted folder or timeout) it exits with
+  the reason instead (`fallBack` in `Run`), and it ignores the broken mark;
+- a helper that never answers `initialize` ends the turn with an error,
+  not a `-p` try. The mark is still written, but the `broken` code is
+  not counted under Interactive only (`claudeMachineWhy`), so the next
+  run tries the interactive mode again;
+- the model test's and warm-up's "hi" (`askClaude`) goes through the
+  helper too (`askClaudeTUI`), in stream-json, and its stdin is closed at
+  the first result.
+
+Reading the plan's allowance (`/usage`) asks no model and stays `-p`.
+The provider page's "Claude Code runs as" row reads `ClaudeMode.Only`:
+with the interactive mode in use it says a request it can't take fails,
+and its card says nothing runs as `-p`; where the interactive mode can't
+run, the pill names Interactive only, never `claude -p`, and says Claude
+requests fail and why, with Change in Settings. A request refused this
+way never ran, so it isn't the row's last request (`noteClaudeRun`).
 
 ## Why turns go on in one run
 

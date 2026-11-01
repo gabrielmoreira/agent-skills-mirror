@@ -152,6 +152,7 @@ oma-design
 │   └── Stitch: optional, requested design-source operation
 ├── OMA-owned specs
 │   ├── external-design-skills.md: task selection and complete support-directory loading
+│   ├── data-grid.md: alignment, filter toolbar, and row rules passed with grid briefs
 │   ├── DESIGN.md / .design-context.md / semantic token contracts
 │   ├── brand, content, URLs, analytics, CJK and accessibility constraints
 │   ├── shared ui-interaction-quality.md: adopted motion / interaction acceptance rules
@@ -276,6 +277,7 @@ oma-video
 │   ├── script.json / timing.json / render-spec.json / manifest.json contracts
 │   ├── existing-media.md: routing, source timeline, vision and speech intent
 │   ├── sound-design.md: earshot routing, cue times, composition placement, listening evidence
+│   ├── motion-principles.md: scene cast, motion, text, narration sync, diagram rules
 │   ├── vendor-matrix.md: creation providers
 │   └── hyperframes-authoring/: creation composition rules
 └── Upstream-owned specs

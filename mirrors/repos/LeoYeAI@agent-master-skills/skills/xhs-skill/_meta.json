@@ -1,0 +1,42 @@
+{
+  "owner": "leeguooooo",
+  "slug": "xhs-skill",
+  "displayName": "Xhs Skill",
+  "latest": {
+    "version": "1.0.15",
+    "publishedAt": 1772411746334,
+    "commit": "https://github.com/openclaw/skills/commit/a79ba76bdd18cff932d6c9ec9bcce77b72ec907f"
+  },
+  "history": [
+    {
+      "version": "1.0.14",
+      "publishedAt": 1772167851963,
+      "commit": "https://github.com/openclaw/skills/commit/b27b782abeb7a390a44649899cc5762e67506d84"
+    },
+    {
+      "version": "1.0.10",
+      "publishedAt": 1771931028230,
+      "commit": "https://github.com/openclaw/skills/commit/f30eab20afe65fccd63e8e5590142b4df0e7fdcc"
+    },
+    {
+      "version": "1.0.8",
+      "publishedAt": 1770959502928,
+      "commit": "https://github.com/openclaw/skills/commit/011a746bf6b91da068dad230c23ff75558b2af34"
+    },
+    {
+      "version": "1.0.5",
+      "publishedAt": 1770918476694,
+      "commit": "https://github.com/openclaw/skills/commit/b72d0aeb7cb2eb684fd8723a31d1f53e9feba373"
+    },
+    {
+      "version": "1.0.2",
+      "publishedAt": 1770872279577,
+      "commit": "https://github.com/openclaw/skills/commit/442ad8d47e8878cd1b7de717cfd0ebbc91a005bd"
+    },
+    {
+      "version": "1.0.0",
+      "publishedAt": 1770743175506,
+      "commit": "https://github.com/openclaw/skills/commit/c6b68741905d770684f390f0c6dbc6948f9aae2a"
+    }
+  ]
+}

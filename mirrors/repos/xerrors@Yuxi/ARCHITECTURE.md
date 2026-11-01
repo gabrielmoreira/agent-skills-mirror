@@ -24,7 +24,7 @@ Yuxi 是一个面向 RAG、知识图谱和多智能体工作流的知识库平�
 - `minio`：附件草稿内容、知识库原始文件和其他对象数据；正式 Agent 附件归 Workdir，附件事实归 PostgreSQL。
 - `milvus`、`etcd`：向量检索及其元数据协调。
 - `graph`：Neo4j 知识图谱。
-- `mineru-api`、`paddlex`：通过 `all` profile 可选启动的文档解析和 OCR 服务。
+- `mineru-api`：通过 `all` profile 可选启动的 MinerU 自托管解析服务；PaddleOCR-VL、PP-OCRv6 和 PP-StructureV3 共用官网云服务适配器。
 
 API 在 `/api/mcp` 提供只读知识库 MCP，与 HTTP API 共用进程和端口。`modules/knowledge/mcp` 拥有服务端协议、内部认证、连接定义、产品读取和知识引用转换，API 只装配组件与生命周期。外部客户端使用 API Key，内部 Agent 使用 Knowledge 自己提供的 SDK Auth，按可信运行用户与会话选择签发五分钟凭据；Knowledge 每次调用复核当前用户权限交集。通用 MCP 复用现有工具发现、目录缓存与执行策略，不解释 Knowledge 的范围、Token 或结果结构。`knowledge-base` Skill 以 `mcp_dependencies` 门控；Agent 只调用 Knowledge 的产品函数。选择器与引用读取直接通过 SDK 调用 MCP，引用保留文件身份和行范围。关闭 Knowledge 时不装配路由与 manager，内置身份保留，能力发现和执行明确不可用。
 
@@ -46,7 +46,7 @@ Yuxi 默认交付完整知识能力。部署开关 `YUXI_KNOWLEDGE_ENABLED` 由�
 ### 业务模块
 
 - `modules/agents` 拥有 Input 接收、优先队列调度、Turn/Run、消息、事件、运行租约与 LangGraph Agent runtime。`services/run_lifecycle.py` 拥有终态的 Thread→Turn→Input→Run 锁序、steer 裁决、Run/Turn 投影及提交后清理；checkpoint、runner 与 lease 恢复用例继续拥有各自事务提交。`services` 编排用例，`repositories` 查询持久状态，`models` 定义 ORM；`runtime/agent_backends` 拥有执行图实现与显式注册，`runtime/sandbox` 拥有沙盒执行与生命周期；`runtime/middlewares` 拥有模型与工具策略，Context 装配留在 runtime，知识库可见范围解析由 knowledge service 拥有。
-- `modules/knowledge` 拥有知识库、分块、检索、图谱与评估的业务状态；`services/uploads.py` 共用上传、URL 与工作区原件的哈希及独立 MinIO 暂存，路由校验权限、调用来源安全读取入口并适配响应，目录与导入 service 在同一 PostgreSQL 事务中发布真实目录、唯一名称、文件、幂等回执及作业，提交后投递；worker 处理已登记文件。`services/graph_build.py` 拥有图谱提交准入与 Job 登记，worker 独立消费 action，图谱执行器拥有配置及投影锁。`modules/documents` 解析配置与 MinIO 输入，并按调用方指定的位置发布资源；`infrastructure/document_parsing` 只生成完整本地 Markdown 目录，`parser.py` 拥有格式转换，`artifacts.py` 拥有产物路径与引用，`engines/` 集中 OCR 契约、注册与实现。
+- `modules/knowledge` 拥有知识库、分块、检索、图谱与评估的业务状态；`services/uploads.py` 共用上传、URL 与工作区原件的哈希及独立 MinIO 暂存，路由校验权限并适配响应，管理用例调用来源安全读取入口；本地文件读取和目录操作直接访问知识域 service/repository，只有解析、索引、检索和外部阅读装配执行器。目录与导入 service 在同一 PostgreSQL 事务中发布真实目录、唯一名称、文件、幂等回执及作业，提交后投递；worker 处理已登记文件。`services/graph_build.py` 拥有图谱提交准入与 Job 登记，worker 独立消费 action，图谱执行器拥有配置及投影锁。`modules/documents` 解析配置与 MinIO 输入，并按调用方指定的位置发布资源；`infrastructure/document_parsing` 只生成完整本地 Markdown 目录，`parser.py` 拥有格式转换，`artifacts.py` 拥有产物路径与引用，`engines/` 集中 OCR 契约、注册与实现。
 - `modules/workspace` 拥有 UserWorkspace 的路径映射、no-follow 文件操作、Workdir 和预览；Agent 沙盒与 Viewer 共用的 runtime 虚拟路径映射由 `modules/workspace/runtime_paths.py` 拥有。
 - `modules/identity` 拥有用户、部门、权限、凭据与 OIDC 账号用例，以及 Public API 的 Key 校验与 App/end_user 身份解析；`modules/extensions` 拥有 Skills、MCP 与工具目录；`modules/models` 拥有模型适配和供应商配置。
 - `modules/schedules` 拥有用户定时 Agent 定义和 occurrence；`modules/background_jobs` 拥有任务登记、执行方上报的观察记录和取消意图；后台作业模块的 dispatch 与 registry 拥有提交和定义，`workers` 拥有领取、执行和失联维护；`modules/system` 拥有系统配置、Dashboard 与跨域共享资源所有权治理。
@@ -95,7 +95,7 @@ Yuxi 默认交付完整知识能力。部署开关 `YUXI_KNOWLEDGE_ENABLED` 由�
 3. `modules/agents/services/scheduler.py` 在线程锁下领取未暂停队列的就绪优先队头，原子创建 Turn、首个 pending Run 和正式 Message。follow-up 单条 FIFO；steer 按原接收序号消费连续就绪前缀，各 Input 保持独立。`services/queue_control.py` 从待办派生暂停，调用用例拥有 Thread 锁、事务与恢复意图；Input model 拥有恢复标记编码，repository 拥有排序与恢复边界。暂停后用户主动提交的恢复消息持久固定优先位置并单独消费，完成后继续原队列。消费固定 Input 的执行归属，并将各 Input 附件挂到自己的最后一条 Message；Receipt 保持接收时的命令目标，不回填执行归属。Message 的 received_at 保留接收时间，created_at 表示进入执行投影的时间。等待回答或审批时拒绝普通消息。
 4. owning transaction 提交后才向 ARQ 投递 pending Run。恢复扫描可补投未成功投递的同一个 Run，不自动重试已经失败的工作。
 5. `worker` 中的 `modules/agents/services/runner.py` 使用进程 identity 与 job-attempt token 取得 Run lease；未取得 ownership 的重复任务不会执行。runner 依次核验输入、执行用户与 Workdir 授权，并共用拒绝结算；启动独立事务续租的心跳后，由 `services/preparation.py` 准备 Context，在有效 lease 下提交 write-once 运行清单后才进入 LangGraph。Langfuse 使用 Turn 级 trace 与 Run 级 observation；远端观测不拥有业务终态。
-6. 所有 Session 通过同一 Agent 后端与 middleware 组合 Workdir、Skills、MCP、审批、摘要及协作能力。协作成员拥有独立上下文、Thread/Input/Turn/Run，以父关系和树内名称关联；不继承父历史。全树共享 Project Workdir，执行名额由系统配置 `max_cooperation_concurrency` 限制，默认四个；同一用户的所有树共用一个 Cube VM，等待释放 worker 与执行名额。PostgreSQL 拥有协作消息、等待与终态事实；普通取消只影响指定 Turn，用户明确停止才停止整树。各 Run 的 lease、结果和终态发布独立，用户环境由 worker 在该用户无活动 Run 或操作时空闲休眠；具体行为见[会话协作](docs/agents/session-cooperation.md)。
+6. 所有 Session 通过同一 Agent 后端与 middleware 组合 Workdir、Skills、MCP、审批、摘要及协作能力。协作成员拥有独立上下文、Thread/Input/Turn/Run，以父关系和树内名称关联；不继承父历史。协作工具也可创建继承当前项目的独立顶层对话，跨树按同用户和 APP 协作，稳定 ID 负责全范围寻址，路径只在本树内解析。全树共享 Project Workdir，执行名额由系统配置 `max_cooperation_concurrency` 限制，默认四个；同一用户的所有树共用一个 Cube VM，等待释放 worker 与执行名额。PostgreSQL 拥有协作消息、等待与终态事实；普通取消只影响指定 Turn，用户明确停止才停止整树。各 Run 的 lease、结果和终态发布独立，用户环境由 worker 在该用户无活动 Run 或操作时空闲休眠；具体行为见[会话协作](docs/agents/session-cooperation.md)。
 7. 安全接管点在工具批次及 checkpoint 保存之后，或无工具的模型调用完成之后。pending steer 被固定为消费批次，旧 Run yielded，同一 Turn 创建下一 Run；提交后确认旧 Run 的 runtime 清理再投递接续，领取边界拒绝同 Thread 尚有清理责任的首次执行。普通工具循环保持同一 Run。人工等待使 Run interrupted、Turn waiting，并保存绑定该 Run 的等待点；结构化回答或审批消费等待点后，在同一 Turn 创建新 Run。
 8. 完成、失败和取消由当前 owner 在数据库事务中收敛 Run 与 Turn。最终结果指向明确的顶层 result Run 的 output Message；Model/Tool 审计保留独立归属；普通历史只读取已登记的公开 item，不包含内部 prompt 或 checkpoint。父完成、失败或单轮取消保留后代独立工作；用户显式停止整树才取消所有成员在途 Turn。取消先持久化状态并暂停待消费输入队列，再发送 Redis 加速信号；失联 Run 由 lease reconciliation 形成可观察失败。外部副作用仍按 at-least-once 语义核对。
 9. 工具真实开始与进度来自 BaseTool 回调，最外层 `ToolErrorGuardMiddleware` 按最终 ToolMessage 发布结局，原始与最终结果均成功时保留压缩前原文，`BaseAgent` 将其转为统一工具事件；中间件直接返回的结果不伪造 `started_at`。LangGraph v3 ProtocolEvent 由 `RunMessageRecorder` 统一记录模型和工具消息事实。工具审计仅在 `extra_metadata.output` 保存原始结果，`content` 固定为空且由数据库约束保护；审计文本、Memory 与公开内容使用同一工具结果契约派生，再由公开适配器转换为 OpenAI Agents 事件。消息事实与公开快照各自提交后发布事件，checkpoint 留在独立执行结果。Redis 保存逐条公开事件，SSE data 为事件本身，逻辑 event_id 与恢复 cursor 分开；断线或过期时客户端读取 PostgreSQL 快照恢复，不从相邻 Run 推断结果。
@@ -120,7 +120,7 @@ Yuxi 默认交付完整知识能力。部署开关 `YUXI_KNOWLEDGE_ENABLED` 由�
 - Skill 的依赖工具只有在对应 Skill 被显式预加载或动态激活后才对模型开放；基础工具与受 Skill 门控的工具保持边界。
 - Shipping 默认装配知识库、图谱和评估能力；显式关闭 Knowledge 时集中停止相关入口与后台工作，保留数据库结构和数据，Agent 通过 MCP 不可用路径继续运行；实际动作使用的解析器保持惰性加载。
 - 文件边界只使用三种跨层路径：数据库中的 Project `workdir_path`、Viewer 当前 scope 相对 `/foo`、Agent/artifact runtime 绝对 `/home/user/workspace/...`；宿主 `Path` 由 `yuxi.modules.workspace` 持有，普通 Service/Repository 不得取得。
-- 沙盒虚拟路径由当前 Project Workdir、Workspace 与共享 Skills 根共同约束；个人 Skill 保存在 UserWorkspace 的 `agents/skills`，共享与内置 Skill 才投影到只读 `/home/user/skills`。Cube 的惰性创建与恢复不得绕过 uid、代次及 Run/attempt owner 校验。Run 终态必须确认所属命令清理；用户环境在无活动 Run 与命令时空闲五分钟休眠。重建保留 Workspace 与 Skills，文件工具访问其他 VM 路径会自动唤醒。用户可见路径、对象存储 URL 与宿主机真实路径不能混用。
+- 沙盒虚拟路径由当前 Project Workdir、Workspace 与共享 Skills 根共同约束；个人 Skill 保存在 UserWorkspace 的 `agents/skills`，沙盒标准入口 `~/.agents/skills` 链接到该目录，CLI 全局安装直接写入个人目录，运行时直接扫描；Container 单独挂载个人目录。共享与内置 Skill 才投影到只读 `/home/user/skills`。Cube 的惰性创建与恢复不得绕过 uid、代次及 Run/attempt owner 校验。Run 终态必须确认所属命令清理；用户环境在无活动 Run 与命令时空闲五分钟休眠。重建保留 Workspace 与 Skills，文件工具访问其他 VM 路径会自动唤醒。用户可见路径、对象存储 URL 与宿主机真实路径不能混用。
 - 面向用户和外部系统的输入在边界校验；内部服务优先依赖已有类型、事务和仓储约束，避免用静默回退掩盖设计错误。
 
 ## 跨切面关注点

@@ -1,0 +1,11 @@
+{
+  "owner": "auroraproudmoore",
+  "slug": "java-audit-skill",
+  "displayName": "Java Security Audit - AI驱动的Java代码审计",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1773913002761,
+    "commit": "https://github.com/openclaw/skills/commit/fe64de0e5e7543bb0ca51a27d73462e5ba6e5826"
+  },
+  "history": []
+}

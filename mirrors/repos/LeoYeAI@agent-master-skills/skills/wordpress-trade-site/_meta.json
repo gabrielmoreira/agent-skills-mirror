@@ -1,0 +1,11 @@
+{
+  "owner": "ipythoning",
+  "slug": "wordpress-trade-site",
+  "displayName": "WordPress Trade Site Builder",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1774537324358,
+    "commit": "https://github.com/openclaw/skills/commit/9e3ae7e6424c02b631ae973b02d9e37a07497042"
+  },
+  "history": []
+}

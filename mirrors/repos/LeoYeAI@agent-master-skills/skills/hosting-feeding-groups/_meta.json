@@ -1,0 +1,11 @@
+{
+  "owner": "howtousehumans",
+  "slug": "hosting-feeding-groups",
+  "displayName": "Hosting Feeding Groups",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1774513386860,
+    "commit": "https://github.com/openclaw/skills/commit/7b39f80dec2b39dffc8e0369e452a9bfe7e7bbb3"
+  },
+  "history": []
+}

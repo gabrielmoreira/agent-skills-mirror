@@ -1,0 +1,11 @@
+{
+  "owner": "yuyonghao-123",
+  "slug": "yuyonghao-proactive-agent",
+  "displayName": "Proactive Agent",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1774587712908,
+    "commit": "https://github.com/openclaw/skills/commit/4328a36ffef91d8446f31b43958e0425155e6771"
+  },
+  "history": []
+}

@@ -52,6 +52,20 @@ On capable daemons, connecting creates no timeline or event demand. Client subsc
 release it on unsubscribe, and restore it after reconnect. Raw message observers inspect traffic
 without requesting streams. Application caches and which agents are visible remain caller-owned.
 
+## Terminal ANSI replay
+
+Terminal replay intentionally drops JSON-era apps, an exception to the general cross-version policy:
+use app v0.1.81 or newer. Earlier apps omit `restore` and reject ANSI Restore (`0x05`), so they show
+only subsequent live output, without the existing screen or history.
+
+`terminal_chunked_replay` is SDK-owned delivery behavior. The daemon sends new binary opcodes only to a source
+advertising the capability. The SDK keeps the established subscribe request against older
+ANSI hosts and normalizes their single Restore frame into begin/data/end. `observeTerminal` defaults
+to an explicit full snapshot: omitting restore on an ANSI-era host selects its discarded JSON path.
+Explicit caller restore modes and history counts pass through unchanged. JSON snapshot
+wire declarations remain accepted, but JSON snapshot frames have no rendering runtime.
+Terminals require `terminal-restore-modes`; older hosts show an update message without attaching.
+
 ## Binary chunking
 
 `binary_chunking_v1` in hello and optional `server_info.features.binaryChunkingV1`

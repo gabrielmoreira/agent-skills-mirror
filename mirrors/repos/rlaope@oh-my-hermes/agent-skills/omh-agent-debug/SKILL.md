@@ -93,7 +93,7 @@ Expected outputs:
 
 Artifact expectations:
 
-- agent_debug_report/v1 from `omh quality-evidence agent-debug --hermes-session <id|latest> --observable <kind> --json` (or `--session-record <jsonl>`, `--turns N:M`): tool errors, identical retries after an error, background processes started without notify_on_complete, and compaction boundaries, each cited by session and message id or record line; treat a kind listed unavailable as unchecked
+- agent_debug_report/v1 from `omh quality-evidence agent-debug --hermes-session <id|latest> --observable <kind> --json` (or `--session-record <jsonl>`, `--turns N:M`): tool errors, identical retries after an error, background processes started without notify_on_complete, compaction boundaries, and silent turn ends (an empty assistant row right after a tool result that ended the turn), each cited by session and message id or record line; treat a kind listed unavailable as unchecked, and when a silent turn end leads, read the host's agent.log `Turn ended: reason=` line for its timestamp before changing anything
 - agent_failure_capture/v1 and agent_failure_pattern_hypothesis/v1 in that payload: observed finding ids, unavailable evidence, and at least two competing hypotheses with evidence for and against
 - contained_recovery_action/v1 proposing the smallest reversible step, never executed; sharing is the separate `agent-debug-export`, written only with --confirm-export
 

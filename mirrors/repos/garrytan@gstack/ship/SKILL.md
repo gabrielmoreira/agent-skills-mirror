@@ -2,7 +2,7 @@
 name: ship
 preamble-tier: 4
 version: 1.0.0
-description: "Ship workflow: detect + merge base branch, run tests, review diff, bump VERSION, update CHANGELOG, commit, push, create PR. (gstack)"
+description: "Ship it: merge the base, run tests, review the diff, bump VERSION and CHANGELOG, push and create a PR. (gstack)"
 allowed-tools:
   - Bash
   - Read
@@ -517,7 +517,7 @@ chooses it in item 2 and ALREADY_BUMPED derives it in item 1.
 
 **One call:** `~/.claude/skills/gstack/bin/gstack-ship-release version --base <base> [--bump <BUMP_LEVEL>] --why '<WHY>'`
 runs items 1 and 3–5; each decision left to you is a `STOP:` naming its rerun flag
-(`--bump`, `--accept-incomplete`, `--version <v>`, `--keep-current`).
+(`--bump`, `--accept-incomplete`, `--version <v>`, `--keep-current`, `--answer`).
 
 `ship: queue_mode stamp-at-merge` replaces items 1–4.
 

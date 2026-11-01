@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `magnus919/agent-skills` — 26 default patterns, 9 followed patterns, 413 file(s) materialized.
+Mirror of `magnus919/agent-skills` — 26 default patterns, 10 followed patterns, 414 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `magnus919/agent-skills` — 26 default patterns, 9 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 413 |
+| Followed pats | 10 |
+| Files         | 414 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `magnus919/agent-skills` — 26 default patterns, 9 followed patterns,
 - `FAILURE-MODE-INDEX.md`
 - `README.md`
 - `references/skill-triggers.md`
+- `docs/harness-installation.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `LICENSE.md`
@@ -475,11 +476,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 406 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 407 | → | [`data-scientist/README.md`](data-scientist/README.md) |
 | 408 | → | [`docs/evaluation-evidence-and-test-routing.md`](docs/evaluation-evidence-and-test-routing.md) |
-| 409 | → | [`docs/jev-ci-reference-runlog.md`](docs/jev-ci-reference-runlog.md) |
-| 410 | → | [`FAILURE-MODE-INDEX.md`](FAILURE-MODE-INDEX.md) |
-| 411 | → | [`LICENSE.md`](LICENSE.md) |
-| 412 | → | [`README.md`](README.md) |
-| 413 | → | [`references/skill-triggers.md`](references/skill-triggers.md) |
+| 409 | → | [`docs/harness-installation.md`](docs/harness-installation.md) |
+| 410 | → | [`docs/jev-ci-reference-runlog.md`](docs/jev-ci-reference-runlog.md) |
+| 411 | → | [`FAILURE-MODE-INDEX.md`](FAILURE-MODE-INDEX.md) |
+| 412 | → | [`LICENSE.md`](LICENSE.md) |
+| 413 | → | [`README.md`](README.md) |
+| 414 | → | [`references/skill-triggers.md`](references/skill-triggers.md) |
 
 ---
 

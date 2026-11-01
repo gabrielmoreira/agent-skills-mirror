@@ -1,0 +1,11 @@
+{
+  "owner": "czzlegend",
+  "slug": "finloop-news-skills",
+  "displayName": "F-AI 资讯搜索",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1773824746249,
+    "commit": "https://github.com/openclaw/skills/commit/41729dd2abe7e9d7a0340fa7318c32549eee0d1e"
+  },
+  "history": []
+}

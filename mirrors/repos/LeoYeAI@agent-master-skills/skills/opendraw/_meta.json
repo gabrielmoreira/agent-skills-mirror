@@ -1,0 +1,11 @@
+{
+  "owner": "alexdalat",
+  "slug": "opendraw",
+  "displayName": "OpenDraw",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1773314280250,
+    "commit": "https://github.com/openclaw/skills/commit/e78a84965565559148ad6f15514da5f156064f19"
+  },
+  "history": []
+}

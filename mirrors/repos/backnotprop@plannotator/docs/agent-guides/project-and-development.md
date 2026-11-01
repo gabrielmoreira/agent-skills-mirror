@@ -224,6 +224,8 @@ The Inbox window e2e (`.github/workflows/inbox-e2e.yml`) builds the apps once, t
 
 The two Windows jobs for the Qwen Code installer steps (about 20 runner minutes, in `windows.yml`) run on a labeled PR only when the `qwen-gate` job sees a change to `scripts/install.{ps1,cmd}`, `scripts/install.test.ts`, `apps/qwen-code/`, the test setup, `package.json`, `bun.lock` or `windows.yml`; otherwise they report skipped. Pushes to main and manual runs always run them.
 
+The diagram engine's Windows build (`diagram-engine-windows`, in `windows.yml`) works the same way: on a labeled PR it runs only when the `diagram-engine-gate` job sees a change to `apps/review/diagram-engine/`, `packages/review-editor/utils/diagramEngineContract.ts`, `apps/review/package.json`, `package.json`, `bun.lock` or `windows.yml`. Its plugins compare Vite's module ids, which use `/` everywhere, with paths the build script makes itself, so only a Windows build catches a path that skips `normalizePath`.
+
 On a PR, the Release dry run skips its own `bun test` (the Test workflow runs the same sweep); tag pushes and manual runs still test before building. Every PR workflow cancels the PR's older run when the PR gets a new push. On main, a new push cancels the older run of the Windows, Inbox e2e, Pi, Claude Code, relay and Security workflows; Test runs for every main commit (Deploy follows it), and tag pushes are never cancelled.
 
 ## Build

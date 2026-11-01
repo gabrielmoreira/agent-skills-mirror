@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `uditgoenka/autoresearch` — 26 default patterns, 1 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 28 |
+| Followed pats | 1 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `uditgoenka/autoresearch` — 26 default patterns, 0 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `pi-extension/README.md`
 
 ## File Index
 
@@ -71,22 +71,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.agents/skills/autoresearch/predict.md`](.agents/skills/autoresearch/predict.md) |
 | 11 | ✓ | [`.agents/skills/autoresearch/probe.md`](.agents/skills/autoresearch/probe.md) |
 | 12 | ✓ | [`.agents/skills/autoresearch/reason.md`](.agents/skills/autoresearch/reason.md) |
-| 13 | ✓ | [`.agents/skills/autoresearch/references/orchestrator-routing.md`](.agents/skills/autoresearch/references/orchestrator-routing.md) |
-| 14 | ✓ | [`.agents/skills/autoresearch/references/predict-personas.md`](.agents/skills/autoresearch/references/predict-personas.md) |
-| 15 | ✓ | [`.agents/skills/autoresearch/references/reason-judge-protocol.md`](.agents/skills/autoresearch/references/reason-judge-protocol.md) |
-| 16 | ✓ | [`.agents/skills/autoresearch/references/security-checklist.md`](.agents/skills/autoresearch/references/security-checklist.md) |
-| 17 | ✓ | [`.agents/skills/autoresearch/regression.md`](.agents/skills/autoresearch/regression.md) |
-| 18 | ✓ | [`.agents/skills/autoresearch/scenario.md`](.agents/skills/autoresearch/scenario.md) |
-| 19 | ✓ | [`.agents/skills/autoresearch/scripts/orchestrate.sh`](.agents/skills/autoresearch/scripts/orchestrate.sh) |
-| 20 | ✓ | [`.agents/skills/autoresearch/scripts/score-regression.sh`](.agents/skills/autoresearch/scripts/score-regression.sh) |
-| 21 | ✓ | [`.agents/skills/autoresearch/security.md`](.agents/skills/autoresearch/security.md) |
-| 22 | ✓ | [`.agents/skills/autoresearch/ship.md`](.agents/skills/autoresearch/ship.md) |
-| 23 | ✓ | [`.agents/skills/autoresearch/SKILL.md`](.agents/skills/autoresearch/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/autoresearch/SKILL.md`](.claude/skills/autoresearch/SKILL.md) |
-| 25 | ✓ | [`.opencode/skills/autoresearch/SKILL.md`](.opencode/skills/autoresearch/SKILL.md) |
-| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 27 | ✓ | [`claude-plugin/skills/autoresearch/SKILL.md`](claude-plugin/skills/autoresearch/SKILL.md) |
-| 28 | ✓ | [`plugins/autoresearch/skills/autoresearch/SKILL.md`](plugins/autoresearch/skills/autoresearch/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/autoresearch/references/behavior-preserving-optimization.md`](.agents/skills/autoresearch/references/behavior-preserving-optimization.md) |
+| 14 | ✓ | [`.agents/skills/autoresearch/references/fork-and-flush.md`](.agents/skills/autoresearch/references/fork-and-flush.md) |
+| 15 | ✓ | [`.agents/skills/autoresearch/references/orchestrator-routing.md`](.agents/skills/autoresearch/references/orchestrator-routing.md) |
+| 16 | ✓ | [`.agents/skills/autoresearch/references/predict-personas.md`](.agents/skills/autoresearch/references/predict-personas.md) |
+| 17 | ✓ | [`.agents/skills/autoresearch/references/reason-judge-protocol.md`](.agents/skills/autoresearch/references/reason-judge-protocol.md) |
+| 18 | ✓ | [`.agents/skills/autoresearch/references/security-checklist.md`](.agents/skills/autoresearch/references/security-checklist.md) |
+| 19 | ✓ | [`.agents/skills/autoresearch/regression.md`](.agents/skills/autoresearch/regression.md) |
+| 20 | ✓ | [`.agents/skills/autoresearch/scenario.md`](.agents/skills/autoresearch/scenario.md) |
+| 21 | ✓ | [`.agents/skills/autoresearch/scripts/orchestrate.sh`](.agents/skills/autoresearch/scripts/orchestrate.sh) |
+| 22 | ✓ | [`.agents/skills/autoresearch/scripts/score-regression.sh`](.agents/skills/autoresearch/scripts/score-regression.sh) |
+| 23 | ✓ | [`.agents/skills/autoresearch/security.md`](.agents/skills/autoresearch/security.md) |
+| 24 | ✓ | [`.agents/skills/autoresearch/ship.md`](.agents/skills/autoresearch/ship.md) |
+| 25 | ✓ | [`.agents/skills/autoresearch/SKILL.md`](.agents/skills/autoresearch/SKILL.md) |
+| 26 | ✓ | [`.claude/skills/autoresearch/SKILL.md`](.claude/skills/autoresearch/SKILL.md) |
+| 27 | ✓ | [`.muse/skills/autoresearch/SKILL.md`](.muse/skills/autoresearch/SKILL.md) |
+| 28 | ✓ | [`.opencode/skills/autoresearch/SKILL.md`](.opencode/skills/autoresearch/SKILL.md) |
+| 29 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 30 | ✓ | [`claude-plugin/skills/autoresearch/SKILL.md`](claude-plugin/skills/autoresearch/SKILL.md) |
+| 31 | ✓ | [`pi-extension/skills/autoresearch/SKILL.md`](pi-extension/skills/autoresearch/SKILL.md) |
+| 32 | ✓ | [`plugins/autoresearch/skills/autoresearch/SKILL.md`](plugins/autoresearch/skills/autoresearch/SKILL.md) |
+| 33 | → | [`pi-extension/README.md`](pi-extension/README.md) |
 
 ---
 

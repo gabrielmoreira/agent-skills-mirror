@@ -1,0 +1,17 @@
+{
+  "owner": "lijiejoy",
+  "slug": "local-coding-orchestrator",
+  "displayName": "local-coding-orchestrator",
+  "latest": {
+    "version": "0.2.2",
+    "publishedAt": 1773032721920,
+    "commit": "https://github.com/openclaw/skills/commit/747207dbe9f92cb3b7f1cb85f7cbf3da68f8c058"
+  },
+  "history": [
+    {
+      "version": "0.3.1",
+      "publishedAt": 1772980058866,
+      "commit": "https://github.com/openclaw/skills/commit/a57b5095d673165a2d02d9f5bd1bd22de9387ec3"
+    }
+  ]
+}

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tt-a1i/archify` — 26 default patterns, 8 followed patterns, 38 file(s) materialized.
+Mirror of `tt-a1i/archify` — 26 default patterns, 8 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tt-a1i/archify` — 26 default patterns, 8 followed patterns, 38 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 38 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,14 +96,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`benchmarks/real-repo-generation/prompts.md`](benchmarks/real-repo-generation/prompts.md) |
 | 29 | ✓ | [`benchmarks/real-repo-generation/report-template.md`](benchmarks/real-repo-generation/report-template.md) |
 | 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 31 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 32 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
-| 33 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
-| 34 | → | [`benchmarks/real-repo-generation/README.md`](benchmarks/real-repo-generation/README.md) |
-| 35 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 36 | → | [`REVIEWING.md`](REVIEWING.md) |
-| 37 | → | [`SECURITY.md`](SECURITY.md) |
-| 38 | → | [`viewer/README.md`](viewer/README.md) |
+| 31 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 32 | ✓ | [`llms.txt`](llms.txt) |
+| 33 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 34 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
+| 35 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
+| 36 | → | [`benchmarks/real-repo-generation/README.md`](benchmarks/real-repo-generation/README.md) |
+| 37 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 38 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 39 | → | [`SECURITY.md`](SECURITY.md) |
+| 40 | → | [`viewer/README.md`](viewer/README.md) |
 
 ---
 

@@ -1,0 +1,17 @@
+{
+  "owner": "sondro110",
+  "slug": "wechat-article-generator",
+  "displayName": "交互式生成公众号文章",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1774225368613,
+    "commit": "https://github.com/openclaw/skills/commit/2011bde771b8bc928028fc75e02551b6d53c0d73"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1774138192744,
+      "commit": "https://github.com/openclaw/skills/commit/e46dc53facd884f92e37b71b007d2f6f7d2297b5"
+    }
+  ]
+}

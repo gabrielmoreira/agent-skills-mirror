@@ -1,0 +1,17 @@
+{
+  "owner": "datadrivenconstruction",
+  "slug": "open-data-integrator",
+  "displayName": "Open Data Integrator",
+  "latest": {
+    "version": "2.1.0",
+    "publishedAt": 1771171402060,
+    "commit": "https://github.com/openclaw/skills/commit/c2517b6456f40676d5eaa992552984b4237ef6cc"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1770475409561,
+      "commit": "https://github.com/openclaw/skills/commit/ec12cf63acdcfb96cb19b402f8d3342d77b707f0"
+    }
+  ]
+}

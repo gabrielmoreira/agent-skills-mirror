@@ -74,20 +74,62 @@ architectures comparable (local store, delta sync, crypto layer).
    its font, where RN converts the line height separately, so at large
    scales our lines run a few dp taller.
    **Tablet:** `ui/layout/WindowLayout.kt` answers responsive.ts and
-   layout.ts through `LocalWindowLayout` (the tablet shell is width ≥ 768;
-   the 9-inch diagonal only sets the 800 content max width). Read it, not
-   `LocalConfiguration`, for any `useIsTablet` branch; hold wide content with
-   `Modifier.contentMaxWidth` or `CenteredInputWidth`. `ui/tablet/TabletShell`
+   layout.ts through `LocalWindowLayout`. The two-pane tablet shell is
+   Material's expanded class, width ≥ 840 (`TabletBreakpoint` reads
+   `WidthClass.expandedMin`; happy-app's 768 is deliberately not used), so
+   the Fold7's inner screen, 750 upright and 832 on its side, is one pane.
+   Read it, not `LocalConfiguration`, for any `useIsTablet` branch.
+   **Horizontal layout is one token set by Material width class**
+   (`ContentTokens`, research/foldable-layout.md): compact (< 600) 16 margin
+   and no cap, exactly the phone; medium (600–839, the Fold's inner screen)
+   24 margin and a 640 measure; expanded 24 and 768 (the 800 column). Hold
+   every content column with `Modifier.contentMaxWidth` (or
+   `CenteredInputWidth`) *before* its own 16 inset, so cards, rows, message
+   text and the bars' glyphs share one keyline per side. Top bars sit on the
+   same column with 48 targets 4 in, so a 24 glyph's edge is on the keyline;
+   never pad a bar control from the outside. Home's bar (both homes,
+   `AgentTopBar(inset = HomeCardSpec.inset)`) is the one exception: Steve
+   wants its account avatar on the left edge of the rows' avatars and marks
+   inside the cards, and its last action's glyph on the rows' content end,
+   so the whole bar comes a card's 16 further in (32 from the column's edge;
+   48 targets kept). iOS's home doesn't do this; settings' bar stays on the
+   column, as iOS's does. The compose FAB stays 16 from the column's edge,
+   as iOS's dock does. Dialogs take
+   `ContentTokens.dialogMaxWidth`, sheets `sheetMaxWidth`.
+   `ui/layout/FoldableLayoutTest` checks screens at 411, 750, 832 and 1280;
+   `TabletShellTest` pins one pane at 750, 768 and 832 and the shell at 840. `ui/tablet/TabletShell`
    wraps HappyApp's NavHost; under it `LocalTabletShell` is true and
    `HeaderBackButton` renders nothing. Tablet tests use
    `w1280dp-h800dp-xhdpi`; without `ProvideWindowLayout` a composable lays
    out as an unlimited phone.
-   **Moving between screens:** the one NavHost takes `ui/NavMotion`'s four
-   transitions, Material's shared X axis (300 ms, 30 dp whatever the pane's
-   width, mirrored by Back and by right-to-left, none with animations off).
-   Never leave a NavHost on navigation-compose's defaults: those are a 700 ms
-   crossfade. The back gesture keeps the library's predictive animation. An
-   account or agent switch remounts the stack at once; it is not a push.
+   **Moving between screens:** one motion, measured from One UI Settings on
+   the Fold7 (`research/navigation-motion.md`). The one NavHost takes all six
+   of `ui/NavMotion`'s transitions and `Modifier.backdrop(nav)`: the new page
+   slides across the whole pane over the old one in 450 ms on
+   cubic-bezier(0.22, 0.4, 0, 1), the old one moves 26% the other way and
+   dims 20%, nothing fades. The dim is a black scrim over the page beneath
+   (`PageDims`, which every destination wears by being a `page<Route>`, not a
+   bare `composable`), never the page's alpha: a page at 0.8 alpha costs
+   HWUI a full-window offscreen layer, 10 to 18 ms of GPU allocation on the
+   first frame of every push on the Fold. Toolbar back, system back and a gesture's commit
+   run the same pop. The predictive gesture is that pop held at the finger's
+   progress, and it finishes or cancels on the curve from there. Mirrored in
+   right-to-left; with animations off, none. Never leave a NavHost on
+   navigation-compose's defaults (a 700 ms crossfade, and a scale on the
+   gesture), and never give a destination its own transitions.
+   **Switching accounts** is not a push (`ui/AccountSwitch.kt`, iOS's
+   12a4c4bc9): from home's account menu a new stack's home dissolves in over
+   the old one in 0.28 s (`Dissolve`, iOS's `rootCrossfade`); from
+   Settings' accounts card or search the stack is kept, Settings stays on top
+   where it was scrolled and home changes under it unseen (`HomeRoute` and
+   `SettingsRoute` show whichever account is open). A Happy account and an
+   agent connection have different pages, so a switch between kinds
+   dissolves Settings' scrolling part, the bar steady; one of the same kind
+   only changes the values. Signing out of or disconnecting the open account
+   from Settings keeps Settings too. The screens follow
+   `AppGraph.openAccount`, which changes once per switch (`whileSwitching`),
+   never through "none": a switch never shows the first screen
+   (`AccountSwitchTest`).
 4. **The local store is SQLite through the framework API**
    (`SQLiteOpenHelper`, WAL, hand-written SQL in `data/`). Why not a library:
    the schema is a handful of tables whose rows are mostly JSON documents
@@ -120,9 +162,11 @@ win:
   drop-down of the relay accounts and agent connections (avatar and
   name each, a check on the open one), then one "Add"
   (`ui/home/AccountMenu.kt`); picking one switches
-  (`AppGraph.open`). Settings and then compose (far right) on the right.
-  No logo, filter menu (grouping is in Appearance) or centred "Sessions"
-  title; an unhealthy connection shows centred. One account is open at a
+  (`AppGraph.open`). Settings on the right. The legacy home and agent
+  home share one bar (`AgentTopBar`, `BarTitle`): the account's name as
+  the title, with an unhealthy connection under it. No logo, filter menu
+  (grouping is in Appearance) or "Sessions" title. Compose is a FAB at the
+  bottom right of both homes (`ComposeFab`); home has no text input. One account is open at a
   time: a Happy account or an agent connection (`openAgentId`); each has
   its own back stack. **Add** opens the scanner straight away (the
   app's one `LocalAddFlow`, the same as the first screen's Connect;
@@ -158,7 +202,28 @@ win:
 - **Compose:** from home it opens an empty new chat; from a chat it
   replaces that chat with an empty one, animated, with Back going to home.
   The empty chat becomes the real session in place on the first send, with
-  no route change (not happy-app's draft route then navigate).
+  no route change (not happy-app's draft route then navigate). On a
+  Happy account the empty chat is `SessionRoute("compose-chat:<uuid>")`
+  (`ui/chat/ComposeChat.kt`, iOS's LegacyComposeStart): its composer
+  writes the account's new-session draft; centred between the bar and the
+  composer (`ui/chat/NewWorkPanel.kt`, iOS's NewWorkPanel/NewWorkLayout)
+  sit the computer (only with two or more) and the folder, each a menu,
+  the folders following the computer; its first send starts the session
+  with that text and images, and the screen then shows that session. A
+  refused or failed start says why and keeps the text; leaving before the
+  computer answers stops the start and the draft stays. On a tablet the
+  sidebar's New session opens the same chat in the detail pane. Legacy
+  compose makes sessions only; a legacy bot is made on the new-session
+  screen (`/new`). An agent connection's empty chat asks Task or Bot and an
+  optional name in the same place; its first send makes that kind under
+  that name (`POST /v0/tasks` or `/v0/bots`, once, the same ids on a
+  retry) and only then sends, so a refusal keeps the text and says why.
+  Left unsent, the next compose opens it as it was (`AgentSession.unsentWork`).
+- **Home cards:** the legacy home's rows sit in the agent home's inset
+  cards (`HomeCardRow`: 16 in, radius 26, 24 between cards, hairlines
+  inside). Day and section headings become gaps; a computer heads its
+  cards only when there is more than one; the archive is one card under
+  its toggle. Rows show no timestamp.
 - **Fonts:** the system font for all text, the platform monospace
   (`FontFamily.Monospace`) for code. Not IBM Plex.
 - **Home rows** have strict, precomputed heights, per row kind and font
@@ -166,6 +231,19 @@ win:
   and neither home nor chat scrolls by itself while nothing changed.
 - **Settings cards** look the same everywhere and come from one component
   (`ItemGroup`).
+- **Settings search** (iOS's, `ui/settings/SettingsSearch.kt`), on both
+  kinds of Settings: the bar's search button turns the bar into a field
+  and hides the picture, name and cards; what is typed finds accounts by
+  name, the page's rows (`SettingsEntry`, which the page draws too) and the
+  rows of its own pages (`accountPageEntries` and the like, beside each
+  page), in one card under the bar, or "Nothing found". A page's row opens
+  that page with `reveal` in its route: it scrolls the row to the middle and
+  flashes it (`ProvideRowReveal`, `Modifier.revealRow`). A new row on such
+  a page goes in its `*PageEntries` too; `SettingsSearchTest` checks they
+  agree. An agent's home search finds its Settings rows the same way, from
+  `agentSettingsIndex()` (iOS's `SettingsIndex.computer`):
+  `openAgentSettingsRow` opens the agent's Settings or Appearance page with
+  `reveal`, or Chief of Staff with the ask for name and avatar.
 - **QR codes:** every scan is classified (terminal, account, agent
   connection, or not ours) and routed. A code the screen can't use shows an
   error; nothing is silently ignored. Scanning works while signed in.
@@ -195,6 +273,8 @@ app/
   model/    typed views of the stored JSON: Settings (sync/settings.ts);
             settings/ has agentDefaults.ts, local settings, SettingsRepository
   text/     Resources.plural / pluralResource, PluralExactNumbers (generated)
+benchmark/  on a device, against the bench build: StartupBenchmark (cold start) and the
+          Baseline Profile generator (research/cold-start.md)
 tools/testvectors/   generates crypto and send vectors by running happy-app's TypeScript
 tools/translations/  generates the string resources from happy-app's catalogs
 ```
@@ -210,22 +290,42 @@ After happy-app's catalogs change, regenerate and commit the output:
 cd tools/translations && npm run generate
 ```
 
-`TranslationResourcesTest` fails until you do. A string happy-app doesn't
-have goes in `res/values/strings_android.xml` (English only); add it to
-happy-app's catalogs instead where you can.
+`TranslationResourcesTest` fails until you do.
+
+A string happy-app's catalogs don't have (iOS's words, Android's own) first
+reuses a catalog key whose English and meaning match exactly
+(`session_new_chat`, `common_back`, `settings_account_status`…). Otherwise it
+goes in `res/values/strings_<area>.xml` (`strings_settings.xml`,
+`strings_conversation.xml`, `strings_android.xml`…) **and** in every
+language, `values-<locale>/strings_<area>.xml` under the same name, with the
+same placeholders and each plural with that language's categories (one/few/
+many/other in Russian and Polish, one/many/other in the Romance languages,
+other alone in Japanese and Chinese). `AndroidStringsTranslatedTest` fails
+while one is missing, stale or mismatched. Brand and product names and
+literal examples (`Happy`, `Happy Cloud`, `Chief of Staff`, `deploy-api`) are
+`translatable="false"`.
 
 Where happy-app calls `t()`, use the catalog key; never re-type its English.
 Where happy-app writes English inline instead (most of HomeDock, the machine
 screen, info.tsx's activity rows, the agents and push-diagnostics settings,
-useStartSessionFromDraft's errors), the port stays English too: on screens, in
+useStartSessionFromDraft's errors), the port takes its words into
 `strings_<area>.xml` (`strings_home.xml`, `strings_tablet.xml`,
-`strings_push.xml`, `strings_android.xml`) or inline with a note naming the
-happy-app file. Text built outside composition stays a Kotlin literal, word for
-word as happy-app has it: tool titles (`chat/tools`), slash-command
-descriptions (`autocomplete`), reducer events, spawn, worktree and changes
-errors, and the push diagnostics in `model/settings/Push.kt`. So do brand and
-product names ("Claude Code", "OpenAI Codex", "Happy Engineering"). When
-happy-app moves one of these into its catalogs, switch to the key.
+`strings_push.xml`, `strings_chat.xml`…) and translates them like any other
+Android string. No file is English-only.
+
+Text decided outside composition is not English either: it is a typed
+reason the screen resolves with `stringResource`. A conversation's errors and
+alerts are a `Problem`, an agent turn's failure a `FailureReason`
+(`ui/conversation/ProblemText.kt` words both), a scan's a `ScanFailure`,
+a start refusal carries `StartRefusal.text`, and spawn, worktree, bot name
+and changes errors are `Words` (`text/Words.kt`): `Words.Ours` for our
+sentence, `Words.Said` for what the server, daemon or git said, shown as it
+came. Raw agent, daemon and server messages are never translated, but our
+wrapper around them is. What stays a Kotlin literal: tool titles
+(`chat/tools`), slash-command descriptions (`autocomplete`), reducer events,
+the developer-only voice diagnostics, and brand and product names ("Claude
+Code", "OpenAI Codex", "Happy Engineering"). When happy-app moves one of these
+into its catalogs, switch to the key.
 
 How a catalog entry becomes a resource:
 
@@ -305,6 +405,25 @@ full listing on first sync and once a day catches deletions. Messages: see
 history below. It runs on sign-in, on every socket connect, and when the app
 returns to the foreground.
 
+**Disk never on the main thread** (research/offline-first.md). A screen
+waits for the disk with its loader, never with a frozen frame, and never
+waits for the network when what it shows is on disk. `DiskThread.check()`
+guards every `HappyStore` access and every agent connection file (catalog,
+kept resources and conversations, pictures); tests turn on
+`DiskThread.strict` (`OfflineFirstJourneyTest`), debug builds log
+StrictMode's disk detection. The graph is built off the main thread
+(`HappyApplication.graphReady`); MainActivity holds its first frame until
+then, which costs nothing measured, since the graph is done before the
+first traversal. That thread then starts reading the open home from disk
+(`AppGraph.warmHome`), so on a release build the kept rows are in the
+first frame (research/cold-start.md, `ColdStartTest`). An agent
+connection keeps, beside its catalog, each opened
+conversation's newest 100 runs (`KeptConversation`, iOS's
+`conversation:<agentId>`), its Surfaces' last read, and bots' and
+projects' pictures; a chat shows its kept runs, then asks only
+`messages?after=` the newest finished run's last message. The journal
+resumes from the kept cursor; only a gap reads the snapshot again.
+
 **Store merges** (`HappyStore`). Writes merge instead of overwrite: each
 versioned document (metadata, agentState, daemonState) keeps the higher
 version, presence the newer `activeAt`, counters the maximum, so a slow page
@@ -347,7 +466,8 @@ the `beforeLogout` hooks first, while signed in (the push unregister); then
 its database and credentials; the next account by added order opens. With
 the last account also go local settings, the What's New marker, the
 new-session draft (stored and in memory, `afterLogoutWipe`), picked-image
-copies and the image loader's caches. The server choice stays
+copies and the image loader's caches, and the UI language goes back to the
+device's (it was the account's setting). The server choice stays
 (`LogoutWipeTest`).
 
 **Large sessions** (`perf/LargeDataTest`, `perf/ChatDisplayTimingTest`).
@@ -465,8 +585,9 @@ graph over the same database and keys for process death.
 
 - Kept through both: the open screen (the nav back stack is saved), the
   chat's composer draft (the session composer's mirror is in the
-  database), the chat list's scroll position, the home dock's text and
-  focus (`rememberSaveable`), and an open composer or dock picker.
+  database), the chat list's scroll position, a compose chat's text (the
+  new-session draft is stored) and the session it started
+  (`rememberSaveable`), and an open composer or picker.
 - Kept through a recreation only: Restore's QR request (a ViewModel), or
   its failure with Retry; a recreation never starts a new request.
 - Lost, as in happy-app: pending chats (memory only), open alerts and
@@ -508,7 +629,29 @@ cd packages/happy-android
 
 Build types map to happy-app's variants and application ids: `debug` →
 `com.slopus.happy.dev`, `preview` → `com.slopus.happy.preview`, `release` →
-`com.ex3ndr.happy`.
+`com.ex3ndr.happy`. One more never ships: `bench` → `com.slopus.happy.bench`,
+the release code debug-signed beside the others, with a fixture account
+(`src/bench`). Cold start is measured on it (research/cold-start.md).
+
+**Cold start.** The system doesn't compile a debuggable app on install, so
+after `adb install` of the dev build run
+`adb shell cmd package compile -m verify -f com.slopus.happy.dev` (cold
+start 516 → 302 ms on the Fold). A new content provider or androidx.startup
+initializer runs before the first frame and fails `ColdStartTest` until it
+is listed there; prefer starting it where it is first needed (Firebase's
+provider and ProfileInstaller's initializer are removed for that). Work
+nothing on the first screen shows waits for `LocalAfterStart` (push
+registration, notification channels, the paywall host), and glass blurs
+from the window's second frame (`FirstFrame`). Keep
+`HappyApplication.onCreate` to the debug StrictMode it has. The Baseline and
+startup profiles (`app/src/main/generated/baselineProfiles`) come from
+`benchmark/`'s generator; regenerate them after large UI changes, with only
+the target device's serial:
+
+```
+ANDROID_SERIAL=<device> ./gradlew :app:generateBaselineProfile
+ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest   # StartupBenchmark
+```
 
 ### Versions and signing
 
@@ -677,8 +820,13 @@ plugin: `app/build.gradle.kts` reads `app/google-services.json`, else
 happy-app's committed `packages/happy-app/google-services.json`, and
 generates the plugin's resources for the client matching each variant's
 application id. Without a file or a matching client the app builds and runs
-and push reports unsupported (no prompt, nothing registered). Pushes arrive
-only if:
+and push reports unsupported (no prompt, nothing registered). Firebase
+doesn't start with the process: the manifest removes FirebaseInitProvider,
+and `push/FirebaseStart.kt` starts it where push needs it, off the main
+thread from registration (after the first frame) and in
+`HappyMessagingService.onCreate` for a push that wakes a killed process
+(`FirebaseStartTest`). Anything new that touches FirebaseMessaging calls
+`FirebaseStart.ensure` first. Pushes arrive only if:
 
 - the file has clients for `com.ex3ndr.happy`, `com.slopus.happy.preview`
   and `com.slopus.happy.dev` (happy-app's has all three);
@@ -747,13 +895,47 @@ Verify focus, recording and communication mode on a device after changes.
   policy, then upload; a failed image is counted, not fatal), and handed to
   `ChatActions.send(..., attachments = fileEventRecords(uploaded))`, which
   queues sync.ts's `file` session events ahead of the text.
-- **Picking**: the Android photo picker (`PickVisualMedia`), so no storage
-  permission (happy-app blocks READ_MEDIA_IMAGES); paste reads an image
-  URI from the clipboard. The add button always asks Paste or Library, as
-  useImagePicker does. No thumbhash on Android, as on happy-app native.
+- **Picking**: the add button and the conversation's [+] open the
+  attachment sheet (`ui/attach/`), Telegram's ChatAttachAlert ported with
+  its numbers (`research/attachment-menu.md`, pinned by `AttachSpecTest`):
+  a gallery of recent photos and videos read from MediaStore
+  (`attachments/MediaGallery`, so the app asks READ_MEDIA_IMAGES/VIDEO as
+  the sheet opens; Android 14's partial access lists what was chosen and
+  offers Manage), numbered multi-select, a caption that is the draft, and a
+  File tab (Browse through the system picker, the system photo picker as
+  files, Paste, and the files sent from here before, `RecentFiles`). Picks
+  are copied into the cache on Send (`AttachmentStaging`: photos normalized
+  as below, the rest as they are). What a chat offers is `AttachAccepts`:
+  a Happy Agent conversation takes photos, videos and files (pictures
+  inline, the rest written into the agent's workspace first,
+  `conversation/WorkspaceUploads`, as iOS does); a relay session takes
+  pictures only, since happy-cli reads only images from `file` events,
+  unless a rig v1 policy lists more. No thumbhash on Android, as on
+  happy-app native.
 - **Showing**: `file` tool rows render `FileMessageView`, which downloads
   and decrypts on demand through `AttachmentTransfers` (50-entry LRU of
   decrypted blobs, one download per ref).
+
+### Conversation media and the viewer
+
+An agent connection's conversation lays pictures out with
+`conversation/MediaFlow` (iOS's `MediaFlow` and `MediaLayout`): pictures
+flow together, recordings follow each at its own box (≤ 380 × 320, never
+enlarged), and a person's message shows at most four photos, the fourth
+reading "+N". A recording's tile is its first frame, or its thumbhash
+first, under a play circle with its length in a pill. The frame and length come from
+`artifacts/VideoProbe` over a `RangedSource` on the tool-call media route
+with `Range`, held per screen by `ConversationMediaStore`.
+
+One viewer, `ui/conversation/PictureViewer` (iOS's `PictureViewController`),
+serves the conversation and artifacts (`ArtifactViewer` is an adapter). It
+pages through every picture and recording of the conversation, oldest
+first (`ConversationViewing.entries`). A picture rests at its own size,
+fitted to the safe area and never enlarged (`PictureViewing.fitted`).
+Which gesture wins is `PictureViewing.decide`: zoomed pans, a whole picture
+pages across and is dragged away up or down. A recording plays in its page
+(`VideoPage`). The position reads "N of M" for TalkBack only, as iOS has it
+for VoiceOver (`message.mediaPosition` in happy-app's catalogs).
 
 ### Image loading
 
@@ -768,6 +950,35 @@ hand-rolled loader would re-implement caching and downsampling. The
 loader uses its own OkHttp client without Happy headers (these URLs are
 third-party). Tests swap it through `LocalImageLoader` with coil-test's
 `FakeImageLoaderEngine`.
+
+### Avatars
+
+Anything without a picture wears happy-ios's shader placeholder
+(`ui/components/avatar/`): `AvatarPlaceholder.index(seed)` (FNV-1a then
+the Murmur3 finalizer, mod 200) picks one of 200 bundled WebP stills, and
+`AvatarShader` carries the same row's parameters for the AGSL port of
+happy-ios's Metal shader, so one seed looks the same on both phones. The
+stills, their NOTICE and the MIT license of @craftedstudios/shaders are
+copied from happy-ios, and `AvatarShaderTable.kt` is generated from its
+Swift table, by `node tools/avatars/generate.mjs`; tests pin both
+byte-for-byte to happy-ios, so change them there and regenerate. Keep the
+NOTICE and license in `assets/avatar-placeholders/`.
+
+Placeholders move only with Settings › Appearance › Animated Avatars on
+(device-local, off by default), on Android 13+ (`RuntimeShader`), while
+their screen is resumed, animations aren't removed and power save is off;
+at most 32 at once on one shared Choreographer clock (`LiveAvatarClock`)
+at `AvatarShader.FRAMES_PER_SECOND` (20), each at `AvatarShader.speed`
+for its size (2× at 48 dp and under, 1.5× above), as happy-ios. Settings'
+picture, its accounts card, settings search and the account menu's button
+move only for an account without a picture or thumbhash of its own
+(`AvatarPlaceholder.liveSeed`); the menu's rows stay still. Seeds follow
+happy-ios: an agent connection is
+`agent:<address>`, a bot or task its own id, a project its id. Agent
+home's project folders read the wire's `avatar`: `kind: "image"` is
+`/v0/projects/:id/avatar` over its thumbhash, `"home"` the home glyph,
+anything else the placeholder (happy-ios still looks for a `url` the wire
+doesn't carry).
 
 ### Mermaid
 
@@ -808,12 +1019,81 @@ is `packages/happy-ios`. The wire keeps its own names
   builds its pinned commit's JVM jar (the same sources as its Android
   variant) into `vendor/maven`, which `settings.gradle.kts` reads for the
   `io.tailcat` group only; the catalog pins the version. When it is
-  published, switch the catalog and delete both.
+  published, switch the catalog and delete both. `tools/tailcat/patches`
+  holds fixes not yet in tailcat-kotlin, applied on top of the commit
+  (the version's `-p<n>`): today tailcat-swift 69a661b's closing-flow
+  limits, without which the in-app browser's short requests run the stack
+  out of connections. Upstream them and drop the patch.
 - **Live check:** `LivePairingTest` pairs with a real Happy Agent
   when `HAPPY_PAIRING_LINK` holds a fresh code, writes the emoji for the
   person confirming in Happy Agent, then reads health and config with the
   new device token over a new tunnel. Remove the test device in Happy Agent
   afterwards.
+
+### In-app browser and links
+
+iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
+(policy, relay, tunnel, `BrowserProxy`, the artifact API pool) and
+`ui/browser/` holds the WebView and the link layer.
+
+- **Where links go** (`ui/browser/Links.kt`, `LinkOpener`). HappyApp
+  provides one per open account (`ProvideLinks`, which also replaces
+  `LocalUriHandler`). With an agent connection open, a tap on a web link
+  pushes `BrowserRoute`: the in-app browser through the agent, the local
+  host workspace's network; a conversation narrows that to its agent's
+  workspace. Other schemes go to the system. On a Happy (relay) account a
+  tap does exactly what it did before (the system handler). A long press
+  on a link gives a haptic and a bottom sheet: Open in Happy browser
+  (through the agent; on a relay account a Custom Tab on the phone's
+  network), Open in external browser, Copy link, Share. Text with links
+  takes `webLinkGestures` (every MarkdownView: chat in both modes, tool
+  plans, artifact and Surface documents, questions, What's New; and the
+  link texts of What's New's summaries, Troubleshoot, onboarding and the
+  bot face credit; a `LinkAnnotation.Clickable` carries its address as its
+  tag); a row that opens a page takes `rememberLinkMenu(url)` as its
+  `onLongClick` (About's rows). The gesture is taken in the initial pointer
+  pass, so the link's own click, a bubble's copy menu and text selection
+  never also fire; a drag past the touch slop lets go and scrolls
+  (`LinksTest`, which covers each site).
+- **Remote only.** Every WebView request goes through `ProxyController`'s
+  override to the loopback `BrowserProxy`, with no bypass rules, applied
+  before the first load; a WebView without `PROXY_OVERRIDE` shows
+  "unsupported" and loads nothing. There is no direct fallback.
+- **Android limits and what we do:**
+  - The proxy override is process-wide, not per WebView as WKWebView's.
+    While a browser page is open, every WebView of the app (Mermaid's too)
+    goes through the proxy. With `MULTI_PROFILE` each page's WebView gets
+    a profile of its own (`WebViewProfiles`): its own cookies, storage and
+    network context, which answers the 407 with that page's credential
+    alone, so the proxy routes by credential and pages can't reach each
+    other's origins or workspaces. The profile is deleted with the page
+    (iOS's nonpersistent store). Verified on WebView 124: Chromium's proxy
+    auth cache is per profile; two WebViews in one profile with different
+    credentials send the first one's for both. Without `MULTI_PROFILE`, pages share the
+    default profile and one credential, and the proxy routes by target
+    (an artifact's synthetic origin to its page, the rest through the
+    newest page's workspace).
+  - `shouldInterceptRequest` can't see POST bodies or carry WebSockets,
+    so nothing is intercepted there: the proxy speaks HTTP CONNECT and
+    absolute-form HTTP below WebView, so bodies, WebSockets, SSE, TLS,
+    cookies and redirects are the page's own, untouched.
+  - Cleartext: `network_security_config` allows http only for the
+    synthetic artifact origin, localhost and 127.0.0.1; WebView refuses any
+    other plain-http page (`ERR_CLEARTEXT_NOT_PERMITTED`) before the proxy
+    sees it. iOS allows them in web content only; Android has no
+    WebView-only switch, and a base-config allowance would also open
+    cleartext to the app's native clients.
+  - The listener binds 127.0.0.1 by address: Android's
+    `getLoopbackAddress()` is `::1`, which WebView's `127.0.0.1` rule
+    can't reach.
+- **Pooling** (`BrowserConnectionPool`, `BrowserResponseBody`): artifact
+  `/api/*` requests lease keep-alive connections per page (6 idle, 5 s),
+  returned only after an exact, self-delimited answer; everything else
+  closes after one answer. `BrowserProxyTest` runs OkHttp through the
+  proxy against a byte-level fake daemon; `BrowserWebViewDeviceTest`
+  (androidTest, an emulator) does the same with real WebViews: two artifact
+  pages in their own profiles at once, the computer's localhost, and the
+  cleartext refusal.
 
 ## Autocomplete
 

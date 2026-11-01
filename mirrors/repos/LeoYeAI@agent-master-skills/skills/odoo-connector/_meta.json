@@ -1,0 +1,11 @@
+{
+  "owner": "nullnaveen",
+  "slug": "odoo-connector",
+  "displayName": "Openclaw Skill for Odoo",
+  "latest": {
+    "version": "1.1.2",
+    "publishedAt": 1771324669462,
+    "commit": "https://github.com/openclaw/skills/commit/0dbf2176c5037e204a2436803d9bdc4ead413dcc"
+  },
+  "history": []
+}

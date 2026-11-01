@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
+Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 40 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 40 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,25 +80,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.agents/skills/ghstack-ci/SKILL.md`](.agents/skills/ghstack-ci/SKILL.md) |
 | 20 | ✓ | [`.agents/skills/metal-kernel/SKILL.md`](.agents/skills/metal-kernel/SKILL.md) |
 | 21 | ✓ | [`.agents/skills/pr-review/bc-guidelines.md`](.agents/skills/pr-review/bc-guidelines.md) |
-| 22 | ✓ | [`.agents/skills/pr-review/ci-runner-naming.md`](.agents/skills/pr-review/ci-runner-naming.md) |
-| 23 | ✓ | [`.agents/skills/pr-review/review-checklist.md`](.agents/skills/pr-review/review-checklist.md) |
-| 24 | ✓ | [`.agents/skills/pr-review/SKILL.md`](.agents/skills/pr-review/SKILL.md) |
-| 25 | ✓ | [`.agents/skills/pt2-bug-basher/SKILL.md`](.agents/skills/pt2-bug-basher/SKILL.md) |
-| 26 | ✓ | [`.agents/skills/pyrefly-type-coverage/SKILL.md`](.agents/skills/pyrefly-type-coverage/SKILL.md) |
-| 27 | ✓ | [`.agents/skills/scrub-issue/SKILL.md`](.agents/skills/scrub-issue/SKILL.md) |
-| 28 | ✓ | [`.agents/skills/skill-writer/SKILL.md`](.agents/skills/skill-writer/SKILL.md) |
-| 29 | ✓ | [`.agents/skills/triaging-issues/labels.json`](.agents/skills/triaging-issues/labels.json) |
-| 30 | ✓ | [`.agents/skills/triaging-issues/pt2-triage-rubric.md`](.agents/skills/triaging-issues/pt2-triage-rubric.md) |
-| 31 | ✓ | [`.agents/skills/triaging-issues/README.md`](.agents/skills/triaging-issues/README.md) |
-| 32 | ✓ | [`.agents/skills/triaging-issues/SKILL.md`](.agents/skills/triaging-issues/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/triaging-issues/templates.json`](.agents/skills/triaging-issues/templates.json) |
-| 34 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 37 | ✓ | [`docs/source/distributed/elastic/examples.md`](docs/source/distributed/elastic/examples.md) |
-| 38 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
-| 39 | ✓ | [`torch/distributed/AGENTS.md`](torch/distributed/AGENTS.md) |
-| 40 | ✓ | [`torch/distributed/CLAUDE.md`](torch/distributed/CLAUDE.md) |
+| 22 | ✓ | [`.agents/skills/pr-review/ci-dependencies.md`](.agents/skills/pr-review/ci-dependencies.md) |
+| 23 | ✓ | [`.agents/skills/pr-review/ci-runner-naming.md`](.agents/skills/pr-review/ci-runner-naming.md) |
+| 24 | ✓ | [`.agents/skills/pr-review/review-checklist.md`](.agents/skills/pr-review/review-checklist.md) |
+| 25 | ✓ | [`.agents/skills/pr-review/SKILL.md`](.agents/skills/pr-review/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/pt2-bug-basher/SKILL.md`](.agents/skills/pt2-bug-basher/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/pyrefly-type-coverage/SKILL.md`](.agents/skills/pyrefly-type-coverage/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/scrub-issue/SKILL.md`](.agents/skills/scrub-issue/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/skill-writer/SKILL.md`](.agents/skills/skill-writer/SKILL.md) |
+| 30 | ✓ | [`.agents/skills/triaging-issues/labels.json`](.agents/skills/triaging-issues/labels.json) |
+| 31 | ✓ | [`.agents/skills/triaging-issues/pt2-triage-rubric.md`](.agents/skills/triaging-issues/pt2-triage-rubric.md) |
+| 32 | ✓ | [`.agents/skills/triaging-issues/README.md`](.agents/skills/triaging-issues/README.md) |
+| 33 | ✓ | [`.agents/skills/triaging-issues/SKILL.md`](.agents/skills/triaging-issues/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/triaging-issues/templates.json`](.agents/skills/triaging-issues/templates.json) |
+| 35 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 36 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 38 | ✓ | [`docs/source/distributed/elastic/examples.md`](docs/source/distributed/elastic/examples.md) |
+| 39 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
+| 40 | ✓ | [`torch/distributed/AGENTS.md`](torch/distributed/AGENTS.md) |
+| 41 | ✓ | [`torch/distributed/CLAUDE.md`](torch/distributed/CLAUDE.md) |
 
 ---
 

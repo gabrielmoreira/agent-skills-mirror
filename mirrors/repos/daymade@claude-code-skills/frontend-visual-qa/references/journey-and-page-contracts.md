@@ -386,6 +386,30 @@ The essential-content boundary follows
 [GOV.UK's details guidance](https://design-system.service.gov.uk/components/details/).
 These sources do not prescribe one detail format or prove this target's correctness.
 
+### Nonblocking diagnostics during refresh and return
+
+When secondary diagnostics share a surface with ordinary work, the auditor
+separately checks the data condition, the user's disclosure choice and the
+component lifecycle through authorized Level A/B interaction. Bind the expected
+initial state, refresh behavior and return policy to the product contract before
+testing; an error count alone does not decide which panel should open.
+
+| Transition | Inspect in the actual render |
+|---|---|
+| Open the ordinary collection while another source is unavailable | Required uncertainty stays visible, the main work remains reachable, and secondary reasons follow the contracted default. |
+| Explicitly expand diagnostics, then receive a real data refresh | The complete reasons remain readable and the disclosure follows the contracted update policy; test both continuing errors and recovery. |
+| Explicitly collapse diagnostics, then receive a new failure | The summary updates without unexpectedly reclaiming the main work area when the contract gives the user control. |
+| Enter a task, then return to the collection | Check the promised object and reading context plus the diagnostic state. Distinguish a retained component from a remount: preserving a choice during refresh does not prove that choice survives navigation. |
+
+Use a blocking failure of the selected task as a healthy boundary control:
+its essential explanation and safe next action must remain visible according to
+the recovery contract. Do not prescribe universal default collapse or persistent
+expansion across remounts. Read the collapsed summary, expanded causes and main
+work after the affected transitions; an `open` flag alone cannot establish their
+usability. Reuse the rejected old evidence for fix closure, keep refresh and
+return verdicts separate, and stop after the affected lifecycle cases are resolved.
+These are auditor checks; the generic layout sweep does not enforce them.
+
 ## Authorization, Mode, And Runtime Truth
 
 Apply these checks only when authorization, modes, providers, or runtime status
@@ -497,6 +521,54 @@ Distinguish the observed outcomes:
 For actionable failures, prefer persistent inline placement or a notification
 that remains long enough to act. Check role=alert, focus behavior, localization,
 and whether fields requiring re-entry return to a legible state.
+
+### Action targets after confirmation
+
+When a save or confirmation replaces controls with a receipt, test the transition
+with the pointer left at the original click position. Arm observation before the
+click; inspect the transition and settled result, not just two isolated screens.
+Record which element occupies that viewport point before and after, together with
+the affected controls' geometry. Does collapsing feedback pull a different action
+under the stationary pointer, or move the intended next action away?
+
+Use hit testing and the inspected frames to distinguish a changed click target
+from harmless decoration. A new action under the pointer is an accidental-click
+risk; call an unintended activation observed only if the safe, authorized journey
+actually reproduces it. Do not submit again or trigger a destructive action just
+to prove the risk. Judge required stability from this task's action sequence and
+hit areas, rather than imposing a universal pixel threshold or banning all motion.
+After a repair, repeat the same transition, including the affected reduced-motion
+path, and stop once the intended action remains usable and the observed risk is
+resolved. See [coordinate diagnosis](browser-driving-and-observation-traps.md#separate-viewport-movement-from-layout-movement)
+before attributing displacement to layout.
+
+### Game and expressive feedback
+
+For game or expressive feedback, the executing auditor uses the authorized
+project harness to capture and inspect the visible sequence: before the action,
+at impact, through intermediate frames, and at the stable final state. Arm
+recording or sampling before the trigger. Check what action the feedback
+acknowledges and whether its final outcome is clear without debugger context.
+
+When the action saves participation, exercise confirmed, delayed and failed
+saves. Pending or failed saves must not announce success; inspect their visible
+state and the project's safe recovery path. Confirmed participation may receive
+vivid feedback. Claims such as “correct” or a correctness-based streak require
+the product's reliable decision criterion; saving alone does not establish correctness.
+
+For rewards the product defines as one-time completion events, refresh, revisit
+and safely retry the same completed action; verify these paths do not grant the
+reward again or count it twice. Distinguish explicitly supported animation
+playback from a new reward. Follow the project's existing recovery contract for
+an uncertain write rather than resubmitting to obtain evidence.
+Repeat the affected journey with reduced motion and confirm that a clear final
+acknowledgment remains when motion is shortened or removed.
+
+Separate observed timing, legibility and outcome truth from subjective impact.
+Pixels, DOM presence, frame counts and reviewer scores do not establish that
+feedback feels satisfying or that a person approved it. Leave human acceptance
+unknown until observed. No bundled checker decides emotional quality; the
+auditor records the inspected sequence and the limits of that judgment.
 
 ## Drawers, Modals, Popovers, And Focus
 

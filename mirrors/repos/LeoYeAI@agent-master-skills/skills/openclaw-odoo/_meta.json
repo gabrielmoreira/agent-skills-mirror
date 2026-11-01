@@ -1,0 +1,11 @@
+{
+  "owner": "tuanle96",
+  "slug": "openclaw-odoo",
+  "displayName": "OpenClaw Odoo",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1771865933329,
+    "commit": "https://github.com/openclaw/skills/commit/27180984b0342756239b60e7dfe2186ade78f978"
+  },
+  "history": []
+}

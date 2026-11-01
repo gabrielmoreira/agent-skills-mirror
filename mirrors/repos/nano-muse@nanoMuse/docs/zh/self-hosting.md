@@ -43,6 +43,8 @@ bash scripts/self-host.sh --local --bind 0.0.0.0   # 同一网络里的手机也
 
 ### 登录验证码 {#sign-in-codes}
 
+使用 `--local` 后，脚本会打印一条以 `cd cloud &&` 开头的 *Codes* 命令。在仓库根目录复制执行即可，命令已经带上本地中继使用的两个 compose 文件。
+
 每次有人登录都会发出一个验证码。`CODE_SENDER` 决定怎么发：
 
 - `log`：只打印到中继的日志（`cd cloud && docker compose logs relay` 里能看到 `verification code for …`）。一家人用够了：你把验证码念给对方。`--local` 用的就是这个。
@@ -120,5 +122,7 @@ cp .env.example .env && $EDITOR .env      # a model key, NANOMUSE_SERVER_TOKEN; 
 nanomuse config init                      # or copy config/config.example.toml to config/config.toml
 docker compose up -d app                  # the web app on http://<host>:8787, the URL with its token in the logs
 ```
+
+如果本地中继已经占用 8787 端口，启动网页版前在仓库根目录的 `.env` 中加入 `NANOMUSE_RUNTIME_PORT=8788`，然后用 8788 端口访问。它只改变网页版在宿主机上的端口，容器内仍监听 8787。详见[部署](deployment.md#docker)。
 
 容器只看得到它的数据卷和 `./workspace`；capability 都已丢弃。让它一直跑着、arm64 的发布镜像、从你的网络外面访问它，都在[部署](deployment.md)。这个运行时像其他任何设备一样登录到一个中继（设了 `NANOMUSE_CLOUD_BASE_URL` 的话，就是第 2 节里你自己的那个），之后手机就可以通过 hub 把任务交给它，像交给一台常开的电脑（[every-device.md](every-device.md)）。

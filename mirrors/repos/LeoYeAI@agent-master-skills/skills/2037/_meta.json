@@ -1,0 +1,17 @@
+{
+  "owner": "windinwing",
+  "slug": "2037",
+  "displayName": "2037",
+  "latest": {
+    "version": "1.0.3",
+    "publishedAt": 1774585966748,
+    "commit": "https://github.com/openclaw/skills/commit/ae061cbe1644d1ef17ca4932ff75b13974df7916"
+  },
+  "history": [
+    {
+      "version": "1.0.2",
+      "publishedAt": 1773940962300,
+      "commit": "https://github.com/openclaw/skills/commit/6687223a10e2f669da88358bda542db26885647a"
+    }
+  ]
+}

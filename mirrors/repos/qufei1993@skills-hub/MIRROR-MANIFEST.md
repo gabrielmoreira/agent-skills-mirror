@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qufei1993/skills-hub` — 26 default patterns, 14 followed patterns, 144 file(s) materialized.
+Mirror of `qufei1993/skills-hub` — 26 default patterns, 15 followed patterns, 147 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qufei1993/skills-hub` — 26 default patterns, 14 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 144 |
+| Followed pats | 15 |
+| Files         | 147 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Mirror of `qufei1993/skills-hub` — 26 default patterns, 14 followed patterns, 
 - `docs/releases/v1.0.0/README.md`
 - `README.md`
 - `docs/README.zh.md`
+- `docs/releases/v1.1.0/README.md`
 - `docs/releases/v1.0.1/README.md`
 - `SECURITY.md`
 
@@ -95,7 +96,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`docs/releases/v1.0.0/windows-scheduler-output.md`](docs/releases/v1.0.0/windows-scheduler-output.md) |
 | 22 | ✓ | [`docs/releases/v1.0.0/windows-subpath-updates.md`](docs/releases/v1.0.0/windows-subpath-updates.md) |
 | 23 | ✓ | [`docs/releases/v1.0.1/README.zh.md`](docs/releases/v1.0.1/README.zh.md) |
-| 24 | ✓ | [`docs/releases/v1.1.0/README.md`](docs/releases/v1.1.0/README.md) |
+| 24 | ✓ | [`docs/releases/v1.1.0/implementation.md`](docs/releases/v1.1.0/implementation.md) |
 | 25 | ✓ | [`docs/releases/v1.1.0/README.zh.md`](docs/releases/v1.1.0/README.zh.md) |
 | 26 | ✓ | [`skills/dsh-ci-test-reliability/agents/openai.yaml`](skills/dsh-ci-test-reliability/agents/openai.yaml) |
 | 27 | ✓ | [`skills/dsh-ci-test-reliability/LICENSE`](skills/dsh-ci-test-reliability/LICENSE) |
@@ -202,20 +203,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | ✓ | [`skills/dsh-translate-docs/UPSTREAM.json`](skills/dsh-translate-docs/UPSTREAM.json) |
 | 129 | ✓ | [`skills/manage-skills-hub/SKILL.md`](skills/manage-skills-hub/SKILL.md) |
 | 130 | ✓ | [`skills/README.md`](skills/README.md) |
-| 131 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 132 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 133 | → | [`docs/AGENTS.zh.md`](docs/AGENTS.zh.md) |
-| 134 | → | [`docs/AI-ENGINEERING.md`](docs/AI-ENGINEERING.md) |
-| 135 | → | [`docs/CHANGELOG.zh.md`](docs/CHANGELOG.zh.md) |
-| 136 | → | [`docs/development.en.md`](docs/development.en.md) |
-| 137 | → | [`docs/README.zh.md`](docs/README.zh.md) |
-| 138 | → | [`docs/releases/_template/README.md`](docs/releases/_template/README.md) |
-| 139 | → | [`docs/releases/_template/README.zh.md`](docs/releases/_template/README.zh.md) |
-| 140 | → | [`docs/releases/v1.0.0/README.md`](docs/releases/v1.0.0/README.md) |
-| 141 | → | [`docs/releases/v1.0.1/README.md`](docs/releases/v1.0.1/README.md) |
-| 142 | → | [`docs/UI-DESIGN-GUIDELINES.md`](docs/UI-DESIGN-GUIDELINES.md) |
-| 143 | → | [`README.md`](README.md) |
-| 144 | → | [`SECURITY.md`](SECURITY.md) |
+| 131 | ✓ | [`work/prototypes/next/README.md`](work/prototypes/next/README.md) |
+| 132 | ✓ | [`work/prototypes/README.md`](work/prototypes/README.md) |
+| 133 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 134 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 135 | → | [`docs/AGENTS.zh.md`](docs/AGENTS.zh.md) |
+| 136 | → | [`docs/AI-ENGINEERING.md`](docs/AI-ENGINEERING.md) |
+| 137 | → | [`docs/CHANGELOG.zh.md`](docs/CHANGELOG.zh.md) |
+| 138 | → | [`docs/development.en.md`](docs/development.en.md) |
+| 139 | → | [`docs/README.zh.md`](docs/README.zh.md) |
+| 140 | → | [`docs/releases/_template/README.md`](docs/releases/_template/README.md) |
+| 141 | → | [`docs/releases/_template/README.zh.md`](docs/releases/_template/README.zh.md) |
+| 142 | → | [`docs/releases/v1.0.0/README.md`](docs/releases/v1.0.0/README.md) |
+| 143 | → | [`docs/releases/v1.0.1/README.md`](docs/releases/v1.0.1/README.md) |
+| 144 | → | [`docs/releases/v1.1.0/README.md`](docs/releases/v1.1.0/README.md) |
+| 145 | → | [`docs/UI-DESIGN-GUIDELINES.md`](docs/UI-DESIGN-GUIDELINES.md) |
+| 146 | → | [`README.md`](README.md) |
+| 147 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "owner": "eathon",
+  "slug": "proactive-agent-v2",
+  "displayName": "Proactive Agent V2",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1773234655553,
+    "commit": "https://github.com/openclaw/skills/commit/3e49bc9626bbd9e1bd532f5c1407adf2fb43ca66"
+  },
+  "history": []
+}

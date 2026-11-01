@@ -1,0 +1,11 @@
+{
+  "owner": "liujiang817",
+  "slug": "my-proactive-agent",
+  "displayName": "My Proactive Agent",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1773667747051,
+    "commit": "https://github.com/openclaw/skills/commit/3668b7fb7090daf31ba4bb5277a5efa476a6f2d8"
+  },
+  "history": []
+}

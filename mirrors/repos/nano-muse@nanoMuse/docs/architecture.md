@@ -87,3 +87,6 @@ cd web && npm run build             # type-checks and rebuilds the app
 ```
 
 `tests/test_server.py` drives the app server end to end with a scripted `MockLLM`: sending messages, approval cards, questions, goals, memory, files, settings.
+
+[GUI regression](gui-regression.md) describes the fixed simulated tasks, independent
+state checks and reference/live runners; its usage recorder does not require task budgets.

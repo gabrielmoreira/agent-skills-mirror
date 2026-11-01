@@ -1,0 +1,17 @@
+{
+  "owner": "xintaoliao",
+  "slug": "polymarket-strategic-paper-trader",
+  "displayName": "Strategic Paper Trader on Polymarket",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1774237383295,
+    "commit": "https://github.com/openclaw/skills/commit/443ffb21246b126fcb2aa249467528d866f80bfa"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1773995986153,
+      "commit": "https://github.com/openclaw/skills/commit/3236dade385beb8f5c341919353f047b1cb9f9d1"
+    }
+  ]
+}

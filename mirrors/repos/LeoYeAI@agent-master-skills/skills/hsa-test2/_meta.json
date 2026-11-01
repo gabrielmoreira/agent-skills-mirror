@@ -1,0 +1,17 @@
+{
+  "owner": "shuanhu95",
+  "slug": "hsa-test2",
+  "displayName": "Hsa test2",
+  "latest": {
+    "version": "1.0.9",
+    "publishedAt": 1773834772663,
+    "commit": "https://github.com/openclaw/skills/commit/23a14d23a0e396c0aca4284bf337e15f354dab69"
+  },
+  "history": [
+    {
+      "version": "1.0.8",
+      "publishedAt": 1773833521785,
+      "commit": "https://github.com/openclaw/skills/commit/87a49525fd734093e9ac65b686428e0ffcf122f9"
+    }
+  ]
+}

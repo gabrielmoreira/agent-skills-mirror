@@ -1,0 +1,11 @@
+{
+  "owner": "selzy-openclaw",
+  "slug": "selzy-api-skill",
+  "displayName": "Selzy Email Marketing",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1773266321856,
+    "commit": "https://github.com/openclaw/skills/commit/6a1447568e3e49b231913725ccce4a867e9b32bd"
+  },
+  "history": []
+}

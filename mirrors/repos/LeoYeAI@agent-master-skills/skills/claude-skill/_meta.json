@@ -1,0 +1,11 @@
+{
+  "owner": "feiskyer",
+  "slug": "claude-skill",
+  "displayName": "Claude Skill",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1772248906169,
+    "commit": "https://github.com/openclaw/skills/commit/f8ca1f5fe48eeeb3591725ddf9410ff4eb017b5e"
+  },
+  "history": []
+}

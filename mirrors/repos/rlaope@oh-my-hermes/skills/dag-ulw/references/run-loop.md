@@ -38,7 +38,14 @@
    says `handoff not checked`. With no terminal up yet, `define` hands out nothing: run one terminal
    command there, then `ready`.
    The result carries the next `calls`; dispatch them in the same turn.
-6. `omh_dag action=status` at any time; it survives compaction.
+6. `omh_dag action=status` at any time; it survives compaction. Every open node carries `open_for_s`, the
+   seconds since it first went out. One open past the stuck mark (1 hour) is listed in `stuck`, counted on the
+   status line, and named in `say` with what to check: no child took it (dispatch its call again), its child
+   still runs (`delegate_task action=list`; settle failed and repair when none is live), or it came back
+   unsettled (read the handoff and settle). The profile moves the marks under `plugins.entries.omh.settings`:
+   `dag_stuck_after_s` (0 turns the warning off), `dag_stale_after_s` (when `ready` offers again a node no child
+   took, default 600) and `dag_max_lost_reoffers` (default 3). OMH still starts no timer: the warning shows only
+   on a `status`, `ready` or `settle` call.
 
 A child handing off a still-running background process or CI run is not a failure: settle with
 `outcome=parked`, its `handle` (at most 120 characters), and `wake_at` (UTC ISO-8601 or epoch, future,

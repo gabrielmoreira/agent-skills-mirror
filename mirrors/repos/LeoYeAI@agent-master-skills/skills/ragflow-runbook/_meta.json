@@ -1,0 +1,17 @@
+{
+  "owner": "yitingou",
+  "slug": "ragflow-runbook",
+  "displayName": "ragflow-runbook",
+  "latest": {
+    "version": "0.1.4",
+    "publishedAt": 1772509411607,
+    "commit": "https://github.com/openclaw/skills/commit/cc95f1be2a10f568e477e1cd8439538bae47e2b3"
+  },
+  "history": [
+    {
+      "version": "0.1.3",
+      "publishedAt": 1772509119542,
+      "commit": "https://github.com/openclaw/skills/commit/661713a01c9676a89e13c3eadf9525abf1f9a9ee"
+    }
+  ]
+}

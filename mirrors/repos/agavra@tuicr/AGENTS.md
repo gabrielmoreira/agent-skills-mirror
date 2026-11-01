@@ -128,7 +128,7 @@ src/
 
 Repository-managed agent integrations:
 
-- `skills/tuicr/` - Shared agent skill bundle for coding agents, for example Claude Code, Codex, and similar tools; launches tuicr in a cmux, tmux, Zellij, or Herdr split pane
+- `skills/tuicr/` - Shared agent skill bundle for coding agents, for example Claude Code, Codex, and similar tools; launches tuicr in a cmux, Rex, tmux, Zellij, or Herdr split pane
 
 ### Key Types
 
@@ -345,7 +345,9 @@ These are non-obvious things the implementation chain hit. Worth preserving for 
 
 19. **Gerrit's review-requested toggle uses the attention set, not `reviewer:self`.** `reviewer:self` matches every open change the user reviews, including the ones they already voted on and handed back — the opposite of "needs my review", which makes the toggle useless. `attention:self` is Gerrit's own "it's your turn" signal (the dashboard's *Your Turn* section); `-owner:self` drops the user's own changes, which the attention set also holds when a reviewer replies. This is the one place a forge deliberately diverges from the shared "review-requested" semantics. Costs a Gerrit 3.3+ floor on that toggle alone.
 
-20. **GNU Linux release binaries must stay dynamically linked.** Static glibc binaries can crash when hostname lookup loads a host NSS module (for example Fedora's `libnss_myhostname`). The musl artifacts are the supported static Linux builds. Direct updates must preserve the running binary's GNU/musl target environment when selecting an asset.
+20. **Self-hosted Azure DevOps Server / TFS is opt-in by hostname.** It has no reserved host, so `parse_azure_remote_url` only claims it when the host equals `AZURE_DEVOPS_SERVER_URL`'s (it must stay ahead of the GitHub catch-all). Its `collection/project` is packed into `owner` and the real host is kept, unlike cloud hosts, which normalize to `dev.azure.com` and drop `DefaultCollection`. Because a virtual directory can make the collection path multi-segment, `azure_coords` splits `owner` at the *last* `/`.
+
+21. **GNU Linux release binaries must stay dynamically linked.** Static glibc binaries can crash when hostname lookup loads a host NSS module (for example Fedora's `libnss_myhostname`). The musl artifacts are the supported static Linux builds. Direct updates must preserve the running binary's GNU/musl target environment when selecting an asset.
 
 17. **The `[TYPE]` prefix uses the config-resolved `label`, not the `CommentType` id.** `CommentType` carries no label — it lives on `CommentTypeDefinition` (`App::comment_types`), so `as_str()` only ever yields the uppercased id. Four resolvers render this tag and must agree: `App::comment_type_label` (TUI), `export_comment_type_label` (`src/output/markdown.rs`), `SubmitContext::type_label` (`src/forge/submit.rs`), and `describe_row` (`src/ui/submit_modals.rs`). The last is easy to miss and previews the tag the user is deciding about, so disagreement means choosing Move-to-summary vs Omit against a tag that never gets posted. This is why the submit path takes a `SubmitContext` rather than a bare `&ForgeConfig`.
 
@@ -360,6 +362,8 @@ These are non-obvious things the implementation chain hit. Worth preserving for 
 22. **`base_sha` means the merge base, not the base branch tip.** The old side of a three-dot PR patch lives at `merge-base(base, head)`. GitHub's `baseRefOid`, Azure's `lastMergeTargetCommit`, and Bitbucket's `destination.commit.hash` can instead report the base branch tip. `ForgeBackend::resolve_diff_base_sha` reconciles this once in `fetch_pr_data`, before fetching the patch, so context expansion, PR editor snapshots, and the commit-range fallback parent use the same revision. GitHub and Bitbucket resolve locally first and fall back to their compare/merge-base APIs; Azure resolves locally. GitLab and Gitea already report the merge base, and Gerrit uses the change's parent. Resolution is best-effort: `None` leaves the reported base unchanged. Same-head reloads must refresh `diff_source.pr.base_sha` too, including when a PR is retargeted.
 
 23. **`fetch_pr_data` fans out once the PR metadata is in.** `get_pull_request_info` and `resolve_diff_base_sha` run first, then `get_pull_request_diff`, `list_pull_request_commits`, and `list_pull_request_review_metadata` run concurrently through `forge::join` (scoped threads), so opening a PR waits for the slowest of them rather than their sum. The backend must therefore be `Sync` (`create_forge_backend` returns `Box<dyn ForgeBackend + Sync>`), and test fakes record calls through `Mutex` or atomics, not `RefCell` or `Cell`. Each call still paginates sequentially, and errors keep the sequential precedence: a diff error fails the open, while commit and review-metadata failures degrade to empty. GitHub's `get_pull_request_diff` fetches `pulls/N/files` and `gh pr diff` the same way, and a file-list error wins over a patch error.
+
+24. **Gerrit's `/changes/{N}/comments` returns published comments only.** The caller's drafts live at `/changes/{N}/drafts`, with `author` unset. `:submit draft` marks the local copies `PushedDraft`, and the refetch that follows runs `prune_locked_comments`, so a backend that cannot read its drafts back deletes the only copy the TUI had. The Gerrit backend therefore reads `/drafts` too.
 
 ### Keeping Docs Updated
 

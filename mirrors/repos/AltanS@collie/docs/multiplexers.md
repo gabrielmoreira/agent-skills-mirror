@@ -250,15 +250,19 @@ What works:
 - History and Chat for a Claude pane, once `collie hooks install claude` is done. The core does not
   know the agent's conversation, so the hook supplies it from the terminal's `HC_TERMINAL_ID`. The
   hook never changes the agent name or the status the core reported.
+- History and Chat for a pi or Oh My Pi pane, with no hook. Collie finds the pane's session log from
+  the pane's folder: pi keeps one log folder per working directory, and the newest log whose header
+  names that folder is the pane's.
 
 What looks different on the core:
 
 - **The mirror has no colour.** The core hands out the screen as plain text. The phone shows the
   words and the layout of the screen, and none of the agent's colours.
-- **History needs a hook.** The core does not know the agent's conversation. A Claude pane has History
-  and Chat once `collie hooks install claude` is done. pi and Oh My Pi have no such hook, so their
-  panes have no History and no Chat card on the core. Their screen, their sends and their cards still
-  work.
+- **Claude's History needs a hook.** The core does not know the agent's conversation. A Claude pane has
+  History and Chat once `collie hooks install claude` is done. pi and Oh My Pi need no hook, because
+  Collie finds their log from the pane's folder. A fresh pi or Oh My Pi pane shows an empty Chat until
+  the agent's first reply, because pi writes its log only then. An older log in the same folder is not
+  shown for a pane whose program started after it, and `pi --resume` keeps its Chat.
 - **A send takes a few seconds longer.** The core holds a key for about three seconds after Collie
   types text. Collie waits for it, and a send to an agent takes about six seconds.
 - **The last viewer sets the width.** The terminal has the width of the last window that looked at it.
@@ -269,15 +273,17 @@ What looks different on the core:
   no colour. The card offers Escape, and you answer on the screen. This waits for a colour option in
   the core (`HC_API.md` lists the ask). Claude and Codex dialogs are read from their words and work.
   So does pi's question, when the core answers the read.
-- **A history read can stall behind a dialog.** On a pi pane that shows a dialog, the core may not
-  answer a read of older lines. The phone then shows no card for that dialog.
+- **The mirror shows the screen; older lines come when you ask.** The core holds a terminal's keys
+  while it reads older lines, and under a dialog one such read takes about 25 seconds. So the phone's
+  mirror reads the screen alone, and Load older at the top of the mirror reads the lines above it,
+  once per tap. While the agent waits on you, Load older waits too, and says so.
 
 What the core cannot do:
 
 - Rename a terminal, a tab or a space, and create a space. The names belong to herdr-app.
 - Focus a terminal, so "Show in terminal" is missing. herdr-app keeps focus on its own screen.
 - Show colour. The core hands out the screen as text only.
-- Show History for an agent other than Claude yet, or for any pane before its hooks are installed.
+- Show History for a Claude pane before its hook is installed, or for an agent other than Claude, pi and Oh My Pi.
 - Show a terminal on another machine. Terminals of machines added to the core (`box/t7`) are not
   shown. Add that machine to your [crew](crew.md) and its own Collie shows them.
 - Open a worktree, or list sessions.
@@ -644,7 +650,7 @@ away with Enter. It never holds them, and they do not wait behind other held sen
 later message on that pane waits behind the held ones. A held text lasts 30 minutes, a held command
 10 minutes. After that the row says the message was not sent, and offers Resend. A walky talky
 message is also held over a draft, never typed into it, and its hold lasts 60 minutes
-([Walky talky](walky-talky.md)). Your own send over a draft is still refused, with Append and Replace. Before Collie refuses, adds to or clears a draft, it types one probe character and removes it, to prove that the box takes keys; when the box on the screen does not take keys, the send is refused and nothing is deleted. Focus that pane on the desktop or resize it, so the agent draws its screen again, then send again. Some commands never
+([Walky talky](walky-talky.md)). Your own send over a draft is still refused, with Append and Replace. Before Collie refuses, adds to or clears a draft, it types one probe character and removes it, to prove that the box takes keys; when the box on the screen does not take keys, the send is refused and nothing is deleted. Focus that pane on the desktop or resize it, so the agent draws its screen again, then send again. A pane Collie reads at fewer rows than the box takes (a tab full of splits squeezes each pane) is refused with the rows read and the rows the box needs: zoom or resize it, or close the panes beside it. Some commands never
 wait, and Collie refuses them during a turn. On Claude Code these are `/clear`, `/exit`, `/quit`,
 `/logout`, `/resume`, `/branch` and every `!` line. On Codex these are `/quit`, `/exit`, `/new`,
 `/resume`, `/logout` and every `!` line. On Hermes these are `/exit`, `/quit`, `/clear`, `/new`,

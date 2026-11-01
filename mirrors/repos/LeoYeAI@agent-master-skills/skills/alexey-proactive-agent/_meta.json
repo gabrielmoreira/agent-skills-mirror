@@ -1,0 +1,11 @@
+{
+  "owner": "alexeyvorobiev",
+  "slug": "alexey-proactive-agent",
+  "displayName": "alexey-proactive-agent",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1772308118520,
+    "commit": "https://github.com/openclaw/skills/commit/7573c3d86a4ad8a74df391aa47fcf57c74765647"
+  },
+  "history": []
+}

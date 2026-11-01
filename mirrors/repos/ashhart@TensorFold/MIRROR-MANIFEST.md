@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ashhart/TensorFold` — 26 default patterns, 45 followed patterns, 86 file(s) materialized.
+Mirror of `ashhart/TensorFold` — 26 default patterns, 46 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 45 followed patterns, 86
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 45 |
-| Files         | 86 |
+| Followed pats | 46 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,6 +91,7 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 45 followed patterns, 86
 - `docs/credits.md`
 - `docs/memory-profiling.md`
 - `RELEASE-NOTES-1.0.0.md`
+- `docs/recipes/moss-image-cuda.md`
 - `docs/recipes/moss-image.md`
 - `docs/recipes/fluid-subgraph-residency.md`
 - `docs/speech-controls.md`
@@ -171,24 +172,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
 | 67 | → | [`docs/recipes/lfm2.5-24b-a2b.md`](docs/recipes/lfm2.5-24b-a2b.md) |
 | 68 | → | [`docs/recipes/minimax-m3.1-flash.md`](docs/recipes/minimax-m3.1-flash.md) |
-| 69 | → | [`docs/recipes/moss-image.md`](docs/recipes/moss-image.md) |
-| 70 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
-| 71 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
-| 72 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
-| 73 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
-| 74 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
-| 75 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
-| 76 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
-| 77 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
-| 78 | → | [`docs/speech-controls.md`](docs/speech-controls.md) |
-| 79 | → | [`docs/speech-redraws.md`](docs/speech-redraws.md) |
-| 80 | → | [`docs/speech-sampling.md`](docs/speech-sampling.md) |
-| 81 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
-| 82 | → | [`packaging/README.md`](packaging/README.md) |
-| 83 | → | [`README.md`](README.md) |
-| 84 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
-| 85 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 86 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 69 | → | [`docs/recipes/moss-image-cuda.md`](docs/recipes/moss-image-cuda.md) |
+| 70 | → | [`docs/recipes/moss-image.md`](docs/recipes/moss-image.md) |
+| 71 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
+| 72 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
+| 73 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
+| 74 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
+| 75 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
+| 76 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
+| 77 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
+| 78 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
+| 79 | → | [`docs/speech-controls.md`](docs/speech-controls.md) |
+| 80 | → | [`docs/speech-redraws.md`](docs/speech-redraws.md) |
+| 81 | → | [`docs/speech-sampling.md`](docs/speech-sampling.md) |
+| 82 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
+| 83 | → | [`packaging/README.md`](packaging/README.md) |
+| 84 | → | [`README.md`](README.md) |
+| 85 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
+| 86 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 87 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
 ---
 

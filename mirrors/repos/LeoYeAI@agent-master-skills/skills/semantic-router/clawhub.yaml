@@ -1,0 +1,42 @@
+name: semantic-router
+version: 8.1.0
+metadata:
+  title: "Semantic Router — Framework Only"
+  powered_by: "halfmoon82"
+  attribution: "🔷 Powered by halfmoon82 🔷"
+  description: |
+    Framework-only update. Runtime implementation has been removed from the published artifact.
+    This release keeps the routing concept, interface contract, and usage guidance only.
+  author: halfmoon82
+  homepage: https://clawhub.ai/halfmoon82/semantic-router
+  tags:
+    - semantic-routing
+    - framework
+    - documentation
+    - model-pools
+    - production
+    - security-hardened
+  categories:
+    - AI Agent
+    - Productivity
+    - Development Tools
+  keywords:
+    - 语义路由
+    - 自动模型选择
+    - 模型池
+    - 框架版
+    - 仅文档
+requirements:
+  openclaw:
+    minimum: "0.12.0"
+    recommended: "0.13.0"
+files:
+  - path: SKILL.md
+    type: documentation
+    description: Framework-only skill guide
+  - path: README_v3_PRODUCTION.md
+    type: documentation
+    description: Legacy production guide
+  - path: README_v7.9.2_设计哲学与演进史.md
+    type: documentation
+    description: Legacy design history

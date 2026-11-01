@@ -1,0 +1,11 @@
+{
+  "owner": "mcxxtyhd",
+  "slug": "theo-confluence-reader",
+  "displayName": "crawl requirement from confluence",
+  "latest": {
+    "version": "1.0.1",
+    "publishedAt": 1773642676369,
+    "commit": "https://github.com/openclaw/skills/commit/a5f705d2ec60c35b63cdd5a1bb15f134a0bac6a0"
+  },
+  "history": []
+}

@@ -133,6 +133,8 @@ That prompt is intended for coding agents. It tells the agent to clone the repo 
 
 ### Configuration
 
+Application SQL JSON writes normalize non-finite floats (`NaN`, `Infinity`, `-Infinity`) to `null` on SQLite and PostgreSQL, including DB-backed agent definitions and skill-mutation records. Existing rows are not rewritten.
+
 With `run_events.backend: db`, caller-supplied ISO 8601 event timestamps are normalized to UTC before storage, preserving their instant when SQLite drops timezone information. Timestamps without an offset are treated as UTC. Previously stored timestamps are not rewritten.
 
 Run event streams include `run.terminal` for the owning worker's confirmed final
@@ -1106,6 +1108,14 @@ Signed-in users' notification toggle, default model, conversation mode, and reas
 In a new chat, the submitted question stays above its streamed reasoning and
 tool steps while the server creates the conversation and confirms the message.
 
+While a Web task is running, choose **Queue** to send text for the next turn or
+**Steer** to update the current work. Native subagents pause at a safe boundary
+while the main Agent handles the update; active tool calls finish first. Stop
+keeps the Goal, while explicitly replacing the work can clear it. Unapplied
+messages survive database-backed Gateway restarts and require **Send again**;
+interrupted child side effects are not replayed automatically. Existing execution
+limits still apply. Busy input currently accepts text only.
+
 Markdown and JSON conversation exports from the chat header or sidebar read all
 persisted history pages, including earlier turns outside the loaded view or
 compacted model context. A failed history read stops the export instead of
@@ -1698,7 +1708,10 @@ provider, document title, and retrieved excerpt in chat, including after reload
 and when a subagent performed the retrieval. Missing page numbers and public
 URLs remain absent; sources without a URL are readable as local evidence.
 Inline citations remain readable after Markdown sanitization, and supplied page
-numbers use the selected interface language. New providers use the shared
+numbers use the selected interface language.
+Copying a source reference produces a Markdown link that escapes brackets in the
+visible title and wraps a URL containing parentheses in angle brackets, so the
+copied reference stays a valid link. New providers use the shared
 envelope; existing RAGFlow citation histories remain supported.
 Expand a completed subtask card to inspect its report's forwarded knowledge
 sources, including when reopening a saved conversation.
@@ -3683,6 +3696,10 @@ before the retention sweep reclaims it. Restore returns the document to its
 origin project, or to a project you pick when the origin is gone or archived;
 if the target already holds an identical active file, the entries merge.
 Deleting a project moves its entire shelf to trash in the same step.
+
+If the retention configuration cannot be read, automatic cleanup is deferred
+and the trash listing remains available. Cleanup resumes with the current
+configured retention window once the configuration is readable again.
 
 Permanently deleting read-only documents also works on Windows. A file that is
 already missing does not block deletion; other filesystem errors keep the entry

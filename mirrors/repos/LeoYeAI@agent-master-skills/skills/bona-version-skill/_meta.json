@@ -1,0 +1,11 @@
+{
+  "owner": "chengzipidaily",
+  "slug": "bona-version-skill",
+  "displayName": "Bona Movie Production",
+  "latest": {
+    "version": "0.1.0",
+    "publishedAt": 1774234096437,
+    "commit": "https://github.com/openclaw/skills/commit/636a7ce24b58f70f109fde23e08d5ea1dd56c780"
+  },
+  "history": []
+}

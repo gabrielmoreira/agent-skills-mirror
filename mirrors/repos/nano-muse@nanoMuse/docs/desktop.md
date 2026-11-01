@@ -125,7 +125,9 @@ speaking as nanoMuse through the `nanomuse` preset, with:
   tools `devices`, `device_screen`, `device_shell`, `device_files`, `device_open`,
   `device_notify` and `delegate` for the phone and the other computers; the phone's
   `delegate` landing here as a dsh session "From <device>" with its approvals relayed
-  back, and its text sent while the model writes it when the asker asks (`stream`); remote control (`shell`, `files`, `open`, `screen`) behind a switch;
+  back, and its text sent while the model writes it when the asker asks (`stream`); a
+  task for a conversation whose chat was archived since the last one brings the chat back,
+  as opening it and typing does; remote control (`shell`, `files`, `open`, `screen`) behind a switch;
 - **Coding agents**: *Settings → Coding agents*, with this computer's Cursor, Codex,
   Claude Code and DeepSeek Harness chats (read from disk, a message starts the agent's own
   CLI, the run streams in with its tools, *Stop* ends it) and then the account's other computers',
@@ -322,6 +324,21 @@ last good settings, and a damaged file is replaced from the copy at the next sta
 are readable by the owner alone, as the proxy address may carry a password. *Download your
 agent data* writes its zip one file at a time, leaves out links and anything over 64 MB,
 and removes a password from the proxy address in the `desktop.json` it packs.
+
+## The agent's desktop guide
+
+The nanoMuse preset includes a `nanomuse-desktop` skill. Its description appears in the
+native DeepSeek Harness skill catalog; the `skill` tool loads its full guide only when
+needed. Ask how to connect a second-brain folder or configure a desktop capability, and
+the agent has local instructions for the current desktop instead of searching app source.
+The guide covers settings, workspaces, permissions, connectors and MCP, skills, memory,
+and rooms, with the current workspace and harness-home paths supplied by the host.
+
+For a folder you want every chat to find, the guide explains how to keep a pointer in
+the workspace's `AGENTS.md`, or in `$DSH_HOME/AGENTS.md` across workspaces. It does not
+copy the folder or grant access: writes outside a chat's workspace still need approval,
+including when reached through a Windows junction or a symlink. Credential entry and
+settings without an agent-facing tool stay in their existing settings pages.
 
 ## Models
 
@@ -539,7 +556,10 @@ More to know:
 - Screen Recording reaches freshly started processes only; that process is the helper. When
   the switch flips while the app runs, the app restarts the helper by itself (the log says
   `restarting the helper for the new grant`); the *Restart* button on the Permissions page
-  restarts the helper too, never the app, and two clicks are one restart.
+  restarts the helper too, never the app, and two clicks are one restart. If the helper is
+  still starting, the restart waits for that process and replaces it. The button shows
+  *Restarting…* until the replacement answers, reports a failed restart, and clears the
+  old black-screen notice only after success. A fresh test screenshot checks the grant.
 - The picture is the main display, at most 2 Mpx (a 3456×2234 Retina panel comes down to
   1758×1137), coordinates in points. Only the main display is captured and driven. Holding a
   key across actions (`press` / `release`, UI-TARS's names) works since 0.1.39.

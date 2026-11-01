@@ -1,0 +1,11 @@
+{
+  "owner": "maverick-software",
+  "slug": "skill-creator-vault-enhancement",
+  "displayName": "Skill Creator Enhanced (Vault Awareness)",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1772394583440,
+    "commit": "https://github.com/openclaw/skills/commit/e25d81f3f41b8a7515ef31d393344d375e0a8451"
+  },
+  "history": []
+}

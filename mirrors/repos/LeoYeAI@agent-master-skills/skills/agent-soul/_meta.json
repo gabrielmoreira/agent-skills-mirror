@@ -1,0 +1,17 @@
+{
+  "owner": "keeganthomp",
+  "slug": "agent-soul",
+  "displayName": "Agent Soul",
+  "latest": {
+    "version": "1.2.0",
+    "publishedAt": 1771515974314,
+    "commit": "https://github.com/openclaw/skills/commit/395e9e02bd81b741dc6dd71070103de1a0054b7e"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "publishedAt": 1771265106956,
+      "commit": "https://github.com/openclaw/skills/commit/fb1979ab9cabfe03ba4ea45bf30c3e251cf6938a"
+    }
+  ]
+}

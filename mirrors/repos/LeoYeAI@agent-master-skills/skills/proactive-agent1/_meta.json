@@ -1,0 +1,11 @@
+{
+  "owner": "cp33333333333",
+  "slug": "proactive-agent1",
+  "displayName": "proactive-agent-3.1.0",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1773041376343,
+    "commit": "https://github.com/openclaw/skills/commit/860e78cc0b0f128c27ff35312978e714ea3fd099"
+  },
+  "history": []
+}

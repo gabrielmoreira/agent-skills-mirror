@@ -1,0 +1,67 @@
+{
+  "owner": "halfmoon82",
+  "slug": "semantic-router",
+  "displayName": "Semantic Router",
+  "latest": {
+    "version": "8.1.0",
+    "publishedAt": 1774600415223,
+    "commit": "https://github.com/openclaw/skills/commit/2648533b324d06c5cd42aaa3035b8388e92394d3"
+  },
+  "history": [
+    {
+      "version": "8.0.0",
+      "publishedAt": 1774152902702,
+      "commit": "https://github.com/openclaw/skills/commit/4f37950d7b624921a35df411d5670f813d59ae6b"
+    },
+    {
+      "version": "7.9.6",
+      "publishedAt": 1773672054827,
+      "commit": "https://github.com/openclaw/skills/commit/b686469d64165b4b0e126b9e4d51b0e3898eae86"
+    },
+    {
+      "version": "7.9.5",
+      "publishedAt": 1773290652080,
+      "commit": "https://github.com/openclaw/skills/commit/4ee06e0ca103ba169390e3204d08abd531e6b8ae"
+    },
+    {
+      "version": "7.9.4",
+      "publishedAt": 1772889801602,
+      "commit": "https://github.com/openclaw/skills/commit/7b7ff8c89d1e362f39a9becc2c21615cef27509b"
+    },
+    {
+      "version": "7.9.3",
+      "publishedAt": 1772797438857,
+      "commit": "https://github.com/openclaw/skills/commit/5efb6bcbd25e3203e209fc5a870ca02c9f563250"
+    },
+    {
+      "version": "7.9.0",
+      "publishedAt": 1772723357770,
+      "commit": "https://github.com/openclaw/skills/commit/c72a7140588eefa357b3aea81e8e8ff603fa1ded"
+    },
+    {
+      "version": "2.1.0",
+      "publishedAt": 1772580261530,
+      "commit": "https://github.com/openclaw/skills/commit/04967be5610a51ffec43d2e719f48f4b8d7a4eb7"
+    },
+    {
+      "version": "7.6.4",
+      "publishedAt": 1772466702168,
+      "commit": "https://github.com/openclaw/skills/commit/73c36e2c24aa2f6acbd47788280ab1092b856609"
+    },
+    {
+      "version": "2.0.0",
+      "publishedAt": 1772279979312,
+      "commit": "https://github.com/openclaw/skills/commit/b946d646969d338b56c8e892d3b3f3b7dac4e01c"
+    },
+    {
+      "version": "1.2.3",
+      "publishedAt": 1771860322228,
+      "commit": "https://github.com/openclaw/skills/commit/33458003b1e0bf8c9eee20f22a48e466b6e65b09"
+    },
+    {
+      "version": "1.2.0",
+      "publishedAt": 1771859654737,
+      "commit": "https://github.com/openclaw/skills/commit/d48532016405fcc2f6409c0d3e04c9d7261e1759"
+    }
+  ]
+}

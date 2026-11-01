@@ -1,0 +1,32 @@
+{
+  "owner": "ajaxhe",
+  "slug": "lexiang-mcp-skill",
+  "displayName": "腾讯乐享知识库 Lexiang Knowledge Base",
+  "latest": {
+    "version": "0.1.5",
+    "publishedAt": 1774492524016,
+    "commit": "https://github.com/openclaw/skills/commit/9884a9fe75e7d9fed29efead978799252046782e"
+  },
+  "history": [
+    {
+      "version": "0.1.4",
+      "publishedAt": 1773818652031,
+      "commit": "https://github.com/openclaw/skills/commit/48c4f797b49dd0040b6ce3533f3cbfab5e8e7cfd"
+    },
+    {
+      "version": "0.1.2",
+      "publishedAt": 1773383159296,
+      "commit": "https://github.com/openclaw/skills/commit/2c8398a23830d2929c5e3283ffdd8ef52ca6905f"
+    },
+    {
+      "version": "0.1.1",
+      "publishedAt": 1773140734872,
+      "commit": "https://github.com/openclaw/skills/commit/790e1126e2dd45d1ce03f6cae2fc1920dda5e82c"
+    },
+    {
+      "version": "0.1.0",
+      "publishedAt": 1772802675073,
+      "commit": "https://github.com/openclaw/skills/commit/922482ae3184c5084ef431e6e85fe912193ffadf"
+    }
+  ]
+}

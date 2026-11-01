@@ -1,0 +1,11 @@
+{
+  "owner": "vveerrgg",
+  "slug": "nse-orchestrator",
+  "displayName": "nse-orchestrator",
+  "latest": {
+    "version": "0.2.2",
+    "publishedAt": 1773962366926,
+    "commit": "https://github.com/openclaw/skills/commit/0aecf245182d2fa589cffa46568dd69d31710e23"
+  },
+  "history": []
+}

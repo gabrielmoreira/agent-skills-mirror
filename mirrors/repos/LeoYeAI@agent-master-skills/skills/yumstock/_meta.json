@@ -1,0 +1,11 @@
+{
+  "owner": "yumyumtum",
+  "slug": "yumstock",
+  "displayName": "yumstock",
+  "latest": {
+    "version": "1.0.0",
+    "publishedAt": 1771044464528,
+    "commit": "https://github.com/openclaw/skills/commit/813f384693422920381768d359642d17c9c620cc"
+  },
+  "history": []
+}

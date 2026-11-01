@@ -36,7 +36,7 @@ The chat is where everything happens, and it still feels like a chat client. Pre
 
 ### Hands that succeed more often
 
-The screen as a hand works on Android and on the desktop (the desktop operator is a port of UI-TARS-desktop's). It fails on grounding (the model names the wrong element) and on recovery after an unexpected dialog, and we have no fixed set of tasks to measure it against.
+The screen as a hand works on Android and on the desktop (the desktop operator is a port of UI-TARS-desktop's). It fails on grounding (the model names the wrong element) and on recovery after an unexpected dialog. [GUI regression](gui-regression.md) now provides fixed simulated tasks for runtime regression and opt-in model comparisons; real-device grounding and recovery still need recorded failures.
 
 - Module: `nanomuse/computer/` (`operator.py`, `coords.py`, `screen.py`), `nanomuse/phone/` (`operator.py`, `trace.py`), `harness/desktop/src/operator.ts`, Android `io.github.nanomuse.hands`.
 - Read: [gui.md](gui.md) for the operator's contract, [troubleshooting.md](troubleshooting.md).

@@ -366,11 +366,11 @@ back:
 ```text
 omh · Fix the login bug
 
-  resume: omh --resume 20261025_101530_ab12cd
+  omh --resume 20261025_101530_ab12cd
 ```
 
 The first line is the session's title (`untitled session` when Hermes has
-not named it). After a blank line, `resume:` reopens it by its whole id,
+not named it). After a blank line, the `omh --resume` command reopens it by its whole id,
 which always resolves to this session, and a blank line closes the card so
 your shell prompt does not sit right under the command. With a profile it carries `-p <profile>`, since a profile
 has its own `state.db`. A session in which nothing was said gets one line instead, `omh:
@@ -1213,6 +1213,7 @@ Esc closes it):
 | Ctrl+_ / Ctrl+Y | Undo or redo an edit in the composer (Ctrl+_ is what Ctrl+- and Ctrl+/ send on most terminals); a run of typed characters is one edit |
 | Esc | Closes the `/` or `@` menu; on an empty composer, interrupts a running turn (the activity row shows how long it has run, then `interrupting…`, and what you queued comes back to the composer unsent); cancels a rewind you picked; cancels an agent steer you picked and keeps what you typed; after an approval's tell row, sends nothing more and brings your draft back |
 | Esc Esc | With text, clears it and keeps it in this session's history; on an empty composer between turns, lists your prompts to rewind to (`/rewind` does too) |
+| Esc (vim mode) | With `display.vim_mode` on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, `h l 0 ^ $ w b e j k gg G` move, `i a I A o O` insert, `x X dd D C cc S s r`, `d c y` with a motion, `p P`, `u` and Ctrl+R edit, a count repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt. The info line says INSERT or NORMAL |
 | Ctrl+V | Attaches the clipboard image as an `[Image #N]` token at the caret |
 | Ctrl+O | Opens the whole transcript with every detail (thinking, tool output, whole diffs) at its end, or, while Hermes asks something, the whole question (it answers nothing); q leaves it |
 | Ctrl+L | Redraws the screen |
@@ -1261,6 +1262,88 @@ under the queued prompts names `ctrl+j` until the terminal shows it took the
 request (its answer to the query, or a first key in one of those reports),
 and `ctrl+enter` from then on. `OMH_TUI_KEYBOARD=legacy` stops the request
 and the query on any terminal.
+
+Vim mode: with Hermes' `display.vim_mode` on, the composer edits modally, as
+`hermes --cli` does with that setting. Turn it on with
+`hermes config set display.vim_mode true` and start `omh` again. The OMH TUI
+reads it from the active profile's config, in the same settings it reads
+`display.busy_input_mode` from (at launch and after a gateway restart). Only
+a true turns it on (a number other than 0 too, or, written by hand as a
+string, `true`, `yes`, `on` or `1`); off or absent, every key does what the
+rest of this page says.
+
+- The composer starts in INSERT, and the info line says `INSERT` or `NORMAL`
+  first on its left, before accept or plan. In INSERT every key does what it
+  does without vim mode except Esc: it goes to NORMAL, steps the caret back
+  onto the character before it and closes the `/` or `@` menu (neither
+  opens in NORMAL), and does nothing else (it arms no clear or rewind,
+  cancels nothing and interrupts no turn). In NORMAL, Esc first drops a
+  command typed halfway (`d`, `3`, `g`); otherwise it does what Esc does
+  without vim mode, so Esc Esc from NORMAL clears the draft or opens the
+  rewind list. The one difference is a running turn: on an empty composer
+  in NORMAL, Esc only arms the interrupt (the info line says
+  `esc again to interrupt`), and a second Esc within 0.8 s interrupts, so
+  Esc pressed twice to leave INSERT never stops a turn. The working row
+  says so: `esc esc to interrupt` in NORMAL, and no Esc hint in INSERT,
+  where Esc goes to NORMAL first. The `@` menu is never taken in NORMAL,
+  even when Esc and the next key reach the TUI as one Alt chord.
+- In NORMAL the caret sits on a character, never after the last one on a
+  line, and a character you type is a command, never text. The commands,
+  all of them:
+  - motions `h` `l` (on the line), `0` `^` `$`, `w` `b` `e`, `j` `k` (a row
+    down or up, as ↓ and ↑, walking the input history at the first and the
+    last row), `gg` and `G` (the first and the last line, or line N with a
+    count, on its first character that is not blank);
+  - into INSERT: `i` `a` `I` `A` `o` `O`;
+  - edits: `x` `X`, `dd`, `D`, `C`, `cc` and `S`, `s`, `r<char>`; the
+    operators `d` (delete), `c` (change: delete, then INSERT) and `y` (yank)
+    with a motion `h` `l` `0` `^` `$` `w` `b` `e` (`dw`, `cw`, `d$`, `c$`,
+    `yw`, `db`, `de` and so on), and doubled for whole lines (`dd`, `cc`,
+    `yy`); `dw` and `cw` stop at the end of the line, and `cw` on a word
+    changes up to its end, as Vim's does; `p` and `P` put what the last
+    deletion, change or yank took after or before the caret (whole lines
+    below or above the line); `u` undoes and Ctrl+R redoes;
+  - a count before a command or a motion repeats it: `3w`, `2dd`, `d2w`,
+    `2dw`, `3x`, `2p`, `3G`; `i a I A o O` and `0 ^ $` take none.
+- Enter in NORMAL always sends the composer, as Enter does in INSERT, even
+  with a `\` under or before the caret; `\` then Enter adds a line in INSERT
+  only, and Alt+Enter, Shift+Enter and Ctrl+J add one in both modes.
+  A sent prompt starts the next one in INSERT. Any other character in NORMAL
+  does nothing, and so does a key that arrives while a command is typed
+  halfway (`d` then Enter sends nothing): it drops the command. Backspace is
+  `h` and Delete is `x`; ← / →, ↑ / ↓, Home / End, Tab, Ctrl+V, the other
+  Ctrl keys, `?` on an empty composer and ↑ on an empty composer with
+  prompts queued do what they do in INSERT, and a paste inserts at the
+  caret and stays in NORMAL. Ctrl+R searches the input history from INSERT
+  only.
+- A paste chip and an `[Image #N]` token are one character to every motion
+  and deletion, as is a character of several code points (a Hangul
+  syllable, an emoji with a ZWJ or a skin tone, a letter with a combining
+  mark). `p` puts a chip back with its text and a token back with its
+  image; put twice, the image goes twice. Each command is one undo step, and
+  a change (`c`, `s`, `o`, `O`) and what you type after it until Esc are
+  one.
+- On a terminal that sends no key reports, an Esc and the key after it in
+  the same read arrive as Alt and that key. In INSERT that is Esc and then
+  the key: NORMAL, and the key as its command (Esc then `h` moves left).
+  Alt+B and Alt+F stay word moves, since Terminal.app sends Option+← and
+  Option+→ that way. An Alt chord the terminal reports (kitty, xterm
+  modifyOtherKeys) is a real Alt and does nothing, as without vim mode. So
+  on such a terminal Esc and the next key typed as one burst can read as
+  Alt and that key: type them apart when it matters (Esc then `b`, or `f`).
+- Only the composer that holds your draft is modal, including while it
+  takes a steer for an agent you picked or a rewind you picked. An answer
+  typed to a question Hermes asks (a clarify question's own answer, a sudo
+  password or a secret, which are masked) and the tell row after an
+  approval are typed into composers of their own, which are not modal;
+  approvals, pickers, the agent list and pagers keep their own keys.
+- What differs from Hermes' Vi mode (prompt_toolkit's, in `hermes --cli`):
+  there is no REPLACE mode (`R`), visual mode, named register, text object
+  (`iw`), search or find (`/`, `f`, `t`), `.` repeat, `~`, `J`, `>>` or
+  mark; `w` `b` `e` move by words between blanks (Vim's `W` `B` `E`, not
+  stopping at punctuation); `j` and `k` move a row on the screen, as ↑ and
+  ↓ do; a count does not repeat an insert; and the caret keeps its shape in
+  NORMAL.
 
 Shift+Tab cycles three input modes, and the info line shows the one that is
 on. Accept all turns off Hermes' approval prompts for that

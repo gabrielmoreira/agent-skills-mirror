@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 11 followed patterns, 27 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 11 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 11 followed patterns, 27 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,25 +77,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/knowledge-base/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/knowledge-base/SKILL.md) |
 | 7 | ✓ | [`backend/yuxi/modules/extensions/skills/builtin/mysql-reporter/SKILL.md`](backend/yuxi/modules/extensions/skills/builtin/mysql-reporter/SKILL.md) |
 | 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`docs/advanced/sandbox-operations.md`](docs/advanced/sandbox-operations.md) |
-| 10 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 11 | ✓ | [`docs/agents/agents-config.md`](docs/agents/agents-config.md) |
-| 12 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
-| 13 | ✓ | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 14 | ✓ | [`docs/develop-guides/documentation-guidelines.md`](docs/develop-guides/documentation-guidelines.md) |
-| 15 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
-| 16 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 17 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 18 | → | [`docs/advanced/deployment.md`](docs/advanced/deployment.md) |
-| 19 | → | [`docs/agents/session-cooperation.md`](docs/agents/session-cooperation.md) |
-| 20 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 21 | → | [`docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md`](docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md) |
-| 22 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
-| 23 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
-| 24 | → | [`docs/develop-guides/parallel-worktree-environments.md`](docs/develop-guides/parallel-worktree-environments.md) |
-| 25 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
-| 26 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
-| 27 | → | [`docs/mechanisms/mcp.md`](docs/mechanisms/mcp.md) |
+| 9 | ✓ | [`docs/advanced/document-processing.md`](docs/advanced/document-processing.md) |
+| 10 | ✓ | [`docs/advanced/sandbox-operations.md`](docs/advanced/sandbox-operations.md) |
+| 11 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 12 | ✓ | [`docs/agents/agents-config.md`](docs/agents/agents-config.md) |
+| 13 | ✓ | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 14 | ✓ | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 15 | ✓ | [`docs/develop-guides/documentation-guidelines.md`](docs/develop-guides/documentation-guidelines.md) |
+| 16 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
+| 17 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 18 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 19 | → | [`docs/advanced/deployment.md`](docs/advanced/deployment.md) |
+| 20 | → | [`docs/agents/session-cooperation.md`](docs/agents/session-cooperation.md) |
+| 21 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 22 | → | [`docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md`](docs/develop-guides/decisions/proposed/2026-09-30-agent-view-frontend-refactor.md) |
+| 23 | → | [`docs/develop-guides/decisions/README.md`](docs/develop-guides/decisions/README.md) |
+| 24 | → | [`docs/develop-guides/engineering-trust.md`](docs/develop-guides/engineering-trust.md) |
+| 25 | → | [`docs/develop-guides/parallel-worktree-environments.md`](docs/develop-guides/parallel-worktree-environments.md) |
+| 26 | → | [`docs/develop-guides/spec-loop.md`](docs/develop-guides/spec-loop.md) |
+| 27 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 28 | → | [`docs/mechanisms/mcp.md`](docs/mechanisms/mcp.md) |
 
 ---
 

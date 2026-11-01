@@ -10,7 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This section accumulates work toward the **2.3.0** milestone
 ([2.3.0](https://github.com/bytedance/deer-flow/milestone/4)).
 
+### Added
+
+- **chat:** Running Web chats offer Queue and Steer in the composer. Queue
+  waits for the next turn; Steer lets the main Agent handle updates while
+  native subagents pause and resume. Unconfirmed messages can be retried
+  after a Gateway restart. ([#7729])
+
 ### Fixed
+
+- **projects:** The trash retention sweep no longer deletes live document
+  originals when the data directory, `users/`, a user's directory or a
+  user's `projects/` is a symlink. It protected each document by its resolved
+  path but walked the unresolved tree, so no document matched and every
+  original older than 24 hours was removed as an orphan, at Gateway startup
+  and from `GET /api/trash/documents`. ([#7732])
 
 - **dev:** `scripts/dev_multi_instance.sh logs all` now prints the nginx logs
   as well as both Gateway logs; it printed only the Gateway logs, the same as
@@ -15941,3 +15955,5 @@ with **180 merged pull requests** since the first 2.0 milestone tag.
 [#7665]: https://github.com/bytedance/deer-flow/pull/7665
 [#7723]: https://github.com/bytedance/deer-flow/pull/7723
 [#7727]: https://github.com/bytedance/deer-flow/pull/7727
+[#7729]: https://github.com/bytedance/deer-flow/pull/7729
+[#7732]: https://github.com/bytedance/deer-flow/pull/7732
