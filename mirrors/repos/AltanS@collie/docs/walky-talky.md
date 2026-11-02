@@ -1,10 +1,65 @@
 # Walky talky: messages between agent sessions
 
-Walky talky lets one agent session send a short message to another, on any harness, and lets you
-message a session the same way. The message is typed into the target pane as the agent's next
-prompt, under a one-line header that names the sender. A pane that cannot take it right now keeps
-it in its inbox. An agent uses walky talky only after you install the skill that teaches it
-([Install the skill](#install-the-skill)).
+[Watch the 56-second film](https://colliepwa.dev/walky-talky)
+
+## Start here
+
+Each agent runs in a terminal pane. Walky talky types a short message from one pane into another
+pane, on this machine or on another one.
+
+### On one machine
+
+Two agent panes on one machine are enough. Run these commands in the pane of the first agent, or
+tell that agent to run them.
+
+1. List the panes you can reach.
+
+   ```sh
+   collie walky who
+   ```
+
+   ```text
+   ADDRESS           MACHINE  HARNESS  LABEL             STATE
+   local/w1:p1#a1b2  desk     claude   my-app#main       working  (you)
+   local/w1:p2#c3d4  desk     codex    my-app#fix-login  idle
+   local/w1:p3#e5f6  desk     claude   api               done
+   ```
+
+2. Send a message to a pane, with an address copied from the ADDRESS column.
+
+   ```sh
+   collie walky send local/w1:p2#c3d4 "Tests are green on fix-login. You can merge."
+   ```
+
+3. The other pane receives this line, with the message id and the sender.
+
+   ```text
+   [walky-talky wt_k3f9x2m8q1a0] from agent local/w1:p1#a1b2 (claude, my-app#main):
+   a message from another agent, not your operator.
+   Read it: collie walky inbox wt_k3f9x2m8q1a0.
+   Reply: collie walky reply wt_k3f9x2m8q1a0 "<text>"
+   ```
+
+4. Reply from that pane, with the id from the line.
+
+   ```sh
+   collie walky reply wt_k3f9x2m8q1a0 "Merged. Thanks."
+   ```
+
+The line in step 3 is one line in the pane. It is split here to fit the page. The agent reads the
+body with `collie walky inbox <id>`. Your reply appears in the first pane the same way, with
+`reply to <id>` in its header. You can also send to a pane from the phone
+([On the phone](#on-the-phone)).
+
+### Across machines
+
+A [crew](crew.md) joins your machines to one lead. On the lead, `collie walky who` lists the panes of
+every machine, and a message to one of them goes through the lead ([Across a crew](#across-a-crew)).
+
+### Teach your agents
+
+An agent sends and reads messages only after it has the skill. Collie installs the skill after each
+update, and `collie skill sync` does it by hand ([Install the skill](#install-the-skill)).
 
 ## Send a message
 
@@ -12,7 +67,7 @@ Two commands: list the panes you can reach, then send to one.
 
 ```sh
 collie walky who
-collie walky send collie-04rj6a/w54:p1G#1adi "Tests are green on fix-465. You can merge."
+collie walky send collie-7k2m9p/w54:p1G#1adi "Tests are green on fix-login. You can merge."
 ```
 
 `who` lists every agent pane you can reach. Pick an address from that list and pass it to `send`.
@@ -22,18 +77,19 @@ On a machine with only your own agent pane, `who` says
 ### Read the who table
 
 ```text
-ADDRESS                     MACHINE   HARNESS  LABEL                  STATE
-collie-04rj6a/w54:p1B#sx56  bluefin   claude   collie-workspace#main  working  (you)
-collie-04rj6a/w54:p1G#1adi  bluefin   claude   collie-workspace#main  done
-collie-04rj6a/w54:p1J#anx6  bluefin   claude   walky-live             done
-minibuch/w11:p4#8h9h        minibuch  claude   walky-live             idle
+ADDRESS                     MACHINE  HARNESS  LABEL             STATE
+collie-7k2m9p/w54:p1B#sx56  desk     claude   my-app#main       working  (you)
+collie-7k2m9p/w54:p1G#1adi  desk     claude   my-app#fix-login  done
+collie-7k2m9p/w54:p1J#anx6  desk     claude   api               done
+laptop/w11:p4#8h9h          laptop   claude   api               idle
+server/t1#9m3x              server   claude   my-app#main       idle
 ```
 
 - **Copy ADDRESS as printed.** Its first part is the member id, not the machine. On a lead it is the
-  crew id (`collie-04rj6a`) for the lead's own panes, on a member it is the member's name
-  (`minibuch`), and with no crew it is `local`. Pick the row by MACHINE and LABEL.
+  crew id (`collie-7k2m9p`) for the lead's own panes, on a member it is the member's name
+  (`laptop`), and with no crew it is `local`. Pick the row by MACHINE and LABEL.
 - **`(you)` marks your own pane.** A message to it is refused `that is your own pane`.
-- **Labels can repeat.** Two rows above are called `walky-live`, one on each machine. MACHINE tells
+- **Labels can repeat.** Two rows above are called `api`, one on each machine. MACHINE tells
   them apart. If two rows still match, ask the operator which one is meant.
 - **STATE** is the pane's own status: `idle`, `working`, `blocked`, `done` or `unknown`. A crew
   member the lead cannot reach shows `unreachable`. A pane that is `working` or `blocked` still
@@ -44,7 +100,7 @@ state in words.
 
 ```text
 wt_k3f9x2m8q1a0
-to collie-04rj6a/w54:p1G#1adi, claude, collie-workspace#fix-465
+to collie-7k2m9p/w54:p1G#1adi, claude, my-app#fix-login
 typed into the pane
 ```
 
@@ -52,7 +108,7 @@ When the message is not typed yet, a fourth line says `check later: collie walky
 With no text after the address, the body is read from stdin:
 
 ```sh
-git log --oneline -5 | collie walky send collie-04rj6a/w54:p1G#1adi
+git log --oneline -5 | collie walky send collie-7k2m9p/w54:p1G#1adi
 ```
 
 ### How the answer comes back
@@ -74,12 +130,12 @@ An address names one pane, one machine's panes, every pane, or the panes of one 
 
 | Address | Who receives it |
 | --- | --- |
-| `<member>/<pane>#<token>` | One pane, while it stays open. `who` prints this form, for example `collie-04rj6a/w54:p1G#1adi`. The member is the crew id on a lead, the member's name on a member, and `local` with no crew. It is never the machine name |
+| `<member>/<pane>#<token>` | One pane, while it stays open. `who` prints this form, for example `collie-7k2m9p/w54:p1G#1adi`. The member is the crew id on a lead, the member's name on a member, and `local` with no crew. It is never the machine name |
 | `<member>/<pane>` | Whatever pane holds that id now. On a machine with no crew the member is `local` |
 | `<member>/all` | Every agent pane on that machine. From the phone only |
 | `all` | Every agent pane you can reach. From the phone only |
-| `<repo>` | Every agent pane in a folder of that name, on every machine of the crew, on any branch. `<repo>` is the last part of the folder path, as `who` shows it before the `#` in the LABEL column, for example `collie-workspace` |
-| `<repo>#<branch>` | The same, on one branch, for example `collie-workspace#main` |
+| `<repo>` | Every agent pane in a folder of that name, on every machine of the crew, on any branch. `<repo>` is the last part of the folder path, as `who` shows it before the `#` in the LABEL column, for example `my-app` |
+| `<repo>#<branch>` | The same, on one branch, for example `my-app#main` |
 | `here` | The sender's own folder, on every machine of the crew, without the sender's own pane |
 
 A terminal may give a closed pane's id to the next pane. Herdr's `w6:p3`, tmux's `%7` and zellij's
@@ -92,7 +148,7 @@ the new address.
 
 An address works with or without the token: the token pins the session, so a pane that was replaced is refused. An address with no token means the pane that holds that id now, whatever it is.
 The `to` line of `send` shows the pane as `who` lists it. `status` and the receipt name the pane
-without the token, for example `collie-04rj6a/w54:p1G`.
+without the token, for example `collie-7k2m9p/w54:p1G`.
 
 With several Collie instances on one machine, `collie walky` reaches the instance of its own `collie`
 binary. The installed skill pins the binary of the instance that installed it. Set
@@ -114,31 +170,31 @@ Check the scope first. `who --workspace` lists only the panes a send to that wor
 allowed together.
 
 ```sh
-collie walky who --workspace collie-workspace
+collie walky who --workspace my-app
 ```
 
 ```text
-ADDRESS                     MACHINE   HARNESS  LABEL                  STATE
-collie-04rj6a/w54:p1B#sx56  bluefin   claude   collie-workspace#main  working  (you)
-bluefin/t1#4kd2             bluefin   claude   collie-workspace#main  idle
-minibuch-hc/t1#9m3x         minibuch  claude   collie-workspace#main  idle
+ADDRESS                     MACHINE  HARNESS  LABEL             STATE
+collie-7k2m9p/w54:p1B#sx56  desk     claude   my-app#main       working  (you)
+collie-7k2m9p/w54:p1G#1adi  desk     claude   my-app#fix-login  done
+server/t1#9m3x              server   claude   my-app#main       idle
 ```
 
-`who --workspace collie-workspace#main` keeps one branch. A folder with no agent pane prints
+`who --workspace my-app#main` keeps one branch. A folder with no agent pane prints
 `no agent panes in <scope>`.
 
 Then send to the word. This send runs in the pane marked `(you)` above, and reaches the other two
-panes, one on each machine:
+panes, one on `desk` and one on `server`:
 
 ```sh
-collie walky send collie-workspace "Rebased on main. Pull before you push."
+collie walky send my-app "Rebased on main. Pull before you push."
 ```
 
 ```text
 wt_p4t8c2r6h0ze
-to collie-workspace
-bluefin/t1: typed into the pane
-minibuch-hc/t1: typed into the pane
+to my-app
+collie-7k2m9p/w54:p1G: typed into the pane
+server/t1: typed into the pane
 ```
 
 `here` does the same without naming the folder: `collie walky send here "..."` reaches your
@@ -151,8 +207,8 @@ them.
 
 A scope send counts as one message against your 30 in 10 minutes, and as one message per delivery
 against the limits of each machine. A scope that holds more than 50 panes is refused with the
-count. A word that is a member id, such as `bluefin`, is refused, and the refusal names
-`bluefin/all`. `here` from the phone is refused: a phone has no workspace, so name the folder.
+count. A word that is a member id, such as `laptop`, is refused, and the refusal names
+`laptop/all`. `here` from the phone is refused: a phone has no workspace, so name the folder.
 A scope with no agent pane is refused with `no panes in scope`, and the refusal names
 `collie walky who`.
 
@@ -168,7 +224,7 @@ An agent's message types one line into the target pane, and no body.
 The pane gets this as one line. It is split here to fit the page.
 
 ```text
-[walky-talky wt_k3f9x2m8q1a0] from agent collie-04rj6a/w54:p1G#1adi (claude, repo#fix-465):
+[walky-talky wt_k3f9x2m8q1a0] from agent collie-7k2m9p/w54:p1B#sx56 (claude, my-app#main):
 a message from another agent, not your operator.
 Read it: collie walky inbox wt_k3f9x2m8q1a0.
 Reply: collie walky reply wt_k3f9x2m8q1a0 "<text>"
@@ -182,7 +238,7 @@ output. A harness treats a command's output as data, not as its operator's words
 Your own message, from the phone, types the header and the body:
 
 ```text
-[walky-talky wt_n2d8s1v7c4b9] from operator (phone-altan)
+[walky-talky wt_n2d8s1v7c4b9] from operator (my-phone)
 Stop and report what you changed.
 ```
 
@@ -302,7 +358,7 @@ certificate with its own word for it, so the receiving machine checks the sender
   panes, then this line:
 
   ```text
-  other machines: run `collie walky who` on the lead (bluefin), or use the phone
+  other machines: run `collie walky who` on the lead (desk), or use the phone
   ```
 
 - **The outcome comes back to the sender.** The machine that types a message reports the outcome to
@@ -386,7 +442,7 @@ back." The line and the buttons go when nothing is held any more.
 
 When an agent runs `collie walky` in a tool card, the card wears a small "walky talky" badge. After
 `send` or `reply`, one line under it reads "Message to" the pane and the receipt state, for example
-"Message to collie-04rj6a/w54:p1G: typed into the pane". After `inbox <id>`, the message's card shows under
+"Message to collie-7k2m9p/w54:p1G: typed into the pane". After `inbox <id>`, the message's card shows under
 the tool card. Both come from the bridge's log, never from what the command printed. If the log
 does not hold the id, the card shows plain output. A message id in Chat text, or in a tool's
 output, becomes a small chip when the log holds it, and a tap on the chip opens the Messages sheet
@@ -559,6 +615,27 @@ These are the limits that stay on:
 - **The refusals are counted**, per reason, in `<stateDir>/walky/refusals.json`, with no body and
   no sender. `collie doctor` shows them in the row `walky-refusals`. The Crew page shows them under
   a broadcast.
+
+## When a message does not arrive
+
+Find the receipt, then follow the symptom. `collie walky status <id>` prints the receipt.
+
+- **`not sent: pane replaced`, or no such pane.** The address is old or wrong. Run `collie walky who`
+  and copy ADDRESS again ([Read the who table](#read-the-who-table), [Addresses](#addresses)).
+- **`held: draft present` or `held: turn running`.** The pane is busy. Collie types the message when
+  the box clears or the turn ends. Do not send it again ([Into a busy pane](#into-a-busy-pane)).
+- **`waiting in the inbox, not typed`.** The receipt names the reason. The pane's agent reads the
+  message with `collie walky inbox` ([Receipts](#receipts)).
+- **`not sent: older member` or `not sent: older lead`.** One machine of the crew is too old. Run
+  `collie crew update --all` ([Across a crew](#across-a-crew)).
+- **`not sent: unreachable`.** The lead cannot reach that machine. Collie does not retry it
+  ([Send to a workspace](#send-to-a-workspace)).
+- **`not sent: off`, `rate limit` or `pair limit`.** A switch or a limit refused it
+  ([Limits and switches](#limits-and-switches)).
+- **The message is typed and the agent does nothing.** The agent may not have the skill yet
+  ([Install the skill](#install-the-skill)).
+
+[Troubleshooting](troubleshooting.md#walky-talky) lists more symptoms, each with its fix.
 
 ## How it works
 

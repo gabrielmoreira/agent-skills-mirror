@@ -1,0 +1,98 @@
+# First-Run Onboarding
+
+Use onboarding the first time you open Agent Zero, or any time the Web UI says
+your models still need setup. The wizard helps you pick Cloud, AI account, or
+Local access, configure a main model, choose a utility model, and start
+chatting.
+
+This example uses **OpenRouter** with a masked demo key. Replace the demo key
+with your own key.
+
+## Open Onboarding
+
+Open the Web UI. The welcome screen can show account shortcuts, and the message
+composer is ready immediately.
+
+![Welcome message box and Quick Actions](../res/usage/webui/welcome-start.png)
+
+If you send a message before models are configured, Agent Zero creates the chat,
+holds the message, and shows the model gate inside the conversation. Choose
+**Cloud provider**, **AI account**, or **Local model** to open onboarding.
+
+![Chat model gate with Cloud, account, local and provider-plugin choices](../res/usage/opencode/model-gate.png)
+
+If your provider is missing from a grid, use **Didn't find your provider? Click
+to look in the Plugin Hub** underneath it. The Hub opens with **Provider**
+selected. Follow [OpenCode Go and Provider Plugins](opencode.md) for a complete
+example, from your first message through installation and model selection.
+
+## Choose A Provider Path
+
+Choose **Cloud** when you want to paste an API key for OpenRouter, OpenAI,
+Anthropic, Google, Venice, or another hosted provider.
+
+![Cloud provider picker with hosted providers](../res/usage/onboarding/onboarding-cloud-provider.png)
+
+Choose **Account** when you want to sign in with Codex/ChatGPT, GitHub Copilot,
+Google Cloud Gemini, or xAI Grok instead of pasting a provider key.
+
+For Codex/ChatGPT, onboarding suggests `gpt-6.1-terra` for the Main model and
+`gpt-6-luna` for the Utility model when they are available in your account.
+You can choose different models from the list.
+
+Follow [Codex with Your ChatGPT Account](codex.md) for the complete sign-in
+walkthrough, including the ChatGPT security setting and device code.
+
+![AI account picker with Codex, Copilot, Google Cloud Gemini, and Grok](../res/usage/onboarding/onboarding-account-provider.png)
+
+Choose **Local** when you want to connect to Ollama, LM Studio, oMLX, llama.cpp,
+vLLM, or another model server running on your machine.
+
+![Local model provider picker with Ollama, LM Studio, oMLX, llama.cpp, and vLLM](../res/usage/onboarding/onboarding-local-ollama-main.png)
+
+## Configure The Main Model
+
+For API-key providers, choose the main model and paste the provider key. The
+screenshot uses a masked demo key.
+
+![OpenRouter setup with main model and masked API key](../res/usage/onboarding/onboarding-agent-zero-api-key-model.png)
+
+After the main model is selected, click **Choose utility model**.
+
+## Choose The Utility Model
+
+The utility model handles quick internal tasks such as summaries, naming, and
+memory. A small, fast, cheap model usually works best here. The wizard may
+prefill a utility provider and model, but it remains an explicit choice.
+
+![Utility model step with OpenRouter and a fast Gemini model](../res/usage/onboarding/onboarding-utility-same-model.png)
+
+Click **Finish setup** when the utility model looks right.
+
+If onboarding opened after your first message, Agent Zero retries that held
+message as soon as the selected model is configured. Do not send it a second
+time. Switching that chat to an already configured preset can also let it
+continue.
+
+## Start Chatting
+
+The ready screen confirms that model setup is done. Optional setup cards may
+appear for integrations such as Telegram, Email, WhatsApp, or plugins.
+
+![Onboarding ready screen with Continue returning to the existing chat](../res/usage/onboarding/onboarding-ready.png)
+
+Click **Continue** to close onboarding. If you started setup from a chat,
+you stay in that chat, where Agent Zero answers your held message. Completing
+onboarding does not create another chat.
+
+## Customize or restore Welcome
+
+Use a section's handle to move it, or its close button to hide it. If the
+greeting or message box disappears, **Show all dismissed** at the bottom
+restores it. Layout choices stay in this browser. The adjacent puzzle button
+opens Plugin Hub's welcome extensions. See the
+[Welcome controls](usage.md#customize-welcome) for screenshots and keyboard help.
+
+> [!IMPORTANT]
+> Do not reuse the fake key shown in this guide. Paste your own provider key,
+> and do not share screenshots that reveal real keys or private account details.

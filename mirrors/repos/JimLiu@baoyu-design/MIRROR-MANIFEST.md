@@ -82,7 +82,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/claude-dashboard/artifact-type/reference/visual-short.md`](skills/claude-dashboard/artifact-type/reference/visual-short.md) |
 | 22 | ✓ | [`skills/claude-dashboard/scripts/artifact.mjs`](skills/claude-dashboard/scripts/artifact.mjs) |
 | 23 | ✓ | [`skills/claude-dashboard/scripts/editor/assets/anthropicons-fizzy-lake-AsAz-1yR.woff2`](skills/claude-dashboard/scripts/editor/assets/anthropicons-fizzy-lake-AsAz-1yR.woff2) |
-| 24 | ✓ | [`skills/claude-dashboard/scripts/editor/assets/index-BX9MvuwQ.js`](skills/claude-dashboard/scripts/editor/assets/index-BX9MvuwQ.js) |
+| 24 | ✓ | [`skills/claude-dashboard/scripts/editor/assets/index-CKEz7pBB.js`](skills/claude-dashboard/scripts/editor/assets/index-CKEz7pBB.js) |
 | 25 | ✓ | [`skills/claude-dashboard/scripts/editor/assets/index-DXp7_xcB.css`](skills/claude-dashboard/scripts/editor/assets/index-DXp7_xcB.css) |
 | 26 | ✓ | [`skills/claude-dashboard/scripts/editor/comments.js`](skills/claude-dashboard/scripts/editor/comments.js) |
 | 27 | ✓ | [`skills/claude-dashboard/scripts/editor/index.html`](skills/claude-dashboard/scripts/editor/index.html) |
@@ -102,7 +102,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/vendor/react-dom.production.min.js`](skills/claude-design-system/scripts/editor/artifact-type/vendor/react-dom.production.min.js) |
 | 42 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/vendor/react.production.min.js`](skills/claude-design-system/scripts/editor/artifact-type/vendor/react.production.min.js) |
 | 43 | ✓ | [`skills/claude-design-system/scripts/editor/assets/anthropicons-fizzy-lake-taBimrpG.woff2`](skills/claude-design-system/scripts/editor/assets/anthropicons-fizzy-lake-taBimrpG.woff2) |
-| 44 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-BABbb9P5.js`](skills/claude-design-system/scripts/editor/assets/index-BABbb9P5.js) |
+| 44 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-DQkEmajC.js`](skills/claude-design-system/scripts/editor/assets/index-DQkEmajC.js) |
 | 45 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-iALF7K4N.css`](skills/claude-design-system/scripts/editor/assets/index-iALF7K4N.css) |
 | 46 | ✓ | [`skills/claude-design-system/scripts/editor/index.html`](skills/claude-design-system/scripts/editor/index.html) |
 | 47 | ✓ | [`skills/claude-design-system/scripts/editor/share-ui.js`](skills/claude-design-system/scripts/editor/share-ui.js) |
@@ -130,7 +130,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-notices.json`](skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-notices.json) |
 | 70 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json`](skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json) |
 | 71 | ✓ | [`skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-c1fxtHDl.woff2`](skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-c1fxtHDl.woff2) |
-| 72 | ✓ | [`skills/claude-design/scripts/editor/assets/index-Cs8iq2HP.js`](skills/claude-design/scripts/editor/assets/index-Cs8iq2HP.js) |
+| 72 | ✓ | [`skills/claude-design/scripts/editor/assets/index-BZKwYnL9.js`](skills/claude-design/scripts/editor/assets/index-BZKwYnL9.js) |
 | 73 | ✓ | [`skills/claude-design/scripts/editor/assets/index-oDSQuawR.css`](skills/claude-design/scripts/editor/assets/index-oDSQuawR.css) |
 | 74 | ✓ | [`skills/claude-design/scripts/editor/index.html`](skills/claude-design/scripts/editor/index.html) |
 | 75 | ✓ | [`skills/claude-design/scripts/editor/share-ui.js`](skills/claude-design/scripts/editor/share-ui.js) |
@@ -158,8 +158,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 97 | ✓ | [`skills/claude-slides/scripts/editor/artifact-type/reference/google-fonts-reserved.json`](skills/claude-slides/scripts/editor/artifact-type/reference/google-fonts-reserved.json) |
 | 98 | ✓ | [`skills/claude-slides/scripts/editor/assets/anthropicons-fizzy-lake-yNspLiPZ.woff2`](skills/claude-slides/scripts/editor/assets/anthropicons-fizzy-lake-yNspLiPZ.woff2) |
 | 99 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-DooSdFer.css`](skills/claude-slides/scripts/editor/assets/index-DooSdFer.css) |
-| 100 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-DULUou9H.js`](skills/claude-slides/scripts/editor/assets/index-DULUou9H.js) |
-| 101 | ✓ | [`skills/claude-slides/scripts/editor/assets/woff2-decoder-B0JzUtP5.js`](skills/claude-slides/scripts/editor/assets/woff2-decoder-B0JzUtP5.js) |
+| 100 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-ExkfOJag.js`](skills/claude-slides/scripts/editor/assets/index-ExkfOJag.js) |
+| 101 | ✓ | [`skills/claude-slides/scripts/editor/assets/woff2-decoder-DHpUx46X.js`](skills/claude-slides/scripts/editor/assets/woff2-decoder-DHpUx46X.js) |
 | 102 | ✓ | [`skills/claude-slides/scripts/editor/index.html`](skills/claude-slides/scripts/editor/index.html) |
 | 103 | ✓ | [`skills/claude-slides/scripts/editor/node/compiler.cjs`](skills/claude-slides/scripts/editor/node/compiler.cjs) |
 | 104 | ✓ | [`skills/claude-slides/scripts/editor/node/third-party-licenses.txt`](skills/claude-slides/scripts/editor/node/third-party-licenses.txt) |

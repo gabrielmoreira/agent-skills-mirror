@@ -29,11 +29,11 @@
    has room for `Google TV launcher on Android TV 11`, the short one for `Google TV 11`.
    `tests/test_examples.py` checks the file.
 5. Change nothing outside the folder. The tables in `examples/README.md` and `README.nl.md`, the brand grid in
-   `README.md`, `README.nl.md` and `README.de.md`, and the counts (the `TV models` number in the card's alt text)
-   are generated from every `tv.json` by `tools/gen_tables.py`, which a maintainer runs after merging; CI compares
-   them only on `main`.
+   `README.md`, `README.nl.md`, `README.de.md`, `README.uk.md` and `README.tr.md`, and the counts (the
+   `TV models` number in the card's alt text) are generated from every `tv.json` by `tools/gen_tables.py`,
+   which a maintainer runs after merging; CI compares them only on `main`.
    One copy of those counts is outside the generated blocks: the story sentence that shows the card on the same
-   four front pages ("The lists now cover 387 TV models from 103 brands") is prose, so a regeneration moves the
+   five front pages ("The lists now cover 387 TV models from 103 brands") is prose, so a regeneration moves the
    picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
    story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
    to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
@@ -43,7 +43,9 @@
    A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
    compared with what `tools/disable.sh` would send for the list, so a line added or commented out later moves
    the number in the README with it: `tests/test_example_list_count.py` answers
-   `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. Its undo
+   `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. A
+   sentence the page wraps across two lines is still read as one sentence, so a break cannot hide the
+   number. Its undo
    is the other: the restore command a README shows passes the same stock launcher as the list's own Undo line,
    or none where the list passes none, because those two are where an owner looks for the way back and the copy
    that passes a different package leaves the stock home disabled. `tests/test_folder_undo_agrees.py` names each

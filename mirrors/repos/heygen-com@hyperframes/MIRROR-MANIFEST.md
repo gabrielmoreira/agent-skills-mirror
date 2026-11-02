@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns, 353 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns, 354 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 353 |
+| Files         | 354 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -405,15 +405,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 342 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx) |
 | 343 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/smoke.sh`](skills/remotion-to-hyperframes/scripts/tests/smoke.sh) |
 | 344 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
-| 345 | ✓ | [`skills/reverse-any-video/references/match.md`](skills/reverse-any-video/references/match.md) |
-| 346 | ✓ | [`skills/reverse-any-video/references/people.md`](skills/reverse-any-video/references/people.md) |
-| 347 | ✓ | [`skills/reverse-any-video/references/start.md`](skills/reverse-any-video/references/start.md) |
-| 348 | ✓ | [`skills/reverse-any-video/SKILL.md`](skills/reverse-any-video/SKILL.md) |
-| 349 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
-| 350 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
-| 351 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 352 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 353 | → | [`TRIAGE.md`](TRIAGE.md) |
+| 345 | ✓ | [`skills/reverse-any-video/references/animated.md`](skills/reverse-any-video/references/animated.md) |
+| 346 | ✓ | [`skills/reverse-any-video/references/match.md`](skills/reverse-any-video/references/match.md) |
+| 347 | ✓ | [`skills/reverse-any-video/references/people.md`](skills/reverse-any-video/references/people.md) |
+| 348 | ✓ | [`skills/reverse-any-video/references/start.md`](skills/reverse-any-video/references/start.md) |
+| 349 | ✓ | [`skills/reverse-any-video/SKILL.md`](skills/reverse-any-video/SKILL.md) |
+| 350 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
+| 351 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
+| 352 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 353 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 354 | → | [`TRIAGE.md`](TRIAGE.md) |
 
 ---
 

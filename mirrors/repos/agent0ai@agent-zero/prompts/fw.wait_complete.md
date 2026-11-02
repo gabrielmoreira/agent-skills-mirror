@@ -1,1 +1,0 @@
-Wait complete. Reached {{target_time}}.

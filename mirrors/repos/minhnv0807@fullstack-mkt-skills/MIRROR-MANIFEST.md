@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `minhnv0807/fullstack-mkt-skills` — 26 default patterns, 0 followed patterns, 345 file(s) materialized.
+Mirror of `minhnv0807/fullstack-mkt-skills` — 26 default patterns, 0 followed patterns, 359 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `minhnv0807/fullstack-mkt-skills` — 26 default patterns, 0 followed 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 345 |
+| Files         | 359 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -393,17 +393,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 332 | ✓ | [`skills/vi/76-van-hanh-san-tmdt/references/mega-sale-va-voucher.md`](skills/vi/76-van-hanh-san-tmdt/references/mega-sale-va-voucher.md) |
 | 333 | ✓ | [`skills/vi/76-van-hanh-san-tmdt/references/phi-san-tmdt.md`](skills/vi/76-van-hanh-san-tmdt/references/phi-san-tmdt.md) |
 | 334 | ✓ | [`skills/vi/76-van-hanh-san-tmdt/SKILL.md`](skills/vi/76-van-hanh-san-tmdt/SKILL.md) |
-| 335 | ✓ | [`skills/vi/product-marketing-context/SKILL.md`](skills/vi/product-marketing-context/SKILL.md) |
-| 336 | ✓ | [`skills/vi/references/ai-avatar-tools-vn.md`](skills/vi/references/ai-avatar-tools-vn.md) |
-| 337 | ✓ | [`skills/vi/references/ai-video-disclosure-vn.md`](skills/vi/references/ai-video-disclosure-vn.md) |
-| 338 | ✓ | [`skills/vi/references/copy-frameworks-vn.md`](skills/vi/references/copy-frameworks-vn.md) |
-| 339 | ✓ | [`skills/vi/references/export-benchmarks-vn.md`](skills/vi/references/export-benchmarks-vn.md) |
-| 340 | ✓ | [`skills/vi/references/hook-formulas-vn.md`](skills/vi/references/hook-formulas-vn.md) |
-| 341 | ✓ | [`skills/vi/references/mcp-ads-integration.md`](skills/vi/references/mcp-ads-integration.md) |
-| 342 | ✓ | [`skills/vi/references/phap-ly-marketing-vn.md`](skills/vi/references/phap-ly-marketing-vn.md) |
-| 343 | ✓ | [`skills/vi/references/quality-gates-vn.md`](skills/vi/references/quality-gates-vn.md) |
-| 344 | ✓ | [`skills/vi/references/quy-tac-van-hanh.md`](skills/vi/references/quy-tac-van-hanh.md) |
-| 345 | ✓ | [`skills/vi/references/voice-clone-prompts-vn.md`](skills/vi/references/voice-clone-prompts-vn.md) |
+| 335 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/evals/evals.json`](skills/vi/77-kich-ban-sale-chatbot/evals/evals.json) |
+| 336 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/README.md`](skills/vi/77-kich-ban-sale-chatbot/README.md) |
+| 337 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/khai-thac-hoi-thoai.md`](skills/vi/77-kich-ban-sale-chatbot/references/khai-thac-hoi-thoai.md) |
+| 338 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/luat-theo-be-mat.md`](skills/vi/77-kich-ban-sale-chatbot/references/luat-theo-be-mat.md) |
+| 339 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/nap-vao-opa-agent.md`](skills/vi/77-kich-ban-sale-chatbot/references/nap-vao-opa-agent.md) |
+| 340 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/schema/go-nha-la.pack.example.json`](skills/vi/77-kich-ban-sale-chatbot/references/schema/go-nha-la.pack.example.json) |
+| 341 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/schema/sales-playbook.schema.json`](skills/vi/77-kich-ban-sale-chatbot/references/schema/sales-playbook.schema.json) |
+| 342 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/thu-vien-y-dinh.md`](skills/vi/77-kich-ban-sale-chatbot/references/thu-vien-y-dinh.md) |
+| 343 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/references/xu-ly-tu-choi-va-chot-don.md`](skills/vi/77-kich-ban-sale-chatbot/references/xu-ly-tu-choi-va-chot-don.md) |
+| 344 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/SKILL.md`](skills/vi/77-kich-ban-sale-chatbot/SKILL.md) |
+| 345 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/variants/00-chung.md`](skills/vi/77-kich-ban-sale-chatbot/variants/00-chung.md) |
+| 346 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/variants/01-do-go-decor.md`](skills/vi/77-kich-ban-sale-chatbot/variants/01-do-go-decor.md) |
+| 347 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/variants/02-thoi-trang.md`](skills/vi/77-kich-ban-sale-chatbot/variants/02-thoi-trang.md) |
+| 348 | ✓ | [`skills/vi/77-kich-ban-sale-chatbot/variants/03-my-pham-skincare.md`](skills/vi/77-kich-ban-sale-chatbot/variants/03-my-pham-skincare.md) |
+| 349 | ✓ | [`skills/vi/product-marketing-context/SKILL.md`](skills/vi/product-marketing-context/SKILL.md) |
+| 350 | ✓ | [`skills/vi/references/ai-avatar-tools-vn.md`](skills/vi/references/ai-avatar-tools-vn.md) |
+| 351 | ✓ | [`skills/vi/references/ai-video-disclosure-vn.md`](skills/vi/references/ai-video-disclosure-vn.md) |
+| 352 | ✓ | [`skills/vi/references/copy-frameworks-vn.md`](skills/vi/references/copy-frameworks-vn.md) |
+| 353 | ✓ | [`skills/vi/references/export-benchmarks-vn.md`](skills/vi/references/export-benchmarks-vn.md) |
+| 354 | ✓ | [`skills/vi/references/hook-formulas-vn.md`](skills/vi/references/hook-formulas-vn.md) |
+| 355 | ✓ | [`skills/vi/references/mcp-ads-integration.md`](skills/vi/references/mcp-ads-integration.md) |
+| 356 | ✓ | [`skills/vi/references/phap-ly-marketing-vn.md`](skills/vi/references/phap-ly-marketing-vn.md) |
+| 357 | ✓ | [`skills/vi/references/quality-gates-vn.md`](skills/vi/references/quality-gates-vn.md) |
+| 358 | ✓ | [`skills/vi/references/quy-tac-van-hanh.md`](skills/vi/references/quy-tac-van-hanh.md) |
+| 359 | ✓ | [`skills/vi/references/voice-clone-prompts-vn.md`](skills/vi/references/voice-clone-prompts-vn.md) |
 
 ---
 

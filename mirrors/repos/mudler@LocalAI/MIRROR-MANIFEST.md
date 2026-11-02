@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 22 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 22 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 22 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,10 +78,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
 | 17 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
 | 18 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 21 | → | [`.impeccable.md`](.impeccable.md) |
-| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | ✓ | [`addons/office/skills/docx/SKILL.md`](addons/office/skills/docx/SKILL.md) |
+| 20 | ✓ | [`addons/office/skills/pdf/SKILL.md`](addons/office/skills/pdf/SKILL.md) |
+| 21 | ✓ | [`addons/office/skills/pptx/SKILL.md`](addons/office/skills/pptx/SKILL.md) |
+| 22 | ✓ | [`addons/office/skills/xlsx/SKILL.md`](addons/office/skills/xlsx/SKILL.md) |
+| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 25 | ✓ | [`core/services/studio/builtinskills/tree/docx/SKILL.md`](core/services/studio/builtinskills/tree/docx/SKILL.md) |
+| 26 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
+| 27 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
+| 28 | ✓ | [`core/services/studio/builtinskills/tree/pdf/SKILL.md`](core/services/studio/builtinskills/tree/pdf/SKILL.md) |
+| 29 | ✓ | [`core/services/studio/builtinskills/tree/pptx/SKILL.md`](core/services/studio/builtinskills/tree/pptx/SKILL.md) |
+| 30 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
+| 31 | ✓ | [`core/services/studio/builtinskills/tree/xlsx/SKILL.md`](core/services/studio/builtinskills/tree/xlsx/SKILL.md) |
+| 32 | → | [`.impeccable.md`](.impeccable.md) |
+| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

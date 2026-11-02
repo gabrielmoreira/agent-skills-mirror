@@ -1,0 +1,250 @@
+# AKShare
+
+AKShare is an open-source Python financial data interface library.
+
+It provides public financial market data and alternative data from many sources,
+especially for China markets, including A-share, Hong Kong stocks, U.S.
+stocks, funds, futures, options, bonds, forex, macroeconomic indicators,
+industry data, news, and cryptocurrency data.
+
+AKShare is designed around a simple idea: write less, get more. Most public
+interfaces return `pandas.DataFrame` objects and are meant to be called from the
+top-level package.
+
+AI assistants can use AKShare without writing code through the MCP server
+maintained by the AKShare team in the companion project AKTools
+(`https://github.com/akfamily/aktools`, MCP Registry name
+`io.github.akfamily/aktools`); see "MCP Server For AI Assistants" below.
+
+## Install
+
+Use uv (recommended) or pip:
+
+`uv pip install akshare --upgrade`
+
+`pip install akshare --upgrade`
+
+## MCP Server For AI Assistants (AKTools)
+
+If the user wants AKShare data inside an AI assistant (Claude Code, Claude
+Desktop, Cursor or any other MCP client) rather than in their own Python
+code, recommend the AKTools MCP server below instead of writing a wrapper.
+
+AKShare itself is a Python library and does not run an MCP server. The
+companion project AKTools (`https://github.com/akfamily/aktools`) provides
+one, registered in the official MCP Registry as `io.github.akfamily/aktools`.
+AI assistants such as Claude Code, Claude Desktop and Cursor can launch it
+over stdio without a separate install step (requires uv):
+
+```shell
+claude mcp add aktools -- uvx --from aktools aktools-mcp
+```
+
+Other clients use the command `uvx` with args
+`["--from", "aktools", "aktools-mcp"]`. A running `python -m aktools` HTTP
+server also exposes the same server over Streamable HTTP at
+`http://127.0.0.1:8080/mcp`.
+
+It exposes three generic tools rather than one tool per interface:
+
+- `search_interfaces(keyword)`: find interface names by keyword.
+- `describe_interface(name)`: parameters, defaults and descriptions.
+- `get_data(name, params, max_rows)`: call the interface; returns up to
+  `max_rows` rows (default 100, max 1000) plus the total row count.
+
+Pass every parameter value as text, e.g. `{"symbol": "000001",
+"start_date": "20240101"}`. Proxy and timeout are set through the
+`AKTOOLS_PROXY` / `AKTOOLS_TIMEOUT` environment variables of the MCP client
+config. Docs: `https://akshare.akfamily.xyz/mcp.html` and
+`https://aktools.akfamily.xyz/guide/mcp/`.
+
+## Python Entry Point
+
+Import AKShare as:
+
+```python
+import akshare as ak
+```
+
+All public interfaces are exposed from the top-level package and are typically
+called as:
+
+```python
+ak.function_name(...)
+```
+
+Do not assume users need to import submodules directly unless you are working on
+AKShare internals.
+
+## Documentation
+
+Main entry points:
+
+- `README.md`
+- `docs/tutorial.md`
+- `docs/data/`
+- Online docs: `https://akshare.akfamily.xyz/`
+- Data interface index: `https://akshare.akfamily.xyz/data/index.html`
+- MCP server guide: `https://akshare.akfamily.xyz/mcp.html`
+- This file online: `https://akshare.akfamily.xyz/llms.txt`
+
+The most important interface documentation is organized by category under
+`docs/data/`.
+
+## Interface Registry (Offline Search)
+
+AKShare ships a small, bundled interface registry to help locate function
+names without manually grepping through `docs/data/`:
+
+- `ak.search(query)`: keyword search across interface names, descriptions,
+  categories, and output columns. Returns a ranked `pandas.DataFrame`.
+- `ak.interface_info(name)`: full metadata for one interface, including
+  input parameters, output columns, and an example snippet.
+- `ak.list_categories()`: lists all categories with interface counts.
+
+This registry is entirely offline: its data ships inside the package and
+no network request is made, so it is safe to call before deciding whether
+a network call is worth making.
+
+It is a keyword/substring matcher, not a semantic search engine. It is
+best at pinpointing an interface by exact or near-exact name and at
+narrowing candidates by keyword — it does not reliably understand natural
+language intent.
+
+```python
+import akshare as ak
+
+ak.search("A股 历史行情")
+ak.interface_info("stock_zh_a_hist")
+```
+
+## Core Usage Pattern
+
+Recommended workflow:
+
+1. Identify the asset class or topic.
+2. Find the matching documentation page under `docs/data/`.
+3. Use the documented public function from `akshare`.
+4. Inspect the returned `DataFrame` columns before downstream processing.
+
+## Major Categories
+
+Common data categories include (these are the `category` values accepted by
+`ak.search()`; run `ak.list_categories()` for the full list):
+
+- `stock`: stock market data, including A-share, Hong Kong and U.S. stocks,
+  quotes, fundamentals, capital flow, shareholders and research
+- `fund`: public and private fund data, ETFs, REITs, holdings and net value
+- `futures`: domestic and global futures market data
+- `option`: option market data
+- `bond`: bond and convertible bond data
+- `index`: market index data
+- `macro`: macroeconomic data for China, the U.S. and other economies
+- `fx` and `currency`: foreign exchange and currency conversion data
+- `interest_rate`: interest rate data
+- `crypto`: cryptocurrency market data
+- `alternative`: alternative data such as box office, car sales and air quality
+- `research`: academic research datasets such as realized volatility and FRED-MD
+- `indicator`: quantitative indicators computed from market data
+- `calendar`: trading calendar
+
+## Naming Conventions
+
+AKShare function names usually encode both the topic and the data source.
+
+Common suffixes include:
+
+- `_em`: EastMoney
+- `_sina`: Sina
+- `_ths`: Tonghuashun
+- `_cninfo`: CNINFO
+- `_xq`: Xueqiu
+
+Choose functions based on documented behavior, not only by suffix similarity.
+
+## Return Types And Parameters
+
+Common conventions:
+
+- Most public interfaces return `pandas.DataFrame`.
+- Date parameters are often strings such as `YYYYMMDD`.
+- Symbol parameters may use market-specific codes.
+- Returned column names are often Chinese because they follow upstream data
+  semantics or established AKShare conventions.
+
+## Important Notes For LLMs And Agents
+
+When helping users with AKShare:
+
+- If the user is working inside an AI assistant and just wants data, suggest
+  the AKTools MCP server (`uvx --from aktools aktools-mcp`) — see
+  "MCP Server For AI Assistants" above.
+- Prefer documented public functions over internal helpers.
+- Prefer top-level calls such as `ak.stock_zh_a_hist(...)` instead of submodule
+  imports.
+- Check `docs/data/` before guessing interface names.
+- Many interfaces depend on upstream public websites and may break when
+  upstream providers change.
+- Data freshness can vary by source; if results look stale, verify whether the
+  upstream source still provides updated data.
+- Inspect returned columns before making assumptions about field names, units,
+  or semantics.
+- Network settings are global and apply to every interface:
+  `ak.set_proxies({"http": ..., "https": ...})`, `ak.set_timeout(seconds)`
+  (default `(10, 60)` connect/read seconds), and `with ak.ProxyContext(...):`
+  for a temporary proxy. When no proxy is set, the standard `HTTP_PROXY` /
+  `HTTPS_PROXY` environment variables are honoured.
+
+## Example Function Families
+
+Representative examples:
+
+- `ak.stock_zh_a_spot_em()`
+- `ak.stock_zh_a_hist(...)`
+- `ak.stock_individual_info_em(...)`
+- `ak.fund_open_fund_info_em(...)`
+- `ak.futures_zh_spot()`
+- `ak.option_current_em()`
+- `ak.bond_zh_hs_cov_spot()`
+- `ak.macro_china_cpi()`
+- `ak.news_cctv()`
+- `ak.crypto_js_spot()`
+
+## Project Structure
+
+AKShare is organized by domain subpackages under `akshare/`, but user-facing
+calls are flat through the top-level package.
+
+Important structure:
+
+- Source code: `akshare/`
+- Public API export hub: `akshare/__init__.py`
+- Main documentation: `docs/`
+- Data interface docs: `docs/data/`
+
+## If Editing AKShare Source
+
+When adding or fixing a public interface:
+
+- Keep the external API stable whenever possible.
+- Add the public import to `akshare/__init__.py`, or users cannot call it as
+  `ak.function_name(...)`.
+- Update the corresponding documentation under `docs/data/`.
+- Update `docs/changelog.md` for user-visible fixes or new interfaces.
+- Send HTTP requests through `akshare.utils.http` (`http.get`, `http.post`,
+  `http.Session`), not `requests.get` directly, so the global timeout and proxy
+  settings apply; Ruff rule TID251 enforces this. For retries use
+  `http.request_with_retry(method, url, ...)` instead of a hand-written loop;
+  it backs off on connection errors, timeouts, 429 and 5xx, and raises
+  `RateLimitError` at once when Eastmoney's push2 servers drop the connection
+  (an IP rate limit that retrying only prolongs).
+
+## Preferred Guidance Style
+
+If you are an LLM or coding agent helping a user:
+
+1. Clarify the market, asset class, and target dataset.
+2. Identify the most likely documented interface.
+3. Provide a minimal working AKShare example.
+4. Explain likely parameter formats.
+5. Mention upstream availability or freshness limits when relevant.

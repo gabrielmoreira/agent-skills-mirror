@@ -2708,8 +2708,9 @@ operator's own statusline. The captures back the `cursor` input profile.
 | `cursor--working-queued.txt` | Enter in a turn queued the draft: a `┌─ follow-ups` box above the input box with `│ ○ queued note` and `│ enter steer · ↑ select/edit · esc cancel`, and `ctrl+c to stop` at the right end of the `→` row. Labelled `running` |
 | `cursor--ask-question.txt`, `cursor--ask-question-moved.txt` | The agent's question in a `┌` box that replaces the input box, with the pointer on the first and the second option. Labelled `dialog` |
 | `cursor--idle-after-turn.txt` | The turn is over: `→ Add a follow-up` in grey. Labelled `idle` |
+| `cursor--idle-bottom-docked.txt` | **Derived, not captured** (issue 640): `cursor--idle-after-turn.txt` cut after the prompt row, so `→ Add a follow-up` is the last row of the screen with no `▀` rule and no statusline under it, as ceb3 describes a bottom-docked prompt. The profile's open-bottom frame alternate (`idle.frameAlternates`, interior walk) reads it. Replace it with a real capture when one exists. Labelled `idle` |
 | `cursor--permission-shell.txt` | A shell command approval (Run Everything off) that replaces the box: `Run this command?`, `→ Run (once) (y)` and three more options. A probe character and a Backspace typed here changed nothing. Labelled `dialog` |
-| `cursor--after-skip.txt` | Escape on that approval: a box with `→ Tell the agent what to do instead (Enter to send, empty to skip, Esc to cancel)` and no statusline under it. The profile does not list that hint, so the box reads as a draft and a send stops. Labelled `other` |
+| `cursor--after-skip.txt` | Escape on that approval: a box with `→ Tell the agent what to do instead (Enter to send, empty to skip, Esc to cancel)` and no statusline under it. That hint is the box's placeholder in this state (typing replaces it, Enter sends), and the profile lists it in `idle.placeholders.texts`, so the box is free. Labelled `idle` (issue 640) |
 | `cursor--shell-mode-empty.txt`, `cursor--shell-mode-draft.txt` | `!` turned the box into a shell prompt: a yellow `!` and the grey hint `Run a command — e.g., git status`, then `! echo hi`. The hint is not a placeholder of the profile, so an empty shell prompt reads as a draft and a message never goes into it. Labelled `draft` |
 | `cursor--v20261016-idle-after-queued.txt` | 2026.10.16: a send held during a turn went out when the turn ended (`queued note from collie` in the transcript), and the box is empty again. Labelled `idle` |
 
@@ -2881,7 +2882,7 @@ through.
 |---|---|
 | `pi--v130-slash-model-list--w120.txt`, `--w80.txt` | pi 1.3.0, the box holds `/model`, under it `→ model` and `scoped-models`, then the folder and stats rows. Labelled `popup` |
 | `pi--v130-slash-settings-list--w120.txt`, `--w80.txt` | The box holds `/settings`, one entry `→ settings`. Labelled `popup` |
-| `pi--v130-slash-mod-partial--w120.txt` | The box holds `/mod`, the pointer on `model`: the list points at another command. Labelled `dialog` |
+| `pi--v130-slash-mod-partial--w120.txt` | The box holds `/mod`, the pointer on `model`: the list points at another command. Labelled `popup` since issue 638 (pi's `leadOpens`, see the pi fuzzy list section below); `dialog` before |
 | `pi--v130-model-selector-empty--w120.txt` | The selector `/model` opens, drawn between the box's two rules: `Only showing models from configured providers`, a `>` search row, `No matching models` and the key hints. Labelled `dialog` |
 | `pi--v130-settings-screen--w120.txt` | The settings screen `/settings` opens, in the box's place. Labelled `dialog` |
 | `pi--v0871-slash-model-list--w120.txt`, `--w80.txt` | pi 0.87.1, the same `/model` list on a pane that is not full. Labelled `popup` |
@@ -3240,6 +3241,31 @@ typed text's own popup.
 | `omp--v18-6-1-slash-nothere-fuzzy--w120.txt`, `omp--v18-12-6-slash-nothere-fuzzy--w120.txt` | `popup` | `/nothere` typed: nine rows, the pointer on `skills` |
 | `omp--v18-12-6-slash-comment-loop-row--w120.txt` | `popup` | 18.12.6, `//comment` typed in command mode: one row, `❯ ↻ loop`. The 402 notice's key id is zeros |
 | `omp--v18-12-6-stale-list-row-empty-box--w120.txt` | `idle` | 18.12.6 after a cancelled `//comment` (Ctrl+C): the box is empty and the last list row, `❯ ↻ loop`, stays under it. omp 18.6.1 redraws that row away; 18.12.6 keeps it until the next key. `commandList.staleWhenEmpty` leaves it out of the rows under the box that a send compares. The 402 notice's key id is zeros |
+
+## pi fuzzy command list under the box (captured 2026-11-01, pi 1.4.0, issue 638)
+
+Captured from a scratch Herdr session (`collie-canary`, its own server), pi 1.4.0 started with `--approve`
+in a scratch agent folder, 120 columns, 39 rows, read through Collie's own Herdr adapter while the Send
+Protocol ran a `mode=command` send (the read after the text was typed). Rows kept as read, CRLF. pi
+shortens the home folder to `~`, so no user name shows. Herdr types the text as keys, so pi's list opens;
+a tmux bracketed paste does not open it. pi 1.3.0 draws the same lists. pi draws a fuzzy list under the
+box for a text that starts with `/`: a half-typed command lists the commands that match it in part, and
+a command with an argument lists the matching arguments. Enter would run or pick the pointed entry, not
+the typed text. Until issue 638 the pi profile did not name `leadOpens`, so these screens read
+`unreadable`, the send ended `typed_not_submitted (modal_cue)` with the generic detail, and every later
+send on the pane was refused `unconfirmed` until a person pressed Escape in the terminal. With
+`commandList.leadOpens` the list is the typed text's own popup, and the rows of that list no longer
+count as rows under the box, so the probe that closes the list is no moved screen.
+
+| Fixture | State | What it shows |
+| --- | --- | --- |
+| `pi--v140-slash-model-list--w120.txt` | `popup` | `/model` typed: `→ model` and `scoped-models`, then the folder and stats rows. The pointer rests on the typed command, so Enter runs it |
+| `pi--v140-slash-s-fuzzy--w120.txt` | `popup` | `/s` typed: five rows from `→ settings` to `resume` and a `(1/8)` count |
+| `pi--v140-slash-model-arg-list--w120.txt` | `popup` | `/model haiku` typed: the matching models, `→ anthropic/claude-haiku-4.5` first, and a `(1/23)` count |
+
+The two older captures of `/` alone with the whole palette, `pi--v110-slash-palette.txt` and
+`pi--v120-slash-palette-padded.txt`, move from `dialog` to `popup` with the same rule: the box holds the
+person's `/`, and the palette is its own.
 
 ## OMP drafts taller than the box (captured 2026-10-25, omp gang reports 06 and 07, OMP 18.6.1, Herdr rig)
 

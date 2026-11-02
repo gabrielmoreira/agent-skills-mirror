@@ -5,7 +5,8 @@
 (* Claude calls openDiff and waits. The plugin must send exactly one answer *)
 (* that matches what the user did (FILE_SAVED or DIFF_REJECTED), must not   *)
 (* leave a waiting call with nothing that can answer it, and must not throw *)
-(* away a diff the user accepted unless Claude asked for it.                *)
+(* away a diff the user accepted unless Claude asked for it, or the file   *)
+(* or its buffer already holds the accepted text.                           *)
 (*                                                                          *)
 (* Each action is one synchronous run of Neovim's main loop. Code facts     *)
 (* (BOOLEAN constants) are read from the source by check.sh: TRUE means the *)
@@ -29,11 +30,16 @@ CONSTANTS
                            \* which keeps a saved diff that belongs to another client
   CloseEachByName,         \* diff.lua close_active_diffs closes each match through close_diff_by_tab_name
   CloseRechecksFilter,     \* diff.lua close_active_diffs rechecks each entry's filter right before it closes it
+  CloseTakesRejected,      \* diff.lua close_active_diffs also closes an entry a handler rejected since the snapshot
   StopRejectsPending,      \* server/init.lua M.stop closes pending diffs before clearing senders
   StopPendingOnly,         \* diff.lua close_pending_diffs filters status == "pending"
   DisconnectRejects,       \* server/init.lua on_disconnect schedules close_diffs_for_client
   DisconnectPendingOnly,   \* diff.lua close_diffs_for_client filters status == "pending"
   UserCloseAllPendingOnly, \* init.lua :ClaudeCodeCloseAllDiffs calls close_pending_diffs
+  UserCloseKeepsAcceptedText, \* diff.lua close_saved_diffs closes a saved diff only once its file or its buffer
+                              \* holds the accepted text
+  UserCloseTakesRejected,  \* init.lua :ClaudeCodeCloseAllDiffs calls close_rejected_diffs, which filters
+                           \* status == "rejected"
   ClientTagged,            \* tools/init.lua passes the client to openDiff, which records client.id
   ClientIdsUnique,         \* server/client.lua numbers client ids, so a new connection never reuses one
   SetupAnswerReturned,     \* diff.lua open_diff_blocking returns a result that arrives before its yield
@@ -61,15 +67,20 @@ VARIABLES
   serverUp,   \* the WebSocket server runs
   scheduled,  \* clients whose vim.schedule'd disconnect cleanup has not run yet
   savedLost,  \* ghost: a saved diff was torn down while no connected owner could write it
-  staleOwner  \* ghost: calls whose client id now names a later connection
+  staleOwner, \* ghost: calls whose client id now names a later connection
+  rejectedLeft \* ghost: a bulk close left open a diff from its list that a handler rejected,
+               \* or :ClaudeCodeCloseAllDiffs left a rejected diff open
 
 vars == <<phase, reqTab, reqClient, active, sender, answers, early, clientUp, serverUp, scheduled, savedLost,
-          staleOwner>>
+          staleOwner, rejectedLeft>>
 
 (* The parts of the state that one diff operation touches, as a record, so   *)
 (* that a step that closes several diffs can chain the same operators.       *)
+(* kept is not state: it holds the tabs whose file or file buffer holds the  *)
+(* accepted text while :ClaudeCodeCloseAllDiffs runs, and is empty in every   *)
+(* other step.                                                                *)
 W == [phase |-> phase, active |-> active, sender |-> sender, answers |-> answers, early |-> early,
-      savedLost |-> savedLost]
+      savedLost |-> savedLost, rejectedLeft |-> rejectedLeft, kept |-> {}]
 
 SetW(w) ==
   /\ phase' = w.phase
@@ -78,6 +89,7 @@ SetW(w) ==
   /\ answers' = w.answers
   /\ early' = w.early
   /\ savedLost' = w.savedLost
+  /\ rejectedLeft' = w.rejectedLeft
 
 (* diff.lua open_diff_blocking resolution callback. Before the yield it keeps *)
 (* the result for open_diff_blocking to return. After the yield it calls      *)
@@ -103,12 +115,13 @@ Resolve(w, t, outcome) ==
 
 (* diff.lua _cleanup_diff_state: the entry leaves active_diffs. closer is the  *)
 (* Claude client that asked for the close, or None for the user, a disconnect   *)
-(* cleanup, or a server stop. A saved diff is lost unless its own client closes *)
-(* it, or another client does while the owner is still connected to write it.  *)
+(* cleanup, or a server stop. A saved diff is lost unless its file or its      *)
+(* buffer holds the accepted text, its own client closes it, or another client does while the    *)
+(* owner is still connected to write it.                                        *)
 Remove(w, t, closer) ==
   LET e == w.active[t]
       fresh == e # NoDiff /\ e.req \notin staleOwner
-      lost == /\ e # NoDiff /\ e.status = "saved"
+      lost == /\ e # NoDiff /\ e.status = "saved" /\ t \notin w.kept
               /\ ~(fresh /\ closer = reqClient[e.req])
               /\ (closer = None \/ ~(fresh /\ clientUp[reqClient[e.req]]))
   IN [w EXCEPT !.active[t] = NoDiff, !.savedLost = @ \/ lost]
@@ -127,12 +140,19 @@ CloseByName(w, t, closer) ==
 
 (* The filter_fn a bulk close passes to close_active_diffs: pendingOnly keeps   *)
 (* status == "pending", and owner (a client or None) keeps that client's diffs. *)
-Filter(pendingOnly, owner) == [pendingOnly |-> pendingOnly, owner |-> owner]
+(* SavedFilter is close_saved_diffs: status == "saved" and the file or its     *)
+(* buffer holds the accepted text. RejectedFilter is close_rejected_diffs.      *)
+Filter(pendingOnly, owner) ==
+  [pendingOnly |-> pendingOnly, owner |-> owner, savedOnly |-> FALSE, rejectedOnly |-> FALSE]
+SavedFilter == [pendingOnly |-> FALSE, owner |-> None, savedOnly |-> TRUE, rejectedOnly |-> FALSE]
+RejectedFilter == [pendingOnly |-> FALSE, owner |-> None, savedOnly |-> FALSE, rejectedOnly |-> TRUE]
 
 Matches(w, t, f) ==
   /\ w.active[t] # NoDiff
   /\ (w.active[t].status = "pending" \/ ~f.pendingOnly)
   /\ (f.owner = None \/ (ClientTagged /\ reqClient[w.active[t].req] = f.owner))
+  /\ (~f.savedOnly \/ (w.active[t].status = "saved" /\ (t \in w.kept \/ ~UserCloseKeepsAcceptedText)))
+  /\ (~f.rejectedOnly \/ w.active[t].status = "rejected")
 
 (* Assumption, not a code fact: the user has a ClaudeCodeDiffClosed handler    *)
 (* (README "Diff Lifecycle Events") that accepts or denies another open diff,  *)
@@ -147,16 +167,25 @@ AfterClosedEvent(w) ==
 (* diff.lua close_active_diffs: snapshot the matching tab names, then close each *)
 (* in pairs() order, which is unspecified. The result is the set of states the  *)
 (* user's ClaudeCodeDiffClosed handler can leave behind.                       *)
+Rejected(w, t) == w.active[t] # NoDiff /\ w.active[t].status = "rejected"
+
 RECURSIVE CloseEach(_, _, _, _)
 CloseEach(w, S, f, closer) ==
   IF S = {} THEN {w}
   ELSE UNION {
-         LET skip == IF CloseRechecksFilter THEN ~Matches(w, t, f) ELSE w.active[t] = NoDiff
+         LET skip == IF CloseRechecksFilter THEN ~(Matches(w, t, f) \/ (CloseTakesRejected /\ Rejected(w, t)))
+                     ELSE w.active[t] = NoDiff
              closed == IF CloseEachByName THEN CloseByName(w, t, closer) ELSE Remove(w, t, closer)
          IN UNION {CloseEach(v, S \ {t}, f, closer) : v \in IF skip THEN {w} ELSE AfterClosedEvent(closed)}
        : t \in S}
 
-CloseAll(f, closer) == CloseEach(W, {t \in Tabs : Matches(W, t, f)}, f, closer)
+(* The whole bulk close from state w. It records when a diff from its list is *)
+(* still open at the end because a ClaudeCodeDiffClosed handler rejected it.  *)
+BulkClose(w, f, closer) ==
+  LET S == {t \in Tabs : Matches(w, t, f)}
+  IN {[v EXCEPT !.rejectedLeft = @ \/ \E t \in S : Rejected(v, t)] : v \in CloseEach(w, S, f, closer)}
+
+CloseAll(f, closer) == BulkClose(W, f, closer)
 
 Idle == \A r \in Reqs : phase[r] # "setup"
 Open(t) == active[t] # NoDiff
@@ -174,6 +203,7 @@ TypeOK ==
   /\ scheduled \subseteq Clients
   /\ savedLost \in BOOLEAN
   /\ staleOwner \subseteq Reqs
+  /\ rejectedLeft \in BOOLEAN
 
 Init ==
   /\ phase = [r \in Reqs |-> "unsent"]
@@ -188,6 +218,7 @@ Init ==
   /\ scheduled = {}
   /\ savedLost = FALSE
   /\ staleOwner = {}
+  /\ rejectedLeft = FALSE
 
 (* tools/call openDiff -> open_diff_blocking up to the ClaudeCodeDiffOpened event. *)
 (* When the tab_name holds another client's saved diff, open_diff_blocking     *)
@@ -231,7 +262,7 @@ SetupEnds(r) ==
      ELSE /\ phase' = [phase EXCEPT ![r] = "waiting"]
           /\ sender' = [sender EXCEPT ![r] = TRUE]
           /\ UNCHANGED <<answers, early>>
-  /\ UNCHANGED <<reqTab, reqClient, active, clientUp, serverUp, scheduled, savedLost, staleOwner>>
+  /\ UNCHANGED <<reqTab, reqClient, active, clientUp, serverUp, scheduled, savedLost, staleOwner, rejectedLeft>>
 
 (* :w or :ClaudeCodeDiffAccept (BufWriteCmd / accept_current_diff). *)
 UserAccepts(t) ==
@@ -247,11 +278,18 @@ UserRejects(t) ==
   /\ SetW(Resolve(W, t, "rejected"))
   /\ UNCHANGED <<reqTab, reqClient, clientUp, serverUp, scheduled, staleOwner>>
 
-(* :ClaudeCodeCloseAllDiffs *)
+(* :ClaudeCodeCloseAllDiffs: close_pending_diffs, close_rejected_diffs, then  *)
+(* close_saved_diffs. The saved pass first leaves the accepted text in some    *)
+(* files or file buffers (ok), and skips a diff whose file buffer cannot take  *)
+(* it. The command records a rejected diff it leaves open.                     *)
 UserClosesAllDiffs ==
   /\ Idle
-  /\ \E t \in Tabs : Matches(W, t, Filter(UserCloseAllPendingOnly, None))
-  /\ \E v \in CloseAll(Filter(UserCloseAllPendingOnly, None), None) : SetW(v)
+  /\ \E t \in Tabs : Open(t)
+  /\ \E v \in CloseAll(Filter(UserCloseAllPendingOnly, None), None) :
+     \E x \in IF UserCloseTakesRejected THEN BulkClose(v, RejectedFilter, None) ELSE {v}, ok \in SUBSET Tabs :
+       LET handed == [x EXCEPT !.kept = ok]
+       IN \E u \in BulkClose(handed, SavedFilter, None) :
+            SetW([u EXCEPT !.rejectedLeft = @ \/ \E t \in Tabs : Rejected(u, t)])
   /\ UNCHANGED <<reqTab, reqClient, clientUp, serverUp, scheduled, staleOwner>>
 
 (* tools/close_tab.lua, called by client c *)
@@ -272,7 +310,8 @@ ClientDisconnects(c) ==
   /\ Idle /\ serverUp /\ clientUp[c]
   /\ clientUp' = [clientUp EXCEPT ![c] = FALSE]
   /\ scheduled' = IF DisconnectRejects THEN scheduled \cup {c} ELSE scheduled
-  /\ UNCHANGED <<phase, reqTab, reqClient, active, sender, answers, early, serverUp, savedLost, staleOwner>>
+  /\ UNCHANGED <<phase, reqTab, reqClient, active, sender, answers, early, serverUp, savedLost, staleOwner,
+                 rejectedLeft>>
 
 (* Without ClientIdsUnique, a new connection can get the id of a client that  *)
 (* disconnected, and the plugin takes it for the owner of that client's diffs. *)
@@ -280,7 +319,8 @@ ClientIdReused(c) ==
   /\ ~ClientIdsUnique /\ Idle /\ serverUp /\ ~clientUp[c]
   /\ clientUp' = [clientUp EXCEPT ![c] = TRUE]
   /\ staleOwner' = staleOwner \cup {r \in Reqs : reqClient[r] = c}
-  /\ UNCHANGED <<phase, reqTab, reqClient, active, sender, answers, early, serverUp, scheduled, savedLost>>
+  /\ UNCHANGED <<phase, reqTab, reqClient, active, sender, answers, early, serverUp, scheduled, savedLost,
+                 rejectedLeft>>
 
 (* The scheduled close_diffs_for_client runs; its filter reads the table now. *)
 DisconnectCleanupRuns(c) ==
@@ -345,7 +385,14 @@ NoStrandedCall ==
 (* Only a Claude client (close_tab, closeAllDiffTabs, a replacing openDiff) *)
 (* tears down a diff the user accepted, and only the client that owns it  *)
 (* or another one while the owner is still connected to write the file.   *)
+(* The user can too, once the file or its buffer holds the accepted text. *)
 SavedDiffKept == ~savedLost
+
+(* A bulk close leaves open no diff from its list that a ClaudeCodeDiffClosed *)
+(* handler rejected while the loop ran, and :ClaudeCodeCloseAllDiffs leaves no *)
+(* rejected diff open: a rejected diff holds no edits, Claude has its answer,  *)
+(* and the user asked for the close.                                           *)
+NoRejectedLeftover == ~rejectedLeft
 
 (* When a client disconnects, its waiting calls get answered without the *)
 (* user doing anything.                                                 *)

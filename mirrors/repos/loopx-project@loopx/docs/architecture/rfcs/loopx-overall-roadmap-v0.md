@@ -972,6 +972,25 @@ Current status is design proposal; no G1 or default-screen promotion.
 
 ### R3: Semantic Requests and Automatic Return
 
+**Multi-recipient conversation boundary.** One Chat Turn can supply independent
+recipient-specific handoffs through the existing inbox/return owner. Single
+objects remain compatible; arrays retain per-Goal/Agent authorization, replay
+identity, failure and conclusion readback. Partial delivery or one returned
+result cannot certify completion of the whole request. This adds no team
+assignment or scheduler. Qualify cross-Goal partial revocation, restart/replay,
+out-of-order returns and packaged original-conversation cards; live semantic
+routing, installed App and Lark provider delivery remain distinct evidence.
+
+**Interactive lifetime checkpoint.** Ordinary Codex/ACP Chat turns have no
+implicit absolute cutoff while their existing idle/startup checks and Stop
+remain active. Accepted queued input has no default TTL; explicitly requested
+limits, queue capacity, source validation and bounded managed-host segments keep
+their owners. Synthetic long-activity, explicit-limit, idle, queue and service
+configuration tests qualify this slice. Existing installed settings and immutable
+old failures are retained; installed activation and effect-aware recovery of an
+original timed-out request remain separate acceptance, not inferred replay.
+
+
 **Bound-conversation status presentation.** The shared display renderer leads
 with canonical execution/recovery state, project and queue/permission facts;
 the Lark adapter reserves full commands and diagnostics for help, retaining a

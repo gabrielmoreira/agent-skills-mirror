@@ -30,6 +30,14 @@ your user, so the build output is not owned by root.
 | `KEY_DIR` | `/gradle/.android` | Where the debug signing key is kept inside the container |
 | `HOST_KEY_DIR` | (none) | A folder on this computer to take the key from instead, such as `~/.android` |
 
+## On an Apple Silicon Mac
+
+The build fails there in an arm64 Docker VM (Colima on an M-series Mac): `:app:mergeReleaseResources` stops with
+`AAPT2 aapt2-8.5.2-11315950-linux Daemon #0: Daemon startup failed`, because the Linux AAPT2 that the Android Gradle
+plugin downloads is built for x86-64 and the container is arm64. Build natively instead: Homebrew's `openjdk@17`
+and an Android SDK with platform 34 and build-tools 34.0.0, which the install script below finds on its own when
+run without `SKIP_BUILD`. Running the container as x86-64 under emulation was not tried.
+
 ## Install
 
 The launcher's install script builds with the JDK on this computer unless told not to. With the APK built in

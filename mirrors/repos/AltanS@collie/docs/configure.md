@@ -613,7 +613,7 @@ On the New page, switch to **Shell**. The **Command** select then ends with two 
 **Recent** group, which lists the lines in that machine's history, and **Type a command…**. Pick
 **Type a command…** and a text field appears right under the select. Type the line and tap **Start**
 (or the return key, which reads **Go**). The line above **Start** says what runs and where, for
-example "Runs `htop` in ~/projects on bluefin". The worktree switch stays off for a one-off line.
+example "Runs `htop` in ~/projects on desk". The worktree switch stays off for a one-off line.
 
 Before the first run, Collie asks the machine to check the line. The check runs nothing and keeps
 nothing. If the line carries a flag that skips permission prompts, such as
@@ -791,10 +791,22 @@ Collie saves the file under `<state-dir>/uploads` with owner-only permissions an
 absolute path to your draft. The agent reads it from that path, because a terminal cannot take a
 pasted file. Uploads are swept 48 hours after they are written.
 
-A picked or pasted photo opens a sheet with a preview first. **Attach** sends the original file,
-untouched. **Edit** opens the tools Crop, Draw, Circle and Arrow, and a photo you changed goes up as
-a PNG. A tap on a photo's thumbnail in the composer opens the same tools, and the edited photo takes
-its place. A photo the browser cannot show attaches as it is, with no error.
+To mark up a photo before you send it:
+
+1. Pick a photo with the paperclip, or paste one into the message box.
+2. Look at the preview sheet that opens.
+3. Tap **Edit** to open the tools, or tap **Attach** to send the original as it is and stop here.
+4. Use **Crop**, **Draw**, **Circle** or **Arrow** on the photo.
+5. Tap **Undo** or **Redo** to step through your changes, or **Reset** to start over.
+6. Tap **Use this image**.
+
+The photo joins your draft as a thumbnail, and its marker, such as `[Image #1]`, stands in your text.
+A tap on the thumbnail opens the tools again. The edited photo then takes the place of the first one
+under the same number. **Cancel** closes the sheet and attaches nothing.
+
+**Use this image** with no change sends the original, the same as **Attach**. A photo you changed
+goes up as a PNG. A photo the browser cannot show attaches as it is, with no error. A browser with no
+canvas skips the sheet and attaches the photo as it is, and its thumbnail has no tools.
 
 | Setting | Default | What it does |
 | --- | --- | --- |

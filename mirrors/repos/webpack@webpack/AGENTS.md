@@ -124,6 +124,10 @@ A list of module, source or dependency types in `lib/` is silently wrong the day
 - **A feature flag is the same list in disguise.**
 - **Let an unknown type take the safe side**; avoid a list whose `else` does nothing.
 
+### Load webpack through its public API
+
+Code that runs outside webpack's own module graph — tests, examples, tooling, and a minifier the plugin evaluates as source — loads webpack with `require("webpack")`, never `webpack/lib/...`: internal files move and get renamed between releases, and other developers copy the pattern.
+
 ### Source file headers
 
 Every source file in `lib/`, `hot/` and `tooling/` opens with the MIT license header. A **new** file's `Author` line names its actual author (`Author <Name> @<github-handle>`) — never copied from another file.
@@ -208,6 +212,7 @@ Read [docs/performance.md](docs/performance.md) before claiming or measuring a p
 - **Branch** `<type>/<short-description>`, the type picked from the diff and matching the PR's "What kind of change…" answer; never a `claude/`, `bot/`, `ai/` or other tool prefix. Rename before the first push; a task leaves one branch on `origin` and ends with a `Branches on origin:` line.
 - **Commit author** is the requester's GitHub account, never a bot; no `Co-authored-by` trailers; ask when the identity is unknown.
 - **Open from a branch not behind `main`**: rebase, never merge `main` in.
+- **Stack a PR on the open PR it depends on**: when it needs that PR or changes the same code, branch from that PR's branch and use it as the base; branch from `main` only when the two are unrelated and merge cleanly in either order. Two PRs each green against `main` can still turn `main` red together ([details](docs/pull-requests.md#stacked-prs)).
 - **PR body**: paste the org template yourself with every section, bold labels spelled exactly and `n/a` where one doesn't apply, including **Use of AI** and a **What kind of change…** answer matching the branch prefix. Write it briefly and simply; for a fix or improvement, show a real before/after (code, output, size, memory or CPU) under **Summary**.
 - **Subscribe to every PR you open** and unsubscribe once CI is green and every automated review is handled, or the requester says stop; a PR waiting only on human review needs no live session.
 - **Never post to GitHub on your own initiative** — comments, review replies, PR body edits after opening (except installing the template over an auto-created body), replies to bots other than CodeRabbit. Bring the finding and your draft reply into the session.
@@ -292,7 +297,7 @@ Every process starts cold, and loading code is most of that start, so pay only f
 - **Load on first use**: reach a module that some inputs or options never need through one lazy accessor, not an import at the top of the file.
 - **Keep cheap things light**: constants and option helpers callers need live apart from the heavy code that uses them.
 - **Turned-off work costs nothing**: build tables, regexes and closures on first use, not at load or construction.
-- **Prove it by counting** which modules a fresh process loads, not by timing it.
+- **Prove it by counting** which modules a fresh process loads, not by timing it: CI's Module Loading report compares the counts with the base for each way webpack is used, and `yarn lint:module-loading` prints them and fails when a `lib/` file another package loads reaches `lib/index.js` (hand the package a function, not a path) or when using one language's syntax or minifier loads `lib/Compiler.js`.
 
 ### Keep instance shapes stable
 

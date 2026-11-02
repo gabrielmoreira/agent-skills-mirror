@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,24 +59,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`portable/skills-cn/bilibili-helper/SKILL.md`](portable/skills-cn/bilibili-helper/SKILL.md) |
-| 3 | ✓ | [`portable/skills-cn/china-search/SKILL.md`](portable/skills-cn/china-search/SKILL.md) |
-| 4 | ✓ | [`portable/skills-cn/china-translate/SKILL.md`](portable/skills-cn/china-translate/SKILL.md) |
-| 5 | ✓ | [`portable/skills-cn/china-weather/SKILL.md`](portable/skills-cn/china-weather/SKILL.md) |
-| 6 | ✓ | [`portable/skills-cn/deepseek-helper/SKILL.md`](portable/skills-cn/deepseek-helper/SKILL.md) |
-| 7 | ✓ | [`portable/skills-cn/douyin-script/SKILL.md`](portable/skills-cn/douyin-script/SKILL.md) |
-| 8 | ✓ | [`portable/skills-cn/excel-helper/SKILL.md`](portable/skills-cn/excel-helper/SKILL.md) |
-| 9 | ✓ | [`portable/skills-cn/image-compress/SKILL.md`](portable/skills-cn/image-compress/SKILL.md) |
-| 10 | ✓ | [`portable/skills-cn/pdf-toolkit/SKILL.md`](portable/skills-cn/pdf-toolkit/SKILL.md) |
-| 11 | ✓ | [`portable/skills-cn/ppt-designer/SKILL.md`](portable/skills-cn/ppt-designer/SKILL.md) |
-| 12 | ✓ | [`portable/skills-cn/qrcode-maker/SKILL.md`](portable/skills-cn/qrcode-maker/SKILL.md) |
-| 13 | ✓ | [`portable/skills-cn/web-to-markdown/SKILL.md`](portable/skills-cn/web-to-markdown/SKILL.md) |
-| 14 | ✓ | [`portable/skills-cn/wechat-article/SKILL.md`](portable/skills-cn/wechat-article/SKILL.md) |
-| 15 | ✓ | [`portable/skills-cn/weibo-poster/SKILL.md`](portable/skills-cn/weibo-poster/SKILL.md) |
-| 16 | ✓ | [`portable/skills-cn/word-writer/SKILL.md`](portable/skills-cn/word-writer/SKILL.md) |
-| 17 | ✓ | [`portable/skills-cn/xiaohongshu-writer/SKILL.md`](portable/skills-cn/xiaohongshu-writer/SKILL.md) |
-| 18 | ✓ | [`portable/skills-cn/zhihu-writer/SKILL.md`](portable/skills-cn/zhihu-writer/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`portable/skills-cn/bilibili-helper/SKILL.md`](portable/skills-cn/bilibili-helper/SKILL.md) |
+| 4 | ✓ | [`portable/skills-cn/china-search/SKILL.md`](portable/skills-cn/china-search/SKILL.md) |
+| 5 | ✓ | [`portable/skills-cn/china-translate/SKILL.md`](portable/skills-cn/china-translate/SKILL.md) |
+| 6 | ✓ | [`portable/skills-cn/china-weather/SKILL.md`](portable/skills-cn/china-weather/SKILL.md) |
+| 7 | ✓ | [`portable/skills-cn/deepseek-helper/SKILL.md`](portable/skills-cn/deepseek-helper/SKILL.md) |
+| 8 | ✓ | [`portable/skills-cn/douyin-script/SKILL.md`](portable/skills-cn/douyin-script/SKILL.md) |
+| 9 | ✓ | [`portable/skills-cn/excel-helper/SKILL.md`](portable/skills-cn/excel-helper/SKILL.md) |
+| 10 | ✓ | [`portable/skills-cn/image-compress/SKILL.md`](portable/skills-cn/image-compress/SKILL.md) |
+| 11 | ✓ | [`portable/skills-cn/pdf-toolkit/SKILL.md`](portable/skills-cn/pdf-toolkit/SKILL.md) |
+| 12 | ✓ | [`portable/skills-cn/ppt-designer/SKILL.md`](portable/skills-cn/ppt-designer/SKILL.md) |
+| 13 | ✓ | [`portable/skills-cn/qrcode-maker/SKILL.md`](portable/skills-cn/qrcode-maker/SKILL.md) |
+| 14 | ✓ | [`portable/skills-cn/web-to-markdown/SKILL.md`](portable/skills-cn/web-to-markdown/SKILL.md) |
+| 15 | ✓ | [`portable/skills-cn/wechat-article/SKILL.md`](portable/skills-cn/wechat-article/SKILL.md) |
+| 16 | ✓ | [`portable/skills-cn/weibo-poster/SKILL.md`](portable/skills-cn/weibo-poster/SKILL.md) |
+| 17 | ✓ | [`portable/skills-cn/word-writer/SKILL.md`](portable/skills-cn/word-writer/SKILL.md) |
+| 18 | ✓ | [`portable/skills-cn/xiaohongshu-writer/SKILL.md`](portable/skills-cn/xiaohongshu-writer/SKILL.md) |
+| 19 | ✓ | [`portable/skills-cn/zhihu-writer/SKILL.md`](portable/skills-cn/zhihu-writer/SKILL.md) |
 
 ---
 

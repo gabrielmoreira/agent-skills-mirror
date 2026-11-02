@@ -35,7 +35,9 @@ import {
 } from "./function-cos-upload.js";
 import {
   buildFunctionUpdatingPayload,
+  functionUpdatingRuntime,
   getErrorMessage,
+  isFunctionBusyStatus,
   isFunctionUpdatingError,
   waitUntilFunctionActive,
 } from "./function-updating.js";
@@ -104,6 +106,7 @@ function assertFunctionUploadTarget(input: {
 
 export const SUPPORTED_RUNTIMES = {
   nodejs: [
+    "Nodejs22.21",
     "Nodejs20.19",
     "Nodejs18.15",
     "Nodejs16.13",
@@ -940,6 +943,254 @@ async function waitForManageWriteOrGuide(
     status: waitResult.status,
     waitedAttempts: waitResult.attempts,
     timedOut: waitResult.timedOut,
+  });
+}
+
+/** SCF `StatusReasons` 单项。 */
+export type FunctionStatusReason = {
+  ErrorCode?: string;
+  ErrorMessage?: string;
+};
+
+export type FunctionConfigUpdateInput = {
+  envId: string;
+  functionName: string;
+  /** 必须是**合并后的全量**变量表：SCF 的 Environment 是整份替换，不是增量。 */
+  envVariables: Record<string, string | number | boolean>;
+  timeout?: number;
+  vpc?: { vpcId?: string; subnetId?: string };
+};
+
+/**
+ * 构造「只改配置、不碰日志绑定」的 `UpdateFunctionConfiguration` 请求体。
+ *
+ * 刻意不写 `ClsLogsetId` / `ClsTopicId` / `Role`：SCF 对未传字段保留原值，
+ * 日志绑定与运行角色因此原样不动。
+ *
+ * 为什么不用 SDK 的 `updateFunctionConfig`：@cloudbase/manager-node 5.8.8 会在
+ * 那里无条件注入环境级的 CLS 对（`lib/function/index.js:761-768`，值取自
+ * `getClsServiceConfig()`）。当函数当前的运行角色无权使用那个日志目的地时，
+ * 即使调用方只想改一个环境变量，也会收到
+ * `InvalidParameter.Cls: ClsLogSetId & ClsTopicId not matched`。
+ */
+export function buildFunctionConfigUpdateParams(
+  input: FunctionConfigUpdateInput,
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
+    EnvId: input.envId,
+    Namespace: input.envId,
+    FunctionName: input.functionName,
+  };
+
+  const keys = Object.keys(input.envVariables ?? {});
+  if (keys.length > 0) {
+    params.Environment = {
+      Variables: keys.map((key) => ({ Key: key, Value: input.envVariables[key] })),
+    };
+  }
+
+  if (typeof input.timeout === "number") {
+    params.Timeout = input.timeout;
+  }
+
+  const vpcId = input.vpc?.vpcId;
+  const subnetId = input.vpc?.subnetId;
+  if (vpcId && subnetId) {
+    params.VpcConfig = { VpcId: vpcId, SubnetId: subnetId };
+  }
+
+  return params;
+}
+
+type ScfRequestCapable = {
+  scfService?: {
+    request?: (action: string, params: Record<string, unknown>) => Promise<unknown>;
+  };
+};
+
+/**
+ * 发送 `UpdateFunctionConfiguration`。优先直调底层 SCF service（请求体不含 CLS），
+ * 拿不到 `scfService` 时退回 manager SDK —— 那条路会重新带上环境级 CLS 对，
+ * 属于降级路径，会打 debug 日志。
+ */
+export async function applyFunctionConfigUpdate(
+  manager: unknown,
+  params: Record<string, unknown>,
+): Promise<unknown> {
+  const fnService = (manager as { functions?: ScfRequestCapable & Record<string, unknown> })
+    ?.functions;
+  const scfService = fnService?.scfService;
+  if (typeof scfService?.request === "function") {
+    return scfService.request("UpdateFunctionConfiguration", params);
+  }
+
+  debug(
+    "[updateFunctionConfig] scfService 不可用，退回 manager SDK（会带上环境级 CLS 对）",
+  );
+
+  const environment = params.Environment as { Variables?: IEnvVariable[] } | undefined;
+  const envVariables = (environment?.Variables ?? []).reduce(
+    (acc, curr) => {
+      acc[curr.Key] = curr.Value;
+      return acc;
+    },
+    {} as Record<string, string | number | boolean>,
+  );
+  const vpcConfig = params.VpcConfig as { VpcId?: string; SubnetId?: string } | undefined;
+
+  return (
+    fnService as unknown as {
+      updateFunctionConfig: (arg: Record<string, unknown>) => Promise<unknown>;
+    }
+  ).updateFunctionConfig({
+    name: params.FunctionName,
+    envVariables,
+    timeout: params.Timeout,
+    vpc: vpcConfig
+      ? { vpcId: vpcConfig.VpcId, subnetId: vpcConfig.SubnetId }
+      : undefined,
+  });
+}
+
+export const FUNCTION_UPDATE_OUTCOME_WAIT = {
+  initialDelayMs: 1500,
+  intervalMs: 1500,
+  maxAttempts: 5,
+} as const;
+
+export type FunctionUpdateOutcome =
+  | { state: "ok"; status?: string }
+  | { state: "failed"; status: string; reasons: FunctionStatusReason[] }
+  | { state: "pending"; status?: string };
+
+/**
+ * 更新配置后的状态复核。
+ *
+ * SCF 的 `UpdateFunctionConfiguration` 只同步受理，真实结果写在异步的
+ * `Status` / `StatusReasons` 里。SDK 的 `waitFunctionActive` 只认 `CreateFailed`，
+ * `UpdateFailed` 会落到它的 `resolve()` 分支，所以不补这一步的话，工具永远报成功。
+ */
+export async function inspectFunctionUpdateOutcome(
+  getDetail: () => Promise<
+    { Status?: string; StatusReasons?: FunctionStatusReason[] } | null | undefined
+  >,
+  options: {
+    initialDelayMs?: number;
+    intervalMs?: number;
+    maxAttempts?: number;
+    sleep?: (ms: number) => Promise<void>;
+  } = {},
+): Promise<FunctionUpdateOutcome> {
+  const initialDelayMs =
+    options.initialDelayMs ?? FUNCTION_UPDATE_OUTCOME_WAIT.initialDelayMs;
+  const intervalMs = options.intervalMs ?? FUNCTION_UPDATE_OUTCOME_WAIT.intervalMs;
+  const maxAttempts = options.maxAttempts ?? FUNCTION_UPDATE_OUTCOME_WAIT.maxAttempts;
+  const sleep = options.sleep ?? ((ms: number) => functionUpdatingRuntime.sleep(ms));
+
+  if (initialDelayMs > 0) {
+    await sleep(initialDelayMs);
+  }
+
+  let status: string | undefined;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const detail = await getDetail();
+    status = typeof detail?.Status === "string" ? detail.Status : undefined;
+
+    if (status === "UpdateFailed" || status === "CreateFailed") {
+      return {
+        state: "failed",
+        status,
+        reasons: Array.isArray(detail?.StatusReasons) ? detail.StatusReasons : [],
+      };
+    }
+    if (!isFunctionBusyStatus(status)) {
+      return { state: "ok", status };
+    }
+    if (attempt < maxAttempts - 1) {
+      await sleep(intervalMs);
+    }
+  }
+
+  return { state: "pending", status };
+}
+
+/**
+ * 把 `inspectFunctionUpdateOutcome` 的失败结果转成可读错误。
+ * `kind` 只影响文案（配置更新 / 代码更新），两种动作的失败形态是一样的。
+ */
+export function buildFunctionUpdateFailure(options: {
+  kind: "config" | "code";
+  functionName: string;
+  status: string;
+  reasons: FunctionStatusReason[];
+}): Error {
+  const details = options.reasons
+    .map((item) => `[${item.ErrorCode ?? "Unknown"}] ${item.ErrorMessage ?? ""}`.trim())
+    .join("；");
+  const params = {
+    fnName: options.functionName,
+    status: options.status,
+    details,
+  };
+
+  if (options.kind === "code") {
+    return new Error(
+      details
+        ? t("functions.codeUpdateFailed", params)
+        : t("functions.codeUpdateFailedNoReason", params),
+    );
+  }
+
+  return new Error(
+    details
+      ? t("functions.updateFailed", params)
+      : t("functions.updateFailedNoReason", params),
+  );
+}
+
+/** Seconds spent in inspectFunctionUpdateOutcome with the default schedule. */
+export function functionUpdateWaitedSeconds(): number {
+  return (
+    FUNCTION_UPDATE_OUTCOME_WAIT.initialDelayMs +
+    FUNCTION_UPDATE_OUTCOME_WAIT.intervalMs *
+      (FUNCTION_UPDATE_OUTCOME_WAIT.maxAttempts - 1)
+  ) / 1000;
+}
+
+/**
+ * dryRun and wait only apply to image build deployment. Other actions still
+ * run; the caller gets a warning instead of a silent ignore.
+ */
+export function functionUpdateMisuseWarnings(input: {
+  dryRun?: boolean;
+  wait?: boolean;
+}): string[] {
+  const warnings: string[] = [];
+  if (input.dryRun === true) {
+    warnings.push(t("functions.dryRunNotApplicable"));
+  }
+  if (input.wait !== undefined) {
+    warnings.push(t("functions.waitNotApplicable"));
+  }
+  return warnings;
+}
+
+/**
+ * A code update that is still Updating is not done. Keep the settled copy only
+ * when the outcome is ok; pending uses the shared still-running message.
+ */
+function codeUpdateProgressMessage(
+  functionName: string,
+  outcome: FunctionUpdateOutcome,
+  settledMessage: string,
+): string {
+  if (outcome.state !== "pending") {
+    return settledMessage;
+  }
+  return t("functions.codeUpdateStillRunning", {
+    fnName: functionName,
+    seconds: functionUpdateWaitedSeconds(),
+    status: outcome.status ?? "Updating",
   });
 }
 
@@ -2580,18 +2831,36 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
             error,
           );
         }
+        const cosOutcome = await inspectFunctionUpdateOutcome(() =>
+          cloudbase.functions.getFunctionDetail(input.functionName as string),
+        );
+        if (cosOutcome.state === "failed") {
+          throw buildFunctionUpdateFailure({
+            kind: "code",
+            functionName: input.functionName,
+            status: cosOutcome.status,
+            reasons: cosOutcome.reasons,
+          });
+        }
+
         logCloudBaseResult(server.logger, cosUpdateResult);
+        const cosWarnings = functionUpdateMisuseWarnings(input);
         return buildEnvelope(
           {
             action: input.action,
             functionName: input.functionName,
+            status: cosOutcome.status,
             deployMode: "cos",
             cosBucketName,
             cosBucketRegion,
             cosObjectName: input.code.cosObjectName,
             raw: cosUpdateResult as Record<string, unknown>,
           },
-          t("functions.cosUpdatedMessage", { fnName: input.functionName }),
+          codeUpdateProgressMessage(
+            input.functionName,
+            cosOutcome,
+            t("functions.cosUpdatedMessage", { fnName: input.functionName }),
+          ),
           [
             {
               tool: "queryFunctions",
@@ -2599,6 +2868,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
               reason: t("functions.reason.confirmConfig"),
             },
           ],
+          cosWarnings,
         );
       }
 
@@ -2638,6 +2908,45 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
         );
       }
 
+      // 代码更新同样是异步的：接口受理后真实结果写在 Status / StatusReasons 里。
+      const codeOutcome = await inspectFunctionUpdateOutcome(() =>
+        cloudbase.functions.getFunctionDetail(input.functionName as string),
+      );
+      if (codeOutcome.state === "failed") {
+        throw buildFunctionUpdateFailure({
+          kind: "code",
+          functionName: input.functionName,
+          status: codeOutcome.status,
+          reasons: codeOutcome.reasons,
+        });
+      }
+
+      const codeWarnings = functionUpdateMisuseWarnings(input);
+      if (codeOutcome.state === "pending") {
+        logCloudBaseResult(server.logger, result);
+        return buildEnvelope(
+          {
+            action: input.action,
+            functionName: input.functionName,
+            status: codeOutcome.status,
+            raw: result as Record<string, unknown>,
+          },
+          codeUpdateProgressMessage(
+            input.functionName,
+            codeOutcome,
+            t("functions.updatedCode", { fnName: input.functionName }),
+          ),
+          [
+            {
+              tool: "queryFunctions",
+              action: "getFunctionDetail",
+              reason: t("functions.reason.latestConfig"),
+            },
+          ],
+          codeWarnings,
+        );
+      }
+
       logCloudBaseResult(server.logger, result);
       const envId = cloudBaseOptions?.envId ?? await getEnvId(cloudBaseOptions);
       const gatewayAccess = await resolveGatewayAccessUrls({
@@ -2656,6 +2965,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
         {
           action: input.action,
           functionName: input.functionName,
+          status: codeOutcome.status,
           ...(gatewayAccess.accessUrl ? { accessUrl: gatewayAccess.accessUrl } : {}),
           ...(gatewayAccess.accessUrls.length > 0
             ? { accessUrls: gatewayAccess.accessUrls }
@@ -2665,7 +2975,11 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
             : {}),
           raw: result as Record<string, unknown>,
         },
-        t("functions.updatedCode", { fnName: input.functionName }),
+        codeUpdateProgressMessage(
+          input.functionName,
+          codeOutcome,
+          t("functions.updatedCode", { fnName: input.functionName }),
+        ),
         [
           {
             tool: "queryFunctions",
@@ -2673,6 +2987,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
             reason: t("functions.reason.latestConfig"),
           },
         ],
+        codeWarnings,
       );
     }
     case "updateFunctionConfig": {
@@ -2710,42 +3025,90 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
             }
           : undefined;
 
+      const mergedVariables = Object.assign(
+        {},
+        (functionDetail.Environment?.Variables || []).reduce(
+          (
+            acc: Record<string, string | number | boolean>,
+            curr: IEnvVariable,
+          ) => {
+            acc[curr.Key] = curr.Value;
+            return acc;
+          },
+          {},
+        ),
+        input.envVariables ?? {},
+      );
+
+      const envId = cloudBaseOptions?.envId ?? (await getEnvId(cloudBaseOptions));
+
       try {
-        const result = await cloudbase.functions.updateFunctionConfig({
-          name: input.functionName,
-          envVariables: Object.assign(
-            {},
-            (functionDetail.Environment?.Variables || []).reduce(
-              (
-                acc: Record<string, string | number | boolean>,
-                curr: IEnvVariable,
-              ) => {
-                acc[curr.Key] = curr.Value;
-                return acc;
-              },
-              {},
-            ),
-            input.envVariables ?? {},
-          ),
-          timeout: input.timeout ?? functionDetail.Timeout,
-          vpc: Object.assign({}, currentVpc, input.vpc ?? {}),
-        });
+        // 只提交环境变量 / 超时 / VPC；不提交 CLS 与 Role，SCF 保留原值。
+        const result = await applyFunctionConfigUpdate(
+          cloudbase,
+          buildFunctionConfigUpdateParams({
+            envId,
+            functionName: input.functionName,
+            envVariables: mergedVariables,
+            timeout: input.timeout ?? functionDetail.Timeout,
+            vpc: Object.assign({}, currentVpc, input.vpc ?? {}),
+          }),
+        );
+
+        const outcome = await inspectFunctionUpdateOutcome(() =>
+          cloudbase.functions.getFunctionDetail(input.functionName as string),
+        );
+
+        if (outcome.state === "failed") {
+          throw buildFunctionUpdateFailure({
+            kind: "config",
+            functionName: input.functionName,
+            status: outcome.status,
+            reasons: outcome.reasons,
+          });
+        }
+
+        const misuseWarnings = functionUpdateMisuseWarnings(input);
 
         logCloudBaseResult(server.logger, result);
+
+        const nextActions = [
+          {
+            tool: "queryFunctions",
+            action: "getFunctionDetail",
+            reason: t("functions.reason.confirmConfigChange"),
+          },
+        ];
+
+        if (outcome.state === "pending") {
+          const waitedSeconds = functionUpdateWaitedSeconds();
+          return buildEnvelope(
+            {
+              action: input.action,
+              functionName: input.functionName,
+              status: outcome.status,
+              raw: result,
+            },
+            t("functions.updateStillRunning", {
+              fnName: input.functionName,
+              seconds: waitedSeconds,
+              status: outcome.status ?? "Updating",
+            }),
+            nextActions,
+            misuseWarnings,
+          );
+        }
+
         return buildEnvelope(
           {
             action: input.action,
             functionName: input.functionName,
+            status: outcome.status,
             raw: result,
           },
-          t("functions.updatedConfig", { fnName: input.functionName }),
-          [
-            {
-              tool: "queryFunctions",
-              action: "getFunctionDetail",
-              reason: t("functions.reason.confirmConfigChange"),
-            },
-          ],
+          t("functions.updatedConfigPreservingLogs", { fnName: input.functionName }),
+          nextActions,
+          misuseWarnings,
         );
       } catch (error) {
         if (isFunctionUpdatingError(error)) {

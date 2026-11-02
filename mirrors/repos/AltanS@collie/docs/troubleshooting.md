@@ -10,7 +10,7 @@ reboot** · **a pane is stuck narrow** · **Collie refuses to open a tmux window
 **an update started from the phone stays at staging** · **a phone update on macOS leaves Collie
 unloaded** · **on macOS, `collie status` says "loaded, not running"** · **a pane shows no prompt-cache chip** · **a Kiro pane's History opens empty** · **a pane has no Chat or History** · **`hc-socket` is red in `collie doctor`** · **the phone shows the Herdr TUI's panes, not herdr-app's** · **a new Codex pane says it has no history
 yet** · **the phone says Collie cannot read a screen the agent is not showing** · **sending failed 3 times
-and the phone offers a report** · **something looks wrong on a Herdr core (`herdr-core`) pane** ·
+and the phone offers a report** · **a send is refused and `⌁` shows in the box later** · **something looks wrong on a Herdr core (`herdr-core`) pane** ·
 **an agent is greyed
 out on the New page** · **Start says there is no folder, or says it could not confirm** ·
 **walky talky: send is refused, "run this inside a pane"** · **walky talky: the message sits in the
@@ -238,6 +238,8 @@ under your own GitHub account, and **Copy report** copies the same text. Tap **A
 first to find an issue with the same signature line. The pane menu and **Settings → System** open
 the same sheet at any time. The cross closes the card on that pane until a send works again. A
 crew member's pane does not offer a report yet; use the steps above.
+
+**A send is refused, and `⌁` shows in the box a few seconds later.** The agent was busy and showed the keys Collie typed late. Before Collie types a message, it types one probe character (`⌁`) and looks for it in the box. When the agent is not in a turn and the character does not show at once, Collie looks twice more over about 3 seconds. Claude Code with a subagent running (the agents footer under the box, `● main` and `◯ general-purpose`) can take longer than that, so the send is refused with "the probe character did not show in the box", and the character shows later. A send after that finds only those characters in the box. If the agent is still slow, the refusal says that the agent showed the keys late and to wait. Wait until the agent shows what you type at the desk without delay, then send again: Collie takes its own characters out of the box first, and then types your message. Nothing you typed is lost, and no Enter was pressed.
 
 **An update started from the phone stays at staging.** On Collie up to 1.6.0, an update tapped on
 the phone could stage the new version and then stop: the runner that performs the swap was never

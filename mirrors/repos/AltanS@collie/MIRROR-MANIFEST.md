@@ -108,6 +108,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 108 followed patterns, 186 fi
 - `docs/security.md`
 - `docs/install.md`
 - `docs/claude-code-on-your-phone.md`
+- `docs/walky-talky.md`
 - `docs/sessions.md`
 - `docs/multiplexers.md`
 - `docs/durable-agents.md`
@@ -123,7 +124,6 @@ Mirror of `AltanS/collie` — 26 default patterns, 108 followed patterns, 186 fi
 - `docs/deployment.md`
 - `docs/commands.md`
 - `docs/crew.md`
-- `docs/walky-talky.md`
 - `docs/voice-and-push.md`
 - `docs/upgrading.md`
 - `docs/troubleshooting.md`

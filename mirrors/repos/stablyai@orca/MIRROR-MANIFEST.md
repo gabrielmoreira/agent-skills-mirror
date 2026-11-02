@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 21 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 21 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,11 +51,11 @@ Mirror of `stablyai/orca` — 26 default patterns, 5 followed patterns, 21 file(
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/agents-md-refs/test-antipatterns.md`
 - `docs/STYLEGUIDE.md`
 - `docs/agents-md-refs/component-fixtures.md`
 - `docs/agents-md-refs/cross-platform-support.md`
 - `docs/agents-md-refs/git-workflow.md`
-- `docs/agents-md-refs/test-antipatterns.md`
 
 ## File Index
 
@@ -75,15 +75,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/orca-jira/SKILL.md`](skills/orca-jira/SKILL.md) |
 | 11 | ✓ | [`skills/orca-linear/SKILL.md`](skills/orca-linear/SKILL.md) |
 | 12 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
-| 13 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
-| 14 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
-| 15 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 16 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 17 | → | [`docs/agents-md-refs/component-fixtures.md`](docs/agents-md-refs/component-fixtures.md) |
-| 18 | → | [`docs/agents-md-refs/cross-platform-support.md`](docs/agents-md-refs/cross-platform-support.md) |
-| 19 | → | [`docs/agents-md-refs/git-workflow.md`](docs/agents-md-refs/git-workflow.md) |
-| 20 | → | [`docs/agents-md-refs/test-antipatterns.md`](docs/agents-md-refs/test-antipatterns.md) |
-| 21 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 13 | ✓ | [`skills/orca-plugin-authoring/SKILL.md`](skills/orca-plugin-authoring/SKILL.md) |
+| 14 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
+| 15 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
+| 16 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 17 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
+| 18 | → | [`docs/agents-md-refs/component-fixtures.md`](docs/agents-md-refs/component-fixtures.md) |
+| 19 | → | [`docs/agents-md-refs/cross-platform-support.md`](docs/agents-md-refs/cross-platform-support.md) |
+| 20 | → | [`docs/agents-md-refs/git-workflow.md`](docs/agents-md-refs/git-workflow.md) |
+| 21 | → | [`docs/agents-md-refs/test-antipatterns.md`](docs/agents-md-refs/test-antipatterns.md) |
+| 22 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

@@ -253,11 +253,12 @@ handled; none of them holds a case red:
 - **A plain mirror.** The core hands out text with no colour and no SGR attribute, so a reader that
   keys on a dim or inverse cell sees none. Collie reads the text shapes instead (`HC_API.md`, "What
   Collie handles now").
-- **The key hold.** The core answers a key about 3 s after a raw write. The Send Protocol's probe and S1
-  wait it out, so a send takes longer: about 6.4 s on pi, two holds (the probe's write and Backspace,
-  then the text and Enter), against well under a second on Herdr (measured 2026-10-31). The Load older
-  case seeds 52 sends, so on the core it gets 12 minutes instead of the leg's 6 (`CORE_LOAD_OLDER_MS`
-  in `others.spec.ts`).
+- **The key hold.** The core answers a named key about 3 s after a raw write. Collie types an unmodified
+  Enter, Backspace and Tab as raw input, which the core takes at once, so a Claude send pays no hold.
+  A pi or omp send pays one hold, about 3 s, for its `ctrl+q` submit, against well under a second on
+  Herdr (the 6.4 s and two holds measured 2026-10-31 were before raw Enter and Backspace). The Load
+  older case seeds 52 sends, so on the core it gets 12 minutes instead of the leg's 6
+  (`CORE_LOAD_OLDER_MS` in `others.spec.ts`).
 - **A tall screen.** A core terminal with no viewer attached is 200 by 120. A read without
   `purpose=older` is the screen alone, cut to its last `lines` rows, and pi keeps its editor at the foot
   of the screen and draws the conversation from the top, with blank rows between. So a check that reads
@@ -277,7 +278,7 @@ handled; none of them holds a case red:
   forwarded pane write 15 s (`WRITE_BUDGET_MS`), so a crew case that reads or replies to the member's pi
   on the core gets its answer (M79 spec 04).
 - **pi answers before Claude's last turn ends.** In crew case 13 a send from Claude to a pi on the core
-  costs Claude's `collie walky send` the core's key hold and slow reads, so pi's whole reply (three
+  costs Claude's `collie walky send` slow reads (a one-line send pays no key hold since raw Enter), so pi's whole reply (three
   replayed turns) lands first and its nudge reaches Claude during its turn. Claude Code then carries it as a
   queued prompt on the request that follows its tool results, which no recording holds (the recordings have
   the nudge after the turn). That is the designed behaviour (case 16), not a fault. The replay stub reads
@@ -287,6 +288,7 @@ handled; none of them holds a case red:
   in the terminal's name. The bridge reads a core terminal's name as the pane's label, and a walky talky
   header names its sender by it. A named terminal made pi's header differ from the Claude recording, and
   every later Claude case then missed its recording (M79 spec 03).
+- **Raw keys on other harnesses.** Under a CPU hog on every core (2026-11-01) 20 of 20 mid-turn Claude sends, 20 of 20 Codex sends and one opencode send ended `sent`; Kiro and Hermes are untested with raw keys on the core (not installed in the lab), and Windows ConPTY differs.
 - **A Claude case that is red stops the rest.** Claude's recordings replay one session in order. A card
   left up and then cleared with Escape puts "Request interrupted" into Claude's next prompt, and a case
   left out moves the session's first prompt. Either way every later Claude request misses its recording.

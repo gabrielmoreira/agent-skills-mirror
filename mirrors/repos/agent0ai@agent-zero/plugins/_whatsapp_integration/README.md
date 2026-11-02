@@ -1,0 +1,83 @@
+# WhatsApp Integration Plugin
+
+Communicate with Agent Zero via WhatsApp using a Baileys-based Node.js bridge.
+
+## Requirements
+
+- **Node.js** (v18+) and npm installed on the system
+- A WhatsApp account on a phone (for QR code pairing)
+
+## Setup
+
+### Install bridge dependencies
+
+```bash
+cd plugins/_whatsapp_integration/whatsapp-bridge
+npm install --production
+```
+
+Dependencies are auto-installed on first bridge start if missing.
+
+### Configure and pair
+
+1. Open Settings > External > WhatsApp Integration
+2. Configure allowed phone numbers
+3. Click Show QR code, then use WhatsApp > Linked devices > Link a device to scan it. No separate enable step is needed to show the code.
+4. Finish the setup wizard to save, then send a message from an allowed number to start a chat
+5. Use `/project <name>`, `/config <preset>`, or `/send` in WhatsApp to control the active chat directly
+
+The WhatsApp session persists across restarts in `tmp/whatsapp/session/`. No re-pairing needed unless you disconnect via settings.
+Be careful: if you use your personal number and leave `allowed_numbers` open, other people could misuse your Agent Zero.
+
+Sender and group checks run before media downloads and again before dispatch. Changes to these settings restart the bridge on the next poll. Document filenames are reduced to basenames, and media files are created exclusively inside the cache directory.
+
+Administrative commands require a separate `admin_numbers` list. Administrators must also pass `allowed_numbers` and the group checks. An omitted or empty administrator list grants nobody permission to change plugins, tool policies, profile definitions, or the browser runtime. Membership uses the current message's normalized sender number and is refreshed on each poll; it is never inherited from the chat's previous sender.
+
+## Slash commands
+
+Use `/commands` for a paginated menu, or `/commands 2` for the next page. Built-in commands and commands supplied by enabled plugins, your global scope, and the active project use the same resolver as the WebUI. Custom overrides, arguments, prefix/postfix syntax, and commands in attachment captions are supported.
+
+- `/goal`, `/rename`, `/stop`, `/pause`, `/resume`, `/nudge`, `/queue`, and `/send` control the current chat directly. `/steer <message>` intervenes in an active task.
+- `/new` creates a fresh chat without resetting the previous one. `/sessions` lists chats belonging to this WhatsApp conversation; `/chat <id>` selects one. `/clear` resets the current context.
+- `/project`, `/model` (also `/config`, `/preset`, `/models`, `/presets`), and `/agent` list available choices. Supply a name to switch; administrators can also use `/profile` to create an agent with a name and instructions.
+- `/plugins` lists instance-wide plugin states. Use `/plugins page 2` to continue, or, as an administrator, `/plugins <name> on|off` to change one. Required plugins and the WhatsApp connection remain protected.
+- `/permissions` lists the current profile's canonical tool IDs; `/permissions page 2` continues the list. Administrators can use `/permissions <tool ID> allow|block|default`, `/permissions default allow|block`, `/permissions mcp_default allow|block`, or `/permissions inherit`. Changes use the same writer as Agent Editor and require the active run to be stopped.
+- `/compact` shows statistics and an explicit confirmation command for the current chat. The original conversation is backed up before compaction.
+- `/copy` sends the transcript as a text document. `/attach` explains WhatsApp's native attachment control. `/browser status` shows the browser backend; `/browser host|container` requires an administrator. Host Computer Use permissions remain controlled by A0 Launcher/CLI.
+
+These are text menus over the existing Baileys bridge. Telegram-specific streaming controls and inline keyboards are not used. Unknown commands return help rather than being sent to the model.
+
+## Configuration
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `enabled` | Enable bridge and polling | `false` |
+| `mode` | `self-chat` (personal number) or `dedicated` (separate number) | `self-chat` |
+| `allow_group` | Respond in group chats when mentioned or replied to | `false` |
+| `bridge_port` | Local HTTP port for bridge | `3100` |
+| `poll_interval_seconds` | Poll frequency (min 2) | `3` |
+| `allowed_numbers` | Phone numbers without + prefix | `[]` (all) |
+| `admin_numbers` | Allowed senders permitted to change administrative settings; accepts the same number formats as `allowed_numbers` | `[]` (none) |
+| `project` | Activate project for WA chats | `""` |
+| `agent_instructions` | Extra agent instructions | `""` |
+
+## How It Works
+
+1. The bridge connects to WhatsApp via Baileys and exposes HTTP endpoints on localhost
+2. In personal-number mode, you can message your own WhatsApp number to talk to the agent, and the agent can also handle messages that other people send to that number
+3. The plugin polls the bridge for new messages every few seconds
+4. Incoming messages are routed to existing chats by WhatsApp chat ID or new chats are created
+5. Agent responses are sent back via the bridge as WhatsApp messages
+6. Media (images, documents) is supported in both directions
+
+## Architecture
+
+```
+WhatsApp Phone
+    ↕ (WhatsApp protocol via Baileys)
+whatsapp-bridge/bridge.js  (Node.js subprocess)
+    ↕ (HTTP API on localhost)
+Python helpers (wa_client, handler, bridge_manager)
+    ↕ (Framework extensions)
+Agent Zero
+```

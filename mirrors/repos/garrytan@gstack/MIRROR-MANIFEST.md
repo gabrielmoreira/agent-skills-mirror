@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `garrytan/gstack` — 26 default patterns, 8 followed patterns, 98 file(s) materialized.
+Mirror of `garrytan/gstack` — 26 default patterns, 9 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `garrytan/gstack` — 26 default patterns, 8 followed patterns, 98 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 98 |
+| Followed pats | 9 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `garrytan/gstack` — 26 default patterns, 8 followed patterns, 98 fil
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/howto-ios-testing-with-gstack.md`
+- `docs/support-tiers.md`
 - `docs/TESTING_INTERNALS.md`
 - `docs/test-value-bar.md`
 - `docs/PROJECT_STRUCTURE.md`
@@ -162,8 +163,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 94 | → | [`docs/OPENCLAW_PUBLISHING.md`](docs/OPENCLAW_PUBLISHING.md) |
 | 95 | → | [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) |
 | 96 | → | [`docs/SLOP_SCAN.md`](docs/SLOP_SCAN.md) |
-| 97 | → | [`docs/test-value-bar.md`](docs/test-value-bar.md) |
-| 98 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
+| 97 | → | [`docs/support-tiers.md`](docs/support-tiers.md) |
+| 98 | → | [`docs/test-value-bar.md`](docs/test-value-bar.md) |
+| 99 | → | [`docs/TESTING_INTERNALS.md`](docs/TESTING_INTERNALS.md) |
 
 ---
 

@@ -3,7 +3,7 @@
 > [根目录](../CLAUDE.md) > **codeagent-wrapper**
 
 **Last Updated**: 2026-08-29
-**Binary Version**: v5.15.0
+**Binary Version**: v5.16.0
 **Go Version**: 1.21+（`go.mod:1`）
 
 ---
@@ -87,6 +87,8 @@ diff、明令禁改文件）与修正调用（按 file:line 改）**不开**，�
 | `CODEX_DISABLE_SKIP_GIT_CHECK` | 禁止跳过 Git 仓库检查 | false |
 | `CODEAGENT_ASCII_MODE` | 使用 ASCII 状态符（PASS/WARN/FAIL） | false |
 | `CODEAGENT_LITE_MODE` | 精简模式 | false |
+| `CODEAGENT_BROWSER` | Web UI 打开方式：`default` 开系统浏览器，`builtin` 不开 | default |
+| `CODEAGENT_AGY_SETTINGS` | 作为 `--settings` 传给 agy 的配置文件（agy 1.4.7 还没有这个参数） | 空 |
 | `CODEAGENT_POST_MESSAGE_DELAY` | agent_message 后等待秒数（0-60） | 5s |
 | `CODEAGENT_MAX_PARALLEL_WORKERS` | 并行 worker 上限（0=不限） | 0 |
 | `GEMINI_MODEL` | Gemini 型号（低优先级，CLI 参数覆盖） | 空 |
@@ -128,7 +130,7 @@ type Backend interface {
 | `grok` | `grok`（PATH 回退 `~/.grok/bin/grok`） | `buildGrokArgs()` |
 | `kimi` | `kimi` | `buildKimiArgs()` |
 | `opencode` | `opencode` | `buildOpencodeArgs()` |
-| `antigravity` / `agy` | `agy` | `buildAntigravityArgs()` |
+| `antigravity` / `agy` | `agy` | `buildAntigravityArgs()`，输出由 `parseAntigravityStream()` 解析 |
 
 **加一个后端**：主路径干净 —— 在 `backend.go` 写个 struct 实现 `Backend` 三方法 + 在 `config.go` 的 `backendRegistry` 注册一行即可。此外需手动碰约 12 处后端字符串特判：`server.go`（SSE 输出格式，~4 处）、`executor.go`（stdin/prompt 传递方式 `line 877-878`、`case "codex"` `line 1018`，~4 处）、`main.go`（flag 校验，~4 处）。`parser.go` 已统一（靠 JSON 事件形状识别后端，0 处特判）。若加后端变频繁，可给 `Backend` 接口加 `PromptMode()` / `SSEFormat()` 把这 12 处也收编——半天~1 天渐进重构，非大工程。
 
@@ -297,8 +299,8 @@ bash build-all.sh
 
 | 文件 | 位置 | 当前值 |
 |------|------|--------|
-| `codeagent-wrapper/main.go` | `version = "..."` （`main.go:17`） | `5.15.0` |
-| `src/utils/installer.ts` | `EXPECTED_BINARY_VERSION = '...'` | `5.15.0` |
+| `codeagent-wrapper/main.go` | `version = "..."` （`main.go:17`） | `5.16.0` |
+| `src/utils/installer.ts` | `EXPECTED_BINARY_VERSION = '...'` | `5.16.0` |
 
 两边不一致的后果：用户运行 `npx ccg-workflow update` 时无法触发 binary 重新下载，继续使用旧版 binary。
 

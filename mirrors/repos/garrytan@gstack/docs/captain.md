@@ -172,7 +172,7 @@ not a new ask ([carry-forward](unattended.md#carry-forward)).
 
 **The record.** `gstack-approvals import --autoplan <run dir> --by "<owner>"` (with
 `--stack <b1,b2,...>` for a stacked PR set) writes the approval row (date, the ask, the owner's exact words, the lane that answered as relayer,
-what it covers); `gstack-approvals render` puts it in the report and the PR body. Before
+what it covers; a gate answered with `--words-by agent:<id>` is listed under that agent as its own decision, not the owner's words); `gstack-approvals render` puts it in the report and the PR body. Before
 training the PR the controller compares that row's words and `gate_rev` with the ask it
 relayed and the reply it carried back; a row that does not match is not READY (shape A).
 The brief's done line names the row. A plan approval is not a READY field; the
@@ -299,6 +299,18 @@ refuses `--urgent`); all prefixes green earns exactly one unchanged rebuild;
 anything else goes to a repair lane. An infra-only census earns one re-dispatch. A
 backstop gate runs on every push to the base branch and freezes the queue when it finds
 a tree no green train covered; one repair PR at its exact head clears the freeze.
+
+**Wave PRs when the queue is long.** Every slot pays its own
+stamp, its own round of required checks and its own version, one after another. When more
+than 6 PRs are READY, `gstack-ship-queue wave plan` prints `WAVE_ADVISED` and suggested
+area groups of 3 to 6 (`train build` prints the same line when handed more than 6 pins). The
+controller asks the owner of each group's largest PR to integrate: `wave build` makes the
+wave branch with every constituent merged unchanged, the integrator runs /ship once and
+READYs the wave PR, which then takes one slot and one version. Constituent heads are frozen
+once in; fixes go through the integrator, and a constituent that must change is dropped
+(`wave build --wave <nonce> --drop <pr>`) and goes back to its owner. After the wave lands,
+`wave settle` closes each constituent with a link. While the queue stays long, start new
+work as area waves. The full flow is in [ship-policy.md](ship-policy.md#wave-prs).
 
 **Slot 2 and later.** The base branch already carries the earlier slots' stamps, so a
 stamp on the bare pin leaves the PR conflicting on the CHANGELOG. The lane merges the base

@@ -614,6 +614,29 @@ happy-app's `sources/changelog/changelog.json`, with its images in
 `Changelog.images`. `AppGraph.changelog` is the read marker Home's update
 banner needs.
 
+### Theme and what the platform draws
+
+The theme setting (`localSettings.themePreference`) is the platform's
+night mode too (`ui/theme/AppNightMode.kt`), so nothing platform-drawn
+shows the system's theme under the app's (it used to flash white under a
+dark app on a light phone):
+
+- On API 31+, `UiModeManager.setApplicationNightMode`, which the system
+  keeps for the package: the next start's splash and window are in the
+  app's theme before any of our code runs. MainActivity handles uiMode, so
+  a change repaints in place.
+- MainActivity paints its window in the theme (`paintWindow`), before
+  HappyApp's first frame and on every change.
+- Every WebView is a `themedWebView`: the app's night mode for
+  `prefers-color-scheme`, and the theme's colour until the page draws. The
+  browser then puts white under a page that paints no background and asks
+  for no dark one (`BARE_PAGE`).
+
+A new WebView or window goes through these too. `AppNightModeTest` covers
+dark on a light phone and light on a dark one. `tools/flashscan` records a
+device and reports its brightest frames (`journey.sh`: a cold start and a
+chat).
+
 ## Build and test
 
 Run agent Android builds, unit tests and device checks on Kirill's Mac Mini
@@ -1009,9 +1032,26 @@ is `packages/happy-ios`. The wire keeps its own names
   checks its MAC before anything is kept; `AgentIdentity` reads health
   (protocol 27 or later) and `config.node`; `AgentConnections` keeps each
   connection's credentials Keystore-encrypted, apart from relay credentials.
-- **Transport** (`TailcatTransport`): tailcat-kotlin, one client
-  per agent connection and a fresh TCP stream to `server.tailcat:<port>` per
-  HTTP/1.1 request, framed by `HttpResponseParser`. It uses
+- **Transport** (`TailcatTransport`): tailcat-kotlin, and a fresh TCP
+  stream to `server.tailcat:<port>` per HTTP/1.1 request, framed by
+  `HttpResponseParser`. Each request says its `RequestCategory`, which
+  picks its client in the connection's `TailcatClients` (iOS's, same names):
+  one for `Realtime` (the event stream), one for `Query` (the default) and up
+  to eight for `File` (pictures and avatars, attachments, messages with
+  images, tool-call media, artifact files, and the in-app browser's
+  sockets). Each client is made on first use with a node key of its own,
+  fresh on every connect: the agent and the DERP relay tell clients apart by
+  node key, and a relay keeps one connection per key. A file goes to the
+  file client with the fewest requests in flight; another is made only while
+  every one is busy. A query has 35 s, a file 15 min (any one read or write
+  still 35 s). A failure resets only the client it happened on, so a broken
+  file client never drops the event stream; a stack out of connections
+  (`RESOURCE_LIMIT`) is busy, not gone, and is kept. A new call site that
+  moves bytes passes `RequestCategory.File` (`TailcatClientsTest` pins the
+  existing ones). `HttpsTransport` (an agent with a public URL) has no
+  clients: each socket is its own TLS connection tagged with its category,
+  so `reset(category)` closes only that category's, with the same
+  deadlines; `AgentEndpointTransport` passes the category on. It uses
   tailcat-kotlin's default DERP map (`https://tailcat.dev/derpmap.json`),
   cached in `noBackupFilesDir/tailcat/derpmap.json` (`FileDerpMapCache`):
   with no network and no cached map, connecting fails.

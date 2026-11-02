@@ -42,6 +42,18 @@ For each relevant state, verify:
 Do not require every possible state for a local visual-only change. Cover the
 states affected by the implementation or explicitly requested by the user.
 
+For changed asynchronous loading or saving, the executing auditor uses the
+authorized project harness to distinguish success, a delayed response, an explicit
+failure, no response headers, and headers followed by a body that never completes.
+An eventual error does not exercise permanent waiting. Observe the visible exit
+and usable recovery under the product's declared deadline or cancellation contract;
+do not import a universal timeout. Preserve already-readable content where promised.
+For an uncertain write, verify the existing readback/idempotency path before any
+retry; a timeout does not establish that the write failed. Release a held response
+after recovery or navigation and check that it cannot overwrite current work or
+repeat completion feedback. Keep a normal-success control. This is a journey the
+auditor must exercise; the generic visual sweep does not simulate these failures.
+
 For a changed multi-item read or batch result, the executing auditor uses the
 authorized project harness to fail one known item while the enclosing request
 succeeds. Reconcile the expected identities with the visible successes, failures
@@ -487,7 +499,8 @@ refresh or deep linking is route-state drift.
 ## Transient UI
 
 A late screenshot cannot prove a toast, snackbar, inline validation message, or
-short animation never appeared. Arm observation before the trigger:
+short animation never appeared. For DOM-rendered feedback, arm observation before
+the trigger:
 
     () => {
       window.__visualQaTransient = [];
@@ -509,7 +522,27 @@ short animation never appeared. Arm observation before the trigger:
       return "observer armed";
     }
 
-Trigger the action repeatedly, then read window.__visualQaTransient.
+Trigger the authorized action once, then read `window.__visualQaTransient`.
+Repeat only when the product's recovery contract and a safe test state permit it;
+use the specific confirmation or game-feedback recipe below for save operations.
+
+For native and hybrid feedback, the DOM observer cannot establish that a native toast, bridge error or
+out-of-renderer request succeeded. The auditor uses the project's canonical
+native harness, bound to the installed artifact and app process, and arms its
+supported request, notification and runtime-error observation before the action.
+Continue through the required child controls and recovery until requests settle;
+a successful main response cannot cancel a failed child request or an earlier
+unexpected message. Interpret business success using that API's actual schema.
+
+Calibrate observation inside the same delivery build: release settings may
+suppress a JavaScript console channel that worked in development. In an isolated
+authorized fixture, trigger a known harmless prompt/error and verify the native
+observation records it. Then run the healthy journey separately and retain both
+results. Keep expected validation feedback distinct from unexpected errors; do
+not make every toast a universal release failure. Missing events, process changes
+or incomplete collection leave that claim unverified, even when the final screen
+looks correct. Reuse the project's collector and evidence policy; this recipe
+does not install a global observer or grant access to private request bodies.
 
 Distinguish the observed outcomes:
 

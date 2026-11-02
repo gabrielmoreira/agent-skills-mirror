@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.4] - 2026-11-02
+
+### 🔒 安全
+
+- **Web UI 不再暴露到局域网**（#171）— `codeagent-wrapper` 原先监听所有网卡，同一网络的任何机器都能无认证读到任务内容和模型输出。现在只绑 `127.0.0.1`。
+- **校验 Host 头** — 不是 `localhost` / `127.0.0.1` / `::1` 的请求一律 403，挡住 DNS rebinding。同时去掉 `/api/stream` 上多余的 `Access-Control-Allow-Origin: *`。
+- **修复 Web UI 的 XSS** — 任务文本原先直接写进 `innerHTML`，仓库内容或粘贴的文本可能在页面里执行脚本。现在按纯文本渲染。
+
+### ✨ 新功能
+
+- **`CODEAGENT_BROWSER`**（#171）— 设为 `builtin` 时不自动打开系统浏览器，由 orchestrator 打开网址；默认行为不变。
+- **`CODEAGENT_AGY_SETTINGS`**（#169）— 把 agy 的 `--settings <文件>` 传进去，可用 `permissions.deny` 让被拒的工具回到模型，而不是结束整次调用。需要 agy 支持 `--settings`（1.4.7 还不支持，报告人在 1.4.12 上验证过）。
+
+### 🐛 修复
+
+- **Antigravity 拿不到 Session-ID、无法 resume**（#169）— 改用 `--output-format stream-json`，一拿到 `conversation_id` 就输出 `Session-ID:`，`resume <id>` 可用，报告不再重复。`agy` 上报的失败原因现在会透传，不再只显示 `completed without agent_message output`。`--progress` 仍按整行输出。需要 agy 支持 `--output-format`（1.4.2 已支持）。
+- **skill-router 英文关键字误触发**（#170）— 纯 ASCII 关键字改为整词匹配（含复数），`average` 不再触发 RAG，`restore` 不再触发 API 设计；`rest` 收窄为 `rest api` / `restful`，补上 `dockerfile`。含中文的关键字仍按子串匹配。
+- **「提到」被当成「请求执行」**（#170）— `<ccg-model-action>` 现在说明这只是关键词匹配，仅当用户明确要求时才调用后端。
+- **没安装的领域占用注入名额** — 不随包发布的领域（如 security）不再挤掉真正可用的知识文件。
+
+### 🔄 变更
+
+- **Binary `5.15.0` → `5.16.0`**。感谢 @josh701212-tw 报告并提供 #169 / #170 / #171 的修复方案。
+
 ## [3.7.3] - 2026-10-21
 
 ### 🐛 修复

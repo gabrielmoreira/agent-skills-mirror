@@ -96,7 +96,7 @@ Each skill's `description` field is the canonical routing contract. This conveni
 | "default alive", "default dead", "runway", "burn rate", "burn multiple", "financial projection", "startup finances", "cash on hand", "breakeven", "how long until", "profitability" | [yc-default-alive-calculator](../yc-default-alive-calculator/SKILL.md) |
 | "growth rate", "weekly growth", "monthly growth", "startup growth", "compound growth", "traction", "are we growing", "growth benchmark", "how fast should we grow", "YC growth", "product-market fit", "acceleration", "growth trajectory" | [yc-weekly-growth-compass](../yc-weekly-growth-compass/SKILL.md) |
 | "artifact-pyramids", "artifact pyramids" | [artifact-pyramids](../artifact-pyramids/SKILL.md) |
-| "chief of staff", "CoS", "executive office", "gatekeeping", "triage", "decision memo", "executive briefing", "board materials", "force multiplication", "leader effectiveness", "organizational sensing", "organizational radar", "team health", "institutional memory", "leadership transition", "calendar triage", "meeting audit", "strategic time", "attention allocation" | [chief-of-staff-methodology](../chief-of-staff-methodology/SKILL.md) |
+| "chief of staff", "CoS", "executive operations", "founder operations", "decision support", "operating rhythm", "strategic attention", "executive office", "gatekeeping", "triage", "decision memo", "executive briefing", "board materials", "force multiplication", "leader effectiveness", "organizational sensing", "organizational radar", "team health", "institutional memory", "leadership transition", "calendar triage", "meeting audit", "strategic time", "attention allocation" | [chief-of-staff-methodology](../chief-of-staff-methodology/SKILL.md) |
 | "site-reliability-engineering", "site reliability engineering" | [site-reliability-engineering](../site-reliability-engineering/SKILL.md) |
 | "research and vault", "research-to-notes", "research to durable note", "research extraction and vault", "research-to-note pipeline" | [research-and-vault](../research-and-vault/SKILL.md) |
 | "research-methodology", "research methodology" | [research-methodology](../research-methodology/SKILL.md) |
@@ -120,6 +120,7 @@ Each skill's `description` field is the canonical routing contract. This conveni
 | "Vercel Eve", "eve agent", "eve dev", "eve build", "eve start", "Eve self-hosting", "durable Eve session", "Eve sandbox", "Eve Workflow", "Eve subagent", "Eve agent skills", "Eve deployment", "Eve reverse proxy" | [vercel-eve](../vercel-eve/SKILL.md) |
 | "smallest safe intervention", "evidence ledger", "change contract", "prove it worked", "verify at the boundary", "delivery discipline", "SDLC workflow", "did this actually work", "audit trail", "stop and escalate", "neckbeard" | [neckbeard](../neckbeard/SKILL.md) |
 | "verification-methodology", "verification methodology" | [verification-methodology](../verification-methodology/SKILL.md) |
+| "code review", "review this PR", "review my diff", "pull request review", "review comments", "triage review comments", "review verdict", "LGTM", "request changes", "approve with comments", "review checklist", "reviewer assignment", "review latency", "did review miss this bug", "AI code review", "review an AI-generated change", "scope this review" | [code-review](../code-review/SKILL.md) |
 | "accessibility", "a11y", "WCAG", "ARIA", "accessible name", "screen reader", "keyboard navigation", "focus management", "focus trap", "dialog", "modal", "combobox", "listbox", "accessible form", "form validation", "error recovery", "accessible authentication", "color contrast", "reduced motion", "target size", "accessibility testing" | [web-accessibility](../web-accessibility/SKILL.md) |
 | "SEO", "SEO audit", "AEO", "Answer Engine Optimization", "GEO", "LLMO", "AI search visibility", "AI citations", "citation tracking", "llms.txt", "answer-first content" | [seo](../seo/SKILL.md) |
 | "test strategy", "regression testing", "CI failure triage", "test automation", "quality gates", "risk-based testing", "exploratory testing", "SDET", "agentic evals", "acceptance criteria testability", "QA career levels", "test design techniques", "P×I scoring", "SBTM charter", "flaky test quarantine", "mutation-guided test hardening", "surviving mutants", "mutation review evidence", "weak assertions revealed by mutation analysis", "diff-aware mutation testing" | [qa-methodology](../qa-methodology/SKILL.md) |
@@ -143,3 +144,11 @@ Each skill's `description` field is the canonical routing contract. This conveni
 
 | "job interview", "mock interview", "critique my interview transcript", "interview candidates", "hiring scorecard", "interviewer coaching" | [job-interview-coaching](../job-interview-coaching/SKILL.md) |
 | "solarpunk", "hopeful ecological futures", "solarpunk fiction", "solarpunk image prompts", "solarpunk living", "solarpunk adaptive reuse" | [solarpunk](../solarpunk/SKILL.md) |
+
+## Intent-oriented entry points
+
+For common jobs across software delivery, agent trust, product decisions, and
+business operations, start with the [README workflow map](../README.md#find-a-workflow).
+For handoff evidence, decision owners and stop conditions, use
+[agent-trust routes](agent-trust-routes.md). The map routes to canonical skills;
+it does not create aliases or duplicate specialist ownership.

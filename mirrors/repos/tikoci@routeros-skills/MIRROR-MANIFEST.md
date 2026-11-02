@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tikoci/routeros-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,6 +77,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`routeros-sniffer/SKILL.md`](routeros-sniffer/SKILL.md) |
 | 17 | ✓ | [`routeros-syntax-inspection/SKILL.md`](routeros-syntax-inspection/SKILL.md) |
 | 18 | ✓ | [`routeros-webfig/SKILL.md`](routeros-webfig/SKILL.md) |
+| 19 | ✓ | [`routeros-zerotier/SKILL.md`](routeros-zerotier/SKILL.md) |
 
 ---
 

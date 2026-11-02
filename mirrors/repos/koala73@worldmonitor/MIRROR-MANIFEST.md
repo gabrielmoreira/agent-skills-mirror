@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 88 file(s) materialized.
+Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 8
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 88 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,71 +84,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`.agents/skills/verify-worldmonitor/steps/panel-settings.mjs`](.agents/skills/verify-worldmonitor/steps/panel-settings.mjs) |
 | 22 | ✓ | [`.agents/skills/verify-worldmonitor/steps/prediction-shift-signal-modal.mjs`](.agents/skills/verify-worldmonitor/steps/prediction-shift-signal-modal.mjs) |
 | 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 24 | ✓ | [`docs/Docs_To_Review/ARCHITECTURE.md`](docs/Docs_To_Review/ARCHITECTURE.md) |
-| 25 | ✓ | [`public/.well-known/agent-skills/assess-energy-shock/SKILL.md`](public/.well-known/agent-skills/assess-energy-shock/SKILL.md) |
-| 26 | ✓ | [`public/.well-known/agent-skills/check-airport-delays/SKILL.md`](public/.well-known/agent-skills/check-airport-delays/SKILL.md) |
-| 27 | ✓ | [`public/.well-known/agent-skills/check-chokepoint-status/SKILL.md`](public/.well-known/agent-skills/check-chokepoint-status/SKILL.md) |
-| 28 | ✓ | [`public/.well-known/agent-skills/check-country-risk/SKILL.md`](public/.well-known/agent-skills/check-country-risk/SKILL.md) |
-| 29 | ✓ | [`public/.well-known/agent-skills/check-forecast-signals/SKILL.md`](public/.well-known/agent-skills/check-forecast-signals/SKILL.md) |
-| 30 | ✓ | [`public/.well-known/agent-skills/check-sanctions-pressure/SKILL.md`](public/.well-known/agent-skills/check-sanctions-pressure/SKILL.md) |
-| 31 | ✓ | [`public/.well-known/agent-skills/compare-macro-history/SKILL.md`](public/.well-known/agent-skills/compare-macro-history/SKILL.md) |
-| 32 | ✓ | [`public/.well-known/agent-skills/fetch-country-brief/SKILL.md`](public/.well-known/agent-skills/fetch-country-brief/SKILL.md) |
-| 33 | ✓ | [`public/.well-known/agent-skills/fetch-news-digest/SKILL.md`](public/.well-known/agent-skills/fetch-news-digest/SKILL.md) |
-| 34 | ✓ | [`public/.well-known/agent-skills/fetch-resilience-score/SKILL.md`](public/.well-known/agent-skills/fetch-resilience-score/SKILL.md) |
-| 35 | ✓ | [`public/.well-known/agent-skills/get-market-quotes/SKILL.md`](public/.well-known/agent-skills/get-market-quotes/SKILL.md) |
-| 36 | ✓ | [`public/.well-known/agent-skills/get-prediction-markets/SKILL.md`](public/.well-known/agent-skills/get-prediction-markets/SKILL.md) |
-| 37 | ✓ | [`public/.well-known/agent-skills/lookup-bilateral-tariff/SKILL.md`](public/.well-known/agent-skills/lookup-bilateral-tariff/SKILL.md) |
-| 38 | ✓ | [`public/.well-known/agent-skills/lookup-us-import-duty/SKILL.md`](public/.well-known/agent-skills/lookup-us-import-duty/SKILL.md) |
-| 39 | ✓ | [`public/.well-known/agent-skills/monitor-energy-disruptions/SKILL.md`](public/.well-known/agent-skills/monitor-energy-disruptions/SKILL.md) |
-| 40 | ✓ | [`public/.well-known/agent-skills/monitor-health-alerts/SKILL.md`](public/.well-known/agent-skills/monitor-health-alerts/SKILL.md) |
-| 41 | ✓ | [`public/.well-known/agent-skills/monitor-internet-outages/SKILL.md`](public/.well-known/agent-skills/monitor-internet-outages/SKILL.md) |
-| 42 | ✓ | [`public/.well-known/agent-skills/monitor-supply-chain-stress/SKILL.md`](public/.well-known/agent-skills/monitor-supply-chain-stress/SKILL.md) |
-| 43 | ✓ | [`public/.well-known/agent-skills/monitor-webcams/SKILL.md`](public/.well-known/agent-skills/monitor-webcams/SKILL.md) |
-| 44 | ✓ | [`public/.well-known/agent-skills/research-stocks/SKILL.md`](public/.well-known/agent-skills/research-stocks/SKILL.md) |
-| 45 | ✓ | [`public/.well-known/agent-skills/scan-cyber-threats/SKILL.md`](public/.well-known/agent-skills/scan-cyber-threats/SKILL.md) |
-| 46 | ✓ | [`public/.well-known/agent-skills/trace-trade-flows/SKILL.md`](public/.well-known/agent-skills/trace-trade-flows/SKILL.md) |
-| 47 | ✓ | [`public/.well-known/agent-skills/track-climate-hazards/SKILL.md`](public/.well-known/agent-skills/track-climate-hazards/SKILL.md) |
-| 48 | ✓ | [`public/.well-known/agent-skills/track-conflict-events/SKILL.md`](public/.well-known/agent-skills/track-conflict-events/SKILL.md) |
-| 49 | ✓ | [`public/.well-known/agent-skills/track-earthquakes/SKILL.md`](public/.well-known/agent-skills/track-earthquakes/SKILL.md) |
-| 50 | ✓ | [`public/.well-known/agent-skills/track-military-flights/SKILL.md`](public/.well-known/agent-skills/track-military-flights/SKILL.md) |
-| 51 | ✓ | [`public/.well-known/agent-skills/track-tariff-trends/SKILL.md`](public/.well-known/agent-skills/track-tariff-trends/SKILL.md) |
-| 52 | ✓ | [`public/.well-known/agent-skills/track-unrest-events/SKILL.md`](public/.well-known/agent-skills/track-unrest-events/SKILL.md) |
-| 53 | ✓ | [`public/.well-known/agent-skills/track-vessel-traffic/SKILL.md`](public/.well-known/agent-skills/track-vessel-traffic/SKILL.md) |
-| 54 | ✓ | [`public/api/llms.txt`](public/api/llms.txt) |
-| 55 | ✓ | [`public/developers/llms.txt`](public/developers/llms.txt) |
-| 56 | ✓ | [`public/llms.txt`](public/llms.txt) |
-| 57 | ✓ | [`skills/assess-energy-shock/SKILL.md`](skills/assess-energy-shock/SKILL.md) |
-| 58 | ✓ | [`skills/check-airport-delays/SKILL.md`](skills/check-airport-delays/SKILL.md) |
-| 59 | ✓ | [`skills/check-chokepoint-status/SKILL.md`](skills/check-chokepoint-status/SKILL.md) |
-| 60 | ✓ | [`skills/check-country-risk/SKILL.md`](skills/check-country-risk/SKILL.md) |
-| 61 | ✓ | [`skills/check-forecast-signals/SKILL.md`](skills/check-forecast-signals/SKILL.md) |
-| 62 | ✓ | [`skills/check-sanctions-pressure/SKILL.md`](skills/check-sanctions-pressure/SKILL.md) |
-| 63 | ✓ | [`skills/compare-macro-history/SKILL.md`](skills/compare-macro-history/SKILL.md) |
-| 64 | ✓ | [`skills/fetch-country-brief/SKILL.md`](skills/fetch-country-brief/SKILL.md) |
-| 65 | ✓ | [`skills/fetch-news-digest/SKILL.md`](skills/fetch-news-digest/SKILL.md) |
-| 66 | ✓ | [`skills/fetch-resilience-score/SKILL.md`](skills/fetch-resilience-score/SKILL.md) |
-| 67 | ✓ | [`skills/get-market-quotes/SKILL.md`](skills/get-market-quotes/SKILL.md) |
-| 68 | ✓ | [`skills/get-prediction-markets/SKILL.md`](skills/get-prediction-markets/SKILL.md) |
-| 69 | ✓ | [`skills/lookup-bilateral-tariff/SKILL.md`](skills/lookup-bilateral-tariff/SKILL.md) |
-| 70 | ✓ | [`skills/lookup-us-import-duty/SKILL.md`](skills/lookup-us-import-duty/SKILL.md) |
-| 71 | ✓ | [`skills/monitor-energy-disruptions/SKILL.md`](skills/monitor-energy-disruptions/SKILL.md) |
-| 72 | ✓ | [`skills/monitor-health-alerts/SKILL.md`](skills/monitor-health-alerts/SKILL.md) |
-| 73 | ✓ | [`skills/monitor-internet-outages/SKILL.md`](skills/monitor-internet-outages/SKILL.md) |
-| 74 | ✓ | [`skills/monitor-supply-chain-stress/SKILL.md`](skills/monitor-supply-chain-stress/SKILL.md) |
-| 75 | ✓ | [`skills/monitor-webcams/SKILL.md`](skills/monitor-webcams/SKILL.md) |
-| 76 | ✓ | [`skills/research-stocks/SKILL.md`](skills/research-stocks/SKILL.md) |
-| 77 | ✓ | [`skills/scan-cyber-threats/SKILL.md`](skills/scan-cyber-threats/SKILL.md) |
-| 78 | ✓ | [`skills/trace-trade-flows/SKILL.md`](skills/trace-trade-flows/SKILL.md) |
-| 79 | ✓ | [`skills/track-climate-hazards/SKILL.md`](skills/track-climate-hazards/SKILL.md) |
-| 80 | ✓ | [`skills/track-conflict-events/SKILL.md`](skills/track-conflict-events/SKILL.md) |
-| 81 | ✓ | [`skills/track-earthquakes/SKILL.md`](skills/track-earthquakes/SKILL.md) |
-| 82 | ✓ | [`skills/track-military-flights/SKILL.md`](skills/track-military-flights/SKILL.md) |
-| 83 | ✓ | [`skills/track-tariff-trends/SKILL.md`](skills/track-tariff-trends/SKILL.md) |
-| 84 | ✓ | [`skills/track-unrest-events/SKILL.md`](skills/track-unrest-events/SKILL.md) |
-| 85 | ✓ | [`skills/track-vessel-traffic/SKILL.md`](skills/track-vessel-traffic/SKILL.md) |
-| 86 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 87 | → | [`CONCEPTS.md`](CONCEPTS.md) |
-| 88 | → | [`docs/architecture/five-factor-scorecard-v1.md`](docs/architecture/five-factor-scorecard-v1.md) |
+| 24 | ✓ | [`claude-plugin/skills/chokepoint-check/SKILL.md`](claude-plugin/skills/chokepoint-check/SKILL.md) |
+| 25 | ✓ | [`claude-plugin/skills/conflict-pulse/SKILL.md`](claude-plugin/skills/conflict-pulse/SKILL.md) |
+| 26 | ✓ | [`claude-plugin/skills/country-briefing/SKILL.md`](claude-plugin/skills/country-briefing/SKILL.md) |
+| 27 | ✓ | [`claude-plugin/skills/hazard-watch/SKILL.md`](claude-plugin/skills/hazard-watch/SKILL.md) |
+| 28 | ✓ | [`claude-plugin/skills/market-snapshot/SKILL.md`](claude-plugin/skills/market-snapshot/SKILL.md) |
+| 29 | ✓ | [`claude-plugin/skills/world-brief/SKILL.md`](claude-plugin/skills/world-brief/SKILL.md) |
+| 30 | ✓ | [`docs/Docs_To_Review/ARCHITECTURE.md`](docs/Docs_To_Review/ARCHITECTURE.md) |
+| 31 | ✓ | [`public/.well-known/agent-skills/assess-energy-shock/SKILL.md`](public/.well-known/agent-skills/assess-energy-shock/SKILL.md) |
+| 32 | ✓ | [`public/.well-known/agent-skills/check-airport-delays/SKILL.md`](public/.well-known/agent-skills/check-airport-delays/SKILL.md) |
+| 33 | ✓ | [`public/.well-known/agent-skills/check-chokepoint-status/SKILL.md`](public/.well-known/agent-skills/check-chokepoint-status/SKILL.md) |
+| 34 | ✓ | [`public/.well-known/agent-skills/check-country-risk/SKILL.md`](public/.well-known/agent-skills/check-country-risk/SKILL.md) |
+| 35 | ✓ | [`public/.well-known/agent-skills/check-forecast-signals/SKILL.md`](public/.well-known/agent-skills/check-forecast-signals/SKILL.md) |
+| 36 | ✓ | [`public/.well-known/agent-skills/check-sanctions-pressure/SKILL.md`](public/.well-known/agent-skills/check-sanctions-pressure/SKILL.md) |
+| 37 | ✓ | [`public/.well-known/agent-skills/compare-macro-history/SKILL.md`](public/.well-known/agent-skills/compare-macro-history/SKILL.md) |
+| 38 | ✓ | [`public/.well-known/agent-skills/fetch-country-brief/SKILL.md`](public/.well-known/agent-skills/fetch-country-brief/SKILL.md) |
+| 39 | ✓ | [`public/.well-known/agent-skills/fetch-news-digest/SKILL.md`](public/.well-known/agent-skills/fetch-news-digest/SKILL.md) |
+| 40 | ✓ | [`public/.well-known/agent-skills/fetch-resilience-score/SKILL.md`](public/.well-known/agent-skills/fetch-resilience-score/SKILL.md) |
+| 41 | ✓ | [`public/.well-known/agent-skills/get-market-quotes/SKILL.md`](public/.well-known/agent-skills/get-market-quotes/SKILL.md) |
+| 42 | ✓ | [`public/.well-known/agent-skills/get-prediction-markets/SKILL.md`](public/.well-known/agent-skills/get-prediction-markets/SKILL.md) |
+| 43 | ✓ | [`public/.well-known/agent-skills/lookup-bilateral-tariff/SKILL.md`](public/.well-known/agent-skills/lookup-bilateral-tariff/SKILL.md) |
+| 44 | ✓ | [`public/.well-known/agent-skills/lookup-us-import-duty/SKILL.md`](public/.well-known/agent-skills/lookup-us-import-duty/SKILL.md) |
+| 45 | ✓ | [`public/.well-known/agent-skills/monitor-energy-disruptions/SKILL.md`](public/.well-known/agent-skills/monitor-energy-disruptions/SKILL.md) |
+| 46 | ✓ | [`public/.well-known/agent-skills/monitor-health-alerts/SKILL.md`](public/.well-known/agent-skills/monitor-health-alerts/SKILL.md) |
+| 47 | ✓ | [`public/.well-known/agent-skills/monitor-internet-outages/SKILL.md`](public/.well-known/agent-skills/monitor-internet-outages/SKILL.md) |
+| 48 | ✓ | [`public/.well-known/agent-skills/monitor-supply-chain-stress/SKILL.md`](public/.well-known/agent-skills/monitor-supply-chain-stress/SKILL.md) |
+| 49 | ✓ | [`public/.well-known/agent-skills/monitor-webcams/SKILL.md`](public/.well-known/agent-skills/monitor-webcams/SKILL.md) |
+| 50 | ✓ | [`public/.well-known/agent-skills/research-stocks/SKILL.md`](public/.well-known/agent-skills/research-stocks/SKILL.md) |
+| 51 | ✓ | [`public/.well-known/agent-skills/scan-cyber-threats/SKILL.md`](public/.well-known/agent-skills/scan-cyber-threats/SKILL.md) |
+| 52 | ✓ | [`public/.well-known/agent-skills/trace-trade-flows/SKILL.md`](public/.well-known/agent-skills/trace-trade-flows/SKILL.md) |
+| 53 | ✓ | [`public/.well-known/agent-skills/track-climate-hazards/SKILL.md`](public/.well-known/agent-skills/track-climate-hazards/SKILL.md) |
+| 54 | ✓ | [`public/.well-known/agent-skills/track-conflict-events/SKILL.md`](public/.well-known/agent-skills/track-conflict-events/SKILL.md) |
+| 55 | ✓ | [`public/.well-known/agent-skills/track-earthquakes/SKILL.md`](public/.well-known/agent-skills/track-earthquakes/SKILL.md) |
+| 56 | ✓ | [`public/.well-known/agent-skills/track-military-flights/SKILL.md`](public/.well-known/agent-skills/track-military-flights/SKILL.md) |
+| 57 | ✓ | [`public/.well-known/agent-skills/track-tariff-trends/SKILL.md`](public/.well-known/agent-skills/track-tariff-trends/SKILL.md) |
+| 58 | ✓ | [`public/.well-known/agent-skills/track-unrest-events/SKILL.md`](public/.well-known/agent-skills/track-unrest-events/SKILL.md) |
+| 59 | ✓ | [`public/.well-known/agent-skills/track-vessel-traffic/SKILL.md`](public/.well-known/agent-skills/track-vessel-traffic/SKILL.md) |
+| 60 | ✓ | [`public/api/llms.txt`](public/api/llms.txt) |
+| 61 | ✓ | [`public/developers/llms.txt`](public/developers/llms.txt) |
+| 62 | ✓ | [`public/llms.txt`](public/llms.txt) |
+| 63 | ✓ | [`skills/assess-energy-shock/SKILL.md`](skills/assess-energy-shock/SKILL.md) |
+| 64 | ✓ | [`skills/check-airport-delays/SKILL.md`](skills/check-airport-delays/SKILL.md) |
+| 65 | ✓ | [`skills/check-chokepoint-status/SKILL.md`](skills/check-chokepoint-status/SKILL.md) |
+| 66 | ✓ | [`skills/check-country-risk/SKILL.md`](skills/check-country-risk/SKILL.md) |
+| 67 | ✓ | [`skills/check-forecast-signals/SKILL.md`](skills/check-forecast-signals/SKILL.md) |
+| 68 | ✓ | [`skills/check-sanctions-pressure/SKILL.md`](skills/check-sanctions-pressure/SKILL.md) |
+| 69 | ✓ | [`skills/compare-macro-history/SKILL.md`](skills/compare-macro-history/SKILL.md) |
+| 70 | ✓ | [`skills/fetch-country-brief/SKILL.md`](skills/fetch-country-brief/SKILL.md) |
+| 71 | ✓ | [`skills/fetch-news-digest/SKILL.md`](skills/fetch-news-digest/SKILL.md) |
+| 72 | ✓ | [`skills/fetch-resilience-score/SKILL.md`](skills/fetch-resilience-score/SKILL.md) |
+| 73 | ✓ | [`skills/get-market-quotes/SKILL.md`](skills/get-market-quotes/SKILL.md) |
+| 74 | ✓ | [`skills/get-prediction-markets/SKILL.md`](skills/get-prediction-markets/SKILL.md) |
+| 75 | ✓ | [`skills/lookup-bilateral-tariff/SKILL.md`](skills/lookup-bilateral-tariff/SKILL.md) |
+| 76 | ✓ | [`skills/lookup-us-import-duty/SKILL.md`](skills/lookup-us-import-duty/SKILL.md) |
+| 77 | ✓ | [`skills/monitor-energy-disruptions/SKILL.md`](skills/monitor-energy-disruptions/SKILL.md) |
+| 78 | ✓ | [`skills/monitor-health-alerts/SKILL.md`](skills/monitor-health-alerts/SKILL.md) |
+| 79 | ✓ | [`skills/monitor-internet-outages/SKILL.md`](skills/monitor-internet-outages/SKILL.md) |
+| 80 | ✓ | [`skills/monitor-supply-chain-stress/SKILL.md`](skills/monitor-supply-chain-stress/SKILL.md) |
+| 81 | ✓ | [`skills/monitor-webcams/SKILL.md`](skills/monitor-webcams/SKILL.md) |
+| 82 | ✓ | [`skills/research-stocks/SKILL.md`](skills/research-stocks/SKILL.md) |
+| 83 | ✓ | [`skills/scan-cyber-threats/SKILL.md`](skills/scan-cyber-threats/SKILL.md) |
+| 84 | ✓ | [`skills/trace-trade-flows/SKILL.md`](skills/trace-trade-flows/SKILL.md) |
+| 85 | ✓ | [`skills/track-climate-hazards/SKILL.md`](skills/track-climate-hazards/SKILL.md) |
+| 86 | ✓ | [`skills/track-conflict-events/SKILL.md`](skills/track-conflict-events/SKILL.md) |
+| 87 | ✓ | [`skills/track-earthquakes/SKILL.md`](skills/track-earthquakes/SKILL.md) |
+| 88 | ✓ | [`skills/track-military-flights/SKILL.md`](skills/track-military-flights/SKILL.md) |
+| 89 | ✓ | [`skills/track-tariff-trends/SKILL.md`](skills/track-tariff-trends/SKILL.md) |
+| 90 | ✓ | [`skills/track-unrest-events/SKILL.md`](skills/track-unrest-events/SKILL.md) |
+| 91 | ✓ | [`skills/track-vessel-traffic/SKILL.md`](skills/track-vessel-traffic/SKILL.md) |
+| 92 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 93 | → | [`CONCEPTS.md`](CONCEPTS.md) |
+| 94 | → | [`docs/architecture/five-factor-scorecard-v1.md`](docs/architecture/five-factor-scorecard-v1.md) |
 
 ---
 

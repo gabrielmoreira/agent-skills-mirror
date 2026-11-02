@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `morluto/rea` — 26 default patterns, 78 followed patterns, 160 file(s) materialized.
+Mirror of `morluto/rea` — 26 default patterns, 79 followed patterns, 159 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `morluto/rea` — 26 default patterns, 78 followed patterns, 160 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 78 |
-| Files         | 160 |
+| Followed pats | 79 |
+| Files         | 159 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `morluto/rea` — 26 default patterns, 78 followed patterns, 160 file(
 - `docs/tool-design.md`
 - `docs/testing.md`
 - `README.md`
+- `docs/capability-composition.md`
 - `docs/design/limits-and-recovery.md`
 - `SECURITY.md`
 - `website/locales/README.md`
@@ -175,127 +176,126 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`docs/ghidra-riscv.md`](docs/ghidra-riscv.md) |
 | 38 | ✓ | [`docs/go-binaries.md`](docs/go-binaries.md) |
 | 39 | ✓ | [`docs/godot-pck.md`](docs/godot-pck.md) |
-| 40 | ✓ | [`docs/harmony-analysis.md`](docs/harmony-analysis.md) |
-| 41 | ✓ | [`docs/hex-records.md`](docs/hex-records.md) |
-| 42 | ✓ | [`docs/il2cpp-metadata.md`](docs/il2cpp-metadata.md) |
-| 43 | ✓ | [`docs/javascript-application-graph.md`](docs/javascript-application-graph.md) |
-| 44 | ✓ | [`docs/javascript-route-inventory.md`](docs/javascript-route-inventory.md) |
-| 45 | ✓ | [`docs/javascript-runtime-observation.md`](docs/javascript-runtime-observation.md) |
-| 46 | ✓ | [`docs/javascript-runtime-reconciliation.md`](docs/javascript-runtime-reconciliation.md) |
-| 47 | ✓ | [`docs/migration-6.2.md`](docs/migration-6.2.md) |
-| 48 | ✓ | [`docs/native-function-matching.md`](docs/native-function-matching.md) |
-| 49 | ✓ | [`docs/node-sea.md`](docs/node-sea.md) |
-| 50 | ✓ | [`docs/pe-load-config.md`](docs/pe-load-config.md) |
-| 51 | ✓ | [`docs/python-pyc.md`](docs/python-pyc.md) |
-| 52 | ✓ | [`docs/raw-binary.md`](docs/raw-binary.md) |
-| 53 | ✓ | [`docs/specs/agent-environments/README.md`](docs/specs/agent-environments/README.md) |
-| 54 | ✓ | [`docs/sqlite-databases.md`](docs/sqlite-databases.md) |
-| 55 | ✓ | [`docs/uf2-dfuse.md`](docs/uf2-dfuse.md) |
-| 56 | ✓ | [`docs/uimage.md`](docs/uimage.md) |
-| 57 | ✓ | [`docs/unityfs.md`](docs/unityfs.md) |
-| 58 | ✓ | [`docs/web-runtime.md`](docs/web-runtime.md) |
-| 59 | ✓ | [`docs/web-source-location.md`](docs/web-source-location.md) |
-| 60 | ✓ | [`docs/website-module-trace.md`](docs/website-module-trace.md) |
-| 61 | ✓ | [`docs/website-script-export.md`](docs/website-script-export.md) |
-| 62 | ✓ | [`native/windows/README.md`](native/windows/README.md) |
-| 63 | ✓ | [`tests/conformance/ghidra/README.md`](tests/conformance/ghidra/README.md) |
-| 64 | ✓ | [`tests/conformance/README.md`](tests/conformance/README.md) |
-| 65 | ✓ | [`tests/fixtures/android/jni-bindings/README.md`](tests/fixtures/android/jni-bindings/README.md) |
-| 66 | ✓ | [`tests/fixtures/android/r8-mapping/README.md`](tests/fixtures/android/r8-mapping/README.md) |
-| 67 | ✓ | [`tests/fixtures/golden/README.md`](tests/fixtures/golden/README.md) |
-| 68 | ✓ | [`tests/fixtures/native-macos/archive-xml-encoding/README.md`](tests/fixtures/native-macos/archive-xml-encoding/README.md) |
-| 69 | ✓ | [`tests/fixtures/native-macos/dyld-inventory/README.md`](tests/fixtures/native-macos/dyld-inventory/README.md) |
-| 70 | ✓ | [`tests/fixtures/native-macos/lipo-same-cpu/README.md`](tests/fixtures/native-macos/lipo-same-cpu/README.md) |
-| 71 | ✓ | [`tests/fixtures/native-macos/load-command-text-values/README.md`](tests/fixtures/native-macos/load-command-text-values/README.md) |
-| 72 | ✓ | [`tests/fixtures/pcap/README.md`](tests/fixtures/pcap/README.md) |
-| 73 | ✓ | [`tests/fixtures/wasm/README.md`](tests/fixtures/wasm/README.md) |
-| 74 | ✓ | [`tests/support/analysis-efficiency/README.md`](tests/support/analysis-efficiency/README.md) |
-| 75 | ✓ | [`third_party/pwndbg/README.md`](third_party/pwndbg/README.md) |
-| 76 | ✓ | [`third_party/pwntools/README.md`](third_party/pwntools/README.md) |
-| 77 | ✓ | [`third_party/README.md`](third_party/README.md) |
-| 78 | ✓ | [`third_party/web-network-captures/README.md`](third_party/web-network-captures/README.md) |
-| 79 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
-| 80 | ✓ | [`website/figures.md`](website/figures.md) |
-| 81 | ✓ | [`website/README.md`](website/README.md) |
-| 82 | ✓ | [`website/style-guide.md`](website/style-guide.md) |
-| 83 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 84 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
-| 85 | → | [`docs/adb-device-analysis.md`](docs/adb-device-analysis.md) |
-| 86 | → | [`docs/agent-environments.md`](docs/agent-environments.md) |
-| 87 | → | [`docs/android-analysis.md`](docs/android-analysis.md) |
-| 88 | → | [`docs/apktool-resource-analysis.md`](docs/apktool-resource-analysis.md) |
-| 89 | → | [`docs/apple-application-analysis.md`](docs/apple-application-analysis.md) |
-| 90 | → | [`docs/apple-ips.md`](docs/apple-ips.md) |
-| 91 | → | [`docs/binary-diagnostics.md`](docs/binary-diagnostics.md) |
-| 92 | → | [`docs/browser-observation.md`](docs/browser-observation.md) |
-| 93 | → | [`docs/cli.md`](docs/cli.md) |
-| 94 | → | [`docs/design/limits-and-recovery.md`](docs/design/limits-and-recovery.md) |
-| 95 | → | [`docs/desktop-applications.md`](docs/desktop-applications.md) |
-| 96 | → | [`docs/elf-notes.md`](docs/elf-notes.md) |
-| 97 | → | [`docs/erlang-beam.md`](docs/erlang-beam.md) |
-| 98 | → | [`docs/evm-bytecode.md`](docs/evm-bytecode.md) |
-| 99 | → | [`docs/firmware-analysis.md`](docs/firmware-analysis.md) |
-| 100 | → | [`docs/flutter-analysis.md`](docs/flutter-analysis.md) |
-| 101 | → | [`docs/ghidra-dos.md`](docs/ghidra-dos.md) |
-| 102 | → | [`docs/gpu-code-objects.md`](docs/gpu-code-objects.md) |
-| 103 | → | [`docs/ida-provider.md`](docs/ida-provider.md) |
-| 104 | → | [`docs/installation.md`](docs/installation.md) |
-| 105 | → | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
-| 106 | → | [`docs/javascript-artifact-reconstruction.md`](docs/javascript-artifact-reconstruction.md) |
-| 107 | → | [`docs/jeb-analysis.md`](docs/jeb-analysis.md) |
-| 108 | → | [`docs/kernel-modules.md`](docs/kernel-modules.md) |
-| 109 | → | [`docs/kuna-provider.md`](docs/kuna-provider.md) |
-| 110 | → | [`docs/managed-code-analysis.md`](docs/managed-code-analysis.md) |
-| 111 | → | [`docs/mcp-contracts.md`](docs/mcp-contracts.md) |
-| 112 | → | [`docs/mcp-prompts.md`](docs/mcp-prompts.md) |
-| 113 | → | [`docs/model-artifacts.md`](docs/model-artifacts.md) |
-| 114 | → | [`docs/native-investigation.md`](docs/native-investigation.md) |
-| 115 | → | [`docs/packet-captures.md`](docs/packet-captures.md) |
-| 116 | → | [`docs/pcap-analysis.md`](docs/pcap-analysis.md) |
-| 117 | → | [`docs/pe-certificates.md`](docs/pe-certificates.md) |
-| 118 | → | [`docs/pe-imports.md`](docs/pe-imports.md) |
-| 119 | → | [`docs/process-capture.md`](docs/process-capture.md) |
-| 120 | → | [`docs/python-packaged-applications.md`](docs/python-packaged-applications.md) |
-| 121 | → | [`docs/readme/README_ar.md`](docs/readme/README_ar.md) |
-| 122 | → | [`docs/readme/README_de.md`](docs/readme/README_de.md) |
-| 123 | → | [`docs/readme/README_el.md`](docs/readme/README_el.md) |
-| 124 | → | [`docs/readme/README_es.md`](docs/readme/README_es.md) |
-| 125 | → | [`docs/readme/README_fa.md`](docs/readme/README_fa.md) |
-| 126 | → | [`docs/readme/README_fr.md`](docs/readme/README_fr.md) |
-| 127 | → | [`docs/readme/README_id.md`](docs/readme/README_id.md) |
-| 128 | → | [`docs/readme/README_it.md`](docs/readme/README_it.md) |
-| 129 | → | [`docs/readme/README_ja.md`](docs/readme/README_ja.md) |
-| 130 | → | [`docs/readme/README_ko.md`](docs/readme/README_ko.md) |
-| 131 | → | [`docs/readme/README_ml.md`](docs/readme/README_ml.md) |
-| 132 | → | [`docs/readme/README_pl.md`](docs/readme/README_pl.md) |
-| 133 | → | [`docs/readme/README_pt-BR.md`](docs/readme/README_pt-BR.md) |
-| 134 | → | [`docs/readme/README_ro.md`](docs/readme/README_ro.md) |
-| 135 | → | [`docs/readme/README_ru.md`](docs/readme/README_ru.md) |
-| 136 | → | [`docs/readme/README_th.md`](docs/readme/README_th.md) |
-| 137 | → | [`docs/readme/README_tr.md`](docs/readme/README_tr.md) |
-| 138 | → | [`docs/readme/README_uk.md`](docs/readme/README_uk.md) |
-| 139 | → | [`docs/readme/README_ur-Latn.md`](docs/readme/README_ur-Latn.md) |
-| 140 | → | [`docs/readme/README_vi.md`](docs/readme/README_vi.md) |
-| 141 | → | [`docs/readme/README_zh-TW.md`](docs/readme/README_zh-TW.md) |
-| 142 | → | [`docs/readme/README_zh.md`](docs/readme/README_zh.md) |
-| 143 | → | [`docs/recorded-crashes.md`](docs/recorded-crashes.md) |
-| 144 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 145 | → | [`docs/reverse-engineering-tools.md`](docs/reverse-engineering-tools.md) |
-| 146 | → | [`docs/roadmap.md`](docs/roadmap.md) |
-| 147 | → | [`docs/rust-binaries.md`](docs/rust-binaries.md) |
-| 148 | → | [`docs/signal-recordings.md`](docs/signal-recordings.md) |
-| 149 | → | [`docs/testing.md`](docs/testing.md) |
-| 150 | → | [`docs/tool-design.md`](docs/tool-design.md) |
-| 151 | → | [`docs/web-network-captures.md`](docs/web-network-captures.md) |
-| 152 | → | [`docs/windows-ghidra-p0.md`](docs/windows-ghidra-p0.md) |
-| 153 | → | [`licenses/README.md`](licenses/README.md) |
-| 154 | → | [`README.md`](README.md) |
-| 155 | → | [`SECURITY.md`](SECURITY.md) |
-| 156 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 157 | → | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
-| 158 | → | [`third_party/pwndbg/LICENSE.md`](third_party/pwndbg/LICENSE.md) |
-| 159 | → | [`third_party/wabt/README.md`](third_party/wabt/README.md) |
-| 160 | → | [`website/locales/README.md`](website/locales/README.md) |
+| 40 | ✓ | [`docs/hex-records.md`](docs/hex-records.md) |
+| 41 | ✓ | [`docs/il2cpp-metadata.md`](docs/il2cpp-metadata.md) |
+| 42 | ✓ | [`docs/javascript-application-graph.md`](docs/javascript-application-graph.md) |
+| 43 | ✓ | [`docs/javascript-route-inventory.md`](docs/javascript-route-inventory.md) |
+| 44 | ✓ | [`docs/javascript-runtime-observation.md`](docs/javascript-runtime-observation.md) |
+| 45 | ✓ | [`docs/javascript-runtime-reconciliation.md`](docs/javascript-runtime-reconciliation.md) |
+| 46 | ✓ | [`docs/migration-6.2.md`](docs/migration-6.2.md) |
+| 47 | ✓ | [`docs/native-function-matching.md`](docs/native-function-matching.md) |
+| 48 | ✓ | [`docs/node-sea.md`](docs/node-sea.md) |
+| 49 | ✓ | [`docs/pe-load-config.md`](docs/pe-load-config.md) |
+| 50 | ✓ | [`docs/python-pyc.md`](docs/python-pyc.md) |
+| 51 | ✓ | [`docs/raw-binary.md`](docs/raw-binary.md) |
+| 52 | ✓ | [`docs/specs/agent-environments/README.md`](docs/specs/agent-environments/README.md) |
+| 53 | ✓ | [`docs/sqlite-databases.md`](docs/sqlite-databases.md) |
+| 54 | ✓ | [`docs/uf2-dfuse.md`](docs/uf2-dfuse.md) |
+| 55 | ✓ | [`docs/uimage.md`](docs/uimage.md) |
+| 56 | ✓ | [`docs/unityfs.md`](docs/unityfs.md) |
+| 57 | ✓ | [`docs/web-source-location.md`](docs/web-source-location.md) |
+| 58 | ✓ | [`docs/website-module-trace.md`](docs/website-module-trace.md) |
+| 59 | ✓ | [`docs/website-script-export.md`](docs/website-script-export.md) |
+| 60 | ✓ | [`native/windows/README.md`](native/windows/README.md) |
+| 61 | ✓ | [`tests/conformance/ghidra/README.md`](tests/conformance/ghidra/README.md) |
+| 62 | ✓ | [`tests/conformance/README.md`](tests/conformance/README.md) |
+| 63 | ✓ | [`tests/fixtures/android/jni-bindings/README.md`](tests/fixtures/android/jni-bindings/README.md) |
+| 64 | ✓ | [`tests/fixtures/android/r8-mapping/README.md`](tests/fixtures/android/r8-mapping/README.md) |
+| 65 | ✓ | [`tests/fixtures/golden/README.md`](tests/fixtures/golden/README.md) |
+| 66 | ✓ | [`tests/fixtures/native-macos/archive-xml-encoding/README.md`](tests/fixtures/native-macos/archive-xml-encoding/README.md) |
+| 67 | ✓ | [`tests/fixtures/native-macos/dyld-inventory/README.md`](tests/fixtures/native-macos/dyld-inventory/README.md) |
+| 68 | ✓ | [`tests/fixtures/native-macos/lipo-same-cpu/README.md`](tests/fixtures/native-macos/lipo-same-cpu/README.md) |
+| 69 | ✓ | [`tests/fixtures/native-macos/load-command-text-values/README.md`](tests/fixtures/native-macos/load-command-text-values/README.md) |
+| 70 | ✓ | [`tests/fixtures/pcap/README.md`](tests/fixtures/pcap/README.md) |
+| 71 | ✓ | [`tests/fixtures/wasm/README.md`](tests/fixtures/wasm/README.md) |
+| 72 | ✓ | [`tests/support/analysis-efficiency/README.md`](tests/support/analysis-efficiency/README.md) |
+| 73 | ✓ | [`third_party/pwndbg/README.md`](third_party/pwndbg/README.md) |
+| 74 | ✓ | [`third_party/pwntools/README.md`](third_party/pwntools/README.md) |
+| 75 | ✓ | [`third_party/README.md`](third_party/README.md) |
+| 76 | ✓ | [`third_party/web-network-captures/README.md`](third_party/web-network-captures/README.md) |
+| 77 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
+| 78 | ✓ | [`website/figures.md`](website/figures.md) |
+| 79 | ✓ | [`website/README.md`](website/README.md) |
+| 80 | ✓ | [`website/style-guide.md`](website/style-guide.md) |
+| 81 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 82 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
+| 83 | → | [`docs/adb-device-analysis.md`](docs/adb-device-analysis.md) |
+| 84 | → | [`docs/agent-environments.md`](docs/agent-environments.md) |
+| 85 | → | [`docs/android-analysis.md`](docs/android-analysis.md) |
+| 86 | → | [`docs/apktool-resource-analysis.md`](docs/apktool-resource-analysis.md) |
+| 87 | → | [`docs/apple-application-analysis.md`](docs/apple-application-analysis.md) |
+| 88 | → | [`docs/apple-ips.md`](docs/apple-ips.md) |
+| 89 | → | [`docs/binary-diagnostics.md`](docs/binary-diagnostics.md) |
+| 90 | → | [`docs/browser-observation.md`](docs/browser-observation.md) |
+| 91 | → | [`docs/capability-composition.md`](docs/capability-composition.md) |
+| 92 | → | [`docs/cli.md`](docs/cli.md) |
+| 93 | → | [`docs/design/limits-and-recovery.md`](docs/design/limits-and-recovery.md) |
+| 94 | → | [`docs/desktop-applications.md`](docs/desktop-applications.md) |
+| 95 | → | [`docs/elf-notes.md`](docs/elf-notes.md) |
+| 96 | → | [`docs/erlang-beam.md`](docs/erlang-beam.md) |
+| 97 | → | [`docs/evm-bytecode.md`](docs/evm-bytecode.md) |
+| 98 | → | [`docs/firmware-analysis.md`](docs/firmware-analysis.md) |
+| 99 | → | [`docs/flutter-analysis.md`](docs/flutter-analysis.md) |
+| 100 | → | [`docs/ghidra-dos.md`](docs/ghidra-dos.md) |
+| 101 | → | [`docs/gpu-code-objects.md`](docs/gpu-code-objects.md) |
+| 102 | → | [`docs/ida-provider.md`](docs/ida-provider.md) |
+| 103 | → | [`docs/installation.md`](docs/installation.md) |
+| 104 | → | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
+| 105 | → | [`docs/javascript-artifact-reconstruction.md`](docs/javascript-artifact-reconstruction.md) |
+| 106 | → | [`docs/jeb-analysis.md`](docs/jeb-analysis.md) |
+| 107 | → | [`docs/kernel-modules.md`](docs/kernel-modules.md) |
+| 108 | → | [`docs/kuna-provider.md`](docs/kuna-provider.md) |
+| 109 | → | [`docs/managed-code-analysis.md`](docs/managed-code-analysis.md) |
+| 110 | → | [`docs/mcp-contracts.md`](docs/mcp-contracts.md) |
+| 111 | → | [`docs/mcp-prompts.md`](docs/mcp-prompts.md) |
+| 112 | → | [`docs/model-artifacts.md`](docs/model-artifacts.md) |
+| 113 | → | [`docs/native-investigation.md`](docs/native-investigation.md) |
+| 114 | → | [`docs/packet-captures.md`](docs/packet-captures.md) |
+| 115 | → | [`docs/pcap-analysis.md`](docs/pcap-analysis.md) |
+| 116 | → | [`docs/pe-certificates.md`](docs/pe-certificates.md) |
+| 117 | → | [`docs/pe-imports.md`](docs/pe-imports.md) |
+| 118 | → | [`docs/process-capture.md`](docs/process-capture.md) |
+| 119 | → | [`docs/python-packaged-applications.md`](docs/python-packaged-applications.md) |
+| 120 | → | [`docs/readme/README_ar.md`](docs/readme/README_ar.md) |
+| 121 | → | [`docs/readme/README_de.md`](docs/readme/README_de.md) |
+| 122 | → | [`docs/readme/README_el.md`](docs/readme/README_el.md) |
+| 123 | → | [`docs/readme/README_es.md`](docs/readme/README_es.md) |
+| 124 | → | [`docs/readme/README_fa.md`](docs/readme/README_fa.md) |
+| 125 | → | [`docs/readme/README_fr.md`](docs/readme/README_fr.md) |
+| 126 | → | [`docs/readme/README_id.md`](docs/readme/README_id.md) |
+| 127 | → | [`docs/readme/README_it.md`](docs/readme/README_it.md) |
+| 128 | → | [`docs/readme/README_ja.md`](docs/readme/README_ja.md) |
+| 129 | → | [`docs/readme/README_ko.md`](docs/readme/README_ko.md) |
+| 130 | → | [`docs/readme/README_ml.md`](docs/readme/README_ml.md) |
+| 131 | → | [`docs/readme/README_pl.md`](docs/readme/README_pl.md) |
+| 132 | → | [`docs/readme/README_pt-BR.md`](docs/readme/README_pt-BR.md) |
+| 133 | → | [`docs/readme/README_ro.md`](docs/readme/README_ro.md) |
+| 134 | → | [`docs/readme/README_ru.md`](docs/readme/README_ru.md) |
+| 135 | → | [`docs/readme/README_th.md`](docs/readme/README_th.md) |
+| 136 | → | [`docs/readme/README_tr.md`](docs/readme/README_tr.md) |
+| 137 | → | [`docs/readme/README_uk.md`](docs/readme/README_uk.md) |
+| 138 | → | [`docs/readme/README_ur-Latn.md`](docs/readme/README_ur-Latn.md) |
+| 139 | → | [`docs/readme/README_vi.md`](docs/readme/README_vi.md) |
+| 140 | → | [`docs/readme/README_zh-TW.md`](docs/readme/README_zh-TW.md) |
+| 141 | → | [`docs/readme/README_zh.md`](docs/readme/README_zh.md) |
+| 142 | → | [`docs/recorded-crashes.md`](docs/recorded-crashes.md) |
+| 143 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 144 | → | [`docs/reverse-engineering-tools.md`](docs/reverse-engineering-tools.md) |
+| 145 | → | [`docs/roadmap.md`](docs/roadmap.md) |
+| 146 | → | [`docs/rust-binaries.md`](docs/rust-binaries.md) |
+| 147 | → | [`docs/signal-recordings.md`](docs/signal-recordings.md) |
+| 148 | → | [`docs/testing.md`](docs/testing.md) |
+| 149 | → | [`docs/tool-design.md`](docs/tool-design.md) |
+| 150 | → | [`docs/web-network-captures.md`](docs/web-network-captures.md) |
+| 151 | → | [`docs/windows-ghidra-p0.md`](docs/windows-ghidra-p0.md) |
+| 152 | → | [`licenses/README.md`](licenses/README.md) |
+| 153 | → | [`README.md`](README.md) |
+| 154 | → | [`SECURITY.md`](SECURITY.md) |
+| 155 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 156 | → | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
+| 157 | → | [`third_party/pwndbg/LICENSE.md`](third_party/pwndbg/LICENSE.md) |
+| 158 | → | [`third_party/wabt/README.md`](third_party/wabt/README.md) |
+| 159 | → | [`website/locales/README.md`](website/locales/README.md) |
 
 ---
 

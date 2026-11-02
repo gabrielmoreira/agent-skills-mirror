@@ -8,6 +8,32 @@ The project is also where I codify practical patterns for making agents more cap
 
 [Install the full catalog](#installation) · [Keep skills up to date](#updating-and-refreshing)
 
+## Find a workflow
+
+Start with the decision or job you have. These are links to existing skills, not
+new skill names or runtime aliases. For authority, evidence, and stop conditions,
+use the [agent-trust routes](references/agent-trust-routes.md).
+
+| What you want to do | Start with | Boundary |
+|---|---|---|
+| Take an issue through implementation and a verified PR | [neckbeard](neckbeard/SKILL.md) | Coordinates the software delivery lifecycle; specialists retain their methods |
+| Plan implementation of an approved spec | [implementation-planning](implementation-planning/SKILL.md) | Plans dependencies and verification; does not approve the requirement or implement it |
+| Fix an unreliable agent or build its runtime | [harness-engineering](harness-engineering/SKILL.md) | Instructions, tools, state, recovery and bounded loops; production operation has a separate owner |
+| Review this patch or pull request | [code-review](code-review/SKILL.md) | Evidence-backed change review; does not implement the fix |
+| Finish an authorized change through merge and verify it | [verified-delivery](verified-delivery/SKILL.md) | Carries existing delivery authority; never grants merge or deployment permission |
+| Find the cause of a failing test or incident | [systematic-debugging](systematic-debugging/SKILL.md) | Diagnosis before a repair; incident management and runtime containment retain their owners |
+| Is this customer problem worth further investment? | [product-discovery](product-discovery/SKILL.md) | External problem evidence before requirements; enthusiasm is not validation |
+| Set product direction or choose the next product decision | [product-strategy](product-strategy/SKILL.md) / [product-methodology](product-methodology/SKILL.md) | Strategy versus tactical scope and priorities |
+| Support founder operations or an executive operating rhythm | [chief-of-staff-methodology](chief-of-staff-methodology/SKILL.md) | Prepare and coordinate decisions; the accountable human decides |
+| Design repeatable business operations and handoffs | [operational-design](operational-design/SKILL.md) | Business process design; software delivery and financial models keep separate owners |
+| May this agent act? | [ai-governance](ai-governance/SKILL.md) | Scoped earned-autonomy decision, then runtime enforcement |
+| May this capability enter our environment? | [ai-governance](ai-governance/SKILL.md) | Capability admission is separate from an agent's runtime authority |
+| Should we scale this AI pilot? | [ai-operating-economics](ai-operating-economics/SKILL.md) | Outcomes, full intervention costs, uncertainty and governance; adoption can be constrained or stopped |
+| Grill this specification or proposal | [product-discovery](product-discovery/SKILL.md) | Read the draft, ask one consequential question, preserve unresolved evidence |
+| Why did this agent fail, and may it resume? | [agent-trust routes](references/agent-trust-routes.md#failure-and-resumption) | Diagnosis, containment, incident evidence and renewed authority are separate decisions |
+| Can the agent weaken its own controls? | [agent-trust routes](references/agent-trust-routes.md#protected-controls) | Protect supervisory assets and independently verify current control state |
+| Can humans supervise this volume of agent work? | [agent-trust routes](references/agent-trust-routes.md#supervisory-capacity) | Assess workload, review capacity and reserved decisions; no validated new bundle is implied |
+
 ## Skills
 
 ### [actuarial-risk-modeling](actuarial-risk-modeling/SKILL.md)
@@ -101,7 +127,7 @@ Model technical capacity, unit cost, and budget constraints connected to demand,
 
 ### [chief-of-staff-methodology](chief-of-staff-methodology/SKILL.md)
 
-Prepare executive decisions, information triage, organizational sensing, institutional memory, and calendar choices with accountable human authority, transparent data use, and reviewable trade-offs.
+Support chief of staff (CoS), executive operations, and founder operations: decision support, operating rhythm, strategic attention, briefing, information triage, and institutional memory for solo operators or organizations. Preserve accountable human authority and route meetings, org design, business processes, and authorized task changes to their owners.
 
 ### [cli-builder](cli-builder/SKILL.md)
 
@@ -110,6 +136,10 @@ Build and refactor CLI tools for AI agent consumption. 10 universal patterns (no
 ### [cncf-landscape](cncf-landscape/SKILL.md)
 
 Discover and compare cloud-native technologies from the live CNCF Landscape API, then turn the evidence into a constraint-aware shortlist with trade-offs, unknowns, and a bounded validation plan. Ships a stdlib-only query CLI, API caveats, a decision framework, an output template, and six evals.
+
+### [code-review](code-review/SKILL.md)
+
+Review a change for correctness, security, maintainability, and test adequacy, and reach a verdict the evidence supports. Covers scoping and attention budgets, risk tiers, a 13-class defect taxonomy, severity-labeled comments, verdict and residual-risk records, AI-authored and AI-reviewed changes, and review metrics that resist gaming. Grounded in Google's engineering practices, the Microsoft and Google review studies, and recent AI-review deployments. Ships a read-only diff-scope tool with test mapping and risk flags, a review-record checker, five fillable templates, and eleven evals.
 
 ### [color-management](color-management/SKILL.md)
 

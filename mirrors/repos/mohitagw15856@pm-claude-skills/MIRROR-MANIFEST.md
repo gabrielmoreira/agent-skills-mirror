@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 16 followed patterns, 3210 file(s) materialized.
+Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 17 followed patterns, 3211 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 16 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 16 |
-| Files         | 3210 |
+| Followed pats | 17 |
+| Files         | 3211 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 16 followed 
 - `output-styles/plain-honest-prose.md`
 - `REPO-MAP.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
+- `docs/fork-sync.md`
 - `COMMUNITY-SKILLS.md`
 - `evals/README.md`
 - `docs/AUTHORING-DEPTH.md`
@@ -3275,15 +3276,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3199 | → | [`docs/AUTHORING-DEPTH.md`](docs/AUTHORING-DEPTH.md) |
 | 3200 | → | [`docs/craft/product-decisions.md`](docs/craft/product-decisions.md) |
 | 3201 | → | [`docs/DEPRECATION.md`](docs/DEPRECATION.md) |
-| 3202 | → | [`docs/FOUNDATION.md`](docs/FOUNDATION.md) |
-| 3203 | → | [`docs/prose-style.md`](docs/prose-style.md) |
-| 3204 | → | [`evals/README.md`](evals/README.md) |
-| 3205 | → | [`output-styles/plain-honest-prose.md`](output-styles/plain-honest-prose.md) |
-| 3206 | → | [`REPO-MAP.md`](REPO-MAP.md) |
-| 3207 | → | [`SECURITY.md`](SECURITY.md) |
-| 3208 | → | [`SKILL-AUTHORING-STANDARD.md`](SKILL-AUTHORING-STANDARD.md) |
-| 3209 | → | [`SKILLSPEC.md`](SKILLSPEC.md) |
-| 3210 | → | [`TIERS.md`](TIERS.md) |
+| 3202 | → | [`docs/fork-sync.md`](docs/fork-sync.md) |
+| 3203 | → | [`docs/FOUNDATION.md`](docs/FOUNDATION.md) |
+| 3204 | → | [`docs/prose-style.md`](docs/prose-style.md) |
+| 3205 | → | [`evals/README.md`](evals/README.md) |
+| 3206 | → | [`output-styles/plain-honest-prose.md`](output-styles/plain-honest-prose.md) |
+| 3207 | → | [`REPO-MAP.md`](REPO-MAP.md) |
+| 3208 | → | [`SECURITY.md`](SECURITY.md) |
+| 3209 | → | [`SKILL-AUTHORING-STANDARD.md`](SKILL-AUTHORING-STANDARD.md) |
+| 3210 | → | [`SKILLSPEC.md`](SKILLSPEC.md) |
+| 3211 | → | [`TIERS.md`](TIERS.md) |
 
 ---
 

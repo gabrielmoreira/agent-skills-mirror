@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 6 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 67
 | Ref Type      | `branch` |
 | Ref           | `next` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 67 |
+| Followed pats | 6 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,12 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 67
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `.github/SECURITY.md`
+- `docs/CONTRIBUTING.md`
+- `ts/docs/internal/release.md`
+- `python/docs/release.md`
+- `.github/SUPPORT.md`
 
 ## File Index
 
@@ -62,70 +67,79 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/skills/bug-fixing/references/regression-testing.md`](.agents/skills/bug-fixing/references/regression-testing.md) |
 | 2 | ✓ | [`.agents/skills/bug-fixing/SKILL.md`](.agents/skills/bug-fixing/SKILL.md) |
 | 3 | ✓ | [`.agents/skills/cli-command/references/client-cache-sync.md`](.agents/skills/cli-command/references/client-cache-sync.md) |
-| 4 | ✓ | [`.agents/skills/cli-command/references/design.md`](.agents/skills/cli-command/references/design.md) |
-| 5 | ✓ | [`.agents/skills/cli-command/references/implementation.md`](.agents/skills/cli-command/references/implementation.md) |
-| 6 | ✓ | [`.agents/skills/cli-command/SKILL.md`](.agents/skills/cli-command/SKILL.md) |
-| 7 | ✓ | [`.agents/skills/cli-e2e/references/docker-cli-e2e.md`](.agents/skills/cli-e2e/references/docker-cli-e2e.md) |
-| 8 | ✓ | [`.agents/skills/cli-e2e/SKILL.md`](.agents/skills/cli-e2e/SKILL.md) |
-| 9 | ✓ | [`.agents/skills/cli-release/references/release-workflow.md`](.agents/skills/cli-release/references/release-workflow.md) |
-| 10 | ✓ | [`.agents/skills/cli-release/SKILL.md`](.agents/skills/cli-release/SKILL.md) |
-| 11 | ✓ | [`.agents/skills/cross-sdk-parity/references/parity-workflow.md`](.agents/skills/cross-sdk-parity/references/parity-workflow.md) |
-| 12 | ✓ | [`.agents/skills/cross-sdk-parity/SKILL.md`](.agents/skills/cross-sdk-parity/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/docs-decisions/references/decision-records.md`](.agents/skills/docs-decisions/references/decision-records.md) |
-| 14 | ✓ | [`.agents/skills/docs-decisions/references/docs-workflow.md`](.agents/skills/docs-decisions/references/docs-workflow.md) |
-| 15 | ✓ | [`.agents/skills/docs-decisions/SKILL.md`](.agents/skills/docs-decisions/SKILL.md) |
-| 16 | ✓ | [`.agents/skills/effect-v4/references/cli-surface.md`](.agents/skills/effect-v4/references/cli-surface.md) |
-| 17 | ✓ | [`.agents/skills/effect-v4/references/core-patterns.md`](.agents/skills/effect-v4/references/core-patterns.md) |
-| 18 | ✓ | [`.agents/skills/effect-v4/references/upgrade-workflow.md`](.agents/skills/effect-v4/references/upgrade-workflow.md) |
-| 19 | ✓ | [`.agents/skills/effect-v4/scripts/check-examples.mjs`](.agents/skills/effect-v4/scripts/check-examples.mjs) |
-| 20 | ✓ | [`.agents/skills/effect-v4/SKILL.md`](.agents/skills/effect-v4/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/effect-v4/versions.json`](.agents/skills/effect-v4/versions.json) |
-| 22 | ✓ | [`.agents/skills/eve/references/source-of-truth.md`](.agents/skills/eve/references/source-of-truth.md) |
-| 23 | ✓ | [`.agents/skills/eve/SKILL.md`](.agents/skills/eve/SKILL.md) |
-| 24 | ✓ | [`.agents/skills/good-docs-audit/references/audit-process.md`](.agents/skills/good-docs-audit/references/audit-process.md) |
-| 25 | ✓ | [`.agents/skills/good-docs-audit/SKILL.md`](.agents/skills/good-docs-audit/SKILL.md) |
-| 26 | ✓ | [`.agents/skills/good-docs-writing/references/style-guide.md`](.agents/skills/good-docs-writing/references/style-guide.md) |
-| 27 | ✓ | [`.agents/skills/good-docs-writing/SKILL.md`](.agents/skills/good-docs-writing/SKILL.md) |
-| 28 | ✓ | [`.agents/skills/python-providers/references/provider-workflow.md`](.agents/skills/python-providers/references/provider-workflow.md) |
-| 29 | ✓ | [`.agents/skills/python-providers/SKILL.md`](.agents/skills/python-providers/SKILL.md) |
-| 30 | ✓ | [`.agents/skills/python-release/references/release-workflow.md`](.agents/skills/python-release/references/release-workflow.md) |
-| 31 | ✓ | [`.agents/skills/python-release/SKILL.md`](.agents/skills/python-release/SKILL.md) |
-| 32 | ✓ | [`.agents/skills/python-sdk/references/sdk-layout.md`](.agents/skills/python-sdk/references/sdk-layout.md) |
-| 33 | ✓ | [`.agents/skills/python-sdk/SKILL.md`](.agents/skills/python-sdk/SKILL.md) |
-| 34 | ✓ | [`.agents/skills/python-testing/references/nox-make.md`](.agents/skills/python-testing/references/nox-make.md) |
-| 35 | ✓ | [`.agents/skills/python-testing/SKILL.md`](.agents/skills/python-testing/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/repo-guidance/references/repository-workflow.md`](.agents/skills/repo-guidance/references/repository-workflow.md) |
-| 37 | ✓ | [`.agents/skills/repo-guidance/SKILL.md`](.agents/skills/repo-guidance/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/skill-maintenance/references/skill-format.md`](.agents/skills/skill-maintenance/references/skill-format.md) |
-| 39 | ✓ | [`.agents/skills/skill-maintenance/SKILL.md`](.agents/skills/skill-maintenance/SKILL.md) |
-| 40 | ✓ | [`.agents/skills/typescript-providers/references/provider-workflow.md`](.agents/skills/typescript-providers/references/provider-workflow.md) |
-| 41 | ✓ | [`.agents/skills/typescript-providers/SKILL.md`](.agents/skills/typescript-providers/SKILL.md) |
-| 42 | ✓ | [`.agents/skills/typescript-sdk/references/core-sdk.md`](.agents/skills/typescript-sdk/references/core-sdk.md) |
-| 43 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
-| 44 | ✓ | [`.agents/skills/typescript-testing/references/effect-v4-cli.md`](.agents/skills/typescript-testing/references/effect-v4-cli.md) |
-| 45 | ✓ | [`.agents/skills/typescript-testing/references/test-commands.md`](.agents/skills/typescript-testing/references/test-commands.md) |
-| 46 | ✓ | [`.agents/skills/typescript-testing/SKILL.md`](.agents/skills/typescript-testing/SKILL.md) |
-| 47 | ✓ | [`.agents/skills/verify-change/references/verification-map.md`](.agents/skills/verify-change/references/verification-map.md) |
-| 48 | ✓ | [`.agents/skills/verify-change/SKILL.md`](.agents/skills/verify-change/SKILL.md) |
-| 49 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 50 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 51 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 52 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
-| 53 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 54 | ✓ | [`docs/content/toolkits/faq/gemini.md`](docs/content/toolkits/faq/gemini.md) |
-| 55 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
-| 56 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
-| 57 | ✓ | [`skills/composio/references/errors.md`](skills/composio/references/errors.md) |
-| 58 | ✓ | [`skills/composio/references/for-you.md`](skills/composio/references/for-you.md) |
-| 59 | ✓ | [`skills/composio/references/platform.md`](skills/composio/references/platform.md) |
-| 60 | ✓ | [`skills/composio/SKILL.md`](skills/composio/SKILL.md) |
-| 61 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
-| 62 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
-| 63 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
-| 64 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
-| 65 | ✓ | [`ts/packages/cli/GLOSSARY.md`](ts/packages/cli/GLOSSARY.md) |
-| 66 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
-| 67 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
+| 4 | ✓ | [`.agents/skills/cli-command/references/command-example.md`](.agents/skills/cli-command/references/command-example.md) |
+| 5 | ✓ | [`.agents/skills/cli-command/references/data-and-lifecycle.md`](.agents/skills/cli-command/references/data-and-lifecycle.md) |
+| 6 | ✓ | [`.agents/skills/cli-command/references/design.md`](.agents/skills/cli-command/references/design.md) |
+| 7 | ✓ | [`.agents/skills/cli-command/references/implementation.md`](.agents/skills/cli-command/references/implementation.md) |
+| 8 | ✓ | [`.agents/skills/cli-command/SKILL.md`](.agents/skills/cli-command/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/cli-e2e/references/docker-cli-e2e.md`](.agents/skills/cli-e2e/references/docker-cli-e2e.md) |
+| 10 | ✓ | [`.agents/skills/cli-e2e/SKILL.md`](.agents/skills/cli-e2e/SKILL.md) |
+| 11 | ✓ | [`.agents/skills/cli-release/references/release-workflow.md`](.agents/skills/cli-release/references/release-workflow.md) |
+| 12 | ✓ | [`.agents/skills/cli-release/SKILL.md`](.agents/skills/cli-release/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/cross-sdk-parity/references/parity-workflow.md`](.agents/skills/cross-sdk-parity/references/parity-workflow.md) |
+| 14 | ✓ | [`.agents/skills/cross-sdk-parity/SKILL.md`](.agents/skills/cross-sdk-parity/SKILL.md) |
+| 15 | ✓ | [`.agents/skills/docs-decisions/references/decision-records.md`](.agents/skills/docs-decisions/references/decision-records.md) |
+| 16 | ✓ | [`.agents/skills/docs-decisions/references/docs-workflow.md`](.agents/skills/docs-decisions/references/docs-workflow.md) |
+| 17 | ✓ | [`.agents/skills/docs-decisions/SKILL.md`](.agents/skills/docs-decisions/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/effect-v4/references/cli-surface.md`](.agents/skills/effect-v4/references/cli-surface.md) |
+| 19 | ✓ | [`.agents/skills/effect-v4/references/core-patterns.md`](.agents/skills/effect-v4/references/core-patterns.md) |
+| 20 | ✓ | [`.agents/skills/effect-v4/references/upgrade-workflow.md`](.agents/skills/effect-v4/references/upgrade-workflow.md) |
+| 21 | ✓ | [`.agents/skills/effect-v4/scripts/check-examples.mjs`](.agents/skills/effect-v4/scripts/check-examples.mjs) |
+| 22 | ✓ | [`.agents/skills/effect-v4/SKILL.md`](.agents/skills/effect-v4/SKILL.md) |
+| 23 | ✓ | [`.agents/skills/effect-v4/versions.json`](.agents/skills/effect-v4/versions.json) |
+| 24 | ✓ | [`.agents/skills/eve/references/source-of-truth.md`](.agents/skills/eve/references/source-of-truth.md) |
+| 25 | ✓ | [`.agents/skills/eve/SKILL.md`](.agents/skills/eve/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/good-docs-audit/references/audit-process.md`](.agents/skills/good-docs-audit/references/audit-process.md) |
+| 27 | ✓ | [`.agents/skills/good-docs-audit/SKILL.md`](.agents/skills/good-docs-audit/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/good-docs-writing/references/style-guide.md`](.agents/skills/good-docs-writing/references/style-guide.md) |
+| 29 | ✓ | [`.agents/skills/good-docs-writing/SKILL.md`](.agents/skills/good-docs-writing/SKILL.md) |
+| 30 | ✓ | [`.agents/skills/python-providers/references/provider-workflow.md`](.agents/skills/python-providers/references/provider-workflow.md) |
+| 31 | ✓ | [`.agents/skills/python-providers/SKILL.md`](.agents/skills/python-providers/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/python-release/references/release-workflow.md`](.agents/skills/python-release/references/release-workflow.md) |
+| 33 | ✓ | [`.agents/skills/python-release/SKILL.md`](.agents/skills/python-release/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/python-sdk/references/sdk-layout.md`](.agents/skills/python-sdk/references/sdk-layout.md) |
+| 35 | ✓ | [`.agents/skills/python-sdk/SKILL.md`](.agents/skills/python-sdk/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/python-testing/references/nox-make.md`](.agents/skills/python-testing/references/nox-make.md) |
+| 37 | ✓ | [`.agents/skills/python-testing/SKILL.md`](.agents/skills/python-testing/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/repo-guidance/references/repository-workflow.md`](.agents/skills/repo-guidance/references/repository-workflow.md) |
+| 39 | ✓ | [`.agents/skills/repo-guidance/SKILL.md`](.agents/skills/repo-guidance/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/skill-maintenance/references/skill-format.md`](.agents/skills/skill-maintenance/references/skill-format.md) |
+| 41 | ✓ | [`.agents/skills/skill-maintenance/SKILL.md`](.agents/skills/skill-maintenance/SKILL.md) |
+| 42 | ✓ | [`.agents/skills/typescript-providers/references/provider-workflow.md`](.agents/skills/typescript-providers/references/provider-workflow.md) |
+| 43 | ✓ | [`.agents/skills/typescript-providers/SKILL.md`](.agents/skills/typescript-providers/SKILL.md) |
+| 44 | ✓ | [`.agents/skills/typescript-sdk/references/core-sdk.md`](.agents/skills/typescript-sdk/references/core-sdk.md) |
+| 45 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
+| 46 | ✓ | [`.agents/skills/typescript-testing/references/effect-v4-cli.md`](.agents/skills/typescript-testing/references/effect-v4-cli.md) |
+| 47 | ✓ | [`.agents/skills/typescript-testing/references/test-commands.md`](.agents/skills/typescript-testing/references/test-commands.md) |
+| 48 | ✓ | [`.agents/skills/typescript-testing/SKILL.md`](.agents/skills/typescript-testing/SKILL.md) |
+| 49 | ✓ | [`.agents/skills/verify-change/references/verification-map.md`](.agents/skills/verify-change/references/verification-map.md) |
+| 50 | ✓ | [`.agents/skills/verify-change/SKILL.md`](.agents/skills/verify-change/SKILL.md) |
+| 51 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 52 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 53 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 54 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
+| 55 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 56 | ✓ | [`docs/content/toolkits/faq/gemini.md`](docs/content/toolkits/faq/gemini.md) |
+| 57 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
+| 58 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
+| 59 | ✓ | [`skills/composio/references/errors.md`](skills/composio/references/errors.md) |
+| 60 | ✓ | [`skills/composio/references/for-you.md`](skills/composio/references/for-you.md) |
+| 61 | ✓ | [`skills/composio/references/platform.md`](skills/composio/references/platform.md) |
+| 62 | ✓ | [`skills/composio/SKILL.md`](skills/composio/SKILL.md) |
+| 63 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
+| 64 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
+| 65 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
+| 66 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
+| 67 | ✓ | [`ts/packages/cli/CONTRIBUTING.md`](ts/packages/cli/CONTRIBUTING.md) |
+| 68 | ✓ | [`ts/packages/cli/GLOSSARY.md`](ts/packages/cli/GLOSSARY.md) |
+| 69 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
+| 70 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
+| 71 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 72 | → | [`.github/SUPPORT.md`](.github/SUPPORT.md) |
+| 73 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 74 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
+| 75 | → | [`python/docs/release.md`](python/docs/release.md) |
+| 76 | → | [`ts/docs/internal/release.md`](ts/docs/internal/release.md) |
 
 ---
 

@@ -1,0 +1,154 @@
+# Supported OS / Python Compatibility Matrix
+
+**Source of truth.** This document explains which operating systems and Python versions the
+repository supports. `config/python-support.json` is its machine-readable counterpart and the two
+are checked together. The policy was added by
+[issue #333](https://github.com/tradermonty/claude-trading-skills/issues/333).
+
+The rule of thumb is **"supported = CI-enforced."** A combination is *supported* only if the
+project's CI actively exercises it on a runner. Combinations that are declared but **not**
+CI-tested are called *best-effort* and are kept deliberately distinct so no one reads best-effort
+as equivalent to supported.
+
+## Runtime promise
+
+`pyproject.toml` declares:
+
+```toml
+requires-python = ">=3.11,<3.14"
+```
+
+Python **3.11** is the root-project floor and **3.13** is the ceiling. The upper bound is intentional: it makes
+the promise closed rather than open-ended, so a future 3.14 cannot silently ship as "supported"
+without the CI matrix being extended first. A consequence of the `<3.14` bound is that `uv sync`
+on a 3.14 interpreter will reject the project unless you pass `--no-install-project` (the pattern CI
+already uses), so local development on a newer interpreter stays possible while the supported
+runtime remains bounded.
+
+## Root and standalone boundaries
+
+`config/python-support.json` is the machine-readable boundary. The shared root project and its
+`uv.lock` support Python 3.11 through 3.13. Packaged skills remain source-compatible with Python
+3.9 when their own `requirements.txt` permits it. Python 3.9 clean-room jobs must not sync the root
+lock or install the root project; they validate only standalone artifacts. Ruff therefore retains a
+`py39` syntax target across `skills/` and shared standalone scripts.
+
+## Supported (CI-enforced)
+
+Actively tested in CI:
+
+| OS | Python | Where |
+|----|--------|-------|
+| Linux (`ubuntu-latest`) | 3.11 | `test` / `coverage` / `workflow-replay` jobs, plus `lint` / `metadata` / `security` / `supply-chain` |
+| Linux (`ubuntu-latest`) | 3.9 | standalone `market-calendar-compat` clean room |
+| Linux (`ubuntu-latest`) | 3.13 | `compat-smoke` (PR) |
+| Windows (`windows-latest`) | 3.13 | `compat-smoke` (PR) |
+| Windows (`windows-latest`) | 3.11 | `compat-nightly` (daily) |
+| macOS (`macos-latest`) | 3.13 | `compat-smoke` (PR) |
+| macOS (`macos-latest`) | 3.11 | `compat-nightly` (daily) |
+
+The macOS runner uses the `macos-latest` label. `actions/setup-python` provisions the requested
+Python version independently of the base runner image, so the 3.11 leg is available on that label.
+
+## Best-effort (NOT CI-enforced)
+
+Any combination whose Python version satisfies `>=3.11,<3.14` on
+`ubuntu-latest` / `windows-latest` / `macos-latest`, **except** the CI-enforced rows above.
+
+Defined as the set-complement of the supported rows, so the two tiers never overlap. Nothing in
+this tier is claimed to "just work" — it is simply not ruled out at the package level.
+
+## Policy
+
+Every job in **every** workflow under `.github/workflows/` must satisfy the following (validated
+statically by `scripts/check_compat_matrix.py`):
+
+1. Its OS is in `{ubuntu-latest, windows-latest, macos-latest}`.
+2. Root-project jobs use Python in `[3.11, 3.14)`. Explicit standalone clean-room jobs may use the separately declared 3.9 floor.
+
+The drift guard globs the whole workflow directory rather than a hard-coded allowlist, so a
+brand-new workflow that runs a job on an unsupported OS / out-of-range Python is caught and not
+silently skipped. `ci.yml:dependency-review` (a third-party-action job) and
+`fmp-contract-canary.yml:preflight` (a shell-only gate job) have no `setup-python` step, so they
+are OS-checked only; single-runner jobs without a matrix axis are only OS-checked because no
+Python version can be pinned. Compatibility-defining jobs (`compat-smoke`, `compat-nightly`) are also
+checked against the documented axis mapping below.
+
+## Job → (os, python) mapping
+
+The compatibility-defining jobs are declared here and must match the actual workflow YAML:
+
+```yaml
+compat_matrix:
+  python: ">=3.11,<3.14"
+  supported_os: [ubuntu-latest, windows-latest, macos-latest]
+  jobs:
+    compat-smoke:
+      os: [ubuntu-latest, windows-latest, macos-latest]
+      python: ["3.13"]
+    compat-nightly:
+      os: [windows-latest, macos-latest]
+      python: ["3.11"]
+```
+
+`scripts/check_compat_matrix.py` parses this block and compares it to the axis sets it infers from
+`ci.yml` / `compat-nightly.yml`. Workflow environments are **not** (and cannot be) exercised by the
+static checker.
+
+## Enforcement scope
+
+The issue title asks to *define and enforce* the matrix. Enforcement here is static and has two
+parts:
+
+1. **A drift guard** (`scripts/check_compat_matrix.py`, run in the `metadata` CI job and as a
+   pre-commit hook) that fails a change if the documented matrix diverges from the workflow YAML, or
+   if any workflow job leaves the supported OS set / Python range.
+2. **Declaring only supported combinations** in the workflow itself.
+
+GitHub's list-form `runs-on` syntax is a conjunction of self-hosted runner
+labels, not an OS matrix. The checker classifies a list such as
+`[self-hosted, linux, x64]` as `self-hosted-linux`; it never treats `linux` as
+`ubuntu-latest`. Self-hosted categories are default-deny and must be listed in
+`config/python-support.json` before a job may use them. Unknown, ambiguous,
+dynamic, or non-self-hosted label lists fail closed. These runner categories
+remain separate from the documented GitHub-hosted OS set above.
+
+A *runtime* rejection of "this unsupported combination reached a runner" is **out of scope** for a
+static checker: a static tool cannot observe the live runner. This is a deliberate, documented
+reduction so the gap between "enforce" and the current implementation is explicit.
+
+## Why this matrix
+
+Two past failure classes motivated bounding the promise and testing cross-platform:
+
+- **#64** — a Windows default-encoding Markdown failure that would not have surfaced if the suite
+  had run on a Windows runner.
+- **#311** — a standalone dependency gap discovered by running the risk/state/navigator skills
+  outside the main project venv. The `compat-smoke` / `compat-nightly` jobs therefore run an extra
+  **isolated packaged-dependency import** step: each core skill's declared `requirements.txt` is
+  installed into a throwaway environment (`uv run --isolated --no-project --with <reqs>`) and the
+  entry modules listed in `config/compat-import-smoke.json` are imported independently with a
+  bounded timeout, per OS and per Python version. Stdlib-only skills run the same isolated import
+  without any `--with` arguments; they are not skipped. The explicit inventory avoids executing a
+  newly added helper merely because it matches `scripts/*.py`, while still covering each documented
+  CLI/resource entry point. This catches a missing dependency declaration that the shared dev
+  environment would otherwise mask via transitively installed packages. Function-local and dynamic
+  imports remain the responsibility of the repository-wide `scripts/check_skill_deps.py` AST gate;
+  the runtime smoke is intentionally scoped to configured import-safe entry modules.
+
+The cross-platform jobs (`compat-smoke`, `compat-nightly`) exercise the compatibility-sensitive
+suites — `position-sizer`, `futures-position-sizer`, `trader-memory-core`,
+`drawdown-circuit-breaker`, `trading-skills-navigator` — plus the UTF-8 / path / line-ending /
+temp-dir / subprocess-quoting regressions in `scripts/tests/test_compat_regressions.py`, so these
+classes no longer ship silently.
+
+## Verification record
+
+Local verification on a macOS (aarch64) host, using `uv sync --locked`:
+
+- Python 3.11: resolves the locked environment successfully after the Python 3.10 fork retirement.
+- Python 3.13: resolves the locked environment successfully (`scipy==1.17.1`, `statsmodels==0.14.6`).
+- Result: the `>=3.11,<3.14` range is viable for `--extra dev --extra ci` on this machine.
+
+Windows and macOS runner outcomes are validated by the PR's GitHub Actions; they cannot be
+reproduced locally from a macOS host.

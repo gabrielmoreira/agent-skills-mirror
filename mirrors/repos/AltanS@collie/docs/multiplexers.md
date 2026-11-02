@@ -271,7 +271,7 @@ What looks different on the core:
 - **Some dialogs cannot be answered from the phone yet.** A dialog of pi, opencode or Oh My Pi that
   marks the chosen row by colour alone shows no tappable options on the core, because the core sends
   no colour. The card offers Escape, and you answer on the screen. This waits for a colour option in
-  the core (`HC_API.md` lists the ask). Claude and Codex dialogs are read from their words and work.
+  the core, asked for in [herdr-core issue 68](https://github.com/herdrdev/herdr-core/issues/68). Claude and Codex dialogs are read from their words and work.
   So does pi's question, when the core answers the read.
 - **The mirror shows the screen; older lines come when you ask.** The core holds a terminal's keys
   while it reads older lines, and under a dialog one such read takes about 25 seconds. So the phone's
@@ -650,7 +650,7 @@ away with Enter. It never holds them, and they do not wait behind other held sen
 later message on that pane waits behind the held ones. A held text lasts 30 minutes, a held command
 10 minutes. After that the row says the message was not sent, and offers Resend. A walky talky
 message is also held over a draft, never typed into it, and its hold lasts 60 minutes
-([Walky talky](walky-talky.md)). Your own send over a draft is still refused, with Append and Replace. Before Collie refuses, adds to or clears a draft, it types one probe character and removes it, to prove that the box takes keys; when the box on the screen does not take keys, the send is refused and nothing is deleted. Focus that pane on the desktop or resize it, so the agent draws its screen again, then send again. A pane Collie reads at fewer rows than the box takes (a tab full of splits squeezes each pane) is refused with the rows read and the rows the box needs: zoom or resize it, or close the panes beside it. Some commands never
+([Walky talky](walky-talky.md)). Your own send over a draft is still refused, with Append and Replace. Before Collie refuses, adds to or clears a draft, it types one probe character and removes it, to prove that the box takes keys; when the box on the screen does not take keys, the send is refused and nothing is deleted. Focus that pane on the desktop or resize it, so the agent draws its screen again, then send again. A busy agent can also show typed keys seconds late, for example Claude Code with a subagent running under its agents footer. Collie waits about 3 seconds for the probe character when the agent is not in a turn, and the send goes on when it shows. When it shows later than that, the first send is refused because the probe character did not show, and Collie's characters (⌁) show in the box a little later. When the box holds only those characters and its probe is late again, the refusal says so: wait a moment and send again, and Collie takes them out first. A pane Collie reads at fewer rows than the box takes (a tab full of splits squeezes each pane) is refused with the rows read and the rows the box needs: zoom or resize it, or close the panes beside it. Some commands never
 wait, and Collie refuses them during a turn. On Claude Code these are `/clear`, `/exit`, `/quit`,
 `/logout`, `/resume`, `/branch` and every `!` line. On Codex these are `/quit`, `/exit`, `/new`,
 `/resume`, `/logout` and every `!` line. On Hermes these are `/exit`, `/quit`, `/clear`, `/new`,

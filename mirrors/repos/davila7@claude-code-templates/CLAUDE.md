@@ -329,10 +329,11 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 ### Emergency Rollback
 
 ```bash
-# List recent Pages deployments
-npx wrangler pages deployment list --project-name=aitmpl-dashboard
-# Roll back to a previous deployment
-npx wrangler pages deployment rollback <deployment-id> --project-name=aitmpl-dashboard
+# List recent production deployments
+npx wrangler pages deployment list --project-name=aitmpl-dashboard --environment=production
+# Roll back: Wrangler has no Pages rollback command. Cloudflare dashboard → Workers & Pages →
+# aitmpl-dashboard → Deployments → last good production deployment → Rollback
+# (or POST /accounts/{account_id}/pages/projects/aitmpl-dashboard/deployments/{id}/rollback)
 ```
 
 ## Cloudflare Workers
@@ -504,11 +505,13 @@ A single Cloudflare Pages project (`aitmpl-dashboard`) serves all domains. Confi
 
 ### Deployment
 
-Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs (its rollback section still describes Vercel). Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`. Root `npm run deploy` is the stale Vercel script.
+Deploying = merging to `main`. The deployer agent (`.claude/agents/deployer.md`) only verifies and troubleshoots deploy runs. Manual deploy only when CI cannot: `cd dashboard && npm run build && npx wrangler pages deploy dist --project-name=aitmpl-dashboard`. Root `npm run deploy` is the stale Vercel script.
 
 **CI/CD**: Pushes to `main` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`):
 - Changes in `dashboard/**` trigger tests, a build and `wrangler pages deploy dist --project-name=aitmpl-dashboard`
 - `prod-smoke-test.yml` then runs read-only checks of www.aitmpl.com and the published CLI (also daily)
+
+**Auto-merge (agent PRs)**: an agent that opens a PR from a branch of this repo marks it ready and adds the `automerge` label. `.github/workflows/pr-gate.yml` (`All checks green`) waits for every other check on the head commit and fails if any failed or if the PR has unresolved review threads (so answer or fix every reviewer/bot finding and resolve its thread; it waits at least 5 min for comment-only bots such as greptile); when it passes, `.github/workflows/pr-automerge.yml` (`workflow_run`, so the copy on `main` runs) squash-merges the labelled PR and dispatches `update-component-content.yml` or `deploy.yml`, since a `GITHUB_TOKEN` merge triggers no push workflows. PRs touching `.github/**`, `cli-tool/src|bin/**`, `scripts/**`, the dashboard API and middleware (`dashboard/src/pages/api/**`, `dashboard/src/lib/api/**`, `dashboard/src/middleware*`, `dashboard/src/lib/github-api.ts`), deploy config (`dashboard/wrangler.toml`, `cloudflare-workers/*/wrangler.toml`, `astro.config.mjs`, `public/_headers`, `public/_redirects`) or any `package.json`/`package-lock.json`/`Cargo.toml`/`Cargo.lock` never auto-merge: they are merged by hand (the list is `MANUAL_PATHS` in both workflows; keep them identical). Add the `needs-human` label to any PR to keep a human on it; removing it re-runs the gate. There is no ruleset: one requiring the gate cannot exempt GitHub Actions in a personal repo, and the catalog bots push straight to `main`. Never label a fork PR or a security fix (those stay private until release). A re-run of a failed check, or resolving a thread without a new push, does not re-run the gate: re-run it, or remove and re-add the `automerge` label.
 
 **Required GitHub Secrets** (Settings > Secrets > Actions):
 - `CLOUDFLARE_API_TOKEN` — Cloudflare API token with Pages edit permission

@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **local-codex** (`daymade-codex` v2.4.0 → v2.4.1): Verify account access through the ordinary entry's adopted permission settings; keep separately requested sandbox variants scoped and require a nonempty completed response rather than an empty successful process. Change type: bounded verification correction.
+
+- **macos-cleaner** (`daymade-macos` v1.26.14 → v1.26.15): Keep verified generated browser clones rebuildable from the current installation instead of creating backups from nominal size. Distinguish LFS attribute matches from exact immutable-tree/index tracking while preserving real pointer, cache and protected-path guards. Change type: bounded classification correction.
+
+- **macos-cleaner** (`daymade-macos` v1.26.13 → v1.26.14): Diagnose candidate-only provenance before APFS swap with matched small execution-context probes, strict preservation checks and a fresh exact-pair pilot. Retain finite own-job supervision and unknown-state safeguards. Change type: bounded diagnostic guidance.
+
+- **debugging-network-issues** (v1.11.7 → v1.11.8): Compare production, probe and control proxy contexts before interpreting container experiments; retain native retries and distinguish anycast path changes from ISP or hardware attribution. Change type: bounded evidence-selection guidance.
+
+- **prior-work-retrieval** (`daymade-claude-code` v4.33.21 → v4.33.22): Keep explicitly timestamped current execution deadlines out of historical retrieval; preserve mixed artifact requests and existing obligations. Change type: bounded prompt-classification repair.
+
+- **git-safety-net** (v1.24.5 → v1.24.6): Correct interrupted fast-forward and published-copy recovery to use the project's verified guarded synchronization procedure, preserve WIP, and verify HEAD, index and working-tree state. Remove obsolete hand-reversion advice and derived prose counts. Change type: factual SOP correction.
+- **qa-expert** (v1.2.10 → v1.2.11): Exercise retained-session permission grants, revocations, unknown refreshes and late responses across upgrade/identity boundaries; verify runtime authorization with allowed and denied controls. Change type: bounded acceptance guidance.
+- **frontend-visual-qa** (v1.21.34 → v1.21.35): Calibrate transient feedback observation inside native/hybrid delivery builds, separate native evidence from DOM/console coverage and retain healthy and failing controls. Change type: bounded observation guidance.
+
+- **local-codex** (`daymade-codex` v2.3.1 → v2.4.0): Preserve authorized shared-daemon maintenance, durable replacement receipts and original-session continuation checks; distinguish official updates, pinned packages and Goal recovery. Change type: bounded lifecycle capability.
+- **github-ops** (v1.15.1 → v1.15.2): Recognize gh's empty required-check response while preserving independent ruleset and legacy protection checks. Change type: deterministic implementation repair.
+
+- **skill-creator** (`daymade-skill` v1.74.9 → v1.74.10): Bind security-scan recipes and help to the loaded creator's absolute script and locked project so unrelated working directories cannot redirect module discovery. Preserve scan behavior and marker validation. Change type: authoritative invocation correction.
+
+- **git-safety-net** (v1.24.4 → v1.24.5): Route task closeout to the canonical authority contract and replace repeated authority text with direct section links. Remove derived counts and an unsupported duration estimate. Change type: lossless compression and factual documentation alignment.
+- **peer-message** (v1.24.6 → v1.24.7): Align native-send SOP with complete prepared-envelope limits and linked request expiry; preserve exact-body, known-unsent reconciliation and unknown-result readback. Change type: authoritative factual correction.
+
+- **git-safety-net** (v1.24.3 → v1.24.4): Honor existing task-specific and standing cleanup authorization without requiring a separate task or renewed approval. Preserve object-specific scope, fresh safety evidence and retained-work protections. Change type: authorization-boundary correction.
+
+- **tibo-reset-codex** (v2.8.0 → v2.8.1): Add live-session rules for overdue-event convergence before same-type re-digging, numbered delivery posts as confirmation-plus-remaining-count signals, third-party event-list gaps never serving as negative evidence, and event-level settlement rebinding to any pre-window baseline account. Change type: bounded monitoring judgment additions.
+
+- **frontend-visual-qa** (v1.21.33 → v1.21.34): Exercise requests that never settle, separating missing headers from incomplete response bodies. Verify visible recovery, uncertain-write readback and late-response isolation without prescribing a universal timeout. Change type: bounded journey-acceptance guidance.
+- **app-evolver** (v1.1.12 → v1.1.13): Add a synthetic late-prerequisite recovery example through the ordinary entry, preserving original identity, saved work and admission boundaries. Change type: bounded lifecycle-acceptance example.
+- **frontend-visual-qa** (v1.21.32 → v1.21.33): Align transient observation with safe action/recovery boundaries, remove the coordinate example's persisted arithmetic result, and route repository instructions to confirmation checks and the existing whole-task design example. Change type: bounded SOP alignment.
+
 - **app-evolver** (v1.1.11 → v1.1.12): Add a synthetic review-slip journey showing reference fidelity boundaries and continuity from judgment through saved work and contribution receipts. Keep visual choices application-specific. Change type: bounded design example.
 - **frontend-visual-qa** (v1.21.31 → v1.21.32): Check confirmation transitions with a stationary pointer and distinguish changed hit targets from decoration. Separate viewport movement, document scrolling and entrance transforms without prescribing a universal displacement threshold. Change type: bounded interaction-acceptance guidance.
 - **macos-permissions** (`daymade-macos` v1.26.12 → v1.26.13): Separate supported application credential-backend recovery from Keychain/TCC repair and require each affected service's fresh-consumer operation. Remove a derived state count. Change type: bounded recovery guidance.

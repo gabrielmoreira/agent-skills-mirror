@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PrefectHQ/fastmcp` — 26 default patterns, 0 followed patterns, 21 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,17 +69,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.agents/skills/review-pr/SKILL.md`](.agents/skills/review-pr/SKILL.md) |
 | 9 | ✓ | [`.agents/skills/review-security-report/SKILL.md`](.agents/skills/review-security-report/SKILL.md) |
 | 10 | ✓ | [`.agents/skills/triage/SKILL.md`](.agents/skills/triage/SKILL.md) |
-| 11 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`docs/.cursor/rules/mintlify.mdc`](docs/.cursor/rules/mintlify.mdc) |
-| 15 | ✓ | [`docs/.mintlify/skills/fastmcp-client-cli/SKILL.md`](docs/.mintlify/skills/fastmcp-client-cli/SKILL.md) |
-| 16 | ✓ | [`docs/.mintlify/skills/fastmcp-server/SKILL.md`](docs/.mintlify/skills/fastmcp-server/SKILL.md) |
-| 17 | ✓ | [`examples/skills/sample_skills/code-review/SKILL.md`](examples/skills/sample_skills/code-review/SKILL.md) |
-| 18 | ✓ | [`examples/skills/sample_skills/pdf-processing/reference.md`](examples/skills/sample_skills/pdf-processing/reference.md) |
-| 19 | ✓ | [`examples/skills/sample_skills/pdf-processing/SKILL.md`](examples/skills/sample_skills/pdf-processing/SKILL.md) |
-| 20 | ✓ | [`skills/fastmcp-client-cli/SKILL.md`](skills/fastmcp-client-cli/SKILL.md) |
-| 21 | ✓ | [`skills/fastmcp-server/SKILL.md`](skills/fastmcp-server/SKILL.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`docs/.cursor/rules/mintlify.mdc`](docs/.cursor/rules/mintlify.mdc) |
+| 14 | ✓ | [`docs/.mintlify/skills/fastmcp-client-cli/SKILL.md`](docs/.mintlify/skills/fastmcp-client-cli/SKILL.md) |
+| 15 | ✓ | [`docs/.mintlify/skills/fastmcp-server/SKILL.md`](docs/.mintlify/skills/fastmcp-server/SKILL.md) |
+| 16 | ✓ | [`examples/skills/sample_skills/code-review/SKILL.md`](examples/skills/sample_skills/code-review/SKILL.md) |
+| 17 | ✓ | [`examples/skills/sample_skills/pdf-processing/reference.md`](examples/skills/sample_skills/pdf-processing/reference.md) |
+| 18 | ✓ | [`examples/skills/sample_skills/pdf-processing/SKILL.md`](examples/skills/sample_skills/pdf-processing/SKILL.md) |
+| 19 | ✓ | [`skills/fastmcp-client-cli/SKILL.md`](skills/fastmcp-client-cli/SKILL.md) |
+| 20 | ✓ | [`skills/fastmcp-server/SKILL.md`](skills/fastmcp-server/SKILL.md) |
 
 ---
 

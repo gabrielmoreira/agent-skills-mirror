@@ -717,6 +717,15 @@ arguments are never kept, not even masked.
 `TestToolCallsAreReported` (imagemcp), `TestMCPCallRowsListedNotCounted`
 (usage) and `usage-ledger-mcp.test.cjs` cover it.
 
+A request a provider plugin sends its vendor by itself (Devin's cache
+keep-alive ping, plugins#592) never passes the gateway. The plugin
+reports it through `input.magpie.usage` and `usage.pluginCall` writes it
+as a row of agent `magpie` with the plugin's kind (`cache_keepalive`,
+"Cache keep-alive" in `purposeKinds`). Unlike a probe it is counted:
+priced and in every total (see
+[provider-plugins.md](provider-plugins.md#a-request-a-plugin-sends-by-itself)).
+`TestPluginKeepaliveIsCounted`.
+
 ### Requests magpie sends on its own
 
 The provider editor's Test, Detect APIs and per-model detection, and a

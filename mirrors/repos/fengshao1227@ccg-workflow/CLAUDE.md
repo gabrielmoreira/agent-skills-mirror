@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-10-21 (v3.7.3)
+**Last Updated**: 2026-11-02 (v3.7.4)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,12 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-11-02 (v3.7.4)
+- 🔒 **Web UI 收紧（#171）**：`net.Listen` 改绑 `127.0.0.1:0`（原 `:0` 绑全部网卡，局域网实测可无认证读 `/api/sessions`）；`requireLocalHost` 校验 Host 防 DNS rebinding；删 `/api/stream` 的 CORS `*`；任务文本改 `textContent`，修 `innerHTML` XSS。新增 `CODEAGENT_BROWSER=builtin`。
+- 🐛 **Antigravity 走 stream-json（#169）**：新文件 `antigravity_stream.go`。`conversation_id` 一到就报 Session-ID（超时也能 resume），消息取 `result.response` 不再重复，`result.status`/`error` 透传给调用方，`--progress` 按整行缓冲。新增 `CODEAGENT_AGY_SETTINGS`。⚠ **agy 遇到不认识的参数直接退出，不会退回纯文本**：`--output-format` 1.4.2 已有，`--settings` 1.4.7 还没有。
+- 🐛 **skill-router（#170）**：ASCII 关键字整词匹配 + 复数，CJK 仍是子串；`rest` 收窄、补 `dockerfile`；model-action 注入 `intentGuard`，不再写「用户请求」；缺文件的路由不占两个注入名额。⚠ 只有兼容模式会注入领域知识，原生 Skills 模式在此之前就退出了。
+- 🔄 **Binary `5.15.0` → `5.16.0`**。agy 真实成功路径未实测（本机未登录），事件格式取自报告人 1.4.12 的样例。
 
 ### 2026-10-21 (v3.7.3)
 - 🐛 **Windows dsh 链接失败**：`profileLinkCommand` 给 cmd 的程序名加了引号 → PATH 查到的 `.cmd` 里 `%~dp0` 变成 cwd（microsoft/terminal#15212，官方不修），桌面版 `dsh.cmd` 在配置档目录下找 `DeepSeek Harness.exe`。程序名改为裸名（`[\w.-]+` 校验），参数照旧加引号。⚠ **在 Windows 上经 cmd 调 shim，程序名永远别加引号**。
