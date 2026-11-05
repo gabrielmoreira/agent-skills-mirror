@@ -2837,6 +2837,10 @@ Inherent to vanilla Claude Code: the model writes AskUserQuestion's question tex
 | `claude--v2304-ask-two-paragraph--w80.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 80 columns, trimmed to the prompt bubble and the dialog: ` ☐ Release`, a two-paragraph question across seven `│` gutter rows (paragraph 1 carries `https://ci.example.test/runs/42?tab=checks`, a bare `│` row separates the paragraphs, and paragraph 2 ends in `?`), pointer on `1. Production`. `questionUnderChip` joins all non-empty rows below `☐ Release` so the first row is neither dropped at `MAX_QUESTION_ROWS = 6` nor leaked into `model.subject`, and the bare `│` row does not insert a double space. Labelled `dialog` |
 | `claude--v2312-draft-upload-path--w100.txt` | Claude Code 2.1.312 in tmux at 100 columns (lab 2026-10-30, after the field case of 2026-10-29): one bracketed paste of a two-paragraph message whose first paragraph ends with a Collie upload path (`/uploads/w7C_pF-mvtrpn7j-e4f81595.png`, an existing file). 2.1.312 keeps the path as TEXT on a row of its own after the space and drops the blank line; 2.1.305 attached it as `[Image #1]`. The box reads as a draft of all four rows joined, and `boxMatches` takes this literal form beside the image form (`WholePaste.literal`). A path that is the whole paste still becomes `[Image #1]` on 2.1.312. Labelled `draft` |
 | `claude--v2312-weekly-limit-row--w120.txt` | Claude Code 2.1.312 in tmux at 120 columns (live check 2026-10-30, release 1.25.0, a scratch bridge's watch read, plain text): a fresh pane on Haiku with an empty box, the footer `⏸ manual mode on · ? for shortcuts`, and under it the usage row `You've used 75% of your weekly limit · resets Nov 4, 2am (…) · /usage-credits to keep using Claude Code`. Claude Code drops the row once the box holds two rows, so the rows under the box went from 2 to 1 and a send ended typed_not_submitted (changed). The profile names the row a hint (`idle.volatile.below.hints`), so the Send Protocol leaves it out of that count. The time zone was replaced with `Europe/Lisbon`, same width. Reads idle, no dialog, the composer empty. Labelled `idle` |
+| `claude--v2317-verbose-tokens-notice-idle--w154.txt` | Claude Code 2.1.317 at 154 columns with `verbose` on (field case of 2026-11-03, PR 668): built from the PR's synthetic screen, plain text, the statusline words neutral. A `Brewed for` row, the right-aligned `[-]` mark, a `✦ Heads up · ` notice with its key row `  1: Learn more   2: Knew this already   0: Dismiss`, then the session's token count `230267 tokens` right-aligned on a row of its own, the empty box and two footer rows. Without the profile's notice gap `^ +\d+ tokens$` the Surface read the key row as a dialog and refused every send. Reads idle, modal none, the composer empty, free. Labelled `idle` |
+| `claude--v2317-next-steps-suggestions-empty-box--w100.txt` | Claude Code 2.1.317 at 100 columns with the `next-steps` plugin (discussion 659, 2026-11-03, SGR kept): after a finished turn the plugin draws `next:` and three numbered prompts plus `0: dismiss` above the box, and puts the top suggestion into the empty box as dim ghost text. Claude Code draws its cursor as one reverse-video cell on the ghost's first letter (`ESC[7m` + `A`, then `ESC[0m ESC[2m` + the dim rest). The `next:` block reads `modal: none`. The reverse-video cell is neither dim nor ghost-coloured, so before the cursor rule in `readPlaceholder` (`holeEvery`) the hole counted as typed text and the box read `composer: draft`. Reads idle, the composer empty, free. Labelled `idle` |
+| `claude--v2317-next-steps-suggestions-one-line-draft--w100.txt` | The same screen with the person's one-line draft `also add a docstring` in the box: typed text in the default ink, the cursor a reverse-video blank after it. The `next:` rows stay above the box. Reads a draft of `also add a docstring`, not a placeholder (typed cells are not dim). Labelled `draft` |
+| `claude--v2317-next-steps-suggestions-dismissed--w100.txt` | The same pane after `0` dismissed the suggestions: the `next:` block and its `[-]` mark are gone, and the box still holds the dim ghost suggestion with the cursor on its first letter. Reads idle, the composer empty, free. Labelled `idle` |
 | `claude--v2304-select-preview-cjk.txt` | Plain `claude` (`--safe-mode --setting-sources ""`) at 120 columns, trimmed to the prompt bubble and the dialog: single-question preview AskUserQuestion (` ☐ デザイン`, `どのウィジェットのデザインにしますか？`), pointer on `1. カード型`, options `2. コンパクト` and `3. ミニマル` left of the boxed preview at display column 34. `splitAtDisplayColumn` splits by terminal display width so double-width CJK option labels do not shift the cut into the preview box's left border. Labelled `dialog` |
 | `claude--v2304-select-preview-cjk-moved.txt` | The same live pane after sending one `Down` key (`herdr pane send-keys <pane> Down`): pointer moved onto `2. コンパクト`, right-hand preview updated to option 2's compact box. Labelled `dialog` |
 
@@ -3095,6 +3099,7 @@ this corpus. Recipes: [`hermes/CLARIFY_NOTES.md`](../../lib/harness/hermes/CLARI
 | `hermes--model-picker` | `/model`, the model list; status slot blank, input still idle | picker, Ctrl+C card |
 | `hermes--palette` | Ctrl+P palette; status slot blank, input still idle | picker, Ctrl+C card |
 | `hermes--exited` | The shell after `/exit` | no input, no card |
+| `hermes--v0225-title-idle` | Hermes 0.22.5, issue 657: the session title sits in the top rule, `── Session Title ─`, over the `❯` row and a 120-cell bottom rule. Three rows only, from the reporter's report; the styling, the placeholder row and the bottom rule's width (Hermes draws it across the pane) come from `hermes--idle`, and the rows start in column 0 (the report's one-space indent is Markdown, and a leading space fails the column-0 anchors). Not a `herdr pane read` of ours | composer, no draft, free |
 | `hermes--clarify-choices` | One question, three choices and Other, `❯` on 1, countdown `(3547s)` | digits 1 to 4 |
 | `hermes--clarify-choices-moved` | The same after Down, `❯` on 2 | digits 1 to 4 |
 | `hermes--clarify-choices-w60` | The same at 60 columns, prompt `?` | digits 1 to 4 |
@@ -3649,3 +3654,20 @@ matching `…e/.cache`; no other private text was on screen. The lab is
 
 On the bridge itself omp 18.6.1 reads as a **shell** on herdr-core: it sends no OSC 7501 status, and
 the core adapter names an agent only from that report, so the omp profile above is not applied live.
+
+### Local Gentle Shell 4.5.1 float editor (2026-11-02)
+
+`pi--v140-gentle-float-*--w100.txt` were captured without editing from an isolated
+Gentle Shell 4.5.1 / Pi 1.4.0 pane on herdr-core 0.1.16, attached at 100 columns
+and 30 rows. An input extension consumed messages before any model call. The
+captures cover an empty editor, a draft, a multiline draft and a test selector
+with its pointer on both choices. No operator conversation is included.
+
+The two `quote-rail` captures are derived, not captured: three ` ▎ ` rows, the left rail of
+a quoted block, replace three transcript rows of a stock capture. They prove that the float
+editor's frame never claims a rail in the transcript (issue 660 review, 2026-11-03).
+
+| Fixture | Derived from | Reads as |
+| --- | --- | --- |
+| `pi--v110-stock-idle-quote-rail.txt` | `pi--v110-stock-idle.txt`, rows 4 to 6 | composer, empty, free: the stock box, the quote is transcript |
+| `pi--v130-core-question-quote-rail--w120.txt` | `pi--v130-core-question--w120.txt`, rows 19 to 21 (blank before) | question ask, not free: no float editor |

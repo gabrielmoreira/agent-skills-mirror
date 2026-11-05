@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-es/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.27.0"
+  version: "3.28.0"
 ---
 
 # Sistema de Planificación con Archivos
@@ -257,6 +257,8 @@ Para agentes, añade `--json` (PowerShell: `-Json`) al comando de listado para o
 Para encontrar una tarea antes de retomarla, ejecuta `sh "<skill-dir>/scripts/set-active-plan.sh" --list` o, en Windows PowerShell, `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Sustituye `<skill-dir>` por el directorio de instalación de este skill y mantén la raíz del proyecto como directorio de trabajo actual.
 
 Este comando de solo lectura muestra los planes con nombre y el progreso de sus fases en `.planning/` del directorio actual. `[active]` marca el puntero predeterminado compartido; no vincula una sesión a un plan. Las tareas simultáneas siguen necesitando una `PLAN_ID` por host o árboles de trabajo separados.
+
+Si los hooks indican que hay varios planes disponibles, o todas las fases de un plan con nombre están completas, ejecuta el comando de listado e indica al usuario qué planes parecen terminados. Archiva solo los planes que el usuario apruebe: `--archive <id>` (PowerShell: `-Archive <id>`) muestra una vista previa del traslado a `.planning/.archive/`, `--yes` (`-Yes`) lo aplica y `--restore <id>` (`-Restore <id>`) devuelve el plan. Nunca archives un plan solo por su antigüedad o porque esté completo.
 
 ## Límites de seguridad
 

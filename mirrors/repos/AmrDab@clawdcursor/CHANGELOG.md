@@ -4,6 +4,80 @@ All notable changes to Clawd Cursor will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **macOS: `window focus` names secure input as the cause (#267).** While a
+  password field holds secure input, macOS sends keys and focus only to that
+  app, and a focus ended with a vague "focus went to Google Chrome" / `UNKNOWN`.
+  The focus read-back stays the assertion (a successful accessibility call is no
+  evidence); when it fails, clawdcursor now checks `IsSecureEventInputEnabled()`
+  and, if on, finds the holder (`kCGSSessionSecureInputPID` via `ioreg`) and
+  returns a typed `SECURE_INPUT` result: "secure input is on (held by <App>, pid N)
+  ... Close or leave the password field in <App>, then try again", with a
+  `pause_for_user` next step. If the check cannot answer, the old message is
+  kept. macOS only; no `open -b` fallback.
+- **A field below the fold is scrolled into view, not refused.** On a long web form,
+  `accessibility find_field` returned a field, then `set_value` / `invoke` on its
+  `{element_id, snapshot_id}` failed with "element is off the active window", and
+  `smart_type` with the field's label said "Could not find element". The ref check
+  took "outside the window's rectangle" to mean "in another window", but a page
+  element below the fold reports bounds past the window's edge. The element is
+  now scrolled into view with the platform's own call (Windows: UIA
+  `ScrollItemPattern.ScrollIntoView`, else `SetFocus`; macOS: `AXScrollToVisible`;
+  Linux: AT-SPI `Component.scroll_to`), its bounds are read again, and the act
+  lands where it is now. It is still refused when it belongs to another window of
+  the app, when the platform cannot scroll, or when the scroll leaves it out of
+  view, and the error says which ("could not be scrolled into view (...)",
+  "scrolled but still not visible"). Scrolling sends no input and does not change
+  the window the agent is bound to (the active window is read again afterwards and
+  the act is refused if its handle, title or bounds differ); a stopped session does
+  not scroll. The platform looks only in the active window and picks the element
+  nearest the last-seen bounds, refusing when several share the name; the result is
+  then checked to be the referenced element (name, role kind, size). A scroll moves
+  every other element in the snapshot, so the snapshot is invalidated and the next
+  ref must be compiled afresh. Window titles and element names in these errors are
+  wrapped as untrusted screen content.
+  `smart_type` with a target now also looks the field up in the compiled UI the
+  way `find_field` does (a field's label need not be its accessibility name) and
+  scrolls it in. Verified live on Windows 11 / Edge; the macOS and Linux calls are
+  unit-tested but still need a run on a real Mac and a real Linux desktop.
+
+### Added
+- **The pause prompt is now a card: choices and a text box.** Agents asked their
+  questions in their own chat while the user was looking at the screen (a yes/no on a
+  YC application had to be typed). `pause_for_user` takes `choices` (2-6 short options,
+  at most 40 characters each, de-duplicated: one button each) and/or `input`
+  (`{placeholder?, multiline?}`: a text box with "Don't type passwords here"), and
+  returns `{status:"replied", choice:"<exact option text>"}` or `{status:"replied",
+  reply}`. Bad values are rejected with the limit named; `done_when` cannot be combined
+  with a question. Resume / End task are unchanged, and a pause without `choices` /
+  `input` looks and behaves as before. The overlays print `BANNER_CHOICE <index>`
+  (the text is looked up by the daemon, never taken from the overlay); the card reaches
+  them as JSON in `CLAWD_BANNER_CHOICES` / `CLAWD_BANNER_INPUT`. Windows and macOS show
+  the text box on the card; on Linux the pill cannot take the keyboard, so the
+  button reads "Type an answer" and opens the box. Only the user on screen can choose
+  (an agent's `resume_task` stays unverified), and a choice is never a safety approval:
+  Send / Delete / Pay confirmations are decided by the safety layer alone.
+- The MCP instructions, the `pause_for_user` description, the skill and `llms.txt` say
+  it plainly: while an agent is driving the desktop the user is watching the screen,
+  not its chat, so it should ask on the pause card (with `choices` when there are
+  options) rather than in its own chat.
+
+### Changed
+- **A redesigned pill that says what the agent is doing.** The running pill read
+  "desktop control in progress - double-click to stop" behind a red dot that looked
+  like an error, and a wait looked the same as finished work. It now shows an amber
+  dot, the current action and app ("Typing in Edge", "Opening a page"), the time since
+  it appeared, and a Stop button (a double-click anywhere still stops). Each guarded
+  input names its method once it passed the foreground and stop checks, and the
+  daemon sends the label as one `ACTIVITY <text>` line on the pill's stdin when it
+  changes; a refused input names nothing. The app is named only for keys, typing and
+  the pointer, which read the window in front first. The pause card has the same
+  look with a blue outline, "waiting for you" and the app, and one full-width row per
+  choice. Answers, focus handling and the stdout lines are unchanged on all three
+  overlays.
+
+## [1.5.25] - 2026-11-02
+
 ### Changed
 - **A step the agent may not take is handed over, not the whole task.** Agents
   turned down whole tasks (an APNs key, an App Store review account, notarization)
@@ -21,6 +95,10 @@ All notable changes to Clawd Cursor will be documented in this file.
   desktop-control port to the network, the flag and the `server.host` setting
   are removed. To drive clawdcursor from another machine, tunnel the port:
   `ssh -L 3847:127.0.0.1:3847 user@host`.
+
+### Security
+- **Dependency advisory cleared.** `follow-redirects` (pulled in through
+  jimp) is updated to 1.16.2 for GHSA-mrwp-f3q8-3g9p (high). Lockfile only.
 
 ### Fixed
 
@@ -120,6 +198,39 @@ All notable changes to Clawd Cursor will be documented in this file.
   check, with `key: ["alt+f4"]` therefore skipped the confirm tier and pressed
   Alt+F4. The gate now reads a non-string value the way the handlers do, and
   the key tool refuses one outright.
+- **The key blocklist matches a combo however its modifiers are spelled.** It
+  compared spellings, while the executors accept aliases: `control`,
+  `option`/`opt`, `escape`, and `super`/`meta`/`windows`/`cmd`/`command` for
+  the OS's super key. So `super+l`, `control+shift+escape` and `option+f4`
+  matched nothing, passed the safety gate and the hard-block backstop, and were
+  pressed as Win+L, Ctrl+Shift+Esc and Alt+F4. The blocklist now reads each
+  `+`-separated token whole, as the executors do. It resolves every spelling an
+  executor accepts, including the nut-js key names, left/right variants
+  (`LeftWin`, `rightctrl`, `super_l`) and `forwarddelete`, and puts modifiers in
+  one order before matching. It classifies a super-family
+  token as what this OS presses for it: Command on macOS, the Super key on
+  Linux (so `cmd+l` is blocked there: it locks the screen), and on Windows the
+  Windows key for `super`/`win` but Ctrl for `cmd`/`command`/`meta`. The two
+  Windows executors used to disagree on that (one pressed `cmd+l` as Ctrl+L,
+  the other as Win+L); both now press Ctrl, so a Mac-trained model's `cmd+l` is
+  the address bar on Windows, not the lock screen.
+- **`shortcuts_execute` gates the chord it resolves.** The safety gate saw only
+  `{intent, context}`, and the chord the intent resolved to was then pressed
+  with no blocklist or destructive-label check. So `close window` pressed Alt+F4
+  and `send email` pressed the send shortcut with no confirmation. The resolved
+  chord now goes through the same gate as `key_press`, with the shortcut's intent
+  as the label. A blocked chord is refused. A confirm-tier chord, or an intent
+  like send/delete, returns `safety confirm` and says to press the chord with
+  `key_press` once the user approves.
+- **A compound action is gated like the granular tool it runs.** The gate took
+  a compound action's tier from its own name table. That table had `open_file`
+  and `navigate_browser` at input tier, while both tools declare tier 2. So
+  `window`/`system {action:"open_file"}` and `window`/`browser
+  {action:"navigate"}` ran without the confirmation the granular tools ask for.
+  The gate now never goes below the declared tier of the tool a compound action
+  dispatches to. The projected `minimize_window_to_taskbar` declared tier 2,
+  against the tier 1 its own source and the `window` compound give it. It is
+  now tier 1, so minimize stays unconfirmed on both surfaces.
 
 - **macOS: `window list` says which apps have windows on another desktop
   Space (#278).** The accessibility API only sees the windows of the Space on

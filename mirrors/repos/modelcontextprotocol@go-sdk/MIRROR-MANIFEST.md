@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
+Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 80 |
+| Files         | 81 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,65 +80,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`mcp/event.go`](mcp/event.go) |
 | 20 | ✓ | [`mcp/features_test.go`](mcp/features_test.go) |
 | 21 | ✓ | [`mcp/features.go`](mcp/features.go) |
-| 22 | ✓ | [`mcp/logging.go`](mcp/logging.go) |
-| 23 | ✓ | [`mcp/mcp_example_test.go`](mcp/mcp_example_test.go) |
-| 24 | ✓ | [`mcp/mcp_test.go`](mcp/mcp_test.go) |
-| 25 | ✓ | [`mcp/mcp.go`](mcp/mcp.go) |
-| 26 | ✓ | [`mcp/mrtr_test.go`](mcp/mrtr_test.go) |
-| 27 | ✓ | [`mcp/mrtr.go`](mcp/mrtr.go) |
-| 28 | ✓ | [`mcp/prompt.go`](mcp/prompt.go) |
-| 29 | ✓ | [`mcp/protocol_test.go`](mcp/protocol_test.go) |
-| 30 | ✓ | [`mcp/protocol.go`](mcp/protocol.go) |
-| 31 | ✓ | [`mcp/requests.go`](mcp/requests.go) |
-| 32 | ✓ | [`mcp/resource_test.go`](mcp/resource_test.go) |
-| 33 | ✓ | [`mcp/resource.go`](mcp/resource.go) |
-| 34 | ✓ | [`mcp/sampling_test.go`](mcp/sampling_test.go) |
-| 35 | ✓ | [`mcp/schema_cache_test.go`](mcp/schema_cache_test.go) |
-| 36 | ✓ | [`mcp/schema_cache.go`](mcp/schema_cache.go) |
-| 37 | ✓ | [`mcp/server_example_test.go`](mcp/server_example_test.go) |
-| 38 | ✓ | [`mcp/server_lifecycle_log_test.go`](mcp/server_lifecycle_log_test.go) |
-| 39 | ✓ | [`mcp/server_test.go`](mcp/server_test.go) |
-| 40 | ✓ | [`mcp/server.go`](mcp/server.go) |
-| 41 | ✓ | [`mcp/session.go`](mcp/session.go) |
-| 42 | ✓ | [`mcp/shared_test.go`](mcp/shared_test.go) |
-| 43 | ✓ | [`mcp/shared.go`](mcp/shared.go) |
-| 44 | ✓ | [`mcp/sse_example_test.go`](mcp/sse_example_test.go) |
-| 45 | ✓ | [`mcp/sse_test.go`](mcp/sse_test.go) |
-| 46 | ✓ | [`mcp/sse.go`](mcp/sse.go) |
-| 47 | ✓ | [`mcp/streamable_bench_test.go`](mcp/streamable_bench_test.go) |
-| 48 | ✓ | [`mcp/streamable_client_test.go`](mcp/streamable_client_test.go) |
-| 49 | ✓ | [`mcp/streamable_client.go`](mcp/streamable_client.go) |
-| 50 | ✓ | [`mcp/streamable_example_test.go`](mcp/streamable_example_test.go) |
-| 51 | ✓ | [`mcp/streamable_headers_test.go`](mcp/streamable_headers_test.go) |
-| 52 | ✓ | [`mcp/streamable_headers.go`](mcp/streamable_headers.go) |
-| 53 | ✓ | [`mcp/streamable_keepalive_test.go`](mcp/streamable_keepalive_test.go) |
-| 54 | ✓ | [`mcp/streamable_server.go`](mcp/streamable_server.go) |
-| 55 | ✓ | [`mcp/streamable_test.go`](mcp/streamable_test.go) |
-| 56 | ✓ | [`mcp/streamable.go`](mcp/streamable.go) |
-| 57 | ✓ | [`mcp/structured_content_presence_test.go`](mcp/structured_content_presence_test.go) |
-| 58 | ✓ | [`mcp/testdata/conformance/server/bad_requests.txtar`](mcp/testdata/conformance/server/bad_requests.txtar) |
-| 59 | ✓ | [`mcp/testdata/conformance/server/discover.txtar`](mcp/testdata/conformance/server/discover.txtar) |
-| 60 | ✓ | [`mcp/testdata/conformance/server/lifecycle.txtar`](mcp/testdata/conformance/server/lifecycle.txtar) |
-| 61 | ✓ | [`mcp/testdata/conformance/server/mrtr.txtar`](mcp/testdata/conformance/server/mrtr.txtar) |
-| 62 | ✓ | [`mcp/testdata/conformance/server/prompts.txtar`](mcp/testdata/conformance/server/prompts.txtar) |
-| 63 | ✓ | [`mcp/testdata/conformance/server/resources.txtar`](mcp/testdata/conformance/server/resources.txtar) |
-| 64 | ✓ | [`mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar`](mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar) |
-| 65 | ✓ | [`mcp/testdata/conformance/server/tools.txtar`](mcp/testdata/conformance/server/tools.txtar) |
-| 66 | ✓ | [`mcp/testdata/conformance/server/version-latest.txtar`](mcp/testdata/conformance/server/version-latest.txtar) |
-| 67 | ✓ | [`mcp/testdata/conformance/server/version-older.txtar`](mcp/testdata/conformance/server/version-older.txtar) |
-| 68 | ✓ | [`mcp/testdata/files/info.txt`](mcp/testdata/files/info.txt) |
-| 69 | ✓ | [`mcp/testdata/files/template.txt`](mcp/testdata/files/template.txt) |
-| 70 | ✓ | [`mcp/testdata/private.txt`](mcp/testdata/private.txt) |
-| 71 | ✓ | [`mcp/testdata/public/dir/file3.txt`](mcp/testdata/public/dir/file3.txt) |
-| 72 | ✓ | [`mcp/testdata/public/file1.txt`](mcp/testdata/public/file1.txt) |
-| 73 | ✓ | [`mcp/testdata/public/file2.txt`](mcp/testdata/public/file2.txt) |
-| 74 | ✓ | [`mcp/tool_example_test.go`](mcp/tool_example_test.go) |
-| 75 | ✓ | [`mcp/tool_test.go`](mcp/tool_test.go) |
-| 76 | ✓ | [`mcp/tool.go`](mcp/tool.go) |
-| 77 | ✓ | [`mcp/transport_example_test.go`](mcp/transport_example_test.go) |
-| 78 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
-| 79 | ✓ | [`mcp/transport.go`](mcp/transport.go) |
-| 80 | ✓ | [`mcp/util.go`](mcp/util.go) |
+| 22 | ✓ | [`mcp/logging_test.go`](mcp/logging_test.go) |
+| 23 | ✓ | [`mcp/logging.go`](mcp/logging.go) |
+| 24 | ✓ | [`mcp/mcp_example_test.go`](mcp/mcp_example_test.go) |
+| 25 | ✓ | [`mcp/mcp_test.go`](mcp/mcp_test.go) |
+| 26 | ✓ | [`mcp/mcp.go`](mcp/mcp.go) |
+| 27 | ✓ | [`mcp/mrtr_test.go`](mcp/mrtr_test.go) |
+| 28 | ✓ | [`mcp/mrtr.go`](mcp/mrtr.go) |
+| 29 | ✓ | [`mcp/prompt.go`](mcp/prompt.go) |
+| 30 | ✓ | [`mcp/protocol_test.go`](mcp/protocol_test.go) |
+| 31 | ✓ | [`mcp/protocol.go`](mcp/protocol.go) |
+| 32 | ✓ | [`mcp/requests.go`](mcp/requests.go) |
+| 33 | ✓ | [`mcp/resource_test.go`](mcp/resource_test.go) |
+| 34 | ✓ | [`mcp/resource.go`](mcp/resource.go) |
+| 35 | ✓ | [`mcp/sampling_test.go`](mcp/sampling_test.go) |
+| 36 | ✓ | [`mcp/schema_cache_test.go`](mcp/schema_cache_test.go) |
+| 37 | ✓ | [`mcp/schema_cache.go`](mcp/schema_cache.go) |
+| 38 | ✓ | [`mcp/server_example_test.go`](mcp/server_example_test.go) |
+| 39 | ✓ | [`mcp/server_lifecycle_log_test.go`](mcp/server_lifecycle_log_test.go) |
+| 40 | ✓ | [`mcp/server_test.go`](mcp/server_test.go) |
+| 41 | ✓ | [`mcp/server.go`](mcp/server.go) |
+| 42 | ✓ | [`mcp/session.go`](mcp/session.go) |
+| 43 | ✓ | [`mcp/shared_test.go`](mcp/shared_test.go) |
+| 44 | ✓ | [`mcp/shared.go`](mcp/shared.go) |
+| 45 | ✓ | [`mcp/sse_example_test.go`](mcp/sse_example_test.go) |
+| 46 | ✓ | [`mcp/sse_test.go`](mcp/sse_test.go) |
+| 47 | ✓ | [`mcp/sse.go`](mcp/sse.go) |
+| 48 | ✓ | [`mcp/streamable_bench_test.go`](mcp/streamable_bench_test.go) |
+| 49 | ✓ | [`mcp/streamable_client_test.go`](mcp/streamable_client_test.go) |
+| 50 | ✓ | [`mcp/streamable_client.go`](mcp/streamable_client.go) |
+| 51 | ✓ | [`mcp/streamable_example_test.go`](mcp/streamable_example_test.go) |
+| 52 | ✓ | [`mcp/streamable_headers_test.go`](mcp/streamable_headers_test.go) |
+| 53 | ✓ | [`mcp/streamable_headers.go`](mcp/streamable_headers.go) |
+| 54 | ✓ | [`mcp/streamable_keepalive_test.go`](mcp/streamable_keepalive_test.go) |
+| 55 | ✓ | [`mcp/streamable_server.go`](mcp/streamable_server.go) |
+| 56 | ✓ | [`mcp/streamable_test.go`](mcp/streamable_test.go) |
+| 57 | ✓ | [`mcp/streamable.go`](mcp/streamable.go) |
+| 58 | ✓ | [`mcp/structured_content_presence_test.go`](mcp/structured_content_presence_test.go) |
+| 59 | ✓ | [`mcp/testdata/conformance/server/bad_requests.txtar`](mcp/testdata/conformance/server/bad_requests.txtar) |
+| 60 | ✓ | [`mcp/testdata/conformance/server/discover.txtar`](mcp/testdata/conformance/server/discover.txtar) |
+| 61 | ✓ | [`mcp/testdata/conformance/server/lifecycle.txtar`](mcp/testdata/conformance/server/lifecycle.txtar) |
+| 62 | ✓ | [`mcp/testdata/conformance/server/mrtr.txtar`](mcp/testdata/conformance/server/mrtr.txtar) |
+| 63 | ✓ | [`mcp/testdata/conformance/server/prompts.txtar`](mcp/testdata/conformance/server/prompts.txtar) |
+| 64 | ✓ | [`mcp/testdata/conformance/server/resources.txtar`](mcp/testdata/conformance/server/resources.txtar) |
+| 65 | ✓ | [`mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar`](mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar) |
+| 66 | ✓ | [`mcp/testdata/conformance/server/tools.txtar`](mcp/testdata/conformance/server/tools.txtar) |
+| 67 | ✓ | [`mcp/testdata/conformance/server/version-latest.txtar`](mcp/testdata/conformance/server/version-latest.txtar) |
+| 68 | ✓ | [`mcp/testdata/conformance/server/version-older.txtar`](mcp/testdata/conformance/server/version-older.txtar) |
+| 69 | ✓ | [`mcp/testdata/files/info.txt`](mcp/testdata/files/info.txt) |
+| 70 | ✓ | [`mcp/testdata/files/template.txt`](mcp/testdata/files/template.txt) |
+| 71 | ✓ | [`mcp/testdata/private.txt`](mcp/testdata/private.txt) |
+| 72 | ✓ | [`mcp/testdata/public/dir/file3.txt`](mcp/testdata/public/dir/file3.txt) |
+| 73 | ✓ | [`mcp/testdata/public/file1.txt`](mcp/testdata/public/file1.txt) |
+| 74 | ✓ | [`mcp/testdata/public/file2.txt`](mcp/testdata/public/file2.txt) |
+| 75 | ✓ | [`mcp/tool_example_test.go`](mcp/tool_example_test.go) |
+| 76 | ✓ | [`mcp/tool_test.go`](mcp/tool_test.go) |
+| 77 | ✓ | [`mcp/tool.go`](mcp/tool.go) |
+| 78 | ✓ | [`mcp/transport_example_test.go`](mcp/transport_example_test.go) |
+| 79 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
+| 80 | ✓ | [`mcp/transport.go`](mcp/transport.go) |
+| 81 | ✓ | [`mcp/util.go`](mcp/util.go) |
 
 ---
 

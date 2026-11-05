@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **ghostty-use** (v1.9.8 → v1.10.0): Add the configured Account Manager legacy-terminal JSON bridge, targeted native host and bound-window reader; preserve manual restore, unresolved inventory and uncertain-input reconciliation. Read Darwin argv by its kernel argument count without treating initial prompts or environment data as options. Change type: recovered compatible terminal integration.
+- **lark-cli-router** (`daymade-claude-code` v4.36.0 → v4.37.0): Add external customer group and Wiki collaboration guidance, including reuse of manually created groups, explicit external-group creation, descendant-scoped group grants, and separate configuration/access acceptance. Change type: additive collaboration workflow.
+
+- **macos-cleaner** (`daymade-macos` v1.29.0 → v1.29.1): Retire historical incident arithmetic from growth diagnosis, preserve allocation and mixed-window evidence boundaries, and route emergency cleanup through the existing authorization gate.
+
+- **docs-router** (`daymade-docs` v1.29.0 → v1.29.1): Keep all document jobs, including documentation cleanup, inside the first 130 description characters and bytes; retain the full existing routing table and manual-command boundary. Change type: recovered discovery-prefix correction.
+
+- **ghostty-use** (v1.9.7 → v1.9.8): Require the saved cwd when recognizing a restored process; persist send attempts before terminal input and reconcile uncertain or legacy attempts without sending them twice. Change type: duplicate-restoration bug fix.
+
+- **report-with-html** (v1.4.8 → v1.5.0): Add an explicit-file, frozen-snapshot loopback preview helper and its initial-delivery recipe, with HTTP boundary checks and rendered-browser acceptance kept separate. Change type: recovered local preview capability.
+
+- **prior-work-retrieval** (`daymade-claude-code` v4.35.1 → v4.36.0): Explain lexical `{terms}` selection without assuming every timeout has a query-shape cause or carrying timings across indexes. Change type: bounded adapter guidance correction.
+- **CI**: Accept Ubuntu EC2 regional mirror aliases during bounded hosted-runner APT setup; retain official HTTPS rewriting, path validation and refusal checks.
+
+- **docs-router**, **photo-to-scanned-pdf** (`daymade-docs` v1.28.1 → v1.29.0): Route printable identity-document photos through recipient-specific side, spread, scale and copy-form checks; reuse suitable photos and preserve missing-source and physical-acceptance boundaries. Change type: additive document preparation branch.
+- **lark-cli-router** (`daymade-claude-code` v4.35.0 → v4.35.1): Bind linked resources to the authorized source account before the first read and retain explicit-profile access and permission boundaries. Change type: bounded account-routing repair.
+- **feishu-doc-scraper** (v1.12.0 → v1.12.1): Use the current Minutes transcript export route and per-item output readback instead of the retired metadata-only limitation. Change type: factual operating-guide correction.
+- **git-safety-net** (v1.24.6 → v1.25.0): Use verified survivor-backed clone retirement without a redundant full-history payload; retain explicit self-contained backups and refuse unresolved unique state. Change type: compatible retirement workflow branch.
+- **skill-creator** (`daymade-skill` v1.75.1 → v1.76.0): Register generated outputs by consumer and retire unchanged rebuildable or transport payloads after consumption; preserve evidence, unique work, changed files and active consumers. Change type: compatible output lifecycle capability.
+- **macos-watchdog** (`daymade-macos` v1.28.0 → v1.28.1): Choose observation-failure notification timing from the business observation gap, separately from disruptive repair patience; retain incident deduplication, uncertain-send reconciliation and scheduler-coverage limits. Change type: bounded alert-timing clarification.
+- **read-codex-history / read-claude-code-history** (`daymade-claude-code` v4.34.2 → v4.35.0): Add optional Codex `launch_source` metadata to JSON and Markdown inventories from the native state database. Render missing sources as `unknown` and preserve unrecognized values. Change type: backward-compatible inventory metadata.
+
+- **macos-permissions** (`daymade-macos` v1.26.16 → v1.28.0): Add Local Network diagnosis for app-specific LAN failures. Compare requester and launch context, inspect the actual permission, and verify the original operation after authorized repair; preserve unknown causes, existing privacy protections and all TCC/Keychain paths. Change type: additive diagnostic branch.
+- **skill-creator** (`daymade-skill` v1.75.0 → v1.75.1): Bound programmatic retries to one owner/budget adapter, derive unfinished steps from persisted receipts, propagate runner exit status, and preserve evidence and reserve during storage recovery. Change type: bounded retry-lifecycle clarification.
+- **feishu-doc-scraper** (v1.11.0 → v1.12.0): Discover external Bilibili, YouTube and direct-media resources while preserving video/part/playlist identity; separate link discovery, text capture and verified media retention, and hand acquisition to the selected installed owner. Change type: additive resource-discovery capability.
+- **deep-research** (v2.13.0 → v2.13.1): Match lane question IDs, unknown publication dates and unique claim records to the existing CLI; require retained source excerpts to include the decisive passage. Change type: bounded operating-contract correction.
+- **transcript-fixer** (`daymade-audio` v1.57.0 → v1.57.1): Route prepared source clips and queue domain repair from the repository entry; align existing enqueue examples with project-domain admission and remove redundant runtime-value prose. Change type: operational documentation alignment.
+
+- **transcript-fixer** (`daymade-audio` v1.56.0 → v1.57.0): Bind local or authorized SSH clip extraction to a verified source and reuse it in the existing two-window check; retain local/URL audio inputs. Require explicit domains for project-bound queue appends and provide previewed, audited domain-only repair. Change type: compatible source adapter and queue integrity controls.
+- **macos-cleaner** (`daymade-macos` v1.28.1 → v1.29.0): Add bounded, metadata-only APFS private-allocation measurement with explicit partial/unsupported results. Separate target allocation, confirmed retirement, concurrent activity and mixed volume changes; correct unconditional clone/hard-link reclaim claims and retain original observations without false causal credit. Change type: additive read-only capability and factual SOP correction.
+
+- **read-codex-history** (`daymade-claude-code` v4.34.1 → v4.34.2): Track consumed raw-byte positions during JSONL streaming instead of repeatedly querying the file position; retain the final physical-position check, exact prefix certificates and existing rejection boundaries. Change type: bounded implementation optimization.
+
+- **transcript-fixer** (`daymade-audio` v1.55.0 → v1.56.0): Add an optional persisted background workspace for default correction artifacts, keyed by canonical path. Preserve explicit output locations, legacy defaults and verdict-based report closure. Keep unresolved evidence off the reader's annotation checklist without claiming final correction quality. Change type: compatible output configuration and workflow correction.
+- **lark-cli-router** (`daymade-claude-code` v4.34.0 → v4.34.1): Distinguish CLI profiles from browser identities during document-layout acceptance. Use an explicitly offered, already-authorized identity through the browser owner, then verify the actual identity and rendered document; retain access-refusal boundaries. Change type: bounded verification-route correction.
+
+- **youtube-downloader** (v1.3.0 → v1.4.0): Hand failed local file requests to an existing authorized downloader when available, preserving source, quality and destination before requesting new cookie/provider setup. Change type: bounded optional workflow branch.
+- **feishu-doc-scraper** (v1.10.5 → v1.11.0): Support verified NAS-retained external media with device/account/path locators, source URLs, integrity evidence and movable local cache references. Preserve legacy platform/Git/OSS records and reject malformed NAS identities. Change type: additive storage contract.
+- **transcript-fixer** (`daymade-audio` v1.54.4 → v1.55.0): Accept source-bound same-recording municipal replay evidence through the existing verdict/ledger transaction; retain person-name protection and refusal without writes. Add target-coverage and conflicting-component replay cases. Change type: bounded evidence capability and regression examples.
+
+- **read-codex-history** (`daymade-claude-code` v4.33.22 → v4.34.0): Add an optional consumed-prefix SHA-256 callback after complete streaming validation; preserve exact raw bytes, identity checks and failure propagation while leaving default callers unchanged. Change type: backward-compatible API capability.
+
+- **skill-creator** (`daymade-skill` v1.74.11 → v1.75.0): Bind an explicitly selected capacity reserve across input export, retries and budgeted callers; retain safe cleanup when configuration is unavailable. Persist mixed-filesystem free-space observations without attributing unrelated growth to the task. Change type: bounded optional runtime capability.
+
+- **stepfun-asr** (`daymade-audio` v1.54.3 → v1.54.4): Add explicit subscription endpoint and credential selection for Step Plan ASR, preserve wallet defaults, and replace outdated text-only subscription guidance. Change type: bounded endpoint support and authoritative factual correction.
+- **skill-creator** (`daymade-skill` v1.74.10 → v1.74.11): Reserve task storage outside the monitored root before preparing inputs, reconcile external allocations before growing retries, and distinguish local runner success from the combined task-budget judgment. Change type: bounded budget-accounting guidance.
+
+- **macos-cleaner** (`daymade-macos` v1.26.15 → v1.26.16): Match observed 64-bit thread IDs with the native per-PID query instead of thread handles; retain process identity binding and unknown-attribution safeguards. Change type: factual SOP correction.
+
+- **local-codex** (`daymade-codex` v2.4.2 → v2.4.3): Align refresh-ownership guidance and recovery-entry wording with the existing consumer contract; remove repeated policy-migration guidance. Change type: bounded documentation consistency repair.
+
+- **local-codex** (`daymade-codex` v2.4.1 → v2.4.2): Choose recovery against the requested workflow and supported saved-login/source reuse; distinguish deployed independent policy from user choice while retaining refresh ownership, transfer and unknown-request safeguards. Change type: bounded recovery-route correction.
+
+- **terraform-skill** (v1.5.11 → v1.5.12): Verify numeric frozen inputs in the saved plan's variable representation, distinguish it from evaluated outputs, and reproduce typed var-file forwarding with a provider-free Terraform control. Change type: bounded pre-deploy verification guidance.
+
 - **local-codex** (`daymade-codex` v2.4.0 → v2.4.1): Verify account access through the ordinary entry's adopted permission settings; keep separately requested sandbox variants scoped and require a nonempty completed response rather than an empty successful process. Change type: bounded verification correction.
 
 - **macos-cleaner** (`daymade-macos` v1.26.14 → v1.26.15): Keep verified generated browser clones rebuildable from the current installation instead of creating backups from nominal size. Distinguish LFS attribute matches from exact immutable-tree/index tracking while preserving real pointer, cache and protected-path guards. Change type: bounded classification correction.

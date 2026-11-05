@@ -37,7 +37,16 @@ This repository is an AI-powered code quality tool grounded in twelve classic en
 - `skills/_shared/`: shared framework (common.md, source-coverage.md, decay-risks.md, test-decay-risks.md, remedy-guide.md, custom-risks-guide.md).
 - `commands/`: Short-form command wrappers (used by Claude Code, not Gemini CLI).
 - `hooks/`: SessionStart hook for Claude Code session-level awareness.
-- `evals/`: 58 scenarios across R1–R6 and T1–T6, including false-positive and tradeoff checks — `npm run evals` (structural), `npm run evals:live` (against the AI, needs `ANTHROPIC_API_KEY`). `evals/benchmark-corpus.json` is a frozen corpus of 30 real model-generated reports for the deterministic parser-fidelity benchmark: `npm run benchmark`.
+- `evals/`: 64 scenarios across R1–R6 and T1–T6, including false-positive and tradeoff checks — `npm run evals` (structural), `npm run evals:live` (against the AI, needs `ANTHROPIC_API_KEY`). `evals/benchmark-corpus.json` is a frozen corpus of 30 real model-generated reports for the deterministic parser-fidelity benchmark: `npm run benchmark`.
+
+## Runner Boundaries
+
+All six skills remain available to interactive agents with the necessary project
+access. The tool-less CI runner supports only `review` on a collected diff. API evals
+cover supplied fixtures in the five read-only modes; `sweep` requires interactive
+execution and is explicitly excluded from API eval pass rates. Deterministic eval
+checks validate report structure and risk codes, not semantic correctness. See
+`docs/runner-contracts.md` for the shared contracts.
 
 ## Release Preparation
 
@@ -56,3 +65,11 @@ passing CI is not publication approval. Withdrawn npm versions cannot be reused.
 
 ---
 **Note:** Gemini CLI should prioritize instructions found in `GEMINI.md` when operating in this repository.
+
+## Codex Behavioral Evaluation
+
+The opt-in `npm run evals:codex -- --model <model>` runner compares real Codex
+behavior with and without skills across seven fixtures. It has separate semantic
+judging and does not change the historical Anthropic API runner. Offline checks
+use `npm run evals:codex:validate`; see `docs/codex-behavior-evals.md` for scope,
+isolation, evidence, and limitations.

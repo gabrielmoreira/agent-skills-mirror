@@ -31,7 +31,7 @@ This repository is an AI-powered code quality tool grounded in twelve classic en
 - `.codex-plugin/`: Plugin metadata for Codex CLI installation.
 - `hooks/`: SessionStart hook for session-level awareness (not used by Codex CLI).
 - `commands/`: Short-form command wrappers for Claude Code (not used by Codex CLI).
-- `evals/`: 58 scenarios across R1–R6 and T1–T6, including false-positive and tradeoff checks — `npm run evals` (structural), `npm run evals:live` (against the AI, needs `ANTHROPIC_API_KEY`). `evals/benchmark-corpus.json` is a frozen corpus of 30 real model-generated reports for the deterministic parser-fidelity benchmark: `npm run benchmark`.
+- `evals/`: 64 scenarios across R1–R6 and T1–T6, including false-positive and tradeoff checks — `npm run evals` (structural), `npm run evals:live` (against the AI, needs `ANTHROPIC_API_KEY`). `evals/benchmark-corpus.json` is a frozen corpus of 30 real model-generated reports for the deterministic parser-fidelity benchmark: `npm run benchmark`.
 
 ---
 **Note:** Codex CLI should prioritize instructions found in `AGENTS.md` when operating in this repository.
@@ -112,11 +112,28 @@ for Codex use the repository skills and explicit verification gate above.
 
 ## Eval Suite
 
-`evals/evals.json` contains 58 benchmark scenarios covering R1–R6 (code decay) and T1–T6 (test decay), including false-positive / tradeoff cases that must NOT be flagged. Each scenario has `id`, `name`, `prompt`, `expected_output`, `mode`, `files`. Optional flags (mutually exclusive): `no_risk_codes: true` (no risk codes expected in output) or `no_health_score: true` (Health Score suppression test).
+`evals/evals.json` contains 64 benchmark scenarios covering R1–R6 (code decay) and T1–T6 (test decay), including false-positive / tradeoff cases that must NOT be flagged. Each scenario has `id`, `name`, `prompt`, `expected_output`, `mode`, `files`. Optional boundary settings (mutually exclusive): `no_risk_codes: true` (no findings allowed), `no_health_score: true` (Health Score suppression test), or `forbidden_risk_codes: [R5]` (only those codes are forbidden; other findings are permitted).
 
 To add a scenario: append to the `evals` array with the next sequential `id` and the relevant risk code. Validate structure with `npm run evals`; live-test with `npm run evals:live` (requires `ANTHROPIC_API_KEY`).
 
-`expected_output` should describe the Iron Law finding (Symptom + risk code) and a Health Score range; it does NOT need to be verbatim — the evaluator matches semantics. For false-positive / tradeoff scenarios, set `no_risk_codes: true` and describe what must NOT appear in output.
+`expected_output` should describe the Iron Law finding (Symptom + risk code) and a Health Score range; it does NOT need to be verbatim. The deterministic evaluator checks report structure and finding risk codes, not semantic truth or whether the evidence establishes the diagnosis. Human or semantic review is still needed for those claims. For entirely clean false-positive / tradeoff scenarios, set `no_risk_codes: true`; use `forbidden_risk_codes` for targeted exclusions.
+
+The API eval runner diagnoses supplied fixtures in `review`, `audit`, `debt`, `test`,
+and `health`. It explicitly skips `sweep` scenarios in default runs and excludes them
+from pass-rate denominators; selecting unsupported scenarios explicitly is an error.
+Full Sweep needs an interactive execution environment. The CI runner supports only
+`review` on a collected diff. See `docs/runner-contracts.md` for scope and input rules.
+
+## Codex Behavioral Evaluation
+
+`npm run evals:codex -- --model <model> --runs 3` is an opt-in, real Codex CLI
+comparison against a no-skill baseline. Seven independent fixtures cover review,
+audit, test, and non-trigger controls. It measures observed skill reads, semantic
+completion, false positives, recall, and explicit severity calibration. Separate
+model judging is not human validation. `npm run evals:codex:validate` is offline;
+raw runs are ignored. See `docs/codex-behavior-evals.md` for isolation, evidence,
+limitations, and authentication. Never run live evaluation as an implicit offline
+validation step. The historical Anthropic runner remains separate.
 
 ## Parser-Fidelity Benchmark
 
@@ -130,7 +147,9 @@ npm run validate          # Repo consistency: manifests, version refs, changelog
 npm run changelog:audit   # Release-time: account for every commit since the last tag (see Release Process)
 npm test                  # Unit tests for validate-repo helpers
 npm run evals             # Eval structural validation (IDs, fields, risk-code refs)
-npm run evals:live        # Live evals against the AI (requires ANTHROPIC_API_KEY)
+npm run evals:live        # Historical Anthropic evals (requires ANTHROPIC_API_KEY)
+npm run evals:codex:validate # Offline real-Codex fixture validation
+npm run evals:codex -- --model <model> # Opt-in paired Codex behavioral comparison
 npm run benchmark         # Parser-fidelity benchmark on the frozen real-report corpus
 npm run history           # View Health Score trend (.brooks-lint-history.json)
 

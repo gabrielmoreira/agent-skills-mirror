@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kimtth/awesome-azure-openai-llm` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `kimtth/awesome-azure-openai-llm` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kimtth/awesome-azure-openai-llm` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agent/skills/add-new-entry-from-temp-md/SKILL.md`](.agent/skills/add-new-entry-from-temp-md/SKILL.md) |
-| 2 | ✓ | [`.agent/skills/add-temp-entries-to-sections/SKILL.md`](.agent/skills/add-temp-entries-to-sections/SKILL.md) |
-| 3 | ✓ | [`.agent/skills/fetch-llm-apps/SKILL.md`](.agent/skills/fetch-llm-apps/SKILL.md) |
-| 4 | ✓ | [`.agent/skills/fetch-llm-papers/SKILL.md`](.agent/skills/fetch-llm-papers/SKILL.md) |
-| 5 | ✓ | [`.agent/skills/update-cite-count/SKILL.md`](.agent/skills/update-cite-count/SKILL.md) |
+| 1 | ✓ | [`.agent/skills/fetch-llm-apps/SKILL.md`](.agent/skills/fetch-llm-apps/SKILL.md) |
+| 2 | ✓ | [`.agent/skills/fetch-llm-papers/SKILL.md`](.agent/skills/fetch-llm-papers/SKILL.md) |
+| 3 | ✓ | [`.agent/skills/land-section-entries/SKILL.md`](.agent/skills/land-section-entries/SKILL.md) |
+| 4 | ✓ | [`.agent/skills/update-cite-count/SKILL.md`](.agent/skills/update-cite-count/SKILL.md) |
 
 ---
 

@@ -18,8 +18,11 @@
    `review`), or `role=build` when it builds.
    Lint is advice: a partial prompt-marker set, no verification node, a producer the verification node does
    not depend on, a node with no role whose label reads like another (`role_guess:<id>=verify`: give it
-   the role), every node `deep`, more than one `ultrabrain`, and a graph of 5+ nodes whose critical
-   path is at least 80% of it (`serial_graph`: split it into parallel lanes where the work allows).
+   the role; until then it runs as a native build node), a build node whose `write_scope` holds anything
+   but docs with no `review` node in the run (`no_review_node`: add a `role=review` node when the change
+   warrants a separate review, otherwise go on), every node `deep`, more than one
+   `ultrabrain`, and a graph of 5+ nodes whose critical path is at least 80% of it (`serial_graph`: split
+   it into parallel lanes where the work allows).
 2. The result carries `calls`. Each call is one category (and route: a node retried after a provider error
    goes in a call of its own): run its `route` with `omh_delegate_route` (`set`, or `fallback`), then one
    `delegate_task` with its `tasks` unchanged. The goal ends with `[dag:<run>/<node>]`; that marker is how
@@ -62,6 +65,13 @@ At the deadline call `ready`: the same node gets a fresh attempt naming the hand
 work. OMH starts no timer or poll. After three parks per node, another park is refused with
 `park_limit_reached`; settle accepted, failed or blocked instead. Cancel turns parked nodes cancelled.
 
+## When the path is unknown
+
+Define a first run of two or three cheap scout nodes testing different hypotheses: read-only probes,
+a spike, or a measurement, each with its own VERIFY and handoff. Once accepted, use `extend` to add
+the build layer and its verification node, chosen from those handoffs. This spends one of the run's
+two extend rounds; do not commit to the build approach before the scouts report.
+
 ## Goal loop
 
 Verify, repair, extend, verify. The verification node runs the real command. When it, or any node, fails:
@@ -69,9 +79,11 @@ Verify, repair, extend, verify. The verification node runs the real command. Whe
 - read why, then `omh_dag action=repair node=<failed id> nodes=[...]`. Repair nodes may depend only on
   accepted nodes or on each other. Once the latest repair group is all accepted, a failed producer counts
   as done, and a failed verification node is offered again: only its own accepted re-run says the goal
-  holds.
-- a node gets at most two repair cycles. After that the run state is `stopped`: report what is still
-  open, and do not repair again.
+  holds. A node with no role guessed as verify (`role_guess`) is offered again too.
+- a node gets at most two repair cycles. The last is a re-plan: the engine briefs those nodes with
+  the earlier failure reasons and asks for an approach that differs in kind, not the same retry,
+  unless the failures were infrastructure. After that the run state is `stopped`: report what is
+  still open, and do not repair again.
 - In a one-shot session, repair and extend are refused as `oneshot_budget_exceeded` when they would need
   more children than the remaining one-shot budget; the record is not changed by a refused call.
 
@@ -93,8 +105,9 @@ Check each node against its SCOPE and the goal criteria too. When work is missin
   scope shared with any node of the run without an edge, 48 nodes in all).
 - a run gets at most two extend rounds (`extend_rounds_left`). After that, report what is still open.
 
-To stop early, `omh_dag action=cancel`; children already running finish on their own unless you stop
-them with `delegate_task action=stop`.
+To stop early, `omh_dag action=cancel`; the reply names every child still running (node, subagent id,
+how long open) under `still_running`, and they finish on their own unless you stop each with
+`delegate_task action=stop`. The cancelled run never settles them.
 
 ## Messengers
 
@@ -123,7 +136,8 @@ With such a choice:
 
 - `ready`, `settle`, `repair` and `extend` keep the ready coding nodes out of `calls` and list them in
   `export`. A coding node is a `build` node that writes files (`write_scope`): baseline, verify and review
-  nodes always run on `delegate_task`, because the builder never approves itself.
+  nodes always run on `delegate_task`, because the builder never approves itself. So does a node sent with
+  no role whose label reads like another (`role_guess`); send `role=build` to export it.
 - `omh_dag action=export owner=<codex|claude-code>` writes those nodes, and the waiting coding nodes
   whose every open parent goes with them, as a `fanout_contract/v2` units file and a goal file, and
   returns the two `omh coding fanout` commands to run (`prepare`, then `dispatch`). More than four units

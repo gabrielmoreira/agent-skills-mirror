@@ -1,6 +1,6 @@
 ---
 name: claude-dashboard
-description: "Use this for a local, data-backed dashboard, metrics page, KPI tracker, scorecard, data visualization or recurring report that opens in the bundled live editor: a page or scroll story of charts, numbers and tables over datasets (a CSV/TSV/JSON file the user has, or data you gather and attach), with a Sources panel that shows where every number comes from. Read it when creating, filling, refreshing or revising one. You write the datasets, then the page as plain HTML, into the dashboard's own store with this skill's script. Not for a static HTML mockup or a picture of a dashboard: that is the baoyu-design skill."
+description: "Use this for a local, data-backed dashboard, metrics page, KPI tracker, scorecard, data visualization or recurring report that opens in the bundled live editor: a page or scroll story of charts, numbers and tables over datasets (a CSV/TSV/JSON file the user has, or data you gather and attach), with a Sources panel that shows where every number comes from. Read it when creating, filling, refreshing or revising one. You write the datasets, then the page as plain HTML, into the dashboard's own store with this skill's script. Not for a static HTML mockup or a picture of a dashboard."
 license: "Mixed. The skill text, references and editors adapted from Anthropic's claude.ai Artifact types stay Anthropic's and are not MIT-licensed; the local tooling is MIT. Complete terms in NOTICE.md: https://github.com/JimLiu/baoyu-design/blob/main/NOTICE.md"
 ---
 
@@ -32,11 +32,12 @@ does every call; below, `A` is `<this skill's folder>/scripts/artifact.mjs`.
 | `node $A upload <root> <file> [--name n]` | Attaches a CSV, TSV or JSON file: `{"url": "/_blob/<id>", "bytes", "contentType", …}`. |
 | `node $A delete-asset <root> <url \| id>` | Removes an attached file no document names any more. |
 | `node $A check <root>` | Checks the documents, the page's files, and that each dataset mark's `data-where`/`data-row` finds its rows. Exit 1 while `problems` > 0. |
-| `node $A open <root> [--port n] [--lan]` | Starts the editor at 127.0.0.1:4740 (the next free port up when 4740 is taken; `--port n` starts from n, `--port 0` takes any) in the background and returns `{"url", "pid", "stop", …}`; `url` is the dashboard's own page; its path, `/dashboard/<id>/`, stays the same from one start to the next (`/` goes there). Run again, it reuses the one running. `--lan`: also on the local network (see Sharing). `--agent-hook "<command>"`: see Comments. |
-| `node $A serve <root> [--port n] [--lan]` / `stop <root>` | The same server in the foreground / stops the background one. |
+| `node $A open <root> [--port n] [--lan]` | Starts the editor in the background and returns `{"url", "pid", "stop", …}`. All the dashboards open on this computer share one server and port (4740, the next free port up when that is taken; `--port n` looks for it at n and starts from n, `--port 0` runs a server of its own on any port); `url` is this dashboard's own page, whose path, `/dashboard/<id>/`, stays the same from one start to the next. Run again, it reuses the one running. `--lan`: also on the local network (see Sharing). `--agent-hook "<command>"`: see Comments. `NETWORK_BLOCKED` from `open` means your commands run in a sandbox without local network. Run `open`, `share` and `comments <root> --wait` with local network allowed, outside the sandbox, asking for that permission if your commands need approval; in the sandbox `comments --wait` says `NO_SERVER` even while the page is open. Commands that only read and write files work in the sandbox. |
+| `node $A serve <root> [--port n] [--lan]` / `stop <root>` | The same server in the foreground / takes this folder off the server, which ends with the last one. |
 | `node $A share <root>` | Opens it to the local network and prints a link per role; `--disable` / `--enable` / `--reset <role>`, `--role <guest>=<role>`, `--off`. See Sharing. |
 | `node $A comments <root> [--all]` / `--wait` | The comments people left on the page / waits for one they send you. See Comments. |
 | `node $A comment-reply <root> <id> <text\|->` / `comment-resolve <root> <id>` | Answers one (`--resolve` closes it too) / closes one (`--reopen`). |
+| `node $A archive <root> [--out file.zip\|dir]` | The whole folder, history and comments too, as one zip beside it (`--out`: another file or folder), to back it up, move it to another computer or send it to someone: `{file, files, bytes, open}`. Unzipped anywhere, `open` carries on. The owner's Download folder button in the page does the same; the server's own files and the share links stay out. |
 
 - **A batch** is a JSON array (or `{"writes": [...]}`) of
   `{"op": "set" | "update" | "delete", "path": "<collection>/<doc_id>", "data": {...}}`
@@ -382,8 +383,9 @@ page.
 ## Sharing
 
 `share <root>` opens the dashboard to the local network (the same Wi-Fi or LAN,
-as `http://<this computer's address>:4740/`), starting the server if it isn't
-running, and prints a link per role: `editor` edits and comments, `commenter`
+as `http://<this computer's address>:4740/dashboard/<id>/`), starting the server if
+it isn't running, and prints a link per role (the other dashboards on the same
+server stay closed to the network): `editor` edits and comments, `commenter`
 comments without editing, `viewer` only looks. `open <root> --lan` (or
 `serve --lan`) shares it as it starts.
 
@@ -408,7 +410,7 @@ comments without editing, `viewer` only looks. `open <root> --lan` (or
   by it until it is on again. `--reset <role>` gives the role a new link: the
   old one stops working and the people who came by it are out.
   `--role <guest>=<role>` gives someone who joined another role (`<guest>`: an
-  id from the `guests` it prints). `--off` stops sharing on the network.
+  id from the `guests` it prints). `--off` stops sharing on the network, and only `share <root>` alone opens it: the link options leave it shared or not as it was.
 - Who writes what follows the page's own store rules: the owner and editors
   write the shared documents; commenters and viewers write nothing, their own
   per-person documents (`data/users/<id>`) included, so a run, a check or other
@@ -420,7 +422,7 @@ comments without editing, `viewer` only looks. `open <root> --lan` (or
 - Only the owner's page sends to you (Send to Agent); what guests comment is
   saved for you to read with `comments <root>`.
 - The links and the people who joined are in `<root>/.sharing.json`: leave it.
-  It is plain http on the local network: anyone there with a link gets in.
+  It is plain http on the local network: anyone there can read what passes, and a link is the permission: whoever has one gets its role, so send each only to the people meant to have it, and `--reset` a role's link that went further (the Share panel says so too). When this computer has a Tailscale address (100.64.0.0/10), `share` also prints `tailscale`: the same links at that address, for people on the owner's tailnet from any network (the Share panel: Copy Tailscale link in a link's More menu). Nothing else reaches past the local network; there is no tunnel.
 
 ## History
 
@@ -469,3 +471,21 @@ who changed which document, and when.
   document as JSON. To put something back, point the person to History (it
   records who did it), or write the old content with `write-db`, which makes
   a version of yours.
+
+## Keeping it in git
+
+`open` writes `<root>/.gitignore` when the folder has none. It leaves out what only this computer's server needs:
+`.artifact-server.json`, `.artifact-server.log`, `.sharing.json` (the share links), `history/` (the versions; git
+keeps its own), save temp files and `.DS_Store`. Everything else, `project/` and `comments.json` included, is the
+dashboard and goes in git. A `.gitignore` already there is the person's: leave it. Moving or backing up the dashboard is
+copying or cloning the folder (`archive` puts it,
+history included, in one zip); `open` there starts it again.
+
+Commit, push or set up git only when asked. Asked to check the dashboard before each commit: write
+`.git/hooks/pre-commit` (and `chmod +x` it) in the repository that holds `<root>`, with this skill's folder as an
+absolute path and `<root>` relative to the repository's top (a hook already there: add the line to it):
+
+```sh
+#!/bin/sh
+node "<this skill's folder>/scripts/artifact.mjs" check "<root>" > /dev/null || { echo "The dashboard has problems: run artifact.mjs check <root> to see them." >&2; exit 1; }
+```

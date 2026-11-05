@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-ar/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.27.0"
+  version: "3.28.0"
 ---
 
 # نظام تخطيط الملفات
@@ -251,6 +251,8 @@ if فشل العملية:
 للعثور على مهمة قبل استئنافها، شغّل `sh "<skill-dir>/scripts/set-active-plan.sh" --list` أو، في Windows PowerShell، `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. استبدل `<skill-dir>` بمسار تثبيت هذه المهارة، وأبقِ دليل العمل الحالي عند جذر المشروع.
 
 يعرض هذا الأمر للقراءة فقط الخطط المسماة وتقدّم مراحلها داخل `.planning/` في دليل العمل الحالي. تشير `[active]` إلى المؤشر الافتراضي المشترك، ولا تربط جلسة بخطة. تتطلب المهام المتزامنة تعيين `PLAN_ID` لكل مضيف أو استخدام أشجار عمل منفصلة.
+
+إذا أبلغت الخطافات بوجود عدة خطط متاحة، أو اكتملت جميع مراحل خطة مسماة، فشغّل أمر القائمة وأخبر المستخدم بالخطط التي تبدو منتهية. لا تؤرشف إلا الخطط التي يوافق عليها المستخدم: يعرض `--archive <id>` (في PowerShell: `-Archive <id>`) معاينة لنقل الخطة إلى `.planning/.archive/`، وينفّذ `--yes` (في PowerShell: `-Yes`) النقل، ويعيد `--restore <id>` (في PowerShell: `-Restore <id>`) الخطة إلى مكانها. لا تؤرشف أي خطة لمجرد قِدمها أو اكتمال مراحلها.
 
 ## الحدود الأمنية
 

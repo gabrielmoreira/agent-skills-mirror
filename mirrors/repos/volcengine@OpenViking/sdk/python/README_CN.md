@@ -1,0 +1,489 @@
+# openviking-sdk
+
+OpenViking 的轻量级 Python HTTP SDK。
+
+`openviking-sdk` 面向只需要通过 HTTP 调用现有 OpenViking 服务的用户。它避免了主包 `openviking` 中较重的本地运行时、服务端和 CLI 依赖。
+
+## 安装
+
+```bash
+pip install openviking-sdk
+```
+
+要求：
+
+- Python 3.8+
+- 一个可访问的 OpenViking HTTP 服务，例如 `http://127.0.0.1:1933`
+
+## 包名与导入名
+
+- PyPI 包名：`openviking-sdk`
+- Python 导入名：`openviking_sdk`
+
+```python
+from openviking_sdk import AsyncHTTPClient, SyncHTTPClient
+```
+
+## 配置来源
+
+SDK 支持三种配置方式，优先级从高到低如下：
+
+1. 显式构造参数
+2. 环境变量，例如 `OPENVIKING_URL`、`OPENVIKING_API_KEY`、`OPENVIKING_ACCOUNT`、`OPENVIKING_USER`、`OPENVIKING_ACTOR_PEER_ID` 和 `OPENVIKING_TIMEOUT`
+3. `ovcli.conf`，来源可以是 `OPENVIKING_CLI_CONFIG_FILE` 指定的路径，或者默认路径 `~/.openviking/ovcli.conf`
+
+这意味着之前依赖 `ovcli.conf` 的配置方式，在 SDK 拆分之后仍然可以继续使用。
+
+## 认证模型
+
+大多数部署场景使用 API Key 认证。
+
+常见客户端字段：
+
+- `url`：OpenViking 服务的基础 URL
+- `api_key`：root key 或 user key
+- `account`：可选的 account 覆盖，通常只在使用 root key 时需要
+- `user`：可选的 user 覆盖，通常只在使用 root key 时需要
+- `user_id`：`user` 的兼容旧别名
+- `actor_peer_id`：可选的 actor peer 覆盖
+- `agent_id`：`actor_peer_id` 的兼容旧别名
+- `event_hooks`：可选的 `httpx.AsyncClient` 事件钩子，例如异步 request 或 response hook
+
+兼容性说明：
+
+- 旧调用方仍然可以使用 `user_id` 和 `agent_id`
+- `actor_peer_id` 和 `agent_id` 不能同时传入
+
+示例：
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(
+    url="http://127.0.0.1:1933",
+    api_key="your-user-or-root-key",
+)
+```
+
+如果你使用的是 root key，并且希望以某个租户用户身份执行：
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(
+    url="http://127.0.0.1:1933",
+    api_key="your-root-key",
+    account="demo-account",
+    user="demo-user",
+)
+```
+
+## 请求级 Actor Peer
+
+应用可以复用一个已经绑定凭证并完成初始化的 client，同时为每个请求选择当前的
+actor peer：
+
+```python
+from openviking_sdk import (
+    SyncHTTPClient,
+    use_actor_peer,
+)
+
+client = SyncHTTPClient(
+    url="http://127.0.0.1:1933",
+    api_key="your-user-key",
+)
+client.initialize()
+
+with use_actor_peer("assistant-a"):
+    memories = client.find(query="部署偏好")
+```
+
+该作用域通过 Python `ContextVar` 隔离，因此并发 async task 以及由 SDK worker loop
+执行的同步调用不会互相覆盖。嵌套作用域会自动恢复之前的 actor peer。
+
+该作用域不会改变认证或租户归属。Account 和 user 身份仍然由 API Key 或 OAuth
+凭证决定。每个 OpenViking user 应使用各自绑定凭证的 client，actor peer 只能从应用
+已经认证的状态中解析。服务端只会在支持 actor-peer view 的接口上应用该值；Session
+接口仍然以 user 为作用域。
+
+## 快速开始：同步客户端
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(
+    url="http://127.0.0.1:1933",
+    api_key="your-user-key",
+)
+client.initialize()
+
+healthy = client.health()
+print("health:", healthy)
+
+session = client.create_session(session_id="demo-session")
+print("session:", session)
+
+client.session(session_id="demo-session").add_message(
+    role="user",
+    content="hello from sdk",
+)
+client.session(session_id="demo-session").add_message(
+    role="assistant",
+    content="hello from a specific peer",
+    peer_id="peer-alice",
+)
+context = client.session(session_id="demo-session").get_session_context(token_budget=4096)
+print("context:", context)
+
+client.close()
+```
+
+## 快速开始：异步客户端
+
+```python
+import asyncio
+
+from openviking_sdk import AsyncHTTPClient
+
+
+async def main() -> None:
+    client = AsyncHTTPClient(
+        url="http://127.0.0.1:1933",
+        api_key="your-user-key",
+    )
+    await client.initialize()
+
+    healthy = await client.health()
+    print("health:", healthy)
+
+    session = await client.create_session(session_id="demo-session-async")
+    print("session:", session)
+
+    session_client = client.session(session_id="demo-session-async")
+    await session_client.add_message(
+        role="user",
+        content="hello from async sdk",
+    )
+    context = await session_client.get_session_context(token_budget=4096)
+    print("context:", context)
+
+    await client.close()
+
+
+asyncio.run(main())
+```
+
+## 常见操作
+
+### 创建 Session
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(url="http://127.0.0.1:1933", api_key="your-user-key")
+client.initialize()
+event_config = {
+    "events": {
+        "tags": ["team=search", "channel=web"],
+    }
+}
+result = client.create_session(
+    session_id="demo-session",
+    options={
+        "memory_extraction_config": event_config,
+    },
+)
+# 创建时显式传 None，可覆盖服务端默认并禁用自动提交。
+client.create_session(
+    session_id="manual-session",
+    options={"auto_commit_policy": None},
+)
+client.update_session_config(
+    session_id="demo-session",
+    options={
+        "auto_commit_policy": {"message_count_threshold": 25},
+        "memory_extraction_config": {
+            "events": {"tags": ["team=search", "channel=app"]}
+        },
+    },
+)
+# 显式传 None 会禁用自动 commit；省略参数则保持不变。
+client.update_session_config(
+    session_id="demo-session",
+    options={"auto_commit_policy": None},
+)
+client.session(session_id="demo-session").commit(
+    options={"event_tags": ["team=search", "channel=web"]}
+)
+# 单次 commit 传 event_tags=[] 可显式跳过 session 默认 tags。
+print(result)
+```
+
+### 从本地文件添加资源
+
+`add_resource` 默认返回 `task_id`。通过 `client.get_task(result["task_id"])` 查询状态，任务为 `completed` 后再使用处理结果。
+
+`add_resource` 会自动处理本地路径对应的文件上传。
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(url="http://127.0.0.1:1933", api_key="your-user-key")
+client.initialize()
+
+result = client.add_resource(
+    path="/path/to/notes.md",
+    to="viking://resources/demo-notes",
+    options={
+        "reason": "knowledge import",
+    },
+)
+print(result)
+```
+
+如果只希望入库并生成向量、不走 VLM 语义理解，可以传 `processing_mode="vectors_only"`。
+该模式会写入/同步资源树并向量化当前文件，但不会生成或刷新 `.abstract.md` / `.overview.md`。
+
+```python
+result = client.add_resource(
+    path="/path/to/notes.md",
+    to="viking://resources/demo-notes",
+    options={
+        "processing_mode": "vectors_only",
+    },
+)
+```
+
+### 文件系统操作
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(url="http://127.0.0.1:1933", api_key="your-user-key")
+client.initialize()
+
+client.mkdir(uri="viking://resources/demo-dir")
+print(client.ls(uri="viking://resources"))
+print(client.read(uri="viking://resources/demo-dir/example.md"))
+```
+
+### 检索
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(url="http://127.0.0.1:1933", api_key="your-user-key")
+client.initialize()
+
+result = client.find(query="hello", limit=5)
+print(result)
+```
+
+### MCP Server 与实时上下文
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+client = SyncHTTPClient(url="http://127.0.0.1:1933", api_key="your-user-key")
+client.initialize()
+
+client.add_mcp(
+    name="weather",
+    url="https://mcp.example.com/api",
+    headers={"Authorization": "Bearer token"},
+)
+# 工具摘要和索引默认在后台继续处理。
+# 需要处理完成后再返回时传入 wait=True。
+tools = client.find_mcp_tools("当前天气", limit=5)
+mounted = client.mount_mcp_tool(
+    tool_uri="viking://agent/tools/weather/current.json",
+    node_uri="viking://resources/arranger/beijing-weather.md",
+    title="北京天气",
+    description="北京区域的实时天气。",
+    timeout_seconds=60,
+    arguments={"city": "Beijing"},
+    tags=["project=weather", "kind=live-context"],
+    wait=True,
+)
+batch_result = client.batch_mount_mcp_tools(
+    [
+        {
+            "tool_uri": "viking://agent/tools/weather/current.json",
+            "node_uri": "viking://resources/arranger/shanghai-weather.md",
+            "title": "上海天气",
+            "arguments": {"city": "Shanghai"},
+        }
+    ],
+    wait=True,
+)
+client.batch_unmount_mcp_tools(
+    ["viking://resources/arranger/shanghai-weather.md"],
+    wait=True,
+)
+sync_result = client.sync_mcp("weather")
+print(sync_result["changes"])
+print(sync_result["affected_mounts"])
+```
+
+异步客户端提供相同的方法。MCP 操作包括 `add_mcp`、`remove_mcp`、
+`list_mcps`、`get_mcp`、`validate_mcp`、`sync_mcp`、
+`get_mcp_status`、`find_mcp_tools`、`invoke_mcp_tool`、
+`mount_mcp_tool`、`batch_mount_mcp_tools`、`unmount_mcp_tool`、
+`batch_unmount_mcp_tools` 和 `list_mcp_mounts`。
+
+### 高频参数与 Options
+
+高频字段使用显式参数。为保证可读性，推荐使用参数名，例如 `add_resource` 的
+`to`、`wait`，检索的 `target_uri`、`limit`，以及 `add_message` 的
+`role`、`content`、`parts`、`peer_id`；位置参数调用仍然支持。批量写入时，
+请在每条消息字典中传入 `peer_id`。
+
+进阶字段统一放入带类型提示的 `options` 字典，例如 `processing_mode`、检索
+过滤条件、Session 提取配置和 `telemetry`。不要把进阶字段作为裸关键字参数传入。同一个字段
+只能通过一个入口传递；`options` 或 `extra` 中的 SDK 已定义字段不能覆盖显式参数。
+
+图片搜索也使用同一组方法。通过显式的 `image` 参数传入本地路径、bytes、data URI、HTTP URL 或 `viking://` URI；服务端需要使用 multimodal embedding 模型。
+
+```python
+result = client.find(query="", limit=5, image="/path/to/photo.png")
+result = client.search(
+    query="similar poster",
+    image="viking://resources/poster.png",
+)
+```
+
+复杂请求统一使用带类型提示的 Options 字典。只有服务端已经增加、当前 SDK
+版本尚未正式暴露的字段才通过 `extra` 临时传递：
+
+```python
+result = client.find(
+    query="authentication",
+    limit=10,
+    options={"extra": {"future_server_field": False}},
+)
+```
+
+## 管理员操作
+
+如果你使用 root key 连接，SDK 也暴露了管理员 API，例如：
+
+- `admin_create_account`
+- `admin_register_user`
+- `admin_list_accounts`
+- `admin_get_account`
+- `admin_list_users`
+- `admin_get_user`
+- `admin_regenerate_key`
+- `admin_delete_account`
+
+示例：
+
+```python
+from openviking_sdk import SyncHTTPClient
+
+root_client = SyncHTTPClient(
+    url="http://127.0.0.1:1933",
+    api_key="your-root-key",
+)
+root_client.initialize()
+
+result = root_client.admin_create_account(
+    account_id="demo-account",
+    admin_user_id="demo-admin",
+    seed="demo-admin-seed",
+)
+print(result)
+
+root_client.admin_register_user(
+    account_id="demo-account",
+    user_id="alice",
+    role="user",
+    seed="alice-seed",
+    user_config={
+        "add_targets": {
+            "resource_uri": "viking://~/resources/project-a",
+            "skill_uri": "viking://~/skills",
+        }
+    },
+)
+
+root_client.admin_regenerate_key(
+    account_id="demo-account",
+    user_id="alice",
+    seed="alice-new-seed",
+)
+```
+
+`admin_create_account` 也接受同样结构的 `user_config`。这些字段用于初始化服务端用户配置；普通添加调用仍然只需省略 `to` / `parent` / `target_uri`，由服务端解析默认值。
+传入 `seed` 时，返回的 API Key 会基于 `sha256(user_id + "\0" + seed)` 生成；省略时仍使用随机生成逻辑。
+
+## 错误处理
+
+SDK 会把服务端错误码映射为 Python 异常。
+
+```python
+from openviking_sdk import OpenVikingError, SyncHTTPClient
+
+client = SyncHTTPClient(url="http://127.0.0.1:1933", api_key="your-user-key")
+client.initialize()
+
+try:
+    print(client.read(uri="viking://resources/not-exists.md"))
+except OpenVikingError as exc:
+    print(type(exc).__name__, exc)
+```
+
+## 与 `openviking` 的关系
+
+在以下场景中使用 `openviking-sdk`：
+
+- 只需要 HTTP 客户端
+- 希望依赖体积尽可能小
+- 作为业务应用侧集成包使用
+
+在以下场景中使用 `openviking`：
+
+- 需要完整 Python 主包
+- 需要本地运行时集成
+- 需要服务端入口
+- 需要重新导出 HTTP client 的兼容导入路径
+
+## 开发
+
+从源码安装：
+
+```bash
+cd sdk/python
+pip install -e .
+```
+
+构建发行包：
+
+```bash
+cd sdk/python
+python -m build
+```
+
+SDK 版本号来自以下格式的 git tag：
+
+```text
+python-sdk@0.1.3
+```
+
+这个 tag 命名空间独立于主包的发布 tag，例如：
+
+```text
+v0.3.26
+```
+
+## 发布
+
+仓库已经配置为支持通过 SDK 专用 tag 触发 SDK 发布。
+
+典型流程：
+
+1. 合并 SDK 相关改动
+2. 创建并推送类似 `python-sdk@0.1.3` 的 tag
+3. GitHub Actions 构建 `sdk/python`
+4. GitHub Actions 将 `openviking-sdk` 发布到 PyPI

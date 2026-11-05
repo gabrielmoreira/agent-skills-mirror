@@ -346,6 +346,15 @@ namespace，不表示跨 namespace 全局删除。
 Maintainer SDK 中暴露存储 ID 选择器的方法，例如批量删除中的 `ids`，属于兼容方法并待移除。
 新的 maintainer 契约应按 `namespaceId`、`groupName`、`dataId`，或这些身份元组的显式列表选择配置。
 
+若增加 `changeMessage` 重载，普通和 CAS 发布 API 对插入和更新采用相同处理，保留已有
+重载兼容性，不扩展 Beta、灰度、回滚和删除能力。SDK 不通过先查询来猜测创建或更新。
+输入校验和可选历史详情说明遵循
+[Config 持久化与历史规范](../config/config-persistence-history-spec.md)。
+512 码点限制的本地超长校验映射为 `NacosException.INVALID_PARAM`。
+数据源不支持说明时保留原发布结果；真实发布错误保持原异常映射。
+该重载用于独立控制台转发；已有发布签名及共享 HTTP 客户端的响应读取行为保持不变。
+此处定义目标合同；新增公开方法前须审阅签名，并更新 SDK IT、场景及覆盖登记。
+
 ### 7.3 NamingMaintainerService
 
 `NamingMaintainerService` 包含：
@@ -475,3 +484,9 @@ SDK／用户 Executor 拒绝和 getExecutor 异常释放在途标记并保留差
 Watch 通知触发的查询及同一刷新重试，通过 HTTP Header 或 gRPC Request Header
 携带 `X-Nacos-Agent-Discovery-Trigger: watch-notify`。初始化、握手补查和轮询回退
 不标记；合并、并发、恢复及兼容边界见 [Agent API 规范](../ai/agent-api-spec.md)。
+
+### Agent 请求构造
+
+API 模块提供无连接的 `AgentRequestBuilder`；通用和 A2A 链遵循
+[Agent API Builder 契约](../ai/agent-api-spec.md)。转换内核由现有 SDK、服务端 A2A facade
+与迁移复用，兼容投影保留原行为。Java SDK IT 覆盖真实发布、端点替换、转换、校验与输入隔离。

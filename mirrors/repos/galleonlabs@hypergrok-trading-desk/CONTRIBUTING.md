@@ -23,9 +23,9 @@ HyperGrok is instructions and resources for a user's Grok Bot, not software the 
 bash scripts/check.sh
 ```
 
-The required check runs structural validation, retained release/security/financial contracts, and 14 real CLI journeys against an isolated loopback API. The tool unit suites for Opening Bell, research datasets and the doctor remain available through `python3 -m unittest discover -s scripts -p 'test_*.py'`; prefer end-to-end journeys or boundary contracts for new coverage. CI runs the same script.
+The required check runs structural validation, retained release/security/financial contracts, and 19 real CLI journeys against an isolated loopback API. The tool unit suites for Opening Bell, research datasets and the doctor remain available through `python3 -m unittest discover -s scripts -p 'test_*.py'`; prefer end-to-end journeys or boundary contracts for new coverage. CI runs the same script.
 
-Retained contracts and reasons: manifest/npm/template checks and their negative fixtures protect installation and publication; release-bump fixtures protect immutable tags and scoped writes; exchange-write-gate fixtures protect approval and single-writer boundaries; stop-cost and order-rounding fixtures protect financial arithmetic. The CLI journeys exercise schema/errors without network, offline diagnostics, market reads, risk sizing, dataset collection, offline replay and tamper refusal. No signing, keys, account data or exchange request is used. CI-only changes do not change the pinned user instruction release.
+Retained contracts and reasons: manifest/npm/template checks and their negative fixtures protect installation and publication; release-bump fixtures protect immutable tags and scoped writes; exchange-write-gate fixtures protect approval and single-writer boundaries; stop-cost and order-rounding fixtures protect financial arithmetic. The CLI journeys exercise schema/errors without network, offline diagnostics, market reads, every-DEX account reads in standard and shared-collateral modes, risk sizing, dataset collection, offline replay and tamper refusal. No signing, keys, real account data or exchange request is used. CI-only changes do not change the pinned user instruction release.
 
 Structural validation includes:
 
@@ -46,7 +46,17 @@ Structural validation includes:
 
 5. Run `bash scripts/check.sh`, then commit, then tag: `git tag -a vX.Y.Z -m "..." && git push origin main vX.Y.Z`.
 6. Publish a GitHub release for the tag, re-author the public Grok Bot template from `template/grok-bot.json` (`templateSkillNames` lists the exported bootstrap; `skills` retains all seventeen files installed from the release), and run `python3 scripts/check_public_template.py --live` so its logged-out profile and deep link are proved against the same release contract. When the share link changes, also set it as the GitHub repository homepage (`gh repo edit galleonlabs/hypergrok-trading-desk --homepage <link>`). Gemini CLI installs the latest GitHub release and, when that release has exactly one asset, installs the asset instead of the tagged source; it extracts only `.tar.gz` and `.zip`. Do not attach the npm archive as a release's only asset.
-7. Pack the npm resource package with `npm pack --pack-destination <outside-repo-directory>`. Run `python3 scripts/check_npm_package.py . --tarball <archive>` to verify actual file contents and bytes, unpack it in an empty directory, and run `bash scripts/check.sh` there. Publish the reviewed archive with `npm publish <archive> --access public --registry=https://registry.npmjs.org/`; do not put a token in a command or repository. Fetch the published archive and compare its integrity and bytes with the reviewed artifact. The npm package is instructions/resources, not an exchange executor, and has no install lifecycle hooks or dependencies.
+7. Publish the npm resource package through the `publish.yml` workflow, which authenticates with npm trusted publishing and uses no npm token. It runs only from `main`, requires successful CI on the exact commit and, for a real publish, the `vX.Y.Z` tag on that commit, so run it before `main` moves on. It packs the archive, verifies its contents and bytes with `scripts/check_npm_package.py`, runs `scripts/check.sh` in the unpacked package, publishes that archive and compares the registry integrity with it. Check first with the default dry run: `gh workflow run publish.yml -R galleonlabs/hypergrok-trading-desk`, then add `-f dry_run=false`. The npm package is instructions/resources, not an exchange executor, and has no install lifecycle hooks or dependencies.
+
+   **First release under trusted publishing:** the owner creates the trusted publisher with 2FA, then the release must follow within 2 days, because npm expires a configuration that has not completed a publish by then. A 2FA-bypass token cannot do this. From the home directory, not the personal workspace, whose `.npmrc` would override the login:
+
+   ```bash
+   U=$(mktemp); npm login --userconfig "$U" --auth-type=web && npm trust github hypergrok-trading-desk --userconfig "$U" --repo galleonlabs/hypergrok-trading-desk --file publish.yml --env npm-release --allow-publish --yes; rm -f "$U"
+   ```
+
+   Once that release has landed, set the package's npm **Settings → Publishing access** to "Require two-factor authentication and disallow tokens".
+
+   If Actions is unavailable, stage the reviewed archive from dappnode with `npx -y npm@11.21.1 stage publish <archive> --access public`; it goes live only when the owner approves it with 2FA on npmjs.com. npm removes direct publishing by 2FA-bypass tokens around January 2027.
 8. Verify the published instructions actually work by running section 1 verbatim in an empty directory: clone the tag, then `bash scripts/check.sh` inside it.
 
 The tag must contain a `SETUP.md` that pins to that same tag. If step 4 is skipped, the release ships instructions pointing at the previous one, so the check enforces it rather than leaving it to whoever cuts the release: step 2 without step 4 fails the build, and so does a pin that names a moving branch or no ref at all.

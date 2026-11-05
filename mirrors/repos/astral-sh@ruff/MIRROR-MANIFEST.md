@@ -61,24 +61,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/.claude-plugin/marketplace.json`](.agents/.claude-plugin/marketplace.json) |
 | 2 | ✓ | [`.agents/.claude-plugin/plugin.json`](.agents/.claude-plugin/plugin.json) |
-| 3 | ✓ | [`.agents/skills/adding-ty-diagnostics/SKILL.md`](.agents/skills/adding-ty-diagnostics/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md`](.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md) |
-| 5 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/review-ty-changes/agents/openai.yaml`](.agents/skills/review-ty-changes/agents/openai.yaml) |
-| 7 | ✓ | [`.agents/skills/review-ty-changes/SKILL.md`](.agents/skills/review-ty-changes/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/summarise-ecosystem-results/assets/report-template.md`](.agents/skills/summarise-ecosystem-results/assets/report-template.md) |
-| 9 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md`](.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md) |
-| 10 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md`](.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md) |
-| 11 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
-| 12 | ✓ | [`.agents/skills/triage-ty-issue/agents/openai.yaml`](.agents/skills/triage-ty-issue/agents/openai.yaml) |
-| 13 | ✓ | [`.agents/skills/triage-ty-issue/SKILL.md`](.agents/skills/triage-ty-issue/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/wobbling-ty-constraint-order/SKILL.md`](.agents/skills/wobbling-ty-constraint-order/SKILL.md) |
-| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 16 | ✓ | [`agents/references/cli-threat-model.md`](agents/references/cli-threat-model.md) |
-| 17 | ✓ | [`agents/references/language-server-threat-model.md`](agents/references/language-server-threat-model.md) |
-| 18 | ✓ | [`agents/references/playground-threat-model.md`](agents/references/playground-threat-model.md) |
-| 19 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
-| 20 | ✓ | [`agents/references/threat-models.md`](agents/references/threat-models.md) |
+| 3 | ✓ | [`.agents/references/cli-threat-model.md`](.agents/references/cli-threat-model.md) |
+| 4 | ✓ | [`.agents/references/language-server-threat-model.md`](.agents/references/language-server-threat-model.md) |
+| 5 | ✓ | [`.agents/references/playground-threat-model.md`](.agents/references/playground-threat-model.md) |
+| 6 | ✓ | [`.agents/references/repository-threat-model.md`](.agents/references/repository-threat-model.md) |
+| 7 | ✓ | [`.agents/references/threat-models.md`](.agents/references/threat-models.md) |
+| 8 | ✓ | [`.agents/skills/adding-ty-diagnostics/SKILL.md`](.agents/skills/adding-ty-diagnostics/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md`](.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md) |
+| 10 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
+| 11 | ✓ | [`.agents/skills/review-ty-changes/agents/openai.yaml`](.agents/skills/review-ty-changes/agents/openai.yaml) |
+| 12 | ✓ | [`.agents/skills/review-ty-changes/SKILL.md`](.agents/skills/review-ty-changes/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/summarise-ecosystem-results/assets/report-template.md`](.agents/skills/summarise-ecosystem-results/assets/report-template.md) |
+| 14 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md`](.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md) |
+| 15 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md`](.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md) |
+| 16 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/triage-ty-issue/agents/openai.yaml`](.agents/skills/triage-ty-issue/agents/openai.yaml) |
+| 18 | ✓ | [`.agents/skills/triage-ty-issue/SKILL.md`](.agents/skills/triage-ty-issue/SKILL.md) |
+| 19 | ✓ | [`.agents/skills/wobbling-ty-constraint-order/SKILL.md`](.agents/skills/wobbling-ty-constraint-order/SKILL.md) |
+| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---

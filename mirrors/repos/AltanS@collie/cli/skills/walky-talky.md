@@ -77,15 +77,19 @@ minibuch/w11:p4#8h9h        minibuch  claude   walky-live             idle
   session, so a pane that was replaced is refused with it. Use the address your operator gives you
   as given. When you pick one from `who`, copy ADDRESS as printed. Its first part is the member id,
   not the machine. Pick the row by MACHINE and LABEL.
-- Labels can repeat: `walky-live` is on two machines above. MACHINE tells them apart. If two rows
-  still match, ask your operator.
+- Labels repeat, as `walky-live` does above. MACHINE tells them apart. Still unsure: ask your operator.
+- When a message body names another session, write its full address as `who` prints it, such as
+  `collie-04rj6a/w54:p1J#anx6`. Never write a bare pane id (`w54:p1J`), a window id (`w54`) or a label
+  alone. A label repeats, and your operator's phone draws the session's name in place of the address.
 - A word with no `/` reaches a whole folder. `<repo>` is every agent pane in a folder of that name
   on every machine of the crew, on any branch. `<repo>#<branch>` is the same on one branch. `here`
   is your own folder on every machine, without your own pane. `<repo>` is the first part of LABEL,
   such as `collie-workspace` in `collie-workspace#main`.
 - `(you)` marks your own pane. A message to it is refused.
 - STATE is `idle`, `working`, `blocked`, `done` or `unknown`, or `unreachable` for a crew member out
-  of reach. A message to a `working` or `blocked` pane is not lost: Collie queues or holds it.
+  of reach. A message to a `working` or `blocked` pane is not lost: Collie queues or holds it. A
+  session that rested 15 minutes gets a folder message in its inbox only; `send --wake` types it.
+  Use `--wake` only when your operator asked. A `resting` receipt is final: do not send it again.
 
 Send a message to one address. Only your operator may send to `all`.
 
@@ -157,6 +161,7 @@ this machine`). A refused send exits 4.
 - You finished work another session waits on.
 - Keep to one topic. Say what you need back, or say that nothing is needed.
 - Write the body so it makes sense with no other context. The reader has not seen your session.
+- When you name another session in the body, write its full address as `who` prints it, not a pane id, a window id or a label alone.
 
 ## When not to send
 

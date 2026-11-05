@@ -52,9 +52,9 @@ If `SKILL_PREFIX` is `true` use `/gstack-*` names; paths stay `~/.claude/skills/
 
 ## Question Tuning (skip entirely if `QUESTION_TUNING: false`)
 
-Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>"`; for an unregistered id, write the question summary to `.gstack/tmp/qt.txt` (file-write tool) and append `--summary-file .gstack/tmp/qt.txt` (one-way keyword check). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
+Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>"`; for an unregistered id, write the question summary to `.gstack/tmp/qt.txt` (file-write tool) and append `--summary-file .gstack/tmp/qt.txt` (one-way keyword check); its `--signal-keys` prints an optional signal-key hint. `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
 
-**Embed the question_id as a marker in every asked brief**, ad hoc IDs included, with one ID for check, marker and log. Include `<gstack-qid:{question_id}>` once in the question text itself, not only a command or log. On prose paths, use the explicit reply line. Without the marker, the PreToolUse hook treats AskUserQuestion as observed-only and never auto-decides.
+**Embed the question_id as a marker in every asked brief**, ad hoc IDs included, with one ID for check, marker and log. Include `<gstack-qid:{question_id}>` once in the question text itself, not only a command or log. On prose paths, use the explicit reply line. Without the marker the hook never auto-decides.
 
 **Embed the option recommendation via the `(recommended)` label suffix** on exactly one option per AUQ. The PreToolUse hook parses it first, falls back to "Recommendation: X" prose, and refuses when ambiguous (two labels = refuse).
 
@@ -184,14 +184,16 @@ UBI_TTL_HOURS=3 $U run --setup scripts/ubicloud/bootstrap.sh -- 'make test'
 ```
 
 `run` creates the VM (`-s SIZE`, default `standard-16`; `-l LOCATION`, default
-`eu-central-h1`), streams the checkout (tracked files, untracked files that
-are not ignored, and `.git`, so uncommitted edits are tested), runs the
+`eu-central-h1`), streams the checkout (tracked and non-ignored untracked
+files, and `.git`, so uncommitted edits are tested; a subdirectory skips
+`.git`), runs the
 bootstrap once, runs the command in a login shell with `umask 022`, copies
 `--pull REMOTE_GLOB:LOCAL_DIR` artifacts back and destroys the VM. It exits
 with the command's status. `--env K=V` passes a literal; `--pass NAME` forwards
-a local variable's value without printing it (never `UBICLOUD_*`: the runner's
-own credentials stay on this machine); `--keep` skips teardown for debugging,
-and then `$U down <name>` is yours to run.
+a variable you exported, as it was when the runner started, without printing it
+(never `UBICLOUD_*`, `UBI_RECOVERY_KEY` or `UBI_SINK`: the runner's own
+credentials, recovery secret and sink URL stay on this machine); `--keep`
+skips teardown for debugging, and then `$U down <name>` is yours to run.
 
 ---
 
@@ -277,7 +279,8 @@ is visible: a `standard-16` run is billed from create to confirmed teardown.
 2. `$U records` and `$U list --mine`, then `$U down` anything of yours that no
    rerun will reattach to.
 3. After a machine swap nothing reattaches; tier checkpoints on a Drive
-   (`UBI_CHECKPOINT_DIR`) still count.
+   (`UBI_CHECKPOINT_DIR`) still count; with `UBI_RECOVERY_DIR`, `$U recover`
+   rebuilds VM state here once the old machine is dead.
 4. A background log with no exit sentinel and no VM is an interrupted run, not
    a pass; rerun it.
 5. Measure before/after pairs on the same size and location, never one side

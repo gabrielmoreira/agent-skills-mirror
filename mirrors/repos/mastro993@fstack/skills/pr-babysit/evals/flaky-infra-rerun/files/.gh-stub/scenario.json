@@ -1,0 +1,9 @@
+{
+ "repo": "acme/widgets", "number": 10, "title": "Add bulk discount tiers",
+ "body": "Orders of 50+ units get 5% off, 100+ get 10% off.",
+ "base": "main", "head": "feat/bulk-discount-tiers", "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v", "ci_delay_seconds": 20, "merge_when_ready_after_seconds": 60,
+ "flaky_first_run": true,
+ "reviews": [{"id": "PRR_alice1", "author": "alice", "state": "APPROVED", "body": "LGTM once CI is green."}],
+ "threads": [], "comments": []
+}

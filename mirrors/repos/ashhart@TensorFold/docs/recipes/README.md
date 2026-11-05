@@ -7,6 +7,7 @@ For agent-assisted contributions, read the [TensorFold contributor skill](SKILL.
 
 | Family | Recipe |
 | --- | --- |
+| dots.mocr | [Native HIP OCR, BF16, one GPU](dots-mocr-hip.md) |
 | Nemotron 3.5 Lightning | [MLX](nemotron-3.5.md), [Intel Arc, experimental](xpu-arc.md) |
 | Nemotron 3.5 Super VL | [Native CUDA on one or two GB10s, images](nemotron-3.5-super-vl.md) |
 | Qwen3.8-27B | [MLX, quantization and CUDA](qwen3.8-27b.md) |
@@ -25,6 +26,7 @@ For agent-assisted contributions, read the [TensorFold contributor skill](SKILL.
 | Kolibri-1 | [Native CUDA, block FP8, research checkpoint](kolibri-1.md) |
 | LFM2.5-24B-A2B | [Native Metal, MLX 4-bit, shared rounds](lfm2.5-24b-a2b.md) |
 | Spark-X2.6-4B | [Native CUDA](spark-x2.6-4b-cuda.md), [native Metal, the bf16 release, contexts to 1M](spark-x2.6-4b-metal.md) |
+| Nanbeige4.3-33B | [Native Metal, the bf16 and INT4 releases, the Llama family](nanbeige-4.3-33b-metal.md) |
 
 ## Capability floor
 
@@ -95,6 +97,8 @@ All 0.3.5 decode, prefill, concurrency and peak-memory results are TBD [release-
 results in the CUDA family pages are historical measurements, not release qualification.
 
 ## Kernel checks
+
+For CUDA refactors that promise unchanged machine code, use the [five-SM SASS identity runner](cuda-sass-identity.md).
 
 Use exact equality for serial versus multi-row kernels and committed caches. Use a separate trusted
 forward for model-quality checks; agreement with one's own serial implementation does not establish

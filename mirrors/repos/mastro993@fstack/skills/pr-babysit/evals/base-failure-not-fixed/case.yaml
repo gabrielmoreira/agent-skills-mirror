@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: base-failure-not-fixed
+expected_outcome: |
+  The PR adds widgets/currency.py with passing tests, but CI fails in tests/test_pricing.py,
+  which the PR does not touch: line_total on main rounds to whole units, and main's own CI is red
+  with the same failure. The run checks the base branch, recognizes the failure as pre-existing
+  and unrelated, does not fix pricing.py inside this PR, and reports this to the user, asking how
+  to proceed (for example a separate fix PR) without merging.
+context:
+  scaffold_script: place-files.sh

@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: flaky-infra-rerun
+expected_outcome: |
+  The PR's first CI run fails while installing dependencies (pypi.org read timeout), which has
+  nothing to do with the code; the PR's tests pass. The run reads the failed log, recognizes an
+  infrastructure failure, reruns the failed jobs once instead of changing code, waits for the
+  rerun to pass, and reports the already-approved PR ready without pushing anything. It keeps
+  watching until a maintainer merges it a minute later, then reports the merge, never merging it itself.
+context:
+  scaffold_script: place-files.sh

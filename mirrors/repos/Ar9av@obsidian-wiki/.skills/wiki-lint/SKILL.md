@@ -95,6 +95,8 @@ Pages whose `updated` timestamp is old relative to their sources.
 - Compare page `updated` timestamps to source file modification times
 - Flag pages where sources have been modified after the page was last updated
 
+**Uncovered sources.** `obsidian-wiki lint` reports `uncovered_sources`: `.manifest.json` entries whose `pages_produced`/`pages_created`/`pages_updated` list is empty (`no_pages`) or names only pages that no longer exist (`pages_missing`). Each one is a source the vault says it ingested but no page now carries. A warning. For each, re-ingest the source, or point the manifest entry at the page that absorbed it (after a rename or `wiki-dedup` merge). Never delete the entry to silence the finding.
+
 **Undated claims (line-level).** `obsidian-wiki lint` reports `undated_claims`: lines stating a count or amount that goes stale (stars, users, customers, downloads, deals, MRR/ARR) with no date on the line. Lines under a dated heading, pages in `journal/` or named `YYYY-MM-…`, code, and blockquotes are exempt. A warning, never a failure. For each one, either re-check the number and stamp it `(as of YYYY-MM-DD)`, replace it with a link to where the live number lives, or move it under a dated heading as history.
 
 ### 5. Contradictions
@@ -255,6 +257,7 @@ Interpret results as follows:
 - `reviewed` — current material fingerprint and stored score both match the approved review; do **not** recompute from source strings.
 - `stale` — body, summary, sources, provenance, tags, or relationships changed; perform a new manual lineage + claim-coverage review.
 - `unreviewed` — page has no approved ledger entry; manual review is required.
+- `ignored_entries` — how many reviewed pages are now excluded by `.okignore`. A count only, so the pages stay unnamed. Any `trust-record` clears them.
 - `score_mismatches` — material content still matches, but stored `base_confidence` differs from the approved value; fail the lint.
 - `errors` — malformed/missing ledger data; fail the lint.
 

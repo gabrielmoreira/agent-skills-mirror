@@ -148,7 +148,10 @@ Canvas extensions live in `extensions/<extension-id>/` as reusable source compon
    - Required: `name` (matching folder name), `description`, `version`
    - Optional: `author`, `keywords`
    - `extensions.com.github.copilot.logo` **must** be exactly `"assets/preview.png"`
-3. **Screenshot requirements**: Create `assets/preview.png` as your primary visual
+3. **Screenshot requirements**: Create `assets/preview.png` as your primary visual, and for best results (optional):
+   - Image Size (px): 1280 x 720
+   - Center Focus (px): 600 x 600 (focal point at center of image)
+   - Ratio: 16:9
 4. **Do not add `canvas.json`**: Extension website metadata is sourced from the matching plugin manifest
 5. **Validate before submitting**: Run `npm run plugin:validate` to check compliance with conventions
 
@@ -255,7 +258,7 @@ The public-submission policy builds on those rules and also requires `license` p
 2. **Automated intake validation** checks that the required fields are present and correctly formatted for a GitHub-hosted plugin. Invalid submissions are labeled `requires-submitter-fixes` with a comment explaining what must be fixed before maintainer review.
    Intake also checks the repository owner's type using the GitHub API. Organization-owned repositories receive `first party` for the `Microsoft`, `GitHub`, `Azure`, `dotnet`, `MicrosoftDocs`, or `microsoftgraph` organizations (case-insensitive), or `third party` for any other organization. User-owned repositories receive neither label. On the triage board, `first party` skips AI review and creates an `Accept` recommendation with `/approve`; this is only a triage recommendation. Submissions must still pass automated validation and quality gates, and a human maintainer must review and approve them before listing. Ownership labels are updated on each intake pass.
 3. **Automated quality gates** run after metadata validation:
-   - Agent Plugins v1.0.0 manifest compliance, including a root `plugin.json` with the required schema and supported fields
+   - Agent Plugins v1.0.0 manifest compliance, including a root `plugin.json` with the required schema and supported fields. When legacy manifests coexist, the root manifest is authoritative; legacy files do not override it or provide a fallback for an invalid root manifest.
    - `vally lint` against the submitted plugin path/ref/sha, including Agent Skills spec compliance and valid file references for bundled skills
    - install smoke test via Copilot CLI against an ephemeral marketplace entry generated from the submission
    - version matching against the source manifest, ref/SHA consistency when both locators are provided, and the required extension structure for plugins tagged `canvas`
@@ -490,7 +493,7 @@ A required check called `submission-gate` tracks your PR. A bot keeps one status
 **States.** Each PR carries one state label:
 
 | Label | What it means for you |
-|---|---|
+| --- | --- |
 | `awaiting-automation` | Checks are still running. If a check hit an infrastructure problem (not caused by your change), comment `/rerun-checks`. |
 | `requires-submitter-fixes` | A check found a problem, or a reviewer requested changes. Follow the steps in the status comment and push a fix. |
 | `ready-for-review` | All checks passed. A maintainer will review. |

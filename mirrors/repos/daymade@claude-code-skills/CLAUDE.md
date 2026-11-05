@@ -103,6 +103,8 @@ within the current user/host contract.
 
 For research asset discovery, follow [deep-research's catalog contract](deep-research/references/research-asset-contract.md#start-before-external-retrieval);
 keep discovery observations separate from final result checks.
+For source captures, dates and claim records, use its [capture procedure](deep-research/references/research-asset-contract.md#capture-sources-and-claims-during-the-run);
+lane question IDs follow the [provider-run contract](deep-research/references/provider-run-contract.md#task-file-studyjson).
 
 For research-driven evolution of a specified existing Skill, start at
 [skill-evolver](skill-evolver/SKILL.md) and follow its public stage routes; use
@@ -189,7 +191,8 @@ enter `setup-notifications-via-wecom`; its receipt contract owns accepted/reject
 handling, while the worker owns event identity and delivery state.
 
 For Terraform publication, linked releases, shared-route replacement, approval, first mutation,
-expired plans, environment isolation or initialization-cache changes, enter
+expired plans, saved-plan input-type mismatches, frozen approval-input verification,
+environment isolation or initialization-cache changes, enter
 [`terraform-skill`](terraform-skill/SKILL.md).
 
 For Deep Research or Kimi financial-research changes, enter the owning
@@ -392,6 +395,8 @@ For uv cache diagnosis or retirement, enter
 [uv target semantics](daymade-macos/macos-cleaner/references/cleanup_targets.md#uv-cache-retirement).
 For Cargo or manual CI cleanup, read its
 [artifact selection rules](daymade-macos/macos-cleaner/references/cleanup_targets.md#cargo-and-manual-ci-outputs).
+When free space falls during cleanup, or copy semantics are used to estimate
+reclaim, follow [growth attribution and target allocation](daymade-macos/macos-cleaner/references/growth_attribution.md#target-allocation-and-mixed-free-space-windows).
 
 ### Automated Test Suites (CI)
 
@@ -431,6 +436,8 @@ Before replacing an existing launchd job, enter its
 [authorized unload and replacement procedure](daymade-macos/macos-watchdog/references/event-driven-observers.md#wait-for-an-authorized-unload-before-replacement).
 Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
+Before choosing an observer's failure-notification threshold, follow
+[observation-failure timing](daymade-macos/macos-watchdog/references/alert-discipline.md#observation-failure-timing).
 For named macOS load/runaway alerts, follow
 [macos-load-doctor's intervention and diagnosis-completion contract](daymade-macos/macos-load-doctor/SKILL.md#5-act-within-the-boundary).
 For memory pressure or suspected child-process leaks, enter that Skill's
@@ -475,12 +482,16 @@ to select the command; `fix_transcription.py` dispatch and command-combination
 checks own accepted combinations.
 For domain-context location, configuration-directory selection or homophone-veto
 authoring, enter the [Domain Context Guide](daymade-audio/transcript-fixer/references/domain_context_guide.md).
+For project-bound queue appends or domain-only metadata repair, enter
+[queue domain admission and repair](daymade-audio/transcript-fixer/references/queue_domain_repair.md).
 For remaining pending rows or a received occurrence-specific human verdict on an
 already reviewed file, enter [pending continuation](daymade-audio/transcript-fixer/references/pending-continuation.md)
 for queue resolution and its finalization, learning and propagation owners.
 For source-audio export, identity and timeline pairing, follow
 [the audio setup SOP](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#source-audio-and-timeline-pairing)
 and its [audio helper](daymade-audio/transcript-fixer/scripts/fetch_minute_audio.py).
+For verified local or already authorized SSH clip sources, enter
+[source clips](daymade-audio/transcript-fixer/references/source_clips.md).
 For batch audio checks, follow
 [queue-level clip cross-check](daymade-audio/transcript-fixer/references/advanced_correction_evidence.md#batch-pending-adjudication--queue-level-clip-cross-check).
 [verify_queue_audio.py](daymade-audio/transcript-fixer/scripts/verify_queue_audio.py)
@@ -507,6 +518,12 @@ To find an existing Feishu recording by date, enter
 
 For updates that preserve manual formatting or change table/page width, enter
 [lark-cli-router's layout workflow](daymade-claude-code/lark-cli-router/SKILL.md#preserve-document-layout).
+
+### Feishu External Collaboration
+
+For external customer groups paired with Wiki pages, enter
+[lark-cli-router's external collaboration workflow](daymade-claude-code/lark-cli-router/SKILL.md#external-customer-collaboration).
+It owns group reuse/creation, descendant-scoped grants and their verification.
 
 ### Feishu Document Capture
 
@@ -651,6 +668,12 @@ For change-only automatic backups, use its
 For one-shot helper exits or attribution of an exited terminal, enter
 [helper terminals and original sessions](ghostty-use/SKILL.md#one-shot-helper-terminals-and-original-sessions).
 
+### Codex Startup and Entry Identity
+
+Before a Codex startup diagnosis or a build/resume/recovery claim, follow
+[entry identity](daymade-codex/local-codex/references/entry-identity.md).
+That SOP owns the shell/executable binding and the limits of identity evidence.
+
 ### Codex Quota and Account Checks
 
 For selected-site Cookie copying between local profiles of the same macOS Chrome,
@@ -659,7 +682,7 @@ enter [cookie-copy](cookie-copy/SKILL.md). For its quota-query caller, follow
 
 For an existing Codex session failing after login changes, start at
 [Local Codex existing-owner recovery](daymade-codex/local-codex/references/oauth-guide.md#existing-native-owner-recovery).
-For a remote Codex sign-in prompt or independent-grant recovery, start at
+For a remote Codex sign-in prompt or choosing existing-login reuse versus new authorization, start at
 [Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
 Keep quota checks on the separate route below.
 

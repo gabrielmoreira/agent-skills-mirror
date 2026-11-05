@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 26 file(s) materialized.
+Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,14 +81,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`extensions/Timeline/AGENTS.md`](extensions/Timeline/AGENTS.md) |
 | 17 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
 | 18 | ✓ | [`templates/extension/AGENTS.md`](templates/extension/AGENTS.md) |
-| 19 | ✓ | [`tests/extensions/AGENTS.md`](tests/extensions/AGENTS.md) |
-| 20 | ✓ | [`tests/filter-oracle/AGENTS.md`](tests/filter-oracle/AGENTS.md) |
-| 21 | ✓ | [`Unity-MCP-Plugin/AGENTS.md`](Unity-MCP-Plugin/AGENTS.md) |
-| 22 | → | [`docs/agents/architecture.md`](docs/agents/architecture.md) |
-| 23 | → | [`docs/agents/ci-unity-license.md`](docs/agents/ci-unity-license.md) |
-| 24 | → | [`docs/agents/documentation-sync.md`](docs/agents/documentation-sync.md) |
-| 25 | → | [`docs/agents/release.md`](docs/agents/release.md) |
-| 26 | → | [`docs/agents/style.md`](docs/agents/style.md) |
+| 19 | ✓ | [`tests/ci-disable/AGENTS.md`](tests/ci-disable/AGENTS.md) |
+| 20 | ✓ | [`tests/extensions/AGENTS.md`](tests/extensions/AGENTS.md) |
+| 21 | ✓ | [`tests/filter-oracle/AGENTS.md`](tests/filter-oracle/AGENTS.md) |
+| 22 | ✓ | [`Unity-MCP-Plugin/AGENTS.md`](Unity-MCP-Plugin/AGENTS.md) |
+| 23 | → | [`docs/agents/architecture.md`](docs/agents/architecture.md) |
+| 24 | → | [`docs/agents/ci-unity-license.md`](docs/agents/ci-unity-license.md) |
+| 25 | → | [`docs/agents/documentation-sync.md`](docs/agents/documentation-sync.md) |
+| 26 | → | [`docs/agents/release.md`](docs/agents/release.md) |
+| 27 | → | [`docs/agents/style.md`](docs/agents/style.md) |
 
 ---
 

@@ -4,9 +4,9 @@
 //        node .agents/pstack/page-stop.mjs --hook
 // Prints the Artifact publish that adds or updates this run's part of its
 // subject page, and the files to read in full before sending it. --base names
-// the page as the Artifact tool last returned it, such as the source a refused
-// publish saved; without it the helper starts from this checkout's last
-// publish. --new makes a new page for a subject whose page no longer opens.
+// the page as the Artifact tool last returned it; without it the helper starts
+// from this checkout's last publish. --new makes a new page for a subject whose
+// page no longer opens.
 // --hook reads a Claude Code PostToolUseFailure payload and, when a plan
 // page's publish failed because the page no longer opens, tells the lead to
 // rerun with --new.
@@ -14,12 +14,11 @@
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CODE_VERSION, contextOf, gonePagesFile, pageFile, pageUrlOf, parsePageFile, runBody, runHeader, slugOf, viewerCode } from './plan-page.mjs';
+import { asksOwner, CODE_VERSION, contextOf, gonePagesFile, pageFile, pageUrlOf, parsePageFile, runBody, runHeader, slugOf, viewerCode } from './plan-page.mjs';
 import { stageOfRow } from './status.mjs';
 
 const USAGE = 'Usage: node .agents/pstack/page-stop.mjs stage|stop <plan.md> [--base <file>] [--new] [--session <id>], or --hook';
 const CODEX = 'Nothing to send: outside Claude Code, such as in Codex, a run publishes nothing; render the page locally';
-const DUE = ['occurrence', 'state', 'status', 'title', 'asks', 'picks'];
 
 const readJson = (path) => (existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null);
 const same = (a, b, fields) => fields.every((field) => JSON.stringify(a[field]) === JSON.stringify(b[field]));
@@ -63,15 +62,15 @@ function publish(command, planPath, { session, base: baseFile, fresh }) {
   const header = runHeader(planPath, { session, at: now });
   const previous = readJson(join(out, 'runs', `${header.key}.json`));
   const listed = base.runs.find((entry) => entry.key === header.key);
-  // The page shows the previous header only when the base lists the entry that publish wrote.
-  const shown = previous && listed && listed.at === previous.at ? previous : null;
+  const onPage = listed && previous?.at === listed.at ? previous : null;
   const { occurrence, since } = occurrenceOf(planPath, header.stage);
   header.occurrence = occurrence;
-  header.since = since ?? (shown?.occurrence === occurrence ? shown.since : now);
+  header.since = since ?? (onPage?.occurrence === occurrence ? onPage.since : now);
   const highest = Math.max(0, ...base.runs.map((entry) => (Number.isInteger(entry.handback) ? entry.handback : 0)));
   header.handback = command === 'stop' ? highest + 1 : (listed?.handback ?? null);
-  if (command === 'stage' && shown && same(header, shown, DUE)) return ['Nothing to send: the page already shows this stage'];
-  const body = command === 'stop' || !shown || !same(header, shown, ['asks', 'picks']) ? runBody(planPath, { key: header.key }) : null;
+  const body = runBody(planPath, { key: header.key });
+  const quiet = onPage ? same(header, onPage, ['asks', 'picks']) : !previous && !listed && !asksOwner(header);
+  if (command === 'stage' && quiet) return ['Nothing to send: between stops the page changes only for a new or changed open question or (look) or (answer) pick'];
 
   const entry = { key: header.key, session, plan: header.plan, slug: header.slug, title: header.title, added: listed?.added ?? now, at: now, handback: header.handback, done: header.state === 'done' };
   const stages = Object.fromEntries(base.list.map((item) => [item.slug, item.stage]));
@@ -84,14 +83,12 @@ function publish(command, planPath, { session, base: baseFile, fresh }) {
   };
   write('index.html', pageFile({ title: doc.title || name, subject: name, runs, stages }));
   write(files[0], `${JSON.stringify(header, null, 2)}\n`);
-  if (body) {
-    write(`runs/${header.key}.html`, body.html);
-    files.push(`runs/${header.key}.html`);
-    for (const shot of body.shots) {
-      mkdirSync(dirname(join(out, shot.path)), { recursive: true });
-      copyFileSync(shot.source, join(out, shot.path));
-      files.push(shot.path);
-    }
+  write(`runs/${header.key}.html`, body.html);
+  files.push(`runs/${header.key}.html`);
+  for (const shot of body.shots) {
+    mkdirSync(dirname(join(out, shot.path)), { recursive: true });
+    copyFileSync(shot.source, join(out, shot.path));
+    files.push(shot.path);
   }
   if (base.code < CODE_VERSION) {
     const { version, js, css } = viewerCode();
@@ -110,7 +107,7 @@ function publish(command, planPath, { session, base: baseFile, fresh }) {
       : bound
         ? `This publish makes a new page: replace \`Page: ${bound}\` in ${target} with its URL, and give the plan the reply links a Defaults row that names the old and new links, as the plan-page skill says`
         : `This publish makes the page: write its URL as \`Page: <url>\` ${subjectPath ? 'under the title' : 'under the `Status:` line'} of ${target}`,
-    url ? `If the tool refuses the publish because the page changed, run this command again with --base <the source path the refusal saved> and send what it prints` : null,
+    url ? `If the tool refuses the publish and returns the page's live version, such as when this session has not viewed it or the page changed, run this command again with --base <the source path the refusal saved> and send what it prints. When the refusal saved no file, first read the page's index.html by path with the Artifact tool and pass the file that read saves` : null,
     url ? `If the tool says the page was deleted or is not found, as it also says after a switch to another claude.ai account, run this command again with --new and send what it prints, without asking` : null,
     command === 'stop' ? `Once the publish goes through, reply with 📄 ${url ?? '<url>'}#run-${header.slug}` : null,
   ].filter(Boolean);

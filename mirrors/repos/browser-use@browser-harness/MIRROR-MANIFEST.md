@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browser-use/browser-harness` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `browser-use/browser-harness` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browser-use/browser-harness` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`agent-workspace/domain-skills/claude/skills.md`](agent-workspace/domain-skills/claude/skills.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`SKILL.md`](SKILL.md) |
-| 5 | ✓ | [`skills/browser-harness/references/install.md`](skills/browser-harness/references/install.md) |
-| 6 | ✓ | [`skills/browser-harness/SKILL.md`](skills/browser-harness/SKILL.md) |
-| 7 | ✓ | [`src/browser_harness/SKILL.md`](src/browser_harness/SKILL.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | ✓ | [`skills/browser-harness/references/install.md`](skills/browser-harness/references/install.md) |
+| 5 | ✓ | [`skills/browser-harness/SKILL.md`](skills/browser-harness/SKILL.md) |
+| 6 | ✓ | [`src/browser_harness/SKILL.md`](src/browser_harness/SKILL.md) |
 
 ---
 

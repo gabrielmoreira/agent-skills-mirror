@@ -1,90 +1,111 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this package are summarised in this file.
+The full, per-file history of the skill is in
+[`skills/prestashop-module-development/CHANGELOG.md`](skills/prestashop-module-development/CHANGELOG.md).
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## 2026-08-12
-
-### Added
-
-- `references/configuration-page.md` — new mandatory FormHandler pattern with constructor dependency injection; expanded section explaining controller's limited service locator problem and why DI is required instead of `$this->get()`.
-- `references/services-and-di.md` — new section on controller's limited service locator; explains why controllers can only access core Symfony services and not custom module services via `$this->get()`; includes complete constructor DI pattern and controller service registration requirements (`public: true` + `controller.service_arguments` tag).
-- `references/translations.md` — new critical section on front-office Smarty translations; mandates using `{l}` directly in templates instead of passing pre-translated strings as variables from PHP; includes rationale (translation extraction, context visibility, standard pattern) and examples of correct vs incorrect approaches.
+## 2026-11-03
 
 ### Changed
 
-- `SKILL.md` — **MANDATORY installer pattern rules**: install() must call `parent::install()` FIRST with explicit check, then delegate to Installer; uninstall() must call Installer FIRST, then `parent::uninstall()` with `&&` chaining; hooks and tabs must be defined as class property arrays (`private array $hooks = [...]`, `private array $tabs = [...]`); parent group tab auto-installation logic added; NEVER use `getTabs()` method in module class — all tab management in Installer only.
-- `references/module-class-and-installer.md` — complete rewrite: new **MANDATORY install/uninstall pattern** section at the top; tabs management pattern now uses structured class property array with parent group tab auto-check; hooks defined as class property array; simplified Installer class without ConfigurationInstaller sub-class; removed `getTabs()` pattern; all tab logic consolidated in Installer class.
-- `SKILL.md` — configuration page pattern updated from 4 to 5 classes (added FormHandler); now mandates constructor dependency injection in controllers instead of `$this->get()` service locator access.
-- `SKILL.md` — added controller registration requirements: must be `public: true` with `controller.service_arguments` tag.
-- `SKILL.md` — added FormType registration requirements: must have `parent: 'form.type.translatable.aware'` and `tags: [{ name: form.type }]`.
-- `SKILL.md` — added critical rule for front-office CSS/JS registration: ALWAYS use `actionFrontControllerSetMedia` hook (NEVER `header` or `displayHeader`); use `$this->context->controller->registerStylesheet()` and `->registerJavascript()`.
-- `SKILL.md` — WidgetInterface implementation rule: DO NOT define explicit hook methods like `hookDisplayHome()` — PrestaShop automatically calls `renderWidget()` for all registered display hooks.
-- `SKILL.md` — front-office Smarty template translation rule: use `{l s='Text' d='Modules.Modulename.Front'}` directly in template, NEVER pass pre-translated strings as Smarty variables from `getWidgetVariables()`.
-- `references/hooks-and-front-office.md` — expanded with front-office media registration rules and WidgetInterface implementation patterns.
+- Grid JS: `scripts/grid.bundle.js` is now a generic init script on the core Grid components (PS 8.0+ / 9.x), copied with no edit; it replaces the broken webpack bundle template.
+
+## 2026-10-06
+
+### Changed
+
+- Grid: sort / reset troubleshooting and grid ID verification for copied bundles (superseded on 2026-11-03).
+
+## 2026-08-25
+
+### Added
+
+- `references/configuration-management.md` — YAML-based configuration management (single source of truth); modern Symfony router redirect in `getContent()`.
+
+## 2026-08-12
+
+### Changed
+
+- Mandatory installer pattern, configuration page FormHandler with constructor DI, front-office media registration and Smarty translation rules.
 
 ## 2026-08-10
 
 ### Changed
 
-- `SKILL.md` — CategoryChoiceTreeType documentation now embedded directly in configuration page section instead of referencing external steering file; skill is now more self-contained for core features.
+- CategoryChoiceTreeType documentation embedded in the skill.
+
+## 2026-06-03
+
+### Added
+
+- `references/cart-rules.md` — cart rules and vouchers; console commands; Order `LoggableInterface`.
+- Skill `README.md` and `CHANGELOG.md`.
+
+### Security
+
+- PS9 core documentation clarified as static, pre-bundled files (security audit warning).
+
+## 2026-06-01
+
+### Changed
+
+- Service visibility aligned with Symfony best practices (explicit `public: true` only where needed).
 
 ## 2026-05-28
 
 ### Added
 
-- `references/theme-template-injection.md` — new reference for PS8 theme template injection using marker-based file patching; two-class design (`ThemeTemplateInjector` + `ThemeTemplateInstaller`); rules for install/uninstall safety and `scandir()` vs legacy `Theme::getThemes()`.
-- `scripts/grid.bundle.js` — pre-built bundle template for grid JS; replaces the previously inlined bundle content in the reference.
-- `scripts/translatable-form.bundle.js` — pre-built bundle template for forms using `TranslatableType`.
+- `references/theme-template-injection.md`, grid and translatable form JS templates in `scripts/`.
 
 ### Changed
 
-- `SKILL.md` — service access rules clarified: front-office context uses plain `$this->get()` + null check; `ContainerFinder` is explicitly forbidden.
-- `SKILL.md` — services architecture: root-level `config/services.yml` must not exist; only `config/admin/services.yml` and `config/front/services.yml` are needed.
-- `SKILL.md` — FixturesInstaller rule updated: must use `Db::getInstance()` raw SQL — `SymfonyContainer::getInstance()` returns `null` in `pr:mo` console context, making all Doctrine ORM calls silently no-ops.
-- `SKILL.md` — added rule: `Db::getValue()` appends `LIMIT 1` internally — never write it in the SQL string.
-- `SKILL.md` — added rule: Lang entity property types must match DB column nullability; `TranslatableType` returns `null` for unfilled languages — always coerce to `''` in Manager for `NOT NULL` columns.
-- `SKILL.md` — new section `5b) Theme template injection` pointing to the new reference file.
-- `SKILL.md` — `FrameworkBundleAdminController::trans()` signature clarified: order is `trans($id, $domain, $parameters = [])`, not Symfony's standard order.
-- `SKILL.md` — services wiring: all references to `config/services.yml` updated to `config/components/` sub-folders imported by `config/admin/services.yml`.
-- `references/forms.md` — new `TranslatableType` section: per-language fields, mandatory locale-switcher JS bundle setup with copy/sed instructions, `DataConfiguration` per-lang storage pattern, and service `parent: form.type.translatable.aware` requirement.
-- `references/grid-system.md` — JS bundle setup rewritten to reference external template file (`scripts/grid.bundle.js`) with copy/sed instructions; inlined bundle content removed; added asset path pitfall warning (exact module folder name required).
-- `references/module-class-and-installer.md` — expanded with FixturesInstaller raw SQL pattern, guard pattern details, and fixture resolution.
-- `references/services-and-di.md` — expanded with additional DI rules and patterns.
-- `references/services-split.md` — root `config/services.yml` deprecation clarified; added rule: services using `parent:` do not inherit `_defaults: public: true` — always add `public: true` explicitly.
-- `references/configuration-page.md` — minor addition.
-- `references/debugging.md` — minor fix.
+- FixturesInstaller raw SQL rule, services wiring under `config/components/`.
 
 ## 2026-05-19
 
 ### Added
 
-- `SKILL.md` — new `## Steering` section: describes the steering layers system, load order, and conflict resolution rules so consumers can attach project-specific context files.
+- Steering section in `SKILL.md`; `TranslatableType` documentation.
 
 ### Changed
 
-- `SKILL.md` — company-specific rules (table prefix, admin tab group, namespace examples) replaced with generic placeholders; the skill is now company-neutral.
-- `SKILL.md` — removed live URL from source attribution; replaced with a static note.
-- `references/module-class-and-installer.md` — admin tab group and label examples made generic; added `// Replace with your own values` comments.
-- `references/entity-doctrine.md` — table prefix, class name, and namespace examples made generic.
-- `references/grid-system.md` — table name examples made generic.
-- `references/module-structure.md` — namespace examples made generic.
+- Skill made company-neutral (generic examples).
 
 ### Security
 
-- `SKILL.md` — removed live URL pointing to an external repository (static agent context URL, security scanner fix).
-- `ps9-core-ai/Domain/Webservice/CONTEXT.md` — added static documentation-only disclaimer at top of file (security scanner fix).
+- Removed live external URLs (security scanner fixes).
+
+## 2026-05-13
+
+### Changed
+
+- Front-office service access rules.
+
+## 2026-05-07
+
+### Added
+
+- `ps9-core-ai/` — PrestaShop 9 core documentation.
+
+## 2026-04-29
+
+### Changed
+
+- Translations and legacy context injection patterns.
+
+## 2026-04-23
+
+### Changed
+
+- Forms and validation enrichment.
 
 ## 2026-04-15
 
 ### Added
 
-- `references/` folder with 15 domain-specific reference files (module structure, installer, configuration page, entities, grid, security, services split, translations, validation, debugging, and more).
-
-### Changed
-
-- `SKILL.md` — refactored from a monolithic file into a concise index; each step now delegates to a dedicated reference file. Added Grid system, services-split, and guard-pattern rules.
+- `references/` folder; `SKILL.md` refactored into a concise index.
 
 ## 2026-04-02
 

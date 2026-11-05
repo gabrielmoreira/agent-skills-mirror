@@ -41,7 +41,7 @@ import {
 } from "../utils/site-map.js";
 import { readProjectEnvId, writeProjectConfig } from "../utils/project-config.js";
 import { buildDescribeEnvsFilter } from "../utils/describe-envs-query.js";
-import { normalizeLang, t, type Lang } from "../i18n/index.js";
+import { normalizeLang, setPanelLang, t, type Lang } from "../i18n/index.js";
 import {
   buildAuthNextStep,
   buildJsonToolResult,
@@ -52,21 +52,19 @@ import {
   flattenHttpServiceRoutes,
   isDomainPathReachableViaGateway,
 } from "../utils/gateway-access-urls.js";
-import {
-  checkAndCreateFreeEnv,
-  checkAndInitTcbService,
-  type EnvSetupContext,
-} from "./env-setup.js";
+import { TCB_PURCHASE_URL } from "../utils/console-links.js";
 import {
   buildEnvCreditsPayload,
   buildEnvMetricsPayload,
   isBillingExpired,
+  pickCreditsBilling,
   resolveIsolatedDaysLeft,
+  type CreditsBillingLike,
 } from "./env-credits-payload.js";
 import type { EnvCreditsPayload, EnvMetricsPayload } from "../resources/env-credits.js";
 import type { CreateEnvParams } from "@cloudbase/manager-node/types/interfaces/tcb.interface.js";
 import { isMcpUiEnabled, mcpUiMeta } from "../utils/mcp-ui.js";
-import { TCB_PURCHASE_URL } from "./env-setup.js";
+import { extractClientCapabilities } from "../utils/telemetry.js";
 
 /**
  * Resources accepted by CreateEnv. Matches Cloud API / Manager SDK contract.
@@ -135,16 +133,23 @@ export const LISTABLE_PACKAGE_IDS = [
 const LISTABLE_PACKAGE_ID_SET: ReadonlySet<string> = new Set(LISTABLE_PACKAGE_IDS);
 
 /**
- * Resource-usage modules aligned with tcb CLI `USAGE_MODULES`
- * (`tcb env usage` / `tcb env info --type`).
+ * Resource-usage modules accepted by `DescribeCreditsUsageDetail.Modules`.
+ *
+ * 出处：云 API 文档《获取资源点用量明细》`product/876/132934` 的 Modules 枚举（15 项）。
+ * **不要照抄 tcb CLI 的 `USAGE_MODULES`**——CLI ≤ 3.8.x 只有 13 项，缺 `PostgreSQL` / `Token`，
+ * 照抄会导致按模块查询时**整块用量消失**（PG 环境里最典型：数据库一行永远为 0）。
+ * `Modules` 是必传参数且没有「全部」取值（实测省略报 MissingParameter），所以新增模块
+ * 只能靠这份清单跟上，官方文档是唯一真源。
  */
 export const ENV_USAGE_MODULE_VALUES = [
   "FLEXDB",
   "TDSQL",
+  "PostgreSQL",
   "SCF",
   "EKS",
   "COS",
   "AI",
+  "Token",
   "HOSTING",
   "Auth",
   "APIInvocation",
@@ -565,13 +570,32 @@ function buildEnvCandidatePayload(
  *
  * `env_candidates` in the text payload is capped at 20 so a 60-environment account does not burn
  * the model's context on ids it will never use. The panel still has to show all of them, so the
- * uncapped list rides in `_meta`, which hosts forward to the view and withhold from the model.
+ * uncapped list rides in `_meta`.
+ *
+ * **`_meta` 是否对模型隐藏取决于宿主实现，不是协议保证。** 所以除了看开关，还要看宿主有没有
+ * 在 `initialize` 里声明 MCP Apps 扩展：不声明的宿主根本不会渲染面板，这份不截断的列表放进去
+ * 唯一的下场是被整份交给模型——那还不如不给。
  */
 const UI_META_KEY = "cloudbase/ui";
 
-function buildEnvCandidateUiMeta(envCandidates?: EnvCandidate[]) {
+/** 宿主是否声明了 MCP Apps 扩展。读不到能力时放行，保持既有行为。 */
+function clientDeclaresMcpUi(server: { server?: { getClientCapabilities?: () => unknown } }): boolean {
+  const caps = extractClientCapabilities(server?.server?.getClientCapabilities?.());
+  // `undefined` 表示拿不到（未握手 / 旧 SDK），无法区分「不支持 UI」和「还没连上」，
+  // 这时按原来的行为继续附带，避免把面板在 Codex 里弄坏。
+  return caps ? caps.ui : true;
+}
+
+function buildEnvCandidateUiMeta(
+  server: { server?: { getClientCapabilities?: () => unknown } },
+  envCandidates?: EnvCandidate[],
+) {
   // 面板关掉时这份列表没人看，别往 `_meta` 里塞。
   if (!isMcpUiEnabled() || !envCandidates || envCandidates.length === 0) {
+    return undefined;
+  }
+  // 宿主不认面板，列表塞进去只会进模型上下文。
+  if (!clientDeclaresMcpUi(server)) {
     return undefined;
   }
   return { [UI_META_KEY]: { env_candidates: envCandidates } };
@@ -761,20 +785,27 @@ function getCredentialScope(cloudBaseOptions?: {
   return isApiKeyCredentialMode() ? "single_env" : "account";
 }
 
-function buildCredentialBoundaryPayload(cloudBaseOptions?: {
-  region?: string;
-  envId?: string;
-  credentialScope?: string;
-}) {
+function buildCredentialBoundaryPayload(
+  cloudBaseOptions?: {
+    region?: string;
+    envId?: string;
+    credentialScope?: string;
+  },
+  lang?: Lang,
+) {
   const credentialScope = getCredentialScope(cloudBaseOptions);
   const currentRegion = resolveSiteAndRegion(cloudBaseOptions ?? {}).region;
   const pinnedEnvId = process.env.CLOUDBASE_ENV_ID || cloudBaseOptions?.envId || null;
   const scopeNote =
     credentialScope === "single_env"
-      ? t("env.credential.singleEnvNote", {
-          pinnedEnvId: pinnedEnvId ? ` ${pinnedEnvId}` : "",
-        })
-      : t("env.credential.accountNote", { currentRegion });
+      ? t(
+          "env.credential.singleEnvNote",
+          {
+            pinnedEnvId: pinnedEnvId ? ` ${pinnedEnvId}` : "",
+          },
+          lang,
+        )
+      : t("env.credential.accountNote", { currentRegion }, lang);
 
   return {
     credential_scope: credentialScope,
@@ -899,18 +930,8 @@ function buildSetEnvNextStep(envCandidates: EnvCandidate[]) {
 type AuthEnvSetupStatus =
   | "NOT_NEEDED"
   | "AUTO_BOUND"
-  | "AUTO_CREATED"
   | "SELECTION_REQUIRED"
   | "ACTION_REQUIRED";
-
-type AuthEnvSetupFailure = {
-  reason: string;
-  error_code: string;
-  message: string;
-  help_url?: string;
-  need_real_name_auth?: boolean;
-  need_cam_auth?: boolean;
-};
 
 type AuthEnvPreparationResult = {
   currentEnvId: string | null;
@@ -918,7 +939,11 @@ type AuthEnvPreparationResult = {
   envCandidates: EnvCandidate[];
   envSetupStatus: AuthEnvSetupStatus;
   envSetupActions: string[];
-  envSetupFailure?: AuthEnvSetupFailure;
+  /**
+   * 没有环境时为什么停下。只用于遥测归因，不改文案——文案由 message 承载。
+   */
+  envSetupReason?: string;
+  envSetupHelpUrl?: string;
   message: string;
   nextStep: ReturnType<typeof buildAuthNextStep>;
 };
@@ -927,34 +952,17 @@ function dedupeActions(actions: string[]) {
   return actions.filter((action, index) => actions.indexOf(action) === index);
 }
 
-function buildAuthEnvSetupFailure(params: {
-  reason: string;
-  errorCode: string;
-  message: string;
-  helpUrl?: string;
-  needRealNameAuth?: boolean;
-  needCamAuth?: boolean;
-}): AuthEnvSetupFailure {
-  return {
-    reason: params.reason,
-    error_code: params.errorCode,
-    message: params.message,
-    help_url: params.helpUrl,
-    need_real_name_auth: params.needRealNameAuth,
-    need_cam_auth: params.needCamAuth,
-  };
-}
-
 function buildAuthEnvSetupPayload(preparation: AuthEnvPreparationResult) {
   return {
     current_env_id: preparation.currentEnvId,
     env_status: preparation.envStatus,
     env_setup_status: preparation.envSetupStatus,
     env_setup_actions: preparation.envSetupActions,
-    ...(preparation.envSetupFailure
-      ? {
-          env_setup_failure: preparation.envSetupFailure,
-        }
+    ...(preparation.envSetupReason
+      ? { env_setup_reason: preparation.envSetupReason }
+      : {}),
+    ...(preparation.envSetupHelpUrl
+      ? { env_setup_help_url: preparation.envSetupHelpUrl }
       : {}),
     ...buildEnvCandidatePayload(preparation.envCandidates),
   };
@@ -1043,113 +1051,18 @@ async function prepareAuthEnvironment(params: {
     };
   }
 
-  let setupContext: EnvSetupContext = {};
-  const manager = await getCloudBaseManager({
-    requireEnvId: false,
-    cloudBaseOptions: cloudBaseOptions
-      ? {
-          ...cloudBaseOptions,
-          envId: undefined,
-        }
-      : undefined,
-    mcpServer: server,
-  });
-
-  setupContext = await checkAndInitTcbService(manager, setupContext);
-  if (setupContext.checkTcbServiceAttempted) {
-    envSetupActions.push("check_tcb_service");
-  }
-  if (setupContext.initTcbAttempted) {
-    envSetupActions.push("init_tcb");
-  }
-
-  if (setupContext.initTcbError || !setupContext.tcbServiceInitialized) {
-    const failure = setupContext.initTcbError
-      ? buildAuthEnvSetupFailure({
-          reason: "tcb_init_failed",
-          errorCode: setupContext.initTcbError.code || "TCB_INIT_FAILED",
-          message: setupContext.initTcbError.message,
-          helpUrl: setupContext.initTcbError.helpUrl,
-          needRealNameAuth: setupContext.initTcbError.needRealNameAuth,
-          needCamAuth: setupContext.initTcbError.needCamAuth,
-        })
-      : buildAuthEnvSetupFailure({
-          reason: "tcb_init_failed",
-          errorCode: "TCB_INIT_FAILED",
-          message: t("env.prepare.tcbInitFailed"),
-          helpUrl: TCB_PURCHASE_URL,
-        });
-
-    return {
-      currentEnvId: null,
-      envStatus: "NONE",
-      envCandidates: [],
-      envSetupStatus: "ACTION_REQUIRED",
-      envSetupActions: dedupeActions(envSetupActions),
-      envSetupFailure: failure,
-      message: failure.message,
-      nextStep: buildAuthNextStep("status", {
-        suggestedArgs: { action: "status" },
-      }),
-    };
-  }
-
-  const createResult = await checkAndCreateFreeEnv(manager, setupContext);
-  setupContext = createResult.context;
-  if (setupContext.promotionalActivitiesChecked) {
-    envSetupActions.push("check_promotional_activity");
-  }
-  if (setupContext.createFreeEnvAttempted) {
-    envSetupActions.push("create_free_env");
-  }
-
-  // Surface the user-facing notice emitted at checkAndCreateFreeEnv entry.
-  // Informational only — no confirm required. Prepend to the final message so
-  // the user knows an automatic free-env creation was attempted.
-  const userNotice = createResult.userNotice?.trim() || "";
-
-  if (createResult.success && createResult.envId) {
-    await envManager.setEnvId(createResult.envId);
-    const successMessage = t("env.prepare.autoCreated", { envId: createResult.envId });
-    return {
-      currentEnvId: createResult.envId,
-      envStatus: "READY",
-      envCandidates: [],
-      envSetupStatus: "AUTO_CREATED",
-      envSetupActions: dedupeActions(envSetupActions),
-      message: userNotice ? `${userNotice}\n${successMessage}` : successMessage,
-      nextStep: buildAuthNextStep("status", {
-        suggestedArgs: { action: "status" },
-      }),
-    };
-  }
-
-  const createFailure = setupContext.createEnvError
-    ? buildAuthEnvSetupFailure({
-        reason: "env_creation_failed",
-        errorCode: setupContext.createEnvError.code || "ENV_CREATION_FAILED",
-        message: setupContext.createEnvError.message,
-        helpUrl: setupContext.createEnvError.helpUrl,
-      })
-    : buildAuthEnvSetupFailure({
-        reason: "env_creation_failed",
-        errorCode: "ENV_CREATION_FAILED",
-        message: t("env.prepare.envCreateFailed"),
-        helpUrl: TCB_PURCHASE_URL,
-      });
-
-  const failureMessage = userNotice
-    ? `${userNotice}\n${createFailure.message}`
-    : createFailure.message;
-
+  // 没有环境时不再「顺手建一个」：创建环境是花钱/占额度的用户决策，
+  // 不能藏在 auth(status) 这种查看状态的调用里。这里只返回开通入口和下一步，
+  // 用户在控制台开通后回来说一句，再走一次 status 就能接上。
   return {
     currentEnvId: null,
     envStatus: "NONE",
     envCandidates: [],
     envSetupStatus: "ACTION_REQUIRED",
     envSetupActions: dedupeActions(envSetupActions),
-    envSetupFailure: createFailure,
-    message: failureMessage,
+    envSetupReason: "no_env",
+    envSetupHelpUrl: TCB_PURCHASE_URL,
+    message: t("env.prepare.noEnv", { helpUrl: TCB_PURCHASE_URL }),
     nextStep: buildAuthNextStep("status", {
       suggestedArgs: { action: "status" },
     }),
@@ -1499,14 +1412,29 @@ async function enrichEnvInfoWithRuntimeMode(result: any, manager?: any) {
 }
 
 /**
- * 补充 SDK getEnvInfo() 遗漏的字段。
+ * Keys written by later queryEnv(info) enrichers. Raw DescribeEnvInfo must
+ * not overwrite them, even when EnvBaseInfo uses the same name.
+ */
+const ENV_INFO_OWNED_KEYS = new Set([
+  "BillingInfo",
+  "RuntimeMode",
+  "RuntimeBackends",
+  "RuntimeModeHints",
+  "staticDomainRouteEnabled",
+  "accessUrlReachable",
+  "routeDisabled",
+  "disabledAccessUrls",
+]);
+
+/**
+ * Fill EnvInfo keys that Manager SDK getEnvInfo() dropped.
  *
- * @cloudbase/manager-node 的 getEnvInfo() 从 DescribeEnvInfo CAPI 响应的
- * EnvBaseInfo 中手写白名单映射时，漏掉了 PostgreSQL、Meta、StaticStorages 等字段。
- * 这导致 enrichEnvInfoWithRuntimeMode 无法正确判断环境是否支持 PostgreSQL。
- *
- * 此函数通过 commonService 额外调用 DescribeEnvInfo CAPI，从原始响应中提取
- * 缺失字段补到 EnvInfo 上。
+ * getEnvInfo() copies DescribeEnvInfo EnvBaseInfo through a handwritten
+ * allowlist, so newly added fields (and previously omitted ones such as
+ * PostgreSQL, Meta, StaticStorages, LogServices) never reach callers.
+ * Copy every missing key from the raw EnvBaseInfo. Values already present
+ * on the SDK result stay. Billing and runtime enrichers still run around
+ * this step and own their fields.
  */
 async function enrichEnvInfoWithMissingFields(
   manager: any,
@@ -1515,15 +1443,6 @@ async function enrichEnvInfoWithMissingFields(
 ): Promise<any> {
   const envInfo = result?.EnvInfo;
   if (!envInfo || typeof envInfo !== "object") {
-    return result;
-  }
-
-  // 如果 PostgreSQL 字段已存在且非空，说明 SDK 已经透传了，不需要补充
-  if (
-    Array.isArray(envInfo.PostgreSQL) &&
-    envInfo.PostgreSQL.length > 0 &&
-    Array.isArray(envInfo.Meta)
-  ) {
     return result;
   }
 
@@ -1537,7 +1456,22 @@ async function enrichEnvInfoWithMissingFields(
       capiResult?.EnvInfo?.EnvBaseInfo ||
       capiResult?.Response?.EnvInfo?.EnvBaseInfo;
 
-    if (!envBaseInfo || typeof envBaseInfo !== "object") {
+    if (!envBaseInfo || typeof envBaseInfo !== "object" || Array.isArray(envBaseInfo)) {
+      return result;
+    }
+
+    const filled: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(envBaseInfo)) {
+      if (ENV_INFO_OWNED_KEYS.has(key) || value === undefined) {
+        continue;
+      }
+      if ((envInfo as Record<string, unknown>)[key] !== undefined) {
+        continue;
+      }
+      filled[key] = value;
+    }
+
+    if (Object.keys(filled).length === 0) {
       return result;
     }
 
@@ -1545,22 +1479,11 @@ async function enrichEnvInfoWithMissingFields(
       ...result,
       EnvInfo: {
         ...envInfo,
-        // 补充 PostgreSQL 字段（SDK 白名单映射遗漏）
-        ...(Array.isArray(envBaseInfo.PostgreSQL) && {
-          PostgreSQL: envBaseInfo.PostgreSQL,
-        }),
-        // 补充 Meta 字段（SDK 白名单映射遗漏）
-        ...(Array.isArray(envBaseInfo.Meta) && {
-          Meta: envBaseInfo.Meta,
-        }),
-        // 补充 StaticStorages 字段（SDK 白名单映射遗漏）
-        ...(Array.isArray(envBaseInfo.StaticStorages) && {
-          StaticStorages: envBaseInfo.StaticStorages,
-        }),
+        ...filled,
       },
     };
   } catch {
-    // CAPI 调用失败不影响已有数据，静默忽略
+    // A failed DescribeEnvInfo leaves the SDK payload unchanged.
     return result;
   }
 }
@@ -2357,6 +2280,9 @@ export function registerEnvTools(server: ExtendedMcpServer) {
       const toolLang = normalizeLang(rawArgs.lang);
       // 输出语言：调用级 lang > 实例 lang（createCloudBaseMcpServer / TCB_LANG / project.json）
       const outLang: Lang = toolLang ?? server.lang ?? "zh";
+      // MCP Apps HTML is baked on resources/read after this call returns; remember
+      // call-time lang even when telemetry wrapping is off (enableTelemetry: false).
+      setPanelLang(toolLang);
       const oauthEndpoint = normalizeOptionalToolString(rawArgs.oauthEndpoint);
       const clientId = normalizeOptionalToolString(rawArgs.clientId);
       const oauthCustom = normalizeOptionalToolBoolean(rawArgs.oauthCustom);
@@ -2438,7 +2364,10 @@ export function registerEnvTools(server: ExtendedMcpServer) {
           let envPreparation:
             | AuthEnvPreparationResult
             | undefined;
-          const credentialBoundary = buildCredentialBoundaryPayload(cloudBaseOptions);
+          const credentialBoundary = buildCredentialBoundaryPayload(
+            cloudBaseOptions,
+            outLang,
+          );
 
           if (authStatus === "READY" && loginState) {
             envPreparation = await prepareAuthEnvironment({
@@ -2496,7 +2425,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 : authStatus === "READY"
                   ? envPreparation?.nextStep
                   : buildAuthRequiredNextStep(server),
-          }, buildEnvCandidateUiMeta(envPreparation?.envCandidates));
+          }, buildEnvCandidateUiMeta(server, envPreparation?.envCandidates));
         }
 
         if (action === "start_auth") {
@@ -2721,7 +2650,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               next_step: buildAuthNextStep("status", {
                 suggestedArgs: { action: "status" },
               }),
-            }, buildEnvCandidateUiMeta(envCandidates));
+            }, buildEnvCandidateUiMeta(server, envCandidates));
           }
 
           // 3. 非 Device Flow（显式 web 模式）仍然使用 getLoginState 阻塞等待
@@ -2862,7 +2791,10 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             });
           }
 
-          const credentialBoundary = buildCredentialBoundaryPayload(cloudBaseOptions);
+          const credentialBoundary = buildCredentialBoundaryPayload(
+            cloudBaseOptions,
+            outLang,
+          );
           const envCandidates = isApiKeyCredentialMode()
             ? await fetchAvailableEnvCandidates(cloudBaseOptions, server)
             : await fetchAccountEnvCandidates(cloudBaseOptions);
@@ -3257,8 +3189,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               envId,
               logger: server.logger,
             });
-            // 补充 SDK getEnvInfo() 遗漏的字段（PostgreSQL、Meta 等）
-            // @cloudbase/manager-node 的 getEnvInfo() 手写白名单映射时漏掉了这些字段
+            // Fill EnvBaseInfo keys the SDK allowlist dropped. Runs before
+            // static-domain and runtime enrichers so those still own their fields.
             if (envId) {
               result = await enrichEnvInfoWithMissingFields(cloudbaseInfo, result, envId);
             }
@@ -3330,6 +3262,35 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               endDate,
               accountCircle,
             });
+            const modulesFiltered = Array.isArray(type) && type.length > 0;
+            // 账单聚合（`DescribeCreditsUsage`）只认"整周期 + 全模块"：它没有模块参数，
+            // 传入非周期范围实测会返回全零。所以这里先判能不能用，不能用就回退到分项求和。
+            const cycleStart = extractAccountCircleDate(accountCircle?.StartTime);
+            const cycleEnd = extractAccountCircleDate(accountCircle?.EndTime);
+            const cycleAligned =
+              dateRange.dateSource === "accountCircle" ||
+              (cycleStart === dateRange.startDate && cycleEnd === dateRange.endDate);
+            let billing: CreditsBillingLike | null = null;
+            if (!modulesFiltered && cycleAligned) {
+              try {
+                const billingRaw = await cloudbaseUsage.commonService("tcb", "2018-06-08").call({
+                  Action: "DescribeCreditsUsage",
+                  Param: {
+                    EnvId: usageEnvId,
+                    StartDate: dateRange.startDate,
+                    EndDate: dateRange.endDate,
+                  },
+                });
+                logCloudBaseResult(server.logger, billingRaw);
+                billing = pickCreditsBilling(billingRaw);
+              } catch (billingError) {
+                // 读不到账单不影响明细：头部退回分项求和，面板标 `source: "detail"`。
+                debug(
+                  "queryEnv(usage) DescribeCreditsUsage 失败，头部回退到分项求和:",
+                  billingError instanceof Error ? billingError : new Error(String(billingError)),
+                );
+              }
+            }
             const usageDetail = await cloudbaseUsage.env.describeCreditsUsageDetail({
               EnvId: usageEnvId,
               Modules: modules,
@@ -3338,7 +3299,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               NeedUsageDetails: includeDetails,
             });
             logCloudBaseResult(server.logger, usageDetail);
-            result = {
+            // Record 而非字面类型：`Credits` 要等面板载荷算完（套餐码在后面才取到）再挂上去。
+            const usageResult: Record<string, unknown> = {
               EnvId: usageEnvId,
               Modules: modules,
               StartDate: dateRange.startDate,
@@ -3354,6 +3316,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               Usages: usageDetail?.Usages ?? [],
               RequestId: usageDetail?.RequestId,
             };
+            result = usageResult;
 
             // 面板载荷：套餐码与环境别名只能从环境信息里取（DescribeEnvInfo），
             // 这是本 action 为面板多付的一次只读调用；失败就降级，不影响回执。
@@ -3395,8 +3358,14 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               balance: null,
               // 显式告知"本次查询被 type 过滤过"：此时 Usages 只是被选模块的子集，
               // 配全量配额会得出错误结论（详见 env-credits-payload.ts）。
-              modulesFiltered: Array.isArray(type) && type.length > 0,
+              modulesFiltered,
+              billing,
             });
+            // 同一份汇总也给到模型：分模块行是明细、加起来不等于总额（账单侧还有未归到
+            // 模块的部分，且配额耗尽时会封顶），所以头部数字直接给，别让调用方自己加。
+            if (creditsPayload?.credits) {
+              usageResult.Credits = creditsPayload.credits;
+            }
             break;
           }
 

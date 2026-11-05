@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ag2ai/ag2` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
+Mirror of `ag2ai/ag2` — 26 default patterns, 1 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ag2ai/ag2` — 26 default patterns, 1 followed patterns, 7 file(s) ma
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,12 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/context/skills.md`](docs/context/skills.md) |
-| 3 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 4 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 5 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
-| 6 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
-| 7 | → | [`docs/adr/0002-tool-composite-hierarchy.md`](docs/adr/0002-tool-composite-hierarchy.md) |
+| 2 | ✓ | [`docs/adr/0007-tool-dependency-provider-from-context.md`](docs/adr/0007-tool-dependency-provider-from-context.md) |
+| 3 | ✓ | [`docs/context/skills.md`](docs/context/skills.md) |
+| 4 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 5 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 6 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
+| 7 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
+| 8 | → | [`docs/adr/0002-tool-composite-hierarchy.md`](docs/adr/0002-tool-composite-hierarchy.md) |
 
 ---
 

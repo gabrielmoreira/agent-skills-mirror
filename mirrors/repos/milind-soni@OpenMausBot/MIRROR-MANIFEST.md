@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `milind-soni/OpenMausBot` — 26 default patterns, 1 followed patterns, 143 file(s) materialized.
+Mirror of `milind-soni/OpenMausBot` — 26 default patterns, 1 followed patterns, 149 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `milind-soni/OpenMausBot` — 26 default patterns, 1 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 143 |
+| Files         | 149 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,86 +122,92 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 61 | ✓ | [`docs/verification/first-hour.md`](docs/verification/first-hour.md) |
 | 62 | ✓ | [`docs/verification/fleet.md`](docs/verification/fleet.md) |
 | 63 | ✓ | [`docs/verification/full-access.md`](docs/verification/full-access.md) |
-| 64 | ✓ | [`docs/verification/group-local-vm.md`](docs/verification/group-local-vm.md) |
-| 65 | ✓ | [`docs/verification/guarded-messages.md`](docs/verification/guarded-messages.md) |
-| 66 | ✓ | [`docs/verification/headless-cli.md`](docs/verification/headless-cli.md) |
-| 67 | ✓ | [`docs/verification/hetzner-launch-2026-09-07.md`](docs/verification/hetzner-launch-2026-09-07.md) |
-| 68 | ✓ | [`docs/verification/hosted-slack-management.md`](docs/verification/hosted-slack-management.md) |
-| 69 | ✓ | [`docs/verification/hosted-workspaces.md`](docs/verification/hosted-workspaces.md) |
-| 70 | ✓ | [`docs/verification/interval-restrictions.md`](docs/verification/interval-restrictions.md) |
-| 71 | ✓ | [`docs/verification/japanese-desktop.md`](docs/verification/japanese-desktop.md) |
-| 72 | ✓ | [`docs/verification/live-calls.md`](docs/verification/live-calls.md) |
-| 73 | ✓ | [`docs/verification/local-computer-launch.md`](docs/verification/local-computer-launch.md) |
-| 74 | ✓ | [`docs/verification/local-environments.md`](docs/verification/local-environments.md) |
-| 75 | ✓ | [`docs/verification/local-vm-resume.md`](docs/verification/local-vm-resume.md) |
-| 76 | ✓ | [`docs/verification/mausbot.md`](docs/verification/mausbot.md) |
-| 77 | ✓ | [`docs/verification/mcp-sign-in.md`](docs/verification/mcp-sign-in.md) |
-| 78 | ✓ | [`docs/verification/memory-layer.md`](docs/verification/memory-layer.md) |
-| 79 | ✓ | [`docs/verification/mentions.md`](docs/verification/mentions.md) |
-| 80 | ✓ | [`docs/verification/mobile-generated-images.md`](docs/verification/mobile-generated-images.md) |
-| 81 | ✓ | [`docs/verification/onboarding.md`](docs/verification/onboarding.md) |
-| 82 | ✓ | [`docs/verification/openai-tools.md`](docs/verification/openai-tools.md) |
-| 83 | ✓ | [`docs/verification/opencode-variants.md`](docs/verification/opencode-variants.md) |
-| 84 | ✓ | [`docs/verification/org-library.md`](docs/verification/org-library.md) |
-| 85 | ✓ | [`docs/verification/organization-settings.md`](docs/verification/organization-settings.md) |
-| 86 | ✓ | [`docs/verification/own-home.md`](docs/verification/own-home.md) |
-| 87 | ✓ | [`docs/verification/peer-approvals.md`](docs/verification/peer-approvals.md) |
-| 88 | ✓ | [`docs/verification/people.md`](docs/verification/people.md) |
-| 89 | ✓ | [`docs/verification/persistence-performance.md`](docs/verification/persistence-performance.md) |
-| 90 | ✓ | [`docs/verification/phone-web-app.md`](docs/verification/phone-web-app.md) |
-| 91 | ✓ | [`docs/verification/podman-firefox.md`](docs/verification/podman-firefox.md) |
-| 92 | ✓ | [`docs/verification/podman-self-hosting.md`](docs/verification/podman-self-hosting.md) |
-| 93 | ✓ | [`docs/verification/postiz.md`](docs/verification/postiz.md) |
-| 94 | ✓ | [`docs/verification/presets.md`](docs/verification/presets.md) |
-| 95 | ✓ | [`docs/verification/proactive-routines.md`](docs/verification/proactive-routines.md) |
-| 96 | ✓ | [`docs/verification/proposal-cards.md`](docs/verification/proposal-cards.md) |
-| 97 | ✓ | [`docs/verification/provider-recovery.md`](docs/verification/provider-recovery.md) |
-| 98 | ✓ | [`docs/verification/question-cards.md`](docs/verification/question-cards.md) |
-| 99 | ✓ | [`docs/verification/qwen-models.md`](docs/verification/qwen-models.md) |
-| 100 | ✓ | [`docs/verification/reactions.md`](docs/verification/reactions.md) |
-| 101 | ✓ | [`docs/verification/rich-tables.md`](docs/verification/rich-tables.md) |
-| 102 | ✓ | [`docs/verification/room-coordination.md`](docs/verification/room-coordination.md) |
-| 103 | ✓ | [`docs/verification/routines.md`](docs/verification/routines.md) |
-| 104 | ✓ | [`docs/verification/safety-floor.md`](docs/verification/safety-floor.md) |
-| 105 | ✓ | [`docs/verification/saved-steps.md`](docs/verification/saved-steps.md) |
-| 106 | ✓ | [`docs/verification/server-settings.md`](docs/verification/server-settings.md) |
-| 107 | ✓ | [`docs/verification/shared-workspace-governance.md`](docs/verification/shared-workspace-governance.md) |
-| 108 | ✓ | [`docs/verification/shared-workspace-trust.md`](docs/verification/shared-workspace-trust.md) |
-| 109 | ✓ | [`docs/verification/sidebar-attention.md`](docs/verification/sidebar-attention.md) |
-| 110 | ✓ | [`docs/verification/sidebar.md`](docs/verification/sidebar.md) |
-| 111 | ✓ | [`docs/verification/skill-approval-lifecycle.md`](docs/verification/skill-approval-lifecycle.md) |
-| 112 | ✓ | [`docs/verification/spend-cap.md`](docs/verification/spend-cap.md) |
-| 113 | ✓ | [`docs/verification/startup-tray.md`](docs/verification/startup-tray.md) |
-| 114 | ✓ | [`docs/verification/tailscale.md`](docs/verification/tailscale.md) |
-| 115 | ✓ | [`docs/verification/take-control.md`](docs/verification/take-control.md) |
-| 116 | ✓ | [`docs/verification/talk-shortcut.md`](docs/verification/talk-shortcut.md) |
-| 117 | ✓ | [`docs/verification/team-access.md`](docs/verification/team-access.md) |
-| 118 | ✓ | [`docs/verification/team-backups.md`](docs/verification/team-backups.md) |
-| 119 | ✓ | [`docs/verification/team-bot-access.md`](docs/verification/team-bot-access.md) |
-| 120 | ✓ | [`docs/verification/team-setup.md`](docs/verification/team-setup.md) |
-| 121 | ✓ | [`docs/verification/team-sharing.md`](docs/verification/team-sharing.md) |
-| 122 | ✓ | [`docs/verification/teams.md`](docs/verification/teams.md) |
-| 123 | ✓ | [`docs/verification/threads.md`](docs/verification/threads.md) |
-| 124 | ✓ | [`docs/verification/tool-results.md`](docs/verification/tool-results.md) |
-| 125 | ✓ | [`docs/verification/tool-selection.md`](docs/verification/tool-selection.md) |
-| 126 | ✓ | [`docs/verification/usage-ledger.md`](docs/verification/usage-ledger.md) |
-| 127 | ✓ | [`docs/verification/vps-recovery.md`](docs/verification/vps-recovery.md) |
-| 128 | ✓ | [`docs/verification/waits.md`](docs/verification/waits.md) |
-| 129 | ✓ | [`docs/verification/whop.md`](docs/verification/whop.md) |
-| 130 | ✓ | [`docs/verification/widget-prompts.md`](docs/verification/widget-prompts.md) |
-| 131 | ✓ | [`docs/verification/widgets.md`](docs/verification/widgets.md) |
-| 132 | ✓ | [`docs/verification/workspace-backups.md`](docs/verification/workspace-backups.md) |
-| 133 | ✓ | [`docs/verification/workspaces.md`](docs/verification/workspaces.md) |
-| 134 | ✓ | [`docs/verification/x-connector.md`](docs/verification/x-connector.md) |
-| 135 | ✓ | [`skills/create-verification-skill/manifest.json`](skills/create-verification-skill/manifest.json) |
-| 136 | ✓ | [`skills/create-verification-skill/SKILL.md`](skills/create-verification-skill/SKILL.md) |
-| 137 | ✓ | [`skills/data-dashboards/dashboard.html`](skills/data-dashboards/dashboard.html) |
-| 138 | ✓ | [`skills/data-dashboards/manifest.json`](skills/data-dashboards/manifest.json) |
-| 139 | ✓ | [`skills/data-dashboards/SKILL.md`](skills/data-dashboards/SKILL.md) |
-| 140 | ✓ | [`skills/phone-harness/agents/openai.yaml`](skills/phone-harness/agents/openai.yaml) |
-| 141 | ✓ | [`skills/phone-harness/manifest.json`](skills/phone-harness/manifest.json) |
-| 142 | ✓ | [`skills/phone-harness/SKILL.md`](skills/phone-harness/SKILL.md) |
-| 143 | → | [`docs/verification/README.md`](docs/verification/README.md) |
+| 64 | ✓ | [`docs/verification/gemini-speech.md`](docs/verification/gemini-speech.md) |
+| 65 | ✓ | [`docs/verification/gmail-drafts.md`](docs/verification/gmail-drafts.md) |
+| 66 | ✓ | [`docs/verification/group-local-vm.md`](docs/verification/group-local-vm.md) |
+| 67 | ✓ | [`docs/verification/guarded-messages.md`](docs/verification/guarded-messages.md) |
+| 68 | ✓ | [`docs/verification/headless-cli.md`](docs/verification/headless-cli.md) |
+| 69 | ✓ | [`docs/verification/hetzner-launch-2026-09-07.md`](docs/verification/hetzner-launch-2026-09-07.md) |
+| 70 | ✓ | [`docs/verification/hosted-slack-management.md`](docs/verification/hosted-slack-management.md) |
+| 71 | ✓ | [`docs/verification/hosted-workspaces.md`](docs/verification/hosted-workspaces.md) |
+| 72 | ✓ | [`docs/verification/inbox.md`](docs/verification/inbox.md) |
+| 73 | ✓ | [`docs/verification/interval-restrictions.md`](docs/verification/interval-restrictions.md) |
+| 74 | ✓ | [`docs/verification/japanese-desktop.md`](docs/verification/japanese-desktop.md) |
+| 75 | ✓ | [`docs/verification/live-calls.md`](docs/verification/live-calls.md) |
+| 76 | ✓ | [`docs/verification/local-computer-launch.md`](docs/verification/local-computer-launch.md) |
+| 77 | ✓ | [`docs/verification/local-environments.md`](docs/verification/local-environments.md) |
+| 78 | ✓ | [`docs/verification/local-vm-resume.md`](docs/verification/local-vm-resume.md) |
+| 79 | ✓ | [`docs/verification/mausbot.md`](docs/verification/mausbot.md) |
+| 80 | ✓ | [`docs/verification/mcp-sign-in.md`](docs/verification/mcp-sign-in.md) |
+| 81 | ✓ | [`docs/verification/memory-layer.md`](docs/verification/memory-layer.md) |
+| 82 | ✓ | [`docs/verification/mentions.md`](docs/verification/mentions.md) |
+| 83 | ✓ | [`docs/verification/mobile-generated-images.md`](docs/verification/mobile-generated-images.md) |
+| 84 | ✓ | [`docs/verification/onboarding.md`](docs/verification/onboarding.md) |
+| 85 | ✓ | [`docs/verification/openai-tools.md`](docs/verification/openai-tools.md) |
+| 86 | ✓ | [`docs/verification/opencode-variants.md`](docs/verification/opencode-variants.md) |
+| 87 | ✓ | [`docs/verification/org-library.md`](docs/verification/org-library.md) |
+| 88 | ✓ | [`docs/verification/organization-settings.md`](docs/verification/organization-settings.md) |
+| 89 | ✓ | [`docs/verification/own-home.md`](docs/verification/own-home.md) |
+| 90 | ✓ | [`docs/verification/peer-approvals.md`](docs/verification/peer-approvals.md) |
+| 91 | ✓ | [`docs/verification/people.md`](docs/verification/people.md) |
+| 92 | ✓ | [`docs/verification/persistence-performance.md`](docs/verification/persistence-performance.md) |
+| 93 | ✓ | [`docs/verification/phone-web-app.md`](docs/verification/phone-web-app.md) |
+| 94 | ✓ | [`docs/verification/podman-firefox.md`](docs/verification/podman-firefox.md) |
+| 95 | ✓ | [`docs/verification/podman-self-hosting.md`](docs/verification/podman-self-hosting.md) |
+| 96 | ✓ | [`docs/verification/postiz.md`](docs/verification/postiz.md) |
+| 97 | ✓ | [`docs/verification/presets.md`](docs/verification/presets.md) |
+| 98 | ✓ | [`docs/verification/proactive-routines.md`](docs/verification/proactive-routines.md) |
+| 99 | ✓ | [`docs/verification/proposal-cards.md`](docs/verification/proposal-cards.md) |
+| 100 | ✓ | [`docs/verification/provider-recovery.md`](docs/verification/provider-recovery.md) |
+| 101 | ✓ | [`docs/verification/question-cards.md`](docs/verification/question-cards.md) |
+| 102 | ✓ | [`docs/verification/qwen-models.md`](docs/verification/qwen-models.md) |
+| 103 | ✓ | [`docs/verification/reactions.md`](docs/verification/reactions.md) |
+| 104 | ✓ | [`docs/verification/rich-tables.md`](docs/verification/rich-tables.md) |
+| 105 | ✓ | [`docs/verification/room-coordination.md`](docs/verification/room-coordination.md) |
+| 106 | ✓ | [`docs/verification/routines.md`](docs/verification/routines.md) |
+| 107 | ✓ | [`docs/verification/safety-floor.md`](docs/verification/safety-floor.md) |
+| 108 | ✓ | [`docs/verification/saved-steps.md`](docs/verification/saved-steps.md) |
+| 109 | ✓ | [`docs/verification/server-settings.md`](docs/verification/server-settings.md) |
+| 110 | ✓ | [`docs/verification/shared-workspace-governance.md`](docs/verification/shared-workspace-governance.md) |
+| 111 | ✓ | [`docs/verification/shared-workspace-trust.md`](docs/verification/shared-workspace-trust.md) |
+| 112 | ✓ | [`docs/verification/sidebar-attention.md`](docs/verification/sidebar-attention.md) |
+| 113 | ✓ | [`docs/verification/sidebar.md`](docs/verification/sidebar.md) |
+| 114 | ✓ | [`docs/verification/skill-approval-lifecycle.md`](docs/verification/skill-approval-lifecycle.md) |
+| 115 | ✓ | [`docs/verification/spend-cap.md`](docs/verification/spend-cap.md) |
+| 116 | ✓ | [`docs/verification/startup-tray.md`](docs/verification/startup-tray.md) |
+| 117 | ✓ | [`docs/verification/tailscale.md`](docs/verification/tailscale.md) |
+| 118 | ✓ | [`docs/verification/take-control.md`](docs/verification/take-control.md) |
+| 119 | ✓ | [`docs/verification/talk-shortcut.md`](docs/verification/talk-shortcut.md) |
+| 120 | ✓ | [`docs/verification/team-access.md`](docs/verification/team-access.md) |
+| 121 | ✓ | [`docs/verification/team-backups.md`](docs/verification/team-backups.md) |
+| 122 | ✓ | [`docs/verification/team-bot-access.md`](docs/verification/team-bot-access.md) |
+| 123 | ✓ | [`docs/verification/team-setup.md`](docs/verification/team-setup.md) |
+| 124 | ✓ | [`docs/verification/team-sharing.md`](docs/verification/team-sharing.md) |
+| 125 | ✓ | [`docs/verification/teams.md`](docs/verification/teams.md) |
+| 126 | ✓ | [`docs/verification/threads.md`](docs/verification/threads.md) |
+| 127 | ✓ | [`docs/verification/tool-results.md`](docs/verification/tool-results.md) |
+| 128 | ✓ | [`docs/verification/tool-selection.md`](docs/verification/tool-selection.md) |
+| 129 | ✓ | [`docs/verification/usage-ledger.md`](docs/verification/usage-ledger.md) |
+| 130 | ✓ | [`docs/verification/vps-recovery.md`](docs/verification/vps-recovery.md) |
+| 131 | ✓ | [`docs/verification/waits.md`](docs/verification/waits.md) |
+| 132 | ✓ | [`docs/verification/whop.md`](docs/verification/whop.md) |
+| 133 | ✓ | [`docs/verification/widget-prompts.md`](docs/verification/widget-prompts.md) |
+| 134 | ✓ | [`docs/verification/widgets.md`](docs/verification/widgets.md) |
+| 135 | ✓ | [`docs/verification/workspace-backups.md`](docs/verification/workspace-backups.md) |
+| 136 | ✓ | [`docs/verification/workspaces.md`](docs/verification/workspaces.md) |
+| 137 | ✓ | [`docs/verification/x-connector.md`](docs/verification/x-connector.md) |
+| 138 | ✓ | [`skills/create-verification-skill/manifest.json`](skills/create-verification-skill/manifest.json) |
+| 139 | ✓ | [`skills/create-verification-skill/SKILL.md`](skills/create-verification-skill/SKILL.md) |
+| 140 | ✓ | [`skills/data-dashboards/dashboard.html`](skills/data-dashboards/dashboard.html) |
+| 141 | ✓ | [`skills/data-dashboards/manifest.json`](skills/data-dashboards/manifest.json) |
+| 142 | ✓ | [`skills/data-dashboards/SKILL.md`](skills/data-dashboards/SKILL.md) |
+| 143 | ✓ | [`skills/phone-harness/agents/openai.yaml`](skills/phone-harness/agents/openai.yaml) |
+| 144 | ✓ | [`skills/phone-harness/manifest.json`](skills/phone-harness/manifest.json) |
+| 145 | ✓ | [`skills/phone-harness/SKILL.md`](skills/phone-harness/SKILL.md) |
+| 146 | ✓ | [`skills/social-posts/manifest.json`](skills/social-posts/manifest.json) |
+| 147 | ✓ | [`skills/social-posts/posts.html`](skills/social-posts/posts.html) |
+| 148 | ✓ | [`skills/social-posts/SKILL.md`](skills/social-posts/SKILL.md) |
+| 149 | → | [`docs/verification/README.md`](docs/verification/README.md) |
 
 ---
 

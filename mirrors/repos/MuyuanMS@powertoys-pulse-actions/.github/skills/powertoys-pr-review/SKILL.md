@@ -8,6 +8,14 @@ description: "Review a microsoft/PowerToys PR with at most three cloud review re
 Own one PR's review, not the drain. Finish the next useful operation and return
 a durable result. Do not build another orchestration or permission framework.
 
+Public review drafts must request concrete author changes, not explain coordinator
+work or incomplete validation. Do not invent a postable "qualified assessment"
+when no actionable finding survives. Return that assessment and missing evidence
+privately; the coordinator publishes neutral pending metadata, not an approval.
+For a standalone general finding, use Affected code, Problem, Why it matters,
+Suggested change and Verification. Cloud caps, build-slot waits and permission
+instructions never belong in proposed comments or `review.body_prefix`.
+
 ## Inputs and setup
 
 Inputs: upstream PR number, configured writable fork, saved state (if any),

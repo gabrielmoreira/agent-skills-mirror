@@ -19,9 +19,10 @@ This skill provides comprehensive guidance for developing PrestaShop modules wit
 ## Key Features
 
 ### References Library
-17 comprehensive reference documents covering:
+18 comprehensive reference documents covering:
 - Module structure & installer patterns
 - Configuration pages with Symfony forms
+- Configuration management (YAML single source of truth)
 - Database operations & Doctrine entities
 - Services architecture & dependency injection
 - Grid system with drag-and-drop
@@ -32,7 +33,7 @@ This skill provides comprehensive guidance for developing PrestaShop modules wit
 - Debugging & troubleshooting
 
 ### Scripts & Tooling
-- Pre-built JS bundles for Grid and translatable forms
+- Generic Grid init script (`scripts/grid.bundle.js`, core Grid components, PS 8.0+ / 9.x) and pre-built translatable form bundle
 - Validation tooling (lotr) for code quality
 - PS9 core documentation integration
 
@@ -55,6 +56,9 @@ This skill provides comprehensive guidance for developing PrestaShop modules wit
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
 Latest features:
+- Generic Grid JS init script on core components, PS 8.0+ / 9.x (November 2026)
+- YAML-based configuration management and modern config route (August 2026)
+- Mandatory installer pattern, config form DI, front media & Smarty translation rules (August 2026)
 - Self-contained CategoryChoiceTreeType documentation (August 2026)
 - Cart rules & vouchers reference (June 2026)
 - Symfony console commands guide

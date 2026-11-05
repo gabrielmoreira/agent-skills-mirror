@@ -1,7 +1,0 @@
-{
-  "project_name": "示例研究项目",
-  "goal": "在此说明你的研究目标。",
-  "max_search_depth": 3,
-  "max_subagents": 5,
-  "status": "In Progress"
-}

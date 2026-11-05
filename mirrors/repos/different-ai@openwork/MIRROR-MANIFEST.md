@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,20 +95,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`.warden/skills/contributor-screen/SKILL.md`](.warden/skills/contributor-screen/SKILL.md) |
 | 35 | ✓ | [`.warden/skills/design-spec-review/SKILL.md`](.warden/skills/design-spec-review/SKILL.md) |
 | 36 | ✓ | [`.warden/skills/desktop-den-sync-review/SKILL.md`](.warden/skills/desktop-den-sync-review/SKILL.md) |
-| 37 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
-| 38 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
-| 39 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 40 | ✓ | [`ee/apps/den-web/AGENTS.md`](ee/apps/den-web/AGENTS.md) |
-| 41 | ✓ | [`ee/apps/den-web/CLAUDE.md`](ee/apps/den-web/CLAUDE.md) |
-| 42 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md) |
-| 43 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md) |
-| 44 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md) |
-| 45 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md) |
-| 46 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 47 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 48 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
-| 49 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
-| 50 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 37 | ✓ | [`.warden/skills/diff-bug-review/SKILL.md`](.warden/skills/diff-bug-review/SKILL.md) |
+| 38 | ✓ | [`.warden/skills/diff-security-review/SKILL.md`](.warden/skills/diff-security-review/SKILL.md) |
+| 39 | ✓ | [`.warden/skills/spec-provenance-review/SKILL.md`](.warden/skills/spec-provenance-review/SKILL.md) |
+| 40 | ✓ | [`.warden/skills/ui-skills-review/SKILL.md`](.warden/skills/ui-skills-review/SKILL.md) |
+| 41 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 42 | ✓ | [`ee/apps/den-web/AGENTS.md`](ee/apps/den-web/AGENTS.md) |
+| 43 | ✓ | [`ee/apps/den-web/CLAUDE.md`](ee/apps/den-web/CLAUDE.md) |
+| 44 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md) |
+| 45 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md) |
+| 46 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md) |
+| 47 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md) |
+| 48 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 49 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 50 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
+| 51 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
+| 52 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
 
 ---
 

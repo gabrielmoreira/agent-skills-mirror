@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `rtk-ai/rtk` — 26 default patterns, 17 followed patterns, 63 file(s) materialized.
+Mirror of `rtk-ai/rtk` — 26 default patterns, 17 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 17 followed patterns, 63 file(s)
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 17 |
-| Files         | 63 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,24 +120,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`src/discover/README.md`](src/discover/README.md) |
 | 44 | ✓ | [`src/learn/README.md`](src/learn/README.md) |
 | 45 | ✓ | [`src/parser/README.md`](src/parser/README.md) |
-| 46 | ✓ | [`tests/fixtures/ng_build/README.md`](tests/fixtures/ng_build/README.md) |
-| 47 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 48 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
-| 49 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
-| 50 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
-| 51 | → | [`docs/guide/pipelines/plugins.md`](docs/guide/pipelines/plugins.md) |
-| 52 | → | [`docs/guide/resources/savings-explained.md`](docs/guide/resources/savings-explained.md) |
-| 53 | → | [`docs/guide/resources/telemetry.md`](docs/guide/resources/telemetry.md) |
-| 54 | → | [`engine/CONTRIBUTING.md`](engine/CONTRIBUTING.md) |
-| 55 | → | [`engine/README.md`](engine/README.md) |
-| 56 | → | [`hooks/README.md`](hooks/README.md) |
-| 57 | → | [`proxy/README.md`](proxy/README.md) |
-| 58 | → | [`README.md`](README.md) |
-| 59 | → | [`SECURITY.md`](SECURITY.md) |
-| 60 | → | [`src/cmds/README.md`](src/cmds/README.md) |
-| 61 | → | [`src/core/README.md`](src/core/README.md) |
-| 62 | → | [`src/filters/README.md`](src/filters/README.md) |
-| 63 | → | [`src/hooks/README.md`](src/hooks/README.md) |
+| 46 | ✓ | [`tests/fixtures/go_test_pipe/README.md`](tests/fixtures/go_test_pipe/README.md) |
+| 47 | ✓ | [`tests/fixtures/ng_build/README.md`](tests/fixtures/ng_build/README.md) |
+| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 49 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
+| 50 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
+| 51 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
+| 52 | → | [`docs/guide/pipelines/plugins.md`](docs/guide/pipelines/plugins.md) |
+| 53 | → | [`docs/guide/resources/savings-explained.md`](docs/guide/resources/savings-explained.md) |
+| 54 | → | [`docs/guide/resources/telemetry.md`](docs/guide/resources/telemetry.md) |
+| 55 | → | [`engine/CONTRIBUTING.md`](engine/CONTRIBUTING.md) |
+| 56 | → | [`engine/README.md`](engine/README.md) |
+| 57 | → | [`hooks/README.md`](hooks/README.md) |
+| 58 | → | [`proxy/README.md`](proxy/README.md) |
+| 59 | → | [`README.md`](README.md) |
+| 60 | → | [`SECURITY.md`](SECURITY.md) |
+| 61 | → | [`src/cmds/README.md`](src/cmds/README.md) |
+| 62 | → | [`src/core/README.md`](src/core/README.md) |
+| 63 | → | [`src/filters/README.md`](src/filters/README.md) |
+| 64 | → | [`src/hooks/README.md`](src/hooks/README.md) |
 
 ---
 

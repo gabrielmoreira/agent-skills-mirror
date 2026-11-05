@@ -105,6 +105,54 @@ The loader uses Node's `util.parseEnv` syntax (comments, quoted values, multilin
 
 WXT dev/build commands retain native mode/browser-specific env loading. Shared defaults with `WXT_` or `VITE_` prefixes are excluded by the Node loader because those prefixes expose variables to extension code. Keep test credentials in Node-only variables and env files out of Git; see [WXT environment variables](https://wxt.dev/guide/essentials/config/environment-variables).
 
+### Updating documentation screenshots
+
+Use the maintained command after a UI or feature change. Select pages explicitly;
+ordinary prose edits do not require new screenshots.
+
+```bash
+pnpm docs:screenshots --list
+pnpm docs:screenshots "--pages=keys,channels,sync"
+pnpm docs:screenshots "--pages=web-ai-api-check,usage,balance"
+```
+
+The command builds the required extension variants from the current working tree,
+captures the selected pages in Chinese, English and Japanese, validates every
+requested PNG, and updates their existing paths under `docs/docs/static/image/`.
+README and guide references continue to use those paths. Use `--lang=zh`, `en` or
+`ja` for a single language; omit `--pages` for a full refresh. Playwright Chromium
+must already be installed (`pnpm e2e:install`). Shared local tooling configuration
+uses the same environment loader described above.
+
+Each run prints a report path under the ignored `.scratch/docs-screenshot-updates/`.
+It retains original images, newly captured images, command logs, a consolidated
+Markdown comparison gallery and JSON metadata. Pixel differences are included for
+matching image dimensions. Missing prior images and dimension changes are labelled
+explicitly. Existing documentation images have unknown original build provenance;
+they are asset comparisons, not controlled visual regression baselines.
+
+Captures use deterministic demo data in the actual extension UI. A successful run
+does not replace visual review or prove live provider behavior. Check the final
+images and comparison report before committing. Capture/build failures or missing
+images retain failure evidence and leave existing documentation images unchanged.
+Captures require ready page content and requested framing anchors; readiness failures
+stop the run. If publishing an image fails, the command restores attempted existing
+assets and removes attempted new assets. It continues restoring other assets when a
+rollback fails and reports failed targets and retained backup paths in `failure.json`.
+This recovery handles reported I/O errors; it is not an atomic transaction across
+process crashes or power loss.
+A per-checkout lock prevents concurrent runs of this command; other build commands
+do not participate in that lock. A later run recovers `update.lock` only when its
+recorded PID is confirmed to have exited. Live, malformed or unreadable ownership
+is preserved. Recovery uses an exclusive `update.lock.recovery` marker; if a
+process is forcibly stopped during recovery, inspect that marker's PID and the
+main lock before manually removing either file. Preserve them when ownership
+cannot be verified. Update fixture data and capture checkpoints when
+feature behavior changes. There is no automatic CI trigger or page inference.
+
+The lower-level `scripts/generate-doc-screenshots.mjs` remains available for an
+already prepared build, including `--output=<directory>` for isolated capture.
+
 ### Local screenshot comparison
 
 Use `pnpm visual:capture --help` for the generic entrypoint. Existing asserted Playwright workflows do not need a scenario registry entry. Add an opt-in checkpoint after the UI is ready:
@@ -225,15 +273,20 @@ Reuse a running current-worktree browser and select the task to inspect instead 
 ```bash
 pnpm e2e:cdp -- --list
 pnpm e2e:cdp -- --isolate --scenario=options
+pnpm e2e:cdp -- --isolate --scenario=all --account-id=<saved-account-id> --field="Token Name"
 pnpm e2e:cdp -- --isolate --scenario=account --account-id=<saved-account-id>
 pnpm e2e:cdp -- --isolate --scenario=key-editor --account-id=<saved-account-id> --field="Token Name" --field="Monthly limit (USD)"
 ```
 
-The default build is `.output/chrome-mv3-dev`; add `--prod` when the browser mounts `.output/chrome-mv3`. Use the same `--isolate` choice as the launcher. `--scenario` is repeatable (`options`, `account`, `models`, `key-editor`); the default is `options`. Account IDs belong to the selected extension's saved accounts. Expected field labels must match the current UI language. The key-editor scenario opens the native create form and checks the requested fields, then closes its own page without saving; it does not validate create/edit writes. The models scenario checks catalog rendering, not pricing correctness. A selected subset is a focused check rather than full site acceptance.
+The default build is `.output/chrome-mv3-dev`; add `--prod` when the browser mounts `.output/chrome-mv3`. Use the same `--isolate` choice as the launcher. `--scenario` is repeatable (`options`, `account`, `models`, `key-editor`); the default is `options`. `--scenario=all` selects every registered read-only check and requires the account and native-field prerequisites; missing prerequisites remain incomplete. Account IDs belong to the selected extension's saved accounts. Expected field labels must match the current UI language. The key-editor scenario opens the native create form and checks the requested fields, then closes its own page without saving; it does not validate create/edit writes. The models scenario checks catalog rendering, not pricing correctness. A selected subset is a focused check rather than full site acceptance.
 
 The command prints the path to a unique local temporary directory containing screenshots and `report.json`. The report includes the worktree/revision, dirty state, exact build path/extension ID, per-scenario coverage and duration, and passed/failed/blocked/not-selected/not-run outcomes. Exit codes are `0` when selected scenarios pass, `1` on failure, and `2` when prerequisites block completion. Raw local evidence stays outside Git.
 
 For maintained provider suites, reuse `scripts/cdp/ui-scenarios.mjs` for selection/results, `connectWorktreeExtension` for exact-build attachment, and `scripts/flows/native-key-editor.mjs` for opening/readiness and single-dispatch submission. Select an actual native field by label or locator; a field intentionally absent in create mode cannot be its readiness condition. `waitForClose: false` only dispatches the save so a suite can record the upstream resource ID or sample in-flight failure feedback; the caller must still assert completion/readback. Keep native values, permissions, field preservation and owned-resource cleanup in the site suite. The OpenRouter lifecycle E2E and live runners share these UI helpers.
+
+Multi-suite live commands use `runLiveSuites` from `scripts/cdp/live-suites.mjs` over the same scenario executor. Register independent suites with `id`, `covers`, optional `prerequisite`, and `run`; `all` derives its selection from that registration. Throw or return `{ ok: false }` on failure; return `{ skipped: true, reason }` when required checks remain unexecuted. A failed assertion takes precedence over skipped checks. Each callback must finish its owned-resource cleanup before returning or throwing; use `runScenarioWithCleanup` from `e2e/utils/scenarioErrors.ts` to preserve both execution and cleanup failures. Shared prerequisites belong in `prerequisite`; dependent steps remain together inside one suite. Independent suites continue after failure, while the generic UI executor retains its default stop-on-failure behavior.
+
+The aggregator prints and saves a unique temporary `report.json` on every valid run, including incomplete runs. It records timestamps, selected/unselected suite IDs, coverage labels, durations, failure/block reasons and the runner-supplied target/CDP/extension metadata; incomplete selected coverage throws and the CLI exits nonzero. `allSelected` means all registered suites were selected, not that every product behavior was tested. Partial runs retain omitted suites and cannot establish complete acceptance. Do not pass credentials or raw API payloads as evidence: the aggregator intentionally does not persist callback return data. Keep exact build/revision evidence, native readback, screenshots and detailed scenario evidence in the owning runner. Read-only modes and explicit write flags still define operation scope; expected business rejection asserted by a test is distinct from a test skipped for missing access.
 
 Use `createUiCapture` from `scripts/cdp/ui-driver.mjs` for ordinary screenshots; pass the actual page/locator, existing masks, and any deliberate page fallback. It records the filename actually written and uses a locator's owning page for fallback. Keep protocol-specific capture, fault-injection checkpoints and CDP-only screenshot requirements explicit. `testAccountCardFlow` requires the saved account ID and uses the existing account search route so same-name accounts cannot satisfy its assertion. Managed-site suites share `deleteManagedSiteChannelRow` in `scripts/suites/managed-site/ui.mjs`; pass exactly one run-owned row from a workspace without an existing selection and verify deletion against the gateway afterward. Extend the closest existing flow rather than copying controls or inventing a generic provider protocol. Use deterministic extension E2E for unavailable roles and failure variants, and keep the live-coverage gap explicit.
 
@@ -439,7 +492,7 @@ pnpm compile
 
 ### Permission warning validation
 
-Run `pnpm e2e:permissions` when changing required/optional permissions, host access, or other manifest inputs. The pre-commit hook selects this check for manifest configuration, entrypoints, plugins, dependencies, and its own tooling. The independent `Permission warnings` PR workflow uses the existing cached build producer and does not honor `skip-e2e` or `e2e-optional`; the test also runs in the default E2E suite and existing browser compatibility matrix. The command checks build freshness and uses the default manifest, without extra permissions from test-only build variants.
+Run `pnpm e2e:permissions` when changing required/optional permissions, host access, or other manifest inputs. The pre-commit hook selects this check for manifest configuration, entrypoints, plugins, dependencies, and its own tooling. The independent `Permission warnings` PR workflow uses the existing cached build producer and does not honor `skip-e2e` or `e2e-optional`; only a verified release-only diff skips it, like every other pull-request workflow. The test also runs in the default E2E suite and existing browser compatibility matrix. The command checks build freshness and uses the default manifest, without extra permissions from test-only build variants.
 
 `e2e/extensionPermissionWarnings.spec.ts` asks the actual browser's `management.getPermissionWarningsByManifest` API for warnings from the built candidate and `e2e/fixtures/permission-warnings-baseline.json`. The baseline records the approved version 4.3.0 permission surface before DNR became required, including content-script match patterns. Compare both manifests in the same browser so changes to localized warning text do not require maintaining a warning-text snapshot. A control that promotes optional notifications to required must add a warning; new candidate warnings fail the check. JSON test attachments retain the browser version, manifests, warnings, and differences.
 
@@ -492,6 +545,10 @@ GitHub Actions selects checks according to each workflow's configured events and
 
 - [Quality](.github/workflows/quality.yml) runs type checking, linting, unused-code checks, and translation extraction/completeness validation.
 - [Test](.github/workflows/test.yml) runs the Vitest suite in parallel shards, merges coverage, and uploads artifacts.
+
+The default E2E suite in [the E2E workflow](.github/workflows/e2e-smoke.yml) is split across six runners by measured spec duration instead of Playwright's count-based `--shard`: equal test counts left the slowest shard with 2.45x the work of the fastest. Each shard records a JSON report, and a follow-up job writes `.e2e-durations/spec-durations.json` from them and caches it; pull requests restore the base branch's copy. Without a manifest, each job falls back to `--shard`. `node scripts/write-e2e-spec-durations.mjs` and `node scripts/e2e-shard-plan.mjs --index 1 --total 6` reproduce the pipeline locally.
+
+The DNR and bookmarks E2E variants are derived from the default build with `node scripts/e2e-build-variants.mjs` instead of being built separately: `wxt.config.ts` changes only `permissions` and `optional_permissions` between them. [A test](tests/scripts/e2eBuildVariantDerive.test.ts) compares the real manifest factory across variants and fails if any other field diverges, so a future variant-specific manifest change cannot silently ship the wrong build.
 - [Commit message checks](.github/workflows/commitlint.yml) and [PR title checks](.github/workflows/commitlint-title.yml) enforce Conventional Commits for delivery.
 
 Before submitting a pull request, run the focused tests and local validation relevant to your change. The pull request CI is the authoritative full-suite and coverage check.

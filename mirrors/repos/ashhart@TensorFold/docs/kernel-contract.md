@@ -14,6 +14,10 @@ whether the launch fits every chip we serve.
 The test of a kernel fills a `contract.spec.Spec` and hands the harness a few hooks (`contract.gates.VTable`, or
 `gates.hooks(T)` for a test type with `prepare`, `run`, `count` and `reference`).
 
+`runAll` calls each kernel's optional `VTable.release` before moving to the next kernel, including after a failed
+gate or planted control. `gates.hooks(T)` supplies `rig.reset()` for value or pointer rigs with a `reset` method.
+Direct `one` callers remain responsible for cleanup.
+
 - Its float64 reference: the kernel's own formula in float64. The input families in `zig/src/core/contract/` cover the
   common cases: `affine` (MLX's affine-quantized projections), `dense` (dots against dequantized weights, in K
   slices) and `rows` (RMS norm, softmax, sums, dots, maxima). Each builds inputs for every gate, computes the reference
@@ -88,7 +92,8 @@ On an AMD machine, run `zig build hip-kernel-contract -Dhip-arch=ARCH -Dhipcc=..
 controls are built with the kernels). For the limits of every served chip, `zig build hip-kernel-contract-limits
 -Dhipcc=...` compiles every kernel group and the controls for gfx1030, gfx1100, gfx1151 and gfx1201 and checks each
 record against them, no GPU needed; `hip-kernel-contract-objects` installs those code objects into `zig-out/hsaco/`.
-Its `RECORD` lines are the values `hip_records.zig` holds for that hipcc.
+Its `RECORD` lines are the values `hip_records.zig` holds for that hipcc. The records hold ROCm 10.1's hipcc (HIP 7.16),
+which ROCm 10.1 installs under `core/bin` of its root.
 
 Every run ends with a `SUMMARY` line: kernels passing gates 1 to 4, known findings, controls red, and limit problems.
 The program exits 1 on any failed gate, any control that stayed green, or any limit problem.
@@ -207,6 +212,16 @@ finite (its id word carries bit 31, its value word a NaN) and takes the lower id
 rank's word into the id sentinel, so both Macs refuse a non-finite round where one Mac does. Six controls edit the
 source: a stage reading the peer's half, a gather writing its own half twice, and an argmax or pick tie to the higher
 id must go red at `shapes`, and an argmax or pick that does not flag at `nonfinite`.
+The Llama family's own kernels (`metal_llama*.zig`): its glue (embedding, the norms at HF's rounding points, the
+residual add, RoPE with bf16 cos and sin, the SiLU gate, the decode attention's partials and their merge, the argmax
+draw by its stated rule), its row projections (1 to 32 rows) and, on the M5's tensor units, its four GEMM forms and the
+prompt attention at both served geometries; gate 5 reads their pipelines on this GPU. Twelve controls edit the
+source, one a kernel group: an embedding reading its own row, a norm's mean over the threads, a subtracting add, an
+add-norm dropping its residual, a SiLU with gate and up swapped, a rope at the window's first position, a decode that
+never rescales, a merge dropping each block's scale, a row projection dropping its tail, a GEMM reading its weights
+untransposed and a prompt attention seeing the next key go red at `shapes`, and an argmax never picking a NaN at
+`nonfinite`. The INT4 release's row projections and dequantization have two more: every group taking its row's first
+zero point, and a word's nibbles read in reverse, both red at `shapes`.
 CUDA: the RMS norm rows (16-byte form and the fp32-out tree), the bf16 residual's norm tails (MLX's rounded rows and
 the once-rounded ones, each checked on its residual and its output, with four controls each dropping a rounding point), Nemotron's router logits (and their 128-row tiles,
 bit-equal to them) and top-k, the latent top-k's decode form (bit-equal to `tf_super_topk`), the latent combine and
@@ -243,11 +258,29 @@ CUDA also checks Dory's activation rows (`act_l2.cuh`): the scaled sigmoid outpu
 each row then L2-normed, against float64's ranges at their bf16 points and expf's ulps (four controls, one point each).
 CUDA also checks `dense_rows`' scaled epilogue (Dory's logits, fp32(bf16(x . w)) times a per-column scale), bit-equal to its
 unscaled tile's outputs rounded and scaled on the host.
+CUDA also checks EXL3's replacements of `linear_body` (`exl3_linear.cu`), each byte-equal to it at every row count it
+takes: the mid-M kernels (3, 4, 5 and 6 bits) and `linear_wc` (4 and 6 bits) at 1-128 rows (`Linear.min_rows` 1 runs
+them below 17 rows), the projection groups against each member's own launch, and `tf_exl3_rot_group` against
+`tf_exl3_rot_in` (1-16 rows). Their served shapes reach every form `plan()` gives them (row passes, warps, split or
+unsplit K, `linear_wc`'s tiles); a host test sweeps K and N to 16384 through `exl3.pick` and `groupable` and fails on a
+form no registration runs. A fixed plan keeps the linear. Gate 4 proves an fp16 sum would overflow on a constant-weight
+stress input (all-ones states: one weight at every width). Six controls: another K split (3, 4 and 5 bits; `linear_wc`),
+swapped scales, a swapped suh.
 HIP: the RMS norm rows, a wave a row (fp32, fp16 and bf16 out) and a block a row (fp16 and bf16 out).
 HIP also checks the 64-row prompt attention tile (`prefill.hip`): `tf_fa_paged_bf16` and `tf_fa_paged_f16` over a
 permuted page table at the 27B's, the 35B-A3B's and Nemotron's head counts, each output within attention_ref's float64
 bound, and `tf_fa_wide_bf16` and `tf_fa_wide_f16`, which no model calls, bit-equal to them on flat keys. A build runs
 its chip's cache type (fp16 on gfx1030, bf16 on the rest); gate 5 holds all four.
+HIP's unquantized embedding gather (`tf_embed_dense`) reads a BF16 table byte for byte and an fp32 table bit-equal to
+the gather before its table kind; two controls gather the next row and read a BF16 table as fp16.
+
+HIP also checks the router over the rows a checkpoint already holds in bf16 (`tf_router_bf16`, and its fp16-activation
+form), bit-equal to the fp32-rows router it replaces at 1 to 16 rows, with both kinds' non-finite plants through gate 1
+and the exact sums of gate 4.
+
+On gfx12, HIP also checks the WMMA dense tile (`dense_wmma12_gemm`, both block geometries, fp32 and BF16 out) against
+its depth-k bound. Its control, the same tile summing each 16-deep step in BF16 (`tf_ctl_wmma12_bf16_sum`), goes red
+at gate 4.
 
 RADIO's fused bias, activation and residual (`tf_vit_bias_act`) replaces `tf_vit_bias` then
 `tf_vit_pointwise`, byte for byte.
@@ -258,7 +291,16 @@ sparse). Its prompt indexer (`tf_glm_index_scores`, `tf_glm_index_pools`) is bit
 `tf_glm_select_rows`, and its decode select at a 1,024-thread block a row (`tf_glm_select_rows_wide`) to
 `tf_glm_select_rows`; both stated rules rank any NaN above +inf, as the GPU's `s + 0` makes every NaN one
 positive NaN.
+CUDA also checks `TF_GLM_KV_HOST`'s gather (`tf_glm_kvh_*` in `glm_ops.cu`, launched by `cuda_kv_host.zig`): the
+marks (a slot for each distinct pick; past its slots, the call flagged and no row left marked), the picked rows into
+their slots from host pages or the layer's row cache, the token lists' slots, the marks cleared, the dense rows through
+pages out of order, and the layer's cache kept, each exact against the host's replay (nine controls, one a kernel: a
+stale mark, a dropped row or swapped slots).
 
+Ornith-1.5-122B's routed block on Metal registers the experts' decode rows with the shared expert as an extra matrix
+(`q27_rows_extra`, 4 and 8 bits), the router's softmax and top-k with renormalized bf16 weights (`q27_route`: picks
+equal to the host's, each weight within float64's range at its bf16 points), the tensor units' expert sort and gather
+(bit for bit), the experts' SwiGLU, and the weighted combine with the gated shared expert (in place and from its slot).
 GLM's Metal window projections register narrow and wide rows at 2, 3, 4, 5, 6 and 8 bits, plus both gathered paths.
 Independent FP64 linear cases accompany byte replacements against frozen pre-window-optimization kernels.
 The gathered SwiGLU keeps its predecessor's clipped BF16 output and nonfinite rules; gate/up taps qualify its dots separately.

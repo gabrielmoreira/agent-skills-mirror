@@ -12,7 +12,9 @@ Install Node 20+ and FFmpeg/FFprobe using your platform's normal installer. Opti
 
 ## Manifest v1
 
-The bundled runtime accepts `style: B1` and `style: B2`. B1 keeps its white grid and original caption treatment. B2 uses warm paper without a grid and dark captions on an ivory paper label (40 design-unit default text). Select B2 explicitly and author its own colored scene/prop/character image layers; the B1 `pose` atlas is rejected in B2. The JSON excerpt below remains a B1 example, not a B2 art template. See [B2](b2-colorful-handdrawn.md) for its independent production defaults.
+The bundled runtime accepts `style: B1`, `B2`, `B3` and `B4`. B1 keeps its white grid and original caption treatment. B2 uses warm paper without a grid and dark captions on an ivory paper label (40 design-unit default text). Select B2 explicitly and author its own colored scene/prop/character image layers; the B1 `pose` atlas is rejected in B2. The JSON excerpt below remains a B1 example, not a B2 art template. See [B2](b2-colorful-handdrawn.md) for its independent production defaults.
+
+[B3 Retro TV Style](b3-television.md) is explicitly selected with `style: B3`. It uses a dark field, story-specific white/gray artwork, native Gemini Bodi by default, clean white uppercase semantic captions and an optional restrained television finish. Its layered artwork is described below; it does not reuse the B1 pose atlas or B2 paper-caption design.
 
 All media paths are relative to `project.json` (or absolute local paths); `@b1/…` addresses bundled original B1 assets. Remote URLs and executable expressions are not accepted. Output is a separate project-local `output/` directory. Keep user/source files outside it.
 
@@ -38,13 +40,51 @@ All media paths are relative to `project.json` (or absolute local paths); `@b1/�
 
 This is an excerpt, not a complete valid film: full-film shots must cover the actual voice length plus lead/tail **without gaps/overlap**. A scoped preview needs coverage and available media only through its requested end; later shots may be unproduced or absent. Narration and timed subtitles are required for both preview and full film. Use `probe` to get actual duration. Captions use the final video time including lead. `voice.speed` is not accepted: keep the original rate. Optional `voice.contains_sfx: true` marks an already mixed master; do not add duplicate effects. Optional `music: {path, gain}` adds a licensed track, looping it under the narration; gain must be 0–0.2. The default is no background music, not a forced piano track.
 
-Layers: `image` (local PNG/JPEG, contain-fit within optional `h`), `pose` (B1 only: original three-pose atlas, indices 0–2), `text`, `line` (`points` array), `arrow`, `underline`. Design coordinates are 1280 units wide and `1280 × outputHeight / outputWidth` high (720 for 16:9; about 2275.56 for 9:16), uniformly scaled without stretching characters. Recompose portrait scenes explicitly; changing output dimensions alone does not design a vertical composition. Keep the bottom 110 design units clear for captions. Use `from`/`to` (shot-relative seconds) for selective visibility. `keys` are increasing shot-relative timestamps with optional numeric `x`, `y`, `w`, `angle` (radians), `alpha` and `progress`; values interpolate with smoothstep. For genuine local motion use separate layers or authored pose sprites. Images do not gain inferred limb motion automatically. Text `w` is its maximum width; captions wrap to two lines and overflow is an error, not invisible clipping. All styles are included in shot-cache identity so switching style cannot reuse another style's frames.
+Layers: `image` (local PNG/JPEG, contain-fit within optional `h`), `pose` (B1 only: original three-pose atlas, indices 0–2), `text`, `line` (`points` array), `arrow`, `underline`. Design coordinates are 1280 units wide and `1280 × outputHeight / outputWidth` high (720 for 16:9; about 2275.56 for 9:16), uniformly scaled without stretching characters. Recompose portrait scenes explicitly; changing output dimensions alone does not design a vertical composition. Keep the bottom 110 design units clear for captions. Use `from`/`to` (shot-relative seconds) for selective visibility. `keys` are increasing shot-relative timestamps with optional numeric `x`, `y`, `w`, `angle` (radians), `alpha` and `progress`; values interpolate with smoothstep. For genuine local motion use separate layers or authored pose sprites. Images do not gain inferred limb motion automatically. Text `w` is its maximum width; B subtitles allow at most one visible line. Explicit line breaks or width-induced wrapping fail validation/rendering: regroup into successive meaning/actual-pause based cues, without clipping or automatic shrinking. The runtime enforces fit, not semantic quality; review the [common caption gate](autopilot-production-qa.md#natural-captions-and-semantic-sound). All styles are included in shot-cache identity so switching style cannot reuse another style's frames.
+
+## B3 layered artwork
+
+`init DIR --style B3` creates a non-overwriting B3 scaffold. B3 additionally accepts these declarative layers; no JavaScript, SVG markup, URLs or executable expressions:
+
+- `path`: `commands` are numeric arrays beginning with `M`; supported commands are `M x y`, `L x y`, `Q cx cy x y`, `C c1x c1y c2x c2y x y`, and `Z`. Choose `fill`/`stroke` colors or `none`, and a positive `lineWidth`. Use curves for rounded limbs/pets rather than dense angular connector scaffolds. Paths do not interpolate or draw themselves; use separate pose layers with `from`/`to`, and `line.progress` for progressive connectors.
+- `rect` / `ellipse`: positive `w`, `h`, optional rounded-rectangle `radius`, `fill` and `stroke`.
+- `group`: a nonempty `children` array in back-to-front drawing order. Local `x`/`y` position the group; `pivotX`/`pivotY` define a local rotation/scale anchor. Optional positive `scaleX`/`scaleY` work on any B3 layer and in its keys. Keep joints attached; use keyframed rotation for bounded head/ear/hand movement. Parent alpha multiplies child alpha. A foreground layer after the group can occlude it.
+
+All child `from`/`to` and key times remain **relative to the shot**, not to the parent group's appearance time. Nested media that first appear after a preview's end are not required until that range is rendered. Cache keys include nested media, B3 graphics code and television settings.
+
+An illustrative **layer excerpt**, not a complete film or a reusable character:
+
+```json
+{"type":"group","x":500,"y":180,"children":[
+  {"type":"rect","x":0,"y":120,"w":140,"h":110,"radius":14,"fill":"#858990"},
+  {"type":"group","pivotX":70,"pivotY":110,"keys":[{"t":0,"angle":0},{"t":0.6,"angle":0.12}],"children":[
+    {"type":"ellipse","x":25,"y":20,"w":90,"h":90,"fill":"#e7e9eb"}
+  ]}
+]}
+```
+
+Top-level `television: {enabled: true, intensity: 0.45}` enables soft bloom, subtle scanlines and vignette once after scene composition, **before clean captions**. Intensity ranges from 0 to 1; set `enabled: false` for clean interaction checks. This treatment belongs only to B3. Meaningful object/scene action, varied compositions and faithful contact still require authored decisions and encoded playback review; treatment cannot rescue a static illustration.
+
+## B4 production tracks
+
+`init DIR --style B4` uses the same validate/preview/approve/render pipeline. It sets the verified Brian name/ID, zero title padding, and separate `ambience`, `dialogue` and `audio_cuts` arrays. Supply story-specific image layers rather than the B1 atlas; B4 has no B1 grid/paper or B3 television treatment. The bundled reference lock is checked when loading a B4 project.
+
+- `voice`: local narration at its original rate, with `name: Brian`, `id: nPczCjzI2devNBz1zQrb`. Verify the source voice before recording; metadata cannot authenticate a recording. An explicitly chosen alternative needs a nonblank `user_override`. A lead above 0.1 seconds needs a story-motivated `opening_audio_override`, never a default silent title. If the source recording has verified leading silence, explicitly set `trim_start` in seconds (default 0, at most 5); retain a short pre-speech margin and never cut a breath or consonant. This is a nondestructive edit, not a speed change: the source hash remains unchanged and the export report records the trim. Author captions, shots and track intervals against the shortened video timeline; never auto-trim accepted media or lower the opening-check thresholds.
+- `ambience`: `[{path, start, end, gain, offset?, loop?, fadeIn?, fadeOut?}]`. Gains are 0–0.2; looping defaults to true. Cover the timeline with a subtle bed, except deliberate cuts. Gain alone does not prove audibility or intelligibility.
+- `dialogue`: `[{path, time, gain, role?, offset?, duration?, fadeIn?, fadeOut?}]` for independent secondary-role recordings. Gains are 0–1. Preserve the natural performance; no speed/pitch fields.
+- `sfx`: add `{kind: "file", path, time, gain, offset?, duration?, fadeIn?, fadeOut?}` for local, rights-cleared physical/story effects, at the native rate. Gains are 0–1. Procedural kinds remain available but are not substitutes for convincing story-critical sounds.
+- `audio_cuts`: `[{start, end, reason, return_trigger}]` mutes ambience, music and SFX in that interval, preserving narration and role dialogue. Record why the cut exists and what restores sound.
+- A premixed `voice.contains_sfx: true` master must not receive extra ambience, dialogue, SFX, music or cuts. Use either independent tracks or the accepted mixed master, not both.
+
+B4 adds a `shadow` layer with positive `w`/`h` for the left-side feathered half-shadow. Use ordered `text.from` entrances for a short opening question: upper group first, remaining phrase together. Existing image/text keys provide bounded position, opacity and scale-through-width motion. Animate separate story assets when needed; the renderer cannot infer a frightened face or a new threat from a still. Narrative shots are at most 3 seconds; an exceptional hold needs `kind: exceptional_hold`, `reason` and genuine scoped `user_approval`. Meaningful shot changes and creative motion are also reviewed through the [production ledger](b4-repeatability-check.md).
+
+Exports include an encoded opening-audio diagnostic. Approval is blocked on a flagged opening unless it is repaired or has a recorded story-motivated exception. Check actual playback and early **narration**, not just a token sound at frame zero. Technical passes do not certify acting, horror, semantic captions or sound quality.
 
 ## Commands
 
 - `doctor`: dependency/font/key presence only; no network and no key values.
 - `probe FILE`: duration and media streams.
-- `init DIR [--style B1|B2]`: create a non-overwriting project scaffold; it is not production-ready until voice, captions and shots are filled.
+- `init DIR`: create a non-overwriting project scaffold; it is not production-ready until voice, captions and shots are filled.
 - `validate PROJECT [--seconds N]`: check real files, audio duration, shot coverage, cue timing, layers and SFX. Default is the complete film; `--seconds 20` checks only the sample range.
 - `captions WORDS.json OUTPUT.json`: convert `{words:[{start,end,word}]}` into readable timed phrases. `--lead 0.15` adds initial video offset. Requires actual aligned word timestamps.
 - `preview PROJECT [--seconds 20]`: check/render only the sample range, with caption sidecars/contact sheet/report and shot cache. Missing later-shot media does not block it. Existing outputs are not overwritten unless `--replace` is explicit.

@@ -27,8 +27,10 @@ export const mcpUiCredits = defineModule(
     // 卡片
     title: "环境资源用量",
     "field.credits": "资源点",
+    "field.payg": "按量用量",
+    "field.package": "资源包抵扣",
     "field.plan": "套餐",
-    "field.place": "位置",
+    "field.place": "地域",
     "field.modules": "分模块用量",
     "field.balance": "账户余额",
     "fold.raw": "查看原始返回",
@@ -37,10 +39,11 @@ export const mcpUiCredits = defineModule(
 
     // 状态词（四分支 + 未确认）
     "state.unknown": "用量尚未确认",
+    "state.notCredits": "非资源点环境",
     "state.normal": "用量正常",
     "state.nearLimit": "用量接近上限",
-    "state.trialExhausted": "体验版耗尽",
-    "state.stopped": "套餐资源点已用完",
+    "state.trialExhausted": "体验版已用尽",
+    "state.stopped": "资源点已用尽",
     "state.expired": "套餐已到期",
     "state.arrears": "账户欠费",
 
@@ -50,38 +53,42 @@ export const mcpUiCredits = defineModule(
     "value.currency": "¥",
 
     // 说明句（四分支 + 未确认）
-    "hint.unknown": "这份数据不足以判断资源点是否充足；完整配额可在控制台查看。",
-    "hint.unknownWithUsage": "已读到用量，但套餐状态没拿到，判断不了是否够用；完整配额可在控制台查看。",
-    "hint.normal": "本月资源点仍充足。",
-    "hint.nearLimit": "本月资源点已用 {pct}%；升级套餐或购买资源包可避免中断。",
+    // Empty hint.unknown: status word alone. notCredits keeps a short switch hint.
+    "hint.unknown": "",
+    "hint.notCredits": "当前环境不按资源点计费；可切换到资源点环境，或去看套餐说明。",
+    "hint.unknownWithUsage": "已有用量，缺少套餐状态，无法判断是否充足；完整配额见控制台。",
+    "hint.normal": "本月资源点充足。",
+    "hint.nearLimit": "本月资源点已使用 {pct}%；建议升级套餐或购买资源包。",
 
     // 说明句（四分支）
-    "hint.trialExhausted": "本月资源点已用完；体验版不支持资源包与按量计费，升级付费套餐是唯一恢复途径。",
-    "hint.stopped": "套餐内的资源点已用完；若已购买资源包或开启了按量计费，服务可能仍在正常运行。是否停服以实际调用结果为准。",
-    "hint.expired": "套餐过期后进入 15 天隔离期，逾期环境将被销毁；隔离期内续费可恢复。",
-    "hint.arrears": "账户余额为负，会影响套餐变更与续费；套餐内资源点仍够用时，业务不受影响。",
+    "hint.trialExhausted": "本月资源点已用尽；体验版仅可升级付费套餐恢复。",
+    "hint.stopped": "套餐资源点已用尽；若有资源包或按量计费，服务可能仍在运行。",
+    "hint.expired": "套餐已过期，进入 15 天隔离期；期内续费可恢复。",
+    "hint.arrears": "账户欠费，将影响套餐变更与续费；资源点充足时业务不受影响。",
     "expired.note": "隔离期剩余 {days} 天（第 15 天销毁）",
 
     // 行动（一屏一个主行动 + 一个复制链接的次行动）
-    "action.upgrade": "升级付费套餐（唯一恢复途径）",
-    "action.recommendRestore": "推荐恢复方案",
+    "action.upgrade": "升级付费套餐",
+    "action.recommendRestore": "查看恢复方案",
     "action.renew": "立即续费",
-    "action.guidedTopup": "去充值",
+    "action.guidedTopup": "前往充值",
     "action.openConsole": "打开控制台",
-    "action.nearLimit": "看看怎么省",
-    "message.nearLimit": "这个环境的资源点已经用到 {pct}% 了，帮我看看能怎么省，或者有没有更合适的套餐。",
+    "action.nearLimit": "查看优化建议",
+    "action.switchEnv": "如何切换",
+    "message.nearLimit": "当前环境资源点已使用 {pct}%，请分析可优化项并比较套餐。",
+    "message.switchEnv": "当前环境不是资源点计费。请帮我切换到资源点环境，或说明如何查看/更换套餐。",
     "copy.copied": "已复制",
-    "copy.failed": "没能写入剪贴板，请手动选中复制。",
-    "message.failed": "这个面板不能直接发消息给会话；文字已复制，粘贴到输入框发送即可。",
+    "copy.failed": "未能写入剪贴板，请手动复制。",
+    "message.failed": "无法直接发送到会话；文案已复制，请粘贴发送。",
     "action.openExpense": "打开费用中心",
-    "action.copiedConsole": "没能直接打开，链接已复制；无计费权限时可转给主账号管理员",
-    "action.copiedExpense": "没能直接打开，链接已复制；无计费权限时可转给主账号管理员",
+    "action.copiedConsole": "未能打开，链接已复制；无计费权限时可转交主账号管理员",
+    "action.copiedExpense": "未能打开，链接已复制；无计费权限时可转交主账号管理员",
 
     // 交给会话的请求（按钮 → ui/message 的原文，技能按这些入口组织引导）
-    "message.upgrade": "帮我了解付费套餐，把这个环境从体验版升级",
-    "message.restore": "这个环境资源点耗尽了，帮我比较升配、购买资源包和开启按量计费哪种合适",
-    "message.renew": "这个环境的套餐到期了，帮我完成续费",
-    "message.topup": "这个环境账户欠费了，带我到费用中心完成充值",
+    "message.upgrade": "请说明付费套餐，并将本环境从体验版升级。",
+    "message.restore": "本环境资源点已用尽，请比较升配、资源包与按量计费。",
+    "message.renew": "本环境套餐已到期，请协助续费。",
+    "message.topup": "本环境账户欠费，请引导至费用中心充值。",
 
     // 模块名（分模块用量）
     "module.functions": "云函数",
@@ -168,7 +175,7 @@ export const mcpUiCredits = defineModule(
 
     // 行动（一屏一个主行动）
     // 三态各自的动作（动作腔；noData 最接近流失，不许说"异常"）
-    "metric.action.data": "解释这段曲线",
+    "metric.action.data": "查看这段数据",
     "metric.action.noData": "去日志看这段时间有没有请求",
     "metric.action.failed": "重试这次查询",
     "metric.message.data": "帮我解释这段时间「{metric}」这条曲线的变化",
@@ -190,8 +197,10 @@ export const mcpUiCredits = defineModule(
 
     title: "Environment usage",
     "field.credits": "Credits",
+    "field.payg": "Pay-as-you-go",
+    "field.package": "Resource pack",
     "field.plan": "Plan",
-    "field.place": "Location",
+    "field.place": "Region",
     "field.modules": "Usage by module",
     "field.balance": "Account balance",
     "fold.raw": "View raw response",
@@ -199,10 +208,11 @@ export const mcpUiCredits = defineModule(
     "value.unavailable": "-",
 
     "state.unknown": "Usage not confirmed",
+    "state.notCredits": "Non-credit environment",
     "state.normal": "Usage is within plan",
     "state.nearLimit": "Usage near the limit",
-    "state.trialExhausted": "Trial credits used up",
-    "state.stopped": "Plan credits used up",
+    "state.trialExhausted": "Trial exhausted",
+    "state.stopped": "Credits exhausted",
     "state.expired": "Plan expired",
     "state.arrears": "Account in arrears",
 
@@ -210,42 +220,48 @@ export const mcpUiCredits = defineModule(
     "modules.sep": ", ",
     "value.currency": "CNY ",
 
-    "hint.unknown":
-      "This data is not enough to tell whether credits are sufficient. The full quota is available in the console.",
+    "hint.unknown": "",
+    "hint.notCredits":
+      "This environment is not billed by credits. Switch to a credit environment, or review plan options.",
     "hint.unknownWithUsage":
-      "Usage is known, but the plan state is not, so sufficiency cannot be judged. The full quota is in the console.",
-    "hint.normal": "This month's credits are still within the plan.",
-    "hint.nearLimit": "Credits are {pct}% used; upgrade the plan or add a credit pack to avoid interruption.",
+      "Usage is available, but plan state is missing, so sufficiency cannot be determined. Full quota is in the console.",
+    "hint.normal": "Credits for this month are sufficient.",
+    "hint.nearLimit": "Credits for this month are {pct}% used. Upgrade the plan or buy a credit pack.",
 
     "hint.trialExhausted":
-      "This month's credits are used up. The trial plan supports neither credit packs nor pay-as-you-go, so upgrading to a paid plan is the only way back.",
+      "Credits for this month are exhausted. The trial plan recovers only by upgrading to a paid plan.",
     "hint.stopped":
-      "The plan credits are used up. If you have a credit pack or pay-as-you-go enabled, the service may still be running; check the actual call result to confirm.",
+      "Plan credits are exhausted. With a credit pack or pay-as-you-go, the service may still run.",
     "hint.expired":
-      "The plan has expired. The environment enters a 15-day grace period and is destroyed afterwards; renewing within the grace period restores it.",
+      "The plan has expired and entered a 15-day isolation period. Renew within the period to restore.",
     "hint.arrears":
-      "The account balance is negative, which affects plan changes and renewal. Service is unaffected while the plan still has credits.",
-    "expired.note": "{days} days left in the grace period (destroyed on day 15)",
+      "Account arrears affect plan changes and renewal. Service is unaffected while credits remain.",
+    "expired.note": "{days} days left in isolation (destroyed on day 15)",
 
-    "action.upgrade": "Upgrade plan (the only way back)",
-    "action.recommendRestore": "Recommend a recovery option",
+    "action.upgrade": "Upgrade plan",
+    "action.recommendRestore": "View recovery options",
     "action.renew": "Renew now",
-    "action.guidedTopup": "Top up",
+    "action.guidedTopup": "Go to top-up",
     "action.openConsole": "Open console",
-    "action.nearLimit": "How to cut usage",
-    "message.nearLimit": "This environment is at {pct}% of its credits. Show me how to cut usage or which plan fits better.",
+    "action.nearLimit": "Review savings",
+    "action.switchEnv": "How to switch",
+    "message.nearLimit": "Credits for this environment are {pct}% used. Analyze savings and plan options.",
+    "message.switchEnv":
+      "This environment is not billed by credits. Help me switch to a credit environment, or explain how to view or change the plan.",
     "copy.copied": "Copied",
-    "copy.failed": "Could not write to the clipboard; select and copy manually.",
-    "message.failed": "This panel cannot post to the conversation; the text is copied, paste it to send.",
+    "copy.failed": "Could not write to the clipboard; copy manually.",
+    "message.failed": "Cannot post to the conversation. Text copied; paste to send.",
     "action.openExpense": "Open billing center",
-    "action.copiedConsole": "Could not open it directly; the link is copied. Without billing permission, forward it to the account owner.",
-    "action.copiedExpense": "Could not open it directly; the link is copied. Without billing permission, forward it to the account owner.",
+    "action.copiedConsole":
+      "Could not open; link copied. Without billing permission, forward to the account admin.",
+    "action.copiedExpense":
+      "Could not open; link copied. Without billing permission, forward to the account admin.",
 
-    "message.upgrade": "Help me review the paid plans and upgrade this environment from the trial plan",
+    "message.upgrade": "Explain paid plans and upgrade this environment from trial.",
     "message.restore":
-      "This environment has run out of credits. Compare upgrading the plan, buying a credit pack, and enabling pay-as-you-go for me",
-    "message.renew": "This environment's plan has expired. Help me renew it",
-    "message.topup": "This environment's account is in arrears. Take me to the billing center to top up",
+      "Credits for this environment are exhausted. Compare plan upgrade, credit pack, and pay-as-you-go.",
+    "message.renew": "The plan for this environment has expired. Assist with renewal.",
+    "message.topup": "This environment's account is in arrears. Guide me to billing for top-up.",
 
     "module.functions": "Cloud Functions",
     "module.database": "Database",
@@ -317,7 +333,7 @@ export const mcpUiCredits = defineModule(
     "metric.field.avg": "Average",
     "metric.field.window": "Samples",
 
-    "metric.action.data": "Explain this curve",
+    "metric.action.data": "View this data",
     "metric.action.noData": "Check the logs for requests in this period",
     "metric.action.failed": "Retry this query",
     "metric.message.data": "Walk me through this curve for {metric} in the selected window",

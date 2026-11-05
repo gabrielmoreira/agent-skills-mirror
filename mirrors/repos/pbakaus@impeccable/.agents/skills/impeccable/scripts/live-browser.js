@@ -6514,8 +6514,8 @@
     showToast('The previous live session no longer matches the source file, so it was discarded. Pick an element to start fresh.', 6000);
   }
 
-  function isJsxSourceFile(filePath) {
-    return /\.[cm]?[jt]sx$/i.test(String(filePath || ''));
+  function isCompiledTemplateSourceFile(filePath) {
+    return /\.([cm]?[jt]sx|vue|svelte)$/i.test(String(filePath || ''));
   }
 
   function sourceHasSessionWrapper(text, sessionId) {
@@ -6662,15 +6662,15 @@
       return;
     }
     rememberSessionFileMeta({ file: filePath });
-    if (isJsxSourceFile(filePath)) {
+    if (isCompiledTemplateSourceFile(filePath)) {
       const liveWrapper = findVariantsWrapper(sessionId);
       if (liveWrapper && liveWrapper.querySelector('[data-impeccable-variant]:not([data-impeccable-variant="original"])')) {
         completeSourceInjection(liveWrapper, sessionId, { ...opts, filePath });
         return;
       }
-      // #454: never fetch/parse JSX. Missing wrap waits for mount (closed
-      // modal / other route). Insert scaffolds stay for late HMR. A replace
-      // scaffold with no variants after retries is a failed generation.
+      // #454, #1279, #1282: never fetch/parse JSX, Vue or Svelte. Missing wrap waits for
+      // mount (closed modal / other route). Insert scaffolds stay for late HMR.
+      // A replace scaffold with no variants after retries is a failed generation.
       if (opts.generationCompleted && sessionId === currentSessionId) {
         const attempt = opts.attempt || 0;
         if (attempt < COMPLETED_SOURCE_FALLBACK_RETRIES) {
@@ -8214,8 +8214,11 @@
       return;
     }
     if (state !== 'PICKING' || !pickActive) return;
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    if (!target || !pickable(target) || target === hoveredElement) return;
+    let target = document.elementFromPoint(e.clientX, e.clientY);
+    if (own(target)) return;
+    // Too small to pick (a bare <label>, an icon): take the nearest ancestor that is (#1297).
+    while (target && !pickable(target)) target = target.parentElement;
+    if (!target || target === hoveredElement) return;
     hoveredElement = target;
     showHighlight(target);
   }

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 3 followed patterns, 13 file(s) materialized.
+Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 3 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 3 followed patterns, 13
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,15 +65,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/AGENTS.md`](artifacts/game-ads/run-20260921/runner-variants/AGENTS.md) |
 | 3 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md`](artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`docs/RELEASE_1_5_1.md`](docs/RELEASE_1_5_1.md) |
-| 6 | ✓ | [`docs/RELEASE_1_5_2.md`](docs/RELEASE_1_5_2.md) |
-| 7 | ✓ | [`docs/RELEASE_1_5_3.md`](docs/RELEASE_1_5_3.md) |
-| 8 | ✓ | [`skills/autoclip/references/legacy.md`](skills/autoclip/references/legacy.md) |
-| 9 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
-| 10 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
-| 11 | → | [`docs/TESTING_ACCEPTANCE.md`](docs/TESTING_ACCEPTANCE.md) |
-| 12 | → | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) |
-| 13 | → | [`scripts/winqa/README.md`](scripts/winqa/README.md) |
+| 5 | ✓ | [`docs/PROVIDER_E2E_GATE.md`](docs/PROVIDER_E2E_GATE.md) |
+| 6 | ✓ | [`docs/RELEASE_1_5_1.md`](docs/RELEASE_1_5_1.md) |
+| 7 | ✓ | [`docs/RELEASE_1_5_2.md`](docs/RELEASE_1_5_2.md) |
+| 8 | ✓ | [`docs/RELEASE_1_5_3.md`](docs/RELEASE_1_5_3.md) |
+| 9 | ✓ | [`docs/SUCCESS_RATE_CONTRACT.md`](docs/SUCCESS_RATE_CONTRACT.md) |
+| 10 | ✓ | [`skills/autoclip/references/legacy.md`](skills/autoclip/references/legacy.md) |
+| 11 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
+| 12 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
+| 13 | → | [`docs/TESTING_ACCEPTANCE.md`](docs/TESTING_ACCEPTANCE.md) |
+| 14 | → | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) |
+| 15 | → | [`scripts/winqa/README.md`](scripts/winqa/README.md) |
 
 ---
 

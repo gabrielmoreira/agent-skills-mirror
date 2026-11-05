@@ -282,6 +282,26 @@ a started write without a provider locator stays unconfirmed after restart.
 Revocation or changed identity prevents further delivery. Disable the existing
 connection to revoke it; rollback must preserve its private delivery journals.
 
+Newly verified App user mirrors also reuse the existing reaction journals:
+`Get` acknowledges receipt; only an observed starting/running Core Turn adds
+`OnIt`. Terminal completion, failure or interruption removes processing feedback
+while retaining receipt feedback. A queued input never claims to be processing,
+and assistant mirrors receive neither reaction. Long inputs use their last
+verified concrete post, not the composite parts locator. Turn-only changes are
+discovered within the existing five-second scan even without a transcript append.
+Before each effect, the worker rechecks the canonical input/Turn, current source
+and grants, and frozen provider message. Feedback failures retain recoverable
+receipts without blocking message delivery or starting work. Unknown provider
+writes are not retried. Optional App feedback runs on at most one slot of the
+existing reply pool, outside the body outbox lock. Its final write merges only
+feedback fields, preserving concurrently delivered current and later answers.
+No synthetic incoming event or original-request
+settlement is used. Existing finished mirrors are not backfilled; current active
+mirrors can adopt the feedback path. `loopx chat --no-private-reactions` keeps
+feedback disabled without changing the message path. The isolated HTTP/Core and
+synthetic-provider checks qualify source behavior; installed Lark reactions and
+actual provider presentation remain separate acceptance work.
+
 Use **Continue original conversation** or the explicitly selected App steward
 entry above to reach this path. Old ordinary history is retained separately.
 This checkpoint covers text and bounded App image projection, not reply/thread
@@ -858,6 +878,14 @@ receipt → observed work or actionable failure → readable answer in the same 
   upstream observations; never simulate phases, expose hidden reasoning, or
   infer progress from elapsed time. A period without new events has an explicit
   waiting caption, not an invented failure or continually changing animation.
+- The original private Lark owner sees the same bounded recent reasoning-summary
+  model as Codex (up to four summaries, rendered within the 1,200-character
+  projection) alongside the existing answer stream. Tool and command titles are
+  not repeated in the Lark tree view. Group and unqualified projections retain
+  coarse labels. Antigravity maps its redacted `plannerResponse.thinking`
+  summary through the shared activity contract; `rawThinking`, planner
+  completion and tool completion remain separate, and final answers still
+  replace the draft on the original source-bound post.
 - Generate the visible answer once, then append a complete hidden review envelope
   with `message: ""`. The production parser reuses the preceding Markdown and
   applies the same redaction and typed metadata normalization. Legacy nonempty
@@ -1674,6 +1702,20 @@ without provider identity IO for every historical failure. This is a queue hint;
 admission still re-resolves current App/owner/grant and exact source/native proof
 under the existing fences before reserving or enqueueing any continuation.
 
+A steward request that fails locally with `manager_authorization_unavailable`
+can also qualify on Codex or Antigravity. Core must record exactly the queued,
+manager-context phase, context snapshot and failed events, with distinct IDs,
+no upstream Turn, response, deltas, steering or attachments. Missing events alone
+do not prove safety. Current source and binding verification remain mandatory.
+The original worker reserves at most three deterministic continuations, after
+one, two and four minutes from each failure, through the existing Session queue.
+A stop, pending newer input, an equivalent later human resubmission, another
+recovery kind or contradictory native evidence blocks new work. Repairing the
+correlation of an already admitted continuation does not dispatch it again.
+The original failure and its delivery remain recorded; a qualified private
+steward notice describes conditional recovery rather than promising a replay.
+Unknown failures after native dispatch remain holds.
+
 Source verification accepts both ordinary text and text-only rich posts. A post
 must retain its original provider rendering, an explicit empty attachment
 inventory and the same admitted text after intake whitespace normalization.
@@ -1804,6 +1846,23 @@ delivery remains separate. Model completion, material intake and an intermediate
 card cannot substitute for final-message readback.
 
 ### Recovering a native result after Core failure
+
+A quota-failure notice remains pending work. For Antigravity, the original worker
+may reserve one new quota-continuation Turn only after two independent reads of
+the same idle native trajectory prove its latest invocation contains exactly the
+original input and a structured `QUOTA_EXHAUSTED` error, without model output or
+tool steps. Admission binds the prompt hash, source, execution time, native index,
+current authorization and fresh capacity. Later source input, steering, stop,
+queued input, unknown or cleared steps veto continuation. An unconfirmed cancel
+alone confers no replay eligibility. An enabled flexible endpoint pool may select
+Codex through the existing quota owner; dispatch rechecks current configuration
+and capacity. Keep the failed Turn and its original notice, and adopt the same
+reservation after a crash. The original Bot still delivers and independently
+reads back its normal result in the original audience.
+
+Historical native-result discovery waits while the same Core Session is busy
+or has an active Turn, leaving shared reply workers available for current
+progress. Already verified result metadata keeps its existing correlation owner.
 
 An Antigravity owner request can finish natively while Core retains a transport
 failure. The original reply worker may adopt that existing answer, without

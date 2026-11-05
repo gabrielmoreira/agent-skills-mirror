@@ -34,8 +34,11 @@
 |---|---|---|
 | "Service not found" on Grid factory | Service not defined in `services.yml` | Add all 5 Grid services (factory, query, data, grid, position) |
 | Toggle AJAX fails | Route param mismatch | `route_param_name` in `ToggleColumn` must match controller param name exactly |
-| Drag-and-drop not working | Bundle JS not loaded or wrong grid ID | Verify bundle path in `{% block javascripts %}` uses the exact module folder name; verify grid ID in bundle |
-| Toggle/position silently broken (404 on bundle) | Module folder name typo in asset path | Asset path must be `../modules/{exact-folder-name}/views/js/{modulename}.bundle.js`; a single character difference (e.g. underscore) causes a silent 404 |
+| Sort / reset / row click / drag-and-drop do nothing | Grid script not loaded, or grid not initialised | Network: `{modulename}.bundle.js` must be 200; console: `#{GRID_ID}_grid` must have `data-grid-initialized="1"`; the script must come after `{{ parent() }}` in `{% block javascripts %}` |
+| Reset clicked, no `admin_common_reset_search_by_filter_id` in `var/logs/dev-*.log` | Grid initialised on `DOMContentLoaded`, before the admin theme creates `window.prestashop.component` | Initialise in a jQuery ready callback (`window.jQuery(function () {...})`), as `scripts/grid.bundle.js` does |
+| Toggle/position silently broken (404 on the grid script) | Module folder name typo in asset path | Asset path must be `../modules/{exact-folder-name}/views/js/{modulename}.bundle.js`; a single character difference (e.g. underscore) causes a silent 404 |
+| Toggle reverts / DB unchanged although the UI says success | Two toggle handlers on the same switch | Grid script loaded twice, or `ColumnTogglingExtension` added next to `AsyncToggleColumnExtension` — keep one script and `AsyncToggleColumnExtension` only |
+| Delete row / reset / refresh / show SQL do nothing, sort works | Module ships an old minified webpack bundle (`new o.a("…")`) copied from the previous template (truncated, bootstrap never runs) | Overwrite `views/js/*.bundle.js` with `scripts/grid.bundle.js` — file name and `<script>` tag unchanged |
 | PHPStan: `getFilters()` return type | Returning concrete `FilterCollection` | Change return type to `FilterCollectionInterface` |
 | PHPStan: `getGridActions()` return type | Returning concrete `GridActionCollection` | Change return type to `GridActionCollectionInterface` |
 

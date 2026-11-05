@@ -39,7 +39,12 @@ written back until the user says so.
      too few it has both committed a worse rule and committed nothing at all.
    - `algorithm` (optional): a named method. Call `list_algorithms` (or
      `describe_algorithm` for one) before naming one; the same data is in
-     `agentdescent algorithms list` / `show`. Hosts that expose slash
+     `agentdescent algorithms list` / `show`. To build the spec for one,
+     call `algorithm_spec` (name, absolute `path`, absolute `cases`, optional
+     `params` object, `rounds`/`workers` 1/1 for a quick trial): it writes the
+     starter spec beside the target, plans it, and returns `spec` to pass to
+     `start` after the user's yes -- the MCP form of `agentdescent algorithms
+     run`. Hosts that expose slash
      commands also ship `/algorithms` (Claude `/agentdescent:algorithms`,
      OpenCode `/agentdescent/algorithms`, Codex `/prompts:algorithms`) for
      list / show / run. To compare methods on the user's
@@ -53,6 +58,10 @@ written back until the user says so.
      `algorithm: {name, params}`; explicit `policies` / `evolve` fields in the
      same spec still override the algorithm's defaults. `plan` echoes what was
      resolved and what it costs.
+     For a quick first look at a named method, `agentdescent algorithms run
+     NAME PATH [cases.jsonl] --rounds 1 --workers 1` (same flags on `init`)
+     writes a one-round, one-worker spec and plans it, so the call estimate is
+     small; quote that estimate, then scale the flags up once it works.
    - No data? Offer to draft 12 to 20 cases into `eval/cases.jsonl`
      (`{"prompt": ..., "gold": ...}` per line) and have the user check them.
      Fewer than 12 leaves under 4 held-out cases at the default `held_out_frac`
@@ -282,8 +291,66 @@ does not exist on the CLI/MCP path.
 - **`portfolio`** — "how do the layers rank, and how should the next budget
   window be split?" It reports `reallocated` and a `reasons` line per layer;
   it only suggests, nothing is applied.
+- **`release`** — gate and sign one release from paired held-out scores. It is
+  fail-closed: a reject/defer is a normal `released: false`; only an accepted
+  promotion writes the signed manifest and lineage. The signing secret is the
+  server's `AGENTDESCENT_RELEASE_KEY`, never a tool argument. Relay the verdict
+  and the reasons/missing list; do not present a deferral as a release.
+- **`release_verify`** — read-only: verify a receipt that `release` wrote.
+  Recomputes the signature over the embedded manifest, so an edited hash or
+  evidence fails. `valid: false` is a normal result with `reason`; report it
+  and do not retry as if the tool failed.
 - **`audit_trace`** — "where did this adopted rule's evidence come from?" for
   one `run_id`. A ring with no store passed in is missing evidence, not a pass.
+
+## When the user wants a governed campaign
+
+These surfaces consume the long-running stack rather than one evolve run.
+They execute the Python callbacks/builders a spec names, so on MCP the server
+operator must set `AGENTDESCENT_SURFACE_ALLOW` (empty refuses every ref);
+writes are confined to `AGENTDESCENT_SURFACE_WRITE_DIRS`.
+
+- **`tenant`** — run one platform cycle under a workspace registry's roles,
+  quota reservation and audit. The spec nests the normal platform spec plus
+  tenant/workspace/principal/roles/quota and the tokens/cost to reserve.
+  `dry_run` validates refs and checks `run:write` without creating the DB; a
+  denied role or exhausted quota fails closed.
+- **`meta_campaign`** — run continuous meta-learning as a bounded campaign:
+  repeated `continuous_meta_run` sessions over one archive, each in a fresh
+  ledger repo, with target/cost/patience/session stops. `dry_run` validates refs
+  and configs without calling builders or creating the archive. A rejected rule
+  is a normal session; an errored session stops the campaign with
+  `complete=false`. Relay per-session verdicts and the archive count.
+- **`governed_harness`** — gate and sign one harness/code self-modification:
+  safety gate, proof invariants, human approval, canary/rollback and promotion.
+  `dry_run` validates refs and scores without running the gates; a pending or
+  rejected approval and a failed proof never reach promotion. Relay the
+  `verdict`, `decision.reasons` and the rollback plan; never apply the change
+  yourself.
+- **`platform`** — plan or run a durable five-layer campaign. `dry_run` validates
+  every ref without calling builders or creating the SQLite database; the run
+  returns per-cycle loop/promotion/foundry/experience reports. Offer
+  `agentdescent platform init --demo --out platform.json` for an offline first
+  run, then `platform plan` and `platform run`.
+- **`platform_status`** — read-only: list a campaign's recent runs or one run's
+  full report from its SQLite database after the process finished. Use it when
+  the user asks what a campaign actually ran; a missing database or run id is an
+  error, not an empty result.
+- **`capability`** — plan or run the failure-to-capability loop (traces ->
+  task pipeline -> tool synthesis -> foundry -> QD archive). `dry_run` resolves
+  refs and loads traces without calling the builders. Offer
+  `agentdescent capability init --demo --out capability.json` first.
+- **`ops`** — plan or publish terminal runs from a SQLite run database into the
+  console, lineage, telemetry, RSI metrics and alerts. `dry_run` only counts;
+  a tenant/workspace with no terminal runs is a no-op.
+- **`experience_report`**, **`experience_ingest`**, **`experience_recall`**,
+  **`experience_update`**, **`experience_replay`** — inspect and update the
+  cross-run experience store: rows/actions, deduped ingest, nearest recall,
+  guarded learner update, and preference-ranked replay into a separate engine
+  store. The store is a JSONL separate from the run store.
+  **`experience_cycle`** runs one adaptive cycle: ingest, choose
+  validation/anchors through the preference/recall/history cascade, then the
+  guarded update; exit 1 when the update is not accepted.
 
 `agentdescent exam` re-judges rules with an independent oracle: it needs a
 `--domain module:builder` and runs it, so it is CLI-only. Suggest the command

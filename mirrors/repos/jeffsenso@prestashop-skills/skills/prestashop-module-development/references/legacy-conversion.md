@@ -103,7 +103,7 @@ $('#my-list').sortable({
 });
 ```
 
-**Modern** — use the PS Grid `PositionColumn` and the pre-built Grid JS bundle. Read `references/grid-system.md`.
+**Modern** — use the PS Grid `PositionColumn` and the generic grid script `scripts/grid.bundle.js` (core `PositionExtension`). Read `references/grid-system.md`.
 
 ## ObjectModel vs Doctrine
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 5 followed patterns, 1187 file(s) materialized.
+Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 5 followed patterns, 1189 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tradermonty/claude-trading-skills` — 26 default patterns, 5 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 1187 |
+| Files         | 1189 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1189,67 +1189,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1124 | ✓ | [`skills/us-undervalued-growth-screener/scripts/skill_version.py`](skills/us-undervalued-growth-screener/scripts/skill_version.py) |
 | 1125 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_artifact_paths.py`](skills/us-undervalued-growth-screener/scripts/tests/test_artifact_paths.py) |
 | 1126 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_budget_diagnostics.py`](skills/us-undervalued-growth-screener/scripts/tests/test_budget_diagnostics.py) |
-| 1127 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py`](skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py) |
-| 1128 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py`](skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py) |
-| 1129 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py`](skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py) |
-| 1130 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py`](skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py) |
-| 1131 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py`](skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py) |
-| 1132 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py`](skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py) |
-| 1133 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py`](skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py) |
-| 1134 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py`](skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py) |
-| 1135 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py`](skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py) |
-| 1136 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_collection.py`](skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_collection.py) |
-| 1137 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_screening.py`](skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_screening.py) |
-| 1138 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py`](skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py) |
-| 1139 | ✓ | [`skills/us-undervalued-growth-screener/SKILL.md`](skills/us-undervalued-growth-screener/SKILL.md) |
-| 1140 | ✓ | [`skills/value-dividend-screener/references/fmp_api_guide.md`](skills/value-dividend-screener/references/fmp_api_guide.md) |
-| 1141 | ✓ | [`skills/value-dividend-screener/references/screening_methodology.md`](skills/value-dividend-screener/references/screening_methodology.md) |
-| 1142 | ✓ | [`skills/value-dividend-screener/requirements.txt`](skills/value-dividend-screener/requirements.txt) |
-| 1143 | ✓ | [`skills/value-dividend-screener/scripts/fmp_client.py`](skills/value-dividend-screener/scripts/fmp_client.py) |
-| 1144 | ✓ | [`skills/value-dividend-screener/scripts/screen_dividend_stocks.py`](skills/value-dividend-screener/scripts/screen_dividend_stocks.py) |
-| 1145 | ✓ | [`skills/value-dividend-screener/scripts/tests/conftest.py`](skills/value-dividend-screener/scripts/tests/conftest.py) |
-| 1146 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_clients_and_pipeline.py`](skills/value-dividend-screener/scripts/tests/test_clients_and_pipeline.py) |
-| 1147 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_dividend_sustainability.py`](skills/value-dividend-screener/scripts/tests/test_dividend_sustainability.py) |
-| 1148 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_fmp_stable.py`](skills/value-dividend-screener/scripts/tests/test_fmp_stable.py) |
-| 1149 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_shared_fmp_transport.py`](skills/value-dividend-screener/scripts/tests/test_shared_fmp_transport.py) |
-| 1150 | ✓ | [`skills/value-dividend-screener/SKILL.md`](skills/value-dividend-screener/SKILL.md) |
-| 1151 | ✓ | [`skills/vcp-screener/references/fmp_api_endpoints.md`](skills/vcp-screener/references/fmp_api_endpoints.md) |
-| 1152 | ✓ | [`skills/vcp-screener/references/scoring_system.md`](skills/vcp-screener/references/scoring_system.md) |
-| 1153 | ✓ | [`skills/vcp-screener/references/vcp_methodology.md`](skills/vcp-screener/references/vcp_methodology.md) |
-| 1154 | ✓ | [`skills/vcp-screener/requirements.txt`](skills/vcp-screener/requirements.txt) |
-| 1155 | ✓ | [`skills/vcp-screener/scripts/_fmp_compat.py`](skills/vcp-screener/scripts/_fmp_compat.py) |
-| 1156 | ✓ | [`skills/vcp-screener/scripts/calculators/__init__.py`](skills/vcp-screener/scripts/calculators/__init__.py) |
-| 1157 | ✓ | [`skills/vcp-screener/scripts/calculators/execution_state.py`](skills/vcp-screener/scripts/calculators/execution_state.py) |
-| 1158 | ✓ | [`skills/vcp-screener/scripts/calculators/forward_outcome.py`](skills/vcp-screener/scripts/calculators/forward_outcome.py) |
-| 1159 | ✓ | [`skills/vcp-screener/scripts/calculators/pattern_classifier.py`](skills/vcp-screener/scripts/calculators/pattern_classifier.py) |
-| 1160 | ✓ | [`skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py`](skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py) |
-| 1161 | ✓ | [`skills/vcp-screener/scripts/calculators/relative_strength_calculator.py`](skills/vcp-screener/scripts/calculators/relative_strength_calculator.py) |
-| 1162 | ✓ | [`skills/vcp-screener/scripts/calculators/trend_template_calculator.py`](skills/vcp-screener/scripts/calculators/trend_template_calculator.py) |
-| 1163 | ✓ | [`skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py) |
-| 1164 | ✓ | [`skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py) |
-| 1165 | ✓ | [`skills/vcp-screener/scripts/fmp_client.py`](skills/vcp-screener/scripts/fmp_client.py) |
-| 1166 | ✓ | [`skills/vcp-screener/scripts/historical_report.py`](skills/vcp-screener/scripts/historical_report.py) |
-| 1167 | ✓ | [`skills/vcp-screener/scripts/historical_scanner.py`](skills/vcp-screener/scripts/historical_scanner.py) |
-| 1168 | ✓ | [`skills/vcp-screener/scripts/report_generator.py`](skills/vcp-screener/scripts/report_generator.py) |
-| 1169 | ✓ | [`skills/vcp-screener/scripts/scorer.py`](skills/vcp-screener/scripts/scorer.py) |
-| 1170 | ✓ | [`skills/vcp-screener/scripts/screen_vcp.py`](skills/vcp-screener/scripts/screen_vcp.py) |
-| 1171 | ✓ | [`skills/vcp-screener/scripts/tests/conftest.py`](skills/vcp-screener/scripts/tests/conftest.py) |
-| 1172 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
-| 1173 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py`](skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py) |
-| 1174 | ✓ | [`skills/vcp-screener/scripts/tests/test_historical_vcp.py`](skills/vcp-screener/scripts/tests/test_historical_vcp.py) |
-| 1175 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
-| 1176 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
-| 1177 | ✓ | [`skills/weekly-performance-digest/references/weekly-digest-metrics.md`](skills/weekly-performance-digest/references/weekly-digest-metrics.md) |
-| 1178 | ✓ | [`skills/weekly-performance-digest/requirements.txt`](skills/weekly-performance-digest/requirements.txt) |
-| 1179 | ✓ | [`skills/weekly-performance-digest/scripts/generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/generate_weekly_digest.py) |
-| 1180 | ✓ | [`skills/weekly-performance-digest/scripts/tests/conftest.py`](skills/weekly-performance-digest/scripts/tests/conftest.py) |
-| 1181 | ✓ | [`skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py) |
-| 1182 | ✓ | [`skills/weekly-performance-digest/SKILL.md`](skills/weekly-performance-digest/SKILL.md) |
-| 1183 | → | [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md) |
-| 1184 | → | [`docs/dev/production-verification.md`](docs/dev/production-verification.md) |
-| 1185 | → | [`docs/dev/provider-contracts.md`](docs/dev/provider-contracts.md) |
-| 1186 | → | [`docs/dev/release-compatibility.md`](docs/dev/release-compatibility.md) |
-| 1187 | → | [`workflows/README.md`](workflows/README.md) |
+| 1127 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_budget_transport_attempts.py`](skills/us-undervalued-growth-screener/scripts/tests/test_budget_transport_attempts.py) |
+| 1128 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py`](skills/us-undervalued-growth-screener/scripts/tests/test_capability_cache.py) |
+| 1129 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_checkpoint_counts.py`](skills/us-undervalued-growth-screener/scripts/tests/test_checkpoint_counts.py) |
+| 1130 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py`](skills/us-undervalued-growth-screener/scripts/tests/test_claude_code_pipeline.py) |
+| 1131 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py`](skills/us-undervalued-growth-screener/scripts/tests/test_evaluate_candidates.py) |
+| 1132 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py`](skills/us-undervalued-growth-screener/scripts/tests/test_growth_basis.py) |
+| 1133 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py`](skills/us-undervalued-growth-screener/scripts/tests/test_pool_floor_and_sectors.py) |
+| 1134 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py`](skills/us-undervalued-growth-screener/scripts/tests/test_ranking_scope.py) |
+| 1135 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py`](skills/us-undervalued-growth-screener/scripts/tests/test_scope_and_actuals.py) |
+| 1136 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py`](skills/us-undervalued-growth-screener/scripts/tests/test_seed_and_probe.py) |
+| 1137 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py`](skills/us-undervalued-growth-screener/scripts/tests/test_selection_lanes.py) |
+| 1138 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_collection.py`](skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_collection.py) |
+| 1139 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_screening.py`](skills/us-undervalued-growth-screener/scripts/tests/test_snapshot_screening.py) |
+| 1140 | ✓ | [`skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py`](skills/us-undervalued-growth-screener/scripts/tests/test_unit_reconciliation.py) |
+| 1141 | ✓ | [`skills/us-undervalued-growth-screener/SKILL.md`](skills/us-undervalued-growth-screener/SKILL.md) |
+| 1142 | ✓ | [`skills/value-dividend-screener/references/fmp_api_guide.md`](skills/value-dividend-screener/references/fmp_api_guide.md) |
+| 1143 | ✓ | [`skills/value-dividend-screener/references/screening_methodology.md`](skills/value-dividend-screener/references/screening_methodology.md) |
+| 1144 | ✓ | [`skills/value-dividend-screener/requirements.txt`](skills/value-dividend-screener/requirements.txt) |
+| 1145 | ✓ | [`skills/value-dividend-screener/scripts/fmp_client.py`](skills/value-dividend-screener/scripts/fmp_client.py) |
+| 1146 | ✓ | [`skills/value-dividend-screener/scripts/screen_dividend_stocks.py`](skills/value-dividend-screener/scripts/screen_dividend_stocks.py) |
+| 1147 | ✓ | [`skills/value-dividend-screener/scripts/tests/conftest.py`](skills/value-dividend-screener/scripts/tests/conftest.py) |
+| 1148 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_clients_and_pipeline.py`](skills/value-dividend-screener/scripts/tests/test_clients_and_pipeline.py) |
+| 1149 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_dividend_sustainability.py`](skills/value-dividend-screener/scripts/tests/test_dividend_sustainability.py) |
+| 1150 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_fmp_stable.py`](skills/value-dividend-screener/scripts/tests/test_fmp_stable.py) |
+| 1151 | ✓ | [`skills/value-dividend-screener/scripts/tests/test_shared_fmp_transport.py`](skills/value-dividend-screener/scripts/tests/test_shared_fmp_transport.py) |
+| 1152 | ✓ | [`skills/value-dividend-screener/SKILL.md`](skills/value-dividend-screener/SKILL.md) |
+| 1153 | ✓ | [`skills/vcp-screener/references/fmp_api_endpoints.md`](skills/vcp-screener/references/fmp_api_endpoints.md) |
+| 1154 | ✓ | [`skills/vcp-screener/references/scoring_system.md`](skills/vcp-screener/references/scoring_system.md) |
+| 1155 | ✓ | [`skills/vcp-screener/references/vcp_methodology.md`](skills/vcp-screener/references/vcp_methodology.md) |
+| 1156 | ✓ | [`skills/vcp-screener/requirements.txt`](skills/vcp-screener/requirements.txt) |
+| 1157 | ✓ | [`skills/vcp-screener/scripts/_fmp_compat.py`](skills/vcp-screener/scripts/_fmp_compat.py) |
+| 1158 | ✓ | [`skills/vcp-screener/scripts/calculators/__init__.py`](skills/vcp-screener/scripts/calculators/__init__.py) |
+| 1159 | ✓ | [`skills/vcp-screener/scripts/calculators/execution_state.py`](skills/vcp-screener/scripts/calculators/execution_state.py) |
+| 1160 | ✓ | [`skills/vcp-screener/scripts/calculators/forward_outcome.py`](skills/vcp-screener/scripts/calculators/forward_outcome.py) |
+| 1161 | ✓ | [`skills/vcp-screener/scripts/calculators/pattern_classifier.py`](skills/vcp-screener/scripts/calculators/pattern_classifier.py) |
+| 1162 | ✓ | [`skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py`](skills/vcp-screener/scripts/calculators/pivot_proximity_calculator.py) |
+| 1163 | ✓ | [`skills/vcp-screener/scripts/calculators/relative_strength_calculator.py`](skills/vcp-screener/scripts/calculators/relative_strength_calculator.py) |
+| 1164 | ✓ | [`skills/vcp-screener/scripts/calculators/trend_template_calculator.py`](skills/vcp-screener/scripts/calculators/trend_template_calculator.py) |
+| 1165 | ✓ | [`skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/vcp_pattern_calculator.py) |
+| 1166 | ✓ | [`skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py`](skills/vcp-screener/scripts/calculators/volume_pattern_calculator.py) |
+| 1167 | ✓ | [`skills/vcp-screener/scripts/fmp_client.py`](skills/vcp-screener/scripts/fmp_client.py) |
+| 1168 | ✓ | [`skills/vcp-screener/scripts/historical_report.py`](skills/vcp-screener/scripts/historical_report.py) |
+| 1169 | ✓ | [`skills/vcp-screener/scripts/historical_scanner.py`](skills/vcp-screener/scripts/historical_scanner.py) |
+| 1170 | ✓ | [`skills/vcp-screener/scripts/report_generator.py`](skills/vcp-screener/scripts/report_generator.py) |
+| 1171 | ✓ | [`skills/vcp-screener/scripts/scorer.py`](skills/vcp-screener/scripts/scorer.py) |
+| 1172 | ✓ | [`skills/vcp-screener/scripts/screen_vcp.py`](skills/vcp-screener/scripts/screen_vcp.py) |
+| 1173 | ✓ | [`skills/vcp-screener/scripts/tests/conftest.py`](skills/vcp-screener/scripts/tests/conftest.py) |
+| 1174 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_client_historical.py`](skills/vcp-screener/scripts/tests/test_fmp_client_historical.py) |
+| 1175 | ✓ | [`skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py`](skills/vcp-screener/scripts/tests/test_fmp_stable_migration.py) |
+| 1176 | ✓ | [`skills/vcp-screener/scripts/tests/test_historical_vcp.py`](skills/vcp-screener/scripts/tests/test_historical_vcp.py) |
+| 1177 | ✓ | [`skills/vcp-screener/scripts/tests/test_vcp_screener.py`](skills/vcp-screener/scripts/tests/test_vcp_screener.py) |
+| 1178 | ✓ | [`skills/vcp-screener/SKILL.md`](skills/vcp-screener/SKILL.md) |
+| 1179 | ✓ | [`skills/weekly-performance-digest/references/weekly-digest-metrics.md`](skills/weekly-performance-digest/references/weekly-digest-metrics.md) |
+| 1180 | ✓ | [`skills/weekly-performance-digest/requirements.txt`](skills/weekly-performance-digest/requirements.txt) |
+| 1181 | ✓ | [`skills/weekly-performance-digest/scripts/generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/generate_weekly_digest.py) |
+| 1182 | ✓ | [`skills/weekly-performance-digest/scripts/tests/conftest.py`](skills/weekly-performance-digest/scripts/tests/conftest.py) |
+| 1183 | ✓ | [`skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py`](skills/weekly-performance-digest/scripts/tests/test_generate_weekly_digest.py) |
+| 1184 | ✓ | [`skills/weekly-performance-digest/SKILL.md`](skills/weekly-performance-digest/SKILL.md) |
+| 1185 | → | [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md) |
+| 1186 | → | [`docs/dev/production-verification.md`](docs/dev/production-verification.md) |
+| 1187 | → | [`docs/dev/provider-contracts.md`](docs/dev/provider-contracts.md) |
+| 1188 | → | [`docs/dev/release-compatibility.md`](docs/dev/release-compatibility.md) |
+| 1189 | → | [`workflows/README.md`](workflows/README.md) |
 
 ---
 

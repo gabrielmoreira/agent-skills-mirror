@@ -12,9 +12,42 @@ architectures comparable (local store, delta sync, crypto layer).
   `sources/auth`) are the source of truth. Do not port legacy protocol paths:
   sessions and machines without a `dataEncryptionKey` are skipped, not
   decrypted with the account secret.
-- **Voice** uses Happy's server-controlled allowance and RevenueCat paywalls,
-  with ElevenLabs over WebRTC. The pinned SDK source patch in
+- **Voice** in Happy (relay) sessions is switched off: `AppGraph.voice` is
+  built with `enabled = false`, so a session's chat shows no voice button and
+  `start` answers `NotAvailable` before the microphone, the server's grant,
+  a sheet or ElevenLabs. The engine stays in the tree (removal not decided).
+  When on, it uses Happy's server-controlled allowance and the app's own
+  offer sheets (`payments/`, see "Purchases"), with ElevenLabs over WebRTC. The pinned SDK source patch in
   `vendor/elevenlabs` fixes audio focus, teardown and call-local mute.
+- **An agent connection's voice call** (`call/`, `ui/call/`), iOS's
+  `HappyCore/Call` ported: apart from the relay's voice above, its own new
+  hosted ElevenLabs agent and four client tools (`CallTool`), no permission
+  or question tool, hearing only new words and stopping errors from the last
+  four conversations visited. Home's three-bar button sits immediately left of compose
+  (`ComposeFab(onVoice)`); the call's bar (`CallFrame`, after Telegram-iOS's
+  in-call status bar) slides down over the status bar and pushes the whole
+  window, the top app bar first, down by its height, taking the top inset.
+  A full-screen dialog goes through `PageDialog` or `WindowDialog` so that it
+  carries the bar.
+  It ends when the app leaves the foreground, another account opens or the
+  relay's voice starts. For launch it connects to a public agent by its ID
+  (`PublicAgentCallGrants`), a connection mechanism and not authentication;
+  the ID comes from `HAPPY_CALL_AGENT_ID`, `-Phappy.callAgentId` or the
+  ignored `local.properties` into `BuildConfig.CALL_AGENT_ID`, and is never
+  committed. Without it the tap says "Voice isn't set up for this
+  connection yet". Each device gets 20 free connected minutes in any
+  rolling 30 days, 5 hours a month with the subscription (`CallAllowance`,
+  local). The app's own sheet (`CallSheet`, no vendor UI) is the welcome,
+  once, on the first tap while the subscription is on sale, and, once the
+  time is used, says when it is back with Start greyed out. It sells only
+  what the store and RevenueCat say is on sale (`Offer.OnSale`), never a
+  made-up price (`Preview` is a debug-only test screen). A `ModalBottomSheet` calls
+  `SheetStatusIcons()` so the bar under its scrim keeps light icons.
+  `openSession` replaces a conversation on top and goes over anything else
+  (`openConversationInPlace`). See
+  `docs/agent-voice-call.md` at the repository root. The `happy.call.*`
+  intent extras (`CallFixtures`), `CallProbe` and `CallLiveDeviceCheck`
+  are for debug builds only.
 - **Offline first.** Everything the account has lives on the phone; the
   server is only asked for what changed since the last sync.
 - **Tool outputs are hidden by default** once the chat UI exists.
@@ -22,7 +55,7 @@ architectures comparable (local store, delta sync, crypto layer).
   chat/composer/tools, attachments, diffs/files, onboarding/connect, settings,
   push, tablet layouts, purchases and voice. Experimental and social surfaces
   remain excluded. Store validation needs the existing signing identity,
-  EAS build number and RevenueCat Google SDK key.
+  EAS build number and public RevenueCat Google key.
 - **Happy Protocol V2**: a Happy Agent connected straight to the phone
   over Tailcat, with no relay account. Each pairing is an **agent
   connection**, an account of its own beside relay Happy accounts, shown by
@@ -33,6 +66,10 @@ architectures comparable (local store, delta sync, crypto layer).
   concept and stays). Call the protocol Happy Protocol V2 in strings, docs
   and prose; never "direct" or "direct mode", except where the wire itself
   says it (`happy://direct?`, endpoints, JSON keys).
+- **Naming on screen** (iOS's 64edb6a34): the two kinds of account are
+  Happy Agent (an agent connection) and Happy CLI (a relay Happy account)
+  wherever the person reads them; "legacy" is never shown. The words are
+  `account_kind_*` in `strings_shell.xml`, iOS's own translations.
 - **Naming in code:** current code has no prefix; old relay code that
   clashes is `Legacy*`; never `V2`, `New`, `Direct` or feature prefixes.
   `Legacy*` = used only by the legacy relay protocol or its UI. Shared
@@ -96,10 +133,33 @@ architectures comparable (local store, delta sync, crypto layer).
    column, as iOS's does. The compose FAB stays 16 from the column's edge,
    as iOS's dock does. Dialogs take
    `ContentTokens.dialogMaxWidth`, sheets `sheetMaxWidth`.
+   **The window's unsafe sides**
+   (iOS's b73b1accd): a phone on its side has the cutout on one side and
+   may have the navigation bar on the other; `WindowLayout.safeLeft` and
+   `safeRight` (system bars and cutout, never the keyboard) are the least
+   room `contentMaxWidth` keeps there, so lists, cards and bars stay in
+   the safe band while their grounds run edge to edge. Beside the tablet
+   sidebar the main panel's sidebar side is safe.
    `ui/layout/FoldableLayoutTest` checks screens at 411, 750, 832 and 1280;
-   `TabletShellTest` pins one pane at 750, 768 and 832 and the shell at 840. `ui/tablet/TabletShell`
-   wraps HappyApp's NavHost; under it `LocalTabletShell` is true and
-   `HeaderBackButton` renders nothing. Tablet tests use
+   `TabletShellTest` pins one pane at 750, 768 and 832 and the shell at 840.
+   **The tablet split is happy-ios docs/IPAD.md's**, for Happy Agent and
+   Happy CLI alike (`ui/tablet/TabletShell` around HappyApp's NavHost). The
+   sidebar (30% of the window, held to 340–360) is the account's home
+   itself under `LocalSidebarHome`, which gives it the sidebar's chrome: the
+   bar holds the account and its name alone, agent home's search is a 36
+   field at the top of the list with Cancel while open, and the foot has a
+   48 settings circle and a 48 "New task" / "New session" pill
+   (`SidebarFootBar`; settings alone with nothing to start). The sidebar
+   never pushes: home opens through a `MainPanelOpener`, and the sidebar's
+   (`MainPanel.opener`) makes what it opens the main panel's new root at
+   once (`NavMotion.cutting`, no slide), or goes back to the root when it
+   is already that (`MainPanelKey`: the route, the agent, the Surface),
+   which is also the row it selects. A new home action goes through `go`
+   with its key, never `nav` directly. The main panel's screens keep their
+   own back; wrap a screen's back in `BackOrSidebarToggle`, which is the
+   sidebar's toggle on the panel's root (Hide Sidebar / Show Sidebar, kept
+   in local settings' `zenMode`). Home's page with home in the sidebar is
+   the empty panel, desktop's owl (`MainPanelPlaceholder`). Tablet tests use
    `w1280dp-h800dp-xhdpi`; without `ProvideWindowLayout` a composable lays
    out as an unlimited phone.
    **Moving between screens:** one motion, measured from One UI Settings on
@@ -160,11 +220,18 @@ win:
   Computer page swallows back; here back leaves the app as on any root.
 - **Home's top bar:** the current account's avatar on the left opens a
   drop-down of the relay accounts and agent connections (avatar and
-  name each, a check on the open one), then one "Add"
+  name each, a check on the open one), then one "Add". The two kinds are
+  "Happy CLI" (a relay account) and "Happy Agent" (an agent connection),
+  never "legacy" (iOS 64edb6a34): one with no name of its own goes by
+  its kind, and TalkBack hears the kind after each row's name
   (`ui/home/AccountMenu.kt`); picking one switches
   (`AppGraph.open`). Settings on the right. The legacy home and agent
   home share one bar (`AgentTopBar`, `BarTitle`): the account's name as
-  the title, with an unhealthy connection under it. No logo, filter menu
+  the title. While the link is on its way (iOS 7aee3a9b8, Telegram's
+  title) "Waiting for network…", "Connecting…" or "Updating…" stands in
+  the name's place behind a 16 spinner, debounced by `LinkStateDebounce`
+  and swapped with a 6 slide and fade over 250 ms; offline keeps the
+  name, since home's list says why. No logo, filter menu
   (grouping is in Appearance) or "Sessions" title. Compose is a FAB at the
   bottom right of both homes (`ComposeFab`); home has no text input. One account is open at a
   time: a Happy account or an agent connection (`openAgentId`); each has
@@ -185,8 +252,8 @@ win:
   approves that terminal in one step (`AuthRepository.createAccount`'s
   `prepare`; a failed approval keeps no account), `happy:///account?`
   says it needs a signed-in phone, `happy://direct?` pairs an agent. The
-  ⋮ drop-down holds Enter link manually (same routing), Restore Legacy
-  Account and Legacy Server, and nothing else: no "Get help", and no
+  ⋮ drop-down holds Enter link manually (same routing), Restore Happy CLI
+  account and Happy CLI server, and nothing else: no "Get help", and no
   "Create account" because a Happy account is only ever made by a
   terminal code. A pasted link routes exactly as the scanned code does
   (`ConnectFlow.connectWithUrl` through `route`); only a link of no known
@@ -207,14 +274,23 @@ win:
   (`ui/chat/ComposeChat.kt`, iOS's LegacyComposeStart): its composer
   writes the account's new-session draft; centred between the bar and the
   composer (`ui/chat/NewWorkPanel.kt`, iOS's NewWorkPanel/NewWorkLayout)
-  sit the computer (only with two or more) and the folder, each a menu,
-  the folders following the computer; its first send starts the session
-  with that text and images, and the screen then shows that session. A
-  refused or failed start says why and keeps the text; leaving before the
-  computer answers stops the start and the draft stays. On a tablet the
-  sidebar's New session opens the same chat in the detail pane. Legacy
-  compose makes sessions only; a legacy bot is made on the new-session
-  screen (`/new`). An agent connection's empty chat asks Task or Bot and an
+  sit Session | Bot | Task (always shown; a kind no computer's Happy Agent
+  makes is dimmed, all pickable while the computers are still arriving),
+  the computer (always, with an Online / Offline · 3d / Happy Agent offline
+  chip on its corner, "Loading computers…" until they are in), then a
+  session's folder and harness, or a bot's name (a refusal said inside the
+  field), each a menu, the folders following the computer. Bot and Task
+  go to a computer whose Happy Agent makes them and answers
+  (`MachineTarget`, `NewSessionServices.setKind`), moved off an offline
+  one unless the person picked it. Short of room the block drops its note,
+  then tightens. Its first send starts the session, bot or task (Happy
+  Agent's `target: {kind: "task"}`) with that text and images, and the
+  screen then shows it. A send to a computer that doesn't answer, or
+  before the computers are in, is refused in full before anything starts;
+  a refused or failed start says why and keeps the text; leaving before
+  the computer answers stops the start and the draft stays. On a tablet
+  the sidebar's New session opens the same chat as the main panel's root. An
+  agent connection's empty chat asks Task or Bot and an
   optional name in the same place; its first send makes that kind under
   that name (`POST /v0/tasks` or `/v0/bots`, once, the same ids on a
   retry) and only then sends, so a refusal keeps the text and says why.
@@ -224,6 +300,16 @@ win:
   inside). Day and section headings become gaps; a computer heads its
   cards only when there is more than one; the archive is one card under
   its toggle. Rows show no timestamp.
+- **Legacy tasks** (iOS 36b11c5bf): a Happy Agent session with
+  `metadata.task` is a task. Each computer's tasks follow its bots, in
+  the person's `orderKey` (plain string order), then unjoined ones newest
+  first. A task is named by the task, placed at `~/Tasks/<folder>`, wears
+  its seed's face with no harness badge, and its folder is never a place
+  for new work. Its machine alone ends it: Leave task (`leaveTask`, offered
+  where `rpcMethods` lists it; also the swipe) and Archive task
+  (`killSession`, only where `task.canArchive`); never a server archive or
+  delete. Left or archived, it leaves every list at once and comes back
+  only with the machine's refusal.
 - **Fonts:** the system font for all text, the platform monospace
   (`FontFamily.Monospace`) for code. Not IBM Plex.
 - **Home rows** have strict, precomputed heights, per row kind and font
@@ -244,6 +330,39 @@ win:
   `agentSettingsIndex()` (iOS's `SettingsIndex.computer`):
   `openAgentSettingsRow` opens the agent's Settings or Appearance page with
   `reveal`, or Chief of Staff with the ask for name and avatar.
+- **Agent home search** looks and moves as iOS's
+  (`HappyCore/Agents/Search.swift`, `ui/connection/AgentSearch.kt`) and
+  finds what desktop's ⌘K palette does (`commandPaletteResults.ts`,
+  28342477): the results fade in over home (200 ms ease-out) on its own
+  ground, drawn as home is, and home never moves under them. Nothing typed
+  shows the eight bots and tasks last active (`AgentSearch.recent`); a
+  query shows home's rows that answer it with what they nest under
+  (`AgentSearch.rows`), one card, then Documents, Todos (lists, and the
+  open todos of joined lists whose read the phone kept), Artifacts (the
+  kept catalog page) and Shared (calendars, monitors, chats), every
+  Surface in the catalog joined or not but none home's rows already show
+  (`AgentSearchSources`, read only while search is open), then quick
+  actions and settings: each under its heading, at most six, or "Nothing
+  found" in a capsule. Desktop's ranking (`AgentSearch.rank`): several
+  words in any order, a kind's name three below any title match, joined
+  before not joined; sections keep that order rather than desktop's
+  best-answer one. What a result opens leaves the search for coming back;
+  new work, Cancel or back, and a pull down from the results' top end it.
+  The Happy CLI home has no search, as on iOS.
+- **Bot invitations** (happy-ios HappyGuest, docs/APP-CLIP.md; `guest/`,
+  `ui/guest/`): `https://app.happy.engineering/bot/invite/<token>` opens a
+  guest chat with someone's bot, signed in or out, over whatever is up. The
+  manifest's autoVerify filter takes that path alone (production's overlay
+  already takes the whole host). The guest names themselves once, joins, and
+  chats as plain text with "Message as <name>"; ⋮ reports or leaves. Its
+  transport is its own (no cookies, cache, redirects or owner credential),
+  and its sessions live in their own Keystore-sealed store
+  (`guest-sessions`, service `bot-guest`), off backups and transfers, never
+  the accounts'. Expiry, revocation, a full invite and Leave wipe that
+  invitation's session; one a day past expiry is pruned; with none left the
+  item goes. A debug build reaches a local bridge with
+  `adb shell setprop debug.happy.guest_api http://127.0.0.1:<port>`, never
+  from the link. iOS Preview's demo host isn't taken.
 - **QR codes:** every scan is classified (terminal, account, agent
   connection, or not ours) and routed. A code the screen can't use shows an
   error; nothing is silently ignored. Scanning works while signed in.
@@ -629,8 +748,9 @@ dark app on a light phone):
   HappyApp's first frame and on every change.
 - Every WebView is a `themedWebView`: the app's night mode for
   `prefers-color-scheme`, and the theme's colour until the page draws. The
-  browser then puts white under a page that paints no background and asks
-  for no dark one (`BARE_PAGE`).
+  browser's WebView is see-through instead (WebView keeps the first
+  background it is given) over the theme's colour, which turns white under
+  a page that paints no background and asks for no dark one (`BARE_PAGE`).
 
 A new WebView or window goes through these too. `AppNightModeTest` covers
 dark on a light phone and light on a dark one. `tools/flashscan` records a
@@ -664,7 +784,7 @@ initializer runs before the first frame and fails `ColdStartTest` until it
 is listed there; prefer starting it where it is first needed (Firebase's
 provider and ProfileInstaller's initializer are removed for that). Work
 nothing on the first screen shows waits for `LocalAfterStart` (push
-registration, notification channels, the paywall host), and glass blurs
+registration, notification channels), and glass blurs
 from the window's second frame (`FirstFrame`). Keep
 `HappyApplication.onCreate` to the debug StrictMode it has. The Baseline and
 startup profiles (`app/src/main/generated/baselineProfiles`) come from
@@ -691,6 +811,14 @@ ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest 
   (`keystore.properties.example` lists the keys). Without them `release`
   builds unsigned and `preview` debug-signed, so `assembleRelease` works
   anywhere, CI included.
+- PostHog's public project key comes from `EXPO_PUBLIC_POSTHOG_API_KEY` or
+  `-Phappy.postHogKey`, as happy-app's and Happy Desktop's do; nothing is
+  checked in. A build without it reads every feature flag as off. Only flags
+  are read with it (`config/FeatureFlags.kt`): one `POST /flags/?v=2` per
+  open Happy account with its `anonId` as the distinct id (happy-app's
+  `identify`), each foreground, skipped when the account opted out of
+  analytics. The answer is kept per account in `feature-flags` prefs; a failed
+  ask keeps the last one. Nothing is captured.
 - A signed release or preview build without an explicit versionCode fails in
   `pre<Variant>Build`, before R8, rather than at the Play console.
 - Shipping goes through the `release` skill like every other release.
@@ -740,6 +868,16 @@ Entry points other screens call (all in `ui/onboarding` and `ui/connect`):
   `DeepLinks.offer(intent)`; `DeepLinkEffect(nav, signedIn, onOpenSession)`
   in HappyApp opens them once signed in. `onOpenSession` is the chat's.
 
+### Migration card
+
+The Happy CLI home leads with `ui/migration`'s card (iOS ea1a0902f) only
+while PostHog's `direct-connection-migration-note` is on for the account
+(`AppGraph.migrationNote`), no agent connection is paired, and its × wasn't
+pressed. Its screen's Scan QR code is `rememberMigrationScan`, not Add: a
+direct code pairs, and a Happy server code first says it isn't direct, then
+Link anyway approves it for the open account as Settings' scan does, never
+creating an account.
+
 ### QR codes
 
 Deliberately not happy-app's (expo-camera's `launchScanner`, which is
@@ -764,7 +902,16 @@ the flows are tested with a fake.
   the camera fills the window under transparent system bars, a floating ✕
   top right (= back), a scrim with a centred square viewfinder, a hint
   under it, and a torch toggle when the camera has a flash. Close and
-  system back return `Cancelled`.
+  system back return `Cancelled`. Add's scan (`ScanRequest`) also has a ⋮
+  top left with the other ways in (iOS's `AccountAdding.otherWays`): enter
+  a link, Restore Happy CLI account, Happy CLI server; a pick returns
+  `ScanResult.Chose`.
+- As iOS's ff88dfcd6: the preview and analysis follow the display's
+  rotation (a display listener, since the activity handles rotation and a
+  180° turn reports no configuration change), and a camera whose nearest
+  focus is farther than a 30 mm code filling the viewfinder is zoomed
+  until it is in focus, at most 3x (`ScanFocus`, Camera2's minimum focus
+  distance and field of view).
 - `QrDecoderTest` decodes ZXing-encoded luminance frames; `QrScannerTest`
   covers the result contract, the refused permission and the layout.
 
@@ -775,7 +922,8 @@ decodes the drawn pixels back to the link.
 ### Deep links
 
 `happy://` links route as expo-router routes them for happy-app (the host
-is the first path segment), and so do `https://app.happy.engineering/<path>`
+is the first path segment; Happy Agent's own hosts and instance-locked links
+are not app paths, see "Team servers behind SSO"), and so do `https://app.happy.engineering/<path>`
 links. Every app path maps to its Compose route (`parseDeepLink` in
 `ui/connect/DeepLinks.kt`): `terminal?<key>` opens the confirm screen,
 `/terminal/connect` explains that the web link needs a browser,
@@ -793,6 +941,104 @@ verifies with, so a Play-distributed build should verify as it does; a build
 signed with only the upload key won't. Signed out, only the screens that need
 no account (server, restore, troubleshoot, changelog, onboarding settings)
 open; other links are dropped rather than pushed onto empty signed-in screens.
+
+### Team servers behind SSO (edge SSO)
+
+A Happy Agent server behind an HTTPS load balancer that enforces SSO is an
+`AgentConnection` with `server` (its origin) and `AgentConnectionCredentials.oauth`
+instead of a device token. The contract is shared with iOS and desktop; don't
+change its wire behaviour on Android alone.
+
+- **Adding one: by QR code only** (§8, Steve's decision; `connection/ServerInvite.kt`).
+  A phone never takes a typed or pasted server address: there is no address
+  field or menu item. Desktop shows `happy://<instanceId>/server?url=<percent-encoded
+  base URL>`, no secret in it; any of the app's scanners reads it
+  (`HappyCode.Server`, by shape, so a malformed one is refused as one).
+  `ServerInvite.parse` takes the grammar exactly (normalized `https:` base URL,
+  nothing else in the link, at most 4,096 characters) and repairs nothing.
+  Pasted into "Enter link manually", from the OS, or in a conversation it does
+  nothing (it isn't a `HappyUrls` link). A connection already on that
+  `instanceId` just opens; otherwise a base URL under a path prefix stops with
+  "…can't connect to yet" (the transport is origin-only), and an origin starts
+  the sign-in below. After the token exchange, health's `instanceId` must equal
+  the code's (`ServerSignInFlow.verify`; a new member's health behind the
+  profile gate is checked after the name); a mismatch, or none, drops the
+  credential and reads "This code doesn't match the server it points to."
+- **Sign-in** (`connection/ServerSignInFlow.kt`, `ServerAuth.kt`): `GET
+  /v0/authentication` lists the methods, then OAuth authorization code + PKCE
+  S256 in a Custom Tab (never a WebView), with RFC 8707 `resource` on
+  authorize, exchange and refresh. The redirect URI is **`happy://oauth/callback`**
+  on every flavor (`ServerSignInFlow.REDIRECT_URI`); the manifest's `happy`
+  scheme filter carries it, and MainActivity hands it to the flow before
+  `DeepLinks`. `authenticated` with no `userId` asks for a name (`PATCH
+  /v0/profile`) before the server is kept. A malformed callback (any app can
+  send the redirect URI) is ignored, never thrown.
+- **Binding the sign-in** (API.md, Steve-approved): a method whose `tokenUrl`
+  or `refreshUrl` isn't on `authorizationUrl`'s origin (parsed scheme, host,
+  port) is refused before the browser (`OAuthMethod.oneSite`, "…would send your
+  sign-in to a different site…"). The attempt (`PendingOAuth`) keeps the origin
+  and the method as found; the credential keeps `refreshUrl`, `client_id`,
+  `resource`; nothing is re-read from the server. After the exchange and every
+  refresh the access token's JWT `aud` (string or array, signature not
+  checked) must name the server: same origin, path `/` with a trailing slash
+  added (`ServerAuthClient.audienceIs`); otherwise it is dropped unused ("This
+  sign-in is for a different server."). Token requests never follow redirects.
+- **One member per connection** (as iOS: origin + `userId`): the `userId` is
+  kept with the credential and on the `AgentConnection`. The same member
+  signing in again renews their connection; another member gets a new one,
+  and the connection they signed in again on is wiped (credentials, entry,
+  caches: `AgentSessions` deletes the caches of any connection that goes, open
+  or not, and sweeps orphans at start) and theirs opens. The server is asked
+  who it is first and the new credential saved next; only then is the list
+  replaced in one write and the old member's let go, so a cancelled or failed
+  sign-in leaves the old connection whole. Each sign-in has a generation
+  (`AgentConnections.grant`): a refresh of an older one that lands after a
+  sign-in is dropped and its refusal hands back the new token instead of an
+  auth failure; requests sign out only the generation they were made under
+  (`signedOut(…, grant)`), checked and written under one hold of the lock.
+- **Storage**: credentials are sealed by an AES-256-GCM Android Keystore key
+  (non-exportable, no user authentication, StrongBox when the phone has one,
+  else the TEE: `AndroidKeyStoreKeys`) in app-private preferences, which
+  `data_extraction_rules.xml` / `backup_rules.xml` keep out of cloud backup and
+  device transfer (`CredentialStorageTest`). A team server whose key is gone
+  (restored or moved) reads as signed out.
+- **Tokens**: the refresh token lives with the credentials (Keystore,
+  `ExpoSecureStore`); access tokens are in memory only (`AgentConnections.bearer`,
+  refreshed 60 s before expiry, one refresh at a time per connection, rotation
+  persisted). The refresh token goes only to the `refreshUrl` and `client_id`
+  recorded at sign-in. Credentials go only in `Authorization`, on SSE and
+  WebSockets too; no OkHttp client here follows redirects.
+- **Sign in again** (`SignInRule`): any 3xx but 304, any 401, or a 403 that
+  isn't Happy JSON (`application/json` with string `error` and `code`). A
+  Happy-JSON 401 first asks `GET /v0/authentication` with the same bearer
+  (`AgentClient.recover`); an edge's 401 stands. `AgentConnection.signInRequired`
+  stops the account's links at once (`AgentSession`) and home shows "Sign in
+  again", which reopens the flow replacing the same connection (and checks
+  the `instanceId` it had). Paired agents
+  keep 401 = Revoked.
+- **Tunnels**: over HTTPS, the in-app browser prefers the WebSocket twin of a
+  CONNECT route (`<route>/websocket`, `WebSocketTunnel`) when health reports
+  `capabilities.webSocketTunnels`; otherwise CONNECT once, and an edge's refusal
+  turns tunnels off for that client with a note (`browser_tunnels_blocked`).
+- **No device management.** There are no Android Enterprise managed
+  configurations (Steve's decision). Tailcat, the hosted relay and pairing by
+  code are switched on the server (`happy.toml`); the app only hides what the
+  agent reports as off. Analytics is always the person's own choice. A pairing
+  the agent refuses with `unsupported` (or an older daemon's 404) reads "Phone
+  pairing is turned off on this agent." (`AgentConnectionException.Reason.Disabled`).
+- **Instance-locked links** (§7, `agent/HappyUrls.kt`, `ui/connection/HappyLinks.kt`):
+  `HappyUrls` ports happy-agent-client's `happyLinks.ts` grammar case for case
+  (`HappyUrlsTest`) plus the external form `happy://<instanceId>/<internal URL
+  without happy://>`. Health's `instanceId` is kept on each `AgentConnection`.
+  From outside (`DeepLinks`), only an external link opens, and only on the
+  connection with that `instanceId` (switching to it first, through
+  `DeepLink.OnConnection`, since each account has its own back stack); none
+  matching says "This link belongs to a Happy server you're not connected to."
+  and never falls back. Internal Happy links and `happy-file://` from outside,
+  and malformed ones, open nothing. Inside an artifact a Happy link means that
+  connection; `openOutside` never hands a Happy URL to the system. Sharing a
+  bundled artifact's page shares its external link, and isn't offered when the
+  server has no `instanceId`. Chat doesn't render `happy://` links as links yet.
 
 ## Push
 
@@ -861,30 +1107,47 @@ thread from registration (after the first frame) and in
 
 ## Purchases
 
-`AppGraph.purchases` owns RevenueCat's optional account lifecycle. The public
-Google SDK key is supplied by `EXPO_PUBLIC_REVENUE_CAT_GOOGLE` or
-`-Phappy.revenueCatGoogleKey`; an empty key leaves purchases unavailable.
-`purchases.purchases` is the flat `StateFlow<Purchases>` from purchases.ts,
-cached per server/account and wiped on logout. Configure with the token's
-server-issued subject as appUserID. Startup/foreground and successful paywalls
-sync purchases and fetch customer info. SDK operations serialize with paywalls;
-account generations reject stale results after logout, account or server changes.
+No RevenueCat SDK: Play Billing plus RevenueCat's REST API with the public
+Google key (`EXPO_PUBLIC_REVENUE_CAT_GOOGLE` or `-Phappy.revenueCatGoogleKey`;
+empty means nothing is sold and nothing calls RevenueCat). The legacy SDK and
+its paywall dialog are gone; their old caches (`purchases` preferences, the
+SDK's own) stay on disk, unread.
 
-`suspend purchases.presentPaywall(flow)` (also `Paywall.present`) uses the
-current offering and the `flow` custom variable, never an offering named after
-the flow. `PaywallHost` at app scope renders RevenueCat's native Compose dialog
-and dismisses on account changes. Purchased and Restored return
-`PaywallOutcome(success = true, purchased = true)` after refresh; closing returns
-success with purchased false. `hasPro()` reads the real entitlement for voice;
-Settings' Support us row additionally treats debug builds as Pro, as RN does.
-The row is inert for Pro and otherwise presents `voluntary_support`.
+- `AppGraph.subscription` (`Subscription`) is the one purchase-state owner:
+  the customer (the relay account's JWT subject, else a persistent anonymous
+  install id; login is never needed), `pro`, what is on sale (`offer`:
+  the current offering's monthly package only), buy, the launch/foreground
+  sweep of unfinished purchases and Restore. `pro` comes from the last
+  RevenueCat answer (`ProPass`, cached 24 h), never from the offering, and
+  honours any product granting `pro` (older annual or lifetime too).
+- A purchase belongs to whoever it was bought for: Play's
+  `obfuscatedAccountId` is SHA-256 of the customer id, kept for good in
+  `accounts`. Only a user's Restore moves one to another customer
+  (`restored`); nothing is posted for whoever happens to be signed in.
+  Signing in identifies an anonymous buyer with the account; RevenueCat does
+  not guarantee that merges.
+- `AppGraph.offers` (`Offers`) is the one offer presenter, drawn by the one
+  `OfferHost` in `HappyApp`: voice's welcome and used-up sheets, the relay
+  voice's Required sheet (`voice_must_pay`, unreachable while that voice is
+  off), and Support (Settings' Support us
+  row and the agent's boba row: "Pledge <price>/month", no Start). One sheet
+  at a time; `ask` answers Start (the welcome's only), Pro or Dismissed.
+- Grants are client-side. Only the relay's voice has a server gate; its
+  5-hour hard cap is never sold, only said.
+- Debug builds treat About's Support row as Pro, as RN does; that grants no
+  voice.
+
+See `docs/agent-voice-call.md` at the repository root for the month rule,
+grace and identity.
 
 ## Voice
 
-`AppGraph.voice` owns one `VoiceEngine`. It requests microphone permission
+`AppGraph.voice` owns one `VoiceEngine`, switched off for now (see the top).
+When on, it requests microphone permission
 before allocating a server conversation, applies server denial/paywall rules,
-and connects the ElevenLabs transport. `AppGraph.purchases` provides real Pro
-state and paywalls; debug-only Support us behavior does not grant voice Pro.
+and connects the ElevenLabs transport. `AppGraph.subscription` provides real Pro
+state and `AppGraph.offers` the sheets (`VoicePaywall`); debug-only Support us
+behavior does not grant voice Pro.
 Usage and credentials re-authenticate with the account secret when voice uses
 a different server. Voice language codes come from `VoiceLanguages`.
 
@@ -960,6 +1223,273 @@ pages across and is dragged away up or down. A recording plays in its page
 (`VideoPage`). The position reads "N of M" for TalkBack only, as iOS has it
 for VoiceOver (`message.mediaPosition` in happy-app's catalogs).
 
+A picture opens out of its thumbnail and closes back into it, as
+Telegram's PhotoViewer does. A thumbnail that opens the viewer carries
+`Modifier.viewerOrigin(key, radius)`, keyed as the viewer keys the item
+(a chat tile by its cache key, an artifact file by
+`ArtifactMedia.resourceId`). It says where it is on the screen in
+`ViewerOrigins.Shared` and draws nothing while it is `hidden`. The viewer
+lays the picture out at rest and scales, moves and clips it there
+(`PictureViewing.flight`), so it starts from Coil's memory copy of the
+thumbnail (`rememberMemoryImage`). It hides the thumbnail only once its
+dialog window has focus. It closes into the thumbnail if that is on the
+screen, by tap, back or a drag, and otherwise fades. Then it waits for the
+thumbnail to draw again (`ViewerOrigins.drawn`) before it goes, so there
+is no hole. A recording neither flies nor hides its tile.
+
+A tap on a kept recording's play button plays it as soon as its first
+playable range is on the phone (iOS 42121e99e, `VideoOpening`). The
+retriever reads the header through the same ranged source the player
+reads. Until then the play glyph is a small spinner (`MediaRingState.Starting`:
+0.7 of a circle, a fifth of the disc across, turning every 0.8 s), and the
+rest of the file reads on behind. A second tap while it spins gives up.
+This applies to the chat's tiles and the agent page's grid.
+
+### Conversation turns
+
+Each run of a Happy Agent conversation is a turn, drawn as desktop draws it
+(iOS 7f6355041). A tool call is one line in plain words:
+`ui/conversation/ToolWords` ports desktop's `toolVerb` / `humanizeToolName`
+/ `toolGlyph`, so it reads "Shell ls", "Edit x.ts +3 −1" or "Explored a.ts",
+in the present tense while the call runs. `ui/chat/ToolView` is not used
+here. Once a run has `endedAt`, `Conversation.derive` adds a
+`ConversationRow.TurnEnd` ("Completed in 12s", which also copies the final
+answer, so that answer has no copy button of its own). `conversation/TurnFold`
+then folds the turn behind a `Trace` row ("View traces · N tools"). Folded,
+the turn keeps the person's words, the answer, file edits, media, artifacts
+and failures. `Conversation.toggleTurn` opens or folds it, and
+`FoldHold` in ConversationScreen keeps the trace row where it was on screen.
+Words are in `strings_turns.xml`.
+
+A tap on a tool line opens the call (`ToolCallRoute`, `ToolCallScreen`;
+iOS ToolDetailViewController, 1575b41b8). It is titled with the line's
+subject, under a header card (kind, tool name, status pill), then what the
+call did from its `presentation`: a command in the terminal panel
+(`CommandView`), an edit as each file's diff drawn from the hunks as sent
+(`ToolPatch` builds a patch for DiffFilesList; each file opens alone with
+`file` set), a look around as its steps, a search with its sources. A call
+without one is read from its vendor's arguments (`conversation/ToolCalls`:
+`ToolKind`, `ToolPlan`, `ToolSubagent`, `ToolMessage`) and otherwise shown
+as fields (`ToolValue`: priority keys first, long strings as blocks,
+nested past depth 2 as JSON). Then the review, if the call crossed it, and
+the raw JSON, folded. The chat's copy may lack the raw data (history read
+with `omitToolData`) or have it cut at 32 KB (`ToolData`); `ToolCallModel`
+then reads that run once more whole (`ToolCallReader`). Words are in
+`strings_tool_detail.xml`. The agent page's "Changes" row opens the
+workspace's own Git changes (`WorkspaceChangesRoute`, `WorkspaceGit` over
+`/v0/workspaces/:id/git`, `file-revision` and `file`); five files or fewer
+open whole.
+
+A person's message shows whole; only a ludicrous paste, past seventy
+lines of its own text whatever the screen, folds the same way (`UserFold`
+in ProseViews; iOS c52fd2842, 3928f0f21). `Prose.cut` counts the laid-out
+lines, so the cut is decided while composing and not after measuring. Code
+and tables count their own lines. The bubble shows the lines up to the
+seventieth line's foot, then "Show full". If that line is inside code, the
+cut falls at seventy lines of text height. A tap on the bubble calls `Conversation.toggleMessage`
+and flips `ConversationRow.User.opened`. `FoldHold` keeps the row above the
+message in place, so the bubble opens downward.
+
+Code in a Happy Agent chat works as on desktop (3365ef9f, 3e08585d).
+ConversationScreen provides `LocalCodeCopy` = `CodeCopy.Icon`, so
+MarkdownView's code block shows a quiet 14 copy glyph in a 24 box, 6 in
+from its corner, which turns into a check for 1.6 s. The relay chat keeps
+its "Copy" pill. `proseSpans` marks inline code with `INLINE_CODE`. A long
+press on that code selects the whole span, both in place (`SelectionStart`)
+and in the lift's Select (`LiftSelection`).
+
+A held message lifts over the chat (MessageLift). Only the header and the
+transcript blur (`liftBackdrop`). The veil stops at the composer's top
+(`liftClear` sets `MessageLift.clear`), so the input stays sharp and
+undimmed. The lifted message and its menu keep 10 above the composer. The
+light veil is white at 0.6, so the chat reads frosted white, not grey; the
+dark veil is black at 0.6. A card's shadow (8% black, 12 blur) and the
+menu's 4 elevation part white from white without shading the composer.
+
+A conversation that finishes chimes as on desktop (a72f8304, 962201a2).
+`AgentSession.follow` asks `CompletionWatch` about each journal event. It
+chimes for a `run.finished` of a top-level conversation that home lists,
+for its current run, ended within 30 s (so a replay after reconnecting
+stays quiet), unless the connection's `happy-desktop.completionSound` is
+"never" or the bot is muted or hidden (`happy-desktop.bot.<id>`).
+`CompletionChime` renders desktop's two sines (659.25 Hz, then 880 Hz at
+0.11 s; 15 ms attack, decay to 0.42 s) as a sonification AudioTrack and
+stays silent unless the ringer is normal. The link only runs while the
+connection is open and the app is in the foreground, so on the phone
+When focused and Always chime alike. Appearance shows the setting.
+
+The composers' primary button is one button that changes its glyph
+(`PrimaryGlyph`, iOS `AgentInputPrimaryGlyphMotion`). The glyph going away
+shrinks to 0.5 and fades while the new one grows in, over 0.2 s; Reduce
+Motion keeps only the fade. The relay chat's fill changes over the same
+0.2 s. A stop that fails shakes the button in both chats (Shaker.tsx). The
+Happy Agent field's placeholder is iOS's "Type a message ..."
+(`session_input_placeholder`).
+
+Composer pictures come and go as on iOS 8eed293c9 (`PictureStripMotion`):
+one added grows from 0.2 and fades in, one taken out shrinks to 0.2 and fades
+where it was while the rest slide, over 0.4 s on the (0.38, 0.7, 0.125, 1)
+curve. Both strips use it (the Happy Agent composer's and `AttachmentStrip`).
+A lazy row never redraws an item it is taking out, so `PictureStripFrame`
+draws the leaving picture itself, under the row at its last place. The strip
+records a picture as leaving during composition, so it shows in the same
+frame the row drops it. The picker hands over its own list, which it changes
+in place, so the strip keeps a copy to compare against. The last picture
+keeps the strip open until it has gone. Pictures already there when the
+composer is made arrive without animating.
+
+On a phone held upright, the attach sheet grows out of the + and goes back
+into it (`AttachMorph`, iOS `morphIn`/`morphOut` from 8eed293c9 and da11ed4af).
+The composer marks its + with `Modifier.attachButton(rememberAttachButton {
+glyph })` and passes it to `AttachSheet`. When the morph takes the +, it hides
+the button and draws the glyph on the morph, and gives the button back only
+once the sheet has gone. The sheet is clipped to a rounded rect that runs from
+the button to the sheet: the centre on one spring, the size on another, and
+the corners over 0.2 s. The page and the sheet's ground fade in over 0.2 s,
+and the glyph fades out over 0.15 s. On the way back the page fades out over
+0.12 s, the glyph returns over 0.22 s, and the ground goes last, so the +
+alone lands on the button. iOS gives its springs as damping plus duration;
+these use the same damping ratio, at the stiffness that settles in that
+duration. Tablets, landscape and Reduce Motion slide the sheet up as before.
+
+A Happy Agent picture on its way to the computer wears Telegram's ring in the
+bubble (`UploadRing`, iOS 5ac4296c2). The tile is dimmed, with a dark disc
+and a white arc for the share written; the arc turns while it fills. Its cross
+takes that picture out (`Conversation.removePicture`, iOS `removeAttachment`):
+the write in flight stops and the rest goes again under the same id, and a
+message left empty is taken back. The share comes from the request body as the
+transport writes it. `BodyProgress` in the coroutine context gets each chunk,
+and `UploadRanges` finds where each picture's base64 sits in the body, so
+`UploadBoard` can hold a share per picture. Before any bytes go, the arc is
+short and turning. Once the computer takes the message, every ring fills and
+then shrinks away. The photos are movable content: a message of pictures alone
+comes back captioned "Attached images.", and moves into a bubble without its
+rings starting over.
+
+Presented chat media is kept on the phone for good (`media/`, iOS
+ba7b68346, after Telegram's MediaBox). Each agent connection has a
+`MediaLibrary` beside its kept catalog (`<connection>.media/` in no-backup
+storage), and it goes when the connection does. A file is kept under the
+SHA-256 of its ID (`tool/<agentId>/<toolCallId>/<index>`). While it arrives
+it is a `.part` file with holes plus a `.part.meta` record of the ranges held,
+so a download resumes after a relaunch. `MediaDownloads` reads one file a
+range at a time over the media route with `Range`: 1 MiB chunks for a whole
+file, and a player's range first (256 KiB). At most two automatic downloads
+run at once; a tap or a player goes past them. Three failures in a row, or
+one 4xx, mark the file failed until the next tap. `KeptMedia` connects a
+conversation to its library: photos and small files read themselves as they
+show (`MediaAutoDownload`, Data and Storage), and anything else waits for a
+tap on its ring. Tiles draw `DownloadStatus`: the ring (`MediaRing`, the
+same component as the upload ring) shows an arrow, progress or retry, and a
+recording's ring is its play button. A size badge in the top-left corner
+shows a recording's length over "1.2 / 8.4 MB". A recording streams through
+the library (`MediaStream`), so what was played is kept. Clear Media
+empties the library. `rememberKeptMedia` builds a `KeptMedia` for a chat and
+for its agent page, whose shared grid reads and rings the same way. A file
+card's chip is `FileStatusChip`: a blue ring with the arrow or progress
+until the file is here, then its glyph, with the size or "1.2 / 8.4 MB" in
+the detail line; the chip's tap reads or pauses, and the card's tap opens.
+An artifact's own files go through the same library under
+`artifact/<artifactId>/<version>/<path>` (a numbered version never changes),
+with no automatic rules: opening it reads it. Gallery and document tiles
+draw `MediaStatus`. Happy accounts keep attachments in a library of their
+own (`legacy-media/<publicId>/`, removed on sign-out): plaintext once
+secretbox has checked the MAC, and a sent picture is kept at upload, so the
+sender never downloads it. A legacy download is one request with progress
+from the body; it can't pause.
+
+### Context meter and usage ring
+
+Under an agent connection's composer, `ui/conversation/ContextMeter` draws
+desktop's ContextMeter as iOS does (083c30df4). It is a 64 × 4 bar in a
+20 dp row under the pill, its end under send (`ComposerViewport`'s
+`meter` slot; the one-row composer has none). A tap shows "42% 84k/200k"
+for 4 s, and a hold shows it while held. The bar is coloured only near
+compaction. `conversation/ContextGauge.derive` reads it from
+`ConversationState.context` (the bootstrap's `context`, then each
+`agent.context.updated`, applied without deriving rows) against the
+window in `ModeCatalog.windows`. Before the first measurement it shows
+the selected model's window. There is none while history is read or
+before new work is made.
+
+The model chip wears desktop's usage ring while the selected account
+runs low (`AccountUsage.warning`: the week before the session, under 25 %
+low, under 10 % or blocked critical) and reads the warning out.
+`AgentSession.usage` (`AgentUsageSource`) reads `GET /v0/usage` while a
+chat shows, and again on `provider.usage.*`, `config.updated` and each
+reconnect. It keeps following for 30 s after the last chat goes. Words
+are in `strings_context_meter.xml`.
+
+### One-row composer
+
+The chat's composer is one row when the full card with one line would
+leave the transcript under 120 dp between the bar's foot and the card
+(iOS ac81745ac, `ChatScreenLayout.compactBelow`). That is a phone held
+sideways with the keyboard up. It is also one row wherever the card
+can't fit at all. The decision comes from the card with one line, never
+from the card as it is, so typing and going to one row can't undo it.
+It is read where the keyboard rests (`keyboardPadding`), not mid-drag.
+The row is [+], the field (two lines, then it scrolls, with the expand
+button), the chips and send. The buttons stay at the row's foot as the
+field grows. Android keeps the chips in the row rather than behind iOS's
+options button: a sideways phone has the width for them.
+
+### Full-screen editor
+
+Past the lines the card shows (eight, or the one row's two, measured at
+the field's width without the button), the composer offers Telegram's
+expand as iOS does (efea2b139): send's size, centred over send, as far
+from the card's top as send is from its foot, and the words wrap clear of
+it. In the one row it stands at the field's end. It fades in over 0.1 s.
+It opens `ui/conversation/ComposerEditor` over the chat: the same draft,
+caret where it was, from the top inset to the keyboard, with the collapse
+button 8 in from the top end. Collapse or Back hands the caret back, and
+the composer takes focus before the editor fades out so the keyboard
+stays up. If the keyboard was put away first, it stays away. It is drawn
+in the chat's own window, not a dialog, so the keyboard never drops as
+focus moves between the two fields. While it is up, the chat under it is
+out of TalkBack's tree. Compose text has no exclusion paths, so every
+line keeps clear of the collapse button, not only the first two.
+
+### Pasting a picture
+
+The agent composer's field carries a content receiver
+(`Modifier.contentReceiver`), so a copied picture offers Paste in the
+field's own text menu and attaches as a waiting picture, as iOS's
+`AgentInputTextView` does. A keyboard's inserted image takes the same way.
+The picture is what was meant: its name or address, often copied with it
+as text, is dropped. Copied text alone pastes as words. Pictures go
+through `ImagePicker.receive`, so they get the same room check and
+normalization as the photo picker.
+
+### Model and effort chips
+
+The composer's label slot holds two chips, as iOS does (e2238fdc4,
+083c30df4): the model (bold) and its effort (`ConversationModelChips`).
+Each opens its own list (`ui/conversation/ModelPicker`), in Android's
+menu card instead of iOS glass. The list's trailing edge sits on the
+chip's, 10 dp above it, and it opens scrolled to the checked line.
+`conversation/ModelMenus` builds the model list from `ModeCatalog`'s
+providers: one service per provider type under a heading with the
+selected account, its readings and a chevron. A hidden account or
+model is left out unless it is the selection. A switched-off account is
+listed dimmed, and its service opens on an account that works. A
+selection that is gone, off or hidden gets a notice. The chevron
+stacks that service's accounts over the list in place (same trailing edge
+and bottom), each with its week reading and the selected one's windows.
+Switching account keeps the model list up; any other pick closes it. A
+touch outside, or Back, closes the accounts first.
+
+A pick of another model runs at that model's default effort. The same
+model keeps its effort, and an account switch keeps it when the model
+runs it (`ModeCatalog.pick`, desktop's
+`happyAgentSelectionModelUpdate`). Opening the model list asks
+`POST /v0/usage/refresh` for the accounts it lists, then reads three
+times 2 s apart (`AgentUsageSource.refresh`). `config.updated` and each
+reconnect read `/v0/config` again (`Conversation.rereadCatalog`), so a
+model hidden on the computer leaves the list while it is open. Words are
+in `strings_model_picker.xml`.
+
 ### Image loading
 
 One Coil 3 `ImageLoader` (`ui/components/RemoteImage.kt`) for every
@@ -973,6 +1503,14 @@ hand-rolled loader would re-implement caching and downsampling. The
 loader uses its own OkHttp client without Happy headers (these URLs are
 third-party). Tests swap it through `LocalImageLoader` with coil-test's
 `FakeImageLoaderEngine`.
+
+A picture with a thumbhash shows it from its first frame (iOS 5ebfc1c0b).
+`rememberThumbHash` decodes in place as the view is composed, from one
+process-wide `ThumbHashCache` (256 kept, least recently used out, a hash
+that isn't one kept as nothing). The decoder works its cosines out per
+row and column. The picture dissolves in over it in 0.2 s
+(`HappyImageLoader.FADE_MS`, iOS `ImageFade`). One from the memory cache,
+or any under Reduce Motion, replaces it at once.
 
 ### Avatars
 
@@ -1151,3 +1689,20 @@ ChatComposer's `overlay` slot and the shared `ComposerCursor` into its
 `cursor` parameter (the composer reports the selection, places the cursor
 after an insert, and offers hardware keys to `cursor.onKey` first: arrows,
 Enter/Tab and Escape drive the list while it shows).
+
+Happy Agent chats reuse the same list and cursor for the agent's own slash
+commands (desktop d04fbfef, 4078fd44, aa8a2529). The catalog is
+`ConversationState.commands`: the bootstrap's and every focused agent
+response's `slashCommands`, replaced whole by `agent.slash_commands.updated`,
+and kept offline with the conversation. `conversation/SlashCommands.kt` holds
+desktop's rules: the list shows only while the whole draft is `/` plus a word
+some command begins, commands before skills; a submitted `/name args` with an
+offered name runs instead of sending. `ui/conversation/ConversationCommands`
+is the `SuggestionSource`, through three hooks the CLI source leaves at their
+defaults: `query` (the whole draft, not the word at the cursor), `pick` (a
+command runs at once and the draft clears) and `draft` (a skill becomes
+`/name ` for its arguments). `Conversation.runCommand` invokes a command with
+`POST /slash-commands/:name` and the composer's mode (404 and 409 are
+`Problem.CommandGone`/`CommandBusy`); a skill is a user message `/name args`
+carrying one `read_skill` tool_call_request, as desktop sends it. The command's
+words never go out as a message otherwise.

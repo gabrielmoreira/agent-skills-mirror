@@ -1,0 +1,545 @@
+#!/usr/bin/env python3
+"""Stub gh CLI for pr-babysit evals.
+
+Simulates one GitHub pull request on top of a local bare repository (remote.git). CI for a head
+commit stays pending for scenario["ci_delay_seconds"] after the stub first sees it, then runs
+scenario["ci_command"] on that commit: exit 0 is a pass. Review threads, reviews, and comments
+come from the scenario; replies, comments, and review requests are recorded in state.json, and
+every call is appended to calls.log for grading.
+
+Optional scenario keys simulate the world moving on:
+  base_moves_after_seconds        another PR lands: the base branch jumps to refs/stub/base-next
+  require_up_to_date              mergeStateStatus is BEHIND while the head lacks the base tip
+  merge_when_ready_after_seconds  a maintainer merges once the PR has been ready this long
+"""
+
+import hashlib
+import json
+import os
+import shlex
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+STUB = ROOT / ".gh-stub"
+REMOTE = ROOT / "remote.git"
+SCN = json.loads((STUB / "scenario.json").read_text())
+STATE_FILE = STUB / "state.json"
+OWNER, REPO = SCN["repo"].split("/")
+N = SCN["number"]
+URL = f"https://github.com/{SCN['repo']}/pull/{N}"
+VIEWER = SCN["viewer"]
+
+
+def load():
+    if STATE_FILE.exists():
+        return json.loads(STATE_FILE.read_text())
+    return {"first_seen": {}, "ci": {}, "replies": {}, "comments": [], "rerequested": [],
+            "merged": False, "ready": False, "resolved": [], "extra_reviews": [], "seq": 0}
+
+
+STATE = load()
+STATE.setdefault("t0", time.time())
+
+
+def visible(item):
+    """Scenario items with after_seconds appear that long after the stub's first call."""
+    return time.time() - STATE["t0"] >= item.get("after_seconds", 0)
+
+
+def save():
+    STATE_FILE.write_text(json.dumps(STATE, indent=1))
+
+
+def git(*args, cwd=None):
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, check=True).stdout.strip()
+
+
+def head():
+    return branch_sha(SCN["head"])
+
+
+def maybe_move_base():
+    if "base_moves_after_seconds" in SCN and not STATE.get("base_moved") \
+            and visible({"after_seconds": SCN["base_moves_after_seconds"]}):
+        git("--git-dir", str(REMOTE), "update-ref", f"refs/heads/{SCN['base']}", "refs/stub/base-next")
+        STATE["base_moved"] = True
+
+
+def conflicting():
+    proc = subprocess.run(["git", "--git-dir", str(REMOTE), "merge-tree", "--write-tree", "--quiet",
+                           f"refs/heads/{SCN['base']}", f"refs/heads/{SCN['head']}"])
+    return proc.returncode == 1
+
+
+def behind():
+    proc = subprocess.run(["git", "--git-dir", str(REMOTE), "merge-base", "--is-ancestor",
+                           f"refs/heads/{SCN['base']}", f"refs/heads/{SCN['head']}"])
+    return proc.returncode != 0
+
+
+def merge_state():
+    """(mergeable, mergeStateStatus) as GitHub reports them."""
+    if conflicting():
+        return "CONFLICTING", "DIRTY"
+    if SCN.get("require_up_to_date") and behind():
+        return "MERGEABLE", "BEHIND"
+    ready = ci_result(head())[0] == "pass" and review_decision() == "APPROVED"
+    return "MERGEABLE", "CLEAN" if ready else "BLOCKED"
+
+
+def maybe_merge():
+    """A maintainer merges merge_when_ready_after_seconds after the PR became ready to merge."""
+    delay = SCN.get("merge_when_ready_after_seconds")
+    if delay is None or STATE["merged"]:
+        return
+    if merge_state()[1] != "CLEAN":
+        STATE["ready_since"] = None
+    elif not STATE.get("ready_since"):
+        STATE["ready_since"] = time.time()
+    elif time.time() - STATE["ready_since"] >= delay:
+        STATE["merged"] = True
+        STATE["merged_by"] = "maintainer"
+
+
+INFRA_LOG = """Run python3 -m pip install -r requirements-dev.txt
+WARNING: Retrying (Retry(total=0, connect=None, read=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', port=443): Read timed out. (read timeout=15)")': /simple/coverage/
+ERROR: Could not install packages due to an OSError: HTTPSConnectionPool(host='pypi.org', port=443): Max retries exceeded with url: /simple/coverage/ (Caused by ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', port=443): Read timed out. (read timeout=15)"))
+Error: Process completed with exit code 1.
+"""
+
+
+def branch_sha(branch):
+    return git("--git-dir", str(REMOTE), "rev-parse", f"refs/heads/{branch}")
+
+
+def ci_result(sha):
+    """('pending', None) or (bucket, log) for the test check on sha. Runs on the base branch finished
+    long ago; with flaky_first_run, the PR's first run dies on an infra error until it is rerun."""
+    now = time.time()
+    delay = 0 if sha == branch_sha(SCN["base"]) else SCN.get("ci_delay_seconds", 20)
+    first = STATE["first_seen"].setdefault(sha, now)
+    if now - first < delay:
+        return "pending", None
+    if SCN.get("flaky_first_run") and sha == SCN["initial_head"] and not STATE.get("flaked"):
+        STATE["flaked"] = True
+        STATE["ci"][sha] = ["fail", INFRA_LOG]
+    if sha not in STATE["ci"]:
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(["git", "clone", "-q", str(REMOTE), tmp], check=True)
+            git("checkout", "-q", sha, cwd=tmp)
+            proc = subprocess.run(SCN["ci_command"], shell=True, cwd=tmp, capture_output=True, text=True)
+        STATE["ci"][sha] = ["pass" if proc.returncode == 0 else "fail", proc.stdout + proc.stderr]
+    return tuple(STATE["ci"][sha])
+
+
+def run_id(sha):
+    return int(hashlib.sha1(sha.encode()).hexdigest()[:8], 16)
+
+
+def checks():
+    sha = head()
+    bucket, _ = ci_result(sha)
+    rid = run_id(sha)
+    link = f"https://github.com/{SCN['repo']}/actions/runs/{rid}/job/{rid + 1}"
+    lint_bucket = "pending" if bucket == "pending" else "pass"
+    state = {"pass": "SUCCESS", "fail": "FAILURE", "pending": "IN_PROGRESS"}
+    return [
+        {"name": "lint", "bucket": lint_bucket, "state": state[lint_bucket], "link": link, "workflow": "CI",
+         "description": "", "event": "pull_request", "startedAt": "", "completedAt": ""},
+        {"name": "test", "bucket": bucket, "state": state[bucket], "link": link, "workflow": "CI",
+         "description": "", "event": "pull_request", "startedAt": "", "completedAt": ""},
+    ]
+
+
+def nid(prefix):
+    STATE["seq"] += 1
+    return f"{prefix}_{STATE['seq']}"
+
+
+def threads():
+    out = []
+    for t in filter(visible, SCN.get("threads", [])):
+        comments = [{"id": c["id"], "databaseId": int(hashlib.sha1(c["id"].encode()).hexdigest()[:7], 16), "author": {"login": c["author"]},
+                     "body": c["body"], "url": f"{URL}#discussion_{c['id']}", "createdAt": "2026-11-02T10:00:00Z"}
+                    for c in t["comments"]]
+        comments += STATE["replies"].get(t["id"], [])
+        out.append({"id": t["id"], "isResolved": t["id"] in STATE["resolved"], "isOutdated": False,
+                    "path": t["path"], "line": t["line"], "comments": {"nodes": comments}})
+    return out
+
+
+def reviews():
+    return [{"id": r["id"], "author": {"login": r["author"]}, "state": r["state"], "body": r.get("body", ""),
+             "submittedAt": "2026-11-02T10:00:00Z"} for r in SCN.get("reviews", []) if visible(r)] + STATE["extra_reviews"]
+
+
+def issue_comments():
+    return [{"id": c["id"], "author": {"login": c["author"]}, "body": c["body"], "url": f"{URL}#issuecomment-{c['id']}",
+             "createdAt": "2026-11-02T10:00:00Z"} for c in SCN.get("comments", []) if visible(c)] + STATE["comments"]
+
+
+def review_decision():
+    latest = {}
+    for r in reviews():
+        if r["state"] in ("APPROVED", "CHANGES_REQUESTED"):
+            latest[r["author"]["login"]] = r["state"]
+    if "CHANGES_REQUESTED" in latest.values():
+        return "CHANGES_REQUESTED"
+    return "APPROVED" if latest else "REVIEW_REQUIRED"
+
+
+def maybe_approve():
+    """A re-requested reviewer listed in approve_on_rerequest approves once the head has moved,
+    approve_delay_seconds after the re-request."""
+    for login in SCN.get("approve_on_rerequest", []):
+        already = any(r["author"]["login"] == login and r["state"] == "APPROVED" for r in STATE["extra_reviews"])
+        waited = time.time() - STATE.get("rerequested_at", {}).get(login, time.time())
+        if login in STATE["rerequested"] and head() != SCN["initial_head"] and not already \
+                and waited >= SCN.get("approve_delay_seconds", 0):
+            STATE["extra_reviews"].append({"id": nid("PRR"), "author": {"login": login}, "state": "APPROVED",
+                                           "body": "Thanks, looks good now.", "submittedAt": "2026-11-03T12:00:00Z"})
+
+
+def pr_json():
+    maybe_approve()
+    maybe_merge()
+    sha = head()
+    rollup = [{"__typename": "CheckRun", "name": c["name"], "status": "COMPLETED" if c["bucket"] != "pending" else "IN_PROGRESS",
+               "conclusion": c["state"] if c["bucket"] != "pending" else "", "detailsUrl": c["link"], "workflowName": "CI"}
+              for c in checks()]
+    reviewed = {r["author"]["login"] for r in reviews()}
+    waiting_on = [r for r in SCN.get("requested_reviewers", []) if r not in reviewed]
+    waiting_on += [r for r in STATE["rerequested"] if review_decision() != "APPROVED" and r not in waiting_on]
+    requested = [{"login": r} for r in waiting_on]
+    state = "MERGED" if STATE["merged"] else "OPEN"
+    return {
+        "id": f"PR_{N}_{int(STATE['t0'] * 1000)}",  # unique per sandbox, like a real node ID per PR
+        "number": N, "url": URL, "title": SCN["title"], "body": SCN.get("body", ""), "state": state,
+        "isDraft": False, "headRefName": SCN["head"], "headRefOid": sha, "baseRefName": SCN["base"],
+        "baseRefOid": git("--git-dir", str(REMOTE), "rev-parse", f"refs/heads/{SCN['base']}"),
+        "mergeable": merge_state()[0], "mergeStateStatus": merge_state()[1],
+        "reviewDecision": review_decision(), "reviewRequests": requested, "statusCheckRollup": rollup,
+        "author": {"login": VIEWER}, "isCrossRepository": False, "maintainerCanModify": True,
+        "headRepository": {"name": REPO}, "headRepositoryOwner": {"login": OWNER},
+        "reviews": reviews(), "latestReviews": reviews(), "comments": issue_comments(),
+        "commits": [], "files": [], "labels": [], "assignees": [], "closingIssuesReferences": [],
+    }
+
+
+def emit(obj, args):
+    jq = flag(args, "-q", "--jq")
+    text = json.dumps(obj)
+    if jq:
+        proc = subprocess.run(["jq", "-r", jq], input=text, capture_output=True, text=True)
+        sys.stdout.write(proc.stdout)
+        sys.stderr.write(proc.stderr)
+        return proc.returncode
+    print(text)
+    return 0
+
+
+def flag(args, *names):
+    for i, a in enumerate(args):
+        for n in names:
+            if a == n and i + 1 < len(args):
+                return args[i + 1]
+            if a.startswith(n + "="):
+                return a.split("=", 1)[1]
+    return None
+
+
+def fields(args):
+    vals = {}
+    for i, a in enumerate(args):
+        if a in ("-f", "-F", "--field", "--raw-field") and i + 1 < len(args):
+            k, _, v = args[i + 1].partition("=")
+            if v.startswith("@") and Path(v[1:]).exists():
+                v = Path(v[1:]).read_text()
+            vals[k] = v
+    if "--input" in args:
+        src = flag(args, "--input")
+        vals.update(json.loads(sys.stdin.read() if src == "-" else Path(src).read_text()))
+    return vals
+
+
+def select(obj, keys):
+    return {k: obj.get(k) for k in keys.split(",")} if keys else obj
+
+
+def add_reply(thread_id, body):
+    reply = {"id": nid("PRRC"), "databaseId": STATE["seq"], "author": {"login": VIEWER}, "body": body,
+             "url": f"{URL}#discussion_r{STATE['seq']}", "createdAt": "2026-11-03T12:00:00Z"}
+    STATE["replies"].setdefault(thread_id, []).append(reply)
+    return reply
+
+
+def graphql(args):
+    v = fields(args)
+    q = v.get("query", "")
+    if "addPullRequestReviewThreadReply" in q or "addPullRequestReviewComment" in q:
+        known = {t["id"] for t in SCN.get("threads", [])}
+        tid = next((val for val in v.values() if val in known), None) or next((t for t in known if t in q), None)
+        body = next((val for k, val in v.items() if k not in ("query", "operationName") and val not in known), "")
+        if not body:
+            import re
+            m = re.search(r'body:\s*"((?:[^"\\]|\\.)*)"', q)
+            body = json.loads(f'"{m.group(1)}"') if m else ""
+        if not tid:
+            import re
+            m = re.search(r'pullRequestReviewThreadId:\s*"([^"]+)"', q)
+            tid = m.group(1) if m else None
+        if not tid:
+            print("stub: could not find thread id", file=sys.stderr)
+            return 1
+        reply = add_reply(tid, body)
+        return emit({"data": {"addPullRequestReviewThreadReply": {"comment": reply}}}, args)
+    if "resolveReviewThread" in q:
+        known = {t["id"] for t in SCN.get("threads", [])}
+        tid = next((val for val in v.values() if val in known), None) or next((t for t in known if t in q), None)
+        STATE["resolved"].append(tid)
+        return emit({"data": {"resolveReviewThread": {"thread": {"id": tid, "isResolved": True}}}}, args)
+    if "mutation" in q:
+        print(f"stub: unsupported mutation", file=sys.stderr)
+        return 1
+    maybe_approve()
+    maybe_merge()
+    pr = {"id": "PR_1", "number": N, "url": URL, "title": SCN["title"], "state": "MERGED" if STATE["merged"] else "OPEN",
+          "headRefOid": head(), "reviewDecision": review_decision(),
+          "reviewThreads": {"nodes": threads(), "pageInfo": {"hasNextPage": False}},
+          "reviews": {"nodes": reviews()}, "comments": {"nodes": issue_comments()}}
+    return emit({"data": {"viewer": {"login": VIEWER}, "repository": {"pullRequest": pr}}}, args)
+
+
+def rest(args):
+    path = next(a for a in args[1:] if not a.startswith("-") and args[args.index(a) - 1] not in
+                ("-f", "-F", "-X", "--method", "-q", "--jq", "-H", "--input", "--field", "--raw-field", "--hostname"))
+    path = path.lstrip("/").split("?")[0]
+    method = (flag(args, "-X", "--method") or ("POST" if fields(args) else "GET")).upper()
+    v = fields(args)
+    base = f"repos/{SCN['repo']}"
+    if path in ("user",):
+        return emit({"login": VIEWER}, args)
+    if path == f"{base}/pulls/{N}/comments" and method == "GET":
+        out = []
+        for t in threads():
+            for c in t["comments"]["nodes"]:
+                out.append({"id": c["databaseId"], "node_id": c["id"], "user": {"login": c["author"]["login"]},
+                            "body": c["body"], "path": t["path"], "line": t["line"], "html_url": c["url"],
+                            "pull_request_review_thread_id": t["id"]})
+        return emit(out, args)
+    if path.startswith(f"{base}/pulls/{N}/comments/") and path.endswith("/replies"):
+        cid = int(path.split("/")[-2])
+        for t in threads():
+            if any(c["databaseId"] == cid for c in t["comments"]["nodes"]):
+                r = add_reply(t["id"], v.get("body", ""))
+                return emit({"id": r["databaseId"], "body": r["body"], "html_url": r["url"]}, args)
+        print("stub: comment not found", file=sys.stderr)
+        return 1
+    if path == f"{base}/pulls/{N}/comments" and method == "POST" and v.get("in_reply_to"):
+        cid = int(v["in_reply_to"])
+        for t in threads():
+            if any(c["databaseId"] == cid for c in t["comments"]["nodes"]):
+                r = add_reply(t["id"], v.get("body", ""))
+                return emit({"id": r["databaseId"], "body": r["body"], "html_url": r["url"]}, args)
+    if path == f"{base}/issues/{N}/comments":
+        if method == "POST":
+            c = {"id": nid("IC"), "author": {"login": VIEWER}, "body": v.get("body", ""), "url": f"{URL}#c", "createdAt": ""}
+            STATE["comments"].append(c)
+            return emit({"id": c["id"], "html_url": c["url"]}, args)
+        return emit([{"id": c["id"], "user": {"login": c["author"]["login"]}, "body": c["body"]} for c in issue_comments()], args)
+    if path == f"{base}/pulls/{N}/reviews":
+        return emit([{"id": r["id"], "user": {"login": r["author"]["login"]}, "state": r["state"], "body": r["body"]}
+                     for r in reviews()], args)
+    if path == f"{base}/pulls/{N}/requested_reviewers":
+        if method == "POST":
+            reviewers = v.get("reviewers[]") or v.get("reviewers") or ""
+            for r in ([reviewers] if isinstance(reviewers, str) else reviewers):
+                STATE["rerequested"].append(r.strip("[]\" "))
+                STATE.setdefault("rerequested_at", {})[r.strip("[]\" ")] = time.time()
+        return emit({"users": [{"login": r} for r in STATE["rerequested"]]}, args)
+    if path in (f"{base}/pulls/{N}", f"{base}/pulls/{N}/"):
+        p = pr_json()
+        return emit({"number": N, "state": p["state"].lower(), "head": {"sha": p["headRefOid"], "ref": SCN["head"]},
+                     "base": {"ref": SCN["base"]}, "mergeable": merge_state()[0] == "MERGEABLE", "html_url": URL, "title": SCN["title"]}, args)
+    if path.startswith(f"{base}/commits/") and path.endswith(("/check-runs", "/status")):
+        return emit({"check_runs": [{"name": c["name"], "status": "completed" if c["bucket"] != "pending" else "in_progress",
+                                     "conclusion": {"pass": "success", "fail": "failure"}.get(c["bucket"]),
+                                     "html_url": c["link"]} for c in checks()]}, args)
+    if path.startswith(f"{base}/actions/runs/") or path.startswith(f"{base}/actions/jobs/"):
+        sha = run_sha(path.split("/"))
+        bucket, log = ci_result(sha)
+        if path.endswith("/logs"):
+            print(log or "")
+            return 0
+        return emit({"id": run_id(sha), "head_sha": sha, "status": "completed" if bucket != "pending" else "in_progress",
+                     "conclusion": {"pass": "success", "fail": "failure"}.get(bucket), "name": "CI"}, args)
+    print(f"stub: unsupported api path {method} {path}", file=sys.stderr)
+    return 1
+
+
+def pr_cmd(args):
+    sub = args[0]
+    if sub == "view":
+        if "--json" in args:
+            return emit(select(pr_json(), flag(args, "--json")), args)
+        p = pr_json()
+        print(f"{p['title']} #{N}\n{p['state']} • {VIEWER} wants to merge into {SCN['base']} from {SCN['head']}\n"
+              f"Reviews: {p['reviewDecision']}\n\n{p['body']}\n\nView this pull request on GitHub: {URL}")
+        return 0
+    if sub == "checks":
+        cs = checks()
+        if "--json" in args:
+            rc = emit([select(c, flag(args, "--json")) for c in cs], args)
+        else:
+            for c in cs:
+                print(f"{c['name']}\t{c['bucket']}\t\t{c['link']}")
+            rc = 0
+        if any(c["bucket"] == "fail" for c in cs):
+            return 1 if rc == 0 else rc
+        return 8 if any(c["bucket"] == "pending" for c in cs) else rc
+    if sub == "diff":
+        print(git("--git-dir", str(REMOTE), "diff", f"refs/heads/{SCN['base']}...refs/heads/{SCN['head']}"))
+        return 0
+    if sub == "checkout":
+        subprocess.run(["git", "fetch", "-q", "origin"], check=True)
+        subprocess.run(["git", "checkout", "-q", SCN["head"]], check=True)
+        subprocess.run(["git", "pull", "-q", "--ff-only"], check=False)
+        return 0
+    if sub == "comment":
+        body = flag(args, "--body", "-b") or ""
+        if not body and flag(args, "--body-file", "-F"):
+            src = flag(args, "--body-file", "-F")
+            body = sys.stdin.read() if src == "-" else Path(src).read_text()
+        STATE["comments"].append({"id": nid("IC"), "author": {"login": VIEWER}, "body": body, "url": f"{URL}#c", "createdAt": ""})
+        print(f"{URL}#issuecomment-{STATE['seq']}")
+        return 0
+    if sub == "edit":
+        for r in (flag(args, "--add-reviewer") or "").split(","):
+            if r:
+                STATE["rerequested"].append(r)
+                STATE.setdefault("rerequested_at", {})[r] = time.time()
+        print(URL)
+        return 0
+    if sub == "update-branch":
+        return update_branch("--rebase" in args)
+    if sub == "merge":
+        STATE["merged"] = True
+        print(f"Merged pull request #{N}")
+        return 0
+    if sub == "ready":
+        STATE["ready"] = True
+        return 0
+    if sub == "list":
+        return emit([select(pr_json(), flag(args, "--json") or "number,title,url")], args) if "--json" in args else (print(f"{N}\t{SCN['title']}\t{SCN['head']}") or 0)
+    if sub == "review":
+        print("stub: you cannot review your own pull request", file=sys.stderr)
+        return 1
+    print(f"stub: unsupported pr {sub}", file=sys.stderr)
+    return 1
+
+
+def update_branch(rebase):
+    """Merge the base branch into the PR branch on the remote, as GitHub's "Update branch" does."""
+    if conflicting():
+        print("X Cannot update PR branch due to conflicts", file=sys.stderr)
+        return 1
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["git", "clone", "-q", "-b", SCN["head"], str(REMOTE), tmp], check=True)
+        git("-c", "user.name=GitHub", "-c", "user.email=noreply@github.com",
+            *(["rebase", f"origin/{SCN['base']}"] if rebase else
+              ["merge", "-q", "--no-edit", f"origin/{SCN['base']}"]), cwd=tmp)
+        git("push", "-q", *(["--force"] if rebase else []), "origin", f"HEAD:{SCN['head']}", cwd=tmp)
+    print(f"✓ PR branch updated")
+    return 0
+
+
+def run_sha(args):
+    """The commit a run ID argument refers to: the PR head's or the base branch's run."""
+    ids = {str(run_id(s)): s for s in (head(), branch_sha(SCN["base"]))}
+    return next((ids[a] for a in args if a in ids), head())
+
+
+def run_cmd(args):
+    sub = args[0]
+    sha = run_sha(args[1:])
+    if sub == "view":
+        bucket, log = ci_result(sha)
+        if "--log-failed" in args or "--log" in args:
+            if bucket == "pending":
+                print("run is still in progress; logs will be available when it is complete", file=sys.stderr)
+                return 1
+            print("\n".join(f"test\tRun tests\t{line}" for line in (log or "").splitlines()))
+            return 0
+        if "--json" in args:
+            return emit(select({"databaseId": run_id(sha), "headSha": sha, "status": "completed" if bucket != "pending" else "in_progress",
+                                "conclusion": {"pass": "success", "fail": "failure"}.get(bucket, ""), "name": "CI",
+                                "workflowName": "CI", "jobs": [{"name": "test", "conclusion": bucket}]}, flag(args, "--json")), args)
+        print(f"CI · {run_id(sha)}\nStatus: {bucket}\nJOBS\n  lint\n  test ({bucket})")
+        return 0
+    if sub == "list":
+        branch = flag(args, "--branch", "-b") or SCN["head"]
+        sha = branch_sha(branch)
+        b = ci_result(sha)[0]
+        rows = [{"databaseId": run_id(sha), "headSha": sha, "headBranch": branch, "event": "push" if branch == SCN["base"] else "pull_request",
+                 "status": "completed" if b != "pending" else "in_progress",
+                 "conclusion": {"pass": "success", "fail": "failure"}.get(b, ""), "name": "CI", "workflowName": "CI",
+                 "displayTitle": SCN["title"] if branch == SCN["head"] else "Initial commit", "url": f"https://github.com/{SCN['repo']}/actions/runs/{run_id(sha)}"}]
+        return emit([select(r, flag(args, "--json")) for r in rows], args) if "--json" in args else (print(json.dumps(rows)) or 0)
+    if sub == "rerun":
+        STATE["first_seen"][sha] = time.time()
+        STATE["ci"].pop(sha, None)
+        print("✓ Requested rerun")
+        return 0
+    if sub == "watch":
+        print("stub: gh run watch is not supported here; poll instead", file=sys.stderr)
+        return 1
+    print(f"stub: unsupported run {sub}", file=sys.stderr)
+    return 1
+
+
+def main():
+    args = sys.argv[1:]
+    # Strip a leading -R/--repo selector anywhere in the args.
+    clean, skip = [], False
+    for i, a in enumerate(args):
+        if skip:
+            skip = False
+            continue
+        if a in ("-R", "--repo"):
+            skip = True
+            continue
+        if a.startswith("--repo="):
+            continue
+        clean.append(a)
+    with open(STUB / "calls.log", "a") as log:
+        log.write(shlex.join(["gh", *args]) + "\n")
+    if not clean:
+        return 0
+    maybe_move_base()
+    cmd, rest_args = clean[0], clean[1:]
+    try:
+        if cmd == "pr" and rest_args:
+            return pr_cmd(rest_args)
+        if cmd == "run" and rest_args:
+            return run_cmd(rest_args)
+        if cmd == "api" and rest_args:
+            return graphql(rest_args) if rest_args[0] == "graphql" else rest(["api", *rest_args])
+        if cmd == "auth":
+            print(f"github.com\n  ✓ Logged in to github.com account {VIEWER}")
+            return 0
+        if cmd == "repo" and rest_args and rest_args[0] == "view":
+            return emit(select({"nameWithOwner": SCN["repo"], "name": REPO, "owner": {"login": OWNER},
+                                "defaultBranchRef": {"name": SCN["base"]}, "url": f"https://github.com/{SCN['repo']}"},
+                               flag(rest_args, "--json")), rest_args)
+        print(f"stub: unsupported command gh {' '.join(args)}", file=sys.stderr)
+        return 1
+    finally:
+        save()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

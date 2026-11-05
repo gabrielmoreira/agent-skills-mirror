@@ -61,7 +61,7 @@ to execute:
 | Phase | Tool | Action |
 |-------|------|--------|
 | 1. Plan | `/nav-task` | Design solution, create implementation plan |
-| 2. Execute | `nav-pilot` skill (or raw `gh issue create`) | Hand off task doc as a `pilot`-labeled issue |
+| 2. Execute | `scripts/nav-dispatch-legs.py` (SOP `.agent/sops/development/dispatch-task-legs-to-pilot.md`) | File each `### LEG` of the task doc as a `pilot` + `no-decompose` issue |
 | 3. Review | PR Review | Check Pilot's PR, request changes if needed |
 | 4. Ship | Merge | Merge PR when approved |
 
@@ -71,10 +71,11 @@ to execute:
 # Plan a feature (Navigator)
 /nav-task "Add rate limiting to API endpoints"
 
-# Hand off to Pilot — preferred: nav-pilot skill (Navigator v6.16.0+)
-#   "dispatch TASK-XX to Pilot"        # uses H1 as title + --body-file, writes URL into ## Refs
-# Raw fallback:
-gh issue create --title "Add rate limiting" --label pilot --body "..."
+# Hand off to Pilot — the task doc holds `### LEG` blocks; the script files them
+#   (SOP .agent/sops/development/dispatch-task-legs-to-pilot.md). Dry run first.
+python3 scripts/nav-dispatch-legs.py .agent/tasks/TASK-XX-slug.md --checkout qf-studio/pilot=. --only A1 --dry-run
+python3 scripts/nav-dispatch-legs.py .agent/tasks/TASK-XX-slug.md --checkout qf-studio/pilot=. --only A1 --label no-decompose
+gh issue edit <N> --add-label pilot   # second label by hand: the script passes one --label
 
 # Check Pilot's queue
 gh issue list --label pilot --state open
@@ -252,21 +253,19 @@ Documentation in `.agent/`:
 - `tasks/` - Implementation plans
 - `system/` - Architecture docs
 
-**Navigator runtime (v7+)**: workflow enforcement (session context, workflow
-gating, read guarding, intent briefs, completion gating, compact markers) lives
-in the plugin's hook runtime, not in prose in this file. Off-switches live in
-`.agent/.nav-config.json`: every hook block has `enabled` (e.g.
-`workflow_enforcer_hook.enabled: false`), gating blocks also take
-`strict_block: false` to warn instead of block, Tier-1 instant answers toggle
-per rule under `tier1.rules` (feature-wide: `tier1.enabled`), and forced
-continuation stays off unless
-`stop_completion.continue_enabled: true`. Setting the `PILOT_EXECUTOR`
-environment variable disables interactive/blocking hook behavior for
-non-interactive executors (Pilot-executor sessions). Load task/system/SOP docs
-on demand from `.agent/DEVELOPMENT-README.md`, not upfront.
+**Navigator runtime**: workflow enforcement (session context, workflow gating, read
+guarding, intent briefs, completion gating, compact markers) lives in the hook runtime,
+not in prose in this file. Off-switches live in `.agent/.nav-config.json`: every hook
+block has `enabled` (e.g. `workflow_enforcer_hook.enabled: false`), gating blocks also
+take `strict_block: false` to warn instead of block, Tier-1 instant answers toggle per
+rule under `tier1.rules` (feature-wide: `tier1.enabled`), and forced continuation stays
+off unless `stop_completion.continue_enabled: true`. Setting the `PILOT_EXECUTOR`
+environment variable disables interactive/blocking hook behavior for non-interactive
+executors. Project docs live in `.agent/` — start from `.agent/DEVELOPMENT-README.md`
+and load task/system/SOP docs on demand, not upfront.
 
-**Last Updated**: 2026-11-01
-**Navigator Version**: 8.4.11
+**Last Updated**: 2026-11-04
+**Navigator Version**: 8.4.12
 
 ## Forbidden Actions
 
@@ -281,7 +280,7 @@ on demand from `.agent/DEVELOPMENT-README.md`, not upfront.
 
 1. Start Navigator: `/nav-start`
 2. Plan feature: `/nav-task "description"`
-3. Create issue: `gh issue create --title "..." --label pilot --body "..."`
+3. Dispatch: `scripts/nav-dispatch-legs.py` on the doc's `### LEG` blocks (SOP `.agent/sops/development/dispatch-task-legs-to-pilot.md`)
 4. Wait for Pilot to execute and create PR
 5. Review PR: `gh pr view <n>`
 6. Merge when ready: `gh pr merge <n>`

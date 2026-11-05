@@ -74,13 +74,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/shared/code-output.md`](skills/shared/code-output.md) |
 | 14 | ✓ | [`skills/shared/export.md`](skills/shared/export.md) |
 | 15 | ✓ | [`skills/shared/frameworks.md`](skills/shared/frameworks.md) |
-| 16 | ✓ | [`skills/variant-analyze/SKILL.md`](skills/variant-analyze/SKILL.md) |
-| 17 | ✓ | [`skills/variant-component/SKILL.md`](skills/variant-component/SKILL.md) |
-| 18 | ✓ | [`skills/variant-design-system/SKILL.md`](skills/variant-design-system/SKILL.md) |
+| 16 | ✓ | [`skills/variant-analyze/ROUTE.md`](skills/variant-analyze/ROUTE.md) |
+| 17 | ✓ | [`skills/variant-component/ROUTE.md`](skills/variant-component/ROUTE.md) |
+| 18 | ✓ | [`skills/variant-design-system/ROUTE.md`](skills/variant-design-system/ROUTE.md) |
 | 19 | ✓ | [`skills/variant-generate/actions.md`](skills/variant-generate/actions.md) |
-| 20 | ✓ | [`skills/variant-generate/SKILL.md`](skills/variant-generate/SKILL.md) |
+| 20 | ✓ | [`skills/variant-generate/ROUTE.md`](skills/variant-generate/ROUTE.md) |
 | 21 | ✓ | [`skills/variant-generate/zones.md`](skills/variant-generate/zones.md) |
-| 22 | ✓ | [`skills/variant-ux/SKILL.md`](skills/variant-ux/SKILL.md) |
+| 22 | ✓ | [`skills/variant-ux/ROUTE.md`](skills/variant-ux/ROUTE.md) |
 
 ---
 

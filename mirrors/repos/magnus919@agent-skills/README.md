@@ -18,6 +18,7 @@ use the [agent-trust routes](references/agent-trust-routes.md).
 |---|---|---|
 | Take an issue through implementation and a verified PR | [neckbeard](neckbeard/SKILL.md) | Coordinates the software delivery lifecycle; specialists retain their methods |
 | Plan implementation of an approved spec | [implementation-planning](implementation-planning/SKILL.md) | Plans dependencies and verification; does not approve the requirement or implement it |
+| Coordinate a team across agent harnesses | [multi-agent-coordination](multi-agent-coordination/SKILL.md) | Cross-agent ownership, context, communication and integration; runtime mechanics keep their owner |
 | Fix an unreliable agent or build its runtime | [harness-engineering](harness-engineering/SKILL.md) | Instructions, tools, state, recovery and bounded loops; production operation has a separate owner |
 | Review this patch or pull request | [code-review](code-review/SKILL.md) | Evidence-backed change review; does not implement the fix |
 | Finish an authorized change through merge and verify it | [verified-delivery](verified-delivery/SKILL.md) | Carries existing delivery authority; never grants merge or deployment permission |
@@ -413,6 +414,10 @@ Machine learning engineering methodology — model training, fine-tuning (LoRA/Q
 
 Build, test, sign, and ship mobile apps across iOS, Android, Flutter, and React Native as ONE family skill with per-framework references: project scaffolding, builds and code signing, device and emulator testing, store submission (App Store/TestFlight and Google Play), app lifecycle and backgrounding, offline and sync, and mobile-specific testing. Ships 4 framework references (ios, android, flutter, react-native) and 6 evals. Routes web UI work to frontend-engineering and server-side work to backend-engineering.
 
+### [multi-agent-coordination](multi-agent-coordination/SKILL.md)
+
+Design and diagnose coordination across agent harnesses: decomposition and topology, owned work, distributed context, communication, integration, recovery and shared learning. Includes research and comparative lessons from OpenRig, HERDR and Block/Buzz, practical templates, and a read-only snapshot/exposure helper. Routes runtime mechanics to harness-engineering and production controls to agent-production-operations.
+
 ### [multi-tenant-saas-architecture](multi-tenant-saas-architecture/SKILL.md)
 
 Design end-to-end multi-tenant SaaS architectures by connecting tenant semantics, control/application planes, tenancy and partitioning choices, onboarding, entitlements, metering, billing handoffs, lifecycle, restore, noisy-neighbor behavior, and tenant-aware operations. Routes security, capacity, finance, platform, API, implementation, data, migration, and privacy details to their specialist owners.
@@ -622,6 +627,13 @@ Reverse-engineer a software codebase to understand its architecture, data flow, 
 ### [solarpunk](solarpunk/SKILL.md)
 
 Explore and practice solarpunk across visual art, fiction, everyday living, adaptive reuse, ecological design, community infrastructure, and hopeful collective futures. Includes globally adaptable guidance, annotated research, public examples, and creative and practical templates.
+
+### [solo-startup](solo-startup/SKILL.md)
+
+Choose, validate, and operate a solo business within one founder's cash, time,
+distribution and support capacity. Connect customer evidence to a bounded offer,
+capacity-aware economics and a proceed/revise/stop decision, with primary-source
+research and routes to existing discovery, financial and operating skills.
 
 ### [spec-driven-development](spec-driven-development/SKILL.md)
 

@@ -120,9 +120,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`docs/.style/style-guide/procedural-writing.md`](docs/.style/style-guide/procedural-writing.md) |
 | 45 | ✓ | [`docs/.style/style-guide/voice-and-tone.md`](docs/.style/style-guide/voice-and-tone.md) |
 | 46 | ✓ | [`docs/.style/style-guide/word-choice.md`](docs/.style/style-guide/word-choice.md) |
-| 47 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
-| 48 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 49 | ✓ | [`docs/ai-coder/ai-gateway/reference.md`](docs/ai-coder/ai-gateway/reference.md) |
+| 47 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 48 | ✓ | [`docs/ai-governance/ai-gateway/reference.md`](docs/ai-governance/ai-gateway/reference.md) |
+| 49 | ✓ | [`docs/templates/template-permissions.md`](docs/templates/template-permissions.md) |
 | 50 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
 | 51 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
 | 52 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |

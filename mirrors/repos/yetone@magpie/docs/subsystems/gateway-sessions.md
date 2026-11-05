@@ -8,7 +8,9 @@ with. The response returns that id in `X-Magpie-Session`; listed browser
 origins can read this header through CORS. magpie never makes up an id for a
 request without one, so such a request has no session and its text is not
 recorded: text kept under an id nothing lists couldn't be opened. Prompt text,
-caller keys and network addresses are never used to guess conversation ownership.
+caller keys and network addresses are never used to guess conversation ownership,
+with one exception, Qoder's below, where the prompt is matched against the
+session files the agent itself wrote.
 So the configs magpie writes have each agent name its session: Pi's provider
 block sets `compat.sendSessionAffinityHeaders` (`x-session-affinity` on Chat and
 Messages; Responses sends `session_id` anyway), and omp 16.0.6 and later gets
@@ -30,6 +32,29 @@ identify the current session. This lets Routing group requests by the same id
 the native WorkBuddy session reader already knows; old requests without a
 recorded session remain unnamed. See `TestWorkBuddySessionHeader`,
 `TestWorkBuddySessionThroughGateway` and `TestRemoteMagpieKeepsTheSession`.
+
+Qoder's CLI (qodercli, qoderclicn) named its session in `session-id` up to
+1.1.81; 1.1.82 sends no session at all (coderlee233 on Discord). For a request
+from Qoder or Qoder CN (by its agent token) on this computer that names no
+session, `qoderSession` ([`qoder_session.go`](../../internal/gateway/qoder_session.go))
+finds the session in Qoder's own folder (`sessions.QoderDir`): of the session
+files written in the last 24 hours (`projects/<project>/<id>.jsonl` and a
+recent one's `<id>/subagents/agent-*.jsonl`, whose lines name the parent
+session), the one whose typed prompts (`user` lines with `humanInput`, or
+`origin.kind` human) appear most in the request's user text, Qoder's
+`<system-reminder>` blocks left out; of equal ones, the file written last. A
+turn holds every prompt of its session, a subagent's turn the Agent tool's
+prompt, a title call the latest prompt or a transcript, a suggestion call
+"User: …". The id goes on the request as `session-id`, and in the caller
+passed to a remote magpie, so it is recorded, titled and grouped as 1.1.81's
+was. Files are read incrementally (whole lines only) and listed at most once
+a second, again at once when nothing matches; a side call (no tools) nothing
+matches is held up to 600 ms, since Qoder asks the first title as the prompt
+is sent, before it writes the file. A request that names a session is left as
+it came. Verification: `TestQoderRequestsFindTheirSession`,
+`TestQoderSamePromptTwoSessions`, `TestQoderFirstTitleBeforeItsFile`,
+`TestQoderSessionThroughGateway`, on qodercli 1.1.82's own requests and files
+(`testdata/qoder-1.1.82`).
 
 DSH names its session in `x-deepseek-harness-session-id`, read the same way
 after the others, and marks a request that compacts its context with
@@ -106,7 +131,15 @@ is some. The overview's top summaries (`MergeExternalStats`) carry
 where a folder would be, with "(prompt not recorded)" when no text was kept,
 so it doesn't read as a native session with an empty prompt (#2285: a Pi
 subagent whose session file is in a temp folder). Verification:
-`TestTopSessionsMarkWhatOnlyTheGatewaySaw`, `sessions-overview.test.cjs`. Their
+`TestTopSessionsMarkWhatOnlyTheGatewaySaw`, `sessions-overview.test.cjs`.
+`/api/sessions` makes a row only of the gateway sessions its limit can
+show: `usage.EachGatewaySession` walks the projection newest first without
+a copy, `listedExternal` stops at the limit, and `sessions.EachMerged`
+makes each row when the merge reaches it. Every one of ~10k gateway
+sessions past the natives' cap was copied three times and made a row on
+each poll while a session grew. Verification:
+`TestSessionsListMakesOnlyTheGatewayRowsItShows`,
+`TestEachMergedMakesOnlyTheRowsItReaches`. Their
 models, token totals, start/last timestamps and effective prices come from the
 same usage records used by Usage and stats endpoints.
 
@@ -170,6 +203,11 @@ capabilities to a gateway row. Verification: `TestDesktopSessionTitles`,
 `TestDesktopSessionTitleInStats`, `TestDesktopTitlesReadOncePerList`,
 `TestDesktopSessionTitlesOnPages`.
 
+A ZCode request names its session without the `sess_` prefix ZCode's
+database gives it, so `Titles` looks a `zcode:` key up under both and
+answers under the id asked for (#5195). Verification:
+`TestZCodeTitlesByRequestID`.
+
 Routing's stage names the session an account is serving (connor_yang on
 Discord): a row answering, or that answered, the request shown adds that
 request's session title after its status, on one line cut short with the
@@ -188,6 +226,22 @@ changes it. A session with no title says nothing more, and
 neither does a Codex request whose parent was only matched by its prompt
 (`parentMatched`), since that match is a guess. Verification:
 `routing-session-title.test.cjs`.
+
+A By session head reads as its title (flandern1211_58540 on Discord: a
+folder and an id told nothing): the agent, then the session's title on one
+line (whitespace folded), then its folder in a quieter `.dir`; with no title
+the folder takes its place, and with neither the id. The tooltip keeps the
+title, the folder and the id. Where `sessions.Titles` and Codex's name index
+find nothing, the same endpoint falls back to the first prompt the gateway
+recorded for that session (`sessions.GatewayTitler`, the title its list
+shows), looked up under the agent the page names and the one the gateway
+records it under (`usage.AgentOf`): `withGatewayTitles` and
+`codexReadableTitles` in [`trace.go`](../../internal/gui/trace.go). Codex
+ids the index doesn't name go to `sessions.Titles` as `codex:` keys first,
+so a rollout's own first prompt names it. Nothing is read that the page
+couldn't already show on the Sessions page, and nothing leaves the local
+GUI. Verification: `TestSessionTitlesFallBackToFirstPrompt`,
+`routing-session-folder.test.cjs`.
 
 A gateway projection can be deleted (lc on Discord). `sessions.DeleteGateway`
 moves its recorded text folders (`gateway-conversations/<date>/<identity hash>`)
@@ -280,6 +334,34 @@ choice from the CLI (`sessionReadsTo`); while it is not asked,
 `magpie sessions` says so on stderr and the TUI's empty Sessions page
 says how (`sessNothing`). Tests: `TestSessionsRead`,
 `TestSessionsNotAskedSaysHow`.
+
+In gateway mode (`magpie web`'s page, [`gatewaymode.go`](../../internal/gui/gatewaymode.go))
+no agent's own session files are read, whatever `SessionReads` says
+(paultian on Discord: a server put in gateway mode with agents installed
+listed its own sessions beside those other computers sent). The gui sets
+`sessions.OwnOff` to `ownSessionsOff`, and `currentReads` answers "none"
+while it holds, so `Reads`, `allowed` and every route above (the list,
+`one`, `transcript`, `markdown`, `export`, stats, the overview, search,
+`manage`, delete, carry, the Codex provider move, and Usage's agent-file
+calls) see no local session; `Found` and `Dirs` are empty, the
+trash lists and restores only what the gateway kept, and moving Claude
+Code's project folder is refused (`ErrNotRead`). Gateway-recorded
+sessions (the ledger's projection and the recorded conversations) are not
+behind this gate and still show, a local agent's that went through this
+gateway among them. `ownSessionsOff` asks `settings.Shared()` and an
+agents look kept for 30 s, as it is asked on every read, and when its
+answer turns it resets the sessions' caches and the stats
+(`forgetOwnSessions`), as `POST /api/settings/gateway-mode` does at once.
+`/api/sessions/reads` says `gateway: true` then: the Sessions page asks
+nothing, its empty state says the sessions shown are those of other
+computers' agents that use this gateway, and Settings › Privacy leaves
+*Agents' session history* out. A session is listed only when its
+requests name one in a header (`sessionOf`: `X-Magpie-Session`, or the
+agent's own, `sessionHeaders`), under the agent its User-Agent names
+(`usage.AgentOf`, magpie's agents and plugins' agents; another client by
+its product name).
+The app's windows are never in gateway mode. Tests:
+`TestGatewayModeListsNoOwnSessions`, `gateway-mode-sessions.test.cjs`.
 
 What is read either way: the gateway's own usage ledger, its
 projections and the conversations it recorded (they are magpie's own),
@@ -542,7 +624,12 @@ are read (`sessions.Calls`, from `callSources` in
 Code's, Claude Desktop's and Cowork's, Codex's (and both in WSL), and,
 read a file at a time (`wholeCallReaders` in
 [`call_cache.go`](../../internal/sessions/call_cache.go)), OpenCode's
-(#680), ZCode's, DeepSeek Harness's (`dsh`), WorkBuddy's, CodeBuddy
+(#680), ZCode's, DeepSeek Harness's (`dsh`), WorkBuddy's, WorkBuddy
+AI's (the international build's own `~/.workbuddy-ai`, read as
+WorkBuddy's with its own models.json, listed and deletable under its own
+name, and read once as WorkBuddy's when it is a link to `~/.workbuddy`:
+`TestWorkBuddyAI`, `TestWorkBuddyAIGatewayIsItsOwn`,
+`TestWorkBuddyAISessionsListedUnderTheirName`), CodeBuddy
 Code's (#1779; its sessions are on the Sessions page too, from the same
 `projects/<cwd>/<id>.jsonl` files read as WorkBuddy's, resumed with
 `codebuddy --resume <id>` and deletable, #2657: `TestCodeBuddy`,
@@ -562,7 +649,42 @@ too ("usage" and omp's "model_usage" entries, a compaction's, a branch
 summary's and a tool result's usage, on the model and provider in use);
 the provider `magpie` (or `dial`) is magpie's entry, a failed call has no
 usage, and a fork's copy of its parent's entries (written before its
-header) is the parent's. The other agents the Sessions page reads (Cline,
+header) is the parent's. A Codex fork (/fork, a spawn_agent with the
+parent's context) writes every line of its parent's rollout into its own
+first, token_count events included, stamped at the fork's time; its
+session_meta names the parent (`forked_from_id`), and a checkpoint the
+parent's rollout holds (its total and last call alike) is the parent's,
+on Usage and Sessions both (`codexRolloutOf`, `codexCheckpointsOf` in
+[`codex_fork.go`](../../internal/sessions/codex_fork.go)). The copies
+are the head of the fork only: its first turn the parent never had (a
+`turn_id` of its own) ends them, so a call of the fork's own is counted
+even when its numbers are those of one the parent made after the fork.
+A `rollout-<n>` turn id is not a turn of the fork's own: codex-rs names
+a turn that has no id of its own that way (its canonicalizer for older
+rollouts, its thread-history builder), and a copied head can hold one
+the parent doesn't (`ownTurn`).
+The parent is
+looked for in the same Codex home, by the UUIDv7 day of its id, then
+every day, then `archived_sessions`; one not found leaves the fork read
+as before. A ZCode side chat, fork or restored checkpoint copies its
+session's messages with new ids and the originals' times and tokens,
+each naming its original in `metadata.forkOrigin.messageId`; a copy
+whose original is still in the database is not counted (`zcDB.copied`
+in [`zcode.go`](../../internal/sessions/zcode.go)), one whose original
+is gone is. The message without a `forkOrigin` is the session's own and
+is counted: copies are marked by row, since a row's id is in its own
+column and not in its data (v0.1.2847 marked them by that empty id and
+left out every call of a fork that held one copy). Both came from Sky
+(skyhuang1994): a ZCode side chat put a
+10-31 session's 0.42B tokens on 10-31 again, and a week of gpt-5.4 read
+5.1B tokens; then a ZCode fork's 11,409 calls of its own (3.49B tokens)
+went missing. Verification: `TestCodexForkCountsOnlyItsOwnCalls`,
+`TestCodexForkWithoutItsParentCountsTheCopies`,
+`TestCodexForkThatWentOnWorkingKeepsItsOwnCalls`,
+`TestZCodeCopiesCountedOnce`,
+`TestZCodeForkThatWentOnWorkingKeepsItsOwnCalls`. OpenCode's fork copies the same way with
+no pointer to the original, and is still counted twice (#5072).
+The other agents the Sessions page reads (Cline,
 Qoder, Grok, Droid, Cursor, Hermes, Alma) have no reader yet (#1607). The
 Context page reads the gateway's own traces, so it shows none of these
 calls. Verification: `TestMiniMaxCodeCalls`, `TestKimiCode*` (the
@@ -652,7 +774,9 @@ however old, so a client's history can be backfilled.
   speed is `usage.DecodeOf`'s, as a gateway row's is, on the server
   (`Row.Decode`, the totals' `DecodeN`) and in `page.js`'s `ledDecode`. A
   row that reasoned tells none without `first_text_ms`; `ThinkPace` and,
-  with `flow_ms`, `HeldShare` tell a reply let go in a burst. `first_text_ms`
+  with `flow_ms`, `HeldShare` tell a reply let go in a burst, as does
+  `HeldWindowMs`: a window under a second after a wait over four times
+  longer. `first_text_ms`
   may not be before `ttft_ms` (the first text is content too) or after `ms`;
   `flow_ms` is the middle 80% of the content's time scaled by 10/8, as
   `firstToken.flowMs` measures it, so it is bounded by `ms` × 10/8, not
@@ -907,6 +1031,23 @@ not listed is an error. See `TestClaudeSubagents`, `TestQoderSubagents`,
 `TestKimiSubagentTask`, `TestSubagentTaskReadOnlyWhenTheFileChanges`,
 `TestSubagentWithMetaTaskIsNotReadForIt`, `TestStatsReadNoSubagentFile` and
 `TestSessionSubagentTranscript`.
+
+A session's listed `resume` line is made on every listing and reads no more
+than the listing did. The line that runs when the user opens it, from the
+GUI's Terminal or the TUI, is `sessions.ResumeNow` ([`codex_resume.go`](../../internal/sessions/codex_resume.go)).
+Codex 0.166 resumes a thread only on the provider it was saved with (its
+state-database row, else its `session_meta`): on another, `codex resume`
+stops at `modelProviderMismatch`, and at `modelProviderNotConfigured` when
+config.toml has no table of that provider any more, and no flag lets a
+resume go on another provider (codex-rs `config_manager.rs`
+`load_for_resume`). So a Codex thread saved on a provider other than the
+one Codex is on runs as `codex resume -c model_provider=<its provider> <id>`
+while config.toml has that table, or it is a built-in (`openai`, `ollama`,
+…), and Codex runs it embedded, on its own provider; when the provider is
+gone, `MoveCodexProvider` moves it to the one Codex is on first (its files
+in magpie's trash), and it resumes there (mrten_95615 on Discord). A WSL
+distro's Codex session is as listed. `TestCodexResumeOnItsProvider`; both
+cases were resumed by a real Codex 0.166.0 in a sandbox `CODEX_HOME`.
 
 The Sessions page draws only main sessions on top. A session's subagents are
 folded under its row ("2 subagents"); unfolded, each is a row of its task and

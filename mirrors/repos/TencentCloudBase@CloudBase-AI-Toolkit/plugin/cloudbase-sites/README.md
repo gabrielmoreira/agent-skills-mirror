@@ -136,6 +136,47 @@ starts `init --start` only for empty-enough directories. Set
 intentionally want automatic empty-folder scaffolding without waiting for the
 first prompt.
 
+## Dev-server bind address
+
+The preview dev server serves your project source with no authentication, so it
+listens on `127.0.0.1` (this machine only) by default. Every URL the plugin
+prints is that loopback URL.
+
+To reach the preview from another device — a phone, another laptop, a container
+host — opt in explicitly:
+
+```bash
+cloudbase-sites preview --restart --host 0.0.0.0   # all interfaces
+CLOUDBASE_SITES_HOST=0.0.0.0 cloudbase-sites preview --restart   # change the default
+```
+
+Remote and container hosts (`REMOTE_CONTAINERS`, `CODESPACES`,
+`GITPOD_WORKSPACE_ID`, `CLAUDE_CODE_REMOTE`, `CLOUDBASE_SITES_REMOTE`) opt in
+automatically, because a loopback-only bind is unreachable through their port
+forward. In every exposed case the CLI prints a warning with the reachable
+URLs, `preview --status` reports `exposed: true` and `networkUrls`, and the
+SessionStart context tells the assistant to say so instead of calling the
+preview local-only.
+
+Exposure lasts for the current dev-server process: a restart or a new session
+goes back to loopback unless `CLOUDBASE_SITES_HOST` (or a remote-host env var)
+says otherwise. That keeps a forgotten `--host 0.0.0.0` from outliving the
+reason you passed it.
+
+Only bind beyond loopback on a network you trust: anyone who can reach the port
+can read the project.
+
+## Installing project dependencies
+
+Opening a session in a Vite project whose `node_modules` is missing does not
+install anything. Installing runs the dependency tree's own install scripts, so
+it waits for you: the hook reports that dependencies are missing, and the
+assistant asks before running `pnpm install` (falling back to `npm install`).
+
+Set `CLOUDBASE_SITES_AUTO_INSTALL=1` before starting the session if you want the
+hook to install and start the preview on its own, as it does for a template that
+`init --start` created itself.
+
 Run the focused regression tests:
 
 ```bash

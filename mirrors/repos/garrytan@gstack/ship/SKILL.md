@@ -57,9 +57,9 @@ If `SKILL_PREFIX` is `true` use `/gstack-*` names; paths stay `~/.claude/skills/
 
 ## Question Tuning (skip entirely if `QUESTION_TUNING: false`)
 
-Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>"`; for an unregistered id, write the question summary to `.gstack/tmp/qt.txt` (file-write tool) and append `--summary-file .gstack/tmp/qt.txt` (one-way keyword check). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
+Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>"`; for an unregistered id, write the question summary to `.gstack/tmp/qt.txt` (file-write tool) and append `--summary-file .gstack/tmp/qt.txt` (one-way keyword check); its `--signal-keys` prints an optional signal-key hint. `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
 
-**Embed the question_id as a marker in every asked brief**, ad hoc IDs included, with one ID for check, marker and log. Include `<gstack-qid:{question_id}>` once in the question text itself, not only a command or log. On prose paths, use the explicit reply line. Without the marker, the PreToolUse hook treats AskUserQuestion as observed-only and never auto-decides.
+**Embed the question_id as a marker in every asked brief**, ad hoc IDs included, with one ID for check, marker and log. Include `<gstack-qid:{question_id}>` once in the question text itself, not only a command or log. On prose paths, use the explicit reply line. Without the marker the hook never auto-decides.
 
 **Embed the option recommendation via the `(recommended)` label suffix** on exactly one option per AUQ. The PreToolUse hook parses it first, falls back to "Recommendation: X" prose, and refuses when ambiguous (two labels = refuse).
 
@@ -204,14 +204,14 @@ A review's **start token** is the opaque value returned by `gstack-review-log --
 before it reads the diff. Keep `REVIEW_START` for Step 9, a separate `PASS_START` for
 each Step 11 attempt, and `DESIGN_START` for design. Finish each pass with its original
 token; `--finish` stamps the binding fields automatically. Never borrow or replace a token.
-`gstack-wtree` prints a Git tree hash covering tracked and non-ignored untracked files,
-not a commit ID. Use `git diff <old-tree> <new-tree>` to compare these snapshots.
+`gstack-wtree` prints a Git tree hash of tracked and non-ignored untracked files (not a commit);
+compare two with `git diff <old-tree> <new-tree>`.
 
 **Review policy** (docs/review-policy.md): only a finding that would fail a test,
 break production, or lose data or secrets blocks a pass; the rest is a PR-body
 note. Step 9's plan sets both reviews' depth (`--depth-floor standard|full` only
-raises it). Pass 1 reads the diff, later passes the range; the cap is two rounds,
-fix-checks included. `NO FINDINGS` is complete. `ship: review_scope` (Step 3)
+raises it). Pass 1 reads the diff, later passes the range; the cap is two rounds under `frozen`
+(fix-checks included), else Step 9.4's third fix cycle. `NO FINDINGS` is complete. `ship: review_scope` (Step 3)
 is the knob; the receipt's `review_loop` records the outcome.
 
 ### Ship control flow
@@ -255,7 +255,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 | the pre-landing review and specialist dispatch (Step 9) | `sections/review-army.md` |
 | exploratory QA before Fix-First (Step 9.2.1) | Use the QA Read directive in `sections/review-army.md` |
 | reusing explicitly skipped shared-code advice (Step 9.3) | `sections/shared-code-reuse.md` |
-| addressing Greptile review comments when a PR exists (Step 10) | `sections/greptile.md` |
+| addressing review bot comments when a PR exists (Step 10) | `sections/greptile.md` |
 | the adversarial review and learnings capture (Step 11) | `sections/adversarial.md` |
 | writing the CHANGELOG entry (Step 13) | `sections/changelog.md` |
 | auditing docs before final commit/verification (Step 14.5), on every ship | `sections/documentation.md` |
@@ -306,7 +306,7 @@ branch name wherever the instructions say "the base branch" or `<default>`.
 ---
 
 `<base>` means the detected branch name for fetch/helper arguments;
-`origin/<base>` is its remote-tracking ref for comparisons. Step 1 fetches it.
+`origin/<base>` is its remote-tracking ref for comparisons.
 
 
 
@@ -324,8 +324,8 @@ repository-landing asks, including on Apple repos.
 
 ## Step 1: Pre-flight
 
-Run `~/.claude/skills/gstack/bin/gstack-ship-preflight --base <base>`: Steps 1–3's mechanics in one call;
-act on every `STOP:` and `NEXT:` line.
+Run `~/.claude/skills/gstack/bin/gstack-ship-preflight --base <base> --run <SESSION_ID>`: Steps 1–3 at once;
+act on each `STOP:` and `NEXT:` line.
 
 1. It saves the current branch as `<branch-name>`. If on the base branch or the repo's default branch, **abort**: "You're on the base branch. Ship from a feature branch."
 2. Uncommitted changes are always included; do not ask (`STATUS:`).
@@ -333,11 +333,12 @@ act on every `STOP:` and `NEXT:` line.
    restore access. `DIFF:` is the stat and commit count.
 
 4. **Carry check.** An open PR prints `PR: #<n>` and its `gstack-ship-receipt carry --pr <n> --base <base> --dry-run` line.
-   `CARRY: would carry` (base merge committed, same product patch-id): skip review, fix
-   what it broke (CHANGELOG, size caps), run `gstack-pregate --allow-repo-commands`, then carry
-   without `--dry-run` plus `--pregate .gstack/tmp/pregate.json`. `CARRY: carried` binds HEAD and
-   ends the run. A failed check, HEAD moving after pregate, `current`, or `refused` with no
-   `NEXT: carry route` re-runs Steps 2–16.
+   `CARRY: would carry` (base merge committed, same product patch-id): skip review and Step 14.5,
+   fix what it broke (CHANGELOG, size caps), commit, `gstack-ship-release push --branch <branch-name>
+   --early`, `gstack-ci-carry wait --base <base>`, run `gstack-pregate --allow-repo-commands`, then carry without
+   `--dry-run` plus `--pregate .gstack/tmp/pregate.json`. `CARRY: carried` binds HEAD and ends
+   the run with its `GSTACK_RESULT:` line. A failed check, HEAD moving after pregate, `current`, or `refused` with no
+   `NEXT: carry route` re-runs Steps 2–16. Steps 17–21 then publish.
 
 5. Display historical readiness using the dashboard below, then finish Step 1.
    Prior CLEAR reviews or dashboard skips never replace Step 9's gates.
@@ -484,7 +485,7 @@ repeat Step 2 (decisions included) on the merged content, then Step 4.
 > **STOP.** Before the pre-landing review and specialist dispatch (Step 9), Read `~/.claude/skills/gstack/ship/sections/review-army.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
-> **STOP.** Before addressing Greptile review comments when a PR exists (Step 10), Read `~/.claude/skills/gstack/ship/sections/greptile.md` and execute it
+> **STOP.** Before addressing review bot comments when a PR exists (Step 10), Read `~/.claude/skills/gstack/ship/sections/greptile.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 > **STOP.** Before the adversarial review and learnings capture (Step 11), Read `~/.claude/skills/gstack/ship/sections/adversarial.md` and execute it
@@ -517,10 +518,12 @@ Item 3 needs `BUMP_LEVEL`: reuse this invocation's saved level. Else FRESH
 chooses it in item 2 and ALREADY_BUMPED derives it in item 1.
 
 **One call:** `~/.claude/skills/gstack/bin/gstack-ship-release version --base <base> [--bump <BUMP_LEVEL>] --why '<WHY>'`
-runs items 1 and 3–5; each decision left to you is a `STOP:` naming its rerun flag
+runs items 1 and 3–5; item commands serve only a `STOP:`, which names its rerun flag
 (`--bump`, `--accept-incomplete`, `--version <v>`, `--keep-current`, `--answer`).
 
-`ship: queue_mode stamp-at-merge` replaces items 1–4.
+`VERSION: skipped` or `VERSION: <v> kept (…; no write)` ends Step 12 with
+`NEW_VERSION` unset: Step 13 follows its `NEXT:`; Steps 18 and 20 take NO_VERSION's branch
+(`kept`: VERSION stays `<v>`).
 
 1. **Classify state** — pure reader, never writes:
    ```bash
@@ -627,7 +630,7 @@ write failures are non-blocking.
 ## Step 14.5: Documentation audit (every ship)
 
 **Doc-sync invariant:** Every ship dispatches the /document-release subagent before final
-commit/verification/publication, including reruns, already-pushed branches, existing PRs and docs-only changes.
+commit/verification/publication, including reruns, already-pushed branches, existing PRs and docs-only changes, but not a Step 1 carry.
 No edits means an executed audit, not a skip; report the section's verified outcome.
 
 > **STOP.** Before auditing docs before final commit/verification (Step 14.5), on every ship, Read `~/.claude/skills/gstack/ship/sections/documentation.md` and execute it
@@ -641,19 +644,10 @@ Make bisectable commits; if already committed, continue to Step 16. Never create
    migrations may stand alone. Under 50 lines across fewer than 4 files may be one commit.
 2. Order dependencies first: infrastructure → models/services → controllers/views.
    Each commit works alone (no broken imports or missing code).
-   Group VERSION + CHANGELOG + TODOS.md after the feature commits.
 3. Use `<type>: <summary>` (feat/fix/chore/refactor/docs) and a brief body; fixing a
-   user-named issue adds a `Fixes: #<n>` trailer. Only the final
-   VERSION/CHANGELOG commit gets the release version and co-author trailer. No Git tag:
-
-```bash
-git commit -m "$(cat <<'EOF'
-chore: bump version and changelog (vX.Y.Z.W)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-EOF
-)"
-```
+   user-named issue adds a `Fixes: #<n>` trailer. Leave VERSION, CHANGELOG/fragment, TODOS.md
+   and the digest uncommitted: Step 16's `finish` commits them last with
+   `--trailer 'Co-Authored-By: Claude <noreply@anthropic.com>'`. Do not add a Git tag.
 
 ---
 
@@ -661,49 +655,47 @@ EOF
 
 **IRON LAW: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.**
 
-Run stages 1–5 in order; recovery notes below name where to resume. Content
-changes during or after verification restart at stage 1 and complete all five
-stages before Step 17. Content-preserving commits keep evidence valid.
+`finish` runs stages 1–4 in order; act on each `STOP:` by its recovery below, then rerun
+it. Content changes during or after verification restart at
+stage 1 and complete all five stages before Step 17. Content-preserving commits keep evidence valid.
 
 **One call for stages 1–4:** `~/.claude/skills/gstack/bin/gstack-ship-release finish --base <base> --reviewed-tree <tree> --reviewed-base <mb> --docs-post <audit-id>-post.json --lane <label>=<Step 5 command>... [--build <cmd>]... --trailer '<trailer>'`
-makes Step 15's item-3 commit and runs stages 1–4 and the pregate; each `STOP:` is a recovery
-below (`--docs-rechecked`, `--no-lanes-approved` record stage 2.2 and Step 5's approval).
+also makes Step 15's item-3 commit and runs the pregate (`--docs-rechecked`,
+`--no-lanes-approved` record stage 2.2 and Step 5's approval).
 
 ### 1. Finish writers and prepare outputs
 
-Inspect writer handles, including the docs child. Confirm terminal completion or
+Before `finish`, inspect writer handles, including the docs child. Confirm completion or
 termination before another writer runs; timeout or cancellation acknowledgment
 alone means STOP until confirmed.
 
 Find declared generation/build commands in project instructions, manifests, build
-files and CI. Run them and save results. If none exists, record not applicable and
+files and CI. Pass each to `finish` as `--build`. If none exists, record not applicable and
 the inspected sources. A missing prerequisite or failed build stops shipping:
 report **Build failed or prerequisite missing**, with the command, error and needed
 repair. Never invent a substitute command.
-**If blocked:** Repair it, then repeat stage 1. After it passes, continue
-to stage 2; treat any content repair as a behavioral change there.
+**If blocked:** repair it, repeat stage 1, then continue to stage 2: a content repair is behavior there.
 
 ### 2. Choose the change route
 
-Capture the current tree with `~/.claude/skills/gstack/bin/gstack-wtree`. Inspect
-`git diff <reviewed-tree> <current-tree>` against the snapshot saved before Step 12.
-Missing snapshots block this comparison, regardless of HEAD equality.
+`finish` runs `git diff <reviewed-tree> <current-tree>` (`--reviewed-tree`, saved before Step 12,
+against `~/.claude/skills/gstack/bin/gstack-wtree`) and prints `ROUTE:`. No saved tree: pass `review_binding.end_wtree` from Step 11.5's bound Step 9 record;
+with none, insert `9 → 10 → 11 → 11.5`.
 
-Classify the comparison in this order:
+Its `STOP:` names the route:
 
 1. **Behavior, tests or build inputs changed:** Prompts/templates count as behavior.
-   Insert `5–11.5 → 12–14 → 16` before the pending Step 17, then stop this step.
-   This repair excludes Step 14.5 because the rebuild can change generated docs.
-   Step 16 restarts at stage 1: rebuild and compare again before stage 3 decides
-   documentation freshness. Further repairs use the same work list. A STOP naming a scoped-review packet
+   Insert `5–11.5 → 12–14 → 16` before the pending Step 17. It excludes Step 14.5 (a rebuild
+   can change generated docs; compare before stage 3) and Step 15 (`finish` STOPs on an uncommitted
+   non-release file: commit it by Step 15's rules, then rerun). A STOP naming a scoped-review packet
    instead takes its fix-check and `--context-reviewed` rerun; a blocking finding is this item.
 2. **Only authored docs or release metadata changed:** Keep Step 8's original child
    report and counts. Recheck affected plan items using their recorded verification
    and append current evidence to the invocation record. If a classification is no
    longer supported, run Step 8's audit and decision gates only, then return to
-   Step 16 stage 1. Never edit the child's counts yourself.
-3. **No changes, or the docs-only checks still support the plan:** Continue to stage 3
-   without a new code review.
+   Step 16 stage 1; else rerun with `--docs-rechecked`. Never edit the child's counts yourself.
+3. **No changes, or the docs-only checks still support the plan:** `finish` continues to
+   stage 3 without a new code review.
 
 ### 3. Resolve documentation freshness
 
@@ -735,33 +727,29 @@ Never run a third audit. Child return is not acceptance.
 Freeze inputs through verification and push. Run declared docs/link/generated-file
 checks; report any that are unavailable.
 
-**Reuse a check when its inputs match.** Compare hashes or complete bytes of its
-saved and current consumed files, fixtures, dependencies and execution parameters.
-Changed or unknown dependencies require a rerun. For model judges, compare the complete
-expanded request, rubric, parameters and builder/runtime dependencies. Cite the original
-command, result/counts, timestamp and log, never resample. Mandatory reviews still run.
+**Reuse a check when its inputs match.** Same consumed files, fixtures, dependencies
+and parameters (for a model judge, the complete expanded request and rubric); unknown means
+rerun. Cite the original command, result, timestamp and log; never resample. Mandatory reviews still run.
 
-**Check each test lane's receipt as well.** Use its actual Step 5 label/command:
-`--label <lane> --expect-cmd '<exact Step 5 command>'`. Inspect changes since the run;
-`--allow-paths` exempts only release metadata. A `package.json` version-only edit
-can qualify; scripts, dependencies and runtime configuration require live tests.
-Uncertain edits cannot be exempted. Docs, TODO edits, new/generated tests and fixes
-make evidence STALE even without a new code review; a Step 14 TODOS.md edit reruns them. Use this example only once
-every allowed edit is release metadata:
+**Check each test lane's receipt as well.** `finish` checks every `--lane` as
+`--label <lane> --expect-cmd '<exact Step 5 command>'`, like this example:
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-evidence check --label tests --expect-cmd '<tests>' --label vitest --expect-cmd '<vitest>' --max-age 24 --allow-paths CHANGELOG.md,VERSION,package.json,agents-digest/gstack-AGENTS.md
 ```
 
+`--allow-paths` exempts only release metadata (in `package.json`, only a version edit). Docs, TODO edits, new/generated tests and fixes
+make evidence STALE even without a new code review.
+
 | Receipt result | Next action |
 |---|---|
 | FRESH (exit 0) | Cite the label, exit, timestamp, log and `tests_ran`. |
-| STALE/MISSING: changed content, command or age, or no proven run | Run `~/.claude/skills/gstack/bin/gstack-evidence run --label <lane> -- '<command>'`, read the result and recheck once. Handle failures as described below. |
+| STALE/MISSING: changed content, command or age, or no proven run | Run `~/.claude/skills/gstack/bin/gstack-evidence run --label <lane> -- '<command>'`, read the result and recheck once (`finish` does; a CI-mapped lane is carried, else `EVIDENCE: DEFERRED`). Still not FRESH: a failed lane. |
 | ZERO-RUN: the receipt's `tests_ran` is 0 | STALE-equivalent: use Step 5's ZERO-RUN triage (a failed lane), never FRESH, even with exit 0. |
 | `tests_ran: unknown` | Non-blocking: keep the exit-0 verdict, cite the lane as `count unavailable`. Never record it as ZERO-RUN or as a counted pass. |
 | Only receipt storage/readback failed | Prove unchanged final content, the same command and valid age from the successful run's evidence. Cite its exact command, exit, timestamp and log as **ledger unavailable**, never FRESH. Without that proof, use STALE/MISSING. |
 
-No test lanes: require Step 5's explicit untested-scope approval for final content,
+No test lanes: rerun with `--no-lanes-approved` on Step 5's explicit untested-scope approval,
 or run Steps 5–15, including the no-tests decision, then return to Step 16 stage 1.
 Report the gap, never FRESH; builds must pass.
 
@@ -772,8 +760,9 @@ does not authorize a third attempt.
 
 ### 5. Report, then push
 
-Commit only approved, verified release changes left uncommitted after Step 15,
-including generated outputs; use its grouping rules; never create an empty commit.
+`finish` made the release commit. Commit only verified outputs stage 1's
+builds regenerated, grouped as in Step 15; never create an empty commit. It is
+content-preserving: no restart.
 Preserve unrelated user files.
 
 Paste build/docs/test results. Reuse waivers only for the same verified
@@ -788,7 +777,7 @@ its records:
 - Each test lane's `tests_ran` (N, ZERO-RUN or `count unavailable`).
 Write this report in the auditor's posture: this session's own gate edits are
 evidence for the reader to examine, not positions to defend; a kept gate
-states its reason and nothing more. Otherwise continue to Step 17.
+states its reason and nothing more. Then continue to Step 17.
 
 ---
 
@@ -879,7 +868,7 @@ A new PR or an existing draft needs no question: Step 19 creates or keeps the dr
 ```
 
 It checks the branch, the offer, the gate above (`--gate-open <n>`; `--gate-open-approved` is B)
-and `gstack-pregate sealed`, then `git ls-remote --heads origin refs/heads/<branch-name>` against HEAD: a failed lookup STOPs, a match prints
+`gstack-pregate sealed` and push guards, then `git ls-remote --heads origin refs/heads/<branch-name>` against HEAD: a failed lookup STOPs, a match prints
 `PUSH: ALREADY_PUSHED` (go to Step 18), else it runs `git push -u origin <branch-name>`.
 
 **If the push fails, STOP.** No Step 19 or publication claim. Report the error:
@@ -889,7 +878,8 @@ and `gstack-pregate sealed`, then `git ls-remote --heads origin refs/heads/<bran
   even with unchanged content before returning to Step 17. Never bypass failed guards.
 Never force-push. Only a successful push or verified `ALREADY_PUSHED` proceeds.
 
-Continue to Step 18. No documentation writer runs after push.
+After `EVIDENCE: DEFERRED`, run Step 5's `gstack-ship-release accept`; a `STOP:` there
+is a failed lane (stage 4). Continue to Step 18. No documentation writer runs after push.
 
 ---
 
@@ -917,8 +907,7 @@ echoed): an open PR at HEAD takes pr-body's existing-PR path (body and title onl
 
 ## Step 20: Persist ship metrics
 
-Log metrics for `/retro` through `gstack-review-log`; it handles project/branch paths,
-JSON validation, storage and sync and takes **no path argument**.
+Log metrics for `/retro` through `gstack-review-log`; it takes **no path argument**.
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"ship","timestamp":"'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'","coverage_pct":COVERAGE_PCT,"coverage_schema":2,"coverage_pct_value":COVERAGE_PCT_VALUE,"weak_gaps":WEAK_GAPS,"tests_extended":TESTS_EXTENDED,"tests_rejected":TESTS_REJECTED,"regression_proof":REGRESSION_PROOF,"plan_items_total":PLAN_TOTAL,"plan_items_done":PLAN_DONE,"verification_result":"VERIFY_RESULT","version":"VERSION","branch":"'"$(git rev-parse --abbrev-ref HEAD)"'"}'
@@ -963,9 +952,9 @@ The last line printed is the result line a parent greps (docs/unattended.md):
 ~/.claude/skills/gstack/bin/gstack-ship-receipt result --pr <pr-number>   # handoff: --body .gstack/tmp/ship-receipt.md
 ```
 
-It binds the receipt to HEAD, writes the run record and prints `GSTACK_RESULT: skill=ship
-status=complete run=<dir>`; `QUEUE_RECEIPT_STALE` means HEAD moved after the receipt (rewrite,
-repost, rerun). A run that STOPs earlier ends with `GSTACK_RESULT: skill=ship status=refused run=-`.
+It binds the receipt to HEAD, writes the run record, prints `GSTACK_RESULT: skill=ship
+status=complete head=<sha> run=<dir>`; `QUEUE_RECEIPT_STALE`: HEAD moved past the receipt (rewrite,
+repost, rerun). A STOP before Step 19 publishes ends with `GSTACK_RESULT: skill=ship status=refused run=-`.
 
 ---
 
@@ -981,7 +970,6 @@ hand-roll VERSION/package.json writes.
 
 Follow the numbered gates and their explicit exceptions.
 
-- **Never force push.** Use regular `git push` only.
 - **An early Greptile PR stays up.** A stop after Step 6.5 opened it leaves the draft
   open with one comment saying why (greptile-early section); never close it.
 - **Use the configured version file's format** (4-digit for VERSION); under NO_VERSION,

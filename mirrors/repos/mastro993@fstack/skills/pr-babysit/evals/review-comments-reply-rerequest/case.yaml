@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: review-comments-reply-rerequest
+expected_outcome: |
+  PR #8 has CI passing and three unresolved threads: alice asks to use the csv module so commas get
+  quoted (actionable), alice asks whether voided invoices are exported (a question the code answers:
+  they are skipped), and Copilot claims inv.amount may be None (a false positive, since
+  Invoice.__post_init__ coerces it with float()). The run switches to csv.writer keeping the tests
+  green, pushes, replies on each thread (fix with commit SHA, answer, false-positive explanation),
+  leaves the threads unresolved, re-requests alice's review, waits until she approves and CI passes,
+  and reports the PR ready. It keeps watching until a maintainer merges it a minute later, then
+  reports the merge, never merging it itself.
+context:
+  scaffold_script: place-files.sh

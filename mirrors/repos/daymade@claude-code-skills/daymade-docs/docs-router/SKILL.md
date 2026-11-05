@@ -1,7 +1,7 @@
 ---
 name: docs-router
 description: >-
-  Word/PDF/PPTX/HTML→Markdown;MD/Word→PDF;create Word;PDF HTML/translate;Excel/xlsm/macOS;photo/signed scans;Mermaid;DOCX review;post-change docs.
+  Word/PDF/PPTX/HTML→MD;MD/Word→PDF;new Word;PDF HTML/translate;Excel/xlsm/Mac;photo/signed scan;Mermaid;DOCX review;doc cleanup
   Reads one bundled Daymade specialist. New slide decks use
   deck-creator when installed; generic PDF reading/editing and spreadsheet
   analysis stay with their own Skills. Retired ppt-creator stays manual-only.
@@ -36,7 +36,7 @@ original `/daymade-docs:<leaf>` command manually.
 | Turn a PDF into a self-contained, image-faithful HTML reading page, optionally translating it while keeping figures and charts | `../pdf-to-html/SKILL.md` |
 | Extract Mermaid diagrams from Markdown or render Mermaid as PNG | `../mermaid-tools/SKILL.md` |
 | Create a professionally formatted Excel workbook, parse a complex investment-bank `.xlsm` model, or control Excel on macOS | `../excel-automation/SKILL.md` |
-| Turn photos of paper pages into a scanned PDF, replace pages in a scan, or make an unsigned digital document look hand-signed and scanned | `../photo-to-scanned-pdf/SKILL.md` |
+| Prepare printable ID/passport copies from existing photos, turn paper photos into a scanned PDF, replace scan pages, or make an unsigned digital document look hand-signed and scanned | `../photo-to-scanned-pdf/SKILL.md` |
 | Extract Word/WPS DOCX comments or tracked changes; compare explicitly selected DOCX versions, using the verified sent baseline for counterpart feedback, including files with no review traces | `../read-docx-review/SKILL.md` |
 | Check documentation impact after an authorized code, script, config, environment, path, deployment, auth, test, or procedure change; or consolidate redundant docs | `../docs-cleaner/SKILL.md` |
 

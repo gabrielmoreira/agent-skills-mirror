@@ -13,7 +13,7 @@ Variant Design is an agent skill. It turns one brief into three comparable desig
 | Path | Role | Notes |
 |---|---|---|
 | `SKILL.md` | Router entry point | Keep it short. It routes to one sub-skill; do not inline workflows here |
-| `skills/*/SKILL.md` | Sub-skills: generate, design-system, component, analyze, ux | Shared phases each have one source of truth: `skills/shared/code-output.md` (writing code), `references/workflow/preview.md`, `references/workflow/history.md` and `skills/shared/export.md`. Each route starts with a load map; files are read at the step that needs them. Only the root `SKILL.md` has skill frontmatter: Codex and `npx skills` scan folders recursively and would register sub-skills as broken standalone skills (enforced by `plugin-package.test.py`) |
+| `skills/*/ROUTE.md` | Sub-skills: generate, design-system, component, analyze, ux | Shared phases each have one source of truth: `skills/shared/code-output.md` (writing code), `references/workflow/preview.md`, `references/workflow/history.md` and `skills/shared/export.md`. Each route starts with a load map; files are read at the step that needs them. Only the root `SKILL.md` has skill frontmatter: Codex and `npx skills` scan folders recursively and would register sub-skills as broken standalone skills (enforced by `plugin-package.test.py`) |
 | `references/` | Loaded on demand by the routes | Grouped by role: `workflow/` (context, discovery, history, quality and integrity rules shared by routes), `sources/` (design references and direction cards), `domains/`, `design-system/`, `ux/`, `tasks/` (routes the router sends straight to a reference), plus the shared `palettes.md` and `interactive-patterns.md`. Domain references follow the five-part structure in `README.md` → Contributing. `scripts/skill-links.test.mjs` fails on a named file that does not ship with the skill and on a reference no route reaches |
 | `scripts/*.mjs` | Runtime helpers that run inside **user projects** | Zero dependencies, Node 22+, ESM. Each has a CLI and exported functions |
 | `scripts/*.test.mjs` | `node:test` unit tests for the helpers | Excluded from the plugin package |
@@ -22,6 +22,7 @@ Variant Design is an agent skill. It turns one brief into three comparable desig
 | `mcp/` | Local stdio MCP adapter over the same history helpers | Has its own `package.json` and tests |
 | `evals/` | Real agent runs on fixture projects, graded automatically | See `evals/README.md`. Runs cost model usage; the grader tests do not |
 | `plugin/` | Codex plugin manifest and release-readiness notes | Built by `scripts/build-plugin.py` |
+| `.claude-plugin/marketplace.json` | Claude Code plugin marketplace | Lists the repository root as one plugin whose only skill is the root `SKILL.md`. Its `version` pins installs, so bump it with `VERSION` (enforced by `plugin-package.test.py`) |
 | `docs/prd`, `docs/rfc` | Requirements and architecture, written in Chinese | GitHub Issues track status. Writing a PRD is not shipping it |
 | `docs/research/` | Dated dogfood records and competitor notes | Record evidence here; do not rewrite history |
 
@@ -73,8 +74,8 @@ node evals/run.mjs --agent claude --fixture pulse       # one real, graded agent
 - **Language.**
   - Skill files, references, scripts and the README: English.
   - `README_CN.md`, PRDs and RFCs: Chinese.
-  - Website copy: both languages. New copy is keyed by language, `{ zh, en }`, and read with `t()` from `website/src/i18n/` (RFC-005); data not yet migrated still uses positional `[zh, en]` pairs.
-- **The skill's own text is the product.** When you change behavior in `scripts/`, update every place that describes it in the same change: `references/workflow/preview.md`, `references/workflow/history.md`, `skills/shared/export.md`, `skills/shared/code-output.md`, the relevant `skills/*/SKILL.md`, and user-facing docs (`website/src/DocsGuide.tsx`, `README.md`, `README_CN.md`).
+  - Website copy: both languages. New copy is keyed by language, `{ zh, en }`, and read with `t()` from `website/src/i18n/` (RFC-005); data not yet migrated still uses positional `[zh, en]` pairs. When you write or machine-translate the English of a guide or library entry and nobody has reviewed it, mark it `translations: { en: { status: 'draft' } }`: production then leaves that English page out (RFC-005 §3.5), and previews still show it.
+- **The skill's own text is the product.** When you change behavior in `scripts/`, update every place that describes it in the same change: `references/workflow/preview.md`, `references/workflow/history.md`, `skills/shared/export.md`, `skills/shared/code-output.md`, the relevant `skills/*/ROUTE.md`, and user-facing docs (`website/src/DocsGuide.tsx`, `README.md`, `README_CN.md`).
 - **Progressive loading.** `SKILL.md` routes to one sub-skill. Each sub-skill opens with a load map that names which file to read at which step; split files by the phase that needs them (first generation, edit, export), not only by topic. Do not add "read everything" or "always load" instructions. `node evals/run.mjs` reports the skill text each run read; check it when you change what a route loads.
 - **Rule precedence** across routes: user constraints → product task and existing design system → accessibility → style suggestions.
 - **Dependencies.** Helpers stay dependency-free and reuse the target project's own React and Vite. Pin exact versions in `tests/`, `website/` and `mcp/` lockfiles. Rollup 4.64.0 hangs on production builds; keep `tests/` on 4.65.0 or later.
@@ -84,7 +85,7 @@ node evals/run.mjs --agent claude --fixture pulse       # one real, graded agent
 - Report only checks that actually ran. Never claim WCAG compliance, browser coverage, a quality score or marketplace availability from inspection alone. Static scans and HTTP 200 do not prove that a page renders correctly.
 - Behavior changes need a regression test: unit tests for helper semantics, Playwright for rendering. Test against the real helper, not a mock of it.
 - Before claiming that the skill's user experience improved, dogfood it in a real CLI and record the evidence in `docs/research/`:
-  - Start with `node evals/run.mjs`. It installs this working tree at project level in throwaway fixture projects, runs Claude Code and Codex, and grades the result. Add a fixture when a change needs a scenario the existing ones do not cover.
+  - Start with `node evals/run.mjs`. It installs this working tree at project level in throwaway fixture projects, runs Claude Code and Codex (or DeepSeek Harness with `--agent dsh`), and grades the result. Add a fixture when a change needs a scenario the existing ones do not cover.
   - A global install of the same skill can take precedence. In Claude Code 2.1.311, runs read `~/.claude/skills/variant-design` even with a project-level copy present, unless started with `--setting-sources project,local` (the eval runner does this). In manual runs, check the paths in the run's tool calls (`--output-format stream-json --verbose`); the `skill-under-test` check does this for eval runs.
   - `codex exec` runs in a sandbox that cannot bind ports. `claude -p` stays alive while a background preview server runs.
 
@@ -94,7 +95,7 @@ node evals/run.mjs --agent claude --fixture pulse       # one real, graded agent
 - Deployments (Vercel project `variant-design-skill`): `master` is production at `https://variant-design-skill.vercel.app`; the `dev` branch is always deployed to `https://variant-design-skill-dev.vercel.app`, which sits behind Vercel Authentication (team members only, not indexed). Pull requests still target `master`. To try a change on dev before merging, merge its branch into `dev` and push; never force-push `dev`. After a release, bring `dev` back level with `master` by merging `master` into it. Every pull request also gets its own preview URL.
 - Other agent sessions may be working in this tree at the same time (for example on `mcp/`). Before committing, check `git status` and stage only the files you changed. Do not revert or reformat other people's in-progress work.
 - Never commit `.variant-work/`, `.verification/`, `.integrations/` from test projects, `website/.env`, or anything containing a user's project source.
-- `VERSION` follows semver with release-candidate tags (currently `1.1.0`). Change it only as part of a release.
+- `VERSION` follows semver with release-candidate tags (currently `1.1.0`). Change it only as part of a release, together with the versions in `plugin/plugin.json` and `.claude-plugin/marketplace.json`.
 
 ## Third-party products
 

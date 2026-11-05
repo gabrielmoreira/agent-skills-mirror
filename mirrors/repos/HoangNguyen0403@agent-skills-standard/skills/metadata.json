@@ -297,13 +297,13 @@
   },
   "categories": {
     "flutter": {
-      "version": "1.8.3",
-      "last_updated": "2026-10-27",
+      "version": "1.8.4",
+      "last_updated": "2026-11-03",
       "tag_prefix": "flutter-v",
       "token_metrics": {
         "total_skills": 22,
-        "total_tokens": 13637,
-        "avg_tokens_per_skill": 620,
+        "total_tokens": 13672,
+        "avg_tokens_per_skill": 621,
         "largest_skill": "flutter-testing (1506 tokens)"
       },
       "owners": [
@@ -417,13 +417,13 @@
       ]
     },
     "react-native": {
-      "version": "1.5.2",
-      "last_updated": "2026-10-27",
+      "version": "1.5.3",
+      "last_updated": "2026-11-03",
       "tag_prefix": "react-native-v",
       "token_metrics": {
         "total_skills": 13,
-        "total_tokens": 6622,
-        "avg_tokens_per_skill": 509,
+        "total_tokens": 6653,
+        "avg_tokens_per_skill": 512,
         "largest_skill": "react-native-testing (742 tokens)"
       },
       "owners": [
@@ -489,13 +489,13 @@
       ]
     },
     "common": {
-      "version": "2.9.1",
-      "last_updated": "2026-10-30",
+      "version": "2.9.4",
+      "last_updated": "2026-11-03",
       "tag_prefix": "common-v",
       "token_metrics": {
-        "total_skills": 45,
-        "total_tokens": 47752,
-        "avg_tokens_per_skill": 1061,
+        "total_skills": 46,
+        "total_tokens": 49281,
+        "avg_tokens_per_skill": 1071,
         "largest_skill": "common-subagent-driven-development (2563 tokens)"
       },
       "owners": [
@@ -527,12 +527,12 @@
       ]
     },
     "specialists": {
-      "version": "1.5.1",
-      "last_updated": "2026-10-27",
+      "version": "1.5.2",
+      "last_updated": "2026-11-01",
       "tag_prefix": "specialists-v",
       "token_metrics": {
         "total_skills": 21,
-        "total_tokens": 12390,
+        "total_tokens": 12385,
         "avg_tokens_per_skill": 590,
         "largest_skill": "specialist-solution-diagrammer (1033 tokens)"
       },
@@ -789,14 +789,14 @@
       ]
     },
     "laravel": {
-      "version": "1.4.1",
-      "last_updated": "2026-10-01",
+      "version": "1.4.2",
+      "last_updated": "2026-11-03",
       "tag_prefix": "laravel-v",
       "token_metrics": {
         "total_skills": 10,
-        "total_tokens": 7818,
-        "avg_tokens_per_skill": 782,
-        "largest_skill": "laravel-testing (989 tokens)"
+        "total_tokens": 7858,
+        "avg_tokens_per_skill": 786,
+        "largest_skill": "laravel-testing (1029 tokens)"
       },
       "owners": [
         "HoangNguyen0403"
@@ -867,11 +867,25 @@
         "avg_tokens_per_skill": 1456,
         "largest_skill": "product-requirements (2166 tokens)"
       }
+    },
+    "marketing": {
+      "version": "1.0.0",
+      "last_updated": "2026-10-25",
+      "tag_prefix": "marketing-v",
+      "owners": [
+        "HoangNguyen0403"
+      ],
+      "token_metrics": {
+        "total_skills": 12,
+        "total_tokens": 14614,
+        "avg_tokens_per_skill": 1218,
+        "largest_skill": "marketing-demo-video (2243 tokens)"
+      }
     }
   },
   "releases": {
     "workflows": {
-      "version": "1.1.7",
+      "version": "2.1.1",
       "tag_prefix": "workflows-v"
     }
   },

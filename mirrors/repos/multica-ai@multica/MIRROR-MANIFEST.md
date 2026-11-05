@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 32 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 11 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 32
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 32 |
+| Followed pats | 11 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 32
 - `VISION.md`
 - `SELF_HOSTING.md`
 - `README.zh.md`
+- `README.ja.md`
 - `CLI_AND_DAEMON.md`
 - `apps/mobile/README.md`
 - `VISION.zh.md`
@@ -94,12 +95,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
 | 25 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
 | 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`README.md`](README.md) |
-| 28 | → | [`README.zh.md`](README.zh.md) |
-| 29 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
-| 30 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
-| 31 | → | [`VISION.md`](VISION.md) |
-| 32 | → | [`VISION.zh.md`](VISION.zh.md) |
+| 27 | → | [`README.ja.md`](README.ja.md) |
+| 28 | → | [`README.md`](README.md) |
+| 29 | → | [`README.zh.md`](README.zh.md) |
+| 30 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
+| 31 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
+| 32 | → | [`VISION.md`](VISION.md) |
+| 33 | → | [`VISION.zh.md`](VISION.zh.md) |
 
 ---
 

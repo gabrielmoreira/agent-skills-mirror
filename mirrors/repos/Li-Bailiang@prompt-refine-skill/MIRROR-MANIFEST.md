@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Li-Bailiang/prompt-refine-skill` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `Li-Bailiang/prompt-refine-skill` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Li-Bailiang/prompt-refine-skill` — 26 default patterns, 0 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `Li-Bailiang/prompt-refine-skill` — 26 default patterns, 0 followed 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `references/source-audit.md`
+- `hooks/README.md`
 
 ## File Index
 
@@ -59,7 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
+| 1 | ✓ | [`references/refinement-scenarios.md`](references/refinement-scenarios.md) |
+| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 3 | → | [`hooks/README.md`](hooks/README.md) |
+| 4 | → | [`references/source-audit.md`](references/source-audit.md) |
 
 ---
 

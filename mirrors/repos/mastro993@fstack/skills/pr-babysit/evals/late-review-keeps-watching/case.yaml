@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: late-review-keeps-watching
+expected_outcome: |
+  CI on PR #14 passes after about 30 seconds, but alice has not reviewed yet. Her review arrives
+  about two minutes in, requesting that line_total reject quantities below 1 with a ValueError and a
+  test. The run keeps watching after CI goes green instead of stopping at "waiting on review",
+  makes the change with a test, pushes, replies on her thread with the commit SHA, re-requests her
+  review, waits for her approval (about a minute later), and reports the PR ready. It keeps watching
+  until a maintainer merges it a minute after that, then reports the merge, never merging it itself.
+context:
+  scaffold_script: place-files.sh

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `automazeio/ccpm` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `automazeio/ccpm` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `automazeio/ccpm` — 26 default patterns, 0 followed patterns, 21 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,17 +69,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`skill/ccpm/references/scripts/help.sh`](skill/ccpm/references/scripts/help.sh) |
 | 9 | ✓ | [`skill/ccpm/references/scripts/in-progress.sh`](skill/ccpm/references/scripts/in-progress.sh) |
 | 10 | ✓ | [`skill/ccpm/references/scripts/init.sh`](skill/ccpm/references/scripts/init.sh) |
-| 11 | ✓ | [`skill/ccpm/references/scripts/next.sh`](skill/ccpm/references/scripts/next.sh) |
-| 12 | ✓ | [`skill/ccpm/references/scripts/prd-list.sh`](skill/ccpm/references/scripts/prd-list.sh) |
-| 13 | ✓ | [`skill/ccpm/references/scripts/prd-status.sh`](skill/ccpm/references/scripts/prd-status.sh) |
-| 14 | ✓ | [`skill/ccpm/references/scripts/search.sh`](skill/ccpm/references/scripts/search.sh) |
-| 15 | ✓ | [`skill/ccpm/references/scripts/standup.sh`](skill/ccpm/references/scripts/standup.sh) |
-| 16 | ✓ | [`skill/ccpm/references/scripts/status.sh`](skill/ccpm/references/scripts/status.sh) |
-| 17 | ✓ | [`skill/ccpm/references/scripts/validate.sh`](skill/ccpm/references/scripts/validate.sh) |
-| 18 | ✓ | [`skill/ccpm/references/structure.md`](skill/ccpm/references/structure.md) |
-| 19 | ✓ | [`skill/ccpm/references/sync.md`](skill/ccpm/references/sync.md) |
-| 20 | ✓ | [`skill/ccpm/references/track.md`](skill/ccpm/references/track.md) |
-| 21 | ✓ | [`skill/ccpm/SKILL.md`](skill/ccpm/SKILL.md) |
+| 11 | ✓ | [`skill/ccpm/references/scripts/lib.sh`](skill/ccpm/references/scripts/lib.sh) |
+| 12 | ✓ | [`skill/ccpm/references/scripts/neon-branch.sh`](skill/ccpm/references/scripts/neon-branch.sh) |
+| 13 | ✓ | [`skill/ccpm/references/scripts/next.sh`](skill/ccpm/references/scripts/next.sh) |
+| 14 | ✓ | [`skill/ccpm/references/scripts/prd-list.sh`](skill/ccpm/references/scripts/prd-list.sh) |
+| 15 | ✓ | [`skill/ccpm/references/scripts/prd-status.sh`](skill/ccpm/references/scripts/prd-status.sh) |
+| 16 | ✓ | [`skill/ccpm/references/scripts/search.sh`](skill/ccpm/references/scripts/search.sh) |
+| 17 | ✓ | [`skill/ccpm/references/scripts/standup.sh`](skill/ccpm/references/scripts/standup.sh) |
+| 18 | ✓ | [`skill/ccpm/references/scripts/status.sh`](skill/ccpm/references/scripts/status.sh) |
+| 19 | ✓ | [`skill/ccpm/references/scripts/validate.sh`](skill/ccpm/references/scripts/validate.sh) |
+| 20 | ✓ | [`skill/ccpm/references/structure.md`](skill/ccpm/references/structure.md) |
+| 21 | ✓ | [`skill/ccpm/references/sync.md`](skill/ccpm/references/sync.md) |
+| 22 | ✓ | [`skill/ccpm/references/track.md`](skill/ccpm/references/track.md) |
+| 23 | ✓ | [`skill/ccpm/SKILL.md`](skill/ccpm/SKILL.md) |
 
 ---
 

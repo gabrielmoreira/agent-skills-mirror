@@ -47,6 +47,8 @@ those two files before entering the enclave.
 | `xerj hub feedback` and automatic corpus reviews | On for `xerj hub pull` and the MCP hub tools | A client, not the node. It POSTs a structured review (scores, corpus slug, agent family, a random install id; no document or query text) to `XERJ_CORPUS_FEEDBACK_URL`, default `https://hub.xerj.org/api/corpus-feedback`. Set `XERJ_DISABLE_FEEDBACK=true` (or pass `--disable-feedback`) to send nothing |
 | Cluster | Disabled | Single-node startup does not initialize the Raft transport |
 | REST / ES-compatible listeners | `127.0.0.1` | The default is loopback-only |
+| `xerj sessions hook` (opt-in `xerj init --memory`) | Off until installed | Sends redacted session exports/excerpts and runtime auth to the configured loopback node, reads memories back; remote URLs, redirects and proxies are refused. No external service or model is required |
+| `xerj init hook` (opt-in `xerj init --hooks`, either host) | Off until installed | Reads catalog run metadata using runtime auth from the configured loopback node; no tool input, query, tool result or session ID is sent. Proxies and redirects are disabled |
 | `autoindex` and MCP clients | Localhost defaults | They connect to `localhost`; they do not create a public listener |
 | Runtime telemetry/update/license activation | None | No outbound call is made by the running binary for these purposes |
 

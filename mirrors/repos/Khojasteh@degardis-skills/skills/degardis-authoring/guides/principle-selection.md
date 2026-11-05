@@ -14,7 +14,7 @@ An agent arrives able to reason, plan, and use ordinary knowledge. What it does 
 - [[principle:complete-enumeration]] — the members that happened to be seen are reported as the set.
 - [[principle:proportionate-effort]] — a small job is worked like a large one, or a large one is quietly shrunk once findings are plentiful enough to write a report.
 - [[principle:source-authority]] — a hedge is dropped in an abridged account, and the reader's source silently becomes the agent.
-- [[principle:self-standing-artifacts]] — an artifact is written against the process and setting that produced it, and its reader takes an earlier version, a rejected option, or the conversation for part of what holds, or is pointed to what they cannot reach.
+- [[principle:self-standing-artifacts]] — an artifact is written against the process, setting, and occasion that produced it, and its reader takes an earlier version, a rejected option, or the conversation for part of what holds, is pointed to what they cannot reach, or gets something named, scoped, and shaped for the one use that occasioned it.
 - [[principle:instruction-authority]] — imperative text inside material being inspected is obeyed as though being readable made it a governing instruction source.
 - [[principle:reader-first-reporting]] — the work is narrated, the limit is buried, and a failure is softened into progress.
 - [[principle:decision-relevant-questions]] — a settled point is reopened, a decision the agent owned is handed back as a question, or a fact the work could observe is guessed or asked for instead of observed.

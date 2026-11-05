@@ -66,7 +66,7 @@ On Herdr, give each agent its own workspace while Herdr runs:
 herdr workspace create --label review --cwd ~/src/app-review
 ```
 
-On Herdr you can also do both steps from the phone. Open a pane's **⋯** menu and tap **New agent
+You can also do both steps from the phone. Open a pane's **⋯** menu and tap **New agent
 in a worktree**. The New page opens with **New worktree** already on, for that pane's repo. Pick
 the agent, then tap Start. Collie makes a worktree on a new branch, opens it as its own workspace,
 and starts the agent in it. The branch is named `worktree/<word>-<word>-<hex>`, and you can change
@@ -79,8 +79,9 @@ a branch other than the default, and it opens on **This branch**. Changes you ha
 stay behind, because the new worktree starts from the last commit. Collie never fetches, so the
 default is the copy of the branch you already have.
 
-**Branch folder** says where the worktree goes. **Herdr's default** leaves it to Herdr, which uses
-`~/.herdr/worktrees/<repo>/<branch>` unless its `config.toml` names another `[worktrees] directory`.
+**Branch folder** says where the worktree goes. **Herdr's default** puts it where Herdr puts its
+own worktrees: `~/.herdr/worktrees/<repo>/<branch>`, unless Herdr's `config.toml` names another
+`[worktrees] directory`. Collie uses this folder on every multiplexer.
 **Other folder** puts it in a folder you name, which must already exist under your home folder, and
 must not be hidden, a link, or inside the repo. The page shows the full path of the new folder
 before you tap Start, and Collie checks the rule again at the moment it creates it. Collie remembers
@@ -90,9 +91,25 @@ The page is described in
 [Start an agent or a shell from the phone](#start-an-agent-or-a-shell-from-the-phone). A create can
 take up to a minute on a large repo. If the phone loses the reply, the page says so and does not send
 it again. Look at the dashboard first. **Try again** sends the same request, so Collie answers with
-the worktree it already made and does not make a second one. The switch works only on Herdr, and only
-for the lead machine; elsewhere it stays on the page, off, and says why ("needs Herdr", or "only on"
-the lead's name).
+the worktree it already made and does not make a second one. Collie makes the worktree with git,
+on the machine you pick, and opens it as a new space. So the switch needs git on that machine and a
+multiplexer that opens a space: Herdr, the Herdr core, tmux, tuios or tern. On zellij, or on a
+machine with no git, it stays on the page, off, and says why. When the checkout is made but the space
+does not open, the checkout stays, and the same request again only opens it. This holds in Herdr's
+folder and in a folder you picked. A retry opens a finished checkout only: a folder that holds
+another branch is refused, and the page says which branch it holds.
+
+A pane in a worktree shows its repository where you look for it. Herdr names a worktree space
+with a random word, so the pane's header shows the repository's name before the branch, and the
+Switch pane sheet lists the worktree under its repository's space when that space is open. When it
+is not open, the sheet heads the group `repository › name`. This holds on every multiplexer: Collie
+reads each space's folder from disk, so tmux and zellij spaces nest under their repository too.
+
+On the dashboard, a worktree's space name is only its folder, such as `worktree-eager-summit-7987`.
+So its row carries a second line with the repository, the branch and the base it was cut from, for
+example `openplate-workspace · worktree/eager-summit-7987 · from main`. Under its repository's own
+space the line shows only the branch and the base. A detached head shows its short hash. A part that
+the machine does not know is left out. Every other space draws as before.
 
 Running multiple sessions creates multiple waiting prompts. Collie groups panes by workspace and
 marks the ones that need input: a red wash on the row, a dot on the workspace heading, and a count
@@ -100,6 +117,12 @@ on the line at the top, which jumps to the first of them. Hold a row to pin that
 clock and hourglass beside the count order the list by recent activity or by the cache that goes
 cold first. On tmux, zellij and tern, these marks require the beacon hooks from
 [step 3](#3-run-claude-code-in-a-pane).
+
+A green dot, and the green count at the top, mean a pane that finished and that nobody has looked at
+yet. Open the pane in Collie, or send to it, and its dot becomes a ring and it leaves the green
+count. Work in the pane at your desk does not count as looking: only what you do in Collie stamps the
+mark. The mark is one for all your devices, so a pane you opened on the phone rests on the tablet too
+([ADR 0003](../.adr/0003-one-shared-seen.md)).
 
 ## Drive it from your phone with Collie
 
@@ -172,13 +195,20 @@ the same tailnet.
 1. **Pair the phone.** Run `collie pair` on the host and scan the QR code. Collie answers no device
    until it is paired ([Pair a device](security.md#pair-a-device--the-write-credential)).
 2. **Put it on your home screen.** On Android, tap **Install** at the top of Settings. On an iPhone,
-   tap Safari's share sheet.
+   in Safari tap **Share** (in the default iOS 26 layout it sits under **⋯** at the bottom right), tap **Add to Home Screen**, and tap **Add**.
+
+   ![Put Collie on the home screen: iPhone and Android steps.](images/install/pwa-install.svg)
 
 ## 5. Answer Claude Code
 
 - Panes that need input carry a red mark. Tap the count at the top of the dashboard to jump to the first one, then tap a row to open it.
 - Each dashboard row and the pane header show the git branch the pane's folder is on, or
-  `detached @abc1234` on a detached head. A pane outside a git repo shows none.
+  `detached @abc1234` on a detached head. A pane outside a git repo shows none. The folder is the
+  one of the program in front, not the one the pane started in. When an agent or a shell runs in
+  another folder, the pane's folder follows it, on Herdr as on the Herdr core.
+- A dialog card sits in a dock above the box. The chat keeps at least a third of the screen, and the
+  dock shrinks and scrolls inside itself to make room. The dialog mirror in the unread-dialog card
+  opens at its bottom, where the dialog is.
 - The composer uses a standard text field, so phone dictation works in it.
 - Tap **Keys** on the actions row above the keyboard. The tray includes Esc, arrow keys, Enter, Tab,
   Space, modifiers, digits, and F1 to F12. Esc and Ctrl chords do not depend on the phone keyboard.
@@ -228,9 +258,11 @@ installed through nvm, or in your home folder, counts. An agent that is not foun
 It is disabled, and the reason follows its name in brackets, for example "not installed". Nothing
 disappears from the list without a word.
 
-**Command** lists a plain **Shell** and your [launchers](configure.md#your-own-launchers). You can
-also add a launcher from the phone, with a few option chips such as "Skip permission prompts"
-([Launchers added from a phone](configure.md#launchers-added-from-a-phone)). A launcher that skips
+**Command** lists a plain **Shell** and your [launchers](configure.md#your-own-launchers). On a crew,
+the lead's launchers are the crew's, so they show on every machine you pick, and each reads unavailable
+on a machine that lacks its agent or its folder. You can also add a launcher from the phone, with a
+few option chips such as "Skip permission prompts". It joins the lead's rows and shows on every
+machine ([Launchers added from a phone](configure.md#launchers-added-from-a-phone)). A launcher that skips
 permission prompts carries a **No prompts** badge, and the phone asks you once before it first starts
 it.
 

@@ -46,7 +46,6 @@ gstack/
 │   ├── skill-validation.test.ts  # Tier 1: static validation (free, <1s)
 │   ├── gen-skill-docs.test.ts    # Tier 1: generator quality (free, <1s)
 │   ├── setup-*.test.ts, relink.test.ts, hook-scripts.test.ts  # Tier 1: setup linker ownership, retired-skill prune, browser hint, rebuild check + Chromium bootstrap (anchor-sliced from setup), gstack-relink, PreToolUse hooks (free)
-│   ├── skill-llm-eval.test.ts   # Tier 3: LLM-as-judge (~$0.15/run)
 │   └── skill-e2e-*.test.ts       # Tier 2: E2E via claude -p (~$3.85/run, split by category)
 ├── qa/, qa-only/    # Surface-aware browser/functional QA; /qa-only reports and proposes tests without product edits
 ├── plan-design-review/  # /plan-design-review skill (report-only design audit)
@@ -62,6 +61,7 @@ gstack/
 ├── plan-eng-review/ # /plan-eng-review skill
 ├── autoplan/        # /autoplan skill (auto-review pipeline: CEO → design → DX → eng, eng always last)
 ├── benchmark/       # /benchmark skill (performance regression detection)
+├── runaway-stopper/ # /runaway-stopper skill (runaway thread/subagent detect, stop, rotate, prevent; bin/gstack-runaway, templates/)
 ├── ubicloud/        # /ubicloud skill (ephemeral Ubicloud VMs: TTL + reaper, quota preflight, watchdog, verify; bin/gstack-ubi)
 ├── canary/          # /canary skill (post-deploy monitoring loop)
 ├── codex/           # /codex skill (multi-AI second opinion via OpenAI Codex CLI)
@@ -94,7 +94,7 @@ gstack/
 │   ├── test/        # Integration tests
 │   └── dist/        # Compiled binary
 ├── agents-digest/   # Committed 2KB instruction-tier rules digest (gstack-AGENTS.md) for rules-reading hosts
-├── modules/         # loadouts.json (+ loadouts.schema.json): model rungs, pinned modules and named loadouts; read by scripts/modules.ts, rendered by bin/gstack-modules (docs/loadouts.md)
+├── modules/         # loadouts.json (+ loadouts.schema.json): model rungs, the model map, pinned modules and named loadouts; read by scripts/modules.ts and lib/model-detect.ts, rendered by bin/gstack-modules (docs/loadouts.md)
 ├── extension/       # Chrome extension (side panel + activity feed + CSS inspector)
 ├── lib/             # Shared libraries (aside-render.ts = local-HTML rendering, Aside first, engine fallback; design-catalog.ts = the typed design anti-pattern catalog every design skill renders from; design-lint/ = the static and render tiers behind bin/gstack-design-lint, ported from hallmark's sloplint; design-detect-contract.ts = detector sentinel vocabulary; design-md.ts = open DESIGN.md reader/writer; dom-dump-script.ts + generated dom-dump.js = rendered-DOM dump for the detector; review-evidence.ts = review-start receipt binding, computed freshness and shared-code snapshot eligibility; frontend-scope.ts; claude-bin.ts, error-handling.ts, worktree.ts, egress-receipt.ts, context-bill.ts, redact-engine.ts, tracker-guard.ts, version-source.ts, code-intelligence/)
 │   └── diagram-render/  # Vendored mermaid + excalidraw runtimes, built into one offline bundle the renderer loads

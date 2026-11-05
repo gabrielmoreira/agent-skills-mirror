@@ -2,6 +2,14 @@
 
 This changelog summarizes significant changes to the installable skill.
 
+## [2.5.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-11-02/degardis-authoring.zip) - 2026-11-02
+
+Degardis Authoring 2.5 takes the form of anything it writes for later use, skill source included, from what that thing is for and the whole range of its uses, not from the request that prompted it. A point written from a reported account is now tested on a case unlike the account's in what the point covers, so a point narrowed to the account no longer passes.
+
+- The Self-standing artifacts principle now applies before writing anything that will be used without the process that produced it, so it covers skill source as well as documents and reports. The request that prompted the work shows its purpose through one use. Unless the work exists for that use alone, its names say what a thing is rather than why it was made, its statements cover every case sharing the reason of the cases shown, its parts are shaped for their roles and placed where those roles belong, and the standards its kind is held to still apply. Before delivering, the agent tests the work against a use that differs from its occasion in exactly what it claims to cover, and corrects whatever that use would need decided differently. Skills that select this principle carry the revised text.
+- Principle selection now names the wider failure this principle closes: something named, scoped, and shaped for the one use that occasioned it, alongside an artifact written against its process or pointing its reader to what they can't reach.
+- When a requester's account, a report, or a finding is the basis for a point, the agent tests the point from each path the same cause can reach on a case unlike the account's in what the point covers, rather than on any case the account doesn't mention. A case chosen inside the account's frame passes a point narrowed to it.
+
 ## [2.4.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-10-20/degardis-authoring.zip) - 2026-10-20
 
 Degardis Authoring 2.4 fixes a reported problem everywhere its cause can reach, not only in the part of the skill where it was reported, and a review of fixes checks the same reach. Guide and principle conditions are now tested from both sides, so a page reaches the runs that need it and not the runs it changes nothing for. A nested guide is also listed on a task when a run of that task can need it without its parent.

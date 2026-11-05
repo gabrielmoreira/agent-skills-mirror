@@ -1,6 +1,6 @@
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ExtendedMcpServer } from "../server.js";
-import { getInstanceLang, t, type Lang, type MessageKey } from "../i18n/index.js";
+import { resolvePanelLang, t, type Lang, type MessageKey } from "../i18n/index.js";
 import { readDisplayedEnvId } from "../utils/env-binding.js";
 import {
   SITE_IDS,
@@ -11,6 +11,7 @@ import {
   type SiteId,
 } from "../utils/site-map.js";
 import { debug } from "../utils/logger.js";
+import { CREDENTIAL_GUARD_JS } from "./panel-raw-guard.js";
 import {
   readClientCapabilitiesFromServer,
   readMcpClientInfoFromServer,
@@ -79,7 +80,21 @@ export interface EnvCreditsPayload {
   plan_raw?: string | null;
   current_region?: string;
   site?: string;
-  credits?: { total?: number; used?: number } | null;
+  /**
+   * 资源点用量。三个数各占一个去向，加起来才是总消耗：
+   *   `used`    套餐内用量（进度条分子，与 `total` 同口径）
+   *   `payg`    超套餐后的按量用量
+   *   `package` 资源包抵扣
+   * 只有 `used` 是必有的；`payg` / `package` 为零或读不到时整键缺省（面板不画空行）。
+   * `source` 说明 `used` 从哪来：`billing` = 账单聚合接口，`detail` = 分模块明细求和。
+   */
+  credits?: {
+    total?: number;
+    used?: number;
+    payg?: number;
+    package?: number;
+    source?: "billing" | "detail";
+  } | null;
   modules?: Array<{ module?: CreditsModuleCode | string; credits_value?: number }>;
   spark?: Array<{ calc_time?: string; credits_value?: number }>;
   balance?: number | null;
@@ -290,8 +305,9 @@ body {
 .brand-l .logo svg { width: 20px; height: 20px; display: block; }
 .brand-name { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
 .brand-r { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
-.brand-alias { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 13px; font-weight: 500; color: var(--text); }
+.brand-alias { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 12px; font-weight: 500; color: var(--text-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .plan-tag { font-size: 12px; color: var(--text-2); border: 1px solid var(--border);
   border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
 .icon-btn { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
@@ -419,6 +435,14 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
           <p class="big"><span id="k-pct"></span><span class="v mono" id="k-credits"></span></p>
           <div class="ubar" id="ubar-box" hidden><i id="ubar"></i></div>
         </div>
+        <div class="field" id="f-payg" hidden>
+          <p class="k">${E(L("mcpUiCredits.field.payg"))}</p>
+          <p class="v mono" id="k-payg"></p>
+        </div>
+        <div class="field" id="f-package" hidden>
+          <p class="k">${E(L("mcpUiCredits.field.package"))}</p>
+          <p class="v mono" id="k-package"></p>
+        </div>
         <div class="field" id="f-mods" hidden>
           <p class="k">${E(L("mcpUiCredits.field.modules"))}</p>
           <div class="mods" id="k-mods"></div>
@@ -495,6 +519,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
 <script>
 (function () {
   var host = window.parent;
+${CREDENTIAL_GUARD_JS}
   var pending = {};
   var nextId = 1;
   function post(message) { host.postMessage(message, "*"); }
@@ -548,9 +573,13 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     openExpense: ${S("mcpUiCredits.action.openExpense")},
     expiredNote: ${S("mcpUiCredits.expired.note")},
     stateUnknown: ${S("mcpUiCredits.state.unknown")},
+    stateNotCredits: ${S("mcpUiCredits.state.notCredits")},
     stateNormal: ${S("mcpUiCredits.state.normal")},
     hintUnknown: ${S("mcpUiCredits.hint.unknown")},
+    hintNotCredits: ${S("mcpUiCredits.hint.notCredits")},
     hintNormal: ${S("mcpUiCredits.hint.normal")},
+    actionSwitchEnv: ${S("mcpUiCredits.action.switchEnv")},
+    messageSwitchEnv: ${S("mcpUiCredits.message.switchEnv")},
     plan: {
       trial: ${S("mcpUiCredits.plan.trial")},
       personal: ${S("mcpUiCredits.plan.personal")},
@@ -849,8 +878,11 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     var envId = hasField(payload, "env_id") ? (payload.env_id ? String(payload.env_id) : "") : FALLBACK.envId;
     current.envId = envId;
     var brandAlias = el("brand-alias");
-    setText(brandAlias, alias || ${J(siteText)});
-    if (brandAlias) { brandAlias.title = envId ? T.copyEnvId + ": " + envId : ""; }
+    setText(brandAlias, envId);
+    if (brandAlias) {
+      brandAlias.hidden = !envId;
+      brandAlias.title = envId ? T.copyEnvId : "";
+    }
     var plan = payload ? planLabel(payload) : "";
     var brandPlan = el("brand-plan");
     brandPlan.hidden = !plan;
@@ -870,7 +902,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     }
   }
   /** Credits-only blocks, hidden while the metrics view renders. */
-  var CREDITS_ONLY = ["col-a", "col-b", "f-credits", "f-mods", "f-plan", "f-balance", "k-expired", "ubar-box"];
+  var CREDITS_ONLY = ["col-a", "col-b", "f-credits", "f-payg", "f-package", "f-mods", "f-plan", "f-balance", "k-expired", "ubar-box"];
   /** Metrics-only blocks, hidden while the credits view renders. */
   var METRICS_ONLY = ["f-m-table", "f-m-latest", "f-m-peak", "f-m-avg", "f-m-window"];
 
@@ -907,7 +939,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     // failure, not an environment problem, and red here would be read as the latter - the state
     // word and the action button carry the meaning instead.
     el("st-dot").className = "dot";
-    setText(el("c-hint"), T.metricHint[state]);
+    setHint(T.metricHint[state]);
 
     // Four numbers that belong to the same metric share one table: a row each, and the third
     // column carries what the number alone cannot say (when the peak happened, how the samples
@@ -967,6 +999,29 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     if (copyNote) { copyNote.hidden = true; }
   }
 
+  /** Empty hints leave no sentence under the status word; hide the node instead of a blank line. */
+  function setHint(text) {
+    var node = el("c-hint");
+    var value = text || "";
+    setText(node, value);
+    if (node) { node.hidden = !value; }
+  }
+
+  /**
+   * True when this payload is actually a credit reading: a known credit plan, a non-zero used
+   * figure, module rows, or a sparkline. A zero used with none of those is an empty usage list,
+   * which old non-credit packages also return. Absence of a payload is the list/info case.
+   */
+  function hasCreditSignal(payload) {
+    if (!payload) { return false; }
+    if (payload.plan && T.plan[payload.plan]) { return true; }
+    var credits = payload.credits;
+    if (credits && typeof credits.used === "number" && credits.used > 0) { return true; }
+    if (payload.modules && payload.modules.length) { return true; }
+    if (payload.spark && payload.spark.length) { return true; }
+    return false;
+  }
+
   function render(payload) {
     if (payloadKind(payload) === "metrics") { renderMetrics(payload); return; }
     hideAll(METRICS_ONLY);
@@ -986,7 +1041,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     setText(el("c-title"), T.title + (alias ? T.titleSep + alias : ""));
     setText(el("st-text"), branch.text);
     el("st-dot").className = "dot" + (branch.dot ? " " + branch.dot : "");
-    setText(el("c-hint"), branch.hint);
+    setHint(branch.hint);
 
     var plan = payload ? planLabel(payload) : "";
     var fPlan = el("f-plan");
@@ -1006,10 +1061,28 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       setText(el("k-pct"), pct === null ? "" : pct + "%");
       setText(el("k-credits"), pct === null ? fmtNumber(used) : fmtNumber(used) + " / " + fmtNumber(total));
     }
+    // The two other destinations of the same credit bill. Without them the module rows look like
+    // they add up to more than the plan figure for no reason. Zero means the row would be noise.
+    var payg = credits && typeof credits.payg === "number" && credits.payg > 0 ? credits.payg : null;
+    var packCredits = credits && typeof credits.package === "number" && credits.package > 0 ? credits.package : null;
+    var fPayg = el("f-payg");
+    fPayg.hidden = payg === null;
+    if (!fPayg.hidden) { setText(el("k-payg"), fmtNumber(payg)); }
+    var fPackage = el("f-package");
+    fPackage.hidden = packCredits === null;
+    if (!fPackage.hidden) { setText(el("k-package"), fmtNumber(packCredits)); }
     // "Not enough data" is only true when nothing was read. With a used figure in hand, the honest
     // sentence names the one piece that is missing instead of denying the number on screen.
     if (key === "unknown" && used !== null) {
-      setText(el("c-hint"), T.hintUnknownWithUsage);
+      setHint(T.hintUnknownWithUsage);
+    }
+    var notCredits = key === "unknown" && !hasCreditSignal(payload);
+    // A list/info result, or an environment that is not billed by credits, has no credit figure.
+    // Name it as non-credit and offer a prompt CTA to switch / review plans.
+    if (notCredits) {
+      setText(el("st-text"), T.stateNotCredits);
+      setHint(T.hintNotCredits);
+      current.mainMsg = T.messageSwitchEnv;
     }
     var ubarBox = el("ubar-box");
     ubarBox.hidden = pct === null;
@@ -1022,7 +1095,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       current.pct = pct;
       if (pct >= 80 && (key === "normal" || key === "unknown")) {
         setText(el("st-text"), T.stateNearLimit.replace("{pct}", String(pct)));
-        setText(el("c-hint"), T.hintNearLimit.replace("{pct}", String(pct)));
+        setHint(T.hintNearLimit.replace("{pct}", String(pct)));
         // The wording now says "near the limit", so the dot has to follow: a green dot next to a
         // red bar reads as two different verdicts on one screen.
         el("st-dot").className = "dot warn";
@@ -1067,12 +1140,14 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     if (!expiredNote.hidden) { setText(expiredNote, T.expiredNote.replace("{days}", String(days))); }
 
     var mainBtn = el("btn-main");
-    mainBtn.hidden = !branch.main;
-    if (branch.main) {
+    var mainLabel = notCredits ? T.actionSwitchEnv : branch.main;
+    var mainIcon = notCredits ? "rocket" : (branch.icon || "rocket");
+    mainBtn.hidden = !mainLabel;
+    if (mainLabel) {
       // Label and glyph sit in their own nodes: writing textContent on the button would delete
       // the icon on the next render.
-      setText(el("btn-main-label"), branch.main);
-      setIcon(el("ico-main"), branch.icon || "rocket");
+      setText(el("btn-main-label"), mainLabel);
+      setIcon(el("ico-main"), mainIcon);
       mainBtn.disabled = false;
     }
     var linkBtn = el("btn-link");
@@ -1233,7 +1308,16 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       } else {
         render(null);
       }
-      setText(el("raw-out"), JSON.stringify(data.params, null, 2));
+      if (carriesCredentialBlock(data.params)) {
+        // Credentials never reach the fold: this card explains state, it is not a JSON viewer.
+        var rawPre = el("raw-out");
+        if (rawPre) {
+          setText(rawPre, "");
+          if (rawPre.parentNode) { rawPre.parentNode.hidden = true; }
+        }
+      } else {
+        setText(el("raw-out"), JSON.stringify(data.params, null, 2));
+      }
       reportSize();
       return;
     }
@@ -1280,7 +1364,7 @@ export function registerEnvCreditsResource(server: ExtendedMcpServer): void {
     },
     async (uri) => {
       const startedAt = Date.now();
-      const lang = getInstanceLang();
+      const lang = resolvePanelLang();
       let success = true;
       let errorMessage: string | undefined;
       let bytes = 0;

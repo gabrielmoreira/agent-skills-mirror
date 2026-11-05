@@ -87,7 +87,7 @@ optional autonomous daemon.
 `clawdcursor agent --no-llm` exposes the HTTP tool surface only (your agent supplies the brain).
 `clawdcursor agent --no-vision` (or `CLAWD_DISABLE_VISION=1`, also for stdio) sends no screenshot to any model: a call that would return one is refused with VISION_DISABLED; read the screen with accessibility or OCR.
 
-## Tool surface (compact — recommended, ~1500 tokens of catalog)
+## Tool surface (compact — recommended, ~7,000 tokens of catalog vs ~20,000 granular)
 
 - computer — mouse, keyboard, screenshot (raw I/O)
 - accessibility — drive UI by element name; compile a fused el_NN UI map and act on {element_id, snapshot_id} (survives layout shifts)
@@ -97,7 +97,7 @@ optional autonomous daemon.
 - task — hand a whole task to the built-in autonomous loop
 - batch — run a guarded, safety-gated sequence of the above in one call
 
-98 granular tools (one schema per verb) are available by omitting `--compact`
+100+ granular tools (one schema per verb) are available by omitting `--compact`
 (granular is the default surface) — enumerate them with `tools/list` on either
 transport, if your runtime needs every primitive as a top-level tool.
 
@@ -105,8 +105,8 @@ transport, if your runtime needs every primitive as a top-level tool.
 
 Every tool call routes through one `safety.evaluate()` chokepoint regardless of
 transport (stdio or HTTP). Sensitive actions auto-elevate to Confirm. HTTP requires
-a bearer token. Local-only by default. An on-screen "desktop control in progress"
-indicator shows whenever an agent is driving — double-click it to stop. A stop holds
+a bearer token. Local-only by default. An on-screen pill shows whenever an agent is
+driving and what it is doing ("Typing in Edge") — its Stop button (or a double-click) stops it. A stop holds
 across restarts: every call returns "stopped by the user" until the user's Resume on a
 `system pause_for_user` prompt gives control back. Never lift a stop any other way. Input is
 refused ("foreground changed") when a window other than the one the agent was working
@@ -115,6 +115,13 @@ At a roadblock (sign-in, 2FA, CAPTCHA) the agent pauses instead of failing: the
 glow turns blue, the prompt says what to do, and the task continues when the
 user clicks Resume. Outside agents use
 `system pause_for_user` (ask for the one step only the user can do, and pass `done_when` so the pause ends as soon as they finish); `clawdcursor resume` answers from a terminal.
+While you are driving the desktop, the user is watching the screen, not your chat: ask them on
+the pause card (use `choices` when there are options), not in your own chat.
+`pause_for_user` takes `choices` (2-6 short options, one button each) and/or `input`
+(`{placeholder?, multiline?}`, a text box); the answer is `{status:"replied", choice:"<exact option text>"}`
+or `{status:"replied", reply:"..."}`. It is the user's answer to your question only: never
+approval of a Send / Delete / Pay safety confirmation, and no tool call of yours can pick a
+choice. Never ask for a password or secret on it.
 
 ## Links
 

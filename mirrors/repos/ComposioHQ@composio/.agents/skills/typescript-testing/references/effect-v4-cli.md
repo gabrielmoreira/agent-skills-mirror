@@ -1,7 +1,7 @@
 # Effect v4 CLI testing
 
-The CLI test suite (`ts/packages/cli/test/`) runs on `effect@4.0.5` and
-`@effect/vitest@4.0.5` (pinned exactly, matching `ts/packages/cli/package.json` and the
+The CLI test suite (`ts/packages/cli/test/`) runs on `effect@^4.1.0` and
+`@effect/vitest@^4.1.0` (matching range, matching `ts/packages/cli/package.json` and the
 workspace catalog in `pnpm-workspace.yaml`). `@effect/cli` and `@effect/platform` no longer exist
 as dependencies — their functionality moved into `effect`/`effect/*`. Read
 `ts/packages/cli/test/__utils__/services/test-layer.ts` before writing a new test suite; it is the
@@ -17,6 +17,8 @@ repo-local `effect-v4` skill.
   under test sleeps outside Effect's clock; a retry, timeout, or `Effect.sleep` inside the code
   under test is driven on `it.effect` by forking the effect, looping `Effect.yieldNow` and `TestClock.adjust`
   until `fiber.pollUnsafe()` is set, and `Fiber.join` (see "Time in tests" in the `effect-v4` skill's core-patterns reference).
+  The exception is a test that answers the API client itself with a retryable response. It answers
+  with `retry-after-ms: 0` and runs on the live clock, as that section describes.
 - Reusable service layers go through `layer(...)`, not manual `Effect.provide` scattered per test:
 
 ```ts no-check

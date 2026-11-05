@@ -2,7 +2,7 @@
 name: planning-with-files
 description: "Persistent file-based planning for multi-step AI-agent work. Keeps task_plan.md, findings.md, and progress.md on disk; lifecycle hooks inject selected project planning context. Automatic recovery reads project planning files only. Explicit session-catchup.py --metadata reads same-project local agent session records and emits aggregate counts only; --replay may emit bounded nonce-framed excerpts. Optional gated mode can request continuation only when the host supports it and never runs commands declared in Markdown. The skill has no network upload path. Use for research or work needing 5+ tool calls."
 metadata:
-  version: "3.27.0"
+  version: "3.28.0"
   hermes:
     tags: [planning, long-running-tasks, context-engineering, workflow]
 ---
@@ -233,6 +233,8 @@ For agent-readable paths and state, add `--json` (PowerShell: `-Json`) to the li
 To find a task before resuming it, run `sh "<skill-dir>/scripts/set-active-plan.sh" --list` or, in Windows PowerShell, `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Replace `<skill-dir>` with this installed skill directory and keep your current directory at the project root.
 
 This read-only command lists named plans and phase progress under the current directory's `.planning/`. `[active]` marks the shared default pointer; it does not bind a session. Concurrent tasks still require each host's `PLAN_ID` or separate worktrees.
+
+When hooks report that multiple plans are available, or every phase of a named plan is complete, run the listing command and tell the user which plans look finished. Archive only the plans the user approves: `--archive <id>` (PowerShell: `-Archive <id>`) previews the move to `.planning/.archive/`, `--yes` (`-Yes`) applies it, and `--restore <id>` (`-Restore <id>`) moves it back. Never archive on age or completion alone.
 
 If your Hermes hub installation omits `.ps1` files, use `--list` with a POSIX shell or obtain the helper from the repository's `.hermes/skills/planning-with-files/scripts/` directory. The Hermes adapter itself does not depend on this helper.
 

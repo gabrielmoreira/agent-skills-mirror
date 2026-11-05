@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 // claude-slides: local Artifact tool (prebuilt; do not edit).
 
-import { spawn } from "node:child_process";
-import fs10 from "node:fs";
-import fsp2 from "node:fs/promises";
-import path12 from "node:path";
+import fs13 from "node:fs";
+import fsp3 from "node:fs/promises";
+import path15 from "node:path";
 import { fileURLToPath as fileURLToPath2, pathToFileURL } from "node:url";
 
 var BLOB_ID_PATTERN = /^[0-9a-f]{32}$/;
@@ -2471,9 +2470,11 @@ async function updateComments(root, change) {
 }
 
 import fs8 from "node:fs";
+import net from "node:net";
 import path10 from "node:path";
 var STATE_FILE = ".artifact-server.json";
 var LOG_FILE = ".artifact-server.log";
+var EXPORTS_DIR = "exports";
 function readState(root) {
   try {
     return JSON.parse(fs8.readFileSync(path10.join(root, STATE_FILE), "utf8"));
@@ -2500,6 +2501,35 @@ async function runningServer(root, kind, probe) {
   }
 }
 var DEFAULT_PORTS = { slides: 4710, design: 4720, "design-system": 4730, dashboard: 4740, docs: 4750, motion: 4760 };
+var PORT_TRIES = 100;
+var NetworkBlocked = class extends Error {
+  code = "NETWORK_BLOCKED";
+  constructor() {
+    super(
+      "A sandbox blocks local network here (127.0.0.1), so the server cannot start and no port is really in use. Run this same command with local network allowed, outside the sandbox, asking for that permission if your commands need approval."
+    );
+  }
+};
+function loopbackBlocked(port) {
+  return new Promise((resolve) => {
+    const socket = net.connect({ host: "127.0.0.1", port });
+    const done = (blocked) => {
+      socket.destroy();
+      resolve(blocked);
+    };
+    socket.setTimeout(300, () => done(false));
+    socket.once("connect", () => done(false));
+    socket.once("error", (error) => done(error.code === "EPERM" || error.code === "EACCES"));
+  });
+}
+function serverOrigin(host, port) {
+  const shown = host === "0.0.0.0" || host === "::" ? "127.0.0.1" : host.includes(":") ? `[${host}]` : host;
+  return `http://${shown}:${port}`;
+}
+
+import { spawn } from "node:child_process";
+import fs10 from "node:fs";
+import path12 from "node:path";
 
 import crypto from "node:crypto";
 import fs9 from "node:fs";
@@ -2633,8 +2663,408 @@ var Sharing = class _Sharing {
   }
 };
 
+var MAX_MESSAGE = 64 * 1024 * 1024;
+
+var HUB_ROUTE = "/__hub";
+function buildOf(script2) {
+  const real = fs10.realpathSync(script2);
+  const { mtimeMs, size } = fs10.statSync(real);
+  return `${real}:${mtimeMs}:${size}`;
+}
+async function hubAt(origin) {
+  try {
+    const response = await fetch(`${origin}${HUB_ROUTE}`, { signal: AbortSignal.timeout(1e3) });
+    if (!response.ok) return null;
+    const info = await response.json();
+    return info.hub === 1 ? info : null;
+  } catch {
+    return null;
+  }
+}
+async function joinHub(call, below = Infinity) {
+  if (call.port === 0) return null;
+  const ports = call.portGiven ? [call.port] : Array.from({ length: PORT_TRIES }, (_, i) => call.port + i).filter((port) => port <= 65535 && port < below);
+  const build = buildOf(call.script);
+  const origins = ports.map((port) => serverOrigin(call.host, port));
+  const infos = await Promise.all(origins.map(hubAt));
+  for (const [i, info] of infos.entries()) {
+    if (!info || info.kind !== call.kind || info.build !== build || info.host !== call.host) continue;
+    const response = await fetch(`${origins[i]}${HUB_ROUTE}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "mount", root: call.root, ...call.agentHook ? { agentHook: call.agentHook } : {}, lan: call.lan === true }),
+      signal: AbortSignal.timeout(2e4)
+    }).catch(() => null);
+    if (!response) continue;
+    const body = await response.json().catch(() => ({}));
+    if (response.ok && body.state) return body.state;
+    if (response.status === 409) continue;
+    throw Object.assign(new Error(body.message ?? `the server answered ${response.status}`), { code: body.code ?? "SERVER_FAILED" });
+  }
+  return null;
+}
+async function leaveHub(state) {
+  let remaining = 0;
+  const response = await fetch(`${new URL(state.url).origin}${HUB_ROUTE}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "unmount", root: state.root }),
+    signal: AbortSignal.timeout(5e3)
+  }).catch(() => null);
+  const body = response ? await response.json().catch(() => null) : null;
+  if (body?.hub === 1) remaining = Number(body.remaining ?? 0);
+  else if (alive(state.pid)) process.kill(state.pid, "SIGTERM");
+  const deadline = Date.now() + 5e3;
+  while (remaining === 0 && alive(state.pid) && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 100));
+  if (remaining === 0 && alive(state.pid)) return false;
+  fs10.rmSync(path12.join(state.root, STATE_FILE), { force: true });
+  return true;
+}
+async function openOnHub(call) {
+  if (await loopbackBlocked(call.port || 1)) throw new NetworkBlocked();
+  const joined = await joinHub(call);
+  if (joined) return { state: joined };
+  const logFile = path12.join(call.root, LOG_FILE);
+  const fd = fs10.openSync(logFile, "a");
+  const child = spawn(process.execPath, [...call.command, "--background"], { detached: true, stdio: ["ignore", "ignore", fd] });
+  child.unref();
+  fs10.closeSync(fd);
+  let exited = false;
+  child.once("exit", () => exited = true);
+  const deadline = Date.now() + 15e3;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const state = await call.running();
+    if (state) return { state };
+    if (exited && !readState(call.root)) break;
+  }
+  return { tail: fs10.existsSync(logFile) ? fs10.readFileSync(logFile, "utf8").split("\n").slice(-12).join("\n") : "" };
+}
+
+import fs11 from "node:fs";
+import fsp2 from "node:fs/promises";
+import path13 from "node:path";
+import { promisify } from "node:util";
+import zlib from "node:zlib";
+var LOCAL_FILES = /* @__PURE__ */ new Set([STATE_FILE, LOG_FILE, SHARING_FILE]);
+var LOCAL_DIRS = /* @__PURE__ */ new Set([EXPORTS_DIR]);
+var JUNK_FILES = /* @__PURE__ */ new Set([".DS_Store", "Thumbs.db", "desktop.ini"]);
+var isTemp = (name) => name.endsWith(".tmp") || name.startsWith(".tmp-");
+var STORED = /* @__PURE__ */ new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".heic", ".mp4", ".m4v", ".mov", ".webm", ".mp3", ".m4a", ".aac", ".ogg", ".opus", ".flac", ".woff", ".woff2", ".zip", ".gz", ".br", ".zst", ".7z"]);
+var MAX_ENTRIES = 65535;
+var MAX_BYTES = 4294967295;
+var ArchiveTooLarge = class extends Error {
+  code = "TOO_LARGE";
+};
+async function archiveEntries(root, skip = []) {
+  const folder = path13.basename(path13.resolve(root)) || "artifact";
+  const skipped = new Set(skip.map((file) => path13.resolve(file)));
+  const entries = [];
+  const walk2 = async (dir, rel) => {
+    let names;
+    try {
+      names = await fsp2.readdir(dir, { withFileTypes: true });
+    } catch (error) {
+      if (rel && error.code === "ENOENT") return;
+      throw error;
+    }
+    for (const dirent of names.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)) {
+      const name = dirent.name;
+      if (JUNK_FILES.has(name) || isTemp(name) || !rel && (LOCAL_FILES.has(name) || LOCAL_DIRS.has(name) && dirent.isDirectory())) continue;
+      const file = path13.join(dir, name);
+      if (skipped.has(file)) continue;
+      const inner = rel ? `${rel}/${name}` : name;
+      if (dirent.isDirectory()) await walk2(file, inner);
+      else if (dirent.isFile()) {
+        const stat = await fsp2.stat(file).catch(() => null);
+        if (stat?.isFile()) entries.push({ name: `${folder}/${inner}`, file, size: stat.size, mode: stat.mode & 511, mtime: stat.mtime });
+      }
+    }
+  };
+  await walk2(path13.resolve(root), "");
+  if (entries.length > MAX_ENTRIES) throw new ArchiveTooLarge(`The folder holds ${entries.length} files, more than a zip holds (${MAX_ENTRIES}); copy the folder itself instead.`);
+  const bound = entries.reduce((sum, entry) => sum + entry.size + 2 * (46 + Buffer.byteLength(entry.name)), 22);
+  if (bound > MAX_BYTES) throw new ArchiveTooLarge(`The folder holds ${(bound / 2 ** 30).toFixed(1)} GiB, more than a zip holds (4 GiB); copy the folder itself instead.`);
+  return entries;
+}
+var CRC_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 3988292384 ^ c >>> 1 : c >>> 1;
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
+function crc32(bytes) {
+  let crc = 4294967295;
+  for (let i = 0; i < bytes.length; i++) crc = CRC_TABLE[(crc ^ bytes[i]) & 255] ^ crc >>> 8;
+  return (crc ^ 4294967295) >>> 0;
+}
+function dosTime(date) {
+  const year = date.getFullYear();
+  if (year < 1980) return { time: 0, date: 1 << 5 | 1 };
+  if (year > 2107) return { time: 23 << 11 | 59 << 5 | 29, date: 127 << 9 | 12 << 5 | 31 };
+  return {
+    time: date.getHours() << 11 | date.getMinutes() << 5 | date.getSeconds() >> 1,
+    date: year - 1980 << 9 | date.getMonth() + 1 << 5 | date.getDate()
+  };
+}
+var deflateRaw = promisify(zlib.deflateRaw);
+var UTF8 = 1 << 11;
+async function writeZip(entries, write) {
+  const central = [];
+  let offset = 0;
+  const put = async (chunk) => {
+    await write(chunk);
+    offset += chunk.length;
+  };
+  for (const entry of entries) {
+    let data;
+    try {
+      data = entry.data ?? await fsp2.readFile(entry.file);
+    } catch (error) {
+      if (error.code === "ENOENT") continue;
+      throw error;
+    }
+    const crc = crc32(data);
+    let method = 0;
+    let body = data;
+    if (data.length > 0 && !STORED.has(path13.extname(entry.name).toLowerCase())) {
+      const deflated = await deflateRaw(data);
+      if (deflated.length < data.length) {
+        method = 8;
+        body = deflated;
+      }
+    }
+    if (offset + body.length > MAX_BYTES) throw new ArchiveTooLarge("The folder grew past what a zip holds (4 GiB) while it was being zipped.");
+    const name = Buffer.from(entry.name, "utf8");
+    const { time, date } = dosTime(entry.mtime);
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(67324752, 0);
+    local.writeUInt16LE(20, 4);
+    local.writeUInt16LE(UTF8, 6);
+    local.writeUInt16LE(method, 8);
+    local.writeUInt16LE(time, 10);
+    local.writeUInt16LE(date, 12);
+    local.writeUInt32LE(crc, 14);
+    local.writeUInt32LE(body.length, 18);
+    local.writeUInt32LE(data.length, 22);
+    local.writeUInt16LE(name.length, 26);
+    local.writeUInt16LE(0, 28);
+    const header = Buffer.alloc(46);
+    header.writeUInt32LE(33639248, 0);
+    header.writeUInt16LE(3 << 8 | 20, 4);
+    header.writeUInt16LE(20, 6);
+    header.writeUInt16LE(UTF8, 8);
+    header.writeUInt16LE(method, 10);
+    header.writeUInt16LE(time, 12);
+    header.writeUInt16LE(date, 14);
+    header.writeUInt32LE(crc, 16);
+    header.writeUInt32LE(body.length, 20);
+    header.writeUInt32LE(data.length, 24);
+    header.writeUInt16LE(name.length, 28);
+    header.writeUInt32LE((32768 | (entry.mode || 420) | 384) << 16 >>> 0, 38);
+    header.writeUInt32LE(offset, 42);
+    central.push(header, name);
+    await put(Buffer.concat([local, name]));
+    await put(body);
+  }
+  const start = offset;
+  const directory = Buffer.concat(central);
+  await put(directory);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(101010256, 0);
+  end.writeUInt16LE(central.length / 2, 8);
+  end.writeUInt16LE(central.length / 2, 10);
+  end.writeUInt32LE(directory.length, 12);
+  end.writeUInt32LE(start, 16);
+  await put(end);
+  return offset;
+}
+function archiveFileName(root, now = /* @__PURE__ */ new Date()) {
+  const day = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  return `${path13.basename(path13.resolve(root)) || "artifact"}-${day}.zip`;
+}
+async function writeArchive(root, out) {
+  const file = path13.resolve(out);
+  const entries = await archiveEntries(root, [file]);
+  const tmp = path13.join(path13.dirname(file), `.${path13.basename(file)}.${process.pid}.tmp`);
+  const handle = await fsp2.open(tmp, "w");
+  let bytes;
+  try {
+    bytes = await writeZip(entries, async (chunk) => {
+      await handle.write(chunk);
+    });
+    await handle.close();
+  } catch (error) {
+    await handle.close().catch(() => {
+    });
+    await fsp2.rm(tmp, { force: true });
+    throw error;
+  }
+  await fsp2.rename(tmp, file);
+  return { file, files: entries.length, bytes };
+}
+async function archiveCommand(root, out) {
+  const where = out ? path13.resolve(out) : path13.dirname(path13.resolve(root));
+  const target = fs11.statSync(where, { throwIfNoEntry: false })?.isDirectory() ? path13.join(where, archiveFileName(root)) : where;
+  const { file, files, bytes } = await writeArchive(root, target);
+  return { file, folder: path13.basename(path13.resolve(root)), files, bytes, leftOut: [...LOCAL_FILES] };
+}
+
+import fs12 from "node:fs";
+import path14 from "node:path";
+var FOLDER = /^[a-z0-9][a-z0-9_-]{0,63}$/;
+var MAX_FILES = 2e3;
+var MAX_FILE_BYTES = 64 * 1024 * 1024;
+var DESIGN_SYSTEM_FILE2 = "design-system.json";
+function readRecords(project, indexFile) {
+  let index;
+  try {
+    index = JSON.parse(fs12.readFileSync(path14.join(project, indexFile), "utf8"));
+  } catch {
+    return [];
+  }
+  const list = index?.designSystems;
+  const records = Array.isArray(list) ? list : list && typeof list === "object" ? Object.values(list) : [];
+  const out = [];
+  for (const raw of records) {
+    const r = raw;
+    if (typeof r?.namespace !== "string" || !FOLDER.test(r.namespace)) continue;
+    out.push({
+      namespace: r.namespace,
+      title: typeof r.title === "string" ? r.title : r.namespace,
+      artifact: typeof r.artifact === "string" ? r.artifact : ""
+    });
+  }
+  return out;
+}
+function plain(p, want) {
+  const stat = fs12.lstatSync(p, { throwIfNoEntry: false });
+  return Boolean(stat && !stat.isSymbolicLink() && (want === "file" ? stat.isFile() : stat.isDirectory()));
+}
+function walk(dir, prefix = "", out = []) {
+  for (const entry of fs12.readdirSync(path14.join(dir, prefix), { withFileTypes: true })) {
+    if (out.length >= MAX_FILES) break;
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) walk(dir, rel, out);
+    else if (entry.isFile()) out.push(rel);
+  }
+  return out;
+}
+var projectOf = (candidate) => path14.basename(candidate) === "project" ? candidate : path14.join(candidate, "project");
+function sourceProject(artifact, root, from) {
+  const given = from ?? artifact;
+  if (!given) return { reason: "the record names no source folder", kind: "none" };
+  if (!from && /^[a-z][a-z0-9+.-]*:\/\//i.test(given)) return { reason: `its source is ${given}, which is not a folder on this machine`, kind: "remote" };
+  const candidates = path14.isAbsolute(given) ? [given] : [path14.resolve(given), path14.resolve(root, given), path14.resolve(root, "..", given)];
+  for (const candidate of candidates) {
+    const project = projectOf(candidate);
+    if (plain(project, "dir")) return { project };
+  }
+  if (!from && !path14.isAbsolute(given)) {
+    let dir = path14.resolve(root, "..");
+    for (let up = path14.dirname(dir); up !== dir; up = path14.dirname(dir)) {
+      dir = up;
+      const project = projectOf(path14.resolve(dir, given));
+      if (plain(path14.join(project, DESIGN_SYSTEM_FILE2), "file")) return { project };
+    }
+  }
+  return { reason: `its source folder ${given} was not found${from ? "" : ` (tried from ${process.cwd()} and the folders above the artifact); pass --from <folder>`}`, kind: "not-found" };
+}
+function compareSystem(project, root, record, from) {
+  const diff = { namespace: record.namespace, title: record.title, changed: [], removed: [] };
+  const found = sourceProject(record.artifact, root, from);
+  if (!found.project) return { ...diff, skipped: found.reason, skippedKind: found.kind };
+  diff.source = path14.dirname(found.project);
+  const copy = path14.join(project, "ds", record.namespace);
+  if (!plain(copy, "dir")) return { ...diff, missing: true };
+  for (const rel of walk(copy)) {
+    const mine = path14.join(copy, rel);
+    const theirs = path14.join(found.project, rel);
+    if (!plain(mine, "file")) continue;
+    if (!plain(theirs, "file")) {
+      diff.removed.push(rel);
+      continue;
+    }
+    const a = fs12.statSync(mine);
+    const b = fs12.statSync(theirs);
+    if (a.size > MAX_FILE_BYTES || b.size > MAX_FILE_BYTES) continue;
+    if (a.size !== b.size || !fs12.readFileSync(mine).equals(fs12.readFileSync(theirs))) diff.changed.push(rel);
+  }
+  return diff;
+}
+function pick(records, namespace) {
+  if (namespace === void 0) return records;
+  const one = records.filter((r) => r.namespace === namespace);
+  if (one.length === 0) {
+    const names = records.map((r) => r.namespace);
+    throw new Error(`No designSystems record has namespace ${JSON.stringify(namespace)}${names.length ? ` (it has: ${names.join(", ")})` : ""}.`);
+  }
+  return one;
+}
+function compareSystems(project, root, indexFile, namespace, from) {
+  return pick(readRecords(project, indexFile), namespace).map((r) => compareSystem(project, root, r, from));
+}
+function staleNotes(project, root, indexFile, command) {
+  const notes = [];
+  for (const diff of compareSystems(project, root, indexFile)) {
+    if (diff.changed.length === 0 && diff.removed.length === 0) continue;
+    const parts = [];
+    if (diff.changed.length > 0) parts.push(`${diff.changed.length} changed (${diff.changed.slice(0, 3).join(", ")}${diff.changed.length > 3 ? ", \u2026" : ""})`);
+    if (diff.removed.length > 0) parts.push(`${diff.removed.length} gone from the source`);
+    notes.push(
+      `project/ds/${diff.namespace}/ is behind its source system ${diff.source}: ${parts.join(", ")}. A copy never changes by itself: run \`${command(diff.namespace, false)}\` to copy the changed files again (\`${command(diff.namespace, true)}\` lists them).`
+    );
+  }
+  return notes;
+}
+function stamp(project, indexFile, namespaces, now) {
+  const file = path14.join(project, indexFile);
+  const text = fs12.readFileSync(file, "utf8");
+  const index = JSON.parse(text);
+  const list = index.designSystems;
+  const records = Array.isArray(list) ? list : list && typeof list === "object" ? Object.values(list) : [];
+  for (const r of records) {
+    const record = r;
+    if (record && typeof record.namespace === "string" && namespaces.has(record.namespace)) record.copiedAt = now;
+  }
+  const indent = /^\{\n/.test(text) ? /\n( +|\t)"/.exec(text)?.[1] ?? 2 : void 0;
+  const out = JSON.stringify(index, null, indent);
+  const tmp = `${file}.${process.pid}.tmp`;
+  fs12.writeFileSync(tmp, text.endsWith("\n") ? `${out}
+` : out);
+  fs12.renameSync(tmp, file);
+}
+function syncSystems(project, root, indexFile, opts) {
+  const diffs = compareSystems(project, root, indexFile, opts.namespace, opts.from);
+  const results = [];
+  const synced = /* @__PURE__ */ new Set();
+  const now = (/* @__PURE__ */ new Date()).toISOString().replace(/\.\d{3}Z$/, "Z");
+  for (const diff of diffs) {
+    const result = { ...diff, copied: [] };
+    if (!opts.check && diff.source && !diff.missing) {
+      for (const rel of diff.changed) {
+        const target = path14.join(project, "ds", diff.namespace, rel);
+        const tmp = `${target}.${process.pid}.tmp`;
+        fs12.copyFileSync(path14.join(diff.source, "project", rel), tmp);
+        fs12.renameSync(tmp, target);
+        result.copied.push(rel);
+      }
+      if (diff.changed.length > 0) synced.add(diff.namespace);
+    }
+    results.push(result);
+  }
+  if (synced.size > 0) {
+    stamp(project, indexFile, synced, now);
+    for (const r of results) if (synced.has(r.namespace)) r.copiedAt = now;
+  }
+  return results;
+}
+
 async function shareCall(url, action, fail2) {
-  const response = await fetch(new URL("/__share", url), action ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(action) } : {});
+  const response = await fetch(new URL("__share", url), action ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(action) } : {});
   const body = await response.json().catch(() => ({}));
   if (!response.ok) fail2("SHARE_REFUSED", String(body.message ?? `the server answered ${response.status}`));
   return body;
@@ -2663,6 +3093,7 @@ async function shareCommand(o) {
     ...rolesOf(o.flags, "disable", o.fail).map((role) => ({ action: "link", role, on: false })),
     ...guestRoles(o.flags, o.fail)
   ];
+  const open2 = !off && changes.length === 0;
   let server = await o.running();
   if (!server) {
     const sharing = new Sharing(o.root);
@@ -2676,25 +3107,40 @@ async function shareCommand(o) {
       sharing.setLan(false);
       return { lan: false, message: "Not shared on the local network. Guests already in get their place back when it is shared again (unless their link was reset)." };
     }
+    if (!open2 && !sharing.state.lan) {
+      return {
+        lan: false,
+        links: Object.fromEntries(GUEST_ROLES.map((role) => [role, sharing.state.links[role].on ? "on" : "off"])),
+        message: `Links changed. Not shared on the local network: ${NOT_SHARED_HINT}`
+      };
+    }
     server = await o.startShared();
     if (!server) o.fail("SERVER_FAILED", `The server did not start. Run ${o.serveCommand} in the foreground to see why.`);
   }
   let view = await shareCall(server.url, null, o.fail);
   for (const change of changes) view = await shareCall(server.url, change, o.fail);
-  if (off || !view.lan) view = await shareCall(server.url, { action: "lan", on: !off }, o.fail);
+  if (off || open2 && !view.lan) view = await shareCall(server.url, { action: "lan", on: !off }, o.fail);
   const links = view.links;
+  const shown = (list) => Object.fromEntries(Object.entries(list).map(([role, link]) => [role, link.on ? link.url : "off"]));
+  const tailnet = view.lan ? view.tailnet : void 0;
   return {
     lan: view.lan,
     ...view.lan ? { addresses: lanUrls(view) } : {},
-    links: Object.fromEntries(Object.entries(links).map(([role, link]) => [role, link.on ? link.url : "off"])),
+    links: shown(links),
+    ...tailnet ? {
+      tailscale: shown(tailnet.links),
+      tailscaleNote: `This computer has a Tailscale address (${tailnet.address}): the tailscale links open the same roles for people on your tailnet, from any network. Use the links above for people on this Wi-Fi or LAN.`
+    } : {},
     guests: view.guests,
     ...view.lan ? {
       note: "Send the link for the role you want to give: editor edits, commenter comments, viewer reads. Anyone on this network with a link joins under a name they type. The owner (this computer) shares from the Share button too.",
+      security: "It is plain http: others on the network can read what passes. A link is the permission: whoever has it gets its role, so send it only to the people meant to have it, and reset a role's link if it went further.",
       stop: o.offCommand
-    } : { note: "Not shared on the network: the links work on this computer only." }
+    } : { note: `Not shared on the network: the links work on this computer only. ${NOT_SHARED_HINT}` }
   };
 }
-var lanUrls = (view) => (Array.isArray(view.addresses) ? view.addresses : []).map((a) => `http://${String(a)}:${String(view.port)}/`);
+var NOT_SHARED_HINT = "share <root> with no options shares it.";
+var lanUrls = (view) => (Array.isArray(view.addresses) ? view.addresses : []).map((a) => `http://${String(a)}:${String(view.port)}${String(view.page ?? "/")}`);
 async function lanOn(url, flags, fail2) {
   if (!flags.has("lan")) return {};
   return { lan: lanUrls(await shareCall(url, { action: "lan", on: true }, fail2)) };
@@ -2707,8 +3153,8 @@ process.emitWarning = ((warning, ...rest) => {
 });
 var KIND = "slides";
 var SCRIPT = fileURLToPath2(import.meta.url);
-var EDITOR_DIR = path12.join(path12.dirname(SCRIPT), "editor");
-var SERVER_SCRIPT = path12.join(path12.dirname(SCRIPT), "server.mjs");
+var EDITOR_DIR = path15.join(path15.dirname(SCRIPT), "editor");
+var SERVER_SCRIPT = path15.join(path15.dirname(SCRIPT), "server.mjs");
 var MAX_LISTED = 200;
 var UPLOAD_MAX_BYTES = 20 * 1024 * 1024;
 var INDEX_FILE = KIND === "slides" ? "deck.json" : KIND === "design" ? CANVAS_FILE : DESIGN_SYSTEM_FILE;
@@ -2721,7 +3167,7 @@ var CliError = class extends Error {
     this.code = code;
   }
 };
-var SWITCHES = /* @__PURE__ */ new Set(["all", "wait", "resolve", "reopen", "lan", "off"]);
+var SWITCHES = /* @__PURE__ */ new Set(["all", "wait", "resolve", "reopen", "lan", "off", "check"]);
 function parseArgs(argv) {
   const positional = [];
   const flags = /* @__PURE__ */ new Map();
@@ -2747,13 +3193,13 @@ function quote(s) {
 }
 function resolveArtifact(given, mustExist = true) {
   if (!given) throw new CliError("MISSING_ROOT", `Give the artifact folder: the one that holds project/${INDEX_FILE}.`);
-  let root = path12.resolve(given);
-  if (path12.basename(root) === "project" && fs10.existsSync(path12.join(root, INDEX_FILE)) && !fs10.existsSync(path12.join(root, "project"))) {
-    root = path12.dirname(root);
+  let root = path15.resolve(given);
+  if (path15.basename(root) === "project" && fs13.existsSync(path15.join(root, INDEX_FILE)) && !fs13.existsSync(path15.join(root, "project"))) {
+    root = path15.dirname(root);
   }
-  const project = path12.join(root, "project");
+  const project = path15.join(root, "project");
   if (mustExist) {
-    const stat = fs10.statSync(project, { throwIfNoEntry: false });
+    const stat = fs13.statSync(project, { throwIfNoEntry: false });
     if (!stat?.isDirectory()) {
       throw new CliError("NOT_FOUND", `${project} does not exist. Write project/${INDEX_FILE} and the other files under ${root} first.`);
     }
@@ -2775,7 +3221,7 @@ function localize(value) {
 function designSystemNotes(project, indexFile) {
   let index;
   try {
-    index = JSON.parse(fs10.readFileSync(path12.join(project, indexFile), "utf8"));
+    index = JSON.parse(fs13.readFileSync(path15.join(project, indexFile), "utf8"));
   } catch {
     return [];
   }
@@ -2789,14 +3235,15 @@ function designSystemNotes(project, indexFile) {
       notes.push(`designSystems namespace ${JSON.stringify(ns)} is not a folder name ([a-z0-9][a-z0-9_-]{0,63}): the page skips it. Use the lower-case folder (list prints it as folder), the same in the record and in project/ds/<folder>/.`);
       continue;
     }
-    const folder = path12.join(project, "ds", ns);
-    if (!fs10.existsSync(folder)) {
+    const folder = path15.join(project, "ds", ns);
+    if (!fs13.existsSync(folder)) {
       notes.push(`designSystems names "${ns}" but project/ds/${ns}/ does not exist: copy the system's project/tokens.json (and the files you use) there, or take the record out.`);
-    } else if (!fs10.existsSync(path12.join(folder, "tokens.json"))) {
+    } else if (!fs13.existsSync(path15.join(folder, "tokens.json"))) {
       notes.push(`project/ds/${ns}/ has no tokens.json, so the Theme and color menus show bare hexes: copy the system's project/tokens.json there (a system with none: nothing to do).`);
     }
   }
-  return notes;
+  const root = path15.dirname(project);
+  return [...notes, ...staleNotes(project, root, indexFile, (ns, listOnly) => script("ds-sync", root, ns, ...listOnly ? ["--check"] : []))];
 }
 async function check(a) {
   if (KIND === "slides") {
@@ -2804,9 +3251,9 @@ async function check(a) {
     try {
       rt = loadSlidesCompiler(EDITOR_DIR);
     } catch {
-      throw new CliError("COMPILER_MISSING", `The slides compiler is missing (${path12.join(EDITOR_DIR, "node", "compiler.cjs")}); reinstall the skill.`);
+      throw new CliError("COMPILER_MISSING", `The slides compiler is missing (${path15.join(EDITOR_DIR, "node", "compiler.cjs")}); reinstall the skill.`);
     }
-    if (!fs10.existsSync(path12.join(a.project, "deck.json"))) {
+    if (!fs13.existsSync(path15.join(a.project, "deck.json"))) {
       return {
         problems: 1,
         result: {
@@ -2845,7 +3292,7 @@ async function check(a) {
         ...slides.length > 0 ? { slides } : {},
         ...dsNotes.length > 0 ? { designSystemNotes: dsNotes } : {},
         notChecked: "Text sizes, contrast, whether a section id matches its file name and whether an image path exists are not checked (nothing is rendered).",
-        next: problems2 > 0 ? `Fix the files named in deckProblems and in each slide's problems (paths are under project/), then run check again until problems is 0. notes are hints and lose no content; fix the layout ones (starting "\u6392\u7248") and the warnings (starting "\u8B66\u544A": a font or image falls back) too.` : `No problems. Show it to the user: ${script("open", a.root)} prints the editor URL.` + (layoutNotes ? ' Some slides carry layout notes ("\u6392\u7248": content may overflow or overlap) or warnings ("\u8B66\u544A": a font or image falls back); fix them and check again.' : "") + (report.orphans.length > 0 ? " orphans are slide files missing from order: they do not show; delete the unneeded ones." : "") + (dsNotes.length > 0 ? " Read designSystemNotes: a design system install looks incomplete." : "")
+        next: problems2 > 0 ? `Fix the files named in deckProblems and in each slide's problems (paths are under project/), then run check again until problems is 0. notes are hints and lose no content; fix the layout ones (starting "\u6392\u7248") and the warnings (starting "\u8B66\u544A": a font or image falls back) too.` : `No problems. Show it to the user: ${script("open", a.root)} prints the editor URL.` + (layoutNotes ? ' Some slides carry layout notes ("\u6392\u7248": content may overflow or overlap) or warnings ("\u8B66\u544A": a font or image falls back); fix them and check again.' : "") + (report.orphans.length > 0 ? " orphans are slide files missing from order: they do not show; delete the unneeded ones." : "") + (dsNotes.length > 0 ? " Read designSystemNotes: a design system install looks incomplete or behind its source." : "")
       }
     };
   }
@@ -2864,17 +3311,17 @@ async function check(a) {
         ...problems2 > MAX_LISTED ? { more: `${problems2 - MAX_LISTED} more not listed: fix these, then check again` } : {},
         ...dsNotes.length > 0 ? { designSystemNotes: dsNotes } : {},
         notChecked: "Whether the artboard scripts run, and how the layout looks, is not checked (nothing is rendered).",
-        next: problems2 > 0 ? 'Fix the files per issues (file is a path under project/; "." is the whole folder), then run check again until problems is 0.' : `No problems. Show it to the user: ${script("open", a.root)} prints the editor URL.` + (dsNotes.length > 0 ? " Read designSystemNotes: a design system install looks incomplete." : "")
+        next: problems2 > 0 ? 'Fix the files per issues (file is a path under project/; "." is the whole folder), then run check again until problems is 0.' : `No problems. Show it to the user: ${script("open", a.root)} prints the editor URL.` + (dsNotes.length > 0 ? " Read designSystemNotes: a design system install looks incomplete or behind its source." : "")
       }
     };
   }
   const r = await checkDesignSystem(a.project);
   const problems = r.issues.length;
-  if (fs10.existsSync(path12.join(a.project, DESIGN_SYSTEM_FILE))) {
-    if (!fs10.existsSync(path12.join(a.project, "README.md"))) {
+  if (fs13.existsSync(path15.join(a.project, DESIGN_SYSTEM_FILE))) {
+    if (!fs13.existsSync(path15.join(a.project, "README.md"))) {
       r.notes.push({ file: "README.md", message: "missing: every system includes project/README.md; every reader starts there (Creating, step 1)" });
     }
-    if (!fs10.existsSync(path12.join(a.project, "components", "Cover", "preview.html"))) {
+    if (!fs13.existsSync(path15.join(a.project, "components", "Cover", "preview.html"))) {
       r.notes.push({ file: "components/Cover/preview.html", message: "missing: every system gets a cover, written last before the index (cover.md)" });
     }
   }
@@ -2900,11 +3347,11 @@ function formatBytes(n) {
 }
 async function upload(a, given, group) {
   if (!given) throw new CliError("MISSING_FILE", "Give the file to upload.");
-  const file = path12.resolve(given);
-  const stat = await fsp2.stat(file).catch(() => null);
+  const file = path15.resolve(given);
+  const stat = await fsp3.stat(file).catch(() => null);
   if (!stat) throw new CliError("FILE_NOT_FOUND", `No such file: ${given}`);
   if (!stat.isFile()) throw new CliError("NOT_A_FILE", `${given} is not a regular file.`);
-  const ext = path12.extname(file).slice(1).toLowerCase();
+  const ext = path15.extname(file).slice(1).toLowerCase();
   const type = contentTypeOf(file);
   const isMedia = type.startsWith("image/") || type.startsWith("font/");
   let limit = UPLOAD_MAX_BYTES;
@@ -2927,9 +3374,9 @@ async function upload(a, given, group) {
     limit = designSystemUploadLimit(type);
   }
   if (stat.size > limit) throw new CliError("FILE_TOO_LARGE", `${given} is ${formatBytes(stat.size)}, over the ${formatBytes(limit)} limit: compress or shrink it first.`);
-  const bytes = await fsp2.readFile(file);
+  const bytes = await fsp3.readFile(file);
   const uploaded = await new DeckStore(a.project, LAYOUT).putBlob(bytes, type);
-  const base = path12.basename(file);
+  const base = path15.basename(file);
   if (KIND !== "design-system") {
     return {
       url: uploaded.url,
@@ -2961,12 +3408,12 @@ function folderName(name) {
 }
 var SKIP_DIRS = /* @__PURE__ */ new Set(["node_modules", "dist", "build", "out", "vendor", "target"]);
 async function listSystems(dirs) {
-  const extra = (process.env.CLAUDE_DESIGN_SYSTEMS ?? "").split(path12.delimiter).filter(Boolean);
-  const starts = [...dirs.length > 0 ? dirs : [process.cwd()], ...extra].map((d) => path12.resolve(d));
+  const extra = (process.env.CLAUDE_DESIGN_SYSTEMS ?? "").split(path15.delimiter).filter(Boolean);
+  const starts = [...dirs.length > 0 ? dirs : [process.cwd()], ...extra].map((d) => path15.resolve(d));
   const found = /* @__PURE__ */ new Map();
   const visit = async (dir, depth) => {
-    const project = path12.join(dir, "project");
-    if (fs10.existsSync(path12.join(project, DESIGN_SYSTEM_FILE)) && !found.has(dir)) {
+    const project = path15.join(dir, "project");
+    if (fs13.existsSync(path15.join(project, DESIGN_SYSTEM_FILE)) && !found.has(dir)) {
       const info = await readDesignSystemInfo(project).catch(() => null);
       if (info) {
         const namespace = info.namespace;
@@ -2975,17 +3422,17 @@ async function listSystems(dirs) {
           namespace: namespace ?? null,
           folder: folderName(typeof namespace === "string" && namespace.trim() ? namespace : String(info.title ?? "")),
           root: dir,
-          readme: fs10.existsSync(path12.join(project, "README.md")) ? path12.join(project, "README.md") : null,
-          tokens: fs10.existsSync(path12.join(project, "tokens.json")) ? path12.join(project, "tokens.json") : null
+          readme: fs13.existsSync(path15.join(project, "README.md")) ? path15.join(project, "README.md") : null,
+          tokens: fs13.existsSync(path15.join(project, "tokens.json")) ? path15.join(project, "tokens.json") : null
         });
         return;
       }
     }
     if (depth <= 0) return;
-    const entries = await fsp2.readdir(dir, { withFileTypes: true }).catch(() => []);
+    const entries = await fsp3.readdir(dir, { withFileTypes: true }).catch(() => []);
     for (const entry of entries) {
       if (!entry.isDirectory() || entry.name.startsWith(".") || SKIP_DIRS.has(entry.name) || entry.name === "project") continue;
-      await visit(path12.join(dir, entry.name), depth - 1);
+      await visit(path15.join(dir, entry.name), depth - 1);
     }
   };
   for (const start of starts) await visit(start, 4);
@@ -3009,10 +3456,10 @@ function reusedNote(a, flags) {
   return flags.get("agent-hook") ? { note: `--agent-hook was not applied: the server was already running. To use it: ${script("stop", a.root)}, then open again.` } : {};
 }
 function assertServerFiles() {
-  if (!fs10.existsSync(path12.join(EDITOR_DIR, "index.html"))) {
+  if (!fs13.existsSync(path15.join(EDITOR_DIR, "index.html"))) {
     throw new CliError("EDITOR_MISSING", `The editor page is missing (${EDITOR_DIR}); reinstall the skill.`);
   }
-  if (!fs10.existsSync(SERVER_SCRIPT)) {
+  if (!fs13.existsSync(SERVER_SCRIPT)) {
     throw new CliError("EDITOR_MISSING", `The editor server is missing (${SERVER_SCRIPT}); reinstall the skill.`);
   }
 }
@@ -3040,49 +3487,48 @@ async function open(a, flags) {
   assertServerFiles();
   const existing = await runningServer2(a.root);
   if (existing) {
-    print({ url: existing.url, root: a.root, pid: existing.pid, reused: true, ...await lanOn2(existing.url, flags), ...reusedNote(a, flags) });
+    print({ url: existing.url, root: a.root, pid: existing.pid, reused: true, ...await lanOn2(existing.url, flags), log: path15.join(a.root, LOG_FILE), stop: script("stop", a.root), ...reusedNote(a, flags) });
     return;
   }
   const state = await startBackground(a, flags);
-  const view = await shareCall2(state.url, null).catch(() => null);
-  print({ url: state.url, root: a.root, pid: state.pid, ...view?.lan ? { lan: lanUrls(view) } : {}, log: path12.join(a.root, LOG_FILE), stop: script("stop", a.root) });
+  print({ url: state.url, root: a.root, pid: state.pid, ...state.lan?.length ? { lan: state.lan } : {}, log: path15.join(a.root, LOG_FILE), stop: script("stop", a.root) });
 }
 async function startBackground(a, flags) {
-  const port = Number(flags.get("port") ?? 0);
+  const host = flags.get("host") ?? "127.0.0.1";
+  const port = flags.has("port") ? Number(flags.get("port")) : DEFAULT_PORTS[KIND];
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw new CliError("INVALID_PORT", "--port is a number from 0 to 65535.");
-  const logFile = path12.join(a.root, LOG_FILE);
-  const fd = fs10.openSync(logFile, "a");
-  const child = spawn(process.execPath, [SERVER_SCRIPT, a.root, ...serverArgs(flags)], { detached: true, stdio: ["ignore", "ignore", fd] });
-  child.unref();
-  fs10.closeSync(fd);
-  let exited = false;
-  child.once("exit", () => exited = true);
-  const deadline = Date.now() + 15e3;
-  while (Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 150));
-    const state = readState(a.root);
-    if (state && state.pid === child.pid) return state;
-    if (exited) break;
+  const hook = flags.get("agent-hook") || void 0;
+  const opened = await openOnHub({
+    kind: KIND,
+    script: SERVER_SCRIPT,
+    root: a.root,
+    port,
+    portGiven: flags.has("port"),
+    host,
+    ...hook ? { agentHook: hook } : {},
+    lan: flags.has("lan"),
+    command: [SERVER_SCRIPT, a.root, ...serverArgs(flags)],
+    running: () => runningServer2(a.root)
+  });
+  if ("state" in opened) {
+    const view = await shareCall2(opened.state.url, null).catch(() => null);
+    return { ...opened.state, ...view?.lan ? { lan: lanUrls(view) } : {} };
   }
-  const tail = fs10.existsSync(logFile) ? fs10.readFileSync(logFile, "utf8").split("\n").slice(-12).join("\n") : "";
-  throw new CliError("SERVER_FAILED", `The editor server did not start. Run ${script("serve", a.root)} in the foreground to see why.${tail ? `
-${tail}` : ""}`);
+  throw new CliError("SERVER_FAILED", `The editor server did not start. Run ${script("serve", a.root)} in the foreground to see why.${opened.tail ? `
+${opened.tail}` : ""}`);
 }
 async function stop(a) {
   const state = readState(a.root);
   if (!state || !alive(state.pid)) {
-    fs10.rmSync(path12.join(a.root, STATE_FILE), { force: true });
+    fs13.rmSync(path15.join(a.root, STATE_FILE), { force: true });
     print({ stopped: false, message: "No editor server is running for this folder." });
     return;
   }
-  process.kill(state.pid, "SIGTERM");
-  const deadline = Date.now() + 5e3;
-  while (alive(state.pid) && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 100));
-  if (alive(state.pid)) {
+  if (!await leaveHub(state)) {
     print({ stopped: false, pid: state.pid, message: `The server did not exit within 5 s; end it with: kill ${state.pid}` });
     return;
   }
-  fs10.rmSync(path12.join(a.root, STATE_FILE), { force: true });
+  fs13.rmSync(path15.join(a.root, STATE_FILE), { force: true });
   print({ stopped: true, pid: state.pid });
 }
 async function share(a, flags) {
@@ -3126,7 +3572,7 @@ async function listComments(a, all) {
 async function artifactTitle(a) {
   const info = await readInfo(a.project).catch(() => null);
   const title = typeof info?.title === "string" ? info.title.trim() : "";
-  return title && title !== "project" ? title : path12.basename(a.root);
+  return title && title !== "project" ? title : path15.basename(a.root);
 }
 async function waitComments(a, flags) {
   const timeout = flags.has("timeout") ? Number(flags.get("timeout")) : Infinity;
@@ -3218,14 +3664,20 @@ Usage:
   node scripts/artifact.mjs share  <root>                         share on the local network; prints a link per role
                                    [--reset R] [--enable R] [--disable R]   R: editor, commenter, viewer (comma list) or all
                                    [--role G=R,...]               give guest G (an id it prints) role R
+                                                                  (these change links only: shared or not stays as it was)
                                    [--off]                        stop sharing (guests keep their place for next time)
   node scripts/artifact.mjs check  <root>                         validate project/; exit 1 while problems remain
   node scripts/artifact.mjs upload <root> <file>${KIND === "design-system" ? " --group G  " : "            "}      store an upload; prints its /_blob/<id> url
   node scripts/artifact.mjs list   [dir \u2026]                        find design systems (folders holding project/design-system.json)
-  node scripts/artifact.mjs comments <root> [--all]               the open comments people left in the editor (--all: resolved too)
+${KIND === "design-system" ? "" : `  node scripts/artifact.mjs ds-sync <root> [namespace] [--check]  an installed design system is a copy: copy its changed files again
+                                                                  from the system's folder and stamp copiedAt (--check: list only;
+                                                                  --from <folder>: the source, when the record's path is not found)
+`}  node scripts/artifact.mjs comments <root> [--all]               the open comments people left in the editor (--all: resolved too)
   node scripts/artifact.mjs comments <root> --wait [--timeout s]  wait for a comment sent to the agent from the open editor
   node scripts/artifact.mjs comment-reply <root> <id> <text|->    reply as the agent (-: text on stdin) [--resolve]
   node scripts/artifact.mjs comment-resolve <root> <id> [--reopen]   mark a comment resolved (or open again)
+  node scripts/artifact.mjs archive <root> [--out file.zip|dir]   the whole folder as one zip (backup, another computer,
+                                                                  someone else); beside the folder unless --out says
 
 <root> is the artifact folder: its files live at <root>/project/<path> (project/${INDEX_FILE}, \u2026).`;
 async function main() {
@@ -3251,16 +3703,43 @@ async function main() {
     }
     case "upload": {
       const a = resolveArtifact(positional[0], false);
-      if (!fs10.statSync(a.root, { throwIfNoEntry: false })?.isDirectory()) {
+      if (!fs13.statSync(a.root, { throwIfNoEntry: false })?.isDirectory()) {
         throw new CliError("NOT_FOUND", `${a.root} does not exist. Make the artifact folder first.`);
       }
-      fs10.mkdirSync(a.project, { recursive: true });
+      fs13.mkdirSync(a.project, { recursive: true });
       print(await upload(a, positional[1], flags.get("group")));
       return 0;
     }
     case "list":
       print(await listSystems(positional));
       return 0;
+    case "ds-sync": {
+      if (KIND === "design-system") throw new CliError("NOT_APPLICABLE", "A design system has no installed design systems: ds-sync is for decks and canvases.");
+      const a = resolveArtifact(positional[0]);
+      const check2 = flags.has("check");
+      let results;
+      try {
+        results = syncSystems(a.project, a.root, INDEX_FILE, { namespace: positional[1], from: flags.get("from"), check: check2 });
+      } catch (error) {
+        throw new CliError("NO_SUCH_SYSTEM", error.message);
+      }
+      const behind = results.filter((r) => r.changed.length > 0 || r.removed.length > 0);
+      print({
+        root: a.root,
+        systems: results.map((r) => ({
+          namespace: r.namespace,
+          title: r.title,
+          ...r.skipped ? { skipped: r.skipped } : {},
+          ...r.missing ? { skipped: `project/ds/${r.namespace}/ does not exist: install it first (SKILL.md, Creating, step 4)` } : {},
+          ...r.source ? { source: r.source } : {},
+          changed: r.changed,
+          ...r.removed.length > 0 ? { goneFromSource: r.removed } : {},
+          ...check2 ? {} : { copied: r.copied, ...r.copiedAt ? { copiedAt: r.copiedAt } : {} }
+        })),
+        next: check2 ? behind.length > 0 ? `Behind its source. Run ${script("ds-sync", a.root)} to copy the changed files again.` : "Every copy matches its source (or its source was not found: see skipped)." : results.some((r) => r.copied.length > 0) ? "Copied. The open editor shows the new files at once (a file over 2 MB, or a types file, after a reload). Files the source dropped stay in the copy: remove one, and change the artboards that load it, if the source no longer has it. Files the source gained are not copied: compare its README with project/ds/<folder>/." : "Nothing to copy."
+      });
+      return check2 && behind.some((r) => r.changed.length > 0) ? 1 : 0;
+    }
     case "comments": {
       const a = resolveArtifact(positional[0]);
       print(flags.has("wait") ? await waitComments(a, flags) : await listComments(a, flags.has("all")));
@@ -3272,6 +3751,12 @@ async function main() {
     case "comment-resolve":
       print(await resolveComment(resolveArtifact(positional[0]), positional[1], flags.has("reopen")));
       return 0;
+    case "archive": {
+      const a = resolveArtifact(positional[0]);
+      const made = await archiveCommand(a.root, flags.get("out"));
+      print({ ...made, open: `unzip it anywhere, then ${script("open", `<there>/${made.folder}`)}` });
+      return 0;
+    }
     case void 0:
     case "help":
     case "--help":

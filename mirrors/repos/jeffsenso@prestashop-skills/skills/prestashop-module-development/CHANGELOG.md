@@ -1,12 +1,69 @@
 # Changelog
 
-All notable changes to the PrestaShop Module Development skill.
+All notable changes to the PrestaShop Module Development skill — **full history**.
+The package-level `CHANGELOG.md` (repository root) only summarises each release and points here.
 
-## [2026-10-06] - CategoryChoiceTreeType Self-Contained Documentation
+Format: date-based releases (`YYYY-MM-DD`). Each entry lists the change type (Added, Changed, Deprecated,
+Removed, Fixed, Security), the file or feature affected (**bold**), and what changed and why.
+
+## [2026-11-03] - Grid JS: generic core-based init script (PS 8.0+ / 9.x)
 
 ### Changed
-  - Updated grid references and grid bundle script
+- **scripts/grid.bundle.js** - Replaced the minified webpack bundle with a short readable init script (same file name)
+  - Uses the core `window.prestashop.component.Grid` and `GridExtensions` exposed by the back office theme — same API in PrestaShop 8.0.0, 8.1.0, 8.2.0 and 9.0.0 (checked in the core sources), tested live on 9.1.4
+  - Copied as `views/js/{modulename}.bundle.js` with **no edit**: no grid ID, no `sed`; initialises every `.js-grid[data-grid-id]` of the page (multi-grid pages work)
+  - Adds FiltersReset, FiltersSubmitButtonEnabler, Sorting, ReloadList, ExportToSqlManager, SubmitGridAction, LinkRowAction, SubmitRowAction, BulkActionCheckbox, SubmitBulkAction, AsyncToggleColumn, and PositionExtension only when the grid has a position column
+  - Initialises in a jQuery ready callback (never `DOMContentLoaded`, which runs before the theme creates the components); `data-grid-initialized` guard against double inclusion; never adds `ColumnTogglingExtension` (double toggle requests)
+- **references/grid-system.md** - "JS bundle setup" rewritten as "Grid JS setup" (extension table, init timing, upgrade path for old bundles); "How sort, search and reset actually work", diagnosis checklist, Twig `javascripts` block, gotchas and position drag-and-drop FAQ updated; grid-ID-in-bundle instructions removed
+- **references/debugging.md** - Grid troubleshooting rows for script not loaded / not initialised, `DOMContentLoaded` timing, double toggle handlers, and old copied webpack bundles
+- **references/legacy-conversion.md**, **SKILL.md**, **README.md** - Point to the generic grid script instead of the pre-built bundle
 
+### Fixed
+- The previous webpack template contained only 20 of its 22 modules: positional module indexes were shifted, so its private bootstrap never ran — delete row, reset search, refresh list, show SQL query, row links and bulk actions silently did nothing while sort still worked. A repaired 22-module version (2026-10-08, used by wsimageslider) was superseded by the core-based script. Modules that ship a copied bundle should overwrite their `views/js/*.bundle.js` with the new `scripts/grid.bundle.js` (file name and `<script>` tag unchanged).
+
+## [2026-10-06] - Grid Sort / Reset Troubleshooting
+
+### Changed
+- **grid-system.md** - Documented why sort and reset silently do nothing
+  - Grid ID verification step after the `sed` replacement (`grep -c` on `GRID_ID_PLACEHOLDER` and the real ID)
+  - Bundles copied from another module keep that module's literal grid ID in the minified bootstrap — how to find and fix it
+  - New section "How sort, search and reset actually work": private webpack bootstrap vs `$(document).ready` block, search as a plain form POST
+  - Quick diagnosis checklist and new gotchas (`SortingExtension` with `ReorderPositionsButtonType`, `FiltersResetExtension`, `searchAction()` 3rd argument)
+- **scripts/grid.bundle.js** - Minor fix
+- *Superseded by 2026-11-03* (the webpack template itself was broken)
+
+
+## [2026-08-25] - Configuration Management, Modern Config Route
+
+### Added
+- **configuration-management.md** - Mandatory YAML-based configuration pattern (single source of truth)
+  - `config_data/module.yml` holds every configuration key and its default value
+  - `ConfigurationInstaller` service for install/uninstall of configuration values
+  - `ConfigurationManager` service to read configuration (database, YAML fallback)
+  - Never call `Configuration::updateValue()` / `Configuration::get()` directly in business logic
+
+### Changed
+- **SKILL.md** - New section 1b "Configuration variable management"; `getContent()` must redirect with the Symfony router (`$this->get('router')->generate(...)` + `Tools::redirectAdmin()`)
+- **module-class-and-installer.md** - Installer delegates configuration values to `ConfigurationInstaller`
+
+## [2026-08-12] - Installer Pattern, Config Form DI, Front Media, Translations
+
+### Added
+- **configuration-page.md** - Mandatory FormHandler pattern with constructor dependency injection; why the controller's limited service locator requires DI instead of `$this->get()`
+- **services-and-di.md** - Controller limited service locator section: controllers only reach core Symfony services via `$this->get()`; complete constructor DI pattern; controller registration (`public: true` + `controller.service_arguments` tag)
+- **translations.md** - Front-office Smarty translations: use `{l}` directly in templates, never pass pre-translated strings from PHP (extraction, context, standard pattern)
+
+### Changed
+- **SKILL.md** - Mandatory installer pattern
+  - `install()` calls `parent::install()` first with an explicit check, then delegates to the Installer
+  - `uninstall()` calls the Installer first, then `parent::uninstall()` (`&&` chaining)
+  - Hooks and tabs as class property arrays (`private array $hooks`, `private array $tabs`), parent group tab auto-installation, never `getTabs()` in the module class
+- **SKILL.md** - Configuration page now 5 classes (FormHandler added) with constructor DI; FormType registration (`parent: 'form.type.translatable.aware'`, `form.type` tag)
+- **SKILL.md** - Front-office CSS/JS: always `actionFrontControllerSetMedia` with `registerStylesheet()` / `registerJavascript()`, never `header` / `displayHeader`
+- **SKILL.md** - `WidgetInterface`: no explicit `hookDisplayXxx()` methods, PrestaShop calls `renderWidget()`; Smarty `{l s='…' d='Modules.Modulename.Front'}` in templates
+- **SKILL.md** - Skill file header fix (2026-08-11)
+- **module-class-and-installer.md** - Complete rewrite around the mandatory install/uninstall pattern; tabs and hooks as structured class property arrays; all tab logic in the Installer
+- **hooks-and-front-office.md** - Front-office media registration rules and `WidgetInterface` patterns
 
 ## [2026-08-10] - CategoryChoiceTreeType Self-Contained Documentation
 
@@ -147,7 +204,7 @@ All notable changes to the PrestaShop Module Development skill.
 - **translations.md** - Extended translation patterns
 - **debugging.md** - Added form-related failure modes
 
-## [2026-04-16] - Structure Reorganization & Validation
+## [2026-04-15] - Structure Reorganization & Validation
 
 ### Changed
 - Restructured skill with dedicated `references/` directory
@@ -155,11 +212,7 @@ All notable changes to the PrestaShop Module Development skill.
 - **validation.md** - Updated validation tool installation instructions
 - SKILL.md now serves as workflow overview pointing to references
 
-## Format
+## [2026-04-02] - Initial Release
 
-This changelog follows semantic versioning principles with date-based releases.
-Each entry includes:
-- **Date**: YYYY-MM-DD format
-- **Type**: Added, Changed, Deprecated, Removed, Fixed, Security
-- **Component**: File or feature affected
-- **Description**: What changed and why
+### Added
+- Initial release of the `prestashop-module-development` skill

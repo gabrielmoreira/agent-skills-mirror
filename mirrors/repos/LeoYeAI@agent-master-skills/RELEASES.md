@@ -3,6 +3,129 @@
 每次更新的详细发布说明。
 
 
+## v0.22.7 — 2026-11-05
+
+### 🚀 日更：新增 100 个 Skills，总计 3203
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `taste-skill` — tasteskill 2.5.0, the anti-slop frontend skill. Builds professional company websites at the level of figma.com and x.ai:
+- `execute` — Use for /c-level-agents:execute, or to turn an approved decision into a 90-day plan with weekly milestones and owners.
+- `changelog-automation` — Automate changelog generation from commits, PRs, and releases following Keep a Changelog format. Use when setting up rel
+- `threat-mitigation-mapping` — Map identified threats to appropriate security controls and mitigations. Use when prioritizing security investments, cre
+- `cto-review` — Challenge an architecture bet, 10x scaling plan or rebuild vs buy. Use whenever asked or /c-level-agents:cto-review.
+- `cfo-review` — Challenge a plan that spends real money: hiring wave, raise, channel budget. Use whenever asked or /c-level-agents:cfo-r
+- `spawn` — Launch the competing agents in isolated worktrees. Use when an AgentHub session is set up.
+- `dbt-transformation-patterns` — Master dbt (data build tool) for analytics engineering with model organization, testing, documentation, and incremental 
+- `remember` — Save something important to auto-memory with a timestamp and context. Use whenever the user says remember this, note it 
+- `cmo-review` — Use for /c-level-agents:cmo-review, or to challenge positioning, ICP, messaging or channel mix before a launch.
+- `ciso-review` — Challenge a plan touching customer data, compliance or prod access. Use when asked or /c-level-agents:ciso-review.
+- `ponytail-help` — Quick reference for ponytail levels, skills and commands. One-shot display. Use for /ponytail-help, "ponytail help", "ho
+- `cpo-review` — Challenge a roadmap, PMF claim or feature kill. Use whenever asked or /c-level-agents:cpo-review.
+- `minimalist` — Write the least code: no over-engineering, fewer dependencies. Use whenever the user wants it simpler; applies a ladder 
+- `spark-optimization` — Optimize Apache Spark jobs with partitioning, caching, shuffle optimization, and memory tuning. Use when improving Spark
+- `airflow-dag-patterns` — Build production Apache Airflow DAGs with best practices for operators, sensors, testing, and deployment. Use when creat
+- `cro-review` — Challenge a forecast, win-rate drop or sales hires. Use whenever asked or /c-level-agents:cro-review.
+- `ra-qm-skills` — Router for regulatory and quality skills: ISO 13485, MDR, FDA, ISO 14971, CAPA, ISO 27001, ISO 42001, EU AI Act, GDPR, S
+- `k8s-manifest-generator` — Create production-ready Kubernetes manifests for Deployments, Services, ConfigMaps, and Secrets following best practices
+- `c-level-skills` — Find which C-level advisor fits a question: 14 C-suite roles, board meetings, culture, M&A. Use whenever the user asks w
+- `handoff` — Compact the current conversation into a handoff document for another agent to pick up, referencing existing artifacts (P
+- `pw-review` — Use when reviewing Playwright tests for quality ('review tests', 'audit tests', 'playwright best practices check').
+- `fix` — Diagnose and fix a failing or flaky Playwright test. Use whenever a test fails, passes only sometimes, breaks intermitte
+- `setup` — Use for /autoresearch-agent:setup, or to start a new autoresearch experiment: target, eval command, metric, direction, e
+- `prd` — Gated PRD generation — interrogates problem, user, and metric before drafting; refuses to draft on unknowns. Usage: /prd
+- `grill-me` — Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the
+- `memory-status` — Health check of agent auto-memory: line counts, topic files, capacity, stale entries and what to prune. Use whenever the
+- `report` — Summarize Playwright results. Use whenever the user asks how tests went, for a test report or status.
+- `cs-karpathy-reviewer` — Reviews staged git changes against Karpathy's 4 coding principles. Runs complexity_checker on changed files, diff_surgeo
+- `embedding-strategies` — Select and optimize embedding models for semantic search and RAG applications. Use when choosing embedding models, imple
+
+---
+
+
+## v0.22.6 — 2026-11-04
+
+### 🚀 日更：新增 100 个 Skills，总计 3103
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `hermes-tweet` — Install and operate Hermes Tweet, a Hermes Agent plugin for X/Twitter research, timeline reading, tweet analysis, and ap
+- `incident-runbook-templates` — Create structured incident response runbooks with step-by-step procedures, escalation paths, and recovery actions. Use t
+- `full-page-screenshot` — Use when asked for a full-page or long screenshot of a web page. Captures SPA scroll containers, lazy images and very ta
+- `finance-lead` — Startup CFO who builds models that survive contact with reality. Handles fundraising, unit economics, pricing, burn rate
+- `grounded-vault` — Use when maintaining a durable Markdown knowledge store that agents compile from sources, when every number or quote in 
+- `ponytail-audit` — Quality audit of a whole repo: bugs, security holes, what breaks under real load, risky code without tests, slow paths, 
+- `agent-regression-evals` — Use before shipping any agent, prompt, model or tool change, or when a pass-rate drop needs a verdict. Runs repeated tri
+- `monorepo-management` — Master monorepo management with Turborepo, Nx, and pnpm workspaces to build efficient, scalable multi-package repositori
+- `agent-run-forensics` — Use when asked why an agent did something, what a past session or run changed, whether tests really passed, or to verify
+- `devops-engineer` — Builds infrastructure that scales without babysitting. Automates everything worth automating. Monitors before it breaks.
+- `c-level-agents` — Use when the founder wants a virtual executive team or a /c-level-agents command. Lists the 13 C-suite agents and 21 com
+- `superself` — Use when a project keeps its state in Superself (a `<!-- superself:begin` block in AGENTS.md or CLAUDE.md, or `self setu
+- `aims-audit` — ISO 42001 AI readiness check. Use before a stage 1 or internal audit, or /compliance-os:aims-audit.
+- `tailwind-design-system` — Build scalable design systems with Tailwind CSS v4, design tokens, component libraries, and responsive patterns. Use whe
+- `workflow-builder` — Use when writing or running a Claude Code Workflow-tool script (.js in .claude/workflows/) for fan-out, pipeline, loop o
+- `i18n-localization` — Use when adding UI text, adding or shipping a language, reviewing translation files, or building i18n into an app. Check
+- `linkedin-skills` — Use for any organic LinkedIn growth request (strategy, profile, posts, cadence, outreach, analytics). Checks it against 
+- `multi-reviewer-patterns` — Coordinate parallel code reviews across multiple quality dimensions with finding deduplication, severity calibration, an
+- `cco-review` — Challenge a churn, retention, segment or CS hiring plan. Use whenever asked or /c-level-agents:cco-review.
+- `linkedin-content` — Write, edit or review a LinkedIn post: story, how-to, carousel, video script or poll. Use whenever the user wants a Link
+- `bats-testing-patterns` — Master Bash Automated Testing System (Bats) for comprehensive shell script testing. Use when writing tests for shell scr
+- `apple-hig-expert` — Use when designing or reviewing iOS, macOS, watchOS or visionOS UI against Apple's Human Interface Guidelines, including
+- `coding-agent-rollout` — Roll out Claude Code to a team: shared or managed settings, MCP and plugin approval, layered CLAUDE.md, adoption. Use wh
+- `ponytail-review` — Quality review of a change: is the logic right, is it safe, does it hold under real load, is risky code tested, is it fa
+- `commit-craft` — Turn a mix of changes into clean, reviewable commits with good messages, blocking staged secrets and .env files. Use whe
+- `cdo-review` — Use for /c-level-agents:cdo-review, or to challenge a plan touching training-data rights, data architecture or data mone
+- `universal-scraping-architect` — Scrape websites, crawl pages, extract documents or parse APIs, and validate what was extracted, via Firecrawl or local P
+- `linkedin-engagement` — Use for LinkedIn comments, connection notes, DMs or outreach plans, or checking outreach volume is safe. Plans targets w
+- `demo-video` — Use when asked for a demo video, product walkthrough, feature showcase or GIF from screenshots or scene descriptions. Or
+- `linkedin-analytics` — Use when someone asks why their LinkedIn reach dropped, which posts worked, whether a pattern is real or how to test one
+
+---
+
+
+## v0.22.5 — 2026-11-03
+
+### 🚀 日更：新增 100 个 Skills，总计 3003
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `skill-security-auditor` — Use before installing any skill or plugin from an untrusted source, or when asked if a skill is safe. Scans scripts, SKI
+- `async-python-patterns` — Master Python asyncio, concurrent programming, and async/await patterns for high-performance applications. Use when buil
+- `block-no-verify-hook` — Configure a PreToolUse hook to prevent AI agents from skipping git pre-commit hooks with --no-verify and other bypass fl
+- `agent-harness` — Use when an agent should drive a goal in one of this repo's domains to a verified close, before starting the work. Compi
+- `security-guidance` — Use when installing or tuning the PreToolUse security hook that warns before Claude writes command injection, XSS, SQL i
+- `cs-webinar-marketer` — Webinar & virtual-event marketing specialist agent. Use when planning, promoting, running, or rescuing a webinar, virtua
+- `defi-protocol-templates` — Implement DeFi protocols with production-ready templates for staking, AMMs, governance, and flash loans. Use when buildi
+- `free-tools` — When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or bran
+- `team-communication-protocols` — Structured messaging protocols for agent team communication including message type selection, plan approval, shutdown pr
+- `python-background-jobs` — Python background job patterns including task queues, workers, and event-driven architecture. Use when implementing asyn
+- `ai-act-readiness` — Use for /compliance-os:ai-act-readiness, or EU AI Act readiness questions during AI-system intake or before EU deploymen
+- `pybamm` — Simulates lithium-ion battery charge, discharge and rest experiments with PyBaMM, records parameter-set provenance, chec
+- `hard-call` — Use for a decision where every option hurts (layoff vs down round, killing a loved product). Runs 10/10/10 and regret mi
+- `skillopt-sleep` — Use when the user wants their Claude agent to self-improve from past usage, asks about a nightly/offline 'sleep' or 'dre
+- `grill-with-docs` — Use when a plan should be stress-tested against the project's own docs (CONTEXT.md glossary, docs/adr decisions), or the
+- `pennylane` — Builds and differentiates PennyLane quantum circuits, hybrid PyTorch or JAX models, molecular VQE and QAOA workflows. Us
+- `visual-design-foundations` — Apply typography, color theory, spacing systems, and iconography principles to create cohesive visual designs. Use when 
+- `k8s-security-policies` — Implement Kubernetes security policies including NetworkPolicy, PodSecurityPolicy, and RBAC for production-grade securit
+- `slo-implementation` — Define and implement Service Level Indicators (SLIs) and Service Level Objectives (SLOs) with error budgets and alerting
+- `angular-migration` — Migrate from AngularJS to Angular using hybrid mode, incremental component rewriting, and dependency injection updates. 
+- `schema` — When the user wants to add, fix, or optimize schema markup and structured data on their site. Also use when the user men
+- `cro` — When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, la
+- `uv-package-manager` — Master the uv package manager for fast Python dependency management, virtual environments, and modern Python project wor
+- `python-observability` — Python observability patterns including structured logging, metrics, and distributed tracing. Use when adding logging, i
+- `ml-pipeline-workflow` — Build end-to-end MLOps pipelines from data preparation through model training, validation, and production deployment. Us
+- `startup-metrics-framework` — Track, calculate, and optimize key performance metrics for SaaS, marketplace, consumer, and B2B startups from seed throu
+- `github-actions-templates` — Create production-ready GitHub Actions workflows for automated testing, building, and deploying applications. Use when s
+- `python-resource-management` — Python resource management with context managers, cleanup patterns, and streaming. Use when managing connections, file h
+- `financial-analyst` — Use for financial statement analysis, DCF valuation, budget variance or rolling forecasts. Runs ratio_calculator.py, dcf
+- `diagnosing-superpowers` — Use when a superpowers session went wrong and your human partner wants to know why — repeated work, ignored plans, stumb
+
+---
+
+
 ## v0.22.4 — 2026-11-02
 
 ### 🚀 日更：新增 100 个 Skills，总计 2903

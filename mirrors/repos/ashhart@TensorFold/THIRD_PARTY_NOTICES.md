@@ -1,5 +1,20 @@
 # Third-party notices
 
+The GLM-OCR HIP operators in `zig/kernels/hip/glm_ocr/pointwise.hip`
+adapt reduction ordering and vectorized LayerNorm statistics from PyTorch
+revision `8514f05`, `aten/src/ATen/native/cuda/Reduce.cuh` and
+`aten/src/ATen/native/cuda/layer_norm_kernel.cu`. These are maintained
+TensorFold adaptations under the BSD-3-Clause license, Copyright (c) 2016-
+Facebook, Inc. and the other holders listed in
+[`LICENSES/PyTorch-BSD-3.txt`](LICENSES/PyTorch-BSD-3.txt).
+
+The optional native attention adapter in `zig/src/hip/attention_aotriton.zig`
+uses the AOTriton 0.11.1 version-1 forward ABI from upstream revision
+`d34f3b6c824df77d5c5788a2e7555b2398be4b79`, under the MIT license.
+The declarations follow the original headers; this adapter is maintained
+by TensorFold. The AOTriton library and architecture images are external
+runtime dependencies. See [`LICENSES/AOTriton-MIT.txt`](LICENSES/AOTriton-MIT.txt).
+
 TensorFold uses [MLX](https://github.com/ml-explore/mlx) and
 [mlx-lm](https://github.com/ml-explore/mlx-lm), MIT License, Copyright © 2023 Apple Inc.
 The native engine installs and links neither. It reads checkpoints in their formats, and its Metal kernels under
@@ -256,6 +271,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 `--cortheon` (`zig/src/server/cortheon/`) adapts [Cortheon](https://github.com/ashhart/Cortheon)'s task-classification word lists,
 its stage sequences and their purposes, its rules for when a task needs outside sources, and its instruction-filter patterns,
 rewritten in Zig. MIT License, Copyright (c) 2026 Cortheon contributors; the license text is below.
+
+## Model release and library code these files follow
+
+These follow a model's release code or a library's model code for their math, rounding or resizing. Each is written for TensorFold; the file named is the reference.
+
+- `tools/lfm3/ref64.py` and `zig/kernels/xpu/lfm3.cl`: `modeling_lfm3.py` in [LiquidAI/LFM3-1.7B](https://huggingface.co/LiquidAI/LFM3-1.7B). Copyright Liquid AI, LFM Open License v1.0; see [the license text](LICENSES/LFM-Open-1.0.txt).
+- `zig/kernels/metal/minimax_m3/glue.metal`: the rounding points of `modeling_minimax_m3_vl.py` in [transformers](https://github.com/huggingface/transformers).
+- `zig/src/vision/qwen_cuda.zig`: `Qwen3_5VisionModel` in transformers.
+- `zig/src/core/picture/patches.zig`: `smart_resize`, `Lfm3VlImageProcessor` and `Qwen2VLImageProcessor` in transformers; `patches_test.zig` checks it against them.
+- `zig/src/families/flashnext/rotary_config.zig`: `_compute_yarn_parameters` in transformers, for the 64 rotary dims.
+
+transformers is Copyright The HuggingFace Team, Apache License 2.0; see [the license text](LICENSES/Apache-2.0.txt).
 
 ## MIT License text
 

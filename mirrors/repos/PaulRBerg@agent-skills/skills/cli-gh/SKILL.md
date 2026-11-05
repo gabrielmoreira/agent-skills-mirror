@@ -40,6 +40,26 @@ repository templates, Paul's writing voice, idempotency, and direct posting. Rou
 3. Preview broad writes with the repository, exact targets, commands, and issue/PR impact. An already requested ordinary
    write does not require a second approval.
 
+## GitHub Status
+
+GitHub incidents produce symptoms that look like a local defect. Examples: a run stays `queued` for minutes with no
+runner, `gh run cancel` reports a run as completed while `gh run view` still shows it queued, the API returns 5xx
+errors, or a push succeeds while Actions does not start.
+
+Before you tell the user that an error, a stall, or an inconsistent result comes from their setup, workflow, or
+credentials, check GitHub's status page:
+
+```sh
+curl -fsS https://www.githubstatus.com/api/v2/summary.json | jq '{status: .status.description,
+  incidents: [.incidents[] | {name, status, impact, updated_at}],
+  degraded: [.components[] | select(.status != "operational") | {name, status}]}'
+```
+
+If an incident is open or an affected component is not `operational`, report the incident name, the affected components,
+and the latest update time. Attribute the symptom to the incident. Do not change the user's workflow, configuration, or
+credentials to work around it. Wait for mitigation, then retry. If the status page shows no incident, continue with
+local diagnosis.
+
 ## CI Failure Triage
 
 Use this workflow when the user asks why CI fails or asks to fix a failing run. Keep each command output bounded.
@@ -81,6 +101,9 @@ Use this workflow when the user asks why CI fails or asks to fix a failing run. 
 - `gh auth login --expiring` (2.103+) prefers expiring OAuth tokens that `gh` refreshes. To prefer them on every
   sign-in, run `gh config set expiring_credentials enabled`. Run `gh auth token` each time you need a token. Never cache
   its output. `GH_TOKEN` and `GITHUB_TOKEN` values never refresh.
+- `gh auth status` refreshes an expired or near-expiry refreshable token unless you pass `--no-refresh`. With that flag,
+  2.103.3+ reports the token as expired, not invalid. To renew it, run the command without the flag. Do not run
+  `gh auth refresh` for this case.
 - `--attach '<file>#<alt>'` on issue/PR create, edit, and comment uploads images or videos. Route those writes through
   `yeet`. Since 2.103.2, GitHub App installation tokens can attach, and the upload endpoint decides permission.
 

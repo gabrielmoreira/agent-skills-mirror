@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 30 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 6 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 30 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 30 |
+| Followed pats | 6 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 30 
 - `.github/pull_request_template.md`
 - `LICENSING.md`
 - `THIRD_PARTY_LICENSES.md`
+- `native/agent-desktop/PATCHES.md`
 
 ## File Index
 
@@ -83,16 +84,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`docs/en/internals/skills.md`](docs/en/internals/skills.md) |
 | 19 | ✓ | [`docs/internals/skills.md`](docs/internals/skills.md) |
 | 20 | ✓ | [`mobile/AGENTS.md`](mobile/AGENTS.md) |
-| 21 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 22 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 23 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
-| 24 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
-| 25 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
-| 26 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 28 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
-| 29 | → | [`LICENSING.md`](LICENSING.md) |
-| 30 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
+| 21 | ✓ | [`native/agent-desktop/AGENTS.md`](native/agent-desktop/AGENTS.md) |
+| 22 | ✓ | [`native/agent-desktop/skills/agent-desktop-ffi/SKILL.md`](native/agent-desktop/skills/agent-desktop-ffi/SKILL.md) |
+| 23 | ✓ | [`native/agent-desktop/skills/agent-desktop-linux/SKILL.md`](native/agent-desktop/skills/agent-desktop-linux/SKILL.md) |
+| 24 | ✓ | [`native/agent-desktop/skills/agent-desktop-macos/SKILL.md`](native/agent-desktop/skills/agent-desktop-macos/SKILL.md) |
+| 25 | ✓ | [`native/agent-desktop/skills/agent-desktop-windows/SKILL.md`](native/agent-desktop/skills/agent-desktop-windows/SKILL.md) |
+| 26 | ✓ | [`native/agent-desktop/skills/agent-desktop/SKILL.md`](native/agent-desktop/skills/agent-desktop/SKILL.md) |
+| 27 | ✓ | [`native/agent-desktop/skills/jev-desktop/SKILL.md`](native/agent-desktop/skills/jev-desktop/SKILL.md) |
+| 28 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 29 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 30 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
+| 31 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
+| 32 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
+| 33 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 34 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 35 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
+| 36 | → | [`LICENSING.md`](LICENSING.md) |
+| 37 | → | [`native/agent-desktop/PATCHES.md`](native/agent-desktop/PATCHES.md) |
+| 38 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
 
 ---
 

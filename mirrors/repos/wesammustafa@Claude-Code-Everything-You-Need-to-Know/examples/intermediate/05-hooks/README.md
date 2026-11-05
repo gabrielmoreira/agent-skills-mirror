@@ -41,7 +41,7 @@ Hooks in a repository's `.claude/settings.json` run with your user's rights: in 
 
 Smoke test, without Claude: `bash test.sh`.
 
-The scripts: Tested in Claude Code v2.1.285 (stable) on macOS, 2026-10-06\
-`settings.snippet.json`: Not yet tested in a session at this edition's version
+The scripts: Tested in Claude Code v2.1.309 (stable) on Linux, 2026-11-03\
+`settings.snippet.json`: Tested in Claude Code v2.1.309 (stable) on Linux, 2026-11-03
 
 Sources: [Automate actions with hooks](https://code.claude.com/docs/en/hooks-guide), [Hooks reference](https://code.claude.com/docs/en/hooks), [Configure permissions](https://code.claude.com/docs/en/permissions), [Settings](https://code.claude.com/docs/en/settings)

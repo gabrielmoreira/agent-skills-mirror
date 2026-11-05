@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 1 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 0 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 20 |
+| Followed pats | 1 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 0 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/guard/extensions/contributing.md`
 
 ## File Index
 
@@ -61,24 +61,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.factory/skills/hol-guard/SKILL.md`](.factory/skills/hol-guard/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`docs/guard/SKILL.md`](docs/guard/SKILL.md) |
-| 4 | ✓ | [`integrations/claude-code-plugin/skills/setup/SKILL.md`](integrations/claude-code-plugin/skills/setup/SKILL.md) |
-| 5 | ✓ | [`integrations/claude-code-plugin/skills/status/SKILL.md`](integrations/claude-code-plugin/skills/status/SKILL.md) |
-| 6 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/node_modules/ignored/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/node_modules/ignored/SKILL.md) |
-| 7 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/skills/pdf-tools/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/skills/pdf-tools/SKILL.md) |
-| 8 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/gemini-extension/input/GEMINI.md`](rust/crates/guard-plugin-kit/tests/fixtures/gemini-extension/input/GEMINI.md) |
-| 9 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/Bad Skill/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/Bad%20Skill/SKILL.md) |
-| 10 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/helper/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/helper/SKILL.md) |
-| 11 | ✓ | [`tests/fixtures/claude-plugin-good/skills/example/SKILL.md`](tests/fixtures/claude-plugin-good/skills/example/SKILL.md) |
-| 12 | ✓ | [`tests/fixtures/gemini-extension-good/GEMINI.md`](tests/fixtures/gemini-extension-good/GEMINI.md) |
-| 13 | ✓ | [`tests/fixtures/good-plugin/skills/example/SKILL.md`](tests/fixtures/good-plugin/skills/example/SKILL.md) |
-| 14 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md) |
-| 15 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md) |
-| 16 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md) |
-| 17 | ✓ | [`tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md`](tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md) |
-| 18 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md) |
-| 19 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md) |
-| 20 | ✓ | [`tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md`](tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/guard/extensions/publisher-metadata.md`](docs/guard/extensions/publisher-metadata.md) |
+| 5 | ✓ | [`docs/guard/SKILL.md`](docs/guard/SKILL.md) |
+| 6 | ✓ | [`integrations/claude-code-plugin/skills/setup/SKILL.md`](integrations/claude-code-plugin/skills/setup/SKILL.md) |
+| 7 | ✓ | [`integrations/claude-code-plugin/skills/status/SKILL.md`](integrations/claude-code-plugin/skills/status/SKILL.md) |
+| 8 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/node_modules/ignored/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/node_modules/ignored/SKILL.md) |
+| 9 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/skills/pdf-tools/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/claude-plugin/input/skills/pdf-tools/SKILL.md) |
+| 10 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/gemini-extension/input/GEMINI.md`](rust/crates/guard-plugin-kit/tests/fixtures/gemini-extension/input/GEMINI.md) |
+| 11 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/Bad Skill/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/Bad%20Skill/SKILL.md) |
+| 12 | ✓ | [`rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/helper/SKILL.md`](rust/crates/guard-plugin-kit/tests/fixtures/needs-fixes/input/skills/helper/SKILL.md) |
+| 13 | ✓ | [`tests/fixtures/claude-plugin-good/skills/example/SKILL.md`](tests/fixtures/claude-plugin-good/skills/example/SKILL.md) |
+| 14 | ✓ | [`tests/fixtures/gemini-extension-good/GEMINI.md`](tests/fixtures/gemini-extension-good/GEMINI.md) |
+| 15 | ✓ | [`tests/fixtures/good-plugin/skills/example/SKILL.md`](tests/fixtures/good-plugin/skills/example/SKILL.md) |
+| 16 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/security/malicious/SKILL.md) |
+| 17 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/stealth/sneaky/SKILL.md) |
+| 18 | ✓ | [`tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md`](tests/fixtures/hermes-plugin-evil/skills/utils/benign/SKILL.md) |
+| 19 | ✓ | [`tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md`](tests/fixtures/kimi-plugin-good/skills/using-demo/SKILL.md) |
+| 20 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md) |
+| 21 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md) |
+| 22 | ✓ | [`tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md`](tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md) |
+| 23 | → | [`docs/guard/extensions/contributing.md`](docs/guard/extensions/contributing.md) |
 
 ---
 

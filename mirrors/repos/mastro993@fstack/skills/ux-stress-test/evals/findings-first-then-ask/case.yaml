@@ -1,0 +1,9 @@
+schema_version: "1.1"
+name: findings-first-then-ask
+expected_outcome: |
+  Five persona subagents run the demo invoicing app in real browsers and the merged issue list
+  is ranked by how many personas hit each issue. The request does not ask for fixes, so the run
+  shows the ranked findings and then asks the user which issues to fix now and which to open as
+  issues for later. It changes no app code and opens no issues before the user answers.
+context:
+  scaffold_script: place-files.sh

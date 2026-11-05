@@ -21,6 +21,18 @@ const agent: AgentConfig = {
 | `compact` | Rule-based: truncate large assistant text blocks and tool results, keep recent turns intact. No extra LLM call. |
 | `custom` | Supply your own `compress(messages, estimatedTokens)` function. |
 
+The sliding window keeps a tool call and its adjacent results together when
+trimming caller-owned history, including results supplied in separate messages.
+Results are fused into the call's turn as the message directly after the call
+plus any adjacent messages whose blocks are all matching `tool_result` blocks;
+an ordinary user message starts a new turn. A fused turn is never split, so
+`maxTurns` can be exceeded by its size (an assistant turn plus its result
+messages). When the kept window starts at a tool call, the truncation notice is
+appended after that turn's results so the `tool_result` blocks stay first in
+their message. The summarize strategy also splits on these turn boundaries, so
+a tool call and its result-only messages are summarized or retained together;
+results delivered in a message that also carries other blocks are not fused.
+
 ## Auditing what a strategy replaced
 
 Every strategy above rewrites the conversation destructively: the messages it

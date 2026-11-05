@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `HBAI-Ltd/Toonflow-app` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `HBAI-Ltd/Toonflow-app` — 26 default patterns, 2 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HBAI-Ltd/Toonflow-app` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 6 |
+| Followed pats | 2 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `HBAI-Ltd/Toonflow-app` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `.agent/multiTenantContext.md`
+- `.agent/multiTenant.md`
 
 ## File Index
 
@@ -65,6 +66,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`packages/skills/v118workflow/SKILL.md`](packages/skills/v118workflow/SKILL.md) |
 | 5 | ✓ | [`packages/skills/workflow/SKILL.md`](packages/skills/workflow/SKILL.md) |
 | 6 | ✓ | [`packages/teams/storyboardTeam/skills/storyboard/SKILL.md`](packages/teams/storyboardTeam/skills/storyboard/SKILL.md) |
+| 7 | → | [`.agent/multiTenant.md`](.agent/multiTenant.md) |
+| 8 | → | [`.agent/multiTenantContext.md`](.agent/multiTenantContext.md) |
 
 ---
 

@@ -202,8 +202,11 @@ collie qr
 
 1. Scan the QR code with your phone camera to open Collie in the browser.
 2. Add Collie to your home screen so it opens full screen like an app.
-   - **iPhone:** in Safari, tap **Share**, tap **Add to Home Screen**, and tap **Add**.
+   - **iPhone:** in Safari tap **Share** (in the default iOS 26 layout it sits under **⋯** at the bottom right), tap **Add to Home Screen**, and tap **Add**.
    - **Android:** in Chrome, open Collie **Settings** and tap **Install** on the top card.
+
+   ![Put Collie on the home screen: iPhone and Android steps.](images/install/pwa-install.svg)
+
 3. Open Collie from the new icon.
 
 > **Note.** Pair inside the home screen app, not in the browser tab. On an iPhone, the home screen
@@ -228,6 +231,20 @@ view output and reply.
 If the phone shows nothing or cannot connect, run `collie doctor` on the host: it names what is
 missing.
 
+## Your other machines
+
+Run `collie crew add` on the host to put your other machines on the same phone.
+
+```bash
+collie crew add
+```
+
+The command lists the machines your ssh config, Herdr and the Herdr core know. Type the numbers of the
+machines you want. Each machine gets one confirm, after Collie has probed it and before anything
+is written there, and it joins under the name Herdr gives it. If you use the core, run
+`hc machine add --install <host>` first, and `collie crew add` then finds that host.
+[Two machines, one crew](crew.md#two-machines-one-crew) has the details.
+
 ## Next steps
 
 - [Claude Code in tmux or Herdr, on your phone](claude-code-on-your-phone.md) walks through a full
@@ -235,6 +252,8 @@ missing.
 - [Web Push](voice-and-push.md#web-push-optional) adds notifications when an agent needs input.
 - [Configure](configure.md#configure) documents how to restrict Collie to your tailnet user with
   `COLLIE_TRUSTED_USER`.
+- [Two machines, one crew](crew.md#two-machines-one-crew) adds your other machines to the same
+  phone.
 - [Troubleshooting](troubleshooting.md#troubleshooting) covers common errors.
 
 ---

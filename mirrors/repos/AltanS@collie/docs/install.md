@@ -202,7 +202,8 @@ What to know before you start:
   the steps by hand, and
   [Variant C](deployment.md#variant-c--reverse-proxy-as-the-only-front-door-no-tailscale) covers a
   reverse proxy.
-- **A Windows machine cannot join a crew in this release.**
+- **A Windows machine joins or leads a crew only behind a consent flag.** Crews on Windows are
+  [experimental](windows.md#crews), behind `COLLIE_CREWS_ON_WINDOWS=1`.
 - **A build from source needs Git for Windows' `bash`.** The zip needs no toolchain.
 - **A source checkout never updates itself on Windows.** Moving to the zip install is a one-time
   manual step: `collie uninstall`, then `install.ps1`. After that `collie update` works.
@@ -296,6 +297,10 @@ carries the same choice. `collie update` then runs no `herdr plugin` command. To
 core session, export `HC_SESSION` or `HC_SOCKET` before `collie start`; the unit keeps them. Install
 the Claude hooks with `collie hooks install claude` for History. What the core can and cannot do is
 in [herdr-core notes](multiplexers.md#herdr-core-notes).
+
+Machines you add with `hc machine add` show up in `collie crew add` on this machine. A member with
+only the core installed joins the crew like any other. Run `hc machine add --install <host>`, then
+`collie crew add`. [Two machines, one crew](crew.md#two-machines-one-crew) has the steps.
 
 A Collie that already drives the Herdr TUI keeps it, because its `.env` names `herdr` and wins over
 the shell. To mirror the core on that machine too, run a second instance beside it:
@@ -465,14 +470,17 @@ Collie is a web app. The browser adds it to your home screen without an app stor
 standalone icon and full-screen view. Collie answers no device until it is paired, so the dashboard
 shows **Pair this device** until then ([Pair a device](security.md#pair-a-device--the-write-credential)).
 
+![Put Collie on the home screen: iPhone and Android steps.](images/install/pwa-install.svg)
+
 ### iPhone and iPad
 
 1. Open the Collie URL in Safari.
-2. Tap **Share**, then tap **Add to Home Screen**.
-3. Tap **Add**.
+2. Tap **Share**. In the default iOS 26 layout the Share button sits under **⋯** at the bottom right; with the Top or Bottom tab bar layout it is on the bar.
+3. Scroll down and tap **Add to Home Screen**.
+4. Leave **Open as Web App** on, and tap **Add**.
 
-On iOS 16.4 and newer, Chrome, Edge and Firefox also offer **Add to Home Screen** in their share
-menus. If you see **Open as Web App**, keep it selected.
+Before iOS 26, **Share** is on the toolbar. On iOS 16.4 and newer, Chrome, Edge and Firefox
+also offer **Add to Home Screen** in their share menus.
 
 ![The Install card on iOS or iPadOS: installing goes through the share sheet.](images/updates/settings-install-ios-hint.png)
 

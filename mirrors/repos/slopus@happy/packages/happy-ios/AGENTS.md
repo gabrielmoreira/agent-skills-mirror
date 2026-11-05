@@ -147,12 +147,69 @@ nothing here is wired to the release skill or to EAS.
   - artifacts and the recent-sessions screen, which have no entry point;
   - web and desktop-only UI (command palette, shortcut hints, sidebar
     navigator, web tab bar), purchases and analytics.
-- **Voice mode is included by the current product request.** The official
-  ElevenLabs Swift SDK provides WebRTC microphone and speaker transport.
-  Happy's authenticated backend alone grants its free or subscribed allowance;
-  a missing client RevenueCat configuration never prevents a valid grant.
-  Voice stops on background, account switch/sign-out, audio interruption or
-  headphone removal. Client tools use the existing outbox and permission RPCs.
+- **Voice in a Happy account's sessions is off** (`LegacyVoice`, user
+  request): the relay's ElevenLabs voice (`HappyUI/Voice`, `HappyCore/Voice`)
+  stays in the tree, out of reach. The session composer shows no microphone,
+  `VoiceCoordinator.start` says so before any context, status screen,
+  microphone, grant or provider, and Settings' Voice Assistant says so with
+  no usage request or Upgrade (`HostedLegacyVoiceGateTests`). Don't delete
+  the engine, or turn it back on, without the user. DEBUG runs can
+  (`HAPPY_RELAY_VOICE=1`) to look into it.
+- **An agent connection's voice call** (`HappyCore/Call`, `HappyUI/Call`) is
+  apart from that relay voice: home's three-bar button beside compose starts
+  it, and Telegram's in-call bar (`CallBarLayout`, `CallWaves`, adapted with
+  Steve's permission) sits above the navigation bar and pushes the window
+  down by its height. It talks to a new hosted ElevenLabs agent of its own
+  with four client tools (`CallTool`: listSessions, getSessionContext,
+  openSession, sendMessage) and no permission or question tool; a
+  conversation waiting on the person is a `needsInput` flag on a read only.
+  The call hears from the last four conversations visited (`CallContext`):
+  only their agents' new words, each piece once and whole when complete
+  (the agent went on past it in its run, or the run is no longer the
+  newest or working; never on a pause, never as it streams, never because
+  the person wrote), and errors that stopped a turn, never status, tools or
+  a prompt to speak. Updates name a conversation by title and parents,
+  with its ref only when that is unclear. Its directory is exactly what the
+  sidebar shows (`CallTarget.list` over home's rows: bots, tasks, subtasks,
+  project conversations, nested), as indented text with refs; a change
+  settles one second from the first, never longer (`DirectorySettle`), and
+  goes whole, as the sidebar is then. It projects the app's own state
+  (`WarmChats` hold, watch and release, the chat's own send), never a read
+  of its own.
+  It ends on background, interruption, lost route, account change and when
+  the relay's voice starts. For launch it connects to a public agent by its
+  ID (`PublicAgentCallGrants`): a connection mechanism, not authentication.
+  The ID is injected at build time (`HAPPY_CALL_AGENT_ID`, from the ignored
+  `Config/Call.local.xcconfig` or the command line) and is never committed
+  in code, docs or tests. Without it the tap ends at once as "Voice isn't
+  set up for this connection yet"; never fake a live call. Each device gets
+  20 free connected minutes in any rolling 30 days (`CallAllowance`, local,
+  provisional). A device's first tap shows voice's welcome and its last
+  free minute the same screen with "Start Voice Session" greyed out: one
+  full-height sheet of the app's own in the first screen's style
+  (`CallSheetViewController`, no vendor UI); closing it starts nothing.
+  The subscription is real where it can be (`Offers`, one presenter, over
+  `Subscription`, one owner, in `HappyCore/Subscription`): StoreKit 2 and
+  RevenueCat's REST API, no RevenueCat SDK, with the build's public key
+  (`HAPPY_REVENUE_CAT_APPLE_KEY` → `HappyRevenueCatAppleKey`). It is on sale
+  only when the current offering's `$rc_monthly` is a one-month
+  auto-renewable App Store product, at the store's price; anything else,
+  nothing is sold. RevenueCat's `pro`, from any product, gives 5 hours a
+  paid month in place of the free time. The rules (customer ids, store ids,
+  restore, grace, months, retention) are the frozen billing contract
+  shared with Android; read `Subscription.swift` and `ProPass.swift`
+  before changing them. One knowing divergence from RevenueCat's SDK: a
+  transaction is finished only after RevenueCat answers 2xx, never on a
+  4xx. Restore runs on a person's tap only, never at launch. Debug runs
+  can draw it from a fixture (`HAPPY_SUBSCRIPTION_FIXTURE`: `onsale`,
+  `subscribed`, `pending`, `unconfirmed`, `unconfigured`; no store, no
+  network, no charge) or as a no-charge preview (`HAPPY_CALL_OFFER=preview`).
+  Support Happy (Settings' boba row, Support us) is the same subscription
+  on its own sheet, without a voice session. `openSession` replaces a conversation on top
+  and goes over anything else (`CallNavigation`). Contract, prompt, tool schemas and rationale:
+  `docs/agent-voice-call.md` at the repository root. Harness hooks
+  (`HAPPY_CALL_FIXTURE`, `HAPPY_CALL_TAP`, `-callLive`, `CallProbe`) are
+  DEBUG only.
 - **Offline first.** Everything the account has is kept in the local
   SQLite store, and the UI reads only from that store. The network only
   moves deltas:
@@ -381,6 +438,15 @@ nothing here is wired to the release skill or to EAS.
     the others. Their items and caches stay on disk, unused, and are picked
     up again when this app is reinstalled. If the shared account was
     signed out here, the RN build starts signed out.
+- **Team servers sign in with OAuth, not pairing.** A server added by its
+  HTTPS address (`ServerSignInFlow`) is an agent connection whose
+  credentials hold a sign-in grant instead of a device token. Its
+  `SignedInTransport` puts the in-memory access token in `Authorization`,
+  asks `/v0/authentication` after Happy's own `401`, and takes a redirect or
+  an edge `401`/`403` as "sign in again". Previews use WebSocket tunnels where
+  CONNECT can't pass. The redirect URI (`happy://oauth/callback`) is fixed
+  and shared with Android and desktop, so don't change it. See
+  [docs/SERVER-SIGN-IN.md](docs/SERVER-SIGN-IN.md).
 - **Credentials stay in the RN app's Keychain item.** This app reads and
   writes happy-app's `auth_credentials` exactly as expo-secure-store 55
   stores it, so an in-place upgrade (same bundle ids) stays signed in and a
@@ -555,17 +621,20 @@ Only production has entitlements (associated domains).
 
 ### Versioning
 
-This app uses a new versioning scheme, separate from happy-app's semver
-(`1.x.y`): **`vYYYY.MM.N`**, where `N` counts releases within that month,
-starting at 1 (e.g. `v2026.10.1`). The "v2" in the display names likewise
-tells it apart from the legacy RN app.
+All three variants (development, preview, production) carry the same semver
+version, `2.0.0`, continuing the RN app's `1.x` releases. Production
+continues the existing `com.ex3ndr.happy` listing; dev and preview ship the
+same number on their own listings.
 
-- `CFBundleShortVersionString` must be integers only, so it holds the
-  version without the `v` (`2026.10.1`).
-- Bump it in all three `App/Info-*.plist` files, `MARKETING_VERSION` in
-  `project.yml` and the assertion in `AppConfigurationTests`.
-- `CFBundleVersion` (`CURRENT_PROJECT_VERSION`) stays the build number.
-- The version also goes out as `X-Happy-Client: ios/2026.10.1`. The
+- Bump `MARKETING_VERSION` in `project.yml`'s base settings, the only one
+  there; the Mac app and the App Clip read it too. Because xtool doesn't
+  expand `$(VARIABLES)`, the three `App/Info-*.plist` files and
+  `AppClip/project.yml` repeat it, and `AppConfigurationTests` fails until
+  they all match.
+- `CFBundleVersion` (`CURRENT_PROJECT_VERSION`) stays the build number:
+  production's is set in `App/Info-Production.plist` and the Happy target's
+  Release settings; preview uploads let Xcode pick the next free one.
+- The version also goes out as `X-Happy-Client: ios/<version>`. The
   server uses it only for metrics labels.
 
 ## Conventions

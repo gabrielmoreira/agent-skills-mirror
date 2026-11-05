@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `FlorianBruniaux/claude-code-ultimate-guide` — 26 default patterns, 1 followed patterns, 232 file(s) materialized.
+Mirror of `FlorianBruniaux/claude-code-ultimate-guide` — 26 default patterns, 1 followed patterns, 233 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `FlorianBruniaux/claude-code-ultimate-guide` — 26 default patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 232 |
+| Files         | 233 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -198,99 +198,100 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 137 | ✓ | [`docs/resource-evaluations/vibe-coding-rusitschka.md`](docs/resource-evaluations/vibe-coding-rusitschka.md) |
 | 138 | ✓ | [`docs/resource-evaluations/wasp-fullstack-essentials-eval.md`](docs/resource-evaluations/wasp-fullstack-essentials-eval.md) |
 | 139 | ✓ | [`docs/resource-evaluations/watch-list.md`](docs/resource-evaluations/watch-list.md) |
-| 140 | ✓ | [`docs/resource-evaluations/wikiskill-persistent-skill-evolution.md`](docs/resource-evaluations/wikiskill-persistent-skill-evolution.md) |
-| 141 | ✓ | [`docs/resource-evaluations/wooldridge-productivity-stack.md`](docs/resource-evaluations/wooldridge-productivity-stack.md) |
-| 142 | ✓ | [`docs/resource-evaluations/worktrunk-evaluation.md`](docs/resource-evaluations/worktrunk-evaluation.md) |
-| 143 | ✓ | [`docs/resource-evaluations/zolkos-insights-deep-dive.md`](docs/resource-evaluations/zolkos-insights-deep-dive.md) |
-| 144 | ✓ | [`examples/hooks/bm25-routing/skills-corpus/code-review/SKILL.md`](examples/hooks/bm25-routing/skills-corpus/code-review/SKILL.md) |
-| 145 | ✓ | [`examples/hooks/bm25-routing/skills-corpus/debug-tool/SKILL.md`](examples/hooks/bm25-routing/skills-corpus/debug-tool/SKILL.md) |
-| 146 | ✓ | [`examples/hooks/bm25-routing/skills-corpus/deploy/SKILL.md`](examples/hooks/bm25-routing/skills-corpus/deploy/SKILL.md) |
-| 147 | ✓ | [`examples/learning-project/.claude/skills/verify-release/SKILL.md`](examples/learning-project/.claude/skills/verify-release/SKILL.md) |
-| 148 | ✓ | [`examples/learning-project/CLAUDE.md`](examples/learning-project/CLAUDE.md) |
-| 149 | ✓ | [`examples/learning-project/ISSUE.md`](examples/learning-project/ISSUE.md) |
-| 150 | ✓ | [`examples/skills/audit-agents-skills/SKILL.md`](examples/skills/audit-agents-skills/SKILL.md) |
-| 151 | ✓ | [`examples/skills/audit-codebase/SKILL.md`](examples/skills/audit-codebase/SKILL.md) |
-| 152 | ✓ | [`examples/skills/autoresearch/SKILL.md`](examples/skills/autoresearch/SKILL.md) |
-| 153 | ✓ | [`examples/skills/best-of-n/SKILL.md`](examples/skills/best-of-n/SKILL.md) |
-| 154 | ✓ | [`examples/skills/canary/SKILL.md`](examples/skills/canary/SKILL.md) |
-| 155 | ✓ | [`examples/skills/catchup/SKILL.md`](examples/skills/catchup/SKILL.md) |
-| 156 | ✓ | [`examples/skills/ccboard/SKILL.md`](examples/skills/ccboard/SKILL.md) |
-| 157 | ✓ | [`examples/skills/check-cache-bugs/SKILL.md`](examples/skills/check-cache-bugs/SKILL.md) |
-| 158 | ✓ | [`examples/skills/ci-all/SKILL.md`](examples/skills/ci-all/SKILL.md) |
-| 159 | ✓ | [`examples/skills/ci-pipeline/SKILL.md`](examples/skills/ci-pipeline/SKILL.md) |
-| 160 | ✓ | [`examples/skills/ci-status/SKILL.md`](examples/skills/ci-status/SKILL.md) |
-| 161 | ✓ | [`examples/skills/ci-tests/SKILL.md`](examples/skills/ci-tests/SKILL.md) |
-| 162 | ✓ | [`examples/skills/commit/SKILL.md`](examples/skills/commit/SKILL.md) |
-| 163 | ✓ | [`examples/skills/cyber-defense-team/SKILL.md`](examples/skills/cyber-defense-team/SKILL.md) |
-| 164 | ✓ | [`examples/skills/design-patterns/SKILL.md`](examples/skills/design-patterns/SKILL.md) |
-| 165 | ✓ | [`examples/skills/diagnose/SKILL.md`](examples/skills/diagnose/SKILL.md) |
-| 166 | ✓ | [`examples/skills/eval-agents/SKILL.md`](examples/skills/eval-agents/SKILL.md) |
-| 167 | ✓ | [`examples/skills/eval-hooks/SKILL.md`](examples/skills/eval-hooks/SKILL.md) |
-| 168 | ✓ | [`examples/skills/eval-rules/SKILL.md`](examples/skills/eval-rules/SKILL.md) |
-| 169 | ✓ | [`examples/skills/eval-skills/SKILL.md`](examples/skills/eval-skills/SKILL.md) |
-| 170 | ✓ | [`examples/skills/explain/SKILL.md`](examples/skills/explain/SKILL.md) |
-| 171 | ✓ | [`examples/skills/generate-tests/SKILL.md`](examples/skills/generate-tests/SKILL.md) |
-| 172 | ✓ | [`examples/skills/git-ai-archaeology/SKILL.md`](examples/skills/git-ai-archaeology/SKILL.md) |
-| 173 | ✓ | [`examples/skills/git-worktree-clean/SKILL.md`](examples/skills/git-worktree-clean/SKILL.md) |
-| 174 | ✓ | [`examples/skills/git-worktree-remove/SKILL.md`](examples/skills/git-worktree-remove/SKILL.md) |
-| 175 | ✓ | [`examples/skills/git-worktree-status/SKILL.md`](examples/skills/git-worktree-status/SKILL.md) |
-| 176 | ✓ | [`examples/skills/git-worktree/SKILL.md`](examples/skills/git-worktree/SKILL.md) |
-| 177 | ✓ | [`examples/skills/guide-recap/SKILL.md`](examples/skills/guide-recap/SKILL.md) |
-| 178 | ✓ | [`examples/skills/handoff-create/SKILL.md`](examples/skills/handoff-create/SKILL.md) |
-| 179 | ✓ | [`examples/skills/handoff-resume/SKILL.md`](examples/skills/handoff-resume/SKILL.md) |
-| 180 | ✓ | [`examples/skills/handoff-update/SKILL.md`](examples/skills/handoff-update/SKILL.md) |
-| 181 | ✓ | [`examples/skills/investigate/SKILL.md`](examples/skills/investigate/SKILL.md) |
-| 182 | ✓ | [`examples/skills/issue-triage/SKILL.md`](examples/skills/issue-triage/SKILL.md) |
-| 183 | ✓ | [`examples/skills/land-and-deploy/SKILL.md`](examples/skills/land-and-deploy/SKILL.md) |
-| 184 | ✓ | [`examples/skills/landing-page-generator/SKILL.md`](examples/skills/landing-page-generator/SKILL.md) |
-| 185 | ✓ | [`examples/skills/learn-alternatives/SKILL.md`](examples/skills/learn-alternatives/SKILL.md) |
-| 186 | ✓ | [`examples/skills/learn-quiz/SKILL.md`](examples/skills/learn-quiz/SKILL.md) |
-| 187 | ✓ | [`examples/skills/learn-teach/SKILL.md`](examples/skills/learn-teach/SKILL.md) |
-| 188 | ✓ | [`examples/skills/learning-path/SKILL.md`](examples/skills/learning-path/SKILL.md) |
-| 189 | ✓ | [`examples/skills/mcp-integration-reference/SKILL.md`](examples/skills/mcp-integration-reference/SKILL.md) |
-| 190 | ✓ | [`examples/skills/methodology-advisor/SKILL.md`](examples/skills/methodology-advisor/SKILL.md) |
-| 191 | ✓ | [`examples/skills/optimize/SKILL.md`](examples/skills/optimize/SKILL.md) |
-| 192 | ✓ | [`examples/skills/plan-pipeline/ceo-review/SKILL.md`](examples/skills/plan-pipeline/ceo-review/SKILL.md) |
-| 193 | ✓ | [`examples/skills/plan-pipeline/eng-review/SKILL.md`](examples/skills/plan-pipeline/eng-review/SKILL.md) |
-| 194 | ✓ | [`examples/skills/plan-pipeline/execute/SKILL.md`](examples/skills/plan-pipeline/execute/SKILL.md) |
-| 195 | ✓ | [`examples/skills/plan-pipeline/SKILL.md`](examples/skills/plan-pipeline/SKILL.md) |
-| 196 | ✓ | [`examples/skills/plan-pipeline/start/SKILL.md`](examples/skills/plan-pipeline/start/SKILL.md) |
-| 197 | ✓ | [`examples/skills/plan-pipeline/validate/SKILL.md`](examples/skills/plan-pipeline/validate/SKILL.md) |
-| 198 | ✓ | [`examples/skills/pr-triage/SKILL.md`](examples/skills/pr-triage/SKILL.md) |
-| 199 | ✓ | [`examples/skills/pr/SKILL.md`](examples/skills/pr/SKILL.md) |
-| 200 | ✓ | [`examples/skills/qa/SKILL.md`](examples/skills/qa/SKILL.md) |
-| 201 | ✓ | [`examples/skills/recipe-template/SKILL.md`](examples/skills/recipe-template/SKILL.md) |
-| 202 | ✓ | [`examples/skills/refactor/SKILL.md`](examples/skills/refactor/SKILL.md) |
-| 203 | ✓ | [`examples/skills/release-notes-generator/SKILL.md`](examples/skills/release-notes-generator/SKILL.md) |
-| 204 | ✓ | [`examples/skills/release-notes/SKILL.md`](examples/skills/release-notes/SKILL.md) |
-| 205 | ✓ | [`examples/skills/review-plan/SKILL.md`](examples/skills/review-plan/SKILL.md) |
-| 206 | ✓ | [`examples/skills/review-pr/SKILL.md`](examples/skills/review-pr/SKILL.md) |
-| 207 | ✓ | [`examples/skills/routines-discover/SKILL.md`](examples/skills/routines-discover/SKILL.md) |
-| 208 | ✓ | [`examples/skills/rtk-optimizer/SKILL.md`](examples/skills/rtk-optimizer/SKILL.md) |
-| 209 | ✓ | [`examples/skills/sandbox-status/SKILL.md`](examples/skills/sandbox-status/SKILL.md) |
-| 210 | ✓ | [`examples/skills/sandbox-unblock/SKILL.md`](examples/skills/sandbox-unblock/SKILL.md) |
-| 211 | ✓ | [`examples/skills/scaffold/SKILL.md`](examples/skills/scaffold/SKILL.md) |
-| 212 | ✓ | [`examples/skills/security-audit/SKILL.md`](examples/skills/security-audit/SKILL.md) |
-| 213 | ✓ | [`examples/skills/security-check/SKILL.md`](examples/skills/security-check/SKILL.md) |
-| 214 | ✓ | [`examples/skills/security/SKILL.md`](examples/skills/security/SKILL.md) |
-| 215 | ✓ | [`examples/skills/session-save/SKILL.md`](examples/skills/session-save/SKILL.md) |
-| 216 | ✓ | [`examples/skills/ship/SKILL.md`](examples/skills/ship/SKILL.md) |
-| 217 | ✓ | [`examples/skills/skill-creator/SKILL.md`](examples/skills/skill-creator/SKILL.md) |
-| 218 | ✓ | [`examples/skills/sonarqube/SKILL.md`](examples/skills/sonarqube/SKILL.md) |
-| 219 | ✓ | [`examples/skills/talk-pipeline/orchestrator/SKILL.md`](examples/skills/talk-pipeline/orchestrator/SKILL.md) |
-| 220 | ✓ | [`examples/skills/talk-pipeline/stage-1-extract/SKILL.md`](examples/skills/talk-pipeline/stage-1-extract/SKILL.md) |
-| 221 | ✓ | [`examples/skills/talk-pipeline/stage-2-research/SKILL.md`](examples/skills/talk-pipeline/stage-2-research/SKILL.md) |
-| 222 | ✓ | [`examples/skills/talk-pipeline/stage-3-concepts/SKILL.md`](examples/skills/talk-pipeline/stage-3-concepts/SKILL.md) |
-| 223 | ✓ | [`examples/skills/talk-pipeline/stage-4-position/SKILL.md`](examples/skills/talk-pipeline/stage-4-position/SKILL.md) |
-| 224 | ✓ | [`examples/skills/talk-pipeline/stage-5-script/SKILL.md`](examples/skills/talk-pipeline/stage-5-script/SKILL.md) |
-| 225 | ✓ | [`examples/skills/talk-pipeline/stage-6-revision/SKILL.md`](examples/skills/talk-pipeline/stage-6-revision/SKILL.md) |
-| 226 | ✓ | [`examples/skills/update-threat-db/SKILL.md`](examples/skills/update-threat-db/SKILL.md) |
-| 227 | ✓ | [`examples/skills/validate-changes/SKILL.md`](examples/skills/validate-changes/SKILL.md) |
-| 228 | ✓ | [`examples/skills/voice-refine/SKILL.md`](examples/skills/voice-refine/SKILL.md) |
-| 229 | ✓ | [`llms.txt`](llms.txt) |
-| 230 | ✓ | [`machine-readable/llms.txt`](machine-readable/llms.txt) |
-| 231 | ✓ | [`mcp-server/content/llms.txt`](mcp-server/content/llms.txt) |
-| 232 | → | [`docs/resource-evaluations/README.md`](docs/resource-evaluations/README.md) |
+| 140 | ✓ | [`docs/resource-evaluations/weight-space-programming.md`](docs/resource-evaluations/weight-space-programming.md) |
+| 141 | ✓ | [`docs/resource-evaluations/wikiskill-persistent-skill-evolution.md`](docs/resource-evaluations/wikiskill-persistent-skill-evolution.md) |
+| 142 | ✓ | [`docs/resource-evaluations/wooldridge-productivity-stack.md`](docs/resource-evaluations/wooldridge-productivity-stack.md) |
+| 143 | ✓ | [`docs/resource-evaluations/worktrunk-evaluation.md`](docs/resource-evaluations/worktrunk-evaluation.md) |
+| 144 | ✓ | [`docs/resource-evaluations/zolkos-insights-deep-dive.md`](docs/resource-evaluations/zolkos-insights-deep-dive.md) |
+| 145 | ✓ | [`examples/hooks/bm25-routing/skills-corpus/code-review/SKILL.md`](examples/hooks/bm25-routing/skills-corpus/code-review/SKILL.md) |
+| 146 | ✓ | [`examples/hooks/bm25-routing/skills-corpus/debug-tool/SKILL.md`](examples/hooks/bm25-routing/skills-corpus/debug-tool/SKILL.md) |
+| 147 | ✓ | [`examples/hooks/bm25-routing/skills-corpus/deploy/SKILL.md`](examples/hooks/bm25-routing/skills-corpus/deploy/SKILL.md) |
+| 148 | ✓ | [`examples/learning-project/.claude/skills/verify-release/SKILL.md`](examples/learning-project/.claude/skills/verify-release/SKILL.md) |
+| 149 | ✓ | [`examples/learning-project/CLAUDE.md`](examples/learning-project/CLAUDE.md) |
+| 150 | ✓ | [`examples/learning-project/ISSUE.md`](examples/learning-project/ISSUE.md) |
+| 151 | ✓ | [`examples/skills/audit-agents-skills/SKILL.md`](examples/skills/audit-agents-skills/SKILL.md) |
+| 152 | ✓ | [`examples/skills/audit-codebase/SKILL.md`](examples/skills/audit-codebase/SKILL.md) |
+| 153 | ✓ | [`examples/skills/autoresearch/SKILL.md`](examples/skills/autoresearch/SKILL.md) |
+| 154 | ✓ | [`examples/skills/best-of-n/SKILL.md`](examples/skills/best-of-n/SKILL.md) |
+| 155 | ✓ | [`examples/skills/canary/SKILL.md`](examples/skills/canary/SKILL.md) |
+| 156 | ✓ | [`examples/skills/catchup/SKILL.md`](examples/skills/catchup/SKILL.md) |
+| 157 | ✓ | [`examples/skills/ccboard/SKILL.md`](examples/skills/ccboard/SKILL.md) |
+| 158 | ✓ | [`examples/skills/check-cache-bugs/SKILL.md`](examples/skills/check-cache-bugs/SKILL.md) |
+| 159 | ✓ | [`examples/skills/ci-all/SKILL.md`](examples/skills/ci-all/SKILL.md) |
+| 160 | ✓ | [`examples/skills/ci-pipeline/SKILL.md`](examples/skills/ci-pipeline/SKILL.md) |
+| 161 | ✓ | [`examples/skills/ci-status/SKILL.md`](examples/skills/ci-status/SKILL.md) |
+| 162 | ✓ | [`examples/skills/ci-tests/SKILL.md`](examples/skills/ci-tests/SKILL.md) |
+| 163 | ✓ | [`examples/skills/commit/SKILL.md`](examples/skills/commit/SKILL.md) |
+| 164 | ✓ | [`examples/skills/cyber-defense-team/SKILL.md`](examples/skills/cyber-defense-team/SKILL.md) |
+| 165 | ✓ | [`examples/skills/design-patterns/SKILL.md`](examples/skills/design-patterns/SKILL.md) |
+| 166 | ✓ | [`examples/skills/diagnose/SKILL.md`](examples/skills/diagnose/SKILL.md) |
+| 167 | ✓ | [`examples/skills/eval-agents/SKILL.md`](examples/skills/eval-agents/SKILL.md) |
+| 168 | ✓ | [`examples/skills/eval-hooks/SKILL.md`](examples/skills/eval-hooks/SKILL.md) |
+| 169 | ✓ | [`examples/skills/eval-rules/SKILL.md`](examples/skills/eval-rules/SKILL.md) |
+| 170 | ✓ | [`examples/skills/eval-skills/SKILL.md`](examples/skills/eval-skills/SKILL.md) |
+| 171 | ✓ | [`examples/skills/explain/SKILL.md`](examples/skills/explain/SKILL.md) |
+| 172 | ✓ | [`examples/skills/generate-tests/SKILL.md`](examples/skills/generate-tests/SKILL.md) |
+| 173 | ✓ | [`examples/skills/git-ai-archaeology/SKILL.md`](examples/skills/git-ai-archaeology/SKILL.md) |
+| 174 | ✓ | [`examples/skills/git-worktree-clean/SKILL.md`](examples/skills/git-worktree-clean/SKILL.md) |
+| 175 | ✓ | [`examples/skills/git-worktree-remove/SKILL.md`](examples/skills/git-worktree-remove/SKILL.md) |
+| 176 | ✓ | [`examples/skills/git-worktree-status/SKILL.md`](examples/skills/git-worktree-status/SKILL.md) |
+| 177 | ✓ | [`examples/skills/git-worktree/SKILL.md`](examples/skills/git-worktree/SKILL.md) |
+| 178 | ✓ | [`examples/skills/guide-recap/SKILL.md`](examples/skills/guide-recap/SKILL.md) |
+| 179 | ✓ | [`examples/skills/handoff-create/SKILL.md`](examples/skills/handoff-create/SKILL.md) |
+| 180 | ✓ | [`examples/skills/handoff-resume/SKILL.md`](examples/skills/handoff-resume/SKILL.md) |
+| 181 | ✓ | [`examples/skills/handoff-update/SKILL.md`](examples/skills/handoff-update/SKILL.md) |
+| 182 | ✓ | [`examples/skills/investigate/SKILL.md`](examples/skills/investigate/SKILL.md) |
+| 183 | ✓ | [`examples/skills/issue-triage/SKILL.md`](examples/skills/issue-triage/SKILL.md) |
+| 184 | ✓ | [`examples/skills/land-and-deploy/SKILL.md`](examples/skills/land-and-deploy/SKILL.md) |
+| 185 | ✓ | [`examples/skills/landing-page-generator/SKILL.md`](examples/skills/landing-page-generator/SKILL.md) |
+| 186 | ✓ | [`examples/skills/learn-alternatives/SKILL.md`](examples/skills/learn-alternatives/SKILL.md) |
+| 187 | ✓ | [`examples/skills/learn-quiz/SKILL.md`](examples/skills/learn-quiz/SKILL.md) |
+| 188 | ✓ | [`examples/skills/learn-teach/SKILL.md`](examples/skills/learn-teach/SKILL.md) |
+| 189 | ✓ | [`examples/skills/learning-path/SKILL.md`](examples/skills/learning-path/SKILL.md) |
+| 190 | ✓ | [`examples/skills/mcp-integration-reference/SKILL.md`](examples/skills/mcp-integration-reference/SKILL.md) |
+| 191 | ✓ | [`examples/skills/methodology-advisor/SKILL.md`](examples/skills/methodology-advisor/SKILL.md) |
+| 192 | ✓ | [`examples/skills/optimize/SKILL.md`](examples/skills/optimize/SKILL.md) |
+| 193 | ✓ | [`examples/skills/plan-pipeline/ceo-review/SKILL.md`](examples/skills/plan-pipeline/ceo-review/SKILL.md) |
+| 194 | ✓ | [`examples/skills/plan-pipeline/eng-review/SKILL.md`](examples/skills/plan-pipeline/eng-review/SKILL.md) |
+| 195 | ✓ | [`examples/skills/plan-pipeline/execute/SKILL.md`](examples/skills/plan-pipeline/execute/SKILL.md) |
+| 196 | ✓ | [`examples/skills/plan-pipeline/SKILL.md`](examples/skills/plan-pipeline/SKILL.md) |
+| 197 | ✓ | [`examples/skills/plan-pipeline/start/SKILL.md`](examples/skills/plan-pipeline/start/SKILL.md) |
+| 198 | ✓ | [`examples/skills/plan-pipeline/validate/SKILL.md`](examples/skills/plan-pipeline/validate/SKILL.md) |
+| 199 | ✓ | [`examples/skills/pr-triage/SKILL.md`](examples/skills/pr-triage/SKILL.md) |
+| 200 | ✓ | [`examples/skills/pr/SKILL.md`](examples/skills/pr/SKILL.md) |
+| 201 | ✓ | [`examples/skills/qa/SKILL.md`](examples/skills/qa/SKILL.md) |
+| 202 | ✓ | [`examples/skills/recipe-template/SKILL.md`](examples/skills/recipe-template/SKILL.md) |
+| 203 | ✓ | [`examples/skills/refactor/SKILL.md`](examples/skills/refactor/SKILL.md) |
+| 204 | ✓ | [`examples/skills/release-notes-generator/SKILL.md`](examples/skills/release-notes-generator/SKILL.md) |
+| 205 | ✓ | [`examples/skills/release-notes/SKILL.md`](examples/skills/release-notes/SKILL.md) |
+| 206 | ✓ | [`examples/skills/review-plan/SKILL.md`](examples/skills/review-plan/SKILL.md) |
+| 207 | ✓ | [`examples/skills/review-pr/SKILL.md`](examples/skills/review-pr/SKILL.md) |
+| 208 | ✓ | [`examples/skills/routines-discover/SKILL.md`](examples/skills/routines-discover/SKILL.md) |
+| 209 | ✓ | [`examples/skills/rtk-optimizer/SKILL.md`](examples/skills/rtk-optimizer/SKILL.md) |
+| 210 | ✓ | [`examples/skills/sandbox-status/SKILL.md`](examples/skills/sandbox-status/SKILL.md) |
+| 211 | ✓ | [`examples/skills/sandbox-unblock/SKILL.md`](examples/skills/sandbox-unblock/SKILL.md) |
+| 212 | ✓ | [`examples/skills/scaffold/SKILL.md`](examples/skills/scaffold/SKILL.md) |
+| 213 | ✓ | [`examples/skills/security-audit/SKILL.md`](examples/skills/security-audit/SKILL.md) |
+| 214 | ✓ | [`examples/skills/security-check/SKILL.md`](examples/skills/security-check/SKILL.md) |
+| 215 | ✓ | [`examples/skills/security/SKILL.md`](examples/skills/security/SKILL.md) |
+| 216 | ✓ | [`examples/skills/session-save/SKILL.md`](examples/skills/session-save/SKILL.md) |
+| 217 | ✓ | [`examples/skills/ship/SKILL.md`](examples/skills/ship/SKILL.md) |
+| 218 | ✓ | [`examples/skills/skill-creator/SKILL.md`](examples/skills/skill-creator/SKILL.md) |
+| 219 | ✓ | [`examples/skills/sonarqube/SKILL.md`](examples/skills/sonarqube/SKILL.md) |
+| 220 | ✓ | [`examples/skills/talk-pipeline/orchestrator/SKILL.md`](examples/skills/talk-pipeline/orchestrator/SKILL.md) |
+| 221 | ✓ | [`examples/skills/talk-pipeline/stage-1-extract/SKILL.md`](examples/skills/talk-pipeline/stage-1-extract/SKILL.md) |
+| 222 | ✓ | [`examples/skills/talk-pipeline/stage-2-research/SKILL.md`](examples/skills/talk-pipeline/stage-2-research/SKILL.md) |
+| 223 | ✓ | [`examples/skills/talk-pipeline/stage-3-concepts/SKILL.md`](examples/skills/talk-pipeline/stage-3-concepts/SKILL.md) |
+| 224 | ✓ | [`examples/skills/talk-pipeline/stage-4-position/SKILL.md`](examples/skills/talk-pipeline/stage-4-position/SKILL.md) |
+| 225 | ✓ | [`examples/skills/talk-pipeline/stage-5-script/SKILL.md`](examples/skills/talk-pipeline/stage-5-script/SKILL.md) |
+| 226 | ✓ | [`examples/skills/talk-pipeline/stage-6-revision/SKILL.md`](examples/skills/talk-pipeline/stage-6-revision/SKILL.md) |
+| 227 | ✓ | [`examples/skills/update-threat-db/SKILL.md`](examples/skills/update-threat-db/SKILL.md) |
+| 228 | ✓ | [`examples/skills/validate-changes/SKILL.md`](examples/skills/validate-changes/SKILL.md) |
+| 229 | ✓ | [`examples/skills/voice-refine/SKILL.md`](examples/skills/voice-refine/SKILL.md) |
+| 230 | ✓ | [`llms.txt`](llms.txt) |
+| 231 | ✓ | [`machine-readable/llms.txt`](machine-readable/llms.txt) |
+| 232 | ✓ | [`mcp-server/content/llms.txt`](mcp-server/content/llms.txt) |
+| 233 | → | [`docs/resource-evaluations/README.md`](docs/resource-evaluations/README.md) |
 
 ---
 

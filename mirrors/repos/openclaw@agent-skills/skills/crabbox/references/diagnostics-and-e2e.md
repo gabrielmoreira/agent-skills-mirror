@@ -20,7 +20,10 @@ Prefer built-ins:
 
 ## Real E2E
 
-“Test in Crabbox” = user path, not merely remote unit tests.
+Follow the requested proof scope and the consumer repository's requirements.
+Remote focused tests or builds prove only those checks.
+Use this recipe when the user or consumer requires real user-path proof.
+Never describe remote unit tests as real E2E.
 
 1. Reproduce entrypoint when feasible.
 2. Patch. Narrow local test.
@@ -62,9 +65,10 @@ blacksmith testbox status --id <tbx_id>
 
 - Provider/CLI old: follow consumer's trusted Crabbox update path.
 - Config/auth: `config show`, `doctor`, `whoami`.
-- Sync quiet/stale: `--debug --timing-json`, then `--full-resync` once.
-- Testbox capacity: stop task-owned request, report it, run locally.
-  Never wait on queue or chain providers.
+- Sync quiet/stale: inspect `--debug --timing-json`. Direct providers support
+  `--full-resync`; Testbox uses native sync and the skill's
+  [input checks](../SKILL.md#verify-synced-inputs).
+- Testbox capacity: follow the [proof and capacity rules](../SKILL.md#crabbox).
 - Command failure: read phase, failed test, JUnit, skipped shell segment. Focused
   rerun first.
 - Cleanup unclear: list exact provider. Stop only owned ids.

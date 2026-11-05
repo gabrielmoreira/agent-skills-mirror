@@ -1,5 +1,7 @@
 # The Android app
 
+Bundled skills in Settings → Skills can be read, exported and switched off. Their name, content and files are managed by the app, so Edit, Update and Delete are unavailable. To customize one, export it and import a copy with a different name. The bundled `skill-creator` guide uses provider-neutral instructions.
+
 `android/` is nanoMuse for the phone: [OpenMinis](https://github.com/OpenMinis/OpenMinis)
 1.13 (GPL-3.0): a native app whose agent runs **on the phone**, with a Linux shell, a
 browser, MCP servers, skills and scheduled tasks inside the APK, with nanoMuse's own
@@ -468,6 +470,82 @@ and put its four values in `android/keystore.properties` (git-ignored: `storeFil
 
 The chat-only emulator build (`-Pnm.abi=x86_64`) excludes cached arm64 proot and Alpine root filesystem assets. Switching back to the default arm64 build includes those assets again; no cache deletion is needed.
 
+### Windows with WSL {#windows-wsl}
+
+On x64 Windows, use an x86_64 Ubuntu environment in WSL 2 for the complete build.
+The native build scripts support Linux and macOS hosts, not Windows shells.
+[Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install) first if needed,
+then open Ubuntu. Only this first command runs in an administrator PowerShell:
+
+```powershell
+wsl --install -d Ubuntu
+```
+
+Run the remaining commands in Ubuntu. Keep the checkout, SDK and caches in its Linux
+filesystem, rather than under `/mnt/c`, and keep shell scripts as LF text:
+
+```bash
+sudo apt update
+sudo apt install -y git curl unzip zip build-essential pkg-config openjdk-21-jdk-headless
+mkdir -p ~/src
+git clone --config core.autocrlf=false https://github.com/nano-muse/nanoMuse.git ~/src/nanoMuse
+cd ~/src/nanoMuse
+git submodule update --init android/deps/proot
+```
+
+Install [Go for Linux](https://go.dev/doc/install) and put its `go` command on
+Ubuntu's `PATH`; the [Android workflow](https://github.com/nano-muse/nanoMuse/blob/main/.github/workflows/android.yml)
+uses Go 1.26. Download the **Linux** Android SDK Command-Line Tools and follow the
+[sdkmanager setup](https://developer.android.com/tools/sdkmanager), using
+`$HOME/Android/Sdk` as the SDK directory. The executable must end up at
+`$HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager`. The SDK installed by
+Windows Android Studio does not contain the Linux NDK executables this build needs.
+
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+export ANDROID_HOME="$HOME/Android/Sdk"
+export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/27.2.12479018"
+export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+export GOROOT="$(go env GOROOT)"
+export GOPATH="$(go env GOPATH)"
+export PATH="$GOPATH/bin:$PATH"
+export GOTOOLCHAIN=auto
+
+java -version
+go version                         # must report linux/amd64
+sdkmanager --sdk_root="$ANDROID_HOME" --licenses
+sdkmanager --sdk_root="$ANDROID_HOME" "platform-tools" "platforms;android-36" \
+  "build-tools;35.0.0" "cmake;3.22.1" "ndk;27.2.12479018"
+
+bash scripts/android/build-natives.sh
+cd android/src/android
+./gradlew :app:assembleDebug --console=plain --no-daemon
+```
+
+The APK is `app/build/outputs/apk/debug/app-debug.apk` relative to the Gradle
+directory. Copy the completed APK to Windows if needed; keep the build tree in Linux.
+
+Gradle creates the debug signing key at `$HOME/.android/debug.keystore` inside
+Ubuntu. Preserve that key outside the checkout if later debug builds need to update
+this APK. It may differ from the key in your Windows home. A debug APK cannot update
+an official APK signed with another key; use the release-signing instructions above
+for your own release key.
+
+If Kotlin runs out of Java heap, check the memory available to WSL with `free -h`.
+On a machine with enough memory for both Windows and WSL, a build can raise the Gradle
+and Kotlin daemon limits without editing the repository. For example, from the same
+Gradle directory:
+
+```bash
+./gradlew :app:assembleDebug --console=plain --no-daemon \
+  '-Dorg.gradle.jvmargs=-Xmx4g -Dfile.encoding=UTF-8' \
+  '-Pkotlin.daemon.jvmargs=-Xmx6g'
+```
+
+These are optional heap ceilings, not minimum requirements. Choose limits that fit
+the memory available to WSL and leave room for the other processes.
+
+
 ## Releases
 
 `.github/workflows/android.yml` builds the debug APK on every change under `android/`
@@ -504,3 +582,68 @@ like the Python package's version does.
 | `connectors/`, `ui/connectors/` | The connectors catalogue (`ConnectorsCatalogue` reads the asset), MCP authorization discovery + registration (`McpAuthDiscovery`), connecting and token refresh (`Connectors`), what this phone connected as published to the profile and what the other devices did (`SharedConnectors`), the Settings → Connectors page |
 | `ui/cloud/` | Sign-in, the Account screen, the Devices section |
 | `res/values*/nm_strings.xml` | Every nanoMuse string in the seventeen languages the app has (English, 简体中文, 繁體中文, German, Spanish, Filipino, French, Indonesian, Japanese, Korean, Malay, Polish, Brazilian Portuguese, Romanian, Russian, Thai, Turkish); every file carries the same keys, apart from the two the English file marks `translatable="false"` (the relay address example and the product name `nanoMuse Cloud`), and a missing one falls back to English |
+
+## Resume interrupted backups {#export-resume}
+
+Backup and restore offers Resume and Discard for an interrupted export. Resume requires the original category, file-limit, chat-file and credential options, preserves its identifier and cut-off, and reuses verified completed categories. An encrypted run requires the password again and cannot resume as plaintext. The password is never written to the journal. Encryption and packaging use a disposable copy, so allow temporary disk space for that copy. Failed runs retain private staging until resumed or discarded. Scheduled runs report the pending recovery choice instead of replacing it. Finished packages keep the existing interoperable .minisbak format.
+
+Resuming verifies the committed file index as well as staged data and blobs, so changed destination paths or metadata are refused even when the index length is unchanged.
+
+## Interrupted restore recovery {#restore-recovery}
+
+Android keeps a recovery snapshot before changing shared files, skills, memory, MCP configuration, providers or environment variables during a restore. A failed category is rolled back, and an interrupted category is reconciled before repositories open at the next launch. Recovery failures retain the snapshot and block normal startup for another attempt. Chats keep their existing merge behavior; this is not a full rollback of chat history. Recovery metadata stays outside exported data.
+
+Recovered environment-variable metadata also refreshes the running app when the original metadata file was absent.
+
+## Direct tasks to another device
+
+Start a message with `@Device name` to send its text directly to that device over the Hub. The local model does not spend a turn deciding how to delegate. The remote device uses its own model, tools and configuration. This is one task, not a persistent execution destination for subsequent messages.
+
+The chat shows the device name, tool steps and response text while they arrive. Partial text replaces the current segment instead of adding duplicate messages. Destinations that do not stream still return their final answer. Approvals use the same local cards and scoped grants as model-delegated tasks; Stop cancels this call on the destination and withdraws its pending cards.
+
+An offline or ambiguous destination keeps the message in the composer. Device tasks accept text only: remove attachments and pasted-file content before sending. Wait for an active turn to finish before sending another device task; ordinary local messages retain the existing queue. A failed call can have completed earlier steps, so a failure or missing answer is shown explicitly. The final text and device attribution are saved once; live remote tool capsules are not reconstructed after reopening the chat.
+
+Android device tasks wait up to fifteen minutes, matching the relay task deadline. A caller timeout or cancellation sends a best-effort stop for that exact call, with at most fifteen seconds for cleanup. An expired call identifier cannot stop a later task in the same conversation.
+
+Remote tasks use the same foreground-service tracking as local replies. A successful reply completed away from its conversation is marked unread; cancellation, failures and unsaved replies are not.
+
+## Unread replies {#unread-replies}
+
+A successful reply completed while its chat is not visible is marked unread in the Muse drawer and classic session list. Collapsed classic groups retain the unread signal. Opening the conversation clears it. Failed, cancelled and duplicate completions do not create unread indicators. This state is local, kept only for the current process, and independent of running and paused badges. This covers unread replies from issue #531, not its entire working-state and approval proposal.
+
+Visibility follows the resumed chat in both layouts, including a draft after its first message. Switching to another tab, covering the chat with another page, or putting the app in the background makes subsequent replies unread.
+
+## Picking a device with @
+
+At the beginning of a message, type `@` to see online devices that accept tasks above the usual file matches. Filter by name, then tap a row or use the existing arrow keys and Return. Each device row shows its name, phone or computer icon, operating system, online state and device ID.
+
+Selection inserts the full name. Devices with identical names use `@Name [device-id]` to identify the selected device; an ambiguous unqualified name or prefix is not resolved to the first match. The delegation instruction uses the stable ID. Mentions later in a message continue to offer files only.
+
+## Emoji avatars from another device
+
+An emoji avatar chosen on desktop or web also appears on Android, with its background colour. The phone keeps the emoji beside the drawn avatar, so it survives a restart and follows the existing account isolation. An empty emoji uses ✨ and an invalid colour uses blue (`#0064d4`).
+
+Drawn faces and personal clips retain their existing priority. Renaming the agent or changing connectors leaves an unchanged remote appearance alone. Resetting the avatar explicitly returns to the dragon. Choosing an emoji on Android is not part of this change.
+
+## App lock
+
+Android can require the device screen lock before showing the app. Enable it in Settings, choose when it locks again, and authenticate to save changes. Unlocks last only in this process. Both layouts, incoming shares and safe-mode diagnostics use the same gate. Native diagnostic windows close if the app re-locks, and returning from the export file picker requires access again before any diagnostic data is written. This protects access in the app, not encryption of stored data. Background tasks continue.
+
+A pending diagnostic export requires its activity to be resumed and the app to be unlocked at the same time. Unlocking another window while the export window is paused does not release that export.
+
+Native provider-import and permission-repair dialogs also close when app access expires; pending permission choices are cancelled.
+
+## Protected conversations {#session-lock}
+
+The conversation menu can protect an individual chat with the device screen lock. Authentication is required to protect it, remove protection, export or duplicate a locked chat, or regenerate its title from message content. A duplicate inherits protection and must be unlocked separately. Protecting a new conversation saves it first; cancelling authentication leaves the draft unchanged. Settings controls the re-lock interval, including locking when leaving the chat. Both layouts, notifications and deep links use the gate. Protected previews and body-search matches are hidden.
+
+Interactive backups ask for confirmation when they include locked conversations. This approval applies only to the backup and does not unlock every chat. Scheduled backups, sync and background work keep their existing behavior. Protection metadata survives restarts locally, while unlocks do not; neither is shared through conversation sync or backups. This does not encrypt chat storage.
+
+Selecting another Muse tab counts as leaving the protected conversation for the On exit setting, even while the chat remains retained in the background.
+
+
+## Continuing screen tasks {#hands-continuity}
+
+When another explicit Hands task names the same resolved app in the same conversation, Android supplies a short note from the preceding run: its task, outcome, result and last eight steps. Notes are kept in memory for at most 30 minutes, with at most 32 conversation/app pairs. They are historical observations, not permission to repeat actions or resume a stopped task; the current task and fresh screenshot take precedence. Runs without a conversation or a resolved app do not reuse notes, and a run that explicitly switches to another app does not save a shared note. Clearing, editing or deleting the conversation, syncing a replacement history, signing out or restarting discards the corresponding notes.
+
+The screen model can add `"distance":"large"` to a `scroll` action for a vertical sweep of about 65% of the screen. Omitting it preserves the existing approximately 45% vertical gesture; horizontal gestures are unchanged. The main agent is told to preserve the complete `nanomuse-hands run` JSON, including its outcome and final answer, rather than cut it with `head` or `tail`.

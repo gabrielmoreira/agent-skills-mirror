@@ -5,13 +5,19 @@ description: "Crabbox/Testbox remote proof: portable provider routing, untrusted
 
 # Crabbox
 
-- **PR CI = default broad proof.** First: focused local tests + targeted
-  lint/typecheck/format. Checks pass + change builds: open ready PR; CI runs broad
-  suites. Never hold PR for pre-PR suite runs.
+- **PR CI = default broad proof.** Use the consumer repository's proof policy
+  for required checks, builds, and ready/merge gates. Run bounded local checks
+  only when source trust and host qualification permit them.
+- **Required build unavailable:** remote capacity unavailable + local execution
+  unqualified permits an already-authorized draft with the exact missing build
+  and capacity gap recorded. Require successful exact-head CI covering that build
+  before ready or merge. A skipped draft job is not proof: use the consumer's
+  supported exact-head CI route. This changes proof timing, never publication
+  authority, source trust, credentials, owner approval, or merge gates.
 - Box only for gaps in CI/local coverage: another OS/device, live providers/channels,
   long E2E, heavy benchmarks. Acquire only with command ready + immediate grant.
-- Queued: stop task-owned request; run locally. Never wait on queue or chain
-  Testbox → AWS → other providers.
+- Queued: stop task-owned request; use PR CI or a qualified, trusted local scope.
+  Report uncovered requirements. Never wait on queues or chain providers.
 - Fix real failures; never rerun/re-push merely for green. Read available CI failure
   classification before attributing failure to change.
 
@@ -96,9 +102,10 @@ Several commands: save id, reuse, stop:
 
 - One lease, one active command; no sync/reclaim during run. `--reclaim` only
   for deliberate checkout-path ownership transfer.
-- Native Testbox runs sync even with reused ids. Never rely on `--no-sync` for
-  baseline, even unchanged rerun; may be silently ignored.
-- Base/head changed: stop + rewarm; never override stale lease. `warmup --ref`:
+- Native Testbox runs sync even with reused ids. `--no-sync` is unsupported and
+  exits with code 2 before provider activity. It cannot preserve a remote baseline.
+- Base/head changed: stop + rewarm; never override stale lease.
+  Crabbox `warmup --blacksmith-ref` (native `blacksmith testbox warmup --ref`):
   branch/tag only, never raw SHA. Never checkout refs in synced root.
 - Testbox native status/stop: `--id`; status has no `--json`. Use
   `blacksmith testbox list --all` or `blacksmith testbox status --id <tbx_id>`.
@@ -126,7 +133,6 @@ Read only relevant recipe; routing + immediate-availability rules still apply:
   exact provider commands, broker auth, paid macOS quota/no-spend preflight, desktop
   handoff. No silent substitution; never commit proof assets to product repo.
 - [Diagnostics and real E2E](references/diagnostics-and-e2e.md): capture/env flags,
-  failure layers, user-path proof. “Test in Crabbox” = real
-  install/update/onboard/CLI/service/API path, not merely remote unit tests.
+  failure layers, and the recipe for requested or consumer-required user-path proof.
   Full-screen CLIs: real PTY. Compare Testbox revisions within one synced invocation
   using detached temporary worktrees; later runs resync local source.

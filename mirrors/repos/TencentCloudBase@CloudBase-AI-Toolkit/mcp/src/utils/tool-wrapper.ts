@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolAnnotations as SdkToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 import { ExtendedMcpServer } from "../server.js";
+import { normalizeLang, setPanelLang } from "../i18n/index.js";
 import { shouldRegisterTool } from './cloud-mode.js';
 import { debug } from './logger.js';
 import { reportToolCall, readMcpClientInfoFromServer, readClientCapabilitiesFromServer } from './telemetry.js';
@@ -101,12 +102,12 @@ function contributionHint(server: ExtendedMcpServer): string {
 /**
  * 从 `auth` 的返回里取出「环境准备」的结果，供遥测上报。
  *
- * 为什么要从返回体里抠：`env_setup_status` / `env_setup_failure.reason` 只存在于
+ * 为什么要从返回体里抠：`env_setup_status` / `env_setup_reason` 只存在于
  * `auth` 的 payload 里，不是 `reportToolCall` 的入参。而工具 wrapper 是唯一同时
  * 看得见 args 和 result 的地方。
  *
- * 现状（2026-10-27）：这两项只回给模型、没进埋点，于是「无环境的用户卡在购买页、
- * 实名、还是 CAM 授权」在数据里长得一模一样，加文案也无法验收。
+ * 现状（2026-11-04）：无环境不再自动创建，`auth` 只回 `ACTION_REQUIRED` +
+ * `reason=no_env`，所以这一列用来数「有多少人卡在没环境」。
  */
 function readEnvSetupOutcome(
     result: unknown,
@@ -133,17 +134,9 @@ function readEnvSetupOutcome(
         const p = payload as Record<string, unknown>;
         const status = typeof p?.env_setup_status === 'string' ? p.env_setup_status : undefined;
         if (!status) continue;
-        const failure = p?.env_setup_failure as Record<string, unknown> | undefined;
-        const reason = typeof failure?.reason === 'string' ? failure.reason : undefined;
-        // 把两个布尔压进 reason 的后缀：一列就能看清「卡在哪」，
-        // 单看 reason 只知道「建环境失败」，不知道是实名还是 CAM 授权拦住的
-        const gates: string[] = [];
-        if (failure?.need_real_name_auth === true) gates.push('realname');
-        if (failure?.need_cam_auth === true) gates.push('cam');
-        return {
-            status,
-            reason: reason ? (gates.length ? `${reason}+${gates.join('+')}` : reason) : undefined,
-        };
+        const reason =
+            typeof p?.env_setup_reason === 'string' ? p.env_setup_reason : undefined;
+        return { status, reason };
     }
     return undefined;
 }
@@ -259,9 +252,16 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
         // 提到 try 外：finally 里要读 auth 的环境准备结果（env_setup_status / failure.reason）。
         // 护栏拦截的早退路径不会赋值，finally 里按 undefined 处理。
         let result: any;
+        // 破坏性确认的结果，随遥测一起上报（只有命中破坏性名单才有值）。
+        // 拦截路径直接 return，但 finally 仍会执行，所以这一列在「没执行」的行上也有。
+        let confirmStatus: string | undefined;
 
         try {
             debug(`开始执行工具: ${name}`, { args: sanitizeArgs(args) });
+            // MCP Apps panels bake HTML on resources/read after the tool returns.
+            // Remember call-time `lang` so ui:// HTML follows this invocation, not
+            // only the process/instance lang (auth(lang=en) must not leave a zh panel).
+            setPanelLang(normalizeLang(args?.lang));
             // In test environment, skip logger to avoid potential blocking
             const isTestEnvironment =
               process.env.NODE_ENV === "test" || process.env.VITEST === "true";
@@ -289,6 +289,11 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
                 args,
                 extra: extra as { requestId?: any },
             });
+            // 不是 not_applicable 就说明命中了破坏性名单，把确认结果带上遥测：
+            // 事后要能区分「有人点过确认」和「客户端根本问不了人」。
+            if (guardDecision.status !== "not_applicable") {
+                confirmStatus = guardDecision.status;
+            }
             if (guardDecision.intercept) {
                 success = true;
                 return guardDecision.result;
@@ -410,6 +415,7 @@ function createWrappedHandler(name: string, handler: any, server: ExtendedMcpSer
                     client: server.client || process.env.CLOUDBASE_MCP_CLIENT, // 传递 MCP client 来源标识
                     mcpClientInfo: readMcpClientInfoFromServer(server),
                     mcpClientCapabilities: readClientCapabilitiesFromServer(server),
+                    confirmStatus,
                 }).catch(err => {
                     // 静默处理上报错误，不影响主要功能
                     debug('遥测上报失败', { toolName: name, error: err instanceof Error ? err.message : String(err) });

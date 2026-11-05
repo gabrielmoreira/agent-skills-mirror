@@ -1,0 +1,8 @@
+{
+ "repo": "acme/widgets", "number": 11, "title": "Add euro currency formatting",
+ "body": "Adds `widgets.currency.format_eur` for invoice PDFs.",
+ "base": "main", "head": "feat/format-eur", "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v", "ci_delay_seconds": 20,
+ "reviews": [{"id": "PRR_alice1", "author": "alice", "state": "APPROVED", "body": "Looks good."}],
+ "threads": [], "comments": []
+}

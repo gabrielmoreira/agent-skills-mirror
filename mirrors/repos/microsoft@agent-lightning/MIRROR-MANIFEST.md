@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/agent-lightning` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,7 +69,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`skills/assets/agent-lightning-officeqa-correctness-overall-cost.svg`](skills/assets/agent-lightning-officeqa-correctness-overall-cost.svg) |
 | 9 | ✓ | [`skills/assets/agent-lightning-spreadsheetbench-accuracy-finale-cost.svg`](skills/assets/agent-lightning-spreadsheetbench-accuracy-finale-cost.svg) |
 | 10 | ✓ | [`skills/assets/agent-lightning-spreadsheetbench-accuracy-overall-cost.svg`](skills/assets/agent-lightning-spreadsheetbench-accuracy-overall-cost.svg) |
-| 11 | ✓ | [`skills/README.md`](skills/README.md) |
+| 11 | ✓ | [`skills/assets/agl-skill.pdf`](skills/assets/agl-skill.pdf) |
+| 12 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

@@ -2,7 +2,7 @@
 repo: AnxForever/stylekit
 repoUrl: https://github.com/AnxForever/stylekit.git
 refType: branch
-ref: main
+ref: dev
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `AnxForever/stylekit` — 26 default patterns, 0 followed patterns, 2 
 |---------------|-------|
 | Repo          | `AnxForever/stylekit` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 2 |

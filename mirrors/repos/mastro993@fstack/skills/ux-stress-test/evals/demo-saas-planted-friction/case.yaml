@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: demo-saas-planted-friction
+expected_outcome: |
+  Five persona subagents (impatient, skeptic, mobile, non-native, breaker) run the demo
+  invoicing app from the landing page toward "first invoice created" in real browsers and
+  save screenshots of friction moments. The merged issue list is ranked by how many personas
+  hit each issue and catches the planted problems: the first header button is a 404, the
+  password rule is hidden behind "Invalid input", double-submitting signup crashes, the signup
+  card overflows a 375px screen, the CTA and onboarding copy use idioms and jargon, the step-1
+  button is icon-only, terms 404 and privacy is lorem ipsum, prices disagree between pages,
+  and onboarding breaks on back navigation, long input, and HTML input. The ranked findings are
+  shown first; since the request already asks for fixes, every code-fixable issue is fixed
+  without a further question, legal text and prices are flagged for the owner rather than
+  invented, all five personas rerun, and report.md shows per-issue status with before/after
+  screenshots.
+context:
+  scaffold_script: place-files.sh

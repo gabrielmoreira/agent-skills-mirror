@@ -40,8 +40,6 @@ const {
   mockResetCloudBaseManagerCache,
   mockProbeApiKeyCamCapability,
   mockResolveAuthOptions,
-  mockCheckAndInitTcbService,
-  mockCheckAndCreateFreeEnv,
   authStoreData,
 } = vi.hoisted(() => ({
   mockBuildAuthConfigSummary: vi.fn((options: any) => ({
@@ -99,8 +97,6 @@ const {
   mockGetCloudBaseManager: vi.fn(),
   mockResetCloudBaseManagerCache: vi.fn(),
   mockProbeApiKeyCamCapability: vi.fn().mockResolvedValue("capable"),
-  mockCheckAndInitTcbService: vi.fn(),
-  mockCheckAndCreateFreeEnv: vi.fn(),
   mockResolveAuthOptions: vi.fn((options: any = {}) => ({
     authMode: options.authMode ?? options.serverAuthOptions?.authMode ?? "device",
     clientId: options.clientId ?? options.serverAuthOptions?.clientId,
@@ -189,11 +185,6 @@ vi.mock("./rag.js", () => ({
   getClaudePrompt: vi.fn().mockResolvedValue(""),
 }));
 
-vi.mock("./env-setup.js", () => ({
-  checkAndInitTcbService: mockCheckAndInitTcbService,
-  checkAndCreateFreeEnv: mockCheckAndCreateFreeEnv,
-}));
-
 function createMockServer(
   ide = "TestIDE",
   authOptions?: any,
@@ -250,24 +241,6 @@ describe("env tools - auth", () => {
       status: "IDLE",
       updatedAt: Date.now(),
     });
-    mockCheckAndInitTcbService.mockImplementation(async (_manager: any, context: any) => ({
-      ...context,
-      checkTcbServiceAttempted: true,
-      tcbServiceChecked: true,
-      tcbServiceInitialized: true,
-    }));
-    mockCheckAndCreateFreeEnv.mockImplementation(async (_manager: any, context: any) => ({
-      success: false,
-      context: {
-        ...context,
-        promotionalActivitiesChecked: true,
-        createEnvError: {
-          code: "NoPromotionalActivity",
-          message: "当前账号不符合免费环境创建条件，请手动创建环境",
-          helpUrl: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
-        },
-      },
-    }));
     mockPeekLoginState.mockResolvedValue(null);
     mockEnsureLogin.mockResolvedValue({
       secretId: "sid",
@@ -554,84 +527,7 @@ describe("env tools - auth", () => {
     });
   });
 
-  it("auth(action=status) should auto-create and bind env when possible", async () => {
-    mockPeekLoginState.mockResolvedValue({
-      secretId: "sid",
-      secretKey: "skey",
-    });
-    mockListAvailableEnvCandidates.mockResolvedValue([]);
-    mockResolveEnvCandidateByEnvId.mockResolvedValue(undefined);
-    mockCheckAndCreateFreeEnv.mockImplementation(async (_manager: any, context: any) => ({
-      success: true,
-      envId: "env-created",
-      context: {
-        ...context,
-        promotionalActivitiesChecked: true,
-        createFreeEnvAttempted: true,
-      },
-    }));
-
-    const result = await tools.auth.handler({ action: "status" });
-    const payload = JSON.parse(result.content[0].text);
-
-    expect(payload).toMatchObject({
-      auth_status: "READY",
-      env_status: "READY",
-      current_env_id: "env-created",
-      env_setup_status: "AUTO_CREATED",
-    });
-    expect(payload.env_setup_actions).toEqual(
-      expect.arrayContaining([
-        "list_envs",
-        "check_tcb_service",
-        "check_promotional_activity",
-        "create_free_env",
-      ]),
-    );
-    expect(mockEnvManagerSetEnvId).toHaveBeenCalledWith("env-created");
-  });
-
-  it("auth(action=status) should expose real-name action_required state", async () => {
-    mockPeekLoginState.mockResolvedValue({
-      secretId: "sid",
-      secretKey: "skey",
-    });
-    mockListAvailableEnvCandidates.mockResolvedValue([]);
-    mockResolveEnvCandidateByEnvId.mockResolvedValue(undefined);
-    mockCheckAndInitTcbService.mockImplementation(async (_manager: any, context: any) => ({
-      ...context,
-      checkTcbServiceAttempted: true,
-      initTcbAttempted: true,
-      tcbServiceChecked: true,
-      tcbServiceInitialized: false,
-      initTcbError: {
-        code: "RealNameAuthRequired",
-        message: "当前账号需要先完成实名认证",
-        helpUrl: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
-        needRealNameAuth: true,
-      },
-    }));
-
-    const result = await tools.auth.handler({ action: "status" });
-    const payload = JSON.parse(result.content[0].text);
-
-    expect(payload).toMatchObject({
-      auth_status: "READY",
-      env_status: "NONE",
-      env_setup_status: "ACTION_REQUIRED",
-      env_setup_failure: {
-        reason: "tcb_init_failed",
-        error_code: "RealNameAuthRequired",
-        need_real_name_auth: true,
-        help_url: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
-      },
-    });
-    expect(payload.env_setup_actions).toEqual(
-      expect.arrayContaining(["list_envs", "check_tcb_service", "init_tcb"]),
-    );
-  });
-
-  it("auth(action=status) should expose manual creation guidance when free env is unavailable", async () => {
+  it("auth(action=status) should stop at console guidance when the account has no env", async () => {
     mockPeekLoginState.mockResolvedValue({
       secretId: "sid",
       secretKey: "skey",
@@ -645,13 +541,22 @@ describe("env tools - auth", () => {
     expect(payload).toMatchObject({
       auth_status: "READY",
       env_status: "NONE",
+      current_env_id: null,
       env_setup_status: "ACTION_REQUIRED",
-      env_setup_failure: {
-        reason: "env_creation_failed",
-        error_code: "NoPromotionalActivity",
-        help_url: "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
-      },
+      env_setup_reason: "no_env",
+      env_setup_help_url:
+        "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
     });
+    // 建环境是用户决策：status 只读，不创建、不绑定、不发起任何管理面调用
+    expect(payload.env_setup_actions).toEqual(["list_envs"]);
+    expect(payload.env_setup_failure).toBeUndefined();
+    expect(payload.message).toContain("已开通");
+    expect(payload.message).toContain(
+      "https://buy.cloud.tencent.com/CloudBase?buyType=tcb&region=ap-shanghai&sqlType=pg",
+    );
+    expect(payload.next_step).toMatchObject({ tool: "auth", action: "status" });
+    expect(mockEnvManagerSetEnvId).not.toHaveBeenCalled();
+    expect(mockGetCloudBaseManager).not.toHaveBeenCalled();
   });
 
   it("auth(action=start_auth, authMode=device) should return AUTH_PENDING immediately", async () => {
@@ -824,7 +729,7 @@ describe("env tools - auth", () => {
           "https://tcb.cloud.tencent.com/dev#/cli-auth?from=cli&flow=device",
         ),
       ).toBe(
-        "https://tcb.tencentcloud.com/dev#/cli-auth?from=cli&flow=device",
+        "https://tcb.tencentcloud.com/dev#/cli-auth?from=cli&flow=device&allowNoEnv=true",
       );
     } finally {
       delete process.env.TCB_SITE;
@@ -862,7 +767,9 @@ describe("env tools - auth", () => {
       callArgs.getAuthUrl(
         "https://tcb.cloud.tencent.com/dev#/cli-auth?from=cli&flow=device",
       ),
-    ).toBe("https://tcb.tencentcloud.com/dev#/cli-auth?from=cli&flow=device");
+    ).toBe(
+      "https://tcb.tencentcloud.com/dev#/cli-auth?from=cli&flow=device&allowNoEnv=true",
+    );
     // 站点写入环境变量，供本次登录后续环节与后续工具调用按同一站点解析
     expect(process.env.TCB_SITE).toBe("intl");
   });
@@ -921,7 +828,7 @@ describe("env tools - auth", () => {
     expect(payload.message).toBe(t("env.auth.invalidSite", { site: "us-east" }));
   });
 
-  it("auth(action=start_auth, authMode=web) should continue environment preparation after login", async () => {
+  it("auth(action=start_auth, authMode=web) should hand off to console when the account has no env", async () => {
     mockPeekLoginState.mockResolvedValue(null);
     mockEnsureLogin.mockResolvedValue({
       secretId: "sid",
@@ -929,15 +836,6 @@ describe("env tools - auth", () => {
     });
     mockListAvailableEnvCandidates.mockResolvedValue([]);
     mockResolveEnvCandidateByEnvId.mockResolvedValue(undefined);
-    mockCheckAndCreateFreeEnv.mockImplementation(async (_manager: any, context: any) => ({
-      success: true,
-      envId: "env-web-created",
-      context: {
-        ...context,
-        promotionalActivitiesChecked: true,
-        createFreeEnvAttempted: true,
-      },
-    }));
 
     const result = await tools.auth.handler({
       action: "start_auth",
@@ -947,10 +845,13 @@ describe("env tools - auth", () => {
 
     expect(payload).toMatchObject({
       code: "AUTH_READY",
-      current_env_id: "env-web-created",
-      env_setup_status: "AUTO_CREATED",
+      current_env_id: null,
+      env_status: "NONE",
+      env_setup_status: "ACTION_REQUIRED",
+      env_setup_reason: "no_env",
     });
-    expect(mockEnvManagerSetEnvId).toHaveBeenCalledWith("env-web-created");
+    // 登录成功后不替用户建环境，只给开通入口
+    expect(mockEnvManagerSetEnvId).not.toHaveBeenCalled();
   });
 
   it("auth(action=set_env, envId) should accept direct env binding", async () => {
@@ -1140,7 +1041,7 @@ describe("env tools - auth", () => {
     }
   });
 
-  it("面板默认关闭：不设环境变量时 status 不带 _meta，工具照常工作", async () => {
+  it("面板默认开启：不设环境变量时 status 带 _meta，工具照常工作", async () => {
     mockPeekLoginState.mockResolvedValue({ secretId: "sid", secretKey: "skey" });
     mockListAvailableEnvCandidates.mockResolvedValue(
       Array.from({ length: 3 }, (_, index) => ({ envId: `env-${index + 1}`, alias: `alias-${index + 1}` })),
@@ -1148,6 +1049,28 @@ describe("env tools - auth", () => {
 
     const previous = process.env.CLOUDBASE_MCP_UI;
     delete process.env.CLOUDBASE_MCP_UI;
+    try {
+      const result = await tools.auth.handler({ action: "status" });
+      expect(result.content[0].type).toBe("text");
+      expect(JSON.parse(result.content[0].text).code).toBe("STATUS");
+      expect(result._meta?.["cloudbase/ui"]?.env_candidates).toHaveLength(3);
+    } finally {
+      if (previous === undefined) {
+        delete process.env.CLOUDBASE_MCP_UI;
+      } else {
+        process.env.CLOUDBASE_MCP_UI = previous;
+      }
+    }
+  });
+
+  it("显式关闭后 status 不带 _meta，工具照常工作", async () => {
+    mockPeekLoginState.mockResolvedValue({ secretId: "sid", secretKey: "skey" });
+    mockListAvailableEnvCandidates.mockResolvedValue(
+      Array.from({ length: 3 }, (_, index) => ({ envId: `env-${index + 1}`, alias: `alias-${index + 1}` })),
+    );
+
+    const previous = process.env.CLOUDBASE_MCP_UI;
+    process.env.CLOUDBASE_MCP_UI = "off";
     try {
       const result = await tools.auth.handler({ action: "status" });
       expect(result._meta).toBeUndefined();
@@ -1900,6 +1823,187 @@ describe("env tools - queryEnv", () => {
     expect(payload.EnvInfo.routeDisabled).toBeUndefined();
   });
 
+  it("queryEnv(info) fills EnvBaseInfo keys the SDK omitted without clobbering enrichers", async () => {
+    const commonServiceCall = vi.fn(async ({ Action }: { Action: string }) => {
+      if (Action === "DescribeBillingInfo") {
+        return {
+          EnvBillingInfoList: [
+            {
+              EnvId: "env-test",
+              ExpireTime: "2026-12-31 00:00:00",
+              PayMode: "PREPAYMENT",
+              IsAutoRenew: true,
+            },
+          ],
+        };
+      }
+      if (Action === "DescribeEnvInfo") {
+        return {
+          EnvInfo: {
+            EnvBaseInfo: {
+              EnvId: "env-raw",
+              PackageId: "raw-package",
+              PostgreSQL: [{ InstanceId: "pg-raw" }],
+              Meta: [{ Key: "other", Value: "x" }],
+              Storages: [{ Bucket: "raw-bucket" }],
+              LogServices: [{ LogsetId: "ls-1", TopicId: "tp-1" }],
+              StaticStorages: [
+                {
+                  StaticDomain: "env-test.tcloudbaseapp.com",
+                  Bucket: "hosting-bucket",
+                },
+              ],
+              FutureFlag: "on",
+              BillingInfo: { PayMode: "RAW" },
+              RuntimeMode: "nosql",
+              RuntimeBackends: { postgresql: false, nosql: false, mysql: false },
+              staticDomainRouteEnabled: true,
+              accessUrlReachable: true,
+              routeDisabled: false,
+              disabledAccessUrls: ["https://evil.example/"],
+            },
+          },
+        };
+      }
+      return {};
+    });
+
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: {
+        getEnvInfo: vi.fn().mockResolvedValue({
+          EnvInfo: {
+            EnvId: "env-test",
+            PackageId: "baas_personal",
+            PostgreSQL: [{ InstanceId: "pg-sdk" }],
+            Meta: [{ Key: "postgresql", Value: "enable" }],
+            Storages: [{ Bucket: "sdk-bucket" }],
+          },
+        }),
+        describeHttpServiceRoute: vi.fn().mockResolvedValue({
+          Domains: [
+            {
+              Domain: "env-test.tcloudbaseapp.com",
+              IsDefault: true,
+              Routes: [
+                {
+                  Path: "/",
+                  Enable: false,
+                  UpstreamResourceType: "STATIC_STORE",
+                  UpstreamResourceName: "staticstore",
+                },
+              ],
+            },
+          ],
+        }),
+      },
+      commonService: vi.fn(() => ({ call: commonServiceCall })),
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({ action: "info", envId: "env-test" })
+      ).content[0].text,
+    );
+
+    expect(commonServiceCall).toHaveBeenCalledWith({
+      Action: "DescribeEnvInfo",
+      Param: { EnvId: "env-test" },
+    });
+    expect(payload.EnvInfo.EnvId).toBe("env-test");
+    expect(payload.EnvInfo.PackageId).toBe("baas_personal");
+    expect(payload.EnvInfo.PostgreSQL).toEqual([{ InstanceId: "pg-sdk" }]);
+    expect(payload.EnvInfo.Meta).toEqual([{ Key: "postgresql", Value: "enable" }]);
+    expect(payload.EnvInfo.Storages).toEqual([{ Bucket: "sdk-bucket" }]);
+    expect(payload.EnvInfo.LogServices).toEqual([{ LogsetId: "ls-1", TopicId: "tp-1" }]);
+    expect(payload.EnvInfo.FutureFlag).toBe("on");
+    expect(payload.EnvInfo.StaticStorages[0]).toMatchObject({
+      StaticDomain: "env-test.tcloudbaseapp.com",
+      Bucket: "hosting-bucket",
+      staticDomainRouteEnabled: false,
+    });
+    expect(payload.EnvInfo.BillingInfo).toMatchObject({
+      PayMode: "PREPAYMENT",
+      ExpireTime: "2026-12-31 00:00:00",
+    });
+    expect(payload.EnvInfo.RuntimeMode).toBe("postgresql");
+    expect(payload.EnvInfo.RuntimeBackends.postgresql).toBe(true);
+    expect(payload.EnvInfo.staticDomainRouteEnabled).toBe(false);
+    expect(payload.EnvInfo.accessUrlReachable).toBe(false);
+    expect(payload.EnvInfo.routeDisabled).toBe(true);
+    expect(payload.EnvInfo.disabledAccessUrls).toEqual([
+      "https://env-test.tcloudbaseapp.com/",
+    ]);
+  });
+
+  it("queryEnv(info) keeps SDK StaticStorages when DescribeEnvInfo also returns them", async () => {
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: {
+        getEnvInfo: vi.fn().mockResolvedValue({
+          EnvInfo: {
+            EnvId: "env-test",
+            StaticStorages: [
+              {
+                StaticDomain: "sdk.tcloudbaseapp.com",
+                Bucket: "sdk-hosting",
+              },
+            ],
+          },
+        }),
+        describeHttpServiceRoute: vi.fn().mockResolvedValue({
+          Domains: [
+            {
+              Domain: "sdk.tcloudbaseapp.com",
+              IsDefault: true,
+              Routes: [
+                {
+                  Path: "/",
+                  Enable: true,
+                  UpstreamResourceType: "STATIC_STORE",
+                  UpstreamResourceName: "staticstore",
+                },
+              ],
+            },
+          ],
+        }),
+      },
+      commonService: vi.fn(() => ({
+        call: vi.fn(async ({ Action }: { Action: string }) => {
+          if (Action === "DescribeEnvInfo") {
+            return {
+              EnvInfo: {
+                EnvBaseInfo: {
+                  StaticStorages: [
+                    {
+                      StaticDomain: "raw.tcloudbaseapp.com",
+                      Bucket: "raw-hosting",
+                    },
+                  ],
+                },
+              },
+            };
+          }
+          return {};
+        }),
+      })),
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({ action: "info", envId: "env-test" })
+      ).content[0].text,
+    );
+
+    expect(payload.EnvInfo.StaticStorages).toEqual([
+      {
+        StaticDomain: "sdk.tcloudbaseapp.com",
+        Bucket: "sdk-hosting",
+        staticDomainRouteEnabled: true,
+      },
+    ]);
+  });
+
   it("queryEnv(info) RuntimeBackends.nosql should require usable Databases InstanceId", async () => {
     const cases: Array<{
       name: string;
@@ -2443,6 +2547,7 @@ describe("env tools - queryEnv", () => {
           EnvId: "test-env-0000000000000000",
           Module: "SCF",
           CreditsValue: 12,
+          DeductValue: 12,
           MetricUsageDetail: [{ MetricName: "Invocations", Value: 3 }],
         },
       ],
@@ -2487,6 +2592,7 @@ describe("env tools - queryEnv", () => {
         {
           Module: "SCF",
           CreditsValue: 12,
+          DeductValue: 12,
         },
       ],
     });
@@ -2547,6 +2653,7 @@ describe("env tools - queryEnv", () => {
           EnvId: "env-credits",
           Module: "SCF",
           CreditsValue: 12,
+          DeductValue: 12,
           MetricUsageDetail: [
             { ValueDetailList: [{ CalcTime: "2026-08-01", CreditsValue: 12 }] },
           ],
@@ -2575,7 +2682,7 @@ describe("env tools - queryEnv", () => {
     // 文本回执完全不变
     expect(JSON.parse(result.content[0].text)).toMatchObject({
       EnvId: "env-credits",
-      Usages: [{ Module: "SCF", CreditsValue: 12 }],
+      Usages: [{ Module: "SCF", CreditsValue: 12, DeductValue: 12 }],
     });
     expect(describeEnvInfo).toHaveBeenCalledWith({ EnvId: "env-credits" });
 
@@ -2682,7 +2789,7 @@ describe("env tools - queryEnv", () => {
       EndTime: "2026-08-31 23:59:59",
     });
     const describeCreditsUsageDetail = vi.fn().mockResolvedValue({
-      Usages: [{ EnvId: "env-paid", Module: "FLEXDB", CreditsValue: 7 }],
+      Usages: [{ EnvId: "env-paid", Module: "FLEXDB", CreditsValue: 7, DeductValue: 7 }],
     });
     const describeEnvInfo = vi.fn().mockResolvedValue({
       EnvInfo: {
@@ -2705,6 +2812,49 @@ describe("env tools - queryEnv", () => {
     });
   });
 
+  it("queryEnv(usage) 整周期查询以账单聚合为准，同一份汇总也给到模型", async () => {
+    const describeEnvAccountCircle = vi.fn().mockResolvedValue({
+      StartTime: "2026-08-01 00:00:00",
+      EndTime: "2026-08-31 23:59:59",
+    });
+    // 分项合计 7，账单说 31,700 —— 差额来自按量与未归到模块的部分，头部必须听账单的
+    const describeCreditsUsageDetail = vi.fn().mockResolvedValue({
+      Usages: [{ EnvId: "env-billed", Module: "FLEXDB", CreditsValue: 7, DeductValue: 7 }],
+    });
+    const describeEnvInfo = vi.fn().mockResolvedValue({
+      EnvInfo: {
+        EnvBaseInfo: { EnvId: "env-billed", PackageId: "baas_personal", Region: "ap-shanghai" },
+        BillingInfo: { ExpireTime: "2099-01-01 00:00:00" },
+      },
+    });
+    const billingCall = vi.fn().mockResolvedValue({
+      Response: { DeductValue: 31_700, ReportValue: 520.5, PackageDeductValue: 0 },
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: { describeEnvAccountCircle, describeCreditsUsageDetail, describeEnvInfo },
+      commonService: vi.fn(() => ({ call: billingCall })),
+    });
+
+    const { tools } = createMockServer();
+    const result = await tools.queryEnv.handler({ action: "usage", envId: "env-billed" });
+
+    expect(billingCall).toHaveBeenCalledWith({
+      Action: "DescribeCreditsUsage",
+      Param: { EnvId: "env-billed", StartDate: "2026-08-01", EndDate: "2026-08-31" },
+    });
+    expect(result.structuredContent).toMatchObject({
+      credits: { total: 40000, used: 31_700, source: "billing", payg: 520.5 },
+      branch: "normal",
+    });
+    // 分模块行仍是明细口径，不跟着头部变
+    expect(result.structuredContent).toMatchObject({
+      modules: [{ module: "database", credits_value: 7 }],
+    });
+    // 模型拿到的是同一份汇总，不必自己去加那 15 行
+    const json = JSON.parse(result.content[0].text);
+    expect(json.Credits).toEqual({ total: 40000, used: 31_700, source: "billing", payg: 520.5 });
+  });
+
   it("queryEnv(usage) 带 type 过滤时：只给 used、不给 total，结论压成 unknown", async () => {
     const describeEnvAccountCircle = vi.fn().mockResolvedValue({
       StartTime: "2026-08-01 00:00:00",
@@ -2712,7 +2862,7 @@ describe("env tools - queryEnv", () => {
     });
     const describeCreditsUsageDetail = vi.fn().mockResolvedValue({
       // 被 type 过滤后只回 SCF 一项，而配额是全套餐的 —— 两个数放一起会得出错误结论
-      Usages: [{ EnvId: "env-filtered", Module: "SCF", CreditsValue: 12 }],
+      Usages: [{ EnvId: "env-filtered", Module: "SCF", CreditsValue: 12, DeductValue: 12 }],
     });
     const describeEnvInfo = vi.fn().mockResolvedValue({
       EnvInfo: {
@@ -2750,7 +2900,7 @@ describe("env tools - queryEnv", () => {
       EndTime: "2026-08-31 23:59:59",
     });
     const describeCreditsUsageDetail = vi.fn().mockResolvedValue({
-      Usages: [{ EnvId: "env-degraded", Module: "SCF", CreditsValue: 3 }],
+      Usages: [{ EnvId: "env-degraded", Module: "SCF", CreditsValue: 3, DeductValue: 3 }],
     });
     const describeEnvInfo = vi.fn().mockRejectedValue(new Error("DescribeEnvInfo denied"));
     mockGetCloudBaseManager.mockResolvedValue({

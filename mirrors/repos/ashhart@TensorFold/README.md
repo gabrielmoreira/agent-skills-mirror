@@ -38,6 +38,7 @@ atc release ISSUE --json
 ```
 
 Use `reviewing` or `blocked` when appropriate, land the session when it stops, and resolve overlaps before opening a pull request.
+Before opening a pull request, have the agent run the [pull request skill](docs/pr/SKILL.md); agents that support skills can install it as `tensorfold-pull-request`.
 
 ## Quick start
 
@@ -62,7 +63,7 @@ Its kernels are built with CUDA 13, so TensorFold refuses an older driver at sta
 See the [CUDA runbook](RUNBOOK.md#linux-and-cuda) for runtime libraries and supported GPUs.
 
 ```sh
-V=1.2.1
+V=1.2.2
 case "$(uname -m)" in
   aarch64|arm64) PLATFORM=linux-aarch64 ;;
   x86_64) PLATFORM=linux-x86_64 ;;
@@ -107,6 +108,14 @@ The [TensorFold desktop workspace](app/README.md) bundles the local engine, mode
 Download the Apple-silicon [beta 9 DMG](https://github.com/ashhart/TensorFold/releases/tag/v1.0.0-beta.9), or build from [`app/`](app/README.md).
 The desktop app launches the bundled `tensorfold-native` executable directly.
 Mobile clients in `app/mobile/` remain preview software.
+
+## TensorFold Starlight (enterprise)
+
+[TensorFold Starlight](https://github.com/ashhart/tf-starlight) gives an organisation one governed OpenAI- and Anthropic-compatible endpoint for a fleet of TensorFold engines on Macs, Linux GPU servers and Windows machines.
+It signs people in through the organisation's identity provider (OIDC or SAML, with SCIM provisioning), decides who may use which model and where it runs, places and supervises models on nodes, and accounts for every token.
+It runs fully offline, or brokers approved frontier providers under the same identity, policy and budgets; [the install guide](https://github.com/ashhart/tf-starlight/blob/main/docs/install.md) covers Docker, Kubernetes and Linux services.
+Starlight lives in its own repository, [ashhart/tf-starlight](https://github.com/ashhart/tf-starlight): it pins the TensorFold release it is tested with and checks every flag its nodes pass to `tensorfold serve` against that release in CI.
+Starlight is new: the gates that still need real GPU clusters or identity-provider tenants are listed in [its qualification notes](https://github.com/ashhart/tf-starlight/blob/main/docs/qualification.md).
 
 ## Living Weights (experimental)
 
@@ -159,6 +168,7 @@ Conversions are explicitly marked: their upstream weights need the linked conver
 
 | Model / format | Download | Machine and memory scope | Native recipe / limits |
 | --- | --- | --- | --- |
+| dots.mocr, BF16 OCR | Use the local `dots-studio/dots.mocr` checkpoint. | Native HIP; AMD R9700 (`gfx1201`) checked, one GPU. | [Native OCR recipe](docs/recipes/dots-mocr-hip.md); full model-card demo matches HF tokens. No video, MTP head, CUDA, or Metal qualification. |
 | Qwen3.5-2B, MLX 4-bit | `tensorfold pull mlx-community/Qwen3.5-2B-MLX-4bit@93760be4f1f69842a46bc13dbdc0f19e291392a3` | One Mac (M5 Max checked), or one GB10; no RAM minimum published. | [2B](docs/recipes/qwen3.5-2b-native.md); [CUDA release checks](CHANGELOG.md#110). Text only. |
 | Qwen3.8-27B, MLX 4-bit | `tensorfold pull TensorFold/Qwen3.8-27B-MLX-4bit`<br>`tensorfold pull z-lab/Qwen3.8-27B-DFlash2` | One Mac (M5 Max/M3 Ultra), or one GB10. | [27B](docs/recipes/qwen3.8-27b.md). Add `--drafter z-lab/Qwen3.8-27B-DFlash2`; without it decoding is plain. |
 | Nemotron 3.5 Lightning 30B-A3B, MLX 4-bit | `tensorfold pull TensorFold/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-MLX-4bit` | One Mac (M1-M5), or one GB10; also checked on RTX 3090 / RTX PRO 6000. | [Lightning](docs/recipes/nemotron-3.5.md). Includes MTP. |
@@ -171,8 +181,9 @@ Conversions are explicitly marked: their upstream weights need the linked conver
 | GLM-5.3-Flash, MLX 4-bit | `tensorfold pull TensorFold/GLM-5.3-Flash-MLX-4bit-MTP` | Two M5 Ultras; single-Mac native serving is not qualified. | [Paired Metal runbook](RUNBOOK.md#flash-next-and-paired-metal-serving). Do not use the Python recipe's single-Mac command. |
 | GLM-5.3-Flash, EXL3/TR3 | `tensorfold pull Mia-AiLab/GLM-5.3-Flash-EXL3-TR3-4bpw` | Two CUDA ranks; the release checks the two-GB10 setup. | [Release scope](CHANGELOG.md#110), [checkpoint](docs/recipes/glm-5.3-flash.md#exl3). Experimental checkpoint; use [native rank options](docs/recipes/glm-5.3-flash-cuda.md#run), not the Python installation. |
 | GLM-5.3-Flash, NVFP4 | `tensorfold pull nvidia/GLM-5.3-Flash-NVFP4@423acf37583782c51c142d145aef733d72943d93` | Two GB10s at TP=2: @Bizuayeu loaded the whole checkpoint on 1.1.0 in 302.1 s and served it. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md); [contributed run](https://github.com/ashhart/TensorFold/issues/1040): one token hash per prompt across three runs and a passphrase found in 199,307 tokens; scored prompts and more than two ranks were not covered. |
-| GLM-5.3-Flash, FP4-Local | `tensorfold pull nvidia/GLM-5.3-Flash-FP4-Local@76348ddb2be2e35e39ecfc00e75dc07703f4f3d5` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu loaded it as stored and served it at both sizes. 165.3 GiB of weights, 13% less than NVFP4's 190.4 GiB. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.1.5 (#1050). NVIDIA's mixed-precision checkpoint: NVFP4 routed experts with compressed block scales, MXFP8 and 128×128-block FP8 for most of the rest. As close to BF16 as NVFP4 at its smaller size: at TP=2 its NLL is 1.11% above BF16's against NVFP4's 1.37% ([contributed receipt](docs/receipts/glm-fp4local-80517fc3/README.md) on #1050's head, not rerun on main), a difference the per-document intervals in [XSFP4's card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-XSFP4#measured) do not resolve. |
-| GLM-5.3-Flash, XSFP4 | `tensorfold pull Bizuayeu/GLM-5.3-Flash-XSFP4@88736f916f8939607fde8a4b881dcae749f7551d` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: on main `8086c205c` @Bizuayeu loaded it in 370.7 s at TP=2 (rank 0's model 96.97 GiB at a 524,288-token window) and in 313.8 s at TP=3 (63.60 GiB at 1,048,576), and both served. 165.7 GiB of weights, 0.4 GiB more than FP4-Local's. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.1.5 through FP4-Local's path. FP4-Local with its routed experts' NVFP4 blocks fitted again from the BF16 weights, a smoothing folded into them, so it runs on the same kernels. Closer to BF16 than FP4-Local and NVFP4 at TP=2 by all three measures in [its card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-XSFP4#measured), on #1050's code: top-1 agreement 93.26%, NLL 0.85% above and a KL bound of 0.0431, against FP4-Local's 92.82%, 1.11% and 0.0510. |
+| GLM-5.3-Flash, FP4-Local | `tensorfold pull nvidia/GLM-5.3-Flash-FP4-Local@76348ddb2be2e35e39ecfc00e75dc07703f4f3d5` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu loaded it as stored and served it at both sizes. 165.3 GiB of weights, 13% less than NVFP4's. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.1.5 (#1050). NVIDIA's mixed-precision checkpoint: NVFP4 routed experts, FP8 for most of the rest. As close to BF16 as NVFP4 at its smaller size ([receipt](docs/receipts/glm-fp4local-80517fc3/README.md)). |
+| GLM-5.3-Flash, XSFP4 | `tensorfold pull Bizuayeu/GLM-5.3-Flash-XSFP4@88736f916f8939607fde8a4b881dcae749f7551d` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu served it at both sizes. 165.7 GiB of weights. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.1.5 through FP4-Local's path. FP4-Local with its routed experts refitted from the BF16 weights and a smoothing folded in, on the same kernels. Closer to BF16 than FP4-Local and NVFP4 by all three measures in [its card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-XSFP4#measured). |
+| GLM-5.3-Flash, Jammed XSFP4 | `tensorfold pull Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4@0a22bb46ecef3d0f5f96e41dc6011be12974fbf1` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu served it at both sizes. 160.2 GiB of weights; at TP=2 each GB10 holds [6.6 GiB less](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4#memory) than at block 16. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), on main after 1.2.2 (#2041). Refitted from BF16 at block 32 with XSFP4's smoothing, each row's scales packed (`csf0_v1`, read only by this path), at XSFP4's speed. Its KL and top-1 are nearer BF16 than NVIDIA's two checkpoints', short of XSFP4's ([its card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4#measured)). |
 | GLM-5.3, EXLR8 `home` | `tensorfold pull kindlingai/glm-5.3-exlr8-k2-k3-k4@f459f5d0272a529403dd9b3fd32f771f4250a0d4 --exlr8 home --node 0/2 --dir ~/models/glm-5.3-exlr8-home` | Two M5 Ultra Macs, 256 GB each; about 160 GB resident per Mac at 8k context / four streams. | [Two-Mac recipe](docs/glm-5.3-exlr8.md). Use `--node 1/2` on the other Mac; Thunderbolt 5 and MCDMA required. No CUDA backend. |
 | LFM2.5-24B-A2B, MLX 4 / 6 / 8-bit | `tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-4bit@667408d494bde191c2cb9dd4f4549827816b9275`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-6bit@1deec53eb49571e21cdcbf82fd5839248f07ed88`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-8bit@67ab417dd02d0c9545802a726df668620eae049d` | One Mac; M4 Pro checked. | [Native recipe](docs/recipes/lfm2.5-24b-a2b.md), [release history](CHANGELOG.md). |
 | Qwen3.6-35B-A3B, MLX with MTP | `tensorfold pull TensorFold/Qwen3.6-35B-A3B-MLX-4bit-MTP@81169a9bc511a27c1b4eedb77a2cd98ced431847` | One GB10; 20.9 GB checkpoint. | [Qwen3.6](docs/recipes/qwen3.6-moe.md). Native CUDA; the recipe's Metal path belongs to Python. |
@@ -271,6 +282,7 @@ The binary's `capabilities --json` response lists its supported flags and platfo
 | Flag | Meaning |
 | --- | --- |
 | `--host HOST`, `--port PORT` | Listen address and port, default `127.0.0.1:8080`. |
+| `--profile stable` | Explicitly preserve current defaults; [profiles](docs/profiles.md) describes the initial switch registry and startup report. |
 | `--name NAME` | Model ID advertised to clients. |
 | `--alias NAME` | Another accepted model ID; repeat for multiple aliases. |
 | `--api-key KEY` | Require a bearer key; repeat for multiple keys. |
@@ -370,6 +382,8 @@ zig build test test-golden -Dcpu=apple_m1
 ```
 
 Structured output and required tool calls need the release archive's `lib/` or `zig build grammar -Dxgrammar=DIR`; prepare DIR with `git clone --branch v0.2.8 --recurse-submodules https://github.com/mlc-ai/xgrammar` (use the native build's same `--prefix` for grammar).
+
+To build one stripped server for one GPU (`zig build -Dgpu=spark -Dnvcc=...`, about 69% smaller than the four-target server), see [Build a server for one GPU](RUNBOOK.md#build-a-server-for-one-gpu).
 
 On macOS, `test` also runs available Metal device checks. See [CONTRIBUTING.md](CONTRIBUTING.md) for the host-test subset.
 

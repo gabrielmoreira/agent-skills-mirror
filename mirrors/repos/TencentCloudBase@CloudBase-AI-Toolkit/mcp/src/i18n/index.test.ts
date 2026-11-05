@@ -18,7 +18,9 @@ import {
   isMessageKey,
   normalizeLang,
   resolveInstanceLang,
+  resolvePanelLang,
   setInstanceLang,
+  setPanelLang,
   t,
 } from "./index.js";
 
@@ -154,19 +156,20 @@ describe("t() interpolation and fallback", () => {
   });
 
   it("should return an empty string for a key whose value is intentionally empty", () => {
-    // 词典里 next.why.{unknown,loggedOut,pending,failed,ready} 是有意留空的：
-    // 面板在这些状态下不需要说明句，由 CSS `:empty` 收起。空串 ≠ 取不到。
+    // 词典里 next.why.* 有意留空：面板不需要说明句，由 CSS `:empty` 收起。空串 ≠ 取不到。
     for (const lang of ["zh", "en"] as const) {
       expect(t("mcpUi.next.why.ready", undefined, lang), `${lang} ready`).toBe("");
       expect(t("mcpUi.next.why.pending", undefined, lang), `${lang} pending`).toBe("");
       expect(t("mcpUi.next.why.unknown", undefined, lang), `${lang} unknown`).toBe("");
       expect(t("mcpUi.next.why.loggedOut", undefined, lang), `${lang} loggedOut`).toBe("");
       expect(t("mcpUi.next.why.failed", undefined, lang), `${lang} failed`).toBe("");
+      expect(t("mcpUi.next.why.unbound", undefined, lang), `${lang} unbound`).toBe("");
+      expect(t("mcpUiCredits.hint.unknown", undefined, lang), `${lang} credits unknown`).toBe("");
     }
-    // 对照一：同一组里唯一有值的那条照常给文案（否则上面可能因为"整组都没翻"而虚假通过）
-    expect(t("mcpUi.next.why.unbound", undefined, "zh")).toBe(
-      "账号下可能有多地域的环境，绑定后才能读写其中的资源。",
-    );
+    // 对照一：同一模块里仍有值的句子照常给出（否则上面可能因为"整组都没翻"而虚假通过）
+    expect(t("mcpUi.next.action.login", undefined, "zh")).toBe("登录 CloudBase");
+    expect(t("mcpUiCredits.hint.notCredits", undefined, "zh")).toContain("不按资源点");
+    expect(t("mcpUiCredits.hint.notCredits", undefined, "en")).toContain("not billed by credits");
     // 对照二：真的取不到仍然回退 key 名（诊断行为不能被这条改掉）
     expect(t(runtimeKey("storage.definitelyNotAKey"))).toBe("storage.definitelyNotAKey");
   });
@@ -203,6 +206,16 @@ describe("t() language switching", () => {
     setInstanceLang("zh");
     expect(t("storage.queryTitle")).toBe("查询 CloudBase 存储信息");
     expect(getInstanceLang()).toBe("zh");
+  });
+});
+
+describe("resolvePanelLang", () => {
+  it("prefers call-time panel lang over instance lang", () => {
+    setInstanceLang("zh");
+    setPanelLang("en");
+    expect(resolvePanelLang()).toBe("en");
+    setPanelLang(undefined);
+    expect(resolvePanelLang()).toBe("zh");
   });
 });
 

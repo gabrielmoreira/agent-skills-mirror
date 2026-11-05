@@ -9,10 +9,14 @@ Use when asked to view, export, inspect, or share a Codex, Claude Code, OpenClaw
 
 ## Commands
 
+Resolve `SESSION_VIEWER_SKILL_DIR` to the directory containing this `SKILL.md`.
+Use that installed source for commands, independent of the current repository.
+
 When the session path is not known and the `agent-transcript` skill is available, use it first to find the likely JSONL session:
+Resolve `TRANSCRIPT_SKILL_DIR` from that skill's actual installation before running:
 
 ```bash
-.agents/skills/agent-transcript/scripts/agent-transcript find \
+"$TRANSCRIPT_SKILL_DIR/scripts/agent-transcript" find \
   --query "$USER_GOAL_OR_TITLE $BRANCH_OR_URL" \
   --cwd "$PWD" \
   --since-days 14
@@ -20,22 +24,19 @@ When the session path is not known and the `agent-transcript` skill is available
 
 Pick the highest-confidence `file` result, then render it with `session-viewer`.
 
-From a repo that has this skill:
+Render with the resolved installation:
 
 ```bash
-node skills/session-viewer/scripts/session-viewer.ts <session.jsonl> --out /tmp/session.html --open
+node "$SESSION_VIEWER_SKILL_DIR/scripts/session-viewer.ts" <session.jsonl> --out /tmp/session.html --open
 ```
 
 Useful modes:
 
 ```bash
-node skills/session-viewer/scripts/session-viewer.ts <session.jsonl> --out session.html
-node skills/session-viewer/scripts/session-viewer.ts <session.jsonl> --raw --out session.html
-node skills/session-viewer/scripts/session-viewer.ts --blank --out viewer.html --open
+node "$SESSION_VIEWER_SKILL_DIR/scripts/session-viewer.ts" <session.jsonl> --out session.html
+node "$SESSION_VIEWER_SKILL_DIR/scripts/session-viewer.ts" <session.jsonl> --raw --out session.html
+node "$SESSION_VIEWER_SKILL_DIR/scripts/session-viewer.ts" --blank --out viewer.html --open
 ```
-
-In a downstream repo that syncs shared skills under `.agents/skills`, replace
-`skills/session-viewer` with `.agents/skills/session-viewer`.
 
 Defaults:
 
@@ -59,7 +60,19 @@ find "${CODEX_HOME:-$HOME/.codex}/sessions" -name 'rollout-*.jsonl' -type f | so
 ls -t "${CODEX_HOME:-$HOME/.codex}"/sessions/*/*/*/rollout-*.jsonl | head
 ```
 
-OpenClaw/Pi:
+Current OpenClaw stores session indexes and transcripts in per-agent SQLite databases.
+Use native session discovery:
+
+```bash
+openclaw sessions --agent "<agentId>" --json
+```
+
+This lists sessions; it does not export a JSONL transcript.
+The viewer requires a supported JSONL transcript, not a SQLite database or session-list JSON.
+Use OpenClaw's native session view when no compatible JSONL export is available.
+See the [OpenClaw sessions reference](https://docs.openclaw.ai/cli/sessions).
+
+Legacy OpenClaw JSONL:
 
 ```bash
 AGENT_ID="<agentId>"
@@ -68,7 +81,8 @@ ls -t "$SESSION_DIR"/*.jsonl | head
 find "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/agents" -path '*/sessions/*.jsonl' -type f | sort
 ```
 
-Use `sessions.json` in the same directory to map session keys to session ids.
+Only legacy file stores use `sessions.json` beside those transcripts to map session keys to ids.
+For standalone Pi, select its actual JSONL transcript rather than assuming the OpenClaw directory layout.
 
 Claude Code:
 

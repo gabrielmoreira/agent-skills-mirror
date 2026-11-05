@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coji/natural-japanese` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `coji/natural-japanese` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coji/natural-japanese` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,26 +61,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/natural-japanese/assets/style-profile-template.md`](skills/natural-japanese/assets/style-profile-template.md) |
-| 4 | ✓ | [`skills/natural-japanese/references/diagnose.md`](skills/natural-japanese/references/diagnose.md) |
-| 5 | ✓ | [`skills/natural-japanese/references/doctypes/guide.md`](skills/natural-japanese/references/doctypes/guide.md) |
-| 6 | ✓ | [`skills/natural-japanese/references/doctypes/memo.md`](skills/natural-japanese/references/doctypes/memo.md) |
-| 7 | ✓ | [`skills/natural-japanese/references/doctypes/minutes.md`](skills/natural-japanese/references/doctypes/minutes.md) |
-| 8 | ✓ | [`skills/natural-japanese/references/doctypes/report.md`](skills/natural-japanese/references/doctypes/report.md) |
-| 9 | ✓ | [`skills/natural-japanese/references/doctypes/slide.md`](skills/natural-japanese/references/doctypes/slide.md) |
-| 10 | ✓ | [`skills/natural-japanese/references/manual-checklist.md`](skills/natural-japanese/references/manual-checklist.md) |
-| 11 | ✓ | [`skills/natural-japanese/scripts/calibrate.py`](skills/natural-japanese/scripts/calibrate.py) |
-| 12 | ✓ | [`skills/natural-japanese/scripts/calques.py`](skills/natural-japanese/scripts/calques.py) |
-| 13 | ✓ | [`skills/natural-japanese/scripts/fixtures/ai-smelly.md`](skills/natural-japanese/scripts/fixtures/ai-smelly.md) |
-| 14 | ✓ | [`skills/natural-japanese/scripts/fixtures/natural.md`](skills/natural-japanese/scripts/fixtures/natural.md) |
-| 15 | ✓ | [`skills/natural-japanese/scripts/lint.py`](skills/natural-japanese/scripts/lint.py) |
-| 16 | ✓ | [`skills/natural-japanese/scripts/newfacts.py`](skills/natural-japanese/scripts/newfacts.py) |
-| 17 | ✓ | [`skills/natural-japanese/scripts/outline.py`](skills/natural-japanese/scripts/outline.py) |
-| 18 | ✓ | [`skills/natural-japanese/scripts/paragraphs.py`](skills/natural-japanese/scripts/paragraphs.py) |
-| 19 | ✓ | [`skills/natural-japanese/scripts/semantic.py`](skills/natural-japanese/scripts/semantic.py) |
-| 20 | ✓ | [`skills/natural-japanese/scripts/terms.py`](skills/natural-japanese/scripts/terms.py) |
-| 21 | ✓ | [`skills/natural-japanese/scripts/textcore.py`](skills/natural-japanese/scripts/textcore.py) |
-| 22 | ✓ | [`skills/natural-japanese/SKILL.md`](skills/natural-japanese/SKILL.md) |
+| 3 | ✓ | [`skills/critical-thinking/references/foundations.md`](skills/critical-thinking/references/foundations.md) |
+| 4 | ✓ | [`skills/critical-thinking/references/logic.md`](skills/critical-thinking/references/logic.md) |
+| 5 | ✓ | [`skills/critical-thinking/references/somosomo.md`](skills/critical-thinking/references/somosomo.md) |
+| 6 | ✓ | [`skills/critical-thinking/scripts/coverage.py`](skills/critical-thinking/scripts/coverage.py) |
+| 7 | ✓ | [`skills/critical-thinking/SKILL.md`](skills/critical-thinking/SKILL.md) |
+| 8 | ✓ | [`skills/natural-japanese/assets/style-profile-template.md`](skills/natural-japanese/assets/style-profile-template.md) |
+| 9 | ✓ | [`skills/natural-japanese/references/diagnose.md`](skills/natural-japanese/references/diagnose.md) |
+| 10 | ✓ | [`skills/natural-japanese/references/doctypes/guide.md`](skills/natural-japanese/references/doctypes/guide.md) |
+| 11 | ✓ | [`skills/natural-japanese/references/doctypes/memo.md`](skills/natural-japanese/references/doctypes/memo.md) |
+| 12 | ✓ | [`skills/natural-japanese/references/doctypes/minutes.md`](skills/natural-japanese/references/doctypes/minutes.md) |
+| 13 | ✓ | [`skills/natural-japanese/references/doctypes/report.md`](skills/natural-japanese/references/doctypes/report.md) |
+| 14 | ✓ | [`skills/natural-japanese/references/doctypes/slide.md`](skills/natural-japanese/references/doctypes/slide.md) |
+| 15 | ✓ | [`skills/natural-japanese/references/manual-checklist.md`](skills/natural-japanese/references/manual-checklist.md) |
+| 16 | ✓ | [`skills/natural-japanese/scripts/calibrate.py`](skills/natural-japanese/scripts/calibrate.py) |
+| 17 | ✓ | [`skills/natural-japanese/scripts/calques.py`](skills/natural-japanese/scripts/calques.py) |
+| 18 | ✓ | [`skills/natural-japanese/scripts/fixtures/ai-smelly.md`](skills/natural-japanese/scripts/fixtures/ai-smelly.md) |
+| 19 | ✓ | [`skills/natural-japanese/scripts/fixtures/natural.md`](skills/natural-japanese/scripts/fixtures/natural.md) |
+| 20 | ✓ | [`skills/natural-japanese/scripts/lint.py`](skills/natural-japanese/scripts/lint.py) |
+| 21 | ✓ | [`skills/natural-japanese/scripts/newfacts.py`](skills/natural-japanese/scripts/newfacts.py) |
+| 22 | ✓ | [`skills/natural-japanese/scripts/outline.py`](skills/natural-japanese/scripts/outline.py) |
+| 23 | ✓ | [`skills/natural-japanese/scripts/paragraphs.py`](skills/natural-japanese/scripts/paragraphs.py) |
+| 24 | ✓ | [`skills/natural-japanese/scripts/semantic.py`](skills/natural-japanese/scripts/semantic.py) |
+| 25 | ✓ | [`skills/natural-japanese/scripts/terms.py`](skills/natural-japanese/scripts/terms.py) |
+| 26 | ✓ | [`skills/natural-japanese/scripts/textcore.py`](skills/natural-japanese/scripts/textcore.py) |
+| 27 | ✓ | [`skills/natural-japanese/SKILL.md`](skills/natural-japanese/SKILL.md) |
 
 ---
 

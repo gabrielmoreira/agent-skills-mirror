@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SylphxAI/pdf-reader-mcp` — 26 default patterns, 4 followed patterns, 6 file(s) materialized.
+Mirror of `SylphxAI/pdf-reader-mcp` — 26 default patterns, 4 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SylphxAI/pdf-reader-mcp` — 26 default patterns, 4 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,11 +63,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/anymd/SKILL.md`](skills/anymd/SKILL.md) |
-| 3 | → | [`brand/README.md`](brand/README.md) |
-| 4 | → | [`docs/guide/hosted.md`](docs/guide/hosted.md) |
-| 5 | → | [`docs/PUBLISH.md`](docs/PUBLISH.md) |
-| 6 | → | [`docs/vision.md`](docs/vision.md) |
+| 2 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 3 | ✓ | [`skills/anymd/SKILL.md`](skills/anymd/SKILL.md) |
+| 4 | → | [`brand/README.md`](brand/README.md) |
+| 5 | → | [`docs/guide/hosted.md`](docs/guide/hosted.md) |
+| 6 | → | [`docs/PUBLISH.md`](docs/PUBLISH.md) |
+| 7 | → | [`docs/vision.md`](docs/vision.md) |
 
 ---
 

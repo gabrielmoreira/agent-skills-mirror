@@ -19,6 +19,20 @@ metadata:
 
 Evaluation asks whether behavior meets a defined criterion on a declared dataset or production sample. Observability supplies traces, logs, metrics, correlations, and diagnostic context. Use both; neither proves what the other does.
 
+## Multi-agent evaluation boundary
+
+Use [multi-agent-coordination](../multi-agent-coordination/SKILL.md) to define the
+team's ownership, communication, intent and integration contracts; return here
+for comparable datasets, graders, trajectory evidence and uncertainty. Evaluate
+both individual and combined behavior. Add cases for constraint loss at synthesis,
+peer approval outside scope, stale handoffs and shared-practice recurrence.
+
+Measure coordination activity alongside accepted integrated outcomes, review
+cost and task mix. Rising messages or approvals with flat delivery is a diagnostic
+signal, not proof that checks should be removed. Necessary high-assurance review
+is a near miss, not a detector failure. A verified answer cannot compensate for
+an authority violation. Do not claim a universal ceremony threshold.
+
 ## Workflow
 
 1. Define the decision, risk, task contract, trajectory contract, and unacceptable outcomes. Select evidence by harm, reversibility, and deployment stage, not a staged completeness scale.
@@ -41,6 +55,7 @@ Stop when the supported decision, evidence gaps, residual risks, and responsible
 
 | Need | Load |
 |---|---|
+| Idle-agent capacity claims, event interleavings, callback recovery or hibernation traces | [event-runtime-evaluation](references/event-runtime-evaluation.md) |
 | Compare task-relevant discovery, external artifacts, delegated consumption, or fresh-session recurrence | [references/agent-interface-enrichment.md](references/agent-interface-enrichment.md) |
 | Validate a lesson candidate before promotion and check recurrence | [references/lesson-validation.md](references/lesson-validation.md) |
 | Choose evaluation evidence and contracts | [references/evaluation-design.md](references/evaluation-design.md) |

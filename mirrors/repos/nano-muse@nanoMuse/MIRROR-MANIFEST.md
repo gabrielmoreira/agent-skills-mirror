@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nano-muse/nanoMuse` — 26 default patterns, 11 followed patterns, 77 file(s) materialized.
+Mirror of `nano-muse/nanoMuse` — 26 default patterns, 11 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nano-muse/nanoMuse` — 26 default patterns, 11 followed patterns, 77
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,21 +131,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`nanomuse/skills/builtin/kuaidi100/SKILL.md`](nanomuse/skills/builtin/kuaidi100/SKILL.md) |
 | 61 | ✓ | [`nanomuse/skills/builtin/meeting-prep/SKILL.md`](nanomuse/skills/builtin/meeting-prep/SKILL.md) |
 | 62 | ✓ | [`nanomuse/skills/builtin/phone-messages/SKILL.md`](nanomuse/skills/builtin/phone-messages/SKILL.md) |
-| 63 | ✓ | [`nanomuse/skills/builtin/tencent-meeting/SKILL.md`](nanomuse/skills/builtin/tencent-meeting/SKILL.md) |
-| 64 | ✓ | [`nanomuse/skills/builtin/train-tickets/SKILL.md`](nanomuse/skills/builtin/train-tickets/SKILL.md) |
-| 65 | ✓ | [`nanomuse/skills/builtin/trip-plan/SKILL.md`](nanomuse/skills/builtin/trip-plan/SKILL.md) |
-| 66 | ✓ | [`nanomuse/skills/builtin/weekly-review/SKILL.md`](nanomuse/skills/builtin/weekly-review/SKILL.md) |
-| 67 | → | [`android/BUILDING.md`](android/BUILDING.md) |
-| 68 | → | [`cloud/README.md`](cloud/README.md) |
-| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 70 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 71 | → | [`docs/cloud.md`](docs/cloud.md) |
-| 72 | → | [`docs/desktop.md`](docs/desktop.md) |
-| 73 | → | [`docs/gui.md`](docs/gui.md) |
-| 74 | → | [`docs/hub.md`](docs/hub.md) |
-| 75 | → | [`docs/ios.md`](docs/ios.md) |
-| 76 | → | [`docs/release-notes-template.md`](docs/release-notes-template.md) |
-| 77 | → | [`docs/roadmap.md`](docs/roadmap.md) |
+| 63 | ✓ | [`nanomuse/skills/builtin/skill-creator/SKILL.md`](nanomuse/skills/builtin/skill-creator/SKILL.md) |
+| 64 | ✓ | [`nanomuse/skills/builtin/tencent-meeting/SKILL.md`](nanomuse/skills/builtin/tencent-meeting/SKILL.md) |
+| 65 | ✓ | [`nanomuse/skills/builtin/train-tickets/SKILL.md`](nanomuse/skills/builtin/train-tickets/SKILL.md) |
+| 66 | ✓ | [`nanomuse/skills/builtin/trip-plan/SKILL.md`](nanomuse/skills/builtin/trip-plan/SKILL.md) |
+| 67 | ✓ | [`nanomuse/skills/builtin/weekly-review/SKILL.md`](nanomuse/skills/builtin/weekly-review/SKILL.md) |
+| 68 | → | [`android/BUILDING.md`](android/BUILDING.md) |
+| 69 | → | [`cloud/README.md`](cloud/README.md) |
+| 70 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 71 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 72 | → | [`docs/cloud.md`](docs/cloud.md) |
+| 73 | → | [`docs/desktop.md`](docs/desktop.md) |
+| 74 | → | [`docs/gui.md`](docs/gui.md) |
+| 75 | → | [`docs/hub.md`](docs/hub.md) |
+| 76 | → | [`docs/ios.md`](docs/ios.md) |
+| 77 | → | [`docs/release-notes-template.md`](docs/release-notes-template.md) |
+| 78 | → | [`docs/roadmap.md`](docs/roadmap.md) |
 
 ---
 

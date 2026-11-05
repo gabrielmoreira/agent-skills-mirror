@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `LLM-Coding/Semantic-Anchors` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `LLM-Coding/Semantic-Anchors` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LLM-Coding/Semantic-Anchors` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,17 +95,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`skill/semantic-contracts-installer/scripts/claude-session-start.sh`](skill/semantic-contracts-installer/scripts/claude-session-start.sh) |
 | 35 | ✓ | [`skill/semantic-contracts-installer/scripts/install.sh`](skill/semantic-contracts-installer/scripts/install.sh) |
 | 36 | ✓ | [`skill/semantic-contracts-installer/scripts/refresh-contracts.sh`](skill/semantic-contracts-installer/scripts/refresh-contracts.sh) |
-| 37 | ✓ | [`skill/semantic-contracts-installer/SKILL.md`](skill/semantic-contracts-installer/SKILL.md) |
-| 38 | ✓ | [`skill/socratic-code-theory-recovery/prompts/phase-1-question-tree.md`](skill/socratic-code-theory-recovery/prompts/phase-1-question-tree.md) |
-| 39 | ✓ | [`skill/socratic-code-theory-recovery/prompts/phase-2-synthesize.md`](skill/socratic-code-theory-recovery/prompts/phase-2-synthesize.md) |
-| 40 | ✓ | [`skill/socratic-code-theory-recovery/references/arc42.md`](skill/socratic-code-theory-recovery/references/arc42.md) |
-| 41 | ✓ | [`skill/socratic-code-theory-recovery/references/cockburn-use-cases.md`](skill/socratic-code-theory-recovery/references/cockburn-use-cases.md) |
-| 42 | ✓ | [`skill/socratic-code-theory-recovery/references/examples.md`](skill/socratic-code-theory-recovery/references/examples.md) |
-| 43 | ✓ | [`skill/socratic-code-theory-recovery/references/iso-25010.md`](skill/socratic-code-theory-recovery/references/iso-25010.md) |
-| 44 | ✓ | [`skill/socratic-code-theory-recovery/references/nygard-adrs.md`](skill/socratic-code-theory-recovery/references/nygard-adrs.md) |
-| 45 | ✓ | [`skill/socratic-code-theory-recovery/references/output-schema.md`](skill/socratic-code-theory-recovery/references/output-schema.md) |
-| 46 | ✓ | [`skill/socratic-code-theory-recovery/SKILL.md`](skill/socratic-code-theory-recovery/SKILL.md) |
-| 47 | ✓ | [`website/public/llms.txt`](website/public/llms.txt) |
+| 37 | ✓ | [`skill/semantic-contracts-installer/scripts/resolve-contracts.py`](skill/semantic-contracts-installer/scripts/resolve-contracts.py) |
+| 38 | ✓ | [`skill/semantic-contracts-installer/SKILL.md`](skill/semantic-contracts-installer/SKILL.md) |
+| 39 | ✓ | [`skill/socratic-code-theory-recovery/prompts/phase-1-question-tree.md`](skill/socratic-code-theory-recovery/prompts/phase-1-question-tree.md) |
+| 40 | ✓ | [`skill/socratic-code-theory-recovery/prompts/phase-2-synthesize.md`](skill/socratic-code-theory-recovery/prompts/phase-2-synthesize.md) |
+| 41 | ✓ | [`skill/socratic-code-theory-recovery/references/arc42.md`](skill/socratic-code-theory-recovery/references/arc42.md) |
+| 42 | ✓ | [`skill/socratic-code-theory-recovery/references/cockburn-use-cases.md`](skill/socratic-code-theory-recovery/references/cockburn-use-cases.md) |
+| 43 | ✓ | [`skill/socratic-code-theory-recovery/references/examples.md`](skill/socratic-code-theory-recovery/references/examples.md) |
+| 44 | ✓ | [`skill/socratic-code-theory-recovery/references/iso-25010.md`](skill/socratic-code-theory-recovery/references/iso-25010.md) |
+| 45 | ✓ | [`skill/socratic-code-theory-recovery/references/nygard-adrs.md`](skill/socratic-code-theory-recovery/references/nygard-adrs.md) |
+| 46 | ✓ | [`skill/socratic-code-theory-recovery/references/output-schema.md`](skill/socratic-code-theory-recovery/references/output-schema.md) |
+| 47 | ✓ | [`skill/socratic-code-theory-recovery/SKILL.md`](skill/socratic-code-theory-recovery/SKILL.md) |
+| 48 | ✓ | [`website/public/llms.txt`](website/public/llms.txt) |
 
 ---
 

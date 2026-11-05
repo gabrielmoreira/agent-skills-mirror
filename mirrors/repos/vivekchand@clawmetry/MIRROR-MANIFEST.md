@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vivekchand/clawmetry` — 26 default patterns, 2 followed patterns, 8 file(s) materialized.
+Mirror of `vivekchand/clawmetry` — 26 default patterns, 3 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vivekchand/clawmetry` — 26 default patterns, 2 followed patterns, 8
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 8 |
+| Followed pats | 3 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `vivekchand/clawmetry` — 26 default patterns, 2 followed patterns, 8
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/PRODUCT_RECORDS.md`
 - `FLYWHEEL.md`
 - `docs/STE100_WRITING.md`
 
@@ -66,8 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`docs/skills/clawmetry-selfcheck/SKILL.md`](docs/skills/clawmetry-selfcheck/SKILL.md) |
 | 5 | ✓ | [`docs/STE100_COVERAGE.md`](docs/STE100_COVERAGE.md) |
 | 6 | ✓ | [`skills/agent-kill-switch/SKILL.md`](skills/agent-kill-switch/SKILL.md) |
-| 7 | → | [`docs/STE100_WRITING.md`](docs/STE100_WRITING.md) |
-| 8 | → | [`FLYWHEEL.md`](FLYWHEEL.md) |
+| 7 | → | [`docs/PRODUCT_RECORDS.md`](docs/PRODUCT_RECORDS.md) |
+| 8 | → | [`docs/STE100_WRITING.md`](docs/STE100_WRITING.md) |
+| 9 | → | [`FLYWHEEL.md`](FLYWHEEL.md) |
 
 ---
 

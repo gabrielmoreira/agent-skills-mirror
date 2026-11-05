@@ -259,7 +259,7 @@ Full pattern for building CRUD list pages with the PS Grid system:
 - **Twig FilesystemLoader path is `%kernel.project_dir%/modules/mymodule/views`** — `%kernel.project_dir%` is the PS root (parent of `app/`), so `modules/` is a direct child. Never use `%kernel.project_dir%/../modules/`
 - 4 routes in `routes.yml` (index, search, toggle, update-position)
 - 4 controller actions (`indexAction`, `searchAction`, `toggleStatus`, `updatePositionAction`)
-- Pre-built JS bundle (copied from `ws-entity-grid-skeleton`, grid ID replaced via `sed`)
+- Generic grid script `scripts/grid.bundle.js` copied as `views/js/{modulename}.bundle.js` — no edit, no grid ID (core `window.prestashop.component` Grid + extensions, PS 8.0+ / 9.x)
 
 ## Verification
 

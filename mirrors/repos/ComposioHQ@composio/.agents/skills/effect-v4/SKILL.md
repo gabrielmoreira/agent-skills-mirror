@@ -1,6 +1,6 @@
 ---
 name: effect-v4
-description: Write, review, or upgrade Effect v4 code in the Composio CLI, cli-keyring, and json-schema-to-effect-schema packages, all pinned exactly to effect@4.0.5 — Context.Service and explicit layers, Schema.TaggedError and typed recovery, the effect/cli command surface, and the vendored effect source oracle. Use when writing or reviewing Effect v4 code, answering a v4 API question, working in effect/cli, defining a Context.Service service, modeling an error with Schema.TaggedError, bumping the Effect pins, or verifying an unfamiliar API against ts/vendor/effect. Do not use for CLI command UX/wiring design (use cli-command) or CLI E2E tests (use cli-e2e).
+description: Write, review, or upgrade Effect v4 code in the Composio CLI, cli-keyring, and json-schema-to-effect-schema packages, all using the matching range effect@^4.1.0 — Context.Service and explicit layers, Schema.TaggedError and typed recovery, the effect/cli command surface, and the vendored effect source oracle. Use when writing or reviewing Effect v4 code, answering a v4 API question, working in effect/cli, defining a Context.Service service, modeling an error with Schema.TaggedError, bumping the Effect pins, or verifying an unfamiliar API against ts/vendor/effect. Do not use for CLI command UX/wiring design (use cli-command) or CLI E2E tests (use cli-e2e).
 ---
 
 # Effect v4
@@ -8,13 +8,13 @@ description: Write, review, or upgrade Effect v4 code in the Composio CLI, cli-k
 The CLI, `@composio/cli-keyring`, and `@composio/json-schema-to-effect-schema` run on
 Effect v4. Every claim below is grounded in the migrated source, not memory of v3.
 
-## Exact version matrix
+## Version matrix
 
 `effect`, `@effect/platform-bun`, and `@effect/vitest`
-are pinned to the **same exact** `4.0.5` — never `^`, `@next`, or a mismatched
-version across packages. `@effect/cli` and `@effect/platform` no longer exist as
+use the **same range** `^4.1.0`; keep their lockfile resolutions aligned. Do not use
+`@next` or mismatched versions across packages. `@effect/cli` and `@effect/platform` no longer exist as
 dependencies; their surfaces are consolidated into `effect` and `effect/*`.
-See [versions.json](versions.json) for the full matrix (also `typescript`, `vitest`).
+See [versions.json](versions.json) for the exact example-check matrix (also `typescript`, `vitest`).
 
 ## Read next
 
@@ -48,11 +48,11 @@ when an excerpt or explanation disagrees with the implementation.
   when no Schema fields are needed) and recover with `Effect.catchTag`/`catchTags`/`Match`,
   never manual `_tag` string comparisons.
 - Wrap fallible Promises with `Effect.tryPromise({ try, catch })`; `Effect.promise` turns
-  rejection into a defect. No `async`/`await` or `try`/`catch` inside Effect workflows —
-  ESLint bans them in `ts/packages/cli/src`.
+  rejection into a defect. No `async`/`await` or `try`/`catch` inside Effect workflows.
+  oxlint rejects `try`/`catch` in `ts/packages/cli/src`. Nothing lints `async`/`await`, so review catches it.
 - Treat every remembered v3 package name and API as wrong until verified against
   `ts/vendor/effect` (read-only source oracle — never edit or import from it) and the
-  installed `effect@4.0.5` typings. Source may be ahead of the published package;
+  installed `effect@^4.1.0` typings. Source may be ahead of the published package;
   the compiler is the compatibility gate.
 
 ## Verification

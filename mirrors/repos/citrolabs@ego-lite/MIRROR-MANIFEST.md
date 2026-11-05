@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `citrolabs/ego-lite` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `citrolabs/ego-lite` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `citrolabs/ego-lite` — 26 default patterns, 0 followed patterns, 26 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,28 +63,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.github/dev-skills/ego-lite-simplify/SKILL.md`](.github/dev-skills/ego-lite-simplify/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`package/ego-browser/skill-body/SKILL.md`](package/ego-browser/skill-body/SKILL.md) |
-| 5 | ✓ | [`skills/ego-browser/agents/openai.yaml`](skills/ego-browser/agents/openai.yaml) |
-| 6 | ✓ | [`skills/ego-browser/assets/composer-icon.png`](skills/ego-browser/assets/composer-icon.png) |
-| 7 | ✓ | [`skills/ego-browser/assets/logo.png`](skills/ego-browser/assets/logo.png) |
-| 8 | ✓ | [`skills/ego-browser/learnings/github/browser-tools/repo-stats.js`](skills/ego-browser/learnings/github/browser-tools/repo-stats.js) |
-| 9 | ✓ | [`skills/ego-browser/learnings/github/manifest.json`](skills/ego-browser/learnings/github/manifest.json) |
-| 10 | ✓ | [`skills/ego-browser/learnings/github/notes/overview.md`](skills/ego-browser/learnings/github/notes/overview.md) |
-| 11 | ✓ | [`skills/ego-browser/learnings/github/tools/open-issues.js`](skills/ego-browser/learnings/github/tools/open-issues.js) |
-| 12 | ✓ | [`skills/ego-browser/learnings/github/tools/search-repos.js`](skills/ego-browser/learnings/github/tools/search-repos.js) |
-| 13 | ✓ | [`skills/ego-browser/learnings/google/browser-tools/autocomplete.js`](skills/ego-browser/learnings/google/browser-tools/autocomplete.js) |
-| 14 | ✓ | [`skills/ego-browser/learnings/google/manifest.json`](skills/ego-browser/learnings/google/manifest.json) |
-| 15 | ✓ | [`skills/ego-browser/learnings/google/notes/overview.md`](skills/ego-browser/learnings/google/notes/overview.md) |
-| 16 | ✓ | [`skills/ego-browser/learnings/google/tools/search-extract.js`](skills/ego-browser/learnings/google/tools/search-extract.js) |
-| 17 | ✓ | [`skills/ego-browser/learnings/x-com/browser-tools/extract-post.js`](skills/ego-browser/learnings/x-com/browser-tools/extract-post.js) |
-| 18 | ✓ | [`skills/ego-browser/learnings/x-com/manifest.json`](skills/ego-browser/learnings/x-com/manifest.json) |
-| 19 | ✓ | [`skills/ego-browser/learnings/x-com/notes/overview.md`](skills/ego-browser/learnings/x-com/notes/overview.md) |
-| 20 | ✓ | [`skills/ego-browser/learnings/x-com/notes/timeline.md`](skills/ego-browser/learnings/x-com/notes/timeline.md) |
-| 21 | ✓ | [`skills/ego-browser/learnings/x-com/tools/search-users.js`](skills/ego-browser/learnings/x-com/tools/search-users.js) |
-| 22 | ✓ | [`skills/ego-browser/learnings/x-com/tools/timeline.js`](skills/ego-browser/learnings/x-com/tools/timeline.js) |
-| 23 | ✓ | [`skills/ego-browser/references/clearing-state.md`](skills/ego-browser/references/clearing-state.md) |
-| 24 | ✓ | [`skills/ego-browser/references/install.md`](skills/ego-browser/references/install.md) |
-| 25 | ✓ | [`skills/ego-browser/scripts/install.sh`](skills/ego-browser/scripts/install.sh) |
-| 26 | ✓ | [`skills/ego-browser/SKILL.md`](skills/ego-browser/SKILL.md) |
+| 5 | ✓ | [`plugins/ego/skills/ego-browser/references/install-macos.md`](plugins/ego/skills/ego-browser/references/install-macos.md) |
+| 6 | ✓ | [`plugins/ego/skills/ego-browser/references/install-windows.md`](plugins/ego/skills/ego-browser/references/install-windows.md) |
+| 7 | ✓ | [`plugins/ego/skills/ego-browser/SKILL.md`](plugins/ego/skills/ego-browser/SKILL.md) |
+| 8 | ✓ | [`skills/ego-browser/agents/openai.yaml`](skills/ego-browser/agents/openai.yaml) |
+| 9 | ✓ | [`skills/ego-browser/assets/composer-icon.png`](skills/ego-browser/assets/composer-icon.png) |
+| 10 | ✓ | [`skills/ego-browser/assets/logo.png`](skills/ego-browser/assets/logo.png) |
+| 11 | ✓ | [`skills/ego-browser/learnings/github/browser-tools/repo-stats.js`](skills/ego-browser/learnings/github/browser-tools/repo-stats.js) |
+| 12 | ✓ | [`skills/ego-browser/learnings/github/manifest.json`](skills/ego-browser/learnings/github/manifest.json) |
+| 13 | ✓ | [`skills/ego-browser/learnings/github/notes/overview.md`](skills/ego-browser/learnings/github/notes/overview.md) |
+| 14 | ✓ | [`skills/ego-browser/learnings/github/tools/open-issues.js`](skills/ego-browser/learnings/github/tools/open-issues.js) |
+| 15 | ✓ | [`skills/ego-browser/learnings/github/tools/search-repos.js`](skills/ego-browser/learnings/github/tools/search-repos.js) |
+| 16 | ✓ | [`skills/ego-browser/learnings/google/browser-tools/autocomplete.js`](skills/ego-browser/learnings/google/browser-tools/autocomplete.js) |
+| 17 | ✓ | [`skills/ego-browser/learnings/google/manifest.json`](skills/ego-browser/learnings/google/manifest.json) |
+| 18 | ✓ | [`skills/ego-browser/learnings/google/notes/overview.md`](skills/ego-browser/learnings/google/notes/overview.md) |
+| 19 | ✓ | [`skills/ego-browser/learnings/google/tools/search-extract.js`](skills/ego-browser/learnings/google/tools/search-extract.js) |
+| 20 | ✓ | [`skills/ego-browser/learnings/x-com/browser-tools/extract-post.js`](skills/ego-browser/learnings/x-com/browser-tools/extract-post.js) |
+| 21 | ✓ | [`skills/ego-browser/learnings/x-com/manifest.json`](skills/ego-browser/learnings/x-com/manifest.json) |
+| 22 | ✓ | [`skills/ego-browser/learnings/x-com/notes/overview.md`](skills/ego-browser/learnings/x-com/notes/overview.md) |
+| 23 | ✓ | [`skills/ego-browser/learnings/x-com/notes/timeline.md`](skills/ego-browser/learnings/x-com/notes/timeline.md) |
+| 24 | ✓ | [`skills/ego-browser/learnings/x-com/tools/search-users.js`](skills/ego-browser/learnings/x-com/tools/search-users.js) |
+| 25 | ✓ | [`skills/ego-browser/learnings/x-com/tools/timeline.js`](skills/ego-browser/learnings/x-com/tools/timeline.js) |
+| 26 | ✓ | [`skills/ego-browser/references/clearing-state.md`](skills/ego-browser/references/clearing-state.md) |
+| 27 | ✓ | [`skills/ego-browser/references/install-macos.md`](skills/ego-browser/references/install-macos.md) |
+| 28 | ✓ | [`skills/ego-browser/references/install-windows.md`](skills/ego-browser/references/install-windows.md) |
+| 29 | ✓ | [`skills/ego-browser/references/install.md`](skills/ego-browser/references/install.md) |
+| 30 | ✓ | [`skills/ego-browser/scripts/install.sh`](skills/ego-browser/scripts/install.sh) |
+| 31 | ✓ | [`skills/ego-browser/SKILL.md`](skills/ego-browser/SKILL.md) |
 
 ---
 

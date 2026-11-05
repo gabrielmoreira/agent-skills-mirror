@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 33 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 33 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 33 |
+| Followed pats | 3 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 33 file
 
 - `CONTRIBUTING.md`
 - `.impeccable.md`
+- `docs/content/development/addon-testing.md`
 
 ## File Index
 
@@ -78,21 +79,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
 | 17 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
 | 18 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 19 | ✓ | [`addons/office/skills/docx/SKILL.md`](addons/office/skills/docx/SKILL.md) |
-| 20 | ✓ | [`addons/office/skills/pdf/SKILL.md`](addons/office/skills/pdf/SKILL.md) |
-| 21 | ✓ | [`addons/office/skills/pptx/SKILL.md`](addons/office/skills/pptx/SKILL.md) |
-| 22 | ✓ | [`addons/office/skills/xlsx/SKILL.md`](addons/office/skills/xlsx/SKILL.md) |
-| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 25 | ✓ | [`core/services/studio/builtinskills/tree/docx/SKILL.md`](core/services/studio/builtinskills/tree/docx/SKILL.md) |
-| 26 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
-| 27 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
-| 28 | ✓ | [`core/services/studio/builtinskills/tree/pdf/SKILL.md`](core/services/studio/builtinskills/tree/pdf/SKILL.md) |
-| 29 | ✓ | [`core/services/studio/builtinskills/tree/pptx/SKILL.md`](core/services/studio/builtinskills/tree/pptx/SKILL.md) |
-| 30 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
-| 31 | ✓ | [`core/services/studio/builtinskills/tree/xlsx/SKILL.md`](core/services/studio/builtinskills/tree/xlsx/SKILL.md) |
-| 32 | → | [`.impeccable.md`](.impeccable.md) |
-| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | ✓ | [`addons/home-assistant/skills/home-assistant/SKILL.md`](addons/home-assistant/skills/home-assistant/SKILL.md) |
+| 20 | ✓ | [`addons/jellyfin/skills/jellyfin/SKILL.md`](addons/jellyfin/skills/jellyfin/SKILL.md) |
+| 21 | ✓ | [`addons/memory/skills/memory-check-own-files/SKILL.md`](addons/memory/skills/memory-check-own-files/SKILL.md) |
+| 22 | ✓ | [`addons/memory/skills/memory/SKILL.md`](addons/memory/skills/memory/SKILL.md) |
+| 23 | ✓ | [`addons/office/skills/docx/SKILL.md`](addons/office/skills/docx/SKILL.md) |
+| 24 | ✓ | [`addons/office/skills/pdf/SKILL.md`](addons/office/skills/pdf/SKILL.md) |
+| 25 | ✓ | [`addons/office/skills/pptx/SKILL.md`](addons/office/skills/pptx/SKILL.md) |
+| 26 | ✓ | [`addons/office/skills/xlsx/SKILL.md`](addons/office/skills/xlsx/SKILL.md) |
+| 27 | ✓ | [`addons/pikvm/skills/pikvm/SKILL.md`](addons/pikvm/skills/pikvm/SKILL.md) |
+| 28 | ✓ | [`addons/sandbox/skills/docx/SKILL.md`](addons/sandbox/skills/docx/SKILL.md) |
+| 29 | ✓ | [`addons/sandbox/skills/pdf/SKILL.md`](addons/sandbox/skills/pdf/SKILL.md) |
+| 30 | ✓ | [`addons/sandbox/skills/pptx/SKILL.md`](addons/sandbox/skills/pptx/SKILL.md) |
+| 31 | ✓ | [`addons/sandbox/skills/xlsx/SKILL.md`](addons/sandbox/skills/xlsx/SKILL.md) |
+| 32 | ✓ | [`addons/tables/skills/tables-readonly/SKILL.md`](addons/tables/skills/tables-readonly/SKILL.md) |
+| 33 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 34 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 35 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
+| 36 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
+| 37 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
+| 38 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
+| 39 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
+| 40 | → | [`.impeccable.md`](.impeccable.md) |
+| 41 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 42 | → | [`docs/content/development/addon-testing.md`](docs/content/development/addon-testing.md) |
 
 ---
 

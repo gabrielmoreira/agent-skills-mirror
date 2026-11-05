@@ -1,0 +1,359 @@
+# OpenViking Go SDK
+
+The Go SDK is an HTTP client for a running OpenViking server. It lives in the
+main OpenViking repository as an independent Go module.
+
+```bash
+go get github.com/volcengine/OpenViking/sdk/go
+```
+
+## Client Setup
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	openviking "github.com/volcengine/OpenViking/sdk/go"
+)
+
+func main() {
+	ctx := context.Background()
+
+	client, err := openviking.NewClient(openviking.Config{
+		BaseURL: "http://localhost:1933",
+		APIKey:  "your-key",
+		Timeout: 120 * time.Second,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.CloseIdleConnections()
+
+	ok, err := client.Health(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("healthy:", ok)
+}
+```
+
+The client sends the same identity headers as the Python HTTP client:
+
+| Config field | HTTP header |
+|--------------|-------------|
+| `APIKey` | `X-API-Key` |
+| `Account` | `X-OpenViking-Account` |
+| `User` | `X-OpenViking-User` |
+| `ActorPeerID` | `X-OpenViking-Actor-Peer` |
+
+For the common `api_key` deployment mode, `APIKey` is enough because the server
+derives account and user identity from the key. Set `Account` and `User` only
+for trusted deployments or gateways where the upstream explicitly forwards
+tenant identity through OpenViking headers.
+
+This SDK does not implement legacy `agent_id` compatibility.
+
+## Common Operations
+
+Imports return a `task_id` by default. Query `client.GetTask(ctx, taskID)` to check progress.
+
+```go
+// Add a local file or remote URL. Local files/directories are uploaded first.
+resource, err := client.AddResource(ctx, "./docs/readme.md", &openviking.AddResourceOptions{
+	To: "viking://resources/docs",
+})
+if err != nil {
+	return err
+}
+fmt.Println(resource["task_id"])
+```
+
+After the import task reaches `completed`, read or search the imported content:
+
+```go
+// Read and update content.
+content, err := client.Read(ctx, "viking://resources/docs/readme.md", 0, -1)
+updated, err := client.Write(ctx, "viking://resources/docs/readme.md", content+"\n\nUpdated.", &openviking.WriteOptions{
+	Mode: "replace",
+	Wait: true,
+})
+
+// Find relevant context.
+results, err := client.Find(ctx, "how do I configure auth?", &openviking.FindOptions{
+	TargetURI:   "viking://resources/docs",
+	Limit:       10,
+	ContextType: []string{"resource"},
+})
+for _, item := range results.Resources {
+	fmt.Println(item.URI, item.Score)
+}
+
+// Search by image. Image accepts a local path, viking:// URI, HTTP URL, or data:image URI.
+imageResults, err := client.Find(ctx, "", &openviking.FindOptions{
+	TargetURI: "viking://resources/images",
+	Image:     "./query.png",
+	Limit:     5,
+})
+similarPosters, err := client.Search(ctx, "similar poster", &openviking.SearchOptions{
+	TargetURI: "viking://resources/images",
+	Image:     "viking://resources/images/poster.png",
+	Limit:     5,
+})
+
+// Work with sessions.
+session, err := client.CreateSession(ctx, &openviking.CreateSessionOptions{
+	SessionID: "demo-session",
+	MemoryExtractionConfig: map[string]any{
+		"events": map[string]any{
+			"tags": []string{"team=search", "channel=web"},
+		},
+	},
+})
+_, err = client.CreateSession(ctx, &openviking.CreateSessionOptions{
+	SessionID:         "manual-session",
+	DisableAutoCommit: true,
+})
+_, err = client.UpdateSessionConfig(ctx, "demo-session", &openviking.UpdateSessionConfigOptions{
+	AutoCommitPolicy: openviking.Map(map[string]any{"message_count_threshold": 25}),
+	MemoryExtractionConfig: map[string]any{
+		"events": map[string]any{"tags": []string{"team=search", "channel=app"}},
+	},
+})
+_, err = client.UpdateSessionConfig(ctx, "demo-session", &openviking.UpdateSessionConfigOptions{
+	AutoCommitPolicy: openviking.Map(nil), // explicit JSON null disables auto-commit
+})
+_, err = client.AddMessage(ctx, "demo-session", openviking.Message{
+	Role:    "user",
+	Content: openviking.String("remember this deployment decision"),
+})
+commit, err := client.CommitSession(ctx, "demo-session", &openviking.CommitSessionOptions{
+	KeepRecentCount: openviking.Int(2),
+	EventTags:       []string{"team=search", "channel=web"},
+})
+
+_, _, _, _ = resource, updated, imageResults, similarPosters
+_ = session
+_ = commit
+```
+
+## Pagination Metadata
+
+`List` and `Tree` preserve their existing return types for compatibility. Use
+`ListPage` or `TreePage` when the caller needs to know whether the server
+truncated the result because of `limit` or `node_limit`.
+
+```go
+page, err := client.TreePage(ctx, "viking://resources/", &openviking.TreeOptions{
+        NodeLimit: 1000,
+})
+if err != nil {
+        return err
+}
+fmt.Println("nodes:", len(page.Result))
+fmt.Println("has more:", page.HasMore)
+```
+
+## API Coverage
+
+The Go SDK v1 intentionally follows the Python HTTP client surface.
+
+Implemented:
+
+| Area | Go methods |
+|------|------------|
+| Resource and skill import | `AddResource`, `AddSkill`, `WaitProcessed` |
+| Skill management | `ListSkills`, `FindSkills`, `ValidateSkill`, `GetSkill`, `UpdateSkill`, `DeleteSkill` |
+| MCP servers and live context | `AddMCP`, `RemoveMCP`, `ListMCPs`, `FindMCPTools`, `ValidateMCP`, `GetMCP`, `SyncMCP`, `GetMCPStatus`, `InvokeMCPTool`, `MountMCPTool`, `BatchMountMCPTools`, `UnmountMCPTool`, `BatchUnmountMCPTools`, `ListMCPMounts` |
+| Watch management | `ListWatches`, `GetWatch`, `UpdateWatch`, `DeleteWatch`, `TriggerWatch` |
+| Filesystem and content | `List`, `ListPage`, `Tree`, `TreePage`, `Stat`, `Attrs`, `Mkdir`, `Remove`, `Move`, `Read`, `Abstract`, `Overview`, `Write`, `SetTags`, `Reindex` |
+| Retrieval | `Find`, `Search`, `Grep`, `Glob` |
+| Sessions and tasks | `CreateSession`, `ListSessions`, `GetSession`, `UpdateSessionConfig`, `SessionExists`, `GetSessionContext`, `GetSessionArchive`, `DeleteSession`, `AddMessage`, `BatchAddMessages`, `CommitSession`, `GetTask`, `ListTasks` |
+| Packs | `ExportOVPack`, `BackupOVPack`, `ImportOVPack`, `RestoreOVPack` |
+| System and observer | `Health`, `CheckConsistency`, `GetStatus`, `IsHealthy`, `QueueStatus`, `VikingDBStatus`, `ModelsStatus` |
+| Admin | `AdminCreateAccount`, `AdminCreateAccountWithOptions`, `AdminListAccounts`, `AdminGetAccount`, `AdminDeleteAccount`, `AdminRegisterUser`, `AdminRegisterUserWithOptions`, `AdminListUsers`, `AdminGetUser`, `AdminRemoveUser`, `AdminSetRole`, `AdminRegenerateKey`, `AdminRegenerateKeyWithOptions` |
+
+Not implemented in Go SDK v1:
+
+| Area | Reason |
+|------|--------|
+| Legacy `agent_id` compatibility | New SDKs use `ActorPeerID` only. |
+| Privacy config routes | Server-only management surface today; not in Python HTTP client. |
+| Metrics endpoint | Prometheus text scrape endpoint, not a JSON SDK API. |
+| Console/debug/backend-sync/session tool-result endpoints | Operational or server-only endpoints outside Python HTTP client parity. |
+
+## Admin User Config
+
+Use the options variants when creating users with initial server-side user
+config. Ordinary add calls do not need SDK defaults; omit `To` / `TargetURI`
+and let the server resolve user and deployment defaults.
+
+```go
+seed := "alice-seed"
+_, err := client.AdminRegisterUserWithOptions(ctx, "acme", "alice", "user", &openviking.AdminRegisterUserOptions{
+    Seed: &seed,
+    UserConfig: map[string]any{
+		"add_targets": map[string]any{
+			"resource_uri": "viking://~/resources/project-a",
+			"skill_uri":    "viking://~/skills",
+		},
+	},
+})
+
+newSeed := "alice-new-seed"
+_, err = client.AdminRegenerateKeyWithOptions(ctx, "acme", "alice", &openviking.AdminRegenerateKeyOptions{
+    Seed: &newSeed,
+})
+```
+
+When `Seed` is set, the returned API key is derived from
+`sha256(user_id + "\0" + seed)`; omit it for random key generation.
+Use `nil` to omit `Seed`; set `Seed` to a string pointer to send it, including
+an empty string that the server rejects.
+
+## Files, Directories, and Packs
+
+`AddResource` and `AddSkill` accept local files and directories. Directory
+uploads are zipped by the SDK, symlinks are skipped, and the resulting archive
+is uploaded to `/api/v1/resources/temp_upload` before the final API call.
+
+```go
+skill, err := client.AddSkill(ctx, "./skills/search-web", nil)
+if err != nil {
+	return err
+}
+fmt.Println(skill["task_id"])
+```
+
+After the skill task reaches `completed`:
+
+```go
+skills, err := client.ListSkills(ctx, nil)
+found, err := client.FindSkills(ctx, "search the web", &openviking.FindSkillsOptions{
+	Limit: 5,
+})
+_, _ = skills, found
+
+exported, err := client.ExportOVPack(ctx, "viking://resources/docs", "./backups", nil)
+restored, err := client.RestoreOVPack(ctx, exported, &openviking.ImportPackOptions{
+	OnConflict: "overwrite",
+})
+
+_, _ = exported, restored
+```
+
+## MCP Servers and Live Context
+
+```go
+_, err := client.AddMCP(
+	ctx,
+	"weather",
+	"https://mcp.example.com/api",
+	map[string]string{"Authorization": "Bearer token"},
+	&openviking.WaitOptions{TargetURI: "viking://agent/tools"},
+)
+// Tool summaries and indexing continue in the background by default.
+// Pass &openviking.WaitOptions{Wait: true} as the final argument to wait.
+tools, err := client.FindMCPTools(ctx, "current weather", 5)
+mounted, err := client.MountMCPTool(
+	ctx,
+	"viking://agent/tools/weather/current.json",
+	"viking://resources/arranger/beijing-weather.md",
+	"Beijing Weather",
+	&openviking.MountMCPToolOptions{
+		Description:    openviking.String("Current weather for the Beijing region."),
+		TimeoutSeconds: 60,
+		Arguments:      map[string]any{"city": "Beijing"},
+		Tags:           []string{"project=weather", "kind=live-context"},
+		Wait:           true,
+	},
+)
+batchMounted, err := client.BatchMountMCPTools(ctx, []openviking.MCPToolMount{
+	{
+		ToolURI:  "viking://agent/tools/weather/current.json",
+		NodeURI:  "viking://resources/arranger/shanghai-weather.md",
+		Title:    "Shanghai Weather",
+		Arguments: map[string]any{"city": "Shanghai"},
+	},
+}, &openviking.WaitOptions{Wait: true})
+batchUnmounted, err := client.BatchUnmountMCPTools(
+	ctx,
+	[]string{"viking://resources/arranger/shanghai-weather.md"},
+	&openviking.WaitOptions{Wait: true},
+)
+syncResult, err := client.SyncMCP(
+	ctx,
+	"weather",
+	&openviking.WaitOptions{TargetURI: "viking://agent/tools"},
+)
+
+_, _, _, _, _, _ = tools, mounted, batchMounted, batchUnmounted, syncResult, err
+```
+
+Registration defaults to `viking://~/tools`. Set `WaitOptions.TargetURI` to
+`viking://agent/tools` for account-shared servers. `ListMCPs` and
+`FindMCPTools` merge both spaces when no target URI is supplied; name-based
+operations default to the user space.
+
+## Watch Management
+
+`AddResource` creates a watch when `WatchInterval` is greater than zero.
+The dedicated watch methods manage existing tasks:
+
+```go
+watches, err := client.ListWatches(ctx, &openviking.ListWatchesOptions{
+	ActiveOnly: true,
+})
+updated, err := client.UpdateWatch(ctx, openviking.UpdateWatchOptions{
+	ToURI:         "viking://resources/docs",
+	WatchInterval: openviking.Float64(30),
+	IsActive:      openviking.Bool(true),
+})
+triggered, err := client.TriggerWatch(ctx, openviking.WatchRef{
+	ToURI: "viking://resources/docs",
+})
+
+_, _, _ = watches, updated, triggered
+```
+
+## Error Handling
+
+OpenViking API errors return `*openviking.Error`.
+
+```go
+_, err := client.Read(ctx, "viking://resources/missing.md", 0, -1)
+if openviking.IsCode(err, "NOT_FOUND") {
+	fmt.Println("missing resource")
+}
+
+var apiErr *openviking.Error
+if errors.As(err, &apiErr) {
+	fmt.Println(apiErr.Code, apiErr.StatusCode, apiErr.Details)
+}
+```
+
+## Test
+
+```bash
+cd sdk/go
+go test ./...
+```
+
+## Smoke Test Against a Server
+
+Edit the constants at the top of `examples/basic_usage/main.go`, then run:
+
+```bash
+cd sdk/go
+go run ./examples/basic_usage
+```
+
+The script creates a temporary Markdown file, imports it as an OpenViking
+resource, reads and updates it, runs semantic retrieval, exercises watch and
+skill management APIs, then creates a multi-message session, commits it,
+polls the memory extraction task, and searches both user and peer-scoped
+memories.

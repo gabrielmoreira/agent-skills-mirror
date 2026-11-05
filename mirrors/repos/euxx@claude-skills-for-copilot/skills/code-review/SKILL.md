@@ -15,36 +15,35 @@ Make a todo list first, then follow these steps precisely:
 
 ### 1. Gather context
 
-- Use a sub-agent to list file paths of relevant conventions files in this priority order: AGENTS.md, then CLAUDE.md, then GEMINI.md. Include the root file (if one exists), plus files in directories whose files were changed.
+- Use a sub-agent to list file paths of relevant conventions files in this priority order: AGENTS.md, then CLAUDE.md, then GEMINI.md. Include the repository root and all ancestor directories of changed files, including the changed files' own directories.
 - Use a sub-agent to scan the code changes and return a summary of the change.
+- Give every review and validation agent the user's requested scope and the change summary. Include the PR title and description when provided as context.
 
 ### 2. Parallel review
 
-Launch 5 parallel sub-agents to independently review the change. Each agent returns a list of issues with the reason flagged (e.g. conventions-file adherence, bug, historical context):
+Launch 4 parallel sub-agents to independently review the change. Each agent returns a list of issues with the reason flagged (e.g. conventions-file adherence, bug):
 
-- **Agent 1 — Conventions-file compliance**: Audit changes against AGENTS.md or similar conventions files (CLAUDE.md, GEMINI.md), using priority order AGENTS.md -> CLAUDE.md -> GEMINI.md. Note that these files are guidance for AI while writing code; not all instructions apply during code review.
-- **Agent 2 — Bug scan**: Shallow scan for obvious bugs, focusing only on the changed lines. Prioritize large bugs; ignore nitpicks and likely false positives.
-- **Agent 3 — Git history**: Read git blame and history of modified code to identify bugs in light of historical context.
-- **Agent 4 — Code comments**: Read comments in modified files and verify the changes comply with any guidance in those comments.
-- **Agent 5 — Security & quality**: Look for security issues and code quality problems that would directly impact functionality.
+- **Agents 1 and 2 - Conventions-file compliance**: Independently audit changes against AGENTS.md or similar conventions files (CLAUDE.md, GEMINI.md), using priority order AGENTS.md -> CLAUDE.md -> GEMINI.md. Apply each file only to its directory and descendants, respecting more specific instructions. Quote the exact applicable rule for each violation; not all writing instructions apply during code review.
+- **Agent 3 - Diff-focused bug scan**: Scan the changed lines for significant, demonstrable bugs. Avoid nitpicks, speculative concerns, and findings that cannot be validated from the diff alone.
+- **Agent 4 - Logic and security**: Look for incorrect logic and concrete security problems introduced by the changed code. Read surrounding context when needed to verify the behavior.
 
-### 3. Confidence scoring
+Prioritize actionable findings with clear evidence and actual impact. For input- or state-dependent bugs, identify the concrete trigger and resulting failure. Do not report subjective improvements or general quality concerns.
 
-For each issue found in step 2, launch a parallel sub-agent to score it from 0–100 (give this rubric to each agent verbatim):
+### 3. Independent validation
 
-- **0** — Not confident at all. False positive that doesn't stand up to light scrutiny, or a pre-existing issue.
-- **25** — Somewhat confident. Might be real, but unverified. If stylistic, not explicitly called out in the applicable conventions file.
-- **50** — Moderately confident. Verified as real, but may be a nitpick or rare in practice. Not very important relative to the rest of the change.
-- **75** — Highly confident. Double-checked; very likely a real issue that will be hit in practice. Important and directly impacts functionality, or directly mentioned in the applicable conventions file.
-- **100** — Absolutely certain. Confirmed real issue that will happen frequently. Evidence directly confirms it.
+For each candidate issue, launch an independent validation sub-agent. Give it the scope, change summary, issue description, and relevant conventions-file paths.
 
-For issues flagged due to conventions files, double-check that the applicable conventions file actually calls out that issue specifically.
+- Check the actual code and surrounding context to confirm the failure and its trigger.
+- Check whether the behavior is pre-existing or an intentional part of the requested change.
+- For conventions-file findings, verify both the exact rule and its directory scope.
+- Return whether the issue is confirmed, with supporting evidence. Discard issues that cannot be validated with high confidence.
 
 ### 4. Filter and output
 
-- Discard issues scoring below 80.
+- Discard unvalidated issues and deduplicate reports of the same underlying problem.
 - If no issues remain, output that no issues were found.
 - Output the review directly to the user following the output format below.
+- Keep output in chat. Posting GitHub comments requires an explicit user request and tools available in the target environment.
 
 ## False Positives
 

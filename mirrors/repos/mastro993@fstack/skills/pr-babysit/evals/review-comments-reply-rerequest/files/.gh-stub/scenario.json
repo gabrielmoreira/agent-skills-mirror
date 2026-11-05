@@ -1,0 +1,25 @@
+{
+ "repo": "acme/widgets",
+ "number": 8,
+ "title": "Add CSV export for invoices",
+ "body": "Finance asked for a CSV export of invoices. Adds `widgets.export.to_csv`.",
+ "base": "main",
+ "head": "feat/invoice-csv-export",
+ "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v",
+ "ci_delay_seconds": 20, "merge_when_ready_after_seconds": 60,
+ "approve_on_rerequest": ["alice"],
+ "reviews": [
+  {"id": "PRR_alice1", "author": "alice", "state": "CHANGES_REQUESTED", "body": "A couple of things before this goes in."},
+  {"id": "PRR_copilot1", "author": "copilot-pull-request-reviewer[bot]", "state": "COMMENTED", "body": "Copilot reviewed 1 out of 1 changed files in this pull request and generated 1 comment."}
+ ],
+ "threads": [
+  {"id": "PRRT_csvquote", "path": "widgets/export.py", "line": 12, "comments": [
+   {"id": "PRRC_a1", "author": "alice", "body": "Building rows with an f-string breaks as soon as a customer name has a comma in it (we have \"Acme, Inc.\" in prod). Can we use the csv module so fields get quoted properly?"}]},
+  {"id": "PRRT_void", "path": "widgets/export.py", "line": 10, "comments": [
+   {"id": "PRRC_a2", "author": "alice", "body": "Do voided invoices end up in this export? Finance only wants the live ones."}]},
+  {"id": "PRRT_none", "path": "widgets/export.py", "line": 12, "comments": [
+   {"id": "PRRC_c1", "author": "copilot-pull-request-reviewer[bot]", "body": "`inv.amount` may be `None` here, and formatting `None` with `:.2f` will raise a `TypeError`. Consider guarding against missing amounts before formatting."}]}
+ ],
+ "comments": []
+}

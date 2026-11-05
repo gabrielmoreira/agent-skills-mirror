@@ -67,6 +67,7 @@ The [glossary](GLOSSARY.md) defines the terms these docs use: word tiers, severi
 - [More from me](#more-from-me)
 - [Credits](#credits)
 - [Community / Multilingual](#community--multilingual)
+- [Official sources and sponsorship](#official-sources-and-sponsorship)
 - [Disclaimer](#disclaimer)
 - [License](#license)
 
@@ -630,8 +631,9 @@ This skill removes AI-writing tells. Enforcing a published style guide is the
 different job: it doesn't do that, and it ships no style guides of its own. The
 optional `--style` input takes a house-style config you supply: a `register` list
 the model applies, and a `mechanics` object whose checkable rules
-`scripts/check-style.js` verifies deterministically (quote form and Latin
-abbreviations gate the exit code; heading case, em-dash rate, and number spelling
+`scripts/check-style.js` verifies deterministically (quote form, Latin
+abbreviations, and the `colons`, `semicolons`, and `emDash: "never"` bans gate the
+exit code; heading case, the `emDash: "sparing"` rate, and number spelling
 are advisory). This script requires a cloned checkout. [`examples/`](./examples/) has the schema. You can skip the input
 entirely and put your guide in your agent's context alongside a
 [voice profile](./references/patterns.md#voice-profiles), as instructions rather than as a checked
@@ -696,6 +698,21 @@ Community-maintained adaptations are linked here for discovery. Their authors ow
 - **[evitar-escrita-ia](https://github.com/mariorabeloneto/evitar-escrita-ia)** by [Mário Rabelo Neto](https://github.com/mariorabeloneto) — European Portuguese adaptation with dialect and formal-register guidance. Its vocabulary tables are editorial hypotheses, not corpus measurements.
 
 Built an adaptation? See the [language adaptation guidance](CONTRIBUTING.md#language-adaptations), then open an issue with the language, dialect, maintainer, evidence, limitations, and link. We can link independent versions without taking over their maintenance.
+
+## Official sources and sponsorship
+
+I publish this project through these channels only:
+
+- This repository, [`conorbronsdon/avoid-ai-writing`](https://github.com/conorbronsdon/avoid-ai-writing), including its [releases](https://github.com/conorbronsdon/avoid-ai-writing/releases) and the Claude plugin marketplace it hosts
+- [ClawHub](https://clawhub.ai/conorbronsdon/avoid-ai-writing)
+- The [OpenAI Plugins Directory](https://chatgpt.com/plugins/plugins_6a9b77b18b8881918efa9c1255868164)
+- npm: [`avoid-ai-writing-detector`](https://www.npmjs.com/package/avoid-ai-writing-detector) and [`avoid-ai-writing-mcp`](https://www.npmjs.com/package/avoid-ai-writing-mcp)
+
+Skill directories and catalogs that copy `SKILL.md` from this repository are run by other people. They can fall behind the latest release, so compare the `version` in their copy's frontmatter with the [latest release](https://github.com/conorbronsdon/avoid-ai-writing/releases/latest). I don't control those pages and can't sell space on them.
+
+**No paid placements.** The skill, pattern catalog, detector, and docs contain no paid mentions, links, or product recommendations, and I decline requests to add them.
+
+**Sponsorship.** If this project saves you or your team time, you can support it through [GitHub Sponsors](https://github.com/sponsors/conorbronsdon). Company sponsors get a disclosed acknowledgment in this README. Sponsorship buys no say over rules, categories, detector output, or recommendations. Products whose main purpose is AI-text detection or getting past detectors aren't a fit, because the skill's flags are signals, not proof of authorship.
 
 ---
 

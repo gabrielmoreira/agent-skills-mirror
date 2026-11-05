@@ -65,10 +65,11 @@ Only core skills and the core agents show a full description in your context; th
 
 ## Browser use
 
-The private owner layer's browser rule governs lanes, host eligibility, session state and approvals. Without one: use the active app's built-in browser or Computer Use, read-only for shared, social and authenticated sources; sign in to nothing of the owner's, label such reads partial, and never install or drive a standalone browser (Playwright, Puppeteer, Selenium) from a shell.
+Lane order for all web work: the active app's built-in browser (default); then a managed `agent-browser` CLI (`agent-desktop` for native desktop apps); then Codex Computer Use; then Claude computer use. Move down only after recording why the lane above can't serve the task. Shared, social and authenticated sources are read-only in every lane. Playwright in any form (`playwright-core`, `@playwright/test`, its MCP server and browsers), Puppeteer, Selenium/WebDriver, and any standalone browser installed or driven from a shell are prohibited, no exceptions. The private owner layer's browser rule adds host eligibility, session state and approvals; without one, sign in to nothing of the owner's and label such reads partial.
 
 ## Memory and documentation
 
+- Before writing durable project knowledge, update the existing owning subject note first: in the private knowledge base when the local layer configures one (follow its routing rules for domain-first placement, canonical links, portable paths, and unresolved destinations), otherwise in the project's own docs or ADRs. If no owner exists, report the unresolved destination instead of creating a stray note. Keep one owner per fact; link related surfaces instead of copying policy. Agent-specific notes own only agent operations. Public repository docs stay self-contained and contain no private knowledge-base paths or content.
 - Auto memory is recall, not authority. Durable rules belong in `CLAUDE.md` / `AGENTS.md`.
 - When corrected on a repeated mistake, propose the rule that would have prevented it.
 - After changing toolkit skills, agents, commands, hooks, or rules, update the affected README and regenerate `INDEX.md` with `scripts/regenerate-index.sh`; the pre-commit hook only runs the public-safety gate.

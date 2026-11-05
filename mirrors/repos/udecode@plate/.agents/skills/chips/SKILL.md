@@ -18,7 +18,7 @@ Every command below is `node .agents/pstack/decisions-check.mjs <command>`, run 
 | [Start](#start) | begin a task a card opened, in the card's session |
 | [Drop](#drop) | record the owner's word to drop a task |
 
-pstack calls these modes too. Where a pstack step files a tracked issue, a follow-up or a reflect Backlog item, or puts an out-of-band fix in its own PR, the lead runs Offer instead for a new P0 or P1 finding, or in a verdict or babysit run, and otherwise lists the item in the plan's Open work, as chips.md's Offer says. It runs a sweep only on `/chips`, as chips.md's Sweep says, and Close at the last hand-back of a run that offered a task, never after a sweep, whose card pass replaces it. A question about open chips, such as "what's next" over side work, runs steps 1 and 6 without step 1's cleanup, logs no row and offers no card.
+pstack calls these modes too. Where a pstack step files a tracked issue, a follow-up or a reflect Backlog item, or puts an out-of-band fix in its own PR, the lead runs Offer instead for a new P0 or P1 finding, for an item the run's verdict judges or for any finding in a babysit run, and otherwise lists the finding in the plan's Open work, as chips.md's Offer says. It runs a sweep only on `/chips`, as chips.md's Sweep says, and Close at the last hand-back of a run that offered a task, never after a sweep, whose card pass replaces it. A question about open chips, such as "what's next" over side work, runs steps 1 and 6 without step 1's cleanup, logs no row and offers no card.
 
 ## Sweep
 
@@ -48,7 +48,7 @@ pstack calls these modes too. Where a pstack step files a tracked issue, a follo
 
 ## Offer
 
-Offer only a new P0 or P1 finding, unless the run is a verdict or babysit run or the finding is a measurement the Time budget rule sends here, as chips.md's Offer says. List any other finding in the plan's Open work, or in the reply when the run keeps no plan.
+Offer only a new P0 or P1 finding, unless it is an item the run's verdict judges, a finding in a babysit run or a measurement the Time budget rule sends here, as chips.md's Offer says. List any other finding in the plan's Open work, or in the reply when the run keeps no plan. A project hook that finds recurring work due offers its own P2 or P3 task with `via: hook` without this mode, and the session it stops runs [Close](#close) on that task.
 
 1. Run `chips --session <id>` first, and read the brief of each open task whose topic or title touches the finding with `chips brief <id>`.
 2. Pick the row as chips.md's Offer says:
@@ -65,7 +65,7 @@ A run that offered a task runs this at its last hand-back, once it has delivered
 1. Run `chips brief <id>` for each task this run offered, whose `State:` line says at any priority whether it is Ready and what it waits on, and read no board, because a board's card pass lists tasks this run did not offer. For each task this run offered that is Ready, judge its dependencies and effort as chips.md's Cards says. For a task that needs another open task's result, log an `updated` row with its waits plus `task:<that id>` in place of its card. Append these rows in one batch before any card, because a new wait can raise the priority the next brief prints, and a card's title cannot change.
 2. Offer a card for each of the rest the way Sweep step 5 offers one, highest priority first, within the 10-card limit and all in one turn. Then append each card's `carded` row in one `append --from` batch.
 3. Leave every other task to `/chips`.
-4. Add one line to the reply beside the page link: how many tasks the run offered, how many it carded and what each of the rest waits on, with `start <id>` beside each Ready task the limit left uncarded. `/chips` cards a waiting task once its wait clears, or `/chips all` for a ship-list task or once this session is gone.
+4. Add one line to the reply just above its links: how many tasks the run offered, how many it carded and what each of the rest waits on, with `start <id>` beside each Ready task the limit left uncarded. `/chips` cards a waiting task once its wait clears, or `/chips all` for a ship-list task or once this session is gone.
 
 A runtime with no suggest tool still runs step 1, then lists each Ready task in the reply instead of carding it, as chips.md's Limits says for a plan that has closed, and leaves step 4's `/chips` and `/chips all` hints out, because they card nothing there.
 

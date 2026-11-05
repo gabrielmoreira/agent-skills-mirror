@@ -136,6 +136,8 @@ export const functions = defineModule(
     "reason.latestLayerOrder": "确认最新层顺序和绑定结果",
     "reason.confirmConfig": "确认函数配置",
     "reason.checkTriggers": "检查函数触发器",
+    "reason.clsCheckFunction": "先看这个函数实际绑定的日志对与运行角色",
+    "reason.clsCheckEnv": "再和环境默认的日志对比对——ID 不一致，或角色对该日志集无写权限，都会报同一句话",
     "reason.confirmConfigChange": "确认配置变更结果",
     "reason.gatewayRouteForHttp": "如果需要通过 URL 访问 HTTP 函数，请调用 manageGateway(action=\"createRoute\") 并显式传 upstreamResourceType=\"WEB_SCF\"，再按实际路径和鉴权需求创建访问入口，不要默认假设 /函数名 已存在",
     "reason.confirmAccessPath": "交付前确认 HTTP 访问路径是否已存在并已生效",
@@ -225,6 +227,7 @@ export const functions = defineModule(
     functionMissing: "函数 {fnName} 不存在或无法获取详情",
     layersInvalid: "updateFunctionLayers 操作时，layers 参数必须包含有效的 layerName 和 layerVersion",
     contentPathRequired: "createLayerVersion 操作时，contentPath 和 base64Content 至少需要提供一个",
+    codeSourceMissing: "{action} 缺少代码来源：请提供 functionRootPath、zipFile 或 code 之一。注意 contentPath 只用于 createLayerVersion 指定层内容，不能用来更新函数代码。",
 
     // ---- 诊断警告（stderr） ----
     rootPathAdjustedWarn: "检测到 functionRootPath 包含函数名 \"{fnName}\"，已自动调整为父目录: {parentPath}",
@@ -295,7 +298,7 @@ export const functions = defineModule(
     "schema.manage.triggerName": "deleteFunctionTrigger 的目标触发器名称",
     "schema.manage.layerName": "层名称。创建层推荐固定格式 `{layerName}_{当前envId}`（如 common_cloud1-d9ghadgak3edf6b36）；不要跨环境复用裸层名。层为账号级共享命名空间",
     "schema.manage.layerVersion": "层版本号",
-    "schema.manage.contentPath": "层内容路径，可为目录或 ZIP 文件",
+    "schema.manage.contentPath": "仅 createLayerVersion 使用：层内容路径，可为目录或 ZIP 文件。更新函数代码请改用 functionRootPath / zipFile / code。",
     "schema.manage.base64Content": "层内容的 base64 编码",
     "schema.manage.runtimes": "层适用的运行时列表",
     "schema.manage.description": "描述信息。createLayerVersion 时为层版本描述；publishVersion / updateFunctionAliasConfig 时为版本或别名描述",
@@ -454,6 +457,8 @@ export const functions = defineModule(
     "reason.latestLayerOrder": "Confirm the latest layer order and binding result",
     "reason.confirmConfig": "Confirm the function configuration",
     "reason.checkTriggers": "Check the function's triggers",
+    "reason.clsCheckFunction": "Check the log pair and execution role actually bound to this function",
+    "reason.clsCheckEnv": "Then compare against the environment's default log pair — a mismatched pair and a role without log-write access report the same error",
     "reason.confirmConfigChange": "Confirm the configuration change result",
     "reason.gatewayRouteForHttp": "If the HTTP function needs to be accessed via URL, call manageGateway(action=\"createRoute\") and explicitly pass upstreamResourceType=\"WEB_SCF\", then create the access entry according to the actual path and auth requirements; do not assume /<functionName> exists by default",
     "reason.confirmAccessPath": "Before delivery, confirm whether the HTTP access path already exists and has taken effect",
@@ -543,6 +548,7 @@ export const functions = defineModule(
     functionMissing: "Function {fnName} does not exist or its details are unavailable",
     layersInvalid: "For the updateFunctionLayers action, layers must contain valid layerName and layerVersion entries",
     contentPathRequired: "For the createLayerVersion action, provide at least one of contentPath and base64Content",
+    codeSourceMissing: "{action} has no code source: provide one of functionRootPath, zipFile, or code. Note that contentPath only applies to createLayerVersion (layer content) and cannot be used to update function code.",
 
     // ---- Diagnostic warnings (stderr) ----
     rootPathAdjustedWarn: "Detected that functionRootPath contains the function name \"{fnName}\"; automatically adjusted to the parent directory: {parentPath}",
@@ -613,7 +619,7 @@ export const functions = defineModule(
     "schema.manage.triggerName": "Target trigger name for deleteFunctionTrigger.",
     "schema.manage.layerName": "Layer name. When creating a layer, use `{layerName}_{current envId}` (for example, common_cloud1-d9ghadgak3edf6b36). Do not reuse a bare layer name across environments; layers use an account-level shared namespace.",
     "schema.manage.layerVersion": "Layer version number",
-    "schema.manage.contentPath": "Layer content path, either a directory or ZIP file.",
+    "schema.manage.contentPath": "Only for createLayerVersion: path to layer content, either a directory or a ZIP file. To update function code, use functionRootPath / zipFile / code instead.",
     "schema.manage.base64Content": "Base64-encoded layer content.",
     "schema.manage.runtimes": "Runtimes supported by the layer.",
     "schema.manage.description": "Description. Layer version description for createLayerVersion; version or alias description for publishVersion / updateFunctionAliasConfig.",

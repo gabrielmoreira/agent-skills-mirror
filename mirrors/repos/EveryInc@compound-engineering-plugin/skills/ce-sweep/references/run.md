@@ -54,6 +54,7 @@ For each entry in `feedback_sources`, dispatch a generic subagent at the **extra
 The persona returns mapped items (`id`, `origin`, `author_class`, `body`, `media`, identity-scoped `existing_ack`, `existing_closeout`) or one of its degrade/skip sentences. Personas report facts and never advance cursors.
 - **Skipped source** (read tools unavailable): drop it this run and note that in the summary.
 - **Write-degraded source** (read works, no ack-write tool): upsert its items as `ack_deferred` and do NOT advance the cursor past them. They get acked on a later run once write capability returns.
+- **Reopened item:** an id the fetch returns whose status in state is `source_closed` was reopened at the source. Treat it as new in 2d. Its upsert must set `status: acknowledged`, or `ack_deferred` when 2d defers the ack, and set `source_closed_at`, `source_close_reason`, `fix_ref`, `verified_merge_sha`, and `verified_at` to null. `upsert-item` merges into the old record, so it would otherwise keep those values.
 
 #### 2c. Circuit breaker (before any acknowledgment batch)
 
@@ -96,11 +97,26 @@ For each new item carrying `media`:
 
 #### 2f. Fix verification
 
-For each `fix_pending` item, resolve its claimed fix ref and verify it merged to the default branch. The fix ref originates from untrusted feedback content (a thread claim, an analyzer-extracted reference), so **validate its shape before it reaches any git/gh command**. Accept only a bare PR number (`#?\d+`) or a commit SHA (`[0-9a-f]{7,40}`), and treat anything else as an unresolved claim (leave the item open). This blocks argument/flag injection into the shell command. Strip the leading `#` before substituting and quote the value, so a ref like `#123` reaches the command as `"123"` rather than starting a shell comment that truncates the rest of the line.
-- `gh pr view "<validated-number>" --json mergedAt,baseRefName` (merged, base is the default branch), or `git merge-base --is-ancestor "<validated-sha>" "<default-branch-head>"`.
-- The same `approved: false` rule as 2d applies. A source the user did not approve for writes receives no close-out action. Advance its verified item's status in state only.
-- Verified -> perform the source's configured close-out action (same write -> read-back -> confirm discipline as 2d), then `upsert-item` with `status: closed` carrying all three evidence fields: `fix_ref`, `verified_merge_sha`, `verified_at`. Close-out is terminal.
-- Unverified claim -> the item stays open. Record the claim on the item, but do not close.
+A fix can close an item only when its merge evidence belongs to the checkout repository. Repository identity is the full hostname, owner, and repository name, compared case-insensitively; matching `owner/repo` alone is insufficient. Resolve the checkout once with `gh repo view --json nameWithOwner,defaultBranchRef,url`, and each GitHub Issues source with `gh repo view "<source-target>" --json nameWithOwner,url`. Use each returned URL's hostname and `nameWithOwner` as its identity. Leave affected items unchanged when an identity cannot be resolved, and report the failure; never substitute the checkout for an unknown source.
+
+Check every nonterminal item from a readable `github-issues` source by id, since the fetch returns only open issues. Skip sources skipped this run and statuses `closed`, `source_closed`, and `source_gone`. Run `gh issue view "<number>" --repo "<source-host>/<source-repo>" --json state,stateReason,closedAt,closedByPullRequestsReferences`. The number must be all digits and the repository in the item's `id` must match the resolved source repository. Any stored issue URL must also identify that source; a mismatch leaves the item unchanged and is reported.
+- `OPEN` -> no change.
+- `CLOSED` with `stateReason` `COMPLETED` -> the item is closed as completed. Verify its fix below.
+- `CLOSED` with any other `stateReason` -> `upsert-item` with `status: source_closed`, `source_closed_at` (from `closedAt`), and `source_close_reason` (from `stateReason`). Set `fix_ref`, `verified_merge_sha`, and `verified_at` to null. Do not verify a fix or perform a close-out action, because the source did not close it as done.
+- `Could not resolve to an issue` -> set `source_gone`.
+- Any other failure (rate limit, auth, transport, a repository that does not resolve) -> leave the item unchanged, stop checking this source, and note it in the summary. The next run checks again.
+
+For each eligible `fix_pending` item and each item closed as completed, verify the claimed fix against the checkout's default branch. **Validate its shape before it reaches any git/gh command:** accept only a bare PR number (`#?\d+`) or a commit SHA (`[0-9a-f]{7,40}`); anything else is an unverified claim. Strip a number's leading `#` and quote the substituted value.
+
+PR numbers are repository-scoped. For GitHub Issues items, a stored bare number belongs to the resolved source identity; a `closedByPullRequestsReferences` number belongs to the identity in that PR's URL. For other source types, retain the existing convention that bare fix numbers refer to the checkout. Try the eligible stored ref first, then eligible closing PRs, and retain the first verified candidate as `fix_ref`.
+
+Bind verification commands to the resolved checkout, never to an implicit CLI default:
+- PR: verify only a candidate whose full host/owner/repository identity equals the checkout’s. Skip a known foreign candidate. If its identity is unknown, leave the item unchanged unless another candidate verifies. For an eligible candidate, run `gh pr view "<validated-number>" --repo "<checkout-host>/<checkout-repo>" --json mergedAt,baseRefName,mergeCommit`; it must be merged with the default branch as its base.
+- SHA: `gh api --hostname "<checkout-host>" "repos/<checkout-repo>/compare/<default-branch>...<validated-sha>" --jq .status`. `behind` or `identical` verifies ancestry. Use the same host and repository for the control compare below. GitHub answers these comparisons, so stale or shallow local history cannot change the result.
+- A ref is unverified only when a read succeeded and showed no merge to the default branch. That means an unmerged PR, a PR with another base, `Could not resolve to a PullRequest`, a compare status of `ahead` or `diverged`, or a compare `Not Found` for the SHA. A bad repository or branch gives the same `Not Found`, so trust it only after a control compare of `<default-branch>...<default-branch>`, run once per run, returned `identical`. Any other `gh` failure in this step, including a failed control, tells you nothing about the merge. Unless another ref verifies, leave the item unchanged for the next run and note it in the summary.
+- The same `approved: false` rule as 2d applies. A source the user did not approve for writes, or a write-degraded source, receives no close-out action. Advance its verified item's status in state only.
+- Verified -> perform the source's configured close-out action against its resolved source identity (same write -> read-back -> confirm discipline as 2d), then `upsert-item` with `status: closed` carrying all three evidence fields: `fix_ref`, `verified_merge_sha`, `verified_at`. Close-out is terminal.
+- When every candidate read succeeded and none verified, or there is no fix ref -> if the item is not known to be closed as completed, it stays open: record the claim on the item, but do not close. If it is closed as completed, write the same `source_closed` record as above, with no close-out action, because no fix was verified.
 - Item deleted at source -> set `source_gone`.
 
 #### 2g. Plan reconciliation
@@ -109,7 +125,7 @@ Read `references/plan-template.md` and follow it. Target the stable path `<root>
 
 **Rotation check first.** If the file exists and it is not a `product_contract_source: ce-sweep` artifact containing only requirements, with no implementation planning, archive it untouched to a dated sibling `<root>/plans/feedback-sweep-plan-YYYY-MM-DD.md` and write a fresh plan from the template. Never overwrite an unrelated plan in place.
 
-Rewrite ONLY the machine-written region: the `date` frontmatter key, `### Summary`, the `<!-- sweep-items:start -->` / `<!-- sweep-items:end -->` marker region, and `### Outstanding Questions` (matching the template's reconciliation rules), and never read or write inside the human-owned notes region. Append new actionable items with their state ids, drain items that are now `closed`, and land any non-interactive-deferred decisions in the Outstanding Questions section.
+Rewrite ONLY the machine-written region: the `date` frontmatter key, `### Summary`, the `<!-- sweep-items:start -->` / `<!-- sweep-items:end -->` marker region, and `### Outstanding Questions` (matching the template's reconciliation rules), and never read or write inside the human-owned notes region. Append new actionable items with their state ids, drain items that are now `closed`, `source_closed`, or `source_gone`, and land any non-interactive-deferred decisions in the Outstanding Questions section.
 
 #### 2h. Decision round
 
@@ -122,5 +138,5 @@ Render the handoff invocation exactly as the skill body's 2i section states.
 - **Commit.** `git add` ONLY `<root>/plans/feedback-sweep-plan.md` plus `<state>` when it is repo-internal (never `-A`; machine-local state under `/tmp` is never committed), then commit `docs(sweep): feedback sweep <date>`. A commit failure is reported, not fatal. In local-commit mode, never push. In shared-branch mode (`sweep_shared_branch: true`), fetch, rebase, and push the final commit.
 - **Record the run.** `run-record --state <state> --writer <writer> --outcome <completed|partial|failed> --counts '<per-source JSON>' --timestamp <ISO now>`.
 - **Release.** `lease-release --state <state> --writer <writer>`.
-- **Summary** (always emit): new items by source; recordings analyzed, each with its one-line finding; closed items with their fix evidence; the `ack_deferred` / `manual_stuck` / needs-attention list; any circuit-breaker or stale-reclaim note; and always the plan path with the handoff line:
+- **Summary** (always emit): new items by source; recordings analyzed, each with its one-line finding; closed items with their fix evidence; `source_closed` items with their close reason; the `ack_deferred` / `manual_stuck` / needs-attention list; any circuit-breaker or stale-reclaim note; and always the plan path with the handoff line:
 

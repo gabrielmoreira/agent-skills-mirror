@@ -402,6 +402,15 @@ for every stop of an `--apply` run after the pre-checks; it exits `1` as
 | `branch-name.mjs`                  | a missing `--number` or `--title`, or an unknown flag                                                                                               | none today                                                                                                                                                  |
 | `emit-marker.mjs`                  | a missing `--type` or flag value, or an unknown flag                                                                                                | none today                                                                                                                                                  |
 
+The `audit-authored-issue.mjs` confirmation shape (`--shape confirmation`,
+issue `#4961`) lints an auto-decide confirmation issue. It needs
+`--current-repo`, takes no `--expect-bucket`, and exits `0` on a pass, `1` on
+each failing rule, and `2` on each usage error. `--confirmation-record` with
+`--expect-class` and `--expect-source` lints a record comment instead, with
+optional `--expect-claim`, `--expect-set`, and `--expect-subject`. The shape's
+markers, headings, and trust checks are defined in the authoring contract's
+Auto-decide confirmation issue section.
+
 ### Migrated helpers (marker, handoff, provider, and misc batch)
 
 Issue #3346 moves the last 15 packaged bins onto the same runner --
@@ -845,6 +854,15 @@ in this preamble, since the fallback differs per helper.
   also lists the origin in the top-level `unresolvable` array), or
   `needs_decision_label_conflicts_with_authoring_label` when the configured
   authoring and needs-decision labels collide (issue #4065).
+  Default-on (not opt-in): excludes an issue that carries the configured
+  `autoDecide.confirmationLabelName` (default `status:needs-confirmation`),
+  compared trimmed and case-insensitively, whatever `dangerouslyAutoDecide`
+  and the `autoDecide` class switches say, bucketed under
+  `filtered.blocked_label` with `details` set to the label as stored, or to
+  `needs_confirmation_label_collision` when that name equals another
+  configured IDD label name or `approvalSignals.readyLabelName` (issue
+  `#4960`). This keeps an auto-decide confirmation issue out of Discover
+  after its creation hold is released.
   Repeatable `--exclude-issue <positive-number>` excludes matching open issues
   before classification and claim annotation, reporting them under
   `filtered.excluded_roadmap_leaf`. Values are deduplicated for the hint-cache
@@ -922,7 +940,14 @@ in this preamble, since the fallback differs per helper.
   `discover-orphan-filter.mjs` above, surfaced as a
   `triage_verdict:<outcome>` entry in `filteredOut[].reasons` (referenced
   in
-  [kurone-kito/idd-skill#2243](https://github.com/kurone-kito/idd-skill/issues/2243))
+  [kurone-kito/idd-skill#2243](https://github.com/kurone-kito/idd-skill/issues/2243)).
+  Default-on (not opt-in): an issue that carries the configured
+  `autoDecide.confirmationLabelName` (default `status:needs-confirmation`),
+  compared trimmed and case-insensitively, is never ready, with the reason
+  `label:<name>` for the configured name, or
+  `needs_confirmation_label_collision` when that name equals another
+  configured IDD label name or `approvalSignals.readyLabelName` (issue
+  `#4960`)
 - `scripts/discover-viability-gate.mjs` for A4 viability gate evaluation
   across limited scope, clear verification, and autonomous completion
   criteria (referenced in
@@ -1428,18 +1453,20 @@ in this preamble, since the fallback differs per helper.
   ```
 
 - `scripts/publish-authoring-hold.mjs` (`idd-publish-authoring-hold`,
-  issues #4127 and #4171, and issue `#4253`) publishes one drafted issue
-  under the issue-authoring hold, running the authoring contract's
-  New-issue ownership steps in order, one issue per call. The default
-  `--shape orphan` publishes a standalone held orphan. `--shape carrier`
-  publishes a draft carrier, labelled with the authoring label and the
-  authoring-only label, and accepts only `--bucket ready` (exit `2`
+  issues #4127 and #4171, and issues `#4253` and `#4964`) publishes one
+  drafted issue under the issue-authoring hold, running the authoring
+  contract's New-issue ownership steps in order, one issue per call. The
+  default `--shape orphan` publishes a standalone held orphan. `--shape
+  carrier` publishes a draft carrier, labelled with the authoring label and
+  the authoring-only label, and accepts only `--bucket ready` (exit `2`
   otherwise). A carrier is linted with
   `audit-authored-issue.mjs --shape carrier`, which needs markdown-it:
   without it the lint refuses, and nothing is written. `--shape roadmap`
   publishes a held roadmap shell, linted as a roadmap; its `## Tracks` list
   may be empty, and it is its own set anchor, like an orphan. `--shape
-  child` publishes one held child under an existing set and needs
+  confirmation` publishes one auto-decide confirmation issue, described in
+  its own paragraph below. `--shape child` publishes one held child under
+  an existing set and needs
   `--anchor <owner>/<repo>#<number>`: a child without `--anchor`, any other
   shape with `--anchor`, a malformed anchor, and an anchor in another
   repository all exit `2` before anything is created. The anchor must be an
@@ -1526,6 +1553,56 @@ in this preamble, since the fallback differs per helper.
   both labels for a person's release, and a `recovery-hold` needs an
   owner-log replay before any release. The dry run lists the release steps
   as planned and writes nothing.
+
+  For `--shape confirmation` (issue `#4964`), the helper publishes one
+  auto-decide confirmation issue, its own set anchor like an orphan, and
+  then releases its own creation hold the way a carrier does. The shape
+  refuses `--anchor` and `--review-result` and accepts only `--bucket ready`
+  (exit `2` otherwise, before anything is read). The body is linted with
+  `audit-authored-issue.mjs --shape confirmation --new-issue`, with one
+  `--label` per applied label and no bucket; the confirmation lint does not
+  need markdown-it. The issue is labelled with the authoring label and
+  `autoDecide.confirmationLabelName` (default `status:needs-confirmation`),
+  both applied by the one `gh issue create` call, and a missing label is
+  created first, as for any other shape. Before anything is written, a dry
+  run included, the helper reads `.github/idd/config.json` at the
+  repository's default branch through the trusted-ref policy loader, with
+  no user-global fallback; a confirmed absent file (HTTP 404) means the
+  default name. It refuses (exit `1`, `outcome: "refused"`, nothing
+  written) when the default branch cannot be resolved, when that read fails
+  in any other way, when the name resolved from the repository policy file
+  differs from the trusted name, when the auto-decide label-collision check
+  reports a collision in either policy, or when the repository stores the
+  label under another letter case, judged by the `name` the label read
+  returns. These checks stop a pull request or a stale checkout from
+  renaming the label so that the released issue escapes Discover. The
+  refusal carries a `confirmationLabel` object, and a passing check is the
+  report's `confirmation-label` step; both carry `name`, `trustedRef`,
+  `trustedSource` (`policy` or `absent`), `trustedName`, `collisions`, and
+  `storedName`. The admission rules and the `blocked-by-human` journal stop
+  are the same as for the other shapes.
+
+  After `state=member` the helper runs the carrier release described above
+  (contract.md, "Confirmation creation-hold exception") and removes only the
+  authoring label; the confirmation label stays and
+  keeps the released issue out of Discover. The preconditions are the
+  carrier's, except that the confirmation audit runs in place of the
+  carrier audit: `audit-authored-issue.mjs --shape confirmation` in body
+  mode, not record mode, on the fresh body with both labels. The outcomes
+  and exit codes are the carrier's. A `released` or `held` release reports
+  `outcome: "published"` (exit `0`), and a `held` release keeps both labels
+  for a person's Stage 2 release. A `recovery-hold` (exit `1`) never closes
+  the issue, but a failed or unverified label restore after a release step
+  can leave the authoring label removed. `release.failedStep` names the
+  failed step in both cases. The dry run lists the release steps as the
+  planned `confirmation-release` step. Every `release.backlog` entry has
+  `count: null`, because the confirmation audit reports no
+  `authoring-marker-minimization-backlog` finding. A failed create is a
+  recovery hold with `issue: null` and `failedStep: "create"`, and a failure
+  after the create and before `state=member` is a recovery hold that keeps
+  the issue. Never rerun the helper after the create: a rerun would file a
+  second confirmation issue for one decision, and `release.nextAction` says
+  so.
 
 - `scripts/review-disposition-verify.mjs` for read-only E7 disposition
   marker presence verification across PATH A and PATH B items
@@ -2891,7 +2968,9 @@ This raw-cap check requires `awk`; if it is unavailable or returns an
 unexpected status, refuse with exit `2` before starting the command. If
 `flock` is present but `setsid` is not, refuse with exit `2` before starting
 the command. The locked path also requires `env --default-signal`; refuse with
-exit `2` if that option is unavailable. Otherwise resolve
+exit `2` if that option is unavailable. Alias cleanup requires `/dev/fd` and a
+shell whose `test` supports `-ef`; refuse with exit `2` when either is
+unavailable. Otherwise resolve
 `state` to absolute `XDG_STATE_HOME`, or
 `$HOME/.local/state` when that variable is relative or unset; if neither gives
 an absolute path, refuse with exit `2`. The following Bash-compatible shell
@@ -2922,11 +3001,17 @@ signal during that wait is forwarded to the group, as above, and the run ends
 with that signal's status. The drain has no bound of its own, and `maxWait`
 does not apply to it: a group member that never exits keeps the slot held until
 it ends, so end that member to release the slot. Direct runs do not wait after
-a normal exit. The admitted command runs without the lock descriptor (fd 9), so
-a descendant that leaves the group cannot keep the slot through an inherited
-descriptor. Observed 2026-10-23 in adopter field feedback (finding 10, issue
-`#4702`): a same-group child outlived a normally exiting root, and a contender
-entered while it was still alive.
+a normal exit. Before the admitted command starts, the fallback compares every
+`/dev/fd` entry with fd 9 using the shell's same-file test, closes each matching
+alias other than fd 9, and verifies none remain. The command then runs with fd 9
+closed, so a descendant that leaves the group cannot keep the slot through a
+lock descriptor. If `/dev/fd` or the same-file test is unavailable, the fallback
+refuses with exit 2 before starting the command. Observed 2026-11-04 in issue
+`#5036`: a daemon held the validation lock through an inherited fd 5, so closing
+fd 9 alone was insufficient. The existing group drain protects same-group
+children that outlive the root; observed 2026-10-23 in adopter field feedback
+(finding 10, issue `#4702`): a same-group child outlived a normally exiting root,
+and a contender entered while it was still alive.
 
 ```sh
 child_pid=
@@ -2952,6 +3037,45 @@ group_has_live_member() {
 $process_list
 EOF
   return 1
+}
+matching_lock_descriptors() {
+  if [ ! -d /dev/fd ] || [ ! -e /dev/fd/9 ]; then return 2; fi
+  scan_found_lock_fd=false
+  for scan_descriptor_path in /dev/fd/*; do
+    scan_descriptor=${scan_descriptor_path##*/}
+    case $scan_descriptor in *[!0-9]*|'') continue ;; esac
+    if [ "$scan_descriptor" = 9 ]; then
+      scan_found_lock_fd=true
+      continue
+    fi
+    if [ "$scan_descriptor_path" -ef /dev/fd/9 ]; then
+      printf '%s\n' "$scan_descriptor"
+    else
+      scan_status=$?
+      [ "$scan_status" -eq 1 ] || return 2
+    fi
+  done
+  [ "$scan_found_lock_fd" = true ] || return 2
+}
+close_lock_aliases() {
+  # Check the original stdout before command substitution replaces fd 1 (issue #5036).
+  if [ "/dev/fd/1" -ef /dev/fd/9 ] 2>/dev/null; then
+    return 1
+  else
+    standard_stdout_status=$?
+    [ "$standard_stdout_status" -eq 1 ] || return 1
+  fi
+  scan_lock_aliases=$(matching_lock_descriptors) || return 1
+  for scan_fd in $scan_lock_aliases; do
+    case $scan_fd in
+      *[!0-9]*|'') return 1 ;;
+      0|1|2) return 1 ;;
+      9) continue ;;
+      *) exec {scan_fd}>&- || return 1 ;;
+    esac
+  done
+  scan_lock_aliases=$(matching_lock_descriptors) || return 1
+  [ -z "$scan_lock_aliases" ]
 }
 process_state_ready() {
   if ! command -v ps >/dev/null 2>&1; then return 1; fi
@@ -3065,15 +3189,63 @@ enabled=true
 backend=flock
 raw_max_concurrent=1
 wait_seconds=7200 # Replace with the validated repository maxWait when set.
+# A refusal notice can itself corrupt a lock when stderr aliases it (issue #5036).
+stderr_diagnostic_safe=false
+diagnostic_state=
+case ${XDG_STATE_HOME:-} in
+  /*) diagnostic_state=$XDG_STATE_HOME ;;
+  *) case ${HOME:-} in
+       /*) diagnostic_state=$HOME/.local/state ;;
+     esac ;;
+esac
+if [ -n "$diagnostic_state" ] && [ -d /dev/fd ] && [ -e /dev/fd/2 ]; then
+  diagnostic_lock="$diagnostic_state/idd-skill/local-admission/validate.lock"
+  if [ -f "$diagnostic_lock" ]; then
+    if [ "/dev/fd/2" -ef "$diagnostic_lock" ] 2>/dev/null; then
+      stderr_diagnostic_safe=false
+    else
+      diagnostic_check_status=$?
+      [ "$diagnostic_check_status" -eq 1 ] && stderr_diagnostic_safe=true
+    fi
+  elif [ ! -e "$diagnostic_lock" ] && [ ! -L "$diagnostic_lock" ]; then
+    stderr_diagnostic_safe=true
+  fi
+fi
+safe_notice() {
+  [ "$stderr_diagnostic_safe" = true ] || return 0
+  printf '%s\n' "$1" >&2
+}
 if [ "$enabled" = false ]; then
   run_direct
 fi
 if [ "$backend" = pueue ]; then
-  printf 'local-admission: helper-free path uses flock for backend "pueue" with one slot\n' >&2
+  safe_notice 'local-admission: helper-free path uses flock for backend "pueue" with one slot'
 fi
 if ! command -v flock >/dev/null 2>&1; then
-  printf 'local-admission: flock is not available on this host; running the command without admission\n' >&2
+  safe_notice 'local-admission: flock is not available on this host; running the command without admission'
   run_direct
+fi
+# Resolve lock-only state and stderr prerequisites only when the locked path
+# will be used. The no-flock direct-run fallback needs neither one.
+case ${XDG_STATE_HOME:-} in
+  /*) state=$XDG_STATE_HOME ;;
+  *) case ${HOME:-} in
+       /*) state=$HOME/.local/state ;;
+       *) safe_notice 'local-admission: no absolute state root; command not started'; exit 2 ;;
+     esac ;;
+esac
+lock_dir="$state/idd-skill/local-admission"
+lock="$lock_dir/validate.lock"
+if [ ! -d /dev/fd ] || [ ! -e /dev/fd/2 ]; then exit 2; fi
+exec {scan_stderr_fd}>&2 || exit 2
+if [ "/dev/fd/$scan_stderr_fd" -ef "$lock" ] 2>/dev/null; then
+  exec {scan_stderr_fd}>&-
+  exit 2
+else
+  scan_stderr_status=$?
+  exec {scan_stderr_fd}>&- || exit 2
+  [ "$scan_stderr_status" -eq 1 ] || exit 2
+  stderr_diagnostic_safe=true
 fi
 if [ "$backend" = flock ]; then
   if ! command -v awk >/dev/null 2>&1; then
@@ -3100,16 +3272,8 @@ if ! command -v env >/dev/null 2>&1 ||
   printf 'local-admission: env cannot reset child signal dispositions; command not started\n' >&2
   exit 2
 fi
-case ${XDG_STATE_HOME:-} in
-  /*) state=$XDG_STATE_HOME ;;
-  *) case ${HOME:-} in
-       /*) state=$HOME/.local/state ;;
-       *) printf 'local-admission: no absolute state root; command not started\n' >&2; exit 2 ;;
-     esac ;;
-esac
 original_umask=$(umask)
 umask 077
-lock_dir="$state/idd-skill/local-admission"
 for dir in "$state/idd-skill" "$lock_dir"; do
   if [ -L "$dir" ] || { [ -e "$dir" ] && [ ! -d "$dir" ]; }; then
     printf 'local-admission: unsafe lock directory; command not started\n' >&2
@@ -3126,7 +3290,6 @@ for dir in "$state/idd-skill" "$lock_dir"; do
     exit 2
   fi
 done
-lock="$lock_dir/validate.lock"
 if [ -L "$lock" ] || { [ -e "$lock" ] && [ ! -f "$lock" ]; }; then
   printf 'local-admission: unsafe lock file; command not started\n' >&2
   exit 2
@@ -3194,6 +3357,12 @@ while :; do
   fi
   printf 'local-admission: waiting (waited %s of %s seconds)\n' "$waited_seconds" "$wait_seconds" >&2
 done
+if ! close_lock_aliases; then
+  printf 'local-admission: cannot verify or close every inherited lock descriptor; command not started\n' >&2
+  flock --unlock 9 || { printf 'local-admission: cannot release lock\n' >&2; exit 2; }
+  lock_fd_open=false
+  exit 2
+fi
 run_child admitted
 status=$?
 flock --unlock 9 || { printf 'local-admission: cannot release lock\n' >&2; exit 2; }
@@ -3206,10 +3375,10 @@ starts. A child exit `75` is returned without that line. Other `flock` failures
 before acquisition print a diagnostic and exit `2` without starting the child.
 
 Refusals before the command starts exit `2`: a policy file that fails to parse,
-a raw cap above 1 under `flock`, unavailable signal-reset support, a symlink at
-`idd-skill` or `local-admission`,
-a lock file that is a symlink or not a regular file, or a `flock` that fails
-before it takes the lock.
+a raw cap above 1 under `flock`, unavailable signal-reset support or lock-alias
+inspection, a standard stream that refers to the lock file, a symlink at
+`idd-skill` or `local-admission`, a lock file that is a symlink or not a regular
+file, or a `flock` that fails before it takes the lock.
 The helper also refuses before starting a process-group-supervised command
 when the ps process-state utility is unavailable or returns unusable output.
 
@@ -3271,7 +3440,9 @@ them:
 `scripts/idd-effective-config.mjs` is a read-only diagnostic for the layered
 policy. It prints the effective local policy as JSON, with the layer each
 leaf came from, the selected user-global override, and layering
-diagnostics. It never writes, claims, or posts.
+diagnostics. Its `--trusted-auto-decide` mode, described below, reads a
+trusted base on GitHub instead of the local layers. It never writes,
+claims, or posts.
 
 ```sh
 node scripts/idd-effective-config.mjs [--key <dotted.path>] [--no-user-global]
@@ -3306,6 +3477,66 @@ node scripts/idd-effective-config.mjs [--key <dotted.path>] [--no-user-global]
   a user-global `human-gated` mode cannot authorize a handoff.
 - **`--policy`**: an omitted `--policy` reads the layered policy. An explicit
   path, even the default string, reads only that file.
+
+### Trusted auto-decide verdict (kurone-kito/idd-skill#4958)
+
+The default mode and `--key` describe this checkout only. A pull request or
+a feature worktree can change its own copy of the policy, so
+`--key dangerouslyAutoDecide` and `--key autoDecide.<path>` are local
+diagnostics and never authority. A class consumer, and any session that
+applies the auto-decide procedure, reads the trusted verdict instead:
+
+```sh
+node scripts/idd-effective-config.mjs --trusted-auto-decide [--base-ref <name>] [--owner <owner> --repo <repo>]
+```
+
+- **Trusted base only**: a pull-request-scoped caller passes the pull
+  request's base branch name as `--base-ref`, never its head, a head SHA, or
+  a feature ref. A repository-scoped caller omits `--base-ref`, and the
+  helper reads the live default branch. Without `--owner` and `--repo`, the
+  repository comes from the checkout's GitHub `origin` remote, and the helper
+  refuses when that cannot be resolved. When `origin` is not the base
+  repository, as in a fork checkout, pass `--owner` and `--repo` for the base
+  repository: otherwise the helper reads the fork's policy.
+- **Network reads**: the repository's default branch (only without
+  `--base-ref`), `.github/idd/config.json` at the trusted ref, and
+  `schemas/policy.schema.json` at the same ref. The schema is not read when
+  the document is confirmed absent (HTTP 404). When the trusted ref has no
+  schema file (HTTP 404), a helper installed as a package for another
+  repository validates against its own bundled schema; a checked-out or
+  vendored helper reports `unreadable`. No local layer and no user-global
+  layer is read, so `--key` and `--no-user-global` are usage errors here.
+- **Validation before inspection**: the whole document must pass the schema
+  read at the trusted ref before any key is read. A document, schema, or
+  default branch that cannot be read, or a document that fails that schema
+  (a malformed `autoDecide` or master value included), makes the report
+  `unreadable`.
+- **Output** (JSON on stdout): `status` (`readable` or `unreadable`),
+  `source`, `ref`, `master` (`enabled`, `disabled`, or `unreadable`),
+  `masterReason` when the master switch is off (`config-absent`,
+  `property-absent`, or `explicit-false`), and `classes`, with one verdict
+  for each class:
+  - `enabled`: `dangerouslyAutoDecide` and the class's own `enabled` are
+    both `true`;
+  - `master-off`: the master switch is absent or `false`;
+  - `class-off`: the master switch is `true`, and the class is absent or
+    not enabled;
+  - `unreadable`: every class, when the report is `unreadable`, with the
+    cause in `error`.
+
+  A readable report also carries `confirmationLabelName` (the default
+  `status:needs-confirmation` when the key or the document is absent), so a
+  reader of confirmation issues gets the trusted name even when no class is
+  enabled. When a class is `enabled`, the report also carries
+  `maxPendingConfirmations`, `maxDecisionsPerClaim`, and `quietWindow` (the
+  `worktreeRemnant` quiet window).
+- **Exit codes**: `0` for a readable report, `1` for an `unreadable` one
+  (still printed, so a caller cannot mistake it for a verdict), and `2` for a
+  usage error that the mode detects, which reads nothing. A flag that cannot
+  be parsed at all (an unknown flag, or `--base-ref` with no value) fails
+  before the mode runs: it exits `1` and prints nothing on stdout. A caller
+  therefore treats an exit of `1` as unreadable only when stdout holds a
+  report whose `status` is `unreadable`.
 
 ## E10 same-family recurrence (kurone-kito/idd-skill#4129)
 
@@ -4269,7 +4500,93 @@ Rules:
   Under any other `deferByUrgency`, `enforce` behaves as `record`, and the
   helper writes one warning line on stderr.
 
+## Pull-request draft-state command (kurone-kito/idd-skill#4909)
+
+`idd-pull-request-draft-state` moves one open pull request between draft and
+ready-for-review. It packages the transition core that issue `#4908` added.
+Each profile runs the same command:
+
+```sh
+# source repo / vendored-node
+node scripts/pull-request-draft-state-execute.mjs --owner <owner> \
+  --repo <repo> --number <n> --target <draft|ready> \
+  --expected-head-sha <40-hex> [--apply]
+
+# package-manager
+npm run idd:pull-request-draft-state -- --owner <owner> --repo <repo> \
+  --number <n> --target <draft|ready> --expected-head-sha <40-hex> [--apply]
+pnpm run idd:pull-request-draft-state --owner <owner> --repo <repo> \
+  --number <n> --target <draft|ready> --expected-head-sha <40-hex> [--apply]
+yarn run idd:pull-request-draft-state --owner <owner> --repo <repo> \
+  --number <n> --target <draft|ready> --expected-head-sha <40-hex> [--apply]
+
+# ephemeral-npx
+npx --yes --package <helper-package-spec> idd-pull-request-draft-state \
+  --owner <owner> --repo <repo> --number <n> --target <draft|ready> \
+  --expected-head-sha <40-hex> [--apply]
+```
+
+- `--owner` and `--repo` are required. They name the base repository. A pull
+  request whose base is another repository is refused.
+- `--number` is a positive pull request number within the safe integer range.
+- `--target` is `draft` or `ready`. Any other value is a usage error.
+- `--expected-head-sha` is the full 40-character head SHA. A changed head is
+  refused.
+- The default is a dry run. It reads the pull request, reports the observed
+  state, and sends no transition request.
+- `--apply` re-reads the pull request right before the change, sends one GraphQL
+  mutation, and confirms the result with a fresh read.
+
+The core refuses these states before any transition request: `invalid-target`,
+`invalid-head-sha`, `invalid-number`, `invalid-repository`, `inaccessible`,
+`read-failed`, `wrong-base-repository`, `merged`, `closed`, and `changed-head`.
+
+After a transition request, the verdict depends on both the request result and
+the fresh read:
+
+- A successful request with a clean fresh read that shows the target state is
+  `transitioned`.
+- A failed request with a clean fresh read that still shows the old state is
+  `refused` with `transition-failed`.
+- Any other post-request result is `unverified`. That covers a successful
+  request whose fresh read shows the old state, a fresh read that fails or
+  carries a refusal code, and a failed request whose state already matches the
+  target. An `unverified` report can carry a post-change refusal code, so a
+  caller must check the verdict before it reads the refusal as a rejection.
+
+The verdicts are `dry-run`, `transitioned`, `already-in-target-state`,
+`refused`, and `unverified`. The exit status is `0` for `dry-run`,
+`transitioned`, and `already-in-target-state`. It is `1` for `refused` and
+`unverified`. A usage error exits `1` before any call.
+
+The command never merges, pushes, changes labels, or releases a claim.
+
 ## Stable Helper Evidence Outputs
+
+### Standing-approval report (issue `#4896`)
+
+- Command: `node scripts/standing-approval-report.mjs` with optional
+  `--owner`, `--repo`, and `--format json|table` flags.
+- Source-repo internal helper; not distributed via the package-manager /
+  ephemeral-npx profiles.
+- Output: stable JSON by default. Each `records[]` entry carries `class`,
+  `set`, `anchor`, `ceiling`, `option`, and `issueNumber`. The top-level
+  fields are `repository`, `conversationCount`, `malformedCount`, and
+  `records`. `--format table` is for operator reading.
+- Scope: reads every issue and pull-request comment in the repository
+  through the REST comment feed, oldest first, then validates each marker
+  line against issue `#4886`'s grammar. It does not use comment search,
+  whose index can lag behind a new comment and so leave a record unlisted.
+  It is read-only. Malformed responses or a failed feed-page read produce
+  an error and no partial report (preventive; no observed incident yet).
+- Quick read-only fallback (prints marker lines for manual inspection):
+
+  ```sh
+  set -euo pipefail
+  repo=owner/name
+  gh api --paginate "repos/$repo/issues/comments?per_page=100" |
+    jq -sr 'add[] | .body | split("\n")[] | select(startswith("<!-- idd-skill-standing-approval:"))'
+  ```
 
 ### Operator forced-handoff helpers
 
@@ -10115,7 +10432,8 @@ and hold. Then use this wrapper for both the merge and `git merge --continue`.
 If a confirmed conflict cannot be resolved cleanly,
 run `git merge --abort`, report the failure, and hold without pushing
 (observed 2026-10-28 in PR #4774 review comment #4396449337). After a wrapper
-timeout, terminate and wait for its full process tree before aborting; if it
+timeout, terminate and wait for its full process tree; once it is gone, run
+the post-failure verification below and take the next signing tier; if it
 remains live or its exit is unconfirmed, hold without aborting or pushing.
 
 E11 first fetches the target with this exact refspec:
@@ -10197,9 +10515,50 @@ Unlike the merge case above, a commit-only alias such as `git
 commit-ssh` is sufficient here — a single `commit` invocation needs no
 `--continue` step to re-sign.
 
+**Signing tiers** (`idd-overview-appendix.instructions.md`'s "Commit
+signing"): signing is best-effort, and a signing failure never stops the
+loop (operator statement of 2026-11-01, recorded in issue #4973). Each
+commit, merge, rebase, or `--continue` runs at the first usable tier:
+
+1. the repository's configured signing;
+2. a configured fallback signer, such as the wrapper above;
+3. unsigned: `--no-gpg-sign` for a commit or merge, and
+   `-c commit.gpgsign=false` for a rebase, a merge `--continue`, or the
+   `--continue` of a rebase that started unsigned.
+
+A rebase that started at a signed tier keeps that tier's signing for its
+`--continue`: Git stores `-S` in the rebase state, and
+`git -c commit.gpgsign=false rebase --continue` still fails, while the
+fallback signer's `--continue` works (reproduced 2026-11-03 with Git 2.53.0
+and a failing `gpg.program`, issue #4973). Its unsigned tier is therefore
+a restart: `git rebase --abort`, then rerun the original rebase with
+`-c commit.gpgsign=false` and resolve any conflict again. A repository that
+configures no signing starts at the unsigned tier; it records nothing and
+needs no signature check.
+
+Skip, without running it, a signer known to be unable to run without a
+terminal, such as GPG with a pinentry prompt or a hardware-touch key; the
+unbounded hang cited at the end of this section is that case. Each tier
+runs at most once, under the 2-minute bound below. A signed tier fails when
+it exits nonzero before that bound, or when the bound fires and its process
+tree is gone. Either way, run the post-failure verification below, then
+move to the next tier. Error text is not read. A hook that rejected the
+attempt runs again on the retry and fails the unsigned tier too, as long as
+the retry repeats that hook: a clean merge is rerun, not continued (see the
+state-present bullet below, after PR #4991 review comment r4451234135), and
+a failure at the unsigned tier is not a signing failure: the calling site's
+existing rule applies (E11 and D1 hold; B3 fixes a rejected commit message
+and commits again). If `git diff --name-only --diff-filter=U` lists any
+path, the operation stopped on a content conflict: apply the calling site's
+conflict rule instead of the next tier. An unsigned rebase drops the
+signatures of every commit it replays. Record any non-default outcome as
+the appendix requires. Release tags keep their own rule: see
+[Signed annotated release tags](#signed-annotated-release-tags-idd-release-tag).
+
 **Bounded timeout for every invocation** (commit, merge, or rebase): if
-the wrapper has not completed within 2 minutes, treat it as stuck
-rather than a signing failure worth retrying — a whole-command,
+the wrapper has not completed within 2 minutes, treat it as stuck and
+never retry the same tier; once its process tree is gone, verify and move
+to the next tier — a whole-command,
 root-cause-agnostic bound (it deliberately does not try to isolate the
 signer subprocess) that applies even to an invocation still producing
 output: an inactivity-only trigger would leave a merge or rebase that
@@ -10261,8 +10620,9 @@ simply outlasts the 30-second wait — for example a process stuck in
 uninterruptible I/O, which cannot receive a signal until it leaves
 that state (preventive; no observed incident yet). Whether either kind
 of survivor is safe to proceed past depends on what it can be: a
-signer subprocess is only a resource leak to report, since the
-unsigned fallback below never invokes one and so cannot race it — but
+signer subprocess is only a resource leak to report, since no later
+tier reuses that process and a signer never writes the working tree or
+index, so it cannot race the next tier — but
 the whole-command timeout this section opens with is root-cause-
 agnostic (it can equally fire on a hung hook, not only a stalled
 signer), and a hook process that survives could still be reading or
@@ -10295,14 +10655,18 @@ place and stop with a hold note instead of forcing the removal.
 
 Either way — the tree exited on its own, was terminated with nothing
 left but an identified signer leak, or the checks above otherwise
-allow proceeding — verify what actually happened before falling back;
-a killed or already-exited process can leave the operation completed,
-mid-progress, or never started at all:
+allow proceeding — verify what actually happened before moving to the
+next tier; a killed or already-exited process can leave the operation
+completed, mid-progress, or never started at all. The same verification
+runs after a signed tier that exits nonzero before the 2-minute bound:
+skip the process-tree and lock steps above, because the command has
+already returned and released its locks.
 
 - **Plain commit**: compare `git rev-parse HEAD` before/after the
   wrapper call, the same check B3's "Verify a commit actually landed"
   paragraph already prescribes. Landed → stop, do not re-commit.
-  Otherwise, before falling back to `--no-gpg-sign`, also compare the
+  Otherwise, on the timeout path only, before moving to the next tier,
+  also compare the
   index's tree hash — from running `git write-tree` before the wrapper
   call and again now — rather than comparing `git status --porcelain`
   and `git diff --cached --stat` output: `git commit -F` commits the
@@ -10315,11 +10679,15 @@ mid-progress, or never started at all:
   (preventive; no observed incident yet). Unstaged working-tree
   changes are intentionally excluded from this check: `git commit -F`
   alone never commits them, so they cannot reach the fallback commit
-  regardless of what changed there. Unchanged → fall back to
-  `--no-gpg-sign`
+  regardless of what changed there. Unchanged → commit at the next
+  tier: the configured fallback signer, then `--no-gpg-sign`
   (`idd-overview-appendix.instructions.md`'s "Commit signing" section).
   Changed → stop and post a hold note for review instead of falling
-  back.
+  back. After an error that returned before the bound, skip this
+  comparison and commit at the next tier: the hooks have finished, and
+  they run again on the retry (a signing error that returns at once
+  leaves `HEAD` and the index unchanged, reproduced 2026-11-03 with Git
+  2.53.0 and a failing `gpg.program`, issue #4973).
 - **Merge or rebase, state still present**: name the state via git, not
   a literal path — in a linked worktree (every B1 sibling worktree)
   `.git` at the worktree root is a _file_ pointing elsewhere, so a
@@ -10327,9 +10695,29 @@ mid-progress, or never started at all:
   `git rev-parse -q --verify MERGE_HEAD` for a merge, or
   `test -d "$(git rev-parse --git-path rebase-merge)"` (or
   `rebase-apply`) for a rebase. Either succeeding means the operation is
-  mid-progress: complete it with `-c commit.gpgsign=false` on the
-  `--continue` form — a plain `--continue` re-signs through the stalled
-  primary signer, and `--no-gpg-sign` itself is not a `--continue` flag.
+  mid-progress: complete it with the `--continue` form at the next tier —
+  the fallback signer's `-c` flags or alias, then `-c commit.gpgsign=false`
+  — because a plain `--continue` re-signs through the signer that just
+  failed, and `--no-gpg-sign` itself is not a `--continue` flag. For a
+  rebase that started at a signed tier, the unsigned tier is the restart
+  in "Signing tiers" above, not an unsigned `--continue`. A signing
+  error that returns at once leaves this state: a clean `git merge --no-ff`
+  exits 128 with `MERGE_HEAD` present, and a rebase keeps its
+  `rebase-merge` directory with the replay in the index (reproduced
+  2026-11-03 with Git 2.53.0 and a failing `gpg.program`, issue #4973). At
+  D1 (`idd-pr-submit.instructions.md`), a rebase with no staged content
+  conflict follows D1's failed-write restart instead of `--continue`; with
+  a staged content conflict, the `--continue` form here applies.
+  For a merge, `--continue` is only for one whose conflict was resolved
+  and staged. A merge that stopped with no conflict reruns at the next tier instead:
+  `git merge --abort`, then the original merge command at that tier.
+  `git merge --continue` runs the `pre-commit` and `commit-msg` hooks but
+  not `pre-merge-commit`, so continuing a clean merge that a
+  `pre-merge-commit` hook rejected would skip that hook; the rerun runs it
+  again at each tier, and its rejection at the unsigned rerun is the
+  unsigned tier's failure (PR #4991
+  review comment r4451234135, reproduced with Git 2.43.0 there and with Git
+  2.53.0 on 2026-11-03).
 - **Merge or rebase, no state present**: absent state alone does not
   prove the operation succeeded — the timeout can equally fire before
   Git ever creates that state (nothing to `--continue`), or, for a
@@ -10355,13 +10743,13 @@ mid-progress, or never started at all:
   mistaken for one that did. Verified → stop. Not verified → re-attach
   to the branch if
   detached (`git checkout {branch-name}`; the commit is preserved on
-  the branch ref) and rerun the original merge or rebase command
-  **unsigned** (`git -c commit.gpgsign=false merge …` / `rebase …`, not
-  the SSH-signing wrapper), exactly once, under this same 2-minute
-  bound — mirroring D1's own bounded auto-recovery. If that rerun times
-  out or still fails the same verification, post a hold note
-  documenting the branch state and stop, the same as D1's own recovery
-  does when it is exhausted.
+  the branch ref) and rerun the original merge or rebase command at the
+  next tier — the configured fallback signer if it has not run yet, then
+  **unsigned** (`git -c commit.gpgsign=false merge …` / `rebase …`) —
+  once per tier, under this same 2-minute bound, mirroring D1's own
+  bounded auto-recovery. If the unsigned rerun times out or still fails
+  the same verification, post a hold note documenting the branch state
+  and stop, the same as D1's own recovery does when it is exhausted.
 
 No step in this recovery procedure waits indefinitely: the original
 wrapper invocation and every fallback or continuation share the same
@@ -10369,16 +10757,28 @@ wrapper invocation and every fallback or continuation share the same
 shared 30-second bound across the whole recorded PID set — every
 step that exceeds its bound routes to the same
 terminate-and-verify-or-hold outcome, not a fresh unbounded wait. A
-hook or other non-signing cause can hang the plain-commit
-`--no-gpg-sign` fallback or the `--continue` completion just as it
-hung the original attempt; if either does not itself complete within
-2 minutes, apply the same terminate-and-verify procedure to it, and if
-it still does not resolve, post a hold note and stop rather than
-retrying further.
+hook or other non-signing cause can hang a later tier (the fallback
+signer, the unsigned `--no-gpg-sign` commit, or a `--continue`
+completion) just as it hung the original attempt; if one does not itself
+complete within 2 minutes, apply the same terminate-and-verify procedure
+to it, and if the unsigned tier still does not resolve, post a hold note
+and stop rather than retrying further.
 
 Observed hanging with no output for an extended, unbounded period on
 2026-09-10 (issue #2844 / PR #2870, commit `7be8acc9`, later confirmed
 unsigned).
+
+**Signature check.** After a signed tier reports success, confirm that
+each new commit carries a signature before recording the outcome: `HEAD`
+for a commit or merge, and every commit in
+`origin/{development-branch}..HEAD` for a rebase. Read only the header
+block of `git cat-file commit <commit>` (the lines before the first blank
+line); a signed commit has a `gpgsig` or `gpgsig-sha256` header there,
+and a message line that starts with the same word is not a header. Use
+`git log --format=%G?` only when a verifier is configured: without
+`gpg.ssh.allowedSignersFile`, that format prints `N` for every SSH-signed
+commit (reproduced 2026-11-03 with Git 2.53.0, issue #4973). A commit
+without the header is an unsigned outcome: record it and continue.
 
 ### Scripted-rebase hazards
 

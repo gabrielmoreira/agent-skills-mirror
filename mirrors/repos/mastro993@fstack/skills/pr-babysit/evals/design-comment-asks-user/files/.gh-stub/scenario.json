@@ -1,0 +1,14 @@
+{
+ "repo": "acme/widgets", "number": 12, "title": "Add bulk discount tiers",
+ "body": "Orders of 50+ units get 5% off, 100+ get 10% off.",
+ "base": "main", "head": "feat/discount-tiers", "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v", "ci_delay_seconds": 20,
+ "reviews": [{"id": "PRR_alice1", "author": "alice", "state": "CHANGES_REQUESTED", "body": "One nit, plus a design question."}],
+ "threads": [
+  {"id": "PRRT_typo", "path": "widgets/pricing.py", "line": 6, "comments": [
+   {"id": "PRRC_a1", "author": "alice", "body": "nit: typo, `threshhold` → `threshold`."}]},
+  {"id": "PRRT_config", "path": "widgets/pricing.py", "line": 2, "comments": [
+   {"id": "PRRC_a2", "author": "alice", "body": "Rather than hard-coding the tiers, should these come from the pricing config ops already edits (config/pricing.toml)? Then they could change tiers without a deploy. Not sure it's worth it for this PR though, what do you think?"}]}
+ ],
+ "comments": []
+}

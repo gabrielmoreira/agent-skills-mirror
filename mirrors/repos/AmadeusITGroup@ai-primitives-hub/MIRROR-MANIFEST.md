@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followed patterns, 74 file(s) materialized.
+Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 29 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 21 |
-| Files         | 74 |
+| Followed pats | 29 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,18 +58,26 @@ Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followe
 - `docs/contributor-guide/architecture.md`
 - `docs/contributor-guide/testing.md`
 - `docs/README.md`
+- `docs/reference/hub-replication.md`
+- `docs/author-guide/creating-a-hub.md`
+- `docs/user-guide/profiles-and-hubs.md`
+- `docs/user-guide/sources.md`
 - `apps/vscode-extension/README.md`
+- `docs/reference/commands.md`
 - `docs/author-guide/creating-source-bundle.md`
+- `docs/author-guide/publishing.md`
+- `docs/author-guide/adding-profile-source-to-hub.md`
+- `docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md`
+- `docs/contributor-guide/architecture/library-centric-architecture/system-context.md`
+- `docs/contributor-guide/architecture/library-centric-architecture/codemap.md`
 - `docs/user-guide/getting-started.md`
 - `docs/contributor-guide/development-setup.md`
-- `docs/reference/commands.md`
+- `docs/user-guide/security-scanning.md`
 - `CODE_OF_CONDUCT.md`
 - `SECURITY.md`
 - `docs/contributor-guide/core-flows.md`
 - `docs/user-guide/marketplace.md`
-- `docs/user-guide/sources.md`
 - `docs/user-guide/configuration.md`
-- `docs/user-guide/profiles-and-hubs.md`
 - `docs/user-guide/troubleshooting.md`
 - `docs/contributor-guide/coding-standards.md`
 
@@ -104,55 +112,65 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 24 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 25 | ✓ | [`docs/author-guide/collection-schema.md`](docs/author-guide/collection-schema.md) |
-| 26 | ✓ | [`docs/author-guide/publishing.md`](docs/author-guide/publishing.md) |
-| 27 | ✓ | [`docs/author-guide/validation.md`](docs/author-guide/validation.md) |
-| 28 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 29 | ✓ | [`docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md`](docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md) |
-| 30 | ✓ | [`docs/contributor-guide/architecture/adr/0002-clipanion-cli-framework-with-pinned-rc.md`](docs/contributor-guide/architecture/adr/0002-clipanion-cli-framework-with-pinned-rc.md) |
-| 31 | ✓ | [`docs/contributor-guide/architecture/adr/0003-primitive-index-search-and-multi-target-in-scope.md`](docs/contributor-guide/architecture/adr/0003-primitive-index-search-and-multi-target-in-scope.md) |
-| 32 | ✓ | [`docs/contributor-guide/architecture/adr/0004-cli-only-rebrand-keep-lockfile-and-extension-identity-stable.md`](docs/contributor-guide/architecture/adr/0004-cli-only-rebrand-keep-lockfile-and-extension-identity-stable.md) |
-| 33 | ✓ | [`docs/contributor-guide/architecture/adr/0005-universal-xdg-based-app-storage.md`](docs/contributor-guide/architecture/adr/0005-universal-xdg-based-app-storage.md) |
-| 34 | ✓ | [`docs/contributor-guide/architecture/adr/0006-shared-semantic-cache-and-client-owned-state.md`](docs/contributor-guide/architecture/adr/0006-shared-semantic-cache-and-client-owned-state.md) |
-| 35 | ✓ | [`docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md`](docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md) |
-| 36 | ✓ | [`docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md`](docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md) |
-| 37 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/codemap.md`](docs/contributor-guide/architecture/library-centric-architecture/codemap.md) |
-| 38 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/component.md`](docs/contributor-guide/architecture/library-centric-architecture/component.md) |
-| 39 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/container.md`](docs/contributor-guide/architecture/library-centric-architecture/container.md) |
-| 40 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/system-context.md`](docs/contributor-guide/architecture/library-centric-architecture/system-context.md) |
-| 41 | ✓ | [`docs/contributor-guide/architecture/validation.md`](docs/contributor-guide/architecture/validation.md) |
-| 42 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
+| 26 | ✓ | [`docs/author-guide/validation.md`](docs/author-guide/validation.md) |
+| 27 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 28 | ✓ | [`docs/contributor-guide/architecture/adr/0002-clipanion-cli-framework-with-pinned-rc.md`](docs/contributor-guide/architecture/adr/0002-clipanion-cli-framework-with-pinned-rc.md) |
+| 29 | ✓ | [`docs/contributor-guide/architecture/adr/0003-primitive-index-search-and-multi-target-in-scope.md`](docs/contributor-guide/architecture/adr/0003-primitive-index-search-and-multi-target-in-scope.md) |
+| 30 | ✓ | [`docs/contributor-guide/architecture/adr/0004-cli-only-rebrand-keep-lockfile-and-extension-identity-stable.md`](docs/contributor-guide/architecture/adr/0004-cli-only-rebrand-keep-lockfile-and-extension-identity-stable.md) |
+| 31 | ✓ | [`docs/contributor-guide/architecture/adr/0005-universal-xdg-based-app-storage.md`](docs/contributor-guide/architecture/adr/0005-universal-xdg-based-app-storage.md) |
+| 32 | ✓ | [`docs/contributor-guide/architecture/adr/0006-shared-semantic-cache-and-client-owned-state.md`](docs/contributor-guide/architecture/adr/0006-shared-semantic-cache-and-client-owned-state.md) |
+| 33 | ✓ | [`docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md`](docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md) |
+| 34 | ✓ | [`docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md`](docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md) |
+| 35 | ✓ | [`docs/contributor-guide/architecture/adr/0010-native-ports-and-adapters-security-scanning.md`](docs/contributor-guide/architecture/adr/0010-native-ports-and-adapters-security-scanning.md) |
+| 36 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/component.md`](docs/contributor-guide/architecture/library-centric-architecture/component.md) |
+| 37 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/container.md`](docs/contributor-guide/architecture/library-centric-architecture/container.md) |
+| 38 | ✓ | [`docs/contributor-guide/architecture/security-scanner.md`](docs/contributor-guide/architecture/security-scanner.md) |
+| 39 | ✓ | [`docs/contributor-guide/architecture/validation.md`](docs/contributor-guide/architecture/validation.md) |
+| 40 | ✓ | [`docs/contributor-guide/security-scanner-maintenance.md`](docs/contributor-guide/security-scanner-maintenance.md) |
+| 41 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
+| 42 | ✓ | [`docs/reference/security-scanner.md`](docs/reference/security-scanner.md) |
 | 43 | ✓ | [`docs/reference/settings.md`](docs/reference/settings.md) |
-| 44 | ✓ | [`lib/README.md`](lib/README.md) |
-| 45 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
-| 46 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
-| 47 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
-| 48 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
-| 49 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
-| 50 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
-| 51 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
-| 52 | ✓ | [`packages/infra/src/scaffolding/templates/README.md`](packages/infra/src/scaffolding/templates/README.md) |
-| 53 | ✓ | [`packages/README.md`](packages/README.md) |
-| 54 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
-| 55 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 56 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 57 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
-| 58 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
-| 59 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
-| 60 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
-| 61 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
-| 62 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
-| 63 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
-| 64 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
-| 65 | → | [`docs/README.md`](docs/README.md) |
-| 66 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 67 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
-| 68 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
-| 69 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
-| 70 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
-| 71 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
-| 72 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
-| 73 | → | [`README.md`](README.md) |
-| 74 | → | [`SECURITY.md`](SECURITY.md) |
+| 44 | ✓ | [`github-actions/security-scan/README.md`](github-actions/security-scan/README.md) |
+| 45 | ✓ | [`lib/README.md`](lib/README.md) |
+| 46 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
+| 47 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
+| 48 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
+| 49 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
+| 50 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
+| 51 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
+| 52 | ✓ | [`packages/core/test/fixtures/security/README.md`](packages/core/test/fixtures/security/README.md) |
+| 53 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
+| 54 | ✓ | [`packages/infra/src/scaffolding/templates/README.md`](packages/infra/src/scaffolding/templates/README.md) |
+| 55 | ✓ | [`packages/README.md`](packages/README.md) |
+| 56 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
+| 57 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 59 | → | [`docs/author-guide/adding-profile-source-to-hub.md`](docs/author-guide/adding-profile-source-to-hub.md) |
+| 60 | → | [`docs/author-guide/creating-a-hub.md`](docs/author-guide/creating-a-hub.md) |
+| 61 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
+| 62 | → | [`docs/author-guide/publishing.md`](docs/author-guide/publishing.md) |
+| 63 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
+| 64 | → | [`docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md`](docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md) |
+| 65 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
+| 66 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
+| 67 | → | [`docs/contributor-guide/architecture/library-centric-architecture/codemap.md`](docs/contributor-guide/architecture/library-centric-architecture/codemap.md) |
+| 68 | → | [`docs/contributor-guide/architecture/library-centric-architecture/system-context.md`](docs/contributor-guide/architecture/library-centric-architecture/system-context.md) |
+| 69 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
+| 70 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
+| 71 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
+| 72 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
+| 73 | → | [`docs/README.md`](docs/README.md) |
+| 74 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 75 | → | [`docs/reference/hub-replication.md`](docs/reference/hub-replication.md) |
+| 76 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
+| 77 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
+| 78 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
+| 79 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
+| 80 | → | [`docs/user-guide/security-scanning.md`](docs/user-guide/security-scanning.md) |
+| 81 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
+| 82 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
+| 83 | → | [`README.md`](README.md) |
+| 84 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

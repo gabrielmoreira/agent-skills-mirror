@@ -1,0 +1,2 @@
+- credit notes numbering
+- ask finance about void exports

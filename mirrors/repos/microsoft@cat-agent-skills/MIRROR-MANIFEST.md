@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/cat-agent-skills` — 26 default patterns, 0 followed patterns, 204 file(s) materialized.
+Mirror of `microsoft/cat-agent-skills` — 26 default patterns, 0 followed patterns, 205 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/cat-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 204 |
+| Files         | 205 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -168,101 +168,102 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 107 | ✓ | [`submissions/power-automate-desktop-assessment/SKILL.md`](submissions/power-automate-desktop-assessment/SKILL.md) |
 | 108 | ✓ | [`submissions/power-automate-documentation/SKILL.md`](submissions/power-automate-documentation/SKILL.md) |
 | 109 | ✓ | [`submissions/power-bi-model-review/SKILL.md`](submissions/power-bi-model-review/SKILL.md) |
-| 110 | ✓ | [`submissions/presentation-talk-track-builder/SKILL.md`](submissions/presentation-talk-track-builder/SKILL.md) |
-| 111 | ✓ | [`submissions/process-sop-architect/SKILL.md`](submissions/process-sop-architect/SKILL.md) |
-| 112 | ✓ | [`submissions/product-content-catalog-enrichment/skills/attribute-normalize/SKILL.md`](submissions/product-content-catalog-enrichment/skills/attribute-normalize/SKILL.md) |
-| 113 | ✓ | [`submissions/product-content-catalog-enrichment/skills/claim-check/SKILL.md`](submissions/product-content-catalog-enrichment/skills/claim-check/SKILL.md) |
-| 114 | ✓ | [`submissions/product-content-catalog-enrichment/skills/content-draft/SKILL.md`](submissions/product-content-catalog-enrichment/skills/content-draft/SKILL.md) |
-| 115 | ✓ | [`submissions/product-content-catalog-enrichment/skills/gap-score/SKILL.md`](submissions/product-content-catalog-enrichment/skills/gap-score/SKILL.md) |
-| 116 | ✓ | [`submissions/product-content-catalog-enrichment/skills/source-ingest/SKILL.md`](submissions/product-content-catalog-enrichment/skills/source-ingest/SKILL.md) |
-| 117 | ✓ | [`submissions/production-planning/skills/capacity-check/SKILL.md`](submissions/production-planning/skills/capacity-check/SKILL.md) |
-| 118 | ✓ | [`submissions/production-planning/skills/demand-pull/SKILL.md`](submissions/production-planning/skills/demand-pull/SKILL.md) |
-| 119 | ✓ | [`submissions/production-planning/skills/schedule-optimize/SKILL.md`](submissions/production-planning/skills/schedule-optimize/SKILL.md) |
-| 120 | ✓ | [`submissions/production-planning/skills/shift-plan-draft/SKILL.md`](submissions/production-planning/skills/shift-plan-draft/SKILL.md) |
-| 121 | ✓ | [`submissions/qr-code-builder/SKILL.md`](submissions/qr-code-builder/SKILL.md) |
-| 122 | ✓ | [`submissions/quality-incident-capa/skills/capa-build/SKILL.md`](submissions/quality-incident-capa/skills/capa-build/SKILL.md) |
-| 123 | ✓ | [`submissions/quality-incident-capa/skills/closure-check/SKILL.md`](submissions/quality-incident-capa/skills/closure-check/SKILL.md) |
-| 124 | ✓ | [`submissions/quality-incident-capa/skills/eightd-draft/SKILL.md`](submissions/quality-incident-capa/skills/eightd-draft/SKILL.md) |
-| 125 | ✓ | [`submissions/quality-incident-capa/skills/ncr-intake/SKILL.md`](submissions/quality-incident-capa/skills/ncr-intake/SKILL.md) |
-| 126 | ✓ | [`submissions/quality-incident-capa/skills/root-cause-analyze/SKILL.md`](submissions/quality-incident-capa/skills/root-cause-analyze/SKILL.md) |
-| 127 | ✓ | [`submissions/quality-inspection/skills/defect-grade/SKILL.md`](submissions/quality-inspection/skills/defect-grade/SKILL.md) |
-| 128 | ✓ | [`submissions/quality-inspection/skills/ncr-draft/SKILL.md`](submissions/quality-inspection/skills/ncr-draft/SKILL.md) |
-| 129 | ✓ | [`submissions/quality-inspection/skills/spec-ingest/SKILL.md`](submissions/quality-inspection/skills/spec-ingest/SKILL.md) |
-| 130 | ✓ | [`submissions/quality-inspection/skills/tolerance-check/SKILL.md`](submissions/quality-inspection/skills/tolerance-check/SKILL.md) |
-| 131 | ✓ | [`submissions/redlining-content/SKILL.md`](submissions/redlining-content/SKILL.md) |
-| 132 | ✓ | [`submissions/regulation-monitor/SKILL.md`](submissions/regulation-monitor/SKILL.md) |
-| 133 | ✓ | [`submissions/retail-execution-perfect-store/skills/action-register/SKILL.md`](submissions/retail-execution-perfect-store/skills/action-register/SKILL.md) |
-| 134 | ✓ | [`submissions/retail-execution-perfect-store/skills/gap-score/SKILL.md`](submissions/retail-execution-perfect-store/skills/gap-score/SKILL.md) |
-| 135 | ✓ | [`submissions/retail-execution-perfect-store/skills/standard-retrieve/SKILL.md`](submissions/retail-execution-perfect-store/skills/standard-retrieve/SKILL.md) |
-| 136 | ✓ | [`submissions/retail-execution-perfect-store/skills/visit-prep/SKILL.md`](submissions/retail-execution-perfect-store/skills/visit-prep/SKILL.md) |
-| 137 | ✓ | [`submissions/retail-execution-perfect-store/skills/visit-report/SKILL.md`](submissions/retail-execution-perfect-store/skills/visit-report/SKILL.md) |
-| 138 | ✓ | [`submissions/returns-refund-case/skills/case-packet/SKILL.md`](submissions/returns-refund-case/skills/case-packet/SKILL.md) |
-| 139 | ✓ | [`submissions/returns-refund-case/skills/eligibility-check/SKILL.md`](submissions/returns-refund-case/skills/eligibility-check/SKILL.md) |
-| 140 | ✓ | [`submissions/returns-refund-case/skills/policy-retrieve/SKILL.md`](submissions/returns-refund-case/skills/policy-retrieve/SKILL.md) |
-| 141 | ✓ | [`submissions/returns-refund-case/skills/reason-classify/SKILL.md`](submissions/returns-refund-case/skills/reason-classify/SKILL.md) |
-| 142 | ✓ | [`submissions/returns-refund-case/skills/return-intake/SKILL.md`](submissions/returns-refund-case/skills/return-intake/SKILL.md) |
-| 143 | ✓ | [`submissions/rich-html-presentation/SKILL.md`](submissions/rich-html-presentation/SKILL.md) |
-| 144 | ✓ | [`submissions/root-cause-analysis/SKILL.md`](submissions/root-cause-analysis/SKILL.md) |
-| 145 | ✓ | [`submissions/route-map-visualizer/SKILL.md`](submissions/route-map-visualizer/SKILL.md) |
-| 146 | ✓ | [`submissions/safety-incident/skills/ehs-knowledge-retrieve/SKILL.md`](submissions/safety-incident/skills/ehs-knowledge-retrieve/SKILL.md) |
-| 147 | ✓ | [`submissions/safety-incident/skills/incident-intake/SKILL.md`](submissions/safety-incident/skills/incident-intake/SKILL.md) |
-| 148 | ✓ | [`submissions/safety-incident/skills/incident-writeup/SKILL.md`](submissions/safety-incident/skills/incident-writeup/SKILL.md) |
-| 149 | ✓ | [`submissions/safety-incident/skills/routing-notify/SKILL.md`](submissions/safety-incident/skills/routing-notify/SKILL.md) |
-| 150 | ✓ | [`submissions/safety-incident/skills/severity-recordability/SKILL.md`](submissions/safety-incident/skills/severity-recordability/SKILL.md) |
-| 151 | ✓ | [`submissions/sap-power-platform-integration-architect/SKILL.md`](submissions/sap-power-platform-integration-architect/SKILL.md) |
-| 152 | ✓ | [`submissions/scrollytelling-data/SKILL.md`](submissions/scrollytelling-data/SKILL.md) |
-| 153 | ✓ | [`submissions/semantic-pdf-image-extractor/SKILL.md`](submissions/semantic-pdf-image-extractor/SKILL.md) |
-| 154 | ✓ | [`submissions/sharepoint-file-creation/SKILL.md`](submissions/sharepoint-file-creation/SKILL.md) |
-| 155 | ✓ | [`submissions/sharepoint-list-formatter/SKILL.md`](submissions/sharepoint-list-formatter/SKILL.md) |
-| 156 | ✓ | [`submissions/sharepoint-list-insight-report-generator/SKILL.md`](submissions/sharepoint-list-insight-report-generator/SKILL.md) |
-| 157 | ✓ | [`submissions/skill-authoring-coach/SKILL.md`](submissions/skill-authoring-coach/SKILL.md) |
-| 158 | ✓ | [`submissions/stoic-negotiator/SKILL.md`](submissions/stoic-negotiator/SKILL.md) |
-| 159 | ✓ | [`submissions/store-associate-assist/skills/answer-draft/SKILL.md`](submissions/store-associate-assist/skills/answer-draft/SKILL.md) |
-| 160 | ✓ | [`submissions/store-associate-assist/skills/policy-retrieve/SKILL.md`](submissions/store-associate-assist/skills/policy-retrieve/SKILL.md) |
-| 161 | ✓ | [`submissions/store-associate-assist/skills/product-compare/SKILL.md`](submissions/store-associate-assist/skills/product-compare/SKILL.md) |
-| 162 | ✓ | [`submissions/store-associate-assist/skills/promo-check/SKILL.md`](submissions/store-associate-assist/skills/promo-check/SKILL.md) |
-| 163 | ✓ | [`submissions/store-associate-assist/skills/question-intake/SKILL.md`](submissions/store-associate-assist/skills/question-intake/SKILL.md) |
-| 164 | ✓ | [`submissions/store-task-promotion-execution/skills/brief-draft/SKILL.md`](submissions/store-task-promotion-execution/skills/brief-draft/SKILL.md) |
-| 165 | ✓ | [`submissions/store-task-promotion-execution/skills/exception-raise/SKILL.md`](submissions/store-task-promotion-execution/skills/exception-raise/SKILL.md) |
-| 166 | ✓ | [`submissions/store-task-promotion-execution/skills/pack-ingest/SKILL.md`](submissions/store-task-promotion-execution/skills/pack-ingest/SKILL.md) |
-| 167 | ✓ | [`submissions/store-task-promotion-execution/skills/readiness-check/SKILL.md`](submissions/store-task-promotion-execution/skills/readiness-check/SKILL.md) |
-| 168 | ✓ | [`submissions/store-task-promotion-execution/skills/store-map/SKILL.md`](submissions/store-task-promotion-execution/skills/store-map/SKILL.md) |
-| 169 | ✓ | [`submissions/study-flashcards/SKILL.md`](submissions/study-flashcards/SKILL.md) |
-| 170 | ✓ | [`submissions/style-analyzer/SKILL.md`](submissions/style-analyzer/SKILL.md) |
-| 171 | ✓ | [`submissions/supplier-disruption/skills/disruption-intake/SKILL.md`](submissions/supplier-disruption/skills/disruption-intake/SKILL.md) |
-| 172 | ✓ | [`submissions/supplier-disruption/skills/disruption-writeup/SKILL.md`](submissions/supplier-disruption/skills/disruption-writeup/SKILL.md) |
-| 173 | ✓ | [`submissions/supplier-disruption/skills/mitigation-recommend/SKILL.md`](submissions/supplier-disruption/skills/mitigation-recommend/SKILL.md) |
-| 174 | ✓ | [`submissions/supplier-disruption/skills/shortage-impact-map/SKILL.md`](submissions/supplier-disruption/skills/shortage-impact-map/SKILL.md) |
-| 175 | ✓ | [`submissions/supplier-disruption/skills/supply-knowledge-retrieve/SKILL.md`](submissions/supplier-disruption/skills/supply-knowledge-retrieve/SKILL.md) |
-| 176 | ✓ | [`submissions/supplier-qualification/skills/avl-compare/SKILL.md`](submissions/supplier-qualification/skills/avl-compare/SKILL.md) |
-| 177 | ✓ | [`submissions/supplier-qualification/skills/dossier-ingest/SKILL.md`](submissions/supplier-qualification/skills/dossier-ingest/SKILL.md) |
-| 178 | ✓ | [`submissions/supplier-qualification/skills/qualification-memo/SKILL.md`](submissions/supplier-qualification/skills/qualification-memo/SKILL.md) |
-| 179 | ✓ | [`submissions/supplier-qualification/skills/risk-score/SKILL.md`](submissions/supplier-qualification/skills/risk-score/SKILL.md) |
-| 180 | ✓ | [`submissions/supplier-vendor-performance/skills/issue-cluster/SKILL.md`](submissions/supplier-vendor-performance/skills/issue-cluster/SKILL.md) |
-| 181 | ✓ | [`submissions/supplier-vendor-performance/skills/record-pull/SKILL.md`](submissions/supplier-vendor-performance/skills/record-pull/SKILL.md) |
-| 182 | ✓ | [`submissions/supplier-vendor-performance/skills/review-pack/SKILL.md`](submissions/supplier-vendor-performance/skills/review-pack/SKILL.md) |
-| 183 | ✓ | [`submissions/supplier-vendor-performance/skills/scorecard-roll/SKILL.md`](submissions/supplier-vendor-performance/skills/scorecard-roll/SKILL.md) |
-| 184 | ✓ | [`submissions/supplier-vendor-performance/skills/term-retrieve/SKILL.md`](submissions/supplier-vendor-performance/skills/term-retrieve/SKILL.md) |
-| 185 | ✓ | [`submissions/template-based-document-generation/SKILL.md`](submissions/template-based-document-generation/SKILL.md) |
-| 186 | ✓ | [`submissions/tool-tracer/SKILL.md`](submissions/tool-tracer/SKILL.md) |
-| 187 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/claim-ingest/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/claim-ingest/SKILL.md) |
-| 188 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/claim-match/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/claim-match/SKILL.md) |
-| 189 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/dispute-packet/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/dispute-packet/SKILL.md) |
-| 190 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/term-retrieve/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/term-retrieve/SKILL.md) |
-| 191 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/validity-classify/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/validity-classify/SKILL.md) |
-| 192 | ✓ | [`submissions/travel-cost-estimator/SKILL.md`](submissions/travel-cost-estimator/SKILL.md) |
-| 193 | ✓ | [`submissions/vendor-contract-risk-review/SKILL.md`](submissions/vendor-contract-risk-review/SKILL.md) |
-| 194 | ✓ | [`submissions/wcag-power-platform/SKILL.md`](submissions/wcag-power-platform/SKILL.md) |
-| 195 | ✓ | [`submissions/what-to-use-when/SKILL.md`](submissions/what-to-use-when/SKILL.md) |
-| 196 | ✓ | [`submissions/whiteboard-to-infographic/SKILL.md`](submissions/whiteboard-to-infographic/SKILL.md) |
-| 197 | ✓ | [`submissions/wikipedia-human-style-writing/SKILL.md`](submissions/wikipedia-human-style-writing/SKILL.md) |
-| 198 | ✓ | [`submissions/work-brief/SKILL.md`](submissions/work-brief/SKILL.md) |
-| 199 | ✓ | [`submissions/work-iq-signalboard/SKILL.md`](submissions/work-iq-signalboard/SKILL.md) |
-| 200 | ✓ | [`submissions/work-order-assist/skills/knowledge-retrieve/SKILL.md`](submissions/work-order-assist/skills/knowledge-retrieve/SKILL.md) |
-| 201 | ✓ | [`submissions/work-order-assist/skills/parts-readiness/SKILL.md`](submissions/work-order-assist/skills/parts-readiness/SKILL.md) |
-| 202 | ✓ | [`submissions/work-order-assist/skills/similar-work-rank/SKILL.md`](submissions/work-order-assist/skills/similar-work-rank/SKILL.md) |
-| 203 | ✓ | [`submissions/work-order-assist/skills/wo-intake/SKILL.md`](submissions/work-order-assist/skills/wo-intake/SKILL.md) |
-| 204 | ✓ | [`submissions/work-order-assist/skills/work-order-writeup/SKILL.md`](submissions/work-order-assist/skills/work-order-writeup/SKILL.md) |
+| 110 | ✓ | [`submissions/power-platform-solution-compare/SKILL.md`](submissions/power-platform-solution-compare/SKILL.md) |
+| 111 | ✓ | [`submissions/presentation-talk-track-builder/SKILL.md`](submissions/presentation-talk-track-builder/SKILL.md) |
+| 112 | ✓ | [`submissions/process-sop-architect/SKILL.md`](submissions/process-sop-architect/SKILL.md) |
+| 113 | ✓ | [`submissions/product-content-catalog-enrichment/skills/attribute-normalize/SKILL.md`](submissions/product-content-catalog-enrichment/skills/attribute-normalize/SKILL.md) |
+| 114 | ✓ | [`submissions/product-content-catalog-enrichment/skills/claim-check/SKILL.md`](submissions/product-content-catalog-enrichment/skills/claim-check/SKILL.md) |
+| 115 | ✓ | [`submissions/product-content-catalog-enrichment/skills/content-draft/SKILL.md`](submissions/product-content-catalog-enrichment/skills/content-draft/SKILL.md) |
+| 116 | ✓ | [`submissions/product-content-catalog-enrichment/skills/gap-score/SKILL.md`](submissions/product-content-catalog-enrichment/skills/gap-score/SKILL.md) |
+| 117 | ✓ | [`submissions/product-content-catalog-enrichment/skills/source-ingest/SKILL.md`](submissions/product-content-catalog-enrichment/skills/source-ingest/SKILL.md) |
+| 118 | ✓ | [`submissions/production-planning/skills/capacity-check/SKILL.md`](submissions/production-planning/skills/capacity-check/SKILL.md) |
+| 119 | ✓ | [`submissions/production-planning/skills/demand-pull/SKILL.md`](submissions/production-planning/skills/demand-pull/SKILL.md) |
+| 120 | ✓ | [`submissions/production-planning/skills/schedule-optimize/SKILL.md`](submissions/production-planning/skills/schedule-optimize/SKILL.md) |
+| 121 | ✓ | [`submissions/production-planning/skills/shift-plan-draft/SKILL.md`](submissions/production-planning/skills/shift-plan-draft/SKILL.md) |
+| 122 | ✓ | [`submissions/qr-code-builder/SKILL.md`](submissions/qr-code-builder/SKILL.md) |
+| 123 | ✓ | [`submissions/quality-incident-capa/skills/capa-build/SKILL.md`](submissions/quality-incident-capa/skills/capa-build/SKILL.md) |
+| 124 | ✓ | [`submissions/quality-incident-capa/skills/closure-check/SKILL.md`](submissions/quality-incident-capa/skills/closure-check/SKILL.md) |
+| 125 | ✓ | [`submissions/quality-incident-capa/skills/eightd-draft/SKILL.md`](submissions/quality-incident-capa/skills/eightd-draft/SKILL.md) |
+| 126 | ✓ | [`submissions/quality-incident-capa/skills/ncr-intake/SKILL.md`](submissions/quality-incident-capa/skills/ncr-intake/SKILL.md) |
+| 127 | ✓ | [`submissions/quality-incident-capa/skills/root-cause-analyze/SKILL.md`](submissions/quality-incident-capa/skills/root-cause-analyze/SKILL.md) |
+| 128 | ✓ | [`submissions/quality-inspection/skills/defect-grade/SKILL.md`](submissions/quality-inspection/skills/defect-grade/SKILL.md) |
+| 129 | ✓ | [`submissions/quality-inspection/skills/ncr-draft/SKILL.md`](submissions/quality-inspection/skills/ncr-draft/SKILL.md) |
+| 130 | ✓ | [`submissions/quality-inspection/skills/spec-ingest/SKILL.md`](submissions/quality-inspection/skills/spec-ingest/SKILL.md) |
+| 131 | ✓ | [`submissions/quality-inspection/skills/tolerance-check/SKILL.md`](submissions/quality-inspection/skills/tolerance-check/SKILL.md) |
+| 132 | ✓ | [`submissions/redlining-content/SKILL.md`](submissions/redlining-content/SKILL.md) |
+| 133 | ✓ | [`submissions/regulation-monitor/SKILL.md`](submissions/regulation-monitor/SKILL.md) |
+| 134 | ✓ | [`submissions/retail-execution-perfect-store/skills/action-register/SKILL.md`](submissions/retail-execution-perfect-store/skills/action-register/SKILL.md) |
+| 135 | ✓ | [`submissions/retail-execution-perfect-store/skills/gap-score/SKILL.md`](submissions/retail-execution-perfect-store/skills/gap-score/SKILL.md) |
+| 136 | ✓ | [`submissions/retail-execution-perfect-store/skills/standard-retrieve/SKILL.md`](submissions/retail-execution-perfect-store/skills/standard-retrieve/SKILL.md) |
+| 137 | ✓ | [`submissions/retail-execution-perfect-store/skills/visit-prep/SKILL.md`](submissions/retail-execution-perfect-store/skills/visit-prep/SKILL.md) |
+| 138 | ✓ | [`submissions/retail-execution-perfect-store/skills/visit-report/SKILL.md`](submissions/retail-execution-perfect-store/skills/visit-report/SKILL.md) |
+| 139 | ✓ | [`submissions/returns-refund-case/skills/case-packet/SKILL.md`](submissions/returns-refund-case/skills/case-packet/SKILL.md) |
+| 140 | ✓ | [`submissions/returns-refund-case/skills/eligibility-check/SKILL.md`](submissions/returns-refund-case/skills/eligibility-check/SKILL.md) |
+| 141 | ✓ | [`submissions/returns-refund-case/skills/policy-retrieve/SKILL.md`](submissions/returns-refund-case/skills/policy-retrieve/SKILL.md) |
+| 142 | ✓ | [`submissions/returns-refund-case/skills/reason-classify/SKILL.md`](submissions/returns-refund-case/skills/reason-classify/SKILL.md) |
+| 143 | ✓ | [`submissions/returns-refund-case/skills/return-intake/SKILL.md`](submissions/returns-refund-case/skills/return-intake/SKILL.md) |
+| 144 | ✓ | [`submissions/rich-html-presentation/SKILL.md`](submissions/rich-html-presentation/SKILL.md) |
+| 145 | ✓ | [`submissions/root-cause-analysis/SKILL.md`](submissions/root-cause-analysis/SKILL.md) |
+| 146 | ✓ | [`submissions/route-map-visualizer/SKILL.md`](submissions/route-map-visualizer/SKILL.md) |
+| 147 | ✓ | [`submissions/safety-incident/skills/ehs-knowledge-retrieve/SKILL.md`](submissions/safety-incident/skills/ehs-knowledge-retrieve/SKILL.md) |
+| 148 | ✓ | [`submissions/safety-incident/skills/incident-intake/SKILL.md`](submissions/safety-incident/skills/incident-intake/SKILL.md) |
+| 149 | ✓ | [`submissions/safety-incident/skills/incident-writeup/SKILL.md`](submissions/safety-incident/skills/incident-writeup/SKILL.md) |
+| 150 | ✓ | [`submissions/safety-incident/skills/routing-notify/SKILL.md`](submissions/safety-incident/skills/routing-notify/SKILL.md) |
+| 151 | ✓ | [`submissions/safety-incident/skills/severity-recordability/SKILL.md`](submissions/safety-incident/skills/severity-recordability/SKILL.md) |
+| 152 | ✓ | [`submissions/sap-power-platform-integration-architect/SKILL.md`](submissions/sap-power-platform-integration-architect/SKILL.md) |
+| 153 | ✓ | [`submissions/scrollytelling-data/SKILL.md`](submissions/scrollytelling-data/SKILL.md) |
+| 154 | ✓ | [`submissions/semantic-pdf-image-extractor/SKILL.md`](submissions/semantic-pdf-image-extractor/SKILL.md) |
+| 155 | ✓ | [`submissions/sharepoint-file-creation/SKILL.md`](submissions/sharepoint-file-creation/SKILL.md) |
+| 156 | ✓ | [`submissions/sharepoint-list-formatter/SKILL.md`](submissions/sharepoint-list-formatter/SKILL.md) |
+| 157 | ✓ | [`submissions/sharepoint-list-insight-report-generator/SKILL.md`](submissions/sharepoint-list-insight-report-generator/SKILL.md) |
+| 158 | ✓ | [`submissions/skill-authoring-coach/SKILL.md`](submissions/skill-authoring-coach/SKILL.md) |
+| 159 | ✓ | [`submissions/stoic-negotiator/SKILL.md`](submissions/stoic-negotiator/SKILL.md) |
+| 160 | ✓ | [`submissions/store-associate-assist/skills/answer-draft/SKILL.md`](submissions/store-associate-assist/skills/answer-draft/SKILL.md) |
+| 161 | ✓ | [`submissions/store-associate-assist/skills/policy-retrieve/SKILL.md`](submissions/store-associate-assist/skills/policy-retrieve/SKILL.md) |
+| 162 | ✓ | [`submissions/store-associate-assist/skills/product-compare/SKILL.md`](submissions/store-associate-assist/skills/product-compare/SKILL.md) |
+| 163 | ✓ | [`submissions/store-associate-assist/skills/promo-check/SKILL.md`](submissions/store-associate-assist/skills/promo-check/SKILL.md) |
+| 164 | ✓ | [`submissions/store-associate-assist/skills/question-intake/SKILL.md`](submissions/store-associate-assist/skills/question-intake/SKILL.md) |
+| 165 | ✓ | [`submissions/store-task-promotion-execution/skills/brief-draft/SKILL.md`](submissions/store-task-promotion-execution/skills/brief-draft/SKILL.md) |
+| 166 | ✓ | [`submissions/store-task-promotion-execution/skills/exception-raise/SKILL.md`](submissions/store-task-promotion-execution/skills/exception-raise/SKILL.md) |
+| 167 | ✓ | [`submissions/store-task-promotion-execution/skills/pack-ingest/SKILL.md`](submissions/store-task-promotion-execution/skills/pack-ingest/SKILL.md) |
+| 168 | ✓ | [`submissions/store-task-promotion-execution/skills/readiness-check/SKILL.md`](submissions/store-task-promotion-execution/skills/readiness-check/SKILL.md) |
+| 169 | ✓ | [`submissions/store-task-promotion-execution/skills/store-map/SKILL.md`](submissions/store-task-promotion-execution/skills/store-map/SKILL.md) |
+| 170 | ✓ | [`submissions/study-flashcards/SKILL.md`](submissions/study-flashcards/SKILL.md) |
+| 171 | ✓ | [`submissions/style-analyzer/SKILL.md`](submissions/style-analyzer/SKILL.md) |
+| 172 | ✓ | [`submissions/supplier-disruption/skills/disruption-intake/SKILL.md`](submissions/supplier-disruption/skills/disruption-intake/SKILL.md) |
+| 173 | ✓ | [`submissions/supplier-disruption/skills/disruption-writeup/SKILL.md`](submissions/supplier-disruption/skills/disruption-writeup/SKILL.md) |
+| 174 | ✓ | [`submissions/supplier-disruption/skills/mitigation-recommend/SKILL.md`](submissions/supplier-disruption/skills/mitigation-recommend/SKILL.md) |
+| 175 | ✓ | [`submissions/supplier-disruption/skills/shortage-impact-map/SKILL.md`](submissions/supplier-disruption/skills/shortage-impact-map/SKILL.md) |
+| 176 | ✓ | [`submissions/supplier-disruption/skills/supply-knowledge-retrieve/SKILL.md`](submissions/supplier-disruption/skills/supply-knowledge-retrieve/SKILL.md) |
+| 177 | ✓ | [`submissions/supplier-qualification/skills/avl-compare/SKILL.md`](submissions/supplier-qualification/skills/avl-compare/SKILL.md) |
+| 178 | ✓ | [`submissions/supplier-qualification/skills/dossier-ingest/SKILL.md`](submissions/supplier-qualification/skills/dossier-ingest/SKILL.md) |
+| 179 | ✓ | [`submissions/supplier-qualification/skills/qualification-memo/SKILL.md`](submissions/supplier-qualification/skills/qualification-memo/SKILL.md) |
+| 180 | ✓ | [`submissions/supplier-qualification/skills/risk-score/SKILL.md`](submissions/supplier-qualification/skills/risk-score/SKILL.md) |
+| 181 | ✓ | [`submissions/supplier-vendor-performance/skills/issue-cluster/SKILL.md`](submissions/supplier-vendor-performance/skills/issue-cluster/SKILL.md) |
+| 182 | ✓ | [`submissions/supplier-vendor-performance/skills/record-pull/SKILL.md`](submissions/supplier-vendor-performance/skills/record-pull/SKILL.md) |
+| 183 | ✓ | [`submissions/supplier-vendor-performance/skills/review-pack/SKILL.md`](submissions/supplier-vendor-performance/skills/review-pack/SKILL.md) |
+| 184 | ✓ | [`submissions/supplier-vendor-performance/skills/scorecard-roll/SKILL.md`](submissions/supplier-vendor-performance/skills/scorecard-roll/SKILL.md) |
+| 185 | ✓ | [`submissions/supplier-vendor-performance/skills/term-retrieve/SKILL.md`](submissions/supplier-vendor-performance/skills/term-retrieve/SKILL.md) |
+| 186 | ✓ | [`submissions/template-based-document-generation/SKILL.md`](submissions/template-based-document-generation/SKILL.md) |
+| 187 | ✓ | [`submissions/tool-tracer/SKILL.md`](submissions/tool-tracer/SKILL.md) |
+| 188 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/claim-ingest/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/claim-ingest/SKILL.md) |
+| 189 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/claim-match/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/claim-match/SKILL.md) |
+| 190 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/dispute-packet/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/dispute-packet/SKILL.md) |
+| 191 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/term-retrieve/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/term-retrieve/SKILL.md) |
+| 192 | ✓ | [`submissions/trade-promotion-deduction-recovery/skills/validity-classify/SKILL.md`](submissions/trade-promotion-deduction-recovery/skills/validity-classify/SKILL.md) |
+| 193 | ✓ | [`submissions/travel-cost-estimator/SKILL.md`](submissions/travel-cost-estimator/SKILL.md) |
+| 194 | ✓ | [`submissions/vendor-contract-risk-review/SKILL.md`](submissions/vendor-contract-risk-review/SKILL.md) |
+| 195 | ✓ | [`submissions/wcag-power-platform/SKILL.md`](submissions/wcag-power-platform/SKILL.md) |
+| 196 | ✓ | [`submissions/what-to-use-when/SKILL.md`](submissions/what-to-use-when/SKILL.md) |
+| 197 | ✓ | [`submissions/whiteboard-to-infographic/SKILL.md`](submissions/whiteboard-to-infographic/SKILL.md) |
+| 198 | ✓ | [`submissions/wikipedia-human-style-writing/SKILL.md`](submissions/wikipedia-human-style-writing/SKILL.md) |
+| 199 | ✓ | [`submissions/work-brief/SKILL.md`](submissions/work-brief/SKILL.md) |
+| 200 | ✓ | [`submissions/work-iq-signalboard/SKILL.md`](submissions/work-iq-signalboard/SKILL.md) |
+| 201 | ✓ | [`submissions/work-order-assist/skills/knowledge-retrieve/SKILL.md`](submissions/work-order-assist/skills/knowledge-retrieve/SKILL.md) |
+| 202 | ✓ | [`submissions/work-order-assist/skills/parts-readiness/SKILL.md`](submissions/work-order-assist/skills/parts-readiness/SKILL.md) |
+| 203 | ✓ | [`submissions/work-order-assist/skills/similar-work-rank/SKILL.md`](submissions/work-order-assist/skills/similar-work-rank/SKILL.md) |
+| 204 | ✓ | [`submissions/work-order-assist/skills/wo-intake/SKILL.md`](submissions/work-order-assist/skills/wo-intake/SKILL.md) |
+| 205 | ✓ | [`submissions/work-order-assist/skills/work-order-writeup/SKILL.md`](submissions/work-order-assist/skills/work-order-writeup/SKILL.md) |
 
 ---
 

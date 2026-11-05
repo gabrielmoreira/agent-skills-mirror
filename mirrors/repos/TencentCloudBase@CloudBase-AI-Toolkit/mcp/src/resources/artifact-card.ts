@@ -1,8 +1,9 @@
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ExtendedMcpServer } from "../server.js";
-import { getInstanceLang, t, type Lang, type MessageKey } from "../i18n/index.js";
+import { resolvePanelLang, t, type Lang, type MessageKey } from "../i18n/index.js";
 import { resolveEnvCreditsFallback } from "./env-credits.js";
 import { debug } from "../utils/logger.js";
+import { CREDENTIAL_GUARD_JS } from "./panel-raw-guard.js";
 import {
   readClientCapabilitiesFromServer,
   readMcpClientInfoFromServer,
@@ -23,8 +24,9 @@ import {
  *      全部内联，不引任何 CDN、字体、图片或图表库。
  *   3. **读资源不发请求**：静态兜底值只来自本地（环境 ID / 站点 / 地域），真实状态随**工具结果**
  *      （`ui/notifications/tool-result`）推给面板，逐字段覆盖兜底值。
- *   4. **面板不执行任何动作**：主行动只把一句话交给会话（`ui/message`），
- *      **面板发起的 `tools/call` 恒为 0**（由测试钉住）。
+ *   4. **面板不写云端资源**：主行动只把一句话交给会话（`ui/message`）。唯一的
+ *      `tools/call` 是「提交反馈」失败后重试时调 `prepareFeedback`（拿工单墙地址），
+ *      失败则退回到只给一句话。
  *   5. **只读**：面板不写任何云端资源，也不展示任何密钥类字段。
  *   6. **面向用户，不面向实现**：正文不出现内部枚举 / 字段名 / 工具名；套餐、站点、地域一律走
  *      既有映射（复用 `mcpUiCredits.*` 的标签，见 `mcpUiArtifact.ts` 顶部说明），
@@ -135,7 +137,9 @@ body {
 .logo { width: 20px; height: 20px; flex: 0 0 auto; display: block; }
 .brand-name { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
 .brand-r { font-size: 12px; color: var(--text-2); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
-.brand-alias { max-width: 140px; overflow: hidden; text-overflow: ellipsis; color: var(--text); font-weight: 500; }
+.brand-alias { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--text-2); font-weight: 500; font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .plan-tag { font-size: 12px; color: var(--text-2); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
 .brand-r .icon-btn { width: 24px; height: 24px; }
 @media (prefers-color-scheme: dark) { .logo .lp-brand { fill: #4896FF; } }
@@ -265,6 +269,7 @@ body {
 <script>
 (function () {
   var host = window.parent;
+${CREDENTIAL_GUARD_JS}
   var nextId = 1;
   var pending = {};
   function post(message) { host.postMessage(message, "*"); }
@@ -474,13 +479,15 @@ body {
       }
     }
 
-    // Brand: alias (falling back to the site's human name), plan tag, copy the environment ID.
-    var alias = hasField(payload, "env_alias") && payload.env_alias ? String(payload.env_alias) : "";
+    // Brand: the environment ID sits next to the copy button on every panel. The plan tag stays.
     var envId = hasField(payload, "env_id") ? (payload.env_id ? String(payload.env_id) : "") : FALLBACK.envId;
     current.envId = envId;
     var aliasNode = el("brand-alias");
-    setText(aliasNode, alias || SITE_TEXT);
-    if (aliasNode) { aliasNode.title = envId ? T.envIdLabel + ": " + envId : ""; }
+    setText(aliasNode, envId);
+    if (aliasNode) {
+      aliasNode.hidden = !envId;
+      aliasNode.title = envId ? T.copyEnvId : "";
+    }
     var copyEnv = el("btn-copy-env");
     if (copyEnv) { copyEnv.hidden = !envId; }
     var planLabel = payload && payload.plan ? (T.plan[payload.plan] || "") : "";
@@ -798,7 +805,16 @@ body {
       } else {
         render(null);
       }
-      setText(el("raw-out"), JSON.stringify(data.params, null, 2));
+      if (carriesCredentialBlock(data.params)) {
+        // Credentials never reach the fold: this card explains state, it is not a JSON viewer.
+        var rawPre = el("raw-out");
+        if (rawPre) {
+          setText(rawPre, "");
+          if (rawPre.parentNode) { rawPre.parentNode.hidden = true; }
+        }
+      } else {
+        setText(el("raw-out"), JSON.stringify(data.params, null, 2));
+      }
       reportSize();
       return;
     }
@@ -845,7 +861,7 @@ export function registerArtifactCardResource(server: ExtendedMcpServer): void {
     },
     async (uri) => {
       const startedAt = Date.now();
-      const lang = getInstanceLang();
+      const lang = resolvePanelLang();
       let success = true;
       let errorMessage: string | undefined;
       let bytes = 0;

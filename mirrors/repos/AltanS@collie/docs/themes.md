@@ -37,25 +37,27 @@ light on the left and dark on the right.
 
   ![The Harbour theme on the Dashboard, light and dark.](images/themes/harbour-home.png)
 
+- **Collie New** is the Collie look made bolder and easier to read. It keeps the black and white of the dog mark, with the Atkinson Hyperlegible face for the text and Aldrich for the titles, stronger text and lines, bold headings and a clear step between the page, the cards and the bars. The terminal draws a high-contrast Collie palette.
+
 The table lists every word each theme uses. The first word of each list is today's look: `sharp`, `default`,
 `flat`, `page`, `rules` and `caps`. The words are explained under [Shape](#shape), [Look](#look)
 and [Terminal palette](#terminal-palette).
 
-| | Collie | Nightwatch | Daylight | Harbour |
-| --- | --- | --- | --- | --- |
-| Typeface | Aldrich | IBM Plex Sans | Geist | Atkinson Hyperlegible Next |
-| Display face | the typeface | IBM Plex Sans | Atkinson Hyperlegible Next | Space Grotesk |
-| Radius | `sharp` | `sharp` | `round` | `soft` |
-| Shadow | `default` | `flat` | `lifted` | `lifted` |
-| Density | `default` | `default` | `roomy` | `default` |
-| Weight | `default` | `bold` | `default` | `default` |
-| Border | `default` | `strong` | `default` | `default` |
-| Ground | `flat` | `flat` | `gradient` | `grain` |
-| Chrome | `page` | `band` | `page` | `page` |
-| Rows | `rules` | `rules` | `cards` | `rules` |
-| Icons | `default` | `heavy` | `default` | `thin` |
-| Labels | `caps` | `caps` | `sentence` | `caps` |
-| Terminal palette | the app's own | amber, on `#000000` | vivid, on `#1a1612` | Solarized-based, on `#0a1216` |
+| | Collie | Nightwatch | Daylight | Harbour | Collie New |
+| --- | --- | --- | --- | --- | --- |
+| Typeface | Aldrich | IBM Plex Sans | Geist | Atkinson Hyperlegible Next | Atkinson Hyperlegible Next |
+| Display face | the typeface | IBM Plex Sans | Atkinson Hyperlegible Next | Space Grotesk | Aldrich |
+| Radius | `sharp` | `sharp` | `round` | `soft` | `sharp` |
+| Shadow | `default` | `flat` | `lifted` | `lifted` | `flat` |
+| Density | `default` | `default` | `roomy` | `default` | `default` |
+| Weight | `default` | `bold` | `default` | `default` | `bold` |
+| Border | `default` | `strong` | `default` | `default` | `default` |
+| Ground | `flat` | `flat` | `gradient` | `grain` | `flat` |
+| Chrome | `page` | `band` | `page` | `page` | `band` |
+| Rows | `rules` | `rules` | `cards` | `rules` | `rules` |
+| Icons | `default` | `heavy` | `default` | `thin` | `default` |
+| Labels | `caps` | `caps` | `sentence` | `caps` | `sentence` |
+| Terminal palette | the app's own | amber, on `#000000` | vivid, on `#1a1612` | Solarized-based, on `#0a1216` | high contrast, on `#100f0d` |
 
 ## Pick a theme
 
@@ -143,7 +145,7 @@ the other parts. A floor is a contrast ratio, so a higher number is easier to re
 Pick the theme, then tap **Export**. Collie saves `<id>.collie-theme.json`. A browser that cannot save a
 file shows the text in a sheet, with a copy button. To make your own theme from a shipped one:
 
-1. Export Nightwatch, Daylight, Harbour or Collie.
+1. Export Nightwatch, Daylight, Harbour, Collie New or Collie.
 2. Change `id` and `name`. An id of a shipped theme is refused.
 3. Edit the colours and the words, and delete any token you do not want to change.
 4. Send the file to your phone, then import it.
@@ -224,7 +226,7 @@ Each half takes any of these, in four groups.
 
 | Token | Meaning |
 | --- | --- |
-| **Surfaces and inks** | |
+| **Surfaces and inks** |
 | `background` `card` `chrome` | The page, a raised panel, and the header and bars. |
 | `foreground` `card-foreground` | Text on the page, and text on a card. |
 | `primary` `primary-foreground` | The main button, and the text on it. |
@@ -234,17 +236,17 @@ Each half takes any of these, in four groups.
 | `control-on` `control-on-foreground` | A switch or a segment that is on, and its text. |
 | `destructive` `destructive-foreground` | The delete button, and its text. |
 | `border` `input` `rule` `ring` | The edge of a box, the edge of a field, a thin line between rows, the focus ring. |
-| **Status** | |
+| **Status** |
 | `status-blocked` | An agent waits on you. |
 | `status-working` | An agent is working. |
 | `status-done` | An agent is done. |
 | `status-idle` | An agent is at rest. |
 | `status-unknown` | Collie cannot tell. |
 | `status-info` | A note, not a state. |
-| **Syntax** | |
+| **Syntax** |
 | `syntax-keyword` `syntax-string` `syntax-constant` | Keywords, strings, and numbers or constants in code and diffs. |
 | `syntax-property` `syntax-entity` `syntax-comment` | Property names, types and function names, and comments. |
-| **Host** | |
+| **Host** |
 | `host-0` `host-1` `host-2` `host-3` `host-4` `host-5` `host-6` `host-7` `host-8` `host-9` | The ten colours that tell your machines apart. |
 
 ### The optional token
@@ -292,7 +294,7 @@ square control a stadium. The first word of each list is the look the app had be
 
 ## Look
 
-Five more keys of the `surface` block and one font key set the look of the page. They follow the same rule
+Six more keys of the `surface` block and one font key set the look of the page. They follow the same rule
 of closed words.
 
 | Key | Word | What it does |
@@ -309,6 +311,8 @@ of closed words.
 | | `heavy` | Icon lines of 2.5. |
 | `labels` | `caps` | Small section labels in capitals with a little spacing. The default. |
 | | `sentence` | The same labels as they are typed. |
+| `zoom` | `screen` | The Zoom pill on the belt shows in the Screen view, never in Chat. The default. |
+| | `none` | The Zoom pill never shows. |
 
 `fonts.display` names one of the six typefaces for page titles and the name in the header. A theme that
 names none draws its titles in the typeface, as before. Collie fetches a display face only when the theme
@@ -323,6 +327,8 @@ names it.
 - **The status bar follows a band.** Under `chrome: band` the browser's status bar takes the band colour, and
   under `page` it takes the page colour.
 - **`rows` reaches every list group.** That includes the list inside the Settings index.
+- **`zoom` sets no style.** It decides whether the belt carries the Zoom pill. The **Zoom pill** setting in
+  Settings, under Appearance, wins over it once you have chosen there.
 
 ## Terminal palette
 

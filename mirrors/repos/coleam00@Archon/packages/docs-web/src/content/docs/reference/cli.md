@@ -1326,11 +1326,13 @@ this host:
   above apply here too; inspect warnings before reusing or removing the checkout.
   Abandon retains owned checkouts
   when owner-stop warnings report held output or possible leftovers, including
-  descendant checkouts and their root. Warnings learned after cancellation during
-  descendant cleanup or conversation reset are appended to that run as `workflow_cleanup_warning` events.
-  If writing a warning event fails, cleanup continues and the command reports the
-  persistence failure with the cleanup warnings. Keep that command result: those
-  warnings may be missing from the run history.
+  descendant checkouts and their root. Owner-check warnings learned after cancellation
+  during descendant cleanup or conversation reset are appended to that run as
+  `workflow_cleanup_warning` events. If writing a warning event fails, cleanup continues
+  and the command reports the persistence failure with the cleanup warnings.
+  Verification-image inventory warnings are returned in the immediate result only;
+  they are not saved as cleanup events. Keep that result for recovery guidance and
+  any warnings missing from the run history.
 - **No owner answers:** abandon records `cancelled` and prints what the run recorded:
   the host and pid of the process that last executed it, and its last activity. If that
   host is not this one, or the owner ran as another user on this host, it says so:
@@ -1590,7 +1592,9 @@ environments remain. The error lists their environment IDs and the cleanup comma
 Clean them up explicitly, then retry deletion.
 
 Cleanup continues after individual errors and exits with status `1` if any removal fails;
-protected skips exit with status `0`.
+protected skips exit with status `0`. After container teardown, cleanup attempts image
+release for every associated run. Image lookup/removal failures count as errors even when
+the container was successfully removed.
 
 Age cleanup uses the originating platform's registered policy.
 Both the CLI and server read chat policies from installed plugin receipts without starting
@@ -1915,6 +1919,17 @@ archon project list --json   # { "projects": [ { ...project row, "key" } ] }
 
 `key` is the value `workflow attention --project` and `archon state --project` accept. The list is read-only; register and remove projects through the Web UI or chat.
 
+### `project config`
+
+`archon project config <id|name>` shows one registered project's merged config: defaults, `~/.archon/config.yaml` and the project's own `.archon/config.yaml`, in that order of precedence. It prints the view `GET /api/codebases/{id}/config` serves, plus a `project` field with the matched project's ID and name. Secrets are removed: assistant settings are limited to their safe fields, paths are left out, and `envKeys` lists the keys of the project's `env:` block without their values. The command writes no config file, not even a missing `~/.archon/config.yaml`, and needs no server. Like every CLI command, it opens the project store, so on a fresh install it creates `~/.archon/archon.db`.
+
+```bash
+archon project config acme/widget          # YAML
+archon project config <project-id> --json  # { "project": { "id", "name" }, "config": { ... }, "envKeys": [ ... ] }
+```
+
+The project is matched by ID, then by exact name; a name shared by several projects is refused with their IDs. An unknown project, an ambiguous name and an invalid config file exit 1.
+
 ### state
 
 Durable, audited JSON documents. A document lives in a project or in install scope.
@@ -1997,6 +2012,7 @@ archon metrics factory.prs_merged --since 2026-10-01 --until 2026-10-22 --json
 archon metrics sdlc.tests_unprotective --subject https://github.com/acme/widgets/pull/12
 archon metrics --project acme/widgets
 archon metrics sdlc.pr_merge_rate --since 60d --compare 2026-10-15T09:30:00Z
+archon metrics sdlc.pr_merge_rate --since 60d --by-model ship__deliver__rounds.review__code
 ```
 
 The window is `[--since, --until)`. `--until` defaults to now and takes an ISO date or a
@@ -2006,17 +2022,23 @@ records about one subject. `--project <id|name|key>` keeps records from one regi
 codebase. A name's definition is install-wide either way: a record another codebase
 stored first still fixes it. `--compare <ISO>` takes an ISO date or a time with an offset
 and splits each instrument's records by when their producing runs started: before the cut,
-or at or after it.
+or at or after it. `--by-model <node>` splits them instead by the model label that ran
+`<node>` in their producing runs and the runs below them. The two cannot be combined.
 
 Text output prints one line per metric for its newest instrument: name, kind and unit,
 `value` (the sum for a `count`, the mean for a `score`), `n`, the 95% interval for a score
-of at least two records, and the latest record. An indented line gives the cost and tokens
-of the producing runs, with how many runs recorded no cost, no tokens or no longer exist.
-Other instruments follow with the same lines, indented further. With `--compare`, each
+of at least two records, the latest record, and the instrument with the models that ran its
+`instrument_node`, such as `[judge-v1 on claude/claude-opus-5-5@high]`. An indented line
+gives the cost and tokens of the producing runs, with how many runs recorded no cost, no
+tokens, only partial cost, or no longer exist. Other instruments follow with the same
+lines, indented further. With `--compare`, each
 entry adds the `before` and `after` cohorts with their value, `n` and interval, the delta
 with its 95% interval, whether that interval excludes zero (`separated`), and how many
 records were `straddling` the cut or `unattributed`, and the output ends with a line that
-the comparison is observational. `--json` prints one `MetricsReport` document, the same
+the comparison is observational. With `--by-model`, each entry adds one line per model label,
+then `(mixed)` and `(none)`, with its value, `n`, interval, its difference from the other
+model labels combined (`vs rest`, with its interval and `separated`), the requested models
+it merges, and its cost, and the output ends with a line that the split is observational. `--json` prints one `MetricsReport` document, the same
 shape `GET /api/metrics` returns, with names and instruments in sorted order.
 
 A record that conflicts with its name's first definition is left out and reported on
@@ -2024,7 +2046,11 @@ stderr as `error: metric <name> is <definition>; run <id> node <node> offered
 <definition>`, where each `<definition>` is `<kind>/<unit>`, followed by
 ` calibrates <metric>` for a score that calibrates another metric. A stored output the record schema rejects is reported the same way when
 no name is given. Exit codes: `0` success, `1` usage (including a malformed window or
-`--compare`), `4` the report refused a record.
+`--compare`, an empty `--by-model`, or `--compare` with `--by-model`), `2` the window has existing producing runs and
+none ran the `--by-model` node, with the AI node ids they did run (at most 50) on stderr
+(with no existing producing run the node is not checked and the query exits `0`: a window
+with no records reports none, and records whose runs were all deleted are `unattributed`), `4` the report refused a
+record.
 
 ### `chat <message>`
 

@@ -36,7 +36,7 @@ hooks:
         - type: command
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-de/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
-  version: "3.27.0"
+  version: "3.28.0"
 ---
 
 # Dateiplanungssystem
@@ -250,6 +250,8 @@ Für Agenten: Ergänze beim Auflisten `--json` (PowerShell: `-Json`), um Dateipf
 Um eine Aufgabe vor dem Fortsetzen zu finden, führe `sh "<skill-dir>/scripts/set-active-plan.sh" --list` aus, unter Windows PowerShell `& "<skill-dir>/scripts/set-active-plan.ps1" -List`. Ersetze `<skill-dir>` durch das Installationsverzeichnis dieses Skills und bleibe im Projektstamm als aktuellem Arbeitsverzeichnis.
 
 Der Befehl liest nur und zeigt benannte Pläne samt Phasenfortschritt unter `.planning/` im aktuellen Arbeitsverzeichnis. `[active]` kennzeichnet den gemeinsamen Standardzeiger; er bindet keine Sitzung an einen Plan. Parallele Aufgaben benötigen weiterhin eine eigene `PLAN_ID` pro Host oder getrennte Worktrees.
+
+Melden die Hooks, dass mehrere Pläne verfügbar sind, oder sind alle Phasen eines benannten Plans abgeschlossen, führe den Auflistungsbefehl aus und nenne dem Benutzer die Pläne, die fertig wirken. Archiviere nur Pläne, die der Benutzer freigibt: `--archive <id>` (PowerShell: `-Archive <id>`) zeigt die Verschiebung nach `.planning/.archive/` als Vorschau, `--yes` (`-Yes`) führt sie aus und `--restore <id>` (`-Restore <id>`) holt den Plan zurück. Archiviere nie allein wegen Alter oder Abschlussstatus.
 
 ## Sicherheitsgrenzen
 

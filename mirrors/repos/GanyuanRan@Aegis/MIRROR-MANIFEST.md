@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 54 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 54 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,54 +65,55 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`skills/anti-entropy-governance/SKILL.md`](skills/anti-entropy-governance/SKILL.md) |
 | 6 | ✓ | [`skills/brainstorming/expanded-design-guidance.md`](skills/brainstorming/expanded-design-guidance.md) |
-| 7 | ✓ | [`skills/brainstorming/SKILL.md`](skills/brainstorming/SKILL.md) |
-| 8 | ✓ | [`skills/brainstorming/spec-document-reviewer-prompt.md`](skills/brainstorming/spec-document-reviewer-prompt.md) |
-| 9 | ✓ | [`skills/communicating-concisely/SKILL.md`](skills/communicating-concisely/SKILL.md) |
-| 10 | ✓ | [`skills/dispatching-parallel-agents/SKILL.md`](skills/dispatching-parallel-agents/SKILL.md) |
-| 11 | ✓ | [`skills/establishing-project-context/CONTEXT-FORMAT.md`](skills/establishing-project-context/CONTEXT-FORMAT.md) |
-| 12 | ✓ | [`skills/establishing-project-context/SKILL.md`](skills/establishing-project-context/SKILL.md) |
-| 13 | ✓ | [`skills/executing-plans/SKILL.md`](skills/executing-plans/SKILL.md) |
-| 14 | ✓ | [`skills/finishing-a-development-branch/SKILL.md`](skills/finishing-a-development-branch/SKILL.md) |
-| 15 | ✓ | [`skills/first-principles-review/SKILL.md`](skills/first-principles-review/SKILL.md) |
-| 16 | ✓ | [`skills/goal-framing/SKILL.md`](skills/goal-framing/SKILL.md) |
-| 17 | ✓ | [`skills/long-task-continuation/durable-work-guidance.md`](skills/long-task-continuation/durable-work-guidance.md) |
-| 18 | ✓ | [`skills/long-task-continuation/SKILL.md`](skills/long-task-continuation/SKILL.md) |
-| 19 | ✓ | [`skills/receiving-code-review/SKILL.md`](skills/receiving-code-review/SKILL.md) |
-| 20 | ✓ | [`skills/recording-architecture-decisions/SKILL.md`](skills/recording-architecture-decisions/SKILL.md) |
-| 21 | ✓ | [`skills/requesting-code-review/code-reviewer.md`](skills/requesting-code-review/code-reviewer.md) |
-| 22 | ✓ | [`skills/requesting-code-review/SKILL.md`](skills/requesting-code-review/SKILL.md) |
-| 23 | ✓ | [`skills/subagent-driven-development/code-quality-reviewer-prompt.md`](skills/subagent-driven-development/code-quality-reviewer-prompt.md) |
-| 24 | ✓ | [`skills/subagent-driven-development/implementer-prompt.md`](skills/subagent-driven-development/implementer-prompt.md) |
-| 25 | ✓ | [`skills/subagent-driven-development/SKILL.md`](skills/subagent-driven-development/SKILL.md) |
-| 26 | ✓ | [`skills/subagent-driven-development/spec-reviewer-prompt.md`](skills/subagent-driven-development/spec-reviewer-prompt.md) |
-| 27 | ✓ | [`skills/systematic-debugging/advanced-debugging-governance.md`](skills/systematic-debugging/advanced-debugging-governance.md) |
-| 28 | ✓ | [`skills/systematic-debugging/condition-based-waiting-example.ts`](skills/systematic-debugging/condition-based-waiting-example.ts) |
-| 29 | ✓ | [`skills/systematic-debugging/condition-based-waiting.md`](skills/systematic-debugging/condition-based-waiting.md) |
-| 30 | ✓ | [`skills/systematic-debugging/defense-in-depth.md`](skills/systematic-debugging/defense-in-depth.md) |
-| 31 | ✓ | [`skills/systematic-debugging/feedback-loop-construction.md`](skills/systematic-debugging/feedback-loop-construction.md) |
-| 32 | ✓ | [`skills/systematic-debugging/find-polluter.sh`](skills/systematic-debugging/find-polluter.sh) |
-| 33 | ✓ | [`skills/systematic-debugging/root-cause-claim-contract.md`](skills/systematic-debugging/root-cause-claim-contract.md) |
-| 34 | ✓ | [`skills/systematic-debugging/root-cause-tracing.md`](skills/systematic-debugging/root-cause-tracing.md) |
-| 35 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
-| 36 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 37 | ✓ | [`skills/ui-ux-governance/references/experience-rules.md`](skills/ui-ux-governance/references/experience-rules.md) |
-| 38 | ✓ | [`skills/ui-ux-governance/references/verification.md`](skills/ui-ux-governance/references/verification.md) |
-| 39 | ✓ | [`skills/ui-ux-governance/SKILL.md`](skills/ui-ux-governance/SKILL.md) |
-| 40 | ✓ | [`skills/update-aegis/SKILL.md`](skills/update-aegis/SKILL.md) |
-| 41 | ✓ | [`skills/using-aegis/references/antigravity-tools.md`](skills/using-aegis/references/antigravity-tools.md) |
-| 42 | ✓ | [`skills/using-aegis/references/codex-tools.md`](skills/using-aegis/references/codex-tools.md) |
-| 43 | ✓ | [`skills/using-aegis/references/complexity-governance.md`](skills/using-aegis/references/complexity-governance.md) |
-| 44 | ✓ | [`skills/using-aegis/references/copilot-tools.md`](skills/using-aegis/references/copilot-tools.md) |
-| 45 | ✓ | [`skills/using-aegis/references/skill-discipline.md`](skills/using-aegis/references/skill-discipline.md) |
-| 46 | ✓ | [`skills/using-aegis/SKILL.md`](skills/using-aegis/SKILL.md) |
-| 47 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
-| 48 | ✓ | [`skills/verification-before-completion/expanded-closeout.md`](skills/verification-before-completion/expanded-closeout.md) |
-| 49 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
-| 50 | ✓ | [`skills/writing-plans/expanded-planning-guidance.md`](skills/writing-plans/expanded-planning-guidance.md) |
-| 51 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
-| 52 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
-| 53 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 54 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 7 | ✓ | [`skills/brainstorming/grilling-mode-reference.md`](skills/brainstorming/grilling-mode-reference.md) |
+| 8 | ✓ | [`skills/brainstorming/SKILL.md`](skills/brainstorming/SKILL.md) |
+| 9 | ✓ | [`skills/brainstorming/spec-document-reviewer-prompt.md`](skills/brainstorming/spec-document-reviewer-prompt.md) |
+| 10 | ✓ | [`skills/communicating-concisely/SKILL.md`](skills/communicating-concisely/SKILL.md) |
+| 11 | ✓ | [`skills/dispatching-parallel-agents/SKILL.md`](skills/dispatching-parallel-agents/SKILL.md) |
+| 12 | ✓ | [`skills/establishing-project-context/CONTEXT-FORMAT.md`](skills/establishing-project-context/CONTEXT-FORMAT.md) |
+| 13 | ✓ | [`skills/establishing-project-context/SKILL.md`](skills/establishing-project-context/SKILL.md) |
+| 14 | ✓ | [`skills/executing-plans/SKILL.md`](skills/executing-plans/SKILL.md) |
+| 15 | ✓ | [`skills/finishing-a-development-branch/SKILL.md`](skills/finishing-a-development-branch/SKILL.md) |
+| 16 | ✓ | [`skills/first-principles-review/SKILL.md`](skills/first-principles-review/SKILL.md) |
+| 17 | ✓ | [`skills/goal-framing/SKILL.md`](skills/goal-framing/SKILL.md) |
+| 18 | ✓ | [`skills/long-task-continuation/durable-work-guidance.md`](skills/long-task-continuation/durable-work-guidance.md) |
+| 19 | ✓ | [`skills/long-task-continuation/SKILL.md`](skills/long-task-continuation/SKILL.md) |
+| 20 | ✓ | [`skills/receiving-code-review/SKILL.md`](skills/receiving-code-review/SKILL.md) |
+| 21 | ✓ | [`skills/recording-architecture-decisions/SKILL.md`](skills/recording-architecture-decisions/SKILL.md) |
+| 22 | ✓ | [`skills/requesting-code-review/code-reviewer.md`](skills/requesting-code-review/code-reviewer.md) |
+| 23 | ✓ | [`skills/requesting-code-review/SKILL.md`](skills/requesting-code-review/SKILL.md) |
+| 24 | ✓ | [`skills/subagent-driven-development/code-quality-reviewer-prompt.md`](skills/subagent-driven-development/code-quality-reviewer-prompt.md) |
+| 25 | ✓ | [`skills/subagent-driven-development/implementer-prompt.md`](skills/subagent-driven-development/implementer-prompt.md) |
+| 26 | ✓ | [`skills/subagent-driven-development/SKILL.md`](skills/subagent-driven-development/SKILL.md) |
+| 27 | ✓ | [`skills/subagent-driven-development/spec-reviewer-prompt.md`](skills/subagent-driven-development/spec-reviewer-prompt.md) |
+| 28 | ✓ | [`skills/systematic-debugging/advanced-debugging-governance.md`](skills/systematic-debugging/advanced-debugging-governance.md) |
+| 29 | ✓ | [`skills/systematic-debugging/condition-based-waiting-example.ts`](skills/systematic-debugging/condition-based-waiting-example.ts) |
+| 30 | ✓ | [`skills/systematic-debugging/condition-based-waiting.md`](skills/systematic-debugging/condition-based-waiting.md) |
+| 31 | ✓ | [`skills/systematic-debugging/defense-in-depth.md`](skills/systematic-debugging/defense-in-depth.md) |
+| 32 | ✓ | [`skills/systematic-debugging/feedback-loop-construction.md`](skills/systematic-debugging/feedback-loop-construction.md) |
+| 33 | ✓ | [`skills/systematic-debugging/find-polluter.sh`](skills/systematic-debugging/find-polluter.sh) |
+| 34 | ✓ | [`skills/systematic-debugging/root-cause-claim-contract.md`](skills/systematic-debugging/root-cause-claim-contract.md) |
+| 35 | ✓ | [`skills/systematic-debugging/root-cause-tracing.md`](skills/systematic-debugging/root-cause-tracing.md) |
+| 36 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
+| 37 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 38 | ✓ | [`skills/ui-ux-governance/references/experience-rules.md`](skills/ui-ux-governance/references/experience-rules.md) |
+| 39 | ✓ | [`skills/ui-ux-governance/references/verification.md`](skills/ui-ux-governance/references/verification.md) |
+| 40 | ✓ | [`skills/ui-ux-governance/SKILL.md`](skills/ui-ux-governance/SKILL.md) |
+| 41 | ✓ | [`skills/update-aegis/SKILL.md`](skills/update-aegis/SKILL.md) |
+| 42 | ✓ | [`skills/using-aegis/references/antigravity-tools.md`](skills/using-aegis/references/antigravity-tools.md) |
+| 43 | ✓ | [`skills/using-aegis/references/codex-tools.md`](skills/using-aegis/references/codex-tools.md) |
+| 44 | ✓ | [`skills/using-aegis/references/complexity-governance.md`](skills/using-aegis/references/complexity-governance.md) |
+| 45 | ✓ | [`skills/using-aegis/references/copilot-tools.md`](skills/using-aegis/references/copilot-tools.md) |
+| 46 | ✓ | [`skills/using-aegis/references/skill-discipline.md`](skills/using-aegis/references/skill-discipline.md) |
+| 47 | ✓ | [`skills/using-aegis/SKILL.md`](skills/using-aegis/SKILL.md) |
+| 48 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
+| 49 | ✓ | [`skills/verification-before-completion/expanded-closeout.md`](skills/verification-before-completion/expanded-closeout.md) |
+| 50 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
+| 51 | ✓ | [`skills/writing-plans/expanded-planning-guidance.md`](skills/writing-plans/expanded-planning-guidance.md) |
+| 52 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
+| 53 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
+| 54 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 55 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

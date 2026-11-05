@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
+Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 123 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 122 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 122 |
+| Files         | 123 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -176,11 +176,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 115 | ✓ | [`plugins/dotnet-winforms/skills/winforms-expert/SKILL.md`](plugins/dotnet-winforms/skills/winforms-expert/SKILL.md) |
 | 116 | ✓ | [`plugins/dotnet/skills/csharp-expert/SKILL.md`](plugins/dotnet/skills/csharp-expert/SKILL.md) |
 | 117 | ✓ | [`plugins/dotnet/skills/csharp-refactoring/SKILL.md`](plugins/dotnet/skills/csharp-refactoring/SKILL.md) |
-| 118 | ✓ | [`plugins/dotnet/skills/msbuild/SKILL.md`](plugins/dotnet/skills/msbuild/SKILL.md) |
-| 119 | ✓ | [`plugins/dotnet/skills/setup-local-sdk/SKILL.md`](plugins/dotnet/skills/setup-local-sdk/SKILL.md) |
-| 120 | ✓ | [`plugins/dotnet11/skills/process-api-net11/SKILL.md`](plugins/dotnet11/skills/process-api-net11/SKILL.md) |
-| 121 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
-| 122 | ✓ | [`tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md`](tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md) |
+| 118 | ✓ | [`plugins/dotnet/skills/dotnet-breaking-changes/SKILL.md`](plugins/dotnet/skills/dotnet-breaking-changes/SKILL.md) |
+| 119 | ✓ | [`plugins/dotnet/skills/msbuild/SKILL.md`](plugins/dotnet/skills/msbuild/SKILL.md) |
+| 120 | ✓ | [`plugins/dotnet/skills/setup-local-sdk/SKILL.md`](plugins/dotnet/skills/setup-local-sdk/SKILL.md) |
+| 121 | ✓ | [`plugins/dotnet11/skills/process-api-net11/SKILL.md`](plugins/dotnet11/skills/process-api-net11/SKILL.md) |
+| 122 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
+| 123 | ✓ | [`tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md`](tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md) |
 
 ---
 

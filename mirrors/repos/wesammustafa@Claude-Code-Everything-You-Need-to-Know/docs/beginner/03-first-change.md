@@ -1,6 +1,6 @@
 # Your first change, from request to commit
 
-<sub>**Beginner** · Lesson 3 of 5 · about 20 minutes · Needs: [Permission modes and plan mode](02-permission-modes-and-plan-mode.md) · Verified against Claude Code v2.1.308 (stable) on 2026-10-25</sub>
+<sub>**Beginner** · Lesson 3 of 5 · about 20 minutes · Needs: [Permission modes and plan mode](02-permission-modes-and-plan-mode.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
 
 ## Goal
 
@@ -49,7 +49,7 @@ The practice app checks Markdown links, but it skips any link with a title, such
 3. While Claude works, or once it's done, ask a side question:
 
    ```text
-   /btw in one sentence, why does the current pattern skip a link with a title?
+   /btw in one sentence, why does the original pattern skip a link with a title?
    ```
 
    Claude answers in an overlay, from what the session has already read, without tools and without interrupting the work. The question and answer never enter the conversation, so they don't steer Claude. Press `Space`, `Enter` or `Esc` to close it ([Interactive mode](https://code.claude.com/docs/en/interactive-mode#side-questions-with-%2Fbtw)). To change what Claude does, send a normal message instead.

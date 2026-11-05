@@ -4,12 +4,12 @@
 
 聚焦 GitHub、浏览器自动化、CI 排障、Playwright 与工程协作自动化。
 
-当前分类共 **13** 个技能。
+当前分类共 **12** 个技能。
 
 ## 推荐先看
 
 - [jupyter-notebook](./jupyter-notebook/) - 创建和维护用于分析、实验及教学的 Jupyter 笔记本。
-- [playwright](./playwright/) - 用于使用 Playwright 编写、运行和调试端到端测试。
+- [playwright](./playwright/) - 需要在终端用 playwright-cli 自动化真实浏览器时使用：页面导航、表单填写、快照截图、数据提取和界面流程调试。
 - [gh-address-comments](./gh-address-comments/) - 用于通过 gh CLI 处理当前分支的 GitHub PR Review 评论或 Issue 评论。
 - [gh-fix-ci](./gh-fix-ci/) - 读取 GitHub Actions 失败日志，修复 CI 并验证 PR 检查。
 
@@ -21,12 +21,11 @@
 | `billing-automation` | 用于构建订阅计费、自动开票、续费生命周期和催收管理流程。 | [目录](./billing-automation/) | [SKILL.md](./billing-automation/SKILL.md) |
 | `gh-address-comments` | 用于通过 gh CLI 处理当前分支的 GitHub PR Review 评论或 Issue 评论。 | [目录](./gh-address-comments/) | [SKILL.md](./gh-address-comments/SKILL.md) |
 | `gh-fix-ci` | 读取 GitHub Actions 失败日志，修复 CI 并验证 PR 检查。 | [目录](./gh-fix-ci/) | [SKILL.md](./gh-fix-ci/SKILL.md) |
-| `github` | 用于通过 GitHub CLI 自动化 Issue、PR、Review、CI 检查、标签和发布协作。 | [目录](./github/) | [SKILL.md](./github/SKILL.md) |
-| `guardian` | 提交、分支、合并请求策略和变更粒度把关。 | [目录](./guardian/) | [SKILL.md](./guardian/SKILL.md) |
+| `guardian` | 整理提交或评审合并请求时使用：变更分类、PR 质量与风险评分、分支策略和合并把关。 | [目录](./guardian/) | [SKILL.md](./guardian/SKILL.md) |
 | `harvest` | 采集合并请求信息并生成工作报告和发布材料。 | [目录](./harvest/) | [SKILL.md](./harvest/SKILL.md) |
 | `jupyter-notebook` | 创建和维护用于分析、实验及教学的 Jupyter 笔记本。 | [目录](./jupyter-notebook/) | [SKILL.md](./jupyter-notebook/SKILL.md) |
 | `latch` | 配置和维护生命周期钩子、质量门禁和自动化守卫。 | [目录](./latch/) | [SKILL.md](./latch/SKILL.md) |
-| `playwright` | 用于使用 Playwright 编写、运行和调试端到端测试。 | [目录](./playwright/) | [SKILL.md](./playwright/SKILL.md) |
+| `playwright` | 需要在终端用 playwright-cli 自动化真实浏览器时使用：页面导航、表单填写、快照截图、数据提取和界面流程调试。 | [目录](./playwright/) | [SKILL.md](./playwright/SKILL.md) |
 | `playwright-pro` | 用于高级 Playwright 测试、诊断、稳定性和浏览器自动化。 | [目录](./playwright-pro/) | [SKILL.md](./playwright-pro/SKILL.md) |
 | `web-scraper` | 用于网页抓取、结构化数据提取、爬取策略、选择器设计和增量更新。 | [目录](./web-scraper/) | [SKILL.md](./web-scraper/SKILL.md) |
 | `yeet` | 按用户要求暂存、提交、推送改动并创建 GitHub PR。 | [目录](./yeet/) | [SKILL.md](./yeet/SKILL.md) |

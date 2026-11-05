@@ -357,8 +357,12 @@ graph TD
   (`web/src/lib/operator-scope.ts`). Their **launcher rows**, from `launchers.toml`
   (`bridge/operator-launchers.ts`), share the reader but NOT `/api/config`: a launcher row creates
   its own pane rather than addressing an existing one, so it carries no scope, and its rows ride
-  their own session-scoped `GET /api/launchers` instead — rows must come from the host that runs
-  them, which a lead-only `/api/config` field cannot say in a crew (CREW_PROTOCOL.md §5).
+  their own session-scoped `GET /api/launchers` instead. The lead's merged rows are the crew's
+  ([ADR 0127](./.adr/0127-the-leads-launcher-rows-are-the-crews-rows.md)): the lead offers them for
+  every host and each row is checked on the host that runs it (`not_found`, `no_folder`). A launch
+  of a lead row on a member carries the row over the crew link (`row`), which a member accepts only
+  from its lead; adds are answered on the lead; the deputy keeps a read-only copy
+  (CREW_PROTOCOL.md §5, §18.14).
 
 - **UI strings are translated by a typed dictionary, not a library** (`web/src/lib/i18n/`, six
   locales, English the compile-time source of truth) — `t()`/`tn()` plus the `useLocale()` hook
@@ -439,8 +443,9 @@ door (tailnet-only by default; one per **crew** — §2.1). These four are genui
   (`default-src 'self'`), so an escaping miss can't run injected script that calls back into the
   socket.
 - **A same-origin gate on every API request** — accepted only when the browser's `Origin` host equals
-  the `Host` header the bridge receives (loopback always allowed), so a page on any other tailnet
-  device can't CSRF the bridge. With a plain `tailscale serve` on the MagicDNS name these match
+  the `Host` header the bridge receives, so a page on any other tailnet device, or on another
+  loopback port, can't CSRF the bridge. A loopback `Origin` gets no exemption: it passes only when it
+  names the bridge's own host and port, or is listed in `COLLIE_ALLOWED_ORIGINS`. With a plain `tailscale serve` on the MagicDNS name these match
   automatically (no config). When Collie is fronted by a *different* public hostname or an extra
   reverse proxy / TLS terminator (custom domain, load balancer, Headscale + upstream TLS, or a
   reverse-proxy front door — [docs/deployment.md → Variant C](./docs/deployment.md#variant-c--reverse-proxy-as-the-only-front-door-no-tailscale)),

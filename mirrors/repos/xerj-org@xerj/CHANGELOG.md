@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opt-in hub answer evidence receipts (Refs #1789, #1786): Rust callers can
+  bind exact UTF-8 excerpts to pinned source bytes and export SHA-256/JCS
+  trace reports. MCP ask/def accepts trace identities through `evidence`;
+  unavailable source bytes or calibration explicitly abstain and escalate.
+  Default answer and hit wire fields are unchanged.
+
+- A pure Rust cyber scope guard (Refs #2767, #2769) with exact hostname/IP
+  allowlists, normalized CIDRs, inclusive authorization windows, explicit
+  repository-text taint refusal, and scope echoes. This is a shared planning
+  primitive, not a network scanner or a   wired cyber recipe.
+- Opt-in advisory Claude Code search hints with `xerj init --hooks` on macOS/Linux
+  (Refs #2642): Grep/Glob and repeated Read can suggest a cited search scoped to
+  the indexed folder and configured loopback node, with a per-session quota.
+  `--hooks --remove` preserves other hooks and session memory.
+
+- The same advisory search hints for Gemini CLI with `xerj init --hooks --host
+  gemini` on macOS/Linux (Refs #2642). It writes an `AfterTool` group to
+  `.gemini/settings.json`, because `BeforeTool` has no field that reaches the
+  model, and a millisecond `timeout` as that host expects. Matched tools are
+  `grep_search`, `search_file_content`, `glob` and `read_file`, anchored so MCP
+  tool names are not caught. Setup is refused when the host has hooks disabled.
+  Quotas, counters and backups are per host, and either host can be configured
+  or removed without touching the other.
+
+- Opt-in Claude Code session handoff with `xerj init --memory` on macOS/Linux
+  (Refs #2645). SessionEnd queues a background redacting import and lexical
+  autoindex; SessionStart returns bounded, cited historical excerpts from a
+  project memory namespace, with an offline cache. `--memory --remove` removes
+  only the owned hooks and retains data. Ordinary init and manual session
+  import are unchanged; Codex lifecycle hooks are not included in this first version.
+  Each queued delivery is isolated: terminal input refusals are retained in a
+  private rejected queue with recovery reasons, while transient failures retry.
+  Memory excerpts and displayed briefs filter Unicode controls and format marks.
+
 - A second Claude plugin in the xerj marketplace, `xerj-knowledge`, for
   document search rather than code: a skill and `/xerj-knowledge:index` and
   `/xerj-knowledge:find` commands that search local folders, notes, PDFs,
@@ -30,6 +64,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   syntax as `--stub` — a pattern without `/` matches a file name at any depth,
   one with `/` is anchored at the root. The run reports how many paths it left
   out (#2483).
+
+- Offline `xerj sessions import --format claude-mem` exports a claude-mem
+  store's prompts, observations and session summaries through the existing
+  text redactor (#2874). It reads `claude-mem.db` read-only in one snapshot,
+  including rows still in a running worker's WAL, joins each row to its Claude
+  Code session UUID, and marks the model-written observations and summaries
+  `is_summary: true`.
+
+- Offline `xerj sessions import --format mempalace` exports a MemPalace
+  palace's drawers verbatim, with their wing, room and hall, through the
+  existing text redactor (#2874). It reads the `sqlite_exact` backend
+  read-only in one snapshot without creating side files on a clean store,
+  skips registry and sentinel rows and closets, decodes MemPalace's escaped
+  text, and refuses a palace on the default Chroma backend.
 
 - Offline `xerj sessions import --format codex` exports a documented subset
   of one archived Codex rollout through the existing text redactor. It skips
@@ -100,6 +148,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `benchmarks/skills-intent/results/`. Part of #2644.
 
 ### Fixed
+
+- A plain debug `cargo test --workspace` no longer aborts on a stack overflow,
+  and the `127.0.0.2` loopback test names the missing macOS alias (#2903). Five
+  tests that run the ES-compat router on multi-thread workers overflowed tokio's
+  2 MiB worker stack in a debug build, killing their whole test binary: one in
+  `xerj-mcp`'s `local_def`, one in `xerj-api`'s
+  `autoindex_changed_file_drops_stale_symbols`, and three in `hub_api`. They now
+  use the server's 4 MiB, as the other in-process router tests do. On a host without `127.0.0.2`,
+  `loopback_proxy` fails up front with
+  `sudo ifconfig lo0 alias 127.0.0.2 up` instead of a bare connection error,
+  through the new `xerj_common::loopback_test::require_loopback_alias`.
+  CONTRIBUTING documents both, and that CI runs `--profile ci-test`.
+- `_bulk` refuses a malformed action line the way Elasticsearch 8 does: the
+  whole request is a 400 `illegal_argument_exception` naming the line
+  (`Malformed action/metadata line [3], expected FIELD_NAME but found
+  [END_OBJECT]`, `Action/metadata line [1] contains an unknown parameter
+  [_type]`), and nothing in the body is written. XERJ answered 200 with a
+  per-item error for that line and wrote every other action. An unknown
+  parameter (`_type`, `_version`, `_routing`, a typo) used to be ignored and
+  is now refused, as in ES 8; a client sending the 7.x REST compatibility
+  header (`compatible-with=7`) may still send `_type`, as ES 8 allows. A line
+  the check cannot read with confidence (JSON ES's own parser rejects, an
+  escaped key, a byte order mark) stops the check there, and the rest of the
+  body is answered as before.
+- Data-stream `_rollover` honours `dry_run` and its `conditions` instead of
+  ignoring the body: `max_docs`/`max_age` are ORed and reported in
+  `conditions`, and a dry run or an unmet condition creates no backing index.
+  The response names the real old/new backing indices, and the new backing is
+  marked as the write index so writes through the stream continue after a
+  rollover. Size-based conditions and alias-rollover body fields are refused
+  rather than silently ignored.
+
+- A hub catalogue already on disk is verified against its sibling signature
+  before it is served, including a fresh cache and a `304 Not Modified`
+  (#2904). Replacing `catalogue.json` used to be enough: `load_catalogue`
+  parsed it with no signature check, and a future mtime kept that file
+  fresh. A `304` then re-touched the replacement. The cache is dropped and
+  refetched when the sibling signature does not verify.
+
+- `xerj mcp` no longer answers a JSON-RPC notification, and runs every
+  `tools/call` off the stdio read loop (#2898). A `tools/call` with no `id`, or
+  with `id: null`, used to be awaited on the read loop, so a stalled search held
+  up `ping` and every later request as in #2390; the id-less one was also
+  answered with `id: null`. Now both run on their own task, the notification
+  gets no reply, and `initialize`, `ping` and `tools/list` sent as
+  notifications get none either.
+- Tests name the cause when loopback networking is unavailable (#2886). Every
+  test that binds an ephemeral 127.0.0.1 port, in all crates, goes through
+  `xerj_common::loopback_test::expect_loopback`, so a sandbox that denies the
+  bind fails with "this test starts a fake server on 127.0.0.1 and needs
+  loopback networking" instead of hundreds of bare `PermissionDenied` panics.
+
+- `/lead` rejects non-string email values with HTTP 400 before storage.
+  Arrays no longer become accepted addresses through string coercion, and
+  objects with a non-callable `toString` no longer cause HTTP 500.
+
+- `xerj autoindex` now records Dart `extension` and `extension type`
+  declarations as `class` definitions, so `xerj def <ExtensionName>` finds
+  them. Methods inside an extension were already indexed; the extension's own
+  name was not, because the Dart query adapted from tree-sitter-dart's
+  `tags.scm` had dropped both forms.
+
+- The field-report HTTP fallback now enforces its 16 KiB body limit on raw
+  bytes before decoding or storage access. Multibyte JSON without a reliable
+  `Content-Length` no longer bypasses the limit by having fewer characters.
+
+- `xerj autoindex` no longer stalls near the end of a run at high
+  `--workers`. When all 8 bulk slots were busy, a worker whose chunk crossed
+  the flush size parked; if another worker then shipped the shared buffer,
+  that chunk included, the first one woke to an empty buffer and parked again
+  every 30 s for good, so the run never finished. It now returns once the
+  bulk carrying its chunk has landed. The same loop could also return while
+  that bulk was still on the wire, so a file could be journaled complete
+  before, or even though, one of its bulks failed; it now waits. On a
+  26-file, 28 MB scientific CSV folder, rc.100 stalled at 21 of 26 files with
+  `--workers 32` and 19 of 26 with `--workers 16`; both now finish all 26
+  files and 179,374 records (#2841).
 
 - `weighted_avg` now executes field-based requests (`value` / `weight`, each
   with a `field` and optional numeric `missing`) instead of returning HTTP 200
@@ -191,6 +316,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bytes) is reported as the new `version_map` category. On the 1 GB gate's
   search node the map held ~0.5 GB that no budget saw. (#2427)
 - `xerj autoindex`: Vue (`.vue`) and Svelte (`.svelte`) single-file components are indexed as code instead of being junk-filed as malformed XML. Their `<script>` blocks are parsed with the TypeScript or JavaScript grammar (by `lang`), so their declarations are symbols on the component's own lines, and the record's `language` is `vue` or `svelte`. (#2732)
+- The alias APIs reject an update that would leave more than one
+  `is_write_index: true` member (`POST /_aliases` and
+  `PUT /{index}/_alias/{name}`), including a wildcard add that expands to
+  several indices. The check is on the final state of a batch, so an atomic
+  switch (add the new writer, clear the old one) still works; a rejected
+  update changes nothing instead of leaving an alias whose every write
+  answers 400.
+
 - `_reindex` applies `source._source` field filtering to the documents it
   copies, so an excluded secret or large field no longer reaches the
   destination. `_source:false` is refused with ES's sentence, and a `script`
@@ -478,9 +611,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   refused record came from, and for a size refusal they say how to index the
   rest: under a new `--prefix` and `--state-dir`, with the file left out
   (`--exclude`) or with `--no-semantic`. That route fixes its file list before
-  it sends anything, so it cannot set the file aside, and a rerun repeats the
-  refusal. It used to say only "prepared bulk contained 1 rejected items"
-  (#2807).
+  it sends anything, so it cannot set a refused file aside. It used to say
+  only "prepared bulk contained 1 rejected items" (#2807).
+- `xerj corpus index` and `xerj autoindex --no-graph` now size each record
+  with the vectors the server will add, before they fix the file list, and
+  set aside a record that would not fit as a junk record. The run completes
+  with exit 3, the file's other records are indexed, and reruns complete too.
+  The 2 MB generated `.d.ts` file from #2807 loses only its whole-file record;
+  its type records are still indexed. That route used to stop on the server's
+  refusal, and every rerun stopped on the same record. A run that an earlier
+  version already stopped this way replays the list it fixed and stops again;
+  index that folder under a new `--prefix` and `--state-dir` (#2807).
 
 ## [1.0.0-rc.100] - 2026-10-26
 

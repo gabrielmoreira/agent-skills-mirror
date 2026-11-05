@@ -66,6 +66,9 @@ architectural early exit. Selection and deadline differ, not review policy.
 - Canonical artifacts come only from actions `main`. Public `data/` contains
   dashboard-user results and neutral availability metadata, never operational
   blockers, local paths, request counts, credentials or private evidence.
+- Every proposed review must request a concrete author change. Never offer a
+  no-change assessment or operator diagnostic as a postable suggestion. Preserve
+  incomplete assessments privately with neutral pending metadata in public data.
 - Keep cloud review required. Use the PR skill's three-request loop and
   architectural exit; do not invent another review policy here.
 - A failed PR does not prevent other PRs from delivering. Notifications and

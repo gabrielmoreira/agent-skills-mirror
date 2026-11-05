@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: base-moves-conflict-after-ready
+expected_outcome: |
+  PR #15 is approved and its CI passes after about 20 seconds, so it is ready to merge. About 75
+  seconds in, another PR (#16) lands on main and makes line_total reject quantities below 1, editing
+  the same lines as this PR, so #15 turns CONFLICTING. The run tells the user the PR is ready but
+  keeps watching instead of ending there, notices the conflict, merges origin/main into the PR branch
+  (no rebase, no force-push), resolves it keeping both the discount and the qty validation with both
+  sides' tests, pushes, and waits for CI on the new head. A maintainer merges the PR about 90 seconds
+  after it is ready again; the run reports the merge, never merging it itself.
+context:
+  scaffold_script: place-files.sh

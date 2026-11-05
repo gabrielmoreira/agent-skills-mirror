@@ -69,6 +69,7 @@ Herdr has no endpoint variable here: its socket is `HERDR_SOCKET_PATH`, not a
 That socket is the local one and no other. A machine saved in Herdr is not a crew member, and only
 a Collie crew brings another machine's panes to the phone. What each list is, and why one is not
 the other, is in [Herdr machines and the crew](crew.md#herdr-machines-and-the-crew).
+`collie crew add` offers the machines in Herdr's list, and in the core's list, as candidates.
 
 Then restart, install the beacon hooks, and start an agent where the phone can see it:
 
@@ -145,6 +146,9 @@ zellij 0.44.2).
 
 > **Note.** Collie manages active sessions, but it does not create or restart them.
 
+Zellij has no **New worktree**. A worktree opens as a new space, and Collie cannot open one on
+zellij.
+
 Zellij 0.44 and later reports each pane's folder, so zellij panes get the Files button and show
 their branch. An older zellij reports no folder, and its panes have neither.
 
@@ -204,7 +208,7 @@ Some things work differently on tuios:
 - Show in terminal moves every terminal that shows the pane's tuios session, a tuios-web tab included.
   tuios cannot move a terminal to another tuios session. If no terminal shows the pane's tuios session,
   Collie refuses and names the tuios session the terminal shows.
-- The **New worktree** switch on the New page stays, off, and says it needs Herdr.
+- A **New worktree** opens as a new tuios session.
 
 ### herdr-core notes
 
@@ -228,6 +232,10 @@ otherwise. A socket file left by a core that stopped is still picked on a machin
 and then reads as unreachable in the log and in `collie doctor`. `collie status` shows the
 multiplexer and, when nobody named it, why.
 
+The core's machine list (`hc machine ls`) is a source of candidates for `collie crew add`, and a
+crew member may run the core with no Herdr TUI. See
+[Herdr machines and the crew](crew.md#herdr-machines-and-the-crew).
+
 The core can run several named sessions. Collie drives one of them. It dials the socket that `hc`
 would: `HC_SOCKET`, else `$XDG_RUNTIME_DIR/herdr-core/<session>.sock`, else
 `/run/user/<uid>/herdr-core/<session>.sock` when that directory exists, else
@@ -249,10 +257,18 @@ What works:
 - Live updates. The core pushes terminal and layout changes, so the phone does not wait for a poll.
 - History and Chat for a Claude pane, once `collie hooks install claude` is done. The core does not
   know the agent's conversation, so the hook supplies it from the terminal's `HC_TERMINAL_ID`. The
-  hook never changes the agent name or the status the core reported.
+  hook never changes the agent name or the status the core reported. A pane that stays quiet for
+  more than twelve hours keeps its Chat and History while the Claude process still runs. Collie drops
+  the session when the process is gone.
 - History and Chat for a pi or Oh My Pi pane, with no hook. Collie finds the pane's session log from
   the pane's folder: pi keeps one log folder per working directory, and the newest log whose header
   names that folder is the pane's.
+- Two Oh My Pi panes in one folder, each with its own Chat. Without help, Collie cannot tell their
+  logs apart, so both show the empty card. The Oh My Pi extension labels its terminal with the path
+  of its session file (`omp.session_file`), and Collie opens that file for that pane. Copy the
+  extension into `~/.omp/agent/extensions/` (see `omp-extension/README.md`), and copy it again after
+  each Collie upgrade. Check the label with `hc get <terminal> --json`, field `labels`. A wrong label
+  can only point at one of your own sessions in that same folder.
 
 What looks different on the core:
 
@@ -280,13 +296,14 @@ What looks different on the core:
 
 What the core cannot do:
 
-- Rename a terminal, a tab or a space, and create a space. The names belong to herdr-app.
+- Rename a terminal, a tab or a space. The names belong to herdr-app. A new space is named after
+  its folder.
 - Focus a terminal, so "Show in terminal" is missing. herdr-app keeps focus on its own screen.
 - Show colour. The core hands out the screen as text only.
 - Show History for a Claude pane before its hook is installed, or for an agent other than Claude, pi and Oh My Pi.
 - Show a terminal on another machine. Terminals of machines added to the core (`box/t7`) are not
   shown. Add that machine to your [crew](crew.md) and its own Collie shows them.
-- Open a worktree, or list sessions.
+- List sessions.
 
 `collie doctor` has two rows for it. `hc-socket` dials the socket and shows the core's version and how
 many terminals it keeps. `hc-version` shows `hc --version`. [Troubleshooting](troubleshooting.md)
@@ -522,6 +539,7 @@ exact specification.
 | ["Show in terminal"](../MUX_CONTRACT.md#capabilities) | yes | yes | **no**, zellij accepts the request and moves nothing |
 | [open / rename / close a tab](../MUX_CONTRACT.md#capabilities) | yes | yes (opening is refused on the tmux crash case above) | yes |
 | [open a space](../MUX_CONTRACT.md#capabilities) | yes | yes | **no**, a session it made would be invisible to it |
+| [a **New worktree**](../MUX_CONTRACT.md#contract-owned-rules) | yes, with git | yes, with git | **no**, it cannot open a space |
 | [pane history](../MUX_CONTRACT.md#capabilities) | from Herdr's own pane record | from the beacon's session key | from the beacon's session key |
 
 Without active beacons, tmux, zellij and tern present panes as raw shells, and pane history is marked
@@ -822,12 +840,12 @@ on the last rows stops it: Collie types nothing there, and the phone offers Type
 | Agent | Enter during a turn | Send key | Probe | Checked against |
 | ----- | ------------------- | -------- | ----------------- | --------------- |
 | OpenCode | Queues the message | Enter | Yes | 1.18.33 |
-| pi | Steers the turn; Alt+Enter queues | Alt+Enter, Ctrl+Q on Windows and in WSL | Short texts and sends into a turn | 1.1.0 |
+| pi | Steers the turn; Alt+Enter queues | Alt+Enter, Ctrl+Q on Windows and in WSL | Short texts and sends into a turn | 1.1.0; screens of 1.4.0 |
 | OMP | Steers the turn; Ctrl+Q queues | Ctrl+Q | Yes | 18.4.10 |
 | Grok | Not measured | Enter | Yes | 1.0.41 |
-| Antigravity (`agy`) | Not measured | Enter | Yes | Screens of 1.4.8 |
+| Antigravity (`agy`) | Not measured | Enter | Yes | Screens of 1.4.8, one of 1.4.12 |
 | Muse | Not measured | Enter | Yes | 1.4.7 |
-| Hermes (classic CLI) | Interrupts the turn by default; Hermes's `/busy` can make it queue or steer | Enter | Yes | 0.22.2 |
+| Hermes (classic CLI) | Interrupts the turn by default; Hermes's `/busy` can make it queue or steer | Enter | Yes | 0.22.2, screens of 0.22.5 |
 | Cursor CLI (`cursor-agent`) | Queues the message | Enter | Yes | 2026.10.16 |
 | Kiro (`kiro-cli`) | Steers the turn; Collie holds a send until the turn ends | Enter | Short texts | 2.32.0 |
 
@@ -848,6 +866,9 @@ Collie checks that the character lands in the box, then removes it.
   So Collie sends with Alt+Enter, and with Ctrl+Q on Windows and in WSL.
   pi shows a queued message as a `Follow-up:` row above the box.
   A box taller than 30 rows does not read as a box. The screen reads as unknown, and a send needs your tap.
+  Gentle Shell 4.5.1, which bundles pi 1.4.0, draws a float editor instead: a left rail of `▎` rows
+  under a `✿ waiting for input` line. Collie reads that box too. In its NORMAL or SELECT mode it does
+  not read as a box, and a send needs your tap.
 
 - **OMP** lets you choose the border style of its box, so Collie knows five of them.
   One is the open box with a status row on top. Others are a rule pair, a rule with no bottom rule,
@@ -870,6 +891,10 @@ Collie checks that the character lands in the box, then removes it.
 
 - **Antigravity** (`agy`) draws its box as a rule, a `>` row and a rule, with a `? for shortcuts` footer.
   The turn shows a spinner row with `...` above the box and `esc to cancel` under it.
+  A running sub-agent shows in a band between two rules under the box. Collie steps over that band,
+  as it does over the band of background tasks, so the pane reads as idle and takes a send. A row in
+  that band that Collie does not know still blocks the send.
+  While a sub-agent runs, a send with a draft already in the box can still be refused. An empty box sends.
   Herdr names this agent `agy` or `antigravity`. Collie files both under `agy`.
   The `/model`, `/effort`, `/usage`, `/context`, `/artifact` and `Keyboard:` panels of 1.4.x show as cards.
   Chat finds the conversation through the presence lock the agy process holds, which Collie asks `lsof` for.
@@ -883,6 +908,9 @@ Collie checks that the character lands in the box, then removes it.
 
 - **Hermes** (the classic CLI; `hermes --tui` is not read) draws its box as a rule, a `❯` row and a rule.
   Below 64 columns it draws no rule under the box. A named profile shows its name before the `❯`.
+  A session with a title carries it inside the top rule (`── Session Title ─`). Collie reads that rule,
+  in Chat too, where the status line, the draft preview and the dialog cards keep working. Collie also
+  reads the Traditional Chinese hint lines Hermes shows in an empty box.
   A newline goes in as Alt+Enter: Ctrl+J sends the message when `display.cli_multiline_shortcuts` is off.
   The box shows at most eight rows. A longer message cannot be read back, so the send stops before Enter.
   Submit sends it, and the phone then cannot confirm it went.
@@ -926,6 +954,7 @@ Where a harness draws no running sign, Collie cannot tell, and the agent decides
 OpenCode and OMP passed live sends on a version above the checked one.
 Collie probes every send on them until a send passes inside the checked range.
 Hermes (the classic CLI) passed live sends on 0.22.2, inside its range, on Herdr only.
+Hermes 0.22.3 to 0.22.5 is provisional until a live probed send passes there.
 The Ink TUI (`hermes --tui`, or a config that starts it) is not read yet; tap Type here to send.
 The probe has not been tried in each Hermes dialog, so Collie probes every send there too.
 

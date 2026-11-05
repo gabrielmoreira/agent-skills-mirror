@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  extractRequestId,
   getCloudBaseManager,
   getEnvId,
   logCloudBaseResult,
@@ -9,7 +10,11 @@ import { ExtendedMcpServer } from "../server.js";
 import { isCloudMode } from "../utils/cloud-mode.js";
 import { resolveGatewayAccessUrls } from "../utils/gateway-access-urls.js";
 import { jsonContent } from "../utils/json-content.js";
-import { debug } from "../utils/logger.js";
+import {
+  FUNCTION_LOG_SERVICE_NOT_ENABLED_ERROR_CODE,
+  isLogServiceNotEnabledMessage,
+} from "../utils/log-service.js";
+import { debug, warn } from "../utils/logger.js";
 import { isToolPayloadError, throwToolPayloadError } from "../utils/tool-result.js";
 import {
   DEPLOY_TASK_NOT_FOUND_ERROR_CODE,
@@ -49,6 +54,22 @@ import path from "path";
 
 export const FUNCTION_UPLOAD_TARGET_NOT_FOUND_ERROR_CODE =
   "FUNCTION_UPLOAD_TARGET_NOT_FOUND";
+
+/** SCF 日志配对失败的错误码，两个病因共用这一句。 */
+export const CLS_MISMATCH_ERROR_CODE = "InvalidParameter.Cls";
+
+/**
+ * SDK 的错误文案里常带 `reqId=<uuid>`，但错误对象本身没有这个字段。
+ * 取不到结构化 RequestId 时用它兜底，调用方仍能把请求号交给后台。
+ */
+export function extractRequestIdFromMessage(
+  message: string,
+): string | undefined {
+  const match = message.match(
+    /\breq(?:uest)?[_-]?id\s*[=:]\s*([0-9a-fA-F-]{36})/i,
+  );
+  return match?.[1];
+}
 
 /**
  * 阶段 B 校验：code 三元组必须是当前环境自有存储桶里的代码包地址。
@@ -365,12 +386,14 @@ export function parseFunctionLogItem(item: ClsLogItem): FunctionLogEntry {
 }
 
 export const FUNCTION_LOG_QUERY_ERROR_CODE = "FUNCTION_LOG_QUERY_FAILED";
-export const FUNCTION_LOG_SERVICE_NOT_ENABLED_ERROR_CODE = "LOG_SERVICE_NOT_ENABLED";
-
-/** 未开通日志服务时 CLS 报的是 topic 不存在，按这个特征把它翻译成可执行的下一步。 */
-export function isLogServiceNotEnabledMessage(message: string): boolean {
-  return /TopicNotExist|TopicIsolated|topic[\s\S]{0,20}not\s*exist|日志服务未开通/i.test(message);
-}
+/**
+ * 「日志服务未开通」的判定与错误码已收口到 utils/log-service.ts，供 queryLogs 共用
+ * （2026-11-02）。这里保持导出，外部引用不用改。
+ */
+export {
+  FUNCTION_LOG_SERVICE_NOT_ENABLED_ERROR_CODE,
+  isLogServiceNotEnabledMessage,
+} from "../utils/log-service.js";
 
 type QueryFunctionsAction = (typeof QUERY_FUNCTION_ACTIONS)[number];
 type ManageFunctionsAction = (typeof MANAGE_FUNCTION_ACTIONS)[number];
@@ -976,9 +999,12 @@ export type FunctionConfigUpdateInput = {
 export function buildFunctionConfigUpdateParams(
   input: FunctionConfigUpdateInput,
 ): Record<string, unknown> {
+  // 只带 EnvId，不带 Namespace：两个端点的参数 schema 不同 —— TCB 端点
+  // （tcbService）只认 EnvId，传 Namespace 会报 `The parameter Namespace is not
+  // recognized`；SCF 端点反过来只认 Namespace。这里的目标端点是 TCB，与 SDK 的
+  // updateFunctionConfig 保持一致（`lib/function/index.ts` 的 params 只有 EnvId）。
   const params: Record<string, unknown> = {
     EnvId: input.envId,
-    Namespace: input.envId,
     FunctionName: input.functionName,
   };
 
@@ -1002,30 +1028,41 @@ export function buildFunctionConfigUpdateParams(
   return params;
 }
 
-type ScfRequestCapable = {
-  scfService?: {
+type CloudApiRequestCapable = {
+  /** TCB 定制端点（tcb.tencentcloudapi.com）。`UpdateFunctionConfiguration` 在这里。 */
+  tcbService?: {
     request?: (action: string, params: Record<string, unknown>) => Promise<unknown>;
   };
 };
 
 /**
- * 发送 `UpdateFunctionConfiguration`。优先直调底层 SCF service（请求体不含 CLS），
- * 拿不到 `scfService` 时退回 manager SDK —— 那条路会重新带上环境级 CLS 对，
+ * 发送 `UpdateFunctionConfiguration`，请求体不含 CLS。
+ *
+ * 走 `tcbService` 不走 `scfService`：manager-node 自己的 `updateFunctionConfig`
+ * 末尾就是 `this.tcbService.request('UpdateFunctionConfiguration', params)`
+ * （`lib/function/index.js`）。SCF 原生端点上是另一套同名 API，TCB 建的函数在那边
+ * 按 `Namespace` 查不到 —— 2.37.0 起走 scfService，现网 287 次调用 282 次失败。
+ *
+ * 拿不到 `tcbService` 时退回 manager SDK —— 那条路会重新带上环境级 CLS 对，
  * 属于降级路径，会打 debug 日志。
  */
 export async function applyFunctionConfigUpdate(
   manager: unknown,
   params: Record<string, unknown>,
 ): Promise<unknown> {
-  const fnService = (manager as { functions?: ScfRequestCapable & Record<string, unknown> })
-    ?.functions;
-  const scfService = fnService?.scfService;
-  if (typeof scfService?.request === "function") {
-    return scfService.request("UpdateFunctionConfiguration", params);
+  const fnService = (manager as {
+    functions?: CloudApiRequestCapable & Record<string, unknown>;
+  })?.functions;
+  const tcbService = fnService?.tcbService;
+  if (typeof tcbService?.request === "function") {
+    return tcbService.request("UpdateFunctionConfiguration", params);
   }
 
-  debug(
-    "[updateFunctionConfig] scfService 不可用，退回 manager SDK（会带上环境级 CLS 对）",
+  // 走到这里说明 manager 不是标准 SDK 实例，或 manager-node 改了内部形态。
+  // 用 warn 不用 debug：这条路会重新带上环境级 CLS 对，等于悄悄退回 #1274 之前
+  // 的失败面（函数角色无权用该日志目的地时，改环境变量会报 InvalidParameter.Cls）。
+  warn(
+    "[updateFunctionConfig] tcbService 不可用，退回 manager SDK（会带上环境级 CLS 对）",
   );
 
   const environment = params.Environment as { Variables?: IEnvVariable[] } | undefined;
@@ -1212,15 +1249,48 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
     ...(warnings?.length ? { warnings } : {}),
   });
 
+  /**
+   * `InvalidParameter.Cls: ClsLogSetId & ClsTopicId not matched` 有两个病因：
+   * 传入的日志对不配对，或函数运行角色无权使用该日志目的地。两种都报同一句话，
+   * 所以给两条并列的自查路径，而不是让人按字面意思先去改 ID。
+   */
+  const buildClsDiagnosis = (
+    message: string,
+  ): FunctionToolEnvelope["nextActions"] => {
+    if (!message.includes(CLS_MISMATCH_ERROR_CODE)) {
+      return undefined;
+    }
+    return [
+      {
+        tool: "queryFunctions",
+        action: "getFunctionDetail",
+        reason: t("functions.reason.clsCheckFunction"),
+      },
+      {
+        tool: "queryEnv",
+        action: "info",
+        reason: t("functions.reason.clsCheckEnv"),
+      },
+    ];
+  };
+
   const buildErrorEnvelope = (
     error: unknown,
     errorCode?: string,
-  ): Record<string, unknown> => ({
-    success: false,
-    data: {},
-    message: error instanceof Error ? error.message : String(error),
-    ...(errorCode ? { errorCode } : {}),
-  });
+  ): Record<string, unknown> => {
+    const message = error instanceof Error ? error.message : String(error);
+    const requestId =
+      extractRequestId(error) ?? extractRequestIdFromMessage(message);
+    const nextActions = buildClsDiagnosis(message);
+    return {
+      success: false,
+      data: {},
+      message,
+      ...(errorCode ? { errorCode } : {}),
+      ...(requestId ? { requestId } : {}),
+      ...(nextActions?.length ? { nextActions } : {}),
+    };
+  };
 
   const withEnvelope = async (handler: () => Promise<FunctionToolEnvelope>) => {
     try {
@@ -2872,6 +2942,17 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
         );
       }
 
+      // 代码来源校验（2026-11-02）。两个口子会在这里静默漏下去：
+      //   ① `contentPath` 在 schema 里对所有 action 可见，语义却是「层内容路径」
+      //      （见 schema.manage.contentPath），updateFunctionCode 从不读取它；
+      //   ② `functionRootPath` 本身可选。
+      // 两者都不在时 `updateParams.functionRootPath` 是 undefined 并直通
+      // manager-node，最终抛 Node fs 的 `The "paths[0]" argument must be of
+      // type string` —— 调用方完全看不出缺什么（灯塔 168h：200 次 / 123 环境）。
+      // 措辞与 manager-node FUNCTION_DEPLOY_ERROR.CODE_SOURCE_MISSING 对齐。
+      if (!input.zipFile && !input.functionRootPath) {
+        throw new Error(t("functions.codeSourceMissing", { action: "updateFunctionCode" }));
+      }
       const processedRootPath = processFunctionRootPath(
         input.functionRootPath,
         input.functionName,

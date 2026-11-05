@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.ai/CLAUDE.md`](.ai/CLAUDE.md) |
-| 2 | ✓ | [`.claude/skills/llamafactory-sft/SKILL.md`](.claude/skills/llamafactory-sft/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/llamafactory-v1-docs/SKILL.md`](.claude/skills/llamafactory-v1-docs/SKILL.md) |
-| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/llamafactory-qwen38-sft/references/ascend-qlora.md`](.agents/skills/llamafactory-qwen38-sft/references/ascend-qlora.md) |
+| 2 | ✓ | [`.agents/skills/llamafactory-qwen38-sft/references/serving.md`](.agents/skills/llamafactory-qwen38-sft/references/serving.md) |
+| 3 | ✓ | [`.agents/skills/llamafactory-qwen38-sft/references/setup.md`](.agents/skills/llamafactory-qwen38-sft/references/setup.md) |
+| 4 | ✓ | [`.agents/skills/llamafactory-qwen38-sft/references/training.md`](.agents/skills/llamafactory-qwen38-sft/references/training.md) |
+| 5 | ✓ | [`.agents/skills/llamafactory-qwen38-sft/SKILL.md`](.agents/skills/llamafactory-qwen38-sft/SKILL.md) |
+| 6 | ✓ | [`.ai/CLAUDE.md`](.ai/CLAUDE.md) |
+| 7 | ✓ | [`.claude/skills/llamafactory-qwen38-sft/references/ascend-qlora.md`](.claude/skills/llamafactory-qwen38-sft/references/ascend-qlora.md) |
+| 8 | ✓ | [`.claude/skills/llamafactory-qwen38-sft/references/setup.md`](.claude/skills/llamafactory-qwen38-sft/references/setup.md) |
+| 9 | ✓ | [`.claude/skills/llamafactory-qwen38-sft/references/training.md`](.claude/skills/llamafactory-qwen38-sft/references/training.md) |
+| 10 | ✓ | [`.claude/skills/llamafactory-qwen38-sft/SKILL.md`](.claude/skills/llamafactory-qwen38-sft/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/llamafactory-sft/SKILL.md`](.claude/skills/llamafactory-sft/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/llamafactory-v1-docs/SKILL.md`](.claude/skills/llamafactory-v1-docs/SKILL.md) |
+| 13 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 15 | ✓ | [`docs/zh/configuration/training.md`](docs/zh/configuration/training.md) |
 
 ---
 

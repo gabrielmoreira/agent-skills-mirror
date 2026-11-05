@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 183 file(s) materialized.
+Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 187 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 183 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 183 |
+| Files         | 187 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -213,35 +213,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 152 | ✓ | [`skills/hallmark/references/themes/werkstatt.jpg`](skills/hallmark/references/themes/werkstatt.jpg) |
 | 153 | ✓ | [`skills/hallmark/references/themes/werkstatt.md`](skills/hallmark/references/themes/werkstatt.md) |
 | 154 | ✓ | [`skills/hallmark/scripts/capture.mjs`](skills/hallmark/scripts/capture.mjs) |
-| 155 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/atmospheric.html`](skills/hallmark/scripts/fixtures/exemplars/atmospheric.html) |
-| 156 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/editorial.html`](skills/hallmark/scripts/fixtures/exemplars/editorial.html) |
-| 157 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html`](skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html) |
-| 158 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/playful.html`](skills/hallmark/scripts/fixtures/exemplars/playful.html) |
-| 159 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-fail/index.html`](skills/hallmark/scripts/fixtures/eyebrow-fail/index.html) |
-| 160 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-pass/index.html`](skills/hallmark/scripts/fixtures/eyebrow-pass/index.html) |
-| 161 | ✓ | [`skills/hallmark/scripts/fixtures/kept/after.html`](skills/hallmark/scripts/fixtures/kept/after.html) |
-| 162 | ✓ | [`skills/hallmark/scripts/fixtures/kept/before.html`](skills/hallmark/scripts/fixtures/kept/before.html) |
-| 163 | ✓ | [`skills/hallmark/scripts/fixtures/slopped.html`](skills/hallmark/scripts/fixtures/slopped.html) |
-| 164 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue`](skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue) |
-| 165 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx) |
-| 166 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/index.html`](skills/hallmark/scripts/fixtures/tailwind-fail/index.html) |
-| 167 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/style.css`](skills/hallmark/scripts/fixtures/tailwind-fail/style.css) |
-| 168 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx) |
-| 169 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/index.html`](skills/hallmark/scripts/fixtures/tailwind-pass/index.html) |
-| 170 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/style.css`](skills/hallmark/scripts/fixtures/tailwind-pass/style.css) |
-| 171 | ✓ | [`skills/hallmark/scripts/fixtures/waiver/index.html`](skills/hallmark/scripts/fixtures/waiver/index.html) |
-| 172 | ✓ | [`skills/hallmark/scripts/imagegen.mjs`](skills/hallmark/scripts/imagegen.mjs) |
-| 173 | ✓ | [`skills/hallmark/scripts/install-hook.mjs`](skills/hallmark/scripts/install-hook.mjs) |
-| 174 | ✓ | [`skills/hallmark/scripts/install.mjs`](skills/hallmark/scripts/install.mjs) |
-| 175 | ✓ | [`skills/hallmark/scripts/lint-hook.mjs`](skills/hallmark/scripts/lint-hook.mjs) |
-| 176 | ✓ | [`skills/hallmark/scripts/photos.json`](skills/hallmark/scripts/photos.json) |
-| 177 | ✓ | [`skills/hallmark/scripts/picture.mjs`](skills/hallmark/scripts/picture.mjs) |
-| 178 | ✓ | [`skills/hallmark/scripts/refcheck.mjs`](skills/hallmark/scripts/refcheck.mjs) |
-| 179 | ✓ | [`skills/hallmark/scripts/sloplint-render.mjs`](skills/hallmark/scripts/sloplint-render.mjs) |
-| 180 | ✓ | [`skills/hallmark/scripts/sloplint.mjs`](skills/hallmark/scripts/sloplint.mjs) |
-| 181 | ✓ | [`skills/hallmark/scripts/theme.mjs`](skills/hallmark/scripts/theme.mjs) |
-| 182 | ✓ | [`skills/hallmark/scripts/theme.test.mjs`](skills/hallmark/scripts/theme.test.mjs) |
-| 183 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
+| 155 | ✓ | [`skills/hallmark/scripts/capture.test.mjs`](skills/hallmark/scripts/capture.test.mjs) |
+| 156 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/atmospheric.html`](skills/hallmark/scripts/fixtures/exemplars/atmospheric.html) |
+| 157 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/editorial.html`](skills/hallmark/scripts/fixtures/exemplars/editorial.html) |
+| 158 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html`](skills/hallmark/scripts/fixtures/exemplars/modern-minimal.html) |
+| 159 | ✓ | [`skills/hallmark/scripts/fixtures/exemplars/playful.html`](skills/hallmark/scripts/fixtures/exemplars/playful.html) |
+| 160 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-fail/index.html`](skills/hallmark/scripts/fixtures/eyebrow-fail/index.html) |
+| 161 | ✓ | [`skills/hallmark/scripts/fixtures/eyebrow-pass/index.html`](skills/hallmark/scripts/fixtures/eyebrow-pass/index.html) |
+| 162 | ✓ | [`skills/hallmark/scripts/fixtures/imagegen/imagegen.test.mjs`](skills/hallmark/scripts/fixtures/imagegen/imagegen.test.mjs) |
+| 163 | ✓ | [`skills/hallmark/scripts/fixtures/kept/after.html`](skills/hallmark/scripts/fixtures/kept/after.html) |
+| 164 | ✓ | [`skills/hallmark/scripts/fixtures/kept/before.html`](skills/hallmark/scripts/fixtures/kept/before.html) |
+| 165 | ✓ | [`skills/hallmark/scripts/fixtures/slopped.html`](skills/hallmark/scripts/fixtures/slopped.html) |
+| 166 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue`](skills/hallmark/scripts/fixtures/tailwind-fail/Feature.vue) |
+| 167 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-fail/Hero.tsx) |
+| 168 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/index.html`](skills/hallmark/scripts/fixtures/tailwind-fail/index.html) |
+| 169 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-fail/style.css`](skills/hallmark/scripts/fixtures/tailwind-fail/style.css) |
+| 170 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx`](skills/hallmark/scripts/fixtures/tailwind-pass/Hero.tsx) |
+| 171 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/index.html`](skills/hallmark/scripts/fixtures/tailwind-pass/index.html) |
+| 172 | ✓ | [`skills/hallmark/scripts/fixtures/tailwind-pass/style.css`](skills/hallmark/scripts/fixtures/tailwind-pass/style.css) |
+| 173 | ✓ | [`skills/hallmark/scripts/fixtures/waiver/index.html`](skills/hallmark/scripts/fixtures/waiver/index.html) |
+| 174 | ✓ | [`skills/hallmark/scripts/imagegen.mjs`](skills/hallmark/scripts/imagegen.mjs) |
+| 175 | ✓ | [`skills/hallmark/scripts/install-hook.mjs`](skills/hallmark/scripts/install-hook.mjs) |
+| 176 | ✓ | [`skills/hallmark/scripts/install.mjs`](skills/hallmark/scripts/install.mjs) |
+| 177 | ✓ | [`skills/hallmark/scripts/lint-hook.mjs`](skills/hallmark/scripts/lint-hook.mjs) |
+| 178 | ✓ | [`skills/hallmark/scripts/photos.json`](skills/hallmark/scripts/photos.json) |
+| 179 | ✓ | [`skills/hallmark/scripts/picture.mjs`](skills/hallmark/scripts/picture.mjs) |
+| 180 | ✓ | [`skills/hallmark/scripts/refcheck.mjs`](skills/hallmark/scripts/refcheck.mjs) |
+| 181 | ✓ | [`skills/hallmark/scripts/reroll-exhaustion.test.mjs`](skills/hallmark/scripts/reroll-exhaustion.test.mjs) |
+| 182 | ✓ | [`skills/hallmark/scripts/sloplint-render.mjs`](skills/hallmark/scripts/sloplint-render.mjs) |
+| 183 | ✓ | [`skills/hallmark/scripts/sloplint-render.test.mjs`](skills/hallmark/scripts/sloplint-render.test.mjs) |
+| 184 | ✓ | [`skills/hallmark/scripts/sloplint.mjs`](skills/hallmark/scripts/sloplint.mjs) |
+| 185 | ✓ | [`skills/hallmark/scripts/theme.mjs`](skills/hallmark/scripts/theme.mjs) |
+| 186 | ✓ | [`skills/hallmark/scripts/theme.test.mjs`](skills/hallmark/scripts/theme.test.mjs) |
+| 187 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
 
 ---
 

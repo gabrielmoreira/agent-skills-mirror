@@ -4,6 +4,7 @@ The native CUDA build serves GLM-5.3-Flash at tensor parallel over hosts: from N
 ([1.0.12](../../CHANGELOG.md#1012)), on two ranks from Mia-AiLab's EXL3/TR3 checkpoint
 ([1.1.0](../../CHANGELOG.md#110), [the checkpoint](glm-5.3-flash.md#exl3)), and in [1.1.5](../../CHANGELOG.md#115) (#1050) from
 NVIDIA's FP4-Local checkpoint as stored and from XSFP4, which keeps FP4-Local's tensors outside the routed experts.
+Jammed XSFP4, on `main` after 1.2.2 ([#2041](https://github.com/ashhart/TensorFold/pull/2041)), holds those experts at block 32 in the `csf0_v1` form and loads the same way.
 Rank 0 serves HTTP and the other ranks follow its steps, with MTP drafts, concurrent streams and kept prompt states.
 The [Python 0.6.6 recipe](glm-5.3-flash.md) and its `--tp`, `--rank` and `--master` flags belong to the frozen engine.
 
@@ -49,6 +50,11 @@ left after a 12.2 GiB reserve` and a 5.8 GiB prompt cache
   long conversation's next turn resumes when the card has no room left for its state (#1510). `--prompt-cache-gib`
   sizes the host cache on each rank (8 GiB unasked, at most half of the available memory), and the KV pool sets no
   device cache aside. Checked on two RTX PRO 6000 Blackwell cards at TP=2 with the EXL3 4bpw checkpoint.
+- `TF_GLM_KV_HOST=1` on every rank (with KV pages, BF16) keeps the KV pages' latent rows in pinned host memory: the
+  device keeps the pooled index keys, and each sparse call copies only the rows it picked into device slots. The KV
+  pool then costs the card 768 bytes a token instead of 13,056, so a 1,048,576-token window fits beside the weights.
+  `TF_GLM_KV_HOST_GIB` sizes the host pages (one full window unasked); `TF_GLM_KV_HOST_SHARED=1` gives the ranks of
+  one host a single copy in `/dev/shm`. Checked on two RTX PRO 6000 Blackwell cards at TP=2.
 - `TF_GLM_CHUNK_SOLO=4096` on every rank (opt-in) lets a prompt pass take 4,096 rows while no other stream is decoding.
   Unset or `2048`, every pass takes 2,048 rows and nothing extra is held. See [Prompt chunk size](#prompt-chunk-size).
 - `TF_GLM_DENSE_BITS=4` (EXL3 at TP=2, off by default) repacks the BF16 dense layers to 4 bits at load. Decode is
@@ -56,6 +62,10 @@ left after a 12.2 GiB reserve` and a 5.8 GiB prompt cache
   (#1761).
 
 ## More ranks
+
+With `TF_GLM_PREFILL_REDUCE=ring`, the startup peer warm-up touches only each rank's next and previous neighbours,
+using the existing rank order. The default split and gather modes still warm every peer. This removes the eager
+opposite-peer warm-up; it does not add a switchless RoCE relay or qualify a four-node ring (#1971).
 
 `TF_GLM_WORLD=3` places a third rank the same way. From 1.1.2 the uneven KDA input projections of TP=3 (22, 21 and
 21 heads) run instead of being refused; TP=3 device qualification is pending
@@ -68,7 +78,8 @@ left after a 12.2 GiB reserve` and a 5.8 GiB prompt cache
 A prompt runs in passes of 2,048 rows. Kept prompt states sit on that grid, and a stream decoding beside a prompt waits
 for each pass to end. A pass that takes more rows reads each routed expert's weights fewer times, so a lone prompt
 comes sooner. `TF_GLM_CHUNK_SOLO=4096` lets a pass take two of those chunks when no other stream is decoding as it
-starts. With one decoding, or with the DFlash2 drafter, `prompt_logprobs` or image rows, the pass takes 2,048.
+starts. With one decoding, or with `prompt_logprobs` or image rows, the pass takes 2,048. A drafter's steps take one
+chunk, so `--drafter` beside it is refused at load.
 
 The grid does not move, so warm turns resume where they do unset, and streams decoding beside a prompt see the same
 passes. Replies are the same bytes either way. Two costs remain:
@@ -92,6 +103,14 @@ Each setting is two fresh servers (one at TP=2 for the cold row), `--parallel 4 
 `Bizuayeu/GLM-5.3-Flash-XSFP4` with its MTP drafts. Cold prompts are Python source at `--prompt-cache-gib 0`, and a
 repeated filler line gains 2 to 5% at the same sizes. The other rows ran with the prompt cache on (the default at TP=2,
 2 GiB at TP=3). Three rows at TP=2 that waited on the heat guard are left out.
+
+At TP=3 with `TF_GLM_ROCE_MULTI=1` (#1524) the gain is a little under half: on three GB10s at `--parallel 8` with
+`TF_GLM_KV_SHARE=32` and `TENSORFOLD_PREFILL_SHARE=0.7`, not the table's settings, cold Python-source prompts of 8K to
+128K tokens came 3.2 to 3.4% sooner with the wire and 7.3 to 8.4% sooner without it, two fresh servers each. The wire's
+extra time is in the side stream's exchanges and grows when solo doubles a pass (#1994). `TF_GLM_OVERLAP_PIECES`
+(default 3, 1 to 8, the same on every rank) cuts a prompt chunk's exchanges into that many row pieces. In a further run
+at those settings, solo on the wire came 1.7 to 3.6% sooner at 3 pieces and 6.1 to 7.8% sooner at 8, against the wire
+without solo at 3, with the same tokens; in another, 8 pieces without solo stayed within 1% of 3 (#1994).
 
 ## Long runs on GB10
 

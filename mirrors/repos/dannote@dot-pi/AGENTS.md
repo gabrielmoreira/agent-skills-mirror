@@ -40,6 +40,18 @@ When adding new extensions, skills, or rules:
 3. Include Origin column with link to source if adapted from another project
 4. Commit both the component and README update together
 
+## Documentation
+
+Update an existing canonical home before creating a new Markdown document:
+
+- `README.md`: installation, resource catalog, documentation navigation.
+- `docs/handbook.md`: user workflows.
+- `docs/smoke-test.md`: repeatable validation procedures.
+- `extensions/shared/README.md`: extension development, shared helpers, API references, known limitations.
+- Component READMEs: component-specific usage only; `demos/README.md`: demo recording.
+
+Do not commit ad hoc audit reports, execution diaries, machine-local test evidence, or speculative proposals as standalone docs. Use issues/reviews or commit history for those. Skills, prompts, rules, and Markdown test fixtures are functional resources, not documentation clutter.
+
 ## Quality Gates
 
 Before committing changes, run:

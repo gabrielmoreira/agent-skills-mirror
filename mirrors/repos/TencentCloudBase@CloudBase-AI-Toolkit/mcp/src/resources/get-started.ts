@@ -15,9 +15,9 @@
  *      注入分两路：HTML 文本走 `escapeHtml`，脚本里的字符串走 `jsLiteral`（JSON 转义 +
  *      转义 `<`，避免 `</script>` 截断）。
  *   3. **只读无密钥**：环境 ID 来自这次调用槽；槽是空的才用 `server.cloudBaseOptions.envId`。不读环境变量和缓存。站点仍走站点解析。
- *      读资源时不发网络请求；面板自己只会发两类调用——只读的
- *      `auth(action:"status")`（「重新检查」）和只改本地绑定的
- *      `auth(action:"set_env")`（点「可选环境」里的一行）。两者都不动云端资源，也不碰密钥。
+ *      读资源时不发网络请求；面板自己只会发只读的 `auth(action:"status")`（「重新检查」）。
+ *      点「可选环境」里的一行改为 `ui/message` 交给会话去做 `set_env`——许多宿主不转发
+ *      应用发起的 `tools/call`，不能依赖面板内直接绑环境。
  *   4. **状态吃实时结果，不吃本地猜测**：宿主会以 `ui/notifications/tool-result` 通知把
  *      「令本次面板被渲染的那次工具调用」的结果送来。面板挂在多用途的 `auth` 上，
  *      每一次 `auth` 调用都会渲染它，所以状态区**优先消费这条通知的 `structuredContent`**
@@ -35,10 +35,11 @@
  */
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ExtendedMcpServer } from "../server.js";
-import { getInstanceLang, t, type Lang, type MessageKey } from "../i18n/index.js";
+import { resolvePanelLang, t, type Lang, type MessageKey } from "../i18n/index.js";
 import { readDisplayedEnvId } from "../utils/env-binding.js";
 import { resolveSiteAndRegion } from "../utils/site-map.js";
 import { debug } from "../utils/logger.js";
+import { CREDENTIAL_GUARD_JS } from "./panel-raw-guard.js";
 import {
   readClientCapabilitiesFromServer,
   readMcpClientInfoFromServer,
@@ -138,14 +139,9 @@ export function buildGetStartedHtml(lang: Lang, status: GetStartedStatus): strin
     : siteText;
 
   const title = E(L("mcpUi.title"));
-  const statusTitle = E(L("mcpUi.status.title"));
   const rawLabel = E(L("mcpUi.status.raw"));
   const nextTitle = E(L("mcpUi.next.title"));
   const envTitle = E(L("mcpUi.env.title"));
-  const envHint = E(L("mcpUi.env.hint"));
-  const footnote = E(L("mcpUi.footnote"));
-
-  const envIdText = status.envId ? E(status.envId) : E(L("mcpUi.status.unset"));
 
   return `<!doctype html>
 <html lang="${lang}">
@@ -178,11 +174,20 @@ body {
 }
 /* Fill whatever the host gives us; 860px is where one column of rows still reads well. */
 .panel { width: 100%; max-width: 860px; margin: 0 auto; padding: 16px; }
-.head { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
+.brand { height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; }
+.brand-l { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.brand-name { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+.brand-r { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.brand-env { max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 12px; font-weight: 500; color: var(--text-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+button.icon-btn { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+button.icon-btn svg { width: 14px; height: 14px; display: block; }
 .logo { display: inline-flex; flex: 0 0 auto; }
-.logo svg { width: 22px; height: 22px; display: block; }
-.head h1 { font-size: 22px; font-weight: 600; margin: 0 0 2px; letter-spacing: -.01em; }
-.head .sub { margin: 0; font-size: 13px; color: var(--text-2); }
+.logo svg { width: 20px; height: 20px; display: block; }
+.t1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.t1 h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+.t1 .state { margin: 0; }
 .card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 12px; padding: 16px; margin: 0 0 12px; box-shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.10);
@@ -209,9 +214,10 @@ body {
 .next .why { font-size: 13px; color: var(--text-2); margin: 8px 0 0; }
 .next .why:empty { display: none; }
 .hint { font-size: 12px; color: var(--text-2); margin: 6px 0 0; }
-.env-list { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 0; }
+.env-list { display: grid; grid-template-columns: max-content minmax(0, 1fr) auto; gap: 6px; margin: 10px 0 0; }
 .env-item {
-  display: flex; align-items: center; gap: 10px; width: 100%; height: auto; padding: 8px 10px;
+  display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; align-items: center;
+  column-gap: 12px; width: 100%; height: auto; padding: 8px 10px;
   text-align: left; background: var(--bg); border: 1px solid var(--border-2); border-radius: 8px;
 }
 .env-item .n { font-weight: 600; overflow-wrap: anywhere; }
@@ -219,7 +225,7 @@ body {
   font-size: 12px; color: var(--text-2); overflow-wrap: anywhere;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-.env-item .t { margin-left: auto; flex: 0 0 auto; font-size: 12px; color: var(--text-2); }
+.env-item .t { justify-self: end; flex: 0 0 auto; font-size: 12px; color: var(--text-2); }
 .env-item .t.off { opacity: .65; }
 /* Expanded, the list scrolls inside a capped box: the card must not push the conversation off the
    screen just because one project owns forty environments. */
@@ -294,29 +300,35 @@ pre {
 <symbol id="ico-chevron-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></symbol>
 </defs></svg>
 <main class="panel">
-<div class="head">
+<div class="brand">
+<span class="brand-l">
 <span class="logo" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none" focusable="false">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M-0.00195272 13.364C-0.0021879 13.0869 0.100481 12.8097 0.306053 12.5947L8.64438 4.25689C8.74869 4.15259 8.89015 4.09399 9.03766 4.09399H19.6942C20.1894 4.09399 20.4377 4.69236 20.088 5.04296L11.7889 13.364H-0.00195272Z" fill="#67E9E9"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M-0.00195272 13.366C-0.00218796 13.6431 0.100474 13.9203 0.306033 14.1353L8.64438 22.4731C8.74869 22.5774 8.89015 22.636 9.03766 22.636H19.6942C20.1894 22.636 20.4377 22.0376 20.088 21.687L11.7889 13.366H-0.00195272Z" fill="#2BCCCC"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M35.999 22.2539C35.9993 21.9781 35.8977 21.7023 35.6942 21.4877L27.3527 13.1468C27.2484 13.0425 27.1069 12.9839 26.9594 12.9839H16.3029C15.8077 12.9839 15.5594 13.5823 15.9091 13.9328L24.2081 22.2539H35.999Z" fill="#4896FF"/>
 <path class="logo-strong" fill-rule="evenodd" clip-rule="evenodd" d="M35.999 22.2534C35.9994 22.526 35.9002 22.7987 35.7015 23.0123L27.3527 31.3605C27.2484 31.4648 27.1069 31.5234 26.9594 31.5234H16.3029C15.8077 31.5234 15.5594 30.9251 15.9091 30.5745L24.2081 22.2534H35.999Z" fill="#0052D9"/>
 </svg></span>
-<div>
-<h1>${title}</h1>
-<p class="sub" id="c-sub">${E(L("mcpUi.subtitle.unknown"))}</p>
-</div>
+<span class="brand-name">CloudBase</span>
+</span>
+<span class="brand-r">
+<span class="brand-env" id="brand-env">${status.envId ? E(status.envId) : ""}</span>
+<button class="icon-btn" type="button" id="btn-copy-env"${status.envId ? "" : " hidden"} title="${E(L("mcpUiCredits.brand.copyEnvId"))}" aria-label="${E(L("mcpUiCredits.brand.copyEnvId"))}">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+</button>
+</span>
 </div>
 <section class="card">
-<h2>${statusTitle}</h2>
+<div class="t1">
+<h1>${title}</h1>
 <div class="state" id="state-row" role="status">
 <span class="dot idle" id="st-dot"></span>
 <span id="st-text">${E(L("mcpUi.status.unknown"))}</span>
 <span class="qual" id="st-qual">${E(L("mcpUi.status.unknownHint"))}</span>
 </div>
+</div>
 <div class="kv">
 <div class="row"><p class="k">${E(L("mcpUi.status.place"))}</p><p class="v${placeText ? "" : " idle"}" id="k-place">${placeText ? E(placeText) : E(L("mcpUi.status.placeUnknown"))}</p></div>
-<div class="row"><p class="k">${E(L("mcpUi.status.scope"))}</p><p class="v idle" id="k-scope">${E(L("mcpUi.status.scopeAfterLogin"))}</p></div>
-<div class="row wide"><p class="k">${E(L("mcpUi.status.envId"))}</p><p class="v mono${status.envId ? "" : " idle"}" id="k-env">${envIdText}</p></div>
+<div class="row wide"><p class="k">${E(L("mcpUi.status.scope"))}</p><p class="v idle" id="k-scope">${E(L("mcpUi.status.scopeAfterLogin"))}</p></div>
 </div>
 <details id="raw-box" hidden>
 <summary>${rawLabel}</summary>
@@ -325,7 +337,6 @@ pre {
 </section>
 <section class="card" id="env-card" hidden>
 <h2>${envTitle}</h2>
-<p class="hint">${envHint}</p>
 <div class="env-list" id="env-list" role="group" aria-label="${envTitle}"></div>
 <div class="env-foot" id="env-foot" hidden>
 <p class="hint" id="env-more"></p>
@@ -346,7 +357,6 @@ pre {
 </div>
 </section>
 <div class="foot">
-<p class="foot-row"><span>${footnote}</span></p>
 <p class="foot-row">
 <button class="linklike" type="button" id="lnk-docs">${E(L("mcpUi.link.docs"))}</button>
 <span class="sep">&middot;</span>
@@ -403,12 +413,11 @@ pre {
     actionLogin: ${S("mcpUi.next.action.login")},
     actionConnect: ${S("mcpUi.next.action.connect")},
     actionSelectEnv: ${S("mcpUi.next.action.selectEnv")},
-    actionDeploy: ${S("mcpUi.next.action.deploy")},
     actionRefresh: ${S("mcpUi.next.action.refresh")},
     messageLogin: ${S("mcpUi.message.login")},
     messageConnect: ${S("mcpUi.message.connect")},
     messageSelectEnv: ${S("mcpUi.message.selectEnv")},
-    messageDeploy: ${S("mcpUi.message.deploy")},
+    messageBindEnv: ${S("mcpUi.message.bindEnv")},
     actionPending: ${S("mcpUi.action.pending")},
     actionSent: ${S("mcpUi.action.sent")},
     actionError: ${S("mcpUi.action.error")},
@@ -436,7 +445,7 @@ pre {
     pending: { dot: "warn", text: T.statusPending, hint: T.statusPendingHint, label: T.nextLabelPending, why: T.nextWhyPending, main: "", msg: "", sub: T.subtitlePending },
     failed: { dot: "err", text: T.statusFailed, hint: T.statusFailedHint, label: T.nextLabelFailed, why: T.nextWhyFailed, main: T.actionLogin, msg: T.messageLogin, sub: T.subtitleFailed },
     unbound: { dot: "warn", text: T.statusLoggedIn, hint: T.statusUnboundHint, label: T.nextLabelUnbound, why: T.nextWhyUnbound, main: T.actionSelectEnv, msg: T.messageSelectEnv, sub: T.subtitleUnbound },
-    ready: { dot: "ok", text: T.statusConnected, hint: T.statusConnectedHint, label: T.nextLabelReady, why: T.nextWhyReady, main: T.actionDeploy, msg: T.messageDeploy, sub: T.subtitleReady }
+    ready: { dot: "ok", text: T.statusConnected, hint: T.statusConnectedHint, label: T.nextLabelReady, why: T.nextWhyReady, main: "", msg: "", sub: T.subtitleReady }
   };
   // Local config only fills the gaps until the live result arrives; it never overrides a live value.
   // Region and site are kept apart (not pre-joined) because a real auth(status) result always
@@ -449,7 +458,7 @@ pre {
   var stQual = document.getElementById("st-qual");
   var kPlace = document.getElementById("k-place");
   var kScope = document.getElementById("k-scope");
-  var kEnv = document.getElementById("k-env");
+  var currentEnvId = FALLBACK.env;
   var rawBox = document.getElementById("raw-box");
   var rawOut = document.getElementById("raw-out");
   var nxLabel = document.getElementById("nx-label");
@@ -554,6 +563,12 @@ pre {
   }
 
   // Raw payloads are shown as text only, inside the collapsed "view raw" area.
+  //
+  // This panel explains connection status; it is not a JSON viewer. Some auth actions
+  // answer with a credential block, so the folded area is skipped entirely for those
+  // instead of echoing it. The predicate is shared with the other two panels -
+  // see resources/panel-raw-guard.ts for why it keys off the container, not the fields.
+${CREDENTIAL_GUARD_JS}
   function rawTextOf(value) {
     if (typeof value === "string") { return value; }
     if (value && typeof value === "object") {
@@ -566,6 +581,10 @@ pre {
   }
   function showRaw(value) {
     if (!rawBox || !rawOut) { return; }
+    if (carriesCredentialBlock(value)) {
+      rawBox.hidden = true;
+      return;
+    }
     var text = rawTextOf(value);
     rawOut.textContent = typeof text === "string" ? text : String(text);
     rawBox.hidden = false;
@@ -719,9 +738,7 @@ pre {
     envList.className = "env-list" + (envExpanded && envAll.length > ENV_LIMIT ? " scroll" : "");
 
     var canExpand = envAll.length > ENV_LIMIT;
-    var truncated = envTotal > envAll.length;
-    // Nothing to expand and nothing missing: no footer at all.
-    if (!canExpand && !truncated) {
+    if (!canExpand) {
       if (envFoot) { envFoot.hidden = true; }
       return;
     }
@@ -734,22 +751,10 @@ pre {
         envToggle.setAttribute("aria-expanded", envExpanded ? "true" : "false");
       }
     }
+    // Footer keeps only the expand/collapse control - no "N more not listed" sentence.
     if (envMore) {
-      // Collapsed: how much of the account is on screen. Expanded: how much the result actually
-      // carried. Either way the remainder is named, not implied - a row of text that says "the
-      // first five" without saying where the rest are is the dead end this replaced.
-      var restored = envTotal - envReturned;
-      if (!canExpand) {
-        envMore.textContent = T.envRestHidden.replace("{n}", String(restored));
-      } else if (!envExpanded) {
-        // How many exist, and the button says how many of them this result can actually list:
-        // "first 5 of 37" next to "show all 12" made the reader compare three numbers.
-        envMore.textContent = T.envAllShown.replace("{total}", String(envTotal));
-      } else if (restored > 0) {
-        envMore.textContent = T.envRestHidden.replace("{n}", String(restored));
-      } else {
-        envMore.textContent = T.envAllShown.replace("{total}", String(envTotal));
-      }
+      envMore.textContent = "";
+      envMore.hidden = true;
     }
   }
 
@@ -763,33 +768,54 @@ pre {
     });
   }
 
-  // One click, one path: the panel asks the host to run auth(set_env) itself, then re-reads the
-  // status so the card shows the bound environment instead of guessing. Hosts that do not forward
-  // app-initiated calls leave the deadline to fail the promise, and the row says so in one line
-  // instead of pretending the click worked.
+  // One click, one path: hand a bind prompt to the conversation via ui/message.
+  // Hosts often do not forward app-initiated tools/call (set_env), so the row must
+  // not depend on that path - same contract as the main CTA.
   function bindEnv(envId, name) {
     if (busy || !envId) { return; }
     busy = true;
     setEnvBusy(true);
     if (envErr) { envErr.hidden = true; envErr.textContent = ""; }
-    withTimeout(request("tools/call", { name: "auth", arguments: { action: "set_env", envId: envId } }), CHECK_TIMEOUT_MS)
-      .then(function (result) {
-        var payload = readPayload(result);
-        if (payload && payload.ok === false) { throw new Error(typeof payload.code === "string" ? payload.code : "SET_ENV_FAILED"); }
-        return withTimeout(request("tools/call", { name: "auth", arguments: { action: "status" } }), CHECK_TIMEOUT_MS);
-      })
-      .then(function (result) {
-        var payload = readPayload(result);
-        if (payload) { render(payload); } else { render(null); showRaw(result); }
+    var alias = name || envId;
+    var text = T.messageBindEnv.replace(/\{alias\}/g, alias).replace(/\{envId\}/g, envId);
+    request("ui/message", { role: "user", content: { type: "text", text: text } })
+      .then(function () {
+        // Prompt is in the conversation; the model will call set_env. Do not invent a bound state.
       })
       .catch(function () {
-        if (envErr) { envErr.hidden = false; envErr.textContent = T.envFailed.replace("{alias}", name || envId); }
+        copyText(text);
+        if (envErr) { envErr.hidden = false; envErr.textContent = T.envFailed; }
       })
       .then(function () {
         busy = false;
         setEnvBusy(false);
         reportSize();
       });
+  }
+  function paintEnvId(env) {
+    currentEnvId = env || "";
+    var node = el("brand-env");
+    setText(node, currentEnvId || T.statusUnset);
+    var btn = el("btn-copy-env");
+    if (btn) { btn.hidden = !currentEnvId; }
+  }
+  function copyText(text) {
+    if (!text) { return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text);
+      return;
+    }
+    try {
+      var area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "readonly");
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      document.body.removeChild(area);
+    } catch (error) { /* clipboard denied */ }
   }
   function render(payload) {
     var state = STATES[stateKey(payload)];
@@ -798,6 +824,7 @@ pre {
     if (stDot) { stDot.className = "dot" + (state.dot ? " " + state.dot : ""); }
     setText(stText, state.text);
     setText(stQual, state.hint);
+    if (stQual) { stQual.hidden = !state.hint; }
     // The title never changes; the subtitle is one fixed sentence per state, and the state before
     // any result is a plain welcome instead of a guess about what the panel is checking.
     var subNode = el("c-sub");
@@ -817,10 +844,7 @@ pre {
     var env = hasField(payload, "current_env_id")
       ? (typeof payload.current_env_id === "string" ? payload.current_env_id : "")
       : FALLBACK.env;
-    if (kEnv) {
-      kEnv.className = env ? "v mono" : "v mono idle";
-      setText(kEnv, env || T.statusUnset);
-    }
+    paintEnvId(env);
     var envShown = renderEnvs(payload);
     setText(nxLabel, state === STATES.unbound && envShown ? T.nextLabelUnboundList : state.label);
     setText(nxWhy, state.why);
@@ -836,7 +860,7 @@ pre {
       if (refreshBtn) { refreshBtn.className = replacedByList ? "linklike" : "link"; }
       mainBtn.disabled = false;
       setText(el("btn-main-label"), state.main);
-      setIcon(el("ico-main"), state.main === T.actionSelectEnv ? "server" : (state.main === T.actionDeploy ? "rocket" : "login"));
+      setIcon(el("ico-main"), state.main === T.actionSelectEnv ? "server" : "login");
     }
     if (payload) { showRaw(JSON.stringify(payload, null, 2)); }
   }
@@ -972,6 +996,12 @@ pre {
       });
     });
   }
+  var copyEnvBtn = el("btn-copy-env");
+  if (copyEnvBtn) {
+    copyEnvBtn.addEventListener("click", function () {
+      copyText(currentEnvId);
+    });
+  }
   if (mainBtn) {
     mainBtn.addEventListener("click", function () {
       var state = current;
@@ -1019,7 +1049,7 @@ export function registerGetStartedResource(server: ExtendedMcpServer): void {
     },
     async (uri) => {
       const startedAt = Date.now();
-      const lang = getInstanceLang();
+      const lang = resolvePanelLang();
       let success = true;
       let errorMessage: string | undefined;
       let html = "";

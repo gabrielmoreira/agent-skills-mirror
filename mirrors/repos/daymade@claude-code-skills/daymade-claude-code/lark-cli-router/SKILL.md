@@ -40,6 +40,14 @@ When updating a document with manual formatting, changing table widths, or
 investigating full-width reading, read [document layout](references/document-layout.md)
 before planning a write. Keep command syntax in the selected embedded Doc guide.
 
+## External customer collaboration
+
+For a customer-facing Wiki with a matching external group, creating an external
+group, or granting a group access to a customer page and its descendants, read
+[external collaboration](references/external-collaboration.md) before planning
+changes. It also covers inspecting and reusing a group the user created manually.
+Use the embedded IM, Wiki and Drive guides for the actual commands.
+
 ## Workflow
 
 ### 1. Confirm the runtime
@@ -52,6 +60,12 @@ Set `LARK_CLI_NO_PROXY=1` for every invocation in this environment. When stable
 machine-readable JSON is needed, also set
 `LARKSUITE_CLI_NO_UPDATE_NOTIFIER=1` and
 `LARKSUITE_CLI_NO_SKILLS_NOTIFIER=1` so notices do not pollute the result.
+
+Before the first target-resource read, follow [source account binding](references/source-account-binding.md).
+Reuse the source's authorized profile binding or match its URL tenant against
+the user's existing account registry; the active organization alone does not
+establish the right account. Keep the selected `--profile` and `--as` explicit
+through subsequent calls.
 
 ### 2. Select the embedded guide
 

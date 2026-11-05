@@ -2,16 +2,20 @@
 name: a-stock-data
 description: 当任务需要写代码实际获取A股及相关市场数据时使用——行情/K线/逐笔(腾讯日周月前后复权+分钟线+当日逐笔、通达信官网全市场盘后包、百度)、研报(东财+新浪+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业/板块资金流)、资金面(融资融券/大宗/股东户数/分红/资金流/ETF份额)、新闻(财联社/东财/华尔街见闻/新闻联播)、财务三表/F10/估值历史/ST名单、公告(巨潮)、打板(涨停池/连板/炸板率/监控池/异动)、ETF期权、舆情互动(互动易/上证e互动/热榜)、筹码分布、复权因子、申万行业变迁、宏观与利率(社融/PMI/中债收益率曲线/回购定盘利率/LPR/全球宏观日历)、指数成分/权重/估值/交易日历、期货与大宗商品(五家期货交易所日行情/商品与股指期权/持仓排名/期货日K含大商所/实时期货/A50/上海金)、事件驱动(业绩预告/机构调研/增减持/回购/股权质押/新股申购)、可转债等真实数据。十五层·87端点(含5备胎)·34个来源·内嵌全部可运行代码，自包含零外部文件；优先用腾讯/交易所官方等不封IP源，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.10.3
+version: 3.10.4
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.10.3
+# A股全栈数据工具包 V3.10.4
 
 十五层数据架构，87 个能力端点（82 主端点 + 5 备胎）、34 个来源。V3.10 新增的 2 个入口于 2026-09-22 实测，V3.9 新增的 25 个入口于 2026-09-20 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+
+> **V3.10.4（基金复权修复，2026-11-04 · #64）：** 入口数、来源数不变，个股的返回值不变。§1.6 `sina_adjust_factor()` / `apply_adjust()`：
+> 基金（ETF / LOF）原来只读新浪的 `f`（基金恒为 1），复权等于没做；现在补读 `s`（累计份额折算比例）和 `u`（累计每份分红），
+> 前复权 `raw / s - u`、后复权 `(raw + u) * s`，因子多出 `split` / `dividend`，结果多出 `adj_split` / `adj_dividend`。
 
 > **V3.10.3（上证e互动时间列修复，2026-10-23）：** 入口数、来源数不变，返回的数据也不变。§10.3 `sse_e_interaction()`：
 > 站点 1 天内的回复时间写成「昨天 18:22」，原来只认绝对时间，遇到就整页抛 `RuntimeError`；现在相对 / 绝对写法都换算成
@@ -1202,8 +1206,8 @@ etf_quotes = tencent_quote(["510050", "510300"])
 | `volume` 单位 | **科创板（688 / 689）是股**，其余是手：沪深主板、创业板、B 股、ETF（含科创板 ETF 588）、LOF、REITs 1 手 = 100 股 / 份，可转债 1 手 = 10 张，指数也是手；日周月线、分钟线、复权与否都是这个规则 |
 
 > ⚠️ **腾讯前复权是等差口径**（逐次减去每股分红）：茅台 2020-01-02 原始价 1130.00、腾讯 qfq 870.741，差额正是此后累计分红；
-> 高分红老股早年会被减成负数（茅台 2015 年约 -117.6）。本函数遇到 ≤0 价格直接抛错。**长区间回测请取 `adjust=''`，
-> 再用 §1.6 的比例因子复权**。本接口**没有成交额**，需要成交额用 §1.3。
+> 高分红老股早年会被减成负数（茅台 2015 年约 -117.6）。本函数遇到 ≤0 价格直接抛错。**个股长区间回测请取 `adjust=''`，
+> 再用 §1.6 的比例因子复权；基金（ETF/LOF）长区间请用 §1.6 的 `hfq`（基金为等差+折算口径）**。本接口**没有成交额**，需要成交额用 §1.3。
 
 > ⚠️ **成交量按股对账前先看这几条**（#57，2026-10-05 对照通达信盘后包与 Baostock 实测）：
 > - **整手取整**：科创板以外，日线的量是当日总股数取整到手——2020-03-11 起基本是四舍五入（实测差 −52～+50 股），更早是舍去零头（差 −99～0 股），
@@ -1374,10 +1378,10 @@ def tencent_kline(code, period="day", adjust=None, start=None, end=None, count=3
         raise RuntimeError(f"腾讯 K 线 {symbol} {period} 在所给区间内 0 根（未上市/停牌区间/代码有误）")
     # 腾讯 qfq 是「逐次减去每股分红」的等差口径（茅台 2020-01-02：原始 1130.00，qfq 870.741，
     # 差额 259.259 正是此后累计分红），高分红股的早年价格会被减成负数（茅台 2015 年 -117.6）。
-    # 负价不能拿去算收益率，直接拒绝；长区间请用 adjust='' 再按 §1.6 比例口径复权。
+    # 负价不能拿去算收益率，直接拒绝；个股长区间请用 adjust='' 再按 §1.6 比例口径复权；基金长区间请用 §1.6 的 hfq。
     if any(min(r["open"], r["high"], r["low"], r["close"]) <= 0 for r in rows):
         raise RuntimeError(f"腾讯 {adjust or '原始'} 价格出现 ≤0（等差复权口径的副作用）；"
-                           "请改用 adjust='' 取不复权价，再用 §1.6 sina_adjust_factor + apply_adjust")
+                           "个股请改用 adjust='' 取不复权价，再用 §1.6 sina_adjust_factor + apply_adjust 比例复权；基金长区间请用 hfq")
     # 分段请求可能落在不同入口，source_url 列出实际用到的全部入口
     frame = _v39_frame(rows, "tencent", " | ".join(h + "/appstock/app/fqkline/get" for h in used_hosts))
     frame.insert(0, "code", symbol)
@@ -1716,6 +1720,9 @@ print("最近5根K线:", data["rows"][-5:])
 **核心价值：** §1.7 `tdx_client().bars()`、§1.2 `tencent_kline(adjust='')`、§1.3 `tdx_daily_package()` 返回的是**不复权**数据，跨除权日直接比价必然出错。
 本端点给出复权因子序列，一次 HTTP、约 1.8KB、零鉴权。
 
+个股使用 `f` 比例因子。基金（ETF/LOF）使用 `s`（累计份额折算比例）和 `u`（累计每份分红）的等差+折算口径：
+qfq 为 `raw / s - u`，hfq 为 `(raw + u) * s`；本次基金样例在 0.001 容差内与腾讯复权收盘价一致。
+
 ```python
 import json
 import re
@@ -1724,7 +1731,10 @@ import requests
 
 
 def sina_adjust_factor(code: str, kind: str = "qfq") -> list:
-    """新浪复权因子序列 — kind='qfq'(前复权) | 'hfq'(后复权)，按日期倒序（最新在前）"""
+    """新浪复权因子序列 — kind='qfq'(前复权) | 'hfq'(后复权)，按日期倒序（最新在前）
+
+    个股返回 date/factor；基金（ETF/LOF）另含 split/dividend，对应 s/u 等差+折算口径。
+    """
     if kind not in ("qfq", "hfq"):
         raise ValueError(f"kind 只能是 'qfq' 或 'hfq'，收到 {kind!r}")
     # 数字位用 norm_ticker() 剥掉前后缀（否则 "sz000016" 会拼成 "szsz000016" ——
@@ -1751,7 +1761,16 @@ def sina_adjust_factor(code: str, kind: str = "qfq") -> list:
         data, _ = json.JSONDecoder().raw_decode(text[brace:])
     except json.JSONDecodeError as e:
         raise RuntimeError(f"新浪复权因子 JSON 解析失败（{symbol}/{kind}）: {e}") from e
-    return [{"date": it["d"], "factor": float(it["f"])} for it in data.get("data", [])]
+    rows = []
+    for it in data.get("data", []):
+        row = {"date": it["d"], "factor": float(it["f"])}
+        if "s" in it or "u" in it:
+            try:
+                row.update(split=float(it["s"]), dividend=float(it["u"]))
+            except (KeyError, TypeError, ValueError) as e:
+                raise RuntimeError(f"新浪基金复权因子 s/u 格式异常（{symbol}/{kind}）: {e}") from e
+        rows.append(row)
+    return rows
 
 
 def apply_adjust(bars, factors: list, kind: str = "qfq",
@@ -1767,6 +1786,10 @@ def apply_adjust(bars, factors: list, kind: str = "qfq",
       - `hfq`（后复权）因子是**乘数**：`后复权价 = 不复权价 × factor`
     传错方向不会报错，只会把历史价格放大/缩小几倍（见下方实测对照表）。
 
+    基金（ETF/LOF）每行带 split/dividend，走 s/u 等差+折算口径：
+      - qfq：`v / split - dividend`；hfq：`(v + dividend) * split`
+    输出保留 4 位小数，另记 adj_split/adj_dividend；基金 qfq 舍入后非正价抛错，长区间改用 hfq。
+
     因子表是「生效日 → 因子」的阶梯，每根 K 线取**不晚于它**的最近一个因子。
     """
     if kind not in ("qfq", "hfq"):
@@ -1778,6 +1801,14 @@ def apply_adjust(bars, factors: list, kind: str = "qfq",
             "复权因子列表为空，无法复权。请先确认 sina_adjust_factor() 是否取到数据"
             "（新浪对不支持的标的会返回空 data），不要用未复权价继续计算。"
         )
+
+    fund_mode = all("split" in f and "dividend" in f for f in factors)
+    if not fund_mode and any("split" in f or "dividend" in f for f in factors):
+        raise RuntimeError("复权因子表口径混杂：基金每行必须同时含 split/dividend")
+    if fund_mode:
+        for f in factors:
+            if f["split"] <= 0 or f["factor"] != 1:
+                raise RuntimeError("基金复权因子异常：split 必须 >0，factor 必须为 1")
 
     is_df = hasattr(bars, "columns") and hasattr(bars, "to_dict")
     if is_df:
@@ -1799,7 +1830,7 @@ def apply_adjust(bars, factors: list, kind: str = "qfq",
     out, i, cur = [], 0, None
     for bar in sorted(rows, key=lambda b: b["date"]):
         while i < len(fac) and fac[i]["date"] <= bar["date"]:
-            cur = fac[i]["factor"]
+            cur = fac[i] if fund_mode else fac[i]["factor"]
             i += 1
         # 🔴 早于最早因子日的 K 线不能原样放行 —— 那会让一份结果里混着「已复权」和
         #    「未复权」两种价格且无从分辨。新浪的因子表通常带 1900-01-01 哨兵
@@ -1810,14 +1841,23 @@ def apply_adjust(bars, factors: list, kind: str = "qfq",
                 f"K 线日期 {bar['date']} 早于因子序列最早日 {fac[0]['date']}，"
                 "无法复权；不返回未复权价以免与已复权行混淆。"
             )
-        if cur == 0:
+        factor = cur["factor"] if fund_mode else cur
+        if factor == 0:
             raise RuntimeError(f"复权因子为 0（{bar['date']}），无法换算")
         nb = dict(bar)
         for k in price_keys:
             if k in nb and nb[k] is not None:
                 v = float(nb[k])
-                nb[k] = round(v / cur if kind == "qfq" else v * cur, 4)
-        nb["adj_factor"] = cur
+                if fund_mode:
+                    v = v / cur["split"] - cur["dividend"] if kind == "qfq" else (v + cur["dividend"]) * cur["split"]
+                    nb[k] = round(v, 4)
+                    if kind == "qfq" and nb[k] <= 0:
+                        raise RuntimeError(f"基金前复权价格 ≤0（{bar['date']}/{k}），长区间请改用 hfq")
+                else:
+                    nb[k] = round(v / factor if kind == "qfq" else v * factor, 4)
+        nb["adj_factor"] = factor
+        if fund_mode:
+            nb.update(adj_split=cur["split"], adj_dividend=cur["dividend"])
         out.append(nb)
     if is_df:
         import pandas as pd
@@ -1855,6 +1895,7 @@ print(apply_adjust(bars, hfq, kind="hfq"))                # → 1274.28（后复
 | 2026-08-14 | 1341.99 | 1341.99 | 1341.99 ✅ | 1341.99 ✅ |
 
 > `qfq` 因子恒 ≥ 1 且越往历史越大，**乘上去会把历史价格放大**，必须做除法。
+> 基金（ETF/LOF）请使用上面的 s/u 公式；本段比例因子及下方 baostock 基准对照适用于个股。
 > 2026 那行两种算法都对，是因为最新日因子恰为 1.0 —— **只用最近日期做验证会漏掉这个 bug**。
 >
 > ⚠️ **hfq 的基准与 baostock 不同**：新浪 `raw × hfq` 与 baostock 后复权价差一个**恒定倍数**
@@ -1870,6 +1911,14 @@ print(apply_adjust(bars, hfq, kind="hfq"))                # → 1274.28（后复
 >   ⚠️ 两者**不是倒数**（乘积不为 1），比值 `hfq/qfq` 也**不恒定**（茅台 33 个日期有 32 种取值）——
 >   两个基准不同的归一化序列，只有乘积守恒。
 > 不满足以上任一条，说明响应被截断或标的代码写错。
+
+> **基金分支自检（fixtures 采集于 2026-11-03，离线核对）：**
+> 4 组样例均满足 qfq 最新一行 `split=1、dividend=0`，hfq 最早一行（1900 哨兵）也为 `split=1、dividend=0`。
+>   同日 `qfq.dividend + hfq.dividend` 在各样例全期恒定（依次为 `5.3905、0、0.4062、0`）；
+>   `qfq.split × hfq.split` 也在浮点容差内恒定（依次为 `1、5、约 0.4245239277782239、1`，最大极差约 `4e-17`）。
+>   上述顺序为债券 ETF 示例、份额折算示例、分红及折算示例、无分红示例；这是 fixtures 上的结论，非所有标的的保证。
+> - 基金 `f` 全为 `1` 是正常状态，必须继续读取 `s/u`；已知有分红或折算的基金 **`f` 全为 `1` 且没有 `s/u`** 才是可疑状态。
+>   只有 1900 哨兵且 `s=1、u=0` 的无事件基金可正常原价换算。自检异常时应核对响应完整性和标的代码。
 
 ### 1.7 mootdx — K线 + 五档盘口 + 逐笔成交（⚠️ 2026-09 起行情命令失效，留档）
 

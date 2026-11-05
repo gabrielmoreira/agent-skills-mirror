@@ -45,7 +45,7 @@ as options (see the notes under [Antigravity](#google-antigravity-engine-agy) an
 
 ### Claude Code (`engine: 'claude'`)
 
-Default engine. Long-running subprocess with streaming JSON I/O. Tested with Claude Code CLI **2.1.316**.
+Default engine. Long-running subprocess with streaming JSON I/O. Tested with Claude Code CLI **2.1.317**.
 
 - Persistent multi-turn conversations
 - Real-time streaming (text, tool_use, tool_result, system events)
@@ -499,6 +499,19 @@ What happens behind the scenes:
 1. The session manager reads `~/.openclaw/openclaw.json` for the gateway port + auth (in plugin and `clawo serve` mode alike)
 2. Starts a local proxy server on `127.0.0.1` (random port, auto-managed) the first time a Claude session names a non-Claude model, provided a gateway URL was found
 3. Claude Code CLI sends Anthropic-format requests → proxy converts to OpenAI → gateway → any model
+
+### Your own Anthropic-compatible gateway
+
+A gateway that speaks the Anthropic API and serves other models under their own names (an internal model
+gateway, for instance) needs none of this. Set `CLAWO_CLAUDE_GATEWAY=1` in the environment clawo runs in,
+with the gateway in `ANTHROPIC_BASE_URL` (and its token in `ANTHROPIC_AUTH_TOKEN`) or in a session's
+`baseUrl`. A `claude` session then passes any model name to the CLI as given (`--model gw-model-1`), starts no
+proxy, and does not rewrite the base URL. Because it is read from the environment, it applies to every
+`claude` session the process starts, including those of workflow, fan-out and council nodes.
+
+Such a model is priced only from `pricingOverrides` (or the registry, if it knows the name). The CLI's own
+cost figure is ignored, since it prices tokens from Anthropic's table, and without an override the cost is
+recorded as 0, with a single warning per model name.
 
 ### Manual Config (optional)
 

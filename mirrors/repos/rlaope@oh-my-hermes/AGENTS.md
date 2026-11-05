@@ -129,7 +129,7 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   removed. On Windows the provider starts suspended, enters a kill-on-close
   Job Object, and resumes only after ownership succeeds; clean evidence
   requires the Job Object to report zero active processes.
-- **`omh_jev_ask`**, the one scoped network integration: the plugin tool POSTs
+- **`omh_jev_ask`**, one of two scoped network integrations: the plugin tool POSTs
   typed questions to Jev with the user's own key and returns probabilities.
   It runs only when the user's own message for that turn names Jev (a
   per-turn marker `pre_llm_call` records; otherwise it returns
@@ -140,10 +140,25 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   never writes. Stdlib only, HTTPS only, two route identities, no redirects,
   bounded bodies, no retry after a sent request times out. It
   persists no key, `state`, question text, or reply; one metadata-only ledger
-  row per ask. `src/plugin_bundle/omh/jev_ask_client.py` is the only
-  in-process network client in `src/`, and only `tools/jev_ask_tool.py` may
+  row per ask. `src/plugin_bundle/omh/jev_ask_client.py` is one of the two
+  in-process network clients in `src/`, and only `tools/jev_ask_tool.py` may
   import it. Third-party Jev plugins are never called, and `omh doctor` reads
   no credential value.
+- **The OMH TUI's update notice**, the other scoped network integration: at
+  most once a day per OMH home, on a background thread that never holds the
+  start or the screen, the TUI GETs `https://registry.npmjs.org/oh-my-hermes/latest`
+  and keeps only its `version`, cached with the time of the ask in
+  `<omh_home>/tui/update-check.json`; a newer release than the running one is
+  named beside the info line's badge. Stdlib only, HTTPS only, one fixed host,
+  redirects off that host refused, a 3 s socket timeout, a bounded reply, and
+  nothing about the person sent; every failure is silent and keeps what the
+  cache knew. Off with `OMH_TUI_UPDATE_CHECK=0`, `omh theme update-check
+  off`, or `omh update-check` stored as `off` (`update_check.mode` in
+  `<omh_home>/setup-profile.json`, written by `omh update-check set` or
+  confirmed in `omh setup`; a home that never stored a mode keeps it on), and
+  nothing is asked without an OMH home. `src/tui/update_notice.py`
+  is the other in-process network client in `src/`, and only `tui/app.py` may
+  import it.
 - **Show-reel provider scripts**: `src/skills/show_reel_toolkit/scripts/eleven.py`
   and `narrate.py` (ElevenLabs TTS/STT/SFX/music by spawning `curl`, key from
   `ELEVENLABS_API_KEY` only, passed on curl's stdin) and `codex_ref_image.sh`
@@ -190,6 +205,19 @@ and evidence obvious to a reviewer reading the PR without the chat history.
 - Code, docs, commit messages, PR text, and user-facing CLI output are
   English by default. Localized output (ko/ja/zh) is explicit opt-in through
   `--language` or `OMH_LANG`; never auto-detect the OS locale.
+- OMH is an open-source product for every user on every terminal. Design a
+  fix or a look for all of them. Never tune it to the maintainer's own
+  machine, terminal, theme or language: the maintainer's setup is where a
+  problem shows up and gets measured, not the target. A capability-detected
+  enhancement may sit on top of a fix that works everywhere, but never
+  replaces it.
+- The OMH TUI and CLI frame is English for everyone: TUI labels, key hints,
+  picker rows, TUI notices and CLI output. Never switch it by the language of
+  the conversation or of text a model or a person wrote. That text keeps its
+  own language; the frame around it does not follow. The only exception is
+  the explicit `--language` / `OMH_LANG` opt-in above. Chat and messenger
+  reply copy (`src/wrapper/localized_copy.py`) is a separate surface. It
+  follows the person's message and is not covered by this rule.
 - Reply to Korean user messages in polite Korean; no banmal or casual endings
   unless the user asks for that tone. Name what exists, what is missing, and
   the complete target behavior, rather than process labels or "small first

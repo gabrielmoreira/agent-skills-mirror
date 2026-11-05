@@ -9,6 +9,16 @@ description: Control, debug, and test live All API Hub extension UI on desktop o
 
 Automate and test the development browser extension UI against real accounts and logged-in states without closing or disturbing the user's daily primary browser.
 
+For acceptance, default to exercising all applicable actions and state branches in the scoped workflow. Before browser execution, follow [coverage before execution and closure](../add-site-integration/references/evidence-and-validation.md#coverage-before-execution): derive the inventory independently of the existing script, execute available authorized cases, and account for every untested row. Generic smoke, representative screenshots and a green selected suite do not establish complete coverage. Read-only diagnosis stays read-only; coverage adds no mutation authority.
+
+Apply this to every UI acceptance task, including settings, permissions, popup/sidepanel, imports/exports, models, account/key workflows and Android CDP/RDP, not only new site integrations. Use the [shared execution and reporting contract](../../../CONTRIBUTING.md#reusable-cdp-ui-checks) for maintained runners: derive `all` from registered suites, reject unknown selections, retain skipped/blocked/unselected coverage and both execution/cleanup errors, and preserve each run's report. A successful focused run proves only its asserted scope; neither all registered suites nor a successful device connection establishes complete product acceptance. Do not expand read-only or explicit-write modes to satisfy coverage.
+
+## Changes to shared interactive controls
+
+Before replacing, relocating, or simplifying an existing action, record its request/selection effects and enabled state in each reachable state. Exercise the original action after failure and after successful recovery; a status message or replacement button does not establish that the original control still works. Preserve current selections and known options where the workflow permits retries, and distinguish failed requests, successful empty results, and searches with no matches.
+
+When a user requests complete before/after evidence, capture a matched state matrix from verified earlier and final source builds using the same fixture, viewport, locale, theme and interaction state. Include closed and open controls, surrounding actions and readable local crops; include loading with existing data, empty, success, failure, detailed diagnostics, search with no matches and manual selection when applicable. Pair every applicable row in one gallery, assert recovery behavior separately from screenshot generation, and identify unavailable baselines or cases explicitly. Do not substitute a representative screenshot for the requested matrix or infer disabled/enabled behavior from appearance. See [task acceptance](../../../docs/agents/task-acceptance.md).
+
 ## Choose the runtime
 
 - **Android phone/tablet, including Firefox, Edge, or Lemur (狐猴):** read [mobile debugging and hot updates](references/mobile-debugging.md). Use the unified `scripts/mobile-browser.mjs` entrypoint for discovery, diagnostics, and development sessions. Diagnose the installed release when that is the user's goal; do not replace it with a dev build merely to obtain execution access.
@@ -108,6 +118,12 @@ pnpm e2e:cdp
 This smoke runner uses title-based discovery. Use the exact-path pattern below for mode-specific evidence, especially when dev and production extensions coexist; it replaces this optional smoke step rather than requiring both.
 
 ### 5. Authoring Custom Automated E2E/CDP Tests
+Two Playwright traps cost real time when driving these pages, so handle them deliberately:
+
+- `page.goto()` that differs only by hash is an intra-document navigation: it bypasses the app's router and leaves the Options content area blank. When the page is already on the target document, set `location.hash` instead (and wait for the rendered shell).
+- `locator.isVisible({ timeout })` ignores the timeout and returns a snapshot; a route that has not rendered yet reads as "absent". Use `waitFor({ state: "visible", timeout })` for any readiness assertion.
+- A dev-mode Options page compiles the whole module graph on first paint and keeps an HMR connection open, so the default 30s navigation budget and the `load` event are both unreliable. Navigate with `waitUntil: "domcontentloaded"` and a larger timeout.
+
 When implementing a new feature or reproducing UI bugs, author or extend a CDP automation script following this pattern:
 
 ```javascript

@@ -129,7 +129,7 @@ Store the answer as `BOOK_TYPE`:
 - Option 3 → `BOOK_TYPE=text`
 
 **If `BOOK_TYPE=technical`**, inform the user before proceeding:
-> "📐 Technical mode selected — using Docling for structure-aware extraction (tables, code blocks, formulas preserved as markdown). This takes ~1.5s per page, so expect a few minutes for longer sources. Starting now…"
+> "📐 Technical mode selected — PDFs attempt Docling for layout-aware extraction. EPUBs and other formats use their existing text extractors; code, tables, and formulas may lose structure. Check each source's `extraction_method` and `fallback_reason` in metadata.json for the actual extraction path."
 
 **If `BOOK_TYPE=text`**, inform:
 > "📄 Text mode selected — using the fastest suitable extractor for each file type. Plain text/Markdown/HTML are usually ready in seconds; PDFs use pdftotext when available."
@@ -460,7 +460,7 @@ If a chapter genuinely has no worked example and resists expansion, let it land 
 
 For EACH chapter/major section identified in Step 3:
 
-Read the corresponding section of the extracted `full_text.txt` (use character offsets or grep for chapter headings).
+Read the corresponding section of the extracted `full_text.txt` using top-level `chapter_ranges` from `metadata.json` when present (`start_line`/`end_line` are 1-based inclusive, for `sed`/`Read`); otherwise grep for chapter headings. (`sources[].chapter_ranges` use the same fields but line numbers in that source's text only, not the consolidated `full_text.txt`.)
 
 Create `$SKILLS_HOME/<skill_name>/chapters/ch<NN>-<slug>.md` using the structure below.
 
@@ -610,6 +610,7 @@ the relevant chapter file before answering.
 - [glossary.md](glossary.md) — all key terms with definitions
 - [patterns.md](patterns.md) — all techniques and design patterns
 - [cheatsheet.md](cheatsheet.md) — quick reference tables and decision guides
+- Full text: `<output_text from metadata.json>` — grep it for depth the chapter files omit (local extraction, not shipped)
 
 ---
 

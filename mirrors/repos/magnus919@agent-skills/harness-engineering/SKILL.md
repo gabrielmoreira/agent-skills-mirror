@@ -31,6 +31,19 @@ load [the factory procedure](references/software-factory.md), not a generic
 collection of agent personas. Keep business operating-model decisions with
 operational-design and ai-operating-economics through the catalog handoffs.
 
+## Cross-agent coordination boundary
+
+For decomposition, topology, team ownership, distributed context and collective
+failure diagnosis, load [multi-agent-coordination](../multi-agent-coordination/SKILL.md).
+This skill owns the runtime implementation of those contracts. Existing software
+factory references remain available for production flow and steering.
+
+When compaction or local scope expansion loses intent, reconstruct the accepted
+task → parent outcome → project purpose chain from current source versions.
+Keep narrower scope and authority intact; a broad purpose cannot authorize new
+work. Challenge application of the recovered constraint rather than treating
+context delivery as adoption. See [context design](references/context-design.md).
+
 ## Authority and first move
 
 Confirm the target, scope, and rollback path before acting. Read-only discovery may proceed without confirmation.
@@ -128,12 +141,14 @@ for worked examples and mode-specific exit artifacts.
 
 | Active problem | Reference | Working template |
 |---|---|---|
+| Long waits, callbacks, subscriptions, hibernation or Infinity-style runtime design | [event-driven-continuations](references/event-driven-continuations.md) | [Event runtime decision](templates/event-runtime-decision.md), [worked coding journey](references/event-runtime-worked-example.md) |
 | Trace, conversation or review suggests a lasting lesson | [Lesson-to-PR](references/lesson-to-pr.md) | [Lesson candidate](templates/lesson-candidate.md) |
 | Failures or uncertain audit findings | [Diagnosis](references/diagnosis.md) | [Harness contract](templates/harness-contract.md) |
 | Startup/worker split and fresh-session discovery | [Session lifecycle](references/initialization-and-session-lifecycle.md) | [Session protocol](templates/session-protocol.md) |
 | Invisible knowledge, stale/contradictory rules | [Knowledge and invariants](references/instructions-and-knowledge.md) | [Guardrail promotion](templates/guardrail-promotion.md) |
 | Context retrieval, compression/reset, budgets | [Context design](references/context-design.md) | [Context budget](templates/context-budget.md) |
 | Persistence, state transitions, partial effects | [State and recovery](references/context-and-state.md) | [State](templates/state.json), [recovery drill](templates/recovery-drill.md) |
+| Local tool services, mixed sandbox paths or executable project configuration | [Tool-service trust and containment](references/tool-service-boundaries.md) | Per-path guarantees, caller grants and negative boundary probes |
 | Environment and custom runtime boundaries | [Runtime design](references/runtime-design.md) | [Runtime decision](templates/runtime-design.md) |
 | Credential handles, session reuse/handoff, revocation | [Credential/session authority](references/credential-session-authority.md) | Bind separate grants; challenge synthetic leaks and residual sessions |
 | Imported assistant memory, stale claims, rollback | [Memory import acceptance](references/memory-import-acceptance.md) | Stage reviewed claims; never import authority |
@@ -152,6 +167,15 @@ for worked examples and mode-specific exit artifacts.
 | Need specialist input then return to this workflow | [Catalog handoffs](references/catalog-composition.md) | Supply and consume the named contract |
 | Source provenance and extraction coverage | [Source assessment](references/source-assessment.md), [coverage map](references/source-coverage.md), [primary-source index](references/primary-sources.md), [source inventory](references/source-inventory.json) | Scope observations to their evidence |
 | Create a minimal repository harness | Use existing state owner first | [Instructions](templates/AGENTS.md), [handoff](templates/handoff.md) |
+
+For Infinity provenance or architecture claims, read the
+[research brief](references/infinity-research-brief.md),
+[source records](references/infinity-sources.md), and
+[research log](references/infinity-research-log.md), and
+[follow-up architecture findings](references/infinity-design-findings.md). For new event-runtime rubric
+boundaries, read [initial assertion challenges](evals/infinity-challenges.md) and
+[positive design challenges](evals/infinity-design-challenges.md). Keep reported
+capacity, inspected mechanisms and reproduced behavior separate.
 
 ## Bundled tools
 

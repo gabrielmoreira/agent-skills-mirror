@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `XiaoyeCodes/code-animation-prompts` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `XiaoyeCodes/code-animation-prompts` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `XiaoyeCodes/code-animation-prompts` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,10 +64,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/code-animation-prompts/assets/starter/index.html`](skills/code-animation-prompts/assets/starter/index.html) |
 | 4 | ✓ | [`skills/code-animation-prompts/references/attribution.md`](skills/code-animation-prompts/references/attribution.md) |
 | 5 | ✓ | [`skills/code-animation-prompts/references/catalog.json`](skills/code-animation-prompts/references/catalog.json) |
-| 6 | ✓ | [`skills/code-animation-prompts/references/rendering.md`](skills/code-animation-prompts/references/rendering.md) |
-| 7 | ✓ | [`skills/code-animation-prompts/scripts/render_video.py`](skills/code-animation-prompts/scripts/render_video.py) |
-| 8 | ✓ | [`skills/code-animation-prompts/scripts/styles.py`](skills/code-animation-prompts/scripts/styles.py) |
-| 9 | ✓ | [`skills/code-animation-prompts/SKILL.md`](skills/code-animation-prompts/SKILL.md) |
+| 6 | ✓ | [`skills/code-animation-prompts/references/library-changes.json`](skills/code-animation-prompts/references/library-changes.json) |
+| 7 | ✓ | [`skills/code-animation-prompts/references/rendering.md`](skills/code-animation-prompts/references/rendering.md) |
+| 8 | ✓ | [`skills/code-animation-prompts/scripts/render_video.py`](skills/code-animation-prompts/scripts/render_video.py) |
+| 9 | ✓ | [`skills/code-animation-prompts/scripts/styles.py`](skills/code-animation-prompts/scripts/styles.py) |
+| 10 | ✓ | [`skills/code-animation-prompts/SKILL.md`](skills/code-animation-prompts/SKILL.md) |
 
 ---
 

@@ -65,11 +65,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/2d-pixel-perfect/references/pipeline-detection.cs`](skills/2d-pixel-perfect/references/pipeline-detection.cs) |
 | 5 | ✓ | [`skills/2d-pixel-perfect/references/sprite-settings.cs`](skills/2d-pixel-perfect/references/sprite-settings.cs) |
 | 6 | ✓ | [`skills/2d-pixel-perfect/SKILL.md`](skills/2d-pixel-perfect/SKILL.md) |
-| 7 | ✓ | [`skills/asset-transformer-toolkit/api-docs/rule-api.md`](skills/asset-transformer-toolkit/api-docs/rule-api.md) |
-| 8 | ✓ | [`skills/asset-transformer-toolkit/api-docs/ruleblock-api.md`](skills/asset-transformer-toolkit/api-docs/ruleblock-api.md) |
-| 9 | ✓ | [`skills/asset-transformer-toolkit/api-docs/ruleset-api.md`](skills/asset-transformer-toolkit/api-docs/ruleset-api.md) |
-| 10 | ✓ | [`skills/asset-transformer-toolkit/references/create-importer.md`](skills/asset-transformer-toolkit/references/create-importer.md) |
-| 11 | ✓ | [`skills/asset-transformer-toolkit/references/lods.md`](skills/asset-transformer-toolkit/references/lods.md) |
+| 7 | ✓ | [`skills/asset-transformer-toolkit/references/create-importer.md`](skills/asset-transformer-toolkit/references/create-importer.md) |
+| 8 | ✓ | [`skills/asset-transformer-toolkit/references/lods.md`](skills/asset-transformer-toolkit/references/lods.md) |
+| 9 | ✓ | [`skills/asset-transformer-toolkit/references/rule-api.md`](skills/asset-transformer-toolkit/references/rule-api.md) |
+| 10 | ✓ | [`skills/asset-transformer-toolkit/references/ruleblock-api.md`](skills/asset-transformer-toolkit/references/ruleblock-api.md) |
+| 11 | ✓ | [`skills/asset-transformer-toolkit/references/ruleset-api.md`](skills/asset-transformer-toolkit/references/ruleset-api.md) |
 | 12 | ✓ | [`skills/asset-transformer-toolkit/references/rulesets-and-actions.md`](skills/asset-transformer-toolkit/references/rulesets-and-actions.md) |
 | 13 | ✓ | [`skills/asset-transformer-toolkit/SECURITY.md`](skills/asset-transformer-toolkit/SECURITY.md) |
 | 14 | ✓ | [`skills/asset-transformer-toolkit/SKILL.md`](skills/asset-transformer-toolkit/SKILL.md) |

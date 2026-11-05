@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 50 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,23 +92,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`.agents/skills/setup-openseo/SKILL.md`](.agents/skills/setup-openseo/SKILL.md) |
 | 32 | ✓ | [`.agents/skills/simple-issue-description/agents/openai.yaml`](.agents/skills/simple-issue-description/agents/openai.yaml) |
 | 33 | ✓ | [`.agents/skills/simple-issue-description/SKILL.md`](.agents/skills/simple-issue-description/SKILL.md) |
-| 34 | ✓ | [`.agents/skills/test-audit/SKILL.md`](.agents/skills/test-audit/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/verify-local-mcp/SKILL.md`](.agents/skills/verify-local-mcp/SKILL.md) |
-| 36 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 38 | ✓ | [`plugins/openseo/skills/ai-prompt-research/SKILL.md`](plugins/openseo/skills/ai-prompt-research/SKILL.md) |
-| 39 | ✓ | [`plugins/openseo/skills/ai-visibility-audit/SKILL.md`](plugins/openseo/skills/ai-visibility-audit/SKILL.md) |
-| 40 | ✓ | [`plugins/openseo/skills/competitive-landscape/SKILL.md`](plugins/openseo/skills/competitive-landscape/SKILL.md) |
-| 41 | ✓ | [`plugins/openseo/skills/competitor-analysis/SKILL.md`](plugins/openseo/skills/competitor-analysis/SKILL.md) |
-| 42 | ✓ | [`plugins/openseo/skills/keyword-clustering/SKILL.md`](plugins/openseo/skills/keyword-clustering/SKILL.md) |
-| 43 | ✓ | [`plugins/openseo/skills/keyword-research/SKILL.md`](plugins/openseo/skills/keyword-research/SKILL.md) |
-| 44 | ✓ | [`plugins/openseo/skills/link-prospecting/SKILL.md`](plugins/openseo/skills/link-prospecting/SKILL.md) |
-| 45 | ✓ | [`plugins/openseo/skills/local-seo/SKILL.md`](plugins/openseo/skills/local-seo/SKILL.md) |
-| 46 | ✓ | [`plugins/openseo/skills/seo-audit/SKILL.md`](plugins/openseo/skills/seo-audit/SKILL.md) |
-| 47 | ✓ | [`plugins/openseo/skills/seo-coach/SKILL.md`](plugins/openseo/skills/seo-coach/SKILL.md) |
-| 48 | ✓ | [`plugins/openseo/skills/seo-project-setup/SKILL.md`](plugins/openseo/skills/seo-project-setup/SKILL.md) |
-| 49 | ✓ | [`plugins/openseo/skills/seo-report/SKILL.md`](plugins/openseo/skills/seo-report/SKILL.md) |
-| 50 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
+| 34 | ✓ | [`.agents/skills/takeover/SKILL.md`](.agents/skills/takeover/SKILL.md) |
+| 35 | ✓ | [`.agents/skills/test-audit/SKILL.md`](.agents/skills/test-audit/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/verify-local-mcp/SKILL.md`](.agents/skills/verify-local-mcp/SKILL.md) |
+| 37 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
+| 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 39 | ✓ | [`plugins/openseo/skills/ai-prompt-research/SKILL.md`](plugins/openseo/skills/ai-prompt-research/SKILL.md) |
+| 40 | ✓ | [`plugins/openseo/skills/ai-visibility-audit/SKILL.md`](plugins/openseo/skills/ai-visibility-audit/SKILL.md) |
+| 41 | ✓ | [`plugins/openseo/skills/competitive-landscape/SKILL.md`](plugins/openseo/skills/competitive-landscape/SKILL.md) |
+| 42 | ✓ | [`plugins/openseo/skills/competitor-analysis/SKILL.md`](plugins/openseo/skills/competitor-analysis/SKILL.md) |
+| 43 | ✓ | [`plugins/openseo/skills/keyword-clustering/SKILL.md`](plugins/openseo/skills/keyword-clustering/SKILL.md) |
+| 44 | ✓ | [`plugins/openseo/skills/keyword-research/SKILL.md`](plugins/openseo/skills/keyword-research/SKILL.md) |
+| 45 | ✓ | [`plugins/openseo/skills/link-prospecting/SKILL.md`](plugins/openseo/skills/link-prospecting/SKILL.md) |
+| 46 | ✓ | [`plugins/openseo/skills/local-seo/SKILL.md`](plugins/openseo/skills/local-seo/SKILL.md) |
+| 47 | ✓ | [`plugins/openseo/skills/seo-audit/SKILL.md`](plugins/openseo/skills/seo-audit/SKILL.md) |
+| 48 | ✓ | [`plugins/openseo/skills/seo-coach/SKILL.md`](plugins/openseo/skills/seo-coach/SKILL.md) |
+| 49 | ✓ | [`plugins/openseo/skills/seo-project-setup/SKILL.md`](plugins/openseo/skills/seo-project-setup/SKILL.md) |
+| 50 | ✓ | [`plugins/openseo/skills/seo-report/SKILL.md`](plugins/openseo/skills/seo-report/SKILL.md) |
+| 51 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `upstash/context7` — 26 default patterns, 0 followed patterns, 13 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,18 +60,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`packages/opencode/skills/context7-mcp/SKILL.md`](packages/opencode/skills/context7-mcp/SKILL.md) |
-| 3 | ✓ | [`packages/pi/skills/context7-docs/SKILL.md`](packages/pi/skills/context7-docs/SKILL.md) |
-| 4 | ✓ | [`plugins/agent-plugins/context7/skills/context7-mcp/SKILL.md`](plugins/agent-plugins/context7/skills/context7-mcp/SKILL.md) |
-| 5 | ✓ | [`plugins/antigravity/context7/skills/context7-mcp/SKILL.md`](plugins/antigravity/context7/skills/context7-mcp/SKILL.md) |
-| 6 | ✓ | [`plugins/codex/context7/skills/context7-mcp/SKILL.md`](plugins/codex/context7/skills/context7-mcp/SKILL.md) |
-| 7 | ✓ | [`plugins/copilot/context7/skills/context7-mcp/SKILL.md`](plugins/copilot/context7/skills/context7-mcp/SKILL.md) |
-| 8 | ✓ | [`plugins/cursor/context7/skills/context7-mcp/SKILL.md`](plugins/cursor/context7/skills/context7-mcp/SKILL.md) |
-| 9 | ✓ | [`skills/context7-cli/references/docs.md`](skills/context7-cli/references/docs.md) |
-| 10 | ✓ | [`skills/context7-cli/references/setup.md`](skills/context7-cli/references/setup.md) |
-| 11 | ✓ | [`skills/context7-cli/SKILL.md`](skills/context7-cli/SKILL.md) |
-| 12 | ✓ | [`skills/context7-mcp/SKILL.md`](skills/context7-mcp/SKILL.md) |
-| 13 | ✓ | [`skills/find-docs/SKILL.md`](skills/find-docs/SKILL.md) |
+| 2 | ✓ | [`examples/eve-docs-agent/AGENTS.md`](examples/eve-docs-agent/AGENTS.md) |
+| 3 | ✓ | [`examples/eve-docs-agent/CLAUDE.md`](examples/eve-docs-agent/CLAUDE.md) |
+| 4 | ✓ | [`packages/opencode/skills/context7-mcp/SKILL.md`](packages/opencode/skills/context7-mcp/SKILL.md) |
+| 5 | ✓ | [`packages/pi/skills/context7-docs/SKILL.md`](packages/pi/skills/context7-docs/SKILL.md) |
+| 6 | ✓ | [`plugins/agent-plugins/context7/skills/context7-mcp/SKILL.md`](plugins/agent-plugins/context7/skills/context7-mcp/SKILL.md) |
+| 7 | ✓ | [`plugins/antigravity/context7/skills/context7-mcp/SKILL.md`](plugins/antigravity/context7/skills/context7-mcp/SKILL.md) |
+| 8 | ✓ | [`plugins/codex/context7/skills/context7-mcp/SKILL.md`](plugins/codex/context7/skills/context7-mcp/SKILL.md) |
+| 9 | ✓ | [`plugins/copilot/context7/skills/context7-mcp/SKILL.md`](plugins/copilot/context7/skills/context7-mcp/SKILL.md) |
+| 10 | ✓ | [`plugins/cursor/context7/skills/context7-mcp/SKILL.md`](plugins/cursor/context7/skills/context7-mcp/SKILL.md) |
+| 11 | ✓ | [`skills/context7-cli/references/docs.md`](skills/context7-cli/references/docs.md) |
+| 12 | ✓ | [`skills/context7-cli/references/setup.md`](skills/context7-cli/references/setup.md) |
+| 13 | ✓ | [`skills/context7-cli/SKILL.md`](skills/context7-cli/SKILL.md) |
+| 14 | ✓ | [`skills/context7-mcp/SKILL.md`](skills/context7-mcp/SKILL.md) |
+| 15 | ✓ | [`skills/find-docs/SKILL.md`](skills/find-docs/SKILL.md) |
 
 ---
 

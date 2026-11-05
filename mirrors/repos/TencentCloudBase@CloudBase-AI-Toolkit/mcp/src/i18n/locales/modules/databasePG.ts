@@ -9,7 +9,7 @@ export const databasePG = defineModule(
     "roleError.inspectContext": "重试前请检查自动推导的 PG 上下文（含默认 role）。",
     "queryPgDatabase.title": "查询 PostgreSQL 上下文、对象、元数据或执行只读 SQL",
     "queryPgDatabase.description":
-      "查询 CloudBase PostgreSQL 数据库。支持获取当前 PG 上下文、列出带 schema 的数据库对象、读取轻量元数据、检查单个对象结构，以及执行只读 SQL。",
+      "⚠️ 只读工具：只接受 SELECT 等只读 SQL。CREATE / ALTER / DROP / INSERT / UPDATE / DELETE 会被直接拒绝（STATE 42703/42P01 也多半是表名或列名猜错，先 action=objects 看真实结构，不要凭惯例猜 schema_migrations 之类的表）。写入与 DDL 请改用 managePgDatabase：DML/GRANT/RLS 用 action=execute，建表/改 schema 用 action=applyMigration。\n\n查询 CloudBase PostgreSQL 数据库：获取当前 PG 上下文、列出带 schema 的数据库对象、读取轻量元数据、检查单个对象结构，以及执行只读 SQL。",
     "managePgDatabase.title": "管理 PostgreSQL 上下文或执行写入 SQL",
     "managePgDatabase.description":
       "管理 CloudBase PostgreSQL：执行已确认的写入 SQL、SQL 风险预检、迁移管理。建表/ALTER/DROP 等 schema 变更必须使用 applyMigration（显式 migrationVersion；成功前自动写入或校验本地 cloudbase/migrations/<version>_<name>.sql，与 CLI tcb db pg migration 一致），不要默认用 execute。execute 主要用于 DML 与 GRANT/RLS 等运维 SQL。",
@@ -23,7 +23,7 @@ export const databasePG = defineModule(
     "schema.queryLimit":
       "可选的摘要数量上限，用于对象、元数据或 SQL 返回行数，默认 20，最大 200。",
     "schema.manageAction":
-      "操作类型：execute=执行已确认的写入 SQL（DML/GRANT/RLS；schema DDL 默认拒绝，需 allowDdlViaExecute=true）；dryRun=只分析 SQL 风险不执行；planMigration=预览迁移计划（需 migrationName + migrationVersion + sql；可选 includeAll=true 允许乱序，对齐 CLI --include-all）；applyMigration=应用迁移，建表/改 schema 首选（需 migrationName + migrationVersion + sql + confirm=true；可选 includeAll；本地 SQL 缺失则自动写入 cloudbase/migrations/，内容不一致则 LOCAL_MIGRATION_FILE_MISMATCH fail-closed；成功返回前会轮询 DescribeTaskResult（默认最长 10 分钟，可用 taskPollTimeoutMs / waitForTask 调整）并校验 migrationVersion 已落入远端历史；超时返回 MIGRATION_TASK_TIMEOUT，必须先 describeMigrationTask 再 listMigrations，禁止立刻重推同 version；未落库时返回 success=false 且 errorCode=MIGRATION_NOT_APPLIED）；listMigrations=查询已应用的 Migration 列表（可传 limit/offset 分页）；migrationDetail=查看单条 Migration 详情（需 migrationVersion）；describeMigrationTask=按 TaskId 查询 Push 异步任务状态（DescribeTaskResult：Status/Phase/Reason；需 taskId；用于 waitForTask=false / MIGRATION_TASK_TIMEOUT / 失败诊断，listMigrations 看不到 Reason）；fetchMigration=从远端 history 拉取 SQL 写入本地 cloudbase/migrations/（对齐 CLI tcb db pg migration fetch；可选 migrationVersion 拉单条，省略则全量；force=true 覆盖已存在文件，默认跳过）；repairMigration=修复 Migration 历史记录（需 migrationVersion + migrationName + repairStatus + repairReason）",
+      "操作类型。日常写入用 execute（DML/GRANT/RLS；schema DDL 默认拒绝，需 allowDdlViaExecute=true）或 dryRun（只分析风险、不执行）。建表 / 改 schema 必须用 applyMigration——完整流程（轮询、超时、落库校验）见工具描述。其余 6 个是迁移配套：planMigration=预览计划、listMigrations=列已应用、migrationDetail=单条详情、describeMigrationTask=查 Push 任务、fetchMigration=把远端 SQL 拉到本地、repairMigration=修历史记录。plan / apply / repair 都要 migrationName + migrationVersion；migrationDetail 只要 migrationVersion。",
     "schema.manageSql":
       "action=execute、dryRun、planMigration、applyMigration 或 repairMigration(applied) 使用的 SQL 语句",
     "schema.manageConfirm": "执行任何写入 SQL 前都需要显式设置为 true。",
@@ -143,6 +143,8 @@ export const databasePG = defineModule(
       "migrationVersion 必填（14 位 UTC 时间戳 YYYYMMDDHHMMSS）。请先确定版本，写入本地文件 cloudbase/migrations/<version>_<migrationName>.sql，然后用相同的 migrationVersion 与 migrationName 调用 planMigration/applyMigration。",
     "migration.versionRequired":
       "action={action} 时必须提供 migrationVersion。{rule}",
+    "migration.versionInvalid":
+      "migrationVersion={version} 不是一个真实的时间（{reason}）。14 位必须是 YYYYMMDDHHMMSS 并落在真实日历上：时 ≤23、分 ≤59、秒 ≤59、日不超过当月天数。例如 minute=64 就是把分字段写成了 64。请改用当前时间的 14 位，或直接沿用本地 cloudbase/migrations/<version>_<name>.sql 里已有的版本号。",
     "migration.taskIdRequired":
       "action=describeMigrationTask 时必须提供 taskId（来自 applyMigration Push / MIGRATION_TASK_PENDING / MIGRATION_TASK_TIMEOUT 的 data.taskResult.TaskId）。",
     "localFile.readFailed": "读取本地迁移文件 {path} 失败：{reason}",
@@ -266,7 +268,7 @@ export const databasePG = defineModule(
     "queryPgDatabase.title":
       "Query PostgreSQL context, objects, metadata, or run read-only SQL",
     "queryPgDatabase.description":
-      "Query the CloudBase PostgreSQL database. Supports getting the current PG context, listing schema-qualified database objects, reading lightweight metadata, inspecting a single object schema, and running read-only SQL.",
+      "⚠️ Read-only tool: only accepts read-only SQL such as SELECT. CREATE / ALTER / DROP / INSERT / UPDATE / DELETE are rejected outright (and a 42703/42P01 usually means a guessed table or column name — run action=objects to see the real structure instead of assuming names like schema_migrations). For writes and DDL use managePgDatabase: action=execute for DML/GRANT/RLS, action=applyMigration for schema changes.\n\nQuery the CloudBase PostgreSQL database: get the current PG context, list schema-qualified database objects, read lightweight metadata, inspect a single object schema, and run read-only SQL.",
     "managePgDatabase.title": "Manage PostgreSQL context or run write SQL",
     "managePgDatabase.description":
       "Manage CloudBase PostgreSQL: run confirmed write SQL, pre-check SQL risk, and manage migrations. Schema changes such as CREATE TABLE/ALTER/DROP must use applyMigration (explicit migrationVersion; the local cloudbase/migrations/<version>_<name>.sql file is written or verified automatically before success, matching the CLI tcb db pg migration). Do not use execute by default. execute is mainly for DML and ops SQL such as GRANT/RLS.",
@@ -280,7 +282,7 @@ export const databasePG = defineModule(
     "schema.queryLimit":
       "Optional cap on summary size, applied to objects, metadata, or SQL result rows. Defaults to 20, maximum 200.",
     "schema.manageAction":
-      "Action type: execute=run confirmed write SQL (DML/GRANT/RLS; schema DDL is rejected by default and requires allowDdlViaExecute=true); dryRun=analyze SQL risk without executing; planMigration=preview a migration plan (requires migrationName + migrationVersion + sql; optional includeAll=true allows out-of-order, matching CLI --include-all); applyMigration=apply a migration, the preferred path for CREATE TABLE / schema changes (requires migrationName + migrationVersion + sql + confirm=true; optional includeAll; a missing local SQL file is written to cloudbase/migrations/ automatically, while mismatched content fails closed with LOCAL_MIGRATION_FILE_MISMATCH; before returning success it polls DescribeTaskResult (up to 10 minutes by default, tunable via taskPollTimeoutMs / waitForTask) and verifies migrationVersion landed in the remote history; on timeout it returns MIGRATION_TASK_TIMEOUT and you must call describeMigrationTask before listMigrations — never re-push the same version immediately; when the version did not land it returns success=false with errorCode=MIGRATION_NOT_APPLIED); listMigrations=list applied migrations (supports limit/offset paging); migrationDetail=inspect a single migration (requires migrationVersion); describeMigrationTask=query the async Push task status by TaskId (DescribeTaskResult: Status/Phase/Reason; requires taskId; use it for waitForTask=false / MIGRATION_TASK_TIMEOUT / failure diagnosis, because listMigrations does not expose Reason); fetchMigration=pull SQL from the remote history into local cloudbase/migrations/ (matches CLI tcb db pg migration fetch; optional migrationVersion pulls a single record, omitting it pulls everything; force=true overwrites existing files, skipped by default); repairMigration=repair the migration history record (requires migrationVersion + migrationName + repairStatus + repairReason)",
+      "Action type. For everyday writes use execute (DML/GRANT/RLS; schema DDL is rejected by default and needs allowDdlViaExecute=true) or dryRun (analyze only, no execution). CREATE TABLE / schema changes must use applyMigration — see the tool description for the full flow (polling, timeout, landed-in-history check). The other six support migrations: planMigration=preview, listMigrations=list applied, migrationDetail=one record, describeMigrationTask=inspect a Push task, fetchMigration=pull remote SQL locally, repairMigration=fix history. plan / apply / repair all need migrationName + migrationVersion; migrationDetail needs only migrationVersion.",
     "schema.manageSql":
       "SQL statement used when action=execute, dryRun, planMigration, applyMigration, or repairMigration(applied)",
     "schema.manageConfirm":
@@ -429,6 +431,8 @@ export const databasePG = defineModule(
       "migrationVersion is required (14-digit UTC timestamp YYYYMMDDHHMMSS). Decide the version first, write local file cloudbase/migrations/<version>_<migrationName>.sql, then call planMigration/applyMigration with the same migrationVersion and migrationName.",
     "migration.versionRequired":
       "Provide migrationVersion when action={action}. {rule}",
+    "migration.versionInvalid":
+      "migrationVersion={version} is not a real timestamp ({reason}). The 14 digits must be YYYYMMDDHHMMSS on a real calendar: hour ≤23, minute ≤59, second ≤59, and day within that month. For example minute=64 means the minute field was written as 64. Use the current time in 14 digits, or reuse a version that already exists in cloudbase/migrations/<version>_<name>.sql.",
     "migration.taskIdRequired":
       "Provide taskId when action=describeMigrationTask (from applyMigration Push / MIGRATION_TASK_PENDING / MIGRATION_TASK_TIMEOUT data.taskResult.TaskId).",
     "localFile.readFailed":

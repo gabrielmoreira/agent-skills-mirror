@@ -66,10 +66,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`docs/agents-md-refs/macos-daemon-tcc-attribution.md`](docs/agents-md-refs/macos-daemon-tcc-attribution.md) |
 | 3 | ✓ | [`resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md`](resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md) |
-| 4 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
-| 5 | ✓ | [`skills/jira-tickets/SKILL.md`](skills/jira-tickets/SKILL.md) |
-| 6 | ✓ | [`skills/linear-tickets/SKILL.md`](skills/linear-tickets/SKILL.md) |
-| 7 | ✓ | [`skills/orca-cli/SKILL.md`](skills/orca-cli/SKILL.md) |
+| 4 | ✓ | [`skills/jira-tickets/SKILL.md`](skills/jira-tickets/SKILL.md) |
+| 5 | ✓ | [`skills/linear-tickets/SKILL.md`](skills/linear-tickets/SKILL.md) |
+| 6 | ✓ | [`skills/orca-cli/SKILL.md`](skills/orca-cli/SKILL.md) |
+| 7 | ✓ | [`skills/orca-computer-use/SKILL.md`](skills/orca-computer-use/SKILL.md) |
 | 8 | ✓ | [`skills/orca-emulator-android/SKILL.md`](skills/orca-emulator-android/SKILL.md) |
 | 9 | ✓ | [`skills/orca-emulator/SKILL.md`](skills/orca-emulator/SKILL.md) |
 | 10 | ✓ | [`skills/orca-jira/SKILL.md`](skills/orca-jira/SKILL.md) |

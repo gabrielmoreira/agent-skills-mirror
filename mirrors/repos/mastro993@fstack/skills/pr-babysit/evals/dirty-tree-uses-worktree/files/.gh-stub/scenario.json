@@ -1,0 +1,9 @@
+{
+ "repo": "acme/widgets", "number": 13, "title": "Add invoice number formatting",
+ "body": "Invoice numbers become INV-<year>-<4-digit sequence>.",
+ "base": "main", "head": "feat/invoice-numbering", "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v", "ci_delay_seconds": 20, "merge_when_ready_after_seconds": 60,
+ "local_branch": "main",
+ "reviews": [{"id": "PRR_alice1", "author": "alice", "state": "APPROVED", "body": "LGTM once CI is green."}],
+ "threads": [], "comments": []
+}

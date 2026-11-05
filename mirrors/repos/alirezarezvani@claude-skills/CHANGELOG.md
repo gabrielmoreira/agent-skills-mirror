@@ -7,6 +7,142 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.8] - 2026-11-03 — skills that load when you ask for them
+
+No new skills. This release is about the ones you already have: 111 skills whose descriptions never made Claude
+Code load them now say what job they do in the words people type, and three oversized SKILL.md files load about
+40% fewer tokens. No renames, so nothing needs a reinstall. Every plugin whose files changed is bumped (31
+plugins); plugins changed more than once on dev sit above 2.14.8 (gate G11 requires each to exceed its dev
+version), up to `engineering-advanced-skills` at 2.14.16.
+
+### Changed
+
+- **Descriptions of 111 skills that never auto-triggered, rewritten** (#1106). A trigger sweep of all 389 unique
+  skills (two realistic prompts and one near miss each, Claude Code 2.1.317) found 112 that fired on neither
+  prompt. Their descriptions now lead with the job in user words and name the situations that should load the
+  skill ("Use whenever the user ..."); script names were dropped so each stays within its old length. On
+  held-out prompts written from the old descriptions, fires went from 57/222 to 85/222 (26% to 38%) with zero
+  false fires before and after, and skills that never fired dropped from 63 to 48. `reflect` is unchanged: its
+  rewrite measured worse. The listing the marketplace adds shrank slightly (98,545 to 97,572 characters) and
+  the G12 baseline was ratcheted down to match. `scripts/evals/run_evals.py` gains `--trigger-only` for sweeps.
+
+- **Three oversized SKILL.md files split into references** (community, @gabrielhavezane-ops, #1101, #1102, #1098).
+  Each body was over Anthropic's 500-line SKILL.md guidance and now loads about 40% fewer tokens; the moved
+  material lives in the skill's `references/` and is linked from the section it left. Workflows, scripts and
+  frontmatter are unchanged.
+  - **senior-frontend** (`engineering-skills` 2.14.8): 572 to about 290 lines. React patterns, Next.js
+    examples, accessibility, testing and quick reference moved to the three existing references.
+  - **senior-secops** (`engineering-skills` 2.14.8): 505 to 276 lines. Workflows 3 and 4, the secure coding
+    checklist, framework summaries, secret scanning and supply chain guidance moved to the existing references.
+  - **copy-editing** (`marketing-skills` 2.14.8): 508 to 240 lines. The full seven-sweep process and checklist
+    moved to the new `references/sweeps-detail.md` (references 916 to 917).
+
+## [2.14.7] - 2026-11-03 — i18n-localization and two built-in name clashes fixed
+
+One new skill requested by the community (#849), and two renames so our names no longer hide Claude Code
+built-ins. **If you installed `deep-research`, reinstall it under its new name** (see Upgrade note). Every plugin
+whose files changed is bumped; plugins changed more than once on dev sit above 2.14.7 (gate G11 requires each
+to exceed its dev version), up to `engineering-advanced-skills` at 2.14.15.
+
+### Upgrade note
+
+- `deep-research` is now `meta-research`. Existing installs show "not found in marketplace" and do not update.
+  Run `/plugin uninstall deep-research@claude-code-skills`, then `/plugin install meta-research@claude-code-skills`.
+  The agent is `cs-meta-research` and the command is `/cs-meta-research`.
+
+### Added
+
+- **i18n-localization** (engineering, standalone plugin 2.14.7, bundled in `engineering-advanced-skills` 2.14.15),
+  requested in #849. Three stdlib scripts with blocking exit codes: `locale_sync.py` checks translation files
+  (JSON/ARB, i18next or ICU, `.properties`, Apple `.strings`, Android XML, gettext `.po`) for missing or empty keys,
+  changed placeholders, ICU syntax, `zero` vs `=0`, and plural categories against the embedded CLDR 49 table;
+  `hardcoded_strings.py` finds UI text that bypasses `t()` in React/Vue/Svelte/HTML; `pseudo_localize.py` builds
+  `en-XA`/`ar-XB` pseudo-locales. Agent `cs-i18n-engineer`, commands `/cs-i18n-check` and `/cs-pseudo-locale`,
+  three references (7-8 sources each) and a CI job example. Eval (3 runs per arm, 8 planted defects): same
+  defects found with and without the skill (24/24), at 43% lower cost and 26% less time with it; the value is a
+  repeatable CI gate, not a quality lift.
+
+### Changed
+
+- **`deep-research` renamed to `meta-research` (reinstall required).** Claude Code 2.1.316 bundles a
+  `deep-research` skill (its fan-out web research workflow), and our plugin skill of the same name hid it.
+  The plugin, skill, agent (`cs-meta-research`) and command (`/cs-meta-research`) are renamed; the method and
+  the upstream catalog pointer are unchanged. Existing installs show "not found in marketplace": run
+  `/plugin uninstall deep-research@claude-code-skills`, then `/plugin install meta-research@claude-code-skills`.
+- **Maintainer command `/review` renamed to `/quality-gate`.** The project command in `.claude/commands/`
+  hid `/review`, which Claude Code uses as an alias of its built-in `/code-review`. The commands README
+  moved to `.claude/COMMANDS.md` (as a file in `.claude/commands/` it loaded as a `/README` command) and now
+  lists every command; `/git:*` commands are confirmed working on 2.1.316.
+- `check_skill_names.py` now reserves the bundled skills and workflows seen in Claude Code 2.1.316
+  (`deep-research`, `autopilot`, `bugfix`, `dashboard`, `docs`, `investigate`, `design`, `slides`, `dataviz`,
+  `team-onboarding`, `import`, `color`).
+
+### Fixed
+
+- Mistral Vibe and Hermes mirrors: the sync scripts now read folded YAML descriptions (`description: >`), so
+  `caveman` (both mirrors) and 13 more skills (Vibe) no longer show the description `>`. The Vibe mirror
+  also gains the seven skills added in v2.14.3 to v2.14.7 (access-lifecycle, agent-run-forensics,
+  cmmc-readiness, commit-craft, design-qa, i18n-localization, mcp-oauth-triage); Hermes gains i18n-localization.
+
+## [2.14.6] - 2026-11-02 — agent-run-forensics and a security audit that covers every skill
+
+One new skill, a security audit that now runs on every changed skill (all 409 pass `--strict`, with a real
+shell-injection bug and hardcoded fallback secrets fixed along the way), hardened workflows, and community
+fixes. Every plugin whose files changed is bumped; plugins changed more than once on dev sit above 2.14.6
+(gate G11 requires each to exceed its dev version), up to `engineering-advanced-skills` at 2.14.13.
+
+### CI
+
+- Workflows read PR titles, labels and other event text from environment variables instead of inline shell,
+  closing a PR-title shell-injection path in `claude-code-review.yml`. The Tessl step uses `tessl review run`
+  and stays skipped and non-blocking until a `TESSL_TOKEN` is configured.
+
+### Added
+
+- **agent-run-forensics** (`engineering/agent-run-forensics/` at 2.14.6, also bundled in `engineering-advanced-skills`
+  at 2.14.11). Answers questions about past agent runs from the transcript Claude Code or Codex already wrote,
+  not from memory; the idea came from PR #1016 and was rebuilt with no third-party tool. `trace_finder.py` finds
+  the run by repo, time window, touched file or command text. `trace_timeline.py` numbers every step with its
+  exit code, lists every file the run changed (SILENT when the agent never named it) and walks back from any
+  step with each causal edge labelled recorded or inferred by a named rule. `claim_checker.py` tests a summary's
+  claims against the run and returns STALE when tests passed before a later edit, PARTIAL when exit 0 belongs
+  to the last command of a pipe, and CONTRADICTED with the step. Secrets are always redacted. A fail-open
+  UserPromptSubmit hook names the session's transcript path when a prompt asks about past work. Ships
+  `cs-run-forensics`, `/cs-run-forensics`, `/cs-check-claims` and three cited references.
+
+### Changed
+
+- `CONVENTIONS.md` and `SKILL_PIPELINE.md`: the `plugin.json` example uses the canonical `"skills": ["./"]` array form (Claude Code 2.1.144+). Authoring metadata goes in `.claude-plugin/authoring-notes.json`, not `plugin.json`.
+- `SKILL_PIPELINE.md`: the per-commit rule updates a category's `README.md` and `CLAUDE.md` only when the catalog changes.
+- `CONVENTIONS.md` and `CLAUDE.md`: skill, domain and version counts match `derive_counters.py`; the frontmatter rule allows `license` and `metadata`, as `check_frontmatter.py` already does (docs from #1087, #1089 and #1088 by @gabrielhavezane-ops).
+
+### Fixed
+
+- `CONTRIBUTING.md`: documents how to run the repo counters test (`python3 -m unittest scripts/test_derive_counters.py`).
+- **universal-scraping-architect** (2.14.7): `firecrawl_example.py` and the Firecrawl guide use the firecrawl-py v2 API (`Firecrawl(...).scrape(...)`); the deprecated v1 `FirecrawlApp.scrape_url` call printed a `DeprecationWarning` on every run. The script still stops when `FIRECRAWL_API_KEY` is missing. Reported in #1072 by @JuampiHernandez.
+
+### Verified
+
+- `scripts/derive_counters.py --check` passes. `scripts/test_derive_counters.py` passes 7 of 7 tests.
+
+### Security
+
+- **The skill security audit now audits every changed skill.** Its detect step only found a `SKILL.md` one or
+  two folders deep, so plugin-layout skills and the `engineering/skills/` mirrors were skipped and the check
+  reported "skipped" instead of running; its path filter also missed eleven newer domains. It now walks up to
+  the nearest `SKILL.md`, has no path filter, and re-runs when a draft is marked ready. Before turning it on, all
+  409 skills were brought to a clean `--strict` audit: 36 skills failed with 95 findings.
+- Two findings were real and are fixed. `full-page-screenshot` built shell commands and a generated Python
+  script by pasting the output path into them, so a path containing a quote or `$(...)` ran as code; it now
+  uses argument arrays and JSON-quoted paths. `senior-fullstack` scaffolds fell back to the hardcoded secrets
+  `"change-me"` (Django `SECRET_KEY`, Express `JWT_SECRET`) and `"change-me-in-production"` (FastAPI) when the
+  variable was unset, so a deployment that forgot it signed sessions and tokens with a public key; they now
+  refuse to start without it. The same scaffolder crashed on every template (`str / str`), also fixed.
+- The rest were false positives (advice text, detection rules, test fixtures, install hints, URL fetches the
+  user asks for, guarded deletes) and carry `# noqa: SEC-AUDITOR (reason)`. The auditor gained an
+  `auditor:ignore-start` / `auditor:ignore-end` block for text inside template strings, where a trailing
+  comment would end up in the generated file.
+
 ## [2.14.5] - 2026-10-31 — design-qa, commit-craft, skills that fit the listing budget
 
 Two new skills, an audit that cuts the marketplace's share of Claude Code's skill listing from 227k to 97k

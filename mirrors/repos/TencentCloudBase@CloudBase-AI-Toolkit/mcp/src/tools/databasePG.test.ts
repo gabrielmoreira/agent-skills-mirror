@@ -1348,6 +1348,63 @@ describe("PG database tools", () => {
       });
     });
 
+    it("planMigration rejects a migrationVersion that is not a real timestamp", async () => {
+      // 2026-11-02 真环境实测：20261228196400（分钟=64）在 MCP 和 CLI 两层都被放行，
+      // 一路进到 pending。schema 只有 ^\d{14}$，这里补真实日历校验。
+      const { server, tools } = createMockServer();
+      registerPGDatabaseTools(server, { createClient: vi.fn() });
+
+      const payload = buildToolPayload(
+        await tools.managePgDatabase.handler({
+          action: "planMigration",
+          migrationName: "create_test_table",
+          migrationVersion: "20261228196400",
+          sql: "CREATE TABLE public.test(id int)",
+        }),
+      );
+
+      expect(payload).toMatchObject({
+        success: false,
+        errorCode: "MIGRATION_VERSION_INVALID",
+      });
+      expect(payload.message).toContain("minute=64");
+    });
+
+    it("planMigration keeps accepting a legal version and one with a future date", async () => {
+      // 校验只针对「不可能的时间」，不针对「未来日期」——远端历史里 12-28 这种
+      // 未来版本号是常见做法（版本号被当排序键用），不能误伤。
+      const { server, tools } = createMockServer();
+      registerPGDatabaseTools(server, { createClient: vi.fn() });
+
+      for (const version of ["20261102120000", "20261228160000", "20240229235959"]) {
+        const payload = buildToolPayload(
+          await tools.managePgDatabase.handler({
+            action: "planMigration",
+            migrationName: "create_test_table",
+            migrationVersion: version,
+            sql: "CREATE TABLE public.test(id int)",
+          }),
+        );
+        expect(payload.errorCode).not.toBe("MIGRATION_VERSION_INVALID");
+      }
+    });
+
+    it("migrationDetail still reads a historical version whose minute field is out of range", async () => {
+      // 远端 history 里真实存在 20261031196200（分钟=62）。查询侧绝不能因为
+      // 值不合法就报错，否则会把已有 history 锁死。
+      const { server, tools } = createMockServer();
+      registerPGDatabaseTools(server, { createClient: vi.fn() });
+
+      const payload = buildToolPayload(
+        await tools.managePgDatabase.handler({
+          action: "migrationDetail",
+          migrationVersion: "20261031196200",
+        }),
+      );
+
+      expect(payload.errorCode).not.toBe("MIGRATION_VERSION_INVALID");
+    });
+
     it("planMigration requires migrationVersion", async () => {
       const { server, tools } = createMockServer();
       registerPGDatabaseTools(server, { createClient: vi.fn() });
@@ -1714,6 +1771,33 @@ describe("PG database tools", () => {
       });
       expect(mockCommonServiceCall).not.toHaveBeenCalled();
       expect(fs.readFileSync(absolute, "utf8")).toBe("CREATE TABLE public.other(id int);\n");
+    });
+
+    it("applyMigration treats whitespace-only differences as the same local file", async () => {
+      // 灯塔 168h：476 次 / 221 环境因为「只差空白」被判 LOCAL_MIGRATION_FILE_MISMATCH
+      // 而 fail-closed —— 这是 applyMigration 失败里跨环境最多的一类。
+      // 本地文件只是多了行尾空格和空行，语义上就是同一份 SQL，不该拒绝。
+      const relative = "cloudbase/migrations/20260720160000_create_test_table.sql";
+      const absolute = path.join(migrationWorkspace, relative);
+      fs.mkdirSync(path.dirname(absolute), { recursive: true });
+      fs.writeFileSync(absolute, "CREATE TABLE public.test(id int)   \n\n\n", "utf8");
+
+      const { server, tools } = createMockServer();
+      registerPGDatabaseTools(server, { createClient: vi.fn() });
+      setupMigrationMock();
+      mockApplyMigrationCloudApis();
+
+      const payload = buildToolPayload(
+        await tools.managePgDatabase.handler({
+          action: "applyMigration",
+          migrationName: "create_test_table",
+          migrationVersion: "20260720160000",
+          sql: "CREATE TABLE public.test(id int)",
+          confirm: true,
+        }),
+      );
+
+      expect(payload.errorCode).not.toBe("LOCAL_MIGRATION_FILE_MISMATCH");
     });
 
     it("applyMigration accepts matching legacy migrations/ path without duplicating", async () => {

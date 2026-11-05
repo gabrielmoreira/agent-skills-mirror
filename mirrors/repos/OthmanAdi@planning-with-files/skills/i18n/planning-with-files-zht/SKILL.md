@@ -37,7 +37,7 @@ hooks:
           command: "SH=\"\"; for c in \"${PWF_SCRIPT_DIR}/skill-hook.sh\" \"${CLAUDE_SKILL_DIR}/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files-zht/scripts/skill-hook.sh\" \"$HOME/.claude/skills/planning-with-files/scripts/skill-hook.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/skill-hook.sh\"; do [ -f \"$c\" ] && { SH=\"$c\"; break; }; done; [ -n \"$SH\" ] && sh \"$SH\" --event=precompact; exit 0"
 metadata:
 
-  version: "3.27.0"
+  version: "3.28.0"
 
 ---
 
@@ -253,6 +253,8 @@ if 操作失敗:
 恢復任務前，可執行 `sh "<skill-dir>/scripts/set-active-plan.sh" --list` 尋找計畫；在 Windows PowerShell 中執行 `& "<skill-dir>/scripts/set-active-plan.ps1" -List`。將 `<skill-dir>` 替換為此技能的安裝目錄，並將目前工作目錄保持在專案根目錄。
 
 此命令僅執行讀取，列出目前目錄下 `.planning/` 中的具名計畫及階段進度。`[active]` 表示共用的預設指標，不會將工作階段綁定至計畫。平行任務仍需為每個宿主設定 `PLAN_ID`，或使用獨立的工作樹。
+
+當鉤子提示有多個計畫可用，或某個具名計畫的所有階段均已完成時，執行清單命令，並告訴使用者哪些計畫看起來已經完成。只封存使用者同意的計畫：`--archive <id>`（PowerShell：`-Archive <id>`）預覽移動到 `.planning/.archive/` 的操作，`--yes`（`-Yes`）執行移動，`--restore <id>`（`-Restore <id>`）將計畫移回。不要僅因計畫時間較久或已完成就將其封存。
 
 ## 安全邊界
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `firebase/agent-skills` — 26 default patterns, 0 followed patterns, 89 file(s) materialized.
+Mirror of `firebase/agent-skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `firebase/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 89 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,83 +71,88 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/firebase-ai-logic-basics/references/usage_patterns_android.md`](skills/firebase-ai-logic-basics/references/usage_patterns_android.md) |
 | 11 | ✓ | [`skills/firebase-ai-logic-basics/references/usage_patterns_web.md`](skills/firebase-ai-logic-basics/references/usage_patterns_web.md) |
 | 12 | ✓ | [`skills/firebase-ai-logic-basics/SKILL.md`](skills/firebase-ai-logic-basics/SKILL.md) |
-| 13 | ✓ | [`skills/firebase-app-hosting-basics/references/configuration.md`](skills/firebase-app-hosting-basics/references/configuration.md) |
-| 14 | ✓ | [`skills/firebase-app-hosting-basics/references/emulation.md`](skills/firebase-app-hosting-basics/references/emulation.md) |
-| 15 | ✓ | [`skills/firebase-app-hosting-basics/SKILL.md`](skills/firebase-app-hosting-basics/SKILL.md) |
-| 16 | ✓ | [`skills/firebase-auth-basics/references/client_sdk_android.md`](skills/firebase-auth-basics/references/client_sdk_android.md) |
-| 17 | ✓ | [`skills/firebase-auth-basics/references/client_sdk_web.md`](skills/firebase-auth-basics/references/client_sdk_web.md) |
-| 18 | ✓ | [`skills/firebase-auth-basics/references/flutter_setup.md`](skills/firebase-auth-basics/references/flutter_setup.md) |
-| 19 | ✓ | [`skills/firebase-auth-basics/references/ios_setup.md`](skills/firebase-auth-basics/references/ios_setup.md) |
-| 20 | ✓ | [`skills/firebase-auth-basics/references/security_rules.md`](skills/firebase-auth-basics/references/security_rules.md) |
-| 21 | ✓ | [`skills/firebase-auth-basics/SKILL.md`](skills/firebase-auth-basics/SKILL.md) |
-| 22 | ✓ | [`skills/firebase-basics/references/android_setup.md`](skills/firebase-basics/references/android_setup.md) |
-| 23 | ✓ | [`skills/firebase-basics/references/firebase-cli-guide.md`](skills/firebase-basics/references/firebase-cli-guide.md) |
-| 24 | ✓ | [`skills/firebase-basics/references/firebase-service-init.md`](skills/firebase-basics/references/firebase-service-init.md) |
-| 25 | ✓ | [`skills/firebase-basics/references/flutter_setup.md`](skills/firebase-basics/references/flutter_setup.md) |
-| 26 | ✓ | [`skills/firebase-basics/references/ios_setup.md`](skills/firebase-basics/references/ios_setup.md) |
-| 27 | ✓ | [`skills/firebase-basics/references/local-env-setup.md`](skills/firebase-basics/references/local-env-setup.md) |
-| 28 | ✓ | [`skills/firebase-basics/references/refresh/android_studio.md`](skills/firebase-basics/references/refresh/android_studio.md) |
-| 29 | ✓ | [`skills/firebase-basics/references/refresh/antigravity.md`](skills/firebase-basics/references/refresh/antigravity.md) |
-| 30 | ✓ | [`skills/firebase-basics/references/refresh/claude.md`](skills/firebase-basics/references/refresh/claude.md) |
-| 31 | ✓ | [`skills/firebase-basics/references/refresh/gemini-cli.md`](skills/firebase-basics/references/refresh/gemini-cli.md) |
-| 32 | ✓ | [`skills/firebase-basics/references/refresh/other-agents.md`](skills/firebase-basics/references/refresh/other-agents.md) |
-| 33 | ✓ | [`skills/firebase-basics/references/setup/android_studio.md`](skills/firebase-basics/references/setup/android_studio.md) |
-| 34 | ✓ | [`skills/firebase-basics/references/setup/antigravity.md`](skills/firebase-basics/references/setup/antigravity.md) |
-| 35 | ✓ | [`skills/firebase-basics/references/setup/claude_code.md`](skills/firebase-basics/references/setup/claude_code.md) |
-| 36 | ✓ | [`skills/firebase-basics/references/setup/cursor.md`](skills/firebase-basics/references/setup/cursor.md) |
-| 37 | ✓ | [`skills/firebase-basics/references/setup/gemini_cli.md`](skills/firebase-basics/references/setup/gemini_cli.md) |
-| 38 | ✓ | [`skills/firebase-basics/references/setup/github_copilot.md`](skills/firebase-basics/references/setup/github_copilot.md) |
-| 39 | ✓ | [`skills/firebase-basics/references/setup/other_agents.md`](skills/firebase-basics/references/setup/other_agents.md) |
-| 40 | ✓ | [`skills/firebase-basics/references/web_setup.md`](skills/firebase-basics/references/web_setup.md) |
-| 41 | ✓ | [`skills/firebase-basics/SKILL.md`](skills/firebase-basics/SKILL.md) |
-| 42 | ✓ | [`skills/firebase-crashlytics/references/android_setup.md`](skills/firebase-crashlytics/references/android_setup.md) |
-| 43 | ✓ | [`skills/firebase-crashlytics/references/ios_setup.md`](skills/firebase-crashlytics/references/ios_setup.md) |
-| 44 | ✓ | [`skills/firebase-crashlytics/SKILL.md`](skills/firebase-crashlytics/SKILL.md) |
-| 45 | ✓ | [`skills/firebase-data-connect-basics/examples.md`](skills/firebase-data-connect-basics/examples.md) |
-| 46 | ✓ | [`skills/firebase-data-connect-basics/reference/cloud_functions.md`](skills/firebase-data-connect-basics/reference/cloud_functions.md) |
-| 47 | ✓ | [`skills/firebase-data-connect-basics/reference/config.md`](skills/firebase-data-connect-basics/reference/config.md) |
-| 48 | ✓ | [`skills/firebase-data-connect-basics/reference/data_seeding.md`](skills/firebase-data-connect-basics/reference/data_seeding.md) |
-| 49 | ✓ | [`skills/firebase-data-connect-basics/reference/native_sql.md`](skills/firebase-data-connect-basics/reference/native_sql.md) |
-| 50 | ✓ | [`skills/firebase-data-connect-basics/reference/operations.md`](skills/firebase-data-connect-basics/reference/operations.md) |
-| 51 | ✓ | [`skills/firebase-data-connect-basics/reference/realtime.md`](skills/firebase-data-connect-basics/reference/realtime.md) |
-| 52 | ✓ | [`skills/firebase-data-connect-basics/reference/schema.md`](skills/firebase-data-connect-basics/reference/schema.md) |
-| 53 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_admin_node.md`](skills/firebase-data-connect-basics/reference/sdk_admin_node.md) |
-| 54 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_android.md`](skills/firebase-data-connect-basics/reference/sdk_android.md) |
-| 55 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_flutter.md`](skills/firebase-data-connect-basics/reference/sdk_flutter.md) |
-| 56 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_ios.md`](skills/firebase-data-connect-basics/reference/sdk_ios.md) |
-| 57 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_web.md`](skills/firebase-data-connect-basics/reference/sdk_web.md) |
-| 58 | ✓ | [`skills/firebase-data-connect-basics/reference/search.md`](skills/firebase-data-connect-basics/reference/search.md) |
-| 59 | ✓ | [`skills/firebase-data-connect-basics/reference/security.md`](skills/firebase-data-connect-basics/reference/security.md) |
-| 60 | ✓ | [`skills/firebase-data-connect-basics/SKILL.md`](skills/firebase-data-connect-basics/SKILL.md) |
-| 61 | ✓ | [`skills/firebase-data-connect-basics/templates.md`](skills/firebase-data-connect-basics/templates.md) |
-| 62 | ✓ | [`skills/firebase-firestore/references/enterprise/android_sdk_usage.md`](skills/firebase-firestore/references/enterprise/android_sdk_usage.md) |
-| 63 | ✓ | [`skills/firebase-firestore/references/enterprise/data_model.md`](skills/firebase-firestore/references/enterprise/data_model.md) |
-| 64 | ✓ | [`skills/firebase-firestore/references/enterprise/flutter_setup.md`](skills/firebase-firestore/references/enterprise/flutter_setup.md) |
-| 65 | ✓ | [`skills/firebase-firestore/references/enterprise/indexes.md`](skills/firebase-firestore/references/enterprise/indexes.md) |
-| 66 | ✓ | [`skills/firebase-firestore/references/enterprise/ios_setup.md`](skills/firebase-firestore/references/enterprise/ios_setup.md) |
-| 67 | ✓ | [`skills/firebase-firestore/references/enterprise/provisioning.md`](skills/firebase-firestore/references/enterprise/provisioning.md) |
-| 68 | ✓ | [`skills/firebase-firestore/references/enterprise/python_sdk_usage.md`](skills/firebase-firestore/references/enterprise/python_sdk_usage.md) |
-| 69 | ✓ | [`skills/firebase-firestore/references/enterprise/web_sdk_usage.md`](skills/firebase-firestore/references/enterprise/web_sdk_usage.md) |
-| 70 | ✓ | [`skills/firebase-firestore/references/standard/android_sdk_usage.md`](skills/firebase-firestore/references/standard/android_sdk_usage.md) |
-| 71 | ✓ | [`skills/firebase-firestore/references/standard/flutter_setup.md`](skills/firebase-firestore/references/standard/flutter_setup.md) |
-| 72 | ✓ | [`skills/firebase-firestore/references/standard/indexes.md`](skills/firebase-firestore/references/standard/indexes.md) |
-| 73 | ✓ | [`skills/firebase-firestore/references/standard/ios_setup.md`](skills/firebase-firestore/references/standard/ios_setup.md) |
-| 74 | ✓ | [`skills/firebase-firestore/references/standard/provisioning.md`](skills/firebase-firestore/references/standard/provisioning.md) |
-| 75 | ✓ | [`skills/firebase-firestore/references/standard/web_sdk_usage.md`](skills/firebase-firestore/references/standard/web_sdk_usage.md) |
-| 76 | ✓ | [`skills/firebase-firestore/SKILL.md`](skills/firebase-firestore/SKILL.md) |
-| 77 | ✓ | [`skills/firebase-hosting-basics/references/configuration.md`](skills/firebase-hosting-basics/references/configuration.md) |
-| 78 | ✓ | [`skills/firebase-hosting-basics/references/deploying.md`](skills/firebase-hosting-basics/references/deploying.md) |
-| 79 | ✓ | [`skills/firebase-hosting-basics/SKILL.md`](skills/firebase-hosting-basics/SKILL.md) |
-| 80 | ✓ | [`skills/firebase-remote-config-basics/references/android_setup.md`](skills/firebase-remote-config-basics/references/android_setup.md) |
-| 81 | ✓ | [`skills/firebase-remote-config-basics/references/ios_setup.md`](skills/firebase-remote-config-basics/references/ios_setup.md) |
-| 82 | ✓ | [`skills/firebase-remote-config-basics/SKILL.md`](skills/firebase-remote-config-basics/SKILL.md) |
-| 83 | ✓ | [`skills/firebase-security-rules-auditor/SKILL.md`](skills/firebase-security-rules-auditor/SKILL.md) |
-| 84 | ✓ | [`skills/firestore-rules-creation/SKILL.md`](skills/firestore-rules-creation/SKILL.md) |
-| 85 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore`](skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore) |
-| 86 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved) |
-| 87 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift) |
-| 88 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift) |
-| 89 | ✓ | [`skills/xcode-project-setup/SKILL.md`](skills/xcode-project-setup/SKILL.md) |
+| 13 | ✓ | [`skills/firebase-analytics/references/android_screen_views.md`](skills/firebase-analytics/references/android_screen_views.md) |
+| 14 | ✓ | [`skills/firebase-analytics/references/android_setup.md`](skills/firebase-analytics/references/android_setup.md) |
+| 15 | ✓ | [`skills/firebase-analytics/references/ios_screen_views.md`](skills/firebase-analytics/references/ios_screen_views.md) |
+| 16 | ✓ | [`skills/firebase-analytics/references/ios_setup.md`](skills/firebase-analytics/references/ios_setup.md) |
+| 17 | ✓ | [`skills/firebase-analytics/SKILL.md`](skills/firebase-analytics/SKILL.md) |
+| 18 | ✓ | [`skills/firebase-app-hosting-basics/references/configuration.md`](skills/firebase-app-hosting-basics/references/configuration.md) |
+| 19 | ✓ | [`skills/firebase-app-hosting-basics/references/emulation.md`](skills/firebase-app-hosting-basics/references/emulation.md) |
+| 20 | ✓ | [`skills/firebase-app-hosting-basics/SKILL.md`](skills/firebase-app-hosting-basics/SKILL.md) |
+| 21 | ✓ | [`skills/firebase-auth-basics/references/client_sdk_android.md`](skills/firebase-auth-basics/references/client_sdk_android.md) |
+| 22 | ✓ | [`skills/firebase-auth-basics/references/client_sdk_web.md`](skills/firebase-auth-basics/references/client_sdk_web.md) |
+| 23 | ✓ | [`skills/firebase-auth-basics/references/flutter_setup.md`](skills/firebase-auth-basics/references/flutter_setup.md) |
+| 24 | ✓ | [`skills/firebase-auth-basics/references/ios_setup.md`](skills/firebase-auth-basics/references/ios_setup.md) |
+| 25 | ✓ | [`skills/firebase-auth-basics/references/security_rules.md`](skills/firebase-auth-basics/references/security_rules.md) |
+| 26 | ✓ | [`skills/firebase-auth-basics/SKILL.md`](skills/firebase-auth-basics/SKILL.md) |
+| 27 | ✓ | [`skills/firebase-basics/references/android_setup.md`](skills/firebase-basics/references/android_setup.md) |
+| 28 | ✓ | [`skills/firebase-basics/references/firebase-cli-guide.md`](skills/firebase-basics/references/firebase-cli-guide.md) |
+| 29 | ✓ | [`skills/firebase-basics/references/firebase-service-init.md`](skills/firebase-basics/references/firebase-service-init.md) |
+| 30 | ✓ | [`skills/firebase-basics/references/flutter_setup.md`](skills/firebase-basics/references/flutter_setup.md) |
+| 31 | ✓ | [`skills/firebase-basics/references/ios_setup.md`](skills/firebase-basics/references/ios_setup.md) |
+| 32 | ✓ | [`skills/firebase-basics/references/local-env-setup.md`](skills/firebase-basics/references/local-env-setup.md) |
+| 33 | ✓ | [`skills/firebase-basics/references/refresh/android_studio.md`](skills/firebase-basics/references/refresh/android_studio.md) |
+| 34 | ✓ | [`skills/firebase-basics/references/refresh/antigravity.md`](skills/firebase-basics/references/refresh/antigravity.md) |
+| 35 | ✓ | [`skills/firebase-basics/references/refresh/claude.md`](skills/firebase-basics/references/refresh/claude.md) |
+| 36 | ✓ | [`skills/firebase-basics/references/refresh/gemini-cli.md`](skills/firebase-basics/references/refresh/gemini-cli.md) |
+| 37 | ✓ | [`skills/firebase-basics/references/refresh/other-agents.md`](skills/firebase-basics/references/refresh/other-agents.md) |
+| 38 | ✓ | [`skills/firebase-basics/references/setup/android_studio.md`](skills/firebase-basics/references/setup/android_studio.md) |
+| 39 | ✓ | [`skills/firebase-basics/references/setup/antigravity.md`](skills/firebase-basics/references/setup/antigravity.md) |
+| 40 | ✓ | [`skills/firebase-basics/references/setup/claude_code.md`](skills/firebase-basics/references/setup/claude_code.md) |
+| 41 | ✓ | [`skills/firebase-basics/references/setup/cursor.md`](skills/firebase-basics/references/setup/cursor.md) |
+| 42 | ✓ | [`skills/firebase-basics/references/setup/gemini_cli.md`](skills/firebase-basics/references/setup/gemini_cli.md) |
+| 43 | ✓ | [`skills/firebase-basics/references/setup/github_copilot.md`](skills/firebase-basics/references/setup/github_copilot.md) |
+| 44 | ✓ | [`skills/firebase-basics/references/setup/other_agents.md`](skills/firebase-basics/references/setup/other_agents.md) |
+| 45 | ✓ | [`skills/firebase-basics/references/web_setup.md`](skills/firebase-basics/references/web_setup.md) |
+| 46 | ✓ | [`skills/firebase-basics/SKILL.md`](skills/firebase-basics/SKILL.md) |
+| 47 | ✓ | [`skills/firebase-crashlytics/references/android_setup.md`](skills/firebase-crashlytics/references/android_setup.md) |
+| 48 | ✓ | [`skills/firebase-crashlytics/references/ios_setup.md`](skills/firebase-crashlytics/references/ios_setup.md) |
+| 49 | ✓ | [`skills/firebase-crashlytics/SKILL.md`](skills/firebase-crashlytics/SKILL.md) |
+| 50 | ✓ | [`skills/firebase-data-connect-basics/examples.md`](skills/firebase-data-connect-basics/examples.md) |
+| 51 | ✓ | [`skills/firebase-data-connect-basics/reference/cloud_functions.md`](skills/firebase-data-connect-basics/reference/cloud_functions.md) |
+| 52 | ✓ | [`skills/firebase-data-connect-basics/reference/config.md`](skills/firebase-data-connect-basics/reference/config.md) |
+| 53 | ✓ | [`skills/firebase-data-connect-basics/reference/data_seeding.md`](skills/firebase-data-connect-basics/reference/data_seeding.md) |
+| 54 | ✓ | [`skills/firebase-data-connect-basics/reference/native_sql.md`](skills/firebase-data-connect-basics/reference/native_sql.md) |
+| 55 | ✓ | [`skills/firebase-data-connect-basics/reference/operations.md`](skills/firebase-data-connect-basics/reference/operations.md) |
+| 56 | ✓ | [`skills/firebase-data-connect-basics/reference/realtime.md`](skills/firebase-data-connect-basics/reference/realtime.md) |
+| 57 | ✓ | [`skills/firebase-data-connect-basics/reference/schema.md`](skills/firebase-data-connect-basics/reference/schema.md) |
+| 58 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_admin_node.md`](skills/firebase-data-connect-basics/reference/sdk_admin_node.md) |
+| 59 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_android.md`](skills/firebase-data-connect-basics/reference/sdk_android.md) |
+| 60 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_flutter.md`](skills/firebase-data-connect-basics/reference/sdk_flutter.md) |
+| 61 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_ios.md`](skills/firebase-data-connect-basics/reference/sdk_ios.md) |
+| 62 | ✓ | [`skills/firebase-data-connect-basics/reference/sdk_web.md`](skills/firebase-data-connect-basics/reference/sdk_web.md) |
+| 63 | ✓ | [`skills/firebase-data-connect-basics/reference/search.md`](skills/firebase-data-connect-basics/reference/search.md) |
+| 64 | ✓ | [`skills/firebase-data-connect-basics/reference/security.md`](skills/firebase-data-connect-basics/reference/security.md) |
+| 65 | ✓ | [`skills/firebase-data-connect-basics/SKILL.md`](skills/firebase-data-connect-basics/SKILL.md) |
+| 66 | ✓ | [`skills/firebase-data-connect-basics/templates.md`](skills/firebase-data-connect-basics/templates.md) |
+| 67 | ✓ | [`skills/firebase-firestore/references/enterprise/android_sdk_usage.md`](skills/firebase-firestore/references/enterprise/android_sdk_usage.md) |
+| 68 | ✓ | [`skills/firebase-firestore/references/enterprise/data_model.md`](skills/firebase-firestore/references/enterprise/data_model.md) |
+| 69 | ✓ | [`skills/firebase-firestore/references/enterprise/flutter_setup.md`](skills/firebase-firestore/references/enterprise/flutter_setup.md) |
+| 70 | ✓ | [`skills/firebase-firestore/references/enterprise/indexes.md`](skills/firebase-firestore/references/enterprise/indexes.md) |
+| 71 | ✓ | [`skills/firebase-firestore/references/enterprise/ios_setup.md`](skills/firebase-firestore/references/enterprise/ios_setup.md) |
+| 72 | ✓ | [`skills/firebase-firestore/references/enterprise/provisioning.md`](skills/firebase-firestore/references/enterprise/provisioning.md) |
+| 73 | ✓ | [`skills/firebase-firestore/references/enterprise/python_sdk_usage.md`](skills/firebase-firestore/references/enterprise/python_sdk_usage.md) |
+| 74 | ✓ | [`skills/firebase-firestore/references/enterprise/web_sdk_usage.md`](skills/firebase-firestore/references/enterprise/web_sdk_usage.md) |
+| 75 | ✓ | [`skills/firebase-firestore/references/standard/android_sdk_usage.md`](skills/firebase-firestore/references/standard/android_sdk_usage.md) |
+| 76 | ✓ | [`skills/firebase-firestore/references/standard/flutter_setup.md`](skills/firebase-firestore/references/standard/flutter_setup.md) |
+| 77 | ✓ | [`skills/firebase-firestore/references/standard/indexes.md`](skills/firebase-firestore/references/standard/indexes.md) |
+| 78 | ✓ | [`skills/firebase-firestore/references/standard/ios_setup.md`](skills/firebase-firestore/references/standard/ios_setup.md) |
+| 79 | ✓ | [`skills/firebase-firestore/references/standard/provisioning.md`](skills/firebase-firestore/references/standard/provisioning.md) |
+| 80 | ✓ | [`skills/firebase-firestore/references/standard/web_sdk_usage.md`](skills/firebase-firestore/references/standard/web_sdk_usage.md) |
+| 81 | ✓ | [`skills/firebase-firestore/SKILL.md`](skills/firebase-firestore/SKILL.md) |
+| 82 | ✓ | [`skills/firebase-hosting-basics/references/configuration.md`](skills/firebase-hosting-basics/references/configuration.md) |
+| 83 | ✓ | [`skills/firebase-hosting-basics/references/deploying.md`](skills/firebase-hosting-basics/references/deploying.md) |
+| 84 | ✓ | [`skills/firebase-hosting-basics/SKILL.md`](skills/firebase-hosting-basics/SKILL.md) |
+| 85 | ✓ | [`skills/firebase-remote-config-basics/references/android_setup.md`](skills/firebase-remote-config-basics/references/android_setup.md) |
+| 86 | ✓ | [`skills/firebase-remote-config-basics/references/ios_setup.md`](skills/firebase-remote-config-basics/references/ios_setup.md) |
+| 87 | ✓ | [`skills/firebase-remote-config-basics/SKILL.md`](skills/firebase-remote-config-basics/SKILL.md) |
+| 88 | ✓ | [`skills/firebase-security-rules-auditor/SKILL.md`](skills/firebase-security-rules-auditor/SKILL.md) |
+| 89 | ✓ | [`skills/firestore-rules-creation/SKILL.md`](skills/firestore-rules-creation/SKILL.md) |
+| 90 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore`](skills/xcode-project-setup/scripts/xcode_spm_setup/.gitignore) |
+| 91 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.resolved) |
+| 92 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Package.swift) |
+| 93 | ✓ | [`skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift`](skills/xcode-project-setup/scripts/xcode_spm_setup/Sources/main.swift) |
+| 94 | ✓ | [`skills/xcode-project-setup/SKILL.md`](skills/xcode-project-setup/SKILL.md) |
 
 ---
 

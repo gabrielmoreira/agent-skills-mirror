@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/baoyu-skills` — 26 default patterns, 8 followed patterns, 492 file(s) materialized.
+Mirror of `JimLiu/baoyu-skills` — 26 default patterns, 8 followed patterns, 497 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/baoyu-skills` — 26 default patterns, 8 followed patterns, 49
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 492 |
+| Files         | 497 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -507,57 +507,62 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 439 | ✓ | [`skills/baoyu-url-to-markdown/scripts/package.json`](skills/baoyu-url-to-markdown/scripts/package.json) |
 | 440 | ✓ | [`skills/baoyu-url-to-markdown/SKILL.md`](skills/baoyu-url-to-markdown/SKILL.md) |
 | 441 | ✓ | [`skills/baoyu-wechat-summary/EXTEND.md.example`](skills/baoyu-wechat-summary/EXTEND.md.example) |
-| 442 | ✓ | [`skills/baoyu-wechat-summary/references/group-memory.md`](skills/baoyu-wechat-summary/references/group-memory.md) |
-| 443 | ✓ | [`skills/baoyu-wechat-summary/references/output-formats.md`](skills/baoyu-wechat-summary/references/output-formats.md) |
-| 444 | ✓ | [`skills/baoyu-wechat-summary/references/profiles.md`](skills/baoyu-wechat-summary/references/profiles.md) |
-| 445 | ✓ | [`skills/baoyu-wechat-summary/references/setup.md`](skills/baoyu-wechat-summary/references/setup.md) |
-| 446 | ✓ | [`skills/baoyu-wechat-summary/SKILL.md`](skills/baoyu-wechat-summary/SKILL.md) |
-| 447 | ✓ | [`skills/baoyu-xhs-images/references/codex-imagegen.md`](skills/baoyu-xhs-images/references/codex-imagegen.md) |
-| 448 | ✓ | [`skills/baoyu-xhs-images/references/config/first-time-setup.md`](skills/baoyu-xhs-images/references/config/first-time-setup.md) |
-| 449 | ✓ | [`skills/baoyu-xhs-images/references/config/preferences-schema.md`](skills/baoyu-xhs-images/references/config/preferences-schema.md) |
-| 450 | ✓ | [`skills/baoyu-xhs-images/references/config/watermark-guide.md`](skills/baoyu-xhs-images/references/config/watermark-guide.md) |
-| 451 | ✓ | [`skills/baoyu-xhs-images/references/confirmation.md`](skills/baoyu-xhs-images/references/confirmation.md) |
-| 452 | ✓ | [`skills/baoyu-xhs-images/references/elements/canvas.md`](skills/baoyu-xhs-images/references/elements/canvas.md) |
-| 453 | ✓ | [`skills/baoyu-xhs-images/references/elements/decorations.md`](skills/baoyu-xhs-images/references/elements/decorations.md) |
-| 454 | ✓ | [`skills/baoyu-xhs-images/references/elements/image-effects.md`](skills/baoyu-xhs-images/references/elements/image-effects.md) |
-| 455 | ✓ | [`skills/baoyu-xhs-images/references/elements/typography.md`](skills/baoyu-xhs-images/references/elements/typography.md) |
-| 456 | ✓ | [`skills/baoyu-xhs-images/references/palettes/macaron.md`](skills/baoyu-xhs-images/references/palettes/macaron.md) |
-| 457 | ✓ | [`skills/baoyu-xhs-images/references/palettes/neon.md`](skills/baoyu-xhs-images/references/palettes/neon.md) |
-| 458 | ✓ | [`skills/baoyu-xhs-images/references/palettes/warm.md`](skills/baoyu-xhs-images/references/palettes/warm.md) |
-| 459 | ✓ | [`skills/baoyu-xhs-images/references/presets/bold.md`](skills/baoyu-xhs-images/references/presets/bold.md) |
-| 460 | ✓ | [`skills/baoyu-xhs-images/references/presets/chalkboard.md`](skills/baoyu-xhs-images/references/presets/chalkboard.md) |
-| 461 | ✓ | [`skills/baoyu-xhs-images/references/presets/cute.md`](skills/baoyu-xhs-images/references/presets/cute.md) |
-| 462 | ✓ | [`skills/baoyu-xhs-images/references/presets/fresh.md`](skills/baoyu-xhs-images/references/presets/fresh.md) |
-| 463 | ✓ | [`skills/baoyu-xhs-images/references/presets/minimal.md`](skills/baoyu-xhs-images/references/presets/minimal.md) |
-| 464 | ✓ | [`skills/baoyu-xhs-images/references/presets/notion.md`](skills/baoyu-xhs-images/references/presets/notion.md) |
-| 465 | ✓ | [`skills/baoyu-xhs-images/references/presets/pop.md`](skills/baoyu-xhs-images/references/presets/pop.md) |
-| 466 | ✓ | [`skills/baoyu-xhs-images/references/presets/retro.md`](skills/baoyu-xhs-images/references/presets/retro.md) |
-| 467 | ✓ | [`skills/baoyu-xhs-images/references/presets/screen-print.md`](skills/baoyu-xhs-images/references/presets/screen-print.md) |
-| 468 | ✓ | [`skills/baoyu-xhs-images/references/presets/sketch-notes.md`](skills/baoyu-xhs-images/references/presets/sketch-notes.md) |
-| 469 | ✓ | [`skills/baoyu-xhs-images/references/presets/study-notes.md`](skills/baoyu-xhs-images/references/presets/study-notes.md) |
-| 470 | ✓ | [`skills/baoyu-xhs-images/references/presets/warm.md`](skills/baoyu-xhs-images/references/presets/warm.md) |
-| 471 | ✓ | [`skills/baoyu-xhs-images/references/style-presets.md`](skills/baoyu-xhs-images/references/style-presets.md) |
-| 472 | ✓ | [`skills/baoyu-xhs-images/references/workflows/analysis-framework.md`](skills/baoyu-xhs-images/references/workflows/analysis-framework.md) |
-| 473 | ✓ | [`skills/baoyu-xhs-images/references/workflows/outline-template.md`](skills/baoyu-xhs-images/references/workflows/outline-template.md) |
-| 474 | ✓ | [`skills/baoyu-xhs-images/references/workflows/prompt-assembly.md`](skills/baoyu-xhs-images/references/workflows/prompt-assembly.md) |
-| 475 | ✓ | [`skills/baoyu-xhs-images/SKILL.md`](skills/baoyu-xhs-images/SKILL.md) |
-| 476 | ✓ | [`skills/baoyu-youtube-transcript/prompts/speaker-transcript.md`](skills/baoyu-youtube-transcript/prompts/speaker-transcript.md) |
-| 477 | ✓ | [`skills/baoyu-youtube-transcript/scripts/main.test.ts`](skills/baoyu-youtube-transcript/scripts/main.test.ts) |
-| 478 | ✓ | [`skills/baoyu-youtube-transcript/scripts/main.ts`](skills/baoyu-youtube-transcript/scripts/main.ts) |
-| 479 | ✓ | [`skills/baoyu-youtube-transcript/scripts/shared.ts`](skills/baoyu-youtube-transcript/scripts/shared.ts) |
-| 480 | ✓ | [`skills/baoyu-youtube-transcript/scripts/storage.ts`](skills/baoyu-youtube-transcript/scripts/storage.ts) |
-| 481 | ✓ | [`skills/baoyu-youtube-transcript/scripts/transcript.ts`](skills/baoyu-youtube-transcript/scripts/transcript.ts) |
-| 482 | ✓ | [`skills/baoyu-youtube-transcript/scripts/types.ts`](skills/baoyu-youtube-transcript/scripts/types.ts) |
-| 483 | ✓ | [`skills/baoyu-youtube-transcript/scripts/youtube.ts`](skills/baoyu-youtube-transcript/scripts/youtube.ts) |
-| 484 | ✓ | [`skills/baoyu-youtube-transcript/SKILL.md`](skills/baoyu-youtube-transcript/SKILL.md) |
-| 485 | → | [`docs/chrome-profile.md`](docs/chrome-profile.md) |
-| 486 | → | [`docs/codex-imagegen-backend.md`](docs/codex-imagegen-backend.md) |
-| 487 | → | [`docs/comic-style-maintenance.md`](docs/comic-style-maintenance.md) |
-| 488 | → | [`docs/creating-skills.md`](docs/creating-skills.md) |
-| 489 | → | [`docs/image-generation-tools.md`](docs/image-generation-tools.md) |
-| 490 | → | [`docs/image-generation.md`](docs/image-generation.md) |
-| 491 | → | [`docs/publishing.md`](docs/publishing.md) |
-| 492 | → | [`docs/user-input-tools.md`](docs/user-input-tools.md) |
+| 442 | ✓ | [`skills/baoyu-wechat-summary/references/bot-requests.md`](skills/baoyu-wechat-summary/references/bot-requests.md) |
+| 443 | ✓ | [`skills/baoyu-wechat-summary/references/group-memory.md`](skills/baoyu-wechat-summary/references/group-memory.md) |
+| 444 | ✓ | [`skills/baoyu-wechat-summary/references/output-formats.md`](skills/baoyu-wechat-summary/references/output-formats.md) |
+| 445 | ✓ | [`skills/baoyu-wechat-summary/references/preferences.md`](skills/baoyu-wechat-summary/references/preferences.md) |
+| 446 | ✓ | [`skills/baoyu-wechat-summary/references/profiles.md`](skills/baoyu-wechat-summary/references/profiles.md) |
+| 447 | ✓ | [`skills/baoyu-wechat-summary/references/setup.md`](skills/baoyu-wechat-summary/references/setup.md) |
+| 448 | ✓ | [`skills/baoyu-wechat-summary/SKILL.md`](skills/baoyu-wechat-summary/SKILL.md) |
+| 449 | ✓ | [`skills/baoyu-xhs-images/references/codex-imagegen.md`](skills/baoyu-xhs-images/references/codex-imagegen.md) |
+| 450 | ✓ | [`skills/baoyu-xhs-images/references/config/first-time-setup.md`](skills/baoyu-xhs-images/references/config/first-time-setup.md) |
+| 451 | ✓ | [`skills/baoyu-xhs-images/references/config/preferences-schema.md`](skills/baoyu-xhs-images/references/config/preferences-schema.md) |
+| 452 | ✓ | [`skills/baoyu-xhs-images/references/config/watermark-guide.md`](skills/baoyu-xhs-images/references/config/watermark-guide.md) |
+| 453 | ✓ | [`skills/baoyu-xhs-images/references/confirmation.md`](skills/baoyu-xhs-images/references/confirmation.md) |
+| 454 | ✓ | [`skills/baoyu-xhs-images/references/elements/canvas.md`](skills/baoyu-xhs-images/references/elements/canvas.md) |
+| 455 | ✓ | [`skills/baoyu-xhs-images/references/elements/decorations.md`](skills/baoyu-xhs-images/references/elements/decorations.md) |
+| 456 | ✓ | [`skills/baoyu-xhs-images/references/elements/image-effects.md`](skills/baoyu-xhs-images/references/elements/image-effects.md) |
+| 457 | ✓ | [`skills/baoyu-xhs-images/references/elements/typography.md`](skills/baoyu-xhs-images/references/elements/typography.md) |
+| 458 | ✓ | [`skills/baoyu-xhs-images/references/image-modification.md`](skills/baoyu-xhs-images/references/image-modification.md) |
+| 459 | ✓ | [`skills/baoyu-xhs-images/references/palettes/macaron.md`](skills/baoyu-xhs-images/references/palettes/macaron.md) |
+| 460 | ✓ | [`skills/baoyu-xhs-images/references/palettes/neon.md`](skills/baoyu-xhs-images/references/palettes/neon.md) |
+| 461 | ✓ | [`skills/baoyu-xhs-images/references/palettes/warm.md`](skills/baoyu-xhs-images/references/palettes/warm.md) |
+| 462 | ✓ | [`skills/baoyu-xhs-images/references/presets/bold.md`](skills/baoyu-xhs-images/references/presets/bold.md) |
+| 463 | ✓ | [`skills/baoyu-xhs-images/references/presets/chalkboard.md`](skills/baoyu-xhs-images/references/presets/chalkboard.md) |
+| 464 | ✓ | [`skills/baoyu-xhs-images/references/presets/cute.md`](skills/baoyu-xhs-images/references/presets/cute.md) |
+| 465 | ✓ | [`skills/baoyu-xhs-images/references/presets/fresh.md`](skills/baoyu-xhs-images/references/presets/fresh.md) |
+| 466 | ✓ | [`skills/baoyu-xhs-images/references/presets/minimal.md`](skills/baoyu-xhs-images/references/presets/minimal.md) |
+| 467 | ✓ | [`skills/baoyu-xhs-images/references/presets/notion.md`](skills/baoyu-xhs-images/references/presets/notion.md) |
+| 468 | ✓ | [`skills/baoyu-xhs-images/references/presets/pop.md`](skills/baoyu-xhs-images/references/presets/pop.md) |
+| 469 | ✓ | [`skills/baoyu-xhs-images/references/presets/retro.md`](skills/baoyu-xhs-images/references/presets/retro.md) |
+| 470 | ✓ | [`skills/baoyu-xhs-images/references/presets/screen-print.md`](skills/baoyu-xhs-images/references/presets/screen-print.md) |
+| 471 | ✓ | [`skills/baoyu-xhs-images/references/presets/sketch-notes.md`](skills/baoyu-xhs-images/references/presets/sketch-notes.md) |
+| 472 | ✓ | [`skills/baoyu-xhs-images/references/presets/study-notes.md`](skills/baoyu-xhs-images/references/presets/study-notes.md) |
+| 473 | ✓ | [`skills/baoyu-xhs-images/references/presets/warm.md`](skills/baoyu-xhs-images/references/presets/warm.md) |
+| 474 | ✓ | [`skills/baoyu-xhs-images/references/reference-images.md`](skills/baoyu-xhs-images/references/reference-images.md) |
+| 475 | ✓ | [`skills/baoyu-xhs-images/references/style-layout-matrix.md`](skills/baoyu-xhs-images/references/style-layout-matrix.md) |
+| 476 | ✓ | [`skills/baoyu-xhs-images/references/style-presets.md`](skills/baoyu-xhs-images/references/style-presets.md) |
+| 477 | ✓ | [`skills/baoyu-xhs-images/references/workflows/analysis-framework.md`](skills/baoyu-xhs-images/references/workflows/analysis-framework.md) |
+| 478 | ✓ | [`skills/baoyu-xhs-images/references/workflows/outline-template.md`](skills/baoyu-xhs-images/references/workflows/outline-template.md) |
+| 479 | ✓ | [`skills/baoyu-xhs-images/references/workflows/prompt-assembly.md`](skills/baoyu-xhs-images/references/workflows/prompt-assembly.md) |
+| 480 | ✓ | [`skills/baoyu-xhs-images/SKILL.md`](skills/baoyu-xhs-images/SKILL.md) |
+| 481 | ✓ | [`skills/baoyu-youtube-transcript/prompts/speaker-transcript.md`](skills/baoyu-youtube-transcript/prompts/speaker-transcript.md) |
+| 482 | ✓ | [`skills/baoyu-youtube-transcript/scripts/main.test.ts`](skills/baoyu-youtube-transcript/scripts/main.test.ts) |
+| 483 | ✓ | [`skills/baoyu-youtube-transcript/scripts/main.ts`](skills/baoyu-youtube-transcript/scripts/main.ts) |
+| 484 | ✓ | [`skills/baoyu-youtube-transcript/scripts/shared.ts`](skills/baoyu-youtube-transcript/scripts/shared.ts) |
+| 485 | ✓ | [`skills/baoyu-youtube-transcript/scripts/storage.ts`](skills/baoyu-youtube-transcript/scripts/storage.ts) |
+| 486 | ✓ | [`skills/baoyu-youtube-transcript/scripts/transcript.ts`](skills/baoyu-youtube-transcript/scripts/transcript.ts) |
+| 487 | ✓ | [`skills/baoyu-youtube-transcript/scripts/types.ts`](skills/baoyu-youtube-transcript/scripts/types.ts) |
+| 488 | ✓ | [`skills/baoyu-youtube-transcript/scripts/youtube.ts`](skills/baoyu-youtube-transcript/scripts/youtube.ts) |
+| 489 | ✓ | [`skills/baoyu-youtube-transcript/SKILL.md`](skills/baoyu-youtube-transcript/SKILL.md) |
+| 490 | → | [`docs/chrome-profile.md`](docs/chrome-profile.md) |
+| 491 | → | [`docs/codex-imagegen-backend.md`](docs/codex-imagegen-backend.md) |
+| 492 | → | [`docs/comic-style-maintenance.md`](docs/comic-style-maintenance.md) |
+| 493 | → | [`docs/creating-skills.md`](docs/creating-skills.md) |
+| 494 | → | [`docs/image-generation-tools.md`](docs/image-generation-tools.md) |
+| 495 | → | [`docs/image-generation.md`](docs/image-generation.md) |
+| 496 | → | [`docs/publishing.md`](docs/publishing.md) |
+| 497 | → | [`docs/user-input-tools.md`](docs/user-input-tools.md) |
 
 ---
 
