@@ -51,12 +51,12 @@ Bad example:
 
 ## Recovery Notes
 
-- If evidence is mostly assumption, label it and recommend a research or feedback-triage pass.
-- If the decision owner is missing, keep the output as options rather than accepted strategy.
+- If consent or suppression status is unknown, retain sales_opportunity_evidence_record/v1 and sales_qualification_state/v1, mark sequence eligibility unresolved with HOLD, and hand back the missing eligibility questions without drafting outreach.
+- If no observed buyer response supports a commitment, retain the eligible sales_draft_sequence/v1, mark confirmation not_observed, and hand back sales_handoff_disposition/v1 with proposed actions, owners, timing, and exit criteria.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

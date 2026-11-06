@@ -1,0 +1,245 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Beat "plafonné à deux mille vues ... trente fois plus" (short time 20.15 s, 6.85 s). Part 1: the real Instagram
+     insights of my reel (2 629 views hit a ceiling, retention drops at 10 s). Part 2: the competitor reel row from Treg
+     (handle and face blurred), x31 its median and the bar pair. Transparent 1080x1920, drawn only in x 60-1020, y 140-1090.
+     Every state is a pure function of t in window.setT(t). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; position: relative; color: #14161B; -webkit-font-smoothing: antialiased;
+    font-family: 'Inter', sans-serif; }
+  #root { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+  .card { position: absolute; background: #fff; border-radius: 32px; overflow: hidden;
+    box-shadow: 0 22px 44px -18px rgba(20,22,27,.30), 0 6px 16px -4px rgba(20,22,27,.10), 0 0 0 1px rgba(20,22,27,.04); }
+  .abs { position: absolute; }
+  .big { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; letter-spacing: -.02em; color: #14161B; }
+  .grey { color: #737373; }
+  /* insights card */
+  #ins { left: 80px; top: 150px; width: 920px; height: 900px; transform-origin: 0 0; }
+  #top { left: 0; top: 0; width: 920px; height: 96px; border-bottom: 2px solid #efefef; box-sizing: border-box; }
+  #top .t { position: absolute; left: 0; right: 0; top: 26px; text-align: center; font-size: 38px; font-weight: 700; letter-spacing: -.01em; }
+  #top svg { position: absolute; left: 36px; top: 26px; }
+  #top img { position: absolute; right: 34px; top: 20px; width: 56px; height: 56px; }
+  #reel { left: 0; top: 96px; width: 920px; height: 224px; }
+  #cover { position: absolute; left: 44px; top: 18px; width: 112px; height: 199px; border-radius: 16px; object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+  .meta { position: absolute; left: 196px; font-size: 34px; }
+  .icons { display: flex; gap: 40px; align-items: center; }
+  .icons span { display: flex; align-items: center; gap: 12px; font-size: 38px; font-weight: 700; }
+  #views { left: 0; top: 320px; width: 920px; height: 220px; }
+  #views .lab { position: absolute; left: 44px; top: 6px; font-size: 38px; font-weight: 700; }
+  #vnum { position: absolute; left: 40px; top: 58px; font-size: 132px; line-height: 1; }
+  #spark { position: absolute; left: 0; top: 0; }
+  #plaf { position: absolute; right: 44px; top: 4px; font-size: 34px; }
+  #ret { left: 0; top: 540px; width: 920px; height: 360px; border-top: 2px solid #efefef; box-sizing: border-box; }
+  #ret .lab { position: absolute; left: 44px; top: 18px; font-size: 38px; font-weight: 700; }
+  #watch { position: absolute; left: 44px; right: 44px; top: 72px; display: flex; align-items: baseline; justify-content: space-between; }
+  #watch .k { font-size: 34px; }
+  #watch .v { font-size: 50px; }
+  #chart { position: absolute; left: 0; top: 0; }
+  .ax { position: absolute; top: 300px; font-size: 34px; font-weight: 600; }
+  #pill { position: absolute; top: 296px; height: 50px; padding: 0 16px; border-radius: 25px; background: #258EFF; color: #fff;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 34px; line-height: 50px; white-space: nowrap;
+    transform: translateX(-50%); box-shadow: 0 8px 18px -6px rgba(37,142,255,.55); }
+  /* bars panel */
+  #bars { left: 552px; top: 150px; width: 448px; height: 432px; }
+  #bars .lab { position: absolute; left: 32px; top: 26px; font-size: 36px; font-weight: 700; }
+  .bar { position: absolute; bottom: 92px; width: 116px; border-radius: 14px 14px 4px 4px; }
+  .bv { position: absolute; width: 224px; text-align: center; font-size: 42px; line-height: 1; }
+  .bl { position: absolute; bottom: 34px; width: 224px; text-align: center; font-size: 34px; font-weight: 600; }
+  #base { position: absolute; left: 28px; right: 28px; bottom: 90px; height: 3px; background: #14161B; border-radius: 2px; }
+  /* competitor table */
+  #comp { left: 80px; top: 618px; width: 920px; height: 432px; }
+  #chead { left: 0; top: 0; width: 920px; height: 84px; }
+  #chead .t { position: absolute; left: 32px; top: 22px; font-size: 38px; font-weight: 700; }
+  #chead .via { position: absolute; right: 32px; top: 20px; display: flex; align-items: center; gap: 12px; font-size: 34px; font-weight: 600; }
+  #chead .via img { width: 44px; height: 44px; border-radius: 10px; }
+  #cols { left: 0; top: 84px; width: 920px; height: 56px; border-bottom: 2px solid #efefef; box-sizing: border-box; font-size: 34px;
+    font-weight: 600; color: #8e8e8e; }
+  #cols div { position: absolute; top: 2px; }
+  #row { left: 0; top: 140px; width: 920px; height: 292px; }
+  #thumb { position: absolute; left: 32px; top: 22px; width: 120px; height: 213px; border-radius: 16px; overflow: hidden; }
+  #thumb .g { position: absolute; inset: -30px; filter: blur(14px);
+    background: radial-gradient(circle at 50% 38%, #e7d6c6 0 18%, transparent 34%), radial-gradient(circle at 30% 80%, #6d7480 0 22%, transparent 46%),
+    linear-gradient(170deg, #b9a796, #7d7168 55%, #4f5560); }
+  #thumb svg { position: absolute; left: 40px; top: 86px; }
+  #av { position: absolute; left: 176px; top: 26px; width: 64px; height: 64px; border-radius: 50%; overflow: hidden;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 6px #d62976; }
+  #av .g { position: absolute; inset: -12px; filter: blur(7px); background: radial-gradient(circle at 50% 40%, #d9b8a0 0 26%, #3d434c 60%); }
+  .hb { position: absolute; border-radius: 12px; background: #d6d8dc; filter: blur(2.5px); }
+  #chip { position: absolute; left: 176px; top: 170px; height: 58px; padding: 0 22px 0 16px; border-radius: 29px; background: #14161B; color: #fff;
+    display: flex; align-items: center; gap: 10px; font-size: 34px; font-weight: 700; white-space: nowrap;
+    box-shadow: 0 10px 20px -8px rgba(20,22,27,.45); }
+  .cell { position: absolute; top: 34px; font-size: 38px; font-weight: 600; }
+  #cviews { position: absolute; right: 32px; top: 22px; font-size: 60px; line-height: 1; text-align: right; }
+  #x31 { position: absolute; right: 32px; top: 104px; text-align: right; }
+  #x31 .x { font-size: 116px; line-height: 1; color: #258EFF; }
+  #x31 .m { font-size: 34px; font-weight: 600; margin-top: 4px; }
+  #hl { position: absolute; left: 12px; top: 8px; width: 896px; height: 274px; border-radius: 26px; box-sizing: border-box;
+    border: 5px solid #258EFF; background: rgba(37,142,255,.06); }
+</style></head>
+<body><div id="root">
+
+  <!-- bars panel (part 2) -->
+  <div id="bars" class="card">
+    <div class="lab">Vues</div>
+    <div id="base"></div>
+    <div class="bar" id="b1" style="left:82px;background:#14161B"></div>
+    <div class="bar" id="b2" style="left:306px;background:#258EFF"></div>
+    <div class="bv big" id="v1" style="left:12px">2&#8239;629</div>
+    <div class="bv big" id="v2" style="left:212px;color:#258EFF">0</div>
+    <div class="bl" style="left:28px">Mon reel</div>
+    <div class="bl" style="left:212px">Concurrent</div>
+  </div>
+
+  <!-- competitor table (part 2) -->
+  <div id="comp" class="card">
+    <div id="chead" class="abs"><div class="t">Reels du concurrent</div>
+      <div class="via grey">via Treg<img src="../assets/logos/treg.png"></div></div>
+    <div id="cols" class="abs"><div style="left:32px">Reel</div><div style="left:420px">Durée</div><div style="left:540px">Date</div>
+      <div style="right:32px">Vues</div></div>
+    <div id="row" class="abs">
+      <div id="hl"></div>
+      <div id="thumb"><div class="g"></div>
+        <svg width="40" height="40" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="#fff" fill-opacity=".92"/></svg></div>
+      <div id="av"><div class="g"></div></div>
+      <div class="hb" style="left:258px;top:32px;width:136px;height:26px"></div>
+      <div class="hb" style="left:258px;top:72px;width:92px;height:20px;background:#e4e6e9"></div>
+      <div id="chip"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>Accroche</div>
+      <div class="cell" style="left:420px">48 s</div>
+      <div class="cell" style="left:540px">1 oct.</div>
+      <div id="cviews" class="big">62&#8239;755</div>
+      <div id="x31"><div class="x big">x31</div><div class="m grey">sa médiane</div></div>
+    </div>
+  </div>
+
+  <!-- Instagram insights (part 1, shrinks in part 2) -->
+  <div id="ins" class="card">
+    <div id="top" class="abs">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#14161B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l-8 8 8 8"/></svg>
+      <div class="t">Statistiques du reel</div>
+      <img src="../assets/logos/instagram.png">
+    </div>
+    <div id="reel" class="abs">
+      <img id="cover" src="../assets/images/my-reel-cover.jpg">
+      <div class="meta grey" style="top:22px">Publié le 9 oct.</div>
+      <div class="meta icons" style="top:86px">
+        <span><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#14161B" stroke-width="2.2" stroke-linejoin="round"><path d="M12 20.5s-8-4.6-8-10.4C4 7.3 6 5.5 8.3 5.5c1.6 0 2.9.9 3.7 2.2.8-1.3 2.1-2.2 3.7-2.2 2.3 0 4.3 1.8 4.3 4.6 0 5.8-8 10.4-8 10.4z"/></svg>72</span>
+        <span><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#14161B" stroke-width="2.2" stroke-linejoin="round"><path d="M20.5 11.6a8.5 8.5 0 1 1-3.6-6.9 8.4 8.4 0 0 1 3.6 6.9zM20.5 11.6c0 1.9-.6 3.7-1.7 5.1l1.4 3.8-4-1.3"/></svg>51</span>
+        <span><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#14161B" stroke-width="2.2" stroke-linejoin="round"><path d="M6 3.5h12v17l-6-5.2-6 5.2z"/></svg>105</span>
+      </div>
+      <div class="meta" style="top:158px"><span class="grey">Comptes touchés</span>&nbsp;&nbsp;<b>1&#8239;982</b></div>
+    </div>
+    <div id="views" class="abs">
+      <div class="lab">Vues</div>
+      <div id="vnum" class="big">0</div>
+      <svg id="spark" width="920" height="220">
+        <line id="ceil" x1="470" y1="64" x2="876" y2="64" stroke="#14161B" stroke-linecap="round"/>
+        <path id="sp" d="M470 196 L690 66 L876 66" fill="none" stroke="#258EFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/>
+        <circle id="hit" cx="690" cy="66" r="11" fill="#14161B"/>
+      </svg>
+      <div id="plaf" class="big">plafond</div>
+    </div>
+    <div id="ret" class="abs">
+      <div class="lab">Rétention</div>
+      <div id="watch"><span class="k grey">Durée moyenne regardée</span><span class="v big">0:10,8 <span style="font-size:36px;color:#737373">sur</span> 0:47</span></div>
+      <svg id="chart" width="920" height="360">
+        <defs><clipPath id="clip"><rect id="cr" x="40" y="120" width="0" height="180"/></clipPath></defs>
+        <rect id="band" x="0" y="140" width="0" height="150" fill="#258EFF" fill-opacity=".12"/>
+        <line x1="44" y1="140" x2="876" y2="140" stroke="#e6e6e6" stroke-width="2" stroke-dasharray="8 8"/>
+        <line x1="44" y1="290" x2="876" y2="290" stroke="#d0d0d0" stroke-width="2"/>
+        <g clip-path="url(#clip)">
+          <path id="area" fill="#14161B" fill-opacity=".07"/>
+          <path id="curve" fill="none" stroke="#14161B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <line id="mk" x1="0" y1="128" x2="0" y2="290" stroke="#258EFF" stroke-width="5" stroke-linecap="round"/>
+        <circle id="mkd" r="12" fill="#258EFF" stroke="#fff" stroke-width="4"/>
+      </svg>
+      <div class="ax grey" style="left:44px">0 s</div>
+      <div class="ax grey" style="right:44px">47 s</div>
+      <div id="pill">10 s</div>
+    </div>
+  </div>
+
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const S = (x, w = 14) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const lerp = (a, b, p) => a + (b - a) * p;
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+// retention curve: 100 % holds, drops hard around 10 s, stays low to 47 s
+const PX0 = 44, PW = 832, PY0 = 140, PH = 150, DUR = 47;
+const ret = s => { const hold = 100 - 1.6 * s, low = 22 - .16 * (s - 10), d = 1 / (1 + Math.exp(-(s - 10.6) * 1.7)); return hold * (1 - d) + low * d; };
+const X = s => PX0 + s / DUR * PW, Y = r => PY0 + (1 - r / 100) * PH;
+let dC = '';
+for (let i = 0; i <= 240; i++) { const s = i / 240 * DUR; dC += (i ? ' L' : 'M') + X(s).toFixed(1) + ' ' + Y(ret(s)).toFixed(1); }
+$('curve').setAttribute('d', dC);
+$('area').setAttribute('d', dC + ` L${X(DUR)} ${PY0 + PH} L${PX0} ${PY0 + PH} Z`);
+const MX = X(10), MY = Y(ret(10));
+$('mk').setAttribute('x1', MX); $('mk').setAttribute('x2', MX);
+$('mkd').setAttribute('cx', MX); $('mkd').setAttribute('cy', MY);
+$('pill').style.left = MX + 'px';
+
+// rise-in helper: opacity + translateY from an offset, spring w
+const rise = (el, x, dy = 28, w = 16, dx = 0) => { const p = S(x, w); el.style.opacity = clamp(p * 1.4); el.style.transform = `translate(${dx * (1 - p)}px, ${dy * (1 - p)}px)`; return p; };
+
+window.setT = t => {
+  // whip out to the left over the last .3 s
+  const u = seg(t, 6.55, 6.85);
+  $('root').style.transform = `translateX(${-1150 * u * u}px)`;
+
+  // ---- part 1: insights card
+  const pin = S(t, 15), ph = S(t - 2.15, 12), sh = S(t - 4.10, 11);
+  const ins = $('ins');
+  ins.style.opacity = clamp(pin * 1.6);
+  ins.style.height = lerp(540, 900, ph) + 'px';
+  ins.style.transform = `translateY(${70 * (1 - pin)}px) scale(${lerp(.97, 1, pin) * lerp(1, .48, sh)})`;
+  rise($('top'), t - .04, 20);
+  rise($('reel'), t - .12, 26);
+  rise($('views'), t - .22, 26);
+
+  // views count 0 -> 2 629, climbs to the ceiling, stops dead at 1.62, then the line runs flat
+  const q = seg(t, .75, 1.62), qe = Math.pow(q, 1.25), fl = seg(t, 1.62, 2.05);
+  const CL = .553, f = q < 1 ? CL * qe : CL + (1 - CL) * fl;
+  $('vnum').textContent = fmt(2629 * qe);
+  const sp = $('sp'); sp.style.strokeDasharray = '1 1'; sp.style.strokeDashoffset = 1 - f; sp.style.opacity = t >= .75 ? 1 : 0;
+  const hitp = S(t - 1.62, 22);
+  const ceil = $('ceil');
+  ceil.setAttribute('stroke-dasharray', hitp > .5 ? 'none' : '10 12');
+  ceil.setAttribute('stroke-width', lerp(3, 7, hitp));
+  ceil.setAttribute('stroke-opacity', lerp(.35, 1, hitp) * clamp(S(t - .6, 14) * 1.5));
+  $('hit').style.opacity = hitp; $('hit').setAttribute('r', lerp(6, 11, hitp));
+  const pl = $('plaf'); const plp = S(t - .7, 14); pl.style.opacity = lerp(.0, .45, clamp(plp * 1.4)) + .55 * hitp; pl.style.transform = `translateY(${16 * (1 - plp)}px)`;
+
+  // retention section
+  const r = $('ret'); r.style.opacity = clamp(ph * 1.5); r.style.transform = `translateY(${40 * (1 - ph)}px)`;
+  rise($('watch'), t - 2.25, 22);
+  const cp = seg(t, 2.38, 3.30), cpe = 1 - Math.pow(1 - cp, 1.6);
+  $('cr').setAttribute('width', 4 + (PW + 12) * cpe);
+  // drop zone tint (9 s -> 47 s) on "partaient"
+  const bp = S(t - 2.88, 9);
+  $('band').setAttribute('x', X(9)); $('band').setAttribute('width', (X(DUR) - X(9)) * bp);
+  // blue marker lands at 10 s on "dixième"
+  const mp = S(t - 3.34, 16);
+  $('mk').setAttribute('y1', lerp(290, 128, mp)); $('mk').style.opacity = clamp(mp * 3);
+  const dp = S(t - 3.42, 18); $('mkd').style.opacity = clamp(dp * 2); $('mkd').setAttribute('r', lerp(6, 12, dp));
+  const pp = S(t - 3.50, 16); const pill = $('pill'); pill.style.opacity = clamp(pp * 1.6); pill.style.transform = `translate(-50%, ${18 * (1 - pp)}px)`;
+
+  // ---- part 2: competitor row, bars panel
+  const cpn = rise($('comp'), t - 4.18, 36, 13);
+  const bpn = S(t - 5.37, 13); const bars = $('bars'); bars.style.opacity = clamp(bpn * 1.5); bars.style.transform = `translateY(${28 * (1 - bpn)}px) scale(${lerp(.96, 1, bpn)})`;
+  const H = 240, myH = 2629 / 62755 * H;
+  const g1 = S(t - 5.52, 12); $('b1').style.height = (myH * g1) + 'px';
+  $('v1').style.bottom = (92 + 14 + myH * g1) + 'px'; $('v1').style.opacity = clamp(g1 * 1.5);
+  const g2 = S(t - 6.04, 11); $('b2').style.height = (H * g2) + 'px';
+  $('v2').style.bottom = (92 + 14 + H * g2) + 'px'; $('v2').textContent = fmt(62755 * g2); $('v2').style.opacity = clamp(g2 * 3);
+  rise($('chip'), t - 4.63, 0, 15, -40);
+  const hp = S(t - 5.18, 14); const hl = $('hl'); hl.style.opacity = hp; hl.style.transform = `scale(${lerp(1.025, 1, hp)})`;
+  rise($('x31'), t - 6.20, 36, 15);
+};
+window.setT(0);
+</script>
+</body></html>

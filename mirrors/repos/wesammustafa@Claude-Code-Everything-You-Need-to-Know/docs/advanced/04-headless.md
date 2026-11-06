@@ -62,7 +62,7 @@ In your repository:
    jq '{subtype, has_result: has("result")}' .practice/a-4-capped.json
    ```
 
-   It prints a non-zero exit code, then `"subtype": "error_max_turns"` and `"has_result": false`: a run that stops at the cap has no `result`. `--max-turns` counts only the turns that call tools ([Turns and messages](https://code.claude.com/docs/en/agent-sdk/agent-loop#turns-and-messages)), so if the run finished, give it a task with more steps.
+   It prints a non-zero exit code, then `"subtype": "error_max_turns"` and `"has_result": false`: a run that stops at the cap has no `result`. `--max-turns` counts each turn that calls tools, plus one for the final text-only response ([Turns and messages](https://code.claude.com/docs/en/agent-sdk/agent-loop#turns-and-messages)), so if the run finished, give it a task with more steps.
 
 ## Your turn
 
@@ -110,4 +110,4 @@ If the first item fails, run `chmod +x scripts/review-staged.sh`, then `git add`
 
 <sub>Sources: [Run Claude Code programmatically](https://code.claude.com/docs/en/headless) · [CLI reference](https://code.claude.com/docs/en/cli-reference) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing) · [How the agent loop works](https://code.claude.com/docs/en/agent-sdk/agent-loop) · [Agent SDK reference - TypeScript](https://code.claude.com/docs/en/agent-sdk/typescript) · [Track cost and usage](https://code.claude.com/docs/en/agent-sdk/cost-tracking) · [Authentication](https://code.claude.com/docs/en/authentication) · [Tools reference](https://code.claude.com/docs/en/tools-reference) · [Hooks reference](https://code.claude.com/docs/en/hooks) · [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp) · [Use Claude Code features in the SDK](https://code.claude.com/docs/en/agent-sdk/claude-code-features) · [Error reference](https://code.claude.com/docs/en/errors) · [git diff](https://git-scm.com/docs/git-diff)</sub>
 
-<sub>← [Run and save a dynamic workflow](03-dynamic-workflows.md) · [Advanced index](README.md) · [GitHub Actions](05-github-actions.md) → · Topic: [Automation](../topics/automation.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=a-4)</sub>
+<sub>← [Run and save a dynamic workflow](03-dynamic-workflows.md) · [Advanced index](README.md) · [GitHub Actions](05-github-actions.md) → · Topic: [Automation](../topics/automation.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=a-4)</sub>

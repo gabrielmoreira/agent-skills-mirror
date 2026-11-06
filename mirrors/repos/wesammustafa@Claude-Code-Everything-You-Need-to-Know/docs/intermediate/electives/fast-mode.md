@@ -3,7 +3,7 @@
 <sub>**Intermediate** · Elective · about 10 minutes · Needs: [Pick the model and effort](../03-model-and-effort.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
 
 > [!NOTE]
-> "Fast mode is in research preview. The feature, pricing, and availability may change based on feedback." ([Speed up responses with fast mode](https://code.claude.com/docs/en/fast-mode))
+> "Fast mode for Claude Opus 5.5 is available, and fast mode for Claude Opus 5 and Claude Opus 4.8 is in research preview." ([Speed up responses with fast mode](https://code.claude.com/docs/en/fast-mode))
 
 ## Goal
 
@@ -12,7 +12,7 @@ By the end of this Elective you can tell when fast mode is worth its cost, and t
 ## You need
 
 - Claude Code signed in with a Claude plan, or with a Claude Console account whose organization has fast mode access. Fast mode isn't available on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry or Claude Platform on AWS ([Requirements](https://code.claude.com/docs/en/fast-mode#requirements)).
-- On a Pro, Max, Team or Enterprise plan: usage credits turned on. On Pro and Max, `/usage-credits` opens the page that turns them on; on Team and Enterprise, a member with billing access turns them on for the organization, and a member without it runs `/usage-credits` to ask the organization's admins. On Team and Enterprise, an Owner also turns fast mode on for the organization.
+- On a Pro, Max, Ultra, Team or Enterprise plan: usage credits turned on. On Pro, Max and Ultra, `/usage-credits` opens the page that turns them on; on Team and Enterprise, a member with billing access turns them on for the organization, and a member without it runs `/usage-credits` to ask the organization's admins. On Team and Enterprise, an Owner also turns fast mode on for the organization.
 - Usage: billed beyond your plan (usage credits). Fast mode draws on usage credits even when your plan has usage left. The exercise is optional.
 
 ## The idea
@@ -34,7 +34,7 @@ Turning it on partway through a conversation charges the whole conversation so f
 This exercise is optional, because it spends usage credits.
 
 1. Start a new session, turn fast mode on before your first prompt, and do a few minutes of quick back-and-forth work.
-2. Turn it off when you're done, and check what it cost: on Pro and Max, the **Usage credits** section of **Settings > Usage** on claude.ai; on Team and Enterprise, `/usage`; on Claude Console, the Console's **Usage** and **Cost** pages ([See where fast mode spend appears](https://code.claude.com/docs/en/fast-mode#see-where-fast-mode-spend-appears)).
+2. Turn it off when you're done, and check what it cost: on Pro, Max and Ultra, the **Usage credits** section of **Settings > Usage** on claude.ai; on Team and Enterprise, `/usage`; on Claude Console, the Console's **Usage** and **Cost** pages ([See where fast mode spend appears](https://code.claude.com/docs/en/fast-mode#see-where-fast-mode-spend-appears)).
 
 ## Check
 
@@ -54,4 +54,4 @@ If `/fast` says `Fast mode has been disabled by your organization`, an Owner has
 
 <sub>Sources: [Speed up responses with fast mode](https://code.claude.com/docs/en/fast-mode)</sub>
 
-<sub>Back to the [Intermediate index](../README.md) · Topic: [Models, effort and cost](../../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=i-fast-mode)</sub>
+<sub>Back to the [Intermediate index](../README.md) · Topic: [Models, effort and cost](../../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-fast-mode)</sub>

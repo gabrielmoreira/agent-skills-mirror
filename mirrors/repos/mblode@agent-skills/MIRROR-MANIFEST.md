@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 541 file(s) materialized.
+Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 542 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 54
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 541 |
+| Files         | 542 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -595,11 +595,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 534 | ✓ | [`skills/ui-verification/probes/viewport-stress.md`](skills/ui-verification/probes/viewport-stress.md) |
 | 535 | ✓ | [`skills/ui-verification/probes/web-vitals.md`](skills/ui-verification/probes/web-vitals.md) |
 | 536 | ✓ | [`skills/ui-verification/references/evidence-output.md`](skills/ui-verification/references/evidence-output.md) |
-| 537 | ✓ | [`skills/ui-verification/references/rule-coverage.md`](skills/ui-verification/references/rule-coverage.md) |
-| 538 | ✓ | [`skills/ui-verification/references/session-setup.md`](skills/ui-verification/references/session-setup.md) |
-| 539 | ✓ | [`skills/ui-verification/references/visual-review.md`](skills/ui-verification/references/visual-review.md) |
-| 540 | ✓ | [`skills/ui-verification/SKILL.md`](skills/ui-verification/SKILL.md) |
-| 541 | → | [`LICENSE.md`](LICENSE.md) |
+| 537 | ✓ | [`skills/ui-verification/references/exploratory-test.md`](skills/ui-verification/references/exploratory-test.md) |
+| 538 | ✓ | [`skills/ui-verification/references/rule-coverage.md`](skills/ui-verification/references/rule-coverage.md) |
+| 539 | ✓ | [`skills/ui-verification/references/session-setup.md`](skills/ui-verification/references/session-setup.md) |
+| 540 | ✓ | [`skills/ui-verification/references/visual-review.md`](skills/ui-verification/references/visual-review.md) |
+| 541 | ✓ | [`skills/ui-verification/SKILL.md`](skills/ui-verification/SKILL.md) |
+| 542 | → | [`LICENSE.md`](LICENSE.md) |
 
 ---
 

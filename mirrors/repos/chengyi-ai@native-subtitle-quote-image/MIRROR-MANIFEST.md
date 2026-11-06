@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chengyi-ai/native-subtitle-quote-image` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `chengyi-ai/native-subtitle-quote-image` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chengyi-ai/native-subtitle-quote-image` — 26 default patterns, 0 fo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,9 +68,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`skills/native-subtitle-quote-image/requirements.txt`](skills/native-subtitle-quote-image/requirements.txt) |
 | 8 | ✓ | [`skills/native-subtitle-quote-image/scripts/check_environment.py`](skills/native-subtitle-quote-image/scripts/check_environment.py) |
 | 9 | ✓ | [`skills/native-subtitle-quote-image/scripts/check_update.py`](skills/native-subtitle-quote-image/scripts/check_update.py) |
-| 10 | ✓ | [`skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py`](skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py) |
-| 11 | ✓ | [`skills/native-subtitle-quote-image/SKILL.md`](skills/native-subtitle-quote-image/SKILL.md) |
-| 12 | ✓ | [`skills/native-subtitle-quote-image/VERSION`](skills/native-subtitle-quote-image/VERSION) |
+| 10 | ✓ | [`skills/native-subtitle-quote-image/scripts/fetch_source.py`](skills/native-subtitle-quote-image/scripts/fetch_source.py) |
+| 11 | ✓ | [`skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py`](skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py) |
+| 12 | ✓ | [`skills/native-subtitle-quote-image/SKILL.md`](skills/native-subtitle-quote-image/SKILL.md) |
+| 13 | ✓ | [`skills/native-subtitle-quote-image/VERSION`](skills/native-subtitle-quote-image/VERSION) |
 
 ---
 

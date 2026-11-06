@@ -52,13 +52,16 @@ import {
   flattenHttpServiceRoutes,
   isDomainPathReachableViaGateway,
 } from "../utils/gateway-access-urls.js";
-import { TCB_PURCHASE_URL } from "../utils/console-links.js";
+import { resolveEnvConsoleUrl, resolveEnvPurchaseUrl } from "../utils/console-links.js";
 import {
   buildEnvCreditsPayload,
   buildEnvMetricsPayload,
+  buildReceiptDailyTotals,
   isBillingExpired,
   pickCreditsBilling,
   resolveIsolatedDaysLeft,
+  summarizeUsageDetail,
+  trimUsageForReceipt,
   type CreditsBillingLike,
 } from "./env-credits-payload.js";
 import type { EnvCreditsPayload, EnvMetricsPayload } from "../resources/env-credits.js";
@@ -135,27 +138,39 @@ const LISTABLE_PACKAGE_ID_SET: ReadonlySet<string> = new Set(LISTABLE_PACKAGE_ID
 /**
  * Resource-usage modules accepted by `DescribeCreditsUsageDetail.Modules`.
  *
- * 出处：云 API 文档《获取资源点用量明细》`product/876/132934` 的 Modules 枚举（15 项）。
- * **不要照抄 tcb CLI 的 `USAGE_MODULES`**——CLI ≤ 3.8.x 只有 13 项，缺 `PostgreSQL` / `Token`，
- * 照抄会导致按模块查询时**整块用量消失**（PG 环境里最典型：数据库一行永远为 0）。
- * `Modules` 是必传参数且没有「全部」取值（实测省略报 MissingParameter），所以新增模块
- * 只能靠这份清单跟上，官方文档是唯一真源。
+ * `Modules` 是必传参数且没有「全部」取值（省略报 `MissingParameter`），没点名的模块连行都不返回，
+ * 所以这份清单少一项，那一项的用量就**整块消失**、而且不报错。
+ *
+ * 取值口径：与云开发控制台「功能用量概览」实际请求的 Modules 一致（19 项），
+ * 这样同一个环境的合计与控制台显示的是同一个数。
+ *
+ * 几个容易踩的点：
+ *   - 云 API 文档《获取资源点用量明细》`product/876/132934` 的枚举只有 15 项，是这份清单的**子集**；
+ *     照文档抄会少 `CBF` / `Gateway` / `CLS` / `EO` / `STORAGE_EO` / `CI` 六项。
+ *   - 别把 `Gateway` 拆成 `APIInvocation` + `HTTPInvocation` 一起传：后两个是 `Gateway` 的拆分子类，
+ *     同传会让「环境调用」这笔钱算两遍（实测正好翻倍）。`COS` 与 `COS_SIA`/`COS_ARC` 同理。
+ *   - `EO` 与 `STORAGE_EO` 是两项独立计费，一起传不会重复。
+ *   - 未开通的模块一律返回 0、不报错，所以清单不需要按环境裁剪。
  */
 export const ENV_USAGE_MODULE_VALUES = [
   "FLEXDB",
   "TDSQL",
   "PostgreSQL",
   "SCF",
+  "CBF",
   "EKS",
   "COS",
   "AI",
   "Token",
   "HOSTING",
   "Auth",
-  "APIInvocation",
-  "HTTPInvocation",
-  "VM",
+  "Gateway",
   "Workflow",
+  "CLS",
+  "EO",
+  "STORAGE_EO",
+  "CI",
+  "VM",
   "Other",
 ] as const;
 
@@ -1054,6 +1069,12 @@ async function prepareAuthEnvironment(params: {
   // 没有环境时不再「顺手建一个」：创建环境是花钱/占额度的用户决策，
   // 不能藏在 auth(status) 这种查看状态的调用里。这里只返回开通入口和下一步，
   // 用户在控制台开通后回来说一句，再走一次 status 就能接上。
+  // 购买页按站点切域名：国际站是 buy.tencentcloud.com，不能给国内站链接。
+  const purchaseSite = resolveSiteAndRegion({
+    site: cloudBaseOptions?.site,
+    region: cloudBaseOptions?.region,
+  }).site;
+  const purchaseUrl = resolveEnvPurchaseUrl(purchaseSite);
   return {
     currentEnvId: null,
     envStatus: "NONE",
@@ -1061,8 +1082,8 @@ async function prepareAuthEnvironment(params: {
     envSetupStatus: "ACTION_REQUIRED",
     envSetupActions: dedupeActions(envSetupActions),
     envSetupReason: "no_env",
-    envSetupHelpUrl: TCB_PURCHASE_URL,
-    message: t("env.prepare.noEnv", { helpUrl: TCB_PURCHASE_URL }),
+    envSetupHelpUrl: purchaseUrl,
+    message: t("env.prepare.noEnv", { helpUrl: purchaseUrl }),
     nextStep: buildAuthNextStep("status", {
       suggestedArgs: { action: "status" },
     }),
@@ -1318,7 +1339,28 @@ async function enrichEnvInfoWithRuntimeMode(result: any, manager?: any) {
   const databasesList = Array.isArray(envInfo.Databases)
     ? envInfo.Databases
     : [];
-  const hasNoSql = databasesList.some(isUsableNoSqlDatabaseEntry);
+  // pgdoc carries the document-database API on PostgreSQL. A Databases[]
+  // entry pointing at a taken-over PG instance is that projection, not a
+  // flexdb tenant. Responses without the flag keep the classic shape.
+  const pgdocInstanceNames: string[] = pgList
+    .filter((pg: any) => pg && pg.DocumentExt === true)
+    .map((pg: any) => pg.InstanceName)
+    .filter(
+      (name: unknown): name is string =>
+        typeof name === "string" && name.length > 0,
+    );
+  const pgdocTakenOver =
+    pgdocInstanceNames.length > 0 &&
+    databasesList.some(
+      (db: any) =>
+        isUsableNoSqlDatabaseEntry(db) &&
+        pgdocInstanceNames.includes(String(db.InstanceId)),
+    );
+  const hasNoSql = databasesList.some(
+    (db: any) =>
+      isUsableNoSqlDatabaseEntry(db) &&
+      !(pgdocTakenOver && pgdocInstanceNames.includes(String(db.InstanceId))),
+  );
 
   // MySQL field name has been seen as MysqlInstances / MySQLInstances /
   // MySQL across API versions; check any of them.
@@ -1396,6 +1438,20 @@ async function enrichEnvInfoWithRuntimeMode(result: any, manager?: any) {
           "Read `cloudbase-document-database-web-sdk` (and `cloud-storage-web` for uploads). `postgresql-development-cloudbase` and `relational-database-mcp-cloudbase` are not applicable to this env.",
       };
 
+  // Only taken-over environments need different guidance. Classic responses
+  // keep their existing hints byte-for-byte.
+  const hintsWithPgdoc = pgdocTakenOver
+    ? {
+        ...hints,
+        BusinessDataAPI:
+          "pgdoc is active: the document-database API (Web `app.database()` / `db.collection(...)`, Mini Program `wx.cloud.database()`, and the nosql HTTP API) is carried by PostgreSQL. Keep those SDK calls and HTTP paths — do NOT rewrite them into `app.rdb()` unless the task asks for a NEW PG business table.",
+        Permissions:
+          "pgdoc is active: CUSTOM collection security rules do not take effect. Use the four basic permissions (owner checks via `_openid`) or move validation into a cloud function. `managePermissions(resourceType=\"noSqlDatabase\", securityRule=...)` will not govern pgdoc collections. Direct SQL reads on PG are governed by GRANT / RLS instead.",
+        CoexistingNoSQL:
+          "RuntimeBackends lists provisioned resources only — it does not say whether the document API has been taken over. Here pgdoc has taken over; a Databases[] entry equal to a taken-over PG instance is its projection, not a flexdb tenant. Any remaining flexdb tenant still holds the original data and must be migrated explicitly.",
+      }
+    : hints;
+
   return {
     ...result,
     EnvInfo: {
@@ -1406,7 +1462,7 @@ async function enrichEnvInfoWithRuntimeMode(result: any, manager?: any) {
         nosql: hasNoSql,
         mysql: hasMysql,
       },
-      RuntimeModeHints: hints,
+      RuntimeModeHints: hintsWithPgdoc,
     },
   };
 }
@@ -1977,7 +2033,8 @@ function buildReleaseMethodHint(): {
 } {
   return {
     method: t("env.release.method"),
-    consoleUrl: "https://console.cloud.tencent.com/tcb",
+    // 控制台域名按站点切：国际站是 console.tencentcloud.com
+    consoleUrl: resolveEnvConsoleUrl(resolveSiteAndRegion({}).site),
     note: t("env.release.note"),
   };
 }
@@ -3050,6 +3107,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
     }) => {
       try {
         let result;
+        // `usage` 分支才有值：结构化载荷只放聚合，四层明细在文本回执里，这个信号给模型看。
+        let usageDetailSignal: ReturnType<typeof summarizeUsageDetail>;
         // MCP Apps：`ui://cloudbase/env-credits` 挂在整个 queryEnv 上（resourceUri 是工具级单值），
         // 所以两个视图靠载荷里的 `kind` 分派：usage → 用量卡（credits，缺省），metrics → 指标卡。
         // 面板按 `ui/notifications/tool-result` 收到的 structuredContent 渲染；不带载荷的 action
@@ -3250,8 +3309,11 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               throw new Error(t("env.usage.envIdRequired"));
             }
             const modules = resolveEnvUsageModules(type);
+            // 默认不展开四层明细：4 个环境实测，一次全模块查询的原始明细 4.5 万–5.4 万字符，
+            // 而默认该给的是「模块合计」+ 近 7 天合计（裁剪后 163–661 字符）。
+            // 要指标 / 资源类型 / 逐日传 needUsageDetails: true。
             const includeDetails =
-              typeof needUsageDetails === "boolean" ? needUsageDetails : true;
+              typeof needUsageDetails === "boolean" ? needUsageDetails : false;
             const cloudbaseUsage = await getManagerForEnvQuery(usageEnvId);
             const accountCircle = await cloudbaseUsage.env.describeEnvAccountCircle({
               EnvId: usageEnvId,
@@ -3291,14 +3353,22 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 );
               }
             }
+            // 上游**总是**要明细：面板的柱子、卡片的指标/资源类型两层、回执的 DailyTotals 都靠它。
+            // 「省 token」省的是回执（下面裁剪），不是这一次请求——多花的只是这次响应本身的字节。
             const usageDetail = await cloudbaseUsage.env.describeCreditsUsageDetail({
               EnvId: usageEnvId,
               Modules: modules,
               StartDate: dateRange.startDate,
               EndDate: dateRange.endDate,
-              NeedUsageDetails: includeDetails,
+              NeedUsageDetails: true,
             });
             logCloudBaseResult(server.logger, usageDetail);
+            // 回执裁剪与面板载荷分开做：面板要逐日数据画柱子、要指标与资源类型两层，回执只给模块合计。
+            // 两份数据同源，所以人和模型看到的是同一组数，不是一个多一个少。
+            const receiptUsages = includeDetails
+              ? (usageDetail?.Usages ?? [])
+              : (trimUsageForReceipt(usageDetail?.Usages) ?? []);
+            const receiptDaily = includeDetails ? undefined : buildReceiptDailyTotals(usageDetail?.Usages);
             // Record 而非字面类型：`Credits` 要等面板载荷算完（套餐码在后面才取到）再挂上去。
             const usageResult: Record<string, unknown> = {
               EnvId: usageEnvId,
@@ -3313,10 +3383,14 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 HistoryTime: accountCircle?.HistoryTime ?? [],
                 RequestId: accountCircle?.RequestId,
               },
-              Usages: usageDetail?.Usages ?? [],
+              Usages: receiptUsages,
+              ...(receiptDaily && receiptDaily.length ? { DailyTotals: receiptDaily } : {}),
               RequestId: usageDetail?.RequestId,
             };
             result = usageResult;
+            // 深度信号按**上游**这次真拿到了几层来数，不按裁剪后的回执数：回执默认只到模块层，
+            // 用它数会得出「这工具最多给模块」，正是这条信号要防的误判。
+            usageDetailSignal = summarizeUsageDetail(usageDetail?.Usages);
 
             // 面板载荷：套餐码与环境别名只能从环境信息里取（DescribeEnvInfo），
             // 这是本 action 为面板多付的一次只读调用；失败就降级，不影响回执。
@@ -3482,8 +3556,19 @@ export function registerEnvTools(server: ExtendedMcpServer) {
           // 面板契约（见 resources/env-credits.ts 的 EnvCreditsPayload / EnvMetricsPayload）：
           // usage 带用量载荷、metrics 带指标载荷（同一资源、按 kind 分派）；
           // 文本回执逐字不变，不支持 UI 的客户端拿到的是纯加法。
+          //
+          // `usage_detail` 是**给模型**的（面板不读，故不进 EnvCreditsPayload）：
+          // 结构化载荷只有模块聚合，而文本回执里有四层明细。只读结构化载荷的模型曾据此断言
+          // 「工具最多到模块级、只有平台版才有明细」（2026-11-04），这个键把"还能往下钻"说出来。
           ...(creditsPayload || metricsPayload
-            ? { structuredContent: creditsPayload ?? metricsPayload }
+            ? {
+                structuredContent: {
+                  ...(creditsPayload ?? metricsPayload),
+                  ...(creditsPayload && usageDetailSignal
+                    ? { usage_detail: usageDetailSignal }
+                    : {}),
+                },
+              }
             : {}),
         };
       } catch (error) {

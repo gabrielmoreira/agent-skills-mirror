@@ -1,0 +1,53 @@
+{
+  "skill_name": "obsidian-layout-adjustment",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My Obsidian vault is at ~/Documents/Window/SummerHustle. The right sidebar should feel more like the left side, but the side icons are hard to read and the backlink cards look overwrapped. Make one visual pass, preserve the current look first, and verify it with a screenshot.",
+      "expected_output": "The agent reads appearance.json, identifies active snippets, checkpoints them outside .obsidian/snippets, maps 'right sidebar' to the right utility split/backlink pane and 'side icons' to side-dock tab headers, styles the owning shell or wrapper rather than nesting card treatments, formats CSS, screenshot-checks the affected pane, and reports files/checkpoints.",
+      "expectations": [
+        "Reads the vault's .obsidian/appearance.json and treats enabledCssSnippets as the active source of truth.",
+        "Maps 'right sidebar' to the right workspace utility split/backlinks pane and maps 'side icons' to side-dock tab headers or icon button states.",
+        "Chooses the visible wrapper/shell as the likely owner for the overwrapped backlink/card treatment instead of adding nested styling to inner text.",
+        "Includes a named checkpoint plan outside .obsidian/snippets before any subjective visual pass.",
+        "Includes screenshot verification of the affected right pane and icon states before claiming success."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The note is supposed to look lifted, but the shadow keeps doing nothing. Don't keep guessing. Figure out why it isn't visible and make the smallest safe fix.",
+      "expected_output": "The agent treats 'nothing changed' as an ownership or clipping failure, maps note lift to stage/shell/gutter rather than only the note child, checkpoints active snippets, avoids app internals first, makes one scoped fix, crops or inspects the note edge in a screenshot, and restores or changes ownership if the visual evidence fails.",
+      "expectations": [
+        "Treats repeated 'nothing changed' as evidence of wrong selector ownership, clipping, coverage, or override rather than continuing to guess.",
+        "Maps note lift to a relationship among stage, pane shell, note surface, gutters, overflow, and pseudo-elements rather than only applying box-shadow to markdown content.",
+        "Avoids editing Obsidian app bundle, theme internals, or plugin internals before ruling out active snippet CSS.",
+        "Proposes one smallest safe fix and a rollback path from the last good checkpoint.",
+        "Requires a screenshot or crop of the note edge/shadow area before declaring the lift fixed."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The tabs above the note need more contrast, and the plus is impossible to see. The row with the arrows/book/dots is fine. Update the right thing.",
+      "expected_output": "The agent distinguishes workspace tab headers from markdown view headers, maps the plus to the new tab control, handles active/inactive tab and icon contrast states, checkpoints active snippets, makes a focused tab-header change, and screenshot-verifies without changing the view header.",
+      "expectations": [
+        "Explicitly distinguishes workspace tab headers from the markdown view header row that contains arrows, book, and dots.",
+        "Maps the plus to the new tab control in the workspace tab/header area.",
+        "Handles active, inactive, hover, and icon contrast states together instead of changing only a background color.",
+        "Scopes the change to tab/header selectors and avoids changing the arrows/book/dots view header.",
+        "Includes a screenshot check that verifies both contrast and that the untouched row stayed unchanged."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "We have a bunch of old Obsidian CSS experiments and the active snippet is getting hard to understand. Refactor it without changing the current visual design.",
+      "expected_output": "The agent reads appearance.json, separates active snippets from archived iterations, saves a baseline checkpoint, preserves selector order, adds a file map and section headers, formats CSS, checks the diff for unintended visual changes, screenshot-verifies the same look, and does not delete experiments in the same pass unless explicitly asked.",
+      "expectations": [
+        "Reads appearance.json first and separates active snippets from archived or inactive iterations.",
+        "Saves a baseline checkpoint before refactoring and keeps archives outside .obsidian/snippets so the snippet picker stays clean.",
+        "Preserves selector order and cascade behavior unless a screenshot-verified reason requires changing it.",
+        "Adds or improves a file map and section headers without turning the active CSS into a large narrative document.",
+        "Runs formatting/diff checks and screenshot-verifies that the visual design did not change."
+      ]
+    }
+  ]
+}

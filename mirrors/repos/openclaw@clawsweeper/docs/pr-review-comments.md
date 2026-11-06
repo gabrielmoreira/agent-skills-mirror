@@ -86,9 +86,24 @@ Trailing marker recovery stops at visible prose, including prose ending in
 `-->`. An already-closed HTML comment cannot extend across that prose into the
 final marker block; valid contiguous trailing markers remain recoverable.
 
-Scheduled and other non-command review workers coordinate through a separate
-temporary `clawsweeper-review-lease` comment; final publication updates the durable
-review and removes the owned lease. Command-triggered exact reviews rewrite their
+Queue-owned background re-reviews of an item with an existing durable review
+edit that comment to carry the start status and lease. They preserve the previous
+review text, history, and completion markers while the new review runs, avoiding
+a new-comment notification on every scheduled or target-branch-triggered review.
+First reviews and explicit reviews retain the separate temporary
+`clawsweeper-review-lease` comment. Uncoordinated callers also retain that path:
+their concurrent acquisitions need distinct server-assigned comment IDs.
+Acquisition and owned cleanup (including `expire-review-lease --release-owner`)
+use the lossless comment GET, preserving literal Unicode escapes and controls
+that normal `gh` JSON output sanitizes. When adding the status and marker would
+exceed the publisher's 61,440 UTF-8 byte limit, reservation leaves the durable
+review untouched and falls back to a separate placeholder.
+Apply publication retains the adopted in-place marker on the completed review
+until all label and close mutations finish. This also applies to a bounded
+publication-failure notice. Owned cleanup removes only the status and marker,
+never the previous or newly published review. Normalized comment comparisons
+ignore that temporary status; durable report hashes describe the completed body.
+Command-triggered exact reviews rewrite their
 existing command acknowledgement and use the durable queue claim directly, without
 posting a second visible lease comment. The acknowledgement lease records the
 claimed decision's source head; router-dispatched autofix/automerge commands carry
@@ -108,6 +123,48 @@ review only while a freshly elected status lease matches the report's original
 owner, comment ID, and revision. Missing or expired leases and ambiguous review
 timestamps remain blocked; acquiring a new mutation lease does not establish
 that the original report is newer.
+
+An in-place review uses the durable comment's existing ID, which can be lower
+than a previous separate lease ID. Its original owner/revision/start marker and
+a strictly later review timestamp establish publication order. Expiring a lease
+for deferred publication keeps that inactive marker as provenance; it no longer
+blocks admission. A newer acquisition replaces it. Completed in-place cycles
+are ordered by review time, and an older higher-ID artifact cannot overwrite
+them. Recovery discovers the same start-status sentence in both forms. Closed
+item recovery removes only the in-place status/marker; legacy separate
+placeholders are still deleted. The previous completed review remains available
+to review-history readers throughout the background review.
+
+The controlled reservation proof runs the checked-in reservation shell, built
+CLI, and real curl against loopback GitHub/queue fixtures:
+
+```bash
+pnpm run build:all
+node scripts/e2e/review-reservation.mjs .artifacts/quiet-reservation --quiet
+```
+
+It records source hashes, the base commit, environment, and HTTP traces. It
+compares a background re-review, an explicit re-review, a first review, and a
+superseded background owner, and exercises lease expiry and owned failure
+cleanup. It proves request behavior and review preservation, not GitHub email
+delivery or a real hosted queue race.
+
+The extended authority-chain proof runs built reservation, publication, apply
+lease guards and close execution against loopback HTTP. Both workers read the
+same initial snapshot; the driver releases their requests in both POST/PATCH
+orders and checks the final comment writes. It also checks the adopted lock
+through publication, label deletion and close, sanitized versus lossless bytes,
+and an old unversioned durable review alongside an expired legacy placeholder:
+
+```bash
+node scripts/e2e/review-lease-lifecycle.mjs .artifacts/review-lease-lifecycle
+```
+
+Each scenario writes its HTTP trace and final body/hash. `--case <name>` runs one
+scenario; `PROOF_DIST_ROOT` selects an independently built baseline. This is a
+local macOS/Node 24 proof with synthetic credentials and policy fixtures; it does
+not exercise model generation, full apply orchestration, hosted queue timing,
+or GitHub notification delivery.
 
 A publication blocked by a verified active review lease records
 `review_lease_active` and the normalized lease deadline in both its step outputs
@@ -158,9 +215,13 @@ is captured first, then the worker must still own the exact queue
 item/lease/revision/generation/run tuple and the live item revision must match
 its lease. For pull requests, the claimed queue source head must also match the
 live head. A stale worker therefore cannot treat a newer lease as superseded
-just because the SHAs differ. Same-revision contenders still use the
-server-assigned comment-id election, and expired leftovers retain the existing
-conservative cleanup path.
+just because the SHAs differ. Same-revision separate contenders use the server-assigned comment-id election.
+Separate leases always rank before in-place leases: patching old durable ID 42
+cannot displace a confirmed POST lease on ID 1000. An in-place holder rechecks
+that election at each apply mutation boundary and yields before publication,
+label changes, or close if a separate contender appears. GitHub offers no atomic
+compare-and-swap; the existing read-to-mutation interval remains. Expired leftovers
+retain the conservative cleanup path.
 
 For a PR that needs work, the visible comment starts with:
 
@@ -207,7 +268,10 @@ merge, and why not yet" in this order:
    regression source exists.
 6. `## Merge readiness` leads with one dynamic plain-language outcome, the
    number of real items remaining, a short bottom line, priority, the reviewed
-   head, and an owner-decision pointer only when a decision packet exists.
+   head, and an owner-decision pointer only when a decision packet exists. A PR
+   whose only open hold is that decision reads
+   `⏳ Ready, awaiting maintainer decision` with no remaining items: the
+   decision is the owner's work, not a defect in the PR.
 7. `## Decision needed` appears only when a maintainer decision packet exists.
    It lists the concrete question, the recommended option (or every option when
    none is recommended), and why, as bullet points.
@@ -215,9 +279,16 @@ merge, and why not yet" in this order:
    actions or risks. Routine CI, ordinary maintainer review, and no-op guidance
    collapse to `None.` These items are the one source of merge readiness: the
    PR status label is `status: 👀 ready for maintainer look` only when this
-   section is `None.`, and `status: ⏳ waiting on author` when an item needs
-   changes from the author. If every remaining item is explicitly maintainer-owned,
-   use `status: ⏳ waiting on maintainer` instead; readiness stays blocked.
+   section is `None.` and no maintainer decision is outstanding, and
+   `status: ⏳ waiting on author` when an item needs changes from the author. If
+   every remaining item is explicitly maintainer-owned, use
+   `status: ⏳ waiting on maintainer` instead; readiness stays blocked.
+   An outstanding maintainer decision is never a Before-merge item and never
+   counts toward the remaining items: it renders once under `Decision needed`.
+   When nothing else remains, readiness presents as awaiting the maintainer with
+   `status: ⏳ waiting on maintainer` while the review-state marker stays
+   `blocked` with `hold=maintainer_decision`; beside other items the PR stays
+   blocked.
    Unknown ownership never implies maintainer-only work. When a duplicate close is kept open because the
    close check did not confirm coverage, the item asks a maintainer to close or
    keep the PR, not the author.
@@ -364,10 +435,21 @@ version:
 <!-- clawsweeper-review-state:ready item=<number> sha=<full-head-sha> v=1 -->
 ```
 
-Its states are `ready`, `blocked`, and `needs-changes`. Human-owned blockers take
-precedence over repairable work. A valid exact item, head, review time, and owned
-lease are required before emitting the marker. Ready means no remaining review
-work; it does not grant merge permission or bypass normal maintainer review.
+Its states are `ready`, `blocked`, and `needs-changes`; readers fail closed on any
+other value. Human-owned blockers take precedence over repairable work. A valid
+exact item, head, review time, and owned lease are required before emitting the
+marker. Ready means no remaining review work; it does not grant merge permission
+or bypass normal maintainer review. A review whose only hold is an outstanding
+maintainer decision presents as awaiting the maintainer but keeps the `blocked`
+wire state and adds `hold=maintainer_decision`:
+
+```html
+<!-- clawsweeper-review-state:blocked item=<number> sha=<full-head-sha> v=1 hold=maintainer_decision -->
+```
+
+Readers that do not know the attribute ignore it, so released v1 readers keep
+recognizing the comment; readers that do can tell the owner wait from other
+blocks without parsing prose.
 Consumers must pair it with the matching durable identity, never infer authority
 from a standalone marker or visible prose. The compact producer contract is in
 [`test/fixtures/review-state-contract-v1.json`](../test/fixtures/review-state-contract-v1.json).
@@ -783,8 +865,9 @@ Neither attribute enrolls a repair or merge workflow.
 - `hold` tells why the verdict is human-only: `normalization_failed`,
   `review_identity`, `maintainer_decision`, `review_failed`, `security`,
   `proof`, `not_opted_in` (a retained historical readiness classification),
-  `blocked`, or `undecided`. `maintainer_decision` and `proof` appear only when
-  that hold is the one Before-merge item; otherwise the hold is `blocked`.
+  `blocked`, or `undecided`. `maintainer_decision` appears only when no
+  Before-merge item remains beside the decision, and `proof` only when the proof
+  ask is the one Before-merge item; otherwise the hold is `blocked`.
 - `findings` is the number of typed review findings. It is `0` for a failed or
   unnormalized review. Findings remain work for the contributor or maintainer.
 

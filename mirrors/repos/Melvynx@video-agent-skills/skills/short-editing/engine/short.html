@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<style>
+@font-face { font-family: 'Inter'; src: url('fonts/Inter.ttf') format('truetype'); font-weight: 100 900; }
+@font-face { font-family: 'JetBrains Mono'; src: url('fonts/JetBrainsMono.ttf') format('truetype'); font-weight: 100 800; }
+/* caption and display families (style captions.font, display.font / display.text); variable, opsz follows the size */
+@font-face { font-family: 'DM Sans'; src: url('fonts/DMSans.ttf') format('truetype'); font-weight: 100 1000; }
+@font-face { font-family: 'Bricolage Grotesque'; src: url('fonts/BricolageGrotesque.ttf') format('truetype'); font-weight: 200 800; font-stretch: 75% 100%; }
+@font-face { font-family: 'Poppins'; src: url('fonts/Poppins-SemiBold.ttf') format('truetype'); font-weight: 600; }
+@font-face { font-family: 'Archivo'; src: url('fonts/Archivo.ttf') format('truetype'); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: 'Archivo Black'; src: url('fonts/ArchivoBlack.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Bowlby One SC'; src: url('fonts/BowlbyOneSC.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Geist Pixel'; src: url('fonts/GeistPixel-Square.woff2') format('woff2'); font-weight: 400 900; }
+@font-face { font-family: 'Instrument Serif'; src: url('fonts/InstrumentSerif-Regular.ttf') format('truetype'); font-weight: 400; }
+@font-face { font-family: 'Instrument Serif'; src: url('fonts/InstrumentSerif-Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+/* Apple system fonts for every UI drawn in a captured component (macOS only; elsewhere the stack falls back) */
+@font-face { font-family: 'SF Pro'; src: url('file:///System/Library/Fonts/SFNS.ttf'); font-weight: 1 1000; }
+@font-face { font-family: 'SF Pro'; src: url('file:///System/Library/Fonts/SFNSItalic.ttf'); font-weight: 1 1000; font-style: italic; }
+@font-face { font-family: 'SF Mono'; src: url('file:///System/Library/Fonts/SFNSMono.ttf'); font-weight: 1 1000; }
+html, body { margin: 0; background: #F1EEE6; }
+canvas { width: 540px; height: 960px; display: block; }
+</style>
+<script src="/p/source/spec.js"></script>
+</head>
+<body>
+<script type="module">
+// format 'youtube' (16:9 long-form: paper left, camera right) has its own runtime; every other format shares runtime.js
+const { boot } = await import(window.SPEC?.format === 'youtube' ? './lib/runtime-yt.js' : './lib/runtime.js');
+await boot().catch(e => { console.error(e); window.READY_ERROR = String(e && e.stack || e); });
+// ?play=1: live preview in a normal tab (short.mjs preview)
+if (window.READY && new URLSearchParams(location.search).has('play')) (await import('./lib/player.js')).play();
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Skill 3 of 3 (short 11.28 to 14.45, 3.17 s): « et un autre envoie le lien en DM à chaque commentaire, de manière
+     automatique ». Instagram dark DM thread springs in from the right, a comment banner drops in, the auto DM (text +
+     link card) goes out and flies to the commenter, more comments stack and each gets its DM, a counter ticks 1 to 48,
+     an « Automatique » pill settles, then everything whips out left. Transparent 1080x1920, drawn in x 60-1020,
+     y 140-1090 (1090-1220 kept empty for the captions). window.setT(t): every state is a pure function of t. -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased;
+    font-family: "Inter", -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif; color: #14161B; }
+  svg { display: block; }
+  .emo { font-family: "Apple Color Emoji", sans-serif; font-size: .92em; }
+  #root { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+
+  /* ---- the DM panel (Instagram dark) */
+  #panel { position: absolute; left: 90px; top: 326px; width: 900px; height: 640px; border-radius: 58px; background: #000; overflow: hidden;
+    box-shadow: 0 34px 64px rgba(20,22,27,.30), 0 14px 28px rgba(20,22,27,.20), 0 3px 8px rgba(20,22,27,.12); color: #F5F5F5; }
+  #head { position: absolute; left: 0; top: 0; width: 900px; height: 118px; }
+  #back { position: absolute; left: 22px; top: 37px; }
+  #hav { position: absolute; left: 84px; top: 22px; width: 76px; height: 76px; border-radius: 50%; background: #CFCFD4; overflow: hidden; }
+  #hname { position: absolute; left: 180px; top: 18px; font-size: 38px; line-height: 44px; font-weight: 700; letter-spacing: -.4px; display: flex; align-items: center; gap: 8px; }
+  #hsub { position: absolute; left: 180px; top: 62px; font-size: 34px; line-height: 40px; color: #A8A8A8; letter-spacing: -.3px; }
+  #hicons { position: absolute; right: 30px; top: 35px; display: flex; gap: 38px; }
+  #hair { position: absolute; left: 0; top: 118px; width: 900px; height: 1.5px; background: rgba(255,255,255,.13); }
+  #stamp { position: absolute; left: 0; top: 146px; width: 900px; text-align: center; font-size: 34px; line-height: 40px; color: #A8A8A8; font-weight: 500; letter-spacing: -.2px; }
+  #b1 { position: absolute; right: 24px; top: 0; height: 92px; padding: 0 34px; border-radius: 46px; background: #3797F0; color: #fff;
+    font-size: 39px; font-weight: 500; letter-spacing: -.4px; display: flex; align-items: center; white-space: nowrap; transform-origin: 100% 100%; }
+  #card { position: absolute; right: 24px; top: 0; width: 640px; height: 164px; border-radius: 40px; background: #262626; transform-origin: 100% 100%; overflow: hidden; }
+  #card img { position: absolute; left: 18px; top: 18px; width: 128px; height: 128px; border-radius: 26px; }
+  #ctitle { position: absolute; left: 172px; top: 20px; width: 440px; font-size: 36px; line-height: 43px; font-weight: 700; letter-spacing: -.4px; }
+  #cdom { position: absolute; left: 172px; top: 108px; font-size: 34px; line-height: 40px; color: #A8A8A8; letter-spacing: -.2px; display: flex; align-items: center; gap: 10px; }
+  .rc { position: absolute; right: 30px; top: 0; font-size: 34px; line-height: 40px; color: #A8A8A8; font-weight: 500; letter-spacing: -.2px; }
+  #comp { position: absolute; left: 22px; top: 552px; width: 856px; height: 72px; border-radius: 36px; background: #262626; }
+  #cam { position: absolute; left: 6px; top: 6px; width: 60px; height: 60px; border-radius: 50%; background: #3797F0; display: flex; align-items: center; justify-content: center; }
+  #ph { position: absolute; left: 86px; top: 0; height: 72px; display: flex; align-items: center; font-size: 36px; color: #A8A8A8; letter-spacing: -.3px; }
+  #cicons { position: absolute; right: 24px; top: 17px; display: flex; gap: 30px; }
+
+  /* ---- comment banners (iOS light), clipped at y 140 so they drop in from nowhere */
+  #nclip { position: absolute; left: 0; top: 140px; width: 1080px; height: 196px; overflow: hidden; }
+  .ban { position: absolute; left: 90px; top: 6px; width: 900px; height: 132px; border-radius: 40px; background: #FCFCFC; transform-origin: 50% 0%;
+    box-shadow: 0 18px 40px rgba(20,22,27,.16), 0 4px 10px rgba(20,22,27,.08); }
+  .ban .in { position: absolute; inset: 0; }
+  .ban .av { position: absolute; left: 24px; top: 22px; width: 88px; height: 88px; border-radius: 50%; background: #CFCFD4; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 800; color: #fff; letter-spacing: -.5px; }
+  .ban .badge { position: absolute; left: 82px; top: 78px; width: 40px; height: 40px; border-radius: 11px; border: 3px solid #FCFCFC; overflow: hidden; }
+  .ban .badge img { width: 100%; height: 100%; }
+  .ban .l1 { position: absolute; left: 140px; top: 20px; right: 30px; font-size: 34px; line-height: 42px; font-weight: 700; letter-spacing: -.3px; }
+  .ban .l1 span { position: absolute; right: 0; top: 0; font-weight: 400; color: #8A8A8E; }
+  .ban .l2 { position: absolute; left: 140px; top: 66px; font-size: 36px; line-height: 44px; letter-spacing: -.35px; white-space: nowrap; color: #2A2C31; }
+  .ban .l2 b { font-weight: 700; color: #14161B; }
+  .chip { position: absolute; right: 26px; top: 110px; height: 56px; padding: 0 24px 0 18px; border-radius: 28px; background: #258EFF; color: #fff;
+    display: flex; align-items: center; gap: 10px; font-size: 34px; font-weight: 600; letter-spacing: -.3px; white-space: nowrap; transform-origin: 100% 50%;
+    box-shadow: 0 10px 22px rgba(37,142,255,.30), 0 3px 6px rgba(20,22,27,.12); }
+
+  /* ---- paper plane, counter, Automatique pill */
+  #plane { position: absolute; left: 0; top: 0; width: 84px; height: 84px; margin: -42px 0 0 -42px; filter: drop-shadow(0 6px 14px rgba(37,142,255,.45)); }
+  #counter { position: absolute; left: 90px; top: 942px; height: 92px; padding: 0 32px 0 28px; border-radius: 30px; background: #fff; display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 16px 28px rgba(20,22,27,.22), 0 5px 12px rgba(20,22,27,.12); font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; }
+  #counter .lab { font-size: 40px; letter-spacing: -.6px; color: #14161B; }
+  #num { font-size: 58px; letter-spacing: -1px; color: #258EFF; width: 74px; text-align: left; font-variant-numeric: tabular-nums; }
+  #auto { position: absolute; right: 90px; top: 942px; height: 92px; padding: 0 40px 0 30px; border-radius: 46px; background: #258EFF; color: #fff; display: flex; align-items: center; gap: 14px; overflow: hidden;
+    box-shadow: 0 16px 28px rgba(37,142,255,.34), 0 5px 12px rgba(20,22,27,.16); font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: 46px; letter-spacing: -.8px; }
+  #sheen { position: absolute; top: 0; left: 0; width: 160px; height: 92px; background: linear-gradient(100deg, rgba(255,255,255,0), rgba(255,255,255,.34), rgba(255,255,255,0)); }
+</style></head>
+<body><div id="root">
+
+  <div id="panel">
+    <div id="head">
+      <svg id="back" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l-8 8 8 8"/></svg>
+      <div id="hav"><svg width="76" height="76" viewBox="0 0 88 88"><circle cx="44" cy="34" r="16" fill="#fff"/><path d="M13 82c3-17 16-26 31-26s28 9 31 26z" fill="#fff"/></svg></div>
+      <div id="hname">léa.crea</div>
+      <div id="hsub">Actif maintenant</div>
+      <div id="hicons">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" stroke-width="1.8" stroke-linejoin="round"><path d="M18.23 15.27l-2.54-.29a1.99 1.99 0 0 0-1.64.57l-1.84 1.84a15.05 15.05 0 0 1-6.59-6.59l1.85-1.85c.43-.43.64-1.03.57-1.64l-.29-2.52A2 2 0 0 0 5.77 3H4.04C2.91 3 1.97 3.94 2.04 5.07 2.57 13.61 9.4 20.43 17.93 20.96c1.13.07 2.07-.87 2.07-2v-1.73a1.98 1.98 0 0 0-1.77-1.96z"/></svg>
+        <svg width="50" height="48" viewBox="0 0 25 24" fill="none" stroke="#F5F5F5" stroke-width="1.8" stroke-linejoin="round"><rect x="1.8" y="5.2" width="14.4" height="13.6" rx="3.4"/><path d="M16.2 10.2l5.2-3.4c.6-.4 1.4 0 1.4.8v8.8c0 .8-.8 1.2-1.4.8l-5.2-3.4z"/></svg>
+      </div>
+    </div>
+    <div id="hair"></div>
+    <div id="stamp">Aujourd'hui 11:28</div>
+    <div id="b1">Voici ton guide Insta Skills&nbsp;<span class="emo">🎁</span></div>
+    <div id="card"><img src="../assets/logos/claude.png">
+      <div id="ctitle">insta-skills, le guide gratuit</div>
+      <div id="cdom"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#A8A8A8" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.2 1.2"/><path d="M14 10a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.2-1.2"/></svg>mlv.sh</div>
+    </div>
+    <div class="rc" id="rsent">Envoyé</div>
+    <div class="rc" id="rseen">Vu</div>
+    <div id="comp">
+      <div id="cam"><svg width="34" height="34" viewBox="0 0 24 24" fill="#fff"><path d="M9.4 3.5h5.2c.6 0 1.1.3 1.4.8l.9 1.5h2.6A2.5 2.5 0 0 1 22 8.3v9.2a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5V8.3a2.5 2.5 0 0 1 2.5-2.5h2.6l.9-1.5c.3-.5.8-.8 1.4-.8zM12 9a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg></div>
+      <div id="ph">Message…</div>
+      <div id="cicons">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" stroke-width="1.9" stroke-linecap="round"><rect x="8.5" y="2" width="7" height="12.5" rx="3.5"/><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5V22"/></svg>
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" stroke-width="1.9" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="8.5" cy="8.5" r="1.8"/><path d="M21.5 15.5l-5.2-5.2L5 21.5"/></svg>
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F5F5F5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 21.5H8A5.5 5.5 0 0 1 2.5 16V8A5.5 5.5 0 0 1 8 2.5h8A5.5 5.5 0 0 1 21.5 8v7.5z"/><path d="M15.5 21.5V18a2.5 2.5 0 0 1 2.5-2.5h3.5"/><path d="M8.5 13.5c.9 1.2 2.1 1.8 3.5 1.8"/><circle cx="9" cy="9.2" r=".6" fill="#F5F5F5"/><circle cx="15" cy="9.2" r=".6" fill="#F5F5F5"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="nclip"></div>
+
+  <div id="counter"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#258EFF" stroke-width="2.3" stroke-linejoin="round"><line x1="22" x2="9.218" y1="3" y2="10.083"/><polygon points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/></svg>
+    <span class="lab">DM envoyés</span><span id="num">1</span></div>
+  <div id="auto"><div id="sheen"></div>
+    <svg width="44" height="50" viewBox="0 0 22 26"><path fill="#fff" stroke="#fff" stroke-width="1.6" stroke-linejoin="round" d="M13 1.5 3 15h7.2l-1.7 9.5L19 10.6h-7.3z"/></svg>
+    <span>Automatique</span></div>
+
+  <div id="plane"><svg width="84" height="84" viewBox="0 0 24 24"><polygon fill="#3797F0" stroke="#3797F0" stroke-width="1.4" stroke-linejoin="round" points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/><line x1="22" x2="9.218" y1="3" y2="10.083" stroke="#fff" stroke-width="1.6"/></svg></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+// critically damped spring from rest: never overshoots
+const S = (x, w = 14) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const io = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const out = p => 1 - Math.pow(1 - p, 3);
+const lerp = (a, b, p) => a + (b - a) * p;
+
+// ---- events (τ = seconds from the clip start = short 11.28); words: et .03, autre .23, envoie .49, lien .91, DM 1.19,
+// chaque 1.67, commentaire 1.89, manière 2.48, automatique 2.74
+const T_PANEL = 0, T_B1 = .49, T_CARD = .91, T_SENT = 1.19, T_FLY = 1.19, FLY = .30, T_SEEN = 1.52;
+const T_COUNT = 1.60, T_TICK = [1.70, 2.42], T_AUTO = 2.48, T_SHEEN = 2.74, T_OUT = 2.87;
+
+const PERSON = '<svg width="88" height="88" viewBox="0 0 88 88"><circle cx="44" cy="34" r="16" fill="#fff"/><path d="M13 82c3-17 16-26 31-26s28 9 31 26z" fill="#fff"/></svg>';
+const CHECK = '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>';
+const BANS = [
+  { t: .03, chip: T_FLY + FLY - .02, who: 'léa.crea', what: 'a commenté : INSTA', av: PERSON, cl: '#CFCFD4', ct: 'DM envoyé' },
+  { t: 1.67, chip: 1.82, who: 'tom.dev', what: 'a commenté : INSTA', av: PERSON, cl: '#C9CDD6', ct: 'DM envoyé' },
+  { t: 1.89, chip: 2.04, who: 'sarah.ia', what: 'a commenté : INSTA', av: PERSON, cl: '#D6CFD0', ct: 'DM envoyé' },
+  { t: 2.10, chip: 2.25, who: '+12', what: 'autres ont commenté : INSTA', av: '+12', cl: '#B9BCC4', ct: '12 DM envoyés' },
+];
+BANS.forEach((b, i) => {
+  const el = document.createElement('div'); el.className = 'ban'; el.style.zIndex = 10 + i;
+  el.innerHTML = `<div class="in"><div class="av" style="background:${b.cl}">${b.av}</div><div class="badge"><img src="../assets/logos/instagram.png"></div>
+    <div class="l1">Instagram<span>maintenant</span></div><div class="l2"><b>${b.who}</b> ${b.what}</div></div>
+    <div class="chip">${CHECK}<span>${b.ct}</span></div>`;
+  $('nclip').appendChild(el); b.el = el; b.inner = el.querySelector('.in'); b.chipEl = el.querySelector('.chip');
+});
+
+// thread layout (panel-local y): receipt 488, card 312-476, bubble alone sits on the card slot, then rides up over it
+const CARD_Y = 312, B1_Y_ALONE = 384, B1_Y_UP = 206, RC_Y = 486;
+// plane path (page px): from the receipt to the first banner's chip
+const P0 = [950, 800], P1 = [860, 268];
+const planeAt = p => [lerp(P0[0], P1[0], p) + 46 * Math.sin(Math.PI * p), lerp(P0[1], P1[1], p)];
+
+window.setT = function (t) {
+  // exit whip for the whole component
+  const u = seg(t, T_OUT, T_OUT + .30);
+  $('root').style.transform = `translateX(${-1150 * u * u}px)`;
+
+  // panel springs in from the right, its parts settle just after it
+  const pp = S(t - T_PANEL, 17);
+  $('panel').style.transform = `translateX(${(1 - pp) * 760}px)`;
+  $('panel').style.opacity = clamp(pp * 2.2);
+  [['head', .06], ['stamp', .14], ['comp', .10]].forEach(([id, d]) => {
+    const q = S(t - d, 16); $(id).style.opacity = q; $(id).style.transform = `translateX(${(1 - q) * 60}px)`;
+  });
+
+  // outgoing bubble then link card; both pending (dimmed) until « DM », where they go out
+  const sent = S(t - T_SENT, 26), pend = .55 + .45 * sent;
+  const qb = S(t - T_B1, 16), qc = S(t - (T_CARD + .05), 16), qup = S(t - (T_CARD - .03), 22);
+  const b1y = lerp(B1_Y_ALONE, B1_Y_UP, qup);
+  $('b1').style.top = b1y + 'px';
+  $('b1').style.transform = `translateY(${(1 - qb) * 56}px) scale(${.94 + .06 * qb})`;
+  $('b1').style.opacity = clamp(qb * 1.8) * pend;
+  $('card').style.top = CARD_Y + 'px';
+  $('card').style.transform = `translateY(${(1 - qc) * 56}px) scale(${.94 + .06 * qc})`;
+  $('card').style.opacity = clamp(qc * 1.8) * pend;
+  // receipt: « Envoyé » on « DM », then « Vu »
+  const qs = S(t - T_SENT, 20), qv = S(t - T_SEEN, 20);
+  $('rsent').style.top = RC_Y + 'px'; $('rseen').style.top = RC_Y + 'px';
+  $('rsent').style.opacity = qs * (1 - clamp(qv * 1.6)); $('rsent').style.transform = `translateY(${(1 - qs) * 14 - 10 * qv}px)`;
+  $('rseen').style.opacity = qv; $('rseen').style.transform = `translateY(${(1 - qv) * 10}px)`;
+
+  // paper plane flies from the thread to the commenter's banner
+  const fp = seg(t, T_FLY, T_FLY + FLY);
+  if (t < T_FLY || fp >= 1) $('plane').style.display = 'none';
+  else {
+    const p = io(fp), [x, y] = planeAt(p), [x2, y2] = planeAt(Math.min(1, p + .02));
+    const ang = Math.atan2(y2 - y, x2 - x) * 180 / Math.PI + 45; // the glyph points up-right (-45°)
+    $('plane').style.display = '';
+    $('plane').style.transform = `translate(${x}px,${y}px) rotate(${ang}deg) scale(${1 - .3 * p})`;
+    $('plane').style.opacity = clamp(fp * 6) * (1 - seg(fp, .78, 1));
+  }
+
+  // comment banners: each drops in on top, the older ones sink into an iOS stack behind it
+  BANS.forEach((b, i) => {
+    const q = S(t - b.t, 15);
+    let d = 0; for (let j = i + 1; j < BANS.length; j++) d += S(t - BANS[j].t, 15);
+    const gone = clamp(d - 1.6);
+    b.el.style.display = q > .001 && gone < .999 ? '' : 'none';
+    b.el.style.transform = `translateY(${-150 * (1 - q) + 18 * d}px) scale(${1 - .05 * d})`;
+    b.el.style.opacity = clamp(q * 4) * (1 - gone);
+    b.el.style.background = `rgb(${252 - 14 * clamp(d)},${252 - 14 * clamp(d)},${252 - 12 * clamp(d)})`;
+    b.inner.style.opacity = 1 - clamp(d * 2.2);
+    const qc2 = S(t - b.chip, 22);
+    b.chipEl.style.opacity = clamp(qc2 * 1.6) * (1 - clamp(d * 2.2));
+    b.chipEl.style.transform = `translateX(${(1 - qc2) * 30}px) scale(${.9 + .1 * qc2})`;
+  });
+
+  // counter card rises onto the panel, then ticks 1 -> 48
+  const qn = S(t - T_COUNT, 16);
+  $('counter').style.opacity = clamp(qn * 1.6);
+  $('counter').style.transform = `translateY(${(1 - qn) * 40}px)`;
+  $('num').textContent = String(Math.round(1 + 47 * out(seg(t, T_TICK[0], T_TICK[1]))));
+
+  // Automatique pill settles on the panel, a sheen crosses it on « automatique »
+  const qa = S(t - T_AUTO, 15);
+  $('auto').style.opacity = clamp(qa * 1.6);
+  $('auto').style.transform = `translateY(${-(1 - qa) * 40}px) scale(${.95 + .05 * qa})`;
+  const sh = io(seg(t, T_SHEEN, T_SHEEN + .3));
+  $('sheen').style.transform = `translateX(${-180 + 600 * sh}px)`;
+  $('sheen').style.opacity = t > T_SHEEN && sh < 1 ? 1 : 0;
+  return true;
+};
+window.setT(0);
+</script></body></html>

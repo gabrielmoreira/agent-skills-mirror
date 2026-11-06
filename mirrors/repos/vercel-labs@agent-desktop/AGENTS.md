@@ -7,6 +7,15 @@ accessibility trees and returns structured JSON with ref-based element ids. The 
 calling agent. It never embeds an LLM and has no GUI or interactive prompt. It does not automate web pages (use
 agent-browser). It cannot see UIs that expose no accessibility tree.
 
+## Critical: fixes must be application-agnostic
+
+Every fix must work through the platform's shared accessibility and lifecycle contracts across applications.
+Never add app-specific branches keyed by app names, bundle IDs, executables, window titles, or a known app's UI layout.
+Use observed capabilities, roles, ownership, and process identity in the shared platform adapter. Preserve safe failure
+when the platform cannot establish the required identity or capability. Verify changed behavior against multiple real
+apps and relevant UI toolkits; one app passing does not establish platform-wide correctness. App-specific names belong
+in examples and verification scenarios, never in runtime special cases.
+
 ## Commands
 
 Each platform adapter compiles only on its own OS and the workspace names all three, so an unscoped `cargo build`,
@@ -209,6 +218,7 @@ Every command prints one envelope. `docs/json-output.md` holds the full contract
 ```
 
 - Omit `None` fields and empty arrays. Compact mode omits bounds. `ref_count` and `tree` live inside `data`.
+- Snapshot `data.window` is present for window-owned surfaces. macOS `menu` and `menubar` snapshots are application-owned and omit it.
 - Every snapshot carries `data.complete`. A snapshot that runs out of observation budget succeeds with
   `"complete": false`, `"truncated": true`, `"nodes_observed"` and the tree it saw; each cut node carries
   `"subtree_truncated": true`. A `--root` drill-down returns `TIMEOUT` instead of a partial tree.

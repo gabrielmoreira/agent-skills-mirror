@@ -1,0 +1,97 @@
+# Feature map
+
+<sub>Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+
+Every current Claude Code feature and surface a Learner is likely to meet, with its stability label in the docs' own words and the plans or providers that have it. Each feature links its official page and, where a lesson or Elective teaches it, the guide pages that teach it. For what changed recently, see the official [CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) and [What's new](https://code.claude.com/docs/en/whats-new).
+
+How to read it:
+
+- **Label** quotes the sentence where the docs mark a feature as beta, research preview or experimental. A dash means the docs carry no label.
+- **Who gets it** comes from [Feature availability](https://code.claude.com/docs/en/feature-availability), or from the feature's own page where that page has no row. "Every provider" means a Claude subscription, the Claude Console, Claude Platform on AWS, Amazon Bedrock, Google Cloud's Agent Platform and Microsoft Foundry alike: the CLI and everything that runs locally work on all of them.
+- The guide carries no prices or usage limits; see [claude.com/pricing](https://claude.com/pricing).
+
+## Where you run it
+
+| Feature | Label | Who gets it |
+|---|---|---|
+| [Terminal](https://code.claude.com/docs/en/quickstart); taught in [Install, sign in and look around](../beginner/01-install-and-look-around.md) | – | Every provider |
+| [VS Code](https://code.claude.com/docs/en/vs-code); taught in [IDE extensions](../beginner/electives/ide-extensions.md) | – | Every provider |
+| [JetBrains IDEs](https://code.claude.com/docs/en/jetbrains); taught in [IDE extensions](../beginner/electives/ide-extensions.md) | The page has no label sentence, but its settings path reads "Claude Code [Beta]" | Every provider |
+| [Desktop app](https://code.claude.com/docs/en/desktop) | On Linux: "Linux support for the Claude desktop app is in beta." ([Linux](https://code.claude.com/docs/en/desktop-linux)) | A Claude subscription; on Bedrock, Agent Platform and Foundry, and with a Console API key, through Claude Desktop on 3P |
+| [Cloud sessions on the web](https://code.claude.com/docs/en/claude-code-on-the-web) | – | Pro, Max, Ultra and Team; Enterprise with a premium or Chat + Claude Code seat |
+| [Mobile](https://code.claude.com/docs/en/mobile) | – | A Claude subscription |
+| [Remote Control](https://code.claude.com/docs/en/remote-control) | – | Pro, Max and Ultra; Team and Enterprise once an admin turns it on |
+| [Claude Code in Slack](https://code.claude.com/docs/en/slack) | – | Pro, Max and Ultra, in a Slack workspace no organization has connected to Claude Tag; Team and Enterprise use Claude Tag |
+| [Claude Tag](https://claude.com/docs/claude-tag/overview) | Marked "Public Beta" on its page | Team and Enterprise, on Anthropic's own service |
+| [Claude in Chrome](https://code.claude.com/docs/en/chrome); taught in [Claude in Chrome](../intermediate/electives/claude-in-chrome.md) | – | Pro, Max, Ultra, Team or Enterprise |
+| [Computer use](https://code.claude.com/docs/en/computer-use) | "Computer use is a research preview on macOS that requires a Pro, Max, or Ultra plan." | Pro, Max and Ultra |
+| [Dispatch](https://code.claude.com/docs/en/desktop#sessions-from-dispatch) | – | Pro, Max and Ultra |
+| [Voice dictation](https://code.claude.com/docs/en/voice-dictation) | – | A Claude subscription |
+
+## In a session
+
+| Feature | Label | Who gets it |
+|---|---|---|
+| [Plan mode](https://code.claude.com/docs/en/permission-modes); taught in [Permission modes and plan mode](../beginner/02-permission-modes-and-plan-mode.md) | – | Every provider |
+| [Auto mode](https://code.claude.com/docs/en/permission-modes); taught in [Permission modes and plan mode](../beginner/02-permission-modes-and-plan-mode.md) | – | A Claude subscription, the Console and Claude Platform on AWS; on Bedrock, Agent Platform and Foundry with newer models only. Team and Enterprise admins can turn it off |
+| [Checkpointing and rewind](https://code.claude.com/docs/en/checkpointing); taught in [Keep a session on track](../beginner/04-keep-a-session-on-track.md) | – | Every provider |
+| [CLAUDE.md memory](https://code.claude.com/docs/en/memory); taught in [Project memory with CLAUDE.md](../beginner/05-project-memory.md) and [Organize project memory and see what loaded](../intermediate/02-organize-memory.md) | – | Every provider |
+| [Sandbox](https://code.claude.com/docs/en/sandboxing); taught in [Permissions, settings scopes and the sandbox](../intermediate/04-permissions-and-sandbox.md) and [Put bounds on autonomous runs](../advanced/07-bounded-runs.md) | – | Every provider |
+| [Output styles](https://code.claude.com/docs/en/output-styles); taught in [the built-in teachers](../beginner/electives/built-in-teachers.md) | – | Every provider |
+| [Status line](https://code.claude.com/docs/en/statusline); taught in [The status line](../intermediate/electives/status-line.md) | – | Every provider |
+| [`/goal`](https://code.claude.com/docs/en/goal); taught in [Run and save a dynamic workflow](../advanced/03-dynamic-workflows.md) | – | Every provider |
+| [`/powerup`](https://code.claude.com/docs/en/commands); taught in [the built-in teachers](../beginner/electives/built-in-teachers.md) | – | The docs state no limit |
+| [Fast mode](https://code.claude.com/docs/en/fast-mode); taught in [Fast mode](../intermediate/electives/fast-mode.md) | "Fast mode for Claude Opus 5.5 is available, and fast mode for Claude Opus 5 and Claude Opus 4.8 is in research preview." | A Claude subscription, paid for with usage credits (an Owner turns it on for Team and Enterprise), and Console organizations with access provisioned; not Claude Platform on AWS, Bedrock, Agent Platform or Foundry |
+| [Advisor](https://code.claude.com/docs/en/advisor) | "The advisor tool is experimental and requires the Anthropic API." | A Claude subscription and the Console |
+| [Web search](https://code.claude.com/docs/en/tools-reference#websearch-tool-behavior) | – | A Claude subscription, the Console, Claude Platform on AWS and Foundry; on Agent Platform with Opus 4, Sonnet 4, Haiku 4.5 and later models; not Bedrock |
+
+## Extending Claude Code
+
+| Feature | Label | Who gets it |
+|---|---|---|
+| [Skills](https://code.claude.com/docs/en/skills); taught in [Turn a repeated workflow into a skill](../intermediate/01-first-skill.md) and [Skill patterns](../intermediate/electives/skill-patterns.md) | – | Every provider |
+| [Hooks](https://code.claude.com/docs/en/hooks-guide); taught in [Enforce a rule with a hook](../intermediate/05-hooks.md) | – | Every provider |
+| [Agent hooks](https://code.claude.com/docs/en/hooks-guide#agent-based-hooks) | "Agent hooks are experimental." | As for hooks |
+| [Subagents](https://code.claude.com/docs/en/sub-agents); taught in [Delegate to a custom subagent](../intermediate/06-subagents.md) and [Choose an orchestration pattern](../advanced/02-orchestration-patterns.md) | – | Every provider |
+| [MCP](https://code.claude.com/docs/en/mcp); taught in [Connect a tool with MCP](../intermediate/07-mcp.md) | – | Every provider; claude.ai connectors only when you sign in with a Claude subscription |
+| [Plugins and marketplaces](https://code.claude.com/docs/en/plugins/overview); taught in [Install and manage plugins](../intermediate/08-plugins.md), [Share your setup with a team](../advanced/06-share-your-setup.md) and [Testing and publishing a plugin](../advanced/electives/publish-a-plugin.md) | – | Every provider |
+| [Channels](https://code.claude.com/docs/en/channels) | "Channels are in research preview." | A Claude subscription (Team and Enterprise once an admin turns them on) and the Console; not Claude Platform on AWS, Bedrock, Agent Platform or Foundry |
+| [Dev containers](https://code.claude.com/docs/en/devcontainer); taught in [Dev containers](../advanced/electives/dev-containers.md) | – | Every provider |
+
+## Parallel and unattended work
+
+| Feature | Label | Who gets it |
+|---|---|---|
+| [Worktrees](https://code.claude.com/docs/en/worktrees); taught in [Parallel sessions with worktrees](../advanced/01-parallel-sessions.md) | – | Every provider |
+| [Dynamic workflows](https://code.claude.com/docs/en/workflows); taught in [Run and save a dynamic workflow](../advanced/03-dynamic-workflows.md) | – | Every provider; on Pro, turn them on in `/config` |
+| [Agent view](https://code.claude.com/docs/en/agent-view); taught in [Agent view](../advanced/electives/agent-view.md) | "Agent view is in research preview." | Every provider ([Settings and provider](https://code.claude.com/docs/en/agent-view#settings-and-provider)) |
+| [Agent teams](https://code.claude.com/docs/en/agent-teams); taught in [Agent teams](../advanced/electives/agent-teams.md) | "Agent teams are experimental and disabled by default." | Every provider |
+| [Cross-session messaging](https://code.claude.com/docs/en/cross-session-messaging) | – | A Claude subscription; elsewhere between sessions on the same machine only |
+| [Projects](https://code.claude.com/docs/en/claude-projects) | "Projects are in public beta on Pro, Max, and Ultra plans and rolling out gradually." | Pro, Max and Ultra; not yet Team or Enterprise |
+| [`/loop` and session-scoped scheduled tasks](https://code.claude.com/docs/en/scheduled-tasks); taught in [`/loop` and cloud scheduled tasks](../advanced/electives/goal-loop-routines.md) | – | Every provider |
+| [Cloud scheduled tasks](https://code.claude.com/docs/en/routines), formerly routines; taught in [`/loop` and cloud scheduled tasks](../advanced/electives/goal-loop-routines.md) | "Scheduled tasks are in research preview." | Pro, Max, Ultra, Team and Enterprise |
+| [Running Claude Code from scripts](https://code.claude.com/docs/en/headless); taught in [Script Claude Code with `claude -p`](../advanced/04-headless.md) and [Put bounds on autonomous runs](../advanced/07-bounded-runs.md) | – | Every provider |
+| [GitHub Actions](https://code.claude.com/docs/en/github-actions); taught in [GitHub Actions](../advanced/05-github-actions.md) | – | A Claude subscription, the Console, Bedrock, Agent Platform and Foundry; not Claude Platform on AWS |
+| [GitLab CI/CD](https://code.claude.com/docs/en/gitlab-ci-cd) | "Claude Code for GitLab CI/CD is currently in beta." | Every provider except Microsoft Foundry |
+
+## Review and security
+
+| Feature | Label | Who gets it |
+|---|---|---|
+| [Code Review](https://code.claude.com/docs/en/code-review) | – | Team and Enterprise |
+| [Ultrareview](https://code.claude.com/docs/en/ultrareview) | "Ultrareview is a research preview feature." | A Claude subscription |
+| [Security guidance plugin](https://code.claude.com/docs/en/security-guidance) | – | All plans; it needs Python 3.7 or later, and 3.10 or later for the agentic commit review and, on a third-party provider, for every model-backed review |
+| [Claude Security](https://code.claude.com/docs/en/claude-security) | – | A paid plan, Anthropic API access or a third-party provider |
+
+## Other
+
+| Feature | Label | Who gets it |
+|---|---|---|
+| [Artifacts](https://code.claude.com/docs/en/artifacts) | – | Pro, Max, Ultra, Team and Enterprise, on the Anthropic API |
+| [`/design` and `/slides` templates](https://code.claude.com/docs/en/artifacts#start-from-a-slides-design-or-docs-template) | "Templates are in beta." | On by default on Pro, Max, Ultra and Team; on Enterprise an Owner turns each template on |
+
+---
+
+<sub>Sources: [Feature availability](https://code.claude.com/docs/en/feature-availability) and each feature's linked page.</sub>
+
+<sub>Up: [Reference](README.md)</sub>

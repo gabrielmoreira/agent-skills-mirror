@@ -1,0 +1,53 @@
+{
+  "_": "Starting looks for the onboarding: a partial style.json each, merged over the engine template. preview.mjs --variants '[{\"label\": \"...\", \"look\": \"<key>\", \"style\": {<patch>}}]'. Never personal: no creator, folders, sfx kit or music file.",
+  "default": {
+    "label": "Minimal",
+    "says": "Le style par défaut : papier texturé, police système (celle du Mac), caméra pleine largeur, sous-titres en capitales mono, blancs sur un bandeau noir posé sur la jointure.",
+    "style": {"font": {"family": "system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif"}, "display": {"font": "system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif", "weight": 800, "text": "system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif", "title": "ink2", "flat": true}, "captions": {"style": "band", "font": "JetBrains Mono", "weight": 800, "size": 60, "maxWords": 3, "upper": true, "bg": "#111111", "color": "#FFFFFF", "radius": 0.2, "shadow": true, "tracking": -0.02, "straddle": true}, "layout": {"frame": {"bleed": true, "r": 0}, "seam": 1160}}
+  },
+  "classique": {
+    "label": "Papier classique",
+    "says": "Le style par défaut : papier texturé, sous-titres stickers, accent bleu.",
+    "style": {}
+  },
+  "papier": {
+    "label": "Papier signature",
+    "says": "Papier texturé avec des ombres profondes, caméra en photo encadrée, sous-titres « rise » : le mot dit apparaît sur un bloc de couleur. Tech, explicatif, premium.",
+    "style": {
+      "captions": { "style": "rise", "size": 82, "straddle": true },
+      "paper": { "grain": 1.2, "tooth": 1, "depth": 1.7, "logos": "flat" },
+      "layout": { "frame": true, "seam": 1160 },
+      "display": { "font": "Bricolage Grotesque", "weight": 800, "text": "Bricolage Grotesque", "title": "ink2", "flat": true },
+      "font": { "family": "Bricolage Grotesque" },
+      "grade": true
+    }
+  },
+  "pop": {
+    "label": "Pop jaune",
+    "says": "Blanc cassé, noir et un jaune vif, gros sous-titres « hard » à ombre dure. Podcast, opinion, énergie.",
+    "style": {
+      "colors": { "paper": "#F7F7F5", "ink": "#111111", "accent": "#FFD21F", "pop": "#111111" },
+      "captions": { "style": "hard", "size": 96, "straddle": true },
+      "paper": { "grain": 1.2, "tooth": 1, "depth": 1.7, "logos": "flat", "shadow": "20,20,20" },
+      "layout": { "frame": true, "seam": 1010 },
+      "display": { "font": "Bricolage Grotesque", "weight": 800, "text": "Bricolage Grotesque", "title": "ink2", "flat": true },
+      "font": { "family": "Bricolage Grotesque" }
+    }
+  },
+  "poster": {
+    "label": "Poster orange",
+    "says": "Fond orange uni, coupes franches, le mot clé énorme en majuscules condensées sur la caméra. Rythmé, viral, très lisible.",
+    "style": {
+      "pace": { "speed": 1.12 },
+      "colors": { "paper": "#F0640A", "ink": "#111111", "accent": "#F0640A", "sheet": "#FFFFFF", "onAccent": "#FFFFFF" },
+      "captions": { "style": "stack", "size": 52, "straddle": false, "font": "Inter", "weight": 800, "maxWords": 4, "big": 3.2, "stretch": "extra-condensed", "smallW": 380, "stagger": 70, "fullY": 1250, "paperY": 820, "labelFont": "Inter", "labelWeight": 500, "labelSize": 80, "outline": { "color": "#F0640A", "width": 0.07 }, "zoomDrop": 320, "tall": 1.5, "smallDisplay": true, "snap": true, "margin": 60, "paperBig": 4.6 },
+      "paper": { "grain": 0, "tooth": 0, "depth": 0.4, "logos": "flat", "bg": "flat" },
+      "layout": { "frame": false, "seam": 1000 },
+      "display": { "font": "Archivo", "weight": 900, "text": "Inter", "title": "ink2", "flat": true },
+      "font": { "family": "Inter" },
+      "grade": "eq=contrast=1.08:saturation=0.95:gamma=0.97,vignette=angle=PI/3",
+      "zoom": { "drift": 0.008 },
+      "cuts": "hard"
+    }
+  }
+}

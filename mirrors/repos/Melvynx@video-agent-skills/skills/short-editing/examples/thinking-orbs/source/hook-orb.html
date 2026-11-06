@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1080px; height: 1920px; background: transparent; overflow: hidden; }
+  * { box-sizing: border-box; }
+  .abs { position: absolute; }
+  .line { position: absolute; left: 0; width: 1080px; text-align: center; white-space: nowrap;
+    font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 112px; line-height: 1; color: #111111; letter-spacing: -2px; }
+  .blue { color: #258EFF; }
+  #l2 { display: flex; justify-content: center; align-items: center; }
+  #spinWrap { position: relative; height: 92px; flex: none; overflow: visible; }
+  #spin { position: absolute; left: 0; top: 0; width: 92px; height: 92px; }
+  #strike { position: absolute; left: 0; top: 0; width: 92px; height: 92px; overflow: visible; }
+  #hero { position: absolute; }
+  .chip { position: absolute; height: 104px; overflow: hidden; transform-origin: 52px 52px; display: flex; align-items: center; gap: 14px; padding: 0 36px 0 16px;
+    background: #FFFFFF; border: 2px solid #E6E6E6; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 14px 30px rgba(17,17,17,0.10), 0 3px 6px rgba(17,17,17,0.06);
+    font-family: "Bricolage Grotesque"; font-weight: 700; font-size: 42px; color: #111111; letter-spacing: -0.5px; }
+  .chip canvas { width: 72px; height: 72px; flex: none; }
+  .chip span { flex: none; }
+</style>
+</head>
+<body>
+<canvas id="hero" width="700" height="700"></canvas>
+
+<div class="line" id="l1" style="top:96px">Ton spinner</div>
+<div class="line" id="l2" style="top:214px">
+  <div id="spinWrap">
+    <svg id="spin" viewBox="-50 -50 100 100"></svg>
+    <svg id="strike" viewBox="0 0 92 92"><line id="strikeLine" x1="6" y1="86" x2="86" y2="6" stroke="#111111" stroke-width="9" stroke-linecap="round"/></svg>
+  </div>
+  <span id="l2text">est <span class="blue">mort</span></span>
+</div>
+
+<div class="chip" id="c0"><canvas width="72" height="72"></canvas><span>Thinking</span></div>
+<div class="chip" id="c1"><canvas width="72" height="72"></canvas><span>Searching</span></div>
+<div class="chip" id="c2"><canvas width="72" height="72"></canvas><span>Agent listening</span></div>
+<div class="chip" id="c3"><canvas width="72" height="72"></canvas><span>Solving</span></div>
+
+<script src="orbs.js"></script>
+<script>
+(function () {
+  // spring that never overshoots
+  const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  // ---------- hero orb: composing (ribbon) at its real logical size, the base profile's own spin
+  const HERO = 700, HERO_CX = 540, HERO_CY = 690;
+  const hero = document.getElementById('hero');
+  hero.style.left = (HERO_CX - HERO / 2) + 'px';
+  hero.style.top = (HERO_CY - HERO / 2) + 'px';
+  const hctx = hero.getContext('2d');
+  const heroPreset = ORBS.PRESETS.ribbon[64];
+  const heroOpts = { ...ORBS.BASE_PROFILES.ribbon, bandMul: heroPreset.extra.bandMul, wobMul: heroPreset.extra.wobMul, spin: 1 };
+  const HERO_T0 = 0.35; // pose offset so frame 0 already shows the band sweeping
+
+  // ---------- chips: each with its own real preset-32 orb
+  const chips = [
+    { id: 'c0', state: 'breathing', at: 0.20, x: 48,  y: 410, side: -1 },
+    { id: 'c1', state: 'searching', at: 0.55, x: null, r: 1032, y: 560, side: 1 },
+    { id: 'c2', state: 'listening', at: 0.85, x: 48,  y: 790, side: -1 },
+    { id: 'c3', state: 'solving',   at: 1.15, x: null, r: 1032, y: 920, side: 1 },
+  ].map(c => {
+    const el = document.getElementById(c.id);
+    const cv = el.querySelector('canvas');
+    return { ...c, el, label: el.querySelector('span'), ctx: cv.getContext('2d'), preset: ORBS.resolvePreset(c.state, 32) };
+  });
+  // measured on every setT: the width depends on the font, which the engine loads after the page script ran
+  function place(c) {
+    c.el.style.width = 'auto';
+    c.w = c.el.offsetWidth;
+    c.left = c.x != null ? c.x : c.r - c.w;
+    c.el.style.left = c.left + 'px';
+    c.el.style.top = c.y + 'px';
+    c.cx = c.left + 52; c.cy = c.y + 52;
+  }
+
+  // ---------- classic grey spinner (12 spokes)
+  const spin = document.getElementById('spin');
+  let spokes = '';
+  for (let i = 0; i < 12; i++) {
+    spokes += `<rect x="-5" y="-44" width="10" height="26" rx="5" fill="#9A9A9A" transform="rotate(${i * 30})"/>`;
+  }
+  spin.innerHTML = spokes;
+  const spokeEls = [...spin.children];
+  const spinWrap = document.getElementById('spinWrap');
+  const strikeLine = document.getElementById('strikeLine');
+  const STRIKE_LEN = Math.hypot(80, 80);
+  strikeLine.setAttribute('stroke-dasharray', STRIKE_LEN);
+  const GAP = 26;
+
+  function drawOrb(ctx, px, preset, t) {
+    const k = px / 32;
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    ctx.clearRect(0, 0, 32, 32);
+    ORBS.paintFrame(ctx, ORBS.MODE_FRAMES[preset.mode](32, t * preset.speed, preset.opts), false);
+  }
+
+  window.setT = function (t) {
+    // hero orb, alive from frame 0
+    hctx.setTransform(1, 0, 0, 1, 0, 0);
+    hctx.clearRect(0, 0, HERO, HERO);
+    ORBS.paintFrame(hctx, ORBS.MODE_FRAMES.ribbon(HERO, (t + HERO_T0) * heroPreset.speed, heroOpts), false);
+
+    // each chip: an opaque round bubble holding its orb eases out of the big orb, then unrolls into a pill with its label
+    for (const c of chips) {
+      place(c);
+      const p = S(t - c.at, 15);          // bubble
+      const q = S(t - c.at - 0.07, 12);   // unroll
+      const dx = (HERO_CX - c.cx) * 0.12 * (1 - p);
+      const dy = (HERO_CY - c.cy) * 0.12 * (1 - p);
+      const sc = 0.55 + 0.45 * p;
+      c.el.style.width = (104 + (c.w - 104) * q).toFixed(2) + 'px';
+      c.el.style.opacity = clamp(p * 3, 0, 1).toFixed(3);
+      c.el.style.transform = `translate(${dx.toFixed(2)}px, ${dy.toFixed(2)}px) scale(${sc.toFixed(4)})`;
+      c.el.style.visibility = p > 0.001 ? 'visible' : 'hidden';
+      c.label.style.opacity = clamp((q - 0.25) / 0.6, 0, 1).toFixed(3);
+      drawOrb(c.ctx, 72, c.preset, t + 0.6);
+    }
+
+    // spinner: turns, struck at 1.45, then shrinks away and the line recentres
+    // smooth turn (a stepped one would read as jitter between frames); the fading tail is fixed to the spokes
+    spokeEls.forEach((el, i) => el.setAttribute('opacity', (0.25 + 0.75 * i / 11).toFixed(2)));
+    spin.style.transform = `rotate(${(t * 300).toFixed(2)}deg)`;
+    const sp = S(t - 1.45, 16);
+    strikeLine.setAttribute('stroke-dashoffset', (STRIKE_LEN * (1 - sp)).toFixed(2));
+    strikeLine.style.opacity = sp > 0.001 ? 1 : 0;
+    const shrink = S(t - 1.78, 14);
+    const s = 1 - shrink;
+    spinWrap.style.width = (92 * s).toFixed(2) + 'px';
+    spinWrap.style.marginRight = (GAP * s).toFixed(2) + 'px';
+    spinWrap.style.transform = `scale(${s.toFixed(4)})`;
+    spinWrap.style.opacity = clamp(s * 1.5, 0, 1).toFixed(3);
+    spinWrap.style.transformOrigin = '0 50%';
+  };
+
+  window.setT(0);
+})();
+</script>
+</body>
+</html>

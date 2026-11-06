@@ -1,0 +1,108 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Short time 18.95-20.30 (clip 1.45 s): "et tout est sous licence MIT".
+     The real LICENSE file of Jakubantalik/thinking-orbs as a GitHub file view. A blue highlighter sweeps over
+     "sell copies" on "licence" (.58-.85), the "MIT license" pill gets a blue ring on "MIT" (.99).
+     Transparent 1080x1920 overlay. Draws only inside x 40-1040, y 60-1060. Every state is a pure function of t (setT). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; overflow: hidden; }
+  .gh { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; color: #1F2328; }
+  #card { position: absolute; left: 60px; top: 78px; width: 960px; height: 964px; box-sizing: border-box; background: #FFFFFF;
+    border: 2px solid #D1D9E0; border-radius: 26px; overflow: hidden; transform-origin: 50% 832px;
+    box-shadow: 0 40px 70px -26px rgba(40,28,10,.30), 0 14px 28px -10px rgba(40,28,10,.16), 0 2px 5px rgba(40,28,10,.10); }
+  #lit { position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,.25) 0, rgba(255,255,255,0) 22%, rgba(60,44,20,0) 70%, rgba(60,44,20,.03) 100%); }
+  #hdr { position: absolute; left: 0; top: 0; right: 0; height: 112px; background: #F6F8FA; border-bottom: 2px solid #D1D9E0; }
+  #octo { position: absolute; left: 30px; top: 26px; width: 60px; height: 60px; }
+  #path { position: absolute; left: 112px; top: 56px; transform: translateY(-50%); font-size: 40px; white-space: nowrap; display: flex; align-items: center; }
+  #path .repo { color: #0969DA; font-weight: 600; }
+  #path .sl { color: #59636E; margin: 0 14px; }
+  #path .file { font-weight: 600; }
+  #pill { position: absolute; right: 26px; top: 56px; transform: translateY(-50%); display: flex; align-items: center; gap: 14px;
+    height: 68px; box-sizing: border-box; padding: 0 26px 0 22px; border-radius: 999px; background: #FFFFFF; border: 2px solid #D1D9E0;
+    font-size: 35px; font-weight: 600; color: #1F2328; white-space: nowrap; }
+  #ring { position: absolute; inset: -2px; border-radius: 999px; pointer-events: none; }
+  #pill svg, #pill span { position: relative; }
+  #body { position: absolute; left: 0; top: 114px; right: 0; bottom: 0; }
+  .ln { position: absolute; left: 0; right: 0; height: 52px; }
+  .num { position: absolute; left: 0; width: 70px; text-align: right; top: 0; line-height: 52px;
+    font-family: "JetBrains Mono"; font-size: 34px; color: #8C959F; }
+  .txt { position: absolute; left: 104px; top: 0; line-height: 52px; white-space: pre;
+    font-family: "JetBrains Mono"; font-size: 38px; color: #1F2328; letter-spacing: 0; }
+  #hl { position: absolute; top: 0; height: 52px; border-radius: 9px; background: #258EFF; overflow: hidden; z-index: 1; }
+  #hl span { position: absolute; left: 8px; top: 0; line-height: 52px; color: #FFFFFF; white-space: pre; }
+</style></head>
+<body><div id="stage">
+  <div id="card" class="gh">
+    <div id="lit"></div>
+    <div id="hdr">
+      <img id="octo" src="../assets/logos/github.png">
+      <div id="path"><span class="repo">thinking-orbs</span><span class="sl">/</span><span class="file">LICENSE</span></div>
+      <div id="pill"><i id="ring"></i>
+        <svg width="36" height="36" viewBox="0 0 16 16" id="law" fill="#59636E"><path d="M8.75.75V2h.985c.304 0 .603.08.867.231l1.29.736c.038.022.08.033.124.033h2.234a.75.75 0 0 1 0 1.5h-.427l2.111 4.692a.75.75 0 0 1-.154.838l-.53-.53.529.531-.001.002-.002.002-.006.006-.006.005-.01.01-.045.04c-.21.176-.441.327-.686.45C14.556 10.78 13.88 11 13 11a4.498 4.498 0 0 1-2.023-.454 3.544 3.544 0 0 1-.686-.45l-.045-.04-.016-.015-.006-.006-.004-.004v-.001a.75.75 0 0 1-.154-.838L12.178 4.5h-.162c-.305 0-.604-.079-.868-.231l-1.29-.736a.245.245 0 0 0-.124-.033H8.75V13h2.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5h2.5V3.5h-.984a.245.245 0 0 0-.124.033l-1.289.737c-.265.15-.564.23-.869.23h-.162l2.112 4.692a.75.75 0 0 1-.154.838l-.53-.53.529.531-.001.002-.002.002-.006.006-.016.015-.045.04c-.21.176-.441.327-.686.45C4.556 10.78 3.88 11 3 11a4.498 4.498 0 0 1-2.023-.454 3.544 3.544 0 0 1-.686-.45l-.045-.04-.016-.015-.006-.006-.004-.004v-.001a.75.75 0 0 1-.154-.838L2.178 4.5H1.75a.75.75 0 0 1 0-1.5h2.234a.249.249 0 0 0 .125-.033l1.288-.737c.265-.15.564-.23.869-.23h.984V.75a.75.75 0 0 1 1.5 0Zm2.945 8.477c.285.135.718.273 1.305.273s1.02-.138 1.305-.273L13 6.327Zm-10 0c.285.135.718.273 1.305.273s1.02-.138 1.305-.273L3 6.327Z"/></svg>
+        <span id="pillT">MIT license</span></div>
+    </div>
+    <div id="body"></div>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const L = (a, b, k) => a + (b - a) * k;
+const mix = (a, b, k) => `rgb(${a.map((c, i) => Math.round(L(c, b[i], k)))})`;
+
+// the MIT text, soft-wrapped at 36 columns the way GitHub wraps a long line; [line number or '', text]
+const LINES = [
+  ['1', 'MIT License'],
+  ['2', ''],
+  ['3', 'Copyright (c) 2026 Jakub Antalik'],
+  ['4', ''],
+  ['5', 'Permission is hereby granted, free'],
+  ['', 'of charge, to any person obtaining'],
+  ['', 'a copy of this software and'],
+  ['', 'associated documentation files (the'],
+  ['', '"Software"), to deal in the Software'],
+  ['', 'without restriction, including'],
+  ['', 'without limitation the rights to'],
+  ['', 'use, copy, modify, merge, publish,'],
+  ['', 'distribute, sublicense, and/or'],
+  ['', '<b id="key">sell copies</b><span id="rest"> of the Software, and to</span>'],
+  ['', 'permit persons to whom the Software'],
+  ['', 'is furnished to do so, subject to'],
+];
+const KEY = 13, TOP = 16, LH = 52;
+$('body').innerHTML = LINES.map((l, i) => `<div class="ln" id="l${i}" style="top:${TOP + i * LH}px"><span class="num">${l[0]}</span>` +
+  `<span class="txt" id="t${i}">${i === KEY ? '<span id="hl"><span>sell copies</span></span>' : ''}${l[1]}</span></div>`).join('');
+const keyEl = $('key'); keyEl.style.fontWeight = 'inherit'; keyEl.style.position = 'relative';
+
+window.setT = function (t) {
+  // frame 0 already shows the file; .15 s settle, then a slow push-in toward the key line
+  const s0 = S(t, 36);
+  const push = 1 + 0.02 * cl(t / 1.45);
+  $('card').style.transform = `translateY(${(1 - s0) * 14}px) scale(${push})`;
+  // the text lines settle from the top down, 12 ms apart
+  LINES.forEach((l, i) => { const k = S(t - i * 0.012, 34), e = $('l' + i);
+    e.style.transform = `translateY(${(1 - k) * 8}px)`; e.style.opacity = L(0.8, 1, k); });
+
+  // "licence" .58 -> .85: the highlighter sweeps left to right over "sell copies"; the other lines step back
+  const hw = keyEl.offsetWidth + 16, sw = S(t - 0.58, 15);
+  const hl = $('hl'); hl.style.left = (keyEl.offsetLeft - 8) + 'px'; hl.style.width = (hw * sw) + 'px';
+  hl.style.opacity = cl(hw * sw / 24);
+  const dim = S(t - 0.62, 10);
+  LINES.forEach((l, i) => { if (i !== KEY) $('t' + i).style.opacity = L(1, 0.4, dim); });
+  $('rest').style.opacity = L(1, 0.4, dim);
+  // "MIT" .99: the MIT License heading comes back to full ink with the pill ring
+  const r = S(t - 0.99, 22);
+  $('t0').style.opacity = L(L(1, 0.4, dim), 1, r);
+  $('ring').style.boxShadow = `inset 0 0 0 ${(4 * r).toFixed(2)}px #258EFF`;
+  $('ring').style.background = `rgba(37,142,255,${(0.10 * r).toFixed(3)})`;
+  $('ring').style.opacity = cl(r * 1.4);
+  const c = mix([31, 35, 40], [37, 142, 255], r);
+  $('pillT').style.color = c; $('law').setAttribute('fill', mix([89, 99, 110], [37, 142, 255], r));
+};
+window.setT(0);
+</script>
+</body></html>

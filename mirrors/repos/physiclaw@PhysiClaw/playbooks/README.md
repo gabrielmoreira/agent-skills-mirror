@@ -1,0 +1,287 @@
+# Shared playbook packs
+
+Template packs for the conductor — the deterministic walks it runs
+against a phone. Like `skills/`, these ship with the repo so a
+task one user has rehearsed can be adopted by another with minimal
+adaptation.
+
+## Pack layout — a manifest, one folder per playbook
+
+A pack is a folder. The manifest names the app and holds what every
+playbook of that app shares; each playbook is its own file beside it,
+the way a Helm chart is one `Chart.yaml` beside one template per
+resource, and a Maestro workspace one `config.yaml` beside one flow
+per journey:
+
+    <app>/
+    ├── APP.yml              # the MANIFEST: meta + placeholders + landmarks + shared pages
+    ├── README.md            # for people: what the pack does, the device, the traps (never loaded)
+    ├── macros/<n>.yml       # the pack's hands every route shares (`macro: app.macros.<n>`)
+    └── <name>/              # one ENTRY per folder; the folder is the name
+        ├── PLAYBOOK.yml     # `kind: entry` — name (= the folder), description, enabled, inputs, route
+        ├── <n>.yml          # `kind: playbook` — the same body, walked by the entry's `run: <n>` only
+        ├── macros/<n>.yml   # the entry's recorded hands, shared by what it runs (`macro: <n>`; dispatch <app>/<name>.<n>)
+        ├── prompts/<n>.md   # the entry's prose for the model, shared the same way (`prompt: prompts.<n>`)
+        └── README.md        # the entry's notes for people (never loaded)
+
+A folder with `APP.yml` is a pack; a folder inside it with `PLAYBOOK.yml`
+is an ENTRY — the whole workflow, tell and ask and pay, that the boot
+may offer for a request; any other `<name>.yml` beside that file is one
+of the playbooks it runs — walked by that entry's `run: <name>` only,
+never offered, never named from another entry or pack
+(`<app>/<entry>.<name>` to rehearse it). Every file opens with `kind:`
+then `schema:` — what it is, and which grammar it is written in — read
+before any other key, so a file in the wrong folder is told which folder
+it wants, and a pack that meets a physiclaw it was not written for is
+told "older" or "newer". `macros/` and `prompts/` hold leaf files and
+are never mistaken for either. `APP.yml` never
+carries a route. Every section is optional, so an empty file is a valid
+pack (the file is the pack marker):
+
+- `app` (must equal the folder when present) and `description` (what
+  the pack automates and when to adopt it — `install` prints it)
+- `placeholders:` — per-installation constants (the `inputs:` of
+  `action.yml`): prompt prose + example per token
+- `landmarks:` — named fixed spots (`{label, at, [page]}`) the
+  pack's recover hands tap and its agent episodes read as a `given:`
+  (`close: app.landmarks.close`, written `{close}` in the prompt); a
+  `page:` scope is checked against the page the episode opens on
+- `pages:` — fingerprints more than one route lands on (a page only
+  one route uses is declared in that route's own `pages:` block, or
+  beside its waypoint). A page's `description:` says what it IS, once,
+  for every route that names it. Anchors are the texts that identify
+  the page and EVERY one must show, so declare few, unmistakable texts —
+  alternate readings of one text go
+  inside it (`text: [..]`), `within:` pins it to a band or a box, a
+  `forbid:` term (the same shape) showing reads the page out; no score,
+  a screen reading exactly one page whole is that page — semantics
+  only; geometry is learned on-device via `physiclaw playbooks pages
+  calibrate`. A page here may carry its
+  `recover:` hand too — a gesture, a landmark tap, or a pack macro by
+  name — which every route inherits unless it declares its own. The
+  channel's `app:` names the IM, which tells the conductor which side
+  the user's bubbles hang from; a reply is what sits under the walk's
+  own ask on the thread.
+
+`<name>/PLAYBOOK.yml` is the entry and `<name>/<n>.yml` a playbook it
+runs, both headed like a macro or a skill: `kind` (`entry` or
+`playbook`, whichever the position requires), `name` (must equal the
+folder's, or the file's stem), `description` (the line the menu shows —
+name the app the way users say it, 淘宝 not taobao, so two packs
+offering the same task read apart; a part's is for the reader), `enabled`
+(each is rehearsed and enabled on its own; an entry is not live while
+one it runs is off), `inputs` (a `default:` makes one optional; the
+boot's menu says so), and
+`route` — a ROUTE of `page:` waypoints (checked every time, each
+optionally declaring its own `recover:` — one hand (`go_back`,
+`{tap: app.landmarks.<name>}`, `{macro: app.macros.<name>}`), or
+`covered:`/`elsewhere:`/`locked:` hands per reading, with `tries:`
+beside it)
+alternating with moves — `start` (the cold launch, usually a pack
+macro every route shares), `do` (a recorded macro), `agent` (the
+model drives inside the fence of the `context:` it is built from, with
+`tools:` — the gestures it may make and the macros it may run whole,
+one menu — the `never_tap:` targets
+its taps, and a granted macro's recorded taps, may never land on (never
+shown to the model, so a pay button stays unnameable), and `think:` —
+off, low, medium or high — how much hidden
+thinking each of its calls may spend; a vendor whose thinking is a
+switch, Kimi K2.x, reads low as off and cannot bound the rest, so keep
+its micro calls at off or low), `ask` (human gate; `yes:`/`no:` are the replies it reads,
+`denied:` the line it sends back on a no before `on_fail` decides,
+`wait:` and `rounds:` its patience, `total_label:` the label a payment total sits beside,
+`think:` how much the model may think when it reads a reply those words miss,
+`resume:` re-enters the app), `tell`, and `run` (a playbook beside this
+entry walked as one move — `with:` fills its inputs, it starts where
+that playbook starts and lands on its last page, and its `returns:`
+read downstream as `{<run>.<field>}`; `each: {<input>: <move>.<field>}`
+runs it once per line of a list an earlier agent returned, one round
+per distinct item, the returns joined as lines afterwards, `miss: skip`
+records a failed round as missed and goes on, `revise: <agent>` re-runs
+the walk from that agent when an ask inside the run reads a reply its
+words miss, `limit: {rounds, revisions}` bounds both; a run's `miss:`
+and `on_fail:` are the composing route's words and win over the
+run playbook's own inside its rounds; each is run once per route, as
+moves share one namespace, and only an entry runs). A list is lines:
+a return field holding several things is one per line, and that is
+what `each` iterates and a message renders. Any entry, a page included, may
+say `on_fail: stop|handover` — what a failure of that entry does once
+its own means are spent: hand the session to the model with every tool
+(the default), or end it so the next wake reads the thread again. The
+playbook decides; after a fired payment a stop leaves the order
+unverified and unreported, which the next wake may read as still open. A move's enter/verify checks
+derive from the adjacent waypoints; there is no branching and no loop
+— judgment is an `agent` step, approval is an `ask`. What the playbook
+declares is what runs: a page without `recover:` hands over, a hand
+runs and the page is read again, at most `tries:` times, then `on_fail`
+decides — nothing before the page runs again, so a hand must land on
+its own page — and nothing retries or unlocks in the background.
+
+## What a prompt says
+
+An `agent`'s `context:` is everything the call is built from:
+
+    context:
+      prompt: prompts.pick            # the APP brief; writes {item}, {keyword}, {close}
+      given:                          # what the prompt may write in braces
+        item: inputs.item             #   a value the walk fills
+        keyword: parse.keyword
+        close: app.landmarks.close    #   a fixed spot a tap may aim at
+      memory:                         # what of the agent's memory travels
+        shopping: true                #   the `## shopping` section
+        log: 12                       #   the 12 newest daily-log entries
+
+`prompt:` is the APP brief: what this screen is, which tap means what,
+the traps of this app. `given:` is the whole of what the prompt may
+write as `{name}`, each entry one of two things: `<name>: <ref>` — the
+ref bare (`inputs.item`) or in braces (`"{inputs.item}"`) — a value the
+walk fills, or `<name>: app.landmarks.<n>` a fixed spot the screen may
+not show, rendered as its reading and box (`close it with its ✕
+({close})` reads `close it with its ✕ (reads "✕", box [...])`). Each
+`{name}` is filled once when the step opens (`{{` and `}}` are a
+literal brace); a `{name}` the block does
+not hold is refused, and so is a given the prompt never writes
+(`{inputs.item}` in a prompt is refused too — a prompt names a value,
+never its ref). A value that never changes belongs in the prompt, so a
+given must hold a ref; a landmark given needs the `tap` tool, and its
+box is stated as the fact it is — what MAY be tapped is the tap
+legend's to say, so a grant never arrives as an instruction. `memory:`
+names parts, never a switch: `<slug>: true` for one section, `all:
+true` for the whole file, `log: <n>` for the daily log, and nothing at
+all when the block is absent — no default, no flag. Memory resolves
+when the step opens and rides ONE block stamped as data below the
+brief, each part under its name, because a memory line is a fact and
+never an instruction. The engine
+writes the mechanism around it — the reply contract, what a screen
+block is made of, the tool menu with `done` and `escalate` in it, the
+granted macros by name, and the `returns:` fields to fill — so a prompt that retypes any of that says the same
+thing twice and drifts from it by the second edit. The playbook writes
+the rest: `never_tap:` is the ban, and it is withheld from the model on
+purpose (naming the pay button is telling the model where the pay
+button is), so a prompt names a label to say which control is which,
+never to forbid one.
+
+## References: beside this file, or the pack's
+
+A bare name is the file beside the one naming it (`macro: open-tmall`,
+`prompt: prompts.pick`, `tools: [tap, macros.nudge]`, `run: add` — the
+entry's `add.yml`; a playbook it runs reads the entry's `macros/` and
+`prompts/` the same way); `app.<kind>.<name>` is
+what the pack declares in `APP.yml` or ships beside it — `app.macros.launch`,
+`app.prompts.pick`, `app.landmarks.close`, `app.pages.home` — in a route,
+a manifest hand or a macro's `run:` / `if_page:` alike. The same macro
+or prompt name may live in both places; the spelling says which. A page
+is declared once: a page a route declares itself, in its `pages:` block
+or beside a waypoint, is bare in that route only; a page two routes
+share lives in `APP.yml`.
+
+## Values, and the one check shape
+
+Three spellings, filled at three times:
+
+| Spelling                                        | Filled                                        | Lives in                                             |
+|-------------------------------------------------|-----------------------------------------------|------------------------------------------------------|
+| `<<TOKEN>>`                                     | at install, from `placeholders.yml`           | any string in the pack, macros included              |
+| `{inputs.x}`, `{node.field}`, `{ask.total}`     | when the walk reaches the move                | a move's `with:`, an `agent`'s `context.given:` (bare there, or in braces), an `ask`/`tell` `message:` |
+| `{run.field}`, `{ask.replies}`                  | the same; empty before the run's rounds / any reply | the same — the one forward ref, for a plan that re-reads |
+| a step's own `{node.field}`                     | its last answer; empty the first time         | that step's own `context.given:` — what a revision re-reads |
+| `{name}`                                        | when the agent step opens, from its `given:`  | that step's prompt — a name, never a dotted ref      |
+| `{x}`                                           | when the macro runs, from the move's `with:`  | a macro's steps and checks                           |
+
+A check reads the same everywhere it appears — a macro step's `require`
+/ `forbid` / `expect` / `when` / `skip_when`, a page's anchors:
+
+    "text"                              the text shows
+    ["text", "alt"]                     any of them (alternate readings)
+    {text: "t" | [alts], within: top}   in a band (top / bottom / left /
+                                        right) or a [l, t, r, b] box
+    {and: [..]}  {or: [..]}  {not: ..}  combinators (macro checks only)
+
+A pack macro may also read a page whole: `- if_page: app.pages.thread` with
+`goto: type` skips forward to `- mark: type` while the page already
+shows, so the steps between (the ones that reach it) are not replayed;
+walked to, the mark checks the page arrived. Jumps follow one
+another, forward only, never one inside another. The channel's `open`
+and Taobao's `launch` are written this way.
+
+A macro may run another of its folder as one step: `- run: open`, its
+inputs under `with:`. The steps run inside the same run (one budget,
+one held view), each numbered under the run step in the log, and an
+abort there is the run step's abort. One level only, and a macro is
+live only while every macro it runs is enabled. The channel's `send`
+runs `open`, then types.
+
+Adaptation notes and the rehearsal checklist ride as comments in the
+files.
+
+`channel/<im>/` is the conductor's own pack, one folder per IM app,
+`channel/ACTIVE.txt` naming the one in use: the thread page, the
+send/open macros an `ask` runs, and `boot/` — the walk every wake
+plays before any playbook (reach the thread, read the request, hand
+the matching playbook the baton). Its `select` step is the one entry
+only that file may carry; the hands and limits around it are yours to
+edit, step, and replay like any route.
+
+## Install
+
+    physiclaw playbooks install playbooks/taobao
+    physiclaw playbooks install playbooks/channel/wechat --set CONTACT=QiaoQian
+
+`install` copies a pack into `~/.physiclaw/playbooks/<app>` VERBATIM —
+tokens stay in the files, diffable against this template forever — and
+records their values in `~/.physiclaw/playbooks/placeholders.yml`,
+prompting (with the manifest's prose) for any token that has no value
+yet. `APP.yml` and every README install with the pack, so the docs travel with it.
+
+When physiclaw runs from a source checkout, these template packs load
+directly (repo edits are live, no install step); a same-named pack
+installed at home shadows the tree's.
+
+## Placeholders
+
+`<<CONTACT>>`-style tokens mark per-installation constants (the IM
+contact name of your user thread, in these packs). Values live ONLY in
+the local `playbooks/placeholders.yml`; every parser fills tokens from
+it at load and rejects a token with no value, so a template adopted
+without values fails loudly instead of tapping around looking for the
+literal string.
+
+Values must be YAML strings; quote names that look like numbers or booleans.
+Substitution happens after YAML parsing, so quotes and backslashes in a
+contact name stay literal and cannot change the pack's structure.
+
+Placeholders are deliberately not playbook inputs: inputs are per-run
+values the activation extracts from the user's message, while a
+placeholder is a constant of your installation that also lives where
+inputs cannot reach (page anchors, macro checks).
+
+## After installing
+
+Everything lands disabled — the rehearse-then-enable rule. Recorded
+gesture coordinates come from the authoring device; on the same phone
+model they usually replay as-is, otherwise re-record the steps that
+miss. Each manifest ends with its own checklist; the generic one:
+
+1. replay offline: `physiclaw playbooks replay <app>/<playbook> --session <id>`
+   walks recorded screens through the real route and shows where it
+   would hand over — no phone, nothing written; `physiclaw playbooks
+   micro <id> [--model …] [--think …] [--reps N]` re-asks the session's
+   recorded decision calls and reports valid replies, agreement with
+   what the wake read, time and hidden tokens — the way to compare a
+   model or a `think:` level before a wake runs on it
+2. rehearse: `physiclaw playbooks run <app>/<playbook> --input k=v`
+3. capture page geometry: `physiclaw playbooks pages calibrate <app>`
+4. set `enabled: true` in the pack files
+
+Every wake logs the roster (`conductor: playbooks on disk — taobao/buy
+(disabled), …`) and the decision (`boot drives — offering …` or `plain
+model session — <reason>`), so a wake the model drove alone says why.
+While a walk runs, every reading logs its verdict (`read after peek —
+match taobao.results (2/2 anchors)` or `unknown — buysheet missing 备注;
+results missing 综合`), every decision
+call logs one line (`micro parse_task (parse) → taobao/buy (0.90) …`),
+and the walk's end logs its reason (`handing taobao/buy over to the
+model — …`); `summary.json` lists the same ends under `walks`, and
+`physiclaw playbooks stats` aggregates them from `runs.jsonl`, with
+the decisions those walks made (calls, escalations, time, hidden
+tokens per call kind) read off their sessions.

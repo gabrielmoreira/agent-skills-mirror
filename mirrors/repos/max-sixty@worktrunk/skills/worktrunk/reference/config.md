@@ -219,7 +219,7 @@ Valid built-in names:
 - `age` — Time since the last commit
 - `message` — The head commit's subject
 
-A selection mixes built-ins with [custom columns](#custom-columns), each named
+A selection mixes built-ins with [custom columns](#custom-columns-experimental), each named
 by its `[list.custom-columns]` header (`columns = ["branch", "Ticket", "ci"]`),
 and is exhaustive: only the listed columns render. Omit `columns` to keep the
 default set, where custom columns append automatically.
@@ -1456,7 +1456,7 @@ Stored in git config as `worktrunk.state.<branch>.marker`. Set directly with:
 $ git config worktrunk.state.feature.marker '{"marker":"🚧","set_at":0}'
 ```
 
-When `wt` deletes a branch, it clears that branch's marker.
+When `wt` deletes a branch or `wt switch --create` creates one, it clears that branch's marker. A branch deleted and recreated with plain `git` keeps its marker until `wt config state marker clear`.
 
 Without a subcommand, runs `get` for the current branch. For `--branch`, use `get --branch=NAME`.
 

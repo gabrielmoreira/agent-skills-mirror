@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 11 followed patterns, 64 file(s) materialized.
+Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 11 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `conorbronsdon/avoid-ai-writing` — 26 default patterns, 11 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 64 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,69 +70,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`corpus/INTAKE_TASKS.md`](corpus/INTAKE_TASKS.md) |
-| 4 | ✓ | [`docs/research/hape-2026-11/README.md`](docs/research/hape-2026-11/README.md) |
-| 5 | ✓ | [`evals/rewrite/README.md`](evals/rewrite/README.md) |
-| 6 | ✓ | [`evals/rewrite/reports/automated-stack-295-296-2026-09-16/README.md`](evals/rewrite/reports/automated-stack-295-296-2026-09-16/README.md) |
-| 7 | ✓ | [`evals/rewrite/reports/editorial-cards-206-2026-10-15/followup/README.md`](evals/rewrite/reports/editorial-cards-206-2026-10-15/followup/README.md) |
-| 8 | ✓ | [`evals/rewrite/reports/editorial-cards-206-2026-10-15/README.md`](evals/rewrite/reports/editorial-cards-206-2026-10-15/README.md) |
-| 9 | ✓ | [`evals/rewrite/reports/editorial-cards-206-final-2026-10-18/README.md`](evals/rewrite/reports/editorial-cards-206-final-2026-10-18/README.md) |
-| 10 | ✓ | [`evals/rewrite/reports/preservation-policy-204/README.md`](evals/rewrite/reports/preservation-policy-204/README.md) |
-| 11 | ✓ | [`evals/rewrite/reports/reference-loading-preparation-205-2026-10-15/README.md`](evals/rewrite/reports/reference-loading-preparation-205-2026-10-15/README.md) |
-| 12 | ✓ | [`examples/README.md`](examples/README.md) |
-| 13 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/detector/CATEGORIES.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/detector/CATEGORIES.md) |
-| 14 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/examples/README.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/examples/README.md) |
-| 15 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/SKILL.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/SKILL.md) |
-| 16 | ✓ | [`SKILL.md`](SKILL.md) |
-| 17 | ✓ | [`skills/ai-writing-detector/agents/openai.yaml`](skills/ai-writing-detector/agents/openai.yaml) |
-| 18 | ✓ | [`skills/ai-writing-detector/scripts/detect.js`](skills/ai-writing-detector/scripts/detect.js) |
-| 19 | ✓ | [`skills/ai-writing-detector/scripts/patterns.js`](skills/ai-writing-detector/scripts/patterns.js) |
-| 20 | ✓ | [`skills/ai-writing-detector/SKILL.md`](skills/ai-writing-detector/SKILL.md) |
-| 21 | ✓ | [`skills/avoid-ai-writing-router/agents/openai.yaml`](skills/avoid-ai-writing-router/agents/openai.yaml) |
-| 22 | ✓ | [`skills/avoid-ai-writing-router/references/agency-role-lenses.md`](skills/avoid-ai-writing-router/references/agency-role-lenses.md) |
-| 23 | ✓ | [`skills/avoid-ai-writing-router/references/handoff-contract.md`](skills/avoid-ai-writing-router/references/handoff-contract.md) |
-| 24 | ✓ | [`skills/avoid-ai-writing-router/references/routing-matrix.md`](skills/avoid-ai-writing-router/references/routing-matrix.md) |
-| 25 | ✓ | [`skills/avoid-ai-writing-router/references/skill-graph.json`](skills/avoid-ai-writing-router/references/skill-graph.json) |
-| 26 | ✓ | [`skills/avoid-ai-writing-router/scripts/validate_connections.py`](skills/avoid-ai-writing-router/scripts/validate_connections.py) |
-| 27 | ✓ | [`skills/avoid-ai-writing-router/scripts/validate_connections.test.py`](skills/avoid-ai-writing-router/scripts/validate_connections.test.py) |
-| 28 | ✓ | [`skills/avoid-ai-writing-router/SKILL.md`](skills/avoid-ai-writing-router/SKILL.md) |
-| 29 | ✓ | [`skills/avoid-ai-writing/agents/openai.yaml`](skills/avoid-ai-writing/agents/openai.yaml) |
-| 30 | ✓ | [`skills/avoid-ai-writing/detector/CATEGORIES.md`](skills/avoid-ai-writing/detector/CATEGORIES.md) |
-| 31 | ✓ | [`skills/avoid-ai-writing/detector/patterns.js`](skills/avoid-ai-writing/detector/patterns.js) |
-| 32 | ✓ | [`skills/avoid-ai-writing/detector/validate.js`](skills/avoid-ai-writing/detector/validate.js) |
-| 33 | ✓ | [`skills/avoid-ai-writing/examples/prose.json`](skills/avoid-ai-writing/examples/prose.json) |
-| 34 | ✓ | [`skills/avoid-ai-writing/examples/README.md`](skills/avoid-ai-writing/examples/README.md) |
-| 35 | ✓ | [`skills/avoid-ai-writing/examples/technical.json`](skills/avoid-ai-writing/examples/technical.json) |
-| 36 | ✓ | [`skills/avoid-ai-writing/references/patterns.md`](skills/avoid-ai-writing/references/patterns.md) |
-| 37 | ✓ | [`skills/avoid-ai-writing/scripts/check-style.js`](skills/avoid-ai-writing/scripts/check-style.js) |
-| 38 | ✓ | [`skills/avoid-ai-writing/scripts/html-entity-names.js`](skills/avoid-ai-writing/scripts/html-entity-names.js) |
-| 39 | ✓ | [`skills/avoid-ai-writing/scripts/markdown-prose.js`](skills/avoid-ai-writing/scripts/markdown-prose.js) |
-| 40 | ✓ | [`skills/avoid-ai-writing/scripts/normalize-quotes.js`](skills/avoid-ai-writing/scripts/normalize-quotes.js) |
-| 41 | ✓ | [`skills/avoid-ai-writing/SKILL.md`](skills/avoid-ai-writing/SKILL.md) |
-| 42 | ✓ | [`skills/false-positive-reviewer/agents/openai.yaml`](skills/false-positive-reviewer/agents/openai.yaml) |
-| 43 | ✓ | [`skills/false-positive-reviewer/SKILL.md`](skills/false-positive-reviewer/SKILL.md) |
-| 44 | ✓ | [`skills/file-edit-in-place/agents/openai.yaml`](skills/file-edit-in-place/agents/openai.yaml) |
-| 45 | ✓ | [`skills/file-edit-in-place/SKILL.md`](skills/file-edit-in-place/SKILL.md) |
-| 46 | ✓ | [`skills/preservation-verifier/agents/openai.yaml`](skills/preservation-verifier/agents/openai.yaml) |
-| 47 | ✓ | [`skills/preservation-verifier/scripts/patterns.js`](skills/preservation-verifier/scripts/patterns.js) |
-| 48 | ✓ | [`skills/preservation-verifier/scripts/validate.js`](skills/preservation-verifier/scripts/validate.js) |
-| 49 | ✓ | [`skills/preservation-verifier/SKILL.md`](skills/preservation-verifier/SKILL.md) |
-| 50 | ✓ | [`skills/voice-preserving-rewriter/agents/openai.yaml`](skills/voice-preserving-rewriter/agents/openai.yaml) |
-| 51 | ✓ | [`skills/voice-preserving-rewriter/SKILL.md`](skills/voice-preserving-rewriter/SKILL.md) |
-| 52 | ✓ | [`vale/AvoidAIWriting/README.md`](vale/AvoidAIWriting/README.md) |
-| 53 | ✓ | [`vale/README.md`](vale/README.md) |
-| 54 | → | [`corpus/README.md`](corpus/README.md) |
-| 55 | → | [`cursor-rules/README.md`](cursor-rules/README.md) |
-| 56 | → | [`detector/CATEGORIES.md`](detector/CATEGORIES.md) |
-| 57 | → | [`detector/README.md`](detector/README.md) |
-| 58 | → | [`dist/avoid-ai-writing.md`](dist/avoid-ai-writing.md) |
-| 59 | → | [`evals/gate-calibration/2026-10-15.md`](evals/gate-calibration/2026-10-15.md) |
-| 60 | → | [`GLOSSARY.md`](GLOSSARY.md) |
-| 61 | → | [`OPENAI_PLUGIN.md`](OPENAI_PLUGIN.md) |
-| 62 | → | [`PROOF.md`](PROOF.md) |
-| 63 | → | [`README.md`](README.md) |
-| 64 | → | [`references/patterns.md`](references/patterns.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`corpus/INTAKE_TASKS.md`](corpus/INTAKE_TASKS.md) |
+| 5 | ✓ | [`docs/research/hape-2026-11/README.md`](docs/research/hape-2026-11/README.md) |
+| 6 | ✓ | [`evals/rewrite/README.md`](evals/rewrite/README.md) |
+| 7 | ✓ | [`evals/rewrite/reports/automated-stack-295-296-2026-09-16/README.md`](evals/rewrite/reports/automated-stack-295-296-2026-09-16/README.md) |
+| 8 | ✓ | [`evals/rewrite/reports/editorial-cards-206-2026-10-15/followup/README.md`](evals/rewrite/reports/editorial-cards-206-2026-10-15/followup/README.md) |
+| 9 | ✓ | [`evals/rewrite/reports/editorial-cards-206-2026-10-15/README.md`](evals/rewrite/reports/editorial-cards-206-2026-10-15/README.md) |
+| 10 | ✓ | [`evals/rewrite/reports/editorial-cards-206-final-2026-10-18/README.md`](evals/rewrite/reports/editorial-cards-206-final-2026-10-18/README.md) |
+| 11 | ✓ | [`evals/rewrite/reports/preservation-policy-204/README.md`](evals/rewrite/reports/preservation-policy-204/README.md) |
+| 12 | ✓ | [`evals/rewrite/reports/reference-loading-preparation-205-2026-10-15/README.md`](evals/rewrite/reports/reference-loading-preparation-205-2026-10-15/README.md) |
+| 13 | ✓ | [`examples/README.md`](examples/README.md) |
+| 14 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/detector/CATEGORIES.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/detector/CATEGORIES.md) |
+| 15 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/examples/README.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/examples/README.md) |
+| 16 | ✓ | [`plugins/avoid-ai-writing/skills/avoid-ai-writing/SKILL.md`](plugins/avoid-ai-writing/skills/avoid-ai-writing/SKILL.md) |
+| 17 | ✓ | [`SKILL.md`](SKILL.md) |
+| 18 | ✓ | [`skills/ai-writing-detector/agents/openai.yaml`](skills/ai-writing-detector/agents/openai.yaml) |
+| 19 | ✓ | [`skills/ai-writing-detector/scripts/detect.js`](skills/ai-writing-detector/scripts/detect.js) |
+| 20 | ✓ | [`skills/ai-writing-detector/scripts/patterns.js`](skills/ai-writing-detector/scripts/patterns.js) |
+| 21 | ✓ | [`skills/ai-writing-detector/SKILL.md`](skills/ai-writing-detector/SKILL.md) |
+| 22 | ✓ | [`skills/avoid-ai-writing-router/agents/openai.yaml`](skills/avoid-ai-writing-router/agents/openai.yaml) |
+| 23 | ✓ | [`skills/avoid-ai-writing-router/references/agency-role-lenses.md`](skills/avoid-ai-writing-router/references/agency-role-lenses.md) |
+| 24 | ✓ | [`skills/avoid-ai-writing-router/references/handoff-contract.md`](skills/avoid-ai-writing-router/references/handoff-contract.md) |
+| 25 | ✓ | [`skills/avoid-ai-writing-router/references/routing-matrix.md`](skills/avoid-ai-writing-router/references/routing-matrix.md) |
+| 26 | ✓ | [`skills/avoid-ai-writing-router/references/skill-graph.json`](skills/avoid-ai-writing-router/references/skill-graph.json) |
+| 27 | ✓ | [`skills/avoid-ai-writing-router/scripts/validate_connections.py`](skills/avoid-ai-writing-router/scripts/validate_connections.py) |
+| 28 | ✓ | [`skills/avoid-ai-writing-router/scripts/validate_connections.test.py`](skills/avoid-ai-writing-router/scripts/validate_connections.test.py) |
+| 29 | ✓ | [`skills/avoid-ai-writing-router/SKILL.md`](skills/avoid-ai-writing-router/SKILL.md) |
+| 30 | ✓ | [`skills/avoid-ai-writing/agents/openai.yaml`](skills/avoid-ai-writing/agents/openai.yaml) |
+| 31 | ✓ | [`skills/avoid-ai-writing/detector/CATEGORIES.md`](skills/avoid-ai-writing/detector/CATEGORIES.md) |
+| 32 | ✓ | [`skills/avoid-ai-writing/detector/patterns.js`](skills/avoid-ai-writing/detector/patterns.js) |
+| 33 | ✓ | [`skills/avoid-ai-writing/detector/validate.js`](skills/avoid-ai-writing/detector/validate.js) |
+| 34 | ✓ | [`skills/avoid-ai-writing/examples/prose.json`](skills/avoid-ai-writing/examples/prose.json) |
+| 35 | ✓ | [`skills/avoid-ai-writing/examples/README.md`](skills/avoid-ai-writing/examples/README.md) |
+| 36 | ✓ | [`skills/avoid-ai-writing/examples/technical.json`](skills/avoid-ai-writing/examples/technical.json) |
+| 37 | ✓ | [`skills/avoid-ai-writing/references/patterns.md`](skills/avoid-ai-writing/references/patterns.md) |
+| 38 | ✓ | [`skills/avoid-ai-writing/scripts/check-style.js`](skills/avoid-ai-writing/scripts/check-style.js) |
+| 39 | ✓ | [`skills/avoid-ai-writing/scripts/html-entity-names.js`](skills/avoid-ai-writing/scripts/html-entity-names.js) |
+| 40 | ✓ | [`skills/avoid-ai-writing/scripts/markdown-prose.js`](skills/avoid-ai-writing/scripts/markdown-prose.js) |
+| 41 | ✓ | [`skills/avoid-ai-writing/scripts/normalize-quotes.js`](skills/avoid-ai-writing/scripts/normalize-quotes.js) |
+| 42 | ✓ | [`skills/avoid-ai-writing/SKILL.md`](skills/avoid-ai-writing/SKILL.md) |
+| 43 | ✓ | [`skills/false-positive-reviewer/agents/openai.yaml`](skills/false-positive-reviewer/agents/openai.yaml) |
+| 44 | ✓ | [`skills/false-positive-reviewer/SKILL.md`](skills/false-positive-reviewer/SKILL.md) |
+| 45 | ✓ | [`skills/file-edit-in-place/agents/openai.yaml`](skills/file-edit-in-place/agents/openai.yaml) |
+| 46 | ✓ | [`skills/file-edit-in-place/SKILL.md`](skills/file-edit-in-place/SKILL.md) |
+| 47 | ✓ | [`skills/preservation-verifier/agents/openai.yaml`](skills/preservation-verifier/agents/openai.yaml) |
+| 48 | ✓ | [`skills/preservation-verifier/scripts/patterns.js`](skills/preservation-verifier/scripts/patterns.js) |
+| 49 | ✓ | [`skills/preservation-verifier/scripts/validate.js`](skills/preservation-verifier/scripts/validate.js) |
+| 50 | ✓ | [`skills/preservation-verifier/SKILL.md`](skills/preservation-verifier/SKILL.md) |
+| 51 | ✓ | [`skills/voice-preserving-rewriter/agents/openai.yaml`](skills/voice-preserving-rewriter/agents/openai.yaml) |
+| 52 | ✓ | [`skills/voice-preserving-rewriter/SKILL.md`](skills/voice-preserving-rewriter/SKILL.md) |
+| 53 | ✓ | [`vale/AvoidAIWriting/README.md`](vale/AvoidAIWriting/README.md) |
+| 54 | ✓ | [`vale/README.md`](vale/README.md) |
+| 55 | → | [`corpus/README.md`](corpus/README.md) |
+| 56 | → | [`cursor-rules/README.md`](cursor-rules/README.md) |
+| 57 | → | [`detector/CATEGORIES.md`](detector/CATEGORIES.md) |
+| 58 | → | [`detector/README.md`](detector/README.md) |
+| 59 | → | [`dist/avoid-ai-writing.md`](dist/avoid-ai-writing.md) |
+| 60 | → | [`evals/gate-calibration/2026-10-15.md`](evals/gate-calibration/2026-10-15.md) |
+| 61 | → | [`GLOSSARY.md`](GLOSSARY.md) |
+| 62 | → | [`OPENAI_PLUGIN.md`](OPENAI_PLUGIN.md) |
+| 63 | → | [`PROOF.md`](PROOF.md) |
+| 64 | → | [`README.md`](README.md) |
+| 65 | → | [`references/patterns.md`](references/patterns.md) |
 
 ---
 

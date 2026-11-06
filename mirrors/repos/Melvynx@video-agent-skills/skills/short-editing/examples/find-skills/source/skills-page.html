@@ -1,0 +1,148 @@
+<!doctype html><html><head><meta charset="utf-8">
+<!-- "Ça s'appelle Find Skill et il est branché sur une bibliothèque": the real skills.sh page of find-skills (vercel-labs/skills),
+     zoomed crop, dark Geist look. Title types on "Find Skill", chip + command on "et il est", blue sweep on "branché",
+     camera drifts to INSTALLS 3.8M on "sur une bibliothèque". 960x840 opaque card. -->
+<style>
+  html, body { margin: 0; width: 960px; height: 840px; overflow: hidden; background: #0A0A0A; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Geist', 'Inter', sans-serif; color: #EDEDED; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'Geist Mono', 'JetBrains Mono', monospace; }
+  #page { position: absolute; left: 0; top: 0; width: 1400px; height: 1000px; transform-origin: 0 0; will-change: transform; }
+  .abs { position: absolute; white-space: nowrap; }
+
+  /* top bar */
+  #logo { left: 48px; top: 34px; }
+  #brand { left: 112px; top: 26px; font-size: 40px; line-height: 56px; font-weight: 500; letter-spacing: -0.5px; }
+  #brand .sl { color: #444; margin-right: 20px; font-weight: 300; }
+  #nav { left: 736px; top: 36px; font-size: 28px; line-height: 36px; color: #A1A1A1; display: flex; gap: 50px; }
+
+  /* breadcrumb + title */
+  #crumb { left: 56px; top: 140px; font-size: 36px; line-height: 44px; color: #A1A1A1; }
+  #crumb .s { color: #4A4A4A; margin: 0 16px; }
+  #crumb .last { color: #D4D4D4; }
+  #title { left: 52px; top: 204px; font-size: 112px; line-height: 120px; font-weight: 600; letter-spacing: -3.5px; height: 120px; }
+  #title span { display: inline-block; }
+  #caret { position: absolute; top: 18px; width: 7px; height: 92px; background: #EDEDED; border-radius: 1px; }
+  #chip { left: 56px; top: 346px; height: 60px; padding: 0 26px; border: 2px solid #2E2E2E; border-radius: 30px; font-size: 34px; line-height: 56px; color: #A1A1A1; }
+
+  /* installation */
+  #sec { left: 56px; top: 450px; width: 852px; height: 52px; }
+  #sec .lab { position: absolute; left: 0; top: 6px; font-size: 34px; line-height: 40px; letter-spacing: 0.5px; color: #EDEDED; }
+  #tabs { position: absolute; right: 0; top: 0; display: flex; align-items: center; gap: 10px; font-size: 34px; line-height: 52px; }
+  #tabs .on { background: #2A2A2A; color: #EDEDED; border-radius: 9px; padding: 0 14px; }
+  #tabs .off { color: #8F8F8F; padding: 0 6px; display: flex; align-items: center; gap: 8px; }
+  #rule { left: 56px; top: 524px; width: 852px; height: 2px; background: #232323; }
+  #cmd { left: 56px; top: 552px; width: 852px; padding: 24px 28px; background: #1A1A1A; border-radius: 14px; font-size: 34px; line-height: 54px; color: #D6D6D6; }
+  #cmd .ln { position: relative; height: 54px; white-space: pre; }
+  #cmd .ln .hl { position: absolute; left: -8px; top: 4px; height: 46px; background: rgba(37,142,255,0.30); border-radius: 6px; width: 0; }
+  #cmd .ln .tx { position: relative; }
+  #cmd .ln.ind .tx, #cmd .ln.ind .hl { margin-left: 41px; }
+  #cmd .ln.ind .hl { left: 33px; margin-left: 0; }
+  #cmd .d { color: #6E6E6E; }
+  #copy { position: absolute; right: 26px; top: 30px; }
+  #ring { position: absolute; inset: 0; border-radius: 14px; box-shadow: inset 0 0 0 2px #258EFF; opacity: 0; }
+
+  /* right column */
+  #side { left: 970px; top: 404px; width: 330px; }
+  #side .lab { font-size: 34px; line-height: 40px; letter-spacing: 0.5px; color: #EDEDED; display: flex; align-items: center; gap: 12px; }
+  #inst { font-size: 124px; line-height: 132px; font-weight: 600; letter-spacing: -4px; margin-top: 14px; }
+  #spark { display: block; margin-top: 10px; }
+  #repo { margin-top: 58px; }
+  #repov { font-size: 34px; line-height: 44px; color: #D6D6D6; margin-top: 12px; }
+</style></head><body>
+<div id="page">
+  <!-- top bar -->
+  <svg id="logo" class="abs" width="46" height="42" viewBox="0 0 46 42"><path d="M23 2 L44 40 H2 Z" fill="#EDEDED"/></svg>
+  <div id="brand" class="abs"><span class="sl">/</span>Skills</div>
+  <div id="nav" class="abs"><span>Packs</span><span>Topics</span><span>Official</span><span>Audits</span><span>Docs</span></div>
+
+  <div id="crumb" class="abs">skills<span class="s">/</span>vercel-labs<span class="s">/</span>skills<span class="s">/</span><span class="last">find-skills</span></div>
+  <div id="title" class="abs"></div>
+  <div id="chip" class="abs">Agent workflows</div>
+
+  <div id="sec" class="abs"><span class="lab mono">INSTALLATION</span>
+    <div id="tabs" class="mono"><span class="on">Command</span><span class="off">
+      <svg width="24" height="24" viewBox="0 0 24 24"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8z M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z" fill="#8F8F8F"/></svg>Prompt</span></div>
+  </div>
+  <div id="rule" class="abs"></div>
+  <div id="cmd" class="abs mono">
+    <div id="ring"></div>
+    <div class="ln"><div class="hl"></div><span class="tx"><span class="d">$ </span>npx skills add</span></div>
+    <div class="ln ind"><div class="hl"></div><span class="tx">https://github.com/vercel-labs/skills</span></div>
+    <div class="ln ind"><div class="hl"></div><span class="tx">--skill find-skills</span></div>
+    <svg id="copy" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8F8F8F" stroke-width="1.7" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></svg>
+  </div>
+
+  <div id="side" class="abs">
+    <div class="lab mono">INSTALLS</div>
+    <div id="inst" class="mono">3.8M</div>
+    <svg id="spark" width="300" height="76" viewBox="0 0 300 76">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3A3A" stop-opacity=".9"/><stop offset="1" stop-color="#0A0A0A" stop-opacity="0"/></linearGradient></defs>
+      <path d="M0 9 L40 8.4 L80 8.6 L120 7.6 L160 7.2 L200 6.6 L240 5.8 L270 4.6 L300 2.6 L300 76 L0 76 Z" fill="url(#g)"/>
+      <path d="M0 9 L40 8.4 L80 8.6 L120 7.6 L160 7.2 L200 6.6 L240 5.8 L270 4.6 L300 2.6" fill="none" stroke="#7A7A7A" stroke-width="2.5"/>
+    </svg>
+    <div id="repo" class="lab mono">REPOSITORY
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#EDEDED" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.3 1.7 2.8-.2.9 2.7 2.4 1.5-.8 2.7.8 2.8-2.4 1.5-.9 2.7-2.8-.2L12 21.5l-2.3-1.7-2.8.2-.9-2.7-2.4-1.5.8-2.8-.8-2.7 2.4-1.5.9-2.7 2.8.2z"/><path d="M8.6 12.2l2.3 2.3 4.6-4.8"/></svg></div>
+    <div id="repov" class="mono">vercel-labs/skills</div>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+// critically damped spring: 0 -> 1, never overshoots
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const lerp = (a, b, p) => a + (b - a) * p;
+
+const WORD = 'find-skills';
+const title = $('title');
+const letters = [...WORD].map(c => { const s = document.createElement('span'); s.textContent = c; title.appendChild(s); return s; });
+const caret = document.createElement('div'); caret.id = 'caret'; title.appendChild(caret);
+// nav: the crop edge falls in the gap before "Official" at the start
+{ const nav = $('nav'), off = nav.children[2]; nav.style.left = (736 + 992 - (736 + off.offsetLeft)) + 'px'; }
+const lines = [...document.querySelectorAll('#cmd .ln')];
+const lineW = lines.map(l => l.querySelector('.tx').getBoundingClientRect().width);
+
+// camera: start = page as laid out; end = INSTALLS column brought in, slight zoom toward it
+const CAM0 = { s: 1, x: 0, y: 0 };
+const CAM1 = { s: 1, x: -434, y: -76 };
+
+function rise(el, t, t0, dy = 22, w = 13) {
+  const p = S(t - t0, w);
+  el.style.opacity = p;
+  el.style.transform = `translateY(${(1 - p) * dy}px)`;
+}
+
+window.setT = t => {
+  // page settles down a touch at the start
+  const settle = (1 - S(t, 9)) * -18;
+  // camera drift to the stat
+  const c = S(t - 1.50, 8);
+  const s = lerp(CAM0.s, CAM1.s, c), x = lerp(CAM0.x, CAM1.x, c), y = lerp(CAM0.y, CAM1.y, c) + settle;
+  $('page').style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) scale(${s.toFixed(5)})`;
+
+  // title types itself: .40 -> .95
+  const n = clamp((t - 0.40) / 0.55, 0, 1) * WORD.length;
+  letters.forEach((l, i) => l.style.opacity = clamp((n - i) * 1.6, 0, 1));
+  const k = Math.min(WORD.length, Math.ceil(n - 1e-6));
+  const last = k > 0 ? letters[k - 1] : null;
+  caret.style.left = (last ? last.offsetLeft + last.offsetWidth + 6 : 4) + 'px';
+  caret.style.opacity = clamp((t - 0.12) / 0.12) * (1 - clamp((t - 1.12) / 0.16));
+
+  // chip, section, command ease in on "et il est"
+  rise($('chip'), t, 1.03);
+  rise($('sec'), t, 1.09);
+  $('rule').style.opacity = S(t - 1.12, 13);
+  $('rule').style.transform = `scaleX(${lerp(0.6, 1, S(t - 1.12, 11))})`; $('rule').style.transformOrigin = '0 0';
+  rise($('cmd'), t, 1.14, 26);
+
+  // soft blue sweep across the command on "branché"
+  const starts = [1.28, 1.33, 1.38];
+  lines.forEach((l, i) => {
+    const p = S(t - starts[i], 16);
+    l.querySelector('.hl').style.width = (p * (lineW[i] + 16)).toFixed(1) + 'px';
+    l.querySelector('.tx').style.color = p > 0.02 ? `rgb(${Math.round(lerp(214, 245, p))},${Math.round(lerp(214, 248, p))},${Math.round(lerp(214, 255, p))})` : '';
+  });
+  $('ring').style.opacity = 0.75 * S(t - 1.30, 9);
+};
+window.setT(0);
+</script></body></html>

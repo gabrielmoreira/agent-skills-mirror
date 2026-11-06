@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,33 +65,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`external_plugins/imessage/skills/configure/SKILL.md`](external_plugins/imessage/skills/configure/SKILL.md) |
 | 5 | ✓ | [`external_plugins/telegram/skills/access/SKILL.md`](external_plugins/telegram/skills/access/SKILL.md) |
 | 6 | ✓ | [`external_plugins/telegram/skills/configure/SKILL.md`](external_plugins/telegram/skills/configure/SKILL.md) |
-| 7 | ✓ | [`plugins/claude-code-setup/skills/claude-automation-recommender/SKILL.md`](plugins/claude-code-setup/skills/claude-automation-recommender/SKILL.md) |
-| 8 | ✓ | [`plugins/claude-md-management/skills/claude-md-improver/SKILL.md`](plugins/claude-md-management/skills/claude-md-improver/SKILL.md) |
-| 9 | ✓ | [`plugins/claude-security/skills/claude-security/SKILL.md`](plugins/claude-security/skills/claude-security/SKILL.md) |
-| 10 | ✓ | [`plugins/cwc-makers/skills/cardputer-buddy/SKILL.md`](plugins/cwc-makers/skills/cardputer-buddy/SKILL.md) |
-| 11 | ✓ | [`plugins/cwc-makers/skills/m5-onboard/SKILL.md`](plugins/cwc-makers/skills/m5-onboard/SKILL.md) |
-| 12 | ✓ | [`plugins/example-plugin/skills/example-command/SKILL.md`](plugins/example-plugin/skills/example-command/SKILL.md) |
-| 13 | ✓ | [`plugins/example-plugin/skills/example-skill/SKILL.md`](plugins/example-plugin/skills/example-skill/SKILL.md) |
-| 14 | ✓ | [`plugins/frontend-design/skills/frontend-design/SKILL.md`](plugins/frontend-design/skills/frontend-design/SKILL.md) |
-| 15 | ✓ | [`plugins/hookify/skills/writing-rules/SKILL.md`](plugins/hookify/skills/writing-rules/SKILL.md) |
-| 16 | ✓ | [`plugins/math-olympiad/skills/math-olympiad/SKILL.md`](plugins/math-olympiad/skills/math-olympiad/SKILL.md) |
-| 17 | ✓ | [`plugins/math-proof/skills/siege/SKILL.md`](plugins/math-proof/skills/siege/SKILL.md) |
-| 18 | ✓ | [`plugins/math-proof/skills/solo/SKILL.md`](plugins/math-proof/skills/solo/SKILL.md) |
-| 19 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md) |
-| 20 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md) |
-| 21 | ✓ | [`plugins/mcp-server-dev/skills/build-mcpb/SKILL.md`](plugins/mcp-server-dev/skills/build-mcpb/SKILL.md) |
-| 22 | ✓ | [`plugins/playground/skills/playground/SKILL.md`](plugins/playground/skills/playground/SKILL.md) |
-| 23 | ✓ | [`plugins/plugin-dev/skills/agent-development/SKILL.md`](plugins/plugin-dev/skills/agent-development/SKILL.md) |
-| 24 | ✓ | [`plugins/plugin-dev/skills/command-development/SKILL.md`](plugins/plugin-dev/skills/command-development/SKILL.md) |
-| 25 | ✓ | [`plugins/plugin-dev/skills/hook-development/SKILL.md`](plugins/plugin-dev/skills/hook-development/SKILL.md) |
-| 26 | ✓ | [`plugins/plugin-dev/skills/mcp-integration/SKILL.md`](plugins/plugin-dev/skills/mcp-integration/SKILL.md) |
-| 27 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
-| 28 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
-| 29 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
-| 30 | ✓ | [`plugins/project-artifact/skills/project-artifact/SKILL.md`](plugins/project-artifact/skills/project-artifact/SKILL.md) |
-| 31 | ✓ | [`plugins/receipts/skills/receipts/SKILL.md`](plugins/receipts/skills/receipts/SKILL.md) |
-| 32 | ✓ | [`plugins/session-report/skills/session-report/SKILL.md`](plugins/session-report/skills/session-report/SKILL.md) |
-| 33 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
+| 7 | ✓ | [`plugins/champion-kit/skills/climb/SKILL.md`](plugins/champion-kit/skills/climb/SKILL.md) |
+| 8 | ✓ | [`plugins/champion-kit/skills/faq/SKILL.md`](plugins/champion-kit/skills/faq/SKILL.md) |
+| 9 | ✓ | [`plugins/champion-kit/skills/hackathon/SKILL.md`](plugins/champion-kit/skills/hackathon/SKILL.md) |
+| 10 | ✓ | [`plugins/champion-kit/skills/maturity/SKILL.md`](plugins/champion-kit/skills/maturity/SKILL.md) |
+| 11 | ✓ | [`plugins/champion-kit/skills/office-hours/SKILL.md`](plugins/champion-kit/skills/office-hours/SKILL.md) |
+| 12 | ✓ | [`plugins/champion-kit/skills/patterns/SKILL.md`](plugins/champion-kit/skills/patterns/SKILL.md) |
+| 13 | ✓ | [`plugins/champion-kit/skills/routines/SKILL.md`](plugins/champion-kit/skills/routines/SKILL.md) |
+| 14 | ✓ | [`plugins/claude-code-setup/skills/claude-automation-recommender/SKILL.md`](plugins/claude-code-setup/skills/claude-automation-recommender/SKILL.md) |
+| 15 | ✓ | [`plugins/claude-md-management/skills/claude-md-improver/SKILL.md`](plugins/claude-md-management/skills/claude-md-improver/SKILL.md) |
+| 16 | ✓ | [`plugins/claude-security/skills/claude-security/SKILL.md`](plugins/claude-security/skills/claude-security/SKILL.md) |
+| 17 | ✓ | [`plugins/cwc-makers/skills/cardputer-buddy/SKILL.md`](plugins/cwc-makers/skills/cardputer-buddy/SKILL.md) |
+| 18 | ✓ | [`plugins/cwc-makers/skills/m5-onboard/SKILL.md`](plugins/cwc-makers/skills/m5-onboard/SKILL.md) |
+| 19 | ✓ | [`plugins/example-plugin/skills/example-command/SKILL.md`](plugins/example-plugin/skills/example-command/SKILL.md) |
+| 20 | ✓ | [`plugins/example-plugin/skills/example-skill/SKILL.md`](plugins/example-plugin/skills/example-skill/SKILL.md) |
+| 21 | ✓ | [`plugins/frontend-design/skills/frontend-design/SKILL.md`](plugins/frontend-design/skills/frontend-design/SKILL.md) |
+| 22 | ✓ | [`plugins/hookify/skills/writing-rules/SKILL.md`](plugins/hookify/skills/writing-rules/SKILL.md) |
+| 23 | ✓ | [`plugins/math-olympiad/skills/math-olympiad/SKILL.md`](plugins/math-olympiad/skills/math-olympiad/SKILL.md) |
+| 24 | ✓ | [`plugins/math-proof/skills/siege/SKILL.md`](plugins/math-proof/skills/siege/SKILL.md) |
+| 25 | ✓ | [`plugins/math-proof/skills/solo/SKILL.md`](plugins/math-proof/skills/solo/SKILL.md) |
+| 26 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-app/SKILL.md) |
+| 27 | ✓ | [`plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md`](plugins/mcp-server-dev/skills/build-mcp-server/SKILL.md) |
+| 28 | ✓ | [`plugins/mcp-server-dev/skills/build-mcpb/SKILL.md`](plugins/mcp-server-dev/skills/build-mcpb/SKILL.md) |
+| 29 | ✓ | [`plugins/playground/skills/playground/SKILL.md`](plugins/playground/skills/playground/SKILL.md) |
+| 30 | ✓ | [`plugins/plugin-dev/skills/agent-development/SKILL.md`](plugins/plugin-dev/skills/agent-development/SKILL.md) |
+| 31 | ✓ | [`plugins/plugin-dev/skills/command-development/SKILL.md`](plugins/plugin-dev/skills/command-development/SKILL.md) |
+| 32 | ✓ | [`plugins/plugin-dev/skills/hook-development/SKILL.md`](plugins/plugin-dev/skills/hook-development/SKILL.md) |
+| 33 | ✓ | [`plugins/plugin-dev/skills/mcp-integration/SKILL.md`](plugins/plugin-dev/skills/mcp-integration/SKILL.md) |
+| 34 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
+| 35 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
+| 36 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
+| 37 | ✓ | [`plugins/project-artifact/skills/project-artifact/SKILL.md`](plugins/project-artifact/skills/project-artifact/SKILL.md) |
+| 38 | ✓ | [`plugins/receipts/skills/receipts/SKILL.md`](plugins/receipts/skills/receipts/SKILL.md) |
+| 39 | ✓ | [`plugins/session-report/skills/session-report/SKILL.md`](plugins/session-report/skills/session-report/SKILL.md) |
+| 40 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
 
 ---
 

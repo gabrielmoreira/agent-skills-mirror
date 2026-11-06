@@ -41,7 +41,7 @@ A skill's [`model:` and `effort:` frontmatter](https://code.claude.com/docs/en/s
    ultrathink: read the code and tests for one error path in this repository. Identify a case the tests might miss. Cite the files you used. Do not edit files or run network requests.
    ```
 
-   `ultrathink` requests deeper reasoning for this turn without changing the session effort setting ([Use ultrathink](https://code.claude.com/docs/en/model-config#use-ultrathink-for-one-off-deep-reasoning)). Open a cited file and check whether the suspected gap is real. A plausible answer alone is not evidence.
+   `ultrathink` requests deeper reasoning for this turn without changing the session effort setting ([Use ultrathink](https://code.claude.com/docs/en/model-config#use-ultrathink-for-one-off-deep-reasoning)). Typed in the terminal prompt, the word can also raise that turn to `xhigh` effort, and it shows in rainbow colors when it can. Requires Claude Code v2.1.311 or later. Open a cited file and check whether the suspected gap is real. A plausible answer alone is not evidence.
 4. Give the diagnostic skill its own effort. Add this line inside the frontmatter of `.claude/skills/five-whys/SKILL.md`:
 
    ```yaml
@@ -99,4 +99,4 @@ If the skill check says the model is larger than the task needs, revisit the pre
 
 <sub>Sources: [Model configuration](https://code.claude.com/docs/en/model-config) · [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) · [Choosing a Claude model and effort level in Claude Code](https://claude.com/blog/claude-model-and-effort-level-in-claude-code) · [Commands](https://code.claude.com/docs/en/commands) · [Extend Claude with skills](https://code.claude.com/docs/en/skills) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching)</sub>
 
-<sub>← [Organize project memory and see what loaded](02-organize-memory.md) · [Intermediate index](README.md) · [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) → · Topic: [Models, effort and cost](../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=i-3)</sub>
+<sub>← [Organize project memory and see what loaded](02-organize-memory.md) · [Intermediate index](README.md) · [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) → · Topic: [Models, effort and cost](../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-3)</sub>

@@ -140,7 +140,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 79 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-notices.json`](skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-notices.json) |
 | 80 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json`](skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json) |
 | 81 | ✓ | [`skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-CfC2JIbf.woff2`](skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-CfC2JIbf.woff2) |
-| 82 | ✓ | [`skills/claude-design/scripts/editor/assets/index-CYLuwRoc.js`](skills/claude-design/scripts/editor/assets/index-CYLuwRoc.js) |
+| 82 | ✓ | [`skills/claude-design/scripts/editor/assets/index-CUg1EZUh.js`](skills/claude-design/scripts/editor/assets/index-CUg1EZUh.js) |
 | 83 | ✓ | [`skills/claude-design/scripts/editor/assets/index-tSD8GYWj.css`](skills/claude-design/scripts/editor/assets/index-tSD8GYWj.css) |
 | 84 | ✓ | [`skills/claude-design/scripts/editor/index.html`](skills/claude-design/scripts/editor/index.html) |
 | 85 | ✓ | [`skills/claude-design/scripts/editor/share-ui.js`](skills/claude-design/scripts/editor/share-ui.js) |

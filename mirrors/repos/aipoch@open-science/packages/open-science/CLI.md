@@ -1,0 +1,979 @@
+# Open-Science CLI
+
+The `open-science` command controls the local Open-Science service and submits research tasks without
+requiring browser interaction.
+
+The [release compatibility policy](https://github.com/aipoch/open-science/blob/main/docs/compatibility.md)
+defines the 1.x contract for commands, machine-readable output and exit codes.
+
+## Installation
+
+### From npm
+
+Install the published [standalone CLI](https://www.npmjs.com/package/@aipoch/open-science)
+with Node.js **22.13.0 or later**:
+
+```bash
+npm install --global @aipoch/open-science
+open-science start --no-open
+open-science url
+```
+
+The registry package installs the matching native backend, Web UI and resources through npm
+optional dependencies. It runs without Electron or an installed desktop app. Supported targets
+are macOS ARM64/x64, glibc Linux ARM64/x64 and Windows x64; musl Linux and Windows ARM64 are not
+supported. Do not omit optional dependencies. If startup reports a missing native package, run
+`npm install --global @aipoch/open-science --include=optional`.
+
+Open the printed authenticated URL to configure an Agent runtime, model provider and optional
+Python/R Notebook runtime, or follow [First-run setup (Codex)](#first-run-setup-codex) from the
+terminal. See the [standalone runtime guide](https://github.com/aipoch/open-science/blob/main/docs/standalone-runtime.md#linux-prerequisites)
+for Linux credential storage and sandbox prerequisites.
+
+### Locally built standalone tarball
+
+Install the target-specific standalone tarball built with `npm run pack:backend`, using ordinary
+Node >=22.13.0. It includes the backend, Web UI, resources and native dependencies; Electron and
+a graphical display are not required.
+
+```bash
+npm install --global ./aipoch-open-science-VERSION.tgz # Replace VERSION with the downloaded version.
+open-science start --no-open
+open-science url
+```
+
+Linux secure storage requires an unlocked OS vault and user D-Bus session. See the
+[standalone runtime guide](https://github.com/aipoch/open-science/blob/main/docs/standalone-runtime.md)
+for build dependencies, compatibility and desktop-only capabilities.
+
+### Desktop package launchers (including Debian/WSL)
+
+Installing the `.deb` package registers `/usr/bin/open-science` automatically. No separate
+desktop Settings interaction or `cli install` command is needed to use the launcher.
+It starts or reuses the bundled ordinary Node backend without opening Electron:
+
+```bash
+sudo apt install ./open-science.deb  # Use the downloaded package's actual filename.
+open-science init
+open-science start --no-open
+open-science url
+```
+
+The desktop shortcut continues to launch the application directly. Debian maintains the CLI entry
+through upgrades and removal. Upgrades migrate only the old package-owned system alternative;
+existing user launchers and unrelated manually selected alternatives are preserved. The installer
+reports a conflict instead of overwriting an unmanaged `/usr/bin/open-science` file or symlink.
+The desktop Settings controls manage the optional user launcher, not the
+Debian-owned system entry; remove the Debian package to remove that entry.
+
+### From other application packages
+
+Open **Settings > General > Command line tool** in Open-Science and choose **Install command**. This
+adds an `open-science` launcher to your PATH (`~/.local/bin` on macOS and Linux, or a per-user
+directory added to PATH on Windows). The launcher uses the application's bundled runtime, so it does
+not require a separate Node.js installation.
+
+If the launcher directory is not yet on PATH, the Settings panel shows the line to add. Open a new
+terminal after updating PATH. Choose **Uninstall command** in the same panel to remove the launcher.
+
+### From a source checkout
+
+Replace `open-science` in the examples below with:
+
+```bash
+node packages/open-science/cli.mjs
+```
+
+## Local information and help
+
+These commands work without starting or connecting to the service:
+
+```bash
+open-science --version
+open-science -v
+open-science version --json
+open-science help
+open-science help run
+open-science paths --json
+open-science paths --profile /absolute/path/to/profile
+```
+
+`--version`, `-v`, and `version` print the invoked CLI's application version, including any
+nightly suffix. `version --json` prints `{ "version": "..." }`. Source checkouts use the root
+application version; installed distributions use their own release metadata. This is not the
+version of a running service. The version flags are standalone commands, not options for `run`,
+`start`, or other commands.
+
+`help` is equivalent to `--help`; `help <command>` is equivalent to `<command> --help`.
+For example, `help project` lists Project commands. Unknown command names and unsupported
+arguments fail with the existing usage-error exit code `2`.
+
+`paths` prints human-readable locations; `paths --json` prints one object with:
+
+| Field                  | Meaning                                                                                  |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `cliPath`              | The CLI implementation file used by this invocation.                                     |
+| `nodePath`             | The Node executable running the CLI.                                                     |
+| `startupConfigRoot`    | The configuration directory selected by the installation's default or explicit override. |
+| `discoveryConfigRoots` | Ordered candidate configuration directories searched for an existing service.            |
+
+Source checkouts default to `~/.open-science-project` for startup; installations default to
+`~/.open-science`. Without an override, service discovery checks the development directory first,
+then the production directory. `--config-root` (or `--profile`) takes precedence over
+`OPEN_SCIENCE_CONFIG_ROOT`, then `OPEN_SCIENCE_STORAGE_ROOT`; an override selects a single
+absolute directory for both startup and discovery. Paths are reported even when they do not exist.
+The output does not identify an active service or a research-data directory, which may differ.
+
+These commands do not create profiles, modify settings, read credentials, or print authenticated
+URLs. Successful queries exit `0`; missing or invalid version metadata produces an error rather
+than a fallback version. `paths` accepts only the profile, JSON, and help options; `version`
+accepts only JSON and help options, and `help` accepts only one optional command name and help flags.
+
+## Service lifecycle
+
+Initialize the local configuration directory from a terminal. This is safe to repeat and does not
+start the desktop application:
+
+```bash
+open-science init
+open-science init --config-root /absolute/path/to/profile --json
+```
+
+`init` prepares the profile directory; the first `start` creates the authenticated service state and
+token. It does not migrate or modify an existing profile beyond creating the directory when needed.
+Use `--profile` as an alias for `--config-root`. Both accept an absolute configuration directory,
+including in packaged distributions.
+
+Start the service without opening a browser, check its status, or stop it:
+
+```bash
+open-science start --no-open
+open-science status --json
+open-science stop
+```
+
+To open the Web UI later, request its authenticated URL explicitly:
+
+```bash
+open-science url
+```
+
+`open-science url` is the only command that intentionally prints an authenticated browser URL. Normal
+human-readable, JSON, and JSONL output never includes the local token.
+
+Use `--port <port>` to override `OPEN_SCIENCE_WEB_PORT`, or the default port of `44100` when neither is set. `start` discovers the matching npm platform package, the standalone
+Node entry bundled beside the CLI, or `out/backend/index.cjs` in a source checkout. Build the
+source entry with `npm run build:backend` and Web UI with `npm run build:web` first.
+`--app-path` and `OPEN_SCIENCE_APP_PATH` no longer select a hidden Electron backend.
+`--no-sandbox` does not apply to Node startup; existing Notebook/process permissions still apply.
+
+An already running compatible Node runtime is reused through authenticated discovery, including one
+started by the desktop. App connections and explicit `start` keep the service running. `start` sets
+one persistent hold; repeated calls do not accumulate holds. Quitting the last App stops the service
+unless that explicit hold remains. Ordinary CLI/Web work does not itself keep the service alive, so
+start it explicitly first when that work must continue after the App quits. Closing to the tray is
+not application Quit. Closing a Web tab or SDK connection does not release an explicit hold.
+
+`open-science stop` revokes explicit persistent running. While any App remains connected, it succeeds
+without stopping the service or its tasks. Once no App remains, the service stops. Use
+`open-science stop --force` to request a whole-service stop, including while Apps are connected;
+running tasks may be interrupted. Desktop windows and drafts remain available for explicit retry.
+
+A modern stop records the intended generation and waits for verified process exit. Bounded desktop
+cleanup may escalate only after checking the process birth identity and stop authority. A state-file
+PID alone never authorizes signalling. Failed authentication, unresolved identity, or an unconfirmed
+exit produces an error; retained evidence must not be deleted to bypass a live owner.
+
+Automatic discovery tries the development config directory before the production directory, skipping
+dead or unhealthy candidates until it finds a healthy service. An explicit `--config-root`,
+`OPEN_SCIENCE_CONFIG_ROOT`, or `OPEN_SCIENCE_STORAGE_ROOT` limits discovery to that directory. Live
+unhealthy records are retained; failed authentication never authorizes signalling a recorded PID.
+
+`open-science stop --json` returns one result object:
+
+| `result`             | Meaning                                                                                                                                   |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `already-stopped`    | No live service record was found.                                                                                                         |
+| `keep-alive-revoked` | Explicit persistent running was revoked; connected Apps still keep the service running.                                                   |
+| `stopped`            | The requested generation exited and its directory ownership was released.                                                                 |
+| `shutdown-requested` | Legacy protocol accepted shutdown, but completion remains unconfirmed; `completionStatus` is `unconfirmed` and the command exits nonzero. |
+
+The former `daemon-stopped` and `web-service-stopped` success values are no longer emitted. Modern
+results also include the authenticated service information and `lifetime` snapshot; scripts should
+branch on `result`, not infer that every zero exit code means the service stopped. `--force` requires
+the modern lifetime protocol and fails explicitly for an older service.
+
+`start`, `status`, and `stop` support `--json`; `url` rejects it. `start --no-open --json` reports
+`started` or `already-running`, service information, and `lifetime` (or `unknown` for an older
+protocol). It does not print a browser login URL. Errors with `--json` are reported on stderr as a
+JSON error object with a nonzero exit code. Older protocols can report unconfirmed shutdown even
+if the process subsequently exits; they cannot prove the stopped generation to a script.
+
+## Readiness checks
+
+Inspect the running service without changing runtime, provider, credential, onboarding, or Skill
+settings:
+
+```bash
+open-science doctor --json
+```
+
+The command prints one JSON object. `ready` requires both the selected Agent runtime and active
+provider to be ready. A check is `missing` when its resource is absent and `not_ready` when it is
+configured but unusable; provider failures may include a stable `reason`, such as
+`credential_invalid`.
+
+Codex credential inspection checks supported material in the app-owned `auth.json` without launching
+Codex or validating expiry/revocation remotely; historical provider validation remains a separate gate.
+
+`checks.skills.enabled` contains the sorted IDs of enabled, available Skills; Skills do not block
+overall readiness. `next` contains stable action codes such as
+`runtime_missing` and `provider_not_ready`, with an additive `argv` recovery command for the Codex bootstrap path. A completed inspection
+exits with code `0` even when `ready` is false; connection and command failures keep the existing
+nonzero CLI error codes.
+
+## First-run setup (Codex)
+
+Install the npm package, a standalone artifact or a desktop package containing the ordinary Node backend first.
+`init` creates a configuration directory only; `--profile` selects an absolute configuration directory.
+
+```bash
+open-science start --no-open
+open-science runtime install codex --json
+open-science codex login
+open-science connector configure literature --openalex-key-env OPENALEX_API_KEY --json
+open-science doctor --json
+open-science project create "First review" --json
+open-science run --project "First review" --skill literature-review \
+  --prompt "Review the evidence for the research question in the project context" --wait --jsonl
+```
+
+Place credentials in the named environment variables through your existing secret-management flow.
+Do not put secret values in command arguments. The CLI reads only the variable explicitly named by
+`--api-key-env` or `--openalex-key-env`; it never imports external Codex credentials.
+
+For an OpenAI API-key provider instead of subscription login, prepare the runtime and then use:
+
+```bash
+open-science provider add --type official --vendor openai --model gpt-5.4 \
+  --api-key-env OPENAI_API_KEY --json
+```
+
+Use a model supported by the installed application's OpenAI catalog. Setup probes that exact model
+before saving its protected credential reference and validation record. This initial command creates
+`cli-openai`; repeating it with the same key and currently selected model revalidates that target.
+If Settings changed the active model, Doctor suggests the selected model; revalidation preserves the
+provider default model and active selection. Different existing credentials,
+providers, or framework selections produce `configuration_conflict`, without overwriting them.
+Later account edits remain in Settings. Other runtime/provider bootstrap combinations are not yet
+supported. Existing run-time selection commands are unchanged.
+
+OpenAlex keys are validated before persistence and Literature Graph enablement. Rejected keys or a
+configuration changed during the probe are not saved. A recognized key may still have exhausted
+quota (the existing probe accepts HTTP 429); a successful probe is not a completed literature run.
+
+All writes use existing Settings/runtime/credential owners and formats. No onboarding completion
+flag or database migration is added. OS storage remains the default; Linux file storage still
+requires the existing explicit `start --credential-store file` option on every start.
+
+`doctor` keeps existing readiness/reason fields. If the daemon is absent, the CLI prints a report
+with `checks.daemon.status: "missing"` and `next: [{ code: "daemon_unavailable", argv: ["start",
+"--no-open"] }]`, exiting 3. This includes a stale state file whose loopback connection is refused; HTTP health
+rejections (including authorization failures) remain errors rather than missing-daemon reports.
+When probing both default profiles, a later refused connection does not hide an earlier HTTP or
+configuration error; a healthy later profile can still be selected. A running-daemon report still exits 0 even when readiness is false.
+Append the same development `--profile` argument when executing a suggested argv in an isolated
+profile. Doctor reports readiness, not a live third-party authorization or research-run guarantee.
+
+`bootstrap` SDK requests return `{ ok: true, providerId? }` or `{ ok: false, code }`. Codes are
+`invalid_request` (including unknown model/input), `configuration_conflict`, `runtime_unavailable`,
+`credential_invalid`, or `bootstrap_failed`. The CLI exits nonzero for failures; results never
+include the submitted secret or raw upstream error. Bootstrap/launcher writes require an
+authenticated local connection and are not exposed as research-agent tools.
+
+For desktop packages without an automatically registered command, use **Settings > General >
+Command line tool > Install command**. To invoke the bundled ordinary Node CLI directly on macOS:
+
+```bash
+"/Applications/Open-Science.app/Contents/Resources/node-runtime/node" \
+  "/Applications/Open-Science.app/Contents/Resources/backend/cli.mjs" start --no-open
+```
+
+The native Settings controls own launcher installation/removal. `cli install`/`cli uninstall` over
+the Node service are unavailable; npm owns standalone launchers. Reinstall historical Electron-as-Node
+launchers in desktop Settings. AppImage launchers retain a private immutable backend/Node cache so
+an independently started server survives the invocation's temporary mount. Existing ownership
+receipts and unrelated executables remain protected.
+
+## Agent runtimes
+
+List the supported Agent runtimes and inspect their readiness without exposing executable paths:
+
+```bash
+open-science runtime list
+open-science runtime list --json
+```
+
+## Upgrading installations
+
+Stop the backend before upgrading an installation, then restart it with the same profile.
+For a global npm installation:
+
+```bash
+open-science stop
+npm install --global @aipoch/open-science@latest
+open-science start --no-open
+```
+
+Stop every profile started by that installation before updating it; use `--config-root` for
+custom profiles. To uninstall, stop those services and run
+`npm uninstall --global @aipoch/open-science`. Research data and credentials are retained.
+See [release compatibility](https://github.com/aipoch/open-science/blob/main/docs/compatibility.md)
+before downgrading; reinstalling an older package does not undo data migrations.
+
+Use the installation channel that owns the CLI: Homebrew for a Formula, the new downloaded
+package for deb/rpm or a local npm tarball, or a verified new Release archive in a new directory
+with PATH/the symlink updated.
+The desktop update UI discovers and downloads packages. Automatic replacement remains closed for
+macOS ZIP, Linux AppImage and Debian until each channel passes complete installed-package
+acceptance. Windows automatic installation remains disabled; artifact checks and same-version copy tests do not certify a cross-version upgrade.
+For an accepted channel, use the desktop application's native update UI. A Desktop
+that adopts an orphaned Desktop-launched Runtime can stop it through the normal update gate.
+For a CLI-launched service, explicitly confirm stopping the service and switching to Desktop;
+all connected clients will disconnect, and future Desktop Quit stops the replacement Runtime.
+Cancel keeps the service running. The switch preserves supported configuration and refuses
+unsupported credential/profile settings before stopping. It does not upgrade standalone files.
+Installation recovery may require the original installer when file integrity cannot be verified.
+
+## Codex subscription sign-in
+
+Sign the Open-Science Codex profile in from a terminal without opening Settings:
+
+```bash
+open-science codex login
+```
+
+For first-run setup, start the daemon with `open-science start --no-open`. The command prepares
+the managed runtime and app-owned provider, then runs native Codex OAuth device-code authentication. It prints a verification URL and one-time code in the current terminal; open the URL
+on any browser-capable device, enter the code, and keep the terminal open until Codex reports
+success. Credentials are written only to the app-owned
+<code>codex-subscription/auth.json</code> profile.
+
+The native login follows the profile's saved Network proxy mode. Manual uses the configured proxy,
+Direct clears inherited proxy variables, and System uses the environment that launched the CLI.
+
+When that profile already contains credentials, the command validates and registers them without
+replacing them. Successful validation activates the initial provider; a different active provider is
+never replaced. Start a
+new device-code flow explicitly with:
+
+```bash
+open-science codex login --force
+```
+
+The login command is interactive and intentionally does not support <code>--json</code> or
+<code>--jsonl</code>. Setup and readiness registration use the local daemon; the one-time code stays
+in the terminal process. Already configured profiles can still sign in while the daemon is stopped,
+but must repeat the command with an updated daemon running to register readiness. A running older daemon
+without the bootstrap endpoint also permits this configured native-login path; it cannot register
+provider readiness. An empty profile instead receives `bootstrap_unavailable` with an instruction to
+update and restart the application. HTTP authorization failures do not trigger this fallback.
+
+### AppImage and Node startup
+
+The desktop launcher starts ordinary Node. Chromium's `--no-sandbox` option is rejected by
+`open-science start`; it is not a fallback for starting or updating this backend. Desktop
+Chromium launch troubleshooting is separate from CLI service startup.
+
+## Projects
+
+Create a project and list the projects available to task runs:
+
+```bash
+open-science project create "Systematic review" \
+  --description "Evidence review workspace" \
+  --agent-context-file ./agent-context.md \
+  --json
+open-science project list --json
+```
+
+Commands that accept `--project` allow either a project ID or an exact project name. The CLI resolves
+a unique display name to its ID before calling the Task API; use the ID when names are duplicated.
+
+Project Agent Context contains persistent instructions that are added when Open-Science sets up an
+agent Session. Supply it directly with `--agent-context <text>` or read multiline instructions from a
+strict UTF-8 file with `--agent-context-file <path>`; the two options are mutually exclusive. The
+existing 16,000-character limit applies to both forms.
+
+Update Project metadata or replace its Agent Context later using an ID or exact name:
+
+```bash
+open-science project update "Systematic review" \
+  --name "Evidence synthesis" \
+  --description "Updated evidence review workspace" \
+  --agent-context-file ./revised-agent-context.md \
+  --json
+
+open-science project update <project-id> --clear-agent-context --json
+```
+
+`--name` renames the Project and requires a non-empty value. `--clear-agent-context` is explicit so
+an omitted option keeps the existing value. An update affects
+newly created Sessions and provider Sessions that are set up again after the update. It does not
+rebuild an already attached Session. Project list, create, and update output reports only the boolean
+`hasAgentContext`; Agent Context contents are not returned through the public Task API or CLI output.
+
+### Project Session defaults
+
+Inspect or update the configuration copied into each newly created Session:
+
+```bash
+open-science project session-defaults show <project-id> --json
+open-science project session-defaults update <project-id> \
+  --provider anthropic --model claude-sonnet-4-5 --reasoning-effort high \
+  --approval-profile auto --auto-review --memory --delegation allow \
+  --enable-compute-host ssh:cluster-a --compute-host ssh:cluster-a --json
+```
+
+Updates use the Project's current `updatedAt` value as a compare-and-swap revision. They fail on a
+concurrent Project edit instead of overwriting it. Use the corresponding `--clear-*` option to
+remove an optional default, or `--clear-compute-hosts` to remove both enabled and selected Compute
+Hosts. Omitted options are preserved.
+
+The precedence for a new Session is explicit `run` options, then Project Session defaults, then
+application settings, then the provider-owned default. Defaults are snapshotted into the new
+Session; changing them never rewrites an existing Session.
+
+## Run a task
+
+Provide a prompt directly, read it from a UTF-8 file, or pipe it through stdin:
+
+```bash
+open-science run --project "Systematic review" --prompt "Summarize the evidence" --wait
+open-science run --project <project-id> --prompt-file ./task.md --wait --json
+open-science run --project <project-id> --cwd ./research --prompt-file ./task.md --wait --json
+printf '%s\n' "Summarize the evidence" | open-science run --project <project-id> --wait --json
+```
+
+Use repeatable `--compute-host <provider-id>` options to select Compute Host execution targets for
+the Session:
+
+```bash
+open-science run --project <project-id> --prompt-file ./task.md \
+  --compute-host ssh:cluster-a --compute-host ssh:cluster-b --wait --json
+```
+
+On a new Session, `--enable-compute-host` adds Available hosts, `--compute-host` enables and selects
+its explicit list, and `--clear-compute-hosts` overrides Project defaults with empty Enabled and
+Selected lists. With `--session`, `--compute-host` replaces the selected target pool and enables any
+newly named hosts without disabling other Available hosts. Existing-Session runs reject
+`--enable-compute-host` and `--clear-compute-hosts`; use `session config update` for those access
+changes. Omitting every Compute Host option preserves both access and selection. SDK and Task API
+callers can explicitly send an empty `computeHostIds` array to clear Selected while preserving
+Enabled hosts. JSON output uses the server's compatibility-named
+`preferredComputeHostIds` authority result, not a copy inferred from the command line.
+
+When the selection is non-empty, the agent is instructed to run tool-backed task work on one of
+those hosts and not silently fall back to local execution or another Available Compute Host. Pure answers
+and lightweight orchestration do not require remote execution. Each provider ID must refer to a
+host already configured in Open-Science. This option does not create a host, configure SSH or
+credentials, probe a connection, or pin scratch storage.
+
+`--cwd <path>` selects an externally owned working directory for the Session. The CLI resolves a
+relative path from the directory where the command is invoked. Open-Science then resolves the real
+path, verifies that it exists, is a directory, and is readable and writable, and persists that
+canonical path on a newly created Session. Open-Science does not take ownership of or remove an
+external working directory. Without `--cwd`, Open-Science allocates its usual managed workspace.
+
+The working directory is a Session boundary, not a per-Run override. When `--session` and `--cwd`
+are used together, the requested path must resolve to the Session's recorded working directory. A
+different, missing, or otherwise invalid recorded directory is rejected; it is not migrated,
+replaced, or repaired by the Run request.
+
+Without `--wait`, the command returns as soon as the run starts. Use the returned `id` and `sessionId`
+to poll its state:
+
+```bash
+open-science run --project <project-id> --prompt-file ./task.md --json
+open-science run status <run-id> --json
+open-science run cancel <run-id> --json
+open-science session status <session-id> --json
+```
+
+Use `--timeout-ms <milliseconds>` with `--wait` to bound how long the client waits. A timeout stops the
+CLI wait and returns exit code `1`; it does not cancel the run, which can still be inspected with
+`open-science run status <run-id>`. Add `--cancel-on-timeout` to explicitly cancel the server run after
+the timeout; the command still reports the original timeout and returns exit code `1`. Explicit
+cancellation waits for provider work and application finalization to drain, and preserves partial
+output and successfully finalized artifacts. When the `ask` approval profile needs permission,
+human-readable output directs the user to approve the request in Open-Science Desktop or the Web UI.
+
+Pass an existing session ID to continue a conversation. Approval profiles are `ask`, `auto`, and
+`full`; `--skill` is repeatable:
+
+```bash
+open-science run \
+  --project <project-id> \
+  --session <session-id> \
+  --prompt-file ./follow-up.md \
+  --approval-profile auto \
+  --skill literature-review \
+  --skill citation-check \
+  --wait \
+  --json
+```
+
+For a new Session, an explicit approval profile overrides Project Session defaults, then the saved global
+default; only when all are absent does it fall back to `ask`. Resumed Sessions retain their saved profile unless explicitly changed. For unattended execution, explicitly add
+`--permission-prompts none`. This keeps the selected approval profile and existing grants;
+it denies any remaining request that would require a person. `auto` can still require approval,
+and `full` does not answer questions or approve Plans on the user's behalf.
+
+```bash
+open-science run --project <project-id> --prompt-file ./task.md \
+  --approval-profile auto --permission-prompts none --wait --jsonl
+```
+
+This option applies only to this Run and its delegated work. It is not a saved Session or Project
+preference. Ordinary questions are declined, and generating a Plan that requires approval is
+rejected; combining it with `--plan-first` fails before starting work. The agent can use an already
+authorized alternative or report that it could not finish. A completed Run means the agent finished
+its turn, not that every requested operation succeeded. JSONL events include declined tool results;
+inspect those and the final output when deciding whether the task achieved its goal.
+
+The CLI checks host support before starting an unattended Run. An older daemon without the
+`permission-prompts-none` capability returns `unsupported_capability`; update the host rather than
+silently running a task that might wait for a person. Omitting the option retains existing behavior,
+including Desktop/Web approval for unresolved ordinary permissions. There are no ordinary
+`permission list/show/approve` CLI commands. `--return-on-attention` only covers Plan approval.
+
+### Execution controls
+
+The run command exposes five provider-neutral controls:
+
+```bash
+open-science run \
+  --project "Systematic review" \
+  --prompt-file ./task.md \
+  --plan-first \
+  --auto-review \
+  --memory \
+  --specialist literature-reviewer \
+  --delegation deny \
+  --wait \
+  --return-on-attention \
+  --json
+```
+
+- `--plan-first` marks this turn as Plan First. The Run remains running while its generated Plan
+  waits for an explicit response.
+- `--auto-review` and `--no-auto-review` update the Session automatic-review setting. When enabled, a
+  successful turn starts the existing reviewer workflow before the Run becomes terminal; the Run
+  `review` property reports whether it started and its final lifecycle/outcome.
+- `--memory` and `--no-memory` set Memory for a new Session; the two flags are mutually exclusive.
+  With `--session`, provider/model/reasoning, Memory and enabled Compute Host changes are rejected.
+  Use `session config update` on the idle Session before resuming it.
+- `--specialist` accepts a Specialist UUID or stable Profile name. It binds only a new Session. An
+  existing Session cannot be rebound, and a presentation `displayName` is not an identifier.
+- `--delegation allow|deny` updates whether the Session may create new delegated children. `deny`
+  does not cancel, hide, or prevent collection/messaging of children admitted earlier.
+
+Ordinary `--wait` retains its terminal-only behavior. Add `--return-on-attention` to return a
+still-running Run when its Plan needs approval. Plan approval is the only structured Run attention
+in this release; permission and delegated-question events do not cause an attention return.
+
+Inspect and respond to an active Plan with its exact version and revision:
+
+```bash
+open-science plan show <session-id> --json
+open-science plan approve <session-id> --artifact-version <id> --revision <number> --json
+open-science plan reject <session-id> --artifact-version <id> --revision <number> --json
+open-science plan revise <session-id> --feedback "Split the validation step" --json
+```
+
+Version/revision matching prevents a stale automation client from deciding a newer Plan. Approval
+persists the exact decision and triggers a one-time Agent wakeup; feedback asks the live Plan
+interaction for a revision.
+
+## Session configuration
+
+Read the persisted and effective configuration, including referenced provider, model, Specialist,
+and Compute Host availability:
+
+```bash
+open-science session config show <session-id> --json
+```
+
+Update an idle Session with the revision returned by `show`:
+
+```bash
+open-science session config update <session-id> --revision 7 \
+  --provider openai --provider-default-model --reasoning-effort medium \
+  --approval-profile ask --no-auto-review --memory --delegation deny \
+  --clear-compute-hosts --json
+```
+
+The Main provider, model, and reasoning effort are one compound configuration. A provider change
+must therefore include either `--model` or `--provider-default-model`. An update affects future
+turns only and is rejected while root-agent, subagent, or Notebook work is active. Reviewer work
+does not block the update. Stale revisions fail with `session_revision_conflict`; invalid or
+unavailable references fail with `invalid_configuration`.
+
+## Session package export and import
+
+Export a Session to a `.science` package at an explicit path. The Session must be idle:
+
+```bash
+open-science session export <session-id> --project <id-or-name> --output ~/backups/session.science
+```
+
+`--project` resolves a Project by id or name and selects which Session to export. `--output` must
+be an absolute or relative path ending in `.science`; when it is omitted the command fails instead
+of opening a native save dialog, because the CLI runs without a desktop session. The command
+returns the saved status and written path as JSON with `--json`.
+
+Both package commands allow up to one hour by default. Use `--timeout-ms <milliseconds>`
+to adjust the request deadline for large packages or slower disks.
+
+Import a `.science` package. Import is non-interactive by design and requires an explicit
+confirmation flag:
+
+```bash
+open-science session import ~/backups/session.science --new-project "Restored session" --non-interactive
+open-science session import ~/backups/session.science --project <id-or-name> --non-interactive
+```
+
+`--non-interactive` confirms the import preview on the caller's behalf; without it the command
+fails rather than waiting for an approval that a headless caller can never supply. Choose exactly
+one destination: `--project` imports into an existing Project, `--new-project` creates one with
+the given name, and omitting both uses the package's own Project name in a new Project. The
+package file is read directly from disk, so no upload or drag-and-drop step is involved.
+
+Both commands dispatch the same `sessions:export-package`, `sessions:import-package`, and
+`sessions:package-operation` application commands the desktop app uses, over the authenticated
+loopback HTTP channel. They are unavailable to remote Web sessions by design: the channel is
+installed as a rejecting stub for remote callers, and the handler additionally requires a local
+caller, so arbitrary-path file read and write stay confined to loopback callers that hold the
+service token.
+
+## Agent routing settings
+
+Inspect or atomically update the global Agent framework plus Reviewer and Subagent model routing:
+
+```bash
+open-science settings agent-routing show --json
+open-science settings agent-routing update --framework codex \
+  --reviewer-provider openai --reviewer-model gpt-5 \
+  --subagent-inherit --json
+```
+
+Use `--reviewer-inherit` or `--subagent-inherit` to follow the applicable Main model. Fixed routes
+require both provider and model; reasoning effort is optional. The command validates all three
+settings against the target framework before saving them together. It returns identifiers and
+availability only, never provider credentials.
+
+A framework change applies to new Sessions and future Reviewer work. Existing idle Sessions migrate
+lazily on their next turn, replaying their visible transcript when a fresh provider Session is
+needed. In-flight Main, Reviewer, and Subagent work remains pinned to the runtime generation and
+model snapshot admitted at its start. In Reviewer inherit mode, admission freezes the model name;
+the provider is resolved when the Reviewer session is created. Fixed Reviewer routing freezes its
+explicit provider/framework target. Reviewer and Subagent route changes affect future work.
+
+### Session persistence and compatibility
+
+Session configuration continues to use the Session JSON authority; it does not add a Session
+schema migration:
+
+- Session JSON stores `delegationPolicy` with values `allow` or `deny`. Historical Session files
+  that omit it, and malformed values, restore as `allow`.
+- autoReviewEnabled and specialistId already existed and are reused. Historical
+  autoReviewEnabled omissions remain disabled; an omitted specialistId remains Main Agent.
+- Plan artifacts, persisted approval, active context, and delivery receipts remain under
+  runtimeContext.plan. The originating Conversation Turn remains the Plan owner; related later
+  ordinary or application Attempts on the same durable Message Branch receive it as active context
+  without taking ownership. Delegated attempts, messages, and questions remain under
+  runtimeContext.delegatedWork.
+
+Project Session defaults add one `sessionDefaults` JSON-text column to the Project table. Existing
+rows migrate to `{}` and therefore retain prior behavior. Agent routing reuses the existing Settings
+JSON fields.
+
+No persistent Session status enum value is added. Existing waiting-plan-approval remains the
+durable Session status, while a public Run remains running and carries an attention discriminant.
+Plan delivery receipts may persist `accepted` after the provider boundary so restart recovery can
+settle that one-shot wakeup without replaying it.
+
+## Machine-readable output
+
+Use `--json` to emit one result. `--jsonl` requires `run --wait` and emits progress events followed by
+the final run object, one JSON value per line:
+
+Every Run object includes its effective `cwd`; progress events and Session summaries do not.
+
+The event stream includes `run.progress` phase changes and ten-second liveness heartbeats before the
+first visible provider output. Each progress payload includes `runId`, `sessionId`, `projectId`,
+`phase`, `timestamp`, `elapsedMs`, and `heartbeat`. Its timer starts after Task has prepared the
+Session and registered its Run; Session creation or resume time before registration is outside this
+stream. Every emitted Run event also carries top-level `sequence`, `runId`, `sessionId`, and
+`projectId` fields. The client reconnects with its last sequence after an unexpected disconnect. If
+the bounded, process-local replay suffix is unavailable, JSON Lines output includes a
+`stream.resync-required` control event and final Run state still comes from the Task HTTP API.
+
+```bash
+open-science run \
+  --project <project-id> \
+  --prompt-file ./task.md \
+  --approval-profile auto \
+  --wait \
+  --jsonl
+```
+
+`--json` and `--jsonl` cannot be used together. Structured errors use this shape:
+
+```json
+{ "error": { "code": "invalid_cli_usage", "message": "--project is required." }, "exitCode": 2 }
+```
+
+Exit codes form part of the automation contract:
+
+| Exit code | Meaning                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------ |
+| `0`       | The command succeeded, including a completed waited run.                                   |
+| `1`       | A run failed, status found no service, or a general command failure occurred.              |
+| `2`       | CLI usage was invalid.                                                                     |
+| `3`       | The local daemon was unavailable.                                                          |
+| `4`       | A requested project, run, session, artifact, Literature item, or Specialist was not found. |
+
+Codex login can propagate the native login process exit code (a signal without a code becomes `1`).
+A successfully cancelled Run is not itself a CLI failure; inspect its `cancelled` status.
+
+Timeouts and `session_busy` conflicts use exit code `1` and retain their distinct `timeout` and
+`session_busy` error codes in structured output.
+
+## Artifacts
+
+List the artifacts produced for a session and download one by ID:
+
+```bash
+open-science artifacts list <session-id> --json
+open-science artifacts download <artifact-id> --output ./report.md --json
+```
+
+Artifact output paths are resolved relative to the current working directory.
+
+## Literature
+
+Read the running service's Literature library and format citations:
+
+```bash
+open-science literature search "single-cell atlas" --project "First review" --json
+open-science literature show <item-id> --json
+open-science literature styles
+open-science literature format <item-id> <item-id> --style apa --locale en-US
+open-science literature lookup 10.1038/s41586-020-2649-2
+```
+
+`search` matches title, abstract, journal, author, personal note, and identifiers in the global
+library; omit the query to browse. `--project` limits results to records linked to that Project.
+Pages default to the service page size; `--limit` accepts 1-100 and `nextOffset` is the next
+`--offset`. `format` prints one bibliography entry per line; `--json` also returns in-text
+citations and BibTeX/RIS exports. `--locale` accepts `en-US` (default) or `zh-CN`. Use `styles`
+for style IDs. `lookup` accepts a DOI, `pmid:<n>`, `pmcid:PMC<n>`, or `arxiv:<id>` and always
+prints JSON. It queries external registries through the service and does not save the record.
+
+These commands do not import, edit, or delete records, styles, or attachments, and do not read
+PDF full text. Record objects mirror the running service's Literature schema; only `id`, `item`,
+`entries`, `nextOffset`, `references`, and `exports` are stable fields. A missing or stale item ID
+returns `literature_item_not_found` (exit code `4`) for both `show` and `format`. Older services
+without these commands return `unsupported_capability`.
+
+## Current scope
+
+The CLI does not expose file/directory attachments or per-run Agent framework selection.
+New Sessions accept provider/model selection; resumed Sessions use `session config update`.
+The help listing still includes `cli install`, but the Node host cannot perform this desktop-only
+operation. Use Settings in the desktop application to install a desktop launcher.
+
+## Connector management
+
+Connector commands use the running backend and the same saved Settings as the desktop and web UI.
+Use `--config-root` to select the intended instance. Custom MCP and credential mutations require a
+local authenticated connection; run the CLI on the server itself, including through SSH.
+
+```sh
+open-science connector list --json
+open-science connector show context7 --json
+open-science connector enable context7
+open-science connector disable context7
+open-science connector add --json < connector.json
+open-science connector update context7 --json < connector-update.json
+open-science connector remove context7
+open-science connector test context7 --json
+```
+
+`add` reads an object with `name`, `displayName`, `transport`, and `command` (stdio) or `url`
+(`streamable_http` or `sse`). Optional fields include `args`, `description`, `envCredentialIds`,
+`headerCredentialIds`, and `oauthCredentialId`. Names and IDs remain stable on update. `update`
+requires `transport`; omitted credential bindings retain their saved values. Use an empty binding
+object to clear environment/header bindings. Only custom MCP Connectors can be added, edited, or removed.
+
+```json
+{
+  "name": "context7",
+  "displayName": "Context7",
+  "transport": "streamable_http",
+  "url": "https://mcp.example.test/mcp"
+}
+```
+
+`list` and `show` expose safe Settings views, not raw credential material. `enabled` is a selection
+preference, not proof of connectivity or a global revocation of Specialist access. `availability`,
+`checking`, credential-presence fields, and `skillProjectionStatus` retain their Settings meanings.
+Changes reuse existing agent refresh behavior. Start a new session if its tool list remains unchanged;
+these commands do not force-reset active conversations.
+
+`test` opens a separate MCP connection, discovers tools, and closes it. It does not enable a disabled
+Connector or execute business tools. Its result is `{ success, toolCount?, message, stage?, code? }`; failure exits
+nonzero. Discovery is bounded to ten seconds. Bundled Connector live diagnostics are unsupported.
+OAuth refresh may update existing encrypted token state; testing does not perform first-time browser login.
+
+### Credentials
+
+```sh
+open-science credential list --json
+open-science credential add --json < credential.json
+open-science credential update <credential-id> --json < credential-update.json
+```
+
+Credential writes read JSON exclusively from stdin. Do not put secrets in command arguments or shell
+history. Protect any input file and remove it when no longer needed. A token input has the shape
+`{ "displayName": "Service token", "kind": "token", "secret": "..." }`; `api_key` is also supported.
+The returned `createdCredential.id` can be bound in `envCredentialIds` or `headerCredentialIds`.
+Updates accept `displayName` and/or `secret`. Existing OAuth registration can be created with `kind:
+"oauth"`, `resourceUri`, remote `transport`, and an `oauth` registration object, then authenticated
+through Settings. First-time browserless OAuth login is outside these commands.
+
+Secrets use the OS-protected store by default. Linux headless deployments without a usable keyring
+can explicitly opt into unencrypted local file storage:
+
+```sh
+open-science start --credential-store=file --no-open
+```
+
+Continue using the normal Settings forms and credential commands. The selected mode applies to new
+and updated Settings-managed secrets: provider API keys and app-managed subscription tokens, GitHub
+and literature keys, shared connector credentials, custom MCP secret environment/header values,
+and Settings-managed OAuth client secrets and token state. Compute passwords and protected Compute
+data keep their independent OS-storage requirement; external framework login stores keep their own
+behavior. This flag does not disable any sandbox.
+
+File mode reuses `settings.json` and `credentials.json` under the application's configuration root.
+Secret refs use `file:v1:` followed by base64 **encoding, not encryption**. The existing atomic writer
+creates files and temporary replacements with POSIX mode `0600`. Keep the configuration directory
+private; anyone who can read these files can recover the secrets. Do not copy them into images,
+repositories, logs, or support reports. A disposable container filesystem discards them when the
+container is removed; a persistent volume retains them. A tmpfs mount can be used when disk
+persistence is unwanted. Open-Science does not delete configuration automatically on shutdown.
+
+Specify the option at every startup, including after updates. It is a startup choice, not a saved
+preference. The default (or `--credential-store=os`) requires OS protection. An already-running
+backend rejects explicit mode selection: stop it before restarting with the desired option. File
+mode is supported only by the Linux headless backend, not desktop launches or macOS/Windows.
+
+Legacy `plain:` refs remain readable in explicit file mode without rewriting them.
+Existing encrypted refs are not automatically migrated or downgraded. They still require the original
+OS vault to read, even in file mode; otherwise re-enter the credential. New/refreshed values saved in
+file mode use the file format. File refs require explicit file mode to read and are unreadable by
+older releases. To switch a file credential back to OS storage, restart in OS mode and explicitly
+replace it with the key while the vault is available. Existing unreadable records remain intact.
+These commands do not migrate historical configuration or store diagnostic history. Older backends that
+lack the endpoints return an endpoint error; the CLI never falls back to editing Settings files directly.
+
+## External agents through MCP
+
+Start the selected profile normally, then let an MCP client launch the stdio adapter:
+
+```bash
+open-science start --no-open --config-root /absolute/path/to/profile
+open-science mcp --config-root /absolute/path/to/profile
+```
+
+Example client configuration (replace paths with your installation and profile paths):
+
+```json
+{
+  "mcpServers": {
+    "open-science": {
+      "command": "/absolute/path/to/open-science",
+      "args": ["mcp", "--config-root", "/absolute/path/to/profile"]
+    }
+  }
+}
+```
+
+`--profile` is an alias for `--config-root`; existing environment overrides and discovery order
+apply. For a source checkout, use `node` as the command and put the absolute path to
+`packages/open-science/cli.mjs` before `mcp` in `args`. The adapter connects to an already
+running authenticated local service; it does not start it, install anything or open a browser.
+`open-science mcp --help` works without a running service.
+
+Tool discovery works even when the service is stopped. Calls return an actionable error until
+it is available, and subsequent calls rediscover the service. Tool names consistently use
+lowercase `snake_case`; argument names retain the SDK's `camelCase`. Tools accept explicit IDs
+rather than resolving project names. Each tool publishes its description, input schema, output
+schema and behavior annotations through `tools/list`.
+
+| Tool                           | Purpose                                                  |
+| ------------------------------ | -------------------------------------------------------- |
+| `doctor`                       | Check research readiness                                 |
+| `list_runtimes`                | List detected Agent runtimes                             |
+| `list_projects`                | List projects and IDs                                    |
+| `create_project`               | Create a persistent project                              |
+| `update_project`               | Update project metadata and Agent Context                |
+| `list_sessions`                | List sessions, optionally by project                     |
+| `get_session`                  | Read session information/status, not a full transcript   |
+| `get_session_configuration`    | Read session configuration and revision                  |
+| `update_session_configuration` | Update settings with `expectedRevision`                  |
+| `start_run`                    | Submit a prompt and return a run ID                      |
+| `get_run`                      | Read progress, output and attention state                |
+| `cancel_run`                   | Explicitly cancel a run without undoing previous effects |
+| `get_plan`                     | Read the plan and its version/revision                   |
+| `respond_plan`                 | Approve/reject a reviewed version or request changes     |
+| `list_artifacts`               | List artifact metadata without downloading files         |
+| `search_literature`            | Search or browse Literature library records              |
+| `get_literature_item`          | Read one Literature record                               |
+| `list_citation_styles`         | List citation styles available for formatting            |
+| `format_references`            | Format records as citations with BibTeX/RIS exports      |
+| `get_reference_metadata`       | Resolve DOI/PMID/PMCID/arXiv metadata without saving it  |
+
+A typical workflow calls `list_projects`, `start_run` with `{ "projectId": "…", "prompt": "…" }`,
+then polls `get_run` with the returned run ID and calls `list_artifacts` with the session ID.
+Successful calls return `structuredContent: { "result": ... }` plus the same JSON in text
+content. Tool execution failures set `isError: true`; exception bodies and credentials are not
+forwarded. After a timeout or transport failure, inspect current state before repeating a write:
+the original operation may already have succeeded. The adapter never retries mutations itself.
+
+Runs use the service's configured framework and authorization defaults. `start_run` accepts
+existing session, provider/model, permission, skill, specialist, compute-host, memory, review,
+delegation and plan-first options; it does not change the global framework. A run can require
+human action in Open-Science. Explicit `permissionPrompts: "none"` denies unresolved human
+interactions using the existing capability check; it does not expand permissions and cannot
+be combined with `turnIntent: "plan-first"`. Plan approval/rejection requires the version and
+revision from `get_plan`. Configuration updates require the revision from
+`get_session_configuration`.
+
+Literature tools are read-only. `search_literature` returns at most 20 records per page and
+`format_references` defaults to `en-US`. `get_reference_metadata` contacts external registries
+through the service, so it is marked open-world; none of these tools save records.
+
+MCP access grants the listed operations for the selected profile under its existing permissions.
+The adapter is not a separate sandbox or a read-only view. Project/configuration changes, plan
+responses and research runs persist through existing business owners and may write files or
+incur model costs. No new database schema, historical-data migration, business status enum,
+credential store or background service is introduced. There is no arbitrary shell/RPC tool,
+credential-management tool, file import/export/download-to-path tool or remote HTTP MCP endpoint.
+
+Standard output carries only MCP protocol messages. Closing stdin or sending SIGINT/SIGTERM
+closes the adapter and its pending network requests; it neither stops the service nor cancels
+accepted runs. MCP request cancellation likewise stops waiting, not the persisted operation.
+Use `cancel_run` explicitly to cancel research.

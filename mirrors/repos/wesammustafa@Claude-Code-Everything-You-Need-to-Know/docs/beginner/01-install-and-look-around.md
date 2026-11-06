@@ -8,7 +8,7 @@ By the end of this lesson you can install Claude Code, start it safely in a repo
 
 ## You need
 
-- A terminal and git, plus a Claude subscription (Pro, Max, Team or Enterprise; the free plan doesn't include Claude Code), a Claude Console account, or access through a supported cloud provider ([Quickstart](https://code.claude.com/docs/en/quickstart), [Advanced setup](https://code.claude.com/docs/en/setup)).
+- A terminal and git, plus a Claude subscription (Pro, Max, Ultra, Team or Enterprise; the free plan doesn't include Claude Code), a Claude Console account, or access through a supported cloud provider ([Quickstart](https://code.claude.com/docs/en/quickstart), [Advanced setup](https://code.claude.com/docs/en/setup)).
 - Your copy of the practice template, cloned, as the [Beginner index](README.md#practice) describes, and Node.js LTS for its checks. In a Codespace on your copy, Claude Code is already installed: start at step 3.
 - Usage: light, meaning a few short prompts in one session. Inside Claude Code, `/usage` shows your session cost and plan usage limits ([Commands](https://code.claude.com/docs/en/commands)).
 
@@ -56,25 +56,25 @@ The header Claude Code shows when it starts gives the version and the model. The
    claude
    ```
 
-   The first time, Claude Code asks you to sign in. At the login prompt in the terminal, choose your account type; with a Claude subscription or Console account, you then finish in your browser. If the browser shows a code instead of sending you back, paste it into the terminal at the `Paste code here if prompted` prompt ([Authentication](https://code.claude.com/docs/en/authentication)). With an API key or a cloud provider, follow the [Quickstart](https://code.claude.com/docs/en/quickstart) instead.
+   If Claude Code asks you to sign in, choose your account type at the login prompt in the terminal; with a Claude subscription or Console account, you then finish in your browser. Once you've logged in, Claude Code stores your credentials, so it doesn't ask again ([Quickstart](https://code.claude.com/docs/en/quickstart)). If the browser shows a code instead of sending you back, paste it into the terminal at the `Paste code here if prompted` prompt ([Authentication](https://code.claude.com/docs/en/authentication)). With an API key or a cloud provider, follow the [Quickstart](https://code.claude.com/docs/en/quickstart) instead.
 
-   In a repository you haven't trusted yet, Claude Code then shows the workspace trust dialog ([Security](https://code.claude.com/docs/en/security#additional-safeguards)). Trust a folder only when you know where its code came from: once you trust it, the repository's own `.claude/settings.json` can grant Claude permissions, such as allow rules, and the dialog lists them first ([Configure permissions](https://code.claude.com/docs/en/permissions#project-allow-rules-and-workspace-trust)). For a stranger's fork you just cloned, leave without trusting it and read its `.claude/` folder first. For your own practice copy, read the dialog and choose to trust the folder. Claude Code saves the trust for the whole repository, so it doesn't ask again here.
+   In a repository you haven't trusted yet, Claude Code shows the workspace trust dialog ([Security](https://code.claude.com/docs/en/security#additional-safeguards)). Trust a folder only when you know where its code came from: once you trust it, the repository's own `.claude/settings.json` can grant Claude permissions, such as allow rules, and the dialog lists them first ([Configure permissions](https://code.claude.com/docs/en/permissions#project-allow-rules-and-workspace-trust)). For a stranger's fork you just cloned, leave without trusting it and read its `.claude/` folder first. For your own practice copy, read the dialog and accept it to trust the folder. Claude Code saves the trust for the whole repository, so it doesn't ask again here.
 
    The header above the prompt shows the version, the model and the folder. The status bar under the prompt shows the permission mode, usually `⏵⏵ auto mode on`, where Claude works without asking you about routine actions ([Which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in), [Auto mode](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode)). Lesson 2 covers the modes.
-4. Type `/status`. The **Status** tab lists the version, the model and the account you signed in with (rows such as **Login method** and **Email**). It is the screen to compare when your session differs from a teammate's, such as a model they can pick and you can't: compare the account rows first. If `ANTHROPIC_API_KEY` is set in your shell, Claude Code uses that key once you approve it, not your subscription, and `/status` marks the credential that isn't in use ([Authentication](https://code.claude.com/docs/en/authentication#authentication-precedence)). Press `Esc` to close it ([Interactive mode](https://code.claude.com/docs/en/interactive-mode#general-controls)). Your version may be newer than this page's: Claude Code follows the `latest` release channel unless you choose otherwise ([Configure the release channel](https://code.claude.com/docs/en/setup#configure-release-channel)).
+4. Type `/status`. The **Status** tab lists the version, the model and the account you signed in with (rows such as **Login method** and **Email**). It is the screen to compare when your session differs from a teammate's, such as a model they can pick and you can't: compare the account rows first. Matching model names in your headers don't show which other models each account can pick. If `ANTHROPIC_API_KEY` is set in your shell, Claude Code uses that key once you approve it, not your subscription, and `/status` marks the credential that isn't in use ([Authentication](https://code.claude.com/docs/en/authentication#authentication-precedence)). Press `Esc` to close it ([Interactive mode](https://code.claude.com/docs/en/interactive-mode#general-controls)). Your version may be newer than this page's: a native install, the one step 1 runs, follows the `latest` release channel unless you choose otherwise ([Configure the release channel](https://code.claude.com/docs/en/setup#configure-release-channel)). Where a later version changed a step, the step says from which version. If your screen differs and the step doesn't say, tell us ([Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=b-1)).
 5. Ask about the code, and stop Claude partway:
 
    ```text
    what does this project do?
    ```
 
-   While Claude is still answering, press `Esc`. Claude stops and waits for your next instruction, and keeps the work done so far ([How Claude Code works](https://code.claude.com/docs/en/how-claude-code-works#interrupt-and-steer), [Interactive mode](https://code.claude.com/docs/en/interactive-mode#general-controls)). Press it whenever Claude heads the wrong way, then say what you want instead. Send the question again and let it finish, then ask:
+   While Claude is still answering, press `Esc`. Claude stops and waits for your next instruction, and keeps the work done so far ([How Claude Code works](https://code.claude.com/docs/en/how-claude-code-works#interrupt-and-steer), [Interactive mode](https://code.claude.com/docs/en/interactive-mode#general-controls)). Press `Esc` whenever Claude heads the wrong way, then say what you want instead. Send the question again and let it finish, then ask:
 
    ```text
    which file parses linkcheck.json, and how do I run the tests?
    ```
 
-   Claude reads files to answer, and may run a command, such as the tests, without asking. Your wording will differ, but the answers should name `src/config.js` and `npm test`.
+   Claude reads files to answer, and may run a command, such as the tests, without asking. You should see answers that name `src/config.js` and `npm test`, though your wording will differ.
 6. Check the answer against the source. Open `src/config.js` in your editor: its first lines say it parses `linkcheck.json` and name the two fields it reads, `files` and `ignore`. In `package.json`, the `test` script is what `npm test` runs. Keep the session open for Your turn.
 
 ## Your turn
@@ -86,6 +86,8 @@ Find and correct the wrong claim in a teammate's onboarding notes before the tea
    ```text
    check each claim in @practice/b-1/onboarding.md against the code. For each one, say whether the code agrees, and cite the file and line.
    ```
+
+   Claude may already have pointed at a wrong claim when it explained the project: confirm it against the code yourself before you change the note.
 
 2. For each claim Claude says the code contradicts, open the file and line it cites and read them yourself. Decide which claim is wrong from the code, not from the notes or from Claude's answer. If Claude also names cases a claim leaves out, that's fine: correct only a claim the code contradicts.
 3. Correct that claim in your editor, in one sentence that says what the code does, and leave the other claims as they are. If Claude already edited the note, read its change with [git diff](https://git-scm.com/docs/git-diff) and keep it only if it matches the code.
@@ -105,7 +107,7 @@ You are done when all of these are true:
 
 Run `npm run check -- b-1` in your practice copy. The check runs `claude --version` itself, in the terminal you run it from. An npm error such as `Could not read package.json` or `Missing script: "check"` means you ran it outside your practice copy: `cd` into the copy and run it again.
 
-If the first item fails, run `claude --version` in that terminal: when it prints an error, fix it as Worked example step 2 describes, then open a new terminal and run the check again. If the second item fails, read the check's message: it quotes the claim that is still wrong, or says what the corrected claim lacks. Open the file and line Claude cited for that claim, and write what the code does.
+If the first item fails, run `claude --version` in that terminal: when it prints an error, fix it as Worked example step 2 describes, then open a new terminal and run the check again. If the second item fails, read the check's message: it says the note hasn't changed yet, quotes the claim that is still wrong, or says what the corrected claim lacks. Open the file and line Claude cited for the claim the code contradicts, and write what the code does.
 
 ## Watch out
 
@@ -121,4 +123,4 @@ If the first item fails, run `claude --version` in that terminal: when it prints
 
 <sub>Sources: [Quickstart](https://code.claude.com/docs/en/quickstart) · [Advanced setup](https://code.claude.com/docs/en/setup) · [Authentication](https://code.claude.com/docs/en/authentication) · [Model configuration](https://code.claude.com/docs/en/model-config) · [Security](https://code.claude.com/docs/en/security) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Commands](https://code.claude.com/docs/en/commands) · [How Claude Code works](https://code.claude.com/docs/en/how-claude-code-works) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Common workflows](https://code.claude.com/docs/en/common-workflows) · [Troubleshoot installation](https://code.claude.com/docs/en/troubleshoot-install) · [Codespaces deep dive](https://docs.github.com/en/codespaces/about-codespaces/deep-dive) · [git diff](https://git-scm.com/docs/git-diff) · [git status](https://git-scm.com/docs/git-status) · [git commit](https://git-scm.com/docs/git-commit)</sub>
 
-<sub>← [Beginner index](README.md) · [Permission modes and plan mode](02-permission-modes-and-plan-mode.md) → · Topic: [Models, effort and cost](../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=b-1)</sub>
+<sub>← [Beginner index](README.md) · [Permission modes and plan mode](02-permission-modes-and-plan-mode.md) → · Topic: [Models, effort and cost](../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=b-1)</sub>

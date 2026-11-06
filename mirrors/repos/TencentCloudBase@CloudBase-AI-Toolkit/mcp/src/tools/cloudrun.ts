@@ -11,6 +11,7 @@ import { debug } from '../utils/logger.js';
 import { requireProjectRoot } from '../utils/project-config.js';
 import { preferGatewayOrFallback, resolveGatewayAccessUrls } from '../utils/gateway-access-urls.js';
 import { sendDeployNotification } from '../utils/notification.js';
+import { getConsoleDevUrl } from '../utils/site-map.js';
 import {
   buildArtifactCardPayload,
   resolveArtifactEnvContext,
@@ -199,7 +200,7 @@ const ManageCloudRunInputSchema = {
   // Run operation parameters (function services only)
   runOptions: z.object({
     port: z.number().min(1).max(65535).optional().default(3000).describe('cloudrun.schema.manage.runOptions.port'),
-    envParams: z.record(z.string()).optional().describe('cloudrun.schema.manage.runOptions.envParams'),
+    envParams: z.record(z.string(), z.string()).optional().describe('cloudrun.schema.manage.runOptions.envParams'),
     runMode: z.enum(['normal', 'agent']).optional().default('normal').describe('cloudrun.schema.manage.runOptions.runMode'),
     agentId: z.string().optional().describe('cloudrun.schema.manage.runOptions.agentId')
   }).optional().describe('cloudrun.schema.manage.runOptions'),
@@ -1171,7 +1172,12 @@ export async function ensureCloudRunEnvInitialized(options: {
 }
 
 function throwCloudRunEnvNotInitialized(envId: string): never {
-  throw new Error(t("cloudrun.error.envNotInitialized", { envId }));
+  throw new Error(
+    t("cloudrun.error.envNotInitialized", {
+      envId,
+      consoleUrl: getConsoleDevUrl(envId, "/platform-run"),
+    }),
+  );
 }
 
 /**
@@ -2579,7 +2585,10 @@ for await (let x of res.textStream) {
                 debug('cloudbaserc.json creation skipped:', error instanceof Error ? error : new Error(String(error)));
               }
             }
-            const consoleUrl = `https://tcb.cloud.tencent.com/dev?envId=${currentEnvId}#/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`;
+            const consoleUrl = getConsoleDevUrl(
+              currentEnvId,
+              `/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`,
+            );
 
             let preferredAccessUrl: string | undefined;
             let preferredAccessUrls: string[] = [];
@@ -2891,7 +2900,10 @@ for await (let x of res.textStream) {
             }
 
             const likelyRedeploy = listLikelyRedeployFields(dirty);
-            const consoleUrl = `https://tcb.cloud.tencent.com/dev?envId=${currentEnvId}#/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`;
+            const consoleUrl = getConsoleDevUrl(
+              currentEnvId,
+              `/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`,
+            );
             const taskId =
               diffResult?.TaskId ??
               diffResult?.Response?.TaskId ??

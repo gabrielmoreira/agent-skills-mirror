@@ -8,8 +8,8 @@ By the end of this lesson you can keep a session on track: stop or rewind a chan
 
 ## You need
 
-- Your copy of the practice template with no uncommitted changes, Node.js LTS (a Codespace on your copy has it) and a `.practice/` folder in it: if earlier lessons didn't make one, run `mkdir .practice`.
-- A second terminal in the same folder, for git.
+- Your copy of the practice template with no uncommitted changes, Node.js LTS (a Codespace on your copy has it) and a `.practice/` folder in your copy's `project/` folder: if earlier lessons didn't make one, run `mkdir .practice` there.
+- A second terminal in your copy's `project/` folder, for git.
 - Usage: light.
 
 ## The idea
@@ -30,7 +30,7 @@ For the whole conversation ([Commands](https://code.claude.com/docs/en/commands)
 
 The job: tidy up `brokenLinks` in `src/check-links.js`. You'll try one approach, back out of it, and land the one you want.
 
-1. Start `claude` in your practice copy.
+1. Start `claude` in your copy's `project/` folder.
 2. Explore:
 
    ```text
@@ -41,20 +41,18 @@ The job: tidy up `brokenLinks` in `src/check-links.js`. You'll try one approach,
 3. Try an approach:
 
    ```text
-   Make brokenLinks asynchronous, reading files with fs/promises, and update its callers.
+   Make brokenLinks asynchronous, reading files with fs/promises, and update its callers. Make the edits with your file editing tool, not a shell command.
    ```
 
    In the second terminal, `git status --short` ([git status](https://git-scm.com/docs/git-status)) lists the files Claude changed, `src/check-links.js`, `src/cli.js` and usually `test/links.test.js`, and `git diff` ([git diff](https://git-scm.com/docs/git-diff)) shows the change. Say you decide against it: for a short command-line run, reading files asynchronously buys nothing, and every caller now has to wait for the function.
-4. Put the files and the conversation back, rather than asking Claude to undo it. Anthropic's [session management guide](https://claude.com/resources/articles/using-claude-code-session-management-and-1m-context) calls rewinding often the better correction: the attempt leaves the context, and you re-prompt with what you learned. Type `/rewind`, or press `Esc` twice with an empty prompt, pick the prompt from step 3 and choose **Restore code and conversation**. The files go back, the attempt leaves the conversation, and your step 3 prompt returns to the input box ([Checkpointing](https://code.claude.com/docs/en/checkpointing#rewind-and-summarize)). In the second terminal, `git status --short` prints nothing. If it lists files, Claude changed them in a way rewind doesn't track, usually with a command: run `git restore src test` ([git restore](https://git-scm.com/docs/git-restore)).
-
-   If the menu offers only **Restore conversation**, the summarize options and **Never mind**, Claude changed the files in a way rewind doesn't track, usually with a command: choose **Restore conversation**, then run `git restore src test` in the second terminal.
+4. Put the files and the conversation back, rather than asking Claude to undo it. Anthropic's [session management guide](https://claude.com/resources/articles/using-claude-code-session-management-and-1m-context) says rewinding is often the better correction. The attempt leaves the context, and you re-prompt with what you learned. Type `/rewind`, or press `Esc` twice with an empty prompt, pick the prompt from step 3 and choose **Restore code and conversation**. You'll see the files go back, the attempt leave the conversation, and your step 3 prompt return to the input box ([Checkpointing](https://code.claude.com/docs/en/checkpointing#rewind-and-summarize)). If the menu has no option to restore code, Claude changed the files in a way rewind doesn't track, usually with a command: choose **Restore conversation**, and your step 3 prompt still returns to the input box ([Checkpointing](https://code.claude.com/docs/en/checkpointing#bash-command-changes-not-tracked)). In that case, put the files back with `git restore src test` in the second terminal ([git restore](https://git-scm.com/docs/git-restore)). Either way, in the second terminal, `git status --short` prints nothing. If it still lists files, a command changed a file rewind doesn't track: run `git restore src test`.
 5. Edit the prompt in the input box into the approach you want, and send it:
 
    ```text
    Don't make brokenLinks asynchronous: for a short command-line run it buys nothing. Keep it synchronous, and move the code that checks one file's links into its own function in src/check-links.js. Run the tests.
    ```
 
-   Read the diff in the second terminal, and run `npm run linkcheck -- samples` there: it still prints `guide.md:5: broken link to missing.md`, the sample's one broken link. Then:
+   Read the diff in the second terminal, and run `npm run linkcheck -- samples` there. It still prints `guide.md:5: broken link to missing.md`, the sample's one broken link. Then, back in Claude Code:
 
    ```text
    commit this with a message that says what changed
@@ -87,17 +85,17 @@ Try a teammate's rename script, then undo all of it: another tool imports `findL
    ```
 
    Claude Code replaces the conversation so far with a summary that focuses on what you asked to keep ([Commands](https://code.claude.com/docs/en/commands)).
-2. Ask:
+2. Ask Claude to run the teammate's script, `practice/b-4/rename-export.mjs`, then to update its callers with its file editing tool, not a shell command:
 
    ```text
    Run node practice/b-4/rename-export.mjs, which renames findLinks in src/links.js. Then update its callers with your file editing tool, not a shell command.
    ```
 
 3. In the second terminal, save what git sees: `git status --porcelain > .practice/b-4-before-rewind.txt`. It lists `src/links.js`, which the script changed, and the callers Claude updated, `src/check-links.js` and usually `test/links.test.js`. In a Practice copy each path starts with `project/`: porcelain prints paths from the root of the repository, the folder above `project/`.
-4. You're staying on this task, and Claude should remember what it tried, so this time use **Restore code**. Before you rewind, decide which of those files it will put back. Then rewind the step 2 prompt with **Restore code**, and save what git sees: `git status --porcelain > .practice/b-4-after-rewind.txt`.
+4. You're staying on this task, and Claude should remember what it tried, so this time use **Restore code**. Before you rewind, decide which of those files it will put back. Then rewind the prompt that ran the script with **Restore code**, and save what git sees: `git status --porcelain > .practice/b-4-after-rewind.txt`.
 
-   If the menu offers only **Restore conversation**, the summarize options and **Never mind**, Claude updated the callers in a way rewind doesn't track, usually with commands: choose **Never mind**, press `Esc`, run `git restore src test`, and repeat from step 2.
-5. Read that file, and run `npm run linkcheck -- samples`. Get `src/` back to your last commit so the link check runs again, and run it to see.
+   If the menu offers only **Restore conversation**, the summarize options and **Never mind**, Claude updated the callers in a way rewind doesn't track, usually with commands: choose **Never mind**, press `Esc`, run `git restore src test`, and start again from the prompt that ran the script.
+5. Read `.practice/b-4-after-rewind.txt`, and run `npm run linkcheck -- samples`. Get `src/` back to your last commit so the link check runs again, and run it to see.
 
 ## Check
 
@@ -126,4 +124,4 @@ If no commit changes `src/check-links.js`, finish Worked example step 5 and comm
 
 <sub>Sources: [Commands](https://code.claude.com/docs/en/commands) · [Explore the context window](https://code.claude.com/docs/en/context-window) · [Checkpointing](https://code.claude.com/docs/en/checkpointing) · [Best practices](https://code.claude.com/docs/en/best-practices) · [Manage sessions](https://code.claude.com/docs/en/sessions) · [Using Claude Code: session management and 1M context](https://claude.com/resources/articles/using-claude-code-session-management-and-1m-context) · [git status](https://git-scm.com/docs/git-status) · [git diff](https://git-scm.com/docs/git-diff) · [git restore](https://git-scm.com/docs/git-restore) · [git log](https://git-scm.com/docs/git-log) · [git revert](https://git-scm.com/docs/git-revert)</sub>
 
-<sub>← [Your first change, from request to commit](03-first-change.md) · [Beginner index](README.md) · [Project memory with CLAUDE.md](05-project-memory.md) → · Topic: [Memory and context](../topics/memory-and-context.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=b-4)</sub>
+<sub>← [Your first change, from request to commit](03-first-change.md) · [Beginner index](README.md) · [Project memory with CLAUDE.md](05-project-memory.md) → · Topic: [Memory and context](../topics/memory-and-context.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=b-4)</sub>

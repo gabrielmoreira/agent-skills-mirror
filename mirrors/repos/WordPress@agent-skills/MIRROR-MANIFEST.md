@@ -7,7 +7,7 @@ ref: trunk
 
 # Mirror Manifest
 
-Mirror of `WordPress/agent-skills` — 26 default patterns, 0 followed patterns, 114 file(s) materialized.
+Mirror of `WordPress/agent-skills` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `WordPress/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `trunk` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 114 |
+| Files         | 115 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,96 +83,97 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/wp-abilities-verify/references/schema-lints.md`](skills/wp-abilities-verify/references/schema-lints.md) |
 | 23 | ✓ | [`skills/wp-abilities-verify/references/static-enumeration.md`](skills/wp-abilities-verify/references/static-enumeration.md) |
 | 24 | ✓ | [`skills/wp-abilities-verify/SKILL.md`](skills/wp-abilities-verify/SKILL.md) |
-| 25 | ✓ | [`skills/wp-block-development/references/attributes-and-serialization.md`](skills/wp-block-development/references/attributes-and-serialization.md) |
-| 26 | ✓ | [`skills/wp-block-development/references/block-json.md`](skills/wp-block-development/references/block-json.md) |
-| 27 | ✓ | [`skills/wp-block-development/references/creating-new-blocks.md`](skills/wp-block-development/references/creating-new-blocks.md) |
-| 28 | ✓ | [`skills/wp-block-development/references/debugging.md`](skills/wp-block-development/references/debugging.md) |
-| 29 | ✓ | [`skills/wp-block-development/references/deprecations.md`](skills/wp-block-development/references/deprecations.md) |
-| 30 | ✓ | [`skills/wp-block-development/references/dynamic-rendering.md`](skills/wp-block-development/references/dynamic-rendering.md) |
-| 31 | ✓ | [`skills/wp-block-development/references/inner-blocks.md`](skills/wp-block-development/references/inner-blocks.md) |
-| 32 | ✓ | [`skills/wp-block-development/references/registration.md`](skills/wp-block-development/references/registration.md) |
-| 33 | ✓ | [`skills/wp-block-development/references/supports-and-wrappers.md`](skills/wp-block-development/references/supports-and-wrappers.md) |
-| 34 | ✓ | [`skills/wp-block-development/references/tooling-and-testing.md`](skills/wp-block-development/references/tooling-and-testing.md) |
-| 35 | ✓ | [`skills/wp-block-development/scripts/list_blocks.mjs`](skills/wp-block-development/scripts/list_blocks.mjs) |
-| 36 | ✓ | [`skills/wp-block-development/SKILL.md`](skills/wp-block-development/SKILL.md) |
-| 37 | ✓ | [`skills/wp-block-themes/references/creating-new-block-theme.md`](skills/wp-block-themes/references/creating-new-block-theme.md) |
-| 38 | ✓ | [`skills/wp-block-themes/references/debugging.md`](skills/wp-block-themes/references/debugging.md) |
-| 39 | ✓ | [`skills/wp-block-themes/references/patterns.md`](skills/wp-block-themes/references/patterns.md) |
-| 40 | ✓ | [`skills/wp-block-themes/references/style-variations.md`](skills/wp-block-themes/references/style-variations.md) |
-| 41 | ✓ | [`skills/wp-block-themes/references/templates-and-parts.md`](skills/wp-block-themes/references/templates-and-parts.md) |
-| 42 | ✓ | [`skills/wp-block-themes/references/theme-json.md`](skills/wp-block-themes/references/theme-json.md) |
-| 43 | ✓ | [`skills/wp-block-themes/scripts/detect_block_themes.mjs`](skills/wp-block-themes/scripts/detect_block_themes.mjs) |
-| 44 | ✓ | [`skills/wp-block-themes/SKILL.md`](skills/wp-block-themes/SKILL.md) |
-| 45 | ✓ | [`skills/wp-env/SKILL.md`](skills/wp-env/SKILL.md) |
-| 46 | ✓ | [`skills/wp-interactivity-api/references/debugging.md`](skills/wp-interactivity-api/references/debugging.md) |
-| 47 | ✓ | [`skills/wp-interactivity-api/references/directives-quickref.md`](skills/wp-interactivity-api/references/directives-quickref.md) |
-| 48 | ✓ | [`skills/wp-interactivity-api/references/server-side-rendering.md`](skills/wp-interactivity-api/references/server-side-rendering.md) |
-| 49 | ✓ | [`skills/wp-interactivity-api/SKILL.md`](skills/wp-interactivity-api/SKILL.md) |
-| 50 | ✓ | [`skills/wp-patterns/references/anti-patterns.md`](skills/wp-patterns/references/anti-patterns.md) |
-| 51 | ✓ | [`skills/wp-patterns/references/block-markup-reference.md`](skills/wp-patterns/references/block-markup-reference.md) |
-| 52 | ✓ | [`skills/wp-patterns/references/design-with-tokens.md`](skills/wp-patterns/references/design-with-tokens.md) |
-| 53 | ✓ | [`skills/wp-patterns/references/example-prompts.md`](skills/wp-patterns/references/example-prompts.md) |
-| 54 | ✓ | [`skills/wp-patterns/references/pattern-categories-and-types.md`](skills/wp-patterns/references/pattern-categories-and-types.md) |
-| 55 | ✓ | [`skills/wp-patterns/references/pattern-registration.md`](skills/wp-patterns/references/pattern-registration.md) |
-| 56 | ✓ | [`skills/wp-patterns/references/visual-composition.md`](skills/wp-patterns/references/visual-composition.md) |
-| 57 | ✓ | [`skills/wp-patterns/SKILL.md`](skills/wp-patterns/SKILL.md) |
-| 58 | ✓ | [`skills/wp-performance/references/autoload-options.md`](skills/wp-performance/references/autoload-options.md) |
-| 59 | ✓ | [`skills/wp-performance/references/cron.md`](skills/wp-performance/references/cron.md) |
-| 60 | ✓ | [`skills/wp-performance/references/database.md`](skills/wp-performance/references/database.md) |
-| 61 | ✓ | [`skills/wp-performance/references/http-api.md`](skills/wp-performance/references/http-api.md) |
-| 62 | ✓ | [`skills/wp-performance/references/measurement.md`](skills/wp-performance/references/measurement.md) |
-| 63 | ✓ | [`skills/wp-performance/references/object-cache.md`](skills/wp-performance/references/object-cache.md) |
-| 64 | ✓ | [`skills/wp-performance/references/query-monitor-headless.md`](skills/wp-performance/references/query-monitor-headless.md) |
-| 65 | ✓ | [`skills/wp-performance/references/server-timing.md`](skills/wp-performance/references/server-timing.md) |
-| 66 | ✓ | [`skills/wp-performance/references/wp-cli-doctor.md`](skills/wp-performance/references/wp-cli-doctor.md) |
-| 67 | ✓ | [`skills/wp-performance/references/wp-cli-profile.md`](skills/wp-performance/references/wp-cli-profile.md) |
-| 68 | ✓ | [`skills/wp-performance/scripts/perf_inspect.mjs`](skills/wp-performance/scripts/perf_inspect.mjs) |
-| 69 | ✓ | [`skills/wp-performance/SKILL.md`](skills/wp-performance/SKILL.md) |
-| 70 | ✓ | [`skills/wp-phpstan/references/configuration.md`](skills/wp-phpstan/references/configuration.md) |
-| 71 | ✓ | [`skills/wp-phpstan/references/third-party-classes.md`](skills/wp-phpstan/references/third-party-classes.md) |
-| 72 | ✓ | [`skills/wp-phpstan/references/wordpress-annotations.md`](skills/wp-phpstan/references/wordpress-annotations.md) |
-| 73 | ✓ | [`skills/wp-phpstan/scripts/phpstan_inspect.mjs`](skills/wp-phpstan/scripts/phpstan_inspect.mjs) |
-| 74 | ✓ | [`skills/wp-phpstan/SKILL.md`](skills/wp-phpstan/SKILL.md) |
-| 75 | ✓ | [`skills/wp-playground/references/cli.md`](skills/wp-playground/references/cli.md) |
-| 76 | ✓ | [`skills/wp-playground/references/debugging.md`](skills/wp-playground/references/debugging.md) |
-| 77 | ✓ | [`skills/wp-playground/references/mcp.md`](skills/wp-playground/references/mcp.md) |
-| 78 | ✓ | [`skills/wp-playground/references/sites-api.md`](skills/wp-playground/references/sites-api.md) |
-| 79 | ✓ | [`skills/wp-playground/references/webmcp.md`](skills/wp-playground/references/webmcp.md) |
-| 80 | ✓ | [`skills/wp-playground/references/website.md`](skills/wp-playground/references/website.md) |
-| 81 | ✓ | [`skills/wp-playground/SKILL.md`](skills/wp-playground/SKILL.md) |
-| 82 | ✓ | [`skills/wp-plugin-development/references/data-and-cron.md`](skills/wp-plugin-development/references/data-and-cron.md) |
-| 83 | ✓ | [`skills/wp-plugin-development/references/debugging.md`](skills/wp-plugin-development/references/debugging.md) |
-| 84 | ✓ | [`skills/wp-plugin-development/references/lifecycle.md`](skills/wp-plugin-development/references/lifecycle.md) |
-| 85 | ✓ | [`skills/wp-plugin-development/references/security.md`](skills/wp-plugin-development/references/security.md) |
-| 86 | ✓ | [`skills/wp-plugin-development/references/settings-api.md`](skills/wp-plugin-development/references/settings-api.md) |
-| 87 | ✓ | [`skills/wp-plugin-development/references/structure.md`](skills/wp-plugin-development/references/structure.md) |
-| 88 | ✓ | [`skills/wp-plugin-development/scripts/detect_plugins.mjs`](skills/wp-plugin-development/scripts/detect_plugins.mjs) |
-| 89 | ✓ | [`skills/wp-plugin-development/SKILL.md`](skills/wp-plugin-development/SKILL.md) |
-| 90 | ✓ | [`skills/wp-plugin-directory-guidelines/references/gpl-compliance.md`](skills/wp-plugin-directory-guidelines/references/gpl-compliance.md) |
-| 91 | ✓ | [`skills/wp-plugin-directory-guidelines/references/guideline-review-checklist.md`](skills/wp-plugin-directory-guidelines/references/guideline-review-checklist.md) |
-| 92 | ✓ | [`skills/wp-plugin-directory-guidelines/references/naming-rules.md`](skills/wp-plugin-directory-guidelines/references/naming-rules.md) |
-| 93 | ✓ | [`skills/wp-plugin-directory-guidelines/references/plugin-check.md`](skills/wp-plugin-directory-guidelines/references/plugin-check.md) |
-| 94 | ✓ | [`skills/wp-plugin-directory-guidelines/SKILL.md`](skills/wp-plugin-directory-guidelines/SKILL.md) |
-| 95 | ✓ | [`skills/wp-project-triage/references/triage.schema.json`](skills/wp-project-triage/references/triage.schema.json) |
-| 96 | ✓ | [`skills/wp-project-triage/scripts/detect_wp_project.mjs`](skills/wp-project-triage/scripts/detect_wp_project.mjs) |
-| 97 | ✓ | [`skills/wp-project-triage/SKILL.md`](skills/wp-project-triage/SKILL.md) |
-| 98 | ✓ | [`skills/wp-rest-api/references/authentication.md`](skills/wp-rest-api/references/authentication.md) |
-| 99 | ✓ | [`skills/wp-rest-api/references/custom-content-types.md`](skills/wp-rest-api/references/custom-content-types.md) |
-| 100 | ✓ | [`skills/wp-rest-api/references/discovery-and-params.md`](skills/wp-rest-api/references/discovery-and-params.md) |
-| 101 | ✓ | [`skills/wp-rest-api/references/responses-and-fields.md`](skills/wp-rest-api/references/responses-and-fields.md) |
-| 102 | ✓ | [`skills/wp-rest-api/references/routes-and-endpoints.md`](skills/wp-rest-api/references/routes-and-endpoints.md) |
-| 103 | ✓ | [`skills/wp-rest-api/references/schema.md`](skills/wp-rest-api/references/schema.md) |
-| 104 | ✓ | [`skills/wp-rest-api/SKILL.md`](skills/wp-rest-api/SKILL.md) |
-| 105 | ✓ | [`skills/wp-wpcli-and-ops/references/automation.md`](skills/wp-wpcli-and-ops/references/automation.md) |
-| 106 | ✓ | [`skills/wp-wpcli-and-ops/references/cron-and-cache.md`](skills/wp-wpcli-and-ops/references/cron-and-cache.md) |
-| 107 | ✓ | [`skills/wp-wpcli-and-ops/references/debugging.md`](skills/wp-wpcli-and-ops/references/debugging.md) |
-| 108 | ✓ | [`skills/wp-wpcli-and-ops/references/multisite.md`](skills/wp-wpcli-and-ops/references/multisite.md) |
-| 109 | ✓ | [`skills/wp-wpcli-and-ops/references/packages-and-updates.md`](skills/wp-wpcli-and-ops/references/packages-and-updates.md) |
-| 110 | ✓ | [`skills/wp-wpcli-and-ops/references/safety.md`](skills/wp-wpcli-and-ops/references/safety.md) |
-| 111 | ✓ | [`skills/wp-wpcli-and-ops/references/search-replace.md`](skills/wp-wpcli-and-ops/references/search-replace.md) |
-| 112 | ✓ | [`skills/wp-wpcli-and-ops/scripts/wpcli_inspect.mjs`](skills/wp-wpcli-and-ops/scripts/wpcli_inspect.mjs) |
-| 113 | ✓ | [`skills/wp-wpcli-and-ops/SKILL.md`](skills/wp-wpcli-and-ops/SKILL.md) |
-| 114 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
+| 25 | ✓ | [`skills/wp-ability-development/SKILL.md`](skills/wp-ability-development/SKILL.md) |
+| 26 | ✓ | [`skills/wp-block-development/references/attributes-and-serialization.md`](skills/wp-block-development/references/attributes-and-serialization.md) |
+| 27 | ✓ | [`skills/wp-block-development/references/block-json.md`](skills/wp-block-development/references/block-json.md) |
+| 28 | ✓ | [`skills/wp-block-development/references/creating-new-blocks.md`](skills/wp-block-development/references/creating-new-blocks.md) |
+| 29 | ✓ | [`skills/wp-block-development/references/debugging.md`](skills/wp-block-development/references/debugging.md) |
+| 30 | ✓ | [`skills/wp-block-development/references/deprecations.md`](skills/wp-block-development/references/deprecations.md) |
+| 31 | ✓ | [`skills/wp-block-development/references/dynamic-rendering.md`](skills/wp-block-development/references/dynamic-rendering.md) |
+| 32 | ✓ | [`skills/wp-block-development/references/inner-blocks.md`](skills/wp-block-development/references/inner-blocks.md) |
+| 33 | ✓ | [`skills/wp-block-development/references/registration.md`](skills/wp-block-development/references/registration.md) |
+| 34 | ✓ | [`skills/wp-block-development/references/supports-and-wrappers.md`](skills/wp-block-development/references/supports-and-wrappers.md) |
+| 35 | ✓ | [`skills/wp-block-development/references/tooling-and-testing.md`](skills/wp-block-development/references/tooling-and-testing.md) |
+| 36 | ✓ | [`skills/wp-block-development/scripts/list_blocks.mjs`](skills/wp-block-development/scripts/list_blocks.mjs) |
+| 37 | ✓ | [`skills/wp-block-development/SKILL.md`](skills/wp-block-development/SKILL.md) |
+| 38 | ✓ | [`skills/wp-block-themes/references/creating-new-block-theme.md`](skills/wp-block-themes/references/creating-new-block-theme.md) |
+| 39 | ✓ | [`skills/wp-block-themes/references/debugging.md`](skills/wp-block-themes/references/debugging.md) |
+| 40 | ✓ | [`skills/wp-block-themes/references/patterns.md`](skills/wp-block-themes/references/patterns.md) |
+| 41 | ✓ | [`skills/wp-block-themes/references/style-variations.md`](skills/wp-block-themes/references/style-variations.md) |
+| 42 | ✓ | [`skills/wp-block-themes/references/templates-and-parts.md`](skills/wp-block-themes/references/templates-and-parts.md) |
+| 43 | ✓ | [`skills/wp-block-themes/references/theme-json.md`](skills/wp-block-themes/references/theme-json.md) |
+| 44 | ✓ | [`skills/wp-block-themes/scripts/detect_block_themes.mjs`](skills/wp-block-themes/scripts/detect_block_themes.mjs) |
+| 45 | ✓ | [`skills/wp-block-themes/SKILL.md`](skills/wp-block-themes/SKILL.md) |
+| 46 | ✓ | [`skills/wp-env/SKILL.md`](skills/wp-env/SKILL.md) |
+| 47 | ✓ | [`skills/wp-interactivity-api/references/debugging.md`](skills/wp-interactivity-api/references/debugging.md) |
+| 48 | ✓ | [`skills/wp-interactivity-api/references/directives-quickref.md`](skills/wp-interactivity-api/references/directives-quickref.md) |
+| 49 | ✓ | [`skills/wp-interactivity-api/references/server-side-rendering.md`](skills/wp-interactivity-api/references/server-side-rendering.md) |
+| 50 | ✓ | [`skills/wp-interactivity-api/SKILL.md`](skills/wp-interactivity-api/SKILL.md) |
+| 51 | ✓ | [`skills/wp-patterns/references/anti-patterns.md`](skills/wp-patterns/references/anti-patterns.md) |
+| 52 | ✓ | [`skills/wp-patterns/references/block-markup-reference.md`](skills/wp-patterns/references/block-markup-reference.md) |
+| 53 | ✓ | [`skills/wp-patterns/references/design-with-tokens.md`](skills/wp-patterns/references/design-with-tokens.md) |
+| 54 | ✓ | [`skills/wp-patterns/references/example-prompts.md`](skills/wp-patterns/references/example-prompts.md) |
+| 55 | ✓ | [`skills/wp-patterns/references/pattern-categories-and-types.md`](skills/wp-patterns/references/pattern-categories-and-types.md) |
+| 56 | ✓ | [`skills/wp-patterns/references/pattern-registration.md`](skills/wp-patterns/references/pattern-registration.md) |
+| 57 | ✓ | [`skills/wp-patterns/references/visual-composition.md`](skills/wp-patterns/references/visual-composition.md) |
+| 58 | ✓ | [`skills/wp-patterns/SKILL.md`](skills/wp-patterns/SKILL.md) |
+| 59 | ✓ | [`skills/wp-performance/references/autoload-options.md`](skills/wp-performance/references/autoload-options.md) |
+| 60 | ✓ | [`skills/wp-performance/references/cron.md`](skills/wp-performance/references/cron.md) |
+| 61 | ✓ | [`skills/wp-performance/references/database.md`](skills/wp-performance/references/database.md) |
+| 62 | ✓ | [`skills/wp-performance/references/http-api.md`](skills/wp-performance/references/http-api.md) |
+| 63 | ✓ | [`skills/wp-performance/references/measurement.md`](skills/wp-performance/references/measurement.md) |
+| 64 | ✓ | [`skills/wp-performance/references/object-cache.md`](skills/wp-performance/references/object-cache.md) |
+| 65 | ✓ | [`skills/wp-performance/references/query-monitor-headless.md`](skills/wp-performance/references/query-monitor-headless.md) |
+| 66 | ✓ | [`skills/wp-performance/references/server-timing.md`](skills/wp-performance/references/server-timing.md) |
+| 67 | ✓ | [`skills/wp-performance/references/wp-cli-doctor.md`](skills/wp-performance/references/wp-cli-doctor.md) |
+| 68 | ✓ | [`skills/wp-performance/references/wp-cli-profile.md`](skills/wp-performance/references/wp-cli-profile.md) |
+| 69 | ✓ | [`skills/wp-performance/scripts/perf_inspect.mjs`](skills/wp-performance/scripts/perf_inspect.mjs) |
+| 70 | ✓ | [`skills/wp-performance/SKILL.md`](skills/wp-performance/SKILL.md) |
+| 71 | ✓ | [`skills/wp-phpstan/references/configuration.md`](skills/wp-phpstan/references/configuration.md) |
+| 72 | ✓ | [`skills/wp-phpstan/references/third-party-classes.md`](skills/wp-phpstan/references/third-party-classes.md) |
+| 73 | ✓ | [`skills/wp-phpstan/references/wordpress-annotations.md`](skills/wp-phpstan/references/wordpress-annotations.md) |
+| 74 | ✓ | [`skills/wp-phpstan/scripts/phpstan_inspect.mjs`](skills/wp-phpstan/scripts/phpstan_inspect.mjs) |
+| 75 | ✓ | [`skills/wp-phpstan/SKILL.md`](skills/wp-phpstan/SKILL.md) |
+| 76 | ✓ | [`skills/wp-playground/references/cli.md`](skills/wp-playground/references/cli.md) |
+| 77 | ✓ | [`skills/wp-playground/references/debugging.md`](skills/wp-playground/references/debugging.md) |
+| 78 | ✓ | [`skills/wp-playground/references/mcp.md`](skills/wp-playground/references/mcp.md) |
+| 79 | ✓ | [`skills/wp-playground/references/sites-api.md`](skills/wp-playground/references/sites-api.md) |
+| 80 | ✓ | [`skills/wp-playground/references/webmcp.md`](skills/wp-playground/references/webmcp.md) |
+| 81 | ✓ | [`skills/wp-playground/references/website.md`](skills/wp-playground/references/website.md) |
+| 82 | ✓ | [`skills/wp-playground/SKILL.md`](skills/wp-playground/SKILL.md) |
+| 83 | ✓ | [`skills/wp-plugin-development/references/data-and-cron.md`](skills/wp-plugin-development/references/data-and-cron.md) |
+| 84 | ✓ | [`skills/wp-plugin-development/references/debugging.md`](skills/wp-plugin-development/references/debugging.md) |
+| 85 | ✓ | [`skills/wp-plugin-development/references/lifecycle.md`](skills/wp-plugin-development/references/lifecycle.md) |
+| 86 | ✓ | [`skills/wp-plugin-development/references/security.md`](skills/wp-plugin-development/references/security.md) |
+| 87 | ✓ | [`skills/wp-plugin-development/references/settings-api.md`](skills/wp-plugin-development/references/settings-api.md) |
+| 88 | ✓ | [`skills/wp-plugin-development/references/structure.md`](skills/wp-plugin-development/references/structure.md) |
+| 89 | ✓ | [`skills/wp-plugin-development/scripts/detect_plugins.mjs`](skills/wp-plugin-development/scripts/detect_plugins.mjs) |
+| 90 | ✓ | [`skills/wp-plugin-development/SKILL.md`](skills/wp-plugin-development/SKILL.md) |
+| 91 | ✓ | [`skills/wp-plugin-directory-guidelines/references/gpl-compliance.md`](skills/wp-plugin-directory-guidelines/references/gpl-compliance.md) |
+| 92 | ✓ | [`skills/wp-plugin-directory-guidelines/references/guideline-review-checklist.md`](skills/wp-plugin-directory-guidelines/references/guideline-review-checklist.md) |
+| 93 | ✓ | [`skills/wp-plugin-directory-guidelines/references/naming-rules.md`](skills/wp-plugin-directory-guidelines/references/naming-rules.md) |
+| 94 | ✓ | [`skills/wp-plugin-directory-guidelines/references/plugin-check.md`](skills/wp-plugin-directory-guidelines/references/plugin-check.md) |
+| 95 | ✓ | [`skills/wp-plugin-directory-guidelines/SKILL.md`](skills/wp-plugin-directory-guidelines/SKILL.md) |
+| 96 | ✓ | [`skills/wp-project-triage/references/triage.schema.json`](skills/wp-project-triage/references/triage.schema.json) |
+| 97 | ✓ | [`skills/wp-project-triage/scripts/detect_wp_project.mjs`](skills/wp-project-triage/scripts/detect_wp_project.mjs) |
+| 98 | ✓ | [`skills/wp-project-triage/SKILL.md`](skills/wp-project-triage/SKILL.md) |
+| 99 | ✓ | [`skills/wp-rest-api/references/authentication.md`](skills/wp-rest-api/references/authentication.md) |
+| 100 | ✓ | [`skills/wp-rest-api/references/custom-content-types.md`](skills/wp-rest-api/references/custom-content-types.md) |
+| 101 | ✓ | [`skills/wp-rest-api/references/discovery-and-params.md`](skills/wp-rest-api/references/discovery-and-params.md) |
+| 102 | ✓ | [`skills/wp-rest-api/references/responses-and-fields.md`](skills/wp-rest-api/references/responses-and-fields.md) |
+| 103 | ✓ | [`skills/wp-rest-api/references/routes-and-endpoints.md`](skills/wp-rest-api/references/routes-and-endpoints.md) |
+| 104 | ✓ | [`skills/wp-rest-api/references/schema.md`](skills/wp-rest-api/references/schema.md) |
+| 105 | ✓ | [`skills/wp-rest-api/SKILL.md`](skills/wp-rest-api/SKILL.md) |
+| 106 | ✓ | [`skills/wp-wpcli-and-ops/references/automation.md`](skills/wp-wpcli-and-ops/references/automation.md) |
+| 107 | ✓ | [`skills/wp-wpcli-and-ops/references/cron-and-cache.md`](skills/wp-wpcli-and-ops/references/cron-and-cache.md) |
+| 108 | ✓ | [`skills/wp-wpcli-and-ops/references/debugging.md`](skills/wp-wpcli-and-ops/references/debugging.md) |
+| 109 | ✓ | [`skills/wp-wpcli-and-ops/references/multisite.md`](skills/wp-wpcli-and-ops/references/multisite.md) |
+| 110 | ✓ | [`skills/wp-wpcli-and-ops/references/packages-and-updates.md`](skills/wp-wpcli-and-ops/references/packages-and-updates.md) |
+| 111 | ✓ | [`skills/wp-wpcli-and-ops/references/safety.md`](skills/wp-wpcli-and-ops/references/safety.md) |
+| 112 | ✓ | [`skills/wp-wpcli-and-ops/references/search-replace.md`](skills/wp-wpcli-and-ops/references/search-replace.md) |
+| 113 | ✓ | [`skills/wp-wpcli-and-ops/scripts/wpcli_inspect.mjs`](skills/wp-wpcli-and-ops/scripts/wpcli_inspect.mjs) |
+| 114 | ✓ | [`skills/wp-wpcli-and-ops/SKILL.md`](skills/wp-wpcli-and-ops/SKILL.md) |
+| 115 | ✓ | [`skills/wpds/SKILL.md`](skills/wpds/SKILL.md) |
 
 ---
 

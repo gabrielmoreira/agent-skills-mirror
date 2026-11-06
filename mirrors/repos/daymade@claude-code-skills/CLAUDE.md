@@ -81,7 +81,7 @@ For competitor source-carrier/edition binding, claims, citations and existing-pr
 [citation readback checklist](competitors-analysis/references/analysis_checklist.md#citation-readback-and-counterevidence).
 For changes since a prior analysis, load its
 [Update classification](competitors-analysis/references/analysis_checklist.md#a-newly-discovered-path-is-not-necessarily-a-new-feature).
-For user-selected collection destinations, load the
+For user-selected competitor-analysis collection destinations, load the
 [collection destination route](competitors-analysis/references/collection_destination.md).
 For running an original application demo, follow that Skill's
 [original-app demo recipe](competitors-analysis/references/original-app-demo.md).
@@ -146,12 +146,12 @@ For its audit, release, source-contract or materialization commands from another
 working directory, use the [fixed command entry](daymade-skill/skill-creator/references/fixed-command-entry.md).
 For security scans, use its [absolute owner-script recipe](daymade-skill/skill-creator/references/publishing-and-packaging.md#step-6-security-review).
 
-Before a command that may exceed the response budget, enter Skill Creator's
-[large-output capture recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#large-command-output).
+Before a command that may exceed the response budget, enter the standalone
+[large-output capture recipe](references/bounded-io.md#large-command-output).
 For a large file or saved tool response, use its
-[complete-file reading workflow](daymade-skill/skill-creator/references/stateful-script-verification.md#complete-file-reads).
+[complete-file reading workflow](references/bounded-io.md#complete-file-reads).
 For Codex Code Mode source reads or provisional loading receipts, enter its
-[Code Mode receipt procedure](daymade-skill/skill-creator/references/stateful-script-verification.md#codex-code-mode-receipt).
+[Code Mode receipt procedure](references/bounded-io.md#codex-code-mode-receipt).
 Keep invocation, selection and incomplete-read semantics in those owners.
 
 For plugin/Skill naming, source registration or release labels, use
@@ -166,6 +166,8 @@ For relative-image resource paths or Markdown → PDF rendering, read
 
 For Word creation, existing Word/WPS → PDF, DOCX review or version comparison, enter
 [docs-router](daymade-docs/docs-router/SKILL.md) and load its selected child before acting.
+For printable ID/passport photos, use the same router's
+[identity-copy procedure](daymade-docs/photo-to-scanned-pdf/references/identity-document-copies.md).
 DOCX delivery follows docx-creator's
 [native acceptance procedure](daymade-docs/docx-creator/references/verification_protocol.md#step-3a--check-the-actual-file-in-microsoft-word-when-the-native-route-is-usable),
 including refused/unavailable checks and reviewable handoff. DOCX comparison follows
@@ -512,21 +514,23 @@ Context-veto CLI regressions live in
 ### Feishu Recording Lookup
 
 To find an existing Feishu recording by date, enter
-[lark-cli-router's recording lookup](daymade-claude-code/lark-cli-router/SKILL.md#find-an-existing-recording-by-date).
+[lark-cli-router's recording lookup](lark-cli-router/SKILL.md#find-an-existing-recording-by-date).
 
 ### Feishu Document Layout
 
 For updates that preserve manual formatting or change table/page width, enter
-[lark-cli-router's layout workflow](daymade-claude-code/lark-cli-router/SKILL.md#preserve-document-layout).
+[lark-cli-router's layout workflow](lark-cli-router/SKILL.md#preserve-document-layout).
 
 ### Feishu External Collaboration
 
 For external customer groups paired with Wiki pages, enter
-[lark-cli-router's external collaboration workflow](daymade-claude-code/lark-cli-router/SKILL.md#external-customer-collaboration).
+[lark-cli-router's external collaboration workflow](lark-cli-router/SKILL.md#external-customer-collaboration).
 It owns group reuse/creation, descendant-scoped grants and their verification.
 
 ### Feishu Document Capture
 
+Before the first linked-resource read, follow
+[source account binding](lark-cli-router/references/source-account-binding.md).
 For Feishu document reads and archives, enter
 [feishu-doc-scraper](feishu-doc-scraper/SKILL.md). Its
 [API extraction SOP](feishu-doc-scraper/references/lark-cli-api-extraction.md)
@@ -543,6 +547,8 @@ alongside the destination repository's storage SOP.
 Keep generated manifest metadata aligned with that contract's on-demand statistics rule.
 For local originals, Obsidian delivery or a personal source-catalog handoff, follow the Skill's
 [original-media and reader SOP](feishu-doc-scraper/references/original-media-and-reader.md).
+For Minutes transcript export and permission handling, follow its
+[Minutes procedure](feishu-doc-scraper/references/feishu-minutes-transcript.md).
 
 ### Prior Work Retrieval Boundary
 
@@ -594,17 +600,17 @@ Workflow subagent, use
 [read-claude-code-history's narrow evidence entry](daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence).
 Keep selectors, pairing, source scope and incomplete-output handling in that owner.
 
-For a Claude session briefing or expansion of folded runtime Skill bodies, enter
+For a Claude/Kimi session briefing, saved-export reuse or expansion of folded runtime Skill bodies, enter
 [Exact Session evidence](daymade-claude-code/read-claude-code-history/SKILL.md#exact-session-evidence).
-Large or unmeasured briefing output follows that reader's
-[file-backed reading procedure](daymade-claude-code/read-claude-code-history/references/large-session-briefing.md).
+Capture, bounded reading and snapshot freshness follow that reader's
+[file-backed reading and reuse procedure](daymade-claude-code/read-claude-code-history/references/large-session-briefing.md).
 
 For Claude history discovery without a known Session, use
 [read-claude-code-history's indexed search entry](daymade-claude-code/read-claude-code-history/SKILL.md#indexed-content-search).
 Keep executable examples and coverage requirements in that owner.
 
-For Codex session inventory, use
-[the inventory route](daymade-claude-code/read-codex-history/SKILL.md#route-by-the-requested-result).
+For Codex session inventory, launch-source interpretation or task clustering, use
+[Recent inventory](daymade-claude-code/read-codex-history/SKILL.md#recent-inventory).
 Edit shared reader code in `daymade-claude-code/_conversation_core/`, then run
 `python3 daymade-claude-code/sync_core.py sync` and `check` before shipping;
 bundled `scripts/_core/` copies are generated projections.
@@ -656,8 +662,10 @@ switches start at its
 [account-owner selection](ghostty-use/references/codex-account-switch.md#choose-the-account-owner-first).
 For blocked/delegated reopening, follow its
 [original-set route](ghostty-use/references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session).
-When a snapshot looks too large or recovery is limited to an activity window, use
-[time-window selection](ghostty-use/references/session_liveness.md#select-recovery-candidates-by-a-time-window).
+Before selecting a recovery set or assessing completeness, follow the
+[recovery entry decision tree](ghostty-use/SKILL.md#entry-decision-tree).
+For observer freshness, follow
+[observation-health verification](ghostty-use/references/automatic-snapshots.md#verify-observation-health).
 Before a restore or retry, follow its
 [current-set reconciliation](ghostty-use/references/restore_mechanics.md#reconcile-the-current-wanted-set).
 After process reconciliation, follow
@@ -680,7 +688,7 @@ For selected-site Cookie copying between local profiles of the same macOS Chrome
 enter [cookie-copy](cookie-copy/SKILL.md). For its quota-query caller, follow
 [Tibo's Cookie Copy handoff](tibo-reset-codex/references/browser-session-migration.md).
 
-For an existing Codex session failing after login changes, start at
+Before switching an existing Codex session, or recovering one after login changes, start at
 [Local Codex existing-owner recovery](daymade-codex/local-codex/references/oauth-guide.md#existing-native-owner-recovery).
 For a remote Codex sign-in prompt or choosing existing-login reuse versus new authorization, start at
 [Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
@@ -839,6 +847,10 @@ classification batches, read its
 
 For GitHub-hosted state — PRs, issues, Actions, repository or organization settings, permissions,
 and API/UI mutations — enter [github-ops](github-ops/SKILL.md).
+Before cloning repositories or making source-preservation or rescue copies, follow its
+[copy-purpose destination route](github-ops/references/repository_operations.md#match-copy-purpose-to-the-local-destination).
+For repository copies across GitHub accounts, use its
+[multi-account copy and sync procedure](github-ops/references/multi_account_repository_sync.md).
 For reauthentication during an authorized operation, use its
 [named-write authentication procedure](github-ops/SKILL.md#8-authenticate-only-for-the-named-write).
 For upstream contributions and desktop E2E acceptance, enter
@@ -859,7 +871,7 @@ When individual approvals disagree with effective merge requirements, use
 [the landing diagnosis](github-review-pr/references/remediation_and_landing.md#merge-with-the-reviewed-head-guard).
 For archive/ingestion repair publication, enter
 [the repair and publication preflight](github-review-pr/references/remediation_and_landing.md#prepare-an-isolated-repair-environment).
-For direct, queued or separately authorized bypass merges and landed-rule readback,
+For direct, queued or separately authorized bypass merges, refusal diagnosis and landed-rule readback,
 follow the [checked-merge workflow](github-ops/references/pr_operations.md#merging-prs).
 For hosted-state writes through `gh`, follow its
 [identity, host and target binding](github-ops/SKILL.md#2-bind-identity-host-and-target)
@@ -1081,6 +1093,8 @@ For changes to scripts, importable API contracts, configuration, or operating pr
 [docs-cleaner](daymade-docs/docs-cleaner/SKILL.md) for scoped documentation delivery:
 resolve implementation intent and authorization before updating the owning SOP,
 and validate the delivered command examples. Keep detailed governance in that Skill.
+For tracked path moves or deletions, follow the
+[final-tree reference check](references/ci-operations.md#deleted-target-markdown-links).
 For outbound link-check diagnostics, follow its
 [reader-host interpretation](daymade-docs/docs-cleaner/SKILL.md#updating-references-to-a-file-you-moved-or-deleted).
 After moving a procedure or renaming an anchor, use its

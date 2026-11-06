@@ -1,0 +1,95 @@
+<!doctype html><html><head><meta charset="utf-8">
+<!-- "(se) fond dans n'importe quel design sans faire tache": a light app card with a "Generating summary" pill and a real
+     Thinking Orb (orbs.js); on "design" the whole card wipes to dark, the orb redrawn with dark=true; on "tache" a blue
+     check lands next to the pill. Short time 13.35 -> 15.28. Paper alone: content y 120..1280, y 1300..1500 kept empty. -->
+<style>
+  html, body { margin: 0; width: 1080px; height: 1920px; background: transparent; overflow: hidden; }
+  * { box-sizing: border-box; }
+  #stage { position: absolute; left: 40px; top: 172px; width: 1000px; height: 1004px; }
+  .card { position: absolute; inset: 0; border-radius: 52px; overflow: hidden; }
+  .card .body { position: absolute; inset: 0; border-radius: 52px; }
+  #shadow { position: absolute; inset: 0; border-radius: 52px;
+    box-shadow: 0 50px 90px -24px rgba(20,20,19,.24), 0 14px 30px rgba(20,20,19,.10), 0 2px 6px rgba(20,20,19,.06); }
+  .light .body { background: #FFFFFF; border: 1.5px solid #E9E6DC; }
+  .dark .body { background: #1C1C1A; border: 1.5px solid #2E2E2B; }
+  .sk { position: absolute; height: 30px; border-radius: 15px; }
+  .light .sk { background: #EEEDE7; }
+  .dark .sk { background: #2C2C29; }
+  .bar { position: absolute; left: 0; top: 0; width: 1000px; height: 100px; }
+  .light .bar { background: #FAF9F5; border-bottom: 1.5px solid #ECE9DF; }
+  .dark .bar { background: #222220; border-bottom: 1.5px solid #30302D; }
+  .tl { position: absolute; top: 37px; width: 26px; height: 26px; border-radius: 50%; }
+  .av { position: absolute; left: 60px; top: 146px; width: 92px; height: 92px; border-radius: 50%; }
+  .light .av { background: #E7E5DD; }
+  .dark .av { background: #33332F; }
+  .pill { position: absolute; left: 50px; top: 528px; width: 900px; height: 192px; border-radius: 96px; }
+  .light .pill { background: #F5F4EE; border: 1.5px solid #E6E3D8; box-shadow: 0 10px 24px -10px rgba(20,20,19,.14), 0 1px 0 #fff inset; }
+  .dark .pill { background: #262624; border: 1.5px solid #3A3A36; box-shadow: 0 10px 24px -10px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.05) inset; }
+  .pill canvas { position: absolute; left: 20px; top: 8px; width: 176px; height: 176px; }
+  .pill .tx { position: absolute; left: 206px; top: 0; line-height: 192px; font-family: "Inter", sans-serif; font-weight: 600; font-size: 54px; letter-spacing: -.9px; white-space: nowrap;
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #chk { position: absolute; width: 112px; height: 112px; left: 826px; top: 568px; }
+  #chk i { position: absolute; left: 16%; top: 16%; width: 68%; height: 68%; border-radius: 50%; background: #fff; }
+  #chk img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+</style></head><body>
+<div id="stage">
+  <div id="shadow"></div>
+  <div class="card light" id="L"></div>
+  <div class="card dark" id="D"></div>
+  <div id="chk"><i></i><img src="../assets/icons/glyph/check.png"></div>
+</div>
+<script src="orbs.js"></script>
+<script>
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const lerp = (a, b, f) => a + (b - a) * f;
+// skeleton lines: [left, top, width, appear time]  (above the pill = already there; below = the summary being written)
+const TOP = [[380, 35, 240, -1], [176, 160, 330, -1], [176, 208, 210, -1], [60, 290, 880, -1], [60, 344, 820, -1], [60, 398, 860, -1], [60, 452, 540, -1]];
+const BELOW = [[60, 778, 860, 0.31], [60, 832, 800, 0.63], [60, 886, 840, 1.30], [60, 940, 470, 1.48]];
+const PX = 176, DPR = 2;
+const BLUE = { r: 37, g: 142, b: 255 }, TINT_AT = 1.30;
+const cards = ['L', 'D'].map(id => {
+  const el = document.getElementById(id);
+  el.innerHTML = `<div class="body"></div><div class="bar"></div>` + ['#FF5F57', '#FEBC2E', '#28C840'].map((c, i) => `<div class="tl" style="left:${40 + i * 42}px;background:${c}"></div>`).join('') + `<div class="av"></div>` +
+    TOP.map(([x, y, w]) => `<div class="sk" style="left:${x}px;top:${y}px;width:${w}px"></div>`).join('') +
+    BELOW.map(([x, y, w], i) => `<div class="sk b" style="left:${x}px;top:${y}px;width:${w}px"></div>`).join('') +
+    `<div class="pill"><canvas width="${PX * DPR}" height="${PX * DPR}"></canvas><div class="tx">Generating summary</div></div>`;
+  return { el, dark: id === 'D', ctx: el.querySelector('canvas').getContext('2d'), tx: el.querySelector('.tx'), below: [...el.querySelectorAll('.sk.b')] };
+});
+const { mode, speed, opts } = ORBS.resolvePreset('composing', 64);
+const chk = document.getElementById('chk'), stage = document.getElementById('stage');
+const THEME_AT = 0.80, CHECK_AT = 1.62;
+
+window.setT = t => {
+  const st = S(t + 0.06, 30);
+  stage.style.transform = `translateY(${(1 - st) * 16}px)`;
+  // dark wipe, top to bottom, ~.25 s
+  const w = S(t - THEME_AT, 22);
+  const D = cards[1].el;
+  D.style.clipPath = `inset(0 0 ${((1 - w) * 100).toFixed(3)}% 0)`;
+  D.style.visibility = w < 0.001 ? 'hidden' : 'visible';
+  cards.forEach(c => {
+    const k = PX * DPR / 64;
+    c.ctx.setTransform(k, 0, 0, k, 0, 0); c.ctx.clearRect(0, 0, 64, 64);
+    // accent tint crossfades in on "sans" (the library's own tint option)
+    const fr = ORBS.MODE_FRAMES[mode](64, t * speed, opts), ta = S(t - TINT_AT, 16);
+    c.ctx.globalAlpha = 1 - ta; if (ta < 0.999) ORBS.paintFrame(c.ctx, fr, c.dark);
+    c.ctx.globalAlpha = ta; if (ta > 0.001) ORBS.paintFrame(c.ctx, fr, c.dark, BLUE);
+    c.ctx.globalAlpha = 1;
+    // shimmer sweeping across the label (pure function of t)
+    const sx = ((t * 0.9) % 1.4) * 100 - 20;
+    const base = c.dark ? '#ECEBE6' : '#141413', hi = c.dark ? '#8A8984' : '#A8A69E';
+    c.tx.style.backgroundImage = `linear-gradient(100deg, ${base} ${sx - 22}%, ${hi} ${sx}%, ${base} ${sx + 22}%)`;
+    // summary lines writing in below the pill, left to right
+    c.below.forEach((el, i) => {
+      const a = S(t - BELOW[i][3], 16);
+      el.style.clipPath = `inset(0 ${((1 - a) * 100).toFixed(3)}% 0 0 round 15px)`;
+      el.style.opacity = Math.min(1, a * 1.6);
+    });
+  });
+  // check lands on "tache"
+  const c = S(t - CHECK_AT, 20);
+  chk.style.opacity = Math.min(1, c * 1.5);
+  chk.style.transform = `translateY(${(1 - c) * -26}px) scale(${0.7 + 0.3 * c})`;
+};
+setT(0);
+</script></body></html>

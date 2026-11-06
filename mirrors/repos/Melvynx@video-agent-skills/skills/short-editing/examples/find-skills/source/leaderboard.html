@@ -1,0 +1,178 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Beat « le plus fou c'est que c'est le skill numéro un de tout le site avec presque quatre millions d'installations ».
+     The real skills.sh leaderboard (refs files/refs/skills-home.png + skills-home2.png), zoomed for a phone, 960x840 opaque card.
+     0..1.0 fast eased scroll from row 19 to the top; 1.38 « numéro » blue band on row 1; 1.82 « un » #1 badge;
+     2.36 « site » other rows dim, row 1 lifts; 3.02..3.55 « quatre millions » the INSTALLS cell grows into a counter 0 -> 3.8M;
+     then hold and slow drift. Everything is a pure function of t in window.setT(t). -->
+<style>
+  html, body { margin: 0; background: #0A0A0A; }
+  #app { position: relative; width: 960px; height: 840px; overflow: hidden; background: #0A0A0A; color: #EDEDED;
+    font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  #stage { position: absolute; inset: 0; transform-origin: 480px 330px; }
+  #view { position: absolute; left: 0; top: 76px; width: 960px; height: 764px; overflow: hidden; }
+  #content { position: absolute; left: 0; top: 0; width: 960px; }
+  #top { position: absolute; left: 0; top: 0; width: 960px; height: 76px; background: #0A0A0A; border-bottom: 1px solid #222; z-index: 5; }
+  #top img { position: absolute; left: 40px; top: 16px; width: 44px; height: 44px; }
+  #top .sl { position: absolute; left: 100px; top: 16px; font: 400 36px/44px 'Inter'; color: #444; }
+  #top .nm { position: absolute; left: 126px; top: 16px; font: 500 36px/44px 'Inter'; color: #EDEDED; letter-spacing: -.5px; }
+  #top .nav { position: absolute; right: 40px; top: 19px; font: 400 34px/40px 'Inter'; color: #888; }
+  .lab { position: absolute; left: 40px; top: 18px; font: 500 34px/40px 'JetBrains Mono'; letter-spacing: 1px; color: #EDEDED; }
+  .search { position: absolute; left: 40px; top: 70px; width: 880px; height: 60px; border-bottom: 1.5px solid #CFCFCF; }
+  .search svg { position: absolute; left: 0; top: 13px; }
+  .search .ph { position: absolute; left: 52px; top: 10px; font: 400 34px/40px 'JetBrains Mono'; color: #777; }
+  .search .kbd { position: absolute; right: 0; top: 8px; width: 40px; height: 42px; border: 1.5px solid #333; border-radius: 8px;
+    font: 400 28px/42px 'JetBrains Mono'; color: #888; text-align: center; box-sizing: border-box; line-height: 39px; }
+  .tabs { position: absolute; left: 40px; top: 146px; height: 52px; font: 400 34px/40px 'JetBrains Mono'; white-space: nowrap; }
+  .tabs span { position: absolute; top: 0; color: #777; }
+  .tabs .on { color: #EDEDED; }
+  .tabs .ul { position: absolute; left: 0; top: 48px; height: 2px; background: #EDEDED; }
+  .cols { position: absolute; left: 40px; top: 208px; width: 880px; height: 40px; font: 400 32px/40px 'JetBrains Mono';
+    color: #888; letter-spacing: 1px; }
+  .cols span { position: absolute; top: 0; }
+  .hl { position: absolute; left: 40px; width: 880px; height: 1px; background: #222; }
+  .row { position: absolute; left: 40px; width: 880px; height: 92px; transform-origin: 440px 46px; }
+  .row.first { overflow: hidden; border-radius: 14px; }
+  .row .band { position: absolute; inset: 0; border-radius: 14px; background: rgba(37,142,255,.16);
+    box-shadow: inset 0 0 0 2px #258EFF; }
+  .row .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; border-radius: 14px 0 0 14px; background: #258EFF; }
+  .row .rk { position: absolute; left: 20px; top: 26px; font: 400 34px/40px 'Inter'; color: #888; }
+  .row .nm { position: absolute; left: 90px; top: 7px; font: 700 37px/42px 'Inter'; color: #EDEDED; letter-spacing: -.4px; white-space: nowrap; }
+  .row .rp { position: absolute; left: 90px; top: 51px; font: 400 30px/34px 'JetBrains Mono'; color: #888; white-space: nowrap; }
+  .row .ins { position: absolute; right: 20px; top: 26px; font: 400 34px/40px 'JetBrains Mono'; color: #EDEDED; white-space: nowrap;
+    display: flex; align-items: center; gap: 12px; }
+  .row .ins svg { flex: none; }
+  .row .hr { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #222; }
+  .badge1 { position: absolute; top: 6px; height: 46px; padding: 0 14px; border-radius: 12px; background: #258EFF; color: #fff;
+    font: 800 34px/46px 'Inter'; letter-spacing: -.5px; }
+  .big { position: absolute; white-space: nowrap; font-family: 'JetBrains Mono'; font-weight: 700; color: #EDEDED; }
+  .bigl { position: absolute; left: 90px; font: 500 34px/40px 'JetBrains Mono'; color: #888; letter-spacing: 1px; white-space: nowrap; }
+  .bigv { position: absolute; }
+  #fade { position: absolute; left: 0; bottom: 0; width: 960px; height: 70px; z-index: 4;
+    background: linear-gradient(180deg, rgba(10,10,10,0), #0A0A0A); }
+</style></head>
+<body><div id="app"><div id="stage">
+  <div id="view"><div id="content"></div></div>
+  <div id="top"><img src="../assets/logos/skills-sh.png"><span class="sl">/</span><span class="nm">Skills</span><span class="nav">Docs</span></div>
+  <div id="fade"></div>
+</div></div>
+<script>
+const $ = (tag, cls, parent, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; parent.appendChild(e); return e; };
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);           // critically damped, never overshoots
+const lerp = (a, b, p) => a + (b - a) * p;
+const VER = (size, color) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6l2.1 1.6 2.6-.3 1 2.4 2.4 1-.3 2.6 1.6 2.1-1.6 2.1.3 2.6-2.4 1-1 2.4-2.6-.3L12 21.4l-2.1-1.6-2.6.3-1-2.4-2.4-1 .3-2.6L2.6 12l1.6-2.1-.3-2.6 2.4-1 1-2.4 2.6.3z"/><path d="M8.6 12.2l2.3 2.3 4.6-4.8"/></svg>`;
+
+// real data, skills.sh all time leaderboard (refs)
+const DATA = [
+  ['find-skills', 'vercel-labs/skills', '3.8M', 1], ['grill-me', 'mattpocock/skills', '1.3M'], ['grill-with-docs', 'mattpocock/skills', '1.1M'],
+  ['agent-browser', 'vercel-labs/agent-browser', '1.1M', 1], ['improve-codebase-architecture', 'mattpocock/skills', '1.1M'], ['tdd', 'mattpocock/skills', '1.1M'],
+  ['setup-matt-pocock-skills', 'mattpocock/skills', '983.1K'], ['frontend-design', 'anthropics/skills', '976.0K', 1], ['handoff', 'mattpocock/skills', '963.7K'],
+  ['hyperframes-cli', 'heygen-com/hyperframes', '944.8K'], ['triage', 'mattpocock/skills', '925.5K'], ['prototype', 'mattpocock/skills', '921.1K'],
+  ['hyperframes', 'heygen-com/hyperframes', '902.5K'], ['reddit-automation', 'flowkit-labs/skills', '896.2K'], ['grilling', 'mattpocock/skills', '889.0K'],
+  ['media-use', 'heygen-com/hyperframes', '821.8K'], ['hyperframes-registry', 'heygen-com/hyperframes', '803.2K'], ['domain-modeling', 'mattpocock/skills', '801.1K'],
+  ['hyperframes-animation', 'heygen-com/hyperframes', '794.1K'],
+];
+const ROW_H = 92, ROWS_TOP = 262, EXP = 190;
+
+const content = document.getElementById('content');
+$('div', 'lab', content, 'SKILLS LEADERBOARD');
+const se = $('div', 'search', content, `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><span class="ph">Search skills...</span><span class="kbd">/</span>`);
+const tabs = $('div', 'tabs', content);
+const t1 = $('span', 'on', tabs, 'All Time (1,286,544)'), t2 = $('span', '', tabs, 'Trending (24h)'), t3 = $('span', '', tabs, 'Hot');
+const ul = $('div', 'ul', tabs);
+const cols = $('div', 'cols', content);
+$('span', '', cols, '#').style.left = '20px';
+$('span', '', cols, 'SKILL').style.left = '90px';
+const ci = $('span', '', cols, 'INSTALLS'); ci.style.right = '20px';
+$('div', 'hl', content).style.top = (ROWS_TOP - 1) + 'px';
+
+const rows = DATA.map(([nm, rp, ins, ver], i) => {
+  const r = $('div', i === 0 ? 'row first' : 'row', content);
+  const band = i === 0 ? $('div', 'band', r) : null, bar = i === 0 ? $('div', 'bar', r) : null;
+  $('div', 'rk', r, String(i + 1));
+  const n = $('div', 'nm', r, nm);
+  $('div', 'rp', r, rp);
+  const c = $('div', 'ins', r, (ver ? VER(30, '#9A9A9A') : '') + `<span>${ins}</span>`);
+  const hr = $('div', 'hr', r);
+  return { r, band, bar, n, c, hr };
+});
+const R1 = rows[0];
+const badge = $('div', 'badge1', R1.r, '#1');
+const bigl = $('div', 'bigl', R1.r, 'INSTALLS');
+const big = $('div', 'big', R1.r);
+const bigv = $('div', 'bigv', R1.r, VER(64, '#258EFF'));
+const fmt = v => v < 1e3 ? String(Math.round(v)) : v < 1e6 ? (v / 1e3).toFixed(1) + 'K' : (v / 1e6).toFixed(1) + 'M';
+
+const VIEW_H = 764, MAXS = ROWS_TOP + DATA.length * ROW_H - VIEW_H;   // row 19 bottom on the card bottom at t 0
+
+window.setT = function (t) {
+  // tabs layout (mono widths)
+  t2.style.left = (t1.offsetWidth + 34) + 'px'; t3.style.left = (t1.offsetWidth + t2.offsetWidth + 68) + 'px';
+  ul.style.width = t1.offsetWidth + 'px';
+
+  // 0..1.0 fast eased scroll to the top (starts moving, settles with zero speed)
+  const x = clamp(t / 1.0), ss = x * x * x * (x * (x * 6 - 15) + 10), eo = 1 - Math.pow(1 - x, 3);
+  const scroll = MAXS * (1 - (0.5 * ss + 0.5 * eo));
+  content.style.transform = `translateY(${-scroll.toFixed(2)}px)`;
+
+  // 3.02 row 1 opens, the installs cell grows into the counter
+  const g = S(t - 3.02, 11);
+  const ex = EXP * g;
+  rows.forEach((o, i) => {
+    o.r.style.top = (ROWS_TOP + i * ROW_H + (i > 0 ? ex : 0)) + 'px';
+  });
+  R1.r.style.height = (ROW_H + ex) + 'px';
+
+  // 1.38 « numéro » blue band sweeps in from the left
+  const b = S(t - 1.38, 13);
+  R1.band.style.clipPath = R1.bar.style.clipPath = `inset(0 ${(100 - 100 * b).toFixed(2)}% 0 0 round 14px)`;
+  R1.band.style.opacity = R1.bar.style.opacity = b > 0 ? 1 : 0;
+  R1.hr.style.opacity = 1 - b;
+  R1.r.querySelector('.rk').style.color = b > .5 ? '#EDEDED' : '#888';
+  rows[1] && (rows[1].r.style.zIndex = 0); R1.r.style.zIndex = 2;
+
+  // 1.82 « un » #1 badge lands next to the name
+  const k = S(t - 1.82, 15);
+  badge.style.left = (90 + R1.n.offsetWidth + 20) + 'px';
+  badge.style.opacity = clamp(k * 1.6);
+  badge.style.transform = `translateX(${(-16 * (1 - k)).toFixed(2)}px) scale(${(0.86 + 0.14 * k).toFixed(4)})`;
+  badge.style.transformOrigin = '0 50%';
+
+  // 2.36 « site » the other rows dim, row 1 lifts
+  const d = S(t - 2.36, 11);
+  rows.forEach((o, i) => { if (i) o.r.style.opacity = (1 - 0.6 * d).toFixed(3); });
+  R1.r.style.transform = `scale(${(1 + 0.04 * d).toFixed(4)})`;
+  R1.r.style.boxShadow = d > 0 ? `0 ${(18 * d).toFixed(1)}px ${(48 * d).toFixed(1)}px rgba(0,0,0,${(0.6 * d).toFixed(3)})` : 'none';
+  R1.r.style.borderRadius = '14px';
+
+  // 3.02..3.55 « quatre millions » counter 0 -> 3.8M (right anchored, from the cell to the big line)
+  const on = t >= 3.02;
+  const cf = on ? 1 : 0;   // the cell becomes the counter in place (no crossfade, no double layer)
+  R1.c.style.opacity = on ? 1 - cf : 1;
+  const xc = clamp((t - 3.02) / 0.53), pc = 1 - Math.pow(1 - xc, 3);
+  const fs = lerp(34, 150, g), top = lerp(26, 92, g), lh = fs * 1.05;
+  big.style.display = on ? 'block' : 'none';
+  big.textContent = fmt(3.8e6 * pc);
+  big.style.fontSize = fs.toFixed(2) + 'px'; big.style.lineHeight = lh.toFixed(2) + 'px';
+  big.style.right = (20 + 0.07 * fs * g).toFixed(2) + 'px'; big.style.top = (top + (40 - lh) / 2 * (1 - g)).toFixed(2) + 'px';
+  big.style.opacity = cf;
+  big.style.letterSpacing = (-0.07 * fs * g).toFixed(2) + 'px';
+  const bw = big.offsetWidth, vs = lerp(30, 64, g) / 64;
+  bigv.style.display = on ? 'block' : 'none';
+  bigv.style.left = (880 - 20 - 0.07 * fs * g - bw - 22 - 64 * vs).toFixed(2) + 'px';
+  bigv.style.top = (top + lh / 2 - 32 * vs + (1 - g) * 0).toFixed(2) + 'px';
+  bigv.style.transformOrigin = '0 0'; bigv.style.transform = `scale(${vs.toFixed(4)})`;
+  bigv.style.opacity = cf;
+  bigl.style.display = on ? 'block' : 'none';
+  bigl.style.top = (92 + 150 * 1.05 - 56) + 'px';
+  bigl.style.opacity = clamp((g - 0.35) / 0.5);
+  bigl.style.transform = `translateY(${(14 * (1 - S(t - 3.12, 11))).toFixed(2)}px)`;
+
+  // 3.55..4.1 hold, slow drift
+  const dr = clamp((t - 3.5) / 0.6);
+  document.getElementById('stage').style.transform = `translateY(${(-8 * dr * dr).toFixed(2)}px) scale(${(1 + 0.014 * dr * dr).toFixed(4)})`;
+};
+window.setT(0);
+</script></body></html>

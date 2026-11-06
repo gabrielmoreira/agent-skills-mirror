@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 84 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 84 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 84 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,13 +137,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
 | 76 | ✓ | [`services/files/README.md`](services/files/README.md) |
 | 77 | ✓ | [`services/README.md`](services/README.md) |
-| 78 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 79 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
-| 80 | ✓ | [`services/www/README.md`](services/www/README.md) |
-| 81 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
-| 82 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 83 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 84 | → | [`README.md`](README.md) |
+| 78 | ✓ | [`services/site/AGENTS.md`](services/site/AGENTS.md) |
+| 79 | ✓ | [`services/site/public/arcade3d/README.md`](services/site/public/arcade3d/README.md) |
+| 80 | ✓ | [`services/site/public/logos/companies/README.md`](services/site/public/logos/companies/README.md) |
+| 81 | ✓ | [`services/site/public/logos/tools/wordmarks/README.md`](services/site/public/logos/tools/wordmarks/README.md) |
+| 82 | ✓ | [`services/site/public/providers/README.md`](services/site/public/providers/README.md) |
+| 83 | ✓ | [`services/site/README.md`](services/site/README.md) |
+| 84 | ✓ | [`services/site/script/assets/README.md`](services/site/script/assets/README.md) |
+| 85 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 86 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
+| 87 | ✓ | [`services/www/README.md`](services/www/README.md) |
+| 88 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
+| 89 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 90 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 91 | → | [`README.md`](README.md) |
 
 ---
 

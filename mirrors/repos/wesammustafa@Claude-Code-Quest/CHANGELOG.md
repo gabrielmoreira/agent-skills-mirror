@@ -1,0 +1,98 @@
+# Changelog
+
+Editions of this guide, newest first. An edition is tagged `vYYYY.MM`, and a correction between editions `vYYYY.MM.N`. Each edition stays readable at its tag.
+
+## Unreleased
+
+Baseline: Claude Code v2.1.309 (stable), frozen on 2026-11-02.
+
+Every change in the next edition is verified against this version, the `stable` dist-tag of [`@anthropic-ai/claude-code`](https://www.npmjs.com/package/@anthropic-ai/claude-code?activeTab=versions) on 2026-11-02. It stays frozen until the edition ships, unless a later `stable` release removes, renames or changes the default of something a lesson teaches. It moved earlier from v2.1.292 because v2.1.302 changed the permission mode a `claude -p` run starts in when nothing sets one ([CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21302)). It moved from v2.1.308 to the then-current `stable` for the cutover edition, which re-verifies every stamped page.
+
+## v2026.12 - 2026-11-01
+
+Verified against Claude Code v2.1.308 (stable).
+
+Every lesson and capstone refined for Claude Code v2.1.308, and every other stamped page verified at that version.
+
+### Changed
+
+- The baseline moves from Claude Code v2.1.292 to v2.1.308, because v2.1.302 changed the permission mode a `claude -p` run starts in when nothing sets one ([CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21302)). Every stamped page is re-verified at v2.1.308.
+- Every core lesson's Your turn opens with a mission line, every capstone carries one, and each Your turn asks for a new decision rather than a repeat of the Worked example. Facts that changed since v2.1.292 are brought up to date, and steps a learner would skim are cut. Each lesson and capstone was dry-run at v2.1.308 and fixed from what the runs showed.
+- Beginner: lesson 1 teaches stopping a turn with `Esc` and `@` file references; lesson 2 asks when a plan is worth making and commits the reviewed change instead of stashing it; lesson 3 teaches what a precise request holds; lesson 4 recovers with `Esc` and a rewind, and moves `/branch` and summarizing to Go further; lesson 5 ends by giving one of your own repositories a `CLAUDE.md`, which Intermediate lesson 2 starts from.
+- Intermediate: the `tdd` skill stops at a reviewed diff; the hooks lesson's guard fails closed with `"onFailure": "block"` and its Your turn adds a Stop-hook test gate; the permissions lesson teaches `ask` rules; the plugins lesson drops the `commit-commands` trial; the capstone states problems and accepts any sound mechanism. Setting up `.practice/` in your own repository moves to the [Intermediate index](docs/intermediate/README.md#prepare-your-own-repository).
+- Advanced: `/batch` joins the orchestration patterns; `/goal` is the dynamic workflows lesson's verification gate, and the `/loop` Elective becomes [`/loop` and cloud scheduled tasks](docs/advanced/electives/goal-loop-routines.md); a headless reviewer runs only the tools it lists; the GitHub Actions lesson uses the job's own token and pins the action to a release that installs v2.1.308; the capstone runs one committed review definition both locally and in CI.
+- [Commands by level](docs/reference/commands.md) credits each command to the lesson that uses it and adds `/batch`; the hook line in the Intermediate Exit and the Advanced readiness list says the hook fails closed; Electives, topic and reference pages follow the refined lessons and the current docs.
+- The `tdd` skill and the hook script that Intermediate lessons 1 and 5 download from [examples](examples/README.md) follow their lessons.
+
+## v2026.11 - 2026-10-23
+
+Verified against Claude Code v2.1.292 (stable).
+
+Editions 2 and 3: the Intermediate and Advanced paths, with checked exercises. Every level is now rebuilt, and no page from the previous edition remains.
+
+### Added
+
+- The [Intermediate level](docs/intermediate/README.md): eight lessons, from a first skill to plugins, by way of project memory, model and effort, permissions and the sandbox, hooks, subagents and MCP, and a capstone that sets a repository up for a new teammate. Every lesson and the capstone has a check in the [practice template](https://github.com/wesammustafa/claude-code-practice). You can run the lesson checks against your own repository with `--dir`; the capstone runs in the template copy.
+- Four Intermediate Electives: [skill patterns](docs/intermediate/electives/skill-patterns.md), [Claude in Chrome](docs/intermediate/electives/claude-in-chrome.md), [the status line](docs/intermediate/electives/status-line.md) and [fast mode](docs/intermediate/electives/fast-mode.md).
+- [Examples](examples/README.md) for the Intermediate lessons: two skills, three hook scripts, a read-only reviewer subagent and a pinned Chrome DevTools MCP configuration. Each one is inert until you copy it into a project, and has a smoke test.
+- The [Advanced level](docs/advanced/README.md): seven lessons, from parallel sessions in worktrees to bounds on autonomous runs, by way of orchestration patterns, dynamic workflows, `claude -p` scripts, GitHub Actions and a setup shared with a team, and a capstone that adds CI review a team can share. Every lesson and the capstone has a check in the [practice template](https://github.com/wesammustafa/claude-code-practice). Most lesson checks run against your own repository with `--dir`; the GitHub Actions lesson and the capstone run in a separate template copy that you tear down afterwards.
+- Five Advanced Electives: [agent teams](docs/advanced/electives/agent-teams.md), [agent view](docs/advanced/electives/agent-view.md), [`/goal`, `/loop` and routines](docs/advanced/electives/goal-loop-routines.md), [testing and publishing a plugin](docs/advanced/electives/publish-a-plugin.md) and [dev containers](docs/advanced/electives/dev-containers.md).
+- [Beyond this guide](docs/advanced/beyond-this-guide.md): where to go next for building your own agents and MCP servers, and for running and rolling out Claude Code in an organization.
+- [Examples](examples/README.md) for the Advanced level: the `team-tools` marketplace with its `team-kit` plugin (the `onboard` skill and the read-only `config-reviewer` subagent) and the settings that share it, and the read-only `security-reviewer` and `test-reviewer` subagents for the agent teams Elective. Each one is inert until you copy it into a project, and has a smoke test.
+
+### Changed
+
+- The Beginner lessons and capstone use code review, plan review, recovery and project instructions as practice tasks. The learning app's questions focus on decisions, and its checks read available evidence directly from files, git and the installed CLI.
+- The Intermediate lessons and capstone use real work as practice tasks: a console error found through Chrome DevTools MCP and fixed, a commit made by a plugin, a lookup through a code intelligence plugin, and a malformed-link crash fixed in the capstone. Each lesson asks at most three graded questions, and the capstone asks none.
+- The Advanced lessons and capstone use real work as practice tasks: two backlog changes in parallel worktrees, a release-week backlog sorted by orchestration pattern, a migration across two folders that a saved workflow keeps fixing until the tests pass, a staged-change review you act on, and a bounded run whose diff you review for changes outside the task. Self-checks ask for a decision the check can't see, and the capstone groups its check list by lesson and caps the review script's spend with `--max-budget-usd`.
+- The animated Claude mascot is back beside README's title, and the social card shows it in place of the trail blazes. It comes from [shanraisshan/claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice) under the MIT License.
+- Every stamped page is re-verified against Claude Code v2.1.292 (stable), and the social card carries the full tagline, "Learn it in three levels, with cited facts and checked exercises."
+- The topic pages, [Commands by level](docs/reference/commands.md) and the [Feature map](docs/reference/feature-map.md) link the Intermediate and Advanced lessons and Electives, and "When to use what" on the [Intermediate index](docs/intermediate/README.md#when-to-use-what) links the dynamic workflows lesson.
+- docs/reference/effort-levels.md and docs/skills.md are now stubs that point to the lessons and reference pages that replace them, and the `mcp-servers/` and `specialized-agents/` stubs point to the MCP and subagent lessons.
+- docs/agent-teams.md, docs/workflows.md and docs/reference/faq.md are now stubs that point to the lessons, Electives and reference pages that replace them.
+- The `inertness` check also fails on an example marketplace manifest that is not renamed to `dot-claude-plugin/`, and on a `.claude-plugin/` folder at the repository root. The `static-validation` check also covers the skills and agents of the plugins in an example marketplace.
+
+### Removed
+
+<a id="removed-legacy-intermediate"></a>
+- The previous edition's pages on skills, hooks, MCP and fast mode under `docs/legacy/`, and the subagents section of the subagents and parallel work page: the Intermediate lessons and Electives replace them. Links to the previous edition's README sections land on a line that points to the new page.
+- The skill-resolution diagram, which no page used any more.
+<a id="removed-legacy-advanced"></a>
+- The previous edition's last page under `docs/legacy/`, on subagents and parallel work, and README's index row of previous-edition pages: the Advanced lessons and Electives replace them, and `docs/legacy/` is gone. Links to the previous edition's README sections land on a line that points to the new page.
+
+## v2026.10 - 2026-10-05
+
+Verified against Claude Code v2.1.285 (stable).
+
+Edition 1: the Beginner path, with checked exercises, and the structure the next two levels build on. Intermediate and Advanced are being rebuilt; copies of the previous edition's README sections on skills, hooks, subagents and parallel work, MCP and fast mode stay readable under `docs/legacy/`, labelled as not yet re-verified.
+
+### Added
+
+- The [Beginner level](docs/beginner/README.md): five lessons, from installing Claude Code to giving a project its memory, a capstone and three Electives. Every lesson and the capstone has a check you run in the [practice template](https://github.com/wesammustafa/claude-code-practice), whose `solutions` branch passes every check.
+- A front door that places you at a level, and indexes for the three levels, the [topics](docs/topics/README.md) and the [reference pages](docs/reference/README.md), including a [Feature map](docs/reference/feature-map.md) and a [glossary](docs/reference/glossary.md).
+- Pages from the previous edition, kept readable under `docs/legacy/` with a note until the lessons that replace them land.
+- Issue forms for lesson trouble, bugs and stale facts, with a "Stuck on this lesson?" link at the bottom of every lesson.
+- Checks on every pull request: internal links and anchors, page stamps, lesson structure, images, em dashes, config validation and the safety of `examples/`. Scheduled checks watch external links, expiry markers and new `stable` releases, and open an issue when something needs attention.
+- A listing policy in [CONTRIBUTING.md](CONTRIBUTING.md#listing-policy) and a form to suggest a resource.
+- Agent rules in `AGENTS.md`, which a new `CLAUDE.md` imports.
+- A rewritten [CONTRIBUTING.md](CONTRIBUTING.md), a pull request template with a claim table and a dry-run section, and a CODEOWNERS file.
+
+### Changed
+
+- The listing freeze has ended: resource suggestions are reviewed against the [listing bar](CONTRIBUTING.md#the-listing-bar) again.
+- The guide has its own mark, three trail blazes climbing a post, in place of the mascot image, so it no longer uses a likeness of an Anthropic character. A new social card goes with it, carrying nothing that can go stale.
+- The reference pages are rewritten for lookup: [Models and effort](docs/reference/models.md), [Commands by level](docs/reference/commands.md) and [Further learning](docs/reference/further-reading.md). They carry no prices, plan limits or model specifications, and link the official pages for those.
+
+### Removed
+
+<a id="removed-changelog-mirror"></a>
+- The guide's summary of Claude Code releases, docs/reference/changelog.md, is now a stub that points to the official [CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) and [What's new](https://code.claude.com/docs/en/whats-new).
+
+<a id="removed-listings"></a>
+- Third-party listings that no lesson uses: the skills ecosystem catalog (registries, curated lists and community skill names), the MCP server tables and the MCP ecosystem survey, the four MCP server walkthroughs in `mcp-servers/`, the SuperClaude and BMAD frameworks, and the ten role prompts and nine role descriptions in `specialized-agents/`. The [listing policy](CONTRIBUTING.md#listing-policy) says what the guide lists now. Old links to these pages and sections land on a line that says so.
+
+<a id="removed-further-reading-listings"></a>
+- From Further learning: model announcements, a token calculator, third-party MCP server examples and an MCP authentication post, hook and workflow collections, terminal and note-taking tools, another coding assistant, and an agent-interoperability announcement. No lesson uses them.
+
+<a id="removed-live-config"></a>
+- The repo's live Claude Code setup no longer runs anything when you clone the repo and trust the folder. Gone: the spoken Notification hook with its text-to-speech and LLM helper scripts, the 14 allow rules, the five subagent personas in `.claude/agents/`, the seven slash commands in `.claude/commands/`, and the skills catalog and workflow recipes in docs/skills.md that described them. `.claude/` keeps a deny rule for reading `.env` files, the claude-md-review skill and the stale-docs-audit workflow. To keep a spoken notification of your own, add a Notification hook to `~/.claude/settings.json`.

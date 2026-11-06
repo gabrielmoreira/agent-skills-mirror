@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mksglu/context-mode` — 26 default patterns, 0 followed patterns, 18
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,21 +62,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
 | 3 | ✓ | [`docs/install/gemini.md`](docs/install/gemini.md) |
-| 4 | ✓ | [`plugins/claude-code/claude-code/skills/ctx-doctor/SKILL.md`](plugins/claude-code/claude-code/skills/ctx-doctor/SKILL.md) |
-| 5 | ✓ | [`plugins/claude-code/claude-code/skills/ctx-stats/SKILL.md`](plugins/claude-code/claude-code/skills/ctx-stats/SKILL.md) |
-| 6 | ✓ | [`plugins/claude-code/claude-code/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/claude-code/skills/ctx-upgrade/SKILL.md) |
-| 7 | ✓ | [`plugins/claude-code/codex/skills/ctx-doctor/SKILL.md`](plugins/claude-code/codex/skills/ctx-doctor/SKILL.md) |
-| 8 | ✓ | [`plugins/claude-code/codex/skills/ctx-stats/SKILL.md`](plugins/claude-code/codex/skills/ctx-stats/SKILL.md) |
-| 9 | ✓ | [`plugins/claude-code/codex/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/codex/skills/ctx-upgrade/SKILL.md) |
-| 10 | ✓ | [`plugins/claude-code/pi/skills/ctx-doctor/SKILL.md`](plugins/claude-code/pi/skills/ctx-doctor/SKILL.md) |
-| 11 | ✓ | [`plugins/claude-code/pi/skills/ctx-stats/SKILL.md`](plugins/claude-code/pi/skills/ctx-stats/SKILL.md) |
-| 12 | ✓ | [`plugins/claude-code/pi/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/pi/skills/ctx-upgrade/SKILL.md) |
-| 13 | ✓ | [`plugins/claude-code/skills/ctx-doctor/SKILL.md`](plugins/claude-code/skills/ctx-doctor/SKILL.md) |
-| 14 | ✓ | [`plugins/claude-code/skills/ctx-stats/SKILL.md`](plugins/claude-code/skills/ctx-stats/SKILL.md) |
-| 15 | ✓ | [`plugins/claude-code/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/skills/ctx-upgrade/SKILL.md) |
-| 16 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
-| 17 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
-| 18 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
+| 4 | ✓ | [`plugins/claude-code/codex/skills/ctx-doctor/SKILL.md`](plugins/claude-code/codex/skills/ctx-doctor/SKILL.md) |
+| 5 | ✓ | [`plugins/claude-code/codex/skills/ctx-stats/SKILL.md`](plugins/claude-code/codex/skills/ctx-stats/SKILL.md) |
+| 6 | ✓ | [`plugins/claude-code/codex/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/codex/skills/ctx-upgrade/SKILL.md) |
+| 7 | ✓ | [`plugins/claude-code/pi/skills/ctx-doctor/SKILL.md`](plugins/claude-code/pi/skills/ctx-doctor/SKILL.md) |
+| 8 | ✓ | [`plugins/claude-code/pi/skills/ctx-stats/SKILL.md`](plugins/claude-code/pi/skills/ctx-stats/SKILL.md) |
+| 9 | ✓ | [`plugins/claude-code/pi/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/pi/skills/ctx-upgrade/SKILL.md) |
+| 10 | ✓ | [`plugins/claude-code/skills/ctx-doctor/SKILL.md`](plugins/claude-code/skills/ctx-doctor/SKILL.md) |
+| 11 | ✓ | [`plugins/claude-code/skills/ctx-stats/SKILL.md`](plugins/claude-code/skills/ctx-stats/SKILL.md) |
+| 12 | ✓ | [`plugins/claude-code/skills/ctx-upgrade/SKILL.md`](plugins/claude-code/skills/ctx-upgrade/SKILL.md) |
+| 13 | ✓ | [`skills/ctx-doctor/SKILL.md`](skills/ctx-doctor/SKILL.md) |
+| 14 | ✓ | [`skills/ctx-stats/SKILL.md`](skills/ctx-stats/SKILL.md) |
+| 15 | ✓ | [`skills/ctx-upgrade/SKILL.md`](skills/ctx-upgrade/SKILL.md) |
 
 ---
 

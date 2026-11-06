@@ -40,7 +40,7 @@ HISTORY_FILE="$BP_ROOT/.claude/brewpage-history.md"
 BP_TMPDIR="${TMPDIR:-/tmp}"
 BP_TMPDIR="${BP_TMPDIR%/}"
 # User-Agent on every brewpage.app request: <client>/<shipped version> (+https://brewpage.app).
-BP_UA="ClaudeCode/6.12.8 (+https://brewpage.app)"
+BP_UA="ClaudeCode/6.12.10 (+https://brewpage.app)"
 
 # Creates the history file if absent, keeps it mode 600, and makes sure git
 # never picks it up — the skill used to only *ask* the user to keep it private.
@@ -50,7 +50,7 @@ bp_history_init() {
 # brewpage.app — Published Pages
 
 > Owner tokens allow delete and in-place PUT (html/json/kv/files/sites). Old publications are read-only: 409 OLD_PUBLICATION_READ_ONLY; publish anew and report only the new URL. Keep tokens in this private file; never display them in chat.
-> Delete: `curl -s -A "ClaudeCode/6.12.8 (+https://brewpage.app)" -X DELETE "<Owner API>" -H "X-Owner-Token: TOKEN"`; rows without one: `https://brewpage.app/api/<type>/<ns>/<id>`, type = html|json|files|kv|sites.
+> Delete: `curl -s -A "ClaudeCode/6.12.10 (+https://brewpage.app)" -X DELETE "<Owner API>" -H "X-Owner-Token: TOKEN"`; rows without one: `https://brewpage.app/api/<type>/<ns>/<id>`, type = html|json|files|kv|sites.
 > Update a site (same URL; old publications answer 409, see above): `PUT /api/sites/<ns>/<id>` with the same `-A`, `X-Owner-Token: TOKEN` + the new bundle.
 
 | Date | URL | Owner Token | TTL | Type | Owner API | Identity |
@@ -87,6 +87,26 @@ bp_validate() {
     esac
   fi
   return 0
+}
+
+# rc 0: path ends in .html/.htm, any case; such a file is always published as a page.
+bp_is_html_path() {
+  case "${1:-}" in *.[Hh][Tt][Mm] | *.[Hh][Tt][Mm][Ll]) return 0 ;; *) return 1 ;; esac
+}
+
+# rc 0: path ends in .md/.markdown, any case; rendered through /api/html, never a raw download.
+bp_is_markdown_path() {
+  case "${1:-}" in *.[Mm][Dd] | *.[Mm][Aa][Rr][Kk][Dd][Oo][Ww][Nn]) return 0 ;; *) return 1 ;; esac
+}
+
+# rc 0: file holds a whole HTML document: doctype or <html> first, after an optional BOM and whitespace.
+bp_is_html_document() {
+  python3 -c 'import re,sys; sys.exit(0 if re.match(rb"(?:\xef\xbb\xbf)?\s*<(?:!doctype\s+html|html)(?=[\s>])", open(sys.argv[1],"rb").read(), re.I) else 1)' "$1"
+}
+
+# rc 0: file decodes as UTF-8; jq --rawfile would silently replace any other bytes.
+bp_is_utf8() {
+  python3 -c 'import sys; open(sys.argv[1],"rb").read().decode("utf-8")' "$1" 2>/dev/null
 }
 
 # Allocate before writing inputs; only the generated ASCII basename is substituted into blocks.

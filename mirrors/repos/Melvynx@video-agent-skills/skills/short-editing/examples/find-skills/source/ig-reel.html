@@ -1,0 +1,319 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Comment CTA « Tu le veux ? Commente FINDER et je t'envoie le skill du moment que tu me suis. »: the camera is full screen
+     and the Instagram Reels UI animates over it, as if the viewer were watching this very reel. A finger taps the comment
+     icon on « Commente », the comments sheet comes up, FINDER is typed on « FINDER » and posted, the comment lands, then
+     toncompte's DMs drop in as iOS banners (the viewer's, then two other followers'), with find-skills as the attachment.
+     Transparent overlay: window.setT(t) draws the state at t seconds, t = 0 = the overlay scene's `from` (short 28.79).
+     400x711.1 CSS at zoom 2.7 = 1080x1920. Adapted from shorts/short-gouindr-faille/source/ig-reel.html (validated). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { zoom: 2.7; width: 400px; height: 711.12px; overflow: hidden; color: #f5f5f5; -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, "SF Pro Text", "Helvetica Neue", "Inter", sans-serif; }
+  #app { position: relative; width: 400px; height: 711.12px; overflow: hidden; }
+  svg { display: block; }
+  /* everything but the sheet stays inside x 60..1020, y 120..1820 px (22..378, 44..674 CSS) */
+  #gtop { position: absolute; left: 0; top: 0; width: 400px; height: 150px; background: linear-gradient(to bottom, rgba(0,0,0,.36), rgba(0,0,0,.14) 55%, rgba(0,0,0,0)); }
+  #gbot { position: absolute; left: 0; bottom: 0; width: 400px; height: 190px; background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.2) 55%, rgba(0,0,0,0)); }
+  .sh { filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .tsh { text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  #status { position: absolute; left: 0; top: 46px; width: 400px; height: 26px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 26px 0 30px; box-sizing: border-box; font-size: 14px; font-weight: 600; letter-spacing: -.2px; z-index: 30; }
+  #status .ic { display: flex; align-items: center; gap: 5px; }
+  #rtitle { position: absolute; left: 26px; top: 80px; font-size: 22px; font-weight: 700; letter-spacing: -.5px; display: flex; align-items: center; gap: 4px; }
+  #rcam { position: absolute; right: 26px; top: 80px; }
+  .rail { position: absolute; left: 357px; top: 0; width: 0; }
+  .rail .it { position: absolute; left: -20px; width: 40px; display: flex; flex-direction: column; align-items: center; }
+  .rail .ct { font-size: 12.8px; font-weight: 600; margin-top: 5px; height: 17px; position: relative; width: 60px; text-align: center; letter-spacing: -.1px; overflow: hidden; }
+  #audio { position: absolute; left: 346px; top: 640px; width: 28px; height: 28px; border-radius: 6px; overflow: hidden; border: 1.5px solid #fff; box-sizing: border-box; }
+  #audio img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.32); }
+  #info { position: absolute; left: 24px; top: 582px; width: 300px; }
+  #info > div { will-change: transform; }
+  #info .who { display: flex; align-items: center; gap: 9px; }
+  #info .who img { width: 30px; height: 30px; border-radius: 50%; }
+  #info .who b { font-size: 14px; font-weight: 700; letter-spacing: -.1px; }
+  #follow { height: 26px; padding: 0 11px; border: 1px solid rgba(255,255,255,.75); border-radius: 8px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; margin-left: 2px; }
+  #cap { font-size: 13.5px; line-height: 18px; margin-top: 10px; white-space: nowrap; letter-spacing: -.1px; }
+  #cap i { font-style: normal; color: rgba(255,255,255,.72); }
+  #music { font-size: 12.8px; margin-top: 7px; display: flex; align-items: center; gap: 6px; letter-spacing: -.1px; }
+  #dim { position: absolute; inset: 0; background: #000; z-index: 25; }
+  /* comments sheet: its top sits at 448 CSS (1210 px), under the chin, so the face and the captions (y 1125) stay above it */
+  #sheet { position: absolute; left: 0; top: 448px; width: 400px; height: 263.12px; background: #262626; border-radius: 16px 16px 0 0; z-index: 26; overflow: hidden;
+    box-shadow: 0 -8px 30px rgba(0,0,0,.35); }
+  #handle { position: absolute; left: 182px; top: 8px; width: 36px; height: 4px; border-radius: 2px; background: #6e6e6e; }
+  #stitle { position: absolute; left: 0; top: 20px; width: 400px; text-align: center; font-size: 15.5px; font-weight: 700; letter-spacing: -.2px; background: #262626; height: 30px; }
+  #splane { position: absolute; right: 16px; top: 19px; }
+  #hair { position: absolute; left: 0; top: 50px; width: 400px; height: .5px; background: rgba(255,255,255,.14); }
+  #list { position: absolute; left: 0; top: 0; width: 400px; height: 204px; overflow: hidden; }
+  .crow { position: absolute; left: 0; width: 400px; height: 60px; }
+  .crow .hl { position: absolute; inset: 0; background: rgba(0,149,246,.22); }
+  .cav { position: absolute; left: 14px; top: 9px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; color: #fff; overflow: hidden; }
+  .cav img, .cav svg { width: 100%; height: 100%; }
+  .cbody { position: absolute; left: 56px; top: 6px; width: 290px; }
+  .cname { font-size: 13px; line-height: 17px; display: flex; gap: 6px; align-items: baseline; }
+  .cname b { font-weight: 600; letter-spacing: -.1px; } .cname span { color: #a8a8a8; font-size: 12.8px; }
+  .ctext { font-size: 15px; line-height: 20px; letter-spacing: -.15px; white-space: nowrap; }
+  .creply { font-size: 12.8px; line-height: 16px; color: #a8a8a8; font-weight: 600; margin-top: 1px; }
+  .clike { position: absolute; left: 360px; top: 13px; width: 28px; display: flex; flex-direction: column; align-items: center; gap: 1px;
+    font-size: 12.8px; color: #a8a8a8; }
+  .clike .hw { position: relative; width: 15px; height: 15px; }
+  .clike .hw > div { position: absolute; left: 0; top: 0; }
+  #composer { position: absolute; left: 0; top: 204px; width: 400px; height: 59.12px; background: #262626; }
+  #composer .hair { position: absolute; left: 0; top: 0; width: 400px; height: .5px; background: rgba(255,255,255,.12); }
+  #cav2 { position: absolute; left: 14px; top: 13px; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; }
+  #field { position: absolute; left: 56px; top: 9px; width: 330px; height: 40px; border-radius: 20px; border: 1px solid #3c3c3c; box-sizing: border-box; }
+  #ftext { position: absolute; left: 15px; top: 0; height: 38px; display: flex; align-items: center; font-size: 17px; font-weight: 600; letter-spacing: .2px; }
+  #ftext span { display: inline-block; }
+  #ph { position: absolute; left: 15px; top: 0; height: 38px; display: flex; align-items: center; font-size: 15px; color: #8e8e8e; letter-spacing: -.1px; }
+  #caret { width: 2px; height: 21px; border-radius: 1px; background: #0095F6; margin-left: 1px; }
+  #pub { position: absolute; right: 15px; top: 0; height: 38px; display: flex; align-items: center; font-size: 15px; font-weight: 700; color: #0095F6; transform-origin: 70% 50%; }
+  /* iOS communication notifications: sender avatar with the app badge, name + time, three lines of body, the attachment
+     thumbnail on the right. The newest drops on top, the older ones tuck behind it (iOS stack). */
+  .ban { position: absolute; left: 23px; top: 50px; width: 354px; height: 100px; border-radius: 22px; background: rgba(36,36,38,.97);
+    box-shadow: 0 10px 34px rgba(0,0,0,.42), 0 0 0 .5px rgba(255,255,255,.09) inset; transform-origin: 50% 100%; }
+  .ban .av { position: absolute; left: 12px; top: 29px; width: 40px; height: 40px; border-radius: 50%; }
+  .ban .badge { position: absolute; left: 35px; top: 52px; width: 19px; height: 19px; border-radius: 5.5px; overflow: hidden; box-shadow: 0 0 0 1.6px rgba(36,36,38,1); }
+  .ban .badge img { width: 100%; height: 100%; transform: scale(1.06); }
+  .ban .tx { position: absolute; left: 64px; top: 11px; width: 228px; }
+  .ban .t1 { font-size: 15.5px; line-height: 20px; font-weight: 700; letter-spacing: -.2px; white-space: nowrap; }
+  .ban .t1 span { font-weight: 400; color: #a3a3a3; font-size: 13px; letter-spacing: -.05px; }
+  .ban .t2 { font-size: 14.5px; line-height: 19px; letter-spacing: -.2px; margin-top: 1px; white-space: nowrap; }
+  .ban .t2 code { font-family: inherit; }
+  .ban .when { position: absolute; right: 14px; top: 11px; font-size: 12.8px; line-height: 18px; color: #a3a3a3; letter-spacing: -.05px; }
+  .ban .thumb { position: absolute; right: 13px; top: 38px; width: 38px; height: 38px; border-radius: 9px; background: #fff; overflow: hidden; }
+  .ban .thumb img { position: absolute; left: 4px; top: 4px; width: 30px; height: 30px; }
+  .ban .shade { position: absolute; inset: 0; border-radius: 22px; background: #000; }
+  /* the viewer's finger */
+  #dot { position: absolute; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; z-index: 60;
+    box-sizing: border-box; border: 2px solid rgba(255,255,255,.95); box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+  .rip { position: absolute; left: 0; top: 0; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; z-index: 59;
+    box-sizing: border-box; border: 2px solid rgba(255,255,255,.9); }
+</style></head>
+<body><div id="app">
+  <div id="gtop"></div><div id="gbot"></div>
+
+  <div id="status" class="tsh"><span>9:41</span><div class="ic">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="#fff"><path d="M8 2.6c2.2 0 4.2.85 5.7 2.250l1.2-1.25C13.1 1.9 10.7.9 8 .9S2.9 1.9 1.1 3.6l1.2 1.25C3.8 3.45 5.8 2.6 8 2.6z"/><path d="M8 6.1c1.25 0 2.4.5 3.250 1.3l1.2-1.25A6.4 6.4 0 0 0 8 4.4c-1.7 0-3.3.65-4.45 1.750l1.2 1.25C5.6 6.6 6.75 6.1 8 6.1z"/><path d="M8 9.4l2-2.05a2.8 2.8 0 0 0-4 0z" transform="translate(0 1.4)"/></svg>
+    <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.6" fill="none" stroke="rgba(255,255,255,.45)"/><rect x="2" y="2" width="18" height="9" rx="2.2" fill="#fff"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="rgba(255,255,255,.45)"/></svg>
+  </div></div>
+
+  <div id="rtitle" class="tsh">Reels<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px"><path d="M6 9l6 6 6-6"/></svg></div>
+  <div id="rcam" class="sh"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"><path d="M3 8.6c0-1.2 1-2.1 2.1-2.1h2.3l1.4-2h6.4l1.4 2h2.3c1.2 0 2.1 1 2.1 2.1v9.3c0 1.2-1 2.1-2.1 2.1H5.1C4 20 3 19 3 17.9z"/><circle cx="12" cy="12.8" r="3.7"/></svg></div>
+
+  <div class="rail">
+    <div class="it sh rit" style="top:420px">
+      <svg width="28" height="28" viewBox="0 0 24 24"><path fill="#fff" d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.550 5.827 5.015 7.970.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.940a6.985 6.985 0 0 0-6.708-7.218Z"/></svg>
+      <div class="ct tsh">24,1&nbsp;k</div>
+    </div>
+    <div class="it sh rit" style="top:481px">
+      <svg id="comsvg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"/></svg>
+      <div class="ct tsh">3&nbsp;408</div>
+    </div>
+    <div class="it sh rit" style="top:542px">
+      <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><line x1="22" x2="9.218" y1="3" y2="10.083"/><polygon points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/></svg>
+      <div class="ct tsh">6&nbsp;912</div>
+    </div>
+    <div class="it sh rit" style="top:602px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+    </div>
+  </div>
+  <div id="audio"><img src="../assets/images/avatar.png"></div>
+
+  <div id="info" class="tsh">
+    <div class="who"><img src="../assets/images/avatar.png"><b>toncompte</b><div id="follow">Suivre</div></div>
+    <div id="cap">Commente FINDER, je t'envoie le skill<i>… plus</i></div>
+    <div id="music"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M9 3v11.6A3.5 3.5 0 1 0 11 18V8h8V3z"/></svg><span>toncompte · Son original</span></div>
+  </div>
+
+  <div id="dim"></div>
+  <div id="sheet">
+    <div id="list"></div>
+    <div id="handle"></div>
+    <div id="stitle">Commentaires</div>
+    <div id="splane"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f5f5f5" stroke-width="2" stroke-linejoin="round"><line x1="22" x2="9.218" y1="3" y2="10.083"/><polygon points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/></svg></div>
+    <div id="hair"></div>
+    <div id="composer">
+      <div class="hair"></div>
+      <div id="cav2"></div>
+      <div id="field"><div id="ph">Ajouter un commentaire…</div><div id="ftext"><span id="typed"></span><i id="caret"></i></div><div id="pub">Publier</div></div>
+    </div>
+  </div>
+
+  <div id="bans"></div>
+  <div class="rip" id="rip0"></div><div class="rip" id="rip1"></div>
+  <div id="dot"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+// critically damped spring from rest (never overshoots)
+const S = (x, w = 14) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+// same spring with a launch velocity k in [0,1]: still never overshoots
+const SV = (x, w = 14, k = .6) => x <= 0 ? 0 : 1 - (1 + w * (1 - k) * x) * Math.exp(-w * x);
+const out = p => 1 - Math.pow(1 - p, 3), io = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const lerp = (a, b, p) => a + (b - a) * p;
+// a press that rises and settles back to 0, never below 0
+const bump = (d, tau) => d <= 0 ? 0 : (d / tau) * Math.exp(1 - d / tau);
+const HEART_O = 'M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z';
+const HEART_F = 'M16.792 1.904a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z';
+const HEART = fill => `<svg width="15" height="15" viewBox="0 0 24 24"><path fill="${fill}" d="${fill === '#ff3040' ? HEART_F : HEART_O}"/></svg>`;
+// Instagram's default avatar (the viewer, « toi »)
+const DEFAV = '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#4d4d4d"/><circle cx="16" cy="12.6" r="5.6" fill="#c4c4c4"/><path d="M5.6 27.6c1.8-4.9 5.9-7.5 10.4-7.5s8.6 2.6 10.4 7.5A15.9 15.9 0 0 1 16 32a15.9 15.9 0 0 1-10.4-4.4z" fill="#c4c4c4"/></svg>';
+const AV = '../assets/images/avatar.png', IG = '../assets/logos/instagram.png', SK = '../assets/logos/skills-sh.png';
+
+// ---- event times (seconds from the overlay start = short 28.79). Words: Tu 0, le .09, veux .16, Commente .34, FINDER .65,
+// et 1.09, je 1.16, t'envoie 1.23, le 1.44, skill 1.52, du 1.80, moment 1.88, que 2.09, tu 2.18, me 2.26, suis 2.40
+// (voice ends ~2.6, then the frame holds to 5.35 while the DMs keep landing)
+const TAP_COM = .30, T_SHEET = .33, TAP_FIELD = .62, TYPE = [.70, .78, .86, .94, 1.02, 1.10], T_PUB_ON = .70, TAP_PUB = 1.25, T_POST = 1.29;
+const T_BAN = [2.00, 2.90, 3.80], T_OTHER = [2.50, 3.40], T_LIKE = 4.45;
+
+$('cav2').innerHTML = DEFAV;
+const OLD = [
+  ['lucas.dev', '1 min', 'FINDER', 'linear-gradient(135deg,#2bb673,#0b6e4f)', 'L', '41'],
+  ['nina.codes', '2 min', 'FINDER', 'linear-gradient(135deg,#ff7a59,#c2185b)', 'N', '28'],
+  ['tom_saas', '5 min', 'Il était temps que quelqu\'un en parle', 'linear-gradient(135deg,#5b4bdb,#1b9cff)', 'T', '63'],
+];
+const mkRow = (name, age, text, av, likes, hl) => {
+  const r = document.createElement('div'); r.className = 'crow';
+  r.innerHTML = (hl ? '<div class="hl"></div>' : '') + `<div class="cav"${av.bg ? ` style="background:${av.bg}"` : ''}>${av.html}</div>
+    <div class="cbody"><div class="cname"><b>${name}</b><span>${age}</span></div><div class="ctext">${text}</div><div class="creply">Répondre</div></div>
+    <div class="clike"><div class="hw"><div class="h0">${HEART('#a8a8a8')}</div><div class="h1">${HEART('#ff3040')}</div></div><span class="lk">${likes}</span></div>`;
+  $('list').appendChild(r); return r;
+};
+const LIST_TOP = 54, ROW_H = 60;
+const oldRows = OLD.map(([n, a, tx, bg, ini, l]) => mkRow(n, a, tx, { bg, html: ini }, l));
+const newRow = mkRow('toi', "à l'instant", 'FINDER', { html: DEFAV }, '', true);
+const others = [
+  mkRow('julie.codes', "à l'instant", 'FINDER', { bg: 'linear-gradient(135deg,#f7b733,#fc4a1a)', html: 'J' }, ''),
+  mkRow('sarah.dev', "à l'instant", 'FINDER', { bg: 'linear-gradient(135deg,#00b4db,#0083b0)', html: 'S' }, ''),
+];
+[...oldRows, ...others].forEach(r => r.querySelector('.h1').style.opacity = 0);
+const letters = 'FINDER'.split('').map(c => { const s = document.createElement('span'); s.textContent = c; $('typed').appendChild(s); return s; });
+const railIt = [...document.querySelectorAll('.rit')], infoIt = [...$('info').children];
+const nh0 = newRow.querySelector('.h0'), nh1 = newRow.querySelector('.h1'), nhw = newRow.querySelector('.hw'), nlk = newRow.querySelector('.lk');
+
+// DM banners: the viewer's, then two other followers' (same message, the recipient named next to the sender)
+const MSG = 'Voici le skill find-skills :<br>npx skills add vercel-labs/skills<br>--skill find-skills';
+const BANS = [['', MSG], ['à julie.codes', MSG], ['à sarah.dev', MSG]].map(([to, msg], i) => {
+  const b = document.createElement('div'); b.className = 'ban'; b.style.zIndex = 40 + i;
+  b.innerHTML = `<img class="av" src="${AV}"><div class="badge"><img src="${IG}"></div>
+    <div class="tx"><div class="t1">toncompte${to ? ` <span>${to}</span>` : ''}</div><div class="t2">${msg}</div></div>
+    <div class="when">maintenant</div><div class="thumb"><img src="${SK}"></div><div class="shade"></div>`;
+  $('bans').appendChild(b); return b;
+});
+
+// the viewer's finger: [t0, t1, x, y] eased moves (CSS px); it drifts to Publier while the letters are typed
+const COM = [357, 495], FIELD = [170, 681], PUB = [348, 681];
+const MOVES = [[0, 0, 318, 600], [.04, .27, COM[0], COM[1]], [.40, .58, FIELD[0], FIELD[1]], [.86, 1.16, PUB[0], PUB[1]], [1.36, 1.60, 320, 770]];
+const TAPS = [TAP_COM, TAP_FIELD, TAP_PUB];
+function curAt(t) {
+  let x = MOVES[0][2], y = MOVES[0][3];
+  for (const [a, b, nx, ny] of MOVES) { if (t < a) break; const p = b > a ? io(seg(t, a, b)) : 1; x = lerp(x, nx, p); y = lerp(y, ny, p); }
+  return [x, y];
+}
+const pressAt = (t, a) => { const d = t - a; return d > -.05 && d < .09 ? clamp(1 - Math.abs(d - .015) / .065) : 0; };
+const show = (el, v) => { el.style.display = v > .001 ? '' : 'none'; };
+
+window.setT = function (t) {
+  // the chrome is there from the first frame (a quick settle), the rail and the info fade under the opening sheet
+  const hc = io(seg(t, T_SHEET + .02, T_SHEET + .2));
+  const g = clamp(seg(t, 0, .16));
+  $('gtop').style.opacity = g; $('gbot').style.opacity = g * (1 - hc);
+  [['status', 0], ['rtitle', .02], ['rcam', .04]].forEach(([id, d]) => {
+    const q = SV(t - d, 22, .7), el = $(id);
+    el.style.transform = `translateY(${-14 * (1 - q)}px)`; el.style.opacity = clamp(q * 1.5);
+  });
+  railIt.forEach((el, i) => {
+    const q = SV(t - i * .025, 22, .7);
+    el.style.transform = `translateX(${36 * (1 - q)}px)`; el.style.opacity = clamp(q * 1.6) * (1 - hc);
+  });
+  { const q = SV(t - .08, 22, .7); $('audio').style.transform = `translateX(${36 * (1 - q)}px) rotate(${(t * 40) % 360}deg)`; $('audio').style.opacity = clamp(q * 1.6) * (1 - hc); }
+  infoIt.forEach((el, i) => {
+    const q = SV(t - (.02 + i * .03), 22, .7);
+    el.style.transform = `translateY(${16 * (1 - q)}px)`; el.style.opacity = clamp(q * 1.5) * (1 - hc);
+  });
+  $('comsvg').style.transform = `scale(${1 - .2 * pressAt(t, TAP_COM)})`;
+
+  // sheet slides up over the bottom of the reel (the face stays in the clear), an 8 % dim at most on the reel
+  const ps = SV(t - T_SHEET, 18, .6);
+  $('sheet').style.transform = `translateY(${(1 - ps) * 290}px)`; show($('sheet'), ps);
+  $('dim').style.opacity = .08 * ps; show($('dim'), ps);
+  const hq = S(t - (T_SHEET + .05), 20);
+  $('stitle').style.opacity = hq; $('splane').style.opacity = hq;
+
+  // list: your comment slides in on top on Publier and stays pinned there, the other followers' FINDER land under it
+  const pn = SV(t - T_POST, 16, .5), po = T_OTHER.map(a => SV(t - a, 15, .5)), pos = po[0] + po[1];
+  oldRows.forEach((r, i) => {
+    const q = S(t - (T_SHEET + .08 + i * .04), 18);
+    r.style.top = (LIST_TOP + (i + pn + pos) * ROW_H + (1 - q) * 14) + 'px'; r.style.opacity = q;
+  });
+  const slotIn = (r, p, top) => {
+    r.style.display = p > 0 ? '' : 'none';
+    r.style.top = top + 'px'; r.style.opacity = clamp((p - .08) / .45);
+    r.style.clipPath = `inset(0 0 ${(1 - p) * ROW_H}px 0)`;
+    r.style.transform = `scale(${.97 + .03 * p})`; r.style.transformOrigin = '20% 0%';
+  };
+  slotIn(newRow, pn, LIST_TOP);
+  slotIn(others[1], po[1], LIST_TOP + ROW_H);
+  slotIn(others[0], po[0], LIST_TOP + ROW_H + po[1] * ROW_H);
+  newRow.querySelector('.hl').style.opacity = clamp(pn * 2) * (1 - .5 * io(seg(t, 3.0, 3.6)));
+  // toncompte likes your comment (the red heart fills in) during the hold
+  const lq = S(t - T_LIKE, 20);
+  nh1.style.opacity = lq; nh0.style.opacity = 1 - lq;
+  nhw.style.transform = `scale(${1 + .28 * bump(t - T_LIKE, .08)})`;
+  nlk.textContent = t >= T_LIKE ? '1' : ''; nlk.style.opacity = lq;
+
+  // field: tapped, FINDER typed letter by letter on « FINDER », Publier lights up, cleared after the post
+  const focused = t >= TAP_FIELD + .02 && t < TAP_PUB + .02, cleared = t >= TAP_PUB + .03;
+  let n = 0;
+  letters.forEach((s, i) => {
+    const on = t >= TYPE[i] && !cleared; if (on) n++;
+    const q = S(t - TYPE[i], 45);
+    s.style.display = on ? '' : 'none'; s.style.transform = `translateY(${(1 - q) * 3}px) scale(${.7 + .3 * q})`; s.style.opacity = .3 + .7 * q;
+  });
+  $('ph').style.display = n ? 'none' : '';
+  const typing = t >= TYPE[0] && t < TYPE[TYPE.length - 1] + .12;
+  $('caret').style.opacity = focused && (typing || Math.floor((t - TAP_FIELD) * 2.4) % 2 === 0) ? 1 : 0;
+  $('ph').style.left = (focused ? 18 : 15) + 'px';
+  $('field').style.borderColor = focused ? '#555' : '#3c3c3c';
+  const pon = cleared ? 0 : S(t - T_PUB_ON, 26), pp = pressAt(t, TAP_PUB);
+  $('pub').style.opacity = (.35 + .65 * pon) * (1 - .45 * pp);
+  $('pub').style.transform = `scale(${1 - .08 * pp})`;
+
+  // DM banners drop in from the top; each new one lands on top and the older ones tuck behind it (iOS stack)
+  const bq = T_BAN.map(a => SV(t - a, 13, .6));
+  const under = 1 - clamp(bq[0] * 1.4);   // the status bar and the Reels header go under the first banner
+  $('status').style.opacity = under * clamp(SV(t, 22, .7) * 1.5);
+  $('rtitle').style.opacity = under * clamp(SV(t - .02, 22, .7) * 1.5); $('rcam').style.opacity = under * clamp(SV(t - .04, 22, .7) * 1.5);
+  BANS.forEach((b, i) => {
+    const q = bq[i]; show(b, q);
+    let depth = 0; for (let j = i + 1; j < BANS.length; j++) depth += bq[j];
+    b.style.transform = `translateY(${-150 * (1 - q) + 9 * depth}px) scale(${.96 + .04 * q - .055 * depth})`;
+    b.style.opacity = clamp(q * 3) * (1 - clamp(depth - 1.4));
+    const c = 1 - clamp((depth - .3) * 2.5);
+    b.querySelectorAll('.tx,.av,.badge,.when,.thumb').forEach(e => e.style.opacity = c);
+    b.querySelector('.shade').style.opacity = .3 * clamp(depth);
+  });
+
+  // finger dot + ripples
+  const [fx, fy] = curAt(t);
+  let press = 0; for (const a of TAPS) press = Math.max(press, pressAt(t, a));
+  const vis = clamp(seg(t, .02, .12) - seg(t, 1.38, 1.56));
+  show($('dot'), vis);
+  $('dot').style.transform = `translate(${fx}px,${fy}px) scale(${1 - .16 * press})`;
+  $('dot').style.opacity = vis; $('dot').style.background = `rgba(255,255,255,${.32 + .3 * press})`;
+  const rips = TAPS.filter(a => t >= a && t < a + .42).slice(-2);
+  [0, 1].forEach(i => {
+    const el = $('rip' + i), a = rips[i];
+    if (a === undefined) { el.style.display = 'none'; return; }
+    const p = out((t - a) / .42), [rx, ry] = curAt(a);
+    el.style.display = ''; el.style.transform = `translate(${rx}px,${ry}px) scale(${.45 + .85 * p})`; el.style.opacity = .85 * (1 - p);
+  });
+  return true;
+};
+window.setT(0);
+</script></body></html>

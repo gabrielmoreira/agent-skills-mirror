@@ -1,0 +1,138 @@
+# A2UI Agent Source of Truth (AGENTS.md)
+
+This document is the authoritative guide for AI agents working within the A2UI repository. It outlines design philosophy, repository structure, and synchronization guidelines.
+
+---
+
+## How to Use these Guides
+
+> **INSTRUCTION FOR ALL AGENTS (Gemini CLI, Claude, OpenAI, Antigravity, etc.):**
+> Before performing any specific tasks, load and read the respective skill recipe file in full:
+
+- **For authoring code, refactoring, addressing review feedback, or reviewing PR diffs across any language:** Read [.agents/skills/coding-principles/SKILL.md](.agents/skills/coding-principles/SKILL.md) (progressively activates cross-language principles and routes by language to TypeScript/Web, Python, Swift, and Dart guides)
+- **For preparing, splitting, or reviewing a pull request:** Read [.agents/skills/pr-hygiene/SKILL.md](.agents/skills/pr-hygiene/SKILL.md)
+- **For updating `CHANGELOG.md` files across A2UI packages:** Read [.agents/skills/update-changelog/SKILL.md](.agents/skills/update-changelog/SKILL.md)
+- **For working with Spec-Driven Development (SDD) or repository blueprints:** Read [blueprints/README.md](blueprints/README.md)
+- **For implementing new SDKs in a client language:** Read [.agents/skills/a2ui-implement-new-sdks-for-client-language/SKILL.md](.agents/skills/a2ui-implement-new-sdks-for-client-language/SKILL.md)
+- **For developing in the TypeScript & Web codebases (`typescript/`, `samples/client/`, `tools/`):** Read [.agents/skills/coding-principles/subskills/typescript/INDEX.md](.agents/skills/coding-principles/subskills/typescript/INDEX.md)
+- **For developing Python code anywhere in the repository (libraries, agents, tools, scripts, best practices):** Read [.agents/skills/coding-principles/subskills/python/INDEX.md](.agents/skills/coding-principles/subskills/python/INDEX.md)
+- **For developing in the Swift codebase (core, SwiftUI, sample):** Read [.agents/skills/coding-principles/subskills/swift/INDEX.md](.agents/skills/coding-principles/subskills/swift/INDEX.md)
+- **For developing in the Dart & Flutter codebases (`dart/`, `samples/client/flutter/`) or versioning Dart packages:** Read [.agents/skills/coding-principles/subskills/dart/INDEX.md](.agents/skills/coding-principles/subskills/dart/INDEX.md)
+- **For writing documentation, READMEs, or PR descriptions:** Read [.agents/skills/natural-writing/SKILL.md](.agents/skills/natural-writing/SKILL.md)
+- **For authoring or editing public documentation and developer site guides (`docs/site/`):** Read [.agents/skills/public-documentation/SKILL.md](.agents/skills/public-documentation/SKILL.md)
+
+---
+
+## 1. What is A2UI?
+
+**A2UI (Agent-to-User Interface)** is a platform-agnostic, streaming-first UI protocol designed specifically to allow Large Language Models (LLMs) and autonomous agents to generate user interfaces.
+
+Key capabilities:
+
+- **Streaming UI:** Progressive rendering of components and values on the fly to minimize latency.
+- **Two-Way Data Binding:** Seamless state synchronization between client and agent.
+- **Local Function Evaluation:** Execution of validation/logic functions registered in Component Catalogs.
+
+---
+
+## 2. Protocol Versioning & Authority
+
+The repository supports multiple versions of the A2UI protocol (tracked in [`specification/versions.json`](specification/versions.json)):
+
+- **v1.0**: **Current protocol version**, implemented by our multi-language SDKs, renderers, and sample clients (previously known as v0.10).
+- **v0.9.1**: Previous specification; a patch release of v0.9.
+- **v0.9**: Previous specification; very minor differences from v0.9.1.
+- **v0.8**: Deprecated legacy specification; not supported by the latest SDKs.
+- **Authority Rule:** Default to version **v1.0** as the primary authority when working on SDKs or adapters, unless the user specifies otherwise or a different version is requested.
+
+### Version Labels
+
+Use these rules when you mention a protocol version in documentation, READMEs, specification files, or code comments.
+
+[`specification/versions.json`](specification/versions.json) is the machine-readable source of truth for version status (`release-candidate`, `current`, `previous`, or `deprecated`, listed newest first). Use the display label `Release Candidate` for `release-candidate`, `Current` for `current`, `Deprecated` for `deprecated`, and no label for `previous` (`Previous` only when a table cell needs a value).
+
+1. Name a version's status only where readers choose between versions: version tables (`docs/public/index.md`, the roadmap), spec page titles, badges, and the callout at the top of a spec page, the `**Status:**` field in a spec, specification `README.md` files, sidebar and nav labels, the root `README.md` version note, "use this version" pointers (including the protocol line in agent skill files), and this section.
+2. Everywhere else (running prose, code comments, test names, tab labels), use plain version numbers. To contrast versions, use ranges such as "v1.0 and later", "before v1.0", "pre-1.0", or "v0.9 and v0.9.1".
+3. Outside the places in rule 1, never attach these words to a specific version: current, latest, newest, active, stable, production, candidate, release candidate, draft, or preview. They become wrong when the next version ships.
+4. You may call v0.8 "legacy" or "deprecated" anywhere. Never call v0.9 or v0.9.1 legacy, stable, current, or active.
+5. Pointers that tell readers which version to use (for example, "For new projects, see ...") always point to the `current` version.
+6. Where a spec has a `**Status:**` field, it records the lifecycle: `Release Candidate` for `release-candidate`, `Current` for `current`, `Closed` for `previous`, and `Deprecated` for `deprecated`. Don't add the field to specs that lack it.
+7. These rules don't cover code identifiers, `@deprecated` tags on library APIs, runtime defaults, `CHANGELOG.md` entries, or package release versions (for example, "the latest release of a2ui-agent-sdk").
+
+---
+
+## 3. Spec-Driven Development (SDD)
+
+> **IMPORTANT:** By default, agents should **IGNORE the `blueprints/` folder** unless explicitly instructed by the user to work with blueprints or Spec-Driven Development.
+
+To scale development across multiple programming languages and UI frameworks, the A2UI repository adopts **Spec-Driven Development (SDD)**. Under this methodology:
+
+- **Language-Agnostic Blueprints** define high-level architecture and features under the `blueprints/` directory (`blueprints/modules/` and `blueprints/features/`).
+- **Concrete Codebases** track their module compliance by git commit hash using a `codebase.blueprint.md` file stored under `blueprints/codebases/<relative_codebase_path>/codebase.blueprint.md`.
+- **SDD Skills**: SDD skills live in `blueprints/skills/` and can be symlinked into `.agents/skills/` by running `./blueprints/link_skills.sh`. To remove them when done, remove the `.agents/skills/a2ui-*` symlinks.
+
+For a detailed explanation of the methodology, lifecycle, and workflows, read the [Spec-Driven Development Proposal](docs/proposals/spec_driven_development.md).
+
+---
+
+## 4. Codebase & Repository Structure
+
+- **`blueprints/`**: Isolated central repository for language-agnostic module blueprints (`modules/`), feature blueprints (`features/`, `features/archived/`), codebase compliance blueprints (`codebases/`), and SDD skills (`skills/`).
+- **`docs/`**: Documentation hierarchy. Public site documentation published via MkDocs resides in `docs/public/`, while non-public contributor or internal documentation resides under `docs/` alongside `docs/scripts/`.
+- **`catalogs/`**: Canonical `catalog.json` schemas for the catalogs maintained by the A2UI team (e.g. `catalogs/basic/v1/`, `catalogs/mcp/`). Catalogs are versioned independently of the protocol.
+- **`specification/`**: Versioned subdirectories (`v0_8/`, `v0_9/`, `v0_9_1/`, `v1_0/`) containing JSON schemas and human-readable guides (older versions also bundle their basic catalog). The `specification/<version>/docs/a2ui_protocol.md` file is the most important source of truth for each protocol version, and the `specification/<version>/json` directory contains the associated schemas for the protocol.
+- **`python/`**: Core state SDK (`a2ui_core/`), framework-agnostic agent SDK (`a2ui_agent/`), agent framework integrations for A2A (`a2ui_a2a/`) and ADK (`a2ui_adk/`), and catalog packages (`catalogs/`) for Python.
+- **`conformance/`**: Language-agnostic test suites (`core/`, `agent/`, `extensions/`) and test data (`test_data/`) for verifying behavioral parity across all SDK implementations.
+- **`dart/`**: Dart implementations including core state model (`a2ui_core/`), agent SDK (`a2ui_agent/`), and Flutter framework adapter (`a2ui_flutter/`).
+- **`kotlin/`**: Legacy Kotlin agent SDK (`agent_sdk_legacy/`).
+- **`typescript/`**: Framework-agnostic Web Core state and protocol logic (`core/web_core/`), web framework renderers (`renderers/lit/`, `renderers/angular/`, `renderers/react/`), Markdown renderer (`renderers/markdown-it/`), TypeScript agent SDK (`agents/a2ui_agent/`), TypeScript catalog packages (`catalogs/`), and release scripts (`scripts/`).
+- **`samples/`**: Ready-to-run demo agents utilizing Python ADK (`agent/adk/`), MCP server (`agent/mcp/`), and sample clients (`client/lit/`, `client/angular/`, `client/react/`, `client/flutter/`).
+- **`swift/`**: Native Apple implementation including core state engine (`core/`), SwiftUI adapter (`swiftui/`), and sample iOS client (`sample/`).
+- **`tools/`**: Developer utility suite including visual Editor (`editor/`), visual Composer (`composer/`), payload Inspector (`inspector/`), and catalog builder (`build_catalog/`).
+
+---
+
+## 5. Yarn Workspaces & Standard Script Targets
+
+All Node.js and TypeScript projects inside the repository must be managed as **Yarn workspaces** registered inside the `"workspaces"` array of the root `package.json`.
+
+When creating or modifying workspaces, guarantee strict script uniformity by implementing canonical targets:
+
+- **`"build"`**: TypeScript compilation via `wireit` or `tsc -b`.
+- **`"lint"` / `"lint:fix"`**: Standardized to `"eslint ."` / `"eslint . --fix"` extending root `eslint.preset.mjs` via modern `eslint.config.mjs` flat configs. Pure container folders lacking code must cleanly echo `"Workspace has no lint configuration."`.
+- **`"test"`**: Unit test execution (`vitest`, `node --test`). Packages lacking tests must implement the standard auto-detecting Node fallback script to cleanly emit `"Workspace has no tests."` and exit 0.
+- **`"format"` / `"format:check"`**: Natively runs local Prettier formatting (`"prettier --write ."` / `"prettier --check ."`).
+
+**New Node Projects:** Guarantee that any newly initialized Node/TypeScript project uses Yarn Berry, is situated within the monorepo directory structure, is correctly registered in root `"workspaces"`, and fully defines these five canonical script targets.
+
+---
+
+## 6. Running the Demos and Tools
+
+Do not use hardcoded or guessed build/run sequences. Each subdirectory contains detailed setup, build, dependency resolution, and execution steps.
+
+- **Prerequisite:** Consult the `README.md` files under `typescript/core/web_core/` and `typescript/renderers/` to build the shared web core and renderer packages before running any web tools or clients.
+- **Running SDKs & Samples:** Consult the local `README.md` inside any targeted directory under `python/`, `kotlin/`, `samples/`, or `tools/` for specific run/test/build commands.
+
+---
+
+## 7. Maintenance & Update Policy
+
+As A2UI evolves, keep agent documentation and skills perfectly synchronized with specification and codebase changes:
+
+- Update `AGENTS.md` and associated skill files when specifications, schemas, or directory layouts are added, modified, or removed.
+- Enforce Yarn workspace script hygiene across all Node packages.
+- Suggest updates to the user at the end of your task if any changes affect documented files.
+
+---
+
+## 8. Core Guidelines for Agents
+
+To ensure the integrity, consistency, and high quality of the repository, all agents must adhere to the following core guidelines:
+
+- **Prioritize Authoritative Specifications**: Always base designs, protocol changes, and implementations on the formal schemas and documents under the versioned `specification/` directory (schemas first, catalogs second, protocol guides third) rather than general workspace markdown files.
+- **Maintain Agent-Agnostic Instructions**: When creating or modifying agent instruction files, skills, or guides, write them in a generic, vendor-agnostic manner. Avoid proprietary or environment-specific names (e.g., model names, specific tool terms) and use generic terms (e.g., "assistant", "subagent", "retrieval tool").
+- **Enforce Script Uniformity**: Strictly maintain Yarn workspace script hygiene. Ensure all Node/TypeScript packages implement the five canonical targets (`build`, `lint`, `lint:fix`, `test`, `format`, `format:check`).
+- **Keep Inference Formats Catalog-Agnostic**: When implementing or updating inference formats (Express, Elemental, Atom, Direct JSON, etc.), system prompt rules, compilers, and parsers must remain catalog-agnostic. Catalog-specific constraints, component property rules, or syntax hints must be defined in and derived dynamically from the component catalog JSON schema, rather than hardcoding catalog-specific logic or string filters into format generators.
+- **Export Public Facades and Ban Deep Imports**: Packages across all languages must expose their public API through root or versioned facade barrels (e.g. `__all__` in Python `__init__.py`, `exports` in Node `package.json`, `lib/*.dart` in Dart). Never expose, rely on, or demonstrate deep internal submodule import paths in code, tests, docstrings, or README examples.
+- **Sort and Group Imports**: Across all languages (Python, TypeScript, Dart, Swift), maintain clean, predictable import ordering. Group imports into standard/system libraries, external third-party dependencies, and internal/local packages, separated by a single empty line. Within each group, sort module paths and imported symbols alphabetically. Never use wildcard imports.

@@ -1,8 +1,15 @@
 # happy-ios
 
-Native iOS client for Happy, written in Swift with UIKit. It ports
-`packages/happy-app` (React Native) screen by screen. It is not shipped yet:
-nothing here is wired to the release skill or to EAS.
+Native iOS client for Happy, written in Swift with UIKit.
+
+The React Native app has been removed. References below to its implementation
+are historical porting notes, not live source dependencies. Current native
+code, checked-in compatibility fixtures, `happy-wire`, and CLI/agent producers
+are authoritative. Shared translations are plain JSON in
+`packages/happy-i18n/translations`; regenerate with
+`node scripts/generate-translations.mjs` (no TypeScript loader). The old
+RN-based icon, sending and diff generators are retired; their generated assets
+and fixtures remain. Preserve credential and push compatibility on upgrades.
 
 ## Rules
 
@@ -109,10 +116,9 @@ nothing here is wired to the release skill or to EAS.
 
 ## Scope
 
-- **The current Happy protocol, meaning what the current CLI, happy-app
+- **The current Happy protocol, meaning what the native clients, CLI
   and happy-agent actually exchange today** (not what the files are
-  called). `packages/happy-wire`, happy-app's sync code
-  (`packages/happy-app/sources/sync`) and the CLI's routing are the source
+  called). `packages/happy-wire`, the native clients and the CLI's routing are the source
   of truth; when they disagree with this package, this package is wrong.
   - **User text goes out as `role: 'user'` records**,
     `{ role: 'user', content: { type: 'text', text }, meta }`, field for
@@ -195,17 +201,24 @@ nothing here is wired to the release skill or to EAS.
   only when the current offering's `$rc_monthly` is a one-month
   auto-renewable App Store product, at the store's price; anything else,
   nothing is sold. RevenueCat's `pro`, from any product, gives 5 hours a
-  paid month in place of the free time. The rules (customer ids, store ids,
-  restore, grace, months, retention) are the frozen billing contract
-  shared with Android; read `Subscription.swift` and `ProPass.swift`
-  before changing them. One knowing divergence from RevenueCat's SDK: a
+  paid month in place of the free time. The customer is the install's own
+  anonymous id, kept on the phone: no Happy account, sign-in or analytics
+  id touches it. Its `appAccountToken` is that id's hex as a UUID, so an
+  active subscription on the Apple ID is adopted by every phone at launch
+  and foreground without a restore. The rules (customer ids, store ids,
+  adoption, restore, the one migration restore, grace, months, retention)
+  are the frozen billing contract shared with Android; read
+  `Subscription.swift` and `ProPass.swift` before changing them. One knowing divergence from RevenueCat's SDK: a
   transaction is finished only after RevenueCat answers 2xx, never on a
   4xx. Restore runs on a person's tap only, never at launch. Debug runs
   can draw it from a fixture (`HAPPY_SUBSCRIPTION_FIXTURE`: `onsale`,
   `subscribed`, `pending`, `unconfirmed`, `unconfigured`; no store, no
   network, no charge) or as a no-charge preview (`HAPPY_CALL_OFFER=preview`).
-  Support Happy (Settings' boba row, Support us) is the same subscription
-  on its own sheet, without a voice session. `openSession` replaces a conversation on top
+  Support Happy (an agent connection's Settings boba row, a Happy
+  account's Support us) is the same subscription on its own pushed page
+  (`SupportViewController`), without a voice session: Subscribe always
+  there (greyed out while nothing is on sale), then Restore Purchases and
+  Manage Subscriptions as quiet links. `openSession` replaces a conversation on top
   and goes over anything else (`CallNavigation`). Contract, prompt, tool schemas and rationale:
   `docs/agent-voice-call.md` at the repository root. Harness hooks
   (`HAPPY_CALL_FIXTURE`, `HAPPY_CALL_TAP`, `-callLive`, `CallProbe`) are
@@ -253,6 +266,15 @@ nothing here is wired to the release skill or to EAS.
   edge, which on a phone (no padding for edits) clips the line numbers.
   Here text scrolls and Write's diff sits edge to edge like Edit's. Built
   in `MessageDetailRenderer`.
+- **A new file reads as the file, not as a diff**, as desktop draws a
+  created one: syntax colour and line numbers, no `+` markers, tint or `@@`
+  bars (`DiffViewOptions.newFile`). Whether a file is new comes from what
+  the caller knows (git status, a `file_diff` or Codex `add`, a Write) and
+  is passed in. It is never read off the rows: an empty file that gained
+  lines is all additions too, and git calls it modified. A Write's card and
+  screen already name the file in their title bar, so NEW +N ends that bar
+  (`ToolCardLayout.Header.badge`, the screen's right bar item) and there is
+  no second header.
 - **The CLI-outdated pill sits under the header on every device.** happy-app
   places it 8 below the top of the content area. On a phone in portrait that
   area runs under the floating header, so the pill ends up behind the header
@@ -464,12 +486,23 @@ nothing here is wired to the release skill or to EAS.
   implements this behind `KeychainBackend`, and `SecureStoreTests` pins it
   on Linux. Any other iOS-only secret gets its own item and must never
   touch this one.
-- **Copy comes from happy-app.** English strings are copied verbatim from
-  `packages/happy-app/sources/text/translations/en.ts` into
-  `Sources/HappyUI/Strings.swift`.
+- **Shared copy comes from JSON catalogs.** English is in
+  `packages/happy-i18n/translations/en.json`; run
+  `node scripts/generate-translations.mjs` after catalog changes and commit
+  the generated Swift catalogs and test vectors. Native-only copy remains
+  in `TranslationCatalog.nativeSources` and the native string wrappers.
 - **Design tokens come from happy-app.** They are ported from `theme.ts`
   and the component stylesheets (iOS values) into
   `Sources/HappyLayout/DesignTokens.swift`.
+- **Animated emoji never loop** (Kirill, for both apps). An animated emoji
+  or sticker (the Lottie art: state scenes, the boba, voice's mic) plays
+  once when it appears, holds its last frame, and plays once more on a
+  tap; with Reduce Motion it holds still. Draw every one with
+  `StateSceneView` (a `StateScene` case per file), never a bare
+  `LottieAnimationView`, and never set `.loop`. A row icon that is an
+  emoji sits on a tile like every other row's glyph, the tile's size (30)
+  where the tile goes and orange for the boba, at the row's top when the
+  row grows (`SettingsLayout`'s art row, `SupportBobaArt`).
 
 ## Record kinds: current vs retired
 
@@ -604,9 +637,9 @@ Linux test targets also run from Xcode: open `Package.swift` and use the
 
 | Variant | Configuration | Bundle id | Name |
 | --- | --- | --- | --- |
-| development | Debug | `com.slopus.happy.dev` | Happy v2 (dev) |
-| preview | Preview | `com.slopus.happy.preview` | Happy v2 (preview) |
-| production | Release | `com.ex3ndr.happy` | Happy v2 |
+| development | Debug | `com.slopus.happy.dev` | Happy (dev) |
+| preview | Preview | `com.slopus.happy.preview` | Happy (preview) |
+| production | Release | `com.ex3ndr.happy` | Happy |
 
 The bundle ids are the RN app's. Each variant has its own
 `App/Info-*.plist`. Those files are plain plists, because xtool doesn't

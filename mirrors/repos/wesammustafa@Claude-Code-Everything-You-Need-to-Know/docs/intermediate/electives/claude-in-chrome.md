@@ -9,7 +9,7 @@ By the end of this Elective you can connect Claude Code to your own browser, and
 ## You need
 
 - Google Chrome or Microsoft Edge with the [Claude in Chrome extension](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn), version 1.0.36 or later ([Prerequisites](https://code.claude.com/docs/en/chrome#prerequisites)).
-- A Pro, Max, Team or Enterprise plan, signed in with `/login`. With an API key, Claude Code keeps Chrome integration off.
+- A Pro, Max, Ultra, Team or Enterprise plan, signed in with `/login`. With an API key, Claude Code keeps Chrome integration off.
 - macOS, Linux or native Windows: Chrome integration isn't supported in WSL.
 - One of your own repositories with its `.practice/` folder, and `python3` to serve a page locally.
 - Usage: light.
@@ -74,4 +74,4 @@ If Claude doesn't use the browser, start the session with `--chrome`, or run `/c
 
 <sub>Sources: [Use Claude Code with Chrome](https://code.claude.com/docs/en/chrome)</sub>
 
-<sub>Back to the [Intermediate index](../README.md) · Topic: [MCP](../../topics/mcp.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=i-chrome)</sub>
+<sub>Back to the [Intermediate index](../README.md) · Topic: [MCP](../../topics/mcp.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-chrome)</sub>

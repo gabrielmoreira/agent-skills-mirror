@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 81 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,69 +77,73 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/skills/ai-task/SKILL.md`](.agents/skills/ai-task/SKILL.md) |
 | 17 | ✓ | [`.agents/skills/ai-task/sql/cost-watch.sql`](.agents/skills/ai-task/sql/cost-watch.sql) |
 | 18 | ✓ | [`.agents/skills/ai-task/sql/flow-breakdown.sql`](.agents/skills/ai-task/sql/flow-breakdown.sql) |
-| 19 | ✓ | [`.agents/skills/analyze-logs/SKILL.md`](.agents/skills/analyze-logs/SKILL.md) |
-| 20 | ✓ | [`.agents/skills/build-audit-logs/references/framework-wiring.md`](.agents/skills/build-audit-logs/references/framework-wiring.md) |
-| 21 | ✓ | [`.agents/skills/build-audit-logs/SKILL.md`](.agents/skills/build-audit-logs/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/debug-failed-run/SKILL.md`](.agents/skills/debug-failed-run/SKILL.md) |
-| 23 | ✓ | [`.agents/skills/design/README.md`](.agents/skills/design/README.md) |
-| 24 | ✓ | [`.agents/skills/design/SKILL.md`](.agents/skills/design/SKILL.md) |
-| 25 | ✓ | [`.agents/skills/mcp-builder/LICENSE.txt`](.agents/skills/mcp-builder/LICENSE.txt) |
-| 26 | ✓ | [`.agents/skills/mcp-builder/reference/evaluation.md`](.agents/skills/mcp-builder/reference/evaluation.md) |
-| 27 | ✓ | [`.agents/skills/mcp-builder/reference/mcp_best_practices.md`](.agents/skills/mcp-builder/reference/mcp_best_practices.md) |
-| 28 | ✓ | [`.agents/skills/mcp-builder/reference/node_mcp_server.md`](.agents/skills/mcp-builder/reference/node_mcp_server.md) |
-| 29 | ✓ | [`.agents/skills/mcp-builder/reference/python_mcp_server.md`](.agents/skills/mcp-builder/reference/python_mcp_server.md) |
-| 30 | ✓ | [`.agents/skills/mcp-builder/scripts/connections.py`](.agents/skills/mcp-builder/scripts/connections.py) |
-| 31 | ✓ | [`.agents/skills/mcp-builder/scripts/evaluation.py`](.agents/skills/mcp-builder/scripts/evaluation.py) |
-| 32 | ✓ | [`.agents/skills/mcp-builder/scripts/example_evaluation.xml`](.agents/skills/mcp-builder/scripts/example_evaluation.xml) |
-| 33 | ✓ | [`.agents/skills/mcp-builder/scripts/requirements.txt`](.agents/skills/mcp-builder/scripts/requirements.txt) |
-| 34 | ✓ | [`.agents/skills/mcp-builder/SKILL.md`](.agents/skills/mcp-builder/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
-| 37 | ✓ | [`.agents/skills/piece-builder/ai-metadata.md`](.agents/skills/piece-builder/ai-metadata.md) |
-| 38 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
-| 39 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
-| 40 | ✓ | [`.agents/skills/piece-builder/new-piece-scaffold.md`](.agents/skills/piece-builder/new-piece-scaffold.md) |
-| 41 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
-| 42 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
-| 43 | ✓ | [`.agents/skills/piece-builder/property-ui-selection.md`](.agents/skills/piece-builder/property-ui-selection.md) |
-| 44 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
-| 45 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
-| 46 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
-| 47 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
-| 48 | ✓ | [`.agents/skills/piece-output-schema/capture-recipes.md`](.agents/skills/piece-output-schema/capture-recipes.md) |
-| 49 | ✓ | [`.agents/skills/piece-output-schema/schema-reference.md`](.agents/skills/piece-output-schema/schema-reference.md) |
-| 50 | ✓ | [`.agents/skills/piece-output-schema/SKILL.md`](.agents/skills/piece-output-schema/SKILL.md) |
-| 51 | ✓ | [`.agents/skills/profile-app-cpu/SKILL.md`](.agents/skills/profile-app-cpu/SKILL.md) |
-| 52 | ✓ | [`.agents/skills/profile-worker-memory/SKILL.md`](.agents/skills/profile-worker-memory/SKILL.md) |
-| 53 | ✓ | [`.agents/skills/review-logging-patterns/references/code-review.md`](.agents/skills/review-logging-patterns/references/code-review.md) |
-| 54 | ✓ | [`.agents/skills/review-logging-patterns/references/drain-pipeline.md`](.agents/skills/review-logging-patterns/references/drain-pipeline.md) |
-| 55 | ✓ | [`.agents/skills/review-logging-patterns/references/structured-errors.md`](.agents/skills/review-logging-patterns/references/structured-errors.md) |
-| 56 | ✓ | [`.agents/skills/review-logging-patterns/references/wide-events.md`](.agents/skills/review-logging-patterns/references/wide-events.md) |
-| 57 | ✓ | [`.agents/skills/review-logging-patterns/SKILL.md`](.agents/skills/review-logging-patterns/SKILL.md) |
-| 58 | ✓ | [`.agents/skills/triage-dependabot-alerts/SKILL.md`](.agents/skills/triage-dependabot-alerts/SKILL.md) |
-| 59 | ✓ | [`.agents/skills/triage-image-cves/SKILL.md`](.agents/skills/triage-image-cves/SKILL.md) |
-| 60 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
-| 61 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
-| 62 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 63 | ✓ | [`brain/playbooks/AGENTS.md`](brain/playbooks/AGENTS.md) |
-| 64 | ✓ | [`brain/playbooks/CLAUDE.md`](brain/playbooks/CLAUDE.md) |
-| 65 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 66 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
-| 67 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
-| 68 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
-| 69 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
-| 70 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
-| 71 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
-| 72 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
-| 73 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
-| 74 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
-| 75 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 76 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 77 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 78 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 79 | ✓ | [`packages/tests-e2e/CLAUDE.md`](packages/tests-e2e/CLAUDE.md) |
-| 80 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 81 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 19 | ✓ | [`.agents/skills/ai-task/sql/quality-built-not-published.sql`](.agents/skills/ai-task/sql/quality-built-not-published.sql) |
+| 20 | ✓ | [`.agents/skills/ai-task/sql/quality-judges.sql`](.agents/skills/ai-task/sql/quality-judges.sql) |
+| 21 | ✓ | [`.agents/skills/ai-task/sql/quality-publish-rate.sql`](.agents/skills/ai-task/sql/quality-publish-rate.sql) |
+| 22 | ✓ | [`.agents/skills/ai-task/sql/quality-random.sql`](.agents/skills/ai-task/sql/quality-random.sql) |
+| 23 | ✓ | [`.agents/skills/analyze-logs/SKILL.md`](.agents/skills/analyze-logs/SKILL.md) |
+| 24 | ✓ | [`.agents/skills/build-audit-logs/references/framework-wiring.md`](.agents/skills/build-audit-logs/references/framework-wiring.md) |
+| 25 | ✓ | [`.agents/skills/build-audit-logs/SKILL.md`](.agents/skills/build-audit-logs/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/debug-failed-run/SKILL.md`](.agents/skills/debug-failed-run/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/design/README.md`](.agents/skills/design/README.md) |
+| 28 | ✓ | [`.agents/skills/design/SKILL.md`](.agents/skills/design/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/mcp-builder/LICENSE.txt`](.agents/skills/mcp-builder/LICENSE.txt) |
+| 30 | ✓ | [`.agents/skills/mcp-builder/reference/evaluation.md`](.agents/skills/mcp-builder/reference/evaluation.md) |
+| 31 | ✓ | [`.agents/skills/mcp-builder/reference/mcp_best_practices.md`](.agents/skills/mcp-builder/reference/mcp_best_practices.md) |
+| 32 | ✓ | [`.agents/skills/mcp-builder/reference/node_mcp_server.md`](.agents/skills/mcp-builder/reference/node_mcp_server.md) |
+| 33 | ✓ | [`.agents/skills/mcp-builder/reference/python_mcp_server.md`](.agents/skills/mcp-builder/reference/python_mcp_server.md) |
+| 34 | ✓ | [`.agents/skills/mcp-builder/scripts/connections.py`](.agents/skills/mcp-builder/scripts/connections.py) |
+| 35 | ✓ | [`.agents/skills/mcp-builder/scripts/evaluation.py`](.agents/skills/mcp-builder/scripts/evaluation.py) |
+| 36 | ✓ | [`.agents/skills/mcp-builder/scripts/example_evaluation.xml`](.agents/skills/mcp-builder/scripts/example_evaluation.xml) |
+| 37 | ✓ | [`.agents/skills/mcp-builder/scripts/requirements.txt`](.agents/skills/mcp-builder/scripts/requirements.txt) |
+| 38 | ✓ | [`.agents/skills/mcp-builder/SKILL.md`](.agents/skills/mcp-builder/SKILL.md) |
+| 39 | ✓ | [`.agents/skills/mintlify/SKILL.md`](.agents/skills/mintlify/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/piece-builder/action-patterns.md`](.agents/skills/piece-builder/action-patterns.md) |
+| 41 | ✓ | [`.agents/skills/piece-builder/ai-metadata.md`](.agents/skills/piece-builder/ai-metadata.md) |
+| 42 | ✓ | [`.agents/skills/piece-builder/auth-patterns.md`](.agents/skills/piece-builder/auth-patterns.md) |
+| 43 | ✓ | [`.agents/skills/piece-builder/common-patterns.md`](.agents/skills/piece-builder/common-patterns.md) |
+| 44 | ✓ | [`.agents/skills/piece-builder/new-piece-scaffold.md`](.agents/skills/piece-builder/new-piece-scaffold.md) |
+| 45 | ✓ | [`.agents/skills/piece-builder/output-quality.md`](.agents/skills/piece-builder/output-quality.md) |
+| 46 | ✓ | [`.agents/skills/piece-builder/piece-types.md`](.agents/skills/piece-builder/piece-types.md) |
+| 47 | ✓ | [`.agents/skills/piece-builder/property-ui-selection.md`](.agents/skills/piece-builder/property-ui-selection.md) |
+| 48 | ✓ | [`.agents/skills/piece-builder/props-patterns.md`](.agents/skills/piece-builder/props-patterns.md) |
+| 49 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
+| 50 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
+| 51 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
+| 52 | ✓ | [`.agents/skills/piece-output-schema/capture-recipes.md`](.agents/skills/piece-output-schema/capture-recipes.md) |
+| 53 | ✓ | [`.agents/skills/piece-output-schema/schema-reference.md`](.agents/skills/piece-output-schema/schema-reference.md) |
+| 54 | ✓ | [`.agents/skills/piece-output-schema/SKILL.md`](.agents/skills/piece-output-schema/SKILL.md) |
+| 55 | ✓ | [`.agents/skills/profile-app-cpu/SKILL.md`](.agents/skills/profile-app-cpu/SKILL.md) |
+| 56 | ✓ | [`.agents/skills/profile-worker-memory/SKILL.md`](.agents/skills/profile-worker-memory/SKILL.md) |
+| 57 | ✓ | [`.agents/skills/review-logging-patterns/references/code-review.md`](.agents/skills/review-logging-patterns/references/code-review.md) |
+| 58 | ✓ | [`.agents/skills/review-logging-patterns/references/drain-pipeline.md`](.agents/skills/review-logging-patterns/references/drain-pipeline.md) |
+| 59 | ✓ | [`.agents/skills/review-logging-patterns/references/structured-errors.md`](.agents/skills/review-logging-patterns/references/structured-errors.md) |
+| 60 | ✓ | [`.agents/skills/review-logging-patterns/references/wide-events.md`](.agents/skills/review-logging-patterns/references/wide-events.md) |
+| 61 | ✓ | [`.agents/skills/review-logging-patterns/SKILL.md`](.agents/skills/review-logging-patterns/SKILL.md) |
+| 62 | ✓ | [`.agents/skills/triage-dependabot-alerts/SKILL.md`](.agents/skills/triage-dependabot-alerts/SKILL.md) |
+| 63 | ✓ | [`.agents/skills/triage-image-cves/SKILL.md`](.agents/skills/triage-image-cves/SKILL.md) |
+| 64 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
+| 65 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
+| 66 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 67 | ✓ | [`brain/playbooks/AGENTS.md`](brain/playbooks/AGENTS.md) |
+| 68 | ✓ | [`brain/playbooks/CLAUDE.md`](brain/playbooks/CLAUDE.md) |
+| 69 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 70 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
+| 71 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
+| 72 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
+| 73 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
+| 74 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
+| 75 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
+| 76 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
+| 77 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
+| 78 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
+| 79 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 80 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 81 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 82 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 83 | ✓ | [`packages/tests-e2e/CLAUDE.md`](packages/tests-e2e/CLAUDE.md) |
+| 84 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 85 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

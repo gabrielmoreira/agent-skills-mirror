@@ -2,7 +2,7 @@
 repo: cheaper-inference/OmniRoute
 repoUrl: https://github.com/cheaper-inference/OmniRoute.git
 refType: branch
-ref: release/v3.8.53
+ref: release/v3.8.54
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `cheaper-inference/OmniRoute` — 26 default patterns, 4 followed patt
 |---------------|-------|
 | Repo          | `cheaper-inference/OmniRoute` |
 | Ref Type      | `branch` |
-| Ref           | `release/v3.8.53` |
+| Ref           | `release/v3.8.54` |
 | Default pats  | 26 |
 | Followed pats | 4 |
 | Files         | 270 |

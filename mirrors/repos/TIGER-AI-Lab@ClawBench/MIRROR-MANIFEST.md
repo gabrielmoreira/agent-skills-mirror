@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 17 followed patterns, 28 file(s) materialized.
+Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 21 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 17 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 17 |
-| Files         | 28 |
+| Followed pats | 21 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,12 +60,16 @@ Mirror of `TIGER-AI-Lab/ClawBench` — 26 default patterns, 17 followed patterns
 - `CONTRIBUTING.md`
 - `eval/README.md`
 - `eval/agentic_eval.md`
+- `docs/README.zh-CN.md`
+- `docs/featured.md`
+- `docs/reproduce.md`
 - `docs/trace-cookbook.md`
 - `docs/faq.md`
+- `docs/comparison.md`
 - `docs/getting-started.md`
 - `eval/scoring.md`
-- `docs/browser-runtimes.md`
 - `docs/news.md`
+- `docs/results.md`
 - `docs/walkthrough.md`
 - `docs/answer-mode-tasks.md`
 
@@ -76,11 +80,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/cua-evaluation-post-training.md`](docs/cua-evaluation-post-training.md) |
-| 3 | ✓ | [`docs/edgebench.md`](docs/edgebench.md) |
-| 4 | ✓ | [`docs/harbor.md`](docs/harbor.md) |
-| 5 | ✓ | [`docs/prorl-rl-env.md`](docs/prorl-rl-env.md) |
-| 6 | ✓ | [`docs/README.zh-CN.md`](docs/README.zh-CN.md) |
+| 2 | ✓ | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
+| 3 | ✓ | [`docs/cua-evaluation-post-training.md`](docs/cua-evaluation-post-training.md) |
+| 4 | ✓ | [`docs/edgebench.md`](docs/edgebench.md) |
+| 5 | ✓ | [`docs/harbor.md`](docs/harbor.md) |
+| 6 | ✓ | [`docs/prorl-rl-env.md`](docs/prorl-rl-env.md) |
 | 7 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
 | 8 | ✓ | [`llms.txt`](llms.txt) |
 | 9 | ✓ | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
@@ -89,20 +93,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 13 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 14 | → | [`docs/answer-mode-tasks.md`](docs/answer-mode-tasks.md) |
-| 15 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
-| 16 | → | [`docs/cli.md`](docs/cli.md) |
+| 15 | → | [`docs/cli.md`](docs/cli.md) |
+| 16 | → | [`docs/comparison.md`](docs/comparison.md) |
 | 17 | → | [`docs/faq.md`](docs/faq.md) |
-| 18 | → | [`docs/getting-started.md`](docs/getting-started.md) |
-| 19 | → | [`docs/news.md`](docs/news.md) |
-| 20 | → | [`docs/README.md`](docs/README.md) |
-| 21 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
-| 22 | → | [`docs/walkthrough.md`](docs/walkthrough.md) |
-| 23 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 24 | → | [`eval/README.md`](eval/README.md) |
-| 25 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 26 | → | [`README.md`](README.md) |
-| 27 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
-| 28 | → | [`src/README.md`](src/README.md) |
+| 18 | → | [`docs/featured.md`](docs/featured.md) |
+| 19 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 20 | → | [`docs/news.md`](docs/news.md) |
+| 21 | → | [`docs/README.md`](docs/README.md) |
+| 22 | → | [`docs/README.zh-CN.md`](docs/README.zh-CN.md) |
+| 23 | → | [`docs/reproduce.md`](docs/reproduce.md) |
+| 24 | → | [`docs/results.md`](docs/results.md) |
+| 25 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
+| 26 | → | [`docs/walkthrough.md`](docs/walkthrough.md) |
+| 27 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 28 | → | [`eval/README.md`](eval/README.md) |
+| 29 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 30 | → | [`README.md`](README.md) |
+| 31 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 32 | → | [`src/README.md`](src/README.md) |
 
 ---
 

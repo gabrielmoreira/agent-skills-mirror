@@ -4,7 +4,7 @@
 the same profile. It enables no additional optimization and supplies no new environment values.
 
 This is the foundation of [#1660](https://github.com/ashhart/TensorFold/issues/1660), beginning with the CUDA KV
-switches in its first table, their `_ALL` companions, and GLM's and Nemotron's paging policies (eight variables).
+switches in its first table, their `_ALL` companions, and GLM's and Nemotron's paging policies (seven variables).
 It does not migrate every `TF_*` or `TENSORFOLD_*` variable yet. Other settings continue through their existing readers. `fast-exact` and `fast`
 are refused by name; they are not aliases
 for `stable` and cannot enable unqualified optimizations.
@@ -31,6 +31,10 @@ requirements. The profile does not waive memory, page-size, tensor-parallel, dra
 tensorfold capabilities --json
 ```
 
+The top-level `env` array lists selected documented variables. It is not a complete inventory of runtime environment
+readers. `profiles.registered_switches` covers the profile registry in this build, including variables absent from
+`env`; it is also not an inventory of every family-specific runtime setting. Consult each family's recipe for those.
+
 The `profiles` object contains `default`, `available`, and `registered_switches`. Every row identifies its switch,
 backend, model types, class, effect, evidence link number, syntax, and stable fallback. A null fallback means the
 profile supplies no value. Registry metadata comes directly from the same table the readers use.
@@ -38,9 +42,9 @@ profile supplies no value. Registry metadata comes directly from the same table 
 Initial coverage is:
 
 - Qwen3.5 dense/MoE on CUDA: `TF_QWEN_KV_PAGES`, `TF_QWEN_KV_PAGES_ALL`, `TF_QWEN_KV_SHARE`.
-- GLM on CUDA: `TF_GLM_KV_SHARE`, `TF_KV_PAGES`, `TF_GLM_KV_HOST`, `TF_GLM_KV_HOST_SHARED`.
+- GLM on CUDA: `TF_KV_PAGES`, `TF_GLM_KV_HOST`, `TF_GLM_KV_HOST_SHARED`.
 - Nemotron and Nemotron Omni on CUDA: `TF_KV_PAGES`, with their existing default-on parser.
-- Gemma 4, Kolibri-1, and Spark2.5 on the core CUDA page adapter: `TF_KV_SHARE`, where the adapter is served.
+- Gemma 4, Kolibri-1, Spark2.5 and GLM on the core CUDA page adapter: `TF_KV_SHARE`, where the adapter is served.
 - Flash Next on CUDA: `TF_FLASHNEXT_KV_PAGES`, `TF_FLASHNEXT_KV_PAGES_ALL`.
 
 `identical` records the existing switch's token-preserving design and linked evidence; it is not a claim that the

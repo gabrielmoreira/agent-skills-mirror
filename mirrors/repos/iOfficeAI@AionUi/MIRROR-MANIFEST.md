@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iOfficeAI/AionUi` — 26 default patterns, 5 followed patterns, 12 file(s) materialized.
+Mirror of `iOfficeAI/AionUi` — 26 default patterns, 6 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 5 followed patterns, 12 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 12 |
+| Followed pats | 6 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 5 followed patterns, 12 fi
 - `CONTRIBUTING.md`
 - `CONTRIBUTING.zh.md`
 - `docs/contributing/file-structure.md`
+- `docs/architecture/overview.md`
 - `.github/pull_request_template.md`
 - `docs/contributing/development.md`
 
@@ -73,8 +74,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 | 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 10 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
-| 11 | → | [`docs/contributing/development.md`](docs/contributing/development.md) |
-| 12 | → | [`docs/contributing/file-structure.md`](docs/contributing/file-structure.md) |
+| 11 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
+| 12 | → | [`docs/contributing/development.md`](docs/contributing/development.md) |
+| 13 | → | [`docs/contributing/file-structure.md`](docs/contributing/file-structure.md) |
 
 ---
 

@@ -61,6 +61,16 @@ this computer's values for a provider it has, and brings a new one without
 `KeepLoginAs`, an account signed in on the other computer; `hashes` blanks
 all three (`TestMirrorKeepsKeepLogin`, `TestKeepLoginIsNoChange`).
 
+A Remote magpie's **Use it anyway** (`KeepSelf`) is kept the same way. Sync
+carries a Remote magpie provider to the computer it names (hanslin1666 on
+Discord: B uses A through one, and on A it points at A), and there it is
+found to be this magpie and left out unless kept (see
+[providers and accounts](providers-accounts.md)). Whether it is this magpie
+is about one computer only, so it is kept in `remote-self.json`, which no
+backup or sync carries, and `KeepSelf` is kept by `Mirror` and `Restore`
+(false for a provider new here) and blanked by `hashes`
+(`TestMirrorKeepsKeepSelf`, `TestKeepSelfIsNoChange`).
+
 The agents part keeps a computer's own pick the same way, field by field
 (hayden4608 on Discord: two computers on one GitHub sync, each wanting its own
 Codex model, set each other's on every sync). Each field a sync changes here
@@ -178,6 +188,13 @@ clock.
   reveal,restore}`. `set` changes only the fields sent; `dir ""` is the
   default folder. Settings draws it under Sync's Export and Import from the
   lazy [`autobackup.js`](../../internal/gui/assets/autobackup.js).
+  The status's `inside` says the folder is `settings.Dir()` or in it (letter
+  case aside off Linux), the default included; Settings then says under the
+  folder that a reinstalled system or a lost disk takes the backups too, and
+  to pick one on another disk or a cloud drive's (two_2025. on Discord,
+  magpie on C:). Keeping everything elsewhere is portable mode
+  (`internal/appdir`); docs/start's `#data-folder` gives both
+  (`TestAutoInsideMagpiesFolder`, `auto-backup.test.cjs`).
 - **Sign-ins:** off unless picked (`SignIns`, with `Passphrase`); see
   [Sign-ins, when picked](#sign-ins-when-picked).
 
@@ -332,6 +349,12 @@ has no list and keeps this computer's; an empty list takes them out. A
 library with none hashes as it did before, so upgrading syncs nothing
 (`TestSyncSubagents`, `TestNoSubagentsHashAsBefore`,
 `TestBackupFileCarriesSubagents`).
+
+The hooks go the same way (`library.Bundle.Hooks`): each computer writes
+them into its agents beside the user's own hooks and records its own
+entries, an older bundle with no list keeps this computer's, and a library
+with none hashes as before (`TestSyncHooks`, `TestNoHooksHashAsBefore`,
+`TestBackupFileCarriesHooks`).
 
 ## Verification
 

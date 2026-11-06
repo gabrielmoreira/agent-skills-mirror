@@ -1,0 +1,109 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Short time 21.66-23.18 (clip 1.60 s): "(dans un produit) payant sans rien demander à personne".
+     A pricing card of a fictional SaaS plan: "Pro", 29 €/mois settles (0-.3), the features stagger in (.40 / .51 / .62),
+     the AI row carries a real Thinking Orb (state working), the cursor clicks "Payer" on "demander" (.76) and the
+     "En prod" pill lands with its check on "à personne" (1.02-1.11).
+     Transparent 1080x1920 overlay. Draws only inside x 40-1040, y 60-1060. Every state is a pure function of t (setT). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; overflow: hidden; }
+  .bg { font-family: "Bricolage Grotesque"; color: #111111; }
+  #card { position: absolute; left: 110px; top: 96px; width: 860px; height: 944px; box-sizing: border-box; background: #FFFFFF;
+    border-radius: 44px; transform-origin: 50% 50%;
+    box-shadow: 0 46px 80px -30px rgba(40,28,10,.30), 0 16px 32px -12px rgba(40,28,10,.16), 0 2px 5px rgba(40,28,10,.09), 0 0 0 1.5px rgba(40,28,10,.06); }
+  #lit { position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,.3) 0, rgba(255,255,255,0) 25%, rgba(60,44,20,0) 70%, rgba(60,44,20,.03) 100%);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.6); }
+  .abs { position: absolute; white-space: nowrap; }
+  #plan { left: 64px; top: 58px; font-size: 80px; font-weight: 800; line-height: 1; letter-spacing: -1.5px; }
+  #sub { left: 66px; top: 160px; font-size: 38px; font-weight: 500; color: #3A3A3A; line-height: 1; }
+  #price { left: 60px; top: 222px; display: flex; align-items: baseline; gap: 18px; line-height: 1; }
+  #price .n { font-size: 172px; font-weight: 800; letter-spacing: -6px; }
+  #price .u { font-size: 58px; font-weight: 700; color: #3A3A3A; letter-spacing: -.5px; }
+  #rule { left: 64px; right: 64px; top: 452px; height: 2px; background: #ECE8E0; }
+  .row { position: absolute; left: 64px; height: 96px; display: flex; align-items: center; gap: 28px; font-size: 46px; font-weight: 600; white-space: nowrap; }
+  .ic { width: 76px; height: 76px; flex: none; display: flex; align-items: center; justify-content: center; }
+  .ic.orb { width: 104px; height: 104px; margin-left: -14px; margin-right: -2px; border-radius: 28px; background: #111111;
+    box-shadow: 0 10px 20px -10px rgba(17,17,17,.5), inset 0 1.5px 0 rgba(255,255,255,.14); }
+  #btn { position: absolute; left: 64px; right: 64px; top: 812px; height: 120px; border-radius: 30px; background: #111111;
+    display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 50px; font-weight: 800; letter-spacing: -.5px;
+    box-shadow: 0 14px 26px -12px rgba(17,17,17,.55), inset 0 2px 0 rgba(255,255,255,.12); transform-origin: 50% 50%; }
+  #pill { position: absolute; right: 60px; top: 56px; height: 86px; box-sizing: border-box; padding: 0 30px 0 18px; border-radius: 999px;
+    display: flex; align-items: center; gap: 12px; background: #EAF4FF; box-shadow: inset 0 0 0 3px #258EFF, 0 8px 18px -8px rgba(37,142,255,.45);
+    font-size: 42px; font-weight: 800; color: #111111; transform-origin: 50% 50%; }
+  #pill img { width: 58px; height: 58px; display: block; transform-origin: 50% 50%; }
+  #cur { position: absolute; left: 0; top: 0; width: 58px; height: 84px; transform-origin: 6px 4px; }
+</style></head>
+<body><div id="stage">
+  <div id="card" class="bg">
+    <div id="lit"></div>
+    <div class="abs" id="plan">Pro</div>
+    <div class="abs" id="sub">Pour les équipes qui livrent</div>
+    <div class="abs" id="price"><span class="n">29</span><span class="u">€/mois</span></div>
+    <div class="abs" id="rule"></div>
+    <div class="row" id="r0" style="top:476px;height:112px;gap:22px"><span class="ic orb"><canvas id="orb" width="104" height="104" style="width:104px;height:104px"></canvas></span>Assistant IA</div>
+    <div class="row" id="r1" style="top:598px"><span class="ic"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Projets illimités</div>
+    <div class="row" id="r2" style="top:696px"><span class="ic"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Support prioritaire</div>
+    <div id="btn">Payer</div>
+    <div id="pill"><img id="chk" src="../assets/icons/glyph/check.png"><span>En prod</span></div>
+  </div>
+  <!-- macOS arrow cursor -->
+  <svg id="cur" viewBox="0 0 29 42"><path d="M3 2 L3 32 L10.2 25.4 L14.8 36.4 L19.6 34.4 L15 23.6 L25 23.6 Z" fill="#111111" stroke="#FFFFFF" stroke-width="2.6" stroke-linejoin="round"/></svg>
+</div>
+<script src="orbs.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const L = (a, b, k) => a + (b - a) * k;
+
+const ctx = $('orb').getContext('2d');
+const ORB = ORBS.resolvePreset('working', 64);
+function drawOrb(t) {
+  const k = $('orb').width / 64;
+  ctx.setTransform(k, 0, 0, k, 0, 0); ctx.clearRect(0, 0, 64, 64);
+  ORBS.paintFrame(ctx, ORBS.MODE_FRAMES[ORB.mode](64, t * ORB.speed, ORB.opts), true);
+}
+
+const CARD = { x: 110, y: 96 };
+const BTN = { x: CARD.x + 430, y: CARD.y + 872 };            // centre of "Payer"
+window.setT = function (t) {
+  // the card is there on frame 0, .15 s settle
+  const s0 = S(t, 36);
+  $('card').style.transform = `translateY(${(1 - s0) * 14}px)`;
+  const cy = (1 - s0) * 14;
+
+  // "payant" 0 -> .3: the price settles
+  const p = S(t, 17);
+  $('price').style.opacity = Math.min(1, p * 1.5);
+  $('price').style.transform = `translateY(${(1 - p) * 40}px)`;
+
+  // "sans" .40 / .51 / "rien" .62: the features slide in from the left
+  [0.40, 0.51, 0.62].forEach((at, i) => { const k = S(t - at, 18), e = $('r' + i);
+    e.style.opacity = Math.min(1, k * 1.4); e.style.transform = `translateX(${(1 - k) * -30}px)`; });
+  drawOrb(t);
+
+  // "demander" .76: the cursor glides onto Payer from the lower right, presses at .76, releases
+  const m = S(t - 0.44, 9);
+  const cx = L(985, BTN.x + 160, m), cyy = L(924, BTN.y + 4, m) + cy;
+  const press = S(t - 0.74, 40) - S(t - 0.84, 22);
+  const cur = $('cur');
+  cur.style.opacity = cl((t - 0.44) / 0.1);
+  cur.style.transform = `translate(${cx}px, ${cyy}px) scale(${1 - 0.1 * press})`;
+  const b = $('btn');
+  b.style.transform = `scale(${1 - 0.025 * press})`;
+  b.style.background = `rgb(${[17, 17, 17].map(c => Math.round(L(c, 52, press)))})`;
+
+  // "à" 1.02 -> "personne" 1.11: the En prod pill lands, its check settles
+  const q = S(t - 1.02, 20), pl = $('pill');
+  pl.style.opacity = cl((t - 1.02) / 0.07);
+  pl.style.transform = `translateY(${(1 - q) * -12}px) scale(${L(0.9, 1, q)})`;
+  const c = S(t - 1.10, 20);
+  $('chk').style.opacity = cl((t - 1.10) / 0.06);
+  $('chk').style.transform = `scale(${L(0.55, 1, c)}) rotate(${(1 - c) * -25}deg)`;
+};
+window.setT(0);
+</script>
+</body></html>

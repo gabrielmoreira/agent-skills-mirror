@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 19 file(s) materialized.
+Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 19
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,19 +66,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 5 | ✓ | [`.grok/skills/career-ops/SKILL.md`](.grok/skills/career-ops/SKILL.md) |
 | 6 | ✓ | [`.kimi/skills/career-ops/SKILL.md`](.kimi/skills/career-ops/SKILL.md) |
-| 7 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
-| 8 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`antigravity-directory/skills/career-ops/SKILL.md`](antigravity-directory/skills/career-ops/SKILL.md) |
-| 11 | ✓ | [`claude-directory/skills/career-ops/SKILL.md`](claude-directory/skills/career-ops/SKILL.md) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | ✓ | [`cursor-directory/skills/career-ops/SKILL.md`](cursor-directory/skills/career-ops/SKILL.md) |
-| 14 | ✓ | [`docs/KEEPING_PORTALS_LIVE.md`](docs/KEEPING_PORTALS_LIVE.md) |
-| 15 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 16 | ✓ | [`openai-directory/skills/career-ops/SKILL.md`](openai-directory/skills/career-ops/SKILL.md) |
-| 17 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 18 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 19 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 7 | ✓ | [`.omp/AGENTS.md`](.omp/AGENTS.md) |
+| 8 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
+| 9 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`antigravity-directory/skills/career-ops/SKILL.md`](antigravity-directory/skills/career-ops/SKILL.md) |
+| 12 | ✓ | [`claude-directory/skills/career-ops/SKILL.md`](claude-directory/skills/career-ops/SKILL.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | ✓ | [`cursor-directory/skills/career-ops/SKILL.md`](cursor-directory/skills/career-ops/SKILL.md) |
+| 15 | ✓ | [`docs/KEEPING_PORTALS_LIVE.md`](docs/KEEPING_PORTALS_LIVE.md) |
+| 16 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 17 | ✓ | [`openai-directory/skills/career-ops/SKILL.md`](openai-directory/skills/career-ops/SKILL.md) |
+| 18 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 19 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 20 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

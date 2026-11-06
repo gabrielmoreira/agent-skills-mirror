@@ -52,12 +52,13 @@ Bad example:
 
 ## Recovery Notes
 
-- If sources cannot be accessed, state the retrieval gap and use only observed local context.
-- If evidence is thin or one-sided, lower confidence and ask for a narrower source boundary.
+- If one watch source cannot be read, retain covered sources' findings and the failed source's previous cutoff, mark its coverage unresolved, and hand back that source and uncovered window rather than reporting a quiet period.
+- If the synthesis tool cannot process collected findings, retain raw findings in source_inbox/v1, mark synthesis not_observed, and hand back research_department_plan/v1 with the synthesis-tool readiness gap.
+- If schedule creation has no cronjob_manage result or cron listing, retain the cadence and Scout, Analyst, and Briefer plan, mark job creation not_observed, and hand back the prepared job description for separately approved scheduling.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

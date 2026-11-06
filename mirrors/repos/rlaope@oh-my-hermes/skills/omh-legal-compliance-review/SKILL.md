@@ -51,12 +51,13 @@ Bad example:
 
 ## Recovery Notes
 
-- If the reviewed target is missing, inspect the requested artifact or ask one target question.
-- If independent verification is unavailable, report the gap and avoid an approval-style claim.
+- If an authority's pinpoint or effective status cannot be verified, retain the established document scope, mark authority-dependent issues unresolved, and hand back legal_scope_authority_record/v1 with the missing citations for counsel.
+- If a contested clause has an open counsel hold or no cited playbook position, retain its issue row, mark that redline row unresolved, and hand back the counsel question rather than proposed language.
+- If mandatory counsel triggers remain open at final review, retain the issue matrix and hold register, mark legal_review_disposition/v1 unresolved with HOLD, and hand back the exact triggers and counsel owner without a final determination.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

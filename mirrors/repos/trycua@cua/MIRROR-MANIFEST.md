@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 4 followed patterns, 70 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 5 followed patterns, 71 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `trycua/cua` — 26 default patterns, 4 followed patterns, 70 file(s) 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 70 |
+| Followed pats | 5 |
+| Files         | 71 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `trycua/cua` — 26 default patterns, 4 followed patterns, 70 file(s) 
 - `.github/SECURITY.md`
 - `docs/contributing/Development.md`
 - `docs/contributing/TESTING.md`
+- `docs/contributing/releasing-cua-spaces.md`
 
 ## File Index
 
@@ -130,8 +131,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
 | 67 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
 | 68 | → | [`docs/contributing/Development.md`](docs/contributing/Development.md) |
-| 69 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
-| 70 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
+| 69 | → | [`docs/contributing/releasing-cua-spaces.md`](docs/contributing/releasing-cua-spaces.md) |
+| 70 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
+| 71 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
 
 ---
 

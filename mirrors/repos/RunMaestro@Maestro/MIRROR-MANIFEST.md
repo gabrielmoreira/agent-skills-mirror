@@ -76,9 +76,9 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 28 followed patterns, 31
 - `docs/agent-guides/RELEASE-RUNBOOK.md`
 - `docs/agent-guides/SECURITY-RUNBOOK.md`
 - `docs/agent-guides/CANONICAL-UTILITIES.md`
-- `docs/media-player.md`
 - `docs/agent-guides/DEDUP-TRACKER.md`
 - `docs/encore-features.md`
+- `docs/media-player.md`
 
 ## File Index
 

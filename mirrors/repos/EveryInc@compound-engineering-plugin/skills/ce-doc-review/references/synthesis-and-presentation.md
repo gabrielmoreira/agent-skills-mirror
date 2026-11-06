@@ -18,7 +18,7 @@ Check each agent's returned JSON against the findings schema:
 
 ### 3.1b Admit Findings by Consequence
 
-Establish what, if anything, prevents the document from guiding the agreed work. Retain a concern when its instructions cannot jointly satisfy the agreed contract, or when following the document, its references, and active project conventions would cause a demonstrated wrong outcome or worthwhile avoidable work. Judge an omission against what a competent implementer can already derive. A missing restatement, finer threshold, or additional procedure is not a defect when the existing instructions suffice.
+Establish what, if anything, prevents the document from guiding the agreed work. Retain a concern when its instructions cannot jointly satisfy the agreed contract, or when following the document, its references, and active project conventions would cause a demonstrated wrong outcome or worthwhile avoidable work. Judge an omission against what a competent implementer can already derive. A missing restatement, finer threshold, or additional procedure is not a defect when the existing instructions suffice. An implementer's likely care is not a derivation: when a reviewer traces a path from an input the shipped work accepts to lost or wrongly moved money, a security breach, or corrupted stored data, retain it unless the document, its references, or the code already prevents that harm. Existing code the work newly runs or exposes, and a stub dependency on the path, do not void the trace.
 
 Investigate available facts before accepting a reviewer's claim. Establish the problem independently of its suggested fix: a useful-looking addition does not prove anything is missing. Keep the smallest supported correction that addresses the actual consequence. Verification changes must test the required outcome, not merely produce a passing check.
 
@@ -32,7 +32,7 @@ Route each finding by its `confidence` anchor value. Anchors are discrete intege
 
 | Anchor | Meaning | Route |
 |--------|---------|-------|
-| `0`    | False positive or pre-existing issue | Drop silently |
+| `0`    | False positive, or pre-existing issue the work does not reach | Drop silently |
 | `25`   | Might be real but could not verify | Drop silently |
 | `50`   | Verified, useful advisory concern below the actionable bar | Show in FYI subsection |
 | `75`   | Double-checked, will hit in practice, directly impacts correctness | Enter actionable tier (classify by `autofix_class`) |
@@ -269,6 +269,8 @@ Deferred questions:
 Recorded in the document: N items under Deferred / Open Questions
 Not recorded in the document: N items (<reason>)
 
+Coverage: <what limited this review, including a lite review as references/depth.md words it>
+
 peer.outcome: <folded | in-process-fallback>
 cross-model <lens> peer: <what happened to the peer's result>
 <lens>: in-process fallback (cross-model peer not run: <reason>)
@@ -277,7 +279,7 @@ whole-doc: not run (cross-model peer not run: <reason>)
 Review complete
 ```
 
-Omit any section with zero items. The bucket names are the user-facing vocabulary for the routes 3.7 assigned. "Applied N fixes" reports what already changed. The obligations block and "Proposed fixes" together render the grouped confirmation: obligations first, then the rest of the batch, each shaped by the floor's "Presenting a batch" rule. The caller re-narrates this result to a reader who has seen none of it, so a flat list here becomes a flat list there. "Decisions" carries the decisions the user must still make, and "FYI observations" carries anchor `50`. End with "Review complete" as the final line so callers can detect completion.
+Omit any section with zero items; Coverage follows the same condition as the interactive Coverage line in `references/review-output-template.md`. The bucket names are the user-facing vocabulary for the routes 3.7 assigned. "Applied N fixes" reports what already changed. The obligations block and "Proposed fixes" together render the grouped confirmation: obligations first, then the rest of the batch, each shaped by the floor's "Presenting a batch" rule. The caller re-narrates this result to a reader who has seen none of it, so a flat list here becomes a flat list there. "Decisions" carries the decisions the user must still make, and "FYI observations" carries anchor `50`. End with "Review complete" as the final line so callers can detect completion.
 
 **Deliver the result through a file.** Write the block, exactly as specified, to `result.md` in a private run directory, then print only the three lines below as your final output. Create the directory with this block (`<run-id>` is the current date and time plus a short random suffix, e.g. `20261030-0114-a3f9c1`):
 

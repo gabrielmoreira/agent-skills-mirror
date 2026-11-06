@@ -1,0 +1,146 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Skill 1/3 (short 6.93 s to 9.68 s, 2.75 s): a reel script being written by Claude, the hook highlighted, its views
+     counting up. Transparent 1080x1920 overlay at paper level; draws only inside x 60-1020, y 140-1090.
+     Pure function of t: window.setT(t), t = 0 at the component start. -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; position: relative; -webkit-font-smoothing: antialiased;
+    font-family: "Bricolage Grotesque", sans-serif; color: #14161B; }
+  #card { position: absolute; left: 90px; top: 158px; width: 900px; height: 866px; box-sizing: border-box; padding: 52px 56px 0;
+    background: #FFFFFF; border-radius: 34px; will-change: transform;
+    box-shadow: 0 30px 50px -12px rgba(20,22,27,.22), 0 8px 20px rgba(20,22,27,.08), 0 0 0 1.5px rgba(20,22,27,.05); }
+  .head { display: flex; align-items: center; gap: 22px; height: 72px; }
+  .head img { width: 64px; height: 64px; border-radius: 16px; display: block; }
+  .head .ttl { font-weight: 800; font-size: 50px; letter-spacing: -1px; flex: 1; }
+  .tag { height: 56px; padding: 0 24px; border-radius: 28px; background: #258EFF; color: #fff; font-weight: 800; font-size: 34px;
+    display: flex; align-items: center; letter-spacing: -.2px; }
+  .meta { display: flex; align-items: center; gap: 14px; margin-top: 20px; height: 44px; font-family: "DM Sans", sans-serif;
+    font-weight: 500; font-size: 34px; color: #7A7F8C; }
+  .meta img { width: 40px; height: 40px; border-radius: 10px; display: block; }
+  .meta b { color: #14161B; font-weight: 700; }
+  .tools { display: flex; align-items: center; gap: 6px; height: 68px; margin: 26px -14px 36px; padding: 0 10px; border-radius: 18px;
+    background: #F6F5F2; box-shadow: inset 0 0 0 1.5px #ECEAE5; }
+  .tb { height: 52px; min-width: 52px; padding: 0 10px; box-sizing: border-box; border-radius: 12px; display: flex; align-items: center;
+    justify-content: center; font-size: 34px; color: #4A4E59; font-weight: 800; }
+  .tb.i { font-style: italic; font-weight: 600; font-family: "Instrument Serif", serif; font-size: 40px; }
+  .tb.u { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 5px; font-weight: 600; }
+  .sep { width: 2px; height: 34px; background: #E2E0DA; margin: 0 6px; }
+  .tb svg { display: block; }
+  #pen { position: relative; }
+  .tools .sp { flex: 1; }
+  .save { display: flex; align-items: center; gap: 10px; font-family: "DM Sans", sans-serif; font-weight: 500; font-size: 34px; color: #7A7F8C; padding-right: 12px; }
+  .save i { width: 14px; height: 14px; border-radius: 7px; background: #258EFF; display: block; }
+  .hook { font-weight: 800; font-size: 62px; line-height: 76px; letter-spacing: -1.4px; height: 152px; }
+  .ln { position: relative; display: inline-block; white-space: pre; }
+  .ln .mk { position: absolute; left: -10px; top: 10px; height: 60px; width: 0; background: rgba(37,142,255,.35);
+    border-radius: 8px 14px 10px 16px; }
+  .ln .tx { position: relative; }
+  .caret { display: inline-block; width: 5px; border-radius: 3px; background: #258EFF; vertical-align: top; }
+  .hook .caret { height: 60px; margin: 9px 0 0 4px; }
+  .acc { position: absolute; left: 0; top: 0; height: 56px; padding: 0 24px 0 6px; border-radius: 28px; display: flex; align-items: center; gap: 12px;
+    background: #14161B; color: #fff; font-weight: 800; font-size: 34px; letter-spacing: 1px; white-space: nowrap; opacity: 0; }
+  .acc .ic { width: 44px; height: 44px; border-radius: 22px; background: #fff; display: flex; align-items: center; justify-content: center; }
+  .acc .ic img { width: 32px; height: 32px; }
+  .vrow { height: 66px; margin-top: 22px; position: relative; }
+  #views { position: absolute; left: 0; top: 0; height: 66px; padding: 0 28px 0 10px; border-radius: 33px; background: #258EFF; color: #fff;
+    display: flex; align-items: center; gap: 14px; font-weight: 800; font-size: 38px; letter-spacing: -.3px; opacity: 0;
+    box-shadow: 0 14px 26px -8px rgba(37,142,255,.45); white-space: nowrap; }
+  #views .eye { width: 50px; height: 50px; border-radius: 25px; background: #fff; display: flex; align-items: center; justify-content: center; }
+  #views .eye img { width: 36px; height: 36px; }
+  #views .up { font-size: 26px; }
+  .body { margin-top: 30px; font-family: "DM Sans", sans-serif; font-weight: 500; font-size: 38px; line-height: 52px; color: #5E6370;
+    height: 104px; }
+  .body .caret { height: 42px; margin: 6px 0 0 3px; }
+  .bars { margin-top: 30px; }
+  .bar { height: 24px; border-radius: 12px; background: #EDEBE6; margin-bottom: 22px; transform-origin: left center; transform: scaleX(0); }
+</style></head>
+<body>
+<div id="card">
+  <div class="head">
+    <img src="../assets/logos/instagram.png" alt="">
+    <div class="ttl">Script reel</div>
+    <div class="tag">skill 1/3</div>
+  </div>
+  <div class="meta"><img src="../assets/logos/claude.png" alt=""><span>Écrit par <b>Claude</b></span></div>
+  <div class="tools">
+    <div class="tb">B</div><div class="tb i">I</div><div class="tb u">U</div><div class="sep"></div><div class="tb">H1</div>
+    <div class="tb"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#4A4E59" stroke-width="3.4" stroke-linecap="round"><circle cx="8" cy="11" r="1.6" fill="#4A4E59"/><circle cx="8" cy="20" r="1.6" fill="#4A4E59"/><circle cx="8" cy="29" r="1.6" fill="#4A4E59"/><path d="M15 11h19M15 20h19M15 29h13"/></svg></div>
+    <div class="tb" id="pen"><svg width="42" height="42" viewBox="0 0 42 42" fill="none" stroke-linejoin="round" stroke-linecap="round"><rect x="4" y="33" width="34" height="6" rx="3" id="penInk" fill="#258EFF" stroke="none" opacity=".55"/><path id="penBody" d="M24 5l9 9-13 13-6 1-3-3 1-6z" stroke="#4A4E59" stroke-width="3.2" fill="#fff"/><path id="penTip" d="M12 22l7 7" stroke="#4A4E59" stroke-width="3.2"/></svg></div>
+    <div class="sp"></div><div class="save" id="save"><i></i><span id="saveTx">Brouillon</span></div>
+  </div>
+  <div class="hook" id="hook"></div>
+  <div class="vrow"><div id="views"><div class="eye"><img src="../assets/icons/glyph/eye.png" alt=""></div><span class="up">▲</span><span id="num">1 200</span><span>vues</span></div></div>
+  <div class="body" id="body"></div>
+  <div class="bars"><div class="bar" style="width:100%"></div><div class="bar" style="width:88%"></div><div class="bar" style="width:58%"></div></div>
+</div>
+<script>
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x * x * (3 - 2 * x);
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+const H1 = 'Claude vient de tuer', H2 = 'Instagram.';
+const BODY = 'Tu peux le transformer en community manager qui poste à ta place.';
+const card = document.getElementById('card'), hook = document.getElementById('hook'), body = document.getElementById('body');
+const views = document.getElementById('views'), num = document.getElementById('num'), bars = [...document.querySelectorAll('.bar')];
+const fmt = n => String(Math.round(n / 100) * 100).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+window.setT = function (t) {
+  // card: springs in from the right (0-.3), whips out to the left (2.45-2.75)
+  const u = seg(t, 2.45, 2.75);
+  const x = 1150 * (1 - S(t, 19)) - 1150 * u * u;
+  card.style.transform = `translateX(${x.toFixed(2)}px)`;
+
+  // hook types itself on "écrit" (.47 -> 1.02)
+  const total = H1.length + H2.length, nh = Math.floor(clamp((t - .47) / .55) * total + 1e-6);
+  const typingHook = t >= .47 && nh < total, typingBody = t >= 1.04 && t < 1.62;
+  const blinkOn = (Math.floor((t - .47) * 3.2) % 2) === 0;
+  const caret = '<span class="caret"></span>';
+  const a = H1.slice(0, nh), b = H2.slice(0, Math.max(0, nh - H1.length));
+  const showHookCaret = t >= .2 && t < 1.04 && (t >= .47 || Math.floor((t - .2) * 3.6) % 2 === 0);
+  const onL2 = nh > H1.length;
+  // highlighter sweeps left to right on "accroches" (1.63 -> 2.00)
+  const m1 = ease(seg(t, 1.63, 1.84)), m2 = ease(seg(t, 1.84, 1.98));
+  hook.innerHTML =
+    `<div class="ln" id="l1"><div class="mk" style="width:calc(${(m1 * 100).toFixed(2)}% + ${(20 * m1).toFixed(2)}px)"></div><span class="tx">${esc(a)}${showHookCaret && !onL2 ? caret : ''}</span></div><br>` +
+    `<div class="ln" id="l2"><div class="mk" style="width:calc(${(m2 * 100).toFixed(2)}% + ${(20 * m2).toFixed(2)}px)"></div><span class="tx">${esc(b)}${showHookCaret && onL2 ? caret : ''}</span>` +
+    `<div class="acc" id="acc"><div class="ic"><img src="../assets/icons/glyph/hook.png" alt=""></div>ACCROCHE</div></div>`;
+  if (!b) document.getElementById('l2').querySelector('.tx').innerHTML += '&#8203;';
+  // ACCROCHE label slides in next to the hook (1.90 -> 2.15)
+  const acc = document.getElementById('acc'), l2 = document.getElementById('l2');
+  const pa = S(t - 1.90, 16);
+  acc.style.left = (l2.querySelector('.tx').offsetWidth + 34) + 'px';
+  acc.style.top = '10px';
+  acc.style.opacity = pa.toFixed(3);
+  acc.style.transform = `translateX(${(-26 * (1 - pa)).toFixed(2)}px)`;
+
+  // highlighter tool in the toolbar turns active as the marker sweeps (1.55 -> 1.70), the doc reads "Enregistré" once written
+  const pp = S(t - 1.52, 16);
+  document.getElementById('pen').style.background = `rgba(37,142,255,${(.16 * pp).toFixed(3)})`;
+  document.getElementById('penBody').setAttribute('stroke', pp > .5 ? '#258EFF' : '#4A4E59');
+  document.getElementById('penTip').setAttribute('stroke', pp > .5 ? '#258EFF' : '#4A4E59');
+  document.getElementById('penInk').setAttribute('opacity', (.55 + .45 * pp).toFixed(3));
+  document.getElementById('saveTx').textContent = t < .47 ? 'Brouillon' : t < 1.6 ? 'Rédaction' : 'Enregistré';
+
+  // body line types on "reels" (1.04 -> 1.55), then grey placeholder lines grow (1.30 -> 1.75)
+  const nb = Math.floor(clamp((t - 1.04) / .5) * BODY.length + 1e-6);
+  const bodyCaret = typingBody && (nb < BODY.length || blinkOn);
+  body.innerHTML = esc(BODY.slice(0, nb)) + (bodyCaret ? caret : '') + (nb ? '' : '&#8203;');
+  bars.forEach((el, i) => {
+    const p = S(t - (1.30 + i * .12), 14);
+    el.style.transform = `scaleX(${p.toFixed(4)})`;
+    el.style.opacity = clamp(p * 3).toFixed(3);
+  });
+
+  // views pill lands under the hook on "plus" (2.35), counts up to "vues" (2.61)
+  const pv = S(t - 2.35, 22);
+  views.style.opacity = clamp(pv * 2.2).toFixed(3);
+  views.style.transform = `translateY(${(22 * (1 - pv)).toFixed(2)}px)`;
+  const c = ease(seg(t, 2.36, 2.56));
+  num.textContent = fmt(1200 + (48000 - 1200) * c);
+};
+window.setT(0);
+</script>
+</body></html>

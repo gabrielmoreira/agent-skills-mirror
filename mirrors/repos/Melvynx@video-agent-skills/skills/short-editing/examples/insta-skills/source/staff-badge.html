@@ -1,0 +1,178 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Beat "Tu peux maintenant transformer Claude en community manager de ton compte Instagram" (short 1.41 s to 4.70 s).
+     Claude becomes the STAFF of your Instagram account: a lanyard ID badge drops in, the photo slot fills with the Claude
+     logo, the name writes in, a blue pill sweeps "Community manager", the Instagram logo stamps the corner, then the badge
+     whips out left. Transparent 1080x1920 overlay, drawn only inside x 60-1020, y 140-1090. window.setT(t) is pure. -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; position: relative; -webkit-font-smoothing: antialiased;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; color: #14161B; }
+  #clip { position: absolute; left: 60px; top: 140px; width: 960px; height: 950px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 46px), linear-gradient(to right, transparent 0, #000 36px), linear-gradient(to top, transparent 0, #000 52px);
+    -webkit-mask-composite: source-in, source-in; mask-composite: intersect, intersect; }
+  #rig { position: absolute; left: -60px; top: -140px; width: 1080px; height: 1920px; transform-origin: 540px 140px; }
+  #lan { position: absolute; left: 0; top: 0; filter: drop-shadow(0 10px 14px rgba(20,22,27,.20)); }
+  #tabBack { position: absolute; left: 0; top: 0; }
+  #cardWrap { position: absolute; left: 240px; top: 330px; width: 600px; height: 700px;
+    filter: drop-shadow(0 34px 44px rgba(20,22,27,.24)) drop-shadow(0 8px 12px rgba(20,22,27,.14)); }
+  #card { position: absolute; inset: 0; background: linear-gradient(180deg, #FFFFFF 0%, #FCFBF8 100%); overflow: hidden;
+    -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+  #head { position: absolute; left: 0; top: 0; width: 600px; height: 124px; background: #14161B; }
+  #head .lbl { position: absolute; left: 0; right: 0; top: 52px; text-align: center; color: #FFFFFF; font-size: 52px;
+    line-height: 60px; letter-spacing: .26em; text-indent: .26em; }
+  #stripe { position: absolute; left: 0; top: 124px; width: 600px; height: 10px; background: #258EFF; }
+  #slot { position: absolute; left: 190px; top: 160px; width: 220px; height: 220px; border-radius: 40px; background: #EEF0F3;
+    box-shadow: inset 0 3px 10px rgba(20,22,27,.10); }
+  #slot .dash { position: absolute; inset: 10px; border-radius: 32px; border: 3px dashed rgba(20,22,27,.16); }
+  #photo { position: absolute; left: 190px; top: 160px; width: 220px; height: 220px; border-radius: 40px; overflow: hidden;
+    box-shadow: 0 14px 26px rgba(20,22,27,.20), 0 3px 6px rgba(20,22,27,.12); }
+  #photo img { width: 100%; height: 100%; display: block; }
+  .bar { position: absolute; left: 50%; border-radius: 12px; background: #EEF0F3; }
+  #nameBar { top: 426px; width: 280px; height: 26px; margin-left: -140px; }
+  #roleBar { top: 536px; width: 380px; height: 22px; margin-left: -190px; }
+  #handleBar { top: 618px; width: 200px; height: 16px; margin-left: -100px; }
+  #name { position: absolute; left: 0; right: 0; top: 386px; text-align: center; font-size: 100px; line-height: 110px;
+    letter-spacing: -.02em; color: #14161B; }
+  #pill { position: absolute; left: 50%; top: 508px; height: 78px; transform: translateX(-50%); white-space: nowrap; }
+  #pill .bg { position: absolute; inset: 0; border-radius: 39px; background: #258EFF;
+    box-shadow: 0 10px 20px rgba(37,142,255,.28), 0 2px 4px rgba(20,22,27,.10); }
+  #pill .tx { position: relative; padding: 0 38px; font-size: 46px; line-height: 78px; color: #FFFFFF; letter-spacing: -.01em; }
+  #handle { position: absolute; left: 0; right: 0; top: 604px; text-align: center; font-size: 40px; line-height: 48px;
+    color: #3A3F4A; letter-spacing: -.005em; }
+  #gloss { position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 40%); pointer-events: none; }
+  #shine { position: absolute; top: -400px; left: 0; width: 170px; height: 1500px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.38) 50%, rgba(255,255,255,0) 100%); }
+  #edge { position: absolute; inset: 0; border-radius: 32px; box-shadow: inset 0 0 0 2px rgba(20,22,27,.06); pointer-events: none; }
+  #tabFront { position: absolute; left: 0; top: 0; }
+  #igWrap { position: absolute; left: 0; top: 0; width: 140px; height: 140px; }
+  #ig { position: absolute; inset: 0; border-radius: 40px; background: #FFFFFF; padding: 9px; box-sizing: border-box; }
+  #ig img { width: 100%; height: 100%; display: block; border-radius: 32px; }
+</style></head>
+<body>
+<div id="clip"><div id="rig">
+  <svg id="lan" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+  <svg id="tabBack" width="1080" height="1920" viewBox="0 0 1080 1920">
+    <rect x="514" y="340" width="52" height="54" rx="10" fill="rgba(120,128,140,.55)"/>
+  </svg>
+  <div id="cardWrap"><div id="card">
+    <div id="head"><div class="lbl">STAFF</div></div>
+    <div id="stripe"></div>
+    <div id="slot"><div class="dash"></div></div>
+    <div id="photo"><img src="../assets/logos/claude.png" alt=""></div>
+    <div class="bar" id="nameBar"></div>
+    <div class="bar" id="roleBar"></div>
+    <div class="bar" id="handleBar"></div>
+    <div id="name">Claude</div>
+    <div id="pill"><div class="bg"></div><div class="tx">Community manager</div></div>
+    <div id="handle">@ton.compte</div>
+    <div id="gloss"></div>
+    <div id="shine"></div>
+    <div id="edge"></div>
+  </div></div>
+  <svg id="tabFront" width="1080" height="1920" viewBox="0 0 1080 1920">
+    <defs>
+      <linearGradient id="metal2" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#F4F5F7"/><stop offset=".45" stop-color="#A9B0BA"/><stop offset="1" stop-color="#E3E6EA"/>
+      </linearGradient>
+    </defs>
+    <rect x="512" y="318" width="56" height="44" rx="11" fill="rgba(255,255,255,.62)" stroke="rgba(20,22,27,.20)" stroke-width="2"/>
+    <rect x="518" y="321" width="44" height="6" rx="3" fill="rgba(255,255,255,.75)"/>
+    <circle cx="540" cy="338" r="9" fill="url(#metal2)" stroke="rgba(20,22,27,.28)" stroke-width="1.5"/>
+  </svg>
+  <div id="igWrap"><div id="ig"><img src="../assets/logos/instagram.png" alt=""></div></div>
+</div></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+  const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+
+  // card mask: rounded rect with the punched slot (evenodd), so the paper shows through the hole
+  (() => {
+    const W = 600, H = 700, r = 32, sx = 245, sy = 18, sw = 110, sh = 22, sr = 11;
+    const rr = (x, y, w, h, r) => `M${x + r},${y}H${x + w - r}A${r},${r} 0 0 1 ${x + w},${y + r}V${y + h - r}A${r},${r} 0 0 1 ${x + w - r},${y + h}H${x + r}A${r},${r} 0 0 1 ${x},${y + h - r}V${y + r}A${r},${r} 0 0 1 ${x + r},${y}Z`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${W}' height='${H}' viewBox='0 0 ${W} ${H}'><path fill-rule='evenodd' fill='#000' d='${rr(0, 0, W, H, r)} ${rr(sx, sy, sw, sh, sr)}'/></svg>`;
+    const url = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    $('card').style.webkitMaskImage = url; $('card').style.maskImage = url;
+  })();
+
+  // lanyard: two woven straps meeting in a metal crimp, a ring, a swivel hook
+  (() => {
+    const strap = (x1, y1, x2, y2) => {
+      const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L;
+      const off = k => `x1="${x1 + nx * k}" y1="${y1 + ny * k}" x2="${x2 + nx * k}" y2="${y2 + ny * k}"`;
+      return `<line ${off(0)} stroke="#1B6FCC" stroke-width="46"/>
+        <line ${off(0)} stroke="#258EFF" stroke-width="40"/>
+        <line ${off(-4)} stroke="rgba(255,255,255,.10)" stroke-width="12"/>
+        <line ${off(14)} stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-dasharray="9 7"/>
+        <line ${off(-14)} stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-dasharray="9 7"/>`;
+    };
+    $('lan').innerHTML = `<defs>
+        <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#9AA1AB"/><stop offset=".35" stop-color="#F2F4F6"/><stop offset=".6" stop-color="#C3C8CF"/><stop offset="1" stop-color="#8A919B"/>
+        </linearGradient>
+      </defs>
+      ${strap(700, 40, 556, 252)}
+      ${strap(380, 40, 524, 252)}
+      <rect x="508" y="236" width="64" height="42" rx="10" fill="url(#metal)" stroke="rgba(20,22,27,.25)" stroke-width="1.5"/>
+      <rect x="514" y="242" width="52" height="5" rx="2.5" fill="rgba(255,255,255,.7)"/>
+      <circle cx="540" cy="292" r="13" fill="none" stroke="url(#metal)" stroke-width="7"/>
+      <circle cx="540" cy="292" r="13" fill="none" stroke="rgba(20,22,27,.22)" stroke-width="1.2"/>
+      <rect x="532" y="302" width="16" height="22" rx="5" fill="url(#metal)" stroke="rgba(20,22,27,.25)" stroke-width="1.2"/>`;
+  })();
+
+  window.setT = t => {
+    // drop + swing in (critically damped, never overshoots), then a faint idle sway
+    const drop = S(t, 14);
+    const swingIn = -5 * (1 - S(t, 8));
+    const sway = 0.45 * Math.sin(2 * Math.PI * (t - 0.35) / 2.4) * S(t - 0.35, 5);
+    // whip out left over the last .3 s
+    const u = clamp((t - 3.0) / 0.3);
+    const X = -1150 * u * u, Y = -1000 * (1 - drop), R = swingIn + sway - 4 * u * u;
+    $('rig').style.transform = `translate(${X}px, ${Y}px) rotate(${R}deg)`;
+
+    // shine across the laminate after landing, and again to fill the gap before Instagram
+    const sh1 = smooth((t - 0.42) / 0.5), sh2 = smooth((t - 2.02) / 0.5);
+    const sh = (t < 1.4 ? sh1 : sh2);
+    const shOn = (t > 0.42 && t < 0.92) || (t > 2.02 && t < 2.52);
+    $('shine').style.opacity = shOn ? 1 : 0;
+    $('shine').style.transform = `translateX(${-260 + 1000 * sh}px) rotate(22deg)`;
+
+    // Claude: logo scales into the photo slot, the name writes in
+    const c = S(t - 0.86, 13);
+    $('photo').style.opacity = clamp(c * 1.6);
+    $('photo').style.transform = `scale(${0.88 + 0.12 * c})`;
+    $('slot').style.opacity = 1 - clamp(c * 1.6);
+    const nw = smooth((t - 0.86) / 0.36);
+    const a = -14 + 128 * nw;
+    $('name').style.webkitMaskImage = `linear-gradient(90deg, #000 ${a}%, transparent ${a + 14}%)`;
+    $('name').style.transform = `translateY(${10 * (1 - S(t - 0.86, 12))}px)`;
+    $('nameBar').style.opacity = 1 - clamp(nw * 2.2);
+
+    // Community manager: the blue highlighter sweeps left to right, white text rides it
+    const p = smooth((t - 1.35) / 0.47);
+    const ins = (1 - p) * 100;
+    $('pill').querySelector('.bg').style.clipPath = `inset(0 ${ins}% 0 0 round 39px)`;
+    $('pill').querySelector('.tx').style.clipPath = `inset(0 ${Math.max(0, ins - 2)}% 0 0)`;
+    $('roleBar').style.opacity = 1 - clamp(p * 2.5);
+
+    // Instagram: stamped on the badge corner like a company logo
+    const k = S(t - 2.61, 16);
+    const kOn = clamp((t - 2.61) / 0.07);
+    const cx = 240 + 572, cy = 330 + 148; // frame coords of the sticker centre
+    $('igWrap').style.transform = `translate(${cx - 70}px, ${cy - 70}px) rotate(${-15 + 7 * k}deg) scale(${1.32 - 0.32 * k})`;
+    $('igWrap').style.opacity = kOn;
+    const blur = 34 - 22 * k, off = 26 - 16 * k, al = 0.16 + 0.10 * k;
+    $('igWrap').style.filter = `drop-shadow(0 ${off}px ${blur}px rgba(20,22,27,${al})) drop-shadow(0 3px 5px rgba(20,22,27,${0.14 * k}))`;
+
+    // @ton.compte
+    const h = S(t - 2.83, 22);
+    $('handle').style.opacity = h;
+    $('handle').style.transform = `translateY(${16 * (1 - h)}px)`;
+    $('handleBar').style.opacity = 1 - clamp(h * 2.2);
+  };
+  window.setT(0);
+</script>
+</body></html>

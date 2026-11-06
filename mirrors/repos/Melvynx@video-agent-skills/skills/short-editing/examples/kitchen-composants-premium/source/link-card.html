@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- YouTube Short end (short-kitchen-composants-premium, variants/short): no comment CTA on YouTube. On « Le lien est juste
+     ici. » a paper card springs in at the top (Kitchen's real icon, the black disc of dqnamo.com, + « Kitchen, par dqnamo »), τ .35 the blue link chip drops under it, held to the end.
+     style papier: Bricolage Grotesque 800, paper #FCFBF8, blue #1F5BFF, deep soft shadows. Alpha 1080x1920, y 150-470.
+     window.setT(t): every state is a pure function of t. -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased; font-family: "Bricolage Grotesque"; }
+  .c { position: absolute; left: 540px; width: max-content; white-space: nowrap; display: flex; align-items: center; opacity: 0; }
+  #card { top: 160px; gap: 22px; padding: 18px 34px 18px 18px; border-radius: 40px; background: #FCFBF8; transform-origin: 50% 50%;
+    box-shadow: 0 30px 56px -24px rgba(40,28,10,.46), 0 12px 22px -10px rgba(40,28,10,.24), 0 1px 3px rgba(40,28,10,.10), 0 0 0 1.5px rgba(40,28,10,.06), inset 0 2px 0 #FFFFFF; }
+  #card img { width: 72px; height: 72px; border-radius: 18px; display: block; box-shadow: 0 4px 8px -2px rgba(40,28,10,.25); }
+  #card .dot { width: 60px; height: 60px; margin: 6px; border-radius: 50%; background: #000; display: block; }
+  #card span { font-weight: 800; font-size: 46px; letter-spacing: -.6px; line-height: 54px; color: #14161B; }
+  #link { top: 310px; gap: 20px; padding: 24px 44px 24px 36px; border-radius: 46px; background: #1F5BFF; transform-origin: 50% 0%;
+    box-shadow: 0 36px 64px -26px rgba(20,40,120,.55), 0 14px 26px -12px rgba(20,40,120,.35), inset 0 2px 0 rgba(255,255,255,.22); }
+  #link span { font-weight: 800; font-size: 76px; letter-spacing: -1.6px; line-height: 86px; color: #FFFFFF; }
+  #link b { font-weight: 800; color: #C9D8FF; }
+  #link svg { width: 66px; height: 66px; display: block; }
+</style>
+</head><body>
+<div class="c" id="card"><i class="dot"></i><span>Kitchen, par dqnamo</span></div>
+<div class="c" id="link"><svg viewBox="0 0 24 24" fill="none" stroke="#C9D8FF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg><span>dqnamo.com<b>/kitchen</b></span></div>
+<script>
+const $ = id => document.getElementById(id);
+// critically damped spring from rest: never overshoots
+const S = (x, w = 16) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+window.setT = function (t) {
+  const a = $('card'), p = S(t, 30);
+  a.style.opacity = t >= 0 ? Math.min(1, t / .06) : 0;
+  a.style.transform = `translateX(-50%) translateY(${-24 * (1 - p)}px) scale(${.9 + .1 * p})`;
+  const c = $('link'), d = t - .35;
+  c.style.opacity = d >= 0 ? Math.min(1, d / .06) : 0;
+  c.style.transform = `translateX(-50%) translateY(${-18 * (1 - S(d, 40))}px) scale(${.94 + .06 * S(d, 45)})`;
+};
+window.setT(0);
+</script></body></html>

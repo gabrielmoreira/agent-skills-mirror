@@ -50,12 +50,13 @@ Bad example:
 
 ## Recovery Notes
 
-- If sources cannot be accessed, state the retrieval gap and use only observed local context.
-- If evidence is thin or one-sided, lower confidence and ask for a narrower source boundary.
+- If ledger verification cites zero distinct sources, retain the source ledger and evidence table, mark the citation check not_observed, and hand back the draft with the missing [n] source IDs for correction.
+- If an evidence row's quote cannot be attached from the page text, retain the retrieved source and other supported rows, mark that claim unresolved, and hand back the unmatched wording and source for correction.
+- If a pricing comparison mixes periods, currencies, or denominators, retain its dated source rows, mark the comparison tentative, and hand back the missing common basis before drawing a decision implication.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

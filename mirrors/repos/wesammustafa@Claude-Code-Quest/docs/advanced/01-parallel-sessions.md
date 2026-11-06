@@ -1,0 +1,136 @@
+# Parallel sessions with worktrees
+
+<sub>**Advanced** · Lesson 1 of 7 · about 20 minutes · Needs: [Advanced index](README.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+
+## Goal
+
+By the end of this lesson you can run two Claude Code sessions at once, each in its own git worktree, and merge their work into one branch.
+
+## You need
+
+- One of your own repositories with a test command and no uncommitted changes, checked out on its default branch and up to date with a remote you can push to (Watch out says why), and your copy of the practice template with Node.js LTS and the Advanced checks ([Practice](README.md#practice)): the check runs from the copy. Set up the repository's `.practice/` folder as the [Intermediate index](../intermediate/README.md#prepare-your-own-repository) describes, if you haven't yet.
+- If you haven't run `claude` in that repository before, run it there once and accept the trust dialog: until then `claude --worktree` exits with an error ([Start Claude in a worktree](https://code.claude.com/docs/en/worktrees#start-claude-in-a-worktree)).
+- macOS, Linux or WSL 2, and three terminals open at the repository's root: two for the sessions, one for git.
+- Usage: moderate. Two sessions work at the same time.
+
+## The idea
+
+A [git worktree](https://git-scm.com/docs/git-worktree) is a second working folder, on its own branch, that shares the repository's history. `claude --worktree <name>` (or `-w <name>`) creates one under `.claude/worktrees/<name>/` at the repository root, on a new branch, `worktree-<name>`, and starts the session in it ([Start Claude in a worktree](https://code.claude.com/docs/en/worktrees#start-claude-in-a-worktree)). Each session edits its own copy of the files. Claude Code also stops a worktree session's file-editing tools from changing your main checkout, and its commands from running there or pointing git at it ([How Claude Code enforces isolation](https://code.claude.com/docs/en/worktrees#how-claude-code-enforces-isolation)).
+
+Commits and branches are shared. Uncommitted edits, installed dependencies and gitignored files such as `.env` are not: each worktree is a fresh checkout ([Set up the worktree environment](https://code.claude.com/docs/en/worktrees#set-up-the-worktree-environment)).
+
+The work comes back through git: each session commits on its branch, and you bring both branches into yours. Your review sets the pace. Claude Academy puts the ceiling at "how many streams one person can review properly" ([Parallel sessions and subagents](https://academy.claude.com/courses/ai-native-sdlc-playbook/parallel-sessions-and-subagents)), so run only as many sessions as you can read the diffs of.
+
+## Worked example
+
+1. In your main checkout, ignore the folder the worktrees live in, then commit and push the rule. Without it, worktree contents show up as untracked files in your main checkout. The rule goes in the `.gitignore` at the repository root, beside that folder, which in a Practice copy is the folder above `project/`: `git rev-parse --show-toplevel` prints the root, and a path that starts with `:/` starts there. The push puts it on the remote's default branch, where new worktrees start (Watch out says more):
+
+   ```bash
+   printf '\n.claude/worktrees/\n' >> "$(git rev-parse --show-toplevel)/.gitignore"
+   git add :/.gitignore && git commit -m "Ignore Claude Code worktrees"
+   git push
+   ```
+
+   Afterwards `git status --short` prints nothing, and `git log -1 --oneline` shows the commit.
+2. In terminal 1, start a session in a new worktree and give it a docs task:
+
+   ```bash
+   claude --worktree docs-pass
+   ```
+
+   ```text
+   Tidy the wording of the README's first section, then wait for me before you commit.
+   ```
+
+   Claude Code creates `.claude/worktrees/docs-pass/` on the branch `worktree-docs-pass`, and the session works there. In auto mode, the mode a session starts in, a commit, or even a push to the repository you're working in, wouldn't wait for you ([Which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in), [What the classifier blocks by default](https://code.claude.com/docs/en/permission-modes#what-the-classifier-blocks-by-default)). Asking it to wait is what holds the commit until step 4: auto mode treats a boundary you state in the conversation as a reason to block the matching action. It's a soft stop, which a compacted conversation can lose; for a hard one, add a deny rule ([Boundaries you state in conversation](https://code.claude.com/docs/en/permission-modes#boundaries-you-state-in-conversation)).
+3. In terminal 2, start a second session with the short flag and give it a test task:
+
+   ```bash
+   claude -w test-pass
+   ```
+
+   ```text
+   This worktree is a fresh checkout: install the dependencies, then add one missing test for a small exported function and run the tests. Wait for me before you commit.
+   ```
+
+   Claude Code creates `.claude/worktrees/test-pass/` on the branch `worktree-test-pass`; the session installs the dependencies there before it adds the test.
+4. In terminal 3, in your main checkout, look at all three checkouts while both sessions wait for you:
+
+   ```bash
+   git worktree list
+   git status --short
+   git -C "$(git rev-parse --show-toplevel)/.claude/worktrees/docs-pass" status --short
+   git -C "$(git rev-parse --show-toplevel)/.claude/worktrees/test-pass" status --short
+   ```
+
+   `git worktree list` shows your main checkout first, then `.claude/worktrees/docs-pass` on `[worktree-docs-pass]` and `.claude/worktrees/test-pass` on `[worktree-test-pass]`; git may mark each one `locked` while its session runs. `git status --short` doesn't list either session's edits: they happen in other folders. Each `git -C` command lists only the changes of the session in that folder, such as the README in `docs-pass`, and never the other session's. Now tell each session to commit: `git log --oneline --graph --all` then shows a new commit on each branch.
+5. Still in your main checkout, merge both branches, then run your tests:
+
+   ```bash
+   git merge worktree-docs-pass
+   git merge worktree-test-pass
+   ```
+
+   [`git merge`](https://git-scm.com/docs/git-merge) brings each branch's commits into yours. The first merge just moves your branch forward, and the second makes a merge commit and opens your editor for its message: save and close it. Run this step yourself: while a session is isolated in its worktree, Claude Code blocks its git commands that reach into the main checkout. If both tasks changed the same lines, git stops with a conflict: resolve it, or start `claude` in the main checkout and ask it to.
+6. In each session, run `/exit`. The worktree's branch has a new commit, so Claude Code asks whether to keep or remove the worktree: choose remove ([Clean up worktrees](https://code.claude.com/docs/en/worktrees#clean-up-worktrees)). `git worktree list` no longer shows either worktree.
+
+> [!CAUTION]
+> Removing a worktree deletes its folder and its branch, along with any work in them you haven't merged. Merge first, or choose keep.
+
+## Your turn
+
+Land two backlog changes made at once, with neither session touching the other's files. Pick two real changes from your repository's backlog that don't change the same lines and don't build on each other, such as a small bug fix in one module and a missing test for another. Git merges changes to different parts of one file cleanly, but two changes to the same lines collide when you bring them together ([How conflicts are presented](https://git-scm.com/docs/git-merge#_how_conflicts_are_presented)), and each session starts without the other's change. Keep it to two, because each session's diff still needs your review.
+
+No backlog to pick from? Your copy of the practice template has two such changes:
+
+- `findLinks` in `src/links.js` lets a `~~~` line close a code block that opened with three backticks, so it reports links inside the block.
+- No test covers `src/cli.js`, the command that prints each broken link and sets the exit code.
+
+Before you start the sessions, decide what a fresh worktree of your repository lacks before its tests can run. Dependencies are the usual gap: tell each session to install them, as the Worked example's test session did. A gitignored file the tests read, such as a local config, is the other: list it in a `.worktreeinclude` file at your repository root, which copies only the files that match a pattern and are gitignored, or have the session create a test-only copy ([Copy gitignored files into worktrees](https://code.claude.com/docs/en/worktrees#copy-gitignored-files-into-worktrees)). Every worktree gets its own copy of each file you list, so list only what the tests need.
+
+If the work they should build on isn't on the remote's default branch yet, get it there first, or add `"worktree": {"baseRef": "head"}` to `.claude/settings.local.json`, your personal settings file from [Intermediate lesson 4](../intermediate/04-permissions-and-sandbox.md), so new worktrees start from your local `HEAD` ([`worktree.baseRef`](https://code.claude.com/docs/en/settings-reference#worktree-baseref)).
+
+Acceptance criteria:
+
+- A committed `.gitignore` ignores `.claude/worktrees/`, and doesn't ignore the rest of `.claude/`.
+- Each change is made in its own session, started with `claude --worktree <name>`, and committed on that worktree's branch.
+- `.practice/a-1-worktrees.txt` holds the output of `git worktree list --porcelain`, saved from the main checkout while both worktrees existed and both had committed:
+
+  ```bash
+  git worktree list --porcelain > .practice/a-1-worktrees.txt
+  ```
+
+- Both changes are in your branch, by merge, rebase or squash, whichever your team uses.
+- Your tests pass with both changes in (not checked).
+- Both worktrees are removed, and any branch you kept is deleted only once its change is in your branch.
+
+## Check
+
+You are done when all of these are true:
+
+- [ ] A committed `.gitignore` ignores `.claude/worktrees/`, and not the rest of `.claude/`.
+- [ ] `.practice/a-1-worktrees.txt` lists two worktrees under `.claude/worktrees/` whose commits split from each other, and both changes are in your branch.
+- [ ] Neither of those worktrees still exists: `git worktree list` doesn't show them.
+- [ ] Self-check (not tested): you can name what a fresh worktree of your repository lacked, such as its dependencies or a gitignored config file, and say whether you listed it in `.worktreeinclude` or had the session set it up, and why.
+
+Run `npm run check -- a-1 --dir <your repo>` from your practice copy.
+
+If the first item fails, run `git check-ignore -v :/.claude/worktrees/x` in your repository: it should name your committed `.gitignore` ([git-check-ignore](https://git-scm.com/docs/git-check-ignore#Documentation/git-check-ignore.txt---verbose)). If the second item fails, read the hint the check prints: save the file after both sessions commit and before you remove either worktree. If the third item fails, exit any Claude Code session still open in a worktree it names: `/exit`, then remove it, or keep it and run `git worktree remove <path>` from your main checkout. Run `git worktree unlock <path>` first only when git says the worktree is locked and no session is open in it ([Clean up worktrees](https://code.claude.com/docs/en/worktrees#clean-up-worktrees)).
+
+## Watch out
+
+- In most repositories on macOS, Linux and WSL 2, if a worktree session asks about a Bash command and you choose "Yes, and don't ask again", Claude Code saves the rule to your main checkout's `.claude/settings.local.json`. It then applies in the main checkout and in every worktree of the repository, and it stays after the worktree is removed ([What worktrees share with the main checkout](https://code.claude.com/docs/en/worktrees#what-worktrees-share-with-the-main-checkout)). Approve only commands you'd allow everywhere.
+- Running several sessions at once multiplies token usage ([Run agents in parallel](https://code.claude.com/docs/en/agents)). Give each session one small task, and exit it once its branch is merged.
+- A new worktree branches from the remote's default branch, not from your local `HEAD` ([Choose the base branch](https://code.claude.com/docs/en/worktrees#choose-the-base-branch)). Commits that aren't on that branch yet, such as unpushed commits or your feature branch's work, aren't in it, and merging its branch into a branch that's behind the remote's default branch brings in the commits that branch lacks. With no remote, a new worktree starts from your local `HEAD` instead.
+
+## Go further
+
+- [Isolate subagents with worktrees](https://code.claude.com/docs/en/worktrees#isolate-subagents-with-worktrees): `isolation: worktree` in a subagent's frontmatter gives each run a checkout of its own.
+- [Message your other Claude Code sessions](https://code.claude.com/docs/en/cross-session-messaging): let the sessions in your worktrees pass findings to each other.
+- [Run multiple Claude sessions](https://code.claude.com/docs/en/best-practices#run-multiple-claude-sessions): the Writer/Reviewer pattern, where a fresh session reviews what another one wrote.
+
+---
+
+<sub>Sources: [Run parallel sessions with worktrees](https://code.claude.com/docs/en/worktrees) · [All settings](https://code.claude.com/docs/en/settings-reference) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Run agents in parallel](https://code.claude.com/docs/en/agents) · [Parallel sessions and subagents](https://academy.claude.com/courses/ai-native-sdlc-playbook/parallel-sessions-and-subagents) · [git-worktree](https://git-scm.com/docs/git-worktree) · [git-merge](https://git-scm.com/docs/git-merge) · [git-check-ignore](https://git-scm.com/docs/git-check-ignore)</sub>
+
+<sub>← [Advanced index](README.md) · [Choose an orchestration pattern](02-orchestration-patterns.md) → · Topic: [Subagents and parallel work](../topics/subagents-and-parallel-work.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=a-1)</sub>

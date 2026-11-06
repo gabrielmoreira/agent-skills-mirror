@@ -50,12 +50,13 @@ Bad example:
 
 ## Recovery Notes
 
-- If acceptance criteria or verification are missing, route back to clarification before handoff.
-- If assumptions materially affect the plan, keep them visible and avoid treating the plan as accepted.
+- If an outcome lacks acceptable assessment evidence, retain curriculum_learner_outcome_brief/v1, mark curriculum_alignment_map/v1 tentative, and hand back the orphan outcomes or assessment mismatches for revision.
+- If an access or technology barrier has no equivalent demonstration path, retain the aligned outcomes and assessments, mark curriculum_sequence_design/v1 unresolved, and hand back the barrier and required adaptation.
+- If learner review or pilot evidence is absent, return the alignment and sequence as unvalidated drafts, mark validation unresolved, and hand back curriculum_validation_disposition/v1 with required reviews and revalidation checks.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

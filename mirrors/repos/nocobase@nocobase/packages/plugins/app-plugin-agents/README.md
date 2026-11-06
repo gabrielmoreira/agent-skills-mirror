@@ -12,6 +12,10 @@ Runner agents are enabled or disabled. The available-model list is computed live
 
 The plugin knows no domain of its own beyond conversations: what agents work on (subjects), the scopes variables are kept in, the business actions an agent may be given and those every discovered agent gets, and the report pages are the application's, which contributes them through the extension points below; the CLI's business commands are the application's own routes, each described with `cliRoute()`. The assembling application does it in `server/agents` and `client/agents`. With nothing contributed, the plugin still runs agents in conversations on runners, with its own commands.
 
+## Read-only conversation sharing
+
+Owners can share a snapshot with named application users, advance it by sharing again, and revoke access. Recipients only read completed history and its attachments through the saved cutoff; they receive no live streams, usage or write access. The plugin owns the permission table and checks, while applications supply a directory or candidate scope. See [conversation snapshots](docs/conversation-sharing.md) for storage, endpoint permissions, UI Library integration and cost.
+
 ## What it does
 
 Registering the same runner name and hostname again revokes every active prior registration and its keys for the token's owner, leaving other owners' runners untouched. Registration uses the existing transaction without a dedicated lock or additional table. Simultaneous registrations may leave multiple active records until the next registration cleans them up. Existing tasks continue through the usual sweep and retry rules.
@@ -389,3 +393,9 @@ The runtime status cell displays reported capacity, a pending-sync notice when o
 To defer a selection until a message is accepted, pass optional `agentId` alongside the current SDK user `message` to `POST /api/agents/conversations/{conversationId}/messages`. Only idle, unarchived Runner conversations can change agents this way. Admission validates the target and commits the new binding, fresh thread, one switch notice, message and target run in the existing transaction. Selecting the current agent adds no notice; omitting the field preserves existing behavior. Rejection rolls everything back. A later execution failure keeps the accepted switch; an interrupted response must be reconciled through history, never automatically resent. Queued input and native conversations do not accept this field.
 
 Quota diagnostics (`claims.selectionWait` / `claims.diagnose`) use `toolQuota` for an otherwise fitting tool/model blocked by existing quota marks. Each model entry optionally carries `until`: the earliest known reset across its eligible runners, after all exhausted windows on that runner reset. An unknown reset is null. Non-quota tool failures keep `toolUnavailable`; another usable candidate keeps its existing diagnosis. These explanations do not change dispatch, retries or stored quota marks.
+
+# Host session policy and handoff history
+
+An application's subject binding may set `sessionPolicy: (claim) => 'fresh'` for agents that must start independently on every run. With the callback absent, ordinary fingerprint, reset and poisoned-session checks still control reuse. Explicit `freshSession` requests continue to isolate new work from an active session and survive retries.
+
+Use `agents.runs.recentSummaries(conn, { agentId, subjectKind, subjectId }, exceptRunId)` during assembly to read at most five terminal runs, newest first. Each summary contains at most 400 Unicode characters, with its status and completion time; missing summaries stay null. Identical reads share one query within the transaction. Put handoff notes in `turn.fresh` to keep them outside the reusable brief fingerprint. No model or external service is called.

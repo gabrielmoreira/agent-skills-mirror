@@ -176,6 +176,59 @@ context window before the first is scored, so a refused request costs no GPU wor
 `max_length` above it) returns HTTP 400 with `code` `context_length_exceeded`. An image or video part returns HTTP
 400. Errors use the server's envelope, as on every route: `{"error": {"message", "type"}}`.
 
+## System One on a Clef engine
+
+`POST /v1/systemone` on a Clef checkpoint (Cloudflare's clef-flash: BF16 Qwen3.5 weights with
+`joint_head_config.json` and `joint_head.safetensors`) answers each question from the joint schema head, the way the
+model card's reference `systemone` does. The native server serves it on one HIP GPU; a Clef engine serves no chat, and
+`--tp` is refused. On every other engine the route keeps llama-server's System One request. `capabilities --json`
+lists such formats under `decisions` (`"qwen3_5": ["bf16"]`), apart from the `families` formats that serve chat.
+
+```json
+{"model": "clef-flash",
+ "state": "Ticket #4521: refund of $129.99 requested.",
+ "questions": {
+   "refund": {"type": "noul", "instructions": "Should we refund?"},
+   "priority": {"type": "choice", "instructions": "Priority", "criteria": {"p0": "critical", "p1": "urgent", "p2": null}},
+   "sentiment": {"type": "score", "instructions": "Customer sentiment", "criteria": ["angry", "neutral", "happy"]}},
+ "raw": false}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `model` | A string, echoed in the reply |
+| `state` | Any JSON value: the record the questions are about; a string as given, other values as compact JSON with sorted keys |
+| `questions` | An object keyed by question id, answered in request order |
+| `type` | `noul` (a yes or no question), `choice` (one of the options) or `score` (an ordered level) |
+| `instructions` | Optional; any JSON value. Missing, null or `""` uses the question id |
+| `criteria` | `choice`: an object of option id to description (or null). `score`: a list of 2 to 10 level descriptions, levels `0` up. `noul`: optional, an object that describes `true` and `false` |
+| `raw` | Optional boolean: also return each option's unrounded probability |
+
+The reply has `model`, `answers` keyed by question id, and `usage` with `input_tokens` (the encoded record) and
+`output_tokens` 0. Probabilities are a softmax over each question's options, rounded to 4 decimals:
+
+| Type | Answer |
+| --- | --- |
+| `noul` | `{"type": "noul", "noul": P(true)}` |
+| `choice` | `{"type": "choice", "choice": id, "confidence": P(choice), "probabilities": {id: p}}`; a tie goes to the first option in request order |
+| `score` | `{"type": "score", "score": expected level, "confidence": the top level's p, "legend": {"0": description}, "probabilities": {"0": p}}` |
+
+With `"raw": true` the reply also has `raw`: per question id, its `type`, `options` in encoding order and `probs`, the
+unrounded probabilities in the same order.
+
+A request holds at most 64 questions, 256 options in one question and 1,024 options in all. The record is at most
+16,384 tokens (or the engine's context, if smaller): a longer state keeps its first tokens, and a schema that needs
+more than that before the state returns 400. The route answers:
+
+| Status | When |
+| --- | --- |
+| 422 | A field is missing or has the wrong JSON type. The body is FastAPI's: `{"detail": [{"type": ..., "loc": ["body", "questions", id, "type"], "msg": ...}]}`, one entry per problem |
+| 400 | An unknown `type`, empty `criteria`, no questions, a bound passed, `images` or `videos`, or a record that cannot be encoded or does not fit the engine's readouts |
+| 503 | The engine is closing, cannot take the request now, or is short of memory |
+| 500 | The head failed or gave a non-finite logit |
+
+A client that disconnects cancels its request.
+
 ## Living Weights
 
 With `--slide`, the native server learns facts into the served weights. [Living Weights](living-weights.md) explains
@@ -273,8 +326,9 @@ rows yet. Absent the flag the engines keep their own cuts and `TENSORFOLD_PREFIL
 the prompt's share of a fill step's wall time, time only, never smaller chunks. Flash Next's shared sessions on a Mac
 without tensor units are the exception: absent both, replies take 0.8 of that time and a filling prompt's steps grow
 from 32 to 512 rows after eight, while `--decode-share 0` keeps the 32-row steps with the prompt first. `TENSORFOLD_PREFILL_ORDER=srpt`
-lets running replies with less estimated work left than a filling long prompt take rounds first, the prompt keeping
-at least 10% of the time. With `--decode-share` it keeps that share when the prompt goes first and takes at most 10% when a reply does, and `--decode-share 0` still prefills each prompt whole. The CUDA, qwen27 Metal and
+lets a running reply that would end within a quarter of a filling long prompt's estimated time left take rounds first,
+the prompt keeping at least 10% of the time and lending at most a quarter of its own. It's the default for Qwen3.8-27B
+on Metal when neither `--decode-share` nor `TENSORFOLD_PREFILL_SHARE` is set; any other value of the variable turns it off. With `--decode-share` it keeps that share when the prompt goes first and takes at most 10% when a reply does, and `--decode-share 0` still prefills each prompt whole. The CUDA, qwen27 Metal and
 hip_serve servers pass the flag to their lane host and take its time share; the DeepSeek, Spark-X on Metal, Qwen4
 and XPU servers do not parse or apply the flag. `--decode-share 0` prefills each prompt
 whole
@@ -429,7 +483,7 @@ top-level field wins. An unnamed level maps to the nearest level the template na
 the higher one. GLM-5.3 lists `low`, `high` and `max`, so `max` stays `max`, `medium` is heard as `high`
 and `minimal` as `low`. Qwen3.8 lists `low`, `medium` and `xhigh`, so `high` and `max` are heard as `xhigh`.
 `xhigh` stays `xhigh`. GLM-5.3 renders `xhigh` and `max` as Max. A template that names no level hears `max` as
-`xhigh`. `--reasoning-effort` uses the same rule. An omitted effort, with no startup flag, stays
+`xhigh`. `--reasoning-effort` accepts `minimal`, `low`, `medium`, `high`, `xhigh` and `max` and uses the same rule; use `--no-thinking` for the CLI off switch. An omitted effort, with no startup flag, stays
 the template's own default. An explicit `chat_template_kwargs.enable_thinking` takes
 precedence. A request without an effort gets `--reasoning-effort` when the server was started with one; otherwise
 the template renders its own default, as vLLM and mlx-lm render it (Qwen3.8's is `xhigh`, which adds an instruction
@@ -684,6 +738,21 @@ spent rate; with more than 128 keys starting requests within one refill, a furth
 `admission_inflight`, `admission_inflight_peak`, `admission_principals`, `admission_rate_buckets`,
 `admission_accepted_total` and `admission_rejected_total` with a fixed `reason` label (`global_limit`, `key_limit`,
 `principal_capacity`, `rate_limit`). With none set, nothing is counted and the replies and metrics are as before.
+
+### Waits
+
+A retryable refusal on an inference route answers 503 and names its wait in the OpenAI-shaped body's `code`, from one fixed set:
+
+| Code | Meaning |
+| --- | --- |
+| `server_restarting` | The server is draining for a restart; the answer carries `Retry-After` |
+| `engine_loading` | A parked model is unloading or reloading; sending the request again drives it; `Retry-After` |
+| `engine_reload_failed` | A parked model's reload was attempted and failed; the next request tries again; `Retry-After` |
+| `engine_busy` | The engine had no room for this request (a busy engine, a busy embedding engine, a full speech lane); send it again |
+| `engine_unavailable` | The engine is closed (for embeddings and rerank, also stale); retry after it reopens |
+| `memory_pressure` | The host is under critical memory pressure and takes no new request until it eases |
+
+A capacity refusal keeps the frozen Python engine's shape (`type` `invalid_request_error` and its message) and still carries no `Retry-After`; the code is native's addition. The Messages routes keep their Anthropic envelope, which has no code field, and the Sliding Weights learn/delete and imprint routes keep their own 503 bodies.
 
 ## Conversations on disk
 

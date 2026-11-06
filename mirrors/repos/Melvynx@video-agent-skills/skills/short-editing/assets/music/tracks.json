@@ -1,0 +1,66 @@
+[
+  {
+    "id": "enquete",
+    "name": "Enquête",
+    "mood": "tension",
+    "bpm": 90,
+    "desc": "Drone grave, pulse filtré, battement de coeur, piano feutré",
+    "dur": 155.3
+  },
+  {
+    "id": "arpege",
+    "name": "Arpège sombre",
+    "mood": "tension",
+    "bpm": 96,
+    "desc": "Arpège synthé qui s'ouvre lentement, basse pulsée, lead lointain",
+    "dur": 147
+  },
+  {
+    "id": "filature",
+    "name": "Filature",
+    "mood": "tension",
+    "bpm": 92,
+    "desc": "Ostinato pincé en sourdine, contrebasse qui rôde, vibraphone de film noir",
+    "dur": 152.1
+  },
+  {
+    "id": "compte-a-rebours",
+    "name": "Compte à rebours",
+    "mood": "tension",
+    "bpm": 100,
+    "desc": "Horloge qui tique, basse pulsée qui s'ouvre, nappe qui monte, impacts lointains",
+    "dur": 150
+  },
+  {
+    "id": "sonar",
+    "name": "Sonar",
+    "mood": "tension",
+    "bpm": 80,
+    "desc": "Pings de sonar en écho, drone profond, pouls lent sous la surface",
+    "dur": 152
+  },
+  {
+    "id": "code-noir",
+    "name": "Code noir",
+    "mood": "tension",
+    "bpm": 98,
+    "desc": "Techno minimale feutrée, kick sourd, accords dub en écho, basse qui pompe",
+    "dur": 153.9
+  },
+  {
+    "id": "thriller",
+    "name": "Thriller",
+    "mood": "tension",
+    "bpm": 84,
+    "desc": "Ostinato staccato en 3-3-2, impacts graves lointains, piano sombre",
+    "dur": 156.6
+  },
+  {
+    "id": "neon",
+    "name": "Néon",
+    "mood": "tension",
+    "bpm": 104,
+    "desc": "Arpège en 16e qui pompe, basse en octaves, lead lointain, ville de nuit",
+    "dur": 154.7
+  }
+]

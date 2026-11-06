@@ -559,6 +559,24 @@ describe("env tools - auth", () => {
     expect(mockGetCloudBaseManager).not.toHaveBeenCalled();
   });
 
+  it("auth(action=status, site=intl) should point at the intl purchase page", async () => {
+    mockPeekLoginState.mockResolvedValue({
+      secretId: "sid",
+      secretKey: "skey",
+    });
+    mockListAvailableEnvCandidates.mockResolvedValue([]);
+    mockResolveEnvCandidateByEnvId.mockResolvedValue(undefined);
+
+    const result = await tools.auth.handler({ action: "status", site: "intl" });
+    const payload = JSON.parse(result.content[0].text);
+
+    // 国际站不能给 buy.cloud.tencent.com 的链接，地域也要用 ap-singapore
+    expect(payload.env_setup_help_url).toBe(
+      "https://buy.tencentcloud.com/CloudBase?buyType=tcb&region=ap-singapore&sqlType=pg",
+    );
+    expect(payload.message).toContain("https://buy.tencentcloud.com/CloudBase");
+  });
+
   it("auth(action=start_auth, authMode=device) should return AUTH_PENDING immediately", async () => {
     mockSupervisorLoginByWebAuth.mockImplementation(
       async ({ onDeviceCode }: { onDeviceCode: (info: any) => void }) => {
@@ -2004,6 +2022,72 @@ describe("env tools - queryEnv", () => {
     ]);
   });
 
+  it("queryEnv(info) treats a pgdoc projection as PG, not a flexdb tenant", async () => {
+    const cases: Array<{
+      name: string;
+      envInfo: Record<string, unknown>;
+      nosql: boolean;
+      pgdocHint: boolean;
+    }> = [
+      {
+        name: "taken over: projection excluded from nosql, CUSTOM rules flagged",
+        envInfo: {
+          EnvId: "env-test",
+          PostgreSQL: [{ InstanceName: "pg-doc-1", DocumentExt: true }],
+          Databases: [{ InstanceId: "pg-doc-1", Status: "RUNNING" }],
+        },
+        nosql: false,
+        pgdocHint: true,
+      },
+      {
+        name: "flag without a matching projection is not taken over",
+        envInfo: {
+          EnvId: "env-test",
+          PostgreSQL: [{ InstanceName: "pg-doc-1", DocumentExt: true }],
+          Databases: [{ InstanceId: "tnt-1", Status: "RUNNING" }],
+        },
+        nosql: true,
+        pgdocHint: false,
+      },
+      {
+        name: "no flag keeps the classic shape",
+        envInfo: {
+          EnvId: "env-test",
+          PostgreSQL: [{ InstanceName: "pg-1" }],
+          Databases: [{ InstanceId: "tnt-1", Status: "RUNNING" }],
+        },
+        nosql: true,
+        pgdocHint: false,
+      },
+    ];
+
+    for (const testCase of cases) {
+      mockGetCloudBaseManager.mockResolvedValue({
+        env: {
+          getEnvInfo: vi.fn().mockResolvedValue({ EnvInfo: testCase.envInfo }),
+        },
+        commonService: vi.fn(() => ({
+          call: vi.fn().mockResolvedValue({}),
+        })),
+      });
+
+      const { tools } = createMockServer();
+      const payload = JSON.parse(
+        (await tools.queryEnv.handler({ action: "info" })).content[0].text,
+      );
+
+      expect(payload.EnvInfo.RuntimeBackends.nosql, testCase.name).toBe(
+        testCase.nosql,
+      );
+      const permissions = String(
+        payload.EnvInfo.RuntimeModeHints?.Permissions ?? "",
+      );
+      expect(permissions.includes("CUSTOM"), testCase.name).toBe(
+        testCase.pgdocHint,
+      );
+    }
+  });
+
   it("queryEnv(info) RuntimeBackends.nosql should require usable Databases InstanceId", async () => {
     const cases: Array<{
       name: string;
@@ -2587,12 +2671,15 @@ describe("env tools - queryEnv", () => {
       StartDate: "2026-08-01",
       EndDate: "2026-08-31",
       DateSource: "accountCircle",
-      NeedUsageDetails: true,
+      // 回执默认不展开四层明细（上游照取，回执裁剪）
+      NeedUsageDetails: false,
       Usages: [
         {
           Module: "SCF",
           CreditsValue: 12,
           DeductValue: 12,
+          // 默认只到模块层：指标键保留但为空数组
+          MetricUsageDetail: [],
         },
       ],
     });
@@ -2632,8 +2719,11 @@ describe("env tools - queryEnv", () => {
       Modules: [...ENV_USAGE_MODULE_VALUES],
       StartDate: "2026-07-01",
       EndDate: "2026-07-15",
-      NeedUsageDetails: false,
+      // 上游总要明细：面板柱子和回执 DailyTotals 都靠它
+      NeedUsageDetails: true,
     });
+    // 回执这一侧仍按参数来（false ⇒ 不展开）
+    expect(payload.NeedUsageDetails).toBe(false);
     expect(payload.DateSource).toBe("params");
     expect(payload.Modules).toEqual([...ENV_USAGE_MODULE_VALUES]);
   });

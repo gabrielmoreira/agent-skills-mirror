@@ -16,7 +16,7 @@ By the end of this lesson you can turn a workflow you keep repeating into a proj
 
 ## The idea
 
-Write a [skill](https://code.claude.com/docs/en/skills) when you paste the same playbook into chat for the third time ([Build your setup over time](https://code.claude.com/docs/en/features-overview#build-your-setup-over-time)). A skill is a folder holding a `SKILL.md` file: YAML frontmatter that says what the skill is for, then the instructions Claude follows. A project skill lives in `.claude/skills/<name>/SKILL.md`. Commit it, and everyone who works in the repository gets it.
+Write a [skill](https://code.claude.com/docs/en/skills) when you paste the same playbook into chat for the third time ([Build your setup over time](https://code.claude.com/docs/en/features-overview#build-your-setup-over-time)). A skill is a folder holding a `SKILL.md` file: YAML frontmatter that says what the skill is for, then the instructions Claude follows. A project skill lives in `.claude/skills/<name>/SKILL.md`. Commit it, and everyone who works in the repository gets it. A personal skill lives in `~/.claude/skills/<name>/SKILL.md` and loads in all your projects on this machine. When both hold a skill of the same name, the personal one wins: with `deploy` in both, `/deploy` runs the personal one ([Resolve skills that share a name](https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name)).
 
 Claude decides whether to load a skill from its description, plus any `when_to_use` text, in the skill listing, not from the skill body ([Frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference)). Invoking the skill loads the full instructions:
 
@@ -38,7 +38,7 @@ flowchart LR
 
    ```bash
    mkdir -p .claude/skills/five-whys
-   curl -fsSL https://raw.githubusercontent.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/main/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md -o .claude/skills/five-whys/SKILL.md
+   curl -fsSL https://raw.githubusercontent.com/wesammustafa/Claude-Code-Quest/main/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md -o .claude/skills/five-whys/SKILL.md
    ```
 
    Without its header comments, it starts:
@@ -78,7 +78,7 @@ The team wants a test-first workflow for requested features, while explanation-o
 
    ```bash
    mkdir -p .claude/skills/tdd
-   curl -fsSL https://raw.githubusercontent.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/main/examples/intermediate/01-first-skill/dot-claude/skills/tdd/SKILL.md -o .claude/skills/tdd/SKILL.md
+   curl -fsSL https://raw.githubusercontent.com/wesammustafa/Claude-Code-Quest/main/examples/intermediate/01-first-skill/dot-claude/skills/tdd/SKILL.md -o .claude/skills/tdd/SKILL.md
    ```
 
    The frontmatter has `description: TODO` and `disable-model-invocation: true`, and the Green and Refactor steps are unfinished. The skill ends by showing the diff, not by committing.
@@ -123,6 +123,7 @@ If the skill isn't committed, run `git check-ignore -v .claude/skills/tdd/SKILL.
 ## Watch out
 
 - A skill can pre-approve tools with `allowed-tools`, even in a `claude -p` run in a folder you've never trusted ([Pre-approve tools for a skill](https://code.claude.com/docs/en/skills#pre-approve-tools-for-a-skill)). Read the skills in a repository before you run Claude Code there.
+- If `~/.claude/skills/` already holds a `five-whys` or `tdd` folder, `/five-whys` or `/tdd` runs your personal skill instead of the one in this repository. The check reads only the committed file, so it can't tell. Move that folder out of `~/.claude/skills/` before you start `claude`, and back after the lesson.
 - If `.claude/skills/` didn't exist at session startup, run `/reload-skills`, and repeat it after each later change there ([Edit a skill during a session](https://code.claude.com/docs/en/skills#live-change-detection)). After editing an invoked skill, invoke it again to load the changed instructions ([Skill content lifecycle](https://code.claude.com/docs/en/skills#skill-content-lifecycle)).
 
 ## Go further
@@ -135,4 +136,4 @@ If the skill isn't committed, run `git check-ignore -v .claude/skills/tdd/SKILL.
 
 <sub>Sources: [Extend Claude with skills](https://code.claude.com/docs/en/skills) · [Extend Claude Code](https://code.claude.com/docs/en/features-overview) · [Advanced setup](https://code.claude.com/docs/en/setup) · [Commands](https://code.claude.com/docs/en/commands) · [Security](https://code.claude.com/docs/en/security) · [Tools reference](https://code.claude.com/docs/en/tools-reference) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [git-status](https://git-scm.com/docs/git-status) · [git-add](https://git-scm.com/docs/git-add) · [git-commit](https://git-scm.com/docs/git-commit) · [git-rev-parse](https://git-scm.com/docs/git-rev-parse)</sub>
 
-<sub>← [Intermediate index](README.md) · [Organize project memory and see what loaded](02-organize-memory.md) → · Topic: [Skills](../topics/skills.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=i-1)</sub>
+<sub>← [Intermediate index](README.md) · [Organize project memory and see what loaded](02-organize-memory.md) → · Topic: [Skills](../topics/skills.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-1)</sub>

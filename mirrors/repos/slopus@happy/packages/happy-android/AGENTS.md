@@ -1,15 +1,24 @@
 # happy-android
 
-Native Android client for Happy, in Kotlin. A port of the React Native app
-in `packages/happy-app`, which stays the reference for behaviour, protocol and
-design. `packages/happy-ios` is the iOS counterpart; keep the two
+Native Android client for Happy, in Kotlin. `packages/happy-ios` is the iOS counterpart; keep the two
 architectures comparable (local store, delta sync, crypto layer).
+
+The React Native app has been removed. References below to its implementation
+are historical porting notes, not live source dependencies. Current native
+code, checked-in compatibility fixtures, `happy-wire`, and CLI/agent producers
+are authoritative. Translation catalogs now live as plain JSON in
+`packages/happy-i18n/translations`; run
+`node tools/translations/generate.mjs` with no TypeScript loader. The old
+RN-based crypto/send/diff generators are retired; their checked-in fixtures
+remain compatibility baselines. Version and legacy voice configuration are
+owned by `app/build.gradle.kts`, Firebase by `app/google-services.json`.
+Preserve credential and push compatibility on upgrades.
 
 ## Scope
 
-- **Latest protocol only.** `packages/happy-wire` and happy-app's current
-  sync and encryption code (`sources/sync`, `sources/encryption`,
-  `sources/auth`) are the source of truth. Do not port legacy protocol paths:
+- **Latest protocol only.** `packages/happy-wire`, the CLI/agent producers,
+  and the native clients' sync and encryption code are the source of truth.
+  Do not port legacy protocol paths:
   sessions and machines without a `dataEncryptionKey` are skipped, not
   decrypted with the account secret.
 - **Voice** in Happy (relay) sessions is switched off: `AppGraph.voice` is
@@ -85,7 +94,7 @@ architectures comparable (local store, delta sync, crypto layer).
 1. **UI is Jetpack Compose** (Material 3 is fine), with the theme and design
    tokens taken from happy-app (`sources/theme.ts`, `constants/Typography.ts`).
    Use the Android branch where theme.ts uses `Platform.select`. Strings are
-   generated from happy-app's catalogs (see Localization); never edit
+   generated from shared JSON catalogs (see Localization); never edit
    `res/values*/strings.xml` by hand.
 2. **Gradle with the Kotlin DSL and the version catalog**
    (`gradle/libs.versions.toml`). The wrapper is committed; there is no Gradle
@@ -263,7 +272,7 @@ win:
   (`Screen(avoidKeyboard = true)`); the first screen never does. Palette: blue and violet
   over near-black (dark) or their tints over lavender white (light), no
   green or orange, text AA or better. The shader runs on Android 13+
-  (`RuntimeShader`), about 30 frames a second while resumed, still with
+  (`RuntimeShader`), about 15 frames a second while resumed, still with
   animations removed; older Android draws a still gradient in the same
   colours.
 - **Compose:** from home it opens an empty new chat; from a chat it
@@ -317,6 +326,15 @@ win:
   and neither home nor chat scrolls by itself while nothing changed.
 - **Settings cards** look the same everywhere and come from one component
   (`ItemGroup`).
+- **Animated emoji never loop** (Kirill, for both apps). An animated emoji
+  or sticker (the Lottie art in `res/raw`: state pictures, the boba,
+  voice's mic) plays once when it appears, holds its last frame, and plays
+  once more on a tap; with animations removed it holds still. Draw every one
+  with `SceneAnimation` (or `StateAnimation`), never
+  `LottieConstants.IterateForever`. A row icon that is an emoji sits on a
+  tile like every other row's glyph, the tile's size (30) in the row's 32
+  icon box and orange for the boba, at the row's top when the row grows
+  (`SupportBobaCard`).
 - **Settings search** (iOS's, `ui/settings/SettingsSearch.kt`), on both
   kinds of Settings: the bar's search button turns the bar into a field
   and hides the picture, name and cards; what is typed finds accounts by
@@ -331,23 +349,36 @@ win:
   `openAgentSettingsRow` opens the agent's Settings or Appearance page with
   `reveal`, or Chief of Staff with the ask for name and avatar.
 - **Agent home search** looks and moves as iOS's
-  (`HappyCore/Agents/Search.swift`, `ui/connection/AgentSearch.kt`) and
-  finds what desktop's ⌘K palette does (`commandPaletteResults.ts`,
-  28342477): the results fade in over home (200 ms ease-out) on its own
-  ground, drawn as home is, and home never moves under them. Nothing typed
-  shows the eight bots and tasks last active (`AgentSearch.recent`); a
-  query shows home's rows that answer it with what they nest under
-  (`AgentSearch.rows`), one card, then Documents, Todos (lists, and the
-  open todos of joined lists whose read the phone kept), Artifacts (the
-  kept catalog page) and Shared (calendars, monitors, chats), every
-  Surface in the catalog joined or not but none home's rows already show
-  (`AgentSearchSources`, read only while search is open), then quick
-  actions and settings: each under its heading, at most six, or "Nothing
-  found" in a capsule. Desktop's ranking (`AgentSearch.rank`): several
-  words in any order, a kind's name three below any title match, joined
-  before not joined; sections keep that order rather than desktop's
-  best-answer one. What a result opens leaves the search for coming back;
-  new work, Cancel or back, and a pull down from the results' top end it.
+  (`HappyCore/Agents/Search.swift`, `ui/connection/AgentSearch.kt`): the
+  results fade in over home (200 ms ease-out) on its own ground, drawn as
+  home is, and home never moves under them. Nothing typed shows the eight
+  bots and tasks last active (`AgentSearch.recent`). A query is the node's
+  one search (happy-agent API.md, "Search"): one flat card fusing the
+  phone's half with the daemon's, then quick actions and settings (local
+  only), each under its heading, at most six, or "Nothing found" in a
+  capsule. It is the only search over vaults; a vault has none of its own.
+  - The phone's half (`localSearch`), at keystroke speed, from what it
+    holds: home's conversations (`agent:`), projects and worktrees, the
+    catalog's documents (`document:`) and other Surfaces (`surface:`),
+    joined or not (`AgentSearchSources`, read only while search is open),
+    the open todos kept (`todo:`), the kept artifact page (`artifact:`),
+    and home's own pages (`home:`, phone only). Each kind is ranked by
+    desktop's `AgentSearch.rank` (words in any order, a kind's name three
+    below a title match, joined before not), then the kinds fused as the
+    daemon fuses its providers: by place, then provider order.
+  - The daemon's half: `POST /v0/search` with `{q, limit}`
+    (`search/Search.kt`), 120 ms after the typing rests, cancelled by the
+    next keystroke, only where health says `capabilities.search`; offline
+    or older, the phone's alone. `SearchFusion` is the shared RRF (k = 60)
+    over `key`, the client package's vectors in `test/resources/search/`
+    (from happy-agent c67719baf, client 0.0.158). A daemon's answer joins
+    only the query it was for. A result found by both keeps the phone's
+    row unless the daemon has a content line for it; vault items, messages
+    (titled by their conversation, opening it), events and content matches
+    are the daemon's rows, with a second line (66 high). People and skills
+    have no page on the phone and are left out with unknown types.
+  What a result opens leaves the search for coming back; new work, Cancel
+  or back, and a pull down from the results' top end it.
   The Happy CLI home has no search, as on iOS.
 - **Bot invitations** (happy-ios HappyGuest, docs/APP-CLIP.md; `guest/`,
   `ui/guest/`): `https://app.happy.engineering/bot/invite/<token>` opens a
@@ -394,19 +425,18 @@ app/
   text/     Resources.plural / pluralResource, PluralExactNumbers (generated)
 benchmark/  on a device, against the bench build: StartupBenchmark (cold start) and the
           Baseline Profile generator (research/cold-start.md)
-tools/testvectors/   generates crypto and send vectors by running happy-app's TypeScript
-tools/translations/  generates the string resources from happy-app's catalogs
+tools/translations/  generates string resources from shared JSON catalogs
 ```
 
 ## Localization
 
-All UI text comes from happy-app's ten catalogs (`sources/text/_default.ts`,
-which serves English, and `translations/*.ts`), generated into
+Shared UI text comes from the ten JSON catalogs in
+`packages/happy-i18n/translations`, generated into
 `res/values/strings.xml` and `res/values-{ru,pl,es,it,pt,ca,ja,b+zh+Hans,b+zh+Hant}/strings.xml`.
-After happy-app's catalogs change, regenerate and commit the output:
+After the JSON catalogs change, regenerate and commit the output:
 
 ```
-cd tools/translations && npm run generate
+node tools/translations/generate.mjs
 ```
 
 `TranslationResourcesTest` fails until you do.
@@ -505,8 +535,11 @@ reinstall loses the Keystore key. Release and preview builds must be signed
 with the existing EAS/Play signing key; no signing config is checked in
 (see "Versions and signing").
 
-The custom server URL is not carried over: happy-app keeps it in MMKV
-(`server-config`), which this app does not read.
+The custom server URL is carried over, read-only: `RnServerConfigImporter`
+reads `custom-server-url` from happy-app's unencrypted MMKV `server-config`
+instance (`files/mmkv`) and never writes the React Native files. No file is
+the default server; a value it can't trust (torn, checksum mismatch, not a
+URL) asks the person to confirm rather than sending the token to a wrong host.
 
 ## Sync
 
@@ -798,8 +831,7 @@ ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest 
 
 ### Versions and signing
 
-- `versionName` is happy-app's `version`, read from `app.config.js` at
-  configuration time, so the two apps never drift. `HAPPY_VERSION_NAME` or
+- `versionName` is owned by `app/build.gradle.kts`. `HAPPY_VERSION_NAME` or
   `-Phappy.versionName` overrides it.
 - `versionCode` is EAS's remote, auto-incremented build number
   (`eas.json` `appVersionSource: remote`). There is no counter in the repo:
@@ -824,28 +856,18 @@ ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest 
 - Shipping goes through the `release` skill like every other release.
 - CI: `.github/workflows/happy-android.yml` runs `assembleDebug
   assembleRelease testDebugUnitTest :crypto:test` on changes under
-  `packages/happy-android/` (and happy-app's `app.config.js`, which sets the
-  version). It has no signing secrets.
+  `packages/happy-android/` and shared mobile resources. It has no signing secrets.
 
 The JDK toolchain (21) is provisioned by the foojay resolver if the machine
 only has a JRE. In the agent sandbox Gradle needs network and local sockets:
 run it with full access and keep caches in the workspace, e.g.
 `GRADLE_USER_HOME=$PWD/../../.context/gradle-home ./gradlew …`.
 
-Crypto vectors (`crypto/src/test/resources/happy-ts-vectors.json`) come from
-running happy-app's TypeScript under Node. Regenerate after changing
-happy-app's encryption:
-
-```
-cd tools/testvectors && npm install && npm run generate
-```
-
-The send vectors are generated the same way, from sync.ts's `sendMessage`
-itself; regenerate after changing it or the system prompt:
-
-```
-cd tools/testvectors && npm install && npm run generate:send
-```
+Crypto vectors (`crypto/src/test/resources/happy-ts-vectors.json`) and send
+vectors (`app/src/test/resources/happy-ts-send-vectors.json`) are preserved
+compatibility baselines captured from the former client. Their React Native
+generators are retired. Historical source inputs remain in Git; protocol
+changes must explicitly update these baselines against current producers.
 
 ## Onboarding and connect
 
@@ -1085,8 +1107,7 @@ What happy-app does with expo-notifications, without Expo:
   syncCurrentPushToken, removePushToken).
 
 **Firebase is optional at build time.** There is no google-services
-plugin: `app/build.gradle.kts` reads `app/google-services.json`, else
-happy-app's committed `packages/happy-app/google-services.json`, and
+plugin: `app/build.gradle.kts` reads `app/google-services.json` and
 generates the plugin's resources for the client matching each variant's
 application id. Without a file or a matching client the app builds and runs
 and push reports unsupported (no prompt, nothing registered). Firebase
@@ -1114,26 +1135,31 @@ its paywall dialog are gone; their old caches (`purchases` preferences, the
 SDK's own) stay on disk, unread.
 
 - `AppGraph.subscription` (`Subscription`) is the one purchase-state owner:
-  the customer (the relay account's JWT subject, else a persistent anonymous
-  install id; login is never needed), `pro`, what is on sale (`offer`:
+  the customer (the install's own anonymous id, kept on the phone; no Happy
+  account, sign-in or analytics id ever touches it), `pro`, what is on sale (`offer`:
   the current offering's monthly package only), buy, the launch/foreground
   sweep of unfinished purchases and Restore. `pro` comes from the last
   RevenueCat answer (`ProPass`, cached 24 h), never from the offering, and
   honours any product granting `pro` (older annual or lifetime too).
 - A purchase belongs to whoever it was bought for: Play's
-  `obfuscatedAccountId` is SHA-256 of the customer id, kept for good in
-  `accounts`. Only a user's Restore moves one to another customer
-  (`restored`); nothing is posted for whoever happens to be signed in.
-  Signing in identifies an anonymous buyer with the account; RevenueCat does
-  not guarantee that merges.
+  `obfuscatedAccountId` is the customer id itself, so every phone on the
+  Google account reads it. At launch and foreground an active subscription
+  naming a customer makes it the install's (`adopt`, no restore). Only a
+  user's Restore moves one to another customer (`restored`), except the one
+  restore a new version makes of a subscription that names no one
+  (`migrate`, once, only without `pro`).
 - `AppGraph.offers` (`Offers`) is the one offer presenter, drawn by the one
-  `OfferHost` in `HappyApp`: voice's welcome and used-up sheets, the relay
+  `OfferHost` in `HappyApp`: voice's welcome and used-up sheets and the relay
   voice's Required sheet (`voice_must_pay`, unreachable while that voice is
-  off), and Support (Settings' Support us
-  row and the agent's boba row: "Pledge <price>/month", no Start). One sheet
-  at a time; `ask` answers Start (the welcome's only), Pro or Dismissed.
-- Grants are client-side. Only the relay's voice has a server gate; its
-  5-hour hard cap is never sold, only said.
+  off). One sheet at a time; `ask` answers Start (the welcome's only), Pro
+  or Dismissed. Support Happy is a pushed page, not a sheet (`SupportRoute`,
+  `SupportScreen`; a Happy account's Support us and an agent connection's
+  boba row, which is that page's only Support us): "Pledge <price>/month"
+  over Subscribe, always there and greyed out while nothing is on sale,
+  then Restore Purchases and Manage subscriptions as quiet links.
+- Grants are client-side. The server checks no subscription; its 5-hour
+  hard cap on every account's voice is a cost safety net, never sold, only
+  said.
 - Debug builds treat About's Support row as Pro, as RN does; that grants no
   voice.
 
@@ -1163,6 +1189,17 @@ never changes global microphone mute. Room cleanup completes logically before
 stop returns, and LiveKit's audio thread releases OS focus asynchronously.
 Verify focus, recording and communication mode on a device after changes.
 `testDebugUnitTest` includes the SDK's lifecycle tests as well as app tests.
+
+## New files in diffs
+
+A new file is drawn as the file, as desktop draws a created one: syntax
+colour and line numbers, no `+` markers, tint or `@@` bars
+(`DiffFileBody.listing`), under a NEW +N header. A Write's card and screen
+name the file in their title bar, so NEW +N ends that bar
+(`NewFileBadge`) and there is no second header. Whether a file is new comes
+from what the caller knows (git status, a `file_diff` or Codex `add`, a
+Write) and is passed in. It is never read off the rows: an empty file that
+gained lines is all additions too, and git calls it modified.
 
 ## Attachments and images
 
@@ -1672,6 +1709,98 @@ iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
   (androidTest, an emulator) does the same with real WebViews: two artifact
   pages in their own profiles at once, the computer's localhost, and the
   cleartext refusal.
+- **App mode** (`<meta name="happy-page-mode" content="app">`, the
+  contract shared with desktop and iOS, as agents read it in
+  happy-agent's docs/DESIGN.md §1.8). `artifacts/ArtifactPageMode` reads the entry's first
+  64 KB before any WebView is made (`ArtifactUi.Page.app`,
+  `InlinePages.readMode`), so nothing jumps. Inline, such a page is never
+  run: its card reads "App" and "Open". Opened, `ArtifactAppPage` is a
+  `PageDialog` edge to edge into the cutout, the bars hidden with
+  `BEHAVIOR_DEFAULT` (SHOW_TRANSIENT_BARS_BY_SWIPE turns the edge back
+  gesture off while they are hidden) and shown again on close; back always
+  closes it, as does the × (`AppCloseButton`: 32 at 8 in from the safe
+  corner `<meta name="happy-app-close">` names, `top-start` by default and
+  start/end flipping right to left, 35% after 3 s, woken by a touch within
+  64). Swiped in, the bars go again after 3 s. With `none` there is no ×
+  until a pull down from the top 24 shows it
+  top-start for 3 s; the system takes a top-edge pull a move or two in, so
+  it needs only 8 of drag. `BrowserAppMode` is the page's side: no zoom,
+  scroll, pull to reload, selection or long press,
+  `data-happy-page-mode="app"`, `data-happy-app-close`, the host sheet at
+  document start, `--happy-app-inset-*` (the safe area, plus 48 on the ×'s
+  edge), `--happy-app-close-x/y/width/height` (its 48 box in CSS px, 0 for
+  `none`), and `window.happyApp.close()`, which posts to a
+  `WebMessageListener` allowed only for the page's own synthetic origin and
+  main frame (`BrowserAppMode.accepts`).
+  Android centres no page, so app implies full width with nothing to do.
+  `ArtifactAppDeviceTest` runs a canvas game through the real proxy on an
+  emulator. The WebView matches its `SwipeRefreshLayout`: wrapping its
+  content, it gave every page `100vh`/`dvh` of 0.
+
+### Vaults
+
+A vault Surface (`type: "vault"`) is a versioned folder tree. The contract
+is happy-agent API.md, "Vault Surfaces"; the product is task_221's
+vaults-design.md; iOS's port is `packages/happy-ios`. `vaults/` is the wire
+and state, `ui/vaults/` the screens. Strings are `strings_vaults.xml` in
+every locale, not happy-i18n.
+
+- **Items** (`VaultItem`): the wire's folders (`/folders`,
+  `vault.folder.*`) and files (`/files`, `vault.file.*`, plain or
+  artifact) are one shape here, told apart by `kind`. `VaultClient` picks
+  the route from it, and events say which they are about
+  (`VaultEvent.Updated.folder`).
+- **Folders** (`VaultListing`, `VaultFolderFeed`): a folder is read whole,
+  500 items a page, and sorted on the phone (`VaultSort`: folders first,
+  then name with a SECONDARY `Collator`, updated or size), so a change never
+  waits on a page. An event that follows the held `version`
+  (`previousVersion`) is laid over the item (`VaultItem.changed`). A gap in
+  the chain, a restore or a move here reads the item again. An item that
+  left is remembered with its version, so an older page can't bring it back.
+  `hello` reads everything again. An item the phone's own request returned
+  goes to the folders at once (`Vaults.known`). There are no refresh
+  controls.
+- **Changes** carry `If-Match`, and a `409` with the current `folder` or
+  `file` is tried once more against it (`VaultActions.change`).
+- **Uploads** (`VaultUploads`): uploads are scoped to the session and run one
+  at a time, so they survive leaving the screen. Each is sent in pieces sized
+  to take about 3 s (256 KiB–16 MiB, starting at 1 MiB, under Tailcat's 35 s
+  write deadline). After a failure or a `409` an upload resumes from the
+  daemon's `received`. When the taken name (`409 name_taken`'s `item`)
+  belongs to a file of the same kind, the person chooses Replace (a new
+  version) or Keep both ("name 2.ext"). A file named "*.artifact" (any
+  case) becomes an artifact, and a ".zip" is always a plain file. An
+  artifact's new version is a whole ".artifact" file. A refused one shows
+  the daemon's own reason on its row, with no retry. Each task keeps one
+  `operationId` (for `POST /files/:id/versions`) and one new-file `id` on
+  every try, so a lost answer makes no second version or file; a retry after
+  a placement was sent asks it again before sending any bytes (`placedAgain`),
+  and a `200` with `version: null` is success. A Restore version tap keeps its
+  own `operationId` through its `If-Match` retry. Uploads live in memory, so
+  they don't resume after the process dies.
+- **Apps**: people call an artifact an app, in every string. Its stored name
+  keeps the ".artifact" suffix (API calls, and the `.artifact` file a download
+  or share writes from `/versions/:n/zip`), but no screen shows it:
+  `VaultItem.shownName` and `VaultNames.shown`/`shownPath` drop it everywhere
+  a name or path is drawn. An app is told apart by its one icon
+  (`AppsOutline`) and its live preview. Rename edits the name without the
+  suffix and adds it back (`newName`), and a folder or plain file can't be
+  named "*.artifact" (`vaults_name_reserved`, under its own title,
+  `vaults_name_refused`). A share (`vaultShare`) sends the `.artifact` file
+  titled with the bare name (`EXTRA_TITLE` and the `ClipData` label).
+- **Previews** (`VaultPreview.kind`): pictures and video go to
+  `PictureViewer`, with video over a `RangedSource`. PDFs go to
+  `PdfRenderer`. Text up to 2 MB, and Markdown, go to `FileScreen`.
+  HTML apps run live through `BrowserProxy` with
+  `Scope.Artifact(vault = …)`: every path is a file of that version
+  (`/versions/:n/artifact/*`), and there is no `/api`. Anything else gets
+  share, open in another app, or Save to.
+- **Retention presets** (`VaultRetentionPreset`) are the same on every
+  client: Time Machine (the default), Keep everything, Last 10 versions,
+  Custom. A preset sets only the four version fields, and the Trash keeps its
+  own duration.
+- Tests: `vaults/*Test` (listing, events, uploads against a fake daemon,
+  routes, presets) and `ui/vaults/VaultLayoutTest`.
 
 ## Autocomplete
 

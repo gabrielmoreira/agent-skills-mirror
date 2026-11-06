@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Short 6.75-8.64 s: "(ton) app, prêt à poser dans ton site ou ton produit"
+     Three destinations, a real orb dropped into each on its word: a chat app (Searching orb as the reply loader) at 0,
+     a website hero button (orb as the spinner) at 1.08, a dashboard card "Generating report" at 1.53.
+     Split layout: draws only in x 40-1040, y 60-1060. Every state is a pure function of t in window.setT(t). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; overflow: hidden; }
+  .ui { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; color: #1F2328; }
+  .card { position: absolute; left: 60px; width: 960px; height: 280px; background: #FFFFFF; border-radius: 32px; overflow: hidden;
+    box-shadow: 0 30px 64px -22px rgba(40,28,10,.30), 0 10px 22px -8px rgba(40,28,10,.15), 0 1.5px 3px rgba(40,28,10,.11), 0 0 0 1.5px rgba(31,35,40,.05); }
+  .lit { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 2.5px 0 rgba(255,255,255,.7);
+    background: linear-gradient(180deg, rgba(255,255,255,0) 70%, rgba(60,44,20,.018) 100%); }
+  #A { top: 104px; } #B { top: 432px; } #C { top: 760px; }
+  .pill { position: absolute; right: 100px; height: 78px; padding: 0 32px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center;
+    font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 46px; letter-spacing: -.6px; color: #111111; white-space: nowrap; z-index: 5;
+    box-shadow: 0 16px 30px -12px rgba(40,28,10,.32), 0 4px 10px -3px rgba(40,28,10,.16), 0 1px 2px rgba(40,28,10,.12), inset 0 2px 0 rgba(255,255,255,.8); }
+  .pill b { color: #258EFF; font-weight: 800; margin-left: 13px; }
+  #pA { top: 64px; } #pB { top: 392px; } #pC { top: 720px; }
+  .abs { position: absolute; }
+  .slot { position: absolute; border-radius: 50%; box-sizing: border-box; border: 4px dashed #C3C9D2; }
+  canvas { position: absolute; display: block; }
+  /* A: chat app */
+  #bub { position: absolute; right: 40px; top: 66px; height: 84px; padding: 0 34px; border-radius: 42px 42px 12px 42px; background: #258EFF;
+    color: #FFFFFF; font-size: 38px; font-weight: 500; display: flex; align-items: center; white-space: nowrap; }
+  #oA { left: 34px; top: 66px; width: 180px; height: 180px; }
+  #sA { left: 64px; top: 96px; width: 120px; height: 120px; }
+  #thA { position: absolute; left: 236px; top: 192px; transform: translateY(-50%); font-size: 40px; font-weight: 600; color: #3A3A3A; white-space: nowrap; }
+  /* B: browser */
+  #chrome { position: absolute; left: 0; right: 0; top: 0; height: 84px; background: #F6F8FA; border-bottom: 2px solid #D1D9E0; }
+  .dot { position: absolute; top: 34px; width: 18px; height: 18px; border-radius: 50%; }
+  #url { position: absolute; left: 150px; top: 14px; width: 440px; height: 56px; border-radius: 28px; background: #FFFFFF; box-shadow: inset 0 0 0 2px #D1D9E0;
+    display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 34px; color: #3A3A3A; }
+  #url img { width: 30px; height: 30px; }
+  #h1 { position: absolute; left: 44px; top: 128px; font-size: 48px; font-weight: 800; letter-spacing: -.8px; color: #111111; white-space: nowrap; }
+  #h2 { position: absolute; left: 44px; top: 192px; font-size: 34px; color: #59636E; white-space: nowrap; }
+  #btn { position: absolute; right: 40px; top: 130px; width: 410px; height: 116px; border-radius: 58px; background: #111111;
+    box-shadow: 0 10px 20px -8px rgba(17,17,17,.45), inset 0 1.5px 0 rgba(255,255,255,.12); }
+  #oB { left: 12px; top: 8px; width: 100px; height: 100px; }
+  #sB { left: 24px; top: 20px; width: 76px; height: 76px; border-color: rgba(255,255,255,.35); }
+  #btT { position: absolute; left: 124px; top: 58px; transform: translateY(-50%); font-size: 38px; font-weight: 600; color: #FFFFFF; white-space: nowrap; }
+  /* C: dashboard */
+  #well { position: absolute; left: 36px; top: 32px; width: 216px; height: 216px; border-radius: 26px; background: #F6F8FA; box-shadow: inset 0 0 0 2px #E3E7EC; }
+  #oC { left: 8px; top: 8px; width: 200px; height: 200px; }
+  #sC { left: 43px; top: 43px; width: 130px; height: 130px; }
+  #rep { position: absolute; left: 280px; top: 96px; transform: translateY(-50%); font-size: 46px; font-weight: 700; letter-spacing: -.5px; color: #111111; white-space: nowrap; }
+  #repS { position: absolute; left: 280px; top: 150px; transform: translateY(-50%); font-size: 34px; color: #59636E; white-space: nowrap; }
+  #bar { position: absolute; left: 280px; top: 198px; width: 620px; height: 16px; border-radius: 8px; background: #EAEEF2; overflow: hidden; }
+  #fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px; background: #258EFF; }
+</style></head>
+<body><div id="stage">
+  <div class="card ui" id="A">
+    <div id="bub">Résume ce PDF</div>
+    <i class="slot" id="sA"></i><canvas id="oA" width="180" height="180"></canvas>
+    <div id="thA">Searching</div>
+    <i class="lit"></i>
+  </div>
+  <div class="pill" id="pA">ton<b>app</b></div>
+
+  <div class="card ui" id="B">
+    <div id="chrome"><i class="dot" style="left:34px;background:#FF5F57"></i><i class="dot" style="left:66px;background:#FEBC2E"></i><i class="dot" style="left:98px;background:#28C840"></i>
+      <div id="url"><img src="../assets/icons/glyph/locked.png">tonsite.com</div></div>
+    <div id="h1">Crée ton logo</div>
+    <div id="h2">en un clic, avec l'IA</div>
+    <div id="btn"><i class="slot" id="sB"></i><canvas id="oB" width="100" height="100"></canvas><div id="btT">Generate</div></div>
+    <i class="lit"></i>
+  </div>
+  <div class="pill" id="pB">ton<b>site</b></div>
+
+  <div class="card ui" id="C">
+    <div id="well"><i class="slot" id="sC"></i><canvas id="oC" width="200" height="200"></canvas></div>
+    <div id="rep">Generating report</div>
+    <div id="repS">Ventes Q3, 12 sources</div>
+    <div id="bar"><i id="fill"></i></div>
+    <i class="lit"></i>
+  </div>
+  <div class="pill" id="pC">ton<b>produit</b></div>
+</div>
+<script src="orbs.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const SD = (x, w, d) => Math.min(1, S(x, w) / S(d, w));   // spring that lands exactly at d seconds
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+
+// real orbs, the 64 px preset (the size the library ships for UI), drawn at the canvas size
+// dense = the base profile at a logical size (canvas / 1.4), the dense look of the demo site for the globe modes
+function orb(id, state, t, dark, dense) {
+  const c = $(id), ctx = c.getContext('2d'), r = ORBS.resolvePreset(state, 64);
+  if (dense) { const S0 = c.width / 1.4; ctx.setTransform(1.4, 0, 0, 1.4, 0, 0); ctx.clearRect(0, 0, S0, S0);
+    ORBS.paintFrame(ctx, ORBS.MODE_FRAMES[r.mode](S0, t * r.speed, { ...ORBS.BASE_PROFILES[r.mode] }), dark); return; }
+  const k = c.width / 64; ctx.setTransform(k, 0, 0, k, 0, 0); ctx.clearRect(0, 0, 64, 64);
+  ORBS.paintFrame(ctx, ORBS.MODE_FRAMES[r.mode](64, t * r.speed, r.opts), dark);
+}
+// an orb placed: drops from 46 px above, 1.12 -> 1, lands in .3 s, no bounce; the dashed slot fades as it lands
+function drop(o, s, at, t) {
+  const k = SD(t - at, 20, 0.3), el = $(o);
+  el.style.opacity = Math.min(1, k * 2.2);
+  el.style.transform = `translateY(${-46 * (1 - k)}px) scale(${1.12 - 0.12 * k})`;
+  if (s) $(s).style.opacity = 1 - Math.min(1, k * 1.6);
+  return k;
+}
+const pill = (id, at, t) => { const k = SD(t - at, 24, 0.24), el = $(id);
+  el.style.opacity = Math.min(1, k * 1.8); el.style.transform = `translateY(${14 * (1 - k)}px) scale(${0.95 + 0.05 * k})`; };
+const card = (id, at, t) => { const k = SD(t - at, 18, 0.34), el = $(id);
+  el.style.opacity = Math.min(1, k * 1.6); el.style.transform = `translateY(${50 * (1 - k)}px)`; };
+
+window.setT = function (t) {
+  // A "app" 0: the chat card is there (fast settle), its Searching orb is placed right away
+  const a = S(t + 0.06, 34); $('A').style.transform = `translateY(${(1 - a) * 14}px)`;
+  pill('pA', -0.08, t);
+  orb('oA', 'searching', t + 0.4, false, true);
+  const ka = drop('oA', 'sA', -0.06, t);
+  $('thA').style.opacity = Math.min(1, ka * 1.5) * (0.62 + 0.38 * (0.5 + 0.5 * Math.cos(t * 5.2)));
+
+  // B: the browser slides in on "dans" .75 with an empty spinner slot; "site" 1.08: the orb drops into the button
+  card('B', 0.75, t);
+  orb('oB', 'solving', t + 0.2, true);
+  const kb = drop('oB', 'sB', 1.08, t);
+  $('btT').textContent = kb > 0.35 ? 'Generating' : 'Generate';
+  pill('pB', 1.08, t);
+
+  // C: the dashboard card slides in on "ou" 1.29; "produit" 1.53: the orb drops into its well, the report bar runs
+  card('C', 1.29, t);
+  orb('oC', 'composing', t + 0.7, false);
+  drop('oC', 'sC', 1.53, t);
+  pill('pC', 1.53, t);
+  $('fill').style.width = (8 + 46 * SD(t - 1.6, 6, 0.6)) + '%';
+};
+window.setT(0);
+</script>
+</body></html>

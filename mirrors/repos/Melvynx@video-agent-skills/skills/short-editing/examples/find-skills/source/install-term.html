@@ -1,0 +1,159 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Beat: "Et il te donne juste pas une liste, il l'installe lui-même, le bon skill, à ta place."
+     The real Claude Code terminal: a session already open with a dim list of 3 skills (struck away on "liste"),
+     then a Bash tool call types `npx skills add heygen-com/hyperframes --skill hyperframes` ("l'installe"),
+     the orange spinner runs, the result lands ("bon skill") with a big blue check ("skill"), Claude answers ("à ta place").
+     Opaque 960x840 card. Every state is a pure function of t in window.setT(t). Duration 3.0 s. -->
+<style>
+  html, body { margin: 0; background: #1E1E1E; }
+  body { width: 960px; height: 840px; overflow: hidden; -webkit-font-smoothing: antialiased; position: relative; }
+  #bar { position: absolute; left: 0; top: 0; width: 960px; height: 68px; background: #2A2A2A; border-bottom: 1.5px solid #111; box-sizing: border-box; }
+  .tl { position: absolute; top: 23px; width: 22px; height: 22px; border-radius: 50%; }
+  #title { position: absolute; left: 0; right: 0; top: 0; height: 68px; display: flex; align-items: center; justify-content: center; gap: 12px;
+    font-family: "JetBrains Mono"; font-weight: 600; font-size: 34px; color: #8E8E8E; }
+  #title img { width: 36px; height: 36px; border-radius: 9px; display: block; }
+  #view { position: absolute; left: 0; top: 68px; width: 960px; height: 656px; overflow: hidden; }
+  #fade { position: absolute; left: 0; top: 68px; width: 960px; height: 22px; background: linear-gradient(#1E1E1E, rgba(30,30,30,0)); }
+  #doc { position: absolute; left: 0; top: 0; width: 960px; }
+  .ln { position: absolute; left: 40px; width: 880px; font-family: "JetBrains Mono"; font-size: 38px; line-height: 56px; height: 56px;
+    white-space: pre; color: #ECECEC; }
+  .dim { color: #8E8E8E; }
+  .b { font-weight: 800; }
+  .dot { display: inline-block; width: 1ch; height: 56px; vertical-align: top; position: relative; }
+  .dot::before { content: ""; position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: var(--c, #ECECEC); }
+  .elbow { display: inline-block; width: 1ch; height: 56px; vertical-align: top; position: relative; }
+  .elbow::before { content: ""; position: absolute; left: 6px; top: 6px; width: 14px; height: 22px; border-left: 3px solid #6E6E6E; border-bottom: 3px solid #6E6E6E; }
+  #welcome { position: absolute; left: 40px; width: 880px; height: 152px; box-sizing: border-box; border: 2.5px solid #D97757; border-radius: 14px; }
+  #welcome .ln { left: 26px; }
+  .strike { position: absolute; height: 3px; top: 28px; background: #9A9A9A; border-radius: 2px; transform-origin: 0 50%; }
+  #spin { color: #D97757; }
+  #spin .g { display: inline-block; width: 1ch; text-align: center; }
+  #input { position: absolute; left: 40px; top: 724px; width: 880px; height: 76px; box-sizing: border-box; border: 2px solid #4A4A4A; border-radius: 12px; }
+  #input .ln { left: 20px; top: 8px; color: #8E8E8E; }
+  .caret { display: inline-block; width: 22px; height: 44px; background: #CFCFCF; vertical-align: -10px; }
+  #chk { position: absolute; width: 168px; height: 168px; }
+  #chk i { position: absolute; left: 13px; top: 13px; width: 142px; height: 142px; border-radius: 50%; background: #FFFFFF; }
+  #chk img { position: absolute; left: 0; top: 0; width: 168px; height: 168px; display: block; }
+  .hi { font-weight: 800; }
+</style></head>
+<body>
+  <div id="bar">
+    <i class="tl" style="left:26px; background:#FF5F57"></i>
+    <i class="tl" style="left:62px; background:#FEBC2E"></i>
+    <i class="tl" style="left:98px; background:#28C840"></i>
+    <div id="title"><img src="../assets/logos/claude.png">claude</div>
+  </div>
+  <div id="view"><div id="doc">
+    <div id="welcome">
+      <div class="ln" style="top:18px"><span style="color:#D97757">✻</span> <span class="b">Welcome to Claude Code!</span></div>
+      <div class="ln dim" style="top:74px">  cwd: ~/ma-video</div>
+    </div>
+    <div class="ln dim" id="ask">&gt; trouve un skill pour mes vidéos</div>
+    <div class="ln" id="h0"><span class="dot"></span> <span id="h0t">Voici 3 skills possibles :</span></div>
+    <div class="ln dim" id="i0">  1. remotion-video</div>
+    <div class="ln dim" id="i1">  2. ffmpeg-tools</div>
+    <div class="ln dim" id="i2">  3. video-captions</div>
+    <i class="strike" id="s0"></i><i class="strike" id="s1"></i><i class="strike" id="s2"></i>
+    <div class="ln" id="c0"></div>
+    <div class="ln" id="c1"></div>
+    <div class="ln" id="c2"></div>
+    <div class="ln" id="spin"><span class="g" id="sg">✻</span> Installing… <span class="dim">(esc to interrupt)</span></div>
+    <div class="ln" id="r0"><span class="dim">  </span><span class="elbow"></span>  <span style="color:#4EBA65">✓</span> Installed <span class="hi" id="hw">hyperframes</span></div>
+    <div class="ln dim" id="r1">       to ~/.claude/skills</div>
+    <div id="chk"><i></i><img src="../assets/icons/glyph/check.png"></div>
+    <div class="ln" id="m0"></div>
+    <div class="ln" id="m1"></div>
+  </div></div>
+  <div id="fade"></div>
+  <div id="input"><div class="ln">&gt; <i class="caret"></i></div></div>
+<script>
+const $ = id => document.getElementById(id);
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+const LH = 56, CH = 38 * 0.6, GAP = 26;
+
+// document layout (y inside #doc)
+let y = 26;
+const Y = {};
+Y.welcome = y; y += 152 + GAP;
+Y.ask = y; y += LH + GAP * .6;
+Y.h0 = y; y += LH;
+Y.i0 = y; y += LH; Y.i1 = y; y += LH; Y.i2 = y; y += LH + GAP;
+Y.c0 = y; y += LH; Y.c1 = y; y += LH; Y.c2 = y; y += LH;
+Y.spin = y; Y.r0 = y; y += LH; Y.r1 = y; y += LH + GAP;
+Y.m0 = y; y += LH; Y.m1 = y; y += LH;
+$('welcome').style.top = Y.welcome + 'px';
+for (const k of ['ask', 'h0', 'i0', 'i1', 'i2', 'c0', 'c1', 'c2', 'spin', 'r0', 'r1', 'm0', 'm1']) $(k).style.top = Y[k] + 'px';
+['i0', 'i1', 'i2'].forEach((k, i) => {   // strike under each skill name (from col 5 to the end of the name)
+  const len = $(k).textContent.length, s = $('s' + i);
+  s.style.left = (40 + 5 * CH - 6) + 'px'; s.style.width = ((len - 5) * CH + 12) + 'px'; s.style.top = (Y[k] + 29) + 'px';
+});
+// big check at the right of the result rows
+$('chk').style.left = (960 - 40 - 168) + 'px'; $('chk').style.top = (Y.r0 + LH - 84) + 'px';
+
+// scroll: the transcript bottom stays 20 px above the input box (view height 640, input top 724 - 68 = 656)
+const VIEW_B = 636;
+const bottomAt = [ [1.06, Y.c2 + LH], [1.56, Y.spin + LH], [2.07, Y.r1 + LH], [2.56, Y.m1 + LH] ];
+let cur = Math.max(0, Y.i2 + LH - VIEW_B);
+const SCR = bottomAt.map(([t0, b], i) => { let tgt = Math.max(cur, b - VIEW_B); if (i === bottomAt.length - 1) tgt = Math.max(tgt, Y.i0); const d = tgt - cur; cur = tgt; return [t0, d]; });
+
+const enter = (el, t0, w = 18, dy = 14) => {   // eased fade + rise, never overshoots
+  const p = S(t - t0, w); el.style.opacity = t < t0 ? 0 : cl(p * 1.25); el.style.transform = `translateY(${(1 - p) * dy}px)`;
+};
+let t = 0;
+const CMD = ['npx skills add', 'heygen-com/hyperframes', '--skill hyperframes'];
+const MSG = ["Skill installé, je l'utilise", 'pour ta vidéo.'];
+const typed = (lines, n) => { const out = []; for (const s of lines) { out.push(s.slice(0, Math.max(0, n))); n -= s.length + 1; } return out; };
+const SPIN = ['·', '✢', '✳', '✶', '✻', '✽'];
+
+window.setT = function (tt) {
+  t = tt;
+  // scroll
+  let sc = SCR.reduce((a, [t0, d]) => a + d * S(t - t0, 17), Math.max(0, Y.i2 + LH - VIEW_B));
+  $('doc').style.transform = `translateY(${-sc}px)`;
+
+  // .76 "liste": the list dims and gets struck through, one line after the other
+  const dk = S(t - .76, 12);
+  $('h0t').style.color = `rgb(${mix([236, 236, 236], [120, 120, 120], dk).join(',')})`;
+  ['i0', 'i1', 'i2'].forEach((k, i) => {
+    const p = S(t - .76 - i * .06, 16);
+    $(k).style.opacity = 1 - .55 * p;
+    const s = $('s' + i); s.style.transform = `scaleX(${p})`; s.style.opacity = t < .76 + i * .06 ? 0 : .9 - .3 * p;
+  });
+
+  // 1.10 "l'installe": the Bash tool call, the command types fast (1.10 to 1.55)
+  const nC = CMD.join(' ').length, n = Math.round(nC * cl((t - 1.12) / .43)), tc = typed(CMD, n);
+  const done = S(t - 2.15, 16), dotC = mix([142, 142, 142], [78, 186, 101], done);
+  $('c0').innerHTML = `<span class="dot" style="--c:rgb(${dotC.join(',')})"></span> <span class="b">Bash</span>(${tc[0]}`;
+  $('c1').textContent = '       ' + tc[1];
+  $('c2').textContent = '       ' + tc[2] + (n >= nC ? ')' : '');
+  enter($('c0'), 1.10, 20, 16);
+  $('c1').style.opacity = tc[1].length ? 1 : 0; $('c2').style.opacity = tc[2].length ? 1 : 0;
+
+  // 1.60 to 2.10: the orange spinner (glyph cycles every 0.1 s), gone when the result lands
+  const sp = $('spin');
+  const sIn = S(t - 1.60, 22), sOut = cl((t - 2.08) / .1);
+  sp.style.opacity = t < 1.60 ? 0 : cl(sIn * 1.3) * (1 - sOut);
+  sp.style.transform = `translateY(${(1 - sIn) * 12}px)`;
+  $('sg').textContent = SPIN[Math.max(0, Math.floor((t - 1.60) / .1)) % SPIN.length];
+
+  // 2.15 "bon skill": the result, then 2.27 "skill": the big blue check lands, "hyperframes" goes blue
+  enter($('r0'), 2.15, 20, 14); enter($('r1'), 2.21, 20, 14);
+  const hb = S(t - 2.27, 16);
+  $('hw').style.color = `rgb(${mix([236, 236, 236], [37, 142, 255], hb).join(',')})`;
+  const ck = S(t - 2.17, 20), k = $('chk');
+  k.style.opacity = t < 2.17 ? 0 : cl(ck * 1.6);
+  k.style.transform = `translateY(${(1 - ck) * -26}px) scale(${.62 + .38 * ck})`;
+
+  // 2.60 to 2.95 "à ta place": Claude's answer types in
+  const mC = MSG.join(' ').length, m = Math.round(mC * cl((t - 2.62) / .26)), tm = typed(MSG, m);
+  $('m0').innerHTML = `<span class="dot"></span> ${tm[0]}`;
+  $('m1').textContent = '  ' + tm[1];
+  enter($('m0'), 2.60, 22, 12);
+  $('m1').style.opacity = tm[1].length ? 1 : 0;
+};
+window.setT(0);
+</script>
+</body></html>

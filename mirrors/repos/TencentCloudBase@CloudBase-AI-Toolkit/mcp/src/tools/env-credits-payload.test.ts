@@ -4,6 +4,7 @@ import { buildEnvCreditsHtml } from "../resources/env-credits.js";
 import {
   buildCreditsSpark,
   buildEnvCreditsPayload,
+  buildReceiptDailyTotals,
   buildEnvMetricsPayload,
   CREDITS_MODULE_KEYS,
   downsampleMetricIndices,
@@ -17,6 +18,9 @@ import {
   resolvePlanCode,
   sumCreditsValue,
   sumDeductValue,
+  summarizeUsageDetail,
+  trimUsageForReceipt,
+  RECEIPT_DAILY_DAYS,
   pickCreditsBilling,
   PLAN_CREDITS_TOTAL,
   type CreditsUsageLike,
@@ -188,24 +192,62 @@ describe("用量换算", () => {
     expect(mapCreditsModules(null)).toBeUndefined();
   });
 
-  // 镜像 ENV_USAGE_MODULE_VALUES（env.ts）的全部 15 个码
+  it("点数为 0 的模块不占一行：19 个模块里大部分是 0 时，卡片只画花钱的那几个", () => {
+    // 实测环境 ai-eval 就是这样：只有存储真的扣了点数，其余模块全是 0。
+    // 全画出来是一排「数据库 0 · 云函数 0 · AI 0 …」，把真正花钱的挤成噪声。
+    expect(
+      mapCreditsModules([
+        { Module: "COS", CreditsValue: 7.44 },
+        { Module: "HOSTING", CreditsValue: 0.6 },
+        { Module: "Gateway", CreditsValue: 0.04 }, // 半点以下：卡片上没有小数位，印出来就是「环境调用 0」
+        { Module: "FLEXDB", CreditsValue: 0 },
+        { Module: "SCF", CreditsValue: 0 },
+        { Module: "AI", CreditsValue: 0 },
+      ]),
+    ).toEqual([
+      { module: "storage", credits_value: 7.44 },
+      { module: "hosting", credits_value: 0.6 },
+    ]);
+    // 一个非零模块都没有 ⇒ 不传模块列表，而不是传一串 0
+    expect(mapCreditsModules([{ Module: "FLEXDB", CreditsValue: 0 }])).toBeUndefined();
+    // 全都不到半点时不能滤成空白：宁可按原样显示零点几
+    expect(
+      mapCreditsModules([
+        { Module: "FLEXDB", CreditsValue: 0.1 },
+        { Module: "COS", CreditsValue: 0.2 },
+      ]),
+    ).toEqual([
+      { module: "database", credits_value: 0.1 },
+      { module: "storage", credits_value: 0.2 },
+    ]);
+  });
+
+  // 镜像 ENV_USAGE_MODULE_VALUES（env.ts）的全部 19 个码
   const codes = [
     "FLEXDB",
     "TDSQL",
     "PostgreSQL",
     "SCF",
+    "CBF",
     "EKS",
     "COS",
     "AI",
     "Token",
     "HOSTING",
     "Auth",
-    "APIInvocation",
-    "HTTPInvocation",
-    "VM",
+    "Gateway",
     "Workflow",
+    "CLS",
+    "EO",
+    "STORAGE_EO",
+    "CI",
+    "VM",
     "Other",
   ];
+
+  // 旧码：`Gateway` 的拆分子类，已不在清单里（同传会重复计费），
+  // 但映射表保留一份，免得历史响应带回旧码时落到 `other`。
+  const legacyCodes = ["APIInvocation", "HTTPInvocation"];
 
   it("规范键集合固定 10 个，且覆盖每个已知模块码", () => {
     expect([...CREDITS_MODULE_KEYS]).toEqual([
@@ -221,11 +263,11 @@ describe("用量换算", () => {
       "other",
     ]);
     // 每个成员都必须真的有码能映射过来（不留永不产出的死键，例如曾经留过的 cdn）
-    const reachable = new Set(codes.map((code) => moduleKeyOf(code)));
+    const reachable = new Set([...codes, ...legacyCodes].map((code) => moduleKeyOf(code)));
     for (const key of CREDITS_MODULE_KEYS) {
       expect(reachable, `${key} 应有模块码映射到它`).toContain(key);
     }
-    for (const code of codes) {
+    for (const code of [...codes, ...legacyCodes]) {
       const key = moduleKeyOf(code);
       expect(CREDITS_MODULE_KEYS, `${code} 应落在规范键集合内`).toContain(key);
       // 规范键一律小写，且不等于云 API 的原始码（原码都是大写/驼峰形式）
@@ -238,18 +280,26 @@ describe("用量换算", () => {
     // PostgreSQL 是自己的模块码，不能因为「TDSQL 已经落 database」就漏掉它（漏掉 = PG 环境用量显示 0）
     expect(moduleKeyOf("PostgreSQL")).toBe("database");
     expect(moduleKeyOf("SCF")).toBe("functions");
+    // CBF 是 CBF 后端环境的云函数，与 SCF 同类
+    expect(moduleKeyOf("CBF")).toBe("functions");
     expect(moduleKeyOf("COS")).toBe("storage");
+    // 数据万象、边缘存储都归存储
+    expect(moduleKeyOf("CI")).toBe("storage");
+    expect(moduleKeyOf("STORAGE_EO")).toBe("storage");
     expect(moduleKeyOf("AI")).toBe("ai");
     // Token 模块的指标是 InputToken./OutputToken.<model>（单位 tokens）→ 同属大模型消耗
     expect(moduleKeyOf("Token")).toBe("ai");
     expect(moduleKeyOf("Auth")).toBe("auth");
-    expect(moduleKeyOf("APIInvocation")).toBe("api");
+    // 环境调用（含 API 调用与 HTTP 网关）现在只有 Gateway 一个码
+    expect(moduleKeyOf("Gateway")).toBe("api");
     // 有官方依据的三项
     expect(moduleKeyOf("HTTPInvocation")).toBe("http");
     expect(moduleKeyOf("HOSTING")).toBe("hosting");
     expect(moduleKeyOf("Workflow")).toBe("workflow");
     // 没有把握的一律落 other（宁可少说，不编不准的名字）
     expect(moduleKeyOf("EKS")).toBe("other");
+    expect(moduleKeyOf("CLS")).toBe("other");
+    expect(moduleKeyOf("EO")).toBe("other");
     expect(moduleKeyOf("VM")).toBe("other");
     expect(moduleKeyOf("Other")).toBe("other");
   });
@@ -416,6 +466,8 @@ describe("按 type 过滤过的查询：used 是子集，不能配全量 total",
     const payload = buildEnvCreditsPayload({ ...base, modulesFiltered: true });
 
     expect(payload.branch).toBe("unknown");
+    // `unknown` 的成因要能和"读不到数据"区分开（面板话术按它选）
+    expect(payload.scope).toBe("filtered");
     expect(payload.credits).toEqual({ used: 12 });
     expect(payload.credits).not.toHaveProperty("total");
     // 过滤后的子集照实展示（它们本来就是被选模块的数据）
@@ -430,6 +482,7 @@ describe("按 type 过滤过的查询：used 是子集，不能配全量 total",
 
     expect(payload.credits).toEqual({ total: PLAN_CREDITS_TOTAL.trial, used: 12, source: "detail" });
     expect(payload.branch).toBe("normal");
+    expect(payload.scope).toBe("full");
   });
 
   it("过滤 + 用量拿不到 ⇒ 连 credits 都不传（不留一个只有 used 的空壳）", () => {
@@ -462,6 +515,8 @@ describe("求和不完整（部分和）保护：不配全量配额、不下结�
     });
 
     expect(payload.branch).toBe("unknown");
+    // 与 filtered 分开：这里是"求和本身不完整"，不是"调用方只选了部分模块"
+    expect(payload.scope).toBe("partial");
     // 部分和照给（面板 pct === null 时不画进度条），但不配全量配额
     expect(payload.credits).toEqual({ used: 12 });
     expect(payload.credits).not.toHaveProperty("total");
@@ -631,6 +686,7 @@ describe("buildEnvCreditsPayload", () => {
 
     expect(payload).toEqual({
       branch: "unknown",
+      scope: "none",
       env_alias: null,
       env_id: "env-unknown",
       plan: null,
@@ -875,5 +931,141 @@ describe("账单聚合优先于分项求和（DescribeCreditsUsage）", () => {
     const payload = buildEnvCreditsPayload({ ...base, billing: null });
 
     expect(payload.credits).toEqual({ total: 40000, used: 42, source: "detail" });
+  });
+});
+
+describe("明细信号：结构化载荷只有聚合，层数要如实报", () => {
+  const withDays = {
+    Module: "FLEXDB",
+    CreditsValue: 100,
+    DeductValue: 40,
+    MetricUsageDetail: [
+      {
+        MetricName: "Capacity",
+        Unit: "MB",
+        ResourceType: "FLEXDB",
+        ValueDetailList: [
+          { CalcTime: "2026-11-01", CreditsValue: 20 },
+          { CalcTime: "2026-11-02", CreditsValue: 20 },
+        ],
+      },
+    ],
+  };
+
+  it("带逐日明细 ⇒ 四层，并数出指标行与日行", () => {
+    expect(summarizeUsageDetail([withDays])).toEqual({
+      levels: ["module", "metric", "resource_type", "day"],
+      metric_rows: 1,
+      day_rows: 2,
+    });
+  });
+
+  it("只有指标行（needUsageDetails=false）⇒ 三层，不谎报有天级数据", () => {
+    expect(summarizeUsageDetail([{ ...withDays, MetricUsageDetail: [{ ValueDetailList: [] }] }])).toEqual({
+      levels: ["module", "metric", "resource_type"],
+      metric_rows: 1,
+      day_rows: 0,
+    });
+  });
+
+  it("没有指标明细 ⇒ 整键缺省（不编一个空壳）", () => {
+    expect(summarizeUsageDetail([{ Module: "SCF", CreditsValue: 5, DeductValue: 5 }])).toBeUndefined();
+    expect(summarizeUsageDetail(null)).toBeUndefined();
+  });
+});
+
+describe("默认回执裁剪（needUsageDetails 默认 false）", () => {
+  const full: CreditsUsageLike[] = [
+    {
+      Module: "TDSQL",
+      CreditsValue: 100,
+      DeductValue: 90,
+      MetricUsageDetail: [
+        {
+          MetricName: "Capacity",
+          ResourceType: "TDSQL",
+          Unit: "MB",
+          Value: 2048,
+          CreditsValue: 80,
+          DeductValue: 72,
+          ValueDetailList: [
+            { CalcTime: "2026-11-01", CreditsValue: 40 },
+            { CalcTime: "2026-11-02", CreditsValue: 40 },
+          ],
+        },
+        {
+          // 有量、没扣点数：保留（它解释"有这个用量但没花点数"）
+          MetricName: "Flux",
+          ResourceType: "NAT",
+          Unit: "Byte",
+          Value: 13976221,
+          CreditsValue: 0,
+          ValueDetailList: [],
+        },
+        {
+          // 全 0：整条不要
+          MetricName: "EmptyMetric",
+          CreditsValue: 0,
+          Value: 0,
+          ValueDetailList: [],
+        },
+        { CreditsValue: 20 },
+      ],
+    },
+    {
+      // 模块本身全 0 且没有可用指标 ⇒ 整条不要
+      Module: "SCF",
+      CreditsValue: 0,
+      DeductValue: 0,
+      MetricUsageDetail: [{ MetricName: "Invocations", CreditsValue: 0, Value: 0 }],
+    },
+  ];
+
+  it("只剩模块一层：指标与逐日都不带，但键名与云 API 同形、空数组保留", () => {
+    const receipt = trimUsageForReceipt(full);
+    expect(receipt).toHaveLength(1);
+    const [row] = receipt ?? [];
+    expect(row.Module).toBe("TDSQL");
+    expect(row.CreditsValue).toBe(100);
+    expect(row.DeductValue).toBe(90);
+    // 键留着、值为空：按 MetricUsageDetail 读的地方不会缺键，空数组本身就是"这层没给你"
+    expect(row.MetricUsageDetail).toEqual([]);
+    expect(row).not.toHaveProperty("BillingCycleType");
+  });
+
+  it("裁过之后回执里数不出指标层，深度信号改由上游数据提供", () => {
+    // 回执侧：一条指标都没有，所以数不出层
+    expect(summarizeUsageDetail(trimUsageForReceipt(full))).toBeUndefined();
+    // 上游侧：四层都在（env.ts 用这份数，避免模型以为工具最多给到模块）
+    expect(summarizeUsageDetail(full)).toEqual({
+      levels: ["module", "metric", "resource_type", "day"],
+      metric_rows: 5,
+      day_rows: 2,
+    });
+  });
+
+  it("空输入与全空结果都给 undefined，不编空壳", () => {
+    expect(trimUsageForReceipt(null)).toBeUndefined();
+    expect(trimUsageForReceipt([])).toBeUndefined();
+    expect(trimUsageForReceipt([{ Module: "SCF", CreditsValue: 0 }])).toBeUndefined();
+  });
+
+  it("逐日合计只给最近 7 天，按时间升序，键名对齐云 API 风格", () => {
+    const days: CreditsUsageLike["MetricUsageDetail"] = [
+      {
+        MetricName: "Capacity",
+        CreditsValue: 36,
+        ValueDetailList: Array.from({ length: 10 }, (_unused, index) => ({
+          CalcTime: `2026-11-${String(index + 1).padStart(2, "0")}`,
+          CreditsValue: index + 1,
+        })),
+      },
+    ];
+    const daily = buildReceiptDailyTotals([{ Module: "TDSQL", CreditsValue: 55, MetricUsageDetail: days }]);
+    expect(daily).toHaveLength(RECEIPT_DAILY_DAYS);
+    expect(daily?.[0]).toEqual({ CalcTime: "2026-11-04", CreditsValue: 4 });
+    expect(daily?.[RECEIPT_DAILY_DAYS - 1]).toEqual({ CalcTime: "2026-11-10", CreditsValue: 10 });
+    // 一天都没有 ⇒ 不给（空数组会被读成"这几天是 0"）
+    expect(buildReceiptDailyTotals([{ Module: "SCF", CreditsValue: 0 }])).toBeUndefined();
   });
 });

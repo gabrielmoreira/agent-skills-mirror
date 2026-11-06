@@ -4,7 +4,7 @@ MCP server that lets any AI agent — Claude Code, Cursor, Antigravity, Kiro, Co
 
 Makes standards consultation explicit: `AGENTS.md` and `_INDEX.md` are passive prompt context, while this MCP returns standards through auditable tool calls. Each agent or sub-agent must perform its own applicable lookup; parent-session consultation does not prove fresh-worker delivery or enforced behavior.
 
-**Current release:** `v0.6.1` — explicit consultation auditing, package-aligned security fixes, and supported streamable HTTP request handling.
+**Current release:** `v0.8.1` — explicit consultation auditing, session accounting, retrospective tooling, package-aligned security fixes, and supported streamable HTTP request handling. Per-release detail: [CHANGELOG](../CHANGELOG.md).
 
 ## High-Density Architecture (Zero-Trust)
 
@@ -74,7 +74,7 @@ ags mcp install             # Apply changes
 To install or run the MCP standalone:
 
 ```bash
-npx agent-skills-standard-mcp
+npx -y --prefer-offline agent-skills-standard-mcp@0.8.1
 
 # Or build from source
 pnpm install && pnpm mcp:build
@@ -85,9 +85,9 @@ node mcp/dist/index.js
 
 The candidate adds `ags-mcp-session-report --manifest <manifest.json> [--json]` for explicitly selected Codex JSONL and OMP v3 journals. It retains OMP model-usage calls and orchestration/cache-write buckets separately from transcript and conversation counters; absent submetrics stay unknown, and oversized journals stop at the first resource limit. It reports aggregate counters and inventory coverage only; it does not discover host activity or infer prices. See [`SESSION_REPORT.md`](SESSION_REPORT.md) for the manifest, counter semantics, unknown values, and privacy limits. Real-journal use remains subject to separate Personal-journal authorization.
 
-### Session retrospectives (`ags retrospective`, unreleased source candidate)
+### Session retrospectives (`ags retrospective`)
 
-The source ships **three stdio-only MCP tools plus a retrospective subcommand** in the server package, and none of it is released.
+The package ships **three stdio-only MCP tools plus a retrospective subcommand**; it is inert until a human opts in with `ags retrospective enable` in an interactive terminal.
 
 - `prepare_retrospective`, `get_retrospective_status`, and `prepare_retrospective_index` are registered
   only when the transport is stdio (`mcp/src/server.ts` checks `transport === "stdio"`). They are
@@ -112,11 +112,16 @@ that failure is kept as history, with the temporary compatibility dev dependency
 **Host integration is still not claimed.**
 
 Opt-in is a one-time human action; an agent can never do it (no terminal, no flag, no tool). `enable`
-requires an interactive terminal, prints the fixed consent text with the store root and source roots
-on stderr, accepts only the exact word `yes`, and otherwise writes nothing (`TTY_REQUIRED`,
-`CONSENT_DECLINED`). The default store root is `~/ags/diagnostics`; default source roots are those
-that exist among `~/.omp/agent/sessions` and `~/.codex/sessions`, and `--source-root` (repeatable,
-absolute, must exist) replaces them; none left is `NO_SOURCE_ROOTS`. stdout stays one JSON line.
+requires an interactive terminal, prints the fixed consent text with the store root and the exact
+source roots that will be read on stderr, accepts only the exact word `yes`, and otherwise writes
+nothing (`TTY_REQUIRED`, `CONSENT_DECLINED`). The default store root is `~/ags/diagnostics`; default
+source roots are those that exist among `~/.omp/agent/sessions` and `~/.codex/sessions`, and
+`--source-root` (repeatable, absolute, must exist) replaces them; none left is `NO_SOURCE_ROOTS`. A
+separate, non-consented section of the prompt discloses any existing `~/.claude/projects` or
+`~/.gemini/tmp` folder by presence only — one `lstat`, no enumeration, no read, nothing added to the
+consent record, and no claim that the provider is running. Separately, the overlap refusal
+canonicalizes the candidate root and store paths (symlinks resolved through existing ancestors, path
+metadata only) before the prompt, and the consent text states that. stdout stays one JSON line.
 
 ```text
 ags retrospective enable [--store-root <absolute>] [--source-root <absolute>]...
@@ -129,7 +134,7 @@ ags retrospective index [--since YYYY-MM-DD] [--until YYYY-MM-DD] [--folder NAME
 `{"schemaVersion":1,"enabled":false,"removed":<boolean>}`. `status` (forwarded as `consent-status` in the package) prints
 `{"schemaVersion":1,"state":"enabled","storeRoot":<path>,"allowedSourceRoots":[...]}` or
 `{"schemaVersion":1,"state":"disabled","reason":"<missing|invalid|permissive|symlink|version>"}`; a
-missing record is an ordinary `disabled` result, not an error; pre-existing version 1 consent records fail closed as disabled with reason `version` until `enable` is re-run. The consent file is owner-only and read
+missing record is an ordinary `disabled` result, not an error; pre-existing version 1, 2 and 3 consent records fail closed as disabled with reason `version` until `enable` is re-run. The consent file is owner-only and read
 fail-closed — missing, empty, malformed, unknown keys, relative paths, wrong version, group/other
 readable, symlink or non-regular each count as disabled:
 
@@ -139,11 +144,25 @@ readable, symlink or non-regular each count as disabled:
 Contract constraints to preserve when the binary ships:
 
 - stdout is exactly one JSON line. `index` prints `{"schemaVersion":1,"state":"written","path":<path>,"sessions":<number>,"omitted":<number>,"unreadable":<number>,"since":<string|null>,"until":<string|null>}`.
-- Refusals print `{"schemaVersion":1,"error":{"code":"<STABLE_CODE>"}}` to stderr — code only, never a manifest path, fs/runtime message, stack trace or file content. Codes include `TTY_REQUIRED`, `CONSENT_DECLINED`, `NO_SOURCE_ROOTS`, `ROOT_PERMISSIVE`, `ROOT_SYMLINK`, `ROOT_OWNER_MISMATCH`, `PRIVATE_MODE`, `STORE_ROOT_INSIDE_PROJECT`, `STORE_ROOT_UNRESOLVED`, `INVALID_DATE`, `INVALID_RANGE`, `INVALID_FOLDER`, `FAILED`. An existing root with group/other permissions is `ROOT_PERMISSIVE`; remediate with `mkdir -m 700` or `chmod 700` on a dedicated directory, never a shared/synced folder.
+- Refusals print `{"schemaVersion":1,"error":{"code":"<STABLE_CODE>"}}` to stderr — code only, never a manifest path, fs/runtime message, stack trace or file content. Codes include `TTY_REQUIRED`, `CONSENT_DECLINED`, `NO_SOURCE_ROOTS`, `SOURCE_ROOT_UNSUPPORTED_STORE`, `SOURCE_ROOT_CANONICALIZATION_FAILED`, `ROOT_PERMISSIVE`, `ROOT_SYMLINK`, `ROOT_OWNER_MISMATCH`, `PRIVATE_MODE`, `STORE_ROOT_INSIDE_PROJECT`, `STORE_ROOT_UNRESOLVED`, `INVALID_DATE`, `INVALID_RANGE`, `INVALID_FOLDER`, `FAILED`. An existing root with group/other permissions is `ROOT_PERMISSIVE`; remediate with `mkdir -m 700` or `chmod 700` on a dedicated directory, never a shared/synced folder.
 - Exit codes: usage `2`, refusal or failure `1`, successful index publication `0`.
 - Three tools are exposed on stdio: `prepare_retrospective`, `get_retrospective_status`, and `prepare_retrospective_index`. They never return transcript text or report bodies — only state, numbers, an artifact id, or paths (`summary.md`, `ledger.json`, `report.html`, or `<storeRoot>/index.html`); file contents stay on local disk.
 
-Full behaviour, privacy model and host versions: [`../docs/session-retrospective.md`](../docs/session-retrospective.md), with the privacy boundary in [`../docs/session-retrospective-privacy.md`](../docs/session-retrospective-privacy.md) and provider coverage in [`../docs/session-retrospective-hosts.md`](../docs/session-retrospective-hosts.md). Status: unreleased source; fresh build, passing MCP test suite and packed-tarball consumer smoke pass locally on macOS. Not published, no version bump, and no host-integration, Windows/Linux or process-level egress claim is made; no CI job runs on Windows. Skill, workflow and rule text that would trigger `prepare_retrospective` is not part of this change; it arrives later, after a value pilot.
+Full behaviour, privacy model and host versions: [`../docs/session-retrospective.md`](../docs/session-retrospective.md), with the privacy boundary in [`../docs/session-retrospective-privacy.md`](../docs/session-retrospective-privacy.md) and provider coverage in [`../docs/session-retrospective-hosts.md`](../docs/session-retrospective-hosts.md). Status: published in `0.8.0` and inert until consent; fresh build, passing MCP test suite and packed-tarball consumer smoke pass locally on macOS. No host-integration, Windows/Linux or process-level egress claim is made; no CI job runs on Windows. Skill, workflow and rule text that would trigger `prepare_retrospective` is not part of this change; it arrives later, after a value pilot.
+
+### Faster startup: one global install
+
+Every MCP client spawns the server as a fresh process, and an `npx` launch pays npm package resolution each time. On a warm npm cache, measured locally on macOS: **≈0.6s per `npx` spawn** versus **≈0.17s for the direct global binary** (`npx --offline` was ≈0.49s). Those are local warm-cache numbers, not a universal benchmark — but the relative ordering is why a global install exists.
+
+```bash
+npm i -g agent-skills-standard-mcp@0.8.1   # must match the CLI pin
+ags-mcp --version                          # prints the semver it reports
+ags mcp via auto                           # use it only when the version matches
+```
+
+Selecting global mode (`ags mcp via global`) and running `ags mcp enable` makes the CLI run the pinned global install for you and verify the reported version, exiting `1` without saving enabled state or writing configs if it does not match the pin. `ags mcp enable --install-global` remains available as an explicit trigger for the same install. With `via: auto` (the default), a global binary is used **only** when `ags-mcp --version` exactly equals the CLI pin; otherwise the client falls back to the pinned `npx` line, so a stale global can never serve a mismatched tool surface. On Windows, `auto` always stays on `npx`.
+
+`~/.npm/_npx` is machine-global and keyed by package spec, so several worktrees pointed at the same pin share one cached download — they do not re-download, though each client spawn still pays the resolution cost.
 
 ## Configure your AI agent
 
@@ -158,11 +177,25 @@ Add to `.mcp.json` (project-local) or `~/.claude/.mcp.json` (global):
   "mcpServers": {
     "agent-skills-standard": {
       "command": "npx",
-      "args": ["-y", "agent-skills-standard-mcp"]
+      "args": ["-y", "--prefer-offline", "agent-skills-standard-mcp@0.8.1"]
     }
   }
 }
 ```
+
+If you installed the server globally (see [Faster startup](#faster-startup-one-global-install)), the same entry is just:
+
+```json
+{
+  "mcpServers": {
+    "agent-skills-standard": {
+      "command": "ags-mcp"
+    }
+  }
+}
+```
+
+Every runtime below accepts either shape; only the `command`/`args` pair changes.
 
 ### Cursor
 
@@ -173,7 +206,7 @@ Add to `~/.cursor/mcp.json`:
   "mcpServers": {
     "agent-skills-standard": {
       "command": "npx",
-      "args": ["-y", "agent-skills-standard-mcp"]
+      "args": ["-y", "--prefer-offline", "agent-skills-standard-mcp@0.8.1"]
     }
   }
 }
@@ -191,7 +224,7 @@ Add to `~/.continue/config.json` under `experimental.modelContextProtocolServers
         "transport": {
           "type": "stdio",
           "command": "npx",
-          "args": ["-y", "agent-skills-standard-mcp"]
+          "args": ["-y", "--prefer-offline", "agent-skills-standard-mcp@0.8.1"]
         }
       }
     ]
@@ -208,7 +241,7 @@ Add to `~/.gemini/settings.json`:
   "mcpServers": {
     "agent-skills-standard": {
       "command": "npx",
-      "args": ["-y", "agent-skills-standard-mcp"]
+      "args": ["-y", "--prefer-offline", "agent-skills-standard-mcp@0.8.1"]
     }
   }
 }
@@ -238,7 +271,7 @@ To run the MCP as a standalone HTTP service (e.g., for GoClaw agents):
 ```bash
 export MCP_TRANSPORT=sse
 export PORT=8768
-npx agent-skills-standard-mcp
+npx -y --prefer-offline agent-skills-standard-mcp@0.8.1
 ```
 
 HTTP mode is stateless. Each request uses a fresh MCP server and transport, so clients can initialize and then make subsequent tool calls without a server-side session.

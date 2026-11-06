@@ -6,10 +6,10 @@ Thanks for your interest in improving this guide. This is a learning resource â€
 
 | You want to | Do this |
 |---|---|
-| Report a stale or wrong fact | Open a [stale-content issue](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=stale-content.yml) with a link to a source that shows the current fact. |
-| Get stuck on a lesson | Use the lesson's "Stuck on this lesson?" link, which opens a [lesson-feedback issue](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml) with the lesson filled in. |
-| Report a broken link, script or example | Open a [bug report](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=bug.yml). |
-| Suggest a third-party tool, MCP server, skill, plugin, course or article | Use the [Suggest a resource form](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=suggest-resource.yml). Unsolicited pull requests that add listings are closed; see the [Listing policy](#listing-policy). |
+| Report a stale or wrong fact | Open a [stale-content issue](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=stale-content.yml) with a link to a source that shows the current fact. |
+| Get stuck on a lesson | Use the lesson's "Stuck on this lesson?" link, which opens a [lesson-feedback issue](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml) with the lesson filled in. |
+| Report a broken link, script or example | Open a [bug report](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=bug.yml). |
+| Suggest a third-party tool, MCP server, skill, plugin, course or article | Use the [Suggest a resource form](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=suggest-resource.yml). Unsolicited pull requests that add listings are closed; see the [Listing policy](#listing-policy). |
 | Improve an explanation or fix a fact | Open a pull request. Follow [Sources and citations](#sources-and-citations), [Pull requests](#pull-requests) and the [Doc style guide](#doc-style-guide). |
 | Expand a thin section | Open a pull request. SDLC walkthroughs, new workflow recipes, and copy-ready examples for a lesson (see [Adding a skill](#adding-a-skill)) are all high-value. |
 
@@ -98,6 +98,15 @@ It certifies that on that date every volatile claim on the page was checked agai
 
 The `stamps` rule in the [checks](#checks) fails on a stamped page whose Stamp is missing or malformed. Once README carries a trust strip, it also fails if the strip's version differs from the latest edition entry in [CHANGELOG.md](CHANGELOG.md).
 
+### Version notes
+
+A version note is a sentence on the page, at the line that teaches the feature, that says from which Claude Code version the taught behavior holds. Write it as "From vX.Y.Z, <new behavior>; before that, <old behavior>", or with the docs' own "Requires Claude Code vX.Y.Z or later" wording.
+
+- A note is required when a release after the baseline, in `stable` or `latest`, renames, removes or changes the default or visible output of something a step, Check message or Go further line asks the learner to type, press or see, and the baseline is not moving for it.
+- Fixes and additions a lesson does not touch need none.
+- When a step teaches the line, the step file quotes the note, so the app shows it.
+- The docs win on current behavior, the CHANGELOG on the version.
+
 ### Editions and corrections
 
 Each release has an entry in [CHANGELOG.md](CHANGELOG.md), newest first:
@@ -105,11 +114,11 @@ Each release has an entry in [CHANGELOG.md](CHANGELOG.md), newest first:
 - an edition: `## vYYYY.MM - YYYY-MM-DD`, with the line `Verified against Claude Code vX.Y.Z (stable).` under it;
 - a correction: `## vYYYY.MM.N - YYYY-MM-DD`.
 
-Pushing a `v*` tag runs the edition gate. On an edition tag, every stamped page's Stamp must name the edition's version. On a correction tag, every stamped page changed since the previous tag must carry a Stamp dated after that tag's entry.
+Pushing a `v*` tag runs the edition gate. On an edition tag, every stamped page's Stamp must name the edition's version, and so must every example test line of the form `Tested in Claude Code vX.Y.Z (stable)` (the other form, `Not yet tested in a session at this edition's version`, names none; both are under [Adding a skill](#adding-a-skill)). On a correction tag, every stamped page changed since the previous tag must carry a Stamp dated after that tag's entry.
 
 Not every merge is a release. After a pull request merges, decide which of these it is:
 
-- **Edition** (`vYYYY.MM`): a new level or a major rework. Verify every stamped page at the then-current `stable` and re-stamp it, as the Baseline item under [Pull requests](#pull-requests) says. Then turn the Unreleased entry into the edition's entry, tag the merge commit, and publish a GitHub Release with the entry as its notes.
+- **Edition** (`vYYYY.MM`): a new level or a major rework. Verify every stamped page at the then-current `stable` and re-stamp it, as the Baseline item under [Pull requests](#pull-requests) says, and fold [version notes](#version-notes) whose version the new baseline includes into plain text. Then turn the Unreleased entry into the edition's entry, tag the merge commit, and publish a GitHub Release with the entry as its notes.
 - **Correction** (`vYYYY.MM.N`, numbered from 1 within an edition): a merged change that alters what a learner does or reads as fact, such as a wrong command, a stale claim, or a broken lesson, example or check. Batch these: one correction covers every such change merged since the previous tag, at most once a week. Its entry lists the changes. Give every stamped page changed since the previous tag a new Stamp, then tag the merge commit and publish a Release as for an edition.
 - **No tag**: typos, wording that changes no fact or step, CI, the guide's own check scripts, tooling and repository housekeeping. These ship on `main` without a release.
 
@@ -120,7 +129,7 @@ Not every merge is a release. After a pull request merges, decide which of these
 | Any number | No number without a dated, linked source. Cut unsourced numbers, or reword the sentence without them. The guide's own metadata, such as a lesson's time estimate, needs no source. |
 | Third-party adoption counts (stars, downloads, installs) | Keep them out of the guide's text; they belong in the resource suggestion issue that reviewed the item. Exception: an ecosystem figure a lesson needs, written with the full date in the sentence (`on <full date>, ...`) plus its link, never `as of`. The README's own star badge is fine. |
 | Vendor benchmarks | Always attribute them in the sentence ("Anthropic reports ...") and link them. |
-| Third-party plan-limit estimates | Cut them and link the official plan pages instead: [What is the Pro plan?](https://support.claude.com/en/articles/8325606-what-is-the-pro-plan), [What is the Max plan?](https://support.claude.com/en/articles/11049741-what-is-the-max-plan), [Use Claude Code with your Pro or Max plan](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan). |
+| Third-party plan-limit estimates | Cut them and link the official plan pages instead: [What is the Pro plan?](https://support.claude.com/en/articles/8325606-what-is-the-pro-plan), [What is the Max plan?](https://support.claude.com/en/articles/11049741-what-is-the-max-plan), [What is the Ultra plan?](https://support.claude.com/en/articles/17728952-what-is-the-ultra-plan), [Use Claude Code with your Pro, Max, or Ultra plan](https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-max-or-ultra-plan). |
 | Author heuristics | Reword them as advice with no invented precision: "usually the fix is upstream", not "~80% of the time". |
 
 ### Undocumented behavior
@@ -176,7 +185,7 @@ The guide does not security-audit listings.
 
 ### Suggesting a resource
 
-- Listings are added at a content review, not through contributors' pull requests. A listing added at a review links that review's pull request. To suggest one, use the [Suggest a resource form](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=suggest-resource.yml); its required fields ask for the evidence the bar needs.
+- Listings are added at a content review, not through contributors' pull requests. A listing added at a review links that review's pull request. To suggest one, use the [Suggest a resource form](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=suggest-resource.yml); its required fields ask for the evidence the bar needs.
 - An unsolicited pull request that adds a listing is closed with a reply that points to the form.
 - Suggestions that clear the bar wait for the next content review. Nothing merges ad hoc.
 - Suggesting your own project is allowed. Disclose your affiliation; the same bar applies.
@@ -189,7 +198,7 @@ AI-assisted contributions are allowed, and you do not need to disclose them. You
 
 Each pull request carries one change. Fill in every section of the [pull request template](.github/PULL_REQUEST_TEMPLATE.md) that applies.
 
-- **Baseline.** Changes are verified against one `stable` Claude Code version, named in the Unreleased entry of [CHANGELOG.md](CHANGELOG.md) and frozen while an edition is built. A later `stable` release is pulled in early only when it removes, renames or changes the default of something a lesson teaches, as its own pull request. Before an edition ships, a final pass verifies every stamped page at the then-current `stable` and re-stamps it.
+- **Baseline.** Changes are verified against one `stable` Claude Code version, named in the Unreleased entry of [CHANGELOG.md](CHANGELOG.md) and frozen while an edition is built. A later `stable` release is pulled in early only when it removes, renames or changes the default of something a lesson teaches, as its own pull request. Any other change a later release makes to what a lesson teaches keeps the baseline and gets a [version note](#version-notes). Before an edition ships, a final pass verifies every stamped page at the then-current `stable` and re-stamps it.
 - **Claim table.** Every volatile claim added or changed links its Tier 1 source. The description holds a claim table (claim, source, result), filled by a second, independent pass that tried to refute each claim against Tier 1: a separate agent for agent-made pull requests, the reviewer for human ones.
 - **Tested field.** A pull request that touches `examples/` or `.claude/` states `Tested in Claude Code vX.Y.Z on <OS>`, or "smoke test only" if the change was not run in a session.
 - **Dry-run.** Lesson pull requests, and example pull requests whose example a core lesson or capstone uses, record a dry-run of each exercise and check at the baseline, in a clean configuration:
@@ -216,7 +225,7 @@ It needs Node.js LTS, git, Ruby (for YAML), jq (for the examples' smoke tests), 
 | `anchor-diff` | An anchor in `anchors.txt`, or on the base branch, is gone |
 | `stub-paths` | A page path in `paths.txt` is gone |
 | `stamps` | A stamped page's Stamp is missing or malformed, or the trust strip disagrees with the CHANGELOG |
-| `edition-gate` | On a release tag only: a stamped page does not match the release |
+| `edition-gate` | On a release tag only: a stamped page does not match the release, or, on an edition tag, an example's test line names another version or leaves out `(stable)` |
 | `expiry` | Never on a pull request, where it warns about markers due within 30 days |
 | `em-dash` | An added line in a Markdown, YAML or text file has an em dash outside code and double quotes, or an added line in the `quest/` source (TypeScript, TSX, CSS, JSON or HTML) has one anywhere, strings included |
 | `images` | An image lacks alt text, a Mermaid block lacks its accessibility lines, or a file under `assets/` breaks the naming, reference or size rules |
@@ -297,10 +306,10 @@ Callouts are GitHub alerts, at most two per lesson, each with one meaning:
 - Every image has alt text that says what the reader should learn from it, not "screenshot" and not a repeat of the caption.
 - Text in a diagram or image reaches 4.5:1 contrast in GitHub's light and dark themes; other marks reach 3:1.
 - No third-party images (logos, icons, slides, product screenshots) and no embedded video.
-- The only animation is README's Pip GIFs, `assets/readme/pip-*.gif`: captures of Claude Code Quest that show Pip reacting, each with full alt text and within the Pip GIF budget below. No other page shows them.
+- The only animation is README's Pip GIFs, `assets/readme/pip-*.gif`: captures of Claude Code Quest, or renders of Pip's rig, each with full alt text and within the Pip GIF budget below. No other page shows them. A render's HTML comment names the rig and the date it was rendered, as a capture's names the version and date.
 - Pip's art comes only from his rig (`quest/client/pip/`, rendered by the app's runtime or `npm run pip:build`), his icon SVG, or captures of the app. Never redraw him by hand.
 - The `images` check enforces the alt text, the Mermaid lines, the one-animation rule (it reads each PNG and WebP's header and fails an animated PNG or WebP), and the names, references and budget below.
-- New images go under `assets/`: `assets/brand/` for the guide's identity, `assets/lessons/<lesson-id>/` for captures and `assets/readme/` for README's. Names are kebab-case, and paths are explicit and relative. Budget: an SVG up to 50 KB, a capture up to 200 KB, the social card under 1 MB, and each Pip GIF up to `PIP_GIF_BUDGET`, 1400 KB (the largest measured GIF plus about 15%). Every image that is not a capture ships its editable source beside it. Hand-drawn SVG is for the guide's identity pieces only.
+- New images go under `assets/`: `assets/brand/` for the guide's identity, `assets/lessons/<lesson-id>/` for captures and `assets/readme/` for README's. Names are kebab-case, and paths are explicit and relative. Budget: an SVG up to 50 KB, a capture up to 200 KB, the social card under 1 MB, and each Pip GIF up to `PIP_GIF_BUDGET`, 800 KB (the largest measured GIF plus about 15%). Every image that is not a capture or a render of Pip's rig ships its editable source beside it. Hand-drawn SVG is for the guide's identity pieces only, README's Try it now button among them.
 
 ### Headings
 

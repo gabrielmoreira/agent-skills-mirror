@@ -50,7 +50,7 @@ flowchart TD
 
    By default, an interactive session runs subagents in the background, so your prompt stays free ([Run subagents in foreground or background](https://code.claude.com/docs/en/sub-agents#run-subagents-in-foreground-or-background)).
 4. While they work, run `/tasks`. It lists each item running in the background and lets you check on, attach to, or stop it ([Check on running work](https://code.claude.com/docs/en/agents#check-on-running-work)). Claude may start [built-in](https://code.claude.com/docs/en/sub-agents#built-in-subagents) `Explore` or `general-purpose` subagents, or forks of your conversation, so your rows will differ.
-5. When the summaries arrive, run `/usage` to see what that cost. On a Pro, Max, Team or Enterprise plan, it attributes your recent usage to skills, subagents, plugins and MCP servers, and recommends changes ([Plan usage breakdown](https://code.claude.com/docs/en/costs#plan-usage-breakdown)). The figures are estimates.
+5. When the summaries arrive, run `/usage` to see what that cost. On a Pro, Max, Ultra, Team or Enterprise plan, it attributes your recent usage to skills, subagents, plugins and MCP servers, and recommends changes ([Plan usage breakdown](https://code.claude.com/docs/en/costs#plan-usage-breakdown)). The figures are estimates.
 
 ## Your turn
 
@@ -97,4 +97,4 @@ If a job's pattern is wrong, ask the chart's questions in order: the check's hin
 
 <sub>Sources: [Run agents in parallel](https://code.claude.com/docs/en/agents) · [Orchestrate subagents at scale with dynamic workflows](https://code.claude.com/docs/en/workflows) · [Commands](https://code.claude.com/docs/en/commands) · [Orchestrate teams of Claude Code sessions](https://code.claude.com/docs/en/agent-teams) · [Create custom subagents](https://code.claude.com/docs/en/sub-agents) · [Manage costs effectively](https://code.claude.com/docs/en/costs) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [CLI reference](https://code.claude.com/docs/en/cli-reference)</sub>
 
-<sub>← [Parallel sessions with worktrees](01-parallel-sessions.md) · [Advanced index](README.md) · [Run and save a dynamic workflow](03-dynamic-workflows.md) → · Topic: [Subagents and parallel work](../topics/subagents-and-parallel-work.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=a-2)</sub>
+<sub>← [Parallel sessions with worktrees](01-parallel-sessions.md) · [Advanced index](README.md) · [Run and save a dynamic workflow](03-dynamic-workflows.md) → · Topic: [Subagents and parallel work](../topics/subagents-and-parallel-work.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=a-2)</sub>

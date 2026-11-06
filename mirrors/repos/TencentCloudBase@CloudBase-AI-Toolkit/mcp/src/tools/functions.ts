@@ -498,8 +498,8 @@ type QueryFunctionsInput = {
   layerName?: string;
   layerVersion?: number;
   taskId?: string;
-  order?: string;
-  orderBy?: string;
+  order?: "ASC" | "DESC";
+  orderBy?: "AddTime" | "ModTime";
   aliasName?: string;
 };
 
@@ -651,9 +651,7 @@ const TRIGGER_SCHEMA = z.object({
   config: z
     .string()
     .describe("functions.schema.trigger.config")
-    .refine((val) => SEVEN_FIELD_CRON_REGEX.test(val), () => ({
-      message: t("functions.timerCron.refine"),
-    })),
+    .refine((val) => SEVEN_FIELD_CRON_REGEX.test(val), { error: () => { return t("functions.timerCron.refine"); } }),
 });
 
 const CREATE_FUNCTION_SCHEMA = z.object({
@@ -677,7 +675,7 @@ const CREATE_FUNCTION_SCHEMA = z.object({
     .optional(),
   timeout: z.number().optional().describe("functions.schema.create.timeout"),
   envVariables: z
-    .record(z.string())
+    .record(z.string(), z.string())
     .optional()
     .describe("functions.schema.create.envVariables"),
   vpc: VPC_SCHEMA.optional().describe("functions.schema.create.vpc"),
@@ -3689,8 +3687,8 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           .string()
           .optional()
           .describe("functions.schema.query.taskId"),
-        order: z.string().optional().describe("functions.schema.query.order"),
-        orderBy: z.string().optional().describe("functions.schema.query.orderBy"),
+        order: z.enum(["ASC", "DESC"]).optional().describe("functions.schema.query.order"),
+        orderBy: z.enum(["AddTime", "ModTime"]).optional().describe("functions.schema.query.orderBy"),
         aliasName: z
           .string()
           .optional()
@@ -3727,11 +3725,11 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
         handler: z.string().optional().describe("functions.schema.manage.handler"),
         timeout: z.number().optional().describe("functions.schema.manage.timeout"),
         envVariables: z
-          .record(z.string())
+          .record(z.string(), z.string())
           .optional()
           .describe("functions.schema.manage.envVariables"),
         vpc: VPC_SCHEMA.optional().describe("functions.schema.manage.vpc"),
-        params: z.record(z.any()).optional().describe("functions.schema.manage.params"),
+        params: z.record(z.string(), z.any()).optional().describe("functions.schema.manage.params"),
         triggers: z
           .array(TRIGGER_SCHEMA).max(20)
           .optional()

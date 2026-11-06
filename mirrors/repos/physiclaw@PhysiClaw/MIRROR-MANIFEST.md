@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 1 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 0 followed patterns, 3 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 1 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 0 followed patterns, 3 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
 
 ## File Index
 
@@ -59,9 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`hardware/AGENTS.md`](hardware/AGENTS.md) |
-| 2 | ✓ | [`skills/jd/SKILL.md`](skills/jd/SKILL.md) |
-| 3 | ✓ | [`skills/taobao/SKILL.md`](skills/taobao/SKILL.md) |
+| 1 | ✓ | [`docs/README.md`](docs/README.md) |
+| 2 | ✓ | [`firmware/README.md`](firmware/README.md) |
+| 3 | ✓ | [`hardware/AGENTS.md`](hardware/AGENTS.md) |
+| 4 | ✓ | [`hardware/documents/README.md`](hardware/documents/README.md) |
+| 5 | ✓ | [`hardware/README.md`](hardware/README.md) |
+| 6 | ✓ | [`playbooks/channel/README.md`](playbooks/channel/README.md) |
+| 7 | ✓ | [`playbooks/channel/wechat/README.md`](playbooks/channel/wechat/README.md) |
+| 8 | ✓ | [`playbooks/README.md`](playbooks/README.md) |
+| 9 | ✓ | [`playbooks/taobao/buy-together/README.md`](playbooks/taobao/buy-together/README.md) |
+| 10 | ✓ | [`playbooks/taobao/buy/README.md`](playbooks/taobao/buy/README.md) |
+| 11 | ✓ | [`playbooks/taobao/hema-buy/README.md`](playbooks/taobao/hema-buy/README.md) |
+| 12 | ✓ | [`playbooks/taobao/README.md`](playbooks/taobao/README.md) |
+| 13 | ✓ | [`playbooks/taobao/shangou-buy/README.md`](playbooks/taobao/shangou-buy/README.md) |
+| 14 | ✓ | [`playbooks/taobao/tmall-buy/README.md`](playbooks/taobao/tmall-buy/README.md) |
+| 15 | ✓ | [`skills/jd/SKILL.md`](skills/jd/SKILL.md) |
+| 16 | ✓ | [`skills/taobao/SKILL.md`](skills/taobao/SKILL.md) |
+| 17 | ✓ | [`tests/studio/README.md`](tests/studio/README.md) |
+| 18 | → | [`README.md`](README.md) |
 
 ---
 

@@ -1,0 +1,305 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Comment CTA (short 23.18 to the end, dur 2.80): the camera is full screen and the Instagram Reels UI is already over it,
+     as if the viewer were watching this very reel. The finger taps the comment icon on « Commente », the light comments sheet
+     comes up (top 1242 px, the face stays clear), « ORBES » is typed on « Orb », Publier is tapped on « je », the comment posts
+     on « t'envoie », toncompte's DM drops as an iOS banner on « le » and its GitHub link line opens on « repo », the sheet goes
+     down on « du », the finger taps Suivre on « suis » and it turns into Abonné(e). Holds to the end.
+     Transparent, 400x711.1 CSS at zoom 2.7 = 1080x1920. window.setT(t) draws the state at t seconds, pure function of t.
+     Adapted from short-insta-skills-nico/source/ig-cta.html. -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { zoom: 2.7; width: 400px; height: 711.12px; overflow: hidden; color: #f5f5f5; -webkit-font-smoothing: antialiased;
+    font-family: -apple-system, "SF Pro Text", "Inter", "Helvetica Neue", sans-serif; }
+  #app { position: relative; width: 400px; height: 711.12px; overflow: hidden; }
+  svg { display: block; }
+  #gtop { position: absolute; left: 0; top: 0; width: 400px; height: 100px; background: linear-gradient(to bottom, rgba(0,0,0,.36), rgba(0,0,0,0)); }
+  #gbot { position: absolute; left: 0; bottom: 0; width: 400px; height: 200px; background: linear-gradient(to top, rgba(0,0,0,.6), rgba(0,0,0,.22) 55%, rgba(0,0,0,0)); }
+  .sh { filter: drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .tsh { text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  #status { position: absolute; left: 0; top: 0; width: 400px; height: 30px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 26px 0 34px; box-sizing: border-box; font-size: 14px; font-weight: 600; letter-spacing: -.2px; z-index: 30; }
+  #status .ic { display: flex; align-items: center; gap: 5px; }
+  #rtitle { position: absolute; left: 22px; top: 38px; font-size: 22px; font-weight: 700; letter-spacing: -.5px; display: flex; align-items: center; gap: 4px; }
+  #rcam { position: absolute; right: 24px; top: 38px; }
+  /* right action column, under the caption band (y 1237 px = 458 CSS) */
+  .rail { position: absolute; left: 358px; top: 0; width: 0; }
+  .rail .it { position: absolute; left: -20px; width: 40px; display: flex; flex-direction: column; align-items: center; }
+  .rail .ct { font-size: 13px; font-weight: 600; margin-top: 4px; height: 17px; position: relative; width: 60px; text-align: center; letter-spacing: -.1px; overflow: hidden; }
+  .rail .ct span { position: absolute; left: 0; right: 0; top: 0; }
+  #audio { position: absolute; left: 345px; top: 664px; width: 26px; height: 26px; border-radius: 6px; overflow: hidden; border: 1.5px solid #fff; box-sizing: border-box; }
+  #audio img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.32); }
+  #info { position: absolute; left: 22px; top: 584px; width: 300px; }
+  #info .who { display: flex; align-items: center; gap: 9px; height: 30px; }
+  #info .who img { width: 30px; height: 30px; border-radius: 50%; }
+  #info .who b { font-size: 14px; font-weight: 700; letter-spacing: -.1px; }
+  #follow { position: relative; height: 27px; border-radius: 8px; margin-left: 2px; box-sizing: border-box; }
+  #follow .fb { position: absolute; inset: 0; border-radius: 8px; border: 1px solid rgba(255,255,255,.78); box-sizing: border-box; }
+  #follow .fg { position: absolute; inset: 0; border-radius: 8px; background: rgba(255,255,255,.22); }
+  #follow span { position: absolute; left: 0; right: 0; top: 0; height: 27px; display: flex; align-items: center; justify-content: center; gap: 4px;
+    font-size: 13px; font-weight: 600; white-space: nowrap; letter-spacing: -.1px; }
+  #cap { font-size: 13.5px; line-height: 18px; margin-top: 10px; white-space: nowrap; letter-spacing: -.1px; }
+  #cap i { font-style: normal; color: rgba(255,255,255,.72); }
+  #music { font-size: 13px; margin-top: 7px; display: flex; align-items: center; gap: 6px; letter-spacing: -.1px; }
+  #prog { position: absolute; left: 0; bottom: 0; width: 400px; height: 2px; background: rgba(255,255,255,.28); }
+  #prog i { position: absolute; left: 0; top: 0; height: 2px; background: #fff; }
+  #dim { position: absolute; inset: 0; background: #000; z-index: 25; }
+  /* comments sheet, light mode: its top sits at 460 CSS (1242 px), under the caption band, the face stays clear */
+  #sheet { position: absolute; left: 0; top: 460px; width: 400px; height: 251.12px; background: #fff; color: #000; border-radius: 16px 16px 0 0; z-index: 26; overflow: hidden;
+    box-shadow: 0 -6px 22px rgba(0,0,0,.22); }
+  #handle { position: absolute; left: 182px; top: 8px; width: 36px; height: 4px; border-radius: 2px; background: #c7c7c7; }
+  #stitle { position: absolute; left: 0; top: 20px; width: 400px; text-align: center; font-size: 15.5px; font-weight: 700; letter-spacing: -.2px; }
+  #splane { position: absolute; right: 26px; top: 19px; }
+  #hair { position: absolute; left: 0; top: 50px; width: 400px; height: .5px; background: rgba(0,0,0,.12); }
+  #list { position: absolute; left: 0; top: 0; width: 400px; height: 192px; overflow: hidden; }
+  .crow { position: absolute; left: 0; width: 400px; height: 62px; }
+  .crow .hl { position: absolute; inset: 0; background: rgba(0,149,246,.09); }
+  .cav { position: absolute; left: 22px; top: 9px; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 13px; color: #fff; overflow: hidden; }
+  .cav img, .cav svg { width: 100%; height: 100%; }
+  .cbody { position: absolute; left: 64px; top: 7px; width: 270px; }
+  .cname { font-size: 13px; line-height: 17px; display: flex; gap: 6px; align-items: baseline; }
+  .cname b { font-weight: 600; letter-spacing: -.1px; } .cname span { color: #737373; font-size: 13px; }
+  .ctext { font-size: 15px; line-height: 20px; letter-spacing: -.15px; white-space: nowrap; }
+  .creply { font-size: 13px; line-height: 16px; color: #737373; font-weight: 600; margin-top: 1px; }
+  .clike { position: absolute; left: 346px; top: 14px; width: 24px; height: 34px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 13px; color: #737373; }
+  /* composer, the bottom of the sheet */
+  #composer { position: absolute; left: 0; top: 192px; width: 400px; height: 59.12px; background: #fff; }
+  #composer .hair { position: absolute; left: 0; top: 0; width: 400px; height: .5px; background: rgba(0,0,0,.1); }
+  #cav2 { position: absolute; left: 22px; top: 13px; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; }
+  #field { position: absolute; left: 62px; top: 9px; width: 314px; height: 40px; border-radius: 20px; border: 1px solid #dbdbdb; box-sizing: border-box; }
+  #ftext { position: absolute; left: 15px; top: 0; height: 38px; display: flex; align-items: center; font-size: 17px; font-weight: 600; letter-spacing: .2px; color: #000; }
+  #ftext span { display: inline-block; }
+  #ph { position: absolute; left: 15px; top: 0; height: 38px; display: flex; align-items: center; font-size: 15px; color: #737373; letter-spacing: -.1px; }
+  #caret { width: 2px; height: 21px; border-radius: 1px; background: #0095F6; margin-left: 1px; }
+  #pub { position: absolute; right: 15px; top: 0; height: 38px; display: flex; align-items: center; font-size: 15px; font-weight: 700; color: #0095F6; transform-origin: 70% 50%; }
+  /* iOS communication notification banner, light mode (sender avatar + Instagram badge) */
+  .ban { position: absolute; left: 12px; top: 15px; width: 376px; border-radius: 22px; background: rgba(246,246,248,.97); color: #000; overflow: hidden;
+    box-shadow: 0 8px 22px rgba(0,0,0,.24), 0 0 0 .5px rgba(0,0,0,.06) inset; z-index: 40; transform-origin: 50% 0%; }
+  .ban .av { position: absolute; left: 12px; top: 11px; width: 42px; height: 42px; }
+  .ban .av > img { width: 42px; height: 42px; border-radius: 50%; }
+  .ban .badge { position: absolute; left: 26px; top: 26px; width: 19px; height: 19px; border-radius: 5px; overflow: hidden; box-shadow: 0 0 0 1.5px rgba(246,246,248,1); }
+  .ban .badge img { width: 100%; height: 100%; transform: scale(1.06); }
+  .ban .tx { position: absolute; left: 66px; top: 11px; width: 298px; }
+  .ban .t1 { font-size: 15px; line-height: 19px; font-weight: 700; letter-spacing: -.2px; display: flex; justify-content: space-between; }
+  .ban .t1 i { font-style: normal; font-weight: 400; font-size: 13px; color: #6e6e73; }
+  .ban .t2 { font-size: 15px; line-height: 19px; letter-spacing: -.2px; margin-top: 1px; }
+  .ban .t3 { display: flex; align-items: center; gap: 5px; height: 20px; margin-top: 2px; font-size: 14px; letter-spacing: -.25px; color: #1d1d1f; white-space: nowrap; }
+  .ban .t3 img { width: 16px; height: 16px; }
+  /* the viewer's finger */
+  #dot { position: absolute; left: 0; top: 0; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; z-index: 60;
+    box-sizing: border-box; border: 2px solid rgba(255,255,255,.95); box-shadow: 0 2px 10px rgba(0,0,0,.3); }
+  .rip { position: absolute; left: 0; top: 0; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; z-index: 59;
+    box-sizing: border-box; border: 2px solid rgba(255,255,255,.9); }
+</style></head>
+<body><div id="app">
+  <div id="gtop"></div><div id="gbot"></div>
+
+  <div id="status" class="tsh"><span>9:41</span><div class="ic">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="#fff"><path d="M8 2.6c2.2 0 4.2.85 5.7 2.250l1.2-1.25C13.1 1.9 10.7.9 8 .9S2.9 1.9 1.1 3.6l1.2 1.250C3.8 3.45 5.8 2.6 8 2.6z"/><path d="M8 6.1c1.25 0 2.4.5 3.25 1.3l1.2-1.25A6.4 6.4 0 0 0 8 4.4c-1.7 0-3.3.65-4.450 1.750l1.2 1.25C5.6 6.6 6.75 6.1 8 6.1z"/><path d="M8 9.4l2-2.05a2.8 2.8 0 0 0-4 0z" transform="translate(0 1.4)"/></svg>
+    <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.6" fill="none" stroke="rgba(255,255,255,.45)"/><rect x="2" y="2" width="18" height="9" rx="2.2" fill="#fff"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="rgba(255,255,255,.45)"/></svg>
+  </div></div>
+
+  <div id="rtitle" class="tsh">Reels<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-top:3px"><path d="M6 9l6 6 6-6"/></svg></div>
+  <div id="rcam" class="sh"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"><path d="M3 8.6c0-1.2 1-2.1 2.1-2.1h2.3l1.4-2h6.4l1.4 2h2.3c1.2 0 2.1 1 2.1 2.1v9.3c0 1.2-1 2.1-2.1 2.1H5.1C4 20 3 19 3 17.9z"/><circle cx="12" cy="12.8" r="3.7"/></svg></div>
+
+  <div class="rail">
+    <div class="it sh rit" style="top:458px">
+      <svg width="28" height="28" viewBox="0 0 24 24"><path fill="#fff" d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.120 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.040 6.040 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.610 2.550 5.827 5.015 7.970.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.320 4.98-7.940a6.985 6.985 0 0 0-6.708-7.218Z"/></svg>
+      <div class="ct tsh"><span>21,4&nbsp;k</span></div>
+    </div>
+    <div class="it sh rit" id="icom" style="top:518px">
+      <svg id="comsvg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"/></svg>
+      <div class="ct tsh"><span id="cc0">3&nbsp;118</span><span id="cc1">3&nbsp;119</span></div>
+    </div>
+    <div class="it sh rit" style="top:578px">
+      <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><line x1="22" x2="9.218" y1="3" y2="10.083"/><polygon points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/></svg>
+      <div class="ct tsh"><span>5&nbsp;260</span></div>
+    </div>
+    <div class="it sh rit" style="top:634px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+    </div>
+  </div>
+  <div id="audio"><img src="../assets/images/avatar.png"></div>
+
+  <div id="info" class="tsh">
+    <div class="who"><img src="../assets/images/avatar.png"><b>toncompte</b>
+      <div id="follow"><div class="fb"></div><div class="fg"></div>
+        <span id="fl0">Suivre</span>
+        <span id="fl1"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Abonné(e)</span>
+      </div></div>
+    <div id="cap">Thinking Orbs, la lib open source<i>… plus</i></div>
+    <div id="music"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M9 3v11.6A3.5 3.5 0 1 0 11 18V8h8V3z"/></svg><span>toncompte · Son original</span></div>
+  </div>
+  <div id="prog"><i id="progi"></i></div>
+
+  <div id="dim"></div>
+  <div id="sheet">
+    <div id="list"></div>
+    <div id="handle"></div>
+    <div id="stitle">Commentaires</div>
+    <div id="splane"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="round"><line x1="22" x2="9.218" y1="3" y2="10.083"/><polygon points="11.698 20.334 22 3.001 2 3.001 9.218 10.084 11.698 20.334"/></svg></div>
+    <div id="hair"></div>
+    <div id="composer">
+      <div class="hair"></div>
+      <div id="cav2"></div>
+      <div id="field"><div id="ph">Ajouter un commentaire…</div><div id="ftext"><span id="typed"></span><i id="caret"></i></div><div id="pub">Publier</div></div>
+    </div>
+  </div>
+
+  <div class="ban" id="ban1">
+    <div class="av"><img src="../assets/images/avatar.png"><div class="badge"><img src="../assets/logos/instagram.png"></div></div>
+    <div class="tx"><div class="t1">toncompte<i>maintenant</i></div><div class="t2">Voici le repo Thinking Orbs</div>
+      <div class="t3" id="blink"><img src="../assets/logos/github.png"><span>github.com/Jakubantalik/thinking-orbs</span></div></div>
+  </div>
+
+  <div class="rip" id="rip0"></div><div class="rip" id="rip1"></div>
+  <div id="dot"></div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+// critically damped spring from rest (never overshoots)
+const S = (x, w = 14) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+// same spring with a launch velocity k in [0,1]: still never overshoots
+const SV = (x, w = 14, k = .6) => x <= 0 ? 0 : 1 - (1 + w * (1 - k) * x) * Math.exp(-w * x);
+const out = p => 1 - Math.pow(1 - p, 3), io = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const lerp = (a, b, p) => a + (b - a) * p;
+const HEART_O = '<svg width="14" height="14" viewBox="0 0 24 24"><path fill="#737373" d="M16.792 3.904A4.989 4.989 0 0 1 21.5 9.122c0 3.072-2.652 4.959-5.197 7.222-2.512 2.243-3.865 3.469-4.303 3.752-.477-.309-2.143-1.823-4.303-3.752C5.141 14.072 2.5 12.167 2.5 9.122a4.989 4.989 0 0 1 4.708-5.218 4.21 4.21 0 0 1 3.675 1.941c.84 1.175.98 1.763 1.12 1.763s.278-.588 1.11-1.766a4.17 4.17 0 0 1 3.679-1.938m0-2a6.04 6.04 0 0 0-4.797 2.127 6.052 6.052 0 0 0-4.787-2.127A6.985 6.985 0 0 0 .5 9.122c0 3.61 2.55 5.827 5.015 7.97.283.246.569.494.853.747l1.027.918a44.998 44.998 0 0 0 3.518 3.018 2 2 0 0 0 2.174 0 45.263 45.263 0 0 0 3.626-3.115l.922-.824c.293-.26.59-.519.885-.774 2.334-2.025 4.98-4.32 4.98-7.94a6.985 6.985 0 0 0-6.708-7.218Z"/></svg>';
+const DEF_AV = '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#dbdbdb"/><circle cx="16" cy="12.6" r="5.6" fill="#fafafa"/><path d="M5.6 27.6c1.9-4.9 6-7.5 10.4-7.5s8.5 2.6 10.4 7.500A15.9 15.9 0 0 1 16 32a15.9 15.9 0 0 1-10.4-4.4z" fill="#fafafa"/></svg>';
+
+// ---- event times, τ = seconds from the overlay start (short 23.18). Words: Commente 0, Orb(ES) .33, et .59, je .66,
+// t'envoie .73, le .94, repo 1.03, du 1.38, moment 1.45, que 1.62, tu 1.67, me 1.76, suis 1.86. The chrome is there at τ 0.
+const TAP_COM = .05, T_SHEET = .13, TYPE = [.33, .39, .45, .51, .57], T_PUB_ON = .33;
+const TAP_PUB = .66, T_POST = .73, T_BAN = .94, T_LINK = 1.03, T_SHEET_OUT = 1.36, T_BACK = 1.42, TAP_FOL = 1.86;
+
+const OLD = [
+  ['lucas.dev', '1 min', 'ORBES', 'linear-gradient(135deg,#2bb673,#0b6e4f)', 'L', '24'],
+  ['sarah.creates', '2 min', 'ORBES', 'linear-gradient(135deg,#ff7a59,#c2185b)', 'S', '19'],
+  ['tom.codes', '4 min', 'ORBES, trop propre cette lib', 'linear-gradient(135deg,#5b4bdb,#1b9cff)', 'T', '12'],
+];
+const mkRow = (name, age, text, av, likes, hl) => {
+  const r = document.createElement('div'); r.className = 'crow';
+  r.innerHTML = (hl ? '<div class="hl"></div>' : '') + `<div class="cav"${av.bg ? ` style="background:${av.bg}"` : ''}>${av.html}</div>
+    <div class="cbody"><div class="cname"><b>${name}</b><span>${age}</span></div><div class="ctext">${text}</div><div class="creply">Répondre</div></div>
+    <div class="clike">${HEART_O}<span>${likes}</span></div>`;
+  $('list').appendChild(r); return r;
+};
+const LIST_TOP = 54, ROW_H = 62;
+const newRow = mkRow('toi', "à l'instant", '<b style="font-weight:600">ORBES</b>', { html: DEF_AV }, '', true);
+const oldRows = OLD.map(([n, a, tx, bg, ini, l]) => mkRow(n, a, tx, { bg, html: ini }, l));
+$('cav2').innerHTML = DEF_AV;
+const letters = 'ORBES'.split('').map(c => { const s = document.createElement('span'); s.textContent = c; $('typed').appendChild(s); return s; });
+const railIt = [...document.querySelectorAll('.rit')], infoIt = [...$('info').children];
+
+// follow button widths (Suivre -> Abonné(e)), banner heights (2 lines -> with the link line)
+const FW0 = 60, FW1 = 98, BH0 = 60, BH1 = 82;
+
+// the viewer's finger: [t0, t1, x, y] eased moves (CSS px); a move with t0 = t1 is a jump while the finger is hidden
+const COM = [358, 532], PUB = [340, 681], FOL = [184, 599];
+const MOVES = [[0, 0, COM[0] - 6, COM[1] + 10], [0, .045, COM[0], COM[1]], [.12, .26, 372, 600], [.4, .4, 352, 735], [.44, .63, PUB[0], PUB[1]], [.74, .96, 318, 760],
+  [1.5, 1.5, 236, 700], [1.56, 1.80, FOL[0], FOL[1]], [1.98, 2.30, 230, 700]];
+const TAPS = [TAP_COM, TAP_PUB, TAP_FOL];
+const VIS = [[-1, 0, .12, .26], [.44, .54, .78, .96], [1.52, 1.62, 2.04, 2.30]];
+function curAt(t) {
+  let x = MOVES[0][2], y = MOVES[0][3];
+  for (const [a, b, nx, ny] of MOVES) { if (t < a) break; const p = b > a ? io(seg(t, a, b)) : 1; x = lerp(x, nx, p); y = lerp(y, ny, p); }
+  return [x, y];
+}
+const pressAt = (t, a) => { const d = t - a; return d > -.05 && d < .09 ? clamp(1 - Math.abs(d - .015) / .065) : 0; };
+const show = (el, v) => { el.style.display = v > .001 ? '' : 'none'; };
+
+window.setT = function (t) {
+  // the rail, the info and the bottom gradient fade under the opening sheet, and come back once it goes down
+  const hc = io(seg(t, T_SHEET + .02, T_SHEET + .2)) * (1 - io(seg(t, T_BACK, T_BACK + .24)));
+  $('gbot').style.opacity = 1 - .6 * hc;
+  railIt.forEach(el => { el.style.opacity = 1 - hc; });
+  $('audio').style.opacity = 1 - hc;
+  infoIt.forEach((el, i) => {
+    const back = S(t - (T_BACK + i * .04), 18);
+    el.style.opacity = t < T_BACK ? 1 - hc : back; el.style.transform = `translateY(${t < T_BACK ? 0 : 10 * (1 - back)}px)`;
+  });
+  $('prog').style.opacity = 1 - hc;
+  $('progi').style.width = (62 + 3 * t) + '%';
+
+  // comment icon press + the count rolls when the comment is posted
+  $('comsvg').style.transform = `scale(${1 - .18 * pressAt(t, TAP_COM)})`;
+  const roll = out(seg(t, T_POST + .02, T_POST + .16));
+  $('cc0').style.transform = `translateY(${-17 * roll}px)`; $('cc0').style.opacity = 1 - roll;
+  $('cc1').style.transform = `translateY(${17 * (1 - roll)}px)`; $('cc1').style.opacity = roll;
+
+  // follow: tapped on « suis », Suivre turns into a grey Abonné(e) with a check, the button widens
+  const fp = pressAt(t, TAP_FOL), fq = S(t - (TAP_FOL + .03), 22);
+  $('follow').style.width = lerp(FW0, FW1, fq) + 'px';
+  $('follow').style.transform = `scale(${1 - .07 * fp})`;
+  $('follow').querySelector('.fb').style.opacity = 1 - fq;
+  $('follow').querySelector('.fg').style.opacity = fq;
+  $('fl0').style.opacity = clamp(1 - fq * 2.2); $('fl0').style.transform = `translateY(${-5 * fq}px)`;
+  $('fl1').style.opacity = clamp(fq * 1.6 - .4); $('fl1').style.transform = `translateY(${5 * (1 - fq)}px)`;
+
+  // sheet slides up over the bottom of the reel (the face stays in the clear), a 6 % dim on the reel, down on « du »
+  const ps = SV(t - T_SHEET, 22, .6) * (1 - io(seg(t, T_SHEET_OUT, T_SHEET_OUT + .26)));
+  $('sheet').style.transform = `translateY(${(1 - ps) * 270}px)`; show($('sheet'), ps);
+  $('dim').style.opacity = .06 * ps; show($('dim'), ps);
+  const hq = S(t - (T_SHEET + .05), 24);
+  $('stitle').style.opacity = hq; $('splane').style.opacity = hq;
+
+  // new comment: the list slides down and the viewer's row fills the slot
+  const pn = SV(t - T_POST, 22, .5);
+  oldRows.forEach((r, i) => {
+    const q = S(t - (T_SHEET + .06 + i * .03), 24);
+    r.style.top = (LIST_TOP + (i + pn) * ROW_H + (1 - q) * 14) + 'px'; r.style.opacity = q;
+  });
+  newRow.style.display = t >= T_POST ? '' : 'none';
+  newRow.style.top = LIST_TOP + 'px'; newRow.style.opacity = clamp((pn - .08) / .45);
+  newRow.style.clipPath = `inset(0 0 ${(1 - pn) * ROW_H}px 0)`;
+  newRow.style.transform = `scale(${.97 + .03 * pn})`; newRow.style.transformOrigin = '20% 0%';
+  newRow.querySelector('.hl').style.opacity = clamp(pn * 2);
+
+  // field: focused as the sheet lands, « ORBES » typed letter by letter, Publier lights up, cleared after the post
+  const focused = t >= T_SHEET + .14 && t < TAP_PUB + .02, cleared = t >= TAP_PUB + .03;
+  let n = 0;
+  letters.forEach((s, i) => {
+    const on = t >= TYPE[i] && !cleared; if (on) n++;
+    const q = S(t - TYPE[i], 45);
+    s.style.display = on ? '' : 'none'; s.style.transform = `translateY(${(1 - q) * 3}px)`; s.style.opacity = .3 + .7 * q;
+  });
+  $('ph').style.display = n ? 'none' : '';
+  $('caret').style.opacity = focused ? 1 : 0;
+  $('ph').style.left = (focused ? 18 : 15) + 'px';
+  $('field').style.borderColor = focused ? '#c7c7c7' : '#dbdbdb';
+  const pon = cleared ? 0 : SV(t - T_PUB_ON, 26, .8), pp = pressAt(t, TAP_PUB);
+  $('pub').style.opacity = (.35 + .65 * pon) * (1 - .45 * pp);
+  $('pub').style.transform = `scale(${1 - .08 * pp})`;
+
+  // DM banner: drops on « le », its GitHub link line opens on « repo », then holds
+  const b = SV(t - T_BAN, 16, .6), lq = S(t - T_LINK, 30);
+  // the status bar and the Reels header step aside under the banner
+  ['status', 'rtitle', 'rcam'].forEach(id => { $(id).style.opacity = 1 - clamp(b * 1.6); });
+  show($('ban1'), b);
+  $('ban1').style.height = lerp(BH0, BH1, lq) + 'px';
+  $('ban1').style.transform = `translateY(${-120 * (1 - b)}px) scale(${.97 + .03 * b})`;
+  $('ban1').style.opacity = clamp(b * 3);
+  $('blink').style.opacity = lq; $('blink').style.transform = `translateY(${6 * (1 - lq)}px)`;
+
+  // finger dot + ripples
+  const [cx, cy] = curAt(t);
+  let press = 0; for (const a of TAPS) press = Math.max(press, pressAt(t, a));
+  let vis = 0; for (const [a, bb, c, d] of VIS) vis = Math.max(vis, seg(t, a, bb) - seg(t, c, d));
+  show($('dot'), vis);
+  $('dot').style.transform = `translate(${cx}px,${cy}px) scale(${1 - .16 * press})`;
+  $('dot').style.opacity = vis; $('dot').style.background = `rgba(255,255,255,${.32 + .3 * press})`;
+  const rips = TAPS.filter(a => t >= a && t < a + .38).slice(-2);
+  [0, 1].forEach(i => {
+    const el = $('rip' + i), a = rips[i];
+    if (a === undefined) { el.style.display = 'none'; return; }
+    const p = out((t - a) / .38), [rx, ry] = curAt(a);
+    el.style.display = ''; el.style.transform = `translate(${rx}px,${ry}px) scale(${.45 + .85 * p})`; el.style.opacity = .85 * (1 - p);
+  });
+  return true;
+};
+window.setT(0);
+</script></body></html>

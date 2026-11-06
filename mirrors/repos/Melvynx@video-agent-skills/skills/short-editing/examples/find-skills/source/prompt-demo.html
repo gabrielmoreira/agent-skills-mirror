@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>prompt-demo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 960px; height: 840px; overflow: hidden; background: #FAF9F5; }
+  body { position: relative; font-family: 'DM Sans', 'Inter', sans-serif; color: #1F1E1D; -webkit-font-smoothing: antialiased; }
+  .abs { position: absolute; }
+
+  /* prompt box */
+  #prompt { left: 40px; top: 40px; width: 880px; height: 108px; background: #FFFFFF; border: 1.5px solid #E3DFD4;
+    border-radius: 28px; box-shadow: 0 6px 22px rgba(60, 50, 30, .07), 0 1px 2px rgba(60, 50, 30, .05); }
+  #plus { left: 22px; top: 23px; width: 60px; height: 60px; border-radius: 50%; border: 1.5px solid #E3DFD4; }
+  #plus svg { position: absolute; left: 14px; top: 14px; }
+  #field { left: 104px; top: 0; height: 105px; width: 640px; display: flex; align-items: center; font-size: 37px; white-space: nowrap; }
+  #ph { left: 104px; top: 0; height: 105px; display: flex; align-items: center; font-size: 37px; color: #A19E95; white-space: nowrap; }
+  #caret { display: inline-block; width: 3px; height: 44px; background: #1F1E1D; margin-left: 2px; vertical-align: middle; border-radius: 1px; }
+  #send { right: 22px; top: 21px; width: 64px; height: 64px; border-radius: 17px; background: #D97757; }
+  #send svg { position: absolute; left: 14px; top: 14px; }
+
+  /* greeting */
+  #greet { left: 0; width: 960px; top: 420px; display: flex; align-items: center; justify-content: center; gap: 22px; }
+  #greet img { width: 74px; height: 74px; border-radius: 18px; }
+  #greet .w { font-size: 56px; font-weight: 500; color: #3D3929; letter-spacing: -0.5px; display: inline-block; margin-right: 14px; }
+  #greet .w:last-child { margin-right: 0; }
+
+  /* conversation */
+  .bubble { right: 40px; top: 174px; height: 66px; padding: 0 28px; display: flex; align-items: center; background: #F0EEE6;
+    border-radius: 22px; font-size: 36px; white-space: nowrap; }
+  #avatar { left: 40px; top: 262px; width: 56px; height: 56px; border-radius: 14px; }
+  #chip { left: 114px; top: 261px; height: 58px; padding: 0 20px 0 14px; display: flex; align-items: center; gap: 14px;
+    background: #FFFFFF; border: 1.5px solid #E3DFD4; border-radius: 16px; white-space: nowrap; }
+  #chip img { width: 34px; height: 34px; }
+  #chip b { font-size: 34px; font-weight: 700; }
+  #chip .q { position: relative; height: 40px; width: 210px; }
+  #chip .q span { position: absolute; left: 0; top: 0; font-family: 'JetBrains Mono', monospace; font-size: 30px; line-height: 40px; color: #8A877D; }
+
+  /* skill rows */
+  .row { left: 40px; width: 880px; height: 104px; background: #FFFFFF; border-radius: 20px; }
+  .row .ring { position: absolute; inset: 0; border-radius: 20px; }
+  .row .name { position: absolute; left: 28px; top: 10px; font-size: 36px; line-height: 46px; font-weight: 700; white-space: nowrap; }
+  .row .repo { position: absolute; left: 28px; top: 58px; font-family: 'JetBrains Mono', monospace; font-size: 30px; line-height: 36px; color: #8A877D; white-space: nowrap; }
+  .row .inst { position: absolute; right: 96px; top: 14px; font-size: 30px; line-height: 40px; color: #8A877D; white-space: nowrap; }
+  .row .inst svg { vertical-align: -3px; margin-right: 6px; }
+  .row .check { position: absolute; right: 24px; top: 26px; width: 54px; height: 54px; }
+  .pill { right: 92px; top: 4px; height: 54px; padding: 0 22px; border-radius: 999px; background: #258EFF; color: #FFFFFF;
+    font-size: 34px; font-weight: 700; display: flex; align-items: center; white-space: nowrap; box-shadow: 0 6px 16px rgba(37, 142, 255, .30); }
+</style>
+</head>
+<body>
+  <div id="greet" class="abs">
+    <img id="gLogo" src="../assets/logos/claude.png" alt="">
+    <div><span class="w">Sur</span><span class="w">quoi</span><span class="w">tu</span><span class="w">bosses ?</span></div>
+  </div>
+
+  <div id="bubble1" class="abs bubble">je monte mes vidéos</div>
+  <div id="bubble2" class="abs bubble">j'écris mes emails</div>
+
+  <img id="avatar" class="abs" src="../assets/logos/claude.png" alt="">
+  <div id="chip" class="abs">
+    <img src="../assets/logos/skills-sh.png" alt="">
+    <b>find-skills</b>
+    <div class="q"><span id="q1">find video</span><span id="q2">find email</span></div>
+  </div>
+
+  <div id="rows"></div>
+
+  <div id="prompt" class="abs">
+    <div id="plus" class="abs"><svg width="32" height="32" viewBox="0 0 32 32"><path d="M16 5v22M5 16h22" stroke="#5E5D59" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+    <div id="ph" class="abs"></div>
+    <div id="field" class="abs"><span id="txt"></span><span id="caret"></span></div>
+    <div id="send" class="abs"><svg width="36" height="36" viewBox="0 0 36 36"><path d="M18 29V8M9 16.5 18 7.5l9 9" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
+  </div>
+
+<script>
+// Every state is a pure function of t. Springs never overshoot.
+const L = (t, a, d) => Math.min(1, Math.max(0, (t - a) / d));   // short linear fade for the swap
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const sp = (t, at, w = 14) => S(t - at, w);
+const mix = (a, b, k) => a + (b - a) * k;
+const $ = id => document.getElementById(id);
+
+const SETS = {
+  video: { best: 3, rise: 2.35, rows: [
+    { name: 'ai-video-generation', repo: '101-skills/superpowers', inst: '735.9K' },
+    { name: 'hyperframes-creative', repo: 'heygen-com/hyperframes', inst: '734.4K' },
+    { name: 'video-edit', repo: 'prime-skills/runcomfy-agent-skills', inst: '432.8K' },
+    { name: 'remotion-best-practices', repo: 'remotion-dev/skills', inst: '602.3K' },
+  ] },
+  email: { best: 3, rise: 3.30, rows: [
+    { name: 'lark-mail', repo: 'open.feishu.cn', inst: '756.8K' },
+    { name: 'copywriting', repo: 'coreyhaines31/marketingskills', inst: '221.7K' },
+    { name: 'emails', repo: 'coreyhaines31/marketingskills', inst: '71.4K' },
+    { name: 'cold-email', repo: 'coreyhaines31/marketingskills', inst: '120.7K' },
+  ] },
+};
+const DL = '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M13 4v12M7.5 11 13 16.5 18.5 11M5 21h16" stroke="#8A877D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>';
+const rowsEl = $('rows'), R = {};
+for (const k of ['video', 'email']) {
+  R[k] = SETS[k].rows.map((r, i) => {
+    const d = document.createElement('div');
+    d.className = 'abs row';
+    d.innerHTML = `<div class="ring"></div><div class="name">${r.name}</div><div class="repo">${r.repo}</div>` +
+      `<div class="inst">${DL}${r.inst}</div>` +
+      (i === SETS[k].best ? `<img class="check" src="../assets/icons/glyph/check.png" alt=""><div class="abs pill">Meilleur skill</div>` : '');
+    rowsEl.appendChild(d);
+    return d;
+  });
+}
+const SLOT0 = 342, STEP = 118;
+
+function typed(t, a, b, s) {
+  if (t < a) return '';
+  const n = Math.min(s.length, Math.floor((t - a) / (b - a) * s.length + 1e-6) + 1);
+  return s.slice(0, n);
+}
+
+window.setT = function (t) {
+  // ---------- prompt box
+  const T1 = 'je monte mes vidéos', T2 = "j'écris mes emails";
+  let text = '';
+  if (t >= 1.20 && t < 2.15) text = typed(t, 1.20, 2.10, T1);
+  else if (t >= 2.60 && t < 3.10) text = typed(t, 2.60, 3.05, T2);
+  $('txt').textContent = text;
+  const typing = (t >= 1.20 && t < 2.15) || (t >= 2.60 && t < 3.10);
+  $('caret').style.opacity = typing || ((t * 1.8) % 1) < 0.55 ? 1 : 0;
+  $('ph').textContent = t < 2.15 ? 'Comment puis-je vous aider ?' : 'Répondre à Claude...';
+  $('ph').style.opacity = text ? 0 : (t < 2.15 ? 1 : sp(t, 2.18, 16));
+  $('field').style.left = '104px';
+  // the caret sits before the placeholder when empty
+  $('ph').style.left = '110px';
+  const sendOn = text ? 1 : 0;
+  const press = (x0) => Math.max(0, S(t - x0, 30) - S(t - x0 - 0.10, 30));
+  $('send').style.opacity = 0.45 + 0.55 * sendOn;
+  const ps = 1 - 0.08 * (press(2.12) + press(3.07));
+  $('send').style.transform = `scale(${ps})`;
+
+  // ---------- greeting: logo, then each word on the voice
+  const gl = sp(t, 0.10, 12), gOut = sp(t, 2.12, 26);
+  $('gLogo').style.opacity = gl;
+  $('gLogo').style.transform = `translateY(${(1 - gl) * 18}px)`;
+  const wAt = [0.69, 0.88, 1.09, 1.21];
+  document.querySelectorAll('#greet .w').forEach((w, i) => {
+    const k = sp(t, wAt[i] - 0.06, 16);
+    w.style.opacity = k;
+    w.style.transform = `translateY(${(1 - k) * 16}px)`;
+  });
+  $('greet').style.opacity = 1 - gOut;
+  $('greet').style.transform = `translateY(${-gOut * 24}px)`;
+
+  // ---------- user bubbles (text comes down from the prompt box)
+  const b1 = sp(t, 2.15, 16), b1o = L(t, 3.06, 0.09), b2 = sp(t, 3.15, 20);
+  $('bubble1').style.opacity = b1 * (1 - b1o);
+  $('bubble1').style.transform = `translateY(${-(1 - b1) * 40}px)`;
+  $('bubble2').style.opacity = b2;
+  $('bubble2').style.transform = `translateY(${-(1 - b2) * 40}px)`;
+
+  // ---------- Claude reply: avatar + find-skills chip
+  const av = sp(t, 2.20, 16), ch = sp(t, 2.24, 16);
+  $('avatar').style.opacity = av;
+  $('avatar').style.transform = `translateY(${(1 - av) * 16}px)`;
+  $('chip').style.opacity = ch;
+  $('chip').style.transform = `translateY(${(1 - ch) * 16}px)`;
+  const q2 = sp(t, 3.15, 20), q1o = L(t, 3.06, 0.09);
+  $('q1').style.opacity = 1 - q1o; $('q1').style.transform = `translateY(${-q1o * 8}px)`;
+  $('q2').style.opacity = q2; $('q2').style.transform = `translateY(${(1 - q2) * 12}px)`;
+
+  // ---------- skill rows
+  const vOut = () => L(t, 3.06, 0.09);
+  const fin = sp(t, 3.90, 10), dim = sp(t, 3.95, 10), pill = sp(t, 4.10, 16);
+  for (const k of ['video', 'email']) {
+    const set = SETS[k], best = set.best;
+    set.rows.forEach((r, i) => {
+      const el = R[k][i];
+      // entry
+      let o, dy;
+      if (k === 'video') {
+        const e = sp(t, 2.18 + i * 0.025, 28), x = vOut();
+        o = e * (1 - x); dy = (1 - e) * 22;
+      } else {
+        const e = sp(t, 3.15 + i * 0.012, 30);
+        o = e; dy = (1 - e) * 14;
+      }
+      // reorder: best rises to slot 0, the rows above it move down one slot
+      const rk = sp(t, set.rise, 13);
+      let slot = i;
+      if (i === best) slot = mix(best, 0, rk);
+      else if (i < best) slot = mix(i, i + 1, sp(t, set.rise + 0.03 * (i + 1), 13));
+      let y = SLOT0 + slot * STEP + dy;
+      let sc = 1, op = o;
+      const isBest = i === best;
+      if (k === 'email') {
+        if (isBest) sc = 1 + 0.03 * fin;
+        else op = o * (1 - 0.5 * dim);
+      }
+      // the rising card lifts above the others
+      const lift = isBest ? Math.sin(Math.PI * Math.min(1, rk)) : 0;
+      el.style.opacity = op;
+      el.style.transform = `translateY(${y}px) scale(${sc})`;
+      el.style.top = '0px';
+      el.style.zIndex = isBest ? 5 : 1;
+      const ring = isBest ? sp(t, set.rise + 0.05, 14) : 0;
+      const shadowA = 0.05 + 0.10 * lift + (isBest ? 0.06 * ring : 0);
+      el.style.boxShadow = `0 ${4 + 14 * lift}px ${14 + 26 * lift}px rgba(60, 50, 30, ${shadowA})`;
+      el.querySelector('.ring').style.boxShadow =
+        `inset 0 0 0 2px rgba(227, 223, 212, ${1 - ring}), inset 0 0 0 3px rgba(37, 142, 255, ${ring})`;
+      const c = el.querySelector('.check');
+      if (c) {
+        const ck = sp(t, set.rise + 0.18, 16);
+        c.style.opacity = ck;
+        c.style.transform = `scale(${0.6 + 0.4 * ck})`;
+      }
+      const p = el.querySelector('.pill');
+      if (p) {
+        const pk = k === 'email' ? pill : 0;
+        p.style.opacity = pk;
+        p.style.transform = `translateY(${-(1 - pk) * 26}px)`;
+        el.querySelector('.inst').style.opacity = 1 - sp(t, 4.04, 22);
+      }
+    });
+  }
+};
+window.setT(0);
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Complete Plugin Reference
 
-Browse all 94 marketplace plugins organized by category: 92 local plugins plus 2 external Claude Code marketplace entries (`pensyve` and `hol-guard`). The local source supports seven coding tools through native formats and adapters. Install commands below use Claude Code syntax. See the [tool setup guide](./harnesses.md) for other installation routes.
+Browse all 94 marketplace plugins organized by category: 92 local plugins plus 2 external Claude Code marketplace entries (`pensyve` and `deja-vu`). The local source supports seven coding tools through native formats and adapters. Install commands below use Claude Code syntax. See the [tool setup guide](./harnesses.md) for other installation routes.
 
 ## Quick Start - Essential Plugins
 
@@ -178,11 +178,12 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **llm-finetuning**       | Eval-gated LLM fine-tuning lifecycle: dataset prep, LoRA/QLoRA training, and promotion gating | `/plugin install llm-finetuning`       |
 | **dgx-spark-ops**        | NVIDIA DGX Spark (GB10) environment ops: aarch64/CUDA-13 stack setup, training preflights, unified-memory/thermal management | `/plugin install dgx-spark-ops`        |
 
-### 🧠 Memory (1 external plugin)
+### 🧠 Memory (2 external plugins)
 
 | Plugin      | Description                                                                                  | Install                   |
 | ----------- | -------------------------------------------------------------------------------------------- | ------------------------- |
 | **pensyve** | Cross-session memory runtime with MCP-backed recall, skills, commands, agents, and hooks     | `/plugin install pensyve` |
+| **deja-vu** | Local cross-agent session transcript recall (BM25 over 43 coding agents) with MCP, hooks, skill, and `/deja` command | `/plugin install deja-vu` |
 
 ### 📊 Data (2 plugins)
 
@@ -224,7 +225,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **cloud-infrastructure**  | AWS/Azure/GCP cloud architecture            | `/plugin install cloud-infrastructure`  |
 | **cicd-automation**       | CI/CD pipeline configuration                | `/plugin install cicd-automation`       |
 
-### 🔒 Security (7 plugins)
+### 🔒 Security (6 plugins)
 
 | Plugin                       | Description                                                     | Install                                    |
 | ---------------------------- | --------------------------------------------------------------- | ------------------------------------------ |
@@ -234,7 +235,6 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **frontend-mobile-security** | XSS/CSRF prevention and mobile security                         | `/plugin install frontend-mobile-security` |
 | **reverse-engineering**      | Binary analysis, malware triage, firmware security (authorized) | `/plugin install reverse-engineering`      |
 | **block-no-verify**          | PreToolUse hook blocking `--no-verify` and hook-bypass flags    | `/plugin install block-no-verify`          |
-| **hol-guard**                | Local pre-execution policy and pre-install agent supply-chain scanning | `/plugin install hol-guard`                 |
 
 ### 🛡️ Governance (3 plugins)
 

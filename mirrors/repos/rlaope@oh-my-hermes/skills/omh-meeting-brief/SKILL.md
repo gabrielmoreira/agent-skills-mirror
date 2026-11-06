@@ -50,12 +50,13 @@ Bad example:
 
 ## Recovery Notes
 
-- If participants, purpose, or decision owner are missing, ask for the one field that changes the agenda.
-- If minutes or decisions were not observed, keep the output as prep rather than record.
+- If decision topics lack known context, retain the supplied meeting goal and audience, mark the agenda tentative, and hand back discussion prompts and the decisions-needed list with its open questions.
+- If action owners, due dates, or acceptance conditions are absent from a meeting record, retain the prepared agenda and prompts, mark action ownership not_observed, and hand back the action-item template with those columns marked unknown.
+- If follow-up coding lacks observed decisions or an accepted plan, retain the meeting brief, mark the coding handoff unresolved, and hand back the decisions needed rather than an implementation claim.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

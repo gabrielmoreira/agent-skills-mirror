@@ -1,0 +1,198 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Beat 16.50-20.15 s: "Il récupère tes vraies stats, te compare aux comptes de ta niche qui explosent."
+     Claude Code runs the viral skill: treg pulls the real Instagram stats, then the niche top, and the gap shows (x31).
+     Transparent 1080x1920 overlay at paper level. Draws only inside x 60-1020, y 140-1090.
+     Every state is a pure function of t in window.setT(t). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+  #panel { position: absolute; left: 60px; top: 142px; width: 960px; height: 908px; border-radius: 34px; background: #14161B;
+    box-shadow: 0 20px 34px -14px rgba(20,22,27,.55), 0 10px 20px -10px rgba(20,22,27,.40), 0 0 0 1px rgba(255,255,255,.04) inset;
+    transform-origin: 50% 100%; overflow: hidden; will-change: transform, opacity; }
+  #head { position: absolute; left: 0; top: 0; width: 960px; height: 104px; background: #1C1F26; border-bottom: 1px solid rgba(255,255,255,.07);
+    display: flex; align-items: center; padding: 0 34px; box-sizing: border-box; gap: 16px; }
+  .dot { width: 18px; height: 18px; border-radius: 50%; background: #3A3E48; }
+  .dots { display: flex; gap: 12px; margin-right: 14px; }
+  .chip { width: 60px; height: 60px; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 14px rgba(0,0,0,.35); }
+  .chip img { width: 46px; height: 46px; display: block; }
+  #claude { width: 60px; height: 60px; border-radius: 16px; display: block; box-shadow: 0 6px 14px rgba(0,0,0,.35); }
+  #title { font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 40px; color: #F4F1EA; letter-spacing: -.5px; margin-left: 8px; }
+  #title span { color: #8A909C; font-weight: 700; }
+  .ln { position: absolute; left: 44px; font-family: "JetBrains Mono"; font-size: 35px; line-height: 54px; height: 54px; white-space: pre; color: #E8E6E1; }
+  .pr { color: #258EFF; font-weight: 700; }
+  .cmd { font-weight: 600; }
+  .caret { display: inline-block; width: 18px; height: 38px; background: #E8E6E1; vertical-align: -7px; margin-left: 2px; }
+  .muted { color: #8A909C; }
+  .num { color: #F4F1EA; font-weight: 700; }
+  #spin { position: absolute; left: 0; top: 11px; width: 32px; height: 32px; }
+  #hl { position: absolute; height: 46px; border-radius: 10px; background: rgba(37,142,255,.22); box-shadow: inset 0 0 0 2px rgba(37,142,255,.7); }
+  #tag { position: absolute; right: 30px; top: 280px; height: 76px; padding: 0 30px 0 22px; border-radius: 22px; background: #258EFF;
+    display: flex; align-items: center; gap: 14px; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 38px; color: #fff;
+    box-shadow: 0 16px 30px -8px rgba(37,142,255,.55), 0 6px 14px rgba(0,0,0,.35); transform-origin: 50% 50%; white-space: nowrap; }
+  /* result card */
+  #card { position: absolute; left: 32px; top: 496px; width: 896px; height: 382px; border-radius: 28px; background: #FBFAF6;
+    box-shadow: 0 24px 50px -16px rgba(0,0,0,.6), 0 6px 16px rgba(0,0,0,.3); overflow: hidden; }
+  .lab { position: absolute; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 42px; color: #14161B; letter-spacing: -.5px; }
+  .val { position: absolute; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 38px; color: #14161B; white-space: nowrap; letter-spacing: -.3px; }
+  .bar { position: absolute; border-radius: 14px; }
+  .trk { position: absolute; left: 40px; width: 560px; border-radius: 16px; background: #ECE8DF; box-shadow: inset 0 2px 4px rgba(20,22,27,.06); }
+  #barMe { left: 40px; top: 96px; height: 52px; background: #14161B; box-shadow: 0 8px 16px -6px rgba(20,22,27,.5); }
+  #barNi { left: 40px; top: 248px; height: 64px; border-radius: 16px; background: #258EFF; box-shadow: 0 12px 24px -8px rgba(37,142,255,.6); }
+  .av { position: absolute; width: 58px; height: 58px; border-radius: 50%; border: 4px solid #FBFAF6; box-sizing: content-box; }
+  .av i { position: absolute; inset: 0; border-radius: 50%; filter: blur(5px); }
+  .hb { position: absolute; height: 18px; border-radius: 9px; background: #C9C6BE; filter: blur(4px); }
+  #rocket { position: absolute; width: 84px; height: 84px; top: 238px; }
+  #x31 { position: absolute; right: 40px; top: 30px; font-family: "Bricolage Grotesque"; font-weight: 800; font-size: 150px; line-height: 1;
+    color: #258EFF; letter-spacing: -3px; transform-origin: 100% 50%; }
+</style></head>
+<body><div id="stage">
+  <div id="panel">
+    <div id="head">
+      <div class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+      <img id="claude" src="../assets/logos/claude.png">
+      <div class="chip"><img src="../assets/logos/treg.png"></div>
+      <div id="title">Claude <span>·</span> viral skill</div>
+    </div>
+    <div class="ln" id="l1" style="top:130px"></div>
+    <div class="ln" id="l2" style="top:184px"></div>
+    <div id="hl"></div>
+    <div class="ln" id="r1" style="top:240px"></div>
+    <div class="ln" id="r2" style="top:294px"></div>
+    <div class="ln" id="r3" style="top:348px"></div>
+    <div class="ln" id="l3" style="top:420px"></div>
+    <div id="tag"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg>données réelles</div>
+    <div id="card">
+      <div class="lab" id="labMe" style="left:40px; top:30px">toi</div>
+      <div class="trk" id="trkMe" style="top:96px; height:52px"></div>
+      <div class="bar" id="barMe"></div>
+      <div class="val" id="valMe" style="top:100px">~2 600 vues</div>
+      <div class="lab" id="labNi" style="left:40px; top:176px">niche</div>
+      <div id="avs"></div>
+      <div class="trk" id="trkNi" style="top:248px; height:64px"></div>
+      <div class="bar" id="barNi"></div>
+      <img id="rocket" src="../assets/icons/glyph/rocket.png">
+      <div class="val" id="valNi" style="left:40px; top:318px">0 vues</div>
+      <div id="x31">x31</div>
+    </div>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+const CMD1 = 'treg call instagram stats @toncompte';
+const CMD2 = 'treg call instagram top --niche ia';
+const ROWS = [['09/10', '2 629'], ['07/10', '4 120'], ['05/10', '3 380']];
+const CARET = '<i class="caret"></i>';
+
+// spinner (an arc that turns with t), drawn in svg
+const spinSVG = a => `<svg id="spin" viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="none" stroke="#3A3E48" stroke-width="4"/>` +
+  `<circle cx="16" cy="16" r="12" fill="none" stroke="#258EFF" stroke-width="4" stroke-linecap="round" stroke-dasharray="22 60" transform="rotate(${a} 16 16)"/></svg>`;
+const checkSVG = `<svg style="position:absolute;left:0;top:11px" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#258EFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg>`;
+
+// typed command line: returns html
+function typed(cmd, t0, cps, t, caretOn) {
+  const n = cl(Math.floor((t - t0) * cps), 0, cmd.length);
+  const done = n >= cmd.length;
+  return `<span class="pr">❯ </span><span class="cmd">${esc(cmd.slice(0, n))}</span>${caretOn && (!done || Math.floor(t * 2.5) % 2 === 0) ? CARET : ''}`;
+}
+
+// blurred avatars next to the niche label
+const AV = [['#F2A65A', '#E0457B'], ['#6C5CE7', '#00B4D8'], ['#2EC4B6', '#F7B32B']];
+$('avs').innerHTML = AV.map((c, i) =>
+  `<div class="av" id="av${i}" style="left:${190 + i * 44}px; top:168px; z-index:${3 - i}"><i style="background:linear-gradient(135deg,${c[0]},${c[1]})"></i></div>`).join('') +
+  `<div class="hb" id="hb0" style="left:370px; top:180px; width:150px"></div><div class="hb" id="hb1" style="left:540px; top:180px; width:110px"></div>` +
+  `<div class="hb" id="hb2" style="left:370px; top:208px; width:96px; opacity:.7"></div>`;
+
+const CW = 0.6 * 35; // JetBrains Mono advance at 35 px
+const NI_W = 560;     // full width of the niche bar
+const ME_W = 30;      // you: about 2 600 / 62 755 of the niche bar, kept visible
+
+window.setT = function (t) {
+  // panel in (0-.3) and whip out (3.35-3.65)
+  const a = S(t, 20);
+  const u = cl((t - 3.35) / 0.3);
+  const P = $('panel');
+  P.style.opacity = cl(t / 0.12);
+  P.style.transform = `translateX(${-1150 * u * u}px) scale(${0.9 + 0.1 * a})`;
+
+  // command 1 types from .22 (37 chars by ~.52)
+  const t1end = 0.22 + CMD1.length / 125;
+  $('l1').innerHTML = t < 0.16 ? `<span class="pr">❯ </span>${CARET}` : typed(CMD1, 0.22, 125, t, t < t1end + 0.06);
+
+  // status line: spinner while fetching (.56-.86), then a check
+  const l2 = $('l2');
+  if (t < 0.56) l2.innerHTML = '';
+  else if (t < 0.86) l2.innerHTML = spinSVG((t * 720) % 360) + `<span class="muted">   fetching reels…</span>`;
+  else l2.innerHTML = checkSVG + `<span class="muted">   3 reels · </span><span class="num">@toncompte</span>`;
+  l2.style.opacity = cl((t - 0.56) / 0.06);
+
+  // rows stream in fast (.60, .68, .76)
+  ROWS.forEach((r, i) => {
+    const e = $('r' + (i + 1)), k = S(t - (0.60 + i * 0.08), 26);
+    e.innerHTML = `<span class="muted">Reel ${r[0]}  </span><span class="num">${r[1]}</span><span class="muted"> vues</span>`;
+    e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * 22}px)`;
+  });
+
+  // highlight on my latest reel (the number the comparison uses), 1.20
+  const h = S(t - 1.20, 18), hl = $('hl');
+  hl.style.left = (44 + CW * 12 - 8) + 'px'; hl.style.top = '244px';
+  hl.style.width = (CW * 5 + 16) * h + 'px'; hl.style.opacity = h;
+
+  // "données réelles" stamp lands .83 -> 1.07, from slightly larger down to 1, no overshoot
+  const s = S(t - 0.83, 22), tag = $('tag');
+  tag.style.opacity = cl((t - 0.83) / 0.08);
+  tag.style.transform = `scale(${1.22 - 0.22 * s})`;
+
+  // command 2 types from 1.64
+  const l3 = $('l3');
+  l3.style.opacity = t < 1.56 ? 0 : 1;
+  l3.innerHTML = typed(CMD2, 1.64, 125, t, t < 1.64 + CMD2.length / 125 + 0.1);
+
+  // result card rises 1.80
+  const c = S(t - 1.80, 16), card = $('card');
+  card.style.opacity = cl((t - 1.80) / 0.1);
+  card.style.transform = `translateY(${(1 - c) * 60}px)`;
+
+  // you: label + short ink bar (1.90)
+  const m = S(t - 1.90, 18);
+  $('labMe').style.opacity = cl((t - 1.86) / 0.1);
+  $('barMe').style.width = ME_W * m + 'px';
+  $('valMe').style.left = (40 + ME_W * m + 22) + 'px';
+  $('valMe').style.opacity = cl((t - 1.98) / 0.1);
+
+  // niche: label then three blurred accounts (2.14, 2.22, 2.30)
+  $('labNi').style.opacity = cl((t - 2.08) / 0.1);
+  for (let i = 0; i < 3; i++) {
+    const k = S(t - (2.14 + i * 0.08), 22), e = $('av' + i);
+    e.style.opacity = k; e.style.transform = `translateX(${(1 - k) * -24}px)`;
+    const b = $('hb' + i); b.style.opacity = (i === 2 ? 0.7 : 1) * cl((t - 2.22 - i * 0.05) / 0.12);
+  }
+
+  // long bar grows 2.60 -> 3.10, value counts with it
+  const g = Math.min(1, S((t - 2.60) / 0.5, 5.2) / S(1, 5.2));
+  const W = NI_W * g;
+  $('barNi').style.width = W + 'px';
+  $('barNi').style.opacity = t < 2.60 ? 0 : 1;
+  const vn = $('valNi');
+  vn.textContent = fmt(62755 * g) + ' vues';
+  vn.style.opacity = cl((t - 2.60) / 0.08);
+
+  // explosent 3.07: rocket at the bar end + x31
+  const r = S(t - 3.07, 22), rk = $('rocket');
+  rk.style.left = (40 + W + 10) + 'px';
+  rk.style.opacity = cl((t - 3.07) / 0.08);
+  rk.style.transform = `translate(${(1 - r) * -18}px, ${(1 - r) * 18}px)`;
+  const x = S(t - 3.07, 20), xe = $('x31');
+  xe.style.opacity = cl((t - 3.07) / 0.08);
+  xe.style.transform = `scale(${1.25 - 0.25 * x})`;
+};
+window.setT(0);
+</script>
+</body></html>

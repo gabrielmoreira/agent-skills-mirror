@@ -1,0 +1,84 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Short 4.99-6.75 s: "...librairie d'orbes, une pour chaque état de ton app"
+     The 9 real orbs of the library (3x3 white tiles, live), staggered in row by row, then a blue ring
+     lights Searching, Thinking, Listening one after the other on "chaque état de ton". Paper alone: draws in x 40-1040, y 120-1280.
+     Every state is a pure function of t in window.setT(t). -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  body { width: 1080px; height: 1920px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1300px; overflow: hidden; }
+  .tile { position: absolute; width: 316px; height: 368px; border-radius: 34px; background: #FFFFFF; transform-origin: 50% 60%;
+    box-shadow: 0 26px 52px -20px rgba(40,28,10,.26), 0 8px 18px -8px rgba(40,28,10,.14), 0 1.5px 3px rgba(40,28,10,.10); }
+  .tile .lit { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 2.5px 0 rgba(255,255,255,.7);
+    background: linear-gradient(180deg, rgba(255,255,255,0) 70%, rgba(60,44,20,.018) 100%); }
+  .tile canvas { position: absolute; left: 30px; top: 22px; width: 256px; height: 256px; }
+  .tile .lb { position: absolute; left: 0; right: 0; top: 296px; text-align: center; font-family: "Bricolage Grotesque"; font-weight: 800;
+    font-size: 40px; letter-spacing: -.4px; color: #111111; white-space: nowrap; }
+  .rg { position: absolute; inset: 0; border-radius: 34px; pointer-events: none;
+    box-shadow: 0 0 0 10px #258EFF, 0 0 0 22px rgba(37,142,255,.18), 0 30px 60px -16px rgba(37,142,255,.35); }
+</style></head>
+<body><div id="stage"><div id="tiles"></div></div>
+<script src="orbs.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const L = (a, b, k) => a + (b - a) * k;
+
+// the 9 states of the library and their labels on orbs.jakubantalik.com
+const ORB = [['working', 'Working'], ['searching', 'Searching'], ['solving', 'Solving'], ['listening', 'Listening'], ['connecting', 'Connecting'],
+  ['weaving', 'Weaving'], ['composing', 'Composing'], ['breathing', 'Thinking'], ['shaping', 'Shaping']];
+// draw choice per state, both the library geometry: 'L' = the base profile at a logical size (dense, like the demo site),
+// 'P' = the 64 px preset scaled up (the shipped look; sparser modes read better this way)
+const HOW = { searching: 'L', solving: 'L', listening: 'L', weaving: 'L' };
+const PX = 256, W = 316, H = 368, GX = 26, GY = 28, X0 = 40, Y0 = 120;
+const pos = i => [X0 + (i % 3) * (W + GX), Y0 + Math.floor(i / 3) * (H + GY)];
+$('tiles').innerHTML = ORB.map(([s, l], i) => { const [x, y] = pos(i);
+  return `<div class="tile" id="t${i}" style="left:${x}px;top:${y}px"><canvas id="c${i}" width="${PX}" height="${PX}"></canvas><div class="lb" id="l${i}">${l}</div><i class="lit"></i><i class="rg" id="r${i}"></i></div>`; }).join('');
+const ctxs = ORB.map((o, i) => $('c' + i).getContext('2d'));
+const RES = ORB.map(([s]) => ORBS.resolvePreset(s, 64));
+
+function drawOrb(i, t, tint) {
+  const ctx = ctxs[i], r = RES[i], s = ORB[i][0], tt = (t + 0.9 + i * 0.37) * r.speed;
+  if (HOW[s] === 'L') {
+    const S0 = PX / 1.4; ctx.setTransform(1.4, 0, 0, 1.4, 0, 0); ctx.clearRect(0, 0, S0, S0);
+    ORBS.paintFrame(ctx, ORBS.MODE_FRAMES[r.mode](S0, tt, { ...ORBS.BASE_PROFILES[r.mode] }), false, tint);
+  } else {
+    const k = PX / 64; ctx.setTransform(k, 0, 0, k, 0, 0); ctx.clearRect(0, 0, 64, 64);
+    ORBS.paintFrame(ctx, ORBS.MODE_FRAMES[r.mode](64, tt, r.opts), false, tint);
+  }
+}
+
+// blue ring walk: Searching on "chaque" 1.14, Thinking on "état" 1.35, Listening on "ton" 1.58
+const WALK = [[1, 1.14], [7, 1.35], [3, 1.58]];
+const ACT = 26;
+// spring that lands exactly at d seconds (no tail, no overshoot)
+const SD = (x, w, d) => Math.min(1, S(x, w) / S(d, w));
+function weight(i, t) {
+  let w = 0;
+  WALK.forEach(([j, at], n) => { if (j !== i) return; const next = WALK[n + 1];
+    w = SD(t - at, 34, 0.16) * (next ? 1 - SD(t - next[1], 34, 0.16) : 1); });
+  return w;
+}
+
+window.setT = function (t) {
+  ORB.forEach((o, i) => {
+    // stagger row by row: tile 0 already there, then .05 apart (last one starts at .40)
+    const d = i === 0 ? -0.3 : i * 0.05, k = S(t - d, 20), el = $('t' + i);
+    const w = weight(i, t);
+    el.style.opacity = Math.min(1, k * 1.6);
+    el.style.transform = `translateY(${(1 - k) * 46 - 8 * w}px) scale(${(0.94 + 0.06 * k) * (1 + 0.025 * w)})`;
+    el.style.zIndex = w > 0.01 ? 2 : 1;
+    // its own blue ring: closes in 1.05 -> 1 as it fades in on the word, fades out when the next one lands
+    const at = (WALK.find(([j]) => j === i) || [0, 99])[1], rin = SD(t - at, 34, 0.16), rg = $('r' + i);
+    rg.style.opacity = w; rg.style.transform = `scale(${1.05 - 0.05 * rin})`;
+    $('l' + i).style.color = `rgb(${[17, 17, 17].map((c, n) => Math.round(L(c, [37, 142, 255][n], w)))})`;
+    drawOrb(i, t, w > 0.004 ? { r: Math.round(18 * w), g: Math.round(118 * w), b: Math.round(240 * w) } : undefined);
+    el.style.background = `rgb(${[255, 255, 255].map((c, n) => Math.round(L(c, [240, 247, 255][n], w)))})`;
+  });
+
+};
+window.setT(0);
+</script>
+</body></html>

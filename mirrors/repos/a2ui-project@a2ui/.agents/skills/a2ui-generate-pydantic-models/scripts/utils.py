@@ -1,0 +1,314 @@
+# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Shared utilities for A2UI Pydantic model generation."""
+
+import ast
+import re
+from typing import Any
+
+FILE_HEADER = """# Copyright 2024 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Auto-generated. Do not edit manually.
+from __future__ import annotations"""
+
+
+def ensure_v_prefix(version: str) -> str:
+    """Ensures a version string has a 'v' or 'V' prefix (e.g. '0.9' -> 'v0.9')."""
+    if not version:
+        raise ValueError("version is required")
+    v = version.strip()
+    return v if v.startswith("v") or v.startswith("V") else f"v{v}"
+
+
+def version_to_underscore(version: str) -> str:
+    """Converts a dotted version string (e.g. 'v0.9', '0.8') to underscore format (e.g. 'v0_9', 'v0_8')."""
+    v = ensure_v_prefix(version)
+    return v.lower().replace(".", "_")
+
+
+def is_modern_terminology(version: str, a2r_name: str = "") -> bool:
+    """Returns True if modern A2UI terminology (agent_to_renderer / renderer_to_agent) is used."""
+    if "agent_to_renderer" in a2r_name:
+        return True
+    if "server_to_client" in a2r_name:
+        return False
+
+    import os
+
+    dir_name = version_to_underscore(version)
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
+    spec_path = os.path.join(repo_root, "specification", dir_name)
+    if os.path.exists(
+        os.path.join(spec_path, "json", "agent_to_renderer.json")
+    ) or os.path.exists(os.path.join(spec_path, "agent_to_renderer.json")):
+        return True
+    if os.path.exists(
+        os.path.join(spec_path, "json", "server_to_client.json")
+    ) or os.path.exists(os.path.join(spec_path, "server_to_client.json")):
+        return False
+
+    return dir_name not in ("v0_8", "v0_9", "v0_9_1")
+
+
+def is_at_least_v10(version: str) -> bool:
+    """Returns True if the protocol version is v1.0 or higher."""
+    dir_name = version_to_underscore(version)
+    return dir_name not in ("v0_8", "v0_9", "v0_9_1")
+
+
+def to_snake_case(name: str) -> str:
+    """Converts a camelCase or PascalCase identifier to snake_case."""
+    if name == "$schema":
+        return "schema_uri"
+    if name == "$id":
+        return "schema_id"
+    if name == "$defs":
+        return "defs"
+    if name.startswith("$"):
+        name = name[1:]
+    if name.startswith("@"):
+        name = name.lstrip("@") or "at"
+    if re.match(r"^v\d+(?:_\d+)*$", name):
+        return name
+    s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
+
+
+def to_pascal_case(name: str) -> str:
+    """Converts a camelCase or snake_case string to PascalCase preserving camelCase segments."""
+    if not name:
+        return name
+    if "_" not in name and "-" not in name and " " not in name:
+        return name[0].upper() + name[1:]
+    clean = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+    parts = clean.split("_")
+    return "".join(p[0].upper() + p[1:] for p in parts if p)
+
+
+def extract_exported_symbols(code: str) -> list[str]:
+    """Extracts top-level public class names, function names, and variable/alias assignments from Python code."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return []
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "__all__":
+                    if isinstance(node.value, (ast.List, ast.Tuple)):
+                        return [
+                            elt.value
+                            for elt in node.value.elts
+                            if isinstance(elt, ast.Constant)
+                            and isinstance(elt.value, str)
+                        ]
+    symbols: list[str] = []
+    for node in tree.body:
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            if not node.name.startswith("_"):
+                symbols.append(node.name)
+        elif isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and not target.id.startswith("_"):
+                    symbols.append(target.id)
+        elif isinstance(node, ast.AnnAssign):
+            if isinstance(node.target, ast.Name) and not node.target.id.startswith("_"):
+                symbols.append(node.target.id)
+    return list(dict.fromkeys(symbols))
+
+
+def extract_class_names(code: str) -> set[str]:
+    """Extracts the names of top-level classes defined in Python code."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return set()
+    return {node.name for node in tree.body if isinstance(node, ast.ClassDef)}
+
+
+def _read_base_common_source(common_types_path: str | None = None) -> str:
+    """Reads the source of the hand-written base schema/common_types.py."""
+    import os
+
+    if not common_types_path:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        repo_root = os.path.abspath(os.path.join(script_dir, "../../../.."))
+        common_types_path = os.path.join(
+            repo_root, "python/a2ui_core/src/a2ui/core/schema/common_types.py"
+        )
+    if os.path.exists(common_types_path):
+        with open(common_types_path, "r", encoding="utf-8") as f:
+            return f.read()
+    return ""
+
+
+def get_base_common_symbols(common_types_path: str | None = None) -> list[str]:
+    """Extracts public symbols defined in schema/common_types.py dynamically via AST."""
+    source = _read_base_common_source(common_types_path)
+    return extract_exported_symbols(source) if source else []
+
+
+def get_base_common_class_names(common_types_path: str | None = None) -> set[str]:
+    """Extracts the class names defined in schema/common_types.py via AST."""
+    return extract_class_names(_read_base_common_source(common_types_path))
+
+
+def get_schema_dependencies(node: Any, deps: set[str] | None = None) -> set[str]:
+    """Recursively extracts all local #/$defs/ references from a schema node."""
+    if deps is None:
+        deps = set()
+    if not node or not isinstance(node, (dict, list)):
+        return deps
+    if isinstance(node, list):
+        for item in node:
+            get_schema_dependencies(item, deps)
+        return deps
+    if isinstance(node, dict):
+        if "$ref" in node and isinstance(node["$ref"], str):
+            ref = node["$ref"]
+            if "#/$defs/" in ref:
+                deps.add(ref.split("#/$defs/")[-1])
+            elif ref.startswith("#/definitions/"):
+                deps.add(ref.split("#/definitions/")[-1])
+        for v in node.values():
+            get_schema_dependencies(v, deps)
+    return deps
+
+
+def _is_def_ref(item: Any, def_name: str) -> bool:
+    return isinstance(item, dict) and item.get("$ref") == f"#/$defs/{def_name}"
+
+
+def is_function_call_branch(item: Any) -> bool:
+    """Checks if a union branch is a `FunctionCall` (directly or via `allOf`)."""
+    if _is_def_ref(item, "FunctionCall"):
+        return True
+    all_of = item.get("allOf") if isinstance(item, dict) else None
+    return isinstance(all_of, list) and any(
+        _is_def_ref(sub, "FunctionCall") for sub in all_of
+    )
+
+
+def is_dynamic_def(spec: Any) -> bool:
+    """Checks if a spec def is a dynamic value union.
+
+    A dynamic def is a `oneOf` that accepts a `DataBinding`, a `FunctionCall`,
+    and literal values (e.g. `DynamicString`, `DynamicValue`).
+    """
+    items = spec.get("oneOf") if isinstance(spec, dict) else None
+    if not isinstance(items, list):
+        return False
+    return any(_is_def_ref(it, "DataBinding") for it in items) and any(
+        is_function_call_branch(it) for it in items
+    )
+
+
+def topological_sort_defs(defs: dict[str, Any]) -> list[str]:
+    """Topologically sorts schema definitions by their internal $defs dependencies."""
+    graph: dict[str, set[str]] = {}
+    for name, def_spec in defs.items():
+        deps = get_schema_dependencies(def_spec)
+        # Break cycles between dynamic values and function calls:
+        # In Python, dynamic value unions are type aliases (... | FunctionCall)
+        # evaluated at import time, so FunctionCall must precede them.
+        # The reference from FunctionCall.args to a dynamic value is an annotation
+        # resolved via `from __future__ import annotations`.
+        if name == "FunctionCall":
+            deps.discard("IndexSystemFunction")
+            deps = {d for d in deps if not is_dynamic_def(defs.get(d))}
+        graph[name] = {d for d in deps if d in defs and d != name}
+
+    visited: set[str] = set()
+    order: list[str] = []
+    # Dependencies are visited in spec order, so the output does not depend on
+    # set iteration order (which varies with string hashing between runs).
+    spec_index = {name: index for index, name in enumerate(defs)}
+
+    def visit(name: str) -> None:
+        if name in visited:
+            return
+        visited.add(name)
+        for dep in sorted(graph.get(name, set()), key=spec_index.__getitem__):
+            visit(dep)
+        order.append(name)
+
+    # Prioritize foundational core types first
+    core_prio = ["DataBinding", "FunctionCall"]
+    for key in core_prio:
+        if key in graph:
+            visit(key)
+
+    for name in list(defs.keys()):
+        visit(name)
+
+    return order
+
+
+def find_common_refs(
+    node: Any,
+    common_def_names: set[str],
+    common_defs: dict[str, Any] | None = None,
+) -> set[str]:
+    """Recursively extracts all referenced common_types schema names, following common def dependencies."""
+    refs: set[str] = set()
+
+    def _scan(curr: Any) -> None:
+        if not curr or not isinstance(curr, (dict, list)):
+            return
+        if isinstance(curr, list):
+            for item in curr:
+                _scan(item)
+            return
+        if isinstance(curr, dict):
+            if "$ref" in curr and isinstance(curr["$ref"], str):
+                ref = curr["$ref"]
+                if "#/$defs/" in ref:
+                    target = ref.split("#/$defs/")[-1]
+                    if target in common_def_names:
+                        refs.add(target)
+                elif ref.startswith("common_types.json#/$defs/"):
+                    target = ref.split("#/$defs/")[-1]
+                    if target in common_def_names:
+                        refs.add(target)
+            for v in curr.values():
+                _scan(v)
+
+    _scan(node)
+
+    if common_defs:
+        added = True
+        while added:
+            added = False
+            for r in list(refs):
+                if r in common_defs:
+                    sub_deps = get_schema_dependencies(common_defs[r])
+                    for sd in sub_deps:
+                        if sd in common_def_names and sd not in refs:
+                            refs.add(sd)
+                            added = True
+
+    return refs

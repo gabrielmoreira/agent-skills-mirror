@@ -59,13 +59,13 @@ Bad example:
 
 ## Recovery Notes
 
-- If the user asks for facts or citations, route to `research`.
+- If the user asks for facts or citations, route to `ulw-research`.
 - If a candidate lacks a link or file reference, keep it candidate_prepared and ask for the next observable source step.
 - If the user wants to process a selected source, route to the downstream workflow instead of continuing source acquisition.
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+27 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

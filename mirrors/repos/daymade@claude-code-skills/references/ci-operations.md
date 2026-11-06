@@ -60,6 +60,40 @@ Do not loop reruns while the cause remains unknown or replace a required check w
 unrelated local green run. Local reproduction must use the workflow's relevant environment
 and declared dependencies; preserve prior valid results when their inputs have not changed.
 
+## Deleted-target Markdown links
+
+Use [the checker](../scripts/ci/check_deleted_markdown_links.py) after moving or
+removing tracked paths. Bind the baseline and final integrated candidate, then
+inspect every Markdown consumer in that candidate, including files outside the
+original diff:
+
+```bash
+repo="$(git rev-parse --show-toplevel)" || exit 1
+base="$(git rev-parse '<base-ref>^{commit}')" || exit 1
+candidate="$(git rev-parse '<final-candidate-ref>^{commit}')" || exit 1
+uv run --directory "$repo/daymade-skill/skill-creator" --frozen \
+  --with markdown-it-py python "$repo/scripts/ci/check_deleted_markdown_links.py" \
+  --repo "$repo" --base "$base" --candidate "$candidate"
+```
+
+Run this example from the repository checkout; replace the ref placeholders with
+the selected baseline and final integrated candidate. The `--directory` option
+selects the locked tool project, while `--with` supplies the checker's additional
+parser dependency without changing that project's lockfile or installing globally.
+Read Git objects rather than working-tree repairs. Exit `0` means no covered stale
+link was found (including an explicit no-deletions skip), `1` reports stale consumers,
+and `2` means verification
+was incomplete or input was invalid. `--json` exposes the exact commits, removed
+path count, examined Markdown count and issues. Issue line numbers identify the
+containing Markdown block.
+
+Check relative Markdown links/images and this repository's GitHub `blob/main` or
+`tree/main` URLs to paths that existed in the baseline and are absent in the final
+tree. Ignore code examples, plain mentions, other repositories, immutable-revision
+URLs and unrelated inherited broken links. Keep bare paths, Wiki links, raw HTML
+and other uncovered forms under
+[Docs Cleaner's reference-maintenance procedure](../daymade-docs/docs-cleaner/SKILL.md#updating-references-to-a-file-you-moved-or-deleted).
+
 ## Temporary-Git fixture lifecycle
 
 Reuse `init_repo` in [test_git_mainline_guard.py](../tests/test_git_mainline_guard.py)

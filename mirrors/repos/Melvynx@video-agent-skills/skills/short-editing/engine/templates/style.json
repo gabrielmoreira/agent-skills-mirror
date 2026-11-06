@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "name": "Paper (default)",
+  "pace": { "speed": 1.15, "tighten": { "sentence": 0.08, "comma": 0.05, "word": 0.03, "lead": 0.03, "tail": 0.8 } },
+  "captions": { "style": "sticker", "size": 84 },
+  "music": { "bpm": 112 },
+  "mix": { "music": -28, "sfx": -28.5, "duck": 0.5 }
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1080px; height: 1920px; background: transparent; overflow: hidden; }
+  * { box-sizing: border-box; }
+  .card {
+    position: absolute; left: 40px; top: 70px; width: 1000px; height: 590px;
+    background: #fff; border-radius: 34px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 2px 6px rgba(17,17,17,.06), 0 22px 48px rgba(17,17,17,.11);
+  }
+  #orb { position: absolute; left: 44px; top: 34px; width: 330px; height: 330px; }
+  .num {
+    position: absolute; left: 400px; top: 64px; white-space: nowrap;
+    font-family: 'Bricolage Grotesque'; font-weight: 800; font-size: 196px; line-height: 1;
+    color: #111111; letter-spacing: -6px;
+  }
+  .num .u { color: #258EFF; letter-spacing: -4px; margin-left: 18px; }
+  .ms {
+    position: absolute; left: 408px; top: 284px;
+    font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 40px; color: #3A3A3A;
+  }
+  #graph { position: absolute; left: 40px; top: 382px; width: 920px; height: 176px; }
+  .rows { position: absolute; left: 40px; top: 690px; width: 1000px; }
+  .row { position: absolute; left: 34px; height: 116px; display: flex; align-items: center; white-space: nowrap; }
+  .ic { width: 108px; height: 108px; display: flex; align-items: center; justify-content: center; }
+  .ic img { width: 108px; height: 108px; }
+  .zero { font-family: 'Bricolage Grotesque'; font-weight: 800; font-size: 104px; line-height: 1; color: #258EFF; letter-spacing: -2px; }
+  .lab { margin-left: 34px; position: relative; font-family: 'Bricolage Grotesque'; font-weight: 800; font-size: 88px; line-height: 1; color: #111111; letter-spacing: -2px; }
+  .ul { position: absolute; left: 0; bottom: -14px; height: 12px; border-radius: 6px; background: #258EFF; width: 0; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <canvas id="orb" width="330" height="330"></canvas>
+  <div class="num" id="num"><span id="val">60</span><span class="u">fps</span></div>
+  <div class="ms" id="ms">16,7 ms par frame</div>
+  <canvas id="graph" width="920" height="176"></canvas>
+</div>
+<div class="rows">
+  <div class="row" id="r0" style="top:0"><div class="ic"><img src="../assets/icons/glyph/check.png"></div><div class="lab">Canvas 2D</div></div>
+  <div class="row" id="r1" style="top:122px"><div class="ic"><span class="zero">0</span></div><div class="lab">WebGL</div></div>
+  <div class="row" id="r2" style="top:244px"><div class="ic"><span class="zero">0</span></div><div class="lab" id="l2">filtre<div class="ul" id="ul"></div></div></div>
+</div>
+<script src="orbs.js"></script>
+<script>
+const S = (x, w) => x <= 0 ? 0 : 1 - (1 + w * x) * Math.exp(-w * x);
+const $ = id => document.getElementById(id);
+const orb = $('orb').getContext('2d'), g = $('graph').getContext('2d');
+const MODE = ORBS.STATE_TO_MODE.composing;   // 'ribbon'
+const SPEED = ORBS.resolvePreset('composing', 64).speed;
+const OPTS = { ...ORBS.BASE_PROFILES[MODE] };   // full density, spin on (default 1)
+const OFF = 0.9;   // orb clock offset: already busy on frame 0
+
+function drawOrb(t) {
+  orb.setTransform(1, 0, 0, 1, 0, 0); orb.clearRect(0, 0, 330, 330);
+  ORBS.paintFrame(orb, ORBS.MODE_FRAMES[MODE](330, (t + OFF) * SPEED, OPTS), false);
+}
+
+function drawGraph(t) {
+  const W = 920, H = 176, x0 = 0, x1 = 846, y60 = 34, y30 = 118, base = 162;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
+  // panel
+  g.fillStyle = '#F4F6F9'; roundRect(g, 0, 0, W, H, 22); g.fill();
+  // scrolling vertical grid (live)
+  const step = 92, off = (t * 150) % step;
+  g.strokeStyle = 'rgba(17,17,17,.07)'; g.lineWidth = 2;
+  for (let x = x1 - off; x > 8; x -= step) { g.beginPath(); g.moveTo(x, 14); g.lineTo(x, base); g.stroke(); }
+  // horizontal guides
+  g.strokeStyle = 'rgba(17,17,17,.10)'; g.setLineDash([6, 8]);
+  g.beginPath(); g.moveTo(16, y30); g.lineTo(x1, y30); g.stroke(); g.setLineDash([]);
+  // axis labels
+  g.fillStyle = '#3A3A3A'; g.font = "700 36px 'Bricolage Grotesque'"; g.textBaseline = 'middle';
+  g.fillText('60', x1 + 22, y60 + 2); g.fillText('30', x1 + 22, y30 + 2);
+  // area under the line
+  const grd = g.createLinearGradient(0, y60, 0, base);
+  grd.addColorStop(0, 'rgba(37,142,255,.20)'); grd.addColorStop(1, 'rgba(37,142,255,0)');
+  g.fillStyle = grd; g.beginPath(); g.moveTo(16, y60); g.lineTo(x1, y60); g.lineTo(x1, base + 14); g.lineTo(16, base + 14); g.closePath(); g.fill();
+  // the flat line at 60
+  g.strokeStyle = '#258EFF'; g.lineWidth = 7; g.lineCap = 'round';
+  g.beginPath(); g.moveTo(16, y60); g.lineTo(x1, y60); g.stroke();
+  // sample ticks riding the line, scrolling left
+  g.fillStyle = '#258EFF';
+  for (let x = x1 - off; x > 20; x -= step) { g.beginPath(); g.arc(x, y60, 6, 0, Math.PI * 2); g.fill(); }
+  // live head
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(x1, y60, 13, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#258EFF'; g.beginPath(); g.arc(x1, y60, 9, 0, Math.PI * 2); g.fill();
+}
+function roundRect(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+
+const ROWS = [['r0', .34], ['r1', .71], ['r2', .81]];
+window.setT = function (t) {
+  const c = S(t, 34);
+  $('card').style.transform = `translateY(${(1 - c) * 16}px)`;
+  drawOrb(t); drawGraph(t);
+  for (const [id, at] of ROWS) {
+    const e = S(t - at, 22), el = $(id);
+    el.style.opacity = Math.min(1, e * 1.4).toFixed(3);
+    el.style.transform = `translateX(${((1 - e) * -56).toFixed(2)}px)`;
+  }
+  $('ul').style.width = (S(t - 1.18, 16) * 100).toFixed(2) + '%';
+};
+setT(0);
+</script>
+</body>
+</html>

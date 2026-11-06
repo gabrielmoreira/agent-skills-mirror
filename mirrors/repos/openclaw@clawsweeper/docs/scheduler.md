@@ -33,6 +33,8 @@ manifest with `failure.stage: agent_input_scan` and `retryable: false`, using
 `scanner_unavailable`, `scanner_failed`, `findings`, `deadline`, `staging_limit`,
 `incomplete_source`, `source_drift`, `unsafe_path`, and `unsupported_content`;
 `source_incompatible` remains a separate terminal source-preparation reason.
+Operators can follow the [input-scan diagnostic inspection recipe](input-scan-diagnostics.md)
+from the failed workflow summary without reading raw scanner logs.
 The shared allowlist lives in `src/exact-review-failure-reason.ts`. Exit codes
 78 and 79 still identify `incomplete_source` and `findings` without a manifest.
 A matching non-retryable `review_failure` detail is accepted; retryable or
@@ -114,6 +116,19 @@ Scheduled reviews can reuse exact unchanged inputs through structural or
 content caches. Changed PR content goes to Codex, including source comments
 and formatting. See [Review Cache](review-cache.md) for admission, freshness,
 and runtime packaging rules.
+
+Queue-owned background re-reviews, including issue re-reviews after target-branch
+commits, carry their start lease by editing an existing durable review comment.
+The old review remains readable during the run. Acquisition and owned cleanup
+read the original bytes through the lossless comment transport. If the combined
+body would exceed the 61,440-byte durable limit, reservation leaves it untouched
+and uses a separate placeholder. First and explicit reviews retain their existing
+start path. Separate leases outrank in-place leases; an in-place owner yields at
+the live apply mutation guards if an uncoordinated POST contender appears.
+Publication retains an adopted in-place lock through label and close mutations;
+final cleanup removes only the owned status/lease.
+Lease expiry and orphan recovery still apply to both forms; see
+[PR review comments](pr-review-comments.md#durable-comment-shape).
 
 Ordinary PRs receive one automatic completed review after ten quiet minutes of
 stable head, title, body, and draft state. Pushes and edits after that answer need
@@ -842,7 +857,8 @@ Exact PR review marks ClawSweeper's own acknowledgement comment
 (`clawsweeper-pr-ack`) complete after the review snapshot and before direct
 publication, and GitHub moves the PR's `updated_at` for that edit. The producer's
 apply then syncs the durable review comment, may edit managed labels, and
-releases (deletes) its review lease comment. When direct publication is
+releases its review lease after all apply mutations (deleting a separate
+placeholder or removing the owned in-place status from the completed review). When direct publication is
 deferred, the batch publisher re-applies the same review against those writes.
 Apply freshness treats such an update as automation-only only when a receipt
 ClawSweeper recorded for the item accounts for the latest `updated_at` and the

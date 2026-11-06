@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 177 file(s) materialized.
+Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 181 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `penpot/penpot` — 26 default patterns, 0 followed patterns, 177 file
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 177 |
+| Files         | 181 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -148,94 +148,98 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 87 | ✓ | [`mcp/packages/plugin/src/plugin.ts`](mcp/packages/plugin/src/plugin.ts) |
 | 88 | ✓ | [`mcp/packages/plugin/src/ReconnectPolicy.test.ts`](mcp/packages/plugin/src/ReconnectPolicy.test.ts) |
 | 89 | ✓ | [`mcp/packages/plugin/src/ReconnectPolicy.ts`](mcp/packages/plugin/src/ReconnectPolicy.ts) |
-| 90 | ✓ | [`mcp/packages/plugin/src/SessionId.test.ts`](mcp/packages/plugin/src/SessionId.test.ts) |
-| 91 | ✓ | [`mcp/packages/plugin/src/SessionId.ts`](mcp/packages/plugin/src/SessionId.ts) |
-| 92 | ✓ | [`mcp/packages/plugin/src/SessionIdDisplay.test.ts`](mcp/packages/plugin/src/SessionIdDisplay.test.ts) |
-| 93 | ✓ | [`mcp/packages/plugin/src/SessionIdDisplay.ts`](mcp/packages/plugin/src/SessionIdDisplay.ts) |
-| 94 | ✓ | [`mcp/packages/plugin/src/style.css`](mcp/packages/plugin/src/style.css) |
-| 95 | ✓ | [`mcp/packages/plugin/src/task-handlers/ExecuteCodeTaskHandler.ts`](mcp/packages/plugin/src/task-handlers/ExecuteCodeTaskHandler.ts) |
-| 96 | ✓ | [`mcp/packages/plugin/src/TaskHandler.ts`](mcp/packages/plugin/src/TaskHandler.ts) |
-| 97 | ✓ | [`mcp/packages/plugin/src/VersionCompatibility.test.ts`](mcp/packages/plugin/src/VersionCompatibility.test.ts) |
-| 98 | ✓ | [`mcp/packages/plugin/src/VersionCompatibility.ts`](mcp/packages/plugin/src/VersionCompatibility.ts) |
-| 99 | ✓ | [`mcp/packages/plugin/src/vite-env.d.ts`](mcp/packages/plugin/src/vite-env.d.ts) |
-| 100 | ✓ | [`mcp/packages/plugin/tsconfig.json`](mcp/packages/plugin/tsconfig.json) |
-| 101 | ✓ | [`mcp/packages/plugin/vite.config.ts`](mcp/packages/plugin/vite.config.ts) |
-| 102 | ✓ | [`mcp/packages/plugin/vite.release.config.ts`](mcp/packages/plugin/vite.release.config.ts) |
-| 103 | ✓ | [`mcp/packages/server/.gitignore`](mcp/packages/server/.gitignore) |
-| 104 | ✓ | [`mcp/packages/server/data/api_types.yml`](mcp/packages/server/data/api_types.yml) |
-| 105 | ✓ | [`mcp/packages/server/data/base_instructions.md`](mcp/packages/server/data/base_instructions.md) |
-| 106 | ✓ | [`mcp/packages/server/data/initial_instructions.md`](mcp/packages/server/data/initial_instructions.md) |
-| 107 | ✓ | [`mcp/packages/server/package.json`](mcp/packages/server/package.json) |
-| 108 | ✓ | [`mcp/packages/server/README.md`](mcp/packages/server/README.md) |
-| 109 | ✓ | [`mcp/packages/server/scripts/copy-resources.js`](mcp/packages/server/scripts/copy-resources.js) |
-| 110 | ✓ | [`mcp/packages/server/scripts/integration-test-export-image-semaphore.ts`](mcp/packages/server/scripts/integration-test-export-image-semaphore.ts) |
-| 111 | ✓ | [`mcp/packages/server/src/ApiDocs.ts`](mcp/packages/server/src/ApiDocs.ts) |
-| 112 | ✓ | [`mcp/packages/server/src/ConfigurationLoader.ts`](mcp/packages/server/src/ConfigurationLoader.ts) |
-| 113 | ✓ | [`mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.test.ts`](mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.test.ts) |
-| 114 | ✓ | [`mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.ts`](mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.ts) |
-| 115 | ✓ | [`mcp/packages/server/src/dispatch/SingleInstanceTaskDispatcher.ts`](mcp/packages/server/src/dispatch/SingleInstanceTaskDispatcher.ts) |
-| 116 | ✓ | [`mcp/packages/server/src/dispatch/TaskDispatcher.ts`](mcp/packages/server/src/dispatch/TaskDispatcher.ts) |
-| 117 | ✓ | [`mcp/packages/server/src/Feedback.test.ts`](mcp/packages/server/src/Feedback.test.ts) |
-| 118 | ✓ | [`mcp/packages/server/src/index.ts`](mcp/packages/server/src/index.ts) |
-| 119 | ✓ | [`mcp/packages/server/src/logger.test.ts`](mcp/packages/server/src/logger.test.ts) |
-| 120 | ✓ | [`mcp/packages/server/src/logger.ts`](mcp/packages/server/src/logger.ts) |
-| 121 | ✓ | [`mcp/packages/server/src/McpAuthentication.test.ts`](mcp/packages/server/src/McpAuthentication.test.ts) |
-| 122 | ✓ | [`mcp/packages/server/src/McpAuthentication.ts`](mcp/packages/server/src/McpAuthentication.ts) |
-| 123 | ✓ | [`mcp/packages/server/src/NreplClient.ts`](mcp/packages/server/src/NreplClient.ts) |
-| 124 | ✓ | [`mcp/packages/server/src/PenpotBackendClient.ts`](mcp/packages/server/src/PenpotBackendClient.ts) |
-| 125 | ✓ | [`mcp/packages/server/src/PenpotConnection.ts`](mcp/packages/server/src/PenpotConnection.ts) |
-| 126 | ✓ | [`mcp/packages/server/src/PenpotMcpServer.http.test.ts`](mcp/packages/server/src/PenpotMcpServer.http.test.ts) |
-| 127 | ✓ | [`mcp/packages/server/src/PenpotMcpServer.test.ts`](mcp/packages/server/src/PenpotMcpServer.test.ts) |
-| 128 | ✓ | [`mcp/packages/server/src/PenpotMcpServer.ts`](mcp/packages/server/src/PenpotMcpServer.ts) |
-| 129 | ✓ | [`mcp/packages/server/src/PluginBridge.sessions.test.ts`](mcp/packages/server/src/PluginBridge.sessions.test.ts) |
-| 130 | ✓ | [`mcp/packages/server/src/PluginBridge.test.ts`](mcp/packages/server/src/PluginBridge.test.ts) |
-| 131 | ✓ | [`mcp/packages/server/src/PluginBridge.ts`](mcp/packages/server/src/PluginBridge.ts) |
-| 132 | ✓ | [`mcp/packages/server/src/PluginTask.ts`](mcp/packages/server/src/PluginTask.ts) |
-| 133 | ✓ | [`mcp/packages/server/src/RedisBridge.test.ts`](mcp/packages/server/src/RedisBridge.test.ts) |
-| 134 | ✓ | [`mcp/packages/server/src/RedisBridge.ts`](mcp/packages/server/src/RedisBridge.ts) |
-| 135 | ✓ | [`mcp/packages/server/src/RemotePluginTask.ts`](mcp/packages/server/src/RemotePluginTask.ts) |
-| 136 | ✓ | [`mcp/packages/server/src/ReplServer.ts`](mcp/packages/server/src/ReplServer.ts) |
-| 137 | ✓ | [`mcp/packages/server/src/static/repl.html`](mcp/packages/server/src/static/repl.html) |
-| 138 | ✓ | [`mcp/packages/server/src/tasks/ExecuteCodePluginTask.ts`](mcp/packages/server/src/tasks/ExecuteCodePluginTask.ts) |
-| 139 | ✓ | [`mcp/packages/server/src/Tool.ts`](mcp/packages/server/src/Tool.ts) |
-| 140 | ✓ | [`mcp/packages/server/src/ToolResponse.ts`](mcp/packages/server/src/ToolResponse.ts) |
-| 141 | ✓ | [`mcp/packages/server/src/tools/dev/CljCheckParentheses.ts`](mcp/packages/server/src/tools/dev/CljCheckParentheses.ts) |
-| 142 | ✓ | [`mcp/packages/server/src/tools/dev/CljsCompilerOutputTool.ts`](mcp/packages/server/src/tools/dev/CljsCompilerOutputTool.ts) |
-| 143 | ✓ | [`mcp/packages/server/src/tools/dev/CljsReplTool.ts`](mcp/packages/server/src/tools/dev/CljsReplTool.ts) |
-| 144 | ✓ | [`mcp/packages/server/src/tools/dev/ImportPenpotFileTool.ts`](mcp/packages/server/src/tools/dev/ImportPenpotFileTool.ts) |
-| 145 | ✓ | [`mcp/packages/server/src/tools/dev/ReadTaigaIssueTool.ts`](mcp/packages/server/src/tools/dev/ReadTaigaIssueTool.ts) |
-| 146 | ✓ | [`mcp/packages/server/src/tools/ExecuteCodeTool.ts`](mcp/packages/server/src/tools/ExecuteCodeTool.ts) |
-| 147 | ✓ | [`mcp/packages/server/src/tools/ExportShapeTool.ts`](mcp/packages/server/src/tools/ExportShapeTool.ts) |
-| 148 | ✓ | [`mcp/packages/server/src/tools/HighLevelOverviewTool.ts`](mcp/packages/server/src/tools/HighLevelOverviewTool.ts) |
-| 149 | ✓ | [`mcp/packages/server/src/tools/ImportImageTool.ts`](mcp/packages/server/src/tools/ImportImageTool.ts) |
-| 150 | ✓ | [`mcp/packages/server/src/tools/PenpotApiInfoTool.ts`](mcp/packages/server/src/tools/PenpotApiInfoTool.ts) |
-| 151 | ✓ | [`mcp/packages/server/src/tools/SubmitFeedbackTool.ts`](mcp/packages/server/src/tools/SubmitFeedbackTool.ts) |
-| 152 | ✓ | [`mcp/packages/server/src/types/nrepl-client.d.ts`](mcp/packages/server/src/types/nrepl-client.d.ts) |
-| 153 | ✓ | [`mcp/packages/server/src/UserPenpotConnections.ts`](mcp/packages/server/src/UserPenpotConnections.ts) |
-| 154 | ✓ | [`mcp/packages/server/src/utils/FileUtils.ts`](mcp/packages/server/src/utils/FileUtils.ts) |
-| 155 | ✓ | [`mcp/packages/server/src/utils/Semaphore.ts`](mcp/packages/server/src/utils/Semaphore.ts) |
-| 156 | ✓ | [`mcp/packages/server/tsconfig.json`](mcp/packages/server/tsconfig.json) |
-| 157 | ✓ | [`mcp/pnpm-lock.yaml`](mcp/pnpm-lock.yaml) |
-| 158 | ✓ | [`mcp/pnpm-workspace.yaml`](mcp/pnpm-workspace.yaml) |
-| 159 | ✓ | [`mcp/README.md`](mcp/README.md) |
-| 160 | ✓ | [`mcp/resources/architecture.png`](mcp/resources/architecture.png) |
-| 161 | ✓ | [`mcp/scripts/build`](mcp/scripts/build) |
-| 162 | ✓ | [`mcp/scripts/build-types`](mcp/scripts/build-types) |
-| 163 | ✓ | [`mcp/scripts/check`](mcp/scripts/check) |
-| 164 | ✓ | [`mcp/scripts/fmt`](mcp/scripts/fmt) |
-| 165 | ✓ | [`mcp/scripts/pack`](mcp/scripts/pack) |
-| 166 | ✓ | [`mcp/scripts/set-version`](mcp/scripts/set-version) |
-| 167 | ✓ | [`mcp/scripts/setup`](mcp/scripts/setup) |
-| 168 | ✓ | [`mcp/scripts/start-mcp-devenv`](mcp/scripts/start-mcp-devenv) |
-| 169 | ✓ | [`mcp/scripts/start-mcp-devenv-oauth`](mcp/scripts/start-mcp-devenv-oauth) |
-| 170 | ✓ | [`mcp/types-generator/.gitattributes`](mcp/types-generator/.gitattributes) |
-| 171 | ✓ | [`mcp/types-generator/.gitignore`](mcp/types-generator/.gitignore) |
-| 172 | ✓ | [`mcp/types-generator/build`](mcp/types-generator/build) |
-| 173 | ✓ | [`mcp/types-generator/pixi.lock`](mcp/types-generator/pixi.lock) |
-| 174 | ✓ | [`mcp/types-generator/pixi.toml`](mcp/types-generator/pixi.toml) |
-| 175 | ✓ | [`mcp/types-generator/prepare_api_docs.py`](mcp/types-generator/prepare_api_docs.py) |
-| 176 | ✓ | [`mcp/types-generator/README.md`](mcp/types-generator/README.md) |
-| 177 | ✓ | [`mcp/types-generator/test_prepare_api_docs.py`](mcp/types-generator/test_prepare_api_docs.py) |
+| 90 | ✓ | [`mcp/packages/plugin/src/RollbackLog.test.ts`](mcp/packages/plugin/src/RollbackLog.test.ts) |
+| 91 | ✓ | [`mcp/packages/plugin/src/RollbackLog.ts`](mcp/packages/plugin/src/RollbackLog.ts) |
+| 92 | ✓ | [`mcp/packages/plugin/src/SessionId.test.ts`](mcp/packages/plugin/src/SessionId.test.ts) |
+| 93 | ✓ | [`mcp/packages/plugin/src/SessionId.ts`](mcp/packages/plugin/src/SessionId.ts) |
+| 94 | ✓ | [`mcp/packages/plugin/src/SessionIdDisplay.test.ts`](mcp/packages/plugin/src/SessionIdDisplay.test.ts) |
+| 95 | ✓ | [`mcp/packages/plugin/src/SessionIdDisplay.ts`](mcp/packages/plugin/src/SessionIdDisplay.ts) |
+| 96 | ✓ | [`mcp/packages/plugin/src/style.css`](mcp/packages/plugin/src/style.css) |
+| 97 | ✓ | [`mcp/packages/plugin/src/task-handlers/ExecuteCodeTaskHandler.ts`](mcp/packages/plugin/src/task-handlers/ExecuteCodeTaskHandler.ts) |
+| 98 | ✓ | [`mcp/packages/plugin/src/TaskHandler.ts`](mcp/packages/plugin/src/TaskHandler.ts) |
+| 99 | ✓ | [`mcp/packages/plugin/src/VersionCompatibility.test.ts`](mcp/packages/plugin/src/VersionCompatibility.test.ts) |
+| 100 | ✓ | [`mcp/packages/plugin/src/VersionCompatibility.ts`](mcp/packages/plugin/src/VersionCompatibility.ts) |
+| 101 | ✓ | [`mcp/packages/plugin/src/vite-env.d.ts`](mcp/packages/plugin/src/vite-env.d.ts) |
+| 102 | ✓ | [`mcp/packages/plugin/tsconfig.json`](mcp/packages/plugin/tsconfig.json) |
+| 103 | ✓ | [`mcp/packages/plugin/vite.config.ts`](mcp/packages/plugin/vite.config.ts) |
+| 104 | ✓ | [`mcp/packages/plugin/vite.release.config.ts`](mcp/packages/plugin/vite.release.config.ts) |
+| 105 | ✓ | [`mcp/packages/server/.gitignore`](mcp/packages/server/.gitignore) |
+| 106 | ✓ | [`mcp/packages/server/data/api_types.yml`](mcp/packages/server/data/api_types.yml) |
+| 107 | ✓ | [`mcp/packages/server/data/base_instructions.md`](mcp/packages/server/data/base_instructions.md) |
+| 108 | ✓ | [`mcp/packages/server/data/initial_instructions.md`](mcp/packages/server/data/initial_instructions.md) |
+| 109 | ✓ | [`mcp/packages/server/package.json`](mcp/packages/server/package.json) |
+| 110 | ✓ | [`mcp/packages/server/README.md`](mcp/packages/server/README.md) |
+| 111 | ✓ | [`mcp/packages/server/scripts/copy-resources.js`](mcp/packages/server/scripts/copy-resources.js) |
+| 112 | ✓ | [`mcp/packages/server/scripts/integration-test-export-image-semaphore.ts`](mcp/packages/server/scripts/integration-test-export-image-semaphore.ts) |
+| 113 | ✓ | [`mcp/packages/server/src/ApiDocs.ts`](mcp/packages/server/src/ApiDocs.ts) |
+| 114 | ✓ | [`mcp/packages/server/src/ConfigurationLoader.ts`](mcp/packages/server/src/ConfigurationLoader.ts) |
+| 115 | ✓ | [`mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.test.ts`](mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.test.ts) |
+| 116 | ✓ | [`mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.ts`](mcp/packages/server/src/dispatch/MultiInstanceTaskDispatcher.ts) |
+| 117 | ✓ | [`mcp/packages/server/src/dispatch/SingleInstanceTaskDispatcher.ts`](mcp/packages/server/src/dispatch/SingleInstanceTaskDispatcher.ts) |
+| 118 | ✓ | [`mcp/packages/server/src/dispatch/TaskDispatcher.ts`](mcp/packages/server/src/dispatch/TaskDispatcher.ts) |
+| 119 | ✓ | [`mcp/packages/server/src/Feedback.test.ts`](mcp/packages/server/src/Feedback.test.ts) |
+| 120 | ✓ | [`mcp/packages/server/src/index.ts`](mcp/packages/server/src/index.ts) |
+| 121 | ✓ | [`mcp/packages/server/src/logger.test.ts`](mcp/packages/server/src/logger.test.ts) |
+| 122 | ✓ | [`mcp/packages/server/src/logger.ts`](mcp/packages/server/src/logger.ts) |
+| 123 | ✓ | [`mcp/packages/server/src/McpAuthentication.test.ts`](mcp/packages/server/src/McpAuthentication.test.ts) |
+| 124 | ✓ | [`mcp/packages/server/src/McpAuthentication.ts`](mcp/packages/server/src/McpAuthentication.ts) |
+| 125 | ✓ | [`mcp/packages/server/src/NreplClient.ts`](mcp/packages/server/src/NreplClient.ts) |
+| 126 | ✓ | [`mcp/packages/server/src/PenpotBackendClient.ts`](mcp/packages/server/src/PenpotBackendClient.ts) |
+| 127 | ✓ | [`mcp/packages/server/src/PenpotConnection.ts`](mcp/packages/server/src/PenpotConnection.ts) |
+| 128 | ✓ | [`mcp/packages/server/src/PenpotMcpServer.http.test.ts`](mcp/packages/server/src/PenpotMcpServer.http.test.ts) |
+| 129 | ✓ | [`mcp/packages/server/src/PenpotMcpServer.test.ts`](mcp/packages/server/src/PenpotMcpServer.test.ts) |
+| 130 | ✓ | [`mcp/packages/server/src/PenpotMcpServer.ts`](mcp/packages/server/src/PenpotMcpServer.ts) |
+| 131 | ✓ | [`mcp/packages/server/src/PluginBridge.sessions.test.ts`](mcp/packages/server/src/PluginBridge.sessions.test.ts) |
+| 132 | ✓ | [`mcp/packages/server/src/PluginBridge.test.ts`](mcp/packages/server/src/PluginBridge.test.ts) |
+| 133 | ✓ | [`mcp/packages/server/src/PluginBridge.ts`](mcp/packages/server/src/PluginBridge.ts) |
+| 134 | ✓ | [`mcp/packages/server/src/PluginTask.ts`](mcp/packages/server/src/PluginTask.ts) |
+| 135 | ✓ | [`mcp/packages/server/src/RedisBridge.test.ts`](mcp/packages/server/src/RedisBridge.test.ts) |
+| 136 | ✓ | [`mcp/packages/server/src/RedisBridge.ts`](mcp/packages/server/src/RedisBridge.ts) |
+| 137 | ✓ | [`mcp/packages/server/src/RemotePluginTask.ts`](mcp/packages/server/src/RemotePluginTask.ts) |
+| 138 | ✓ | [`mcp/packages/server/src/ReplServer.ts`](mcp/packages/server/src/ReplServer.ts) |
+| 139 | ✓ | [`mcp/packages/server/src/RollbackNotices.test.ts`](mcp/packages/server/src/RollbackNotices.test.ts) |
+| 140 | ✓ | [`mcp/packages/server/src/RollbackNotices.ts`](mcp/packages/server/src/RollbackNotices.ts) |
+| 141 | ✓ | [`mcp/packages/server/src/static/repl.html`](mcp/packages/server/src/static/repl.html) |
+| 142 | ✓ | [`mcp/packages/server/src/tasks/ExecuteCodePluginTask.ts`](mcp/packages/server/src/tasks/ExecuteCodePluginTask.ts) |
+| 143 | ✓ | [`mcp/packages/server/src/Tool.ts`](mcp/packages/server/src/Tool.ts) |
+| 144 | ✓ | [`mcp/packages/server/src/ToolResponse.ts`](mcp/packages/server/src/ToolResponse.ts) |
+| 145 | ✓ | [`mcp/packages/server/src/tools/dev/CljCheckParentheses.ts`](mcp/packages/server/src/tools/dev/CljCheckParentheses.ts) |
+| 146 | ✓ | [`mcp/packages/server/src/tools/dev/CljsCompilerOutputTool.ts`](mcp/packages/server/src/tools/dev/CljsCompilerOutputTool.ts) |
+| 147 | ✓ | [`mcp/packages/server/src/tools/dev/CljsReplTool.ts`](mcp/packages/server/src/tools/dev/CljsReplTool.ts) |
+| 148 | ✓ | [`mcp/packages/server/src/tools/dev/ImportPenpotFileTool.ts`](mcp/packages/server/src/tools/dev/ImportPenpotFileTool.ts) |
+| 149 | ✓ | [`mcp/packages/server/src/tools/dev/ReadTaigaIssueTool.ts`](mcp/packages/server/src/tools/dev/ReadTaigaIssueTool.ts) |
+| 150 | ✓ | [`mcp/packages/server/src/tools/ExecuteCodeTool.ts`](mcp/packages/server/src/tools/ExecuteCodeTool.ts) |
+| 151 | ✓ | [`mcp/packages/server/src/tools/ExportShapeTool.ts`](mcp/packages/server/src/tools/ExportShapeTool.ts) |
+| 152 | ✓ | [`mcp/packages/server/src/tools/HighLevelOverviewTool.ts`](mcp/packages/server/src/tools/HighLevelOverviewTool.ts) |
+| 153 | ✓ | [`mcp/packages/server/src/tools/ImportImageTool.ts`](mcp/packages/server/src/tools/ImportImageTool.ts) |
+| 154 | ✓ | [`mcp/packages/server/src/tools/PenpotApiInfoTool.ts`](mcp/packages/server/src/tools/PenpotApiInfoTool.ts) |
+| 155 | ✓ | [`mcp/packages/server/src/tools/SubmitFeedbackTool.ts`](mcp/packages/server/src/tools/SubmitFeedbackTool.ts) |
+| 156 | ✓ | [`mcp/packages/server/src/types/nrepl-client.d.ts`](mcp/packages/server/src/types/nrepl-client.d.ts) |
+| 157 | ✓ | [`mcp/packages/server/src/UserPenpotConnections.ts`](mcp/packages/server/src/UserPenpotConnections.ts) |
+| 158 | ✓ | [`mcp/packages/server/src/utils/FileUtils.ts`](mcp/packages/server/src/utils/FileUtils.ts) |
+| 159 | ✓ | [`mcp/packages/server/src/utils/Semaphore.ts`](mcp/packages/server/src/utils/Semaphore.ts) |
+| 160 | ✓ | [`mcp/packages/server/tsconfig.json`](mcp/packages/server/tsconfig.json) |
+| 161 | ✓ | [`mcp/pnpm-lock.yaml`](mcp/pnpm-lock.yaml) |
+| 162 | ✓ | [`mcp/pnpm-workspace.yaml`](mcp/pnpm-workspace.yaml) |
+| 163 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 164 | ✓ | [`mcp/resources/architecture.png`](mcp/resources/architecture.png) |
+| 165 | ✓ | [`mcp/scripts/build`](mcp/scripts/build) |
+| 166 | ✓ | [`mcp/scripts/build-types`](mcp/scripts/build-types) |
+| 167 | ✓ | [`mcp/scripts/check`](mcp/scripts/check) |
+| 168 | ✓ | [`mcp/scripts/fmt`](mcp/scripts/fmt) |
+| 169 | ✓ | [`mcp/scripts/pack`](mcp/scripts/pack) |
+| 170 | ✓ | [`mcp/scripts/set-version`](mcp/scripts/set-version) |
+| 171 | ✓ | [`mcp/scripts/setup`](mcp/scripts/setup) |
+| 172 | ✓ | [`mcp/scripts/start-mcp-devenv`](mcp/scripts/start-mcp-devenv) |
+| 173 | ✓ | [`mcp/scripts/start-mcp-devenv-oauth`](mcp/scripts/start-mcp-devenv-oauth) |
+| 174 | ✓ | [`mcp/types-generator/.gitattributes`](mcp/types-generator/.gitattributes) |
+| 175 | ✓ | [`mcp/types-generator/.gitignore`](mcp/types-generator/.gitignore) |
+| 176 | ✓ | [`mcp/types-generator/build`](mcp/types-generator/build) |
+| 177 | ✓ | [`mcp/types-generator/pixi.lock`](mcp/types-generator/pixi.lock) |
+| 178 | ✓ | [`mcp/types-generator/pixi.toml`](mcp/types-generator/pixi.toml) |
+| 179 | ✓ | [`mcp/types-generator/prepare_api_docs.py`](mcp/types-generator/prepare_api_docs.py) |
+| 180 | ✓ | [`mcp/types-generator/README.md`](mcp/types-generator/README.md) |
+| 181 | ✓ | [`mcp/types-generator/test_prepare_api_docs.py`](mcp/types-generator/test_prepare_api_docs.py) |
 
 ---
 

@@ -2,7 +2,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { capEffort } from './lead.mjs';
 import { landed, stateOf } from './status.mjs';
@@ -17,6 +17,7 @@ let config;
 const projectConfig = () => (config ??= existsSync('.agents/pstack.json') ? JSON.parse(readFileSync('.agents/pstack.json', 'utf8')) : {});
 const trunk = () => projectConfig().delivery === 'trunk';
 const branch = () => projectConfig().branch ?? 'main';
+const reviewScopes = (dir) => (existsSync(dir) ? readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isFile()).map((entry) => entry.name.replace(/\.[^.]+$/u, '')) : []);
 
 const FROM = {
   started: ['offered', 'started'],
@@ -26,7 +27,8 @@ const FROM = {
   uncarded: ['offered'],
   updated: ['offered', 'started'],
   folded: ['offered'],
-  reopened: ['dismissed gone'],
+  apart: ['offered', 'started'],
+  reopened: ['dismissed gone', 'dismissed dup'],
   'dismissed done': ['offered'],
   'dismissed dup': ['offered'],
   'dismissed superseded': ['offered'],
@@ -46,21 +48,23 @@ const RESULT = new RegExp(`^(${CHIP_STATES.join('|')}|dismissed (?:${REASONS.joi
 const LEGACY_ONLY = ['dismissed gone', 'dismissed replaced'];
 const PROOFS = ['repro', 'regressed', 'ship'];
 const EVIDENCE = ['priority', ...PROOFS];
+const FACTS = ['review-scope', 'regression'];
 const TAKES = {
-  offered: ['writes', 'topic', 'kind', 'waits', 'owns', 'fast', 'card', 'shown', 'session', 'transcript', 'via', ...EVIDENCE],
-  updated: ['writes', 'topic', 'kind', 'effort', 'waits', 'owns', 'fast', 'session', 'transcript', ...EVIDENCE],
+  offered: ['writes', 'topic', 'kind', 'waits', 'owns', 'fast', 'card', 'shown', 'session', 'transcript', 'via', ...EVIDENCE, ...FACTS],
+  updated: ['writes', 'topic', 'kind', 'effort', 'waits', 'owns', 'fast', 'session', 'transcript', ...EVIDENCE, ...FACTS],
   folded: ['writes', 'kind', 'effort', 'waits', 'owns', ...EVIDENCE],
   started: ['writes', 'session'],
   landed: ['patch', 'commit'],
   carded: ['card', 'shown', 'session', 'codex'],
   uncarded: ['card'],
+  apart: ['from'],
   'dismissed declined': ['card'],
 };
-const LIST_KEYS = ['writes', 'waits', 'owns', 'commit'];
-const SCALAR_KEYS = ['topic', 'kind', 'effort', 'fast', 'patch', 'card', 'shown', 'session', 'transcript', 'codex', 'via', ...EVIDENCE];
+const LIST_KEYS = ['writes', 'waits', 'owns', 'commit', 'from', 'regression'];
+const SCALAR_KEYS = ['topic', 'kind', 'effort', 'fast', 'patch', 'card', 'shown', 'session', 'transcript', 'codex', 'via', 'review-scope', ...EVIDENCE];
 const KINDS = ['fix', 'decide', 'review'];
 const PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
-const ROUTES = ['verdict', 'babysit', 'time', 'hook'];
+const ROUTES = ['verdict', 'babysit', 'time', 'hook', 'panel'];
 const CARD_LIMIT = 10;
 
 const CHIP = /^([\w-]+) (?:(?:Now|After): )?\S/u;
@@ -71,7 +75,9 @@ const CHECK = /^[\w.:/-]+$/u;
 export const SESSION = /^\w[\w.-]*$/u;
 const WAIT = /^(?:pr:(\d+)|task:([\w-]+)|run:(\S+\.md))$/u;
 
-const values = (evidence, key) => [...evidence.matchAll(new RegExp(`(?:^|[\\s;])${key}:\\s*([^;]*)`, 'gu'))].map((match) => match[1].trim());
+const withoutReproProse = (evidence, key) => (key === 'repro' ? evidence : evidence.replace(/(^|;)\s*repro:[^;]*/gu, '$1'));
+const values = (evidence, key) => [...withoutReproProse(evidence, key).matchAll(new RegExp(`(?:^|[\\s;])${key}:\\s*([^;]*)`, 'gu'))].map((match) => match[1].trim());
+export const hasToken = (evidence, key) => values(evidence, key).length > 0;
 const list = (value) => value.split(',').map((item) => item.trim()).filter(Boolean);
 // A one-token value with a space in it ran into the next field.
 const ranOn = (value) => (/\s/u.test(value) ? '; a field runs to the next ";", so end it with ";" before more evidence' : '');
@@ -196,6 +202,7 @@ const waitsInTopic = (task, tasks) =>
 const mergeInto = (kept, task, tasks) => {
   kept.covers.push({ id: task.id, title: displayTitle(task), findings: task.findings }, ...task.covers);
   kept.owns = joined(kept.owns, task.owns);
+  kept.apart = joined(kept.apart, task.apart).filter((other) => other !== kept.id);
   if (kept.status !== 'offered') return;
   const outside = (wait) => {
     const target = wait.match(WAIT)?.[2];
@@ -245,12 +252,15 @@ export function recordRow(tasks, cells, ts = null) {
       repro: given.repro ?? null,
       regressed: given.regressed ?? null,
       ship: given.ship ?? null,
+      reviewScope: given['review-scope'] ?? null,
+      regression: given.regression ?? [],
       patch: null,
       commits: [],
       landedAt: null,
       reviewed: false,
       findings: [row.why],
       covers: [],
+      apart: [],
     };
     created.cardEffort = created.card ? levelOf(created) : null;
     tasks.set(row.id, created);
@@ -282,6 +292,7 @@ export function recordRow(tasks, cells, ts = null) {
     task.landedAt = ts;
   }
   if (row.move === 'reviewed') task.reviewed = true;
+  if (row.move === 'apart') task.apart = joined(task.apart, given.from ?? []);
   if (row.move === 'carded') {
     task.card = given.card ?? null;
     task.cardedAt = ts;
@@ -300,8 +311,14 @@ export function recordRow(tasks, cells, ts = null) {
     task.cardEffort = null;
   }
   if (row.move === 'reopened') {
+    const kept = task.reason === 'dup' && follow(task.target, tasks);
+    if (kept) {
+      const brought = new Set([task.id, ...task.covers.map((entry) => entry.id)]);
+      kept.covers = kept.covers.filter((entry) => !brought.has(entry.id));
+    }
     task.status = 'offered';
     task.reason = null;
+    task.target = null;
   }
   if (row.move === 'updated') {
     if (given.writes) {
@@ -309,6 +326,8 @@ export function recordRow(tasks, cells, ts = null) {
       task.keys = given.writes.map(writeKey);
     }
     for (const key of ['topic', 'kind', 'effort', 'waits', 'owns', ...EVIDENCE]) if (given[key] !== undefined) task[key] = given[key];
+    if (given['review-scope'] !== undefined) task.reviewScope = given['review-scope'];
+    if (given.regression !== undefined) task.regression = given.regression;
     if (given.fast !== undefined) task.fast = given.fast === 'yes';
     if (given.session !== undefined) {
       task.owner = given.session;
@@ -349,11 +368,13 @@ const tokenProblems = (given, where) => {
   if (given.transcript !== undefined && !SESSION.test(given.transcript)) found.push(`${where}: transcript: names the session's transcript id as one token${ranOn(given.transcript)}`);
   if (given.codex !== undefined && given.codex !== 'always') found.push(`${where}: codex: is always, which forces the card session's Codex handoff`);
   if (given.priority !== undefined && !PRIORITIES.includes(given.priority)) found.push(`${where}: priority: is P0, P1, P2 or P3, as chips.md's Priority says`);
-  if (given.via !== undefined && !ROUTES.includes(given.via)) found.push(`${where}: via: is verdict, babysit, time or hook, the route that lets a run offer a P2 or P3 task, as chips.md's Offer says`);
+  if (given.via !== undefined && !ROUTES.includes(given.via)) found.push(`${where}: via: is verdict, babysit, time, hook or panel, the route that lets a run offer a P2 or P3 task, as chips.md's Offer says`);
   if (given.shown !== undefined && !PRIORITIES.includes(given.shown)) found.push(`${where}: shown: is the priority the card's title shows, P0, P1, P2 or P3`);
   if (given.repro === '') found.push(`${where}: repro: names a failing test, or exact steps someone ran and saw fail`);
   if (given.regressed !== undefined && !/^[0-9a-f]{7,40}$/u.test(given.regressed)) found.push(`${where}: regressed: names the commit the regression came in by its hash`);
   if (given.ship !== undefined && !SESSION.test(given.ship)) found.push(`${where}: ship: names one item of the project's ship list by its id`);
+  if (given['review-scope'] !== undefined && !TOPIC.test(given['review-scope'])) found.push(`${where}: review-scope: names the review scope that owns the task's code by its id, or none when no review scope owns it`);
+  for (const page of given.regression ?? []) if (!['http:', 'https:'].includes(URL.parse(page)?.protocol)) found.push(`${where}: regression: names each page where the behavior still works by its URL, comma-separated, as a triage record's regression: does; "${page}" is not a URL`);
   return found;
 };
 
@@ -369,7 +390,7 @@ export function chipRowProblems(cells, before, where) {
   const [, id] = decision.match(CHIP) ?? [];
   if (!id) return [`${where}: a chip row's decision is "<task id> <title>", with (xhigh) after the title of a design question or of a bug whose cause nobody has located`];
   const row = parseRow(cells);
-  if (!row) return [`${where}: a chip row's result is offered, carded, uncarded, updated, folded, started, landed, reviewed, reopened, or dismissed with done, superseded, declined, stopped or dup <task id>`];
+  if (!row) return [`${where}: a chip row's result is offered, carded, uncarded, updated, folded, apart, started, landed, reviewed, reopened, or dismissed with done, superseded, declined, stopped or dup <task id>`];
   const { move } = row;
   const known = before.get(id);
   const { given } = fields(evidence);
@@ -386,10 +407,13 @@ export function chipRowProblems(cells, before, where) {
     if (!FROM[move].includes(state)) found.push(`${where}: ${id} is ${state}, so it cannot be ${move}`);
   }
   if (move === 'carded' && !given.card) found.push(`${where}: a carded row names the suggest tool's card id as "card: <id>"`);
+  if (move === 'apart' && (!given.from?.length || given.from.some((other) => other === id || !before.has(other) || follow(other, before)?.id === id))) {
+    found.push(`${where}: an apart row names in "from: <task id>, <task id>" each other task the ledger holds that a sweep judged separate work from ${id}`);
+  }
   if (move === 'updated' && !TAKES.updated.some((key) => given[key] !== undefined)) found.push(`${where}: an updated row names what changes: writes:, topic:, kind:, effort:, waits:, owns:, fast: or session:`);
   if (move === 'updated' && given.transcript !== undefined && given.session === undefined) found.push(`${where}: transcript: goes beside session:, the owner it names`);
-  if (move === 'updated' && known && sessionPicksPlan(known) && Object.keys(given).some((key) => key !== 'owns')) {
-    found.push(`${where}: ${id} is started, so an updated row on it takes only owns:; the session adds paths with another started row`);
+  if (move === 'updated' && known && sessionPicksPlan(known) && Object.keys(given).some((key) => key !== 'owns' && !FACTS.includes(key))) {
+    found.push(`${where}: ${id} is started, so an updated row on it takes only owns:, review-scope: and regression:; the session adds paths with another started row`);
   }
   const kept = row.target && before.get(row.target);
   if (move === 'dismissed dup' && (row.target === id || !kept || !isOpen(kept))) found.push(`${where}: ${row.target} must be another task the ledger holds as offered; offer the task it merges into before this row`);
@@ -452,7 +476,8 @@ export function newChipRowProblems(cells, before, where, git, here = null, shipL
     if (untaggedTitle(decision, id) !== decision.slice(id.length + 1)) found.push(`${where}: a new title is a plain imperative phrase, with (xhigh) only for a design question or a bug whose cause nobody has located; chips works out when a task can start, so no title says Now: or After:, chips brief adds its priority as [P1], and fast: yes adds (fast) for it`);
     if (!given.topic) found.push(`${where}: a new offer names its owner question as "topic: <word>"; run chips to see the open topics and reuse one when the finding answers its question`);
     if (!given.priority && !given.owns?.length) found.push(`${where}: a new offer names its priority as "priority: P0", P1, P2 or P3, as chips.md's Priority says; a task that owns a check failing on the base branch is P0 without one`);
-    if (['P2', 'P3'].includes(given.priority) && !given.via) found.push(`${where}: a run offers a task only for a new P0 or P1 finding, as chips.md's Offer says, so list this ${given.priority} finding in the plan's Open work, or in the reply when the run keeps no plan; an offer for an item the run's verdict judges, for a finding in a babysit run, for a measurement the Time budget rule sends to a task, or from a project hook that finds recurring work due names its route as via: verdict, via: babysit, via: time or via: hook`);
+    if (['P2', 'P3'].includes(given.priority) && !given.via) found.push(`${where}: a run offers a task only for a new P0 or P1 finding, as chips.md's Offer says, so list this ${given.priority} finding in the plan's Open work, or in the reply when the run keeps no plan; an offer for an item the run's verdict judges, for a finding in a babysit run, for a measurement the Time budget rule sends to a task, from a project hook that finds recurring work due, or for the design question that two open critical panel findings require names its route as via: verdict, via: babysit, via: time, via: hook or via: panel`);
+    if (given.via === 'panel' && given.kind !== 'decide') found.push(`${where}: via: panel is the route for the design question that two open critical panel findings require, so it goes only on a kind: decide offer`);
   }
   const claimed = ['P0', 'P1'].includes(given.priority) ? afterRow(before, cells).get(id) : null;
   if (claimed && !claimed.owns.length && !claimed.repro) {
@@ -469,6 +494,9 @@ export function newChipRowProblems(cells, before, where, git, here = null, shipL
     if (!items) found.push(`${where}: ship: names an item of the project's ship list, and ${note ?? 'this project sets no chips.ship command in .agents/pstack.json'}`);
     else if (!items.some((item) => item.id === given.ship)) found.push(`${where}: ship: ${given.ship} is not an open item of the project's ship list; chips lists the open ones`);
   }
+  const scopes = projectConfig().chips?.scopes;
+  const scope = given['review-scope'];
+  if (scopes && scope && scope !== 'none' && !reviewScopes(scopes).includes(scope)) found.push(`${where}: review-scope: ${scope} is no review scope in ${scopes}; name the one that owns the task's code, or none`);
   const cycledBefore = cyclicEdges(before);
   const added = [...cyclicEdges(afterRow(before, cells))].filter((edge) => !cycledBefore.has(edge)).map((edge) => edge.split(' '));
   const self = added.find(([from, to]) => from === to);
@@ -513,14 +541,15 @@ export function newChipRowProblems(cells, before, where, git, here = null, shipL
   if (move === 'folded' && held(own)) found.push(`${where}: ${id} holds card ${own.card}, which cannot show new work; offer the finding as a new task in topic ${own.topic ?? '<its question>'} with waits: task:${id}, and chips merges it once the card is withdrawn`);
   const narrows = Object.keys(given).every((key) => key === 'writes') && (given.writes ?? []).map(writeKey).every((key) => own?.keys.some((old) => key === old || contains(old, key)));
   const addsWaits = Object.keys(given).every((key) => key === 'waits') && given.waits !== undefined && given.waits.length > (own?.waits.length ?? 0) && (own?.waits ?? []).every((wait) => given.waits.includes(wait));
-  const relabels = Object.keys(given).every((key) => key === 'effort' || EVIDENCE.includes(key));
+  const relabels = Object.keys(given).every((key) => key === 'effort' || EVIDENCE.includes(key) || FACTS.includes(key));
   if (move === 'updated' && held(own) && !narrows && !addsWaits && !relabels) {
-    found.push(`${where}: ${id} holds card ${own.card}, which cannot change; withdraw the card first, as chips.md's Limits says, then log this row; a row that only narrows writes:, only adds waits: and keeps every wait it has, or only sets effort:, priority: and its evidence, needs no withdrawal`);
+    found.push(`${where}: ${id} holds card ${own.card}, which cannot change; withdraw the card first, as chips.md's Limits says, then log this row; a row that only narrows writes:, only adds waits: and keeps every wait it has, or only sets effort:, priority: and its evidence, review-scope: or regression:, needs no withdrawal`);
   }
   if (given.fast === 'yes') {
     const after = afterRow(before, cells).get(id);
     if (after && (after.kind !== 'fix' || needsJudgment(after))) found.push(`${where}: ${id} is ${after.kind === 'fix' ? 'an (xhigh) task' : `a ${after.kind} task`}, and fast: yes marks only a fix at high effort that names its exact change`);
   }
+  if (move === 'dismissed dup' && own && keeper && judgedApart(own, keeper, before)) found.push(`${where}: an apart row keeps ${id} and ${keeper.id} apart as separate work, so ${id} is no duplicate of ${keeper.id}; keep both open`);
   if (move === 'dismissed dup' && held(keeper)) found.push(`${where}: ${keeper.id} holds card ${keeper.card}, which cannot show new work; keep ${id} open and log updated on it with its waits plus task:${keeper.id}, and chips merges it once the card is withdrawn`);
   if (move === 'carded' || (move === 'offered' && given.card)) {
     const uncarded = move === 'carded' ? before : afterRow(before, cells);
@@ -754,12 +783,91 @@ export function staleReport(tasks, at, probe) {
         ...(commits.length ? [`${commits.length} ${commits.length === 1 ? 'commit' : 'commits'} on its paths since its offer, last "${commits[0]}"`] : []),
         ...closed,
         ...(possiblyThin(task) ? ['possibly thin: every finding is a note an older migration wrote, so add the finding before its next card'] : []),
+        ...(projectConfig().triage?.experimental && task.status === 'offered' && !task.reviewScope ? ['no review scope'] : []),
         ...(task.card ? [`card ${task.card}${task.session ? ` in session ${task.session}` : ''}`] : []),
       ];
       return { task, facts, weight: 3 * (deleted.length > 0) + 3 * (closed.length > 0) + 3 * shipClosed + 2 * possiblyThin(task) + (missing.length > 0) + (commits.length > 0) };
     })
     .sort((a, b) => b.weight - a.weight || byOrder(a.task, b.task));
   return rows.map(({ task, facts }) => line(task, `  ${facts.join('; ')}`));
+}
+
+const COMMON_WORDS = new Set('the and are for its with from into onto over under through after before when whose that this their his her one two every each make keep find why fix let give stop decide whether what how does not more than again also xhigh fast'.split(' '));
+const wordsOf = (text) => new Set(text.toLowerCase().split(/[^a-z0-9]+/u).filter((word) => word.length > 2 && !COMMON_WORDS.has(word)).map((word) => (word.endsWith('s') && !word.endsWith('ss') ? word.slice(0, -1) : word)));
+const shareOf = (a, b) => {
+  const both = [...a].filter((word) => b.has(word)).length;
+  return both / (a.size + b.size - both || 1);
+};
+const CODE_NAME = /\b(?:[a-z][a-z0-9]*[A-Z][a-z0-9]+\w*|[\w-]+(?:\.[\w-]+)*\.(?:tsx?|jsx?|mjs))\b/gu;
+const REPRO_FILE = /[\w./-]+\.(?:test|spec)\.[a-z]+|[\w./-]+\.log\b/gu;
+const WRITTEN_FILE = /(?:^|\/)[^/.][^/]*\.[a-z0-9]+$/iu;
+const RARE = 3;
+const TITLE_SHARE = 0.3;
+const TOPIC_SHARE = 0.5;
+const KINDS_TO_PAIR = 2;
+
+const judgedApart = (task, other, tasks) => task.apart.some((id) => follow(id, tasks)?.id === other.id) || other.apart.some((id) => follow(id, tasks)?.id === task.id);
+
+const isBookkeeping = (path, plans) => path.startsWith('.changeset/') || path === plans || path.startsWith(`${plans}/`);
+
+export function groupsOf(tasks, plans = 'docs/plans') {
+  const open = [...tasks.values()].filter(isOpen).sort(byOrder);
+  const facts = new Map(
+    open.map((task) => [
+      task.id,
+      {
+        title: wordsOf(task.title),
+        topic: wordsOf(task.topic ?? ''),
+        repro: new Set(task.repro?.match(REPRO_FILE) ?? []),
+        reproNames: new Set((task.repro?.match(REPRO_FILE) ?? []).map((file) => basename(file))),
+        area: new Set([...task.writes.filter((path) => WRITTEN_FILE.test(path) && !isBookkeeping(path, plans)), ...([...task.findings, ...task.covers.flatMap((entry) => entry.findings)].join(' ').match(CODE_NAME) ?? [])]),
+      },
+    ]),
+  );
+  const named = new Map();
+  for (const { area } of facts.values()) for (const key of area) named.set(key, (named.get(key) ?? 0) + 1);
+  const waitsOn = (task, other) =>
+    task.waits.some((wait) => {
+      const target = wait.match(WAIT)?.[2];
+      return target && follow(target, tasks)?.id === other.id;
+    });
+  const links = [];
+  for (const [at, a] of open.entries()) {
+    for (const b of open.slice(at + 1)) {
+      if (waitsOn(a, b) || waitsOn(b, a) || judgedApart(a, b, tasks)) continue;
+      const one = facts.get(a.id);
+      const two = facts.get(b.id);
+      const kinds = [];
+      if (shareOf(one.title, two.title) >= TITLE_SHARE || (one.topic.size > 0 && shareOf(one.topic, two.topic) >= TOPIC_SHARE)) kinds.push('problem');
+      const failure = [...a.owns.filter((check) => b.owns.includes(check)), ...[...one.repro].filter((file) => two.repro.has(file))];
+      if (failure.length > 0) kinds.push(`failure (${failure.join(', ')})`);
+      const area = [...one.area].filter((key) => two.area.has(key) && (named.get(key) <= RARE || (a.writes.includes(key) && b.writes.includes(key))) && !one.reproNames.has(basename(key)) && !two.reproNames.has(basename(key)));
+      if (area.length > 0) kinds.push(`fix area (${area.slice(0, 3).join(', ')})`);
+      if (kinds.length >= KINDS_TO_PAIR) links.push({ a, b, kinds });
+    }
+  }
+  const root = new Map(open.map((task) => [task.id, task.id]));
+  const rootOf = (id) => (root.get(id) === id ? id : rootOf(root.get(id)));
+  for (const { a, b } of links) root.set(rootOf(b.id), rootOf(a.id));
+  const groups = new Map();
+  for (const link of links) {
+    const group = groups.get(rootOf(link.a.id)) ?? { members: new Map(), links: [] };
+    group.members.set(link.a.id, link.a).set(link.b.id, link.b);
+    group.links.push(link);
+    groups.set(rootOf(link.a.id), group);
+  }
+  return [...groups.values()].map((group) => ({ members: [...group.members.values()].sort(byOrder), links: group.links })).sort((x, y) => byOrder(x.members[0], y.members[0]));
+}
+
+export function renderGroups(groups, ledger) {
+  if (groups.length === 0) return `No two open tasks in ${ledger} share two kinds of evidence, so no group needs judging.`;
+  const out = [
+    `${groups.length} ${groups.length === 1 ? 'group' : 'groups'} of open tasks in ${ledger} that may answer one question. Judge each pair as chips.md's Groups bullet says: dismissed dup when they share two kinds of evidence and one fix removes both, and otherwise apart with from:, then a task: wait when an offered task needs the other's result or one fix removes both.`,
+  ];
+  for (const { members, links } of groups) {
+    out.push('', ...links.map(({ a, b, kinds }) => `  ${a.id} and ${b.id}: ${kinds.join('; ')}`), ...members.map((task) => line(task, `  ${task.status === 'started' ? 'started' : task.card ? `card ${task.card}` : 'no card'}`)));
+  }
+  return out.join('\n');
 }
 
 export function startedOverlaps(tasks) {
@@ -876,7 +984,7 @@ export function board(tasks, git, here = null, { transcript = null, all = false,
       };
     });
   const passes = [
-    ['withdrawal', withdrawals],
+    ['withdrawal', here === null ? [] : withdrawals],
     ['ledger', merge ? [merge, ...rows.filter((item) => !item.ids.some((id) => merge.ids.includes(id)))] : rows],
     ['card', cards],
   ];
@@ -919,9 +1027,18 @@ const rank = (task) => {
   return at === -1 ? PRIORITIES.length : at;
 };
 
+const milestoneClassOf = ({ reviewScope, regression }) => {
+  const experimental = projectConfig().triage?.experimental;
+  if (!experimental || !reviewScope || reviewScope === 'none') return null;
+  if (regression.length > 0) return 'regression';
+  return experimental.includes(reviewScope) ? 'experimental' : 'new';
+};
+const MILESTONE_RANK = { regression: 0, new: 1, experimental: 2 };
+const milestoneRank = (task) => MILESTONE_RANK[milestoneClassOf(task) ?? 'new'];
+
 const PUBLIC_ISSUE = /(?<![&\w])[\w.-]*#\d+\b|:\/\/\S+\/issues\/\d+/u;
 const issueRank = (task) => (PUBLIC_ISSUE.test(task.repro ?? '') ? 0 : 1);
-const byPriority = (a, b) => rank(a) - rank(b) || issueRank(a) - issueRank(b) || byOrder(a, b);
+const byPriority = (a, b) => rank(a) - rank(b) || milestoneRank(a) - milestoneRank(b) || issueRank(a) - issueRank(b) || byOrder(a, b);
 
 function shipOffers(items, tasks, open) {
   const served = new Set(open.map((task) => task.ship).filter(Boolean));
@@ -958,7 +1075,7 @@ function mergeItem(offered, tasks, git) {
     for (const wait of task.waits) {
       const target = wait.match(WAIT)?.[2];
       const keeper = target && follow(target, tasks);
-      if (!keeper || keeper.status !== 'offered' || keeper.card || keeper.topic !== task.topic || waitBlocker(wait, task, tasks, git)?.stuck) continue;
+      if (!keeper || keeper.status !== 'offered' || keeper.card || keeper.topic !== task.topic || judgedApart(task, keeper, tasks) || waitBlocker(wait, task, tasks, git)?.stuck) continue;
       const cells = ['chip', task.decision, 'its card is gone, so it joins the task it waited on', '', `dismissed dup ${keeper.id}`];
       if (chipRowProblems(cells, tasks, 'merge').length === 0 && newChipRowProblems(cells, tasks, 'merge', git).length === 0) {
         return { kind: 'merge', ids: [task.id, keeper.id], text: `merge ${task.id} into ${keeper.id}: ${keeper.id} has no card now, so log ${task.id} dismissed dup ${keeper.id}` };
@@ -973,7 +1090,7 @@ const sharesWith = (task, open) => {
   return ids.length > 5 ? [...ids.slice(0, 5), `${ids.length - 5} more`] : ids;
 };
 
-const line = (task, extra = '') => `  ${task.id}  ${displayTitle(task)}${task.topic ? `  [${task.topic}${task.kind === 'decide' ? ', decide' : ''}]` : ''}${task.owns.length ? `  owns ${task.owns.join(', ')}` : ''}${extra}`;
+const line = (task, extra = '') => `  ${task.id}  ${displayTitle(task)}${task.topic ? `  [${task.topic}${task.kind === 'decide' ? ', decide' : ''}]` : ''}${milestoneClassOf(task) ? `  ${milestoneClassOf(task)}` : ''}${task.owns.length ? `  owns ${task.owns.join(', ')}` : ''}${extra}`;
 
 export function renderBoard(view, ledger, max = null) {
   if (view.open.length === 0 && view.lost.length === 0 && view.owed.length === 0) return `No open suggested tasks in ${ledger}.`;
@@ -1068,6 +1185,7 @@ function brief(task, ledger, max, tasks, codex, state) {
   const patch = resolve(root, artifacts, 'chips', `${task.id}.patch`);
   const reviewed = task.waits.map((wait) => follow(wait.match(WAIT)?.[2] ?? '', tasks)).filter(Boolean);
   const priority = priorityOf(task);
+  const milestone = milestoneClassOf(task);
   return [
     `${priority ? `[${priority}] ` : ''}${displayTitle(task)}`,
     '',
@@ -1075,6 +1193,8 @@ function brief(task, ledger, max, tasks, codex, state) {
     ...(task.repro ? [`Repro: ${task.repro}`] : []),
     ...(task.regressed ? [`Regressed in: ${task.regressed}`] : []),
     ...(task.ship ? [`Serves ship item: ${task.ship}`] : []),
+    ...(task.reviewScope ? [`Review scope: ${task.reviewScope}.${milestone ? ` Milestone: ${milestone}.` : ''}`] : []),
+    ...(task.regression.length ? [`Regression: it still works on ${task.regression.join(', ')}`] : []),
     'Findings:',
     ...task.findings.map((finding) => `- ${finding}`),
     ...(task.covers.length ? ['Also covers:', ...task.covers.flatMap((entry) => [`- ${entry.id} ${entry.title}`, ...entry.findings.map((finding) => `  - ${finding}`)])] : []),
@@ -1098,7 +1218,7 @@ function brief(task, ledger, max, tasks, codex, state) {
       ? `Work in your own worktree, and land the task yourself from it with node .agents/pstack/land.mjs, as ${root}/.agents/pstack/rules/land.md says. Write your run directory under ${root}/${artifacts} by absolute path, so removing your worktree deletes nothing your rows cite, and write its files with the shell, such as a quoted heredoc, because the Claude Code desktop app refuses a worktree session's Edit or Write tool call in the main checkout, even where guard.mjs allows it. Once land.mjs has pushed, log landed with commit: <the hash it pushed>, so the lead's report links it; when it opens a PR instead, log nothing more and name the PR in your last report, because a later sweep logs landed once origin/${branch()} holds the change. Last, stop each server you started. Merge each run directory that you or a tool, such as a page render, wrote under ${artifacts} in your worktree into the same path in ${root} without overwriting, with mkdir -p <that path> && cp -Rn <your run directory>/. <that path>/, because removing the worktree deletes ignored files. Then run node ${root}/.agents/skills/cleanup/scripts/scan.mjs --landed <your worktree's absolute path>. When it exits 0, every change of yours is committed where a remote reaches it or in the checkout, and every file under ${artifacts} is in the checkout; other ignored files are build output or copies, so remove your worktree as your final command with git -C ${root} worktree remove --force <your worktree's absolute path> && git -C ${root} worktree list, and check that its list no longer names your worktree. Your next command may fail once because its directory is gone, so use absolute paths after it. When it exits otherwise or the script is missing, keep the worktree and tell the owner what it printed. In every report, name each commit by its subject in the text, and end the report with its links, local file links first and then each commit as 📦 [<subject>](https://diffshub.com/<owner>/<repo>/commit/<sha>), with the owner and repository read from ${root}'s origin remote; a commit in another repository puts its name first, as 📦 [<repo>: <subject>](...).`
       : `When you work in your own worktree and your project's rules bring your work to ${ref} as a patch rather than through your own branch, you may commit in your worktree as you go. When you finish, land it yourself: run git add -A in your worktree and save git diff --cached <base>, where <base> is what git merge-base HEAD ${ref} prints, which holds your commits, your uncommitted changes and new files, as ${patch}, run git -C ${root} apply --check --whitespace=error-all ${patch}, then git -C ${root} apply ${patch}, which changes only the checkout's working tree and leaves its index alone. When the check fails, commit your work, copy the checkout's copy of each refused file into your worktree and commit those copies unchanged, then redo your change on them, rerun your checks and commit again. Save the patch again as git diff <base> <copies commit> -- . ':(exclude)<refused file>', with one exclude for each refused file, followed by git diff <copies commit> HEAD, because a diff from <base> would also carry the checkout's own edits to those files, which the checkout already has. Then deliver the patch's paths from ${root} as your project's Delivery rule says, because an applied patch ships nothing: where that rule commits, commit only those paths there; where the owner owns commits, leave them in the working tree. Merge each run directory you wrote under ${artifacts} in your worktree into the same path in ${root} without overwriting, with mkdir -p <that path> && cp -Rn <your run directory>/. <that path>/, because append refuses a row whose evidence cites a path the checkout lacks, and removing the worktree deletes ignored files your logged rows cite. Then log landed with patch: ${patch}, adding commit: <hash>, <hash> for each commit you made, so the lead's report links them. Last, stop each server you started. Then run node ${root}/.agents/skills/cleanup/scripts/scan.mjs --landed <your worktree's absolute path>. When it exits 0, every change and ignored file of yours is committed, recreated by an install or build, or in the checkout, so remove your worktree as your final command with git -C ${root} worktree remove --force <your worktree's absolute path> && git -C ${root} worktree list, and check that its list no longer names your worktree. Your next command may fail once because its directory is gone, so use absolute paths after it. When it exits otherwise or the script is missing, keep the worktree and tell the owner what it printed. When you work in the checkout itself, or your project's rules deliver through your own branch instead, land the change as your project's Delivery rule says. When that branch is in your own worktree, merge your run directories as above first. Then log landed, with commit: for each commit you made. When that branch is in your own worktree, then stop each server, run scan.mjs --landed and remove the worktree, as above. In every report, name each commit by its subject in the text, and end the report with its links, local file links first and then each commit as 📦 [<subject>](https://diffshub.com/<owner>/<repo>/commit/<sha>), with the owner and repository read from ${root}'s origin remote; a commit in another repository puts its name first, as 📦 [<repo>: <subject>](...).`,
     '',
-    `Suggested task ${task.id} in ${ledger} of the project checkout ${root}. First detach this session from the session that offered your card or started it, such as with Claude Code desktop's detach_session with self, because while it stays linked each of your turn ends wakes that session; when the runtime refuses or lacks the detach, carry on. This prompt can be older than the task, so next run ${run} chips brief ${task.id} and work from what it prints. ${onTrunk ? 'Run every ledger command as written from your own worktree, where you make your edits and run your checks; the helper writes the live ledger in the main checkout.' : `Run every ledger command from ${root} that way, even when your session opened in its own worktree, because the live ledger is there; make your edits and run your checks in your own worktree.`} This prompt holds all of the chips law your task needs, so skip .agents/pstack/rules/chips.md and the chips skill unless you offer, card or drop another task. Each row you log on this task is ${run} append ${ledger} chip ${shellQuoted(task.decision)} "<why>" "<tokens>" <result>, with that decision unchanged and each field in "<tokens>" ended by ";" before the next, such as "writes: a.ts, b.ts; session: <id>". When the State: line that chips brief prints says neither Ready nor Started, tell the owner what it says and stop. Started means the lead already logged your start. Before you write any file, log a started row with the tokens writes: naming each path the Writes line above lacks and session: naming this session's id where the runtime's session tool gives one, then run ${run} chips brief ${task.id} again and work from what it prints, because the task can gain work until your started row. Before you write a path for your task that neither the brief nor a started row lists, log another started row with it${onTrunk ? '' : '; when append refuses it because another started task writes that path outside the checkout, leave the path alone and tell the owner'}. When the session tool shows this session above the brief's Effort:, say so to the owner in your first reply, because a session cannot lower its own effort. Once your task has landed or its PR is open, and before you remove your worktree, fix each piece of workflow friction you hit and have not fixed yet, such as a helper that hid a result or a file you could not reach, as the Improve the workflow mid-task rule says, each fix in a commit of its own: project tooling lands the way your task did, and a shared rule or helper goes through the sync-pstack skill's Lesson mode. Your last report names each piece of friction with the commit that settled it, or with what you could not fix and why, so the lead fixes the rest. Offer a suggested task only for a new P0 or P1 finding, such as a product bug outside your task, never for friction. When your task is a verdict run, you may also offer a P2 or P3 task for an item your verdict judges, with via: verdict. Any other finding you offer must still rank P0 or P1. When your task is a babysit run, you may also offer a P2 or P3 finding other than friction, with via: babysit. A measurement the Time budget rule sends to a task goes with via: time. Each offer carries session: naming this session's id, which makes it yours, and you card it after your friction fixes and before you run scan.mjs --landed, as the chips skill's Close says. An offer that names ship: has no owner, because no session owns a ship-list task, but your Close still cards it like your other offers. Send the lead, the session that offered your card or started your session, no message, because its run does not wait on your task; your ledger rows, your session title and your last report carry the outcome to its next /chips. Once the task has landed or its PR is open, where your runtime can rename this session, title your session 👀 <name>, with no count, in the same message as your last other call, the worktree removal when you remove it, and after that call, as ${root}/.agents/pstack/rules/title.md says, so the owner's sidebar shows which sessions hold landed work to review and none still running. When a later message has you work again, title the session with your current stage before your first step. Whenever you stop on something only the owner can settle, title your session with the waiting state the title rule gives, so the owner's sidebar shows the stop. A question only the lead could answer does not stop you. Take its most reversible answer, as the Autopilot rule says, and name that pick in your report with the word that reverses it.`,
+    `Suggested task ${task.id} in ${ledger} of the project checkout ${root}. First detach this session from the session that offered your card or started it, such as with Claude Code desktop's detach_session with self, because while it stays linked each of your turn ends wakes that session; when the runtime refuses or lacks the detach, carry on. This prompt can be older than the task, so next run ${run} chips brief ${task.id} and work from what it prints. ${onTrunk ? 'Run every ledger command as written from your own worktree, where you make your edits and run your checks; the helper writes the live ledger in the main checkout.' : `Run every ledger command from ${root} that way, even when your session opened in its own worktree, because the live ledger is there; make your edits and run your checks in your own worktree.`} This prompt holds all of the chips law your task needs, so skip .agents/pstack/rules/chips.md and the chips skill unless you offer, card or drop another task. Each row you log on this task is ${run} append ${ledger} chip ${shellQuoted(task.decision)} "<why>" "<tokens>" <result>, with that decision unchanged and each field in "<tokens>" ended by ";" before the next, such as "writes: a.ts, b.ts; session: <id>". When the State: line that chips brief prints says neither Ready nor Started, tell the owner what it says and stop. Started means the lead already logged your start. Before you write any file, log a started row with the tokens writes: naming each path the Writes line above lacks and session: naming this session's id where the runtime's session tool gives one, then run ${run} chips brief ${task.id} again and work from what it prints, because the task can gain work until your started row. Before you write a path for your task that neither the brief nor a started row lists, log another started row with it${onTrunk ? '' : '; when append refuses it because another started task writes that path outside the checkout, leave the path alone and tell the owner'}. When the session tool shows this session above the brief's Effort:, say so to the owner in your first reply, because a session cannot lower its own effort. Once your task has landed or its PR is open, and before you remove your worktree, fix each piece of workflow friction you hit and have not fixed yet, such as a helper that hid a result or a file you could not reach, as the Improve the workflow mid-task rule says, each fix in a commit of its own: project tooling lands the way your task did, and a shared rule or helper goes through the sync-pstack skill's Lesson mode. Your last report names each piece of friction with the commit that settled it, or with what you could not fix and why, so the lead fixes the rest. Offer a suggested task only for a new P0 or P1 finding, such as a product bug outside your task, never for friction. When your task is a verdict run, you may also offer a P2 or P3 task for an item your verdict judges, with via: verdict. Any other finding you offer must still rank P0 or P1. When your task is a babysit run, you may also offer a P2 or P3 finding other than friction, with via: babysit. A measurement the Time budget rule sends to a task goes with via: time, and the design question that two open critical panel findings require goes with via: panel. Each offer carries session: naming this session's id, which makes it yours, and you card it after your friction fixes and before you run scan.mjs --landed, as the chips skill's Close says. An offer that names ship: has no owner, because no session owns a ship-list task, but your Close still cards it like your other offers. Send the lead, the session that offered your card or started your session, no message, because its run does not wait on your task; your ledger rows, your session title and your last report carry the outcome to its next /chips. Once the task has landed or its PR is open, where your runtime can rename this session, title your session 👀 <name>, with no count, in the same message as your last other call, the worktree removal when you remove it, and after that call, as ${root}/.agents/pstack/rules/title.md says, so the owner's sidebar shows which sessions hold landed work to review and none still running. When a later message has you work again, title the session with your current stage before your first step. Whenever you stop on something only the owner can settle, title your session with the waiting state the title rule gives, so the owner's sidebar shows the stop. A question only the lead could answer does not stop you. Take its most reversible answer, as the Autopilot rule says, and name that pick in your report with the word that reverses it.`,
   ].join('\n');
 }
 

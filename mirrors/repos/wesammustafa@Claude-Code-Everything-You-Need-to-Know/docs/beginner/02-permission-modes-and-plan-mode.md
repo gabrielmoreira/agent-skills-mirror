@@ -9,7 +9,7 @@ By the end of this lesson you can pick a permission mode for a task, decide whet
 ## You need
 
 - Your copy of the practice template, cloned, with no uncommitted changes, and Node.js LTS for its checks (a Codespace on your copy has both).
-- A second terminal open in the same folder, for git.
+- A second terminal open in your copy's `project/` folder, for git.
 - Usage: light.
 
 > [!NOTE]
@@ -24,11 +24,11 @@ A [permission mode](https://code.claude.com/docs/en/permission-modes) decides wh
 - **Manual**, `⏸ manual mode on`: Claude asks before edits and most commands. For sensitive work, or whenever approving each step is the point.
 - **Accept edits**, `⏵⏵ accept edits on`: file edits and common file commands, such as `mkdir`, `mv` and `rm`, run without asking inside your working directory ([Auto-approve file edits](https://code.claude.com/docs/en/permission-modes#auto-approve-file-edits-with-acceptedits-mode)). For code you'll review afterwards.
 
-Plan when you're unsure of the approach, the change touches several files, or you don't know the code. If you could describe the diff in one sentence, such as a typo fix, skip the plan ([Best practices](https://code.claude.com/docs/en/best-practices#explore-first-then-plan-then-code)). When you do plan, approve only a plan you would merge.
+Plan when you're unsure of the approach, the change touches several files, or you don't know the code. If you could describe the diff in one sentence, such as a typo fix, skip the plan ([Best practices](https://code.claude.com/docs/en/best-practices#explore-first-then-plan-then-code)). A new key in `linkcheck.json` needs a plan too: the parser and its tests change with it, in code you haven't read yet. When you do plan, approve only a plan you would merge.
 
 ## Worked example
 
-1. Start `claude` in your practice copy. The status bar usually reads `⏵⏵ auto mode on` ([Which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)).
+1. Start `claude` in your copy's `project/` folder. The status bar usually reads `⏵⏵ auto mode on` ([Which mode a session starts in](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in)). The header above the prompt shows the folder: it should be your copy's `project/` folder ([Quickstart](https://code.claude.com/docs/en/quickstart)). If it isn't, type `/exit`, go to your copy's `project/` folder and start `claude` again.
 2. The change makes `parseConfig` in `src/config.js` reject an empty file, with a test: two files, in code you haven't read, so plan it. Press `Shift+Tab` until the status bar reads `⏸ plan mode on`. Each press moves to the next mode, and the status bar names it.
 3. Ask for the change:
 
@@ -55,7 +55,9 @@ Plan when you're unsure of the approach, the change touches several files, or yo
    - The test command, `npm test`: **Yes**, or **Yes, and don't ask again** if you would rather not be asked about it again. That saves a rule for this repository in `.claude/settings.local.json` ([Configure permissions](https://code.claude.com/docs/en/permissions#permission-system)), so keep it for commands whose effects you know.
    - A command that does more than the plan needs, such as `npm test && git add -A` ([git add](https://git-scm.com/docs/git-add)): **No**. To say what to do instead, move the highlight to **No**, press `Tab`, type it and press `Enter` ([Add a comment](https://code.claude.com/docs/en/permissions#add-a-comment-when-you-answer-a-permission-prompt)).
 
-   Answer with the arrow keys and `Enter`. Skip **Yes, and switch to auto mode**, which ends the step-by-step review ([Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)), and don't press `Shift+Tab` here: on an edit request it picks the choice that allows edits for the rest of the session, when the request offers one ([Interactive mode](https://code.claude.com/docs/en/interactive-mode#general-controls)).
+   Answer with the arrow keys and `Enter`. Skip **Yes, and switch to auto mode**, which ends the step-by-step review ([Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)). Also skip any choice that allows edits for the rest of the session, which an edit request may offer, and don't press `Shift+Tab` here: on an edit request it picks that choice ([Interactive mode](https://code.claude.com/docs/en/interactive-mode#general-controls)).
+
+   After Claude edits a file, Claude Code may offer to install a code intelligence plugin in a dialog titled **LSP plugin recommendation** ([Code intelligence plugins](https://code.claude.com/docs/en/plugins/code-intelligence#accept-or-dismiss-the-recommendation-dialog)). This lesson doesn't need one: choose **No, not now**, and the dialog closes.
 8. When Claude is done, run `git status` in the other terminal again. It lists `src/config.js` and `test/config.test.js`, the two files the plan named. If it lists another file, look in the session for the edit or command that wrote it.
 9. You reviewed each edit as it landed, so commit the example's change, and Your turn starts from a clean tree ([git commit](https://git-scm.com/docs/git-commit)):
 
@@ -65,10 +67,10 @@ Plan when you're unsure of the approach, the change touches several files, or yo
 
 ## Your turn
 
-Work a teammate's ticket so that nothing ships you'd reject in review. The ticket is `practice/b-2/ticket.md` in your practice copy.
+Work a teammate's ticket so that nothing ships you'd reject in review. The ticket is `practice/b-2/ticket.md` in your copy's `project/` folder.
 
 1. Read the ticket yourself first.
-2. Start a fresh conversation for the new task: type `/exit`, then start `claude` again. To enter plan mode and start the task in one step, type `/plan` before it ([Commands](https://code.claude.com/docs/en/commands)):
+2. Start a fresh conversation for the new task: type `/exit`, then start `claude` again. Press `Shift+Tab` until the status bar reads `⏸ plan mode on`, then ask for the task: `Work the ticket in practice/b-2/ticket.md`. To enter plan mode and start the task in one step, type `/plan` before it ([Commands](https://code.claude.com/docs/en/commands)):
 
    ```text
    /plan Work the ticket in practice/b-2/ticket.md
@@ -76,7 +78,7 @@ Work a teammate's ticket so that nothing ships you'd reject in review. The ticke
 
    Check that the status bar reads `⏸ plan mode on`, and answer any question Claude asks.
 3. Read the plan as its reviewer. For each change, ask whether you would merge it as part of this ticket. If the plan includes a request you wouldn't merge, use the plan menu to send it back, in your own words, with your reason. If the plan already leaves one out, read Claude's reason and decide whether you agree. Revise until the plan is one you would approve.
-4. While the final plan is on screen, save what git sees, and the files the plan says it will change, in the other terminal. Write each path the way `git status` shows it: relative to the repository root, with forward slashes, one per line. For a plan that changed `src/links.js` and `test/links.test.js`, it would be:
+4. While the final plan is on screen, save the output of `git status --porcelain` to `.practice/b-2-before.txt`, in the other terminal, creating the `.practice` folder first if it isn't there. Then save the files the plan says it will change to `.practice/b-2-plan.txt`. Write each path relative to `project/`, with forward slashes, one per line. In a Practice copy, `git status --porcelain` prints each path from the root of the repository, the folder above `project/`, such as `project/src/links.js`: the check accepts either form. For a plan that changed `src/links.js` and `test/links.test.js`, the plan file lists those two paths, and the commands are:
 
    ```bash
    mkdir -p .practice
@@ -85,7 +87,7 @@ Work a teammate's ticket so that nothing ships you'd reject in review. The ticke
    ```
 
    **Windows:** `New-Item -ItemType Directory -Force .practice` replaces the `mkdir` line, and `'src/links.js','test/links.test.js' | Set-Content .practice/b-2-plan.txt` replaces the `printf` line.
-5. Approve the plan you reviewed. After a plan you trust, **Yes, and use auto mode** is the everyday choice; if Claude Code asks before an action, read it before you answer.
+5. Approve the plan you reviewed. After a plan you trust, **Yes, and use auto mode** is the everyday choice; if Claude Code asks before an action, read it before you answer. If the **LSP plugin recommendation** dialog appears, choose **No, not now**, as in the Worked example.
 6. When Claude is done, save what git sees now:
 
    ```bash
@@ -114,11 +116,11 @@ If `.practice/b-2-before.txt` lists files, the tree wasn't clean when Your turn 
 ## Go further
 
 - While a plan is on screen, press `Ctrl+G` to open it in your default text editor and edit it before Claude proceeds ([Review and approve a plan](https://code.claude.com/docs/en/permission-modes#review-and-approve-a-plan)).
-- When auto mode blocks an action, `/permissions` lists it under **Recently denied**, where you can press `r` to retry it with your approval ([When auto mode falls back](https://code.claude.com/docs/en/permission-modes#when-auto-mode-falls-back)).
+- When auto mode blocks an action, `/permissions` lists it under the **Recently blocked** tab ([When auto mode falls back](https://code.claude.com/docs/en/permission-modes#when-auto-mode-falls-back)). From v2.1.314, the tab has that name; before that, it was called **Recently denied** ([CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md#21314)). On that tab you can press `r` to approve the action and let Claude retry it ([Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)).
 - [Analyze before you edit with plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode): what plan mode lets Claude run while it plans.
 
 ---
 
-<sub>Sources: [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Best practices](https://code.claude.com/docs/en/best-practices) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Commands](https://code.claude.com/docs/en/commands) · [Tools reference](https://code.claude.com/docs/en/tools-reference) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) · [git status](https://git-scm.com/docs/git-status) · [git add](https://git-scm.com/docs/git-add) · [git commit](https://git-scm.com/docs/git-commit)</sub>
+<sub>Sources: [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Best practices](https://code.claude.com/docs/en/best-practices) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Commands](https://code.claude.com/docs/en/commands) · [Quickstart](https://code.claude.com/docs/en/quickstart) · [Tools reference](https://code.claude.com/docs/en/tools-reference) · [Code intelligence plugins](https://code.claude.com/docs/en/plugins/code-intelligence) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Configure auto mode](https://code.claude.com/docs/en/auto-mode-config) · [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) · [git status](https://git-scm.com/docs/git-status) · [git add](https://git-scm.com/docs/git-add) · [git commit](https://git-scm.com/docs/git-commit)</sub>
 
-<sub>← [Install, sign in and look around](01-install-and-look-around.md) · [Beginner index](README.md) · [Your first change, from request to commit](03-first-change.md) → · Topic: [Permissions and safety](../topics/permissions-and-safety.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Everything-You-Need-to-Know/issues/new?template=lesson-feedback.yml&lesson=b-2)</sub>
+<sub>← [Install, sign in and look around](01-install-and-look-around.md) · [Beginner index](README.md) · [Your first change, from request to commit](03-first-change.md) → · Topic: [Permissions and safety](../topics/permissions-and-safety.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=b-2)</sub>
