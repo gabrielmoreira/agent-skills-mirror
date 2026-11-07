@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 11 followed patterns, 33 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 12 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `multica-ai/multica` — 26 default patterns, 11 followed patterns, 33
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 33 |
+| Followed pats | 12 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 11 followed patterns, 33
 - `CONTRIBUTING.md`
 - `.github/RELEASING.md`
 - `README.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
 - `VISION.md`
 - `SELF_HOSTING.md`
 - `README.zh.md`
@@ -82,26 +83,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`examples/plugins/schedule-pulse/README.md`](examples/plugins/schedule-pulse/README.md) |
 | 12 | ✓ | [`examples/plugins/triage-notify/README.md`](examples/plugins/triage-notify/README.md) |
 | 13 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
-| 14 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
-| 15 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
-| 16 | ✓ | [`server/cmd/qoder-runtime/README.md`](server/cmd/qoder-runtime/README.md) |
-| 17 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
-| 18 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
-| 19 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
-| 20 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
-| 21 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
-| 22 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
-| 23 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 24 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
-| 25 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
-| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`README.ja.md`](README.ja.md) |
-| 28 | → | [`README.md`](README.md) |
-| 29 | → | [`README.zh.md`](README.zh.md) |
-| 30 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
-| 31 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
-| 32 | → | [`VISION.md`](VISION.md) |
-| 33 | → | [`VISION.zh.md`](VISION.zh.md) |
+| 14 | ✓ | [`scripts/brand/README.md`](scripts/brand/README.md) |
+| 15 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
+| 16 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
+| 17 | ✓ | [`server/cmd/qoder-runtime/README.md`](server/cmd/qoder-runtime/README.md) |
+| 18 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
+| 19 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
+| 20 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
+| 21 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
+| 22 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
+| 23 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
+| 24 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 25 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 26 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
+| 27 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
+| 28 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 29 | → | [`README.ja.md`](README.ja.md) |
+| 30 | → | [`README.md`](README.md) |
+| 31 | → | [`README.zh.md`](README.zh.md) |
+| 32 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
+| 33 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
+| 34 | → | [`VISION.md`](VISION.md) |
+| 35 | → | [`VISION.zh.md`](VISION.zh.md) |
 
 ---
 

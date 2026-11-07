@@ -1020,7 +1020,7 @@ sets the defaults that keep it from coming back.
 - **Detect.** One program fetches each crew thread (`tools.thread.get`, with its transcript) to files, then
   `gstack-runaway scan --dir <dir>` prints a `RUNAWAY:` line per thread and a `FLAG:` line per limit crossed:
   own tokens past 500M or active past 3 days (rotate), a subagent past 100M (stop), empty wakes past 25% of the
-  last 40 turns, and review rounds past 2 per PR. Captains are reported, never rotated.
+  last 40 turns (warm-wait check-ins are left out), and review rounds past 2 per PR. Captains are reported, never rotated.
 - **Stop.** A live subagent past 100M is stopped with its reason. A thread is rotated at a clean point through
   a handoff file and a successor brief (`runaway-stopper/templates/`), then archived by its own Captain. A thread
   mid-/ship or mid-merge gets `DEFER:` and nothing happens until that work finishes.
@@ -1087,6 +1087,8 @@ Claude: UBICLOUD_API_KEY: set; UBI_OWNER=lane7
 This is my **Chief Security Officer**.
 
 Run `/cso` for a bounded static investigation with an application model, challenged findings, and explicit coverage; static assessment remains available when no runtime or scanner catalog profile is qualified. With matching qualified profiles, `/cso --comprehensive` can prepare Node/Bun, Python, and Rails applications in contained local runtimes, reproduce a defect, and retain a reviewable repair candidate without changing the working branch. An out-of-process witness can authenticate the external boot, legitimate-control, and security assertions and issue a `runtime_tested` bundle. Project-test completion remains `self_reported` because target code shares that process and can forge reporter output or terminate the runner; recorded command, count, exit, and output hashes are diagnostic evidence, not a target-independent completion witness. Every report shows assertion, test-completion, and review assurance separately. The `tested` state is reserved for a future target-independent witness and is not emitted today. `/cso --doctor`, `--resume`, `--replay`, and `--recheck` diagnose prerequisites, recover interrupted work, repeat recorded verification, and establish current-source closure from fresh evidence.
+
+Contained runtime and scanner execution needs Docker and a matching qualified profile. The runtime catalog qualifies ten images: Node 24.4.0, Bun 1.3.10, Python 3.13.4 with uv 0.8.0, Rails on Ruby 3.4.4, and PostgreSQL 17.2, each for linux/amd64 and linux/arm64. The scanner catalog qualifies twelve: gitleaks, OSV-Scanner, Schemathesis, Semgrep, Trivy and zizmor on both platforms. Without Docker, or where no profile matches (native Windows Docker, for example), `/cso` runs static assessment only.
 
 ```
 You:   /cso

@@ -1,0 +1,147 @@
+# Staleness — diffs proposed against a version that moved
+
+!!! note "One field of the bundle"
+    This is the `staleness` field of the [Policies bundle](policies.md); where a keyword argument exists it is a shortcut onto that field, and an explicit argument wins over a bundle default.
+
+
+*Module:* [`agentdescent.staleness`](https://github.com/ThinkFlowLab/agentdescent/blob/main/agentdescent/staleness.py)
+· *API:* [`StalenessPolicy`, `FullStaleness`, `GuardedStaleness`, `ReflectiveStaleness`, `get_policy`](api.md#staleness-policies)
+
+This is the problem parallel self-improvement has and serial self-improvement does
+not. A worker reads version 4, spends a minute on a rollout, and proposes a diff
+— but three other workers merged in the meantime and the head is now version 7.
+Is the proposal still good?
+
+```python
+eta = vv_staleness(head, base_version)     # 0 = fresh, larger = the world moved
+```
+
+Throwing every stale diff away wastes the expensive part of the run (the
+rollout). Accepting every one of them merges changes justified by a state that no
+longer exists. The policy is where you choose.
+
+```python
+evolve(tasks, reward, agent=agent, staleness_policy=get_policy("guarded"))
+```
+
+!!! warning "First, make sure the run *has* staleness"
+    A policy can only decide something if `eta` can be non-zero, and on the
+    **synchronous** path it cannot by default: `evolve()` takes a fresh snapshot
+    at the top of every round and every worker proposes against it, so `eta` is 0
+    by construction. Measured over an 8-round run, all 15 staleness decisions saw
+    `eta = 0` and returned ACCEPT — `full`, `guarded` and `reflective` produced
+    identical runs.
+
+    Two ways to have some:
+
+    | | knob | what it does |
+    |---|---|---|
+    | synchronous | `evolve(refresh_interval=N)` | a worker keeps its snapshot for N rounds, staggered by worker id |
+    | barrier-free | `async_evolve(async_ratio=N)` | a worker resyncs once the head is N versions ahead |
+
+    `refresh_interval` costs no extra ledger read — a worker either adopts the
+    snapshot the round already took, or keeps the older one it has.
+
+| policy | `eta == 0` | `0 < eta <= alpha` | `eta > alpha` |
+|---|---|---|---|
+| `full` | accept | accept | accept |
+| **`guarded`** (default) | accept | **rebase** + re-verify | discard |
+| `reflective` | accept | rebase | **rebase** — `alpha` is ignored |
+
+`full` is maximum throughput and the reference orchestrator's baseline. `guarded`
+is the AReaL bounded-staleness discipline expressed over diffs. `reflective` is
+FlashEvolve's top tier: every stale diff gets a replay on the current head, and is
+discarded only if the improvement no longer holds — the highest recovery of
+otherwise-wasted proposals, paid for in cheap-eval work.
+
+A **contract-breaking** diff is the exception in all three: once stale it is
+discarded rather than rebased, because a cross-contract rebase costs more than
+re-proposing.
+
+`alpha` is the tolerance, and the [aggregator](aggregator.md) picks it **by
+governance layer**, not by measured traffic:
+
+```python
+alpha_head = 5     # L1 -- a harness, a verifier: iterating fast, lag expected
+alpha_tail = 1     # L2 -- a local skill: a moved head more likely invalidates it
+```
+
+The config calls them *hot* and *cold*, which is the intent; the selector is
+`classify(artifact)`, which is the [one definition of the
+boundary](governance.md#the-l1l2-boundary-is-measured-not-declared). That
+substitution has bitten before: while the aggregator re-derived the layer with a
+different threshold, an artifact at 0.4 was L1 by governance and got the *cold*
+tolerance meant for an L2 skill.
+
+## The trade-off, measured
+
+Measured on the reference domain at `async_ratio=4`, where all three converge to
+1.000 ([the numbers](concepts.md#34-async_ratio-roll-flash-the-global-lag-budget)):
+
+| policy | rollouts | stale discarded | wall-clock |
+|---|---|---|---|
+| Full | ~8k | 0 | ~3.2s |
+| Reflective | ~7.8k | ~0.7k | ~3.3s |
+| Guarded | ~20k | ~17k | ~5.1s |
+
+Reproduce with
+[`examples/rq2_staleness.py`](https://github.com/ThinkFlowLab/agentdescent/blob/main/examples/rq2_staleness.py)
+and [`examples/run_async.py`](https://github.com/ThinkFlowLab/agentdescent/blob/main/examples/run_async.py).
+What the table says:
+
+* **Guarded discards more work than Reflective** — that is the claim under test,
+  and it holds regardless of machine speed.
+* **Reflective spends fewer rollouts** to reach the same accuracy, because a
+  rebased card is a rollout it did not have to repeat.
+* Recovering that work never leaves Reflective *behind* Guarded on final
+  accuracy.
+
+The counts are in `result.outcomes()` as `all-stale`, and in the async runtime's
+`AsyncStats.discarded_stale`.
+
+## `StaleAction` — the three outcomes
+
+```python
+class StaleAction(Enum):
+    ACCEPT   # merge it as proposed
+    REBASE   # cheap re-verification, then merge against the new head
+    DISCARD  # settle the evidence card back into the pool
+```
+
+`DISCARD` is not deletion. The [evidence card](data-model.md#evidencecard-the-gradient-metadata)
+goes back to the pool: the diff no longer applies, but the *observation* that
+justified it is still true, and the pool is what a later round draws on.
+
+## Writing your own
+
+```python
+from agentdescent import StaleAction
+
+class MyPolicy:
+    name = "patient"
+
+    def decide(self, eta: int, alpha: int, contract_breaking: bool) -> StaleAction:
+        if contract_breaking and eta > 0:
+            return StaleAction.DISCARD
+        return StaleAction.ACCEPT if eta == 0 else StaleAction.REBASE
+
+evolve(tasks, reward, agent=agent, staleness_policy=MyPolicy())
+```
+
+Anything with a `name` and `decide(eta, alpha, contract_breaking) -> StaleAction`
+works. `get_policy(name)` resolves the three built-ins, which is what the
+policy loop in `examples/run_async.py` iterates over.
+
+## Its relationship to `async_ratio`
+
+The [lag budget](async.md#async_ratio-the-lag-budget) bounds how far ahead the
+workers may run; the staleness policy decides what to do with whatever slips
+through anyway. They have to be set together:
+
+* tolerance too tight for the lag budget → everything is discarded, and
+  `result.outcomes()` fills with `all-stale` while nothing commits;
+* lag budget too tight → the workers idle at a barrier you were trying to remove.
+
+`result.forced_refreshes` is the symptom of the mismatch: cards arriving, nothing
+committing, workers forced to resync. A non-zero count means the two knobs
+disagree.

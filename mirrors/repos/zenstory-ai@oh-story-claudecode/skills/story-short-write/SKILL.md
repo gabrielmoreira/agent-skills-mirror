@@ -94,7 +94,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 进入正文写作前，完整读取 [references/workflow-draft.md](references/workflow-draft.md)，执行交付参数锁定、写前验收与逐场景写作；只做构思或精修时不加载。下面两段是写正文和精修共用的完成标准，只在这里写。
 
 **小节完整性流程**：
-1. **写作时**：每节围绕一个主问题推进；让风险、信息、关系、资源、决定、行动或读者理解至少发生一项可见变化。相关情节点可以由同一动作链或对话同时兑现，不为拆成多个“子事件”重复铺陈。
+1. **写作时**：每节围绕一个主问题推进；让风险、信息、关系、资源、决定、行动或读者理解至少发生一项具体变化。相关情节点可以由同一动作链或对话同时兑现，不为拆成多个“子事件”重复铺陈。
 2. **写完后**：对照 `小节大纲.md` 检查批准内容是否落地、因果与下一步是否读得懂、感知/反应是否提供新信息、埋下的东西后面有没有接上。
 3. **发现缺口时**：只补回原计划中漏掉的动作、证据、选择或后果；若本节已经完成职责，即使很短也不加任务卡点、对话、回忆或环境来凑长度。
 4. **发现冗余时**：删除不改变风险、信息、关系、资源、决定、行动或可信度的阻碍、复述与旁人反应；不把“有冲突”本身当成保留理由。
@@ -106,8 +106,8 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 - [ ] 节数 = 小节大纲规划节数（不得合并/省略；某节确实不需要独立存在，回构思改大纲，不在写正文时偷减）
 - [ ] 身体细节按叙事功能判断，不设次数上限；不对“手、眼、心”等单字计数改稿
 - [ ] 「像/好像/仿佛/如同」不成片堆叠；超过 10 处需逐处复核功能，不机械全删
-- [ ] `node scripts/check-ai-patterns.js --check --fail-on=blocking 正文.md` 无 blocking 命中；其余提示先通读，确属问题再改
-- [ ] `node scripts/check-degeneration.js --check 正文.md` 无 blocking 退化命中（复读/截断/工程词泄漏）
+- [ ] `node {skill 根}/scripts/check-ai-patterns.js --check --fail-on=blocking {短篇目录}/正文.md` 无 blocking 命中；其余提示先通读，确属问题再改
+- [ ] `node {skill 根}/scripts/check-degeneration.js --check {短篇目录}/正文.md` 无 blocking 退化命中（复读/截断/工程词泄漏）
 
 **不通过 → 回退补足，不得进入精修。**
 

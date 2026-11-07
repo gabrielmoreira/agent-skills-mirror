@@ -11,6 +11,7 @@ music: { bed: '<id>', offset: <s> },   // resolves to <skill>/assets/music/<id>.
 - Use the generated score (no `bed`, no `src`) only when the short needs its `music.breaks` drum drops or the `pause` tape stop, since a library bed does neither. Also use it when the creator asks for it.
 - Long-form (`format: 'youtube'`): `music: { chapters: [[at, '<id>'], ...] }` (SOURCE s) plays one bed per chapter, with a 2 s crossfade centred on each `at`. Without it, one bed runs the whole video.
 - Paid ads keep the stock `tension-ad.mp3` (see scene-library `music`).
+- Real songs added by the creator sit in the same folder (`mood: "song"` in `tracks.json`, kept by `music.mjs` when it re-renders the beds). Use one only when the creator asks for it, never as a default pick: it is someone else's music, so Instagram, TikTok or YouTube may mute the video or claim it. `credits-song`: « Credits Song for My Death » by vivivivivi, 92 BPM, 2 min 51, mastered at -16 LUFS, found on a capitain.ai reel (2026-10-28) that plays it from 1.6 s, so `offset: 1.6` gives the same start. `prateria`: « Prateria » by Mattia Turzo, 108 BPM, 3 min 09, mastered at -16 LUFS, found on a bradfordmarais reel (2026-10-28) that plays it from 3.1 s (`offset: 3.1`).
 - The beds stay calm under the voice on purpose. Busy AI-generated tracks were tested and rejected as too dynamic under a voice, so never swap in one of those.
 
 ## Pick by what the viewer should feel at the hook

@@ -4,6 +4,16 @@ See [AGENTS.md](AGENTS.md) for repository layout, commands and rules. The same i
 
 This repository is also a Claude Code plugin marketplace: `/plugin marketplace add ./` loads it locally for testing.
 
+## Agent skills
+
+### Issue tracker
+
+GitHub issues via `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context (`CONTEXT.md` + `docs/adr/`). See `docs/agents/domain.md`.
+
 ## graphify
 
 This project uses a local knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.

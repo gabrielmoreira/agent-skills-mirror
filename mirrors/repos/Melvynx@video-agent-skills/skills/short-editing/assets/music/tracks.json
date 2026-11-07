@@ -62,5 +62,23 @@
     "bpm": 104,
     "desc": "Arpège en 16e qui pompe, basse en octaves, lead lointain, ville de nuit",
     "dur": 154.7
+  },
+  {
+    "id": "credits-song",
+    "name": "Credits Song for My Death",
+    "mood": "song",
+    "bpm": 92,
+    "desc": "Vrai morceau de vivivivivi (pas généré), repéré sur un reel de capitain.ai le 2026-10-28",
+    "dur": 171.1,
+    "source": "https://www.youtube.com/watch?v=lrXADTo3AeI"
+  },
+  {
+    "id": "prateria",
+    "name": "Prateria",
+    "mood": "song",
+    "bpm": 108,
+    "desc": "Vrai morceau de Mattia Turzo (pas généré), repéré sur un reel de bradfordmarais le 2026-10-28",
+    "dur": 188.9,
+    "source": "https://www.youtube.com/watch?v=U8I43Pge_b8"
   }
 ]

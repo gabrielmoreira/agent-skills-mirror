@@ -138,6 +138,11 @@ Post-tool hooks put an out-of-scope write warning first in `additionalContext` (
 signal to stop and re-run `ai-coord start`, not as coordination state itself. It covers only visible file-mutating
 tools, not Bash.
 
+Post-tool checks share one literal-pathspec Git status inspection of the current claim and observed outside writes. Git
+dirt inspections disable optional index locks. Keep complete dirty-path sets for snapshot, arbitration, and release
+observations because partial sets would discard observations outside the inspected scope. Exclude directories and
+special files from blob-hash batches so one unhashable path cannot force individual retries for every regular file.
+
 Named drafts (`draft --name NAME` / `bundle draft --name NAME`, submitted with `start --draft NAME` or
 `bundle start --draft NAME`) have no owning session, are never counted as active work by any session, and outlive the
 session that created them. If never promoted, they expire after `DRAFT_TTL` (seven days). Bare `--draft` still means
@@ -330,15 +335,21 @@ Editing requires the matching `ai-coord start` or `ai-coord bundle start` form t
 `start`, `wait`, and `done` outcome also prints one concise next-step sentence to stderr while preserving the stdout TSV
 contract.
 
-`wait` checks the SQLite generation counter each second. It performs full inventory, Git, and arbitration refreshes when
-coordination state changes, every second while the work is blocked by dirty-settling, or otherwise every 20 seconds as a
-fallback. `MESSAGE`, `RELEASED`, and `TIMEOUT` are non-readiness wakes with exit 3. `UNKNOWN` exits 2. After any such
-wake, inspect the reported state and re-arm with the matching start form as needed.
+`wait` checks process liveness, messages, and the SQLite generation counter each second. It performs full inventory,
+Git, and arbitration refreshes immediately on entry and when coordination state changes. Otherwise, it refreshes at the
+remaining dirty-settling time, bounded to 1–20 seconds, or every 20 seconds without a settling deadline. Each grant
+still requires fresh provider inventory. Manual Git changes without a ledger generation change can take up to 20 seconds
+to be noticed. `MESSAGE`, `RELEASED`, and `TIMEOUT` are non-readiness wakes with exit 3. `UNKNOWN` exits 2. After any
+such wake, inspect the reported state and re-arm with the matching start form as needed.
 
 Each wait recheck pins the observed work-item ID and revision before Git evidence and again in the arbitration
 transaction. A concurrent lifecycle change is retried within the original timeout instead of recreating or overwriting
 work. If `done` releases work while its wait is in flight, that wait returns `RELEASED`. Neither retry nor release
 grants ownership: only a fresh matching foreground start that returns `READY` authorizes editing.
+
+After both revision checks, skip the work-row update when a queued wait recheck changes no work state. Preserve its
+revision and `updated_at`, and do not bump the ledger generation for that recheck. Continue evidence collection and
+arbitration. Real changes still advance the generation so peer waiters and dashboard clients refresh promptly.
 
 For one-claim work, `done` keeps its idempotent current-root behavior. For a bundle, `done` requires a claimed worktree
 and releases all claims atomically. Rejection leaves the bundle intact and supplies a command using one claimed root to
@@ -440,6 +451,14 @@ Repository snapshots include a live session when either its reported root or one
 root, retain the logical work item once, and derive waiting state from the claim in that root. Status, dashboard
 snapshots, and message recipient discovery may reuse complete provider inventory for up to two seconds. `start`, wait
 promotion, and `check` always probe providers freshly before granting work or reporting installation health.
+
+Resolve each exact Claude working directory once per inventory response, including directories with no Git root. Do not
+retain these root results across responses.
+
+Inspection subprocesses use one deadline for stdin delivery, child completion, and output reads. Retain the 8 MiB limit
+per output stream. On Unix, give each subprocess its own process group. On failure or timeout, terminate that group and
+reap the child, even if the child exited before its descendants closed the pipes. Allow at most one extra second for IO
+worker cleanup; never wait indefinitely on inherited pipes.
 
 Session-start registration assigns each session a machine-wide unique callsign. Callsigns contain a letter or number and
 an emoji. They are capped at 40 Unicode code points and normalized for whitespace, case-insensitive uniqueness, and

@@ -72,6 +72,7 @@ Select every applicable profile and read it once. Read all selected profiles tog
 | Python services, scripts, async, packaging, data IO           | `python`                |
 | shell, CI, deploy, installers, quoting                        | `shell`                 |
 | CSV/JSON/YAML/binary, schemas, migrations, generated data     | `data-formats`          |
+| human-facing numbers, money, percentages, rates, units        | `number-formatting`     |
 | naming and intent clarity                                     | `naming` unless skipped |
 
 Profiles live at `references/profiles/<name>.md`. Missing selected profiles are a stop condition.

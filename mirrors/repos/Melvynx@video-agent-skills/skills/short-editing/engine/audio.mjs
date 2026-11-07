@@ -27,8 +27,12 @@ function trackBed(M, src, P, T, X) {
   // decode only the stretch laid (+1 s): the library beds run 150 s, a short uses 30
   const pcm = execFileSync(FFMPEG, ['-v', 'error', ...(M.offset ? ['-ss', String(M.offset)] : []), '-i', file, '-t', String(Math.max(0, i1 - i0) / SR + 1), '-ac', '2', '-ar', String(SR), '-f', 'f32le', '-'], { maxBuffer: 1 << 30 });
   const a = new Float32Array(pcm.buffer, pcm.byteOffset, pcm.length / 4), L = a.length >> 1; if (!L) throw new Error(`music.src decoded empty: ${file}`);
+  // music.holes: [[a, b]] SHORT ranges where the bed is silent (.25 s fades), e.g. a finished video played inside the short
+  // with its own music (an insert); the bed resumes where it would have been
+  const H = (M.holes || []).map(([a, b]) => [a * SR, b * SR]), hf = .25 * SR;
+  const hole = i => H.reduce((g, [a, b]) => Math.min(g, i <= a - hf || i >= b + hf ? 1 : i < a ? (a - i) / hf : i > b ? (i - b) / hf : 0), 1);
   for (let i = i0; i < i1; i++) {
-    const k = (i - i0) % L, e = Math.min(1, (i - i0) / fi, (i1 - i) / fo);
+    const k = (i - i0) % L, e = Math.min(1, (i - i0) / fi, (i1 - i) / fo) * (H.length ? hole(i) : 1);
     X.MUS[0][i] += a[2 * k] * e; X.MUS[1][i] += a[2 * k + 1] * e;
   }
 }
@@ -38,7 +42,7 @@ export async function buildAudio(proj, raw) {
   const tl = JSON.parse(fs.readFileSync(P('assets/timeline.json'), 'utf8')), m = mapper(tl), T = tl.duration;
   const spec = mapSpec(raw, m); spec._map = m; spec._jumps = (raw.cut || []).map(([a]) => m(a));
   const mm = v => v != null ? m(v) : undefined;
-  if (spec.music) spec.music = { ...spec.music, breaks: (raw.music?.breaks || []).map(([a, b]) => [m(a), m(b)]), end: mm(raw.music?.end), start: mm(raw.music?.start), drops: (raw.music?.drops || []).map(m) };
+  if (spec.music) spec.music = { ...spec.music, breaks: (raw.music?.breaks || []).map(([a, b]) => [m(a), m(b)]), end: mm(raw.music?.end), start: mm(raw.music?.start), drops: (raw.music?.drops || []).map(m), holes: (raw.music?.holes || []).map(([a, b]) => [m(a), m(b)]) };
   const mixCfg = { music: -28, sfx: -29.5, duck: .5, ...(spec.mix || {}) };
 
   // ---- voice

@@ -41,4 +41,5 @@ for (const id of ids) {
   const st = STYLES[id]; meta[id] = { id, name: st.name, mood: st.mood, bpm: st.bpm, desc: st.desc, dur: +r.T.toFixed(1) };
   console.log(`[music] ${id.padEnd(13)} ${r.T.toFixed(1)}s ${r.bars} bars  ${r.lufs.toFixed(1)} LUFS  peak ${(20 * Math.log10(pk)).toFixed(1)} dB  bands ${bands(r.L, r.R).join('/')}%  ${(ms / 1000).toFixed(1)}s`);
 }
-fs.writeFileSync(path.join(out, 'tracks.json'), JSON.stringify(Object.keys(STYLES).filter(k => meta[k] && fs.existsSync(path.join(out, `${k}.mp3`))).map(k => meta[k]), null, 2) + '\n');
+// real songs added by hand (not in STYLES) stay listed after the generated beds
+fs.writeFileSync(path.join(out, 'tracks.json'), JSON.stringify([...Object.keys(STYLES), ...Object.keys(meta).filter(k => !STYLES[k])].filter(k => meta[k] && fs.existsSync(path.join(out, `${k}.mp3`))).map(k => meta[k]), null, 2) + '\n');

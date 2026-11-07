@@ -27,6 +27,7 @@ skillshare audit --analyzer static # Run only the static analyzer
 | `-p, --project` | Scan project-level skills |
 | `-g, --global` | Scan global skills |
 | `--threshold <t>`, `-T <t>` | Block threshold: `critical\|high\|medium\|low\|info` (shorthand: `c\|h\|m\|l\|i`) |
+| `--min-severity <level>` | Display only findings at/above this level; JSON/SARIF, scores and gates stay unchanged |
 | `--profile <p>` | Audit profile preset: `default`, `strict`, `permissive` |
 | `--dedupe <mode>` | Dedup mode: `legacy`, `global` (default) |
 | `--analyzer <id>` | Only run specified analyzer (repeatable): `static`, `dataflow`, `tier`, `integrity`, `metadata`, `structure`, `cross-skill` |
@@ -86,6 +87,12 @@ Findings affect risk scores, and HIGH findings block at a HIGH audit threshold.
 Disable or override severity/confidence by rule ID or pattern in global/project
 `audit-rules.yaml`; explicit severity applies to every form. Leave `regex` and
 `exclude` unset for this file-level detector.
+
+## Bundled hooks and settings
+
+The `structure` analyzer inspects `hooks.json`, `hooks/hooks.json`, `.claude/settings.json`, and `.claude/settings.local.json` inside a skill, with confined reads capped at 1,000,000 bytes per file. It reports lifecycle commands at MEDIUM and recognized network commands, remote POST, broad permissions, and command-valued helpers at HIGH. Findings describe potential behavior if activated. Malformed, unsupported, oversized, or unreadable declarations produce `bundled-config-unparsed` at INFO; they do not establish a clean surface. Arguments and URLs are redacted before reporting. The six `bundled-*` IDs are listed by `audit rules` and honor disabling/severity overrides. Command-valued settings inspection is limited to `apiKeyHelper` and `statusLine`; other command-valued settings are not inspected. No declaration is executed and no live settings are read.
+
+Broad grants include `*`, bare tools, `Bash(*)`, `Bash(:*)`, and MCP server-wide grants (`mcp__server__*`). Narrow prefixes such as `Bash(git diff:*)` and scoped paths such as `Read(./docs/**)` and MCP tool prefixes such as `mcp__github__get_*` stay clean. POST evidence must come from the network command's own segment. Hidden settings receive declaration analysis only and remain excluded from text-rule scans and analyzability bytes. Existing text findings in the two visible hook files are redacted, changing their fingerprints/acceptance keys and requiring prior acceptances to be renewed.
 
 ## Config
 
@@ -162,6 +169,8 @@ Summary includes severity breakdown (`c/h/m/l/i`) and threat category breakdown 
 
 `Failed` counts skills at/above threshold. `Warning` counts skills with findings below threshold.
 
+When a followed source link cannot be read, its skills go unscanned: JSON adds `warnings` and `incomplete: true`, Markdown lists the links under **Source links not followed**, the TUI summary line counts them, and the dashboard marks the scan **Scan incomplete**.
+
 ## Logging
 
 Audit results are logged to `audit.log` (JSONL). View with:
@@ -181,14 +190,14 @@ headers are INFO. This does not analyze runtime behavior or archive members.
 from header reads; the existing source-link policy and six-level depth limit stay
 in effect. There is no file-count cap; directory scans count header read failures as skipped
 and continue. An unreadable direct-file target still returns an error. Hidden
-directories receive header classification only; file symlinks keep existing text
-scanning. Hidden names alone do not imply disguise. HIGH requires a document,
+directories receive header classification only; links to non-special files keep existing text scanning. Special targets are
+skipped; direct audits of them return an error. Hidden names alone do not imply disguise. HIGH requires a document,
 image or configuration extension or a `.cache`/`__pycache__` parent directory;
 other native binaries, including `.venv/bin/python`, are MEDIUM.
 JSON results and summaries expose `binaryFiles`, `skippedFiles`, `oversizedFiles`;
 CLI and dashboard summaries show the same counts; the dashboard, Markdown and SARIF also report per-resource counts. Skipped includes read failures, binary,
 unsupported, oversized and regular files below hidden directories, so the counters
-overlap. Links and special files are not counted just for skipping header reads. Header
+overlap. Special files and links to special targets outside hidden directories count as skipped; other links are not counted just for skipping header reads. Header
 bytes are not auditable text. The rules `disguised-executable`, `python-bytecode`,
 `executable-artifact`, `archive-artifact`, `uncertain-header` can be disabled by ID
 with `enabled: false` in `audit-rules.yaml`.
@@ -202,3 +211,7 @@ Metadata hosts are detected in every admitted text format. Prose, configuration 
 Metadata code context recognizes `.sh`, `.bash`, `.zsh`, `.fish`, `.py`, `.js`, `.ts`, `.rb`, `.php`, `.php3`, `.php4`, `.php5`, `.phtml`, `.go`, `.rs`, `.swift`, `Makefile` and `Dockerfile` (case-insensitive). Markdown fences qualify when unlabelled or labelled with one of those extension names, or `python`, `javascript`, `typescript`, `ruby`, `shell`, `console`, `golang`, `rust`, `makefile`, `dockerfile`. Other fence labels (including `http`, `powershell`, `pwsh`, `node`, `jsx`, `tsx`, `java`) retain HIGH unless a recognized literal request targets metadata. Terminal sentence periods after IPv4 metadata addresses or the recognized metadata hostname are accepted; hostname suffixes such as `.example.com` do not match. Extensionless notes without a first-line shebang remain HIGH unless a recognized request targets metadata; a shebang after an initial BOM is recognized.
 
 Custom rules accept `files: ['*.py', 'scripts/*.php']`: basename globs match any depth; slash-containing Go `path.Match` globs match relative paths. Matching is case-insensitive; `**`, escapes, absolute and parent paths are rejected. Omitting `files` in a partial override inherits the existing filter; `files: []` clears it. A full regex replacement replaces the whole rule, so omitted `files` removes the built-in scope and built-in call/context inspection does not apply. Inspect effective applicability with `audit rules --format json`.
+
+## Display severity floor
+
+Use `skillshare audit --min-severity high` to display HIGH and CRITICAL findings in terminal/TUI or Markdown output. Levels: critical, high, medium, low, info (case-insensitive; aliases such as h work). Reports show visible/hidden counts. This changes only display: full scores, blocking, exit codes, scan errors and completeness warnings remain. JSON/SARIF output is unchanged, without display metadata; use existing `summary.maxSeverity` in JSON. Dashboard severity counts support exact or minimum severity selection, while LOW/INFO remain collapsible when no severity is selected.

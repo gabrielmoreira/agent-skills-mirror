@@ -7,7 +7,7 @@ are very welcome.
 ## Development setup
 
 ```bash
-git clone https://github.com/Birfy/agentdescent
+git clone https://github.com/ThinkFlowLab/agentdescent
 cd agentdescent
 pip install -e ".[dev]"     # installs NumPy plus the pytest/PyYAML/Markdown development tools
 ```
@@ -16,12 +16,9 @@ Python ≥ 3.9 is required.
 
 ## Shortest verification path
 
-From a fresh checkout, the shortest environment and behavior check is:
+From that checkout, the shortest environment and behavior check is:
 
 ```bash
-git clone https://github.com/Birfy/agentdescent
-cd agentdescent
-pip install -e ".[dev]"
 pytest -q
 python -m examples.run_demo
 ```
@@ -79,6 +76,15 @@ mkdocs build --strict   # must pass with no warnings (CI enforces this)
 - **No hidden network in tests.** Anything requiring an API or heavy infra
   (SWE-bench Docker, gated datasets) must be gated behind a flag and documented.
 - Match the style and comment density of the surrounding code.
+
+- **Where a new `evolve()` knob goes.** Decision / plug-in behaviour belongs on
+  a [`Policies`](docs/policies.md) field. Spend, stop, wall-clock, workers,
+  hooks and recording belong on
+  `BudgetSettings` / `RuntimeSettings` / `ObservabilitySettings`
+  (`agentdescent.evolve_settings`). Do **not** add another top-level
+  `evolve(...)` keyword without updating `EVOLVE_PARAM_ALLOWLIST` and saying
+  why a bag or Policies field was not enough — the allowlist test fails accidental
+  growth (#804). Flat kwargs that already exist stay as shortcuts.
 
 ## Pull requests
 

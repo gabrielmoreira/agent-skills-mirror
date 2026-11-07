@@ -54,6 +54,9 @@ The curated bundles are `research-essentials`, `ml-research`, `ai-research`, `bi
 
 | Method | Command |
 |---|---|
+| Interactive Web Catalog | Browse and copy commands at [skills.kalarislabs.com](https://skills.kalarislabs.com) |
+| Python (uvx - instant run) | `uvx research-agent-skills install citation-verification` |
+| Python (pip) | `pip install research-agent-skills` then `research-agent-skills install --bundle research-essentials` |
 | skills.sh (Vercel) | `npx skills add KalarisLabs/research-agent-skills --list`, then `npx skills add KalarisLabs/research-agent-skills --skill citation-verification` |
 | GitHub CLI | `gh skill install KalarisLabs/research-agent-skills [skill]` |
 | Claude Code | `/plugin marketplace add KalarisLabs/research-agent-skills` → `/plugin install research-essentials@research-agent-skills` |

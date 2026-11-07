@@ -114,6 +114,15 @@ staggered prompt work for 1 through 4 whole 2,048-row chunks; without the flag i
 uses `TF_CUDA_SEGMENTS`, then 1. The `tensorfold segments` command compares the
 available segment counts and can profile the serial chunk parts.
 
+Dory's recurrent block can run more than once a pass: `--loops N` serves the checkpoint with N passes over it,
+1 through 4. Without the flag a checkpoint serves at its own `n_recurrent_loops`; the flag overrides it. The
+schedule runs the input sublayers once, the recurrent block N times, then the output sublayers — 16 + 40×N + 16
+steps with 8 + 20×N + 8 attention caches — and a token's KV and stream state grows from 36 KiB at one loop to 56
+at two and 96 at four. A saved state records its loop count and never crosses to another. Zero and anything above
+4 are refused at load ("--loops: passes over Dory's recurrent block, 1 to 4"); a negative count is refused at
+parse. The other CUDA families, the HIP engines and Kimi on Metal refuse the flag by name, and `tensorfold run`
+refuses it for any model that is not Dory.
+
 Experimental: on a DGX Spark (GB10), `tensorfold run --carveout`, or `TF_CUDA_CARVEOUT=1` for `tensorfold run` and
 `tensorfold-native`, puts Nemotron's KV caches in the memory the display controller reserves, which
 MemAvailable never counts. The native engine maps a
@@ -352,7 +361,7 @@ window. It accounts for stream count and retained caches where concurrency is en
 
 Two-rank Flash Next, Nemotron and GLM requests finish on both ranks after a client disconnects, keeping the
 collective sequence aligned. MLX disk snapshots and cache-budget flags do not configure these CUDA
-caches. The CUDA CLI also does not apply `--alias`; use `--name` for the served model ID. `--thinking`,
+caches. The CUDA CLI applies `--alias` too; `--name` sets the served model ID. `--thinking`,
 `--reasoning-effort` and `--thinking-budget` set the defaults a request's `chat_template_kwargs.enable_thinking`,
 `reasoning_effort` and `thinking_budget` override, as on the Mac.
 

@@ -200,7 +200,7 @@ turn counts its own wait.
 | **Connectors** (`connectors/`, `ui/connectors/`) | The services the agent can be let into: the desktop's catalogue of 75 remote MCP servers (Notion, Linear, GitHub, GitLab, Slack, Stripe, Miro, …), shipped as `assets/nanomuse/connectors.json`. The only Settings row for all of this is *Connectors*; the upstream MCP editor (by address, by command, imported JSON) is *Your own servers* at the end of the page. Open servers add with a tap; a key service takes the key; an OAuth service runs the MCP authorization flow (discovery, dynamic client registration, PKCE in a Custom Tab) and the token goes into the entry's `Authorization` header for the in-guest MCP client, refreshed at app start; a service whose authorization server registers no clients (`clientIdRequired`: GitHub, Slack, Discord, HubSpot, Render, Bitrise, PagerDuty, Box) asks for an OAuth client id and secret made at the vendor's developer page with the app's callback address, which the sheet shows and copies. A connected service is an MCP server entry under the same id; *Your own servers* manages it too. What is connected is shared with the account's other devices through the relay profile, the entries (id, label, address, kind of auth, which device, when), never a token, so the page also lists *On your other devices*: a service connected on the desktop shows as *Connected on <device>. Sign in here to use it on this phone*, one tap into the same sheet. |
 | **The chat, plain** | While the agent works, the line under its avatar names the step under way (*nanoMuse is using Shell*, *Writing the reply*, *On it: book the table*), never a state of mind. The tool pills, the Computer sheet and the floating step bar are **on by default** since 0.1.37; *Settings → Appearance → Show the agent's steps* turns them off. With them on, a finished step reads *nanoMuse used Shell · Done*, and its sheet closes on ×, swipe or Back. |
 
-The chat sits on the same canvas as the pill bar, the menus and the drawer: pure black in the
+By default, the chat sits on the same canvas as the pill bar, the menus and the drawer: pure black in the
 dark theme, pure white in the light one. Your messages are white pills with black text (black
 pills with white text in light), the agent's replies sit in a pill a shade off the canvas
 (`#1C1C1E` / `#F2F2F7`), and the send button and the scroll-to-latest disc are white with a
@@ -220,8 +220,8 @@ a command longer than six lines is folded behind *Show all*, the description and
 preview scroll in the middle, and Allow and Deny stay in view at the bottom. When reading
 older messages, a slightly lighter fade follows
 the composer's rounded outline. Live browser controls hide it; historical tool pills and
-other tools keep it. In dark-mode home and side chats, pure black surrounds the navigation
-pill and fills the gap below the composer. Its glass stays open to the scrolling content
+other tools keep it. In dark-mode home and side chats, the selected chat background surrounds the navigation
+pill and fills the gap below the composer. The default is pure black. Its glass stays open to the scrolling content
 for live frosted blur. Other tabs keep their navigation appearance. With the keyboard
 open the composer sits on the keyboard and the pill is behind it. The Feed, Ideas, Goals and
 Library lists end above the pill as well, so their last row is never under it.
@@ -229,6 +229,13 @@ Library lists end above the pill as well, so their last row is never under it.
 The web console of the same account is at the relay (`/app`), the desktop app in
 [desktop.md](desktop.md); the phone, the desktop and the web share the design language
 described in [brand.md](brand.md).
+
+**Settings → Appearance → Chat background** offers Default, Warm, Blue, Green and Purple.
+The choice applies immediately to all chats on this device and is kept when the app restarts.
+Each color follows the app's light or dark mode; the header and footer fades and the area
+around the navigation pill follow the same background. Choose **Default** to restore the
+original canvas. Message bubbles, text, accent colors and other screens keep their existing
+colors. Background images, gradients and theme imports are not included.
 
 Under **Settings → Appearance**, the font-size labels for **Chat Input**, **Message Text** and **App Base** follow the app's language.
 
@@ -352,6 +359,26 @@ Leaving sign-in or the Network page ends its pending request, even if the server
 started to answer but has not finished sending the response.
 
 ## Voice input
+
+You can choose voice input and voice output separately from the chat model, including
+models from different providers, using the voice groups and the voice picker.
+For Alibaba Model Studio, `paraformer-realtime-v2` transcribes recorded speech through
+the native DashScope WebSocket API. Read-aloud supports `cosyvoice-v2` through that API
+and `qwen3-tts-flash` through the native HTTP API. The provider's selected region and
+workspace are retained. The API key, model and voice must be available in that region;
+the default CosyVoice voice is `longxiaochun_v2`, and Qwen uses `Cherry`.
+Qwen TTS supplies WAV audio; the app requests that format and plays the returned file
+without relabelling it as MP3. An explicit old CosyVoice `longxiaochun` voice selection
+is normalized to `longxiaochun_v2`.
+
+These adapters transcribe a completed recording or generate a reply's audio. They do
+not provide a full-duplex voice conversation. Qwen ASR Realtime, Qwen TTS Realtime and
+Omni Realtime session protocols are not supported by these voice controls. These
+models are rejected before a provider request; read-aloud keeps its existing fallback
+to the device's speech engine when provider synthesis fails.
+See Alibaba's [Paraformer protocol](https://help.aliyun.com/en/model-studio/websocket-for-paraformer-real-time-service),
+[CosyVoice protocol](https://help.aliyun.com/en/model-studio/cosyvoice-websocket-api) and
+[Qwen TTS HTTP API](https://help.aliyun.com/en/model-studio/qwen-tts-api).
 
 On Android 13 and later, continuous system dictation keeps feeding audio when the recognizer
 starts its next segment. A write that fails on the previous segment's closed pipe cannot

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TickDB/tickdb-unified-realtime-marketdata-api` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `TickDB/tickdb-unified-realtime-marketdata-api` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TickDB/tickdb-unified-realtime-marketdata-api` — 26 default pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,36 +79,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`mcp/main.py`](mcp/main.py) |
 | 19 | ✓ | [`mcp/MCP_CLIENT_SETUP.md`](mcp/MCP_CLIENT_SETUP.md) |
 | 20 | ✓ | [`mcp/pyproject.toml`](mcp/pyproject.toml) |
-| 21 | ✓ | [`mcp/README.md`](mcp/README.md) |
-| 22 | ✓ | [`mcp/tests/__init__.py`](mcp/tests/__init__.py) |
-| 23 | ✓ | [`mcp/tests/fixtures/api_contract_v021.json`](mcp/tests/fixtures/api_contract_v021.json) |
-| 24 | ✓ | [`mcp/tests/test_account.py`](mcp/tests/test_account.py) |
-| 25 | ✓ | [`mcp/tests/test_api_contract.py`](mcp/tests/test_api_contract.py) |
-| 26 | ✓ | [`mcp/tests/test_client.py`](mcp/tests/test_client.py) |
-| 27 | ✓ | [`mcp/tests/test_http_contract.py`](mcp/tests/test_http_contract.py) |
-| 28 | ✓ | [`mcp/tests/test_http_transport.py`](mcp/tests/test_http_transport.py) |
-| 29 | ✓ | [`mcp/tests/test_logging.py`](mcp/tests/test_logging.py) |
-| 30 | ✓ | [`mcp/tests/test_middleware.py`](mcp/tests/test_middleware.py) |
-| 31 | ✓ | [`mcp/tests/test_oauth.py`](mcp/tests/test_oauth.py) |
-| 32 | ✓ | [`mcp/tickdb_mcp/__init__.py`](mcp/tickdb_mcp/__init__.py) |
-| 33 | ✓ | [`mcp/tickdb_mcp/client.py`](mcp/tickdb_mcp/client.py) |
-| 34 | ✓ | [`mcp/tickdb_mcp/config.py`](mcp/tickdb_mcp/config.py) |
-| 35 | ✓ | [`mcp/tickdb_mcp/http.py`](mcp/tickdb_mcp/http.py) |
-| 36 | ✓ | [`mcp/tickdb_mcp/logging.py`](mcp/tickdb_mcp/logging.py) |
-| 37 | ✓ | [`mcp/tickdb_mcp/middleware.py`](mcp/tickdb_mcp/middleware.py) |
-| 38 | ✓ | [`mcp/tickdb_mcp/oauth/__init__.py`](mcp/tickdb_mcp/oauth/__init__.py) |
-| 39 | ✓ | [`mcp/tickdb_mcp/oauth/authorization.py`](mcp/tickdb_mcp/oauth/authorization.py) |
-| 40 | ✓ | [`mcp/tickdb_mcp/oauth/consent.py`](mcp/tickdb_mcp/oauth/consent.py) |
-| 41 | ✓ | [`mcp/tickdb_mcp/oauth/localization.py`](mcp/tickdb_mcp/oauth/localization.py) |
-| 42 | ✓ | [`mcp/tickdb_mcp/oauth/provider.py`](mcp/tickdb_mcp/oauth/provider.py) |
-| 43 | ✓ | [`mcp/tickdb_mcp/oauth/store.py`](mcp/tickdb_mcp/oauth/store.py) |
-| 44 | ✓ | [`mcp/tickdb_mcp/server.py`](mcp/tickdb_mcp/server.py) |
-| 45 | ✓ | [`mcp/tickdb_mcp/tools/__init__.py`](mcp/tickdb_mcp/tools/__init__.py) |
-| 46 | ✓ | [`mcp/tickdb_mcp/tools/account.py`](mcp/tickdb_mcp/tools/account.py) |
-| 47 | ✓ | [`mcp/tickdb_mcp/tools/fundamentals.py`](mcp/tickdb_mcp/tools/fundamentals.py) |
-| 48 | ✓ | [`mcp/tickdb_mcp/tools/market.py`](mcp/tickdb_mcp/tools/market.py) |
-| 49 | ✓ | [`mcp/tickdb_mcp/tools/stock.py`](mcp/tickdb_mcp/tools/stock.py) |
-| 50 | ✓ | [`SKILL/SKILL.md`](SKILL/SKILL.md) |
+| 21 | ✓ | [`mcp/README_PYPI.md`](mcp/README_PYPI.md) |
+| 22 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 23 | ✓ | [`mcp/scripts/verify_installed_package.py`](mcp/scripts/verify_installed_package.py) |
+| 24 | ✓ | [`mcp/tests/__init__.py`](mcp/tests/__init__.py) |
+| 25 | ✓ | [`mcp/tests/fixtures/api_contract_v021.json`](mcp/tests/fixtures/api_contract_v021.json) |
+| 26 | ✓ | [`mcp/tests/test_account.py`](mcp/tests/test_account.py) |
+| 27 | ✓ | [`mcp/tests/test_api_contract.py`](mcp/tests/test_api_contract.py) |
+| 28 | ✓ | [`mcp/tests/test_client.py`](mcp/tests/test_client.py) |
+| 29 | ✓ | [`mcp/tests/test_http_contract.py`](mcp/tests/test_http_contract.py) |
+| 30 | ✓ | [`mcp/tests/test_http_security.py`](mcp/tests/test_http_security.py) |
+| 31 | ✓ | [`mcp/tests/test_http_transport.py`](mcp/tests/test_http_transport.py) |
+| 32 | ✓ | [`mcp/tests/test_logging.py`](mcp/tests/test_logging.py) |
+| 33 | ✓ | [`mcp/tests/test_middleware.py`](mcp/tests/test_middleware.py) |
+| 34 | ✓ | [`mcp/tests/test_oauth.py`](mcp/tests/test_oauth.py) |
+| 35 | ✓ | [`mcp/tests/test_startup.py`](mcp/tests/test_startup.py) |
+| 36 | ✓ | [`mcp/tickdb_mcp/__init__.py`](mcp/tickdb_mcp/__init__.py) |
+| 37 | ✓ | [`mcp/tickdb_mcp/client.py`](mcp/tickdb_mcp/client.py) |
+| 38 | ✓ | [`mcp/tickdb_mcp/config.py`](mcp/tickdb_mcp/config.py) |
+| 39 | ✓ | [`mcp/tickdb_mcp/http.py`](mcp/tickdb_mcp/http.py) |
+| 40 | ✓ | [`mcp/tickdb_mcp/logging.py`](mcp/tickdb_mcp/logging.py) |
+| 41 | ✓ | [`mcp/tickdb_mcp/middleware.py`](mcp/tickdb_mcp/middleware.py) |
+| 42 | ✓ | [`mcp/tickdb_mcp/oauth/__init__.py`](mcp/tickdb_mcp/oauth/__init__.py) |
+| 43 | ✓ | [`mcp/tickdb_mcp/oauth/authorization.py`](mcp/tickdb_mcp/oauth/authorization.py) |
+| 44 | ✓ | [`mcp/tickdb_mcp/oauth/consent.py`](mcp/tickdb_mcp/oauth/consent.py) |
+| 45 | ✓ | [`mcp/tickdb_mcp/oauth/localization.py`](mcp/tickdb_mcp/oauth/localization.py) |
+| 46 | ✓ | [`mcp/tickdb_mcp/oauth/provider.py`](mcp/tickdb_mcp/oauth/provider.py) |
+| 47 | ✓ | [`mcp/tickdb_mcp/oauth/store.py`](mcp/tickdb_mcp/oauth/store.py) |
+| 48 | ✓ | [`mcp/tickdb_mcp/server.py`](mcp/tickdb_mcp/server.py) |
+| 49 | ✓ | [`mcp/tickdb_mcp/tools/__init__.py`](mcp/tickdb_mcp/tools/__init__.py) |
+| 50 | ✓ | [`mcp/tickdb_mcp/tools/account.py`](mcp/tickdb_mcp/tools/account.py) |
+| 51 | ✓ | [`mcp/tickdb_mcp/tools/fundamentals.py`](mcp/tickdb_mcp/tools/fundamentals.py) |
+| 52 | ✓ | [`mcp/tickdb_mcp/tools/market.py`](mcp/tickdb_mcp/tools/market.py) |
+| 53 | ✓ | [`mcp/tickdb_mcp/tools/stock.py`](mcp/tickdb_mcp/tools/stock.py) |
+| 54 | ✓ | [`SKILL/SKILL.md`](SKILL/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aipoch/open-science` — 26 default patterns, 14 followed patterns, 101 file(s) materialized.
+Mirror of `aipoch/open-science` — 26 default patterns, 13 followed patterns, 100 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aipoch/open-science` — 26 default patterns, 14 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 101 |
+| Followed pats | 13 |
+| Files         | 100 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,7 +56,6 @@ Mirror of `aipoch/open-science` — 26 default patterns, 14 followed patterns, 1
 - `scripts/windows-reset/README.md`
 - `docs/development-quick-reference.md`
 - `CONTRIBUTING.md`
-- `docs/remote-control.md`
 - `packages/open-science/CLI.md`
 - `packages/open-science/README.md`
 - `docs/testing.md`
@@ -165,14 +164,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 91 | → | [`docs/development-quick-reference.md`](docs/development-quick-reference.md) |
 | 92 | → | [`docs/native-components.md`](docs/native-components.md) |
 | 93 | → | [`docs/package-workflows.md`](docs/package-workflows.md) |
-| 94 | → | [`docs/remote-control.md`](docs/remote-control.md) |
-| 95 | → | [`docs/reproducibility-cases/README.md`](docs/reproducibility-cases/README.md) |
-| 96 | → | [`docs/standalone-runtime.md`](docs/standalone-runtime.md) |
-| 97 | → | [`docs/testing.md`](docs/testing.md) |
-| 98 | → | [`packages/open-science/CLI.md`](packages/open-science/CLI.md) |
-| 99 | → | [`packages/open-science/README.md`](packages/open-science/README.md) |
-| 100 | → | [`README.md`](README.md) |
-| 101 | → | [`scripts/windows-reset/README.md`](scripts/windows-reset/README.md) |
+| 94 | → | [`docs/reproducibility-cases/README.md`](docs/reproducibility-cases/README.md) |
+| 95 | → | [`docs/standalone-runtime.md`](docs/standalone-runtime.md) |
+| 96 | → | [`docs/testing.md`](docs/testing.md) |
+| 97 | → | [`packages/open-science/CLI.md`](packages/open-science/CLI.md) |
+| 98 | → | [`packages/open-science/README.md`](packages/open-science/README.md) |
+| 99 | → | [`README.md`](README.md) |
+| 100 | → | [`scripts/windows-reset/README.md`](scripts/windows-reset/README.md) |
 
 ---
 

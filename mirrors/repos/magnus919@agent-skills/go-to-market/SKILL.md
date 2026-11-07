@@ -3,7 +3,8 @@ name: go-to-market
 description: >-
   Plan and evaluate go-to-market strategy using positioning, acquisition,
   growth economics, market-entry, competitive-response, and governed
-  agent-assisted acquisition experiments. Use for ICP, messaging, channel,
+  agent-assisted acquisition experiments. Use for ICP, customer-centered messaging,
+  website narrative, channel,
   CAC/LTV, beachhead, or automated-GTM strategy decisions. Do not use for
   campaign execution, CRM mutations, legal interpretation, product strategy,
   or visual brand design.
@@ -23,6 +24,7 @@ CMO-level methodology for go-to-market strategy, positioning, acquisition, brand
 | Trigger | What's Needed |
 |---------|---------------|
 | Define positioning and messaging | `references/positioning-messaging.md` — Dunford framework, message hierarchy |
+| Clarify a website offer or customer narrative | Read `references/customer-centered-messaging.md` after positioning; fill `templates/customer-message-brief.md` |
 | Build acquisition channel strategy | `references/acquisition-strategy.md` — channel mix, PLG/SLG, funnel metrics |
 | Design brand architecture | `references/acquisition-strategy.md` — brand systems, visual identity, brand health |
 | Model growth economics | `references/growth-modeling.md` — CAC/LTV, cohort analysis, market entry |
@@ -49,9 +51,42 @@ skill_view('go-to-market', file_path='references/agent-assisted-acquisition-expe
 | `references/positioning-messaging.md` | April Dunford positioning, message hierarchy (elevator pitch → value prop → narrative), positioning diagnostic |
 | `references/acquisition-strategy.md` | Channel taxonomy, PLG vs SLG playbooks, sales funnel ratios, competitive response playbook, brand architecture |
 | `references/growth-modeling.md` | CAC/LTV deep dive, cohort analysis practical guide, NRR, market entry strategy (beachhead, land-and-expand) |
+| `references/customer-centered-messaging.md` | Customer goal, obstacle, credible help, path, action, outcome, channel adaptation and testing |
+| `references/final-copy-fact-check.md` | Facts/proposals/unknowns, final-expression audit and supported replacements |
+| `references/message-drafting-and-revision.md` | Evidence-to-copy technique, candidate selection, diagnosis and revision |
+| `references/messaging-worked-examples.md` | Complete fictional service and enterprise examples from inputs to channel handoff |
+| `templates/customer-message-brief.md` | Evidence-linked message draft and strategy/voice/UX handoff |
 | `references/decision-workflow.md` | Bounded launch/channel decisions, worked beachhead example, reusable memo, and owner routing matrix |
 | `references/agent-assisted-acquisition-experiments.md` | Bounded experiment contract, readiness and responsibility gate, capability-specific earned authority, signal-quality ladder, decision loop, and stop conditions |
 
+
+## Customer-Centered Messaging
+
+For an unclear offer, website message, or customer narrative, establish audience,
+alternatives, differentiation and evidence before drafting. Read
+`references/customer-centered-messaging.md` and use
+`templates/customer-message-brief.md`. Mark unknowns instead of inventing customer
+feelings or results. Produce a plain offer, credible help, realistic path to value,
+clear next action and claim/proof mapping. Keep approved voice intact; do not
+require a fixed page order or step count.
+
+When drafting alternatives or revising weak copy, read
+`references/message-drafting-and-revision.md`. For complete evidence-to-copy
+examples, read `references/messaging-worked-examples.md`. Record why the chosen
+copy fits the audience, the tradeoff, and the actual revised passages.
+
+Before handoff, read `references/final-copy-fact-check.md` and audit the actual
+headline, proof, objections, action and adaptations. Before emitting final copy,
+show a compact plan of the proposed NEW claims with their supplied support and
+disposition, then render the accepted wording. A revision table about old copy
+is not a substitute. Keep unknowns unknown; do not
+turn plausible process choices into existing promises. Repair unsupported copy
+while preserving the supplied offer and differentiator.
+
+Hand the versioned message brief to `brand-designer` for strategy/voice documentation,
+and action expectations to `product-design-and-ux` for page behavior. Drafting does
+not authorize publishing or outreach. Complete when the brief, evidence gaps,
+validation state and next owner are explicit; a structural check is not sales proof.
 
 ## Output Contract
 

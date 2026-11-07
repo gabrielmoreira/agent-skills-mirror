@@ -59,12 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`wb-xhs-account-profile/SKILL.md`](wb-xhs-account-profile/SKILL.md) |
-| 2 | ✓ | [`wb-xhs-humanize-compliance/SKILL.md`](wb-xhs-humanize-compliance/SKILL.md) |
-| 3 | ✓ | [`wb-xhs-low-follower-pattern/SKILL.md`](wb-xhs-low-follower-pattern/SKILL.md) |
-| 4 | ✓ | [`wb-xhs-monetization-backsolve/SKILL.md`](wb-xhs-monetization-backsolve/SKILL.md) |
-| 5 | ✓ | [`wb-xhs-schedule-review/SKILL.md`](wb-xhs-schedule-review/SKILL.md) |
-| 6 | ✓ | [`wb-xhs-topic-bank/SKILL.md`](wb-xhs-topic-bank/SKILL.md) |
+| 1 | ✓ | [`xhs-account-profile/SKILL.md`](xhs-account-profile/SKILL.md) |
+| 2 | ✓ | [`xhs-humanize-compliance/SKILL.md`](xhs-humanize-compliance/SKILL.md) |
+| 3 | ✓ | [`xhs-low-follower-pattern/SKILL.md`](xhs-low-follower-pattern/SKILL.md) |
+| 4 | ✓ | [`xhs-monetization-backsolve/SKILL.md`](xhs-monetization-backsolve/SKILL.md) |
+| 5 | ✓ | [`xhs-schedule-review/SKILL.md`](xhs-schedule-review/SKILL.md) |
+| 6 | ✓ | [`xhs-topic-bank/SKILL.md`](xhs-topic-bank/SKILL.md) |
 
 ---
 

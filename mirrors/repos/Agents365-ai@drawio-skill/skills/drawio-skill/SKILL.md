@@ -4,7 +4,7 @@ name: drawio-skill
 description: Create and edit draw.io/diagrams.net diagrams as editable `.drawio` files. Covers architecture, UML/ERD/sequence, BPMN, network, and swimlane views authored from a description or converted from code, IaC, SQL, and API schemas, plus sync, query, test, review, export, and publish of existing diagrams. Use when the user asks for draw.io/diagrams.net or an editable diagram; prefer Mermaid/PlantUML when diagrams-as-code is enough.
 license: MIT
 allowed-tools: [Bash, Read, Write, WebFetch]
-metadata: {"openclaw":{"requires":{"anyBins":["python3"]},"emoji":"📐","os":["darwin","linux","win32"],"install":[{"id":"brew-drawio","kind":"brew","formula":"drawio","bins":["drawio"],"label":"Install draw.io for native exports","os":["darwin"],"optional":true},{"id":"brew-graphviz","kind":"brew","formula":"graphviz","bins":["dot"],"label":"Install Graphviz for automatic layout","os":["darwin"],"optional":true}]},"hermes":{"tags":["drawio","diagram","architecture","visualization","uml"],"category":"design","requires_tools":["python3"],"related_skills":["mermaid","excalidraw","plantuml"]},"author":"Agents365-ai","version":"3.4.3","homepage":"https://github.com/Agents365-ai/drawio-skill","compatibility":"Core IR, XML, sync, query, test, review, and Story workflows need Python 3 only; native export needs draw.io; Graphviz is optional.","platforms":["macos","linux","windows"]}
+metadata: {"openclaw":{"requires":{"anyBins":["python3"]},"emoji":"📐","os":["darwin","linux","win32"],"install":[{"id":"brew-drawio","kind":"brew","formula":"drawio","bins":["drawio"],"label":"Install draw.io for native exports","os":["darwin"],"optional":true},{"id":"brew-graphviz","kind":"brew","formula":"graphviz","bins":["dot"],"label":"Install Graphviz for automatic layout","os":["darwin"],"optional":true}]},"hermes":{"tags":["drawio","diagram","architecture","visualization","uml"],"category":"design","requires_tools":["python3"],"related_skills":["mermaid","excalidraw","plantuml"]},"author":"Agents365-ai","version":"3.4.4","homepage":"https://github.com/Agents365-ai/drawio-skill","compatibility":"Core IR, XML, sync, query, test, review, and Story workflows need Python 3 only; native export needs draw.io; Graphviz is optional.","platforms":["macos","linux","windows"]}
 ---
 
 # Draw.io Architecture Studio
@@ -67,6 +67,11 @@ commands are offline and stdlib-only.
 
 ## Creation workflow
 
+Before the first native export, resolve the draw.io CLI once (see Export
+invariants below). `python3 scripts/diagramctl.py doctor` prints the absolute
+path it found. The bundled exporters resolve it themselves, so a name mismatch
+(`drawio` vs `draw.io.exe`) no longer blocks them.
+
 1. Infer the diagram type, audience, scope, output format, and location from the
    request. Ask only when a missing choice materially changes the result;
    default to PNG plus `.drawio` in the working directory.
@@ -101,8 +106,20 @@ commands are offline and stdlib-only.
 
 ## Export invariants
 
-Resolve the available binary once (`drawio`, `draw.io`, the macOS app path, or
-the Windows executable) and use that exact binary for the run.
+Resolve the available binary once, to an **absolute path**, and use that exact
+path for the run. `scripts/drawio_cli.py` does this for every bundled exporter
+(`buildup.py`, `drawio2pptx.py`, `drawiohtml.py`, `prdiff.py`, `svgflow.py`,
+`timelapse.py`), and `diagramctl.py doctor` reports the result. It tries both
+PATH names, then the macOS app bundle and the Windows install directories:
+
+- macOS Homebrew and Linux packages: `drawio` (no dot)
+- Windows: `draw.io.exe` (with the dot). `drawio` does not exist there, and
+  `subprocess` cannot launch a `.cmd`/`.bat` shim, so never pass a bare name.
+- macOS app bundle: `/Applications/draw.io.app/Contents/MacOS/draw.io`
+- Windows install directories: `%ProgramFiles%\draw.io\draw.io.exe`,
+  `%LOCALAPPDATA%\Programs\draw.io\draw.io.exe`
+
+The commands below use `drawio`; substitute your resolved path.
 
 ```bash
 # Draft for visual inspection: never use -e here

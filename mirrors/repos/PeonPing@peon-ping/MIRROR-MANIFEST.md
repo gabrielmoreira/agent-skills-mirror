@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PeonPing/peon-ping` — 26 default patterns, 7 followed patterns, 24 file(s) materialized.
+Mirror of `PeonPing/peon-ping` — 26 default patterns, 7 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PeonPing/peon-ping` — 26 default patterns, 7 followed patterns, 24 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 24 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,20 +75,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`mcp/README.md`](mcp/README.md) |
 | 9 | ✓ | [`skills/peon-ping-config/SKILL.md`](skills/peon-ping-config/SKILL.md) |
 | 10 | ✓ | [`skills/peon-ping-create-pack/SKILL.md`](skills/peon-ping-create-pack/SKILL.md) |
-| 11 | ✓ | [`skills/peon-ping-log/SKILL.md`](skills/peon-ping-log/SKILL.md) |
-| 12 | ✓ | [`skills/peon-ping-remix/SKILL.md`](skills/peon-ping-remix/SKILL.md) |
-| 13 | ✓ | [`skills/peon-ping-rename/SKILL.md`](skills/peon-ping-rename/SKILL.md) |
-| 14 | ✓ | [`skills/peon-ping-toggle/SKILL.md`](skills/peon-ping-toggle/SKILL.md) |
-| 15 | ✓ | [`skills/peon-ping-use/SKILL.md`](skills/peon-ping-use/SKILL.md) |
-| 16 | ✓ | [`tests/fixtures/hook-logging/README.md`](tests/fixtures/hook-logging/README.md) |
-| 17 | ✓ | [`tests/README.md`](tests/README.md) |
-| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 19 | → | [`docs/opencode-v2-events.md`](docs/opencode-v2-events.md) |
-| 20 | → | [`README_ja.md`](README_ja.md) |
-| 21 | → | [`README_ko.md`](README_ko.md) |
-| 22 | → | [`README_zh.md`](README_zh.md) |
-| 23 | → | [`README.md`](README.md) |
-| 24 | → | [`RELEASING.md`](RELEASING.md) |
+| 11 | ✓ | [`skills/peon-ping-log/HDSOP.md`](skills/peon-ping-log/HDSOP.md) |
+| 12 | ✓ | [`skills/peon-ping-log/SKILL.md`](skills/peon-ping-log/SKILL.md) |
+| 13 | ✓ | [`skills/peon-ping-remix/SKILL.md`](skills/peon-ping-remix/SKILL.md) |
+| 14 | ✓ | [`skills/peon-ping-rename/SKILL.md`](skills/peon-ping-rename/SKILL.md) |
+| 15 | ✓ | [`skills/peon-ping-toggle/SKILL.md`](skills/peon-ping-toggle/SKILL.md) |
+| 16 | ✓ | [`skills/peon-ping-use/HDSOP.md`](skills/peon-ping-use/HDSOP.md) |
+| 17 | ✓ | [`skills/peon-ping-use/SKILL.md`](skills/peon-ping-use/SKILL.md) |
+| 18 | ✓ | [`tests/fixtures/hook-logging/README.md`](tests/fixtures/hook-logging/README.md) |
+| 19 | ✓ | [`tests/README.md`](tests/README.md) |
+| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 21 | → | [`docs/opencode-v2-events.md`](docs/opencode-v2-events.md) |
+| 22 | → | [`README_ja.md`](README_ja.md) |
+| 23 | → | [`README_ko.md`](README_ko.md) |
+| 24 | → | [`README_zh.md`](README_zh.md) |
+| 25 | → | [`README.md`](README.md) |
+| 26 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

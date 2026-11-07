@@ -7,7 +7,7 @@ ref: staging
 
 # Mirror Manifest
 
-Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tirth8205/code-review-graph` — 26 default patterns, 0 followed patt
 | Ref           | `staging` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,14 +62,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 5 | ✓ | [`skills/build-graph/SKILL.md`](skills/build-graph/SKILL.md) |
-| 6 | ✓ | [`skills/debug-issue/SKILL.md`](skills/debug-issue/SKILL.md) |
-| 7 | ✓ | [`skills/explore-codebase/SKILL.md`](skills/explore-codebase/SKILL.md) |
-| 8 | ✓ | [`skills/refactor-safely/SKILL.md`](skills/refactor-safely/SKILL.md) |
-| 9 | ✓ | [`skills/review-changes/SKILL.md`](skills/review-changes/SKILL.md) |
-| 10 | ✓ | [`skills/review-delta/SKILL.md`](skills/review-delta/SKILL.md) |
-| 11 | ✓ | [`skills/review-pr/SKILL.md`](skills/review-pr/SKILL.md) |
+| 4 | ✓ | [`code_review_graph/assets/code-review-graph/SKILL.md`](code_review_graph/assets/code-review-graph/SKILL.md) |
+| 5 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 6 | ✓ | [`skills/build-graph/SKILL.md`](skills/build-graph/SKILL.md) |
+| 7 | ✓ | [`skills/debug-issue/SKILL.md`](skills/debug-issue/SKILL.md) |
+| 8 | ✓ | [`skills/explore-codebase/SKILL.md`](skills/explore-codebase/SKILL.md) |
+| 9 | ✓ | [`skills/refactor-safely/SKILL.md`](skills/refactor-safely/SKILL.md) |
+| 10 | ✓ | [`skills/review-changes/SKILL.md`](skills/review-changes/SKILL.md) |
+| 11 | ✓ | [`skills/review-delta/SKILL.md`](skills/review-delta/SKILL.md) |
+| 12 | ✓ | [`skills/review-pr/SKILL.md`](skills/review-pr/SKILL.md) |
 
 ---
 

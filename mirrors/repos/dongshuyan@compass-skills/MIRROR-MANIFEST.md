@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dongshuyan/compass-skills` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
+Mirror of `dongshuyan/compass-skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dongshuyan/compass-skills` — 26 default patterns, 0 followed patter
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 115 |
+| Files         | 116 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -147,33 +147,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 86 | ✓ | [`skills/session-handoff-prompt/scripts/validate_handoff_prompt.py`](skills/session-handoff-prompt/scripts/validate_handoff_prompt.py) |
 | 87 | ✓ | [`skills/session-handoff-prompt/SKILL.md`](skills/session-handoff-prompt/SKILL.md) |
 | 88 | ✓ | [`skills/task-clarifier/agents/openai.yaml`](skills/task-clarifier/agents/openai.yaml) |
-| 89 | ✓ | [`skills/task-clarifier/evals/test_trigger_contract.py`](skills/task-clarifier/evals/test_trigger_contract.py) |
-| 90 | ✓ | [`skills/task-clarifier/SKILL.md`](skills/task-clarifier/SKILL.md) |
-| 91 | ✓ | [`skills/task-forest/agents/openai.yaml`](skills/task-forest/agents/openai.yaml) |
-| 92 | ✓ | [`skills/task-forest/assets/task-forest-overview.html`](skills/task-forest/assets/task-forest-overview.html) |
-| 93 | ✓ | [`skills/task-forest/references/concurrency.md`](skills/task-forest/references/concurrency.md) |
-| 94 | ✓ | [`skills/task-forest/references/goal-alignment.md`](skills/task-forest/references/goal-alignment.md) |
-| 95 | ✓ | [`skills/task-forest/references/html-visualization-contract.md`](skills/task-forest/references/html-visualization-contract.md) |
-| 96 | ✓ | [`skills/task-forest/references/integration-contract.md`](skills/task-forest/references/integration-contract.md) |
-| 97 | ✓ | [`skills/task-forest/references/node-types.md`](skills/task-forest/references/node-types.md) |
-| 98 | ✓ | [`skills/task-forest/references/schema.md`](skills/task-forest/references/schema.md) |
-| 99 | ✓ | [`skills/task-forest/references/session-close-workflow.md`](skills/task-forest/references/session-close-workflow.md) |
-| 100 | ✓ | [`skills/task-forest/scripts/task_forest_html.py`](skills/task-forest/scripts/task_forest_html.py) |
-| 101 | ✓ | [`skills/task-forest/scripts/task_forest_ordering.py`](skills/task-forest/scripts/task_forest_ordering.py) |
-| 102 | ✓ | [`skills/task-forest/scripts/task_forest.py`](skills/task-forest/scripts/task_forest.py) |
-| 103 | ✓ | [`skills/task-forest/scripts/validate_task_forest_export.py`](skills/task-forest/scripts/validate_task_forest_export.py) |
-| 104 | ✓ | [`skills/task-forest/SKILL.md`](skills/task-forest/SKILL.md) |
-| 105 | ✓ | [`skills/user-profile-keeper/agents/openai.yaml`](skills/user-profile-keeper/agents/openai.yaml) |
-| 106 | ✓ | [`skills/user-profile-keeper/references/examples.md`](skills/user-profile-keeper/references/examples.md) |
-| 107 | ✓ | [`skills/user-profile-keeper/references/privacy-boundary.md`](skills/user-profile-keeper/references/privacy-boundary.md) |
-| 108 | ✓ | [`skills/user-profile-keeper/references/profile-schema.md`](skills/user-profile-keeper/references/profile-schema.md) |
-| 109 | ✓ | [`skills/user-profile-keeper/references/questionnaire.md`](skills/user-profile-keeper/references/questionnaire.md) |
-| 110 | ✓ | [`skills/user-profile-keeper/references/task-clarifier-integration.md`](skills/user-profile-keeper/references/task-clarifier-integration.md) |
-| 111 | ✓ | [`skills/user-profile-keeper/references/update-policy.md`](skills/user-profile-keeper/references/update-policy.md) |
-| 112 | ✓ | [`skills/user-profile-keeper/scripts/onboarding_webui.py`](skills/user-profile-keeper/scripts/onboarding_webui.py) |
-| 113 | ✓ | [`skills/user-profile-keeper/scripts/profile_store.py`](skills/user-profile-keeper/scripts/profile_store.py) |
-| 114 | ✓ | [`skills/user-profile-keeper/scripts/smoke_test_onboarding.py`](skills/user-profile-keeper/scripts/smoke_test_onboarding.py) |
-| 115 | ✓ | [`skills/user-profile-keeper/SKILL.md`](skills/user-profile-keeper/SKILL.md) |
+| 89 | ✓ | [`skills/task-clarifier/evals/test_behavior_guards.py`](skills/task-clarifier/evals/test_behavior_guards.py) |
+| 90 | ✓ | [`skills/task-clarifier/evals/test_trigger_contract.py`](skills/task-clarifier/evals/test_trigger_contract.py) |
+| 91 | ✓ | [`skills/task-clarifier/SKILL.md`](skills/task-clarifier/SKILL.md) |
+| 92 | ✓ | [`skills/task-forest/agents/openai.yaml`](skills/task-forest/agents/openai.yaml) |
+| 93 | ✓ | [`skills/task-forest/assets/task-forest-overview.html`](skills/task-forest/assets/task-forest-overview.html) |
+| 94 | ✓ | [`skills/task-forest/references/concurrency.md`](skills/task-forest/references/concurrency.md) |
+| 95 | ✓ | [`skills/task-forest/references/goal-alignment.md`](skills/task-forest/references/goal-alignment.md) |
+| 96 | ✓ | [`skills/task-forest/references/html-visualization-contract.md`](skills/task-forest/references/html-visualization-contract.md) |
+| 97 | ✓ | [`skills/task-forest/references/integration-contract.md`](skills/task-forest/references/integration-contract.md) |
+| 98 | ✓ | [`skills/task-forest/references/node-types.md`](skills/task-forest/references/node-types.md) |
+| 99 | ✓ | [`skills/task-forest/references/schema.md`](skills/task-forest/references/schema.md) |
+| 100 | ✓ | [`skills/task-forest/references/session-close-workflow.md`](skills/task-forest/references/session-close-workflow.md) |
+| 101 | ✓ | [`skills/task-forest/scripts/task_forest_html.py`](skills/task-forest/scripts/task_forest_html.py) |
+| 102 | ✓ | [`skills/task-forest/scripts/task_forest_ordering.py`](skills/task-forest/scripts/task_forest_ordering.py) |
+| 103 | ✓ | [`skills/task-forest/scripts/task_forest.py`](skills/task-forest/scripts/task_forest.py) |
+| 104 | ✓ | [`skills/task-forest/scripts/validate_task_forest_export.py`](skills/task-forest/scripts/validate_task_forest_export.py) |
+| 105 | ✓ | [`skills/task-forest/SKILL.md`](skills/task-forest/SKILL.md) |
+| 106 | ✓ | [`skills/user-profile-keeper/agents/openai.yaml`](skills/user-profile-keeper/agents/openai.yaml) |
+| 107 | ✓ | [`skills/user-profile-keeper/references/examples.md`](skills/user-profile-keeper/references/examples.md) |
+| 108 | ✓ | [`skills/user-profile-keeper/references/privacy-boundary.md`](skills/user-profile-keeper/references/privacy-boundary.md) |
+| 109 | ✓ | [`skills/user-profile-keeper/references/profile-schema.md`](skills/user-profile-keeper/references/profile-schema.md) |
+| 110 | ✓ | [`skills/user-profile-keeper/references/questionnaire.md`](skills/user-profile-keeper/references/questionnaire.md) |
+| 111 | ✓ | [`skills/user-profile-keeper/references/task-clarifier-integration.md`](skills/user-profile-keeper/references/task-clarifier-integration.md) |
+| 112 | ✓ | [`skills/user-profile-keeper/references/update-policy.md`](skills/user-profile-keeper/references/update-policy.md) |
+| 113 | ✓ | [`skills/user-profile-keeper/scripts/onboarding_webui.py`](skills/user-profile-keeper/scripts/onboarding_webui.py) |
+| 114 | ✓ | [`skills/user-profile-keeper/scripts/profile_store.py`](skills/user-profile-keeper/scripts/profile_store.py) |
+| 115 | ✓ | [`skills/user-profile-keeper/scripts/smoke_test_onboarding.py`](skills/user-profile-keeper/scripts/smoke_test_onboarding.py) |
+| 116 | ✓ | [`skills/user-profile-keeper/SKILL.md`](skills/user-profile-keeper/SKILL.md) |
 
 ---
 

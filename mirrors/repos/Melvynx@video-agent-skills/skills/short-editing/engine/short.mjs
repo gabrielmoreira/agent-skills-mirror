@@ -232,6 +232,12 @@ function keepSelect(tl) {
   // a - .001: a keep starting on a frame whose time rounds up at 4 decimals would lose that frame (1 per keep, ~0.7 s drift)
   return tree(tl.keeps.map(([a, b]) => `between(t,${(a - .001).toFixed(4)},${(b - .001).toFixed(4)})`));
 }
+// input seek to the keeps' span (1 s margin, timestamps kept so keepSelect's t still reads source time): a mix range at
+// 15:00 of a 16 min master decodes its 57 s, not the 15 min before it (75 s -> a few s per prepare)
+function keepSeek(tl) {
+  const a = Math.max(0, Math.floor((Math.min(...tl.keeps.map(k => k[0])) - 1) * FPS) / FPS), b = Math.max(...tl.keeps.map(k => k[1])) + 1;
+  return a < 5 ? [] : ['-ss', a.toFixed(6), '-t', (b - a).toFixed(6), '-copyts'];
+}
 
 // grade: true = the default look, fitted to the take's exposure: it measures the face (a box under cam.eyes, median of 5
 // frames). DIM (face luma <= 80, a dim warm room): brighter face and mids, solid blacks, 0.84 saturation so the wood and
@@ -323,15 +329,18 @@ function gradeChain(g) {
   return `scale=in_color_matrix=${srcMatrix()}:in_range=tv,format=gbrp,${g},scale=out_color_matrix=bt601:out_range=pc,format=yuvj420p`;
 }
 
+// spec.cam.lag (s): how late the picture is on the voice in the take (a browser webcam runs ~0.17 s behind its mic, the
+// Recorder takes of 02/11 measured 5-6 frames). The cuts follow the voice, so the camera reads every keep that much later.
 function extractCam(spec, tl) {
-  const [cx, cy, cw, ch] = spec.cam?.crop || [400, 0, 1200, 1080], g = gradeOf(spec);
+  const [cx, cy, cw, ch] = spec.cam?.crop || [400, 0, 1200, 1080], g = gradeOf(spec), lag = spec.cam?.lag || 0;
   const dir = P('frames/cam'); fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
+  if (lag) tl = { ...tl, keeps: tl.keeps.map(([a, b, o]) => [a + lag, b + lag, o]) };
   const sel = keepSelect(tl);
   // software decode on all cores: 6 s for a 143 s HEVC take, VideoToolbox (copy-back) and -threads 4 are ~8 s
   // fps= BEFORE select: a VFR phone/Tella take is first put on the exact 30 fps grid, so every keep yields exactly
   // (b - a) * 30 frames and the picture never drifts from the voice (select on raw VFR lost ~7 frames over 12 min).
   // spec.cam.q = JPEG quality (2 = near lossless for long-form, 3 = default)
-  ff(['-threads', '0', '-i', P('assets/source.mp4'), '-vf', `fps=${FPS},select='${sel}',setpts=N/${FPS * (tl.speed || 1)}/TB,fps=${FPS},crop=${cw}:${ch}:${cx}:${cy}${g ? ',' + gradeChain(g) : ''}`,
+  ff(['-threads', '0', ...keepSeek(tl), '-i', P('assets/source.mp4'), '-vf', `fps=${FPS},select='${sel}',setpts=N/${FPS * (tl.speed || 1)}/TB,fps=${FPS},crop=${cw}:${ch}:${cx}:${cy}${g ? ',' + gradeChain(g) : ''}`,
     '-fps_mode', 'passthrough', '-an', '-q:v', String(spec.cam?.q ?? 3), '-start_number', '0', path.join(dir, '%05d.jpg')]);
   let n = fs.readdirSync(dir).filter(f => f.endsWith('.jpg')).length;
   // freeze (spec.pause, spec.inserts), earliest first: shift every frame after the gap, then fill it with the last frame before it
@@ -403,13 +412,23 @@ function repeats(dir) {
   }
   return alias;
 }
+// iPhone B-roll is HDR (HLG or PQ, BT.2020) too: read as SDR it comes out grey and washed ("les couleurs du B-roll sont
+// à chier"). On a Mac, VideoToolbox tone-maps it to SDR BT.709 while decoding (the look the iPhone shows); elsewhere it
+// stays as is, with a warning.
+const SDR_VT = 'scale_vt=color_matrix=bt709:color_primaries=bt709:color_transfer=bt709,hwdownload,format=nv12,';
+function hdrClip(f) {
+  let trc = ''; try { trc = probe(f, 'stream=color_transfer').split('\n')[0]; } catch { return false; }
+  if (trc !== 'arib-std-b67' && trc !== 'smpte2084') return false;
+  if (process.platform !== 'darwin') { log(`WARNING: HDR clip (${trc}) ${path.basename(f)}, colors will look washed: convert it to SDR BT.709 first`); return false; }
+  return true;
+}
 function extractMedia(spec, prev, tl) {
   const out = {};
   for (const [id, m] of Object.entries(spec.media || {})) {
     // the key holds the file's size and mtime too: a clip re-encoded under the same name (a component captured again) is re-extracted
     const fp = path.resolve(PROJ, expand(m.src)), fst = fs.existsSync(fp) ? fs.statSync(fp) : null, stamp = fst && [fst.size, Math.round(fst.mtimeMs)];
-    const crops = !!m.alpha && !m.sync && overlayOnly(spec, id);
-    const key = JSON.stringify(m.sync ? [m, tl.keeps, tl.speed, stamp] : [m, stamp, ...(crops ? ['crop1'] : [])]), dir = P('frames/media', id);
+    const crops = !!m.alpha && !m.sync && overlayOnly(spec, id), hdr = !m.sync && fst && hdrClip(fp);
+    const key = JSON.stringify(m.sync ? [m, tl.keeps, tl.speed, stamp] : [m, stamp, ...(crops ? ['crop1'] : []), ...(hdr ? ['sdr1'] : [])]), dir = P('frames/media', id);
     if (prev?.[id]?.key === key && fs.existsSync(dir)) { out[id] = { ...prev[id], alias: prev[id].alias || repeats(dir) }; continue; }
     fs.rmSync(dir, { recursive: true, force: true }); fs.mkdirSync(dir, { recursive: true });
     // fill: true crops the clip to the frame's aspect first (full-screen B-roll, spec.broll), around focus [x, y] (0..1)
@@ -421,8 +440,9 @@ function extractMedia(spec, prev, tl) {
     let crop = null;
     if (m.sync) extractSynced(m, dir, tl, fill, w);
     else {
-      const input = ['-threads', '4', ...(m.from ? ['-ss', String(m.from)] : []), ...(m.dur ? ['-t', String(m.dur)] : []), '-i', path.resolve(PROJ, expand(m.src))];
-      let vf = `fps=${FPS},${fill}scale=${w}:-2:flags=lanczos${m.alpha ? ',format=rgba' : ''}`;
+      const input = ['-threads', '4', ...(hdr ? ['-hwaccel', 'videotoolbox', '-hwaccel_output_format', 'videotoolbox_vld'] : []),
+        ...(m.from ? ['-ss', String(m.from)] : []), ...(m.dur ? ['-t', String(m.dur)] : []), '-i', path.resolve(PROJ, expand(m.src))];
+      let vf = `${hdr ? SDR_VT : ''}fps=${FPS},${fill}scale=${w}:-2:flags=lanczos${m.alpha ? ',format=rgba' : ''}`;
       // an overlay is mostly transparent: only its visible box is stored (about half the pixels to decode and draw per frame)
       if (crops && (crop = alphaBox(input, vf))) vf += `,crop=${crop.box[2]}:${crop.box[3]}:${crop.box[0]}:${crop.box[1]}`;
       ff([...input, '-vf', vf, '-an', ...enc, '-start_number', '0', path.join(dir, `%05d.${ext}`)]);
@@ -530,7 +550,7 @@ async function prepare() {
   wordsDoc(tl);
   const prevF = fs.existsSync(P('assets/frames.json')) ? readJSON(P('assets/frames.json')) : {};
   const srcStat = fs.statSync(P('assets/source.mp4'));
-  const camKey = JSON.stringify([srcStat.size, Math.round(srcStat.mtimeMs), tl.keeps, tl.speed, spec.cam?.crop, tl.pause, tl.inserts, ...(gradeOf(spec) ? [gradeOf(spec)] : []), ...(spec.cam?.q != null ? [spec.cam.q] : [])]);
+  const camKey = JSON.stringify([srcStat.size, Math.round(srcStat.mtimeMs), tl.keeps, tl.speed, spec.cam?.crop, tl.pause, tl.inserts, ...(gradeOf(spec) ? [gradeOf(spec)] : []), ...(spec.cam?.q != null ? [spec.cam.q] : []), ...(spec.cam?.lag ? [spec.cam.lag] : [])]);
   let cam = prevF.cam;
   if (!(prevF.camKey === camKey && fs.existsSync(P('frames/cam')))) {
     cam = extractCam(spec, tl); log(`cam: ${cam} frames (expected ${Math.round(tl.duration * FPS)})`);
@@ -681,21 +701,32 @@ async function capture() {
   const { chromium } = await import('playwright-core');
   const bs = await chromium.launchServer({ executablePath: CHROME, headless: true, args: ['--disable-extensions', '--mute-audio', '--allow-file-access-from-files'] });
   const browser = await chromium.connect(bs.wsEndpoint());   // killed at the end, not closed (see openPage)
-  try {
+  // setT(t) is pure, so the frames are shared out over several pages (one renderer each) and shot in parallel;
+  // CDP's optimizeForSpeed PNG encoder is several times faster than Playwright's screenshot at 4K, still lossless
+  const workers = Math.max(1, Math.min(n, +flag('workers', Math.min(6, Math.max(1, os.cpus().length - 2)))));
+  const shoot = async k => {
     const page = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
-    page.on('pageerror', e => console.log('  pageerror:', e.message));
-    page.on('console', m => { if (m.type() === 'error') console.log('  page:', m.text()); });
-    page.on('requestfailed', r => console.log('  missing:', r.url()));
+    if (k === 0) {
+      page.on('pageerror', e => console.log('  pageerror:', e.message));
+      page.on('console', m => { if (m.type() === 'error') console.log('  page:', m.text()); });
+      page.on('requestfailed', r => console.log('  missing:', r.url()));
+    }
     await page.goto(pathToFileURL(html).href);
     await page.addStyleTag({ content: faces });
     await page.evaluate(() => Promise.all([...document.fonts].map(f => f.load().catch(() => {})))
       .then(() => Promise.all([...document.images].map(i => i.decode().catch(() => {})))));
     if (!(await page.evaluate(() => typeof window.setT === 'function'))) throw new Error(`${html}: no window.setT(t)`);
-    for (let i = 0; i < n; i++) {
+    const cdp = await page.context().newCDPSession(page);
+    if (alpha) await cdp.send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } });
+    const writes = [];
+    for (let i = k; i < n; i += workers) {
       await page.evaluate(t => window.setT(t), i / fps);
-      fs.writeFileSync(path.join(tmp, `${pad5(i)}.png`), await page.screenshot({ omitBackground: alpha, type: 'png' }));
+      const { data } = await cdp.send('Page.captureScreenshot', { format: 'png', optimizeForSpeed: true });
+      writes.push(fs.promises.writeFile(path.join(tmp, `${pad5(i)}.png`), Buffer.from(data, 'base64')));
     }
-  } finally { await bs.kill(); }
+    await Promise.all(writes);
+  };
+  try { await Promise.all(Array.from({ length: workers }, (_, k) => shoot(k))); } finally { await bs.kill(); }
   fs.mkdirSync(path.dirname(out), { recursive: true });
   ff(['-framerate', String(fps), '-i', path.join(tmp, '%05d.png'), ...(alpha ? ['-c:v', 'png', '-pix_fmt', 'rgba']
     : ['-c:v', 'libx264', '-crf', '10', '-preset', 'medium', '-pix_fmt', 'yuv420p', ...BT709]), out]);

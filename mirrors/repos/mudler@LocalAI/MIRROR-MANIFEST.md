@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 44 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 44 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 44 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,12 +99,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 37 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
 | 38 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
-| 39 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
-| 40 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
-| 41 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
-| 42 | → | [`.impeccable.md`](.impeccable.md) |
-| 43 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 44 | → | [`docs/content/development/addon-testing.md`](docs/content/development/addon-testing.md) |
+| 39 | ✓ | [`core/services/studio/builtinskills/tree/localai/SKILL.md`](core/services/studio/builtinskills/tree/localai/SKILL.md) |
+| 40 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
+| 41 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
+| 42 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
+| 43 | → | [`.impeccable.md`](.impeccable.md) |
+| 44 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 45 | → | [`docs/content/development/addon-testing.md`](docs/content/development/addon-testing.md) |
 
 ---
 

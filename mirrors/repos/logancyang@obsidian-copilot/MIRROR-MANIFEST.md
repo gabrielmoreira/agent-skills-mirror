@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 6 followed patterns, 16 file(s) materialized.
+Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 9 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 6 followed patt
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 16 |
+| Followed pats | 9 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,11 +52,14 @@ Mirror of `logancyang/obsidian-copilot` — 26 default patterns, 6 followed patt
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `internal-docs/TESTING_GUIDE.md`
+- `internal-docs/feature-map/README.md`
+- `internal-docs/FEATURE_MAP_GUIDE.md`
 - `internal-docs/STYLE_GUIDE.md`
 - `internal-docs/PLUGIN_DEV_GUIDE.md`
 - `internal-docs/PROCESS_GUIDE.md`
 - `internal-docs/DOCS_GUIDE.md`
 - `internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md`
+- `internal-docs/NOMENCLATURE.md`
 
 ## File Index
 
@@ -69,17 +72,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.cursor/rules/test-rule.mdc`](.cursor/rules/test-rule.mdc) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`internal-docs/GALLERY_REVIEW_COVERAGE.md`](internal-docs/GALLERY_REVIEW_COVERAGE.md) |
-| 7 | ✓ | [`src/agentMode/AGENTS.md`](src/agentMode/AGENTS.md) |
-| 8 | ✓ | [`src/agentMode/CLAUDE.md`](src/agentMode/CLAUDE.md) |
-| 9 | ✓ | [`src/modelManagement/AGENTS.md`](src/modelManagement/AGENTS.md) |
-| 10 | ✓ | [`src/modelManagement/CLAUDE.md`](src/modelManagement/CLAUDE.md) |
-| 11 | → | [`internal-docs/DOCS_GUIDE.md`](internal-docs/DOCS_GUIDE.md) |
-| 12 | → | [`internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md`](internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md) |
-| 13 | → | [`internal-docs/PLUGIN_DEV_GUIDE.md`](internal-docs/PLUGIN_DEV_GUIDE.md) |
-| 14 | → | [`internal-docs/PROCESS_GUIDE.md`](internal-docs/PROCESS_GUIDE.md) |
-| 15 | → | [`internal-docs/STYLE_GUIDE.md`](internal-docs/STYLE_GUIDE.md) |
-| 16 | → | [`internal-docs/TESTING_GUIDE.md`](internal-docs/TESTING_GUIDE.md) |
+| 6 | ✓ | [`docs/projects.md`](docs/projects.md) |
+| 7 | ✓ | [`docs/relevant-notes.md`](docs/relevant-notes.md) |
+| 8 | ✓ | [`internal-docs/feature-map/agent-home.md`](internal-docs/feature-map/agent-home.md) |
+| 9 | ✓ | [`internal-docs/feature-map/agent-questions.md`](internal-docs/feature-map/agent-questions.md) |
+| 10 | ✓ | [`internal-docs/feature-map/agent-replies.md`](internal-docs/feature-map/agent-replies.md) |
+| 11 | ✓ | [`internal-docs/feature-map/agent-setup.md`](internal-docs/feature-map/agent-setup.md) |
+| 12 | ✓ | [`internal-docs/feature-map/chat-controls.md`](internal-docs/feature-map/chat-controls.md) |
+| 13 | ✓ | [`internal-docs/feature-map/chat-input.md`](internal-docs/feature-map/chat-input.md) |
+| 14 | ✓ | [`internal-docs/feature-map/chat-rows.md`](internal-docs/feature-map/chat-rows.md) |
+| 15 | ✓ | [`internal-docs/feature-map/chat-tabs.md`](internal-docs/feature-map/chat-tabs.md) |
+| 16 | ✓ | [`internal-docs/feature-map/copilot-navigator.md`](internal-docs/feature-map/copilot-navigator.md) |
+| 17 | ✓ | [`internal-docs/feature-map/multi-surface-journeys.md`](internal-docs/feature-map/multi-surface-journeys.md) |
+| 18 | ✓ | [`internal-docs/feature-map/permission-requests.md`](internal-docs/feature-map/permission-requests.md) |
+| 19 | ✓ | [`internal-docs/feature-map/plan-proposals.md`](internal-docs/feature-map/plan-proposals.md) |
+| 20 | ✓ | [`internal-docs/feature-map/projects.md`](internal-docs/feature-map/projects.md) |
+| 21 | ✓ | [`internal-docs/feature-map/queued-messages.md`](internal-docs/feature-map/queued-messages.md) |
+| 22 | ✓ | [`internal-docs/feature-map/relevant-notes.md`](internal-docs/feature-map/relevant-notes.md) |
+| 23 | ✓ | [`internal-docs/feature-map/report-issue.md`](internal-docs/feature-map/report-issue.md) |
+| 24 | ✓ | [`internal-docs/feature-map/status-and-error-cards.md`](internal-docs/feature-map/status-and-error-cards.md) |
+| 25 | ✓ | [`internal-docs/feature-map/turn-diffs.md`](internal-docs/feature-map/turn-diffs.md) |
+| 26 | ✓ | [`internal-docs/GALLERY_REVIEW_COVERAGE.md`](internal-docs/GALLERY_REVIEW_COVERAGE.md) |
+| 27 | ✓ | [`src/agentMode/AGENTS.md`](src/agentMode/AGENTS.md) |
+| 28 | ✓ | [`src/agentMode/CLAUDE.md`](src/agentMode/CLAUDE.md) |
+| 29 | ✓ | [`src/modelManagement/AGENTS.md`](src/modelManagement/AGENTS.md) |
+| 30 | ✓ | [`src/modelManagement/CLAUDE.md`](src/modelManagement/CLAUDE.md) |
+| 31 | → | [`internal-docs/DOCS_GUIDE.md`](internal-docs/DOCS_GUIDE.md) |
+| 32 | → | [`internal-docs/FEATURE_MAP_GUIDE.md`](internal-docs/FEATURE_MAP_GUIDE.md) |
+| 33 | → | [`internal-docs/feature-map/README.md`](internal-docs/feature-map/README.md) |
+| 34 | → | [`internal-docs/NOMENCLATURE.md`](internal-docs/NOMENCLATURE.md) |
+| 35 | → | [`internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md`](internal-docs/OBSIDIAN_COMMUNITY_REVIEW.md) |
+| 36 | → | [`internal-docs/PLUGIN_DEV_GUIDE.md`](internal-docs/PLUGIN_DEV_GUIDE.md) |
+| 37 | → | [`internal-docs/PROCESS_GUIDE.md`](internal-docs/PROCESS_GUIDE.md) |
+| 38 | → | [`internal-docs/STYLE_GUIDE.md`](internal-docs/STYLE_GUIDE.md) |
+| 39 | → | [`internal-docs/TESTING_GUIDE.md`](internal-docs/TESTING_GUIDE.md) |
 
 ---
 

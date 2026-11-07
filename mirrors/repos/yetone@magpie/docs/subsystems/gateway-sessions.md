@@ -418,7 +418,9 @@ affinity see the request as the client sent it. The existing protocol
 readers handle Chat, Anthropic, Responses and Gemini; streaming replies use the
 existing decoders, with completed Responses items retaining custom tool calls.
 Only content actually sent through the gateway is available. Images are shown
-as placeholders; hidden reasoning, client-only operations and unsupported wire
+as placeholders, their base64 taken out before the 8 MiB input cap
+(`leanImages`), so a turn of pictures keeps its text (matrix0487 on Discord;
+`TestFileIDConversationStillShows`); hidden reasoning, client-only operations and unsupported wire
 items cannot be reconstructed. This is not a raw request archive or remote
 session synchronization, and existing S3 archives are not imported.
 
@@ -895,7 +897,8 @@ for: `provider_test`, `api_detect` or `model_list`
   all leaves them out.
 - **A model list answered is no row:** magpie fetches lists by itself
   (start-up's `FetchNew`, the panel's and the Providers page's, and
-  `KeepListsFresh`, which asks a Remote magpie every 10 minutes), so a
+  `KeepListsFresh`, which asks a Remote magpie every 10 minutes, and
+  `KeepRemoteListsFollowed`, as soon as its list changes there), so a
   `model_list` row with a 2xx/3xx status and no error is neither written
   (`usage`'s `probelog.Sink`) nor read back from an older log
   (`quietProbe`, in the index's parse): ferock on Discord, a Requests page

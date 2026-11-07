@@ -49,19 +49,19 @@
 
 Para entender cómo se obtuvo un resultado, consulte los datos de entrada, el código y el historial de ejecución disponibles. Para compartir su trabajo, elija las ramas de conversación, las versiones de los archivos, los registros del Notebook y las pruebas de verificación que quiera incluir y expórtelos en un paquete `.science`.
 
-### 💡 AIPOCH Open-Science v1.0.8 — Novedades
+### 💡 AIPOCH Open-Science v1.1.0 — Novedades
 
-_4 de noviembre de 2026_
+_6 de noviembre de 2026_
 
-- **Ajustes**: Pestañas por función organizan la información de la aplicación, los diagnósticos y la ayuda.
-- **Importación de bibliografía**: Hasta **100** identificadores DOI, arXiv o PubMed, o enlaces oficiales de artículos, por lote, con normalización y eliminación de duplicados.
-- **Resúmenes de estudios con IA**: Presentan la pregunta, la población, los métodos, los resultados principales y las limitaciones, e indican si utilizan el texto completo o el resumen.
-- **Recursos de sesión**: Los cinco marcos de agentes liberan los procesos al finalizar las sesiones para reducir la acumulación de memoria.
-- **Modelos**: Tencent TokenHub añade Hy4 y rutas DeepSeek V4.1 Flash, además de entrada de imágenes para determinados modelos.
-- **Datos científicos y PDF**: Se restablecen las consultas eQTL Catalogue con validación GRCh38 y se mejoran el orden de lectura y la extracción de texto de PDF.
-- **Fiabilidad**: Se mejoran la verificación de dependencias de R y la procedencia de artefactos; se corrigen actualizaciones, descargas, red aislada e instalación de Pi.
+- **Películas de investigación**: Exporte sesiones completadas como películas portátiles con reproducción del terminal y narración. La narración requiere un modelo de voz instalado localmente.
+- **Emparejamiento móvil**: Abra el espacio de trabajo actual en un teléfono o tableta mediante un código QR, por WiFi local o un túnel Pinggy; el tráfico de Internet pasa por los servidores de Pinggy.
+- **Biblioteca bibliográfica en la CLI y MCP**: Busque y gestione las referencias desde la línea de comandos y los clientes MCP, con exploración de solo lectura más herramientas de escritura.
+- **Resúmenes que se pueden reanudar**: Los resúmenes por lotes de artículos se reanudan tras las interrupciones sin regenerar los resultados completados.
+- **Centro de recursos**: Centro de recursos renombrado con una disposición adaptada de la biblioteca de casos, enlaces externos más compactos y configuración de cómputo bajo conexiones.
+- **Diagnóstico**: Las exportaciones conservan la evidencia de ejecución de Notebook, permiten seleccionar registros históricos del backend y pueden incluir grabaciones de recursos opcionales (Windows).
+- **Correcciones de fiabilidad**: Recuperación de conversaciones tras interrupciones, restauración de figuras y tablas de PDF desde escaneos con texto, y mejoras en el arranque, las comprobaciones de actualización de Windows y el uso de memoria.
 
-[Notas completas v1.0.8](https://github.com/aipoch/open-science/releases/tag/v1.0.8)
+[Notas completas v1.1.0](https://github.com/aipoch/open-science/releases/tag/v1.1.0)
 
 <p align="center">
  <img width="1920" height="1140" alt="Banner principal de AIPOCH Open-Science: Science, Open to All — un entorno de investigación de IA científica de código abierto, independiente del modelo y autohospedado" src="../images/readme/open-science-banner.png" />
@@ -310,7 +310,7 @@ Los PDF traducidos pueden refluir de forma opcional el texto del cuerpo y los pi
 
 En la aplicación de escritorio también puede exportar la procedencia de artefactos como RO-Crate 1.1. Un paquete de entorno ligado a una versión solo puede crear un entorno gestionado si la captura está completa y es compatible con la plataforma de destino; no es una copia de seguridad completa del equipo.
 
-Explore casos de investigación en el mercado Sharing desde Inicio o desde el espacio de conversación, filtre por categoría, busque por palabra clave y descargue paquetes desde los detalles de cada caso.
+Explore casos de investigación en el centro de recursos, filtre por categoría, busque por palabra clave y descargue paquetes desde los detalles de cada caso.
 
 ## Proveedores de modelos
 
@@ -388,9 +388,7 @@ La aplicación de escritorio y el navegador comparten el mismo servicio. Las apl
 
 ### Acceso remoto móvil
 
-Se puede acceder a la misma interfaz web de localhost desde un teléfono o una tableta mediante el emparejamiento de Remote.It. Empareje un navegador con un código de AIPOCH Open-Science de seis dígitos, apruébelo una vez en el escritorio y el espacio de trabajo permanecerá accesible sin exponer directamente el servidor de loopback. Puede revocar la confianza del navegador; además, los cambios de modo o el cierre del servicio invalidan de inmediato las sesiones remotas activas.
-
-El equipo anfitrión debe permanecer encendido y conectado, con AIPOCH Open-Science y el agente Remote.It en ejecución, y debe estar añadido a una cuenta de Remote.It con sesión iniciada. La autorización del navegador caduca y puede revocarse; consulte la [guía de control remoto](../remote-control.md).
+Escanee un código QR para abrir el espacio de trabajo actual en un teléfono o una tableta por WiFi local o un túnel Pinggy. El emparejamiento por WiFi permanece en la red local; los túneles de Internet encaminan el tráfico por los servidores de Pinggy, como indica el diálogo de conexión.
 
 ### CLI y SDK sin interfaz gráfica
 
@@ -426,7 +424,7 @@ R: El paso actual no cumple la condición requerida. Corrija cualquier fila del 
 <details>
 <summary>¿Cómo ejecuto trabajos en un clúster HPC remoto?</summary>
 
-R: **Computación remota (SSH)** permanece siempre habilitada y no necesita activarse en Configuración. Registre un host de cálculo SSH en **Configuración → Cálculo**, hágalo disponible para la sesión actual y utilice lenguaje natural o `/remote-compute-ssh`. Se necesita un host SSH accesible, autenticación válida, permisos sobre los directorios necesarios y el software, las dependencias y los recursos de cálculo que requiera la tarea. Direct SSH no requiere planificador; el modo Slurm exige un entorno Slurm operativo y permiso para enviar trabajos. “Siempre habilitada” se refiere a la habilidad, no a la disponibilidad permanente de cada host registrado.
+R: **Computación remota (SSH)** permanece siempre habilitada y no necesita activarse en Configuración. Registre un host de cálculo SSH en **Configuración → Conexiones → Cálculo**, hágalo disponible para la sesión actual y utilice lenguaje natural o `/remote-compute-ssh`. Se necesita un host SSH accesible, autenticación válida, permisos sobre los directorios necesarios y el software, las dependencias y los recursos de cálculo que requiera la tarea. Direct SSH no requiere planificador; el modo Slurm exige un entorno Slurm operativo y permiso para enviar trabajos. “Siempre habilitada” se refiere a la habilidad, no a la disponibilidad permanente de cada host registrado.
 
 </details>
 

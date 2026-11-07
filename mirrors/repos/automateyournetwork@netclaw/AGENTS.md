@@ -179,6 +179,10 @@ When unsure about severity or approach: escalate. Say "I'd recommend verifying t
 - non-secret profile/reference state, native secure sessions, memory-only CSRF/tickets. (174-cloud-client-integration)
 - Python3.12 federation; existing Node24.19/React18 HUD; TypeScript5.9 VS Code; Dart3.12.2/Flutter3.44.8 and Swift under installed Xcode27.2. + existing SQLite, qrcode, WebSocket/TLS/P256, Express, VS Code APIs, Flutter secure storage/mobile_scanner. No new server/framework or hosted QR service. (175-cloud-mobile-enrollment)
 - additive private enrollment issuance records and existing private federation authority; device secure storage for keys/pending identity/references; QR matrix only in transient UI memory. (175-cloud-mobile-enrollment)
+- Spec176 planned: Python3.12 federation/runtime; existing Node/React/TypeScript/Flutter clients; existing MCP, SQLite, Docker, OpenClaw and DefenseClaw with pinned Ollama0.40.11/Qwen3:0.6b CPU profiles. (176-ollama-members)
+- Spec176 planned: additive private parent/profile records, existing child authority, per-request claims and member/runner-wide unknown-provider latch; bounded client references. (176-ollama-members)
+- Python3.12 federation; Python3.10+ host helpers; existing Node24.19/React18 HUD; TypeScript5.9 VS Code; existing Flutter/Dart. + Existing asyncio/SQLite/cryptography/pyOpenSSL, FastMCP/MCP, pinned OpenClaw gateway and subnet MCP, Express/React, VS Code APIs, Flutter secure storage/scanner, OpenTofu1.13.2/Google8.9.0 and Caddy2.11.7. Reuse verified public artifact closures. (177-external-en2n-federation)
+- Separate private homes, federation DBs, keys, gateway state, existing grants/tasks/chat/GAIT. Bounded non-secret client provenance. Plans/evidence outside source in0700/0600 storage. (177-external-en2n-federation)
 
 - Spec 148 implementation: JavaScript ESM/Express/React HUD; HUD Node >=24.19 <25 or >=26.1; isolated bridge/tool Python 3.12 and companion Python 3.14; official MCP Node client 2.3.1 and isolated FastMCP 4.0.11/MCP Python SDK 2.3.0. General OpenClaw installer Node policy remains >=24.16 <25 or >=26.1.
 - Qualified Hermes baseline: v0.21.6, source 818c13be1dc4fd28987e1e881a9408224afd4535. Private MCP bridge/protected companion, schema-2 owned HUD bindings, SQLite admission/evidence records and installation-scoped browser storage. Mac and Ubuntu 26.04 WSL live/browser qualification is recorded in specs/148-hermes-hud-integration/closure.md; broader tool and platform qualification is not implied.
@@ -650,3 +654,179 @@ were removed. Baseline101containers/50networks, all4operation rows and source
 evidence are preserved. The owned simulator is shut down with profiles retained.
 The usable pilot/member keep their existing December1scope. Full stop before R05
 remains explicit; neither release nor acceptance starts another spec.
+
+
+### R05 / Spec176 SDD kickoff — 2026-11-05
+
+The owner explicitly started R05 after accepted R04a/R04b, requesting Spec176,
+heavy reuse of Thermidor and then the branch/spec artifacts. This supersedes the
+prior stop-before-R05 for this stage. Branch `176-ollama-members` contains the
+specification, evidence-derived plan/contracts and33 unchecked implementation/
+acceptance tasks. No R05 runtime/cloud/model/client execution occurred in preparation.
+Use the final Thermidor004 profile and tests, pinned in thermidor-reference.json;
+never import dirty HA work, Tailscale or expired trial/runtime state. Native subnet
+source needs bounded IPv4/IPv6 qualification; provider uncertainty requires a
+member/runner-wide latch as well as per-request claims. Preserve existing pilot,
+December1 lifetime, source1.18.6/extension1.6.1/Mobile1.0.4+7 and publication holds.
+Actual runtime changes retain exact scoped review; human R05 acceptance precedes
+R06/R07. No new optional loop. See specs/176-ollama-members/.
+
+
+### R05 implementation authorization — 2026-11-05
+
+Owner said to go ahead with the prepared Spec176, emphasizing proven/tested
+Thermidor reuse. Implementation is started; use the existing coordinator and
+separate-worktree delegation for R02–R05. No extra optional loop or release is
+authorized. Exact runtime/resource review, preservation and final human gate
+remain; do not repeat source-implementation permission requests.
+
+
+R05 owner clarification (2026-11-05): this is NetClaw with NetClaw members using
+Ollama over existing NetClaw iN2N, no Tailscale. Thermidor provides proven patterns,
+tests and lessons only; do not deploy/import the Thermidor product/runtime or
+introduce its transport, identities, authority or lifecycle. Final model/guard
+images and source are NetClaw-owned, with official pinned public Ollama/model bytes.
+
+### R05 exact 48-hour cloud approval — 2026-11-05
+
+The owner selected the48-hour window (~CAD5.47) for the reviewed separate
+2vCPU/8GiB Ollama member,40GiB disk and isolated network. This supersedes the
+proposed December1 retention for the new R05 member only. Revised saved plan
+`ca32d0d28314d3f90cd5aa0cf0ef5d923524d46e69b5cc3a141c54b2e14dba30`
+applied once:8creates,0changes,0destroys, stop2026-11-07T19:41:25Z. Preserve
+existing Border/R01 identities/history/DNS/state. Full owned cleanup after
+qualification must remove disk/IP residues; STOP alone is not cleanup. No
+publication/version/R06/R07 authorization is implied. Use fresh R05 state under
+`~/.local/share/netclaw/roadmap-r05-20261105/cloud-plan-48h/`; oldDec1plan is
+evidence-only and must not be applied. NetClaw Ollama members, noTailscale.
+
+### R05 technical qualification and retained delivery — 2026-11-06
+
+Spec176 implements fresh NetClaw Ollama members over existing strict iN2N, with
+Thermidor004 patterns/tests as the foundation and no Tailscale or Thermidor runtime.
+Actual local ARM64 IPv4/cloud AMD64 IPv6, combined browser, Mac VS Code and native
+iPhone simulator flows passed: separate exact approvals, native verified facts,
+signed results/durable ACKs, positive usage, confinement and finite resources.
+The integrated protected suite passed776 tests; client suites/builds and actual
+recovery evidence are recorded in specs/176-ollama-members/verification.md.
+
+Preserve the real unknown outcomes and original Mobile ordinal2 CLAIMED inference.
+Its actual model stop/reattest/recover/profile-rebind is durable; never clear the
+latch/database or replay old IDs. Two deliberate cloud pause outcomes remain
+unknown with zero inference/tool dispatch. Actual shared worker restart and all
+three clients' GET-only recovery preserved authority/results/claims/call counts.
+Small-model commentary can be inaccurate; native independently verified facts
+are authoritative and displayed separately. Physical iPhone, other OS/runtime/
+model/GPU/HA/eN2N and live injected native-ACK-loss qualification are not implied.
+
+The existing owner Border, original protected history/bindings/keys and unrelated
+runtimes remain preserved. Final disposable cleanup removed34 stopped containers
+and11 empty networks after verified export, in addition to the earlier17/6.
+Original failed helper attempts and one-use continuation receipts remain retained.
+The intended two models, canonical qualification peers, member homes and owned
+networks remain for the approved48-hour delivery. Primary private archive:
+`~/.local/share/netclaw/roadmap-r05-20261105/handoff-export/final-20261105T222010Z/`,
+manifest `d80bc85f4c2603002231b9ce29cbc4d2d848086da156d99d9b076f4774fea4e6`;
+later cleanup/current-state evidence is separately sealed, never rewritten into
+that primary archive. Use current handoff pointers, not historical startup payloads.
+
+Full owned cloud cleanup is armed for November7: quiesce/export19:36:25UTC,
+exact ten-resource destruction no earlier19:41:25UTC. Current execution manifest
+`5b6a39412c4d02f8ab9ad3923af9768eef34eddc62cd281820a13f41b7d201ec` binds the
+recovered cloud profile and verified Docker absence handling. It requires this Mac awake/logged-in/online, Docker and
+gcloud/IAP authorization. Independent VM STOP remains the fallback; disk/IP costs
+remain if full deletion does not succeed. Future teardown is not yet completed
+and is not a hard spending cap. Never replay spent activation/recovery/cleanup
+claims; inspect actual state after interruption. Existing Border lifetime is
+unchanged. After this technical handoff, the owner explicitly requested completion,
+commit/PR/merge and return to main on November6, accepting R05 and closing33/33
+tasks. Source integration is authorized; do not repeat permission requests.
+Source1.18.6, extension1.6.1 and Mobile1.0.4+7 remain unchanged; no release/version/
+public rollout or R06 implementation is authorized. Preserve both independent
+Spec176 directories (ollama-members and upstream convergence-vm-security). Next
+is R06 external federation, then R07 recovery, R08 Border HA, R09 three-region
+GCP and R10 Azure single region. Recheck the next free spec number at kickoff.
+See specs/176-ollama-members/source-integration.md for the clear-session handoff.
+
+### R06 / Spec177 kickoff — 2026-11-06
+
+The owner explicitly started R06, requested a new branch and full SDD through
+100%, and clarified that existing non-cloud eN2N already works: confirm and fix
+cloud parity without redesigning federation. Branch177-external-en2n-federation
+uses three independent NetClaw organizations, full triangle/all six directions.
+Two cloud Borders use separate resources in the existing GCP project; local C
+is a third organization. Source-planning default is fresh ordinary full Borders,
+not changes to existing protected homes. Runtime-profile question remains open;
+no cloud activation or approval is inferred from silence. Exact resource/runtime
+plans, owner resource preservation, R05 November7 teardown and release holds
+remain. Research agents are read-only under Spec Kit planning; no implementation
+delegation or later roadmap stage is implied. See specs/177-external-en2n-federation/.
+
+
+### R06 source and concrete review checkpoint — 2026-11-06
+
+Spec177 source implementation/preparation has24/35tasks complete. Existing eN2N
+strict triangle, selected-runtime MCP, original-request recovery, external native
+source attribution and ordinary cloud HUD/editor/Mobile support are implemented.
+Full federation/gateway/cloud-control1758pass/5skip; HUD518; editor205/3skip;
+Flutter497/analyzer; native Linux packages and Caddy validation pass. These are
+source/offline results, not actual R06 cloud/native qualification.
+
+The full concrete activation packet is pending owner review. Fresh run
+20261106-a4fd has a saved16-create foundation and a34-create activation preview;
+no cloud/DNS/provider mutation or apply attempt occurred. Do not apply the
+combined preview. After actual scoped approval, continue all delegated steps
+without repeating permission requests; retain exact plans and no-replay evidence.
+Expiry Nov8 15:19:35Z, base cloud estimate CAD10.95/48h plus disclosed usage.
+Preserve R05 Nov7 19:36:25Z/19:41:25Z retirement and original Border December1.
+Source1.18.6/extension1.6.1/Mobile1.0.4+7, no publication or R07. See Spec177
+resume.md/deployment-review.md. No100% claim until required live tasks close.
+
+
+R06 full activation delegation —2026-11-06: the owner approved the complete
+Spec177 deployment-review.md packet with “yes go go go go go” and “get it to100%
+yes ?”. Foundation/runtime/DNS/TLS/Sonnet/all-six-direction/native clients and
+bounded retirement are delegated. Do not repeat the same permission requests.
+Preserve exact state/plans, unknown outcomes, R01/R04a/R05 and existing retirement
+schedules. Fixed R06 expiryNov8 15:19:35Z and release/R07 hold remain. GAIT7a196046.
+
+### R06 / Spec177 technical closure — 2026-11-06
+
+This supersedes the24/35preparation checkpoint above. Full SDD and35/35tasks are
+complete for three independent ordinary OpenClaw/Sonnet organizations, cloud A/B
+plus local C. All six directions and actual browser/editor/iOS simulator flows,
+refusals, budget/consent boundaries and original-result loss/restart recovery pass.
+Exact native evidence counts16subnet calls,3workspace reads,38provider responses;
+no device command or unauthorized execution. The final Mobile cold-load race is
+fixed with shared in-flight loading;499Flutter tests and native same-turn recovery
+pass. Source/runtime hashes and historical failures are in Spec177 verification.
+
+Preserve private roadmap-r06-20261106 state/receipts and never replay spent plans
+or requests. Two owned cloud Borders/local C are intentionally retained within
+Nov8window:15:09:35Zquiesce/export,15:14:35Zexact34-resource teardown plus DNS/key,
+15:19:35ZGCESTOP/guard fallback. Loaded Mac jobcom.netclaw.r06-retire-48h needs the
+Mac awake/online; future deletion is not an observed zero-residue result. R05Nov7
+schedule and original BorderDecember1scope are unchanged. Source1.18.6/extension
+1.6.1/Mobile1.0.4+7 stay unchanged. No source integration, release/public rollout,
+existing-client upgrade or R07 is authorized by technical closure.
+
+R06 final history qualification: actual cold native CLI listing hit20.25s while
+model discovery took24.20s. Cloud host renderer opts into bounded60s history reads;
+composed saved-history proxy deadline130s. Final HUD520passes, cloud22passes.
+Original browser result recovered with zero provider replay; transcript hashes
+remain unchanged (38responses). Four-request proxy admission can return429 during
+initial dashboard polling; existing Refresh chats recovers the read. Preserve
+these witnesses and exact v4 amendments in Spec177/history-recovery.
+
+### R06 acceptance and source integration — 2026-11-06
+
+After the35/35technical handoff, the owner explicitly requested all completed
+R06 changes committed, a PR merged into main, completed-branch deletion and
+return to main, plus a short completion write-up and R07–R10 brief. This accepts
+R06 and supersedes its source-integration hold. Preserve the separate open
+`177-defenseclaw-sidecar-identity` PR by full path; do not merge that unrelated
+PR or rename historical Spec177. Source integration does not redeploy the frozen
+qualified runtimes. Existing R05/R06 expiry and cleanup authority are preserved.
+The roadmap version/release/public rollout hold remains; R07–R10 briefing does
+not start implementation or authorize new cloud resources. See Spec177
+source-integration.md and docs/roadmap/issue-310/R07-R10-next-steps.md.

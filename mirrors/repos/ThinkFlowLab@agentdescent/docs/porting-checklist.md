@@ -1,7 +1,7 @@
 # Porting checklist
 
 Use this before calling an algorithm example a **benchmark-faithful** port;
-microports/analogues follow the [MethodPolicy checklist](porting-methodpolicy.md).
+microports/analogues follow the [MethodPolicy checklist](porting-methodpolicy.md); or the [algorithm decision tree](algorithm-decision-tree.md) if unsure.
 
 - [ ] Give the port its own directory: `examples/<name>/` with `__init__.py`, a `README.md`, the entry point, and any helper only this port uses.
 - [ ] Start from **released code**, not only the paper; follow code on conflicts and document each conflict in `docs/algo-<name>.md`.
@@ -15,6 +15,6 @@ microports/analogues follow the [MethodPolicy checklist](porting-methodpolicy.md
 - [ ] Make `--dry-run` return before data/model setup: zero network and zero API key.
 - [ ] Add `tests/test_<name>_example.py`; all tests must run offline.
 - [ ] Add `docs/algo-<name>.md` in the shape every other port page has: lead blockquote, the Paper / Upstream code / Example / Domain / Layer / Fidelity table, the algorithm, how it plugs into `evolve()`, the plug-ins it implements, **Measured results — `<domain>`** (or why none exists), **Run it**, and the offline-tests line.
-- [ ] Add its rows to [the eight](self-evolution-examples.md#the-eight-benchmark-faithful-ports), to [all twenty-three](self-evolution-examples.md#measured-results-all-twenty-three), and to the README's fidelity table.
+- [ ] Add its rows to [the eight](self-evolution-examples.md#the-eight-benchmark-faithful-ports) and to [all twenty-three](self-evolution-examples.md#measured-results-all-twenty-three); update the README's port list.
 - [ ] State heavy-infrastructure boundaries such as Docker or gated data instead of hiding them.
 - [ ] Record the port author/maintainer so later fidelity decisions have an owner.

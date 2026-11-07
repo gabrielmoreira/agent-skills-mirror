@@ -157,8 +157,10 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   `<omh_home>/setup-profile.json`, written by `omh update-check set` or
   confirmed in `omh setup`; a home that never stored a mode keeps it on), and
   nothing is asked without an OMH home. `src/tui/update_notice.py`
-  is the other in-process network client in `src/`, and only `tui/app.py` may
-  import it.
+  is the other in-process network client in `src/`. Only `tui/app.py` and
+  `commands/setup.py` may import it; the latter calls `fetch_latest` once in
+  an explicit `omh update` on an installer-managed stable install, to pick the
+  release wheel it is about to download, and never moves on a failed read.
 - **Show-reel provider scripts**: `src/skills/show_reel_toolkit/scripts/eleven.py`
   and `narrate.py` (ElevenLabs TTS/STT/SFX/music by spawning `curl`, key from
   `ELEVENLABS_API_KEY` only, passed on curl's stdin) and `codex_ref_image.sh`
@@ -181,11 +183,16 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   (`src/tui/herdr.py`, in INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`): a local
   socket, no network call. The gateway child does not get the pane's
   `HERDR_PANE_ID`; herdr's CLI and skill still work there, without a
-  current-pane default. On `/gateway restart`, typed by the person and
-  confirmed in the slot, it runs Hermes' own `hermes gateway restart --yes
-  --detach` on Hermes' interpreter (`src/tui/gateway_restart.py`, in
-  INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`) and reattaches to the same
-  session; it signals no process itself.
+  current-pane default. On `/gateway restart`, typed by the person or offered
+  once after an update, and confirmed in the slot, it runs Hermes' own `hermes
+  gateway restart --yes --detach` on Hermes' interpreter
+  (`src/tui/gateway_restart.py`, in INVARIANT 1's `PROCESS_SPAWN_ALLOWLIST`)
+  and reattaches to the same session; it signals no process itself. `omh
+  update` asks the same on a terminal, defaulting to no, or takes
+  `--restart-gateway`, and then runs the person's `hermes` with those
+  arguments. When `omh update` moved the generation under a running TUI and
+  the person picks Restart between turns, the TUI exits and the `omh` that
+  launched it starts the installed generation's `omh --resume <id>`.
   Read [`docs/OMH-TUI-BOUNDARY.md`](docs/OMH-TUI-BOUNDARY.md) before touching
   `src/tui/`.
 - No Hermes core patching.

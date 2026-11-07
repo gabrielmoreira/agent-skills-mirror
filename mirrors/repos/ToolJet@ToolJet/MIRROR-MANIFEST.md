@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 83 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 83 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -126,22 +126,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 65 | ✓ | [`marketplace/AGENTS.md`](marketplace/AGENTS.md) |
 | 66 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
 | 67 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
-| 68 | ✓ | [`server/src/modules/app-validation/AGENTS.md`](server/src/modules/app-validation/AGENTS.md) |
-| 69 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
-| 70 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
-| 71 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
-| 72 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
-| 73 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
-| 74 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
-| 75 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
-| 76 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
-| 77 | ✓ | [`server/src/modules/mcp-oauth/AGENTS.md`](server/src/modules/mcp-oauth/AGENTS.md) |
-| 78 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
-| 79 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
-| 80 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
-| 81 | ✓ | [`server/src/modules/tooljet-db/AGENTS.md`](server/src/modules/tooljet-db/AGENTS.md) |
-| 82 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
-| 83 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
+| 68 | ✓ | [`server/src/modules/app-environments/AGENTS.md`](server/src/modules/app-environments/AGENTS.md) |
+| 69 | ✓ | [`server/src/modules/app-validation/AGENTS.md`](server/src/modules/app-validation/AGENTS.md) |
+| 70 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
+| 71 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
+| 72 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
+| 73 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
+| 74 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
+| 75 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
+| 76 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
+| 77 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
+| 78 | ✓ | [`server/src/modules/mcp-oauth/AGENTS.md`](server/src/modules/mcp-oauth/AGENTS.md) |
+| 79 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
+| 80 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
+| 81 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
+| 82 | ✓ | [`server/src/modules/tooljet-db/AGENTS.md`](server/src/modules/tooljet-db/AGENTS.md) |
+| 83 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
+| 84 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
 
 ---
 

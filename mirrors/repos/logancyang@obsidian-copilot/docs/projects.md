@@ -1,0 +1,84 @@
+# Projects
+
+Projects are focused workspaces inside Agent Chat. Each Project keeps its own instructions, reusable context, and chat history, so ongoing work for a client, codebase, course, or research topic stays together.
+
+A Project works with OpenCode, Claude, or Codex. It uses the agent, model, effort, and permission setting selected for the current chat. It does not lock you to a separate model.
+
+On the Agent Chat home screen, open **Projects** to browse your most recently used Projects. Scroll the list to see more, or use **Search projects** to find a Project by name or description. Search includes every Project, even those you have not scrolled to yet.
+
+## Create a Project
+
+1. Open **Agent Chat** from the ribbon or command palette.
+2. From the Agent Chat home screen, open **Projects** and select **New project**.
+3. Enter a name and select **Create**.
+
+Copilot opens the new Project immediately. Creation asks only for a name. Use **Edit project** to add a description, instructions, and saved context.
+
+Each Project has a folder under `<Copilot folder>/projects/`. The default root is `copilot/projects/`. Its `project.md` file stores Project details and the context list. Its `AGENTS.md` file contains the instructions you own and edit.
+
+## Add Project instructions
+
+Open the Project info menu beside the name and select **AGENTS.md**. You can also choose **Edit project** from the Projects list and edit **Project instructions**. Both open the same Project file.
+
+Vault-wide instructions still apply. Project instructions are more specific, so they take precedence when the two files conflict. The same Project `AGENTS.md` works with OpenCode, Claude, and Codex.
+
+Useful Project instructions include:
+
+- the goal and intended audience;
+- important source and output folders;
+- the expected deliverable format;
+- naming, style, or citation rules; and
+- actions that should always require confirmation.
+
+Keep stable rules in `AGENTS.md` and put one-off requests in chat. Start a new Project chat after changing the file so every backend reads the latest instructions. See [Instructions for Agent Chat and Quick Chat](system-prompts.md).
+
+## Add reusable context
+
+For a new Project, **Context** appears below the composer. After the Project has chats, it appears as a **Context** tab beside **Recent chats**.
+
+You can:
+
+- drag a vault file or folder into **Context**;
+- select **URL** to add a web page or YouTube video; or
+- select **Manage** or **Manage context** to add **Links**, **Tags**, **Properties**, **Folders**, and **Files**, or to manage **Ignore files**.
+
+Tags match tags stored in note properties. Properties can target notes by a frontmatter field, such as `Topics: Physics`.
+
+When a new Project chat starts, Copilot gives the agent a list of the saved context: folders, notes, and files by their location, and web pages and YouTube videos as links. Nothing is downloaded or converted in advance. The agent reads each source when a question needs it.
+
+An existing Project chat keeps the instructions and context captured when that chat started. Start a new chat after changing either one when you need the updated version.
+
+### File and link support
+
+Markdown, text, and source files can be read directly by the active agent. Binary files such as PDFs, Office documents, EPUBs, spreadsheets, and common images are not converted. Copilot gives the agent the absolute path of each original file, and the agent opens it with its own tools. With **Miyo document processing** on, agents use Copilot's Miyo parse tool for PDF and EPUB files. How well an agent reads a given format depends on that agent.
+
+The agent opens a saved web page with its own web tool or Copilot's web fetch Skill, and reads a YouTube video through Copilot's YouTube transcript Skill, which requires an eligible Copilot plan. An agent without its own web tool or the matching Skill cannot read a saved link.
+
+> **Private Projects:** When a chat starts, Copilot does not upload a Project's files or fetch its links. The list of file paths and links goes to the selected model as part of the first message. A link's address goes to Brevilabs only when the agent fetches it through a Copilot-hosted Skill. If a Project must not send task content to Brevilabs, use Markdown and document files with local tools or local [Miyo](vault-search-and-indexing.md), use a local model if prompts must also stay on the device, and disable cloud-backed Copilot Skills for every agent you use.
+
+**Ignore files** controls which files are listed in the Project's context. It is not a file permission setting. An agent can still find an ignored file through its own tools when the file is inside a location that agent can access.
+
+## Work with Project chats
+
+Inside a Project:
+
+- **Recent chats** and **Chat history** show that Project's conversations.
+- **New chat** starts a clean conversation with the latest Project instructions and context.
+- **Leave project** returns to the Agent Chat home screen.
+
+From the Projects list, hover over a Project to **Reveal in vault**, **Edit project**, **Archive**, or **Delete** it. The global **Recent chats** list on the Agent Chat home screen includes conversations from across Projects.
+
+Archiving a Project puts it away without deleting it. The Project and all of its chats, pinned ones included, disappear from the Projects list, **Recent chats** and **Chat history**. A chat that is still running keeps running. Select **View archived** below **Recent chats** to unarchive the Project, which brings back the Project and every chat in it, or to open it.
+
+Deleting a Project removes its Copilot Project configuration. It does not delete your ordinary vault notes or conversation notes already saved in the vault.
+
+## When to use a Project
+
+Use a Project when a task has a stable scope or will continue across several chats. Use a one-turn [context attachment](context-and-mentions.md) when the material matters only for the next message. Use the vault-root `AGENTS.md` when an instruction should apply everywhere.
+
+## Related
+
+- [Agent Chat](agent-mode-and-tools.md)
+- [Context and Mentions](context-and-mentions.md)
+- [`AGENTS.md` Examples](agents-md-examples.md)
+- [Copilot Plans, Privacy, and Self-Hosting](copilot-plus-and-self-host.md)

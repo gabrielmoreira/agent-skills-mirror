@@ -21,6 +21,7 @@ export async function boot() {
   const spec = mapSpec(withStyle(window.SPEC, style), mapper(tl)), FPS = tl.fps;
   for (const w of ['400', '500', '600', '700', '800']) await document.fonts.load(`${w} 40px ${K.F.sans}`);
   await document.fonts.load('500 40px "JetBrains Mono"');
+  await document.fonts.load('900 40px Archivo');   // board `label` items draw in it; unloaded, their first frames fall back to a serif
   K.setDisplay(spec.display);   // big-text look (style.display): its families must be loaded before the first frame
   if (K.D.font) await document.fonts.load(`${K.D.weight} 40px ${K.D.font}`);
   if (K.D.text) for (const w of ['600', '800']) await document.fonts.load(`${w} 40px ${K.D.text}`);
@@ -412,23 +413,28 @@ export async function boot() {
     }
     ctx.restore();
   }
+  // captions.reveal true: words appear one by one as they are said (velvet look), positions fixed on the whole chunk
   // captions.radius: corner radius of the band block as a multiple of size (.06); captions.shadow: a soft drop under it
   // captions.active (a colour, e.g. '#8A8A8A'): karaoke on the band, the words not being said take that colour and the
   // word being said takes captions.color (white); an emphasised word keeps captions.hi when it is not the current one
   function bandCaption(c, y, t) {
     const sp = spW(), padX = CS * .2, h = CS * 1.2, x0 = W / 2 - c.w / 2, b = K.midBase(y, CS);
-    // captions.bg 'none': no block, the words sit on the video with a soft shadow (captions.shadow false = none)
-    ctx.save(); if (cap.bg === 'none') { if (cap.shadow !== false) K.drop(ctx, .35, CS * .25, CS * .04, '0,0,0'); }
+    // captions.bg 'none': no block, the words sit on the video with a soft shadow (captions.shadow false = none, captions.shadowAlpha = its strength, .35)
+    ctx.save(); if (cap.bg === 'none') { if (cap.shadow !== false) K.drop(ctx, cap.shadowAlpha ?? .35, CS * .25, CS * .04, '0,0,0'); }
     else { ctx.beginPath(); ctx.roundRect(x0 - padX, y - h / 2, c.w + 2 * padX, h, CS * (cap.radius ?? .06)); ctx.fillStyle = cap.bg || C.ink; if (cap.shadow) K.drop(ctx, .28, CS * .45, CS * .17, '0,0,0'); ctx.fill(); ctx.shadowColor = 'transparent'; }
     ctx.font = K.font(CS, WT, CF); ctx.letterSpacing = LS + 'px'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     // captions.bold: faux bold for a single-weight font, a square stroke in the text colour of bold x size px (pixel fonts stay square)
     const BW = cap.bold ? cap.bold * CS : 0; if (BW) { ctx.lineWidth = BW; ctx.lineJoin = 'miter'; ctx.miterLimit = 2; }
     let cur = -1; if (cap.active && t !== undefined) c.words.forEach((w, i) => { if (w.start - .02 <= t) cur = i; });
+    // captions.reveal: each word appears as it is said (fades in over 70 ms), laid out on the whole chunk so the line never re-centers
+    const REV = cap.reveal && t !== undefined, A0 = ctx.globalAlpha;
     let x = x0; for (const [i, w] of c.words.entries()) {
-      const fg = cap.color || '#FFFFFF';
+      const fg = cap.color || '#FFFFFF', ww = wordW(w);
+      if (REV) { const a = Math.min(1, (t - (w.start - .02)) / .07); if (a <= 0) { x += ww + sp; continue; } ctx.globalAlpha = A0 * a; }
       ctx.fillStyle = ctx.strokeStyle = cap.active ? (i === cur ? fg : w.emph ? cap.hi || C.tint : cap.active) : w.emph ? cap.hi || C.tint : fg;
-      if (BW) ctx.strokeText(w.text, x, b); ctx.fillText(w.text, x, b); x += wordW(w) + sp;
+      if (BW) ctx.strokeText(w.text, x, b); ctx.fillText(w.text, x, b); x += ww + sp;
     }
+    ctx.globalAlpha = A0;
     ctx.restore();
   }
   // 'dim' (speedy-devv): the phrase builds word by word on 1-2 centered lines; spoken words grey (captions.color,
@@ -851,7 +857,7 @@ export async function boot() {
   // Captions are drawn once on top, by render().
   function frame(t, seam, imgs, { cam = true } = {}) {
     const ref = stageRef(t), cutImg = imgs.get(cutURL(t));
-    const R = { ctx, t, spec, tl, cam: imgs.get(camURL(t)), frame: (id, ct) => imgs.get(mediaURL(id, ct)) || null, media: id => frames.media[id], img: u => imgs.get(u) || null, U, camT, camFit: sm => camFit(t, sm), camEdge: edgePath, CW, CHh, pause: pz, pauseP: pauseP(t), allChunks, seam, seamRef: ref ?? seam };
+    const R = R_last = { ctx, t, spec, tl, cam: imgs.get(camURL(t)), frame: (id, ct) => imgs.get(mediaURL(id, ct)) || null, media: id => frames.media[id], img: u => imgs.get(u) || null, U, camT, camFit: sm => camFit(t, sm), camEdge: edgePath, CW, CHh, pause: pz, pauseP: pauseP(t), allChunks, seam, seamRef: ref ?? seam };
     ctx.drawImage(BG, 0, 0);
     if (CARD) {   // card layout: stage above the card, header, the camera card, then 'over' scenes
       ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, CARD.y - 6); ctx.clip();
@@ -877,7 +883,11 @@ export async function boot() {
     for (const s of scenes) if (s.layer === 'over' && t > s.from - 1 && t < (s.to ?? 1e9) + 1) SCENES[s.type]?.draw(R, s, t);
   }
   // quick fade + settle in (a cut that breathes), slow push while it plays, quick fade out
-  function fullBroll(t, imgs) {
+  // 'top' scenes: like 'over', but drawn above the full-screen B-roll (an animation that must stay on a B-roll cover)
+  let R_last = null;
+  function tops(t) { if (R_last) for (const s of scenes) if (s.layer === 'top' && t > s.from - 1 && t < (s.to ?? 1e9) + 1) SCENES[s.type]?.draw(R_last, s, t); }
+  function fullBroll(t, imgs) { brollOnly(t, imgs); tops(t); }
+  function brollOnly(t, imgs) {
     for (const b of brolls) {
       if (!brollOn(b, t)) continue;
       const img = imgs.get(mediaURL(b.media, Math.max(0, (b.offset || 0) + t - b.from)));

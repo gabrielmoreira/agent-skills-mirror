@@ -34,7 +34,7 @@ A named registry card alone (no MethodPolicy / matrix row) is
   table, **The mechanism**, **Where each piece lives**, **Boundaries**,
   **Measured results — `<domain>`**, **Run it**, and the offline-tests line.
 - [ ] Add its row to
-  [the eleven](self-evolution-examples.md#the-eleven-microports-and-analogues)
+  [the MethodPolicy table](self-evolution-examples.md#the-methodpolicy-microports-and-analogues)
   and, once measured, to
   [all twenty-three](self-evolution-examples.md#measured-results-all-twenty-three).
-- [ ] Record the port author and the upstream trace, exactly as Path A does.
+- [ ] Record the port author and the upstream trace, exactly as a benchmark-faithful port does.

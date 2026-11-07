@@ -10,7 +10,7 @@ no merge authority beyond AGENTS.md › Merge policy.
 
 ## 0. Before anything
 
-- `AGENT_PAUSE` is not `true` (`gh variable list -R Birfy/agentdescent`).
+- `AGENT_PAUSE` is not `true` (`gh variable list -R ThinkFlowLab/agentdescent`).
 - The issue is `agent-ready`, not `hold`, and nobody else is assigned.
 - Read AGENTS.md, CODE_STANDARDS.md and LESSONS.md from `origin/main`.
 - Claim: assign `Birfy`, add `agent-working`, comment with the branch name.
@@ -19,7 +19,7 @@ no merge authority beyond AGENTS.md › Merge policy.
 
 ```sh
 RUN=<run-root>/$(date +%Y%m%d-%H%M%S)-<issue>
-git clone https://github.com/Birfy/agentdescent "$RUN/repo" && cd "$RUN/repo"
+git clone https://github.com/ThinkFlowLab/agentdescent "$RUN/repo" && cd "$RUN/repo"
 git checkout -b agent/<issue>-<slug> origin/main
 python3 -m venv "$RUN/venv" && "$RUN/venv/bin/pip" install -e ".[dev,mcp]"
 ```
@@ -60,7 +60,7 @@ tip from scratch (a new commit voids the PASS).
 
 ## 6. Merge by tier
 
-- **T0/T1:** `gh pr merge <n> -R Birfy/agentdescent --auto --squash --match-head-commit <sha>`.
+- **T0/T1:** `gh pr merge <n> -R ThinkFlowLab/agentdescent --auto --squash --match-head-commit <sha>`.
 - **T2/T3:** add `awaiting-approval` and stop; Danyang clicks merge.
 - Never `--admin`, never the ruleset bypass.
 

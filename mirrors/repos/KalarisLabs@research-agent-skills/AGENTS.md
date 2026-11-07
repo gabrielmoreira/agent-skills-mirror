@@ -27,6 +27,7 @@ uv run tools/build_catalog.py [--check]   # regenerate derived files
 uv run python -m pytest -q                # tooling + skill script tests
 uv run tools/skill_quality.py             # static quality rubric (original skills must score >= 80)
 uv run tools/trigger_bench.py             # does the right skill get picked? (evals/*/evals.json)
+uv run tools/skill_scorecard.py <skill>   # full scorecard PR review (score, lines, routing, security)
 cd cli && npm ci && npm test              # CLI build + tests
 make check                                # everything CI runs on a pull request
 ```
@@ -55,3 +56,14 @@ changes. The graphify skill is never committed: `skills/` is the only place skil
   `tools/import_upstream.py` overwrites them.
 - Don't add upstream project names outside `LICENSES/`, `THIRD_PARTY_NOTICES.md` and `third_party/`
   (enforced by `tools/brand_guard.py`).
+
+## Agent skills
+
+### Issue tracker
+
+GitHub issues via `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context (`CONTEXT.md` + `docs/adr/`). See `docs/agents/domain.md`.
+

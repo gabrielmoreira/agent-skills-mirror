@@ -302,7 +302,8 @@ Before judging wheel-driven pan/zoom sensitivity, load the same reference's
 with received input rather than the harness request.
 
 Load [references/history-derived-checklist.md](references/history-derived-checklist.md)
-for the core visual/responsive defect catalog and standards-backed checks.
+for the core visual/responsive defect catalog and standards-backed checks,
+including complete multiline request, log and audit-table rows.
 For composition or density audits, including AI-generated UI or copy complaints,
 execute its **Information necessity before layout** check and select the matched
 **Established methods** before fixing line breaks. Before declaring rendered UI ready for
@@ -451,6 +452,11 @@ Also verify, when applicable:
 - file picker/dialog -> visible open/cancel/select path -> recovered app state;
 - print/PDF -> real Chrome preview -> nonblank pages;
 - Electron/native -> canonical app process/window -> native controls and shell.
+
+For a media library, evidence/review viewer or a video-download complaint, load
+[media playback and output cases](references/media-playback-and-output.md)
+before choosing samples. It covers poster-to-playback geometry, portrait/landscape,
+image notices, compatible previews, source identity, seeking and actual downloaded bytes.
 
 Load
 [references/journey-and-page-contracts.md](references/journey-and-page-contracts.md)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `earendil-works/pi` — 26 default patterns, 2 followed patterns, 23 file(s) materialized.
+Mirror of `earendil-works/pi` — 26 default patterns, 3 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `earendil-works/pi` — 26 default patterns, 2 followed patterns, 23 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 23 |
+| Followed pats | 3 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `earendil-works/pi` — 26 default patterns, 2 followed patterns, 23 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `.pi/skills/p2-ui.md`
 - `.pi/skills/interactive-testing.md`
 - `.pi/skills/release.md`
 
@@ -82,7 +83,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md`](packages/coding-agent/test/fixtures/skills/unknown-field/SKILL.md) |
 | 21 | ✓ | [`packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md`](packages/coding-agent/test/fixtures/skills/valid-skill/SKILL.md) |
 | 22 | → | [`.pi/skills/interactive-testing.md`](.pi/skills/interactive-testing.md) |
-| 23 | → | [`.pi/skills/release.md`](.pi/skills/release.md) |
+| 23 | → | [`.pi/skills/p2-ui.md`](.pi/skills/p2-ui.md) |
+| 24 | → | [`.pi/skills/release.md`](.pi/skills/release.md) |
 
 ---
 

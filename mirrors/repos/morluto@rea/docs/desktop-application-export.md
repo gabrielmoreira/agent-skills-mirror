@@ -88,9 +88,11 @@ The class declares:
 - For a vendor repository, `sources=[AptSource(apt=..., suite=...,
   components=[...], key="apt-keys/<name>.gpg")]`, with the retained key copied
   to that path (`.asc` when it is armored, which agentenv tells by its
-  content). apt takes one key per URI and suite, so sources that share them,
-  such as one repository listed for two architectures, are declared once, with
-  their components merged; one with a different key is left out. A repository
+  content). A PPA added with `add-apt-repository`, whose sources entry holds its
+  key in `Signed-By`, exports that key as `apt-keys/<name>.asc`. apt takes one
+  key per URI and suite, so sources that share them, such as one repository
+  listed for two architectures, are declared once, with their components
+  merged; one with a different key is left out. A repository
   whose key the capture did not verify, an Ubuntu Pro (ESM) repository, one
   whose sources entry's URI held a user name or password (which the capture
   did not record and the export never writes; the reason names neither them
@@ -188,8 +190,9 @@ container named `e81232be457d`, and many files hold the home path
 export removes them from what the bundle ships:
 
 - In seeded text files (text, JSON, key files and XML in the state view), in
-  UTF-16 files that start with a byte-order mark (keeping the mark and byte
-  order), and in the dconf keys, `user@host` becomes `user@localhost`, the
+  UTF-16 files that start with a byte-order mark (keeping the mark, byte order
+  and a following U+FEFF content character), and in the dconf keys,
+  `user@host` becomes `user@localhost`, the
   host name standing alone becomes `localhost`, and the captured home becomes
   `/home/user` wherever it is followed by `/`, the end of the text, or a
   character that cannot continue a file name. The host name counts only as a

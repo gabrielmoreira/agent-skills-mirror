@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for AI coding agents working on `Birfy/agentdescent`. Human
+Instructions for AI coding agents working on `ThinkFlowLab/agentdescent`. Human
 contributors: [CONTRIBUTING.md](CONTRIBUTING.md) has the same rules with more
 background. The owner and only maintainer is Danyang (GitHub `Birfy`).
 
@@ -16,7 +16,7 @@ background. The owner and only maintainer is Danyang (GitHub `Birfy`).
 One issue → one fresh clone → one branch → one PR → green CI → review → merge by tier.
 
 1. **Issue.** Work one `agent-ready` issue per session, in a **fresh clone**
-   (`git clone https://github.com/Birfy/agentdescent <run-dir>/repo`), never in a
+   (`git clone https://github.com/ThinkFlowLab/agentdescent <run-dir>/repo`), never in a
    shared or stale checkout.
 2. **Branch** from the latest `origin/main`. Write a test that **fails on
    `main`**, then fix the class of bug, not the one sample.
@@ -42,7 +42,7 @@ When a class of mistake repeats, date a lesson in LESSONS.md (`Seen N×`); after
 ## Merge policy
 
 The tier comes from the diff, never from the PR text:
-`python3 .github/scripts/risk_gate.py --pr <n> --repo Birfy/agentdescent`, and the
+`python3 .github/scripts/risk_gate.py --pr <n> --repo ThinkFlowLab/agentdescent`, and the
 controller sets the `risk:T*` label within ~30 minutes. Rules:
 [`.github/agent/risk-rules.json`](.github/agent/risk-rules.json) (docs T0; tests,
 examples and `changelog.d/` T1; other package code and unknown paths T2; the
@@ -54,7 +54,7 @@ process docs T3; a PR over its tier's size cap is T3).
   `Birfy` may PASS its own PR), then enable auto-merge pinned to that tip:
 
   ```sh
-  gh pr merge <n> -R Birfy/agentdescent --auto --squash --match-head-commit <sha>
+  gh pr merge <n> -R ThinkFlowLab/agentdescent --auto --squash --match-head-commit <sha>
   ```
 
 - **T2 / T3:** green checks + a PASS at the tip (self-PASS counts), then add

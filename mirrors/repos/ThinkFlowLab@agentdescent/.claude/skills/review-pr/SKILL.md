@@ -5,12 +5,12 @@ description: Review an AgentDescent PR (or local change) at a tip SHA and write 
 
 # AgentDescent review-pr
 
-Produces a Verifier report for `Birfy/agentdescent`. The report is evidence,
+Produces a Verifier report for `ThinkFlowLab/agentdescent`. The report is evidence,
 not merge authority: what may happen after a PASS is AGENTS.md › Merge policy.
 
 ## Establish the tip
 
-1. Work in a **fresh clone** (`git clone https://github.com/Birfy/agentdescent`),
+1. Work in a **fresh clone** (`git clone https://github.com/ThinkFlowLab/agentdescent`),
    check out the PR head (`gh pr checkout <n>`), record `git rev-parse HEAD`. If
    the head moves during the review, start over.
 2. Read the rules from `origin/main`, not a stale copy: AGENTS.md,

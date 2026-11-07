@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,24 +78,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`agents/kimi-cli.js`](agents/kimi-cli.js) |
 | 18 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
 | 19 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
-| 20 | ✓ | [`agents/kirocrew.js`](agents/kirocrew.js) |
-| 21 | ✓ | [`agents/mimocode.js`](agents/mimocode.js) |
-| 22 | ✓ | [`agents/minimax.js`](agents/minimax.js) |
-| 23 | ✓ | [`agents/omp.js`](agents/omp.js) |
-| 24 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
-| 25 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
-| 26 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 27 | ✓ | [`agents/pi.js`](agents/pi.js) |
-| 28 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
-| 29 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
-| 30 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
-| 31 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
-| 32 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
-| 33 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 34 | ✓ | [`agents/traecode.js`](agents/traecode.js) |
-| 35 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
-| 36 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
-| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | ✓ | [`agents/kiro-desktop-log-monitor.js`](agents/kiro-desktop-log-monitor.js) |
+| 21 | ✓ | [`agents/kiro-desktop.js`](agents/kiro-desktop.js) |
+| 22 | ✓ | [`agents/kirocrew.js`](agents/kirocrew.js) |
+| 23 | ✓ | [`agents/mimocode.js`](agents/mimocode.js) |
+| 24 | ✓ | [`agents/minimax.js`](agents/minimax.js) |
+| 25 | ✓ | [`agents/omp.js`](agents/omp.js) |
+| 26 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
+| 27 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
+| 28 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 29 | ✓ | [`agents/pi.js`](agents/pi.js) |
+| 30 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
+| 31 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
+| 32 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
+| 33 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
+| 34 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
+| 35 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 36 | ✓ | [`agents/traecode.js`](agents/traecode.js) |
+| 37 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
+| 38 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
+| 39 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

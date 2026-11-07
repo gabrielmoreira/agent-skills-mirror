@@ -26,7 +26,8 @@ let LOGOS = 'lift';   // logo finish (style.paper.logos): 'lift' = raised soft s
 let DEPTH = 1;   // shadow strength (style.paper.depth): 0 = flat, 1 = default, 2 = deep (ambient shadow, sheets lit from above, light falloff)
 let DOTS = null;   // style.paper.dots {pitch (40), r (2), alpha (.07), color (white)}: a faint dot grid on the background (lemondedumarketing's dark split panel)
 let BG = 'paper';   // background (style.paper.bg): 'paper' = textured sheet with a warm vignette, 'clean' = flat light gradient + a soft accent glow,
-// 'flat' = the paper color alone (no grain, relief or vignette: a solid poster color like the nico-slowdown orange)
+// 'flat' = the paper color alone (no grain, relief or vignette: a solid poster color like the nico-slowdown orange),
+// 'velvet' = the velvet-orange full screen (felt grain, light from the top, white 108 px grid) in the paper color
 // shadow tints 'r,g,b' (style.paper.shadow recolors all three, e.g. a cool '16,40,64' for the clean look): sheet shadows, drop shadows, hairlines
 let SH = '40,28,10', DROP = '20,16,8', EDGE = '60,45,20';
 // Creator style (lib/style.js themeOf). Mutates C and F in place, so call it before initSheet / makeBackground.
@@ -156,6 +157,7 @@ function dotGrid(x, W, H) {   // paper.dots: centered grid, so the dots sit symm
 // a 1920x1080 page stretched 2x reads as blurry, dirty paper (review 2026-10-06).
 export function makeBackground(W = WD, H = HD, res = 1) {   // any size (format 'youtube' paints a 1920x1080 page behind its 1080 stage)
   if (BG === 'clean') return cleanBackground(W, H);
+  if (BG === 'velvet') return velvetBackground(W, H, res);
   if (BG === 'flat') { const c = new OffscreenCanvas(W, H), x = c.getContext('2d'); x.fillStyle = C.paper; x.fillRect(0, 0, W, H); dotGrid(x, W, H); return c; }
   const c = makePaper(W, H, C.paper, 7, GRAIN, res, MOTTLE ?? GRAIN), x = c.getContext('2d'), deep = clamp(DEPTH - 1);
   relief(c, TCELL * Math.sqrt(res), .16 * TOOTH, 21); relief(c, 90 * res, .1 * (WAVES ?? TOOTH), 23);   // tooth + the soft waves of a real sheet
@@ -167,6 +169,28 @@ export function makeBackground(W = WD, H = HD, res = 1) {   // any size (format 
   const g = x.createRadialGradient(W / 2, H * .42, H * .2, W / 2, H * .5, H * .85);
   g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(70,52,25,${(.10 + .06 * deep).toFixed(3)})`);
   x.fillStyle = g; x.fillRect(0, 0, W, H);
+  return c;
+}
+
+// velvet: the full screens of the velvet-orange preset (Nico's VELVET look, 2026-11-06): the paper
+// color (#F25500, or white) with a coarse felt grain, a soft light from the top, a darker edge and a faint 108 px grid
+function velvetBackground(W, H, res = 1) {
+  const c = new OffscreenCanvas(W, H), x = c.getContext('2d'), r = rng(41), LT = lum(C.paper) > .6;
+  x.fillStyle = C.paper; x.fillRect(0, 0, W, H);
+  const cw = Math.ceil(W / 3), ch = Math.ceil(H / 3), b = new OffscreenCanvas(cw, ch), bx = b.getContext('2d'), bd = bx.createImageData(cw, ch);
+  for (let i = 0; i < bd.data.length; i += 4) { const v = r() > .5 ? 255 : 0; bd.data[i] = bd.data[i + 1] = bd.data[i + 2] = v; bd.data[i + 3] = LT ? 4 + r() * 10 : 10 + r() * 22; }
+  bx.putImageData(bd, 0, 0); x.imageSmoothingEnabled = true; x.drawImage(b, 0, 0, W, H);   // felt clumps
+  const id = x.getImageData(0, 0, W, H), d = id.data, k = GRAIN / Math.max(1, res);
+  for (let i = 0; i < d.length; i += 4) { const n = (r() - .5) * (LT ? 12 : 30) * k - (LT ? 2 : 0); d[i] += n; d[i + 1] += LT ? n : n * .8; d[i + 2] += LT ? n : n * .5; }
+  x.putImageData(id, 0, 0);
+  // a light paper (white) gets a neutral light, a soft gray edge and a faint ink grid instead of the orange's white one
+  const light = LT, g = x.createRadialGradient(W / 2, H * .32, 0, W / 2, H * .32, H * .75);
+  if (light) { g.addColorStop(0, 'rgba(255,255,255,.45)'); g.addColorStop(.6, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(40,36,30,.10)'); }
+  else { g.addColorStop(0, 'rgba(255,140,60,.35)'); g.addColorStop(.6, 'rgba(255,140,60,0)'); g.addColorStop(1, 'rgba(90,20,0,.35)'); }
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const p = 108 * (W / WD); x.fillStyle = light ? 'rgba(20,22,27,.05)' : 'rgba(255,255,255,.1)';
+  for (let i = 0; i < W; i += p) x.fillRect(i, 0, 2, H);
+  for (let j = 0; j < H; j += p) x.fillRect(0, j, W, 2);
   return c;
 }
 
@@ -182,6 +206,7 @@ function cleanBackground(W, H) {
   }
   return c;
 }
+const lum = h => { const [r, g, b] = hexRGB(h); return (.2126 * r + .7152 * g + .0722 * b) / 255; };   // rough brightness 0..1
 export const hexRGB = h => { h = String(h).replace('#', ''); if (h.length === 3) h = h.replace(/./g, '$&$&'); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
 
 let SHEET = null;

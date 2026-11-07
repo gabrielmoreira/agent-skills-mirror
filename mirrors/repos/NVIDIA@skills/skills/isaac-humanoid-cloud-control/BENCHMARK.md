@@ -9,17 +9,32 @@ Recommended for publication based on the completed evaluation evidence in this r
 ## Evaluation Metadata
 
 - Skill: `isaac-humanoid-cloud-control`
-- Evaluation date: 2026-10-22
-- Evaluator version: `1.5.6`
-- Agents: Claude Code (`aws/anthropic/bedrock-claude-sonnet-5-5`), Codex (`openai/openai/gpt-5.5`)
+- Validation status: `passed`
+- Evaluation date: 2026-11-06
+- Evaluator version: `1.6.9`
+- Agents: Claude Code (`aws/anthropic/bedrock-claude-opus-5-5`), Codex (`openai/openai/gpt-6.1-sol`)
 - Tasks: 15 evaluation tasks (15 positive)
-- Dataset digest: `sha256:e864e89308afa62c8f968b3061cb82e668f628b21b15e26ce6c91b79f3bbe565` (skill-evaluator-dataset-snapshot/1)
+- Dataset digest: `sha256:bbb620a371ba91241218df5a85d2791daf339409c06a2e021e1fd2f5ff2f1c09` (skill-evaluator-dataset-snapshot/1)
 - Attempts per task: 1
 - Environment: `k8s-sandbox`
 - Tier 2 evidence: required for publication
 - Tier 3 evidence: required for publication
 
 Each task attempt ran in its own isolated sandbox pod.
+
+## Tier 1 LLM Provenance
+
+SkillSpector provider, model, analyzer revision, and determinism evidence retained for this scan.
+
+| Skill | Provider | Adapter | Analyzer | Model | Revision | Determinism |
+| --- | --- | --- | --- | --- | --- | --- |
+| isaac-humanoid-cloud-control | nv_inference | openai | mcp_tool_poisoning | `aws/anthropic/bedrock-claude-opus-5-5` | `2.13.4` | nondeterministic / provider_defaults |
+| isaac-humanoid-cloud-control | nv_inference | openai | semantic_developer_intent | `aws/anthropic/bedrock-claude-opus-5-5` | `2.13.4` | nondeterministic / provider_defaults |
+| isaac-humanoid-cloud-control | nv_inference | openai | semantic_quality_policy | `aws/anthropic/bedrock-claude-opus-5-5` | `2.13.4` | nondeterministic / provider_defaults |
+| isaac-humanoid-cloud-control | nv_inference | openai | semantic_security_discovery | `aws/anthropic/bedrock-claude-opus-5-5` | `2.13.4` | nondeterministic / provider_defaults |
+| isaac-humanoid-cloud-control | nv_inference | openai | meta_analyzer | `aws/anthropic/bedrock-claude-opus-5-5` | `2.13.4` | nondeterministic / provider_defaults |
+
+- Controls for `isaac-humanoid-cloud-control`: temperature=not set (source=provider_default, forwarded=no); seed=not set (source=unset, forwarded=no); reasoning_effort=not set (source=provider_default, forwarded=no)
 
 ## What This Report Answers
 
@@ -35,16 +50,27 @@ The three-tier evaluation checks whether the skill:
 
 | Measure | Claude Code (Baseline → Skill Uplift) | Codex (Baseline → Skill Uplift) |
 |---|---:|---:|
-| Overall | 82.3% — baseline ran, but no comparable score was available; uplift unavailable | 68.9% — baseline ran, but no comparable score was available; uplift unavailable |
-| Security | 80.0% → 100.0% (+20.0 points) | 46.7% → 60.0% (+13.3 points) |
-| Correctness | 28.0% → 78.7% (+50.7 points) | 20.0% → 72.0% (+52.0 points) |
-| Discoverability | 92.3% — baseline ran, but no comparable score was available; uplift unavailable | 80.0% — baseline ran, but no comparable score was available; uplift unavailable |
-| Effectiveness | 30.7% → 51.8% (+21.1 points) | 24.7% → 51.0% (+26.3 points) |
-| Efficiency | 88.5% — baseline ran, but no comparable score was available; uplift unavailable | 81.4% — baseline ran, but no comparable score was available; uplift unavailable |
+| Overall | 83.8% — baseline ran, but no comparable score was available; uplift unavailable | 78.2% — baseline ran, but no comparable score was available; uplift unavailable |
+| Security | 93.3% → 93.3% (±0.0 points) | 76.7% → 90.0% (+13.3 points) |
+| Correctness | 33.3% → 84.0% (+50.7 points) | 16.0% → 81.3% (+65.3 points) |
+| Discoverability | 96.3% — baseline ran, but no comparable score was available; uplift unavailable | 87.7% — baseline ran, but no comparable score was available; uplift unavailable |
+| Effectiveness | 30.6% → 56.3% (+25.7 points) | 25.3% → 45.5% (+20.2 points) |
+| Efficiency | 89.0% — baseline ran, but no comparable score was available; uplift unavailable | 86.3% — baseline ran, but no comparable score was available; uplift unavailable |
 
 **How to read this table:** baseline is the same task attempted without the target skill. Scores are rounded to one decimal; threshold-adjacent values use additional precision so their displayed band matches the verdict. Uplift is derived from those displayed scores and shown in percentage points.
 
 Example: `47.0% → 92.0% (+45.0 points)` means the skill-assisted run scored 92.0%, 45.0 percentage points above its 47.0% no-skill baseline.
+
+### Comparison details
+
+Shared-source comparisons use the same signals and weights on both conditions. They do not replace the full dimension scores above or change the publication verdict.
+
+| Agent | Dimension | Basis | Baseline → With skill (uplift) | Explanation |
+| --- | --- | --- | --- | --- |
+| claude-code | Discoverability | Dimension comparison | N/A | Discoverability is not applicable to the no-skill baseline; there is no installed skill to discover. |
+| claude-code | Efficiency | Token-only comparison | 98.0% → 91.3% (-6.7 points) | Only Token Efficiency is comparable; the full dimension scores use different evaluator sources. |
+| codex | Discoverability | Dimension comparison | N/A | Discoverability is not applicable to the no-skill baseline; there is no installed skill to discover. |
+| codex | Efficiency | Token-only comparison | 91.6% → 87.9% (-3.7 points) | Only Token Efficiency is comparable; the full dimension scores use different evaluator sources. |
 
 ## Token Usage
 
@@ -52,48 +78,48 @@ Actual Tier 3 execution usage is reported for every observed agent/case pair and
 
 | Agent | Dataset case | With skill | Without skill | Delta | Change | Coverage |
 |---|---|---:|---:|---:|---:|---|
-| claude-code | All cases | 4,174,730 | 1,895,234 | +2,279,496 | +120.28% | skill 15/15; base 15/15 |
-| claude-code | isaac-humanoid-cloud-control-001 | 229,766 | 125,065 | +104,701 | +83.72% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-002 | 210,822 | 89,316 | +121,506 | +136.04% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-003 | 269,030 | 126,576 | +142,454 | +112.54% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-004 | 100,935 | 124,884 | -23,949 | -19.18% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-005 | 221,824 | 89,936 | +131,888 | +146.65% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-006 | 422,256 | 191,430 | +230,826 | +120.58% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-007 | 376,010 | 163,139 | +212,871 | +130.48% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-008 | 283,805 | 125,098 | +158,707 | +126.87% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-009 | 283,647 | 93,850 | +189,797 | +202.23% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-010 | 359,187 | 121,349 | +237,838 | +196.00% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-011 | 319,573 | 153,737 | +165,836 | +107.87% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-012 | 375,878 | 121,381 | +254,497 | +209.67% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-013 | 236,760 | 155,443 | +81,317 | +52.31% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-release-retry | 108,712 | 90,730 | +17,982 | +19.82% | skill 1/1; base 1/1 |
-| claude-code | isaac-humanoid-cloud-control-security-boundary | 376,525 | 123,300 | +253,225 | +205.37% | skill 1/1; base 1/1 |
-| codex | All cases | 6,134,063 | 5,829,823 | +304,240 | +5.22% | skill 15/15; base 15/15 |
-| codex | isaac-humanoid-cloud-control-001 | 564,812 | 147,039 | +417,773 | +284.12% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-002 | 606,805 | 13,318 | +593,487 | +4456.28% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-003 | 202,340 | 148,091 | +54,249 | +36.63% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-004 | 78,392 | 265,817 | -187,425 | -70.51% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-005 | 221,298 | 97,537 | +123,761 | +126.89% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-006 | 745,145 | 983,567 | -238,422 | -24.24% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-007 | 902,032 | 1,052,456 | -150,424 | -14.29% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-008 | 141,097 | 393,603 | -252,506 | -64.15% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-009 | 163,886 | 151,463 | +12,423 | +8.20% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-010 | 634,668 | 409,409 | +225,259 | +55.02% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-011 | 331,993 | 1,439,776 | -1,107,783 | -76.94% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-012 | 480,119 | 101,151 | +378,968 | +374.66% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-013 | 577,492 | 157,192 | +420,300 | +267.38% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-release-retry | 82,709 | 68,858 | +13,851 | +20.12% | skill 1/1; base 1/1 |
-| codex | isaac-humanoid-cloud-control-security-boundary | 401,275 | 400,546 | +729 | +0.18% | skill 1/1; base 1/1 |
-| ALL AGENTS | Dataset aggregate | 10,308,793 | 7,725,057 | +2,583,736 | +33.45% | skill 30/30; base 30/30 |
+| claude-code | All cases | 3,722,186 | 2,208,053 | +1,514,133 | +68.57% | skill 15/15; base 15/15 |
+| claude-code | isaac-humanoid-cloud-control-001 | 353,360 | 107,422 | +245,938 | +228.95% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-002 | 212,553 | 106,588 | +105,965 | +99.42% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-003 | 235,718 | 142,871 | +92,847 | +64.99% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-004 | 157,865 | 108,308 | +49,557 | +45.76% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-005 | 291,494 | 144,428 | +147,066 | +101.83% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-006 | 425,967 | 187,303 | +238,664 | +127.42% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-007 | 169,679 | 180,278 | -10,599 | -5.88% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-008 | 368,128 | 218,066 | +150,062 | +68.81% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-009 | 214,072 | 146,360 | +67,712 | +46.26% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-010 | 169,984 | 182,245 | -12,261 | -6.73% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-011 | 311,354 | 107,216 | +204,138 | +190.40% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-012 | 269,284 | 143,504 | +125,780 | +87.65% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-013 | 165,602 | 145,100 | +20,502 | +14.13% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-release-retry | 124,902 | 106,775 | +18,127 | +16.98% | skill 1/1; base 1/1 |
+| claude-code | isaac-humanoid-cloud-control-security-boundary | 252,224 | 181,589 | +70,635 | +38.90% | skill 1/1; base 1/1 |
+| codex | All cases | 2,302,040 | 986,989 | +1,315,051 | +133.24% | skill 15/15; base 15/15 |
+| codex | isaac-humanoid-cloud-control-001 | 202,423 | 96,532 | +105,891 | +109.70% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-002 | 118,059 | 13,174 | +104,885 | +796.15% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-003 | 197,354 | 73,814 | +123,540 | +167.37% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-004 | 33,813 | 108,453 | -74,640 | -68.82% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-005 | 186,527 | 41,478 | +145,049 | +349.70% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-006 | 235,112 | 74,025 | +161,087 | +217.61% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-007 | 202,990 | 79,144 | +123,846 | +156.48% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-008 | 138,441 | 49,682 | +88,759 | +178.65% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-009 | 118,233 | 42,200 | +76,033 | +180.17% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-010 | 143,719 | 61,667 | +82,052 | +133.06% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-011 | 226,707 | 61,314 | +165,393 | +269.75% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-012 | 203,427 | 55,706 | +147,721 | +265.18% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-013 | 153,183 | 54,916 | +98,267 | +178.94% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-release-retry | 48,009 | 55,805 | -7,796 | -13.97% | skill 1/1; base 1/1 |
+| codex | isaac-humanoid-cloud-control-security-boundary | 94,043 | 119,079 | -25,036 | -21.02% | skill 1/1; base 1/1 |
+| ALL AGENTS | Dataset aggregate | 6,024,226 | 3,195,042 | +2,829,184 | +88.55% | skill 30/30; base 30/30 |
 
-Prompt tokens include cached reads, so total tokens are `prompt + completion` (cached is not added twice). The Efficiency score uses `(prompt - cached) + completion`. N/A means the relevant trajectory counters were not available; coverage is never estimated.
+Prompt tokens include cached reads, so total tokens are `prompt + completion` (cached is not added twice). The Efficiency score uses `(prompt - cached) + completion`. Change is `100 * (with - without) / without`; negative means fewer tokens. N/A comparisons include their reason in the coverage column; coverage is never estimated.
 
 ## Tier Status
 
 | Tier | Purpose | Status | Evidence |
 |---|---|---|---|
-| Tier 1 | Static validation | **PASSED WITH OBSERVATIONS** | 11 validator(s); 58 finding(s) |
-| Tier 2 | Semantic deduplication | **PASSED WITH OBSERVATIONS** | 2 validator(s); 2 finding(s) |
+| Tier 1 | Static validation | **PASSED WITH OBSERVATIONS** | 11 validator(s); 63 finding(s) |
+| Tier 2 | Semantic deduplication | **PASSED WITH OBSERVATIONS** | 2 validator(s); 1 finding(s) |
 | Tier 3 | Live agent evaluation | **PASS** | 2 agent(s); 15 task(s) |
 
 ## Findings and Observations
@@ -102,15 +128,13 @@ Prompt tokens include cached reads, so total tokens are `prompt + completion` (c
 <summary>Show detailed findings and successful checks</summary>
 
 - **HIGH** DUPLICATE/duplicate: Duplicate content found across references/ordered-startup.md and references/release-4.6.md:
-  "# Ordered startup and mission workflow" in references/ordered-startup.md (lines 162-165)
-  vs "## Isaac Sim navigation" in references/release-4.6.md (lines 84-87) (`references/ordered-startup.md:162`)
-- **HIGH** DUPLICATE/duplicate: Duplicate content found across references/ordered-startup.md and references/release-4.6.md:
-  "# Ordered startup and mission workflow" in references/ordered-startup.md (lines 142-161)
-  vs "## Isaac Sim navigation" in references/release-4.6.md (lines 76-83) (`references/ordered-startup.md:142`)
+  "# Ordered startup and mission workflow" in references/ordered-startup.md (lines 86-107)
+  vs "## Isaac Sim navigation" in references/release-4.6.md (lines 47-63) (`references/ordered-startup.md:86`)
 - **MEDIUM** QUALITY/quality_efficiency: Deeply nested references in dependencies.md (`skills/isaac-humanoid-cloud-control/SKILL.md`)
 - **MEDIUM** SCRIPT_LINT/flat_script: simulation_identity.py has no function definitions (flat script) (`skills/isaac-humanoid-cloud-control/scripts/simulation_identity.py`)
-- **MEDIUM** SECURITY/Unknown (LP3): MCP Least Privilege: Without declared permissions the skill's intent is opaque and cannot be validated. (`SKILL.md:1`)
-- 55 additional finding(s) are available in the full evaluation artifacts.
+- **MEDIUM** SECURITY/MCP Least Privilege (LP3): MCP Least Privilege: Without declared permissions the skill's intent is opaque and cannot be validated. (`SKILL.md:1`)
+- **MEDIUM** SECURITY/Security finding (SQP-2): Step 1 (Isaac Sim) and step 4 (web-viewer clone) both require explicit approval. Step 2 doesn't: it tells the agent to i (`references/bootstrap.md:65`)
+- 59 additional finding(s) are available in the full evaluation artifacts.
 
 </details>
 

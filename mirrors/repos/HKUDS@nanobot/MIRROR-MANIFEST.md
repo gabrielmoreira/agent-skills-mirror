@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 28 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 12 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 28 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 28 |
+| Followed pats | 12 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 28 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `.agent/navigation.md`
 - `.agent/design.md`
 - `.agent/simplify.md`
 - `.agent/copywriting.md`
@@ -89,14 +90,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
 | 19 | → | [`.agent/design.md`](.agent/design.md) |
 | 20 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
-| 21 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
-| 22 | → | [`.agent/security.md`](.agent/security.md) |
-| 23 | → | [`.agent/simplify.md`](.agent/simplify.md) |
-| 24 | → | [`.agent/workflow.md`](.agent/workflow.md) |
-| 25 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
-| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 28 | → | [`webui/README.md`](webui/README.md) |
+| 21 | → | [`.agent/navigation.md`](.agent/navigation.md) |
+| 22 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
+| 23 | → | [`.agent/security.md`](.agent/security.md) |
+| 24 | → | [`.agent/simplify.md`](.agent/simplify.md) |
+| 25 | → | [`.agent/workflow.md`](.agent/workflow.md) |
+| 26 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 28 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 29 | → | [`webui/README.md`](webui/README.md) |
 
 ---
 

@@ -19,6 +19,10 @@ recipient guide, read [the illustrated-manual workflow](references/illustrated-m
 before drafting. Continue through this Skill's normal theme, backend and
 visual self-check requirements after assembling the Markdown source.
 
+For source changes, follow [maintainer testing](references/maintainer-testing.md)
+for the complete test environment and native-backend acceptance. Keep this
+source-checkout workflow separate from ordinary installed-Skill use.
+
 ## Quick Start
 
 Every `scripts/…` path below is **relative to this skill's own directory** — run the commands from there, or substitute the absolute path. Running them from the directory holding your markdown fails with `Failed to spawn: 'scripts/md_to_pdf.py'`. Omitting the output path is allowed and derives it from the input's basename (`input.md` → `input.pdf`, in the input's directory).
@@ -83,7 +87,7 @@ Routing is pinned by `scripts/tests/test_backend_routing.py`. A theme you add yo
 | Backend | Install | Pros | Cons |
 |---------|---------|------|------|
 | `weasyprint` | `pip install weasyprint` | Precise CSS rendering, no browser needed, does not clip overflow | Subsets PingFang SC as CID Type 0C — unreadable in Preview/Adobe |
-| `chrome` | Google Chrome installed | Zero Python deps, renders PingFang correctly | **Clips anything past the @page box** (see below) |
+| `chrome` | Google Chrome installed, or Microsoft Edge on Windows | Zero Python deps, renders PingFang correctly | **Clips anything past the @page box** (see below) |
 
 Override with `--backend chrome` or `--backend weasyprint`; an explicit flag always wins over auto-detection.
 
@@ -186,11 +190,13 @@ For existing Word/WPS → PDF, use the docx-creator route above.
 
 ## Visual Self-Check (MANDATORY — Do Not Skip)
 
-**This is not optional.** After every PDF generation, the script automatically:
+**Visual inspection is mandatory.** When automatic self-checks run, the script
+performs them in this order:
 
-1. Converts each page to PNG via `pdftoppm` (poppler-utils) into a `<pdf-name>/` subdirectory under the **system temp dir** (NOT next to the PDF — previews are a throwaway self-check artifact and must never linger in your working tree / git repo). The run prints the directory as `Previews:` and an existing `First page:` path. Poppler may zero-pad page numbers according to the page count; enumerate the actual `page-*.png` files instead of constructing filenames.
-2. Prints a structured self-check checklist reminding the caller to visually inspect each page
-3. Runs typography lint to detect CJK line-break anti-patterns
+1. Run [typography lint](#layer-2-typography-lint-post-render-detection-catches-the-rest)
+   under its stated prerequisite conditions.
+2. Convert each page to PNG via `pdftoppm` (poppler-utils) into a `<pdf-name>/` subdirectory under the **system temp dir** (NOT next to the PDF — previews are a throwaway self-check artifact and must never linger in your working tree / git repo). Read the printed `Previews:` directory and existing `First page:` path. Poppler may zero-pad page numbers according to the page count; enumerate the actual `page-*.png` files instead of constructing filenames.
+3. Print the structured self-check checklist for page inspection.
 
 **Why mandatory**: "PDF generated cleanly" ≠ "rendering matches markdown intent". Common silent failures include:
 - Paragraphs collapsing into one (CommonMark soft-break on consecutive non-blank lines)
@@ -210,7 +216,8 @@ For existing Word/WPS → PDF, use the docx-creator route above.
 
 These checks do not catch everything. The PNGs come from `pdftoppm`, which renders CID Type 0C fonts that macOS Preview and Adobe Reader show as blanks — so a font-embedding defect can look perfect in step 1 and be unreadable on the recipient's machine. That one is handled by theme routing, not by looking (see "Backends"); the check to run by hand is in Troubleshooting under "Inline code with mixed CJK + ASCII".
 
-**Disable** with `--no-preview` for batch / non-interactive runs:
+**Disable automated lint and previews** with `--no-preview` for batch /
+non-interactive runs. This does not waive the delivery checks above:
 
 ```bash
 python scripts/md_to_pdf.py input.md output.pdf --no-preview
@@ -234,7 +241,7 @@ This silently fixes the most common anti-pattern (cell content forcibly wrapped 
 
 ### Layer 2: Typography lint (post-render detection, catches the rest)
 
-After PDF generation, the script runs `pdftotext -layout` per page and scans for known CJK anti-patterns per "中文文案排版指北" (Chinese typography style guide):
+After PDF generation, when previews are enabled and both `pdfinfo` and `pdftotext` are available, the script runs `pdftotext -layout` per page and scans for known CJK anti-patterns per "中文文案排版指北" (Chinese typography style guide). If either tool is missing, skip this optional lint:
 
 - Single CJK character alone on a line (cell still too narrow even after Layer 1)
 - Line ending with `（` followed by content next line (broken bracket pair)

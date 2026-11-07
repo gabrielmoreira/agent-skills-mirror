@@ -313,7 +313,9 @@ export function sfxCues(spec, tl, X0) {
   const first = Math.min(...(spec.actors || []).map(a => a.from - (a.pre || 0)), ...(spec.scenes || []).filter(s => s.layer !== 'over' && s.layer !== 'top').map(s => s.from));
   let lastLand = -1e9;
   for (const [t, g, p] of lands.sort((a, b) => a[0] - b[0])) {
-    const enters = (seamAt(t - .2) <= 0 && seamAt(t + .4) > 0) || t <= first + .15;
+    // a full camera -> full paper swap on a youtube frame is a blur cross-fade (runtime-yt layout.blur): nothing slides, no slide sound
+    const blurIn = spec.format === 'youtube' && seam.some(([k, y, , m], i) => i && Math.abs(k - t) < .6 && m !== 'slide' && (m === 'blur' || spec.layout?.blur !== false && seam[i - 1][1] <= 0 && y >= 1920));
+    const enters = !blurIn && ((seamAt(t - .2) <= 0 && seamAt(t + .4) > 0) || t <= first + .15);
     if (SW > 0 && enters && t - lastLand >= GAP) { X.slide(t, g * SW, p); lastLand = t; }
   }
   let lastApp = -1e9; const APG = spec.sfx?.appearGap ?? 1.2, APV = spec.sfx?.appearGain ?? .1;

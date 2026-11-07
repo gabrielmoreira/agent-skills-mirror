@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `awslabs/mcp` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `awslabs/mcp` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `awslabs/mcp` — 26 default patterns, 0 followed patterns, 8 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`src/aurora-dsql-mcp-server/skills/dsql-skill/SKILL.md`](src/aurora-dsql-mcp-server/skills/dsql-skill/SKILL.md) |
 | 7 | ✓ | [`src/cloudwatch-mcp-server/skills/agentcore-investigation/SKILL.md`](src/cloudwatch-mcp-server/skills/agentcore-investigation/SKILL.md) |
 | 8 | ✓ | [`src/dynamodb-mcp-server/AGENTS.md`](src/dynamodb-mcp-server/AGENTS.md) |
+| 9 | ✓ | [`src/redshift-mcp-server/awslabs/redshift_mcp_server/skills/redshift-guide/SKILL.md`](src/redshift-mcp-server/awslabs/redshift_mcp_server/skills/redshift-guide/SKILL.md) |
 
 ---
 

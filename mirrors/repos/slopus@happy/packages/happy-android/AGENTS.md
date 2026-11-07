@@ -404,6 +404,8 @@ win:
 crypto/   pure Kotlin/JVM, no Android: every primitive and key derivation of
           happy-app's encryption, byte for byte. BouncyCastle low-level
           classes (no JCA provider), so it behaves the same on every device.
+analytics/ product analytics, its own Android library behind the `Analytics`
+          facade (see "Analytics"); knows none of the app's types.
 app/
   auth/     account auth (POST /v1/auth), credentials in expo-secure-store's format
   config/   server URL (survives logout), device-only settings (theme)
@@ -801,6 +803,7 @@ cd packages/happy-android
 ./gradlew assembleDebug            # app/build/outputs/apk/debug/app-debug.apk
 ./gradlew testDebugUnitTest        # app unit + Robolectric layout tests
 ./gradlew :crypto:test             # crypto, incl. vectors from happy-app's TS
+./gradlew :analytics:testDebugUnitTest  # analytics, incl. the shared catalog's contract
 ```
 
 Build types map to happy-app's variants and application ids: `debug` →
@@ -831,8 +834,28 @@ ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest 
 
 ### Versions and signing
 
-- `versionName` is owned by `app/build.gradle.kts`. `HAPPY_VERSION_NAME` or
-  `-Phappy.versionName` overrides it.
+- `versionName` is CalVer `YYYY.M.C`: the UTC year, the month without a
+  leading zero, and a counter that starts at 1 each month (`2026.11.1`).
+  Every variant carries the same one; a preview upload differs from
+  production only by its versionCode. The checked-in default
+  (`defaultVersionName` in `app/build.gradle.kts`) is the upcoming release.
+  `C` moves only when a production version ships: the next version is the
+  highest `C` this UTC month's production tags carry, plus one, else 1, and
+  a month with previews but no production release restamps it to the new
+  month.
+- Production uploads, and only they, are tagged
+  `native-android-<versionName>-build<versionCode>`; Android counts on its
+  own, and tags of other schemes (`2.0.0`) don't count. Preview uploads get
+  no tag.
+- `node scripts/native-version.cjs next android` prints the upcoming
+  version from the tags; `check android` fails unless the default is it;
+  `set android` writes it. Before any store build run `check android`, and
+  if it fails, `set android`, commit and land that on `main` first. A
+  production build re-sent under an already tagged version keeps it:
+  `set android <version>` and skip `check`.
+- `HAPPY_VERSION_NAME` or `-Phappy.versionName` overrides the default. A
+  signed release or preview build whose versionName isn't CalVer fails in
+  `pre<Variant>Build`.
 - `versionCode` is EAS's remote, auto-incremented build number
   (`eas.json` `appVersionSource: remote`). There is no counter in the repo:
   a store build passes the next number as `HAPPY_VERSION_CODE` or
@@ -845,12 +868,12 @@ ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest 
   anywhere, CI included.
 - PostHog's public project key comes from `EXPO_PUBLIC_POSTHOG_API_KEY` or
   `-Phappy.postHogKey`, as happy-app's and Happy Desktop's do; nothing is
-  checked in. A build without it reads every feature flag as off. Only flags
-  are read with it (`config/FeatureFlags.kt`): one `POST /flags/?v=2` per
-  open Happy account with its `anonId` as the distinct id (happy-app's
-  `identify`), each foreground, skipped when the account opted out of
-  analytics. The answer is kept per account in `feature-flags` prefs; a failed
-  ask keeps the last one. Nothing is captured.
+  checked in. A build without it reads every feature flag as off and sends
+  no events. Flags (`config/FeatureFlags.kt`): asked by the `:analytics`
+  module alone, `POST /flags/?v=2` with the install id as the distinct id,
+  each foreground, only from a build that sends analytics to PostHog and
+  only while analytics may go; the answer is held in memory, and a failed
+  ask keeps the last one. Events: see "Analytics".
 - A signed release or preview build without an explicit versionCode fails in
   `pre<Variant>Build`, before R8, rather than at the Play console.
 - Shipping goes through the `release` skill like every other release.
@@ -868,6 +891,90 @@ vectors (`app/src/test/resources/happy-ts-send-vectors.json`) are preserved
 compatibility baselines captured from the former client. Their React Native
 generators are retired. Historical source inputs remain in Git; protocol
 changes must explicitly update these baselines against current producers.
+
+## Analytics
+
+The `:analytics` module (`analytics/`) sends the events
+`docs/analytics-catalog.json` lists for Android (the contract shared with
+Happy Desktop and happy-ios; never edit the copy, ask for a change to the
+shared one). It knows none of the app's types: the app calls the
+`Analytics` facade (`start` once in `AppGraph`, then `record`, `errorShown`,
+`failureShown`) with the typed events, and maps its own reasons to the
+catalog's sets in `app/…/analytics/` (`AnalyticsReasons`, `ChatAddress`,
+`accountsOptedOut`). Deleting the module, that folder and the call sites
+removes analytics; `docs/product-analytics.md` lists every line.
+
+No PostHog SDK: it would add the device's name, screen and time zone.
+`AnalyticsEvent` is the typed catalog (closed enums only; no text, id, name,
+path or message has a field; a model goes as its `ModelFamily`, never its
+id), `AnalyticsSchema` the send boundary's allowlist, which drops unknown
+events and properties and any event holding a value outside its set;
+`AnalyticsCatalogTest` holds both, and the family rule, to the JSON.
+Versions are numbers only (`AnalyticsSchema.version` cuts a `-`/`+`
+suffix). `AnalyticsClient` adds the common properties and PostHog's own
+(`distinct_id`, a random install id, never an account's; `$insert_id`;
+`$lib`; `$process_person_profile: false`; `$ip: null`;
+`$geoip_disable: true`), keeps events in memory (500, 7 days) and posts
+`/batch/` (`PostHog`, timestamps in whole seconds, no redirect followed,
+an https host or a loopback one only) every 30 s in the foreground and as
+the app goes behind. A failed batch goes again with the same `$insert_id`;
+what a process held when it died is lost.
+
+Nothing on the phone but the install id (and the switch) in `analytics`
+prefs: the queue, `error_shown`'s throttle and the failure cards seen live
+in memory. `Retired` deletes what earlier builds kept
+(`noBackupFilesDir/analytics`, the day counts), and `AppGraph` the old
+per-account `feature-flags` prefs. `app_crashed` reads only the reason,
+importance and the crashed version of the system's last `ApplicationExitInfo`;
+a process leaves its version with the system
+(`setProcessStateSummary`) only while analytics is on, so a run with
+analytics off is never reported, and the trace is never read.
+
+Fewer events and more privacy: an event is only what no other event
+answers. Nothing is counted on the phone, and no screen, view, navigation,
+picker change, stop, approval or todo is sent; model and effort ride on
+`message_sent`. Each event goes once its step worked (or failed, for the
+`*_failed`/`_error` ones). The "fires" rules are `AnalyticsRules.kt`:
+`error_shown`'s throttle, `chat_failure_shown`'s fresh-and-unseen check,
+`agent_connection_lost`'s incidents, `app_opened`'s cold and warm opens.
+`message_sent` goes as the person sends (queued only, too), with the mode
+then, and never again on a retry; a create that fails is only its
+`task_created`/`bot_created`, not also the send's `error_shown`. A failure
+card's `chat_failure_shown` and a failed Happy CLI send's `error_shown`
+(`Analytics.errorSeen`, with the `SendFailure` its row carries, once per
+row and opt-in) go once the card or row is seen (`Modifier.onSeen`: half on screen, the page
+resumed, no overlay up, as a `PageDialog` leaves the page resumed). A call
+is reported only if analytics was on from its start to its end
+(`Analytics.span`).
+
+Only release and preview builds with a key send, never debug, bench, a test
+harness, an instrumented run or Robolectric (`AnalyticsTarget`). Consent is
+this phone's switch (Data and Storage › Analytics, `AnalyticsSwitch`; a
+stored value that can't be read is off) and every Happy account signed in
+here allowing it (`accountsOptedOut`: the open account's setting as it is
+now, the others from their own databases; settings that can't be read, or
+an `analyticsOptOut` that isn't a boolean, are opted out, a missing one is
+not). Nothing is recorded until both are read. Analytics is on in one
+generation at a time: either switch turned off calls `Analytics.revoke()`
+at once, outside every flow, which ends the generation, cancels the
+requests on their way, and deletes the queue, the throttle, the cards seen,
+the crash mark, the flags and the install id on the client's lane without
+waiting for them. Every record, error, exposure, incident, open, flag
+answer and send checks the generation it was made in, and consent as it
+is then. It stays off until the setting reads as off or is turned back on
+(`Analytics.allow()`); on again starts a new install id. While the old
+install id can't be deleted, analytics stays off and `allow()` refuses
+either switch going back on, which then isn't written down, so a restart
+can't bring that id back. PostHog's `/flags` is asked only by the module, with the install id,
+under the same consent; `FeatureFlags` holds the answer in memory for the
+migration card. If either switch can't be written down, its screen says
+so. Each account's switch on the Account screen toggles from its switch
+only, not its title, like the app's other switch rows.
+
+To see the payloads, a debug build sends to a local endpoint only:
+`adb reverse tcp:8787 tcp:8787` to a listener, then
+`adb shell setprop debug.happy.analytics_host http://127.0.0.1:8787` and a
+cold start.
 
 ## Onboarding and connect
 
@@ -986,6 +1093,73 @@ change its wire behaviour on Android alone.
   the code's (`ServerSignInFlow.verify`; a new member's health behind the
   profile gate is checked after the name); a mismatch, or none, drops the
   credential and reads "This code doesn't match the server it points to."
+- **Happy Cloud, the one exception** (accounts contract v1;
+  `connection/HappyCloud.kt`, `connection/CloudAccount.kt`,
+  `ui/connection/CloudConnect.kt`, `CloudScreens.kt`): the accounts service
+  is its own origin, `BuildConfig.HAPPY_CLOUD_ACCOUNTS`
+  (`https://auth.happy.engineering`; `HAPPY_CLOUD_ACCOUNTS` or
+  `-Phappy.cloudAccounts` points a build elsewhere), and servers live under
+  one domain, `BuildConfig.HAPPY_CLOUD_BASE` (`happy-clusters.com`; `HAPPY_CLOUD_BASE` or
+  `-Phappy.cloudBase`): the server named `acme` is `https://acme.BASE`.
+  Only `debug` and `preview` builds offer it (`HappyCloud.offeredIn`, by
+  `BuildConfig.BUILD_TYPE`); `release` and `bench` have no way in at all.
+  The account menu's last row, a + reading "Connect to Happy Cloud" (with no
+  account yet, the first screen's ⋮ and Add's scanner ⋮, `ScannerWay.Cloud`),
+  opens a full-screen welcome (no dialog); its Connect opens the
+  **account** sign-in in a Custom Tab: PKCE against the accounts origin's
+  `/authorize` and `/token`, `client_id` `happy`, `resource` the accounts
+  origin, nothing discovered (the page offers Apple for now). The account
+  token is a pass of about an hour with no refresh (token lifetimes v4): held
+  in memory only, never stored, never refreshed, and only ever sent to the
+  accounts API. Past its hour (two minutes' margin), or on any 401 from the
+  accounts API, the account is signed out with nothing retried, and the +
+  opens on the welcome saying the hour is up (`CloudAccountState.SignedOut`
+  `expired`). Signed in, the + skips the welcome and shows the picker: "Your servers" (`GET /v1/servers`, the ones on
+  the phone checked; each titled by its `displayName` over `@name`, with its
+  picture: the ThumbHash painted first, then the bytes from its `url`, which
+  `CloudAccount.image` fetches with the account token only from the accounts
+  origin; no picture, the generated avatar its connection will have), "Create a new server" (a name typed after an `@`,
+  checked with `GET /v1/servers/availability` as the person pauses, then
+  `POST /v1/servers`) and "Join a server" (name and invite code, `POST
+  /v1/servers/join`). Picking, creating or joining one signs in to it with no
+  browser: `POST /v1/servers/:id/token` with the account token
+  (`CloudAccount.serverToken`, `ServerSignInFlow.startWith`) gives the server's
+  access and refresh tokens, its `aud` checked as any; then as the sign-in
+  below (checked with the server, a name if new, kept). That server token is
+  the long-lived session: refreshed at the accounts origin's `/token` with the
+  `refresh_token` grant, `resource` the server, and no account token, so a
+  server stays signed in long after the account's hour. Signing in
+  again on a cloud server does the same while the account is signed in; signed
+  out of it, the server's own browser sign-in opens by itself. Each server is its own connection; one already here
+  just opens. The addresses are the app's own, never typed or pasted, so no
+  code and no `instanceId` check them.
+  Every Happy Cloud screen (welcome, Your servers, Create, Join, and the
+  server sign-in, which reads "Connecting to @name…") is full screen on the
+  first screen's Grain Gradient (`StartSpec` palettes, onboarding's 28/34
+  title, a scene above it) with one primary action at the bottom
+  (`CloudScreens.kt`, `CloudFrame`); servers are cards on it.
+  Sign-in methods are the accounts page's (Apple and GitHub now); the app
+  shows none of its own, but one hidden: the welcome's sparkles pressed ten
+  times within four seconds (`CloudWelcome`) reveal a test account's login
+  and password, for people and agents testing without Apple or GitHub.
+  Nothing of it is composed before then. It posts `POST /v1/auth/password`
+  (`CloudAccount.signInWithPassword`) for the same hour's pass, then goes on
+  as after the browser; a wrong login or password, or a lockout, shows under
+  the fields. The password stays in that composition only: never saved with
+  the screen, stored or logged. Test accounts exist only when an operator
+  creates one. Your servers' ⋮ has "Sign out of Happy Cloud", which
+  forgets the pass; servers on the phone stay signed in. Removing a cloud
+  server (`removeAgentConnection`) first revokes its session at the accounts
+  service (`POST /revoke`, its refresh token and `client_id`, no account
+  token; `CloudAccount.revoke`, best effort, not waited on). A cloud server's
+  Settings has Members (`CloudMembers.kt`: `GET /v1/servers/:id/members`, and
+  Leave server, `POST /v1/servers/:id/leave`, confirmed, then the server is
+  removed here too; its only owner gets `last_owner`), asking for the sign-in
+  when the pass is gone.
+  People read a cloud server's address as `@name`, like a username, until
+  Happy Cloud has its own domain (`HappyCloud.handle`: the picker, create,
+  join, the server sign-in screen, the account menu); the URL is used as
+  before, only not shown. Connection diagnostics keep the real host.
 - **Sign-in** (`connection/ServerSignInFlow.kt`, `ServerAuth.kt`): `GET
   /v0/authentication` lists the methods, then OAuth authorization code + PKCE
   S256 in a Custom Tab (never a WebView), with RFC 8707 `resource` on

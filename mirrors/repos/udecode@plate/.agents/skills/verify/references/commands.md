@@ -19,6 +19,7 @@ bun test ./packages/platejs/<file>.test.ts --test-name-pattern "<pattern>"
 
 Rules:
 
+- To run a whole folder of `platejs` or `plitejs` tests, run its partition, such as `pnpm --filter platejs run test:partition:docx-import`. A partition gives each file that calls `mock.module` its own process. `pnpm --filter platejs test -- <folder>` and `bun test <folder>` run every file in one process, so those mocks leak into the other files: one DOCX run failed 74 tests this way, at `HEAD` too. `pnpm test <path>` skips both packages and exits 1 with `No tests matched`.
 - `pnpm check:plite:dev` is the normal affected development lane.
 - Add `--dry-run` to inspect its exact proof selection. Local changes and
   `PLITE_CHECK_BASE=<ref>` use the same planner as Plite CI. Planner or runner
@@ -325,6 +326,12 @@ helper's clean status, which ignores only its own links, before labeling any
 run as base. A worktree in which a patched build or typecheck ran is never base, even after
 `git apply -R`, because ignored build output such as `dist` and `.source`
 survives; every base control runs in a fresh worktree.
+In a split clone, `git diff` reads only the public half, so a patch made from it
+leaves out each `*.spec.*` file and the other files `.gitprivate` lists. Replay
+those files with `--with <file>` or a second patch from
+`git --git-dir=.git-private --work-tree=. diff`, then check that the run's test
+count includes the new tests. A mutant run on the base copy of a spec passes
+without proving anything.
 
 A timing, typing-burst or caret case that fails only on a candidate server
 that has served a long run is not yet a regression. Start a fresh base server

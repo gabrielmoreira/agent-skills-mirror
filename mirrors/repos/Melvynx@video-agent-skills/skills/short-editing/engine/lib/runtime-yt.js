@@ -30,8 +30,10 @@ export async function boot() {
 
   const canvas = document.createElement('canvas'); canvas.width = Math.round(OW * scale); canvas.height = Math.round(OH * scale);
   document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d', { alpha: false });
+  let ctx = canvas.getContext('2d', { alpha: false });
   K.initSheet(ctx);
+  const back = document.createElement('canvas'); back.width = canvas.width; back.height = canvas.height;   // blur swaps: the outgoing frame
+  const backCtx = back.getContext('2d', { alpha: false }), mainCtx = ctx;
   const BG = K.makeBackground(Math.round(OW * scale), Math.round(OH * scale), scale);   // native res, drawn back at OWxOH
 
   // ---- image cache (LRU of decoded bitmaps)
@@ -70,7 +72,15 @@ export async function boot() {
   };
 
   // ---- layout: one vertical edge, sprung between keys (layout.w = stiffness, softer than shorts: the moves are longer)
-  const seamKeys = spec.layout?.keys || [[0, SW]], LW = spec.layout?.w ?? 9;
+  // A swap between two full frames (full camera 0 <-> full paper >= 1920) is a blur cross-fade by default, never a
+  // slide from the side (the creator 2026-10-26): the seam steps at the key and the new frame blurs in over the old one in
+  // layout.blurDur s (default .5). layout.blur false = the old slide everywhere; a key's 4th element 'blur' or 'slide'
+  // forces one key. Keys to or from a split (1080...) keep the spring.
+  const rawKeys = spec.layout?.keys || [[0, SW]], LW = spec.layout?.w ?? 9, BD = spec.layout?.blurDur ?? .5;
+  const fullX = x => x <= 0 || x >= OW;
+  const isBlur = (k, i) => i > 0 && k[1] !== rawKeys[i - 1][1] && (k[3] === 'blur' || k[3] !== 'slide' && spec.layout?.blur !== false && fullX(rawKeys[i - 1][1]) && fullX(k[1]));
+  const blurs = rawKeys.map((k, i) => isBlur(k, i) ? { t: k[0], from: rawKeys[i - 1][1] } : null).filter(Boolean);
+  const seamKeys = rawKeys.map((k, i) => isBlur(k, i) ? [k[0], k[1], 1e4] : k);
   const seamAt = t => clamp(track(t, seamKeys, LW), 0, OW), LEFT = spec.layout?.side === 'left';
   const edgeAt = x => LEFT ? OW - x : x;   // where the deckle edge sits on screen
   // stage offset: centred in the paper, pushed out (its inner edge on the seam) toward full camera
@@ -234,14 +244,29 @@ export async function boot() {
     const x = seamAt(t), dx = stageX(x);
     const camT = () => camFit(t, x);
     const R = { ctx, t, spec, tl, cam: imgs.get(camURL(t)), frame: (id, ct) => imgs.get(mediaURL(id, ct)) || null, media: id => frames.media[id], img: u => imgs.get(u) || null, U, camT, pause: pz, pauseP: pauseP(t), allChunks, seam: SH, seamRef: SH };
-    ctx.drawImage(BG, 0, 0, OW, OH);
-    if (x > 4) {
-      ctx.save(); ctx.clip(edgePath(edgeAt(x), LEFT)); ctx.translate(dx, 0);
-      for (const a of actors) drawActor(R, a, t);
-      for (const s of scenes) if (s.layer === 'stage' && t > s.from - 1 && t < (s.to ?? 1e9) + 1) SCENES[s.type]?.draw(R, s, t);
-      ctx.restore();
-    }
-    camera(R.cam, t, x);
+    const base = (x, dx) => {   // page paper, stage and camera at seam x
+      ctx.drawImage(BG, 0, 0, OW, OH);
+      if (x > 4) {
+        ctx.save(); ctx.clip(edgePath(edgeAt(x), LEFT)); ctx.translate(dx, 0);
+        for (const a of actors) drawActor(R, a, t);
+        for (const s of scenes) if (s.layer === 'stage' && t > s.from - 1 && t < (s.to ?? 1e9) + 1) SCENES[s.type]?.draw(R, s, t);
+        ctx.restore();
+      }
+      camera(R.cam, t, x);
+    };
+    const bl = blurs.find(b => t >= b.t && t < b.t + BD);
+    if (bl) {   // the outgoing full frame stays sharp below, the new one blurs in over it (blur 28 px -> 0, scale 1.04 -> 1, fade in)
+      const p = clamp((t - bl.t) / BD), e = p * p * (3 - 2 * p), dev = scale;
+      base(bl.from, stageX(bl.from));
+      ctx = R.ctx = backCtx; ctx.setTransform(scale, 0, 0, scale, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none';
+      base(x, dx);
+      ctx = R.ctx = mainCtx;
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = e;
+      if (e < .999) ctx.filter = `blur(${((1 - e) * 28 * dev).toFixed(2)}px)`;
+      const k = 1 + .04 * (1 - e), w = canvas.width, h = canvas.height;
+      ctx.drawImage(back, w / 2 - w * k / 2, h / 2 - h * k / 2, w * k, h * k); ctx.restore();
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    } else base(x, dx);
     ctx.save();   // 'over' scenes draw in output px (1920x1080), whatever the layout
     for (const s of scenes) if (s.layer === 'over' && t > s.from - 1 && t < (s.to ?? 1e9) + 1) SCENES[s.type]?.draw(R, s, t);
     ctx.restore();

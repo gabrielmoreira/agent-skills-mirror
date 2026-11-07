@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 117 file(s) materialized.
+Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 118 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sgl-project/sglang` — 26 default patterns, 0 followed patterns, 117
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 117 |
+| Files         | 118 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -150,32 +150,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 89 | ✓ | [`.agents/skills/mechanical-refactor-verify/SKILL.md`](.agents/skills/mechanical-refactor-verify/SKILL.md) |
 | 90 | ✓ | [`.agents/skills/mechanical-refactor-verify/spec-reproduction-cli.md`](.agents/skills/mechanical-refactor-verify/spec-reproduction-cli.md) |
 | 91 | ✓ | [`.agents/skills/mechanical-refactor-verify/spec-reproduction-utils.md`](.agents/skills/mechanical-refactor-verify/spec-reproduction-utils.md) |
-| 92 | ✓ | [`.agents/skills/processor-model-parity/SKILL.md`](.agents/skills/processor-model-parity/SKILL.md) |
-| 93 | ✓ | [`.agents/skills/rerun-test/SKILL.md`](.agents/skills/rerun-test/SKILL.md) |
-| 94 | ✓ | [`.agents/skills/scripted-runtime-notes/SKILL.md`](.agents/skills/scripted-runtime-notes/SKILL.md) |
-| 95 | ✓ | [`.agents/skills/sglang-bisect-ci-regression/SKILL.md`](.agents/skills/sglang-bisect-ci-regression/SKILL.md) |
-| 96 | ✓ | [`.agents/skills/sglang-cherrypick/SKILL.md`](.agents/skills/sglang-cherrypick/SKILL.md) |
-| 97 | ✓ | [`.agents/skills/sglang-multi-graph-check/references/cli.md`](.agents/skills/sglang-multi-graph-check/references/cli.md) |
-| 98 | ✓ | [`.agents/skills/sglang-multi-graph-check/SKILL.md`](.agents/skills/sglang-multi-graph-check/SKILL.md) |
-| 99 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/case-studies.md`](.agents/skills/sglang-prod-incident-triage/references/case-studies.md) |
-| 100 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/decision-tree.md`](.agents/skills/sglang-prod-incident-triage/references/decision-tree.md) |
-| 101 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/endpoints-and-signals.md`](.agents/skills/sglang-prod-incident-triage/references/endpoints-and-signals.md) |
-| 102 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/replay-trace-profile.md`](.agents/skills/sglang-prod-incident-triage/references/replay-trace-profile.md) |
-| 103 | ✓ | [`.agents/skills/sglang-prod-incident-triage/scripts/incident_artifact_tool.py`](.agents/skills/sglang-prod-incident-triage/scripts/incident_artifact_tool.py) |
-| 104 | ✓ | [`.agents/skills/sglang-prod-incident-triage/scripts/replay_trusted_request_dump.py`](.agents/skills/sglang-prod-incident-triage/scripts/replay_trusted_request_dump.py) |
-| 105 | ✓ | [`.agents/skills/sglang-prod-incident-triage/SKILL.md`](.agents/skills/sglang-prod-incident-triage/SKILL.md) |
-| 106 | ✓ | [`.agents/skills/sglang-runtime-context/SKILL.md`](.agents/skills/sglang-runtime-context/SKILL.md) |
-| 107 | ✓ | [`.agents/skills/speculative-naming/SKILL.md`](.agents/skills/speculative-naming/SKILL.md) |
-| 108 | ✓ | [`.agents/skills/write-sglang-test/SKILL.md`](.agents/skills/write-sglang-test/SKILL.md) |
-| 109 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 110 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-add-model/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-add-model/SKILL.md) |
-| 111 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |
-| 112 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md) |
-| 113 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/SKILL.md) |
-| 114 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-cache-dit/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-cache-dit/SKILL.md) |
-| 115 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-modelopt-quant/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-modelopt-quant/SKILL.md) |
-| 116 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-performance/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-performance/SKILL.md) |
-| 117 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |
+| 92 | ✓ | [`.agents/skills/processor-mm-parity/SKILL.md`](.agents/skills/processor-mm-parity/SKILL.md) |
+| 93 | ✓ | [`.agents/skills/processor-model-parity/SKILL.md`](.agents/skills/processor-model-parity/SKILL.md) |
+| 94 | ✓ | [`.agents/skills/rerun-test/SKILL.md`](.agents/skills/rerun-test/SKILL.md) |
+| 95 | ✓ | [`.agents/skills/scripted-runtime-notes/SKILL.md`](.agents/skills/scripted-runtime-notes/SKILL.md) |
+| 96 | ✓ | [`.agents/skills/sglang-bisect-ci-regression/SKILL.md`](.agents/skills/sglang-bisect-ci-regression/SKILL.md) |
+| 97 | ✓ | [`.agents/skills/sglang-cherrypick/SKILL.md`](.agents/skills/sglang-cherrypick/SKILL.md) |
+| 98 | ✓ | [`.agents/skills/sglang-multi-graph-check/references/cli.md`](.agents/skills/sglang-multi-graph-check/references/cli.md) |
+| 99 | ✓ | [`.agents/skills/sglang-multi-graph-check/SKILL.md`](.agents/skills/sglang-multi-graph-check/SKILL.md) |
+| 100 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/case-studies.md`](.agents/skills/sglang-prod-incident-triage/references/case-studies.md) |
+| 101 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/decision-tree.md`](.agents/skills/sglang-prod-incident-triage/references/decision-tree.md) |
+| 102 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/endpoints-and-signals.md`](.agents/skills/sglang-prod-incident-triage/references/endpoints-and-signals.md) |
+| 103 | ✓ | [`.agents/skills/sglang-prod-incident-triage/references/replay-trace-profile.md`](.agents/skills/sglang-prod-incident-triage/references/replay-trace-profile.md) |
+| 104 | ✓ | [`.agents/skills/sglang-prod-incident-triage/scripts/incident_artifact_tool.py`](.agents/skills/sglang-prod-incident-triage/scripts/incident_artifact_tool.py) |
+| 105 | ✓ | [`.agents/skills/sglang-prod-incident-triage/scripts/replay_trusted_request_dump.py`](.agents/skills/sglang-prod-incident-triage/scripts/replay_trusted_request_dump.py) |
+| 106 | ✓ | [`.agents/skills/sglang-prod-incident-triage/SKILL.md`](.agents/skills/sglang-prod-incident-triage/SKILL.md) |
+| 107 | ✓ | [`.agents/skills/sglang-runtime-context/SKILL.md`](.agents/skills/sglang-runtime-context/SKILL.md) |
+| 108 | ✓ | [`.agents/skills/speculative-naming/SKILL.md`](.agents/skills/speculative-naming/SKILL.md) |
+| 109 | ✓ | [`.agents/skills/write-sglang-test/SKILL.md`](.agents/skills/write-sglang-test/SKILL.md) |
+| 110 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 111 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-add-model/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-add-model/SKILL.md) |
+| 112 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |
+| 113 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/existing-fast-paths.md) |
+| 114 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-benchmark-profile/SKILL.md) |
+| 115 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-cache-dit/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-cache-dit/SKILL.md) |
+| 116 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-modelopt-quant/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-modelopt-quant/SKILL.md) |
+| 117 | ✓ | [`python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-performance/SKILL.md`](python/sglang/multimodal_gen/.agents/skills/sglang-diffusion-performance/SKILL.md) |
+| 118 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |
 
 ---
 

@@ -1255,14 +1255,17 @@ const mdIntro = {
 
 // ---- overlay: a full-frame transparent clip (a media with alpha: true, e.g. an app UI animated in HTML and captured with
 // omitBackground) drawn straight over the frame, under the captions. With layer: 'over' it sits on top of the full-screen
-// camera (seam 0), e.g. the Instagram Reels UI over the creator's face for a comment CTA. Keep it inside a full-screen
+// camera (seam 0), e.g. the Instagram Reels UI over the creator's face for a comment CTA. With layer: 'top' it sits above the
+// full-screen B-roll too (a hook animation kept on a B-roll that covers the camera). Keep it inside a full-screen
 // stretch: a window move draws the camera card over the 'over' layer. {media, from, to, offset, fade (s, 0 = cut),
-// rect: [x, y, w, h] (default the whole layer: 0, 0, W, H; a 1920x1080 clip on a youtube 'over'/'top' layer = [0, 0, 1920, 1080])}
+// rect: [x, y, w, h] (default the whole layer: 0, 0, W, H; a 1920x1080 clip on a youtube 'over'/'top' layer = [0, 0, 1920, 1080]),
+// rate (clip playback speed, default 1: a clip captured for speed 1.1 plays in sync at speed 1.15 with rate 1.15 / 1.1)}
+const ovTime = (s, t) => Math.max(0, (s.offset || 0) + (t - s.from) * (s.rate || 1));
 const overlay = {
-  needs(s, t) { return t >= s.from - .1 && t <= (s.to ?? 1e9) + .1 ? [[s.media, clipTime(t, s.from, s.offset || 0)]] : []; },
+  needs(s, t) { return t >= s.from - .1 && t <= (s.to ?? 1e9) + .1 ? [[s.media, ovTime(s, t)]] : []; },
   draw(R, s, t) {
     const to = s.to ?? 1e9; if (t < s.from || t > to) return;
-    const img = R.frame(s.media, clipTime(t, s.from, s.offset || 0)); if (!img) return;
+    const img = R.frame(s.media, ovTime(s, t)); if (!img) return;
     const f = s.fade || 0, a = f ? Math.min(1, (t - s.from) / f, (to - t) / f) : 1;
     const [x, y, w, h] = s.rect || [0, 0, W, H], m = R.media?.(s.media), c = m?.crop;   // crop: only the clip's visible box is stored
     const kx = c ? w / m.w : 0, ky = c ? h / m.h : 0;

@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 6 followed patterns, 76 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 7 followed patterns, 77 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 6 followed patterns, 76
 | Ref Type      | `branch` |
 | Ref           | `next` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 76 |
+| Followed pats | 7 |
+| Files         | 77 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 6 followed patterns, 76
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `GLOSSARY.md`
 - `CONTRIBUTING.md`
 - `.github/SECURITY.md`
 - `docs/CONTRIBUTING.md`
@@ -138,8 +139,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 72 | → | [`.github/SUPPORT.md`](.github/SUPPORT.md) |
 | 73 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 74 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
-| 75 | → | [`python/docs/release.md`](python/docs/release.md) |
-| 76 | → | [`ts/docs/internal/release.md`](ts/docs/internal/release.md) |
+| 75 | → | [`GLOSSARY.md`](GLOSSARY.md) |
+| 76 | → | [`python/docs/release.md`](python/docs/release.md) |
+| 77 | → | [`ts/docs/internal/release.md`](ts/docs/internal/release.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ThinkFlowLab/agentdescent` — 26 default patterns, 6 followed patterns, 12 file(s) materialized.
+Mirror of `ThinkFlowLab/agentdescent` — 26 default patterns, 7 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ThinkFlowLab/agentdescent` — 26 default patterns, 6 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 12 |
+| Followed pats | 7 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `ThinkFlowLab/agentdescent` — 26 default patterns, 6 followed patter
 - `.github/pull_request_template.md`
 - `changelog.d/README.md`
 - `docs/porting-checklist.md`
+- `docs/policies.md`
 
 ## File Index
 
@@ -68,14 +69,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
 | 3 | ✓ | [`agentdescent/integrations/SKILL.md`](agentdescent/integrations/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`docs/porting-methodpolicy.md`](docs/porting-methodpolicy.md) |
-| 6 | ✓ | [`integrations/claude-code/skills/agentdescent/SKILL.md`](integrations/claude-code/skills/agentdescent/SKILL.md) |
-| 7 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 8 | → | [`changelog.d/README.md`](changelog.d/README.md) |
-| 9 | → | [`CODE_STANDARDS.md`](CODE_STANDARDS.md) |
-| 10 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 11 | → | [`docs/porting-checklist.md`](docs/porting-checklist.md) |
-| 12 | → | [`LESSONS.md`](LESSONS.md) |
+| 5 | ✓ | [`docs/acceptance-policies.md`](docs/acceptance-policies.md) |
+| 6 | ✓ | [`docs/aggregator-factory.md`](docs/aggregator-factory.md) |
+| 7 | ✓ | [`docs/algorithm-decision-tree.md`](docs/algorithm-decision-tree.md) |
+| 8 | ✓ | [`docs/conflict-policies.md`](docs/conflict-policies.md) |
+| 9 | ✓ | [`docs/execution.md`](docs/execution.md) |
+| 10 | ✓ | [`docs/fusion-policies.md`](docs/fusion-policies.md) |
+| 11 | ✓ | [`docs/ledger.md`](docs/ledger.md) |
+| 12 | ✓ | [`docs/policy-guide.md`](docs/policy-guide.md) |
+| 13 | ✓ | [`docs/porting-methodpolicy.md`](docs/porting-methodpolicy.md) |
+| 14 | ✓ | [`docs/promotion-policies.md`](docs/promotion-policies.md) |
+| 15 | ✓ | [`docs/proposal-policies.md`](docs/proposal-policies.md) |
+| 16 | ✓ | [`docs/sampling.md`](docs/sampling.md) |
+| 17 | ✓ | [`docs/selection.md`](docs/selection.md) |
+| 18 | ✓ | [`docs/staleness.md`](docs/staleness.md) |
+| 19 | ✓ | [`docs/strategies.md`](docs/strategies.md) |
+| 20 | ✓ | [`docs/verifier.md`](docs/verifier.md) |
+| 21 | ✓ | [`integrations/claude-code/skills/agentdescent/SKILL.md`](integrations/claude-code/skills/agentdescent/SKILL.md) |
+| 22 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 23 | → | [`changelog.d/README.md`](changelog.d/README.md) |
+| 24 | → | [`CODE_STANDARDS.md`](CODE_STANDARDS.md) |
+| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 26 | → | [`docs/policies.md`](docs/policies.md) |
+| 27 | → | [`docs/porting-checklist.md`](docs/porting-checklist.md) |
+| 28 | → | [`LESSONS.md`](LESSONS.md) |
 
 ---
 

@@ -10,6 +10,12 @@ command with the same verbs. A run is an evolution: N workers propose edits in
 parallel, a merger keeps the ones that improve held-out reward, and nothing is
 written back until the user says so.
 
+**Path A only by default.** The MCP server exposes doctor → plan → start →
+status/show → apply (plus cancel/resume, diagnose, list/describe/algorithm_spec).
+Do not reach for audit_*, release, platform, experience, or other satellites
+unless the user asked and the server was started with `--advanced` /
+`AGENTDESCENT_MCP_ADVANCED=1`. See docs/mcp-path-a.md.
+
 ## The procedure
 
 1. **`doctor` first.** Report what is missing (worker agent CLI, provider key,
@@ -22,10 +28,12 @@ written back until the user says so.
    Write every path **absolute**. A relative one is resolved against whatever
    directory read the spec -- the host started its MCP server somewhere you
    cannot see -- so the same spec finds the file from one host and not another.
-   - `kind`: `text` (a prompt or instruction), `skill_dir` (a SKILL.md folder),
-     `agent_dir` (subagent definitions), `agent_code` (a tree that runs behind
-     tests), `plugin` (a host plugin; needs `host`), `policy_slot` (a decision
-     rule of the optimiser itself -- see below; almost never what a user means).
+   - `kind`: `text` (a prompt or instruction), `skill_dir` (one SKILL.md folder),
+     `skill_library` (a directory of `*/SKILL.md` skills; see
+     `examples.skill_library_evolution`), `agent_dir` (subagent definitions),
+     `agent_code` (a tree that runs behind tests), `plugin` (a host plugin;
+     needs `host`), `policy_slot` (a decision rule of the optimiser itself --
+     see below; almost never what a user means).
    - **`policy_slot` is not for improving the user's files.** Its artifact is one
      slot of AgentDescent's own search (`selection`, `task_sampler`, ...), and
      one rollout is a *whole inner search*, so a round costs minutes to hours
@@ -37,8 +45,12 @@ written back until the user says so.
      run asked for 8 rounds and completed 2 in 90 minutes. Read `plan`'s notes
      aloud: they say how many held-out tasks the gate actually gets, and with
      too few it has both committed a worse rule and committed nothing at all.
-   - `algorithm` (optional): a named method. Call `list_algorithms` (or
-     `describe_algorithm` for one) before naming one; the same data is in
+   - `algorithm` (optional): a named **Algorithm card** (`surface=card`). Call
+     `list_algorithms` with the artifact's `kind` (or `describe_algorithm` for
+     one) before naming one; filter by kind so ineligible cards are not offered.
+     Same-name `examples/<algo>/` research ports are source-only and may differ
+     in fidelity — `plan` echoes `fidelity` / `research_port` / `fidelity_note`;
+     never claim the paper port ran when only the card did. **Hard contract (#384):** Path A names **cards only**; MethodPolicy / full ports stay `python -m examples…` until a scoped card issue lands. The same data is in
      `agentdescent algorithms list` / `show`. To build the spec for one,
      call `algorithm_spec` (name, absolute `path`, absolute `cases`, optional
      `params` object, `rounds`/`workers` 1/1 for a quick trial): it writes the
@@ -77,7 +89,7 @@ written back until the user says so.
        agent here**: `claude_code` / `codex` / `dsh` / `opencode` are
        file-editing agents, and pointing one at a prompt costs a whole agent
        session per case to answer a question a model answers in one call.
-     - `skill_dir` / `agent_dir` / `agent_code` / `plugin` -- the agent has to
+     - `skill_dir` / `skill_library` / `agent_dir` / `agent_code` / `plugin` -- the agent has to
        read and edit files, so it must be a CLI agent, and `reflect` is where a
        cheap model goes.
    - **Never invent a model name.** `openai_compatible` needs one and there is

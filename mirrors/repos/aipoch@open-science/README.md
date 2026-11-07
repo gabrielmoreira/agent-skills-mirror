@@ -47,19 +47,19 @@
 
 When you want to see how a result was produced, inspect the available inputs, code, and execution history. To share the work, export a `.science` package with the conversation branches, file versions, Notebook records, and verification evidence you choose.
 
-### 💡 AIPOCH Open-Science v1.0.8 updates
+### 💡 AIPOCH Open-Science v1.1.0 updates
 
-_November 4, 2026_
+_November 6, 2026_
 
-- **Settings**: Focused tabs organize preferences, app information, diagnostics, and help.
-- **Batch reference import**: Import up to **100** DOI, arXiv, or PubMed identifiers or official article links at once, with normalization and deduplication.
-- **AI paper overviews**: Summarize the research question, study population, methods, main findings, and limitations, with the full-text or abstract source labeled.
-- **Session resources**: All five agent frameworks release processes after completed sessions to reduce memory accumulation.
-- **Model support**: Tencent TokenHub adds Hy4 and DeepSeek V4.1 Flash routes, plus image input for selected models.
-- **Scientific data and PDFs**: Restore eQTL Catalogue queries with GRCh38 coordinate validation and improve PDF reading order and extraction.
-- **Reliability fixes**: Improve R dependency verification and artifact provenance, and fix cross-platform updates, downloads, sandbox networking, and Pi installation.
+- **Research films**: Export completed sessions as portable narrated films with terminal playback. Voice narration requires a locally installed voice model.
+- **Mobile pairing**: Scan a QR code to open the current workspace on a phone or tablet over local WiFi or a Pinggy tunnel; internet traffic passes through Pinggy’s servers.
+- **Literature in CLI and MCP**: Search and manage references from the command line and MCP clients, with read-only browsing plus write tools.
+- **Resumable overviews**: Batch paper overviews resume after interruptions without regenerating completed results.
+- **Resource center**: A renamed resource center with an adapted case library layout, more compact external links, and compute settings under connections.
+- **Diagnostics**: Exports preserve Notebook execution evidence, allow selecting historical backend logs, and can include opt-in resource recordings (Windows).
+- **Reliability fixes**: Recover conversations after interruptions, restore PDF figures and tables from searchable scans, and improve startup, Windows update checks, and memory use.
 
-[View the full v1.0.8 release notes](https://github.com/aipoch/open-science/releases/tag/v1.0.8)
+[View the full v1.1.0 release notes](https://github.com/aipoch/open-science/releases/tag/v1.1.0)
 
 <p align="center">
  <img width="1920" height="1140" alt="AIPOCH Open-Science banner: Science, Open to All — an open-source, model-agnostic, self-hosted scientific AI research workbench" src="docs/images/readme/open-science-banner.png" />
@@ -308,7 +308,7 @@ Translated PDFs can optionally reflow body text and captions into a single-colum
 
 In the desktop app, artifact provenance can also be exported as RO-Crate 1.1. A version-bound environment bundle can create a managed environment only when the captured bundle is complete and compatible with the target platform; this is separate from a full machine backup.
 
-Browse research cases in the Marketplace from Home or the conversation workspace, filter by category, search by keyword, and download packages from case details.
+Browse research cases in the resource center, filter by category, search by keyword, and download packages from case details.
 
 ## Model Providers
 
@@ -387,12 +387,7 @@ The desktop app and browser share the same service. App connections and an expli
 
 ### Mobile remote access
 
-The same localhost web UI can be reached from a phone or tablet through Remote.It pairing. Pair
-a browser with a six-digit AIPOCH Open-Science code, approve it once on the desktop, and the workspace
-stays reachable without exposing the loopback server directly. Browser trust is revocable, and
-mode changes or service shutdown immediately invalidate active remote sessions.
-
-Remote access requires the host to stay on and online, with AIPOCH Open-Science and the Remote.It agent running, and the host added to a signed-in Remote.It account. Browser approval has an expiry and can be revoked; see the [Remote control guide](docs/remote-control.md).
+Scan a QR code to open the current workspace on a phone or tablet over local WiFi or a Pinggy tunnel. Local WiFi pairing stays on your network; internet tunnels route traffic through Pinggy’s servers, as disclosed in the connection dialog.
 
 ### Headless CLI and SDK
 
@@ -431,7 +426,7 @@ A: The current step has not met its required condition. Fix any environment row 
 <details>
 <summary>How do I run jobs on a remote HPC cluster?</summary>
 
-A: **Remote Compute (SSH)** is always enabled and does not need to be enabled in Settings. Register an SSH compute host under **Settings → Compute**, make it available to the current session, and then use natural language or `/remote-compute-ssh`. You need a reachable SSH host, valid authentication, permission for the required directories, and the software, dependencies, and compute resources required by the workload. Direct SSH does not require a scheduler; Slurm mode requires a working Slurm environment and permission to submit jobs. “Always enabled” refers to the skill, not to the availability of every registered host.
+A: **Remote Compute (SSH)** is always enabled and does not need to be enabled in Settings. Register an SSH compute host under **Settings → Connections → Compute**, make it available to the current session, and then use natural language or `/remote-compute-ssh`. You need a reachable SSH host, valid authentication, permission for the required directories, and the software, dependencies, and compute resources required by the workload. Direct SSH does not require a scheduler; Slurm mode requires a working Slurm environment and permission to submit jobs. “Always enabled” refers to the skill, not to the availability of every registered host.
 
 </details>
 
