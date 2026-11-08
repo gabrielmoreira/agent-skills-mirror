@@ -64,14 +64,13 @@ hardware/
 │   └── custom/            Custom parts
 ├── assembly/
 │   ├── procedures/        Assembly steps
-│   ├── patch/             Saved drawing annotations
-│   └── mark/              Drawing annotation tool
+│   └── annotation/        Generated manual highlights and callouts
 ├── documents/
 │   ├── bom/bom.json       Shared purchasing list
 │   ├── manual/            Assembly instructions and manual builder
 │   ├── sourcing/          Suppliers and sourcing guide builder
 │   ├── drawing/           Frame cut-and-drill drawings
-│   └── assets/            Shared icons and illustrations
+│   └── assets/            Styles, scripts, icons and illustrations
 ├── port/                  Platform-specific helpers
 ├── __main__.py            Python command-line entry point
 ├── check.py               Source consistency checks

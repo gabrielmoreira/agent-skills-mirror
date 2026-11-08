@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **asr-transcribe-to-text** (`daymade-audio` v1.57.5 → v1.57.6): Preserve original-speed upload and source-time review requirements; make metered speedup conditional on user permission and a verified mapping back to the original media.
+- **tibo-reset-codex** (v2.8.1 → v2.8.2): Route monitor-stop requests directly to the actual host's lifecycle procedure; preserve read-only research boundaries and verify all in-scope schedulers stopped without querying reset sources.
+
+- **macos-watchdog** (`daymade-macos` v1.30.2 → v1.30.3): Diagnose invisible local notifications through sender, application, Focus and sharing settings; verify the requested display surface through the installed sender while preserving authorization and job state.
+
+- **macos-cleaner** (`daymade-macos` v1.30.0 → v1.30.1): Separate logical, allocated and private bytes in file diagnostics; preserve unknown measurements, avoid overlapping inventory totals, and label disk changes as observations.
+- **claude-code-hooks** (`daymade-claude-code` v5.1.2 → v5.1.3): Audit functional overlap, false blocking and observed execution cost through bounded read-only evidence; keep unmeasured cost explicit.
+- **macos-cleaner** (`daymade-macos` v1.30.1 → v1.30.2): Route instruction readers to the allocation CLI and leave input limits with their implementing parsers.
+- **claude-code-hooks** (`daymade-claude-code` v5.1.3 → v5.1.4): Add the instruction-file audit entry and remove the derived observation count and copied reader-key definition.
+
+- **openclaw** (v1.3.0 → v1.3.1): Align live configuration with native APIs; document verified backups, native upgrade recovery and state-aware rollback. Scope verification to the repaired behavior while preserving offline tools and plugin diagnostics.
+- **openclaw-model-switch** (v1.2.0 → v1.2.1): Prefer validated batch writes and the CLI reload hint; verify the default through a real Gateway turn with exact model and fallback evidence. Preserve older-version file tools and distinguish Gateway, delivery and ingress checks.
+
 - **frontend-visual-qa** (v1.21.36 → v1.21.37): Add media-state journey cases for playback geometry, seeking, tall-image notices, exact source/preview identity and native downloaded-file validation. Change type: sampled acceptance-recipe extension; existing audit profiles and browser owners remain intact.
 
 - **pdf-creator** (`daymade-docs` v1.29.4 → v1.29.5): Correct the documented lint/preview/checklist order and automation opt-out; keep maintainer testing linked to its canonical QA, runtime and Python contracts.

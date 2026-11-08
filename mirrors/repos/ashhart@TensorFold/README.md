@@ -44,6 +44,8 @@ Before opening a pull request, have the agent run the [pull request skill](docs/
 
 Start with Qwen3.5-2B, the small 4-bit checkpoint checked on Metal and a GB10. The commands below download its
 pinned revision, then serve it as `local-model`. Model weights have their own licenses.
+Reviewing or benchmarking TensorFold? [Evaluating TensorFold](docs/evaluating.md) covers pinning, signature checks,
+a container and the tests that need no GPU.
 
 ### Mac with Apple Silicon
 
@@ -63,7 +65,7 @@ Its kernels are built with CUDA 13, so TensorFold refuses an older driver at sta
 See the [CUDA runbook](RUNBOOK.md#linux-and-cuda) for runtime libraries and supported GPUs.
 
 ```sh
-V=1.2.3
+V=1.2.4
 case "$(uname -m)" in
   aarch64|arm64) PLATFORM=linux-aarch64 ;;
   x86_64) PLATFORM=linux-x86_64 ;;
@@ -93,6 +95,10 @@ The API also serves completions, Responses and Anthropic Messages. `/v1/models` 
 On Windows with an NVIDIA GPU, follow [the native Windows build guide](docs/WINDOWS.md).
 Use `tensorfold --help`, `tensorfold capabilities --json` and `tensorfold serve REPO --help` to inspect your binary.
 You can also serve a complete local checkpoint directory or an existing Hugging Face cache.
+
+`tensorfold web [ARGS...]` opens TensorFold Web, a small local web app for picking, running and chatting with models.
+If it needs installing, an interactive release binary offers to install its matching version with `uv` after you say yes.
+See [the web launcher](docs/web.md) for manual installation and unattended use.
 
 `--parallel N` caps active requests at N; extra requests wait for a free slot.
 Omitting the flag uses `--parallel auto`, which asks for up to eight streams as memory and the engine allow.
@@ -186,9 +192,9 @@ Conversions are explicitly marked: their upstream weights need the linked conver
 | GLM-5.3-Flash, NVFP4 | `tensorfold pull nvidia/GLM-5.3-Flash-NVFP4@423acf37583782c51c142d145aef733d72943d93` | Two GB10s at TP=2: @Bizuayeu loaded the whole checkpoint on 1.1.0 in 302.1 s and served it. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md); [contributed run](https://github.com/ashhart/TensorFold/issues/1040): one token hash per prompt across three runs and a passphrase found in 199,307 tokens; scored prompts and more than two ranks were not covered. |
 | GLM-5.3-Flash, FP4-Local | `tensorfold pull nvidia/GLM-5.3-Flash-FP4-Local@76348ddb2be2e35e39ecfc00e75dc07703f4f3d5` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu loaded it as stored and served it at both sizes. 165.3 GiB of weights, 13% less than NVFP4's. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.1.5 (#1050). NVIDIA's mixed-precision checkpoint: NVFP4 routed experts, FP8 for most of the rest. As close to BF16 as NVFP4 at its smaller size ([receipt](docs/receipts/glm-fp4local-80517fc3/README.md)). |
 | GLM-5.3-Flash, XSFP4 | `tensorfold pull Bizuayeu/GLM-5.3-Flash-XSFP4@88736f916f8939607fde8a4b881dcae749f7551d` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu served it at both sizes. 165.7 GiB of weights. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.1.5 through FP4-Local's path. FP4-Local with its routed experts refitted from the BF16 weights and a smoothing folded in, on the same kernels. Closer to BF16 than FP4-Local and NVFP4 by all three measures in [its card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-XSFP4#measured). |
-| GLM-5.3-Flash, Jammed XSFP4 | `tensorfold pull Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4@0a22bb46ecef3d0f5f96e41dc6011be12974fbf1` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu served it at both sizes. 160.2 GiB of weights; at TP=2 each GB10 holds [6.6 GiB less](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4#memory) than at block 16. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), on main after 1.2.2 (#2041). Refitted from BF16 at block 32 with XSFP4's smoothing, each row's scales packed (`csf0_v1`, read only by this path), at XSFP4's speed. Its KL and top-1 are nearer BF16 than NVIDIA's two checkpoints', short of XSFP4's ([its card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4#measured)). |
+| GLM-5.3-Flash, Jammed XSFP4 | `tensorfold pull Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4@0a22bb46ecef3d0f5f96e41dc6011be12974fbf1` | Two GB10s at TP=2, or three at TP=3 over a ring of direct links: @Bizuayeu served it at both sizes. 160.2 GiB of weights; at TP=2 each GB10 holds [6.6 GiB less](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4#memory) than at block 16. | [Native CUDA](docs/recipes/glm-5.3-flash-cuda.md), in 1.2.3 (#2041). Refitted from BF16 at block 32 with XSFP4's smoothing, each row's scales packed (`csf0_v1`, read only by this path), at XSFP4's speed. Its KL and top-1 are nearer BF16 than NVIDIA's two checkpoints', short of XSFP4's ([its card](https://huggingface.co/Bizuayeu/GLM-5.3-Flash-Jammed-XSFP4#measured)). |
 | GLM-5.3, EXLR8 `home` | `tensorfold pull kindlingai/glm-5.3-exlr8-k2-k3-k4@f459f5d0272a529403dd9b3fd32f771f4250a0d4 --exlr8 home --node 0/2 --dir ~/models/glm-5.3-exlr8-home` | Two M5 Ultra Macs, 256 GB each; about 160 GB resident per Mac at 8k context / four streams. | [Two-Mac recipe](docs/glm-5.3-exlr8.md). Use `--node 1/2` on the other Mac; Thunderbolt 5 and MCDMA required. No CUDA backend. |
-| LFM2.5-24B-A2B, MLX 4 / 6 / 8-bit | `tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-4bit@667408d494bde191c2cb9dd4f4549827816b9275`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-6bit@1deec53eb49571e21cdcbf82fd5839248f07ed88`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-8bit@67ab417dd02d0c9545802a726df668620eae049d` | One Mac; M4 Pro checked. | [Native recipe](docs/recipes/lfm2.5-24b-a2b.md), [release history](CHANGELOG.md). |
+| LFM2.5-24B-A2B, MLX 4 / 6 / 8-bit | `tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-4bit@667408d494bde191c2cb9dd4f4549827816b9275`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-6bit@1deec53eb49571e21cdcbf82fd5839248f07ed88`<br>`tensorfold pull LiquidAI/LFM2.5-24B-A2B-MLX-8bit@67ab417dd02d0c9545802a726df668620eae049d` | One Mac (M4 Pro checked), or one NVIDIA GPU with the 4-bit export (GB10 checked). | [Native recipe](docs/recipes/lfm2.5-24b-a2b.md) ([CUDA](docs/recipes/lfm2.5-24b-a2b.md#cuda)), [release history](CHANGELOG.md). Weights: LFM Open License v1.0. |
 | Qwen3.6-35B-A3B, MLX with MTP | `tensorfold pull TensorFold/Qwen3.6-35B-A3B-MLX-4bit-MTP@81169a9bc511a27c1b4eedb77a2cd98ced431847` | One GB10; 20.9 GB checkpoint. | [Qwen3.6](docs/recipes/qwen3.6-moe.md). Native CUDA receipt here. Metal also registers this model type; the recipe's Metal commands describe Python 0.6.6. |
 | Qwen3.6-35B-A3B, NVIDIA NVFP4 with MTP | `tensorfold pull nvidia/Qwen3.6-35B-A3B-NVFP4@1355db6a052410cfd62085d94b58866fd0f2c3c5` | One GB10; 20.3 GiB on the device, 20.9 GiB with the drafter. | [Native CUDA](docs/recipes/qwen3.6-moe.md#nvidias-nvfp4-checkpoint-native-cuda). Serve with `--drafter` naming the same checkpoint for MTP drafts. |
 | Gemma 4 31B, MLX 4-bit | `tensorfold pull mlx-community/gemma-4-31B-it-4bit@696d436c404745a59f30e4939a658162b0a9e57f`<br>`tensorfold pull z-lab/gemma-4-31B-it-DFlash@eabd648301ce28583cc14757912e5e0f84e152e1` | One Mac (M5 Ultra checked), or one GB10 on CUDA. Pre-M5 Metal has a row path; its assistant and DFlash drafters require M5 tensor units. | [Native 31B on Metal](docs/recipes/gemma-4-native.md), [CUDA qualification](CHANGELOG.md#114). Name the drafter with `--drafter`; images with `--vision`. |
@@ -234,12 +240,14 @@ On Metal, each of up to 128 streams in the 27B's shared rounds drafts its own DF
 ```sh
 tensorfold pull TensorFold/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-MLX-4bit
 tensorfold models
+tensorfold models --json
 tensorfold info TensorFold/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-MLX-4bit
 ```
 
 `pull` downloads a checkpoint into the Hugging Face cache and checks what it downloads against the Hub: large files by sha256, small files by their git blob sha1.
 Large files come down in pieces over up to 16 connections, and an interrupted pull resumes with the pieces it lacks.
 It refuses a checkpoint whose `model_type` has no native family, and fetches the 27B's DFlash2 drafter for `--drafter`. `models` lists the cached checkpoints with a model type it knows, and `info` shows one checkpoint's family, format, context and memory floor.
+`models --json` prints the same list as one document for programs: `schema` 1, and each checkpoint's `repo`, `family` and `model_type`; `family` is a display title and `model_type` is the key to match on.
 `tensorfold serve REPO` serves a cached checkpoint by its repository name.
 
 ## Context compaction
@@ -291,7 +299,7 @@ The binary's `capabilities --json` response lists its supported flags and platfo
 | `--alias NAME` | Another accepted model ID; repeat for multiple aliases. |
 | `--api-key KEY` | Require a bearer key; repeat for multiple keys. |
 | `--api-key-file FILE` | Read keys from a restricted-permission file; a key can be limited to [some routes](docs/api.md#key-scopes). |
-| `--metrics-open` | Allow `/metrics` and `/v1/load` without a key when API authentication is enabled. |
+| `--metrics-open` | Allow `/metrics`, `/v1/metrics` and `/v1/load` without a key when API authentication is enabled. |
 | `--dashboard` | Enable the local `/dashboard` page and `/stats` endpoint. |
 | `--max-inflight N`, `--max-inflight-per-key N` | Refuse model requests past N in progress at once, overall or per key, with 429; 0, the default, is off. See [admission](docs/api.md#admission). |
 | `--requests-per-second N`, `--request-burst N` | Refuse a key's model requests past N a second, after a burst; 0, the default, is off. |
@@ -559,6 +567,7 @@ Thank you to everyone who has sent TensorFold a pull request, a measurement or a
 [@spenchey](https://github.com/spenchey),
 [@squarrier](https://github.com/squarrier),
 [@ss-cong](https://github.com/ss-cong),
+[@Stephane-Eden](https://github.com/Stephane-Eden),
 [@styles01](https://github.com/styles01),
 [@SvangenStudios](https://github.com/SvangenStudios),
 [@swbiggart](https://github.com/swbiggart),

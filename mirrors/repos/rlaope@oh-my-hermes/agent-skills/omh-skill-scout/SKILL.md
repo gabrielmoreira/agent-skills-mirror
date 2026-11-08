@@ -31,7 +31,7 @@ Good example:
 
 - Prompt: skill-scout find existing skill candidates before we create a release-note workflow skill.
 - Expected behavior: Produce `prepare_skill_scout` with required context, wrapper actions, and not-evidence boundaries.
-- Why: The prompt names a real workflow surface that Hermes can orchestrate without hiding execution.
+- Why: Reuse is judged by candidate and source trust; the scout installs nothing.
 
 Bad example:
 
@@ -49,7 +49,7 @@ Bad example:
 ## Recovery Notes
 
 - If the request is about setup or installed skill repair, it is outside this skill.
-- If the request is a portfolio health dashboard, route to skill-health.
+- If the request is a portfolio health dashboard, route to `omh-skill-health`.
 - If the request is an approved skill mutation or creation task, route to implementation after the scout decision.
 
 

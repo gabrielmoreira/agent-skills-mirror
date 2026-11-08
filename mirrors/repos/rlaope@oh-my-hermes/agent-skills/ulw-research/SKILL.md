@@ -1,6 +1,6 @@
 ---
 name: "ulw-research"
-description: "[omh] Deep dive before a decision: deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use web-research. Use when the user says: research plan, literature review, research literature, review recent papers, deep research, deep-research, exhaustive research, saturation research."
+description: "[omh] Deep dive before a decision: deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use `omh-research-brief`, for upstream guidance use `omh-web-research`. Use when the user says: research plan, literature review, research literature, review recent papers, deep research, deep-research, exhaustive research, saturation research."
 license: MIT
 metadata:
   hermes:
@@ -62,7 +62,7 @@ Bad example:
 - If no archive access exists or the capture provider's paid authority is exhausted, record a temporal retrieval gap with no network action and keep the as-of claim in the annex; never substitute the current page for it.
 - If the evidence stays thin or contested, lower the stated confidence and keep the unresolved claims in the annex rather than flattening them.
 - If leads keep expanding past the declared budget, stop, record open leads in the dossier, and ask whether to extend the budget.
-- If enough evidence already exists and the real request is planning, hand off to ralplan with the recorded dossier.
+- If enough evidence already exists and the real request is planning, hand off to `ulw-plan` with the recorded dossier.
 - If the audience answer arrives after retrieval started, keep the evidence and re-render rather than re-running: the dossier feeds both branches.
 
 
@@ -82,7 +82,7 @@ Reasoning demand: `standard`
 
 Quality bar:
 
-- Ask for the research question, source boundaries, freshness, jurisdiction, and version assumptions before retrieval.
+- Ask for the research question, source boundaries, freshness, jurisdiction, and version assumptions before retrieval. When another workflow or a lane that cannot ask called you, take audience = coding agent, skip the format and language questions, use the caller's stated question and depth, take the open web and the caller's repository as source boundaries, current freshness, and no stated jurisdiction or version, and record each defaulted input in the dossier `scope` as `defaulted: <why>`; ask only when a human is in the loop.
 - Ask who the output is for before retrieval and never infer it: a human reader gets a briefing document, a coding agent gets the dense handoff of findings, exact symbols, and file paths. The answer changes what the run records, not only how it is written up.
 - On the human branch ask the output format (markdown, a print-ready page, or both) and the output language before writing, then hold the document to `references/briefing-format.md` - noun-phrase titles carrying a role label from its closed vocabulary, cause before effect, terms defined at first use, figures drawn in code blocks, and the fixed chapter-and-appendix structure.
 - Keep the coding-agent branch dense: findings, exact symbols, file paths, and the plan-feed block, with no narrative framing and no briefing structure.

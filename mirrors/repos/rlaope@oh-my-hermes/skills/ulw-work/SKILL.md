@@ -10,7 +10,7 @@ metadata:
     phase: parallel-delivery
     role: handoff-guide
     quality_tier: handoff-gated
-    related_skills: [omh-decision-prototype, ulw-loop]
+    related_skills: [omh-plan, ulw-plan, omh-decision-prototype, ulw-loop]
 ---
 
 # Ultrawork
@@ -23,12 +23,12 @@ This is a Hermes-native `ultrawork` workflow skill.
 
 ## First Steps
 
-- Initialize the phase todo before engine work (todo init) in ONE tool, never both: `todo_list` when `todo_list` is in your tool list or tool_search finds it (OMH mirrors it), else `omh_todo`; an accepted plan stays in `omh_todo`. Declare numbered phases in delivery order — bootstrap, one implement/verify/deliver task per lane or work unit, independent review lanes, and an evidence-and-cleanup close, one task per observable outcome — keep exactly one item active, and update states as lanes complete, so the run walks a bounded checklist. Phase names and task titles are written in English as short labels even when the conversation runs in another language, since the HUD checklist is an operator surface.
+- Initialize the phase todo before engine work (todo init) in ONE tool, never both: `todo_list` when `todo_list` is in your tool list or tool_search finds it (OMH mirrors it), else `omh_todo`; an accepted plan stays in `omh_todo`. Declare numbered phases in delivery order — bootstrap, one implement/verify/deliver task per lane or work unit, independent review lanes, and an evidence-and-cleanup close, one task per observable outcome — keep exactly one item active, and update states as lanes complete, so the run walks a bounded checklist. Phase names and task titles are written in English as short labels even when the conversation runs in another language (the HUD is an operator surface).
 
 ## Do Not Use When
 
 - Avoid conflicting parallel writers; use single-owner or ordered execution.
-- The plan is not accepted, lane boundaries are unclear, or verification commands are missing.
+- Plan not accepted, lanes unclear or verification missing; use `omh-plan` (`ulw-plan` for a stated risk) unless a delivery cycle was asked for or it is one concrete change with its own acceptance criteria and verification command.
 - The user expects Hermes to secretly execute coding lanes instead of preparing explicit selected-runtime handoffs.
 - For a decision spike, use `omh-decision-prototype`.
 - [capability:coordinated_scope] The lanes are exploratory research or QA coordination without an accepted implementation plan; frame them with the `coordinated_scope` capability before parallel delivery.
@@ -84,7 +84,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -110,7 +110,7 @@ Quality bar:
 - When adapting an existing capability, load `skill_view(name='omh-verification-gate', file_path='references/adaptation-quality.md')` before accepting a plan, dispatching work, or claiming completion; carry its criteria and comparisons into tasks and evidence.
 - Attach acceptance criteria, verification commands, and review expectations to each lane.
 - Keep dispatch, execution, review, CI, and merge status evidence separate.
-- After final brief composition and before unattended coding handoff, explicitly run `omh handoff-risk-scan --brief-file <final-brief> --repo <workspace> --strict --json`. Route high_risk (exit 1) to existing confirmation or security-safety-review; scan_error (exit 2) requires repaired input and a new scan. Clear never grants permission or bypasses metadata preflight, approval, or host policy.
+- After final brief composition and before unattended coding handoff, explicitly run `omh handoff-risk-scan --brief-file <final-brief> --repo <workspace> --strict --json`. Route high_risk (exit 1) to existing confirmation or `omh-security-safety-review`; scan_error (exit 2) requires repaired input and a new scan. Clear never grants permission or bypasses metadata preflight, approval, or host policy.
 - Write each lane prompt to the node prompt contract and close every code-changing run with the verification fan-in; `references/dependency-topology.md` holds both.
 - For each behavioral increment follow PIN -> RED -> GREEN -> SURFACE -> CLEAN: pin behavior a refactor could hide, capture the intended failing proof before implementation, make the smallest change, exercise the real user surface, and tear down every QA resource with a cleanup receipt; tests alone never prove completion.
 - Keep one inspectable, append-only evidence ledger for the run using the available goal/runtime records: record the tier decision, dependency topology, todo transitions, command outputs, real-surface artifacts, and cleanup receipts when each occurs.
@@ -118,7 +118,7 @@ Quality bar:
 - [capability:coordinated_scope] Keep Hermes as coordinator and status narrator for lane framing and status while coding lanes become runtime handoffs with explicit ownership.
 - [capability:delivery_boundary] Complete exactly one plan-to-PR delivery cycle, then stop with status, evidence gaps, or a next recommended workflow.
 - [capability:delivery_boundary] Start a delivery cycle with codebase/source research and a ralplan-style decision record before implementation handoff.
-- [capability:delivery_boundary] Run code-review as a gate after implementation evidence exists; review preparation alone is not review evidence.
+- [capability:delivery_boundary] Run `omh-code-review` as a gate after implementation evidence exists; review preparation alone is not review evidence.
 - [capability:delivery_boundary] End a delivery cycle with a PR-ready or PR-observed report that separates prepared, executed, reviewed, verified, CI, and PR evidence.
 - [capability:delivery_boundary] For implementation, default to Hermes-native delegation with a per-lane `omh_delegate_route` mixture route and acceptance criteria and verification commands attached; hand off to the `durable_checkpoint` capability for work that must survive sessions, and prepare a selected external executor/runtime path only on the user's explicit owner acceptance.
 - When a lane's coding owner is an external CLI rather than the Hermes harness, that lane's handoff runs under `ulw-maestro`'s contract — load it and follow it whole; a lane with an external owner is never a Hermes-native `delegate_task` lane. Lane framing, disjointness, integration verification, and the closing brief stay here.
@@ -150,14 +150,14 @@ Executor readiness:
 
 Delegation transparency:
 
-- When delegating, show the composed delegate prompt in a fenced code block in the status message; truncate a long prompt to a bounded preview ending with `... [truncated, N chars total]` — the user must see WHAT was asked, not just that something was.
+- When delegating, show the composed delegate prompt in a fenced code block in the status message; truncate a long prompt to a bounded preview ending with `... [truncated, N chars total]`.
 - Name every delegated or parallel lane's model and, when the host exposes it, its reasoning effort inline as `(model effort)` in status and briefing lines — including runtime-native subagents; when no effort is exposed, show the model alone as `(model)` rather than writing a placeholder like `unknown` beside a known model, and never emit empty parentheses. Carry token and elapsed figures the same way in these narration lines: report observed figures and omit unobserved ones — when the user asks for a figure directly, say it was not observed instead of omitting it; a rendered status-board column keeps its own `unknown` cell.
-- Capture a resumable session or thread id at dispatch and report it in the status message: for non-interactive Claude Code pass `--output-format json` and read `session_id` from the result (resume with `claude -p --resume <session-id>`); for Codex pass `--json` and read `thread_id` (resume with `codex exec resume <thread-id>`, repeating `--skip-git-repo-check` outside a git repo). Never leave a delegate run with no recorded way to resume or steer it — a plain-text one-shot that hides its session id strands the work when the run stalls or times out.
+- Capture a resumable session or thread id at dispatch and report it in the status message: for non-interactive Claude Code pass `--output-format json` and read `session_id` from the result (resume with `claude -p --resume <session-id>`); for Codex pass `--json` and read `thread_id` (resume with `codex exec resume <thread-id>`, repeating `--skip-git-repo-check` outside a git repo). Never leave a delegate run with no recorded way to resume or steer it.
 - Before dispatch, grant the executor session every permission the task will need — file write/edit, command/test execution, and the working directory — on the dispatch command itself, not through settings-file guesses: for non-interactive Claude Code pass `--permission-mode acceptEdits` or an explicit `--allowedTools` list (`--dangerously-skip-permissions` only inside an isolated worktree or sandbox), and the equivalent sandbox/approval flags for other CLIs. `acceptEdits: true` is not a settings key and `~/.claude/settings.local.json` is not a file Claude Code reads — user scope is `~/.claude/settings.json` and project scope is the dispatch cwd's `.claude/settings.local.json` with rules under `permissions.allow`. Prove the grant with a bounded scratch-edit probe run before the real dispatch: a permission denial in a non-interactive run recurs identically on retry, so never redispatch until a changed grant is proven, and surface an ungrantable permission as a blocker before dispatch, not after minutes of silence.
 
 Required inputs:
 
-- accepted plan
+- accepted plan, or one concrete change's acceptance criteria and verification command
 - work units with read/write scopes
 - dependency edges or shared invariants
 - verification commands
@@ -182,7 +182,7 @@ Safety rules:
 - [capability:coordinated_scope] Use coordination lanes only when work is independent; if two lanes are not independent, collapse them under one owner or re-plan before dispatch.
 - [capability:coordinated_scope] Keep shared-file edits under one owner; if integration reveals a shared-file conflict, stop lane fan-out and reassign ownership before continuing.
 - [capability:coordinated_scope] Record unobserved delegation as not_observed; a delegation record exists only when separate participants are observed.
-- [capability:delivery_boundary] Do not continue into a repeated feedback loop; recommend `loop` when the user wants ongoing cycles.
+- [capability:delivery_boundary] Do not continue into a repeated feedback loop; recommend `ulw-loop` when the user wants ongoing cycles.
 - [capability:delivery_boundary] Do not skip planning when the delivery request is broad, risky, or user-visible; a ralplan-style or reviewed plan names acceptance criteria, risks, and verification commands.
 - [capability:delivery_boundary] Run docs sync only when behavior, setup, commands, examples, or public claims changed.
 - [capability:delivery_boundary] Keep web research source-backed and permission-aware; do not run hidden network or LLM calls from OMH core.

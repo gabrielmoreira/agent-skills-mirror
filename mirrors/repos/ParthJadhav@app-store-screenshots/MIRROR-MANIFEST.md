@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followed patterns, 129 file(s) materialized.
+Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followed patterns, 131 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ParthJadhav/app-store-screenshots` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 129 |
+| Files         | 131 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -150,44 +150,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 89 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/tabs.tsx`](skills/app-store-screenshots/template/src/components/ui/tabs.tsx) |
 | 90 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/textarea.tsx`](skills/app-store-screenshots/template/src/components/ui/textarea.tsx) |
 | 91 | ✓ | [`skills/app-store-screenshots/template/src/components/ui/tooltip.tsx`](skills/app-store-screenshots/template/src/components/ui/tooltip.tsx) |
-| 92 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-hex-color.ts`](skills/app-store-screenshots/template/src/lib/clean-hex-color.ts) |
-| 93 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-imported-font.ts`](skills/app-store-screenshots/template/src/lib/clean-imported-font.ts) |
+| 92 | ✓ | [`skills/app-store-screenshots/template/src/lib/asset-files.ts`](skills/app-store-screenshots/template/src/lib/asset-files.ts) |
+| 93 | ✓ | [`skills/app-store-screenshots/template/src/lib/clean-hex-color.ts`](skills/app-store-screenshots/template/src/lib/clean-hex-color.ts) |
 | 94 | ✓ | [`skills/app-store-screenshots/template/src/lib/constants.ts`](skills/app-store-screenshots/template/src/lib/constants.ts) |
 | 95 | ✓ | [`skills/app-store-screenshots/template/src/lib/contrast.ts`](skills/app-store-screenshots/template/src/lib/contrast.ts) |
 | 96 | ✓ | [`skills/app-store-screenshots/template/src/lib/copy-ideas.ts`](skills/app-store-screenshots/template/src/lib/copy-ideas.ts) |
-| 97 | ✓ | [`skills/app-store-screenshots/template/src/lib/defaults.ts`](skills/app-store-screenshots/template/src/lib/defaults.ts) |
-| 98 | ✓ | [`skills/app-store-screenshots/template/src/lib/elements.ts`](skills/app-store-screenshots/template/src/lib/elements.ts) |
-| 99 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-assets.ts`](skills/app-store-screenshots/template/src/lib/export-assets.ts) |
-| 100 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-render.ts`](skills/app-store-screenshots/template/src/lib/export-render.ts) |
-| 101 | ✓ | [`skills/app-store-screenshots/template/src/lib/frame-assets.ts`](skills/app-store-screenshots/template/src/lib/frame-assets.ts) |
-| 102 | ✓ | [`skills/app-store-screenshots/template/src/lib/image-cache.ts`](skills/app-store-screenshots/template/src/lib/image-cache.ts) |
-| 103 | ✓ | [`skills/app-store-screenshots/template/src/lib/locale.ts`](skills/app-store-screenshots/template/src/lib/locale.ts) |
-| 104 | ✓ | [`skills/app-store-screenshots/template/src/lib/measure-frame.ts`](skills/app-store-screenshots/template/src/lib/measure-frame.ts) |
-| 105 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-encode.ts`](skills/app-store-screenshots/template/src/lib/png-encode.ts) |
-| 106 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-rgb.ts`](skills/app-store-screenshots/template/src/lib/png-rgb.ts) |
-| 107 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-worker.ts`](skills/app-store-screenshots/template/src/lib/png-worker.ts) |
-| 108 | ✓ | [`skills/app-store-screenshots/template/src/lib/project-validation.ts`](skills/app-store-screenshots/template/src/lib/project-validation.ts) |
-| 109 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-body.ts`](skills/app-store-screenshots/template/src/lib/request-body.ts) |
-| 110 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-guard.ts`](skills/app-store-screenshots/template/src/lib/request-guard.ts) |
-| 111 | ✓ | [`skills/app-store-screenshots/template/src/lib/scene.ts`](skills/app-store-screenshots/template/src/lib/scene.ts) |
-| 112 | ✓ | [`skills/app-store-screenshots/template/src/lib/serve-asset.ts`](skills/app-store-screenshots/template/src/lib/serve-asset.ts) |
-| 113 | ✓ | [`skills/app-store-screenshots/template/src/lib/storage.ts`](skills/app-store-screenshots/template/src/lib/storage.ts) |
-| 114 | ✓ | [`skills/app-store-screenshots/template/src/lib/style-lab.ts`](skills/app-store-screenshots/template/src/lib/style-lab.ts) |
-| 115 | ✓ | [`skills/app-store-screenshots/template/src/lib/types.ts`](skills/app-store-screenshots/template/src/lib/types.ts) |
-| 116 | ✓ | [`skills/app-store-screenshots/template/src/lib/typography.ts`](skills/app-store-screenshots/template/src/lib/typography.ts) |
-| 117 | ✓ | [`skills/app-store-screenshots/template/src/lib/utils.ts`](skills/app-store-screenshots/template/src/lib/utils.ts) |
-| 118 | ✓ | [`skills/app-store-screenshots/template/src/lib/write-asset.ts`](skills/app-store-screenshots/template/src/lib/write-asset.ts) |
-| 119 | ✓ | [`skills/app-store-screenshots/template/tailwind.config.ts`](skills/app-store-screenshots/template/tailwind.config.ts) |
-| 120 | ✓ | [`skills/app-store-screenshots/template/tests/editor.e2e.ts`](skills/app-store-screenshots/template/tests/editor.e2e.ts) |
-| 121 | ✓ | [`skills/app-store-screenshots/template/tests/harness/api-bug-bash.cjs`](skills/app-store-screenshots/template/tests/harness/api-bug-bash.cjs) |
-| 122 | ✓ | [`skills/app-store-screenshots/template/tests/harness/bug-bash.cjs`](skills/app-store-screenshots/template/tests/harness/bug-bash.cjs) |
-| 123 | ✓ | [`skills/app-store-screenshots/template/tests/harness/migration-fixture.cjs`](skills/app-store-screenshots/template/tests/harness/migration-fixture.cjs) |
-| 124 | ✓ | [`skills/app-store-screenshots/template/tests/harness/run.cjs`](skills/app-store-screenshots/template/tests/harness/run.cjs) |
-| 125 | ✓ | [`skills/app-store-screenshots/template/tests/harness/ui-bug-bash.cjs`](skills/app-store-screenshots/template/tests/harness/ui-bug-bash.cjs) |
-| 126 | ✓ | [`skills/app-store-screenshots/template/tests/regression.e2e.ts`](skills/app-store-screenshots/template/tests/regression.e2e.ts) |
-| 127 | ✓ | [`skills/app-store-screenshots/template/tests/scene-style-lab.e2e.ts`](skills/app-store-screenshots/template/tests/scene-style-lab.e2e.ts) |
-| 128 | ✓ | [`skills/app-store-screenshots/template/tests/targets.e2e.ts`](skills/app-store-screenshots/template/tests/targets.e2e.ts) |
-| 129 | ✓ | [`skills/app-store-screenshots/template/tsconfig.json`](skills/app-store-screenshots/template/tsconfig.json) |
+| 97 | ✓ | [`skills/app-store-screenshots/template/src/lib/deck.ts`](skills/app-store-screenshots/template/src/lib/deck.ts) |
+| 98 | ✓ | [`skills/app-store-screenshots/template/src/lib/defaults.ts`](skills/app-store-screenshots/template/src/lib/defaults.ts) |
+| 99 | ✓ | [`skills/app-store-screenshots/template/src/lib/devices.ts`](skills/app-store-screenshots/template/src/lib/devices.ts) |
+| 100 | ✓ | [`skills/app-store-screenshots/template/src/lib/elements.ts`](skills/app-store-screenshots/template/src/lib/elements.ts) |
+| 101 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-assets.ts`](skills/app-store-screenshots/template/src/lib/export-assets.ts) |
+| 102 | ✓ | [`skills/app-store-screenshots/template/src/lib/export-render.ts`](skills/app-store-screenshots/template/src/lib/export-render.ts) |
+| 103 | ✓ | [`skills/app-store-screenshots/template/src/lib/frame-assets.ts`](skills/app-store-screenshots/template/src/lib/frame-assets.ts) |
+| 104 | ✓ | [`skills/app-store-screenshots/template/src/lib/image-cache.ts`](skills/app-store-screenshots/template/src/lib/image-cache.ts) |
+| 105 | ✓ | [`skills/app-store-screenshots/template/src/lib/layouts.ts`](skills/app-store-screenshots/template/src/lib/layouts.ts) |
+| 106 | ✓ | [`skills/app-store-screenshots/template/src/lib/locale.ts`](skills/app-store-screenshots/template/src/lib/locale.ts) |
+| 107 | ✓ | [`skills/app-store-screenshots/template/src/lib/measure-frame.ts`](skills/app-store-screenshots/template/src/lib/measure-frame.ts) |
+| 108 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-encode.ts`](skills/app-store-screenshots/template/src/lib/png-encode.ts) |
+| 109 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-rgb.ts`](skills/app-store-screenshots/template/src/lib/png-rgb.ts) |
+| 110 | ✓ | [`skills/app-store-screenshots/template/src/lib/png-worker.ts`](skills/app-store-screenshots/template/src/lib/png-worker.ts) |
+| 111 | ✓ | [`skills/app-store-screenshots/template/src/lib/project-schema.ts`](skills/app-store-screenshots/template/src/lib/project-schema.ts) |
+| 112 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-body.ts`](skills/app-store-screenshots/template/src/lib/request-body.ts) |
+| 113 | ✓ | [`skills/app-store-screenshots/template/src/lib/request-guard.ts`](skills/app-store-screenshots/template/src/lib/request-guard.ts) |
+| 114 | ✓ | [`skills/app-store-screenshots/template/src/lib/scene.ts`](skills/app-store-screenshots/template/src/lib/scene.ts) |
+| 115 | ✓ | [`skills/app-store-screenshots/template/src/lib/storage.ts`](skills/app-store-screenshots/template/src/lib/storage.ts) |
+| 116 | ✓ | [`skills/app-store-screenshots/template/src/lib/style-lab.ts`](skills/app-store-screenshots/template/src/lib/style-lab.ts) |
+| 117 | ✓ | [`skills/app-store-screenshots/template/src/lib/types.ts`](skills/app-store-screenshots/template/src/lib/types.ts) |
+| 118 | ✓ | [`skills/app-store-screenshots/template/src/lib/typography.ts`](skills/app-store-screenshots/template/src/lib/typography.ts) |
+| 119 | ✓ | [`skills/app-store-screenshots/template/src/lib/uploaded-assets.ts`](skills/app-store-screenshots/template/src/lib/uploaded-assets.ts) |
+| 120 | ✓ | [`skills/app-store-screenshots/template/src/lib/utils.ts`](skills/app-store-screenshots/template/src/lib/utils.ts) |
+| 121 | ✓ | [`skills/app-store-screenshots/template/tailwind.config.ts`](skills/app-store-screenshots/template/tailwind.config.ts) |
+| 122 | ✓ | [`skills/app-store-screenshots/template/tests/editor.e2e.ts`](skills/app-store-screenshots/template/tests/editor.e2e.ts) |
+| 123 | ✓ | [`skills/app-store-screenshots/template/tests/harness/api-bug-bash.cjs`](skills/app-store-screenshots/template/tests/harness/api-bug-bash.cjs) |
+| 124 | ✓ | [`skills/app-store-screenshots/template/tests/harness/bug-bash.cjs`](skills/app-store-screenshots/template/tests/harness/bug-bash.cjs) |
+| 125 | ✓ | [`skills/app-store-screenshots/template/tests/harness/migration-fixture.cjs`](skills/app-store-screenshots/template/tests/harness/migration-fixture.cjs) |
+| 126 | ✓ | [`skills/app-store-screenshots/template/tests/harness/run.cjs`](skills/app-store-screenshots/template/tests/harness/run.cjs) |
+| 127 | ✓ | [`skills/app-store-screenshots/template/tests/harness/ui-bug-bash.cjs`](skills/app-store-screenshots/template/tests/harness/ui-bug-bash.cjs) |
+| 128 | ✓ | [`skills/app-store-screenshots/template/tests/regression.e2e.ts`](skills/app-store-screenshots/template/tests/regression.e2e.ts) |
+| 129 | ✓ | [`skills/app-store-screenshots/template/tests/scene-style-lab.e2e.ts`](skills/app-store-screenshots/template/tests/scene-style-lab.e2e.ts) |
+| 130 | ✓ | [`skills/app-store-screenshots/template/tests/targets.e2e.ts`](skills/app-store-screenshots/template/tests/targets.e2e.ts) |
+| 131 | ✓ | [`skills/app-store-screenshots/template/tsconfig.json`](skills/app-store-screenshots/template/tsconfig.json) |
 
 ---
 

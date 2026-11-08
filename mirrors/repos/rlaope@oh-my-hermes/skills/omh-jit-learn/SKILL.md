@@ -34,14 +34,14 @@ This is a Hermes-native `jit-learn` workflow skill.
 Good example:
 
 - Prompt: What should I learn next to solve my current onboarding blocker? Recommend books, podcasts, creators, and courses I can apply this week.
-- Expected behavior: Ask one confirmation question, confirm the immediate target, then prepare a source-backed four-section learning brief ranked by fit and time-to-first-value.
+- Expected behavior: Ask one confirmation question, confirm the immediate target, then prepare a source-backed learning brief ranked by fit and time-to-first-value.
 - Why: The user needs target selection and immediate transfer, not a generic curriculum or popularity-ranked resource list.
 
 Bad example:
 
 - Prompt: Design a six-week Python syllabus with weekly assessments.
 - Expected behavior: Route to `omh-curriculum-design` because the target is already chosen and the requested output is a sequenced curriculum.
-- Why: Just-in-time target selection should not displace an explicit curriculum-design request.
+- Why: Just-in-time target selection should not displace an explicit `omh-curriculum-design` request.
 
 ## Completion Checklist
 
@@ -61,7 +61,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -118,7 +118,7 @@ Artifact expectations:
 Safety rules:
 
 - Always ask at least one confirmation question before research, exactly one question per turn, even when the initial request appears complete.
-- Use the shared deep-interview ceiling of 6 rounds and its early-stop discipline; do not create a second interview budget.
+- Use the shared `ulw-interview` ceiling of 6 rounds and its early-stop discipline; do not create a second interview budget.
 - Use only the current conversation and reviewed or explicitly approved OMH context; never claim hidden Hermes memory or create a persistent learner profile.
 - Admit recommendations only from primary, institutional, or credible practitioner evidence whose authority, currency, availability, and link can be checked; report retrieval gaps instead of inventing support.
 - Never use bestseller status, ratings, follower counts, charts, generic popularity, or unsupported reputation as admission or ranking evidence.
@@ -129,7 +129,7 @@ Safety rules:
 
 1. Review only the current conversation and reviewed or explicitly approved OMH context. Never claim access to hidden Hermes memory and never create a learner profile.
 2. Always ask at least one confirmation question before research, including when the request appears complete. Ask exactly one question per turn. Resolve three readiness dimensions: **urgency/trigger** (why now), **current level** (what the user already knows or can do), and **application window** (where and by when this will be used), plus only practical constraints that change the recommendation. Record this evidence step as `confirmation_asked`.
-3. Reuse the deep-interview early-stop discipline and its shared ceiling of 6 rounds. After the mandatory first answer, stop asking as soon as the three readiness dimensions are clear. If the ceiling is reached, state assumptions and gaps instead of asking again.
+3. Reuse the `ulw-interview` early-stop discipline and its shared ceiling of 6 rounds. After the mandatory first answer, stop asking as soon as the three readiness dimensions are clear. If the ceiling is reached, state assumptions and gaps instead of asking again.
 4. Confirm one target before research in exactly this semantic form: `Learn X now so I can do/decide Y in context Z by T.` Here T means the application deadline. When the initial request already supplies all readiness dimensions, use the mandatory first question to confirm this target so research can begin after one answer.
 5. Scope research around that target. Prefer primary, institutional, and credible practitioner sources; check authority, currency, availability, and links. Admit and rank by specific fit, authority, currency, time-to-first-value, and direct transfer. Never admit or rank from bestseller status, ratings, followers, charts, generic popularity, or unsupported reputation.
 6. Prepare the Markdown brief, then stop. Do not buy, download, enroll, subscribe, contact creators, bypass access controls, write externally, or imply those actions happened.
@@ -142,6 +142,8 @@ Start with the confirmed target statement and a short source-boundary note. Then
 - `## Podcasts`
 - `## Creators`
 - `## Courses`
+
+When the target names a tool, API, or library, add `## Docs and References` ahead of them (official documentation, API reference, changelog, source repository), since for a technical blocker that is usually the fastest source; it follows the same source gate and fields.
 
 Under every heading, list only candidates that passed the source gate. If none passed, say why - for example, insufficient authority, stale or unavailable evidence, poor immediate fit, or an unresolved retrieval gap - rather than padding the section.
 

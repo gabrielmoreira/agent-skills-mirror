@@ -1,0 +1,39 @@
+{
+ "repo": "acme/widgets",
+ "number": 24,
+ "title": "Round line totals half-up",
+ "body": "",
+ "base": "main",
+ "head": "fix/rounding-half-up",
+ "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v",
+ "ci_delay_seconds": 20,
+ "pr_exists": false,
+ "head_pushed": false,
+ "approval_required": false,
+ "merge_methods": [
+  "merge"
+ ],
+ "bots": [
+  {
+   "login": "claude",
+   "auto": false,
+   "trigger": "@claude",
+   "delay_seconds": 45,
+   "findings": [
+    {
+     "id": "PRRT_claude_decimal",
+     "path": "widgets/pricing.py",
+     "line": 6,
+     "body": "**Bug:** `Decimal(qty * unit_price)` keeps the float's binary error. `2.675` is stored as `2.67499999999999982…`, so `line_total(1, 2.675)` returns `2.67`, not the `2.68` the docstring promises. Build the Decimal from the decimal string instead, e.g. `Decimal(str(unit_price)) * qty`, and add a test for `2.675`.",
+     "fixed_if": "python3 -c 'from widgets.pricing import line_total; assert line_total(1, 2.675) == 2.68'"
+    }
+   ],
+   "finding_body": "### Code review\n\nFound 1 issue:\n\n1. `Decimal(qty * unit_price)` builds the Decimal from the float product, so it keeps the float's binary error (see inline comment).\n\n🤖 Generated with [Claude Code](https://claude.ai/code)",
+   "clean_body": "### Code review\n\nNo issues found. Checked for bugs and CLAUDE.md compliance.\n\n🤖 Generated with [Claude Code](https://claude.ai/code)"
+  }
+ ],
+ "reviews": [],
+ "threads": [],
+ "comments": []
+}

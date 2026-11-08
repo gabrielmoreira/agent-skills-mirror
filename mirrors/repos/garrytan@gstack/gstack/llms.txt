@@ -10,7 +10,7 @@ Conventions:
 
 ## Skills
 
-- [/autoplan](autoplan/SKILL.md): Auto-review pipeline — reads the full CEO, design, eng, and DX review skills from disk and runs them sequentially with auto-decisions using 6 decision principles.
+- [/autoplan](autoplan/SKILL.md): Auto-review pipeline — runs the CEO, design, eng (architecture, edge cases, failure modes, tests) and DX reviews in order, auto-deciding by 6 principles.
 - [/benchmark](benchmark/SKILL.md): Web performance regression detection.
 - [/benchmark-models](benchmark-models/SKILL.md): Cross-model benchmark for gstack skills.
 - [/browse](browse/SKILL.md): Drive a real browser through Aside: open a page, read it, click through a flow, take screenshots, check console errors.
@@ -24,7 +24,7 @@ Conventions:
 - [/design-consultation](design-consultation/SKILL.md): Design consultation: understands your product, researches the landscape, proposes a complete design system (aesthetic, typography, color, layout, spacing, motion), and generates font+color preview pages.
 - [/design-html](design-html/SKILL.md): Design finalization: generates production-quality Pretext-native HTML/CSS.
 - [/design-motion](design-motion/SKILL.md): Design motion: animate an approved design into a seamless MP4 and GIF loop.
-- [/design-review](design-review/SKILL.md): Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactions — then fixes them.
+- [/design-review](design-review/SKILL.md): Designer's eye QA: finds visual inconsistency, spacing issues, hierarchy problems, AI slop patterns, and slow interactions — then fixes them; --build checks UI while you build it.
 - [/design-shotgun](design-shotgun/SKILL.md): Design shotgun: generate multiple AI design variants, open a comparison board, collect structured feedback, and iterate.
 - [/deslop-shared-libs](deslop-shared-libs/SKILL.md): Find worthwhile shared-code extractions in recent work.
 - [/devex-review](devex-review/SKILL.md): Live developer experience audit.
@@ -37,7 +37,6 @@ Conventions:
 - [/gstack-upgrade](gstack-upgrade/SKILL.md): Upgrade gstack to the latest version.
 - [/guard](guard/SKILL.md): Full safety mode: destructive command warnings + directory-scoped edits.
 - [/health](health/SKILL.md): Code quality dashboard.
-- [/investigate](investigate/SKILL.md): Use when a test fails, code errors or output is wrong: find the root cause, then fix it.
 - [/ios-clean](ios-clean/SKILL.md): Remove the DebugBridge SPM package and all #if DEBUG wiring from an iOS app.
 - [/ios-design-review](ios-design-review/SKILL.md): Visual design audit for iOS apps on real hardware.
 - [/ios-fix](ios-fix/SKILL.md): Autonomous iOS bug fixer.
@@ -54,7 +53,6 @@ Conventions:
 - [/plan-ceo-review](plan-ceo-review/SKILL.md): CEO/founder-mode plan review.
 - [/plan-design-review](plan-design-review/SKILL.md): Designer's eye plan review — interactive, like CEO and Eng review.
 - [/plan-devex-review](plan-devex-review/SKILL.md): Interactive developer experience plan review.
-- [/plan-eng-review](plan-eng-review/SKILL.md): Eng manager-mode plan review.
 - [/plan-tune](plan-tune/SKILL.md): Self-tuning question sensitivity + developer psychographic for gstack (v1: observational).
 - [/qa](qa/SKILL.md): Use when you test the site, API or CLI and fix bugs.
 - [/qa-only](qa-only/SKILL.md): Report browser/API/CLI/job/worker/webhook bugs.

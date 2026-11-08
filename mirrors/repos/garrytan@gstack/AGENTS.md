@@ -16,7 +16,6 @@ CLIs (`gstack-ios-qa-daemon`, `gstack-ios-qa-mint`, `gstack-ios-qa-regen`) are i
 |-------|------|
 | `/office-hours` | plan |
 | `/plan-ceo-review` | plan |
-| `/plan-eng-review` | plan |
 | `/plan-design-review` | plan |
 | `/plan-devex-review` | plan |
 | `/plan-tune` | plan |
@@ -29,7 +28,6 @@ CLIs (`gstack-ios-qa-daemon`, `gstack-ios-qa-mint`, `gstack-ios-qa-regen`) are i
 | `/test-audit` | build + review |
 | `/codex` | build + review |
 | `/claude-code` | build + review |
-| `/investigate` | build + review |
 | `/verify` | build + review |
 | `/design-review` | build + review |
 | `/design-shotgun` | build + review |

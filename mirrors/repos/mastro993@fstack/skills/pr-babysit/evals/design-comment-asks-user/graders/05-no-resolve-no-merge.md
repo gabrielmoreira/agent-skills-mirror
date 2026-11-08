@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-No review thread was resolved and the PR was not merged.
+No review thread was resolved and the run never called gh pr merge.

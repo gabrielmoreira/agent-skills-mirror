@@ -1,6 +1,6 @@
 ---
 name: "omh-research-brief"
-description: "[omh] Business question on market, competitors, pricing: business research brief - turns a market, competitor, pricing, or customer question into a structured evidence-vs-inference brief; for raw link gathering use ulw-research. Use when the user says: research-brief, business-research, business research, research brief, decision brief, pricing decision brief, decision-ready brief, source-backed business research."
+description: "[omh] Business question on market, competitors, pricing: business research brief - turns a market, competitor, pricing, or customer question into a structured evidence-vs-inference brief. Use when the user says: research-brief, business-research, business research, research brief, decision brief, pricing decision brief, decision-ready brief, source-backed business research."
 license: MIT
 metadata:
   hermes:
@@ -17,13 +17,15 @@ This is an OMH `research-brief` workflow skill, projected for Agent Skills hosts
 
 ## Why This Exists
 
-`research-brief` exists to keep `research` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+`research-brief` exists because a decision brief goes wrong when a vendor claim, a source's date and the analyst's inference share one sentence: it keeps each evidence row typed observed, vendor-asserted or inferred, with its source date, so the decision owner can see what would change the answer.
 
 ## Do Not Use When
 
 - The user needs to decide whether a customer problem deserves product investment with evidence typing and customer re-entry; use `omh-product-discovery-validation`.
-- The request is only fresh links, citations, or current facts without a business question or decision audience; use `ulw-research`.
+- The request is only fresh links, citations, or current facts without a business question or decision audience; use `omh-web-research` for one cited lookup, or `ulw-research` for a depth-budget study.
 - Sources have not yet been selected and the user wants source types, candidates, or acquisition state; use `omh-source-finder`.
+- A scoped TAM/SAM/SOM model, customer-evidence matrix, or comparable competitor or pricing profile is the deliverable; use `omh-market-research`, then return here for the audience synthesis.
+- The research is recurring and run by several roles.
 
 ## Examples
 
@@ -35,9 +37,9 @@ Good example:
 
 Bad example:
 
-- Prompt: research-brief: treat casual chat or unaccepted work as if this workflow already produced verified results.
-- Expected behavior: Ask a clarification question or route to a narrower workflow instead of forcing `research-brief`.
-- Why: The request lacks the required inputs or would overclaim work that Hermes did not observe.
+- Prompt: research-brief: how big is the dental-clinic software market, TAM, SAM and SOM?
+- Expected behavior: Hand the sizing to `omh-market-research`; return here only for the audience synthesis.
+- Why: Sizing is a model with units and calculation receipts, not a brief.
 
 ## Completion Checklist
 

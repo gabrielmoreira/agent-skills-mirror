@@ -1,6 +1,6 @@
 ---
 name: "omh-wiki"
-description: "[omh] Scattered knowledge needing a wiki: wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance. Use when the user says: wiki, project wiki, build a wiki, start a wiki, organize my notes, external knowledge store, knowledge base, Obsidian."
+description: "[omh] Scattered knowledge needing a wiki: wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance. Use when the user says: wiki, project wiki, write a handover guide, build a wiki, start a wiki, organize my notes, external knowledge store, knowledge base."
 license: MIT
 author: "oh-my-hermes maintainers"
 metadata:
@@ -19,13 +19,13 @@ This is a Hermes-native `wiki` workflow skill.
 
 ## Why This Exists
 
-`wiki` exists to keep `knowledge` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+`wiki` exists because a wiki fails by its audience and its upkeep, not its folder names: it sizes the structure to who reads and who maintains it, and names what would break the chosen model before any page is written.
 
 ## Do Not Use When
 
 - The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
 - The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
-- The user wants the agent to ingest sources into, query, or lint an interlinked markdown knowledge base it maintains itself in the Karpathy LLM Wiki pattern; load Hermes' bundled `llm-wiki` skill instead of this one.
+- The user wants the agent to ingest sources into, query, or lint an interlinked markdown knowledge base it maintains itself in the Karpathy LLM Wiki pattern; load Hermes' `llm-wiki` skill instead of this one when it is installed (bundled through Hermes v0.22.5 and the floor v2026.9.7, optional from v0.22.6; hermes skills browse --source official finds it); when it is not installed, say so and offer to install it rather than imitating it.
 
 ## Examples
 
@@ -60,7 +60,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Retained knowledge** (`memory-new`, `memory-sync`, `decision-recall`, `wiki`) - memory, rejected alternatives, wiki notes, retrieval, and staleness.
+- Current lane: **Retained knowledge** - memory, rejected alternatives, wiki notes, retrieval, and staleness.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -82,7 +82,7 @@ A `wiki_blueprint/v1` is a prepared design artifact, not evidence that a store w
 
 Use to design a wiki someone can start today - model, skeleton, conventions, seed pages, and maintenance sized to a personal, small-group, team, or organization audience - and to capture durable knowledge into markdown vaults, Obsidian, Notion, Google Drive/Docs, databases, or local folders.
 
-    Strong routing signals: `wiki`, `project wiki`, `build a wiki`, `start a wiki`, `organize my notes`, `external knowledge store`, `knowledge base`, `Obsidian`, `markdown vault`, `Notion knowledge base`, `Google Drive wiki`, `옵시디언`, `마크다운 볼트`, `노션 지식베이스`, `위키`, `위키 만들`, `지식베이스`, `지식 정리 체계`
+    Strong routing signals: `wiki`, `project wiki`, `write a handover guide`, `build a wiki`, `start a wiki`, `organize my notes`, `external knowledge store`, `knowledge base`, `Obsidian`, `markdown vault`, `Notion knowledge base`, `Google Drive wiki`, `옵시디언`, `마크다운 볼트`, `노션 지식베이스`, `위키`, `위키 만들`, `지식베이스`, `지식 정리 체계`, `인수인계 문서 써줘`
 
 ## Catalog Metadata
 
@@ -102,6 +102,7 @@ Quality bar:
 - Never present prepared wiki guidance as an observed external write, store creation, or memory mutation.
 - Mark stale or uncertain knowledge instead of presenting it as permanent truth.
 - Extract separate coding tasks instead of burying them in notes.
+- Before writing a page to a shared or synced store, strip credentials and personal data from it, or ask: a note's destination decides who can read it.
 
 Handoff policy:
 

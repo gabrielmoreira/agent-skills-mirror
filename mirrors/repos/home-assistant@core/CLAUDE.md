@@ -1,1 +1,0 @@
-cache/repos/github.com/home-assistant@core/AGENTS.md

@@ -62,7 +62,7 @@ Shell 进度更新若把较长内容改为较短文字，会保留未被覆盖�
 | **编程助手**（`ui/coding/`） | 在手机上查看、引导电脑中的 Cursor、Codex、Claude Code 会话，见 [coding-agents.md](coding-agents.md)。 |
 | **账号**（`ui/cloud/`） | 查看当前账号、密码、持有登录 key 的设备，以及按类型、模型分类的用量，并管理退出。额度耗尽或已用超过 80 % 时，账号页和失败轮次会列出自有 key、已付费套餐、邀请三类方式。服务商按地区排列：中国大陆优先百炼，依据简体中文界面、手机号登录或中继地区信息判断，其他地区优先 OpenRouter、OpenAI，各有能力说明。套餐包括 ChatGPT、Claude、Kimi、OpenRouter，详见[自己的 key](#your-own-key)。手机只显示和同步当前账号聊天。0.1.40 起，无论是否同步，每个聊天都有归属。退出时「在这台设备上保留这个账号的聊天」默认关，关闭会移除账号聊天、记忆、动态、目标、例程和形象，开启则单独保存，等待重新登录。删除账号会全部删除；`401 bad_key` 按保留处理，并在登录页持续提示；只有 `401 account_deleted` 直接删除。未登录时只显示未登录期间创建的聊天，见 [sync.md](sync.md)。 |
 | **接手浏览器**（`browser/`） | 登录、验证码、付款、人机验证等必须你亲自完成时，`browser_use` 的 `hand_over` 会在浏览器面板打开智能体原标签页，保留同一 WebView 和会话，智能体暂停。输入框上方「轮到你了」卡片说明所需操作，提供「打开页面」「完成，继续」，浏览器面板显示相同提示、按钮。工具等待「完成」，最长十五分钟，随后从页面现状继续。实现为 `io.github.nanomuse.browser.BrowserHandOver`。 |
-| **连接器**（`connectors/`、`ui/connectors/`） | 用于接入 Notion、Linear、GitHub、GitLab、Slack、Stripe、Miro 等服务。复用桌面版 75 个远程 MCP 服务器目录，打包为 `assets/nanomuse/connectors.json`。设置统一入口为「连接器」，页面末尾「你自己的服务器」进入上游 MCP 编辑器，可按地址、命令或导入 JSON 管理。公开服务点选即可加入，需要 key 则填写，OAuth 服务执行发现、动态客户端注册、Custom Tab 内 PKCE 验证。令牌写入条目 `Authorization` 头供沙箱 MCP 客户端使用，启动时刷新。GitHub、Slack、Discord、HubSpot、Render、Bitrise、PagerDuty、Box 等不支持动态注册的服务标记 `clientIdRequired`，需要你在厂商开发页创建 OAuth client id、secret，面板会显示并允许复制 App 回调地址。连接结果是相同 id 的 MCP 条目，也可在自有服务器编辑器管理。连接清单经中继 profile 共享给其他设备，只含 id、名称、地址、认证方式、来源设备、时间，不含令牌。页面「在你的其他设备上」显示如「已在 <device> 上连接，在这里登录即可在这台手机上使用」，点开同一配置面板。 |
+| **连接器**（`connectors/`、`ui/connectors/`） | 用于接入 Notion、Linear、GitHub、GitLab、Slack、Stripe、Miro 等服务。复用桌面版 75 个远程 MCP 服务器目录，打包为 `assets/nanomuse/connectors.json`。设置统一入口为「连接器」，页面末尾「你自己的服务器」进入上游 MCP 编辑器，可按地址、命令或导入 JSON 管理。公开服务点选即可加入，需要 key 则填写，OAuth 服务执行发现、动态客户端注册、Custom Tab 内 PKCE 验证。令牌写入条目 `Authorization` 头供沙箱 MCP 客户端使用，启动时刷新。GitHub、Slack、Discord、HubSpot、Render、Bitrise、PagerDuty、Box 等不支持动态注册的服务标记 `clientIdRequired`，需要你在厂商开发页创建 OAuth client ID，并按服务商要求填写 client secret，面板会显示并允许复制 App 回调地址。连接结果是相同 id 的 MCP 条目，也可在自有服务器编辑器管理。连接清单经中继 profile 共享给其他设备，只含 id、名称、地址、认证方式、来源设备、时间，不含令牌。页面「在你的其他设备上」显示如「已在 <device> 上连接，在这里登录即可在这台手机上使用」，点开同一配置面板。 |
 | **聊天中的进度** | 智能体工作时，形象下方说明当前步骤，例如「nanoMuse 正在用 Shell」「正在写回复」「在做了：订餐桌」，不写情绪。0.1.37 起，工具标签、电脑面板、浮动步骤条默认开启，可在 设置 → 外观 →「显示智能体的步骤」关闭。完成后标签显示如「nanoMuse 用过 Shell · 完成」，点 ×、滑动或返回均可关闭面板。 |
 
 默认情况下，聊天、胶囊导航栏、菜单、抽屉使用统一底色，深色为纯黑，浅色为纯白。用户消息在深色模式为白底黑字，浅色模式为黑底白字。智能体消息使用稍有区分的底色 `#1C1C1E` / `#F2F2F7`。发送和「回到最新」按钮在深色模式为白底黑箭头，浅色反向。除链接外，聊天不使用蓝色。顶栏采用渐隐层，内容滚过时融入背景，翻看旧消息时顶部再加一层渐隐。配色由 `scripts/rebrand.py` 写入上游 `com/openminis/app/ui/theme/ChatColors.kt`。
@@ -284,7 +284,7 @@ Android 等待设备任务的上限为十五分钟，与中继期限相同。发
 
 ## 未读回复 {#unread-replies}
 
-回复成功完成时，如果聊天不可见，Muse 抽屉和经典会话列表会显示未读，经典布局折叠分组也保留提示。打开聊天即清除。失败、取消、重复完成事件不产生标记。未读状态只保存在本机当前进程中，与运行、暂停徽标分开。此功能只实现 #531 的未读回复部分，未覆盖其中全部工作状态、审批建议。
+回复成功完成时，如果聊天不可见，Muse 抽屉和经典会话列表会显示未读，经典布局折叠分组也保留提示。打开聊天即清除。失败、取消、重复完成事件不产生标记。未读状态只保存在本机当前进程中，与运行、暂停徽标分开。Muse 抽屉还会在本机跟踪到任务进行中的主对话、侧对话旁显示小型进度环，也包括从这里发起的 `@device` 直连任务。任务结束后进度环消失，不影响未读回复的判断。它暂不区分等待审批、不显示每个对话的当前步骤，也不代表从另一台设备独立发起的任务状态；#531 的这些部分仍需另行处理。
 
 两种布局都按当前已恢复到前台的聊天判断可见性，新草稿发出首条消息后也适用。切换标签、被其他页面遮住或 App 进入后台后，完成的回复会标为未读。
 
@@ -316,6 +316,12 @@ Android 可要求先验证设备锁屏，再显示 App 内容。在设置启用�
 
 使用「退出时」重新锁定选项时，切换到其他 Muse 标签也算离开对话，即使聊天仍在后台保留。
 
+
+## 连接器 OAuth 登录 {#connector-oauth}
+
+交换和刷新令牌时会明确请求 JSON 响应。即使服务商返回 HTTP 200，只要响应包含 OAuth 错误，就会视为登录失败。错误提示只显示固定错误码，不展示服务商响应原文或凭据。刷新响应无效时，已保存的令牌不会被替换。
+
+出现 `incorrect_client_credentials` 或 `invalid_client` 时，请核对 OAuth 应用的 client ID；如果服务商要求 client secret，也要核对该值。出现 `redirect_uri_mismatch` 时，请核对服务商登记的回调地址与 App 显示的地址是否一致。出现 `bad_verification_code` 或 `invalid_grant` 时，请重新发起登录。并非所有连接器都需要 client secret。GitHub 的官方文档说明了 [JSON 响应协商](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps)和[令牌错误码](https://docs.github.com/en/apps/oauth-apps/maintaining-oauth-apps/troubleshooting-oauth-app-access-token-request-errors)。
 
 ## 继续操作屏幕 {#hands-continuity}
 

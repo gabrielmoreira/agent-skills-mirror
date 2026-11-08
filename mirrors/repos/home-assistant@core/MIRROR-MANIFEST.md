@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 18 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 18
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 18 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,12 +71,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
 | 11 | ✓ | [`.claude/skills/ha-quality-scale-verify/SKILL.md`](.claude/skills/ha-quality-scale-verify/SKILL.md) |
 | 12 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
-| 13 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 16 | ✓ | [`packages/hassfest/AGENTS.md`](packages/hassfest/AGENTS.md) |
-| 17 | ✓ | [`script/hassfest/AGENTS.md`](script/hassfest/AGENTS.md) |
-| 18 | → | [`AI_POLICY.md`](AI_POLICY.md) |
+| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 14 | ✓ | [`packages/hassfest/AGENTS.md`](packages/hassfest/AGENTS.md) |
+| 15 | ✓ | [`script/hassfest/AGENTS.md`](script/hassfest/AGENTS.md) |
+| 16 | → | [`AI_POLICY.md`](AI_POLICY.md) |
 
 ---
 

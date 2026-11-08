@@ -1,12 +1,12 @@
 ---
 name: pr-babysit
-description: Use when the user asks to monitor, watch, babysit, or keep an eye on a pull request through CI, review, and merge, or to get a PR green, mergeable, or landed.
+description: Use when the user asks to monitor, watch, babysit, or keep an eye on a pull request through CI, review, and merge, or to get a PR green or mergeable.
 compatibility: Needs the gh CLI (authenticated), git, python3, and a checkout of the PR's repository to push fixes from.
 ---
 
 # PR babysit
 
-Stay with the PR until it is merged or closed, or the user tells you to stop. Ready to merge (open, checks green, approved or no review required, mergeable and up to date, no thread waiting on a reply) is a milestone, not the end: tell the user, then keep watching. A ready PR can stop being mergeable without anyone touching it, for example when another PR lands on the base branch and leaves it conflicting or behind, or when a late review arrives. "CI is green, now waiting on review" is not a stopping point either. If the user only asked to be told ("let me know when CI finishes"), report and change nothing.
+Stay with the PR until it is merged or closed, or the user tells you to stop. Ready to merge (open, checks green, approved or no review required, no review request or requested changes outstanding, mergeable and up to date, no thread waiting on a reply) is a milestone, not the end: tell the user, then keep watching. A ready PR can stop being mergeable without anyone touching it, for example when another PR lands on the base branch and leaves it conflicting or behind, or when a late review arrives. "CI is green, now waiting on review" is not a stopping point either. If the user only asked to be told ("let me know when CI finishes"), report and change nothing.
 
 ## Watching
 

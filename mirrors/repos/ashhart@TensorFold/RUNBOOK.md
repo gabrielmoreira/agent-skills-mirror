@@ -19,7 +19,7 @@ For an archive installation, download the arm64 asset and its companion checksum
 [latest release](https://github.com/ashhart/TensorFold/releases/latest), with `V` set to its version:
 
 ```sh
-V=1.2.3
+V=1.2.4
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-macos-arm64.tar.gz
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-macos-arm64.tar.gz.sha256
 shasum -a 256 -c tensorfold-$V-macos-arm64.tar.gz.sha256
@@ -136,10 +136,10 @@ When API authentication is enabled, `/health` returns only status.
 
 ## Prompt prefill share, budget and admission policy
 
-The native server reads four environment variables when it opens its lane host.
+The native server reads four environment variables when it opens its lane host, and `serve` checks them before it loads the model.
 All are optional. Set them before starting the server.
 `TENSORFOLD_PREFILL_SHARE` takes a number from 0.01 to 1.
-The default is 1. Any other text gives the default.
+The default is 1, and empty text gives the default. `serve` refuses any other value at start, naming the variable.
 It is the share of wall time long prompt steps get while other streams are decoding.
 A step of length t at share p owes the decoders t (1 - p) / p of decode time.
 The debt grows after each step and falls after each decode round.
@@ -152,7 +152,7 @@ The check compares the prompt's length with the cached state, not how far the fi
 
 `TENSORFOLD_PREFILL_BUDGET` takes a whole number of prompt rows from 1 to 4,294,967,295.
 The default is 0, which means none.
-Empty text, 0, a negative number, a fractional form, a value above the range or any other text gives 0, which removes the cap.
+Empty text or 0 gives 0, which removes the cap. `serve` refuses a negative number, a fractional form, a value above the range or any other text at start.
 It caps the prompt rows filled in one pass while a stream is ready to decode.
 The cap counts only rows filled while such a stream waits.
 A call that reports no progress spends the allowance anyway and yields, so unknown or stale progress never holds the cap open.
@@ -167,13 +167,13 @@ That costs more passes to finish the prompts.
 With the default 0 no cap applies: short prompts run as one burst beside decoders, bounded at a lane's worth of newly begun prompts while other work waits.
 
 `TENSORFOLD_PREFILL_POLICY` takes `fcfs`.
-Unset, or any other text, keeps the default order described above.
+Unset or empty keeps the default order described above. `serve` refuses any other text at start.
 Under `fcfs` the host fills only the oldest long prompt (more than 512 uncached rows) on each visit, in chunks of `TENSORFOLD_PREFILL_TOKENS` rows, and the decoding streams take one round after each chunk.
 A long prompt with no stream decoding beside it takes the engine's own cut, so a lone request runs exactly as without the policy.
 Short prompts run as they do without the policy. `TENSORFOLD_PREFILL_BUDGET` does not apply under a policy; `TENSORFOLD_PREFILL_SHARE` is checked once per visit.
 
 `TENSORFOLD_PREFILL_TOKENS` takes a whole number of prompt rows from 64 to 16384. Values outside the range are clamped.
-The default is 2048. Empty text, 0, or text that is not a whole number gives the default.
+The default is 2048, and empty text or 0 gives the default. `serve` refuses text that is not a whole number at start.
 It only matters when `TENSORFOLD_PREFILL_POLICY` is set.
 Smaller chunks shorten each pause the decoding streams see while a prompt fills; larger chunks let later prompts start sooner.
 On flashnext Metal with eight 14336-row prompts arriving together, `fcfs` at 2048 paused decoders about 1.7 s per chunk with the last first token at about 94 s;
@@ -210,7 +210,7 @@ Qwen4 has synthetic gates only.
 On a GB10 arm64 host (an x86_64 host uses `linux-x86_64` in the same commands):
 
 ```sh
-V=1.2.3
+V=1.2.4
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-linux-aarch64.tar.gz
 curl -fLO https://github.com/ashhart/TensorFold/releases/download/v$V/tensorfold-$V-linux-aarch64.tar.gz.sha256
 sha256sum -c tensorfold-$V-linux-aarch64.tar.gz.sha256

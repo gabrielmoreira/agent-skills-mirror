@@ -36,6 +36,7 @@ evolve(tasks, reward, agent=agent, strategy=SingleSlot(initial_value="Answer con
 
 | strategy | the artifact is | competing proposals |
 |---|---|---|
+| **`SeededAppendRules`** | seed prompt + appended one-line rules (default `kind=text`) | rules append; seed stays (#837) |
 | **`SingleSlot`** | one value — a system prompt, an instruction, one document | always contradict; the best replaces the incumbent |
 | `AppendRules` | a deduped list of lessons, keyed by content hash | almost always **fuse**; identical ones collapse |
 | `KeyedRules(categories)` | one entry per named category | contradict *within* a category, fuse across |

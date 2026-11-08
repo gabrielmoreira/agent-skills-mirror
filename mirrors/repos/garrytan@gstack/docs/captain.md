@@ -127,6 +127,12 @@ cheap guards (generated-content freshness, size and prompt budgets, credential s
 crew names them in `GUARD_CHECKS`), because a paid gate that turns red on a free check
 is spend wasted.
 
+A lane writes the public record in plain words: its branch name, PR title, commit subjects
+and changelog fragment say what changed for someone using the project, with an issue code
+only at the end (`capy/github-rate-limit-gst-1713`, "Stop gstack from hitting GitHub's rate
+limit while it waits on PRs (GST-1713)"), and its PR body keeps codes, receipts and lane
+state in the closing Agent notes section ([ship-policy.md](ship-policy.md#plain-titles)).
+
 A lane edits only the files it was given. The controller keeps the ownership list in the
 digest's **In progress**; a lane that needs a file another live lane owns tells the
 controller, who routes it, and never edits it itself. Everything crosses the crew through
@@ -256,8 +262,9 @@ not a new ask ([carry-forward](unattended.md#carry-forward)).
 what it covers; a gate answered with `--words-by agent:<id>` is listed under that agent as its own decision, not the owner's words); `gstack-approvals render` puts it in the report and the PR body. Before
 training the PR the controller compares that row's words and `gate_rev` with the ask it
 relayed and the reply it carried back; a row that does not match is not READY (shape A).
-The brief's done line names the row. A plan approval is not a READY field; the
-[READY contract](#the-ready-contract) is unchanged.
+The brief's done line names the row. The READY block carries the resolved plan as its
+`PLAN:` line, which the [READY template](../captain/templates/READY.md) refuses when it is
+missing, says `warn`, or names another plan than the brief's `Plan:` line.
 
 **Exemptions.** Read-only lanes (triage, research, measurement, a review voice), the daily
 flaky pass's repairs, slot stamps, CHANGELOG-only conflict resolves and a size or budget
@@ -271,8 +278,19 @@ run, `--kind feature`: one reviewer reading the plan and the draft code together
 revision and no carry check (docs/unattended.md). `--full` brings back the full run.
 A crew may add exemptions
 in its rules file with the owner's words and date; it does not remove these. The brief
-says which applies, `Plan: required | approved: <run> | exempt: <reason>`, so an
+says which applies, `Plan: required | approved: <run id or approval row id> | exempt: <reason>`, so an
 already-approved plan is not planned twice and exempt work does not wait on an ask.
+The lane copies that line into the PR body (`gstack-approvals render --plan "<line>"` under
+`## Approvals`), and `gstack-ship-queue ready` prints `PLAN:` and records it in the READY note
+(docs/ship-policy.md#plan-record): an `approved:` run id or row id must resolve to the owner's
+words, never a gate the lane answered itself; an `exempt:` reason must be on this list or a
+crew's `crew:<rule>`. Crew sessions warn by default; `plan_record: require` or
+`GSTACK_PLAN_RECORD=require` makes ready and land refuse. A repo that commits no
+`.gstack/` sets the mode per machine (`gstack-config set plan_record warn|require`), which
+gates ready and /ship finish only, since land needs the tracked policy; on Capy, where a fresh
+machine starts without it, put `GSTACK_PLAN_RECORD` in the project env. On a public repo
+render writes `Plan: approved (record r-<id>)` in place of the brief's run id, and ready
+resolves that id to the same approval row.
 
 The copy-paste brief is [`captain/templates/brief.md`](../captain/templates/brief.md): the
 plan and the ask as step 1, the build after the word as step 2, /ship to READY as step 3,

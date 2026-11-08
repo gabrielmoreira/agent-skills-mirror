@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: no-pr-mention-bot
+expected_outcome: |
+  The fix is committed on fix/rounding-half-up but not pushed, and there is no PR. The run pushes the
+  branch and opens a ready (non-draft) PR against main whose body follows the repo's PR template.
+  The repo's Claude workflow only runs when a comment mentions @claude, so the run asks for a review
+  with an @claude comment. Claude finds that Decimal(qty * unit_price) keeps the float error
+  (line_total(1, 2.675) gives 2.67); the run fixes it with a test, replies on the thread, and asks
+  @claude again for the new head. After Claude's clean review, the run merges with a merge commit,
+  the only method the repo allows, and reports the merge with the link.
+context:
+  scaffold_script: place-files.sh

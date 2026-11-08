@@ -47,6 +47,7 @@ Bad example:
 - Findings or no-issue results are grounded in concrete file, artifact, command, or source evidence.
 - Open questions, residual risk, and missing verification are named.
 - Fixes or follow-up work are separate handoffs unless the user explicitly asked to implement them.
+- Per string: placeholders intact, target-locale plural categories, expansion and truncation, date/number/currency formats, register, literal brand and command tokens. Blocker: wrong meaning, broken placeholder, legal or safety text; major: glossary or register miss; minor: style.
 
 ## Recovery Notes
 
@@ -55,7 +56,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Materials and visual summaries** (`show-reel`, `sprite-forge`, `design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `+8 more`) - web, accessibility, visual QA, files, and packages.
+- Current lane: **Materials and visual summaries** - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

@@ -2681,6 +2681,60 @@ in this version: a command to manage identities, picking an identity
 automatically, or carrying one from a session to the next; name it again
 when you want it.
 
+### Per-model reasoning efforts
+
+`-`/`+` in the picker step the head model's effort along that model's ladder;
+left/right still change the model. A model with a contract in
+`src/coding/model_contracts.py`, by exact id, declared alias or dated snapshot,
+gets the contract's ladder. `none` is on it only where the contract documents
+turning thinking off, so models whose thinking is always on never list it.
+On Hermes builds through v0.21.6, Haiku is sent neither thinking nor effort, so
+`none` there runs the API default `medium`. A provider's mapping is not a rung:
+DeepSeek maps `medium` and `xhigh` to `high`, so its ladder is
+`none, low, high, max`.
+
+A model with no contract and no user entry keeps the shared steps `low`,
+`medium`, `high`, `xhigh`, marked `?` as ladder not known. `model-efforts.json`
+is optional; it narrows or extends a ladder, and an empty list is the one way to
+turn the keys off.
+
+`~/.omh/routing/model-efforts.json` (`model_effort_options/v1`) sits beside
+`model-chains.json`:
+
+```json
+{
+  "schema_version": "model_effort_options/v1",
+  "models": {
+    "claude-haiku-5-5": {"efforts": ["low", "high"]},
+    "my-custom-model": {"efforts": ["none", "max"]},
+    "fixed-model": {"efforts": []}
+  }
+}
+```
+
+`efforts` is the complete list for that model, in any order. The key is the
+chain alias or the wire id its `model-providers.json` route names, wire id
+first; it is not the contract id, so an entry for `deepseek-v4.1-flash` does not
+reach the `deepseek-flash` pointer. A rung outside `none, minimal, low, medium,
+high, xhigh, max`, as well as `off` (write `none`), `auto`, a duplicate or an
+unknown field, makes the whole document invalid. An invalid document is ignored
+whole: the picker says so and keeps `-`/`+` off until it is fixed and the picker
+reopened, and a model-only save still goes through, with a warning. The file is
+user metadata, not proof that a provider accepts a rung, and it is per model id,
+so a shared chain also feeding an external CLI lane is not checked against that
+lane's own ladder.
+
+Only a press is checked. Opening, cancelling or saving another row never
+rewrites a stored value: an old `off`, a mapping alias or a value your list
+removed stays stored and marked `!` until a press moves it. A head switch is not
+checked either, but a `none` it carries onto a model whose route refuses it gets
+`!` and a line saying so. Enter on a pressed value its head's list does not hold
+keeps the picker open on that row with every edit intact; `-`/`+` or `d` fix it
+and Enter saves. A save reads the file again, so a list edited while the picker
+was open refuses a press it no longer allows, and writes nothing. Bare
+`omh model-chains` and `/omh-model` share all of this; `show`, `set` and
+`interview` do not check efforts against these lists.
+
 ### Reaching models through a provider
 
 Chains name models the way a person says them (`glm-5.3`, `kimi-k3.1-pro`). A host
@@ -2694,9 +2748,10 @@ Which providers and subscriptions a machine holds is a third, separate
 question. The interactive `omh setup` asks it as one ticked list of the
 services you have an account, key, or login for: every provider family, plus
 each provider id in Hermes' config (`providers.<id>` and `model.provider`,
-except `auto`) and each builtin provider whose key NAME appears in
-`$HERMES_HOME/.env` or the environment (`ANTHROPIC_API_KEY`,
-`OPENAI_API_KEY`, ...; values are never read), plus OpenGateway — OMH's own
+except `auto`) and each builtin provider whose key has a value in
+`$HERMES_HOME/.env` or whose key NAME appears in the environment
+(`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, ...; `X=` is no key, and a value is
+never copied or shown), plus OpenGateway — OMH's own
 gateway, offered whether or not `OPENGATEWAY_API_KEY` is set yet, because a
 row that appears only once the key exists is a row nobody discovers. Rows
 found on the machine arrive ticked, because a found config key or variable
@@ -5045,6 +5100,14 @@ under `.hermes/plans/`. Each plan includes a deterministic `quality_gate` and
 so Hermes can ask one blocking clarification. Review gates remain
 `not_observed` unless the wrapper can prove a separate review happened.
 
+The sections of that file are generated. To record a plan someone reviewed, pass it
+with `--plan-file <path>`: the file replaces the generated sections and the front
+matter says `plan_body: reviewed`. Without it the file says `plan_body: scaffold`,
+and `plan-accept` on it still succeeds but returns `reviewed_body: false` and a
+`say`. `--input-bundle` (with `--plan-file`) records planning input that
+`plan-accept` refuses. Stdout `plan.goals` and `plan.options` stay generated either way;
+the recorded file is the plan.
+
 The stdout JSON also includes `wrapper_contract`. Wrappers should use that JSON,
 not the Markdown body, to decide the next local action. If
 `wrapper_contract.coding_delegate.available` is `true`, the listed
@@ -5261,8 +5324,9 @@ Before calling the bot integration ready, verify these points:
   `coding_delegation.json`; `.hermes/plans/` is a user-facing draft surface, not
   observed execution evidence.
 - If a wrapper needs machine-readable planning fields, use the stdout
-  `hermes_plan/v1` JSON payload as the contract and treat the Markdown file as
-  presentation.
+  `hermes_plan/v1` JSON payload as the contract for routing, quality gate and
+  wrapper fields; the Markdown file holds the plan text an executor is handed
+  (stdout `plan.goals` and `plan.options` stay generated).
 - For implementation-shaped draft plans, the stdout
   `wrapper_contract.coding_delegate.argv_template` is the handoff bridge to
   `omh coding delegate --executor codex --record --from-plan <accepted-plan.md>`;

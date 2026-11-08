@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-The PR was not merged.
+The run never called gh pr merge.

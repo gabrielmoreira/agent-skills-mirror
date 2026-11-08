@@ -1,0 +1,54 @@
+{
+ "repo": "acme/widgets",
+ "number": 33,
+ "title": "Add invoicing helpers",
+ "body": "Formatting, VAT totals, due dates, and even splits for invoices.",
+ "base": "main",
+ "head": "feat/invoicing",
+ "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v",
+ "ci_delay_seconds": 20,
+ "approval_required": false,
+ "bots": [
+  {
+   "login": "coderabbitai",
+   "auto": true,
+   "delay_seconds": 45,
+   "findings": [
+    {
+     "id": "PRRT_cr_format",
+     "path": "widgets/format.py",
+     "line": 3,
+     "body": "_⚠️ Potential issue_\n\n**`format_eur` doesn't produce the format its docstring promises.**\n\n`format_eur(1234.5)` returns `'€1234.5'`, not `'€1,234.50'`: no thousands separator and no fixed two decimals. Use `f\"€{amount:,.2f}\"` and add a test.",
+     "fixed_if": "python3 -c 'from widgets.format import format_eur; assert format_eur(1234.5) == '\"'\"'€1,234.50'\"'\"''"
+    },
+    {
+     "id": "PRRT_cr_vat",
+     "path": "widgets/invoice.py",
+     "line": 9,
+     "body": "_⚠️ Potential issue_\n\n**`invoice_total` isn't rounded to cents.**\n\nThe docstring says rounded to cents, but `invoice_total([(1, 9.99)])` returns `12.1878`. Wrap the result in `round(..., 2)` and cover it with a test.",
+     "fixed_if": "python3 -c 'from widgets.invoice import invoice_total; assert invoice_total([(1, 9.99)]) == 12.19'"
+    },
+    {
+     "id": "PRRT_cr_due",
+     "path": "widgets/dates.py",
+     "line": 6,
+     "body": "_⚠️ Potential issue_\n\n**Off-by-one in `due_date`.**\n\n`timedelta(days=days - 1)` makes an invoice issued on 2026-01-01 due on 2026-01-30 instead of 2026-01-31. Use `timedelta(days=days)` and add a test.",
+     "fixed_if": "python3 -c 'from datetime import date; from widgets.dates import due_date; assert due_date(date(2026, 1, 1)) == date(2026, 1, 31)'"
+    },
+    {
+     "id": "PRRT_cr_split",
+     "path": "widgets/split.py",
+     "line": 3,
+     "body": "_⚠️ Potential issue_\n\n**`split_evenly` loses cents.**\n\n`split_evenly(10, 3)` returns `[3.33, 3.33, 3.33]`, which sums to 9.99, not 10. Work in integer cents and give the remainder to the first shares (`[3.34, 3.33, 3.33]`), with a test.",
+     "fixed_if": "python3 -c 'from widgets.split import split_evenly; assert round(sum(split_evenly(10, 3)), 2) == 10'"
+    }
+   ],
+   "finding_body": "**Actionable comments posted: 1**\n\n<details>\n<summary>📜 Review details</summary>\n\nConfiguration used: `.coderabbit.yaml`\nReview profile: CHILL\n</details>",
+   "clean_body": "No actionable comments were generated in the recent review. 🎉\n\n<details>\n<summary>📜 Review details</summary>\n\nConfiguration used: `.coderabbit.yaml`\nReview profile: CHILL\n</details>"
+  }
+ ],
+ "reviews": [],
+ "threads": [],
+ "comments": []
+}

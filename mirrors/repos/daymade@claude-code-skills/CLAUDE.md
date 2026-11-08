@@ -263,6 +263,8 @@ For hook creation, consolidation, Skill-entry enforcement, registration or recov
 and follow its Build order and installer-owned recovery contract. Follow that
 Skill's loop and reminder contract; keep current thresholds in the
 owning implementation.
+For an existing hook's usefulness, duplicate execution or latency, follow the
+[effect and cost audit](daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md).
 For shared selection, source refresh, deadlines, status or rollback changes, load
 the Skill's [lifecycle regression template](daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md).
 For hook model-context delivery claims or ordinary-interface notification visibility, use
@@ -394,6 +396,8 @@ accounting, retry eligibility and cleanup behavior. For disk diagnosis, cleanup
 recovery, or capacity checks before necessary backup/copy/extraction, use
 [macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
 [necessary-copy capacity preflight](daymade-macos/macos-cleaner/references/safety_rules.md#necessary-copy-capacity-preflight).
+For exact-file allocation or an already collected inventory, use the
+[read-only diagnosis CLI](daymade-macos/macos-cleaner/references/storage-diagnosis.md).
 When changing measurement, run the SOP's targeted regression suite before shipping.
 For OrbStack image discovery and physical-release diagnosis, use its
 [Docker reference](daymade-macos/macos-cleaner/references/docker_analysis.md#step-2b-orbstack-specific-analysis).
@@ -447,6 +451,8 @@ Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
 Before choosing an observer's failure-notification threshold, follow
 [observation-failure timing](daymade-macos/macos-watchdog/references/alert-discipline.md#observation-failure-timing).
+When a local job emitted a notification but its banner or card is not visible, follow
+[local notification diagnosis](daymade-macos/macos-watchdog/references/alert-discipline.md#local-notifications-are-not-visible).
 For named macOS load/runaway alerts, follow
 [macos-load-doctor's intervention and diagnosis-completion contract](daymade-macos/macos-load-doctor/SKILL.md#5-act-within-the-boundary).
 For memory pressure or suspected child-process leaks, enter that Skill's

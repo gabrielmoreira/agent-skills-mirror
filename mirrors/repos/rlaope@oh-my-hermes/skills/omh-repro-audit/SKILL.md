@@ -10,6 +10,7 @@ metadata:
     phase: result-audit
     role: researcher
     quality_tier: evidence-gated
+    related_skills: [omh-app-debugging]
 ---
 
 # Repro Audit
@@ -18,7 +19,7 @@ This is a Hermes-native `repro-audit` workflow skill.
 
 ## Why This Exists
 
-A displayed score is not evidence that evaluation conditions match. This workflow compares retained source claims without executing an evaluator or inventing missing conditions.
+A displayed score is not evidence that evaluation conditions match. This audit covers lm-eval HellaSwag results only. This workflow compares retained source claims without executing an evaluator or inventing missing conditions.
 
 ## First Steps
 
@@ -31,6 +32,8 @@ A displayed score is not evidence that evaluation conditions match. This workflo
 
 ## Do Not Use When
 
+- A bug report whose reproduction steps need checking is software debugging, not an evaluation audit; use `omh-app-debugging`.
+- A results file for any benchmark other than HellaSwag (the importer reads only the HellaSwag task); say it is unsupported and do not map it onto HellaSwag.
 - A supplied article needs section-by-section explanation rather than comparison of retained records.
 - A pull request needs code correctness review rather than research evidence mapping.
 - The request requires running an evaluator, downloading weights or verifying scientific reproduction.
@@ -63,7 +66,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

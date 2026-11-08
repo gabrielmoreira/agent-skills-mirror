@@ -50,8 +50,8 @@ Bad example:
 ## Completion Checklist
 
 - The convention read names the template and log sample it drew from.
-- Every `Tested:` entry maps to an observed ledger row with its exit status.
-- Every prepared, skipped, or unobserved command is under `Not-tested:` with its reason.
+- Every `Tested:` entry (or the validation line of a repository whose log has no such trailer) maps to an observed ledger row with its exit status.
+- Every prepared, skipped, or unobserved command is under `Not-tested:` (or "Not run" where the log has no trailers) with its reason.
 - The draft lists the paths to stage, and any state-claiming subject prefix maps to an observed ledger row.
 - Nothing was committed, pushed, or opened by OMH.
 
@@ -62,7 +62,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

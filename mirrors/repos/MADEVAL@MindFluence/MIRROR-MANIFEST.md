@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MADEVAL/MindFluence` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `MADEVAL/MindFluence` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MADEVAL/MindFluence` — 26 default patterns, 0 followed patterns, 1 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
+| 1 | ✓ | [`skills/mindfluence/agents/openai.yaml`](skills/mindfluence/agents/openai.yaml) |
+| 2 | ✓ | [`skills/mindfluence/examples/ad-script.md`](skills/mindfluence/examples/ad-script.md) |
+| 3 | ✓ | [`skills/mindfluence/examples/audit-example.md`](skills/mindfluence/examples/audit-example.md) |
+| 4 | ✓ | [`skills/mindfluence/examples/email-welcome.md`](skills/mindfluence/examples/email-welcome.md) |
+| 5 | ✓ | [`skills/mindfluence/examples/landing-hero.md`](skills/mindfluence/examples/landing-hero.md) |
+| 6 | ✓ | [`skills/mindfluence/examples/longform-article.md`](skills/mindfluence/examples/longform-article.md) |
+| 7 | ✓ | [`skills/mindfluence/examples/optimize-hero.md`](skills/mindfluence/examples/optimize-hero.md) |
+| 8 | ✓ | [`skills/mindfluence/examples/social-post.md`](skills/mindfluence/examples/social-post.md) |
+| 9 | ✓ | [`skills/mindfluence/references/anti-patterns.md`](skills/mindfluence/references/anti-patterns.md) |
+| 10 | ✓ | [`skills/mindfluence/references/cultural-matrix.md`](skills/mindfluence/references/cultural-matrix.md) |
+| 11 | ✓ | [`skills/mindfluence/references/decision-matrix.md`](skills/mindfluence/references/decision-matrix.md) |
+| 12 | ✓ | [`skills/mindfluence/scenarios/ad-campaign.md`](skills/mindfluence/scenarios/ad-campaign.md) |
+| 13 | ✓ | [`skills/mindfluence/scenarios/case-study.md`](skills/mindfluence/scenarios/case-study.md) |
+| 14 | ✓ | [`skills/mindfluence/scenarios/cold-outreach.md`](skills/mindfluence/scenarios/cold-outreach.md) |
+| 15 | ✓ | [`skills/mindfluence/scenarios/crisis-response.md`](skills/mindfluence/scenarios/crisis-response.md) |
+| 16 | ✓ | [`skills/mindfluence/scenarios/email-sequence.md`](skills/mindfluence/scenarios/email-sequence.md) |
+| 17 | ✓ | [`skills/mindfluence/scenarios/landing-page.md`](skills/mindfluence/scenarios/landing-page.md) |
+| 18 | ✓ | [`skills/mindfluence/scenarios/pricing-page.md`](skills/mindfluence/scenarios/pricing-page.md) |
+| 19 | ✓ | [`skills/mindfluence/scenarios/product-launch.md`](skills/mindfluence/scenarios/product-launch.md) |
+| 20 | ✓ | [`skills/mindfluence/scenarios/push-notifications.md`](skills/mindfluence/scenarios/push-notifications.md) |
+| 21 | ✓ | [`skills/mindfluence/scenarios/sales-page.md`](skills/mindfluence/scenarios/sales-page.md) |
+| 22 | ✓ | [`skills/mindfluence/scenarios/seo-brief.md`](skills/mindfluence/scenarios/seo-brief.md) |
+| 23 | ✓ | [`skills/mindfluence/scenarios/social-media-post.md`](skills/mindfluence/scenarios/social-media-post.md) |
+| 24 | ✓ | [`skills/mindfluence/scenarios/webinar-warmup.md`](skills/mindfluence/scenarios/webinar-warmup.md) |
+| 25 | ✓ | [`skills/mindfluence/scripts/anti_patterns.py`](skills/mindfluence/scripts/anti_patterns.py) |
+| 26 | ✓ | [`skills/mindfluence/SKILL.md`](skills/mindfluence/SKILL.md) |
 
 ---
 

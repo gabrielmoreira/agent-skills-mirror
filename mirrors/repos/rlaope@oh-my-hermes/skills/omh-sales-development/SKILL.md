@@ -45,9 +45,8 @@ Bad example:
 
 ## Completion Checklist
 
-- The decision, options, tradeoffs, assumptions, and rejected alternatives are named.
-- Observed signals are separated from strategic inference.
-- Accepted decisions and implementation follow-ups are not conflated.
+- Each claim is tagged observed, asserted, hypothesis or unknown, with a source for observed ones; sequence rows are unsent drafts and exist only with supplied consent, suppression and channel eligibility.
+- The disposition is ADVANCE, HOLD or DISQUALIFY with its deciding evidence; a next step is confirmed only from an observed buyer response; CRM changes stay proposals.
 
 ## Recovery Notes
 
@@ -56,7 +55,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

@@ -1,6 +1,6 @@
 ---
 name: "omh-ai-slop-cleaner"
-description: "[omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, risk analysis, refactor workflow."
+description: "[omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, refactor workflow, legacy refactor."
 license: MIT
 author: "oh-my-hermes maintainers"
 metadata:
@@ -58,7 +58,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -66,7 +66,7 @@ Bad example:
 
 Use when the goal is removing existing low-quality, duplicated, or AI-generated code and the observable behavior must not change; lock behavior with tests before and after the edits.
 
-    Strong routing signals: `ai-slop-cleaner`, `$ai-slop-cleaner`, `cleanup`, `deslop`, `refactor`, `risky`, `behavior-preserving refactor`, `risk analysis`, `refactor workflow`, `legacy refactor`, `anti-slop pass`, `anti-slop review`, `anti-slop sweep`, `ai slop`, `deslop review`, `리팩터링`, `리팩토링`, `위험 분석`, `변경 범위 제한`, `회귀 테스트`, `деслоп`, `убери мусор из кода`, `почисти код`, `убери лишнее в коде`, `зачисти код`, `мёртвый код`, `анслоп`, `деблоат`, `почистить код`
+    Strong routing signals: `ai-slop-cleaner`, `$ai-slop-cleaner`, `cleanup`, `deslop`, `refactor`, `risky`, `behavior-preserving refactor`, `refactor workflow`, `legacy refactor`, `anti-slop pass`, `anti-slop review`, `anti-slop sweep`, `ai slop`, `deslop review`, `위험 분석`, `변경 범위 제한`, `회귀 테스트`, `리팩터링`, `리팩토링`, `деслоп`, `убери мусор из кода`, `почисти код`, `убери лишнее в коде`, `зачисти код`, `мёртвый код`, `анслоп`, `деблоат`, `почистить код`
 
 ## Catalog Metadata
 
@@ -80,7 +80,7 @@ Quality bar:
 
 - Lock current behavior with regression checks before non-trivial cleanup.
 - Classify before deleting: every finding names one category from the slop taxonomy - duplication, dead code, needless abstraction, boundary violation, missing tests, or templated defaults - so the pass order below can own it.
-- Run single-smell passes in fixed order, re-verifying between passes and never bundling categories: dead-code deletion, then duplicate removal, then naming and error handling, then test reinforcement; the full contract is `omh-ai-slop-cleaner/references/cleanup-passes.md`.
+- Run single-smell passes in fixed order, re-verifying between passes and never bundling categories: dead-code deletion, then duplicate removal, then naming and error handling, then test reinforcement, after a pass 0 that names the check locking each file's behavior; the full contract is `omh-ai-slop-cleaner/references/cleanup-passes.md`.
 - When the user names no target smell, run detection first and hand back the inventory: prepared linter and dead-code commands are named per stack in the reference and stay prepared_not_observed until run.
 - When the cleanup target is written English rather than code, load `omh-ai-slop-cleaner/references/prose-lexicon.md` for the word tiers, the pattern severities, and the context profile that decides which rules apply.
 - Review mode (`deslop review`, or a request to judge a drafted cleanup without editing) edits nothing: read the writer pass's plan, its diff, and the before/after checks it ran against the six taxonomy categories and return findings in the `omh-code-review` shape - P0-P3 severity and a ship or no_ship verdict - never a new verdict format; the checklist is in `cleanup-passes.md`.
@@ -102,9 +102,9 @@ Executor readiness:
 
 Delegation transparency:
 
-- When delegating, show the composed delegate prompt in a fenced code block in the status message; truncate a long prompt to a bounded preview ending with `... [truncated, N chars total]` — the user must see WHAT was asked, not just that something was.
+- When delegating, show the composed delegate prompt in a fenced code block in the status message; truncate a long prompt to a bounded preview ending with `... [truncated, N chars total]`.
 - Name every delegated or parallel lane's model and, when the host exposes it, its reasoning effort inline as `(model effort)` in status and briefing lines — including runtime-native subagents; when no effort is exposed, show the model alone as `(model)` rather than writing a placeholder like `unknown` beside a known model, and never emit empty parentheses. Carry token and elapsed figures the same way in these narration lines: report observed figures and omit unobserved ones — when the user asks for a figure directly, say it was not observed instead of omitting it; a rendered status-board column keeps its own `unknown` cell.
-- Capture a resumable session or thread id at dispatch and report it in the status message: for non-interactive Claude Code pass `--output-format json` and read `session_id` from the result (resume with `claude -p --resume <session-id>`); for Codex pass `--json` and read `thread_id` (resume with `codex exec resume <thread-id>`, repeating `--skip-git-repo-check` outside a git repo). Never leave a delegate run with no recorded way to resume or steer it — a plain-text one-shot that hides its session id strands the work when the run stalls or times out.
+- Capture a resumable session or thread id at dispatch and report it in the status message: for non-interactive Claude Code pass `--output-format json` and read `session_id` from the result (resume with `claude -p --resume <session-id>`); for Codex pass `--json` and read `thread_id` (resume with `codex exec resume <thread-id>`, repeating `--skip-git-repo-check` outside a git repo). Never leave a delegate run with no recorded way to resume or steer it.
 - Before dispatch, grant the executor session every permission the task will need — file write/edit, command/test execution, and the working directory — on the dispatch command itself, not through settings-file guesses: for non-interactive Claude Code pass `--permission-mode acceptEdits` or an explicit `--allowedTools` list (`--dangerously-skip-permissions` only inside an isolated worktree or sandbox), and the equivalent sandbox/approval flags for other CLIs. `acceptEdits: true` is not a settings key and `~/.claude/settings.local.json` is not a file Claude Code reads — user scope is `~/.claude/settings.json` and project scope is the dispatch cwd's `.claude/settings.local.json` with rules under `permissions.allow`. Prove the grant with a bounded scratch-edit probe run before the real dispatch: a permission denial in a non-interactive run recurs identically on retry, so never redispatch until a changed grant is proven, and surface an ungrantable permission as a blocker before dispatch, not after minutes of silence.
 
 Required inputs:

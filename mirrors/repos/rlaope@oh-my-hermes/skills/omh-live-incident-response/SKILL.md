@@ -46,7 +46,7 @@ Bad example:
 ## Completion Checklist
 
 - Severity is declared, carries the observation that set it, and every change appended rather than overwrote the previous level.
-- One commander is named; operations, communications, and scribe each name a person or read unfilled.
+- One commander is named; operations, communications, and scribe each name a person (the assistant, when one human holds the rest) or read unfilled.
 - Every timeline entry is timestamped, attributed, and typed, and no earlier entry was edited.
 - Each mitigation reads temporary or permanent, and a temporary one names what removes it.
 - Recovery cites the named signal, its healthy value, the observed value, and the observer, never the mitigation alone.
@@ -54,14 +54,14 @@ Bad example:
 
 ## Recovery Notes
 
-- If nobody is named commander, ask for one before anything else; an incident without a commander produces opinions instead of decisions.
+- If nobody is named commander, ask for one before anything else; an incident without a commander produces opinions instead of decisions. With one human, that person is commander and operations.
 - If the recovery signal is not stated, ask which signal and which value counts as healthy before calling anything recovered.
 - If the incident turns out to be closed, hand the postmortem to `omh-reliability-review` and leave this record as the timeline it reads.
 - If a connector call fails or returns nothing, keep the send prepared and name the channel that is unconfirmed instead of assuming delivery.
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

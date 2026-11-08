@@ -30,6 +30,8 @@ config/provider-contracts/
     profile.v1.json
     quote.v1.json
     historical-price-eod-full.v1.json
+    historical-price-eod-dividend-adjusted.v1.json
+    historical-price-eod-light.v1.json
     earnings-calendar.v1.json
     income-statement.v1.json
     ratios.v1.json
@@ -161,6 +163,13 @@ Field semantics:
   Earnings fields such as `epsActual` may legitimately be all-null before
   reporting and do not opt in. Non-boolean policy values fail both the offline
   fixture check and canary validation, including on empty responses.
+  Two more opt-in boolean policies exist, both default `false`. `finite: true`
+  requires numeric-only `types` (`int`/`float`) and rejects NaN, infinity and
+  integers outside finite float range. `iso_date: true` requires `types` to be
+  exactly `["str"]` and rejects any value that is not a canonical `YYYY-MM-DD`
+  calendar date. Only the light EOD contract opts in. A malformed policy value
+  fails the offline fixture check and canary validation, including on empty
+  responses.
 - **`optional_fields`** — every other field observed live but not read by any
   in-scope consumer. Informational only; not validated.
 - **`legacy_aliases`** — a field name the provider used to use (`mktCap`,
@@ -203,6 +212,10 @@ Produced by `validate_rows()` in `scripts/provider_contracts.py`:
 | `all_null_required_field:<f>` | fatal | every row explicitly has null for a field with `reject_all_null: true` |
 | `invalid_contract_rule:<f>:reject_all_null` | fatal | the opt-in policy value is not a JSON boolean |
 | `wrong_type:<f>:<got>` | fatal | required key's value type is outside its declared `types` |
+| `non_finite_required_field:<f>` | fatal | a value is NaN, infinity or out of float range for a field with `finite: true` |
+| `invalid_contract_rule:<f>:finite` | fatal | the `finite` policy is not a boolean, or its `types` are not numeric-only |
+| `invalid_date_format:<f>` | fatal | a value is not a canonical `YYYY-MM-DD` date for a field with `iso_date: true` |
+| `invalid_contract_rule:<f>:iso_date` | fatal | the `iso_date` policy is not a boolean, or `types` is not exactly `["str"]` |
 | `missing_required_value:<col>=<val>` | fatal | a `required_values` entry (for example `worksheet=all`) appears in no row |
 | `canonical_absent_legacy_present:<legacy>-><canonical>` | fatal | **the #328 signature** — the legacy field name showed up instead of the canonical one |
 | `legacy_alias_present:<legacy>` | deprecation (non-fatal) | both the legacy and canonical keys are present; informational only |
@@ -288,6 +301,7 @@ when `candidates` is non-empty):
 |---|---|---|---|
 | `no_earnings_rows` | Mode A: the FMP earnings calendar returned no rows (or no rows carried a `symbol`) for the lookback window | 0 | WARNING |
 | `calendar_fetch_failed` | Mode A: the calendar fetch returned no usable body (`None` on transport/HTTP/rate-limit failure, or a non-list body); non-dict rows are ignored, never dereferenced | 1 | ERROR |
+| `calendar_budget_exhausted` | Mode A: the per-day calendar fetch (`lookback_days + 1` calls) raised `ApiCallBudgetExceeded`; raise `--max-api-calls` or lower `--lookback-days` | 1 | ERROR |
 | `profiles_budget_exhausted` | Mode A: profile fetching raised `ApiCallBudgetExceeded` (including after partial retrieval), or profiles came back empty and the budget is exhausted (`budget_remaining == 0` or `rate_limit_reached`) | 1 | ERROR |
 | `no_profiles_returned` | Mode A: ≥1 symbol, but `get_company_profiles` returned nothing and the budget is not exhausted | 1 | ERROR |
 | `profiles_missing_required_field:marketCap` | Mode A: no candidate passed the cap filter **and** no profile has a coercible `marketCap` *or* `mktCap` — see the value-based nuance below | 1 | ERROR |
@@ -317,6 +331,7 @@ signal above.
 | `profile` | earnings-trade-analyzer, pead-screener, ibd-distribution-day-monitor, parabolic-short-trade-planner, canslim-screener, us-undervalued-growth-screener |
 | `quote` | vcp-screener, parabolic-short-trade-planner, ftd-detector, canslim-screener, market-top-detector, us-undervalued-growth-screener, stockbee-exhaustion-hammer-screener (generated client `fetch_quote_row`) |
 | `historical-price-eod-full` | 15 generated-client owners: pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor, vcp-screener, parabolic-short-trade-planner, ftd-detector, canslim-screener, macro-regime-detector, market-top-detector, us-undervalued-growth-screener, plus the five stockbee clients (#495 Batch C): stockbee-20pct-study, stockbee-episodic-pivot-analyzer, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, stockbee-setup-fluency-trainer |
+| `historical-price-eod-dividend-adjusted` | pair-trade-screener (generated client `fetch_pair_history`, tried before `historical-price-eod/full`; falls back to the unadjusted `close` with a stderr warning and a `price_basis` record) |
 | `earnings-calendar` | pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor |
 | `sp500-constituent` | vcp-screener, parabolic-short-trade-planner |
 | `income-statement` | canslim-screener, dividend-growth-pullback-screener, value-dividend-screener — ad-hoc consumers (their own inline FMP fetch layer) |
@@ -349,7 +364,7 @@ response rows, per grep-verified call sites:
 | pair-trade-screener | `symbol`, `companyName`, `marketCap`, `sector`, `exchangeShortName`, `isActivelyTrading` |
 | stockbee-20pct-study | `symbol`, `exchangeShortName`, `type` (defaults to `"stock"` — a key `/stable` rows do not carry), `price`, `isEtf`, `isFund` |
 | stockbee-exhaustion-hammer-screener | `symbol`, `isEtf`, `isFund`, `marketCap` (defensive fallback `mktCap`) |
-| stockbee-momentum-burst-screener | `symbol`, `isEtf`, `isFund`, `marketCap` (defensive fallback `mktCap`) |
+| stockbee-momentum-burst-screener | `symbol`, `isEtf`, `isFund`, `isActivelyTrading` (requested as `isActivelyTrading=true` and re-checked client-side), `marketCap` (defensive fallback `mktCap`) |
 | us-undervalued-growth-screener | `symbol`, `companyName`, `exchange` OR `exchangeShortName`, `sector`, `industry`, `price`, `marketCap`, `volume`, `isEtf`, `isFund`, `isActivelyTrading` (client pins the three flags server-side; `normalize_listing` re-checks them client-side) |
 | value-dividend-screener | `symbol`, `price`, `lastAnnualDividend`, `marketCap`, `isEtf`, `isFund` |
 
@@ -605,6 +620,7 @@ endpoints, and are excluded.
 | `profile` | ✅ `profile.v1.json` | see ownership table above | — |
 | `quote` | ✅ `quote.v1.json` | see ownership table above | — |
 | `historical-price-eod/full` | ✅ `historical-price-eod-full.v1.json` | see ownership table above | — |
+| `historical-price-eod/dividend-adjusted` | ✅ `historical-price-eod-dividend-adjusted.v1.json` | pair-trade-screener (SPY fixture window 2026-10-26..2026-10-30; plan-tier availability unverified) | — |
 | `earnings-calendar` (v3 alias: `earning_calendar`) | ✅ `earnings-calendar.v1.json` | pead-screener, earnings-trade-analyzer, ibd-distribution-day-monitor call `get_earnings_calendar`; vcp-screener/parabolic-short-trade-planner vendor the same v3→stable compat rename but do not call it | — |
 | `company-screener` | ✅ `company-screener.v1.json` | dividend-growth-pullback-screener, downtrend-duration-analyzer, institutional-flow-tracker, pair-trade-screener, stockbee-20pct-study, stockbee-exhaustion-hammer-screener, stockbee-momentum-burst-screener, us-undervalued-growth-screener, value-dividend-screener — the stockbee three are generated-client consumers (`fetch_screener_rows`, stable-only, no v3 fallback) | consumer reason codes → slice 2b |
 | `sp500-constituent` (v3 alias: `sp500_constituent`) | ✅ `sp500-constituent.v1.json` | vcp-screener, parabolic-short-trade-planner call `get_sp500_constituents`; pead-screener/earnings-trade-analyzer/ibd-distribution-day-monitor vendor the compat rename but do not call it | covered |
@@ -615,7 +631,7 @@ endpoints, and are excluded.
 | `institutional-ownership/symbol-positions-summary` | ❌ | canslim-screener | slice 2 |
 | `etf/holdings` | ❌ | theme-detector | slice 2 |
 | `economic-calendar` | ✅ | economic-calendar-fetcher | recorded contract + consumer validation; #332 economic-calendar slice |
-| `historical-price-eod/light` | ❌ | news-reaction-failure-analyzer | slice 2 |
+| `historical-price-eod/light` | ✅ | news-reaction-failure-analyzer | recorded SPY window; finite price contract |
 | `commitment-of-traders-report` | ❌ | cot-contrarian-detector | slice 2 |
 
 This table defines slice 2's completion criteria: every row marked ❌ needs its own
@@ -731,3 +747,56 @@ one request per contract with its dynamically computed call budget.
 This endpoint completes another part of Issue #332. Other uncovered endpoints
 in the inventory, cross-provider contracts, and production consumer reason
 codes remain separate work; this change does not close the Issue.
+
+
+## Light EOD endpoint contract (#332)
+
+`historical-price-eod-light.v1.json` records five SPY rows returned by one
+HTTP 200 `/stable/historical-price-eod/light` GET on 2026-11-06 UTC for
+2026-10-26 through 2026-10-30. Only public `symbol`, `date`, `price`, and
+`volume` values are retained. The subscription tier was not established;
+this observation proves neither free-tier availability nor futures coverage.
+HTTP denials and malformed response cases in tests are synthetic.
+
+The sole owner is `news-reaction-failure-analyzer`. Its required fields are
+non-null `date` (string) and `price` (int/float); `symbol` and `volume` are
+informational. The light endpoint uses `price`. A synthetic rename to `close`
+is rejected; `close` is not claimed as a historical provider alias. The
+existing generic series helper still supports full-endpoint `close` rows.
+
+The additive field rule `finite: true` requires numeric-only declared types
+and rejects NaN, infinity, and integers outside finite float range with fatal
+`non_finite_required_field:<field>`. Non-boolean policies or use with nonnumeric
+types produce `invalid_contract_rule:<field>:finite`, including on empty bodies.
+Existing contracts without this opt-in retain their current behavior. Nullable
+fields, if any, still follow their separate nullability rule.
+
+The contract's `date` field opts in to `iso_date: true`, so the canary flags a
+row dated `10/30/2026` with `invalid_date_format:date`, matching the consumer.
+The consumer additionally checks canonical ISO dates before sorting and strips
+any extra `close` field so it cannot override the validated light `price`. Malformed
+bodies, rows, or required fields return static `schema_drift:<reason>` errors;
+values are not echoed. Information cutoff: a row whose `date` parses as canonical
+ISO and is strictly after `as_of` is ignored by validation and dropped before
+analysis, so a malformed bar the run would discard cannot change which source is
+used. A row whose date cannot be parsed still counts as drift, because it cannot
+be placed relative to the cutoff. Non-list bodies and non-object rows are always
+drift, and any malformed row dated at or before `as_of` rejects the whole source.
+The reason is reported in `run_context.price_attempts` (JSON) and a `Price attempts`
+line (Markdown) as a static code: `schema_drift:<reason>`, `http_<NNN>`,
+`invalid_json`, `request_exception`, `0 rows`, `no_rows_before_as_of` or `ok`.
+Response text and the API key are never emitted. A literal empty list retains
+attempt status `0 rows`.
+A valid series containing only dates after `as_of` reports
+`no_rows_before_as_of`. Both cases advance the source chain; exhausting it
+retains `no_price_source` and the existing insufficient-evidence verdict.
+
+The scheduled FMP canary discovers the new contract and adds one GET to its
+computed budget. It reuses the fixed recorded SPY window to test shape and
+nonemptiness, without holiday-dependent empty windows; it does not measure
+current-data freshness. Probe errors remain unmasked by consumer fallbacks.
+The existing operational-health versus report-only schema-drift policy is
+unchanged. No workflow was dispatched or repository secret configured here.
+
+Issue #332 remains open for other uncovered endpoints/providers, broader
+consumer reason codes and remaining operational acceptance.

@@ -43,6 +43,7 @@ Bad example:
 - The path root, allowed file operations, excluded paths, destructive-operation policy, and stop condition are explicit.
 - Delete, overwrite, move, rename, permission change, archive mutation, upload, and download are gated, or marked missing and not run.
 - With nobody to answer the confirmation (a scheduled job, a one-shot run, a webhook run), an irreversible or externally visible action is not run: it is handed to a person's turn and its confirmation is recorded as missing.
+- Before a bulk change, list the exact paths and the destination names that already exist; never overwrite a name the confirmation did not name, and compare the listing after the run with the plan.
 - Checkpoint availability is recorded before any destructive step, and the confirmation gate holds either way; without an observed checkpoint covering the target, a reversible copy or a move to trash comes first.
 - Directory listings, file contents, hashes, diffs, and operation results are reported only from observed file evidence.
 
@@ -50,7 +51,7 @@ Bad example:
 
 - If the target path or folder is missing, ask for the smallest path scope needed before preparing the operation.
 - If delete, overwrite, move, rename, chmod, or irreversible cleanup is requested, require an explicit confirmation gate.
-- If the request is file conversion, deck/PDF export, or attachment delivery, route to materials-package or deliverable-package instead.
+- If the request is file conversion, deck/PDF export, or attachment delivery, route to `omh-materials-package` or `omh-deliverable-package` instead.
 - On Hermes, when a checkpoint covers the change, the user's `/rollback` restores it and `/diff session` shows what the session changed since the checkpoint baseline; cite either only after the user runs it.
 - On Hermes, a write that its own file guards refuse or hold for approval (a sensitive system path, a protected instruction file) is that gate's outcome to record, `blocked` or the user's answer, never a write to retry through another tool.
 

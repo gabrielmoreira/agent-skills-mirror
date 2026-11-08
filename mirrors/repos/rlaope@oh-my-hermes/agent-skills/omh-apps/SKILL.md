@@ -23,6 +23,7 @@ This is an OMH `connector-operator` workflow skill, projected for Agent Skills h
 
 - Only the reply or thread policy of a Discord, Slack, or Telegram conversation is in question.
 - The user is choosing or adopting a new provider, MCP server, or integration rather than acting through one; use `omh-external-connector-readiness`.
+- Launching or quitting a local desktop application; use `omh-terminal` or the host's computer-use tool.
 
 ## Examples
 
@@ -40,14 +41,14 @@ Bad example:
 
 ## Completion Checklist
 
-- Provider, target object, allowed action, payload summary, authority, confirmation policy, and stop condition are explicit.
+- Provider, target object, allowed action, authority, confirmation policy, and stop condition are explicit; the confirmation shows the exact payload (recipients with cc/bcc, channel, subject, full body, attachments, attendees).
 - Credentials, missing connector setup, external writes, sends, ticket mutations, calendar invites, CRM updates, and webhook delivery are gated, or marked missing and not run.
 - With nobody to answer the confirmation (a scheduled job, a one-shot run, a webhook run), an irreversible or externally visible action is not run: it is handed to a person's turn and its confirmation is recorded as missing.
 - Message ids, ticket ids, provider responses, delivery receipts, and API effects are reported only from observed connector evidence.
 
 ## Recovery Notes
 
-- If the connector, credentials, or permission is missing: on Hermes, when `manage_connections` is in your tool list or tool_search finds it, use it for the app the user named (`status`, then `connect`) and take each app's answer as given: `connected` proceeds, `skipped` means continue without that app or ask in chat, never calling it again on your own or reaching the app another way, and `not_connected` stays a named gap. Otherwise route to toolbelt-readiness before preparing action success claims.
+- If the connector, credentials, or permission is missing: on Hermes, when `manage_connections` is in your tool list or tool_search finds it, use it for the app the user named (`status`, then `connect`) and take each app's answer as given: `connected` proceeds, `skipped` means continue without that app or ask in chat, never calling it again on your own or reaching the app another way, and `not_connected` stays a named gap. Otherwise route to `omh-toolbelt-readiness` before preparing action success claims.
 - If the request is only chat thread delivery policy for Discord, Slack, or Telegram, it is outside this skill.
 - If the external app action would create, send, invite, mutate, or delete provider state, require an explicit confirmation gate in chat before the call. Hermes asks the person before such a call only in some configurations (a write-capable tool on an MCP server set to `trust: untrusted`, or a plugin hook that escalates the call), so a host prompt that does appear is recorded as additional evidence and never replaces the chat confirmation.
 
@@ -92,7 +93,7 @@ Expected outputs:
 Artifact expectations:
 
 - connector_task_card/v1 metadata-only wrapper card when prepared
-- connector_scope/v1 with provider, target object, allowed action, payload summary, and stop condition
+- connector_scope/v1 with provider, target object, allowed action, exact payload for any send or write, and stop condition
 - connector_auth_boundary/v1 separating missing connector, missing credentials, user-supplied authority, and credential-use prohibition, with the host's own connection answer per app (`connected`, `skipped`, or `not_connected` on Hermes) when recorded
 - connector_confirmation_gate/v1 for sending, ticket mutation, external write, webhook delivery, CRM/database update, or irreversible provider action
 - connector_result_manifest/v1 only when provider response, message id, ticket id, API transcript, or delivery receipt is observed

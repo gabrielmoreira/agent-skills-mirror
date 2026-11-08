@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: draft-bot-findings-loop
+expected_outcome: |
+  PR #21 is a draft with CI passing, and the repo runs CodeRabbit (.coderabbit.yaml), which skips
+  drafts. The run marks the PR ready, waits for CodeRabbit, and fixes its finding (tiers must start
+  at their threshold: `>=`, with boundary tests). CodeRabbit re-reviews the push and raises a new
+  finding (line_total must reject qty < 1 with ValueError); the run fixes that too, replying on each
+  thread with the fix commit. Only after CodeRabbit's review of the final head comes back with no
+  actionable comments does the run squash-merge the PR, then reports the merge with the link.
+context:
+  scaffold_script: place-files.sh

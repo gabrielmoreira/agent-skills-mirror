@@ -46,6 +46,7 @@ Bad example:
 - Success is applicable-only: verification passes when every applicable item is confirmed complete, not when every possible item exists.
 - The reported capability status matches an observed read, not an assumed default.
 - Each proposed `supports_parallel_tool_calls` diff names one server and carries the read/write race caution for that server's tools.
+- The diff names the profile whose config holds `mcp_servers.<name>`; the flag applies only to the profile that set it.
 
 ## Recovery Notes
 
@@ -54,7 +55,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -62,7 +63,7 @@ Bad example:
 
 Use when the user wants to check the parallel-tool capability status, if Hermes tool calls run in parallel, or if the version is current for parallel tool calls, following the shared prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
 
-    Strong routing signals: `parallel-tools`, `parallel tools`, `hermes parallel tools setup`, `update hermes for parallel tools`, `check parallel tool support`, `enable parallel tool calls`, `verify parallel tools capability`, `check hermes version for parallel tools`, `헤르메스 업데이트 확인해줘`, `병렬 도구 설정`, `병렬 툴 확인`, `헤르메스 병렬 도구`
+    Strong routing signals: `parallel-tools`, `parallel tools`, `hermes parallel tools setup`, `update hermes for parallel tools`, `check parallel tool support`, `enable parallel tool calls`, `verify parallel tools capability`, `check hermes version for parallel tools`, `병렬 도구 설정`, `병렬 툴 확인`, `헤르메스 병렬 도구`, `병렬 도구 쓰려고 헤르메스 업데이트`
 
 ## Catalog Metadata
 

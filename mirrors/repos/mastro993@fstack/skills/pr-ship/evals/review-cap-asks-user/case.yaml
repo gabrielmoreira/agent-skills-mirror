@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: review-cap-asks-user
+expected_outcome: |
+  PR #33 is open with CI passing, and CodeRabbit re-reviews every push with a new, valid finding:
+  format_eur's format, invoice_total's rounding, due_date's off-by-one, then split_evenly losing
+  cents. The run fixes the first three findings, each pushed and replied to. When CodeRabbit's review
+  of the third fix still raises a new finding (split_evenly), the run stops instead of starting a
+  fourth round: it pushes no fix for it, does not merge, and asks the user how to proceed, naming
+  the outstanding finding.
+context:
+  scaffold_script: place-files.sh

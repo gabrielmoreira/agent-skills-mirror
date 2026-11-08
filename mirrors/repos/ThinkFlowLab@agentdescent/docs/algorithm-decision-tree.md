@@ -26,6 +26,26 @@ Future card candidates (not promised): Voyager / SkillWeaver / Reflexion /
 Self-Refine / TextGrad MethodPolicy mechanisms — each needs its own issue with
 kinds, params, fidelity class, and deviation vs `examples/<algo>/`.
 
+## Skill libraries vs text-only cards (#846)
+
+Product positioning emphasises multi-file skill libraries (`kind=skill_library`),
+but most named cards today declare **`kinds=("text",)` only**:
+`gepa`, `dgm`, `ace`, `skillopt`, `rrsi`. For an on-disk Agent Skill library,
+use **`evoskill`** or **`archive_selection`** (both list `skill_library`), or
+stay on `kind=text` / `skill_dir` with a text-capable card. Path A recipe for
+the non-evoskill card:
+
+```bash
+agentdescent init ./my-skills --kind skill_library \
+  --data cases.jsonl --algorithm archive_selection --out spec.json
+agentdescent plan spec.json
+```
+
+(`demo --algorithm archive_selection` is still a **skill_dir** offline smoke.)
+Expanding more cards to `skill_library` is tracked in #846 — until then,
+`algorithms show` / `--kind` filtering is the source of truth, not the
+marketing copy (#864).
+
 ## Decision tree
 
 | If you need… | Prefer… | Fidelity / surface | Example |

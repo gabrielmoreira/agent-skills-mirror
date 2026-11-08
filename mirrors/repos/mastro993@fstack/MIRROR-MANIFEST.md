@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 174 file(s) materialized.
+Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 223 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 174 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 174 |
+| Files         | 223 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -196,43 +196,92 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 135 | ✓ | [`skills/pr-babysit/evals/watch-only-reports-failure/prompt.md`](skills/pr-babysit/evals/watch-only-reports-failure/prompt.md) |
 | 136 | ✓ | [`skills/pr-babysit/scripts/pr_watch.py`](skills/pr-babysit/scripts/pr_watch.py) |
 | 137 | ✓ | [`skills/pr-babysit/SKILL.md`](skills/pr-babysit/SKILL.md) |
-| 138 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml`](skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml) |
-| 139 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs`](skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs) |
-| 140 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md) |
-| 141 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md) |
-| 142 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md) |
-| 143 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md) |
-| 144 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md) |
-| 145 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md) |
-| 146 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md) |
-| 147 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md) |
-| 148 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md) |
-| 149 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md) |
-| 150 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh`](skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh) |
-| 151 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md) |
-| 152 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/case.yaml`](skills/ux-stress-test/evals/findings-first-then-ask/case.yaml) |
-| 153 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs`](skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs) |
-| 154 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md) |
-| 155 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md) |
-| 156 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md) |
-| 157 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh`](skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh) |
-| 158 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/prompt.md`](skills/ux-stress-test/evals/findings-first-then-ask/prompt.md) |
-| 159 | ✓ | [`skills/ux-stress-test/references/drivers/browser-use.md`](skills/ux-stress-test/references/drivers/browser-use.md) |
-| 160 | ✓ | [`skills/ux-stress-test/references/drivers/playwright.md`](skills/ux-stress-test/references/drivers/playwright.md) |
-| 161 | ✓ | [`skills/ux-stress-test/references/persona-protocol.md`](skills/ux-stress-test/references/persona-protocol.md) |
-| 162 | ✓ | [`skills/ux-stress-test/references/personas/breaker.md`](skills/ux-stress-test/references/personas/breaker.md) |
-| 163 | ✓ | [`skills/ux-stress-test/references/personas/impatient.md`](skills/ux-stress-test/references/personas/impatient.md) |
-| 164 | ✓ | [`skills/ux-stress-test/references/personas/mobile.md`](skills/ux-stress-test/references/personas/mobile.md) |
-| 165 | ✓ | [`skills/ux-stress-test/references/personas/non-native.md`](skills/ux-stress-test/references/personas/non-native.md) |
-| 166 | ✓ | [`skills/ux-stress-test/references/personas/skeptic.md`](skills/ux-stress-test/references/personas/skeptic.md) |
-| 167 | ✓ | [`skills/ux-stress-test/scripts/chrome.sh`](skills/ux-stress-test/scripts/chrome.sh) |
-| 168 | ✓ | [`skills/ux-stress-test/scripts/controls.js`](skills/ux-stress-test/scripts/controls.js) |
-| 169 | ✓ | [`skills/ux-stress-test/scripts/failures.py`](skills/ux-stress-test/scripts/failures.py) |
-| 170 | ✓ | [`skills/ux-stress-test/scripts/keyboard.py`](skills/ux-stress-test/scripts/keyboard.py) |
-| 171 | ✓ | [`skills/ux-stress-test/scripts/mobile-audit.js`](skills/ux-stress-test/scripts/mobile-audit.js) |
-| 172 | ✓ | [`skills/ux-stress-test/scripts/mobile-setup.py`](skills/ux-stress-test/scripts/mobile-setup.py) |
-| 173 | ✓ | [`skills/ux-stress-test/scripts/slow-3g.js`](skills/ux-stress-test/scripts/slow-3g.js) |
-| 174 | ✓ | [`skills/ux-stress-test/SKILL.md`](skills/ux-stress-test/SKILL.md) |
+| 138 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/case.yaml`](skills/pr-ship/evals/draft-bot-findings-loop/case.yaml) |
+| 139 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/.gh-stub/scenario.json`](skills/pr-ship/evals/draft-bot-findings-loop/files/.gh-stub/scenario.json) |
+| 140 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/.coderabbit.yaml`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/.coderabbit.yaml) |
+| 141 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/.github/workflows/ci.yml`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/.github/workflows/ci.yml) |
+| 142 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/README.md`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/README.md) |
+| 143 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/tests/test_pricing.py`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/tests/test_pricing.py) |
+| 144 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/widgets/__init__.py`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/widgets/__init__.py) |
+| 145 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/widgets/pricing.py`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/base/widgets/pricing.py) |
+| 146 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/pr/tests/test_pricing.py`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/pr/tests/test_pricing.py) |
+| 147 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/pr/widgets/pricing.py`](skills/pr-ship/evals/draft-bot-findings-loop/files/fixture/pr/widgets/pricing.py) |
+| 148 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/graders/01-marks-ready.md`](skills/pr-ship/evals/draft-bot-findings-loop/graders/01-marks-ready.md) |
+| 149 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/graders/02-fixes-both-findings.md`](skills/pr-ship/evals/draft-bot-findings-loop/graders/02-fixes-both-findings.md) |
+| 150 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/graders/03-replies-on-threads.md`](skills/pr-ship/evals/draft-bot-findings-loop/graders/03-replies-on-threads.md) |
+| 151 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/graders/04-waits-for-clean-round.md`](skills/pr-ship/evals/draft-bot-findings-loop/graders/04-waits-for-clean-round.md) |
+| 152 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/graders/05-squash-merge-reported.md`](skills/pr-ship/evals/draft-bot-findings-loop/graders/05-squash-merge-reported.md) |
+| 153 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/place-files.sh`](skills/pr-ship/evals/draft-bot-findings-loop/place-files.sh) |
+| 154 | ✓ | [`skills/pr-ship/evals/draft-bot-findings-loop/prompt.md`](skills/pr-ship/evals/draft-bot-findings-loop/prompt.md) |
+| 155 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/case.yaml`](skills/pr-ship/evals/no-pr-mention-bot/case.yaml) |
+| 156 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/.gh-stub/scenario.json`](skills/pr-ship/evals/no-pr-mention-bot/files/.gh-stub/scenario.json) |
+| 157 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/.github/pull_request_template.md`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/.github/pull_request_template.md) |
+| 158 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/.github/workflows/ci.yml`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/.github/workflows/ci.yml) |
+| 159 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/.github/workflows/claude.yml`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/.github/workflows/claude.yml) |
+| 160 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/README.md`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/README.md) |
+| 161 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/tests/test_pricing.py`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/tests/test_pricing.py) |
+| 162 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/widgets/__init__.py`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/widgets/__init__.py) |
+| 163 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/widgets/pricing.py`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/base/widgets/pricing.py) |
+| 164 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/pr/tests/test_pricing.py`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/pr/tests/test_pricing.py) |
+| 165 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/files/fixture/pr/widgets/pricing.py`](skills/pr-ship/evals/no-pr-mention-bot/files/fixture/pr/widgets/pricing.py) |
+| 166 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/graders/01-opens-pr-from-template.md`](skills/pr-ship/evals/no-pr-mention-bot/graders/01-opens-pr-from-template.md) |
+| 167 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/graders/02-asks-claude-to-review.md`](skills/pr-ship/evals/no-pr-mention-bot/graders/02-asks-claude-to-review.md) |
+| 168 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/graders/03-fixes-and-asks-again.md`](skills/pr-ship/evals/no-pr-mention-bot/graders/03-fixes-and-asks-again.md) |
+| 169 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/graders/04-merge-commit-reported.md`](skills/pr-ship/evals/no-pr-mention-bot/graders/04-merge-commit-reported.md) |
+| 170 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/place-files.sh`](skills/pr-ship/evals/no-pr-mention-bot/place-files.sh) |
+| 171 | ✓ | [`skills/pr-ship/evals/no-pr-mention-bot/prompt.md`](skills/pr-ship/evals/no-pr-mention-bot/prompt.md) |
+| 172 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/case.yaml`](skills/pr-ship/evals/review-cap-asks-user/case.yaml) |
+| 173 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/files/.gh-stub/scenario.json`](skills/pr-ship/evals/review-cap-asks-user/files/.gh-stub/scenario.json) |
+| 174 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/tests/test_invoicing.py`](skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/tests/test_invoicing.py) |
+| 175 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/dates.py`](skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/dates.py) |
+| 176 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/format.py`](skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/format.py) |
+| 177 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/invoice.py`](skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/invoice.py) |
+| 178 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/split.py`](skills/pr-ship/evals/review-cap-asks-user/files/fixture/pr/widgets/split.py) |
+| 179 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/graders/01-fixes-three-rounds.md`](skills/pr-ship/evals/review-cap-asks-user/graders/01-fixes-three-rounds.md) |
+| 180 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/graders/02-stops-after-third-round.md`](skills/pr-ship/evals/review-cap-asks-user/graders/02-stops-after-third-round.md) |
+| 181 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/graders/03-asks-user.md`](skills/pr-ship/evals/review-cap-asks-user/graders/03-asks-user.md) |
+| 182 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/graders/04-no-merge.md`](skills/pr-ship/evals/review-cap-asks-user/graders/04-no-merge.md) |
+| 183 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/place-files.sh`](skills/pr-ship/evals/review-cap-asks-user/place-files.sh) |
+| 184 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/prompt.md`](skills/pr-ship/evals/review-cap-asks-user/prompt.md) |
+| 185 | ✓ | [`skills/pr-ship/references/review-bots.md`](skills/pr-ship/references/review-bots.md) |
+| 186 | ✓ | [`skills/pr-ship/SKILL.md`](skills/pr-ship/SKILL.md) |
+| 187 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml`](skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml) |
+| 188 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs`](skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs) |
+| 189 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md) |
+| 190 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md) |
+| 191 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md) |
+| 192 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md) |
+| 193 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md) |
+| 194 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md) |
+| 195 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md) |
+| 196 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md) |
+| 197 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md) |
+| 198 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md) |
+| 199 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh`](skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh) |
+| 200 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md) |
+| 201 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/case.yaml`](skills/ux-stress-test/evals/findings-first-then-ask/case.yaml) |
+| 202 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs`](skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs) |
+| 203 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md) |
+| 204 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md) |
+| 205 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md) |
+| 206 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh`](skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh) |
+| 207 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/prompt.md`](skills/ux-stress-test/evals/findings-first-then-ask/prompt.md) |
+| 208 | ✓ | [`skills/ux-stress-test/references/drivers/browser-use.md`](skills/ux-stress-test/references/drivers/browser-use.md) |
+| 209 | ✓ | [`skills/ux-stress-test/references/drivers/playwright.md`](skills/ux-stress-test/references/drivers/playwright.md) |
+| 210 | ✓ | [`skills/ux-stress-test/references/persona-protocol.md`](skills/ux-stress-test/references/persona-protocol.md) |
+| 211 | ✓ | [`skills/ux-stress-test/references/personas/breaker.md`](skills/ux-stress-test/references/personas/breaker.md) |
+| 212 | ✓ | [`skills/ux-stress-test/references/personas/impatient.md`](skills/ux-stress-test/references/personas/impatient.md) |
+| 213 | ✓ | [`skills/ux-stress-test/references/personas/mobile.md`](skills/ux-stress-test/references/personas/mobile.md) |
+| 214 | ✓ | [`skills/ux-stress-test/references/personas/non-native.md`](skills/ux-stress-test/references/personas/non-native.md) |
+| 215 | ✓ | [`skills/ux-stress-test/references/personas/skeptic.md`](skills/ux-stress-test/references/personas/skeptic.md) |
+| 216 | ✓ | [`skills/ux-stress-test/scripts/chrome.sh`](skills/ux-stress-test/scripts/chrome.sh) |
+| 217 | ✓ | [`skills/ux-stress-test/scripts/controls.js`](skills/ux-stress-test/scripts/controls.js) |
+| 218 | ✓ | [`skills/ux-stress-test/scripts/failures.py`](skills/ux-stress-test/scripts/failures.py) |
+| 219 | ✓ | [`skills/ux-stress-test/scripts/keyboard.py`](skills/ux-stress-test/scripts/keyboard.py) |
+| 220 | ✓ | [`skills/ux-stress-test/scripts/mobile-audit.js`](skills/ux-stress-test/scripts/mobile-audit.js) |
+| 221 | ✓ | [`skills/ux-stress-test/scripts/mobile-setup.py`](skills/ux-stress-test/scripts/mobile-setup.py) |
+| 222 | ✓ | [`skills/ux-stress-test/scripts/slow-3g.js`](skills/ux-stress-test/scripts/slow-3g.js) |
+| 223 | ✓ | [`skills/ux-stress-test/SKILL.md`](skills/ux-stress-test/SKILL.md) |
 
 ---
 

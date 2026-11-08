@@ -10,6 +10,7 @@ metadata:
     phase: plan
     role: planner
     quality_tier: acceptance-gated
+    related_skills: [ulw-plan, ulw-interview, omh-refactor-plan]
 ---
 
 # Plan
@@ -24,20 +25,23 @@ This is a Hermes-native `plan` workflow skill.
 
 - The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
 - The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- The change is risky or architectural and the user wants alternatives compared, a risk review and a recorded decision; use `ulw-plan`, and keep this skill for the ordinary plan.
+- Requirements are too vague to list non-goals or acceptance criteria; use `ulw-interview`.
+- The direction is decided and what is missing is the phase-by-phase refactor shape; use `omh-refactor-plan`.
 
 ## Examples
 
 Good example:
 
-- Prompt: plan: handle a planning request that needs explicit evidence boundaries and a clear stop condition.
-- Expected behavior: Run `plan` only after naming the target, evidence boundary, and stop condition.
-- Why: The request matches the catalog use case and keeps observed evidence separate from prepared guidance.
+- Prompt: plan: add CSV export to the reports page; admins only, and it must stream 100k rows.
+- Expected behavior: Write goals, non-goals, risks, tasks with ids, dependencies and done checks, a closing gate, and the acceptance criteria; hand back for acceptance before any handoff.
+- Why: A feature with real acceptance questions needs a plan the user accepts before any code moves.
 
 Bad example:
 
-- Prompt: plan: treat casual chat or unaccepted work as if this workflow already produced verified results.
-- Expected behavior: Ask a clarification question or route to a narrower workflow instead of forcing `plan`.
-- Why: The request lacks the required inputs or would overclaim work that Hermes did not observe.
+- Prompt: plan: fix the null check in parse_user (one line, the test already exists)
+- Expected behavior: Make the edit directly and run the test; a plan adds a round trip with nothing to decide.
+- Why: One bounded edit with a known check has no goals or tradeoffs to write down.
 
 ## Completion Checklist
 
@@ -56,7 +60,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+9 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -90,7 +94,7 @@ Quality bar:
 - When the plan describes code changes, name the raw material the work starts from instead of a digest of it - the failing log, trace, or data rather than the issue summary - and the methods and tools a leading practitioner of the field would use on it. Every verification step names an outside judge - a test, CI, a measurement, a human reviewer, or an external tool - never the planning model's or the executor's own reading of the result; a step with no outside judge is recorded as an evidence gap.
 - When the plan describes code changes, restate the deliverable once as the verbs it must accomplish rather than the noun it produces; when that brings in another field, write what a practitioner of that field does as a task (fuzz the parser, audit each completion claim against its evidence), never an instruction to write or speak like one.
 - Take plan acceptance only from the answer the user gave — the response status and value the question tool returns, or the user's own reply — never from the wording of the question you asked: when the acceptance question times out, is dismissed, or returns with no answer, the plan stays unaccepted, so record no acceptance, prepare no handoff, and start nothing; a missing answer is not a refusal either, so ask again later or report the plan as awaiting acceptance.
-- Plan acceptance approves the plan content, not execution: after acceptance, recommend the follow-on path that fits the work's shape — `dag-ulw` for an accepted plan whose tasks form a graph (several tasks with disjoint write scopes or an order between them, handing work on through files, plus a separate verification task), `ultrawork` durable checkpoints for progress that must survive sessions as a checkpointed ledger, `ultrawork` coordinated lanes for an accepted plan split into disjoint parallel lanes, `ultrawork` single-owner persistence for one already-scoped task with a single owner, `ultrawork` for one bounded delivery cycle, or a direct selected executor/runtime handoff for a single prepared coding change — state the fit reason in one line, and start it only after the user's explicit go-ahead.
+- Plan acceptance approves the plan content, not execution: after acceptance, recommend the follow-on path that fits the work's shape — `dag-ulw` for an accepted plan whose tasks form a graph (several tasks with disjoint write scopes or an order between them, handing work on through files, plus a separate verification task), `ulw-work` durable checkpoints for progress that must survive sessions as a checkpointed ledger, `ulw-work` coordinated lanes for an accepted plan split into disjoint parallel lanes, `ulw-work` single-owner persistence for one already-scoped task with a single owner, `ulw-work` for one bounded delivery cycle, or a direct selected executor/runtime handoff for a single prepared coding change — state the fit reason in one line, and start it only after the user's explicit go-ahead.
 - Hermes' built-in `/plan` writes one plan file under `.hermes/plans/` in a turn of its own that opens `[/plan — plan mode]` and executes nothing; in that turn, follow its instructions. When the user later asks to review, accept, or hand off that file, it is this skill's draft, not a reason to write a second plan: load `references/hermes-plan-mode.md`.
 
 Handoff policy:
@@ -112,7 +116,7 @@ Expected outputs:
 
 Artifact expectations:
 
-- plan artifact when durable execution will follow
+- plan artifact when durable execution will follow, via `omh hermes plan --record --plan-file <file> "<task>"`
 
 Safety rules:
 

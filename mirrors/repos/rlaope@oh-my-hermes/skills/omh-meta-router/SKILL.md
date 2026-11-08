@@ -10,6 +10,7 @@ metadata:
     phase: meta-routing
     role: guide
     quality_tier: routing-gated
+    related_skills: [omh-routing]
 ---
 
 # Meta Router
@@ -23,14 +24,14 @@ This is a Hermes-native `meta-router` workflow skill.
 ## Do Not Use When
 
 - The /omh token is not the leading command token.
-- The message is a bare picker alias or an OMH catalog/entrypoint question — those belong to oh-my-hermes.
+- The message is a bare picker alias or an OMH catalog/entrypoint question — those belong to `omh-routing`.
 
 ## Examples
 
 Good example:
 
 - Prompt: /omh migrate this service off the deprecated API and add tests
-- Expected behavior: Consult `omh recommend` on the remainder, then chain the recommended plan and executor workflows with explicit observed-vs-prepared evidence boundaries.
+- Expected behavior: Consult `omh recommend` on the remainder, then name the recommended chain and start only its first stage; each later engine waits for the user's go-ahead, with explicit observed-vs-prepared evidence boundaries.
 - Why: A leading /omh command with an imperative remainder is a meta-routing request that reasons over the live catalog rather than a memorized list.
 
 Bad example:
@@ -53,7 +54,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+9 more`) - clarify, plan, ship, or loop goals.
+- Current lane: **Intent -> plan** - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

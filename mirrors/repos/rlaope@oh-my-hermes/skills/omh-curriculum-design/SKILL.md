@@ -44,9 +44,10 @@ Bad example:
 
 ## Completion Checklist
 
-- The plan names goals, non-goals, assumptions, acceptance criteria, and verification shape.
-- Draft recommendations, accepted decisions, and executor handoffs are separate states.
-- Rejected options or unresolved tradeoffs are recorded before handoff.
+- Every outcome states performance, conditions and criterion; each has assessment evidence and rubric criteria, and the alignment map lists orphan outcomes and orphan assessments.
+- The sequence shows diagnosis, modeling, guided practice, feedback and independent transfer, with the hours per week totalled against the stated schedule.
+- Each accessibility adaptation names the learner barrier and an equivalent demonstration path.
+- Validation is PASS, REVISE or BLOCKED per criterion; learner review and pilot stay prepared until observed.
 
 ## Recovery Notes
 
@@ -56,7 +57,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

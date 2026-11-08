@@ -16,6 +16,16 @@ All notable changes to SkillOpt are documented here. This project adheres to
   setting. The MCP client ships in a new `parallel` extra
   (`pip install 'skillopt[parallel]'`) and is imported lazily, so OfficeQA
   runs and offline installs do not require `mcp`.
+- **OfficeQA Keenable search** as an opt-in `env.search_mode=keenable`
+  provider for `openai_chat`/`qwen_chat`. The default stays `offline` and no
+  config selects Keenable automatically. Selecting it sends the generated
+  search queries, one request per query, with an `X-Keenable-Title: SkillOpt`
+  header to Keenable's keyless search endpoint; if `KEENABLE_API_KEY` is set,
+  that key is sent in an `X-API-Key` header to the keyed endpoint instead. No
+  key, credential or account is bundled, and service errors fail the rollout
+  with no fallback. It uses the core `httpx` dependency, so it needs no
+  extra. Its scores are not directly comparable to the paper's Google-backed
+  search setting.
 - **SkillOpt-Sleep paired A/B evalkit** (`python -m skillopt_sleep.evalkit`):
   McNemar plus percentile-bootstrap CIs on a fixed task manifest, with
   task-cluster multi-seed inference and seeded null calibration for exact-test
@@ -88,6 +98,12 @@ All notable changes to SkillOpt are documented here. This project adheres to
   (thanks @AKhozya, #131).
 
 ### Changed
+- **SkillOpt-Sleep legacy adoption confinement**: `adopt` now derives allowed
+  destinations from the caller (`invoked_project`, `skill_search_roots(cfg)`,
+  and explicit `target_skill_path`), treating manifest values as a consistency
+  check. Nights staged prior to this change that lack a recorded `project_root`
+  in `manifest.json` now fail closed with `StagingError` ("missing 'project_root'
+  … Discard and restage this night").
 - Claude Code's Sleep plugin can now use a `pip`/`uv`-installed
   `skillopt-sleep` when no repository checkout is present (thanks
   @ichoosetoaccept, #107).
@@ -135,6 +151,12 @@ All notable changes to SkillOpt are documented here. This project adheres to
   long-prompt handling (thanks @codeL1985, #98).
 - Preserve the scheduler's established annealing contract while expanding its
   endpoint and sequence coverage (thanks @nankingjing, #123; follow-up #133).
+- Stop SearchQA `sub_em` from scoring an empty or article-only answer as a
+  match, and from letting a gold answer that normalizes to empty match every
+  prediction (thanks @Shizoqua).
+- Skip step-level edits whose target runs into a protected slow-update or
+  appendix region, so a `replace` or `delete` can no longer remove the start
+  marker and expose the protected content (thanks @Shizoqua).
 
 ### Security
 - Prevent managed-identity credentials from being sent to non-Azure or

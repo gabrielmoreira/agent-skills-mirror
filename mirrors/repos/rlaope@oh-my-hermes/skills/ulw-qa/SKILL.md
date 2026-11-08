@@ -37,15 +37,16 @@ Good example:
 
 Bad example:
 
-- Prompt: ultraqa: treat casual chat or unaccepted work as if this workflow already produced verified results.
-- Expected behavior: Ask a clarification question or route to a narrower workflow instead of forcing `ultraqa`.
-- Why: The request lacks the required inputs or would overclaim work that Hermes did not observe.
+- Prompt: ultraqa that the profile page looks right on mobile
+- Expected behavior: Route to `omh-visual-qa`; no changed behavior is being attacked.
+- Why: The question is how a rendered page looks, which the viewport and state matrix answers.
 
 ## Completion Checklist
 
 - The scenario, expected behavior, observed result, and pass/fail basis are named.
 - Proposed fixes are separated from observed QA evidence.
-- Missing or failed verification routes back to plan, fix, or a narrower test.
+- Missing or failed verification routes back to `omh-plan`, fix, or a narrower test; a failed scenario gets at most two fix-and-rerun rounds, then it is reported as an open finding with its evidence and is not redefined to pass.
+- Everything the hostile scenarios created or changed (accounts, rows, files, processes, ports) was listed before the first one ran and removed or restored afterwards, with the command and its observed result as the cleanup receipt, or what remains is named.
 
 ## Recovery Notes
 
@@ -55,7 +56,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -81,7 +82,7 @@ Quality bar:
 - The closing brief scales to the change: one or two sentences for a simple change. Lead with the result and validation; omit abandoned approaches unless they explain a tradeoff, and internal bookkeeping. Disclose requested-but-not-done work and material prepared/unmerged work; omit unrelated non-action footers. Required accounting stays outside this scaling. Order: result -> relevant evidence/limits -> observed accounting (when required) -> specific question (if useful). For a real unresolved user decision or a useful briefing discussion, offer one specific, content-linked question. Completed work needs no question; discussion grants no authority. Never estimate usage.
 - Generate hostile scenarios from changed behavior and known risk areas.
 - Report pass/fail evidence separately from proposed fixes.
-- For native `omh_todo` checkpoints, load the todo-checklist closing recipe; `record` then `recall` this qa declaration. Stored declarations are not proof.
+- For native `omh_todo` checkpoints, load `omh-todo-checklist/references/closing-a-story.md`; `record` then `recall` this qa declaration. Stored declarations are not proof.
 - Delegate code mutations discovered by QA to the selected coding executor.
 - A check no automation can hold gets a manual test guide, never a done claim: load `references/manual-test-guide.md` for the step shape (setup, do, expect, broken), the four reasons a step may stay manual, and why it stays `prepared_not_observed` until a run records a fresh `observed_check_results/v1`. `code-story` phase `VI. Manual test guide`; rendered surfaces go to `omh-visual-qa`.
 - For probes that must run in Hermes-owned isolation or outlive this session, load `references/board-fanin.md`: one probe row per scenario in its own worktree, one fixer row whose `parents` is every probe, re-verification through the review lane, and findings only through bounded readback.

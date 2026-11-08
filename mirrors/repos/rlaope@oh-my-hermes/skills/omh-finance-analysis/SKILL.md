@@ -29,6 +29,7 @@ This is a Hermes-native `finance-analysis` workflow skill.
 - The user wants pipeline coverage, deal health, or a seller forecast scenario rather than authoritative revenue or close reporting; use `omh-sales-pipeline-review`.
 - The user needs an enterprise or product direction decision after analysis; route that decision to `omh-decide`.
 - The ask is testing whether an internal control operated -- a SOX or ICFR sample, re-performance, or a deficiency's severity; use `omh-internal-audit`.
+- The ask is a valuation, DCF, multiples or a stock comparison from published statements; this procedure does not cover it. A host valuation skill does, when installed (Hermes ships optional finance skills); otherwise compute ratios with code from the supplied statements, state the formulas, give no recommendation, and stop at facts.
 
 ## Examples
 
@@ -46,9 +47,10 @@ Bad example:
 
 ## Completion Checklist
 
-- Confirm the workflow target, evidence boundary, and stop condition are named.
-- Report which outputs are prepared, observed, blocked, or missing.
-- Name the smallest next verification or handoff instead of claiming completion from narration.
+- finance_scope_source_record/v1 names entity, period, cutoff, currency and units, accounting basis and comparator version.
+- Totals tie to the source, or the unreconciled gap is listed; the brief is not called reconciled otherwise.
+- Every formula and policy is supplied or marked an unapproved assumption.
+- Recalculation ran with a tool and its result is quoted; the disposition is PASS or HOLD with an escalation owner.
 
 ## Recovery Notes
 
@@ -58,7 +60,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 

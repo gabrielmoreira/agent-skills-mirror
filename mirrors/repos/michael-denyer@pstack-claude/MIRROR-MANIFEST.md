@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `michael-denyer/pstack-claude` — 26 default patterns, 0 followed patterns, 70 file(s) materialized.
+Mirror of `michael-denyer/pstack-claude` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `michael-denyer/pstack-claude` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 70 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -113,22 +113,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`plugins/pstack/skills/principle-type-system-discipline/SKILL.md`](plugins/pstack/skills/principle-type-system-discipline/SKILL.md) |
 | 53 | ✓ | [`plugins/pstack/skills/recall/SKILL.md`](plugins/pstack/skills/recall/SKILL.md) |
 | 54 | ✓ | [`plugins/pstack/skills/reflect/SKILL.md`](plugins/pstack/skills/reflect/SKILL.md) |
-| 55 | ✓ | [`plugins/pstack/skills/setup-pstack/copilot.md`](plugins/pstack/skills/setup-pstack/copilot.md) |
-| 56 | ✓ | [`plugins/pstack/skills/setup-pstack/SKILL.md`](plugins/pstack/skills/setup-pstack/SKILL.md) |
-| 57 | ✓ | [`plugins/pstack/skills/sharpen/SKILL.md`](plugins/pstack/skills/sharpen/SKILL.md) |
-| 58 | ✓ | [`plugins/pstack/skills/show-me-your-work/SKILL.md`](plugins/pstack/skills/show-me-your-work/SKILL.md) |
-| 59 | ✓ | [`plugins/pstack/skills/statechart/SKILL.md`](plugins/pstack/skills/statechart/SKILL.md) |
-| 60 | ✓ | [`plugins/pstack/skills/swarm/SKILL.md`](plugins/pstack/skills/swarm/SKILL.md) |
-| 61 | ✓ | [`plugins/pstack/skills/tdd/SKILL.md`](plugins/pstack/skills/tdd/SKILL.md) |
-| 62 | ✓ | [`plugins/pstack/skills/teach/SKILL.md`](plugins/pstack/skills/teach/SKILL.md) |
-| 63 | ✓ | [`plugins/pstack/skills/technical-writing/SKILL.md`](plugins/pstack/skills/technical-writing/SKILL.md) |
-| 64 | ✓ | [`plugins/pstack/skills/thermo-nuclear-code-quality-review/SKILL.md`](plugins/pstack/skills/thermo-nuclear-code-quality-review/SKILL.md) |
-| 65 | ✓ | [`plugins/pstack/skills/thermo-nuclear-review/SKILL.md`](plugins/pstack/skills/thermo-nuclear-review/SKILL.md) |
-| 66 | ✓ | [`plugins/pstack/skills/thermos/SKILL.md`](plugins/pstack/skills/thermos/SKILL.md) |
-| 67 | ✓ | [`plugins/pstack/skills/typescript-best-practices/SKILL.md`](plugins/pstack/skills/typescript-best-practices/SKILL.md) |
-| 68 | ✓ | [`plugins/pstack/skills/unslop/SKILL.md`](plugins/pstack/skills/unslop/SKILL.md) |
-| 69 | ✓ | [`plugins/pstack/skills/what-did-i-get-done/SKILL.md`](plugins/pstack/skills/what-did-i-get-done/SKILL.md) |
-| 70 | ✓ | [`plugins/pstack/skills/why/SKILL.md`](plugins/pstack/skills/why/SKILL.md) |
+| 55 | ✓ | [`plugins/pstack/skills/setup-pstack/SKILL.md`](plugins/pstack/skills/setup-pstack/SKILL.md) |
+| 56 | ✓ | [`plugins/pstack/skills/sharpen/SKILL.md`](plugins/pstack/skills/sharpen/SKILL.md) |
+| 57 | ✓ | [`plugins/pstack/skills/show-me-your-work/SKILL.md`](plugins/pstack/skills/show-me-your-work/SKILL.md) |
+| 58 | ✓ | [`plugins/pstack/skills/statechart/SKILL.md`](plugins/pstack/skills/statechart/SKILL.md) |
+| 59 | ✓ | [`plugins/pstack/skills/swarm/SKILL.md`](plugins/pstack/skills/swarm/SKILL.md) |
+| 60 | ✓ | [`plugins/pstack/skills/tdd/SKILL.md`](plugins/pstack/skills/tdd/SKILL.md) |
+| 61 | ✓ | [`plugins/pstack/skills/teach/SKILL.md`](plugins/pstack/skills/teach/SKILL.md) |
+| 62 | ✓ | [`plugins/pstack/skills/technical-writing/SKILL.md`](plugins/pstack/skills/technical-writing/SKILL.md) |
+| 63 | ✓ | [`plugins/pstack/skills/thermo-nuclear-code-quality-review/SKILL.md`](plugins/pstack/skills/thermo-nuclear-code-quality-review/SKILL.md) |
+| 64 | ✓ | [`plugins/pstack/skills/thermo-nuclear-review/SKILL.md`](plugins/pstack/skills/thermo-nuclear-review/SKILL.md) |
+| 65 | ✓ | [`plugins/pstack/skills/thermos/SKILL.md`](plugins/pstack/skills/thermos/SKILL.md) |
+| 66 | ✓ | [`plugins/pstack/skills/typescript-best-practices/SKILL.md`](plugins/pstack/skills/typescript-best-practices/SKILL.md) |
+| 67 | ✓ | [`plugins/pstack/skills/unslop/SKILL.md`](plugins/pstack/skills/unslop/SKILL.md) |
+| 68 | ✓ | [`plugins/pstack/skills/what-did-i-get-done/SKILL.md`](plugins/pstack/skills/what-did-i-get-done/SKILL.md) |
+| 69 | ✓ | [`plugins/pstack/skills/why/SKILL.md`](plugins/pstack/skills/why/SKILL.md) |
 
 ---
 

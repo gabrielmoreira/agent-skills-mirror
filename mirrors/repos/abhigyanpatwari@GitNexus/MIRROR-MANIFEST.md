@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 24 followed patterns, 129 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 24 followed patterns, 130 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 24 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 24 |
-| Files         | 129 |
+| Files         | 130 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -152,65 +152,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md) |
 | 69 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md) |
 | 70 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-review/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-review/SKILL.md) |
-| 71 | ✓ | [`gitnexus/bench/cross-repo-trace/README.md`](gitnexus/bench/cross-repo-trace/README.md) |
-| 72 | ✓ | [`gitnexus/bench/emit-persistence/README.md`](gitnexus/bench/emit-persistence/README.md) |
-| 73 | ✓ | [`gitnexus/bench/impact-pdg/README.md`](gitnexus/bench/impact-pdg/README.md) |
-| 74 | ✓ | [`gitnexus/bench/import-emission/README.md`](gitnexus/bench/import-emission/README.md) |
-| 75 | ✓ | [`gitnexus/bench/incremental-write-integrity/README.md`](gitnexus/bench/incremental-write-integrity/README.md) |
-| 76 | ✓ | [`gitnexus/bench/java-overload-resolution/README.md`](gitnexus/bench/java-overload-resolution/README.md) |
-| 77 | ✓ | [`gitnexus/bench/lexical-binding-provenance/README.md`](gitnexus/bench/lexical-binding-provenance/README.md) |
-| 78 | ✓ | [`gitnexus/bench/mcp-query/README.md`](gitnexus/bench/mcp-query/README.md) |
-| 79 | ✓ | [`gitnexus/bench/mcp-serialization/README.md`](gitnexus/bench/mcp-serialization/README.md) |
-| 80 | ✓ | [`gitnexus/bench/method-declaration-facts/README.md`](gitnexus/bench/method-declaration-facts/README.md) |
-| 81 | ✓ | [`gitnexus/bench/rename/README.md`](gitnexus/bench/rename/README.md) |
-| 82 | ✓ | [`gitnexus/bench/schema-pairs/README.md`](gitnexus/bench/schema-pairs/README.md) |
-| 83 | ✓ | [`gitnexus/bench/scope-resolution/README.md`](gitnexus/bench/scope-resolution/README.md) |
-| 84 | ✓ | [`gitnexus/bench/tool-accuracy/README.md`](gitnexus/bench/tool-accuracy/README.md) |
-| 85 | ✓ | [`gitnexus/README.md`](gitnexus/README.md) |
-| 86 | ✓ | [`gitnexus/skills/gitnexus-lfg/README.md`](gitnexus/skills/gitnexus-lfg/README.md) |
-| 87 | ✓ | [`gitnexus/skills/gitnexus-lfg/SKILL.md`](gitnexus/skills/gitnexus-lfg/SKILL.md) |
-| 88 | ✓ | [`gitnexus/skills/gitnexus-plan/README.md`](gitnexus/skills/gitnexus-plan/README.md) |
-| 89 | ✓ | [`gitnexus/skills/gitnexus-plan/SKILL.md`](gitnexus/skills/gitnexus-plan/SKILL.md) |
-| 90 | ✓ | [`gitnexus/skills/gitnexus-review/SKILL.md`](gitnexus/skills/gitnexus-review/SKILL.md) |
-| 91 | ✓ | [`gitnexus/skills/gitnexus-work/README.md`](gitnexus/skills/gitnexus-work/README.md) |
-| 92 | ✓ | [`gitnexus/skills/gitnexus-work/SKILL.md`](gitnexus/skills/gitnexus-work/SKILL.md) |
-| 93 | ✓ | [`gitnexus/test/fixtures/lang-resolution/zig-monorepo/README.md`](gitnexus/test/fixtures/lang-resolution/zig-monorepo/README.md) |
-| 94 | ✓ | [`gitnexus/test/fixtures/rename-integration/README.md`](gitnexus/test/fixtures/rename-integration/README.md) |
-| 95 | ✓ | [`gitnexus/test/fixtures/scenario-map-recall/README.md`](gitnexus/test/fixtures/scenario-map-recall/README.md) |
-| 96 | ✓ | [`gitnexus/tools/scenario-map/README.md`](gitnexus/tools/scenario-map/README.md) |
-| 97 | ✓ | [`gitnexus/vendor/lbug-vector/README.md`](gitnexus/vendor/lbug-vector/README.md) |
-| 98 | ✓ | [`gitnexus/vendor/README.md`](gitnexus/vendor/README.md) |
-| 99 | ✓ | [`gitnexus/vendor/tree-sitter-c/README.md`](gitnexus/vendor/tree-sitter-c/README.md) |
-| 100 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
-| 101 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
-| 102 | ✓ | [`gitnexus/vendor/tree-sitter-objc/README.md`](gitnexus/vendor/tree-sitter-objc/README.md) |
-| 103 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
-| 104 | ✓ | [`gitnexus/vendor/tree-sitter-zig/README.md`](gitnexus/vendor/tree-sitter-zig/README.md) |
-| 105 | ✓ | [`llms.txt`](llms.txt) |
-| 106 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 107 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 108 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 109 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
-| 110 | → | [`docs/deployment.md`](docs/deployment.md) |
-| 111 | → | [`docs/editor-setup.md`](docs/editor-setup.md) |
-| 112 | → | [`docs/languages/objective-c-provider.md`](docs/languages/objective-c-provider.md) |
-| 113 | → | [`docs/languages/README.md`](docs/languages/README.md) |
-| 114 | → | [`docs/languages/receiver-resolution-audit.md`](docs/languages/receiver-resolution-audit.md) |
-| 115 | → | [`docs/mcp-reference.md`](docs/mcp-reference.md) |
-| 116 | → | [`docs/wiki-generation.md`](docs/wiki-generation.md) |
-| 117 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
-| 118 | → | [`gitnexus/bench/receiver-resolution/BASELINE.md`](gitnexus/bench/receiver-resolution/BASELINE.md) |
-| 119 | → | [`gitnexus/prebuilds/bundled/README.md`](gitnexus/prebuilds/bundled/README.md) |
-| 120 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 121 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 122 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 123 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 124 | → | [`README.md`](README.md) |
-| 125 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 126 | → | [`SECURITY.md`](SECURITY.md) |
-| 127 | → | [`TESTING.md`](TESTING.md) |
-| 128 | → | [`type-resolution-roadmap.md`](type-resolution-roadmap.md) |
-| 129 | → | [`type-resolution-system.md`](type-resolution-system.md) |
+| 71 | ✓ | [`gitnexus/bench/analyze-resume/README.md`](gitnexus/bench/analyze-resume/README.md) |
+| 72 | ✓ | [`gitnexus/bench/cross-repo-trace/README.md`](gitnexus/bench/cross-repo-trace/README.md) |
+| 73 | ✓ | [`gitnexus/bench/emit-persistence/README.md`](gitnexus/bench/emit-persistence/README.md) |
+| 74 | ✓ | [`gitnexus/bench/impact-pdg/README.md`](gitnexus/bench/impact-pdg/README.md) |
+| 75 | ✓ | [`gitnexus/bench/import-emission/README.md`](gitnexus/bench/import-emission/README.md) |
+| 76 | ✓ | [`gitnexus/bench/incremental-write-integrity/README.md`](gitnexus/bench/incremental-write-integrity/README.md) |
+| 77 | ✓ | [`gitnexus/bench/java-overload-resolution/README.md`](gitnexus/bench/java-overload-resolution/README.md) |
+| 78 | ✓ | [`gitnexus/bench/lexical-binding-provenance/README.md`](gitnexus/bench/lexical-binding-provenance/README.md) |
+| 79 | ✓ | [`gitnexus/bench/mcp-query/README.md`](gitnexus/bench/mcp-query/README.md) |
+| 80 | ✓ | [`gitnexus/bench/mcp-serialization/README.md`](gitnexus/bench/mcp-serialization/README.md) |
+| 81 | ✓ | [`gitnexus/bench/method-declaration-facts/README.md`](gitnexus/bench/method-declaration-facts/README.md) |
+| 82 | ✓ | [`gitnexus/bench/rename/README.md`](gitnexus/bench/rename/README.md) |
+| 83 | ✓ | [`gitnexus/bench/schema-pairs/README.md`](gitnexus/bench/schema-pairs/README.md) |
+| 84 | ✓ | [`gitnexus/bench/scope-resolution/README.md`](gitnexus/bench/scope-resolution/README.md) |
+| 85 | ✓ | [`gitnexus/bench/tool-accuracy/README.md`](gitnexus/bench/tool-accuracy/README.md) |
+| 86 | ✓ | [`gitnexus/README.md`](gitnexus/README.md) |
+| 87 | ✓ | [`gitnexus/skills/gitnexus-lfg/README.md`](gitnexus/skills/gitnexus-lfg/README.md) |
+| 88 | ✓ | [`gitnexus/skills/gitnexus-lfg/SKILL.md`](gitnexus/skills/gitnexus-lfg/SKILL.md) |
+| 89 | ✓ | [`gitnexus/skills/gitnexus-plan/README.md`](gitnexus/skills/gitnexus-plan/README.md) |
+| 90 | ✓ | [`gitnexus/skills/gitnexus-plan/SKILL.md`](gitnexus/skills/gitnexus-plan/SKILL.md) |
+| 91 | ✓ | [`gitnexus/skills/gitnexus-review/SKILL.md`](gitnexus/skills/gitnexus-review/SKILL.md) |
+| 92 | ✓ | [`gitnexus/skills/gitnexus-work/README.md`](gitnexus/skills/gitnexus-work/README.md) |
+| 93 | ✓ | [`gitnexus/skills/gitnexus-work/SKILL.md`](gitnexus/skills/gitnexus-work/SKILL.md) |
+| 94 | ✓ | [`gitnexus/test/fixtures/lang-resolution/zig-monorepo/README.md`](gitnexus/test/fixtures/lang-resolution/zig-monorepo/README.md) |
+| 95 | ✓ | [`gitnexus/test/fixtures/rename-integration/README.md`](gitnexus/test/fixtures/rename-integration/README.md) |
+| 96 | ✓ | [`gitnexus/test/fixtures/scenario-map-recall/README.md`](gitnexus/test/fixtures/scenario-map-recall/README.md) |
+| 97 | ✓ | [`gitnexus/tools/scenario-map/README.md`](gitnexus/tools/scenario-map/README.md) |
+| 98 | ✓ | [`gitnexus/vendor/lbug-vector/README.md`](gitnexus/vendor/lbug-vector/README.md) |
+| 99 | ✓ | [`gitnexus/vendor/README.md`](gitnexus/vendor/README.md) |
+| 100 | ✓ | [`gitnexus/vendor/tree-sitter-c/README.md`](gitnexus/vendor/tree-sitter-c/README.md) |
+| 101 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
+| 102 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
+| 103 | ✓ | [`gitnexus/vendor/tree-sitter-objc/README.md`](gitnexus/vendor/tree-sitter-objc/README.md) |
+| 104 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
+| 105 | ✓ | [`gitnexus/vendor/tree-sitter-zig/README.md`](gitnexus/vendor/tree-sitter-zig/README.md) |
+| 106 | ✓ | [`llms.txt`](llms.txt) |
+| 107 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 108 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 109 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 110 | → | [`docs/cli-reference.md`](docs/cli-reference.md) |
+| 111 | → | [`docs/deployment.md`](docs/deployment.md) |
+| 112 | → | [`docs/editor-setup.md`](docs/editor-setup.md) |
+| 113 | → | [`docs/languages/objective-c-provider.md`](docs/languages/objective-c-provider.md) |
+| 114 | → | [`docs/languages/README.md`](docs/languages/README.md) |
+| 115 | → | [`docs/languages/receiver-resolution-audit.md`](docs/languages/receiver-resolution-audit.md) |
+| 116 | → | [`docs/mcp-reference.md`](docs/mcp-reference.md) |
+| 117 | → | [`docs/wiki-generation.md`](docs/wiki-generation.md) |
+| 118 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
+| 119 | → | [`gitnexus/bench/receiver-resolution/BASELINE.md`](gitnexus/bench/receiver-resolution/BASELINE.md) |
+| 120 | → | [`gitnexus/prebuilds/bundled/README.md`](gitnexus/prebuilds/bundled/README.md) |
+| 121 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 122 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 123 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 124 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 125 | → | [`README.md`](README.md) |
+| 126 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 127 | → | [`SECURITY.md`](SECURITY.md) |
+| 128 | → | [`TESTING.md`](TESTING.md) |
+| 129 | → | [`type-resolution-roadmap.md`](type-resolution-roadmap.md) |
+| 130 | → | [`type-resolution-system.md`](type-resolution-system.md) |
 
 ---
 

@@ -488,7 +488,7 @@ $D compare --images-file "$_DESIGN_DIR/board-images.json" --output "$_DESIGN_DIR
 
 Creates HTML and opens the board. **Run it in the background** (host task, or `&` redirecting stdout/stderr to private files in `$_DESIGN_DIR`). Read captured stderr for the startup marker; a PID is not readiness. Missing marker: use the failure fallback below.
 
-Default stderr: `BOARD_URL: http://127.0.0.1:N/boards/<id>/`. Use that full per-board URL for AskUserQuestion and as the reload base. Only explicit legacy `--no-daemon` emits `SERVE_STARTED: port=XXXXX`, serving one board at `/` with reload at `/api/reload`.
+Default stderr: `BOARD_URL: http://127.0.0.1:N/<secret>/boards/<id>/`. Use that exact URL for AskUserQuestion and as the reload base. Only explicit legacy `--no-daemon` emits `SERVE_STARTED: port=XXXXX`, serving one board at `/` with reload at `/api/reload`.
 
 **PRIMARY WAIT: AskUserQuestion with board URL**
 
@@ -677,7 +677,7 @@ HARD RULES — first classify as MARKETING/LANDING PAGE vs APP UI vs HYBRID, the
 
 For each finding: what's wrong, what will happen if it ships unresolved, and the specific fix. Be opinionated. No hedging."
 
-Write the **complete prompt and context**, including actual plan/spec/source, to a private file. Substitute its shell-quoted path for `<prepared-prompt-file>`; never interpolate user text into shell source. Request a severity (Critical, High, Medium or Low) per finding and a final Recommendation: <action> because <specific reason> line, including an explicit no-findings rationale.
+Write the **complete prompt and context**, including actual plan/spec/source, to a private file. Substitute its shell-quoted path for `<prepared-prompt-file>`; never interpolate user text into shell source. Request severity (Critical, High, Medium or Low) per finding, a Recommendation: <action> because <reason> line, and `VERDICT: CLEAN` or `VERDICT: FINDINGS` as the last line.
 
 ```bash
 # GSTACK_ACTIVE_HOST names the harness, never the model.
@@ -696,7 +696,6 @@ _OUTSIDE_TMP=$(mktemp -d "${TMPDIR:-/tmp}/gstack-outside.XXXXXXXX") || exit 1
 trap 'rm -rf "$_OUTSIDE_TMP"' EXIT
 _OUTSIDE_INPUT="$_OUTSIDE_TMP/prompt"
 cat -- '<prepared-prompt-file>' >"$_OUTSIDE_INPUT" || exit 1
-
 _CODEX_PROBE="$HOME/.claude/skills/gstack/bin/gstack-codex-probe"
 export _CODEX_DEADLINE=$(($(date +%s)+300)); _CODEX_OUT=$("$_CODEX_PROBE" role-ready exec) || exit $?
 _CODEX_SEL=$(echo "$_CODEX_OUT" | sed -n 's/^CODEX_SEL: //p')

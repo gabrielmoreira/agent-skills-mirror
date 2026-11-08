@@ -349,7 +349,7 @@ prompt's chunks to families that declare chunk-independent prompt arithmetic. Th
 behind device token-hash qualification; every native family is gated out today, so no native server caps chunk
 rows yet. Absent the flag the engines keep their own cuts and `TENSORFOLD_PREFILL_SHARE` keeps its old meaning:
 the prompt's share of a fill step's wall time, time only, never smaller chunks. Flash Next's shared sessions on a Mac
-without tensor units are the exception: absent both, replies take 0.8 of that time and a filling prompt's steps grow
+are the exception: absent both, replies take 0.8 of that time and a filling prompt's steps grow
 from 32 to 512 rows after eight, while `--decode-share 0` keeps the 32-row steps with the prompt first. `TENSORFOLD_PREFILL_ORDER=srpt`
 lets a running reply that would end within a quarter of a filling long prompt's estimated time left take rounds first,
 the prompt keeping at least 10% of the time and lending at most a quarter of its own. It's the default for Qwen3.8-27B
@@ -857,10 +857,13 @@ store for each model and build. That store takes the place of `--learn`'s store 
 with the flag neither reads nor writes the prefix files a plain `--learn` server keeps, and they stay on disk until the
 cap below needs their room. After a restart, a crash or an eviction from RAM, the next turn reads the latest state back
 instead of reading the conversation again from its first token. Qwen3.8-27B, Nemotron, Flash Next and GLM-5.3-Flash on
-one Mac and Nemotron on CUDA keep them; other engines refuse the flag at startup.
+one Mac, and Nemotron, the Qwen3.5 hybrids and Flash Next on CUDA, keep them; other engines refuse the flag at startup.
 
 The engine stages an owned copy between rounds, and an I/O thread writes and fsyncs it. Staging has a 1 GiB byte permit
-and at most eight jobs. A save that finds either full but would fit alone waits in the queue until a write finishes; one
+and at most eight jobs. Qwen3.8-27B widens the permit to one whole state at its `--context`, with none of its rows on
+disk yet, but never past `--prompt-cache-gib`: a conversation whose first save or post-compaction prompt holds more
+than about 13K new tokens is still written. A save is charged only its new bytes, the rows not already on disk.
+A save that finds either full but would fit alone waits in the queue until a write finishes; one
 that cannot fit even then is skipped. So is a waiting save whose state leaves RAM, unless `--spill-gib` copies it then
 (below); that copy, like any made at an eviction, is skipped when the permit is full. A block still being written is
 charged and copied once, however many saves name it. The copy waits for its GPU producers before RAM can be reused. A
@@ -963,7 +966,7 @@ configured the body is only `{"status": "ok"}`. An engine that reports unhealthy
 | `max_batch_size` | integer | The lanes the engine serves at once |
 | `policy` | string | The engine's policy line; absent when the engine reports none |
 | `warming` | boolean | Always `false` on the native engines |
-| `memory` | object | CUDA: `active`, `cache` and `peak` in bytes (`cache` is 0), plus `limit` when the engine reports one. Metal: `{}` |
+| `memory` | object | `active`, `cache` and `peak` in bytes (`cache` is 0), plus `limit` when the engine reports one: CUDA's allocator counts; on Metal the process footprint, from Nemotron, Qwen3.5-2B, Qwen3.8-27B, Qwen3.5-MoE, Flash Next, GLM-5.3-Flash and GLM-5.3 (EXLR8); Flash Next and both GLMs add `limit`, their load limit. `{}` from the other Metal families |
 | `live` | object | `connections`, `waiting`, `decode_tokens_per_second`, `prefill_tokens_per_second` |
 | `version` | string | The release this server was built from |
 | `backend` | string | The backend built in: `metal`, `cuda`, `hip` or `xpu`; absent from a build without one |

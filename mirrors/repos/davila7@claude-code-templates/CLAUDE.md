@@ -6,7 +6,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 Node.js CLI tool (`cli-tool/`) for managing Claude Code components (agents, commands, MCPs, hooks, settings) with a static website for browsing and installing components. The dashboard and its API routes are deployed on Cloudflare Pages, with supporting cron and monitoring tasks running as Cloudflare Workers.
 
-`cli-rust/` is a Rust port of the CLI's install core (preview binary, releases tagged `cli-rust-v*`, CI `rust-ci.yml` / `build-rust-cli.yml`), kept at byte-for-byte install parity with the Node CLI; everything else is delegated to the Node CLI.
+`cli-rust/` (Rust port of the install core) is **in the backlog**: do not plan, change, test parity with or mention it unless Daniel resumes it.
 
 ## Essential Commands
 
@@ -68,7 +68,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 **Hooks** (60+) - Automation triggers
 **Loops** (18+) - Autonomous agentic workflows (goal + interval + stop condition) that reference other components
 **Mods** (50+) - Claude Mods: plugins whose behaviour lives in a function-hooks module (`register(on, options)` hooking engine events as `($, e, next)` middleware). Anthropic's reference is [anthropics/claude-code/mods](https://github.com/anthropics/claude-code/tree/main/mods) (three built-in mods + `mods/types/claude-code.d.ts`); discussion in [anthropics/claude-code#91870](https://github.com/anthropics/claude-code/issues/91870). Mods are official and on by default in Claude Code >= 2.1.287 ([docs](https://code.claude.com/docs/en/plugins/mods/overview)); 2.1.287+ ignores `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS`, builds 2.1.259–2.1.286 still need it set to `1`; the `$` API may change between releases. Each mod is a complete plugin directory in Anthropic's `mods/` layout: `cli-tool/components/mods/{category}/{name}/` with `.claude-plugin/plugin.json` (name, description, `userConfig` — options are read from user/managed settings `pluginConfigs[name].options`, never project settings), `hooks/hooks.json` (`modules`), any number of hooks-modules under `hooks/` (relative imports allowed), optional `commands/*.md` (slash commands the plugin ships; a `skill.prompt` hook may rewrite their prompt at run time), `types/`, `tests/`, and a `README.md` the site shows. The generator uses README.md as content and ships every text file in the per-component content file (`files`), so the site explorer and the send-to-repo flow have the whole plugin. `--mod` (alias `--function-hook`) downloads the directory recursively (like a skill) and writes it verbatim to `.claude/skills/{name}/`, which Claude Code auto-loads as `{name}@skills-dir` — **only in a trusted project** (see "Debugging a mod that seems silent" below). Third-party mods are vendored as-is with LICENSE + attribution (e.g. `games/cc-arcade`). **Every module must typecheck against `cli-tool/components/mods/types/claude-code.d.ts`** (`cd cli-tool/components/mods && npx -y -p typescript@5 tsc -p tsconfig.json`; CI runs it in `mods-typecheck.yml`). Rules from the engine: import types only from `'claude-code'`, spell `$` as `$.noun.event(...)` at the call site (never pass `$` to a helper), treat `e` as frozen, deny with `{ deny }` without calling `next` (returning `{}` is fail-open). When Anthropic bumps the API, regenerate the d.ts with `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude -p "/plugin-types <dir>"` on a current Claude Code and re-run tsc (the header's first line names the writing version; currently 2.1.316; 2.1.278 added `prompt.attachment` — the per-attachment hook `jev-skill-suggestion` uses to withhold the `skill_listing` system-reminder — and 2.1.283 changed `$.model.complete` from a string and `$.model.fork` from `result | null` to `{ isAnswered, text, usage } | { isAnswered: false, reason }`). Note `/context`'s "Skills" row is estimated from the roster and does not reflect that hook; a mod can ship `commands/*.md` and rewrite their prompt in `skill.prompt` (that is how `/jev-skill-suggestion:setup` hides every skill as `user-invocable-only` while the mod injects the chosen `SKILL.md` itself). Typechecking against the d.ts does not prove an older engine draws a mod: Claude Code 2.1.287 skips the whole `ui.render` of a Button with Text children instead of a `label` string, and the Claude Desktop app may run an older bundled build than your terminal: `ultra-config` drew in a 2.1.301 terminal and stayed empty in Desktop with exactly that skip. Test a pane on the oldest supported engine too: `npm i @anthropic-ai/claude-code@2.1.287` in a scratch folder, then run its `claude plugin test {category}/{name}` from `cli-tool/components/mods`. The early-access banner and Beta badge were removed 2026-10-04 (mods are official). Old URLs (`/function-hooks`, `/component/function-hook/*`) redirect via `dashboard/public/_redirects`.
-**Templates** (14+) - Complete project configurations
+**Templates** (14) - **Retired: do not fix, extend or link them.** Old language/framework project setups (`cli-tool/templates/`, `--template`). Nobody installs them (0 downloads) and they are out of the sitemap, the lists and Catalog API v1; the generator still lists them and their `/component/templates/*` pages still exist, but they are not maintained
 **Skills** (890+) - `SKILL.md` directories under `cli-tool/components/skills/{category}/{name}/` (`--skill`); scanned by SkillSpector (see below)
 **Plugins** (1) - Whole Claude Code plugins (skills, agents, commands, hooks, MCP/LSP servers… in one package) pinned from their authors' repos: `cli-tool/components/plugins/{category}/{name}/source.json` only. Claude Code installs them from our `aitmpl` marketplace (`--plugin`); nothing is copied into `.claude/`. See "Plugins (the aitmpl marketplace)" below
 **Sandbox** (11) - Launchers that run Claude Code in E2B, Cloudflare or Docker sandboxes (`cli-tool/components/sandbox/`). Reference only since CLI 1.31.0: `--sandbox` was removed (it is no longer in the npm package), and the catalog's sandbox entries are its loose files (README, package.json), not installable components
@@ -100,9 +100,11 @@ npx claude-code-templates@latest --plugin productivity/champion-kit      # Claud
 # Batch installation
 npx claude-code-templates@latest --agent security-auditor --command security-audit --setting read-only-mode
 
-# Interactive mode
+# No arguments: catalog browser (cli-tool/src/catalog-browser.js, reads /api/v1; since 1.31.0)
 npx claude-code-templates@latest
 ```
+
+Test CLI flows from the packed tarball (`npm pack`), not the checkout: npm is built from the **root** `package.json` `files`, so the published CLI can differ from the repo.
 
 ### Component Development
 
@@ -412,17 +414,17 @@ API endpoints live as Astro API routes in `dashboard/src/pages/api/`:
 - **Agent vs human (CLI >= 1.32.0, live 2026-11-03):** the CLI also sends `agent`, `entrypoint` and `isTty` from `cli-tool/src/agent-detection.js` (`AI_AGENT`, `CLAUDECODE`, Cursor/Codex/Gemini/Copilot/OpenCode/Replit/Devin markers, following `@vercel/detect-agent`; `CLAUDE_CODE_ENTRYPOINT`; `process.stdout.isTTY`). The endpoint clamps them (`dashboard/src/lib/api/download-client-signals.ts`: unknown agent → `other`, entrypoint must be a ≤32-char slug) and stores `client_agent`, `client_entrypoint`, `client_is_tty` (`database/migrations/004_supabase_download_client_signals.sql`, applied). Read a row as: `client_is_tty IS NULL` = older CLI (unknown), `client_agent` set = AI agent, else `client_is_tty` true = person in a terminal, false = script/pipe. Never send the other variables Claude Code exports (account email, account id, session id). Self-reported and spoofable, a person's `!` command inside Claude Code counts as `claude`, and `CI=true` runs are not tracked at all, so the split is a statistic, never a sponsor-billed metric. The Rust CLI does not send it. A new agent name goes in both `KNOWN_AGENTS` lists (CLI and endpoint; `dashboard/tests/download-client-signals.test.ts` fails if they differ). Shown on `/trending#agents` from `trending-data.json` `clientSplit`.
 - Querying `component_downloads` by `created_at` over REST times out (statement timeout, 1.7M+ rows): filter by `id` ranges instead, or use the Supabase MCP `execute_sql` for one-off reads
 
-**`/api/claude-code-check`**
-- Monitors Claude Code releases
-- Triggered every 30 minutes by the `cloudflare-workers/crons` Worker (not a Vercel cron)
-- Database: Neon (claude_code_versions, claude_code_changes, discord_notifications_log, monitoring_metadata tables)
+The project no longer uses Discord (removed 2026-11-08): the Claude Code release monitor
+`/api/claude-code-check` and its changelog parser existed only to post to a Discord
+webhook and were deleted, as were the bot, the Discord workflows and pulse's Discord
+source. Its Neon tables (`claude_code_versions`, `claude_code_changes`,
+`discord_notifications_log`, `monitoring_metadata`) are left in place, unread.
 
 ### Shared API Libraries
 
 - `dashboard/src/lib/api/cors.ts` — CORS headers, `corsResponse()`, `jsonResponse()`
 - `dashboard/src/lib/api/neon.ts` — Neon client factory
 - `dashboard/src/lib/api/auth.ts` — Clerk JWT verification
-- `dashboard/src/lib/api/changelog-parser.ts` — Claude Code changelog parser
 
 ### Emergency Rollback
 
@@ -442,7 +444,6 @@ The `cloudflare-workers/` directory contains Cloudflare Worker projects that run
 
 Replaces the old Vercel cron jobs. On a schedule it calls the dashboard API endpoints (which stay on Cloudflare Pages) with a shared `TRIGGER_SECRET`.
 
-- `*/30 * * * *` → `/api/claude-code-check` (monitors Claude Code npm releases)
 - `0 * * * *` → `/api/health-check` (hourly; was every 15 min on Vercel, reduced to save invocations)
 
 Errors and cron check-ins are reported to Sentry (`sentry.js`, DSN from the `aitmpl-workers` project — see Error Tracking below).
@@ -461,7 +462,7 @@ Monitored https://code.claude.com/docs hourly with Telegram notifications. **Del
 
 ### pulse (Weekly KPI Report)
 
-Collects metrics from GitHub, Discord, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
+Collects metrics from GitHub, Supabase, npm, and Google Analytics every Sunday at 14:00 UTC and sends a consolidated report via Telegram.
 
 **Architecture:** Single `index.js` file (no npm dependencies at runtime). All source collectors, formatter, and Telegram sender in one file.
 
@@ -492,8 +493,6 @@ TELEGRAM_CHAT_ID            # Shared with docs-monitor
 GITHUB_TOKEN                # GitHub PAT (public_repo scope)
 SUPABASE_URL                # Supabase project URL
 SUPABASE_SERVICE_ROLE_KEY   # Supabase service role key
-DISCORD_BOT_TOKEN           # Discord bot token
-DISCORD_GUILD_ID            # Discord server ID
 TRIGGER_SECRET              # For manual /trigger endpoint
 GA_PROPERTY_ID              # GA4 property ID (optional)
 GA_SERVICE_ACCOUNT_JSON     # Base64 service account (optional)
@@ -541,7 +540,7 @@ appearing in its Issues dashboard).
 - ✅ **Dashboard** (Sentry project `aitmpl-dashboard`) — `SENTRY_DSN` set as a
   Cloudflare Pages secret (`wrangler pages secret put SENTRY_DSN
   --project-name=aitmpl-dashboard`). Wired into `captureApiError()` calls in
-  `claude-code-check`, `health-check`, and the three `track-*` endpoints.
+  `health-check` and the three `track-*` endpoints.
 - ✅ **CLI** (Sentry project `aitmpl-cli`) — the DSN is public by design
   (send-only, not a secret) and ships **hardcoded as the default** in
   `cli-tool/src/error-reporting.js` (`DEFAULT_SENTRY_DSN`, overridable via
@@ -550,14 +549,23 @@ appearing in its Issues dashboard).
   `CCT_ERROR_REPORTING=true`, and always defers to the existing
   `CCT_NO_TRACKING`/`CCT_NO_ANALYTICS`/`CI` opt-outs.
 
-**Not yet configured (any surface):** Sentry alert rules to Discord/Telegram,
+**Not yet configured (any surface):** Sentry alert rules to Telegram,
 and Cron Monitors dashboards for the workers' scheduled check-ins (the
 `checkIn()` calls already send `in_progress`/`ok`/`error` events — a Monitor
 just needs to be created in the Sentry UI with matching slugs:
-`claude-code-check`, `health-check`, `pulse-weekly-report`, `docs-monitor`).
+`health-check`, `pulse-weekly-report`, `docs-monitor`).
 
 **Files:** `cloudflare-workers/{crons,pulse,docs-monitor}/sentry.js` (workers),
 `dashboard/src/lib/api/error-tracking.ts` (dashboard), `cli-tool/src/error-reporting.js` (CLI).
+
+## Docs site (docs.aitmpl.com)
+
+`docs-site/` is the Mintlify source of docs.aitmpl.com (new since 2026-11; the old site came from a Mintlify-managed private repo and fell behind every release). Mintlify builds it from `main` (Git settings: this repo, monorepo path `docs-site`); there is no GitHub Action deploy.
+
+- Change the docs in the same PR as the CLI or catalog change they describe. `docs-ci.yml` fails a PR when an install example points at a missing component, a page mentions a flag removed in 1.31.0, a generated table is stale, or a link is broken.
+- `snippets/cli-flags.mdx`, `snippets/removed-flags.mdx` and `snippets/component-counts.mdx` are generated by `python3 docs-site/scripts/generate_snippets.py` (needs `npm ci` in `cli-tool/`): never edit them by hand. `update-component-content.yml` refreshes the counts on `main`.
+- Preview: `cd docs-site && npx mint dev`; checks: `python3 docs-site/scripts/check_docs.py`, `npx mint validate`, `npx mint broken-links`.
+- Style follows aitmpl.com: accent `#d57455`, warm dark `#0b0b0a`, Geist, blocks logo (`docs.json`, `style.css`).
 
 ## Dashboard (www.aitmpl.com)
 
@@ -637,15 +645,18 @@ SUPABASE_SERVICE_ROLE_KEY=xxx               # secret
 
 # Neon Database
 NEON_DATABASE_URL=postgresql://user:pass@host/db?sslmode=require   # secret
-
-# Discord
-DISCORD_WEBHOOK_URL_CHANGELOG=https://discord.com/api/webhooks/xxx   # secret
 ```
 
 ### Known Issues & Solutions
 
+**Off-canvas panels zoom out the whole site on iOS Safari**
+- A closed `fixed` drawer translated off-screen widens the page iOS counts, and Safari zooms out every page (Chromium emulation never shows it; `overflow-x-hidden` on body does not help). Clip such panels inside a `fixed inset-0 overflow-hidden pointer-events-none` wrapper.
+
 **Node built-ins in SSR**
 - The Cloudflare Workers runtime does not expose Node's `fs`/`path`/etc. by default. `astro.config.mjs` enables `nodejs_compat` (via `wrangler.toml`) and externalizes `node:fs`, `node:path`, `node:url`, `node:stream` in SSR. Avoid adding new hard dependencies on Node-only APIs in server code.
+
+**Security headers and CSP**
+- `public/_headers` reaches only static files and prerendered pages; SSR pages get the same headers from `src/middleware.ts`. Both come from `src/lib/security-headers.ts` (`tests/security-headers.test.ts` fails if they drift). The CSP is `Content-Security-Policy-Report-Only` for now: violations go to `/api/csp-report`, which forwards each distinct directive + blocked origin to Sentry once per 6 h. A new third-party script, font, iframe or fetch origin must be added there.
 
 **`react-dom/server` on Cloudflare**
 - `astro.config.mjs` aliases `react-dom/server` to `react-dom/server.node` and marks `react-dom` as `noExternal` at build time so React SSR works on the Workers runtime. Don't remove this alias.
@@ -714,6 +725,10 @@ Docs page `/developers/catalog-api`; audit and design in
 4. `scripts/generate_trending_data.py` writes only `docs/trending-data.json`; `update-json-data.yml` copies it to `dashboard/public/trending-data.json`, which is the one `TrendingView.tsx` and the home counters actually fetch. Besides the per-type rankings it writes `clientSplit` (last 30 days of agent / human / script / unknown installs per day, top agents and Claude Code entrypoints), which the "Agents vs humans" tab (`AgentSplitView.tsx`, `/trending#agents`) renders; it refreshes with the daily cron
 5. Download tracking via `/api/track-download-supabase`
 
+### Jobs board
+
+`scripts/generate_claude_jobs.py` runs in `update-json-data.yml` (daily) and writes `claude-jobs.json` to `docs/` and `dashboard/public/` (read by `JobsView.tsx`). Company boards are listed in `scripts/jobs_ats_boards.json`; Firecrawl discovery runs only when the `FIRECRAWL_API_KEY` Actions secret is set and persists `docs/claude-jobs-discovered-boards.json`. Only postings that say "Claude Code" are kept.
+
 ### Plugins & Marketplaces Catalog
 
 - `scripts/generate_plugins_json.py` — scans the repos listed in `REPOS` via the `gh` CLI (needs `gh auth login`) and writes `dashboard/public/plugins.json`. This is a **manual, offline step** — it does not run during `npm run build` or CI/CD, so re-running it never affects deploy time.
@@ -742,10 +757,8 @@ This automatically:
 only the `docs/` copy, so after creating an article you must mirror it across —
 the article directory, its cover under `assets/`, and the new entry in
 `blog-articles.json` — or it never appears on aitmpl.com. Three articles were
-stranded this way before 2026-09-20. `daily-blog-discord.yml` (schedule paused 2026-10-26 with the other Discord workflows; `workflow_dispatch` only) picks from
-`docs/blog/blog-articles.json` and links to `aitmpl.com/blog/<slug>/`, so an
-unmirrored article is posted to Discord as a 404. Keep the two
-`blog-articles.json` files identical.
+stranded this way before 2026-09-20. Keep the two `blog-articles.json` files
+identical.
 
 ## Rust CLI (`cli-rust/`): in backlog
 

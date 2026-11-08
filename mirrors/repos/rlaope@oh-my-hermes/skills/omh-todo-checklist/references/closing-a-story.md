@@ -19,9 +19,9 @@ lets a reader infer the first has claimed a merge nobody observed.
 | Source | Held where | Read these | What it supplies |
 | --- | --- | --- | --- |
 | Plan record (`omh_todo/v1` item) | durable record, read with `omh runtime todo show` | `state`, `phase`, `blocked_reason` | what was done, which stage it belonged to, and what was skipped with its reason |
-| Verification gate (`omh-verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | command, source, exit status, summary, scope, freshness, and origin for each check that ran (`origin` on a failing check only), plus which checks are missing or failed |
-| Review (`omh-code-review`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `ranked findings per axis` | what a reader misses unless someone tells them |
-| QA (`ultraqa`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `pass/fail evidence` | what nobody thought of the first time |
+| Verification gate (the `omh-verification-gate` skill) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | command, source, exit status, summary, scope, freshness, and origin for each check that ran (`origin` on a failing check only), plus which checks are missing or failed |
+| Review (the `omh-code-review` skill) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `ranked findings per axis` | what a reader misses unless someone tells them |
+| QA (the `ulw-qa` skill) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `pass/fail evidence` | what nobody thought of the first time |
 
 Read the live plan with `omh runtime todo show`, and the accepted scope checkpoint
 with `omh_todo action=recall`. Verification gate, Review and QA can now survive the session as
@@ -63,11 +63,33 @@ original `item` number, `kind` (`verification`, `review` or `qa`), `verdict`
 this declaration. An empty
 finding list declares none found, not a missing source. Keep raw outputs outside
 the dossier. Read back the exact checkpoint with `action=recall`: missing, stale
-and malformed differ from declared clean. The
-completion projection covers verification declarations for every accepted item;
-review and QA are applicable source records, not mandatory extra phases. A
-reported review/QA blocker also prevents declaration completeness. Even complete
-declarations remain `not_verified` until the agent checks original evidence.
+and malformed differ from declared clean.
+
+`ship`, `no_ship`, `pass` and `fail` are not verdicts the store accepts, so record
+each closing outcome as:
+
+| Closing outcome | `kind` | `verdict` | `findings` | Item in `blockers` |
+| --- | --- | --- | --- | --- |
+| Verification gate returns PASS | `verification` | `PASS` | empty | no |
+| Verification gate returns HOLD or BLOCK | `verification` | `HOLD` or `BLOCK` | the missing or failed checks | yes |
+| Review closes `ship` with no finding | `review` | `PASS` | empty | no |
+| Review closes `ship` with findings left open | `review` | `PASS` | the open findings | yes |
+| Review closes `no_ship` | `review` | `BLOCK` | the blocking findings | yes |
+| Review could not reach a verdict | `review` | `HOLD` | what could not be assessed | yes |
+| QA passes | `qa` | `PASS` | empty | no |
+| QA fails | `qa` | `BLOCK` | the failed scenarios | yes |
+| QA could not run its scenarios | `qa` | `HOLD` | what did not run | yes |
+
+`recall` with the current revision and environment reports `completion`. An item
+is in `blockers` when the latest current row of any kind for it has a verdict
+other than `PASS` or any finding at all, so `HOLD` and `BLOCK` count the same and
+a `ship` that leaves findings open still blocks. `missing` lists the items with no
+current verification row; review and QA are applicable source records, not
+mandatory extra phases. `declarations_complete` is true only when both lists are
+empty. A later row for the same item and kind replaces the earlier one, so a
+blocker clears by recording the fixed result, never by dropping a finding. Even
+complete declarations remain `not_verified` until the agent checks original
+evidence.
 
 `verification_receipt/v1` references reuse the existing immutable receipt key,
 which binds revision, command, toolchain, environment and claim scope. A stored
@@ -159,7 +181,7 @@ all, which is `plan_record_absent` and never "nothing was blocked".
   before this phase rather than inside it. A close report restating one of its
   verdicts has not re-proved it.
 - **Do not let the deep guide, the ELI5 pass, or the quiz stand in for the
-  close.** Those are `wiki`'s three handover artifacts and they are retained
+  close.** Those are the `omh-wiki` skill's three handover artifacts and they are retained
   knowledge, not a report of what the plan says.
 
 ## Boundary

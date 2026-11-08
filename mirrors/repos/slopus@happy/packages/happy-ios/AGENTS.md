@@ -165,10 +165,17 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   apart from that relay voice: home's three-bar button beside compose starts
   it, and Telegram's in-call bar (`CallBarLayout`, `CallWaves`, adapted with
   Steve's permission) sits above the navigation bar and pushes the window
-  down by its height. It talks to a new hosted ElevenLabs agent of its own
-  with four client tools (`CallTool`: listSessions, getSessionContext,
-  openSession, sendMessage) and no permission or question tool; a
-  conversation waiting on the person is a `needsInput` flag on a read only.
+  down by its height. It talks to a hosted ElevenLabs agent of its own
+  ("Happy Agent v3public") with four client tools (`CallTool`:
+  listConversations, readConversation, message, navigate) and no permission
+  or question tool, and the phone sends its system prompt (`CallPrompt`, the
+  agent's prompt override); a conversation waiting on the person is a
+  `needsInput` flag on a read only. message's new-task and new-bot are
+  compose's own, navigate's happy://back and happy://home the stack's own
+  back and root, and message's model and effort the composer's pickers'.
+  v2 ("Happy Agent v2public" and its sendMessage, listSessions,
+  getSessionContext and openSession) is what the shipped App Store build
+  calls: frozen, never edited.
   The call hears from the last four conversations visited (`CallContext`):
   only their agents' new words, each piece once and whole when complete
   (the agent went on past it in its run, or the run is no longer the
@@ -181,14 +188,20 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   settles one second from the first, never longer (`DirectorySettle`), and
   goes whole, as the sidebar is then. It projects the app's own state
   (`WarmChats` hold, watch and release, the chat's own send), never a read
-  of its own.
+  of its own. A conversation it doesn't follow is reached for first, as a
+  finger on its row reaches (`WarmChats.intent`), and both a read and a send
+  wait for its first page: one never opened on this phone takes a message
+  by voice, and a read or send after it finds it kept, not started over.
   It ends on background, interruption, lost route, account change and when
   the relay's voice starts. For launch it connects to a public agent by its
   ID (`PublicAgentCallGrants`): a connection mechanism, not authentication.
-  The ID is injected at build time (`HAPPY_CALL_AGENT_ID`, from the ignored
-  `Config/Call.local.xcconfig` or the command line) and is never committed
-  in code, docs or tests. Without it the tap ends at once as "Voice isn't
-  set up for this connection yet"; never fake a live call. Each device gets
+  The ID is injected at build time (`HAPPY_CALL_AGENT_V3_ID`, from the ignored
+  `Config/Call.local.xcconfig`, the command line or the environment) and is
+  never committed in code, docs or tests. Without it the tap ends at once as
+  "Voice isn't set up for this connection yet"; never fake a live call.
+  Preview and Release builds fail without it (the Happy target's "Require
+  the voice agent" phase reads the built Info.plist); one that ships nowhere
+  sets `HAPPY_RELEASE_WITHOUT_CALL_AGENT=1`. Each device gets
   20 free connected minutes in any rolling 30 days (`CallAllowance`, local,
   provisional). A device's first tap shows voice's welcome and its last
   free minute the same screen with "Start Voice Session" greyed out: one
@@ -218,7 +231,7 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   account's Support us) is the same subscription on its own pushed page
   (`SupportViewController`), without a voice session: Subscribe always
   there (greyed out while nothing is on sale), then Restore Purchases and
-  Manage Subscriptions as quiet links. `openSession` replaces a conversation on top
+  Manage Subscriptions as quiet links. `navigate` to a conversation replaces one on top
   and goes over anything else (`CallNavigation`). Contract, prompt, tool schemas and rationale:
   `docs/agent-voice-call.md` at the repository root. Harness hooks
   (`HAPPY_CALL_FIXTURE`, `HAPPY_CALL_TAP`, `-callLive`, `CallProbe`) are
@@ -503,6 +516,10 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   emoji sits on a tile like every other row's glyph, the tile's size (30)
   where the tile goes and orange for the boba, at the row's top when the
   row grows (`SettingsLayout`'s art row, `SupportBobaArt`).
+- **No pull to refresh** (Steve, for both apps), on any list or page. A
+  list stays current through its feed (events, a resync after a gap, a
+  read when it opens or the stream reconnects); a page reloads from its
+  header's button.
 
 ## Record kinds: current vs retired
 
@@ -660,18 +677,20 @@ leading zero, and a counter that starts at 1 each month (`2026.11.1`,
 `2026.9.3`). It is still three integers, as `CFBundleShortVersionString`
 wants, and sorts above the RN app's `1.x` and the first native `2.0.0`.
 All three variants (development, preview, production) carry the same
-version; a preview upload differs from production only by its build
-number. Production continues the existing `com.ex3ndr.happy` listing; dev
+version, and every build of it, preview or production, differs only by its
+build number. Production continues the existing `com.ex3ndr.happy` listing; dev
 and preview ship the same number on their own listings.
 
 - The checked-in version is the upcoming release. `C` moves only when a
-  production version ships: the next version is the highest `C` this UTC
-  month's production tags carry, plus one, else 1. A month with previews
-  but no production release restamps the version to the new month.
-- Production uploads, and only they, are tagged
-  `native-ios-<version>-build<N>` (iOS counts on its own; Android has its
-  own tags). Preview uploads get no tag. Tags of other schemes (`2.0.0`)
-  don't count.
+  version is released publicly on the App Store; uploading to TestFlight,
+  production builds included, doesn't move it, so any number of builds of
+  2026.11.1 go up until 2026.11.1 is released. The next version is the
+  highest `C` this UTC month's release tags carry, plus one, else 1. A
+  month without a release restamps the version to the new month.
+- The build released publicly is tagged `native-ios-<version>-build<N>`
+  when it is released, never at upload (iOS counts on its own; Android has
+  its own tags). Uploads get no tag; their upload ID and binary SHA-256 go
+  in the release report. Tags of other schemes (`2.0.0`) don't count.
 - `node scripts/native-version.cjs next ios` prints the upcoming version
   from the tags; `check ios` fails unless the checked-in version is it;
   `set ios` writes it. Before any release build run `check ios`, and if it
@@ -682,9 +701,6 @@ and preview ship the same number on their own listings.
   `App/Info-*.plist` files and `AppClip/project.yml`.
   `AppConfigurationTests` fails unless they all match and the version is
   CalVer.
-- A production build re-sent under a version that is already tagged (a
-  rejected build, before that version goes public) keeps its version: use
-  `set ios <version>` and skip `check`.
 - `CFBundleVersion` (`CURRENT_PROJECT_VERSION`) stays the build number:
   production's is set in `App/Info-Production.plist` and the Happy target's
   Release settings; preview uploads let Xcode pick the next free one.

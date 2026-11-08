@@ -371,6 +371,15 @@ requests name one in a header (`sessionOf`: `X-Magpie-Session`, or the
 agent's own, `sessionHeaders`), under the agent its User-Agent names
 (`usage.AgentOf`, magpie's agents and plugins' agents; another client by
 its product name).
+The stats' `keys` name these sessions too (`MergeExternalStats`), since
+Usage › Sessions lists only the keys it is given (linkaww on Discord: a
+Docker magpie in gateway mode listed almost none;
+`TestGatewayStatsNameTheGatewaySessions`,
+`TestGatewayModeStatsNameTheGatewaySessions`). Usage › Context's Tuned for
+you is left out (`/api/tune` says `gateway: true`, and Use and Undo are
+refused): it replays this computer's agent files, so it said Claude Code
+made 0 requests (`TestTuneInGatewayModeIsLeftOut`,
+`context-tune-gateway.test.cjs`).
 The app's windows are never in gateway mode. Tests:
 `TestGatewayModeListsNoOwnSessions`, `gateway-mode-sessions.test.cjs`.
 
@@ -731,6 +740,24 @@ Subagents (`parent_conversation_id`) and agy in WSL are not read.
 Verification: `TestAgySessions`, `TestAgyTitleLater`, `TestAgyGrows`,
 `TestAgyTranscript`, `TestAgyFolder`, `TestAgyRowOnly`, on conversations agy 1.3.5 and 1.4.7
 wrote in a sandbox.
+
+The Antigravity desktop app's stable and Insiders stores are read by
+[`antigravity_app.go`](../../internal/sessions/antigravity_app.go):
+`~/.gemini/antigravity/conversations/*.db` and
+`~/.gemini/antigravity-insiders/conversations/*.db`. Both use the existing
+`antigravity` session-reading choice and agent on Sessions and Usage;
+`Found` detects an Insiders-only install, and `Dirs` lists each existing
+store. Each conversation takes its title and workspace from the
+`conversation_summaries.db` beside its own store, including later title
+updates. Model calls reuse the app's read-only SQLite/protobuf reader,
+including response folding and gateway matching. Insiders session ids
+have an `insiders-` prefix in magpie, leaving stable ids unchanged and
+keeping equal UUIDs in the two stores from sharing a session or call id.
+The files themselves are not renamed. Sessions stay read-only with no
+terminal resume command; encrypted conversation text is not read.
+Verification: `TestAntigravityInsidersSessions` covers Insiders alone,
+both stores with the same UUID, per-model tokens, call ids, summary refresh
+and turning the existing reading choice off, using #2190's real step bytes.
 
 A read of every call decodes each file's cached shard, and over a long
 history that is tens of thousands of files (#2278: 68k shards, 415 MB).

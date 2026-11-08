@@ -169,6 +169,16 @@ def awaiting_reply(pr):
             and login(t["comments"]["nodes"][-1]) != pr["viewer"]]
 
 
+def changes_requested(pr):
+    """Reviewers whose latest decisive review requests changes. GitHub's reviewDecision misses
+    them when the base branch requires no review."""
+    latest = {}
+    for r in pr["activity"]["reviews"]["nodes"]:
+        if r["state"] in ("APPROVED", "CHANGES_REQUESTED", "DISMISSED"):
+            latest[login(r)] = r["state"]
+    return [who for who, state in latest.items() if state == "CHANGES_REQUESTED"]
+
+
 def summary(pr, new_threads=()):
     checks = pr["checks"]
     counts = {b: sum(c["bucket"] == b for c in checks) for b in ("pass", "fail", "cancel", "pending", "skipping")}
@@ -185,6 +195,10 @@ def summary(pr, new_threads=()):
         blockers.append("checks pending")
     if pr["reviewDecision"] not in ("APPROVED", "", None):
         blockers.append(f"review {pr['reviewDecision']}")
+    elif changes_requested(pr):
+        blockers.append(f"changes requested by {', '.join(changes_requested(pr))}")
+    if pending_review:
+        blockers.append(f"review requested from {', '.join(pending_review)}")
     if pr["mergeable"] != "MERGEABLE":
         blockers.append(f"mergeable {pr['mergeable']}")
     elif pr["mergeStateStatus"] == "BEHIND":

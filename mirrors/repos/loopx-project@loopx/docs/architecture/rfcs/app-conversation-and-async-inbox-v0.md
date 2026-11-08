@@ -295,6 +295,9 @@ receipts without blocking message delivery or starting work. Unknown provider
 writes are not retried. Optional App feedback runs on at most one slot of the
 existing reply pool, outside the body outbox lock. Its final write merges only
 feedback fields, preserving concurrently delivered current and later answers.
+The idle scan reuses only App message and Turn references while the local journal
+is unchanged. It reads current Turn status each pass and uses the original
+canonical input, source and provider verification before any reaction.
 No synthetic incoming event or original-request
 settlement is used. Existing finished mirrors are not backfilled; current active
 mirrors can adopt the feedback path. `loopx chat --no-private-reactions` keeps
@@ -1718,6 +1721,18 @@ hide cancellation or reopen a closed Session.
 All prefixes share the configured hard Turn time budget; it is not renewed for
 each compaction.
 
+A bound Codex steward can retain its working thread across an isolated answer
+review. Before entering review, Core verifies the current working adapter is
+idle and stores its native identity, provider and source-policy basis with the
+review Turn. On return with the same authority, the adapter resumes that native
+thread directly if there are no new visible review answers. Otherwise it uses a
+native fork to inherit the compaction checkpoint and injects only those answers.
+The recovered user input already belongs to the original request. It is not a
+new history message. The child is published only after the exact policy, source,
+queued Turn and imported suffix are verified. An unknown fork or injection
+leaves the original binding and history intact. Unverified legacy or changed
+authority retains the existing context migration path.
+
 Discovery uses the local enabled binding and the same typed candidate planner,
 without provider identity IO for every historical failure. This is a queue hint;
 admission still re-resolves current App/owner/grant and exact source/native proof
@@ -2034,17 +2049,41 @@ unfinished declaration; later native inputs must be correlated to Core. This
 observation does **not** certify settled effects. A failed or signal-terminated
 command cannot acquire replay authority through this route.
 
+A new result review now requires an explicit observation that no original
+writable adapter is attached. An inconclusive effect readback while that owner
+is still attached remains a hold; it must not replace the owner with a model
+review of an already delivered partial answer. The existing reply-worker probe
+backoff remains in force. A later fresh settled-effect proof can admit the same
+single remaining-work continuation without a new user input. Unknown ownership
+also holds. Previously reserved reviews retain their exact queue-adoption checks;
+this rule does not manufacture ownership after a native process has been lost.
+
 The original worker uses its existing Session, queue and project binding. Fresh
 source and grant checks, an idle queue, the backoff, and stop/steering/attachment
-guards still apply. A live adapter with owned background work is retained. The
-review uses the existing workspace-only read permission profile without network
+guards still apply. With a live adapter, the readback uses that same adapter
+only when it owns the exact thread and has no active or background work. The
+cold reader is used only when no adapter owns the Session. The review
+uses the existing workspace-only read permission profile without network
 access; it may inspect current local artifacts and receipts but cannot write,
 send, delegate or replace the original work declaration. References in the old
 question use its original-time Core context. The original partial Turn and
 delivery remain immutable, and the same Lark worker returns the new answer in a
 separate, idempotent phase. Reservation crashes adopt that exact queued review.
+If writable continuation was already admitted before the request journal was
+updated, the worker first recovers that same queued Turn. Dispatch still
+requires the original source, queue and native effect checks.
 The retained business obligation stays pending independently of the review's
 prose or failure; a review never starts a writable retry or another review.
+
+A completed review does not consume the original one-shot `work-1` reservation.
+If the original writable owner later becomes available through ordinary work,
+the existing reply worker can reconsider the retained original declaration.
+It must obtain fresh settled native-effect proof and recheck the exact original
+source, grant, completed review and binding snapshot. A later equivalent source
+submission still holds the old work. Review output and cold-reader inventory
+cannot substitute for that proof. Admission and dispatch use the existing
+continuation checks, and a crash adopts the same reserved Turn. A failed or
+still-incomplete continuation remains pending and gets no additional attempt.
 
 ### File-backed idle recovery observations
 

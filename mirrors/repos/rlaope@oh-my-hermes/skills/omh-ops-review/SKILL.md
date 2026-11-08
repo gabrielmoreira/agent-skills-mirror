@@ -1,6 +1,6 @@
 ---
 name: "omh-ops-review"
-description: "[omh] Recurring operating status and blockers: status, risks, blockers, priorities, and follow-ups. Use when the user says: ops-review, ops review, weekly ops review, status review, operating review, release risks, risks and blockers, priorities."
+description: "[omh] Recurring operating status and blockers: status, risks, blockers, priorities, and follow-ups. Use when the user says: ops-review, ops review, weekly ops review, status review, operating review, release risks, risks and blockers, weekly status."
 license: MIT
 author: "oh-my-hermes maintainers"
 metadata:
@@ -44,6 +44,7 @@ Bad example:
 
 - Confirm the workflow target, evidence boundary, and stop condition are named.
 - Report which outputs are prepared, observed, blocked, or missing.
+- Order priorities by impact on the next release or customer, then by time left; a blocker names who unblocks it and by when, or says the owner is unknown.
 - Name the smallest next verification or handoff instead of claiming completion from narration.
 
 ## Recovery Notes
@@ -53,7 +54,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+28 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -61,7 +62,7 @@ Bad example:
 
 Use when Hermes should summarize observed status, risks, blockers, priorities, and follow-up actions for recurring operating work.
 
-    Strong routing signals: `ops-review`, `ops review`, `weekly ops review`, `status review`, `operating review`, `release risks`, `risks and blockers`, `priorities`, `weekly status`, `운영 리뷰`, `주간 운영`, `상태 리뷰`, `리스크`, `블로커`, `우선순위`, `릴리즈 리스크`
+    Strong routing signals: `ops-review`, `ops review`, `weekly ops review`, `status review`, `operating review`, `release risks`, `risks and blockers`, `weekly status`, `운영 리뷰`, `주간 운영`, `상태 리뷰`, `릴리즈 리스크`, `리스크랑 블로커`, `리스크와 블로커`, `우선순위랑 블로커`
 
 ## Catalog Metadata
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `volcengine/OpenViking` — 26 default patterns, 15 followed patterns, 199 file(s) materialized.
+Mirror of `volcengine/OpenViking` — 26 default patterns, 15 followed patterns, 202 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `volcengine/OpenViking` — 26 default patterns, 15 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 15 |
-| Files         | 199 |
+| Files         | 202 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -200,78 +200,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 125 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
 | 126 | ✓ | [`examples/skills/ov-skills/SKILL.md`](examples/skills/ov-skills/SKILL.md) |
 | 127 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 128 | ✓ | [`frontend/packages/icons/README.md`](frontend/packages/icons/README.md) |
-| 129 | ✓ | [`frontend/packages/react/AGENTS.md`](frontend/packages/react/AGENTS.md) |
-| 130 | ✓ | [`frontend/packages/react/README_CN.md`](frontend/packages/react/README_CN.md) |
-| 131 | ✓ | [`frontend/packages/react/README.md`](frontend/packages/react/README.md) |
-| 132 | ✓ | [`frontend/packages/react/src/client/README_CN.md`](frontend/packages/react/src/client/README_CN.md) |
-| 133 | ✓ | [`frontend/packages/react/src/client/README.md`](frontend/packages/react/src/client/README.md) |
-| 134 | ✓ | [`frontend/packages/react/src/components/agent-connect/README_CN.md`](frontend/packages/react/src/components/agent-connect/README_CN.md) |
-| 135 | ✓ | [`frontend/packages/react/src/components/agent-connect/README.md`](frontend/packages/react/src/components/agent-connect/README.md) |
-| 136 | ✓ | [`frontend/packages/react/src/components/AGENTS.md`](frontend/packages/react/src/components/AGENTS.md) |
-| 137 | ✓ | [`frontend/packages/react/src/components/file-preview/README_CN.md`](frontend/packages/react/src/components/file-preview/README_CN.md) |
-| 138 | ✓ | [`frontend/packages/react/src/components/file-preview/README.md`](frontend/packages/react/src/components/file-preview/README.md) |
-| 139 | ✓ | [`frontend/packages/react/src/components/file-tree/README_CN.md`](frontend/packages/react/src/components/file-tree/README_CN.md) |
-| 140 | ✓ | [`frontend/packages/react/src/components/file-tree/README.md`](frontend/packages/react/src/components/file-tree/README.md) |
-| 141 | ✓ | [`frontend/packages/react/src/components/scope-switcher/README_CN.md`](frontend/packages/react/src/components/scope-switcher/README_CN.md) |
-| 142 | ✓ | [`frontend/packages/react/src/components/scope-switcher/README.md`](frontend/packages/react/src/components/scope-switcher/README.md) |
-| 143 | ✓ | [`frontend/packages/react/src/components/tui/README_CN.md`](frontend/packages/react/src/components/tui/README_CN.md) |
-| 144 | ✓ | [`frontend/packages/react/src/components/tui/README.md`](frontend/packages/react/src/components/tui/README.md) |
-| 145 | ✓ | [`frontend/packages/react/src/hooks/README_CN.md`](frontend/packages/react/src/hooks/README_CN.md) |
-| 146 | ✓ | [`frontend/packages/react/src/hooks/README.md`](frontend/packages/react/src/hooks/README.md) |
-| 147 | ✓ | [`frontend/packages/react/src/modules/AGENTS.md`](frontend/packages/react/src/modules/AGENTS.md) |
-| 148 | ✓ | [`frontend/packages/react/src/modules/README_CN.md`](frontend/packages/react/src/modules/README_CN.md) |
-| 149 | ✓ | [`frontend/packages/react/src/modules/README.md`](frontend/packages/react/src/modules/README.md) |
-| 150 | ✓ | [`frontend/packages/react/src/utils/README_CN.md`](frontend/packages/react/src/utils/README_CN.md) |
-| 151 | ✓ | [`frontend/packages/react/src/utils/README.md`](frontend/packages/react/src/utils/README.md) |
-| 152 | ✓ | [`frontend/README.md`](frontend/README.md) |
-| 153 | ✓ | [`integrations/frameworks/langchain/README_CN.md`](integrations/frameworks/langchain/README_CN.md) |
-| 154 | ✓ | [`integrations/frameworks/langchain/README.md`](integrations/frameworks/langchain/README.md) |
-| 155 | ✓ | [`integrations/frameworks/microsoft-agent-framework/README.md`](integrations/frameworks/microsoft-agent-framework/README.md) |
-| 156 | ✓ | [`npm/cli/README.md`](npm/cli/README.md) |
-| 157 | ✓ | [`openviking/eval/README.md`](openviking/eval/README.md) |
-| 158 | ✓ | [`openviking/observability/usage_audit/README.md`](openviking/observability/usage_audit/README.md) |
-| 159 | ✓ | [`openviking/parse/parsers/code/README.md`](openviking/parse/parsers/code/README.md) |
-| 160 | ✓ | [`openviking/parse/parsers/README.md`](openviking/parse/parsers/README.md) |
-| 161 | ✓ | [`openviking/storage/observers/README.md`](openviking/storage/observers/README.md) |
-| 162 | ✓ | [`openviking/storage/vectordb_adapters/README.md`](openviking/storage/vectordb_adapters/README.md) |
-| 163 | ✓ | [`openviking/storage/vectordb/README.md`](openviking/storage/vectordb/README.md) |
-| 164 | ✓ | [`openviking/system_assets/compile/example-skills/daily-report/SKILL.md`](openviking/system_assets/compile/example-skills/daily-report/SKILL.md) |
-| 165 | ✓ | [`openviking/system_assets/compile/example-skills/knowledge-distillation/SKILL.md`](openviking/system_assets/compile/example-skills/knowledge-distillation/SKILL.md) |
-| 166 | ✓ | [`openviking/system_assets/compile/example-skills/llm-wiki/SKILL.md`](openviking/system_assets/compile/example-skills/llm-wiki/SKILL.md) |
-| 167 | ✓ | [`openviking/system_assets/compile/example-skills/ov-session-report/SKILL.md`](openviking/system_assets/compile/example-skills/ov-session-report/SKILL.md) |
-| 168 | ✓ | [`openviking/ttl/README.md`](openviking/ttl/README.md) |
-| 169 | ✓ | [`scripts/maintenance/vikingdb_content_backfill/README.md`](scripts/maintenance/vikingdb_content_backfill/README.md) |
-| 170 | ✓ | [`sdk/go/README_CN.md`](sdk/go/README_CN.md) |
-| 171 | ✓ | [`sdk/python/README_CN.md`](sdk/python/README_CN.md) |
-| 172 | ✓ | [`sdk/typescript/README_CN.md`](sdk/typescript/README_CN.md) |
-| 173 | ✓ | [`tests/api_test/README.md`](tests/api_test/README.md) |
-| 174 | ✓ | [`tests/gateway/fixtures/README.md`](tests/gateway/fixtures/README.md) |
-| 175 | ✓ | [`tests/gateway/README.md`](tests/gateway/README.md) |
-| 176 | ✓ | [`tests/oc2ov_test/README.md`](tests/oc2ov_test/README.md) |
-| 177 | ✓ | [`tests/README.md`](tests/README.md) |
-| 178 | ✓ | [`third_party/leveldb-1.23/CONTRIBUTING.md`](third_party/leveldb-1.23/CONTRIBUTING.md) |
-| 179 | ✓ | [`third_party/leveldb-1.23/port/README.md`](third_party/leveldb-1.23/port/README.md) |
-| 180 | ✓ | [`third_party/leveldb-1.23/README.md`](third_party/leveldb-1.23/README.md) |
-| 181 | ✓ | [`third_party/spdlog-1.14.1/README.md`](third_party/spdlog-1.14.1/README.md) |
-| 182 | ✓ | [`web-studio/CONTRIBUTING_CN.md`](web-studio/CONTRIBUTING_CN.md) |
-| 183 | ✓ | [`web-studio/CONTRIBUTING.md`](web-studio/CONTRIBUTING.md) |
-| 184 | ✓ | [`web-studio/README_CN.md`](web-studio/README_CN.md) |
-| 185 | → | [`benchmark/README.md`](benchmark/README.md) |
-| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 187 | → | [`docs/repository/CONTRIBUTING_CN.md`](docs/repository/CONTRIBUTING_CN.md) |
-| 188 | → | [`docs/repository/CONTRIBUTING_JA.md`](docs/repository/CONTRIBUTING_JA.md) |
-| 189 | → | [`docs/repository/README_CN.md`](docs/repository/README_CN.md) |
-| 190 | → | [`docs/repository/README_JA.md`](docs/repository/README_JA.md) |
-| 191 | → | [`docs/repository/RELEASE_CN.md`](docs/repository/RELEASE_CN.md) |
-| 192 | → | [`docs/repository/RELEASE.md`](docs/repository/RELEASE.md) |
-| 193 | → | [`integrations/frameworks/README.md`](integrations/frameworks/README.md) |
-| 194 | → | [`README.md`](README.md) |
-| 195 | → | [`sdk/go/README.md`](sdk/go/README.md) |
-| 196 | → | [`sdk/python/README.md`](sdk/python/README.md) |
-| 197 | → | [`sdk/typescript/README.md`](sdk/typescript/README.md) |
-| 198 | → | [`SECURITY.md`](SECURITY.md) |
-| 199 | → | [`web-studio/README.md`](web-studio/README.md) |
+| 128 | ✓ | [`frontend/docs/docs/_demos/assets/scope-switcher/README.md`](frontend/docs/docs/_demos/assets/scope-switcher/README.md) |
+| 129 | ✓ | [`frontend/packages/icons/README.md`](frontend/packages/icons/README.md) |
+| 130 | ✓ | [`frontend/packages/icons/svg/file-type/README.md`](frontend/packages/icons/svg/file-type/README.md) |
+| 131 | ✓ | [`frontend/packages/icons/svg/README.md`](frontend/packages/icons/svg/README.md) |
+| 132 | ✓ | [`frontend/packages/react/AGENTS.md`](frontend/packages/react/AGENTS.md) |
+| 133 | ✓ | [`frontend/packages/react/README_CN.md`](frontend/packages/react/README_CN.md) |
+| 134 | ✓ | [`frontend/packages/react/README.md`](frontend/packages/react/README.md) |
+| 135 | ✓ | [`frontend/packages/react/src/client/README_CN.md`](frontend/packages/react/src/client/README_CN.md) |
+| 136 | ✓ | [`frontend/packages/react/src/client/README.md`](frontend/packages/react/src/client/README.md) |
+| 137 | ✓ | [`frontend/packages/react/src/components/agent-connect/README_CN.md`](frontend/packages/react/src/components/agent-connect/README_CN.md) |
+| 138 | ✓ | [`frontend/packages/react/src/components/agent-connect/README.md`](frontend/packages/react/src/components/agent-connect/README.md) |
+| 139 | ✓ | [`frontend/packages/react/src/components/AGENTS.md`](frontend/packages/react/src/components/AGENTS.md) |
+| 140 | ✓ | [`frontend/packages/react/src/components/file-preview/README_CN.md`](frontend/packages/react/src/components/file-preview/README_CN.md) |
+| 141 | ✓ | [`frontend/packages/react/src/components/file-preview/README.md`](frontend/packages/react/src/components/file-preview/README.md) |
+| 142 | ✓ | [`frontend/packages/react/src/components/file-tree/README_CN.md`](frontend/packages/react/src/components/file-tree/README_CN.md) |
+| 143 | ✓ | [`frontend/packages/react/src/components/file-tree/README.md`](frontend/packages/react/src/components/file-tree/README.md) |
+| 144 | ✓ | [`frontend/packages/react/src/components/scope-switcher/README_CN.md`](frontend/packages/react/src/components/scope-switcher/README_CN.md) |
+| 145 | ✓ | [`frontend/packages/react/src/components/scope-switcher/README.md`](frontend/packages/react/src/components/scope-switcher/README.md) |
+| 146 | ✓ | [`frontend/packages/react/src/components/tui/README_CN.md`](frontend/packages/react/src/components/tui/README_CN.md) |
+| 147 | ✓ | [`frontend/packages/react/src/components/tui/README.md`](frontend/packages/react/src/components/tui/README.md) |
+| 148 | ✓ | [`frontend/packages/react/src/hooks/README_CN.md`](frontend/packages/react/src/hooks/README_CN.md) |
+| 149 | ✓ | [`frontend/packages/react/src/hooks/README.md`](frontend/packages/react/src/hooks/README.md) |
+| 150 | ✓ | [`frontend/packages/react/src/modules/AGENTS.md`](frontend/packages/react/src/modules/AGENTS.md) |
+| 151 | ✓ | [`frontend/packages/react/src/modules/README_CN.md`](frontend/packages/react/src/modules/README_CN.md) |
+| 152 | ✓ | [`frontend/packages/react/src/modules/README.md`](frontend/packages/react/src/modules/README.md) |
+| 153 | ✓ | [`frontend/packages/react/src/utils/README_CN.md`](frontend/packages/react/src/utils/README_CN.md) |
+| 154 | ✓ | [`frontend/packages/react/src/utils/README.md`](frontend/packages/react/src/utils/README.md) |
+| 155 | ✓ | [`frontend/README.md`](frontend/README.md) |
+| 156 | ✓ | [`integrations/frameworks/langchain/README_CN.md`](integrations/frameworks/langchain/README_CN.md) |
+| 157 | ✓ | [`integrations/frameworks/langchain/README.md`](integrations/frameworks/langchain/README.md) |
+| 158 | ✓ | [`integrations/frameworks/microsoft-agent-framework/README.md`](integrations/frameworks/microsoft-agent-framework/README.md) |
+| 159 | ✓ | [`npm/cli/README.md`](npm/cli/README.md) |
+| 160 | ✓ | [`openviking/eval/README.md`](openviking/eval/README.md) |
+| 161 | ✓ | [`openviking/observability/usage_audit/README.md`](openviking/observability/usage_audit/README.md) |
+| 162 | ✓ | [`openviking/parse/parsers/code/README.md`](openviking/parse/parsers/code/README.md) |
+| 163 | ✓ | [`openviking/parse/parsers/README.md`](openviking/parse/parsers/README.md) |
+| 164 | ✓ | [`openviking/storage/observers/README.md`](openviking/storage/observers/README.md) |
+| 165 | ✓ | [`openviking/storage/vectordb_adapters/README.md`](openviking/storage/vectordb_adapters/README.md) |
+| 166 | ✓ | [`openviking/storage/vectordb/README.md`](openviking/storage/vectordb/README.md) |
+| 167 | ✓ | [`openviking/system_assets/compile/example-skills/daily-report/SKILL.md`](openviking/system_assets/compile/example-skills/daily-report/SKILL.md) |
+| 168 | ✓ | [`openviking/system_assets/compile/example-skills/knowledge-distillation/SKILL.md`](openviking/system_assets/compile/example-skills/knowledge-distillation/SKILL.md) |
+| 169 | ✓ | [`openviking/system_assets/compile/example-skills/llm-wiki/SKILL.md`](openviking/system_assets/compile/example-skills/llm-wiki/SKILL.md) |
+| 170 | ✓ | [`openviking/system_assets/compile/example-skills/ov-session-report/SKILL.md`](openviking/system_assets/compile/example-skills/ov-session-report/SKILL.md) |
+| 171 | ✓ | [`openviking/ttl/README.md`](openviking/ttl/README.md) |
+| 172 | ✓ | [`scripts/maintenance/vikingdb_content_backfill/README.md`](scripts/maintenance/vikingdb_content_backfill/README.md) |
+| 173 | ✓ | [`sdk/go/README_CN.md`](sdk/go/README_CN.md) |
+| 174 | ✓ | [`sdk/python/README_CN.md`](sdk/python/README_CN.md) |
+| 175 | ✓ | [`sdk/typescript/README_CN.md`](sdk/typescript/README_CN.md) |
+| 176 | ✓ | [`tests/api_test/README.md`](tests/api_test/README.md) |
+| 177 | ✓ | [`tests/gateway/fixtures/README.md`](tests/gateway/fixtures/README.md) |
+| 178 | ✓ | [`tests/gateway/README.md`](tests/gateway/README.md) |
+| 179 | ✓ | [`tests/oc2ov_test/README.md`](tests/oc2ov_test/README.md) |
+| 180 | ✓ | [`tests/README.md`](tests/README.md) |
+| 181 | ✓ | [`third_party/leveldb-1.23/CONTRIBUTING.md`](third_party/leveldb-1.23/CONTRIBUTING.md) |
+| 182 | ✓ | [`third_party/leveldb-1.23/port/README.md`](third_party/leveldb-1.23/port/README.md) |
+| 183 | ✓ | [`third_party/leveldb-1.23/README.md`](third_party/leveldb-1.23/README.md) |
+| 184 | ✓ | [`third_party/spdlog-1.14.1/README.md`](third_party/spdlog-1.14.1/README.md) |
+| 185 | ✓ | [`web-studio/CONTRIBUTING_CN.md`](web-studio/CONTRIBUTING_CN.md) |
+| 186 | ✓ | [`web-studio/CONTRIBUTING.md`](web-studio/CONTRIBUTING.md) |
+| 187 | ✓ | [`web-studio/README_CN.md`](web-studio/README_CN.md) |
+| 188 | → | [`benchmark/README.md`](benchmark/README.md) |
+| 189 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 190 | → | [`docs/repository/CONTRIBUTING_CN.md`](docs/repository/CONTRIBUTING_CN.md) |
+| 191 | → | [`docs/repository/CONTRIBUTING_JA.md`](docs/repository/CONTRIBUTING_JA.md) |
+| 192 | → | [`docs/repository/README_CN.md`](docs/repository/README_CN.md) |
+| 193 | → | [`docs/repository/README_JA.md`](docs/repository/README_JA.md) |
+| 194 | → | [`docs/repository/RELEASE_CN.md`](docs/repository/RELEASE_CN.md) |
+| 195 | → | [`docs/repository/RELEASE.md`](docs/repository/RELEASE.md) |
+| 196 | → | [`integrations/frameworks/README.md`](integrations/frameworks/README.md) |
+| 197 | → | [`README.md`](README.md) |
+| 198 | → | [`sdk/go/README.md`](sdk/go/README.md) |
+| 199 | → | [`sdk/python/README.md`](sdk/python/README.md) |
+| 200 | → | [`sdk/typescript/README.md`](sdk/typescript/README.md) |
+| 201 | → | [`SECURITY.md`](SECURITY.md) |
+| 202 | → | [`web-studio/README.md`](web-studio/README.md) |
 
 ---
 

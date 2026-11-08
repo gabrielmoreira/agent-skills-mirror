@@ -1,6 +1,6 @@
 ---
 name: "omh-ai-slop-cleaner"
-description: "[omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, risk analysis, refactor workflow."
+description: "[omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, refactor workflow, legacy refactor."
 license: MIT
 metadata:
   hermes:
@@ -59,7 +59,7 @@ Bad example:
 
 Use when the goal is removing existing low-quality, duplicated, or AI-generated code and the observable behavior must not change; lock behavior with tests before and after the edits.
 
-    Strong routing signals: `ai-slop-cleaner`, `$ai-slop-cleaner`, `cleanup`, `deslop`, `refactor`, `risky`, `behavior-preserving refactor`, `risk analysis`, `refactor workflow`, `legacy refactor`, `anti-slop pass`, `anti-slop review`, `anti-slop sweep`, `ai slop`, `deslop review`, `리팩터링`, `리팩토링`, `위험 분석`, `변경 범위 제한`, `회귀 테스트`, `деслоп`, `убери мусор из кода`, `почисти код`, `убери лишнее в коде`, `зачисти код`, `мёртвый код`, `анслоп`, `деблоат`, `почистить код`
+    Strong routing signals: `ai-slop-cleaner`, `$ai-slop-cleaner`, `cleanup`, `deslop`, `refactor`, `risky`, `behavior-preserving refactor`, `refactor workflow`, `legacy refactor`, `anti-slop pass`, `anti-slop review`, `anti-slop sweep`, `ai slop`, `deslop review`, `위험 분석`, `변경 범위 제한`, `회귀 테스트`, `리팩터링`, `리팩토링`, `деслоп`, `убери мусор из кода`, `почисти код`, `убери лишнее в коде`, `зачисти код`, `мёртвый код`, `анслоп`, `деблоат`, `почистить код`
 
 ## Catalog Metadata
 
@@ -72,7 +72,7 @@ Quality bar:
 
 - Lock current behavior with regression checks before non-trivial cleanup.
 - Classify before deleting: every finding names one category from the slop taxonomy - duplication, dead code, needless abstraction, boundary violation, missing tests, or templated defaults - so the pass order below can own it.
-- Run single-smell passes in fixed order, re-verifying between passes and never bundling categories: dead-code deletion, then duplicate removal, then naming and error handling, then test reinforcement; the full contract is `omh-ai-slop-cleaner/references/cleanup-passes.md`.
+- Run single-smell passes in fixed order, re-verifying between passes and never bundling categories: dead-code deletion, then duplicate removal, then naming and error handling, then test reinforcement, after a pass 0 that names the check locking each file's behavior; the full contract is `omh-ai-slop-cleaner/references/cleanup-passes.md`.
 - When the user names no target smell, run detection first and hand back the inventory: prepared linter and dead-code commands are named per stack in the reference and stay prepared_not_observed until run.
 - When the cleanup target is written English rather than code, load `omh-ai-slop-cleaner/references/prose-lexicon.md` for the word tiers, the pattern severities, and the context profile that decides which rules apply.
 - Review mode (`deslop review`, or a request to judge a drafted cleanup without editing) edits nothing: read the writer pass's plan, its diff, and the before/after checks it ran against the six taxonomy categories and return findings in the `omh-code-review` shape - P0-P3 severity and a ship or no_ship verdict - never a new verdict format; the checklist is in `cleanup-passes.md`.

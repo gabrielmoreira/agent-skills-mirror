@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 10 followed patterns, 157 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 10 followed patterns, 158 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 10 followed patterns, 157 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 157 |
+| Files         | 158 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -213,18 +213,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 143 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
 | 144 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
 | 145 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
-| 146 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
-| 147 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
-| 148 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 149 | → | [`docs/design/README.md`](docs/design/README.md) |
-| 150 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
-| 151 | → | [`docs/evaluation.md`](docs/evaluation.md) |
-| 152 | → | [`docs/users/qwen-serve.md`](docs/users/qwen-serve.md) |
-| 153 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
-| 154 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
-| 155 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
-| 156 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
-| 157 | → | [`README.md`](README.md) |
+| 146 | ✓ | [`scripts/ci/ephemeral-runner/README.md`](scripts/ci/ephemeral-runner/README.md) |
+| 147 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
+| 148 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
+| 149 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 150 | → | [`docs/design/README.md`](docs/design/README.md) |
+| 151 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
+| 152 | → | [`docs/evaluation.md`](docs/evaluation.md) |
+| 153 | → | [`docs/users/qwen-serve.md`](docs/users/qwen-serve.md) |
+| 154 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
+| 155 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
+| 156 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
+| 157 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
+| 158 | → | [`README.md`](README.md) |
 
 ---
 

@@ -57,7 +57,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -97,7 +97,7 @@ Required inputs:
 Expected outputs:
 
 - orientation summary: manifests read, churn ranking, largest files, test and CI entry points
-- findings table per `tech_debt_ledger/v1`: id, category, file:line, severity, effort, recommendation
+- findings table per `tech_debt_ledger/v1`: id, dimension, file:line, severity, effort, recommendation
 - top fixes ranked by severity and the quick wins ranked by payoff-per-effort
 - the looks-bad-but-is-actually-fine list, and the RESOLVED/NEW/CARRIED reconciliation on rerun
 

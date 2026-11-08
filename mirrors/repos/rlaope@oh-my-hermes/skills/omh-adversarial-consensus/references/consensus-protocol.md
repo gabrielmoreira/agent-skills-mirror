@@ -28,7 +28,7 @@ The order is the contract. Independence exists only before any seat has read ano
 
 ### Round 1 - independent findings
 
-Each perspective produces its findings without seeing any other perspective's output. Prompt each seat separately with the same problem statement, and give each one the same context: the proposal, the decision it must inform, and the known constraints. Nothing else.
+Each perspective produces its findings without seeing any other perspective's output. Prompt each seat separately with the same problem statement, and give each one the same context: the proposal, the decision it must inform, and the known constraints. Nothing else. When `delegate_task` is in your tool list, run each seat as its own child so the contexts really are separate; otherwise run the seats in sequence and mark the caveat below.
 
 Every finding names its evidence or labels itself an assumption. "This will not scale" is not a finding; "this holds every session in one process, and the deploy target runs four replicas behind a round-robin balancer" is.
 
@@ -70,7 +70,7 @@ The bucket set is closed. If distillation seems to need a fifth bucket, the extr
 
 The run ends with the bundle handed to a separate planning pass, and it ends there.
 
-State plainly that the bundle (**Hard Constraints**, **Decisions**, **Risks**, **Open Questions**) is INPUT to planning, name the follow-on workflow -- `ralplan` when the plan itself needs review gates, `plan` when the shape is already agreed -- and stop.
+State plainly that the bundle (**Hard Constraints**, **Decisions**, **Risks**, **Open Questions**) is INPUT to planning, name the follow-on workflow -- `ulw-plan` when the plan itself needs review gates, `omh-plan` when the shape is already agreed -- and stop.
 
 **The anti-pattern:** treating the bundle as the plan. The four buckets read like a plan's front matter, which is exactly why the substitution is tempting and exactly why it is wrong. The bundle contains no sequence, no owner, no acceptance criteria, and no verification commands, because producing those is the planner's job and this workflow deliberately never did it. Emitting steps here skips the reviewed-plan gate and ships a task list that nobody planned.
 

@@ -60,7 +60,7 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- Current lane: **Coding handoff** - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `omh-routing` or name the adjacent workflow.
 - Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
@@ -81,10 +81,11 @@ Reasoning demand: `standard`
 Quality bar:
 
 - Name every component, data store, and external dependency of the real system before naming one threat; a model of a system nobody described is a checklist.
-- Give each asset a data class and exactly one loss: disclosure, corruption, unavailability, or fraud.
+- Give each asset a data class and its primary loss: disclosure, corruption, unavailability, or fraud.
 - For each trust boundary, state what crosses it, what authenticates the crossing, and what the receiver assumes without checking.
 - Run all six STRIDE prompts from `omh-application-threat-model/references/threat-model-method.md` per boundary; drop an unreachable scenario with its reason instead of carrying it.
 - Resolve every scenario to one decision (mitigate, transfer, accept, eliminate) with an owner, and give every mitigating control a test whose observable fails when the control is removed.
+- Rank scenarios by likelihood times impact; accept only below the owner's limit.
 
 Handoff policy:
 
@@ -109,7 +110,7 @@ Expert clarification questions:
 Expected outputs:
 
 - application_threat_model/v1
-- asset register: data class plus the one loss that makes each asset worth defending
+- asset register: data class plus the loss that makes each asset worth defending
 - trust boundaries: what crosses, what authenticates the crossing, what the receiver assumes unchecked
 - attack scenarios: entry point, path, precondition, impact
 - one decision per scenario (mitigate, transfer, accept, eliminate) with an owner

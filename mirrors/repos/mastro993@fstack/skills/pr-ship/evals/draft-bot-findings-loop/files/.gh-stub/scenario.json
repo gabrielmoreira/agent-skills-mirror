@@ -1,0 +1,41 @@
+{
+ "repo": "acme/widgets",
+ "number": 21,
+ "title": "Add bulk discount tiers",
+ "body": "Orders of 50+ units get 5% off, 100+ get 10% off.",
+ "base": "main",
+ "head": "feat/bulk-tiers",
+ "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v",
+ "ci_delay_seconds": 20,
+ "draft": true,
+ "approval_required": false,
+ "bots": [
+  {
+   "login": "coderabbitai",
+   "auto": true,
+   "delay_seconds": 45,
+   "findings": [
+    {
+     "id": "PRRT_cr_threshold",
+     "path": "widgets/pricing.py",
+     "line": 8,
+     "body": "_⚠️ Potential issue_\n\n**Off-by-one: tiers never apply at their exact threshold.**\n\nThe docstring and the `DISCOUNT_TIERS` comment say a tier applies *from* its threshold, but `qty > threshold` gives `bulk_discount(50) == 0.0` and `bulk_discount(100) == 0.05`. Use `>=` and add boundary tests for 50 and 100.",
+     "fixed_if": "python3 -c 'from widgets.pricing import bulk_discount as b; assert b(50) == 0.05 and b(100) == 0.10'"
+    },
+    {
+     "id": "PRRT_cr_negative",
+     "path": "widgets/pricing.py",
+     "line": 15,
+     "body": "_⚠️ Potential issue_\n\n**Negative quantities produce negative totals.**\n\n`line_total(-3, 2.5)` returns `-7.5`, so a bad cart quantity turns into a refund. Raise `ValueError` for `qty < 1` and cover it with a test.",
+     "fixed_if": "python3 -c 'from widgets.pricing import line_total\ntry:\n    line_total(-3, 2.5)\nexcept ValueError:\n    pass\nelse:\n    raise SystemExit(1)'"
+    }
+   ],
+   "finding_body": "**Actionable comments posted: 1**\n\n<details>\n<summary>📜 Review details</summary>\n\nConfiguration used: `.coderabbit.yaml`\nReview profile: CHILL\n</details>",
+   "clean_body": "No actionable comments were generated in the recent review. 🎉\n\n<details>\n<summary>📜 Review details</summary>\n\nConfiguration used: `.coderabbit.yaml`\nReview profile: CHILL\n</details>"
+  }
+ ],
+ "reviews": [],
+ "threads": [],
+ "comments": []
+}
