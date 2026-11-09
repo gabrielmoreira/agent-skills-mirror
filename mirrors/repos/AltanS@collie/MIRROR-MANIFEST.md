@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AltanS/collie` — 26 default patterns, 111 followed patterns, 195 file(s) materialized.
+Mirror of `AltanS/collie` — 26 default patterns, 114 followed patterns, 200 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 111 followed patterns, 195 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 111 |
-| Files         | 195 |
+| Followed pats | 114 |
+| Files         | 200 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,14 +106,19 @@ Mirror of `AltanS/collie` — 26 default patterns, 111 followed patterns, 195 fi
 - `.adr/0028-the-standby-door-is-a-second-listener.md`
 - `.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md`
 - `.adr/0016-updates-ride-the-operators-ssh.md`
-- `docs/five-minute-install.md`
-- `docs/security.md`
-- `docs/install.md`
 - `docs/claude-code-on-your-phone.md`
 - `docs/walky-talky.md`
+- `docs/voice-and-push.md`
+- `docs/changes.md`
+- `docs/crew.md`
+- `docs/durable-agents.md`
+- `docs/themes.md`
+- `docs/upgrading.md`
+- `docs/five-minute-install.md`
+- `docs/install.md`
+- `docs/security.md`
 - `docs/sessions.md`
 - `docs/multiplexers.md`
-- `docs/durable-agents.md`
 - `docs/durable-agents-on-the-phone.md`
 - `docs/durable-agents-troubleshooting.md`
 - `docs/durable-agents-security.md`
@@ -121,17 +126,15 @@ Mirror of `AltanS/collie` — 26 default patterns, 111 followed patterns, 195 fi
 - `docs/durable-wire.md`
 - `docs/windows.md`
 - `docs/configure.md`
-- `docs/themes.md`
-- `docs/changes.md`
 - `docs/deployment.md`
 - `docs/commands.md`
-- `docs/crew.md`
-- `docs/voice-and-push.md`
-- `docs/upgrading.md`
 - `docs/troubleshooting.md`
 - `docs/terminology.md`
 - `MUX_CONTRACT.md`
+- `HC_API.md`
 - `CONTRIBUTING.md`
+- `.adr/0129-an-anonymous-install-count-on-by-default.md`
+- `telemetry/README.md`
 - `TRADEMARKS.md`
 - `CHANGELOG.md`
 - `.adr/0026-the-operator-is-the-quorum.md`
@@ -139,6 +142,7 @@ Mirror of `AltanS/collie` — 26 default patterns, 111 followed patterns, 195 fi
 - `.adr/0022-the-mux-seam-is-a-port-collie-owns.md`
 - `.adr/0121-two-fingers-move-between-panes.md`
 - `.adr/0064-an-update-puts-the-phone-in-update-mode.md`
+- `.adr/0136-a-theme-may-name-a-mark-and-every-mark-keeps-one-contract.md`
 - `.adr/0069-a-row-glides-into-its-header.md`
 - `.adr/0106-a-theme-is-a-closed-file-of-named-tokens.md`
 - `web/src/fixtures/panes/README.md`
@@ -157,7 +161,6 @@ Mirror of `AltanS/collie` — 26 default patterns, 111 followed patterns, 195 fi
 - `.adr/0014-promote-is-a-confirm-on-the-lead.md`
 - `.adr/0101-a-control-on-a-screenless-pane-names-the-turn-it-saw.md`
 - `.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`
-- `HC_API.md`
 - `.adr/0126-collie-makes-a-worktree-with-git-and-opens-it-as-a-space.md`
 - `.adr/0099-a-durable-program-is-a-mux-with-no-screen.md`
 - `.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`
@@ -229,141 +232,146 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`.adr/0124-a-sends-bound-starts-after-its-profile.md`](.adr/0124-a-sends-bound-starts-after-its-profile.md) |
 | 59 | ✓ | [`.adr/0125-the-browser-leg-replays-recorded-model-streams.md`](.adr/0125-the-browser-leg-replays-recorded-model-streams.md) |
 | 60 | ✓ | [`.adr/0128-background-jobs-are-journal-facts.md`](.adr/0128-background-jobs-are-journal-facts.md) |
-| 61 | ✓ | [`.adr/0129-an-anonymous-install-count-on-by-default.md`](.adr/0129-an-anonymous-install-count-on-by-default.md) |
-| 62 | ✓ | [`.adr/0130-pinned-messages-are-a-copy-kept-by-the-owning-bridge.md`](.adr/0130-pinned-messages-are-a-copy-kept-by-the-owning-bridge.md) |
-| 63 | ✓ | [`.adr/0131-the-plus-offers-the-launcher-rows.md`](.adr/0131-the-plus-offers-the-launcher-rows.md) |
-| 64 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 65 | ✓ | [`bridge/journal/fixtures/dsh/README.md`](bridge/journal/fixtures/dsh/README.md) |
-| 66 | ✓ | [`bridge/journal/fixtures/kiro/README.md`](bridge/journal/fixtures/kiro/README.md) |
-| 67 | ✓ | [`bridge/mux/tern/captures/README.md`](bridge/mux/tern/captures/README.md) |
-| 68 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 69 | ✓ | [`cli/skills/walky-talky.md`](cli/skills/walky-talky.md) |
-| 70 | ✓ | [`examples/durable-harness/README.md`](examples/durable-harness/README.md) |
-| 71 | ✓ | [`examples/durable-member/README.md`](examples/durable-member/README.md) |
-| 72 | ✓ | [`experiments/durable-member-cloudflare/README.md`](experiments/durable-member-cloudflare/README.md) |
-| 73 | ✓ | [`herdr-app-mod/collie/README.md`](herdr-app-mod/collie/README.md) |
-| 74 | ✓ | [`omp-extension/README.md`](omp-extension/README.md) |
-| 75 | ✓ | [`packages/durable-sdk/CHANGELOG.md`](packages/durable-sdk/CHANGELOG.md) |
-| 76 | ✓ | [`packages/durable-sdk/README.md`](packages/durable-sdk/README.md) |
-| 77 | ✓ | [`packaging/aur/README.md`](packaging/aur/README.md) |
-| 78 | ✓ | [`packaging/omarchy/README.md`](packaging/omarchy/README.md) |
-| 79 | ✓ | [`scripts/harness-canary/README.md`](scripts/harness-canary/README.md) |
-| 80 | ✓ | [`telemetry/README.md`](telemetry/README.md) |
-| 81 | ✓ | [`web/e2e/manual/README.md`](web/e2e/manual/README.md) |
-| 82 | ✓ | [`web/e2e/rig/README.md`](web/e2e/rig/README.md) |
-| 83 | ✓ | [`web/src/fixtures/traces/README.md`](web/src/fixtures/traces/README.md) |
-| 84 | ✓ | [`web/src/lib/surface/profiles/README.md`](web/src/lib/surface/profiles/README.md) |
-| 85 | → | [`.adr/0001-one-managed-front-door.md`](.adr/0001-one-managed-front-door.md) |
-| 86 | → | [`.adr/0002-invert-the-light-terminal-mirror.md`](.adr/0002-invert-the-light-terminal-mirror.md) |
-| 87 | → | [`.adr/0003-one-shared-seen.md`](.adr/0003-one-shared-seen.md) |
-| 88 | → | [`.adr/0004-the-statusline-run-is-bounded.md`](.adr/0004-the-statusline-run-is-bounded.md) |
-| 89 | → | [`.adr/0005-a-composed-key-queue-never-outlives-its-dock.md`](.adr/0005-a-composed-key-queue-never-outlives-its-dock.md) |
-| 90 | → | [`.adr/0006-update-advances-the-checkout-herdr-installed.md`](.adr/0006-update-advances-the-checkout-herdr-installed.md) |
-| 91 | → | [`.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md`](.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md) |
-| 92 | → | [`.adr/0008-collie-does-not-run-a-terminal-emulator.md`](.adr/0008-collie-does-not-run-a-terminal-emulator.md) |
-| 93 | → | [`.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md`](.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md) |
-| 94 | → | [`.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md`](.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md) |
-| 95 | → | [`.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md`](.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md) |
-| 96 | → | [`.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md`](.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md) |
-| 97 | → | [`.adr/0013-a-peer-listens-without-becoming-a-front-door.md`](.adr/0013-a-peer-listens-without-becoming-a-front-door.md) |
-| 98 | → | [`.adr/0014-promote-is-a-confirm-on-the-lead.md`](.adr/0014-promote-is-a-confirm-on-the-lead.md) |
-| 99 | → | [`.adr/0016-updates-ride-the-operators-ssh.md`](.adr/0016-updates-ride-the-operators-ssh.md) |
-| 100 | → | [`.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md`](.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md) |
-| 101 | → | [`.adr/0018-operator-command-rows-replace-the-catalog.md`](.adr/0018-operator-command-rows-replace-the-catalog.md) |
-| 102 | → | [`.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md`](.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md) |
-| 103 | → | [`.adr/0021-the-path-name-is-a-pointer-never-a-copy.md`](.adr/0021-the-path-name-is-a-pointer-never-a-copy.md) |
-| 104 | → | [`.adr/0022-the-mux-seam-is-a-port-collie-owns.md`](.adr/0022-the-mux-seam-is-a-port-collie-owns.md) |
-| 105 | → | [`.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md`](.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md) |
-| 106 | → | [`.adr/0026-the-operator-is-the-quorum.md`](.adr/0026-the-operator-is-the-quorum.md) |
-| 107 | → | [`.adr/0027-the-deputy-is-named-ahead-of-time.md`](.adr/0027-the-deputy-is-named-ahead-of-time.md) |
-| 108 | → | [`.adr/0028-the-standby-door-is-a-second-listener.md`](.adr/0028-the-standby-door-is-a-second-listener.md) |
-| 109 | → | [`.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md`](.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md) |
-| 110 | → | [`.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md`](.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md) |
-| 111 | → | [`.adr/0031-freshness-is-a-declared-promise.md`](.adr/0031-freshness-is-a-declared-promise.md) |
-| 112 | → | [`.adr/0033-the-app-face-is-a-device-preference.md`](.adr/0033-the-app-face-is-a-device-preference.md) |
-| 113 | → | [`.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`](.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md) |
-| 114 | → | [`.adr/0035-a-packaged-install-is-not-ours-to-update.md`](.adr/0035-a-packaged-install-is-not-ours-to-update.md) |
-| 115 | → | [`.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`](.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md) |
-| 116 | → | [`.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md`](.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md) |
-| 117 | → | [`.adr/0039-the-machine-says-crew-too.md`](.adr/0039-the-machine-says-crew-too.md) |
-| 118 | → | [`.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md`](.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md) |
-| 119 | → | [`.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md`](.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md) |
-| 120 | → | [`.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md`](.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md) |
-| 121 | → | [`.adr/0048-the-input-box-is-found-by-its-own-frame.md`](.adr/0048-the-input-box-is-found-by-its-own-frame.md) |
-| 122 | → | [`.adr/0053-an-unread-dialog-still-has-a-way-out.md`](.adr/0053-an-unread-dialog-still-has-a-way-out.md) |
-| 123 | → | [`.adr/0054-a-printed-scale-is-tappable.md`](.adr/0054-a-printed-scale-is-tappable.md) |
-| 124 | → | [`.adr/0055-a-pointed-list-is-walked-then-confirmed.md`](.adr/0055-a-pointed-list-is-walked-then-confirmed.md) |
-| 125 | → | [`.adr/0063-a-pane-keeps-its-place-when-its-state-changes.md`](.adr/0063-a-pane-keeps-its-place-when-its-state-changes.md) |
-| 126 | → | [`.adr/0064-an-update-puts-the-phone-in-update-mode.md`](.adr/0064-an-update-puts-the-phone-in-update-mode.md) |
-| 127 | → | [`.adr/0065-the-changes-view-reads-git-read-only.md`](.adr/0065-the-changes-view-reads-git-read-only.md) |
-| 128 | → | [`.adr/0067-back-goes-up-one-level.md`](.adr/0067-back-goes-up-one-level.md) |
-| 129 | → | [`.adr/0069-a-row-glides-into-its-header.md`](.adr/0069-a-row-glides-into-its-header.md) |
-| 130 | → | [`.adr/0074-a-push-title-is-a-code-the-phone-translates.md`](.adr/0074-a-push-title-is-a-code-the-phone-translates.md) |
-| 131 | → | [`.adr/0075-windows-is-a-supported-host.md`](.adr/0075-windows-is-a-supported-host.md) |
-| 132 | → | [`.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md`](.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md) |
-| 133 | → | [`.adr/0080-a-pointed-list-is-walked-verified-then-confirmed.md`](.adr/0080-a-pointed-list-is-walked-verified-then-confirmed.md) |
-| 134 | → | [`.adr/0083-the-files-view-reads-the-changes-root.md`](.adr/0083-the-files-view-reads-the-changes-root.md) |
-| 135 | → | [`.adr/0086-reads-need-the-pairing-token.md`](.adr/0086-reads-need-the-pairing-token.md) |
-| 136 | → | [`.adr/0090-files-shows-images.md`](.adr/0090-files-shows-images.md) |
-| 137 | → | [`.adr/0091-launch-by-id-with-a-request-id.md`](.adr/0091-launch-by-id-with-a-request-id.md) |
-| 138 | → | [`.adr/0093-a-branch-folder-is-named-by-its-parent.md`](.adr/0093-a-branch-folder-is-named-by-its-parent.md) |
-| 139 | → | [`.adr/0094-launchers-added-from-a-phone.md`](.adr/0094-launchers-added-from-a-phone.md) |
-| 140 | → | [`.adr/0095-one-off-commands-and-their-history.md`](.adr/0095-one-off-commands-and-their-history.md) |
-| 141 | → | [`.adr/0096-speech-can-stay-on-the-phone.md`](.adr/0096-speech-can-stay-on-the-phone.md) |
-| 142 | → | [`.adr/0097-codex-speech-can-be-chosen-from-settings.md`](.adr/0097-codex-speech-can-be-chosen-from-settings.md) |
-| 143 | → | [`.adr/0099-a-durable-program-is-a-mux-with-no-screen.md`](.adr/0099-a-durable-program-is-a-mux-with-no-screen.md) |
-| 144 | → | [`.adr/0100-an-ask-travels-as-data-and-is-answered-by-id.md`](.adr/0100-an-ask-travels-as-data-and-is-answered-by-id.md) |
-| 145 | → | [`.adr/0101-a-control-on-a-screenless-pane-names-the-turn-it-saw.md`](.adr/0101-a-control-on-a-screenless-pane-names-the-turn-it-saw.md) |
-| 146 | → | [`.adr/0103-the-wire-has-two-transports-a-private-socket-or-tls-with-a-token.md`](.adr/0103-the-wire-has-two-transports-a-private-socket-or-tls-with-a-token.md) |
-| 147 | → | [`.adr/0106-a-theme-is-a-closed-file-of-named-tokens.md`](.adr/0106-a-theme-is-a-closed-file-of-named-tokens.md) |
-| 148 | → | [`.adr/0108-a-dialog-over-live-chrome-declares-its-tail.md`](.adr/0108-a-dialog-over-live-chrome-declares-its-tail.md) |
-| 149 | → | [`.adr/0113-an-askuserquestion-answer-is-typed-into-its-field.md`](.adr/0113-an-askuserquestion-answer-is-typed-into-its-field.md) |
-| 150 | → | [`.adr/0121-two-fingers-move-between-panes.md`](.adr/0121-two-fingers-move-between-panes.md) |
-| 151 | → | [`.adr/0126-collie-makes-a-worktree-with-git-and-opens-it-as-a-space.md`](.adr/0126-collie-makes-a-worktree-with-git-and-opens-it-as-a-space.md) |
-| 152 | → | [`.adr/0127-the-leads-launcher-rows-are-the-crews-rows.md`](.adr/0127-the-leads-launcher-rows-are-the-crews-rows.md) |
-| 153 | → | [`.adr/0132-the-math-engines-are-a-pack-the-host-downloads.md`](.adr/0132-the-math-engines-are-a-pack-the-host-downloads.md) |
-| 154 | → | [`.adr/README.md`](.adr/README.md) |
-| 155 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 156 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 157 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 158 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
-| 159 | → | [`DESIGN.md`](DESIGN.md) |
-| 160 | → | [`docs/changes.md`](docs/changes.md) |
-| 161 | → | [`docs/claude-code-on-your-phone.md`](docs/claude-code-on-your-phone.md) |
-| 162 | → | [`docs/commands.md`](docs/commands.md) |
-| 163 | → | [`docs/configure.md`](docs/configure.md) |
-| 164 | → | [`docs/crew.md`](docs/crew.md) |
-| 165 | → | [`docs/deployment.md`](docs/deployment.md) |
-| 166 | → | [`docs/durable-agents-on-the-phone.md`](docs/durable-agents-on-the-phone.md) |
-| 167 | → | [`docs/durable-agents-security.md`](docs/durable-agents-security.md) |
-| 168 | → | [`docs/durable-agents-troubleshooting.md`](docs/durable-agents-troubleshooting.md) |
-| 169 | → | [`docs/durable-agents.md`](docs/durable-agents.md) |
-| 170 | → | [`docs/durable-sdk.md`](docs/durable-sdk.md) |
-| 171 | → | [`docs/durable-wire.md`](docs/durable-wire.md) |
-| 172 | → | [`docs/five-minute-install.md`](docs/five-minute-install.md) |
-| 173 | → | [`docs/install.md`](docs/install.md) |
-| 174 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
-| 175 | → | [`docs/security.md`](docs/security.md) |
-| 176 | → | [`docs/sessions.md`](docs/sessions.md) |
-| 177 | → | [`docs/terminology.md`](docs/terminology.md) |
-| 178 | → | [`docs/themes.md`](docs/themes.md) |
-| 179 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 180 | → | [`docs/upgrading.md`](docs/upgrading.md) |
-| 181 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
-| 182 | → | [`docs/walky-talky.md`](docs/walky-talky.md) |
-| 183 | → | [`docs/windows.md`](docs/windows.md) |
-| 184 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
-| 185 | → | [`HC_API.md`](HC_API.md) |
-| 186 | → | [`HERDR_API.md`](HERDR_API.md) |
-| 187 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
-| 188 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
-| 189 | → | [`README.md`](README.md) |
-| 190 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
-| 191 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
-| 192 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
-| 193 | → | [`web/src/lib/grammar/ASK_FIELD_NOTES.md`](web/src/lib/grammar/ASK_FIELD_NOTES.md) |
-| 194 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
-| 195 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
+| 61 | ✓ | [`.adr/0130-pinned-messages-are-a-copy-kept-by-the-owning-bridge.md`](.adr/0130-pinned-messages-are-a-copy-kept-by-the-owning-bridge.md) |
+| 62 | ✓ | [`.adr/0131-the-plus-offers-the-launcher-rows.md`](.adr/0131-the-plus-offers-the-launcher-rows.md) |
+| 63 | ✓ | [`.adr/0133-the-omp-plan-review-is-lifted-and-its-tier-is-named-not-moved.md`](.adr/0133-the-omp-plan-review-is-lifted-and-its-tier-is-named-not-moved.md) |
+| 64 | ✓ | [`.adr/0134-the-trouble-tally-names-the-dialog-by-a-hash-of-its-key-hint-row.md`](.adr/0134-the-trouble-tally-names-the-dialog-by-a-hash-of-its-key-hint-row.md) |
+| 65 | ✓ | [`.adr/0137-a-theme-may-name-a-glyph-set-from-a-closed-list.md`](.adr/0137-a-theme-may-name-a-glyph-set-from-a-closed-list.md) |
+| 66 | ✓ | [`.adr/0138-an-app-left-alone-draws-no-frame.md`](.adr/0138-an-app-left-alone-draws-no-frame.md) |
+| 67 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 68 | ✓ | [`bridge/journal/fixtures/dsh/README.md`](bridge/journal/fixtures/dsh/README.md) |
+| 69 | ✓ | [`bridge/journal/fixtures/kiro/README.md`](bridge/journal/fixtures/kiro/README.md) |
+| 70 | ✓ | [`bridge/mux/tern/captures/README.md`](bridge/mux/tern/captures/README.md) |
+| 71 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 72 | ✓ | [`cli/skills/walky-talky.md`](cli/skills/walky-talky.md) |
+| 73 | ✓ | [`examples/durable-harness/README.md`](examples/durable-harness/README.md) |
+| 74 | ✓ | [`examples/durable-member/README.md`](examples/durable-member/README.md) |
+| 75 | ✓ | [`experiments/durable-member-cloudflare/README.md`](experiments/durable-member-cloudflare/README.md) |
+| 76 | ✓ | [`herdr-app-mod/collie/README.md`](herdr-app-mod/collie/README.md) |
+| 77 | ✓ | [`omp-extension/README.md`](omp-extension/README.md) |
+| 78 | ✓ | [`packages/durable-sdk/CHANGELOG.md`](packages/durable-sdk/CHANGELOG.md) |
+| 79 | ✓ | [`packages/durable-sdk/README.md`](packages/durable-sdk/README.md) |
+| 80 | ✓ | [`packaging/aur/README.md`](packaging/aur/README.md) |
+| 81 | ✓ | [`packaging/omarchy/README.md`](packaging/omarchy/README.md) |
+| 82 | ✓ | [`scripts/harness-canary/README.md`](scripts/harness-canary/README.md) |
+| 83 | ✓ | [`web/e2e/manual/README.md`](web/e2e/manual/README.md) |
+| 84 | ✓ | [`web/e2e/rig/README.md`](web/e2e/rig/README.md) |
+| 85 | ✓ | [`web/src/fixtures/traces/README.md`](web/src/fixtures/traces/README.md) |
+| 86 | ✓ | [`web/src/lib/surface/profiles/README.md`](web/src/lib/surface/profiles/README.md) |
+| 87 | → | [`.adr/0001-one-managed-front-door.md`](.adr/0001-one-managed-front-door.md) |
+| 88 | → | [`.adr/0002-invert-the-light-terminal-mirror.md`](.adr/0002-invert-the-light-terminal-mirror.md) |
+| 89 | → | [`.adr/0003-one-shared-seen.md`](.adr/0003-one-shared-seen.md) |
+| 90 | → | [`.adr/0004-the-statusline-run-is-bounded.md`](.adr/0004-the-statusline-run-is-bounded.md) |
+| 91 | → | [`.adr/0005-a-composed-key-queue-never-outlives-its-dock.md`](.adr/0005-a-composed-key-queue-never-outlives-its-dock.md) |
+| 92 | → | [`.adr/0006-update-advances-the-checkout-herdr-installed.md`](.adr/0006-update-advances-the-checkout-herdr-installed.md) |
+| 93 | → | [`.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md`](.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md) |
+| 94 | → | [`.adr/0008-collie-does-not-run-a-terminal-emulator.md`](.adr/0008-collie-does-not-run-a-terminal-emulator.md) |
+| 95 | → | [`.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md`](.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md) |
+| 96 | → | [`.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md`](.adr/0010-long-sends-are-verified-via-the-paste-placeholder.md) |
+| 97 | → | [`.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md`](.adr/0011-the-pack-protocol-is-the-mux-driver-seam.md) |
+| 98 | → | [`.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md`](.adr/0012-every-machine-runs-a-collie-and-the-pack-has-a-lead.md) |
+| 99 | → | [`.adr/0013-a-peer-listens-without-becoming-a-front-door.md`](.adr/0013-a-peer-listens-without-becoming-a-front-door.md) |
+| 100 | → | [`.adr/0014-promote-is-a-confirm-on-the-lead.md`](.adr/0014-promote-is-a-confirm-on-the-lead.md) |
+| 101 | → | [`.adr/0016-updates-ride-the-operators-ssh.md`](.adr/0016-updates-ride-the-operators-ssh.md) |
+| 102 | → | [`.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md`](.adr/0017-recognising-a-password-prompt-changes-what-collie-says.md) |
+| 103 | → | [`.adr/0018-operator-command-rows-replace-the-catalog.md`](.adr/0018-operator-command-rows-replace-the-catalog.md) |
+| 104 | → | [`.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md`](.adr/0019-oxlint-and-vendored-anti-slop-are-the-lint-gate.md) |
+| 105 | → | [`.adr/0021-the-path-name-is-a-pointer-never-a-copy.md`](.adr/0021-the-path-name-is-a-pointer-never-a-copy.md) |
+| 106 | → | [`.adr/0022-the-mux-seam-is-a-port-collie-owns.md`](.adr/0022-the-mux-seam-is-a-port-collie-owns.md) |
+| 107 | → | [`.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md`](.adr/0025-the-wire-guard-forces-a-decision-never-a-bump.md) |
+| 108 | → | [`.adr/0026-the-operator-is-the-quorum.md`](.adr/0026-the-operator-is-the-quorum.md) |
+| 109 | → | [`.adr/0027-the-deputy-is-named-ahead-of-time.md`](.adr/0027-the-deputy-is-named-ahead-of-time.md) |
+| 110 | → | [`.adr/0028-the-standby-door-is-a-second-listener.md`](.adr/0028-the-standby-door-is-a-second-listener.md) |
+| 111 | → | [`.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md`](.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md) |
+| 112 | → | [`.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md`](.adr/0030-the-ui-is-translated-by-a-typed-dictionary-not-a-library.md) |
+| 113 | → | [`.adr/0031-freshness-is-a-declared-promise.md`](.adr/0031-freshness-is-a-declared-promise.md) |
+| 114 | → | [`.adr/0033-the-app-face-is-a-device-preference.md`](.adr/0033-the-app-face-is-a-device-preference.md) |
+| 115 | → | [`.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md`](.adr/0034-collie-collects-nothing-and-opt-in-is-the-ceiling.md) |
+| 116 | → | [`.adr/0035-a-packaged-install-is-not-ours-to-update.md`](.adr/0035-a-packaged-install-is-not-ours-to-update.md) |
+| 117 | → | [`.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md`](.adr/0036-the-map-of-machines-is-collies-a-mux-reports-one-machine.md) |
+| 118 | → | [`.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md`](.adr/0038-the-group-is-a-crew-the-wire-keeps-pack.md) |
+| 119 | → | [`.adr/0039-the-machine-says-crew-too.md`](.adr/0039-the-machine-says-crew-too.md) |
+| 120 | → | [`.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md`](.adr/0043-operator-bar-rows-replace-the-bar-not-the-palette.md) |
+| 121 | → | [`.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md`](.adr/0045-a-build-below-the-protocol-floor-is-a-red-preflight.md) |
+| 122 | → | [`.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md`](.adr/0046-an-urgent-patch-keeps-the-daily-cadence.md) |
+| 123 | → | [`.adr/0048-the-input-box-is-found-by-its-own-frame.md`](.adr/0048-the-input-box-is-found-by-its-own-frame.md) |
+| 124 | → | [`.adr/0053-an-unread-dialog-still-has-a-way-out.md`](.adr/0053-an-unread-dialog-still-has-a-way-out.md) |
+| 125 | → | [`.adr/0054-a-printed-scale-is-tappable.md`](.adr/0054-a-printed-scale-is-tappable.md) |
+| 126 | → | [`.adr/0055-a-pointed-list-is-walked-then-confirmed.md`](.adr/0055-a-pointed-list-is-walked-then-confirmed.md) |
+| 127 | → | [`.adr/0063-a-pane-keeps-its-place-when-its-state-changes.md`](.adr/0063-a-pane-keeps-its-place-when-its-state-changes.md) |
+| 128 | → | [`.adr/0064-an-update-puts-the-phone-in-update-mode.md`](.adr/0064-an-update-puts-the-phone-in-update-mode.md) |
+| 129 | → | [`.adr/0065-the-changes-view-reads-git-read-only.md`](.adr/0065-the-changes-view-reads-git-read-only.md) |
+| 130 | → | [`.adr/0067-back-goes-up-one-level.md`](.adr/0067-back-goes-up-one-level.md) |
+| 131 | → | [`.adr/0069-a-row-glides-into-its-header.md`](.adr/0069-a-row-glides-into-its-header.md) |
+| 132 | → | [`.adr/0074-a-push-title-is-a-code-the-phone-translates.md`](.adr/0074-a-push-title-is-a-code-the-phone-translates.md) |
+| 133 | → | [`.adr/0075-windows-is-a-supported-host.md`](.adr/0075-windows-is-a-supported-host.md) |
+| 134 | → | [`.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md`](.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md) |
+| 135 | → | [`.adr/0080-a-pointed-list-is-walked-verified-then-confirmed.md`](.adr/0080-a-pointed-list-is-walked-verified-then-confirmed.md) |
+| 136 | → | [`.adr/0083-the-files-view-reads-the-changes-root.md`](.adr/0083-the-files-view-reads-the-changes-root.md) |
+| 137 | → | [`.adr/0086-reads-need-the-pairing-token.md`](.adr/0086-reads-need-the-pairing-token.md) |
+| 138 | → | [`.adr/0090-files-shows-images.md`](.adr/0090-files-shows-images.md) |
+| 139 | → | [`.adr/0091-launch-by-id-with-a-request-id.md`](.adr/0091-launch-by-id-with-a-request-id.md) |
+| 140 | → | [`.adr/0093-a-branch-folder-is-named-by-its-parent.md`](.adr/0093-a-branch-folder-is-named-by-its-parent.md) |
+| 141 | → | [`.adr/0094-launchers-added-from-a-phone.md`](.adr/0094-launchers-added-from-a-phone.md) |
+| 142 | → | [`.adr/0095-one-off-commands-and-their-history.md`](.adr/0095-one-off-commands-and-their-history.md) |
+| 143 | → | [`.adr/0096-speech-can-stay-on-the-phone.md`](.adr/0096-speech-can-stay-on-the-phone.md) |
+| 144 | → | [`.adr/0097-codex-speech-can-be-chosen-from-settings.md`](.adr/0097-codex-speech-can-be-chosen-from-settings.md) |
+| 145 | → | [`.adr/0099-a-durable-program-is-a-mux-with-no-screen.md`](.adr/0099-a-durable-program-is-a-mux-with-no-screen.md) |
+| 146 | → | [`.adr/0100-an-ask-travels-as-data-and-is-answered-by-id.md`](.adr/0100-an-ask-travels-as-data-and-is-answered-by-id.md) |
+| 147 | → | [`.adr/0101-a-control-on-a-screenless-pane-names-the-turn-it-saw.md`](.adr/0101-a-control-on-a-screenless-pane-names-the-turn-it-saw.md) |
+| 148 | → | [`.adr/0103-the-wire-has-two-transports-a-private-socket-or-tls-with-a-token.md`](.adr/0103-the-wire-has-two-transports-a-private-socket-or-tls-with-a-token.md) |
+| 149 | → | [`.adr/0106-a-theme-is-a-closed-file-of-named-tokens.md`](.adr/0106-a-theme-is-a-closed-file-of-named-tokens.md) |
+| 150 | → | [`.adr/0108-a-dialog-over-live-chrome-declares-its-tail.md`](.adr/0108-a-dialog-over-live-chrome-declares-its-tail.md) |
+| 151 | → | [`.adr/0113-an-askuserquestion-answer-is-typed-into-its-field.md`](.adr/0113-an-askuserquestion-answer-is-typed-into-its-field.md) |
+| 152 | → | [`.adr/0121-two-fingers-move-between-panes.md`](.adr/0121-two-fingers-move-between-panes.md) |
+| 153 | → | [`.adr/0126-collie-makes-a-worktree-with-git-and-opens-it-as-a-space.md`](.adr/0126-collie-makes-a-worktree-with-git-and-opens-it-as-a-space.md) |
+| 154 | → | [`.adr/0127-the-leads-launcher-rows-are-the-crews-rows.md`](.adr/0127-the-leads-launcher-rows-are-the-crews-rows.md) |
+| 155 | → | [`.adr/0129-an-anonymous-install-count-on-by-default.md`](.adr/0129-an-anonymous-install-count-on-by-default.md) |
+| 156 | → | [`.adr/0132-the-math-engines-are-a-pack-the-host-downloads.md`](.adr/0132-the-math-engines-are-a-pack-the-host-downloads.md) |
+| 157 | → | [`.adr/0136-a-theme-may-name-a-mark-and-every-mark-keeps-one-contract.md`](.adr/0136-a-theme-may-name-a-mark-and-every-mark-keeps-one-contract.md) |
+| 158 | → | [`.adr/README.md`](.adr/README.md) |
+| 159 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 160 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 161 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 162 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
+| 163 | → | [`DESIGN.md`](DESIGN.md) |
+| 164 | → | [`docs/changes.md`](docs/changes.md) |
+| 165 | → | [`docs/claude-code-on-your-phone.md`](docs/claude-code-on-your-phone.md) |
+| 166 | → | [`docs/commands.md`](docs/commands.md) |
+| 167 | → | [`docs/configure.md`](docs/configure.md) |
+| 168 | → | [`docs/crew.md`](docs/crew.md) |
+| 169 | → | [`docs/deployment.md`](docs/deployment.md) |
+| 170 | → | [`docs/durable-agents-on-the-phone.md`](docs/durable-agents-on-the-phone.md) |
+| 171 | → | [`docs/durable-agents-security.md`](docs/durable-agents-security.md) |
+| 172 | → | [`docs/durable-agents-troubleshooting.md`](docs/durable-agents-troubleshooting.md) |
+| 173 | → | [`docs/durable-agents.md`](docs/durable-agents.md) |
+| 174 | → | [`docs/durable-sdk.md`](docs/durable-sdk.md) |
+| 175 | → | [`docs/durable-wire.md`](docs/durable-wire.md) |
+| 176 | → | [`docs/five-minute-install.md`](docs/five-minute-install.md) |
+| 177 | → | [`docs/install.md`](docs/install.md) |
+| 178 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
+| 179 | → | [`docs/security.md`](docs/security.md) |
+| 180 | → | [`docs/sessions.md`](docs/sessions.md) |
+| 181 | → | [`docs/terminology.md`](docs/terminology.md) |
+| 182 | → | [`docs/themes.md`](docs/themes.md) |
+| 183 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 184 | → | [`docs/upgrading.md`](docs/upgrading.md) |
+| 185 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
+| 186 | → | [`docs/walky-talky.md`](docs/walky-talky.md) |
+| 187 | → | [`docs/windows.md`](docs/windows.md) |
+| 188 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
+| 189 | → | [`HC_API.md`](HC_API.md) |
+| 190 | → | [`HERDR_API.md`](HERDR_API.md) |
+| 191 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
+| 192 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
+| 193 | → | [`README.md`](README.md) |
+| 194 | → | [`telemetry/README.md`](telemetry/README.md) |
+| 195 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
+| 196 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 197 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
+| 198 | → | [`web/src/lib/grammar/ASK_FIELD_NOTES.md`](web/src/lib/grammar/ASK_FIELD_NOTES.md) |
+| 199 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
+| 200 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
 
 ---
 

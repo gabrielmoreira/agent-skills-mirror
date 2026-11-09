@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **peer-message** (v1.24.10 → v1.25.0): Add optional native-envelope UTF-8 byte preflight to `coord prepare`; reject oversized messages atomically before retaining send reservations or state revisions. Preserve omitted-limit behavior, native delivery guards and receipt boundaries.
+
+- **terraform-skill** (v1.5.12 → v1.5.13): Add a certificate-maintenance replay case covering initial creation, next replacement and no-op through the complete publisher/lifecycle gate chain, with unsafe-context and deletion controls.
+- **daymade-skill** (v1.77.2 → v1.77.3): Align repository and suite instructions with the canonical publication, native-discovery and consumed-bundle workflows; remove duplicated setup details from the repository guide. Runtime interfaces and SOP definitions are unchanged.
+- **lark-cli-router** (v1.0.0 → v1.0.1): Distinguish deleted items from whole Wiki spaces, inspect the corresponding recovery surface, and keep recovery, archive coverage and deletion authorization separate. Change type: bounded recovery-routing correction.
+
+- **skill-creator / skill-governance** (`daymade-skill` v1.77.1 → v1.77.2): Add shared-plugin publication and source-alias adoption cases. Check concurrent release inputs before review and distinguish published content from the bundle actually consumed, preserving existing review, activation and merge gates.
+- **peer-message** (v1.24.9 → v1.24.10): Discover the complete current native tool surface before selecting a coordination transport; retain actual-schema, identity, delivery and fallback boundaries.
+
+- **macos-watchdog** (`daymade-macos` v1.30.3 → v1.30.4): Align suspected watchdog symptoms with actual action logs and Network Extension retry evidence; keep auto-cooldown from suppressing current-round state restoration and require honest DIRECT/proxy recovery semantics. Change type: bounded diagnostic and recovery-contract correction.
+- **tunnel-doctor** (v1.17.15 → v1.17.16): Distinguish Network Extension startup retries, exact-address listeners, real proxy requests and Tailscale backend state; add exiting-process evidence boundaries and latest-correction recovery checks. Change type: bounded diagnostic and recovery-guide correction.
+- **ghostty-use** (v1.11.5 → v1.11.6): Add a complete no-foreground GUI acceptance loop with current-keybinding discovery, per-ID readiness/missing outcomes, independent selected-tab/body readback and dynamic tab-set reconciliation. Change type: sampled acceptance-recipe extension; paste-based restore and existing authorization boundaries remain unchanged.
+- **kimi-use** (v1.8.3 → v1.8.4): Add a low-overhead native-tab traversal recipe combining selected-tab and document observation, with explicit delivery/readback, dynamic-identity and repeat-guard boundaries. Change type: sampled desktop-verification recipe extension.
+
+- **ghostty-use** (v1.11.4 → v1.11.5): Drop the incidental session count from the side-channel verification example; the durable criterion is window-visibility versus process-liveness, not a historical tally.
+- **feishu-doc-scraper** (v1.12.3 → v1.13.0): Inventory opaque clickable and plain-text website links before batch scope/volume decisions; preserve selected acquisition/upload/retention policy on continuation. Import verified original-preview recoveries offline into the existing attachment state and manifest while retaining failed-attempt history. Change type: additive discovery and recovery interfaces.
+
+- **frontend-visual-qa** (v1.21.38 → v1.21.39): Add bounded catalog/topology acceptance cases for exact-model photos, labeled schematic fallbacks after missing or failed media, relationship roles, visible search priority and retained detail context. Change type: sampled acceptance-recipe extension; existing audit and action boundaries remain intact.
+- **frontend-visual-qa** (v1.21.37 → v1.21.38): Audit operational ledgers through selection, navigation and actual issue resolution; distinguish useful persistent inspectors from generic rails. Add scoped-style/portal and settled-tooltip counterexamples while preserving project decisions and desktop scope.
+
+- **ghostty-use** (v1.11.3 → v1.11.4): Document the resolver-replay diagnosis for active-but-unresolved sessions, the empty-tab unresolved case, and the kimi-cu side-channel snapshot check with its window-visibility versus process-liveness boundary.
+- **ghostty-use** (v1.11.2 → v1.11.3): Raise the bounded transcript-identity head budget from 256KB to 1MB so Claude sessions with large front-loaded system records resolve to their transcripts instead of failing closed into unresolved live TUIs; foreign, missing or invalid sessionId heads and over-budget files remain rejected.
 - **asr-transcribe-to-text** (`daymade-audio` v1.57.5 → v1.57.6): Preserve original-speed upload and source-time review requirements; make metered speedup conditional on user permission and a verified mapping back to the original media.
 - **tibo-reset-codex** (v2.8.1 → v2.8.2): Route monitor-stop requests directly to the actual host's lifecycle procedure; preserve read-only research boundaries and verify all in-scope schedulers stopped without querying reset sources.
 

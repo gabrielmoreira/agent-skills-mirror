@@ -263816,6 +263816,9 @@ function installBridgePlaceLinks(runtime2) {
   var COPY_PAGE_LINK_FAILURES;
   var isCopySlideLinkShortcut;
   var COPY_SLIDE_LINK_SHORTCUT;
+  var LOCAL_ADDRESS_PUSH_LIMIT;
+  var localAddressPushes;
+  var localAddressPlace;
   function readLastPlace(storage, memoryScope) {
     try {
       let value = storage?.getItem(
@@ -263831,7 +263834,9 @@ function installBridgePlaceLinks(runtime2) {
       return Promise.resolve("invalid_fragment");
     }
     if (win.parent === win) {
-      return Promise.resolve("no_answer");
+      return copyLocalPageLink(fragment, win).catch(
+        () => "clipboard_denied"
+      );
     }
     let id = "place-" + Math.random().toString(36).slice(2, 10);
     return new Promise((resolve) => {
@@ -263973,8 +263978,59 @@ function installBridgePlaceLinks(runtime2) {
     }
     return fragment === null ? null : { place: fragment, why: "known" };
   }
+  function writeLocalAddressBar(fragment, tab, win = window) {
+    localAddressPlace = fragment;
+    let current = win.location.hash.slice(1);
+    if (current === fragment || current.startsWith("comment-")) {
+      return;
+    }
+    let activation = win.navigator.userActivation, push = tab && localAddressPushes < LOCAL_ADDRESS_PUSH_LIMIT && PLACE_LINK_FRAGMENT_PATTERN.test(current) && activation?.isActive !== false;
+    try {
+      let url = `${win.location.pathname}${win.location.search}#${fragment}`;
+      if (push) {
+        win.history.pushState(win.history.state, "", url);
+        localAddressPushes += 1;
+      } else {
+        win.history.replaceState(win.history.state, "", url);
+      }
+    } catch {
+    }
+  }
+  function postPlaceToHost(message, win = window) {
+    if (win.parent !== win) {
+      return (0, runtime2.postToHost)(message, win);
+    }
+    if (isValidPlaceFragment(message.fragment)) {
+      writeLocalAddressBar(message.fragment, message.nav === "tab", win);
+    }
+  }
+  function observeLocalAddressBar(onGoto, win = window) {
+    let onChange = () => {
+      let fragment = win.location.hash.slice(1);
+      if (!isValidPlaceFragment(fragment) || fragment === localAddressPlace) {
+        return;
+      }
+      localAddressPlace = fragment;
+      onGoto(fragment);
+    };
+    win.addEventListener("popstate", onChange);
+    win.addEventListener("hashchange", onChange);
+    return () => {
+      win.removeEventListener("popstate", onChange);
+      win.removeEventListener("hashchange", onChange);
+    };
+  }
+  async function copyLocalPageLink(fragment, win = window) {
+    let url = new URL(win.location.href);
+    url.hash = fragment;
+    if (!await (0, runtime2.copyTextToClipboard)(url.href)) {
+      return "clipboard_denied";
+    }
+    (0, runtime2.setInternalClipboard)(void 0);
+    return null;
+  }
   function createPlaceLinkReporter(input = {}) {
-    let value = input.post ?? runtime2.postToHost, tabMove = false, value2 = input.enabled ?? placeLinkMessagesEnabled, callback = () => input.store === void 0 ? getPlaceLinkSessionStorage() : input.store, value3 = null, value4 = null, items = [], callback2 = () => {
+    let value = input.post ?? postPlaceToHost, tabMove = false, value2 = input.enabled ?? placeLinkMessagesEnabled, callback = () => input.store === void 0 ? getPlaceLinkSessionStorage() : input.store, value3 = null, value4 = null, items = [], callback2 = () => {
       if (value4 !== null) {
         clearPlaceLinkTimeout(value4);
       }
@@ -264044,9 +264100,7 @@ function installBridgePlaceLinks(runtime2) {
   }
   function subscribeGotoAnchorMessages(onGoto, hostWindow = window) {
     if (hostWindow.parent === hostWindow) {
-      return () => {
-        return;
-      };
+      return observeLocalAddressBar(onGoto, hostWindow);
     }
     let listener = (dataset) => {
       if (dataset.source !== hostWindow.parent || !(0, runtime2.isAllowedHostMessageOrigin)(dataset.origin)) {
@@ -264266,6 +264320,9 @@ function installBridgePlaceLinks(runtime2) {
     setPlaceLinkTimeout = (input, options) => setTimeout(input, options);
     clearPlaceLinkTimeout = (input) => clearTimeout(input);
     placeLinkMessagesEnabled = PLACE_LINK_MESSAGES_ENABLED;
+    LOCAL_ADDRESS_PUSH_LIMIT = 20;
+    localAddressPushes = 0;
+    localAddressPlace = null;
   };
 }
 
@@ -268559,7 +268616,21 @@ function installEditorApp(runtime2) {
     }, [shownSlideId, placeLinkPaused]);
     let [copySlideLink] = runtime2.reactd0.useState(() => {
       let copy = (0, runtime2.createPlaceLinkCopier)(
-        (message) => void (0, runtime2.showToast)(message)
+        (message) => void (0, runtime2.showToast)(message),
+        // BaoCut: on claude.ai the frame shell says the link was copied; as the
+        // top window the deck copied it itself (place-links.ts), so it says so here.
+        (fragment) => (0, runtime2.requestCopyPageLink)(fragment).then((failure) => {
+          if (failure === null && window.parent === window) {
+            (0, runtime2.showToast)(
+              (0, runtime2.formatMessage)({
+                defaultMessage: "Link copied.",
+                id: "9c1Cm+qXH3"
+              }),
+              3e3
+            );
+          }
+          return failure;
+        })
       );
       return (slideId) => copy((0, runtime2.slidePlaceFragment)(slideId));
     });

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `makecindy/cindy` — 26 default patterns, 26 followed patterns, 210 file(s) materialized.
+Mirror of `makecindy/cindy` — 26 default patterns, 26 followed patterns, 211 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `makecindy/cindy` — 26 default patterns, 26 followed patterns, 210 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 26 |
-| Files         | 210 |
+| Files         | 211 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -258,42 +258,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 172 | ✓ | [`packages/device-link/README.md`](packages/device-link/README.md) |
 | 173 | ✓ | [`packages/heartbeat-client/README.md`](packages/heartbeat-client/README.md) |
 | 174 | ✓ | [`packages/lizi-im/README.md`](packages/lizi-im/README.md) |
-| 175 | ✓ | [`packages/lizi-mcps/src/computer/README.md`](packages/lizi-mcps/src/computer/README.md) |
-| 176 | ✓ | [`packages/maker-core/AGENTS.md`](packages/maker-core/AGENTS.md) |
-| 177 | ✓ | [`packages/model-compat/README.md`](packages/model-compat/README.md) |
-| 178 | ✓ | [`packages/model-providers/AGENTS.md`](packages/model-providers/AGENTS.md) |
-| 179 | ✓ | [`packages/opencli-vendor/README.md`](packages/opencli-vendor/README.md) |
-| 180 | ✓ | [`packages/project-context/README.md`](packages/project-context/README.md) |
-| 181 | ✓ | [`packages/remote-credentials-native/README.md`](packages/remote-credentials-native/README.md) |
-| 182 | ✓ | [`packages/wechat-ilink/README.md`](packages/wechat-ilink/README.md) |
-| 183 | ✓ | [`scripts/examples/plugin-model-picker/README.md`](scripts/examples/plugin-model-picker/README.md) |
-| 184 | ✓ | [`tools/model-catalog/README.md`](tools/model-catalog/README.md) |
-| 185 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 186 | → | [`apps/mobile/docs/simulator-debugging.md`](apps/mobile/docs/simulator-debugging.md) |
-| 187 | → | [`CODE_OF_CONDUCT.en.md`](CODE_OF_CONDUCT.en.md) |
-| 188 | → | [`CONTRIBUTING.en.md`](CONTRIBUTING.en.md) |
-| 189 | → | [`DESIGN.md`](DESIGN.md) |
-| 190 | → | [`docs/auth-realm-routing.md`](docs/auth-realm-routing.md) |
-| 191 | → | [`docs/design-rules/cindy-design-system.md`](docs/design-rules/cindy-design-system.md) |
-| 192 | → | [`docs/design-rules/DESIGN.md`](docs/design-rules/DESIGN.md) |
-| 193 | → | [`docs/design-rules/README.md`](docs/design-rules/README.md) |
-| 194 | → | [`docs/dev-rules/architecture-invariants.md`](docs/dev-rules/architecture-invariants.md) |
-| 195 | → | [`docs/dev-rules/desktop-development.md`](docs/dev-rules/desktop-development.md) |
-| 196 | → | [`docs/dev-rules/development-workflow.md`](docs/dev-rules/development-workflow.md) |
-| 197 | → | [`docs/dev-rules/environment-setup.md`](docs/dev-rules/environment-setup.md) |
-| 198 | → | [`docs/dev-rules/log-upload-and-redaction.md`](docs/dev-rules/log-upload-and-redaction.md) |
-| 199 | → | [`docs/dev-rules/maker-core-and-agent-behavior.md`](docs/dev-rules/maker-core-and-agent-behavior.md) |
-| 200 | → | [`docs/dev-rules/mobile-development.md`](docs/dev-rules/mobile-development.md) |
-| 201 | → | [`docs/dev-rules/README.md`](docs/dev-rules/README.md) |
-| 202 | → | [`docs/dev-rules/server-channel-review.md`](docs/dev-rules/server-channel-review.md) |
-| 203 | → | [`docs/linux.md`](docs/linux.md) |
-| 204 | → | [`docs/product-rules/core-product-principles.md`](docs/product-rules/core-product-principles.md) |
-| 205 | → | [`docs/product-rules/README.md`](docs/product-rules/README.md) |
-| 206 | → | [`docs/README.md`](docs/README.md) |
-| 207 | → | [`README.md`](README.md) |
-| 208 | → | [`REVIEW.md`](REVIEW.md) |
-| 209 | → | [`SECURITY.en.md`](SECURITY.en.md) |
-| 210 | → | [`SUPPORT.en.md`](SUPPORT.en.md) |
+| 175 | ✓ | [`packages/lizi-im/src/bluebubbles/README.md`](packages/lizi-im/src/bluebubbles/README.md) |
+| 176 | ✓ | [`packages/lizi-mcps/src/computer/README.md`](packages/lizi-mcps/src/computer/README.md) |
+| 177 | ✓ | [`packages/maker-core/AGENTS.md`](packages/maker-core/AGENTS.md) |
+| 178 | ✓ | [`packages/model-compat/README.md`](packages/model-compat/README.md) |
+| 179 | ✓ | [`packages/model-providers/AGENTS.md`](packages/model-providers/AGENTS.md) |
+| 180 | ✓ | [`packages/opencli-vendor/README.md`](packages/opencli-vendor/README.md) |
+| 181 | ✓ | [`packages/project-context/README.md`](packages/project-context/README.md) |
+| 182 | ✓ | [`packages/remote-credentials-native/README.md`](packages/remote-credentials-native/README.md) |
+| 183 | ✓ | [`packages/wechat-ilink/README.md`](packages/wechat-ilink/README.md) |
+| 184 | ✓ | [`scripts/examples/plugin-model-picker/README.md`](scripts/examples/plugin-model-picker/README.md) |
+| 185 | ✓ | [`tools/model-catalog/README.md`](tools/model-catalog/README.md) |
+| 186 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 187 | → | [`apps/mobile/docs/simulator-debugging.md`](apps/mobile/docs/simulator-debugging.md) |
+| 188 | → | [`CODE_OF_CONDUCT.en.md`](CODE_OF_CONDUCT.en.md) |
+| 189 | → | [`CONTRIBUTING.en.md`](CONTRIBUTING.en.md) |
+| 190 | → | [`DESIGN.md`](DESIGN.md) |
+| 191 | → | [`docs/auth-realm-routing.md`](docs/auth-realm-routing.md) |
+| 192 | → | [`docs/design-rules/cindy-design-system.md`](docs/design-rules/cindy-design-system.md) |
+| 193 | → | [`docs/design-rules/DESIGN.md`](docs/design-rules/DESIGN.md) |
+| 194 | → | [`docs/design-rules/README.md`](docs/design-rules/README.md) |
+| 195 | → | [`docs/dev-rules/architecture-invariants.md`](docs/dev-rules/architecture-invariants.md) |
+| 196 | → | [`docs/dev-rules/desktop-development.md`](docs/dev-rules/desktop-development.md) |
+| 197 | → | [`docs/dev-rules/development-workflow.md`](docs/dev-rules/development-workflow.md) |
+| 198 | → | [`docs/dev-rules/environment-setup.md`](docs/dev-rules/environment-setup.md) |
+| 199 | → | [`docs/dev-rules/log-upload-and-redaction.md`](docs/dev-rules/log-upload-and-redaction.md) |
+| 200 | → | [`docs/dev-rules/maker-core-and-agent-behavior.md`](docs/dev-rules/maker-core-and-agent-behavior.md) |
+| 201 | → | [`docs/dev-rules/mobile-development.md`](docs/dev-rules/mobile-development.md) |
+| 202 | → | [`docs/dev-rules/README.md`](docs/dev-rules/README.md) |
+| 203 | → | [`docs/dev-rules/server-channel-review.md`](docs/dev-rules/server-channel-review.md) |
+| 204 | → | [`docs/linux.md`](docs/linux.md) |
+| 205 | → | [`docs/product-rules/core-product-principles.md`](docs/product-rules/core-product-principles.md) |
+| 206 | → | [`docs/product-rules/README.md`](docs/product-rules/README.md) |
+| 207 | → | [`docs/README.md`](docs/README.md) |
+| 208 | → | [`README.md`](README.md) |
+| 209 | → | [`REVIEW.md`](REVIEW.md) |
+| 210 | → | [`SECURITY.en.md`](SECURITY.en.md) |
+| 211 | → | [`SUPPORT.en.md`](SUPPORT.en.md) |
 
 ---
 

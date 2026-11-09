@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `apify/apify-mcp-server` — 26 default patterns, 8 followed patterns, 25 file(s) materialized.
+Mirror of `apify/apify-mcp-server` — 26 default patterns, 8 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `apify/apify-mcp-server` — 26 default patterns, 8 followed patterns,
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 25 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,19 +78,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`res/code_runtime_eval.md`](res/code_runtime_eval.md) |
 | 11 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
 | 12 | ✓ | [`src/mcp/AGENTS.md`](src/mcp/AGENTS.md) |
-| 13 | ✓ | [`src/payments/AGENTS.md`](src/payments/AGENTS.md) |
-| 14 | ✓ | [`src/resources/AGENTS.md`](src/resources/AGENTS.md) |
-| 15 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
-| 16 | ✓ | [`src/web/AGENTS.md`](src/web/AGENTS.md) |
-| 17 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 19 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
-| 20 | → | [`LICENSE.md`](LICENSE.md) |
-| 21 | → | [`README.md`](README.md) |
-| 22 | → | [`res/index.md`](res/index.md) |
-| 23 | → | [`src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`](src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md) |
-| 24 | → | [`tests/UNIT_TESTING_GUIDE.md`](tests/UNIT_TESTING_GUIDE.md) |
-| 25 | → | [`TOOL_GUIDELINES.md`](TOOL_GUIDELINES.md) |
+| 13 | ✓ | [`src/resources/AGENTS.md`](src/resources/AGENTS.md) |
+| 14 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 15 | ✓ | [`src/web/AGENTS.md`](src/web/AGENTS.md) |
+| 16 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 18 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
+| 19 | → | [`LICENSE.md`](LICENSE.md) |
+| 20 | → | [`README.md`](README.md) |
+| 21 | → | [`res/index.md`](res/index.md) |
+| 22 | → | [`src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`](src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md) |
+| 23 | → | [`tests/UNIT_TESTING_GUIDE.md`](tests/UNIT_TESTING_GUIDE.md) |
+| 24 | → | [`TOOL_GUIDELINES.md`](TOOL_GUIDELINES.md) |
 
 ---
 

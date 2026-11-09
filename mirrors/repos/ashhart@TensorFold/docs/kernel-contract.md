@@ -124,6 +124,8 @@ norm on the host's cores) through gates 1 to 4 and their eight controls; a CPU k
 nothing to check. `zig build test-kernel-contract`, CI's no-device step, runs the same gates as a test, and `zig build
 test` the kernels' own test that the bytes are the same at 1 to 16 threads and at column splits every 8 columns to 256 and every 256 beyond (each alignment of the four-tile pass), on x86_64 and arm64.
 
+`--only` filters generic Metal launch labels too; both global launch-limit controls still run.
+
 Every run ends with a `SUMMARY` line: kernels passing gates 1 to 4, known findings, controls red, and limit problems.
 The program exits 1 on any failed gate, any control that stayed green, or any limit problem.
 
@@ -333,14 +335,30 @@ softmax over FP32 scores to 16,384 keys, GELU, BF16 widening and rounding, the s
 rows by id (FP32 in prompt row order) and their means, step 5's option summary, and step 7's logits (prior, cosine and
 the scorer's input rows) and their gate, each within float64's bound at the head's BF16 points. Two controls: a layer
 norm summed in bf16 and a softmax that skips non-finite scores.
+CUDA checks the same head (`joint_schema.cu`, `zig/tests/cuda/contract_js_*.zig`) with the same cases, plus the
+lexical sums read from the engine's packed BF16 lm_head (`tf_js_lex_sums`) and the head's residual add and broadcast.
+Every kernel has a planted control (`contract_js_controls.cuh`), each naming the gate that catches it.
 
 HIP also checks the router over the rows a checkpoint already holds in bf16 (`tf_router_bf16`, and its fp16-activation
 form), bit-equal to the fp32-rows router it replaces at 1 to 16 rows, with both kinds' non-finite plants through gate 1
 and the exact sums of gate 4.
 
-On gfx12, HIP also checks the WMMA dense tile (`dense_wmma12_gemm`, both block geometries, fp32 and BF16 out) against
-its depth-k bound. Its control, the same tile summing each 16-deep step in BF16 (`tf_ctl_wmma12_bf16_sum`), goes red
-at gate 4.
+On gfx12, HIP also checks the WMMA dense tile (`dense_wmma12_gemm`, both block geometries, fp32 and BF16 out). The
+small block meets its depth-k bound. The big block (64-deep K steps over swizzled LDS rows) replaces the 32-deep block
+it was before #2245's second lever, byte for byte: gate 3 runs a frozen copy of that block (`tf_ref_wmma12_k32`, in the
+controls' code object, with its own gate-5 record) on the same inputs, and the kernel tests hold both geometries to
+float64. Three controls go red: the small block summing each 16-deep step in BF16 (`tf_ctl_wmma12_bf16_sum`) at gate 4,
+and at gate 3 against the frozen block, the big block loading its operands without the stores' swizzle
+(`tf_ctl_wmma12_unswizzled`) and the big block without its K loop's barriers (`tf_ctl_wmma12_unordered`). The last is a
+race, so gate 3 launches it up to eight times a shape and counts it red if any launch differs.
+
+On gfx12, HIP also checks the WMMA product with silu x up in its epilogue (`dense_wmma12_gemm_silu`, a 2-wave 16 x 64
+block and the 128 x 128 block, BF16 out), over a gate/up weight interleaved in 16-row groups. Each block replaces the
+plain WMMA product on that weight, its split into gate and up columns (`tf_copy_cols`) and `tf_silu_mul`, byte for
+byte, at Qwen3-8B's served rows and each block's edges; gate 1 holds the unfused bytes and every float64 class, and
+gate 4 negates the stress rows' x so that every gate and up sum is positive and silu keeps its error. One control goes
+red at gate 3: the pair epilogue applying silu to the fp32 gate sum instead of its BF16 rounding
+(`tf_ctl_silu_unrounded`), once the served kernel shows the unfused bytes on the same inputs.
 
 RADIO's fused bias, activation and residual (`tf_vit_bias_act`) replaces `tf_vit_bias` then
 `tf_vit_pointwise`, byte for byte.
@@ -408,6 +426,14 @@ run on two). Eight controls: a projection zeroing a non-finite activation, writi
 activations, skipping the rows past its last block of eight, and summing each group in half; a norm taking a
 non-finite input as zero, writing its output over its input, scaling by the next element's weight, and summing its
 squares in bf16.
+
+CUDA also checks the mla image (`mla.cu`, MLA over a 512-wide latent with 64 roped columns and 128-wide heads, on
+GLM's chunk bodies): the head-wise gate, the rope (plain, and with YaRN's attention factor at 900,000 positions), the
+128-wide absorb_q and expand_v, and the chunk tiles (`tf_mla_chunks_r16`, 576-wide q and keys over a linear cache,
+through `tf_glm_merge`; the split form with `tf_mla_merge_part`), each against float64 (eight controls, real launches
+each given one planted fault: the gate reading the next head's column, the plain rope one position late, the YaRN
+rope without its factor, absorb_q and expand_v reading the next head's weights, the chunks the next head's queries,
+the split chunks reading a rank's page z as chunk z, and the per-rank merge one chunk short).
 
 ## CUDA records per nvcc release
 

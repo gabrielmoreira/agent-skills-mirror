@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "path_base": "skill_root",
+  "distribution_note": "用户确认这些是其制作的资料并允许公开分发。此记录不把第三方署名、引用或代码重新许可为项目许可证；各资料保留原有声明。",
+  "sources": [
+    {
+      "id": "S01",
+      "category": "reading",
+      "title": "NodeSeek 服务器行业黑话",
+      "original_filename": "服务器行业黑话.md",
+      "original_sha256": "e2660c1b049d73e7a927594743f079cb0a5f10be9f72bad7928f10a5838bb68b",
+      "path": "sources/S01-server-glossary.md",
+      "distributed_sha256": "e2660c1b049d73e7a927594743f079cb0a5f10be9f72bad7928f10a5838bb68b",
+      "changes": [],
+      "attribution": "来源页 https://www.nodeseek.com/post-1033-1；保留原文来源声明",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
+    },
+    {
+      "id": "S02",
+      "category": "reading",
+      "title": "AI 所有支付方式汇总（核验版）",
+      "original_filename": "AI 所有支付方式汇总_核验版.md",
+      "original_sha256": "9fc0962d5386011d3c292fd30a8f8530544899a82bda62d9c574ff62d4e52c75",
+      "path": "sources/S02-ai-payments.md",
+      "distributed_sha256": "9fc0962d5386011d3c292fd30a8f8530544899a82bda62d9c574ff62d4e52c75",
+      "changes": [],
+      "attribution": "原文署名 DUNHKPcc；保留免费开源声明与证据来源",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
+    },
+    {
+      "id": "S03",
+      "category": "reading",
+      "title": "Claude 使用经验与防封策略（5 页 PDF）",
+      "original_filename": "Anthropic claude code 防封策略 Q群1124987353.pdf",
+      "original_sha256": "ffd8ab0e3f8c597733f842c3b17e4bea8d9ac9585f6a21d4e12039b0b32ed792",
+      "path": "sources/S03-claude-experience.pdf",
+      "distributed_sha256": "ffd8ab0e3f8c597733f842c3b17e4bea8d9ac9585f6a21d4e12039b0b32ed792",
+      "changes": [],
+      "attribution": "保留所提供 PDF、标题及其中相关链接",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可",
+      "companions": [
+        {
+          "path": "sources/S03-extracted-text.md",
+          "sha256": "63939e28f7dfb777fc7fb3cf4364bdc07605eba30d1a1f5e8f686e759ce1bc70",
+          "limitations": [
+            "仅提取 PDF 文字层；第 4 页手机表格和第 5 页事件表格需阅读 PDF 图片",
+            "未经完整人工转录，不作为完整原文替代"
+          ]
+        },
+        {
+          "path": "sources/S03-source-text.md",
+          "sha256": "9789083417f707a303d4f5b920b75f35e4fe0044410d48bb7355dd1abf202de6",
+          "limitations": [
+            "所有者提供的 Markdown 源文本，与 PDF 文字略有出入；第 4、5 页的表格以 PDF 图片为准",
+            "2026-10-21 按所有者要求删除末尾一段（“尽量不要在机房环境，模拟海外环境使用”），该段为原资料错误；其余内容不变"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "category": "reading",
+      "title": "Claude 防封号指南（2026）",
+      "original_filename": "Anthropic claude code 防封策略2.md",
+      "original_sha256": "281b2881c5a016b5188aa71c1e7162e1742c98170d9685f2a4e24503ee7a5992",
+      "path": "sources/S04-claude-guide.md",
+      "distributed_sha256": "281b2881c5a016b5188aa71c1e7162e1742c98170d9685f2a4e24503ee7a5992",
+      "changes": [],
+      "attribution": "原文指向 Fishason/Claude-anti-ban 并声明 MIT；原引用 LICENSE 和 CONTRIBUTING.md 未随输入提供",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
+    },
+    {
+      "id": "S05",
+      "category": "reading",
+      "title": "Claude 本地防护实战",
+      "original_filename": "Claude本地防护实战_月落惊征.md",
+      "original_sha256": "f2a975d359161312763f02d6c5d2b4e796e52a57edf2a9ecb233445c8d2389d9",
+      "path": "sources/S05-local-protection.md",
+      "distributed_sha256": "f2a975d359161312763f02d6c5d2b4e796e52a57edf2a9ecb233445c8d2389d9",
+      "changes": [],
+      "attribution": "原文作者 月落惊征；https://x.com/yueluo_jz/status/2105578466309808617；保留整理说明与署名",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
+    },
+    {
+      "id": "S06",
+      "category": "reading",
+      "title": "macOS Claude 清理教程（保留 CLI，脱敏阅读版）",
+      "original_filename": "macOS Claude 清理教程 保留 CLI.md",
+      "original_sha256": "c49c3bfab9823e15a46bc13aeccf2045dd16bb8d3e553b90ae3aca2f52d75f99",
+      "path": "sources/S06-macos-cleanup-sanitized.md",
+      "distributed_sha256": "2fc1d7694bd636b2bd449a31961872958155af78855b921caf9f72a796498a91",
+      "changes": [
+        "增加公开脱敏阅读版说明",
+        "移除原第 230–259 行个人用户名、私有备份路径和机器执行历史；替换为通用验收提示",
+        "保留备份敏感性与回滚风险说明"
+      ],
+      "attribution": "用户提供的教程；个人机器执行记录已脱敏，不代表读者机器状态",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
+    },
+    {
+      "id": "S07",
+      "type": "checklist",
+      "category": "reading",
+      "title": "VPS IP 质量与网络测试清单（精简版）",
+      "original_filename": "NodeSeek_常用VPS脚本_可直接执行版(1).md",
+      "original_sha256": "ba1c1f4b4a7c6f9737436c9b488bcb6d34f69c8e9687fdfcbb75b66eeb3767a3",
+      "path": "sources/S07-vps-script-catalog.md",
+      "distributed_sha256": "ffbc46c8835389ee68fcc476570a7bac87ee498a80f9d0437e77034bd0a49663",
+      "changes": [
+        "2026-10-21 所有者将原目录精简为 IP 质量与网络测试清单，删除其余命令（重装系统、改网络、改防火墙等）"
+      ],
+      "attribution": "原帖 https://www.nodeseek.com/post-183694-1；本版为所有者精简清单",
+      "redistribution": "用户在允许公开来源资料后新增的原设计 S07 参考，不延伸到下载或再分发上游脚本",
+      "limitations": [
+        "第三方脚本和网站，未经本项目审计，未执行其中任何命令",
+        "多数为 curl | bash 远程执行，须先审阅再在用户的 VPS 上运行",
+        "测试结果不能推导免封概率或 IP 纯净度门槛",
+        "带宽、磁盘、CPU 测试可能产生流量与资源成本"
+      ]
+    },
+    {
+      "id": "S08",
+      "category": "reading",
+      "title": "VPS Claude 教程：极低的封号风险（11 页 PDF）",
+      "original_filename": "VPS Claude教程 极低的封号风险 Q群 1124987353.pdf",
+      "original_sha256": "8b0afec499f0d8c12c6e8594947e0594ac4e9622c35d602ca35e3a8e2cc01013",
+      "path": "sources/S08-vps-claude-tutorial.pdf",
+      "distributed_sha256": "8b0afec499f0d8c12c6e8594947e0594ac4e9622c35d602ca35e3a8e2cc01013",
+      "changes": [],
+      "attribution": "保留所提供 PDF、标题及其中相关链接",
+      "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可",
+      "limitations": [
+        "教程中的命令由用户或 Agent 在用户授权的 SSH 会话里运行",
+        "第 3、4、5 页的截图已在文字版文末转述，细节以 PDF 为准"
+      ],
+      "companions": [
+        {
+          "path": "sources/S08-extracted-text.md",
+          "sha256": "c806fd5e26da8721f97ad2cc0bc11cdecf1114d12d9ca3c80453fafb0c09c505",
+          "limitations": [
+            "提取 PDF 文字层，并在文末转述第 3 到 5 页的截图",
+            "未经完整人工转录，不作为完整原文替代"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S10",
+      "category": "reading",
+      "title": "Windows 本机路线、Killswitch 与自建 VPS 部署经验（完整脱敏版）",
+      "original_filename": "Claude-Guardian-Windows部署经验记录.md",
+      "original_sha256": "f9f61642cd72607045bc61dca1d5903717ebf4c463735d9762670005f650dddf",
+      "path": "sources/S10-windows-deployment-sanitized.md",
+      "distributed_sha256": "4193e4a1ff0194f6f8d82ad3b9f15af2ee413b3bdf93221fe4a15cdebf7f6bb1",
+      "changes": [
+        "2026-11-03 所有者授权整份脱敏收录；保留全部章节、代码示例、部署结果、待办和晚间桌面开关事故复盘",
+        "替换真实主机名、用户名、用户路径、Tailnet/路由器/出口地址、密码与出口短哈希；不随包提供原始机器记录",
+        "新增按主题的章节导航和稳定锚点；编者注区分原作者观察、版本相关判断、工具实际能力与未验证状态",
+        "2026-11-04 按所有者归类，在编者注和导航中将远程操作指向本机高级扩展；本机从第二节开始，完整案例正文与顺序不变"
+      ],
+      "attribution": "项目所有者 DUNHKPcc 提供的 2026-11-02～11-03 实战记录；新增说明标为编者注",
+      "redistribution": "所有者 2026-11-03 明确授权全文脱敏后收录项目；保留原文第三方项目名称与链接，不重新许可第三方组件",
+      "limitations": [
+        "历史实战报告，本次入库未重新连接原设备或独立复验，不代表所有 Windows/代理版本",
+        "REALITY 全系不兼容、UDP 默认关闭与接口 GUID 机制保留为原作者判断，不推广为通则",
+        "STUN 通过不代证浏览器 WebRTC；严格路由、浏览器验收与生命周期待办不能写成完成",
+        "命令只是阅读示例，依赖安装、防火墙切换、远程演练与凭据操作仍须相应授权"
+      ]
+    }
+  ],
+  "collections": [
+    {
+      "id": "R01",
+      "category": "reading",
+      "title": "VPS 推荐报告集（业务 / 性价比 / 高端家宽）",
+      "original_filename": "VPS 推荐 业务 / 性价比 / 高端家宽 三个文件夹（17 份 PDF）",
+      "original_sha256": "7b16eb6c06c9aa98f06078c537681dad9bcd2b052aea7bf4ef60fd16e697d243",
+      "path": "sources/vps-recommendations/INDEX.md",
+      "distributed_sha256": "7b16eb6c06c9aa98f06078c537681dad9bcd2b052aea7bf4ef60fd16e697d243",
+      "changes": [
+        "2026-10-21 所有者提供；PDF 用 Ghostscript（/ebook，图像 130dpi）压缩以减小体积，页面内容与链接保留，个别字符的文字层提取可能略有缺失；含 emoji 的中文文件名改为 ASCII 文件名（原名与原始哈希见各 companion）；INDEX.md 为本项目编写的索引"
+      ],
+      "attribution": "所有者提供的整理报告，保留原文中的商家与测评来源链接",
+      "redistribution": "所有者放入技能作为资料；不延伸到商家页面或第三方测评原文的再分发",
+      "limitations": [
+        "价格、配置、测试均为历史记录，不代表当前套餐",
+        "星级为报告作者的推荐指数，非本项目验证结论",
+        "千宿网络、NodeMach 两份报告含商家推广或邀请链接，不作推荐或排序依据",
+        "压缩后约 15MB",
+        "压缩版的文字层可能缺字，复制或搜索中文时以页面显示为准"
+      ],
+      "companions": [
+        {
+          "path": "sources/vps-recommendations/biz-aws-ec2-taipei.pdf",
+          "sha256": "ea36e2d5e8a8ebbba376fbe226c6f1a75c255e9c0fbb9748dd98ff771823b449",
+          "original_filename": "VPS-推荐报告-AWS EC2 台北 t3.micro 🌟🌟🌟.pdf",
+          "original_sha256": "8924a03e1e9d198583dd4f154ab8a40088cf4586b65264ada0fbca6ba0d4ced0"
+        },
+        {
+          "path": "sources/vps-recommendations/biz-aws-lightsail-my.pdf",
+          "sha256": "a3cbba0bf50b694711454c10fa8ff6254fcfb8a248e239b9d9d6df0cf46386c1",
+          "original_filename": "VPS-推荐报告-AWS Lightsail 马来西亚 2C2G 🌟🌟🌟.pdf",
+          "original_sha256": "989afde43063f6f398fcf0e3f13ca78b26880ff1602bd930fe2e49fec78cd59a"
+        },
+        {
+          "path": "sources/vps-recommendations/biz-azure-sg-b2ats.pdf",
+          "sha256": "186c842f825380375baea2d0c217303627c1016b856b36b61447e00143edcedb",
+          "original_filename": "VPS-推荐报告-Azure 新加坡 B2ats_v2 🌟🌟🌟.pdf",
+          "original_sha256": "bb4759bcabd5f93b01c3348604d87e5a60b66a2eafc969789575c62a91eb6995"
+        },
+        {
+          "path": "sources/vps-recommendations/biz-azure-jp-b2pts.pdf",
+          "sha256": "9163a7241278fb72c28fcb84999c2cd6cd039ef4eb45a42e2c4f6f5495f7ac84",
+          "original_filename": "VPS-推荐报告-Azure 日本东部 B2pts_v2 ARM 🌟🌟🌟.pdf",
+          "original_sha256": "1bbd29d72ff31fbdbb2ed722188591d6ac8eb9d90c6b4fc4b4eee612f05b32e4"
+        },
+        {
+          "path": "sources/vps-recommendations/biz-dmit.pdf",
+          "sha256": "c8795af8000e5282cd96066ce9e5afd55ddcb381908d1a733a962311ce1f350a",
+          "original_filename": "VPS-推荐报告-DMIT 产品线与美西线路 🌟🌟🌟🌟.pdf",
+          "original_sha256": "fd225c8e326b1087a96b47fd01bd0633bb22f3064cd38f78fb51ce96f0a2f5fa"
+        },
+        {
+          "path": "sources/vps-recommendations/value-vmiss.pdf",
+          "sha256": "798e3ad552d16526f31a427be8633feeaef99396447128ec92e7be438fe913be",
+          "original_filename": "VPS-推荐报告-VMISS 美西三网优化 🌟🌟🌟🌟.pdf",
+          "original_sha256": "1de82b4dc4f2bd0c592e835e8def124634de489d78ea8c536d9981a3a10ef56b"
+        },
+        {
+          "path": "sources/vps-recommendations/value-vmrack.pdf",
+          "sha256": "d5b154916257b40ebebfe0bc3891211377b4292529ecff3395e426a883ad38bc",
+          "original_filename": "VPS-推荐报告-VMRACK L3 三网优化 🌟🌟🌟.pdf",
+          "original_sha256": "4a90ca1740d7cecd99781bb342a4a24544f74681edfbe4d39ba6bbff5130506a"
+        },
+        {
+          "path": "sources/vps-recommendations/value-qiansu.pdf",
+          "sha256": "547419fda9ded8f8d0db2b2a2055ad17978d858ceed1819fa9e512a1def8bae5",
+          "original_filename": "VPS-推荐报告-千宿网络 指数 🌟🌟🌟🌟.pdf",
+          "original_sha256": "a6b2f9af15e4d761fd08fc96573e83394cb92ac75d16c669258ff8665dc395dd"
+        },
+        {
+          "path": "sources/vps-recommendations/value-bandwagon.pdf",
+          "sha256": "3308b48b3a8ebd69d1617a5b781cf497db16060b8eaf8238d4b6cde5cb44e896",
+          "original_filename": "VPS-推荐报告-搬瓦工 MINIBOX与MegaBOX 🌟🌟🌟🌟.pdf",
+          "original_sha256": "1203723c65cf81fcf41b7219c24a0fc1cc544c9cd655003500973a33bcca2f77"
+        },
+        {
+          "path": "sources/vps-recommendations/home-aaitr.pdf",
+          "sha256": "2430eaa472c4f2cbe9e6a61665f539d715f95a27f292b9a8322deae0439e57bc",
+          "original_filename": "VPS-推荐报告-AaITR 美日家宽与静态线路复测 🌟🌟🌟🌟.pdf",
+          "original_sha256": "eee89a6ef4caacd0e3e513bd6690690896ed57a51521b93001fdb68aa6f3eb91"
+        },
+        {
+          "path": "sources/vps-recommendations/home-nodemach.pdf",
+          "sha256": "ae72b03448479a01328a661f480fbd3c6f494b324d9f3090d4682e154cabdac8",
+          "original_filename": "VPS-推荐报告-NodeMach(VIRCS) 🌟🌟🌟🌟🌟.pdf",
+          "original_sha256": "75d1808c94b04823a35f0d2e6c21b979c7cef2c6490b92b624ee875e75279e6a"
+        },
+        {
+          "path": "sources/vps-recommendations/home-novixlink.pdf",
+          "sha256": "6e3b937e1ddecda720d1cbe963b74e89d56ad3945c7bbb3320fbb0bbcd01aae3",
+          "original_filename": "VPS-推荐报告-NovixLink 美国COX家宽 🌟🌟🌟.pdf",
+          "original_sha256": "e1d8e61034a17398bde912ddacdb7aa7a8ce8d255e72c35afcfa67844cde0507"
+        },
+        {
+          "path": "sources/vps-recommendations/home-qqpw.pdf",
+          "sha256": "006fe7813f52e7fa2c9c38fea62d3d92301128f71a4ee310a35c57b8e8be2118",
+          "original_filename": "VPS-推荐报告-QQPW 夏威夷Hawaiian家宽 🌟🌟🌟🌟.pdf",
+          "original_sha256": "95b3cd54bc1560dd1a552cb294bef4898f498f765decac03317f007b1be9805b"
+        },
+        {
+          "path": "sources/vps-recommendations/home-radonet.pdf",
+          "sha256": "92d639b7beb386af227cddbc77be47bfd8dfb75c03c1f7b26dc2c01f9c23d730",
+          "original_filename": "VPS-推荐报告-RadoNet 日本SoftBank静态NAT 🌟🌟🌟🌟.pdf",
+          "original_sha256": "3bfe5bae074d862959c72c5e86c13eaf155c7be5e5f929981e00e02f5e216bd2"
+        },
+        {
+          "path": "sources/vps-recommendations/home-residentialvps.pdf",
+          "sha256": "54b41ee0b058a39344d1640fa388a4e2c904e3e410ba0e005897468a5ffc6932",
+          "original_filename": "VPS-推荐报告-ResidentialVPS 美国AT&T家宽 🌟🌟🌟.pdf",
+          "original_sha256": "846fe09c5e5ffadfdb9181296ef2d0b0ce0e98d54a733711a5d1a3675ad6d26d"
+        },
+        {
+          "path": "sources/vps-recommendations/home-tokyonline.pdf",
+          "sha256": "7f33e0fca5082f45e5340f1f44f8a59e3fca615c32fa036a768b4a54ef58e409",
+          "original_filename": "VPS-推荐报告-Tokyonline 日本KDDI家宽 🌟🌟.pdf",
+          "original_sha256": "1b47646714faf98e4dd9bed4bf3ea5679a600957be4fca066adce56324ba2740"
+        },
+        {
+          "path": "sources/vps-recommendations/home-zorocloud.pdf",
+          "sha256": "70e9279e9f0bbee7de517d835d501c0f6cea58eb96511319b4334c3683d82bc5",
+          "original_filename": "VPS-推荐报告-ZoroCloud 美国AT&T静态家宽 🌟🌟🌟.pdf",
+          "original_sha256": "e6db736802c4cb0d6b5a92440dc52205d5993371374cbf58f6c0dd29c7bf15f4"
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "category": "reading",
+      "title": "VPS 线路优化与家宽中转教程",
+      "original_filename": "VPS 线路优化与家宽中转教程.md",
+      "original_sha256": "5401ecd636699bf2d41e3196c44f52e1a892443c9e409860a497e97890768ce6",
+      "path": "sources/R02-vps-line-optimization.md",
+      "distributed_sha256": "c339fd4c511c5c2a007eb6f912211feb0a199dacaeb36ca840f80c87d14edcfb",
+      "changes": [
+        "2026-10-21 将 Obsidian 的 ![[图源/…png]] 图片链接改为相对路径图片，将 [[…]] 内部链接改为指向 R01 报告 PDF 的相对链接；其余文字不变"
+      ],
+      "attribution": "整理日期 2026-10-17，文中保留 Linux.do、NodeSeek、V2EX 等来源链接",
+      "redistribution": "所有者提供；两张链路图随包提供（R02-images/）",
+      "limitations": [
+        "命令由用户或 Agent 在用户授权的 SSH 会话里运行"
+      ],
+      "companions": [
+        {
+          "path": "sources/R02-images/single-relay.png",
+          "sha256": "1d0ba47a9b0410a7daa84df69371bfd03808ac184d5054978cd26da48ac17d39",
+          "original_filename": "VPS-线路优化-单端中转.png"
+        },
+        {
+          "path": "sources/R02-images/dual-tunnel.png",
+          "sha256": "f4fd0f37a96768205339f5c2de6a4229fad5593708a830eaebdcdd848701e0cc",
+          "original_filename": "VPS-线路优化-双端隧道.png"
+        }
+      ]
+    }
+  ]
+}

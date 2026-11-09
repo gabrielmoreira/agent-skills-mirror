@@ -2,7 +2,7 @@
 repo: lidge-jun/opencodex
 repoUrl: https://github.com/lidge-jun/opencodex.git
 refType: branch
-ref: main
+ref: dev
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 89
 |---------------|-------|
 | Repo          | `lidge-jun/opencodex` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 5 |
 | Files         | 89 |

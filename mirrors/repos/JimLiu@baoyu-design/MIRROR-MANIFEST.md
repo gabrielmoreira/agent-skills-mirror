@@ -114,8 +114,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/vendor/react-dom.production.min.js`](skills/claude-design-system/scripts/editor/artifact-type/vendor/react-dom.production.min.js) |
 | 54 | ✓ | [`skills/claude-design-system/scripts/editor/artifact-type/vendor/react.production.min.js`](skills/claude-design-system/scripts/editor/artifact-type/vendor/react.production.min.js) |
 | 55 | ✓ | [`skills/claude-design-system/scripts/editor/assets/anthropicons-fizzy-lake-BSKaZSiT.woff2`](skills/claude-design-system/scripts/editor/assets/anthropicons-fizzy-lake-BSKaZSiT.woff2) |
-| 56 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-P4rxb6lX.css`](skills/claude-design-system/scripts/editor/assets/index-P4rxb6lX.css) |
-| 57 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-vF5SCZhf.js`](skills/claude-design-system/scripts/editor/assets/index-vF5SCZhf.js) |
+| 56 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-DyB-rYp6.js`](skills/claude-design-system/scripts/editor/assets/index-DyB-rYp6.js) |
+| 57 | ✓ | [`skills/claude-design-system/scripts/editor/assets/index-P4rxb6lX.css`](skills/claude-design-system/scripts/editor/assets/index-P4rxb6lX.css) |
 | 58 | ✓ | [`skills/claude-design-system/scripts/editor/index.html`](skills/claude-design-system/scripts/editor/index.html) |
 | 59 | ✓ | [`skills/claude-design-system/scripts/editor/share-ui.js`](skills/claude-design-system/scripts/editor/share-ui.js) |
 | 60 | ✓ | [`skills/claude-design-system/scripts/editor/third-party-licenses.txt`](skills/claude-design-system/scripts/editor/third-party-licenses.txt) |
@@ -143,7 +143,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 82 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json`](skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json) |
 | 83 | ✓ | [`skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-CfC2JIbf.woff2`](skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-CfC2JIbf.woff2) |
 | 84 | ✓ | [`skills/claude-design/scripts/editor/assets/index-B-Upphbb.css`](skills/claude-design/scripts/editor/assets/index-B-Upphbb.css) |
-| 85 | ✓ | [`skills/claude-design/scripts/editor/assets/index-BCan_JNh.js`](skills/claude-design/scripts/editor/assets/index-BCan_JNh.js) |
+| 85 | ✓ | [`skills/claude-design/scripts/editor/assets/index-CLSAsUf1.js`](skills/claude-design/scripts/editor/assets/index-CLSAsUf1.js) |
 | 86 | ✓ | [`skills/claude-design/scripts/editor/index.html`](skills/claude-design/scripts/editor/index.html) |
 | 87 | ✓ | [`skills/claude-design/scripts/editor/share-ui.js`](skills/claude-design/scripts/editor/share-ui.js) |
 | 88 | ✓ | [`skills/claude-design/scripts/editor/third-party-licenses.txt`](skills/claude-design/scripts/editor/third-party-licenses.txt) |
@@ -197,8 +197,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 136 | ✓ | [`skills/claude-slides/scripts/editor/artifact-type/reference/google-fonts-reserved.json`](skills/claude-slides/scripts/editor/artifact-type/reference/google-fonts-reserved.json) |
 | 137 | ✓ | [`skills/claude-slides/scripts/editor/assets/anthropicons-fizzy-lake-D4byUNVq.woff2`](skills/claude-slides/scripts/editor/assets/anthropicons-fizzy-lake-D4byUNVq.woff2) |
 | 138 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-BCy7EbiI.css`](skills/claude-slides/scripts/editor/assets/index-BCy7EbiI.css) |
-| 139 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-D55QgVzE.js`](skills/claude-slides/scripts/editor/assets/index-D55QgVzE.js) |
-| 140 | ✓ | [`skills/claude-slides/scripts/editor/assets/woff2-decoder-CNWy3Xyb.js`](skills/claude-slides/scripts/editor/assets/woff2-decoder-CNWy3Xyb.js) |
+| 139 | ✓ | [`skills/claude-slides/scripts/editor/assets/index-BIvbGgb1.js`](skills/claude-slides/scripts/editor/assets/index-BIvbGgb1.js) |
+| 140 | ✓ | [`skills/claude-slides/scripts/editor/assets/woff2-decoder-ByxtpGxr.js`](skills/claude-slides/scripts/editor/assets/woff2-decoder-ByxtpGxr.js) |
 | 141 | ✓ | [`skills/claude-slides/scripts/editor/index.html`](skills/claude-slides/scripts/editor/index.html) |
 | 142 | ✓ | [`skills/claude-slides/scripts/editor/node/compiler.cjs`](skills/claude-slides/scripts/editor/node/compiler.cjs) |
 | 143 | ✓ | [`skills/claude-slides/scripts/editor/node/third-party-licenses.txt`](skills/claude-slides/scripts/editor/node/third-party-licenses.txt) |

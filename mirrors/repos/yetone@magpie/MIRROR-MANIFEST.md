@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 23 file(s) materialized.
+Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 23 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 23 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,14 +77,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`docs/subsystems/plugin-tools.md`](docs/subsystems/plugin-tools.md) |
 | 14 | ✓ | [`docs/subsystems/provider-plugins.md`](docs/subsystems/provider-plugins.md) |
 | 15 | ✓ | [`docs/subsystems/providers-accounts.md`](docs/subsystems/providers-accounts.md) |
-| 16 | ✓ | [`docs/subsystems/sync-backup.md`](docs/subsystems/sync-backup.md) |
-| 17 | ✓ | [`internal/sessions/testdata/droid-skills/skills/greet-user/SKILL.md`](internal/sessions/testdata/droid-skills/skills/greet-user/SKILL.md) |
-| 18 | ✓ | [`internal/sessions/testdata/droid-skills/skills/wave-hand/SKILL.md`](internal/sessions/testdata/droid-skills/skills/wave-hand/SKILL.md) |
-| 19 | ✓ | [`internal/sessions/testdata/grok-tools/skills/greet-user/SKILL.md`](internal/sessions/testdata/grok-tools/skills/greet-user/SKILL.md) |
-| 20 | → | [`docs/code-standards.md`](docs/code-standards.md) |
-| 21 | → | [`docs/contributors.md`](docs/contributors.md) |
-| 22 | → | [`docs/subsystems/README.md`](docs/subsystems/README.md) |
-| 23 | → | [`LESSONS.md`](LESSONS.md) |
+| 16 | ✓ | [`docs/subsystems/skill-router.md`](docs/subsystems/skill-router.md) |
+| 17 | ✓ | [`docs/subsystems/sync-backup.md`](docs/subsystems/sync-backup.md) |
+| 18 | ✓ | [`internal/sessions/testdata/droid-skills/skills/greet-user/SKILL.md`](internal/sessions/testdata/droid-skills/skills/greet-user/SKILL.md) |
+| 19 | ✓ | [`internal/sessions/testdata/droid-skills/skills/wave-hand/SKILL.md`](internal/sessions/testdata/droid-skills/skills/wave-hand/SKILL.md) |
+| 20 | ✓ | [`internal/sessions/testdata/grok-tools/skills/greet-user/SKILL.md`](internal/sessions/testdata/grok-tools/skills/greet-user/SKILL.md) |
+| 21 | ✓ | [`site/public/llms.txt`](site/public/llms.txt) |
+| 22 | → | [`docs/code-standards.md`](docs/code-standards.md) |
+| 23 | → | [`docs/contributors.md`](docs/contributors.md) |
+| 24 | → | [`docs/subsystems/README.md`](docs/subsystems/README.md) |
+| 25 | → | [`LESSONS.md`](LESSONS.md) |
 
 ---
 

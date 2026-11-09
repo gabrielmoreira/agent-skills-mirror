@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 18 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,15 +68,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`src/features/chat/side-chat/AGENTS.md`](src/features/chat/side-chat/AGENTS.md) |
 | 8 | ✓ | [`src/features/chat/tabs/AGENTS.md`](src/features/chat/tabs/AGENTS.md) |
 | 9 | ✓ | [`src/features/chat/zen/AGENTS.md`](src/features/chat/zen/AGENTS.md) |
-| 10 | ✓ | [`src/providers/antigravity/AGENTS.md`](src/providers/antigravity/AGENTS.md) |
-| 11 | ✓ | [`src/providers/claude/AGENTS.md`](src/providers/claude/AGENTS.md) |
-| 12 | ✓ | [`src/providers/codex/AGENTS.md`](src/providers/codex/AGENTS.md) |
-| 13 | ✓ | [`src/providers/deepseek/AGENTS.md`](src/providers/deepseek/AGENTS.md) |
-| 14 | ✓ | [`src/providers/grok/AGENTS.md`](src/providers/grok/AGENTS.md) |
-| 15 | ✓ | [`src/providers/opencode/AGENTS.md`](src/providers/opencode/AGENTS.md) |
-| 16 | ✓ | [`src/providers/pi/AGENTS.md`](src/providers/pi/AGENTS.md) |
-| 17 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
-| 18 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 10 | ✓ | [`src/features/settings/AGENTS.md`](src/features/settings/AGENTS.md) |
+| 11 | ✓ | [`src/providers/antigravity/AGENTS.md`](src/providers/antigravity/AGENTS.md) |
+| 12 | ✓ | [`src/providers/claude/AGENTS.md`](src/providers/claude/AGENTS.md) |
+| 13 | ✓ | [`src/providers/codex/AGENTS.md`](src/providers/codex/AGENTS.md) |
+| 14 | ✓ | [`src/providers/deepseek/AGENTS.md`](src/providers/deepseek/AGENTS.md) |
+| 15 | ✓ | [`src/providers/grok/AGENTS.md`](src/providers/grok/AGENTS.md) |
+| 16 | ✓ | [`src/providers/opencode/AGENTS.md`](src/providers/opencode/AGENTS.md) |
+| 17 | ✓ | [`src/providers/pi/AGENTS.md`](src/providers/pi/AGENTS.md) |
+| 18 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
+| 19 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 
 ---
 

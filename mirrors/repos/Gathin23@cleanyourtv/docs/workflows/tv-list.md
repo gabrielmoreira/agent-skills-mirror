@@ -27,12 +27,14 @@
    ```
    `tv` and `os` fill the folder's row in the TV tables, `brand` the README's brand grid (spelled as it is there),
    `notes` the Notes cell in `examples/README.md`: one line of Markdown, links relative to `examples/`, `\|`
-   for a pipe. One thing in it is read back: a package named in backticks with `kept`, `disabled` or
+   for a pipe. Two things in it are read back: a package named in backticks with `kept`, `disabled` or
    `refused` straight after it is a claim about what the list does, and
    `tests/test_example_readme_package_fates.py` holds it to the list - `kept` and `refused` have to be off
    an active line, `disabled` on one (the stock launcher `launcher/build-and-install.sh` takes Home from is
    the exception) - so a package left commented out is not `disabled` however the comment reads, and a
-   package the list still sends is not `kept`. Any other wording after the name claims nothing, which is
+   package the list still sends is not `kept`. The other is a package count ("19 packages"), which the same
+   test compares with the number of packages the list sends, so a line commented out of `debloat.txt` moves
+   the number in the row with it. Any other wording after the name claims nothing, which is
    how `notes` stays free prose. `readme_os` is the one optional key: it is the OS cell of the two-column
    table in `README.nl.md`,
    for a set whose row there should read shorter than the same set's row in `examples/README.md` - that table
@@ -47,15 +49,22 @@
    picture and leaves the sentence where it was - the round that took the tree to 387 models shipped 380 in the
    story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
    to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
-   card states (387, 103)`), so they move in the same commit.
+   card states (387, 103)`), so they move in the same commit. The brand grid itself is hand-kept on one page:
+   `README.he.md` carries neither the card nor the `tv-brands` markers, so `tools/gen_tables.py` cannot write
+   it and `tests/test_readme_he_brand_block.py` reads its grid, its two-list line, its single-list names and
+   its `<summary>` numbers against README.md's copy - a regeneration moves the Hebrew page with it, while a
+   list PR, which touches only its own folder, leaves both pages where they were and stays green.
 6. A `README.md` for TV-specific notes and a `config.json` with the dock are welcome in the folder. Notes are
    free prose; three things in a README are read back, two of them against the list beside it.
-   A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages") is
-   compared with what `tools/disable.sh` would send for the list, so a line added or commented out later moves
-   the number in the README with it: `tests/test_example_list_count.py` answers
+   A package count ("The 38 packages that were disabled", "the debloat list disables 71 packages", "The
+   list disables **N packages**", "The list contains N packages", "`debloat.txt` is the list: N
+   packages") is compared with what `tools/disable.sh` would send for the list, so a line added or
+   commented out later moves the number in the README with it: `tests/test_example_list_count.py` answers
    `examples/<folder>/README.md says 12 packages in the debloat.txt row and its debloat.txt carries 8`. A
-   sentence the page wraps across two lines is still read as one sentence, so a break cannot hide the
-   number. Its undo
+   sentence that only says "The list disables 10 packages" is read while `debloat.txt` is the folder's
+   only list, and not in the folders that also ship a `debloat-keep-cast.txt` or another list beside it,
+   where those words could be about that file. A sentence the page wraps across two lines is still read
+   as one sentence, so a break cannot hide the number. Its undo
    is the other: the restore command a README shows passes the same stock launcher as the list's own Undo line,
    or none where the list passes none, because those two are where an owner looks for the way back and the copy
    that passes a different package leaves the stock home disabled. `tests/test_folder_undo_agrees.py` names each

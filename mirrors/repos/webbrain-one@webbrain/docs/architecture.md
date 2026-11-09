@@ -73,7 +73,7 @@ Model tiering is separate from mode: `compact | mid | full` controls how many no
 
 **Automatic mode selection** is the default: the side panel sends `mode: 'auto'`. The composer's "!" menu also has an Auto | Ask | Act | Dev picker. Ask, Act or Dev chosen there is kept for the tab's chat (`composer-mode-pin.js`, one session-storage key per tab, so a reopened panel finds it): the panel then sends that mode as in Manual, and the menu's trigger shows it. A new chat or a recovered history record returns to Auto; Act and Dev pass the same checks as the shortcuts (selection scope, in-browser model, Compact for Dev), and the standalone window hides the picker. The agent routes the turn in `auto-mode.js`, shared by both builds:
 
-1. Run state decides alone when it can: a continuation keeps an action run's mode. A continuation of a read-only run (Retry, Continue, or a quota or cost resume, which the panel sends as `auto` for a run it saw routed to Ask, marked `data-auto-routed`) is routed like a new turn from the continued task's own words, its request and the answers, updates and corrections bound to it, never from WebBrain's continuation text; its hand-off must quote those words, and the background's `continue` handler restarts it like `chat` does. Without such words it stays in Ask. A turn for an in-browser (WebGPU) model, which runs as a tiny Ask, a selected-text scope, the standalone window, a Cloud run and a message that carries an `<untrusted_page_content>` block (a selection shortcut with page context) stay in Ask; and a video attachment, which can only be uploaded, needs Act. Context-menu and selection prompts are sent as Ask, as in Manual.
+1. Run state decides alone when it can: a continuation keeps an action run's mode. A continuation of a read-only run (Retry, Continue, or a quota or cost resume, which the panel sends as `auto` for a run it saw routed to Ask, marked `data-auto-routed`) is routed like a new turn from the continued task's own words, its request and the answers, updates and corrections bound to it, never from WebBrain's continuation text; its hand-off must quote those words, and the background's `continue` handler restarts it like `chat` does. Without such words it stays in Ask. A turn for an in-browser (WebGPU) model, which runs as a tiny Ask, a selected-text scope, the standalone window, a Cloud run and a message that carries an `<untrusted_page_content>` block (a selection shortcut with page context) stay in Ask; and a video attachment, which can only be uploaded, needs Act. Past those, the user's answer to the clarifying question an Act or Dev run's planner asked keeps that run's mode (`clarification_answer`): the task was already routed or handed to it, and routed again from the answer's own words ("the second one") it could fall to Ask, whose hand-off may only quote this turn's words, not the task's. Context-menu and selection prompts are sent as Ask, as in Manual.
 2. Otherwise the decision model answers the fixed-choice `run_mode` question (`semantic-decisions.js`) about the user's own words, the previous turn's mode and the earlier task. It never sees page text, title or address. The question starts as soon as the turn's cost state exists and is awaited after `_enrichUserMessageWithCurrentPage`, so it overlaps page capture; after capture the turn waits at most `AUTO_MODE_ROUTE_GRACE_MS` (250 ms). Only a sure `act` or `dev` answer (the choices are `authorizing`) selects an action mode; Compact maps Dev to Act. The same decision request also asks `plan_need` about the same words (`direct`, `plan` or `unclear`); a sure answer travels with an action route as `modeRoute.plan`, which lets Try skip the full planner for a direct task ([Step 4](#step-4-plan-before-act-gate)). It adds no request and no data. The routed mode replaces the provisional Ask setup: run mode, system prompt, the turn's trusted runtime line and dialog handling (Chrome) or the BiDi run (Firefox).
 3. Without a sure answer, or with no decision model, the turn starts in Ask at once. So does a turn whose user sent a correction while the route ran or while the action run's browser setup started (`route_corrected`): the route did not read it, so an action answer is not trusted. That check follows the setup's last await, so nothing arrives between it and the committed mode. Its tools add `request_action_mode`, and its system prompt adds `AUTO_MODE_ASK_NOTE`. The tool is never dispatched. Page updates that arrive while the model decides (a timeline's counters and relative times, page-script focus) do not discard the call (`page-feedback-policy.js` treats it like the other page-independent tools): it never runs on the page, and the action run reads the page again before acting. The person's own input on the page, a navigation or a correction still makes the model decide again. The loop accepts the call only when its `evidence` quotes the user's own words (the request, or a correction sent during the turn): word for word, though quotation marks around it, a trailing full stop, letter case and curly versus straight quotes and apostrophes do not count against it (`readModeEscalation`), and the hand-off carries the matched words as the user wrote them. Because the calling model has read the page, it also needs the same `run_mode` question, about the request with its corrections and asked again without any page content (decision model, then the active model with a quoted reason; a sure routing answer is reused from the semantic-decision cache) to answer act or dev. A correction sent while that check runs supersedes the call like any pending correction: the next step applies it and the model asks again, so a correction that needs Dev gets a Dev hand-off. Corrections sent during the read-only pass, applied or still pending, go with the hand-off: they stay journaled under the same request, and the action run queues them before its first model or tool boundary, so it never acts on the uncorrected request. A correction that arrives after the check (while the hand-off is saved) marks the escalation `reroute`: the background then restarts the request in Automatic again, and that route reads the request with its carried corrections; a third such restart runs read-only (`reroute_limit`, without the hand-off tool): it applies the corrections and answers, and never runs in a mode chosen before the latest correction. An accepted hand-off restores the conversation and per-tab turn state captured before the turn gathered its context (approved plans, site-adapter and API notes, the follow-up allowance, the durable-turn marker) and returns; the background's `chat` handler then restarts the same request with `modeEscalation` in the requested mode, under the same request ID, so Stop still cancels it. The page-free check asks `plan_need` alongside `run_mode` too, and a sure answer rides along as `modeEscalation.plan`. The action run's planner gate reads the request again before any action. A refused call gets a tool result with the reason (`modeEscalationRefusal`: a bad mode, an empty, unmatched or too short quote, or a page-free answer that does not confirm it) and whether it may call again; a second refusal withdraws the tool and says so. Traces record a `mode_escalation_refused` note with the reason code, the attempt and whether the tool was withdrawn, never the quote. Chrome drains Dev diagnostics only when a routed turn after Dev ends without handing itself to Dev.
 
@@ -1030,7 +1030,21 @@ keeping a post up, and whether the candidate summary gives the result, only
 says that an answer was given, or only describes what will be done next. A sure
 "expects later" answer adds the note that publication was verified while later
 votes and moderation remain unverified; a summary read as a claim or a plan is
-sent back once for the actual result. Where no judge runs, a model reads the
+sent back once for the actual result. After a run read a page in the background
+(a successful GET `fetch_url` or a `research_url`; the run keeps the site and
+the `retrieval` flags each reported), the judge also answers whether the
+request says how a page is to be opened or read (in the background, without
+opening a tab, keeping the current tab). A sure "asked" adds one line built
+from those reads, such as "Read in the background from example.org:
+fetched directly, without opening a tab or changing your active tab." The
+words "or changing your active tab" appear only when every other tool of the
+run only read its tab or used no page (`changedRunTab`): after a navigation,
+click, scroll or any tool not known to leave the tab alone, the line stops at
+"without opening a tab". The reads and whether the run changed its tab are
+kept across a steering revision. A `research_url` read says the browser was
+asked to close its background tab, since that close is requested, not
+confirmed. Without such a read the question is not sent. Where no judge runs,
+a model reads the
 summary with the `done_summary` question: a short Ask answer with no structure
 of its own (a colon, line breaks or a list mean it carries content), and an Act
 run's failed or partial summary, which may also blame the agent's own Ask or
@@ -1038,6 +1052,31 @@ read-only mode and then gets the runtime-mode correction. A planner-shaped
 object is recognized by its shape, and one the model rates at zero confidence
 is its refusal; a plain final message in an Act run gets one recovery whatever
 it says. No word list reads a summary or a final message.
+
+An Ask answer can be written from the start of a long page only: a page
+observation cut to fit the context, a first tree page or a first read_page
+window. A page-content result too large for its tool result is cut inside
+`pageContent`, so it stays JSON, ends with `[...page content truncated]` and
+its `notice` names `read_page({"includeChrome":false,"limit":6000})` for the
+whole page (or, for a subtree read by `ref_id`, the same element in smaller
+pages). `page-read-coverage.js` records, per run, whether the page content the
+model was shown was cut off and whether read_page windows or full-depth tree
+slices later joined up to the end of the page (a tree whose walk left out
+content below its depth, `depthTruncated`, never completes it). When an Ask
+answer (done or a plain final) arrives while the rest is unread, the
+`page_read_scope` question
+reads the request once per run: a sure `whole_page` sends the answer back once
+(`read-coverage-incomplete`) with the exact call that continues the read, such
+as the next read_page window in the largest windows read_page returns. A
+recommended action decides it by construction: Summarize this page is the
+whole page, and an action whose first read is not of the page text (a video's
+transcript) is not. An answer given again without reading on is accepted as
+partial with the note that only part of the page was read. Short pages, a
+question about one part of the page, unsure readings, requests about selected
+text, pages whose content was read through a reader of its own source (the
+open video's transcript, the tab's PDF, the framed documents, the page's own
+address fetched), Act runs and conversations (their own whole-thread check) are
+not affected.
 
 When the model request fails after an Act run sent a submission, WebBrain reads
 the page itself and completes the run only while that submission is still the
@@ -1066,7 +1105,15 @@ follow) are batched: the decision model gets one question per item in chunks of
 of an expected item that only says it is missing ("unknown", "bilinmiyor", "—")
 is found this way once, at a successful done, among values of 40 characters or
 fewer; no sure answer leaves the value counted as given. Missing values are
-otherwise JSON null. Action names in progress rows and requested field names
+otherwise JSON null. A field the item itself has no value for (a profile with
+no bio) is recorded by name: the row lists it in `emptyFields` (names match
+ignoring case), it counts as answered and is not read. A later update that
+writes a different value for a listed field takes it off the list. A field
+that is null or absent and not listed was never filled and still blocks
+success, and the refusal tells the model how to list one. Rows that list the
+first required field and hold no value for it are left out of its duplicate
+check; a listed row that holds a value is still compared. Action names in
+progress rows and requested field names
 are the canonical names the models are given; another word for one is rejected
 (progress_update) or names no field (the requirement stays incomplete).
 
@@ -1206,7 +1253,7 @@ word list: Discord's channel composer is found by its channelTextArea
 container and a channel or contact is named by the longest text of its
 selected rail link that the composer's label also contains, LinkedIn's
 conversation list by its class, a formatting toolbar by its role, WhatsApp's
-contact drawer closes through its header's one named button, and a phone
+contact drawer closes through the named button that leads its header (the one before its title when the header also holds Edit), and a phone
 number in a composer's label is taken by its digits.
 
 Chrome's one trusted retry click on a generic element whose synthetic click
@@ -1235,7 +1282,18 @@ hints in `wb_user_memory_v1` using this v1 shape:
 `{ version, updatedAt, records: [{ id, text, kind, scope, confidence, source, createdAt, updatedAt, lastUsedAt, archivedAt }] }`.
 Allowed `kind` values are `preference`, `profile_hint`, and
 `workflow_preference`. Normalization drops malformed records, obvious secrets,
-page facts, attachment bodies, and duplicate normalized text.
+page facts, attachment bodies, and duplicate normalized text. `source` names
+who wrote a record's text: `manual` for `/memory --add` and an edit in
+Settings that changes the text, `auto` for auto-capture, including an
+auto-capture rewrite of a manual record. Saving the same words again (up to
+case and punctuation) takes the newer text and source, except that
+auto-capture repeating a `manual` record leaves its text, source and
+confidence alone. A `manual` record has confidence 1 (`/memory --add` saves
+it so, and a Settings edit that changes the text sets it). The sign-in
+password check takes only active `manual` records with confidence 1 as given
+by the user (`userAuthoredMemoryRecords`, `docs/security-model.md`); that
+leaves out records an older auto-capture rewrote without changing their
+source.
 
 The agent hydrates memory from local storage before the first handled message
 and listens for storage changes so live conversations refresh their system
@@ -1474,7 +1532,7 @@ promptTier                    → 'compact' | 'mid' | 'full'
 testConnection()              → { ok, error, model }
 ```
 
-`promptTier` drives both the action prompt and the normal tool subset. Local providers default to Mid, cloud providers are forced Full, and the legacy `useCompactPrompt` flag maps to Compact for existing configs. Dev mode is a separate conversation mode: Mid/Full Dev uses the selected Act tier plus `SYSTEM_PROMPT_DEV_APPENDIX`; Compact Dev is blocked before an LLM request is sent.
+`promptTier` drives both the action prompt and the normal tool subset. Local providers default to Mid (except the two local relays to the cloud, WebBrain Companion and the Local OpenAI-compatible Proxy, which default to Full), cloud providers are forced Full, and the legacy `useCompactPrompt` flag maps to Compact for existing configs. Dev mode is a separate conversation mode: Mid/Full Dev uses the selected Act tier plus `SYSTEM_PROMPT_DEV_APPENDIX`; Compact Dev is blocked before an LLM request is sent.
 
 Ollama, llama.cpp, LM Studio, and LocalAI resolve `supportsVision` from native
 server metadata before page enrichment. Explicit model/base-URL identities are

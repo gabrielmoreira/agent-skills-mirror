@@ -1,0 +1,260 @@
+# M01/M06–M09: independent environment routes
+
+中文执行摘要：本机默认建议须获得接受，VM/VPS 为独立可选方案。完整覆盖准备、接入、配置规划、后续交接、日常使用、更新、排障和恢复；本版不自动执行部署。Mac/Windows 是本机范围，Linux 客机/远端不被删除。宿主、客机、远端、容器和出口分别记录。
+
+All three routes cover preparation, existing-environment intake, proposed setup, later contact handoff, ordinary use, update rechecks, diagnosis, and recovery planning. The route procedures here are human guidance and plans, not an automated provisioning or deployment claim. Any separate adapter must establish its own implemented operations and target-platform evidence before use.
+
+## Common concepts
+
+The execution host runs Guardian; the target runs the future Claude workflow; an egress is where traffic leaves a network. An editor displayed locally can execute remotely. VPS ownership or using a VPS proxy does not make a local client a remote workspace. IP/ASN describe a sampled network, DNS resolves names, and SSH/OAuth/API keys perform different roles. Product subscription and developer API billing are separate; verify current eligibility after a permitted handoff.
+
+## R-LOCAL / local (recommended, never silently selected)
+
+Scope: macOS and Windows 10/11. Identify OS/version, Edition or relevant architecture, chosen client, installation metadata, proxy boundaries, and data protections. A browser-only task does not require Code/Desktop installation. browser-only 不能豁免整机网络要求；网络准备／修复按[现行整机默认与明确例外](agent-remediation.md#ipv4-only-policy)核对，具体接管／防护机制先核验能力、说明影响并取得批准，不默认安装防火墙。Linux desktop and mobile-only users receive clearly limited general guidance; do not claim a native adapter or force a VM/VPS migration.
+
+1. Interview and authorized native metadata reads; plan only necessary changes
+2. Identify network/browser evidence gaps and post-contact compatibility checks
+3. Explain PC-G1 and scoped handoff requirements; do not open the service to fill a PC0 gap
+4. After scoped handoff, an explicitly approved manual workflow or independently validated adapter may install the chosen client and perform real PC-G2 checks; this guide does not execute those actions
+5. Record a repeatable startup plan and recheck after relevant app/core/profile/network updates
+6. Diagnose by component; plan exact recovery with project/CLI/history protection
+
+Windows: distinguish Home from Home Single Language. Display-language licensing does not prove timezone controls are disabled. Diagnose automatic versus manual timezone, user privileges, policy, and a value reverting separately. Do not use registry hacks or unofficial Home policy-editor installs. Distinguish UI language, keyboard, regional format, app/browser language, timezone, and actual clock. Record Windows 10 maintenance arrangements when relevant; do not upgrade the OS automatically. Windows sandbox/WSL metadata is not necessarily the desktop user's configuration.
+
+macOS: identify actual version/architecture and application versus system settings. A translated process does not establish native architecture support. Permission denial is unknown/blocked, never an automatic sudo request. Built-in incoming firewall settings do not prove per-process outbound isolation. No default timezone, language, or identity changes.
+
+## R-VM / vm (optional)
+
+Existing/new VM → separate host/guest resource and architecture inventory → guest network/OS plan → shared-directory/clipboard/credential boundaries → scoped preparation evidence → explicit handoff → client compatibility/authentication plan → startup/update/backup/recovery plan.
+
+Use the user's chosen hypervisor; do not force recreation. Record NAT/bridged/other mode and actual host-versus-guest proxy reachability; guest loopback is not host loopback. Check guest compatibility independently. Snapshots may include secrets and mounted data may be outside their scope. Do not copy credentials, create snapshots, install a guest, or restore anything in preview. A snapshot cannot reverse remote account enforcement. Keep host evidence separate from guest results.
+
+WSL and containers are runtime layers, not interchangeable VM products. Record machine, namespace, networking, mounts, process location, and browser location. A container inside a VPS remains part of that VPS task. Preview adapters may be unavailable even when the conceptual route is supported.
+
+## R-VPS / vps (optional)
+
+First confirm workspace versus exit-only role. For a workspace: existing/new server → project/local-dependency fit → region/resource/cost plan → SSH and independent rescue → least-privilege development user/firewall plan → network preparation → scoped handoff → required client/authentication plan → terminal/Remote-SSH/tmux operation → optional temporary browser closure → monitoring/backups/update checks.
+
+Label every step local versus server. Reuse existing machines; do not assume an empty server, reimage, benchmark production, or purchase resources. A Linux remote server remains in scope conceptually; it does not extend the native desktop collector matrix. No SSH secrets in reports. Cloud firewall and guest firewall are separate; network modifications require a working independent rescue path. Temporary GUI access needs authentication and restricted transport, never public/no-password VNC. A remote browser is optional according to actual login needs. OAuth redirects and local callbacks must match the actual approved flow; never transfer tokens through chat.
+
+If the task depends on local GUI/software/hardware or data cannot leave the machine, flag feasibility before deployment. Extra egress is an optional requirement to assess, not a mandatory purchase. Costs, legal terms, region support, and vendors remain pending current verification. Exit changes are not proof of service eligibility or a cure for suspension.
+
+## 执行卡使用约定（M01/M08/M09）
+
+以下是可交给人的分阶段操作手册，不是自动部署能力声明。上文的 preview 指这些路线不自动执行部署；仓库某个独立适配器是否已实现，须另查其操作/版本矩阵和目标设备验收，不能由教程推断。每次只展开选中的路线。
+
+- **输入**：路线、任务、目标机器/用户/命名空间、客户端类别、已有配置、预算及数据不能离开的位置；用户回答“不知道”时先安排范围有限的只读确认
+- **阶段**：Codex 在 PC0 编排；PC-G1 只证明接触前准备；用户同意具体设备、Profile、动作和目的地后才进入 PC1；PC-G2 将无需认证和登录后项目分开；PC2 登录、支付各自授权
+- **操作卡**：每一步注明执行位置、先决条件、只读现状、拟议最小改变、副作用/保护对象、所需批准、成功证据、失败出口和恢复方法。无批准仅交付卡片，不执行
+- **证据**：记录日期、OS/客户端/代理版本、配置修订、采集来源、实际测试路径及 pass/fail/unknown/not_run/not_applicable；截图脱敏，凭据及原始订阅链接不入报告
+- **停止**：目标不匹配、权限被拒、依赖/兼容性不明、唯一控制通道会断、严格出站要求未验证，均暂停依赖步骤。只收集缺失事实，不自动 sudo、安装依赖或换路线
+- **费用**：本项目工具方案只采用免费候选/系统内置能力；不把试用期当免费。现有 VM/VPS 可复用；新 VPS、流量、备份和 Claude 服务可能收费，不能因用户选择路线而购买。零新增费用不能满足时明确 blocked，不偷偷降级或承诺免费服务
+
+### M01：五分钟术语卡与选择题
+
+| 概念 | 给初学者的解释 | 容易混淆的边界 |
+| --- | --- | --- |
+| 网页 / Desktop / Code / API | 网页在浏览器里；Desktop 是应用；Code 是开发工具；API 是程序调用服务 | 同一个品牌不等于同一安装、认证、计费或网络路径 |
+| 订阅 / API 余额 / 商店余额 / 组织席位 | 分别是产品权益、开发调用资金、商店支付资金及组织分配权限 | 钱已经充值不等于所需产品已开通 |
+| IP / ASN / DNS | IP 是某次连接可见的地址；ASN 是网络运营域；DNS 把名字解析成地址 | 地址标签/国家库可能不同；IP 分数不能证明准入或封禁原因 |
+| 代理 / TUN / 系统代理 | 都可能影响选定流量的路径，但覆盖方式不同 | 设置存在不证明应用采用，更不证明失效后不会直连 |
+| VPS / 独服 / VM | VPS 是远端租用虚拟服务器；独服是专用物理服务器；本地 VM 是宿主上的客机 | 硬件与网络标签不代表账号稳定性 |
+| 中转 / 落地 / 出口 | 用来描述链路中间节点和最终出口 | 先画实际流向，再看出口 IP 的类型（住宅、原生、双 ISP） |
+| SSH / OAuth / API Key | SSH 连接远端；OAuth 按官方流程授予访问；API Key 是调用凭据 | 不在聊天传私钥、令牌或密码；三者不能互换 |
+| 本地编辑器 / 远程扩展 | 界面可以在本地，终端、扩展和任务可能在远端 | 逐进程确认在哪里运行，不用窗口位置判定 |
+| KYC / KYB / AVS / 3DS | 身份核验、企业核验、账单地址验证、付款认证 | 不要求伪造材料；只有实际渠道需要时再解释 |
+
+初次只问：“默认建议在现有电脑上准备；也可用本地 VM 或 VPS。你选本机、VM、VPS，还是先解释？”接受本机建议即可，不考察技术水平。用户已明确某机器故障则沿用该对象。解释深度可按新手逐步卡片、熟悉用户简表、专家差异清单调整，安全门槛不随等级变化。词源按需链接 [S01 服务器术语](../sources/S01-server-glossary.md)、[S02 明确概念](../sources/S02-ai-payments.md)；营销称呼保留“来源自述”标记。
+
+### 共用接触交接单
+
+1. 展示 PC-G1：哪些路径已测、哪些只有配置证据、哪些被沙箱遮蔽；附相关 [网络处理单](network-and-remedies.md)，不要重跑全部访谈
+2. 列出将接触的目标设备/用户、浏览器 Profile 或应用、允许访问/下载/安装/启动的具体动作、可能自动联网的安装器组件和配置修订
+3. 列出 PC-G2 待测：真实程序路径、代理采用、子进程/后台行为；登录前不可测的功能明确延期。未覆盖的严格要求是 blocker
+4. 用户明确批准范围后，才核验当前官方兼容性/下载资料并执行相应获准步骤；审批不含注册、登录、管理员权限、购买或新服务
+5. 完成无需认证的适用检查，展示结果；取得登录许可再由用户走官方认证。支付另见 [账号与支付](accounts-and-payments.md)
+6. 网络、配置、目标或版本变化使受影响证据失效；重新收窄授权和验证。用户撤回时停止新动作，已发生的接触如实记录
+
+## R-LOCAL 独立操作卡
+
+目标机已有 Agent 时，默认直接在本机走 L1–L3，不需要 OpenSSH、Tailscale 或内网穿透。异机协助是本机高级扩展，不是本机主流程的前置。
+
+### L1 准备与已有环境接入（本机，PC0）
+
+1. 用户确认 Mac/Windows 的实际目标和日常使用者；从已有报告复用版本/架构/Edition，不把远程沙箱当本机
+2. 明确网页、Desktop、独立 Code 或 IDE 中的 Code；只处理需要的客户端。浏览器-only 跳过无关开发运行时、CLI、MCP，不默认安装系统防火墙；防护机制按整机覆盖需求和具体批准评估，不因只用浏览器就豁免网络要求
+3. 通过授权元数据检查安装来源、版本/签名、浏览器 Profile、活动代理实例/配置；不运行 `claude --version`、更新器或登录状态命令
+4. 记录现有后台任务、恢复标签页和扩展可能联网的缺口。需要退出时先保存工作并让用户确认正常退出；不能强杀整个运行时
+5. 标注需保护的项目、未提交修改、CLI 配置、历史、skills/hooks、Codex 路径。备份方案列明私有目的地和恢复限制，再单独批准实际备份
+
+**验收/失败出口**：机器、用户、Profile、配置修订有明确绑定才继续。缺权限标 blocked；没有安装则标 absent 并规划 PC1，不为了盘点安装。原环境未更改，无需“清理恢复”。
+
+### L2 网络、浏览器与可选防护（本机，PC0）
+
+1. 写清现行整机默认或用户明确选择的窄范围／分流例外，按[Agent 路径要求](agent-remediation.md#ipv4-only-policy)核对。指定 Profile 的 HTTPS 走既有代理只是局部观察示例，不是整机验收；不能据此写“全机安全”
+2. 按 [网络与解决方法](network-and-remedies.md) 分别检查 HTTPS、DNS、IPv6、UDP、WebRTC；中性端点也要范围批准，不主动解析 Claude 域名
+3. 对确认的差异仅拟最小配置改动，展示语义 diff、配置持久化位置、更新覆盖风险、备份与回滚；批准后仅使用已验收的适配器，否则交给用户人工完成并复验
+4. macOS 严格出站保护用系统自带 PF（[guardian-pf-killswitch.sh](../assets/mac-killswitch/guardian-pf-killswitch.sh)，逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md)，ADR-054）；不用 LuLu，它按进程拦，分不出 TUN 和直连（Issue #17）。加载和开机项是 C 档；未完成故障测试不能称已实现 kill switch，[Issue #25](https://github.com/DUNHKpcc/Claude-Guardian/issues/25) 已有现场修正版的真机通过报告，环境与范围见本机指引
+5. Windows 优先评估系统内置防火墙的精确程序/作用域规则（逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md#windows)）；先导出现有相关规则并核查组织策略。不要用全局 block 再假定 allow 回环能覆盖冲突；共享解释器规则可能影响其他项目
+6. 故障演练前准备离线恢复和独立控制通道，单独请求授权。分别测节点失效、GUI 退出/内核仍在、内核停止、新进程、网络切换、IPv4/IPv6 和适用 UDP；未测项保留未测
+
+**验收/恢复**：正常与故障条件下有实际获准的新连接尝试和观测才能评价阻断；单次连接失败不够。恢复原配置/精确规则后复测 Codex、代理及用户必要应用。不得未经具体批准将 Codex 改为 DIRECT；获准的 Codex／救援独立直连须单列为例外并验收，不能称全软件零旁路。不能全机禁 UDP/IPv6 来隐藏缺口。
+
+<a id="safe-shutdown"></a>
+### 关闭代理与防火墙前：先确认后台退出
+
+所有者 2026-11-07 反馈：退出 Claude Desktop、关闭浏览器中 Claude 相关标签页后，仍可能留下监听进程。窗口消失不是退出证据；监听存在也不等于已经向外发送数据。本条是操作指导，本次未独立复测具体进程及各平台行为。
+
+1. **保留代理和防直连规则。**先保存工作，按现有授权正常退出 Desktop、相关 Code／IDE 会话和浏览器标签页；涉及接触 Claude 的动作仍按 C 档确认。不要先停代理或撤规则再检查。
+2. **在选定设备、用户和命名空间内核实残留。**查看相关 PID、父子关系、可执行文件路径及其 TCP 监听、TCP 连接与 UDP socket；包括 Helper、原生浏览器宿主（如 `chrome-native-host`）、相关扩展／后台任务及已确认归属的子进程。名称只能作线索，不能只查名为 Claude 的进程，也不能把所有 Node、Chrome 或浏览器进程都当作 Claude。无需读取页面内容、完整命令行或凭据。
+3. **只终止已确认归属且获准的对象。**优先正常退出；残留进程按精确 PID 处理，提前说明未保存工作、共享浏览器／MCP 服务及控制通道的影响。共享或归属不明的进程先查清；若必须退出整个浏览器或强制终止，先明确范围并取得相应授权，不批量强杀、不删除缓存或个人数据。
+4. **退出后重新核实。**确认相关进程、监听和连接都消失，并再检查是否被后台服务自动拉起；没有监听不能替代进程检查，没有连接也不能证明进程已退出。若重现，查清启动来源并在获准范围内停止它，再复查。查询失败、权限不足、归属不明或自动重启未解决，一律记 blocked／unknown，保留代理与防直连规则。
+5. **复查通过后才解除防护。**在已批准的退出计划内，先停代理，最后撤销本次防直连规则／恢复原防火墙配置；不是关闭系统所有防火墙。交接给用户手动操作也必须先满足这个前置条件。汇报清理对象和复查结论，不公开原始进程／连接清单；再次启动 Claude 前须先恢复并验证代理及防护。
+
+这是正常退出流程；故障演练、救援和保险丝自动回滚仍按各自已批准的恢复方案执行
+
+### L2a 固定出口 IP 的来源（本机，PC0 指引）
+
+用户已选本机、要固定一个出口 IP、但还没有稳定出口时，按 [egress-ip-options.md](egress-ip-options.md) 介绍纯净机场、自建梯（可搭配家宽出口）和家宽拼车三种来源及推荐（Max 优先自建，Pro 推荐机场）。机场和家宽拼车不给教程，让用户自己搜索；自建梯只给简版提示词（3x-ui、CN2 GIA 等优化线路 VPS、可选家宽出口、iOS 小火箭、Android FlClash、桌面 Clash Verge 或 FlClash），VPS 选择见[VPS 推荐报告索引](../sources/vps-recommendations/INDEX.md)。不代买、不代配置；选 VM 或 VPS 路线时不触发。
+
+### L3 安装、使用与更新（本机，PC1/PC2）
+
+1. 完成共用交接单后核实所选客户端的当前官方 OS/架构/安装依赖；不从第三方镜像或旧教程粘贴一键安装命令
+2. 获准安装时仅选所需产品，展示安装器可能添加的后台组件/自动更新；使用现有安装时先查冲突来源，不先覆盖
+3. 在已选 Profile/启动器打开一次，观察真实程序及网络路径，完成适用 PC-G2；异常回 L2，不反复登录
+4. 获准登录后由用户在官方界面完成敏感输入；验证正确产品/账户的最小功能，不能以重复收费/大量调用验收
+5. 交付日常顺序：确认选定网络/配置 → 启动选定 Profile/应用 → 检查路径仍有效 → 正常结束任务并保存工作。不要承诺固定时间/节奏可避免封禁
+6. 浏览器/Code/Desktop/代理更新后只复测受影响路径、程序位置、规则、子进程及故障行为。更新失败保留旧状态与错误，不禁用安全校验
+
+**恢复**：先判别网络、客户端、认证、支付或服务异常，再到 [故障分流](incidents-and-integrations.md)。恢复设置不等于撤销服务端操作；卸载/清理另行精确授权。
+
+### L4 本机高级扩展：异机远程协助（按需）
+
+仅在用户明确选择远程协助时进入 [local-advanced-route.md](local-advanced-route.md)：OpenSSH/Tailscale 接入、必要的内网穿透、跨机传文件和独立于 SSH 会话的故障演练。仍属于 R-LOCAL，不新增路线值；目标机的 TUN、防火墙与网络验收继续按 L2 和本机指引。远程通道的规划不等于安装或系统操作授权。
+
+## R-VM 独立操作卡（M08）
+
+### V1 新建或接入（宿主与客机分别操作，PC0）
+
+1. 进入条件是明确选择 VM 工作区；问客机目标客户端、项目/数据、已有 hypervisor/镜像、宿主 OS/架构、可用内存/磁盘及许可证。不要仅因宿主是 Mac 就假设客机支持同一二进制
+2. 已有 VM：记录虚拟机标识、客机 OS、网络模式、共享目录与运行状态；不重建、不覆盖现有磁盘。新 VM：先用当前 hypervisor 官方资料核实免费许可和架构兼容性，展示资源上限、镜像来源、磁盘增长和回收办法
+3. 新建/安装 OS 需要具体批准；不捆绑付费许可、不复制宿主凭据、不克隆带登录状态的模板。零预算不可满足时停在选型结果
+4. 客机准备只装实际开发任务所需的获准基础依赖；Claude 客户端仍留到 PC1。不要为方便默认共享整个用户目录或双向剪贴板
+5. 用户决定共享哪些项目目录、只读/读写、剪贴板和设备映射；说明客机能触及宿主数据的后果。改动前记录原值
+
+**验收/恢复**：客机标识/架构/资源和共享边界有记录；无权限/不支持标 blocked。新 VM 失败保留用户原磁盘和项目，删除新资源也需批准。宿主可用不表示客机可用。
+
+### V2 网络与快照（宿主配置和客机测试分开，PC0）
+
+1. 记录 NAT/桥接/其他模式及客机地址族。画出“客机进程 → 客机代理或宿主入口 → 上游 → 出口”；客机 `127.0.0.1` 不能指向宿主代理
+2. 若要访问宿主代理，核实精确可达地址、监听接口和访问控制；不要直接开放到整个 LAN/公网。修改监听/防火墙必须另行批准，确保宿主原业务不受影响
+3. 在客机发出获准的中性探测；宿主结果仅作对照。DNS、IPv6、UDP/WebRTC 与目标浏览器都按客机执行边界复验
+4. 快照前说明包含磁盘/内存/凭据的可能性以及共享目录、云端数据不在恢复范围；决定是否关机/静默文件并另行批准。快照名称与时间不放秘密
+5. 为重要项目安排独立、可读回的私有备份；先在获准隔离副本验证恢复，不用生产 VM 回滚作第一次演练
+
+**验收/恢复**：保存客机路径证据和快照/备份范围。网络变更失联时用宿主控制台恢复原模式/规则；快照回退前列出将丢失的后续变更并确认。不能用快照恢复“解除封号”。
+
+### V2a 系统、网卡、出口与防火墙（VM，PC0 指引）
+
+选定 VM 路线后，按 [vm-guidance.md](vm-guidance.md)：客机系统默认首选 Omarchy，宿主是 Mac 时首选 macOS；创建前网卡选 LAN 独立网卡，不选与宿主机一致的 shared NAT；出口 IP 复用[固定出口 IP 的来源](egress-ip-options.md)；Linux 客机防火墙参考[脱敏脚本](../assets/vm-killswitch/install-flclash-killswitch.sh)（fail-closed，180 秒保险丝）。随后的注册、订阅、养号与本机路线一致。Agent 可按分级授权部署（装客机、配网卡、TUN、killswitch）；买、付款、登录由用户本人完成；本机和 VPS 路线不触发。
+
+### V3 接触、日常与更新（客机为目标，PC1/PC2）
+
+1. 以客机为目标完成共用交接单；客机客户端兼容性独立核验，安装/登录与支付逐项批准
+2. 从客机选定入口完成 PC-G2；宿主浏览器完成 OAuth 时要核对官方流程及回调目标，不能把令牌粘贴到聊天或共享文本
+3. 日常按“宿主网络 → 启动 VM → 客机时钟/网络状态 → 选定客户端”检查；暂停恢复、NAT 改动或宿主换网后重测相关证据
+4. 分别记录 hypervisor、客机 OS、代理、浏览器/客户端更新。更新前检查备份与空间，更新后验证共享目录权限、路径和子进程
+5. 客机故障先看资源、磁盘、时间和网络，再看客户端/认证；不要先删除 VM。迁出时仅迁移获准项目/设置，凭据走官方登录，不删除旧环境直到用户确认
+
+**交付**：宿主/客机两份边界摘要、可复现启动步骤、网络测试记录、共享数据清单和恢复步骤；所有未执行项写 not_run。
+
+### V4 WSL 与容器子场景
+
+只在实际任务涉及时加载，沿用主路线，不改称本地 VM。记录 WSL 发行版/版本或容器镜像与运行时、宿主、用户、命名空间、挂载、端口发布、DNS/代理、进程及浏览器位置。检查 host/guest loopback、Windows/WSL 路径转换、文件权限和持久卷分别由谁管理；网络行为按实际版本核验，不假设所有 WSL/容器一致。容器删除不保证卷删除，重建不保证配置仍在；变更前列明持久化与备份。只在相关命名空间做获准探测，宿主成功不作替代；不要挂载整个 home、Docker socket 或凭据来解决权限问题。VPS 中的容器继续归 R-VPS，恢复依赖远端控制台和卷备份。
+
+## R-VPS 独立操作卡（M09）
+
+### P1 可行性、现有服务器与成本（本机规划，PC0）
+
+1. VPS 路线是开发机（Claude Code 跑在 VPS 上）。只想把 VPS 当代理出口（自建梯）的，属于本机路线选 IP 出口的选项，见 [egress-ip-options.md](egress-ip-options.md)，不在本路线处理。明确远端任务需要的语言/工具、CPU/架构、内存、存储、GUI、本地硬件及数据驻留要求
+2. 已有服务器优先只读接入；记录机器/用户/用途及不能中断的服务。不假定空机，不默认运行压力测试、DD、RAID、BBR/WARP 或“优化全家桶”；线路优化按 [line-optimization.md](line-optimization.md)，每项改动经用户逐项批准、先记原值、可回滚
+3. 新服务器只比较符合真实地区与合规条件的方案：计算实例、磁盘、出站流量、备份/快照、税费、续费和取消条件；选型参考[VPS 推荐报告索引](../sources/vps-recommendations/INDEX.md)，价格以官方当前页面为准。用户只要免费工具不等于批准任何 VPS 费用
+4. 不能迁移本地 GUI/硬件依赖或敏感数据时说明阻碍，保留本机方案；只有用户选新方案才做迁移计划
+5. 购买、开通、操作条款与支付都需相应确认/本人交接；本手册不创建服务器。受限地区不能通过虚假地址/身份或出口标签绕过
+
+### P1a 系统、环境一致、出口与防火墙（VPS，PC0 指引）
+
+选定 VPS 路线后，按 [vps-guidance.md](vps-guidance.md)：服务器系统首选 Ubuntu 24.04、x86_64；核心是环境一致，注册、登录、养号、订阅和 OAuth 都在 VPS 的远程桌面浏览器里完成，不和本机浏览器混用；出口是 VPS 自己的 IP，或在其上套一层家宽出口（见 R02）；防火墙用[vps-guard.sh](../assets/vps-firewall/vps-guard.sh)，套家宽时用 VM 的 killswitch 脚本。详细流程见 [S08](../sources/S08-vps-claude-tutorial.pdf)。用户买好服务器并给出 SSH 后，Agent 可按分级授权部署；买服务器和付款由用户本人完成；本机和 VM 路线不触发。
+
+### P2 SSH、开发用户与救援（本机与服务器分别标注，PC0）
+
+1. 本机：核对提供商官方控制台中的服务器标识和主机密钥指纹；首次 SSH 指纹不明时停下核验，不设 `StrictHostKeyChecking=no`
+2. 本机：使用用户批准的现有密钥/认证方式，私钥留本机；创建新密钥或持久授权单独确认。不要把私钥复制到服务器/报告/聊天
+3. 控制台：先核实独立救援方式、可用身份和恢复步骤；仅打开现有会话不等于救援经过验证
+4. 服务器：确认实际用户、目录和 sudo 范围；拟最小权限开发用户，不把日常任务放 root。用户/authorized_keys/安全配置变化另行审批
+5. 本机：保留原会话，在另一会话验证新的获准登录后，才考虑收窄旧方式。服务器和云防火墙分别列出 SSH 管理来源、现有业务端口和规则顺序
+6. 任何 SSH/防火墙变化前把原配置、精确撤销命令及控制台路径放在用户批准的私有位置；不要关闭唯一访问入口再在线求助
+
+**验收/恢复**：主机身份、开发用户、第二会话、独立救援分别有证据；未验证则安全配置写入 blocked。失联时经原会话/控制台恢复相关原规则，不清空全部防火墙。
+
+### P3 开发与可选额外出口（服务器，PC0）
+
+1. 在确定项目目录后查看所需工具版本/权限/空间；仅安装获准的通用依赖，Claude 安装留 PC1。项目迁移要明确文件、目的地与访问权限；先保护未提交工作
+2. 记录实际网络、DNS/地址族、代理和容器层；在服务器做获准中性端点检查，不能用本机 IP 结果替代
+3. **额外出口仅当需求确立时比较**：保留现有合规出口最少变更；应用级显式代理覆盖较窄；整机隧道影响 SSH/DNS/其他服务且恢复复杂。第三方出口增加日志、凭据、费用和运维边界，不作为服务准入证明
+4. 确需出口改变时列出精确应用/目的地、地址族、DNS、认证存储及超时/失败行为，核验当前客户端支持的代理协议。选定方案后才生成版本匹配配置，不从 S07 远程执行可变脚本
+5. 在独立会话/救援就绪后，经批准仅应用目标范围；使用获准中性探测比较前后出口/DNS/IPv6/UDP。检查 SSH 和原有业务仍正常，故障时是否发生未允许直连
+6. 失败先恢复目标配置和相关路由，再验证 SSH/原业务；无实际故障演练时只报告配置已检查，不能称 kill switch 成功。严格阻断条件未满足就停在 PC-G1
+
+### P4 客户端、OAuth 与临时浏览器（服务器为目标，PC1/PC2）
+
+1. 完成绑定远端的共用交接单后，按当前官方兼容性安装所需客户端；仅浏览器任务跳过 Code/开发工具
+2. Remote-SSH：本机编辑器界面与远端扩展/终端分别记录；扩展是否会启动 Claude、上传项目或使用本地凭据需明确授权
+3. OAuth：先阅读本次获准官方流程，分清设备码、本地回调与远端回调，选择其文档支持的方式。不要任意改 redirect URI、公开回调端口或通过聊天搬令牌
+4. 只有流程确实需要时才规划临时远端浏览器/GUI。部署前核实认证、加密传输、仅回环/受限访问及关闭方法；拒绝公网无密码 VNC，不能默认长期运行桌面
+5. 完成无需登录的 PC-G2 后，由用户执行获准登录；登录后补测所需功能，再单独进入支付。授权异常走 M11/M12，不换号重试
+6. 临时组件使用后列出实际创建的进程、端口转发和服务，获准后正常关闭，并确认监听/会话消失；仅关闭浏览器窗口不能证明后台远程服务已关闭
+
+### P5 日常、更新、备份与退出（本机入口 / 服务器任务）
+
+1. 本机确认主机和用户，再 SSH/Remote-SSH；服务器确认项目目录、网络状态和客户端入口，避免在 root 或错误机器运行
+2. tmux 仅为可选会话保持工具：先检查是否安装及用户需要；新安装另行批准。连接断开后先重新列出现有会话并接入，不能直接重复启动任务。不要将 secret 写入命令/会话名
+3. 使用现有免费日志/系统资源视图检查磁盘、CPU/内存、失败记录与提供商费用页面；持续监控/告警另获许可。日志最小化，预算提醒不代表硬性消费上限
+4. 备份列出项目、配置、数据卷及不备份的秘密；加密/访问权限、留存和远端存储收费需说明。在隔离目标抽样读回并演练恢复，快照不能替代应用一致性备份
+5. OS、代理、客户端或配置更新后，复验 SSH、路径、后台进程和故障行为；恢复到兼容的原配置前检查后来用户变更，不能覆盖新工作
+6. 退役前确认项目已迁出且可恢复、临时端口关闭、续费/资源依赖明晰；删盘、撤销凭据、取消计费分别确认。停止实例不一定停止账单，实际状态由提供商核验
+
+**路线完成证据**：机器/用户绑定、成本和数据边界、SSH/救援、开发依赖、网络/PC-G1、PC1 授权、PC-G2 分段结果、登录/账单的用户确认、日常启动和恢复说明逐项标状态。不以“SSH 能连”宣布远端产品可用。
+
+## R-ADV 进阶路线卡（远端 Linux 机器的出口钉死与反向隧道）
+
+进阶路线不是第四种环境，也不新增路线值：它叠加在 R-VM / R-VPS 之上，用于目标 Linux 机器**管理者无法直连**（别人的网络、NAT 之后）且要整机出口钉死的场景。目标机仍按 vm_guest 或 vps 绑定，中转 VPS 按 vps 绑定，管理端按 local 绑定，三者证据分开记录，不能互相替代结论。完整说明见 [advanced-route.md](advanced-route.md)。本机或 VM 能直接连的，用 R-VM 即可。
+
+### A1 适用判断与前置（管理端规划，PC0）
+
+确认：目标机能不能直连；谁拥有网络和机器，是否同意加固；出口节点和隧道中转是否同一台 VPS（单点风险必须让用户知道）；目标机已按 V2a 做到 FlClash TUN 通、出口是预期 IP；独立救援入口是什么（本地终端、宿主机控制台）。任何一项没有就停在规划，不部署。**验收**项：出口 IP、救援入口、网络所有者同意，各标状态。
+
+### A2 反向隧道与崩溃自愈（目标机与 VPS 分别标注，B 档）
+
+按 [advanced-route.md 第 2 节](advanced-route.md#2-搭建顺序)的顺序：VPS 侧准备 → [install-reverse-tunnel.sh](../assets/remote-hardening/install-reverse-tunnel.sh) → [flclash-crash-heal.sh](../assets/remote-hardening/flclash-crash-heal.sh) `install`。隧道专用密钥由用户生成并传入路径，不内嵌、不输出。展示目标、差异、影响、备份和**恢复**方案后，整个计划**批准**一次。
+
+### A3 启用 killswitch 与验收（目标机，C 档）
+
+[install-flclash-killswitch.sh](../assets/vm-killswitch/install-flclash-killswitch.sh) 自动读取隧道 unit 放行管理通道。启用属 C 档，当场确认；管理端保持一个已登录会话，另有独立入口；180 秒保险丝内先探活再 `confirm`。验收按[覆盖矩阵](advanced-route.md#5-验收与覆盖矩阵)逐项，包括 `pkill -x FlClashCore` 的零泄漏与自愈时序、IPv6 实测。
+
+### A4 日常、更新与恢复（PC0 指引；接触 Claude 的 PC1/PC2 仍走 V3）
+
+日常体检、重连、故障**恢复**见 [advanced-route.md 第 6 节](advanced-route.md#6-日常运维)。节点或订阅更新后 `refresh`，换网络后重测 IPv6，更新 FlClash 后重测 helper 与 TUN。注册、订阅、养号与 V3 一致，目标机是接触 Claude 的唯一环境。
+
+<a id="r-router"></a>
+## R-ROUTER 软路由（占位，未来补齐）
+
+所有者 2026-11-01：**Claude Desktop 最佳还是软路由。**这条路线先占位，搭建步骤（硬件与固件、插件、主路由或旁路由、电脑本机还装不装代理、验收）未来补齐。补齐之前：
+
+- 用户问 Claude Desktop 怎么做最好，直接说最佳是软路由，本 Skill 的软路由指引还在补；现在先按本机路线在电脑上做（[Claude Desktop 的 WebRTC](agent-remediation.md#webrtc-block)：TUN 严格路由、关 IPv6、断线保护）。
+- Agent 不自行编写软路由的搭建步骤，也不改用户的路由器；用户已经有软路由的，只读记录它的位置和职责，电脑这一侧仍按本机路线验收。
+- 不新增路线值，访谈和入口校验仍是本机、VM、VPS 三种。
+
+## 来源与维护定位
+
+[S04 路线/FAQ](../sources/S04-claude-guide.md)、[S05 本地防护](../sources/S05-local-protection.md)、[S07 测试目录](../sources/S07-vps-script-catalog.md) 是背景材料，不授予执行权；[S08 VPS 教程](../sources/S08-vps-claude-tutorial.pdf)的命令，Agent 可在用户授权的 SSH 会话里按分级授权执行，详见 [vps-guidance.md](vps-guidance.md)。官方 OS 和客户端入口使用前核对当前版本。

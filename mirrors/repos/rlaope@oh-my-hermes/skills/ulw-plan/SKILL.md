@@ -135,7 +135,7 @@ Expected outputs:
 Artifact expectations:
 
 - write the reviewed plan (options, rejected alternatives, risks, `Success criteria` table, target-state coverage, lanes in node-prompt shape) to a Markdown file outside the repository and the OMH store (the system temp directory is fine), then record it with `omh hermes plan --record --plan-file <file> "<task>"`, which writes `<repo>/.omh/plans/<slug>.md` inside a repository and the user-scope OMH store outside one; without `--plan-file` the file holds only a generated scaffold, and its `say` field tells you so
-- mark acceptance with `omh hermes plan-accept <path>` only for a file recorded with `--plan-file` (front matter `plan_body: reviewed`), so acceptance_recorded and handoff_ready point at the reviewed plan; accepting a scaffold-only file returns `reviewed_body: false` and is not a reviewed plan
+- mark acceptance with `omh hermes plan-accept <path>` only for a file recorded with `--plan-file` (front matter `plan_body: reviewed`), so acceptance_recorded and handoff_ready point at the reviewed plan; `plan-accept` refuses a scaffold-only file, and `--allow-scaffold` accepts the scaffold only when the user asked for that, not a reviewed plan
 
 Safety rules:
 
@@ -158,7 +158,7 @@ Record observed delegation results; otherwise return `not_available` or `not_obs
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
 - When wrapper metadata includes `memory_review_card/v1` or `handoff_context_pack/v1`, treat it as reviewed OMH-local or wrapper-supplied context only. Use conflict-free context summaries to shape plans and handoffs, but do not claim Hermes internal memory was read or changed.
 Preserve workflow intent and stop conditions; verify before claiming completion.
-Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only; OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a real unresolved user decision or a useful briefing discussion remains, offer one specific, content-linked question. Completed work needs no question; omit unrelated non-action footers and generic offers to continue.
+Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only. When the requested output is delivered, put any open points inside the result and end with no question or offer; only when the person asked to choose or decide and that choice is still theirs, end with one specific question about it, not a list, a generic offer, or a footer; the shared rail's Reply Language And Host Voice and Turn Ending sections hold the full rule.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 

@@ -6,7 +6,7 @@ the thread reports to a Captain (a crew thread) or straight to a person. `gstack
 short form as the `capy-asks` block whenever `GSTACK_CAPY=1` (the Capy launch line sets it).
 `GSTACK_CAPY_ASKS=0` drops that block for one session. This is the lane's side. The controller's side (the
 READY contract, merge trains, the digest, the daily flaky pass, and the templates for the crew rules file
-and the Captain's drive) is the `/captain` skill and `docs/captain.md` in the gstack checkout.
+and the Captain's drive) is the `/captain` skill and `crew/docs/captain.md` in the gstack checkout.
 
 ## 1. How approvals work, per thread
 
@@ -77,7 +77,7 @@ Under a Captain, a thread that builds something plans before any product code. A
 brief, sized to the work, is its first act, the gate goes up in the shape below, and the build starts only
 when the answer is in the run and it reports `APPROVED`. The short form every Capy thread follows, with the
 exempt work (read-only threads, flaky-pass repairs, slot stamps, CHANGELOG resolves, cap re-pins under a
-grant), is the "Plan, approve, ship" section of SKILL.md in this folder; the rule in full is `docs/captain.md`,
+grant), is the "Plan, approve, ship" section of SKILL.md in this folder; the rule in full is `crew/docs/captain.md`,
 Plan before build.
 
 Every plan or gate you bring for approval has these parts, in this order, written so someone outside the
@@ -89,7 +89,7 @@ project can follow it:
 3. **What caused this work.** The trigger: an issue or PR link, a failed run, a user report, or the
    person's request, quoted.
 4. **Big decisions.** For each: the options considered, the pick and why, and what would flip it.
-5. **What we need from you.** The ask format (`docs/captain.md`, The ask format): the Captain's name, then one
+5. **What we need from you.** The ask format (`crew/docs/captain.md`, The ask format): the Captain's name, then one
    lettered line per decision, letters unique across the list: "A: <code> hit problem p, which happens when h.
    We could fix it in these ways: 1) x; 2) y; 3) z. Recommendation: x because why. A1 to take recommendation."
    The recommendation is option 1. Never offer "the plan as first written" as the default.
@@ -153,6 +153,13 @@ Every PR you send READY on, and the READY report itself, has:
 
 The READY report attaches the key image (Capy message attachment), so the Captain can show it inline.
 /ship does items 1-4 when `GSTACK_CAPY=1` (its `capy-pr` section). Outside Capy, the PR body is unchanged.
+
+**Who watches CI.** You own your PR's checks and review until READY: hold its watch yourself and fix what
+turns red (one rerun for a flake), so a check never wakes your Captain. A Captain whose PRs bring many check,
+review and merge wakes hands PR and CI watching to one merge-lane thread instead of subscribing itself, because
+every wake more than about five minutes after its last call rewrites its whole context cache at many times the
+warm price. The merge lane reports to the Captain only a landing, a decision or a blocker
+(`crew/docs/captain.md` in the gstack checkout, Roles).
 
 A token cap in a brief goes to /ship as `--token-cap <n>`. Run each /ship in a fresh subagent titled
 `ship #<n> at <head7> <4-char nonce>` (unique), with `GSTACK_SHIP_TASK_TITLE=<that title>` in its brief and the instruction to

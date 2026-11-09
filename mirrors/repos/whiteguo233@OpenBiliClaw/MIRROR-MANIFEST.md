@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed patterns, 20 file(s) materialized.
+Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `whiteguo233/OpenBiliClaw` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,17 +68,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 8 | ✓ | [`docs/mobile-connection.md`](docs/mobile-connection.md) |
 | 9 | ✓ | [`docs/partners.md`](docs/partners.md) |
-| 10 | ✓ | [`docs/platform-source-acceptance.github.md`](docs/platform-source-acceptance.github.md) |
-| 11 | ✓ | [`docs/platform-source-acceptance.instagram.md`](docs/platform-source-acceptance.instagram.md) |
-| 12 | ✓ | [`skills/browse/SKILL.md`](skills/browse/SKILL.md) |
-| 13 | ✓ | [`skills/comment_analysis/SKILL.md`](skills/comment_analysis/SKILL.md) |
-| 14 | ✓ | [`skills/openbiliclaw-adapter/SKILL.md`](skills/openbiliclaw-adapter/SKILL.md) |
-| 15 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
-| 16 | ✓ | [`src/openbiliclaw/agent/skills_builtin/bangumi-advisor/SKILL.md`](src/openbiliclaw/agent/skills_builtin/bangumi-advisor/SKILL.md) |
-| 17 | ✓ | [`src/openbiliclaw/agent/skills_builtin/system-steward/SKILL.md`](src/openbiliclaw/agent/skills_builtin/system-steward/SKILL.md) |
-| 18 | ✓ | [`src/openbiliclaw/agent/skills_builtin/taste-companion/SKILL.md`](src/openbiliclaw/agent/skills_builtin/taste-companion/SKILL.md) |
-| 19 | ✓ | [`src/openbiliclaw/agent/skills_builtin/taste-explorer/SKILL.md`](src/openbiliclaw/agent/skills_builtin/taste-explorer/SKILL.md) |
-| 20 | → | [`docs/changelog.md`](docs/changelog.md) |
+| 10 | ✓ | [`docs/platform-source-acceptance.dynamic-web.md`](docs/platform-source-acceptance.dynamic-web.md) |
+| 11 | ✓ | [`docs/platform-source-acceptance.github.md`](docs/platform-source-acceptance.github.md) |
+| 12 | ✓ | [`docs/platform-source-acceptance.instagram.md`](docs/platform-source-acceptance.instagram.md) |
+| 13 | ✓ | [`skills/browse/SKILL.md`](skills/browse/SKILL.md) |
+| 14 | ✓ | [`skills/comment_analysis/SKILL.md`](skills/comment_analysis/SKILL.md) |
+| 15 | ✓ | [`skills/openbiliclaw-adapter/SKILL.md`](skills/openbiliclaw-adapter/SKILL.md) |
+| 16 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
+| 17 | ✓ | [`src/openbiliclaw/agent/skills_builtin/bangumi-advisor/SKILL.md`](src/openbiliclaw/agent/skills_builtin/bangumi-advisor/SKILL.md) |
+| 18 | ✓ | [`src/openbiliclaw/agent/skills_builtin/system-steward/SKILL.md`](src/openbiliclaw/agent/skills_builtin/system-steward/SKILL.md) |
+| 19 | ✓ | [`src/openbiliclaw/agent/skills_builtin/taste-companion/SKILL.md`](src/openbiliclaw/agent/skills_builtin/taste-companion/SKILL.md) |
+| 20 | ✓ | [`src/openbiliclaw/agent/skills_builtin/taste-explorer/SKILL.md`](src/openbiliclaw/agent/skills_builtin/taste-explorer/SKILL.md) |
+| 21 | → | [`docs/changelog.md`](docs/changelog.md) |
 
 ---
 

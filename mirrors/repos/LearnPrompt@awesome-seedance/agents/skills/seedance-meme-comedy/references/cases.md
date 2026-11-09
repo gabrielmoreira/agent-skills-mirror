@@ -1,6 +1,6 @@
 # Case evidence · Twist-ending comedy skit
 
-45 verified cases are filed under this template in awesome-seedance; the 8 hottest are below, full prompts included. Pick one as the anchor before drafting.
+46 verified cases are filed under this template in awesome-seedance; the 8 hottest are below, full prompts included. Pick one as the anchor before drafting.
 
 Generated from `data/cases.json` + `data/case-taxonomy.json`. Do not hand-edit.
 
@@ -224,7 +224,7 @@ VISUAL REQUIREMENTS: Maintain consistent faces, hairstyles, outfits, and locatio
 
 ## E6 · Monday Morning’s Upside-Down Water Ritual
 
-- Seedance 2.5 · creator: @Just_sharon7 · heat: 88
+- Seedance 2.5 · creator: @Just_sharon7 · heat: 89
 - Evidence: [GoodCase](https://goodcase.ai/cases/seedance-this-is-how-it-feels-like-to-wake-up-on-monday-to-go-to-work-b0d56af4f909) · [finished media](https://media.goodcase.ai/cases/71885692ca73.mp4) · [poster](https://media.goodcase.ai/cases/d86c8eb13364.jpg) · [original source](https://x.com/Just_sharon7/status/2104544058471502330)
 - Summary: This is how it feels like to wake up on Monday to go to work. Seedance 2.5 on @FishCreativeHQ Prompt A cinematic indoor performance-art / fashion editorial vide…
 

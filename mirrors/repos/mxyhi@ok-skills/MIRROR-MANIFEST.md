@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 52 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,6 +111,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
 | 51 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
 | 52 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
+| 53 | ✓ | [`unslop/SKILL.md`](unslop/SKILL.md) |
 
 ---
 

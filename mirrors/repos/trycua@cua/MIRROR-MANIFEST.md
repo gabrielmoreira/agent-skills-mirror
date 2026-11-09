@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 6 followed patterns, 73 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 6 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trycua/cua` — 26 default patterns, 6 followed patterns, 73 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 73 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,15 +128,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`libs/cua/skills/cua-spaces/SKILL.md`](libs/cua/skills/cua-spaces/SKILL.md) |
 | 63 | ✓ | [`libs/cua/skills/cua-volume/SKILL.md`](libs/cua/skills/cua-volume/SKILL.md) |
 | 64 | ✓ | [`libs/cua/skills/gui-automation/SKILL.md`](libs/cua/skills/gui-automation/SKILL.md) |
-| 65 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 66 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
-| 67 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
-| 68 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 69 | → | [`docs/component-release-workflow.md`](docs/component-release-workflow.md) |
-| 70 | → | [`docs/contributing/Development.md`](docs/contributing/Development.md) |
-| 71 | → | [`docs/contributing/releasing-cua-spaces.md`](docs/contributing/releasing-cua-spaces.md) |
-| 72 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
-| 73 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
+| 65 | ✓ | [`libs/cua/skills/supercomputer/SKILL.md`](libs/cua/skills/supercomputer/SKILL.md) |
+| 66 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 67 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 68 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
+| 69 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 70 | → | [`docs/component-release-workflow.md`](docs/component-release-workflow.md) |
+| 71 | → | [`docs/contributing/Development.md`](docs/contributing/Development.md) |
+| 72 | → | [`docs/contributing/releasing-cua-spaces.md`](docs/contributing/releasing-cua-spaces.md) |
+| 73 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
+| 74 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
 
 ---
 

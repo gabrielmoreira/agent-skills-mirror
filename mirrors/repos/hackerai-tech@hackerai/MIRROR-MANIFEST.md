@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 3 followed patterns, 26 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 3 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 3 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 26 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,15 +78,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`docs/desktop-qa-tooling.md`](docs/desktop-qa-tooling.md) |
 | 16 | ✓ | [`e2b/README.md`](e2b/README.md) |
 | 17 | ✓ | [`e2e/README.md`](e2e/README.md) |
-| 18 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
-| 19 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
-| 20 | ✓ | [`scripts/benchmarks/cve-bench/README.md`](scripts/benchmarks/cve-bench/README.md) |
-| 21 | ✓ | [`scripts/benchmarks/realvuln/README.md`](scripts/benchmarks/realvuln/README.md) |
-| 22 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 23 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 24 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
-| 25 | → | [`docs/safe-local-diagnostics.md`](docs/safe-local-diagnostics.md) |
-| 26 | → | [`README.md`](README.md) |
+| 18 | ✓ | [`lib/chat/next-actions/README.md`](lib/chat/next-actions/README.md) |
+| 19 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
+| 20 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
+| 21 | ✓ | [`scripts/benchmarks/cve-bench/README.md`](scripts/benchmarks/cve-bench/README.md) |
+| 22 | ✓ | [`scripts/benchmarks/realvuln/README.md`](scripts/benchmarks/realvuln/README.md) |
+| 23 | ✓ | [`scripts/benchmarks/suggestions/README.md`](scripts/benchmarks/suggestions/README.md) |
+| 24 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 25 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
+| 26 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
+| 27 | → | [`docs/safe-local-diagnostics.md`](docs/safe-local-diagnostics.md) |
+| 28 | → | [`README.md`](README.md) |
 
 ---
 

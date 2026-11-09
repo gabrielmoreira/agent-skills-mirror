@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 223 file(s) materialized.
+Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 224 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 223 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 223 |
+| Files         | 224 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -268,20 +268,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 207 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/prompt.md`](skills/ux-stress-test/evals/findings-first-then-ask/prompt.md) |
 | 208 | ✓ | [`skills/ux-stress-test/references/drivers/browser-use.md`](skills/ux-stress-test/references/drivers/browser-use.md) |
 | 209 | ✓ | [`skills/ux-stress-test/references/drivers/playwright.md`](skills/ux-stress-test/references/drivers/playwright.md) |
-| 210 | ✓ | [`skills/ux-stress-test/references/persona-protocol.md`](skills/ux-stress-test/references/persona-protocol.md) |
-| 211 | ✓ | [`skills/ux-stress-test/references/personas/breaker.md`](skills/ux-stress-test/references/personas/breaker.md) |
-| 212 | ✓ | [`skills/ux-stress-test/references/personas/impatient.md`](skills/ux-stress-test/references/personas/impatient.md) |
-| 213 | ✓ | [`skills/ux-stress-test/references/personas/mobile.md`](skills/ux-stress-test/references/personas/mobile.md) |
-| 214 | ✓ | [`skills/ux-stress-test/references/personas/non-native.md`](skills/ux-stress-test/references/personas/non-native.md) |
-| 215 | ✓ | [`skills/ux-stress-test/references/personas/skeptic.md`](skills/ux-stress-test/references/personas/skeptic.md) |
-| 216 | ✓ | [`skills/ux-stress-test/scripts/chrome.sh`](skills/ux-stress-test/scripts/chrome.sh) |
-| 217 | ✓ | [`skills/ux-stress-test/scripts/controls.js`](skills/ux-stress-test/scripts/controls.js) |
-| 218 | ✓ | [`skills/ux-stress-test/scripts/failures.py`](skills/ux-stress-test/scripts/failures.py) |
-| 219 | ✓ | [`skills/ux-stress-test/scripts/keyboard.py`](skills/ux-stress-test/scripts/keyboard.py) |
-| 220 | ✓ | [`skills/ux-stress-test/scripts/mobile-audit.js`](skills/ux-stress-test/scripts/mobile-audit.js) |
-| 221 | ✓ | [`skills/ux-stress-test/scripts/mobile-setup.py`](skills/ux-stress-test/scripts/mobile-setup.py) |
-| 222 | ✓ | [`skills/ux-stress-test/scripts/slow-3g.js`](skills/ux-stress-test/scripts/slow-3g.js) |
-| 223 | ✓ | [`skills/ux-stress-test/SKILL.md`](skills/ux-stress-test/SKILL.md) |
+| 210 | ✓ | [`skills/ux-stress-test/references/opening-issues.md`](skills/ux-stress-test/references/opening-issues.md) |
+| 211 | ✓ | [`skills/ux-stress-test/references/persona-protocol.md`](skills/ux-stress-test/references/persona-protocol.md) |
+| 212 | ✓ | [`skills/ux-stress-test/references/personas/breaker.md`](skills/ux-stress-test/references/personas/breaker.md) |
+| 213 | ✓ | [`skills/ux-stress-test/references/personas/impatient.md`](skills/ux-stress-test/references/personas/impatient.md) |
+| 214 | ✓ | [`skills/ux-stress-test/references/personas/mobile.md`](skills/ux-stress-test/references/personas/mobile.md) |
+| 215 | ✓ | [`skills/ux-stress-test/references/personas/non-native.md`](skills/ux-stress-test/references/personas/non-native.md) |
+| 216 | ✓ | [`skills/ux-stress-test/references/personas/skeptic.md`](skills/ux-stress-test/references/personas/skeptic.md) |
+| 217 | ✓ | [`skills/ux-stress-test/scripts/chrome.sh`](skills/ux-stress-test/scripts/chrome.sh) |
+| 218 | ✓ | [`skills/ux-stress-test/scripts/controls.js`](skills/ux-stress-test/scripts/controls.js) |
+| 219 | ✓ | [`skills/ux-stress-test/scripts/failures.py`](skills/ux-stress-test/scripts/failures.py) |
+| 220 | ✓ | [`skills/ux-stress-test/scripts/keyboard.py`](skills/ux-stress-test/scripts/keyboard.py) |
+| 221 | ✓ | [`skills/ux-stress-test/scripts/mobile-audit.js`](skills/ux-stress-test/scripts/mobile-audit.js) |
+| 222 | ✓ | [`skills/ux-stress-test/scripts/mobile-setup.py`](skills/ux-stress-test/scripts/mobile-setup.py) |
+| 223 | ✓ | [`skills/ux-stress-test/scripts/slow-3g.js`](skills/ux-stress-test/scripts/slow-3g.js) |
+| 224 | ✓ | [`skills/ux-stress-test/SKILL.md`](skills/ux-stress-test/SKILL.md) |
 
 ---
 

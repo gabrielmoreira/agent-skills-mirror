@@ -70,8 +70,10 @@ Its verification reference owns dual-entry reconciliation and native-host readba
 keep the detailed procedure there.
 For a valid check that emits warnings, follow its
 [warning interpretation](daymade-skill/skill-creator/references/knowledge-skill-grounding.md#interpret-validation-warnings).
-For course/original-video uploads, ASR input preparation, local/remote ASR selection,
-speed comparison and speech-content acceptance, enter
+For original audio/video or original-speed upload requests, start with
+[media routing](daymade-audio/asr-transcribe-to-text/SKILL.md#route-before-asr-the-transcript-is-the-result-not-the-run).
+For ASR input preparation, local/remote ASR selection, speed comparison and
+speech-content acceptance, enter
 [asr-transcribe-to-text](daymade-audio/asr-transcribe-to-text/SKILL.md) and its
 [execution SOP](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md).
 For Scrapling browser-cache diagnosis, follow
@@ -189,7 +191,11 @@ For tunnel/proxy-path failures or slow throughput, enter
 throughput investigations, use [debugging-network-issues](debugging-network-issues/SKILL.md).
 Proxy-selection and disruptive VPN changes follow tunnel-doctor's
 [proxy-conflict procedure](tunnel-doctor/references/proxy_conflict_reference.md) and
-[network-change recovery](tunnel-doctor/references/network_change_recovery.md). For unresolved tunnel packet-loss
+[network-change recovery](tunnel-doctor/references/network_change_recovery.md). For Shadowrocket rapid toggle loops or Network Extension startup assertions, read its
+[Network Extension recovery section](tunnel-doctor/references/network_change_recovery.md#network-extension-state-and-stale-listener-recovery).
+When a watchdog is suspected, first align the actual actor and state transitions through
+[macos-watchdog troubleshooting](daymade-macos/macos-watchdog/SKILL.md#troubleshooting-quick-map).
+For unresolved tunnel packet-loss
 localization, read the [capture procedure](debugging-network-issues/references/packet-capture-recipes.md#four-boundary-tunnel-captures).
 For same-provider node failures with a working subscription, enter
 [provider account checks](tunnel-doctor/references/provider_account_suspension.md).
@@ -317,6 +323,10 @@ Before drawing page relationships or a click-through journey, use
 [the topology/visit distinction](data-visualization-discipline/references/visual-form-selection.md#关系拓扑与有序旅程).
 For live status, attention filters, retention intent or excluded-record recovery, follow its
 [cross-view attention journey](frontend-visual-qa/references/journey-and-page-contracts.md#operational-attention-across-views).
+For audits of asset-ledger hierarchy, row selection or issue resolution, follow its
+[operational asset review](frontend-visual-qa/references/journey-and-page-contracts.md#operational-asset-review-select-understand-resolve).
+For shared controls or help mounted outside the workspace's style scope, use its
+[scoped-style and portal checks](frontend-visual-qa/references/journey-and-page-contracts.md#scoped-styles-and-portal-content).
 For embedded-reader sizing, surrounding navigation, overlays, zoom, reading/return,
 focus or filtered-selection changes, use its
 [reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
@@ -536,34 +546,20 @@ To find an existing Feishu recording by date, enter
 For updates that preserve manual formatting or change table/page width, enter
 [lark-cli-router's layout workflow](lark-cli-router/SKILL.md#preserve-document-layout).
 
+### Feishu Deleted Content
+
+For deleted documents or Wiki spaces, missing-space responses, or an empty
+recycle bin, enter [lark-cli-router's deletion and recovery route](lark-cli-router/SKILL.md#deleted-documents-and-wiki-spaces).
+
 ### Feishu External Collaboration
 
 For external customer groups paired with Wiki pages, enter
 [lark-cli-router's external collaboration workflow](lark-cli-router/SKILL.md#external-customer-collaboration).
-It owns group reuse/creation, descendant-scoped grants and their verification.
 
 ### Feishu Document Capture
 
-Before the first linked-resource read, follow
-[source account binding](lark-cli-router/references/source-account-binding.md).
-For Feishu document reads and archives, enter
-[feishu-doc-scraper](feishu-doc-scraper/SKILL.md). Its
-[API extraction SOP](feishu-doc-scraper/references/lark-cli-api-extraction.md)
-owns resolved Wiki target dispatch and the authorized reference-traversal scope.
-Its
-[comments and feedback SOP](feishu-doc-scraper/references/comments-and-feedback.md)
-owns discussion capture and interpretation; the bundled helper owns the CLI
-interface. Before permanent filing or choosing an authorized archive destination,
-follow the [destination handoff](feishu-doc-scraper/references/archive-destination-handoff.md).
-Use that handoff for authorized source access instructions alongside original links.
-For storage decisions, use its
-[archive storage contract](feishu-doc-scraper/references/archive-storage-contract.md)
-alongside the destination repository's storage SOP.
-Keep generated manifest metadata aligned with that contract's on-demand statistics rule.
-For local originals, Obsidian delivery or a personal source-catalog handoff, follow the Skill's
-[original-media and reader SOP](feishu-doc-scraper/references/original-media-and-reader.md).
-For Minutes transcript export and permission handling, follow its
-[Minutes procedure](feishu-doc-scraper/references/feishu-minutes-transcript.md).
+For faithful Feishu document reads, resource archives and destination handoffs,
+enter [feishu-doc-scraper](feishu-doc-scraper/SKILL.md) and follow its task router.
 
 ### Prior Work Retrieval Boundary
 
@@ -637,15 +633,10 @@ for candidate selection and commands; keep the detailed rules in those owners.
 ### Local Agent Messaging
 
 For local transport selection or accepted/consumed delivery interpretation, enter
-[peer-message](peer-message/SKILL.md). For independent sessions, enter the
-[local coordination workflow](peer-message/references/local-coordination.md#原生跨会话通信)
-before sending, including complete prepared-envelope size checks and parent-request expiry at send time. Use its routing guidance for uncovered local targets
-or coordination evidence that needs verification, never to bypass denied or Held messages.
-Treat `peer-message/scripts/peer.py` as the fallback CLI executable
-contract, [codex_live.py](peer-message/scripts/codex_live.py) as its Codex live adapter,
-and `peer-message/SKILL.md` as the runtime router and owner of stable
-runtime prerequisites plus the peer-cannot-authorize safety boundary. Independent-session
-task/resource declarations and request lifecycle belong in its `references/local-coordination.md`.
+[peer-message](peer-message/SKILL.md), starting with
+[current-host tool discovery](peer-message/references/local-coordination.md#先发现完整工具面再选通信通道).
+For independent-session preflight and request lifecycle, follow the
+[local coordination workflow](peer-message/references/local-coordination.md#原生跨会话通信).
 Keep native-guard installation, recovery and actual-host acceptance in that workflow;
 do not duplicate its parameters here. Reply lookup, transport and discovery
 details belong in [the transport and receiver-evidence SOP](peer-message/references/protocol-and-discovery.md).
@@ -665,9 +656,7 @@ shared resource, and the verification contracts that decide what a peer assertio
 peer denial is worth belong in
 `peer-message/references/coordination-and-learning-loop.md`. Keep implementation, CLI help,
 tests, and those owners aligned; README and changelog entries should point to
-them instead of restating volatile protocol facts. The repository-wide
-local-source activation contract below still applies—never hand-create Codex
-Skill links.
+them instead of restating volatile protocol facts.
 
 ### Ghostty Terminal Sessions
 
@@ -683,8 +672,12 @@ For observer freshness, follow
 [observation-health verification](ghostty-use/references/automatic-snapshots.md#verify-observation-health).
 Before a restore or retry, follow its
 [current-set reconciliation](ghostty-use/references/restore_mechanics.md#reconcile-the-current-wanted-set).
-After process reconciliation, follow
+After process reconciliation, and before a complete GUI acceptance pass that must
+not foreground Ghostty, follow
 [history-readiness acceptance](ghostty-use/references/restore_mechanics.md#verify-history-readiness-after-process-reconciliation).
+Keep per-requested-ID GUI readback; process checks and delivery receipts are not
+substitutes. For low-overhead traversal, follow
+[ordered native-tab acceptance](kimi-use/references/kimi-cu-desktop-automation.md#原生标签页的顺序验收).
 For change-only automatic backups, use its
 [automatic workflow](ghostty-use/references/automatic-snapshots.md).
 
@@ -708,6 +701,9 @@ Before switching an existing Codex session, or recovering one after login change
 For a remote Codex sign-in prompt or choosing existing-login reuse versus new authorization, start at
 [Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
 Keep quota checks on the separate route below.
+
+For stopping a Tibo monitor or ending reset tracking, enter the
+[host lifecycle route](tibo-reset-codex/SKILL.md#停用监控先走宿主操作).
 
 For Codex reset announcements or account quota questions, enter
 [tibo-reset-codex](tibo-reset-codex/SKILL.md). Follow its
@@ -755,29 +751,22 @@ receipt, and an automatic outbox path gets one non-retrying HTTP attempt.
 For affected executable entries before release and after source synchronization,
 follow [source location and activation](daymade-skill/skill-creator/references/source-location-and-activation.md).
 
-For installed-Skill and fresh-host acceptance, test the canonical source route. Use the current
-`claude-switch-models-setup` local-source workflow for this maintainer machine,
-and use `daymade-skill:skill-governance` to verify source, installed state,
-discovery policy, and the fresh model-visible catalog. Do not blindly remove and
-re-add a marketplace: removing it uninstalls plugins installed from that
-marketplace. Do not `cp -r` a second Skill tree into a user Skill directory; that
-copy immediately creates an independent drift owner.
+For installed-Skill and fresh-host acceptance, enter
+[skill-governance](daymade-skill/skill-governance/SKILL.md).
 
 For maintainer source-backed activation, source-watcher deployment, or authorized plugin-to-personal
 Skill conversion, follow
 [Local Source Sync Architecture](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md).
-Do not hand-create user Skill links. Intentional same-name source variants follow
-that owner's [explicit source preferences](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md#explicit-source-preferences).
+Intentional same-name source variants follow that owner's
+[explicit source preferences](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md#explicit-source-preferences).
 For Skill authoring in an approved independent Fleet clone, follow the
 [leased-authoring owner procedure](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md#leased-fleet-authoring-clones).
 
-When delivery includes local availability, finish the source owner's dry-run/apply
-and the [newly registered Skill gate](daymade-skill/skill-governance/references/skill-surface-governance.md#14-verify-a-newly-registered-skill).
-Take expected identities from the requested change, not from links or a whitelist
-that may already omit the new Skill. Keep installation/catalog evidence separate
-from actual task results. A daemon using a pinned plugin copy also needs the
+For requested local availability, follow
+[source-backed activation and consumed-bundle readback](daymade-skill/skill-governance/references/skill-surface-governance.md#5-reconcile-source-backed-activation)
+and the [fresh-host delivery gate](daymade-skill/skill-governance/references/skill-surface-governance.md#14-verify-a-newly-registered-skill).
+For a daemon using a pinned plugin copy, follow the
 [pin-update workflow](daymade-claude-code/claude-switch-models-setup/references/troubleshooting.md#advance-the-pin).
-Do not treat a merged source change as proof that this runtime advanced.
 For a named-target availability verdict, use the
 [target-verdict procedure](daymade-skill/skill-governance/references/skill-surface-governance.md#named-target-verdict).
 Keep its invocation and result contract in that owner.

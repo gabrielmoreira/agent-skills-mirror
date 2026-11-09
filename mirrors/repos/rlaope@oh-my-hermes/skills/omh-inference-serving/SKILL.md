@@ -10,7 +10,7 @@ metadata:
     phase: inference-serving
     role: operator
     quality_tier: observed-command-gated
-    related_skills: [omh-model-optimization, omh-model-setup, omh-executor-runtime-readiness, ulw-perf]
+    related_skills: [omh-model-optimization, omh-model-setup, omh-executor-runtime-readiness, ulw-perf, omh-model-compression]
 ---
 
 # Inference Serving
@@ -27,6 +27,7 @@ This is a Hermes-native `inference-serving` workflow skill.
 - The user wants their own machine's model routing or providers configured; use `omh-model-setup`.
 - The question is whether a coding runtime/executor can run at all; use `omh-executor-runtime-readiness`.
 - The goal is application or system performance rather than the serving endpoint itself; use `ulw-perf`.
+- The ask is producing the smaller weights -- GPTQ or AWQ calibration, pruning, or a distilled student -- and proving they still do the task; use `omh-model-compression`.
 
 ## Examples
 
@@ -120,7 +121,7 @@ Record observed delegation results; otherwise return `not_available` or `not_obs
 Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
 - Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
 Preserve workflow intent and stop conditions; verify before claiming completion.
-Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only; OMH's record terms (surface, lane, wrapper, handoff, evidence boundary, not_observed) stay in records and tool calls, never in the sentence the user reads unless they ask about one; and when a real unresolved user decision or a useful briefing discussion remains, offer one specific, content-linked question. Completed work needs no question; omit unrelated non-action footers and generic offers to continue.
+Reply in the user's own words and the host's own voice: its SOUL.md persona owns reply language, tone, speech level, and sentence endings, progress updates included (where it sets no language, use the one the user wrote in), and OMH shapes structure and content only. When the requested output is delivered, put any open points inside the result and end with no question or offer; only when the person asked to choose or decide and that choice is still theirs, end with one specific question about it, not a list, a generic offer, or a footer; the shared rail's Reply Language And Host Voice and Turn Ending sections hold the full rule.
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 

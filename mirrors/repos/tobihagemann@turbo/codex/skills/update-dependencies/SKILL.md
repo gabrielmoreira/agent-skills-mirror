@@ -18,7 +18,7 @@ At the start, use `update_plan` to track each phase, restating any remaining ste
 3. Research breaking changes
 4. User confirmation
 5. Execute upgrades
-6. Apply migrations
+6. Apply migrations and sync out-of-manifest records
 7. Run `$run-checks` skill
 8. Exercise upgraded schema against the real store
 9. Report results
@@ -124,20 +124,20 @@ If "Show details" selected, display full migration research, then ask again.
 
 Bump each outdated CI action ref in the file that declares it, under the chosen strategy. For a ref pinned to a commit SHA, resolve the target release tag to the commit it points to (for an annotated tag, follow the tag to its commit) and update the trailing version comment to match. For a tag ref, keep the ref's precision when the action publishes a tag at that precision for the target, otherwise use the full release tag.
 
-After every install command in this phase, run both checks below before any tests and before Phase 6.
+After every install or update command in this phase, run both checks below before any tests and before Phase 6.
 
-1. **Confirm the installed tree moved** — spot-check the resolved version of one or two upgraded packages in the installed dependency tree against the manifest. An install can record the new versions while leaving the installed packages on their old ones, which makes every later check report on the pre-upgrade tree. When the two disagree, force a clean resolve: use the package manager's lockfile-respecting install where it has one, otherwise clear the installed tree and install again. Re-check afterward.
+1. **Confirm the installed tree moved** — spot-check the resolved version of one or two upgraded packages in the installed dependency tree against the manifest, or against the lockfile after an update command. An install can record the new versions while leaving the installed packages on their old ones, which makes every later check report on the pre-upgrade tree. When the two disagree, force a clean resolve: use the package manager's lockfile-respecting install where it has one, otherwise clear the installed tree and install again. Re-check afterward.
 2. **Diff the package-manager configuration** — inspect the package-manager config files for entries the tool wrote on its own. A tool enforcing a safety guard, such as a minimum age before a release is installable or a provenance requirement, may record a per-package exclusion rather than refusing. Treat such an entry as the guard being bypassed: revert it and lower the manifest constraint to the newest version the guard admits. When the lowered range still admits the rejected version, an existing lockfile keeps it: restore the lockfile from git (delete it when git does not track it), re-run the resolving install and any semver-respecting update command this phase already ran, and diff the configuration again.
 
-### Cautious Strategy
+### Minor and Patch Updates
 
-First upgrade minor and patch only using the package manager's semver-respecting update command, then run tests. If the test command exits nonzero, stop before proceeding with major upgrades.
+Under every strategy, run the package manager's semver-respecting update command, where it has one, so direct and indirect dependencies advance within their declared ranges. When a filter was given, limit the command to the filtered packages. Before running it, write each Phase 2 cap, and each Phase 2 hold whose declared range admits a release beyond its pin, into that package's manifest constraint. Under Cautious, run it before any major upgrade, then run tests; if the test command exits nonzero, stop before proceeding with major upgrades. Under every other strategy, run it after the major upgrades' install, or alone when no major is being upgraded.
 
 ### Major Version Upgrades
 
 Update the manifest file (version constraint) and run the install/resolve command. For package managers with a dedicated upgrade command, use it. For others (Swift PM, Maven, Gradle), edit the manifest directly.
 
-## Phase 6: Apply Migrations
+## Phase 6: Apply Migrations and Sync Out-of-Manifest Records
 
 ### Step 1: Run Codemods (if Available)
 
@@ -175,6 +175,15 @@ Some packages pin their version outside the manifest, beyond the package manager
 - Base images and tool versions in `Dockerfile`, `.devcontainer/`, and `docker-compose.yml`.
 - Pinned tool versions in CI setup steps (`actions/setup-node` `node-version`, `setup-python`, toolchain files).
 
+### Step 6: Refresh Bundled License Inventories
+
+When the repository commits a third-party license inventory or bundled license and notice texts, such as a licenses folder, an acknowledgements file, or an in-app credits list, refresh it for every package whose resolved version changed. Find it with `rg -il --hidden "licen[cs]e|NOTICE|acknowledg|third.party"`, and follow any refresh procedure the project records beside it, such as a README in that folder. When a script or tool generates the inventory, re-run it instead of editing by hand, then compare its output with the committed copy.
+
+- Update the recorded versions and revisions from the resolved lockfile.
+- Re-copy the unmodified upstream license and notice texts from the resolved revisions and compare them with the bundled copies. Include code a package vendors from another project, whose revision can move on a patch release.
+
+When a package's license, or the license of code it vendors, changed, use `request_user_input` before accepting the new text: adopt the new license, updating every project license text, attribution, and license exception written for the old one, or cap the package at the last release under the old license. Add a **Get a second opinion** option, which runs the `$consult-claude` skill for what each option commits to and what reversing it costs. Then resolve the choice with that answer in hand, re-asking when it stays the user's. On adopt, raise the package's manifest floor to the first release under the new license, as Step 3 does. On cap, write the cap into the manifest constraint, re-run the install, run Phase 5's two checks, revert the Phase 6 changes made for the newer release, and refresh the inventory for the capped release.
+
 ## Phase 7: Verification
 
 ### Step 1: Run `$run-checks` Skill
@@ -195,6 +204,8 @@ If any migrations could not be automated:
 - List specific changes the user needs to review
 - Highlight deprecated patterns that need attention
 - Note any runtime behavior changes to watch for
+
+Include every open item in the printed report. Whether or not any migration remains, ask about each open item that waits on a user decision through `request_user_input`, one question per item, filling each call to its three-question limit: a follow-up fix to make now or note for later, or an advisory that no release within the declared range fixes, to accept or to override to the earliest release that fixes it. Act on each answer, running the `$note-improvement` skill for an item noted for later. When an answer changes code, the manifest, or the lockfile, run Phase 5's two checks after any install, then run the `$run-checks` skill again and update the report.
 
 ## Error Handling
 

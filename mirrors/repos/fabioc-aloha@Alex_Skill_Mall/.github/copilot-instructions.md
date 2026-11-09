@@ -95,3 +95,13 @@ The Mall does not:
 ## Token Budget
 
 The Mall brain stays lean because the Mall is not interactive. Target: ≤10K tokens of always-on instructions. If it grows past that threshold, audit against this charter.
+
+## Local maintenance artifact storage
+
+For explicitly authorized local maintenance, keep requested documents, reports,
+plans, useful helpers, and supporting evidence inside this repository, not solely
+in session storage. Verify final files, dependencies, links, ignore state, and
+actual Git state before completion. Preserve historical evidence; exclude
+credentials, runtime state, and unapproved personal or cross-project data.
+This does not extend the automated workflow's write allowlist, consumer-policy
+authority, or publication permissions. It is guidance, not filesystem enforcement.

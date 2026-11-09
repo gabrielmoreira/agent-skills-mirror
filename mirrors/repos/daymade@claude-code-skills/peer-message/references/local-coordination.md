@@ -125,6 +125,23 @@ CLI；旧 CLI 能继续处理原 notice/request/reply，但不提供新状态模
 
 ## 原生跨会话通信
 
+### 先发现完整工具面，再选通信通道
+
+执行者先检查当前宿主实际暴露的工具，包括可延迟发现的工具，再判断目标是否能用
+原生通道到达。只看到父子 agent 的 collaboration 工具，不能据此断言独立会话没有
+原生通信。若宿主提供工具目录或搜索接口，用它查找独立会话的列举、读取和发送能力，
+再读取所选工具的实际 schema；没有完整发现能力时明确覆盖缺口，不把未看到当不存在。
+
+例如，某次 Codex 工具面另有独立线程的 list/read/send 工具，首次可见列表却只展示
+父子协作入口。此时先发现那组原生工具、核对目标线程及发送参数，随后沿现有
+`coord prepare → 原生发送 → coord commit` 流程执行。这个例子不保证其他宿主或
+下一次会话提供同名工具；消息长度、字段和回执均以当次 schema 为准。
+原生通道确实不覆盖目标时才进入既有脚本路线；原生拒绝、Held 或送达未明仍按原边界
+处置，不能据此换 transport。这里的发现顺序由执行者负责，不由发送 guard 代查工具。
+
+需要独立会话或跨产品协调时，才按现有身份协议绑定发送者和回信路线；普通父子 agent
+交办继续使用宿主身份，不为该例额外执行脚本身份探测、登记或发送。
+
 宿主同时继承 Claude 与 Codex 身份时，在每个写入型 `coord` 子命令后传
 `--actor codex:<完整 UUID>` 或 `--actor claude-session:<完整 UUID>`，明确当前宿主。
 它必须逐字匹配所选产品的环境身份；同产品身份冲突、缺失或空值仍拒绝。
@@ -168,6 +185,11 @@ python3 "$PEER_SKILL_ROOT/scripts/peer.py" coord prepare '<exact-target>' reques
 只有 `prepared` 才将输出的 `body` 原样交给原生工具；记录其 `message_id`。
 发送前按当前宿主工具的实际限制核对完整 `body`，包括协调信封；限制按 UTF-8
 字节计时，用 `len(body.encode("utf-8"))`，不拿原始正文的字符数代替。
+原生工具声明字节上限时，在 `coord prepare` 加
+`--max-envelope-bytes '<该工具的实际上限>'`；它核对包含 metadata、advisory 和
+reply 关联行的完整 UTF-8 信封，超限返回非零且不保留发送预留或新 state revision，
+缩短原始正文后沿原准入重试。未声明或非字节计量的限制不猜值；省略参数保留原流程，
+发送前仍按工具实际合同检查。此检查不发送消息、不改变权限，也不替代原生回执。
 若完整信封超限且已确认 transport 未调用，先对该 prepared id 执行
 `coord commit --message-id '<prepared-id>' --outcome not_sent`，再缩短原始正文，
 沿原准入重新 prepare。不得截改 prepared body、只删信封或改走其他 transport；

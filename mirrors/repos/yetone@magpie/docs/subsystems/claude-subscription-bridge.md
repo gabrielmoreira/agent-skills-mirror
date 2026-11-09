@@ -84,8 +84,16 @@ the full name, which is the client's own, when the cut name maps to
 nothing and isn't in `subscriptionRun.tools`: handed over cut, as
 `<server>__<tool>`, the client answered "No such tool available" and the
 model had to load it and call again (packinggoods, 11-02,
-`TestClaudeBridgeHandsOverAnUnloadedMagpieTool`). A deferred tool of
-another client MCP server (`mcp__linear__…`) is still not handed over.
+`TestClaudeBridgeHandsOverAnUnloadedMagpieTool`). Only a cut name of the
+router's form, `<server>__<tool>` (`magpieServerTool`), keeps the prefix.
+A deferred built-in (`WebFetch`, `WebSearch`, `CronCreate`: no `__` in
+the name, no prefix on the client) called as `mcp__magpie__WebFetch` is
+handed over as `WebFetch`; handed over whole, the client answered "No
+such tool available: mcp__magpie__WebFetch" (steven_4422, 11-08). One of
+another client MCP server called as `mcp__magpie__mcp__linear__…` is
+handed over as `mcp__linear__…`. A deferred tool the run's model calls
+by the bare client name (`WebFetch`, `mcp__linear__…`) is the run's
+Claude Code's to answer and is not handed over.
 
 A turn with `tool_choice` none is offered every tool the client sent, as
 any other turn is (bbfatx on X). Anthropic caches a prompt as tools, then
@@ -194,7 +202,15 @@ talks to it as it talks to `-p`: stream-json in and out. The helper:
   show or a `[Pasted text #N` with N past the paste before (`shown`):
   images and pasted text are numbered together, and the prompt drawn
   again shows the earlier ones (`TestShimWaitsForWordsNamingImages`,
-  `TestShimPastesImages`). The transcript holds real image blocks, and
+  `TestShimPastesImages`). Both are looked for in what was drawn since
+  the paste and at the end of the prompt as the screen shows it, the rows
+  between its last two rules (`prompt`, `imageTaken`, `textTaken`): a
+  prompt grown past a row is drawn again only where it changed, so the
+  drawing after a paste can hold one digit of its mark. With nineteen
+  images between words, 2.1.319 drew "3" of `[Image #33]`, the helper
+  waited out `pasteWait` and ended with exit status 1, a 502 to the
+  client (#5654, `TestShimSeesPastesOnAPromptDrawnInPart`, a real run's
+  bytes). The transcript holds real image blocks, and
   Claude Code notes each one's path to the model (`[Image: source: …]`).
   The folder is removed once its message is sent (Claude Code has read
   the files by then), and when the helper ends, on SIGINT, SIGTERM and
@@ -388,6 +404,29 @@ turn whose reply had begun, and Off are never asked again
 (`thirdPartyRefused` says why). Settings' own value is not changed.
 `claude_tui_refusal_test.go` holds each case.
 
+The other exception is Claude Code's auto mode classifier when its own
+cache marks keep a long transcript (#5585, #5655; `keptByPrint`,
+`claudePrint` code `cache-marks`). The classifier is asked afresh each
+call: its system, the user's CLAUDE.md, the transcript so far with its
+marks moved on to the newest entry, and the action to judge. Pasted into a
+new interactive run, it loses those marks: Claude Code marks only the last
+block of what it is pasted, and the classifier's tail changes every call,
+so each call read only Claude Code's own prompt (about 69K tokens) and
+wrote the whole transcript again, 126K and 132K a call at an hour's 2x
+in iamnil's rows. A `-p` run keeps the client's marks (below), so a call
+reads what the call before wrote and writes only what is new. `-p` is
+counted at about twice the allowance a token, so it is chosen only past
+`marksPrintAt`, 64KB of message text before the last mark: with S Claude
+Code's prompt, M the marked transcript and D the new part, the interactive
+call costs about 0.1·S + 2·M and the `-p` one about 2·(0.1·(S+M) + 2·D),
+which meet at M ≈ 15–20K tokens. A shorter classifier, and every other
+request, stays interactive; a conversation's later turns go on in their
+run, which keeps its own cache, so none of them is moved. Desktop's
+classifier, which sends no `X-Magpie-Cache-Marks` header, is parsed for
+its marks with the interactive mode on only for this
+(`serveSubscriptionAs`). `TestClaudeTUIClassifierKeepsLongMarksAsPrint`
+holds it, with and without the header.
+
 A JSON schema is answered through an answer tool of magpie's
 (`claude_tui_schema.go`): interactive Claude Code takes `--json-schema`
 and does nothing with it (2.1.316, a real run: its result's
@@ -470,7 +509,8 @@ still restarts. The `-p` run takes every change in place
 helper pastes the words without their marks, so the run keeps Claude
 Code's own prompt caching (no `DISABLE_PROMPT_CACHING`, no client tail)
 and the reply reports every client mark as dropped
-(`clientCache.pasted`; see
+(`clientCache.pasted`), except a long classifier's, which runs as `-p`
+for them (`keptByPrint`, above; see
 [Client-placed cache marks](#client-placed-cache-marks-1717)).
 
 The gateway's log says which (`claude: not the interactive mode: …`).
@@ -760,7 +800,9 @@ A client can send `X-Magpie-Cache-Marks: client` on a `/v1/messages`
 request to a Claude subscription. Without that header, the bridge behaves
 as before — except Claude Code's auto mode classifier, whose own marks are
 kept like an opted-in client's when they are valid, and dropped as before when
-they are not (#3835). Chat Completions and Responses
+they are not (#3835). With the interactive mode on, the classifier's marks
+are kept only when they keep `marksPrintAt` of transcript, and its run is
+then `-p` (#5585). Chat Completions and Responses
 ignore the header. The mode is
 part of the run's identity, including rewritten conversations and tool-result
 handoffs: opted-in and ordinary requests never share a run.
@@ -768,8 +810,9 @@ handoffs: opted-in and ordinary requests never share a run.
 An opted-in `-p` run sets `DISABLE_PROMPT_CACHING=1`. Its four cache slots
 belong to the client. An interactive run is pasted the words without their
 marks, so it keeps Claude Code's own caching and reports the system, message
-and tail marks dropped beside the tools' (`clientCache.pasted`); the table
-below is the `-p` run's. `claude_cache.go` validates the marks before run selection;
+and tail marks dropped beside the tools' (`clientCache.pasted`); a
+classifier whose marks keep a long transcript runs as `-p` instead
+(`keptByPrint`). The table below is the `-p` run's. `claude_cache.go` validates the marks before run selection;
 `renderClaudePrompt` places them in a new run's first user message.
 
 | Client mark | Bridge behavior |
@@ -1617,6 +1660,16 @@ them before judging what is left. Before, `agentNotice` dropped them
 whole, the run never heard the sub-agent finished, and the main agent
 waited for it (stones_2026 on Discord). A notification after a reply is a
 turn of its own and is told as it is.
+
+A skill's body is not the user's either. Claude Code sends a loaded
+skill's SKILL.md as a text block after the Skill call's result, starting
+"Base directory for this skill: ", and `desktopNote` counts that as an
+agent notice (#5403), so the run's model got "Launching skill: …" and
+nothing it said. `withSkillBodies` appends each such body to the result
+of its Skill call (the first that has none yet), or to the result before
+it, and the [skill router](skill-router.md)'s entry and every skill
+reach the run whole. `TestSkillBodyRealClaudeCode` holds a real Claude
+Code request.
 
 Where the result ends is said by the message's parts alone. A tool whose
 output says "Do not use tools." has it told as its output, inside the

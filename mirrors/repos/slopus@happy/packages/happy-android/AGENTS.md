@@ -350,34 +350,50 @@ win:
   `openAgentSettingsRow` opens the agent's Settings or Appearance page with
   `reveal`, or Chief of Staff with the ask for name and avatar.
 - **Agent home search** looks and moves as iOS's
-  (`HappyCore/Agents/Search.swift`, `ui/connection/AgentSearch.kt`): the
-  results fade in over home (200 ms ease-out) on its own ground, drawn as
-  home is, and home never moves under them. Nothing typed shows the eight
-  bots and tasks last active (`AgentSearch.recent`). A query is the node's
-  one search (happy-agent API.md, "Search"): one flat card fusing the
-  phone's half with the daemon's, then quick actions and settings (local
-  only), each under its heading, at most six, or "Nothing found" in a
-  capsule. It is the only search over vaults; a vault has none of its own.
+  (`HappyCore/Agents/Search.swift`, `SearchShown.swift`,
+  `ui/connection/AgentSearch.kt`) and lists what desktop's ⌘K palette
+  lists (happy-desktop `commandPaletteResults.ts`): the results fade in
+  over home (200 ms ease-out) on its own ground, and home never moves under
+  them. Nothing typed shows the eight bots and tasks last active
+  (`AgentSearch.recent`). A query is the node's one search (happy-agent
+  API.md, "Search"): one flat card of at most 12 things found
+  (`FOUND_LIMIT`), the phone's half fused with the daemon's, and quick
+  actions and settings (local only), each under its heading, at most six,
+  or "Nothing found" in a capsule. Each section stands where its best
+  answer puts it, as desktop's do; what was found comes first once the
+  daemon has answered with anything. It is the only search over vaults; a
+  vault has none of its own.
   - The phone's half (`localSearch`), at keystroke speed, from what it
-    holds: home's conversations (`agent:`), projects and worktrees, the
-    catalog's documents (`document:`) and other Surfaces (`surface:`),
-    joined or not (`AgentSearchSources`, read only while search is open),
-    the open todos kept (`todo:`), the kept artifact page (`artifact:`),
-    and home's own pages (`home:`, phone only). Each kind is ranked by
-    desktop's `AgentSearch.rank` (words in any order, a kind's name three
-    below a title match, joined before not), then the kinds fused as the
-    daemon fuses its providers: by place, then provider order.
-  - The daemon's half: `POST /v0/search` with `{q, limit}`
-    (`search/Search.kt`), 120 ms after the typing rests, cancelled by the
-    next keystroke, only where health says `capabilities.search`; offline
-    or older, the phone's alone. `SearchFusion` is the shared RRF (k = 60)
-    over `key`, the client package's vectors in `test/resources/search/`
-    (from happy-agent c67719baf, client 0.0.158). A daemon's answer joins
-    only the query it was for. A result found by both keeps the phone's
-    row unless the daemon has a content line for it; vault items, messages
-    (titled by their conversation, opening it), events and content matches
-    are the daemon's rows, with a second line (66 high). People and skills
-    have no page on the phone and are left out with unknown types.
+    holds: home's conversations (`agent:`), the catalog's documents
+    (`document:`) and other Surfaces (`surface:`), joined or not
+    (`AgentSearchSources`, read only while search is open), the open todos
+    kept (`todo:`), the kept artifact page (`artifact:`), and home's own
+    pages (`home:`, phone only). Each kind is ranked by desktop's
+    `AgentSearch.rank` (words in any order, a kind's name three below a
+    title match, joined before not), then the kinds fused as the daemon
+    fuses its providers: by place, then provider order; its best 12 go to
+    the fusion.
+  - The daemon's half: `POST /v0/search` with `{q, limit: 20}` and no
+    `types`, as desktop asks (`search/Search.kt`), 120 ms after the typing
+    rests, cancelled by the next keystroke, only where health says
+    `capabilities.search`; offline or older, the phone's alone.
+    `SearchFusion` is the shared RRF (k = 60) over `key`, the client
+    package's vectors in `test/resources/search/` (from happy-agent
+    c67719baf, client 0.0.158). A daemon's answer joins only the query it
+    was for. What the phone has nowhere to open is left out before the
+    fusion, as desktop's `remoteRow` leaves out what it can't open:
+    projects and worktrees (they open nothing on the phone, as their home
+    headings don't), anything archived, a conversation or message in no
+    workspace, and people and skills, which don't parse.
+  - Every found row is a title and desktop's meta under it (66 high): a
+    conversation's kind (Bot, Task, Subtask) or, for a project's chat, its
+    project and worktree; a Surface's kind; an artifact's type; a todo's
+    list, "Done" first when done; a vault item's vault and path; an
+    event's calendar and day; a message is its words, under its
+    conversation, "Agent" when an agent wrote it, and its day. A content
+    match's words take that line, on the phone's row too when both found
+    it. The phone's own rows wear home's marks and open as home opens
+    them; home's own pages draw as home draws them.
   What a result opens leaves the search for coming back; new work, Cancel
   or back, and a pull down from the results' top end it.
   The Happy CLI home has no search, as on iOS.
@@ -1849,7 +1865,17 @@ is `packages/happy-ios`. The wire keeps its own names
   existing ones). `HttpsTransport` (an agent with a public URL) has no
   clients: each socket is its own TLS connection tagged with its category,
   so `reset(category)` closes only that category's, with the same
-  deadlines; `AgentEndpointTransport` passes the category on. It uses
+  deadlines; `AgentEndpointTransport` passes the category on. A session
+  kept through the background (`AppGraph.setForeground` →
+  `AgentSessions.backgrounded`) resumes its transport before its link next
+  runs, open then or later (`Transport.resumed`, iOS's): every client is
+  woken (`TailcatClient.wake`), which checks rather than assumes anything
+  broke. The relay is pinged and replaced only if it doesn't answer within
+  two seconds, every direct path is probed and one that stopped answering
+  dropped, and an expired session rekeys; clients, requests under way and
+  live sessions stay. tailcat-kotlin watches no network itself, so a network
+  that returns gets the same check on every kept client
+  (`Transport.networkChanged`, from `AgentSession.networkReturned`). It uses
   tailcat-kotlin's default DERP map (`https://tailcat.dev/derpmap.json`),
   cached in `noBackupFilesDir/tailcat/derpmap.json` (`FileDerpMapCache`):
   with no network and no cached map, connecting fails.
@@ -1893,6 +1919,19 @@ iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
   pass, so the link's own click, a bubble's copy menu and text selection
   never also fire; a drag past the touch slop lets go and scrolls
   (`LinksTest`, which covers each site).
+- **Live artifacts** (`ArtifactShow.Live`, `ArtifactLoader.livePage`) open
+  the URL of the version shown, a pinned version its own, http or https, with
+  `BrowserProxy.Scope.Live`: every tunnel, to the page's origin or any other
+  host, is `CONNECT /v0/artifacts/:id/proxy` (`BrowserNetwork.artifact`), in
+  the network the artifact was made on, where the daemon checks each
+  destination against its URL (happy-agent API.md, "Live URLs"). No workspace
+  is looked up and nothing falls back to another network. There is no data
+  bridge: the page's `/api/…` is the site's own. Its WebView has a profile of
+  its own (below), as every page does. A refusal of the route itself (404, 501,
+  503) is `BrowserException.Kind.LiveUnavailable` (`browser_proxy_live_unavailable`),
+  shown as "This Page's Computer Isn't Available"; a refusal inside the open
+  tunnel is what it was. Over HTTPS the route is its WebSocket twin, as every
+  tunnel's is (`BrowserTunnel.outer`).
 - **Remote only.** Every WebView request goes through `ProxyController`'s
   override to the loopback `BrowserProxy`, with no bypass rules, applied
   before the first load; a WebView without `PROXY_OVERRIDE` shows
@@ -1921,6 +1960,7 @@ iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
     sees it. iOS allows them in web content only; Android has no
     WebView-only switch, and a base-config allowance would also open
     cleartext to the app's native clients.
+    A live artifact at plain http off localhost hits the same refusal.
   - The listener binds 127.0.0.1 by address: Android's
     `getLoopbackAddress()` is `::1`, which WebView's `127.0.0.1` rule
     can't reach.
@@ -2058,3 +2098,14 @@ command runs at once and the draft clears) and `draft` (a skill becomes
 `Problem.CommandGone`/`CommandBusy`); a skill is a user message `/name args`
 carrying one `read_skill` tool_call_request, as desktop sends it. The command's
 words never go out as a message otherwise.
+
+A new chat, before it has an agent, offers the computer's global skills in the
+same list (`ConversationApi.skills`: `GET /v0/skills` 100 a page, read again
+from the start on 409, enabled and ready ones only; 404/501 offer none). They
+are read as the new chat starts and again on `skills.updated` or a reconnect.
+A first message that is `/skill args` with an offered name (`Conversation.send`)
+goes as a skill does in a chat: `/name args` asking for `read_skill`, sent as
+the task or bot's first message once it is made. The new agent's catalog (its
+bootstrap) decides: without that name, or with attachments, the words go as
+plain text. A failure leaves the message failed with Retry, as a first send's
+does. Other commands wait for an agent.

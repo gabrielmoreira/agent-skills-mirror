@@ -70,6 +70,8 @@ For each candidate, write the following.
 
 If the codex CLI is available, you can get candidates separately under the same request and conditions and compare them together. Mixing in another model's candidates adds directions to compare. The command format is the same as "Second script review" in `craft-story.md` (pass the prompt through stdin).
 
+> OMH note: each candidate run is a `codex exec` call on the user's own ChatGPT plan, and no price gives its cost. Run them only after `omh-spend-gate`'s card, which names how many calls, with a spend-only cap set in calls, and the person's typed yes to that card.
+
 ### 3) Choosing
 
 Score each candidate 1 to 5 on the criteria below and keep it as a table. Choose the highest-scoring candidate, or combine the strengths of two candidates.
@@ -127,6 +129,8 @@ The working times below are minimums measured with the earlier method (one round
 WebGL and 3D scenes and scenes with many particles take longer to render. Re-estimate the final render time from the draft render time.
 
 ElevenLabs credits (approximate):
+
+> OMH note: these figures are a rough planning guide, not a quote. A spend card reads the expected credits from the provider's own price for the chosen model; where that gives no figure, the card says the cost is unknown and `omh-spend-gate`'s spend-only cap applies.
 
 - TTS: character count × 1 (about 1.5 to 2 times including regeneration and takes)
 - STT: a small amount per minute

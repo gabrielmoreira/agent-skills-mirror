@@ -1060,7 +1060,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   terminal whatever is saved. Each row of the `/theme` picker shows the
   look's colours on its ground.
 - Each tool call is a block of its own on a rail in its state's
-  colour, with a blank row between two calls and no header over a turn's
+  colour, with two blank rows between two calls (one between any other two
+  blocks) and no header over a turn's
   calls: its state's mark (below), its name, and what it ran on (a path, a
   command, a query) in parentheses, cut with `…` where the row is too narrow
   (`┃ ● terminal(rm -rf ./tmp-cache)  1.9s`). Under it (`  ⎿  `) it shows the first three lines of what the tool
@@ -1093,7 +1094,7 @@ run and approval decision stays Hermes'; the screen is OMH's.
   run, say), the last three lines it printed, under the
   count of the lines above them. An edit's diff hangs under the same `⎿`, and a long diff counts
   its rest the same way. A resumed session's earlier calls (`omh --resume`,
-  `/resume`, a switch) are drawn the same way, a blank row between two,
+  `/resume`, a switch) are drawn the same way, two blank rows between two,
   with a grey `●` on a grey rail, since Hermes' record of them keeps no
   outcome, and an edit's diff under it where Hermes kept the one it showed.
   Ctrl+O opens the whole transcript with every detail
@@ -1237,7 +1238,13 @@ run and approval decision stays Hermes'; the screen is OMH's.
   Ctrl+K, Ctrl+C, Esc Esc) removes the image, and an undo puts both back.
   The prompt keeps the `[Image #N]` labels in its text so the model can name
   them, and the transcript lists under it each image Hermes accepted for it
-  (`⎿  [Image #1]`). A `!` line or a command that sends no prompt gives its
+  (`⎿  [Image #1]`), with a small preview under each: real pixels on kitty and
+  Ghostty at truecolor, coloured half-blocks elsewhere (tmux, Terminal.app,
+  iTerm2, WezTerm, VS Code), even where Hermes' config names kitty, none under
+  `NO_COLOR`; `display.inline_images: off` in Hermes' config turns it off. The
+  prompt waits up to 2 seconds for its previews before it is printed, and
+  prints with only the image names when they do not come in time. `/history`
+  shows a kitty preview as its name only. A `!` line or a command that sends no prompt gives its
   tokens back to the composer. Enter right after a paste or a drop waits for
   Hermes to answer it, under `waiting for the image…`, and the prompt goes
   with that image (a one-line paste shaped like a path joins it the same
@@ -1335,7 +1342,7 @@ Esc closes it):
 | Ctrl+_ / Ctrl+Y | Undo or redo an edit in the composer (Ctrl+_ is what Ctrl+- and Ctrl+/ send on most terminals); a run of typed characters is one edit |
 | Esc | Closes the `/` or `@` menu; on an empty composer, interrupts a running turn (the activity row shows how long it has run, then `interrupting…`, and what you queued comes back to the composer unsent); cancels a rewind you picked; cancels an agent steer you picked and keeps what you typed; after an approval's tell row, sends nothing more and brings your draft back |
 | Esc Esc | With text, clears it and keeps it in this session's history; on an empty composer between turns, lists your prompts to rewind to (`/rewind` does too) |
-| Esc (vim mode) | With `display.vim_mode` on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, `h l 0 ^ $ w b e j k gg G` move, `f F t T` and a character find on the line and `; ,` repeat the find, `i a I A o O` insert, `x X dd D C cc S s r`, `d c y` with a motion or `iw aw`, `p P`, `u` and Ctrl+R edit, a count repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt. In NORMAL, Space is the leader: Space s opens sessions, Space b opens bots, Space p folds the plan, Space r or Space / searches history, Space m cycles the input mode, and Space t steps reasoning effort. Space Enter submits or steers typed text, or sends the oldest eligible queued prompt now on an empty composer; Space c interrupts a running turn, else clears the draft into session history. Esc or an unmapped key cancels the leader; Ctrl+C, Ctrl+O, Ctrl+L and Ctrl+Z cancel it and do what they always do. A picker taking input also cancels pending leader and Vim commands; a session picker waiting while you type leaves typing, leader shortcuts and Enter with the composer until ↑, ↓, Esc or Ctrl+C takes the picker. The info line says INSERT or NORMAL, or NORMAL · SPC while the leader is armed |
+| Esc (vim mode) | With `display.vim_mode` on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, `h l 0 ^ $ w b e j k gg G` move, `f F t T` and a character find on the line and `; ,` repeat the find, `i a I A o O` insert, `x X dd D C cc S s r`, `d c y` with a motion, `iw aw` or a quote object (`i` or `a` with double quote, single quote or backtick; inner count 1 selects inside, count 2 or more includes the quotes, around includes quotes and adjacent blanks without extra pairs; quote objects never cross a logical line; empty inner `y` keeps the register and moves inside, `d` keeps register and caret, and `c` enters INSERT inside), `p P`, `u` and Ctrl+R edit, a motion or edit count scales or repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt. In NORMAL, Space is the leader: Space s opens sessions, Space b opens bots, Space p folds the plan, Space r or Space / searches history, Space m cycles the input mode, and Space t steps reasoning effort. Space Enter submits or steers typed text, or sends the oldest eligible queued prompt now on an empty composer; Space c interrupts a running turn, else clears the draft into session history. Esc or an unmapped key cancels the leader; Ctrl+C, Ctrl+O, Ctrl+L and Ctrl+Z cancel it and do what they always do. A picker taking input also cancels pending leader and Vim commands; a session picker waiting while you type leaves typing, leader shortcuts and Enter with the composer until ↑, ↓, Esc or Ctrl+C takes the picker. The info line says INSERT or NORMAL, or NORMAL · SPC while the leader is armed |
 | Ctrl+V | Attaches the clipboard image as an `[Image #N]` token at the caret |
 | Ctrl+O | Opens the whole transcript with every detail (thinking, tool output, whole diffs) at its end, or, while Hermes asks something, the whole question (it answers nothing); q leaves it |
 | Ctrl+L | Redraws the screen |
@@ -1696,11 +1703,61 @@ to 1 MiB each (a larger one is reported by size), the OMH store's records are
 counted from its directory listing, the only signal it sends is the signal-0
 liveness probe, and it calls nothing in Hermes' gateway.
 
+#### The TUI on a Hermes runtime of its own
+
+By default bare `omh` opens its session on the Hermes gateway that also serves
+your bots: Hermes runs one gateway per host for every profile under
+`profiles/`, and refuses its standalone entry beside it. So a whole-gateway
+restart with a bot turn running drains first, up to Hermes'
+`agent.restart_after_turn_timeout` (30 minutes by default), and `omh` waits
+with it. `omh theme runtime own` moves the TUI's sessions to a Hermes home of
+the TUI's own, `<omh_home>/tui-home`, which Hermes gives a gateway of its own
+(auto-started, exits once idle). Nothing that happens to the bots' gateway
+reaches it, and `/gateway restart` there restarts only that runtime, which
+loads new OMH code without a bot reconnecting.
+
+`omh` builds the home from the root Hermes home at every launch and refreshes
+only what changed: `config.yaml` copied (model, providers and their keys,
+OMH's memory provider, OMH's skills through `skills.external_dirs`, the
+plugins; a copy you changed in the TUI home is replaced, with a line saying
+so), `auth.json` copied only when the root's is newer (Hermes rotates OAuth
+refresh tokens into the store it read, so a TUI-home copy that moved later is
+kept), `.env` copied without any messaging credential, and the same names
+stripped from the environment the TUI is started with (no adapter of the
+TUI runtime ever polls a bot's token), `SOUL.md` linked, `skills/` a link per
+skill at its own `<category>/<skill>` path over the root's and every served
+profile's (a skill is any directory holding `SKILL.md`; the root wins a name
+clash; a skill or link you put there yourself is left alone and stands for
+its name), and `plugins/omh` linked to the same OMH bundle the bots run. A
+root `config.yaml` that connects a messaging platform under `platforms:`
+keeps bare `omh` on the shared gateway, with a line naming the entry.
+Sessions, Hermes' own memory, cron and kanban are the TUI home's. The bot
+board keeps reading the bots' home. `omh --hermes-home` and `omh -p <profile>`
+stay on the home they name; `omh --resume <id>` opens where that session is,
+whichever runtime is chosen, and says so when that differs (the id as the exit
+card printed it; a title is not looked up); `omh theme runtime shared` goes
+back. `omh-tui-home.json` in
+the home records what was built from what. `omh update` rebuilds the home
+too (the plugin bundle it links moved with the update), `omh doctor` has an
+`omh_tui_runtime` row (which runtime, what the home was built from, how many
+skills, a messaging credential or adapter that should not be there, whether
+its gateway runs), and the menu bar's settings name the runtime and the TUI
+gateway's pid while it is live.
+
 When the OMH TUI cannot start, `omh` says why in one line on stderr and opens
 Hermes instead, so you lose the OMH screen, never the session. For a reason
 that is the OMH TUI's own — Windows or another terminal without `termios`,
 its frontend missing, or a Hermes whose gateway no longer speaks what the TUI
-was built for — that is Hermes' own TUI (`hermes --tui`). With `TERM=dumb`,
+was built for — that is Hermes' own TUI (`hermes --tui`). A gateway that is
+there but not answering is not such a reason, since Hermes' own TUI would ask
+the same gateway: a launch while it restarts waits for it on one shell line
+(`omh: the Hermes gateway is restarting; waiting… (12s)`), and while it drains
+for a restart, letting running turns finish first (a `/gateway restart` of the
+whole gateway while a bot's turn runs, up to Hermes' `restart_after_turn_timeout`,
+30 minutes by default), the line names that work (`the Hermes gateway restarts
+after 2 running turns (it allows up to 30 min); waiting… (40s) · ctrl+c
+leaves`) and the launch opens once the gateway is back. Past the wait it says
+what to check (`hermes gateway status`) and exits 1. With `TERM=dumb`,
 with `OMH_NO_TUI=1`, or with no Node for Hermes' launcher (Hermes' TUI needs
 it too), it is plain `hermes`, which opens what your `display.interface`
 chooses. `omh` reopens Hermes' terminal only
@@ -3097,11 +3154,13 @@ omh coding model-routing status --json
 ```
 
 The report separates confirmed models from discovered-only metadata, Hermes
-aliases from Maestro category readiness, and owner-learning state from both.
-Its missing recommendation heads are advisory. To clear only one learned owner
-preference, an agent/maintainer may run `omh coding model-routing reset
---route-family <id>`; this does not alter aliases, recommendations, providers,
-or credentials.
+aliases from Maestro category readiness, and the stored coding-owner choices
+from both. Its missing recommendation heads are advisory. A stored choice
+selects no owner: a coding-owner choice counts only for the request it was made
+in, so the router asks again unless the request names an owner or the setup
+profile holds one. To clear one route's stored choices, an agent/maintainer may
+run `omh coding model-routing reset --route-family <id>`; this does not alter
+aliases, recommendations, providers, or credentials.
 
 ### External coding CLI handoff (claude-code / codex)
 
@@ -3446,6 +3505,7 @@ omh theme use crimson --dry-run
 omh theme status             # the active theme, which source decided it, and where it is saved
 omh theme wallpaper off      # the living wallpaper off in every later OMH TUI session (on, or alone to show it)
 omh theme update-check off   # no once-a-day ask of npm for a newer release (on, or alone to show it)
+omh theme runtime own        # open sessions on a Hermes runtime of the TUI's own (shared, or alone to show it)
 ```
 
 Bare `omh theme` opens a picker: up/down arrows (or `j`/`k`) move the cursor,
@@ -5083,7 +5143,7 @@ Lower-level debug surfaces remain available when an adapter needs them:
 ```sh
 omh chat route --source discord --record --json "risky refactor"
 omh chat route --source discord "risky refactor"
-omh hermes plan --source discord --record "risky refactor with review"
+omh hermes plan --source discord --record --plan-file <reviewed-plan.md> "risky refactor with review"
 omh hermes plan-accept .hermes/plans/<accepted-plan.md>
 omh coding delegate --executor codex --source discord --record --from-plan .hermes/plans/<accepted-plan.md>
 omh coding delegate --executor claude-code --source discord --record "risky refactor"
@@ -5103,16 +5163,21 @@ so Hermes can ask one blocking clarification. Review gates remain
 The sections of that file are generated. To record a plan someone reviewed, pass it
 with `--plan-file <path>`: the file replaces the generated sections and the front
 matter says `plan_body: reviewed`. Without it the file says `plan_body: scaffold`,
-and `plan-accept` on it still succeeds but returns `reviewed_body: false` and a
-`say`. `--input-bundle` (with `--plan-file`) records planning input that
-`plan-accept` refuses. Stdout `plan.goals` and `plan.options` stay generated either way;
+and `plan-accept` refuses it with exit code 2 and a message that names the fix:
+record the reviewed plan with `--plan-file` and accept that file. To accept the
+scaffold on purpose, pass `plan-accept --allow-scaffold`; it then returns
+`reviewed_body: false` and a `say`. `--input-bundle` (with `--plan-file`)
+records planning input that `plan-accept` refuses. Stdout `plan.goals` and `plan.options` stay generated either way;
 the recorded file is the plan.
 
 The stdout JSON also includes `wrapper_contract`. Wrappers should use that JSON,
 not the Markdown body, to decide the next local action. If
 `wrapper_contract.coding_delegate.available` is `true`, the listed
 `argv_template` is an adapter contract for preparing a lower-level delegation
-after plan acceptance. Use the accepted plan artifact or generated context pack
+after plan acceptance; `available` does not mean the plan can be accepted yet.
+On a scaffold record, `coding_delegate.acceptance_requires` (the same value as
+`decision_gate.acceptance_requires`) says acceptance first needs the reviewed
+plan recorded with `--plan-file`. Use the accepted plan artifact or generated context pack
 as the executor context; Discord/channel text is only a summary. If
 `coding_delegate.available` is `false`, follow `next_action` and do not dispatch
 coding work.
@@ -5318,8 +5383,15 @@ Before calling the bot integration ready, verify these points:
 - `omh coding lifecycle report --run <run-id>` does not claim final completion
   while executor, verification, review, CI, or merge-readiness evidence is
   missing.
-- `omh hermes plan --source discord --record "<message>"` writes a
-  `hermes_plan/v1` artifact under the same Hermes home that the bot uses.
+- `omh hermes plan --source discord --record --plan-file <reviewed-plan.md> "<message>"`
+  writes a `hermes_plan/v1` artifact holding the reviewed plan under the same
+  Hermes home that the bot uses. Without `--plan-file` the file holds only the
+  generated scaffold: stdout reports `quality_gate.readiness:
+  needs_reviewed_body`, `coding_handoff_ready: false`, `next_action:
+  record_reviewed_plan` and `decision_gate.acceptance_requires` (the recorded
+  file's quality gate and next action say the same), and
+  `omh hermes plan-accept` refuses the file with exit code 2 unless
+  `--allow-scaffold` is passed.
 - That planning command does not create a runtime `run.json` or
   `coding_delegation.json`; `.hermes/plans/` is a user-facing draft surface, not
   observed execution evidence.
@@ -5329,10 +5401,12 @@ Before calling the bot integration ready, verify these points:
   (stdout `plan.goals` and `plan.options` stay generated).
 - For implementation-shaped draft plans, the stdout
   `wrapper_contract.coding_delegate.argv_template` is the handoff bridge to
-  `omh coding delegate --executor codex --record --from-plan <accepted-plan.md>`;
+  `omh coding delegate --executor <selected-executor> --record --from-plan <accepted-plan.md>`;
   run it only after plan acceptance and pass the accepted artifact or context
-  pack, not the original Discord/channel summary, when the wrapper wants a
-  run-backed Codex handoff.
+  pack, not the original Discord/channel summary. The template's executor is
+  the setup profile's default executor, else `generic`; a run-backed Codex
+  handoff needs `--executor codex`, because `--from-plan` without `--executor`
+  resolves the same default as a plain `omh coding delegate`.
 - A chat message that strongly names a workflow reaches Hermes with installed
   skill descriptions available after the wrapper dispatches to Hermes.
 - `omh runtime record` can create a run and `omh runtime show <run-id>` can read

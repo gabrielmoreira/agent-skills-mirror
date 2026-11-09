@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `phuryn/pm-skills` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `phuryn/pm-skills` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `phuryn/pm-skills` — 26 default patterns, 0 followed patterns, 71 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,65 +71,68 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`pm-execution/skills/create-prd/SKILL.md`](pm-execution/skills/create-prd/SKILL.md) |
 | 11 | ✓ | [`pm-execution/skills/dummy-dataset/SKILL.md`](pm-execution/skills/dummy-dataset/SKILL.md) |
 | 12 | ✓ | [`pm-execution/skills/job-stories/SKILL.md`](pm-execution/skills/job-stories/SKILL.md) |
-| 13 | ✓ | [`pm-execution/skills/outcome-roadmap/SKILL.md`](pm-execution/skills/outcome-roadmap/SKILL.md) |
-| 14 | ✓ | [`pm-execution/skills/pre-mortem/SKILL.md`](pm-execution/skills/pre-mortem/SKILL.md) |
-| 15 | ✓ | [`pm-execution/skills/prioritization-frameworks/SKILL.md`](pm-execution/skills/prioritization-frameworks/SKILL.md) |
-| 16 | ✓ | [`pm-execution/skills/release-notes/SKILL.md`](pm-execution/skills/release-notes/SKILL.md) |
-| 17 | ✓ | [`pm-execution/skills/retro/SKILL.md`](pm-execution/skills/retro/SKILL.md) |
-| 18 | ✓ | [`pm-execution/skills/sprint-plan/SKILL.md`](pm-execution/skills/sprint-plan/SKILL.md) |
-| 19 | ✓ | [`pm-execution/skills/stakeholder-map/SKILL.md`](pm-execution/skills/stakeholder-map/SKILL.md) |
-| 20 | ✓ | [`pm-execution/skills/strategy-red-team/SKILL.md`](pm-execution/skills/strategy-red-team/SKILL.md) |
-| 21 | ✓ | [`pm-execution/skills/summarize-meeting/SKILL.md`](pm-execution/skills/summarize-meeting/SKILL.md) |
-| 22 | ✓ | [`pm-execution/skills/test-scenarios/SKILL.md`](pm-execution/skills/test-scenarios/SKILL.md) |
-| 23 | ✓ | [`pm-execution/skills/user-stories/SKILL.md`](pm-execution/skills/user-stories/SKILL.md) |
-| 24 | ✓ | [`pm-execution/skills/wwas/SKILL.md`](pm-execution/skills/wwas/SKILL.md) |
-| 25 | ✓ | [`pm-go-to-market/skills/beachhead-segment/SKILL.md`](pm-go-to-market/skills/beachhead-segment/SKILL.md) |
-| 26 | ✓ | [`pm-go-to-market/skills/competitive-battlecard/SKILL.md`](pm-go-to-market/skills/competitive-battlecard/SKILL.md) |
-| 27 | ✓ | [`pm-go-to-market/skills/growth-loops/SKILL.md`](pm-go-to-market/skills/growth-loops/SKILL.md) |
-| 28 | ✓ | [`pm-go-to-market/skills/gtm-motions/SKILL.md`](pm-go-to-market/skills/gtm-motions/SKILL.md) |
-| 29 | ✓ | [`pm-go-to-market/skills/gtm-strategy/SKILL.md`](pm-go-to-market/skills/gtm-strategy/SKILL.md) |
-| 30 | ✓ | [`pm-go-to-market/skills/ideal-customer-profile/SKILL.md`](pm-go-to-market/skills/ideal-customer-profile/SKILL.md) |
-| 31 | ✓ | [`pm-market-research/skills/competitor-analysis/SKILL.md`](pm-market-research/skills/competitor-analysis/SKILL.md) |
-| 32 | ✓ | [`pm-market-research/skills/customer-journey-map/SKILL.md`](pm-market-research/skills/customer-journey-map/SKILL.md) |
-| 33 | ✓ | [`pm-market-research/skills/market-segments/SKILL.md`](pm-market-research/skills/market-segments/SKILL.md) |
-| 34 | ✓ | [`pm-market-research/skills/market-sizing/SKILL.md`](pm-market-research/skills/market-sizing/SKILL.md) |
-| 35 | ✓ | [`pm-market-research/skills/sentiment-analysis/SKILL.md`](pm-market-research/skills/sentiment-analysis/SKILL.md) |
-| 36 | ✓ | [`pm-market-research/skills/user-personas/SKILL.md`](pm-market-research/skills/user-personas/SKILL.md) |
-| 37 | ✓ | [`pm-market-research/skills/user-segmentation/SKILL.md`](pm-market-research/skills/user-segmentation/SKILL.md) |
-| 38 | ✓ | [`pm-marketing-growth/skills/marketing-ideas/SKILL.md`](pm-marketing-growth/skills/marketing-ideas/SKILL.md) |
-| 39 | ✓ | [`pm-marketing-growth/skills/north-star-metric/SKILL.md`](pm-marketing-growth/skills/north-star-metric/SKILL.md) |
-| 40 | ✓ | [`pm-marketing-growth/skills/positioning-ideas/SKILL.md`](pm-marketing-growth/skills/positioning-ideas/SKILL.md) |
-| 41 | ✓ | [`pm-marketing-growth/skills/product-name/SKILL.md`](pm-marketing-growth/skills/product-name/SKILL.md) |
-| 42 | ✓ | [`pm-marketing-growth/skills/value-prop-statements/SKILL.md`](pm-marketing-growth/skills/value-prop-statements/SKILL.md) |
-| 43 | ✓ | [`pm-product-discovery/skills/analyze-feature-requests/SKILL.md`](pm-product-discovery/skills/analyze-feature-requests/SKILL.md) |
-| 44 | ✓ | [`pm-product-discovery/skills/brainstorm-experiments-existing/SKILL.md`](pm-product-discovery/skills/brainstorm-experiments-existing/SKILL.md) |
-| 45 | ✓ | [`pm-product-discovery/skills/brainstorm-experiments-new/SKILL.md`](pm-product-discovery/skills/brainstorm-experiments-new/SKILL.md) |
-| 46 | ✓ | [`pm-product-discovery/skills/brainstorm-ideas-existing/SKILL.md`](pm-product-discovery/skills/brainstorm-ideas-existing/SKILL.md) |
-| 47 | ✓ | [`pm-product-discovery/skills/brainstorm-ideas-new/SKILL.md`](pm-product-discovery/skills/brainstorm-ideas-new/SKILL.md) |
-| 48 | ✓ | [`pm-product-discovery/skills/identify-assumptions-existing/SKILL.md`](pm-product-discovery/skills/identify-assumptions-existing/SKILL.md) |
-| 49 | ✓ | [`pm-product-discovery/skills/identify-assumptions-new/SKILL.md`](pm-product-discovery/skills/identify-assumptions-new/SKILL.md) |
-| 50 | ✓ | [`pm-product-discovery/skills/interview-script/SKILL.md`](pm-product-discovery/skills/interview-script/SKILL.md) |
-| 51 | ✓ | [`pm-product-discovery/skills/metrics-dashboard/SKILL.md`](pm-product-discovery/skills/metrics-dashboard/SKILL.md) |
-| 52 | ✓ | [`pm-product-discovery/skills/opportunity-solution-tree/SKILL.md`](pm-product-discovery/skills/opportunity-solution-tree/SKILL.md) |
-| 53 | ✓ | [`pm-product-discovery/skills/prioritize-assumptions/SKILL.md`](pm-product-discovery/skills/prioritize-assumptions/SKILL.md) |
-| 54 | ✓ | [`pm-product-discovery/skills/prioritize-features/SKILL.md`](pm-product-discovery/skills/prioritize-features/SKILL.md) |
-| 55 | ✓ | [`pm-product-discovery/skills/summarize-interview/SKILL.md`](pm-product-discovery/skills/summarize-interview/SKILL.md) |
-| 56 | ✓ | [`pm-product-strategy/skills/ansoff-matrix/SKILL.md`](pm-product-strategy/skills/ansoff-matrix/SKILL.md) |
-| 57 | ✓ | [`pm-product-strategy/skills/business-model/SKILL.md`](pm-product-strategy/skills/business-model/SKILL.md) |
-| 58 | ✓ | [`pm-product-strategy/skills/lean-canvas/SKILL.md`](pm-product-strategy/skills/lean-canvas/SKILL.md) |
-| 59 | ✓ | [`pm-product-strategy/skills/monetization-strategy/SKILL.md`](pm-product-strategy/skills/monetization-strategy/SKILL.md) |
-| 60 | ✓ | [`pm-product-strategy/skills/pestle-analysis/SKILL.md`](pm-product-strategy/skills/pestle-analysis/SKILL.md) |
-| 61 | ✓ | [`pm-product-strategy/skills/porters-five-forces/SKILL.md`](pm-product-strategy/skills/porters-five-forces/SKILL.md) |
-| 62 | ✓ | [`pm-product-strategy/skills/pricing-strategy/SKILL.md`](pm-product-strategy/skills/pricing-strategy/SKILL.md) |
-| 63 | ✓ | [`pm-product-strategy/skills/product-strategy/SKILL.md`](pm-product-strategy/skills/product-strategy/SKILL.md) |
-| 64 | ✓ | [`pm-product-strategy/skills/product-vision/SKILL.md`](pm-product-strategy/skills/product-vision/SKILL.md) |
-| 65 | ✓ | [`pm-product-strategy/skills/startup-canvas/SKILL.md`](pm-product-strategy/skills/startup-canvas/SKILL.md) |
-| 66 | ✓ | [`pm-product-strategy/skills/swot-analysis/SKILL.md`](pm-product-strategy/skills/swot-analysis/SKILL.md) |
-| 67 | ✓ | [`pm-product-strategy/skills/value-proposition/SKILL.md`](pm-product-strategy/skills/value-proposition/SKILL.md) |
-| 68 | ✓ | [`pm-toolkit/skills/draft-nda/SKILL.md`](pm-toolkit/skills/draft-nda/SKILL.md) |
-| 69 | ✓ | [`pm-toolkit/skills/grammar-check/SKILL.md`](pm-toolkit/skills/grammar-check/SKILL.md) |
-| 70 | ✓ | [`pm-toolkit/skills/privacy-policy/SKILL.md`](pm-toolkit/skills/privacy-policy/SKILL.md) |
-| 71 | ✓ | [`pm-toolkit/skills/review-resume/SKILL.md`](pm-toolkit/skills/review-resume/SKILL.md) |
+| 13 | ✓ | [`pm-execution/skills/live-polls/SKILL.md`](pm-execution/skills/live-polls/SKILL.md) |
+| 14 | ✓ | [`pm-execution/skills/live-qa/SKILL.md`](pm-execution/skills/live-qa/SKILL.md) |
+| 15 | ✓ | [`pm-execution/skills/outcome-roadmap/SKILL.md`](pm-execution/skills/outcome-roadmap/SKILL.md) |
+| 16 | ✓ | [`pm-execution/skills/pre-mortem/SKILL.md`](pm-execution/skills/pre-mortem/SKILL.md) |
+| 17 | ✓ | [`pm-execution/skills/prioritization-frameworks/SKILL.md`](pm-execution/skills/prioritization-frameworks/SKILL.md) |
+| 18 | ✓ | [`pm-execution/skills/release-notes/SKILL.md`](pm-execution/skills/release-notes/SKILL.md) |
+| 19 | ✓ | [`pm-execution/skills/retro/SKILL.md`](pm-execution/skills/retro/SKILL.md) |
+| 20 | ✓ | [`pm-execution/skills/sprint-plan/SKILL.md`](pm-execution/skills/sprint-plan/SKILL.md) |
+| 21 | ✓ | [`pm-execution/skills/stakeholder-map/SKILL.md`](pm-execution/skills/stakeholder-map/SKILL.md) |
+| 22 | ✓ | [`pm-execution/skills/strategy-red-team/SKILL.md`](pm-execution/skills/strategy-red-team/SKILL.md) |
+| 23 | ✓ | [`pm-execution/skills/summarize-meeting/SKILL.md`](pm-execution/skills/summarize-meeting/SKILL.md) |
+| 24 | ✓ | [`pm-execution/skills/test-scenarios/SKILL.md`](pm-execution/skills/test-scenarios/SKILL.md) |
+| 25 | ✓ | [`pm-execution/skills/user-stories/SKILL.md`](pm-execution/skills/user-stories/SKILL.md) |
+| 26 | ✓ | [`pm-execution/skills/wwas/SKILL.md`](pm-execution/skills/wwas/SKILL.md) |
+| 27 | ✓ | [`pm-go-to-market/skills/beachhead-segment/SKILL.md`](pm-go-to-market/skills/beachhead-segment/SKILL.md) |
+| 28 | ✓ | [`pm-go-to-market/skills/competitive-battlecard/SKILL.md`](pm-go-to-market/skills/competitive-battlecard/SKILL.md) |
+| 29 | ✓ | [`pm-go-to-market/skills/growth-loops/SKILL.md`](pm-go-to-market/skills/growth-loops/SKILL.md) |
+| 30 | ✓ | [`pm-go-to-market/skills/gtm-motions/SKILL.md`](pm-go-to-market/skills/gtm-motions/SKILL.md) |
+| 31 | ✓ | [`pm-go-to-market/skills/gtm-strategy/SKILL.md`](pm-go-to-market/skills/gtm-strategy/SKILL.md) |
+| 32 | ✓ | [`pm-go-to-market/skills/ideal-customer-profile/SKILL.md`](pm-go-to-market/skills/ideal-customer-profile/SKILL.md) |
+| 33 | ✓ | [`pm-market-research/skills/competitor-analysis/SKILL.md`](pm-market-research/skills/competitor-analysis/SKILL.md) |
+| 34 | ✓ | [`pm-market-research/skills/customer-journey-map/SKILL.md`](pm-market-research/skills/customer-journey-map/SKILL.md) |
+| 35 | ✓ | [`pm-market-research/skills/market-segments/SKILL.md`](pm-market-research/skills/market-segments/SKILL.md) |
+| 36 | ✓ | [`pm-market-research/skills/market-sizing/SKILL.md`](pm-market-research/skills/market-sizing/SKILL.md) |
+| 37 | ✓ | [`pm-market-research/skills/sentiment-analysis/SKILL.md`](pm-market-research/skills/sentiment-analysis/SKILL.md) |
+| 38 | ✓ | [`pm-market-research/skills/survey-design/SKILL.md`](pm-market-research/skills/survey-design/SKILL.md) |
+| 39 | ✓ | [`pm-market-research/skills/user-personas/SKILL.md`](pm-market-research/skills/user-personas/SKILL.md) |
+| 40 | ✓ | [`pm-market-research/skills/user-segmentation/SKILL.md`](pm-market-research/skills/user-segmentation/SKILL.md) |
+| 41 | ✓ | [`pm-marketing-growth/skills/marketing-ideas/SKILL.md`](pm-marketing-growth/skills/marketing-ideas/SKILL.md) |
+| 42 | ✓ | [`pm-marketing-growth/skills/north-star-metric/SKILL.md`](pm-marketing-growth/skills/north-star-metric/SKILL.md) |
+| 43 | ✓ | [`pm-marketing-growth/skills/positioning-ideas/SKILL.md`](pm-marketing-growth/skills/positioning-ideas/SKILL.md) |
+| 44 | ✓ | [`pm-marketing-growth/skills/product-name/SKILL.md`](pm-marketing-growth/skills/product-name/SKILL.md) |
+| 45 | ✓ | [`pm-marketing-growth/skills/value-prop-statements/SKILL.md`](pm-marketing-growth/skills/value-prop-statements/SKILL.md) |
+| 46 | ✓ | [`pm-product-discovery/skills/analyze-feature-requests/SKILL.md`](pm-product-discovery/skills/analyze-feature-requests/SKILL.md) |
+| 47 | ✓ | [`pm-product-discovery/skills/brainstorm-experiments-existing/SKILL.md`](pm-product-discovery/skills/brainstorm-experiments-existing/SKILL.md) |
+| 48 | ✓ | [`pm-product-discovery/skills/brainstorm-experiments-new/SKILL.md`](pm-product-discovery/skills/brainstorm-experiments-new/SKILL.md) |
+| 49 | ✓ | [`pm-product-discovery/skills/brainstorm-ideas-existing/SKILL.md`](pm-product-discovery/skills/brainstorm-ideas-existing/SKILL.md) |
+| 50 | ✓ | [`pm-product-discovery/skills/brainstorm-ideas-new/SKILL.md`](pm-product-discovery/skills/brainstorm-ideas-new/SKILL.md) |
+| 51 | ✓ | [`pm-product-discovery/skills/identify-assumptions-existing/SKILL.md`](pm-product-discovery/skills/identify-assumptions-existing/SKILL.md) |
+| 52 | ✓ | [`pm-product-discovery/skills/identify-assumptions-new/SKILL.md`](pm-product-discovery/skills/identify-assumptions-new/SKILL.md) |
+| 53 | ✓ | [`pm-product-discovery/skills/interview-script/SKILL.md`](pm-product-discovery/skills/interview-script/SKILL.md) |
+| 54 | ✓ | [`pm-product-discovery/skills/metrics-dashboard/SKILL.md`](pm-product-discovery/skills/metrics-dashboard/SKILL.md) |
+| 55 | ✓ | [`pm-product-discovery/skills/opportunity-solution-tree/SKILL.md`](pm-product-discovery/skills/opportunity-solution-tree/SKILL.md) |
+| 56 | ✓ | [`pm-product-discovery/skills/prioritize-assumptions/SKILL.md`](pm-product-discovery/skills/prioritize-assumptions/SKILL.md) |
+| 57 | ✓ | [`pm-product-discovery/skills/prioritize-features/SKILL.md`](pm-product-discovery/skills/prioritize-features/SKILL.md) |
+| 58 | ✓ | [`pm-product-discovery/skills/summarize-interview/SKILL.md`](pm-product-discovery/skills/summarize-interview/SKILL.md) |
+| 59 | ✓ | [`pm-product-strategy/skills/ansoff-matrix/SKILL.md`](pm-product-strategy/skills/ansoff-matrix/SKILL.md) |
+| 60 | ✓ | [`pm-product-strategy/skills/business-model/SKILL.md`](pm-product-strategy/skills/business-model/SKILL.md) |
+| 61 | ✓ | [`pm-product-strategy/skills/lean-canvas/SKILL.md`](pm-product-strategy/skills/lean-canvas/SKILL.md) |
+| 62 | ✓ | [`pm-product-strategy/skills/monetization-strategy/SKILL.md`](pm-product-strategy/skills/monetization-strategy/SKILL.md) |
+| 63 | ✓ | [`pm-product-strategy/skills/pestle-analysis/SKILL.md`](pm-product-strategy/skills/pestle-analysis/SKILL.md) |
+| 64 | ✓ | [`pm-product-strategy/skills/porters-five-forces/SKILL.md`](pm-product-strategy/skills/porters-five-forces/SKILL.md) |
+| 65 | ✓ | [`pm-product-strategy/skills/pricing-strategy/SKILL.md`](pm-product-strategy/skills/pricing-strategy/SKILL.md) |
+| 66 | ✓ | [`pm-product-strategy/skills/product-strategy/SKILL.md`](pm-product-strategy/skills/product-strategy/SKILL.md) |
+| 67 | ✓ | [`pm-product-strategy/skills/product-vision/SKILL.md`](pm-product-strategy/skills/product-vision/SKILL.md) |
+| 68 | ✓ | [`pm-product-strategy/skills/startup-canvas/SKILL.md`](pm-product-strategy/skills/startup-canvas/SKILL.md) |
+| 69 | ✓ | [`pm-product-strategy/skills/swot-analysis/SKILL.md`](pm-product-strategy/skills/swot-analysis/SKILL.md) |
+| 70 | ✓ | [`pm-product-strategy/skills/value-proposition/SKILL.md`](pm-product-strategy/skills/value-proposition/SKILL.md) |
+| 71 | ✓ | [`pm-toolkit/skills/draft-nda/SKILL.md`](pm-toolkit/skills/draft-nda/SKILL.md) |
+| 72 | ✓ | [`pm-toolkit/skills/grammar-check/SKILL.md`](pm-toolkit/skills/grammar-check/SKILL.md) |
+| 73 | ✓ | [`pm-toolkit/skills/privacy-policy/SKILL.md`](pm-toolkit/skills/privacy-policy/SKILL.md) |
+| 74 | ✓ | [`pm-toolkit/skills/review-resume/SKILL.md`](pm-toolkit/skills/review-resume/SKILL.md) |
 
 ---
 

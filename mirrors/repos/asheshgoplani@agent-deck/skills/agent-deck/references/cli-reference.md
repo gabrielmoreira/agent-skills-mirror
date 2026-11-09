@@ -117,9 +117,13 @@ Each row reports the slot name, its config dir, and whether that directory exist
 ### list - List sessions
 
 ```bash
-agent-deck list [--json] [--all]
+agent-deck list [--json] [--all] [--no-archived]
 agent-deck ls  # Alias
 ```
+
+`--no-archived` leaves archived sessions out before any status work, so a poller that only needs live sessions (a dashboard polling `list --json --no-archived`) pays neither their status pass nor their encoding. Without it every session is listed, archived ones with `"archived": true`.
+
+A live `list --json` captures every live pane with one tmux call per socket. When that call times out (a host too loaded to answer it), the listing does not fall back to one `capture-pane` per session: those rows carry `"status_source": "stale"`: status is the last one observed in this process (the default for a fresh process), `substate` is the last one seen or absent, and `--stats` reports how many panes were skipped as `captures_skipped` (absent when none).
 
 Both JSON forms always include `account`: the exact stored per-session slot, including an empty string when no slot is explicitly stored. Human tables show the slot in a quoted `ACCOUNT` column, escaping controls. This is stored metadata, not a resolved account or login identity.
 
@@ -1158,7 +1162,8 @@ agent-deck conductor list [--profile <name>]
 - Re-running `setup <name>` without `--agent` keeps the conductor's existing agent (new conductors default to `claude`); pass `--agent` explicitly to switch. On a switch, the previous agent's instructions file (`CLAUDE.md` / `AGENTS.md` / `HERMES.md`) is deleted only if it still matches the generated template; an edited file is renamed to `<file>.bak-<timestamp>`.
 - `setup` also installs shared `<conductor dir>/CLAUDE.md` (or symlink via `--shared-claude-md`).
 - Heartbeat timers run per conductor (default every 15 minutes) and can be disabled with `--no-heartbeat`.
-- Heartbeat sends use non-blocking `session send --no-wait -q` to avoid timeout churn when sessions are busy.
+- Heartbeat sends use non-blocking `session send --json --no-wait` to avoid timeout churn when sessions are busy. A send the idle gate skipped or a muted trigger dropped (`"skipped": true` / `"muted": true`) is not saved as delivered, so the same tick is offered again next time.
+- `heartbeat.sh` takes `<conductor dir>/<name>/heartbeat.lock` with `flock -n` (a second run exits 0; without `flock`, as on macOS, it runs unlocked). When the conductor is `error`, `stopped` or missing it appends `heartbeat: conductor <name> is <status>; heartbeat not sent` to `heartbeat.log` and queues one `conductor notify --tier urgent` item, once per outage (cleared when it is `idle` or `waiting` again).
 - Bridge daemon is installed only when Telegram and/or Slack is configured in `[conductor]`.
 - Transition notifier daemon (`agent-deck notify-daemon`) is installed by setup and sends event nudges on `running -> waiting|error|idle` transitions (parent first, then conductor fallback).
 

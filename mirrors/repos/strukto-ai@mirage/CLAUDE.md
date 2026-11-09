@@ -201,9 +201,9 @@ under `rm`/`mv`/`mkdir`/... and refuses it as a source of `tar -c`, `zip`,
 `workspace/expand/` expands and classifies words; `workspace/lookup/` holds
 the one precedence list (builtin, namespace command, function, CLI, mount);
 `workspace/executor/` runs pipes, redirects, jobs and control flow.
-Follow tables live in `workspace/lookup/constants.py`. Every session write goes through
-`SessionView.set`, so a `pre_session` rule is enforced; only shell
-bookkeeping and `seed_var` are exempt.
+Follow tables live in `workspace/lookup/constants.py`. Every session write
+lands through the Rust store's writer, which refuses a hidden or readonly
+name; only shell bookkeeping and `seed_var` are exempt.
 
 ### CommandSpec
 
@@ -232,7 +232,7 @@ serde_json-faithful scanner, exit 1 for a bad body and 5 for a bad line).
 `workspace/session/`: env, cwd, functions, jobs, persisted in a
 `NamespaceStore` (`workspace/mount/namespace/store`), the one store the
 node table uses too: RAM, disk, redis, or s3 through a record client.
-`policy/`: `pre_command`, `pre_session`, profiles and scripts;
+`policy/`: `pre_command`, `pre_vfs`, `pre_network`, profiles and scripts;
 builtins `mount_root`, `output_cap`, `permissions`. `observe/`: a hidden
 `Observer` records every top-level command; `/.bash_history` and the
 `history` builtin are two views of that one recording.
@@ -246,9 +246,19 @@ builtins `mount_root`, `output_cap`, `permissions`. `observe/`: a hidden
 (`LanguageRuntime.run` resolves the program, `interpret` runs it), a whole
 line (`run_line`, `sh -c` with `ctx.flags["c"]`) or a process (`run_process`,
 argv in `texts`). `WorkspaceRuntime` (default) runs inside mirage;
-`MontyRuntime` and wasm run in-process; `SSHRuntime` and `DaytonaRuntime` run
-remote. `RuntimeFiles` bridges a guest's file ops back to the dispatcher
+`MontyRuntime` and wasm run in-process; `MachineRuntime` runs programs on a
+machine. `RuntimeFiles` bridges a guest's file ops back to the dispatcher
 through `ctx.vfs`.
+
+### Machines
+
+`machine/`: where programs run, split from how they run. A `MachineHandle`
+per provider (docker, ssh, e2b, ...) comes from a `machines:` entry, its id
+`provider:name`; `ProgramMachine` is the base for providers driven by a local
+program such as `docker exec`. `execution/machine/`: a workspace's
+`MachineTable`, which scans each machine's `/proc` for what a run started and
+sends signals as sent. A line picks its machine with `execute(machine=)` or
+`Route(machine=)`.
 
 ### FUSE and FSKit
 
@@ -284,7 +294,7 @@ flowchart TD
     Parse --> Expand["expansion + classification<br/>workspace/expand"]
     Expand --> Lookup["lookup<br/>builtin › namespace command › function › CLI › mount"]
     Lookup --> Exec["executor<br/>workspace/executor"]
-    Exec --> Policy["policy<br/>pre_command · pre_session"]
+    Exec --> Policy["policy<br/>pre_command · pre_vfs"]
     Exec --> Runtime["runtime routing<br/>workspace · process · remote"]
     Exec --> Handler["command handler<br/>(accessor, paths, texts, ctx)"]
     Spec["Argument · CommandSpec · CLI · FlagView"] -.-> Handler
@@ -309,8 +319,9 @@ flowchart LR
 Repository:
 
 ```
-python/mirage/   accessor core vfs commands workspace shell runtime policy
-                 observe cache events mount fuse cli server agents
+python/mirage/   accessor core vfs commands workspace shell runtime machine
+                 execution policy observe cache events mount fuse cli server
+                 agents
 typescript/packages/
   core/          runtime-agnostic twin; no Node-only or browser-only API
   node/ browser/ runtime-specific VFS, commands, wiring, FUSE (node)

@@ -8,8 +8,6 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 你负责从构思到成稿，完成一篇完整的短篇小说。
 
-**执行规则：短篇以情绪为目标，所有内容为情绪服务。**
-
 ## 写前必读（强制，先读后写）
 
 短篇按作者当前要做的事分时刻读文件，时刻之间靠落盘文件交接。创建或修改故事文件前，先判断当前时刻，按下表读完（这张表是唯一的读取清单）；只读本文件、`rg` 检索或摘读都不算。**按节读只允许两种**：本表点名的节，或文件内「什么时候读这份」点名的节；其余整份读到结尾。缺文件、没读完或题材还没对上唯一的题材包就停，报准确路径或待定项，**不得创建或修改故事产物**。每个时刻、每个会话重新读。
@@ -31,7 +29,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 > 专业 agent 只查当前宿主：Claude `.claude/agents`（`subagent_type`）、OpenCode `.opencode/agents`（`subagent` 的 `agent`）、Codex `.codex/agents` TOML（`agent_type`）、Antigravity `.agents/agents`（`invoke_subagent` + `TypeName`）；ZCode 查插件注册的同名角色，用 `Agent` 按实际 schema 派发，不要求 `.zcode/agents`。主会话自己写正文、去味是常态，不报；作者明确要交给写作助手而角色/工具缺失或返回 unknown agent 时，由主会话接手，对作者只说「这次我自己写」。
 >
-> 版本：项目根 `.story-deployed` 的 `agents_version` 与本版 `agents_version: 41` 不一致（缺失、非整数、更小或更大）时照常按当前宿主角色来源检查并 spawn，只对作者说一句「写作助手是旧版，运行 /story-setup（ZCode 先更新插件）后新开会话」；大于 41 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有当前宿主角色缺失或不暴露调用能力时才降级 solo/direct，对作者只说「这次我自己写」。
+> 版本：项目根 `.story-deployed` 的 `agents_version` 与本版 `agents_version: 42` 不一致（缺失、非整数、更小或更大）时照常按当前宿主角色来源检查并 spawn，只对作者说一句「写作助手是旧版，运行 /story-setup（ZCode 先更新插件）后新开会话」；大于 42 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有当前宿主角色缺失或不暴露调用能力时才降级 solo/direct，对作者只说「这次我自己写」。
 
 ## 执行规则
 
@@ -50,7 +48,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ## 核心方法
 
 - **按题材选写法**：确定题材后选用[题材包](references/genre-styles/)的腔调、开篇、钩子、情绪烈度、金句、套路与收尾；追妻按时代变体及小三/死人文学分支选择。冷门题材用公式安排结构，腔调按 `short-craft.md`。写法冲突时的先后见 short-craft 开头。
-- **复用作者习惯**：有作者记忆时，正文前用 `scripts/author_memory_commit.py query --workspace {工作区} --book-root {项目目录} --kind prose_style --kind story_design [--genre {题材}] [--workflow 短篇]`（改写、去味只带 `--kind prose_style`），把输出的 `lines` 原样交正文/改写 agent 作自然倾向，不逐条追求命中，不牺牲连贯、节奏和字数；硬门禁、当前请求和本篇设定优先；没装下的交稿时用原话告诉作者。长期声明在收尾按上方管理入口处理。
+- **复用作者习惯**：有作者记忆时，正文前用 `scripts/author_memory_commit.py query --workspace {工作区} --book-root {项目目录} --kind prose_style --kind story_design [--genre {题材}] [--workflow 短篇]`（改写、去味只带 `--kind prose_style`），把输出的 `lines` 原样交正文/改写 agent 作自然倾向，不逐条追求命中，不牺牲连贯、节奏和字数；硬门禁、当前请求和本篇设定优先；没装下的交稿时用原话告诉作者。长期声明在收尾按上方作者记忆管理入口处理。
 
 ---
 
