@@ -2,6 +2,15 @@
 
 This changelog summarizes significant changes to the installable skill.
 
+## [1.6.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-11-10/coder.zip) - 2026-11-10
+
+Coder 1.6 gives helper agents the guidance their tasks need and checks the work they return against that guidance. Longer delegated tasks can retain the skill's workflow and progress tracking, while settled design decisions remain requirements and blocked work stays visible.
+
+- A helper whose task needs the skill's workflow and progress tracking can receive the whole skill. The coordinating agent first follows the request's route, reads the workflow, and checks that it fits the brief and available capabilities. Other tasks receive selected instructions and any guidance those instructions require. Naming a whole skill grants no additional permission to read, change, act, or start helpers.
+- Each named instruction source identifies the exact content used to prepare the brief, fixed or checked for changes. A helper receives complete guidance without reconstructing it from a conversation or an unnamed source.
+- Settled decisions are requirements in the brief. The brief names which decisions the helper may make, including choices between conflicting instructions. Any other decision returns to the coordinating agent.
+- The coordinating agent inspects returned designs, code, and tests against the brief and the instructions the helper worked under. A helper's account of what it followed, or a passing check, cannot replace that inspection. Each blocked part is retried under a corrected brief, completed by the coordinating agent, or reported as unfinished with the conclusions it prevents.
+
 ## [1.5.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-11-02/coder.zip) - 2026-11-02
 
 Coder 1.5 judges performance by what the work delivers for what it costs, not by the cost of one call, and keeps an optimization only when its gain rests on a mechanism that holds beyond the machine it was measured on. Code and anything else the work writes for later use now take their names, coverage, shape, and placement from what they're for and the whole range of their uses, not from the request that prompted them.

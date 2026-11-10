@@ -294,6 +294,7 @@ The binary's `capabilities --json` response lists its supported flags and platfo
 | Flag | Meaning |
 | --- | --- |
 | `--host HOST`, `--port PORT` | Listen address and port, default `127.0.0.1:8080`. |
+| `--unix-socket PATH` | Listen on a new owner-only Unix socket at PATH instead of TCP, refused with `--host` or `--port`; macOS and Linux. An existing PATH, or a directory other users can write to (unless sticky, like `/tmp`), is refused, and connections from other users are closed. API keys, `--metrics-open` and the Host check apply as on TCP (a client sends a loopback `Host` or one in `--allowed-host`): the socket's permissions are a second layer, not a substitute for keys. |
 | `--profile stable` | Explicitly preserve current defaults; [profiles](docs/profiles.md) describes the initial switch registry and startup report. |
 | `--name NAME` | Model ID advertised to clients. |
 | `--alias NAME` | Another accepted model ID; repeat for multiple aliases. |
@@ -311,6 +312,7 @@ The binary's `capabilities --json` response lists its supported flags and platfo
 | `--temperature T` | Sampling temperature; zero requests greedy decoding. |
 | `--prompt-seed` | Use native prompt-derived keys instead of the fresh OS fallback; request and configured default seeds still win. |
 | `--top-p P`, `--top-k K`, `--min-p P` | Sampling defaults. |
+| `--instruct-sampling SET` | Sampling defaults for sampled chat requests with thinking off: `card` (the Qwen 3.5, 3.6 and 3.8 cards' temperature 0.7, top_p 0.8, top_k 20, presence_penalty 1.5), `name=value` pairs over it, or `none`; the serve flags still win. Greedy requests, raw completions and the server's own requests never take them. |
 | `--thinking`, `--no-thinking` | Choose whether the chat template opens a reasoning block. |
 | `--reasoning-effort LEVEL` | Default template effort: `minimal`, `low`, `medium`, `high`, `xhigh` or `max`. |
 | `--thinking-budget N` | Limit reasoning tokens where the engine supports closing the reasoning block. |

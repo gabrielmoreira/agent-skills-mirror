@@ -30,6 +30,7 @@ Creating. Else see Revising.
 
 Tell the user what happens on the canvas, never the mechanism.
 Asked to send it to apps like Canva: there is no Send to here; point the user to the editor's Export, if shown, to save a file they can import there. Give an app's import tool no other link, never the editor's local address.
+Asked to bring it into Figma: Export → HTML for Figma (in an artboard's Export: that artboard) saves a page with each artboard's rendered layers and no frames; the user opens that file in Chrome and captures it with Figma's Chrome extension (Capture page, or Select element for one artboard). The canvas and the Standalone web page draw artboards in frames and come into Figma empty.
 
 ## The canvas's files: exact shapes
 

@@ -24,9 +24,15 @@ templates/                       # AI tool config templates (distributed to user
   CLAUDE.md                      # Claude Code project instructions
   AGENTS.md                      # Codex CLI / generic agent instructions
   GEMINI.md                      # Gemini CLI instructions
+hooks/
+  hooks.json                     # Claude Code plugin hook registration (runs validate-udonsharp.sh)
 .github/
   workflows/                     # CI (lint, pack test, publish)
   ISSUE_TEMPLATE/                # Bug report, knowledge request
+tests/
+  run.sh                         # Local entry point: runs every suite CI runs
+  docs/                          # Documentation contract tests and fixtures
+  hooks/                         # Validator hook tests and fixtures
 package.json                     # npm package config
 ```
 
@@ -66,10 +72,15 @@ Both `dev` and `main` are protected:
 ## Testing
 
 ```bash
+# Run every suite CI runs. Needs bash, python3 and jq; on Windows run it inside WSL.
+npm test                        # same as: bash tests/run.sh
+bash tests/run.sh layers        # only suites whose path contains "layers"
+
 # Verify npm pack includes correct files
 npm pack --dry-run
-
 ```
+
+The BusyBox and PowerShell hook suites are skipped locally when `busybox` or `pwsh` is missing; CI always runs them.
 
 ## CI Checks
 
@@ -290,6 +301,8 @@ When modifying skill content in `skills/`:
 - Update SDK version tables if adding new API coverage
 - Run the validate-udonsharp hook against any `.cs` code examples
 - Keep `templates/` in sync if skills table or rules paths change
+- After adding, renaming, or removing a `##` section in a reference, run `python3 tests/docs/reference-toc.py --write` to refresh its table of contents
+- The active SDK target is declared once per skill, in the `## SDK Versions` section of each `SKILL.md`. Other files under `skills/` link to it instead of repeating the number
 
 ### Documentation Sync
 

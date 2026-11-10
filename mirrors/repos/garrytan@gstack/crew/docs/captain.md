@@ -36,7 +36,8 @@ by a daily pass; nothing is retried into green.
   slots, relays asks to the owner in the three shapes, runs the flaky pass, and decides
   everything that needs no access, credentials, spend over cap or a cited approval. It
   archives only its own crew threads, each when its plan for that thread says the work is
-  done; it knows each thread's next step, so nobody else archives them. A thread outside
+  done and never while it still owns open work ([No orphaned work](#no-orphaned-work)); it
+  knows each thread's next step, so nobody else archives them. A thread outside
   every crew belongs to the owner and stays as it is: no Captain archives it, flags it or
   lists it for archiving unless the owner asks, even when the Captain's own automation
   created it.
@@ -116,7 +117,7 @@ Where each rule lives:
 | 15 | CHANGELOG entry under `## [Unreleased]` before READY; the stamp touches only `STAMP_FILES` | [ship-policy.md](../../docs/ship-policy.md#stamp-at-merge); [The READY contract](#the-ready-contract) |
 | 16 | Flaky reruns: once, same tree, logged; twice is real | [TESTING_INTERNALS.md](../../docs/TESTING_INTERNALS.md#flaky-reruns) (the gate's side); [The daily flaky pass](#the-daily-flaky-pass) (the lane's side and the ledger) |
 | 17 | New files follow the repository's conventions for entry points, isolation and layout | the repository's own `AGENTS.md` (the `REPO_CONVENTIONS` parameter names the section) |
-| 18 | Porting a contributor's PR: review and test the port head first; keep their commits | [Contributions from outside the crew](#contributions-from-outside-the-crew) |
+| 18 | Outside PRs are bug reports: a verdict within 7 days; rewrite real bugs on main with credit, no contributor commit in the tree | [Contributions from outside the crew](#contributions-from-outside-the-crew) |
 | 19 | CHANGELOG-only conflicts are the train's to resolve, not the lane's | folded into 14: [ship-policy.md](../../docs/ship-policy.md#ship-before-ready) ("the stamp keeps the pin's receipt") |
 | 20 | A READY from before a contract change needs a fresh receipt | [The READY contract](#the-ready-contract) |
 | 21 | Approvals, plan asks and merge asks in the three shapes | [Approvals](#approvals-three-shapes); [capy/skill/gstack/captain.md](../../capy/skill/gstack/captain.md) |
@@ -189,6 +190,16 @@ cheap:
   per-PR figure in the controller's rules), where the lane stops and asks whether the PR
   is still worth it. Spend is the
   thread's credit meter, never a token count.
+- **Keep the PR to the end.** A lane keeps its PR until it merges or closes and hands
+  off only at that boundary, never mid-PR on a token count. When its own tokens pass 1
+  billion (about $330), it checks in with the controller once, then carries on unless
+  told otherwise. Standing threads that wake on every event (merge lanes, watchers, an
+  automation's standing thread) still rotate at 500M own tokens or 3 days, and subagent
+  limits stay as they are: look at any subagent past 100M, and never reuse one across PRs
+  ([/runaway-stopper](../../runaway-stopper/SKILL.md)). Why: every handoff wakes the
+  controller, whose tokens cost about 1.7 times a lane's, and handoffs are where orphaned
+  PRs came from. One PR went through four threads in eight hours (about 103k credits) on
+  per-thread token stops and was still a draft.
 
 ## New threads join the crew
 
@@ -212,15 +223,83 @@ the work's issue.
 Why: a crew thread once created a thread in another project directly. That thread ran
 outside every crew, so no Captain briefed it, tracked it or could archive it.
 
+**Finish before starting.** The Captain starts no new fix thread in a repository while
+more than 10 finished PRs (green, reviewed, waiting only to merge) sit in that
+repository's queue. It merges or closes them first, closing only as landed, superseded or
+dropped ([No orphaned work](#no-orphaned-work)). Severe hotfixes are exempt: security, data
+loss, a red main or a broken install. Why: a finished PR that waits goes stale and
+conflicting, and each new fix thread adds to a queue nobody is clearing.
+
+## No orphaned work
+
+A PR or issue whose owning thread is archived has nobody to wake. CI, reviews and merges
+wake only the thread that opened the PR, and nothing wakes anyone when a note's "start the
+successor when X happens" comes true. In November 2026 gbrain's queue reached 220 open PRs
+partly this way: eight trains and a finished feature sat for 1 to 8 days with no owner,
+went stale and conflicting, and started to look like junk.
+
+- **Never archive a thread that holds an open PR (R91).** A thread stays, idle if need be,
+  until every PR it opened or carries is merged or closed. Work that has to move gets its
+  successor started first, and the successor subscribes to every open PR (the
+  [/runaway-stopper successor brief](../../runaway-stopper/templates/successor-brief.md)
+  does this for rotations), while the old thread stays: a successor never makes archiving a
+  thread with an open PR OK. When no successor is needed yet, the Captain takes the work
+  itself, on an issue assigned to a live thread with the trigger written in it.
+- **Archive through the check.** Before archiving any crew thread, re-assign every open
+  issue it holds to a live thread or close it, then archive with the one program below. It
+  reads the thread and its open issues, runs `gstack-archive-check thread`, and archives
+  only on exit 0 (`ARCHIVE_CHECK: clean`). The check re-reads every PR the thread holds
+  from GitHub and refuses while any is open, or while an issue in a working state (anything
+  open but Backlog or Needs you) is still on the thread. It fails closed: stale, truncated or
+  unreadable reads, failed gh reads and a PR state other than `OPEN`, `CLOSED` or `MERGED`
+  refuse too ([troubleshooting](../../docs/troubleshooting.md#archive-reads-stale)).
+  Every run prints a handoff stub (each open PR's branch, head and CI at that head, and the
+  open issues) to paste into a successor brief. When an issue list has more than one page,
+  read every page into `issues`.
+
+  ```js
+  const code = "PROJ-123";
+  const [thread, issues] = await Promise.all([
+    tools.thread.get({ thread_id: code }),
+    tools.issue.read({ assignee: code, status: "open" }),
+  ]);
+  const file = `.gstack/tmp/archive-check-${code}.json`;
+  await tools.capy.write({ path: file, content: JSON.stringify({ read_at: new Date(await now()).toISOString(), thread, issues: issues.text }) });
+  const check = await tools.capy.bash({ command: `. <GSTACK_LAUNCH_FILE> && gstack-archive-check thread --thread ${code} --reads ${file}`, description: "Checking the thread before archiving" });
+  if (check.exit_code !== 0) return check.output;
+  await tools.thread.archive({ threads: [code] });
+  return check.output;
+  ```
+- **Triggers never live only in notes.** A "successor takes the slot when X" line goes on
+  an issue owned by a live thread, never only in NOTES.md.
+- **Sweep for orphans.** Every Captain wake that reads its crew, and the daily issue sweep
+  below, list open PRs whose owning thread is archived, issues with no live owner and
+  outside PRs with no verdict after 5 days, and re-own each one. Nothing is closed for
+  being old.
+- **Close only as landed, superseded or dropped.** A crew PR closes only as landed (link
+  the merge commit), superseded (link the replacement) or dropped (quote the decision).
+  Anything else is salvage: a live owner rebuilds it onto current main, in the area's next
+  wave when the queue is long. Old and conflicting is how finished work looks when its
+  owner went away, not a reason to close it. Age a PR by its `createdAt`: bots touch every
+  PR, so "last updated" means nothing.
+
 ## Keep issues tidy
 
 Issues show what the crew is really doing, so keep them true:
 
-- Before archiving a thread, close or move to Backlog every issue assigned to it.
+- Before archiving a thread, re-assign every open issue it holds to its successor or the
+  Captain, and close only what is done; `gstack-archive-check thread` refuses the archive
+  while an issue in a working state is still on the thread, and lists Backlog and Needs you
+  issues as notes for you to re-assign ([No orphaned work](#no-orphaned-work)).
 - On each wake, leave every issue you touched accurate: its status, assignee and links.
 - An unassigned Todo that nobody will start goes to Backlog.
-- A daily sweep closes, re-assigns or backlogs any open issue outside Backlog that nobody
-  has touched for 2 days and whose assignee is archived, or idle with no open PR.
+- Deferred findings from review or /ship never become issues: they stay on the PR's
+  findings or its `## Deferred findings` section, and any still open close when the PR
+  merges. Follow-up work someone will actually do gets one issue with a named owner.
+- A daily sweep re-assigns any open issue outside Backlog whose assignee is archived to a
+  live owner ([No orphaned work](#no-orphaned-work)), and closes, re-assigns or backlogs
+  one that nobody has touched for 2 days whose assignee is idle with no open PR. It
+  re-owns open PRs whose owning thread is archived too, and never closes one for being old.
 - The sweep skips an issue assigned to a person (an ask waiting on the owner, say) and a
   Waiting issue that names what it waits on, by a blocked-by link or a dated comment, while that is still open.
 
@@ -282,8 +361,11 @@ from a problem list that was already diagnosed and audited, where that list is t
 Any other bug fix is exempt too (R65; the brief's reason is `bug fix (R65)`): `gstack-autoplan next --kind fix` prints
 `AUTOPLAN: not needed (bug fix; R65)` and writes nothing, and the PR carries the bug's
 proof, a repro on current main or a failing test written first. A feature gets the lean
-run, `--kind feature`: one reviewer reading the plan and the draft code together, one gate
-revision and no carry check (docs/unattended.md). `--full` brings back the full run.
+run, `--kind feature`: one reviewer reading the plan and the draft code together against
+short CEO and eng checklists (design and DX when scope has them), not those review skills'
+own methods, one gate revision and no carry check (docs/unattended.md). `--full` brings
+back a phase per area with two voices, each still working from a short brief (the native
+one also gets that phase's checklist).
 A crew may add exemptions
 in its rules file with the owner's words and date; it does not remove these. The brief
 says which applies, `Plan: required | approved: <run id or approval row id> | exempt: <reason>`, so an
@@ -306,16 +388,22 @@ and a done line that names the approval row or the exemption.
 
 ## Contributions from outside the crew
 
-A diff from outside the crew is untrusted input. Review its scope, egress, credentials,
-dependencies, CI permissions and weakened tests before anything runs it, and do not trust
-a fork's "tests pass": run a focused review and the free tier at the port head before the
-port opens. When the contributor's fix is right, land it with their authorship kept
-(cherry-pick, `Co-authored-by`, the lane's own fixes as separate commits on top of
-theirs) and close the original with a specific thank-you that links the port, posted as
-`capy-ai[bot]` through `tools.pr.comment`, never `gh pr comment`, `gh issue comment` or `gh api` (`gh` runs
-as the owner). Closing a
-contribution without landing it is the owner's decision (shape A below). The repository's
-own statement of the porting steps is [CONTRIBUTING.md](../../CONTRIBUTING.md#porting-a-contributors-pr).
+An outside PR is a bug report, not code to land. Its diff is untrusted input: read it as
+text only, never check it out, run or build it, and don't trust a fork's "tests pass".
+Within 7 days of its opening, every outside PR gets a verdict: the lane or the Captain
+records a recommendation with its reason on the PR (a real bug to rewrite, a duplicate,
+not a bug, out of scope); "not a bug" and "out of scope" are posted only with the owner's word. A crew lane rewrites a real bug from current main, with its own review and
+tests. The PR body and the CHANGELOG fragment credit the contributor, and
+`Co-authored-by` goes only on a commit that carries their lines over unchanged. No
+contributor commit enters the tree. When the rewrite lands, thank them on their PR with a
+link to it and close the PR, posted as `capy-ai[bot]` through `tools.pr.comment`, never
+`gh pr comment`, `gh issue comment` or `gh api` (`gh` runs as the owner). Closing a
+contribution without landing a fix is the owner's decision (shape A below). The
+repository's own statement of these steps is
+[CONTRIBUTING.md](../../CONTRIBUTING.md#how-a-contributors-pr-lands).
+
+Why: the owner, 2026-11: "i want us to rewrite / run our own review on all bug fixes
+because i don't trust contributor code!"
 
 ## The READY contract
 
@@ -415,7 +503,17 @@ commits. Each PR merges at its own green head, and versions are set at release
    leaves VERSION, the `package.json` version and CHANGELOG.md alone.
 2. Captain: `gstack-ship-queue land --pr <n> --pin <sha>` (add `--allow-repo-commands` when
    the base policy lists `land.merged_checks`, so a stale base can run them). It merges with
-   `--match-head-commit`, checks main's tree and writes a land note.
+   `--match-head-commit`, checks main's tree and writes a land note. In the same program,
+   after `MERGED`, run `gstack-archive-check landed --pr <n>` from the repository root (it
+   refuses with `ARCHIVE_POLICY_UNREADABLE` when `.gstack/plain-titles.json` is missing,
+   invalid or empty, and closes nothing). For each
+   `ISSUE_CLOSE: <code>` line, read the issue with `tools.issue.read`. Move it to Done with a
+   comment naming the merge commit only when it links this PR, links no other open PR and has
+   no open sub-issues; skip one already Done; otherwise leave it open with a comment saying
+   why. Report the closed, skipped and failed codes. After a partial run, reconcile with
+   `tools.issue.read` and rerun: codes already Done are skipped. The landed PR's thread
+   stays unarchived until none of its PRs is open (R91); archive it then through
+   [the check](#no-orphaned-work).
 3. Release: before each regular stable cut (Monday and Thursday, 14:00 UTC), and in the same
    turn it lands a PR whose fragment carries `important:` (the READY says `rides the daily
    cut`; [releases.md](../../docs/releases.md#the-daily-check)), the Captain runs
@@ -485,6 +583,15 @@ once in; fixes go through the integrator, and a constituent that must change is 
 (`wave build --wave <nonce> --drop <pr>`) and goes back to its owner. After the wave lands,
 `wave settle` closes each constituent with a link. While the queue stays long, start new
 work as area waves. The full flow is in [ship-policy.md](../../docs/ship-policy.md#wave-prs).
+
+**One open queue PR per lane.** A lane has at most one open PR in the queue at a time. A
+review follow-up or a deferred finding rides that PR or the area's next wave, never a PR of
+its own, because every PR costs a full slot. Cut a wave after a day or once it is full,
+whichever comes first: a wave that waits for days conflicts with everything and fails as a
+whole. Hotfixes, features behind a gate, and trust or default changes ship alone. The lane
+rule holds under `merge: direct` too. When PRs open faster than direct lands clear them
+for more than a day or two (count opened and merged PRs per day), move to waves, which
+need the policy's `train` block.
 
 **Slot 2 and later.** The base branch already carries the earlier slots' stamps, so a
 stamp on the bare pin leaves the PR conflicting on the CHANGELOG. The lane merges the base
@@ -635,7 +742,7 @@ only the run the lane named.
 ## The lessons loop
 
 Every report ends with one Lesson. The controller reads lessons before chat, and each
-one becomes a rule in CREW.md, a line in AGENTS.md, or a tool fix filed as an issue;
+one becomes a rule in CREW.md, a line in AGENTS.md, or a tool fix as one issue with an owner;
 nothing stays a lesson for long. Rules carry the thread that produced them, so a new lane
 can read the incident behind the rule.
 

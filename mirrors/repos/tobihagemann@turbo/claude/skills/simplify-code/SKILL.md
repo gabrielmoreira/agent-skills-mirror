@@ -1,6 +1,6 @@
 ---
 name: simplify-code
-description: "Run a multi-agent review of changed files for scope, reuse, quality, efficiency, clarity, and altitude issues followed by fixes. Use when the user asks to \"simplify code\", \"review changed code\", \"check for code reuse\", \"review code quality\", \"review efficiency\", \"simplify changes\", \"clean up code\", \"refactor changes\", or \"run simplify\"."
+description: "Review changed code for scope, reuse, quality, efficiency, clarity, and altitude issues, then fix them. Use when the user asks to \"simplify code\", \"clean up code\", or \"run simplify\"."
 ---
 
 # Simplify Code
@@ -98,7 +98,7 @@ A finding that would revise an interface or shape the user already approved is n
 
 - **Apply** — make the change
 - **Keep the approved shape** — leave as-is
-- **Note for later** — run the `/note-improvement` skill to capture it
+- **Note for later** — run the `/backlog` skill to capture it
 - **Get a second opinion** — run the `/consult-codex` skill for the soundest shape on technical merit alone, independent of the earlier decision, carrying back what changing it costs. Then apply, keep, or note the finding with that answer in hand
 
 Once this round's fixes have landed, including any resolved at a gate, make one pass over the agents' findings: any whose verdict depended on code the fixes changed, moved, added, or deleted gets decided again against the current tree, keeping resolutions the user already chose.

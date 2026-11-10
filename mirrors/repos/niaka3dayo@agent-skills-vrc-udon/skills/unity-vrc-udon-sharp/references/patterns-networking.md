@@ -2,8 +2,20 @@
 
 Object pooling, synced game state management, NetworkCallable patterns, persistence, dynamics interactions, and delayed event debouncing.
 
-**Active support / last verified**: SDK 3.10.6
-**Historical version notes**: Older version numbers record feature introductions or migration facts only; they are not supported or validation targets.
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
+
+## Table of Contents
+
+- [Object Pooling](#object-pooling)
+- [Master-Managed Player Object Pool](#master-managed-player-object-pool)
+- [NetworkCallable Patterns (SDK 3.8.1+)](#networkcallable-patterns-sdk-381)
+- [Persistence Patterns (SDK 3.7.4+)](#persistence-patterns-sdk-374)
+- [Dynamics Patterns (SDK 3.10.0+)](#dynamics-patterns-sdk-3100)
+- [Synced Game State Management](#synced-game-state-management)
+- [Distant-Room Pseudo-Multi-Room Pattern](#distant-room-pseudo-multi-room-pattern)
+- [Delayed Event Debounce](#delayed-event-debounce)
+- [String Join for Array Sync](#string-join-for-array-sync)
+- [See Also](#see-also-1)
 
 ## Object Pooling
 
@@ -248,7 +260,7 @@ using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class ChatSystem : UdonSharpBehaviour
 {
     private const int MaxMessageLength = 256;
@@ -619,7 +631,7 @@ Reuse a single local room model to render the illusion of multiple rooms by sepa
 - Some level of voice isolation between rooms is desired (a side effect of physical separation)
 - Players in the same room must visibly share the same space; players in different rooms must not collide
 
-The recommended `VRCPlayerObject` tier was introduced in SDK 3.7.4 and remains the recommended choice on the active SDK target, SDK 3.10.6. The fixed-size synced-array tier remains a valid alternative for small, capacity-limited worlds, while the local-only tier is valid for single-player preview or debugging. The 3.7.4 version note is historical migration context, not an active-support cutoff.
+The recommended `VRCPlayerObject` tier was introduced in SDK 3.7.4 and remains the recommended choice on the active SDK target. The fixed-size synced-array tier remains a valid alternative for small, capacity-limited worlds, while the local-only tier is valid for single-player preview or debugging. The 3.7.4 version note is historical migration context, not an active-support cutoff.
 
 ### Architecture (state vs presentation split)
 
@@ -628,7 +640,7 @@ Two responsibilities, each on a separate UdonBehaviour with a different sync mod
 | Layer | Sync mode | What it holds | Where it lives |
 |---|---|---|---|
 | **State** — `RoomAssignment` | `[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]` | `[UdonSynced] int roomIndex` | On a `VRCPlayerObject` prefab — auto-spawned per player, auto-owned by that player |
-| **Presentation** — `LocalRoomPresenter` | `[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]` | `Transform roomRoot`, `Transform[] roomOrigins` | One scene-level instance, per-client local view only |
+| **Presentation** — `LocalRoomPresenter` | `[UdonBehaviourSyncMode(BehaviourSyncMode.None)]` | `Transform roomRoot`, `Transform[] roomOrigins` | One scene-level instance, per-client local view only |
 
 Each client computes "where is **my** room?" from the local player's `RoomAssignment.roomIndex`, then locally moves `roomRoot` to `roomOrigins[roomIndex]` and `TeleportTo`s the local player to that same origin. **Two players who hold the same `roomIndex` independently run this on their own clients and therefore collocate at the same world coordinate** — they appear together because they were each sent there, not because the room object itself was synced.
 
@@ -655,8 +667,8 @@ The self-owned tier avoids the master-handoff race. Use master coordination only
 
 ### Key Design Decisions
 
-**Why `NoVariableSync` on the presenter?**
-The presenter holds no shared state — only local view placement derived from the synced `roomIndex`. `NoVariableSync` makes the design intent explicit: *this object's fields must never participate in network sync, even by accident*. Editor warnings will flag attempts to add `[UdonSynced]` later.
+**Why `None` on the presenter?**
+The presenter holds no shared state — only local view placement derived from the synced `roomIndex` — and receives no network events. `None` makes the design intent explicit: *this object's fields must never participate in network sync, even by accident*. The compiler rejects `[UdonSynced]` fields in a `None` class.
 
 **Why `Manual` sync mode on the assignment script?**
 Room assignment changes are discrete user actions (Interact, button press, lottery roll), not continuous values. `Manual` + `RequestSerialization()` after each write minimises bandwidth and avoids per-frame churn. Discrete user-action state maps to Manual sync per the [Sync Mode Quick Decision](../SKILL.md#sync-mode-quick-decision) in SKILL.md.
@@ -729,12 +741,12 @@ public class RoomAssignment : UdonSharpBehaviour
 
 ```csharp
 // One instance in the scene. Holds the room model and the origin transforms.
-// NoVariableSync makes it explicit: this object's state is per-client local.
+// None makes it explicit: this object's state is per-client local.
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LocalRoomPresenter : UdonSharpBehaviour
 {
     [SerializeField] private Transform roomRoot;

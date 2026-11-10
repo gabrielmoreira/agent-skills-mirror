@@ -125,7 +125,14 @@ Each operation holds the sync lock, so configuration changes cannot race a
 sync's state write.
 
 A first computer creates a remote backup. Another computer joining takes
-the remote setup and keeps displaced local parts in its sync folder.
+the remote setup and keeps displaced local parts in its sync folder. A
+part the file holds nothing of its own in (`unset`: no providers or
+routing groups, the default settings, no profiles, an empty library) is
+the folder never having had one, not a removal: on a join, a computer
+with that part set up keeps it and sends it up (#5642: an empty computer
+that synced first emptied the next one's providers and groups). After the
+join an emptied part is a removal and spreads as before
+(`TestSyncEmptyFirstKeepsLaterSetups`).
 Subsequent syncs compare each part with the hashes from the previous sync:
 local-only changes go up, remote-only changes come down, and a part changed
 on both sides keeps the newer version while retaining the replaced copy.
@@ -222,6 +229,16 @@ switch that anyone with the file and the passphrase can use those accounts.
   Each record has an id that names the account (agent, lower-case email and
   organisation; or the account key), its time of renewal and a hash; ids two
   rows share are left out on both sides, as no one can tell which is which.
+- **Never carried:** a plugin's sign-in whose vendor spends a refresh
+  token once. Two computers holding one copy race to renew it, and the
+  vendor turns the loser away for good with no newer copy anywhere
+  (#5583, skalitz-wolf). Such a plugin says so with its auth hook's
+  `rotating` (`Provider.Rotating`); MiniMax Code and Qoder are known to
+  (`rotatesKnown`). `CollectSignIns` leaves them out, and `records` leaves
+  out one an older file carried, so a sync neither sends nor takes one
+  and a Restore writes none. Each computer signs in to them itself
+  (`TestCollectSignInsLeavesARotatingSignInOut`,
+  `TestKnownRotatingSignInsStayWithNoPluginListed`).
 - **Sealed:** a backup or export seals them with the rest of the file. An
   automatic backup, which has no passphrase on a schedule, seals them
   alone (`SealData`) with the passphrase asked for as they are turned on,

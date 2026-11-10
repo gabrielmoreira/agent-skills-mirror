@@ -206,7 +206,8 @@ handling, while the worker owns event identity and delivery state.
 For Terraform publication, linked releases, shared-route replacement, approval, first mutation,
 expired plans, saved-plan input-type mismatches, frozen approval-input verification,
 environment isolation or initialization-cache changes, enter
-[`terraform-skill`](terraform-skill/SKILL.md).
+[`terraform-skill`](terraform-skill/SKILL.md). Certificate rotation or another recurring
+maintenance change uses its [publisher and maintenance-cycle validation](terraform-skill/references/pre-deploy-validation.md#replay-the-next-maintenance-cycle-through-every-gate).
 
 For Deep Research or Kimi financial-research changes, enter the owning
 [`deep-research`](deep-research/SKILL.md) or [`kimi-use`](kimi-use/SKILL.md) Skill.
@@ -230,6 +231,11 @@ XLSX with a printable layout, enter
 For growth analysis from sales or support conversations, enter
 [product-growth](product-growth/SKILL.md) and follow its
 [customer-conversation evidence recipe](product-growth/references/customer-conversations.md).
+
+For reopening or hosting existing HTML, enter
+[existing HTML restoration](report-with-html/references/local-http-preview.md#existing-html-restoration).
+For missing page files or attachments, follow
+[page and attachment recovery](daymade-claude-code/read-claude-code-history/references/page-and-attachment-recovery.md).
 
 For HTML report creation or updates, enter
 [report-with-html's Define success workflow](report-with-html/SKILL.md#workflow)
@@ -498,11 +504,14 @@ validation behavior in
 [native_review.py](daymade-audio/transcript-fixer/scripts/native_review.py), and
 queue anchor behavior in
 [review_queue.py](daymade-audio/transcript-fixer/scripts/core/review_queue.py).
+For a failed queue operation, enter
+[pending execution state](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#pending-execution-state)
+before choosing the continuation route.
 For same-line repeats or a legacy row needing an explicit slot, follow
 [occurrence anchoring](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#same-line-occurrence-anchoring).
 For company slots or a short match inside a longer name, follow
 [minimum occurrence checks](daymade-audio/transcript-fixer/references/dictionary_identity_and_context.md#minimum-occurrence-checks-for-name-candidates).
-For wording supported by a parallel transcript, follow
+For finite written wording evidence, follow
 [written wording evidence](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#written-evidence-for-ordinary-wording).
 Use the [CLI reference](daymade-audio/transcript-fixer/references/script_parameters.md#fix_transcriptionpy)
 to select the command; `fix_transcription.py` dispatch and command-combination
@@ -560,6 +569,9 @@ For external customer groups paired with Wiki pages, enter
 
 For faithful Feishu document reads, resource archives and destination handoffs,
 enter [feishu-doc-scraper](feishu-doc-scraper/SKILL.md) and follow its task router.
+Body-capture commands and failure recovery belong to its
+[API capture procedure](feishu-doc-scraper/references/lark-cli-api-extraction.md#step-3-fetch-the-body-programmatically);
+change and exercise that recipe rather than maintaining another copy in the entry.
 
 ### Prior Work Retrieval Boundary
 
@@ -637,6 +649,8 @@ For local transport selection or accepted/consumed delivery interpretation, ente
 [current-host tool discovery](peer-message/references/local-coordination.md#先发现完整工具面再选通信通道).
 For independent-session preflight and request lifecycle, follow the
 [local coordination workflow](peer-message/references/local-coordination.md#原生跨会话通信).
+For a native payload limit or a rejected preparation, use its
+[complete-envelope preflight and recovery](peer-message/references/local-coordination.md#完整信封限制与失败收口).
 Keep native-guard installation, recovery and actual-host acceptance in that workflow;
 do not duplicate its parameters here. Reply lookup, transport and discovery
 details belong in [the transport and receiver-evidence SOP](peer-message/references/protocol-and-discovery.md).
@@ -645,7 +659,7 @@ Before asking about mutable ownership or a publication window, use the
 [fresh-state preflight](peer-message/references/coordination-and-learning-loop.md#51-发现别人的在制品先核实再问等一个有界窗口).
 For an inbound coordination envelope, a native reply, original-input capture or a receive-integrity error, follow
 [receive, reply and closure](peer-message/references/local-coordination.md#收件回信和关闭).
-For a known inbound `peer-message` envelope ID in Codex, use the
+For a known inbound script or native coordination envelope ID in Codex, use the
 [original-envelope receive recipe](peer-message/references/local-coordination.md#从-codex-入站原件接收).
 For oversized discovery responses or complete-title export, use its
 [discovery-output contract](peer-message/references/protocol-and-discovery.md#发现输出的范围).
@@ -689,6 +703,9 @@ For one-shot helper exits or attribution of an exited terminal, enter
 Before a Codex startup diagnosis or a build/resume/recovery claim, follow
 [entry identity](daymade-codex/local-codex/references/entry-identity.md).
 That SOP owns the shell/executable binding and the limits of identity evidence.
+
+For an authorized shared Codex backend upgrade or restart, enter
+[shared daemon maintenance](daymade-codex/local-codex/references/shared-daemon-maintenance.md).
 
 ### Codex Quota and Account Checks
 
@@ -1021,11 +1038,13 @@ If it fires, fix the issue — do NOT use `--no-verify` to bypass.
 - Move detailed documentation to `references/` files
 - Avoid duplication between SKILL.md and references
 - Keep `tunnel-doctor` environment-neutral: it may teach discovery and presence checks, but exact private node labels, billing identities, endpoints, credentials, and current chain state remain in the owning private configuration/Skill and must not be copied into this public repository.
-- Kimi desktop input and tunnel diagnostics follow the current host-specific procedures in `kimi-use/references/driving-kimi-app.md` and `tunnel-doctor/SKILL.md`; a proxy bypass recommendation requires compared path evidence.
+- For kimi-cu desktop input or recovery, enter [desktop automation](kimi-use/references/kimi-cu-desktop-automation.md); for Kimi.app mode and driver setup, enter [driving Kimi.app](kimi-use/references/driving-kimi-app.md). Network-path diagnosis remains with [tunnel-doctor](tunnel-doctor/SKILL.md).
 - Scripts must be executable with proper shebangs
 - All bundled resources must be referenced in SKILL.md
 
 ## Marketplace Configuration
+
+For marketplace metadata changes, use the [repository checker](scripts/ci/check_marketplace.py) and its [regression cases](scripts/ci/test_check_marketplace.py); the executable check sequence is in [CI](.github/workflows/ci.yml).
 
 The marketplace is configured in `.claude-plugin/marketplace.json`:
 - Contains plugin entries: single-skill plugins point `source` directly at the skill directory (no `skills` field); any plugin entry with a non-empty `skills` array is a suite and uses those relative paths for multi-skill routing

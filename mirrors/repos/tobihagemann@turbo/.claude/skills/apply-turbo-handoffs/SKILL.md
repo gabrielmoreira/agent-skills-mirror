@@ -1,6 +1,6 @@
 ---
 name: apply-turbo-handoffs
-description: "Audit the turbo skill lessons that /self-improve writes into this repo's .turbo/handoff/ from other projects, apply the ones the user approves, delete the consumed handoffs, and commit and push. Use when the user asks to \"read .turbo/handoff and let me know what you think\", \"read the handoff files and let me know what you think\", \"review the lesson handoffs\", \"apply the self-improve handoffs\", or \"process the turbo handoffs\"."
+description: "Audit the turbo lessons /self-improve wrote to .turbo/handoff/ and apply approved ones. Use when the user asks to \"read .turbo/handoff and let me know what you think\" or \"process the turbo handoffs\"."
 ---
 
 # Apply Turbo Handoffs
@@ -38,7 +38,7 @@ Close with how to reply: approve the verdicts as they stand, describe what to ch
 
 ## Step 3: Apply the Approved Changes
 
-When any lesson approved to apply edits a skill, run the `/create-skill` skill once for the whole batch of them. Make all of the lessons' edits in their approved form, following the edition-mirroring rules in the target edition's `claude/CLAUDE.md` or `codex/AGENTS.md`, before that skill's review begins. Edit non-skill files such as docs directly.
+When any lesson approved to apply edits a skill, run the `/write-skill` skill once for the whole batch of them. Make all of the lessons' edits in their approved form, following the edition-mirroring rules in the target edition's `claude/CLAUDE.md` or `codex/AGENTS.md`, before that skill's review begins. Edit non-skill files such as docs directly.
 
 When the applied edits depart materially from the approved verdicts, such as review findings rewriting an approved rule or a lesson turning out not to fit, present each departure and end the turn. Continue from the user's reply.
 

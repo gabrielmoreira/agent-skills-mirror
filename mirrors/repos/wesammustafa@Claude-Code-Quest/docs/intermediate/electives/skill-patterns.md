@@ -1,6 +1,6 @@
 # Skill patterns: live data, supporting files and a context of its own
 
-<sub>**Intermediate** · Elective · about 20 minutes · Needs: [Turn a repeated workflow into a skill](../01-first-skill.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Elective · about 20 minutes · Needs: [Turn a repeated workflow into a skill](../01-first-skill.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -77,7 +77,7 @@ If `/changes-review` stops with `Shell command failed` or `Shell command permiss
 ## Go further
 
 - [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices): how to write descriptions, structure supporting files and test a skill.
-- [anthropics/skills](https://github.com/anthropics/skills): Anthropic's example skills. Some are source-available rather than open source, so read each one's license before you copy it.
+- [anthropics/skills](https://github.com/anthropics/skills): Anthropic's example skills. Read each one's license before you copy it.
 - [Troubleshooting](https://code.claude.com/docs/en/skills#troubleshooting): skills that don't trigger, trigger too often, or stop being followed.
 
 ---

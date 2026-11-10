@@ -917,13 +917,21 @@ function isTailnet(address) {
   const m = /^100\.(\d{1,3})\./.exec(address);
   return !!m && Number(m[1]) >= 64 && Number(m[1]) <= 127;
 }
-var isTunnel = (name) => /^(utun|tun|tap|wg|ppp|ipsec)\d/i.test(name);
+var isTunnel = (name) => /(^|[^a-z0-9])(utun|tun|tap|wg|ppp|ipsec)\d*($|[^a-z0-9])/i.test(name) || /vpn|wintun|tunnel/i.test(name);
+var ipv4Number = (address) => address.split(".").reduce((n, part) => n * 256 + Number(part), 0);
+function isOwnNetwork(entry) {
+  if (!/^\d+\.\d+\.\d+\.\d+$/.test(entry.netmask)) return false;
+  const mask = ipv4Number(entry.netmask);
+  if (mask >= ipv4Number("255.255.255.252")) return true;
+  const address = ipv4Number(entry.address);
+  return ((address & mask) >>> 0) + 1 === address;
+}
 function lanAddresses() {
   const out = /* @__PURE__ */ new Map();
   for (const [name, list] of Object.entries(os2.networkInterfaces())) {
     for (const entry of list ?? []) {
       if (entry.family !== "IPv4" || entry.internal || entry.address.startsWith("169.254.") || isBenchmarkRange(entry.address)) continue;
-      const rank = isTailnet(entry.address) ? 2 : isTunnel(name) ? 1 : 0;
+      const rank = isTailnet(entry.address) ? 2 : isTunnel(name) || isOwnNetwork(entry) ? 1 : 0;
       out.set(entry.address, Math.min(rank, out.get(entry.address) ?? rank));
     }
   }
@@ -938,7 +946,10 @@ function answers(host, port) {
     };
     socket.setTimeout(300, () => done(false));
     socket.once("connect", () => done(true));
-    socket.once("error", (error) => done(!["ECONNREFUSED", "EADDRNOTAVAIL", "EAFNOSUPPORT", "ENETUNREACH", "EHOSTUNREACH"].includes(error.code ?? "")));
+    socket.once(
+      "error",
+      (error) => done(!["ECONNREFUSED", "EADDRNOTAVAIL", "EAFNOSUPPORT", "ENETUNREACH", "EHOSTUNREACH", "EACCES", "EPERM"].includes(error.code ?? ""))
+    );
   });
 }
 async function answersAnyPort(address) {
@@ -984,6 +995,7 @@ function serverOrigin(host, port) {
   return `http://${shown2}:${port}`;
 }
 var pagePathOf = (kind, root) => `/${kind}/${createHash("sha256").update(path2.resolve(root)).digest("base64url").slice(0, 22)}/`;
+var pageGone = (dir, owner) => owner ? `This page's files are no longer in ${dir}: the skill was moved, renamed or removed while its server ran. Stop the server and open the artifact again (the agent that opened it can do both).` : "This page's files are gone from the computer that shares it. Ask whoever shared it to open it again.";
 function sendJson2(response, status, body, headers = {}) {
   const text = JSON.stringify(body);
   response.writeHead(status, {
@@ -4744,7 +4756,8 @@ data: ${JSON.stringify(event)}
     const info = real === null ? null : await fsp4.lstat(real).catch(() => null);
     if (file === null || real !== file || !info?.isFile()) {
       if (realDist === null && !invalid && parts[0] === "index.html") {
-        response.writeHead(503, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }).end("The editor page is missing; reinstall the skill.");
+        stamp2(`the editor's files are gone from ${EDITOR_DIR}: the skill was moved, renamed or removed while this server ran`);
+        response.writeHead(503, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" }).end(pageGone(EDITOR_DIR, viewer.role === "owner"));
         return;
       }
       response.writeHead(404, { "Cache-Control": "no-store" }).end();

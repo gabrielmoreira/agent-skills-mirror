@@ -94,7 +94,7 @@ If the task depends on local GUI/software/hardware or data cannot leave the mach
 1. 写清现行整机默认或用户明确选择的窄范围／分流例外，按[Agent 路径要求](agent-remediation.md#ipv4-only-policy)核对。指定 Profile 的 HTTPS 走既有代理只是局部观察示例，不是整机验收；不能据此写“全机安全”
 2. 按 [网络与解决方法](network-and-remedies.md) 分别检查 HTTPS、DNS、IPv6、UDP、WebRTC；中性端点也要范围批准，不主动解析 Claude 域名
 3. 对确认的差异仅拟最小配置改动，展示语义 diff、配置持久化位置、更新覆盖风险、备份与回滚；批准后仅使用已验收的适配器，否则交给用户人工完成并复验
-4. macOS 严格出站保护用系统自带 PF（[guardian-pf-killswitch.sh](../assets/mac-killswitch/guardian-pf-killswitch.sh)，逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md)，ADR-054）；不用 LuLu，它按进程拦，分不出 TUN 和直连（Issue #17）。加载和开机项是 C 档；未完成故障测试不能称已实现 kill switch，[Issue #25](https://github.com/DUNHKpcc/Claude-Guardian/issues/25) 已有现场修正版的真机通过报告，环境与范围见本机指引
+4. macOS 严格出站保护用系统自带 PF（[guardian-pf-killswitch.sh](../assets/mac-killswitch/guardian-pf-killswitch.sh)，逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md)，ADR-054）；不用 LuLu，它按进程拦，分不出 TUN 和直连（Issue #17）。加载和开机项是 C 档；未完成故障测试不能称已实现 kill switch，Mac PF 已验收（2026-11-09）；[Issue #25](https://github.com/DUNHKpcc/Claude-Guardian/issues/25) 为历史现场修正版通过报告，环境与版本说明见本机指引
 5. Windows 优先评估系统内置防火墙的精确程序/作用域规则（逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md#windows)）；先导出现有相关规则并核查组织策略。不要用全局 block 再假定 allow 回环能覆盖冲突；共享解释器规则可能影响其他项目
 6. 故障演练前准备离线恢复和独立控制通道，单独请求授权。分别测节点失效、GUI 退出/内核仍在、内核停止、新进程、网络切换、IPv4/IPv6 和适用 UDP；未测项保留未测
 
@@ -103,7 +103,9 @@ If the task depends on local GUI/software/hardware or data cannot leave the mach
 <a id="safe-shutdown"></a>
 ### 关闭代理与防火墙前：先确认后台退出
 
-所有者 2026-11-07 反馈：退出 Claude Desktop、关闭浏览器中 Claude 相关标签页后，仍可能留下监听进程。窗口消失不是退出证据；监听存在也不等于已经向外发送数据。本条是操作指导，本次未独立复测具体进程及各平台行为。
+本节用于主动停用保护或回滚；正常关机、重启保留长期防火墙策略，不要求先撤规则。
+
+2026-11-07：退出 Claude Desktop、关闭浏览器中 Claude 相关标签页后，仍可能留下监听进程。窗口消失不是退出证据；监听存在也不等于已经向外发送数据。本条是操作指导，本次未独立复测具体进程及各平台行为。
 
 1. **保留代理和防直连规则。**先保存工作，按现有授权正常退出 Desktop、相关 Code／IDE 会话和浏览器标签页；涉及接触 Claude 的动作仍按 C 档确认。不要先停代理或撤规则再检查。
 2. **在选定设备、用户和命名空间内核实残留。**查看相关 PID、父子关系、可执行文件路径及其 TCP 监听、TCP 连接与 UDP socket；包括 Helper、原生浏览器宿主（如 `chrome-native-host`）、相关扩展／后台任务及已确认归属的子进程。名称只能作线索，不能只查名为 Claude 的进程，也不能把所有 Node、Chrome 或浏览器进程都当作 Claude。无需读取页面内容、完整命令行或凭据。
@@ -232,7 +234,7 @@ If the task depends on local GUI/software/hardware or data cannot leave the mach
 
 ### A1 适用判断与前置（管理端规划，PC0）
 
-确认：目标机能不能直连；谁拥有网络和机器，是否同意加固；出口节点和隧道中转是否同一台 VPS（单点风险必须让用户知道）；目标机已按 V2a 做到 FlClash TUN 通、出口是预期 IP；独立救援入口是什么（本地终端、宿主机控制台）。任何一项没有就停在规划，不部署。**验收**项：出口 IP、救援入口、网络所有者同意，各标状态。
+确认：目标机能不能直连；网络与设备使用授权是否涵盖加固；出口节点和隧道中转是否同一台 VPS（单点风险必须让用户知道）；目标机已按 V2a 做到 FlClash TUN 通、出口是预期 IP；独立救援入口是什么（本地终端、宿主机控制台）。任何一项没有就停在规划，不部署。**验收**项：出口 IP、救援入口、网络使用授权，各标状态。
 
 ### A2 反向隧道与崩溃自愈（目标机与 VPS 分别标注，B 档）
 
@@ -249,7 +251,7 @@ If the task depends on local GUI/software/hardware or data cannot leave the mach
 <a id="r-router"></a>
 ## R-ROUTER 软路由（占位，未来补齐）
 
-所有者 2026-11-01：**Claude Desktop 最佳还是软路由。**这条路线先占位，搭建步骤（硬件与固件、插件、主路由或旁路由、电脑本机还装不装代理、验收）未来补齐。补齐之前：
+2026-11-01：**Claude Desktop 最佳还是软路由。**这条路线先占位，搭建步骤（硬件与固件、插件、主路由或旁路由、电脑本机还装不装代理、验收）未来补齐。补齐之前：
 
 - 用户问 Claude Desktop 怎么做最好，直接说最佳是软路由，本 Skill 的软路由指引还在补；现在先按本机路线在电脑上做（[Claude Desktop 的 WebRTC](agent-remediation.md#webrtc-block)：TUN 严格路由、关 IPv6、断线保护）。
 - Agent 不自行编写软路由的搭建步骤，也不改用户的路由器；用户已经有软路由的，只读记录它的位置和职责，电脑这一侧仍按本机路线验收。

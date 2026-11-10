@@ -2,9 +2,7 @@
 
 Common errors, causes, and solutions for VRChat UdonSharp development.
 
-**Active support / last verified**: SDK 3.10.6
-
-Older version numbers in this reference record feature introductions or migration facts only; SDK 3.7.1-3.10.4 are not supported or validation targets for this Skill.
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
 ## Table of Contents
 
@@ -18,6 +16,11 @@ Older version numbers in this reference record feature introductions or migratio
 - [Editor Issues](#editor-issues)
 - [Performance Issues](#performance-issues)
 - [Common Pitfalls](#common-pitfalls)
+- [Debugging Techniques](#debugging-techniques)
+- [Quick Reference: Error -> Solution](#quick-reference-error---solution)
+- [Resources](#resources)
+- [Investigation Steps for Unknown Errors](#investigation-steps-for-unknown-errors)
+- [See Also](#see-also-1)
 
 ---
 
@@ -1284,19 +1287,22 @@ public override void OnPlayerLeft(VRCPlayerApi player)
 
 ### Changes Not Saved on Prefab
 
-**Cause:** UdonSharp uses a proxy system, and changes to the proxy are not auto-saved.
+**Cause:** Editor code assigned a field on a prefab instance directly without recording the change as a prefab override. In UdonSharp 1.x the C# component is the saved data, so this is the same rule as for any Unity component.
 
 **Solution:**
 
 ```csharp
 
-#if UNITY_EDITOR
-// In custom editor or after programmatic changes
-UdonSharpEditorUtility.CopyProxyToUdon(behaviour);
-EditorUtility.SetDirty(behaviour);
+#if UNITY_EDITOR && !COMPILER_UDONSHARP
+// Direct assignment from editor code
+Undo.RecordObject(behaviour, "Change value");
+behaviour.speed = 10f;
+PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
 #endif
 
 ```
+
+Editing through `SerializedObject` / `SerializedProperty` records the override automatically. Do not add `UdonSharpEditorUtility.CopyProxyToUdon()`; in Edit Mode it only adds a duplicate copy to the scene file (see [editor-scripting.md](editor-scripting.md#editing-in-edit-mode)).
 
 ### Runtime-only public field keeps an Inspector value
 
@@ -1683,17 +1689,7 @@ var myScript = (MyScript)(object)other.GetComponent(typeof(MyScript));
 
 ```
 
-**Solution (Editor):**
-
-```csharp
-
-#if UNITY_EDITOR && !COMPILER_UDONSHARP
-var myScript = other.GetUdonSharpComponent<MyScript>();
-#else
-var myScript = (MyScript)(object)other.GetComponent(typeof(MyScript));
-#endif
-
-```
+**Solution (Editor):** Use `GetComponent<MyScript>()` directly. The 0.x lookup extensions are obsolete in UdonSharp 1.x and only wrap `GetComponent` (see [editor-scripting.md](editor-scripting.md#obsolete-0x-apis)).
 
 ---
 

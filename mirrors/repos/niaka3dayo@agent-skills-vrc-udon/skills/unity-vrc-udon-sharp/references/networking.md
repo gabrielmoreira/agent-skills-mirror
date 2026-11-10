@@ -2,15 +2,31 @@
 
 Comprehensive guide to networking and synchronization in UdonSharp.
 
-**Active support / last verified**: SDK 3.10.6
-
-Older version numbers in this reference record feature introductions or migration facts only; SDK 3.7.1-3.10.4 are not supported or validation targets for this Skill.
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
 > **Warning**: Networking in Udon is a work in progress and can be fragile. Keep implementations simple and test thoroughly with multiple players.
 >
 > **Best Practice**: "The key to sync is NOT to sync." Minimize synced data and use local calculation where possible.
 >
 > **SDK 3.8.1+ New Feature**: The `[NetworkCallable]` attribute enables **network events with parameters**. See [Network Events with Parameters](#network-events-with-parameters-sdk-381) for details.
+
+## Table of Contents
+
+- [Sync Methods (BehaviourSyncMode)](#sync-methods-behavioursyncmode)
+- [VRC_ObjectSync Warning](#vrc_objectsync-warning)
+- [Late Joiner Considerations](#late-joiner-considerations)
+- [Optimization Tips](#optimization-tips)
+- [Core Concepts](#core-concepts)
+- [Synced Variables](#synced-variables)
+- [Network Events](#network-events)
+- [Network Event Hardening and Sender Authorization](#network-event-hardening-and-sender-authorization)
+- [Network Events with Parameters (SDK 3.8.1+)](#network-events-with-parameters-sdk-381)
+- [Data Limits](#data-limits)
+- [Object Pooling](#object-pooling)
+- [Player Events](#player-events)
+- [Common Patterns](#common-patterns)
+- [Owner-Centric Architecture Migration](#owner-centric-architecture-migration)
+- [See Also](#see-also)
 
 ## Sync Methods (BehaviourSyncMode)
 
@@ -104,16 +120,18 @@ public class ManualSyncExample : UdonSharpBehaviour
 - Much larger data capacity
 - Low network overhead for infrequent updates
 
-### NoVariableSync
+### None (Local-Only Behaviours)
 
-NoVariableSync disables variable synchronization while keeping network events available.
+`None` turns off variable sync and incoming network events for the behaviour. Use it for behaviours that only act locally: UI, effects, loaders, local helpers.
 
-`BehaviourSyncMode` has both `None` and `NoVariableSync`; `None` also disables `SendCustomNetworkEvent` on the behaviour, while `NoVariableSync` keeps network events working. For event-driven behaviours, use `NoVariableSync`. Source: UdonSharp source XML docs (verified SDK 3.10.3).
+- `[UdonSynced]` fields fail to compile.
+- `OnPreSerialization`, `OnPostSerialization`, and `OnDeserialization` are skipped. In the SDK 3.10.6 `UdonBehaviour` source these are the only events that check the sync method.
+- The behaviour cannot receive `SendCustomNetworkEvent` or `NetworkCalling` calls. VRChat's [network events docs](https://creators.vrchat.com/worlds/udon/networking/events/) state that the receiving UdonBehaviour must not use sync mode `None`. The UdonSharp compiler does **not** flag a `[NetworkCallable]` method in a `None` class (SDK 3.10.6); the event is simply never received. When you add a network event to a `None` behaviour, switch it to `Manual`.
+- When the editor aligns the sync methods of UdonBehaviours on one GameObject, it skips `None` behaviours (SDK 3.10.6 source), so a `None` behaviour can sit next to `Manual`, `Continuous`, or `VRCObjectSync` components.
 
-**Characteristics:**
-- No synced variables supported (`[UdonSynced]` will error)
-- Must use `SendCustomNetworkEvent()` for communication
-- Best for: Local-only logic, event-driven communication, reducing network overhead
+### Events Without Synced Variables
+
+A behaviour that receives network events but has no `[UdonSynced]` fields uses `Manual`. With no synced fields there is nothing to serialize, and network events do not need `RequestSerialization()`. If the same GameObject has `VRCObjectSync` or a `Continuous` behaviour, use `Continuous` instead; UdonSharp warns about `Manual` next to `VRCObjectSync`.
 
 ```csharp
 using UdonSharp;
@@ -122,14 +140,12 @@ using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
-public class NoSyncExample : UdonSharpBehaviour
+// Receives network events, holds no synced fields
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
+public class EventOnlyExample : UdonSharpBehaviour
 {
     private const float ReceiverCooldown = 1f;
     private float lastAcceptedEventTime = float.MinValue;
-
-    // Cannot use [UdonSynced] with NoVariableSync mode!
-    // [UdonSynced] private int score; // ERROR!
 
     public void _TriggerGlobalEvent()
     {
@@ -156,18 +172,25 @@ public class NoSyncExample : UdonSharpBehaviour
 }
 ```
 
-**When to use NoVariableSync:**
-- Purely event-based systems (buttons, triggers)
-- Objects that only need notifications, not state synchronization
-- Reducing network overhead in complex worlds
+### NoVariableSync (Existing Assets Only)
+
+`NoVariableSync` is still a valid `BehaviourSyncMode` value (not `[Obsolete]`). The [attributes docs](https://creators.vrchat.com/worlds/udon/udonsharp/attributes/#behavioursyncmode) describe it as usable "on GameObjects that use either Manual or Continuous sync". The UdonBehaviour has no matching sync method, so the editor stores `Manual` or `Continuous` instead and re-evaluates it whenever a scene opens and when Play Mode starts or stops. Measured on SDK 3.10.6 by running that editor update pass three times:
+
+| GameObject contents | Stored sync method after every pass |
+|---|---|
+| `NoVariableSync` alone | `Continuous` |
+| `NoVariableSync` + a `Manual` behaviour with `[UdonSynced]` fields | **Both `Continuous`**, and the scene is marked dirty on every pass |
+| `Manual` (no synced fields) + `Manual` with `[UdonSynced]` fields | Both `Manual` |
+
+The second row is the case the docs describe, and it turns the behaviour declared `Manual` into `Continuous`: its data is then sent under Continuous rules (automatic, ~200-byte budget) instead of Manual. Do not use `NoVariableSync` in new code. In existing assets, replace it with `None` (no incoming network events) or `Manual` (receives network events), then save and reopen the scene and check the stored sync method.
 
 ### Mode Selection Guide
 
 | Mode | Data size | Frequency | Use case |
 |--------|-------------|------|-------------|
 | Continuous | ~200 bytes | High (10Hz) | Position/rotation tracking |
-| Manual | ~280KB (280,496 bytes) | On-demand | Game state, scores, settings |
-| NoVariableSync | N/A | N/A | Event-only communication |
+| Manual | ~280KB (280,496 bytes) | On-demand | Game state, scores, settings; also event-only behaviours with no synced fields |
+| None | N/A | N/A | Local-only behaviour; cannot receive network events |
 
 ## VRC_ObjectSync Warning
 
@@ -454,12 +477,22 @@ void Update()
 
 // GOOD: Sync start time, calculate locally
 [UdonSynced] private double startServerTime;
+[UdonSynced] private bool timerStarted; // server time can be negative, so it cannot mark "unset"
+
+public void _StartTimer()
+{
+    Networking.SetOwner(Networking.LocalPlayer, gameObject);
+    startServerTime = Networking.GetServerTimeInSeconds();
+    timerStarted = true;
+    RequestSerialization(); // Manual sync
+}
 
 void Update()
 {
-    if (startServerTime > 0)
+    if (timerStarted)
     {
-        float elapsed = (float)(Networking.GetServerTimeInSeconds() - startServerTime);
+        float elapsed = (float)Networking.CalculateServerDeltaTime(
+            Networking.GetServerTimeInSeconds(), startServerTime);
         timerDisplay.text = elapsed.ToString("F1");
     }
 }
@@ -530,7 +563,7 @@ public override void OnOwnershipTransferred(VRCPlayerApi player)
 - **On remote clients:** the new ownership becomes visible after VRChat propagates the change. Each remote client's `OnOwnershipTransferred` fires when the propagation arrives.
 - **No client-side arbitration:** when two clients call `SetOwner` simultaneously, both succeed locally and may write synced variables; VRChat resolves the durable owner by network arrival order. The loser's write is overwritten when the winner's serialization arrives. This is by design — see [networking-antipatterns.md §1](networking-antipatterns.md#1-ownership-race-condition) for the recommended `IsOwner`-guarded pattern, and [§"Ownership Arbitration with OnOwnershipRequest"](#ownership-arbitration-with-onownershiprequest) below for owner-side protection during critical actions.
 
-> *Footnote: Pre-2021.2.2 SDKs treated `SetOwner` as asynchronous on the calling client; the active target (SDK 3.10.6) is locally immediate. Source: [Ownership Transfer Events](https://creators.vrchat.com/worlds/udon/networking/ownership/#transfer-events-diagram).*
+> *Footnote: Pre-2021.2.2 SDKs treated `SetOwner` as asynchronous on the calling client; the active target is locally immediate. Source: [Ownership Transfer Events](https://creators.vrchat.com/worlds/udon/networking/ownership/#transfer-events-diagram).*
 
 ### Owner Leave and Ownership Cascade
 
@@ -1224,7 +1257,7 @@ using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class TargetedMessageExample : UdonSharpBehaviour
 {
     private const int MaxMessageLength = 256;
@@ -1377,7 +1410,7 @@ Master status selects a session coordinator; it never authorizes a request. Use 
 using UdonSharp;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class MasterSessionCoordinator : UdonSharpBehaviour
 {
     private int lastReconciledPlayerCount = -1;
@@ -1446,10 +1479,24 @@ void Update()
 {
     if (!gameRunning) return;
 
-    double elapsed = Networking.GetServerTimeInSeconds() - gameStartTime;
+    double elapsed = Networking.CalculateServerDeltaTime(
+        Networking.GetServerTimeInSeconds(), gameStartTime);
     timerDisplay.text = elapsed.ToString("F1");
 }
 ```
+
+#### Server Time Wraps and Can Be Negative
+
+`Networking.GetServerTimeInMilliseconds()` returns an `int`. `Networking.GetServerTimeInSeconds()` returns a `double`, but it is reported to be derived from the same millisecond counter, so it is not a non-wrapping clock either: values stay within about ±2,147,483 s and are often negative. The API docs do not state this; it comes from a [tracked VRChat feedback post](https://feedback.vrchat.com/sdk-bug-reports/p/document-getservertimeinseconds-wrapping) and a [community measurement write-up](https://phi16.hatenablog.com/entry/2025/01/08/023655). Write timer code that is correct whether or not a wrap happens:
+
+| Task | Do | Don't |
+|------|----|-------|
+| Mark a timer as started | Keep a separate `bool` (synced if remote clients need it) | `if (startTime > 0)` or `startTime != 0` as an "unset" check — a valid server time can be negative or zero |
+| Elapsed seconds between two `GetServerTimeInSeconds()` values | `Networking.CalculateServerDeltaTime(now, previous)` — the documented API for the difference between two server timestamps (newer value first) | `now - previous` — returns a large negative number if the clock wrapped in between |
+| Elapsed milliseconds | Subtract as `int`: `int elapsedMs = nowMs - startMs;` (see [patterns-video.md](patterns-video.md#2-server-time-playback-position-sync)). This holds while the real gap is under about 24.8 days (`int.MaxValue` ms). If a timer can run longer, re-commit before then: keep the elapsed time so far in a separate value and set the start timestamp to now (the video pattern's `_UpdateSyncedPosition()` does this with its playback offset) | Widen to `long` or `double` before subtracting |
+| Deadlines that must survive a rejoin or span days | Store a UTC wall-clock value, as in [persistence.md](persistence.md) (`System.DateTime.UtcNow`). `UtcNow` reads each player's device clock, which can be off or changed by the player, so do not use it where an exact or cheat-resistant deadline matters | Save a server-time value for comparison in a later session |
+
+Do not "fix" a negative result with `Mathf.Abs`, clamping to 0, or sign masking; those hide the wrap instead of handling it.
 
 ---
 

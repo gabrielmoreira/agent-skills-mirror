@@ -1,6 +1,6 @@
 # Your first change, from request to commit
 
-<sub>**Beginner** · Lesson 3 of 5 · about 20 minutes · Needs: [Permission modes and plan mode](02-permission-modes-and-plan-mode.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Lesson 3 of 5 · about 20 minutes · Needs: [Permission modes and plan mode](02-permission-modes-and-plan-mode.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -15,9 +15,9 @@ By the end of this lesson you can take a change from request to commit, and revi
 
 ## The idea
 
-Asking for a change and accepting whatever comes back is how sessions go wrong. Anthropic's [best practices](https://code.claude.com/docs/en/best-practices#explore-first-then-plan-then-code) recommend four phases: explore, plan, implement and commit. Auto mode doesn't send ordinary source edits to its classifier ([lesson 2](02-permission-modes-and-plan-mode.md#the-idea), [How the classifier evaluates actions](https://code.claude.com/docs/en/permission-modes#how-the-classifier-evaluates-actions)), so whether the change is right is yours to judge, in two places: the plan, before Claude starts, and the diff, before anything is committed.
+Asking for a change and accepting whatever comes back is how sessions go wrong. Auto mode doesn't send ordinary source edits to its classifier ([lesson 2](02-permission-modes-and-plan-mode.md#the-idea), [How the classifier evaluates actions](https://code.claude.com/docs/en/permission-modes#how-the-classifier-evaluates-actions)), so whether the change is right is yours to judge, in two places: the plan, before Claude starts, and the diff, before anything is committed.
 
-A precise request needs fewer corrections: it names the file, the case to handle, what must keep working, and the check to run, and asks Claude to show you the output ([Provide specific context](https://code.claude.com/docs/en/best-practices#provide-specific-context-in-your-prompts), [Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work)).
+A precise request needs fewer corrections: it names the file, the case to handle, what must keep working, and the check to run, and asks Claude to show you the output ([Write a specific prompt](https://code.claude.com/docs/en/best-practices#write-a-specific-prompt), [Give Claude a check to run](https://code.claude.com/docs/en/best-practices#give-claude-a-check-to-run)).
 
 1. **Explore** in plan mode: Claude reads, and doesn't edit your files.
 2. **Plan**, and approve it only when it changes the files you expect.
@@ -45,7 +45,7 @@ The practice app checks Markdown links, but it skips any link with a title, such
 
    Read the plan before you choose. It should change only `src/links.js` and `test/links.test.js`; a file it reads or names as needing no change is fine. If it also changes another file, such as `src/cli.js`, or adds one, send it back as in [lesson 2](02-permission-modes-and-plan-mode.md#worked-example): use the plan menu to ask Claude to keep the change to those two files.
 
-   When the plan is right, choose **Yes, and use auto mode**, as in lesson 2. Claude edits and runs the tests without asking. If Claude starts on a file the plan didn't name, press `Esc` and tell it to keep to the plan: correct it as soon as it goes off track, rather than after it finishes ([Best practices](https://code.claude.com/docs/en/best-practices#course-correct-early-and-often)).
+   When the plan is right, choose **Yes, and use auto mode**, as in lesson 2. Claude edits and runs the tests without asking. If Claude starts on a file the plan didn't name, press `Esc` and tell it to keep to the plan: correct it as soon as it goes off track, rather than after it finishes ([Best practices](https://code.claude.com/docs/en/best-practices#steer-the-session)).
 3. While Claude works, or once it's done, ask a side question:
 
    ```text
@@ -111,7 +111,7 @@ If titled links are still skipped, or reported with the title in the target, fin
 ## Go further
 
 - [Common workflows](https://code.claude.com/docs/en/common-workflows): step-by-step guides for fixing bugs, refactoring and testing.
-- [Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work): why a test beats a summary.
+- [Give Claude a check to run](https://code.claude.com/docs/en/best-practices#give-claude-a-check-to-run): why a test beats a summary.
 - [`/code-review`](https://code.claude.com/docs/en/commands): reviews your current diff for correctness bugs, a second check before you commit.
 
 ---

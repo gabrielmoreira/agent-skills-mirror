@@ -1,6 +1,6 @@
 ---
 name: pick-next-issue
-description: "Fetch and rank open GitHub issues by community engagement, present the top 3 candidates, and plan implementation for the selected issue. Use when the user asks to \"pick next issue\", \"next issue\", \"which issue should I work on\", \"top issues\", \"most popular issues\", \"prioritize issues\", or \"what should I work on next\"."
+description: "Rank open GitHub issues by engagement, present the top 3, and plan the selected one. Use when the user asks to \"pick next issue\", \"which issue should I work on\", or \"what should I work on next\"."
 ---
 
 # Pick Next Issue
@@ -53,9 +53,9 @@ gh issue view <number> --json number,title,body,url,labels,comments,reactionGrou
 
 Read the full issue body and comments to understand the requirements and any discussion context.
 
-## Step 5: Run `$turboplan` Skill
+## Step 5: Run `$plan` Skill
 
-Run the `$turboplan` skill with the issue body as the task description. Tell turboplan that the plan must include a final implementation step: "Close issue #N or reference it in the PR with `Closes #N`."
+Run the `$plan` skill with the issue body as the task description. Tell `$plan` that the plan must include a final implementation step: "Close issue #N or reference it in the PR with `Closes #N`."
 
 ## Rules
 

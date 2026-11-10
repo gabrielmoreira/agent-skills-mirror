@@ -1,6 +1,6 @@
 # Connect a tool with MCP
 
-<sub>**Intermediate** · Lesson 7 of 8 · about 25 minutes · Needs: [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 7 of 8 · about 25 minutes · Needs: [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -60,13 +60,13 @@ In an interactive session, Claude Code asks you to approve a project's servers b
    ```
 
 3. Run `claude mcp get chrome-devtools` in the same repository. It shows which scope holds the server, local here, and the server's status ([Find your configuration on disk](https://code.claude.com/docs/en/mcp-quickstart#find-your-configuration-on-disk)).
-4. Start a Manual session with `claude --permission-mode default` for this first MCP tool use ([Choose a permission mode](https://code.claude.com/docs/en/permission-modes#available-modes)). Run `/mcp` and select `chrome-devtools` to inspect its status and tools. The list shows a tool count; select the server to see the tool list ([Tool availability](https://code.claude.com/docs/en/mcp#tool-availability)). Then ask:
+4. Start a Manual session with `claude --permission-mode default` for this first MCP tool use ([Choose a permission mode](https://code.claude.com/docs/en/permission-modes#available-modes)). If Claude Code shows the "Claude in Chrome extension detected" dialog as it starts, choose **No, keep browser tools off**: this lesson uses only the browser that the chrome-devtools server starts, and `/chrome` changes your answer later ([Answer the startup dialog](https://code.claude.com/docs/en/chrome#answer-the-startup-dialog)). Run `/mcp` and select `chrome-devtools`: its menu shows the server's status and tool count, and **View tools** lists its tools ([Tool availability](https://code.claude.com/docs/en/mcp#tool-availability), [Example workflows](https://code.claude.com/docs/en/chrome#example-workflows)). Then ask:
 
    ```text
    Use the chrome-devtools tools to open .practice/demo.html as a file: URL. Read the title, visible count and console error. Report the error and its source location, without editing any files.
    ```
 
-   If Claude Code asks about a tool call, inspect the tool name and inputs, then approve only that call ([Configure permissions](https://code.claude.com/docs/en/permissions#manage-permissions)). Do not grant a standing approval for this exercise. Read the actual tool output: the count stays at `Counting links...`, and the script fails when it tries to update an element that wasn't found. Your browser's error wording may differ. After reviewing the first call, press `Shift+Tab` until the status bar reads `⏵⏵ auto mode on`, if auto mode is available, so later calls can proceed under its checks ([Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)).
+   To answer, Claude may use several of the server's tools, such as opening a page, taking a snapshot and listing console messages ([tool reference](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/tool-reference.md)). Manual mode prompts on the first use of each tool, so expect a prompt for each of them ([Permission modes](https://code.claude.com/docs/en/permissions#permission-modes)). At each prompt, inspect the tool name and inputs, then approve only that call with **Yes**. Do not grant a standing approval for this exercise. Read the actual tool output: the count stays at `Counting links...`, and the script fails when it tries to update an element that wasn't found. Your browser's error wording may differ. Once Claude has answered, press `Shift+Tab` until the status bar reads `⏵⏵ auto mode on`, if auto mode is available, so later calls can proceed under its checks ([Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)).
 
 ## Your turn
 
@@ -81,16 +81,16 @@ Give every teammate the exact browser server you reviewed, then use it to fix th
 
 3. Read `.mcp.json` before you commit it: check the pinned version, the two flags and the variable, and that it holds no token. Then commit it.
 4. Exit the session from the Worked example, then start `claude` again in your repository. When it asks about the project's new server, approve it only if you have reviewed the server's command and arguments in `.mcp.json`: they decide what code runs on your machine. If `.mcp.json` names a server you haven't reviewed, decline and investigate. Run `/mcp`, select the server and check that it connected ([Edit .mcp.json directly](https://code.claude.com/docs/en/mcp-quickstart#edit-mcp-json-directly)). Keep auto mode for the repair.
-5. Use the project's browser tools to reload `.practice/demo.html` and read its console before editing. Decide whether the element lookup or the count calculation is at fault: compare the reported source line with the page's existing result element. Fix the mismatched lookup while keeping the calculation; hiding the exception would leave the page broken. Ask Claude to make that focused repair, then use the MCP tools to reload and verify the visible count and console. The result should read `2 links ready` with no script error. Then have the server save the repaired page as a PNG to `.practice/i-7-page.png` ([Screenshot tool](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/tool-reference.md#take_screenshot)).
+5. Use the project's browser tools to reload `.practice/demo.html` and read its console before editing. Decide whether the element lookup or the count calculation is at fault: compare the reported error with the page's element lookup and its existing result element. Fix the mismatched lookup while keeping the calculation; hiding the exception would leave the page broken. Ask Claude to make that focused repair, then use the MCP tools to reload and verify the visible count and console. The result should read `2 links ready` with no script error. Then have the server save the repaired page as a PNG to `.practice/i-7-page.png` ([Screenshot tool](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/tool-reference.md#take_screenshot)).
 
 ## Check
 
 You are done when all of these are true:
 
-- [ ] The committed `.mcp.json` pins the package to an exact version and turns off usage statistics, CrUX lookups and update checks: `git show HEAD:.mcp.json | jq '.mcpServers["chrome-devtools"]'` shows them.
+- [ ] The committed `.mcp.json` pins the package to an exact version and turns off usage statistics, CrUX lookups and update checks: `git show HEAD:./.mcp.json | jq '.mcpServers["chrome-devtools"]'` shows them.
 - [ ] `.practice/i-7-page.png` holds a PNG image of the repaired page, saved after the repair.
 - [ ] The demo script displays `2 links ready` without a script error; a hardcoded count doesn't pass.
-- [ ] Self-check (not tested): you reviewed the first MCP tool call, used the project's server to read the real console error, and verified the repaired count and clean console after reloading.
+- [ ] Self-check (not tested): you reviewed each MCP tool call you approved, used the project's server to read the real console error, and verified the repaired count and clean console after reloading.
 
 Run `npm run check -- i-7 --dir <your repo>` from your practice copy, or `npm run check -- i-7` in the copy itself.
 
@@ -113,6 +113,6 @@ Listings checked against the listing bar on 2026-10-06.
 
 ---
 
-<sub>Sources: [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp) · [Connect to MCP servers](https://code.claude.com/docs/en/mcp-quickstart) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Chrome DevTools MCP README](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/README.md) · [Chrome DevTools MCP configuration](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/configuration.md) · [Chrome DevTools MCP tools](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/tool-reference.md) · [The MCP Registry](https://modelcontextprotocol.io/registry/about)</sub>
+<sub>Sources: [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp) · [Connect to MCP servers](https://code.claude.com/docs/en/mcp-quickstart) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Use Claude Code with Chrome](https://code.claude.com/docs/en/chrome) · [Chrome DevTools MCP README](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/README.md) · [Chrome DevTools MCP configuration](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/configuration.md) · [Chrome DevTools MCP tools](https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/chrome-devtools-mcp-v1.10.1/docs/tool-reference.md) · [The MCP Registry](https://modelcontextprotocol.io/registry/about)</sub>
 
 <sub>← [Delegate to a custom subagent](06-subagents.md) · [Intermediate index](README.md) · [Install and manage plugins](08-plugins.md) → · Topic: [MCP](../topics/mcp.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-7)</sub>

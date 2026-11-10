@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 530 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 532 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 530 |
+| Files         | 532 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -583,12 +583,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 522 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md) |
 | 523 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md) |
 | 524 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-docs-codex/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-docs-codex/AGENTS.md) |
-| 525 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md) |
-| 526 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md) |
-| 527 | ✓ | [`tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md) |
-| 528 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
-| 529 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
-| 530 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
+| 525 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-recurrence-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-recurrence-refresh/AGENTS.md) |
+| 526 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-recurrence/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-recurrence/AGENTS.md) |
+| 527 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md) |
+| 528 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md) |
+| 529 | ✓ | [`tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md) |
+| 530 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
+| 531 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
+| 532 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
 
 ---
 

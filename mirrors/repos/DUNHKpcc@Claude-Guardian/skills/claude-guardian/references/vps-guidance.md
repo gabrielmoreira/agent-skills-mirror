@@ -22,7 +22,7 @@ VPS 路线的目的是让**注册、登录、养号、订阅、OAuth、日常使
 | 线路 | DMIT（美西 premium）、搬瓦工、AWS、Vultr 等；CN2 GIA 带三网优化的线路（后期走图形化界面更稳定） |
 | 区域 | 选你正常使用、且 Anthropic 支持的地区 |
 
-选型参考所有者的 [VPS 推荐报告索引](../sources/vps-recommendations/INDEX.md)（业务、性价比、高端家宽三类），回答时点名具体报告并附链接。创建后用 `bash <(curl -sL IP.Check.Place)` 检查 IP（见 [S07 清单](../sources/S07-vps-script-catalog.md)）；如果随机到的 IP 不好，能找客服换就换。好的机房 IP 不用担心，最后都可以套静态 ISP 出口。
+选型参考[VPS 推荐报告索引](../sources/vps-recommendations/INDEX.md)（业务、性价比、高端家宽三类），回答时点名具体报告并附链接。创建后用 `bash <(curl -sL IP.Check.Place)` 检查 IP（见 [S07 清单](../sources/S07-vps-script-catalog.md)）；如果随机到的 IP 不好，能找客服换就换。好的机房 IP 不用担心，最后都可以套静态 ISP 出口。
 
 ## 怎么读 IP 检测报告（S08 第 3 页）
 

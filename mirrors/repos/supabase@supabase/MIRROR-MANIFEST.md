@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 89 file(s) materialized.
+Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 89 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 89 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,48 +106,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`.agents/skills/test-the-docs/sandbox/Dockerfile`](.agents/skills/test-the-docs/sandbox/Dockerfile) |
 | 46 | ✓ | [`.agents/skills/test-the-docs/sandbox/run.sh`](.agents/skills/test-the-docs/sandbox/run.sh) |
 | 47 | ✓ | [`.agents/skills/test-the-docs/SKILL.md`](.agents/skills/test-the-docs/SKILL.md) |
-| 48 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/architecture-avoid-boolean-props.md`](.agents/skills/vercel-composition-patterns/rules/architecture-avoid-boolean-props.md) |
-| 49 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/architecture-compound-components.md`](.agents/skills/vercel-composition-patterns/rules/architecture-compound-components.md) |
-| 50 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/patterns-children-over-render-props.md`](.agents/skills/vercel-composition-patterns/rules/patterns-children-over-render-props.md) |
-| 51 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/patterns-explicit-variants.md`](.agents/skills/vercel-composition-patterns/rules/patterns-explicit-variants.md) |
-| 52 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/react19-no-forwardref.md`](.agents/skills/vercel-composition-patterns/rules/react19-no-forwardref.md) |
-| 53 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/state-context-interface.md`](.agents/skills/vercel-composition-patterns/rules/state-context-interface.md) |
-| 54 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/state-decouple-implementation.md`](.agents/skills/vercel-composition-patterns/rules/state-decouple-implementation.md) |
-| 55 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/state-lift-state.md`](.agents/skills/vercel-composition-patterns/rules/state-lift-state.md) |
-| 56 | ✓ | [`.agents/skills/vercel-composition-patterns/SKILL.md`](.agents/skills/vercel-composition-patterns/SKILL.md) |
-| 57 | ✓ | [`.agents/skills/vitest/GENERATION.md`](.agents/skills/vitest/GENERATION.md) |
-| 58 | ✓ | [`.agents/skills/vitest/references/advanced-environments.md`](.agents/skills/vitest/references/advanced-environments.md) |
-| 59 | ✓ | [`.agents/skills/vitest/references/advanced-projects.md`](.agents/skills/vitest/references/advanced-projects.md) |
-| 60 | ✓ | [`.agents/skills/vitest/references/advanced-type-testing.md`](.agents/skills/vitest/references/advanced-type-testing.md) |
-| 61 | ✓ | [`.agents/skills/vitest/references/advanced-vi.md`](.agents/skills/vitest/references/advanced-vi.md) |
-| 62 | ✓ | [`.agents/skills/vitest/references/core-cli.md`](.agents/skills/vitest/references/core-cli.md) |
-| 63 | ✓ | [`.agents/skills/vitest/references/core-config.md`](.agents/skills/vitest/references/core-config.md) |
-| 64 | ✓ | [`.agents/skills/vitest/references/core-describe.md`](.agents/skills/vitest/references/core-describe.md) |
-| 65 | ✓ | [`.agents/skills/vitest/references/core-expect.md`](.agents/skills/vitest/references/core-expect.md) |
-| 66 | ✓ | [`.agents/skills/vitest/references/core-hooks.md`](.agents/skills/vitest/references/core-hooks.md) |
-| 67 | ✓ | [`.agents/skills/vitest/references/core-test-api.md`](.agents/skills/vitest/references/core-test-api.md) |
-| 68 | ✓ | [`.agents/skills/vitest/references/features-concurrency.md`](.agents/skills/vitest/references/features-concurrency.md) |
-| 69 | ✓ | [`.agents/skills/vitest/references/features-context.md`](.agents/skills/vitest/references/features-context.md) |
-| 70 | ✓ | [`.agents/skills/vitest/references/features-coverage.md`](.agents/skills/vitest/references/features-coverage.md) |
-| 71 | ✓ | [`.agents/skills/vitest/references/features-filtering.md`](.agents/skills/vitest/references/features-filtering.md) |
-| 72 | ✓ | [`.agents/skills/vitest/references/features-mocking.md`](.agents/skills/vitest/references/features-mocking.md) |
-| 73 | ✓ | [`.agents/skills/vitest/references/features-snapshots.md`](.agents/skills/vitest/references/features-snapshots.md) |
-| 74 | ✓ | [`.agents/skills/vitest/SKILL.md`](.agents/skills/vitest/SKILL.md) |
-| 75 | ✓ | [`.agents/skills/write-the-docs/reference/content-type-gate.md`](.agents/skills/write-the-docs/reference/content-type-gate.md) |
-| 76 | ✓ | [`.agents/skills/write-the-docs/reference/drafting-mechanics.md`](.agents/skills/write-the-docs/reference/drafting-mechanics.md) |
-| 77 | ✓ | [`.agents/skills/write-the-docs/SKILL.md`](.agents/skills/write-the-docs/SKILL.md) |
-| 78 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 79 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 80 | ✓ | [`apps/docs/AGENTS.md`](apps/docs/AGENTS.md) |
-| 81 | ✓ | [`apps/docs/CLAUDE.md`](apps/docs/CLAUDE.md) |
-| 82 | ✓ | [`apps/kb/AGENTS.md`](apps/kb/AGENTS.md) |
-| 83 | ✓ | [`apps/kb/CLAUDE.md`](apps/kb/CLAUDE.md) |
-| 84 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
-| 85 | ✓ | [`apps/studio/.claude/skills/explorer/SKILL.md`](apps/studio/.claude/skills/explorer/SKILL.md) |
-| 86 | ✓ | [`apps/studio/AGENTS.md`](apps/studio/AGENTS.md) |
-| 87 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
-| 88 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
-| 89 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 48 | ✓ | [`.agents/skills/turbo-scripts/scripts/audit.mjs`](.agents/skills/turbo-scripts/scripts/audit.mjs) |
+| 49 | ✓ | [`.agents/skills/turbo-scripts/SKILL.md`](.agents/skills/turbo-scripts/SKILL.md) |
+| 50 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/architecture-avoid-boolean-props.md`](.agents/skills/vercel-composition-patterns/rules/architecture-avoid-boolean-props.md) |
+| 51 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/architecture-compound-components.md`](.agents/skills/vercel-composition-patterns/rules/architecture-compound-components.md) |
+| 52 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/patterns-children-over-render-props.md`](.agents/skills/vercel-composition-patterns/rules/patterns-children-over-render-props.md) |
+| 53 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/patterns-explicit-variants.md`](.agents/skills/vercel-composition-patterns/rules/patterns-explicit-variants.md) |
+| 54 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/react19-no-forwardref.md`](.agents/skills/vercel-composition-patterns/rules/react19-no-forwardref.md) |
+| 55 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/state-context-interface.md`](.agents/skills/vercel-composition-patterns/rules/state-context-interface.md) |
+| 56 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/state-decouple-implementation.md`](.agents/skills/vercel-composition-patterns/rules/state-decouple-implementation.md) |
+| 57 | ✓ | [`.agents/skills/vercel-composition-patterns/rules/state-lift-state.md`](.agents/skills/vercel-composition-patterns/rules/state-lift-state.md) |
+| 58 | ✓ | [`.agents/skills/vercel-composition-patterns/SKILL.md`](.agents/skills/vercel-composition-patterns/SKILL.md) |
+| 59 | ✓ | [`.agents/skills/vitest/GENERATION.md`](.agents/skills/vitest/GENERATION.md) |
+| 60 | ✓ | [`.agents/skills/vitest/references/advanced-environments.md`](.agents/skills/vitest/references/advanced-environments.md) |
+| 61 | ✓ | [`.agents/skills/vitest/references/advanced-projects.md`](.agents/skills/vitest/references/advanced-projects.md) |
+| 62 | ✓ | [`.agents/skills/vitest/references/advanced-type-testing.md`](.agents/skills/vitest/references/advanced-type-testing.md) |
+| 63 | ✓ | [`.agents/skills/vitest/references/advanced-vi.md`](.agents/skills/vitest/references/advanced-vi.md) |
+| 64 | ✓ | [`.agents/skills/vitest/references/core-cli.md`](.agents/skills/vitest/references/core-cli.md) |
+| 65 | ✓ | [`.agents/skills/vitest/references/core-config.md`](.agents/skills/vitest/references/core-config.md) |
+| 66 | ✓ | [`.agents/skills/vitest/references/core-describe.md`](.agents/skills/vitest/references/core-describe.md) |
+| 67 | ✓ | [`.agents/skills/vitest/references/core-expect.md`](.agents/skills/vitest/references/core-expect.md) |
+| 68 | ✓ | [`.agents/skills/vitest/references/core-hooks.md`](.agents/skills/vitest/references/core-hooks.md) |
+| 69 | ✓ | [`.agents/skills/vitest/references/core-test-api.md`](.agents/skills/vitest/references/core-test-api.md) |
+| 70 | ✓ | [`.agents/skills/vitest/references/features-concurrency.md`](.agents/skills/vitest/references/features-concurrency.md) |
+| 71 | ✓ | [`.agents/skills/vitest/references/features-context.md`](.agents/skills/vitest/references/features-context.md) |
+| 72 | ✓ | [`.agents/skills/vitest/references/features-coverage.md`](.agents/skills/vitest/references/features-coverage.md) |
+| 73 | ✓ | [`.agents/skills/vitest/references/features-filtering.md`](.agents/skills/vitest/references/features-filtering.md) |
+| 74 | ✓ | [`.agents/skills/vitest/references/features-mocking.md`](.agents/skills/vitest/references/features-mocking.md) |
+| 75 | ✓ | [`.agents/skills/vitest/references/features-snapshots.md`](.agents/skills/vitest/references/features-snapshots.md) |
+| 76 | ✓ | [`.agents/skills/vitest/SKILL.md`](.agents/skills/vitest/SKILL.md) |
+| 77 | ✓ | [`.agents/skills/write-the-docs/reference/content-type-gate.md`](.agents/skills/write-the-docs/reference/content-type-gate.md) |
+| 78 | ✓ | [`.agents/skills/write-the-docs/reference/drafting-mechanics.md`](.agents/skills/write-the-docs/reference/drafting-mechanics.md) |
+| 79 | ✓ | [`.agents/skills/write-the-docs/SKILL.md`](.agents/skills/write-the-docs/SKILL.md) |
+| 80 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 81 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 82 | ✓ | [`apps/docs/AGENTS.md`](apps/docs/AGENTS.md) |
+| 83 | ✓ | [`apps/docs/CLAUDE.md`](apps/docs/CLAUDE.md) |
+| 84 | ✓ | [`apps/kb/AGENTS.md`](apps/kb/AGENTS.md) |
+| 85 | ✓ | [`apps/kb/CLAUDE.md`](apps/kb/CLAUDE.md) |
+| 86 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
+| 87 | ✓ | [`apps/studio/.claude/skills/explorer/SKILL.md`](apps/studio/.claude/skills/explorer/SKILL.md) |
+| 88 | ✓ | [`apps/studio/AGENTS.md`](apps/studio/AGENTS.md) |
+| 89 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
+| 90 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
+| 91 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

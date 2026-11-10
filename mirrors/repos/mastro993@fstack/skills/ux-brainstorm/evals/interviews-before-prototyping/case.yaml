@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: interviews-before-prototyping
+expected_outcome: |
+  The request names the settings page but leaves the behavior open, so the run maps demo-app first
+  (the settings page, the settings types, the shadcn/ui components and tokens) and finds where the
+  page conflicts with the data model: settings with no UI, roles the page ignores, controls that do
+  nothing. It interviews the user about behavior, rules and scope drawn from those findings, in plain
+  words with a recommended option, and asks nothing about layout or about what the code already
+  answers. It stops to wait for the answers without building or rendering any prototype. Inspiration
+  research may run alongside the mapping.
+context:
+  scaffold_script: place-files.sh

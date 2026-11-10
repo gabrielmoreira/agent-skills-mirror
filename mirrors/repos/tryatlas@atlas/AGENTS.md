@@ -287,13 +287,15 @@ that touch a release input, so x86-specific behaviour (seccomp syscall tables, S
 ## Versioning, branching, commits
 
 Atlas is **trunk-based**: every PR targets `main` (a hotfix PR into `release/X.Y` is the one
-exception) and is squash-merged, so the PR title
-is the one commit `main` gets and must be a Conventional Commit (`feat(scope): …`,
-`fix: …`; `pr-title.yml` checks it). Branch as `<you>/<slug>`; there are no version
-branches. Releases are automatic (`.github/workflows/release.yml`, release-please):
+exception) and is merged with a **merge commit, not squashed**. The merge commit is
+titled with the PR title, so the title must be a Conventional Commit (`feat(scope): …`,
+`fix: …`; `pr-title.yml` checks it). The branch's own commits reach `main` as they are,
+and release-please reads them too: a branch commit in Conventional form is a changelog
+entry of its own. Branch as `<you>/<slug>`; there are no version branches. Releases are
+automatic (`.github/workflows/release.yml`, release-please):
 
 ```
-  PRs ──squash──► main ──■──■──■────────────────■──►
+  PRs ──merge───► main ──■──■──■────────────────■──►
                          │  │  │                ▲ merge = release
                          ▼  ▼  ▼                │
                   "chore: release X.Y.Z" PR ────┘ ──► tag alpha-X.Y.Z

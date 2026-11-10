@@ -1,6 +1,6 @@
 # Enforce a rule with a hook
 
-<sub>**Intermediate** · Lesson 5 of 8 · about 20 minutes · Needs: [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 5 of 8 · about 20 minutes · Needs: [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -74,13 +74,13 @@ A matcher picks the tools a hook watches: `Edit|Write` runs it for those two too
    Use your Edit tool, not a shell command, to change the top-level version in package-lock.json to 1.0.1.
    ```
 
-   The Edit is blocked: Claude Code passes your script's `Blocked:` message to Claude as feedback ([Exit code output](https://code.claude.com/docs/en/hooks#exit-code-output)). Ask for the Edit tool by name here: Claude can also edit a file through a shell command, which an `Edit|Write` hook doesn't see.
+   The Edit is blocked: Claude Code passes your script's `Blocked:` message to Claude as feedback ([Exit code output](https://code.claude.com/docs/en/hooks#exit-code-output)). Exit code 2 is a blocking error, so you see a hook error that ends in your `Blocked:` line, such as `PreToolUse:Edit hook error: [...]: Blocked: ...`: Claude Code prefixes your stderr with the event name, the tool name and the hook's command ([Exit code 2](https://code.claude.com/docs/en/hooks#exit-code-2)). That is the hook working. Ask for the Edit tool by name here: Claude can also edit a file through a shell command, which an `Edit|Write` hook doesn't see.
 
    If `/hooks` doesn't list your hooks, or the Edit isn't stopped by your `Blocked:` line, find where it stops:
 
    - `/hooks` doesn't list them: Claude Code didn't load them. Check that they sit under `"hooks"` in your repository's `.claude/settings.json`, and restart `claude` if a change doesn't show ([`/hooks` shows no hooks configured](https://code.claude.com/docs/en/hooks-guide#%2Fhooks-shows-no-hooks-configured)).
    - The Edit goes through: check that the matcher is exactly `Edit|Write`, since matchers are case-sensitive ([Hook not firing](https://code.claude.com/docs/en/hooks-guide#hook-not-firing)) and a misspelled one fails silently ([Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)), and that you accepted the folder's trust dialog: an interactive session holds back hooks until you do ([Workspace trust](https://code.claude.com/docs/en/hooks#workspace-trust)).
-   - The Edit is blocked with another message, such as one that says the hook `failed`: the script couldn't start or exited with a code other than 0 or 2. Run step 3's test again and fix what it shows: run `chmod +x` on a script that isn't executable, and install `jq` if it prints `jq: command not found`.
+   - The Edit is blocked with another message in place of your `Blocked:` line, such as one that says the hook `failed`: the script couldn't start or exited with a code other than 0 or 2. Run step 3's test again and fix what it shows: run `chmod +x` on a script that isn't executable, and install `jq` if it prints `jq: command not found`.
 
    To see what each hook did, press `Ctrl+O` for the transcript view, or start `claude --debug-file /tmp/claude.log` for every hook's exit code and output ([Check what a hook did](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)).
 5. Break the hook on purpose, to see it fail closed. In a terminal, rename the script, `mv .claude/hooks/protect-files.sh .claude/hooks/protect-files.off`, and repeat the step 4 request. Claude Code can't start the hook, so it blocks the edit, and the error says the hook `failed; blocking because onFailure is "block"` ([Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)). Put the script back: `mv .claude/hooks/protect-files.off .claude/hooks/protect-files.sh`.
@@ -118,14 +118,14 @@ Claude sometimes stops while the tests fail: send it back to work when it does, 
    ```
 
 4. Review and commit the three hook scripts, the formatter you downloaded included, and `.claude/settings.json`. Keep the scripts executable: `git ls-files -s .claude/hooks` shows `100755` for each ([Git ls-files](https://git-scm.com/docs/git-ls-files)).
-5. See the gate in a session. Break one test on purpose again, start `claude`, and ask a question that needs no edit, such as `Which file holds the link parser?` When Claude finishes its answer, the gate runs the tests and sends it back to work with your reason. Then restore the test you broke with git, and check that `git status --short` prints nothing.
+5. See the gate in a session. Break one test on purpose again, start `claude`, and ask a question that needs no edit, such as `Which file holds the link parser?` When Claude finishes its answer, the gate runs the tests and sends it back to work with your reason. This too shows as a hook error, with your reason where step 4 showed a `Blocked:` line ([Stop decision control](https://code.claude.com/docs/en/hooks#stop-decision-control)). Claude may then restore the test itself, and a fix through a shell command such as `sed` goes through Bash, which an `Edit|Write` matcher doesn't watch ([Filter hooks with matchers](https://code.claude.com/docs/en/hooks-guide#filter-hooks-with-matchers)). Then check that `git status --short` prints nothing; if it lists the test you broke, restore it with git.
 
 ## Check
 
 You are done when all of these are true:
 
 - [ ] Both hook scripts are committed and executable: `git ls-files -s .claude/hooks` shows `100755` for `protect-files.sh` and `test-gate.sh`.
-- [ ] The committed `.claude/settings.json` runs `protect-files.sh` as a `PreToolUse` hook for `Edit|Write` with `"onFailure": "block"`, and `test-gate.sh` as a `Stop` hook: `git show HEAD:.claude/settings.json | jq .hooks` shows both.
+- [ ] The committed `.claude/settings.json` runs `protect-files.sh` as a `PreToolUse` hook for `Edit|Write` with `"onFailure": "block"`, and `test-gate.sh` as a `Stop` hook: `git show HEAD:./.claude/settings.json | jq .hooks` shows both.
 - [ ] The committed gate gives step 3's results: exit 2 with a reason while the tests fail, and exit 0 once they pass or when `stop_hook_active` is `true`.
 - [ ] The committed `protect-files.sh` gives exit 2 for `package-lock.json`, as Worked example step 3 shows, and exit 0 for a file it doesn't protect.
 - [ ] Self-check (not tested): in a session, the gate sent Claude back to work while a test failed.

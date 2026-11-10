@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Area name</title>
+<style>
+  [hidden] { display: none !important; }
+
+  /* Prototype chrome above the app window; follows the host theme when it sets one. */
+  .bars { display: grid; gap: 6px; margin: 0 0 12px; font: 12px/1.3 var(--font-sans, system-ui, sans-serif); color: var(--foreground, #18181b); }
+  .bars .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .bars button, .bars select { border: 1px solid var(--border, #d4d4d8); border-radius: 999px; padding: 4px 10px; background: none; color: inherit; font: inherit; cursor: pointer; }
+  .bars button[aria-pressed="true"] { background: var(--foreground, #18181b); color: var(--background, #fff); }
+  .bars .desc { margin-left: 4px; color: var(--muted-foreground, #71717a); }
+
+  /* Product look: define every token the prototype uses here, under the project's own names, light then dark.
+     Inside .window, rely on these only, never on the host's theme variables. */
+  .window {
+    --background: #ffffff; --foreground: #18181b; --muted-foreground: #71717a; --border: #e4e4e7; --primary: #2563eb; --radius: 10px;
+    position: relative; height: 520px; overflow: hidden;
+    background: var(--background); color: var(--foreground); font: 14px/1.4 system-ui, sans-serif;
+    border: 1px solid var(--border); border-radius: var(--radius);
+  }
+  @media (prefers-color-scheme: dark) {
+    .window { --background: #18181b; --foreground: #fafafa; --muted-foreground: #a1a1aa; --border: #27272a; --primary: #3b82f6; }
+  }
+  .window.phone { max-width: 390px; height: 760px; margin: 0 auto; }
+  :where(.window) svg { width: 16px; height: 16px; flex: none; }
+  .new-icon { outline: 1px dashed currentColor; outline-offset: 2px; }
+
+  /* Tooltip from data-tip, on buttons and spans (svg, img and input can't render it).
+     At the window's edges add data-tip-pos="start", "end" or "up". */
+  :where([data-tip]) { position: relative; }
+  [data-tip]:is(:hover, :focus-visible)::after {
+    content: attr(data-tip); position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    padding: 4px 8px; border-radius: 6px; background: var(--foreground, #18181b); color: var(--background, #fafafa);
+    font: 12px/1.2 system-ui, sans-serif; white-space: nowrap; pointer-events: none; z-index: 10;
+  }
+  [data-tip-pos~="start"]:is(:hover, :focus-visible)::after { left: 0; transform: none; }
+  [data-tip-pos~="end"]:is(:hover, :focus-visible)::after { left: auto; right: 0; transform: none; }
+  [data-tip-pos~="up"]:is(:hover, :focus-visible)::after { top: auto; bottom: calc(100% + 6px); }
+</style>
+</head>
+<!-- data-first-variant and data-first-state pick the first view, so a preview can capture any of them.
+     They're named apart from data-proto-*, so a [data-proto-variant] selector never matches body. -->
+<body data-first-variant="A" data-first-state="Default">
+<div class="bars">
+  <div class="bar" id="variants"></div>
+  <div class="bar" id="states"></div>
+  <div class="bar" id="controls">
+    <!-- Demo controls, read through proto.controls: <label>Speed <select data-proto-control="speed"><option>normal</option><option>slow</option></select></label> -->
+  </div>
+</div>
+<div class="window">
+  <!-- One [data-proto-variant] block per variant, its data-proto-desc one line naming the structure and its reference.
+       [data-proto-state] elements show only in that state. Declare every state here in markup: the state bar is built from it. -->
+  <section data-proto-variant="A" data-proto-desc="Popover on the row · like Linear's assignee picker">
+    <div data-proto-state="Default">
+      <button data-tip="Search" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+      </button>
+    </div>
+    <div data-proto-state="Empty"></div>
+  </section>
+  <section data-proto-variant="B" data-proto-desc="Side panel · like Front's details pane"></section>
+</div>
+<script>
+(() => {
+  const win = document.querySelector('.window');
+  const values = key => [...new Set([...win.querySelectorAll(`[data-proto-${key}]`)].map(el => el.getAttribute(`data-proto-${key}`)))];
+  const initial = key => {
+    const wanted = document.body.getAttribute(`data-first-${key}`);
+    return values(key).includes(wanted) ? wanted : values(key)[0];
+  };
+  const listeners = [];
+  const proto = (window.proto = {
+    variant: initial('variant'),
+    state: initial('state'),
+    controls: {},
+    // fn(proto) runs on every change, before visibility updates: render data-driven parts there.
+    onChange(fn) { listeners.push(fn); update(); },
+    set(key, value) { proto[key] = value; update(); },
+  });
+
+  const desc = Object.assign(document.createElement('span'), { className: 'desc' });
+  for (const key of ['variant', 'state']) {
+    const bar = document.getElementById(`${key}s`);
+    const options = values(key);
+    if (options.length < 2) { bar.remove(); continue; }
+    for (const value of options) {
+      const b = Object.assign(document.createElement('button'), { textContent: value });
+      b.dataset.key = key;
+      b.dataset.value = value;
+      b.onclick = () => proto.set(key, value);
+      bar.append(b);
+    }
+    if (key === 'variant') bar.append(desc);
+  }
+  const read = control => (control.type === 'checkbox' ? control.checked : control.value);
+  for (const control of document.querySelectorAll('[data-proto-control]')) {
+    const name = control.getAttribute('data-proto-control');
+    proto.controls[name] = read(control);
+    control.addEventListener('input', () => { proto.controls[name] = read(control); update(); });
+  }
+
+  function update() {
+    listeners.forEach(fn => fn(proto));
+    for (const el of win.querySelectorAll('[data-proto-variant], [data-proto-state]')) {
+      const variant = el.getAttribute('data-proto-variant');
+      const state = el.getAttribute('data-proto-state');
+      el.hidden = (variant !== null && variant !== proto.variant) || (state !== null && state !== proto.state);
+    }
+    for (const b of document.querySelectorAll('.bars button[data-key]')) b.setAttribute('aria-pressed', proto[b.dataset.key] === b.dataset.value);
+    desc.textContent = win.querySelector(`[data-proto-variant="${proto.variant}"]`)?.getAttribute('data-proto-desc') ?? '';
+  }
+  update();
+})();
+</script>
+<!-- Prototype code goes in its own <script> below; use proto.onChange and proto.set. -->
+</body>
+</html>

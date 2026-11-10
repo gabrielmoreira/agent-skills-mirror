@@ -1,6 +1,6 @@
 # Project memory with CLAUDE.md
 
-<sub>**Beginner** · Lesson 5 of 5 · about 20 minutes · Needs: [Your first change, from request to commit](03-first-change.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Lesson 5 of 5 · about 20 minutes · Needs: [Your first change, from request to commit](03-first-change.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -22,7 +22,7 @@ Each session starts with a fresh context window. Your instruction files load at 
 | `./CLAUDE.local.md` | Your notes for this project | Only you: add it to `.gitignore` |
 | Auto memory | Notes Claude saves, such as what you ask it to remember | Only you, on this machine |
 
-- `/init` writes a first `CLAUDE.md` from the code. Then cut it: for each line, ask whether removing it would make Claude make mistakes ([Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)).
+- `/init` writes a first `CLAUDE.md` from the code. From there the work is mostly removing lines: keep only what Claude couldn't work out from the code itself ([Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)).
 - Add a line when Claude makes the same mistake a second time, or you type the same correction again ([When to add to CLAUDE.md](https://code.claude.com/docs/en/memory#when-to-add-to-claude-md)).
 - Say "add this to CLAUDE.md" to put an instruction in the file; "remember" puts it in auto memory ([View and edit with `/memory`](https://code.claude.com/docs/en/memory#view-and-edit-with-%2Fmemory)).
 - These files are context, not configuration Claude must obey: a rule that must never be broken needs a [hook](https://code.claude.com/docs/en/hooks-guide), which the [Intermediate level](../intermediate/README.md) teaches.
@@ -37,7 +37,7 @@ Each session starts with a fresh context window. Your instruction files load at 
 
    Claude reads the code and writes a `CLAUDE.md` with the commands and conventions it found. In a second terminal, read the file with `cat CLAUDE.md`.
 2. Edit it as you would before your team sees it. Open `CLAUDE.md` in your editor, or type `/memory` and select the project's `./CLAUDE.md` ([View and edit with `/memory`](https://code.claude.com/docs/en/memory#view-and-edit-with-%2Fmemory)).
-   - Cut what Claude can learn by reading the code, such as a tour of each file, and what describes the course rather than linkcheck: every line only the course uses. Course lines include anything about `checks/`, `learn/`, `capstone/`, `.github/` or `.devcontainer/`, any `npm run check`, `npm run learn` or `npm run test:checks` line, and any rule to keep your work off `main` (that rule is for the template repository). A tour of what `src/links.js` and `src/cli.js` do goes: Claude can read those files. A line about `npm run learn` goes too: it runs the course, not linkcheck.
+   - Cut what Claude can learn by reading the code, such as a tour of each file, and what describes the course rather than linkcheck: every line only the course uses. Course lines include anything about `checks/`, `learn/`, `capstone/`, `practice/`, `.practice/`, `.github/` or `.devcontainer/`, any `npm run check`, `npm run learn` or `npm run test:checks` line, and any rule to keep your work off `main` (that rule is for the template repository). A tour of what `src/links.js` and `src/cli.js` do goes: Claude can read those files. A line about `npm run learn` goes too: it runs the course, not linkcheck.
    - Compare each command that's left with the `scripts` in `package.json`. Keep `npm test`, which the [capstone](capstone.md) checks for.
 
    Add a convention that shows up in files. Put it under a `## Conventions` heading, and add that heading at the end of the file if `/init` didn't write one:
@@ -97,11 +97,11 @@ Afterwards, give one of your own repositories the same start: `/init`, compare e
 
 You are done when all of these are true:
 
-- [ ] A committed CLAUDE.md has a rule that every new JavaScript file in `src/` starts with a given line: `git show HEAD:CLAUDE.md` ([git show](https://git-scm.com/docs/git-show)) shows it.
+- [ ] A committed CLAUDE.md has a rule that every new JavaScript file in `src/` starts with a given line: `git show HEAD:./CLAUDE.md` ([git show](https://git-scm.com/docs/git-show)) shows it.
 - [ ] A commit made after that rule adds JavaScript files to `src/`, and each of them starts with the rule's line: `git log --stat -3` ([git log](https://git-scm.com/docs/git-log)) lists them.
 - [ ] The committed CLAUDE.md holds the notes' rule for CLI errors, and every `npm run` script it names is in `package.json`.
 - [ ] A committed `.gitignore` keeps `CLAUDE.local.md` out, git tracks no `CLAUDE.local.md`, and the committed CLAUDE.md holds neither personal note: `git check-ignore CLAUDE.local.md` ([git check-ignore](https://git-scm.com/docs/git-check-ignore)) prints its name.
-- [ ] The committed CLAUDE.md has no line about the course's folders or scripts: `git show HEAD:CLAUDE.md` shows none.
+- [ ] The committed CLAUDE.md has no line about the course's folders or scripts: `git show HEAD:./CLAUDE.md` shows none.
 - [ ] Self-check (not tested): the session that wrote `src/stats.js` started after you committed the rule, and its `/context all` listed `CLAUDE.md` under **Memory files**. Your `CLAUDE.local.md` holds the sample-docs note: git ignores that file, so the check can't see it.
 
 Run `npm run check -- b-5` in your practice copy.
@@ -110,7 +110,7 @@ If CLAUDE.md isn't committed, run `git add CLAUDE.md` and commit it. If a new fi
 
 ## Go further
 
-- [Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md): what to put in it and what to leave out.
+- [Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short): what to put in it and what to leave out.
 - [Write effective instructions](https://code.claude.com/docs/en/memory#write-effective-instructions): size, structure and consistency, with a target length.
 - [Auto memory](https://code.claude.com/docs/en/memory#auto-memory): what Claude saves for itself, where, and how to turn it off.
 

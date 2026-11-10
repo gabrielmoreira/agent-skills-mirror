@@ -214,7 +214,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/nacos-skill-registry/SKILL.md`](skills/nacos-skill-registry/SKILL.md) |
 | 4 | ✓ | [`specs/en/ai/a2a-upgrade-migration-spec.md`](specs/en/ai/a2a-upgrade-migration-spec.md) |
 | 5 | ✓ | [`specs/en/ai/ai-resource-search-spec.md`](specs/en/ai/ai-resource-search-spec.md) |
-| 6 | ✓ | [`specs/en/ai/ard-v091-adaptation-spec.md`](specs/en/ai/ard-v091-adaptation-spec.md) |
+| 6 | ✓ | [`specs/en/ai/ard-protocol-spec.md`](specs/en/ai/ard-protocol-spec.md) |
 | 7 | ✓ | [`specs/en/ai/client-ai-api-evolution-spec.md`](specs/en/ai/client-ai-api-evolution-spec.md) |
 | 8 | ✓ | [`specs/en/plugin/addressing-plugin-spec.md`](specs/en/plugin/addressing-plugin-spec.md) |
 | 9 | ✓ | [`specs/en/plugin/ai-pipeline-plugin-spec.md`](specs/en/plugin/ai-pipeline-plugin-spec.md) |
@@ -233,7 +233,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`specs/en/sdk/sdk-java-json-adapter-spec.md`](specs/en/sdk/sdk-java-json-adapter-spec.md) |
 | 23 | ✓ | [`specs/zh-cn/ai/a2a-upgrade-migration-spec.md`](specs/zh-cn/ai/a2a-upgrade-migration-spec.md) |
 | 24 | ✓ | [`specs/zh-cn/ai/ai-resource-search-spec.md`](specs/zh-cn/ai/ai-resource-search-spec.md) |
-| 25 | ✓ | [`specs/zh-cn/ai/ard-v091-adaptation-spec.md`](specs/zh-cn/ai/ard-v091-adaptation-spec.md) |
+| 25 | ✓ | [`specs/zh-cn/ai/ard-protocol-spec.md`](specs/zh-cn/ai/ard-protocol-spec.md) |
 | 26 | ✓ | [`specs/zh-cn/ai/client-ai-api-evolution-spec.md`](specs/zh-cn/ai/client-ai-api-evolution-spec.md) |
 | 27 | ✓ | [`specs/zh-cn/plugin/addressing-plugin-spec.md`](specs/zh-cn/plugin/addressing-plugin-spec.md) |
 | 28 | ✓ | [`specs/zh-cn/plugin/ai-pipeline-plugin-spec.md`](specs/zh-cn/plugin/ai-pipeline-plugin-spec.md) |

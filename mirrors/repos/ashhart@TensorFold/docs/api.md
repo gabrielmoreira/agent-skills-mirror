@@ -45,7 +45,7 @@ different scopes, or scopes a key the flags or environment already give, is refu
 
 | Scope | Routes |
 | --- | --- |
-| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/audio/speech`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, `/v1/rerank` (also by PUT), and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices` |
+| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/audio/speech`, `/v1/images/generations`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, `/v1/rerank` (also by PUT), and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices` |
 | `read` | GET `/metrics`, `/v1/metrics`, `/v1/load`, `/memory`, `/v1/memory`, `/stats`, `/dashboard`, `/v1/benchmark/manifest`, `/v1/models`, `/models`, `/v1/voices` |
 
 A scoped key reaches nothing else: not the stored Responses (GET or DELETE `/v1/responses/ID`), Recall, Sliding Weights,
@@ -341,6 +341,32 @@ token or the reply limit; the server returns the reply only up to the match. Whe
 `ignore_eos`, end tokens inside the reply are decoded into its text, as on MLX, and `finish_reason` is `length`
 unless a stop string or a tool call ended the reply.
 
+### Replies that quote a template marker
+
+Some templates encode their turn-end spelling as one added token: Qwen3.8-Flash-Next's tokenizer encodes
+`<|im_end|>` to one id, while `<|tool_call_begin|>` stays seven ordinary tokens, as `POST /tokenize` with
+`{"prompt": "<spelling>", "add_special_tokens": false}` shows ([#2399]). A reply can quote that spelling with
+ordinary tokens and finish normally; when it draws the one-token spelling instead, the turn ends there even inside
+a code span. The server stops on the token the model drew; it does not sample past the end token and decide
+afterwards, because that would change the reply.
+
+A plain request already finishes on the checkpoints measured so far: they spell a quoted marker with ordinary
+tokens, and the server stops on the end token when the model draws it. A client that still uses `ignore_eos`
+should stop on `["<|endoftext|>", "<|im_start|>"]` and not on `<|im_end|>` or end-of-text alone. With
+`ignore_eos`, the end token no longer stops the reply, and behind an agent prompt the model often opens the next
+turn instead of writing end-of-text, so a stop on end-of-text alone never fires; the invented turns run on, and a
+tool parser returns their tool calls ([#2399]). Strip a trailing `<|im_end|>` and the whitespace after it before
+display. The cost is the same for both stops: a stop string matches the spelling however it is tokenized, so a
+reply that quotes `<|endoftext|>`, `<|im_start|>` or `<|im_end|>` as text is cut there. A `stop` for `<|im_end|>`
+cuts at least where the end token would, and also where the reply spells it with ordinary tokens.
+
+Measured greedy on a GB10 with a finished tool call and its result in the conversation, on Qwen3.5-2B MLX
+4-bit and Qwen3.6-35B-A3B NVFP4: both checkpoints wrote the quoted marker with ordinary tokens, so the plain request
+finished; with `ignore_eos` and `stop: ["<|endoftext|>", "<|im_start|>"]` all replies stopped right after their
+first end, and each ended with the drawn `<|im_end|>` for the client to strip. On an agent-shaped body, the runs
+reported in #2399 gave 0/9 runaways with the pair, against 7/9 with end-of-text alone, on stock Qwen3.8-Flash-Next
+weights.
+
 On MLX, `--parallel auto` is the default: requests share rounds within the configured concurrency and memory
 budget. Every admitted prompt prefills a chunk at a time beside the others. Each chunk goes to a foreground prompt
 before a background one, then to the prompt with the fewest tokens left, and a prompt passed over for 8 chunks takes
@@ -374,6 +400,31 @@ name-value pairs. A request's own fields win over the defaults. The merged value
 request fields: a `--min-p` outside 0 through 1 refuses every chat request, a negative `--top-k` clamps to 0, and
 `--temperature` and `--top-p` must be finite numbers. An engine that decodes greedily only refuses sampled
 requests while the server samples by default, and its refusal suggests serving with `--temperature 0`.
+
+`--instruct-sampling` gives chat requests with thinking off their own sampling defaults. Exactly these requests change
+under it: a chat request (not a raw completion) whose reasoning block is off (the request's `enable_thinking: false`,
+or `--no-thinking` with nothing in the request turning it on), that samples (its temperature, or the default it ends
+up with, is above 0), takes the set's value for each sampling field it leaves unset; a field the request sends wins,
+as over the ordinary defaults. Requests with thinking on, greedy requests (a request's `temperature: 0`, a server's
+`--temperature 0`, or a checkpoint whose `generation_config.json` has `do_sample: false`), raw prompt completions and
+the server's own requests (compaction summaries, Living Weights' lesson wordings and checks) are unchanged. `card`
+serves the family's model-card instruct set: Qwen 3.5, Qwen 3.6, Qwen3.8-27B and Qwen3.8-Flash-Next give temperature
+0.7, top_p 0.8, top_k 20 and presence_penalty 1.5, while their thinking set stays in `generation_config.json`.
+`name=value,...` sets or changes `temperature`, `top_p`, `top_k`, `min_p`, `presence_penalty` and `frequency_penalty`
+over that set, or over the server's defaults for a family without one; `none` serves one set. The set, pairs
+included, sits between `generation_config.json` and the flags, so `--temperature`, `--top-p`, `--top-k` and `--min-p`
+still decide for both modes: a server started with `--temperature 0` stays greedy whatever the pairs say. Without the
+flag the server has one default set for every request, as before. A pair outside the range a request may send
+(temperature below 0, top_p outside 0 through 1, a negative top_k, min_p outside 0 through 1, a penalty outside -2
+through 2) refuses the argument at startup, naming the field. `card` refuses a model type whose family gives no card
+set; it cannot tell checkpoints apart within a type, so leave the flag off (or give pairs from the card) for a
+checkpoint whose card gives no non-thinking set, such as Ornith-1.5-122B served as `qwen3_5_moe`. On an engine that
+applies no penalties the card's presence_penalty is left out with a startup line saying so, and pairs naming a
+non-zero penalty are refused at startup. The serving line prints the set after the sampling defaults
+(`thinking off: ...`). With a DFlash2 drafter, presence_penalty 1.5 lowers draft acceptance: on Qwen3.8-27B drafted
+thinking-off replies at the card set decode about 19% slower than with the penalty at 0, while the thinking set and
+undrafted decoding are unaffected (#2645); `--instruct-sampling presence_penalty=0` keeps the card's temperature,
+top_p and top_k without the penalty.
 
 `--name-priority ID=background` gives one served id (`--name` or an `--alias`) a default priority: a request that
 asks for it and sends no `priority` of its own is treated as `priority: "background"`. The request's own `priority`
@@ -425,6 +476,22 @@ completed call. Prose and reasoning can still stream. Usage counts the entire de
 additional calls omitted from the response. Otherwise both servers stream each Qwen XML call as it is written: a
 delta with the call's id and name, then its arguments in pieces; a call the streamer can't follow arrives whole at
 the end.
+
+On the native server a call's id is `call_` and 24 hex digits of HMAC-SHA-256 under the server's tool-call id key, over
+the request's own digest (its body as compact JSON in the order sent, without `stream` and `stream_options`), the choice
+and the call's index. On `/v1/messages` and `/v1/responses` that body is the chat request the route translates the
+client's body into, not the client's raw body, so two client bodies that translate to the same chat request get the same
+ids, and a field the translation drops changes none. Without the key an id reveals nothing about the request: whoever
+sees it cannot test a guessed request against it. By default the server draws a random key at startup and never writes
+or logs it, so a request replayed to the same running server names its calls the same way, streamed or not, while after
+a restart or on another server the same request gets other ids. For ids that hold across restarts and machines, set
+`TENSORFOLD_TOOL_ID_KEY_FILE` to a regular file only its owner can read or write (`chmod 600`) holding at least 32
+bytes, for example from `openssl rand -hex 32`; one trailing line ending is not part of the key, and every server
+reading the same file gives the same ids. A missing, unreadable, linked, shared, shorter or over 4 KiB file stops the
+start with the setting's name, and the key itself is never read from the environment or the command line. Byte-identical
+requests under one key share ids, as a replay does; another request or another call gets other ids. A Responses
+`function_call` item's `fc_` id is keyed from its `call_id` the same way, Kimi's ids are the indexes the model writes
+(`call_1`), and ids a client sends back in its history are rendered as sent.
 
 On the Python 0.6.6 server, with `tool_choice: "required"`, or a function named in `tool_choice`, the reply's answer (after any think block
 or thought channel) opens a call to an offered tool. The server replaces the first answer token that isn't

@@ -70,7 +70,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`packages/agent/README.md`](packages/agent/README.md) |
 | 5 | ✓ | [`packages/app/deploy/cloud-agent-template/README.md`](packages/app/deploy/cloud-agent-template/README.md) |
-| 6 | ✓ | [`packages/app/deploy/dstack-alpha/README.md`](packages/app/deploy/dstack-alpha/README.md) |
+| 6 | ✓ | [`packages/app/deploy/dstack/README.md`](packages/app/deploy/dstack/README.md) |
 | 7 | ✓ | [`packages/app/deploy/README.md`](packages/app/deploy/README.md) |
 | 8 | ✓ | [`packages/app/e2e/accounts-ui/README.md`](packages/app/e2e/accounts-ui/README.md) |
 | 9 | ✓ | [`packages/app/platforms/android/paradee-voice/README.md`](packages/app/platforms/android/paradee-voice/README.md) |

@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: builds-lean-interactive-variants
+expected_outcome: |
+  Brief and direction arrive confirmed and there is no design system, so the run builds one
+  interactive prototype of the ticket inbox whose letter bar switches 2-4 variants in place that
+  differ in layout, hierarchy, or primary affordance. A state bar reaches default, empty, and error;
+  the reply action responds to a click; tickets use realistic data with an overflow case. Copy is
+  lean: common actions are icon-only with a tooltip and aria-label, labels are one or two words, and
+  empty and error states are one line. The run ends with a short list of things to weigh and a pick
+  prompt the user can answer in one line, with no spec written yet.

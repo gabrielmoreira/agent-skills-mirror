@@ -32,7 +32,7 @@ Detailed guides for every gstack skill — philosophy, workflow, and examples.
 | [`/retro`](#retro) | **Eng Manager** | Team-aware weekly retro. Per-person breakdowns, shipping streaks, test health trends, growth opportunities. |
 | [`/browse`](#browse) | **QA Engineer** | Give the agent eyes. Drives your Aside browser first — real sessions, real clicks, real screenshots — through deterministic `aside repl` scripts, and falls back to gstack's own Chromium (~100ms per command) when Aside isn't there. |
 | [`/setup-browser-cookies`](#setup-browser-cookies) | **Session Manager** | Copy selected cookies from Chrome, Chromium, Brave, Edge, Windows-only Opera and Opera GX, or macOS-only Comet and Arc into the fallback browser. Choose your profile and domains; check sign-in separately. Unnecessary on Aside, which already has your sessions. |
-| [`/autoplan`](#autoplan) | **Review Pipeline** | One command, fully reviewed plan. Runs CEO → design → DX → eng review automatically (eng always last, so the shipping gate reviews the final amended plan) with encoded decision principles. Surfaces only taste decisions for your approval. |
+| [`/autoplan`](#autoplan) | **Review Pipeline** | One command, reviewed plan. In an interactive session it runs CEO → design → DX → eng review from each skill's own method (eng always last, so the shipping gate reviews the final amended plan) with encoded decision principles, and surfaces only taste decisions for your approval. A run driven by `gstack-autoplan` (the Capy default) gives its reviewers short checklists instead of those methods: the lean run is one reviewer, `--full` one per phase ([what each run loads](#what-each-run-loads)). |
 | [`/plan-devex-review`](#plan-devex-review) | **DX Reviewer** | Plan-stage DX review. TTHW (time-to-hello-world), magical moments, friction points, persona traces, and error messages scored for the agents that read them ([agent-ready errors](agent-ready-errors.md)). Three modes: Expansion, Polish, Triage. |
 | [`/devex-review`](#devex-review) | **DX Reviewer (live)** | Live developer experience audit. Walks the actual onboarding flow, measures TTHW, catches the docs lies, and triggers CLI errors the way an agent meets them (no terminal, contained, redacted) through `gstack-error-capture`. |
 | [`/plan-tune`](#plan-tune) | **Question Tuner** | Self-tune AskUserQuestion sensitivity per question. Mark questions as never-ask, always-ask, or only-for-one-way. |
@@ -187,7 +187,7 @@ Visions and decisions are persisted to `~/.gstack/projects/` so they survive bey
 
 `/plan-eng-review` was cut on 2026-11-06 (GST-1698) after two evals found no gain. In the seeded-flaw panel, plain Opus 5.5 with no gstack found the planted engineering flaws in 15 of 16 reviews. In the wave 1 outcome test, plain Opus 5.5 built 22 of 22 planned features correctly, and a session told to use the skill cost 7.1 times a plain one. The evidence is in GST-1218 and gstack-evals#253.
 
-The standalone skill no longer installs, and `./setup` removes an existing gstack-owned `/plan-eng-review` entry on every host. Its review methodology stays as `/autoplan`'s eng phase (Phase 3), unchanged. To review a plan's architecture, data flow, edge cases and tests, run `/autoplan`. `/review` covers the diff before `/ship`.
+The standalone skill no longer installs, and `./setup` removes an existing gstack-owned `/plan-eng-review` entry on every host. Its review methodology stays as `/autoplan`'s eng phase (Phase 3), unchanged, in an interactive session. A run driven by `gstack-autoplan` (the Capy default) gives its reviewer only the skill's 36-line checklist, not the methodology. To review a plan's architecture, data flow, edge cases and tests, run `/autoplan`. `/review` covers the diff before `/ship`.
 
 ### Review Readiness Dashboard
 
@@ -705,7 +705,7 @@ A lot of branches die when the interesting work is done and only the boring rele
 1. **`## What changed`**: one to three captioned before/after images from `gstack-pr-shots` or a UI screenshot, highest-signal first, with a collapsed text version under each.
 2. **`## Why`**: two or three sentences. The first states the problem in the person's words (the issue, the message, the failing run), then the cause and the user-visible effect.
 3. **`## Blast radius`**: what else the change touches and the one fact that makes that safe, with the evidence-ladder rung that fact reached (a test that exercises the shared path, a grep over every caller, a measured run). A change to a shared helper, a generated file, a selection list or a policy default always has one; a leaf fix says so in one line.
-`## Approvals`, the output of `gstack-approvals render` verbatim, goes inside Agent notes. On a private repository that is the table; on a public repository, or one whose visibility gh cannot read, it is only `Approved: yes|no (record <id>)`, because GitHub keeps every earlier version of a PR description.
+`## Approvals`, the output of `gstack-approvals render` verbatim, goes inside Agent notes. On a private repository that is the table; on a public repository, or one whose visibility gh cannot read, it is only `Approved: yes|no (record <id>)`, because GitHub keeps every earlier version of a PR description. The table shows each local path in Asked, Covers and Still pending as `…/<file name>`, so the home directory, user name and Drive folder in those paths stay out of the body; Exact words stays verbatim, and `gstack-approvals list` keeps the full path. For a private repository that may go public, `render --redacted` prints the public form, byte for byte; `--redacted` with `--full` is refused.
 
 Before the body is composed, `gstack-prose-lint` reads the Why, Summary and Blast radius drafts (`--sections 'Why,Summary,Blast radius' --gate`) and the CHANGELOG entry (`--base origin/<base> --gate`), and a `PROSE_LINT_FOUND` line names the sentence to rewrite; the rest of the body is advisory. The Captain's merge-ask template (`captain/templates/merge-ask.md`) carries the same sections, so a READY report and its PR say the same thing.
 
@@ -968,16 +968,20 @@ sets the defaults that keep it from coming back.
 
 - **Detect.** One program fetches each crew thread (`tools.thread.get`, with its transcript) to files, then
   `gstack-runaway scan --dir <dir>` prints a `RUNAWAY:` line per thread and a `FLAG:` line per limit crossed:
-  own tokens past 500M or active past 3 days (rotate), a subagent past 100M (stop), empty wakes past 25% of the
+  own tokens past 500M or active past 3 days (rotate, for a standing thread that wakes on every event; a crew
+  thread keeps its PR until it merges or closes and checks in with its Captain once past 1B, and no thread holding an
+  open PR rotates), a subagent past 100M (stop), empty wakes past 25% of the
   last 40 turns (warm-wait check-ins are left out), and review rounds past 2 per PR. Captains are reported, never rotated.
-- **Stop.** A live subagent past 100M is stopped with its reason. A thread is rotated at a clean point through
-  a handoff file and a successor brief (`runaway-stopper/templates/`), then archived by its own Captain. A thread
+- **Stop.** A live subagent past 100M is stopped with its reason. A standing thread is rotated at a clean point through
+  a handoff file and a successor brief (`runaway-stopper/templates/`), then archived by its own Captain once none of
+  its PRs is open (R91), through `gstack-archive-check thread`. A thread
   mid-/ship or mid-merge gets `DEFER:` and nothing happens until that work finishes.
 - **Prevent.** One wait on all pending operations, quiet wakes, compact program returns, one /ship subagent per
   PR head (metering its own row with a 100M default cap, `BUDGET_DEFAULT_CAP:`), two review rounds, and a fresh
   thread per automation run.
 
-Scanning FOUN-4, FOUN-14 and FOUN-71 as read on 2026-11-03 (excerpt):
+Scanning FOUN-4, FOUN-14 and FOUN-71 as read on 2026-11-03, before R70's 2026-11-09 amendment (today only a thread
+marked standing gets `ROTATE`, a crew thread past 1B gets `CHECK_IN`, and a thread holding an open PR never rotates) (excerpt):
 
 ```
 RUNAWAY: thread=FOUN-4 verdict=ROTATE own=4.04B(upper) total=6.90B credits=2299398 age_days=13.1 active=yes ...
@@ -1241,7 +1245,7 @@ This is my **review autopilot mode**.
 
 Running `/plan-ceo-review`, `/plan-design-review` and `/plan-devex-review` individually means answering 15-30 intermediate questions. Each question is valuable, but sometimes you want the gauntlet to run without stopping for every decision.
 
-`/autoplan` reads the review skills from disk and runs them sequentially: CEO → Design (if UI scope) → DX (if developer-facing scope) → Eng, always last — the required shipping gate reviews the final amended plan, not a stale one. It makes decisions automatically: each question resolves to its recommended option by default, with six encoded principles (prefer completeness, match existing patterns, choose reversible options, prefer the option the user chose for similar past decisions, defer ambiguous items, and escalate security) breaking ties and deciding questions that carry no recommendation. Taste decisions (close approaches, borderline scope expansions, cross-model disagreements) get saved and presented at a final approval gate.
+In an interactive session, `/autoplan` reads the review skills from disk and runs them sequentially: CEO → Design (if UI scope) → DX (if developer-facing scope) → Eng, always last — the required shipping gate reviews the final amended plan, not a stale one. It makes decisions automatically: each question resolves to its recommended option by default, with six encoded principles (prefer completeness, match existing patterns, choose reversible options, prefer the option the user chose for similar past decisions, defer ambiguous items, and escalate security) breaking ties and deciding questions that carry no recommendation. Taste decisions (close approaches, borderline scope expansions, cross-model disagreements) get saved and presented at a final approval gate.
 
 One command, fully reviewed plan out.
 
@@ -1262,6 +1266,16 @@ You:    1) Yes, add search. 2) Option A.
 
 Claude: Plan complete. 9 decisions auto-resolved, 2 taste decisions approved.
 ```
+
+### What each run loads
+
+How deep the review goes depends on who drives the run.
+
+- **Interactive session** (no parent agent): the session model reads each phase's review skill, its SKILL.md and review sections, and works through that method itself. Each phase also sends the plan to a native reviewer subagent, which gets a five-question brief but not the skill, and to an outside voice from another model family (Codex) when one is available.
+- **Lean run** (`--kind feature`, the default for an unattended run on Capy): one engineering reviewer and nothing else. Its prompt holds the five-question eng brief, the 36-line eng checklist (unattended or `--light` runs only), a one-paragraph CEO role with the 37-line CEO checklist, the 28-line design and 34-line DX checklists only when scope detects UI or developer-facing work, and the draft code. It does not run the CEO, design or DX skills' own methods. There is no outside voice and one round.
+- **Full run** (`--full`, and the default for an unattended run off Capy): a phase per area, CEO → design → DX → eng, each with two voices. The native reviewer gets the five-question brief, the plan and, in an unattended or `--light` run, that phase's checklist; the outside reviewer gets a one-paragraph role and the plan. Neither gets the review skill's own method.
+
+The lean and full kinds are runs a parent agent drives through `gstack-autoplan` ([autoplan/DRIVER.md](../autoplan/DRIVER.md), [unattended.md](unattended.md)). An interactive session that sees `SESSION_KIND: unattended` hands off to the same runner.
 
 ---
 

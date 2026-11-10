@@ -143,7 +143,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 82 | ✓ | [`skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json`](skills/claude-design/scripts/editor/artifact-type/reference/google-fonts-reserved.json) |
 | 83 | ✓ | [`skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-CfC2JIbf.woff2`](skills/claude-design/scripts/editor/assets/anthropicons-fizzy-lake-CfC2JIbf.woff2) |
 | 84 | ✓ | [`skills/claude-design/scripts/editor/assets/index-B-Upphbb.css`](skills/claude-design/scripts/editor/assets/index-B-Upphbb.css) |
-| 85 | ✓ | [`skills/claude-design/scripts/editor/assets/index-CLSAsUf1.js`](skills/claude-design/scripts/editor/assets/index-CLSAsUf1.js) |
+| 85 | ✓ | [`skills/claude-design/scripts/editor/assets/index-B0Ur8XcL.js`](skills/claude-design/scripts/editor/assets/index-B0Ur8XcL.js) |
 | 86 | ✓ | [`skills/claude-design/scripts/editor/index.html`](skills/claude-design/scripts/editor/index.html) |
 | 87 | ✓ | [`skills/claude-design/scripts/editor/share-ui.js`](skills/claude-design/scripts/editor/share-ui.js) |
 | 88 | ✓ | [`skills/claude-design/scripts/editor/third-party-licenses.txt`](skills/claude-design/scripts/editor/third-party-licenses.txt) |

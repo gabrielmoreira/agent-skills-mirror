@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Guardian Switch</title><link rel="icon" href="icon.png"><link rel="stylesheet" href="switch.css"></head>
+<body><main><header><div class="brand"><img src="icon.png" alt="" width="36" height="36"><span>Guardian <b>Switch</b></span></div><button id="close" class="quiet" aria-label="退出界面">退出 ↗</button></header>
+<div id="preview" hidden>界面演示 · 不读取或修改系统</div>
+<section class="workspace"><div class="eyebrow">本机网络保护</div><div id="symbol" class="symbol" aria-hidden="true">◇</div><h1 id="title">先看看当前状态</h1><p id="summary">读取系统防火墙，确认保护是否生效。</p><button id="primary" class="primary">刷新状态 <span>↻</span></button><p id="hint" class="hint">操作时会打开本机授权终端</p></section>
+<section class="facts" aria-label="状态详情"><div><span>当前保护</span><strong id="protection">尚未读取</strong></div><div><span>开机保持</span><strong id="startup">尚未读取</strong></div><div><span>上次检查</span><strong id="checked">—</strong></div></section>
+<p id="message" role="status" aria-live="polite">首次使用？先让 Agent 完成配置与场景验收。</p>
+<footer><button id="refresh" class="quiet">↻ 刷新状态</button><details><summary>更多</summary><button id="on" class="quiet">开启保护</button><button id="off" class="quiet">关闭保护</button><button id="uninstall" class="danger">卸载防护</button></details></footer>
+<p class="footnote">防火墙状态与出口验收分别记录。关闭此界面不会关闭保护。</p>
+<dialog id="confirm"><h2 id="dialog-title"></h2><p id="dialog-copy"></p><div class="dialog-actions"><button id="cancel" class="quiet">取消</button><button id="continue" class="primary">打开操作终端</button></div></dialog>
+</main><script src="switch.js"></script></body></html>

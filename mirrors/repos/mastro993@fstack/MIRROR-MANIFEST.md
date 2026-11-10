@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 224 file(s) materialized.
+Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 275 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastro993/fstack` — 26 default patterns, 0 followed patterns, 224 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 224 |
+| Files         | 275 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -245,44 +245,95 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 184 | ✓ | [`skills/pr-ship/evals/review-cap-asks-user/prompt.md`](skills/pr-ship/evals/review-cap-asks-user/prompt.md) |
 | 185 | ✓ | [`skills/pr-ship/references/review-bots.md`](skills/pr-ship/references/review-bots.md) |
 | 186 | ✓ | [`skills/pr-ship/SKILL.md`](skills/pr-ship/SKILL.md) |
-| 187 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml`](skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml) |
-| 188 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs`](skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs) |
-| 189 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md) |
-| 190 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md) |
-| 191 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md) |
-| 192 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md) |
-| 193 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md) |
-| 194 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md) |
-| 195 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md) |
-| 196 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md) |
-| 197 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md) |
-| 198 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md) |
-| 199 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh`](skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh) |
-| 200 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md) |
-| 201 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/case.yaml`](skills/ux-stress-test/evals/findings-first-then-ask/case.yaml) |
-| 202 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs`](skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs) |
-| 203 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md) |
-| 204 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md) |
-| 205 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md) |
-| 206 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh`](skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh) |
-| 207 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/prompt.md`](skills/ux-stress-test/evals/findings-first-then-ask/prompt.md) |
-| 208 | ✓ | [`skills/ux-stress-test/references/drivers/browser-use.md`](skills/ux-stress-test/references/drivers/browser-use.md) |
-| 209 | ✓ | [`skills/ux-stress-test/references/drivers/playwright.md`](skills/ux-stress-test/references/drivers/playwright.md) |
-| 210 | ✓ | [`skills/ux-stress-test/references/opening-issues.md`](skills/ux-stress-test/references/opening-issues.md) |
-| 211 | ✓ | [`skills/ux-stress-test/references/persona-protocol.md`](skills/ux-stress-test/references/persona-protocol.md) |
-| 212 | ✓ | [`skills/ux-stress-test/references/personas/breaker.md`](skills/ux-stress-test/references/personas/breaker.md) |
-| 213 | ✓ | [`skills/ux-stress-test/references/personas/impatient.md`](skills/ux-stress-test/references/personas/impatient.md) |
-| 214 | ✓ | [`skills/ux-stress-test/references/personas/mobile.md`](skills/ux-stress-test/references/personas/mobile.md) |
-| 215 | ✓ | [`skills/ux-stress-test/references/personas/non-native.md`](skills/ux-stress-test/references/personas/non-native.md) |
-| 216 | ✓ | [`skills/ux-stress-test/references/personas/skeptic.md`](skills/ux-stress-test/references/personas/skeptic.md) |
-| 217 | ✓ | [`skills/ux-stress-test/scripts/chrome.sh`](skills/ux-stress-test/scripts/chrome.sh) |
-| 218 | ✓ | [`skills/ux-stress-test/scripts/controls.js`](skills/ux-stress-test/scripts/controls.js) |
-| 219 | ✓ | [`skills/ux-stress-test/scripts/failures.py`](skills/ux-stress-test/scripts/failures.py) |
-| 220 | ✓ | [`skills/ux-stress-test/scripts/keyboard.py`](skills/ux-stress-test/scripts/keyboard.py) |
-| 221 | ✓ | [`skills/ux-stress-test/scripts/mobile-audit.js`](skills/ux-stress-test/scripts/mobile-audit.js) |
-| 222 | ✓ | [`skills/ux-stress-test/scripts/mobile-setup.py`](skills/ux-stress-test/scripts/mobile-setup.py) |
-| 223 | ✓ | [`skills/ux-stress-test/scripts/slow-3g.js`](skills/ux-stress-test/scripts/slow-3g.js) |
-| 224 | ✓ | [`skills/ux-stress-test/SKILL.md`](skills/ux-stress-test/SKILL.md) |
+| 187 | ✓ | [`skills/ux-brainstorm/assets/prototype-template.html`](skills/ux-brainstorm/assets/prototype-template.html) |
+| 188 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/case.yaml`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/case.yaml) |
+| 189 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/01-letter-bar-variants.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/01-letter-bar-variants.md) |
+| 190 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/02-states-and-interaction.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/02-states-and-interaction.md) |
+| 191 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/03-icons-with-tooltips.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/03-icons-with-tooltips.md) |
+| 192 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/04-lean-copy.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/04-lean-copy.md) |
+| 193 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/05-realistic-content.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/05-realistic-content.md) |
+| 194 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/06-weigh-and-pick.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/graders/06-weigh-and-pick.md) |
+| 195 | ✓ | [`skills/ux-brainstorm/evals/builds-lean-interactive-variants/prompt.md`](skills/ux-brainstorm/evals/builds-lean-interactive-variants/prompt.md) |
+| 196 | ✓ | [`skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/case.yaml`](skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/case.yaml) |
+| 197 | ✓ | [`skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/01-searches-inspiration.md`](skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/01-searches-inspiration.md) |
+| 198 | ✓ | [`skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/02-two-or-three-directions.md`](skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/02-two-or-three-directions.md) |
+| 199 | ✓ | [`skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/03-directions-differ-in-structure.md`](skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/03-directions-differ-in-structure.md) |
+| 200 | ✓ | [`skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/04-asks-pick-no-variants.md`](skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/graders/04-asks-pick-no-variants.md) |
+| 201 | ✓ | [`skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/prompt.md`](skills/ux-brainstorm/evals/confirmed-brief-proposes-directions/prompt.md) |
+| 202 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/case.yaml`](skills/ux-brainstorm/evals/design-system-skips-direction/case.yaml) |
+| 203 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/components.json`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/components.json) |
+| 204 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/package.json`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/package.json) |
+| 205 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/components/ui/button.tsx`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/components/ui/button.tsx) |
+| 206 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/components/ui/card.tsx`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/components/ui/card.tsx) |
+| 207 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/components/ui/switch.tsx`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/components/ui/switch.tsx) |
+| 208 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/index.css`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/index.css) |
+| 209 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/lib/settings.ts`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/lib/settings.ts) |
+| 210 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/lib/utils.ts`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/lib/utils.ts) |
+| 211 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/pages/Settings.tsx`](skills/ux-brainstorm/evals/design-system-skips-direction/files/demo-app/src/pages/Settings.tsx) |
+| 212 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/graders/01-skips-direction.md`](skills/ux-brainstorm/evals/design-system-skips-direction/graders/01-skips-direction.md) |
+| 213 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/graders/02-two-prototypes-letter-bar.md`](skills/ux-brainstorm/evals/design-system-skips-direction/graders/02-two-prototypes-letter-bar.md) |
+| 214 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/graders/03-project-look.md`](skills/ux-brainstorm/evals/design-system-skips-direction/graders/03-project-look.md) |
+| 215 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/graders/04-honors-decisions.md`](skills/ux-brainstorm/evals/design-system-skips-direction/graders/04-honors-decisions.md) |
+| 216 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/graders/05-weigh-and-pick.md`](skills/ux-brainstorm/evals/design-system-skips-direction/graders/05-weigh-and-pick.md) |
+| 217 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/place-files.sh`](skills/ux-brainstorm/evals/design-system-skips-direction/place-files.sh) |
+| 218 | ✓ | [`skills/ux-brainstorm/evals/design-system-skips-direction/prompt.md`](skills/ux-brainstorm/evals/design-system-skips-direction/prompt.md) |
+| 219 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/case.yaml`](skills/ux-brainstorm/evals/interviews-before-prototyping/case.yaml) |
+| 220 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/components.json`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/components.json) |
+| 221 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/package.json`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/package.json) |
+| 222 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/components/ui/button.tsx`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/components/ui/button.tsx) |
+| 223 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/components/ui/card.tsx`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/components/ui/card.tsx) |
+| 224 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/components/ui/switch.tsx`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/components/ui/switch.tsx) |
+| 225 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/index.css`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/index.css) |
+| 226 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/lib/settings.ts`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/lib/settings.ts) |
+| 227 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/lib/utils.ts`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/lib/utils.ts) |
+| 228 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/pages/Settings.tsx`](skills/ux-brainstorm/evals/interviews-before-prototyping/files/demo-app/src/pages/Settings.tsx) |
+| 229 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/graders/01-maps-code-first.md`](skills/ux-brainstorm/evals/interviews-before-prototyping/graders/01-maps-code-first.md) |
+| 230 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/graders/02-questions-from-conflicts.md`](skills/ux-brainstorm/evals/interviews-before-prototyping/graders/02-questions-from-conflicts.md) |
+| 231 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/graders/03-plain-language-recommended.md`](skills/ux-brainstorm/evals/interviews-before-prototyping/graders/03-plain-language-recommended.md) |
+| 232 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/graders/04-no-layout-or-code-questions.md`](skills/ux-brainstorm/evals/interviews-before-prototyping/graders/04-no-layout-or-code-questions.md) |
+| 233 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/graders/05-no-prototype-yet.md`](skills/ux-brainstorm/evals/interviews-before-prototyping/graders/05-no-prototype-yet.md) |
+| 234 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/place-files.sh`](skills/ux-brainstorm/evals/interviews-before-prototyping/place-files.sh) |
+| 235 | ✓ | [`skills/ux-brainstorm/evals/interviews-before-prototyping/prompt.md`](skills/ux-brainstorm/evals/interviews-before-prototyping/prompt.md) |
+| 236 | ✓ | [`skills/ux-brainstorm/references/prototyping.md`](skills/ux-brainstorm/references/prototyping.md) |
+| 237 | ✓ | [`skills/ux-brainstorm/SKILL.md`](skills/ux-brainstorm/SKILL.md) |
+| 238 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml`](skills/ux-stress-test/evals/demo-saas-planted-friction/case.yaml) |
+| 239 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs`](skills/ux-stress-test/evals/demo-saas-planted-friction/files/demo-app/server.mjs) |
+| 240 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/01-five-personas-ran.md) |
+| 241 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/02-ranked-by-persona-count.md) |
+| 242 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/03-catches-hidden-password-rule.md) |
+| 243 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/04-catches-mobile-overflow.md) |
+| 244 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/05-catches-duplicate-signup-crash.md) |
+| 245 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/06-catches-literal-copy.md) |
+| 246 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/07-legal-and-prices-left-to-owner.md) |
+| 247 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/08-code-fixed.md) |
+| 248 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/09-blind-rerun.md) |
+| 249 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/graders/10-report-statuses.md) |
+| 250 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh`](skills/ux-stress-test/evals/demo-saas-planted-friction/place-files.sh) |
+| 251 | ✓ | [`skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md`](skills/ux-stress-test/evals/demo-saas-planted-friction/prompt.md) |
+| 252 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/case.yaml`](skills/ux-stress-test/evals/findings-first-then-ask/case.yaml) |
+| 253 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs`](skills/ux-stress-test/evals/findings-first-then-ask/files/demo-app/server.mjs) |
+| 254 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/01-findings-shown.md) |
+| 255 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/02-asks-fix-or-issue.md) |
+| 256 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md`](skills/ux-stress-test/evals/findings-first-then-ask/graders/03-no-action-before-answer.md) |
+| 257 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh`](skills/ux-stress-test/evals/findings-first-then-ask/place-files.sh) |
+| 258 | ✓ | [`skills/ux-stress-test/evals/findings-first-then-ask/prompt.md`](skills/ux-stress-test/evals/findings-first-then-ask/prompt.md) |
+| 259 | ✓ | [`skills/ux-stress-test/references/drivers/browser-use.md`](skills/ux-stress-test/references/drivers/browser-use.md) |
+| 260 | ✓ | [`skills/ux-stress-test/references/drivers/playwright.md`](skills/ux-stress-test/references/drivers/playwright.md) |
+| 261 | ✓ | [`skills/ux-stress-test/references/opening-issues.md`](skills/ux-stress-test/references/opening-issues.md) |
+| 262 | ✓ | [`skills/ux-stress-test/references/persona-protocol.md`](skills/ux-stress-test/references/persona-protocol.md) |
+| 263 | ✓ | [`skills/ux-stress-test/references/personas/breaker.md`](skills/ux-stress-test/references/personas/breaker.md) |
+| 264 | ✓ | [`skills/ux-stress-test/references/personas/impatient.md`](skills/ux-stress-test/references/personas/impatient.md) |
+| 265 | ✓ | [`skills/ux-stress-test/references/personas/mobile.md`](skills/ux-stress-test/references/personas/mobile.md) |
+| 266 | ✓ | [`skills/ux-stress-test/references/personas/non-native.md`](skills/ux-stress-test/references/personas/non-native.md) |
+| 267 | ✓ | [`skills/ux-stress-test/references/personas/skeptic.md`](skills/ux-stress-test/references/personas/skeptic.md) |
+| 268 | ✓ | [`skills/ux-stress-test/scripts/chrome.sh`](skills/ux-stress-test/scripts/chrome.sh) |
+| 269 | ✓ | [`skills/ux-stress-test/scripts/controls.js`](skills/ux-stress-test/scripts/controls.js) |
+| 270 | ✓ | [`skills/ux-stress-test/scripts/failures.py`](skills/ux-stress-test/scripts/failures.py) |
+| 271 | ✓ | [`skills/ux-stress-test/scripts/keyboard.py`](skills/ux-stress-test/scripts/keyboard.py) |
+| 272 | ✓ | [`skills/ux-stress-test/scripts/mobile-audit.js`](skills/ux-stress-test/scripts/mobile-audit.js) |
+| 273 | ✓ | [`skills/ux-stress-test/scripts/mobile-setup.py`](skills/ux-stress-test/scripts/mobile-setup.py) |
+| 274 | ✓ | [`skills/ux-stress-test/scripts/slow-3g.js`](skills/ux-stress-test/scripts/slow-3g.js) |
+| 275 | ✓ | [`skills/ux-stress-test/SKILL.md`](skills/ux-stress-test/SKILL.md) |
 
 ---
 

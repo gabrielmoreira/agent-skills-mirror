@@ -23,6 +23,15 @@
 | `network_check.py` | 入口 | Windows 缺 Python 必须先补齐（[S10 第十节](../sources/S10-windows-deployment-sanitized.md#network-evidence)、[能力核实](agent-remediation.md#capability-checkpoint)），统一用本工具；网络基础检测：默认路由是否走 TUN、IPv4 出口（国家与 ASN，不回显 IP）、经本地代理端口的出口、IPv6、DNS 泄露（含 fake-ip）、UDP（STUN）、可选故障演练；macOS、Windows、Linux；`--evidence-output` 交给 `egress_verifier.py` | [whole-machine-ipv4.md](whole-machine-ipv4.md#4-取证agent-实际执行不替用户编造) |
 | `egress_verifier.py` | 入口 | 整机只走 IPv4 出口的判定（`check --input`），macOS、Windows、Linux | [whole-machine-ipv4.md](whole-machine-ipv4.md) |
 
+## 统一防直连开关
+
+| 脚本 | 类型 | 用途 | 说明 |
+| --- | --- | --- | --- |
+| `killswitch.py` | 入口 | 已部署防护的 on/off/status/uninstall、Windows snapshot、本机确认与状态读回 | [killswitch-switch.md](killswitch-switch.md) |
+| `killswitch_ui.py` | 入口／库 | 无系统改动演示、本机 GUI、桌面入口生成 | 同上 |
+
+随包资源：`assets/killswitch/windows-switch.ps1`、`assets/killswitch/config.example.json`、`assets/killswitch/switch.html`、`assets/killswitch/switch.css`、`assets/killswitch/switch.js`、`assets/killswitch/icon.svg`、`assets/killswitch/icon.png`、`assets/killswitch/icon.ico`、`assets/killswitch/icon.icns`。全部通过同一使用指引按需读取。
+
 ## 网络检测的其他部分
 
 | 脚本 | 类型 | 用途 | 说明 |
@@ -63,7 +72,7 @@ Windows、Linux 没有清理脚本，按 [windows-cleanup.md](windows-cleanup.md
 
 | 文件 | 用途 | 说明 |
 | --- | --- | --- |
-| `assets/mac-killswitch/guardian-pf-killswitch.sh` | Mac 本机／客机 PF fail-closed 防火墙（未在真机验证） | [local-firewall-prompts.md](local-firewall-prompts.md) |
+| `assets/mac-killswitch/guardian-pf-killswitch.sh` | Mac 本机／客机 PF fail-closed 防火墙（已验收，2026-11-09） | [local-firewall-prompts.md](local-firewall-prompts.md) |
 | `assets/vm-killswitch/install-flclash-killswitch.sh` | VM 客机 fail-closed 防火墙 | [vm-guidance.md](vm-guidance.md) |
 | `assets/vm-killswitch/install-flclash-tun.sh` | VM 客机安装 FlClash TUN | [vm-guidance.md](vm-guidance.md) |
 | `assets/vm-killswitch/enable-guest-ssh.sh` | 开客机 SSH（限管理来源） | [vm-guidance.md](vm-guidance.md) |

@@ -1,6 +1,6 @@
 # Fast mode
 
-<sub>**Intermediate** · Elective · about 10 minutes · Needs: [Pick the model and effort](../03-model-and-effort.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Elective · about 10 minutes · Needs: [Pick the model and effort](../03-model-and-effort.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 > [!NOTE]
 > "Fast mode for Claude Opus 5.5 is available, and fast mode for Claude Opus 5 and Claude Opus 4.8 is in research preview." ([Speed up responses with fast mode](https://code.claude.com/docs/en/fast-mode))

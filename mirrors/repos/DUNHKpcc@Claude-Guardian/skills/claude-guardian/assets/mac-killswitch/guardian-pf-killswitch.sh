@@ -1,5 +1,5 @@
 #!/bin/bash
-# Claude-Guardian：macOS 本机路线的 PF killswitch（ADR-054，2026-11-01 所有者确认走 PF；Issue #25 已报告现场修正版真机通过，随包版本与覆盖范围见 local-firewall-prompts.md）。
+# Claude-Guardian：macOS 本机路线的 PF killswitch（ADR-054，2026-11-01 采用 PF；Issue #25 已报告现场修正版真机通过，随包版本与覆盖范围见 local-firewall-prompts.md）。
 # 起因：Issue #17 实测 LuLu 按进程过滤，早于路由，分不出“走 TUN”和“直连”，只放行核心会把正常 TUN 流量一起拦掉。
 # 思路：按网卡拦，不按进程拦。物理网卡只放行发往节点真实 IP:端口 的连接（加 DHCP，可选 DNS、局域网例外），
 #       其余出站一律丢弃；TUN（utun）和回环不受影响。核心或 TUN 停掉后，应用流量落到物理网卡，被拦，不会直连。
@@ -114,12 +114,12 @@ collect_nodes() {
     ips=$(csv_words "$NODE_IPS"); ports=$(csv_words "$NODE_PORTS")
   else
     local cfg="${CONFIG:-$(user_home)/Library/Application Support/io.github.clash-verge-rev.clash-verge-rev/clash-verge.yaml}"
-    [ -f "$cfg" ] || die "找不到 Clash Verge 运行配置：$cfg（可用 CONFIG= 指定，或直接给 NODE_IPS/NODE_PORTS）"
+    [ -f "$cfg" ] || die "找不到 Clash Verge 运行配置：${cfg}（可用 CONFIG= 指定，或直接给 NODE_IPS/NODE_PORTS）"
     local kind val
     while read -r kind val; do
       case "$kind" in
         S) if is_ipv4 "$val"; then ips="$ips $val"
-           elif [[ "$val" == *:* ]]; then warn "跳过 IPv6 节点 $val（本路线只走 IPv4）"
+           elif [[ "$val" == *:* ]]; then warn "跳过 IPv6 节点 ${val}（本路线只走 IPv4）"
            else ips="$ips $(resolve_domain "$val" | tr '\n' ' ')"; fi ;;
         P) ports="$ports $val" ;;
       esac
@@ -197,14 +197,14 @@ do_dns() {
     [ -n "$svc" ] || continue
     out=$(networksetup -getdnsservers "$svc" 2>/dev/null || true)
     if echo "$out" | grep -qi "aren't any"; then
-      echo "WARN: $svc：自动（DHCP 下发）。换网后会用新网络下发的 DNS，常见是路由器地址，会被拦"
+      echo "WARN: ${svc}：自动（DHCP 下发）。换网后会用新网络下发的 DNS，常见是路由器地址，会被拦"
       warned=1
     else
       cls=""
       for ns in $out; do
         { is_ipv4 "$ns" || [[ "$ns" == *:* ]]; } && cls="$cls $(ip_class "$ns")"
       done
-      echo "  $svc：手动（$(uniq_words $cls)）"
+      echo "  ${svc}：手动（$(uniq_words $cls)）"
     fi
   done < <(networksetup -listallnetworkservices 2>/dev/null | tail -n +2)
   echo "== 当前生效的 DNS 走哪张网卡 =="
@@ -215,7 +215,7 @@ do_dns() {
     fi
     ifc=$(route -n get "$ns" 2>/dev/null | awk '/interface:/{print $2}' || true)
     case "$ifc" in
-      utun*|lo*) echo "  一个$cls 走 $ifc：会进 TUN，正常" ;;
+      utun*|lo*) echo "  一个$cls 走 ${ifc}：会进 TUN，正常" ;;
       *) echo "WARN: 一个$cls 走 ${ifc:-未知网卡}：不进 TUN。加了 PF 会解析失败；放进 LAN_NET 能解析，但查询绕过代理（DNS 泄漏）"; warned=1 ;;
     esac
     case " $allowed " in *" $ns "*)

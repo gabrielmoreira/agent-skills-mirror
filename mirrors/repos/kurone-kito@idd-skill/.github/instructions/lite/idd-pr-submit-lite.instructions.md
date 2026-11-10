@@ -24,9 +24,11 @@ claimed, implemented issue.
 - Resolve active-profile `idd-local-admission` via manifest/docs; pass
   each configured string once as `-- <shell> -c <string>` (one argument).
 - If set in repo policy, admit `localExec.admission.testCommand` likewise.
-  Exit 75 expires only with stderr `local-admission: expired`: report
-  no start; do not rerun or count a pass (not a test rerun or Discover
-  incomplete-result retry). Otherwise, 75 is command status.
+- These exit/stderr pairs mean no start: `75` with
+  `local-admission: expired`, or `69` with
+  `local-admission: pueue daemon is not accepting commands`. Report; do not
+  rerun, push manually, or mark as pass/flaky (not a test rerun or Discover
+  incomplete-result retry). Bare `69`/`75`: command statuses.
 
 ## Stop-and-ask conditions
 
@@ -185,9 +187,18 @@ instead of returning to this D1 rebase path.
    claim id. If it is missing, released, or held by a different claim id
    (even under the same agent id), the claim was lost — stop.
 2. Run **pre-push-validate**. (E2E tests are verified by CI; do not run
-   them locally.)
-3. Push the branch: `git push -u origin {branch-name}`, plain on first
-   publication or a no-open-PR resume (D1 step 1). Use `--force-with-lease` only
+   them locally.) Skip this step when B3 recorded an S-to-M assessment SHA:
+   step 3's helper runs the gate itself.
+3. If B3 recorded an S-to-M assessment SHA (see the S-to-M correction in
+   `idd-work-lite.instructions.md`), publish only through the profile-selected
+   `claimed-push` helper, run from the claimed worktree with
+   `--issue {issue-number} --claim-id {claim-id} --agent-id {agent-id}
+   [--nonce {nonce}] --expected-scope-sha256 {assessment-sha256} --apply`.
+   Its `--apply` runs the gate and the push, so skip the plain push.
+   Require `pushed: true`; otherwise follow its `nextAction`.
+   Otherwise push the branch: `git push -u origin {branch-name}`, plain on
+   first publication or a no-open-PR resume (D1 step 1). Use
+   `--force-with-lease` only
    when the branch is already published, a repository policy permits a
    force-push exception, and this exact exception already required a rebase.
    Otherwise stop per the condition above, without `--force-with-lease`; the

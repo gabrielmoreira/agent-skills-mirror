@@ -2,6 +2,8 @@
 # Collect agent configuration data for health audit.
 # Outputs labeled sections for each data source.
 # Run from any directory; uses pwd as the project root.
+# Owns bounded, redacted discovery and receipt assembly. Keep shell to orchestration and simple
+# presence checks; structured parsing belongs in Python helpers.
 #
 # Known failure modes (for interpreting (unavailable) output):
 #   trusted Python missing  -> conversation, MCP/hooks/allowedTools, and skill-security sections print "(unavailable)"
@@ -875,6 +877,11 @@ echo "local_claude_words: $(count_file_words "$P/CLAUDE.md")"
 echo "local_claude_cjk_chars: $(count_file_cjk_chars "$P/CLAUDE.md")"
 echo "local_claude_bytes: $(count_file_bytes "$P/CLAUDE.md")"
 echo "local_claude_context_units: $(count_file_context_units "$P/CLAUDE.md")"
+# Claude Code reads a root AGENTS.md when no CLAUDE.md exists, and Codex always does.
+echo "local_agents_words: $(count_file_words "$P/AGENTS.md")"
+echo "local_agents_cjk_chars: $(count_file_cjk_chars "$P/AGENTS.md")"
+echo "local_agents_bytes: $(count_file_bytes "$P/AGENTS.md")"
+echo "local_agents_context_units: $(count_file_context_units "$P/AGENTS.md")"
 echo "rules_words: $(rules_word_count always)"
 echo "rules_context_units: $(rules_context_unit_count always)"
 echo "path_scoped_rules_words: $(rules_word_count scoped)"

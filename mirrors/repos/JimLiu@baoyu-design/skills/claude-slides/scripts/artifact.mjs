@@ -2524,6 +2524,10 @@ function loopbackBlocked(port) {
     socket.once("error", (error) => done(error.code === "EPERM" || error.code === "EACCES"));
   });
 }
+function isTailnet(address) {
+  const m = /^100\.(\d{1,3})\./.exec(address);
+  return !!m && Number(m[1]) >= 64 && Number(m[1]) <= 127;
+}
 function serverOrigin(host, port) {
   const shown = host === "0.0.0.0" || host === "::" ? "127.0.0.1" : host.includes(":") ? `[${host}]` : host;
   return `http://${shown}:${port}`;
@@ -3125,9 +3129,12 @@ async function shareCommand(o) {
   const links = view.links;
   const shown = (list) => Object.fromEntries(Object.entries(list).map(([role, link]) => [role, link.on ? link.url : "off"]));
   const tailnet = view.lan ? view.tailnet : void 0;
+  const addresses = view.lan ? lanUrls(view) : [];
+  const local = view.lan && Array.isArray(view.addresses) ? view.addresses.filter((a) => !isTailnet(String(a))) : [];
+  const others = local.length > 1 ? " This computer is on more than one network (addresses): if a link does not open for someone on the same Wi-Fi or LAN, give them the same link with another of those addresses." : "";
   return {
     lan: view.lan,
-    ...view.lan ? { addresses: lanUrls(view) } : {},
+    ...view.lan ? { addresses } : {},
     links: shown(links),
     ...tailnet ? {
       tailscale: shown(tailnet.links),
@@ -3135,7 +3142,7 @@ async function shareCommand(o) {
     } : {},
     guests: view.guests,
     ...view.lan ? {
-      note: "Send the link for the role you want to give: editor edits, commenter comments, viewer reads. Anyone on this network with a link joins under a name they type. The owner (this computer) shares from the Share button too.",
+      note: `Send the link for the role you want to give: editor edits, commenter comments, viewer reads. Anyone on this network with a link joins under a name they type. The owner (this computer) shares from the Share button too.${others}`,
       security: "It is plain http: others on the network can read what passes. A link is the permission: whoever has it gets its role, so send it only to the people meant to have it, and reset a role's link if it went further.",
       stop: o.offCommand
     } : { note: `Not shared on the network: the links work on this computer only. ${NOT_SHARED_HINT}` }

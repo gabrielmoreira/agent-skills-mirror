@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mark3labs/mcp-go` — 26 default patterns, 0 followed patterns, 68 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,36 +97,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`mcp/struct_schema_test.go`](mcp/struct_schema_test.go) |
 | 37 | ✓ | [`mcp/struct_schema.go`](mcp/struct_schema.go) |
 | 38 | ✓ | [`mcp/structured_result_serialization_test.go`](mcp/structured_result_serialization_test.go) |
-| 39 | ✓ | [`mcp/task_result_structured_precision_test.go`](mcp/task_result_structured_precision_test.go) |
-| 40 | ✓ | [`mcp/task_status_parsing_test.go`](mcp/task_status_parsing_test.go) |
-| 41 | ✓ | [`mcp/tasks_test.go`](mcp/tasks_test.go) |
-| 42 | ✓ | [`mcp/tasks.go`](mcp/tasks.go) |
-| 43 | ✓ | [`mcp/testdata/schema_cache/first/models.go`](mcp/testdata/schema_cache/first/models.go) |
-| 44 | ✓ | [`mcp/testdata/schema_cache/second/models.go`](mcp/testdata/schema_cache/second/models.go) |
-| 45 | ✓ | [`mcp/tool_result_reuse_test.go`](mcp/tool_result_reuse_test.go) |
-| 46 | ✓ | [`mcp/tools_additional_test.go`](mcp/tools_additional_test.go) |
-| 47 | ✓ | [`mcp/tools_annotations_test.go`](mcp/tools_annotations_test.go) |
-| 48 | ✓ | [`mcp/tools_defer_loading_test.go`](mcp/tools_defer_loading_test.go) |
-| 49 | ✓ | [`mcp/tools_properties_test.go`](mcp/tools_properties_test.go) |
-| 50 | ✓ | [`mcp/tools_property_order_test.go`](mcp/tools_property_order_test.go) |
-| 51 | ✓ | [`mcp/tools_raw_arguments_test.go`](mcp/tools_raw_arguments_test.go) |
-| 52 | ✓ | [`mcp/tools_schema_additional_fields_test.go`](mcp/tools_schema_additional_fields_test.go) |
-| 53 | ✓ | [`mcp/tools_test.go`](mcp/tools_test.go) |
-| 54 | ✓ | [`mcp/tools.go`](mcp/tools.go) |
-| 55 | ✓ | [`mcp/typed_tools_additional_test.go`](mcp/typed_tools_additional_test.go) |
-| 56 | ✓ | [`mcp/typed_tools_test.go`](mcp/typed_tools_test.go) |
-| 57 | ✓ | [`mcp/typed_tools.go`](mcp/typed_tools.go) |
-| 58 | ✓ | [`mcp/types_test.go`](mcp/types_test.go) |
-| 59 | ✓ | [`mcp/types.go`](mcp/types.go) |
-| 60 | ✓ | [`mcp/utils_additional_test.go`](mcp/utils_additional_test.go) |
-| 61 | ✓ | [`mcp/utils_envelope_test.go`](mcp/utils_envelope_test.go) |
-| 62 | ✓ | [`mcp/utils_helpers_test.go`](mcp/utils_helpers_test.go) |
-| 63 | ✓ | [`mcp/utils_integer_test.go`](mcp/utils_integer_test.go) |
-| 64 | ✓ | [`mcp/utils_task_result_test.go`](mcp/utils_task_result_test.go) |
-| 65 | ✓ | [`mcp/utils_test.go`](mcp/utils_test.go) |
-| 66 | ✓ | [`mcp/utils.go`](mcp/utils.go) |
-| 67 | ✓ | [`mcp/version_test.go`](mcp/version_test.go) |
-| 68 | ✓ | [`mcp/version.go`](mcp/version.go) |
+| 39 | ✓ | [`mcp/task_result_content_array_test.go`](mcp/task_result_content_array_test.go) |
+| 40 | ✓ | [`mcp/task_result_structured_precision_test.go`](mcp/task_result_structured_precision_test.go) |
+| 41 | ✓ | [`mcp/task_status_parsing_test.go`](mcp/task_status_parsing_test.go) |
+| 42 | ✓ | [`mcp/tasks_test.go`](mcp/tasks_test.go) |
+| 43 | ✓ | [`mcp/tasks.go`](mcp/tasks.go) |
+| 44 | ✓ | [`mcp/testdata/schema_cache/first/models.go`](mcp/testdata/schema_cache/first/models.go) |
+| 45 | ✓ | [`mcp/testdata/schema_cache/second/models.go`](mcp/testdata/schema_cache/second/models.go) |
+| 46 | ✓ | [`mcp/tool_result_reuse_test.go`](mcp/tool_result_reuse_test.go) |
+| 47 | ✓ | [`mcp/tool_schema_keywords_test.go`](mcp/tool_schema_keywords_test.go) |
+| 48 | ✓ | [`mcp/tool_schema_roundtrip_regression_test.go`](mcp/tool_schema_roundtrip_regression_test.go) |
+| 49 | ✓ | [`mcp/tools_additional_test.go`](mcp/tools_additional_test.go) |
+| 50 | ✓ | [`mcp/tools_annotations_test.go`](mcp/tools_annotations_test.go) |
+| 51 | ✓ | [`mcp/tools_defer_loading_test.go`](mcp/tools_defer_loading_test.go) |
+| 52 | ✓ | [`mcp/tools_int_slice_precision_test.go`](mcp/tools_int_slice_precision_test.go) |
+| 53 | ✓ | [`mcp/tools_properties_test.go`](mcp/tools_properties_test.go) |
+| 54 | ✓ | [`mcp/tools_property_order_test.go`](mcp/tools_property_order_test.go) |
+| 55 | ✓ | [`mcp/tools_raw_arguments_test.go`](mcp/tools_raw_arguments_test.go) |
+| 56 | ✓ | [`mcp/tools_schema_additional_fields_test.go`](mcp/tools_schema_additional_fields_test.go) |
+| 57 | ✓ | [`mcp/tools_test.go`](mcp/tools_test.go) |
+| 58 | ✓ | [`mcp/tools.go`](mcp/tools.go) |
+| 59 | ✓ | [`mcp/typed_tools_additional_test.go`](mcp/typed_tools_additional_test.go) |
+| 60 | ✓ | [`mcp/typed_tools_test.go`](mcp/typed_tools_test.go) |
+| 61 | ✓ | [`mcp/typed_tools.go`](mcp/typed_tools.go) |
+| 62 | ✓ | [`mcp/types_test.go`](mcp/types_test.go) |
+| 63 | ✓ | [`mcp/types.go`](mcp/types.go) |
+| 64 | ✓ | [`mcp/utils_additional_test.go`](mcp/utils_additional_test.go) |
+| 65 | ✓ | [`mcp/utils_envelope_test.go`](mcp/utils_envelope_test.go) |
+| 66 | ✓ | [`mcp/utils_helpers_test.go`](mcp/utils_helpers_test.go) |
+| 67 | ✓ | [`mcp/utils_integer_test.go`](mcp/utils_integer_test.go) |
+| 68 | ✓ | [`mcp/utils_task_result_test.go`](mcp/utils_task_result_test.go) |
+| 69 | ✓ | [`mcp/utils_test.go`](mcp/utils_test.go) |
+| 70 | ✓ | [`mcp/utils.go`](mcp/utils.go) |
+| 71 | ✓ | [`mcp/version_test.go`](mcp/version_test.go) |
+| 72 | ✓ | [`mcp/version.go`](mcp/version.go) |
 
 ---
 

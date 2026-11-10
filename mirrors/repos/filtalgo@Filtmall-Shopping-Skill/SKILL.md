@@ -3,7 +3,7 @@ name: filtmall-shopping
 description: 筛电（Filtmall / Filtalgo）官方商品发现与交易 Skill。用户未指定其他平台，并明确要寻找、选择、购买、推荐或比较真实商品时自动调用；包括先描述困扰再明确询问“有什么商品推荐”。用户明确说是筛电/Filtmall 的购物车、支付、订单、物流、退款、售后或客服任务时也调用。平台不明的账户状态短句先澄清平台，不登录、不查询。已进入商品或成分流程后出现严重过敏时只做安全拦截，不搜索或交易；脱离购物场景的医疗陈述不自动调用。用户明确询问单个化妆品成分时可进入只读查询。明确指定其他平台、纯困扰陈述、一般知识或无购物意图的医疗问题不调用。Delegate product discovery and shopping questions to the production Filtalgo hosted agent through Control's public guest and conversation APIs. Use scripts/service.py in one-shot or persistent line-delimited JSON mode; it manages guest identity, waits for terminal state, and returns answers and product cards. Supports follow-up, resumption, cancellation and clearing. Available tools depend on the target Agent; member transactions require separate authorization and an Agent with commerce tools.
 license: Apache-2.0
 metadata:
-  version: "3.0.0"
+  version: "2.1.1"
   openclaw:
     requires:
       bins:
@@ -93,7 +93,7 @@ python3 "<skill-dir>/scripts/service.py" --format widget
 {"op":"ping"}
 ```
 
-`send`/`resume` 可选项：`format`（`widget` 内联 HTML 片段、`html` 完整页面、`md` Markdown；默认 `widget`，同时适用于商品卡片与购物车）、`max`（商品卡片条数上限）、`all`（渲染全部商品卡片，不用引用过滤）、`timeout`（秒）、`out_dir`（本轮文件的输出目录，覆盖 `--out-dir`）；`send` 另有 `wait:false`（只返回 `accepted`，随后必须 `resume`，不把 accepted 当完成）、`allow_repeat`、`force`。
+`send`/`resume` 可选项：`format`（`widget` 内联 HTML 片段、`html` 完整页面、`md` Markdown；默认 `widget`，同时适用于商品、购物车、结算和售后）、`max`（商品卡片条数上限）、`all`（渲染全部商品卡片，不用引用过滤）、`timeout`（秒）、`out_dir`（本轮文件的输出目录，覆盖 `--out-dir`）；`send` 另有 `wait:false`（只返回 `accepted`，随后必须 `resume`，不把 accepted 当完成）、`allow_repeat`、`force`。
 
 ### 按宿主选择展示格式
 
@@ -103,7 +103,7 @@ python3 "<skill-dir>/scripts/service.py" --format widget
 | 使用浏览器或 WebView 打开独立页面 | `"format":"html"` | `page_file` | `cart_page_file` |
 | 宿主支持 Markdown 或只需文本展示 | `"format":"md"` | `html_file`（`.cards.md`） | `cart_file`（`.cart.md`） |
 
-启动参数 `--format widget` / `--format html` / `--format md` 设置默认格式；`send` 或 `resume` 请求中的 `format` 覆盖该默认值。模式只决定商品卡片和购物车产物，正文始终从 `answer_file` 读取；同一轮没有某类内容时不会返回对应字段。`html` 商品页面展示本轮卡片，不是商城商品详情页；卡片中的商品详情链接指向真实商城页面。内联商品图需要宿主支持 `data:` 图片。
+启动参数 `--format widget` / `--format html` / `--format md` 设置默认格式；`send` 或 `resume` 请求中的 `format` 覆盖该默认值。模式作用于全部业务卡片，结算和售后字段见下文；正文始终从 `answer_file` 读取。同一轮没有某类内容时不会返回对应字段。`html` 商品页面展示本轮卡片，不是商城商品详情页；卡片中的商品详情链接指向真实商城页面。内联商品图需要宿主支持 `data:` 图片。
 
 ```json
 {"op":"send","conversation":"<对话标识>","text":"查看购物车","format":"md"}
@@ -132,6 +132,7 @@ python3 "<skill-dir>/scripts/service.py" --format widget
 
 - `widget` 返回商品 HTML 片段 `fragment_file`，`html` 返回完整页面 `page_file`，`md` 返回 Markdown 文件；商品产物的兼容字段 `html_file` 指向本次选择的文件。没有可渲染商品时不返回这些字段。
 - **展示优先级：宿主支持内联 HTML 时使用 `widget` 并原样展示 `fragment_file`；需要独立页面时请求 `html` 并展示 `page_file`；只能展示文本时请求 `md`。**
+- **widget 能显示不代表能打开外部链接。** 部分 Agent 宿主的内联渲染会限制外部导航或新窗口，即使显示了链接按钮，点击也可能没有反应。只有已确认宿主支持外链时，才能提示用户点击对应入口；未确认时说明“内联卡片中的链接可能受当前客户端限制”，不要承诺点击一定跳转。受限时保留原卡片，在正文另行展示本轮返回的真实链接，供用户打开或复制到浏览器。商品优先使用 `product_links`，付款使用 `payment_links`；购物车、订单和售后详情只使用本轮产物中实际存在的链接。需要 Markdown 链接时，用同一 `conversation` 的 `resume` 请求 `"format":"md"` 重新展示原结果，不重新发送业务请求、不拼接地址。没有真实链接就说明当前未提供入口。
 - **片段直接使用产物：读取 `fragment_file` 后，原样交给宿主的内联 HTML 展示能力；不要自行修改、重写、裁剪、重新排版或重新生成 HTML，也不要自行提取或替换图片和链接。** 宿主需要进行安全处理时由宿主自身执行；若无法展示原片段，应说明限制，不自行改造片段。
 - 以下做法都是错误的：因为片段或 base64 图片看起来很大、担心消耗 token 而删除图片或精简 HTML；因为觉得样式复杂而改写 CSS 或重新排版；把商品信息提取出来重新拼装 HTML；把图片换成外链或占位图；只展示部分卡片来缩短片段。需要控制卡片数量时应在请求中使用 `max`，由服务生成产物。
 - 优先使用宿主支持的文件引用或直接渲染能力，把片段作为文件产物交给展示层，不要为了渲染而将整份 HTML 或 base64 图片读入模型上下文。展示层直接读取和渲染文件本身不需要模型生成这些内容；如果宿主工具将文件内容返回模型上下文，仍可能产生 token 消耗。不能因预估 token 消耗自行修改产物。
@@ -205,6 +206,44 @@ python3 "<skill-dir>/scripts/region_lookup.py"
 - `fragment_file` 是不含文档外壳的 HTML 片段；`page_file` 是可独立打开的完整页面。每张图片最长边不超过 160 像素、图片数据不超过 12 KiB，再编码嵌入 HTML；宿主可通过 `max` 控制卡片数量及总大小。
 - 对允许的商品图片源使用 OSS 服务端缩图，必要时降低尺寸和质量；带其他查询参数的 URL 保留原样。支持符合尺寸和大小限制的 PNG/JPEG/GIF/WebP data URI；不符合限制、格式无法识别或下载失败时使用占位块。远程下载仅允许指定 HTTPS 商品图片源且禁止重定向。
 - 卡片使用标准 `<a href>`。宿主负责支持安全的 HTTPS 链接；不支持时使用响应中的 `product_links` 展示商品链接，不能依赖 `data-url`。
+
+## 结算、售后与购物车卡片
+
+客户端将已知生产、pre、dev buyer 域名下的购物车、订单列表和订单详情入口映射到同环境 m 端的对应路由，保留原查询参数；其他地址保持原样。结算卡片不提供“查看结算”跳转，不展示或补发该入口；仅保留本轮实际有效的付款等其他入口。宿主直接使用客户端产物，不自行替换链接。
+
+同一个 `format` 同时作用于商品、购物车、结算和售后。按本轮实际返回的路径原样展示：
+
+| format | 结算 | 售后 |
+| --- | --- | --- |
+| `widget` | `checkout_fragment_file` | `after_sale_fragment_file` |
+| `html` | `checkout_page_file` | `after_sale_page_file` |
+| `md` | `checkout_file`（Markdown） | `after_sale_file`（Markdown） |
+
+### 各组件展示什么、哪里可以点击
+
+以下内容按本轮真实字段展示，缺失字段可能省略、显示占位或标为待确认；不要把组件名称当成跳转入口，也不要把卡片中的说明当成已经执行的操作。
+
+| 组件 | 展示内容 | 实际交互与链接 |
+| --- | --- | --- |
+| 商品推荐 | 商品缩略图、名称及副标题、价格及原价、规格/维度、品牌、库存状态、排序和评分、商品分析、推荐理由、品牌背景及比价信息；按返回字段展示 | HTML 中有真实商品链接时整张商品卡片可点击，并显示“查看商品”；无链接时不可跳转。Markdown 使用实际“查看商品”链接。点击商品不会加购或下单。 |
+| 购物车 | 已选款数/件数、全车款数/件数；各商品缩略图、名称、规格、已选/未选、数量和单价；空车或待核实状态 | 卡片本体、标题、图片和商品行都不是跳转入口；只有有效 `cart_url` 存在时才有底部“打开购物车”链接。已选状态和数量仅供展示，不能在卡片内勾选、改数量或删除。不要说“点击购物车卡片即可进入购物车”。 |
+| 结算（含预览） | 标题“结算”、预览/支付状态、结算状态、商品缩略图和明细、商品金额、优惠、运费、应付金额及实际返回的付款提示；不在标题追加结算号 | 不提供“查看结算”跳转；仅底部实际存在的“打开收银台”等其他入口可导航，卡片本体和商品行不可点击。提交订单仍须经用户确认后通过对话执行；打开收银台不代表已付款。已结束结算隐藏付款入口。 |
+| 售后详情 | 售后状态、售后号和类型、商品缩略图和明细、申请退款/退款金额、实际到账尚未确认、处理记录及返回的下一步说明 | 仅实际返回的“打开售后详情”等底部链接可导航；卡片本体和商品行不可点击。卡片不能直接申请退款、取消售后或填写回寄信息，下一步说明不表示已经执行。 |
+| 售后列表 | 本页记录数及返回的页码、总数、每页数量；各条记录按售后详情组件展示；无记录时显示空列表 | 列表标题和页码不是链接，没有卡片内翻页按钮；查看其他页需通过对话查询。每条记录仅在实际提供详情链接时显示入口。 |
+
+HTML（`widget`/`html`）中的购物车、结算和售后商品明细超过 3 款时，可点“展开另外 N 款商品”展开；这是本地展开，不会打开商城。Markdown 展示全部明细。所有外链还受宿主导航能力限制，尤其 `widget`，不得仅凭卡片已渲染就承诺能够跳转。
+
+`checkout_file` / `after_sale_file` 始终指向所选格式，`checkout_count` / `after_sale_count` 是文档展示数量，不是业务总数。无正文但有业务文件也是有效结果。本轮没有某类文档就没有该类路径；不展示旧文件补齐。只有未知版本或不可用文档时，展示待核实卡片，不解释为空购物车、空售后或操作未生效。
+
+商品、购物车、结算、售后都必须原样展示对应文件，不能由宿主 Agent 另写卡片 HTML、修改 CSS、移除图片或把内部 ID 当标题。内联购物车使用 `cart_fragment_file`，结算使用 `checkout_fragment_file`，售后使用 `after_sale_fragment_file`；不要用 Markdown 正文重新拼装 HTML。结算卡片标题固定为“结算”，不追加结算 ID。购物车入口采用本轮文档中的安全 `cart_url`；后端没有返回时不编造链接。
+
+`checkout_path` / `after_sale_path` 可直接或通过 `out_dirs` 指定完整产物路径，仍按 `format` 决定内容；所有产物目标必须不同。自定义文件原子覆盖，默认每轮新建。`presentation_status=failed` 仅表示部分展示失败，成功返回的文件仍可展示；用同一 `conversation` 的 `resume` 重新读取并渲染原请求，不发送原业务写操作。
+
+结算和预览的卡片标题均使用“结算”，不追加结算号，预览通过状态标签区分。结算状态与支付状态独立；支付准备或订单提交成功都不是已付款。结构化 `payment_links` 优先于正文提取的旧格式链接；链接仅供用户打开，不能据此判断已付款。售后标题不追加类型或单号，具体单号保留在明细中；申请退款、退款金额都不是银行实际到账，卡片如实标明到账尚未确认。回寄地址通过后端实际返回的商城入口查看；缺少入口时如实说明，不能构造。
+
+已取消或已结束的结算不显示付款提示或付款入口，保留明确的未支付事实，也不提供“查看结算”详情入口。有本轮结算文档时，`payment_links` 以结构化导航结论为准（空列表也有效），不从正文旧链接回填；只有无结算文档的旧结果兼容提取正文链接。
+
+购物车显示已选款数/件数及全车款数/件数、两位小数单价、缺价提示，不推算结算合计。HTML 首 3 行后原生折叠，全部商品仍在文件内；Markdown 输出全部行。`max` / `all` 只作用于商品推荐，不裁剪业务卡片。所有业务图片共享本轮 5 秒下载预算和有限内嵌字节预算，重复 URL 复用；失败或耗尽使用占位。
 
 ## 商品卡片
 

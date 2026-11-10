@@ -5,6 +5,22 @@ dynamic player list, scroll input abstraction, lookup-table localization, toggle
 settings persistence via PlayerObject, listener-based menu event system, finger-based touch
 interaction for canvas UI, and modular app architecture with plugin lifecycle.
 
+## Table of Contents
+
+- [1. Immobilize Guard Pattern](#1-immobilize-guard-pattern)
+- [2. Avatar-Scale-Aware UI](#2-avatar-scale-aware-ui)
+- [3. FOV-Responsive UI Positioning](#3-fov-responsive-ui-positioning)
+- [4. Platform-Adaptive UI Layout](#4-platform-adaptive-ui-layout)
+- [5. Dynamic Player List UI](#5-dynamic-player-list-ui)
+- [6. ScrollRect VR/Desktop Input Abstraction](#6-scrollrect-vrdesktop-input-abstraction)
+- [7. Lookup-Table Localization](#7-lookup-table-localization)
+- [8. Toggle Switch with Animator Bridge](#8-toggle-switch-with-animator-bridge)
+- [9. UI Settings Persistence via PlayerObject](#9-ui-settings-persistence-via-playerobject)
+- [10. Listener-Based Menu Event System](#10-listener-based-menu-event-system)
+- [11. Finger-Based Touch Interaction for Canvas UI](#11-finger-based-touch-interaction-for-canvas-ui)
+- [12. Modular App Architecture (Plugin Lifecycle)](#12-modular-app-architecture-plugin-lifecycle)
+- [See Also](#see-also)
+
 ## 1. Immobilize Guard Pattern
 
 When the local player interacts with dropdown menus or scroll views, accidental movement
@@ -60,7 +76,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class AvatarScaleUI : UdonSharpBehaviour
 {
     [Header("Configuration")]
@@ -147,7 +163,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Rendering;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class FovResponsiveUI : UdonSharpBehaviour
 {
     [Header("References")]
@@ -230,7 +246,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Rendering;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class PlatformAdaptiveUI : UdonSharpBehaviour
 {
     [Header("Platform-Specific Panels")]
@@ -309,7 +325,7 @@ using UnityEngine.UI;
 using TMPro;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class DynamicPlayerList : UdonSharpBehaviour
 {
     [Header("References")]
@@ -430,13 +446,25 @@ Unity's built-in `ScrollRect` responds to mouse scroll on desktop but has no nat
 for VR controller thumbstick scrolling. This pattern polls VR input axes and desktop mouse
 scroll, then applies the appropriate scroll delta each frame.
 
+**Prerequisites:**
+- Set the ScrollRect's **Scroll Sensitivity to 0**. VRChat's
+  [VRC_UIShape troubleshooting](https://creators.vrchat.com/worlds/components/vrc_uishape/)
+  recommends it because movement input otherwise scrolls the list. Dragging the content or
+  the scrollbar keeps working, and this adapter then becomes the only stick/wheel path.
+- The adapter reads the stick and wheel wherever the player is pointing, so the list also
+  moves while the player walks or turns. Enable the component only while the panel is in use
+  (for example, from the panel's open and close buttons). Every enabled adapter scrolls its
+  own list, so keep only the adapter of the list in use enabled, even when several panels or
+  lists are open at once.
+  If dragging is enough for your panel, skip this adapter.
+
 ```csharp
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class ScrollInputAdapter : UdonSharpBehaviour
 {
     [Header("References")]
@@ -475,7 +503,8 @@ public class ScrollInputAdapter : UdonSharpBehaviour
             scrollDelta = GetDesktopScrollDelta();
         }
 
-        if (Mathf.Abs(scrollDelta) > 0.001f)
+        // No size threshold: at high frame rates a slow stick gives a tiny per-frame delta
+        if (scrollDelta != 0.0f)
         {
             Vector2 pos = scrollRect.normalizedPosition;
             pos.y = Mathf.Clamp01(pos.y + scrollDelta);
@@ -506,6 +535,7 @@ public class ScrollInputAdapter : UdonSharpBehaviour
 > - VR thumbstick axes vary by headset. `Oculus_CrossPlatform_SecondaryThumbstickVertical` covers most SteamVR and Oculus setups in VRChat.
 > - Apply a dead zone to prevent unintentional drift from loose thumbsticks.
 > - Desktop scroll uses `Mouse ScrollWheel`, which returns small float values per frame; adjust `desktopScrollSpeed` to taste.
+> - The adapter moves `normalizedPosition.y`, so it scrolls vertical lists only; change it to `x` for a horizontal list. Both speeds are fractions of the scrollable range, so the same setting moves a longer list further per step.
 > - This pattern runs in `Update()` — see the Update Handler pattern in `patterns-performance.md` for centralized update management in complex worlds.
 
 ---
@@ -522,7 +552,7 @@ using UnityEngine;
 using TMPro;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LookupLocalization : UdonSharpBehaviour
 {
     [Header("UI Elements")]
@@ -621,7 +651,7 @@ using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class ToggleAnimatorBridge : UdonSharpBehaviour
 {
     [Header("References")]
@@ -830,7 +860,7 @@ array with manual resize for listener management.
 using UdonSharp;
 using UnityEngine;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class MenuEventBroadcaster : UdonSharpBehaviour
 {
     [Header("Events")]

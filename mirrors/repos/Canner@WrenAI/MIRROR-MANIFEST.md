@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 25 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,15 +75,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`core/wren/src/wren/skills_content/generate-mdl/SKILL.md`](core/wren/src/wren/skills_content/generate-mdl/SKILL.md) |
 | 15 | ✓ | [`core/wren/src/wren/skills_content/onboarding/SKILL.md`](core/wren/src/wren/skills_content/onboarding/SKILL.md) |
 | 16 | ✓ | [`core/wren/src/wren/skills_content/usage/SKILL.md`](core/wren/src/wren/skills_content/usage/SKILL.md) |
-| 17 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
-| 18 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
-| 19 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 20 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
-| 21 | ✓ | [`skills/index.json`](skills/index.json) |
-| 22 | ✓ | [`skills/install.sh`](skills/install.sh) |
-| 23 | ✓ | [`skills/README.md`](skills/README.md) |
-| 24 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
-| 25 | ✓ | [`skills/wren/SKILL.md`](skills/wren/SKILL.md) |
+| 17 | ✓ | [`core/wren/src/wren/skills_content/wren-planner/SKILL.md`](core/wren/src/wren/skills_content/wren-planner/SKILL.md) |
+| 18 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
+| 19 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
+| 20 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 21 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
+| 22 | ✓ | [`skills/index.json`](skills/index.json) |
+| 23 | ✓ | [`skills/install.sh`](skills/install.sh) |
+| 24 | ✓ | [`skills/README.md`](skills/README.md) |
+| 25 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
+| 26 | ✓ | [`skills/wren/SKILL.md`](skills/wren/SKILL.md) |
 
 ---
 

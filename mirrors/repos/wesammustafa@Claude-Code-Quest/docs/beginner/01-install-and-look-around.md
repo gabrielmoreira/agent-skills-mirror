@@ -1,6 +1,6 @@
 # Install, sign in and look around
 
-<sub>**Beginner** · Lesson 1 of 5 · about 20 minutes · Needs: [Beginner index](README.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Lesson 1 of 5 · about 20 minutes · Needs: [Beginner index](README.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -49,7 +49,7 @@ The header Claude Code shows when it starts gives the version and the model. The
    ```
 
    If your shell says `claude` isn't found or isn't recognized, the install folder isn't on your `PATH` yet: fix it with [Troubleshoot installation](https://code.claude.com/docs/en/troubleshoot-install#command-not-found-claude-after-installation) before you go on.
-3. Go to your copy's `project/` folder and start a session there, not at the root of your copy: put the full path to your copy's folder in place of `<your practice copy>`, in quotes if the path has a space. In a Codespace, that is `/workspaces/` followed by your copy's name ([Codespaces deep dive](https://docs.github.com/en/codespaces/about-codespaces/deep-dive)):
+3. Go to your copy's `project/` folder and start a session there, not at the root of your copy: put the full path to your copy's folder in place of `<your practice copy>`, in quotes if the path has a space. In a Codespace, your copy is in the `/workspaces` folder ([Codespaces deep dive](https://docs.github.com/en/codespaces/about-codespaces/deep-dive)):
 
    ```bash
    cd <your practice copy>/project

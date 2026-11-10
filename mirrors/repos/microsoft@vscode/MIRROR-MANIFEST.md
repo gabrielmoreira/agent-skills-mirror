@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 145 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 146 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 145 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 145 |
+| Files         | 146 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -157,53 +157,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`.github/skills/smoke-tests/SKILL.md`](.github/skills/smoke-tests/SKILL.md) |
 | 97 | ✓ | [`.github/skills/sweeper-implement/SKILL.md`](.github/skills/sweeper-implement/SKILL.md) |
 | 98 | ✓ | [`.github/skills/sweeper-plan/SKILL.md`](.github/skills/sweeper-plan/SKILL.md) |
-| 99 | ✓ | [`.github/skills/symbolicate-crash-dump/SKILL.md`](.github/skills/symbolicate-crash-dump/SKILL.md) |
-| 100 | ✓ | [`.github/skills/unit-tests/SKILL.md`](.github/skills/unit-tests/SKILL.md) |
-| 101 | ✓ | [`.github/skills/update-instructions/SKILL.md`](.github/skills/update-instructions/SKILL.md) |
-| 102 | ✓ | [`.github/skills/update-screenshots/SKILL.md`](.github/skills/update-screenshots/SKILL.md) |
-| 103 | ✓ | [`.github/skills/ux-css-layout/SKILL.md`](.github/skills/ux-css-layout/SKILL.md) |
-| 104 | ✓ | [`.github/skills/ux-theming/SKILL.md`](.github/skills/ux-theming/SKILL.md) |
-| 105 | ✓ | [`.github/skills/validate-ui-scenario/SKILL.md`](.github/skills/validate-ui-scenario/SKILL.md) |
-| 106 | ✓ | [`.github/skills/vscode-dev-workbench/SKILL.md`](.github/skills/vscode-dev-workbench/SKILL.md) |
-| 107 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 108 | ✓ | [`extensions/copilot/.agents/skills/github-copilot-upgrader/SKILL.md`](extensions/copilot/.agents/skills/github-copilot-upgrader/SKILL.md) |
-| 109 | ✓ | [`extensions/copilot/.agents/skills/launch/SKILL.md`](extensions/copilot/.agents/skills/launch/SKILL.md) |
-| 110 | ✓ | [`extensions/copilot/.github/copilot-instructions.md`](extensions/copilot/.github/copilot-instructions.md) |
-| 111 | ✓ | [`extensions/copilot/assets/prompts/skills/agent-customization/references/skills.md`](extensions/copilot/assets/prompts/skills/agent-customization/references/skills.md) |
-| 112 | ✓ | [`extensions/copilot/assets/prompts/skills/agent-customization/SKILL.md`](extensions/copilot/assets/prompts/skills/agent-customization/SKILL.md) |
-| 113 | ✓ | [`extensions/copilot/assets/prompts/skills/chronicle/SKILL.md`](extensions/copilot/assets/prompts/skills/chronicle/SKILL.md) |
-| 114 | ✓ | [`extensions/copilot/assets/prompts/skills/create-agent/SKILL.md`](extensions/copilot/assets/prompts/skills/create-agent/SKILL.md) |
-| 115 | ✓ | [`extensions/copilot/assets/prompts/skills/create-canvas/SKILL.md`](extensions/copilot/assets/prompts/skills/create-canvas/SKILL.md) |
-| 116 | ✓ | [`extensions/copilot/assets/prompts/skills/create-hook/SKILL.md`](extensions/copilot/assets/prompts/skills/create-hook/SKILL.md) |
-| 117 | ✓ | [`extensions/copilot/assets/prompts/skills/create-instructions/SKILL.md`](extensions/copilot/assets/prompts/skills/create-instructions/SKILL.md) |
-| 118 | ✓ | [`extensions/copilot/assets/prompts/skills/create-prompt/SKILL.md`](extensions/copilot/assets/prompts/skills/create-prompt/SKILL.md) |
-| 119 | ✓ | [`extensions/copilot/assets/prompts/skills/create-skill/SKILL.md`](extensions/copilot/assets/prompts/skills/create-skill/SKILL.md) |
-| 120 | ✓ | [`extensions/copilot/assets/prompts/skills/init/SKILL.md`](extensions/copilot/assets/prompts/skills/init/SKILL.md) |
-| 121 | ✓ | [`extensions/copilot/assets/prompts/skills/migrate-customizations/SKILL.md`](extensions/copilot/assets/prompts/skills/migrate-customizations/SKILL.md) |
-| 122 | ✓ | [`extensions/copilot/assets/prompts/skills/record-video/SKILL.md`](extensions/copilot/assets/prompts/skills/record-video/SKILL.md) |
-| 123 | ✓ | [`extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md`](extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md) |
-| 124 | ✓ | [`extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md`](extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md) |
-| 125 | ✓ | [`extensions/copilot/src/platform/authentication/common/AGENTS.md`](extensions/copilot/src/platform/authentication/common/AGENTS.md) |
-| 126 | ✓ | [`src/vs/platform/agentHost/AGENTS.md`](src/vs/platform/agentHost/AGENTS.md) |
-| 127 | ✓ | [`src/vs/platform/agentHost/common/state/AGENTS.md`](src/vs/platform/agentHost/common/state/AGENTS.md) |
-| 128 | ✓ | [`src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md`](src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md) |
-| 129 | ✓ | [`src/vs/platform/agentHost/PERFORMANCE.md`](src/vs/platform/agentHost/PERFORMANCE.md) |
-| 130 | ✓ | [`src/vs/platform/agentHost/test/node/AGENTS.md`](src/vs/platform/agentHost/test/node/AGENTS.md) |
-| 131 | ✓ | [`src/vs/sessions/skills/act-on-feedback/SKILL.md`](src/vs/sessions/skills/act-on-feedback/SKILL.md) |
-| 132 | ✓ | [`src/vs/sessions/skills/automate/SKILL.md`](src/vs/sessions/skills/automate/SKILL.md) |
-| 133 | ✓ | [`src/vs/sessions/skills/code-review/SKILL.md`](src/vs/sessions/skills/code-review/SKILL.md) |
-| 134 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
-| 135 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
-| 136 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
-| 137 | ✓ | [`src/vs/sessions/skills/fix-ci/SKILL.md`](src/vs/sessions/skills/fix-ci/SKILL.md) |
-| 138 | ✓ | [`src/vs/sessions/skills/generate-chat-background/SKILL.md`](src/vs/sessions/skills/generate-chat-background/SKILL.md) |
-| 139 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
-| 140 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
-| 141 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
-| 142 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
-| 143 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
-| 144 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 145 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 99 | ✓ | [`.github/skills/sweeper-query/SKILL.md`](.github/skills/sweeper-query/SKILL.md) |
+| 100 | ✓ | [`.github/skills/symbolicate-crash-dump/SKILL.md`](.github/skills/symbolicate-crash-dump/SKILL.md) |
+| 101 | ✓ | [`.github/skills/unit-tests/SKILL.md`](.github/skills/unit-tests/SKILL.md) |
+| 102 | ✓ | [`.github/skills/update-instructions/SKILL.md`](.github/skills/update-instructions/SKILL.md) |
+| 103 | ✓ | [`.github/skills/update-screenshots/SKILL.md`](.github/skills/update-screenshots/SKILL.md) |
+| 104 | ✓ | [`.github/skills/ux-css-layout/SKILL.md`](.github/skills/ux-css-layout/SKILL.md) |
+| 105 | ✓ | [`.github/skills/ux-theming/SKILL.md`](.github/skills/ux-theming/SKILL.md) |
+| 106 | ✓ | [`.github/skills/validate-ui-scenario/SKILL.md`](.github/skills/validate-ui-scenario/SKILL.md) |
+| 107 | ✓ | [`.github/skills/vscode-dev-workbench/SKILL.md`](.github/skills/vscode-dev-workbench/SKILL.md) |
+| 108 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 109 | ✓ | [`extensions/copilot/.agents/skills/github-copilot-upgrader/SKILL.md`](extensions/copilot/.agents/skills/github-copilot-upgrader/SKILL.md) |
+| 110 | ✓ | [`extensions/copilot/.agents/skills/launch/SKILL.md`](extensions/copilot/.agents/skills/launch/SKILL.md) |
+| 111 | ✓ | [`extensions/copilot/.github/copilot-instructions.md`](extensions/copilot/.github/copilot-instructions.md) |
+| 112 | ✓ | [`extensions/copilot/assets/prompts/skills/agent-customization/references/skills.md`](extensions/copilot/assets/prompts/skills/agent-customization/references/skills.md) |
+| 113 | ✓ | [`extensions/copilot/assets/prompts/skills/agent-customization/SKILL.md`](extensions/copilot/assets/prompts/skills/agent-customization/SKILL.md) |
+| 114 | ✓ | [`extensions/copilot/assets/prompts/skills/chronicle/SKILL.md`](extensions/copilot/assets/prompts/skills/chronicle/SKILL.md) |
+| 115 | ✓ | [`extensions/copilot/assets/prompts/skills/create-agent/SKILL.md`](extensions/copilot/assets/prompts/skills/create-agent/SKILL.md) |
+| 116 | ✓ | [`extensions/copilot/assets/prompts/skills/create-canvas/SKILL.md`](extensions/copilot/assets/prompts/skills/create-canvas/SKILL.md) |
+| 117 | ✓ | [`extensions/copilot/assets/prompts/skills/create-hook/SKILL.md`](extensions/copilot/assets/prompts/skills/create-hook/SKILL.md) |
+| 118 | ✓ | [`extensions/copilot/assets/prompts/skills/create-instructions/SKILL.md`](extensions/copilot/assets/prompts/skills/create-instructions/SKILL.md) |
+| 119 | ✓ | [`extensions/copilot/assets/prompts/skills/create-prompt/SKILL.md`](extensions/copilot/assets/prompts/skills/create-prompt/SKILL.md) |
+| 120 | ✓ | [`extensions/copilot/assets/prompts/skills/create-skill/SKILL.md`](extensions/copilot/assets/prompts/skills/create-skill/SKILL.md) |
+| 121 | ✓ | [`extensions/copilot/assets/prompts/skills/init/SKILL.md`](extensions/copilot/assets/prompts/skills/init/SKILL.md) |
+| 122 | ✓ | [`extensions/copilot/assets/prompts/skills/migrate-customizations/SKILL.md`](extensions/copilot/assets/prompts/skills/migrate-customizations/SKILL.md) |
+| 123 | ✓ | [`extensions/copilot/assets/prompts/skills/record-video/SKILL.md`](extensions/copilot/assets/prompts/skills/record-video/SKILL.md) |
+| 124 | ✓ | [`extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md`](extensions/copilot/assets/prompts/skills/troubleshoot/SKILL.md) |
+| 125 | ✓ | [`extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md`](extensions/copilot/src/extension/chatSessions/copilotcli/AGENTS.md) |
+| 126 | ✓ | [`extensions/copilot/src/platform/authentication/common/AGENTS.md`](extensions/copilot/src/platform/authentication/common/AGENTS.md) |
+| 127 | ✓ | [`src/vs/platform/agentHost/AGENTS.md`](src/vs/platform/agentHost/AGENTS.md) |
+| 128 | ✓ | [`src/vs/platform/agentHost/common/state/AGENTS.md`](src/vs/platform/agentHost/common/state/AGENTS.md) |
+| 129 | ✓ | [`src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md`](src/vs/platform/agentHost/node/copilot/prompts/AGENTS.md) |
+| 130 | ✓ | [`src/vs/platform/agentHost/PERFORMANCE.md`](src/vs/platform/agentHost/PERFORMANCE.md) |
+| 131 | ✓ | [`src/vs/platform/agentHost/test/node/AGENTS.md`](src/vs/platform/agentHost/test/node/AGENTS.md) |
+| 132 | ✓ | [`src/vs/sessions/skills/act-on-feedback/SKILL.md`](src/vs/sessions/skills/act-on-feedback/SKILL.md) |
+| 133 | ✓ | [`src/vs/sessions/skills/automate/SKILL.md`](src/vs/sessions/skills/automate/SKILL.md) |
+| 134 | ✓ | [`src/vs/sessions/skills/code-review/SKILL.md`](src/vs/sessions/skills/code-review/SKILL.md) |
+| 135 | ✓ | [`src/vs/sessions/skills/commit/SKILL.md`](src/vs/sessions/skills/commit/SKILL.md) |
+| 136 | ✓ | [`src/vs/sessions/skills/create-draft-pr/SKILL.md`](src/vs/sessions/skills/create-draft-pr/SKILL.md) |
+| 137 | ✓ | [`src/vs/sessions/skills/create-pr/SKILL.md`](src/vs/sessions/skills/create-pr/SKILL.md) |
+| 138 | ✓ | [`src/vs/sessions/skills/fix-ci/SKILL.md`](src/vs/sessions/skills/fix-ci/SKILL.md) |
+| 139 | ✓ | [`src/vs/sessions/skills/generate-chat-background/SKILL.md`](src/vs/sessions/skills/generate-chat-background/SKILL.md) |
+| 140 | ✓ | [`src/vs/sessions/skills/generate-run-commands/SKILL.md`](src/vs/sessions/skills/generate-run-commands/SKILL.md) |
+| 141 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
+| 142 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
+| 143 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
+| 144 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
+| 145 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
+| 146 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
 
 ---
 

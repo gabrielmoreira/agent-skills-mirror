@@ -1,9 +1,8 @@
 # VRChat World Components Complete Reference
 
-Full component reference for the active SDK target, 3.10.6. Version-specific feature introductions below are retained as historical migration information only.
+Full component reference for the active SDK target.
 
-**Active support / last verified**: SDK 3.10.6
-**Historical version notes**: Older version numbers are not supported or validation targets for this Skill.
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
 ## Table of Contents
 
@@ -18,14 +17,15 @@ Full component reference for the active SDK target, 3.10.6. Version-specific fea
 - [VRC_UIShape](#vrc_uishape)
 - [VRC_AvatarPedestal](#vrc_avatarpedestal)
 - [VRC_CameraDolly](#vrc_cameradolly)
-- [VRCCameraSettings API](#vrccamerasettings-api)
 - [VRCBillboard (SDK 3.10.6)](#vrcbillboard-sdk-3106)
 - [VRCVelocityTracker (SDK 3.10.6)](#vrcvelocitytracker-sdk-3106)
 - [VRCPlacementZone (SDK 3.10.6)](#vrcplacementzone-sdk-3106)
 - [Contacts in Worlds](#contacts-in-worlds)
 - [PhysBones and Global Collision in Worlds](#physbones-and-global-collision-in-worlds)
+- [VRCCameraSettings API](#vrccamerasettings-api)
 - [Avatar-driven features that read world colliders](#avatar-driven-features-that-read-world-colliders)
 - [Allowed Unity Components](#allowed-unity-components)
+- [See Also](#see-also)
 
 ---
 
@@ -613,7 +613,10 @@ Enables VRChat interaction with Unity UI (Canvas).
 // - Keep EventSystem in the scene (don't delete it)
 // - Canvas Z-axis should face away from the player
 // - Set Navigation to "None" on UI elements
+// - Set Scroll Sensitivity to 0 on every ScrollRect (scroll views)
 ```
+
+The last two settings stop movement input from driving the UI. VRChat's [VRC_UIShape troubleshooting](https://creators.vrchat.com/worlds/components/vrc_uishape/) lists both for "the UI is moving when you move, press a key, or move a joystick". With Scroll Sensitivity at 0, the desktop mouse wheel stops scrolling too, and players scroll by dragging the content or the scrollbar. If a vertical list needs stick or wheel scrolling, add the [ScrollRect input adapter](../../unity-vrc-udon-sharp/references/patterns-ui.md#6-scrollrect-vrdesktop-input-abstraction) and enable it only while the panel is in use.
 
 ### TextMeshPro Recommendation
 

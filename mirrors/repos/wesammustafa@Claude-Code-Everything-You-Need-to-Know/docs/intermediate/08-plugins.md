@@ -1,6 +1,6 @@
 # Install and manage plugins
 
-<sub>**Intermediate** · Lesson 8 of 8 · about 25 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md), [Enforce a rule with a hook](05-hooks.md), [Delegate to a custom subagent](06-subagents.md), [Connect a tool with MCP](07-mcp.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 8 of 8 · about 25 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md), [Enforce a rule with a hook](05-hooks.md), [Delegate to a custom subagent](06-subagents.md), [Connect a tool with MCP](07-mcp.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -26,7 +26,7 @@ The [install scope](https://code.claude.com/docs/en/plugins/install#choose-an-in
 | Project | Your collaborators | `.claude/settings.json`, committed |
 | Local | You, in this repository | `.claude/settings.local.json` |
 
-A shared setting does not download the plugin to a teammate's machine. They install it too. A local trial lets you evaluate the result before proposing a team dependency.
+A shared setting does not download the plugin to a teammate's machine unless its marketplace entry has a relative-path source; otherwise teammates install it too ([Enabled in project settings but not installed](https://code.claude.com/docs/en/plugins/loading#enabled-in-project-settings-but-not-installed)). A local trial lets you evaluate the result before proposing a team dependency.
 
 [Code intelligence](https://code.claude.com/docs/en/plugins/code-intelligence#see-what-claude-gains) adds diagnostics and symbol navigation through a language server. Installing the plugin alone does not install that server. Confirm a real lookup, rather than treating an installed label as proof it works.
 
@@ -46,7 +46,7 @@ A shared setting does not download the plugin to a teammate's machine. They inst
    /plugin install typescript-lsp@claude-plugins-official
    ```
 
-   If Claude Code says `Marketplace "claude-plugins-official" not found`, the official marketplace isn't registered on this machine yet, for example because you've only used Claude Code in VS Code. Add it with `/plugin marketplace add anthropics/claude-plugins-official`, then open the plugin again ([Marketplace not found](https://code.claude.com/docs/en/plugins/troubleshooting#marketplace-claude-plugins-official-not-found)). Nothing installs until you review the details and choose a scope ([Install a plugin](https://code.claude.com/docs/en/plugins/install#install-a-plugin)). Read **Will install**, and **Context cost**, its token estimates for every turn and for when its skills and agents load. Then choose **Install for you, in this repo only (local scope)**. Claude Code keeps `.claude/settings.local.json` at the repository root, which in a Practice copy is the folder above `project/`; either place counts ([Where Claude Code keeps the local file in a git repository](https://code.claude.com/docs/en/settings#where-claude-code-keeps-the-local-file-in-a-git-repository)). A confirmation says whether the plugin is active now or needs `/reload-plugins`. If that reload would invalidate the prompt cache, as adding the `LSP` tool can, Claude Code warns and leaves the plugin pending. Run `/reload-plugins --force` to activate it anyway, which costs one uncached request ([Install a plugin](https://code.claude.com/docs/en/plugins/install#install-a-plugin), [Reloads that change MCP tools](https://code.claude.com/docs/en/plugins/cli-reference#reloads-that-change-mcp-tools)).
+   If Claude Code says `Marketplace "claude-plugins-official" not found`, the official marketplace isn't registered on this machine yet, for example because you've only used Claude Code in VS Code. Add it with `/plugin marketplace add anthropics/claude-plugins-official`, then open the plugin again ([Marketplace not found](https://code.claude.com/docs/en/plugins/troubleshooting#marketplace-claude-plugins-official-not-found)). Nothing installs until you review the details and choose a scope ([Install a plugin](https://code.claude.com/docs/en/plugins/install#install-a-plugin)). Read **Will install**, and **Context cost**, its two token estimates: **Every turn** is what the plugin adds to each message you send, and **When invoked** is what its skills and agents add once Claude loads them. Then choose **Install for you, in this repo only (local scope)**. Claude Code keeps `.claude/settings.local.json` at the repository root, which in a Practice copy is the folder above `project/`; either place counts ([Where Claude Code keeps the local file in a git repository](https://code.claude.com/docs/en/settings#where-claude-code-keeps-the-local-file-in-a-git-repository)). A confirmation says whether the plugin is active now or needs `/reload-plugins`. If that reload would invalidate the prompt cache, as adding the `LSP` tool can, Claude Code warns and leaves the plugin pending. Run `/reload-plugins --force` to activate it anyway, which costs one uncached request ([Install a plugin](https://code.claude.com/docs/en/plugins/install#install-a-plugin), [Reloads that change MCP tools](https://code.claude.com/docs/en/plugins/cli-reference#reloads-that-change-mcp-tools)).
 3. Confirm the server starts: it starts the first time Claude edits a file the plugin handles. Ask Claude to introduce a type error or a syntax error in one of your source files and then fix it, and look for a `Found N new diagnostic issues` line after the edit ([Install a code intelligence plugin](https://code.claude.com/docs/en/plugins/code-intelligence#install-a-code-intelligence-plugin)). If none appears, open `/plugin` and check **Errors**, then verify the server binary is on the launching shell's `PATH`.
 
    Decide the small change you'll make, and choose a function it could affect. Replace the placeholders and ask:
@@ -78,7 +78,7 @@ Share only the plugin the team chose, so nobody pulls in the trial you're still 
 
    Review `git status`: if installation reformatted `.claude/settings.json`, review and commit that change too.
 4. Exit the existing session with `/exit`, start `claude` in this repository, and request `Recommend Claude Code automations for this project.` The plugin's [read-only skill](https://github.com/anthropics/claude-plugins-official/blob/main/plugins/claude-code-setup/README.md) recommends automations; it does not implement them. Look for its Skill tool call. If it did not load, invoke `/claude-code-setup:claude-automation-recommender` directly. A plugin's skills run under the plugin's name, as `/<plugin>:<skill>`, so they load beside the skills in your `.claude/skills/` even when a name matches ([Resolve skills that share a name](https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name)). Choose one recommendation that fills a real gap, rather than duplicating an existing skill or hook, and note why. Implementing it is optional.
-5. Save a machine-readable install list from this repository's root ([JSON list output](https://code.claude.com/docs/en/plugins/cli-reference#plugin-list)):
+5. Save a machine-readable install list from the folder where you start `claude` (in a Practice copy, `project/`, not the folder above it) ([JSON list output](https://code.claude.com/docs/en/plugins/cli-reference#plugin-list)):
 
    ```bash
    mkdir -p .practice
@@ -91,14 +91,14 @@ Share only the plugin the team chose, so nobody pulls in the trial you're still 
 
 You are done when all of these are true:
 
-- [ ] The committed settings turn the plugin on for the project: `git show HEAD:.claude/settings.json | jq .enabledPlugins` shows `"claude-code-setup@claude-plugins-official": true`.
+- [ ] The committed settings turn the plugin on for the project: `git show HEAD:./.claude/settings.json | jq .enabledPlugins` shows `"claude-code-setup@claude-plugins-official": true`.
 - [ ] It's installed at project scope and enabled: `jq '.[] | select(.id == "claude-code-setup@claude-plugins-official") | {scope, enabled, projectEnabled}' .practice/i-8-plugins.json` shows `"project"`, `true` and `true`.
 - [ ] Your code intelligence trial is installed at local scope and stays out of the committed settings: `jq '.[] | select(.scope == "local") | .id' .practice/i-8-plugins.json` shows your `-lsp` plugin.
 - [ ] Self-check (not tested): you verified an LSP definition or reference, and chose a recommendation that fills a real gap.
 
 Run `npm run check -- i-8 --dir <your repo>` from your practice copy, or `npm run check -- i-8` in the copy itself.
 
-If the first item fails, check the name after `@`: it's the marketplace's name, `claude-plugins-official`, not its repository. If the second fails, install the project plugin in this repository and save the list again with `--json`. If the trial item fails, install your language's plugin with local scope, keep it out of `enabledPlugins` in `.claude/settings.json`, and save the list again.
+If the first item fails, check the name after `@`: it's the marketplace's name, `claude-plugins-official`, not its repository. If the second fails, install the project plugin in this repository and save the list again with `--json`, from the folder where you start `claude`. If the trial item fails, install your language's plugin with local scope, keep it out of `enabledPlugins` in `.claude/settings.json`, and save the list again.
 
 ## Watch out
 

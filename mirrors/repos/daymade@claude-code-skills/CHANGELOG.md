@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **prior-work-retrieval** (`daymade-claude-code` v5.1.6 → v5.1.7): Match complete English code/codebase tokens so Codex and code identifiers do not trigger prior-work retrieval.
+
+- **report-with-html** (v1.6.0 → v1.6.1): Keep preview limits with their executable owner and route existing-page hosting and missing-asset recovery from repository instructions. Runtime behavior is unchanged.
+
+- **transcript-fixer** (`daymade-audio` v1.57.7 → v1.57.8): Route reviewed-file continuation through execution-blocker inspection before choosing more audio evidence, and align the repository entry with the finite written-wording contract.
+
+- **peer-message** (v1.25.3 → v1.25.4): Decode native Codex XML carrier entities once before verifying the prepared coordination envelope. Preserve payload whitespace, direct envelopes and strict digest and identity checks.
+- **report-with-html** (v1.5.1 → v1.6.0): Restore and host existing HTML through a bounded transport-only route. Stream large, explicitly listed media snapshots with HTTP range support while preserving small-preview compatibility and frozen content.
+- **read-claude-code-history** (`daymade-claude-code` v5.1.5 → v5.1.6): Recover page dependencies alongside HTML and distinguish original bytes, regenerated assets, screenshot-only evidence and missing media. Align recovery instructions with the helper's file-writing behavior.
+- **transcript-fixer** (`daymade-audio` v1.57.6 → v1.57.7): Separate execution blockers from undecided review items, allow bounded wording evidence, and recover anchors only through recorded successful edits; preserve name authority and refusal atomicity.
+
+- **peer-message** (v1.25.1 → v1.25.2): Read native Codex coordination envelopes from their exact history carrier, preserve the original inner payload, and verify sender and recipient before receive. Keep scripted intake and digest/lifecycle checks.
+- **report-with-html** (v1.5.0 → v1.5.1): Remove Skill-authored initial-navigation and rehosting restrictions from local HTTP preview guidance. Preserve the loopback manifest server and rendered-delivery verification.
+- **kimi-use** (v1.8.5 → v1.8.6): Keep recovery permission and retry rules with their owning sections, route desktop recovery from project instructions, and remove the optional duplicate marketplace description.
+- **Marketplace validation:** Accept omitted or empty-string descriptions, reject present non-string values, and exercise those boundaries in CI against the vendor schema contract.
+
+- **kimi-use** (v1.8.4 → v1.8.5): Distinguish backend input limitations, host permission refusals and unknown effects; verify authorized native recovery and upgrade outcomes separately.
+
+- **local-codex** (`daymade-codex` v2.4.7 → v2.4.8): Honor accepted interruption for official shared-backend upgrades without a global idle prerequisite; distinguish official pinned packages from custom builds and verify account-controller adoption separately. Enhanced migrations retain their own drain contract.
+- **feishu-doc-scraper** (v1.13.1 → v1.13.2): Keep the body-capture recipe in its API SOP, route the Skill and repository guide to it, and align refresh guidance with the existing refusal to overwrite notes. Remove the handwritten contents summary; extraction behavior is unchanged.
+- **feishu-doc-scraper** (v1.13.0 → v1.13.1): Reject empty converted bodies and validate the documented extraction recipes before publishing notes; preserve existing notes, original HTML and valid text or media bodies.
+- **local-codex** (`daymade-codex` v2.4.6 → v2.4.7): Separate client/backend provenance and official-package compatibility from optional patches; verify new and existing sessions independently and preserve unknown login receipts through supported reconciliation. Change type: bounded diagnostic and acceptance clarification.
+- **peer-message** (v1.25.0 → v1.25.1): Align preflight recovery and JSON error-receipt guidance with the existing complete-envelope limit handler; distinguish rejected preparation from an already prepared unsent message. Runtime behavior is unchanged.
+
 - **peer-message** (v1.24.10 → v1.25.0): Add optional native-envelope UTF-8 byte preflight to `coord prepare`; reject oversized messages atomically before retaining send reservations or state revisions. Preserve omitted-limit behavior, native delivery guards and receipt boundaries.
 
 - **terraform-skill** (v1.5.12 → v1.5.13): Add a certificate-maintenance replay case covering initial creation, next replacement and no-op through the complete publisher/lifecycle gate chain, with unsafe-context and deletion controls.
@@ -3268,6 +3292,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Broken flagship install commands** ([#67](https://github.com/daymade/claude-code-skills/issues/67)): `claude plugin install skill-creator@daymade-skills` (plus `skill-reviewer` / `skills-search` / `doc-to-markdown`) failed because those are suite members, not standalone plugins. Corrected every occurrence across README.md, README.zh-CN.md, QUICKSTART.md, QUICKSTART.zh-CN.md to the suite name (`daymade-skill@daymade-skills` / `daymade-docs@daymade-skills`), invoked as `daymade-skill:skill-creator` etc.
 
 - **tibo-reset-codex** (v2.6.0 → v2.6.1): Deliver verified decision-changing information through the existing host contract before nonessential follow-up. Make preserving banked resets conditional on account evidence and the cost of delaying valuable work; preserve read-only hosting, notification permissions and manual redemption. Change type: bounded decision and delivery guidance correction.
+
+- **terraform-skill** (v1.5.13 → v1.5.14): Route restoration through the existing release checks; verify separately owned DNS, consumer hostname TLS and selected SSH arguments before resuming application acceptance.
+- **peer-message** (v1.25.2 → v1.25.3): Add owner-release, successor-claim and readback steps; distinguish resource-window release from responsibility for the consumer's result.
+- **tech-selection** (`daymade-claude-code` v5.1.4 → v5.1.5): Assign hosted-database and object-storage responsibilities before capacity comparisons; retain justified binary fields and unknown provider/account constraints.
 
 ## [1.82.0] - 2026-07-07
 

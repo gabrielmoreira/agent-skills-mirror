@@ -1,6 +1,6 @@
 # Organize project memory and see what loaded
 
-<sub>**Intermediate** · Lesson 2 of 8 · about 20 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 2 of 8 · about 20 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -96,7 +96,7 @@ A teammate's rule never takes effect. Find out why, and fix it.
 
 You are done when all of these are true:
 
-- [ ] The committed `CLAUDE.md` imports a file that exists: `git show HEAD:CLAUDE.md | grep '@'` shows the import.
+- [ ] The committed `CLAUDE.md` imports a file that exists: `git show HEAD:./CLAUDE.md | grep '@'` shows the import (the `./` reads the path from the folder you are in, [gitrevisions](https://git-scm.com/docs/gitrevisions)).
 - [ ] Every committed rule with `paths:` matches a file: for each pattern, `git ls-files ':(glob)<pattern>'` lists at least one file.
 - [ ] The log shows the import and a scoped rule loading: `grep -E '^(include|path_glob_match)' .practice/i-2-loaded.txt` prints at least one line of each kind.
 - [ ] Self-check (not tested): you can say which of your instruction files load at the start and which load later, and how you saw each one load.
@@ -119,6 +119,6 @@ If the import check fails, look for punctuation right after the path, or a path 
 
 ---
 
-<sub>Sources: [How Claude remembers your project](https://code.claude.com/docs/en/memory) · [Hooks reference](https://code.claude.com/docs/en/hooks) · [Debug your configuration](https://code.claude.com/docs/en/debug-your-config) · [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching) · [CLI reference](https://code.claude.com/docs/en/cli-reference) · [Commands](https://code.claude.com/docs/en/commands)</sub>
+<sub>Sources: [How Claude remembers your project](https://code.claude.com/docs/en/memory) · [Hooks reference](https://code.claude.com/docs/en/hooks) · [Debug your configuration](https://code.claude.com/docs/en/debug-your-config) · [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching) · [CLI reference](https://code.claude.com/docs/en/cli-reference) · [Commands](https://code.claude.com/docs/en/commands) · [gitrevisions](https://git-scm.com/docs/gitrevisions)</sub>
 
 <sub>← [Turn a repeated workflow into a skill](01-first-skill.md) · [Intermediate index](README.md) · [Pick the model and effort](03-model-and-effort.md) → · Topic: [Memory and context](../topics/memory-and-context.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-2)</sub>

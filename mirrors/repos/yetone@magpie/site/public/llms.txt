@@ -12,6 +12,7 @@ Key facts:
 - Install from a terminal (macOS, Linux): `curl -fsSL https://usemagpie.ai/install.sh | sh`
 - Community: Discord, linked from the website
 - Price: free
+- Full text of every docs page in one file: https://usemagpie.ai/llms-full.txt
 
 ## What it does
 
@@ -43,6 +44,17 @@ DeepSeek, Kimi (Moonshot), GLM (Zhipu), Qwen, MiniMax, Anthropic (Claude), OpenA
 - [Local models in Claude Code and Codex](https://usemagpie.ai/docs/local-models): run Claude Code and Codex on Ollama, LM Studio, oMLX, MLX-Serve, vLLM or llama.cpp; default addresses, which API each server speaks, context window and masking.
 - [Models in OpenCode](https://usemagpie.ai/docs/opencode-models): run OpenCode on DeepSeek, Kimi, GLM, Qwen or a Claude, ChatGPT or Copilot subscription; what magpie writes in opencode.json, reasoning variants and cost, and how to switch back.
 - [magpie vs CC Switch vs Claude Code Router](https://usemagpie.ai/docs/alternatives): a fair comparison of the three: agents, config rewrite or local proxy, protocol translation, subscription sign-ins, routing and failover, GUI and CLI, platforms and license, and which one fits.
+- [DeepSeek in every agent](https://usemagpie.ai/docs/deepseek): use DeepSeek V4 in Claude Code, Codex, Gemini CLI and OpenCode; the API key, endpoints, thinking on tool turns, reasoning effort, prompt cache and balance.
+- [Kimi K2 and Kimi Code in every agent](https://usemagpie.ai/docs/kimi): Kimi API or Kimi Code membership keys, global and China endpoints, in Claude Code, Codex, Gemini CLI and OpenCode; usage windows and web search.
+- [GLM Coding Plan in every agent](https://usemagpie.ai/docs/glm): Zhipu GLM and Z.ai, pay as you go or Coding Plan, each plan's endpoints, the 1113 "insufficient balance" fix, thinking and plan windows.
+- [Qwen in every agent](https://usemagpie.ai/docs/qwen): Alibaba Cloud Model Studio (DashScope), Bailian, the Qwen and Bailian Token Plans and Qwen Cloud in Claude Code, Codex, Gemini CLI and OpenCode; which endpoint each key works on, thinking and images.
+- [MiniMax and the Coding Plan in every agent](https://usemagpie.ai/docs/minimax): MiniMax M3 and M2.7, pay as you go or Coding Plan keys, global and China endpoints, interleaved thinking, effort and the plan's usage windows.
+- [OpenRouter in every agent](https://usemagpie.ai/docs/openrouter): one OpenRouter key for Claude Code, Codex, Gemini CLI and OpenCode; which endpoint each agent's requests use, the model list, reasoning, Claude's prompt cache, cost and credits, several keys and free models.
+- [GitHub Copilot in every agent](https://usemagpie.ai/docs/copilot): a Copilot seat's models in Claude Code, Codex, Gemini CLI and OpenCode; signing in (editors, Copilot CLI, GHE.com), Copilot Auto, premium requests, several accounts and errors.
+- [Gemini in every agent](https://usemagpie.ai/docs/gemini): a Google AI Studio key (or Vertex AI) in Claude Code, Codex, Gemini CLI and OpenCode; endpoints, thinking levels, thought signatures across tool calls, tool schemas, search and rate limits.
+- [Grok in every agent](https://usemagpie.ai/docs/grok): an xAI API key in Claude Code, Codex, Gemini CLI and OpenCode; which API each agent's requests use, what magpie fixes for xAI, reasoning effort, web search, prompt cache and several keys.
+- [Mistral in every agent](https://usemagpie.ai/docs/mistral): a Mistral API key in Claude Code, Codex, Gemini CLI and OpenCode; the model list, what magpie fixes for Mistral (thinking parts, refused fields), effort, search, cache and the plan card.
+- [Ollama in every agent](https://usemagpie.ai/docs/ollama): local Ollama, Ollama on another computer and Ollama Cloud in Claude Code, Codex, Gemini CLI and OpenCode; addresses, model list, context window, reasoning, tools, masking, pricing, and magpie as an Ollama server.
 - [Intent routing](https://usemagpie.ai/docs/intent): how a turn is routed by what the user asks for.
 - [Privacy masking](https://usemagpie.ai/docs/masking): what is masked before a request leaves the computer and how values come back.
 - [Library](https://usemagpie.ai/docs/library): instructions, MCP servers, skills, hooks and subagents for each agent.

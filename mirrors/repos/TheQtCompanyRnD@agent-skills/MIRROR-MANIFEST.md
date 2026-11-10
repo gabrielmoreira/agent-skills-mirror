@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 173 file(s) materialized.
+Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed patterns, 172 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TheQtCompanyRnD/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 173 |
+| Files         | 172 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -228,10 +228,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 167 | ✓ | [`skills/qt-qml-test/SKILL.md`](skills/qt-qml-test/SKILL.md) |
 | 168 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
 | 169 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
-| 170 | ✓ | [`skills/qt-qml/references/qmlpreview.md`](skills/qt-qml/references/qmlpreview.md) |
-| 171 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
-| 172 | ✓ | [`skills/qt-ui-design/LICENSE.txt`](skills/qt-ui-design/LICENSE.txt) |
-| 173 | ✓ | [`skills/qt-ui-design/SKILL.md`](skills/qt-ui-design/SKILL.md) |
+| 170 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
+| 171 | ✓ | [`skills/qt-ui-design/LICENSE.txt`](skills/qt-ui-design/LICENSE.txt) |
+| 172 | ✓ | [`skills/qt-ui-design/SKILL.md`](skills/qt-ui-design/SKILL.md) |
 
 ---
 

@@ -68,7 +68,7 @@ Skills are the core value of this project.
 2. **Create**: Add your category folder in `skills/`.
 3. **Validate**: Keep each canonical `SKILL.md` at or below 100 lines; verify token budget with `pnpm calculate-tokens`.
 4. **Reference**: Move detailed content to `references/`.
-5. **Framework packs**: Large framework categories may add category-level `references/framework-map.md`; keep skill files focused on decisions and verification.
+5. **Framework packs**: Large framework categories may add category-level `references/framework-map.md` for role navigation and stack routing (served via registry-backed MCP; current sync/generation tooling does not copy category-root guides to installed host directories (installed-host delivery deferred)); keep skill files focused on decisions and verification.
 6. **Guardrail skills**: Add `pressure_scenarios`, `rationalizations`, `red_flags`, and behavior assertions to `evals/evals.json`.
 7. **Evidence first**: Retain applicable earlier cases, remove obsolete expectations, and add preventing cases for corrected behavior. Candidate fixtures are not live efficacy evidence.
 8. **Public package boundary**: Do not ship project-specific environment, VPN, account-selection, or credential-handling recipes in reusable skills or references.
@@ -84,6 +84,7 @@ Skills are the core value of this project.
 18. **Diagnostic-prevention & trust boundaries**: Strictly scope operation-private capability minting to privileged mint, seal, restore, or high-risk mutation capabilities (ordinary user sessions follow their legitimate intended lifetime); require revalidation against authoritative sources (rejecting stale shared ledgers), and authentic caller provenance in persisted evidence without universal cryptographic signature mandates. Do not claim synthetic auth bypass (such as renderer-only fixtures, manual header injection, or standalone fetch) as proof of backend governance or CSRF enforcement.
 19. **Truthful telemetry & resource accounting**: Follow the Missing ≠ Zero principle. In telemetry guidance and reporting, never coerce missing token counts or pricing rates to 0 or $0.00; distinguish catalog discovery from body fetch, context delivery, and active tool usage.
 20. **Learning logs & no auto-promotion**: Document repeated mistakes and retrospective findings as proposed candidate lessons requiring human review. Do not auto-promote agent learnings directly into repository rules, instructions, or policy.
+21. **Project verification guidance & operational kits**: Portable verification patterns belong in reusable skills (`skills/common/common-project-verification/`) with on-demand references (`kit-contract.md`, `maintenance.md`). Project-specific commands, URLs, handles, and journey maps remain project-owned (e.g. `docs/verification/<app>/`), never in public registry packages. Reusable kits must define launch, read-only doctor, drive, evidence retention, and cleanup. Reusable equivalents take precedence over creating competing kits; proofs require actual build/dirty-content identity and surviving evidence.
 
 ## 4. Creating Workflows
 
@@ -199,16 +200,25 @@ pnpm build
 
 `pnpm freshness:check` is the weekly upstream drift job (`.github/workflows/skill-freshness.yml`), not a PR gate: it needs a `GITHUB_TOKEN` (up to ~110 GitHub requests) and exits 1 whenever any upstream has shipped a new major, regardless of your change. Run it locally only when reviewing pins; see `docs/FRESHNESS.md`.
 
-For changes to the architecture-diagram pipeline, also run its stdlib Python suite and a real render:
+For changes to the architecture-diagram pipeline, also run its stdlib Python suite, offline export verification, and a real render:
 
 ```bash
 python3 -m unittest discover -s skills/common/common-architecture-diagramming/scripts -p 'test_*.py'
 python3 skills/common/common-architecture-diagramming/scripts/validate_manifest.py skills/common/common-architecture-diagramming/assets/fixtures/view-manifest.json
 python3 skills/common/common-architecture-diagramming/scripts/render_drawio.py skills/common/common-architecture-diagramming/assets/fixtures/component.spec.json -o /tmp/component.drawio --strict
+python3 skills/common/common-architecture-diagramming/scripts/export_html.py skills/common/common-architecture-diagramming/assets/fixtures/component.spec.json --output-dir /tmp/component-package/
 ```
 
-Inspect the rendered image in draw.io, not only XML or geometry checks. Refresh golden files only after an intentional renderer change (`UPDATE_GOLDEN=1 python3 -m unittest test_fixtures` from the scripts directory), then verify without the update flag. Never acknowledge overwriting a manually edited diagram without first reconciling its semantic changes into the spec. For system-design guidance, pair lexical checks with the independent rubric; targeted comparisons are not aggregate quality scores.
+Inspect the rendered image in draw.io and open `/tmp/component-package/index.html` locally to visually inspect both light and dark themes at 100% zoom, not only XML or geometry checks. Refresh golden files only after an intentional renderer change (`UPDATE_GOLDEN=1 python3 -m unittest test_fixtures` from the scripts directory), then verify without the update flag. Never acknowledge overwriting a manually edited diagram without first reconciling its semantic changes into the spec. Detailed offline bundle specifications and security boundaries are documented in `skills/common/common-architecture-diagramming/references/offline-export.md`.
 
+For database query performance and N+1 query amplification changes, run the stdlib Python regression suite and real SQLite smoke fixture:
+
+```bash
+python3 -m unittest discover -s skills/database/database-query-performance/scripts -p 'test_*.py' -v
+python3 skills/database/database-query-performance/scripts/nplus1_smoke.py --json
+```
+
+The fixture verifies runtime statement counting ($1 + N$ queries), bounded batch remediation ($Q_{base} + \lceil N / B \rceil$, yielding 2 SELECTs even under high fan-out with 250 child relations), pagination, tenant isolation, and aggregate projection on real local SQLite without requiring external database services or packages. Conceptual distinctions (already-batched queries, slow constant-count routines, and N+1 spare-instance redundancy) belong to guidance and held-out model evaluation, documented in `skills/database/database-query-performance/references/nplus1-diagnosis.md`.
 For live-eval or eval-definition changes, also run:
 
 ```bash

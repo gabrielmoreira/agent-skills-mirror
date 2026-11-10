@@ -2,6 +2,16 @@
 
 Cross-class call overhead, partial class pattern, update handler, PostLateUpdate, spatial query optimization, animator hash caching, and platform detection.
 
+## Table of Contents
+
+- [Performance Patterns](#performance-patterns)
+- [Performance Optimization Patterns](#performance-optimization-patterns)
+- [Rate Limit Resolver](#rate-limit-resolver)
+- [Event Dispatch & Cross-Behaviour Call Cost Tiers](#event-dispatch--cross-behaviour-call-cost-tiers)
+- [GameObject Reference Cost Tiers](#gameobject-reference-cost-tiers)
+- [Array Filtering — `Array.FindAll` Alternative](#array-filtering--arrayfindall-alternative)
+- [See Also](#see-also)
+
 ## Performance Patterns
 
 ### Cross-Class Call Overhead
@@ -546,7 +556,7 @@ using UdonSharp;
 using UnityEngine;
 using System.Diagnostics;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class FrameBudgetProcessor : UdonSharpBehaviour
 {
     [Header("Processing Data")]
@@ -939,7 +949,7 @@ using VRC.SDKBase;
 /// Place one instance in the scene and wire all video-loading behaviours to it
 /// via SerializeField.
 /// </summary>
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class UrlLoadScheduler : UdonSharpBehaviour
 {
     [Header("Rate Limit")]

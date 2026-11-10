@@ -1,6 +1,6 @@
 ---
 name: generative-media-director
-description: Use when planning, prompting, generating, editing, routing, finishing, or QAing AI-created images, GIFs, videos, style frames, image-to-video clips, social ads, cinematic brand assets, motion studies, or multi-provider generative media workflows using Codex imagegen, GPT Image, Sora, Grok Imagine, Veo, Luma, Runway, Higgsfield, Remotion, Playwright, ffmpeg, Figma, Canva, or Vercel.
+description: Use when planning, prompting, generating, editing, routing, finishing, or QAing AI-created images, GIFs, videos, style frames, image-to-video clips, social ads, cinematic brand assets, motion studies, or multi-provider generative media workflows using Codex imagegen, GPT Image, Sora, Grok Imagine, Veo, Luma, Runway, Remotion, Playwright, ffmpeg, Figma, Canva, or Vercel.
 ---
 
 # Generative Media Director

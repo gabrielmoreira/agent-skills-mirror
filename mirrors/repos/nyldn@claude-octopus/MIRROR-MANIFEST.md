@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nyldn/claude-octopus` — 26 default patterns, 0 followed patterns, 270 file(s) materialized.
+Mirror of `nyldn/claude-octopus` — 26 default patterns, 1 followed patterns, 271 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nyldn/claude-octopus` — 26 default patterns, 0 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 270 |
+| Followed pats | 1 |
+| Files         | 271 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `nyldn/claude-octopus` — 26 default patterns, 0 followed patterns, 2
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/CLAUDE-NATIVE-INTEGRATION.md`
 
 ## File Index
 
@@ -329,6 +329,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 268 | ✓ | [`skills/sys-configure/agents/openai.yaml`](skills/sys-configure/agents/openai.yaml) |
 | 269 | ✓ | [`skills/sys-configure/SKILL.md`](skills/sys-configure/SKILL.md) |
 | 270 | ✓ | [`vendors/ui-ux-pro-max-skill/CLAUDE.md`](vendors/ui-ux-pro-max-skill/CLAUDE.md) |
+| 271 | → | [`docs/CLAUDE-NATIVE-INTEGRATION.md`](docs/CLAUDE-NATIVE-INTEGRATION.md) |
 
 ---
 

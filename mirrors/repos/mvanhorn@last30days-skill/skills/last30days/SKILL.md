@@ -1,6 +1,6 @@
 ---
 name: last30days
-version: "3.31.0"
+version: "3.33.0"
 description: "Research what people actually say about any topic in the last 30 days. Pulls posts and engagement from Reddit, X, YouTube, TikTok, Hacker News, Polymarket, GitHub, and the web. Includes a doctor health check to diagnose broken or missing sources."
 argument-hint: 'last30days nvidia earnings reaction | last30days AI video tools | last30days what users want in react'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
@@ -70,7 +70,7 @@ metadata:
 ---
 
 
-# last30days v3.31.0: Research Any Topic from the Last 30 Days
+# last30days v3.33.0: Research Any Topic from the Last 30 Days
 
 ## Skill contract
 
@@ -212,8 +212,9 @@ Check governing formatting/citation instructions first. Skip a conflicting prese
 4. Remove tooling meta-commentary. Keep claims grounded in the actual output and resolved entity.
 5. If Polymarket returned markets, include specific percentages and directional movement; do not substitute dollar volume for odds.
 6. Preserve every required citation. Omit only unnecessary duplicate trailing source lists.
-7. On host-WebSearch paths, verify `--emit=compact --plan -` with a quoted JSON heredoc and every applicable resolved handle/subreddit/hashtag/creator flag. If protocol was skipped, return to resolution/planning and run it; do not hide the engine's pre-research warning.
-8. For person topics, resolve at least `--x-handle`, `--github-user`, and `--subreddits`, typically `--x-related`, unless resolution explicitly established no account. A lone X handle is insufficient.
+7. Engagement counts select evidence; outside COUNTS IN PROSE exceptions, print one only when its size is the finding.
+8. On host-WebSearch paths, verify `--emit=compact --plan -` with a quoted JSON heredoc and every applicable resolved handle/subreddit/hashtag/creator flag. If protocol was skipped, return to resolution/planning and run it; do not hide the engine's pre-research warning.
+9. For person topics, resolve at least `--x-handle`, `--github-user`, and `--subreddits`, typically `--x-related`, unless resolution explicitly established no account. A lone X handle is insufficient.
 
 If one regeneration still cannot satisfy a data-backed check, display the best supported result and name the unsatisfied check. Never fabricate missing evidence.
 

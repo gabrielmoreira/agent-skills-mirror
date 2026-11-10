@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: design-system-skips-direction
+expected_outcome: |
+  The decisions are final and demo-app has an established design system (shadcn/ui tokens in
+  src/index.css, lucide icons), so the run skips the direction board and builds two prototypes,
+  settings navigation and the locations list, each switching 2-4 structural variants in place. They
+  use the app's own primary color and radius and inline lucide SVG icons, and they honor the
+  decisions: a role control hides Billing from managers and shows staff only their notifications,
+  the swap-approval toggle appears only when swaps are on, deleting a location confirms and then
+  offers Undo, and a 40-location case exists. The run ends with things to weigh and a one-line pick
+  prompt, with no handoff yet.
+context:
+  scaffold_script: place-files.sh

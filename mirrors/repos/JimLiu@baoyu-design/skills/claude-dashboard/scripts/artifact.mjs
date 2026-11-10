@@ -104,13 +104,21 @@ function isTailnet(address) {
   const m = /^100\.(\d{1,3})\./.exec(address);
   return !!m && Number(m[1]) >= 64 && Number(m[1]) <= 127;
 }
-var isTunnel = (name) => /^(utun|tun|tap|wg|ppp|ipsec)\d/i.test(name);
+var isTunnel = (name) => /(^|[^a-z0-9])(utun|tun|tap|wg|ppp|ipsec)\d*($|[^a-z0-9])/i.test(name) || /vpn|wintun|tunnel/i.test(name);
+var ipv4Number = (address) => address.split(".").reduce((n, part) => n * 256 + Number(part), 0);
+function isOwnNetwork(entry) {
+  if (!/^\d+\.\d+\.\d+\.\d+$/.test(entry.netmask)) return false;
+  const mask = ipv4Number(entry.netmask);
+  if (mask >= ipv4Number("255.255.255.252")) return true;
+  const address = ipv4Number(entry.address);
+  return ((address & mask) >>> 0) + 1 === address;
+}
 function lanAddresses() {
   const out = /* @__PURE__ */ new Map();
   for (const [name, list] of Object.entries(os.networkInterfaces())) {
     for (const entry of list ?? []) {
       if (entry.family !== "IPv4" || entry.internal || entry.address.startsWith("169.254.") || isBenchmarkRange(entry.address)) continue;
-      const rank = isTailnet(entry.address) ? 2 : isTunnel(name) ? 1 : 0;
+      const rank = isTailnet(entry.address) ? 2 : isTunnel(name) || isOwnNetwork(entry) ? 1 : 0;
       out.set(entry.address, Math.min(rank, out.get(entry.address) ?? rank));
     }
   }
@@ -125,7 +133,10 @@ function answers(host, port) {
     };
     socket.setTimeout(300, () => done(false));
     socket.once("connect", () => done(true));
-    socket.once("error", (error) => done(!["ECONNREFUSED", "EADDRNOTAVAIL", "EAFNOSUPPORT", "ENETUNREACH", "EHOSTUNREACH"].includes(error.code ?? "")));
+    socket.once(
+      "error",
+      (error) => done(!["ECONNREFUSED", "EADDRNOTAVAIL", "EAFNOSUPPORT", "ENETUNREACH", "EHOSTUNREACH", "EACCES", "EPERM"].includes(error.code ?? ""))
+    );
   });
 }
 async function answersAnyPort(address) {
@@ -171,6 +182,7 @@ function serverOrigin(host, port) {
   return `http://${shown2}:${port}`;
 }
 var pagePathOf = (kind, root) => `/${kind}/${createHash("sha256").update(path.resolve(root)).digest("base64url").slice(0, 22)}/`;
+var pageGone = (dir, owner) => owner ? `This page's files are no longer in ${dir}: the skill was moved, renamed or removed while its server ran. Stop the server and open the artifact again (the agent that opened it can do both).` : "This page's files are gone from the computer that shares it. Ask whoever shared it to open it again.";
 function sendJson(response, status, body, headers = {}) {
   const text = JSON.stringify(body);
   response.writeHead(status, {
@@ -2958,9 +2970,12 @@ async function shareCommand(o) {
   const links = view.links;
   const shown2 = (list) => Object.fromEntries(Object.entries(list).map(([role, link]) => [role, link.on ? link.url : "off"]));
   const tailnet = view.lan ? view.tailnet : void 0;
+  const addresses = view.lan ? lanUrls(view) : [];
+  const local = view.lan && Array.isArray(view.addresses) ? view.addresses.filter((a) => !isTailnet(String(a))) : [];
+  const others = local.length > 1 ? " This computer is on more than one network (addresses): if a link does not open for someone on the same Wi-Fi or LAN, give them the same link with another of those addresses." : "";
   return {
     lan: view.lan,
-    ...view.lan ? { addresses: lanUrls(view) } : {},
+    ...view.lan ? { addresses } : {},
     links: shown2(links),
     ...tailnet ? {
       tailscale: shown2(tailnet.links),
@@ -2968,7 +2983,7 @@ async function shareCommand(o) {
     } : {},
     guests: view.guests,
     ...view.lan ? {
-      note: "Send the link for the role you want to give: editor edits, commenter comments, viewer reads. Anyone on this network with a link joins under a name they type. The owner (this computer) shares from the Share button too.",
+      note: `Send the link for the role you want to give: editor edits, commenter comments, viewer reads. Anyone on this network with a link joins under a name they type. The owner (this computer) shares from the Share button too.${others}`,
       security: "It is plain http: others on the network can read what passes. A link is the permission: whoever has it gets its role, so send it only to the people meant to have it, and reset a role's link if it went further.",
       stop: o.offCommand
     } : { note: `Not shared on the network: the links work on this computer only. ${NOT_SHARED_HINT}` }
@@ -5150,7 +5165,8 @@ data: ${JSON.stringify(data)}
     try {
       html = fs10.readFileSync(path9.join(EDITOR_DIR, "index.html"), "utf8");
     } catch {
-      return json(res, 404, { code: "not_found", message: "The editor page is missing." });
+      log(`the editor's files are gone from ${EDITOR_DIR}: the skill was moved, renamed or removed while this server ran`);
+      return json(res, 404, { code: "not_found", message: pageGone(EDITOR_DIR, viewer.role === "owner") });
     }
     const body = Buffer.from(share2.injectHead(html, viewer, at === void 0 ? "" : `?at=${at}`) ?? html);
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Content-Length": body.length, "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }).end(body);

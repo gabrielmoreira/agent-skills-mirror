@@ -51,7 +51,7 @@ Mirror of `vercel-labs/skills` — 26 default patterns, 1 followed patterns, 7 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/factory-board.md`
+- `.automations/factory-board.md`
 
 ## File Index
 
@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.vc/automations/workflows/triage/skills/triage/SKILL.md`](.vc/automations/workflows/triage/skills/triage/SKILL.md) |
 | 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 6 | ✓ | [`skills/find-skills/SKILL.md`](skills/find-skills/SKILL.md) |
-| 7 | → | [`docs/factory-board.md`](docs/factory-board.md) |
+| 7 | → | [`.automations/factory-board.md`](.automations/factory-board.md) |
 
 ---
 

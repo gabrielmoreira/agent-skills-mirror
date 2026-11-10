@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 460 file(s) materialized.
+Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 1 followed patterns, 462 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 460 |
+| Followed pats | 1 |
+| Files         | 462 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `evals/triggers/README.md`
 
 ## File Index
 
@@ -510,15 +510,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 449 | ✓ | [`skills/social/references/platforms.md`](skills/social/references/platforms.md) |
 | 450 | ✓ | [`skills/social/references/post-templates.md`](skills/social/references/post-templates.md) |
 | 451 | ✓ | [`skills/social/references/reverse-engineering.md`](skills/social/references/reverse-engineering.md) |
-| 452 | ✓ | [`skills/social/references/short-form-video.md`](skills/social/references/short-form-video.md) |
-| 453 | ✓ | [`skills/social/references/x-algorithm.md`](skills/social/references/x-algorithm.md) |
-| 454 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
-| 455 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
-| 456 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
-| 457 | ✓ | [`skills/video/references/code-rendered-product-films.md`](skills/video/references/code-rendered-product-films.md) |
-| 458 | ✓ | [`skills/video/references/edit-anatomy.md`](skills/video/references/edit-anatomy.md) |
-| 459 | ✓ | [`skills/video/references/product-demo-recording.md`](skills/video/references/product-demo-recording.md) |
-| 460 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
+| 452 | ✓ | [`skills/social/references/ship-post.md`](skills/social/references/ship-post.md) |
+| 453 | ✓ | [`skills/social/references/short-form-video.md`](skills/social/references/short-form-video.md) |
+| 454 | ✓ | [`skills/social/references/x-algorithm.md`](skills/social/references/x-algorithm.md) |
+| 455 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
+| 456 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
+| 457 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
+| 458 | ✓ | [`skills/video/references/code-rendered-product-films.md`](skills/video/references/code-rendered-product-films.md) |
+| 459 | ✓ | [`skills/video/references/edit-anatomy.md`](skills/video/references/edit-anatomy.md) |
+| 460 | ✓ | [`skills/video/references/product-demo-recording.md`](skills/video/references/product-demo-recording.md) |
+| 461 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
+| 462 | → | [`evals/triggers/README.md`](evals/triggers/README.md) |
 
 ---
 

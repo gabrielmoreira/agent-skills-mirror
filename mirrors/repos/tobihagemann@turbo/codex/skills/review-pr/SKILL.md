@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: "Review a pull request by fetching PR comments, running a comprehensive code review, evaluating findings, and dispatching to implementation. Use when the user asks to \"review PR\", \"review pull request\", \"review this PR\", \"check PR before merging\", or \"full PR review\"."
+description: "Review a pull request: fetch its comments, run a full code review, evaluate findings, and implement them. Use when the user asks to \"review PR\", \"review this PR\", or \"check PR before merging\"."
 ---
 
 # Review PR
@@ -15,7 +15,7 @@ At the start, use `update_plan` to track each step, restating any remaining step
 2. Resolve base branch
 3. Run `$review-code` skill
 4. Run `$evaluate-findings` skill
-5. Run `$resolve-findings` skill
+5. Run `$implement-findings` skill
 
 ## Step 1: Run `$fetch-pr-comments` Skill
 
@@ -33,11 +33,11 @@ Run the `$review-code` skill. The diff command is `git diff origin/<base-branch>
 
 Run the `$evaluate-findings` skill on the combined results from Step 3. Include any unresolved PR comments from Step 1 as additional findings for evaluation.
 
-## Step 5: Run `$resolve-findings` Skill
+## Step 5: Run `$implement-findings` Skill
 
 If zero actionable findings survive evaluation, report that the code looks clean and stop.
 
-Otherwise, run the `$resolve-findings` skill on the accepted findings from Step 4.
+Otherwise, run the `$implement-findings` skill on the accepted findings from Step 4.
 
 ## Rules
 

@@ -1,6 +1,6 @@
 # Degardis Authoring
 
-**Version:** `2.5.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
+**Version:** `2.6.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
 
 Turn a repeatable agent workflow into a skill that another agent can follow and that you can check before you release it.
 

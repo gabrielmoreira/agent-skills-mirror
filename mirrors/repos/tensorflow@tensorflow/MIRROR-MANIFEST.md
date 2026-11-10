@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `tensorflow/tensorflow` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `tensorflow/tensorflow` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tensorflow/tensorflow` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`third_party/xla/AGENTS.md`](third_party/xla/AGENTS.md) |
-| 2 | ✓ | [`third_party/xla/xla/AGENTS.md`](third_party/xla/xla/AGENTS.md) |
-| 3 | ✓ | [`third_party/xla/xla/GEMINI.md`](third_party/xla/xla/GEMINI.md) |
+| 1 | ✓ | [`third_party/xla/.agents/skills/avoid_ifdefs_review/SKILL.md`](third_party/xla/.agents/skills/avoid_ifdefs_review/SKILL.md) |
+| 2 | ✓ | [`third_party/xla/.agents/skills/cpu_abi_compatibility_review/SKILL.md`](third_party/xla/.agents/skills/cpu_abi_compatibility_review/SKILL.md) |
+| 3 | ✓ | [`third_party/xla/.agents/skills/cuda_api_review/SKILL.md`](third_party/xla/.agents/skills/cuda_api_review/SKILL.md) |
+| 4 | ✓ | [`third_party/xla/.agents/skills/gpu_aot_compatibility_review/SKILL.md`](third_party/xla/.agents/skills/gpu_aot_compatibility_review/SKILL.md) |
+| 5 | ✓ | [`third_party/xla/AGENTS.md`](third_party/xla/AGENTS.md) |
+| 6 | ✓ | [`third_party/xla/xla/AGENTS.md`](third_party/xla/xla/AGENTS.md) |
+| 7 | ✓ | [`third_party/xla/xla/GEMINI.md`](third_party/xla/xla/GEMINI.md) |
 
 ---
 

@@ -9,7 +9,7 @@ A release is a `chore: mark v0.0.<next>` commit whose **PR body is the release n
 
 ## 1. Roll Playwright
 
-Follow the "Rolling Playwright" steps in `CLAUDE.md`: run `node roll.js`, branch as `roll-pw-<version-suffix>`, run `npm test`, and open a `chore: roll Playwright to <version>` PR. **Wait for it to merge into `main`** before proceeding.
+Follow the "Rolling Playwright" steps in `AGENTS.md`: run `node roll.js`, branch as `roll-pw-<version-suffix>`, run `npm test`, and open a `chore: roll Playwright to <version>` PR. **Wait for it to merge into `main`** before proceeding.
 
 ## 2. Bump the version
 
@@ -84,7 +84,8 @@ npx @playwright/mcp@0.0.<next>
 Wording rules:
 - Only list things that change user-visible behavior.
 - **Describe what landed, not what the PR description says** — read the diff (`git show <sha>`). Descriptions go stale during review: parts get dropped, behavior changes (e.g. "ignores" became "returns an error").
-- **Do not mention features that are not enabled by default** — confirm with the user before listing experimental flags. A fix to an opt-in tool can be listed when annotated, e.g. `browser_route` (opt-in via `--caps=network`).
+- **Opt-in options belong in the notes.** A documented option that is off by default is a feature, often one a user asked for: list it and say how to turn it on, e.g. `--background` (config `background`, env `PLAYWRIGHT_MCP_BACKGROUND`), a `browser.contextOptions` key from the Playwright API, or `browser_route` (opt-in via `--caps=network`). Documented means it is in `--help`, `README.md`, `config.d.ts` or the Playwright API docs.
+- **Leave out only what is not public** — an option hidden from `--help` (`hideHelp()`), one that is documented nowhere, or one its source calls experimental. Confirm with the user before listing one of these.
 - When a release removes or replaces something announced earlier, say so in the bullet of the feature that replaces it.
 
 ## 6. Commit, push, open the PR with the notes as its body

@@ -37,6 +37,21 @@ sqlite3 -readonly -cmd ".headers on" -cmd ".mode column" ~/.hope-agent/sessions.
 
 ## Subsystem Reference
 
+### Personal assistant — `personal-assistant.md`
+
+- Entry: `ha-core/src/personal_assistant.rs`, `personal_assistant_continue.rs`, `session/model_search.rs`, `tools/sessions.rs`, `src/components/personal-assistant/`.
+- State: `sessions.db` contains the unique `personal_assistant` home, request ledger, private target markers, Goal watches and `personal_assistant_continue_receipts`. Read request-to-turn references before diagnosing completion. Cross-session Continue uses the immutable pause snapshot from the live owner home turn; a new Stop requires a new owner instruction. Home history cannot be rewound to withdraw work; use the cancellation panel and new messages.
+- Grep: `category='chat'`, `source='personal_assistant'`.
+- Gotcha: a queued task waits behind the target's ordinary FIFO and Stop fences. Only the exact admitted turn determines completion. Private targets cannot be attached to work IM. Once private data exists, HTTP requires a configured owner token; scoped legacy event/resource tickets are insufficient.
+
+### Personal assistant IM — `personal-assistant.md`
+
+- Entry: kernel `ha-core/src/personal_assistant_im/`, adapter `ha-channel/src/personal_assistant_im/`, owner routes `ha-server/src/routes/personal_assistant_im.rs` and the personal assistant panel.
+- State: read-only `sessions.db` projections from `im_bot_purposes`, `assistant_im_connection`, `assistant_im_grants`, `assistant_im_activations`, `assistant_im_commands`, `assistant_im_views`, `assistant_im_deliveries` and `assistant_im_notification_attempts`. Never print credential references, pairing codes, raw updates or message text in diagnostics.
+- Grep: `category='channel'`, `source='personal_assistant_im'`.
+- Notification policy: valid owner-profile IANA timezone is required, 22:00–08:00 is quiet, and at most two proactive attempts are admitted per local day. The timestamp-only attempts ledger survives connection removal; submitting/unknown attempts consume the limit. Inspect `deferredReason` for pending receipts. Immediate replies bypass this proactive limit.
+- Gotcha: a token rotation does not change the stable Bot ID or its claimed purpose. Owner confirmation only queues activation; the Primary sends it even when the control UI is a Secondary. Check the activation attempt, pairing generation, explicit private-chat activation, grant revision/expiry and Stop epochs before blaming the model. IM uses a restricted view, not the desktop home's full history. `accepted` is a platform message ID, not a read receipt; `unknown` is not safe to replay. Ordinary work routes and scoped web tickets cannot authorize this owner-only surface.
+
 Per subsystem: the architecture doc, the diagnostic entry module(s), the
 runtime state (DB / config), the stable `logs.db` `category` to grep, and the
 gotcha that most often explains a failure. Open every DB read-only.
@@ -85,6 +100,8 @@ gotcha that most often explains a failure. Open every DB read-only.
 - State: `sessions.db` (`context_json` snapshot, `messages.stream_status`, `messages.is_side_snapshot`, `chat_turns`, `session_autonomy_pauses`, session-free `runtime_control_epochs`), `memory.db`. Config: `compact.*` (`cacheTtlSecs=300`, override at usage ≥0.95), `memoryExtract.*`, `memory_embedding`.
 - Grep: `category IN ('chat_engine','memory')`; compaction logs under `category='context'` (source `compact`) plus `category='agent'` (`reactive_microcompact`).
 - 摘要正文为空或推理档位失败 → 检查 `compact.summaryReasoningEffort`（null 保持默认）；仅摘要请求应用显式覆盖，不改变主对话推理或输出上限。不支持的档位/关闭参数以 request-contract 终态停止且保留原历史；先核对摘要专用模型、协议和错误类型，不自动切换模型或扩预算，第三方网关需单独验收。
+- 长上下文摘要费用偏高 → 核对摘要用量元数据 `summary_request_mode` 与实际缓存读写。`native_prefix_fork` 只表示保留了本轮原生前缀，不证明缓存仍有效；`independent` 可由专用模型、显式推理覆盖、容量、媒体或服务端工具触发。工具调用型摘要候选会被拒绝，不执行工具。前缀身份变更导致拒绝时保留历史，不绕过账号/工作区校验，也不打印模板正文。
+- 主请求历史反复重建缓存 → 核对 Anthropic 的历史断点是否位于动态用户数据前，以及官方 OpenAI Responses 显式模式是否保留当前、上一历史组两个断点。并行工具结果按整组计，不按单个结果挤掉上一轮位置；兼容端点与 Codex 不强发官方缓存字段。缓存注解不改变工具权限或权威历史，真实命中只认服务商回执。
 - Codex 本地记录导入：入口 `session/codex_import.rs`，台账 `sessions.db.session_import_sources`；`category='session' AND source='codex_import'` 只记录汇总计数。`SELECT source_id,session_id FROM session_import_sources WHERE provider='codex'` 可检查去重关系；这些会话故意只读，`TurnKernel` 和消息插入触发器均拒绝续写。检查失败时不要读取或贴出 JSONL 正文、凭据与工作目录。
 - 主对话关闭镜像后侧聊无法自动打开 → 检查浏览器与 Mac 是否都经 `useMirrorPanelSessionScope` 绑定当前对话面，显示与关闭状态不能再由父会话工作台缓存覆盖。
 - 侧聊宠物提示点击无效 → 检查所属主会话是否仍符合 `regular_session_scope_sql`、侧聊自身是否未归档；归档或恢复应触发 `pet:activity_changed`，不能为不可打开的主会话继续投影侧聊活动。
@@ -168,6 +185,10 @@ gotcha that most often explains a failure. Open every DB read-only.
 
 ### Dashboard / Recap / Awareness — `dashboard.md`, `recap.md`, `behavior-awareness.md`
 
+- 缓存基准：评测中心显式选择 `prompt-cache`；资产 `evals/live/suites/prompt-cache/`，报告 `ha-eval/src/model_cache.rs`。`model cache-smoke` 只用 loopback 合成回执验证链路；`model cache-report` 离线按阶段读 cache tokens / 归一化输入 / 逐调用 TTFT / summary mode。未知用量或价格保持 null，标准输入价预算不代表缓存账单；详见 `cache-benchmark.md`。
+- 自动摘要对照：使用 `prompt-cache-auto` / `HA-CACHE-002`，不调用手动压缩。最终 `minTotalSummaryCalls` 校验需要成功摘要回执；实际安装仍核对生产压缩日志及后续上下文。旧版与新版固定同一配置窗口、模型与资产，记录产品二进制摘要，分别报告真实命中；缩放窗口不能冒充服务商满窗口，普通计价反事实不能冒充旧版实测。
+- 真实评测初始鉴权正常、压缩/记忆协调后 401：检查配置回读是否覆盖了一次性内存凭据。隔离评测配置必须固定启动快照，不能从无凭据磁盘配置覆盖缓存，也不能为修复 401 把 Key 写入 config 或恢复继承凭据环境。
+
 - Entry: `dashboard/`, `recap/`, `awareness/`, `agent/mod.rs`.
 - State: `recap/recap.db` (rebuildable, keyed by `last_message_ts`), `sessions.db` (`learning_events`), `logs.db`, `cron.db`. Config: `awareness.enabled`/`mode` (hard-gate), `recap.analysisAgent`/`language`.
 - Grep: `category IN ('awareness','recap')`.
@@ -249,7 +270,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 - PDF 解析失败沿文本回退处理；深层输入的受控错误与进程 abort 分别记录。quick-xml 自有/Excel 为 0.41，xcb 旧构建链与 GTK/glib 平台债不冒称已消除。
 - 客户端 MP4 导出分别定位编码、异步封装与清理错误；成功须有最终 MP4 bytes，不能以抓帧数或 encoder flush 完成认定已交付。Mediabunny 仅为隔离候选，合成读回不证明平台 H.264 编码/播放可用，生产默认未切换。
 - 裸二进制/桌面验签共同锁定 minisign-verify 0.3.0（2026-11-05）；验签失败先核 payload、签名、公钥及 legacy 模式，不放宽校验。原0.2.5也检查规范S，版本差异不能当漏洞证据；公开测试公钥夹具不替代真实安装验收。
-- 桌面 updater 的 Rust/JS 两端固定 2.14.0（2026-10-19 配对维护）；降级开关来自应用配置且固定 false，不通过 renderer 参数覆盖版本门，不关闭验签/重启确认。
+- 桌面 updater 的 Rust/JS 分别固定 2.14.1 / 2.14.0（2026-11-06 发版核对，主次版本一致）；降级开关来自应用配置且固定 false，不通过 renderer 参数覆盖版本门，不关闭验签/重启确认。
 - R2 镜像或 Linux 仓库发布在安装 rclone 时失败：检查共用 `scripts/install-rclone.sh` 的固定版本、大小和官方 SHA，以及离线 version/flags 步骤；大小/摘要错误在解压执行前拒绝，版本/flag错误在原子安装前拒绝。不改成 apt 或跳过核验，不为排障带入桶凭据或重发生产工作流。
 - 桌面发布在编译前报 `Found version mismatched Tauri packages` → 对照 Cargo.lock 与 pnpm-lock.yaml 的全部官方插件，而非只看 tauri/API/updater；dialog、notification、process 同样要求 major.minor 配对。运行 `node scripts/verify-tauri-version-sync.mjs`，再按发布流程验证，不能用普通 Rust 测试通过代替 Tauri CLI 预检。
 - Linux 桌面构建在 `tauri-plugin-deep-link 2.6.2` 的 `ParseOption` 报 E0063 缺字段：核对 `rust-ini 0.21.3` 及根 Cargo patch 的完整官方提交 `463977675da7bbb257dee59669b5e122c8d681db`；不要重跑不变源码或降级到已撤回 INI 版本。普通 Rust CI 不编译 Tauri 壳，应按发布流程先验证待发提交的四平台 dry-run，再创建新 tag。

@@ -1,6 +1,6 @@
 ---
 name: review-dependencies
-description: "Detect package managers and CI action pins, then discover outdated or vulnerable dependencies. Returns structured findings without upgrading. Use when the user asks to \"review dependencies\", \"check for outdated packages\", \"check dependencies\", \"scan dependencies\", \"dependency review\", \"check for outdated GitHub Actions\", or \"are my workflow actions up to date\"."
+description: "Find outdated or vulnerable dependencies and GitHub Actions pins without upgrading them. Use when the user asks to \"review dependencies\", \"check for outdated packages\", or \"scan dependencies\"."
 ---
 
 # Review Dependencies
@@ -54,6 +54,10 @@ Run the appropriate discovery command to find available updates:
 | Maven | `mvn versions:display-dependency-updates` | |
 | Gradle | `gradle dependencyUpdates` | Requires `com.github.ben-manes.versions` plugin. |
 | GitHub Actions | `gh api repos/<owner>/<repo>/releases/latest --jq .tag_name`, compared against each `uses:` ref | No outdated command. Take `<owner>/<repo>` from the ref's first two path segments. Read a SHA-pinned ref's version from its trailing comment (`uses: <owner>/<action>@<sha> # v1.2.3`). Compare only the components the ref pins, so `@v7` is current against `v7.0.1`. Fall back to `repos/<owner>/<repo>/tags` when the release 404s or its tag namespace differs from the ref's, and to WebSearch when the action is not hosted on GitHub. Exclude local (`./…`), `<repo-relative>` (`$/…`), and Docker (`docker://…`) refs, which pin no release. |
+
+Also check for an update to the version pin the project declares for the package manager itself, such as `packageManager` or `devEngines.packageManager` in `package.json` or the Gradle wrapper's distribution version, when the discovery command leaves it out.
+
+When the package manager enforces a minimum release age, propose only versions the guard admits, and run discovery with a matching cooldown where the tool has one (`ncu --cooldown <days>`).
 
 Categorize updates:
 - **Major** (breaking changes) — requires migration research

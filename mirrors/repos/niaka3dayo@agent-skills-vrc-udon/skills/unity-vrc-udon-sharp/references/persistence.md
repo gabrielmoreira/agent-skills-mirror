@@ -1,11 +1,23 @@
 # VRChat Persistence Reference
 
-Comprehensive guide to persistent data storage in VRChat worlds. The feature was introduced in SDK 3.7.4; the active verified target is SDK 3.10.6.
+Comprehensive guide to persistent data storage in VRChat worlds. The feature was introduced in SDK 3.7.4.
 
-**Active support / last verified**: SDK 3.10.6
-**Historical feature introduction**: SDK 3.7.4
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
-SDK 3.7.4-3.10.4 references are historical migration information only, not active support or validation targets for this Skill.
+## Table of Contents
+
+- [Overview](#overview)
+- [Storage Layer Decision Tree](#storage-layer-decision-tree)
+- [PlayerData](#playerdata)
+- [PlayerObject](#playerobject)
+- [PlayerData vs PlayerObject](#playerdata-vs-playerobject)
+- [Persistence Storage Information API (SDK 3.10.0+)](#persistence-storage-information-api-sdk-3100)
+- [Storage Limits](#storage-limits)
+- [Error Handling](#error-handling)
+- [Common Patterns](#common-patterns)
+- [Debugging](#debugging)
+- [Best Practices](#best-practices)
+- [See Also](#see-also)
 
 ## Overview
 
@@ -59,7 +71,7 @@ Does another player need to see this value?
 | Writing PlayerData before `OnPlayerRestored` fires | Write is silently ignored | Always guard writes with a `_dataReady` flag set in `OnPlayerRestored` |
 | Changing a PlayerObject prefab or scene wiring without checking saved Network IDs | Persistence keys are bound to Network IDs; breaking the mapping loses saved data | Audit Network IDs before restructuring; keep a mapping document |
 
-> **Cross-reference:** For choosing between Continuous, Manual, and NoVariableSync *within* the synced layer, see the sync selection rule in [../rules/udonsharp-sync-selection.md](../rules/udonsharp-sync-selection.md). For bandwidth budgeting, see [networking-bandwidth.md](networking-bandwidth.md).
+> **Cross-reference:** For choosing between Continuous, Manual, and None *within* the synced layer, see the sync selection rule in [../rules/udonsharp-sync-selection.md](../rules/udonsharp-sync-selection.md). For bandwidth budgeting, see [networking-bandwidth.md](networking-bandwidth.md).
 
 ---
 
@@ -641,7 +653,7 @@ using VRC.SDKBase;
 /// Each entry is keyed by a Unix timestamp (seconds). On restore, entries
 /// older than <see cref="retainDays"/> calendar days are discarded.
 /// </summary>
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class DataAgingExample : UdonSharpBehaviour
 {
     /// <summary>How many calendar days of data to keep.</summary>

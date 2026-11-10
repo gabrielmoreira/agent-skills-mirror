@@ -1,6 +1,6 @@
 # Keep a session on track
 
-<sub>**Beginner** · Lesson 4 of 5 · about 25 minutes · Needs: [Your first change, from request to commit](03-first-change.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Lesson 4 of 5 · about 25 minutes · Needs: [Your first change, from request to commit](03-first-change.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -16,7 +16,7 @@ By the end of this lesson you can keep a session on track: stop or rewind a chan
 
 Everything in a conversation, your prompts, Claude's replies and every file it read, sits in the session's context window. A dead end left there crowds out what you need next ([Explore the context window](https://code.claude.com/docs/en/context-window#when-your-context-fills-up)).
 
-Press `Esc` once to stop Claude mid-action, as in lesson 1 ([Best practices](https://code.claude.com/docs/en/best-practices#course-correct-early-and-often)). Before each prompt that starts a turn, Claude Code takes a checkpoint, and it tracks the files Claude then changes with its file editing tools. `/rewind`, or `Esc` twice on an empty prompt, lists your prompts: pick one, then choose what you want back ([Checkpointing](https://code.claude.com/docs/en/checkpointing#rewind-and-summarize)).
+Press `Esc` once to stop Claude mid-action, as in lesson 1 ([Best practices](https://code.claude.com/docs/en/best-practices#steer-the-session)). Before each prompt that starts a turn, Claude Code takes a checkpoint, and it tracks the files Claude then changes with its file editing tools. `/rewind`, or `Esc` twice on an empty prompt, lists your prompts: pick one, then choose what you want back ([Checkpointing](https://code.claude.com/docs/en/checkpointing#rewind-and-summarize)).
 
 | You want | Choose |
 |---|---|
@@ -24,7 +24,7 @@ Press `Esc` once to stop Claude mid-action, as in lesson 1 ([Best practices](htt
 | Files and conversation back, to send a better prompt | **Restore code and conversation** |
 | The files kept, and a long stretch of conversation shrunk | **Summarize from here** |
 
-For the whole conversation ([Commands](https://code.claude.com/docs/en/commands)): `/context` shows what fills the window, as a colored grid; `/compact` summarizes it when you keep going on the same task; `/clear` starts empty for a new task; and `/resume` opens an earlier one. After two failed corrections on the same thing, `/clear` and start again with a better prompt ([Best practices](https://code.claude.com/docs/en/best-practices#avoid-common-failure-patterns)).
+For the whole conversation ([Commands](https://code.claude.com/docs/en/commands)): `/context` shows what fills the window, as a colored grid; `/compact` summarizes it when you keep going on the same task; `/clear` starts empty for a new task; and `/resume` opens an earlier one. After two failed corrections on the same thing, `/clear` and start again with a better prompt ([Best practices](https://code.claude.com/docs/en/best-practices#steer-the-session)).
 
 ## Worked example
 

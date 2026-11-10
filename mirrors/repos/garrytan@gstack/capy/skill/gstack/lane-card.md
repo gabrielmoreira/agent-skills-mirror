@@ -4,7 +4,7 @@ For a crew lane (a thread working for a Captain). Read this once `gstack: ok <re
 
 ## After the check
 
-- Report the trailer verbatim in your first report, `floor=` and `behind=` notes included. A `floor=` or `stale=` note or a `fix:` command runs once before the first workflow, and a thread older than a day reruns the check before its next workflow (§ "Session start: check, then install only when needed", step 2); a `floor=` note that says `no release meets this floor yet` runs nothing and goes to your Captain.
+- Report the trailer verbatim in your first report, `floor=` and `behind=` notes included. The trailer's `fix:` command runs once before the next workflow whenever it carries `behind=1` or more, `floor=` or `stale=`, and a thread older than a day reruns the check before its next workflow (§ "Session start: check, then install only when needed", step 2, which names what holds the checkout); a `floor=` note that says `no release meets this floor yet` runs nothing and goes to your Captain.
 - Read `capy/skill/gstack/factory.md` in the checkout once per session.
 - Start every shell that runs a gstack command with `. <GSTACK_LAUNCH_FILE>`. Never re-type the assignments as `export $(...)`, and never run `env`, `printenv`, a bare `set` or a bare `export`: they print API keys into the transcript. Hand a child agent the file path, never the values.
 - Every subagent runs its own `--check` and puts its trailer in its first report; a read-only reviewer uses `--for review-voice`. One machine's install never covers another.
@@ -31,6 +31,7 @@ For a crew lane (a thread working for a Captain). Read this once `gstack: ok <re
 - Batch independent reads in one parallel program. Return 4k characters or less per call; write long output to a file under `~/.capy/work` and read the part you need.
 - A wait you expect to last under about 30 minutes checks in every 240 s: `wait` on the operation with `duration_seconds: 240`, then re-issue it silently on a wake that brings nothing new. After about 30 minutes, or past the expected end, stop re-issuing and sleep on the operation or pull request watch. A longer wait sleeps on its operations. While /ship runs, sleep.
 - Past twice the crew's median lane spend, write `handoffs/<code>/next.md` and tell the Captain in one line; it decides whether you continue, rotate or park.
+- Keep your PR until it merges or closes; never hand off mid-PR on a token count. Past 1B own tokens (about $330), check in with the Captain once, then carry on unless told otherwise.
 
 ## Before a push
 

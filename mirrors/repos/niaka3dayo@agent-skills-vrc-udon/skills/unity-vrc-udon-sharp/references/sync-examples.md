@@ -5,9 +5,20 @@ Refer to the Decision Tree in `../rules/udonsharp-sync-selection.md` for pattern
 
 ---
 
+## Table of Contents
+
+- [Pattern 1: No Sync (Local Only)](#pattern-1-no-sync-local-only)
+- [Pattern 2: Events Only (No Synced Variables)](#pattern-2-events-only-no-synced-variables)
+- [Pattern 3: Synced Variables (Late Joiner Support)](#pattern-3-synced-variables-late-joiner-support)
+- [Pattern 4: Managing Multiple Values with FieldChangeCallback](#pattern-4-managing-multiple-values-with-fieldchangecallback)
+- [Pattern Comparison Table](#pattern-comparison-table)
+- [Data Budget Reference (Per-Pattern Reference Values)](#data-budget-reference-per-pattern-reference-values)
+- [See Also](#see-also)
+
 ## Pattern 1: No Sync (Local Only)
 
 **Criteria**: Operations that do not affect other players. No `[UdonSynced]` required.
+**Sync mode**: `None`.
 
 ```csharp
 using UdonSharp;
@@ -15,7 +26,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // LocalCounter: Local counter (0 synced variables, 0 bytes)
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LocalCounter : UdonSharpBehaviour
 {
     [SerializeField] Text CounterText;
@@ -39,6 +50,7 @@ public class LocalCounter : UdonSharpBehaviour
 ## Pattern 2: Events Only (No Synced Variables)
 
 **Criteria**: Visible to other players, but no state sharing needed for late joiners.
+**Sync mode**: `Manual` on the behaviour that receives the event (`Continuous` if `VRCObjectSync` is on the same GameObject). A behaviour that only sends to another behaviour can be `None`.
 
 ### 2a. Play Effects for All Players
 
@@ -51,7 +63,7 @@ using VRC.Udon.Common.Interfaces;
 
 // HitTarget: Target hit (0 synced variables, 0 bytes)
 // Uses SendCustomNetworkEvent(All) to execute a temporary action for everyone
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class HitTarget : UdonSharpBehaviour
 {
     [SerializeField] private GameObject trustedProjectile;
@@ -99,8 +111,9 @@ using UnityEngine;
 using VRC.Udon.Common.Interfaces;
 
 // VoteYesButton: Non-owner sends event to owner
-// The button side has no synced variables
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+// The button side has no synced variables and only sends: the sync-mode rule applies
+// to the receiver (VoteSystemCore, Manual), so the sender can be None
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class VoteYesButton : UdonSharpBehaviour
 {
     [SerializeField] UdonSharpBehaviour voteSystemCore;
@@ -130,7 +143,7 @@ using VRC.Udon.Common.Interfaces;
 
 // EventOnlyLock: Owner decides -> broadcasts to all (0 synced variables, 0 bytes)
 // Late joiners will not know the unlock state (suitable for temporary gimmicks)
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class EventOnlyLock : UdonSharpBehaviour
 {
     [SerializeField] GameObject KeyObject;

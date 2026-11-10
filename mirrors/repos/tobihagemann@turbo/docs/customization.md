@@ -1,10 +1,10 @@
 # Customization
 
-[← Back to Turbo](../README.md) · [Workflow guide](workflows.md) · [Prompt examples](examples.md) · [Requirements](requirements.md)
+[← Back to Turbo](../README.md) · [Workflow guide](workflows.md) · [Prompt examples](examples.md) · [Requirements](requirements.md) · [Claude Code mod](claude-code-mod.md)
 
 ## The Puzzle Piece Philosophy
 
-Every skill is a self-contained piece. Pipeline skills like [`/turboplan`](../claude/skills/turboplan/SKILL.md) and [`/finalize`](../claude/skills/finalize/SKILL.md) compose them into workflows, but each piece works independently too.
+Every skill is a self-contained piece. Pipeline skills like [`/plan`](../claude/skills/plan/SKILL.md) and [`/finalize`](../claude/skills/finalize/SKILL.md) compose them into workflows, but each piece works independently too.
 
 Want to swap a piece? For example:
 

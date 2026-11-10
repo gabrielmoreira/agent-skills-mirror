@@ -72,7 +72,7 @@ The work comes back through git: each session commits on its branch, and you bri
    ```
 
    [`git merge`](https://git-scm.com/docs/git-merge) brings each branch's commits into yours. The first merge just moves your branch forward, and the second makes a merge commit and opens your editor for its message: save and close it. Run this step yourself: while a session is isolated in its worktree, Claude Code blocks its git commands that reach into the main checkout. If both tasks changed the same lines, git stops with a conflict: resolve it, or start `claude` in the main checkout and ask it to.
-6. In each session, run `/exit`. The worktree's branch has a new commit, so Claude Code asks whether to keep or remove the worktree: choose remove ([Clean up worktrees](https://code.claude.com/docs/en/worktrees#clean-up-worktrees)). `git worktree list` no longer shows either worktree.
+6. In each session, run `/exit`. The worktree's branch has a new commit, so Claude Code asks whether to keep or remove the worktree: choose remove ([Clean up worktrees](https://code.claude.com/docs/en/worktrees#clean-up-worktrees)). Its remove option says `All changes and commits will be lost.`, but a commit you merged in step 5 stays on your branch. `git worktree list` no longer shows either worktree.
 
 > [!CAUTION]
 > Removing a worktree deletes its folder and its branch, along with any work in them you haven't merged. Merge first, or choose keep.
@@ -127,7 +127,7 @@ If the first item fails, run `git check-ignore -v :/.claude/worktrees/x` in your
 
 - [Isolate subagents with worktrees](https://code.claude.com/docs/en/worktrees#isolate-subagents-with-worktrees): `isolation: worktree` in a subagent's frontmatter gives each run a checkout of its own.
 - [Message your other Claude Code sessions](https://code.claude.com/docs/en/cross-session-messaging): let the sessions in your worktrees pass findings to each other.
-- [Run multiple Claude sessions](https://code.claude.com/docs/en/best-practices#run-multiple-claude-sessions): the Writer/Reviewer pattern, where a fresh session reviews what another one wrote.
+- [Run sessions in parallel](https://code.claude.com/docs/en/best-practices#run-sessions-in-parallel): a second session as an independent reviewer of what another one wrote.
 
 ---
 

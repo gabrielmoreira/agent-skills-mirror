@@ -1,6 +1,6 @@
 # Choose who approves what: permission modes and plan mode
 
-<sub>**Beginner** · Lesson 2 of 5 · about 25 minutes · Needs: [Install, sign in and look around](01-install-and-look-around.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Lesson 2 of 5 · about 25 minutes · Needs: [Install, sign in and look around](01-install-and-look-around.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -24,7 +24,7 @@ A [permission mode](https://code.claude.com/docs/en/permission-modes) decides wh
 - **Manual**, `⏸ manual mode on`: Claude asks before edits and most commands. For sensitive work, or whenever approving each step is the point.
 - **Accept edits**, `⏵⏵ accept edits on`: file edits and common file commands, such as `mkdir`, `mv` and `rm`, run without asking inside your working directory ([Auto-approve file edits](https://code.claude.com/docs/en/permission-modes#auto-approve-file-edits-with-acceptedits-mode)). For code you'll review afterwards.
 
-Plan when you're unsure of the approach, the change touches several files, or you don't know the code. If you could describe the diff in one sentence, such as a typo fix, skip the plan ([Best practices](https://code.claude.com/docs/en/best-practices#explore-first-then-plan-then-code)). A new key in `linkcheck.json` needs a plan too: the parser and its tests change with it, in code you haven't read yet. When you do plan, approve only a plan you would merge.
+Plan a change you want to review before it touches disk ([Plan before editing](https://code.claude.com/docs/en/common-workflows#plan-before-editing)). A new key in `linkcheck.json` is such a change: the parser and its tests change with it, in code you haven't read yet. When you do plan, approve only a plan you would merge.
 
 ## Worked example
 
@@ -121,6 +121,6 @@ If `.practice/b-2-before.txt` lists files, the tree wasn't clean when Your turn 
 
 ---
 
-<sub>Sources: [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Best practices](https://code.claude.com/docs/en/best-practices) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Commands](https://code.claude.com/docs/en/commands) · [Quickstart](https://code.claude.com/docs/en/quickstart) · [Tools reference](https://code.claude.com/docs/en/tools-reference) · [Code intelligence plugins](https://code.claude.com/docs/en/plugins/code-intelligence) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Configure auto mode](https://code.claude.com/docs/en/auto-mode-config) · [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) · [git status](https://git-scm.com/docs/git-status) · [git add](https://git-scm.com/docs/git-add) · [git commit](https://git-scm.com/docs/git-commit)</sub>
+<sub>Sources: [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Common workflows](https://code.claude.com/docs/en/common-workflows) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Commands](https://code.claude.com/docs/en/commands) · [Quickstart](https://code.claude.com/docs/en/quickstart) · [Tools reference](https://code.claude.com/docs/en/tools-reference) · [Code intelligence plugins](https://code.claude.com/docs/en/plugins/code-intelligence) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Configure auto mode](https://code.claude.com/docs/en/auto-mode-config) · [Claude Code CHANGELOG](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md) · [git status](https://git-scm.com/docs/git-status) · [git add](https://git-scm.com/docs/git-add) · [git commit](https://git-scm.com/docs/git-commit)</sub>
 
 <sub>← [Install, sign in and look around](01-install-and-look-around.md) · [Beginner index](README.md) · [Your first change, from request to commit](03-first-change.md) → · Topic: [Permissions and safety](../topics/permissions-and-safety.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=b-2)</sub>

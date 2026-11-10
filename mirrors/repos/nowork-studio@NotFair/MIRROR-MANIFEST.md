@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nowork-studio/NotFair` — 26 default patterns, 2 followed patterns, 51 file(s) materialized.
+Mirror of `nowork-studio/NotFair` — 26 default patterns, 2 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nowork-studio/NotFair` — 26 default patterns, 2 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 51 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,13 +61,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/backlink-audit/SKILL.md`](skills/backlink-audit/SKILL.md) |
-| 3 | ✓ | [`skills/broken-link-checker/SKILL.md`](skills/broken-link-checker/SKILL.md) |
-| 4 | ✓ | [`skills/competitor-pages/SKILL.md`](skills/competitor-pages/SKILL.md) |
-| 5 | ✓ | [`skills/content-planner/SKILL.md`](skills/content-planner/SKILL.md) |
-| 6 | ✓ | [`skills/content-writer/SKILL.md`](skills/content-writer/SKILL.md) |
-| 7 | ✓ | [`skills/ecommerce-seo/SKILL.md`](skills/ecommerce-seo/SKILL.md) |
-| 8 | ✓ | [`skills/gemini/SKILL.md`](skills/gemini/SKILL.md) |
+| 2 | ✓ | [`docs/claude-directory-release.md`](docs/claude-directory-release.md) |
+| 3 | ✓ | [`skills/backlink-audit/SKILL.md`](skills/backlink-audit/SKILL.md) |
+| 4 | ✓ | [`skills/broken-link-checker/SKILL.md`](skills/broken-link-checker/SKILL.md) |
+| 5 | ✓ | [`skills/competitor-pages/SKILL.md`](skills/competitor-pages/SKILL.md) |
+| 6 | ✓ | [`skills/content-planner/SKILL.md`](skills/content-planner/SKILL.md) |
+| 7 | ✓ | [`skills/content-writer/SKILL.md`](skills/content-writer/SKILL.md) |
+| 8 | ✓ | [`skills/ecommerce-seo/SKILL.md`](skills/ecommerce-seo/SKILL.md) |
 | 9 | ✓ | [`skills/geo-optimizer/SKILL.md`](skills/geo-optimizer/SKILL.md) |
 | 10 | ✓ | [`skills/gohighlevel/SKILL.md`](skills/gohighlevel/SKILL.md) |
 | 11 | ✓ | [`skills/google-ads-assets/SKILL.md`](skills/google-ads-assets/SKILL.md) |
@@ -104,13 +104,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/seo-analysis/SKILL.md`](skills/seo-analysis/SKILL.md) |
 | 43 | ✓ | [`skills/seo-drift/SKILL.md`](skills/seo-drift/SKILL.md) |
 | 44 | ✓ | [`skills/seo-page/SKILL.md`](skills/seo-page/SKILL.md) |
-| 45 | ✓ | [`skills/setup-cms/SKILL.md`](skills/setup-cms/SKILL.md) |
-| 46 | ✓ | [`skills/sitemap-audit/SKILL.md`](skills/sitemap-audit/SKILL.md) |
-| 47 | ✓ | [`skills/sxo/SKILL.md`](skills/sxo/SKILL.md) |
-| 48 | ✓ | [`skills/upgrade/SKILL.md`](skills/upgrade/SKILL.md) |
-| 49 | ✓ | [`skills/wordpress/SKILL.md`](skills/wordpress/SKILL.md) |
-| 50 | → | [`docs/mcp-connection.md`](docs/mcp-connection.md) |
-| 51 | → | [`docs/plugin-development.md`](docs/plugin-development.md) |
+| 45 | ✓ | [`skills/sitemap-audit/SKILL.md`](skills/sitemap-audit/SKILL.md) |
+| 46 | ✓ | [`skills/sxo/SKILL.md`](skills/sxo/SKILL.md) |
+| 47 | ✓ | [`skills/wordpress/SKILL.md`](skills/wordpress/SKILL.md) |
+| 48 | → | [`docs/mcp-connection.md`](docs/mcp-connection.md) |
+| 49 | → | [`docs/plugin-development.md`](docs/plugin-development.md) |
 
 ---
 

@@ -1,12 +1,23 @@
 # Image Loading — VRAM & Memory Management
 
-**Active support / last verified**: SDK 3.10.6
-
-Older version numbers in this reference record feature introductions or migration facts only; SDK 3.7.1-3.10.4 are not supported or validation targets for this Skill.
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
 Extended memory management guide for `VRCImageDownloader`. Covers GPU memory lifecycle,
 safe texture cleanup, double-buffer fade, stock vs. streaming mode, mipmap bias control,
 and multi-instance staggering. For the base API reference see [web-loading.md](web-loading.md).
+
+## Table of Contents
+
+- [Overview](#overview)
+- [VRAM Accumulation Mechanism](#vram-accumulation-mechanism)
+- [`Dispose()` vs `Destroy()` — Critical Distinction](#dispose-vs-destroy--critical-distinction)
+- [Double-Buffer Fade Pattern](#double-buffer-fade-pattern)
+- [Stock Mode vs Streaming Mode](#stock-mode-vs-streaming-mode)
+- [Distance-Based Mipmap Bias Control](#distance-based-mipmap-bias-control)
+- [Multi-Instance Delay Staggering](#multi-instance-delay-staggering)
+- [Anti-Patterns](#anti-patterns)
+- [Troubleshooting](#troubleshooting)
+- [See Also](#see-also)
 
 ## Overview
 
@@ -101,7 +112,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Image;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class SafeImageLoader : UdonSharpBehaviour
 {
     [SerializeField] private VRCUrl imageUrl;
@@ -223,7 +234,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Image;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class DoubleBufferImageDisplay : UdonSharpBehaviour
 {
     [Header("Renderers (A/B double buffer)")]
@@ -467,7 +478,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Image;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class StockModeGallery : UdonSharpBehaviour
 {
     [Header("Gallery URLs (all downloaded at startup)")]
@@ -699,7 +710,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class MipmapBiasController : UdonSharpBehaviour
 {
     [Header("Display to control")]
@@ -789,7 +800,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Image;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class StaggeredImageLoader : UdonSharpBehaviour
 {
     [Header("Image URL")]

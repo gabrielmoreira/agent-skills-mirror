@@ -1,6 +1,12 @@
 <!-- AUTO-GENERATED from SKILL.md frontmatters — do not edit manually -->
 # system-design Skills Index
 
+## File Match (auto-check against the file you are editing)
+
+| Skill | File pattern | Keywords |
+| ----- | ------------ | -------- |
+| **system-design-document** | `docs/**/*-design.md`, `docs/superpowers/specs/*.md` | hld, high level design, architecture document, design document, solution options, option comparison, etl options, architecture review comments |
+
 ## Keyword Match (only when user's request mentions these)
 
 | Skill | Match when user mentions |
@@ -13,7 +19,7 @@
 | system-design-estimation | back of envelope, qps, capacity estimate, storage estimate, throughput budget, peak load, latency budget, sizing |
 | system-design-integration-patterns | cqrs, event sourcing, saga, durable execution, workflow replay, reconciliation, outbox, leader election, sidecar, strangler fig, backends for frontends, anti-corruption layer, choreography |
 | system-design-interview-coaching | mock interview, interview practice, interview prep, practice round, system design round, grade my design, time budget |
-| **system-design-methodology** | system design, design a system, design session, high-level design, low-level design, HLD, LLD, requirements clarification, capacity planning, scale this |
+| **system-design-methodology** | system design, design a system, design session, high-level design, low-level design, HLD, LLD, requirements clarification, capacity planning, scale this, system architect |
 | system-design-mobile-client | mobile client system design, offline sync, client authority, client lifecycle, SDK system design, SDK compatibility, device resource constraints |
 | **system-design-principles** | architecture, scalability, microservice, microservices, module boundary, coupling, bounded context, dependency direction, clean architecture, cap theorem, idempotency |
 | system-design-resilience-ops | single point of failure, failover, disaster recovery, rpo, rto, multi-region, autoscaling, deployment strategy, blue-green, canary |

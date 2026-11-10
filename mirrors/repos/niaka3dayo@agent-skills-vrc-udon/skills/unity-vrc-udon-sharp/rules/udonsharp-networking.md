@@ -2,9 +2,7 @@
 
 Core networking rules and constraints. See `../references/networking.md` for detailed patterns.
 
-**Active support / last verified**: SDK 3.10.6
-
-Older version numbers in this rule record feature introductions or migration facts only; SDK 3.7.1-3.10.4 are not supported or validation targets for this Skill.
+SDK version labels in this rule mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
 ## Ownership Model
 
@@ -25,7 +23,7 @@ RequestSerialization();
 
 | Mode | Attribute Value | Characteristics | Data Limit |
 |------|----------------|-----------------|------------|
-| **NoVariableSync** | `BehaviourSyncMode.NoVariableSync` | No variable sync, events only | - |
+| **None** | `BehaviourSyncMode.None` | Local only; cannot receive network events | - |
 | **Continuous** | `BehaviourSyncMode.Continuous` | Automatic sync ~10Hz | ~200 bytes |
 | **Manual** | `BehaviourSyncMode.Manual` | Explicit sync via `RequestSerialization()` | ~280KB (280,496 bytes) |
 

@@ -1,6 +1,6 @@
 # Pick the model and effort
 
-<sub>**Intermediate** · Lesson 3 of 8 · about 20 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 3 of 8 · about 20 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -41,7 +41,7 @@ A skill's [`model:` and `effort:` frontmatter](https://code.claude.com/docs/en/s
    ultrathink: read the code and tests for one error path in this repository. Identify a case the tests might miss. Cite the files you used. Do not edit files or run network requests.
    ```
 
-   `ultrathink` requests deeper reasoning for this turn without changing the session effort setting ([Use ultrathink](https://code.claude.com/docs/en/model-config#use-ultrathink-for-one-off-deep-reasoning)). Typed in the terminal prompt, the word can also raise that turn to `xhigh` effort, and it shows in rainbow colors when it can. Requires Claude Code v2.1.311 or later. Open a cited file and check whether the suspected gap is real. A plausible answer alone is not evidence.
+   `ultrathink` requests deeper reasoning for this turn without changing the session effort setting ([Use ultrathink](https://code.claude.com/docs/en/model-config#use-ultrathink-for-one-off-deep-reasoning)). Typed in the terminal prompt, the word can also raise that turn to `xhigh` effort, and it shows in rainbow colors when it can. Requires Claude Code v2.1.311 or later. Open a cited file and check whether the suspected gap is real. A plausible answer alone is not evidence. After Claude responds, Claude Code can suggest your next prompt; in your practice copy, don't send a suggested fix for the malformed percent escape bug: the [Intermediate capstone](capstone.md) fixes it ([Prompt suggestions](https://code.claude.com/docs/en/interactive-mode#prompt-suggestions)).
 4. Give the diagnostic skill its own effort. Add this line inside the frontmatter of `.claude/skills/five-whys/SKILL.md`:
 
    ```yaml
@@ -76,8 +76,8 @@ A changelog entry is routine work: give it only what it needs, and keep root-cau
 
 You are done when all of these are true:
 
-- [ ] The committed skill picks a smaller model and a low or medium effort: `git show HEAD:.claude/skills/changelog/SKILL.md | grep -E '^(model|effort):'` shows both.
-- [ ] A committed `CHANGELOG.md` has a `- ` entry under `## Unreleased`: `git show HEAD:CHANGELOG.md` shows it.
+- [ ] The committed skill picks a smaller model and a low or medium effort: `git show HEAD:./.claude/skills/changelog/SKILL.md | grep -E '^(model|effort):'` shows both.
+- [ ] A committed `CHANGELOG.md` has a `- ` entry under `## Unreleased`: `git show HEAD:./CHANGELOG.md` shows it.
 - [ ] Self-check (not tested): you checked the investigation against a cited file and the entry against the staged diff, and can explain why the tasks use different settings.
 
 Run `npm run check -- i-3 --dir <your repo>` from your practice copy, or `npm run check -- i-3` in the copy itself.
@@ -86,7 +86,7 @@ If the skill check says the model is larger than the task needs, revisit the pre
 
 ## Watch out
 
-- `/model <alias>` and `/effort <level>` save your choice as the default for new sessions. To change only the current session, press `s` in the picker or the slider.
+- `/model <alias>` and `/effort <level>` save your choice as the default for new sessions, except effort `max`, which applies to the current session only. To change only the current session, press `s` in the picker or the slider.
 - A model switch makes the next request read the conversation without cache hits. Claude Code may ask you to confirm while the cache is warm ([Switching models](https://code.claude.com/docs/en/prompt-caching#switching-models)). A skill whose `model:` differs from the session's is a switch too, for that turn: its next request reads the whole conversation with no cache hits.
 
 ## Go further
@@ -97,6 +97,6 @@ If the skill check says the model is larger than the task needs, revisit the pre
 
 ---
 
-<sub>Sources: [Model configuration](https://code.claude.com/docs/en/model-config) · [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) · [Choosing a Claude model and effort level in Claude Code](https://claude.com/blog/claude-model-and-effort-level-in-claude-code) · [Commands](https://code.claude.com/docs/en/commands) · [Extend Claude with skills](https://code.claude.com/docs/en/skills) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching)</sub>
+<sub>Sources: [Model configuration](https://code.claude.com/docs/en/model-config) · [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) · [Choosing a Claude model and effort level in Claude Code](https://claude.com/blog/claude-model-and-effort-level-in-claude-code) · [Commands](https://code.claude.com/docs/en/commands) · [Extend Claude with skills](https://code.claude.com/docs/en/skills) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [How Claude Code uses prompt caching](https://code.claude.com/docs/en/prompt-caching) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode)</sub>
 
 <sub>← [Organize project memory and see what loaded](02-organize-memory.md) · [Intermediate index](README.md) · [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) → · Topic: [Models, effort and cost](../topics/models-effort-and-cost.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-3)</sub>

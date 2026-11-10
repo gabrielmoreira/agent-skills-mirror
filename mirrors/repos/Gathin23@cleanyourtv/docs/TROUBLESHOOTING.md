@@ -279,6 +279,18 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   build `STT2.230505.001.S136 682241`) with setupwraith and launcherx disabled: there the line came every 500 ms from a single
   process, each time with `CountrySettingsModule: SetupProviderGateway getCountryCode() failed to query
   SetupProvider.`, and nothing on screen was wrong. Whether VH21 units do the same has not been reported yet.
+- **The TV stays slow after the debloat, `system_server` keeps a core busy, and `logcat` repeats
+  `IpClient.eth0: ERROR IPv4 configuration failed: java.lang.IllegalStateException: Null LinkAddress given`.**
+  The unused Ethernet port is set to a static address with no address in it: `tools/tv.py 'dumpsys ethernet'`
+  shows `eth0: IP assignment: STATIC` above an empty `Static configuration`. Android starts `IpClient` on
+  `eth0`, fails at once and starts it again, in bursts tens of milliseconds apart, with no cable plugged in. On a
+  Vu Premium FHD 43-inch (`Smart_2K_ATV4`, `hamamatsucho`, Android TV 9, `PTM3.190725.242`) that was 166 errors
+  a minute, `system_server` at 121% and `netd` at 27% in `top` (of 400% for four cores), and 189% idle on the
+  Home screen. It was there before anything was disabled, and no package list touches it. The fix is in the
+  TV's own menu, without a cable: Settings > Network & Internet > Ethernet > IP settings > DHCP. Right after,
+  `dumpsys ethernet` read `IP assignment: DHCP`, the error stopped (0 in the next minute) and idle rose to
+  356-365% over three samples. Not yet checked across a reboot. How the port came to be static on that set is
+  not known.
 - **Every `dumpsys` answers `Service dumps disabled due to hung system process.`**, and `tools/disable.sh`
   skips every package in the list and says to reboot first (older copies of the script said "the TV's dumpsys
   shows neither a requested nor a granted permission block" and named Android 5.x instead). Android's watchdog
@@ -734,7 +746,11 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   enough; forget the network first (Xiaomi MiTV-MOSR4, where this also switched USB debugging off).
 - **A reboot on setupwraith's recovery screen factory-reset the TV** (Xiaomi MiTV-MOSR4). Disable
   setupwraith before launcherx. If `mFocusedApp` shows `.RecoveryActivity`, re-enable launcherx
-  first and do not reboot. [Notes](devices/xiaomi-mitv-mosr4.md).
+  first and do not reboot. [Notes](devices/xiaomi-mitv-mosr4.md). The same happens the other way round:
+  re-enabling setupwraith while launcherx stays disabled (for casting, say) made Home resolve to
+  `.RecoveryActivity` on a Xiaomi MiTV-MOEU0 (`V816.0.26.10.12.1`), `set-home-activity` did not change it,
+  and after one reboot the TV never left the boot animation and only a factory reset brought it back
+  ([#3578](https://github.com/Gathin23/cleanyourtv/issues/3578)). Enable launcherx first, every time.
 - **Home worked for days, then went black after a power cut** (Acer R4G and Panasonic 4KTV-3MUP,
   MOKA `R4_GTV`, Google TV 14): the firmware re-enables setupwraith at every cold boot and its
   `.RecoveryActivity` takes Home. `logcat | grep RecoveryActivity` shows it starting several times a
@@ -830,9 +846,10 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   `sony-bravia-4k-gb-us`, `sony-xbr-65x900f`, `sony-xbr-x900e`, `tcl-32s5k`, `tcl-40s5400a`,
   `tcl-55s470g`, `tcl-65ep640`, `tcl-beyondtv2-android-11`, `tcl-g09-google-tv`,
   `xgimi-horizon-s-pro`, `xgimi-mogo-3-pro`, `xgimi-mogo-4`, `xiaomi-mi-box-3` and
-  `xiaomi-mi-box-s`, and `grep -l '^com.google.android.tv.remote.service' examples/*/debloat.txt`
-  prints the current set. Those TVs haven't been tested for this, but any of them whose remote has a
-  microphone may show the same symptom. The G10 list has since been tested from the other side: on a
+  `xiaomi-mi-box-s`, and `grep -l '^com.google.android.tv.remote.service' examples/*/debloat*.txt`
+  prints the current set, the folders that ship a second list beside `debloat.txt` included. Those TVs
+  haven't been tested for this, but any of them whose remote has a microphone may show the same
+  symptom. The G10 list has since been tested from the other side: on a
   43T6C (G10, Realtek, build `STT2.230203.001`) a mic press with `com.google.android.tv.remote.service`
   disabled logs `Unable to start service Intent { act=...AtvSearchAssistantService ... } U=0: not found`
   — that service lives in the package — and re-enabling only it, with every other line applied, brought
@@ -862,7 +879,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   inside setupwraith (`...tv.setupwraith.libs.castinfo.CastInfoProvider`), so disabling the wizard
   takes the credentials with it. Re-enable it and within a minute the log shows
   `SetupWraith|CastInfoProvider: querying cast infos` and `Created singleton instance of
-  ClientAuthSigner`, and casting works. You cannot keep the provider and give up only Home:
+  ClientAuthSigner`, and casting works. If launcherx is disabled, enable it before setupwraith and keep it
+  enabled until setupwraith is off again, also for the after-each-boot sequence below: with setupwraith on
+  and launcherx off, Home resolves to setupwraith's `.RecoveryActivity`, and a reboot in that state ended in
+  a factory reset on a Xiaomi MiTV-MOEU0 ([#3578](https://github.com/Gathin23/cleanyourtv/issues/3578)).
+  Before casting is put down to setupwraith, check the cached-app freezer (below): on that set the receiver
+  loaded its keys without setupwraith. You cannot keep the provider and give up only Home:
   `pm disable-user` on `setupwraith/.RecoveryActivity` is refused with `SecurityException: Shell
   cannot change component state`. So either debloat without setupwraith and launcherx (for the 4K:
   [`debloat-keep-cast.txt`](../examples/google-chromecast-gtv-4k/debloat-keep-cast.txt)), or re-enable
@@ -874,9 +896,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   wizard is not always enough after a reboot: on a Chromecast with Google TV 4K (`sabrina`,
   UTTC.250917.004) no `ClientAuthSigner` line came within 3 minutes and phones did not even list the
   device. Restart the receiver while setupwraith is enabled instead: `pm enable
-  com.google.android.tungsten.setupwraith`, `logcat -c`, then `am crash com.google.android.apps.mediashell`.
-  The system starts the receiver again with a new pid, and `Created singleton instance of ClientAuthSigner`
-  follows within seconds. Before trusting that line, check the pid (`pidof
+  com.google.android.tungsten.setupwraith`, `logcat -c`, then `am crash $(pidof
+  com.google.android.apps.mediashell)`. The system starts the receiver again with a new pid, and `Created
+  singleton instance of ClientAuthSigner` follows within seconds. Crash it by pid: `am crash
+  com.google.android.apps.mediashell`, with the package name, hit one of the receiver's helper processes
+  (`:privileged_process1`, seen on `sabrina` UTTC.250917.004) and left the receiver itself running with
+  its old pid, so the pid has to change after the crash. Before trusting that line, check the pid (`pidof
   com.google.android.apps.mediashell`) is still the same 30 s later, then `pm disable-user --user 0
   com.google.android.tungsten.setupwraith`; with no `No private key` line after that, casting works
   ([#2615](https://github.com/Gathin23/cleanyourtv/issues/2615)). Do not restart it with `am force-stop`
@@ -930,6 +955,12 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   launcher does not do that today. That the freezing causes the lost discovery is inferred from the two
   showing up together, not proven: if `isFrozen=true` is not there, the receiver is hung, as above.
   [The G08 US notes](../examples/tcl-g08-us-google-tv/README.md#fourth-unit-cast-and-the-freezer).
+  Without a launcher change, switching the freezer off works from the shell: on a Xiaomi TV S Mini LED 65 2025
+  (MiTV-MOEU0, `V816.0.26.10.12.1.ULBMIXM`) phones lost the TV with the same `freezing <pid>` lines and 8009
+  not answering, and `tools/tv.py "settings put global cached_apps_freezer disabled"` followed by a reboot
+  left the receiver at `isFrozen=false` with 8008 and 8009 open, and casting worked again. It is the Developer
+  options switch "Suspend execution for cached apps", it covers every cached app, not only the receiver, and
+  `device_default` undoes it ([the MOEU0 list](../examples/xiaomi-mitv-moeu0/debloat.txt), fourth unit).
 - **The TV drops off Wi-Fi every minute right after the install**, seen on Google TV 14 (Xiaomi
   MiTV-MZTU0): the same setupwraith `.RecoveryActivity` took Home and system_server crash-looped
   on it. The install script now starts the new launcher before disabling the stock one, sets the
@@ -1180,6 +1211,22 @@ turned off in Settings stays off.
   tools/tv.py "settings put secure enabled_accessibility_services com.gathin.tvhome/.InputKeyService; sleep 1; settings put secure enabled_accessibility_services ''; sleep 1; settings put secure enabled_accessibility_services com.gathin.tvhome/.InputKeyService"
   ```
 
+- **On that Hisense board the helper can also hang under `Binding services` after a restart.** `dumpsys
+  accessibility` shows it enabled, `Bound services:{}` and the helper under `Binding services`, not
+  `Crashed services`, and the three writes above do not clear it. The firmware refuses every background
+  process start of a third-party app, at any time: only an activity start gets through, and `logcat`
+  says `BootInterface: intercept 3rd app.processName:com.gathin.tvhome(service)`. When Android binds the
+  helper before Home has started the launcher's process, or after standby has killed it
+  (`PowerVtImp: kill 3rd app`), the start is refused and Android 11 never retries. The firmware lets an
+  app through only when it is switched on in **Device Assistant > App Manager > Self-launched
+  applications** ("Launch Management"), and that screen lists only apps with a `BOOT_COMPLETED`
+  receiver, which the launcher does not have, so it cannot be switched on there today. The setting
+  behind that screen (`allowed_self_launch_3rd_packages`, global) cannot be set by hand either: the
+  firmware reads it once per boot and `com.hisense.tv.protector` rewrites it from its own list at every
+  start. Until then, reinstalling the launcher binds the helper again. Seen on a Hisense 55A53FUA (`songshan`,
+  Android 11, `RTT2.220118.001`); the full trace is in
+  [#3304](https://github.com/Gathin23/cleanyourtv/issues/3304).
+
 - **Enabled** means the component is in that user's colon-separated list (the class may be written in
   full, `com.gathin.tvhome/com.gathin.tvhome.HomeKeyService`). Match the whole component.
 - **Bound** means it appears under that user's `Bound services` section of the dump (`services` on older
@@ -1217,6 +1264,16 @@ turned off in Settings stays off.
   consuming the key in the helper also keeps it from the vendor receiver
   `com.homwee.factory/.FactoryKeyReciver`, which `dumpsys window policy` routes `KEYCODE_NOTIFICATION`
   to once the stock launcher is gone.
+  A press can print two numbers, and the one the framework reports is not always the `MSC_SCAN`: on a
+  XGIMI Elfin Plus (`WK03C`, `altai`, MediaTek, Android 11,
+  [#3613](https://github.com/Gathin23/cleanyourtv/issues/3613)) the remote's gear printed `MSC_SCAN
+  00070041` with `EV_KEY KEY_F8`, and its key layout (`Vendor_000d_Product_3838.kl`) could not be read
+  from the shell, so nothing there said which keycode it becomes. `139` in `settings_key_keycodes` did nothing (the report
+  took it for `KEYCODE_F8`, which is `138`; `138` was not tried); `66`, the `input-event-codes.h` number for `KEY_F8`, in
+  `settings_key_scancodes` opened the launcher's panel with `settings_key_panel`. So read both numbers
+  off one `getevent -lt` press and try the `EV_KEY` one when the `MSC_SCAN` one matches nothing. That
+  board also brings the stock launcher back within minutes of `pm disable-user` (the
+  `com.xgimi.xrmservice` bullet above), and while it is on, the gear and Home open Google TV.
 - **All vendor buttons die at once** and `logcat` says `GLOBAL_BUTTON ... process is bad`: the
   global-key receiver crashes on the disabled launcherx and Android stops starting it. Map every such
   keycode in the helpers, also for disabled apps. See [the MOSR4 note](devices/xiaomi-mitv-mosr4.md).
@@ -1246,8 +1303,10 @@ turned off in Settings stays off.
   answered before the settings branch in
   `HomeKeyService.onKeyEvent`: `"scan:<scancode>:com.sony.dtv.smartui/.settings.SmartSettingsActivity"` in
   `config.xml`, or in a theme's `app_keys` (find `<scancode>` with `getevent -lt` while pressing the button,
-  as the `scan:` bullet above does for a Sony remote). A keycode entry cannot: `"176:..."` is
-  `KEYCODE_SETTINGS`, which the helper takes itself before it looks at any app key.
+  as the `scan:` bullet above does for a Sony remote). A keycode entry, `"176:..."` (`KEYCODE_SETTINGS`), is
+  also answered before the settings branch, when it has a tap target: a `hold:176:...` entry alone leaves the tap
+  to Settings, and a button listed in `settings_key_scancodes` stays Settings (read from the launcher's code, not
+  yet tried on a set).
 - **The gear does nothing after the stock launcher is disabled** (onn 4K Streaming Box, `YOC`, Google TV 14,
   `URO4.260304.011.B1.15051976`, and Hisense SmartTV 4K, `lushan` / `his9603`, Google TV 12,
   `STT2.230929.001.092`). The app buttons and the mic can keep working while this one does not: on the onn
@@ -1276,9 +1335,11 @@ turned off in Settings stays off.
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
   `enabled_accessibility_services` naming `com.gathin.tvhome/com.gathin.tvhome.HomeKeyService` while
   `accessibility_enabled` read `0`, `dumpsys accessibility` showed `Bound services:{}` and the Home
-  button opened Google TV. `restore_key_services` does not repair this state: `ServiceRepair` writes
-  `accessibility_enabled 1` only on the path that also puts a missing helper back on the list, and here
-  the list was complete. Write the flag back, then read the dump again; toggling the service off and on
+  button opened Google TV. With `restore_key_services` on, Home now repairs this state itself for a
+  helper that had connected before: when the flag reads a confirmed `0`, `ServiceRepair` takes the
+  helpers off the list, puts them back and writes `accessibility_enabled 1`
+  ([#3404](https://github.com/Gathin23/cleanyourtv/issues/3404), a Hisense whose standby leaves exactly
+  this). Without that key, write the flag back, then read the dump again; toggling the service off and on
   in Accessibility, which is what the owner did, brought the redirect back for that session. Whether
   that manual flag change survived the next reboot was not retested; the cold-boot follow-up below
   tests the fork's separate opt-in startup repair. In one cold-boot test of that repair, TCL had reset

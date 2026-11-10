@@ -1,6 +1,6 @@
 # Delegate to a custom subagent
 
-<sub>**Intermediate** · Lesson 6 of 8 · about 25 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md), [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 6 of 8 · about 25 minutes · Needs: [Turn a repeated workflow into a skill](01-first-skill.md), [Permissions, settings scopes and the sandbox](04-permissions-and-sandbox.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -26,7 +26,7 @@ flowchart LR
   B -->|summary only| A
 ```
 
-A project subagent is a Markdown file in `.claude/agents/`: frontmatter with a `name` and a `description` (both required), an optional `tools` list, then the instructions it works from. Claude reads the description to decide when to delegate; you can also name the subagent in your request.
+A project subagent is a Markdown file in `.claude/agents/`: frontmatter with a `name` and a `description` (both required), an optional `tools` list, then the instructions it works from. Without a `tools` line, a subagent inherits every tool available to subagents ([Supported frontmatter fields](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields)). Claude reads the description to decide when to delegate; you can also name the subagent in your request.
 
 Delegate a task whose output you don't need in full, or that should run with restricted tools. Keep it in the main conversation when it needs back-and-forth, or when it's a quick, targeted change ([Choose between subagents and main conversation](https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation)).
 
@@ -61,7 +61,7 @@ Delegate a task whose output you don't need in full, or that should run with res
    ```
 
    Without `--fix`, the bundled skill asks for a report only ([What the review reads and edits](https://code.claude.com/docs/en/code-review-local#what-the-review-reads-and-edits)). That instruction differs from the custom reviewer's tool restriction: the custom reviewer has no file-editing or shell tool. Run `git status --short` now, after both reviews, to inspect what actually happened ([Git status](https://git-scm.com/docs/git-status)).
-5. Compare the reports against the same diff. A reviewer asked to find gaps usually reports some, even when the work is sound: act on a finding that affects correctness or the requirements, after a targeted test shows it is real ([Add an adversarial review step](https://code.claude.com/docs/en/best-practices#add-an-adversarial-review-step)). Review and commit any justified fix and `.claude/agents/code-reviewer.md`.
+5. Compare the reports against the same diff. A reviewer asked to find gaps usually reports some, even when the work is sound: act on a finding that affects correctness or the requirements, after a targeted test shows it is real ([Review against your spec](https://code.claude.com/docs/en/best-practices#review-against-your-spec)). Review and commit any justified fix and `.claude/agents/code-reviewer.md`.
 
 ## Your turn
 
@@ -96,14 +96,14 @@ Hand the noisy search for untested code to a read-only helper, and keep only its
 
 You are done when all of these are true:
 
-- [ ] The committed subagent has its name and a description of when to use it: `git show HEAD:.claude/agents/test-gaps.md | head -5`.
+- [ ] The committed subagent has its name and a description of when to use it: `git show HEAD:./.claude/agents/test-gaps.md | head -5`.
 - [ ] Its tools only read code: the `tools` line names tools such as `Read`, `Grep` and `Glob`, and no tool that edits files, runs commands or reaches the web, such as `Edit`, `Bash` or `WebFetch`.
 - [ ] Claude delegated to it: `grep -x test-gaps .practice/i-6-agents.txt` prints `test-gaps`.
 - [ ] Self-check (not tested): the subagent's file reads stayed out of your conversation, and only its summary came back. You compared both reviews of the same commit with the actual diff, and tested a finding before acting on it.
 
 Run `npm run check -- i-6 --dir <your repo>` from your practice copy, or `npm run check -- i-6` in the copy itself.
 
-If the first item fails, check the frontmatter: Claude Code skips an agent file without a `name`, and one with a `name` but no `description`. If the tools item fails, remove each tool that can change files, run commands or reach the web; without a `tools` line, a subagent gets every tool. If the log has no `test-gaps` line, start the session with the hook file and name the subagent in your request.
+If the first item fails, check the frontmatter: Claude Code skips an agent file without a `name`, and one with a `name` but no `description`. If the tools item fails, remove each tool that can change files, run commands or reach the web; without a `tools` line, a subagent inherits every tool available to subagents. If the log has no `test-gaps` line, start the session with the hook file and name the subagent in your request.
 
 ## Watch out
 

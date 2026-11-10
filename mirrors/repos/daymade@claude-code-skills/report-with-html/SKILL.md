@@ -27,11 +27,18 @@ Do not trigger it for a normal status reply, generic review, code diff, issue li
 or Markdown document. Those tasks may be reported in chat unless the user explicitly
 asks to turn the result into a visual HTML artifact.
 
-For a local report that needs HTTP preview, select the initial delivery route in
-`references/local-http-preview.md` and its bundled `scripts/preview_report.py`
-before the first browser navigation. Serve only the reviewed explicit file
+For restoring or hosting an existing HTML page without changing its content,
+take [Existing HTML restoration](references/local-http-preview.md#existing-html-restoration)
+and stop after its delivery checks. This transport-only route does not enter the
+new-report design, masked-render or reader-review workflow below. If the request
+also changes the report's conclusions, layout or interactions, use the applicable
+authoring/maintenance workflow for those changes.
+
+For a local report that needs HTTP preview, use
+`references/local-http-preview.md` and its bundled `scripts/preview_report.py`.
+Serve only the reviewed explicit file
 snapshot; verify its HTTP readiness and rendered content/action in the permitted
-browser. A browser-policy refusal requires permission recovery, not rehosting.
+browser.
 
 The default delivery is the verified HTML opened in a browser. A PNG is a QA artifact
 and is delivered only when the user asks for an image. If the user needs editable

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 脱敏版（2026-10-21）：由所有者的脚本整理。原脚本按 QEMU 的 shared NAT 写，放行 10.0.2.2；
+# 脱敏版（2026-10-21）：由原始脚本整理。原脚本按 QEMU 的 shared NAT 写，放行 10.0.2.2；
 # VM 路线现在要求 LAN 独立网卡，所以放行来源改为必填参数 SSH_SRC（你的管理机在局域网里的地址或网段）。
 # 在 Linux 客机的控制台里由用户自己运行：开启 sshd，若 ufw 已启用，只放行 SSH_SRC 到 22 端口。
 # 用法: sudo SSH_SRC=<管理机地址或网段> NIC=<客机网卡名> bash enable-guest-ssh.sh

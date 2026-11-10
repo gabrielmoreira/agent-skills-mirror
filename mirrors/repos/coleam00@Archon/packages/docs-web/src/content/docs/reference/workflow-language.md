@@ -2132,10 +2132,10 @@ that is after its worktree was created. A `required` setting must be set there, 
 by a workflow `inputs:` entry of the same name, or passed with `--input`.
 
 Pack folders of the same name in the project, home and bundled scopes share one file, and each
-reads it against its own declaration. A bundled pack declares no settings, so if a project pack
-folder takes a bundled pack's name and the file sets the project pack's settings, the bundled
-workflows of that name refuse to start ("declares no settings"); the same happens when the
-project and home declarations of one name differ. Give a pack with settings a name of its own.
+reads it against its own declaration. A bundled pack ships its `.pack/pack.yaml` with it, so its
+settings are set the same way. If a project or home pack folder takes another pack's name and
+declares different settings, a workflow whose declaration lacks a setting the file sets refuses
+to start ("unknown setting"). Give a pack with settings of its own a name of its own.
 
 **Layers**, lowest first: the pack's `default:`, then the workflow's own `inputs:` default of the
 same name, then the project's `.archon/packs/<pack>.yaml`, then the run's supplied inputs
@@ -3026,8 +3026,9 @@ The value stays a run id plus a relative path everywhere: in events, in the API,
 resume. The engine never expands it into an absolute path and never loads the file, and there
 is no in-workflow resolver: a pointer is for **machine readers**, and
 `GET /api/artifacts/<run_id>/<path>` serves exactly that file. The read side owns
-reachability and real-path checks by design; that route does lexical containment today, and
-real-path resolution at read time is not yet implemented (#3160). A prompt inside the
+reachability and real-path checks by design. The route checks lexical containment,
+resolves symlinks in both the artifacts directory and requested file, and refuses a
+target outside the resolved artifacts directory before reading it. A prompt inside the
 producing run keeps using the `$ARTIFACTS_DIR/<path>` string, which is the same file on
 disk. See
 [Artifact pointers](/reference/variables/#artifact-pointers-in-a-result) for the full rule

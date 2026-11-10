@@ -65,7 +65,7 @@ Agent 编排检测与修复（10 节）
 - [选定路线后的能力核实](agent-remediation.md#选定路线后的能力核实)
 - [手动交接与遗留验收](agent-remediation.md#手动交接与遗留验收)
 - [修复后的复验](agent-remediation.md#修复后的复验)
-- [整机只走 IPv4（所有者 2026-10-19 确认，2026-10-25 补充）](agent-remediation.md#整机只走-ipv4所有者-2026-10-19-确认2026-10-25-补充)
+- [整机只走 IPv4（2026-10-19，2026-10-25 补充）](agent-remediation.md#整机只走-ipv42026-10-192026-10-25-补充)
 - [Windows 网卡 IPv6：默认关闭（B 档）](agent-remediation.md#windows-网卡-ipv6默认关闭b-档)
 - [WebRTC：浏览器和系统分开堵（B 档）](agent-remediation.md#webrtc浏览器和系统分开堵b-档)
 - [选择器能做什么](agent-remediation.md#选择器能做什么)
@@ -124,7 +124,7 @@ Contact phases and execution boundary（4 节）
 
 ## egress-ip-options.md
 
-本机路线：固定出口 IP 的三种来源（所有者指定，2026-10-21）（7 节）
+本机路线：固定出口 IP 的三种来源（2026-10-21）（7 节）
 
 - [三种来源](egress-ip-options.md#三种来源)
 - [推荐](egress-ip-options.md#推荐)
@@ -230,6 +230,16 @@ M00: adaptive intake and stable question registry（18 节）
   - [Target capability observations](intake.md#target-capability-observations)
   - [Handoff and acceptance records](intake.md#handoff-and-acceptance-records)
 
+## killswitch-switch.md
+
+Guardian Switch：统一防直连开关（5 节）
+
+- [支持范围与操作含义](killswitch-switch.md#支持范围与操作含义)
+- [首次配置：交给目标机 Agent](killswitch-switch.md#首次配置交给目标机-agent)
+- [命令行与桌面入口](killswitch-switch.md#命令行与桌面入口)
+- [恢复与开关验收](killswitch-switch.md#恢复与开关验收)
+- [界面与随包文件](killswitch-switch.md#界面与随包文件)
+
 ## line-optimization.md
 
 线路优化：Agent 如何帮用户的机器优化线路（10 节）
@@ -274,13 +284,17 @@ Linux：Claude 本机数据清理（Agent 提示词，无内置宿主）（8 节
 
 ## local-firewall-prompts.md
 
-本机路线：Clash 与防火墙（Agent 提示词）（13 节）
+本机路线：Clash 与防火墙（Agent 提示词）（17 节）
 
 - [通用工作方式（两个系统相同）](local-firewall-prompts.md#通用工作方式两个系统相同)
 - [替别人交付：先说范围，按验收单交](local-firewall-prompts.md#替别人交付先说范围按验收单交)
+- [突发场景：分平台处理与 Agent 验收提示词（2026-11-09）](local-firewall-prompts.md#突发场景分平台处理与-agent-验收提示词2026-11-09)
+  - [平台机制与检查重点](local-firewall-prompts.md#平台机制与检查重点)
+  - [场景与通过条件](local-firewall-prompts.md#场景与通过条件)
+  - [可直接交给目标机 Agent 的提示词](local-firewall-prompts.md#可直接交给目标机-agent-的提示词)
 - [Mac](local-firewall-prompts.md#mac)
   - [Mac 上的 Clash（Clash Verge）怎么配](local-firewall-prompts.md#mac-上的-clashclash-verge怎么配)
-  - [Mac 的防火墙：PF 脚本（已有真机通过报告）](local-firewall-prompts.md#mac-的防火墙pf-脚本已有真机通过报告)
+  - [Mac 的防火墙：PF 脚本（已验收）](local-firewall-prompts.md#mac-的防火墙pf-脚本已验收)
 - [Windows](local-firewall-prompts.md#windows)
   - [Windows 上的 Clash](local-firewall-prompts.md#windows-上的-clash)
   - [Windows 的防火墙：系统自带](local-firewall-prompts.md#windows-的防火墙系统自带)
@@ -364,10 +378,11 @@ M01/M06–M09: independent environment routes（34 节）
 
 ## scripts-index.md
 
-脚本索引（7 节）
+脚本索引（8 节）
 
 - [访谈与评估](scripts-index.md#访谈与评估)
 - [检查与报告（只读）](scripts-index.md#检查与报告只读)
+- [统一防直连开关](scripts-index.md#统一防直连开关)
 - [网络检测的其他部分](scripts-index.md#网络检测的其他部分)
 - [修复计划与规则（离线，不写入）](scripts-index.md#修复计划与规则离线不写入)
 - [写入与恢复（有事务和备份）](scripts-index.md#写入与恢复有事务和备份)

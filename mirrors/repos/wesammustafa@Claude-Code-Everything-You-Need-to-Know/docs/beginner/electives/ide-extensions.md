@@ -1,6 +1,6 @@
 # Use Claude Code in your editor
 
-<sub>**Beginner** · Elective · about 15 minutes · Needs: [Install, sign in and look around](../01-install-and-look-around.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Elective · about 15 minutes · Needs: [Install, sign in and look around](../01-install-and-look-around.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -27,7 +27,7 @@ In VS Code:
 
 1. Open the Extensions view with `Cmd+Shift+X` (Mac) or `Ctrl+Shift+X` (Windows and Linux), search for "Claude Code", and click **Install**. The extension doesn't work in Restricted Mode, so if VS Code shows a Restricted Mode banner or asks whether to trust the folder, trust it: this copy is your own code ([Workspace Trust](https://code.visualstudio.com/docs/editing/workspaces/workspace-trust)).
 2. Open `src/config.js`. Click the Spark icon at the top right of the editor to open Claude Code, and sign in if it asks. No icon? Click `✻ Claude Code` in the status bar at the bottom right instead.
-3. Select the body of `parseConfig` and press `Option+K` (Mac) or `Alt+K` (Windows and Linux). The prompt box footer shows how many lines are selected, and the shortcut adds a reference with the file name and line numbers, such as `config.js#7-17` ([VS Code](https://code.claude.com/docs/en/vs-code#automatic-context-from-your-selection-and-open-file)). Ask:
+3. Select the body of `parseConfig` and press `Option+K` (Mac) or `Alt+K` (Windows and Linux). The prompt box footer shows how many lines are selected, and the shortcut adds a reference with the file name and line numbers, such as `@config.js#7-17` ([VS Code](https://code.claude.com/docs/en/vs-code#automatic-context-from-your-selection-and-open-file)). Ask:
 
    ```text
    What happens if linkcheck.json holds an array instead of an object?

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 脱敏版（2026-10-21）：由所有者的脚本整理，逻辑不变，只把版本和架构改成可覆盖的参数。
+# 脱敏版（2026-10-21）：由原始脚本整理，逻辑不变，只把版本和架构改成可覆盖的参数。
 # 在 Arch 系 Linux 客机（如 Omarchy）里由用户自己运行；用 pacman 装依赖，以 root 装 FlClash 和 TUN 助手。
 # 先打快照、先读一遍脚本；运行会下载 FlClash 的 GitHub Release 并核对 SHA256，校验失败即中止。
 # 版本固定为脚本编写时的 0.9.1，升级前到 FlClash 的 Release 页面核对；架构默认 arm64（Apple 芯片 Mac 上的客机），
@@ -73,7 +73,7 @@ echo tun | sudo tee /etc/modules-load.d/tun.conf >/dev/null
 echo 'Installing the privileged TUN helper...'
 sudo /opt/FlClash/FlClashHelperService install
 
-# 非 0.9.1 版本（所有者在 0.9.2 deb 上实测）helper 还需要两处补丁，缺一则 helper 起不来：
+# 非 0.9.1 版本（在 0.9.2 deb 上实测）helper 还需要两处补丁，缺一则 helper 起不来：
 #   1. 桌面用户不是默认 uid 时，helper 要显式知道属主：FLCLASH_HELPER_OWNER_UID/GID；
 #   2. helper 需要 /run/flclash 目录：RuntimeDirectory=flclash。
 # 用 systemd drop-in 加，不改包内的 unit 文件；重复运行结果相同。

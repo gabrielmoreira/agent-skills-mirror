@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 424 file(s) materialized.
+Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 425 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 424 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 424 |
+| Files         | 425 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -482,8 +482,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 420 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
 | 421 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
 | 422 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
-| 423 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
-| 424 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
+| 423 | ✓ | [`v3/docs/adr/ADR-526-metaharness-darwin-regular-dependency.md`](v3/docs/adr/ADR-526-metaharness-darwin-regular-dependency.md) |
+| 424 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
+| 425 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `arc53/DocsGPT` — 26 default patterns, 7 followed patterns, 19 file(s) materialized.
+Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `arc53/DocsGPT` — 26 default patterns, 7 followed patterns, 19 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 19 |
+| Followed pats | 6 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `arc53/DocsGPT` — 26 default patterns, 7 followed patterns, 19 file(
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `HACKTOBERFEST.md`
 - `CONTRIBUTING.md`
 - `CODE_OF_CONDUCT.md`
 - `docs/README.md`
@@ -81,9 +80,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 15 | → | [`docs/README.md`](docs/README.md) |
 | 16 | → | [`frontend/DESIGN.md`](frontend/DESIGN.md) |
-| 17 | → | [`HACKTOBERFEST.md`](HACKTOBERFEST.md) |
-| 18 | → | [`README.md`](README.md) |
-| 19 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
+| 17 | → | [`README.md`](README.md) |
+| 18 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
 
 ---
 

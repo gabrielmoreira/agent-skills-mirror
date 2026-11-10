@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tiann/hapi` — 26 default patterns, 17 followed patterns, 34 file(s) materialized.
+Mirror of `tiann/hapi` — 26 default patterns, 18 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tiann/hapi` — 26 default patterns, 17 followed patterns, 34 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 17 |
-| Files         | 34 |
+| Followed pats | 18 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `tiann/hapi` — 26 default patterns, 17 followed patterns, 34 file(s)
 - `ios/README.md`
 - `android/README.md`
 - `relay/README.md`
+- `docs/guide/session-jobs.md`
 - `docs/guide/why-hapi.md`
 - `docs/guide/codex-shared-sessions.md`
 - `docs/guide/pwa.md`
@@ -102,13 +103,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | → | [`docs/guide/installation.md`](docs/guide/installation.md) |
 | 26 | → | [`docs/guide/native-apps.md`](docs/guide/native-apps.md) |
 | 27 | → | [`docs/guide/pwa.md`](docs/guide/pwa.md) |
-| 28 | → | [`docs/guide/voice-assistant.md`](docs/guide/voice-assistant.md) |
-| 29 | → | [`docs/guide/why-hapi.md`](docs/guide/why-hapi.md) |
-| 30 | → | [`hub/README.md`](hub/README.md) |
-| 31 | → | [`ios/README.md`](ios/README.md) |
-| 32 | → | [`README.md`](README.md) |
-| 33 | → | [`relay/README.md`](relay/README.md) |
-| 34 | → | [`web/README.md`](web/README.md) |
+| 28 | → | [`docs/guide/session-jobs.md`](docs/guide/session-jobs.md) |
+| 29 | → | [`docs/guide/voice-assistant.md`](docs/guide/voice-assistant.md) |
+| 30 | → | [`docs/guide/why-hapi.md`](docs/guide/why-hapi.md) |
+| 31 | → | [`hub/README.md`](hub/README.md) |
+| 32 | → | [`ios/README.md`](ios/README.md) |
+| 33 | → | [`README.md`](README.md) |
+| 34 | → | [`relay/README.md`](relay/README.md) |
+| 35 | → | [`web/README.md`](web/README.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,21 +75,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`skills/cloud/references/quickstart.md`](skills/cloud/references/quickstart.md) |
 | 15 | ✓ | [`skills/cloud/references/sessions.md`](skills/cloud/references/sessions.md) |
 | 16 | ✓ | [`skills/cloud/SKILL.md`](skills/cloud/SKILL.md) |
-| 17 | ✓ | [`skills/open-source/references/actor.md`](skills/open-source/references/actor.md) |
-| 18 | ✓ | [`skills/open-source/references/agent.md`](skills/open-source/references/agent.md) |
-| 19 | ✓ | [`skills/open-source/references/browser.md`](skills/open-source/references/browser.md) |
-| 20 | ✓ | [`skills/open-source/references/examples.md`](skills/open-source/references/examples.md) |
-| 21 | ✓ | [`skills/open-source/references/integrations.md`](skills/open-source/references/integrations.md) |
-| 22 | ✓ | [`skills/open-source/references/models.md`](skills/open-source/references/models.md) |
-| 23 | ✓ | [`skills/open-source/references/monitoring.md`](skills/open-source/references/monitoring.md) |
-| 24 | ✓ | [`skills/open-source/references/quickstart.md`](skills/open-source/references/quickstart.md) |
-| 25 | ✓ | [`skills/open-source/references/tools.md`](skills/open-source/references/tools.md) |
-| 26 | ✓ | [`skills/open-source/SKILL.md`](skills/open-source/SKILL.md) |
-| 27 | ✓ | [`skills/qa/references/browser-use-v2.md`](skills/qa/references/browser-use-v2.md) |
-| 28 | ✓ | [`skills/qa/references/methodology.md`](skills/qa/references/methodology.md) |
-| 29 | ✓ | [`skills/qa/SKILL.md`](skills/qa/SKILL.md) |
-| 30 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
-| 31 | ✓ | [`skills/x402/SKILL.md`](skills/x402/SKILL.md) |
+| 17 | ✓ | [`skills/open-source/SKILL.md`](skills/open-source/SKILL.md) |
+| 18 | ✓ | [`skills/qa/references/browser-use-v2.md`](skills/qa/references/browser-use-v2.md) |
+| 19 | ✓ | [`skills/qa/references/methodology.md`](skills/qa/references/methodology.md) |
+| 20 | ✓ | [`skills/qa/SKILL.md`](skills/qa/SKILL.md) |
+| 21 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
+| 22 | ✓ | [`skills/x402/SKILL.md`](skills/x402/SKILL.md) |
 
 ---
 

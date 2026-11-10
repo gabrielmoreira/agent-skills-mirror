@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datachain-ai/datachain` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
+Mirror of `datachain-ai/datachain` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datachain-ai/datachain` — 26 default patterns, 1 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 5 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 3 | ✓ | [`src/datachain/skill/core/SKILL.md`](src/datachain/skill/core/SKILL.md) |
-| 4 | ✓ | [`src/datachain/skill/knowledge/SKILL.md`](src/datachain/skill/knowledge/SKILL.md) |
-| 5 | → | [`AGENT.md`](AGENT.md) |
+| 3 | ✓ | [`src/datachain/skill/datachain/SKILL.md`](src/datachain/skill/datachain/SKILL.md) |
+| 4 | → | [`AGENT.md`](AGENT.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Beginner
 
-<sub>**Beginner** · about 2½ hours · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · about 2½ hours · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 One session, one change, done well. You start Claude Code safely and check what it tells you against the code, decide when it asks and when to plan first, take a change from request to commit and catch what it gets wrong, stop or rewind a wrong turn and keep the conversation focused, and give the project a memory that new sessions follow.
 
@@ -59,7 +59,7 @@ Optional lessons beside the core path, each ending with a checklist you confirm 
 ## Official companions
 
 - [Quickstart](https://code.claude.com/docs/en/quickstart): Anthropic's walkthrough from install to a first change.
-- [Claude Code 101](https://academy.claude.com/courses/claude-code-101): Claude Academy's beginner course.
+- [Claude Code 101](https://academy.claude.com/courses/claude-code-101): Claude Academy's introduction to Claude Code.
 - `/powerup`: interactive lessons inside Claude Code ([Commands](https://code.claude.com/docs/en/commands)).
 
 ## Next level

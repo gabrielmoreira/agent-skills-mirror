@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 47 followed patterns, 298 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 297 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 47 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 47 |
-| Files         | 298 |
+| Followed pats | 46 |
+| Files         | 297 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,7 +97,6 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 47 followed patterns, 
 - `docs/harness/daytona-sandbox.md`
 - `src/pydantic_clai2/PLUGINS.md`
 - `docs/harness/subagents.md`
-- `.github/workflows/pydantic-ai-ui-security-review.md`
 
 ## File Index
 
@@ -357,52 +356,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 250 | ✓ | [`tests/harness/CLAUDE.md`](tests/harness/CLAUDE.md) |
 | 251 | ✓ | [`tests/harness/skills/temporal_workspace/skills/reviewer/SKILL.md`](tests/harness/skills/temporal_workspace/skills/reviewer/SKILL.md) |
 | 252 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 253 | → | [`.github/workflows/pydantic-ai-ui-security-review.md`](.github/workflows/pydantic-ai-ui-security-review.md) |
-| 254 | → | [`agent_docs/complexity.md`](agent_docs/complexity.md) |
-| 255 | → | [`agent_docs/index.md`](agent_docs/index.md) |
-| 256 | → | [`docs/agent.md`](docs/agent.md) |
-| 257 | → | [`docs/capabilities/instrumentation.md`](docs/capabilities/instrumentation.md) |
-| 258 | → | [`docs/capabilities/mcp.md`](docs/capabilities/mcp.md) |
-| 259 | → | [`docs/capabilities/select-model.md`](docs/capabilities/select-model.md) |
-| 260 | → | [`docs/capabilities/web-fetch.md`](docs/capabilities/web-fetch.md) |
-| 261 | → | [`docs/cli.md`](docs/cli.md) |
-| 262 | → | [`docs/deferred-tools.md`](docs/deferred-tools.md) |
-| 263 | → | [`docs/dependencies.md`](docs/dependencies.md) |
-| 264 | → | [`docs/durable_execution/overview.md`](docs/durable_execution/overview.md) |
-| 265 | → | [`docs/evals.md`](docs/evals.md) |
-| 266 | → | [`docs/graph.md`](docs/graph.md) |
-| 267 | → | [`docs/harness/background-tools.md`](docs/harness/background-tools.md) |
-| 268 | → | [`docs/harness/bubblewrap-sandbox.md`](docs/harness/bubblewrap-sandbox.md) |
-| 269 | → | [`docs/harness/code-mode.md`](docs/harness/code-mode.md) |
-| 270 | → | [`docs/harness/daytona-sandbox.md`](docs/harness/daytona-sandbox.md) |
-| 271 | → | [`docs/harness/e2b-sandbox.md`](docs/harness/e2b-sandbox.md) |
-| 272 | → | [`docs/harness/index.md`](docs/harness/index.md) |
-| 273 | → | [`docs/harness/memory.md`](docs/harness/memory.md) |
-| 274 | → | [`docs/harness/modal-sandbox.md`](docs/harness/modal-sandbox.md) |
-| 275 | → | [`docs/harness/shell.md`](docs/harness/shell.md) |
-| 276 | → | [`docs/harness/sprites-sandbox.md`](docs/harness/sprites-sandbox.md) |
-| 277 | → | [`docs/harness/ssh-workspace.md`](docs/harness/ssh-workspace.md) |
-| 278 | → | [`docs/harness/step-persistence.md`](docs/harness/step-persistence.md) |
-| 279 | → | [`docs/harness/subagents.md`](docs/harness/subagents.md) |
-| 280 | → | [`docs/harness/tool-output-limits.md`](docs/harness/tool-output-limits.md) |
-| 281 | → | [`docs/input.md`](docs/input.md) |
-| 282 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 283 | → | [`docs/mcp/client.md`](docs/mcp/client.md) |
-| 284 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 285 | → | [`docs/models/overview.md`](docs/models/overview.md) |
-| 286 | → | [`docs/output.md`](docs/output.md) |
-| 287 | → | [`docs/persistence.md`](docs/persistence.md) |
-| 288 | → | [`docs/realtime/deployment.md`](docs/realtime/deployment.md) |
-| 289 | → | [`docs/timeouts.md`](docs/timeouts.md) |
-| 290 | → | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
-| 291 | → | [`docs/tools.md`](docs/tools.md) |
-| 292 | → | [`docs/ui/overview.md`](docs/ui/overview.md) |
-| 293 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 294 | → | [`docs/web.md`](docs/web.md) |
-| 295 | → | [`docs/workspace.md`](docs/workspace.md) |
-| 296 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
-| 297 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
-| 298 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
+| 253 | → | [`agent_docs/complexity.md`](agent_docs/complexity.md) |
+| 254 | → | [`agent_docs/index.md`](agent_docs/index.md) |
+| 255 | → | [`docs/agent.md`](docs/agent.md) |
+| 256 | → | [`docs/capabilities/instrumentation.md`](docs/capabilities/instrumentation.md) |
+| 257 | → | [`docs/capabilities/mcp.md`](docs/capabilities/mcp.md) |
+| 258 | → | [`docs/capabilities/select-model.md`](docs/capabilities/select-model.md) |
+| 259 | → | [`docs/capabilities/web-fetch.md`](docs/capabilities/web-fetch.md) |
+| 260 | → | [`docs/cli.md`](docs/cli.md) |
+| 261 | → | [`docs/deferred-tools.md`](docs/deferred-tools.md) |
+| 262 | → | [`docs/dependencies.md`](docs/dependencies.md) |
+| 263 | → | [`docs/durable_execution/overview.md`](docs/durable_execution/overview.md) |
+| 264 | → | [`docs/evals.md`](docs/evals.md) |
+| 265 | → | [`docs/graph.md`](docs/graph.md) |
+| 266 | → | [`docs/harness/background-tools.md`](docs/harness/background-tools.md) |
+| 267 | → | [`docs/harness/bubblewrap-sandbox.md`](docs/harness/bubblewrap-sandbox.md) |
+| 268 | → | [`docs/harness/code-mode.md`](docs/harness/code-mode.md) |
+| 269 | → | [`docs/harness/daytona-sandbox.md`](docs/harness/daytona-sandbox.md) |
+| 270 | → | [`docs/harness/e2b-sandbox.md`](docs/harness/e2b-sandbox.md) |
+| 271 | → | [`docs/harness/index.md`](docs/harness/index.md) |
+| 272 | → | [`docs/harness/memory.md`](docs/harness/memory.md) |
+| 273 | → | [`docs/harness/modal-sandbox.md`](docs/harness/modal-sandbox.md) |
+| 274 | → | [`docs/harness/shell.md`](docs/harness/shell.md) |
+| 275 | → | [`docs/harness/sprites-sandbox.md`](docs/harness/sprites-sandbox.md) |
+| 276 | → | [`docs/harness/ssh-workspace.md`](docs/harness/ssh-workspace.md) |
+| 277 | → | [`docs/harness/step-persistence.md`](docs/harness/step-persistence.md) |
+| 278 | → | [`docs/harness/subagents.md`](docs/harness/subagents.md) |
+| 279 | → | [`docs/harness/tool-output-limits.md`](docs/harness/tool-output-limits.md) |
+| 280 | → | [`docs/input.md`](docs/input.md) |
+| 281 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 282 | → | [`docs/mcp/client.md`](docs/mcp/client.md) |
+| 283 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 284 | → | [`docs/models/overview.md`](docs/models/overview.md) |
+| 285 | → | [`docs/output.md`](docs/output.md) |
+| 286 | → | [`docs/persistence.md`](docs/persistence.md) |
+| 287 | → | [`docs/realtime/deployment.md`](docs/realtime/deployment.md) |
+| 288 | → | [`docs/timeouts.md`](docs/timeouts.md) |
+| 289 | → | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
+| 290 | → | [`docs/tools.md`](docs/tools.md) |
+| 291 | → | [`docs/ui/overview.md`](docs/ui/overview.md) |
+| 292 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 293 | → | [`docs/web.md`](docs/web.md) |
+| 294 | → | [`docs/workspace.md`](docs/workspace.md) |
+| 295 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
+| 296 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
+| 297 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
 
 ---
 

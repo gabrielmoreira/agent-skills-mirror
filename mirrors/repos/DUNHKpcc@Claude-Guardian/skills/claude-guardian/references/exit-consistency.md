@@ -1,6 +1,6 @@
 # 出口与本机环境一致：TCP 延迟、TCP 指纹、UA
 
-所有者 2026-11-01 提供。本文主要针对**浏览器环境**。**Claude Desktop 最佳还是软路由**（[路线占位，未来补齐](routes-and-platforms.md#r-router)），补齐前按 [Claude Desktop 的 WebRTC](agent-remediation.md#webrtc-block) 在本机做。出口 IP 从哪来见[固定出口 IP 的来源](egress-ip-options.md)，浏览器验收见[整机统一出口 5a](whole-machine-ipv4.md#browser-acceptance)。
+2026-11-01。本文主要针对**浏览器环境**。**Claude Desktop 最佳还是软路由**（[路线占位，未来补齐](routes-and-platforms.md#r-router)），补齐前按 [Claude Desktop 的 WebRTC](agent-remediation.md#webrtc-block) 在本机做。出口 IP 从哪来见[固定出口 IP 的来源](egress-ip-options.md)，浏览器验收见[整机统一出口 5a](whole-machine-ipv4.md#browser-acceptance)。
 
 **为什么要一致：UA 声称的系统和浏览器，会被拿来和 TCP 指纹、TLS 指纹、JS 环境等对比，看是否自相矛盾。**经代理访问时，这几层来自两个地方：
 

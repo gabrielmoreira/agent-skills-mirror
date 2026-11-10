@@ -1,6 +1,6 @@
 # Learn from Claude Code itself
 
-<sub>**Beginner** · Elective · about 20 minutes · Needs: [Install, sign in and look around](../01-install-and-look-around.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Beginner** · Elective · about 20 minutes · Needs: [Install, sign in and look around](../01-install-and-look-around.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -61,7 +61,7 @@ Why write some of the code yourself? In an Anthropic study, developers who learn
    cp .claude/settings.local.json .practice/b-teachers-style.json
    ```
 
-3. Ask `claude-code-guide` about a Claude Code feature you haven't used yet: start your prompt with `Use the claude-code-guide agent:`, and look for its row in the transcript. If you asked the helper something earlier in this session, Claude may send the question to that same helper: the transcript then shows `Resuming agent` instead of a new `claude-code-guide(...)` row, and that counts too.
+3. Ask `claude-code-guide` about a Claude Code feature you haven't used yet: start your prompt with `Use the claude-code-guide agent:`, and look for its row in the transcript. If you asked the helper something earlier in this session, Claude may send the question to that same helper instead of starting a new one, and that counts too.
 4. When you're done, switch back with `/output-style default`.
 
 ## Check

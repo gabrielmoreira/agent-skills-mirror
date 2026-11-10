@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # FlClash 崩溃自愈：路由黑洞清理 + core 看门狗。killswitch 场景特有，适用于任何 Linux 上的 FlClash TUN + fail-closed 防火墙。
-# 脱敏版（2026-10-24）：由所有者的脚本整理，逻辑不变；用户名、UID、GUI 环境改为参数，并加 install/uninstall 生成 systemd 单元。
+# 脱敏版（2026-10-24）：由原始脚本整理，逻辑不变；用户名、UID、GUI 环境改为参数，并加 install/uninstall 生成 systemd 单元。
 # 背景: FlClashCore 死后 TUN 消失，但 FlClash 写入的 ip rule 和策略路由表(如 2022)残留，公网被黑洞，
 #       反向隧道/任何重连都出不去。本脚本只在 TUN 不存在时清残留；TUN 在或 core 活着时绝不碰路由。
 # 子命令:

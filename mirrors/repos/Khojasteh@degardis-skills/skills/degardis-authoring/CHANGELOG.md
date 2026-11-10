@@ -2,6 +2,15 @@
 
 This changelog summarizes significant changes to the installable skill.
 
+## [2.6.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-11-10/degardis-authoring.zip) - 2026-11-10
+
+Degardis Authoring 2.6 gives helper agents the guidance their tasks need and checks the work they return against that guidance. Longer delegated tasks can retain a whole instruction source's workflow and progress tracking, while settled decisions remain requirements and blocked work stays visible. Skills that select these delegation principles carry the revised guidance.
+
+- A helper whose task needs an instruction source's workflow and progress tracking can receive that whole source. The coordinating agent first follows the request's route, reads the workflow, and checks that it fits the brief and available capabilities. Other tasks receive selected instructions and any guidance those instructions require. Naming a whole source grants no additional permission to read, change, act, or start helpers.
+- Each named instruction source identifies the exact content used to prepare the brief, fixed or checked for changes. A helper receives complete guidance without reconstructing it from a conversation or an unnamed source.
+- Settled decisions are requirements in the brief. The brief names which decisions the helper may make, including choices between conflicting instructions. Any other decision returns to the coordinating agent.
+- The coordinating agent inspects returned work against the brief and the instructions the helper worked under. A helper's account of what it followed, or a passing check, cannot replace that inspection. Each blocked part is retried under a corrected brief, completed by the coordinating agent, or reported as unfinished with the conclusions it prevents.
+
 ## [2.5.0](https://github.com/Khojasteh/degardis-skills/releases/download/skills-2026-11-02/degardis-authoring.zip) - 2026-11-02
 
 Degardis Authoring 2.5 takes the form of anything it writes for later use, skill source included, from what that thing is for and the whole range of its uses, not from the request that prompted it. A point written from a reported account is now tested on a case unlike the account's in what the point covers, so a point narrowed to the account no longer passes.

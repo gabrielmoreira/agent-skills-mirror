@@ -1,8 +1,8 @@
 # Coder
 
-**Version:** `1.5.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
+**Version:** `1.6.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
 
-Help your coding agent turn a software request into a result you can check, understand, and trust.
+Guide your coding agent through software work, with evidence you can check.
 
 Coder guides an agent through the decisions that make software work succeed. The agent learns what result you really need, finds the contract the software must keep, stays inside the limits you set, and collects evidence that shows whether the result works. One skill covers the whole job: investigation, design, planning, implementation, review, documentation, verification, and measurement. An edited file is never treated as proof that the work is done.
 

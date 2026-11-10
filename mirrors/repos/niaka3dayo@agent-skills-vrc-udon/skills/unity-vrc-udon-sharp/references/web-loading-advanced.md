@@ -1,14 +1,25 @@
 # Web Loading — Advanced Packed Resource Patterns
 
-**Active support / last verified**: SDK 3.10.6
-
-Older version numbers in this reference record feature introductions or migration facts only; SDK 3.7.1-3.10.4 are not supported or validation targets for this Skill.
+SDK version labels in this reference mark when a feature was introduced. The active target and the support policy are in [SKILL.md](../SKILL.md#sdk-versions).
 
 Advanced techniques for embedding multiple textures in a single `VRCStringDownloader` response
 to work around `VRCImageDownloader` limitations. For the base API reference see
 [web-loading.md](web-loading.md). For VRAM lifecycle management see [image-loading-vram.md](image-loading-vram.md).
 
 ---
+
+## Table of Contents
+
+- [Overview / Motivation](#overview--motivation)
+- [Custom Binary-Mixed Text Format](#custom-binary-mixed-text-format)
+- [Base64 Texture Embedding](#base64-texture-embedding)
+- [Cross-Platform Texture Compression](#cross-platform-texture-compression)
+- [URL Index Double-Key Pattern](#url-index-double-key-pattern)
+- [LRU-Style Decode Cache](#lru-style-decode-cache)
+- [Complete Example](#complete-example)
+- [Anti-Patterns](#anti-patterns)
+- [Troubleshooting](#troubleshooting)
+- [See Also](#see-also)
 
 ## Overview / Motivation
 
@@ -106,7 +117,7 @@ using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
 using VRC.SDK3.Data;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class PackFormatParser : UdonSharpBehaviour
 {
     private const string SupportedVersion = "PACK1";
@@ -176,7 +187,7 @@ using UnityEngine;
 using System;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class Base64TextureDecoder : UdonSharpBehaviour
 {
     /**
@@ -258,7 +269,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class PlatformFormatSelector : UdonSharpBehaviour
 {
     // Inspector fields: assign both sets; only the platform-appropriate one is used
@@ -354,7 +365,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Data;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class ResourceIndex : UdonSharpBehaviour
 {
     /** Parallel arrays: _resourceIds[i] maps to (_urlIndices[i], _innerIndices[i]) */
@@ -435,7 +446,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class PackedResourceCache : UdonSharpBehaviour
 {
     private const int CacheCapacity = 3;
@@ -532,7 +543,7 @@ using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
 using VRC.SDK3.Data;
 
-[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class PackedResourceLoader : UdonSharpBehaviour
 {
     // ── Inspector ────────────────────────────────────────────────────────────

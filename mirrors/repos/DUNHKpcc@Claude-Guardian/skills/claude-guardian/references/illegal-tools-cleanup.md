@@ -1,6 +1,6 @@
 # 非法工具清理：破限、反代分发等 MCP、插件、hooks（Agent 提示词）
 
-所有者 2026-10-26 要求：**清理时要查出用户给 Claude 装的非法工具，例如涉及破限、反代分发的 MCP、插件、skills、hooks，这些工具也要清理掉。**macOS、Windows、Linux 都适用。Claude 自己的缓存、日志、对话记录见 [macOS 清理](cleanup-cli-usage.md)、[Windows 清理](windows-cleanup.md)、[Linux 清理](linux-cleanup.md)；代理、VPN、终端历史见[环境痕迹清理](trace-cleanup.md)。
+2026-10-26：**清理时要查出用户给 Claude 装的非法工具，例如涉及破限、反代分发的 MCP、插件、skills、hooks，这些工具也要清理掉。**macOS、Windows、Linux 都适用。Claude 自己的缓存、日志、对话记录见 [macOS 清理](cleanup-cli-usage.md)、[Windows 清理](windows-cleanup.md)、[Linux 清理](linux-cleanup.md)；代理、VPN、终端历史见[环境痕迹清理](trace-cleanup.md)。
 
 **和“始终保护”的关系：**各平台清理文档里 `~/.claude` 的设置、skills、插件，以及桌面端的 `claude_desktop_config.json` 始终保护，指的是不整目录清理。本文是唯一的例外：只处理审计查出来、用户逐项确认是非法工具的那几项，同一个文件、同一个目录里的其他东西一个都不动。
 

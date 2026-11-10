@@ -34,13 +34,13 @@
 1. **自启和持久化：**代理客户端开机自启、服务模式、订阅和扩展合并顺序要和这次改动一致；只改生成配置可能被应用回写或订阅更新覆盖，改在持久化源上。没有受支持的自启入口就告诉用户，不自建服务。
 2. **整机覆盖：**按下一节，所有普通应用和子进程走同一 IPv4 出口；用户明确要求的例外分开记录。
 3. **四层分开报：**规则写进去了、应用载入了、程序实际用了、端到端测通了。一次 curl 成功只代表那一次。
-4. **按变化复测：**节点失效、GUI 退出但核心还在、核心停止、重启、睡眠唤醒、换网、订阅或客户端更新后，用 `network_check.py run` 再测；故障演练加 `--failure-drill`，要有独立恢复办法、不能切断唯一的控制通道。
+4. **按变化复测：**[场景验收](local-firewall-prompts.md#incident-acceptance)。节点失效、GUI 退出但核心还在、核心停止、重启、睡眠唤醒、换网、订阅或客户端更新后，用 `network_check.py run` 再测；故障演练加 `--failure-drill`，要有独立恢复办法、不能切断唯一的控制通道。
 5. **DNS、UDP、WebRTC 各测各的：**`network_check.py` 测 DNS 泄露和 UDP，WebRTC 用 `serve_webrtc.py` 在浏览器里测。
 6. **IP 漂移：**出口变了先告诉用户、暂停依赖旧出口的步骤，查当前选的节点、自动切换和配置更新，不反复重试或轮换节点。
 7. **Fake-IP 回滚后清 DNS 缓存：**代理或 TUN 关掉后，缓存里的 198.18.0.0/15 假地址会让网络不通。Windows 用 `ipconfig /flushdns`；macOS 用 `sudo dscacheutil -flushcache` 加 `sudo killall -HUP mDNSResponder`；用户同意后执行。
 
 <a id="ipv4-only-policy"></a>
-## 整机只走 IPv4（所有者 2026-10-19 确认，2026-10-25 补充）
+## 整机只走 IPv4（2026-10-19，2026-10-25 补充）
 
 1. **默认整机：**同一台电脑所有普通应用、子进程、后台服务的公网 TCP、UDP、DNS 都走同一个代理出口，包括自带 DoH、QUIC、WebRTC 的软件。代理失效时不直连、不切到没批准的出口。
 2. **只走 IPv4，IPv6 关闭：**代理核心 `ipv6: false`、DNS 不返回 IPv6、规则末尾拒绝 IPv6 目标（配置见 [whole-machine-ipv4.md](whole-machine-ipv4.md)）。**Windows 默认关闭网卡 IPv6**（见下一节，B 档）。macOS、Linux 在代理核心和 TUN 层关闭 IPv6，系统网卡不动。IPv4 不可用就报告不可用，不回退到 IPv6。节点用 IPv4 地址连接。
@@ -52,7 +52,7 @@
 <a id="windows-adapter-ipv6-hint"></a>
 ## Windows 网卡 IPv6：默认关闭（B 档）
 
-所有者 2026-10-25 确认：Windows 本机路线默认关闭网卡 IPv6，和整机配置放在同一张计划里批准。
+2026-10-25Windows 本机路线默认关闭网卡 IPv6，和整机配置放在同一张计划里批准。
 
 1. **列出网卡：**`Get-NetAdapterBinding -ComponentID ms_tcpip6 | Format-Table Name,Enabled`。只关用户实际上网的物理网卡（以太网、Wi-Fi）；TUN、VPN、Hyper-V、WSL 的虚拟网卡单独说明，不一起关。
 2. **记原值：**把上面的输出存进私有备份，作为恢复依据。
@@ -73,7 +73,7 @@
 
 **系统：**操作系统里没有统一关 WebRTC 的开关。桌面客户端、Electron 应用、游戏、会议软件自己发 STUN/UDP，浏览器插件和浏览器策略都管不到。**只开系统代理时，非浏览器应用的 WebRTC/UDP 不受保护**：系统代理只对愿意读它的程序生效，而且只有 HTTP/SOCKS 的 TCP 流量走代理，UDP 照样直连，会暴露真实 IP。所以**必须开 TUN 严格路由**（Clash Verge 里的“虚拟网卡模式”加“严格路由”，mihomo 配置是 `tun.enable: true`、`strict-route: true`），并按[整机只走 IPv4](#ipv4-only-policy)关 IPv6。开好后跑 `network_check.py run`：“UDP”一项要显示 STUN 映射地址和 TCP 出口一致，“路由”一项要显示走 TUN。
 
-**这一步就是为了防止 Claude Desktop 的 WebRTC 泄漏（所有者 2026-10-28）：**Claude Desktop 是 Electron 应用，自己发 STUN/UDP，Chrome 插件和浏览器策略管不到，所以本机防它的 WebRTC 泄漏靠 TUN 严格路由加关 IPv6，不靠应用内开关。**Claude Desktop 最佳还是软路由（所有者 2026-11-01）**，这条路线先[占位](routes-and-platforms.md#r-router)、未来补齐；现在按本节在本机做。验收按下面做：
+**这一步就是为了防止 Claude Desktop 的 WebRTC 泄漏（2026-10-28）：**Claude Desktop 是 Electron 应用，自己发 STUN/UDP，Chrome 插件和浏览器策略管不到，所以本机防它的 WebRTC 泄漏靠 TUN 严格路由加关 IPv6，不靠应用内开关。**Claude Desktop 最佳还是软路由（2026-11-01）**，这条路线先[占位](routes-and-platforms.md#r-router)、未来补齐；现在按本节在本机做。验收按下面做：
 
 1. 在 **Claude Desktop 运行、TUN 开着** 的同一状态下跑 `network_check.py run`，UDP 项的 STUN 映射地址必须和 TCP 出口一致，路由项显示走 TUN。局域网和 mDNS 候选不算公网泄漏。
 2. UDP 要真能出去：节点和协议得支持 UDP 转发，规则里不能让 STUN 目标命中 `DIRECT`。ICE 701、无候选或超时只算无法判定，不算已防住。

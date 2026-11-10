@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: confirmed-brief-proposes-directions
+expected_outcome: |
+  The brief arrives confirmed, so the run skips the interview and gathers inspiration: it searches
+  Mobbin for iOS habit-tracker screens (or, with no Mobbin, asks where to look instead of inventing
+  references). It groups the references into two or three named directions that differ in
+  structure, each with a one-line thesis and linked references, shows them as a board, and asks the
+  user to pick one or mix two. It builds no prototype variants yet.

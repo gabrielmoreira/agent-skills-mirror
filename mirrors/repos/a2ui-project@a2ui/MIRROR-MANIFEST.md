@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `a2ui-project/a2ui` — 26 default patterns, 2 followed patterns, 71 file(s) materialized.
+Mirror of `a2ui-project/a2ui` — 26 default patterns, 2 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `a2ui-project/a2ui` — 26 default patterns, 2 followed patterns, 71 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 71 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,23 +114,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`.agents/skills/inspect-ai/SKILL.md`](.agents/skills/inspect-ai/SKILL.md) |
 | 53 | ✓ | [`.agents/skills/natural-writing/SKILL.md`](.agents/skills/natural-writing/SKILL.md) |
 | 54 | ✓ | [`.agents/skills/pr-hygiene/SKILL.md`](.agents/skills/pr-hygiene/SKILL.md) |
-| 55 | ✓ | [`.agents/skills/public-documentation/SKILL.md`](.agents/skills/public-documentation/SKILL.md) |
-| 56 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
-| 57 | ✓ | [`.gemini/GEMINI.md`](.gemini/GEMINI.md) |
-| 58 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 59 | ✓ | [`blueprints/skills/a2ui-blueprint-compliance/SKILL.md`](blueprints/skills/a2ui-blueprint-compliance/SKILL.md) |
-| 60 | ✓ | [`blueprints/skills/a2ui-blueprint-maintenance/SKILL.md`](blueprints/skills/a2ui-blueprint-maintenance/SKILL.md) |
-| 61 | ✓ | [`blueprints/skills/a2ui-blueprint-navigator/SKILL.md`](blueprints/skills/a2ui-blueprint-navigator/SKILL.md) |
-| 62 | ✓ | [`blueprints/skills/a2ui-create-feature-blueprint/SKILL.md`](blueprints/skills/a2ui-create-feature-blueprint/SKILL.md) |
-| 63 | ✓ | [`blueprints/skills/a2ui-implement-feature-from-blueprint/SKILL.md`](blueprints/skills/a2ui-implement-feature-from-blueprint/SKILL.md) |
-| 64 | ✓ | [`docs/site/llms.txt`](docs/site/llms.txt) |
-| 65 | ✓ | [`eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md`](eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md) |
-| 66 | ✓ | [`skills/a2ui/SKILL.md`](skills/a2ui/SKILL.md) |
-| 67 | ✓ | [`swift/AGENTS.md`](swift/AGENTS.md) |
-| 68 | ✓ | [`swift/CODING_STANDARDS.md`](swift/CODING_STANDARDS.md) |
-| 69 | ✓ | [`tools/composer/AGENTS.md`](tools/composer/AGENTS.md) |
-| 70 | → | [`blueprints/README.md`](blueprints/README.md) |
-| 71 | → | [`docs/proposals/spec_driven_development.md`](docs/proposals/spec_driven_development.md) |
+| 55 | ✓ | [`.agents/skills/public-documentation/references/components-and-landing-pages.md`](.agents/skills/public-documentation/references/components-and-landing-pages.md) |
+| 56 | ✓ | [`.agents/skills/public-documentation/references/concepts-and-diagrams.md`](.agents/skills/public-documentation/references/concepts-and-diagrams.md) |
+| 57 | ✓ | [`.agents/skills/public-documentation/references/guides-and-quickstarts.md`](.agents/skills/public-documentation/references/guides-and-quickstarts.md) |
+| 58 | ✓ | [`.agents/skills/public-documentation/references/specifications-and-agent-manifests.md`](.agents/skills/public-documentation/references/specifications-and-agent-manifests.md) |
+| 59 | ✓ | [`.agents/skills/public-documentation/SKILL.md`](.agents/skills/public-documentation/SKILL.md) |
+| 60 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
+| 61 | ✓ | [`.gemini/GEMINI.md`](.gemini/GEMINI.md) |
+| 62 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 63 | ✓ | [`blueprints/skills/a2ui-blueprint-compliance/SKILL.md`](blueprints/skills/a2ui-blueprint-compliance/SKILL.md) |
+| 64 | ✓ | [`blueprints/skills/a2ui-blueprint-maintenance/SKILL.md`](blueprints/skills/a2ui-blueprint-maintenance/SKILL.md) |
+| 65 | ✓ | [`blueprints/skills/a2ui-blueprint-navigator/SKILL.md`](blueprints/skills/a2ui-blueprint-navigator/SKILL.md) |
+| 66 | ✓ | [`blueprints/skills/a2ui-create-feature-blueprint/SKILL.md`](blueprints/skills/a2ui-create-feature-blueprint/SKILL.md) |
+| 67 | ✓ | [`blueprints/skills/a2ui-implement-feature-from-blueprint/SKILL.md`](blueprints/skills/a2ui-implement-feature-from-blueprint/SKILL.md) |
+| 68 | ✓ | [`docs/site/llms.txt`](docs/site/llms.txt) |
+| 69 | ✓ | [`eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md`](eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md) |
+| 70 | ✓ | [`skills/a2ui/SKILL.md`](skills/a2ui/SKILL.md) |
+| 71 | ✓ | [`swift/AGENTS.md`](swift/AGENTS.md) |
+| 72 | ✓ | [`swift/CODING_STANDARDS.md`](swift/CODING_STANDARDS.md) |
+| 73 | ✓ | [`tools/composer/AGENTS.md`](tools/composer/AGENTS.md) |
+| 74 | → | [`blueprints/README.md`](blueprints/README.md) |
+| 75 | → | [`docs/proposals/spec_driven_development.md`](docs/proposals/spec_driven_development.md) |
 
 ---
 

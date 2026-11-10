@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
+Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 105 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 105 |
+| Files         | 106 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -155,15 +155,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 94 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
 | 95 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
 | 96 | ✓ | [`templates/template-agent-harness/AGENTS.md`](templates/template-agent-harness/AGENTS.md) |
-| 97 | ✓ | [`templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md) |
-| 98 | ✓ | [`templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md) |
-| 99 | ✓ | [`templates/template-factory-self-hosted/AGENTS.md`](templates/template-factory-self-hosted/AGENTS.md) |
-| 100 | ✓ | [`templates/template-factory/AGENTS.md`](templates/template-factory/AGENTS.md) |
-| 101 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
-| 102 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
-| 103 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
-| 104 | ✓ | [`templates/template-mongodb-bedrock-agent/AGENTS.md`](templates/template-mongodb-bedrock-agent/AGENTS.md) |
-| 105 | ✓ | [`templates/template-starter-agent/AGENTS.md`](templates/template-starter-agent/AGENTS.md) |
+| 97 | ✓ | [`templates/template-agent-harness/CLAUDE.md`](templates/template-agent-harness/CLAUDE.md) |
+| 98 | ✓ | [`templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md) |
+| 99 | ✓ | [`templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md) |
+| 100 | ✓ | [`templates/template-factory-self-hosted/AGENTS.md`](templates/template-factory-self-hosted/AGENTS.md) |
+| 101 | ✓ | [`templates/template-factory/AGENTS.md`](templates/template-factory/AGENTS.md) |
+| 102 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
+| 103 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
+| 104 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
+| 105 | ✓ | [`templates/template-mongodb-bedrock-agent/AGENTS.md`](templates/template-mongodb-bedrock-agent/AGENTS.md) |
+| 106 | ✓ | [`templates/template-starter-agent/AGENTS.md`](templates/template-starter-agent/AGENTS.md) |
 
 ---
 

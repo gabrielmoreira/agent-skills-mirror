@@ -343,6 +343,13 @@ HIP also checks the router over the rows a checkpoint already holds in bf16 (`tf
 form), bit-equal to the fp32-rows router it replaces at 1 to 16 rows, with both kinds' non-finite plants through gate 1
 and the exact sums of gate 4.
 
+HIP also checks the DeltaNet prompt recurrence at half a value head a block (`tf_gdn_prompt_128`, its y and state),
+bit-equal to the plain window scan `gated_delta_tile` on the same tokens.
+Its prompt prework in one launch (`tf_gdn_prompt_prep`: conv, q and k head norms, v, gate, beta and the new conv state)
+is bit-equal to the chain it replaces (`tf_conv_prefill`, `tf_copy_cols`, `tf_rms`, `tf_gdn_gate_prefill`).
+Four controls: the recurrence one row short of the prompt and with one key head, and the prework norming q with k's
+weights and writing gate and beta to each other's outputs.
+
 On gfx12, HIP also checks the WMMA dense tile (`dense_wmma12_gemm`, both block geometries, fp32 and BF16 out). The
 small block meets its depth-k bound. The big block (64-deep K steps over swizzled LDS rows) replaces the 32-deep block
 it was before #2245's second lever, byte for byte: gate 3 runs a frozen copy of that block (`tf_ref_wmma12_k32`, in the
@@ -407,6 +414,10 @@ each one planted fault, and one on the row bytes).
 CUDA also checks the grouped EXL3 experts' `tf_exl3_plan_finish`: its bf16 and fp32 SwiGLU and its fp32 and bf16 down
 epilogues bit-equal to main's kernel (kept in `contract_controls.cu`), and its SwiGLU-OAI (`act_mode` 2,
 MiniMax-M3.1-Flash's) against float64 at its rounding points (two controls: the up without its + 1, alpha 1).
+Its twin `tf_exl3_plan_finish_after` clamps silu's output instead, `min(silu(g), L) * clip(u, -L, L)` (Ling-3.1-flash's
+order): its fp32 SwiGLU at limits 10 and 2 and without one, and its fp32 down, against float64 at Ling's widths. A
+control runs `tf_exl3_plan_finish` against the after order at limit 2, where silu's term differs by up to L - silu(L)
+(0.24; 4.5e-4 at limit 10).
 
 CUDA also checks the grouped EXL3 experts (`tf_exl3_grouped_0`, `_1` and `_2`, one a codebook), which on sm_120 and
 sm_121 load a warp's next k tile while the current one decodes: each bit-equal to main's loop (kept in

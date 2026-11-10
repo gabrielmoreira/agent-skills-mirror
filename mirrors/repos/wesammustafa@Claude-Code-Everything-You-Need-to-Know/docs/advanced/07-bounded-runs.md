@@ -96,7 +96,7 @@ Work in your repository. The folders `src/` and `test/` and the command `npm tes
    ```
 
    The summary shows `"subtype": "success"`, the turns used, `total_cost_usd`, and under `denied` each call your bounds refused, such as the `git commit`; your list will differ. HEAD is the same before and after, and `git status` lists the new test, uncommitted. Your output will differ. `total_cost_usd` is a client-side estimate, not your bill ([Track cost and usage](https://code.claude.com/docs/en/agent-sdk/cost-tracking#estimates-not-billing)); on a Claude plan, `/usage` in a session shows your plan's usage limits ([Commands](https://code.claude.com/docs/en/commands#all-commands)). To bound the whole task, scale the slice's figure up and set the spend limit above it, with room to spare. A run that reaches the limit stops with `"subtype": "error_max_budget_usd"` and a non-zero exit code ([Handle the result](https://code.claude.com/docs/en/agent-sdk/agent-loop#handle-the-result)), and its `total_cost_usd` can be above the limit, because it includes the response that crossed it ([Track costs on failed conversations](https://code.claude.com/docs/en/agent-sdk/cost-tracking#track-costs-on-failed-conversations)).
-5. Be the review gate. Read every change with `git status` and `git diff`, the bounds file included, and look for changes outside the task: a test weakened or deleted so the suite passes, an edited config or bounds file, a moved HEAD. Run `npm test` yourself, and commit only what you accept. For a second opinion, start `claude` and have a subagent review the diff in a fresh context and report gaps ([Add an adversarial review step](https://code.claude.com/docs/en/best-practices#add-an-adversarial-review-step)).
+5. Be the review gate. Read every change with `git status` and `git diff`, the bounds file included, and look for changes outside the task: a test weakened or deleted so the suite passes, an edited config or bounds file, a moved HEAD. Run `npm test` yourself, and commit only what you accept. For a second opinion, start `claude` and have a subagent review the diff in a fresh context and report gaps ([Review against your spec](https://code.claude.com/docs/en/best-practices#review-against-your-spec)).
 
 ## Your turn
 
@@ -138,7 +138,7 @@ If the first item fails, make sure the committed script is executable (`git ls-f
 
 - [Choose a sandbox environment](https://code.claude.com/docs/en/sandbox-environments): containers and VMs for runs the Bash sandbox can't cover.
 - [How we contain Claude across products](https://www.anthropic.com/engineering/how-we-contain-claude): Anthropic's engineering post on capping how much damage an agent can do, in Claude Code and its other products.
-- [Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work): gate an unattended run's stop on a check it must pass, with a `/goal` condition or a Stop hook.
+- [Give Claude a check to run](https://code.claude.com/docs/en/best-practices#give-claude-a-check-to-run): gate an unattended run's stop on a check it must pass, with a `/goal` condition or a Stop hook.
 
 ---
 

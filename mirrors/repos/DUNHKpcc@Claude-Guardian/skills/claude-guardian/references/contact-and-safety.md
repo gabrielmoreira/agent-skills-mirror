@@ -20,7 +20,7 @@ Existing subscribers follow the same scoped preparation/contact distinction with
 
 ## Permissions and reporting
 
-**Authorization granularity (owner-confirmed 2026-10-21):** it follows [authorization-tiers.md](authorization-tiers.md): tier A runs inside a confirmed scope, tier B is approved once as a whole plan, tier C needs the user at the decision point. Phrases below and in other references such as "specific authorization" or "per-action approval" are read at that granularity: for tier B, one approval of the plan covers its steps; for tier C, an in-the-moment confirmation. The hard rules in this file (PC0/PC1/PC2, payment and login by the user, no credential collection, host policy first) are not relaxed.
+**Authorization granularity (2026-10-21):** it follows [authorization-tiers.md](authorization-tiers.md): tier A runs inside a confirmed scope, tier B is approved once as a whole plan, tier C needs the user at the decision point. Phrases below and in other references such as "specific authorization" or "per-action approval" are read at that granularity: for tier B, one approval of the plan covers its steps; for tier C, an in-the-moment confirmation. The hard rules in this file (PC0/PC1/PC2, payment and login by the user, no credential collection, host policy first) are not relaxed.
 
 Keep question answers, plan acceptance, host permission, OS privilege, first-contact authorization, and payment authorization distinct. Silence, cancellation, elapsed time, a default option, and accepting a route grant none of the others. User authorization cannot override host policy.
 

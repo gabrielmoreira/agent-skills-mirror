@@ -12,7 +12,7 @@
 4. 浏览器、终端、其他应用、后台服务取样的出口 IPv4 都一致（等于预期出口）。
 5. IPv6 探测不可达，WebRTC 没有真实地址，DNS 没有泄漏。
 6. 停掉代理核心后**没有任何直连**（故障演练）。
-7. 重启、睡眠唤醒、换网之后再验一次，才算持续保护有证据。
+7. 重启、睡眠唤醒、换网之后再验一次，才算持续保护有证据；按[分平台场景表与 Agent 提示词](local-firewall-prompts.md#incident-acceptance)执行并逐项报告。
 
 ## 2. 配置（Clash Verge）
 
@@ -26,7 +26,7 @@ rules:
   - MATCH,<代理组名>
 ```
 
-**注意：**客户端设置界面只有在对应开关启用时才覆盖合并文件里的同名字段（真机核实：TUN 总开关来自 `enable_tun_mode`，DNS 覆写来自 `enable_dns_settings`，两者启用时界面里的 `tun:`、`dns:` 段与最终运行配置一致）；改完以运行时配置读回为准。**严格路由默认可能是关的**：关着时停掉代理核心，流量会回落直连，fail-closed 就要靠 LuLu 或系统防火墙拦直连，建议在界面里开启严格路由作为第二道防线。
+**注意：**客户端设置界面只有在对应开关启用时才覆盖合并文件里的同名字段（真机核实：TUN 总开关来自 `enable_tun_mode`，DNS 覆写来自 `enable_dns_settings`，两者启用时界面里的 `tun:`、`dns:` 段与最终运行配置一致）；改完以运行时配置读回为准。**严格路由默认可能是关的**：关着时停掉代理核心，流量会回落直连，fail-closed 就要靠 Mac PF 或 Windows 系统防火墙拦直连，建议在界面里开启严格路由作为第二道防线。
 
 客户端设置里对应：TUN 模式开启，严格路由（strict-route）开启；DNS 开启、IPv6 关闭、增强模式 fake-ip；`dns-hijack` 接管 53 端口。Fake-IP 的边界和回滚后清 DNS 缓存见 [macOS DNS 经验](macos-dns-case-lessons.md) 和 [agent-remediation 第 10 条](agent-remediation.md#post-repair-stability)。
 
@@ -122,7 +122,7 @@ python scripts/egress_verifier.py check --input <证据文件.json>
 <a id="browser-acceptance"></a>
 ## 5a. 浏览器环境验收：[ip.net.coffee/claude](https://ip.net.coffee/claude/)
 
-所有者 2026-10-26 指定：**环境修复后，用户在实际要用 Claude 的那个浏览器里打开 https://ip.net.coffee/claude/ 做验收，除了“语言”一项，其他必须全绿。**所有者 2026-10-28 补充：**本机和手机也要求时区与出口一致**，时区一项同样要绿（VM、VPS 原本就这样要求）。
+2026-10-26：**环境修复后，用户在实际要用 Claude 的那个浏览器里打开 https://ip.net.coffee/claude/ 做验收，除了“语言”一项，其他必须全绿。**2026-10-28：补充：**本机和手机也要求时区与出口一致**，时区一项同样要绿（VM、VPS 原本就这样要求）。
 
 1. 先做完第 5 节判定（`established`），再打开这个页面；浏览器用平时用的那个配置文件，不换浏览器、不开无痕。
 2. 逐项看：出口 IP（中国出口 IPv4、Cloudflare 出口 IP、Claude AI 出口 IP 三个要一致，等于预期出口）、Claude AI 信任评分、Claude 支持地区、IP 属性、VPN／代理／Tor／机器人／滥用记录、claude.ai 与 anthropic.com 可用性、DNS 泄露检测、WebRTC UDP 泄露检测、设备信息。**语言以外有任何一项不是绿色，验收不通过**，回到对应层修（出口不一致看第 2 节规则与 TUN，DNS 泄露看 DNS，WebRTC 按[浏览器插件或策略、TUN 严格路由](agent-remediation.md#webrtc-block)修，IP 属性或信任评分不绿就换出口 IP，见[固定出口 IP 的来源](egress-ip-options.md)），修完重新跑第 5 节再打开这个页面。
@@ -143,7 +143,7 @@ python scripts/egress_verifier.py check --input <证据文件.json>
 
 ## 7. 限制
 
-- Mac 上做过真机验收：TUN 开启下出口一致、DNS 与 WebRTC 无泄漏，自动取证判定 `established`（ADR-039）；重启、睡眠唤醒、换网后的复验和停核心演练还没在真机上做。Windows 按本文命令做，环境不同由 Agent 核对调整。
+- Mac PF 已验收（2026-11-09），含故障阻断及重启、睡眠唤醒、换网等相关项目；此前 TUN 正常时的整机通过样本见 ADR-039；PF 历史样本和已合入的现场变量修复见[PF 指引](local-firewall-prompts.md#mac)。本次未新增 Agent 自动实测。Windows 按本文命令做，环境不同由 Agent 核对调整。
 - 判定只相信 Agent 提供的观察。
 - Windows 没有带事务的写入引擎，靠备份和读回哈希，不是原子替换。
 - IPv4 不可用时报告不可用，不回退到 IPv6，也不自动换节点。

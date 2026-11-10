@@ -1,6 +1,6 @@
 # Permissions, settings scopes and the sandbox
 
-<sub>**Intermediate** · Lesson 4 of 8 · about 20 minutes · Needs: [Organize project memory and see what loaded](02-organize-memory.md) · Verified against Claude Code v2.1.309 (stable) on 2026-11-02</sub>
+<sub>**Intermediate** · Lesson 4 of 8 · about 20 minutes · Needs: [Organize project memory and see what loaded](02-organize-memory.md) · Verified against Claude Code v2.1.311 (stable) on 2026-11-09</sub>
 
 ## Goal
 
@@ -45,7 +45,7 @@ In your practice copy:
    }
    ```
 
-   Auto mode on its own lets Claude read `.env` ([What the classifier blocks by default](https://code.claude.com/docs/en/permission-modes#what-the-classifier-blocks-by-default)): the deny rules are what stop it. The ask rule makes Claude Code prompt before a push, even in auto mode ([Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)). Claude Code reloads permission rules when the file changes ([When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect)). Run `/permissions`: it lists every rule and the settings file it comes from.
+   Auto mode on its own lets Claude read `.env` ([What the classifier blocks by default](https://code.claude.com/docs/en/permission-modes#what-the-classifier-blocks-by-default)): the deny rules are what stop it. The ask rule makes Claude Code prompt before a push, even in auto mode ([Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)). Claude Code reloads permission rules when the file changes ([When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect)). Run `/permissions` and find the rules you saved: the dialog lists all permission rules.
 
    The practice copy has no `.env`, so make a dummy one with a fake value, and ask Claude to read it:
 
@@ -59,7 +59,7 @@ In your practice copy:
 
    The deny rule blocks the read: deny rules prevent Claude Code from using the tool on that path. Delete the dummy file afterwards: `rm .env`.
 3. Ask Claude to `Run npm test`. Read the test result. In Manual mode, with the sandbox off and no matching ask or deny rule, this exact command runs without a permission prompt because the allow rule covers it. If it asks, inspect the command and rule sources instead of approving a broader grant.
-4. Turn on the sandbox. Run `/sandbox` and, on the Mode tab, select auto-allow. Claude Code saves the setting to `.claude/settings.local.json`, your personal file, at the repository root, which in a Practice copy is the folder above `project/`; a file in `project/.claude/` counts too ([Get started](https://code.claude.com/docs/en/sandboxing#get-started), [Where Claude Code keeps the local file in a git repository](https://code.claude.com/docs/en/settings#where-claude-code-keeps-the-local-file-in-a-git-repository)). Permission approval and that boundary answer different questions: may this command run, and what can it reach? If `/sandbox` shows only a Dependencies tab, install `bubblewrap` and `socat`, restart Claude Code and run `/sandbox` again.
+4. Turn on the sandbox. Run `/sandbox` and, on the Mode tab, select auto-allow. Claude Code saves the setting to `.claude/settings.local.json`, your personal file, at the repository root, which in a Practice copy is the folder above `project/`; a file in `project/.claude/` counts too ([Get started](https://code.claude.com/docs/en/sandboxing#get-started), [Where Claude Code keeps the local file in a git repository](https://code.claude.com/docs/en/settings#where-claude-code-keeps-the-local-file-in-a-git-repository)). Permission approval and that boundary answer different questions: may this command run, and what can it reach? If `/sandbox` shows only a Dependencies tab, install what it reports, restart Claude Code and run `/sandbox` again.
 5. Ask Claude to try a write outside the project:
 
    ```text
@@ -86,14 +86,14 @@ Audit a proposed team setup in your own repository. A teammate suggests `Bash(np
 
    Replace every `TODO` before saving the final file. Allow only the one command that runs your tests, such as `Bash(npm test)` or `Bash(pytest)`, and ask before pushes with `Bash(git push *)`.
 2. Review and commit the team's rules. Use your repository's terminal. Check that the commit contains the narrow test rule, the ask rule and both deny rules, while preserving the earlier lessons' settings.
-3. In a Claude Code session in your repository, turn on the sandbox with `/sandbox` in auto-allow mode. The Config tab shows the resolved sandbox settings ([Get started](https://code.claude.com/docs/en/sandboxing#get-started)). Your local file outranks the shared one, so a local `"enabled": false` overrides a shared `true` ([Settings precedence](https://code.claude.com/docs/en/settings#settings-precedence)): `jq .sandbox $(git rev-parse --show-toplevel)/.claude/settings.local.json` shows what yours holds. Ask Claude to `Run this exact command and show me its output: touch ~/sandbox-probe`, and inspect the actual failure. If Claude offers to retry outside the sandbox, decline.
+3. In a Claude Code session in your repository, turn on the sandbox with `/sandbox` in auto-allow mode. The Config tab shows the resolved sandbox settings ([Get started](https://code.claude.com/docs/en/sandboxing#get-started)). Your local file outranks the shared one, so a local `"enabled": false` overrides a shared `true` ([Settings precedence](https://code.claude.com/docs/en/settings#settings-precedence)): `jq .sandbox $(git rev-parse --show-toplevel)/.claude/settings.local.json` shows what yours holds. Ask Claude to `Run this exact command and show me its output: touch ~/sandbox-probe`, and inspect the actual failure. If Claude's reply only sums up the command, press `Ctrl+O`: the transcript viewer shows detailed tool usage and execution ([Keyboard shortcuts](https://code.claude.com/docs/en/interactive-mode#keyboard-shortcuts)). Claude may retry the blocked command outside the sandbox. In Manual mode that retry raises a prompt titled "Bash command (unsandboxed)": decline the retry ([The unsandboxed retry escape hatch](https://code.claude.com/docs/en/sandboxing#the-unsandboxed-retry-escape-hatch)). Setting `sandbox.allowUnsandboxedCommands` to `false` turns that retry off ([Turn off the retry with strict sandbox mode](https://code.claude.com/docs/en/sandboxing#turn-off-the-retry-with-strict-sandbox-mode)).
 4. Run [`git status --short`](https://git-scm.com/docs/git-status) and [`git ls-files .claude/settings.local.json`](https://git-scm.com/docs/git-ls-files) in your repository's terminal. Your personal file should appear in neither output. In a Practice copy it sits at the repository root, the folder above `project/`: run `git ls-files :/.claude/settings.local.json` there too. Claude Code keeps it out of git when it creates it; if you created it by hand, add it to `.gitignore` yourself ([Keep personal settings out of a repository](https://code.claude.com/docs/en/settings#keep-personal-settings-out-of-a-repository)). Leave Manual mode when the exercise is finished: press `Shift+Tab` until the footer shows `auto mode on`, if auto mode is available ([Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)).
 
 ## Check
 
 You are done when all of these are true:
 
-- [ ] The committed `.claude/settings.json` denies reading `.env` and `.env.*` files and allows one test command: `git show HEAD:.claude/settings.json | jq .permissions` shows them.
+- [ ] The committed `.claude/settings.json` denies reading `.env` and `.env.*` files and allows one test command: `git show HEAD:./.claude/settings.json | jq .permissions` shows them.
 - [ ] It asks before a command the team approves each time, such as `Bash(git push *)`, in `permissions.ask`.
 - [ ] The sandbox is on, and your personal file stays out of git: `jq .sandbox .claude/settings.local.json` shows `"enabled": true` (in a Practice copy, `jq .sandbox ../.claude/settings.local.json`), and `git ls-files .claude/settings.local.json` prints nothing.
 - [ ] Self-check (not tested): you inspected the active rules and sandbox configuration, and Claude's attempted write outside the project failed without an unsandboxed retry.
@@ -115,6 +115,6 @@ If the rules item fails, review Your turn step 1, then commit the corrected sett
 
 ---
 
-<sub>Sources: [Settings files and precedence](https://code.claude.com/docs/en/settings) · [All settings](https://code.claude.com/docs/en/settings-reference) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Configure auto mode](https://code.claude.com/docs/en/auto-mode-config) · [Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing) · [git status](https://git-scm.com/docs/git-status) · [git ls-files](https://git-scm.com/docs/git-ls-files)</sub>
+<sub>Sources: [Settings files and precedence](https://code.claude.com/docs/en/settings) · [All settings](https://code.claude.com/docs/en/settings-reference) · [Configure permissions](https://code.claude.com/docs/en/permissions) · [Choose a permission mode](https://code.claude.com/docs/en/permission-modes) · [Configure auto mode](https://code.claude.com/docs/en/auto-mode-config) · [Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [git status](https://git-scm.com/docs/git-status) · [git ls-files](https://git-scm.com/docs/git-ls-files)</sub>
 
 <sub>← [Pick the model and effort](03-model-and-effort.md) · [Intermediate index](README.md) · [Enforce a rule with a hook](05-hooks.md) → · Topic: [Permissions and safety](../topics/permissions-and-safety.md) · [Stuck on this lesson?](https://github.com/wesammustafa/Claude-Code-Quest/issues/new?template=lesson-feedback.yml&lesson=i-4)</sub>

@@ -2,7 +2,7 @@
 name: dd-aws-storage-management
 description: Set up Datadog Storage Management for AWS S3 by configuring S3 Inventory on the buckets the user picks and provisioning the destination buckets, destination bucket policy, Datadog read policy, and Storage Management sync with the DataDog/storage-management-datadog/aws Terraform module, including multi-Region and SSE-KMS destinations and optional S3 access logs. Use when the user wants to set up Storage Management for their S3 buckets, monitor their S3 storage in Datadog, or enable S3 storage management. Does not connect a new AWS account to Datadog and does not deploy the Datadog Forwarder Lambda (that is `dd-aws-log-forwarding`). Commercial AWS partition only; there is no supported setup for AWS GovCloud or China. Requires an existing role-based Datadog AWS integration; run `dd-aws-integration` first if it is missing.
 metadata:
-  version: "1.0.1"
+  version: "1.0.3"
   author: datadog-labs
   repository: https://github.com/datadog-labs/agent-skills
   tags: datadog,aws,storage,storage-management,s3,s3-inventory,terraform
@@ -37,6 +37,10 @@ This is a **product integration (PINT) flow** - it requires an existing Datadog 
 **resource collection** and **S3 metric collection** enabled (Phase 1 turns these on if they are off). Even
 once everything is applied, AWS delivers the first inventory report **24-48 hours** later, so data will not
 appear immediately.
+
+## Stopping
+
+Some steps below end in a stop: a selected account outside the commercial AWS partition (Phase 1). Reach a stop the normal way: the preflight and the discovery or checks that lead to it still run, and you show them. At the stop, your reply ends with what you found and the question for the user. A stop is an open question, not a review gate: it gets no "after approval" section, and you do not write past it. Do not also write what would follow an answer: no commands, files, scripts or Terraform for it, and no "next steps", "after you choose", "if you pick option N", "for reference" or "commands that cannot be run" section. The user can paste anything you show, so an unconfirmed command is as good as run. Write the next steps after the user answers.
 
 ## Running another skill
 
@@ -698,8 +702,9 @@ Do this once per SSE-KMS destination bucket, in that bucket's Region: the CLI se
    aws kms get-key-policy --region <DESTINATION_BUCKET_REGION> --key-id <KMS_KEY_ARN> --policy-name default --query Policy --output text
    ```
 
-2. Add these statements - keep all existing statements; if a matching statement already exists, union the source
-   ARNs into it rather than replacing it:
+2. Write the merged policy to `merged-key-policy.json` in the working directory: every existing statement plus the
+   two below (if a matching statement already exists, union the source ARNs into it rather than replacing it).
+   Step 3 applies that file, so it has to exist before `put-key-policy` runs:
 
    ```json
    {
@@ -722,7 +727,7 @@ Do this once per SSE-KMS destination bucket, in that bucket's Region: the CLI se
    }
    ```
 
-3. **Show the merged key policy to the user and wait for confirmation**, then apply it:
+3. **Show `merged-key-policy.json` to the user and wait for confirmation**, then apply it:
 
    ```bash
    aws kms put-key-policy --region <DESTINATION_BUCKET_REGION> --key-id <KMS_KEY_ARN> --policy-name default --policy file://merged-key-policy.json
