@@ -194,7 +194,7 @@ Common chat export shapes:
 
 ### Web URL sources
 
-When the source is a **web URL** (`/ingest-url <url>`, "add this URL", "ingest this link", "save this page", or a pasted link), the flow is different: detect the current project, fetch with `defuddle`/`WebFetch`, then file the page into the detected project's `references/` folder or fall back to `misc/` with affinity scoring for later promotion. **Read `references/url-sources.md` and follow it** — it covers project detection, clean extraction, dedup, slug generation, project-vs-misc frontmatter, affinity scoring, stub handling on fetch failure, and the `INGEST_URL` log/manifest format. The rest of this skill (config, trust boundary, QMD refresh) still applies.
+When the source is a **web URL** (`/ingest-url <url>`, "add this URL", "ingest this link", "save this page", or a pasted link), the flow is different: detect the current project, fetch with `defuddle`/`WebFetch` (or `firecrawl`, else Jina Reader, for PDFs and JavaScript-rendered pages), then file the page into the detected project's `references/` folder or fall back to `misc/` with affinity scoring for later promotion. **Read `references/url-sources.md` and follow it** — it covers project detection, clean extraction, dedup, slug generation, project-vs-misc frontmatter, affinity scoring, stub handling on fetch failure, and the `INGEST_URL` log/manifest format. The rest of this skill (config, trust boundary, QMD refresh) still applies.
 
 ### Multimodal branch (images)
 
@@ -516,7 +516,7 @@ If the manifest doesn't exist yet, create it with `version: 1`.
 obsidian-wiki memory sync INGEST source="path/to/source" \
   pages_created=N pages_updated=M \
   mode=append \
-  --takeaways "Fowler's decomposition argument now anchors the microservices cluster."
+  --takeaways "Fowler's decomposition argument now anchors the microservices cluster." --expect-takeaways-sha256 "$TAKEAWAYS_REVISION"
 ```
 
 This appends the log line, reconciles `index.md` against the pages on disk, and
@@ -596,3 +596,5 @@ After ingesting, verify:
 ## Reference
 
 Read `references/ingest-prompts.md` for the LLM prompt templates used during extraction.
+
+Before explicit takeaway replacement, read/reconcile the full current Key Takeaways and obtain TAKEAWAYS_REVISION from hot.takeaways_sha256 in memory status --json (llm-wiki/references/MEMORY.md). Preserve still-valid owner conclusions. Omit --takeaways for mechanical bookkeeping; stale revisions require review, not blind retry.

@@ -11,7 +11,9 @@ rea-video --help
 pip 报 `externally-managed-environment`（Homebrew / 新版 Ubuntu 的系统 Python）时，不要加 `--break-system-packages`，改用
 `pipx install "rea-video[ocr] @ git+https://github.com/JuneYaooo/rea-video"`，或直接跑 `install_skill.sh`（会自动改用 pipx 或仓库内 `.venv`）。
 
-手动装了 `[ocr]` 时，OCR 依赖会再装一套 `opencv-python`，和 rea-video 用的 `opencv-python-headless` 抢同一个 `cv2` 目录。装完跑一次：
+报 `onnxruntime` 找不到匹配的安装包（如 `no wheels with a matching Python ABI tag`）时，是默认 Python 太新、依赖还没出对应版本：换一个 3.10–3.14 的解释器，`pipx install --python python3.12 "rea-video[ocr] @ git+https://github.com/JuneYaooo/rea-video"` 或 `PYTHON_BIN=python3.12 bash scripts/install_skill.sh`。`install_skill.sh` 自动选解释器时已经优先 3.10–3.14。3.10–3.14 都能装全 `[ocr]`：3.12 及以下用 `rapidocr-onnxruntime`，3.13 起自动换成 `rapidocr` 3。
+
+在 Python 3.12 及以下手动装了 `[ocr]` 时，OCR 依赖会再装一套 `opencv-python`，和 rea-video 用的 `opencv-python-headless` 抢同一个 `cv2` 目录。装完跑一次：
 `pip uninstall -y opencv-python && pip install --force-reinstall --no-deps "opencv-python-headless>=4.8,<5"`（`install_skill.sh` 会自动做）。
 
 ## VLM 配置（建议，不强制）

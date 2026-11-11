@@ -4,6 +4,8 @@
 原文链接：[X 文章](https://x.com/yueluo_jz/status/2105578466309808617)  
 原文页面显示发布日期：2026 年 10 月 1 日
 
+> 维护者修订（2026-11-11，Issue #28）：步骤 4 的部署示例已替换为保留旧规则、失败回退本批新增规则并读回的版本，相关固定数量与更新保证已纠正；其余为历史来源观点。当前执行与验收以[本机防火墙指引](../references/local-firewall-prompts.md)为准，不把来源文章当作操作授权。
+
 > 整理说明：本文件为原文的完整阅读版，保留作者的观点、操作步骤和示例代码，调整标题层级、段落与代码排版。原文内嵌截图中的可读内容转录为表格；被打码的内容不作推测。文中的实测结果与效果判断均为原作者表述。
 
 ## 目录
@@ -272,40 +274,63 @@ exit
 
 ### 步骤 4 防火墙双栈物理熔断
 
-Windows 商店版的 Claude 实际上包含主程序、辅助服务、SSH 代理及内置 GitHub MCP 组件等共 7 个核心可执行程序（若系统开启了跨盘存储迁移，可能在多盘扫描出 14 个组件）。
+组件数必须按当前目标机盘点，不能固定为 7 或 14 个。以下维护者示例仅覆盖所选当前包 `app` 目录中的 EXE，不覆盖包外 Code 运行时和 Cowork 服务，也不自动追踪版本更新。程序路径规则与版本无关的身份过滤不同：事后重绑不能证明更新后首次联网前已经覆盖。
 
-管理员身份运行 PowerShell，自动扫描全部组件，下发 IPv4/IPv6 双栈出站阻断规则（单盘 14 条，多盘 28 条，总数严格等于组件数 × 2），只准连接 `127.0.0.1` 和 `::1`：
+先按现行指引核实目标、管理权限与授权，退出相关应用及后台进程并保留现有保护。示例先创建独立批次、读回 PersistentStore/ActiveStore 的程序、接口和地址等条件；失败时只清理本批尝试创建的精确名称，旧规则始终保留。成功后也不自动删除旧规则，待完整覆盖验收通过后，另按已批准的精确旧规则清单撤销；旧规则可能继续阻断，不能靠清空规则来恢复业务。
 
 ```powershell
-# 1. 动态嗅探 Claude 当前版本物理部署路径
-$pkg = Get-AppxPackage -Name "*Claude*" | Select-Object -First 1
-if (-not $pkg) { Write-Host "未找到已安装的 Claude 应用包！" -ForegroundColor Red; exit 1 }
-$appDir = Join-Path $pkg.InstallLocation "app"
-$targetExes = Get-ChildItem -Path $appDir -Recurse -Filter "*.exe"
-
-# 2. 清理历史旧规则
-Remove-NetFirewallRule -Name "Claude_KillSwitch_*" -ErrorAction SilentlyContinue
-
-# 3. 递归为每一个子程序部署 IPv4 与 IPv6 双栈出站物理熔断
-$blockedV4 = @("1.0.0.0-126.255.255.255", "128.0.0.0-255.255.255.255")
-$blockedV6 = @("::2-ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
-
-$count = 0
-foreach ($exe in $targetExes) {
-    $count++
-    $name = $exe.BaseName
-    
-    # IPv4 阻断 (放行 127.0.0.1 环回代理)
-    New-NetFirewallRule -Name "Claude_KillSwitch_V4_$count" -DisplayName "Claude 物理阻断 IPv4 [$name]" `
-        -Direction Outbound -Action Block -Program $exe.FullName -RemoteAddress $blockedV4 | Out-Null
-        
-    # IPv6 阻断 (放行 ::1 环回代理，掐死光猫双栈偷跑)
-    New-NetFirewallRule -Name "Claude_KillSwitch_V6_$count" -DisplayName "Claude 物理阻断 IPv6 [$name]" `
-        -Direction Outbound -Action Block -Program $exe.FullName -RemoteAddress $blockedV6 | Out-Null
+$ErrorActionPreference = 'Stop'
+$packages = @(Get-AppxPackage -Name '*Claude*')
+if ($packages.Count -ne 1) { throw 'Expected one reviewed Claude package; select the target explicitly.' }
+$appDir = Join-Path $packages[0].InstallLocation 'app'
+$targetExes = @(Get-ChildItem -LiteralPath $appDir -Recurse -Filter '*.exe' -File)
+if ($targetExes.Count -eq 0) { throw 'No executables discovered; no rules changed.' }
+$batch = 'Claude_KillSwitch_' + [guid]::NewGuid().ToString('N')
+$attempted = @()
+$expectedRules = @()
+$blocked = @(
+    @('1.0.0.0-126.255.255.255', '128.0.0.0-255.255.255.255'),
+    @('::2-ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
+)
+try {
+    foreach ($exe in $targetExes) {
+        foreach ($addresses in $blocked) {
+            $name = $batch + '_' + $attempted.Count
+            $attempted += $name
+            New-NetFirewallRule -PolicyStore PersistentStore -Name $name -DisplayName $name `
+                -Enabled True -Profile Any -Direction Outbound -Action Block -Program $exe.FullName `
+                -InterfaceAlias Any -Protocol Any -RemoteAddress $addresses -ErrorAction Stop | Out-Null
+            $expectedRules += @{Name=$name;Program=$exe.FullName;Addresses=$addresses}
+        }
+    }
+    foreach ($store in @('PersistentStore','ActiveStore')) {
+        foreach ($expected in $expectedRules) {
+            $rules = @(Get-NetFirewallRule -PolicyStore $store -Name $expected.Name -ErrorAction Stop)
+            if ($rules.Count -ne 1) { throw 'Rule count mismatch' }
+            $rule = $rules[0]
+            $app = @($rule | Get-NetFirewallApplicationFilter -ErrorAction Stop)
+            $iface = @($rule | Get-NetFirewallInterfaceFilter -ErrorAction Stop)
+            $address = @($rule | Get-NetFirewallAddressFilter -ErrorAction Stop)
+            $service = @($rule | Get-NetFirewallServiceFilter -ErrorAction Stop)
+            $port = @($rule | Get-NetFirewallPortFilter -ErrorAction Stop)
+            if ($app.Count -ne 1 -or $iface.Count -ne 1 -or $address.Count -ne 1 -or $service.Count -ne 1 -or $port.Count -ne 1) { throw 'Incomplete filters' }
+            if ([string]$rule.Enabled -ne 'True' -or [string]$rule.Direction -ne 'Outbound' -or [string]$rule.Action -ne 'Block' -or [string]$rule.Profile -ne 'Any' -or
+                $app[0].Program -ne $expected.Program -or [string]$app[0].Package -notin @('','Any') -or
+                (@($iface[0].InterfaceAlias) -join ',') -ne 'Any' -or $service[0].Service -ne 'Any' -or
+                [string]$port[0].Protocol -ne 'Any' -or [string]$port[0].LocalPort -ne 'Any' -or [string]$port[0].RemotePort -ne 'Any' -or
+                [string]$address[0].LocalAddress -ne 'Any' -or
+                ((@($address[0].RemoteAddress) | Sort-Object) -join ',') -ne ((@($expected.Addresses) | Sort-Object) -join ',')) { throw 'Rule conditions mismatch' }
+        }
+    }
+} catch {
+    $failure = $_
+    foreach ($name in $attempted) {
+        try { Remove-NetFirewallRule -PolicyStore PersistentStore -Name $name -ErrorAction Stop }
+        catch { Write-Warning "Cleanup not confirmed for $name; retain the receipt and inspect this exact rule." }
+    }
+    throw $failure
 }
-
-$totalRules = $count * 2
-Write-Host "✅ 成功为 $count 个组件部署 $totalRules 条双栈物理熔断规则！应用内更新重启也绝无可能裸连。" -ForegroundColor Green
+Write-Host "Current package rules read back: $($expectedRules.Count). Old rules retained. Application coverage and update safety NOT verified. Batch: $batch"
 ```
 
 ## 四 从自查到注册养号与支付
@@ -317,7 +342,7 @@ Write-Host "✅ 成功为 $count 个组件部署 $totalRules 条双栈物理熔�
 ### 1 注册前本地自查与外部多重核验
 
 - 打开沙箱 Chrome，访问 `chrome://policy`，确认 `WebRtcIPHandling` 显示为 `disable_non_proxied_udp` 且状态为 `OK`。
-- PowerShell 运行下面的命令，确认规则数等于已识别组件数 × 2（单盘通常为 14 条，多盘为 28 条）全部生效：
+- PowerShell 运行下面的命令，仅查看历史规则数量；数量不能代替当前程序、服务、接口条件和 ActiveStore 验收（维护者修订，Issue #28）：
 
   ```powershell
   (Get-NetFirewallRule -Name "Claude_KillSwitch_*").Count

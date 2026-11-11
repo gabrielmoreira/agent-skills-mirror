@@ -22,7 +22,7 @@ claude-seo/
   CONTRIBUTORS.md                    # Community credits (Pro Hub Challenge)
   AGENTS.md                          # Multi-platform agent instructions (Cursor, Antigravity)
   .claude-plugin/
-    plugin.json                    # Plugin manifest (v2.5.0)
+    plugin.json                    # Plugin manifest (v2.6.0)
     marketplace.json               # Marketplace catalog for distribution
   skills/                            # 26 sub-skills (auto-discovered)
     seo/                           # Main orchestrator skill
@@ -90,8 +90,9 @@ claude-seo/
     seo-flow.md                  # FLOW framework integration
   hooks/                           # Quality gate hooks
     hooks.json                   # PostToolUse schema validation
-  scripts/                         # 60 Python execution scripts
+  scripts/                         # 63 Python execution scripts
     google_auth.py               # Credential management (OAuth, SA, API key, 4-tier detection)
+    google_properties.py         # Picks the GSC/GA4 property for the audited domain, fails closed on a mismatch
     backlinks_auth.py            # Backlink API credential management (Moz, Bing)
     moz_api.py                   # Moz Link Explorer API (DA/PA, spam, domains, anchors)
     bing_webmaster.py            # Bing Webmaster Tools API (registered-site links/comparison)
@@ -112,6 +113,8 @@ claude-seo/
     keyword_planner.py           # Google Ads Keyword Planner
     fetch_page.py                # Page fetcher with UA rotation
     parse_html.py                # HTML parser for SEO elements
+    page_checks.py               # Deterministic single-page on-page checker (47 checks, JSON findings)
+    transport_check.py           # TLS certificate, security header and HTTPS redirect checker
     capture_screenshot.py        # Playwright screenshots
     analyze_visual.py            # Visual analysis helper
     drift_baseline.py            # SEO drift baseline capture (SQLite)

@@ -2,7 +2,7 @@
 
 Scan skills for prompt injection, data exfiltration, credential access, destructive commands, obfuscation, suspicious URLs, and broken local links. Use `audit rules --no-tui` for the installed rule set.
 
-Local references in Markdown links/images, code paths with a file extension (prefixes `./`, `../`, `scripts/`, `references/`, or `assets/`), explicit `path:` declarations, and `skillshare-paths` fences are checked within the skill directory. Markdown links/images are document-relative. Code paths, `path:` declarations and path fences use the containing document for leading `./` or `../`; other relative code paths use the skill root, even in nested Markdown files. Absolute in-bundle paths accept equivalent spellings derived from the root and its symlinked ancestors. Missing targets remain LOW `dangling-link`; explicit reference escapes are HIGH `reference-escapes-root`; implicit inline-code paths outside the bundle are ignored and trailing `:line` suffixes are stripped; unreadable, unsupported or bounded-out checks are LOW `reference-check-incomplete`. Implicit glob/template and extensionless examples, URLs, anchors, ordinary identifiers and unmarked absolute code examples are excluded. Use `path:` or a path fence for required directories and extensionless files. Disable individual IDs with `enabled: false` in `audit-rules.yaml`. `doctor` uses the same checker and reports escapes as errors, missing/incomplete checks as warnings.
+Local references in Markdown links/images, code paths with a file extension (prefixes `./`, `../`, `scripts/`, `references/`, or `assets/`), explicit `path:` declarations, and `skillshare-paths` fences are checked within the skill directory. Markdown links/images are document-relative. Code paths, `path:` declarations and path fences use the containing document for leading `./` or `../`; other relative code paths use the skill root, even in nested Markdown files. A nested skill (a subdirectory with its own `SKILL.md`) is its own root, also when its parent is audited. Absolute in-bundle paths accept equivalent spellings derived from the root and its symlinked ancestors. Missing targets remain LOW `dangling-link`; explicit reference escapes are HIGH `reference-escapes-root`; implicit inline-code paths outside the bundle are ignored and trailing `:line` suffixes are stripped; unreadable, unsupported or bounded-out checks are LOW `reference-check-incomplete`. Implicit glob/template and extensionless examples, URLs, anchors, ordinary identifiers and unmarked absolute code examples are excluded. Use `path:` or a path fence for required directories and extensionless files. Disable individual IDs with `enabled: false` in `audit-rules.yaml`. `doctor` uses the same checker and reports escapes as errors, missing/incomplete checks as warnings, each finding once.
 
 ## Usage
 
@@ -194,13 +194,16 @@ headers are INFO. This does not analyze runtime behavior or archive members.
 from header reads; the existing source-link policy and six-level depth limit stay
 in effect. There is no file-count cap; directory scans count header read failures as skipped
 and continue. An unreadable direct-file target still returns an error. Hidden
-directories receive header classification only; links to non-special files keep existing text scanning. Special targets are
+directories inside a skill receive header classification only. A whole-repository
+scan (`install --track`, tracked updates) text-scans skills found in hidden
+directories such as `.agents/skills/` or `.curated/`, but not target copies.
+Links to non-special files keep existing text scanning. Special targets are
 skipped; direct audits of them return an error. Hidden names alone do not imply disguise. HIGH requires a document,
 image or configuration extension or a `.cache`/`__pycache__` parent directory;
 other native binaries, including `.venv/bin/python`, are MEDIUM.
 JSON results and summaries expose `binaryFiles`, `skippedFiles`, `oversizedFiles`;
 CLI and dashboard summaries show the same counts; the dashboard, Markdown and SARIF also report per-resource counts. Skipped includes read failures, binary,
-unsupported, oversized and regular files below hidden directories, so the counters
+unsupported, oversized and regular files below hidden directories inside a skill, so the counters
 overlap. Special files and links to special targets outside hidden directories count as skipped; other links are not counted just for skipping header reads. Header
 bytes are not auditable text. The rules `disguised-executable`, `python-bytecode`,
 `executable-artifact`, `archive-artifact`, `uncertain-header` can be disabled by ID

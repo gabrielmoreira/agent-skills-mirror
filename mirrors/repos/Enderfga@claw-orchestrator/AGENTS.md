@@ -23,7 +23,7 @@ or an ACP agent, with first-class OpenClaw plugin support. Key source files:
 | `src/persistent-agy-session.ts`       | Google Antigravity CLI wrapper (`agy -p --output-format stream-json`) — reported token usage, conversation resumed by id (`--conversation`)                                                                                                  |
 | `src/agy-conversation.ts`             | Reads agy's own log for the created conversation id and for tool-confirmation denials                                                                                                                                                        |
 | `src/persistent-cursor-session.ts`    | Cursor Agent CLI wrapper — **legacy**: superseded in this lineup by Grok Build (`grok`). Kept working for existing callers; not documented as an option and not version-tracked. Binary is `cursor-agent`, never the contested `agent` name. |
-| `src/persistent-grok-session.ts`      | Grok Build CLI wrapper (`grok -p --output-format json`) — engine-reported cost, resumable session id                                                                                                                                         |
+| `src/persistent-grok-session.ts`      | Grok Build CLI wrapper (`grok -p --output-format streaming-json`) — engine-reported cost, resumable session id                                                                                                                               |
 | `src/persistent-opencode-session.ts`  | sst/opencode CLI wrapper (`opencode run --format json`)                                                                                                                                                                                      |
 | `src/persistent-custom-session.ts`    | Custom engine — any CLI via user-provided `CustomEngineConfig`                                                                                                                                                                               |
 | `src/persistent-acp-session.ts`       | ACP engine — drives any Agent Client Protocol agent over stdio (`kimi acp`, `dsh --profile acp`, `opencode acp`)                                                                                                                             |
@@ -242,7 +242,8 @@ git push origin main && git push origin vX.Y.Z
 gh release create vX.Y.Z --title "vX.Y.Z — Title" --notes "release notes"
 ```
 
-This triggers the `Publish to npm` workflow automatically.
+This triggers the `Publish to npm` workflow automatically, and `Publish to ClawHub` once it is set up (see
+[ClawHub](#clawhub) below).
 
 **Publishing uses npm trusted publishing (OIDC) — there is no `NPM_TOKEN` to rotate.**
 `publish.yml` installs npm 11.x (trusted publishing needs >= 11.5.1; the pin stays on the 11.x line
@@ -255,9 +256,28 @@ token problem. (Migrated from a 90-day-expiring `NPM_TOKEN` secret in v4.5.0.)
 ### 7. Verify
 
 ```bash
-gh run list --limit 2                          # CI + Publish should both pass
+gh run list --limit 3                          # CI + Publish (+ ClawHub) should all pass
 npm view @enderfga/claw-orchestrator version   # should equal X.Y.Z
 ```
+
+### ClawHub
+
+The same GitHub release also triggers `clawhub-publish.yml`. It builds and packs the package, then publishes
+it to [ClawHub](https://clawhub.ai) through ClawHub's reusable `package-publish.yml` workflow, pinned by commit
+SHA, and waits for ClawHub's security checks. It runs only when the repository secret `CLAWHUB_TOKEN` exists;
+without it, release runs skip. One-time setup:
+
+1. Sign in at [clawhub.ai](https://clawhub.ai) with the GitHub account that owns the `@enderfga` scope, and
+   create a token under Settings → API tokens. The package scope must match the publishing account.
+2. Add it as the repository secret `CLAWHUB_TOKEN`.
+
+The next release is then the first ClawHub publish, which also creates the package there. A manual run
+(Actions → Publish to ClawHub → Run workflow) is a dry run by default; a real manual publish, for example to
+retry a release, must be started on that release's tag (`vX.Y.Z` matching `package.json`). ClawHub keeps each release hidden until its security
+checks pass; if they hold it, the run fails after the wait (30 minutes by default) and the release can be
+retried or recovered with `clawhub package recover`. `openclaw.compat.pluginApi` and
+`openclaw.build.openclawVersion` in `package.json` are required by ClawHub; `clawhub-metadata.test.ts` keeps them
+equal to the `openclaw` peer range and the lockfile version.
 
 ## Engine CLI Reference
 
@@ -265,10 +285,10 @@ Current tested versions (update on each release):
 
 | Engine      | CLI        | Tested Version | Invocation                                                                                                                                                                                                                                                                                                                                                                     |
 | ----------- | ---------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Claude      | `claude`   | 2.1.321        | Persistent subprocess: `claude -p --input-format stream-json --output-format stream-json --replay-user-messages --verbose --include-partial-messages --permission-mode M [--resume <id>] [--model M]` (read-only sessions run `--permission-mode plan`)                                                                                                                        |
-| Codex       | `codex`    | 0.166.0        | `codex exec --sandbox <mode> --skip-git-repo-check --json -C <dir> [--model M] [--output-schema F] [--profile P] [--ephemeral] [--ignore-user-config] [--add-dir D] -` (prompt on stdin; later turns `codex exec resume <thread>` with the sandbox restated as `-c sandbox_mode=…`). The `codex-app` engine runs `codex app-server --listen stdio:// --enable goals` for /goal |
+| Claude      | `claude`   | 2.1.322        | Persistent subprocess: `claude -p --input-format stream-json --output-format stream-json --replay-user-messages --verbose --include-partial-messages --permission-mode M [--resume <id>] [--model M]` (read-only sessions run `--permission-mode plan`)                                                                                                                        |
+| Codex       | `codex`    | 0.167.0        | `codex exec --sandbox <mode> --skip-git-repo-check --json -C <dir> [--model M] [--output-schema F] [--profile P] [--ephemeral] [--ignore-user-config] [--add-dir D] -` (prompt on stdin; later turns `codex exec resume <thread>` with the sandbox restated as `-c sandbox_mode=…`). The `codex-app` engine runs `codex app-server --listen stdio:// --enable goals` for /goal |
 | Antigravity | `agy`      | 1.5.3          | `agy -p <msg> --output-format stream-json --log-file <tmp> [--mode plan \| --dangerously-skip-permissions \| --sandbox] [--model M] [--effort E] [--conversation <id>] [--settings S] --print-timeout <n>s` (`--mode plan` for read-only sessions)                                                                                                                             |
-| Grok        | `grok`     | 1.0.77         | `grok -p <msg> --output-format json --cwd <dir> [--resume <id>] [--permission-mode M] [--effort E] [--tools/--disallowed-tools] [--json-schema] [--rules]` (read-only runs in `--sandbox read-only`, OS-enforced; refused under the temp dir, off macOS/Linux, or if grok cannot apply it)                                                                                     |
+| Grok        | `grok`     | 1.0.77         | `grok -p <msg> --output-format streaming-json --cwd <dir> [--resume <id>] [--permission-mode M] [--effort E] [--tools/--disallowed-tools] [--json-schema] [--rules]` (read-only runs in `--sandbox read-only`, OS-enforced; refused under the temp dir, off macOS/Linux, or if grok cannot apply it)                                                                           |
 | OpenCode    | `opencode` | 1.19.5         | `opencode run --format json [--session <id>] [--model provider/model] [--variant E]`, prompt on stdin (read-only sessions add `--agent clawo-readonly` + `OPENCODE_CONFIG_CONTENT`)                                                                                                                                                                                            |
 
 ACP agents and custom engines are not pinned here: a community preset carries its own tested version

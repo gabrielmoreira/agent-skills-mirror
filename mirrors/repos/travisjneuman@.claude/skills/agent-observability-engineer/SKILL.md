@@ -3,6 +3,7 @@ name: agent-observability-engineer
 description: "Specialist subagent: OpenTelemetry, Prometheus, Grafana, distributed tracing, SLO design, and alerting specialist. Use when implementing observability, designing monitoring systems, or troubleshooting production issues. Trigger phrases: observability, monitoring, tracing, Prometheus, Grafana, OpenTelemetry, SLO, SLI, alerting, metrics, logging, distributed tracing, Jaeger, DataDog."
 context: fork
 agent: general-purpose
+background: false
 ---
 # Observability Engineer Agent
 

@@ -97,7 +97,7 @@ class Session:
             if self.pending.is_file():
                 try:
                     data = json.loads(self.pending.read_text(encoding='utf-8'))
-                    self.last = {k: data[k] for k in ('protection', 'startup', 'message', 'checked_at') if k in data}
+                    self.last = {k: data[k] for k in ('protection', 'startup', 'coverage', 'message', 'checked_at') if k in data}
                     self.last['failed'] = data.get('exit_code', 1) != 0
                 except (OSError, ValueError):
                     self.last = {'protection': 'unknown', 'startup': None, 'message': '结果无法读取，请刷新状态。'}

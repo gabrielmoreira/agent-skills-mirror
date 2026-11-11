@@ -98,10 +98,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 37 | ✓ | [`core/services/studio/builtinskills/tree/assemble-media/SKILL.md`](core/services/studio/builtinskills/tree/assemble-media/SKILL.md) |
-| 38 | ✓ | [`core/services/studio/builtinskills/tree/fframes-video/SKILL.md`](core/services/studio/builtinskills/tree/fframes-video/SKILL.md) |
-| 39 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
-| 40 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
-| 41 | ✓ | [`core/services/studio/builtinskills/tree/localai/SKILL.md`](core/services/studio/builtinskills/tree/localai/SKILL.md) |
+| 38 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
+| 39 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
+| 40 | ✓ | [`core/services/studio/builtinskills/tree/localai/SKILL.md`](core/services/studio/builtinskills/tree/localai/SKILL.md) |
+| 41 | ✓ | [`core/services/studio/builtinskills/tree/media-prompting/SKILL.md`](core/services/studio/builtinskills/tree/media-prompting/SKILL.md) |
 | 42 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
 | 43 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
 | 44 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |

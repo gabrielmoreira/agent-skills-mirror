@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `huggingface/transformers` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `huggingface/transformers` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `huggingface/transformers` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.ai/AGENTS.md`](.ai/AGENTS.md) |
 | 2 | ✓ | [`.ai/skills/add-or-fix-type-checking/SKILL.md`](.ai/skills/add-or-fix-type-checking/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -2,23 +2,41 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
-## v0.3.235：统一免费 Provider 与动态来源（2026-11-08）
+## v0.3.237：首启免密、安装引导与初始化可靠性（2026-11-10）
+
+- 后台 LLM 预算改为请求级硬上限并跨进程共享（issue #344，待下次发版）：`LLMConcurrencyGate` 在每次后台请求前扣减额度，超限抛 `LLMBudgetExhaustedError`（请求不会发出）；计数落在 SQLite `background_llm_budget` 表，daemon / API / 桌面 worker / CLI 共用一份额度，`scheduler.llm_budget_max_calls=0` 仍可关闭。认知循环在 awareness / insight 分片之间停下、保留水位并报告 `budget_exhausted`；强信号早触发去抖为 ≥30 分钟一次、每 12h 最多 4 次。同时把 `interests` 里 `state="archived"` 的生命周期墓碑行从两条 prompt 视图里剔除（存储不删），无台账输入仍逐字节不变。
+
+- 桌面、后端和浏览器插件统一为 0.3.237。独立插件 0.3.236 的按需账号字段与连接测试改进一并交付。
+- 安装包、容器、运行时和浏览器商店的各渠道回执见 [v0.3.237 发布记录](testing/2026-11-10-release-v0.3.237.md)。
+- Chrome Web Store 已受理 0.3.237，待审核，通过后自动发布。
+- Docker 发行补丁为 Playwright 内置 Node 补齐 `libatomic1`，恢复 amd64 / arm64 的 Chromium 构建；现有源码、桌面与扩展标签保留。详见 [Docker 部署](docker-deployment.md#平台支持v034)。
+- 为 Apple Silicon 内置向量版补齐 DMG 卷容量，清理临时模型下载库并将 ZIP 归档延后，降低构建机磁盘峰值。桌面发布工作流可将缺失的内置向量版单独补挂到现有发行页。
+
+- macOS DMG 原生验收补充。Apple Silicon 和 Intel 的 macOS 15 公证包通过安装、正常启动及真实流式请求。本机 macOS 26.5.1 Intel 用同一公证包复现菜单栏启动卡住，前台对照真实请求通过。[验收记录](testing/2026-11-10-macos-dmg-live.md)
+
+- macOS DMG 安装引导：Finder 窗口直接显示应用图标、指向「应用程序」的箭头和中英文说明，提示复制完成后从「应用程序」打开。
+
+- 修复 macOS / Linux 首次打开本机 Web 误弹访问密码：主 API 在转发前鉴权，独立推荐进程只接受带内部凭据的转发，保存密码后远程推荐立即可用。桌面和手机 Web 依据主 API 的认证状态显示登录。新装默认关闭密码，终端初始化不再询问密码，桌面用户可在本机 Web「设置 → 通用」手动开启。
+
+- 认知 prompt 不再重复序列化归档兴趣（issue #342）：`preference_prompt_payload()` 门面统一剔除只增不减的 `archived_interests` 台账，五个偏好 prompt builder 与 `build_cognition_profile_view_v1` 的 legacy / compact-v1 两条视图都不再输出它；持久化存储不变，偏好分析器仍从库内做归档别名去重与证据驱动复燃，无台账输入的 prompt 逐字节不变。真实 Provider 复测（4,752 条台账 / 109,390 条真实事件库）：同一次 `soul.awareness_confusions` 从 852,649 input tokens、¥0.8545 降到 25,787 tokens、¥0.0297，且 4,752 条台账与 0 条台账的出站请求逐字节相同。[验收记录](testing/2026-11-10-issue-342-cognition-archive-e2e.md)。
 
 - 免费初始化修复合入收尾：Core 合并前回归 707 passed，Rust 81 passed，静态检查通过；临时后端停止，保留验收证据及 4B 工具协议 / 浏览器实测缺口。此次不发安装包或 SDK，后续需同步构建。[合入验证](testing/2026-11-09-setup-progressive-options.md#2026-11-09-合入验证与清理)。
 
 - 初始化真实请求验收：两个免费模型各完成 40 条 GitHub Star 的偏好、画像与首轮推荐，流式对话、三路并发及反馈去重通过；4B 画像工具首次协议失败、两次复测成功，保留未解决项。浏览器点击因权限不可用按用户要求待续。[验收边界](testing/2026-11-09-setup-progressive-options.md#真实后端与真实模型请求补充)。
 
-- 初始化界面精简（待发布）：首启移除重复的“准备免费组件”按钮，继续自动准备及验证；首启、PC 和插件的 Bangumi / GitHub 用户名、令牌与帮助仅在勾选对应平台后展开，重新勾选保留输入。
+- 初始化界面精简：首启移除重复的“准备免费组件”按钮，继续自动准备及验证；首启、PC 和插件的 Bangumi / GitHub 用户名、令牌与帮助仅在勾选对应平台后展开，重新勾选保留输入。
 
 - 全流程复测补齐：免费 BGE 主动连接测试从 15 秒对齐 180 秒业务预算，PC / 插件等待 190 秒；默认链热切换规范等价语言标签，避免 `zh` → `zh-Hans` 误触发完整重建和学习排空。
 
-- 真实全流程验收补充（待发布）：大批历史画像后的向量请求可能占满 Rust 共享分钟额度，导致发现与聊天立即失败。普通、向量及尚未输出的流式请求遇到明确本地 RPM 拒绝后，在原预算内等待一个窗口并只重试一次；保持签名额度、权限和不重放边界不变。[测试记录](testing/2026-11-08-free-full-e2e.md)。
+- 真实全流程验收补充：大批历史画像后的向量请求可能占满 Rust 共享分钟额度，导致发现与聊天立即失败。普通、向量及尚未输出的流式请求遇到明确本地 RPM 拒绝后，在原预算内等待一个窗口并只重试一次；保持签名额度、权限和不重放边界不变。[测试记录](testing/2026-11-08-free-full-e2e.md)。
 
 - 同轮真实请求补充：修复免费初始化遇到上游 TLS 提前断连时整轮终止；明确的传输断连复用一次缩批恢复，连续失败仍报错，证书、鉴权、配额、策略与内容错误不额外重试。
 
-- 发布后修复（待下次发版）：免费 LLM 继承全局 20 分钟默认请求预算，Rust 普通 / 流式接受有界传输超时并让 HTTP 重试共用预算；初始化按请求预算扩展等待。Embedding 保留独立 3 分钟限制；需同步更新 Rust SDK。[验证记录](testing/2026-11-08-model-timeout-alignment.md)。
+- 免费初始化修复：免费 LLM 继承全局 20 分钟默认请求预算，Rust 普通 / 流式接受有界传输超时并让 HTTP 重试共用预算；初始化按请求预算扩展等待。Embedding 保留独立 3 分钟限制。[验证记录](testing/2026-11-08-model-timeout-alignment.md)。
 
-- 发布后修复（待下次发版）：首次历史导入按实际 prompt 批次更新进度与时间预算；免费偏好分析限制输出、关闭隐式思考，包裹后的上下文错误可拆批，单次超时只作一层缩批恢复。[真实请求验收](testing/2026-11-08-free-model-init-timeouts.md)。
+- 免费初始化修复：首次历史导入按实际 prompt 批次更新进度与时间预算；免费偏好分析限制输出、关闭隐式思考，包裹后的上下文错误可拆批，单次超时只作一层缩批恢复。[真实请求验收](testing/2026-11-08-free-model-init-timeouts.md)。
+
+## v0.3.235：统一免费 Provider 与动态来源（2026-11-08）
 
 - Intel 安装包增加已验证产物发布流程：从成功且同提交的 CI 构建提取，核对人工复核的 SHA-256 后附到两个发行页，保留已签名／公证字节。
 
@@ -155,6 +173,7 @@
 - **旧版公开 Web recipe 的独立宿主与有效配额**：OpenClaw standalone composition 也注册 Web adapter/producer，按最新 enabled recipe 计算有效配额，短请求内完成有界候选评估与 durable copy；来源份额建议 GET/POST 与初始化 CLI 同步反映 recipe 新增、停用，无需等后台重建。
 - **旧版匿名 HTTP recipe：URL authoring probe（Phase B）**：桌面 Web、插件与 `openbiliclaw probe-web <URL>` 可只读探测一个用户显式粘贴的匿名公开 URL；`POST /api/sources/web/probe` 只接受 `{url}`，在 exact origin、robots fail-closed、公共 DNS/socket pin、无 Cookie/Auth/环境代理、无登录/JavaScript/LLM 与共享 deadline 下，按 Feed → Sitemap → 确定性静态 Listing 收集最多 4 个 compiler-ready 草稿和每个最多 3 条样例。图形端「采用此方案」只回填 recipe 表单并明确显示尚未保存，必须再次点击「添加网站」才调用权威 `/api/sources` CRUD；probe 自身不写 recipe、state、seen、candidate、memory 或 profile，在 guided init 与 LLM degraded recovery 中仍可用。该兼容 recipe 编辑器没有移动端独立表单；动态来源已有移动设置管理与聊天新增入口。正式 producer 仍只运行用户已保存并启用的 recipe，不会把探测扩展为自动保存、跨域授权、递归 crawl 或浏览器 fallback。
 - **旧版匿名 HTTP recipe：discovery-only Phase A**：Web 现在以 canonical `source_platform="web"` 接入统一来源注册表、候选池、runtime 状态与三端文字卡。桌面 Web 与插件「设置 → 平台源 → 公开 Web」新增 recipe editor，可列出 runtime、创建 `feed / sitemap / listing`、编辑 exact origins / cadence / 上限 / 受限 selector、单条启停或删除，并原样显示后端 422；权威 CRUD 仍为 `/api/sources`。首版只支持匿名公开 RSS / Atom / JSON Feed、Sitemap / 一层 Sitemap Index 与静态 HTML Listing；正式 producer 按 recipe cadence / 权重公平领取 token-fenced lease，候选 enqueue 成功后才写 recipe seen，只有完整 `ok / empty / not_modified` 推进 ETag、Last-Modified 或 sitemap cursor。Sitemap 失败恢复采用 root + child 两层 topology clean sweep；正常 positional cursor 也绑定 root/当前 child 的 URL-order fingerprint，newest-first 头插或顺序变化时只从受影响的稳定边界重扫，不跳过新 URL。Feed/listing 每轮有界扫描 `max_items` 并按 allocation 分批 handoff，backlog 清空前不提交 validator；非空 feed/sitemap 却无 usable same-origin rows 一律 schema degraded，HTML 超过 25,000 nodes / depth 256 / 512 listing scopes 或共享 selector/text 工作预算一律 `document_too_complex` fail closed。安全传输固定 exact-origin allowlist、逐跳公共 DNS 校验、validated socket 地址 pin、robots fail-closed、无环境代理 / Cookie，以及 timeout、响应体、redirect、MIME 与 parser 上限。为让“已校验地址就是实际连接地址”成为受支持的生产边界，`httpx[socks]` 约束为 `>=0.27,<1`，并把直接 import 的 `httpcore>=1,<2` 明确列为默认依赖、离线更新 `uv.lock`；pip/uv/Docker/桌面安装自动携带，不增加独立服务或浏览器步骤。`/api/sources/status` 分开表达 legacy `no_auth` 与 discovery health，从未运行不假报 ready；Web 没有 credential、verify、初始化或站内写入能力。CLI 的 `discover --source web [--limit] [--force]` 复用真实 adapter / producer / candidate pipeline 正式补池，并对 partial / disabled / no-recipes / error 返回非零；`discover-web --recipe-id ...` 保留为不写 candidate / seen / checkpoint / memory 的单 recipe preview。此兼容 HTTP recipe 链路仍不支持探测后自动保存、站内搜索、递归 crawl、登录态、JavaScript / CDP / Playwright；历史 `web_extract` 浏览器 + LLM 实验不进入 typed API 或 formal producer。动态 workflow 独立于该限制；新网页使用 Ego Lite，旧 Playwright 流程保留兼容，分别按其实际网络保证与验收记录报告。
+- **后台循环归属与委派接管（待发布）**：full worker 自身带 `OPENBILICLAW_FULL_WORKER=1`，旧实现据此认为循环已委派而不启动任何循环，API 同时放弃启动，导致刷新循环在任何进程都没有运行（某 Windows 桌面端内容池因此自 2026-10-15 冻结 23 天）。现由调用方显式声明 `start_refresh_controller` / `start_account_sync` 归属；API 侧新增 watchdog，在 600s 宽限后按心跳接管无持有者的循环，只接管死者、不覆盖存活 worker。同时放宽 temporal 解析：`none` 对已分类候选合法，不再把 2402 条已分类内容降级为 `unknown`；子进程退出日志补上 `logs/child-<name>.log` 位置。
 
 
 ## v0.3.234：免费模型交付、认证与元信息修复（2026-11-06）

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,21 +93,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`.agents/skills/theme-system/references/tokens-and-examples.md`](.agents/skills/theme-system/references/tokens-and-examples.md) |
 | 33 | ✓ | [`.agents/skills/theme-system/SKILL.md`](.agents/skills/theme-system/SKILL.md) |
 | 34 | ✓ | [`.agents/skills/triage-issues/references/feature-facts.md`](.agents/skills/triage-issues/references/feature-facts.md) |
-| 35 | ✓ | [`.agents/skills/triage-issues/references/security-advisory.md`](.agents/skills/triage-issues/references/security-advisory.md) |
-| 36 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
-| 37 | ✓ | [`.agents/skills/triage-prs/scripts/finish.sh`](.agents/skills/triage-prs/scripts/finish.sh) |
-| 38 | ✓ | [`.agents/skills/triage-prs/scripts/prep.sh`](.agents/skills/triage-prs/scripts/prep.sh) |
-| 39 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
-| 40 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
-| 41 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
-| 42 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
-| 43 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
-| 44 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
-| 45 | ✓ | [`.agents/skills/writing-for-agents/references/audit-checklist.md`](.agents/skills/writing-for-agents/references/audit-checklist.md) |
-| 46 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
-| 47 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 48 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 49 | ✓ | [`packages/sdk/examples/agent-desk/skills/deploy-notes/SKILL.md`](packages/sdk/examples/agent-desk/skills/deploy-notes/SKILL.md) |
+| 35 | ✓ | [`.agents/skills/triage-issues/references/idea-rounds.md`](.agents/skills/triage-issues/references/idea-rounds.md) |
+| 36 | ✓ | [`.agents/skills/triage-issues/references/security-advisory.md`](.agents/skills/triage-issues/references/security-advisory.md) |
+| 37 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/triage-prs/scripts/finish.sh`](.agents/skills/triage-prs/scripts/finish.sh) |
+| 39 | ✓ | [`.agents/skills/triage-prs/scripts/prep.sh`](.agents/skills/triage-prs/scripts/prep.sh) |
+| 40 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
+| 41 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
+| 42 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
+| 43 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
+| 44 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
+| 45 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
+| 46 | ✓ | [`.agents/skills/writing-for-agents/references/audit-checklist.md`](.agents/skills/writing-for-agents/references/audit-checklist.md) |
+| 47 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
+| 48 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 49 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 50 | ✓ | [`packages/sdk/examples/agent-desk/skills/deploy-notes/SKILL.md`](packages/sdk/examples/agent-desk/skills/deploy-notes/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/html-anything` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
+Mirror of `nexu-io/html-anything` — 26 default patterns, 1 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nexu-io/html-anything` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 84 |
+| Followed pats | 1 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `nexu-io/html-anything` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/motion-release-activation.md`
 
 ## File Index
 
@@ -143,6 +143,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 82 | ✓ | [`next/src/lib/templates/skills/web-proto-soft/SKILL.md`](next/src/lib/templates/skills/web-proto-soft/SKILL.md) |
 | 83 | ✓ | [`next/src/lib/templates/skills/weekly-update/SKILL.md`](next/src/lib/templates/skills/weekly-update/SKILL.md) |
 | 84 | ✓ | [`next/src/lib/templates/skills/wireframe-sketch/SKILL.md`](next/src/lib/templates/skills/wireframe-sketch/SKILL.md) |
+| 85 | → | [`docs/motion-release-activation.md`](docs/motion-release-activation.md) |
 
 ---
 

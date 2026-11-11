@@ -49,6 +49,18 @@ Windows x64 应用在启动后及每六小时检查一次较新的正式稳定�
 
 「网络」中的代理不用于 nanoMuse Cloud，包括中继登录、hub 和同步连接。外壳 `proxy.ts` 中的 `DEFAULT_RELAY_HOST` 只参与生成 `NO_PROXY`（绕过代理的地址列表），不能用来选择中继。上述启动方法用于连接自己的服务器，不能修复托管中继网络路径中的连接重置。
 
+## Linux 上连接自己的中继 {#using-your-own-relay-on-linux}
+
+先完全退出 nanoMuse，包括托盘中的后台进程，再使用自己的中继和单独数据目录启动 AppImage：
+
+```sh
+env NANOMUSE_CLOUD_URL='https://relay.example' \
+  NANOMUSE_DESKTOP_HOME="$HOME/.nanomuse/desktop-self-hosted" \
+  /path/to/nanoMuse.AppImage
+```
+
+替换中继地址和 AppImage 路径，然后在该中继注册或登录。以后继续使用同一命令和数据目录，直接打开 AppImage 不会继承这些变量。前面关于独立账号和 profile 覆盖设置优先级的说明同样适用。
+
 ## 桌面版包含什么 {#what-it-is}
 
 首次启动时，先选一个示例任务，再连接模型或跳过，最后开始对话。选中的任务会填入主要聊天的空输入框；已有草稿会保留。模型页可以登录 nanoMuse Cloud、登录 ChatGPT，或添加服务商 key。新建的 Cloud 账号可以设置密码，macOS 还会询问手需要的权限。
@@ -210,6 +222,8 @@ profile 中的 `node_modules/dsh-nanomuse` 是指向应用内插件的链接，W
 Windows 的只读和工作区可写 PowerShell 命令使用 DSH 受限令牌 ACL 沙箱。ACL 是控制文件访问权限的规则。Electron 启动的进程没有自己的控制台，nanoMuse 会在这一执行程序前加入短期 Node 模式辅助进程，在限制令牌前创建无窗口控制台，不支持时用隐藏控制台。PowerShell 子进程继承它，避免在 DLL 初始化时以 `0xC0000142` 退出；临时沙箱目录清理重建后也有效。这不放宽 ACL，也不用于完全访问命令。
 
 首次启动可能耗时数分钟，Windows 尤其明显。Host 只有加载完 profile 所有插件才公布地址，全新安装的 `resources/dsh/node_modules` 约有 20 000 个文件，Windows Defender 首读时逐个扫描，慢盘或外置盘还会更久。0.1.41 及以前，外壳等待 120 秒便报 `the host did not announce its address within 120 s`，而 Host 仍在加载，有报告显示只差六秒就绪。现在只要 Host 还运行就继续等；两分钟后显示「还在启动」、原因及最近输出，十分钟后询问继续等待或退出。只有退出才停止仍在启动的 Host。超过半分钟的启动会在 `desktop.log` 记录 `host: ready after N min`。文件经过首次检查后，第二次通常更快；若每次都慢，将安装目录加入实时扫描排除项可能有帮助。
+
+在高级模型设置中修改自己的 key 对应的服务商后，重启应用会保留修改。在这里删除服务商行，会移除 nanoMuse 保存的对应来源，并将对话切换到其他可用来源；保险库中保存的 key 不会删除。从配置读入的对话模型列表为空时，会停用该对话来源，不会恢复默认模型，图像和视频配置仍会保留。底层设置可能拒绝删除自定义来源的最后一个模型，这时请删除对应服务商行。若要同时移除来源和 key，请通过设置 → 账号操作。切换模型来源或关闭 nanoMuse Cloud 模型，请使用设置 → 模型。
 
 ## macOS 权限 {#macos-permissions}
 

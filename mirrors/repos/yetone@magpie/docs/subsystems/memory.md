@@ -93,27 +93,55 @@ agents ticked under Instructions, unless `Instructions.NoMemory`
 | `GET /api/memory` | `{memories, projects, digest, agents}` |
 | `POST /api/memory` | `{id?, …Input}`: `Edit` with an id, else `Save` as the user's |
 | `POST /api/memory/remove` | `{ids}` |
+| `POST /api/memory/status` | `{ids, status}`: `SetStatus`, in one write, as `Edit` by the user per memory (`TestSetStatusOfSome`, `TestMemoryStatusRouteActsOnSome`) |
 | `POST /api/memory/digest` | `{on}` |
 
 A reply after a change carries `problem` when publishing the digest
 failed. The tab is in [plugins/library/client.js](../../internal/gui/assets/plugins/library/client.js)
 (`renderMemory`), tested by `internal/gui/tests/library-memory.test.cjs`.
+Its Select puts a box on each memory listed: a click picks one, a
+Shift-click the range from the last one clicked, ↑ ↓ move between the
+boxes (Shift picks as it goes), ⌘A / Ctrl+A picks every one shown, Escape
+ends it. The bar under the list keeps (To review), archives (In use) or
+restores (Archived) the ones picked through `/api/memory/status`, and
+deletes them on a second click through `/api/memory/remove`; a search or
+filter unpicks what it hides (RealZeroP27 on X,
+`library-memory-select.test.cjs`).
 
 ### Distillation
 
 `internal/memdistill` reads finished conversations into candidate
 memories. It is off until switched on under Memory → Learn from
 conversations; switched on, it looks back seven days (`Back`) and no
-further (`State.Since`).
+further (`State.Since`), unless a range is picked.
 
+- How far back (`State.Days`, `SetRange`): 7, 30, 90 or 365 days, or All
+  (`memdistill.All`, -1); 0 is the 7-day default, so a state from before
+  the picker keeps its own `Since` until a range is picked
+  (`TestRangePicked`). Every range reads from the latest 400 conversations
+  (`Listed`).
+- A backlog is read at once when the user asks (`ReadAll`, through
+  `distillNow`): switched on, a model or a longer range picked, Read now.
+  It reads every conversation due, one request at a time, and the row
+  shows how far it has gone (`Progress`, `doing` of `of` in the view)
+  with a Stop (`Stop`, `POST /api/memory/distill/stop`; switching off
+  stops it too). A stop or a failure leaves the rest for the next run,
+  and the row says how many (`State.Left`) (`TestBacklogReadAtOnce`,
+  `TestStopEndsTheRun`). Before, every run read 10, and 400 took 40
+  hours (RealZeroP27 on X).
 - State is `distill.json` beside `memory.json` (`memdistill.Path`):
-  the switch, the model, the conversations done (kept 30 days), and the
-  last run's time, counts and error. It is written through temp-and-rename
+  the switch, the model, the reasoning level, the range, the
+  conversations done, and the last run's time, counts, error and how
+  many it left. A
+  conversation's mark is dropped once it is before `Since`, or older
+  than 30 days and past the oldest conversation listed; before that a
+  conversation older than 30 days was read again every hour
+  (`TestOldConversationReadOnce`). It is written through temp-and-rename
   under a file lock; an unreadable file runs nothing
   (`TestUnreadableStateRunsNothing`).
 - `Keep` runs 5 minutes after the GUI backend starts, then hourly
   (`keepDistilling` in `internal/gui/memory_distill.go`). `Run` takes at
-  most 10 conversations (`PerRun`) quiet for 30 minutes (`Quiet`) with at
+  most 30 conversations (`PerRun`, more than a busy hour brings) quiet for 30 minutes (`Quiet`) with at
   least two turns, and skips the gateway's own records, read-only
   agents, subagent sessions and its own agent (`memory`). One run at a
   time, in this process and across processes (`.run` lock).
@@ -126,7 +154,11 @@ further (`State.Since`).
   (`distillComplete`), as `x-api-key: magpie-memory`, so it is routed,
   masked and counted in Usage under the agent `memory`
   (`TestDistillCompleteThroughGateway`). With no model picked it uses
-  `gateway.AutoVision()`.
+  `gateway.AutoVision()`. A reasoning level picked (`State.Effort`,
+  `SetEffort`) is fitted to the model's levels and sent as thinking with
+  room for it (`gateway.WithSideEffort`, as Vision and Searcher do);
+  Default sends none. Run and the nightly tidy both use it
+  (`TestEffortPicked`).
 - Each proposal is saved as an inferred candidate (To review) with its
   conversation as the source and the quote it rests on; at most 5 per
   conversation. A proposal whose quote isn't in what the user wrote
@@ -137,7 +169,9 @@ further (`State.Since`).
   leaves the conversation to be read again next time
   (`TestFailureAndCap`).
 - Routes: `GET /api/memory/distill`, `POST /api/memory/distill`
-  `{on, model}` (switching on, or a new model, reads at once) and
+  `{on, model, effort?, days?}` (switching on, a new model, or a longer
+  range reads at once; a bad level or range is a 400,
+  `TestDistillRangeAndEffortRoutes`) and
   `POST /api/memory/distill/run`. The row polls every 2s while a run
   goes and reloads the memories when it ends.
 
@@ -176,17 +210,56 @@ off until switched on under Memory → Tidy up every night.
   and `POST /api/memory/dream/undo`; `GET /api/memory/distill` carries
   `dreaming`.
 
-## Not built yet
+### Search by meaning
 
-Semantic search is planned; today search is by words (`Search`, CJK
-split per character, `TestSearch`).
+[internal/memembed](../../internal/memembed/memembed.go) ranks a search by
+what it means as well as by its words, so "什么时候上线" finds "Releases go
+out on Tuesdays". It is off until switched on under Memory → Search by
+meaning, since it downloads a model (~135 MB).
+
+- The model is paraphrase-multilingual-MiniLM-L12-v2, Xenova's int8 ONNX
+  at a pinned revision, fetched from Hugging Face with each file's size
+  and sha256 checked (`pii.Fetch`) into
+  `<cache>/paraphrase-multilingual-MiniLM-L12-v2/<rev>`. It
+  runs in Go on the PII guard's BERT code (`guard.LoadEmbedder`); nothing
+  leaves the computer. Its vectors match ONNX Runtime's to cosine 0.995
+  and are no further from fp32 than ONNX Runtime's own
+  (`TestEmbedderMatchesONNXRuntime`). A search and a memory are read the
+  same way, with no prefix. multilingual-e5-small was tried first: its
+  cosines sat in 0.78 to 0.89 for everything, and a Chinese search ranked
+  Chinese memories over the English one it meant.
+- Switched off, the model folder is deleted (`Set`). The switch is
+  `memory-semantic.json` in the config folder; one that can't be read is
+  off (`TestNotThereIsWords`).
+- What is read: each active or candidate memory's text and why, as an
+  one text, keyed by its sha256 in `vectors.bin` beside the model, once,
+  and again when its text changes; vectors of texts gone are dropped
+  (`TestIndexReadsOnce`). `Keep` reads them in the backend each minute and
+  on a nudge (`Poke`); a search reads up to 16 missing ones itself, and
+  with none read yet it is by words while Keep reads. The model is let go
+  after 10 minutes unused.
+- Ranking (`memory.Semantic`, `fuse` in
+  [search.go](../../internal/memory/search.go)): the memories whose
+  cosine with the query passes `Near` (0.30) and is within `Within` (0.15)
+  of the best are fused with the word hits by reciprocal rank (`rrfK` 20),
+  pinned ×1.2 and non-global ×1.1. Calibrated on 97 real memories and 16
+  queries, half in Chinese for English memories: the one sought scored a
+  median 0.47, the rest a median 0.16; 12 of 16 found with ~4 others each
+  (`TestSearchFindsByMeaning`).
+- Every search goes through it: the MCP server's `memory_search` and the
+  Memory tab, which asks `POST /api/memory/rank` `{q, status}` (ids, best
+  first, not noted as used; null while off) and lists what it ranked
+  first, then what holds the words. `GET`/`POST /api/memory/semantic`
+  `{on}` give the row its state: the download's progress, the memories
+  read, and why either failed.
 
 ## Verification
 
 ```sh
-mote-run go test ./internal/memory ./internal/memdistill ./internal/library
+mote-run go test ./internal/memory ./internal/memdistill ./internal/memembed ./internal/library
+mote-run sh -c 'MAGPIE_EMBED_DIR=$HOME/models/pml go test -run Embedder ./internal/pii/guard'
 mote-run go test -run 'Distill|Dream' ./internal/gui
 mote-run go test -tags nogui -run 'MemoryMCP|OwnMCP' ./internal/gateway
 mote-run go test ./internal/browsermcp ./internal/cli
-mote-run node --test internal/gui/tests/library-memory.test.cjs
+mote-run node --test internal/gui/tests/library-memory.test.cjs internal/gui/tests/library-memory-select.test.cjs
 ```

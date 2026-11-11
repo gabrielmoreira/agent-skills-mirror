@@ -4,6 +4,262 @@ All notable changes to Clawd Cursor will be documented in this file.
 
 ## [Unreleased]
 
+### Removed
+- **Breaking: the built-in agent loop is gone.** clawdcursor no longer calls a
+  model itself. It is a tool layer: your own agent (Claude Code, Claude Desktop,
+  Codex, Cursor, a local Llama, …) drives the MCP tools.
+  - Gone: the `task` compound tool (the compact surface is now `accessibility`,
+    `system`, `window`, `browser`, `computer`, `batch`), the granular
+    `submit_task`, `agent_status`, `abort_task`, `delegate_to_agent`,
+    `task_logs_list`, `task_logs_current` and `get_system_prompt` tools, the
+    `system` actions `delegate` and `system_prompt`, the scheduler
+    (`scheduled_task_*`), the `clawdcursor task` command and the daemon's
+    `POST /abort` route.
+  - Use instead: call the compact tools step by step from your agent, or `batch`
+    for a known sequence in one call; `system pause_for_user` to hand a step to
+    the user; your agent host's own scheduler for recurring work; `clawdcursor
+    stop` (or the on-screen pill) to stop. With `task {"action":"resume"}` gone,
+    a pause on the compact surface ends only by the user (Resume on screen,
+    `clawdcursor resume`, the dashboard) or its `done_when`; the granular
+    `resume_task` stays.
+  - `clawdcursor agent` is now only the HTTP MCP server: no model, no key, no
+    provider check. `--no-llm` is still accepted and does nothing; the
+    `--provider`, `--model`, `--text-model`, `--vision-model`, `--base-url` and
+    `--api-key` flags are gone from `agent` and `start`. The HTTP MCP transport,
+    `/stop`, `/resume`, `/health` and token auth are unchanged.
+  - The removed flags and `clawdcursor task` now fail as an unknown option or
+    command, followed by "removed in 1.6: clawdcursor no longer runs a model;
+    your agent drives the tools". The same goes for the removed `doctor` flags.
+- **Breaking: all model configuration is gone.** There is no provider, model,
+  API key or base URL setting anywhere: the provider clients and key discovery
+  (`src/llm/`) are gone, and so are the `AI_API_KEY` / `CLAWD_*_MODEL` /
+  `CLAWD_PROVIDER` style variables and the matching keys in
+  `.clawdcursor-config.json` (old files still load; those keys are ignored).
+  `.env.example` is gone. `clawdcursor doctor` is now only a diagnostic (version,
+  installed copies, consent, screen capture, macOS permissions, accessibility,
+  skill registration): it no longer scans or tests providers, stores keys or
+  writes a config, and its `--provider`, `--api-key`, `--no-save` and `--reset`
+  flags are gone. `clawdcursor status` no longer reports an AI config. The config
+  ladder (CLI > project file > user file > env > default) is unchanged for
+  `port`, `debug` and `disableVision`. Configure the model in your agent host.
+- **The dashboard's Tasks and Scheduled tabs**, task form, history and
+  favorites, and with them the granular `favorites_list`, `favorites_add` and
+  `favorites_remove` tools: they stored task strings for the built-in agent.
+  Keep reusable prompts in your agent host. The dashboard is the pause banner, the log view, the connection
+  status and the Kill button.
+
+### Changed
+- **A thin outline around the agent's window replaces the glow on every screen edge.** While an agent drives, the window it
+  is working in gets a 3 px border (amber; blue while it waits for you), scaled per monitor. Nothing is drawn over the
+  window's content or on the rest of the screen, and nothing at all when no window is known or that window is not in
+  front: the pill alone shows an agent is in control. The border follows the window as it moves, resizes or changes, is
+  click-through, never takes focus, and stays out of clawdcursor's screenshots and reads (on
+  Linux and on Windows 10 before 2004, where a window cannot be kept out of a capture, it steps aside for each one).
+  `CLAWD_NO_GLOW` is gone with the glow.
+- **The pill and the outline close by themselves when clawdcursor is killed.** A host that hard-kills the process runs no
+  exit hook; each drawer now exits when its stdin closes instead of staying on screen.
+- **Keys are OS-aware from the first message.** The server reads the OS once at startup and its instructions say which
+  OS this is and which modifier its shortcuts use ("This computer runs macOS: the shortcut modifier is cmd … not ctrl"),
+  so an agent no longer guesses and sends Windows hotkeys to a Mac. `mod` is the one alias for the OS's modifier (cmd on
+  macOS, ctrl on Windows and Linux); key examples in tool descriptions use it. An agent's explicit `ctrl+x` is still
+  sent as Ctrl on macOS (terminals bind it): nothing is translated.
+  - `shortcuts_list` / `shortcuts_run` offer and run only the shortcuts that exist on the current OS, with its keys. An
+    entry with no chord there is not offered and no longer matches (before, `shortcuts_run` could match a macOS-only
+    intent on Windows and press nothing). Fixed entries: system search, screenshots, the emoji picker and Task View are
+    no longer handed to Linux with Windows chords; "force quit", "close all windows" and "switch windows of the same app"
+    no longer fall back to `Alt+F4` / `Alt+Tab`; Safari, Notes and Messages entries are macOS-only; macOS "show desktop"
+    is `F11` (Fn cannot be sent); Linux gets its own redo, minimize, and Thunderbird forward / mark-read chords (Outlook's
+    `Ctrl+Q` quits Thunderbird).
+  - clawdcursor's own key presses go through `mod`: `type_text`'s paste and the triple-click select-all no longer pick
+    the chord with an inline OS check. The focus-time minimize of a phantom off-screen window (`Super+Down`) now runs on
+    Windows only: on macOS it was `Cmd+Down`.
+- **Agents are steered through the blind pipeline** (wording, order and result text; no tool or action added or removed).
+  Read lines say to act by name and keep `@x,y` for elements with no name; `smart_click` is explained where agents look
+  for it and its miss carries a next step; the sparse-tree hint, `SKILL.md` and `docs/llms.txt` use one SEE/ACT ladder in
+  one call notation (`accessibility {"action":"smart_click","target":"<label>"}`); `computer` comes last, with its
+  screenshot actions at the end of the enum; misses point at `smart_click` or `window list`; `[unverified]` appears only
+  on calls whose effect nothing checked, and a read-back that confirmed it is `[confirmed]`; `expect` is usable from its
+  description; every compound tool description is at most 1,024 characters.
+- **The "little or no accessibility structure" hint needs a sparse tree**, not just a browser window: a browser needs 5
+  named elements inside its page, any other window 5 named elements (a small dialog of named buttons is fine).
+
+### Security
+- **Breaking: the policy gate is removed.** clawdcursor no longer decides which actions an agent may take.
+  - **What was removed.** The SafetyLayer (`src/core/safety.ts`, `src/tools/safety-gate.ts`) and everything it decided:
+    the tool tiers that refused `open_file`, `close_window`, `clipboard_write`, browser `navigate` / `evaluate`,
+    `open_uri` and `relaunch_with_cdp`; the label rules that refused by-name clicks on Send, Delete, Subscribe, Pay and
+    the like; the URI-scheme and sensitive-app rules; the intent bypass; the confirm tier for shortcuts (`Alt+F4`,
+    `Ctrl+W`, `Win+R`, `Cmd+Q`, …); `batch`'s `allowConfirm` and `dryRun` parameters, its `needs_confirm` step status
+    and the `CLAWD_BATCH_ALLOW_CONFIRM` variable; the result codes `SAFETY_BLOCKED` and `NEEDS_CONFIRMATION`; the unused
+    `safety` block of the config.
+  - **Why.** It was not a security boundary. A click by coordinates never went through the label rules, so the gate
+    stopped nothing an agent set on doing, while over MCP a "confirm" was a permanent refusal that blocked ordinary
+    work (opening a Start-menu shortcut, closing a window the user asked to close) and pushed agents from acting by
+    name onto screenshots. It also suggested a protection that was not there.
+  - **What protects you now.** clawdcursor is a tool layer that runs with your own permissions. What to do is decided
+    by your agent and by your MCP host's permission prompts, which read the tool annotations: reads carry
+    `readOnlyHint`; the tools that are destructive by themselves carry `destructiveHint` (`close_window`,
+    `open_file`, `open_uri`, `write_clipboard`, `cdp_evaluate`, `navigate_browser`, `relaunch_with_cdp`,
+    `submit_report`, `batch`, and all six compact tools). No annotation changed from 1.5.27: `safetyTier` is now only
+    0 (read) or 1 (input), and the former tier 2 / 3 tools keep their hint through a `destructive` flag. Agents are told to ask with `pause_for_user` before an
+    irreversible action the user did not ask for. clawdcursor itself still always enforces: the user's **Stop**
+    (`stopped.json`, every process, across restarts), the **pause**, the own-UI guard, **no stray input into an AI
+    assistant's window**, token-authenticated loopback-only HTTP, `<untrusted-screen-content>` wrapping, one-time
+    consent, and the never-type-credentials guidance. The injection fixes (GHSA-9ppf-38v8-h97v, GHSA-r54p-hj6c-2434)
+    are code-execution fixes, not policy, and are unchanged.
+  - **The hard key list** replaces the key blocklist: a handful of OS-level combos are never sent because they lock
+    or end the user's session, or cut the agent off from the desktop. Windows `Win+L`, `Ctrl+Alt+Del`; macOS `Ctrl+Cmd+Q`,
+    `Cmd+Shift+Q`, anything with Power / Eject; Linux `Super+L`, `Ctrl+Alt+Del`, `Ctrl+Alt+Backspace`,
+    `Ctrl+Alt+F1`–`F12`, SysRq, Power. Only the running OS's list applies; every other shortcut is allowed. It is
+    checked in one place, the input layer under every tool (`guardInputMethods`), on the normalized input, so a tool
+    name, a batch, a named shortcut, a sequence (`esc win+l`), spacing, case, key order, an alias
+    (`cmd`/`meta`/`super`/`win`) or a key held with `key_down` cannot get around it (the bypass classes of
+    GHSA-35pc-g74h-p476 and GHSA-3v3f-5rwv-whc9). `Ctrl+Shift+Esc`, `Cmd+Opt+Esc` and (Linux) `Ctrl+Alt+L` are not on it. The `lock screen` entry of `shortcuts_list` / `shortcuts_run` is gone: it could only ever be refused.
+  - `SECURITY.md` states the threat model, the guarantees, their limits and the scope.
+- **Screen text cannot leave its block.** `read_clipboard` and `copy_all_text` built the `<untrusted-screen-content>`
+  tags by hand around raw text, so a page containing the closing tag followed by fake clawdcursor output escaped the
+  block; `copy_all_text` also put the window title outside it. Every tool result that carries page text, OCR, a tree,
+  the clipboard, a field value, a window or tab title, an element name or a URL now goes through one helper
+  (`untrusted-screen-content.ts`: a block for free text, quotes for a short name, defused JSON for JSON results), which
+  makes the delimiter inert inside the text. Also fixed: `cdp_read_text`, `cdp_evaluate`, `cdp_list_tabs`,
+  `cdp_switch_tab`, `smart_read`, `smart_click`, `find_element`'s DOM fallback, `window list`, `invoke` get-value,
+  `wait_for`, `open_app` / `open_file` / `open_uri` / `navigate` window titles, verification reports, and batch step
+  text cut in the middle of a block.
+- **The hard key list counts held keys correctly.** `key_up` forgot a held key by family before releasing it
+  (`key_down win`, `key_up rwin`, `key_press l` locked the screen): a key is now forgotten only when `key_up` names that
+  same key and the release succeeded. Typed text was not checked at all (`key_down super`, then type `l`): with a key
+  held, every typed character is checked with it. On Wayland an unknown key in a chord was typed as text with the
+  modifiers held (`super+ll`): it is refused, as on X11. Held keys are tracked per server process.
+- **`open_app` takes an application name only, and only starts an installed app.** The name is checked against an
+  allowlist (letters, digits, spaces and `. _ + & ' ( ) # , ! @ -`): a path, a `scheme:` (`ms-settings:`, `search-ms:`,
+  `file:`), a percent-encoded separator, a wildcard or an option-like string is refused and the agent is pointed to
+  `open_file` or `open_uri`, the tools announced as destructive. On Windows the name used to reach
+  `Start-Process -FilePath`, where a path to an `.exe` ran and a `scheme:` went to its protocol handler. A name outside
+  the alias table is now resolved first, read-only, to a program (`.exe` / `.com`) on PATH / App Paths or to an app the
+  Start menu lists under exactly that name (`Get-StartApps`; a packaged app, or a shortcut to a program — not a URL or
+  document shortcut), and only that is started; nothing found means nothing started. Such a name is no longer typed into
+  the Start menu or Spotlight, whose best match can be a document (`payload.exe`); macOS uses `open -a` only, which starts an app known to
+  LaunchServices (that includes an app bundle sitting in Downloads).
+- **More of the same review:** process and app names are quoted like titles (macOS `localizedName` and a Linux
+  `WM_CLASS` are arbitrary strings); near-miss delimiters (`</untrusted-screen-content x>`, `…/>`, no closing bracket)
+  are made inert too, in one linear pass that nested or overlapping tags cannot get through; `key_up` forgets a held key only for that one key by its own name (a chord such as `win+x` forgets
+  nothing); an unknown key name is an error in every executor (Wayland typed `ll` as text, with Super held), and
+  `key_down` / `key_up` throw on a chord or an unknown name instead of doing nothing.
+- **Windows system programs are started by absolute path, from a private directory.** PowerShell (and `reg`, `tasklist`,
+  `taskkill`, `netstat`, `rundll32`, `explorer`) were spawned by bare name, which Windows resolves in the current directory
+  before PATH (CWE-427). They now run from `%SystemRoot%` by full path, through `execFile` with an argument array (the one
+  shell `exec` of PowerShell is gone), and fail with a clear error if `SystemRoot` is unset or the file is missing.
+  PowerShell children run in `~/.clawdcursor/run` (mode 0700), not the shell's working directory or the shared temp folder,
+  which also keeps PowerShell's `ModuleAnalysisCache` out of a repository. Apps and terminals clawdcursor opens
+  for the user start in the user's home (not in that private directory, and not wherever clawdcursor ran from); `windir` stands in
+  when `SystemRoot` is unset, and the run directory is refused if it is a symlink and tightened to 0700.
+
+### Fixed
+- **A value read gives the field's value, and `set_value` says when it did nothing.** `get_value` on an empty text
+  field answered with its label (macOS: `"Your name" = "Your name"`), so a set the app ignored read as "could not be
+  read back: NOT verified". Now an empty field reads `""`, every bridge says whether the value itself was read
+  (`readable`), and only a field that truly cannot be read (a password box, no value) is "NOT verified". A direct
+  set that had no effect (the field is still empty, or unchanged) is typed once (its window in front, click, the focus
+  confirmed on the field, select-all, keys) and the result names that path; one that is still empty fails with "the field still shows nothing". A clear that reads back empty
+  on a readable field is confirmed. An element with no value is reported as having none, with its name given as its name.
+- **A number box is a field.** Edge's `<input type="number">` is a UIA Spinner: `set_value` found "no editable field"
+  and `get_value` answered its name. Windows now reads and sets it through ValuePattern or RangeValuePattern, macOS
+  treats a stepper (AXIncrementor) as a value target, and the keyboard fallback types into a Spinner / spin button.
+- **The pill names the app by its own name.** On Windows it is the exe's file description ("Clicking in Designcenter
+  NX", not "Clicking in Ugraf"), read once per process; macOS already gave the localized name; elsewhere the process
+  name as before.
+- **The session log says which app a call acted in, by input or by name** (`app`: the app's name only, never a window title).
+  It is left out for browser acts and for by-name acts on a window that is not in front, where it isn't known.
+- **`computer key` takes `repeat`** (1 to 100): the key or sequence is pressed that many times. It was dropped without
+  a word and the key pressed once.
+- **`set_value` and a replacing `smart_type` succeed only when the field holds the value.** Every path (native set,
+  keyboard fallback, element ref) ends in one read-back of the whole field. The same text (whitespace and case aside) is
+  `[confirmed]`; a number is compared as a number, so `30.0`, `30,00`, `30 mm` and `$30.00` hold `30` while `300` and
+  `10030` do not. Text with more after it (an inline suggestion) or in another format (`1,000` for `1000`, a phone or
+  card number in groups) succeeds but says NOT verified and quotes the field, as does a field that cannot be read (an
+  empty read never confirms a clear). Anything else (a field that ignored select-all and
+  kept its old text) is `READBACK_MISMATCH` with what the field shows, not a success or a "read back ✓". A `get_value`
+  miss carries its reason (`NOT_FOUND`, `UNSUPPORTED_ACTION`, `TIMEOUT`) instead of `UNKNOWN`.
+- **Input never lands in an AI assistant's window by accident.** `type`, `key`, click, drag, scroll and by-name acts
+  (`invoke`, `set_value`, `toggle`, `select`) are refused when the window in front is Claude, ChatGPT, Codex, Cursor,
+  VS Code (and Insiders), Windsurf or Zed, or an app this server was started from (stdio), unless the agent focused or
+  opened it on purpose. A launch that surfaced no window excuses only a window of the app it started. A foreground the
+  adapter only guessed at (Linux without xdotool) never blocks.
+- **`find` and `invoke` stay in the window the agent works in.** With several windows of one process (Edge, Explorer,
+  Office), Windows searched every window for `find` (so names from the user's other windows of that app reached the
+  agent) and took the first window for `invoke`. Both now search one window: the foreground window when it belongs to the
+  process, else the process's topmost window. macOS searches the key window (and the main window when a panel is key),
+  Linux the active window and its open popups. A miss says only the front window was searched and how to work in another.
+- **`invoke` expands and collapses** an expandable element (a `<details>` summary, a disclosure button) and says which
+  way it went; a miss reports the click's reason, not "TogglePattern not supported" from the last fallback.
+- **A found-but-unsupported miss is `UNSUPPORTED_ACTION`**, not `NOT_FOUND`.
+- **Window titles match through invisible characters** (the zero-width space in Edge's title) in focus, `expect` and
+  scoping, on every OS.
+- **`system copy_all_text` accepts `scope`**, which the `system` schema lists for `ocr`.
+- **A waiting `pause_for_user` says how it ends.** If the user tells the agent in chat that they are done, the reply now
+  says to ask them to click Resume on the pill.
+- **The dashboard shows a pause for the user again.** The Resume / End banner was
+  fed by the removed `agent_status` tool. It now reads the pending pause
+  (message, choices) from `GET /resume`, which needs the token like
+  `POST /resume`; the public `/health` is unchanged and carries no pause.
+- **macOS: opening a web `<details>` section and choosing from a web dropdown work.** `expand` used to say "Expanded"
+  when it had only opened the page's context menu (AXShowMenu), `collapse` failed, and `select` on a `<select>` found
+  no options and left that menu open. Expand and collapse now report only what they read back
+  (`data.expandState`). A web `<summary>` (no AXPress, read-only AXExpanded) is opened with focus + Return. The
+  accessibility helper never presses that key itself: it asks for it, and the macOS adapter sends it through the same
+  input guard as every other key (stop, clawdcursor's own control, the window the agent works in), to the app in front
+  only; if that is not the element's app the miss says to `window focus` first. A pop-up button opens with AXPress and
+  closes with AXCancel (Escape only if its list is still up, through the same guard); a button with `aria-haspopup="listbox"`, whose list WebKit draws as a plain AXList and whose open state it does not report, is confirmed open by the list that appeared next to it and closed with Escape. A list counts as the control's own
+  only if it hangs under the control or sits next to it, and an expand counts only a list that appeared with the press,
+  so a page's always-visible menu, a context menu or another pop-up's list is never taken for it. `state` of a
+  disclosure triangle reports `expandable` / `expanded`; an open pop-up's options appear in `find` / `read_tree`;
+  `select` re-reads a control that still shows the old value for up to 1.5 s before calling a late-updating pick a
+  failure, and closes whatever an unconfirmed press may have opened; a failed expand or collapse says why. Only a
+  disclosure triangle is pressed to expand it. **Behaviour change:** a native button that only opens a menu through
+  AXShowMenu now misses on `expand` (it used to report "Expanded"); use `invoke` for it.
+
+## [1.5.27] - 2026-11-09
+
+### Fixed
+- **Typing goes only where the agent was working.** Windows `set_value`'s keyboard
+  fallback types only when the target's own window is in front, and an owned
+  dialog in front (Save As) counts as that window (#314, #331). A typed value
+  that cannot be read back is reported as not verified instead of set.
+- **A stop always stops, and says so first.** A stop also refuses hover,
+  clipboard writes, page script and tab switches (#319). A stopped call now
+  answers "stopped by the user" before any other refusal (#329).
+- **Ticks, dropdowns and expanders read and change the same way on Windows,
+  macOS and Linux** (#323). `toggle` reports the state it actually reached, or
+  says the change was not confirmed (it reported the state from before the
+  toggle on Chromium) (#329). `select` by name aims at the dropdown, not its
+  label (#329). Actions by name (`focus`, `toggle`, `set_value`, `select`) prefer the control over a label with the same name, a toggle or select that read its result back is reported as confirmed, and a failure says why (#332). `expand`, `collapse` and `toggle` no longer fall back to
+  clicking whatever had the name.
+- **Linux reads deep web pages** (#315): the tree walk reaches 40 levels, and a
+  cut tree is marked partial. Searches have their own budget (5,000 elements,
+  7 s) and say when and why they were cut, instead of "not found" (#331). Names
+  starting with `-` work.
+- **Failures say why** (#317): a Windows bridge command that fails returns its
+  reason, and the click fallback runs.
+- **The compact `accessibility` tool no longer lists actions it cannot run** (#320).
+- **"confirm" alone no longer gates a click** (#321), and the refusal names the
+  real way forward (ask the user with `pause_for_user`).
+- **A bad API key stops only the built-in agent, not the server** (#322).
+- The daemon no longer prints "CDP connected" after a failed connection (#329).
+
+### Added
+- **Logs that explain what happened** (`~/.clawdcursor/logs/`), to fix bugs from
+  (#324, #330, #331):
+  - `tool.done` for every call: tool, action, time, outcome and result code.
+  - `step.slow` for any internal step of 1 s or more (a PowerShell start, a
+    bridge command), and per-call step totals for slow calls.
+  - `mcp.start`, and `mcp.exit` with the reason and the call it cut off. A
+    server that was killed or crashed is reported at the next start.
+  - `control.stop` / `control.resume` with who did it, `pause.end` with the
+    outcome, and `crash`.
+  - No typed text, clipboard, error text, element names or window titles: a
+    failure is logged by its result code. Crash stacks keep only the frames,
+    with your home folder removed.
+
 ### Deprecated
 - **The built-in agent loop is deprecated and will be removed in 1.6.** The
   `task` tool, `submit_task`, `system delegate`, the `clawdcursor agent` model

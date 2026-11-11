@@ -12,7 +12,7 @@ argument-hint: "[command] [url|property]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.5.0"
+  version: "2.6.0"
   category: seo
 ---
 
@@ -121,6 +121,8 @@ Output includes per-metric trend direction, percentage change, and weekly p75 va
 Search Analytics: clicks, impressions, CTR, position for last 28 days.
 
 **Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_query.py --property <property> --json`
+**Site URL or host instead of a property** (every site audit): `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_query.py --domain <audited-domain> --json`
+**Which flag:** a GSC property (`sc-domain:example.com`, or a URL-prefix property the user named as such) goes to `--property`; a site URL or host goes to `--domain`, which looks up that site's property and refuses another site's. Never pass a property to `--domain` or leave either flag empty. With neither flag the script names the default property on stderr, or exits if a `sites` mapping is configured (`references/auth-setup.md`).
 **Reference:** `references/search-console-api.md`
 **Default:** 28 days, dimensions=query,page, type=web, limit=1000.
 
@@ -150,7 +152,7 @@ dimension rows, not the size of every pagination request.
 
 URL Inspection: real indexation status from Google.
 
-**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_inspect.py <url> --json`
+**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_inspect.py <url> --domain <audited-domain> --json`
 
 Returns: verdict (PASS/FAIL), coverage state, robots.txt status, indexing state,
 page fetch state, canonical selection, rich results. (`mobileUsabilityResult` is deprecated
@@ -160,7 +162,7 @@ in the API; do not report it as a mobile-usability check.)
 
 Batch inspection from a file (one URL per line). Rate limited to 2,000/day per site.
 
-**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_inspect.py --batch <file> --json`
+**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_inspect.py --batch <file> --domain <audited-domain> --json`
 
 ### `/seo google sitemaps <property>`
 
@@ -169,6 +171,7 @@ submitted counts only; URL Inspection API is the indexation truth for whether
 specific URLs are indexed.
 
 **Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_query.py sitemaps --property <property> --json`
+**Site URL or host instead of a property:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run gsc_query.py sitemaps --domain <audited-domain> --json`
 
 ---
 
@@ -198,7 +201,9 @@ Batch submit URLs from a file. Tracks quota usage.
 
 Organic traffic report: daily sessions, users, pageviews, bounce rate, engagement.
 
-**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run ga4_report.py --property <id> --json`
+**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run ga4_report.py --property <property-id> --json`
+**Site URL or host, or no property ID given** (every site audit): `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run ga4_report.py --domain <audited-domain> --json`
+**Which flag:** a numeric GA4 property ID goes to `--property`; a site URL or host goes to `--domain`. Same rules as `gsc` above.
 **Reference:** `references/ga4-data-api.md`
 **Default:** 28 days, filtered to Organic Search channel group.
 
@@ -208,7 +213,8 @@ Organic traffic report: daily sessions, users, pageviews, bounce rate, engagemen
 
 Top organic landing pages ranked by sessions.
 
-**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run ga4_report.py --property <id> --report top-pages --json`
+**Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run ga4_report.py --property <property-id> --report top-pages --json`
+**Site URL or host, or no property ID given:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run ga4_report.py --domain <audited-domain> --report top-pages --json`
 
 ---
 
@@ -243,6 +249,7 @@ Full NLP analysis: entities, sentiment, content classification.
 
 **Script:** `"${CLAUDE_PLUGIN_ROOT}/scripts/claude-seo" run nlp_analyze.py --url <url> --json` or `--text "..."`
 **Reference:** `references/nlp-api.md`
+**Language:** auto-detected by default; add `--language <code>` (BCP-47, e.g. `pt-BR`) only to override the detection. The JSON `language` field reports the code used.
 **Free tier:** 5,000 units/month. Requires billing enabled on GCP project.
 
 ### `/seo google entities <url-or-text>`

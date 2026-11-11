@@ -30,7 +30,7 @@
       "files": [],
       "assertions": [
         "Does not kill the existing listener",
-        "Verifies the served build identity",
+        "Says to confirm the response on the chosen port comes from this checkout's build before trusting its metadata",
         "Does not flag block count alone"
       ]
     },
@@ -87,7 +87,7 @@
       "assertions": [
         "Treats the weekly-review guide as a refresh or update candidate because of its position loss, rather than recommending a separate 'weekly review template' post that would compete with it",
         "Reports absolute clicks and impressions beside any percentage change",
-        "Requires a gap check (who the current results cite and what they miss) before recommending any of the three new posts",
+        "Requires checking what the current top results miss before recommending any of the three new posts",
         "Does not state that the TickTick export guide's CTR fall is proven significant from these counts alone"
       ]
     },
@@ -98,8 +98,9 @@
       "files": [],
       "assertions": [
         "Labels the prompt panel by collection method (OpenAI API), never as ChatGPT",
-        "Runs each tracked prompt at least five times and reports rates with the run count, per engine",
-        "Records cited-as-source separately from named-in-the-shortlist",
+        "Specifies at least five runs per tracked prompt",
+        "Says each rate is reported with its run count",
+        "Treats being cited as a source as a separate measure from being named in the answer's shortlist",
         "Reports Google AI Overviews and Bing Copilot as No data with a reason instead of substituting overall search data",
         "Labels the partial current month and does not call its lower count a decline",
         "Does not read other projects' .env files for API keys"

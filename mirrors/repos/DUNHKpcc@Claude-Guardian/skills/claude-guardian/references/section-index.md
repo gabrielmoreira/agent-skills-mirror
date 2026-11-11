@@ -232,10 +232,11 @@ M00: adaptive intake and stable question registry（18 节）
 
 ## killswitch-switch.md
 
-Guardian Switch：统一防直连开关（5 节）
+Guardian Switch：统一防直连开关（6 节）
 
 - [支持范围与操作含义](killswitch-switch.md#支持范围与操作含义)
 - [首次配置：交给目标机 Agent](killswitch-switch.md#首次配置交给目标机-agent)
+- [Windows 整机出口模式：代价与首次交付](killswitch-switch.md#windows-整机出口模式代价与首次交付)
 - [命令行与桌面入口](killswitch-switch.md#命令行与桌面入口)
 - [恢复与开关验收](killswitch-switch.md#恢复与开关验收)
 - [界面与随包文件](killswitch-switch.md#界面与随包文件)
@@ -284,7 +285,7 @@ Linux：Claude 本机数据清理（Agent 提示词，无内置宿主）（8 节
 
 ## local-firewall-prompts.md
 
-本机路线：Clash 与防火墙（Agent 提示词）（17 节）
+本机路线：Clash 与防火墙（Agent 提示词）（19 节）
 
 - [通用工作方式（两个系统相同）](local-firewall-prompts.md#通用工作方式两个系统相同)
 - [替别人交付：先说范围，按验收单交](local-firewall-prompts.md#替别人交付先说范围按验收单交)
@@ -299,6 +300,8 @@ Linux：Claude 本机数据清理（Agent 提示词，无内置宿主）（8 节
   - [Windows 上的 Clash](local-firewall-prompts.md#windows-上的-clash)
   - [Windows 的防火墙：系统自带](local-firewall-prompts.md#windows-的防火墙系统自带)
   - [切换后不通：分层诊断](local-firewall-prompts.md#切换后不通分层诊断)
+  - [Windows 更新覆盖与规则替换](local-firewall-prompts.md#windows-更新覆盖与规则替换)
+  - [Windows Error 5 分诊](local-firewall-prompts.md#windows-error-5-分诊)
   - [查 WFP 丢包记录](local-firewall-prompts.md#查-wfp-丢包记录)
   - [宿主拒绝执行时](local-firewall-prompts.md#宿主拒绝执行时)
   - [最小反馈清单](local-firewall-prompts.md#最小反馈清单)

@@ -44,6 +44,7 @@
 | common-family-ux | family app, parents and children, kids app, child ux, parent gate, preschool, parenting app, designed for families, coppa |
 | **common-git-collaboration** | commit, branch, merge, pull-request, git |
 | **common-llm-security** | LLM security, prompt injection, agent security, RAG security, AI security, openai, anthropic, langchain, LLM review |
+| **common-mcp-security-assessment** | mcp security, mcp assessment, owasp mcp, mcp top 10, mcp security report, tool poisoning, shadow mcp, mcp audit, mcp posture, mcp config review |
 | common-mobile-visual-testing | visual test, mobile test, verify ui, dark mode test, accessibility audit, behavioral test, visual regression, localization test |
 | **common-operator-profile** | operator profile, audience adaptation, non-technical stakeholder, business owner, plain language summary |
 | **common-owasp** | security review, OWASP, broken access control, IDOR, BOLA, injection, broken auth, API review, authorization, access control, mobile security |
@@ -56,6 +57,6 @@
 | common-task-complexity-routing | task complexity, snc score, complexity tier, difficulty tier, autonomy level, review depth, model tier, model routing, llm model selection, model selection, model capability, thinking level, reasoning effort, effort selection, premium model, how big is this change |
 | common-telemetry | token cost, token usage, session telemetry, cost report |
 | **common-ui-design** | build a page, create a component, design a dashboard, landing page, UI for, build a layout, make it look good, improve the design, build UI, create interface, design screen |
-| common-web-visual-testing | web test, browser test, responsive audit, verify web ui, cross-browser check, web accessibility |
+| common-web-visual-testing | web test, browser test, responsive audit, verify web ui, cross-browser check, web accessibility, visual testing, zoom reflow |
 
 > Load matched skills: `<SKILLS>/common/<skill>/SKILL.md`. Load ALL that match — the tier model already filters irrelevant ones.

@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 507 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 506 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 4 followed patterns, 507 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 507 |
+| Files         | 506 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -558,17 +558,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 494 | ✓ | [`packages/heterogeneous-agents/src/codex/protocol/README.md`](packages/heterogeneous-agents/src/codex/protocol/README.md) |
 | 495 | ✓ | [`packages/i18n-extractor/README.md`](packages/i18n-extractor/README.md) |
 | 496 | ✓ | [`packages/memory-user-memory/benchmarks/locomo/README.md`](packages/memory-user-memory/benchmarks/locomo/README.md) |
-| 497 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 498 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
-| 499 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
-| 500 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
-| 501 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
-| 502 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
-| 503 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
-| 504 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 505 | → | [`DESIGN.md`](DESIGN.md) |
-| 506 | → | [`README.md`](README.md) |
-| 507 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 497 | ✓ | [`packages/prompts/README.md`](packages/prompts/README.md) |
+| 498 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
+| 499 | ✓ | [`packages/secret-channel/README.md`](packages/secret-channel/README.md) |
+| 500 | ✓ | [`packages/web-crawler/README.md`](packages/web-crawler/README.md) |
+| 501 | ✓ | [`packages/web-crawler/README.zh-CN.md`](packages/web-crawler/README.zh-CN.md) |
+| 502 | ✓ | [`src/features/CommandMenu/README.md`](src/features/CommandMenu/README.md) |
+| 503 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 504 | → | [`DESIGN.md`](DESIGN.md) |
+| 505 | → | [`README.md`](README.md) |
+| 506 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

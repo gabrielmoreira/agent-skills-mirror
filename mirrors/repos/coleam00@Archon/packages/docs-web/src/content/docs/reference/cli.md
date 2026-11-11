@@ -218,6 +218,32 @@ The command exits 0 when every fixture passes, including when none are declared.
 
 Fixtures with `exec-code: true` receive the same environment as [executable dry runs](#deterministic-dry-run): inherited process values, file-configured `env`, then registered-project environment values, with later sources winning. Environment lookup happens only for executable fixtures. If lookup fails, that fixture fails with the lookup error; independent stub fixtures still run and workflow-load errors remain in the report.
 
+### `workflow types`
+
+Generate TypeScript from the [`output_format`](/reference/workflow-language/#typescript-for-output_format) of a workflow's nodes, so scripts read node outputs through generated types instead of restating each schema by hand. The file holds, for every node that declares `output_format`, its output type (`NodeOutput<'<workflow>', '<node>'>`) and, for every `enum` in those schemas, its values as an `as const` tuple (`OUTPUT_ENUMS`). It contains no imports.
+
+```bash
+archon workflow types my-team                          # a pack of this project, by name
+archon workflow types .archon/workflows/my-team        # the same pack, by directory path
+archon workflow types my-team --check                  # write nothing; exit 1 when stale
+archon workflow types build-change --out src/build-change.gen.ts   # one workflow
+```
+
+| Target | Written to |
+| --- | --- |
+| A pack: its name under `.archon/workflows/`, or its directory path | `<pack>/.shared/outputs.generated.ts`, unless `--out` names another file |
+| One workflow: its name, its YAML file, or its folder | The `--out` file, which is required |
+
+A relative path target and `--out` resolve from the invoking directory. A workflow file can live anywhere, inside or outside the project. A name resolves in the project's `.archon/workflows/` only; bundled, global and installed workflows are not targets. The generated file's header names the command that regenerates it, with paths relative to the project root.
+
+| Flag | Effect |
+| --- | --- |
+| `--out <file>` | The file to write |
+| `--check` | Compare instead of writing. Exits 1 naming the file when it is missing or its content differs. CRLF line endings in the file are read as LF, so a checkout that converts line endings stays current |
+| `--json` | Print `{ ok, path, status, workflows, nodes }`; `status` is `written`, `unchanged`, `current` or `stale` |
+
+Output is deterministic: workflows sorted by name, nodes and fields in YAML order. The command exits 1 without writing when a workflow of the pack does not load, when no node declares `output_format`, or when a schema uses a keyword the generator cannot state as a type; that error names the workflow, the node and the keyword. See [the supported keywords](/reference/workflow-language/#typescript-for-output_format).
+
 ### `workflow run <name> [message]`
 
 Run a workflow with an optional user message, which the workflow reads as `$ARGUMENTS`.
@@ -2147,6 +2173,39 @@ Start workflows from deployment bindings and inspect durable resource admission;
 When a binding fails launch preparation, `trigger fire` exits nonzero and prints the refusal (with `--json`, in `error`). The stored receipt keeps only the failed stage, for example `launch_preparation_failed`. `trigger whoami` prints the Archon user ID of your CLI identity, for a binding's `runAsUserId`.
 
 Run from inside a workflow node, `trigger fire` records the calling run and node as the receipt's `sourceActor` (`{source: "archon-run", id: <run id>, display: <node path>}`); outside a run it records none. A set `WORKFLOW_ID` makes `fire` act as a call from that node: it then requires a matching `ARCHON_NODE_EXECUTION`, and refuses a run the opened store does not know before a receipt is written, so a shell left with a stale `WORKFLOW_ID` fails instead of firing. `trigger inspect <request-id>` and `workflow get <run-id> --json` always carry the requesting run, as `requestedBy` and `requested_by` (`{runId, nodePath}`, or `null` when no run asked for the start), and the plain `workflow get` view prints a `Requested by` line when there is one. The started run still acts as its binding's `runAsUserId`; the requesting run is provenance only.
+
+### `pack bindings`
+
+Write the [trigger bindings a pack declares](/reference/workflow-language/#pack-bindings) as files for one repository. The command registers and schedules nothing; it prints what registers each file.
+
+```bash
+archon pack bindings <pack> \
+  --repo <host>/<owner>/<name> \
+  --host <host-id> \
+  --run-as <user-id> \
+  --out <dir> \
+  [--cwd <checkout>] [--only <id,...>] [--force]
+```
+
+- `<pack>` is the pack's folder name (`sdlc`), or `<owner>.<name>` for an installed pack. It is discovered from `--cwd` as a run there would find it, so a project's copy of a pack wins over the bundled one.
+- `--repo` is the repository the bindings act on, such as `github.com/acme/widgets`.
+- `--host` is the execution host the starts are assigned to: the server's `ARCHON_TRIGGER_HOST`, or the host you pass to `trigger drain`.
+- `--run-as` is the Archon user the runs act as; `archon trigger whoami` prints yours. The command does not check that the user exists; `trigger schedule install` and a webhook delivery do.
+- `--cwd` is the checkout the runs launch in (default: the current directory). It is written as an absolute path.
+- `--out` is where the files go. Each is named `<pack>-<owner>-<name>-<binding id>-<digest>.json`, where the digest is of the pack, repository host and path, and binding ID, so two packs or repositories never share a name. That name without `.json` is its binding ID and a timer's `sourceInstanceId`.
+- `--only` writes the listed bindings. A binding whose input names another binding's file needs that binding listed too, or its file already in `--out`.
+- `--force` replaces existing files. Without it, one existing file refuses the whole set and nothing is written.
+
+A timer binding is written as a complete `trigger fire --config` file. An event binding is written as one object for the `bindings` array of the GitHub source plugin's `config`, in the file `ARCHON_WEBHOOK_SOURCES` names, because the plugin reads bindings only from there. The plugin accepts `github.com` repositories, so the command refuses to write an event binding for another host. Every file is checked against the schema of the loader that will read it before any is written. `--json` prints `{"pack", "written": [{"id", "kind", "path"}]}`.
+
+```bash
+archon pack bindings sdlc --repo github.com/acme/widgets --host build-host-1 \
+  --run-as 2a568f73-e217-40ca-b17d-a784d19fd43a --cwd /srv/archon/widgets --out /srv/archon/bindings
+# the build-queue path the command printed; another repository's file names a different one
+BINDING=/srv/archon/bindings/sdlc-acme-widgets-build-queue-0297fdfa94d5.json
+archon trigger fire --config "$BINDING"
+archon trigger schedule install --config "$BINDING"
+```
 
 ### `forge`
 

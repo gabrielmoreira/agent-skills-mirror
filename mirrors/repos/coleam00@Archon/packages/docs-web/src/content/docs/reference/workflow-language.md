@@ -619,6 +619,26 @@ nodes:
 
 `output_format` is not AI-only, and it is not only a branching aid: it is how *any* producing node declares the shape of the value it hands downstream, including a workflow's own result. [Result contracts](#result-contracts) is the one description of that ownership: who declares a schema, what an `include:` alias and a `workflow:` sub-run each guarantee, and how a small result points at a large file.
 
+#### TypeScript for `output_format`
+
+A script that reads a node's output should not restate the schema as a hand-written interface. [`archon workflow types`](/reference/cli/#workflow-types) generates the types from the YAML, which stays the one owner of the shape:
+
+```bash
+archon workflow types my-pack            # writes .archon/workflows/my-pack/.shared/outputs.generated.ts
+archon workflow types my-pack --check    # exits 1 while that file is stale
+```
+
+```ts
+import { OUTPUT_ENUMS, type NodeOutput } from '../../.shared/outputs.generated.ts';
+
+type Classified = NodeOutput<'triage', 'classify'>;        // { readonly type: 'BUG' | 'FEATURE'; readonly severity: ... }
+const SEVERITIES = OUTPUT_ENUMS.triage.classify.severity;  // readonly ['low', 'medium', 'high']
+```
+
+The file holds types and `as const` tuples only, with no imports. Each node is emitted once, under the workflow file that declares it, including a `loop_group:` body node; a workflow that includes another reads the included nodes' types under the included workflow's name. A wait node's output is the engine's own shape and is not emitted.
+
+The generator states a schema exactly or refuses it. It reads `type` (a name or a list, `'null'` included), `properties`, `required`, `additionalProperties`, `items`, `enum`, `const`, `anyOf` and `oneOf`. Keywords that narrow a value without changing its type, such as `pattern`, `minimum` or `minItems`, are accepted and left to runtime validation. Any other keyword (`$ref`, `allOf`, `not`, tuple `items`, and so on) fails the command with the workflow, the node and the keyword; so does a shape keyword without a `type` beside it. Commit the generated file and run `--check` in CI.
+
 ### `allowed_tools` and `denied_tools` for Tool Restrictions
 
 Restrict which built-in tools a node can use without relying on prompt instructions. Restrictions are enforced at the Claude SDK level.
@@ -1213,7 +1233,9 @@ body can substitute for it: every one of them fails the same way against a faile
 whether the reference is fielded or whole-text.
 
 Two guarantees the loader enforces: every bound producer must be reachable through
-`depends_on` (a binding can never race its producer), and two binding names may not fold to
+`depends_on` (a binding can never race its producer; a
+[typed-outputs binding](#binding-every-output-of-a-type) holds every
+producer of its type to the same rule), and two binding names may not fold to
 the same `INPUTS_*` env key. At runtime, node-local bindings are the **nearest** input
 layer: they win over a composed block's inputs, which win over the run's `$INPUTS`.
 
@@ -1264,6 +1286,99 @@ receives its own execution identity, including this attempt's observation, as JS
 implement workflow compares these two observations to decide whether an invocation
 changed anything since it started.
 
+### Binding every output of a type
+
+A `$node.output` binding names one node by id. It cannot say "every review verdict this run
+produced": those outputs come from a node inside a `loop_group` body, once per iteration,
+and often from inside an included block whose node ids the includer
+[cannot read](#limits-of-include). `output_type` is the name the engine already keeps for
+that, so a `script:` node can bind by type:
+
+```yaml
+  - id: rounds
+    loop_group:
+      until_bash: ...
+      max_iterations: 4
+      nodes:
+        - id: review
+          command: review
+          output_type: review-report
+          output_format:
+            type: object
+            properties: { ready: { type: boolean } }
+            required: [ready]
+
+  - id: record
+    script: record-rounds          # reads process.env.INPUTS_REVIEWS
+    runtime: bun
+    depends_on: [rounds]
+    with:
+      reviews: { outputs: review-report }
+```
+
+When `record` starts, `INPUTS_REVIEWS` holds one JSON array: every output of that type the
+run has recorded, oldest first.
+
+```json
+[
+  { "node": "review", "loop": [{ "group": "rounds", "iteration": 1 }],
+    "at": "2026-11-06T10:00:00.000Z", "value": { "ready": false } },
+  { "node": "review", "loop": [{ "group": "rounds", "iteration": 2 }],
+    "at": "2026-11-06T10:06:00.000Z", "value": { "ready": true } }
+]
+```
+
+`node` is the producer's id in the flattened workflow (`review__publish` for the `publish`
+node of an include named `review`), `loop` its enclosing `loop_group` iterations, outermost
+first and empty at top level, `at` when the engine recorded the output, and `value` the
+output itself. The script selects, filters and reduces; the YAML only names the type.
+
+What the binding guarantees, and where it stops:
+
+- **It reads recorded outputs, the ones `$TYPED_ARTIFACTS_FILE` lists.** One record per
+  node per loop iteration; a node that failed or was skipped recorded none. When every
+  producer was skipped, the value is an empty array, not an error.
+- **The type must exist in the workflow.** A bound type that no node declares as its
+  `output_type` is a load error naming the binding, so a misspelt type never reads as "this
+  run produced none".
+- **Every producer is ordered before the reader, checked at load.** Each node in the
+  workflow that declares the type must be an upstream dependency of the reader, directly,
+  transitively, or through the `loop_group` that holds it. A producer the reader could race
+  is a load error naming the `depends_on` edge to add. Two producers are outside that check:
+  the instances of a [composed fan-out](#fanning-out-a-composed-block-inside-the-run-include--fan_out),
+  whose nodes exist only at run time, so order the reader after the fan-out node yourself
+  (a type that only those instances declare is refused as undeclared); and a `workflow:`
+  child, which is another run whose outputs this binding never reads.
+- **A value is a JSON document.** Declare `output_format` on every producer of a type you
+  bind. An output that is not JSON fails the binding, naming the producer.
+- **An unreadable record fails the node.** A record the engine cannot read has no
+  trustworthy type, so it might be one of the outputs asked for. The node fails before its
+  script starts, with the record named; it never receives a shorter list that looks complete.
+  A reader that must run anyway says so on the binding:
+  `reviews: { outputs: review-report, if_unreadable: null }` delivers the declared value
+  (here `null`, never a partial list) and the engine logs the record it could not read. Like
+  `if_skipped`, it is data: the script decides what a null means, and should say so in its
+  own output. The value is `null` or an array, the shape a read delivers. It covers unreadable records only; an output that is not JSON still fails.
+- **Resume reads the same records.** A resumed run keeps its artifact directory, so the
+  reader sees what was recorded before the pause or failure. A node replayed as already
+  complete has its output recorded again from its stored output, with a new `at`: sort by
+  `loop` when you need iteration order across a resume.
+- **`--dry-run` and `archon workflow test` deliver it.** The simulation records each stubbed
+  or executed producer's output as it goes, so a fixture's reader receives the array its
+  stubs imply.
+- **Script nodes only.** A `command:` node that binds `{ outputs }` is a load error; an
+  agent reads the same records through [`$TYPED_ARTIFACTS_FILE`](#reading-typed-artifacts-by-type),
+  which stays for that and for a script that wants paths rather than values.
+
+The array arrives in one environment variable, so keep typed outputs small: a verdict that
+points at a report file ([a small result that points at a large file](#a-small-result-that-points-at-a-large-file)),
+not the report.
+
+Node outcomes (which nodes failed, were skipped, completed) stay in
+[`$NODE_OUTCOMES_FILE`](#reading-what-other-nodes-did-node_outcomes_file). They are one
+listing of the whole run with nothing for a node to declare, so a binding form would add
+YAML that selects nothing.
+
 ## The Artifact Chain
 
 Nodes pass documents to each other as files. Each run gets its own `$ARTIFACTS_DIR` outside the repository; a node writes a file there and a later node reads it. A command that writes an artifact should say where it writes and in what format, and a command that reads one should say where to find it. Values small enough to branch on travel as node output instead; see [`$node_id.output` Substitution](#node_idoutput-substitution) and [Binding values](#binding-values-into-command-and-script-nodes).
@@ -1311,6 +1426,9 @@ for (const gate of listing.artifactsByType['green-gate'] ?? []) {
   console.log(gate.nodeId, body);
 }
 ```
+
+A script that wants the values of one type, not their paths, binds them instead:
+[`with: { reviews: { outputs: review-report } }`](#binding-every-output-of-a-type).
 
 In an agent prompt, point at the listing rather than the layout: "Read `$TYPED_ARTIFACTS_FILE`, select `artifactsByType["plan"]`, and open each entry's `path` under `$ARTIFACTS_DIR`."
 
@@ -2091,7 +2209,8 @@ same input again. Every workflow of the pack reads them as `$INPUTS.<name>` and
 `INPUTS_<UPPER_SNAKE>`, exactly like its own inputs. A flat workflow has no pack and no settings.
 
 The pack declares them in `<pack>/.pack/pack.yaml`, a top-level `inputs:` block in the same
-shape as a workflow's, plus a `type`:
+shape as a workflow's, plus a `type`. The file holds only `inputs:` and
+[`bindings:`](#pack-bindings):
 
 ```yaml
 # .archon/workflows/review-kit/.pack/pack.yaml
@@ -2179,6 +2298,55 @@ result on its row; a resumed run keeps those values even if the project file cha
   checked against the setting's type.
 - A run refused at start by its project settings file is marked failed, including a run row
   created in advance by a background or detached launch.
+
+### Pack bindings
+
+A pack can also declare the [trigger bindings](/guides/workflow-triggers/) it recommends, in a
+top-level `bindings:` block of the same `<pack>/.pack/pack.yaml`. A declaration starts nothing
+and installs nothing. An operator turns it into binding files for one repository with
+[`archon pack bindings`](/reference/cli/#pack-bindings) and registers each file. The pack
+states what it knows; the command fills in the repository, the execution host, the run-as user
+and the checkout.
+
+```yaml
+# .archon/workflows/review-kit/.pack/pack.yaml
+bindings:
+  sweep:                              # the binding id: lowercase letters, digits, hyphens
+    workflow: review-sweep            # a workflow of this pack
+    resource: sweep                   # last segment of the resource name
+    capacity: 1                       # optional, default 1
+    overlap: skip                     # skip | queue
+    isolation: { kind: worktree }     # optional, default { kind: default }
+    schedule: { interval_seconds: 1800 }
+    inputs:
+      repo_host: { repo: host }       # the host of --repo
+      repo_path: { repo: path }       # the owner/name of --repo
+      sweep_binding: { binding: sweep }   # the path of the file written for that binding
+      mode: fast                      # literal text
+  opened:
+    workflow: review-pull-request
+    resource: review
+    overlap: queue
+    event:                            # the source plugin's selector, without `repository`
+      kind: pr.lifecycle
+      actions: [opened]
+    inputs:
+      number: { event: subject.number }   # an event field; event bindings only
+```
+
+Each binding sets exactly one of `schedule:` (a timer binding, written as a file
+`archon trigger fire --config` reads) or `event:` (an entry for the GitHub source plugin's
+`bindings` array). `capacity`, `overlap` and `isolation` mean what they mean in a
+[binding](/guides/workflow-triggers/#choose-a-resource-capacity-and-overlap-policy). The
+resource is written as `<pack>:<host>/<owner>/<name>:<resource>`, so bindings that declare the
+same `resource` share its slots. With `resource_scope: host` it is
+`<pack>:<host id>:<resource>`, for work that spans every repository on the host.
+
+The declaration is validated when the pack loads, and an invalid one fails every workflow of
+the pack, naming the file and the binding. Beyond each binding's shape, a `{ binding: <id> }`
+input must name a declared timer binding, an `{ event: <field> }` input belongs to an event
+binding, and bindings sharing a resource must declare the same capacity. An `event:` selector
+and its fields are checked against the source plugin when a binding is generated, not at load.
 
 ## Launching a Separate Governed Run with `workflow:`
 

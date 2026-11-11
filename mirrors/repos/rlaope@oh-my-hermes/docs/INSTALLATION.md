@@ -270,7 +270,8 @@ install the same `omh` command from the published release.
 ### Universal installer (macOS/Linux)
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/rlaope/oh-my-hermes/main/install.sh | sh
+curl -fsSL https://omher.app/install | sh
+# same as: curl -fsSL https://raw.githubusercontent.com/rlaope/oh-my-hermes/main/install.sh | sh
 ```
 
 OMH needs Python 3.11+, and the installer finds one itself: it probes `python3`
@@ -320,7 +321,8 @@ leaves its exit code in `$LASTEXITCODE`.
 ### Windows (PowerShell 5.1+)
 
 ```powershell
-irm https://raw.githubusercontent.com/rlaope/oh-my-hermes/main/install.ps1 | iex
+irm https://omher.app/install.ps1 | iex
+# same as: irm https://raw.githubusercontent.com/rlaope/oh-my-hermes/main/install.ps1 | iex
 ```
 
 Windows npm/Bun launcher support is gated by the Windows CI suite and is still
@@ -590,10 +592,10 @@ run and approval decision stays Hermes'; the screen is OMH's.
   to exit` for the 2 s a second one exits in, and writes nothing to the
   transcript; during a turn that first press also interrupts it, and the
   second leaves even while `interrupting…` still shows. The interrupt is offered in one place, the working row's `esc
-  to interrupt`, and only while Esc does it: in every mode, while the
-  composer is empty and nothing else takes Esc (a question, a picker, the
-  history search, the agent list, a picked steer or rewind, or the `@` menu
-  does), and not again while `interrupting…` shows, so Esc means one thing
+  to interrupt`, and only while Esc does it: in every mode, with or without a
+  draft, while nothing else takes Esc (a question, a picker, the history
+  search, the agent list, a picked steer or rewind, the `/` or `@` menu, or in
+  vim mode a draft, does), and not again while `interrupting…` shows, so Esc means one thing
   on the screen. When the OMH
   HUD sees a call repeating, or tool calls in flight during a turn, the right
   side says that first (`repeat x4`, `1 tool · 9s`). On a narrower terminal
@@ -1149,11 +1151,11 @@ run and approval decision stays Hermes'; the screen is OMH's.
   reports arrives; the number never goes back during a turn, and the done
   line below carries Hermes' count. On a terminal 16 rows tall or more a tip sits
   under it, one a turn, each naming a key (`⎿  Tip: ctrl+o shows the whole
-  transcript`). Once you interrupt it (Esc or Ctrl+C on an empty composer)
-  it reads `✻ interrupting… (12s)` until Hermes has stopped the turn. What you queued behind that turn is not sent then:
+  transcript`). Once you interrupt it (Esc, with a draft typed too, which
+  stays; or Ctrl+C on an empty composer) it reads `✻ interrupting… (12s)` until Hermes has stopped the turn. What you queued behind that turn is not sent then:
   it comes back into the composer, as Claude Code does it, joined in order;
-  a queued `!` line, which is never joined to a prompt, and what follows it
-  stay queued (`held · ↑ edit`) until you send your next
+  a queued `!` line or slash command, which is never joined to a prompt, and
+  what follows it stay queued (`held · ↑ edit`) until you send your next
   prompt or take them back with Up, and so does the whole queue if you typed
   something while the turn was stopping. Each turn ends with a dim line,
   `✻ 34s · 3 tools · ↓1.2k`, under the reply's words (a line too narrow for
@@ -1351,10 +1353,10 @@ Esc closes it):
 
 | Key | Does |
 | --- | --- |
-| Enter | Sends the composer |
+| Enter | Sends the composer; while a turn runs, queues it for the turn's end, a slash command too (`/stop`, `/steer`, `/queue`, `/btw`, `/bg`, `/yolo`, `/effort`, `/reasoning <level>` and the commands about this terminal run at once), whatever Hermes' `busy_input_mode` says |
 | `\` then Enter, Alt+Enter, Shift+Enter, Ctrl+J | Adds a line; with a list or menu focused, Ctrl+J moves down instead. Alt+Enter and Shift+Enter still add a line in an open menu; backslash then Enter may accept a completion |
 | Ctrl+Enter | While a turn runs, sends the composer's text into it now as a steer (`/steer <text>` too); idle, sends as Enter does |
-| Ctrl+Enter, Ctrl+J | While a turn runs, on an empty composer, send the oldest queued prompt into it now as a steer; the row under the queue names the key (Ctrl+J where the terminal has not shown it tells Ctrl+Enter from Enter). A queued `!` line, skill prompt or plan prompt waits its turn |
+| Ctrl+Enter, Ctrl+J | While a turn runs, on an empty composer, send the oldest queued prompt into it now as a steer; the row under the queue names the key (Ctrl+J where the terminal has not shown it tells Ctrl+Enter from Enter). A queued `!` line, slash command, skill prompt or plan prompt waits its turn |
 | Tab | Completes a slash command, or the `@` reference being typed; on an open menu, Enter takes the highlighted row too, and sends a command already typed in full |
 | Shift+Tab | Cycles the input mode: normal, accept all (Hermes asks no approvals in this session), plan (prompts go as /plan); while Hermes itself has approvals off, turns plan on and off |
 | Ctrl+T | Steps the reasoning effort: low, medium, high, xhigh, max; the info line shows it as effort medium |
@@ -1374,9 +1376,9 @@ Esc closes it):
 | Ctrl+W, Alt+Backspace, Ctrl+Backspace | Deletes the word before the caret (Ctrl+Backspace where the terminal reports it apart from Backspace) |
 | Ctrl+U / Ctrl+K | Delete to the start or the end of the line; with a list or menu focused, Ctrl+K moves up instead |
 | Ctrl+_ / Ctrl+Y | Undo or redo an edit in the composer (Ctrl+_ is what Ctrl+- and Ctrl+/ send on most terminals); a run of typed characters is one edit |
-| Esc | Closes the `/` or `@` menu; on an empty composer, interrupts a running turn (the activity row shows how long it has run, then `interrupting…`, and what you queued comes back to the composer unsent); cancels a rewind you picked; cancels an agent steer you picked and keeps what you typed; after an approval's tell row, sends nothing more and brings your draft back |
-| Esc Esc | With text, clears it and keeps it in this session's history; on an empty composer between turns, lists your prompts to rewind to (`/rewind` does too) |
-| Esc (vim mode) | With `display.vim_mode` on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, `h l 0 ^ $ w b e j k gg G` move, `f F t T` and a character find on the line and `; ,` repeat the find, `i a I A o O` insert, `x X dd D C cc S s r`, `d c y` with a motion, `iw aw`, a quote object (`i` or `a` with double quote, single quote or backtick; inner count 1 selects inside, count 2 or more includes the quotes, around includes quotes and adjacent blanks without extra pairs; quote objects never cross a logical line; empty inner `y` keeps the register and moves inside, `d` keeps register and caret, and `c` enters INSERT inside), or a bracket object (`i` or `a` with `(`, `)`, `[`, `]`, `{`, `}`; closing aliases identical; inner and around count selects enclosing ancestor; empty inner `y` keeps register and moves to interior, `d` keeps register and caret, and `c` enters INSERT at interior), `p P`, `u` and Ctrl+R edit, a motion or edit count scales or repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt. In NORMAL, Space is the leader: Space s opens sessions, Space b opens bots, Space p folds the plan, Space r or Space / searches history, Space m cycles the input mode, and Space t steps reasoning effort. Space Enter submits or steers typed text, or sends the oldest eligible queued prompt now on an empty composer; Space c interrupts a running turn, else clears the draft into session history. Esc or an unmapped key cancels the leader; Ctrl+C, Ctrl+O, Ctrl+L and Ctrl+Z cancel it and do what they always do. A picker taking input also cancels pending leader and Vim commands; a session picker waiting while you type leaves typing, leader shortcuts and Enter with the composer until ↑, ↓, Esc or Ctrl+C takes the picker. The info line says INSERT or NORMAL, or NORMAL · SPC while the leader is armed |
+| Esc | Closes the `/` or `@` menu; else interrupts a running turn, with a draft typed too, which stays in the composer (the activity row shows how long it has run, then `interrupting…`, and what you queued comes back to an empty composer unsent, or waits); cancels a rewind you picked; cancels an agent steer you picked and keeps what you typed; after an approval's tell row, sends nothing more and brings your draft back |
+| Esc Esc | Between turns, with text, clears it and keeps it in this session's history; on an empty composer, lists your prompts to rewind to (`/rewind` does too) |
+| Esc (vim mode) | With `display.vim_mode` on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, `h l 0 ^ $ w b e j k gg G` move, `f F t T` and a character find on the line and `; ,` repeat the find, `i a I A o O` insert, `x X dd D C cc S s r`, `d c y` with a motion, `iw aw`, a quote object (`i` or `a` with double quote, single quote or backtick; inner count 1 selects inside, count 2 or more includes the quotes, around includes quotes and adjacent blanks without extra pairs; quote objects never cross a logical line; empty inner `y` keeps the register and moves inside, `d` keeps register and caret, and `c` enters INSERT inside), or a bracket object (`i` or `a` with `(`, `)`, `[`, `]`, `{`, `}`; closing aliases identical; inner and around count selects enclosing ancestor; empty inner `y` keeps register and moves to interior, `d` keeps register and caret, and `c` enters INSERT at interior), `p P`, `u` and Ctrl+R edit, a motion or edit count scales or repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt on an empty composer, and two clear a draft as between turns. In NORMAL, Space is the leader: Space s opens sessions, Space b opens bots, Space p folds the plan, Space r or Space / searches history, Space m cycles the input mode, and Space t steps reasoning effort. Space Enter submits or steers typed text, or sends the oldest eligible queued prompt now on an empty composer; Space c interrupts a running turn, else clears the draft into session history. Esc or an unmapped key cancels the leader; Ctrl+C, Ctrl+O, Ctrl+L and Ctrl+Z cancel it and do what they always do. A picker taking input also cancels pending leader and Vim commands; a session picker waiting while you type leaves typing, leader shortcuts and Enter with the composer until ↑, ↓, Esc or Ctrl+C takes the picker. The info line says INSERT or NORMAL, or NORMAL · SPC while the leader is armed |
 | Ctrl+V | Attaches the clipboard image as an `[Image #N]` token at the caret |
 | Ctrl+O | Opens the whole transcript with every detail (thinking, tool output, whole diffs) at its end, or, while Hermes asks something, the whole question (it answers nothing); q leaves it |
 | Ctrl+L | Redraws the screen |
@@ -1445,8 +1447,8 @@ and the query on any terminal.
 Vim mode: with Hermes' `display.vim_mode` on, the composer edits modally, as
 `hermes --cli` does with that setting. Turn it on with
 `hermes config set display.vim_mode true` and start `omh` again. The OMH TUI
-reads it from the active profile's config, in the same settings it reads
-`display.busy_input_mode` from (at launch and after a gateway restart). Only
+reads it from the active profile's config (at launch and after a gateway
+restart). Only
 a true turns it on (a number other than 0 too, or, written by hand as a
 string, `true`, `yes`, `on` or `1`); off or absent, every key does what the
 rest of this page says.
@@ -1557,7 +1559,12 @@ reports for it, and when Hermes reports approvals off for its own reasons
 (`approvals.mode` is off, it was started with `--yolo`, or `/yolo` turned them
 off) the info line shows accept all as well. Those approvals are not the OMH
 TUI's to turn back on: Shift+Tab then sends nothing and turns plan mode on and
-off beside accept all, and the transcript says so once per session. In plan
+off beside accept all, and the transcript says so once per session. A typed
+`/yolo` (or `/yolo on`, `/yolo off`) sends the same per-session switch and
+leaves plan mode as it is, and says the outcome under the command. Shift+Tab
+presses made before Hermes answers are kept: the info line shows the mode they
+lead to at once, dimmed with `…`, and the TUI goes there once Hermes answers.
+In plan
 mode each prompt you send goes to Hermes as `/plan <text>`, its prompt for a
 written plan instead of the work; that is an
 instruction to the model, not a restriction on its tools. An answer to a
@@ -1575,8 +1582,9 @@ its own replaces once Hermes names that one. Where none is configured, so
 the provider's own default applies, it says `effort default` and the
 first Ctrl+T sets `low`; where per-model overrides (`agent.reasoning_overrides`) may apply,
 it says `ctrl+t effort` until the session reports one. A level you set
-shows once Hermes confirms it; a level Hermes refuses leaves the line as it
-was and says so.
+shows dimmed with `…` until Hermes confirms it; a level Hermes refuses leaves
+the line as it was and says so. `/reasoning <level>` sets the level as
+`/effort <level>` does, and a typed command says the level set under it.
 
 A steer adds what you typed to the turn that is running, without interrupting
 it: Hermes reads it after its next tool call, or, while it is compressing the
@@ -1591,7 +1599,7 @@ or inside a streaming reply. A turn you stop before taking it in says so
 (`⧗ not read — the turn stopped first`). If Hermes does not take the steer
 while the turn still runs (an agent still starting, or one that takes no
 steer), the text joins the OMH TUI's own queue (`⧗`) and goes when the turn
-ends, whatever `display.busy_input_mode` says, so it never interrupts the
+ends, as everything sent during a turn does, so it never interrupts the
 turn; if the turn had already ended, it goes as an ordinary prompt. Either
 way the steer's row says so in amber (`⧗ queued — Hermes refused the steer
 (<why>) · <text>`). A steer Hermes has not answered in 120 s is never sent or
@@ -1616,8 +1624,21 @@ A skill command (`/<skill> <request>`) is one row: its echo gives way to the row
 once Hermes answers. That row shows the command, as Hermes names it for the turn (the row a resumed session shows)
 or else as you typed it, not the expanded skill prompt that is sent; an echo already written to the scrollback
 before Hermes answered stays, with the prompt's row under it.
-Typed during a turn, the echo and its output wait under what is running and are written after it, as a
-steer is, so a command never cuts off a running tool call or splits a reply; one Hermes has not finished
+Typed during a turn, a command waits in the queue (`⧗`, as a prompt does, whatever Hermes'
+`display.busy_input_mode` says) and runs when the turn ends, in the order you sent it: a prompt queued after a
+`/compress` goes once Hermes has answered the `/compress`, and the lines queued after a `/new` or a
+`/sessions <id>` go into the session it opens. A command that opens a picker or a question (bare `/model`, a
+guarded model's confirm) holds the queue until you answer it. Up takes a queued command back on its own, its paste
+chips as you typed them, and the send-now key
+never sends one into the turn. Only these run at once during a turn: `/stop` and `/steer`, which are for the
+running turn, `/queue`, `/btw` and `/bg`, which Hermes runs beside it, the commands about this terminal (`/help`,
+`/keys`, `/whats-new`, `/redraw`, `/history`, `/todos`, `/details`, `/logs`, `/dag`, `/bots`, `/copy`, `/theme`,
+`/wallpaper`, `/image`, `/paste`), `/gateway restart`, which asks first and lets running turns finish, `/quit`,
+`/yolo`, `/effort <level>` and `/reasoning <level>`, the typed forms of Shift+Tab and Ctrl+T, which set the session
+and leave the turn as it is, and the ones that only say where they run. Bare `/reasoning`, or with anything but a
+level, is Hermes' own and waits. Interrupting is Esc or
+`/stop`, never Enter. The echo and output of a command run during a turn wait under what is running and are
+written after it, as a steer is, so a command never cuts off a running tool call or splits a reply; one Hermes has not finished
 answering when the turn ends is written above that turn's done line with what it printed so far, and
 what it prints later goes under a repeat of its echo. In the transcript, a long output shows its
 first 12 rows and a count of the rest
@@ -1664,8 +1685,8 @@ call the gateway, `/image` and `/paste` included, wait in the composer. Your dra
 stays and nothing is sent again; a failure says why and the command to run
 in a terminal; bare `/gateway` stays Hermes' platform status). Claude Code's `/cost`, `/permissions` and
 `/compact` run Hermes' `/usage`, `/approvals` and `/compress` (`here [N]`, a
-focus topic, or `--preview`; Hermes refuses a compression while a turn runs,
-and the TUI says to run it again once the turn ends). Hermes' shared gateway,
+focus topic, or `--preview`; typed during a turn, it waits in the queue for
+the turn's end). Hermes' shared gateway,
 which a Hermes from v0.22 runs, does not take `/compress`, `/branch`,
 `/retry`, `/undo`, `/stop`, `/bg`, `/btw`, `/rollback`, `/reload`,
 `/reload-mcp`, `/tools`, bare `/plugins` or `/config` as a typed command. The
@@ -1833,8 +1854,8 @@ on the TUI's own request (exit 75 together with a file `omh` named for that
 launch and removes afterwards), so a 75 Hermes returns for a reason of its
 own ends the launch like any other exit code. If the gateway stops accepting a method or a key mid-session, the
 TUI leaves with the command that reopens the same session in `hermes`; on the
-three calls a session does without, reading Hermes' settings (for the busy
-mode, which then stays `queue`), reading the command list and the
+three calls a session does without, reading Hermes' settings (for the
+effort its config sets and Vim mode), reading the command list and the
 `/reload-skills` rescan, it says so instead and the session goes on. If
 the gateway itself exits mid-session with a failure, the TUI starts it again
 the way Hermes' launcher set it up and resumes the same session, saying so
@@ -2126,21 +2147,46 @@ the bundle carries its files, and `plugin_enabled` for local Hermes config;
 neither check proves Desktop copied, enabled or mounted the half. Rescan in
 Desktop (Capabilities -> Plugins -> Rescan, or restart the app), inspect the
 Plugins page, and verify the pane/backend in that runtime before reporting
-it ready. The pane shows OMH catches, the plan checklist, the active delegation
-graph, board or route summaries, and the active fanout DAG as they become
-available. It reads idle when nothing is running, keeps the plan and status bar
-in agreement, and leaves individual subagent rows to Desktop's Agents panel.
-A failed lane reads as failed (red), apart from blocked (yellow).
+it ready. The pane always draws the same five sections in the same order, each
+with an empty line when it has nothing to say: USAGE (the focused chat's
+figures: what Hermes recorded for the chat, or the gateway's live
+`session.stats` counters where they count more, or the status bar's stream
+where neither has any), CATCHES (what OMH caught earlier in the session), PLAN
+(the plan as it stands), DAG (the session's one graph, a dag-ulw run, the
+native delegation tree or a fanout, drawn as cards) and AGENTS (one summary
+line for the subagents Desktop's Agents panel lists, beside the routes OMH
+dispatched). Each section folds, and the folds are kept in the app's local
+storage. The DAG section follows the focused chat: a pane that names its chat
+does not draw a fanout whose record names another chat as its origin, draws
+one that names this chat as this chat's, and draws one with no recorded origin
+as the home's, as before; that includes any fanout still running, whichever
+chat started it, since the origin is recorded when the dispatch ends.
+The yolo chip follows the focused chat too. Where OMH holds no observation of
+that chat (it has not ticked yet, or other sessions pushed it out of the
+ledger) and some session of the gateway was observed ON within the ledger's
+freshness window, the chip still shows, whichever session ticked last, since a wrong ON
+is the safer error. The pane reads idle when nothing is
+running and keeps the plan and status bar in agreement. A failed lane reads as
+failed (red), apart from blocked (yellow), and done DAG work is green.
 The pane keeps Desktop's own look (its sans, components and theme tokens) with the
 OMH TUI's colour character: a rose brand, warm section labels and muted violet
-frames. While a delegation graph runs, the pane shows it as the box drawing the
-TUI prints into its transcript, made by the same renderer at the pane's width,
-in a card: boxes for a run of up to 12 lanes, the tree for a bigger run or a
-pane too narrow for boxes. The drawing scrolls sideways rather than wrap, and a
-settled run reads as one summary line. Without a drawing (an older backend, or
-one that failed to draw), a delegation row stacks its model under the title at the
-default pane width. It uses calmer colours and follows Desktop's language when
-Korean is selected; the drawing's own words are the TUI's, in English.
+frames. The DAG's cards fold by layer. A bar over the cards picks Auto (from
+nine lanes on, finished layers and those more than two past the work in hand
+fold), Focus (the running layers and the layers either side), Unfold all, or
+Fold all (the work in hand stays open); a layer's chip or tag opens or folds
+that layer by hand. The View menu turns the figures, the stats, implied edges
+and compact cards on or off, and the fold mode and those choices are kept in
+the app's local storage. A settled run keeps its cards under its run line;
+under Auto, one of nine lanes or more shows them as folded layer chips. A
+graph too large for the pane's payload comes as a bounded layer view: lanes in
+hand (running, or returned to be checked) and lanes that stopped short
+(failed, blocked, stuck) first, then the layers nearest the work in hand. Each
+layer that lost lanes counts them by state, an edge that skips cut lanes is
+drawn dotted, and the layers drawn open are asked for again within the larger
+open-view bound: a layer bigger than that comes back cut, with its hidden
+count. A run too deep for
+even its layer rows reads as its counts by state. The pane follows Desktop's
+language when Korean is selected.
 `omh uninstall --registration-only` does not disable the plugin or
 change `plugins.enabled`. Desktop mounting must be observed separately.
 
@@ -2479,17 +2525,17 @@ The shipped catalog is editorial policy, not benchmark output:
 <!-- omh:model-chain-table:begin (generated: uv run python -m omh.cli docs chain-table; source: src/coding/model_recommendations.py) -->
 | Surface | What it is for | Shipped editable order |
 | --- | --- | --- |
-| Hermes `main` suggestion | The session's own model | GPT-6.1 Sol (`high`), Claude Opus 5.5, Claude Fable 5.1, GPT-6 Astra (`xhigh`), Kimi K3.1 Pro |
-| `ultrabrain` | Deepest reasoning | Claude Fable 5.1 (`xhigh`), GPT-6 Astra (`xhigh`), Claude Opus 5.5 (`xhigh`) |
+| Hermes `main` suggestion | The session's own model | GPT-6.1 Sol (`high`), Claude Opus 5.5, Claude Fable 5.2, GPT-6 Astra (`xhigh`), Kimi K3.1 Pro |
+| `ultrabrain` | Deepest reasoning | Claude Fable 5.2 (`xhigh`), GPT-6 Astra (`xhigh`), Claude Opus 5.5 (`xhigh`) |
 | `deep` | Strong default tier | Claude Opus 5.5 (`high`), GPT-6.1 Sol (`high`), Kimi K3.1 Pro (`high`) |
-| `architect` | Architecture and system design | Claude Opus 5.5 (`xhigh`), GPT-6 Astra (`xhigh`), Claude Fable 5.1 (`xhigh`), Kimi K3.1 Pro (`xhigh`) |
+| `architect` | Architecture and system design | Claude Opus 5.5 (`xhigh`), GPT-6 Astra (`xhigh`), Claude Fable 5.2 (`xhigh`), Kimi K3.1 Pro (`xhigh`) |
 | `unspecified-high` | Default working model | GPT-6.1 Sol (`medium`), Claude Opus 5.5 (`medium`), Kimi K3.1 Pro (`medium`) |
 | `unspecified-low` | Cheaper fallback | GLM 5.3 (`low`), DeepSeek V4.1 Flash (`low`), GPT-6.1 Sol (`low`), Claude Sonnet 5.5 (`low`) |
 | `quick` | Short tasks | GLM 5.3 Flash (`low`), GPT-6 Luna (`low`), Claude Haiku 5.5 (`low`), Kimi K3.1 Pro (`low`) |
 | `writing` | Prose and docs | Claude Opus 5.5 (`medium`), Claude Sonnet 5.5 (`medium`), Kimi K3.1 Pro (`medium`), Gemini 4 Argon (`medium`) |
-| `visual-engineering` | Frontend and visual | Claude Opus 5.5 (`high`), Claude Fable 5.1 (`high`), Gemini 4 Argon (`high`), Kimi K3.1 Pro (`high`) |
-| `artistry` | Unconventional work | Gemini 4 Argon (`high`), Claude Opus 5.5 (`high`), Claude Fable 5.1 (`high`), Kimi K3.1 Pro (`high`) |
-| `capable` | Strong general work | Claude Opus 5.5 (`medium`), GPT-6.1 Sol (`medium`), Claude Fable 5.1 (`medium`), Kimi K3.1 Pro (`medium`) |
+| `visual-engineering` | Frontend and visual | Claude Fable 5.2 (`high`), Claude Opus 5.5 (`high`), Gemini 4 Argon (`high`), Kimi K3.1 Pro (`high`) |
+| `artistry` | Unconventional work | Gemini 4 Argon (`high`), Claude Opus 5.5 (`high`), Claude Fable 5.2 (`high`), Kimi K3.1 Pro (`high`) |
+| `capable` | Strong general work | Claude Opus 5.5 (`medium`), GPT-6.1 Sol (`medium`), Claude Fable 5.2 (`medium`), Kimi K3.1 Pro (`medium`) |
 | `simple-work` | Small everyday tasks | GPT-6 Luna (`low`), Claude Haiku 5.5 (`low`), DeepSeek V4.1 Flash (`low`) |
 | `deep-work` | Long tasks at frontier depth | Claude Opus 5.5 (`max`), GPT-6.1 Sol (`max`) |
 | `google-search` | Research grounded in Google Search | Gemini 4 Argon (`medium`), GPT-6.1 Sol (`medium`), Claude Opus 5.5 (`medium`) |
@@ -2544,7 +2590,7 @@ $ cat ~/.omh/routing/model-chains.json
   "schema_version": "mixture_chain_overrides/v1",
   "categories": {
     "architect": [
-      {"model": "claude-fable-5-1", "reasoning_effort": "xhigh"},
+      {"model": "claude-fable-5-2", "reasoning_effort": "xhigh"},
       {"model": "gpt-6.1-sol", "reasoning_effort": "xhigh"}
     ],
     "quick": [
@@ -3005,7 +3051,7 @@ nothing, and vendors reprice. Put your own rates in
 {
   "schema_version": "model_price_overrides/v1",
   "models": {
-    "claude-fable-5-1": {"input_per_mtok": 8.0, "output_per_mtok": 40.0},
+    "claude-fable-5-2": {"input_per_mtok": 8.0, "output_per_mtok": 40.0},
     "grok-build-0.1": {"input_per_mtok": 1.0, "output_per_mtok": 2.0},
     "my-free-tier-model": {"input_per_mtok": 0, "output_per_mtok": 0}
   }
@@ -3318,7 +3364,8 @@ answer, and the capability boundary.
 ### Install
 
 ```powershell
-irm https://raw.githubusercontent.com/rlaope/oh-my-hermes/main/install.ps1 | iex
+irm https://omher.app/install.ps1 | iex
+# same as: irm https://raw.githubusercontent.com/rlaope/oh-my-hermes/main/install.ps1 | iex
 omh setup
 omh doctor
 ```
@@ -4149,16 +4196,16 @@ is how a session leaves one for unrelated work (a recorded `deferred_reason`
 only pauses it), and the session's next turn is told once when a `todo_list`
 write was not mirrored and the plan is still held and not deferred. Hermes
 Desktop draws a `todo_list` itself (the composer's status stack), so for a
-plan `todo_list` holds the Desktop pane does not repeat its items: it shows a
-compact "in todo_list" plan summary only when OMH knows something Hermes
-does not show — an item waiting on a recorded reason, or a checklist
-unchanged past the stall threshold. The OMH TUI's plan panel draws the items
-whichever tool holds them: the done ones quiet (a `✓` in the done colour,
-their words muted) and, when they do not all fit, folded into one `✓ N done`
-row before any item still to do is cut. Ctrl+P folds the plan to its header
-and the item it is on (`[Plan] │ 6/7 ▸ <item>`), or expands it again, for the
-rest of the session; the header says `ctrl+p fold` or `ctrl+p expand` on its
-right where there is room.
+plan `todo_list` holds the Desktop pane does not repeat its items: its PLAN
+block lists only what OMH knows and Hermes does not show — an item waiting on
+a recorded reason, or a checklist unchanged past the stall threshold — and
+otherwise says the steps are in the Hermes todos above the composer. The OMH
+TUI's plan panel draws the items whichever tool holds them: the done ones
+quiet (a `✓` in the done colour, their words muted) and, when they do not all
+fit, folded into one `✓ N done` row before any item still to do is cut. Ctrl+P
+folds the plan to its header and the item it is on (`[Plan] │ 6/7 ▸ <item>`),
+or expands it again, for the rest of the session; the header says
+`ctrl+p fold` or `ctrl+p expand` on its right where there is room.
 
 A plan may be declared from a named phase template instead of from phases the
 model writes out itself. `omh_todo` with `action=set` and

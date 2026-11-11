@@ -51,8 +51,8 @@ Mirror of `siyuan-note/siyuan` — 26 default patterns, 2 followed patterns, 6 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/RELEASE-VERIFICATION.zh-CN.md`
 - `docs/API-CONTRACTS.md`
+- `docs/RELEASE-VERIFICATION.zh-CN.md`
 
 ## File Index
 

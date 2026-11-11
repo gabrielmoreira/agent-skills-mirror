@@ -173,9 +173,30 @@ record by its own model and keys its day and model rows by the alias, and
 [`alias.go`](../../internal/sessions/alias.go)) merge a native session's rows
 the same way, into new slices so the memo is never changed. The alias is read
 before any lock, and an unreadable settings.json keeps the last aliases read.
-Requests, the Requests ledger and model lists keep each call's own id.
+Found routing groups are also merged under their public `auto/<model>` id
+by this mapper: a native file or old usage row naming `group/auto-<slug>`
+and one naming `auto/<model>` form one model option. Vendor spellings of
+`auto/<model>` follow `PublicRef`; effort and `[1m]` suffixes are preserved.
+The mapping is a snapshot taken before usage locks and before grouping,
+so lists (`ListAgent` and `Manage` too), details, daily stats, summaries,
+filtered overviews and Codex's model/effort rows agree. Original parses,
+ledger rows and prices stay intact.
+An unavailable group or a user's pre-existing provider named `auto` keeps
+its original names. User usage aliases are applied after public spelling.
+`UsageNamesKey` invalidates named caches when the group catalog changes.
+
+Requests keep their original priced model ids internally; their model shares,
+chart legends and model filters treat both routing-group ids as one (the
+filter's model is made the kept `group/auto-…` once, in `usageapi.FilterOf`,
+so only an `auto/…` record reads the providers), and
+`usageapi.LedgerPage` displays the public spelling for both `model` and `req`.
+This does not apply user usage aliases to Requests. A clear made under either
+group id covers both spellings. Model lists continue to use the catalog ids.
 Verification: `TestUsageAliasCountsTwoIdsAsOne`,
-`TestSessionsCountAliasedModelsAsOne`, `TestAliasStatsLeavesItsInputAlone`.
+`TestSessionsCountAliasedModelsAsOne`, `TestAliasStatsLeavesItsInputAlone`,
+`TestSessionsFoundGroupNames`, `TestSessionsAPIFoundGroupNames`,
+`TestUsageFoundGroupNames`, `TestCodexEffortFoundGroupNames`,
+`TestLedgerFoundGroupNames`.
 
 The Usage page can clear its figures (CrazyMouse_TT on X): a model's row's
 "…" has "Clear usage…", and "Clear all usage…" sits under the lists. Each
@@ -198,6 +219,15 @@ of the same model or of everything takes an earlier one's place. Usage ›
 Sessions is not cleared. Verification: `TestClearedUsageLeavesThePages`,
 `TestClearUsageKeepsOneMarkAModel`, `TestUsageClearRoute`,
 `usage-clear.test.cjs`.
+
+Claude Code's sessions are read from every folder it is run in
+(`appdir.ClaudeHomes`, `sessions.ClaudeDirs`): `$CLAUDE_CONFIG_DIR` or
+`~/.claude`, a folder beside it or in the home folder whose name starts with
+`claude` or `.claude` (or one level down) and holds `projects/`, and the
+folders of the Claude accounts saved in magpie. A session id kept in two of
+them is one session, under the first. Verification:
+`TestClaudeHomesIn`, `TestCallsReadEveryClaudeFolder`,
+`TestListReadsEveryClaudeFolderOnce`.
 
 Claude Desktop gateway rows can have a local name even without a CLI
 transcript (#1675). [`DesktopTitles`](../../internal/sessions/desktop_titles.go)
@@ -828,7 +858,7 @@ one record or an array of up to 5000 (32 MiB at most), in `usage.jsonl`'s
 shape: `t`, `agent`, `provider`, `model` and `rid` are required; `in`,
 `out`, `cache_read`, `cache_write`, `cache_write_1h`, `reasoning`, `ms`,
 `ttft_ms`, `first_text_ms`, `flow_ms`, `status`, `cost`, `effort`,
-`session` and `err` are optional.
+`session`, `err`, `req` and `served` are optional.
 Any other field, a quoted number, a negative or out-of-range count, a time
 more than an hour ahead or before 2000-01-01T00:00:00Z refuses the whole
 post with a 400 that names the record (`error.index`) and the field
@@ -851,6 +881,13 @@ however old, so a client's history can be backfilled.
   was appended since. The reply counts `accepted` and `skipped` and gives
   each record's `index`, `rid` and `status`, so a re-run of a batch is
   safe.
+- **Asked and answered:** `req` and `served` (#3534) are `Record.Requested`
+  and `Record.Served`, the Requests page's requested and served model:
+  what the client asked for (an alias, a group) and what its vendor's
+  reply said answered. Each is checked as `model` is (a string, at most
+  256 characters, no control characters) and kept only as sent; a record
+  without `served` says nothing of what answered, so it is never filled
+  from `model`. `TestUsageIngestRequestedAndServed`.
 - **Pricing:** a record with `cost` keeps it (`Record.OwnCost`, the
   `rowOwnCost` flag on a packed row). Without one it is priced at magpie's
   own prices, like a gateway row.

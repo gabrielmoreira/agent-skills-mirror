@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 7 followed patterns, 22 file(s) materialized.
+Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 11 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 7 followed patterns, 22 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 22 |
+| Followed pats | 11 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,10 @@ Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 7 followed patterns, 22 
 
 - `README.md`
 - `docs/en-US/features.md`
+- `harness/reference/openclaw-2026-10-10-upgrade.md`
+- `harness/reference/windows-sqlite-upgrade-validation-20261109.md`
+- `harness/reference/enterprise-windows-upgrade-validation-20261109.md`
+- `harness/reference/cron-inference-upgrade.md`
 - `harness/reference/computer-use-cli-validation.md`
 - `harness/reference/computer-use-skill.md`
 - `docs/en-US/proxy-settings.md`
@@ -66,27 +70,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`resources/icons/README.md`](resources/icons/README.md) |
-| 3 | ✓ | [`resources/skills/computer-use/BROWSER.md`](resources/skills/computer-use/BROWSER.md) |
-| 4 | ✓ | [`resources/skills/computer-use/EMBEDDING.md`](resources/skills/computer-use/EMBEDDING.md) |
-| 5 | ✓ | [`resources/skills/computer-use/LICENSE.md`](resources/skills/computer-use/LICENSE.md) |
-| 6 | ✓ | [`resources/skills/computer-use/LINUX.md`](resources/skills/computer-use/LINUX.md) |
-| 7 | ✓ | [`resources/skills/computer-use/MACOS.md`](resources/skills/computer-use/MACOS.md) |
-| 8 | ✓ | [`resources/skills/computer-use/README.md`](resources/skills/computer-use/README.md) |
-| 9 | ✓ | [`resources/skills/computer-use/RECORDING.md`](resources/skills/computer-use/RECORDING.md) |
-| 10 | ✓ | [`resources/skills/computer-use/RUNTIME.md`](resources/skills/computer-use/RUNTIME.md) |
-| 11 | ✓ | [`resources/skills/computer-use/SKILL.md`](resources/skills/computer-use/SKILL.md) |
-| 12 | ✓ | [`resources/skills/computer-use/UPSTREAM-SKILL.md`](resources/skills/computer-use/UPSTREAM-SKILL.md) |
-| 13 | ✓ | [`resources/skills/computer-use/VISUAL.md`](resources/skills/computer-use/VISUAL.md) |
-| 14 | ✓ | [`resources/skills/computer-use/WINDOWS.md`](resources/skills/computer-use/WINDOWS.md) |
-| 15 | ✓ | [`resources/skills/computer-use/WORKFLOW.md`](resources/skills/computer-use/WORKFLOW.md) |
-| 16 | → | [`docs/en-US/architecture.md`](docs/en-US/architecture.md) |
-| 17 | → | [`docs/en-US/development.md`](docs/en-US/development.md) |
-| 18 | → | [`docs/en-US/features.md`](docs/en-US/features.md) |
-| 19 | → | [`docs/en-US/proxy-settings.md`](docs/en-US/proxy-settings.md) |
-| 20 | → | [`harness/reference/computer-use-cli-validation.md`](harness/reference/computer-use-cli-validation.md) |
-| 21 | → | [`harness/reference/computer-use-skill.md`](harness/reference/computer-use-skill.md) |
-| 22 | → | [`README.md`](README.md) |
+| 2 | ✓ | [`harness/reference/openclaw-2026-10-5-upgrade.md`](harness/reference/openclaw-2026-10-5-upgrade.md) |
+| 3 | ✓ | [`harness/reference/windows-doctor-performance-20261109.md`](harness/reference/windows-doctor-performance-20261109.md) |
+| 4 | ✓ | [`resources/icons/README.md`](resources/icons/README.md) |
+| 5 | ✓ | [`resources/skills/computer-use/BROWSER.md`](resources/skills/computer-use/BROWSER.md) |
+| 6 | ✓ | [`resources/skills/computer-use/EMBEDDING.md`](resources/skills/computer-use/EMBEDDING.md) |
+| 7 | ✓ | [`resources/skills/computer-use/LICENSE.md`](resources/skills/computer-use/LICENSE.md) |
+| 8 | ✓ | [`resources/skills/computer-use/LINUX.md`](resources/skills/computer-use/LINUX.md) |
+| 9 | ✓ | [`resources/skills/computer-use/MACOS.md`](resources/skills/computer-use/MACOS.md) |
+| 10 | ✓ | [`resources/skills/computer-use/README.md`](resources/skills/computer-use/README.md) |
+| 11 | ✓ | [`resources/skills/computer-use/RECORDING.md`](resources/skills/computer-use/RECORDING.md) |
+| 12 | ✓ | [`resources/skills/computer-use/RUNTIME.md`](resources/skills/computer-use/RUNTIME.md) |
+| 13 | ✓ | [`resources/skills/computer-use/SKILL.md`](resources/skills/computer-use/SKILL.md) |
+| 14 | ✓ | [`resources/skills/computer-use/UPSTREAM-SKILL.md`](resources/skills/computer-use/UPSTREAM-SKILL.md) |
+| 15 | ✓ | [`resources/skills/computer-use/VISUAL.md`](resources/skills/computer-use/VISUAL.md) |
+| 16 | ✓ | [`resources/skills/computer-use/WINDOWS.md`](resources/skills/computer-use/WINDOWS.md) |
+| 17 | ✓ | [`resources/skills/computer-use/WORKFLOW.md`](resources/skills/computer-use/WORKFLOW.md) |
+| 18 | → | [`docs/en-US/architecture.md`](docs/en-US/architecture.md) |
+| 19 | → | [`docs/en-US/development.md`](docs/en-US/development.md) |
+| 20 | → | [`docs/en-US/features.md`](docs/en-US/features.md) |
+| 21 | → | [`docs/en-US/proxy-settings.md`](docs/en-US/proxy-settings.md) |
+| 22 | → | [`harness/reference/computer-use-cli-validation.md`](harness/reference/computer-use-cli-validation.md) |
+| 23 | → | [`harness/reference/computer-use-skill.md`](harness/reference/computer-use-skill.md) |
+| 24 | → | [`harness/reference/cron-inference-upgrade.md`](harness/reference/cron-inference-upgrade.md) |
+| 25 | → | [`harness/reference/enterprise-windows-upgrade-validation-20261109.md`](harness/reference/enterprise-windows-upgrade-validation-20261109.md) |
+| 26 | → | [`harness/reference/openclaw-2026-10-10-upgrade.md`](harness/reference/openclaw-2026-10-10-upgrade.md) |
+| 27 | → | [`harness/reference/windows-sqlite-upgrade-validation-20261109.md`](harness/reference/windows-sqlite-upgrade-validation-20261109.md) |
+| 28 | → | [`README.md`](README.md) |
 
 ---
 

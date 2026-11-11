@@ -14,7 +14,7 @@ The CLI is an HTTP client that talks to the Claw Orchestrator embedded server. U
 clawo serve [-p, --port <port>] [-H, --host <host>] [--ultraapp-runtime host|docker]
 ```
 
-Start the standalone embedded server (default port 18796, bound to `127.0.0.1`, or `OPENCLAW_SERVER_HOST` when set; pass `-H 0.0.0.0` for remote access). `--ultraapp-runtime` selects how ultraapp builds run: `host` (default, spawns Node directly) or `docker`. The server also starts the ultraapp reverse-proxy router on port 19000 (or the next free port); if the router cannot start, ultraapp deploys are skipped and the server runs without it. If the server's port is already in use, `clawo serve` prints an error and exits 1.
+Start the standalone embedded server (default port 18796, bound to `127.0.0.1`, or `OPENCLAW_SERVER_HOST` when set; pass `-H 0.0.0.0` for remote access, which exposes command execution as the server's user to anyone with the token — see [Security model](./getting-started.md#security-model)). `--ultraapp-runtime` selects how ultraapp builds run: `host` (default, spawns Node directly) or `docker`. The server also starts the ultraapp reverse-proxy router on port 19000 (or the next free port); if the router cannot start, ultraapp deploys are skipped and the server runs without it. If the server's port is already in use, `clawo serve` prints an error and exits 1.
 
 Under `clawo serve` the session manager allows 32 concurrent sessions and unloads a session after 60 idle minutes (the plugin defaults are 5 and 120). Override with `OPENCLAW_SERVE_MAX_SESSIONS` and `OPENCLAW_SERVE_TTL_MINUTES`.
 
@@ -61,7 +61,7 @@ An `X-Session-Reset: 1` (or `true`) header answers the request from a fresh sess
 - `composer*`, `cursor*`, `auto` → the legacy `cursor` engine
 - anything else → Claude engine
 
-**CORS:** `/v1/` paths allow cross-origin requests by default, and `localhost` origins are allowed on every path. Set `OPENCLAW_CORS_ORIGINS=*` to allow all origins on all paths.
+**CORS:** `localhost` origins are allowed on every path. With auth on, `/v1/` paths also allow any origin, and `OPENCLAW_CORS_ORIGINS=*` allows all origins on all paths; with auth disabled only loopback origins are allowed, and only loopback `Host` names are served (see [Security model](./getting-started.md#security-model)).
 
 **Auto-compact:** When a session's context utilization exceeds 80%, the endpoint automatically compacts the session before sending the next message.
 

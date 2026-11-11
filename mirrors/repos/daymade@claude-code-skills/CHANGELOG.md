@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **claude-switch-models-setup** (`daymade-claude-code` v5.1.9 → v5.1.10): Preserve malformed required plugin registries, report preparation failures before native launch, and serialize both sync helpers without expiring live or unknown lock owners.
+
+- **stepfun-tts** (`daymade-audio` v1.58.1): Correct the China HTTP normalization, subtitle and model-specific label contracts. Document the observed 2.5 preview reference/text binding without adding hidden uploads or retries.
+- **debugging-network-issues** (v1.11.10 → v1.11.11): Reuse a compatible successful transfer before inventing another. Bound concurrency at both levels.
+
+- **terraform-skill** (v1.5.14 → v1.5.15): Preserve verified application facts across cleanup failures, distinguish recovery after completed or partial apply, and bind promotion to artifact identity and explicit controller compatibility.
+- **stepfun-tts** (`daymade-audio` v1.58.0): Expose native speech requests, voice/file lifecycle, SSE and WebSocket events while retaining the text/batch CLI. Preserve raw responses and fail on conflicting identities; align control and cloning guidance with current official sources. Offline transport contracts do not establish listening quality.
+- **frontend-visual-qa** (v1.21.41 → v1.21.42): Check direct entry before warm returns so another route's stylesheet cannot mask an unstyled shared navigation; retain separate visual, interaction and delivery conclusions.
+- **frontend-visual-qa** (v1.21.43): Route collection and retained-context checks from project instructions and remove derived fixture counts from the acceptance recipe. Route interrupted worktree preservation to its existing helper.
+
+- **git-safety-net** (v1.27.1 → v1.28.0): Add resumable, preparation-only recovery for clean linked worktrees and their initialized submodules. Reuse completed recovery carriers, scope borrowed objects to required dependencies, and verify current state before separately authorized removal. Change type: additive script capability; existing retirement gates remain in force.
+- **frontend-visual-qa** (v1.21.40 → v1.21.41): Calibrate collection readiness, exact original reading, return context, scope-bound drafts and real Escape against hidden retained content with synthetic healthy and faulty browser journeys. Change type: sampled acceptance-recipe extension.
+
+- **deep-research** (v2.14.0): Bind new research dispatch to the exact transmitted prompt and selected prior conclusions, corrections, unknowns and reopening evidence; reject stale or incomplete continuation bodies before preparation/submission while preserving existing-task recovery.
+
+- **claude-code-hooks** (`daymade-claude-code` v5.1.8 → v5.1.9): Route repository-level recovery incidents to the owning triage reference and remove its derived fact count.
+
+- **claude-code-hooks** (`daymade-claude-code` v5.1.7 → v5.1.8): Triage input syntax, replay deadlines and consumer receipt failures separately; verify native result shape and the original obligation's completion before reporting recovery.
+
+- **peer-message** (v1.25.4 → v1.25.5): Recover a cache-missing native inbound from its exact original host event through the installed history reader; preserve the complete carrier and existing receive integrity and expiry checks.
+
+- **transcript-fixer** (daymade-audio v1.57.9 -> v1.57.10): align domain-trust and guard documentation with the existing runtime; route startup and Native instructions to the owning contracts, and remove derived navigation and guard counts.
+
+- **transcript-fixer** (`daymade-audio` v1.57.8 → v1.57.9): Prefer complete overlapping entity variants and defer ambiguous short-name expansions rather than produce an unverified name with a residual suffix.
+- **skill-creator** (`daymade-skill` v1.78.0 → v1.78.1): Keep materialization output and compatibility in the owning SOP, remove the handwritten operation inventory, and align repository entry triggers with Agent materialization and long-list acceptance.
+
+- **frontend-visual-qa** (v1.21.39 → v1.21.40): Verify first-entry critical controls and actual nested-list scroll movement while preserving ordinary table scrolling and source reading checks.
+- **skill-creator** (`daymade-skill` v1.77.3 → v1.78.0): Add the summary-first `materialize_agent` entry while preserving full receipts, child logs and the existing materialization interfaces.
+
 - **prior-work-retrieval** (`daymade-claude-code` v5.1.6 → v5.1.7): Match complete English code/codebase tokens so Codex and code identifiers do not trigger prior-work retrieval.
 
 - **report-with-html** (v1.6.0 → v1.6.1): Keep preview limits with their executable owner and route existing-page hosting and missing-asset recovery from repository instructions. Runtime behavior is unchanged.

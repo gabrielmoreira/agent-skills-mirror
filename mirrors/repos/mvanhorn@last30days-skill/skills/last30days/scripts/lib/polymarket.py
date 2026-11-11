@@ -4,6 +4,7 @@ Uses gamma-api.polymarket.com for event/market discovery.
 No API key needed - public read-only API with generous rate limits (15K req/10s).
 """
 
+import datetime
 import json
 import math
 import re
@@ -591,13 +592,13 @@ def _parse_outcome_prices(market: Dict[str, Any]) -> List[tuple]:
     return result
 
 
-def _shorten_question(question: str) -> str:
-    """Extract a short display name from a market question.
+# Longest name _shorten_question keeps when a question has no shorter subject.
+_MAX_QUESTION_NAME_CHARS = 80
+_UNBROKEN_NAME_CHARS = 40
 
-    'Will Arizona win the 2026 NCAA Tournament?' -> 'Arizona'
-    'Will Duke be a number 1 seed in the 2026 NCAA...' -> 'Duke'
-    """
-    q = question.strip().rstrip("?")
+
+def _question_subject(q: str) -> Optional[str]:
+    """The subject of a "Will X win/be/..." question, or None."""
     # Common patterns: "Will X win/be/...", "X wins/loses..."
     m = re.match(r"^Will\s+(.+?)\s+(?:win|be|make|reach|have|lose|qualify|advance|strike|agree|pass|sign|get|become|remain|stay|leave|survive|next)\b", q, re.IGNORECASE)
     if m:
@@ -605,9 +606,240 @@ def _shorten_question(question: str) -> str:
     m = re.match(r"^Will\s+(.+?)\s+", q, re.IGNORECASE)
     if m and len(m.group(1).split()) <= 4:
         return m.group(1).strip()
-    # Fallback: truncate, dropping a leading article so the name doesn't read "an"/"the"
-    text = q[:40] if len(q) > 40 else q
+    return None
+
+
+def _shorten_question(question: str) -> str:
+    """Extract a short display name from a market question.
+
+    'Will Arizona win the 2026 NCAA Tournament?' -> 'Arizona'
+    'Will Duke be a number 1 seed in the 2026 NCAA...' -> 'Duke'
+    """
+    q = question.strip().rstrip("?")
+    subject = _question_subject(q)
+    if subject is not None:
+        return subject
+    return _whole_question_name(q)
+
+
+def _whole_question_name(q: str) -> str:
+    """The question itself as a name. Sub-markets of one event often differ
+    only in their last words ("... by March 31, 2027"), so it is kept whole
+    and only a very long one is cut, at a word boundary. A leading article is
+    dropped so the name doesn't read "an"/"the"."""
+    q = q.strip().rstrip("?")
+    text = q
+    if len(q) > _MAX_QUESTION_NAME_CHARS:
+        head = q[: _MAX_QUESTION_NAME_CHARS + 1]
+        if " " in head:
+            text = head.rsplit(" ", 1)[0].rstrip(" ,;:-")
+        else:
+            # One unbroken run has no word boundary to cut at.
+            text = q[:_UNBROKEN_NAME_CHARS]
     return re.sub(r"^(?:a|an|the)\s+", "", text, flags=re.I)
+
+
+_ARTICLES = frozenset({"a", "an", "the"})
+
+
+def _own_outcome_labels(
+    outcome_prices: List[tuple],
+    outcome_questions: List[Optional[str]],
+    outcome_markets: List[Dict[str, Any]],
+) -> List[tuple]:
+    """Give each sub-market of an event a label of its own.
+
+    ``_shorten_question`` names a sub-market by its question's subject, which
+    tells teams apart ("Will Arizona win ...") but not the brackets, cities
+    or prices of one subject: every "Will Waymo operate in N cities ..."
+    market came out as "Waymo". A subject that repeats within the event, or
+    is a bare article, is replaced by the label Polymarket gives that
+    sub-market (``groupItemTitle``: "12-15", "Denver, CO"), or by the whole
+    question when it has none or the label repeats too.
+
+    Only subject names are replaced, and the order is kept, so every name an
+    older build saved still reads its own market through
+    ``_legacy_shorten_question``.
+    """
+    names = [str(name) for name, _price in outcome_prices]
+    subjects = [
+        question is not None and _question_subject(question.strip().rstrip("?")) is not None
+        for question in outcome_questions
+    ]
+    repeats: Dict[str, int] = {}
+    for name in names:
+        repeats[name.casefold()] = repeats.get(name.casefold(), 0) + 1
+    relabel = [
+        is_subject and (repeats[name.casefold()] > 1 or name.casefold() in _ARTICLES)
+        for name, is_subject in zip(names, subjects)
+    ]
+    labels = [
+        " ".join(str(market.get("groupItemTitle") or "").split()) if change else name
+        for name, change, market in zip(names, relabel, outcome_markets)
+    ]
+    taken: Dict[str, int] = {}
+    for label in labels:
+        taken[label.casefold()] = taken.get(label.casefold(), 0) + 1
+    return [
+        (
+            _whole_question_name(question)
+            if change and (not label or taken[label.casefold()] > 1)
+            else label,
+            price,
+        )
+        for label, change, question, (_name, price) in zip(
+            labels, relabel, outcome_questions, outcome_prices,
+        )
+    ]
+
+
+_MONTH_NAMES = (
+    "January|February|March|April|May|June|July|August|September|October|"
+    "November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec"
+)
+# "by December 31, 2026", "before March 31": a deadline, not "on" a day.
+_DEADLINE = re.compile(
+    rf"\b(?:by|before)\s+(?:the\s+end\s+of\s+)?({_MONTH_NAMES})\.?\s+(\d{{1,2}})"
+    r"(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?",
+    re.IGNORECASE,
+)
+_MONTH_NUMBERS = {
+    name: number
+    for number, name in enumerate(
+        ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"), 1,
+    )
+}
+
+
+def _deadline_date(question: str, market: Dict[str, Any]) -> Optional[str]:
+    """The one deadline a question names, as an ISO date: the date it spells
+    out when that has a year, and the market's end date otherwise. None when
+    the question names no deadline, or more than one."""
+    found = _DEADLINE.findall(question)
+    if len(found) != 1:
+        return None
+    month, day, year = found[0]
+    if year:
+        try:
+            return datetime.date(int(year), _MONTH_NUMBERS[month[:3].lower()], int(day)).isoformat()
+        except ValueError:
+            return None
+    end = str(market.get("endDate") or "")[:10]
+    return end if re.fullmatch(r"\d{4}-\d{2}-\d{2}", end) else None
+
+
+def _today() -> str:
+    return datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+
+
+# A deadline rung priced under this says only that the date is too soon.
+_LIVE_RUNG_PRICE = 0.05
+
+
+def _nearest_deadline(
+    outcome_questions: List[Optional[str]],
+    outcome_markets: List[Dict[str, Any]],
+    prices: List[float],
+) -> Optional[int]:
+    """Index of the nearest deadline that has not passed, for a deadline ladder.
+
+    A rung the market gives under 5% is passed over for the next one, so an
+    "IPO by" ladder shows the first date traders think is live, not a date
+    days away at 0.8%. When every open rung is that low the nearest is kept.
+
+    A ladder is one question asked for several deadlines ("... by December 31,
+    2026?", "... by March 31, 2027?"). Its later deadlines always price
+    higher, so the highest price is only the furthest date. None when the
+    sub-markets are not one question with different deadlines.
+    """
+    if len(outcome_questions) < 2:
+        return None
+    stems = set()
+    ends: List[str] = []
+    for question, market in zip(outcome_questions, outcome_markets):
+        if not question:
+            return None
+        end = _deadline_date(question, market)
+        if end is None:
+            return None
+        stems.add(" ".join(_DEADLINE.sub("", question).casefold().split()))
+        ends.append(end)
+    if len(stems) != 1:
+        return None
+    today = _today()
+    open_ends = [index for index, end in enumerate(ends) if end >= today]
+    live = [index for index in open_ends if prices[index] >= _LIVE_RUNG_PRICE]
+    return min(live or open_ends or range(len(ends)), key=lambda index: ends[index])
+
+
+def _headline_market(
+    title: str,
+    top_market: Dict[str, Any],
+    outcome_prices: List[tuple],
+    outcome_questions: List[Optional[str]],
+    outcome_markets: List[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    """The one market and price that stand for an event in a one-line summary.
+
+    The question and the price always come from the same market. For an event
+    of Yes/No sub-markets that is the nearest open deadline of a deadline
+    ladder, and otherwise the first outcome (the topic's own, or the most
+    likely). For a single market it is its Yes price, or its leading outcome
+    with that outcome's ``label``.
+    """
+    if not outcome_prices:
+        return None
+    if outcome_questions[0] is not None:
+        index = _nearest_deadline(
+            outcome_questions, outcome_markets, [price for _name, price in outcome_prices],
+        ) or 0
+        return {"question": outcome_questions[index], "price": outcome_prices[index][1]}
+    question = str(top_market.get("question") or title)
+    by_name = {str(name).casefold(): price for name, price in outcome_prices}
+    if set(by_name) == {"yes", "no"}:
+        return {"question": question, "price": by_name["yes"]}
+    name, price = outcome_prices[0]
+    return {"question": question, "label": str(name), "price": price}
+
+
+def names_whole_topic(topic: str, *texts: str) -> bool:
+    """Whether a market's text names the whole topic, not one word of it.
+
+    The event filter keeps a market that shares one informative word with a
+    two-word topic, so "Jensen Huang" keeps a table tennis match played by
+    another Huang. Every informative word of the topic (of either side of a
+    "vs" topic) must appear as a word of its own. A topic with no informative
+    word is not checked.
+    """
+    def words(text: str) -> List[str]:
+        text = re.sub(r"['\u2019]s\b", "", text.casefold())
+        return [word for word in re.sub(r"[^\w\s]", " ", text).split() if len(word) > 1]
+
+    found = {word for text in texts for word in words(text or "")}
+    sides = re.split(r"\s+(?:vs\.?|versus)\s+", _extract_core_subject(topic), flags=re.IGNORECASE)
+    checked = False
+    for side in sides:
+        side_words = words(side)
+        informative = _informative_words(side_words) or side_words
+        if not informative:
+            continue
+        checked = True
+        if all(word in found for word in informative):
+            return True
+    return not checked
+
+
+def _legacy_shorten_question(question: str) -> str:
+    """The name older builds gave a market question; saved reports hold it.
+
+    They cut a question with no shorter subject at 40 characters and only
+    then dropped a leading article.
+    """
+    q = question.strip().rstrip("?")
+    subject = _question_subject(q)
+    if subject is not None:
+        return subject
+    return re.sub(r"^(?:a|an|the)\s+", "", q[:40], flags=re.I)
 
 
 def _compute_text_similarity(topic: str, title: str, outcomes: List[str] = None) -> float:
@@ -775,6 +1007,10 @@ def parse_polymarket_response(
         # sub-markets, synthesize from market questions to show actual
         # team/entity probabilities instead of a single market's Yes/No
         outcome_prices = _parse_outcome_prices(top_market)
+        # The market question each outcome was named from, None for a label.
+        outcome_questions: List[Optional[str]] = [None] * len(outcome_prices)
+        # The market each outcome is priced in.
+        outcome_markets: List[Dict[str, Any]] = [top_market] * len(outcome_prices)
         top_outcomes_are_binary = (
             len(outcome_prices) == 2
             and {n.lower() for n, _ in outcome_prices} == {"yes", "no"}
@@ -788,10 +1024,12 @@ def parse_polymarket_response(
                 pairs = _parse_outcome_prices(m)
                 yes_price = next((p for name, p in pairs if name.lower() == "yes"), None)
                 if yes_price is not None and yes_price > 0.005:
-                    synth_outcomes.append((q, yes_price))
+                    synth_outcomes.append((q, yes_price, m))
             if synth_outcomes:
                 synth_outcomes.sort(key=lambda x: x[1], reverse=True)
-                outcome_prices = [(_shorten_question(q), p) for q, p in synth_outcomes]
+                outcome_prices = [(_shorten_question(q), p) for q, p, _m in synth_outcomes]
+                outcome_questions = [q for q, _p, _m in synth_outcomes]
+                outcome_markets = [m for _q, _p, m in synth_outcomes]
 
         # Format price movement
         price_movement = _format_price_movement(top_market)
@@ -859,8 +1097,8 @@ def parse_polymarket_response(
             core_tokens = set(core.split())
             reordered = []
             rest = []
-            for pair in outcome_prices:
-                name_lower = pair[0].lower()
+            for pair in zip(outcome_prices, outcome_questions, outcome_markets):
+                name_lower = pair[0][0].lower()
                 # Match if full core is substring, or name is substring of core,
                 # or any core token appears in the name (handles long question strings)
                 if (core in name_lower or name_lower in core
@@ -869,7 +1107,15 @@ def parse_polymarket_response(
                 else:
                     rest.append(pair)
             if reordered:
-                outcome_prices = reordered + rest
+                outcome_prices = [priced for priced, _q, _m in reordered + rest]
+                outcome_questions = [q for _priced, q, _m in reordered + rest]
+                outcome_markets = [m for _priced, _q, m in reordered + rest]
+
+        # After the ordering above, which reads the subject names.
+        outcome_prices = _own_outcome_labels(outcome_prices, outcome_questions, outcome_markets)
+        headline = _headline_market(
+            title, top_market, outcome_prices, outcome_questions, outcome_markets,
+        )
 
         # Normal display payloads stay compact. Verification requests the
         # complete snapshot so topic-promoted outcomes remain re-checkable.
@@ -884,7 +1130,9 @@ def parse_polymarket_response(
             "question": top_market.get("question", title),
             "url": url,
             "outcome_prices": top_outcomes,
+            "outcome_questions": outcome_questions[: len(top_outcomes)],
             "outcomes_remaining": remaining,
+            "headline": headline,
             "price_movement": price_movement,
             "volume24hr": volume24hr,
             "volume1mo": event_volume1mo,
@@ -1029,6 +1277,27 @@ def refetch_datum(item: Any, datum_key: str) -> dict[str, Any]:
         outcome_counts[normalized] = occurrence + 1
         key = f"{name}\x1f{occurrence}" if outcome_totals[normalized] > 1 else str(name)
         values[key] = price
+    # Reports saved by older builds hold each market under its old cut name.
+    # The same snapshot answers later claims on this event, so it carries
+    # those names too, numbered the way the old names repeated.
+    questions = refreshed.get("outcome_questions") or []
+    legacy_pairs = [
+        (
+            _legacy_shorten_question(question).strip() if question else str(name),
+            price,
+        )
+        for (name, price), question in zip(outcome_pairs, questions)
+    ]
+    legacy_totals: dict[str, int] = {}
+    for name, _price in legacy_pairs:
+        legacy_totals[name.casefold()] = legacy_totals.get(name.casefold(), 0) + 1
+    legacy_counts: dict[str, int] = {}
+    for name, price in legacy_pairs:
+        normalized = name.casefold()
+        occurrence = legacy_counts.get(normalized, 0)
+        legacy_counts[normalized] = occurrence + 1
+        key = f"{name}\x1f{occurrence}" if legacy_totals[normalized] > 1 else name
+        values.setdefault(key, price)
     if refreshed.get("end_date") is not None:
         values["end_date"] = refreshed["end_date"]
 
@@ -1040,11 +1309,16 @@ def refetch_datum(item: Any, datum_key: str) -> dict[str, Any]:
             occurrence = int(raw_occurrence)
         else:
             outcome_name, occurrence = datum_key, 0
+        wanted = outcome_name.casefold()
         matches = [
-            price
-            for name, price in refreshed.get("outcome_prices") or []
-            if str(name).casefold() == outcome_name.casefold()
+            price for name, price in outcome_pairs if str(name).casefold() == wanted
         ]
+        if occurrence >= len(matches):
+            # An old cut name; the nth repeat of it is the nth market it was
+            # cut from.
+            matches = [
+                price for name, price in legacy_pairs if name.casefold() == wanted
+            ]
         value = matches[occurrence] if occurrence < len(matches) else None
     if value is None:
         raise KeyError(f"Polymarket datum {datum_key!r} was not found")

@@ -3,12 +3,12 @@ name: deep-research
 description: "Use when the user asks for \"deep research\", a \"research report on\", a \"comprehensive analysis of\", to \"look into X in depth\", to \"write a report on X\", or any question needing multi-source synthesis beyond a single search — an autonomous multi-step deep research engine implementing an iterative Think → Search → Extract → Synthesize → Stop loop. The LLM drives every decision: what to search, what's relevant, what's missing, and when to stop. Produces a cited, magazine-quality report with inline citations, category-specific formatting, and research stats. For entity vetting/dossiers use entity-research; for news digests use news-monitoring; for source-grounded Q&A use notebooklm-mode."
 license: MIT
 metadata:
-  version: 1.9.2
+  version: 1.12.0
   author: moonlight-lupin
   platforms: [linux, macos, windows]
   hermes:
     tags: [research, deep-research, report, synthesis, iterative, citations, evidence-basis, provenance]
-    related_skills: [news-monitoring, entity-research, notebooklm-mode, youtube-topic-research, fact-checker, source-tracker]
+    related_skills: [news-monitoring, entity-research, notebooklm-mode]
 ---
 
 # Deep Research — Iterative Research Engine
@@ -21,6 +21,9 @@ source quality tiers, and explicit gaps/contradictions sections.
 
 See `references/structured-evidence-format.md` for the evidence.json layer and
 `references/docsgpt-concepts.md` for adaptive-depth concept mapping.
+
+For the "is there updated or custom firmware for device X?" question class, follow
+`references/firmware-support-status-research.md` — vendor download page + official-forum RSS + GitHub-API triangulation recipe.
 
 ## When to use
 
@@ -82,6 +85,24 @@ Before planning, assess whether the question is specific enough to research prod
 > Please provide these details and I'll begin."
 
 If the question is already specific, skip this step entirely and proceed to Step 1.
+
+**Proper-noun referent check (before Round 1):** when the question names a term
+that could refer to either the user's own tooling/environment or a public product
+(a bot name, a codename, a vendor feature, a person), disambiguate the referent
+BEFORE running full rounds. If the user is available, ask once with the plausible
+readings as options; if the user does not answer, proceed on the best
+interpretation, say which one you chose in the plan, and let the user correct
+course cheaply. A wrong referent costs entire rounds of searching and a full
+refocus — it is the most expensive research mistake this loop can make, more so
+than any vague scope.
+
+**Acronym referent probe (cheap, before Round 1):** the same check applies to short
+acronyms that collide with unrelated high-ranking terms — a bare "UI", "MAS", or
+"RAG" matches medical scales, entertainment companies, or storage tech at the same
+rank as the intended referent. Run a 2-3 query precision probe (one query per
+candidate reading) before committing rounds. If the probe is ambiguous, state the
+chosen reading in the plan header AND as an interpretation note at the top of the
+final report, so the user can correct course cheaply instead of re-running the loop.
 
 ## Step 1 — Research Plan
 
@@ -156,9 +177,10 @@ Query rules, fetch budgets, quote anchoring, the synthesis template, the evidenc
 | Query generation, search and fetch, extraction, anchoring, synthesis, or the stopping check | `references/step3-iterative-loop.md` |
 | Evidence-store commands and the three delivery gates | `references/validation-gates.md` |
 | The evidence.json intermediate | `references/structured-evidence-format.md` |
+| The default search or reader fails, or the plan needs a country, language or date filter | `references/search-and-fetch-fallbacks.md` |
 
 1. **3a — Query Generation (gap-driven)** — Breadth comes from the Step 1 preset (simple=2, moderate=3, complex=4). Round 1 targets plan sub-questions; later rounds target gaps and recorded follow-ups.
-2. **3b — Search and Fetch** — Use the donsetch MCP search/fetch tools when the user asked for them; otherwise `web_search` / `web_extract`. Never abort over a provider preference.
+2. **3b — Search and Fetch** — Use the donsetch MCP search/fetch tools when the user asked for them; otherwise `web_search` / `web_extract`. Never abort over a provider preference. *Optional, paid:* when the plan needs the **same public facts for several organisations** (size, mandate, sector exposure, recent commitments), one Exa Agent API run can collect them as cited rows (about US$0.10 a run, ceiling US$1.10; quote first; organisations only, never people). Its output enters the evidence store like any other source — each fact keeps the page it cites and gets its own label. Procedure: `entity-research/references/organisation-evidence-exa.md`.
 3. **3b.1 — Evidence Persistence (mandatory for 5+ source reports)** — From round 1, persist with `init-run`, `register-source`, `add-claim`, `add-evidence`, and `check-quote` on `scripts/research_validation.py`.
 4. **3c — Quality Filter and Extraction** — Discard low-quality results before extracting.
 5. **Verbatim snippet anchoring (mandatory for claims you store)** — Every stored claim carries a verbatim contiguous excerpt from that source's page text.
@@ -283,6 +305,16 @@ For larger research tasks (10+ sources) or when the user may want to follow up w
 
 This is optional — the skill works fully without a vault for one-off reports.
 
+## Persistent citation database (absorbed source-tracker)
+
+For research that spans sessions, keep a portable SQLite citation database instead of scattering URLs. The scripts live in `scripts/source_db.py` and `scripts/url_health.py` (formerly the standalone source-tracker skill). Full workflow doc: `references/citation-database.md` (schema details in `citation-schema.md`, export formats in `citation-export-formats.md`).
+
+- Add every source at the moment it passes the quality filter, before synthesis: `python scripts/source_db.py add --url URL --topic TOPIC --title TITLE --type web --session-id RUN_ID`. Never add an invented URL — only URLs observed through a real source channel.
+- Database path: set `SOURCE_TRACKER_DB` or pass `--db-path`; for multi-session work use an explicit path (for example `<project>/.hermes/research/sources.db`). The default `./sources.db` depends on the current working directory.
+- Before final delivery: `python scripts/source_db.py dedup` (merges http/https and `www.` URL variants; the survivor keeps the earliest `accessed_at`), then `python scripts/source_db.py export --topic TOPIC --format markdown --output bibliography.md` (also `bibtex`, `csv`, `json`).
+- Link health before final citations: `python scripts/url_health.py --stale-days 30 --batch-size 50` — it HEAD-checks stale URLs and marks HTTP >= 400 as dead (`verified = 0`). Dead links are recorded, not errors.
+- URL normalization: canonical storage lowercases scheme/host, strips fragments and non-root trailing slashes, preserves query strings; dedup comparison additionally treats http/https and `www.` variants as one source.
+
 ## Subagent Mode (optional)
 
 For genuinely parallel research across distinct sub-topics (e.g. researching 3 unrelated companies):
@@ -307,6 +339,14 @@ delegate_task(
 - If `web_extract` fails on a URL, note it and move on — don't retry endlessly
 - If `web_search` returns no results, apply the §3a refinement protocol including the identical-rewrite stop
 
+## External provider head-to-head (optional benchmarking)
+
+When the user wants this stack benchmarked against an external research
+provider (e.g. Perplexity), read `references/research-provider-benchmark.md`
+first. Standing rules: same raw question to both sides, no date or scope
+injection; verify the provider's central claims independently before scoring;
+report cost, breadth, and complementary positioning rather than a single winner.
+
 ## Pitfalls
 
 - **Overclaiming basis** — when torn between two labels, pick the weaker one. A source's "about half" stays `~50% [SOURCED]`.
@@ -316,6 +356,8 @@ delegate_task(
 - **Complexity misclassification** — complexity is breadth of synthesis, not how impressive the topic sounds. A narrow factual topic with six sub-questions is moderate.
 - **Token budget fills before the cap** — on long extractions, summarize aggressively when context is tight rather than waiting for the round ceiling.
 - **Word-boundary matching** — "port" matching "transport" or "support" is a false hit; filter on topical relevance, not substring overlap.
+- **Keyless search noise on jurisdiction- or regulator-scoped questions** — when a keyless `web_search` returns `weak:true`/degraded and is dominated by unrelated verticals, re-run with the authority or domain named in the query ("Singapore Monetary Authority", `site:mas.gov.sg`) before concluding anything is absent. Absence from a noisy keyless result set is not evidence of absence — the same query re-scoped routinely returns the primary documents that were missing.
+- **Mid-research re-scope** — when the user narrows the question after Round 1, do not restart the loop on the new scope: run one targeted pass, cite only sources that answer the narrowed scope, and state in the report what changed versus the broader framing.
 - **Store claims are quote-shaped** — the deterministic scorer supports a claim only when ONE stored snippet covers every figure, year AND entity the claim text carries; anything else caps at `partial`−0.01 (strict red for factual). The law, validated live three times in one session: multi-fact claims split per snippet, claim text byte-aligns to its quote, and prose paraphrase stays in the report body. Instances of the same law: **CJK claims** extract no tokens, so even an identical snippet scores ~0.33 — byte-identical claim text (entity axis 1.0) or anchor via `check-quote` (tokenization-free) instead; **glommed capitalized runs** ("Scrape URL FIRECRAWL" → one entity `scrape url`) never set-match a claim that says "Firecrawl" alone; **alphanumeric brand prefixes** ("x402" → figure `402`) cap unless the snippet carries the brand text. Diagnose with the script's `_figures`/`_entities`/`_tokens` helpers before rewriting.
 - **Anchored to the wrong substrate** — `check-quote --source-id` reads `pages/<source_id>.txt`; verify the id resolves to the URL the sentence actually came from before treating a mismatch as fabrication — the same sentence on another page's file gives a false red.
 - **Unanchored snippets** — storing a snippet (or evidence) that never passed `check-quote` is how a smooth paraphrase becomes "evidence": the scorer sees familiar tokens and rates it supported. Verbatim excerpt, checked against the saved page text (`<run_dir>/pages/<source_id>.txt`), repair-once on mismatch — never massage the snippet toward the claim, never splice across paragraphs. No contiguous excerpt exists? The claim is not evidence-backed; store it honestly and let the gate flag it.

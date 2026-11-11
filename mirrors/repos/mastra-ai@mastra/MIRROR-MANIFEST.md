@@ -119,7 +119,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`mastracode/AGENTS.md`](mastracode/AGENTS.md) |
 | 59 | ✓ | [`mastracode/factory-ui/AGENTS.md`](mastracode/factory-ui/AGENTS.md) |
 | 60 | ✓ | [`mastracode/factory/factory-skills/configure-factory-rules/SKILL.md`](mastracode/factory/factory-skills/configure-factory-rules/SKILL.md) |
-| 61 | ✓ | [`mastracode/factory/factory-skills/factory-complete-issue/SKILL.md`](mastracode/factory/factory-skills/factory-complete-issue/SKILL.md) |
+| 61 | ✓ | [`mastracode/factory/factory-skills/factory-build/SKILL.md`](mastracode/factory/factory-skills/factory-build/SKILL.md) |
 | 62 | ✓ | [`mastracode/factory/factory-skills/factory-gitlab-rereview/SKILL.md`](mastracode/factory/factory-skills/factory-gitlab-rereview/SKILL.md) |
 | 63 | ✓ | [`mastracode/factory/factory-skills/factory-gitlab-review/SKILL.md`](mastracode/factory/factory-skills/factory-gitlab-review/SKILL.md) |
 | 64 | ✓ | [`mastracode/factory/factory-skills/factory-plan/SKILL.md`](mastracode/factory/factory-skills/factory-plan/SKILL.md) |

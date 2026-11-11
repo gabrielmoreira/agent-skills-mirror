@@ -12,7 +12,7 @@ Write the finished piece. The user brings facts, a ramble, or a draft; you bring
 
 ## Done looks like
 
-The text itself, complete, in the profile's voice, with every supplied fact, link, and number in place and nothing added. Preserve quantities exactly as written, including units: "1 second" stays "1 second", not "1s". Preserve each fact once; repeated wording is not an extra fact. Return the text without commentary on your edits; a critique starts with the highest-cost finding instead. Ask one question only when a missing fact would change what the piece says; otherwise state the assumption in one line and write.
+The text itself, complete, in the profile's voice, with every supplied fact, link, and number in place and nothing added. Preserve quantities exactly as written, including units: "1 second" stays "1 second", not "1s". Preserve each fact once; repeated wording is not an extra fact. Open the response with the text itself; a critique opens with the highest-cost finding instead. After it come only the notes this skill requires, one line each: the profile used when it is not the surface's own, an assumption made, a brief detail inferred, a fact still missing. Never say what you cut or changed, or why. Ask one question only when a missing fact would change what the piece says; otherwise state the assumption in one line and write.
 
 ## The default
 
@@ -48,7 +48,7 @@ When the user pastes their own writing and asks for a profile, write `<data-root
 
 ## Before returning
 
-First read the whole draft once, aloud in the user's voice, as its reader. Wherever you stumble, reread, or lose the point, rewrite that sentence from the brief; this one read catches what no single rule does (pacing, emphasis, a sentence that parses only on the second try). Then edit as the sternest reader: passive voice where the actor matters, a verb buried in a noun, the same phrase twice, filler adverbs, a paragraph that belongs elsewhere, the point arriving late. Check the length against the profile's measured range, or the size of the question when there is none. Then run [references/tells.md](references/tells.md). A word or habit the profile names is never a tell, apart from "load-bearing", which is never written. Never paste profile text into the output.
+First read the whole draft once, aloud in the user's voice, as its reader. Wherever you stumble, reread, or lose the point, rewrite that sentence from the brief; this one read catches what no single rule does (pacing, emphasis, a sentence that parses only on the second try). Then edit as the sternest reader: passive voice where the actor matters (if "by zombies" fits after the verb, it is passive), a verb buried in a noun, the same phrase twice, filler adverbs, a paragraph that belongs elsewhere, the point arriving late. Check the length against the profile's measured range, or the size of the question when there is none. Then run [references/tells.md](references/tells.md). A word or habit the profile names is never a tell, apart from "load-bearing", which is never written. Never paste profile text into the output.
 
 Never invent a name, number, date, link, quote, statistic, citation, decision, availability, experience, motive, or reason the user did not state, and never put words in a real person's mouth. An invented "why I built this" is the first thing the user corrects. Diff the draft against the brief: nothing added, nothing dropped. Never firm up a position they left open; leave `[placeholder]` for a missing fact.
 
@@ -69,7 +69,7 @@ A profile always wins over a reference's defaults. An ask, a decline, bad news, 
 | Technical docs | `docs` | [references/docs.md](references/docs.md) |
 | README | `readme` | [references/readme.md](references/readme.md) |
 
-Maintenance only: [evals/evals.json](evals/evals.json) holds scenarios for anyone changing this skill.
+Maintenance only: [evals/evals.json](evals/evals.json) holds scenarios for anyone changing this skill. [scripts/discriminate.py](scripts/discriminate.py) checks whether drafts from a profile pass as the person: hold out a fifth of their real messages (never counted or quoted in the profile), then a second model guesses which of each real and drafted pair the person wrote; near 50% means it cannot tell.
 
 ## Gotchas
 

@@ -9,7 +9,7 @@ decision is reversed, add a new one that says which record it supersedes.
 2. Add one line to the right section of this index.
 3. Do **not** paste the record body into `AGENTS.md`.
 
-526 records, 2026-05-19 → 2026-11-09.
+533 records, 2026-05-19 → 2026-11-10.
 
 ---
 
@@ -244,7 +244,17 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Ship `janhq/llama.cpp` cudart DLLs with every Windows CUDA backend](2026-05-22-ship-janhq-llama-cpp-cudart-dlls-with-every-windows-cuda-backend.md)
 - **2026-05-19** — [Windows uses upstream `ggml-org/llama.cpp`, not the TurboQuant fork](2026-05-19-windows-uses-upstream-ggml-org-llama-cpp-not-the-turboquant-fork.md)
 
-## Models, Hub & downloads (51)
+## Models, Hub & downloads (56)
+
+- **2026-11-09** — [Offer FastFlowLM in the Model Hub, outside onboarding](2026-11-09-offer-fastflowlm-in-the-hub-only.md) — remove onboarding FLM offers and restore the registered engine/format in Hub filters.
+
+- **2026-11-09** — [Keep onboarding model-first and install the model's engine](2026-11-09-keep-onboarding-model-first.md) — remove the engine picker, retain model choices, and install/check FLM before downloading a model.
+
+- **2026-11-09** — [Preserve FastFlowLM desktop handoff invariants](2026-11-09-preserve-fastflowlm-desktop-handoff-invariants.md) — independent settings, serialized discovery, source-bound catalogs, engine-scoped onboarding and terminal authorization.
+
+- **2026-11-09** — [Acknowledge FastFlowLM maintenance before finalizing](2026-11-09-acknowledge-fastflowlm-maintenance-before-finalizing.md) — recover rollback guards, publish same-digest replacements and inherit engine launch settings.
+
+- **2026-11-09** — [Install FastFlowLM models in the desktop](2026-11-09-install-fastflowlm-models-in-the-desktop.md) — shared catalog/SDK builders, durable desktop-owned downloads, maintenance recovery and separate NPU residency.
 
 - **2026-11-05** — [Discover GenieX bundles in Qualcomm releases](2026-11-05-discover-geniex-qualcomm-bundles.md)
 
@@ -346,8 +356,10 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-10** — [Throttle crashloop `model_load` failure spam client-side; confirm `model_load.status` / api 404-noise are already-fixed-pending-rollout, not code bugs (ATO-130: ATO-133 + ATO-131 + ATO-132)](2026-06-10-throttle-crashloop-model-load-failure-spam-client-side-confirm.md)
 - **2026-06-09** — [Add zero-PII Sentry crash/error tracking to both the React frontend and the Rust/Tauri desktop, gated behind `productAnalytic` (ATO-113)](2026-06-09-add-zero-pii-sentry-crash-error-tracking-to-both-the-react.md)
 
-## Packaging, installers, autostart & platform policy (33)
+## Packaging, installers, autostart & platform policy (35)
 
+- **2026-11-10** — [Sign the Windows ARM64 build on the arm64 runner](2026-11-10-sign-windows-arm64-on-the-arm64-runner.md) — `build-windows-arm64` signs every PE through the same signCommand as x64 (`TAURI_WINDOWS_SIGNTOOL_PATH` points the bundler at signtool); the two x64 signing jobs are gone.
+- **2026-11-10** — [Sign Windows builds with the Azure Key Vault key through GitHub OIDC](2026-11-10-sign-windows-builds-with-azure-key-vault.md) — AzureSignTool replaces DigiCert KeyLocker in every Windows signing step; jobs run in the `codesign` environment with `id-token: write`; `sign.ps1` fetches its token just in time inside `tauri build`. Supersedes the signing tool of 2026-10-22.
 - **2026-11-06** — [Submit every published release to the Microsoft Store](2026-11-06-submit-published-releases-to-the-microsoft-store.md) — `msstore.yml`'s submit job points Partner Center at the uploaded installer, rewrites "What's new" and submits; it skips while another submission is in certification; `make release-prod` follows the run.
 - **2026-10-30** — [Correct the Windows publisher without changing installation identity](2026-10-30-correct-windows-publisher-without-changing-install-identity.md)
 

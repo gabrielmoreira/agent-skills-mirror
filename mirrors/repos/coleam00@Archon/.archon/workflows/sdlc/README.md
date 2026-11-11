@@ -121,6 +121,56 @@ settings:
     one, refuses until a later round validates the head again. This trusts the agent's
     report of the run, which is weaker than CI.
 
+## Bindings
+
+The pack installs no binding and starts nothing by itself. It declares the bindings it
+recommends once, under `bindings:` in [`.pack/pack.yaml`](.pack/pack.yaml), and one
+command writes them as files for a repository:
+
+```bash
+archon trigger whoami   # prints the runAsUserId
+archon pack bindings sdlc \
+  --repo github.com/acme/widgets \
+  --host build-host-1 \
+  --run-as <runAsUserId> \
+  --cwd /srv/archon/widgets \
+  --out /srv/archon/bindings
+```
+
+`--cwd` is the checkout the runs launch in; point it at one that tracks the default
+branch. The command writes `sdlc-<owner>-<name>-<binding>-<digest>.json` for each binding below and
+prints what registers each one. It registers and schedules nothing, refuses to replace a
+file unless `--force`, and `--only <id,...>` writes a subset. The repository, host, user
+and checkout are filled in once, and an input that names another binding's file
+(`build_queue_binding`, `merge_queue_binding`, `discoveries_binding`) is the path of the
+file written beside it, so `--only` needs every binding a selected one names, or that
+binding's file already in `--out`.
+
+| Binding | Starts | On | Section |
+|---|---|---|---|
+| `intake-issues`, `intake-labels` | `archon-intake` | GitHub issue and label events | [Intake](#intake) |
+| `build-queue` | `archon-build-queue` | every 30 minutes | [Build queue](#build-queue) |
+| `split-queue` | `archon-split` | every 30 minutes | [Split queue](#split-queue) |
+| `merge-queue` | `archon-merge-queue` | every 30 minutes | [Merge queue](#merge-queue) |
+| `discoveries` | `archon-discoveries` | every 4 hours | [Discoveries](#discoveries) |
+| `metrics-prs` | `archon-metrics-prs` | daily | [Metrics](#metrics) |
+| `metrics-test-value` | `archon-metrics-test-value` | daily | [Test value](#test-value) |
+| `worktree-cleanup` | `archon-worktree-cleanup` | every 6 hours | [Worktree cleanup](#worktree-cleanup) |
+
+A timer binding is a whole file: fire it once with `archon trigger fire --config <file>`,
+then schedule that command (`archon trigger schedule install --config <file>` on macOS;
+cron, systemd or Task Scheduler elsewhere). If you already schedule a queue another way, remove that
+schedule first, or both start runs for the same queue. An event binding is one entry of the GitHub
+source plugin's `bindings` array, so its file is the object to add there; see
+[Configure GitHub event starts](https://archon.diy/guides/workflow-triggers/#configure-github-event-starts).
+A generated file is the operator's from then on; write it again with `--force` after the
+declaration changes. An installed schedule keeps the interval it was installed with: after
+changing `schedule.intervalSeconds`, run `archon trigger schedule remove --config <file>` and
+install it again on macOS, or change the interval in cron, systemd or Task Scheduler. A
+resource keeps the capacity its first start declared, and a start declaring another is
+rejected as `resource_capacity_conflict`. To change a capacity, give the resource a new
+name, with the same new name and capacity in every binding that shares it.
+
 ## Forge
 
 Every pull-request, issue and check read and write this pack makes goes through
@@ -162,9 +212,12 @@ remote resolves to no repository, or that has several remotes and no `origin`, r
 the run and says so. A checkout whose `origin` is a fork works on the fork; set both
 inputs to choose another repository.
 
-Agents read CI job logs with the tools the run has, since the contract has no operation
-for them. A red default branch is always raised as a `merge: base` item: `checks.rerun`
-acts only on a pull request, so the pack never reruns it.
+Agents reach the forge through `archon forge` too: they read a failing check's log with
+`checks.logs` and search issues and pull requests with `workitem.search`. No workflow
+preflights those two reads, so on a plugin without one the agent's call is refused with
+`unsupported_op`, and the agent reports that instead of a cause or a search result. A red
+default branch is always raised as a `merge: base` item: `checks.rerun` acts only on a
+pull request, so the pack never reruns it.
 
 `archon-ship`, `archon-deliver`, `archon-upkeep` and `archon-pr` start with a `forge` node
 ([`.shared/forge-check.ts`](.shared/forge-check.ts)) that proves the plugin can act
@@ -251,9 +304,14 @@ covers every TypeScript file under `.archon/workflows/`, so it needs no globs of
 own. A script placed outside the type-check globs fails `pack-scripts-validation.test.ts`
 rather than going quietly unchecked.
 
-The scripts' tool-boundary tests live under `.archon/scripts/__tests__/`. CI runs the
-merge-sweep conformance test through `merge-sweep-contract`, and runs the other pack tests and
-the workflow fixtures on a pull request that changes the pack. Run them locally with
+`.shared/outputs.generated.ts` holds the type of every node output and the values of every
+enum, generated from the workflows' `output_format` schemas. A script reads a node's
+output as `NodeOutput<'<workflow>', '<node>'>` instead of restating the shape. After
+changing an `output_format`, run `bun run generate:workflow-output-types`; CI's
+`generated-files` check fails while the file is stale.
+
+The scripts' tool-boundary tests live under `.archon/scripts/__tests__/`. CI runs the pack
+tests and the workflow fixtures on a pull request that changes the pack. Run them locally with
 `bun run test --plan pack` and `bun run validate --only workflow-fixtures`.
 
 Three rules, each protecting something a script cannot get back on its own:
@@ -485,43 +543,15 @@ request, never the state.
 - **Inputs.** `label_actor` is the one input that can create a promotion, never
   trust. Only the binding, or someone with access to the install, can supply it.
 
-The pack installs no binding. Two bindings in the GitHub source plugin's configuration start
-it; both share one resource so runs queue rather than overlap:
+The pack installs no binding. Two bindings in the GitHub source plugin's configuration
+start it, `intake-issues` on an issue opened, edited or reopened and `intake-labels` on a
+request label added; `archon pack bindings sdlc --only intake-issues,intake-labels` writes
+both ([Bindings](#bindings)). They share one resource at capacity 2 with `"overlap":
+"queue"`, so runs queue rather than overlap.
 
-```json
-{
-  "bindingId": "intake-issues",
-  "hostId": "build-host-1",
-  "runAsUserId": "<archon user id>",
-  "resource": "forge:github.com/acme/widgets:intake",
-  "capacity": 2,
-  "overlap": "queue",
-  "launch": {
-    "cwd": "/srv/archon/widgets",
-    "workflowName": "archon-intake",
-    "inputs": {},
-    "isolation": { "kind": "default" }
-  },
-  "selector": {
-    "kind": "issue.lifecycle",
-    "actions": ["opened", "edited", "reopened"],
-    "repository": { "host": "github.com", "path": "acme/widgets" }
-  },
-  "inputMapping": {
-    "repo_host": { "source": "field", "field": "repository.host" },
-    "repo_path": { "source": "field", "field": "repository.path" },
-    "number": { "source": "field", "field": "subject.number" },
-    "kind": { "source": "field", "field": "subject.kind" },
-    "action": { "source": "field", "field": "event.action" }
-  }
-}
-```
-
-The label binding is the same with `"bindingId": "intake-labels"`, a selector of
-`{"kind": "label.changed", "actions": ["added"], "predicates": [{"field": "label.name",
-"in": ["archon-triage", "archon-ready", "archon-plan", "archon-investigate", "archon-split"]}]}`, and two
-more mappings: `label` from `label.name` and `label_actor` from `label.actor.login`.
-The predicate only saves runs; intake ignores any other label.
+The label binding's predicate names the request labels (`archon-triage` and the route
+labels), and it maps two more inputs: `label` from `label.name` and `label_actor` from
+`label.actor.login`. The predicate only saves runs; intake ignores any other label.
 
 ## Build queue
 
@@ -547,7 +577,7 @@ which a project extends with its own `.archon/sdlc/policy/build.md`.
   run holds it, or its stage and build status show it does not wait.
 - **A message.** A run with no `number` and a message, such as
   `archon workflow run archon-build-queue "build the retry fix"`, has the `interpret`
-  agent resolve the message with the tracker's CLI to one of five typed decisions:
+  agent resolve the message through the forge's reads to one of five typed decisions:
   `build` one issue, which the run then claims as a named item; `choose` between
   several, which pauses as a `select` attention item labelled `build: message` and
   claims the issue picked; `order`, for several issues to build, which the `order`
@@ -658,37 +688,12 @@ which a project extends with its own `.archon/sdlc/policy/build.md`.
 
 The pack installs no binding. A schedule keeps items moving, because a run works one
 item and a continuation waits for the next run. Each run includes `archon-build`, which
-changes its checkout, so every run needs its own worktree:
+changes its checkout, so every run needs its own worktree: the `build-queue` binding
+([Bindings](#bindings)) launches in a worktree every 30 minutes, at capacity 2 with
+`"overlap": "skip"`.
 
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "widgets-build-queue",
-  "binding": {
-    "bindingId": "build-queue",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "forge:github.com/acme/widgets:build",
-    "capacity": 2,
-    "overlap": "skip",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-build-queue",
-      "inputs": {
-        "repo_host": "github.com",
-        "repo_path": "acme/widgets",
-        "build_queue_binding": "/srv/archon/bindings/widgets-build-queue.json"
-      },
-      "isolation": { "kind": "worktree" }
-    }
-  },
-  "schedule": { "intervalSeconds": 1800, "runAtLoad": false }
-}
-```
-
-`build_queue_binding` names this file, so a run's follow-up rounds start through the
-same binding: one run of the queue holds a slot of the resource while it fires its
+Its `build_queue_binding` input names the binding's own file, so a run's follow-up
+rounds start through the same binding: one run of the queue holds a slot of the resource while it fires its
 follow-up, so the follow-up needs a free slot, or waits in line under `"overlap":
 "queue"`. Without the input, follow-ups wait for the next scheduled run.
 
@@ -813,30 +818,8 @@ window, whether it is split or built whole. A PRD missing any of them gets
 
 The pack installs no binding. A schedule keeps items moving, as for the build queue.
 The run reads the checkout and writes only to the tracker and the state store, so it
-needs no worktree:
-
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "widgets-split-queue",
-  "binding": {
-    "bindingId": "split-queue",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "forge:github.com/acme/widgets:split",
-    "capacity": 1,
-    "overlap": "skip",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-split",
-      "inputs": { "repo_host": "github.com", "repo_path": "acme/widgets" },
-      "isolation": { "kind": "default" }
-    }
-  },
-  "schedule": { "intervalSeconds": 1800, "runAtLoad": false }
-}
-```
+needs no worktree: the `split-queue` binding ([Bindings](#bindings)) runs in the launch
+checkout every 30 minutes, at capacity 1 with `"overlap": "skip"`.
 
 To split an item as soon as intake routes it, add a label binding on the same
 resource, with intake's label selector narrowed to `archon-split` and the same launch.
@@ -973,38 +956,13 @@ then the project's file, whose lines win where the two conflict.
   ask waits for a later sweep, which decides it again.
 
 The pack installs no binding. A schedule sweeps the queue. A run never changes its
-checkout, and the claim keeps two runs off the same item:
+checkout, and the claim keeps two runs off the same item: the `merge-queue` binding
+([Bindings](#bindings)) runs in the launch checkout every 30 minutes, at capacity 1 with
+`"overlap": "queue"`.
 
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "widgets-merge-queue",
-  "binding": {
-    "bindingId": "merge-queue",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "forge:github.com/acme/widgets:merge",
-    "capacity": 1,
-    "overlap": "queue",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-merge-queue",
-      "inputs": {
-        "repo_host": "github.com",
-        "repo_path": "acme/widgets",
-        "merge_queue_binding": "/srv/archon/bindings/widgets-merge-queue.json",
-        "build_queue_binding": "/srv/archon/bindings/widgets-build-queue.json"
-      },
-      "isolation": { "kind": "default" }
-    }
-  },
-  "schedule": { "intervalSeconds": 1800, "runAtLoad": false }
-}
-```
-
-`merge_queue_binding` names this file and `build_queue_binding` the build queue's, so
-an answer's follow-up starts through the operator's own binding. The answering run
+Its `merge_queue_binding` input names the binding's own file and `build_queue_binding`
+the build queue's, so an answer's follow-up starts through the operator's own binding.
+The answering run
 still holds the merge queue's only slot when it fires the sweep, so the binding uses
 `"overlap": "queue"`: the sweep a "merge" answer fires waits in line and starts as soon
 as the answering run ends, at the host's next drain (a server drains every few seconds;
@@ -1068,30 +1026,8 @@ back. Naming the same binding file as the merge queue's `discoveries_binding` al
 starts a pass after each sweep that merged a pull request, when the records about the
 merged code can first be decided ([Merge queue](#merge-queue)). A fired pass that finds
 one already running is skipped like a scheduled one, and the next merging sweep or
-scheduled tick starts it:
-
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "build-host-discoveries",
-  "binding": {
-    "bindingId": "discoveries",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "discoveries:github.com/acme/widgets",
-    "capacity": 1,
-    "overlap": "skip",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-discoveries",
-      "inputs": { "repo_host": "github.com", "repo_path": "acme/widgets" },
-      "isolation": { "kind": "default" }
-    }
-  },
-  "schedule": { "intervalSeconds": 14400, "runAtLoad": false }
-}
-```
+scheduled tick starts it. The `discoveries` binding ([Bindings](#bindings)) starts a pass
+every 4 hours, at capacity 1.
 
 ## Metrics
 
@@ -1149,30 +1085,8 @@ report them makes it refuse. Run it on demand:
 archon workflow run archon-metrics-prs
 ```
 
-The pack installs no binding. A native schedule refreshes the records daily:
-
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "widgets-metrics-prs",
-  "binding": {
-    "bindingId": "metrics-prs",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "metrics-prs:widgets",
-    "capacity": 1,
-    "overlap": "skip",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-metrics-prs",
-      "inputs": {},
-      "isolation": { "kind": "default" }
-    }
-  },
-  "schedule": { "intervalSeconds": 86400, "runAtLoad": false }
-}
-```
+The pack installs no binding. A native schedule refreshes the records daily: the
+`metrics-prs` binding ([Bindings](#bindings)), at capacity 1 with `"overlap": "skip"`.
 
 ### Issues, by route
 
@@ -1223,7 +1137,7 @@ that built it:
 A review round is one verdict a delivery round's review published on the pull request:
 the `review-report` output of the deliver loop's `review` node. The build queue records each run's
 verdicts on its build round (`reviews` on the work item) when it records the round, from
-the run's typed-artifact listing, and the metric reads only the work item. Every build
+the run's `review-report` outputs bound into that node, and the metric reads only the work item. Every build
 round that carried the pull request counts, oldest verdict first. Rounds to Ready counts up to the
 verdict from which every later verdict is ready, so a Ready review that a later review
 overturned does not end the count. A pull request Ready on its first review and on every
@@ -1258,6 +1172,30 @@ the review's code lens:
 ```bash
 archon metrics sdlc.review_rounds --compare <when this checkout picked up a pack change>
 archon metrics sdlc.review_one_round --by-model ship__deliver__rounds.review__code
+```
+
+### Test and production lines
+
+Given `lines_since`, `archon-metrics-prs` also records the lines each factory pull
+request merged since then added, at its merge time and attributed like the other records:
+
+| Metric | Kind | Unit | One record per merged pull request |
+|---|---|---|---|
+| `sdlc.test_lines_added` | count | `lines` | lines it added in test files |
+| `sdlc.production_lines_added` | count | `lines` | lines it added in every other file |
+
+A test file is one under a `__tests__`, `test`, `tests` or `spec` directory, or named
+`*.test.*`, `*.spec.*`, `*_test.*`, `*_spec.*` or `test_*`. Lines are counted from the
+patches `pr.files` reports, one read per pull request, so the window sets the cost. A pull
+request with a file the forge reports without a patch, such as a binary or a very large
+diff, is listed in `lines_skipped` and counts in neither. The records are evidence and gate
+nothing. The test-to-production ratio across a pack change is the two values divided, on
+each side of the cut:
+
+```bash
+archon workflow run archon-metrics-prs --input lines_since=30d
+archon metrics sdlc.test_lines_added --compare <when this checkout picked up a pack change>
+archon metrics sdlc.production_lines_added --compare <when this checkout picked up a pack change>
 ```
 
 ### Test value
@@ -1347,30 +1285,8 @@ archon workflow run archon-metrics-test-value --input since=7d
 ```
 
 The pack installs no binding. A native schedule judges the last day's merges daily; a
-pull request judged twice keeps its latest record:
-
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "widgets-metrics-test-value",
-  "binding": {
-    "bindingId": "metrics-test-value",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "metrics-test-value:widgets",
-    "capacity": 1,
-    "overlap": "skip",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-metrics-test-value",
-      "inputs": { "since": "1d" },
-      "isolation": { "kind": "default" }
-    }
-  },
-  "schedule": { "intervalSeconds": 86400, "runAtLoad": false }
-}
-```
+pull request judged twice keeps its latest record. The `metrics-test-value` binding
+([Bindings](#bindings)) passes `since=1d`, at capacity 1 with `"overlap": "skip"`.
 
 ## Worktree cleanup
 
@@ -1404,31 +1320,11 @@ Who removes each checkout:
 - A worktree launched with `--branch` waits for this workflow's merged sweep.
 
 A server already runs a merged sweep on its cleanup schedule, so this binding is for
-installs that run only the CLI. The pack installs no binding. A native schedule starts a
-pass every few hours:
-
-```json
-{
-  "version": 1,
-  "sourceInstanceId": "build-host-worktree-cleanup",
-  "binding": {
-    "bindingId": "worktree-cleanup",
-    "bindingRevision": null,
-    "hostId": "build-host-1",
-    "runAsUserId": "<archon user id>",
-    "resource": "worktree-cleanup:build-host-1",
-    "capacity": 1,
-    "overlap": "skip",
-    "launch": {
-      "cwd": "/srv/archon/widgets",
-      "workflowName": "archon-worktree-cleanup",
-      "inputs": { "include_closed": "false" },
-      "isolation": { "kind": "default" }
-    }
-  },
-  "schedule": { "intervalSeconds": 21600, "runAtLoad": false }
-}
-```
+installs that run only the CLI. The pack installs no binding. The `worktree-cleanup`
+binding ([Bindings](#bindings)) starts a pass every 6 hours with `include_closed=false`.
+Its resource is named for the host, not the repository, because one pass covers every
+project registered there: generated for two repositories, the two schedules share one
+slot and `"overlap": "skip"` drops the second pass.
 
 ## Docker verification
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 124 followed patterns, 280 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 128 followed patterns, 284 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 124 followed pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 124 |
-| Files         | 280 |
+| Followed pats | 128 |
+| Files         | 284 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 124 followed pat
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `daymade-audio/stepfun-tts/references/api_reference.md`
 - `daymade-skill/skill-creator/references/first-use-and-resume.md`
 - `daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md`
 - `competitors-analysis/references/collection_destination.md`
@@ -77,6 +78,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 124 followed pat
 - `report-with-html/references/interaction-components.md`
 - `report-with-html/references/visual-evidence.md`
 - `daymade-skill/skill-creator/references/source-snapshot-archives.md`
+- `daymade-claude-code/claude-code-hooks/references/recovery-failure-triage.md`
 - `daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md`
 - `daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md`
 - `daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md`
@@ -125,6 +127,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 124 followed pat
 - `daymade-skill/skill-creator/references/release-readiness.md`
 - `references/git-publication-transport.md`
 - `git-safety-net/references/merge_verification.md`
+- `git-safety-net/references/worktree-retirement-helper.md`
 - `daymade-skill/skill-creator/references/sanitization_checklist.md`
 - `kimi-use/references/kimi-cu-desktop-automation.md`
 - `kimi-use/references/driving-kimi-app.md`
@@ -171,6 +174,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 124 followed pat
 - `daymade-docs/docx-creator/references/verification_protocol.md`
 - `daymade-codex/interaction-design-board/references/interaction-design-method.md`
 - `daymade-codex/interaction-design-board/references/board-contract.md`
+- `daymade-audio/stepfun-tts/references/migration_from_v2.md`
 - `peer-message/references/official-feature.md`
 - `peer-message/references/coordination-and-learning-loop.md`
 - `repomix-safe-mixer/references/common_secrets.md`
@@ -351,117 +355,121 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 167 | → | [`data-visualization-discipline/references/operational-state-matrix.md`](data-visualization-discipline/references/operational-state-matrix.md) |
 | 168 | → | [`daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md`](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md) |
 | 169 | → | [`daymade-audio/asr-transcribe-to-text/references/review_workbench.md`](daymade-audio/asr-transcribe-to-text/references/review_workbench.md) |
-| 170 | → | [`daymade-audio/transcript-fixer/references/domain_context_guide.md`](daymade-audio/transcript-fixer/references/domain_context_guide.md) |
-| 171 | → | [`daymade-audio/transcript-fixer/references/native_metadata_provenance.md`](daymade-audio/transcript-fixer/references/native_metadata_provenance.md) |
-| 172 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
-| 173 | → | [`daymade-audio/transcript-fixer/references/pending-continuation.md`](daymade-audio/transcript-fixer/references/pending-continuation.md) |
-| 174 | → | [`daymade-audio/transcript-fixer/references/queue_domain_repair.md`](daymade-audio/transcript-fixer/references/queue_domain_repair.md) |
-| 175 | → | [`daymade-audio/transcript-fixer/references/scoped_speaker_inference.md`](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md) |
-| 176 | → | [`daymade-audio/transcript-fixer/references/source_clips.md`](daymade-audio/transcript-fixer/references/source_clips.md) |
-| 177 | → | [`daymade-audio/transcript-fixer/references/workflow_guide.md`](daymade-audio/transcript-fixer/references/workflow_guide.md) |
-| 178 | → | [`daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md`](daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md) |
-| 179 | → | [`daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md`](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md) |
-| 180 | → | [`daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md`](daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md) |
-| 181 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
-| 182 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
-| 183 | → | [`daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md`](daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md) |
-| 184 | → | [`daymade-claude-code/read-claude-code-history/references/large-session-briefing.md`](daymade-claude-code/read-claude-code-history/references/large-session-briefing.md) |
-| 185 | → | [`daymade-claude-code/read-claude-code-history/references/page-and-attachment-recovery.md`](daymade-claude-code/read-claude-code-history/references/page-and-attachment-recovery.md) |
-| 186 | → | [`daymade-claude-code/read-codex-history/references/storage_and_portability.md`](daymade-claude-code/read-codex-history/references/storage_and_portability.md) |
-| 187 | → | [`daymade-claude-code/read-codex-history/references/terminal-session-recovery.md`](daymade-claude-code/read-codex-history/references/terminal-session-recovery.md) |
-| 188 | → | [`daymade-codex/design-style-picker/references/selection-playbook.md`](daymade-codex/design-style-picker/references/selection-playbook.md) |
-| 189 | → | [`daymade-codex/interaction-design-board/references/board-contract.md`](daymade-codex/interaction-design-board/references/board-contract.md) |
-| 190 | → | [`daymade-codex/interaction-design-board/references/interaction-design-method.md`](daymade-codex/interaction-design-board/references/interaction-design-method.md) |
-| 191 | → | [`daymade-codex/local-codex/references/entry-identity.md`](daymade-codex/local-codex/references/entry-identity.md) |
-| 192 | → | [`daymade-codex/local-codex/references/shared-daemon-maintenance.md`](daymade-codex/local-codex/references/shared-daemon-maintenance.md) |
-| 193 | → | [`daymade-docs/doc-to-markdown/references/pdf-acceptance.md`](daymade-docs/doc-to-markdown/references/pdf-acceptance.md) |
-| 194 | → | [`daymade-docs/docs-cleaner/references/delivery-entry-replay.md`](daymade-docs/docs-cleaner/references/delivery-entry-replay.md) |
-| 195 | → | [`daymade-docs/docx-creator/references/verification_protocol.md`](daymade-docs/docx-creator/references/verification_protocol.md) |
-| 196 | → | [`daymade-docs/excel-automation/references/formatting-reference.md`](daymade-docs/excel-automation/references/formatting-reference.md) |
-| 197 | → | [`daymade-docs/pdf-creator/references/illustrated-manual.md`](daymade-docs/pdf-creator/references/illustrated-manual.md) |
-| 198 | → | [`daymade-docs/photo-to-scanned-pdf/references/identity-document-copies.md`](daymade-docs/photo-to-scanned-pdf/references/identity-document-copies.md) |
-| 199 | → | [`daymade-docs/read-docx-review/references/full-comparison.md`](daymade-docs/read-docx-review/references/full-comparison.md) |
-| 200 | → | [`daymade-financial/financial-data-collector/references/output-schema.md`](daymade-financial/financial-data-collector/references/output-schema.md) |
-| 201 | → | [`daymade-financial/financial-data-collector/references/yfinance-pitfalls.md`](daymade-financial/financial-data-collector/references/yfinance-pitfalls.md) |
-| 202 | → | [`daymade-macos/developing-ios-apps/references/xcodegen-full.md`](daymade-macos/developing-ios-apps/references/xcodegen-full.md) |
-| 203 | → | [`daymade-macos/macos-cleaner/references/storage-diagnosis.md`](daymade-macos/macos-cleaner/references/storage-diagnosis.md) |
-| 204 | → | [`daymade-macos/macos-permissions/references/automated-full-disk-access.md`](daymade-macos/macos-permissions/references/automated-full-disk-access.md) |
-| 205 | → | [`daymade-macos/macos-watchdog/references/event-driven-observers.md`](daymade-macos/macos-watchdog/references/event-driven-observers.md) |
-| 206 | → | [`daymade-macos/macos-watchdog/references/native-job-readback.md`](daymade-macos/macos-watchdog/references/native-job-readback.md) |
-| 207 | → | [`daymade-macos/macos-watchdog/references/probe-cost.md`](daymade-macos/macos-watchdog/references/probe-cost.md) |
-| 208 | → | [`daymade-skill/skill-creator/references/delivery-identity.md`](daymade-skill/skill-creator/references/delivery-identity.md) |
-| 209 | → | [`daymade-skill/skill-creator/references/eval_pipeline_schemas.md`](daymade-skill/skill-creator/references/eval_pipeline_schemas.md) |
-| 210 | → | [`daymade-skill/skill-creator/references/first-use-and-resume.md`](daymade-skill/skill-creator/references/first-use-and-resume.md) |
-| 211 | → | [`daymade-skill/skill-creator/references/fixed-command-entry.md`](daymade-skill/skill-creator/references/fixed-command-entry.md) |
-| 212 | → | [`daymade-skill/skill-creator/references/independent-review-protocol.md`](daymade-skill/skill-creator/references/independent-review-protocol.md) |
-| 213 | → | [`daymade-skill/skill-creator/references/materialization-budget.md`](daymade-skill/skill-creator/references/materialization-budget.md) |
-| 214 | → | [`daymade-skill/skill-creator/references/release-readiness.md`](daymade-skill/skill-creator/references/release-readiness.md) |
-| 215 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 216 | → | [`daymade-skill/skill-creator/references/skill-development-methodology.md`](daymade-skill/skill-creator/references/skill-development-methodology.md) |
-| 217 | → | [`daymade-skill/skill-creator/references/source-location-and-activation.md`](daymade-skill/skill-creator/references/source-location-and-activation.md) |
-| 218 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
-| 219 | → | [`daymade-skill/skill-governance/references/skill-surface-governance.md`](daymade-skill/skill-governance/references/skill-surface-governance.md) |
-| 220 | → | [`deep-research/references/research_report_template.md`](deep-research/references/research_report_template.md) |
-| 221 | → | [`deep-research/references/research-asset-contract.md`](deep-research/references/research-asset-contract.md) |
-| 222 | → | [`douban-skill/references/troubleshooting.md`](douban-skill/references/troubleshooting.md) |
-| 223 | → | [`feishu-doc-scraper/references/archive-destination-handoff.md`](feishu-doc-scraper/references/archive-destination-handoff.md) |
-| 224 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
-| 225 | → | [`frontend-visual-qa/references/browser-driving-and-observation-traps.md`](frontend-visual-qa/references/browser-driving-and-observation-traps.md) |
-| 226 | → | [`frontend-visual-qa/references/delivery-verification.md`](frontend-visual-qa/references/delivery-verification.md) |
-| 227 | → | [`frontend-visual-qa/references/markdown-reader-handoff.md`](frontend-visual-qa/references/markdown-reader-handoff.md) |
-| 228 | → | [`frontend-visual-qa/references/publication-journey-cases.md`](frontend-visual-qa/references/publication-journey-cases.md) |
-| 229 | → | [`ghostty-use/references/automatic-snapshots.md`](ghostty-use/references/automatic-snapshots.md) |
-| 230 | → | [`git-safety-net/references/merge_verification.md`](git-safety-net/references/merge_verification.md) |
-| 231 | → | [`git-safety-net/references/prevention_practices.md`](git-safety-net/references/prevention_practices.md) |
-| 232 | → | [`git-safety-net/references/recovery_playbook.md`](git-safety-net/references/recovery_playbook.md) |
-| 233 | → | [`github-contributor/references/phase3_quality_gates_and_e2e.md`](github-contributor/references/phase3_quality_gates_and_e2e.md) |
-| 234 | → | [`github-ops/references/ci-demand-and-notifications.md`](github-ops/references/ci-demand-and-notifications.md) |
-| 235 | → | [`github-ops/references/multi_account_repository_sync.md`](github-ops/references/multi_account_repository_sync.md) |
-| 236 | → | [`github-review-pr/references/behavioral-impact-review.md`](github-review-pr/references/behavioral-impact-review.md) |
-| 237 | → | [`ima-copilot/references/known_issues.md`](ima-copilot/references/known_issues.md) |
-| 238 | → | [`kimi-use/references/driving-kimi-app.md`](kimi-use/references/driving-kimi-app.md) |
-| 239 | → | [`kimi-use/references/kimi-cu-desktop-automation.md`](kimi-use/references/kimi-cu-desktop-automation.md) |
-| 240 | → | [`llm-eval-harness/references/evaluation_disciplines.md`](llm-eval-harness/references/evaluation_disciplines.md) |
-| 241 | → | [`llm-eval-harness/references/machine-results.md`](llm-eval-harness/references/machine-results.md) |
-| 242 | → | [`llm-eval-harness/references/quality_blind_judge.md`](llm-eval-harness/references/quality_blind_judge.md) |
-| 243 | → | [`peer-message/references/coordination-and-learning-loop.md`](peer-message/references/coordination-and-learning-loop.md) |
-| 244 | → | [`peer-message/references/local-coordination.md`](peer-message/references/local-coordination.md) |
-| 245 | → | [`peer-message/references/network-preview.md`](peer-message/references/network-preview.md) |
-| 246 | → | [`peer-message/references/official-feature.md`](peer-message/references/official-feature.md) |
-| 247 | → | [`peer-message/references/protocol-and-discovery.md`](peer-message/references/protocol-and-discovery.md) |
-| 248 | → | [`product-analysis/references/analysis_dimensions.md`](product-analysis/references/analysis_dimensions.md) |
-| 249 | → | [`product-analysis/references/synthesis_methodology.md`](product-analysis/references/synthesis_methodology.md) |
-| 250 | → | [`product-growth/references/customer-conversations.md`](product-growth/references/customer-conversations.md) |
-| 251 | → | [`promptfoo-evaluation/references/promptfoo_api.md`](promptfoo-evaluation/references/promptfoo_api.md) |
-| 252 | → | [`qa-expert/references/master_qa_prompt.md`](qa-expert/references/master_qa_prompt.md) |
-| 253 | → | [`qa-expert/references/runtime-compatibility-acceptance.md`](qa-expert/references/runtime-compatibility-acceptance.md) |
-| 254 | → | [`QUICKSTART.md`](QUICKSTART.md) |
-| 255 | → | [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md) |
-| 256 | → | [`README.md`](README.md) |
-| 257 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 258 | → | [`references/bounded-io.md`](references/bounded-io.md) |
-| 259 | → | [`references/ci-operations.md`](references/ci-operations.md) |
-| 260 | → | [`references/git-publication-transport.md`](references/git-publication-transport.md) |
-| 261 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 262 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 263 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 264 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 265 | → | [`repomix-safe-mixer/references/common_secrets.md`](repomix-safe-mixer/references/common_secrets.md) |
-| 266 | → | [`report-with-html/references/interaction-components.md`](report-with-html/references/interaction-components.md) |
-| 267 | → | [`report-with-html/references/interactive-analysis.md`](report-with-html/references/interactive-analysis.md) |
-| 268 | → | [`report-with-html/references/long-lived-report-maintenance.md`](report-with-html/references/long-lived-report-maintenance.md) |
-| 269 | → | [`report-with-html/references/visual-evidence.md`](report-with-html/references/visual-evidence.md) |
-| 270 | → | [`report-with-html/references/visualization-patterns.md`](report-with-html/references/visualization-patterns.md) |
-| 271 | → | [`scrapling-skill/references/troubleshooting.md`](scrapling-skill/references/troubleshooting.md) |
-| 272 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 273 | → | [`tibo-reset-codex/references/browser-session-migration.md`](tibo-reset-codex/references/browser-session-migration.md) |
-| 274 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
-| 275 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
-| 276 | → | [`tibo-reset-codex/references/signal-readings.md`](tibo-reset-codex/references/signal-readings.md) |
-| 277 | → | [`tunnel-doctor/references/network_change_recovery.md`](tunnel-doctor/references/network_change_recovery.md) |
-| 278 | → | [`tunnel-doctor/references/provider_account_suspension.md`](tunnel-doctor/references/provider_account_suspension.md) |
-| 279 | → | [`tunnel-doctor/references/proxy_conflict_reference.md`](tunnel-doctor/references/proxy_conflict_reference.md) |
-| 280 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 170 | → | [`daymade-audio/stepfun-tts/references/api_reference.md`](daymade-audio/stepfun-tts/references/api_reference.md) |
+| 171 | → | [`daymade-audio/stepfun-tts/references/migration_from_v2.md`](daymade-audio/stepfun-tts/references/migration_from_v2.md) |
+| 172 | → | [`daymade-audio/transcript-fixer/references/domain_context_guide.md`](daymade-audio/transcript-fixer/references/domain_context_guide.md) |
+| 173 | → | [`daymade-audio/transcript-fixer/references/native_metadata_provenance.md`](daymade-audio/transcript-fixer/references/native_metadata_provenance.md) |
+| 174 | → | [`daymade-audio/transcript-fixer/references/native_review_packets.md`](daymade-audio/transcript-fixer/references/native_review_packets.md) |
+| 175 | → | [`daymade-audio/transcript-fixer/references/pending-continuation.md`](daymade-audio/transcript-fixer/references/pending-continuation.md) |
+| 176 | → | [`daymade-audio/transcript-fixer/references/queue_domain_repair.md`](daymade-audio/transcript-fixer/references/queue_domain_repair.md) |
+| 177 | → | [`daymade-audio/transcript-fixer/references/scoped_speaker_inference.md`](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md) |
+| 178 | → | [`daymade-audio/transcript-fixer/references/source_clips.md`](daymade-audio/transcript-fixer/references/source_clips.md) |
+| 179 | → | [`daymade-audio/transcript-fixer/references/workflow_guide.md`](daymade-audio/transcript-fixer/references/workflow_guide.md) |
+| 180 | → | [`daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md`](daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md) |
+| 181 | → | [`daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md`](daymade-claude-code/claude-code-hooks/references/hook_pitfalls.md) |
+| 182 | → | [`daymade-claude-code/claude-code-hooks/references/recovery-failure-triage.md`](daymade-claude-code/claude-code-hooks/references/recovery-failure-triage.md) |
+| 183 | → | [`daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md`](daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md) |
+| 184 | → | [`daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`](daymade-claude-code/claude-switch-models-setup/references/context-window-config.md) |
+| 185 | → | [`daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md`](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md) |
+| 186 | → | [`daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md`](daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md) |
+| 187 | → | [`daymade-claude-code/read-claude-code-history/references/large-session-briefing.md`](daymade-claude-code/read-claude-code-history/references/large-session-briefing.md) |
+| 188 | → | [`daymade-claude-code/read-claude-code-history/references/page-and-attachment-recovery.md`](daymade-claude-code/read-claude-code-history/references/page-and-attachment-recovery.md) |
+| 189 | → | [`daymade-claude-code/read-codex-history/references/storage_and_portability.md`](daymade-claude-code/read-codex-history/references/storage_and_portability.md) |
+| 190 | → | [`daymade-claude-code/read-codex-history/references/terminal-session-recovery.md`](daymade-claude-code/read-codex-history/references/terminal-session-recovery.md) |
+| 191 | → | [`daymade-codex/design-style-picker/references/selection-playbook.md`](daymade-codex/design-style-picker/references/selection-playbook.md) |
+| 192 | → | [`daymade-codex/interaction-design-board/references/board-contract.md`](daymade-codex/interaction-design-board/references/board-contract.md) |
+| 193 | → | [`daymade-codex/interaction-design-board/references/interaction-design-method.md`](daymade-codex/interaction-design-board/references/interaction-design-method.md) |
+| 194 | → | [`daymade-codex/local-codex/references/entry-identity.md`](daymade-codex/local-codex/references/entry-identity.md) |
+| 195 | → | [`daymade-codex/local-codex/references/shared-daemon-maintenance.md`](daymade-codex/local-codex/references/shared-daemon-maintenance.md) |
+| 196 | → | [`daymade-docs/doc-to-markdown/references/pdf-acceptance.md`](daymade-docs/doc-to-markdown/references/pdf-acceptance.md) |
+| 197 | → | [`daymade-docs/docs-cleaner/references/delivery-entry-replay.md`](daymade-docs/docs-cleaner/references/delivery-entry-replay.md) |
+| 198 | → | [`daymade-docs/docx-creator/references/verification_protocol.md`](daymade-docs/docx-creator/references/verification_protocol.md) |
+| 199 | → | [`daymade-docs/excel-automation/references/formatting-reference.md`](daymade-docs/excel-automation/references/formatting-reference.md) |
+| 200 | → | [`daymade-docs/pdf-creator/references/illustrated-manual.md`](daymade-docs/pdf-creator/references/illustrated-manual.md) |
+| 201 | → | [`daymade-docs/photo-to-scanned-pdf/references/identity-document-copies.md`](daymade-docs/photo-to-scanned-pdf/references/identity-document-copies.md) |
+| 202 | → | [`daymade-docs/read-docx-review/references/full-comparison.md`](daymade-docs/read-docx-review/references/full-comparison.md) |
+| 203 | → | [`daymade-financial/financial-data-collector/references/output-schema.md`](daymade-financial/financial-data-collector/references/output-schema.md) |
+| 204 | → | [`daymade-financial/financial-data-collector/references/yfinance-pitfalls.md`](daymade-financial/financial-data-collector/references/yfinance-pitfalls.md) |
+| 205 | → | [`daymade-macos/developing-ios-apps/references/xcodegen-full.md`](daymade-macos/developing-ios-apps/references/xcodegen-full.md) |
+| 206 | → | [`daymade-macos/macos-cleaner/references/storage-diagnosis.md`](daymade-macos/macos-cleaner/references/storage-diagnosis.md) |
+| 207 | → | [`daymade-macos/macos-permissions/references/automated-full-disk-access.md`](daymade-macos/macos-permissions/references/automated-full-disk-access.md) |
+| 208 | → | [`daymade-macos/macos-watchdog/references/event-driven-observers.md`](daymade-macos/macos-watchdog/references/event-driven-observers.md) |
+| 209 | → | [`daymade-macos/macos-watchdog/references/native-job-readback.md`](daymade-macos/macos-watchdog/references/native-job-readback.md) |
+| 210 | → | [`daymade-macos/macos-watchdog/references/probe-cost.md`](daymade-macos/macos-watchdog/references/probe-cost.md) |
+| 211 | → | [`daymade-skill/skill-creator/references/delivery-identity.md`](daymade-skill/skill-creator/references/delivery-identity.md) |
+| 212 | → | [`daymade-skill/skill-creator/references/eval_pipeline_schemas.md`](daymade-skill/skill-creator/references/eval_pipeline_schemas.md) |
+| 213 | → | [`daymade-skill/skill-creator/references/first-use-and-resume.md`](daymade-skill/skill-creator/references/first-use-and-resume.md) |
+| 214 | → | [`daymade-skill/skill-creator/references/fixed-command-entry.md`](daymade-skill/skill-creator/references/fixed-command-entry.md) |
+| 215 | → | [`daymade-skill/skill-creator/references/independent-review-protocol.md`](daymade-skill/skill-creator/references/independent-review-protocol.md) |
+| 216 | → | [`daymade-skill/skill-creator/references/materialization-budget.md`](daymade-skill/skill-creator/references/materialization-budget.md) |
+| 217 | → | [`daymade-skill/skill-creator/references/release-readiness.md`](daymade-skill/skill-creator/references/release-readiness.md) |
+| 218 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 219 | → | [`daymade-skill/skill-creator/references/skill-development-methodology.md`](daymade-skill/skill-creator/references/skill-development-methodology.md) |
+| 220 | → | [`daymade-skill/skill-creator/references/source-location-and-activation.md`](daymade-skill/skill-creator/references/source-location-and-activation.md) |
+| 221 | → | [`daymade-skill/skill-creator/references/source-snapshot-archives.md`](daymade-skill/skill-creator/references/source-snapshot-archives.md) |
+| 222 | → | [`daymade-skill/skill-governance/references/skill-surface-governance.md`](daymade-skill/skill-governance/references/skill-surface-governance.md) |
+| 223 | → | [`deep-research/references/research_report_template.md`](deep-research/references/research_report_template.md) |
+| 224 | → | [`deep-research/references/research-asset-contract.md`](deep-research/references/research-asset-contract.md) |
+| 225 | → | [`douban-skill/references/troubleshooting.md`](douban-skill/references/troubleshooting.md) |
+| 226 | → | [`feishu-doc-scraper/references/archive-destination-handoff.md`](feishu-doc-scraper/references/archive-destination-handoff.md) |
+| 227 | → | [`feishu-doc-scraper/references/archive-storage-contract.md`](feishu-doc-scraper/references/archive-storage-contract.md) |
+| 228 | → | [`frontend-visual-qa/references/browser-driving-and-observation-traps.md`](frontend-visual-qa/references/browser-driving-and-observation-traps.md) |
+| 229 | → | [`frontend-visual-qa/references/delivery-verification.md`](frontend-visual-qa/references/delivery-verification.md) |
+| 230 | → | [`frontend-visual-qa/references/markdown-reader-handoff.md`](frontend-visual-qa/references/markdown-reader-handoff.md) |
+| 231 | → | [`frontend-visual-qa/references/publication-journey-cases.md`](frontend-visual-qa/references/publication-journey-cases.md) |
+| 232 | → | [`ghostty-use/references/automatic-snapshots.md`](ghostty-use/references/automatic-snapshots.md) |
+| 233 | → | [`git-safety-net/references/merge_verification.md`](git-safety-net/references/merge_verification.md) |
+| 234 | → | [`git-safety-net/references/prevention_practices.md`](git-safety-net/references/prevention_practices.md) |
+| 235 | → | [`git-safety-net/references/recovery_playbook.md`](git-safety-net/references/recovery_playbook.md) |
+| 236 | → | [`git-safety-net/references/worktree-retirement-helper.md`](git-safety-net/references/worktree-retirement-helper.md) |
+| 237 | → | [`github-contributor/references/phase3_quality_gates_and_e2e.md`](github-contributor/references/phase3_quality_gates_and_e2e.md) |
+| 238 | → | [`github-ops/references/ci-demand-and-notifications.md`](github-ops/references/ci-demand-and-notifications.md) |
+| 239 | → | [`github-ops/references/multi_account_repository_sync.md`](github-ops/references/multi_account_repository_sync.md) |
+| 240 | → | [`github-review-pr/references/behavioral-impact-review.md`](github-review-pr/references/behavioral-impact-review.md) |
+| 241 | → | [`ima-copilot/references/known_issues.md`](ima-copilot/references/known_issues.md) |
+| 242 | → | [`kimi-use/references/driving-kimi-app.md`](kimi-use/references/driving-kimi-app.md) |
+| 243 | → | [`kimi-use/references/kimi-cu-desktop-automation.md`](kimi-use/references/kimi-cu-desktop-automation.md) |
+| 244 | → | [`llm-eval-harness/references/evaluation_disciplines.md`](llm-eval-harness/references/evaluation_disciplines.md) |
+| 245 | → | [`llm-eval-harness/references/machine-results.md`](llm-eval-harness/references/machine-results.md) |
+| 246 | → | [`llm-eval-harness/references/quality_blind_judge.md`](llm-eval-harness/references/quality_blind_judge.md) |
+| 247 | → | [`peer-message/references/coordination-and-learning-loop.md`](peer-message/references/coordination-and-learning-loop.md) |
+| 248 | → | [`peer-message/references/local-coordination.md`](peer-message/references/local-coordination.md) |
+| 249 | → | [`peer-message/references/network-preview.md`](peer-message/references/network-preview.md) |
+| 250 | → | [`peer-message/references/official-feature.md`](peer-message/references/official-feature.md) |
+| 251 | → | [`peer-message/references/protocol-and-discovery.md`](peer-message/references/protocol-and-discovery.md) |
+| 252 | → | [`product-analysis/references/analysis_dimensions.md`](product-analysis/references/analysis_dimensions.md) |
+| 253 | → | [`product-analysis/references/synthesis_methodology.md`](product-analysis/references/synthesis_methodology.md) |
+| 254 | → | [`product-growth/references/customer-conversations.md`](product-growth/references/customer-conversations.md) |
+| 255 | → | [`promptfoo-evaluation/references/promptfoo_api.md`](promptfoo-evaluation/references/promptfoo_api.md) |
+| 256 | → | [`qa-expert/references/master_qa_prompt.md`](qa-expert/references/master_qa_prompt.md) |
+| 257 | → | [`qa-expert/references/runtime-compatibility-acceptance.md`](qa-expert/references/runtime-compatibility-acceptance.md) |
+| 258 | → | [`QUICKSTART.md`](QUICKSTART.md) |
+| 259 | → | [`QUICKSTART.zh-CN.md`](QUICKSTART.zh-CN.md) |
+| 260 | → | [`README.md`](README.md) |
+| 261 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 262 | → | [`references/bounded-io.md`](references/bounded-io.md) |
+| 263 | → | [`references/ci-operations.md`](references/ci-operations.md) |
+| 264 | → | [`references/git-publication-transport.md`](references/git-publication-transport.md) |
+| 265 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 266 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 267 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 268 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 269 | → | [`repomix-safe-mixer/references/common_secrets.md`](repomix-safe-mixer/references/common_secrets.md) |
+| 270 | → | [`report-with-html/references/interaction-components.md`](report-with-html/references/interaction-components.md) |
+| 271 | → | [`report-with-html/references/interactive-analysis.md`](report-with-html/references/interactive-analysis.md) |
+| 272 | → | [`report-with-html/references/long-lived-report-maintenance.md`](report-with-html/references/long-lived-report-maintenance.md) |
+| 273 | → | [`report-with-html/references/visual-evidence.md`](report-with-html/references/visual-evidence.md) |
+| 274 | → | [`report-with-html/references/visualization-patterns.md`](report-with-html/references/visualization-patterns.md) |
+| 275 | → | [`scrapling-skill/references/troubleshooting.md`](scrapling-skill/references/troubleshooting.md) |
+| 276 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 277 | → | [`tibo-reset-codex/references/browser-session-migration.md`](tibo-reset-codex/references/browser-session-migration.md) |
+| 278 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
+| 279 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
+| 280 | → | [`tibo-reset-codex/references/signal-readings.md`](tibo-reset-codex/references/signal-readings.md) |
+| 281 | → | [`tunnel-doctor/references/network_change_recovery.md`](tunnel-doctor/references/network_change_recovery.md) |
+| 282 | → | [`tunnel-doctor/references/provider_account_suspension.md`](tunnel-doctor/references/provider_account_suspension.md) |
+| 283 | → | [`tunnel-doctor/references/proxy_conflict_reference.md`](tunnel-doctor/references/proxy_conflict_reference.md) |
+| 284 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

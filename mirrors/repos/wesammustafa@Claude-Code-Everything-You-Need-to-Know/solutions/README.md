@@ -2,7 +2,7 @@
 
 One worked solution per Lesson, in course order, for the Practice template a Learner copies. Each folder is named by the Lesson's id in [the course manifest](../course/manifest.json) and holds:
 
-- the files the Lesson adds or changes, at their paths under the copy's `project/`, in the inert names the [examples](../examples/) use: `dot-claude/` for `.claude/`, `dot-mcp.json`, `CLAUDE.example.md`, `CLAUDE.local.example.md`, `AGENTS.example.md` and `dot-claude-plugin/`;
+- the files the Lesson adds or changes, at their paths under the copy's `project/`, in the inert names the [examples](../examples/) use: `dot-claude/` for `.claude/`, `dot-mcp.json`, `CLAUDE.example.md`, `CLAUDE.local.example.md`, `AGENTS.example.md` and `dot-claude-plugin/`. A workflow under `.github/workflows/` goes at the copy's root instead, where GitHub reads it ([Workflows](https://docs.github.com/en/actions/concepts/workflows-and-actions/workflows));
 - `steps.sh`, the Lesson's git steps: when the files land, the commits, worktrees and merges, and the evidence a Check reads under `.practice/`.
 
 No file here names a commit. Every commit, and every file that records one, is made by the replay's real git commands.

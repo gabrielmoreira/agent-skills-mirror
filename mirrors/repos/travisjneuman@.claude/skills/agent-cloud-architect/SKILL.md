@@ -3,6 +3,7 @@ name: agent-cloud-architect
 description: "Specialist subagent: Multi-cloud architecture, cost optimization, serverless vs containers, disaster recovery, and infrastructure design specialist. Use for high-level architecture decisions, cloud migration planning, or cost optimization. Trigger phrases: cloud, AWS, GCP, Azure, serverless, containers, Kubernetes, infrastructure, cost, disaster recovery, scalability, architecture."
 context: fork
 agent: general-purpose
+background: false
 ---
 # Cloud Architect Agent
 

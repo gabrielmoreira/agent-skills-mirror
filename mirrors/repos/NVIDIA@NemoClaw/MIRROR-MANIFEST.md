@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 300 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 301 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 10 followed patterns, 300 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 300 |
+| Files         | 301 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -278,96 +278,97 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 208 | ✓ | [`agents/hermes/plugin/test_private_url_opt_in.py`](agents/hermes/plugin/test_private_url_opt_in.py) |
 | 209 | ✓ | [`agents/hermes/plugin/test_register_tools.py`](agents/hermes/plugin/test_register_tools.py) |
 | 210 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
-| 211 | ✓ | [`agents/hermes/runtime-config-guard.py`](agents/hermes/runtime-config-guard.py) |
-| 212 | ✓ | [`agents/hermes/security-dependencies.patch`](agents/hermes/security-dependencies.patch) |
-| 213 | ✓ | [`agents/hermes/sharp-security-probes.mts`](agents/hermes/sharp-security-probes.mts) |
-| 214 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
-| 215 | ✓ | [`agents/hermes/validate-cli-adapter.py`](agents/hermes/validate-cli-adapter.py) |
-| 216 | ✓ | [`agents/hermes/validate-env-secret-boundary.py`](agents/hermes/validate-env-secret-boundary.py) |
-| 217 | ✓ | [`agents/hermes/whatsapp-proxy.patch`](agents/hermes/whatsapp-proxy.patch) |
-| 218 | ✓ | [`agents/langchain-deepagents-code/dcode-launcher.sh`](agents/langchain-deepagents-code/dcode-launcher.sh) |
-| 219 | ✓ | [`agents/langchain-deepagents-code/dcode-login-profile.sh`](agents/langchain-deepagents-code/dcode-login-profile.sh) |
-| 220 | ✓ | [`agents/langchain-deepagents-code/dcode-session-supervisor.py`](agents/langchain-deepagents-code/dcode-session-supervisor.py) |
-| 221 | ✓ | [`agents/langchain-deepagents-code/dcode-wrapper.sh`](agents/langchain-deepagents-code/dcode-wrapper.sh) |
-| 222 | ✓ | [`agents/langchain-deepagents-code/dependency-overrides.in`](agents/langchain-deepagents-code/dependency-overrides.in) |
-| 223 | ✓ | [`agents/langchain-deepagents-code/dependency-review.md`](agents/langchain-deepagents-code/dependency-review.md) |
-| 224 | ✓ | [`agents/langchain-deepagents-code/Dockerfile`](agents/langchain-deepagents-code/Dockerfile) |
-| 225 | ✓ | [`agents/langchain-deepagents-code/Dockerfile.base`](agents/langchain-deepagents-code/Dockerfile.base) |
-| 226 | ✓ | [`agents/langchain-deepagents-code/generate-config-entrypoint.ts`](agents/langchain-deepagents-code/generate-config-entrypoint.ts) |
-| 227 | ✓ | [`agents/langchain-deepagents-code/generate-config.ts`](agents/langchain-deepagents-code/generate-config.ts) |
-| 228 | ✓ | [`agents/langchain-deepagents-code/managed-dcode-runtime.py`](agents/langchain-deepagents-code/managed-dcode-runtime.py) |
-| 229 | ✓ | [`agents/langchain-deepagents-code/manifest.yaml`](agents/langchain-deepagents-code/manifest.yaml) |
-| 230 | ✓ | [`agents/langchain-deepagents-code/nemoclaw_observability.py`](agents/langchain-deepagents-code/nemoclaw_observability.py) |
-| 231 | ✓ | [`agents/langchain-deepagents-code/nemoclaw_read_only_mcp.py`](agents/langchain-deepagents-code/nemoclaw_read_only_mcp.py) |
-| 232 | ✓ | [`agents/langchain-deepagents-code/patch-dependency-compatibility.py`](agents/langchain-deepagents-code/patch-dependency-compatibility.py) |
-| 233 | ✓ | [`agents/langchain-deepagents-code/patch-managed-deepagents-code.py`](agents/langchain-deepagents-code/patch-managed-deepagents-code.py) |
-| 234 | ✓ | [`agents/langchain-deepagents-code/patch-managed-quickjs.py`](agents/langchain-deepagents-code/patch-managed-quickjs.py) |
-| 235 | ✓ | [`agents/langchain-deepagents-code/policy-additions.yaml`](agents/langchain-deepagents-code/policy-additions.yaml) |
-| 236 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/.gitignore`](agents/langchain-deepagents-code/profile-plugin/.gitignore) |
-| 237 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/pyproject.toml`](agents/langchain-deepagents-code/profile-plugin/pyproject.toml) |
-| 238 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py`](agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py) |
-| 239 | ✓ | [`agents/langchain-deepagents-code/progressive_tool_disclosure.py`](agents/langchain-deepagents-code/progressive_tool_disclosure.py) |
-| 240 | ✓ | [`agents/langchain-deepagents-code/requirements.in`](agents/langchain-deepagents-code/requirements.in) |
-| 241 | ✓ | [`agents/langchain-deepagents-code/requirements.lock`](agents/langchain-deepagents-code/requirements.lock) |
-| 242 | ✓ | [`agents/langchain-deepagents-code/start.sh`](agents/langchain-deepagents-code/start.sh) |
-| 243 | ✓ | [`agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py`](agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py) |
-| 244 | ✓ | [`agents/langchain-deepagents-code/validate-observability.py`](agents/langchain-deepagents-code/validate-observability.py) |
-| 245 | ✓ | [`agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py`](agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py) |
-| 246 | ✓ | [`agents/langchain-deepagents-code/validate-quickjs-runtime.py`](agents/langchain-deepagents-code/validate-quickjs-runtime.py) |
-| 247 | ✓ | [`agents/langchain-deepagents-code/validate-read-only-mcp-call.py`](agents/langchain-deepagents-code/validate-read-only-mcp-call.py) |
-| 248 | ✓ | [`agents/langchain-deepagents-code/validate-runtime-contract.py`](agents/langchain-deepagents-code/validate-runtime-contract.py) |
-| 249 | ✓ | [`agents/nemocua/Dockerfile`](agents/nemocua/Dockerfile) |
-| 250 | ✓ | [`agents/nemocua/manifest.yaml`](agents/nemocua/manifest.yaml) |
-| 251 | ✓ | [`agents/nemocua/policy-additions.yaml`](agents/nemocua/policy-additions.yaml) |
-| 252 | ✓ | [`agents/openclaw/dependency-review.md`](agents/openclaw/dependency-review.md) |
-| 253 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/npm-cache-seed/.gitkeep`](agents/openclaw/managed-image-messaging-runtime/npm-cache-seed/.gitkeep) |
-| 254 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/package-lock.json`](agents/openclaw/managed-image-messaging-runtime/package-lock.json) |
-| 255 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/package.json`](agents/openclaw/managed-image-messaging-runtime/package.json) |
-| 256 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 257 | ✓ | [`agents/openclaw/mcporter-runtime/package-lock.json`](agents/openclaw/mcporter-runtime/package-lock.json) |
-| 258 | ✓ | [`agents/openclaw/mcporter-runtime/package.json`](agents/openclaw/mcporter-runtime/package.json) |
-| 259 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.5-runtime/package-lock.json`](agents/openclaw/openclaw-migration-2026.9.5-runtime/package-lock.json) |
-| 260 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.5-runtime/package.json`](agents/openclaw/openclaw-migration-2026.9.5-runtime/package.json) |
-| 261 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.7-runtime/package-lock.json`](agents/openclaw/openclaw-migration-2026.9.7-runtime/package-lock.json) |
-| 262 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.7-runtime/package.json`](agents/openclaw/openclaw-migration-2026.9.7-runtime/package.json) |
-| 263 | ✓ | [`agents/openclaw/openclaw-runtime/package-lock.json`](agents/openclaw/openclaw-runtime/package-lock.json) |
-| 264 | ✓ | [`agents/openclaw/openclaw-runtime/package.json`](agents/openclaw/openclaw-runtime/package.json) |
-| 265 | ✓ | [`agents/openclaw/wechat-runtime/package-lock.json`](agents/openclaw/wechat-runtime/package-lock.json) |
-| 266 | ✓ | [`agents/openclaw/wechat-runtime/package.json`](agents/openclaw/wechat-runtime/package.json) |
-| 267 | ✓ | [`agents/pi/check-native-credentials.ts`](agents/pi/check-native-credentials.ts) |
-| 268 | ✓ | [`agents/pi/dependency-review.md`](agents/pi/dependency-review.md) |
-| 269 | ✓ | [`agents/pi/Dockerfile`](agents/pi/Dockerfile) |
-| 270 | ✓ | [`agents/pi/Dockerfile.base`](agents/pi/Dockerfile.base) |
-| 271 | ✓ | [`agents/pi/generate-config.ts`](agents/pi/generate-config.ts) |
-| 272 | ✓ | [`agents/pi/manifest.yaml`](agents/pi/manifest.yaml) |
-| 273 | ✓ | [`agents/pi/pi-runtime/package-lock.json`](agents/pi/pi-runtime/package-lock.json) |
-| 274 | ✓ | [`agents/pi/pi-runtime/package.json`](agents/pi/pi-runtime/package.json) |
-| 275 | ✓ | [`agents/pi/policy-additions.yaml`](agents/pi/policy-additions.yaml) |
-| 276 | ✓ | [`agents/pi/start.sh`](agents/pi/start.sh) |
-| 277 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 278 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 279 | ✓ | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 280 | ✓ | [`docs/DORI_SETUP.md`](docs/DORI_SETUP.md) |
-| 281 | ✓ | [`docs/STYLE.md`](docs/STYLE.md) |
-| 282 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
-| 283 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
-| 284 | ✓ | [`skills/nemoclaw-user-guide/references/docs-access.md`](skills/nemoclaw-user-guide/references/docs-access.md) |
-| 285 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
-| 286 | ✓ | [`skills/README.md`](skills/README.md) |
-| 287 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
-| 288 | ✓ | [`test/e2e/docs/jetson-dispatch.md`](test/e2e/docs/jetson-dispatch.md) |
-| 289 | ✓ | [`test/e2e/docs/RETIREMENT.md`](test/e2e/docs/RETIREMENT.md) |
-| 290 | ✓ | [`test/e2e/fixtures/hermes-skill-runtime/SKILL.md`](test/e2e/fixtures/hermes-skill-runtime/SKILL.md) |
-| 291 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 292 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 293 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 294 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
-| 295 | → | [`scripts/vendor/openshell-sdk/README.md`](scripts/vendor/openshell-sdk/README.md) |
-| 296 | → | [`SECURITY.md`](SECURITY.md) |
-| 297 | → | [`test/e2e/docs/README.md`](test/e2e/docs/README.md) |
-| 298 | → | [`test/e2e/README.md`](test/e2e/README.md) |
-| 299 | → | [`test/README.md`](test/README.md) |
-| 300 | → | [`WRITING.md`](WRITING.md) |
+| 211 | ✓ | [`agents/hermes/qualify-switchyard-judge.py`](agents/hermes/qualify-switchyard-judge.py) |
+| 212 | ✓ | [`agents/hermes/runtime-config-guard.py`](agents/hermes/runtime-config-guard.py) |
+| 213 | ✓ | [`agents/hermes/security-dependencies.patch`](agents/hermes/security-dependencies.patch) |
+| 214 | ✓ | [`agents/hermes/sharp-security-probes.mts`](agents/hermes/sharp-security-probes.mts) |
+| 215 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
+| 216 | ✓ | [`agents/hermes/validate-cli-adapter.py`](agents/hermes/validate-cli-adapter.py) |
+| 217 | ✓ | [`agents/hermes/validate-env-secret-boundary.py`](agents/hermes/validate-env-secret-boundary.py) |
+| 218 | ✓ | [`agents/hermes/whatsapp-proxy.patch`](agents/hermes/whatsapp-proxy.patch) |
+| 219 | ✓ | [`agents/langchain-deepagents-code/dcode-launcher.sh`](agents/langchain-deepagents-code/dcode-launcher.sh) |
+| 220 | ✓ | [`agents/langchain-deepagents-code/dcode-login-profile.sh`](agents/langchain-deepagents-code/dcode-login-profile.sh) |
+| 221 | ✓ | [`agents/langchain-deepagents-code/dcode-session-supervisor.py`](agents/langchain-deepagents-code/dcode-session-supervisor.py) |
+| 222 | ✓ | [`agents/langchain-deepagents-code/dcode-wrapper.sh`](agents/langchain-deepagents-code/dcode-wrapper.sh) |
+| 223 | ✓ | [`agents/langchain-deepagents-code/dependency-overrides.in`](agents/langchain-deepagents-code/dependency-overrides.in) |
+| 224 | ✓ | [`agents/langchain-deepagents-code/dependency-review.md`](agents/langchain-deepagents-code/dependency-review.md) |
+| 225 | ✓ | [`agents/langchain-deepagents-code/Dockerfile`](agents/langchain-deepagents-code/Dockerfile) |
+| 226 | ✓ | [`agents/langchain-deepagents-code/Dockerfile.base`](agents/langchain-deepagents-code/Dockerfile.base) |
+| 227 | ✓ | [`agents/langchain-deepagents-code/generate-config-entrypoint.ts`](agents/langchain-deepagents-code/generate-config-entrypoint.ts) |
+| 228 | ✓ | [`agents/langchain-deepagents-code/generate-config.ts`](agents/langchain-deepagents-code/generate-config.ts) |
+| 229 | ✓ | [`agents/langchain-deepagents-code/managed-dcode-runtime.py`](agents/langchain-deepagents-code/managed-dcode-runtime.py) |
+| 230 | ✓ | [`agents/langchain-deepagents-code/manifest.yaml`](agents/langchain-deepagents-code/manifest.yaml) |
+| 231 | ✓ | [`agents/langchain-deepagents-code/nemoclaw_observability.py`](agents/langchain-deepagents-code/nemoclaw_observability.py) |
+| 232 | ✓ | [`agents/langchain-deepagents-code/nemoclaw_read_only_mcp.py`](agents/langchain-deepagents-code/nemoclaw_read_only_mcp.py) |
+| 233 | ✓ | [`agents/langchain-deepagents-code/patch-dependency-compatibility.py`](agents/langchain-deepagents-code/patch-dependency-compatibility.py) |
+| 234 | ✓ | [`agents/langchain-deepagents-code/patch-managed-deepagents-code.py`](agents/langchain-deepagents-code/patch-managed-deepagents-code.py) |
+| 235 | ✓ | [`agents/langchain-deepagents-code/patch-managed-quickjs.py`](agents/langchain-deepagents-code/patch-managed-quickjs.py) |
+| 236 | ✓ | [`agents/langchain-deepagents-code/policy-additions.yaml`](agents/langchain-deepagents-code/policy-additions.yaml) |
+| 237 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/.gitignore`](agents/langchain-deepagents-code/profile-plugin/.gitignore) |
+| 238 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/pyproject.toml`](agents/langchain-deepagents-code/profile-plugin/pyproject.toml) |
+| 239 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py`](agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py) |
+| 240 | ✓ | [`agents/langchain-deepagents-code/progressive_tool_disclosure.py`](agents/langchain-deepagents-code/progressive_tool_disclosure.py) |
+| 241 | ✓ | [`agents/langchain-deepagents-code/requirements.in`](agents/langchain-deepagents-code/requirements.in) |
+| 242 | ✓ | [`agents/langchain-deepagents-code/requirements.lock`](agents/langchain-deepagents-code/requirements.lock) |
+| 243 | ✓ | [`agents/langchain-deepagents-code/start.sh`](agents/langchain-deepagents-code/start.sh) |
+| 244 | ✓ | [`agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py`](agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py) |
+| 245 | ✓ | [`agents/langchain-deepagents-code/validate-observability.py`](agents/langchain-deepagents-code/validate-observability.py) |
+| 246 | ✓ | [`agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py`](agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py) |
+| 247 | ✓ | [`agents/langchain-deepagents-code/validate-quickjs-runtime.py`](agents/langchain-deepagents-code/validate-quickjs-runtime.py) |
+| 248 | ✓ | [`agents/langchain-deepagents-code/validate-read-only-mcp-call.py`](agents/langchain-deepagents-code/validate-read-only-mcp-call.py) |
+| 249 | ✓ | [`agents/langchain-deepagents-code/validate-runtime-contract.py`](agents/langchain-deepagents-code/validate-runtime-contract.py) |
+| 250 | ✓ | [`agents/nemocua/Dockerfile`](agents/nemocua/Dockerfile) |
+| 251 | ✓ | [`agents/nemocua/manifest.yaml`](agents/nemocua/manifest.yaml) |
+| 252 | ✓ | [`agents/nemocua/policy-additions.yaml`](agents/nemocua/policy-additions.yaml) |
+| 253 | ✓ | [`agents/openclaw/dependency-review.md`](agents/openclaw/dependency-review.md) |
+| 254 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/npm-cache-seed/.gitkeep`](agents/openclaw/managed-image-messaging-runtime/npm-cache-seed/.gitkeep) |
+| 255 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/package-lock.json`](agents/openclaw/managed-image-messaging-runtime/package-lock.json) |
+| 256 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/package.json`](agents/openclaw/managed-image-messaging-runtime/package.json) |
+| 257 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 258 | ✓ | [`agents/openclaw/mcporter-runtime/package-lock.json`](agents/openclaw/mcporter-runtime/package-lock.json) |
+| 259 | ✓ | [`agents/openclaw/mcporter-runtime/package.json`](agents/openclaw/mcporter-runtime/package.json) |
+| 260 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.5-runtime/package-lock.json`](agents/openclaw/openclaw-migration-2026.9.5-runtime/package-lock.json) |
+| 261 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.5-runtime/package.json`](agents/openclaw/openclaw-migration-2026.9.5-runtime/package.json) |
+| 262 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.7-runtime/package-lock.json`](agents/openclaw/openclaw-migration-2026.9.7-runtime/package-lock.json) |
+| 263 | ✓ | [`agents/openclaw/openclaw-migration-2026.9.7-runtime/package.json`](agents/openclaw/openclaw-migration-2026.9.7-runtime/package.json) |
+| 264 | ✓ | [`agents/openclaw/openclaw-runtime/package-lock.json`](agents/openclaw/openclaw-runtime/package-lock.json) |
+| 265 | ✓ | [`agents/openclaw/openclaw-runtime/package.json`](agents/openclaw/openclaw-runtime/package.json) |
+| 266 | ✓ | [`agents/openclaw/wechat-runtime/package-lock.json`](agents/openclaw/wechat-runtime/package-lock.json) |
+| 267 | ✓ | [`agents/openclaw/wechat-runtime/package.json`](agents/openclaw/wechat-runtime/package.json) |
+| 268 | ✓ | [`agents/pi/check-native-credentials.ts`](agents/pi/check-native-credentials.ts) |
+| 269 | ✓ | [`agents/pi/dependency-review.md`](agents/pi/dependency-review.md) |
+| 270 | ✓ | [`agents/pi/Dockerfile`](agents/pi/Dockerfile) |
+| 271 | ✓ | [`agents/pi/Dockerfile.base`](agents/pi/Dockerfile.base) |
+| 272 | ✓ | [`agents/pi/generate-config.ts`](agents/pi/generate-config.ts) |
+| 273 | ✓ | [`agents/pi/manifest.yaml`](agents/pi/manifest.yaml) |
+| 274 | ✓ | [`agents/pi/pi-runtime/package-lock.json`](agents/pi/pi-runtime/package-lock.json) |
+| 275 | ✓ | [`agents/pi/pi-runtime/package.json`](agents/pi/pi-runtime/package.json) |
+| 276 | ✓ | [`agents/pi/policy-additions.yaml`](agents/pi/policy-additions.yaml) |
+| 277 | ✓ | [`agents/pi/start.sh`](agents/pi/start.sh) |
+| 278 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 279 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 280 | ✓ | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 281 | ✓ | [`docs/DORI_SETUP.md`](docs/DORI_SETUP.md) |
+| 282 | ✓ | [`docs/STYLE.md`](docs/STYLE.md) |
+| 283 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
+| 284 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
+| 285 | ✓ | [`skills/nemoclaw-user-guide/references/docs-access.md`](skills/nemoclaw-user-guide/references/docs-access.md) |
+| 286 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
+| 287 | ✓ | [`skills/README.md`](skills/README.md) |
+| 288 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
+| 289 | ✓ | [`test/e2e/docs/jetson-dispatch.md`](test/e2e/docs/jetson-dispatch.md) |
+| 290 | ✓ | [`test/e2e/docs/RETIREMENT.md`](test/e2e/docs/RETIREMENT.md) |
+| 291 | ✓ | [`test/e2e/fixtures/hermes-skill-runtime/SKILL.md`](test/e2e/fixtures/hermes-skill-runtime/SKILL.md) |
+| 292 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 293 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 294 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 295 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
+| 296 | → | [`scripts/vendor/openshell-sdk/README.md`](scripts/vendor/openshell-sdk/README.md) |
+| 297 | → | [`SECURITY.md`](SECURITY.md) |
+| 298 | → | [`test/e2e/docs/README.md`](test/e2e/docs/README.md) |
+| 299 | → | [`test/e2e/README.md`](test/e2e/README.md) |
+| 300 | → | [`test/README.md`](test/README.md) |
+| 301 | → | [`WRITING.md`](WRITING.md) |
 
 ---
 

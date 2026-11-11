@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 27 file(s) materialized.
+Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 27 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,33 +63,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/build-cli/SKILL.md`](.claude/skills/build-cli/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/github-pr-review-fix/SKILL.md`](.claude/skills/github-pr-review-fix/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 6 | ✓ | [`extensions/AGENTS.md`](extensions/AGENTS.md) |
-| 7 | ✓ | [`extensions/Animation/AGENTS.md`](extensions/Animation/AGENTS.md) |
-| 8 | ✓ | [`extensions/Cinemachine/AGENTS.md`](extensions/Cinemachine/AGENTS.md) |
-| 9 | ✓ | [`extensions/InputSystem/AGENTS.md`](extensions/InputSystem/AGENTS.md) |
-| 10 | ✓ | [`extensions/Navigation/AGENTS.md`](extensions/Navigation/AGENTS.md) |
-| 11 | ✓ | [`extensions/ParticleSystem/AGENTS.md`](extensions/ParticleSystem/AGENTS.md) |
-| 12 | ✓ | [`extensions/ProBuilder/AGENTS.md`](extensions/ProBuilder/AGENTS.md) |
-| 13 | ✓ | [`extensions/Splines/AGENTS.md`](extensions/Splines/AGENTS.md) |
-| 14 | ✓ | [`extensions/Terrain/AGENTS.md`](extensions/Terrain/AGENTS.md) |
-| 15 | ✓ | [`extensions/Tilemap/AGENTS.md`](extensions/Tilemap/AGENTS.md) |
-| 16 | ✓ | [`extensions/Timeline/AGENTS.md`](extensions/Timeline/AGENTS.md) |
-| 17 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 18 | ✓ | [`templates/extension/AGENTS.md`](templates/extension/AGENTS.md) |
-| 19 | ✓ | [`tests/ci-disable/AGENTS.md`](tests/ci-disable/AGENTS.md) |
-| 20 | ✓ | [`tests/extensions/AGENTS.md`](tests/extensions/AGENTS.md) |
-| 21 | ✓ | [`tests/filter-oracle/AGENTS.md`](tests/filter-oracle/AGENTS.md) |
-| 22 | ✓ | [`Unity-MCP-Plugin/AGENTS.md`](Unity-MCP-Plugin/AGENTS.md) |
-| 23 | → | [`docs/agents/architecture.md`](docs/agents/architecture.md) |
-| 24 | → | [`docs/agents/ci-unity-license.md`](docs/agents/ci-unity-license.md) |
-| 25 | → | [`docs/agents/documentation-sync.md`](docs/agents/documentation-sync.md) |
-| 26 | → | [`docs/agents/release.md`](docs/agents/release.md) |
-| 27 | → | [`docs/agents/style.md`](docs/agents/style.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
+| 4 | ✓ | [`extensions/AGENTS.md`](extensions/AGENTS.md) |
+| 5 | ✓ | [`extensions/Animation/AGENTS.md`](extensions/Animation/AGENTS.md) |
+| 6 | ✓ | [`extensions/Cinemachine/AGENTS.md`](extensions/Cinemachine/AGENTS.md) |
+| 7 | ✓ | [`extensions/InputSystem/AGENTS.md`](extensions/InputSystem/AGENTS.md) |
+| 8 | ✓ | [`extensions/Navigation/AGENTS.md`](extensions/Navigation/AGENTS.md) |
+| 9 | ✓ | [`extensions/ParticleSystem/AGENTS.md`](extensions/ParticleSystem/AGENTS.md) |
+| 10 | ✓ | [`extensions/ProBuilder/AGENTS.md`](extensions/ProBuilder/AGENTS.md) |
+| 11 | ✓ | [`extensions/Splines/AGENTS.md`](extensions/Splines/AGENTS.md) |
+| 12 | ✓ | [`extensions/Terrain/AGENTS.md`](extensions/Terrain/AGENTS.md) |
+| 13 | ✓ | [`extensions/Tilemap/AGENTS.md`](extensions/Tilemap/AGENTS.md) |
+| 14 | ✓ | [`extensions/Timeline/AGENTS.md`](extensions/Timeline/AGENTS.md) |
+| 15 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 16 | ✓ | [`templates/extension/AGENTS.md`](templates/extension/AGENTS.md) |
+| 17 | ✓ | [`tests/ci-disable/AGENTS.md`](tests/ci-disable/AGENTS.md) |
+| 18 | ✓ | [`tests/extensions/AGENTS.md`](tests/extensions/AGENTS.md) |
+| 19 | ✓ | [`tests/filter-oracle/AGENTS.md`](tests/filter-oracle/AGENTS.md) |
+| 20 | ✓ | [`Unity-MCP-Plugin/AGENTS.md`](Unity-MCP-Plugin/AGENTS.md) |
+| 21 | → | [`docs/agents/architecture.md`](docs/agents/architecture.md) |
+| 22 | → | [`docs/agents/ci-unity-license.md`](docs/agents/ci-unity-license.md) |
+| 23 | → | [`docs/agents/documentation-sync.md`](docs/agents/documentation-sync.md) |
+| 24 | → | [`docs/agents/release.md`](docs/agents/release.md) |
+| 25 | → | [`docs/agents/style.md`](docs/agents/style.md) |
 
 ---
 

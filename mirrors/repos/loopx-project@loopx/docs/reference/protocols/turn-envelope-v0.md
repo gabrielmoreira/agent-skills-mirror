@@ -9,7 +9,8 @@ This page describes the current versioned representation. The
 [unified-contract RFC](../../architecture/rfcs/controller-executor-unified-contract-v0.md)
 proposes replacing the live quota/envelope format choice with one complete
 contract, including differential delivery. Historical captures retain their
-original schema and signature; the proposal does not introduce a new CLI switch.
+original schema and signature. The explicit complete-v1 Host entry below does
+not switch existing quota or v0 consumers to the proposed unified default.
 The proposed composition point precedes capture and encoding. Today's action
 signature compares its registered projection; equality alone does not establish
 complete source-clause preservation or qualify the unified contract.
@@ -20,7 +21,8 @@ separate from switching new admissions to a future unified version.
 
 中文：本页记录当前版本。[统一契约提案](../../architecture/rfcs/controller-executor-unified-contract-v0.zh-CN.md)
 的终态是一份包含差分交付能力的完整契约，取消线上 quota/envelope 格式选择；
-历史捕获保留原 schema 与签名。本次文档更新不新增 CLI 开关。
+历史捕获保留原 schema 与签名。下述显式完整 v1 Host 入口不将既有 quota 或 v0
+消费者切换到提案的统一默认。
 提议的组合点位于 capture 与编码之前。当前 action signature 比较其注册投影；
 仅签名相等不能证明完整来源条款得到保留，也不能验收统一契约。
 RFC 的 [C1 消费链替换](../../architecture/rfcs/controller-executor-unified-contract-v0.zh-CN.md#c1-消费链替换与切换单元)
@@ -32,6 +34,54 @@ Preview it explicitly:
 ```bash
 loopx --format json quota should-run --goal-id <goal-id> --agent-id <agent-id> --turn-envelope
 ```
+
+### Explicit complete-v1 Host entry / 显式完整 v1 Host 入口
+
+A Host that consumes the existing complete contract can select `--complete-turn`
+on JSON `quota should-run`. It composes `loopx_turn_envelope_v1` before capture;
+the saved source retains original work, acceptance, Stop, required-read and
+permission facts. Ordinary progressive/Delta navigation may be returned instead
+of the full document. Follow its pinned reader without rerunning admission.
+
+```bash
+loopx --format json quota should-run --goal-id <goal-id> --agent-id <agent-id> \
+  --turn-instance-id <turn-id> --complete-turn --decision-output-dir ./complete-001
+```
+
+The flag is mutually exclusive with legacy `--turn-envelope`. Omitting it keeps
+the existing quota/v0 behavior, including App callers. Context delivery is
+independent: `--context-delivery off` returns the complete v1 document without
+progressive presentation; it does not undo the explicit version choice.
+An older CLI rejects the new flag before guard execution. Omit it to roll back;
+existing complete captures remain readable through their original digest-bound
+`quota context-read`/`context-project` recovery.
+
+For eligible original Todo plans, the same typed settlement owner projects one
+`refresh-state ... --settle-turn --settlement-receipt` command. It retains the
+original effect identity, validation and terminal conditions. A non-ready
+preparation or mismatched receipt never becomes ready; partial failure returns
+the original `settlement_owed` recovery instead of a second debit. Contract
+composition failure preserves the decided receipt and available original
+capture, reports failure, and grants no work or automatic retry.
+
+`heartbeat-prompt --thin --complete-turn` preserves the selection on its guard
+and same-Turn selection commands. External benchmark heartbeat adapters may
+explicitly select `--complete-turn` on their runner too; other profiles reject
+it. This developer protocol adds no settings owner, model request, child worker,
+permission or execution allowance. User task time requirements remain task
+context; the caller's private current deadline and runtime guidance are not new
+model context. Actual live adoption and efficiency still require separate proof.
+
+中文：只有显式选择 `--complete-turn` 才让 JSON guard 在 capture 前生成完整 v1；
+未选择的 quota/App 与旧 `--turn-envelope` 行为保留，两种版本选项互斥。
+渐进/差分交付独立控制；关闭上下文交付时仍返回已显式选择的完整 v1 文档。
+读取按原摘要绑定的分页，不为补读重新准入。原验收、Stop、权限、必要读取与用户
+任务时间要求保留；不会把调用方私有当前倒计时或常驻 runtime 指导新增到模型输入。
+可执行的原 Todo 结算计划复用同一 typed owner，合并为一条写回并保留原 effect id，
+不把未 ready 的准备或错误回执转成授权。部分失败只沿原 `settlement_owed` 恢复。
+旧 CLI 在 guard 前拒绝新选项，回滚时移除该选项；旧完整 capture 仍用原 reader。
+这只是 Host 开发协议入口，不新增设置、模型/子 worker、预算或权限，也不证明
+已运行的 Host 采用或效率收益。
 
 For a tool with bounded output, optionally capture the full decided payload before
 its display projection. Choose a **new directory for each invocation**, even when
@@ -1132,6 +1182,24 @@ facts in `boundary.capabilities.reward_memory`: `automatic_recall` and
 `automatic_ingest`. Unconfigured, disabled or unavailable bindings omit this
 projection. It carries neither private provider configuration nor memory content
 and grants no action authority. Existing action-signature coverage includes it.
+
+A declared complete native source passes the existing complete-decision validator
+before capability facts or reusable guidance are read. A damaged binding, unknown
+version/codec, or changed retained field cannot fall back to the unversioned quota
+signature path. Provider recall observations are passed separately from that
+immutable source; they cannot be merged into its signed fields for enablement.
+Unversioned quota input and recorded wrapped Host input keep their own readers.
+Source-free status readback keeps its registration, namespace, slot and size
+checks without requiring an executable source; it cannot deliver guidance or
+result schemas. This adds complete-source validation on native advice, rather
+than qualifying a reduction in context, RPCs or complete-task cost.
+
+中文：声明了版本的完整 native 来源在能力参与事实和可复用指导读取前，先由已有完整
+契约 owner 验证。绑定损坏、版本／codec 不支持或保留字段变动，均不得回退到未版本化
+quota 的签名路径。召回观察与原来源分开传递，不能为判断参与而改写签名字段；未版本化
+quota 与记录中的 Host 包装保留各自 reader。仅状态读回仍校验注册、命名空间、槽位和
+大小，但不要求可执行来源，也不能提供指导或结果 schema。完整 native 指导增加来源
+验证；这不是上下文、RPC 或整任务成本下降的资格证据。
 
 Codex CLI host requests use these facts together with the fresh runtime binding
 readback. Recall guidance is added only with enabled recall and actual context;

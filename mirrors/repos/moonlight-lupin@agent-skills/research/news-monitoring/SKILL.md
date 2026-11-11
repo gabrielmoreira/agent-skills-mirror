@@ -3,12 +3,12 @@ name: news-monitoring
 description: "Use when a topic or news stream needs recurring monitoring — cover it with web search, multi-language sources, digest formatting, and automated delivery via Hermes cron jobs. Covers search strategy, source selection, Chinese-language platforms, and digest templates."
 license: MIT
 metadata:
-  version: 2.0.0
+  version: 2.1.0
   author: moonlight-lupin
   platforms: [linux, macos, windows]
   hermes:
     tags: [news, monitoring, digest, cron, research, chinese, HK, PBSA]
-    related_skills: [deep-research, youtube-topic-research, website-scraping]
+    related_skills: [deep-research, website-scraping]
 ---
 
 # News Monitoring & Digest Delivery
@@ -241,6 +241,10 @@ Set `context_from: ["<job_id>"]` on the cron job (using the job's own ID) so eac
 
 **Industry-specific:** PBSA News, Global Student Living, Centurion announcements (SGX-listed PBSA REIT)
 
+### Source database and link health
+
+For monitoring topics that run for weeks, record digest sources in the citation database shipped with the deep-research skill (`../deep-research/scripts/source_db.py`; workflow doc at `../deep-research/references/citation-schema.md`). Add each article at digest build time with `--topic <monitoring topic> --type news` and an explicit `--db-path` or `SOURCE_TRACKER_DB` per topic, so separate monitors do not fragment into near-duplicate tags. Before a major digest or monthly rollup, run `../deep-research/scripts/url_health.py --stale-days 30` against that database so dead links are caught before the reader clicks them.
+
 ## Pitfalls
 
 - **No dates in digest = rejected.** User explicitly asked for publish dates on every item.
@@ -268,7 +272,7 @@ Set `context_from: ["<job_id>"]` on the cron job (using the job's own ID) so eac
 
 `evals/routing-fixtures.json` holds lightweight contract fixtures — sample
 request → expected routing (including when a request should go to
-`deep-research` or `youtube-topic-research` instead), required digest output
+`deep-research` instead), required digest output
 fields, and forbidden output patterns. They are specs, not run against a live
 model; the repo-root `tests/test_routing_fixtures.py` validates they stay well-formed and
 route to real skills.

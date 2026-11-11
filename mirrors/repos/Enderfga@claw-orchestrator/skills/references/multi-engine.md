@@ -15,7 +15,7 @@ SessionManager
 ├── engine: 'agy'       → PersistentAgySession
 │   └── Wraps: agy -p (Google Antigravity CLI, per-message spawning, stream-json output)
 ├── engine: 'grok'      → PersistentGrokSession
-│   └── Wraps: grok -p --output-format json (xAI Grok Build, per-message spawning)
+│   └── Wraps: grok -p --output-format streaming-json (xAI Grok Build, per-message spawning)
 ├── engine: 'opencode'  → PersistentOpencodeSession
 │   └── Wraps: opencode run --format json, message on stdin (per-message spawning)
 ├── engine: 'acp'       → PersistentAcpSession
@@ -45,7 +45,7 @@ as options (see the notes under [Antigravity](#google-antigravity-engine-agy) an
 
 ### Claude Code (`engine: 'claude'`)
 
-Default engine. Long-running subprocess with streaming JSON I/O. Tested with Claude Code CLI **2.1.321**.
+Default engine. Long-running subprocess with streaming JSON I/O. Tested with Claude Code CLI **2.1.322**.
 
 - Persistent multi-turn conversations
 - Real-time streaming (text, tool_use, tool_result, system events)
@@ -82,7 +82,7 @@ await manager.startSession({
 
 ### OpenAI Codex (`engine: 'codex'`)
 
-Wraps the `codex exec` subcommand. Each `send()` spawns a new process. Tested with `codex` CLI **0.166.0**.
+Wraps the `codex exec` subcommand. Each `send()` spawns a new process. Tested with `codex` CLI **0.167.0**.
 
 - Non-interactive execution via `codex exec --sandbox workspace-write --skip-git-repo-check --json`
 - Real `usage` from the `turn.completed` JSON event (input, output, cached, reasoning tokens). **These are cumulative over the thread, not per turn**, so they replace the session totals rather than being added to them; subtracting consecutive values gives one turn's prompt
@@ -120,7 +120,7 @@ await manager.startSession({
 
 ### OpenAI Codex App-Server (`engine: 'codex-app'`)
 
-Wraps `codex app-server --listen stdio:// --enable goals` as a long-running JSON-RPC subprocess. **Required for `/goal` long-horizon objective support** — Codex's exec subcommand has no goal surface. Tested with `codex` CLI **0.166.0**.
+Wraps `codex app-server --listen stdio:// --enable goals` as a long-running JSON-RPC subprocess. **Required for `/goal` long-horizon objective support** — Codex's exec subcommand has no goal surface. Tested with `codex` CLI **0.167.0**.
 
 - Long-running subprocess; one `codex app-server` per session
 - JSON-RPC 2.0 over stdio with v2 protocol method names (`initialize`, `thread/start`, `turn/start`, ...)
@@ -240,10 +240,11 @@ await manager.startSession({
 
 ### Grok Build (`engine: 'grok'`)
 
-Wraps xAI's **Grok Build** CLI. Each `send()` spawns `grok -p <msg> --output-format json`, which
-prints a single JSON object and exits. Tested with `grok` **1.0.77**.
+Wraps xAI's **Grok Build** CLI. Each `send()` spawns `grok -p <msg> --output-format streaming-json`,
+which prints one JSON object per line and exits: the reply as `text` pieces, a `usage` event per
+request, and an `end` event with the rest. Tested with `grok` **1.0.77**.
 
-- **Cost comes from the engine, not from the price table.** The result object carries
+- **Cost comes from the engine, not from the price table.** The `end` event carries
   `total_cost_usd`, and the wrapper writes it straight into the session's spend, so the run ledger
   and the `maxBudgetUsd` gate both read what xAI charged. Other engines multiply tokens by a rate in
   `models.ts`. `grok-4.7` (grok's default since 1.0.67) and `grok-4.6` are still registered, for
@@ -252,9 +253,10 @@ prints a single JSON object and exits. Tested with `grok` **1.0.77**.
 - **Real conversation continuity**: the `sessionId` from turn 1 is replayed as `--resume <id>`.
   `--continue` is not used — it means "the most recent session for this cwd", which collides
   between concurrent sessions.
-- Real token counts from `usage` (`input_tokens`, `output_tokens`, `cache_read_input_tokens`,
-  `cache_creation_input_tokens`). These are **per-turn**, unlike codex, where the same field is
-  cumulative, and `input_tokens` excludes the cached reads.
+- Real token counts from the `end` event's `usage` (`input_tokens`, `output_tokens`,
+  `cache_read_input_tokens`, `cache_creation_input_tokens`). These are **per-turn**, unlike codex,
+  where the same field is cumulative, and `input_tokens` excludes the cached reads. They sum every
+  request of the turn, so the context percentage comes from the last request's own `usage` event.
 - Permission modes pass straight through: grok's `--permission-mode` takes the same vocabulary we
   use. The one exception is our `manual`, which grok spells `default`.
 - Reasoning effort maps to `--effort`; grok accepts `low|medium|high|xhigh`, so `max` and `ultra`
@@ -499,6 +501,14 @@ What happens behind the scenes:
 1. The session manager reads `~/.openclaw/openclaw.json` for the gateway port + auth (in plugin and `clawo serve` mode alike)
 2. Starts a local proxy server on `127.0.0.1` (random port, auto-managed) the first time a Claude session names a non-Claude model, provided a gateway URL was found
 3. Claude Code CLI sends Anthropic-format requests → proxy converts to OpenAI → gateway → any model
+
+The proxy forwards with the gateway key and any provider keys in the environment, so it serves only the
+sessions it started. Each process draws a random secret, and a session's base URL carries it as the first path
+segment (`http://127.0.0.1:<port>/<secret>`). A request without it gets 401 before its body is read, so a process
+that only knows the port cannot spend those credentials. The secret is in the Claude child's environment, so the
+processes that session runs, and other processes of the same user that can read it, still reach the proxy. It is
+not persisted, and a restarted process uses a new one. Under the secret, `POST` must be `application/json` (415
+otherwise), bodies are capped at 32 MB (413), and methods other than `POST`, `GET` and `HEAD` get 405.
 
 ### Your own Anthropic-compatible gateway
 

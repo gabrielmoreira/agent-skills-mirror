@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 347 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 349 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 347 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 347 |
+| Files         | 349 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -406,6 +406,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 345 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
 | 346 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
 | 347 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 348 | ✓ | [`fixtures/templates/hosted-e2e/package/skills/research/SKILL.md`](fixtures/templates/hosted-e2e/package/skills/research/SKILL.md) |
+| 349 | ✓ | [`scripts/security/fixtures/template-qualification/skills/notes/SKILL.md`](scripts/security/fixtures/template-qualification/skills/notes/SKILL.md) |
 
 ---
 

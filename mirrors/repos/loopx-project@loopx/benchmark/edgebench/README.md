@@ -3,11 +3,8 @@
 This research adapter calls SForge's native `run_agent`. Task images, prompts,
 submission cooldowns, judge isolation and scoring remain owned by the pinned
 EdgeBench checkout. Best-only adds host capture/admission scheduling; native and
-blind retain native automatic evaluation. The CLI defaults to a reviewed commit
-from the shared
-[EdgeBench integration branch](https://github.com/huangruiteng/EdgeBench/tree/codex/edgebench-integration),
-maintained jointly by `huangruiteng` and `loopx-agent`. The canonical repository
-and revision/compatibility-patch pair live in [`source-default.json`](source-default.json).
+blind retain native automatic evaluation. The canonical repository and pinned
+revision/compatibility-patch pair live in [`source-default.json`](source-default.json).
 Run the controller on Linux with Docker and native SForge
 iptables permissions; a macOS Docker socket alone does not provide that boundary.
 
@@ -24,7 +21,7 @@ never repin an active or historical cohort.
 
 For a **new cohort with no explicit source options**, `source-default.json`
 selects the reviewed provider commit
-[`118f9257d39c71d0805bb5b9cd4eb85d13a1e6d2`](https://github.com/huangruiteng/EdgeBench/commit/118f9257d39c71d0805bb5b9cd4eb85d13a1e6d2)
+[`476b34d17e759a7dbcf9ec36a12ff42b757b462a`](https://github.com/huangruiteng/EdgeBench/commit/476b34d17e759a7dbcf9ec36a12ff42b757b462a)
 and the versioned
 [`nonfinite-checkpoint-v2` compatibility patch](compatibility/nonfinite-checkpoint-v2.patch).
 This LoopX-owned patch fixes the native checkpoint representation of nonfinite
@@ -114,6 +111,28 @@ its PR manifest current. Changing the default repository/branch requires updatin
 the single source file and this protocol; adding a second contributor-specific
 default would split the source of truth again.
 
+## Reserve a native evaluator per arm
+
+For matched native or blind archive-submission trials, give the judge the exact
+`--run-id` of each worker at startup. Use the same log directory for the judge and
+workers. This example reserves four evaluator lanes.
+
+```sh
+SFORGE_TASKS_DIR=/data/tasks python -m benchmark.edgebench.serve \
+  --log-dir /data/private-runs --port 8080 \
+  --judge-isolated-run official-01 --judge-isolated-run native-goal-01 \
+  --judge-isolated-run context-on-01 --judge-isolated-run context-off-01 \
+  --judge-max-concurrent 4 --judge-max-pending 4
+```
+
+Each listed run gets one FIFO evaluator and an equal share of
+`--judge-max-pending`, rounded down. A full lane rejects another submission
+before spending a round or starting its cooldown. The judge rejects
+registrations for unlisted run IDs. Set `--judge-max-concurrent` to at least the
+number of reserved runs and provision enough CPU, memory and host evaluation
+slots for all of them. Shared hardware can still affect grading latency.
+Omitting the run list selects the shared evaluator pool.
+
 ### Inspect cached images by case
 
 The worker's existing Docker preflight records the local image ID and logical
@@ -135,13 +154,39 @@ its own image provenance, and a later retag can change what gets launched.
 
 ## Worker profiles
 
-The five worker profiles are `official`, `single`, `native-goal`,
-`heartbeat-resume`, and `heartbeat-explore`. `official` uses SForge's Codex Stop
+The worker profiles are `official`, `single`, `native-goal`, `heartbeat-resume`,
+`heartbeat-explore`, and `turn-resume`. `official` uses SForge's Codex Stop
 hook and outer recovery. `single` executes once with neither. `native-goal` uses
 the shared native Codex Goal transport. The heartbeat profiles use the shared
 LoopX scheduler and resume store. `heartbeat-explore` additionally enables the
 existing Explore Graph and analysis-only Explore Harness gates with the
 `adaptive-resilient` profile; this grants no child-agent execution authority.
+
+Use `--worker turn-resume --validation-command-json '["/opt/task-checks/check-work"]'`
+to run the same case through the public `loopx turn run-once` entry. Supply a
+trusted executable available **inside the guest** that reads the normalized
+result on stdin and checks an independent work postcondition. Pin that
+executable with the trial image or source. The receipts record the digest of
+the argv. Keep hidden tests and judge credentials outside the solver. Only
+the native judge supplies the benchmark score.
+
+Both `heartbeat-resume` and `turn-resume` use the external quota scheduler,
+planned task entry and one Agent-scoped Codex session by default. Turn sends
+the captured work to the Host, runs the validator and settles through Core.
+For a comparison, freeze both source revisions, task, feedback, model, effort
+and effective solve time. Heartbeat's native context delivery defaults on.
+Turn uses its product Host request and reserves 160 seconds for managed cleanup.
+Allow for that difference when choosing the phase budget.
+
+A lost reply leaves a private pending marker. The next Turn wake looks up the
+original journal by Goal, Agent and wake identity. A committed replay produces
+no Host invocation or additional spend. Missing or conflicting history holds
+the wake for reconciliation. Older markers without a validator digest also
+require reconciliation against the original validator; the current command
+cannot establish that history. Retain the original trial state while diagnosing
+a failure. To return to heartbeat, select `heartbeat-resume` for a new trial.
+The Controller–Worker profile and its matched comparison are specified in the
+[delivery RFC](../../docs/architecture/rfcs/controller-executor-unified-contract-v0.md#from-current-code-to-a-useful-product-dependencies-and-delivery-slices).
 
 All profiles use the same explicitly staged Codex binary and model/effort. This
 permits an updated Codex version with the native scaffold; it is not a claim of
@@ -429,6 +474,82 @@ resource policy in the study manifest before launching a new comparison.
 Use explicit `--feedback best-only` to retain strict-improvement publication, or
 `--feedback blind` as an evaluator-feedback-free control. Harbor is unchanged.
 
+### Native artifact evidence and independent measurements
+
+Native heartbeat workers with `--execution-observation local_probe` expose
+`loopx-bind-native-candidate` as an artifact reader. Native results do not need
+a preceding successful local execution:
+
+```sh
+loopx-bind-native-candidate --result native-result.json
+```
+
+The original receipt names the accepted upload as `archive:<sha256>` and records
+its size. This offline command checks the receipt shape, not service identity.
+For additional file-content evidence, pass `--archive submission.tar.gz`. It
+checks the original receipt against the bytes and safely reads the complete
+ordinary gzip tar without extracting files, bounded to 256 members and 64 MiB
+compressed/expanded. The returned `submitted_file_set_ref` uses the shared
+Explore `candidate_content` path-and-byte manifest. File mode, packing, build
+lineage and execution conditions remain separate; equal content refs alone do
+not prove equivalent execution. Generated outputs belong to the full file set,
+and a probe's selected subset or extra fixtures are a different subject.
+
+Local and native producers each retain their own actual workload, evaluator,
+subject and evidence through ordinary Explore measurements. There is no
+required local-to-native work order. Missing content evidence limits pairing,
+not retention of an otherwise valid result. Never rewrite an earlier
+measurement or resubmit merely to force a candidate match. When the installed
+native client advertises `--retain-archive` and `--json`, it can retain bytes of
+a planned upload; this is optional evidence, not an extra evaluation.
+
+The old `--observation`, `--snapshot` and `--generated-file` options remain an
+explicit offline diagnostic for sealed probe artifacts. They keep their strict
+original correspondence checks and do not gate ordinary native facts.
+
+For an explicit native Explore trial, opt in with `--native-result-comparison`.
+`local_probe` is an independent option. Split source pins must also include the
+product's existing `record_work_finding` and `explore finding --result-json`
+entrypoint. Preflight rejects an older product explicitly; startup checks the
+actual staged product APIs before qualifying the service context. Use `--submission-id ID` instead of
+`--result FILE` to read one existing result. A single GET supplies native feedback
+and, when its service receipt/context are valid, a formal `native_measurement`
+with the stable accepted `archive:<sha256>` subject. No local execution or local
+archive is required. Optional `--archive` adds file-content evidence; its absence
+or mismatch does not erase a valid formal measurement or change its subject.
+Pending or unverified service results retain raw feedback with no measurement.
+
+This opt-in requires the native service's run-scoped `/context` route. Before
+the solver starts, the runner checks the task and benchmark digests and score
+direction against that service's fixed registration. The installed
+`evaluation_ref` fingerprints the service's task specification, grading source,
+immutable judge image, execution configuration and selection policy; use it for
+the native Yardstick. The result receipt must carry that exact registration and
+conditions. A local checkout label does not identify the running evaluator.
+Older services without this context require ordinary native feedback instead;
+older results without those conditions remain unpaired. Qualification adds one
+startup request and no extra request to each result read. The conditions do not
+claim to freeze external services or mutable external data.
+
+Record local and native measurements on the same claimed Todo with
+[`loopx explore finding --result-json`](../../loopx/capabilities/explore/README.md#quantitative-findings).
+Reuse the applicable question; each producer keeps its original workload, evaluator
+and subject. Different profile revisions are valid. Pair only the same subject
+under applicable conditions; content equality alone does not alias an archive or
+prove execution equivalence. Explore returns
+the comparable change in the write receipt. With a declared Yardstick, the
+receipt can show that the two evaluators prefer different candidates. The
+native read creates no finding and spends no submission opportunity.
+
+
+The common content capture lives in the product's existing Explore producer
+neighborhood; benchmark runtime only adapts native receipt/archive fields. A
+split product/runner install selecting capture must pin a product revision with
+`loopx.capabilities.explore.candidate_content`. Preflight rejects an older
+product before worker staging; it never overlays product code or falls back to
+a benchmark copy. Omitted capture preserves the historical source-pin behavior.
+
+
 For native archive submission, start `python -m benchmark.edgebench.serve` and use the runner
 without `--feedback` to select the defaults. Explicit
 `--feedback native --submission-cooldown 120 --eval-interval 300` restores the
@@ -438,11 +559,10 @@ does not limit game API calls.
 
 The pinned native judge's cooldown is in-memory session state. Server restart or
 fresh registration does not prove cooldown continuity or safe retry after an
-ambiguous response. Its capacity bound is aggregate, not a reserved evaluation
-lane per run. Qualify restart/reconciliation, per-run contention and infrastructure
-failure accounting before admitting a campaign; a one-hour cooldown alone does
-not establish fairness. This adapter change does not repair those provider gaps
-or change scoring, accepted-submission accounting, or final selection.
+ambiguous response. For matched trials, [reserve a native evaluator per arm](#reserve-a-native-evaluator-per-arm)
+and record the scheduling configuration in the study manifest. Qualify restart
+and reconciliation, shared-host contention and infrastructure failure accounting
+before admitting a campaign.
 
 The shared native task policy also describes accepted-result recovery. Check the
 pinned provider's generated `sforge-submit --help`: clients that support
@@ -885,6 +1005,19 @@ keeping objective guidance, task/scorer version, model and budgets matched.
 Omit the flag on the next run to disable it. No active experiment is changed by
 installing this code. Inspect wake receipts and the saved decisions before
 claiming adoption; score countability still requires the usual integrity review.
+
+For an explicitly complete v1 Host contract, choose `--complete-turn` instead
+on either heartbeat profile. The shared worker forwards that choice through
+the real heartbeat renderer and guard; it retains the original ready claim,
+receipt and single-command settlement. It cannot be combined with the legacy
+short-envelope option. Context delivery remains independent, and unselected
+runs keep their existing behavior. See the [Host protocol](../../docs/reference/protocols/turn-envelope-v0.md#explicit-complete-v1-host-entry--显式完整-v1-host-入口)
+for source readback, failure recovery and rollback. User task time requirements
+remain readable; private Host deadlines stay outside model context.
+
+中文：heartbeat profile 可显式选择 `--complete-turn` 以消费完整 v1，不能与旧短包
+选项同时启用；共用原 ready claim、回执和单条结算 owner，不改变未选择的运行。
+按原 source reader 核实采用与恢复；该开关不新增模型、子 worker、时钟或权限。
 
 ## Close a managed native attempt
 

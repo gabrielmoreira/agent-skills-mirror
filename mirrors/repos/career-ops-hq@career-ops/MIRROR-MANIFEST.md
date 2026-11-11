@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `career-ops-hq/career-ops` — 26 default patterns, 2 followed patterns, 20 file(s) materialized.
+Mirror of `career-ops-hq/career-ops` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `career-ops-hq/career-ops` — 26 default patterns, 2 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,11 +75,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 14 | ✓ | [`cursor-directory/skills/career-ops/SKILL.md`](cursor-directory/skills/career-ops/SKILL.md) |
 | 15 | ✓ | [`docs/KEEPING_PORTALS_LIVE.md`](docs/KEEPING_PORTALS_LIVE.md) |
-| 16 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 17 | ✓ | [`openai-directory/skills/career-ops/SKILL.md`](openai-directory/skills/career-ops/SKILL.md) |
-| 18 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 19 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 20 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 16 | ✓ | [`docs/LINKEDIN_ALERTS.md`](docs/LINKEDIN_ALERTS.md) |
+| 17 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 18 | ✓ | [`openai-directory/skills/career-ops/SKILL.md`](openai-directory/skills/career-ops/SKILL.md) |
+| 19 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 20 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 21 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

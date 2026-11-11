@@ -43,8 +43,10 @@ def load_config(path):
     if cfg['mac'].get('CONFIG') and not Path(cfg['mac']['CONFIG']).is_absolute():
         raise SwitchError('代理配置路径必须是绝对路径。')
     win = cfg['windows']
-    if not isinstance(win, dict) or set(win) != {'enable_rules', 'disable_rules', 'state_path'}:
+    if not isinstance(win, dict) or set(win) - {'enable_rules', 'disable_rules', 'state_path', 'mode'} or not {'enable_rules', 'disable_rules', 'state_path'} <= set(win):
         raise SwitchError('Windows 配置格式不正确。')
+    if win.get('mode', 'application_paths') not in ('application_paths', 'whole_machine'):
+        raise SwitchError('Windows 模式须为 application_paths 或 whole_machine。')
     for key in ('enable_rules', 'disable_rules'):
         if not isinstance(win[key], list) or any(not isinstance(n, str) or not re.fullmatch(r'[A-Za-z0-9_.-]+', n) for n in win[key]):
             raise SwitchError('Windows 规则须使用精确 Name，不使用显示名称或通配符。')
@@ -128,6 +130,8 @@ def confirm(action, cfg):
                'off': '停用当前保护及开机加载，可能恢复直连。请先退出相关应用及后台进程。',
                'uninstall': '恢复未保护状态并移除已部署的防护组件；配置模板与桌面入口保留。',
                'snapshot': '保存当前 Windows 策略及指定规则状态，作为关闭时的恢复基线。'}
+    if cfg['backend'] == 'windows_firewall' and cfg['windows'].get('mode') == 'whole_machine':
+        print('整机出口模式：影响所有软件。代理停用时其他软件也可能断网；国内直连、局域网、虚拟机和远程连接须先审核例外。关闭保护会恢复原有出站策略。', flush=True)
     phrase = action.upper() + ' ' + cfg['target']
     print(effects[action] + '\n目标设备：' + cfg['target'] + '\n输入 ' + phrase + ' 继续，其他输入取消。', flush=True)
     if input('> ').strip() != phrase:
@@ -169,6 +173,7 @@ def off(cfg, path):
 
 def on(cfg, path):
     before = status(cfg, path)
+    require_coverage(cfg, before)
     if before['protection'] == 'on' and before['startup']:
         return before
     if before['protection'] != 'off' or before['startup'] is not False:
@@ -186,10 +191,12 @@ def on(cfg, path):
             run(['systemctl', 'start', UNITS[0]])
         else:
             windows(path, 'On')
-        print('保护已临时开启。请验证网络正常、出口符合预期；180 秒内输入 KEEP 保留，否则恢复。', flush=True)
+        print('开关配置已临时开启。请核对当前应用覆盖、网络正常及出口符合预期；180 秒内输入 KEEP 保留，否则恢复。', flush=True)
         if input('> ').strip() != 'KEEP' or time.monotonic() - started >= 160:
             raise SwitchError('未在确认时间内保留，正在恢复未保护状态。')
-        if status(cfg, path)['protection'] != 'on':
+        current = status(cfg, path)
+        require_coverage(cfg, current)
+        if current['protection'] != 'on' or current.get('coverage', {}).get('status') == 'fail':
             raise SwitchError('未读回有效保护，可能已触发保险丝。')
         if cfg['backend'] == 'mac_pf':
             pf(cfg, 'confirm')
@@ -203,9 +210,17 @@ def on(cfg, path):
         off(cfg, path)
         raise
     result = status(cfg, path)
+    require_coverage(cfg, result)
     if result['protection'] != 'on' or not result['startup']:
         raise SwitchError('开启后的状态验证未通过，请按恢复入口检查。')
     return result
+
+
+def require_coverage(cfg, state):
+    coverage = state.get('coverage', {}).get('status')
+    whole_machine = cfg['backend'] == 'windows_firewall' and cfg['windows'].get('mode') == 'whole_machine'
+    if coverage == 'fail' or (whole_machine and coverage != 'pass'):
+        raise SwitchError('防护配置未核实，请检查出站放行规则、代理路径和接口；不要据此恢复受保护业务。')
 
 
 def execute(action, cfg, path):

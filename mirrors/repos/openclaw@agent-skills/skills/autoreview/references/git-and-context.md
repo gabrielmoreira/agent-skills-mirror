@@ -78,8 +78,33 @@ authentication, sandbox and mutation checks remain enabled.
   argument; different paths/evidence roles stay distinct.
 
 - Both roles: tracked-source filename classification; source names such as
-  `src/token_count.py` accepted. Credential directories, stores, keyfiles forbidden.
-  Existing prompt-file/dataset restrictions unchanged.
+  `src/token_count.py` accepted. Source files in compound-named directories such
+  as `credential-proxy` use the same tracked source/store classification, without
+  requiring content pins. Literal credential directories, stores and keyfiles
+  remain restricted.
+  Regular-file Markdown documents directly under `docs/flows/credential-source-egress/`,
+  `docs/reference/repository-credentials/`, `docs/reference/credential-sources/` or
+  `specs/rfcs/0023-egress-proxy-credential-lifecycle/` use ordinary tracked-source rules.
+  These named directories hold behavior docs or proposals, not credential storage. Sensitive
+  basenames, nested directories, other file types and private roots retain their
+  restrictions. This also keeps these
+  documents in tracked change bundles. Both changed sides must be regular files
+  or absent; symlinks, gitlinks and type changes involving them remain restricted.
+  Untracked, prompt-file and dataset rules
+  remain unchanged.
+  A shared-policy maintainer can pin a naming false positive after reviewing the
+  full committed file for disclosure. Each installed pin matches the
+  repository-relative path, Git blob ID, Git mode `100644`, and content SHA-256.
+  Pins can cover otherwise restricted source or chart-template names. Private
+  roots, literal credential directories such as `credentials/` and `secrets/`,
+  and credential stores remain restricted. The sole literal-directory exception is
+  the inspected `apps/controller/src/drivers/secret/kubernetes/index.ts` source,
+  which must also match its installed blob, mode and SHA-256 pin. Neighboring files
+  and other versions remain refused.
+  Both source-context flags and batch-manifest contexts use this check. Only the
+  installed policy can supply pins. A pin stops matching after a move, edit, or
+  mode change. Pins authorize context delivery only. Changed-file, prompt-file,
+  and dataset rules still apply.
 - Every source block: path, commit, blob, mode provenance.
 - `--source-context` bytes: partition with change when needed.
 - `--source-context-file` blocks: complete every pass; must fit with instructions

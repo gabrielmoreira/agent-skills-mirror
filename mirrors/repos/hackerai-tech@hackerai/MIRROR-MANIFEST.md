@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 3 followed patterns, 31 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 4 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 3 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 31 |
+| Followed pats | 4 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 3 followed patterns,
 - `README.md`
 - `docs/safe-local-diagnostics.md`
 - `docs/desktop-local-acceptance.md`
+- `pull_request_template.md`
 
 ## File Index
 
@@ -84,14 +85,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`lib/chat/next-actions/README.md`](lib/chat/next-actions/README.md) |
 | 22 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
 | 23 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
-| 24 | ✓ | [`scripts/benchmarks/cve-bench/README.md`](scripts/benchmarks/cve-bench/README.md) |
-| 25 | ✓ | [`scripts/benchmarks/realvuln/README.md`](scripts/benchmarks/realvuln/README.md) |
-| 26 | ✓ | [`scripts/benchmarks/suggestions/README.md`](scripts/benchmarks/suggestions/README.md) |
-| 27 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 28 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 29 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
-| 30 | → | [`docs/safe-local-diagnostics.md`](docs/safe-local-diagnostics.md) |
-| 31 | → | [`README.md`](README.md) |
+| 24 | ✓ | [`scripts/benchmarks/controller/README.md`](scripts/benchmarks/controller/README.md) |
+| 25 | ✓ | [`scripts/benchmarks/cve-bench/README.md`](scripts/benchmarks/cve-bench/README.md) |
+| 26 | ✓ | [`scripts/benchmarks/realvuln/README.md`](scripts/benchmarks/realvuln/README.md) |
+| 27 | ✓ | [`scripts/benchmarks/suggestions/README.md`](scripts/benchmarks/suggestions/README.md) |
+| 28 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 29 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
+| 30 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
+| 31 | → | [`docs/safe-local-diagnostics.md`](docs/safe-local-diagnostics.md) |
+| 32 | → | [`pull_request_template.md`](pull_request_template.md) |
+| 33 | → | [`README.md`](README.md) |
 
 ---
 

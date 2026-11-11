@@ -117,6 +117,41 @@ contract; this recipe does not authorize resubmission. Exercise an all-success
 control as well. No generic sweep determines per-item completeness or safe retry;
 retain the exact selection, visible outcome and recovery observations in the audit.
 
+### Collection readiness and retained context
+
+For a collection that opens reports or keeps unfinished work, bind the expected
+answers and preservation policy before driving it. Use this concrete matrix to
+separate outcomes that a row-count or DOM-presence assertion conflates:
+
+| State or action | Observe through the ordinary UI | Counterexample to reject |
+|---|---|---|
+| Collection rows have arrived | Read the promised summary for each expected item; distinguish true missing data from a failed read. | Rows exist, but their summaries say the read failed. This is neither usable summary content nor a healthy empty collection. |
+| Open a report with a repeated title | Check the requested report identity, its readable body and addressability where promised. | A readable report with the same title belongs to another record. |
+| Return to the collection | Compare the selected record, filter, actual scroll owner and focus against the bound return policy. | The exact report opens correctly, but returning clears the filter and moves the reader to the top. |
+| Close, discard, then change scope | Exercise each action separately under the product's draft policy. | Closing loses unfinished input; explicit discard resurrects it; another scope inherits it. Preserving everything indiscriminately also fails. |
+| Leave an inactive view mounted, then press Escape in the active view | Deliver the real key with ordinary focus; observe dismissal, focus and preserved context. | An invisible cached dialog node causes a global modal-presence check to swallow Escape. |
+| Assert current visible content | Read the active rendered surface and check hidden retained nodes separately. | `textContent` or an unscoped text locator finds an old report still mounted under `display:none` and declares it current or duplicated. |
+
+Retention is a useful healthy control: an inactive mounted view may legitimately
+keep drafts or reading state. DOM presence alone proves neither a visible defect
+nor an active modal. Conversely, an accessible role or visible box alone does not
+establish that its content answers the actor's question. Preserve separate verdicts
+for collection readiness, exact reading, return and unfinished-work boundaries.
+
+Source-checkout calibration: `evals/files/collection-context-fixture.html` is a
+self-contained synthetic collection with repeated report titles, a scrolled list,
+scope-bound drafts and a hidden retained dialog. From an **existing Playwright
+project** with an installed Chromium, run
+`node --test <skill-root>/tests/test_collection_context.mjs`; the test resolves that
+project's `playwright`, `@playwright/test` or `playwright-core` dependency from the
+working directory. Missing renderer/dependency fails explicitly; this command does
+not install one. Set `COLLECTION_CONTEXT_EVIDENCE_DIR` to retain screenshots and
+observations. The same output-level assertions distinguish healthy journeys from
+deliberately faulty controls. The fixture declares its draft policy;
+it does not impose that policy on another application or certify its semantics.
+These source-development resources are excluded from the runtime package and are
+not prerequisites for ordinary audits or evidence of a deployed product passing.
+
 For nested zoomable workspaces, the executing auditor treats the ordinary entry,
 enlarged mode, affected zoom levels and return-to-ordinary as separate states.
 An enlarged canvas cannot certify the shallow ordinary pane. Record its rendered
@@ -875,6 +910,28 @@ its own component checks while the page reads as a disaster:
   counts, unlabeled gauges. An aria-label satisfies the accessibility tree but
   not the sighted reader; if the audit cannot say what a number means from the
   rendered page alone, neither can the user.
+
+### Long lists and first-viewport controls
+
+When the task promises first-viewport discovery or controls that remain available
+while browsing a long list, name those controls before auditing: for example, a
+fold/expand action and its count. Do not require every list item above the fold.
+Use representative long data and the agreed viewport. At the ordinary entry,
+before any scrolling or automatic positioning, inspect the named controls' full
+labels, current bounds, clipping ancestors and topmost hit targets. DOM presence
+alone cannot pass a control buried after the last row. Do not assign `scrollTop`
+or call `scrollIntoView()` to manufacture a first-viewport pass.
+
+When continued availability during scrolling is promised, use the
+[nested-list input check](browser-driving-and-observation-traps.md#nested-vertical-lists-use-the-same-fresh-input-target-check)
+to reach the actual list end through ordinary scrolling and inspect the named
+controls there. When a declared control folds or expands items, exercise it and
+reconcile its displayed counts with the represented subsets. Keep a healthy long
+list whose ordinary rows extend below the viewport as a control. Reject a
+promised entry control placed after those rows; making it visible only after
+scrolling does not repair the entry failure. If a scroll attempt that should move
+the list has no verified displacement, keep that reached-state check unverified
+instead of reporting that the bottom has lost its controls.
 
 ## Design-System Artifacts
 

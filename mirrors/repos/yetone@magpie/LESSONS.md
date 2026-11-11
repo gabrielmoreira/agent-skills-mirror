@@ -192,6 +192,20 @@ protocol, never by a key's name.**
   looks most like what it lets through.
 - Seen 2× (2026-10-09, 2026-10-28).
 
+**When one access list must sit inside another, prove the containment
+for each pair of entry kinds; never try one entry on the other's text.**
+- bf4d8f3e5 (11-11) let a gateway key's model be a `re:` pattern and
+  judged an issued key's glob by matching the issuer's pattern against
+  the glob's text. `[^-]` and `.` take the `*`, so an issuer held to
+  `re:^openai/[^-]*$` issued `openai/*` and the issued key used
+  openai/gpt-4o; `re:^gr` covered `gr*` and with it group/… ids. Its body
+  said only that each test was red with the match switched off, and no
+  test put an issued glob under an issuer's pattern. Fixed in 08cca7311.
+- List the kinds (exact id, glob, pattern, group, account-derived) and
+  test each child kind under each issuer kind with an id the issuer may
+  not use. When containment can't be shown, refuse it.
+- Seen 1× (2026-11-11).
+
 **A security gap a doc names is an open bug, not a description.**
 - docs/subsystems/gateway-routing.md said "There is no `Host` check, so a
   page whose own name resolves to 127.0.0.1 (DNS rebinding) counts as
@@ -401,6 +415,39 @@ re-derives every place that discloses it.**
   privacy text in the same commit.
 - Seen 1× (2026-10-08).
 
+**A test waits for the state it checks, not for an earlier step of
+the same start.**
+- TestServingGatesTools waited for the gateway's listener and then read
+  the tool gate at once. ListenAndServe sets the listener first and takes
+  the gate later, after loading rests, acks and groups. On a loaded mote,
+  a full -race run of internal/gateway checked in that gap and went red
+  (#6016). With a 300ms pause injected there, it was red 3 of 3.
+  6fa02550a waits for the gate itself.
+- Before waiting on a "ready" sign, read the code that sets it and check
+  that what you assert is done before that sign, not after it.
+- Seen 1× (2026-11-11).
+
+**A body written "to be rewritten at ship" is rewritten before the
+push.**
+- b9f8548d2 (11-10, account export, 1,037 lines; it writes live sign-ins
+  to files) went to main with only "WIP commit before the full checks;
+  body rewritten at ship." The rewrite never happened, so no record of
+  what was run reaches git. This is the 10-15 SUITE_LINE placeholder
+  again, in another wording.
+- Before pushing, read each commit's body (`git log origin/main..`) for
+  "WIP", "TODO", "rewritten" or a template's placeholder.
+- Seen 1× (2026-11-11).
+
+**A new file's name is checked against the tree before it is written.**
+- 8fa91a852 (11-11) wrote its idle test to internal/agent/dsh_idle_test.go,
+  which already held 544b91ca8's streamIdleTimeoutMs tests, and they went
+  with it. 1c3056a2e put them back minutes later. ac2340d lost
+  three tests the same way.
+- Before pushing, `git diff --stat` a "new" test file: it shows
+  insertions only. Deletions in a file you meant to create are someone
+  else's tests.
+- Seen 1× (2026-11-11).
+
 **A test that reads a dependency's source needs the dependency on disk.**
 - 884dbdb2's TestTrayMenuOpenFrameIsWails read Wails' source through
   `go list -m` Dir. CI's fresh module cache hasn't unpacked it, so main was
@@ -414,7 +461,13 @@ re-derives every place that discloses it.**
   placeholder's random suffix spelled it ({{HOSTNAME_mlopsiy3}}) on macOS
   CI. f0453192 strips placeholders before the check, in its sibling
   TestMask too.
-- Seen 1× (2026-10-10).
+- 11-10: TestSearchAPIFailureKeepsNoURL looked for its query's "4410"
+  in usage.jsonl by substring. A random port (127.0.0.1:44105, #5616)
+  and then a route_id (1794294410888, run 42771382484) held it, and
+  main went red. Gaoshou101's patch, posted on #5616 three days before,
+  made the query letters only (17b9b5b03). A word a test looks for
+  can't be spelled by a port, an id, a time or a hash.
+- Seen 2× (2026-10-10, 2026-11-10).
 
 **Playwright's WebKit is not WebKitGTK.** A GUI change with motion or a new
 browser API is tried in the real Linux app too.
@@ -520,6 +573,10 @@ cause:
   CI at f191d6423 and was fixed with that patch (50a703190). #2737 got
   three "Not taking it; recording the numbers" comments before a3b48e0f7
   fixed it.
+- 11-11: the same on a third occasion. #5433 had skygunner's patch, with
+  a test red on the old code, for three days with no owner. It went red
+  on ubuntu CI at 296a9292c and was landed unchanged in 855b97a40. A
+  patch on an open red issue is reviewed in the tick it is posted.
   - One test's subtests were filed three times: #2169, #2711 and #2737
     are all TestTranslatedStreamKeepsClientAlive. Search the test's name
     before filing, and file per test.
@@ -617,7 +674,15 @@ before the merge, are in the code standards.)
   (#2710). 17557132c met the same budget without a raise.
 - A raise moves something out first, or follows a growth rate the owner
   set.
-- Seen 1× (2026-10-17).
+- 11-10: the cap held, so it was met another way. The budget counts
+  comments, and five features that reached it (ecc16fe97, b72256b59,
+  b3a57b3d8, d374168d0 and the check-in time) each went red on CI and
+  were brought back under by deleting comments that say why the code is
+  as it is: 12 lines in b596da773, 44 in 0eac4e6aa (11-09). Nothing moved
+  out to a plugin (#5918). A budget that counts comments makes them the
+  cheapest thing to cut. Measure what the budget is about, and run the
+  sub-second guard before pushing a change near it.
+- Seen 2× (2026-10-17, 2026-11-10).
 
 **A release published after a newer one takes Latest, and with it the
 update feed and the tap, unless the publish step checks.**
@@ -848,6 +913,73 @@ each one.
     and bf931f82c ran at older bases too.
   - Each citation is checked: 04e8aa8f1 cites #2710 for a GUI red that
     is #2552.
+- **11-10, criteria still missed.**
+  - The suite before the push: two sub-second guards were red on main
+    eight times in one day. TestCoreScriptBudget went red after
+    ecc16fe97, b72256b59, b3a57b3d8, d374168d0 and the check-in time
+    (#5918). TestEveryRouteHasACommandOrIsNamed went red after a Codex
+    service-tier route (8417ae6da), 350856f51 (71fbb33a7) and 6a253f8af
+    (488d0f9fc). Each was fixed by a follow-up after CI said so. Tagging
+    without waiting for CI is not pushing without running `go test
+    ./internal/gui ./internal/cli`: a new route or core bytes trip them
+    every time.
+  - The same class in two more packages that afternoon. d3f862340 put a
+    package-level `regexp.MustCompile` in internal/library, and the root
+    package's TestNoEagerPackageRegexps was red until 7869a454c.
+    d109ec8da added the miniq agent with no Library target and no
+    noLibrary line, and TestEveryAgentInLibrary was red until 68cb92e8e.
+    A guard test lives where the rule is kept, not where the change is.
+    A new agent, route or package-level value runs `go test .
+    ./internal/library ./internal/cli ./internal/gui` before the push.
+  - And in the evening: e8fbee60e's /api/gateway/pause made the route
+    guard red a fourth time (db9f0652a), and 07af9f86a's "billing  pay
+    as you go" row turned TestProvidersShowVertexCredentials red, whose
+    lineWith(out, " as ") found the billing row before the "as" row
+    (ea310a8c9). A test that finds a row by a word in it breaks when
+    another row says the word; find a labelled row by its label.
+  - Three more the same night, after that line was written.
+    9c39edb92 (Avibe) and 4a9142ccd (Obsidian) each added an agent with
+    no Library line, and e6f151507's /api/speeds made the route guard red
+    a fifth time. All three were pushed and tagged before CI ran.
+    Writing the rule here didn't reach those sessions. Until a pre-push
+    check runs these guards, run them yourself before every push that
+    adds an agent or a route.
+  - 86825005e (#5890) wrote two hook-budget tests whose margin was the
+    one second between a hook's own timer and the RPC's 11s. That 11s
+    counts the plugin host's start, which on a busy CI machine is more
+    than a second. Both went red on CI and were fixed one at a time
+    (e39ecfec8, then 0659dc66f). When a test's margin is under a
+    deadline that also covers starting something, start it first, and
+    fix every test in the file that shares the margin.
+  - The route guard went red a sixth and seventh time before midnight:
+    e053c337a's /api/settings/join and 4623f5419's five
+    /api/settings/https routes. 4623f5419's record says it ran
+    `go test ./internal/cli -run Help|HTTPS|TLS|…`, and a -run filter
+    skips the guard, which was named for none of those words. A change
+    that adds a route runs internal/cli whole, with no -run.
+  - The same commit's `GET /magpie-ca.crt` was in neither
+    clientPrefixes nor readOnlyRoutes, so internal/gateway's
+    TestClientPathCoversHandler and TestReadOnlyKeyEveryRoute were red
+    on ubuntu and macOS CI for about ten hours (db0f2f20d, 5b28e8599)
+    under two tags, until 6b11914df. The CLI fix (20aff50d4) answered
+    one guard and stopped there. A route has three guards: the CLI's,
+    the one-port page's and the read-only key's. A change that adds one
+    runs internal/cli and internal/gateway whole, and a fix for one
+    guard reads the other two.
+  - plugins#601 (muzimu217) brought back the Doubao plugin declined on
+    10-06, now reading Doubao.app's HttpOnly cookies over CDP, clicking
+    through its reward campaigns, installing a .dmg into /Applications
+    and sending requests through a third-party relay. It was closed
+    unrun. A vendor the maintainer declined is checked for before the
+    diff is read: search the repo's closed issues and PRs and
+    docs/contributors.md for the vendor's name.
+- **11-10, criteria still missed.**
+  - The suite: 6af54dc9a (internal/library) and b9f8548d2
+    (internal/provider) each added a package-level regexp.MustCompile.
+    Each ran its own packages, not the root package, whose
+    TestNoEagerPackageRegexps went red on ubuntu and macOS CI. It was
+    found by yinwu01 (#6020) and fixed in a68f114d9. A new package-level
+    var runs the guards in `.` too.
 - **Done right on 10-17.** The retire stack (0f1666b38 to de671719a)
   diffed staticcheck's U1000 against its base for dead code, b98f906b1
   was red on the old code for an own-account gap, and 8 subscriptions

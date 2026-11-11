@@ -6,6 +6,7 @@ import json
 import pathlib
 import re
 from collections import Counter
+from collections.abc import Collection
 from datetime import date
 from urllib.parse import urlparse
 
@@ -15,8 +16,10 @@ from . import (
     fusion,
     health,
     hiring_signals,
+    jobs_digest,
     library_index,
     meta_ads,
+    polymarket,
     registers,
     relevance,
     rerank,
@@ -61,21 +64,25 @@ def _skill_version() -> str:
     return "?"
 
 
-def _render_badge() -> list[str]:
-    """Emit the MANDATORY first-line badge per SKILL.md OUTPUT CONTRACT.
+_BADGE_TOPIC_LIMIT = 60
 
-    Added in v3.0.8 after three Opus 4.7 self-debugs (2026-04-18) confirmed
-    the model was failing to emit the badge manually because SKILL.md was
-    too big to reach the BADGE MANDATORY block before synthesis. Engine
-    emission makes passing-through-the-script-output the default-correct
-    behavior; emitting the badge no longer depends on model compliance.
+
+def _render_badge(topic: str, range_from: str, range_to: str) -> list[str]:
+    """Emit the first-line badge: search, window and version.
+
+    The engine owns this line so that passing the script output through is
+    the default-correct behavior; the instruction files tell the model to
+    copy it rather than rebuild it. A segment with nothing to say is left
+    out, so the separators never double up or trail.
     """
     version = _skill_version()
-    today = date.today().strftime("%Y-%m-%d")
-    return [
-        f"🌐 last30days v{version} · synced {today}",
-        "",
+    segments = [
+        "🌐 last30days",
+        _truncate(_safe_title(topic), _BADGE_TOPIC_LIMIT),
+        dates.format_window(range_from, range_to),
+        f"v{version}" if version else "",
     ]
+    return [" · ".join(segment for segment in segments if segment), ""]
 
 
 def _ordinal(count: int) -> str:
@@ -110,7 +117,7 @@ def render_discovery(report: schema.DiscoveryReport) -> str:
         f"# Trending discovery: {report.domain}" if report.domain else "# Trending now"
     )
     lines = [
-        *_render_badge(),
+        *_render_badge(report.domain, report.range_from, report.range_to),
         title,
         "",
         f"Window: {report.range_from} to {report.range_to}",
@@ -234,6 +241,7 @@ SOURCE_LABELS = {
     "trustpilot": "Trustpilot",
     "amazon": "Amazon",
     "meta_ads": "Meta Ads",
+    "yahoo_finance": "Yahoo Finance",
     "perplexity": "Perplexity",
     "jobs": "Jobs",
     "corpus": "Your files",
@@ -397,6 +405,8 @@ def _qualifying_representative_ids(
 def _render_ranked_clusters(
     report: schema.Report,
     clusters: list[schema.Cluster],
+    *,
+    digest_urls: Collection[str] = (),
 ) -> list[str]:
     lines = ["## Ranked Evidence Clusters", ""]
     candidate_by_id = {
@@ -431,7 +441,9 @@ def _render_ranked_clusters(
             if not candidate:
                 continue
             lines.extend(
-                _render_candidate(candidate, prefix=f"{rep_index}.", report=report)
+                _render_candidate(
+                    candidate, prefix=f"{rep_index}.", report=report, digest_urls=digest_urls,
+                )
             )
         lines.append("")
     return lines
@@ -801,7 +813,7 @@ def render_compact(
     evidence_report = schema.without_sources(report, {"corpus"})
     non_empty = [s for s, items in sorted(report.items_by_source.items()) if items]
     lines = [
-        *_render_badge(),
+        *_render_badge(report.topic, report.range_from, report.range_to),
         f"# last30days v{_skill_version()}: {report.topic}",
         "",
         *_assistant_safety_lines(),
@@ -872,11 +884,21 @@ def render_compact(
     if hiring_block and audience.name in {"default", "eli5"}:
         lines.extend(hiring_block)
         lines.append("")
+    jobs_digest_block, jobs_digest_urls = _jobs_digest_block(evidence_report)
+    if jobs_digest_block:
+        lines.extend(jobs_digest_block)
+        lines.append("")
+    market_block = _render_market_data(report)
+    if market_block:
+        lines.extend(market_block)
+        lines.append("")
     fun_params = _FUN_LEVELS.get(fun_level, _FUN_LEVELS["medium"])
     if audience.name in {"default", "eli5"}:
         # Keep this legacy assembly byte-for-byte stable. ELI5 has always been
         # a synthesis-only voice change, so it intentionally takes this path.
-        lines.extend(_render_ranked_clusters(evidence_report, visible_clusters))
+        lines.extend(_render_ranked_clusters(
+            evidence_report, visible_clusters, digest_urls=jobs_digest_urls,
+        ))
         lines.extend(_render_stats(evidence_report))
 
         if not no_solid_evidence:
@@ -961,7 +983,7 @@ def render_for_html(
     audience = registers.get_register(register)
     evidence_report = schema.without_sources(report, {"corpus"})
     lines = [
-        *_render_badge(),
+        *_render_badge(report.topic, report.range_from, report.range_to),
         *_render_html_metadata(report),
     ]
     drill_context = _render_drill_context(report)
@@ -1036,7 +1058,9 @@ def render_for_html_comparison(
         f"· comparing {len(entities)}: {', '.join(entities)} -->"
     )
     lines = [
-        *_render_badge(),
+        *_render_badge(
+            " vs ".join(entities), main_report.range_from, main_report.range_to
+        ),
         meta,
     ]
     if synthesis_md:
@@ -1049,7 +1073,9 @@ def render_for_html_comparison(
         if corpus_section:
             lines.extend(["", f"## {label}", "", *corpus_section])
     # Comparison data quality notes also go to stderr, not into the artifact.
-    _append_html_footer(lines, main_report, save_path)
+    _append_html_footer(
+        lines, main_report, save_path, market_windows=_market_windows(entity_reports),
+    )
     return "\n".join(lines).strip() + "\n"
 
 
@@ -1153,9 +1179,13 @@ def _dedupe_notes(notes: list[str]) -> list[str]:
 
 
 def _append_html_footer(
-    lines: list[str], report: schema.Report, save_path: str | None
+    lines: list[str],
+    report: schema.Report,
+    save_path: str | None,
+    *,
+    market_windows: list[dict] | None = None,
 ) -> None:
-    footer = _render_emoji_footer(report, save_path)
+    footer = _render_emoji_footer(report, save_path, market_windows=market_windows)
     _append_pass_through_footer(lines, footer)
 
 
@@ -1386,7 +1416,9 @@ def render_comparison_multi(
     synthesized_topic = " vs ".join(entities)
 
     lines: list[str] = [
-        *_render_badge(),
+        *_render_badge(
+            synthesized_topic, main_report.range_from, main_report.range_to
+        ),
         f"# last30days v{_skill_version()}: {synthesized_topic}",
         "",
         *_assistant_safety_lines(),
@@ -1438,7 +1470,9 @@ def render_comparison_multi(
     scaffold = _render_comparison_scaffold(synthesized_topic)
     lines.extend(scaffold)
 
-    footer = _render_emoji_footer(main_report, save_path)
+    footer = _render_emoji_footer(
+        main_report, save_path, market_windows=_market_windows(entity_reports),
+    )
     _append_pass_through_footer(lines, footer)
 
     lines.extend(_render_canonical_boundary())
@@ -1489,10 +1523,21 @@ def _render_resolved_entities_block(
                 + ")"
             )
         context_display = _truncate(context, 120) if context else "-"
+        ticker = resolved.get("ticker") or ""
+        ticker_display = ""
+        if ticker:
+            ticker_display = f" | Ticker {ticker}"
+            if resolved.get("ticker_source") == "host":
+                tickers = [_footer_safe(str(symbol), 16) for symbol in resolved.get("tickers") or [ticker]]
+                ticker_display = f" | Ticker {', '.join(tickers)} (host search)"
+            elif resolved.get("company_via_person") and resolved.get("company"):
+                ticker_display += f" (via {resolved['company']})"
+            elif resolved.get("company_source") == "yahoo-backup":
+                ticker_display += " (Yahoo match)"
 
         out.append(
             f"- **{label}**: X {x_display} | Subs {subs_display} | "
-            f"GitHub {gh_display} | Context: {context_display}"
+            f"GitHub {gh_display}{ticker_display} | Context: {context_display}"
         )
     return out
 
@@ -1513,6 +1558,10 @@ def _render_entity_evidence_block(
         requested_clusters,
     )
     out: list[str] = [f"## {label}", ""]
+    market_block = _render_market_data(report, heading="### Market Data")
+    if market_block:
+        out.extend(market_block)
+        out.append("")
 
     if not evidence_report.clusters:
         out.append("(no significant discussion this month)")
@@ -1750,6 +1799,13 @@ def render_full(report: schema.Report, save_path: str | None = None) -> str:
             lines.extend(single_row)
             lines.append("")
 
+    # The board's digest, as the compact output carries it: the saved file
+    # lists only the ranked postings below, so this is where the board is read.
+    jobs_digest_block, _digest_urls = _jobs_digest_block(evidence_report)
+    if jobs_digest_block:
+        lines.extend(jobs_digest_block)
+        lines.append("")
+
     # ALL clusters (no limit)
     lines.extend(_render_ranked_clusters(evidence_report, evidence_report.clusters))
 
@@ -1814,6 +1870,15 @@ def render_full(report: schema.Report, save_path: str | None = None) -> str:
             continue
         lines.append(f"### {_source_label(source)} ({len(items)} items)")
         lines.append("")
+        unlisted = 0
+        if source == "jobs":
+            # A board can hold thousands of postings, each opening with the
+            # same company text. The file lists the ones that were ranked;
+            # the rest are counted, and the Jobs Digest holds the board's
+            # distinct roles.
+            listed = _ranked_job_items(evidence_report, items)
+            unlisted = len(items) - len(listed)
+            items = listed
         for item in items:
             # local_rank_score is 0..1; print it on the report's 0-100 scale
             # (":.0f" of the raw value rendered every item as score:0 or 1).
@@ -1904,6 +1969,17 @@ def render_full(report: schema.Report, save_path: str | None = None) -> str:
                 if end_date:
                     lines.append(f"  Closes: {end_date}")
             lines.append("")
+        if unlisted:
+            note = (
+                f"{unlisted:,} more job posting{'s' if unlisted != 1 else ''} on the board "
+                f"{'are' if unlisted != 1 else 'is'} not listed here: only ranked postings are."
+                if items
+                else f"No job posting was ranked, so none of the board's {unlisted:,} is listed here."
+            )
+            if jobs_digest_block:
+                note += " The Jobs Digest above holds the board's distinct roles."
+            lines.append(f"_{note}_")
+            lines.append("")
 
     corpus_section = _render_corpus_section(report)
     if corpus_section:
@@ -1919,6 +1995,25 @@ def render_full(report: schema.Report, save_path: str | None = None) -> str:
     if save_path:
         _append_pass_through_footer(lines, _render_emoji_footer(evidence_report, save_path))
     return "\n".join(lines).strip() + "\n"
+
+
+# The most job postings the saved file lists one by one.
+FULL_DUMP_JOBS_LIMIT = 40
+
+
+def _ranked_job_items(
+    report: schema.Report, items: list[schema.SourceItem],
+) -> list[schema.SourceItem]:
+    """The job postings the saved file lists: those the ranking kept as
+    candidates, best first, up to ``FULL_DUMP_JOBS_LIMIT``."""
+    on_board = {fusion.candidate_key(item): item for item in items}
+    listed: dict[str, schema.SourceItem] = {}
+    for candidate in report.ranked_candidates:
+        for item in candidate.source_items:
+            key = fusion.candidate_key(item)
+            if item.source == "jobs" and key in on_board:
+                listed.setdefault(key, on_board[key])
+    return list(listed.values())[:FULL_DUMP_JOBS_LIMIT]
 
 
 def _format_item_engagement(item: schema.SourceItem) -> str:
@@ -2311,10 +2406,121 @@ def _render_hiring_signals(
     return out
 
 
+def _jobs_board_footer_line(report: schema.Report) -> str | None:
+    """Build the 💼 Jobs footer line from what the company's board reports.
+
+    Open roles always; a ``+`` when the board stopped short of its full count;
+    roles new in the window only when the board gave every role a true
+    first-posted date. None when the run read no board directly.
+    """
+    board = (report.artifacts or {}).get("jobs")
+    if not isinstance(board, dict) or not board.get("open_roles"):
+        return None
+    count = int(board["open_roles"])
+    line = (
+        f"💼 Jobs: {count:,}{'+' if board.get('open_roles_floor') else ''} "
+        f"open role{'s' if count != 1 else ''}"
+    )
+    new = board.get("new_in_window")
+    if isinstance(new, int) and not isinstance(new, bool):
+        line += f" │ {new:,} new in the L30"
+    return line
+
+
+def _jobs_digest(report: schema.Report) -> dict | None:
+    board = (report.artifacts or {}).get("jobs")
+    digest = board.get("digest") if isinstance(board, dict) else None
+    return digest if isinstance(digest, dict) and digest.get("roles") else None
+
+
+def _render_jobs_digest(report: schema.Report) -> list[str]:
+    """The digest section's lines; see ``_jobs_digest_block``."""
+    return _jobs_digest_block(report)[0]
+
+
+def _jobs_digest_block(report: schema.Report) -> tuple[list[str], set[str]]:
+    """Render the board's role-unique digest as one flat list of roles.
+
+    A header line with the board's own counts, then one line per role: title
+    and posting URL, department, location, posted date when the board gave a
+    true one, and the text no other role on the board repeats. Roles the
+    ranking rejected stay out. The section stops before the character ceiling.
+
+    The second value is the posting URLs of the roles that made it into the
+    section, so a caller that prints the section can leave those roles'
+    snippets out of the ranked evidence.
+    """
+    digest = _jobs_digest(report)
+    if not digest:
+        return [], set()
+    board = report.artifacts["jobs"]
+    rejected = set((report.artifacts.get("hiring_signals") or {}).get("rejected_job_keys") or [])
+    rejected_urls = {
+        item.url
+        for item in report.items_by_source.get("jobs", [])
+        if fusion.candidate_key(item) in rejected
+    }
+    entries = [entry for entry in digest["roles"] if entry.get("url") not in rejected_urls]
+    if not entries:
+        return [], set()
+
+    count = int(board.get("open_roles") or 0)
+    header = [
+        _format_untrusted_evidence(" ".join(str(board.get("company") or report.topic).split()), 80),
+        str(board.get("provider") or "board"),
+        f"{count:,}{'+' if board.get('open_roles_floor') else ''} open role{'s' if count != 1 else ''}",
+    ]
+    new = board.get("new_in_window")
+    if isinstance(new, int) and not isinstance(new, bool):
+        header.append(f"{new:,} posted {report.range_from} to {report.range_to}")
+    distinct = int(digest.get("distinct_roles") or len(entries))
+    out = [
+        "## Jobs Digest",
+        "",
+        "- Board: " + " | ".join(header),
+        (
+            f"- Roles listed: {len(entries):,} of {distinct:,} distinct roles, the rarest on this "
+            "board by department, location and title wording. Each carries the text "
+            "no other role on the board repeats."
+        ),
+    ]
+    if digest.get("note"):
+        out.append(f"- Note: {digest['note']}")
+    size = sum(len(line) + 1 for line in out)
+    shown: set[str] = set()
+    for entry in entries:
+        # The title and URL are the board's own text. `_markdown_url_link`
+        # links only a one-line http(s) URL and escapes the rest, so neither
+        # can open a heading, close the evidence block or forge a link.
+        title = " ".join(str(entry.get("title") or "").split()) or "Job posting"
+        url = str(entry.get("url") or "")
+        parts = [
+            _markdown_url_link(url, label=title) or _escape_markdown_plain_text(title)
+        ]
+        parts.extend(
+            _format_untrusted_evidence(" ".join(str(entry[key]).split()), 120)
+            for key in ("department", "location") if entry.get(key)
+        )
+        if entry.get("posted"):
+            parts.append(f"posted {entry['posted']}")
+        line = "- " + " | ".join(parts)
+        text = " ".join(str(entry.get("text") or "").split())
+        if text:
+            line += ": " + _format_untrusted_evidence(text, jobs_digest.DIGEST_ROLE_CHARS)
+        if size + len(line) + 1 > jobs_digest.DIGEST_MAX_CHARS:
+            break
+        size += len(line) + 1
+        out.append(line)
+        shown.update(url for url in (entry.get("url"), *(entry.get("urls") or [])) if url)
+    return out, shown
+
+
 def _render_candidate(
     candidate: schema.Candidate,
     prefix: str,
     report: schema.Report | None = None,
+    *,
+    digest_urls: Collection[str] = (),
 ) -> list[str]:
     primary = schema.candidate_primary_item(candidate)
     detail_parts = [
@@ -2347,7 +2553,13 @@ def _render_candidate(
     explanation = _format_explanation(candidate)
     if explanation:
         lines.append(f"   - Why: {explanation}")
-    if candidate.snippet:
+    # A job description opens with company text every role shares. A role the
+    # caller printed in the Jobs Digest has its own text there instead; any
+    # other posting keeps its snippet.
+    in_digest = bool(
+        primary and primary.source == "jobs" and candidate.url in digest_urls
+    )
+    if candidate.snippet and not in_digest:
         lines.append(
             f"   - Evidence: {_format_untrusted_evidence(candidate.snippet, 360)}"
         )
@@ -2457,13 +2669,114 @@ def _shorten_polymarket_title(title: str) -> str:
     return t
 
 
-def _polymarket_top_markets(
-    items: list[schema.SourceItem], limit: int = 3
-) -> list[str]:
-    """Build short summary strings for the top Polymarket markets by volume.
+def _polymarket_name_key(text: str) -> str:
+    return " ".join((text or "").casefold().split())
 
-    Returns list like: ['UK visit 5.5%', 'Israel visit 8%', 'blocked from entering 36%']
+
+def _polymarket_market_name(question: str, label: str) -> tuple[str, bool]:
+    """Name one market for the footer, saying each thing once.
+
+    Returns the name and whether it is the bare descriptor, which drops the
+    question's deadline and so can read the same for two different markets.
     """
+    descriptor = _shorten_polymarket_title(question)
+    if not descriptor:
+        return "", True
+    label = (label or "").strip()
+    label_key = _polymarket_name_key(label)
+    descriptor_key = _polymarket_name_key(descriptor)
+    descriptor_lead = descriptor_key.split()[0] if descriptor_key else ""
+
+    # The label adds nothing when it is empty, a binary Yes/No proxy, a bare
+    # article ("an"/"the"), the descriptor's leading token, or a copy of the
+    # question cut short ("Jensen Huang announced resignation or re").
+    if (
+        not label_key
+        or label_key in ("yes", "no", "a", "an", "the")
+        or label_key == descriptor_lead
+        or descriptor_key.startswith(label_key)
+        or _polymarket_name_key(question.rstrip("?")).startswith(label_key)
+    ):
+        return descriptor, True
+    # A sub-market named by its own question ("Jensen Huang divorce by March
+    # 31, 2027") already holds the descriptor; the price is that market's.
+    if label_key.startswith(descriptor_key):
+        return label, False
+    return f"{descriptor}: {label}", False
+
+
+_POLYMARKET_MONTHS = {
+    "january": "Jan", "february": "Feb", "march": "Mar", "april": "Apr",
+    "june": "Jun", "july": "Jul", "august": "Aug", "september": "Sep",
+    "october": "Oct", "november": "Nov", "december": "Dec",
+}
+_POLYMARKET_DATE = re.compile(
+    rf"\b({'|'.join(_POLYMARKET_MONTHS)})\s+(\d{{1,2}})(?:st|nd|rd|th)?(?:,?\s+(\d{{4}}))?\b",
+    re.IGNORECASE,
+)
+# "market cap be between $2.0T and $2.25T" reads whole without the "be".
+_POLYMARKET_BE = re.compile(
+    r"\bbe\s+(?=(?:between|less than|more than|greater than|at least|at most|above|below|over|under)\b)",
+    re.IGNORECASE,
+)
+
+
+def _polymarket_phrase(question: str) -> str:
+    """A market's whole question as a footer name, with nothing cut off.
+
+    "Will Waymo operate in 12-15 cities on December 31 2026?" ->
+    "Waymo operate in 12-15 cities on Dec 31, 2026". Only the question
+    wrapping goes ("Will", "?", a leading article, the "be" before a
+    comparison) and a month name with a day is shortened; every bracket,
+    place and date stays, so the name says which market the price is for.
+    """
+    text = " ".join((question or "").split()).rstrip("?").strip()
+    if text.lower().startswith("will "):
+        text = _POLYMARKET_BE.sub("", text[5:].strip(), count=1)
+    text = _POLYMARKET_DATE.sub(
+        lambda match: (
+            f"{_POLYMARKET_MONTHS[match.group(1).lower()]} {match.group(2)}"
+            + (f", {match.group(3)}" if match.group(3) else "")
+        ),
+        text,
+    )
+    return re.sub(r"^(?:a|an|the)\s+", "", text, flags=re.IGNORECASE)
+
+
+def _polymarket_headline(item: schema.SourceItem) -> tuple[str, float, str] | None:
+    """The question, price and outcome label the parser chose to stand for the
+    event, or None for an item saved before it chose one."""
+    headline = item.metadata.get("headline")
+    if not isinstance(headline, dict):
+        return None
+    question = str(headline.get("question") or "").strip()
+    price = headline.get("price")
+    if not question or isinstance(price, bool) or not isinstance(price, (int, float)):
+        return None
+    return question, float(price), " ".join(str(headline.get("label") or "").split())
+
+
+def _polymarket_top_markets(
+    items: list[schema.SourceItem], limit: int = 3, topic: str = "",
+) -> list[str]:
+    """Build summary strings for the top Polymarket markets by volume.
+
+    Returns list like: ['Waymo launch in Denver, CO by Dec 31, 2026 74%'].
+    Each market is named once, by its whole question, with the price of that
+    same market. With ``topic``, only a market that names the whole topic is
+    listed. An item saved by an older build carries no chosen market and is
+    named the older way: ['UK visit 5.5%', 'blocked from entering 36%'].
+    """
+    if topic:
+        items = [
+            item for item in items
+            if polymarket.names_whole_topic(
+                topic,
+                item.title,
+                str(item.metadata.get("question") or ""),
+                (_polymarket_headline(item) or ("",))[0],
+            )
+        ]
     # Sort by volume descending
     sorted_items = sorted(
         items,
@@ -2471,8 +2784,17 @@ def _polymarket_top_markets(
         reverse=True,
     )
 
-    summaries: list[str] = []
+    # (name, pct, question, label when the name is not the bare descriptor)
+    markets: list[tuple[str, str, str, str]] = []
     for item in sorted_items[:limit]:
+        headline = _polymarket_headline(item)
+        if headline:
+            question, price, label = headline
+            pct = f"{price * 100:.0f}%" if price >= 0.1 else f"{price * 100:.1f}%"
+            name = _polymarket_phrase(question)
+            if name:
+                markets.append((f"{name}: {label}" if label else name, pct, question, label))
+            continue
         outcome_prices = item.metadata.get("outcome_prices") or []
         if not outcome_prices:
             continue
@@ -2487,27 +2809,37 @@ def _polymarket_top_markets(
             else f"{lead_price * 100:.1f}%"
         )
 
-        descriptor = _shorten_polymarket_title(
-            item.metadata.get("question") or item.title or ""
-        )
-        if not descriptor:
+        question = (item.metadata.get("question") or item.title or "").strip()
+        name, is_descriptor = _polymarket_market_name(question, lead_name)
+        if not name:
             continue
+        label = "" if is_descriptor else str(lead_name).strip()
+        markets.append((name, pct, question, label))
 
-        # Append the outcome name only when it adds information. It's redundant when
-        # empty, a binary Yes/No proxy, a bare article ("an"/"the"), or already the
-        # leading token of the descriptor — appending it then yields noise like
-        # "...score at: an 19%" or a doubled token.
-        label = (lead_name or "").strip()
-        descriptor_lead = descriptor.split()[0].lower() if descriptor.split() else ""
-        redundant = (
-            not label
-            or label.lower() in ("yes", "no", "a", "an", "the")
-            or label.lower() == descriptor_lead
+    # Different questions can shorten to one name (a deadline ladder:
+    # "... by March 31, 2027", "... by June 30, 2027"), with or without an
+    # outcome label after it. Name those by the whole question so they read
+    # apart; only the same question listed twice is said once.
+    questions_by_name: dict[str, set[str]] = {}
+    for name, _pct, question, _label in markets:
+        questions_by_name.setdefault(_polymarket_name_key(name), set()).add(
+            _polymarket_name_key(question)
         )
-        if redundant:
-            summaries.append(f"{descriptor} {pct}")
-        else:
-            summaries.append(f"{descriptor}: {label} {pct}")
+
+    summaries: list[str] = []
+    seen: set[tuple[str, str]] = set()
+    for name, pct, question, label in markets:
+        if len(questions_by_name[_polymarket_name_key(name)]) > 1:
+            whole = question.rstrip("?").strip()
+            if whole.lower().startswith("will "):
+                whole = whole[5:].strip()
+            if whole:
+                name = f"{whole}: {label}" if label else whole
+        key = (_polymarket_name_key(question), _polymarket_name_key(name))
+        if key in seen:
+            continue
+        seen.add(key)
+        summaries.append(f"{name} {pct}")
 
     return summaries
 
@@ -2834,8 +3166,15 @@ def _footer_line_for_source(
     return f"{emoji} {label}: {count_str} {plural}"
 
 
-def _build_source_footer_lines(report: schema.Report) -> list[str]:
+def _build_source_footer_lines(
+    report: schema.Report,
+    *,
+    market_windows: list[dict] | None = None,
+) -> list[str]:
     """Return emoji-tree lines for populated sources only (>=1 item).
+
+    ``market_windows`` holds the price windows of every entity of a
+    comparison; left out, the report's own window is used.
 
     Sources that returned zero items - clean NO_RESULTS or a failure - are
     omitted; their outcome still surfaces in the ## Source Coverage /
@@ -2845,6 +3184,11 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
     out: list[str] = []
     for source_key, emoji, label, item_word, engagement_fields in _FOOTER_SOURCES:
         items = report.items_by_source.get(source_key) or []
+        if source_key == "jobs":
+            board_line = _jobs_board_footer_line(report)
+            if board_line:
+                out.append(board_line)
+                continue
         if not items:
             continue
         parts: list[str] = []
@@ -2881,7 +3225,7 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
     # Polymarket (special: count + odds string from existing helper)
     polymarket_items = report.items_by_source.get("polymarket") or []
     if polymarket_items:
-        odds = _polymarket_top_markets(polymarket_items, limit=3)
+        odds = _polymarket_top_markets(polymarket_items, limit=3, topic=report.topic)
         odds_str = ", ".join(odds) if odds else ""
         count = len(polymarket_items)
         count_str = f"{count:,}" if count >= 1000 else str(count)
@@ -2891,6 +3235,10 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
         else:
             line = f"📊 Polymarket: {count_str} {plural}"
         out.append(line)
+
+    yahoo_finance_line = _yahoo_finance_footer_line(report, market_windows)
+    if yahoo_finance_line:
+        out.append(yahoo_finance_line)
 
     amazon_line = _amazon_footer_line(report)
     if amazon_line:
@@ -2920,6 +3268,153 @@ def _build_source_footer_lines(report: schema.Report) -> list[str]:
     # ## Partial Coverage / ## Source Coverage evidence blocks, so nothing is
     # silently lost; the conclusion surface just stays clean.
     return out
+
+
+def _market_windows(entity_reports: list[tuple[str, schema.Report]]) -> list[dict]:
+    """The price windows of each entity that has any, in entity order."""
+    return [
+        window for _label, report in entity_reports for window in _report_market_windows(report)
+    ]
+
+
+def _report_market_windows(report: schema.Report) -> list[dict]:
+    """A report's price windows: the ``yahoo_finance`` artifact, then the
+    windows in its ``more`` list (a second ticker the host passed)."""
+    first = (report.artifacts or {}).get("yahoo_finance")
+    more = first.get("more") if isinstance(first, dict) else None
+    windows = [first, *(more if isinstance(more, list) else [])]
+    return [window for window in windows if _is_market_window(window)]
+
+
+_MARKET_WINDOW_NUMBERS = ("start_close", "end_close", "change_pct")
+
+
+def _is_market_window(window: object) -> bool:
+    return (
+        isinstance(window, dict)
+        and bool(window.get("symbol"))
+        and all(isinstance(window.get(key), (int, float)) for key in _MARKET_WINDOW_NUMBERS)
+    )
+
+
+def _signed_percent(value: float) -> str:
+    return f"{value:+.1f}%"
+
+
+def _market_price(value: float, currency: str) -> str:
+    """Dollars as ``$226.32``; any other currency by its code, ``JPY 2,480``,
+    with decimals only when the price has them."""
+    if currency == "USD":
+        return f"${value:,.2f}"
+    number = f"{value:,.0f}" if value == int(value) else f"{value:,.2f}"
+    return f"{_footer_safe(currency, 8)} {number}".strip()
+
+
+def _market_ticker(window: dict, *, name_company: bool) -> str:
+    ticker = _footer_safe(window["symbol"], 16)
+    company = _footer_safe(window.get("company") or "")
+    return f"{ticker} ({company})" if name_company and company else ticker
+
+
+def _market_day(iso_date: str) -> str:
+    try:
+        day = date.fromisoformat(iso_date)
+    except ValueError:
+        return _footer_safe(iso_date, 12)
+    return f"{day:%b} {day.day}"
+
+
+def _yahoo_finance_footer_line(
+    report: schema.Report,
+    market_windows: list[dict] | None = None,
+) -> str | None:
+    """Build the 📈 Yahoo Finance footer line from the price-window artifact.
+
+    One line whatever the number of tickers. A single ticker carries its two
+    closes and its largest daily move; a comparison lists each ticker's change
+    and keeps the line short. A ticker reached through the person who leads
+    the company, or passed by the host for a company that is not the topic,
+    names the company beside it. The S&P 500 segment is present only when the
+    window carries one (US listings).
+    """
+    if market_windows is None:
+        market_windows = _report_market_windows(report)
+    windows = [window for window in market_windows if _is_market_window(window)]
+    if not windows:
+        return None
+    changes = " │ ".join(
+        f"{_market_ticker(window, name_company=bool(window.get('via_person') or window.get('name_company')))} "
+        f"{_signed_percent(window['change_pct'])}"
+        for window in windows
+    )
+    parts = [f"📈 Yahoo Finance: {changes} in the L30"]
+    if len(windows) == 1:
+        currency = str(windows[0].get("currency") or "")
+        parts.append(
+            f"{_market_price(windows[0]['start_close'], currency)} → "
+            f"{_market_price(windows[0]['end_close'], currency)}"
+        )
+    benchmark = next(
+        (
+            window["benchmark"] for window in windows
+            if isinstance(window.get("benchmark"), dict)
+            and isinstance(window["benchmark"].get("change_pct"), (int, float))
+        ),
+        None,
+    )
+    if benchmark:
+        parts.append(
+            f"{_footer_safe(benchmark.get('name') or '')} "
+            f"{_signed_percent(benchmark['change_pct'])}"
+        )
+    moves = windows[0].get("top_moves") or []
+    if len(windows) == 1 and moves:
+        biggest = moves[0]
+        label = "worst day" if biggest["change_pct"] < 0 else "best day"
+        parts.append(
+            f"{label} {_market_day(str(biggest['date']))} {_signed_percent(biggest['change_pct'])}"
+        )
+    return " │ ".join(parts)
+
+
+def _render_market_data(report: schema.Report, heading: str = "## Market Data") -> list[str]:
+    """The price windows as evidence: the same numbers as the footer line plus
+    the closes around the largest daily moves, ticker after ticker under one
+    heading. Data only."""
+    windows = _report_market_windows(report)
+    if not windows:
+        return []
+    lines = [heading, ""]
+    for window in windows:
+        lines.extend(_market_window_lines(window))
+    return lines
+
+
+def _market_window_lines(window: dict) -> list[str]:
+    currency = _footer_safe(str(window.get("currency") or ""), 8)
+    lines = [
+        f"- Yahoo Finance daily closes: {_market_ticker(window, name_company=True)}, "
+        f"{currency}, {window.get('range_from')} to {window.get('range_to')}",
+        f"- First close {window['start_close']:,.2f} ({window.get('start_date')}), "
+        f"last close {window['end_close']:,.2f} ({window.get('end_date')}), "
+        f"change {_signed_percent(window['change_pct'])}",
+    ]
+    benchmark = window.get("benchmark")
+    if isinstance(benchmark, dict):
+        lines.append(
+            f"- {_footer_safe(benchmark.get('name') or '')} over the same window: "
+            f"{benchmark['start_close']:,.2f} to {benchmark['end_close']:,.2f}, "
+            f"change {_signed_percent(benchmark['change_pct'])}"
+        )
+    moves = window.get("top_moves") or []
+    if moves:
+        lines.append("- Largest daily moves, close to close:")
+        lines.extend(
+            f"  - {move['date']}: {move['previous_close']:,.2f} to {move['close']:,.2f}, "
+            f"{_signed_percent(move['change_pct'])}"
+            for move in moves
+        )
+    return lines
 
 
 def _amazon_footer_line(report: schema.Report) -> str | None:
@@ -3196,7 +3691,12 @@ def _top_voices_footer_line(report: schema.Report) -> str | None:
     return f"🗣️ Top voices: {' │ '.join(parts)}"
 
 
-def _render_emoji_footer(report: schema.Report, save_path: str | None) -> list[str]:
+def _render_emoji_footer(
+    report: schema.Report,
+    save_path: str | None,
+    *,
+    market_windows: list[dict] | None = None,
+) -> list[str]:
     """Produce the deterministic magic footer block.
 
     Returns a list of markdown lines, including enclosing ``---`` separators.
@@ -3205,7 +3705,7 @@ def _render_emoji_footer(report: schema.Report, save_path: str | None) -> list[s
     items but a save path exists, the banner and the 'Raw results saved to' line
     still render so the durable raw-file citation is never silently dropped.
     """
-    source_lines = _build_source_footer_lines(report)
+    source_lines = _build_source_footer_lines(report, market_windows=market_windows)
     voices_line = _top_voices_footer_line(report)
     # The freshness verdict is computed for the report body, but a reader who
     # only scans this footer never sees it — and it is the one line that says
@@ -3254,23 +3754,38 @@ def _render_stats(report: schema.Report) -> list[str]:
         for source, items in sorted(report.items_by_source.items())
         if items
     }
-    total_items = sum(len(items) for items in non_empty_sources.values())
     if not non_empty_sources:
         lines.append("- No usable source metrics available.")
         lines.append("")
         return lines
 
-    lines.append(
-        f"- Total evidence: {total_items} item{'s' if total_items != 1 else ''} across "
-        f"{len(non_empty_sources)} source{'s' if len(non_empty_sources) != 1 else ''}"
-    )
-    top_voices = _top_voices_overall(non_empty_sources)
+    # Job postings are roles, not evidence or voices: a company board can hold
+    # thousands, and their department and hiring-system names are not people.
+    # They stay out of the total, its source count and the top voices, and get
+    # their own line below.
+    evidence_sources = {
+        source: items
+        for source, items in non_empty_sources.items()
+        if source != "jobs"
+    }
+    total_items = sum(len(items) for items in evidence_sources.values())
+    if evidence_sources:
+        lines.append(
+            f"- Total evidence: {total_items} item{'s' if total_items != 1 else ''} across "
+            f"{len(evidence_sources)} source{'s' if len(evidence_sources) != 1 else ''}"
+        )
+    top_voices = _top_voices_overall(evidence_sources)
     if top_voices:
         lines.append(f"- Top voices: {', '.join(top_voices)}")
     for source, items in non_empty_sources.items():
+        if source == "jobs":
+            lines.append(
+                f"- {_source_label(source)}: {len(items)} role{'s' if len(items) != 1 else ''}"
+            )
+            continue
         if source == "polymarket":
             # Polymarket gets a richer stats line with top market odds
-            market_summaries = _polymarket_top_markets(items)
+            market_summaries = _polymarket_top_markets(items, topic=report.topic)
             if market_summaries:
                 label = f"{len(items)} market{'s' if len(items) != 1 else ''}"
                 parts_str = f"{label} | " + " | ".join(market_summaries)
@@ -3298,9 +3813,12 @@ def _render_stats(report: schema.Report) -> list[str]:
 
 
 def _assess_data_freshness(report: schema.Report) -> str | None:
+    # Job postings are roles on a board, not dated evidence of what people
+    # said: a board can hold thousands, most posted long before the window.
     dated_items = [
         item
-        for items in report.items_by_source.values()
+        for source, items in report.items_by_source.items()
+        if source != "jobs"
         for item in items
         if item.published_at
     ]
@@ -3564,6 +4082,29 @@ def _comment_attribution(source: str | None, author: str | None) -> str:
     return f"{prefix}{author}" if prefix else author
 
 
+def _comment_platform_dot(source: str | None) -> str:
+    """The footer's dot for a source ("🟠" for Reddit), or "" when it has none."""
+    for source_key, emoji, *_rest in _FOOTER_SOURCES:
+        if source_key == source:
+            return emoji
+    return ""
+
+
+def _comment_community(item: schema.SourceItem) -> str:
+    """Where a comment was posted, as ``on r/sub``. Only Reddit has one."""
+    if item.source != "reddit":
+        return ""
+    subreddit = (item.container or "").strip().removeprefix("r/")
+    return f" on r/{subreddit}" if subreddit else ""
+
+
+def _comment_count(score) -> str:
+    """A vote count with thousands separators; other values print as they are."""
+    if isinstance(score, int) and not isinstance(score, bool):
+        return f"{score:,}"
+    return str(score)
+
+
 def _comment_link(item: schema.SourceItem, comment: dict, fallback: str = "") -> str:
     """Link for a quoted comment: where it was said, never the HN article.
 
@@ -3795,8 +4336,9 @@ def _render_top_comments(
     use the funniest comments never reach the model. This block always surfaces
     the crowd-voted comments and leaves the funny/quotable SELECTION to the model
     (a capable fun judge). Ranking is per-platform-normalized so one platform
-    can't crowd out the rest; each line carries the verbatim comment/post URL so
-    the model can cite without reconstructing a link.
+    can't crowd out the rest; each line carries the platform dot, the author,
+    the subreddit for Reddit, the count and the verbatim comment/post URL, so
+    the model can attribute and cite without looking anything up.
     """
     seen: set[str] = set()
     scored: list[tuple[float, schema.Candidate, schema.SourceItem, dict, str]] = []
@@ -3873,13 +4415,15 @@ def _render_top_comments(
         url = _comment_link(item, tc, fallback=cand.url)
         url_part = f" — {url}" if url else ""
         vote_part = (
-            f" ({score} {vote_label})"
+            f" ({_comment_count(score)} {vote_label})"
             if score is not None and score != ""
             else ""
         )
+        dot = _comment_platform_dot(item.source)
+        dot_part = f"{dot} " if dot else ""
         lines.append(
             f'- "{_format_untrusted_evidence(body, 240, continuation_indent="  ")}" '
-            f"— {attribution}{vote_part}{url_part}"
+            f"— {dot_part}{attribution}{_comment_community(item)}{vote_part}{url_part}"
         )
     return lines
 

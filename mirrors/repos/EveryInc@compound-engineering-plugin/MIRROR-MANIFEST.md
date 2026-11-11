@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 532 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 535 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 532 |
+| Files         | 535 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -519,78 +519,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 458 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
 | 459 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
 | 460 | ✓ | [`skills/ce-work/references/work-intake.md`](skills/ce-work/references/work-intake.md) |
-| 461 | ✓ | [`skills/ce-work/references/workspace-setup.md`](skills/ce-work/references/workspace-setup.md) |
-| 462 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
-| 463 | ✓ | [`skills/ce-work/scripts/packs-resolve.py`](skills/ce-work/scripts/packs-resolve.py) |
-| 464 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
-| 465 | ✓ | [`skills/ce-work/scripts/unit_workspace_ignored.py`](skills/ce-work/scripts/unit_workspace_ignored.py) |
-| 466 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
-| 467 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
-| 468 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
-| 469 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
-| 470 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
-| 471 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
-| 472 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
-| 473 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
-| 474 | ✓ | [`skills/CODING_STANDARDS.md`](skills/CODING_STANDARDS.md) |
-| 475 | ✓ | [`skills/lfg/references/debug-return.md`](skills/lfg/references/debug-return.md) |
-| 476 | ✓ | [`skills/lfg/references/intake.md`](skills/lfg/references/intake.md) |
-| 477 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
-| 478 | ✓ | [`skills/lfg/references/plan-brief.md`](skills/lfg/references/plan-brief.md) |
-| 479 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
-| 480 | ✓ | [`skills/lfg/references/shipping.md`](skills/lfg/references/shipping.md) |
-| 481 | ✓ | [`skills/lfg/references/stage-routing.md`](skills/lfg/references/stage-routing.md) |
-| 482 | ✓ | [`skills/lfg/references/task-visibility.md`](skills/lfg/references/task-visibility.md) |
-| 483 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
-| 484 | ✓ | [`skills/lfg/references/work-return.md`](skills/lfg/references/work-return.md) |
-| 485 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
-| 486 | ✓ | [`skills/wtf/agents/openai.yaml`](skills/wtf/agents/openai.yaml) |
-| 487 | ✓ | [`skills/wtf/SKILL.md`](skills/wtf/SKILL.md) |
-| 488 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
-| 489 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
-| 490 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
-| 491 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
-| 492 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
-| 493 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
-| 494 | ✓ | [`tests/skill-eval-cell/fixtures/bakeoff-upload/AGENTS.md`](tests/skill-eval-cell/fixtures/bakeoff-upload/AGENTS.md) |
-| 495 | ✓ | [`tests/skill-eval-cell/fixtures/booking-zoom/AGENTS.md`](tests/skill-eval-cell/fixtures/booking-zoom/AGENTS.md) |
-| 496 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms-lint-no-baseline/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms-lint-no-baseline/AGENTS.md) |
-| 497 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms-lint/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms-lint/AGENTS.md) |
-| 498 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms-no-standards/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms-no-standards/AGENTS.md) |
-| 499 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms/AGENTS.md) |
-| 500 | ✓ | [`tests/skill-eval-cell/fixtures/cpp-project-publishing-gate/src/AGENTS.md`](tests/skill-eval-cell/fixtures/cpp-project-publishing-gate/src/AGENTS.md) |
-| 501 | ✓ | [`tests/skill-eval-cell/fixtures/cpp-visual-app-askfirst/AGENTS.md`](tests/skill-eval-cell/fixtures/cpp-visual-app-askfirst/AGENTS.md) |
-| 502 | ✓ | [`tests/skill-eval-cell/fixtures/cpp-visual-app-hostedshots/AGENTS.md`](tests/skill-eval-cell/fixtures/cpp-visual-app-hostedshots/AGENTS.md) |
-| 503 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-jot-assumptions/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-jot-assumptions/AGENTS.md) |
-| 504 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-jot-decisions/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-jot-decisions/AGENTS.md) |
-| 505 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-jot-requirements/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-jot-requirements/AGENTS.md) |
-| 506 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-zoom-confirmation/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-zoom-confirmation/AGENTS.md) |
-| 507 | ✓ | [`tests/skill-eval-cell/fixtures/ideate-jot/AGENTS.md`](tests/skill-eval-cell/fixtures/ideate-jot/AGENTS.md) |
-| 508 | ✓ | [`tests/skill-eval-cell/fixtures/incremental-message/project/AGENTS.md`](tests/skill-eval-cell/fixtures/incremental-message/project/AGENTS.md) |
-| 509 | ✓ | [`tests/skill-eval-cell/fixtures/judged-billing-planned/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-billing-planned/AGENTS.md) |
-| 510 | ✓ | [`tests/skill-eval-cell/fixtures/judged-billing/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-billing/AGENTS.md) |
-| 511 | ✓ | [`tests/skill-eval-cell/fixtures/judged-shop/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-shop/AGENTS.md) |
-| 512 | ✓ | [`tests/skill-eval-cell/fixtures/judged-webapp/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-webapp/AGENTS.md) |
-| 513 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-forms-no-standards/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-forms-no-standards/AGENTS.md) |
-| 514 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-forms/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-forms/AGENTS.md) |
-| 515 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-lens/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-lens/AGENTS.md) |
-| 516 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-obsolete-check/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-obsolete-check/AGENTS.md) |
-| 517 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-vacuous-check/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-vacuous-check/AGENTS.md) |
-| 518 | ✓ | [`tests/skill-eval-cell/fixtures/resolver-caller-publication/AGENTS.md`](tests/skill-eval-cell/fixtures/resolver-caller-publication/AGENTS.md) |
-| 519 | ✓ | [`tests/skill-eval-cell/fixtures/resolver-caller-publication/tasks/resume.md`](tests/skill-eval-cell/fixtures/resolver-caller-publication/tasks/resume.md) |
-| 520 | ✓ | [`tests/skill-eval-cell/fixtures/review-policy-excludes/AGENTS.md`](tests/skill-eval-cell/fixtures/review-policy-excludes/AGENTS.md) |
-| 521 | ✓ | [`tests/skill-eval-cell/fixtures/review-roster-skill-prose/skills/release-notes/SKILL.md`](tests/skill-eval-cell/fixtures/review-roster-skill-prose/skills/release-notes/SKILL.md) |
-| 522 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md) |
-| 523 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md) |
-| 524 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-docs-codex/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-docs-codex/AGENTS.md) |
-| 525 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-recurrence-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-recurrence-refresh/AGENTS.md) |
-| 526 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-recurrence/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-recurrence/AGENTS.md) |
-| 527 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md) |
-| 528 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md) |
-| 529 | ✓ | [`tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md) |
-| 530 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
-| 531 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
-| 532 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
+| 461 | ✓ | [`skills/ce-work/references/worker-model.md`](skills/ce-work/references/worker-model.md) |
+| 462 | ✓ | [`skills/ce-work/references/workspace-setup.md`](skills/ce-work/references/workspace-setup.md) |
+| 463 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
+| 464 | ✓ | [`skills/ce-work/scripts/packs-resolve.py`](skills/ce-work/scripts/packs-resolve.py) |
+| 465 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
+| 466 | ✓ | [`skills/ce-work/scripts/unit_workspace_ignored.py`](skills/ce-work/scripts/unit_workspace_ignored.py) |
+| 467 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
+| 468 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
+| 469 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
+| 470 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
+| 471 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
+| 472 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
+| 473 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
+| 474 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
+| 475 | ✓ | [`skills/CODING_STANDARDS.md`](skills/CODING_STANDARDS.md) |
+| 476 | ✓ | [`skills/lfg/references/debug-return.md`](skills/lfg/references/debug-return.md) |
+| 477 | ✓ | [`skills/lfg/references/intake.md`](skills/lfg/references/intake.md) |
+| 478 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
+| 479 | ✓ | [`skills/lfg/references/plan-brief.md`](skills/lfg/references/plan-brief.md) |
+| 480 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
+| 481 | ✓ | [`skills/lfg/references/shipping.md`](skills/lfg/references/shipping.md) |
+| 482 | ✓ | [`skills/lfg/references/stage-routing.md`](skills/lfg/references/stage-routing.md) |
+| 483 | ✓ | [`skills/lfg/references/task-visibility.md`](skills/lfg/references/task-visibility.md) |
+| 484 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
+| 485 | ✓ | [`skills/lfg/references/work-return.md`](skills/lfg/references/work-return.md) |
+| 486 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
+| 487 | ✓ | [`skills/wtf/agents/openai.yaml`](skills/wtf/agents/openai.yaml) |
+| 488 | ✓ | [`skills/wtf/SKILL.md`](skills/wtf/SKILL.md) |
+| 489 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
+| 490 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
+| 491 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
+| 492 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
+| 493 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
+| 494 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
+| 495 | ✓ | [`tests/skill-eval-cell/fixtures/bakeoff-upload/AGENTS.md`](tests/skill-eval-cell/fixtures/bakeoff-upload/AGENTS.md) |
+| 496 | ✓ | [`tests/skill-eval-cell/fixtures/booking-zoom/AGENTS.md`](tests/skill-eval-cell/fixtures/booking-zoom/AGENTS.md) |
+| 497 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms-lint-no-baseline/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms-lint-no-baseline/AGENTS.md) |
+| 498 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms-lint/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms-lint/AGENTS.md) |
+| 499 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms-no-standards/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms-no-standards/AGENTS.md) |
+| 500 | ✓ | [`tests/skill-eval-cell/fixtures/compound-forms/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-forms/AGENTS.md) |
+| 501 | ✓ | [`tests/skill-eval-cell/fixtures/compound-trigger-post/AGENTS.md`](tests/skill-eval-cell/fixtures/compound-trigger-post/AGENTS.md) |
+| 502 | ✓ | [`tests/skill-eval-cell/fixtures/cpp-project-publishing-gate/src/AGENTS.md`](tests/skill-eval-cell/fixtures/cpp-project-publishing-gate/src/AGENTS.md) |
+| 503 | ✓ | [`tests/skill-eval-cell/fixtures/cpp-visual-app-askfirst/AGENTS.md`](tests/skill-eval-cell/fixtures/cpp-visual-app-askfirst/AGENTS.md) |
+| 504 | ✓ | [`tests/skill-eval-cell/fixtures/cpp-visual-app-hostedshots/AGENTS.md`](tests/skill-eval-cell/fixtures/cpp-visual-app-hostedshots/AGENTS.md) |
+| 505 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-jot-assumptions/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-jot-assumptions/AGENTS.md) |
+| 506 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-jot-decisions/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-jot-decisions/AGENTS.md) |
+| 507 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-jot-requirements/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-jot-requirements/AGENTS.md) |
+| 508 | ✓ | [`tests/skill-eval-cell/fixtures/doc-review-depth-zoom-confirmation/AGENTS.md`](tests/skill-eval-cell/fixtures/doc-review-depth-zoom-confirmation/AGENTS.md) |
+| 509 | ✓ | [`tests/skill-eval-cell/fixtures/ideate-jot/AGENTS.md`](tests/skill-eval-cell/fixtures/ideate-jot/AGENTS.md) |
+| 510 | ✓ | [`tests/skill-eval-cell/fixtures/incremental-message/project/AGENTS.md`](tests/skill-eval-cell/fixtures/incremental-message/project/AGENTS.md) |
+| 511 | ✓ | [`tests/skill-eval-cell/fixtures/judged-billing-planned/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-billing-planned/AGENTS.md) |
+| 512 | ✓ | [`tests/skill-eval-cell/fixtures/judged-billing/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-billing/AGENTS.md) |
+| 513 | ✓ | [`tests/skill-eval-cell/fixtures/judged-shop/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-shop/AGENTS.md) |
+| 514 | ✓ | [`tests/skill-eval-cell/fixtures/judged-webapp/AGENTS.md`](tests/skill-eval-cell/fixtures/judged-webapp/AGENTS.md) |
+| 515 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-forms-no-standards/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-forms-no-standards/AGENTS.md) |
+| 516 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-forms/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-forms/AGENTS.md) |
+| 517 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-lens/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-lens/AGENTS.md) |
+| 518 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-obsolete-check/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-obsolete-check/AGENTS.md) |
+| 519 | ✓ | [`tests/skill-eval-cell/fixtures/refresh-worth-vacuous-check/AGENTS.md`](tests/skill-eval-cell/fixtures/refresh-worth-vacuous-check/AGENTS.md) |
+| 520 | ✓ | [`tests/skill-eval-cell/fixtures/resolver-caller-publication/AGENTS.md`](tests/skill-eval-cell/fixtures/resolver-caller-publication/AGENTS.md) |
+| 521 | ✓ | [`tests/skill-eval-cell/fixtures/resolver-caller-publication/tasks/resume.md`](tests/skill-eval-cell/fixtures/resolver-caller-publication/tasks/resume.md) |
+| 522 | ✓ | [`tests/skill-eval-cell/fixtures/review-policy-excludes/AGENTS.md`](tests/skill-eval-cell/fixtures/review-policy-excludes/AGENTS.md) |
+| 523 | ✓ | [`tests/skill-eval-cell/fixtures/review-roster-skill-prose/skills/release-notes/SKILL.md`](tests/skill-eval-cell/fixtures/review-roster-skill-prose/skills/release-notes/SKILL.md) |
+| 524 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-covered/AGENTS.md) |
+| 525 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-gap/AGENTS.md) |
+| 526 | ✓ | [`tests/skill-eval-cell/fixtures/setup-instructions-gated/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-instructions-gated/AGENTS.md) |
+| 527 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-docs-codex/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-docs-codex/AGENTS.md) |
+| 528 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-recurrence-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-recurrence-refresh/AGENTS.md) |
+| 529 | ✓ | [`tests/skill-eval-cell/fixtures/setup-review-recurrence/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-review-recurrence/AGENTS.md) |
+| 530 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-bugbot/AGENTS.md) |
+| 531 | ✓ | [`tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md`](tests/skill-eval-cell/fixtures/setup-standards-refresh/AGENTS.md) |
+| 532 | ✓ | [`tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-compliant/AGENTS.md) |
+| 533 | ✓ | [`tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-designated/AGENTS.md) |
+| 534 | ✓ | [`tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-fallback-only/AGENTS.md) |
+| 535 | ✓ | [`tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md`](tests/skill-eval-cell/fixtures/standards-mixed-scope/AGENTS.md) |
 
 ---
 

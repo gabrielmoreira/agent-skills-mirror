@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 87 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 87 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 87 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,25 +128,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
 | 67 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
 | 68 | ✓ | [`packages/ui/src/motion/README.md`](packages/ui/src/motion/README.md) |
-| 69 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
-| 70 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
-| 71 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
-| 72 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
-| 73 | ✓ | [`services/files/README.md`](services/files/README.md) |
-| 74 | ✓ | [`services/README.md`](services/README.md) |
-| 75 | ✓ | [`services/share/README.md`](services/share/README.md) |
-| 76 | ✓ | [`services/site/AGENTS.md`](services/site/AGENTS.md) |
-| 77 | ✓ | [`services/site/public/arcade3d/README.md`](services/site/public/arcade3d/README.md) |
-| 78 | ✓ | [`services/site/public/logos/companies/README.md`](services/site/public/logos/companies/README.md) |
-| 79 | ✓ | [`services/site/public/logos/tools/wordmarks/README.md`](services/site/public/logos/tools/wordmarks/README.md) |
-| 80 | ✓ | [`services/site/public/providers/README.md`](services/site/public/providers/README.md) |
-| 81 | ✓ | [`services/site/README.md`](services/site/README.md) |
-| 82 | ✓ | [`services/site/script/assets/README.md`](services/site/script/assets/README.md) |
-| 83 | ✓ | [`services/site/src/docs/AGENTS.md`](services/site/src/docs/AGENTS.md) |
-| 84 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 85 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 86 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 87 | → | [`README.md`](README.md) |
+| 69 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
+| 70 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
+| 71 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
+| 72 | ✓ | [`services/files/README.md`](services/files/README.md) |
+| 73 | ✓ | [`services/README.md`](services/README.md) |
+| 74 | ✓ | [`services/share/README.md`](services/share/README.md) |
+| 75 | ✓ | [`services/site/AGENTS.md`](services/site/AGENTS.md) |
+| 76 | ✓ | [`services/site/public/arcade3d/README.md`](services/site/public/arcade3d/README.md) |
+| 77 | ✓ | [`services/site/public/logos/companies/README.md`](services/site/public/logos/companies/README.md) |
+| 78 | ✓ | [`services/site/public/logos/tools/wordmarks/README.md`](services/site/public/logos/tools/wordmarks/README.md) |
+| 79 | ✓ | [`services/site/public/providers/README.md`](services/site/public/providers/README.md) |
+| 80 | ✓ | [`services/site/README.md`](services/site/README.md) |
+| 81 | ✓ | [`services/site/script/assets/README.md`](services/site/script/assets/README.md) |
+| 82 | ✓ | [`services/site/src/docs/AGENTS.md`](services/site/src/docs/AGENTS.md) |
+| 83 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 84 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 85 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 86 | → | [`README.md`](README.md) |
 
 ---
 

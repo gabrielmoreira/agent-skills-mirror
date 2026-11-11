@@ -12,13 +12,13 @@ On the Agent Chat home screen, open **Projects** to browse your most recently us
 2. From the Agent Chat home screen, open **Projects** and select **New project**.
 3. Enter a name and select **Create**.
 
-Copilot opens the new Project immediately. Creation asks only for a name. Use **Edit project** to add a description, instructions, and saved context.
+Copilot opens the new Project immediately. Creation asks only for a name. Use **Edit project** to add a description and instructions, and the **Files** tab to add saved context.
 
 Each Project has a folder under `<Copilot folder>/projects/`. The default root is `copilot/projects/`. Its `project.md` file stores Project details and the context list. Its `AGENTS.md` file contains the instructions you own and edit.
 
 ## Add Project instructions
 
-Open the Project info menu beside the name and select **AGENTS.md**. You can also choose **Edit project** from the Projects list and edit **Project instructions**. Both open the same Project file.
+In a Project chat, open the Project info menu beside the name and select **AGENTS.md** under **Project folder**. You can also select **Project settings** beside the name, or **Edit project** from the Projects list, and edit **Project instructions**. Each opens the same Project file.
 
 Vault-wide instructions still apply. Project instructions are more specific, so they take precedence when the two files conflict. The same Project `AGENTS.md` works with OpenCode, Claude, and Codex.
 
@@ -32,19 +32,42 @@ Useful Project instructions include:
 
 Keep stable rules in `AGENTS.md` and put one-off requests in chat. Start a new Project chat after changing the file so every backend reads the latest instructions. See [Instructions for Agent Chat and Quick Chat](system-prompts.md).
 
+## Browse Project files
+
+A Project opens on its **Files** tab, beside **Recent chats**. When the Project has no chats, **Files** appears alone below the message box. It shows the Project folder as a tree, folders first. **Linked** lists the notes, folders, tags, properties, and web and YouTube links linked to the Project.
+
+- Select a file to open it, or a folder to expand it.
+- Drag a file into the message box to add it to your message.
+- Right-click a file or folder for its file menu.
+
+### Link notes, folders, tags, properties, and web pages
+
+- Drag a note or folder from the file explorer onto the **Files** tab to link it. Folders at any depth link by their full location.
+- Select **Link context** at the bottom of the **Files** tab, then **Files**, **Folders**, **Tags**, **Properties**, or **Link**. Pick the note, folder, tag, or property to link, or paste a web or YouTube link. For a property, pick a value, or **Any value** to link every note that has the property.
+- A linked tag shows how many notes have it. Select it to list those notes. A note counts when the tag is in its properties or its text, and a tag also covers the tags nested under it, so `#project` includes `#project/alpha`. The list updates as you tag and untag notes.
+- A linked property, such as `status: active`, works the same way: it shows how many notes have that value and lists them when selected.
+- Select a linked web page or YouTube video to open it in your browser.
+- Select **Unlink** on a linked item to remove it from the Project. The note, folder, tag, or property stays in your vault.
+- Drag a file from your computer onto the **Files** tab to copy it into the Project's `sources/` folder. A notice names the copy. If a file with that name is already there, the copy gets a number added to its name. A file that is already in your vault is linked instead of copied.
+- Folders from your computer can't be added. Move the folder into your vault, or drop the files you need.
+
+Linking never moves a vault file. Dropping on the message box adds the item to that message only. A file from your computer is copied into `sources/` first, and a notice names it.
+
+### See what a chat changed
+
+In a Project chat, open the Project info menu beside the name. **Changed in this chat** lists each file the chat created, edited, or deleted, newest first, with **new**, **edited**, or **deleted** and the number of lines added and removed. A file changed in several turns appears once, counted from before the chat first changed it. Select a file to open it.
+
+Below it are the same **Project folder** and **Linked** sections as the **Files** tab. To link something, use the **Files** tab on the Project's home.
+
+**Changed in this chat** covers the current session only. After you reload Obsidian or reopen the chat, it stays empty until the chat changes another file.
+
 ## Add reusable context
 
-For a new Project, **Context** appears below the composer. After the Project has chats, it appears as a **Context** tab beside **Recent chats**. In a Project chat, Relevant Notes suggests from the Project's context until you start typing, then from the chat itself.
+In a Project chat, Relevant Notes suggests from the Project's context until you start typing, then from the chat itself.
 
-You can:
+Link notes, folders, tags, properties, and web pages from the **Files** tab (see [Link notes, folders, tags, properties, and web pages](#link-notes-folders-tags-properties-and-web-pages)). A property targets notes by a frontmatter field, such as `Topics: Physics`.
 
-- drag a vault file or folder into **Context**;
-- select **URL** to add a web page or YouTube video; or
-- select **Manage** or **Manage context** to add **Links**, **Tags**, **Properties**, **Folders**, and **Files**, or to manage **Ignore files**.
-
-Tags match tags stored in note properties. Properties can target notes by a frontmatter field, such as `Topics: Physics`.
-
-When a new Project chat starts, Copilot gives the agent a list of the saved context: folders, notes, and files by their location, and web pages and YouTube videos as links. Nothing is downloaded or converted in advance. The agent reads each source when a question needs it.
+When a new Project chat starts, Copilot gives the agent a list of the saved context: folders, notes, and files by their location, tags and properties by name, and web pages and YouTube videos as links. Nothing is downloaded or converted in advance. The agent reads each source when a question needs it, and finds the notes that have a linked tag or property itself.
 
 An existing Project chat keeps the instructions and context captured when that chat started. Start a new chat after changing either one when you need the updated version.
 
@@ -56,7 +79,7 @@ The agent opens a saved web page with its own web tool or Copilot's web fetch Sk
 
 > **Private Projects:** When a chat starts, Copilot does not upload a Project's files or fetch its links. The list of file paths and links goes to the selected model as part of the first message. A link's address goes to Brevilabs only when the agent fetches it through a Copilot-hosted Skill. If a Project must not send task content to Brevilabs, use Markdown and document files with local tools or local [Miyo](vault-search-and-indexing.md), use a local model if prompts must also stay on the device, and disable cloud-backed Copilot Skills for every agent you use.
 
-**Ignore files** controls which files are listed in the Project's context. It is not a file permission setting. An agent can still find an ignored file through its own tools when the file is inside a location that agent can access.
+To keep the agent away from a folder, say so in the Project's instructions (`AGENTS.md`).
 
 ## Work with Project chats
 
@@ -65,6 +88,7 @@ Inside a Project:
 - **Recent chats** and **Chat history** show that Project's conversations.
 - **New chat** starts a clean conversation with the latest Project instructions and context.
 - **Leave project** returns to the Agent Chat home screen.
+- **Project settings** beside the name edits the Project, and **Reveal project folder in vault** shows its folder in the file explorer.
 
 From the Projects list, hover over a Project to **Reveal in vault**, **Edit project**, **Archive**, or **Delete** it. The global **Recent chats** list on the Agent Chat home screen includes conversations from across Projects.
 

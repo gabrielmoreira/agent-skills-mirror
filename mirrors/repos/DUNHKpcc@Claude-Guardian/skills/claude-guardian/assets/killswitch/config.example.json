@@ -2,13 +2,21 @@
   "version": 1,
   "target": "REPLACE_WITH_HOSTNAME",
   "backend": "mac_pf",
-  "protected_processes": ["Claude", "claude", "Google Chrome"],
+  "protected_processes": [
+    "Claude",
+    "claude",
+    "Google Chrome"
+  ],
   "mac": {
     "CONFIG": "/absolute/path/to/clash-verge.yaml"
   },
   "windows": {
-    "enable_rules": ["guardian-proxy-core", "guardian-tun"],
+    "enable_rules": [
+      "guardian-proxy-core",
+      "guardian-tun"
+    ],
     "disable_rules": [],
-    "state_path": "C:\\ProgramData\\ClaudeGuardian\\Switch\\baseline.json"
+    "state_path": "C:\\ProgramData\\ClaudeGuardian\\Switch\\baseline.json",
+    "mode": "whole_machine"
   }
 }

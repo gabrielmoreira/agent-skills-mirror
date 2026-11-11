@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 18 file(s) materialized.
+Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 18 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,12 +76,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`frontend/PATTERNS.md`](frontend/PATTERNS.md) |
 | 11 | ✓ | [`scripts/e2e/mock_llm_fixtures/README.md`](scripts/e2e/mock_llm_fixtures/README.md) |
 | 12 | ✓ | [`tests/fixtures/many_attachments/README.md`](tests/fixtures/many_attachments/README.md) |
-| 13 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 15 | → | [`docs/README.md`](docs/README.md) |
-| 16 | → | [`frontend/DESIGN.md`](frontend/DESIGN.md) |
-| 17 | → | [`README.md`](README.md) |
-| 18 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
+| 13 | ✓ | [`tests/fuzz/README.md`](tests/fuzz/README.md) |
+| 14 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 16 | → | [`docs/README.md`](docs/README.md) |
+| 17 | → | [`frontend/DESIGN.md`](frontend/DESIGN.md) |
+| 18 | → | [`README.md`](README.md) |
+| 19 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
 
 ---
 

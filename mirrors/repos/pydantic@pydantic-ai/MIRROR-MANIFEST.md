@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 297 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 298 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 46 |
-| Files         | 297 |
+| Files         | 298 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -330,77 +330,78 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 224 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/AGENTS.md) |
 | 225 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/anthropic/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/anthropic/AGENTS.md) |
 | 226 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/models/CLAUDE.md) |
-| 227 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md`](pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md) |
-| 228 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md) |
-| 229 | ✓ | [`pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md`](pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md) |
-| 230 | ✓ | [`pydantic_ai_slim/pydantic_ai/providers/AGENTS.md`](pydantic_ai_slim/pydantic_ai/providers/AGENTS.md) |
-| 231 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md`](pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md) |
-| 232 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md) |
-| 233 | ✓ | [`pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md`](pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md) |
-| 234 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
-| 235 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
-| 236 | ✓ | [`src/pydantic_ai_harness/agent_docs/concurrency.md`](src/pydantic_ai_harness/agent_docs/concurrency.md) |
-| 237 | ✓ | [`src/pydantic_ai_harness/agent_docs/index.md`](src/pydantic_ai_harness/agent_docs/index.md) |
-| 238 | ✓ | [`src/pydantic_ai_harness/AGENTS.md`](src/pydantic_ai_harness/AGENTS.md) |
-| 239 | ✓ | [`src/pydantic_ai_harness/CLAUDE.md`](src/pydantic_ai_harness/CLAUDE.md) |
-| 240 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md) |
-| 241 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md) |
-| 242 | ✓ | [`src/pydantic_clai2/AGENTS.md`](src/pydantic_clai2/AGENTS.md) |
-| 243 | ✓ | [`src/pydantic_clai2/CLAUDE.md`](src/pydantic_clai2/CLAUDE.md) |
-| 244 | ✓ | [`src/pydantic_clai2/MODEL_SETTINGS_AUDIT.md`](src/pydantic_clai2/MODEL_SETTINGS_AUDIT.md) |
-| 245 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 246 | ✓ | [`tests/benchmarks/AGENTS.md`](tests/benchmarks/AGENTS.md) |
-| 247 | ✓ | [`tests/benchmarks/CLAUDE.md`](tests/benchmarks/CLAUDE.md) |
-| 248 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
-| 249 | ✓ | [`tests/harness/AGENTS.md`](tests/harness/AGENTS.md) |
-| 250 | ✓ | [`tests/harness/CLAUDE.md`](tests/harness/CLAUDE.md) |
-| 251 | ✓ | [`tests/harness/skills/temporal_workspace/skills/reviewer/SKILL.md`](tests/harness/skills/temporal_workspace/skills/reviewer/SKILL.md) |
-| 252 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 253 | → | [`agent_docs/complexity.md`](agent_docs/complexity.md) |
-| 254 | → | [`agent_docs/index.md`](agent_docs/index.md) |
-| 255 | → | [`docs/agent.md`](docs/agent.md) |
-| 256 | → | [`docs/capabilities/instrumentation.md`](docs/capabilities/instrumentation.md) |
-| 257 | → | [`docs/capabilities/mcp.md`](docs/capabilities/mcp.md) |
-| 258 | → | [`docs/capabilities/select-model.md`](docs/capabilities/select-model.md) |
-| 259 | → | [`docs/capabilities/web-fetch.md`](docs/capabilities/web-fetch.md) |
-| 260 | → | [`docs/cli.md`](docs/cli.md) |
-| 261 | → | [`docs/deferred-tools.md`](docs/deferred-tools.md) |
-| 262 | → | [`docs/dependencies.md`](docs/dependencies.md) |
-| 263 | → | [`docs/durable_execution/overview.md`](docs/durable_execution/overview.md) |
-| 264 | → | [`docs/evals.md`](docs/evals.md) |
-| 265 | → | [`docs/graph.md`](docs/graph.md) |
-| 266 | → | [`docs/harness/background-tools.md`](docs/harness/background-tools.md) |
-| 267 | → | [`docs/harness/bubblewrap-sandbox.md`](docs/harness/bubblewrap-sandbox.md) |
-| 268 | → | [`docs/harness/code-mode.md`](docs/harness/code-mode.md) |
-| 269 | → | [`docs/harness/daytona-sandbox.md`](docs/harness/daytona-sandbox.md) |
-| 270 | → | [`docs/harness/e2b-sandbox.md`](docs/harness/e2b-sandbox.md) |
-| 271 | → | [`docs/harness/index.md`](docs/harness/index.md) |
-| 272 | → | [`docs/harness/memory.md`](docs/harness/memory.md) |
-| 273 | → | [`docs/harness/modal-sandbox.md`](docs/harness/modal-sandbox.md) |
-| 274 | → | [`docs/harness/shell.md`](docs/harness/shell.md) |
-| 275 | → | [`docs/harness/sprites-sandbox.md`](docs/harness/sprites-sandbox.md) |
-| 276 | → | [`docs/harness/ssh-workspace.md`](docs/harness/ssh-workspace.md) |
-| 277 | → | [`docs/harness/step-persistence.md`](docs/harness/step-persistence.md) |
-| 278 | → | [`docs/harness/subagents.md`](docs/harness/subagents.md) |
-| 279 | → | [`docs/harness/tool-output-limits.md`](docs/harness/tool-output-limits.md) |
-| 280 | → | [`docs/input.md`](docs/input.md) |
-| 281 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 282 | → | [`docs/mcp/client.md`](docs/mcp/client.md) |
-| 283 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 284 | → | [`docs/models/overview.md`](docs/models/overview.md) |
-| 285 | → | [`docs/output.md`](docs/output.md) |
-| 286 | → | [`docs/persistence.md`](docs/persistence.md) |
-| 287 | → | [`docs/realtime/deployment.md`](docs/realtime/deployment.md) |
-| 288 | → | [`docs/timeouts.md`](docs/timeouts.md) |
-| 289 | → | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
-| 290 | → | [`docs/tools.md`](docs/tools.md) |
-| 291 | → | [`docs/ui/overview.md`](docs/ui/overview.md) |
-| 292 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 293 | → | [`docs/web.md`](docs/web.md) |
-| 294 | → | [`docs/workspace.md`](docs/workspace.md) |
-| 295 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
-| 296 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
-| 297 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
+| 227 | ✓ | [`pydantic_ai_slim/pydantic_ai/models/openai/AGENTS.md`](pydantic_ai_slim/pydantic_ai/models/openai/AGENTS.md) |
+| 228 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md`](pydantic_ai_slim/pydantic_ai/native_tools/AGENTS.md) |
+| 229 | ✓ | [`pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/native_tools/CLAUDE.md) |
+| 230 | ✓ | [`pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md`](pydantic_ai_slim/pydantic_ai/profiles/AGENTS.md) |
+| 231 | ✓ | [`pydantic_ai_slim/pydantic_ai/providers/AGENTS.md`](pydantic_ai_slim/pydantic_ai/providers/AGENTS.md) |
+| 232 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md`](pydantic_ai_slim/pydantic_ai/realtime/AGENTS.md) |
+| 233 | ✓ | [`pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/realtime/CLAUDE.md) |
+| 234 | ✓ | [`pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md`](pydantic_ai_slim/pydantic_ai/toolsets/AGENTS.md) |
+| 235 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/AGENTS.md`](pydantic_ai_slim/pydantic_ai/ui/AGENTS.md) |
+| 236 | ✓ | [`pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md`](pydantic_ai_slim/pydantic_ai/ui/CLAUDE.md) |
+| 237 | ✓ | [`src/pydantic_ai_harness/agent_docs/concurrency.md`](src/pydantic_ai_harness/agent_docs/concurrency.md) |
+| 238 | ✓ | [`src/pydantic_ai_harness/agent_docs/index.md`](src/pydantic_ai_harness/agent_docs/index.md) |
+| 239 | ✓ | [`src/pydantic_ai_harness/AGENTS.md`](src/pydantic_ai_harness/AGENTS.md) |
+| 240 | ✓ | [`src/pydantic_ai_harness/CLAUDE.md`](src/pydantic_ai_harness/CLAUDE.md) |
+| 241 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md) |
+| 242 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md) |
+| 243 | ✓ | [`src/pydantic_clai2/AGENTS.md`](src/pydantic_clai2/AGENTS.md) |
+| 244 | ✓ | [`src/pydantic_clai2/CLAUDE.md`](src/pydantic_clai2/CLAUDE.md) |
+| 245 | ✓ | [`src/pydantic_clai2/MODEL_SETTINGS_AUDIT.md`](src/pydantic_clai2/MODEL_SETTINGS_AUDIT.md) |
+| 246 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 247 | ✓ | [`tests/benchmarks/AGENTS.md`](tests/benchmarks/AGENTS.md) |
+| 248 | ✓ | [`tests/benchmarks/CLAUDE.md`](tests/benchmarks/CLAUDE.md) |
+| 249 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 250 | ✓ | [`tests/harness/AGENTS.md`](tests/harness/AGENTS.md) |
+| 251 | ✓ | [`tests/harness/CLAUDE.md`](tests/harness/CLAUDE.md) |
+| 252 | ✓ | [`tests/harness/skills/temporal_workspace/skills/reviewer/SKILL.md`](tests/harness/skills/temporal_workspace/skills/reviewer/SKILL.md) |
+| 253 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 254 | → | [`agent_docs/complexity.md`](agent_docs/complexity.md) |
+| 255 | → | [`agent_docs/index.md`](agent_docs/index.md) |
+| 256 | → | [`docs/agent.md`](docs/agent.md) |
+| 257 | → | [`docs/capabilities/instrumentation.md`](docs/capabilities/instrumentation.md) |
+| 258 | → | [`docs/capabilities/mcp.md`](docs/capabilities/mcp.md) |
+| 259 | → | [`docs/capabilities/select-model.md`](docs/capabilities/select-model.md) |
+| 260 | → | [`docs/capabilities/web-fetch.md`](docs/capabilities/web-fetch.md) |
+| 261 | → | [`docs/cli.md`](docs/cli.md) |
+| 262 | → | [`docs/deferred-tools.md`](docs/deferred-tools.md) |
+| 263 | → | [`docs/dependencies.md`](docs/dependencies.md) |
+| 264 | → | [`docs/durable_execution/overview.md`](docs/durable_execution/overview.md) |
+| 265 | → | [`docs/evals.md`](docs/evals.md) |
+| 266 | → | [`docs/graph.md`](docs/graph.md) |
+| 267 | → | [`docs/harness/background-tools.md`](docs/harness/background-tools.md) |
+| 268 | → | [`docs/harness/bubblewrap-sandbox.md`](docs/harness/bubblewrap-sandbox.md) |
+| 269 | → | [`docs/harness/code-mode.md`](docs/harness/code-mode.md) |
+| 270 | → | [`docs/harness/daytona-sandbox.md`](docs/harness/daytona-sandbox.md) |
+| 271 | → | [`docs/harness/e2b-sandbox.md`](docs/harness/e2b-sandbox.md) |
+| 272 | → | [`docs/harness/index.md`](docs/harness/index.md) |
+| 273 | → | [`docs/harness/memory.md`](docs/harness/memory.md) |
+| 274 | → | [`docs/harness/modal-sandbox.md`](docs/harness/modal-sandbox.md) |
+| 275 | → | [`docs/harness/shell.md`](docs/harness/shell.md) |
+| 276 | → | [`docs/harness/sprites-sandbox.md`](docs/harness/sprites-sandbox.md) |
+| 277 | → | [`docs/harness/ssh-workspace.md`](docs/harness/ssh-workspace.md) |
+| 278 | → | [`docs/harness/step-persistence.md`](docs/harness/step-persistence.md) |
+| 279 | → | [`docs/harness/subagents.md`](docs/harness/subagents.md) |
+| 280 | → | [`docs/harness/tool-output-limits.md`](docs/harness/tool-output-limits.md) |
+| 281 | → | [`docs/input.md`](docs/input.md) |
+| 282 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 283 | → | [`docs/mcp/client.md`](docs/mcp/client.md) |
+| 284 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 285 | → | [`docs/models/overview.md`](docs/models/overview.md) |
+| 286 | → | [`docs/output.md`](docs/output.md) |
+| 287 | → | [`docs/persistence.md`](docs/persistence.md) |
+| 288 | → | [`docs/realtime/deployment.md`](docs/realtime/deployment.md) |
+| 289 | → | [`docs/timeouts.md`](docs/timeouts.md) |
+| 290 | → | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
+| 291 | → | [`docs/tools.md`](docs/tools.md) |
+| 292 | → | [`docs/ui/overview.md`](docs/ui/overview.md) |
+| 293 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 294 | → | [`docs/web.md`](docs/web.md) |
+| 295 | → | [`docs/workspace.md`](docs/workspace.md) |
+| 296 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
+| 297 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
+| 298 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
 
 ---
 

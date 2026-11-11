@@ -1,7 +1,7 @@
 ---
 name: fiscaliste
 metadata:
-  last_updated: "2026-11-05"
+  last_updated: "2026-11-06"
 includes:
   - data/**
   - references/**
@@ -17,12 +17,12 @@ description: |
   exceptionnels), la déclaration 2042 et annexes, les revenus du capital (PFU vs barème,
   PEA, assurance-vie, dividendes, plus-values), les revenus fonciers (micro/réel,
   déficit, LMNP, SCI IR), l'equity startup (RSU, BSPCE, stock-options, PEE/PERCO),
-  la fiscalité crypto (PAMC, 2086), l'IFI et les déductions (PER, pension alimentaire).
+  la fiscalité crypto (PAMC, 2086), l'IFI, les déductions (PER, pension alimentaire)
+  et les revenus d'artiste-auteur (BNC, régularisation).
 
-  Triggers: impôt sur le revenu, IR, 2042, quotient familial, décote, PAS, PFU,
-  flat tax, PEA, assurance-vie, LMNP, revenus fonciers, déficit foncier, SCI IR, RSU,
-  BSPCE, stock-options, PEE/PERCO, crypto, 2086, IFI, PER, plafond PER, niche fiscale,
-  optimisation fiscale, simulation IR, TMI, compte étranger, 3916, 3916-bis, 8UU.
+  Triggers: impôt sur le revenu, 2042, quotient familial, décote, PFU, flat tax,
+  déficit foncier, plafond PER, niche fiscale, simulation IR, TMI, compte étranger,
+  3916, 3916-bis, 8UU, artiste-auteur, droits d'auteur, micro-BNC, 2042 C PRO, 5HQ.
 
   Hors scope : succession/donation (notaire), IS/SASU/arbitrage dividende-salaire/SCI IS
   (comptable).
@@ -230,7 +230,7 @@ python fiscaliste/scripts/calc_ir.py --rni 45000 --parts 1
 python fiscaliste/scripts/calc_ir.py --rni 126000 --parts 3 --parts-base 2
 ```
 
-Le script applique, pour l'année demandée (`--annee`, sinon `_meta.annee_revenus` du foyer, sinon 2025) : abattement de 10 % sur les salaires et l'ARE **par déclarant** (plancher et plafond pour chaque membre du foyer), abattement de 10 % sur les pensions (minimum par pensionné, maximum par foyer ; plancher jamais supérieur au revenu), barème de l'année, quotient familial avec plafonnement (enfants en résidence alternée décomptés après ceux à charge exclusive), décote, IR forfaitaire du PFU (12,8 %, art. 200 A CGI) sauf option barème, PS différenciés selon la nature du revenu (18,6 % sur revenus du patrimoine dès 2025 ; 17,2 % sur produits de placement 2025 ; PS sur les revenus fonciers et l'assurance-vie non calculés, taux maintenu à 17,2 %), CEHR (RFR incluant les versements PER déduits, art. 1417, IV CGI). Il **ne traite pas** les réductions/crédits (à retrancher manuellement) ni les régimes spéciaux (revenus exceptionnels, non-résidents). Pour la CDHR (plancher 20 % sur RFR > 250/500 k€), voir [references/cas-speciaux.md](references/cas-speciaux.md) — calculée automatiquement par l'administration.
+Le script applique, pour l'année demandée (`--annee`, sinon `_meta.annee_revenus` du foyer, sinon 2025) : abattement de 10 % sur les salaires et l'ARE **par déclarant** (plancher et plafond pour chaque membre du foyer), abattement de 10 % sur les pensions (minimum par pensionné, maximum par foyer ; plancher jamais supérieur au revenu), barème de l'année, quotient familial avec plafonnement (enfants en résidence alternée décomptés après ceux à charge exclusive), décote, IR forfaitaire du PFU (12,8 %, art. 200 A CGI) ou, avec `options_fiscales.revenus_capital = "bareme"` (case 2OP), intégration au barème des dividendes (après abattement de 40 %), intérêts et plus-values mobilières, avec la CSG déductible de 6,8 % des dividendes et intérêts de la ligne 2BH déduite l'année même ; option distincte pour les actifs numériques (`options_fiscales.crypto`, case 3CN, art. 200 C, ouverte depuis les revenus 2023), que la 2OP ne couvre pas ; résultat LMNP au réel au barème et aux PS des revenus du patrimoine, jamais à l'IR de 12,8 % ; PS aux taux du millésime selon la nature du revenu (revenus 2025 : 18,6 % sur les revenus du patrimoine, LMNP et RCM sans PS à la source compris ; 17,2 % sur les produits de placement ; 17,2 % sur les revenus fonciers nets, après imputation des déficits fonciers antérieurs `deficit_foncier_anterieur`, case 4BD) ; moins-values nettes retenues pour zéro (jamais imputées sur le revenu global) ; CEHR (RFR incluant les versements PER déduits et l'abattement de 40 %, art. 1417, IV CGI). Il **ne traite pas** les réductions/crédits sans le bloc décrit ci-dessous, les régimes spéciaux (revenus exceptionnels ; non-résidents, refusés), l'abattement pour durée de détention des plus-values mobilières au barème (titres acquis avant 2018 : saisir la plus-value brute, l'IR est alors surestimé ; l'abattement ne réduit pas la base des PS), la CSG déductible reportée sur l'année suivante (plus-values, crypto au barème, RCM sans PS à la source, revenus fonciers, LMNP : à saisir en `csg_deductible_n1` l'année d'après), le contrôle du plafond PER ni l'assurance-vie. Pour la CDHR (plancher 20 % sur RFR > 250/500 k€), voir [references/cas-speciaux.md](references/cas-speciaux.md), calculée automatiquement par l'administration.
 
 **Réductions, crédits et solde** (exception à la phrase précédente) : si le foyer.json contient le bloc `reductions_credits` (et/ou `prelevement_a_la_source`), le script poursuit au-delà de l'impôt après décote : réductions dons (75 % / 66 %, limite de 20 %, excédent reportable), Pinel (fraction annuelle selon l'année, la durée et la prorogation), scolarité, crédits emploi à domicile et garde d'enfants, plafonnement global des niches (10 000 € / 18 000 €, art. 200-0 A), IR 12,8 % du PFU, impôt net, puis **solde** après retenue à la source, acomptes et **avance RICI de janvier** (art. 1665 bis). Ordre d'imputation de l'art. 197, I-5. Sans ces blocs, la sortie est inchangée. Cette étape n'existe que pour les années dont le millésime porte `parametres_calcul_rici` (2025 à ce jour) : le script refuse les autres plutôt que d'appliquer les plafonds d'une autre année. Détails : [references/deductions-reductions-credits.md](references/deductions-reductions-credits.md).
 
@@ -257,6 +257,7 @@ Pour la fraîcheur des données : `python fiscaliste/scripts/update_data.py`.
 | Déductions / réductions / crédits | [references/deductions-reductions-credits.md](references/deductions-reductions-credits.md) |
 | Départ de France, non-résidents (année du départ, taux minimum, foncier, PS 7,5 %, ex-RP, exit tax) | [references/non-residents.md](references/non-residents.md) |
 | Cas particuliers (revenus exceptionnels, CEHR, DOM, impatriation) | [references/cas-speciaux.md](references/cas-speciaux.md) |
+| **Artistes-auteurs** (droits d'auteur : TS vs BNC, micro-BNC, 2042 C PRO, régularisation IR de revenus de plateforme non déclarés) | [references/artistes-auteurs.md](references/artistes-auteurs.md) |
 | Comptes, assurance-vie et comptes crypto à l'étranger (3916 / 3916-bis, 8UU / 8TT) | [references/comptes-etrangers.md](references/comptes-etrangers.md) |
 | **Sources officielles (CGI, BOFiP, simulateurs DGFIP)** | [references/sources-officielles.md](references/sources-officielles.md) |
 
@@ -368,6 +369,12 @@ Ces points sont systématiquement vérifiés par les utilisateurs exigeants — 
 
 - Rappeler l'exonération si cessions annuelles ≤ 305 € (montant brut, pas la PV).
 - Au-delà : imposition sur TOUT (pas seulement l'excédent).
+
+### Pour un artiste-auteur (droits d'auteur, autoédition, Patreon/Substack)
+- Régime par défaut selon QUI verse : droits **intégralement déclarés par un tiers** (éditeur, SACEM…) → traitements et salaires (93, 1 quater, cases 1GF-1JF) ; sinon (plateformes, autoédition, ventes directes) → **BNC** (micro-BNC 34 %, 2042 C PRO, 5HQ). Ne pas citer le § 50 de BOI-BNC-SECT-20-10-20 à l'appui du BNC : le fondement est l'autoédition (voir [references/artistes-auteurs.md](references/artistes-auteurs.md)).
+- Seuil micro-BNC apprécié sur le total des activités BNC (83 600 € pour 2026-2028). Le 102 ter, 6 n'exclut plus les auteurs soumis à la retenue de TVA du 285 bis.
+- Revenus de plateforme jamais déclarés : régularisation spontanée, 1758 A (10 %, écarté si correction spontanée), 1727 V (intérêt réduit de moitié), « ANNULE ET REMPLACE » papier seulement avant la date limite, sinon réclamation.
+- Le volet social (URSSAF artistes-auteurs, RAAP) et la TVA des auteurs relèvent du skill `comptable`. Chiffrage : `python fiscaliste/scripts/calc_artiste_auteur.py --recettes 19000` (cotisations + RAAP + IR estimé au TMI ; l'IR exact passe par `calc_ir.py`).
 
 ## Limites à Signaler
 

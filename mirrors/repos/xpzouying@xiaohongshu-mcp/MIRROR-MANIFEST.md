@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xpzouying/xiaohongshu-mcp` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `xpzouying/xiaohongshu-mcp` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xpzouying/xiaohongshu-mcp` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,17 +60,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/post-to-xhs/config/accounts.json`](skills/post-to-xhs/config/accounts.json) |
-| 4 | ✓ | [`skills/post-to-xhs/references/publish-workflow.md`](skills/post-to-xhs/references/publish-workflow.md) |
-| 5 | ✓ | [`skills/post-to-xhs/scripts/account_manager.py`](skills/post-to-xhs/scripts/account_manager.py) |
-| 6 | ✓ | [`skills/post-to-xhs/scripts/cdp_publish.py`](skills/post-to-xhs/scripts/cdp_publish.py) |
-| 7 | ✓ | [`skills/post-to-xhs/scripts/chrome_launcher.py`](skills/post-to-xhs/scripts/chrome_launcher.py) |
-| 8 | ✓ | [`skills/post-to-xhs/scripts/content.txt`](skills/post-to-xhs/scripts/content.txt) |
-| 9 | ✓ | [`skills/post-to-xhs/scripts/image_downloader.py`](skills/post-to-xhs/scripts/image_downloader.py) |
-| 10 | ✓ | [`skills/post-to-xhs/scripts/publish_pipeline.py`](skills/post-to-xhs/scripts/publish_pipeline.py) |
-| 11 | ✓ | [`skills/post-to-xhs/scripts/title.txt`](skills/post-to-xhs/scripts/title.txt) |
-| 12 | ✓ | [`skills/post-to-xhs/SKILL.md`](skills/post-to-xhs/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`skills/post-to-xhs/config/accounts.json`](skills/post-to-xhs/config/accounts.json) |
+| 5 | ✓ | [`skills/post-to-xhs/references/publish-workflow.md`](skills/post-to-xhs/references/publish-workflow.md) |
+| 6 | ✓ | [`skills/post-to-xhs/scripts/account_manager.py`](skills/post-to-xhs/scripts/account_manager.py) |
+| 7 | ✓ | [`skills/post-to-xhs/scripts/cdp_publish.py`](skills/post-to-xhs/scripts/cdp_publish.py) |
+| 8 | ✓ | [`skills/post-to-xhs/scripts/chrome_launcher.py`](skills/post-to-xhs/scripts/chrome_launcher.py) |
+| 9 | ✓ | [`skills/post-to-xhs/scripts/content.txt`](skills/post-to-xhs/scripts/content.txt) |
+| 10 | ✓ | [`skills/post-to-xhs/scripts/image_downloader.py`](skills/post-to-xhs/scripts/image_downloader.py) |
+| 11 | ✓ | [`skills/post-to-xhs/scripts/publish_pipeline.py`](skills/post-to-xhs/scripts/publish_pipeline.py) |
+| 12 | ✓ | [`skills/post-to-xhs/scripts/title.txt`](skills/post-to-xhs/scripts/title.txt) |
+| 13 | ✓ | [`skills/post-to-xhs/SKILL.md`](skills/post-to-xhs/SKILL.md) |
 
 ---
 

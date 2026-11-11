@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 225 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 239 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 225 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 225 |
+| Files         | 239 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -222,68 +222,82 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 161 | ✓ | [`.agents/test/app/workflow/editor/FG-APP-WORKFLOW-049-canvas-handle-geometry-and-state.md`](.agents/test/app/workflow/editor/FG-APP-WORKFLOW-049-canvas-handle-geometry-and-state.md) |
 | 162 | ✓ | [`.agents/test/app/workflow/editor/FG-APP-WORKFLOW-050-builder-preview-presentation-and-decisions.md`](.agents/test/app/workflow/editor/FG-APP-WORKFLOW-050-builder-preview-presentation-and-decisions.md) |
 | 163 | ✓ | [`.agents/test/app/workflow/editor/FG-APP-WORKFLOW-051-builder-preview-reading-and-scroll.md`](.agents/test/app/workflow/editor/FG-APP-WORKFLOW-051-builder-preview-reading-and-scroll.md) |
-| 164 | ✓ | [`.agents/test/app/workflow/editor/workflow.browser.ts`](.agents/test/app/workflow/editor/workflow.browser.ts) |
-| 165 | ✓ | [`.agents/test/businesses.json`](.agents/test/businesses.json) |
-| 166 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001-generation-lease-lifecycle.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001-generation-lease-lifecycle.md) |
-| 167 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001.mjs`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001.mjs) |
-| 168 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-002-rejected-send-and-recovery.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-002-rejected-send-and-recovery.md) |
-| 169 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003-stream-resume-lifecycle.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003-stream-resume-lifecycle.md) |
-| 170 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003.mjs`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003.mjs) |
-| 171 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-004-explicit-stop-and-races.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-004-explicit-stop-and-races.md) |
-| 172 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-005-publish-source-latest-call.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-005-publish-source-latest-call.md) |
-| 173 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-006-submitted-input-draft-lifecycle.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-006-submitted-input-draft-lifecycle.md) |
-| 174 | ✓ | [`.agents/test/chat/history-feedback/app-key-chat-fixture.mjs`](.agents/test/chat/history-feedback/app-key-chat-fixture.mjs) |
-| 175 | ✓ | [`.agents/test/chat/history-feedback/app-key-chat-matrix.mjs`](.agents/test/chat/history-feedback/app-key-chat-matrix.mjs) |
-| 176 | ✓ | [`.agents/test/chat/history-feedback/app-key-customuid.mjs`](.agents/test/chat/history-feedback/app-key-customuid.mjs) |
-| 177 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001-lease-status-and-polling.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001-lease-status-and-polling.md) |
-| 178 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001.mjs`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001.mjs) |
-| 179 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001-user-authorizer-log-display-and-filter.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001-user-authorizer-log-display-and-filter.md) |
-| 180 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001.mjs`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001.mjs) |
-| 181 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-002-publish-source-channel-display.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-002-publish-source-channel-display.md) |
-| 182 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003-app-key-chat-management.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003-app-key-chat-management.md) |
-| 183 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003.mjs`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003.mjs) |
-| 184 | ✓ | [`.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001-website-sync-lifecycle.md`](.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001-website-sync-lifecycle.md) |
-| 185 | ✓ | [`.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.mjs`](.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.mjs) |
-| 186 | ✓ | [`.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.runner.mts`](.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.runner.mts) |
-| 187 | ✓ | [`.agents/test/index.html`](.agents/test/index.html) |
-| 188 | ✓ | [`.agents/test/infra/database/FG-INFRA-DATABASE-001-chat-status-compatibility.md`](.agents/test/infra/database/FG-INFRA-DATABASE-001-chat-status-compatibility.md) |
-| 189 | ✓ | [`.agents/test/infra/database/FG-INFRA-DATABASE-001.mjs`](.agents/test/infra/database/FG-INFRA-DATABASE-001.mjs) |
-| 190 | ✓ | [`.agents/test/infra/runtime/FG-INFRA-RUNTIME-001-chat-lease-fault-recovery.md`](.agents/test/infra/runtime/FG-INFRA-RUNTIME-001-chat-lease-fault-recovery.md) |
-| 191 | ✓ | [`.agents/test/infra/runtime/FG-INFRA-RUNTIME-002-customuid-sandbox-identity.md`](.agents/test/infra/runtime/FG-INFRA-RUNTIME-002-customuid-sandbox-identity.md) |
-| 192 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md) |
-| 193 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs) |
-| 194 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md) |
-| 195 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs) |
-| 196 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md) |
-| 197 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs) |
-| 198 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md) |
-| 199 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md) |
-| 200 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs) |
-| 201 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md`](.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md) |
-| 202 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs`](.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs) |
-| 203 | ✓ | [`.agents/test/playwright.config.ts`](.agents/test/playwright.config.ts) |
-| 204 | ✓ | [`.agents/test/retired-ids.md`](.agents/test/retired-ids.md) |
-| 205 | ✓ | [`.agents/test/support/app-key-lifecycle-service.mjs`](.agents/test/support/app-key-lifecycle-service.mjs) |
-| 206 | ✓ | [`.agents/test/support/app-key-service.mjs`](.agents/test/support/app-key-service.mjs) |
-| 207 | ✓ | [`.agents/test/support/app-key.mjs`](.agents/test/support/app-key.mjs) |
-| 208 | ✓ | [`.agents/test/support/chat.mjs`](.agents/test/support/chat.mjs) |
-| 209 | ✓ | [`.agents/test/support/environment.mjs`](.agents/test/support/environment.mjs) |
-| 210 | ✓ | [`.agents/test/support/fixtures.example.json`](.agents/test/support/fixtures.example.json) |
-| 211 | ✓ | [`.agents/test/support/gate.mjs`](.agents/test/support/gate.mjs) |
-| 212 | ✓ | [`.agents/test/support/history.mjs`](.agents/test/support/history.mjs) |
-| 213 | ✓ | [`.agents/test/support/private.mjs`](.agents/test/support/private.mjs) |
-| 214 | ✓ | [`.agents/test/support/redis-proxy.mjs`](.agents/test/support/redis-proxy.mjs) |
-| 215 | ✓ | [`.agents/test/support/runtime.mjs`](.agents/test/support/runtime.mjs) |
-| 216 | ✓ | [`.agents/test/support/runtime.selftest.mjs`](.agents/test/support/runtime.selftest.mjs) |
-| 217 | ✓ | [`.agents/test/support/scenario.mjs`](.agents/test/support/scenario.mjs) |
-| 218 | ✓ | [`.agents/test/support/stream.mjs`](.agents/test/support/stream.mjs) |
-| 219 | ✓ | [`.agents/test/support/stream.selftest.mjs`](.agents/test/support/stream.selftest.mjs) |
-| 220 | ✓ | [`.agents/test/tsconfig.json`](.agents/test/tsconfig.json) |
-| 221 | ✓ | [`.agents/test/workflow/connection-rules.md`](.agents/test/workflow/connection-rules.md) |
-| 222 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 223 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 224 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
-| 225 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
+| 164 | ✓ | [`.agents/test/app/workflow/editor/FG-APP-WORKFLOW-052-builder-confirmed-execution-and-repair.md`](.agents/test/app/workflow/editor/FG-APP-WORKFLOW-052-builder-confirmed-execution-and-repair.md) |
+| 165 | ✓ | [`.agents/test/app/workflow/editor/FG-APP-WORKFLOW-052-modal-and-canvas-menu-visibility.md`](.agents/test/app/workflow/editor/FG-APP-WORKFLOW-052-modal-and-canvas-menu-visibility.md) |
+| 166 | ✓ | [`.agents/test/app/workflow/editor/FG-APP-WORKFLOW-053-builder-task-memory-and-recovery.md`](.agents/test/app/workflow/editor/FG-APP-WORKFLOW-053-builder-task-memory-and-recovery.md) |
+| 167 | ✓ | [`.agents/test/app/workflow/editor/workflow-builder-memory.integration.mjs`](.agents/test/app/workflow/editor/workflow-builder-memory.integration.mjs) |
+| 168 | ✓ | [`.agents/test/app/workflow/editor/workflow-builder.integration.mjs`](.agents/test/app/workflow/editor/workflow-builder.integration.mjs) |
+| 169 | ✓ | [`.agents/test/app/workflow/editor/workflow.browser.ts`](.agents/test/app/workflow/editor/workflow.browser.ts) |
+| 170 | ✓ | [`.agents/test/app/workflow/execution/FG-APP-WORKFLOW-055-toolset-interactive-resume-identity.md`](.agents/test/app/workflow/execution/FG-APP-WORKFLOW-055-toolset-interactive-resume-identity.md) |
+| 171 | ✓ | [`.agents/test/app/workflow/execution/FG-APP-WORKFLOW-056-existing-toolset-source-and-reference-compatibility.md`](.agents/test/app/workflow/execution/FG-APP-WORKFLOW-056-existing-toolset-source-and-reference-compatibility.md) |
+| 172 | ✓ | [`.agents/test/app/workflow/execution/FG-APP-WORKFLOW-057-legacy-toolset-interactive-resume.md`](.agents/test/app/workflow/execution/FG-APP-WORKFLOW-057-legacy-toolset-interactive-resume.md) |
+| 173 | ✓ | [`.agents/test/app/workflow/execution/FG-APP-WORKFLOW-058-legacy-toolset-config-compatibility.md`](.agents/test/app/workflow/execution/FG-APP-WORKFLOW-058-legacy-toolset-config-compatibility.md) |
+| 174 | ✓ | [`.agents/test/app/workflow/execution/FG-APP-WORKFLOW-059-inline-toolset-configuration-and-execution.md`](.agents/test/app/workflow/execution/FG-APP-WORKFLOW-059-inline-toolset-configuration-and-execution.md) |
+| 175 | ✓ | [`.agents/test/app/workflow/management/FG-APP-WORKFLOW-054-inline-toolset-credential-lifecycle.md`](.agents/test/app/workflow/management/FG-APP-WORKFLOW-054-inline-toolset-credential-lifecycle.md) |
+| 176 | ✓ | [`.agents/test/businesses.json`](.agents/test/businesses.json) |
+| 177 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001-generation-lease-lifecycle.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001-generation-lease-lifecycle.md) |
+| 178 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001.mjs`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-001.mjs) |
+| 179 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-002-rejected-send-and-recovery.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-002-rejected-send-and-recovery.md) |
+| 180 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003-stream-resume-lifecycle.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003-stream-resume-lifecycle.md) |
+| 181 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003.mjs`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-003.mjs) |
+| 182 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-004-explicit-stop-and-races.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-004-explicit-stop-and-races.md) |
+| 183 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-005-publish-source-latest-call.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-005-publish-source-latest-call.md) |
+| 184 | ✓ | [`.agents/test/chat/conversation/FG-CHAT-CONVERSATION-006-submitted-input-draft-lifecycle.md`](.agents/test/chat/conversation/FG-CHAT-CONVERSATION-006-submitted-input-draft-lifecycle.md) |
+| 185 | ✓ | [`.agents/test/chat/history-feedback/app-key-chat-fixture.mjs`](.agents/test/chat/history-feedback/app-key-chat-fixture.mjs) |
+| 186 | ✓ | [`.agents/test/chat/history-feedback/app-key-chat-matrix.mjs`](.agents/test/chat/history-feedback/app-key-chat-matrix.mjs) |
+| 187 | ✓ | [`.agents/test/chat/history-feedback/app-key-customuid.mjs`](.agents/test/chat/history-feedback/app-key-customuid.mjs) |
+| 188 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001-lease-status-and-polling.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001-lease-status-and-polling.md) |
+| 189 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001.mjs`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-001.mjs) |
+| 190 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001-user-authorizer-log-display-and-filter.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001-user-authorizer-log-display-and-filter.md) |
+| 191 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001.mjs`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-001.mjs) |
+| 192 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-002-publish-source-channel-display.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-002-publish-source-channel-display.md) |
+| 193 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003-app-key-chat-management.md`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003-app-key-chat-management.md) |
+| 194 | ✓ | [`.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003.mjs`](.agents/test/chat/history-feedback/FG-CHAT-HISTORY-FEEDBACK-003.mjs) |
+| 195 | ✓ | [`.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001-website-sync-lifecycle.md`](.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001-website-sync-lifecycle.md) |
+| 196 | ✓ | [`.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.mjs`](.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.mjs) |
+| 197 | ✓ | [`.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.runner.mts`](.agents/test/dataset/ingestion/FG-DATASET-INGESTION-001.runner.mts) |
+| 198 | ✓ | [`.agents/test/index.html`](.agents/test/index.html) |
+| 199 | ✓ | [`.agents/test/infra/database/FG-INFRA-DATABASE-001-chat-status-compatibility.md`](.agents/test/infra/database/FG-INFRA-DATABASE-001-chat-status-compatibility.md) |
+| 200 | ✓ | [`.agents/test/infra/database/FG-INFRA-DATABASE-001.mjs`](.agents/test/infra/database/FG-INFRA-DATABASE-001.mjs) |
+| 201 | ✓ | [`.agents/test/infra/runtime/FG-INFRA-RUNTIME-001-chat-lease-fault-recovery.md`](.agents/test/infra/runtime/FG-INFRA-RUNTIME-001-chat-lease-fault-recovery.md) |
+| 202 | ✓ | [`.agents/test/infra/runtime/FG-INFRA-RUNTIME-002-customuid-sandbox-identity.md`](.agents/test/infra/runtime/FG-INFRA-RUNTIME-002-customuid-sandbox-identity.md) |
+| 203 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md) |
+| 204 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs) |
+| 205 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md) |
+| 206 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs) |
+| 207 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md) |
+| 208 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs) |
+| 209 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md) |
+| 210 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md) |
+| 211 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs) |
+| 212 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-toolset-reference-version-authorization.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-toolset-reference-version-authorization.md) |
+| 213 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md`](.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md) |
+| 214 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs`](.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs) |
+| 215 | ✓ | [`.agents/test/playwright.config.ts`](.agents/test/playwright.config.ts) |
+| 216 | ✓ | [`.agents/test/retired-ids.md`](.agents/test/retired-ids.md) |
+| 217 | ✓ | [`.agents/test/support/app-key-lifecycle-service.mjs`](.agents/test/support/app-key-lifecycle-service.mjs) |
+| 218 | ✓ | [`.agents/test/support/app-key-service.mjs`](.agents/test/support/app-key-service.mjs) |
+| 219 | ✓ | [`.agents/test/support/app-key.mjs`](.agents/test/support/app-key.mjs) |
+| 220 | ✓ | [`.agents/test/support/chat.mjs`](.agents/test/support/chat.mjs) |
+| 221 | ✓ | [`.agents/test/support/environment.mjs`](.agents/test/support/environment.mjs) |
+| 222 | ✓ | [`.agents/test/support/fixtures.example.json`](.agents/test/support/fixtures.example.json) |
+| 223 | ✓ | [`.agents/test/support/gate.mjs`](.agents/test/support/gate.mjs) |
+| 224 | ✓ | [`.agents/test/support/history.mjs`](.agents/test/support/history.mjs) |
+| 225 | ✓ | [`.agents/test/support/private.mjs`](.agents/test/support/private.mjs) |
+| 226 | ✓ | [`.agents/test/support/redis-proxy.mjs`](.agents/test/support/redis-proxy.mjs) |
+| 227 | ✓ | [`.agents/test/support/runtime.mjs`](.agents/test/support/runtime.mjs) |
+| 228 | ✓ | [`.agents/test/support/runtime.selftest.mjs`](.agents/test/support/runtime.selftest.mjs) |
+| 229 | ✓ | [`.agents/test/support/scenario.mjs`](.agents/test/support/scenario.mjs) |
+| 230 | ✓ | [`.agents/test/support/stream.mjs`](.agents/test/support/stream.mjs) |
+| 231 | ✓ | [`.agents/test/support/stream.selftest.mjs`](.agents/test/support/stream.selftest.mjs) |
+| 232 | ✓ | [`.agents/test/support/toolset-fixture.mjs`](.agents/test/support/toolset-fixture.mjs) |
+| 233 | ✓ | [`.agents/test/support/toolset-fixture.selftest.mjs`](.agents/test/support/toolset-fixture.selftest.mjs) |
+| 234 | ✓ | [`.agents/test/tsconfig.json`](.agents/test/tsconfig.json) |
+| 235 | ✓ | [`.agents/test/workflow/connection-rules.md`](.agents/test/workflow/connection-rules.md) |
+| 236 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 237 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 238 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 239 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
 
 ---
 

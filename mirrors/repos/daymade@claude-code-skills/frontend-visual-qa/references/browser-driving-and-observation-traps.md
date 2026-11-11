@@ -114,6 +114,31 @@ second-order trap: the reader checks the *stale* one, concludes "this is the old
 version", and dismisses a change that did ship. If an artifact carries a version
 in more than one place, they must be written together.
 
+### Cold entry before warm return
+
+For an unstyled-page complaint or a change to shared route styles, have the auditor
+open the exact target first through the project's authorized browser harness,
+then compare a return after visiting an adjacent route. Keep the actor, data,
+viewport and source identity fixed. Here "cold entry" means the target has not
+inherited another feature route's styles; it does not claim every HTTP cache is cold.
+
+**Failing case:** a shared navigation renders as plain text on direct entry, but
+looks correct after another page has loaded its stylesheet. A screenshot taken
+only after that visit masks the defect. CSS rules existing in the bundle, all
+links appearing in the DOM, or a successful warm return cannot clear direct entry.
+
+Record the first-entry pixels and the affected region's computed layout before
+visiting another feature. Then visit the adjacent consumer, return, and compare
+the same region. If styling appears only on return, inspect stylesheet ownership
+and imports; after an authorized fix, rerun direct entry before the warm path.
+Do not navigate around until the target looks right and preserve only that result.
+
+**Healthy control:** direct entry already has the intended navigation, spacing and
+current-item treatment, and the same relationships survive the adjacent-route
+return. That supports the observed visual contract; clicks, permissions and delivery
+identity retain their separate checks. Stop at the reported target and affected
+shared consumers, without turning this into every-route cache testing.
+
 Record this state from the rendered page:
 
 ```js
@@ -486,6 +511,25 @@ of the affected block. A blank screenshot does not count as a read position;
 reacquire an inspected frame or keep that position unverified. Observe offsets;
 do not assign `scrollLeft` or `currentTime`, or change CSS to stage a result.
 This is a journey-specific auditor check, not an automatic sweep verdict.
+
+### Nested vertical lists use the same fresh input-target check
+
+Apply the geometry and hit check above to the intended list and its actual
+scroll owner; the `closest <pre>` predicate remains specific to PRE reading.
+Record the list and relevant scrolling ancestors' `scrollTop`, `scrollHeight`
+and `clientHeight` before and after ordinary vertical wheel input at an explicit
+in-bounds point. A hit inside the list does not prove that this scroll owner
+moved: a nested child or the page can receive the movement instead. Discard old
+coordinates after scrolling or layout changes and inspect the reached content.
+
+For an attempt that should move the list within its range, a successful tool
+receipt with unchanged offsets leaves the input unverified. It does not prove
+that a bottom control disappeared, nor establish a bottom-state test: the actual
+owner's offsets must establish the reached position. Re-target from fresh
+geometry, retry ordinary input and read back the result before judging that
+state. If a retry changes both the pointer position and wheel delta, its success
+does not isolate hover or delta size as the cause. Observe offsets; do not assign
+`scrollTop` to stage the journey.
 
 ### Separate viewport movement from layout movement
 

@@ -1,0 +1,464 @@
+<p align="center">
+  <img src="https://cdn.mcp-use.com/github/Contributing.jpg" alt="Contributing to mcp-use" width="100%" />
+</p>
+
+# Contributing to mcp-use
+
+Thank you for your interest in contributing to mcp-use! This document provides guidelines for contributing to both the Python and TypeScript libraries.
+
+## Table of Contents
+
+- [Code of Conduct](#code-of-conduct)
+- [Ways to Contribute](#ways-to-contribute)
+- [Contribution Requirements](#contribution-requirements)
+- [Repository Structure](#repository-structure)
+- [Python Development](#python-development)
+- [TypeScript Development](#typescript-development)
+- [Pull Request Process](#pull-request-process)
+- [Getting Help](#getting-help)
+
+## Code of Conduct
+
+Please read and follow our [Code of Conduct](./CODE_OF_CONDUCT.md) to ensure a welcoming and inclusive environment for all contributors.
+
+## Ways to Contribute
+
+We welcome all kinds of contributions! Here are some ways you can help:
+
+- **Help with issues**: Answer questions, help debug problems, or provide guidance on [GitHub Issues](https://github.com/mcp-use/mcp-use/issues)
+- **Fix bugs**: Pick an issue from our [issue tracker](https://github.com/mcp-use/mcp-use/issues) and submit a fix. Issues labeled [`good first issue`](https://github.com/mcp-use/mcp-use/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) are great starting points, but don't let that stop you from tackling other issues, many are very approachable!
+- **Add new features**: Have an idea? Open an issue to discuss it first, then submit a PR
+- **Improve documentation**: Fix typos, clarify explanations, or add examples
+
+If you have any questions or need guidance, join our [Discord](https://discord.gg/XkNkSkMz3V), we're super happy to help!
+
+## Contribution Requirements
+
+- Start with an existing GitHub issue, or open one describing the problem and its reproduction or proposed change. Wait for maintainer feedback before investing in an implementation; an issue or discussion is not a promise that a PR will be accepted.
+- Every PR from a contributor who is not a repository maintainer or admin, including documentation and small fixes, must link a GitHub issue in this repository. Put `Closes #123` in the PR description or ask a maintainer to link it in the Development sidebar. PRs without a linked issue are automatically closed; after linking an issue, ask a maintainer to reopen the PR.
+- Search for existing issues and PRs first. Keep the change focused, explain why it is needed, and include concrete test results and any limitations.
+- You are responsible for understanding and maintaining everything you submit. Disclose material AI assistance and follow the [AI contribution policy](./AI_POLICY.md).
+
+## Repository Structure
+
+This is a monorepo containing both Python and TypeScript implementations:
+
+```
+mcp-use/
+├── libraries/
+│   ├── python/        # Python library (mcp-use on PyPI)
+│   └── typescript/    # TypeScript monorepo (multiple npm packages)
+├── docs/              # Documentation
+└── .github/           # CI/CD workflows
+```
+
+The Python and TypeScript libraries have independent development workflows and release processes.
+
+---
+
+## Python Development
+
+### Prerequisites
+
+- [Python](https://www.python.org/downloads/) 3.11 or higher
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) - Fast Python package manager
+
+### Setup
+
+```bash
+# Navigate to the Python library
+cd libraries/python
+
+# Create and activate a virtual environment
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies with development extras
+uv pip install -e ".[dev,anthropic,openai,search,e2b]"
+```
+
+### Code Quality
+
+We use **Ruff** for linting and formatting:
+
+```bash
+cd libraries/python
+
+# Check linting
+ruff check .
+
+# Fix linting issues
+ruff check . --fix
+
+# Check formatting
+ruff format --check .
+
+# Format code
+ruff format .
+```
+
+### Pre-commit Hooks (Python)
+
+The Python library has its own pre-commit config at `libraries/python/.pre-commit-config.yaml`:
+
+```bash
+cd libraries/python
+
+# Install pre-commit (if not already in your venv)
+uv pip install pre-commit
+
+# Install hooks
+pre-commit install
+
+# Run manually on all files
+pre-commit run --all-files
+```
+
+This runs:
+- Ruff linting and formatting
+- Type checking with ty (excluding tests)
+- Trailing whitespace and end-of-file fixes
+
+### Running Tests
+
+```bash
+cd libraries/python
+
+# Run all unit tests
+pytest tests/unit
+
+# Run with verbose output
+pytest -vv tests/unit
+
+# Run with coverage
+pytest --cov=mcp_use tests/unit
+```
+
+#### Test Categories
+
+Tests are organized into:
+
+- **Unit tests** (`tests/unit/`): Fast, isolated tests
+- **Integration tests** (`tests/integration/`):
+  - `client/transports/`: Tests for stdio, sse, streamable_http transports
+  - `client/primitives/`: Tests for MCP primitives (tools, resources, prompts, etc.)
+  - `client/others/`: Other integration tests
+  - `agent/`: Agent tests (require API keys)
+
+To run specific integration tests:
+
+```bash
+# Transport tests
+pytest -vv tests/integration/client/transports/test_stdio.py
+
+# Primitive tests
+pytest -vv tests/integration/client/primitives/test_tools.py
+
+# Agent tests (requires OPENAI_API_KEY)
+pytest -vv tests/integration/agent/test_agent_run.py
+```
+
+### Python Coding Standards
+
+- Follow [PEP 8](https://pep8.org/)
+- Maximum line length: 120 characters (configured in `pyproject.toml`)
+- Use type hints for all public functions
+- Write docstrings using Google-style format
+- Use async/await for asynchronous code
+
+```python
+def function_name(param1: str, param2: int) -> bool:
+    """Short description of what the function does.
+
+    Args:
+        param1: Description of param1
+        param2: Description of param2
+
+    Returns:
+        Description of return value
+
+    Raises:
+        ValueError: When and why this exception is raised
+    """
+```
+
+---
+
+## TypeScript Development
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 22 or higher
+- [pnpm](https://pnpm.io/installation) 10 or higher
+
+### Monorepo Structure
+
+The TypeScript library is a **pnpm workspace monorepo** containing multiple packages in `libraries/typescript/packages/`:
+
+```
+libraries/typescript/
+├── package.json          # Root workspace config
+├── pnpm-workspace.yaml   # Workspace definition
+├── packages/
+│   ├── server/           # MCP framework and CLI (npm: mcp-use)
+│   ├── client/           # MCP client (npm: @mcp-use/client)
+│   ├── agent/            # MCP agent (npm: @mcp-use/agent)
+│   ├── cli/              # CLI shim (npm: @mcp-use/cli)
+│   ├── inspector/        # MCP Inspector (npm: @mcp-use/inspector)
+│   └── create-mcp-use-app/  # Project scaffolding CLI
+```
+
+**How the monorepo works:**
+
+- All packages share the same `node_modules` at the workspace root (efficient disk usage)
+- Packages can depend on each other using `workspace:*` protocol
+- Running `pnpm install` at the root installs dependencies for all packages
+- Running `pnpm build` builds packages in the correct dependency order (`@mcp-use/client`, then `mcp-use`, then the rest)
+
+### Setup
+
+```bash
+# Navigate to the TypeScript library
+cd libraries/typescript
+
+# Install dependencies for all packages
+pnpm install
+
+# Build all packages (mcp-use first, then others in parallel)
+pnpm build
+```
+
+### Working with Packages
+
+Use `pnpm --filter` to run commands in specific packages:
+
+```bash
+# Build only the core library
+pnpm --filter mcp-use build
+
+# Run tests in inspector package
+pnpm --filter @mcp-use/inspector test
+
+# Run a command in all packages
+pnpm run -r test
+```
+
+### Code Quality
+
+We use **ESLint** for linting and **Prettier** for formatting:
+
+```bash
+cd libraries/typescript
+
+# Check formatting
+pnpm format:check
+
+# Format code
+pnpm format
+
+# Run linter
+pnpm lint
+
+# Fix lint issues
+pnpm lint:fix
+```
+
+### Commit Checks (TypeScript)
+
+TypeScript does not install Git hooks. Run the formatting and lint commands above before opening a PR; CI checks both. Commits do not automatically format files or stage changes.
+
+If you previously installed Husky, you can remove its repository-local hook setting from the repository root:
+
+```bash
+if [ "$(git config --local --get core.hooksPath)" = "libraries/typescript/.husky/_" ]; then
+  git config --local --unset core.hooksPath
+fi
+```
+
+This setting is shared by linked worktrees. Run the cleanup from a checkout with permission to write the shared Git config. The guard preserves custom hook paths.
+
+### Running Tests
+
+```bash
+cd libraries/typescript
+
+# Run all tests across all packages
+pnpm test
+
+# Run tests for specific package
+pnpm --filter mcp-use test
+pnpm --filter @mcp-use/inspector test
+pnpm --filter @mcp-use/cli test
+
+# Run tests once without watch mode (mcp-use package)
+pnpm --filter mcp-use test:run
+
+# Run agent integration tests (requires OPENAI_API_KEY)
+pnpm --filter @mcp-use/agent test:integration:agent
+```
+
+#### Writing and reviewing tests
+
+Tests should check behaviour callers can observe, not implementation details. Two contributor skills in [`.claude/skills/`](.claude/skills/) spell out how; coding agents load them automatically, and people can read them as guides:
+
+- [`writing-tests`](.claude/skills/writing-tests/SKILL.md): the rules, the workflow, and how to test `@mcp-use/cli` commands against a local fake of Manufact Cloud ([`tests/helpers/`](libraries/typescript/packages/cli/tests/helpers/)).
+- [`reviewing-tests`](.claude/skills/reviewing-tests/SKILL.md): a step-by-step check that breaks the code under test, confirms each test fails, and reports each test as keep, rewrite or delete.
+
+The root [`skills/`](skills/) folder is different: it holds the skills we ship to mcp-use users.
+
+### Changesets
+
+**All TypeScript changes require a changeset** describing what changed. This is enforced in CI for PRs to `main`.
+
+```bash
+cd libraries/typescript
+
+# Create a changeset
+pnpm changeset
+```
+
+You'll be prompted to:
+1. Select which packages changed
+2. Choose the semver bump type (patch/minor/major)
+3. Write a summary of changes
+
+Commit the generated `.changeset/*.md` file with your changes.
+
+### Hosted Inspector releases
+
+Railway follows `main` for production Inspector and `canary` for dev, with
+**Wait for CI** enabled on both native GitHub triggers. Leave the Railway
+`VERSION` variable unset: the Dockerfile installs the exact version in the
+commit's `package.json`, and copying that manifest invalidates the install cache.
+Production rejects prerelease versions on `main`, retaining the previous stable
+deployment until the exit-prerelease commit publishes a stable version.
+
+The canary release workflow versions and builds packages locally, publishes to
+npm, verifies the packed artifacts and dist-tags, and creates tags and release
+notes before pushing the version commit. That final `GITHUB_TOKEN` push does not
+start recursive Actions runs; the published artifacts have already passed the
+release workflow's verification before Railway can see the new version commit.
+Main and canary releases share a concurrency queue so publication cannot overlap
+with the stable release's canary reset. A canary run stops before publishing if
+its source commit has already been superseded; the final push never overwrites
+concurrent branch updates.
+
+### TypeScript Coding Standards
+
+- Use TypeScript strict mode
+- Always define explicit types (avoid `any`)
+- Use interfaces for object shapes
+- Prefer `const` over `let`
+- Use async/await over raw promises
+
+---
+
+## Pull Request Process
+
+> [!NOTE]
+> Before you start, search [open pull requests](https://github.com/mcp-use/mcp-use/pulls) for the issue you want to work on. If a PR for that issue is already open, don't open a new one. Help on the existing PR instead: review it, test it, leave suggestions, or offer commits to the author.
+>
+> If the existing PR has gone inactive and the author doesn't respond to a comment, ask a maintainer on the PR or in [Discord](https://discord.gg/XkNkSkMz3V) before taking it over.
+
+### 1. Link an Issue and Create a Branch
+
+Discuss the work in a GitHub issue first, and wait for maintainer feedback. Include `Closes #123` in the PR description, replacing `123` with the issue number. Repository maintainers and admins are exempt from the automatic linked issue requirement.
+
+```bash
+# Create a feature branch from main
+git checkout main
+git pull origin main
+git checkout -b feat/python/your-feature-name
+# or
+git checkout -b feat/typescript/your-feature-name
+
+# Or a fix branch
+git checkout -b fix/python/bug-description
+# or
+git checkout -b fix/typescript/bug-description
+```
+
+### 2. Make Your Changes
+
+- Write clean, well-documented code
+- Follow the coding standards for the language
+- Add tests for new functionality
+- Update documentation if needed
+
+### 3. Commit Your Changes
+
+We recommend (but don't strictly enforce) conventional commit format:
+
+```bash
+# Format: <type>(<scope>): <subject>
+git commit -m "feat(python): add new MCP server connection"
+git commit -m "fix(typescript): resolve memory leak in agent"
+git commit -m "docs: update installation instructions"
+```
+
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+### 4. Before Pushing
+
+**For Python changes:**
+```bash
+cd libraries/python
+ruff check .
+ruff format --check .
+pytest tests/unit
+```
+
+**For TypeScript changes:**
+```bash
+cd libraries/typescript
+pnpm format:check
+pnpm lint
+pnpm build
+pnpm changeset  # Create a changeset if not done yet
+```
+
+### 5. Push and Create PR
+
+```bash
+git push origin your-branch-name
+```
+
+Create a Pull Request on GitHub with:
+- Clear title and description
+- Link to related issues (use "Closes #123")
+- Screenshots/recordings for UI changes
+- **A before and after video for Inspector or Agent fixes.** If your PR fixes something in the Inspector (`@mcp-use/inspector`) or the Agent (`@mcp-use/agent` or Python's `MCPAgent`), attach a video showing the broken behavior before your change and the fixed behavior after. For Agent fixes, a terminal recording is fine.
+
+### CI Checks
+
+PRs trigger automated checks:
+
+**Python (runs if `libraries/python/**` changed):**
+- Linting (ruff check + format check)
+- Unit tests (Python 3.11 & 3.12, latest & minimum deps)
+- Transport tests (stdio, sse, streamable_http)
+- Primitive tests (tools, resources, prompts, etc.)
+- Agent tests (requires API keys)
+
+**TypeScript (runs if `libraries/typescript/**` changed):**
+- Linting (ESLint)
+- Formatting (Prettier)
+- Build verification
+- Package tests
+- Changeset verification (PRs to main only)
+
+---
+
+## Getting Help
+
+- 💬 [GitHub Discussions](https://github.com/mcp-use/mcp-use/discussions) - Ask questions and share ideas
+- 🐛 [GitHub Issues](https://github.com/mcp-use/mcp-use/issues) - Report bugs and request features
+- 💼 [Discord](https://discord.gg/XkNkSkMz3V) - Join our community
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the same MIT License that covers the project.
+
+---
+
+Thank you for contributing to mcp-use! 🎉

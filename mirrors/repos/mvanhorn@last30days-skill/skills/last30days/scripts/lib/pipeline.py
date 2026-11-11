@@ -26,6 +26,7 @@ from . import (
     bird_x,
     bluesky,
     brightdata,
+    company_resolve,
     corpus,
     dates,
     dedupe,
@@ -147,6 +148,9 @@ STREAM_ARTIFACT_LIFT_KEYS: tuple[str, ...] = ("meta_ads_page", "meta_ads_tally")
 # Worst case per stream is one timeout ceiling (+ one inline 5xx retry in the
 # main fan-out, itself bounded by the lane's own timeouts); no new config knobs.
 STREAM_FUTURE_TIMEOUT_SECONDS = 180.0
+# A job board lists the roles open today, so it cannot answer a window that
+# ended in the past.
+JOBS_PAST_WINDOW_SKIP = "skipped: a job board shows the roles open today, not those of a past window"
 DISCOVERY_FUTURE_TIMEOUT_SECONDS = 60.0
 THIN_RETRY_FUTURE_TIMEOUT_SECONDS = 120.0
 # One X source, ordered backends: grok (up to 240s/call) + xai (90-180s) would
@@ -2257,6 +2261,7 @@ def run(
     # overlaps other sources instead of waiting for them all to finish.
     run_started = time.monotonic()
     from_date, to_date = dates.get_date_range(lookback_days, as_of_date=as_of_date)
+    jobs_past_window = to_date < dates.get_date_range(0)[1]
     resolved_corpus_dirs = corpus.resolve_directories(
         corpus_dirs or config.get("_CORPUS_DIRS"),
         config.get("LAST30DAYS_CORPUS_DIRS"),
@@ -2686,6 +2691,14 @@ def run(
                 # Skip GitHub keyword search if person-mode already ran
                 if source == "github" and (_github_person_done or _github_custom_done):
                     continue
+                if source == "jobs" and jobs_past_window:
+                    bundle.source_status["jobs"] = schema.SourceOutcome(
+                        source="jobs",
+                        state=schema.NO_RESULTS,
+                        attempted=False,
+                        detail=JOBS_PAST_WINDOW_SKIP,
+                    )
+                    continue
                 # Enforce per-source fetch cap. A CLI override (issue #716) raises
                 # the cap for capped sources so every X subquery in a multi-angle
                 # --plan fetches, instead of only the first two.
@@ -2902,6 +2915,11 @@ def run(
                             attempted=deferred_outcome.get("attempted", True),
                         )
             bundle.add_items(subquery.label, source, normalized)
+            if _is_jobs_board(source, artifact):
+                # The board's own counts and digest are read by name, and stay
+                # whatever happens to the board's items below.
+                bundle.artifacts["jobs"] = _jobs_board_artifact(artifact)
+                artifact = {key: value for key, value in artifact.items() if key != "digest"}
             if artifact:
                 bundle.artifacts.setdefault("grounding", []).append(artifact)
 
@@ -2930,6 +2948,8 @@ def run(
     _github_skip_retry = {"corpus"}
     if _github_person_done or _github_custom_done:
         _github_skip_retry.add("github")
+    if jobs_past_window:
+        _github_skip_retry.add("jobs")
     pre_retry_counts = {
         source: len(bundle.items_by_source.get(source, []))
         for source in deferred_retryable_failures
@@ -3125,14 +3145,9 @@ def run(
     if hiring_summary:
         # The diagnostic source dump retains pruned jobs; hiring aggregation
         # needs their rejection identities after they leave the ranked pool.
-        retained_ids = {candidate.candidate_id for candidate in ranked_public}
-        hiring_summary["rejected_job_keys"] = sorted({
-            fusion.candidate_key(item)
-            for candidate in public_candidates
-            if candidate.candidate_id not in retained_ids
-            for item in candidate.source_items
-            if item.source == "jobs"
-        })
+        hiring_summary["rejected_job_keys"] = _rejected_job_keys(
+            public_candidates, ranked_public, bundle.artifacts.get("jobs"), topic,
+        )
     # Private corpus already cleared a body-aware retrieval floor; do not apply
     # the public title/snippet visibility gate (filenames often omit the head
     # token even when the document body matched).
@@ -3764,12 +3779,58 @@ def _merge_replayed_enrichment(
     return items
 
 
+def _is_jobs_board(source: str, artifact: Any) -> bool:
+    """Whether a jobs fetch read the company's board directly."""
+    return source == "jobs" and isinstance(artifact, dict) and artifact.get("tier") == "ats"
+
+
+def _jobs_board_artifact(artifact: dict[str, Any]) -> dict[str, Any]:
+    """The board data a run keeps, with no digest when the caller asked for none."""
+    if env.jobs_digest_disabled():
+        return {key: value for key, value in artifact.items() if key != "digest"}
+    return artifact
+
+
+def _rejected_job_keys(
+    candidates: list[schema.Candidate],
+    ranked: list[schema.Candidate],
+    board: Any,
+    topic: str,
+) -> list[str]:
+    """The postings ranking dropped, which the hiring sections then leave out.
+
+    Ranking judges a posting against the topic's name. On the company's own
+    board that is a fair test of a stray posting when the topic is the
+    company, whose postings name it. When the topic is the person who leads
+    the company, no posting names the topic, so ranking drops every one it
+    looks at: that says nothing about the roles, and none is recorded.
+    """
+    if (
+        isinstance(board, dict)
+        and board.get("owned")
+        and not jobs._same_company(str(board.get("company") or ""), topic)
+    ):
+        return []
+    retained_ids = {candidate.candidate_id for candidate in ranked}
+    return sorted({
+        fusion.candidate_key(item)
+        for candidate in candidates
+        if candidate.candidate_id not in retained_ids
+        for item in candidate.source_items
+        if item.source == "jobs"
+    })
+
+
 def _apply_hiring_signal_gate(
     bundle: schema.RetrievalBundle,
     *,
     explicit: bool,
     topic: str,
 ) -> dict[str, Any] | None:
+    # On a standard run, a board whose titles cluster into no clear theme
+    # leaves the evidence pool, so scattered postings are not ranked and
+    # clustered beside what people said. The board's counts and digest live in
+    # ``bundle.artifacts["jobs"]`` and are not touched here.
     jobs_items = bundle.items_by_source.get("jobs") or []
     if not jobs_items:
         if explicit:
@@ -3922,47 +3983,7 @@ def _ensure_perplexity_in_plan(
     plan.source_weights = planner._normalize_weights(plan.source_weights)
 
 
-def _company_topic_likely(topic: str) -> bool:
-    text = topic.strip()
-    if not text:
-        return False
-    lower = text.lower()
-    if "?" in text or len(text.split()) > 4:
-        return False
-    generic = {
-        "how", "what", "why", "best", "top", "tutorial", "guide", "prompts",
-        "news", "latest", "ideas", "examples",
-    }
-    if any(word in generic for word in lower.split()):
-        return False
-    known_single_word_companies = {
-        "apple", "uber", "google", "microsoft", "amazon", "meta", "netflix",
-        "openai", "anthropic", "qualtrics", "stripe", "brex",
-    }
-    if " vs " in lower or " versus " in lower:
-        parts = re.split(r"\s+(?:vs|versus)\s+", text, maxsplit=1, flags=re.IGNORECASE)
-        if len(parts) != 2:
-            return False
-        return _comparison_side_company_like(parts[0], known_single_word_companies) or _comparison_side_company_like(
-            parts[1], known_single_word_companies
-        )
-    return bool(text[:1].isupper() or lower in known_single_word_companies)
-
-
-def _comparison_side_company_like(side: str, known_companies: set[str]) -> bool:
-    token = re.sub(r"[^\w.+#-]", "", side.strip().split()[0] if side.strip() else "")
-    if not token:
-        return False
-    lower = token.lower()
-    common_tech_terms = {
-        "python", "ruby", "javascript", "typescript", "java", "go", "golang",
-        "rust", "php", "swift", "kotlin", "scala", "clojure", "elixir",
-        "react", "vue", "angular", "svelte", "node", "django", "rails",
-        "postgres", "mysql", "redis", "kubernetes", "docker",
-    }
-    if lower in common_tech_terms:
-        return False
-    return bool(token[:1].isupper() or lower in known_companies)
+_company_topic_likely = company_resolve.company_topic_likely
 
 
 def _warnings(
@@ -4973,7 +4994,9 @@ def _retry_thin_sources(
 
     def _retry_one_source(
         source: str,
-    ) -> tuple[str, list[schema.SourceItem], dict[str, Any] | None, tuple, bool]:
+    ) -> tuple[
+        str, list[schema.SourceItem], dict[str, Any] | None, tuple, bool, dict[str, Any] | None,
+    ]:
         raw_items, artifact = _retrieve_stream(
             topic=topic,
             subquery=retry_subquery,
@@ -5019,7 +5042,10 @@ def _retry_thin_sources(
             defer_relevance_prune=(source == "x"),
         )
         if source == "jobs":
-            return source, normalized, outcome_note, (detail_note, detail_state), out_of_time
+            return (
+                source, normalized, outcome_note, (detail_note, detail_state), out_of_time,
+                artifact if _is_jobs_board(source, artifact) else None,
+            )
         normalized = _apply_reddit_stream_keepers(
             source, normalized, settings["per_stream_limit"], topic
         )
@@ -5027,7 +5053,7 @@ def _retry_thin_sources(
             outcome_note = outcome_note or artifact["_source_outcome_deferred"]
         if not normalized and isinstance(artifact, dict):
             outcome_note = outcome_note or artifact.get("_source_outcome_if_empty")
-        return source, normalized, outcome_note, (detail_note, detail_state), out_of_time
+        return source, normalized, outcome_note, (detail_note, detail_state), out_of_time, None
 
     retryable = [s for s in thin_sources if s not in rate_limited_sources]
 
@@ -5045,6 +5071,7 @@ def _retry_thin_sources(
             try:
                 (
                     source, normalized, outcome_note, (detail_note, detail_state), out_of_time,
+                    jobs_board,
                 ) = future.result(timeout=0)
             except Exception as exc:
                 print(f"[Pipeline] Retry failed for {source}: {type(exc).__name__}: {exc}", file=sys.stderr)
@@ -5074,6 +5101,10 @@ def _retry_thin_sources(
                 if new_items:
                     primary_label = plan.subqueries[0].label if plan.subqueries else "primary"
                     bundle.add_items(primary_label, source, new_items)
+                # A board read only on this retry still gives the footer its
+                # counts and the report its digest.
+                if jobs_board and "jobs" not in bundle.artifacts:
+                    bundle.artifacts["jobs"] = _jobs_board_artifact(jobs_board)
             except Exception as exc:
                 print(f"[Pipeline] Retry failed for {source}: {type(exc).__name__}: {exc}", file=sys.stderr)
                 state, attempted = _classify_source_failure(exc)
@@ -5761,14 +5792,37 @@ def _retrieve_stream_impl(
         return grounding.web_search(
             subquery.search_query, date_range, config, backend=web_backend)
     if source == "jobs":
-        return jobs.search_jobs(
-            raw_topic or topic or subquery.search_query,
-            date_range,
-            config,
-            depth=depth,
+        # The company the topic resolved to, so a person's name searches the
+        # board of the company they lead, starting from its official site.
+        company = config.get("_company") or {}
+
+        def search(name: str, **where: Any) -> tuple[list[dict], dict]:
+            return jobs.search_jobs(
+                name,
+                date_range,
+                config,
+                depth=depth,
+                explicit=bool(config.get("_hiring_signals_mode")),
+                entity_count=_comparison_entity_count(config),
+                **where,
+            )
+
+        items, artifact = search(
+            company.get("company") or raw_topic or topic or subquery.search_query,
             web_backend=web_backend,
-            explicit=bool(config.get("_hiring_signals_mode")),
+            site=str(company.get("company_site") or ""),
         )
+        # The lookup named no company, and the topic has no board of its own:
+        # a person, searched by name. The company the host named with
+        # ``--ticker`` is searched then, and used only when it has a board.
+        # It comes with no official site, so the board gives a digest only
+        # when it names that company itself.
+        host_company = str(company.get("host_company") or "")
+        if host_company and not company.get("company") and not _is_jobs_board("jobs", artifact):
+            host_items, host_artifact = search(host_company, web_backend="none")
+            if _is_jobs_board("jobs", host_artifact):
+                return host_items, host_artifact
+        return items, artifact
     if source == "reddit":
         # Use raw_topic so expand_reddit_queries() generates diverse variants
         # from the original user topic, not the planner's narrowed search_query.
@@ -6494,7 +6548,10 @@ def _retrieve_stream_impl(
         # lookup and gh-CLI subprocess fallback (up to 5s timeout each).
         token = github.resolve_token(config.get("GITHUB_TOKEN"))
         response = github.search_github(subquery.search_query, from_date, to_date, depth=depth, token=token)
-        items = github.parse_github_response(response)
+        # Judge results against the stable research topic, not the narrowed
+        # per-subquery search_query, as polymarket does above.
+        relevance_topic = raw_topic or topic or subquery.search_query
+        items = github.parse_github_response(response, topic=relevance_topic)
         # Note: an unauth rate-limit (response["error"]) is expected on the
         # tokenless anon tier and returns empty here rather than raising — github
         # is now always eligible, so raising would spam "github failed" on every

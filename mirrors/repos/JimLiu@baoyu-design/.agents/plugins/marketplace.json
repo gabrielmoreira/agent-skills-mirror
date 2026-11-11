@@ -65,6 +65,18 @@
       "category": "Creativity"
     },
     {
+      "name": "baoyu-whiteboard",
+      "source": {
+        "source": "local",
+        "path": "./chatgpt-plugins/baoyu-whiteboard"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "baoyu-dataviz",
       "source": {
         "source": "local",

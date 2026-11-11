@@ -5,7 +5,8 @@
 .DESCRIPTION
     Checks for common constraint violations in UdonSharp code.
     Called as a PostToolUse hook when a .cs file is written or edited.
-    Input: JSON via stdin with tool_input.file_path
+    Input: JSON via stdin with tool_input.file_path, or a Codex apply_patch
+    payload with the patch text in tool_input.command
     Output: Diagnostics on stderr for a person, and the same lines on stdout as
     one JSON object (hookSpecificOutput.additionalContext) for the agent.
     Prints nothing when there is nothing to report. Always exits 0.
@@ -13,12 +14,22 @@
 
 $ErrorActionPreference = "Stop"
 
-$HookInput = [Console]::In.ReadToEnd()
+# Host agents write the hook input as UTF-8. [Console]::In would decode it with
+# the console code page, which turns a non-ASCII path into a path that does not
+# exist, so the file would be skipped without a word.
+$StdinReader = New-Object System.IO.StreamReader([Console]::OpenStandardInput(), (New-Object System.Text.UTF8Encoding($false)))
+$HookInput = $StdinReader.ReadToEnd()
 
 # A host agent (Claude Code, Gemini CLI, Codex) never shows the model stderr
 # from a hook that exits 0. It parses stdout as one JSON object and adds
 # additionalContext to the model's context, so diagnostics must go there to
 # be acted on. The event name is echoed back because hosts name it differently.
+function ConvertTo-AsciiJson($Value) {
+    $Json = $Value | ConvertTo-Json -Compress -Depth 3
+    # Escape non-ASCII so the text survives any console code page.
+    return [regex]::Replace($Json, '[^\x00-\x7F]', { param($Match) '\u{0:x4}' -f [int][char]$Match.Value })
+}
+
 function Write-AgentReport([string]$Context) {
     $EventName = 'PostToolUse'
     try {
@@ -29,15 +40,12 @@ function Write-AgentReport([string]$Context) {
     } catch {
         $EventName = 'PostToolUse'
     }
-    $Json = [ordered]@{
+    [Console]::Out.WriteLine((ConvertTo-AsciiJson ([ordered]@{
         hookSpecificOutput = [ordered]@{
             hookEventName = $EventName
             additionalContext = $Context
         }
-    } | ConvertTo-Json -Compress -Depth 3
-    # Escape non-ASCII so the reply survives any console code page.
-    $Json = [regex]::Replace($Json, '[^\x00-\x7F]', { param($Match) '\u{0:x4}' -f [int][char]$Match.Value })
-    [Console]::Out.WriteLine($Json)
+    })))
 }
 
 function Stop-Validation([string]$Code) {
@@ -59,6 +67,41 @@ try {
     }
 } catch {
     Stop-Validation 'JSON_PARSE_FAILED'
+}
+
+# Codex edits files with apply_patch, whose hook input carries the patch text
+# in tool_input.command instead of a path. Validate each .cs file the patch
+# adds, updates, or moves, and name the file in front of its findings.
+# shortcut: relative paths resolve against the hook working directory, which
+# Codex sets to the session directory; read the payload cwd if a host differs.
+if (-not $FilePath -and $JsonObj.tool_input.command -is [string]) {
+    $PatchPaths = @([regex]::Matches($JsonObj.tool_input.command, '(?m)^\*\*\* (?:Add File|Update File|Move to): (.*\.cs)\r?$') |
+        ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
+    $PowerShellPath = (Get-Process -Id $PID).Path
+    $PatchReport = @()
+    foreach ($PatchPath in $PatchPaths) {
+        $ChildPayload = ConvertTo-AsciiJson @{ tool_input = @{ file_path = $PatchPath } }
+        # Windows PowerShell turns redirected native stderr into error records.
+        $ErrorActionPreference = "Continue"
+        $ChildReply = $ChildPayload | & $PowerShellPath -NoLogo -NoProfile -File $PSCommandPath 2>$null
+        $ErrorActionPreference = "Stop"
+        if (-not $ChildReply) {
+            if ($LASTEXITCODE -ne 0) {
+                $PatchReport += "[UdonSharp] FILE: $PatchPath"
+                $PatchReport += "[UdonSharp] VALIDATOR-WARNING: validation skipped (PATCH_FILE_FAILED)"
+            }
+            continue
+        }
+        $PatchReport += "[UdonSharp] FILE: $PatchPath"
+        $PatchReport += ([string]($ChildReply | ConvertFrom-Json).hookSpecificOutput.additionalContext) -split "`n"
+    }
+    if ($PatchReport.Count -gt 0) {
+        foreach ($Line in $PatchReport) {
+            [Console]::Error.WriteLine($Line)
+        }
+        Write-AgentReport ($PatchReport -join "`n")
+    }
+    exit 0
 }
 
 # Only process .cs files
@@ -588,7 +631,7 @@ function Get-SyncStats([string]$Source) {
         }
 
         $Synced = $false
-        $NoVariableSync = $false
+        $SyncMode = ''
         $Segment = [System.Text.StringBuilder]::new()
         $Parens = 0
         $Brackets = 0
@@ -628,21 +671,21 @@ function Get-SyncStats([string]$Source) {
             }
             if (($Target -eq '' -or $Target -eq 'type') -and $Name -eq 'UdonBehaviourSyncMode') {
                 $Arguments = $Arguments -replace 'global::', '' -replace 'UdonSharp\.', ''
-                if ($Arguments -eq 'BehaviourSyncMode.NoVariableSync') {
-                    $NoVariableSync = $true
+                if ($Arguments -ceq 'BehaviourSyncMode.NoVariableSync' -or $Arguments -ceq 'BehaviourSyncMode.None') {
+                    $SyncMode = $Arguments
                 }
             }
         }
 
         return [pscustomobject]@{
             Synced = $Synced
-            NoVariableSync = $NoVariableSync
+            SyncMode = $SyncMode
         }
     }
 
     function Reset-PendingDeclaration {
         $State.PendingSynced = $false
-        $State.PendingNoVariableSync = $false
+        $State.PendingSyncMode = ''
         [void]$State.DeclarationBuilder.Clear()
         $State.DeclarationParens = 0
         $State.DeclarationBrackets = 0
@@ -724,8 +767,12 @@ function Get-SyncStats([string]$Source) {
         $Declaration = ($State.DeclarationBuilder.ToString() -replace '[ \t\r\n]+', ' ').Trim()
         $IsClass = $Declaration -match '^((public|private|protected|internal|abstract|sealed|static|partial|new) +)*class( |$)'
 
-        if ($State.PendingNoVariableSync -and $IsClass) {
-            $State.HasNoVariableSync = $true
+        if ($State.PendingSyncMode -and $IsClass) {
+            if ($State.PendingSyncMode -ceq 'BehaviourSyncMode.None') {
+                $State.HasNoneSync = $true
+            } else {
+                $State.HasNoVariableSync = $true
+            }
             Reset-PendingDeclaration
             return
         }
@@ -740,7 +787,7 @@ function Get-SyncStats([string]$Source) {
     }
 
     function Add-DeclarationFragment([string]$Text, [int]$Start) {
-        if (-not ($State.PendingSynced -or $State.PendingNoVariableSync) -or $Start -ge $Text.Length) {
+        if (-not ($State.PendingSynced -or $State.PendingSyncMode) -or $Start -ge $Text.Length) {
             return $Start
         }
         $Boundary = -1
@@ -819,7 +866,7 @@ function Get-SyncStats([string]$Source) {
                     $State.AttributeBrackets -eq 0 -and $State.AttributeBraces -eq 0) {
                     $Flags = Get-AttributeFlags $State.AttributeContent.ToString()
                     $State.PendingSynced = $State.PendingSynced -or $Flags.Synced
-                    $State.PendingNoVariableSync = $State.PendingNoVariableSync -or $Flags.NoVariableSync
+                    if ($Flags.SyncMode) { $State.PendingSyncMode = $Flags.SyncMode }
                     $State.CollectingAttribute = $false
                     [void]$State.AttributeContent.Clear()
                     $Position++
@@ -841,7 +888,7 @@ function Get-SyncStats([string]$Source) {
                 $Position++
             }
             if ($Position -ge $Line.Length) { return }
-            if (($State.PendingSynced -or $State.PendingNoVariableSync) -and $State.DeclarationBuilder.Length -gt 0) {
+            if (($State.PendingSynced -or $State.PendingSyncMode) -and $State.DeclarationBuilder.Length -gt 0) {
                 $Position = Add-DeclarationFragment $Line $Position
                 continue
             }
@@ -850,7 +897,7 @@ function Get-SyncStats([string]$Source) {
                 $Position++
                 continue
             }
-            if ($State.PendingSynced -or $State.PendingNoVariableSync) {
+            if ($State.PendingSynced -or $State.PendingSyncMode) {
                 $Position = Add-DeclarationFragment $Line $Position
                 continue
             }
@@ -861,7 +908,7 @@ function Get-SyncStats([string]$Source) {
 
     $State = @{
         PendingSynced = $false
-        PendingNoVariableSync = $false
+        PendingSyncMode = ''
         DeclarationBuilder = [System.Text.StringBuilder]::new()
         DeclarationParens = 0
         DeclarationBrackets = 0
@@ -875,6 +922,7 @@ function Get-SyncStats([string]$Source) {
         AttributeBraces = 0
         SyncedCount = 0
         HasNoVariableSync = $false
+        HasNoneSync = $false
         HasLargeSyncedArray = $false
     }
 
@@ -886,6 +934,7 @@ function Get-SyncStats([string]$Source) {
     return [pscustomobject]@{
         SyncedCount = $State.SyncedCount
         HasNoVariableSync = $State.HasNoVariableSync
+        HasNoneSync = $State.HasNoneSync
         HasLargeSyncedArray = $State.HasLargeSyncedArray
     }
 }
@@ -897,6 +946,7 @@ try {
 }
 $SyncedCount = $SyncStats.SyncedCount
 $HasNoVariableSync = $SyncStats.HasNoVariableSync
+$HasNoneSync = $SyncStats.HasNoneSync
 $HasLargeSyncedArray = $SyncStats.HasLargeSyncedArray
 
 # Check for potential networking issues
@@ -948,6 +998,12 @@ if ($HasNoVariableSync -and $SyncedCount -gt 0) {
     $Warnings += "[UdonSharp] ERROR: NoVariableSync mode but [UdonSynced] variables found. Remove [UdonSynced] or change sync mode."
 }
 
+# A None-mode behaviour cannot receive network events, and the compiler does
+# not report it (Issue #383). A call on another behaviour is not flagged.
+if ($HasNoneSync -and $MaskedSource -match '(?<![\w])NetworkCallable(Attribute)?\s*[\],(]|(?<!\.\s*)(?<!\w)(this\s*\.\s*)?SendCustomNetworkEvent\s*\(') {
+    $Warnings += "[UdonSharp] WARNING: BehaviourSyncMode.None cannot receive network events, but this file declares [NetworkCallable] or calls SendCustomNetworkEvent on itself. The event is never delivered. Use Manual or Continuous, or send the event to a synced behaviour."
+}
+
 # Check for multi-dimensional arrays (T[,])
 if ($MaskedSource -match '\w+\s*\[\s*,') {
     $Warnings += "[UdonSharp] BLOCKED: Multi-dimensional arrays (T[,]) not supported. Use jagged arrays (T[][]) or flatten to 1D instead."
@@ -955,15 +1011,11 @@ if ($MaskedSource -match '\w+\s*\[\s*,') {
 
 # Output warnings
 if ($Warnings.Count -gt 0) {
-    $SavedErrorAction = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    Write-Error ""
-    Write-Error "=== UdonSharp Validation Warnings ==="
-    foreach ($Warning in $Warnings) {
-        Write-Error $Warning
+    # Plain lines: Write-Error wraps each one in an error record, which
+    # Windows PowerShell prints as several decorated lines.
+    $Report = @("", "=== UdonSharp Validation Warnings ===") + $Warnings + @("===================================", "")
+    foreach ($Line in $Report) {
+        [Console]::Error.WriteLine($Line)
     }
-    Write-Error "==================================="
-    Write-Error ""
-    $ErrorActionPreference = $SavedErrorAction
     Write-AgentReport ($Warnings -join "`n")
 }

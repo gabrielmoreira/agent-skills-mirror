@@ -1394,10 +1394,14 @@ snapshot, then rechecks an exact connection/Goal source. Interrupted, repeated,
 mis-scoped or inconsistent cursors remain unreadable and retry through the
 existing recovery path, without model replay. Unpaged v1 callers remain
 compatible. This is a stateless read hint, not a new store, consumer, execution
-state or grant. Response row count is bounded; server-side journal reads and
-prefix hashing still scale with full history and no latency improvement is
-claimed. HTTP/store and source/packaged browser checks qualify this bounded
-history path; installed native input, reply threading and live App/Lark media
+state or grant. Response row count is bounded. File Chat may reuse one bounded
+strict parse after reading the journal again and confirming the same raw-byte
+digest. Changed or oversized data uses the strict parser; unreadable data
+still fails the request. Each page verifies its frozen prefix and reads its
+provider overlays afresh. Journal reads and prefix hashing still scale with
+full history. HTTP/store and source/packaged
+browser checks qualify this bounded history path; installed native input,
+reply threading and live App/Lark media
 remain separate acceptance. Earlier baseline and `--pagination-only` runs did
 not qualify the default return scenario's background wait. That historical
 timeout is retained; the default return journey now reads background revisions
@@ -1763,6 +1767,18 @@ new history message. The child is published only after the exact policy, source,
 queued Turn and imported suffix are verified. An unknown fork or injection
 leaves the original binding and history intact. Unverified legacy or changed
 authority retains the existing context migration path.
+
+Before opening a Codex adapter for an accepted queued Turn, Core records the
+first routing choice in that Turn's `native_context_preparation` metadata.
+The immutable observation names the planned native
+`thread/start`, `thread/resume` or `thread/fork`, prior thread, planned history
+message count, and the migration, settings and checkpoint conditions used by
+the current controller. It contains no transcript, host path or account data.
+Healthy in-process reuse adds no restoration observation. This is planned
+preparation, not proof that native IO, compaction or business work succeeded;
+the normal native and terminal records remain authoritative for those facts.
+It does not change lifecycle events or pre-dispatch recovery evidence. Older
+Turns without this observation remain unknown and are not rewritten.
 
 Discovery uses the local enabled binding and the same typed candidate planner,
 without provider identity IO for every historical failure. This is a queue hint;

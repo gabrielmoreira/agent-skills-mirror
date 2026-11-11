@@ -111,6 +111,18 @@ sign-in, Hub and sync traffic. `DEFAULT_RELAY_HOST` in the shell's `proxy.ts` co
 to `NO_PROXY`; it does not select another relay. This launch option points Desktop at
 your server. It does not repair a connection reset on the hosted relay's network path.
 
+## Using your own relay on Linux
+
+Fully quit nanoMuse, including its tray process, before launching the AppImage with your relay and a separate data directory:
+
+```sh
+env NANOMUSE_CLOUD_URL='https://relay.example' \
+  NANOMUSE_DESKTOP_HOME="$HOME/.nanomuse/desktop-self-hosted" \
+  /path/to/nanoMuse.AppImage
+```
+
+Replace the relay address and AppImage path, then register or sign in on that relay. Use the same command and data directory on later launches; a normal AppImage launch does not inherit these variables. The separate-account and profile-override rules above also apply.
+
 ## What it is
 
 Copy buttons can put text on the clipboard. Right-click selected text to copy it, or
@@ -553,6 +565,8 @@ asks whether to keep waiting or quit, and quitting is the only thing that stops 
 is still starting. `desktop.log` carries `host: ready after N min` when a start took longer
 than half a minute. A second start is quicker, since the files have been checked once;
 should every start stay slow, excluding the install folder from real-time scanning helps.
+
+Edits to an own-key provider in Advanced model settings survive app restarts. Removing its provider row removes the saved nanoMuse source and moves the chat selection to another available source; saved keys stay in the credential vault. A chat-model list loaded empty from configuration disables that source instead of restoring the default catalog, while image and video entries remain. The host can refuse deletion of a custom source's last model; remove the provider row to disable that source. To remove a source and its key together, use Settings → Account. Use Settings → Models to choose another source or switch nanoMuse Cloud models off.
 
 ## macOS permissions
 

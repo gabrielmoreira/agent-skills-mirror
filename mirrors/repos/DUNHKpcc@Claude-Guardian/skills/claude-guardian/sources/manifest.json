@@ -76,8 +76,10 @@
       "original_filename": "Claude本地防护实战_月落惊征.md",
       "original_sha256": "f2a975d359161312763f02d6c5d2b4e796e52a57edf2a9ecb233445c8d2389d9",
       "path": "sources/S05-local-protection.md",
-      "distributed_sha256": "f2a975d359161312763f02d6c5d2b4e796e52a57edf2a9ecb233445c8d2389d9",
-      "changes": [],
+      "distributed_sha256": "e37e3f97e585ccd336744f789048b41c05a479d3d78e4a7c7699d75f3fcc38cc",
+      "changes": [
+        "2026-11-11 Issue #28：标注维护者修订，替换步骤 4 部署示例，保留旧规则、失败清理精确新增批次、双存储读回；取消固定组件数量及跨版本保证，限定数量检查含义。其余原文及署名保留。"
+      ],
       "attribution": "原文作者 月落惊征；https://x.com/yueluo_jz/status/2105578466309808617；保留整理说明与署名",
       "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
     },

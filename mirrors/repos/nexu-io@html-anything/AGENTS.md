@@ -6,11 +6,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Workspace Shape
 
-- Root is the public harness boundary only: workspace metadata, `.github/workflows/ci.yml`, `scripts/guard.ts`, and repository docs.
+- Root is the public harness boundary: workspace metadata, repository workflows, release-control helpers and tests, `scripts/guard.ts`, and repository docs.
+- `.github/scripts/` owns Motion release controls; `scripts/*.mjs` supplies their shared helpers, and `tests/` holds their deterministic tests. Browser tests remain under `e2e/`.
 - `next/` owns the complete Next application: app routes, components, app libraries, public assets, Next config, app TypeScript config, and app unit tests.
 - `e2e/` owns browser-level tests as the only source of truth: Playwright config, e2e TypeScript config, helper scripts, and flat `ui/*.test.ts` cases.
 - Do not add Playwright tests under `next/`. Do not add app source back at root `src/` or root `app/`.
 - Root `package.json` must not proxy app or e2e scripts. Use pnpm workspace filters from the repository root.
+
+## Motion release controls
+
+- Motion application development remains on `feature/motion`. Registering manual workflows on `main` does not move the application or authorize publication.
+- Candidate build, test publication and recovery execute only from `feature/motion`; `main` registers their manual entries and fails explicitly when selected for execution. Blank candidate versions use the frozen dispatch source baseline and short workflow-counter `test.N` numbering, with a historical offset and an attempt suffix on reruns; an explicit override remains available. Application source must be integrated into `feature/motion`; arbitrary branches cannot supply candidates.
+- Use Node 26.11.1 for control checks: `node --test tests/release-workflows.test.mjs tests/release-scan.test.mjs tests/install-guide.test.ts`. These tests need no workspace dependency installation and simulate publication services.
+- New test candidates embed DEV defaults. npm publication uses `candidate` first; only matching successful Mac/Windows native reports permit the separate promotion job to advance `test`. Stable publication, `latest` promotion and Skills platform distribution remain out of scope.
+- Follow [activation and operation](docs/motion-release-activation.md). Keep completed acceptance evidence private; do not merge or publish without the task's explicit authorization.
 
 ## Commands
 

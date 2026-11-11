@@ -78,6 +78,7 @@ Grep-verified 2026-11-05 (`npm run docs:verify` re-checks every path). This is t
 - **Path utilities:** `truncatePath()`, `getParentDir()`, `truncateCommand()`, `isAbsolutePath()`, `getBasename()`, `joinPath()` in `src/shared/formatters.ts` (`joinPath` is the renderer-safe `path.join`: it uses whichever separator the base path speaks, so Windows and SSH-remote POSIX paths both survive)
 - **Worktree path comparisons:** `normalizeWorktreePath(path, posix?)`, `isPathAtOrUnderRoot()` in `src/shared/worktreePaths.ts`.
 - **Remote worktree aliases:** `resolveWorktreeAliasesRemote()` in `src/main/utils/remote-git.ts` batches saved and registered paths with independent physical, missing, or unresolved results.
+- **Parsing a base64 data URL (an image payload):** `parseBase64DataUrl()`, `mediaSubtype()` in `src/shared/dataUrl.ts` (never a `base64,(.+)$` capture)
 - **Reading a zip from disk:** `readZipArchive(filePath, options?)`, `extractZipTo()`, `isUnsafeZipEntryName()` in `src/main/utils/zip-archive.ts`.
 - **Classifying a file by extension:** `getFileCategory()`, `isPreviewableFile()`, `matchesFileCategory()`, `getFileExtension()` in `src/shared/fileCategories.ts`.
 - **Guarding a serialized JSON payload before it overwrites a file:** `assertSerializedJsonIsSafe(serialized, target)` in `src/shared/jsonUtils.ts`.
@@ -150,6 +151,8 @@ Grep-verified 2026-11-05 (`npm run docs:verify` re-checks every path). This is t
 - **Taking the user to an agent:** `jumpToAgent(sessionId, { tabId? })`, `revealAgentInSidebar(session)`, `openAgentSettings(session)` in `src/renderer/services/agentNavigation.ts`
 - **Dismissing a drawer after the user picks something in it:** `closeLeftSidebarForNavigation()` / `closeRightPanelForNavigation()` in `src/renderer/stores/uiStore.ts`, over `isNarrowViewportNow()` in `src/renderer/hooks/ui/useViewportBreakpoint.ts`.
 - **Session lookup:** `selectActiveSession()`, `selectSessionById()` in `src/renderer/stores/sessionStore.ts`.
+- **Reading settings without the lifecycle effects:** `useSettingsValues()` in `src/renderer/hooks/settings/useSettings.ts`.
+- **A Settings section the search can show inline:** `GENERAL_SECTIONS` / `DISPLAY_SECTIONS` / `ENCORE_SECTIONS` in each tab's `sections.tsx`, looked up by `findSettingsSection(settingId)` in `src/renderer/components/Settings/settingsSections.ts`.
 - **Which agent this client is looking at:** `persistActiveSessionId()` / `readPersistedActiveSessionId()` in `src/renderer/utils/activeSessionPersistence.ts`.
 - **Telling the other clients an agent appeared or went away:** `sessions:lifecycleSync`, emitted by `sessions:setMany` / `sessions:setAll` in `src/main/ipc/handlers/persistence.ts` and applied by `useSessionLifecycleSync` (`src/renderer/hooks/session/useSessionLifecycleSync.ts`).
 - **Session mutation:** `updateSessionWith(sessionId, updater)` for a whole agent, plus one single-tab updater per tab type in `src/renderer/stores/sessionStore.ts`.

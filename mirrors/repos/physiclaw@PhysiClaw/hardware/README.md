@@ -110,6 +110,27 @@ authenticated GitHub CLI (`gh`):
 make hw-publish HW_VERSION=X.Y
 ```
 
-Publishing also triggers the docs site deployment. If that hook fails, retry
-`make docs-deploy`; the release is already published. The site updates when its
-asynchronous build finishes. Release rules are in [AGENTS.md](AGENTS.md).
+Publishing deploys docs and waits for the new build and `docs.physiclaw.ai` to
+serve the expected release marker, polling every 15 seconds for up to 15 minutes.
+It then audits assets on `docs.physiclaw.ai` and `physiclaw.ai`. All asset checks
+must pass; an existing production build serving the same release assets is
+acceptable.
+
+Keep the terminal open until verification finishes. Release rules are in
+[AGENTS.md](AGENTS.md).
+
+Logs and audit reports are saved under `hardware/output/site-asset-report/`.
+If verification fails, the release remains published. Inspect Cloudflare after
+a readiness timeout, then retry as needed:
+
+```sh
+make docs-deploy HW_VERSION=X.Y        # Redeploy docs, wait, and audit both sites
+make check-site-assets HW_VERSION=X.Y  # Audit only
+```
+
+Omit `HW_VERSION` to check the newest published hardware release. For direct
+Python use, check-only mode, and timeout options, see:
+
+```sh
+uv run --locked python scripts/docs_deploy.py --help
+```
