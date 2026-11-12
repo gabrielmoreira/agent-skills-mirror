@@ -59,7 +59,7 @@ source files, or state read back from the artifact).
 <!-- /shared:view-context -->
 
 Design publishes `{ mode, page, pageName, visibleArtboards, selectedArtboards,
-erroredArtboards, firstError, dirty, selected, selection }` (plus `edits`, above). Artboards are named by their .dc.html file with the
+erroredArtboards, firstError, dirty, shaders, selected, selection }` (plus `edits`, above). Artboards are named by their .dc.html file with the
 part before `.dc.html` percent-encoded (`encodeURIComponent`:
 `"Coffee & Deck.dc.html"` arrives as `"Coffee%20%26%20Deck.dc.html"`;
 plain names are unchanged). Treat these as opaque tokens: to match one,
@@ -100,6 +100,8 @@ the whole record, as above.
   "Ask Claude to fix", their next message carries up to 1800 characters
   of these errors.
 - `dirty` — as above.
+- `shaders` — `true` when you may read `shaders.md` for this viewer, absent
+  otherwise. Shaders already on the canvas run either way.
 - `selected` — up to 20 selected ELEMENTS, most recent last (entries of
   the most recently touched artboard come last); empty in `focused`
   and when only whole artboards are selected. Each entry is

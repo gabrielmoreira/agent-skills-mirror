@@ -3,6 +3,13 @@
 Depth for `unreal-enhanced-input`: a self-contained third-person Character that adds a mapping
 context and binds move/look/jump. Verified against the Enhanced Input documentation.
 
+Contents:
+- Header
+- Source (context added in `PawnClientRestart`, bindings, move and look handlers)
+- Build.cs
+- Asset setup checklist (editor)
+- Runtime rebinding note (Enhanced Input User Settings)
+
 ## Header
 
 ```cpp
@@ -24,7 +31,7 @@ public:
     AMyCharacter();
 
 protected:
-    virtual void BeginPlay() override;
+    virtual void PawnClientRestart() override;   // owning client, after possession
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
     // Assign these in the Blueprint subclass (IMC_/IA_ assets).
@@ -56,12 +63,12 @@ protected:
 
 AMyCharacter::AMyCharacter()
 {
-    // (camera/spring-arm setup omitted — see unreal-cpp-gameplay references)
+    // (camera/spring-arm setup omitted; see the unreal-cpp-gameplay skill)
 }
 
-void AMyCharacter::BeginPlay()
+void AMyCharacter::PawnClientRestart()
 {
-    Super::BeginPlay();
+    Super::PawnClientRestart();
     if (APlayerController* PC = Cast<APlayerController>(GetController()))
         if (ULocalPlayer* LP = PC->GetLocalPlayer())
             if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
@@ -133,7 +140,8 @@ editing the `IMC_` asset:
    RegisterInputMappingContext(IMC)`, or pass `FModifyContextOptions` with
    `bNotifyUserSettings = true` to `AddMappingContext`.
 4. Remap with `UEnhancedInputUserSettings::MapPlayerKey` (an `FMapPlayerKeyArgs` naming the
-   mapping, slot and new key), reset with `UnmapPlayerKey`, and persist with `SaveSettings`.
+   mapping, slot and new key), reset with `UnMapPlayerKey` (capital M), and persist with
+   `SaveSettings`.
 
 The settings object belongs to the `UEnhancedInputLocalPlayerSubsystem` (one per local player),
 so it exists only while that local player does.

@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: opens-issues-in-dependency-order
+expected_outcome: |
+  The spec is approved and the user chose issues, so the run reads the spec's five slices and opens
+  one issue per slice on millbrook/readwell with gh: each titled by its outcome, with what to build,
+  acceptance checks, and links to the spec and its ADRs. It creates them so that every blocker
+  exists before the issue it blocks (slice 1 before 3 and 5; 2 and 3 before 4) and names the
+  blockers by issue number in each body. It replies with the issue links and the implementation
+  order, saying which issues can run in parallel, and implements nothing.
+context:
+  scaffold_script: place-files.sh

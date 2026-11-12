@@ -2,6 +2,7 @@
 name: pr-ship
 description: Use when the user asks to ship, land, or merge a change or pull request ("ship it", "get this into main", "merge #42"). Opens the PR or marks a draft ready, babysits CI, keeps automated reviewers (CodeRabbit, Pullfrog, Claude, Copilot, ...) reviewing until a round comes back clean, then merges.
 compatibility: Needs the gh CLI (authenticated), git, python3, and the pr-babysit skill from the same plugin.
+allowed-tools: Bash(gh pr merge *)
 ---
 
 # PR ship
@@ -35,6 +36,8 @@ A **round** is one review of the current head from each automated reviewer on th
 With no automated reviewer on the repo, the gate is CI plus the reviews the repo requires.
 
 ## 4. Merge
+
+The ship request is the user's explicit, standing go-ahead to merge: once the gate below holds, run `gh pr merge` yourself in that same turn and report the result.
 
 Merge when both hold for the same head:
 

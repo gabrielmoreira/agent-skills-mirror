@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: settled-answers-documents-and-offers-handoff
+expected_outcome: |
+  The interview is over, so the run asks no further product questions. It makes the technical
+  decisions itself (how a one-tap link renews without a login and stays safe, how the nightly job
+  sends the two reminders, how renewals are recorded) and explains them to the user once, as what
+  and why in plain English tied to the six answers. It records the non-trivial decisions as new
+  ADRs numbered from 0004 in readwell/docs/adr/, marks ADR 0003 (one renewal per loan) as superseded
+  by the two-renewal decision, leaves ADRs 0001 and 0002 standing, keeps the glossary's terms and
+  adds any new term, and writes a full spec under readwell/docs/ with behavior, design, acceptance
+  checks and ordered implementation slices. It ends by offering three ways on (issues, implementing
+  in a new session, or both) and doesn't change any source code or open issues.
+context:
+  scaffold_script: place-files.sh

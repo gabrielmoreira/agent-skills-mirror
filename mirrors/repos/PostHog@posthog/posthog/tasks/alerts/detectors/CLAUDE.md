@@ -1,0 +1,1 @@
+cache/repos/github.com/PostHog@posthog/posthog/tasks/alerts/detectors/AGENTS.md

@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: rebase-incompatible-keeps-landed-side
+expected_outcome: |
+  The branch bankers-rounding (draft PR #21, closes #20) has three tersely named commits ("wip
+  rounding", "invoice", "export"). Its PR and issue say finance's ledger policy ACC-7 needs every
+  booked amount, refunds included, rounded half to even. Since it branched, main got PR #19 (fixes
+  #18), which rounds halves away from zero so a refund mirrors its charge, and asserts
+  roundMoney(-0.125) === -0.13. The two can't both hold for negative ties: half to even gives -0.12.
+  Half to even is symmetric, so #19's real goal (a refund mirrors its charge, -0.375 -> -0.38) still
+  holds. The run fetches, rebases onto origin/main, keeps PR #21's half-to-even roundMoney, keeps
+  main's refund code and its other tests, changes only the -0.125 expectation to -0.12, keeps both
+  export lines in src/index.js, and continues until all three commits are replayed. npm test
+  passes. Nothing is pushed. The report says that main's half-away-from-zero rounding of negative
+  ties (PR #19) was dropped in favor of PR #21, why, and that #19's mirroring goal still holds.
+context:
+  scaffold_script: place-files.sh

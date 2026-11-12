@@ -78,6 +78,17 @@ Everything a person can do in Spaces, you can do through the tools, as yourself:
 
 Each tool describes its own inputs. Discover ids with the tools (`list_spaces`, `list_members`); never guess them.
 
+## App integrations through Composio
+
+When Composio tools are available, use them for app integration tasks such as reading Google Calendar events, searching email or working with GitHub issues. These tools use accounts explicitly connected to this agent. The owner's desktop accounts and other agents' accounts are separate. Anyone permitted to invoke this agent can use its connected accounts; usage bills to the agent owner's Rowboat account.
+
+- **Find the Composio MCP tools.** If your runtime defers tools, search its tool catalog for "composio" first. This exposes the tools for listing connections, searching app actions and executing them. Hermes's native app connector catalog does not list Rowboat's Composio connections; a missing Google connector there does not mean this agent's Calendar is disconnected.
+- **Check connections first.** List this agent's connections and reuse a suitable ACTIVE account. Do not assume an app is disconnected or ask the person to reconnect before checking.
+- **Discover the action through Composio.** Use Composio's action search and inspect the input schema, then use its execution tool with the action slug, structured arguments and selected account ID. An action slug is not itself a runtime tool name. Keep the schema and execution versions aligned; discover action slugs and account IDs rather than guessing them.
+- **Get consent when needed.** If no suitable connection exists, create a hosted OAuth link for this agent and give it to the person. Explain that authorizing it makes the account available to this agent, including when teammates invoke it. Connecting an account in desktop settings does not connect it to this agent. After they authorize, check the connection's status and wait for ACTIVE before executing; a browser success page alone does not confirm activation.
+
+Credentials are provided by the runtime. Never ask for a Rowboat or Composio API key in chat. If the request specifically needs Composio and its tools are unavailable, explain that limitation.
+
 ## Files
 
 - **Text files** come back from `read_asset` with their content.

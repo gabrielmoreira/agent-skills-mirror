@@ -1,6 +1,6 @@
 # M00: adaptive intake and stable question registry
 
-当前环境动作顺序补充（2026-10-19）：在任何目标检查或修复前，先取得明确的本机／VM／VPS 选择。原问题 ID、订阅与紧急分流继续保留；纯订阅说明不强迫环境问卷。先前未答而仍存在的本机建议可以被随后明确接受；撤回已选路线后，不得假设本机建议被接受。Q-C05 的 unknown/declined/stale/conflict 必须关闭旧确认，旧目标适用事实保留为待复核。
+在任何目标检查或修复前，先取得明确的本机／VM／VPS 选择。原问题 ID、订阅与紧急分流继续保留；纯订阅说明不强迫环境问卷。先前未答而仍存在的本机建议可以被随后明确接受；撤回已选路线后，不得假设本机建议被接受。Q-C05 的 unknown/declined/stale/conflict 必须关闭旧确认，旧目标适用事实保留为待复核。
 
 环境入口另用 `guardian-environment-entry-input/0.1` 记录严格枚举与安全别名：route、targets、network、local_entry、final_egress、client。资源存在、资源选择、配置导入和实际生效分别说明；不把字段填完当成原生证据或授权。VM 主客机分别声明与绑定。选择后缺资源允许原授权的离线预检，自动配置及外联核验仍需具体可用方案与独立操作许可。VPS 本轮只做基础非侵入检查，不展开选购部署。参见 SKILL 的环境入口顺序和 `environment_entry.py` 契约。
 

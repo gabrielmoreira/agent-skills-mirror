@@ -42,7 +42,7 @@ changing the facade.
 | Function | Purpose |
 | --- | --- |
 | `status`, `setup`, `reveal_recovery_phrase` | Onboarding, public account metadata, encrypted phrase custody, and explicit reveal. |
-| `balances`, `chain_status`, `network_defaults`, `supported_assets` | Read module-owned provider and network data. |
+| `balances`, `token_balances`, `chain_status`, `network_defaults`, `supported_assets` | Read module-owned provider and network data (`token_balances`: catalogued SPL tokens such as USDC, contract 1.15). |
 | `encode_erc20_transfer` | Request standard EVM transfer calldata from the module. |
 | `prepare_transfer`, `execute_prepared` | Prepare a module-owned quote, then explicitly confirm and execute it (through the spend policy, as an interactive execute). |
 | `policy_get`, `policy_update` | Read and persist the `[wallet_policy]` spend policy. |
@@ -61,7 +61,9 @@ The six established wallet tools are declared in `tinywallet-bus` and adapted
 in `tools.rs`: `wallet_status`, `wallet_chain_status`,
 `wallet_prepare_transfer`, `wallet_tx_status`, `wallet_tx_receipt`, and
 `wallet_lookup_tx`. `automation_tools.rs` adds two policy-bound tools:
-`wallet_balances` (the module's native balances) and `wallet_execute_prepared`
+`wallet_balances` (the module's native and token balances as `{native, tokens}`,
+with `tokensError` beside the native rows when only the token read fails) and
+`wallet_execute_prepared`
 (an execute through the spend policy below).
 
 ## Spend policy and ledger
@@ -72,9 +74,10 @@ Every execute, from the RPC or the agent tool, runs through
 - `policy.rs` classifies the caller (`ExecutionOrigin`): the wallet UI's RPC is
   *interactive* and stays uncapped unless `apply_to_interactive`; the agent
   tool in a chat-type turn is *agent* and is always held to the allowlist and
-  caps; a background job or approval-free workflow is *automation* and also
-  needs `automation_enabled`; an external channel or unlabelled turn is
-  refused. Caps per asset (atomic units): per transaction, rolling 24 hours,
+  caps; a background job, an approval-free workflow, or a cron job whose agent
+  opted into `scheduled_actions` (`CronActions`) is *automation* and also
+  needs `automation_enabled`; an external channel, an unlabelled turn or a
+  plain cron turn is refused. Caps per asset (atomic units): per transaction, rolling 24 hours,
   and rolling 7 days per recipient (`config/schema/wallet_policy.rs`).
 - `ledger.rs` records the attempt as `pending` before the module signs and
   updates it to `broadcast` or `in_doubt` afterwards; refusals are recorded
@@ -85,8 +88,12 @@ Every execute, from the RPC or the agent tool, runs through
 - `policy_ops.rs` serves `policy_get`, `policy_update` and `ledger_list`.
 
 The policy is host approval policy over the module's exact quote; it never
-builds or alters a transfer. Scheduled cron turns stay read-only at the
-harness gate, so they cannot reach the execute tool.
+builds or alters a transfer. A plain cron turn stays read-only at the
+harness gate and is refused by the policy; a cron job whose agent opted into
+`scheduled_actions` runs as `CronActions`, whose root run may call
+`wallet_balances` and `wallet_execute_prepared` within the caps (its
+sub-agents stay read-only). x402 payments from the same origin are approved
+within the per-request budget.
 
 ## Persistence and lifecycle
 

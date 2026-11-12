@@ -1,0 +1,3 @@
+interface:
+  display_name: "Comment Sweep"
+  short_description: "Delete the comments that don't earn their place"

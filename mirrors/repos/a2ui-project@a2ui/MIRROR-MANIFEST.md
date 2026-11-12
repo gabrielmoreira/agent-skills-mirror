@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `a2ui-project/a2ui` — 26 default patterns, 2 followed patterns, 75 file(s) materialized.
+Mirror of `a2ui-project/a2ui` — 26 default patterns, 2 followed patterns, 92 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `a2ui-project/a2ui` — 26 default patterns, 2 followed patterns, 75 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 75 |
+| Files         | 92 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -127,14 +127,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 65 | ✓ | [`blueprints/skills/a2ui-blueprint-navigator/SKILL.md`](blueprints/skills/a2ui-blueprint-navigator/SKILL.md) |
 | 66 | ✓ | [`blueprints/skills/a2ui-create-feature-blueprint/SKILL.md`](blueprints/skills/a2ui-create-feature-blueprint/SKILL.md) |
 | 67 | ✓ | [`blueprints/skills/a2ui-implement-feature-from-blueprint/SKILL.md`](blueprints/skills/a2ui-implement-feature-from-blueprint/SKILL.md) |
-| 68 | ✓ | [`docs/site/llms.txt`](docs/site/llms.txt) |
-| 69 | ✓ | [`eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md`](eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md) |
-| 70 | ✓ | [`skills/a2ui/SKILL.md`](skills/a2ui/SKILL.md) |
-| 71 | ✓ | [`swift/AGENTS.md`](swift/AGENTS.md) |
-| 72 | ✓ | [`swift/CODING_STANDARDS.md`](swift/CODING_STANDARDS.md) |
-| 73 | ✓ | [`tools/composer/AGENTS.md`](tools/composer/AGENTS.md) |
-| 74 | → | [`blueprints/README.md`](blueprints/README.md) |
-| 75 | → | [`docs/proposals/spec_driven_development.md`](docs/proposals/spec_driven_development.md) |
+| 68 | ✓ | [`dart/a2ui_agent/CHANGELOG.md`](dart/a2ui_agent/CHANGELOG.md) |
+| 69 | ✓ | [`dart/a2ui_cli/CHANGELOG.md`](dart/a2ui_cli/CHANGELOG.md) |
+| 70 | ✓ | [`dart/a2ui_core/CHANGELOG.md`](dart/a2ui_core/CHANGELOG.md) |
+| 71 | ✓ | [`dart/a2ui_flutter/CHANGELOG.md`](dart/a2ui_flutter/CHANGELOG.md) |
+| 72 | ✓ | [`docs/site/llms.txt`](docs/site/llms.txt) |
+| 73 | ✓ | [`eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md`](eval/iterative_format_optimizer/skills/inference-format-optimizer/SKILL.md) |
+| 74 | ✓ | [`python/a2ui_a2a/CHANGELOG.md`](python/a2ui_a2a/CHANGELOG.md) |
+| 75 | ✓ | [`python/a2ui_adk/CHANGELOG.md`](python/a2ui_adk/CHANGELOG.md) |
+| 76 | ✓ | [`python/a2ui_agent/CHANGELOG.md`](python/a2ui_agent/CHANGELOG.md) |
+| 77 | ✓ | [`python/a2ui_core/CHANGELOG.md`](python/a2ui_core/CHANGELOG.md) |
+| 78 | ✓ | [`skills/a2ui/SKILL.md`](skills/a2ui/SKILL.md) |
+| 79 | ✓ | [`swift/AGENTS.md`](swift/AGENTS.md) |
+| 80 | ✓ | [`swift/CHANGELOG.md`](swift/CHANGELOG.md) |
+| 81 | ✓ | [`swift/CODING_STANDARDS.md`](swift/CODING_STANDARDS.md) |
+| 82 | ✓ | [`tools/composer/AGENTS.md`](tools/composer/AGENTS.md) |
+| 83 | ✓ | [`typescript/agents/a2ui_agent/CHANGELOG.md`](typescript/agents/a2ui_agent/CHANGELOG.md) |
+| 84 | ✓ | [`typescript/catalogs/mcp/CHANGELOG.md`](typescript/catalogs/mcp/CHANGELOG.md) |
+| 85 | ✓ | [`typescript/catalogs/vegachart/CHANGELOG.md`](typescript/catalogs/vegachart/CHANGELOG.md) |
+| 86 | ✓ | [`typescript/core/web_core/CHANGELOG.md`](typescript/core/web_core/CHANGELOG.md) |
+| 87 | ✓ | [`typescript/renderers/angular/CHANGELOG.md`](typescript/renderers/angular/CHANGELOG.md) |
+| 88 | ✓ | [`typescript/renderers/lit/CHANGELOG.md`](typescript/renderers/lit/CHANGELOG.md) |
+| 89 | ✓ | [`typescript/renderers/markdown-it/CHANGELOG.md`](typescript/renderers/markdown-it/CHANGELOG.md) |
+| 90 | ✓ | [`typescript/renderers/react/CHANGELOG.md`](typescript/renderers/react/CHANGELOG.md) |
+| 91 | → | [`blueprints/README.md`](blueprints/README.md) |
+| 92 | → | [`docs/proposals/spec_driven_development.md`](docs/proposals/spec_driven_development.md) |
 
 ---
 

@@ -28,7 +28,7 @@ description: 带着作者和社区的真实经验，陪用户准备 Claude 的�
 3. 本机是默认建议，但要问用户接受本机、选择 VM/VPS，还是先比较。三者是并列方案。已明确的目标优先；用户有 VPS 时，问清是当开发机还是当出口。
 4. 按需读取 [intake.md](references/intake.md)，使用稳定问题 ID 和 G1/G2/G3。**Q-C07 永久停用**，不得换名称恢复账号归属/控制权问题。首次订阅无实际冲突时跳过旧套餐/旧渠道题。
 5. 每次工具操作前遵守 [contact-and-safety.md](references/contact-and-safety.md)。从 **PC0** 开始：不接触 Claude/Anthropic、不安装或运行客户端、不登录、不查看订阅页。公开文档、DNS、HEAD、`claude --version` 及委派 Claude 工具也不是例外。使用随包历史依据，待核验的现行事实明确标出。
-6. 只在获准目标范围内使用已实现 CLI 检查（先查看 `scripts/guardian.py --help`）。缺依赖不静默安装；未支持的检查记为未知。内置功能未开放时，Agent继续调查实际环境；不得用临时命令绕过权限拒绝、PC0或既有执行门禁。独立Agent修复须按 [agent-remediation.md](references/agent-remediation.md) 取得具体动作许可并提供最小差异、备份与复测。
+6. 只在获准目标范围内使用已实现 CLI 检查（先查看 `scripts/guardian.py --help`）。缺依赖不静默安装；未支持的检查记为未知。内置功能未开放时，Agent继续调查实际环境；不得用临时命令绕过权限拒绝、PC0或既有执行门禁。修复按 [agent-remediation.md](references/agent-remediation.md) 授权、备份及复测；Windows 网络写入先读[独立恢复](references/windows-network-transaction.md)。
 7. 交付具体问题、目标范围、证据、未知项、最小修复建议、保留项及下一步。`pass/fail/unknown/not_applicable/blocked/skipped` 只描述指定检查。
 
 ## 环境入口顺序（2026-10-19 更新）
@@ -112,7 +112,7 @@ description: 带着作者和社区的真实经验，陪用户准备 Claude 的�
 
 ## Agent 补充资料来源
 
-项目参考资料（上表和 `required_references`）是必附的下限，也是本项目的依据。需要补充、核对或查最新做法时（例如线路、机场、家宽、支付渠道、封号讨论、某个工具的新版本），Agent 可以到下面这些渠道查找。**本 skill 也可以直接当帖子和论坛的搜索工具用：**用户明确要求“去某论坛搜一下某商家、某线路、某问题”时，不必先有资料缺口，Agent 直接按下面的渠道和规则检索，用 `site:` 限定站点（如 `site:nodeseek.com 商家名`），汇报带链接和发帖日期的结果（2026-10-22，Issue #12）：
+项目参考资料（上表和 `required_references`）是必附的下限，也是本项目的依据。需要补充、核对或查最新做法时（例如线路、机场、家宽、支付渠道、封号讨论、某个工具的新版本），Agent 可以到下面这些渠道查找。**本 skill 也可以直接当帖子和论坛的搜索工具用：**用户明确要求“去某论坛搜一下某商家、某线路、某问题”时，不必先有资料缺口，Agent 直接按下面的渠道和规则检索，用 `site:` 限定站点（如 `site:nodeseek.com 商家名`），汇报带链接和发帖日期的结果：
 
 | 渠道 | 地址 | 适合找什么 |
 | --- | --- | --- |

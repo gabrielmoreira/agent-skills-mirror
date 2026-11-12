@@ -3,39 +3,25 @@ name: unity-decal
 description: Create and configure URP Decal Projectors
 ---
 
-> **Before calling any skill in this module:** if you are about to call a skill with parameters guessed from its name or description, STOP — read this file (or fetch its schema via `GET /skills/recommend?includeSchema=true`) first. If you already have the parameter definitions from recommend/schema, you may proceed straight to dryRun.
+# Decal Skills
 
-## Triggers
+URP Decal Projector creation and configuration. URP only: the HDRP decal APIs are not covered here. Parameters come from the schema (`GET /skills/schema?category=Decal&wire=v2`); execution and dryRun rules: root [SKILL.md](../../SKILL.md).
+
+## When to use
 - Adding decals in URP
 - Configuring a Decal Projector
 - Enabling the Decal Renderer Feature
-- 在 URP 中添加贴花、配置 Decal Projector、启用 Decal Renderer Feature
 
-# Decal Skills
+## Rules
+- Call `decal_ensure_renderer_feature` before assuming the current URP renderer is decal-ready; it returns `alreadyExists: true` when the feature is present, so it is safe to repeat.
+- Use `decal_get_info` or `decal_find_all` to read the real projector state before editing.
+- `decal_set_properties` applies only the fields you pass; any invalid value rejects the whole call before anything is written.
+- When URP is not installed, every skill returns a stub `{ error: "Universal Render Pipeline package … is not installed." }` (`RenderPipelineSkillsCommon.NoURP()`). It is a diagnostic payload, not a permission denial.
+- For renderer feature management in general, use the `urp` module.
 
-URP Decal Projector creation and configuration (URP only; HDRP decal APIs are not covered here).
-
-## Operating Mode
-
-- Query skills (`decal_get_info`, `decal_find_all`) are `SkillMode.SemiAuto` — they run in all three modes without grant.
-- Mutating skills (`decal_create`, `decal_set_properties`, `decal_set_properties_batch`, `decal_ensure_renderer_feature`) are `SkillMode.FullAuto` — under **Approval** they need user grant (grant triggers one server-side execute returning the result); under **Auto** / **Bypass** they execute directly.
-- `decal_delete` carries `SkillOperation.Delete` and is **auto-forbidden** in Approval / Auto modes (NeverInSemi). Only **Bypass** or the user-managed **Allowlist** can run it.
-
-## URP Package Stub
-
-This module is compiled against `com.unity.render-pipelines.universal` (`URP`). When URP is not installed, **every** skill returns a stub `{ error: "Universal Render Pipeline package … is not installed." }` (`RenderPipelineSkillsCommon.NoURP()`). The stub is a diagnostic payload, not a permission denial — it does **not** require grant and is **not** treated as NeverInSemi.
-
-## Guardrails
-
-**Routing**:
-- For renderer feature management in general: `urp`
-- For DecalProjector scene operations: this module
-
-**Runtime-first rules**:
-- Call `decal_ensure_renderer_feature` before assuming the current URP renderer is decal-ready
-- Use `decal_get_info` / `decal_find_all` to discover real projector state before editing
-- `decal_set_properties_batch` expects `items` to be a JSON array string
-- This module targets the URP Decal workflow first; do not assume HDRP decal APIs are covered here
+## Pitfalls
+- `decal_get_info` and `decal_set_properties` need at least one locator (`name`, `entityId`, `instanceId` or `path`); an empty call is refused rather than reported as "not found".
+- `decal_set_properties_batch` expects `items` as a JSON array string.
 
 ## Skills
 
@@ -56,6 +42,7 @@ Inspect a Decal Projector.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `name` | string | No* | null | GameObject name |
+| `entityId` | string | No* | null | GameObject entity ID (preferred; the only id on Unity 6000.4+) |
 | `instanceId` | int | No* | 0 | GameObject instance ID |
 | `path` | string | No* | null | GameObject hierarchy path |
 
@@ -67,6 +54,7 @@ Modify Decal Projector properties. Every property below is applied only when sup
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `name` | string | No* | null | GameObject name |
+| `entityId` | string | No* | null | GameObject entity ID (preferred; the only id on Unity 6000.4+) |
 | `instanceId` | int | No* | 0 | GameObject instance ID |
 | `path` | string | No* | null | GameObject hierarchy path |
 | `materialPath` | string | No | null | Decal material asset path |
@@ -95,6 +83,7 @@ Delete a Decal Projector GameObject.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `name` | string | No* | null | GameObject name |
+| `entityId` | string | No* | null | GameObject entity ID (preferred; the only id on Unity 6000.4+) |
 | `instanceId` | int | No* | 0 | GameObject instance ID |
 | `path` | string | No* | null | GameObject hierarchy path |
 
@@ -103,7 +92,7 @@ Batch-edit Decal Projectors.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `items` | json string | Yes | - | JSON array of `{name, instanceId, path, materialPath, drawDistance, fadeScale, fadeFactor, startAngleFade, endAngleFade, uvScale, uvBias, size, pivot, renderingLayerMask, scaleMode}` — same per-item keys as `decal_set_properties` |
+| `items` | json string | Yes | - | JSON array of `{name, instanceId, path, entityId, materialPath, drawDistance, fadeScale, fadeFactor, startAngleFade, endAngleFade, uvScale, uvBias, size, pivot, renderingLayerMask, scaleMode}` — same per-item keys as `decal_set_properties` |
 
 ### `decal_ensure_renderer_feature`
 Ensure the target URP renderer has a DecalRendererFeature.
@@ -115,8 +104,3 @@ Ensure the target URP renderer has a DecalRendererFeature.
 | `rendererDataPath` | string | No | null | `UniversalRendererData` asset path — takes precedence over `rendererIndex`, and must belong to the resolved URP asset |
 
 Returns `alreadyExists: true` when the feature was already present, so the call is safe to repeat.
-
----
-## Exact Signatures
-
-Exact names, parameters, defaults, and returns are defined by `GET /skills/schema` or `unity_skills.get_skill_schema()`, not by this file.

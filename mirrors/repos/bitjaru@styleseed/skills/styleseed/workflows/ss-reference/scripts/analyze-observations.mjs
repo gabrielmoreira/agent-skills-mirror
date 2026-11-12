@@ -1,5 +1,8 @@
 // Pure analysis of observe-design output. No I/O, no browser. Every derived value names the
 // counts it came from, so a human can disagree with the derivation and keep the observation.
+// When observations carry `.structure` (observe-structure, same page load), the summary also
+// carries the structure summary and the flat facts list (analyze-structure.mjs).
+import { structureSummary, buildFacts } from './analyze-structure.mjs';
 
 export function parseColor(value) {
   if (typeof value !== 'string') return null;
@@ -88,8 +91,121 @@ export function radiusFamilies(hist, { minShare = 0.03 } = {}) {
   return entries.filter(([, v]) => total && v / total >= minShare).map(([k]) => k).sort((a, b) => a - b);
 }
 
+// Shadow family of a computed box-shadow, read from its visible layers (transparent and all-zero
+// layers, such as the ring placeholders utility CSS stacks in front, are skipped): the largest
+// outer blur decides tight (up to 4px), soft (up to 16px), raised (up to 32px), or floating; a
+// shadow made only of spread is a ring, one made only of inset layers is inset.
+export function shadowFamily(value) {
+  const s = String(value || '').trim();
+  if (!s || s === 'none') return null;
+  const layers = s.split(/,(?![^()]*\))/).map(layer => {
+    const colour = layer.match(/[a-z-]+\([^)]*\)|#[0-9a-f]+/i)?.[0] ?? null;
+    const [x = 0, y = 0, blur = 0, spread = 0] = [...layer.replace(/[a-z-]+\([^)]*\)|#[0-9a-f]+/gi, ' ').matchAll(/(-?[\d.]+)px/g)].map(m => Number(m[1]));
+    return { inset: /\binset\b/.test(layer), transparent: colour !== null && parseColor(colour)?.[3] === 0, x, y, blur, spread };
+  }).filter(l => !l.transparent && (l.x || l.y || l.blur || l.spread));
+  if (!layers.length) return null;
+  const outer = layers.filter(l => !l.inset);
+  if (!outer.length) return 'inset';
+  const cast = outer.filter(l => l.x || l.y || l.blur);
+  if (!cast.length) return 'ring';
+  const blur = Math.max(...cast.map(l => l.blur));
+  return blur <= 4 ? 'tight' : blur <= 16 ? 'soft' : blur <= 32 ? 'raised' : 'floating';
+}
+
+// The most frequent numeric key of a histogram; ties go to the smaller value.
+function modeKey(hist) {
+  const entries = Object.entries(hist || {}).map(([k, v]) => [Number(k), Number(v)]).filter(([k]) => Number.isFinite(k));
+  entries.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
+  return entries.length ? entries[0][0] : null;
+}
+const total = hist => Object.values(hist || {}).reduce((sum, n) => sum + Number(n), 0);
+const share = (n, of) => (of ? Math.round((n / of) * 100) / 100 : 0);
+
+// The largest text of one observation's `type` histogram (`size|weight|lineHeight` keys): the
+// largest numeric size, how many text elements carry it, and the most frequent weight and line
+// height at that size (ties go to the smaller value; a numeric line height sorts before `normal`).
+// Null when no key has a numeric size.
+export function largestText(type) {
+  const rows = Object.entries(type || {}).map(([key, n]) => { const [size, weight, lineHeight] = key.split('|'); return { size: Number(size), weight, lineHeight, n: Number(n) }; })
+    .filter(r => Number.isFinite(r.size) && Number.isFinite(r.n));
+  if (!rows.length) return null;
+  const size = Math.max(...rows.map(r => r.size)), at = rows.filter(r => r.size === size);
+  const asValue = v => (v === undefined || v === '' ? null : Number.isFinite(Number(v)) ? Number(v) : v);
+  const smaller = (a, b) => (typeof a === 'number' && typeof b === 'number' ? a - b : typeof a === 'number' ? -1 : typeof b === 'number' ? 1 : String(a).localeCompare(String(b)));
+  const most = field => {
+    const counts = new Map();
+    for (const r of at) { const v = asValue(r[field]); counts.set(v, (counts.get(v) || 0) + r.n); }
+    return [...counts].sort((a, b) => b[1] - a[1] || smaller(a[0], b[0]))[0][0];
+  };
+  return { size, weight: most('weight'), lineHeight: most('lineHeight'), count: at.reduce((sum, r) => sum + r.n, 0) };
+}
+
+// What observe-design collects beyond the roles: border, elevation, heading and muted ink, the
+// surface colour, the colour on accent-filled actions, motion, scroll depth, target sizes, tabular
+// numerals, the largest text, and the scroll pass record (only when a pass ran). Additive to the
+// summary; per-viewport values are keyed by viewport width.
+export function summarizeExtras(list, roles) {
+  const borders = sortedEntries(mergeCounts(list.map(o => o.borders)));
+  const border = borders.length ? { width: Number(borders[0][0].split('|')[0]), color: toHex(borders[0][0].split('|')[1]), count: borders[0][1], distinct: borders.length } : null;
+  const shadows = mergeCounts(list.map(o => o.shadows));
+  const families = {};
+  for (const [value, count] of Object.entries(shadows)) { const f = shadowFamily(value); if (f) families[f] = (families[f] || 0) + count; }
+  const shadowTotal = total(families);
+  const elevation = {
+    families: Object.fromEntries(sortedEntries(families)),
+    levels: Object.entries(families).filter(([f, n]) => !['ring', 'inset'].includes(f) && n / shadowTotal >= 0.03).length,
+    distinct: Object.keys(shadows).length,
+  };
+  const headingInk = toHex(sortedEntries(mergeCounts(list.map(o => o.headings)))[0]?.[0]) || null;
+  const texts = sortedEntries(mergeCounts(list.map(o => o.text))).map(([c, n]) => [toHex(c), n]).filter(([c]) => c);
+  const muted = texts.find(([c]) => c !== roles.ink && (!roles.canvas || roles.inkContrast === null || (contrastRatio(c, roles.canvas) ?? Infinity) < roles.inkContrast));
+  const mutedInk = muted ? muted[0] : null;
+  const surface = sortedEntries(mergeCounts(list.map(o => o.surfaces))).map(([c]) => toHex(c)).find(c => c && c !== roles.canvas) || null;
+  const pairs = sortedEntries(mergeCounts(list.map(o => o.actionPairs))).map(([k]) => k.split('|').map(toHex));
+  const onAccent = roles.accent ? (pairs.find(([bg]) => bg === roles.accent)?.[1] ?? null) : null;
+  const transitions = mergeCounts(list.map(o => o.motion?.transitions)), animations = mergeCounts(list.map(o => o.motion?.animations));
+  const durations = {}, easings = {}, properties = {};
+  for (const [key, n] of Object.entries(transitions)) {
+    const [family, ms, easing] = key.split('|');
+    durations[ms] = (durations[ms] || 0) + n; easings[easing] = (easings[easing] || 0) + n; properties[family] = (properties[family] || 0) + n;
+  }
+  const easingList = Object.entries(easings).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([e]) => e);
+  const motion = {
+    transitions: total(transitions), durations: radiusFamilies(durations), duration: modeKey(durations),
+    easing: easingList[0] ?? null, easings: easingList.slice(0, 3), properties: Object.fromEntries(sortedEntries(properties)),
+    animations: total(animations), infinite: Object.entries(animations).filter(([k]) => k.endsWith('|infinite')).reduce((sum, [, n]) => sum + n, 0),
+  };
+  const scrollDepth = {}, targets = {}, tabular = {}, largest = {}, scroll = {};
+  for (const o of list) {
+    const width = o.viewport?.width;
+    if (!width) continue;
+    if (o.documentHeight && o.viewport.height) scrollDepth[width] = Math.round((o.documentHeight / o.viewport.height) * 100) / 100;
+    const big = largestText(o.type);
+    if (big) largest[width] = big;
+    if (o.scroll) scroll[width] = { ...o.scroll };
+    const t = total(o.targets);
+    if (t) {
+      const sizes = Object.entries(o.targets).map(([k, n]) => [Number(k), Number(n)]);
+      targets[width] = { count: t, mode: modeKey(o.targets), under44Share: share(sizes.filter(([k]) => k < 44).reduce((s, [, n]) => s + n, 0), t), under24Share: share(sizes.filter(([k]) => k < 24).reduce((s, [, n]) => s + n, 0), t) };
+    }
+    if (typeof o.tabular === 'number') tabular[width] = { count: o.tabular, share: share(o.tabular, total(o.type)) };
+  }
+  return {
+    bodyFontSize: list[0]?.body?.fontSize ?? null,
+    border, elevation, headingInk, mutedInk, mutedInkContrast: mutedInk && roles.canvas ? contrastRatio(mutedInk, roles.canvas) : null,
+    surface, onAccent, onAccentContrast: onAccent && roles.accent ? contrastRatio(onAccent, roles.accent) : null,
+    motion, scrollDepth, targets, tabular,
+    distinct: { controlHeights: Object.keys(mergeCounts(list.map(o => o.controlHeights))).length, radii: Object.keys(mergeCounts(list.map(o => o.radii))).length },
+    largestText: largest,
+    ...(Object.keys(scroll).length ? { scroll } : {}),
+  };
+}
+
 // Roles: the accent is what primary actions are painted with, then what links are coloured with.
-// The tool never promotes a colour that only appears in large surfaces or pictures.
+// The tool never promotes a colour that only appears in large surfaces or pictures. The canvas is
+// the colour that paints the largest share of the document height behind content (`backdrop`;
+// a tie goes to the body colour, then to the smaller colour), else the body background when it is
+// painted at all (black included), else the most frequent surface colour.
 export function deriveRoles(obs) {
   const evidence = [];
   const actions = sortedEntries(obs.actions);
@@ -113,8 +229,20 @@ export function deriveRoles(obs) {
   const ink = text.length ? toHex(text[0][0]) : toHex(bodyColor);
   if (ink) evidence.push({ role: 'ink', from: text.length ? 'text-elements' : 'body', color: ink, count: text[0]?.[1] ?? null, pureBlack: ink === '#000000' });
   const surfaces = sortedEntries(obs.surfaces);
-  const canvas = toHex(obs.body?.background) && toHex(obs.body?.background) !== '#000000' && !/rgba\(0, 0, 0, 0\)/.test(obs.body.background) ? toHex(obs.body.background) : (surfaces.length ? toHex(surfaces[0][0]) : null);
-  if (canvas) evidence.push({ role: 'canvas', from: 'body-or-largest-surface', color: canvas });
+  const bodyBg = parseColor(obs.body?.background);
+  const bodyCanvas = bodyBg && bodyBg[3] > 0 ? toHex(obs.body.background) : null;
+  const shares = {};
+  for (const [c, n] of Object.entries(obs.backdrop || {})) { const hex = toHex(c); if (hex && Number(n) > 0) shares[hex] = Math.round(((shares[hex] || 0) + Number(n)) * 100) / 100; }
+  const painted = Object.entries(shares).sort((a, b) => b[1] - a[1] || Number(b[0] === bodyCanvas) - Number(a[0] === bodyCanvas) || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+  let canvas;
+  if (painted.length) {
+    canvas = painted[0][0];
+    const of = painted.reduce((sum, [, n]) => sum + n, 0);
+    evidence.push({ role: 'canvas', from: 'backdrop', color: canvas, share: share(painted[0][1], of), alternatives: painted.slice(1, 4).map(([color, n]) => ({ color, share: share(n, of) })) });
+  } else {
+    canvas = bodyCanvas || (surfaces.length ? toHex(surfaces[0][0]) : null);
+    if (canvas) evidence.push({ role: 'canvas', from: 'body-or-largest-surface', color: canvas });
+  }
   const inkContrast = ink && canvas ? contrastRatio(ink, canvas) : null;
   const accentContrast = accent && canvas ? contrastRatio(accent, canvas) : null;
   return { accent, accentFrom, ink, canvas, inkContrast, accentContrast, evidence };
@@ -129,19 +257,26 @@ export function summarize(observations) {
   const controlHeights = radiusFamilies(mergeCounts(list.map(o => o.controlHeights || {})));
   const merged = {
     actions: mergeCounts(list.map(o => o.actions)), links: mergeCounts(list.map(o => o.links)), text: mergeCounts(list.map(o => o.text)),
-    surfaces: mergeCounts(list.map(o => o.surfaces)), body: list[0]?.body || {},
+    surfaces: mergeCounts(list.map(o => o.surfaces)), backdrop: mergeCounts(list.map(o => o.backdrop)), body: list[0]?.body || {},
   };
   const roles = deriveRoles(merged);
   const perViewport = list.map(o => ({ viewport: o.viewport, accent: deriveRoles(o).accent }));
   const accentAgrees = perViewport.every(v => v.accent === roles.accent);
   const fonts = sortedEntries(mergeCounts(list.map(o => o.fonts))).slice(0, 4).map(([family, count]) => ({ family, count }));
   const colorCount = new Set([...Object.keys(merged.text), ...Object.keys(merged.surfaces), ...Object.keys(merged.links), ...Object.keys(merged.actions).map(k => k.replace(/^(bg|text):/, ''))].map(toHex).filter(Boolean)).size;
-  return {
+  const out = {
     spacingBase: spacing.base, spacingScale: spacing.scale, spacingCoverage: spacing.coverage, offScale: spacing.offScale,
     typeSteps: type.steps.length, typeStepDetail: type.steps, distinctFontSizes: type.distinctSizes,
     radii, controlHeights, fonts, colorCount,
     accentDerived: roles.accent, accentFrom: roles.accentFrom, accentAgreesAcrossViewports: accentAgrees, perViewport,
     ink: roles.ink, canvas: roles.canvas, inkContrast: roles.inkContrast, accentContrast: roles.accentContrast,
     roleEvidence: roles.evidence,
+    ...summarizeExtras(list, roles),
   };
+  const structures = list.map(o => o && o.structure).filter(Boolean);
+  if (structures.length) {
+    out.structure = structureSummary(structures);
+    out.facts = buildFacts(out, out.structure).facts;
+  }
+  return out;
 }

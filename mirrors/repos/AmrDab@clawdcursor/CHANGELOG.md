@@ -4,6 +4,20 @@ All notable changes to Clawd Cursor will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **Linux: password field values stay out of tree reads**, as on Windows and macOS. An AT-SPI `password text` element now
+  returns no value or text in `read_tree`, `find`, the focused element and page text. A screenshot or OCR can still show
+  whatever is visible on screen.
+
+### Changed
+- README and clawdcursor.com describe 2.0: install per host, what protects you (including auto-approving hosts), and
+  the 2.1 roadmap. Five obsolete docs about removed features are deleted, and descriptions no longer say "safe".
+
+## [2.0.0] - 2026-11-11
+
+First published as 1.6.0 on 2026-11-10. It removes tools, CLI flags and the policy gate, which is a breaking change, so it is
+renumbered 2.0.0 to follow semver; 1.6.0 is deprecated on npm. The code is the same apart from the "removed in 2.0" wording.
+
 ### Removed
 - **Breaking: the built-in agent loop is gone.** clawdcursor no longer calls a
   model itself. It is a tool layer: your own agent (Claude Code, Claude Desktop,
@@ -28,7 +42,7 @@ All notable changes to Clawd Cursor will be documented in this file.
     `--api-key` flags are gone from `agent` and `start`. The HTTP MCP transport,
     `/stop`, `/resume`, `/health` and token auth are unchanged.
   - The removed flags and `clawdcursor task` now fail as an unknown option or
-    command, followed by "removed in 1.6: clawdcursor no longer runs a model;
+    command, followed by "removed in 2.0: clawdcursor no longer runs a model;
     your agent drives the tools". The same goes for the removed `doctor` flags.
 - **Breaking: all model configuration is gone.** There is no provider, model,
   API key or base URL setting anywhere: the provider clients and key discovery
@@ -155,6 +169,36 @@ All notable changes to Clawd Cursor will be documented in this file.
   when `SystemRoot` is unset, and the run directory is refused if it is a symlink and tightened to 0700.
 
 ### Fixed
+- **`open_app` and `open_file` name a window only when it belongs to the app.** "Opened Calculator" could name another app's
+  window whose title held "app" (the Store-app id ends in `!App`), and Calculator never started. A running window now counts
+  only by identity: its process name, or its Store package (a framed Store window by the app it hosts). `open_file` on Windows
+  passes drive paths with backslashes (a `/` read as a switch opened Documents) and never counts a File Explorer window.
+  Paths with `'`, `$` or spaces open. macOS `open_file` / `open_url` / `open_uri` run `/usr/bin/open` (no shell, no
+  Spotlight); Linux runs `xdg-open`. An app that is still starting says so: `Started "Designcenter" (ugraf.exe, pid=N) but its
+  window isn't up yet … wait, then window focus`, within a bounded wait, instead of "no window appeared" after 39 s.
+- **The outline follows the agent.** It moves on acts by name (`invoke`, `set_value`, `select`…), on the agent's `window
+  focus` and on `open_app`, not only on mouse and keyboard input; reads don't move it. Its corners are rounded where the
+  window's are (Windows 11, macOS).
+- **`find` shows an element's value** (`[TextField] "Quantity" … value="30"`), as `read_tree` does.
+- **`screenshot_region` and `zoom` with `space:"screen"` capture the area named on a Retina Mac.** They took the points as
+  pixels: half the area, part of another window. One helper converts for both.
+- **An action by name presses the element you can see (Windows).** `invoke` / `smart_click` took the first element in
+  tree order whose name matched: in Designcenter NX, "New" was a link of a web view the window does not show (laid out
+  at y = 31,000), and the answer was `Clicked "New" via UI Automation` while nothing opened. Now a match that is on a
+  monitor and not offscreen wins, an element on no monitor is never pressed (`ELEMENT_HIDDEN`; `smart_click` then
+  clicks the text OCR sees), and several visible elements with the name are listed with role and position instead of
+  one being picked (`AMBIGUOUS`: pass `controlType`, or click the position). A label gives way to the control that
+  shares its name, and of several visible matches only those inside the dialog that has the focus count (a toolbar
+  and a dialog in one window both have "Close"). A minimized window is still driven by pattern, through the same
+  choice with placement unknown (two controls of one name are ambiguous there too), and a miss never hands out a point
+  on no monitor to click. Value reads and writes are unchanged.
+- **`find` and the focused element mark an element on no monitor offscreen (Windows)**, as `read_tree` does: no
+  position, listed after the elements on screen. `find "Model"` listed a hidden web view's text at y up to 31,000.
+  The 20-result cut now comes after "on screen first", so hidden matches cannot crowd out the visible one.
+- **`system ocr` with scope "window" answers in text rows and says first which window it read**:
+  `@x,y "text"`, x,y the centre of the text in screen coordinates, after one line with the window's rectangle (210
+  words were 15,000 characters of JSON, with the window named after the last element). It also says when the agent
+  last worked outside that window, and when no window could be read and the answer is the whole screen.
 - **A value read gives the field's value, and `set_value` says when it did nothing.** `get_value` on an empty text
   field answered with its label (macOS: `"Your name" = "Your name"`), so a set the app ignored read as "could not be
   read back: NOT verified". Now an empty field reads `""`, every bridge says whether the value itself was read

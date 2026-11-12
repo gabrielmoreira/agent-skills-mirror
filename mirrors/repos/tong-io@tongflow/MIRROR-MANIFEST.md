@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tong-io/tongflow` — 26 default patterns, 12 followed patterns, 15 file(s) materialized.
+Mirror of `tong-io/tongflow` — 26 default patterns, 10 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 12 followed patterns, 15 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 15 |
+| Followed pats | 10 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,17 +51,15 @@ Mirror of `tong-io/tongflow` — 26 default patterns, 12 followed patterns, 15 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/developers.md`
 - `README.md`
-- `docs/plugins.md`
 - `docs/README_ZH.md`
 - `docs/README_JA.md`
+- `docs/plugins.md`
 - `CLA.md`
 - `sdk/README.md`
 - `desktop/README.md`
 - `CHANGELOG.md`
-- `packages/tongflow/README.md`
-- `packages/tongflow-studio/README.md`
-- `packages/dsh-tongflow/README.md`
 - `COMMERCIAL-LICENSE.md`
 
 ## File Index
@@ -73,18 +71,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`claude-plugin/tongflow/README.md`](claude-plugin/tongflow/README.md) |
 | 2 | ✓ | [`claude-plugin/tongflow/skills/tongflow-studio/SKILL.md`](claude-plugin/tongflow/skills/tongflow-studio/SKILL.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 5 | → | [`CLA.md`](CLA.md) |
-| 6 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
-| 7 | → | [`desktop/README.md`](desktop/README.md) |
-| 8 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 9 | → | [`docs/README_JA.md`](docs/README_JA.md) |
-| 10 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
-| 11 | → | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
-| 12 | → | [`packages/tongflow-studio/README.md`](packages/tongflow-studio/README.md) |
-| 13 | → | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
-| 14 | → | [`README.md`](README.md) |
-| 15 | → | [`sdk/README.md`](sdk/README.md) |
+| 4 | ✓ | [`packages/dsh-tongflow/README.md`](packages/dsh-tongflow/README.md) |
+| 5 | ✓ | [`packages/tongflow-studio/README.md`](packages/tongflow-studio/README.md) |
+| 6 | ✓ | [`packages/tongflow/README.md`](packages/tongflow/README.md) |
+| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 8 | → | [`CLA.md`](CLA.md) |
+| 9 | → | [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) |
+| 10 | → | [`desktop/README.md`](desktop/README.md) |
+| 11 | → | [`docs/developers.md`](docs/developers.md) |
+| 12 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 13 | → | [`docs/README_JA.md`](docs/README_JA.md) |
+| 14 | → | [`docs/README_ZH.md`](docs/README_ZH.md) |
+| 15 | → | [`README.md`](README.md) |
+| 16 | → | [`sdk/README.md`](sdk/README.md) |
 
 ---
 

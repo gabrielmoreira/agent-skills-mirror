@@ -75,7 +75,7 @@ For a flagged archive, review the manifest and its `REVIEW_SHA256` digest, then 
 
 Entry file (server rule): `--entry` override > root `index.html` > shallowest `.html` (ties: name order). To start on another page, pass `--entry`.
 
-Site limits: 200 files, 5 MB per file, 20 MB total, 25 MB per request. To see the current values, ask the skill to check the limits or run `curl -s -A "ClaudeCode/6.12.11 (+https://brewpage.app)" https://brewpage.app/api/limits`; the skill runs its own `limits` command before a big site. A successful upload prints `OK <url>`, then `MANAGE: <management link>` and any server `NOTICE:` lines. A rejected upload prints `FAILED: publish rejected (HTTP <status>: <message>)` with the server's reason and no notices.
+Site limits: 200 files, 5 MB per file, 20 MB total, 25 MB per request. To see the current values, ask the skill to check the limits or run `curl -s -A "ClaudeCode/6.12.12 (+https://brewpage.app)" https://brewpage.app/api/limits`; the skill runs its own `limits` command before a big site. A successful upload prints `OK <url>`, then `MANAGE: <management link>` and any server `NOTICE:` lines. A rejected upload prints `FAILED: publish rejected (HTTP <status>: <message>)` with the server's reason and no notices.
 
 Local ZIP inspection has separate size and metadata budgets, rejects ZIP64 and split archives, and limits each `unzip` check to 10 seconds; see [the skill's archive inspection notes](SKILL.md#notes).
 
@@ -114,12 +114,16 @@ New password-protected links stay clean: do not append `?p=`. Readers unlock thr
 Use the saved `ownerLink` and identity for updates and deletion on `https://brewpage.app`, never the publication host. Existing history without metadata keeps its saved API identifiers. Delete:
 
 ```bash
-curl -A "ClaudeCode/6.12.11 (+https://brewpage.app)" -X DELETE "{ownerLink}" -H "X-Owner-Token: {token}"
+curl -A "ClaudeCode/6.12.12 (+https://brewpage.app)" -X DELETE "{ownerLink}" -H "X-Owner-Token: {token}"
 # no ownerLink: {type} = html|json|files|kv|sites
-curl -A "ClaudeCode/6.12.11 (+https://brewpage.app)" -X DELETE "https://brewpage.app/api/{type}/{ns}/{id}" -H "X-Owner-Token: {token}"
+curl -A "ClaudeCode/6.12.12 (+https://brewpage.app)" -X DELETE "https://brewpage.app/api/{type}/{ns}/{id}" -H "X-Owner-Token: {token}"
 ```
 
 New publications without a required subdomain support owner-only `PATCH /api/{type}/{ns}/{id}/hosting` with `deliveryMode` and the current `expectedVersion`. Read the version first; use the returned link and version afterward. Switching modes retains the same reserved host. Legacy publications, sites and non-public HTML pages (format `html`) keep their required or historical delivery; incompatible PATCH requests return unchanged with a notice. Ordinary content updates omit `X-Delivery-Mode`. See the [hosting API reference](https://brewpage.app/api#hosting).
+
+## Page Data
+
+A published HTML page or site can save what its visitors enter (game progress, form answers, guestbook messages, votes) with no backend of your own. The page loads `https://brewpage.app/js/state.js` and calls `bp.state()`. Saving works on the page's own address (`--delivery-mode subdomain`; sites and non-public HTML pages already have one) and on a connected custom domain. Publish the page with this skill, then open the management link and turn page data on in its Data tab; the same tab shows what visitors saved and downloads it as CSV. A page stores up to 1 MB, or 10 MB when it is in your free profile. See the [Page data reference](https://brewpage.app/api#page-data).
 
 ## Part of Brewcode
 

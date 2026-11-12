@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: merge-combines-both-intents
+expected_outcome: |
+  PR #42 (branch per-line-discount, already pushed and approved) applies the discount per line
+  and rounds each line, closing issue #40 (checkout must match the invoice). Since it branched,
+  main got PR #45 (fixing #44), which makes lineTotal throw a RangeError for quantities that aren't
+  whole numbers of at least 1. Both rewrite lineTotal, so they conflict; the commit messages on the
+  branch ("wip", "fix tests") say nothing, so the reasons live in the PRs and issues. The run fetches,
+  merges origin/main into the pushed branch (no rebase, no force-push), and resolves lineTotal so it
+  validates the quantity first and then applies and rounds the discount per line, keeping both sides'
+  tests. npm test passes, the merge commit has two parents, it is pushed to per-line-discount, and
+  the report gives each side's intent with its PR and issue.
+context:
+  scaffold_script: place-files.sh

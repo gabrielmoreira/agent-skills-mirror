@@ -3,15 +3,14 @@ name: unity-batch
 description: Unified batch and async-job orchestration
 ---
 
-## Triggers
+# Unity Batch Skills
+
+## When to use
 - Operating on many objects at once
 - Running or polling long async jobs
 - Preview-then-commit bulk edits
-- 一次性操作大量对象、运行或轮询长时异步任务、先预览后提交的批量编辑
 
-# Unity Batch Skills
-
-The `POST /skills/batch` endpoint, query → preview → execute bulk edits, execution reports and async jobs. Parameters come from the schema, never from a skill's name; execution and dryRun rules: root [SKILL.md](../../SKILL.md).
+The `POST /skills/batch` endpoint, query → preview → execute bulk edits, execution reports and async jobs. Parameters come from the schema (`GET /skills/schema?category=Workflow&wire=v2`, or `?category=Validation` for the fixers), never from a skill's name; execution and dryRun rules: root [SKILL.md](../../SKILL.md).
 
 ## POST /skills/batch — several skills, one HTTP call
 
@@ -22,7 +21,7 @@ POST /skills/batch
 {
   "steps": [
     {"skill": "gameobject_create", "args": {"name": "Cube", "primitiveType": "Cube"}},
-    {"skill": "component_add", "args": {"instanceId": {"$ref": "$0.instanceId"}, "componentType": "Rigidbody"}}
+    {"skill": "component_add", "args": {"entityId": {"$ref": "$0.entityId"}, "componentType": "Rigidbody"}}
   ],
   "continueOnError": false
 }
@@ -34,8 +33,8 @@ POST /skills/batch
 | `continueOnError` | `false` | `false` = stop at the first failure; `true` = record it and keep going. |
 | `params` | none | Values for `{"$param":"name"}` or `{"$param":"name","default":X}` nodes in args; static, resolved before `$ref`; a missing slot without default fails that step. |
 
-- **`$ref`**: an args object whose only key is `$ref`, `{"$ref":"$N.path"}`, is replaced by the value at `path` (e.g. `instanceId`, `results[0].path`; bare `$N` = the whole result) in the result of earlier successful step `N` (0-based). Only structured args are scanned, never strings. A ref that cannot resolve (forward, failed step, no match) fails its step with `SEMANTIC_INVALID`. Refer to created objects through `$ref` (`instanceId`, or `entityId` on Unity 6000.4+) rather than by name: a same-named existing object may win a name lookup.
-- **Query**: `?mode=dryRun` (the batch dryRun gate) validates every step, executes nothing and never halts; a step may name an object an earlier step would create (a warning notes the skipped live checks) and `$ref` args get a structural check only (`refsValidated`). `?mode=transactional` is all-or-nothing with Undo rollback, rejected up front (`400`) for an unknown skill, a step that may trigger a domain reload, or `continueOnError:true`. `?diff=1` adds a net `sceneDiff`; `?wire=v2` slims dryRun step payloads; `expectInstance` / `expectProject` work as on `/skill`. `?mode=plan` is not supported. `mode` / `dryRun` may sit in the body instead: each key resolves query-first and a blank value counts as absent. Any key outside these (body: `steps`, `params`, `continueOnError`, `mode`, `dryRun`) is `400 UNKNOWN_PARAM`.
+- **`$ref`**: an args object whose only key is `$ref`, `{"$ref":"$N.path"}`, is replaced by the value at `path` (e.g. `entityId`, `results[0].path`; bare `$N` = the whole result) in the result of earlier successful step `N` (0-based). Only structured args are scanned, never strings. A ref that cannot resolve (forward, failed step, no match) fails its step with `SEMANTIC_INVALID`. Refer to created objects through `$ref` (`entityId`, any version; the instanceId before 6000.4), not by name: a same-named existing object may win a name lookup.
+- **Query**: `?mode=dryRun` (the batch dryRun gate) validates every step, executes nothing and never halts; a step may name an object or component an earlier step adds (a warning notes skipped live checks) and `$ref` args get a structural check only (`refsValidated`). `?mode=transactional` is all-or-nothing with Undo rollback, rejected up front (`400`) for `continueOnError:true` or a step it cannot undo (unknown skill, may reload, invoke/scenario, particle playback). `?diff=1` adds a net `sceneDiff`; `?wire=v2` slims dryRun step payloads; `expectInstance` / `expectProject` work as on `/skill`. `?mode=plan` is not supported. `mode` / `dryRun` may sit in the body instead: each key resolves query-first and a blank value counts as absent. Any key outside these (body: `steps`, `params`, `continueOnError`, `mode`, `dryRun`) is `400 UNKNOWN_PARAM`.
 
 **Reading the response.** HTTP `200` whenever the batch ran; only a rejected request (bad body, >50 steps, unknown mode or key) is `4xx`.
 
@@ -56,20 +55,18 @@ POST /skills/batch
 
 ## Preview → execute
 
-1. Select with `queryJson` (filters ANDed: `name` substring, `namePattern` regex, `path` / `parentPath` exact, `entityId`, `instanceId`, `tag`, `layer`, `componentType`, `sceneName`, `active`, `isStatic`, `prefabSource`, `includeInactive` (false), `limit` (500)); `batch_query_*` shows what matches.
-2. Preview with `batch_preview_*` or a fixer (`batch_fix_missing_scripts`, `batch_standardize_naming`, `batch_set_render_layer`, `batch_replace_material`, `batch_cleanup_temp_objects`). Previews are read-only and return `{confirmToken, kind, summary, riskLevel, targetCount, executableCount, skipCount, sampleChanges: [{targetPath, action, before, after}], skipReasons}`.
+1. Select with `queryJson` (filters ANDed: `name` substring and `namePattern` .NET regex, case-insensitive unless `caseSensitive:true` or `(?-i)`; `path` / `parentPath` exact, `underPath` any depth; `entityId`, `instanceId`, `tag`, `layer`, `componentType`, `sceneName`, `active`, `isStatic`, `prefabSource`, `includeInactive` (false), `limit` (500)); `batch_query_*` shows what matches. A `limit` cut shows as `truncated:true` with the full `totalMatched` (`count` stops at `limit`); previews return both and cover only `limit` matches.
+2. Preview with `batch_preview_*` or a fixer (`batch_fix_missing_scripts`, `batch_standardize_naming`, `batch_set_render_layer`, `batch_replace_material`, `batch_cleanup_temp_objects`). Previews are read-only and return `{confirmToken, kind, summary, riskLevel, targetCount, executableCount, skipCount, totalMatched, truncated, sampleChanges: [{targetPath, action, before, after}], skipReasons}`.
 3. Review samples and risk (execution may delete or modify many objects), then `batch_execute(confirmToken)`. The token is single-use and expires after an hour: preview again. Large runs return a `jobId`; the report (`batch_report_get`) lists failures, and `batch_retry_failed(reportId)` reruns only those.
 
 Under the `guide` surface profile previews still work but carry `surfaceExclusion`; `batch_execute` then returns `SURFACE_EXCLUDED` without consuming the token.
-
-## Operating Mode
-All but four of the 22 skills are read-only `SemiAuto` (query, preview, fixers, validation, reports, job status/progress/logs/list) and run directly under Approval; the 4 `FullAuto` ones (`batch_execute`, `job_wait`, `job_cancel`, `batch_retry_failed`) answer `MODE_RESTRICTED` there first and need a grant. Auto/Bypass run all; none is NeverInSemi → [operating mode](../../references/protocol-operating-mode.md).
 
 ## Skills Overview
 - Query: `batch_query_gameobjects`, `batch_query_components`, `batch_query_assets` (type/folder/name regex/label).
 - Preview: `batch_preview_rename` (prefix/suffix/replace/regex_replace), `batch_preview_set_property`, `batch_preview_replace_material`, plus the fixers above; `batch_validate_scene_objects` only reports (missing scripts/references, duplicate names, empty objects).
 - Execute and reports: `batch_execute`, `batch_retry_failed`, `batch_report_get`, `batch_report_list`.
 - Jobs: `job_status`, `job_progress`, `job_logs`, `job_list`, `job_wait`, `job_cancel`.
+- Fixers (preview and execute through `batch_execute`): `batch_fix_missing_scripts`, `batch_standardize_naming`, `batch_set_render_layer`, `batch_replace_material`, `batch_cleanup_temp_objects`.
 
 Per-skill tables and result shapes: `reference/<skill_name>.md` — rarely needed, the schema notes the parameters.
 
@@ -80,7 +77,3 @@ Per-skill tables and result shapes: `reference/<skill_name>.md` — rarely neede
 - `batch_delete` / `batch_move` do not exist → use `asset_*` skills for asset-level operations
 
 **Elsewhere**: asset bulk move/copy/delete → `asset_*`; workflow session undo → `workflow_*`.
-
-## Exact Signatures
-
-There is no `Batch` category: `GET /skills/schema?category=Workflow` holds 16 of these skills (query, preview, execute, reports, jobs) and `?category=Validation` the 5 fixers plus `batch_validate_scene_objects`; or use `?names=a,b`.

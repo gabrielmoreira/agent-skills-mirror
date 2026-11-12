@@ -366,6 +366,13 @@ reuse an existing tag.
   `liblkjingle_peerconnection_so.so` (LiveKit WebRTC),
   `libandroidx.graphics.path.so`, `libdatastore_shared_counter.so`,
   `libimage_processing_util_jni.so` and `libsurface_util_jni.so` (AndroidX/CameraX).
+  The upstream AARs already ship these libraries stripped: build IDs in the AAB
+  match the Maven AARs byte for byte, with no `.symtab` or `.debug_*` sections. AGP
+  therefore has nothing to extract, and `keepDebugSymbols` cannot help. Neither
+  webrtc-sdk (Maven Central, GitHub releases; see webrtc-sdk/android#57) nor
+  Google Maven publishes symbol artifacts for them. The warning is advisory. It
+  does not block review or rollout, and Java/Kotlin stack traces are still
+  deobfuscated through the embedded R8 mapping.
   Do not fabricate or upload a symbols zip containing stripped libraries. If
   first-party native code is added, the build must produce its symbols and the
   warning must go away.
@@ -379,13 +386,13 @@ reuse an existing tag.
 ## Server Release
 
     Package:     packages/happy-server
-    Dockerfile:  Dockerfile.server (production), Dockerfile (standalone w/ PGlite)
+    Dockerfile:  Dockerfile.server (production, Rust: packages/happy-server-rs), Dockerfile (standalone w/ PGlite, TS)
     Image:       docker.korshakov.com/handy-server:{version}
     K8s:         packages/happy-server/deploy/handy.yaml (1 replica, port 3005)
 
 Server releases go through TeamCity (`Lab_HappyServer`). The config is in the TeamCity UI, not in the repo.
 
-Build: node:24 + python3 + ffmpeg, builds happy-wire + happy-server.
+Build: compiles packages/happy-server-rs (rust:1.99) and keeps the Prisma CLI from packages/happy-server for migrations.
 Secrets from Vault: handy-db, handy-master, handy-github, handy-files, handy-e2b, handy-revenuecat, handy-elevenlabs.
 Redis: happy-redis StatefulSet (redis:7-alpine, 1Gi persistent volume).
 

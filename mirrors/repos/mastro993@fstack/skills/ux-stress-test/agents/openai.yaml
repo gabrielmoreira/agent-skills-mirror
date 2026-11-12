@@ -1,0 +1,3 @@
+interface:
+  display_name: "UX Stress Test"
+  short_description: "Run first-time-user personas through your web app"

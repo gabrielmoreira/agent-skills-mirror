@@ -1,7 +1,7 @@
 ---
 name: pr-babysit
 description: Use when the user asks to monitor, watch, babysit, or keep an eye on a pull request through CI, review, and merge, or to get a PR green or mergeable.
-compatibility: Needs the gh CLI (authenticated), git, python3, and a checkout of the PR's repository to push fixes from.
+compatibility: Needs the gh CLI (authenticated), git, python3, a checkout of the PR's repository to push fixes from, and the resolve-merge-conflicts skill from the same plugin.
 ---
 
 # PR babysit
@@ -22,7 +22,7 @@ Wait with a host PR-watch tool if you have one (e.g. `watch_pull_request`). Othe
 Fix failures and review comments as you normally would, minding these:
 
 - **The user's checkout.** If it has uncommitted changes or another branch checked out, leave it untouched (no switch, stash, or commit). Work in `git worktree add --detach ../<repo>-pr-<n> origin/<head branch>` (after `git fetch`) and push with `git push origin HEAD:<head branch>`.
-- **Base moved.** On `MERGE CONFLICT` or `BEHIND`, merge the base into the PR branch (never rebase: the shared branch keeps its history): `git fetch origin && git merge origin/<base>`, resolve keeping what both sides meant, run the tests, commit, push. With no conflict, `gh pr update-branch <n>` does the same on GitHub. If the sides change the same behavior incompatibly, ask the user. If the push dismissed approvals, re-request those reviewers.
+- **Base moved.** On `BEHIND` with no conflict, `gh pr update-branch <n>` merges the base in on GitHub. On `MERGE CONFLICT`, load the resolve-merge-conflicts skill and run it to the end, merging the base into the PR branch (never rebase: the shared branch keeps its history); it works out why each side changed, resolves, runs the checks, commits, and pushes. If the push dismissed approvals, re-request those reviewers.
 - **CI.** A failure that also happens on the base branch isn't this PR's to fix: report it. Infra failures (runner lost, network timeouts) get one `gh run rerun <id> --failed`. Stop and ask after two failed attempts at the same check.
 - **The user's calls.** Design changes, scope growth, and disagreeing with a human reviewer go to the user, and the reply stays theirs to post.
 - **Bots.** Check a bot's claim against the code before acting; if it's wrong, reply briefly with why.

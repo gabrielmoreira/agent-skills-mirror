@@ -45,6 +45,7 @@ from . import (
     http,
     instagram,
     jobs,
+    jobs_digest,
     linkedin,
     library,
     library_index,
@@ -59,8 +60,10 @@ from . import (
     providers,
     query,
     reddit,
+    reddit_keyless,
     reddit_listing,
     reddit_public,
+    reddit_search,
     relevance,
     rerank,
     schema,
@@ -152,6 +155,16 @@ STREAM_FUTURE_TIMEOUT_SECONDS = 180.0
 # ended in the past.
 JOBS_PAST_WINDOW_SKIP = "skipped: a job board shows the roles open today, not those of a past window"
 DISCOVERY_FUTURE_TIMEOUT_SECONDS = 60.0
+# The keyless Reddit lane stops this long before the stream wait ends, which
+# leaves time to return, normalize and score the threads it found.
+REDDIT_LANE_RETURN_MARGIN_SECONDS = 20.0
+# With a ScrapeCreators key the free lane stops this much earlier still, so a
+# backfill of a thin or timed-out free result gets a turn inside the same wait.
+REDDIT_SC_BACKFILL_RESERVE_SECONDS = 45.0
+# A backfill is not started with less than this left, and is abandoned this
+# long before the stream wait ends so the free threads are still returned.
+REDDIT_SC_BACKFILL_MIN_SECONDS = 8.0
+REDDIT_SC_BACKFILL_RETURN_MARGIN_SECONDS = 5.0
 THIN_RETRY_FUTURE_TIMEOUT_SECONDS = 120.0
 # One X source, ordered backends: grok (up to 240s/call) + xai (90-180s) would
 # stack sequentially inside one unbounded future under MCP's kill. The chain
@@ -2097,6 +2110,9 @@ def diagnose(
         "has_github": bool(config.get("GITHUB_TOKEN") or which("gh")),
         "brightdata_installed": brightdata_status["brightdata_installed"],
         "brightdata_authenticated": brightdata_status["brightdata_authenticated"],
+        # Fresh browser session or a cached company record: the host resolves
+        # a --trustpilot-domain only then. Local reads; never opens a browser.
+        "trustpilot_can_run": trustpilot.can_run_now(config)["can_run"],
         # safe=True (doctor/--diagnose/--preflight) must stay network-free:
         # answer X availability from local evidence only. x_pending is
         # precomputed by diagnose() to avoid double evaluation.
@@ -2347,12 +2363,20 @@ def run(
         or (not requested_sources and auto_company_jobs)
     ) and "jobs" not in available:
         available.append("jobs")
+    # A host plan about a company gets the jobs lane whether or not the plan
+    # names it: the lane is free and bounded, and a host that forgets one
+    # word must not cost the run a working board. Quick runs keep the
+    # sanitizer's two-source budget, as for the installed lanes below.
+    company_signal = str(config.get("_company_signal") or "")
     if (
         host_plan
         and not requested_sources
         and "jobs" not in available
         and "jobs" not in excluded_sources
-        and _external_plan_names_source(external_plan, "jobs")
+        and (
+            _external_plan_names_source(external_plan, "jobs")
+            or (company_signal and depth != "quick")
+        )
     ):
         available.append("jobs")
     if hiring_signals_mode:
@@ -2394,9 +2418,15 @@ def run(
             external_plan, topic, available, planner_requested_sources, depth,
             honor_plan_sources=True,
         )
-        # Quick runs keep the sanitizer's two-source budget.
-        if depth != "quick":
-            _ensure_unplanned_lanes_in_host_plan(plan, available)
+        # Quick runs keep the sanitizer's two-source budget, plus any paid
+        # lane this run asked for.
+        _ensure_unplanned_lanes_in_host_plan(
+            plan, available,
+            asked=_paid_lanes_asked_for(planner_requested_sources, config),
+            installed=depth != "quick",
+        )
+        if depth != "quick" and not hiring_signals_mode:
+            _ensure_company_jobs_in_host_plan(plan, available, company_signal)
         plan_source = "external"
     else:
         _check_research(config)
@@ -2544,11 +2574,12 @@ def run(
     # the LAW 7 degraded-run and Step 0.55 pre-research banners do not apply -
     # they would contradict the documented jobs-scoped flow. Suppress them.
     bundle.artifacts["hiring_signals_mode"] = hiring_signals_mode
-    # Record the resolved Amazon keyword whenever the lane is active, so the
+    # Record the resolved Amazon keyword whenever the lane is planned, so the
     # footer can name it on an empty result. A search that matched nothing
     # still spent a credit, and the fix is almost always the keyword -- a
-    # suppressed line means nobody ever learns it was wrong.
-    if "amazon" in (available or []):
+    # suppressed line means nobody ever learns it was wrong. A lane that is
+    # available but in no subquery never searched, so it names no keyword.
+    if any("amazon" in subquery.sources for subquery in plan.subqueries):
         bundle.artifacts["amazon_query"] = (
             str(config.get("_amazon_query") or "").strip() or topic
         )
@@ -2679,6 +2710,10 @@ def run(
         if source in available and source != "corpus"
     )
     max_workers = _inner_max_workers(stream_count, internal_subrun=internal_subrun)
+    # One holder, shared by every copy of the config made below: the jobs
+    # lane's time budget for this topic (see ``_jobs_lane_budget``).
+    # It goes into a copy, so the caller's config is left as it was.
+    config = {**config, "_jobs_lane": {}}
     stream_config = dict(config)
     stream_config["_research_deadline"] = _research_deadline(config, STREAM_FUTURE_TIMEOUT_SECONDS)
     with _abandoning_executor(max_workers=max_workers) as executor:
@@ -2835,6 +2870,17 @@ def run(
                     state, attempted = _classify_source_failure(exc)
                     bundle.record_failure(source, state, str(exc), attempted=attempted)
                     continue
+            if isinstance(artifact, dict) and artifact.get("_source_skipped"):
+                # The lane chose not to run (jobs' past-window skip is the
+                # precedent): not attempted, so it is no failure, no degraded
+                # source and no warning.
+                bundle.source_status[source] = schema.SourceOutcome(
+                    source=source,
+                    state=schema.NO_RESULTS,
+                    attempted=False,
+                    detail=artifact["_source_skipped"],
+                )
+                continue
             outcome_note = None
             if isinstance(artifact, dict) and artifact.get("_source_outcome"):
                 artifact = dict(artifact)
@@ -2919,6 +2965,7 @@ def run(
                 # The board's own counts and digest are read by name, and stay
                 # whatever happens to the board's items below.
                 bundle.artifacts["jobs"] = _jobs_board_artifact(artifact)
+                bundle.jobs_board_rows = list(raw_items)
                 artifact = {key: value for key, value in artifact.items() if key != "digest"}
             if artifact:
                 bundle.artifacts.setdefault("grounding", []).append(artifact)
@@ -3141,7 +3188,13 @@ def run(
         resolved_handles=resolved_handles,
         primary_handle=x_handle,
     )
+    reranked_public = ranked_public
     ranked_public = rerank.prune_fallback_entity_misses(ranked_public, topic=topic)
+    # The footer leaves these out of its totals; an item that merely has no
+    # candidate (author cap, pool size) is not among them and still counts.
+    rejected_items = rerank.rejected_item_keys(reranked_public, ranked_public)
+    if rejected_items:
+        bundle.artifacts[rerank.REJECTED_ITEMS_ARTIFACT] = rejected_items
     if hiring_summary:
         # The diagnostic source dump retains pruned jobs; hiring aggregation
         # needs their rejection identities after they leave the ranked pool.
@@ -3161,6 +3214,7 @@ def run(
             candidate.title,
         ),
     )
+    _add_ranked_roles_to_jobs_digest(bundle, ranked_candidates, hiring_summary)
     _check_research(config)
     rerank.score_fun(
         topic=topic,
@@ -3729,6 +3783,17 @@ def _finalize_items_by_source(
             else:
                 digg.enrich_source_items(items, top_k=3)
                 http.fixture_source_record(enrichment_request, schema.to_dict(items))
+        if source == "reddit" and items and not mock:
+            # The lane enriched its own top picks before this ranking; give
+            # the threads that survived their top comments too.
+            matched, replayed = http.fixture_source_replay(enrichment_request)
+            if matched:
+                items = _merge_replayed_enrichment(items, replayed)
+            else:
+                reddit_keyless.enrich_source_items(
+                    items, depth=depth, deadline=(config or {}).get("_research_deadline"),
+                )
+                http.fixture_source_record(enrichment_request, schema.to_dict(items))
         if source == "devto" and items and not mock:
             matched, replayed = http.fixture_source_replay(enrichment_request)
             if matched:
@@ -3779,6 +3844,155 @@ def _merge_replayed_enrichment(
     return items
 
 
+def _jobs_lane_budget(config: dict[str, Any]) -> jobs.LaneBudget:
+    """The one time budget the jobs lane has for this topic's run.
+
+    ``run`` puts a holder in the config before it copies it for its passes,
+    so the first pass, a retry after a server error and the thin-results
+    retry all draw on the same budget. A comparison gives each entity an
+    equal share.
+    """
+    holder = config.get("_jobs_lane")
+    budget = holder.get("budget") if isinstance(holder, dict) else None
+    if budget is None:
+        budget = jobs.LaneBudget(
+            jobs.JOBS_BUDGET_SECONDS / max(1, _comparison_entity_count(config)),
+        )
+        if isinstance(holder, dict):
+            holder["budget"] = budget
+    return budget
+
+
+def _host_companies(company: dict[str, Any]) -> list[str]:
+    """The companies the host named (``--company``, then ``--ticker``), in order."""
+    names = [str(name) for name in company.get("host_companies") or [] if name]
+    single = str(company.get("host_company") or "")
+    if single and single not in names:
+        names.insert(0, single)
+    return names
+
+
+def _search_jobs_lane(
+    company: dict[str, Any],
+    topic: str,
+    *,
+    config: dict[str, Any],
+    depth: str,
+    date_range: tuple[str, str],
+    web_backend: str,
+) -> tuple[list[dict], dict]:
+    """Search the board of the company the topic resolved to.
+
+    A person's name searches the company they lead, starting from its
+    official site. When the lookup named no company and the topic has no
+    board of its own (a person, searched by name), each company the host
+    named with ``--company`` or ``--ticker`` is tried in order and the first one with a board
+    is used. Those come with no official site, so a board gives a digest only
+    when it names that company itself. Every company tried draws on one
+    budget, and a board that is not the topic's own says whose it is under
+    ``board_of``.
+    """
+    budget = _jobs_lane_budget(config)
+    if budget.settled or budget.spent():
+        # This run's lane already has its answer, or no time left to look.
+        return [], {}
+    name = str(company.get("company") or topic)
+    hosts = [] if company.get("company") else _host_companies(company)
+    tries = 1 + len(hosts)
+    site = str(company.get("company_site") or company.get("topic_site") or "")
+    # The official site the resolver returned for a company the host named.
+    host_sites = {
+        str(key): str(value)
+        for key, value in (company.get("host_company_sites") or {}).items() if value
+    }
+
+    def named(found: dict) -> dict:
+        # A board that is not the topic's own says whose it is.
+        of = str(found.get("company") or name)
+        if not jobs._same_company(of, topic):
+            found["board_of"] = of
+        return found
+
+    # The board the host found by web search is read first. One that is the
+    # company's ends the lane; any other is kept only if the lane finds no
+    # board itself.
+    held: tuple[list[dict], dict] | None = None
+    board_url = str(config.get("_jobs_board") or "").strip()
+    if board_url:
+        with http.tee_failures() as failures:
+            host_items, host_artifact = jobs.search_board_url(
+                board_url, [name, *hosts], date_range, config,
+                site=site, sites=host_sites,
+                explicit=bool(config.get("_hiring_signals_mode")), budget=budget,
+                # Until the board is known to be the company's it has one
+                # share of the budget, like each company still to be tried.
+                discovery_seconds=budget.remaining() / (1 + tries),
+            )
+        if _is_jobs_board("jobs", host_artifact):
+            if host_artifact.get("owned"):
+                budget.settled = True
+                return host_items, named(host_artifact)
+            held = (host_items, host_artifact)
+
+    def search(target: str, left: int, **where: Any) -> tuple[list[dict], dict]:
+        return jobs.search_jobs(
+            target,
+            date_range,
+            config,
+            depth=depth,
+            explicit=bool(config.get("_hiring_signals_mode")),
+            entity_count=_comparison_entity_count(config),
+            budget=budget,
+            # Finding one company's board may use an equal share of what is
+            # left, so the next company still gets its turn.
+            discovery_seconds=budget.remaining() / left if left > 1 else None,
+            **where,
+        )
+
+    with http.tee_failures() as failures:
+        items, artifact = search(
+            name,
+            tries,
+            web_backend=web_backend,
+            site=site,
+        )
+        if _is_jobs_board("jobs", artifact):
+            if not jobs._same_company(name, topic):
+                artifact["board_of"] = name
+        else:
+            for index, host_company in enumerate(hosts):
+                host_items, host_artifact = search(
+                    host_company, tries - 1 - index, web_backend="none",
+                    **({"site": host_sites[host_company]} if host_company in host_sites else {}),
+                )
+                if _is_jobs_board("jobs", host_artifact):
+                    host_artifact["board_of"] = host_company
+                    items, artifact = host_items, host_artifact
+                    break
+                # The topic's own result stands, with the reason the budget
+                # ended the search when it did.
+                for key in ("_source_outcome", "_source_out_of_time"):
+                    if key in host_artifact and not items:
+                        artifact = {**artifact, key: host_artifact[key]}
+    if held and not _is_jobs_board("jobs", artifact):
+        items, artifact = held[0], named(held[1])
+        # A board tied to no company here is shown under the name it states.
+        stated = str(artifact.get("board_company") or "")
+        if stated and not jobs._same_company(stated, topic):
+            artifact["board_of"] = stated
+    if not items and not _is_jobs_board("jobs", artifact) and not (
+        budget.stopped_at or budget.spent() or budget.unanswered
+    ):
+        jobs.log_no_board([name, *hosts])
+    # Nothing failed and time was left: the answer will not change on a
+    # second pass. A failure or a spent budget leaves the retry its chance
+    # within what is left of the budget.
+    budget.settled = _is_jobs_board("jobs", artifact) or not (
+        failures or budget.stopped_at or budget.spent() or budget.unanswered
+    )
+    return items, artifact
+
+
 def _is_jobs_board(source: str, artifact: Any) -> bool:
     """Whether a jobs fetch read the company's board directly."""
     return source == "jobs" and isinstance(artifact, dict) and artifact.get("tier") == "ats"
@@ -3819,6 +4033,68 @@ def _rejected_job_keys(
         for item in candidate.source_items
         if item.source == "jobs"
     })
+
+
+def _engine_ranked_job_urls(
+    ranked: list[schema.Candidate],
+    hiring_summary: dict[str, Any] | None,
+) -> list[str]:
+    """Posting URLs of the roles the run itself put highest, best first.
+
+    Two lists, taken in turn: the job postings in ranking order, and the
+    roles the Hiring Signals block names (its strategic single roles, then
+    the evidence under each theme, as many of each as the block prints) when
+    the run has that block. Postings the ranking rejected are left out.
+    """
+    summary = hiring_summary if isinstance(hiring_summary, dict) else {}
+    rejected = set(summary.get("rejected_job_keys") or [])
+    ranked_urls = [
+        item.url
+        for candidate in ranked
+        for item in candidate.source_items
+        if item.source == "jobs" and item.url and fusion.candidate_key(item) not in rejected
+    ]
+    named: list[str] = []
+    if summary.get("include") or summary.get("mode") == "explicit":
+        named.extend(
+            str(role.get("url") or "") for role in (summary.get("strategic_candidates") or [])[:8]
+        )
+        for signal in (summary.get("signals") or [])[:4]:
+            named.extend(str(role.get("url") or "") for role in (signal.get("evidence") or [])[:3])
+    urls: list[str] = []
+    for index in range(max(len(ranked_urls), len(named))):
+        for source_urls in (ranked_urls, named):
+            if index < len(source_urls) and source_urls[index] and source_urls[index] not in urls:
+                urls.append(source_urls[index])
+    return urls
+
+
+def _add_ranked_roles_to_jobs_digest(
+    bundle: schema.RetrievalBundle,
+    ranked: list[schema.Candidate],
+    hiring_summary: dict[str, Any] | None,
+) -> None:
+    """Give the Jobs Digest the roles this run ranked highest.
+
+    The digest is chosen by rarity when the board is read, before anything is
+    ranked, and the report's hiring section is written from the digest alone.
+    Up to ``jobs_digest.ENGINE_ROLE_SLOTS`` of its places go to the ranked
+    roles it left out. The board's rows are dropped afterwards.
+    """
+    rows, bundle.jobs_board_rows = bundle.jobs_board_rows, []
+    board = bundle.artifacts.get("jobs")
+    digest = board.get("digest") if isinstance(board, dict) else None
+    if not rows or not isinstance(digest, dict) or not digest.get("roles"):
+        return
+    # Ranking sees normalized items; the digest holds the board's own URLs.
+    board_urls = {fusion._normalize_url(str(row.get("url") or "")): str(row["url"])
+                  for row in rows if row.get("url")}
+    urls = [
+        board_urls[key]
+        for key in (fusion._normalize_url(url) for url in _engine_ranked_job_urls(ranked, hiring_summary))
+        if key in board_urls
+    ]
+    board["digest"] = jobs_digest.add_engine_roles(digest, rows, list(dict.fromkeys(urls)))
 
 
 def _apply_hiring_signal_gate(
@@ -3868,7 +4144,8 @@ def _ensure_devto_in_plan(plan: schema.QueryPlan, available: list[str]) -> None:
 # in (INCLUDE_SOURCES, --search, a targeting flag). A host plan that names none
 # of them in any subquery almost always means the host planner never knew to
 # list them, not that it chose to skip them, so they ride the primary subquery.
-# Paid lanes with their own host decision step (amazon, meta_ads) stay out;
+# Paid lanes with their own host decision step (amazon, meta_ads) stay out
+# unless this run asked for them (HOST_PLAN_PAID_LANES below);
 # EXCLUDE_SOURCES and --search already filter ``available``.
 HOST_PLAN_BACKFILL_SOURCES = (
     "digg",
@@ -3885,17 +4162,51 @@ HOST_PLAN_BACKFILL_SOURCES = (
 )
 
 
+# Paid lanes the host requests per run outside the plan (runbook Step 0.5e /
+# 0.5f): source -> (config key of its targeting flag, log label). They join a
+# host plan only when this run asked: the source is in --search, or its
+# targeting flag is set. INCLUDE_SOURCES alone makes the lane available but
+# leaves the per-topic decision with the host.
+HOST_PLAN_PAID_LANES = {
+    "amazon": ("_amazon_query", "Amazon"),
+    "meta_ads": ("_meta_ads_page", "Meta Ads"),
+}
+
+
+def _paid_lanes_asked_for(
+    requested_sources: list[str] | None,
+    config: dict[str, Any] | None,
+) -> list[str]:
+    requested = requested_sources or []
+    return [
+        source for source, (flag_key, _label) in HOST_PLAN_PAID_LANES.items()
+        if source in requested or str((config or {}).get(flag_key) or "").strip()
+    ]
+
+
 def _ensure_unplanned_lanes_in_host_plan(
     plan: schema.QueryPlan,
     available: list[str],
+    *,
+    asked: list[str] | tuple[str, ...] = (),
+    installed: bool = True,
 ) -> None:
     if not plan.subqueries:
         return
     planned = {source for subquery in plan.subqueries for source in subquery.sources}
+    candidates = (*(HOST_PLAN_BACKFILL_SOURCES if installed else ()), *asked)
     missing = [
-        source for source in HOST_PLAN_BACKFILL_SOURCES
+        source for source in candidates
         if source in available and source not in planned
     ]
+    for source, (_flag_key, label) in HOST_PLAN_PAID_LANES.items():
+        if source in available and source not in planned and source not in missing:
+            log.source_log(
+                label,
+                "available but not requested for this run; not run "
+                f"(add {source} to --search to run it).",
+                tty_only=False,
+            )
     if not missing:
         return
     plan.subqueries[0].sources.extend(missing)
@@ -3904,9 +4215,40 @@ def _ensure_unplanned_lanes_in_host_plan(
     plan.source_weights = planner._normalize_weights(plan.source_weights)
     log.source_log(
         "Planner",
-        "Added installed/opted-in sources absent from every --plan subquery to "
+        "Added installed/opted-in/requested sources absent from every --plan subquery to "
         f"{plan.subqueries[0].label}: {', '.join(missing)} "
         "(set EXCLUDE_SOURCES to skip them).",
+        tty_only=False,
+    )
+
+
+def _ensure_company_jobs_in_host_plan(
+    plan: schema.QueryPlan,
+    available: list[str],
+    company_signal: str,
+) -> None:
+    """Give the jobs lane the primary subquery of a host plan about a company.
+
+    ``company_signal`` says what makes the run about a company (the official
+    site, a host ticker or company, the company the topic resolved to); with
+    none the plan is left as it is, so a musician or a concept gets no jobs
+    lane. ``available`` already leaves jobs out under EXCLUDE_SOURCES or a
+    ``--search`` list without it.
+    """
+    if not company_signal or "jobs" not in available or not plan.subqueries:
+        return
+    if "drill-mode" in plan.notes:
+        return
+    if any("jobs" in subquery.sources for subquery in plan.subqueries):
+        return
+    plan.subqueries[0].sources.append("jobs")
+    plan.source_weights.setdefault("jobs", 1.0)
+    plan.source_weights = planner._normalize_weights(plan.source_weights)
+    log.source_log(
+        "Planner",
+        f"Added jobs to {plan.subqueries[0].label}: the run is about a company "
+        f"({company_signal}) and no --plan subquery names it "
+        "(set EXCLUDE_SOURCES=jobs to skip it).",
         tty_only=False,
     )
 
@@ -4088,6 +4430,75 @@ def _classify_source_failure(exc: Exception) -> tuple[schema.RunOutcomeState, bo
         message=detail,
     )
     return state, True
+
+
+def _reddit_on_topic_count(
+    items: list[dict],
+    from_date: str,
+    to_date: str,
+    ranking_query: str,
+    freshness_mode: str | None,
+) -> int:
+    """How many free Reddit threads will survive this stream's relevance prune.
+
+    The ScrapeCreators floor is measured on this, not on the raw count: a run
+    whose site search is refused still returns dozens of listing threads from
+    the targeted subreddits, nearly all pruned as off topic a moment later
+    ("relevance prune dropped 99 of 106"), so the raw count never fell under
+    the floor and the backfill never ran. Same normalize, annotate and prune
+    as ``_normalize_score_dedupe``; on any error the raw count is used.
+    """
+    if not items:
+        return 0
+    try:
+        mode = freshness_mode or "balanced_recent"
+        normalized = normalize.normalize_source_items(
+            "reddit", copy.deepcopy(items), from_date, to_date, freshness_mode=mode,
+        )
+        days = (date.fromisoformat(to_date) - date.fromisoformat(from_date)).days
+        annotated = signals.annotate_stream(
+            normalized, relevance.PreparedQuery(ranking_query), mode,
+            reference_date=to_date, max_days=days,
+        )
+        return len(signals.prune_low_relevance(annotated, passing_only=True))
+    except Exception:
+        return len(items)
+
+
+def _run_reddit_backfill(config: dict[str, Any], call) -> Any:
+    """Run the ScrapeCreators backfill, giving up shortly before the stream
+    wait ends so a slow backfill cannot turn the free threads into a timeout.
+    Raises ``TimeoutError`` when it does not finish in time."""
+    research_deadline = config.get("_research_deadline")
+    if research_deadline is None:
+        return call()
+    remaining = research_deadline - REDDIT_SC_BACKFILL_RETURN_MARGIN_SECONDS - time.monotonic()
+    if remaining < REDDIT_SC_BACKFILL_MIN_SECONDS:
+        raise TimeoutError("no time left in the run's budget for the ScrapeCreators backfill")
+    executor = ThreadPoolExecutor(max_workers=1)
+    try:
+        future = http.submit_with_context(executor, call)
+        try:
+            return future.result(timeout=remaining)
+        except TimeoutError:
+            raise TimeoutError(
+                f"ScrapeCreators backfill did not finish in {remaining:.0f}s"
+            ) from None
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
+
+
+def _reddit_search_blocked_artifact(items: list[dict]) -> dict[str, Any]:
+    """Mark Reddit partial when its site search was refused and threads came
+    from subreddit listings alone; ``{}`` when search worked or nothing came."""
+    reason = reddit_search.failed_reason()
+    if not reason or not items:
+        return {}
+    return _outcome_artifact(
+        health.PARTIAL,
+        f"Reddit site search was blocked ({reason}); threads come from subreddit "
+        "listings only",
+    )
 
 
 def _outcome_artifact(
@@ -5044,7 +5455,7 @@ def _retry_thin_sources(
         if source == "jobs":
             return (
                 source, normalized, outcome_note, (detail_note, detail_state), out_of_time,
-                artifact if _is_jobs_board(source, artifact) else None,
+                (artifact, list(raw_items)) if _is_jobs_board(source, artifact) else None,
             )
         normalized = _apply_reddit_stream_keepers(
             source, normalized, settings["per_stream_limit"], topic
@@ -5104,7 +5515,8 @@ def _retry_thin_sources(
                 # A board read only on this retry still gives the footer its
                 # counts and the report its digest.
                 if jobs_board and "jobs" not in bundle.artifacts:
-                    bundle.artifacts["jobs"] = _jobs_board_artifact(jobs_board)
+                    bundle.artifacts["jobs"] = _jobs_board_artifact(jobs_board[0])
+                    bundle.jobs_board_rows = jobs_board[1]
             except Exception as exc:
                 print(f"[Pipeline] Retry failed for {source}: {type(exc).__name__}: {exc}", file=sys.stderr)
                 state, attempted = _classify_source_failure(exc)
@@ -5794,35 +6206,14 @@ def _retrieve_stream_impl(
     if source == "jobs":
         # The company the topic resolved to, so a person's name searches the
         # board of the company they lead, starting from its official site.
-        company = config.get("_company") or {}
-
-        def search(name: str, **where: Any) -> tuple[list[dict], dict]:
-            return jobs.search_jobs(
-                name,
-                date_range,
-                config,
-                depth=depth,
-                explicit=bool(config.get("_hiring_signals_mode")),
-                entity_count=_comparison_entity_count(config),
-                **where,
-            )
-
-        items, artifact = search(
-            company.get("company") or raw_topic or topic or subquery.search_query,
+        return _search_jobs_lane(
+            config.get("_company") or {},
+            raw_topic or topic or subquery.search_query,
+            config=config,
+            depth=depth,
+            date_range=date_range,
             web_backend=web_backend,
-            site=str(company.get("company_site") or ""),
         )
-        # The lookup named no company, and the topic has no board of its own:
-        # a person, searched by name. The company the host named with
-        # ``--ticker`` is searched then, and used only when it has a board.
-        # It comes with no official site, so the board gives a digest only
-        # when it names that company itself.
-        host_company = str(company.get("host_company") or "")
-        if host_company and not company.get("company") and not _is_jobs_board("jobs", artifact):
-            host_items, host_artifact = search(host_company, web_backend="none")
-            if _is_jobs_board("jobs", host_artifact):
-                return host_items, host_artifact
-        return items, artifact
     if source == "reddit":
         # Use raw_topic so expand_reddit_queries() generates diverse variants
         # from the original user topic, not the planner's narrowed search_query.
@@ -5897,11 +6288,20 @@ def _retrieve_stream_impl(
         min_items = env.reddit_sc_min_items(config)
         public_results: list[dict] = []
         public_failure: Exception | None = None
+        # The lane returns what it has before the stream wait gives up on
+        # it; a lane still running then is reported as a timeout with nothing.
+        research_deadline = config.get("_research_deadline")
+        lane_deadline = (
+            research_deadline - REDDIT_LANE_RETURN_MARGIN_SECONDS
+            - (REDDIT_SC_BACKFILL_RESERVE_SECONDS if has_sc_key else 0.0)
+            if research_deadline is not None else None
+        )
         try:
-            public_results = reddit_public.search_reddit_public(
-                reddit_query, from_date, to_date, depth=depth,
-                subreddits=subreddits, dedicated_subreddits=dedicated_subreddits,
-            ) or []
+            with reddit_keyless.lane_deadline(lane_deadline):
+                public_results = reddit_public.search_reddit_public(
+                    reddit_query, from_date, to_date, depth=depth,
+                    subreddits=subreddits, dedicated_subreddits=dedicated_subreddits,
+                ) or []
         except Exception as exc:
             public_failure = exc
             sys.stderr.write(
@@ -5912,15 +6312,38 @@ def _retrieve_stream_impl(
                 state = reddit.classify_run_failure(str(exc))
                 raise SourceRunError(f"Reddit public search failed: {exc}", state) from exc
             sys.stderr.write(", using ScrapeCreators backup\n")
-        # Enough free results, or no key to backfill with -> done. max(min_items,
-        # 1) keeps the default (min_items=0) as empty-only AND treats exactly
-        # `min_items` results as acceptable (no backfill) for min_items > 0.
-        if len(public_results) >= max(min_items, 1) or not has_sc_key:
-            return public_results, {}
+        free_timed_out = (
+            not public_results and public_failure is None
+            and reddit_keyless._out_of_time(lane_deadline)
+        )
+        if free_timed_out and not has_sc_key:
+            # The lane started with no budget left (queued behind slower
+            # streams): that is a timeout, not a topic nobody posted about.
+            return [], _outcome_artifact(
+                health.TIMEOUT,
+                "Reddit had no time left in the run's budget before it found threads",
+            )
+        # The floor counts the free threads that are on topic for this stream,
+        # the ones its relevance prune will keep. Enough of them, or no key to
+        # backfill with -> done. max(min_items, 1) keeps the default
+        # (min_items=0) as empty-only AND treats exactly `min_items` results
+        # as acceptable (no backfill) for min_items > 0.
+        on_topic = _reddit_on_topic_count(
+            public_results, from_date, to_date,
+            subquery.ranking_query or reddit_query, freshness_mode,
+        ) if has_sc_key and min_items > 0 else len(public_results)
+        if on_topic >= max(min_items, 1) or not has_sc_key:
+            return public_results, _reddit_search_blocked_artifact(public_results)
         if public_results:
             sys.stderr.write(
                 f"[Reddit] Free path returned {len(public_results)} "
-                f"(below the {min_items}-item floor); backfilling with ScrapeCreators\n"
+                f"({on_topic} on topic, below the {min_items}-item floor); "
+                "backfilling with ScrapeCreators\n"
+            )
+        elif free_timed_out:
+            sys.stderr.write(
+                "[Reddit] Free path ran out of time with no threads; "
+                "backfilling with ScrapeCreators\n"
             )
         # With free items in hand, scope the backfill's own HTTP failures
         # away from the stream's capture sink: a ScrapeCreators 429 is not a
@@ -5934,11 +6357,11 @@ def _retrieve_stream_impl(
         )
         try:
             with backfill_scope as backfill_failures:
-                result = reddit.search_and_enrich_memo(
+                result = _run_reddit_backfill(config, lambda: reddit.search_and_enrich_memo(
                     reddit_query, from_date, to_date, depth=depth,
                     token=config.get("SCRAPECREATORS_API_KEY"),
                     subreddits=subreddits,
-                )
+                ))
             sc_items = reddit.parse_reddit_response(result)
         except Exception as exc:
             sys.stderr.write(
@@ -6416,6 +6839,10 @@ def _retrieve_stream_impl(
             explicit_domain=trustpilot_domain,
             domain_is_hint=trustpilot_domain_is_hint,
         )
+        if result.get("needs_session"):
+            # An expected skip (no browser is ever opened for a session), not
+            # a failure: recorded like a board that cannot answer the window.
+            return [], {"_source_skipped": str(result.get("skipped") or "")}
         return (
             trustpilot.parse_trustpilot_response(result, query=relevance_topic),
             _result_outcome_artifact(source, result),
@@ -6460,7 +6887,7 @@ def _retrieve_stream_impl(
             artifact = dict(artifact) if artifact else {}
             artifact["_source_outcome"] = {
                 "state": schema.PARTIAL,
-                "detail": review_status,
+                "detail": amazon.outcome_detail(review_status),
                 "attempted": True,
             }
 

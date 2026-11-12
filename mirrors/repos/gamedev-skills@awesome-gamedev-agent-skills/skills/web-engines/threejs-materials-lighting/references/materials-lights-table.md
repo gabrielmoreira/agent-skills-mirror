@@ -2,6 +2,13 @@
 
 Lookup tables and detail behind the materials & lighting skill.
 
+Contents:
+
+- Material cheat-sheet and PBR intuition
+- Light types, starting intensities, shadow camera by light type
+- Transparency & sorting
+- IBL without an HDR file: PMREM + RoomEnvironment, tone mapping, `OutputPass`
+
 ## Material cheat-sheet
 
 | Material | Lit? | Use for | Key params |
@@ -91,6 +98,8 @@ pmrem.dispose();  // the generated texture stays valid
 
 `RoomEnvironment` was repositioned in r183, so a project upgraded across that
 release lights slightly differently; re-check exposure and `scene.environmentIntensity`.
+r187 rebuilt PMREMs on cube render targets and removed `CubeUVReflectionMapping`, so
+IBL also shifts slightly when upgrading across r187; the code above is unchanged.
 
 `PMREMGenerator` pre-filters any environment (HDR, RoomEnvironment, or a rendered
 scene) into the mip-mapped format PBR materials sample for reflections at varying

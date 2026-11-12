@@ -1,6 +1,6 @@
 ---
 name: unity-netcode-spawning
-description: "Netcode for GameObjects spawning and prefab registration — NetworkPrefabsList, NetworkObject.Spawn, and the prefab-registration happy path. Netcode for GameObjects 的生成与预制体注册(NetworkPrefabsList、NetworkObject.Spawn,以及预制体注册的正确流程)。"
+description: "Netcode for GameObjects spawning and prefab registration — NetworkPrefabsList, NetworkObject.Spawn, and the prefab-registration happy path."
 type: reference
 ---
 
@@ -152,7 +152,7 @@ void RequestSpawnServerRpc(Vector3 pos) {
 // ❌ At runtime: Server spawns successfully, but clients log
 // [Netcode] Failed to create object locally. [globalObjectIdHash=XXX] not found in prefab list.
 ```
-Check: the prefab is in `NetworkConfig.Prefabs` or a `NetworkPrefabsList`; `PlayerPrefab` is also registered (some versions need the explicit entry).
+Check: the prefab is in `NetworkConfig.Prefabs` or a `NetworkPrefabsList`; `PlayerPrefab` needs a `NetworkObject`; `NetworkManager` registers it automatically in 2.13.3, so an explicit list entry is only needed for an override.
 
 ### 3. Using a NetworkObject as a nested child in a prefab
 

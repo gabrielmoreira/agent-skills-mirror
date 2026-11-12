@@ -155,14 +155,15 @@ its real viewing distance.
 
 ### Accessible as drawn
 
-Draw controls with the real elements even in a static mockup: `<button>`,
-`<a href>`, and `<input>` paired with a `<label>`. A div or span with
-`role` or `onClick` looks the same, but Tab skips it and a screen reader
-has nothing to announce. Give an icon-only button an `aria-label`. Keep
-text at a contrast of at least 4.5:1 against what is behind it (3:1 from
-24px). What fails most often is caption grey, and coloured fills under
-white text: darken both. Colors that must be told apart also differ in
-lightness, not hue alone; prefer blue/orange to red/green.
+Draw controls with real elements even in a static mockup: `<button>`,
+`<a href>`, and `<input>` with a `<label>`. A div or span with `role` or
+`onClick` looks the same, but Tab skips it. Give an icon-only button an
+`aria-label`. SVG: decor `aria-hidden="true"`, else
+`role="img" aria-label`. Keep text at a contrast of at least 4.5:1
+against what is behind it (3:1 from 24px). Caption grey and coloured
+fills under white text fail most often: darken both. Colors that must be
+told apart also differ in lightness, not hue alone; prefer blue/orange to
+red/green.
 
 ### Landing pages and marketing artboards
 

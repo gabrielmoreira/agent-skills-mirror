@@ -1657,6 +1657,13 @@ handled go dead, the same trade without a `settings` write. Write back the exact
 printed; the empty list also unbinds TalkBack. Bisect, keycodes and limits:
 [the G09 note](devices/tcl-55p71b-g09-key-repeat.md).
 
+A pause keeps both at the price of the first step. On a Xiaomi MOEU0 (Google TV 14) the policy steps once per press
+while a helper filters, and no helper sees the volume keys, so `consume_volume_keys` cannot repeat them. The remote's
+Netflix (289), Prime Video (290) and YouTube (296), Apps and the gear are global keys that never reach a window:
+`mitv.service` starts Netflix and Prime Video by package, and its gear handler is empty. `"volume_pauses_filter":
+true` (the same bool in `config.xml`) makes every volume change stop the filtering for 4 s. The first press steps
+once, a press or hold within those 4 s repeats as usual, and the buttons work again when the pause ends.
+
 Where launcherx is what answers the buttons, keeping it enabled and redirecting its home screen keeps both. On a
 Sony BRAVIA VU3 (`BRAVIA_VU3_4K`, Google TV 14, `UKR1.240726.001`) the Netflix, YouTube, Prime Video and YouTube
 Music buttons are global keys (`BUTTON_4`, `BUTTON_14`, `BUTTON_2`, `BUTTON_15`) routed to
@@ -2123,6 +2130,34 @@ tools/tv.py 'settings put global private_dns_mode opportunistic'
 
 or keep Private DNS and accept that the router's domain rules no longer cover the TV. Write down which one
 you chose, so the next "this one service is slow on the TV" does not start from scratch.
+
+## An app says it can't connect right after the TV wakes from standby
+
+With Private DNS in hostname mode, every lookup waits for the resolver's DNS-over-TLS connection, and strict mode
+never falls back to the router. After standby that connection has to be made again, and until it is, name lookups
+hang while the TV is otherwise online. An app opened in that gap can show its own "Can't connect" screen and stay
+there: on a Sony BRAVIA VU31 (`BRAVIA_VU31_4K`, Google TV 14, `UKR1.240726.001`, Realtek) with `dns.adguard-dns.com`
+in hostname mode, YouTube (`com.google.android.youtube.tv`) showed "Can't connect right now" and did not retry,
+while Wi-Fi was connected, pings by address answered and Play Services logged `NETWORK_ERROR` timeouts.
+Lookups came back 40 seconds to about two minutes after waking, measured three times on one evening. Restarting
+the TV looks like the fix only because it closes the stuck app; the TV's own uptime was not the cause.
+
+To tell, run these straight after waking the TV, before opening anything:
+
+```sh
+tools/tv.py 'ping -c1 -W1 8.8.8.8 | tail -2'             # by address: answers at once
+tools/tv.py 'ping -c1 -W2 www.youtube.com | head -1'     # by name: hangs until the resolver is back
+tools/tv.py 'settings get global private_dns_mode'       # hostname = strict
+```
+
+If the address answers and the name hangs, it is this. Either give the TV a minute after waking before opening
+apps, and close an app that got stuck instead of restarting the TV (Settings > Apps > the app > Force stop, or
+`tools/tv.py 'am force-stop <package>'`), or set the mode back, which lets lookups fall back while the secure
+connection is being made:
+
+```sh
+tools/tv.py 'settings put global private_dns_mode opportunistic'
+```
 
 ## A VPN app on the TV makes strict Private DNS fail every lookup
 

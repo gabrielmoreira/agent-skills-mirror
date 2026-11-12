@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""Stub gh CLI for feature-design evals: an issue tracker for millbrook/readwell.
+
+Issues live in .gh-stub/issues.json; every call is appended to .gh-stub/calls.log for grading.
+"""
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent / ".gh-stub"
+ROOT.mkdir(exist_ok=True)
+STORE = ROOT / "issues.json"
+REPO = "millbrook/readwell"
+args = sys.argv[1:]
+with (ROOT / "calls.log").open("a") as log:
+    log.write(json.dumps(args) + "\n")
+issues = json.loads(STORE.read_text()) if STORE.exists() else []
+
+
+def flag(*names, many=False):
+    found = [args[i + 1] for i, a in enumerate(args[:-1]) if a in names]
+    return found if many else (found[-1] if found else None)
+
+
+def body():
+    path = flag("--body-file", "-F")
+    if path:
+        return sys.stdin.read() if path == "-" else Path(path).read_text()
+    return flag("--body", "-b") or ""
+
+
+def find(number):
+    return next(i for i in issues if str(i["number"]) == number.lstrip("#").rsplit("/", 1)[-1])
+
+
+def save():
+    STORE.write_text(json.dumps(issues, indent=2))
+
+
+cmd = args[:2]
+if cmd == ["auth", "status"]:
+    print("github.com\n  ✓ Logged in to github.com account millbrook-volunteer")
+elif cmd == ["repo", "view"]:
+    print(json.dumps({"nameWithOwner": REPO, "hasIssuesEnabled": True, "url": f"https://github.com/{REPO}"}))
+elif cmd == ["label", "list"]:
+    print("enhancement\tNew feature or request\t#a2eeef\nbug\tSomething isn't working\t#d73a4a")
+elif cmd == ["issue", "list"]:
+    if "--json" in args:
+        print(json.dumps(issues))
+    else:
+        for i in issues:
+            print(f"{i['number']}\tOPEN\t{i['title']}\t{','.join(i['labels'])}")
+elif cmd == ["issue", "create"]:
+    issue = {"number": len(issues) + 12, "title": flag("--title", "-t"), "body": body(), "labels": flag("--label", "-l", many=True), "state": "OPEN"}
+    issue["url"] = f"https://github.com/{REPO}/issues/{issue['number']}"
+    issues.append(issue)
+    save()
+    print(issue["url"])
+elif cmd == ["issue", "view"]:
+    issue = find(args[2])
+    print(json.dumps(issue) if "--json" in args else f"#{issue['number']} {issue['title']}\n\n{issue['body']}")
+elif cmd == ["issue", "edit"]:
+    issue = find(args[2])
+    if flag("--title", "-t"):
+        issue["title"] = flag("--title", "-t")
+    if flag("--body", "-b", "--body-file", "-F"):
+        issue["body"] = body()
+    issue["labels"] += flag("--add-label", many=True)
+    save()
+    print(issue["url"])
+else:
+    sys.exit(f"gh stub: `gh {' '.join(args[:2])}` is not available in this sandbox (issues only; no sub-issue or dependency API)")

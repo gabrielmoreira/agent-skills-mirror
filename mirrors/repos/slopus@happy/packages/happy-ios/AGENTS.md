@@ -176,7 +176,8 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   v2 ("Happy Agent v2public" and its sendMessage, listSessions,
   getSessionContext and openSession) is what the shipped App Store build
   calls: frozen, never edited.
-  The call hears from the last four conversations visited (`CallContext`):
+  The call hears from the last four conversations visited or messaged
+  (`CallContext`):
   only their agents' new words, each piece once and whole when complete
   (the agent went on past it in its run, or the run is no longer the
   newest or working; never on a pause, never as it streams, never because
@@ -192,6 +193,11 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   finger on its row reaches (`WarmChats.intent`), and both a read and a send
   wait for its first page: one never opened on this phone takes a message
   by voice, and a read or send after it finds it kept, not started over.
+  A read answers at once with what the phone has; one not current is
+  marked `refreshing` and made current behind it for up to eight seconds
+  (`SessionCallTargets.refreshed`), what is new then told as a
+  `conversation_update` cue (a silent line if nothing is, or it doesn't
+  come current).
   It ends on background, interruption, lost route, account change and when
   the relay's voice starts. For launch it connects to a public agent by its
   ID (`PublicAgentCallGrants`): a connection mechanism, not authentication.
@@ -213,7 +219,7 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
   (`HAPPY_REVENUE_CAT_APPLE_KEY` → `HappyRevenueCatAppleKey`). It is on sale
   only when the current offering's `$rc_monthly` is a one-month
   auto-renewable App Store product, at the store's price; anything else,
-  nothing is sold. RevenueCat's `pro`, from any product, gives 5 hours a
+  nothing is sold. RevenueCat's `pro`, from any product, gives 2 hours a
   paid month in place of the free time. The customer is the install's own
   anonymous id, kept on the phone: no Happy account, sign-in or analytics
   id touches it. Its `appAccountToken` is that id's hex as a UUID, so an

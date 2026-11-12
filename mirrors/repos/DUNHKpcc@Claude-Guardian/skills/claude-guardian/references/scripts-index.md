@@ -80,3 +80,5 @@ Windows、Linux 没有清理脚本，按 [windows-cleanup.md](windows-cleanup.md
 | `assets/remote-hardening/flclash-crash-heal.sh` | FlClash 崩溃后清路由残留 + core 看门狗（含 `install`） | [advanced-route.md](advanced-route.md)、[vm-guidance.md](vm-guidance.md) |
 | `assets/vps-firewall/vps-guard.sh` | VPS 入站防火墙（带 180 秒保险丝） | [vps-guidance.md](vps-guidance.md) |
 | `assets/webrtc-probe.html` | 本地 WebRTC 探测页 | [SKILL.md](../SKILL.md) |
+
+Windows 多步网络修改的独立执行入口：[`windows-network-transaction.ps1`](../assets/killswitch/windows-network-transaction.ps1)，支持 Start／Status／Commit／Recover；步骤协议、SYSTEM 上下文、私有快照与限制见 [网络事务说明](windows-network-transaction.md)。不是任意网络修改的自动适配器。

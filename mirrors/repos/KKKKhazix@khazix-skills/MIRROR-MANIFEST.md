@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KKKKhazix/khazix-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `KKKKhazix/khazix-skills` — 26 default patterns, 1 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `KKKKhazix/khazix-skills` — 26 default patterns, 0 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 26 |
+| Followed pats | 1 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `KKKKhazix/khazix-skills` — 26 default patterns, 0 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `STATES.md`
 
 ## File Index
 
@@ -59,32 +59,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`aihot/SKILL.md`](aihot/SKILL.md) |
-| 2 | ✓ | [`hv-analysis/SKILL.md`](hv-analysis/SKILL.md) |
-| 3 | ✓ | [`khazix-writer/SKILL.md`](khazix-writer/SKILL.md) |
-| 4 | ✓ | [`leader/SKILL.md`](leader/SKILL.md) |
-| 5 | ✓ | [`neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/CLAUDE.md) |
-| 6 | ✓ | [`neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/AGENTS.md`](neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/AGENTS.md) |
-| 7 | ✓ | [`neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/CLAUDE.md`](neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/CLAUDE.md) |
-| 8 | ✓ | [`neat-freak/evals/fixtures/eval-11-unknown-platform/project/AGENTS.md`](neat-freak/evals/fixtures/eval-11-unknown-platform/project/AGENTS.md) |
-| 9 | ✓ | [`neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/CLAUDE.md) |
-| 10 | ✓ | [`neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/AGENTS.md`](neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/AGENTS.md) |
-| 11 | ✓ | [`neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/CLAUDE.md`](neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/CLAUDE.md) |
-| 12 | ✓ | [`neat-freak/evals/fixtures/eval-3-cold-start/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-3-cold-start/workspace/CLAUDE.md) |
-| 13 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/AGENTS.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/AGENTS.md) |
-| 14 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/CLAUDE.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/CLAUDE.md) |
-| 15 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/CLAUDE.md) |
-| 16 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/AGENTS.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/AGENTS.md) |
-| 17 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/CLAUDE.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/CLAUDE.md) |
-| 18 | ✓ | [`neat-freak/evals/fixtures/eval-5-governance/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-5-governance/workspace/CLAUDE.md) |
-| 19 | ✓ | [`neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/AGENTS.md`](neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/AGENTS.md) |
-| 20 | ✓ | [`neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/CLAUDE.md`](neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/CLAUDE.md) |
-| 21 | ✓ | [`neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/CLAUDE.md) |
-| 22 | ✓ | [`neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/AGENTS.md`](neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/AGENTS.md) |
-| 23 | ✓ | [`neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/CLAUDE.md`](neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/CLAUDE.md) |
-| 24 | ✓ | [`neat-freak/evals/fixtures/eval-7-release-terminal/project/CLAUDE.md`](neat-freak/evals/fixtures/eval-7-release-terminal/project/CLAUDE.md) |
-| 25 | ✓ | [`neat-freak/SKILL.md`](neat-freak/SKILL.md) |
-| 26 | ✓ | [`storage-analyzer/SKILL.md`](storage-analyzer/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`aihot/SKILL.md`](aihot/SKILL.md) |
+| 3 | ✓ | [`hv-analysis/SKILL.md`](hv-analysis/SKILL.md) |
+| 4 | ✓ | [`khazix-writer/SKILL.md`](khazix-writer/SKILL.md) |
+| 5 | ✓ | [`leader/SKILL.md`](leader/SKILL.md) |
+| 6 | ✓ | [`neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/CLAUDE.md) |
+| 7 | ✓ | [`neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/AGENTS.md`](neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/AGENTS.md) |
+| 8 | ✓ | [`neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/CLAUDE.md`](neat-freak/evals/fixtures/eval-1-routine-dev-sync/workspace/taskflow/CLAUDE.md) |
+| 9 | ✓ | [`neat-freak/evals/fixtures/eval-11-unknown-platform/project/AGENTS.md`](neat-freak/evals/fixtures/eval-11-unknown-platform/project/AGENTS.md) |
+| 10 | ✓ | [`neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/CLAUDE.md) |
+| 11 | ✓ | [`neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/AGENTS.md`](neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/AGENTS.md) |
+| 12 | ✓ | [`neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/CLAUDE.md`](neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/CLAUDE.md) |
+| 13 | ✓ | [`neat-freak/evals/fixtures/eval-3-cold-start/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-3-cold-start/workspace/CLAUDE.md) |
+| 14 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/AGENTS.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/AGENTS.md) |
+| 15 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/CLAUDE.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/auth-center/CLAUDE.md) |
+| 16 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/CLAUDE.md) |
+| 17 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/AGENTS.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/AGENTS.md) |
+| 18 | ✓ | [`neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/CLAUDE.md`](neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/CLAUDE.md) |
+| 19 | ✓ | [`neat-freak/evals/fixtures/eval-5-governance/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-5-governance/workspace/CLAUDE.md) |
+| 20 | ✓ | [`neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/AGENTS.md`](neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/AGENTS.md) |
+| 21 | ✓ | [`neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/CLAUDE.md`](neat-freak/evals/fixtures/eval-5-governance/workspace/pdf-tools/CLAUDE.md) |
+| 22 | ✓ | [`neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/CLAUDE.md`](neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/CLAUDE.md) |
+| 23 | ✓ | [`neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/AGENTS.md`](neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/AGENTS.md) |
+| 24 | ✓ | [`neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/CLAUDE.md`](neat-freak/evals/fixtures/eval-6-scope-boundary/workspace/current-app/CLAUDE.md) |
+| 25 | ✓ | [`neat-freak/evals/fixtures/eval-7-release-terminal/project/CLAUDE.md`](neat-freak/evals/fixtures/eval-7-release-terminal/project/CLAUDE.md) |
+| 26 | ✓ | [`neat-freak/SKILL.md`](neat-freak/SKILL.md) |
+| 27 | ✓ | [`storage-analyzer/SKILL.md`](storage-analyzer/SKILL.md) |
+| 28 | → | [`STATES.md`](STATES.md) |
 
 ---
 

@@ -2,59 +2,17 @@
 
 中文执行摘要：PC0 了解目标套餐、设备、商店地区和付款类别；Claude App 入口、实际价格与目标账号匹配留到明确交接后。Apple 设备、可登录账户、商店地区、卡种和内购入口分别核实；不能先买卡再验证。旧账单只在相关任务或实际冲突时追问。本版不代付、不兑换、不注册。
 
-Preparation assumes a subscription task only until the user's actual goal narrows it. Do not conflate subscription, API credit, store balance, and an enterprise entitlement. Never infer supported use from an exit IP. Account and service eligibility, current plan availability, pricing, authentication terms, and refund conditions require current official verification after the contact gate permits it. Packaged source IDs are historical pointers, not fresh verification.
+## 已到期用户的相关旧账单
 
-## PC0 versus checkout
+明确待退款／恢复权益时使用 `billing_issue`，旧渠道迁移使用 `change_channel`；保留已到期状态和未来 Q-C08 套餐，旧账单渠道不能从未来付款方案推定。完整 Q-P02 答复覆盖 Q-A06 后不重复追问，未知／拒答／延期也不换题重问。仅补相关缺口，字段规则见 [intake](intake.md#已到期用户的相关旧账单t76)。
 
-PC0 may collect reported registration/login state, actual region of use, desired plan, budget, device availability, store region, payment category, and renewal needs. Do not open Claude, test login, check entitlements, or ask users to inspect its app/checkout yet. The actual app entry, target-account correspondence, total including tax, billing period, payment-method requirements, and current terms remain deferred. Do not buy gift cards to resolve uncertainty.
-
-A prior suspension triggers factual incident triage, not re-registration, hardware-identity changes, or a new payment route. Identity checks use authentic material through official channels; no documents in the interview. Current SDK/API rules belong to the actual product/use case, never a blanket historical claim.
-
-## Relevant old bills after expiry
-
-An expired returning subscriber's explicit pending refund/restoration is `billing_issue`; a relevant old-channel migration is `change_channel`. Preserve the reported absence of an effective subscription and any selected future Q-C08 plan. No contradiction or current entitlement is implied. Ask only missing old-order facts, with actual past channel separate from the proposed future payment channel. A complete reported Q-P02 old-channel/status/pending-issue answer covers Q-A06; do not ask it twice, manufacture facts, or repeat the question after unknown/refusal/defer. See [intake's normalization contract](intake.md#已到期用户的相关旧账单t76).
-
-A refund explanation does not require a new iPhone, App Store region, gift card, renewal plan, checkout or deployment survey. The channel prerequisite trees below apply to actual purchase preparation, not as prerequisites to handling a legacy bill. On returning to resubscription preparation in the same task, reuse the selected target and explicit expired status. Account access, current refund policy checks and actual refund submission remain separately scoped; no refund or entitlement is promised.
-
-## Channel prerequisite trees
-
-**Apple / Q-A01–Q-A10**（选择 Apple 内购时，手机端先过[手机端防封要点](mobile-guidance.md)；订阅后手机端 Claude App 至少每周用一次，见 [A0 第 12 条](account-onboarding.md)）
-
-1. Distinguish access to iPhone/iPad from Mac-only redemption and merely having an Apple account
-2. Establish account sign-in/verification availability and actual App Store storefront; system language, device sales region, iCloud UI, and proxy location are not substitutes
-3. Plan later verification of official app/desired-plan entry and correct Claude-account match
-4. Establish gift-card formal type, issuing region, and status without recording its code; mismatches stop purchase/redemption planning
-5. Later check actual total, balance coverage, additional payment requirements, seller legitimacy and restrictions before buying; no guarantee that balance avoids all card requirements
-6. Discuss future renewal. Other Apple balances/subscriptions matter only when a region change is actually proposed; do not change the primary store region to accommodate a mistaken purchase
-7. Q-A06 old-order questions only when existing billing or a real conflict requires them; first-time subscribers do not receive a second history survey
-
-O12–O16 are the historical official-source pointers. Ability to redeem is not evidence that the target Claude subscription can be bought. Card seller rankings and claimed success percentages are not authoritative.
-
-**Google Play / Q-G01–Q-G05**
-
-Available Android hardware is only one prerequisite: official store/app availability, Google verification, Play country and payment categories must also fit. Defer actual target plan/Claude account checks until contact. Old orders retain Q-P02's conditional gate. Use the actual billing channel for later management (O07/O17).
-
-**Web card / Q-W01–Q-W04**
-
-Ask card category/issuing region, ability to supply truthful billing details at the actual checkout, online/recurring support, and relevant decline symptoms. Do not request card numbers, CVV, BIN, bank balances, or full billing addresses in chat. Do not repeatedly attempt charges. Current total/currency/tax, recurring commitment, seller/service, and refund/cancellation restrictions require action-time review and user-led payment.
-
-**API / organization / Q-I01–Q-I04**
-
-Only load on explicit API/integration needs. Establish billing platform/project, specific usage/payment authority, personal versus third-party-service purpose, spending cap, and alert requirements. Never ask for API keys or transfer subscription credentials to a gateway. Usage budgets are plans in preview, not created alerts or enforced caps.
-
-**Enterprise / Q-E01–Q-E02**
-
-Only actual enterprise settlement needs justify organization prerequisites. Do not push a personal subscriber into company formation, banking, or KYB. Sensitive documents stay in official workflows.
-
-## Handoff and stopping conditions
-
-Every payment answer ends with the references block, S02 first (see B1, ADR-011). Use G2 for conditional channel comparison. Unsupported or unknown country/device/store/app/plan conditions block purchase advice that assumes feasibility. Explain the smallest next check. G3 and PC2 are separate; a route choice, plan acceptance, or passed environmental check is not payment permission. This preview does not pay, redeem cards, submit appeals, change account settings, or register accounts. Give precise user-led official steps only once their current applicability and permitted contact are established. Avoid refund promises and record post-purchase state to prevent duplicate buying.
+解释旧账单不要求新购设备、礼品卡、续费或部署问卷；返回订阅准备时复用已选目标。账号访问、政策核验和退款提交分别授权，不承诺退款或恢复权益。
 
 ## 操作总则与证据状态
 
 以下是由 Codex 编排、人可执行的 M02/M03 手册；不会因为文档写出步骤就替用户开户、登录、兑换或付款。执行时复核当前官方页面，但 PC0 不通过浏览器、搜索、MCP 或 shell 主动请求 Claude/Anthropic 文档、状态、认证或收费页面。官方历史链接列于文末，链接存在不等于已获访问许可。
 
-每张处理单最少记录：本次目标、产品/套餐、所选路线/设备/商店、阶段、已知事实及来源日期、缺失条件、下一步、授权、验收和失败出口。用户不愿提供非必要信息就标 unknown 并给条件式结论，不继续审问。凭据、验证码、礼品卡码、证件、完整账单及卡号不进报告；用户在官方流程自行输入。
+每张处理单最少记录：本次目标、产品/套餐、所选路线/设备/商店、阶段、已知事实及来源日期、缺失条件、下一步、授权、验收和失败出口。用户不愿提供非必要信息就标 unknown 并给条件式结论，不继续审问。凭据、验证码、礼品卡码、证件、完整账单、账单地址、卡号、CVV、BIN 和银行余额不进报告或聊天；用户在官方流程自行输入。
 
 ## M02 准入、账号与安全操作卡
 
@@ -108,7 +66,7 @@ Every payment answer ends with the references block, S02 first (see B1, ADR-011)
 | 维护 | 续费资金、地区变更影响、异常支持入口 | 不创建自动充值/提醒，除非另外授权 |
 | 证据 | 当前官方页面/日期 + 本人界面确认 | 缺证据不标 ready |
 
-**S02 是支付任务的核心参考（2026-10-21，ADR-011）。** 凡支付回答，末尾必须附 [AI 所有支付方式汇总（核验版）](../sources/S02-ai-payments.md)（列在参考资料第一项，并指出所用章节，如“快速结论”“Apple 礼品卡”“证据来源”），Agent 可以据此向用户推荐支付方式。推荐时：
+**S02 是支付任务的核心参考。** 凡支付回答，末尾必须附 [AI 所有支付方式汇总（核验版）](../sources/S02-ai-payments.md)（列在参考资料第一项，并指出所用章节，如“快速结论”“Apple 礼品卡”“证据来源”），Agent 可以据此向用户推荐支付方式。推荐时：
 
 1. 先按用户的地区、设备、已有付款工具和预算，从 S02 里挑 1 至 3 个适合的候选，说明为什么适合，并引用 S02 的“快速结论”和门槛说明。
 2. 每个候选标出 S02 的证据等级（A 官方、B 实测、C 推广）和已知风险（拒付案例、KYC 或身份验证触发、地区受限、渠道来源不明）。S02 自己标为“不推荐”的渠道（如闲鱼、淘宝低价卡商）不推荐。
@@ -137,7 +95,7 @@ Every payment answer ends with the references block, S02 first (see B1, ADR-011)
 
 ### B2 Apple 分步卡（Q-A01–Q-A10）
 
-**前提**：已选 Apple 候选；PC0 可询问非 Claude 设备与商店条件，实际 Claude 内购入口在 PC1 后。
+**前提**：已选 Apple 候选；PC0 可询问非 Claude 设备与商店条件，实际 Claude 内购入口在 PC1 后。手机端先过[手机端防封要点](mobile-guidance.md)；订阅后 Claude App 至少每周用一次，见 [A0 第 12 条](account-onboarding.md)。
 
 1. 设备：区分可使用 iPhone/iPad、只有 Mac、借用设备和仅有 Apple 账户；Mac 可兑换的事实不证明目标内购入口可用
 2. 账户：还没有美区 Apple ID 就先按 [B2a](#b2a) 在网页注册，注册后养 3 到 7 天再充值；确认用户能完成 Apple 登录/验证；由用户从自己的 App Store/账户设置查看 storefront。不要用 iCloud 页面语言、设备销售地区或代理地址猜商店地区
@@ -149,7 +107,7 @@ Every payment answer ends with the references block, S02 first (see B1, ADR-011)
 8. 兑换后仅核对本人账户余额变化；失败按 O14 的未激活/无效/已兑/地区错误等实际提示交 Apple 或原卖家，不连续换账号兑换
 9. 订阅结算前使用 B5 付款交接；本人确认付款后记录渠道、脱敏订单引用、计划与续费时间。余额扣除但权益缺失按 B7 对账，不买第二份
 10. 续费：说明同渠道管理和资金检查。只有用户实际要改区才展开 O15 的剩余余额、订阅、待处理订单/家庭共享等限制；不要把改区当初次订阅必做项
-    - **不要从 App Store 订阅管理页续费（实战案例）：**通过 App Store 订阅 Claude 的用户，到期后续费或重新订阅，必须先打开 Claude App，在 App 内的订阅页面付费；不要在 App Store 的订阅管理页续费，否则续费信息 Claude 收不到。实例：用户到期后在 App Store 订阅页续费，扣了款但会员没有到账；找 Apple 退款被拒，Apple 客服称商家没提供服务不归他们管，让用户找 Claude；Claude 客服又基本不回应，来回一周无解。因此用户一说要在 Apple 渠道续费，Agent 就直接提醒这一点，再进入 B5 付款交接。已扣款但会员缺失按 B7 对账，不买第二份，保存脱敏订单引用。
+    - **续费必须在 Claude App 内订阅页完成，不从 App Store 订阅管理页续费。**进入 B5 付款交接；已扣款但会员缺失按 B7 对账，保存脱敏订单引用，不买第二份。
 
 **验收/恢复**：购卡、兑换和权益三个结果分别记录；前两个成功不能代替第三个。已兑换资金可能无法转移/退回，按当前官方规则处理，不承诺回滚。
 
@@ -169,7 +127,7 @@ Every payment answer ends with the references block, S02 first (see B1, ADR-011)
 
 **网页卡 Q-W01–Q-W04**：PC0 只确认卡类别/发行地区、本人能提供真实账单资料以及线上/循环支付是否可用。PC1 核验产品准入，PC2 核对账户与实际账单；本人直接在官方 checkout 输入卡信息并处理 3DS。拒付只记录时间、脱敏提示和交易状态，先核对是否待处理/已扣款，再由本人联系发卡方/商户；不要换地址、改身份、反复小额试刷或列 BIN 白名单。
 
-**账单地址要和卡的地区一致（2026-11-02）：**网页用卡付款（含 checkout、虚拟卡、外卡）要填账单地址时，填这张卡在发卡方登记的地址，国家、州、邮编都和卡的发行地区一致。不要为了省税随意填免税州（俄勒冈、特拉华、蒙大拿、新罕布什尔、阿拉斯加等）的地址，地址和卡对不上会触发风控。账单地址、支付 IP、支付币种也要对齐（S03）。用户问填什么地址，Agent 直接这样提醒。
+**账单地址以发卡商提供或确认的信息为准（2026-11-11）：**网页用卡付款（含 checkout、虚拟卡、外卡）需要账单地址时，填写发卡商提供或确认的、对应这张卡的真实账单地址，国家、州、街道和邮编按该信息填写。不要为了省税随意填免税州，也不要根据卡的发行地区或支付 IP 自行拼凑地址。账单地址不是收货地址。
 
 **API Q-I01–Q-I04**：仅明确 API 需求加载。确认官方 API/第三方聚合/云平台的实际计费主体、项目、用途（个人或为他人提供服务）、调用权限和预算。核验当前产品认证规则及数据政策；订阅 OAuth 不自动授权 gateway。购买额度/自动充值/创建 API key 分别授权，支付和秘密输入本人完成。计划列单次请求成本来源、重试放大、月度预算、告警与硬上限是否真的可配置；未创建的控制只写 planned，第三方余额不是官方订阅。
 
@@ -212,12 +170,10 @@ Every payment answer ends with the references block, S02 first (see B1, ADR-011)
 
 ## 当前核验入口与来源边界
 
-这些是设计快照保留的官方入口，未在本次编写中实时请求；Claude 链接仅在 PC1 对应范围批准后访问。重定向/失效时从已确认的官方主页寻找当前帮助入口，不跟随第三方私信链接。
+以下为核验入口，不代表政策、价格或订单已获实时核验；Claude 链接仅在 PC1 对应范围批准后访问。重定向/失效时从已确认的官方主页寻找当前帮助入口，不跟随第三方私信链接。
 
 - O05 [支持地区](https://support.claude.com/en/articles/8461763-where-can-i-access-claude)、O08 [身份核验](https://support.claude.com/en/articles/14328960-identity-verification-on-claude)
 - O07 [付费计划账单](https://support.claude.com/en/articles/8325618-paid-plan-billing-faqs)、O10 [退款](https://support.claude.com/en/articles/12386328-request-a-refund-for-a-paid-claude-plan)
 - O12 [Apple 兑换](https://support.apple.com/en-us/118242)、O13 [Apple 余额用途](https://support.apple.com/en-us/118245)、O14 [兑换错误](https://support.apple.com/en-us/108285)、O15 [Apple 账户国家或地区](https://support.apple.com/en-my/118283)
 - O16 [iOS 购买入口说明](https://support.claude.com/en/articles/9266495-how-do-i-sign-up-for-claude-pro-on-the-claude-app-for-ios)、O17 [Android 购买入口说明](https://support.claude.com/en/articles/9612892-how-do-i-sign-up-for-claude-pro-on-claude-for-android)
 - [S02 原作者支付整理](../sources/S02-ai-payments.md)、[S03 PDF 第 2 页](../sources/S03-claude-experience.pdf)、[S04 FAQ](../sources/S04-claude-guide.md) 保留原署名；价格、卡费、准入变化快，购买前核对当前官方页面和当次订单
-
-本次没有实时核验上述政策、价格、账户或订单；执行前必须在获准阶段补齐相关证据。

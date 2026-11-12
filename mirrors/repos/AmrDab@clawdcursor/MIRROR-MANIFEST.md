@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 10 file(s) materialized.
+Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 10 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 10 |
+| Followed pats | 5 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 10 
 
 - `README.md`
 - `CHANGELOG.md`
+- `docs/MACOS-SETUP.md`
 - `SECURITY.md`
 - `CONTRIBUTING.md`
 
@@ -62,16 +63,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
-| 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 3 | ✓ | [`native/README.md`](native/README.md) |
-| 4 | ✓ | [`seed-registry/README.md`](seed-registry/README.md) |
-| 5 | ✓ | [`SKILL.md`](SKILL.md) |
-| 6 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
-| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 9 | → | [`README.md`](README.md) |
-| 10 | → | [`SECURITY.md`](SECURITY.md) |
+| 1 | ✓ | [`bench/README.md`](bench/README.md) |
+| 2 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
+| 3 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 4 | ✓ | [`native/README.md`](native/README.md) |
+| 5 | ✓ | [`seed-registry/README.md`](seed-registry/README.md) |
+| 6 | ✓ | [`SKILL.md`](SKILL.md) |
+| 7 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
+| 8 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`docs/MACOS-SETUP.md`](docs/MACOS-SETUP.md) |
+| 11 | → | [`README.md`](README.md) |
+| 12 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

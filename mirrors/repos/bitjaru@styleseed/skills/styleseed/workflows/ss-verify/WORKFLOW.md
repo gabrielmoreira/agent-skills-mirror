@@ -195,12 +195,66 @@ becomes the baseline for the screens it covers, so a value outside it reads `vio
 an approved exception covers reads `approved D-…` and is not drift. `--gate` also exits 3 on any
 decision violation.
 
+With `--structure`, the structure probe runs on the same page loads and the table gains rows for
+table row height, list item height, heading sizes in the main region, section gap, primaries per
+section, and transition durations, compared the same way. A structure value outside the shared set
+does not fail `--gate`; a recorded decision on one of these six axes applies like the others
+(`violates D-…` fails `--gate`, `approved D-…` does not). Without the flag the report is unchanged,
+except that a decision on a structure axis is listed once as not measured. `--scroll`
+scrolls each page to the bottom and back inside its one load before measuring, for screens whose
+content reveals on scroll; it is off by default.
+
+With `--faults`, a third read-only probe runs on the same page loads and `FAULTS.md` and `faults.json`
+list render faults measured from boxes and computed style: amounts laid out on two lines, text over
+other text, text out of the button or card that holds it, clipped text, tight insets, near touches and
+near alignments, emoji used as icons, and mixed icon construction in one navigation or list. Each
+finding names its class, viewport, and box; nothing is scored. `--gate` fails only on classes whose
+catalog rule has priority `blocks`, and an approved ledger exception to a default rule waives it per
+screen; the other classes report. The drift files are byte for byte what the run writes without the
+flag. Definitions, thresholds, and limits: [render faults](references/render-faults.md).
+
+With `--reference <slug>` (and `--project-root`), the run also measures the distance from one screen
+(`--screen <label>`, default the first) to the project's approved generated contract
+`.styleseed/rulesets/<slug>/evidence.json`, and writes `DISTANCE.md` and `distance.json` beside the
+drift files. It turns `--structure` on, and `--scroll` when the reference was measured with its scroll
+pass, and says so; a draft contract, or one edited after approval, is refused before anything is
+measured. Kept facts read `same`, `different`, or `absent` (the screen has no such fact, or its value
+is a lower bound that cannot decide); adapted facts `same`, `near`, `different`, or `absent`; avoided
+token values `copied` (taken from the reference and not already owned by the project) or `clear`.
+Observed facts and facts marked `avoid` get no row. One verdict line counts the kept facts that differ
+and the avoided values that were copied; nothing is summed or scored. `--gate` also exits 3 on a
+`different` kept fact or a `copied` value, naming each. **Distance is not drift:** drift compares the
+screens with each other and the project baseline, distance compares one screen with one contract, and
+`DRIFT.md` and `drift.json` are byte for byte what the same run writes without `--reference` (with the
+flags it turns on).
+
 Read it as measurement, not judgment. A `different` accent may be an approved exception nobody has
 recorded yet. A `none`
 accent usually means the primary action only appears in a state (a save bar, a dialog), so
 re-measure with `--states`. No page text, screenshots, or URLs beyond the ones you passed are
 written. The method is described in `engine/REFERENCE-COMPILER.md`, "Measurement and evidence
 levels".
+
+## Step 6 — Transition frame jumps (measured, optional)
+
+A transition that names its properties can leave one out, and that property then snaps in one frame
+while the rest glides. On your own pages, mark each state change to check: a root
+`data-styleseed-transition="<id>"` holding one `data-styleseed-trigger`. Then run:
+
+```bash
+node <installed-ss-verify>/scripts/transition-jumps.mjs http://localhost:3000/settings \
+  --out .styleseed/evidence/transitions/<date> --compare-all
+```
+
+It clicks each trigger forward and back, holds the transitions and animations the change starts, steps
+their clocks every 1000/60 ms, and writes `TRANSITIONS.md` and `transitions.json`: boxes that move in one
+frame at the start, in the middle, or after the end of the change. With `--compare-all`, both directions
+run again with `transition-property: all` set inline on every element under the root (restored
+afterwards), and a finding that disappears there was caused by the named list. Only box geometry is
+compared. It reports and does not gate; exit 2 means a run was inconclusive (not at rest, too many
+elements, chained, script-driven, or skipped after a run that could not return the case).
+Never point it at a reference site. Definitions and limits: [transition frame
+jumps](references/render-faults.md#transition-frame-jumps).
 
 ## Rules
 

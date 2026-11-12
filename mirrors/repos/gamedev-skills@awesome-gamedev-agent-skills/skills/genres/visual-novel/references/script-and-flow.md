@@ -4,6 +4,15 @@ Detail behind `SKILL.md`. Engine-neutral pseudocode. Covers the branching data m
 structures, and the save/backlog/skip data a VN needs. For the branching-script runtime
 (Ink/Yarn) defer to `dialogue-systems`; this file is the VN-specific glue.
 
+Contents:
+1. The script data model
+2. Route structures
+3. Flags and variables
+4. Save-anywhere data (Ink, Yarn Spinner, Ren'Py)
+5. Backlog, skip and auto
+6. Presentation conventions
+7. Localization
+
 ## 1. The script data model
 
 A VN script is a graph of nodes. Whether authored in Ink, Yarn, or your own format, the engine
@@ -67,7 +76,8 @@ What the runtime can restore decides how precise "save anywhere" can be:
 - **Ink:** `story.state.ToJson()` / `story.state.LoadJson(json)` captures the exact position
   and all variables, so a load resumes the same line.
 - **Yarn Spinner:** you can save the variables and the current node name
-  (`DialogueRunner.CurrentNodeName` in Unity) and restart that node, but its FAQ states that the
+  (`DialogueRunner.Dialogue.CurrentNode` in Yarn Spinner for Unity 3.x; 2.x had
+  `DialogueRunner.CurrentNodeName`) and restart that node, but its FAQ states that the
   specific line inside a node cannot be saved or restored. Keep nodes short, put a node boundary
   wherever a save may happen, or record the last line ID and fast-forward to it on load.
 - **Ren'Py:** saving and loading at any line is built in (a save records the start of the

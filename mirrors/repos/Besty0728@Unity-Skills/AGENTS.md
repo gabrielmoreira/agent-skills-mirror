@@ -4,28 +4,28 @@ Audience: agents editing this repository. Agents *calling* the REST API read `Sk
 
 | Field | Value |
 |------|----|
-| Version | 2.9.1 |
+| Version | 3.0.0 |
 | Stack | C# Unity Editor plugin (UPM `com.besty.unity-skills`) + Python client |
 | Unity | 2022.3+, verified on 6000.x |
 | License | MIT |
 
 ## Architecture
 
-`AI agent → unity_skills.py → HTTP localhost:8090-8100 → SkillsHttpServer (producer-consumer) → SkillRouter (reflects [UnitySkill]) → 56 *Skills.cs / 54 SkillCategory / 839 skills`. `WorkflowManager` = persistent undo/rollback, `RegistryService` = multi-instance discovery. 56 vs 54: `BatchSkills.cs` registers into Workflow + Validation, `DiagnoseSkills.cs` into Debug. The per-category table lives in `README.md`; `/skillcheck` keeps every count in sync — do not hand-edit counts.
+`AI agent → unity_skills.py → HTTP localhost:8090-8100 → SkillsHttpServer (producer-consumer) → SkillRouter (reflects [UnitySkill]) → 57 *Skills.cs / 55 SkillCategory / 873 skills`. `WorkflowManager` = persistent undo/rollback, `RegistryService` = multi-instance discovery. 57 vs 55: `BatchSkills.cs` registers into Workflow + Validation, `DiagnoseSkills.cs` into Debug. The per-category table lives in `README.md`; `/skillcheck` keeps every count in sync — do not hand-edit counts.
 
 - **Threading (hard rule)**: the HTTP thread only enqueues; the Unity main thread drains the queue from `EditorApplication.update`. Zero `UnityEngine.*`/`UnityEditor.*` calls off the main thread.
 - **Every request, including GET `/health` `/jobs/{id}` `/skills`, goes through that main-thread queue** (≤20 per tick). A skill that blocks the main thread also freezes liveness; the Python client polls `GET /jobs/{id}` instead of `job_wait` for this reason.
 - **No auth + wildcard CORS is intentional** (loopback bind is the accepted boundary). Do not report "add auth / tighten CORS / validate Origin" as a security finding.
 - Optional-package modules (ProBuilder, XR, Netcode, YooAsset, DOTween, PrimeTween, Behavior, HybridCLR, Addressables, QFramework) detect their dependency and return `MISSING_PACKAGE`; URP-family modules (Volume/PostProcess/Decal/URP) compile to same-named `NoURP()` stubs without `com.unity.render-pipelines.universal`. QFramework has no UPM package, so detection is by reflected anchor type and it must not declare `RequiresPackages`.
 - Optional-package behavior is tested for real in `Tests/Editor/OptionalPackages/`: one fixture per module on `OptionalPackageTestBase` (skills called by name, state read back by reflection, fixture ignored when the probe skill's package is missing), with per-module floors of passed tests in `.github/optional-package-floors.json`; a new optional module adds a fixture and a floor. Package code that needs a built-in module (NGO's `NetworkRigidbody2D` needs physics2d) mirrors the package's `COM_UNITY_MODULES_*` versionDefines, or a project without that module fails to compile the whole package.
-- 29 advisory modules under `unity-skills~/skills/` are documentation only: no REST skills, no C# stub, ever.
+- 30 advisory modules under `unity-skills~/skills/` are documentation only: no REST skills, no C# stub, ever.
 
 Key files (`SkillsForUnity/Editor/`):
-- `Skills/`: `SkillsHttpServer.cs`, `SkillRouter.cs`, `SkillPlanningService.cs` (/plan + dryRun engine, not a skill) — each is a `partial` class split by concern into `<Class>.<Area>.cs` (e.g. `SkillsHttpServer.Batch.cs`, `SkillRouter.Gates.cs`); fields with initializers and the static constructor stay in the main file, since static initializer order across partial files is unspecified; `UnitySkillAttribute.cs`, `SkillErrorResponse.cs` + `SkillErrorCode.cs`, `SkillsLogger.cs` (single source of `Version`), `SkillsModeManager.cs`, `SkillsAuditLog.cs`, `ConfirmationTokenService.cs`, `WorkflowManager.cs`, `RegistryService.cs`, `GameObjectFinder.cs`, `BatchExecutor.cs`, `SkillInstaller.cs`, `AgentInstructionService.cs`, `UnityCliService.cs`, `ClientProcessResolver.cs` (caller identity via TCP port → PID → parent chain), `*Skills.cs` ×56.
+- `Skills/`: `SkillsHttpServer.cs`, `SkillRouter.cs`, `SkillPlanningService.cs` (/plan + dryRun engine, not a skill) — each is a `partial` class split by concern into `<Class>.<Area>.cs` (e.g. `SkillsHttpServer.Batch.cs`, `SkillRouter.Gates.cs`); fields with initializers and the static constructor stay in the main file, since static initializer order across partial files is unspecified; `UnitySkillAttribute.cs`, `SkillErrorResponse.cs` + `SkillErrorCode.cs`, `SkillsLogger.cs` (single source of `Version`), `SkillsModeManager.cs`, `SkillsAuditLog.cs`, `ConfirmationTokenService.cs`, `WorkflowManager.cs`, `RegistryService.cs`, `GameObjectFinder.cs`, `BatchExecutor.cs`, `SkillInstaller.cs`, `AgentInstructionService.cs`, `UnityCliService.cs`, `ClientProcessResolver.cs` (caller identity via TCP port → PID → parent chain), `*Skills.cs` ×57.
 - `Locales/{en,zh-CN,ru}.json`: all UI strings.
 - `Versioning/`: self-update. Only files here may name `LocalGitSync` / `GitCliRunner`; the UI uses `LocalSelfUpdateService` (`Check` / `Start`, `ShortSha`, `MaxListedEntries`, the `LocalUpdate*` result types), enforced by `SelfUpdateBoundaryTests`.
 - `UI/`: `UnitySkillsWindow.{cs,uxml,uss}`, `Controllers/*.cs`, `Tabs/*.uxml`, `EditorUiScheduler.cs`, `ShortcutActions.cs`, `UISkillsFontIncrementalUpdater.cs`, `AuditLogWindow`, `AllowlistPickerWindow`, `UnityCliWindow`.
-- `SkillsForUnity/unity-skills~/`: shipped template — `SKILL.md`, `scripts/unity_skills.py`, `skills/` (83 module docs: 54 REST + 29 advisory), `references/` (protocol docs, Unity manual URL indexes, `windows.md` PowerShell / Git Bash guide).
+- `SkillsForUnity/unity-skills~/`: shipped template — `SKILL.md`, `scripts/unity_skills.py`, `skills/` (85 module docs: 55 REST + 30 advisory), `references/` (protocol docs, Unity manual URL indexes, `windows.md` PowerShell / Git Bash guide).
 
 ## Rules
 
@@ -55,11 +55,12 @@ public static object SkillName(string name, float x = 0f) { ... }
 - Provide `xxx` and `xxx_batch` pairs; batch uses `BatchExecutor.Execute<TItem>(items, perItem, idFn)`.
 - New module: `SkillCategory` enum entry + `XxxSkills.cs` + `unity-skills~/skills/<module>/SKILL.md`; reflection discovers the methods. Run `/skillcheck` afterwards.
 - Never write a regression test whose failure mode installs a package, compiles scripts or enters Play Mode: a regressed guard would change the project running the test (round6: a red run of a `package_install_cinemachine` guard installed Cinemachine into the dev project). Test such guards through an internal seam, or not at all.
+- Gate version-specific tests with `#if UNITY_6000_4_OR_NEWER` or `Assert.Ignore`, never `Assume`: an Inconclusive result makes the command-line test run exit non-zero, so CI fails with no failed test.
 
 ### Shared helpers — do not reimplement
 | Need | Use | Not |
 |------|-----|-----|
-| Find GameObject | `GameObjectFinder.FindOrError(name, instanceId, path)` | `GameObject.Find` |
+| Find GameObject | `GameObjectFinder.FindOrError(name, instanceId, path, entityId: entityId)`; every `instanceId` / `xInstanceId` parameter or batch-item field has its `entityId` / `xEntityId` twin (`EntityIdCoverageGuardTests`) | `GameObject.Find` |
 | Validate params | `Validate.Required` / `Validate.RequiredJsonArray` | hand-written if-chains |
 | Batch | `BatchExecutor.Execute<T>` | manual loops |
 | JSON | `SkillsCommon.JsonSettings` (Newtonsoft) | `JsonUtility`, ad-hoc settings |
@@ -67,12 +68,14 @@ public static object SkillName(string name, float x = 0f) { ... }
 | Async | `AsyncJobService` / `BatchJobService` | own Task/Thread |
 | Scene-wide find | `FindHelper.FindAll<T>()` | `FindObjectsOfType` |
 | Periodic UI | `EditorUiScheduler.RepeatSafe` | bare scheduler / `EditorApplication.update` |
+| Rewrite a `Library/UnitySkills` state file | `LibraryStateFile.Write` / `WriteAllText` (temp file + rename) / `AppendLines` | `File.WriteAllText` / `WriteAllLines` over the live file |
 
 ### Constants, logging, prefs, compatibility
 - Version comes only from `SkillsLogger.Version`; never hardcode a version literal. Bump versions only through `/updateversion`.
 - Log only via `SkillsLogger.{Log,LogWarning,LogError,LogVerbose,LogAgent}` with `PREFIX_*` colors; never `Debug.Log*`.
 - Startup policy (owner decision): a normal editor launch / domain reload prints exactly one Info line. New startup diagnostics are Verbose; a startup Warning must correspond to a real failed action (e.g. port fallback), never a pre-emptive scan.
 - EditorPrefs keys are prefixed `UnitySkills_`.
+- Every editor entry point (`[InitializeOnLoad]` static constructor, `[InitializeOnLoadMethod]`, `AssetPostprocessor` callback) starts with `if (ImportWorkerGate.IsWorkerProcess) return;` (RegistryService computes its pure identity fields first). Unity's AssetImportWorker processes load the editor assemblies and share `Library/`: ungated, they read state files mid-rewrite, append to our JSONL logs under their own seq counters, save stale job tables, resume jobs, and write prefs, manifests and defines. `ImportWorkerGateTests` scans for entry points; one that must run in a worker goes on its allowlist with the reason. Gated workers stay silent (startup-log policy).
 - Wrap Unity 6 APIs in `#if UNITY_6000_0_OR_NEWER` / `#else` (see `FindHelper`); prefer 2022.2+ non-obsolete events. Namespaces: `UnitySkills` for features, `UnitySkills.Internal` for helpers.
 
 ### Localization and font atlas
@@ -89,8 +92,8 @@ public static object SkillName(string name, float x = 0f) { ... }
 
 ## Workflow and commands
 Commands are prompt files under `.claude/commands/`; agents without slash commands read the file and follow it.
-- `/skillcheck` (`.claude/commands/skillcheck.md`) — C# ↔ `skills/*/SKILL.md` consistency audit and skill-count sync across `AGENTS.md`, README×2 and the root `SKILL.md`. Run after adding, renaming or removing any skill.
+- `/skillcheck` (`.claude/commands/skillcheck.md`) — C# ↔ `skills/*/SKILL.md` consistency audit driven by `.github/scripts/skill_inventory.py`, plus skill-count sync (`--sync-counts`) across `AGENTS.md` and README×2 (the root `SKILL.md` carries no counts). Run after adding, renaming or removing any skill.
 - `/metacheck` (`.claude/commands/metacheck.md`) — `.meta` GUID audit; run after adding assets or `.meta` files.
-- `/updateversion <MAJOR.MINOR.PATCH>` (`.claude/commands/updateversion.md`) — bumps the declared version anchors and writes the CHANGELOG entry; verifies with `.github/scripts/check_project_version.py`. Never search-and-replace version numbers globally.
+- `/updateversion <MAJOR.MINOR.PATCH>` (`.claude/commands/updateversion.md`) — bumps the declared version anchors (plus `.github/SECURITY.md` supported-versions table on minor/major bumps) and writes the CHANGELOG entry; verifies with `.github/scripts/check_project_version.py`. Never search-and-replace version numbers globally.
 - `/release [version]` (`.claude/commands/release.md`) — candidate matrix → beta/main sync → tag → stable GitHub Release. Develop on `beta`; `main` is linear, no merge commits. `beta` and `main` run parallel: Star History chart commits land on `main` only, never sync them into `beta`; `/release` drops them when it moves `main`. Never move or re-publish a released tag: users install by `#vX.Y.Z`, so fix forward with a new number.
 - Domain reload makes the REST server briefly unreachable (503/504 with diagnostics); clients retrying is expected. Do not modify the server to hide it.

@@ -41,10 +41,10 @@
       "category": "Creativity"
     },
     {
-      "name": "baoyu-dashboard",
+      "name": "baoyu-data",
       "source": {
         "source": "local",
-        "path": "./chatgpt-plugins/baoyu-dashboard"
+        "path": "./chatgpt-plugins/baoyu-data"
       },
       "policy": {
         "installation": "AVAILABLE",

@@ -19,6 +19,8 @@ Read the core skill first (`agent-desktop skills get desktop`) for the observe, 
 
 ## Requirements
 
+The sandbox provider on macOS is `macos`: a macOS VM that needs an Apple Silicon Mac, macOS 13 or later, and Xcode Command Line Tools. See `agent-browser.dev/desktop/sandboxes/macos`.
+
 - macOS 13 or later, Intel or Apple Silicon.
 - Accessibility permission for the app that launches agent-desktop (Terminal, iTerm2, Warp, VS Code, Codex). macOS 27 and later name this list Device Control and Data Access. If System Settings lists the `agent-desktop` binary separately, grant it too.
 - Screen Recording permission, only for `screenshot` and for `session start --screenshots` artifacts.

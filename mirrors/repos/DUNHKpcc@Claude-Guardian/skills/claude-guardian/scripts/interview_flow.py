@@ -1835,6 +1835,7 @@ REFERENCE_PATHS = {
     'vm_ssh': 'assets/vm-killswitch/enable-guest-ssh.sh',
     'vm_tun': 'assets/vm-killswitch/install-flclash-tun.sh',
     'win_ipv6': 'references/agent-remediation.md',
+    'win_network_tx': 'references/windows-network-transaction.md',
     'local_fw': 'references/local-firewall-prompts.md',
     'mac_dns': 'references/macos-dns-case-lessons.md',
     'auth': 'references/authorization-tiers.md',
@@ -1875,6 +1876,8 @@ def references_for_topics(topics, *, os_name='unknown'):
     ordered = (['payment'] if 'payment' in topics else []) + [t for t in topics if t != 'payment']
     for topic in ordered:
         keys = list(routes.get(topic, ()))
+        if os_name == 'windows' and topic in {'local_protection', 'whole_machine_egress', 'egress'}:
+            keys.append('win_network_tx')
         if topic in {'cleanup', 'trace_cleanup'}:
             if os_name in {'macos', 'unknown'}:
                 keys += ['S06', 'cleanup_cli']
@@ -1945,6 +1948,8 @@ def required_references(state):
                                 'vps': '#r-vps-独立操作卡m09'}[route])
     if c['task'] in {'network', 'environment'}:
         add('network', 'network_diagnosis')
+        if os_value == 'windows':
+            add('win_network_tx', 'network_recovery')
     if route == 'local':
         add('egress', 'egress')
         add('whole_ipv4', 'whole_machine_egress')
@@ -1952,6 +1957,7 @@ def required_references(state):
             add('local_fw', 'local_firewall', '#windows')
             add('S05', 'local_protection')
             add('win_ipv6', 'windows_ipv6', '#windows-adapter-ipv6-hint')
+            add('win_network_tx', 'network_recovery')
         elif os_value == 'macos':
             add('local_fw', 'local_firewall', '#mac')
             add('mac_dns', 'mac_dns')

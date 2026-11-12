@@ -65,7 +65,7 @@ Grep-verified 2026-11-05 (`npm run docs:verify` re-checks every path). This is t
 - **Format profiling spans (ms):** `formatDuration()` in `src/shared/performance-metrics.ts` (NOT formatters.ts - common mistake).
 - **Format relative time:** `formatRelativeTime()` in `src/shared/formatters.ts`
 - **Format a calendar day:** `formatCalendarDay()` in `src/shared/formatters.ts` renders a `YYYY-MM-DD` string as `"Jul 10, 2026"`.
-- **Local calendar day keys:** `toLocalYmd()`, `parseLocalYmd()`, `addLocalDays()` in `src/shared/localDay.ts`.
+- **Local calendar day keys:** `toLocalYmd()`, `parseLocalYmd()`, `addLocalDays()`, `startOfLocalDay()` in `src/shared/localDay.ts`.
 - **Format an hour of day:** `formatHourOfDay()` in `src/shared/formatters.ts` (`13` -> `"1 PM"`).
 - **Format cost:** `formatCost()` in `src/shared/formatters.ts`
 - **Token pricing and Codex token totals:** `resolveModelPricing()` / `calculateModelCost()` in `src/shared/modelPricing.ts`, and `CodexTokenCounts` in `src/shared/codexTokenUsage.ts`.
@@ -313,6 +313,7 @@ Grep-verified 2026-11-05 (`npm run docs:verify` re-checks every path). This is t
 - **Sizing a virtualized row the user's font decides:** `virtualizer.measureElement` + `data-index` and NO inline `height`; see `HistoryPanel` and `FileSearchModal`.
 - **An agent's model list, and refreshing it:** `discoverAgentModels()` in `src/main/agents/model-discovery.ts`, `refreshModels()` on `useAgentModelEffortOptions()`.
 - **Whether an absolute path exists, from render code:** `checkPathExists()` in `src/renderer/utils/fileLinks/pathExistence.ts`, `usePathExistence(sshRemoteId?)` in `src/renderer/hooks/utils/usePathExistence.ts` (async-filled cache; `remarkFileLinks` links a spaced absolute path only once it exists)
+- **Finding the file a markdown embed points at:** `resolveEmbedCandidates()`, `findFirstExistingPath()`, `parseEmbedAltSize()` in `src/renderer/utils/fileLinks/embedResolution.ts`.
 - **A path the user typed on the CLI:** `resolveCliPath(input)` in `src/cli/utils/parse.ts`
 - **Filing GitHub feedback (check gh, search, +1, submit):** `submitFeedbackConversation()`, `searchFeedbackIssues()` in `src/main/feedback/index.ts`
 - **Sizing a surface to its longest label:** `widestLabelWidth(labels, opts)`, `estimateLabelWidth()` in `src/renderer/utils/labelWidth.ts`

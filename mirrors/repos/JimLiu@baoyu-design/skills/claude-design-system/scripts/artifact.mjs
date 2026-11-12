@@ -2536,7 +2536,7 @@ async function runningServer(root, kind, probe) {
     return null;
   }
 }
-var DEFAULT_PORTS = { slides: 4710, design: 4720, "design-system": 4730, dashboard: 4740, docs: 4750, motion: 4760 };
+var DEFAULT_PORTS = { slides: 4710, design: 4720, "design-system": 4730, data: 4740, docs: 4750, motion: 4760 };
 var PORT_TRIES = 100;
 var NetworkBlocked = class extends Error {
   code = "NETWORK_BLOCKED";
@@ -2612,6 +2612,7 @@ var Sharing = class _Sharing {
         if (isRecord5(link) && typeof link.token === "string" && link.token.length >= 16) state.links[role] = { token: link.token, on: link.on !== false };
       }
     }
+    if (isRecord5(raw.owner) && typeof raw.owner.token === "string" && raw.owner.token.length >= 32) state.owner = { token: raw.owner.token };
     if (Array.isArray(raw.guests)) {
       for (const g of raw.guests) {
         if (!isRecord5(g) || typeof g.id !== "string" || typeof g.secret !== "string" || !isGuestRole(g.role) || typeof g.link !== "string") continue;
@@ -2641,6 +2642,27 @@ var Sharing = class _Sharing {
       if (link.on && tokenGiven.length === link.token.length && crypto.timingSafeEqual(Buffer.from(tokenGiven), Buffer.from(link.token))) return role;
     }
     return null;
+  }
+  /** The owner's link token (`state.owner`), made and saved the first time it is asked for. */
+  ownerToken() {
+    if (!this.state.owner) {
+      this.state.owner = { token: token(32) };
+      this.save();
+    }
+    return this.state.owner.token;
+  }
+  /** Whether `given` is the owner's link token (a cookie or a link's). */
+  isOwnerToken(given) {
+    const own = this.state.owner?.token;
+    if (!given || !own) return false;
+    const a = Buffer.from(given);
+    const b = Buffer.from(own);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  }
+  /** A new owner's link: the old one, and every browser that came in through it, stop working. */
+  resetOwner() {
+    this.state.owner = { token: token(32) };
+    this.save();
   }
   /** The guest a cookie names, if they still have access (their link on and not reset). */
   guest(secret) {
@@ -3109,11 +3131,11 @@ async function shareCall(url, action, fail2) {
   if (!response.ok) fail2("SHARE_REFUSED", String(body.message ?? `the server answered ${response.status}`));
   return body;
 }
-function rolesOf(flags, key, fail2) {
+function rolesOf(flags, key, fail2, owner = false) {
   const given = flags.get(key);
   if (given === void 0) return [];
   const roles = given === "all" || given === "true" ? [...GUEST_ROLES] : given.split(",").map((r) => r.trim());
-  for (const role of roles) if (!isGuestRole(role)) fail2("INVALID_ROLE", `--${key}: editor, commenter, viewer or all (got ${role}).`);
+  for (const role of roles) if (!isGuestRole(role) && !(owner && role === "owner")) fail2("INVALID_ROLE", `--${key}: ${owner ? "owner, " : ""}editor, commenter, viewer or all (got ${role}).`);
   return roles;
 }
 function guestRoles(flags, fail2) {
@@ -3128,7 +3150,7 @@ function guestRoles(flags, fail2) {
 async function shareCommand(o) {
   const off = o.flags.has("off");
   const changes = [
-    ...rolesOf(o.flags, "reset", o.fail).map((role) => ({ action: "reset", role })),
+    ...rolesOf(o.flags, "reset", o.fail, true).map((role) => ({ action: "reset", role })),
     ...rolesOf(o.flags, "enable", o.fail).map((role) => ({ action: "link", role, on: true })),
     ...rolesOf(o.flags, "disable", o.fail).map((role) => ({ action: "link", role, on: false })),
     ...guestRoles(o.flags, o.fail)
@@ -3138,7 +3160,8 @@ async function shareCommand(o) {
   if (!server) {
     const sharing = new Sharing(o.root);
     for (const change of changes) {
-      if (change.action === "reset") sharing.resetLink(change.role);
+      if (change.action === "reset" && change.role === "owner") sharing.resetOwner();
+      else if (change.action === "reset") sharing.resetLink(change.role);
       else if (change.action === "role") {
         if (!sharing.setRole(String(change.guest), change.role)) o.fail("SHARE_REFUSED", `No guest ${String(change.guest)}, or the ${String(change.role)} link is off.`);
       } else sharing.setLink(change.role, change.on === true);
@@ -3184,6 +3207,30 @@ async function shareCommand(o) {
 }
 var NOT_SHARED_HINT = "share <root> with no options shares it.";
 var lanUrls = (view) => (Array.isArray(view.addresses) ? view.addresses : []).map((a) => `http://${String(a)}:${String(view.port)}${String(view.page ?? "/")}`);
+async function remoteOn(url, flags, fail2, stopCommand) {
+  const given = flags.get("remote");
+  if (given === void 0) return {};
+  const call = async (action) => {
+    const response = await fetch(new URL("__share", url), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(action) });
+    const body = await response.json().catch(() => ({}));
+    if (response.ok) return body;
+    if (response.status === 400 && /^action: /.test(String(body.message ?? ""))) {
+      fail2("REMOTE_UNSUPPORTED", `The editor server running for this folder is of an earlier release and cannot open it to another device. Run ${stopCommand}, then open again.`);
+    }
+    return fail2("SHARE_REFUSED", String(body.message ?? `the server answered ${response.status}`));
+  };
+  if (given === "off") {
+    await call({ action: "remote", on: false });
+    return { remote: false };
+  }
+  const view = await call({ action: "remote", on: true, ...given && given !== "true" ? { host: given } : {} });
+  const link = view.remoteLink;
+  if (typeof link?.url !== "string") return fail2("SHARE_REFUSED", "The server did not give the owner's link.");
+  return {
+    remoteUrl: link.url,
+    remoteNote: `remoteUrl opens the editor as its owner from another device that reaches this computer at ${String(link.address)} (an app reached remotely, a phone, a laptop on the same network or tailnet). It is the owner's own key, over plain http: open it only on your own devices and give it to nobody (to let others in, \`share\`). \`--remote=off\` closes it; \`share <root> --reset owner\` replaces it.`
+  };
+}
 async function lanOn(url, flags, fail2) {
   if (!flags.has("lan")) return {};
   return { lan: lanUrls(await shareCall(url, { action: "lan", on: true }, fail2)) };
@@ -3210,7 +3257,7 @@ var CliError = class extends Error {
     this.code = code;
   }
 };
-var SWITCHES = /* @__PURE__ */ new Set(["all", "wait", "resolve", "reopen", "lan", "off", "check"]);
+var SWITCHES = /* @__PURE__ */ new Set(["all", "wait", "resolve", "reopen", "lan", "remote", "off", "check"]);
 function parseArgs(argv) {
   const positional = [];
   const flags = /* @__PURE__ */ new Map();
@@ -3530,11 +3577,11 @@ async function open(a, flags) {
   assertServerFiles();
   const existing = await runningServer2(a.root);
   if (existing) {
-    print({ url: existing.url, root: a.root, pid: existing.pid, reused: true, ...await lanOn2(existing.url, flags), log: path15.join(a.root, LOG_FILE), stop: script("stop", a.root), ...reusedNote(a, flags) });
+    print({ url: existing.url, root: a.root, pid: existing.pid, reused: true, ...await lanOn2(existing.url, flags), ...await remoteOn(existing.url, flags, fail, script("stop", a.root)), log: path15.join(a.root, LOG_FILE), stop: script("stop", a.root), ...reusedNote(a, flags) });
     return;
   }
   const state = await startBackground(a, flags);
-  print({ url: state.url, root: a.root, pid: state.pid, ...state.lan?.length ? { lan: state.lan } : {}, log: path15.join(a.root, LOG_FILE), stop: script("stop", a.root) });
+  print({ url: state.url, root: a.root, pid: state.pid, ...state.lan?.length ? { lan: state.lan } : {}, ...await remoteOn(state.url, flags, fail, script("stop", a.root)), log: path15.join(a.root, LOG_FILE), stop: script("stop", a.root) });
 }
 async function startBackground(a, flags) {
   const host = flags.get("host") ?? "127.0.0.1";
@@ -3703,6 +3750,8 @@ Usage:
                                    [--agent-hook "<command>"]     open/serve: run this for each comment sent to the agent
                                                                   (the comment as JSON on stdin)
                                    [--lan]                        open/serve: also share on the local network, as share does
+                                   [--remote[=<host>]]            open: also open it to you on another device (<host>: how
+                                                                  that device reaches this computer); prints remoteUrl
   node scripts/artifact.mjs stop   <root>                         stop the background editor server
   node scripts/artifact.mjs share  <root>                         share on the local network; prints a link per role
                                    [--reset R] [--enable R] [--disable R]   R: editor, commenter, viewer (comma list) or all

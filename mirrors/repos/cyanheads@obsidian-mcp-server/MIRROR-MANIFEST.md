@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cyanheads/obsidian-mcp-server` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,6 +95,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`framework-skills/setup/SKILL.md`](framework-skills/setup/SKILL.md) |
 | 35 | ✓ | [`framework-skills/techniques/SKILL.md`](framework-skills/techniques/SKILL.md) |
 | 36 | ✓ | [`framework-skills/tool-defs-analysis/SKILL.md`](framework-skills/tool-defs-analysis/SKILL.md) |
+| 37 | ✓ | [`skills/obsidian-guide/SKILL.md`](skills/obsidian-guide/SKILL.md) |
 
 ---
 

@@ -1,12 +1,12 @@
 # Agent 编排检测与修复
 
-授权按[分级授权](authorization-tiers.md)：A 档范围内自己做，B 档整个计划批准一次，C 档当场确认。脚本和库的输入格式、阻塞条件见 [host-libraries.md](host-libraries.md)。
+授权按[分级授权](authorization-tiers.md)：A 档范围内自己做，B 档整个计划批准一次，C 档当场确认。脚本契约见 [host-libraries.md](host-libraries.md)。
 
 ## 一次任务的闭环
 
 1. 复用访谈事实，确认本轮路线（本机、VM、VPS）和目标设备。
 2. 先完成下面的能力核实，再检测：`guardian.py check` 采系统和代理设置，`network_check.py run` 测网络（B 档批准检测计划后跑）。已有新鲜报告就直接用。
-3. 选动作：`python scripts/agent_remediation.py select --input <报告.json> --target-ref <别名>`，`catalog` 列出全部动作。清单是建议，Agent 审阅后替换成核实过的参数再调用固定脚本，不拼接任意 shell。
+3. 用 `agent_remediation.py select` 选动作，`catalog` 列清单；审核参数后调用固定脚本，不拼接任意 shell。Windows 网络写入先按[独立恢复](windows-network-transaction.md)交给本机任务，无独立恢复不写入。
 4. 要改东西时，给用户看：改哪里、原值→新值、影响、保留什么、备份和恢复办法，按档位取得批准。
 5. 改完先读回，再用 `network_check.py run` 对同一目标复测。
 6. 汇报：改了什么、复测结果、还没测的项、怎么恢复。已改未验的不自动重复写入；恢复只撤回本次改动，不覆盖用户后来的修改。
@@ -17,7 +17,7 @@
 
 在目标机核实 Python 3.10+，运行 `inventory_cli.py capabilities`、`network_check.py --help`、`egress_verifier.py --help`，记录目标绑定的 `capabilities`（[格式](intake.md#workflow-record-formats-and-dependency-preparation)）。网络检测支持三平台。
 
-**缺 Python 必须补齐，统一用我们的脚本，不能手写替代验收。**先说明官方来源、架构、安装范围、权限、PATH 影响和卸载恢复，按档授权；未获准或失败就记检测未完成。Windows 历史经验见 [S10 第十节](../sources/S10-windows-deployment-sanitized.md#network-evidence)，不照搬旧镜像、全机安装或 SYSTEM 方案。
+**缺 Python 必须补齐，统一用我们的脚本，不能手写替代验收。**安装范围、授权和失败处理见[依赖准备](intake.md#workflow-record-formats-and-dependency-preparation)。
 
 <a id="handoff-and-follow-up"></a>
 ## 手动交接与遗留验收
@@ -73,7 +73,7 @@
 
 **系统：**操作系统里没有统一关 WebRTC 的开关。桌面客户端、Electron 应用、游戏、会议软件自己发 STUN/UDP，浏览器插件和浏览器策略都管不到。**只开系统代理时，非浏览器应用的 WebRTC/UDP 不受保护**：系统代理只对愿意读它的程序生效，而且只有 HTTP/SOCKS 的 TCP 流量走代理，UDP 照样直连，会暴露真实 IP。所以**必须开 TUN 严格路由**（Clash Verge 里的“虚拟网卡模式”加“严格路由”，mihomo 配置是 `tun.enable: true`、`strict-route: true`），并按[整机只走 IPv4](#ipv4-only-policy)关 IPv6。开好后跑 `network_check.py run`：“UDP”一项要显示 STUN 映射地址和 TCP 出口一致，“路由”一项要显示走 TUN。
 
-**这一步就是为了防止 Claude Desktop 的 WebRTC 泄漏（2026-10-28）：**Claude Desktop 是 Electron 应用，自己发 STUN/UDP，Chrome 插件和浏览器策略管不到，所以本机防它的 WebRTC 泄漏靠 TUN 严格路由加关 IPv6，不靠应用内开关。**Claude Desktop 最佳还是软路由（2026-11-01）**，这条路线先[占位](routes-and-platforms.md#r-router)、未来补齐；现在按本节在本机做。验收按下面做：
+**Claude Desktop 的 WebRTC：**Claude Desktop 是 Electron 应用，自己发 STUN/UDP，Chrome 插件和浏览器策略管不到，所以本机防它的 WebRTC 泄漏靠 TUN 严格路由加关 IPv6，不靠应用内开关。**Claude Desktop 最佳还是软路由**，见[路线占位](routes-and-platforms.md#r-router)；当前按本节处理。验收按下面做：
 
 1. 在 **Claude Desktop 运行、TUN 开着** 的同一状态下跑 `network_check.py run`，UDP 项的 STUN 映射地址必须和 TCP 出口一致，路由项显示走 TUN。局域网和 mDNS 候选不算公网泄漏。
 2. UDP 要真能出去：节点和协议得支持 UDP 转发，规则里不能让 STUN 目标命中 `DIRECT`。ICE 701、无候选或超时只算无法判定，不算已防住。
@@ -130,4 +130,4 @@
 5. **重启 Clash Verge（B 档）：** 重新打开应用，让它载入新规则。写入成功只表示文件读回一致，不表示应用已载入。
 6. **验证出口与规则命中：** 跑 `network_check.py run` 验证出口、DNS 和 UDP，WebRTC 用 `serve_webrtc.py`；失败就用回执回滚，再重启应用。
 
-限制：macOS 没有强制文件锁，适配器只能发现并失败，不能阻止别的进程在两次复查之间写入。只有应用 `clash-verge`（及应用包路径下的进程）算写入者，已在一台真实 Mac 上核对；核心和服务不算（真机上退出应用后它们仍在运行，旧版本把它们也算进去，逼用户 `sudo launchctl bootout`，已取消）。拒绝路径、真实写入、重启后规则在场和回滚都已在一台真实 Mac（macOS 15.7.4）上验证（ADR-039）。
+限制：macOS 没有强制文件锁，适配器能检测冲突并停止，不能阻止两次复查之间的外部写入。拒绝路径、真实写入、重启后规则在场和回滚已在 macOS 15.7.4 单机验证（ADR-039）。

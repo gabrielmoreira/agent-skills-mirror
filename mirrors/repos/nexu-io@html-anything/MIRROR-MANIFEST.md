@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nexu-io/html-anything` — 26 default patterns, 1 followed patterns, 85 file(s) materialized.
+Mirror of `nexu-io/html-anything` — 26 default patterns, 49 followed patterns, 128 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nexu-io/html-anything` — 26 default patterns, 1 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 85 |
+| Followed pats | 49 |
+| Files         | 128 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,55 @@ Mirror of `nexu-io/html-anything` — 26 default patterns, 1 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/motion-release-activation.md`
+- `docs/repository-migration.md`
+- `docs/product/architecture.md`
+- `docs/README.md`
+- `docs/mcp-phase1-tools.md`
+- `docs/release-workflows.md`
+- `README.zh-CN.md`
+- `README.md`
+- `docs/README.ja.md`
+- `docs/examples.zh-CN.md`
+- `docs/project-workspace.md`
+- `library/ENTRY_TEMPLATE.md`
+- `docs/agent-adapters.md`
+- `examples/brand-studies/stripe/MOTION.md`
+- `library/components/README.md`
+- `library/components/title-reveal/README.md`
+- `library/brandkits/openmotion/BRANDKIT.md`
+- `library/design-systems/ink-water/MOTION_DESIGN.md`
+- `library/templates/presenter-tech/README.md`
+- `docs/readme/RESOURCES.md`
+- `docs/motion-design-examples.zh-CN.md`
+- `docs/motion-md.zh-CN.md`
+- `docs/model-gateway.md`
+- `docs/usage.md`
+- `docs/npm-installation.md`
+- `docs/test-packages.md`
+- `docs/template-catalog.md`
+- `docs/product-tour.md`
+- `docs/session-architecture.md`
+- `docs/editor-fork.md`
+- `library/README.zh-CN.md`
+- `docs/product/studio-vision.md`
+- `docs/product/media-generation-design.md`
+- `docs/hyperframes.md`
+- `CONTRIBUTING.md`
+- `studio/README.md`
+- `docs/media-kit.md`
+- `docs/readme/models/README.md`
+- `docs/design-system.md`
+- `template-library/NOTICE.md`
+- `library/templates/presenter-tech/NOTICE.md`
+- `docs/readme/brand-showcase/README.md`
+- `docs/readme/ASSETS.md`
+- `docs/README.zh-CN.md`
+- `docs/examples.md`
+- `docs/motion-design-examples.md`
+- `docs/motion-md.md`
+- `library/README.md`
+- `CONTRIBUTING.zh-CN.md`
+- `docs/product/changes.md`
 
 ## File Index
 
@@ -59,91 +107,134 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 4 | ✓ | [`next/src/lib/templates/skills/article-magazine/SKILL.md`](next/src/lib/templates/skills/article-magazine/SKILL.md) |
-| 5 | ✓ | [`next/src/lib/templates/skills/article-sketchnote-editorial/SKILL.md`](next/src/lib/templates/skills/article-sketchnote-editorial/SKILL.md) |
-| 6 | ✓ | [`next/src/lib/templates/skills/blog-post/SKILL.md`](next/src/lib/templates/skills/blog-post/SKILL.md) |
-| 7 | ✓ | [`next/src/lib/templates/skills/card-twitter/SKILL.md`](next/src/lib/templates/skills/card-twitter/SKILL.md) |
-| 8 | ✓ | [`next/src/lib/templates/skills/card-xiaohongshu/SKILL.md`](next/src/lib/templates/skills/card-xiaohongshu/SKILL.md) |
-| 9 | ✓ | [`next/src/lib/templates/skills/competitive-teardown/SKILL.md`](next/src/lib/templates/skills/competitive-teardown/SKILL.md) |
-| 10 | ✓ | [`next/src/lib/templates/skills/dashboard/SKILL.md`](next/src/lib/templates/skills/dashboard/SKILL.md) |
-| 11 | ✓ | [`next/src/lib/templates/skills/data-report/SKILL.md`](next/src/lib/templates/skills/data-report/SKILL.md) |
-| 12 | ✓ | [`next/src/lib/templates/skills/dating-web/SKILL.md`](next/src/lib/templates/skills/dating-web/SKILL.md) |
-| 13 | ✓ | [`next/src/lib/templates/skills/deck-blueprint/SKILL.md`](next/src/lib/templates/skills/deck-blueprint/SKILL.md) |
-| 14 | ✓ | [`next/src/lib/templates/skills/deck-course-module/SKILL.md`](next/src/lib/templates/skills/deck-course-module/SKILL.md) |
-| 15 | ✓ | [`next/src/lib/templates/skills/deck-dir-key-nav/SKILL.md`](next/src/lib/templates/skills/deck-dir-key-nav/SKILL.md) |
-| 16 | ✓ | [`next/src/lib/templates/skills/deck-graphify-dark/SKILL.md`](next/src/lib/templates/skills/deck-graphify-dark/SKILL.md) |
-| 17 | ✓ | [`next/src/lib/templates/skills/deck-guizang-editorial/SKILL.md`](next/src/lib/templates/skills/deck-guizang-editorial/SKILL.md) |
-| 18 | ✓ | [`next/src/lib/templates/skills/deck-hermes-cyber/SKILL.md`](next/src/lib/templates/skills/deck-hermes-cyber/SKILL.md) |
-| 19 | ✓ | [`next/src/lib/templates/skills/deck-ljg-present/SKILL.md`](next/src/lib/templates/skills/deck-ljg-present/SKILL.md) |
-| 20 | ✓ | [`next/src/lib/templates/skills/deck-magazine-web/SKILL.md`](next/src/lib/templates/skills/deck-magazine-web/SKILL.md) |
-| 21 | ✓ | [`next/src/lib/templates/skills/deck-obsidian-claude/SKILL.md`](next/src/lib/templates/skills/deck-obsidian-claude/SKILL.md) |
-| 22 | ✓ | [`next/src/lib/templates/skills/deck-open-slide-canvas/SKILL.md`](next/src/lib/templates/skills/deck-open-slide-canvas/SKILL.md) |
-| 23 | ✓ | [`next/src/lib/templates/skills/deck-pitch/SKILL.md`](next/src/lib/templates/skills/deck-pitch/SKILL.md) |
-| 24 | ✓ | [`next/src/lib/templates/skills/deck-presenter-mode/SKILL.md`](next/src/lib/templates/skills/deck-presenter-mode/SKILL.md) |
-| 25 | ✓ | [`next/src/lib/templates/skills/deck-product-launch/SKILL.md`](next/src/lib/templates/skills/deck-product-launch/SKILL.md) |
-| 26 | ✓ | [`next/src/lib/templates/skills/deck-replit/SKILL.md`](next/src/lib/templates/skills/deck-replit/SKILL.md) |
-| 27 | ✓ | [`next/src/lib/templates/skills/deck-safety-alert/SKILL.md`](next/src/lib/templates/skills/deck-safety-alert/SKILL.md) |
-| 28 | ✓ | [`next/src/lib/templates/skills/deck-simple/SKILL.md`](next/src/lib/templates/skills/deck-simple/SKILL.md) |
-| 29 | ✓ | [`next/src/lib/templates/skills/deck-swiss-international/SKILL.md`](next/src/lib/templates/skills/deck-swiss-international/SKILL.md) |
-| 30 | ✓ | [`next/src/lib/templates/skills/deck-tech-sharing/SKILL.md`](next/src/lib/templates/skills/deck-tech-sharing/SKILL.md) |
-| 31 | ✓ | [`next/src/lib/templates/skills/deck-xhs-pastel/SKILL.md`](next/src/lib/templates/skills/deck-xhs-pastel/SKILL.md) |
-| 32 | ✓ | [`next/src/lib/templates/skills/deck-xhs-post/SKILL.md`](next/src/lib/templates/skills/deck-xhs-post/SKILL.md) |
-| 33 | ✓ | [`next/src/lib/templates/skills/deck-xhs-white/SKILL.md`](next/src/lib/templates/skills/deck-xhs-white/SKILL.md) |
-| 34 | ✓ | [`next/src/lib/templates/skills/digital-eguide/SKILL.md`](next/src/lib/templates/skills/digital-eguide/SKILL.md) |
-| 35 | ✓ | [`next/src/lib/templates/skills/doc-kami-parchment/SKILL.md`](next/src/lib/templates/skills/doc-kami-parchment/SKILL.md) |
-| 36 | ✓ | [`next/src/lib/templates/skills/docs-page/SKILL.md`](next/src/lib/templates/skills/docs-page/SKILL.md) |
-| 37 | ✓ | [`next/src/lib/templates/skills/email-marketing/SKILL.md`](next/src/lib/templates/skills/email-marketing/SKILL.md) |
-| 38 | ✓ | [`next/src/lib/templates/skills/eng-runbook/SKILL.md`](next/src/lib/templates/skills/eng-runbook/SKILL.md) |
-| 39 | ✓ | [`next/src/lib/templates/skills/exec-briefing-memo/SKILL.md`](next/src/lib/templates/skills/exec-briefing-memo/SKILL.md) |
-| 40 | ✓ | [`next/src/lib/templates/skills/experiment-readout/SKILL.md`](next/src/lib/templates/skills/experiment-readout/SKILL.md) |
-| 41 | ✓ | [`next/src/lib/templates/skills/finance-report/SKILL.md`](next/src/lib/templates/skills/finance-report/SKILL.md) |
-| 42 | ✓ | [`next/src/lib/templates/skills/flowai-team-dashboard/SKILL.md`](next/src/lib/templates/skills/flowai-team-dashboard/SKILL.md) |
-| 43 | ✓ | [`next/src/lib/templates/skills/frame-data-chart-nyt/SKILL.md`](next/src/lib/templates/skills/frame-data-chart-nyt/SKILL.md) |
-| 44 | ✓ | [`next/src/lib/templates/skills/frame-flowchart-sticky/SKILL.md`](next/src/lib/templates/skills/frame-flowchart-sticky/SKILL.md) |
-| 45 | ✓ | [`next/src/lib/templates/skills/frame-glitch-title/SKILL.md`](next/src/lib/templates/skills/frame-glitch-title/SKILL.md) |
-| 46 | ✓ | [`next/src/lib/templates/skills/frame-light-leak-cinema/SKILL.md`](next/src/lib/templates/skills/frame-light-leak-cinema/SKILL.md) |
-| 47 | ✓ | [`next/src/lib/templates/skills/frame-liquid-bg-hero/SKILL.md`](next/src/lib/templates/skills/frame-liquid-bg-hero/SKILL.md) |
-| 48 | ✓ | [`next/src/lib/templates/skills/frame-logo-outro/SKILL.md`](next/src/lib/templates/skills/frame-logo-outro/SKILL.md) |
-| 49 | ✓ | [`next/src/lib/templates/skills/frame-macos-notification/SKILL.md`](next/src/lib/templates/skills/frame-macos-notification/SKILL.md) |
-| 50 | ✓ | [`next/src/lib/templates/skills/gamified-app/SKILL.md`](next/src/lib/templates/skills/gamified-app/SKILL.md) |
-| 51 | ✓ | [`next/src/lib/templates/skills/hr-onboarding/SKILL.md`](next/src/lib/templates/skills/hr-onboarding/SKILL.md) |
-| 52 | ✓ | [`next/src/lib/templates/skills/info-funnel/SKILL.md`](next/src/lib/templates/skills/info-funnel/SKILL.md) |
-| 53 | ✓ | [`next/src/lib/templates/skills/invoice/SKILL.md`](next/src/lib/templates/skills/invoice/SKILL.md) |
-| 54 | ✓ | [`next/src/lib/templates/skills/kanban-board/SKILL.md`](next/src/lib/templates/skills/kanban-board/SKILL.md) |
-| 55 | ✓ | [`next/src/lib/templates/skills/live-dashboard/SKILL.md`](next/src/lib/templates/skills/live-dashboard/SKILL.md) |
-| 56 | ✓ | [`next/src/lib/templates/skills/magazine-poster/SKILL.md`](next/src/lib/templates/skills/magazine-poster/SKILL.md) |
-| 57 | ✓ | [`next/src/lib/templates/skills/meeting-notes/SKILL.md`](next/src/lib/templates/skills/meeting-notes/SKILL.md) |
-| 58 | ✓ | [`next/src/lib/templates/skills/mobile-app/SKILL.md`](next/src/lib/templates/skills/mobile-app/SKILL.md) |
-| 59 | ✓ | [`next/src/lib/templates/skills/mobile-onboarding/SKILL.md`](next/src/lib/templates/skills/mobile-onboarding/SKILL.md) |
-| 60 | ✓ | [`next/src/lib/templates/skills/mockup-device-3d/SKILL.md`](next/src/lib/templates/skills/mockup-device-3d/SKILL.md) |
-| 61 | ✓ | [`next/src/lib/templates/skills/motion-frames/SKILL.md`](next/src/lib/templates/skills/motion-frames/SKILL.md) |
-| 62 | ✓ | [`next/src/lib/templates/skills/pm-spec/SKILL.md`](next/src/lib/templates/skills/pm-spec/SKILL.md) |
-| 63 | ✓ | [`next/src/lib/templates/skills/poster-hero/SKILL.md`](next/src/lib/templates/skills/poster-hero/SKILL.md) |
-| 64 | ✓ | [`next/src/lib/templates/skills/ppt-keynote/SKILL.md`](next/src/lib/templates/skills/ppt-keynote/SKILL.md) |
-| 65 | ✓ | [`next/src/lib/templates/skills/pricing-page/SKILL.md`](next/src/lib/templates/skills/pricing-page/SKILL.md) |
-| 66 | ✓ | [`next/src/lib/templates/skills/prototype-web/SKILL.md`](next/src/lib/templates/skills/prototype-web/SKILL.md) |
-| 67 | ✓ | [`next/src/lib/templates/skills/resume-modern/SKILL.md`](next/src/lib/templates/skills/resume-modern/SKILL.md) |
-| 68 | ✓ | [`next/src/lib/templates/skills/saas-landing/SKILL.md`](next/src/lib/templates/skills/saas-landing/SKILL.md) |
-| 69 | ✓ | [`next/src/lib/templates/skills/social-carousel/SKILL.md`](next/src/lib/templates/skills/social-carousel/SKILL.md) |
-| 70 | ✓ | [`next/src/lib/templates/skills/social-media-dashboard/SKILL.md`](next/src/lib/templates/skills/social-media-dashboard/SKILL.md) |
-| 71 | ✓ | [`next/src/lib/templates/skills/social-media-matrix/SKILL.md`](next/src/lib/templates/skills/social-media-matrix/SKILL.md) |
-| 72 | ✓ | [`next/src/lib/templates/skills/social-reddit-card/SKILL.md`](next/src/lib/templates/skills/social-reddit-card/SKILL.md) |
-| 73 | ✓ | [`next/src/lib/templates/skills/social-spotify-card/SKILL.md`](next/src/lib/templates/skills/social-spotify-card/SKILL.md) |
-| 74 | ✓ | [`next/src/lib/templates/skills/social-x-post-card/SKILL.md`](next/src/lib/templates/skills/social-x-post-card/SKILL.md) |
-| 75 | ✓ | [`next/src/lib/templates/skills/sprite-animation/SKILL.md`](next/src/lib/templates/skills/sprite-animation/SKILL.md) |
-| 76 | ✓ | [`next/src/lib/templates/skills/team-okrs/SKILL.md`](next/src/lib/templates/skills/team-okrs/SKILL.md) |
-| 77 | ✓ | [`next/src/lib/templates/skills/vfx-text-cursor/SKILL.md`](next/src/lib/templates/skills/vfx-text-cursor/SKILL.md) |
-| 78 | ✓ | [`next/src/lib/templates/skills/video-hyperframes/SKILL.md`](next/src/lib/templates/skills/video-hyperframes/SKILL.md) |
-| 79 | ✓ | [`next/src/lib/templates/skills/waitlist-page/SKILL.md`](next/src/lib/templates/skills/waitlist-page/SKILL.md) |
-| 80 | ✓ | [`next/src/lib/templates/skills/web-proto-brutalist/SKILL.md`](next/src/lib/templates/skills/web-proto-brutalist/SKILL.md) |
-| 81 | ✓ | [`next/src/lib/templates/skills/web-proto-editorial/SKILL.md`](next/src/lib/templates/skills/web-proto-editorial/SKILL.md) |
-| 82 | ✓ | [`next/src/lib/templates/skills/web-proto-soft/SKILL.md`](next/src/lib/templates/skills/web-proto-soft/SKILL.md) |
-| 83 | ✓ | [`next/src/lib/templates/skills/weekly-update/SKILL.md`](next/src/lib/templates/skills/weekly-update/SKILL.md) |
-| 84 | ✓ | [`next/src/lib/templates/skills/wireframe-sketch/SKILL.md`](next/src/lib/templates/skills/wireframe-sketch/SKILL.md) |
-| 85 | → | [`docs/motion-release-activation.md`](docs/motion-release-activation.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/browser-runtime.md`](docs/browser-runtime.md) |
+| 5 | ✓ | [`docs/collections/README.md`](docs/collections/README.md) |
+| 6 | ✓ | [`docs/collections/README.zh-CN.md`](docs/collections/README.zh-CN.md) |
+| 7 | ✓ | [`docs/install.md`](docs/install.md) |
+| 8 | ✓ | [`docs/motion-director.md`](docs/motion-director.md) |
+| 9 | ✓ | [`docs/motion-extension-scope.md`](docs/motion-extension-scope.md) |
+| 10 | ✓ | [`docs/readme/reverse-engineering-cover.md`](docs/readme/reverse-engineering-cover.md) |
+| 11 | ✓ | [`docs/release-guide.md`](docs/release-guide.md) |
+| 12 | ✓ | [`docs/reviews/motion-mvp-followup/README.md`](docs/reviews/motion-mvp-followup/README.md) |
+| 13 | ✓ | [`docs/reviews/motion-mvp/README.md`](docs/reviews/motion-mvp/README.md) |
+| 14 | ✓ | [`docs/shared-editor.md`](docs/shared-editor.md) |
+| 15 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 16 | ✓ | [`examples/wing-construction/README.md`](examples/wing-construction/README.md) |
+| 17 | ✓ | [`library/components/showcase/app-showcase/vendor/gsap-3.14.2/README.md`](library/components/showcase/app-showcase/vendor/gsap-3.14.2/README.md) |
+| 18 | ✓ | [`library/components/showcase/aurora/vendor/gsap-3.14.2/README.md`](library/components/showcase/aurora/vendor/gsap-3.14.2/README.md) |
+| 19 | ✓ | [`library/components/showcase/glass-shard-title/vendor/gsap-3.14.2/README.md`](library/components/showcase/glass-shard-title/vendor/gsap-3.14.2/README.md) |
+| 20 | ✓ | [`library/components/showcase/NOTICE.md`](library/components/showcase/NOTICE.md) |
+| 21 | ✓ | [`library/components/showcase/nyc-paris-flight/vendor/gsap-3.14.2/README.md`](library/components/showcase/nyc-paris-flight/vendor/gsap-3.14.2/README.md) |
+| 22 | ✓ | [`library/components/showcase/README.md`](library/components/showcase/README.md) |
+| 23 | ✓ | [`library/skills/brandkit/SKILL.md`](library/skills/brandkit/SKILL.md) |
+| 24 | ✓ | [`library/skills/motion-design-remix/NOTICE.md`](library/skills/motion-design-remix/NOTICE.md) |
+| 25 | ✓ | [`library/skills/motion-design-remix/references/canopy-part-title/MOTION_DESIGN.md`](library/skills/motion-design-remix/references/canopy-part-title/MOTION_DESIGN.md) |
+| 26 | ✓ | [`library/skills/motion-design-remix/references/code-3d-extrude/MOTION_DESIGN.md`](library/skills/motion-design-remix/references/code-3d-extrude/MOTION_DESIGN.md) |
+| 27 | ✓ | [`library/skills/motion-design-remix/references/code-particle-assemble/MOTION_DESIGN.md`](library/skills/motion-design-remix/references/code-particle-assemble/MOTION_DESIGN.md) |
+| 28 | ✓ | [`library/skills/motion-design-remix/references/liquid-glass-widgets/MOTION_DESIGN.md`](library/skills/motion-design-remix/references/liquid-glass-widgets/MOTION_DESIGN.md) |
+| 29 | ✓ | [`library/skills/motion-design-remix/references/ui-3d-reveal/MOTION_DESIGN.md`](library/skills/motion-design-remix/references/ui-3d-reveal/MOTION_DESIGN.md) |
+| 30 | ✓ | [`library/skills/motion-design-remix/references/wireframe-portal-title/MOTION_DESIGN.md`](library/skills/motion-design-remix/references/wireframe-portal-title/MOTION_DESIGN.md) |
+| 31 | ✓ | [`library/skills/motion-design-remix/SKILL.md`](library/skills/motion-design-remix/SKILL.md) |
+| 32 | ✓ | [`library/skills/motion-design-remix/vendor/clipper-lib-6.4.2/README.md`](library/skills/motion-design-remix/vendor/clipper-lib-6.4.2/README.md) |
+| 33 | ✓ | [`library/skills/motion-design-remix/vendor/gsap-3.14.2/README.md`](library/skills/motion-design-remix/vendor/gsap-3.14.2/README.md) |
+| 34 | ✓ | [`library/skills/motion-design-remix/vendor/NOTICE.md`](library/skills/motion-design-remix/vendor/NOTICE.md) |
+| 35 | ✓ | [`library/skills/presenter-story/references/presenter-listicle/MOTION_DESIGN.md`](library/skills/presenter-story/references/presenter-listicle/MOTION_DESIGN.md) |
+| 36 | ✓ | [`library/skills/presenter-story/references/product-walkthrough/MOTION_DESIGN.md`](library/skills/presenter-story/references/product-walkthrough/MOTION_DESIGN.md) |
+| 37 | ✓ | [`library/skills/presenter-story/references/workflow-demo/MOTION_DESIGN.md`](library/skills/presenter-story/references/workflow-demo/MOTION_DESIGN.md) |
+| 38 | ✓ | [`library/skills/presenter-story/SKILL.md`](library/skills/presenter-story/SKILL.md) |
+| 39 | ✓ | [`library/templates/presenter-tech/MOTION_DESIGN.md`](library/templates/presenter-tech/MOTION_DESIGN.md) |
+| 40 | ✓ | [`library/templates/presenter-tech/TEMPLATE.md`](library/templates/presenter-tech/TEMPLATE.md) |
+| 41 | ✓ | [`library/templates/presenter-tech/THIRD-PARTY-NOTICES.md`](library/templates/presenter-tech/THIRD-PARTY-NOTICES.md) |
+| 42 | ✓ | [`library/templates/README.md`](library/templates/README.md) |
+| 43 | ✓ | [`skills/.gitkeep`](skills/.gitkeep) |
+| 44 | ✓ | [`skills/motion-director/agents/openai.yaml`](skills/motion-director/agents/openai.yaml) |
+| 45 | ✓ | [`skills/motion-director/references/action-script.md`](skills/motion-director/references/action-script.md) |
+| 46 | ✓ | [`skills/motion-director/references/examples.md`](skills/motion-director/references/examples.md) |
+| 47 | ✓ | [`skills/motion-director/references/motion-craft.md`](skills/motion-director/references/motion-craft.md) |
+| 48 | ✓ | [`skills/motion-director/references/motion-phrases.md`](skills/motion-director/references/motion-phrases.md) |
+| 49 | ✓ | [`skills/motion-director/references/motion-review.md`](skills/motion-director/references/motion-review.md) |
+| 50 | ✓ | [`skills/motion-director/references/production-decisions.md`](skills/motion-director/references/production-decisions.md) |
+| 51 | ✓ | [`skills/motion-director/references/sound-narrative.md`](skills/motion-director/references/sound-narrative.md) |
+| 52 | ✓ | [`skills/motion-director/SKILL.md`](skills/motion-director/SKILL.md) |
+| 53 | ✓ | [`skills/motion-production/references/context.md`](skills/motion-production/references/context.md) |
+| 54 | ✓ | [`skills/motion-production/references/edit.md`](skills/motion-production/references/edit.md) |
+| 55 | ✓ | [`skills/motion-production/references/intake.md`](skills/motion-production/references/intake.md) |
+| 56 | ✓ | [`skills/motion-production/references/native.md`](skills/motion-production/references/native.md) |
+| 57 | ✓ | [`skills/motion-production/references/portable-project.md`](skills/motion-production/references/portable-project.md) |
+| 58 | ✓ | [`skills/motion-production/references/production.md`](skills/motion-production/references/production.md) |
+| 59 | ✓ | [`skills/motion-production/references/templates.md`](skills/motion-production/references/templates.md) |
+| 60 | ✓ | [`skills/motion-production/references/verification.md`](skills/motion-production/references/verification.md) |
+| 61 | ✓ | [`skills/motion-production/SKILL.md`](skills/motion-production/SKILL.md) |
+| 62 | ✓ | [`skills/motion-recreate/references/rebuild.md`](skills/motion-recreate/references/rebuild.md) |
+| 63 | ✓ | [`skills/motion-recreate/references/verify.md`](skills/motion-recreate/references/verify.md) |
+| 64 | ✓ | [`skills/motion-recreate/scripts/measure_frame.mjs`](skills/motion-recreate/scripts/measure_frame.mjs) |
+| 65 | ✓ | [`skills/motion-recreate/SKILL.md`](skills/motion-recreate/SKILL.md) |
+| 66 | ✓ | [`skills/motion-template-to-video/SKILL.md`](skills/motion-template-to-video/SKILL.md) |
+| 67 | ✓ | [`skills/motion-video-to-template/references/measure.md`](skills/motion-video-to-template/references/measure.md) |
+| 68 | ✓ | [`skills/motion-video-to-template/references/rebuild.md`](skills/motion-video-to-template/references/rebuild.md) |
+| 69 | ✓ | [`skills/motion-video-to-template/references/rule-sources.md`](skills/motion-video-to-template/references/rule-sources.md) |
+| 70 | ✓ | [`skills/motion-video-to-template/references/verify.md`](skills/motion-video-to-template/references/verify.md) |
+| 71 | ✓ | [`skills/motion-video-to-template/SKILL.md`](skills/motion-video-to-template/SKILL.md) |
+| 72 | ✓ | [`skills/reference-video/SKILL.md`](skills/reference-video/SKILL.md) |
+| 73 | ✓ | [`studio/tests/e2e/fixtures/composition-reliability/README.md`](studio/tests/e2e/fixtures/composition-reliability/README.md) |
+| 74 | ✓ | [`studio/tests/e2e/fixtures/studio-open/README.md`](studio/tests/e2e/fixtures/studio-open/README.md) |
+| 75 | ✓ | [`studio/tests/e2e/fixtures/webmcp-edit-loop/README.md`](studio/tests/e2e/fixtures/webmcp-edit-loop/README.md) |
+| 76 | ✓ | [`template-library/decision-tree/vendor/gsap-3.14.2/README.md`](template-library/decision-tree/vendor/gsap-3.14.2/README.md) |
+| 77 | ✓ | [`template-library/nyt-graph/vendor/gsap-3.14.2/README.md`](template-library/nyt-graph/vendor/gsap-3.14.2/README.md) |
+| 78 | ✓ | [`template-library/product-promo/vendor/gsap-3.14.2/README.md`](template-library/product-promo/vendor/gsap-3.14.2/README.md) |
+| 79 | ✓ | [`tracking/README.md`](tracking/README.md) |
+| 80 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 81 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 82 | → | [`docs/agent-adapters.md`](docs/agent-adapters.md) |
+| 83 | → | [`docs/design-system.md`](docs/design-system.md) |
+| 84 | → | [`docs/editor-fork.md`](docs/editor-fork.md) |
+| 85 | → | [`docs/examples.md`](docs/examples.md) |
+| 86 | → | [`docs/examples.zh-CN.md`](docs/examples.zh-CN.md) |
+| 87 | → | [`docs/hyperframes.md`](docs/hyperframes.md) |
+| 88 | → | [`docs/mcp-phase1-tools.md`](docs/mcp-phase1-tools.md) |
+| 89 | → | [`docs/media-kit.md`](docs/media-kit.md) |
+| 90 | → | [`docs/model-gateway.md`](docs/model-gateway.md) |
+| 91 | → | [`docs/motion-design-examples.md`](docs/motion-design-examples.md) |
+| 92 | → | [`docs/motion-design-examples.zh-CN.md`](docs/motion-design-examples.zh-CN.md) |
+| 93 | → | [`docs/motion-md.md`](docs/motion-md.md) |
+| 94 | → | [`docs/motion-md.zh-CN.md`](docs/motion-md.zh-CN.md) |
+| 95 | → | [`docs/npm-installation.md`](docs/npm-installation.md) |
+| 96 | → | [`docs/product-tour.md`](docs/product-tour.md) |
+| 97 | → | [`docs/product/architecture.md`](docs/product/architecture.md) |
+| 98 | → | [`docs/product/changes.md`](docs/product/changes.md) |
+| 99 | → | [`docs/product/media-generation-design.md`](docs/product/media-generation-design.md) |
+| 100 | → | [`docs/product/studio-vision.md`](docs/product/studio-vision.md) |
+| 101 | → | [`docs/project-workspace.md`](docs/project-workspace.md) |
+| 102 | → | [`docs/README.ja.md`](docs/README.ja.md) |
+| 103 | → | [`docs/README.md`](docs/README.md) |
+| 104 | → | [`docs/README.zh-CN.md`](docs/README.zh-CN.md) |
+| 105 | → | [`docs/readme/ASSETS.md`](docs/readme/ASSETS.md) |
+| 106 | → | [`docs/readme/brand-showcase/README.md`](docs/readme/brand-showcase/README.md) |
+| 107 | → | [`docs/readme/models/README.md`](docs/readme/models/README.md) |
+| 108 | → | [`docs/readme/RESOURCES.md`](docs/readme/RESOURCES.md) |
+| 109 | → | [`docs/release-workflows.md`](docs/release-workflows.md) |
+| 110 | → | [`docs/repository-migration.md`](docs/repository-migration.md) |
+| 111 | → | [`docs/session-architecture.md`](docs/session-architecture.md) |
+| 112 | → | [`docs/template-catalog.md`](docs/template-catalog.md) |
+| 113 | → | [`docs/test-packages.md`](docs/test-packages.md) |
+| 114 | → | [`docs/usage.md`](docs/usage.md) |
+| 115 | → | [`examples/brand-studies/stripe/MOTION.md`](examples/brand-studies/stripe/MOTION.md) |
+| 116 | → | [`library/brandkits/openmotion/BRANDKIT.md`](library/brandkits/openmotion/BRANDKIT.md) |
+| 117 | → | [`library/components/README.md`](library/components/README.md) |
+| 118 | → | [`library/components/title-reveal/README.md`](library/components/title-reveal/README.md) |
+| 119 | → | [`library/design-systems/ink-water/MOTION_DESIGN.md`](library/design-systems/ink-water/MOTION_DESIGN.md) |
+| 120 | → | [`library/ENTRY_TEMPLATE.md`](library/ENTRY_TEMPLATE.md) |
+| 121 | → | [`library/README.md`](library/README.md) |
+| 122 | → | [`library/README.zh-CN.md`](library/README.zh-CN.md) |
+| 123 | → | [`library/templates/presenter-tech/NOTICE.md`](library/templates/presenter-tech/NOTICE.md) |
+| 124 | → | [`library/templates/presenter-tech/README.md`](library/templates/presenter-tech/README.md) |
+| 125 | → | [`README.md`](README.md) |
+| 126 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 127 | → | [`studio/README.md`](studio/README.md) |
+| 128 | → | [`template-library/NOTICE.md`](template-library/NOTICE.md) |
 
 ---
 

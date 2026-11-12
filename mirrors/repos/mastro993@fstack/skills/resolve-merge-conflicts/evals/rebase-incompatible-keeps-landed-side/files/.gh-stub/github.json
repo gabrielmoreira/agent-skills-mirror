@@ -1,0 +1,28 @@
+{
+ "repo": "acme/shop",
+ "pulls": [
+  {
+   "number": 21, "title": "Use banker's rounding for money (ACC-7)", "state": "OPEN", "isDraft": true,
+   "headRefName": "bankers-rounding", "baseRefName": "main", "author": "fede",
+   "body": "Closes #20.\n\nFinance's ledger rounds half to even (accounting policy ACC-7). We round halves up, so about 3% of invoices miss reconciliation by a cent. `roundMoney` now sends exact ties to the even cent (0.125 -> 0.12, 0.875 -> 0.88), for every amount we round: charges, invoices, and refunds alike. Also adds `invoiceTotal` and exports it.",
+   "closingIssuesReferences": [20],
+   "comments": [{"author": "dana", "body": "Confirming for finance: ACC-7 applies to every amount we book, refunds included. The ledger is the source of truth."}]
+  },
+  {
+   "number": 19, "title": "Round negative amounts away from zero", "state": "MERGED", "mergedAt": "2026-11-09T10:41:00Z",
+   "headRefName": "refund-rounding", "baseRefName": "main", "author": "bruno",
+   "body": "Fixes #18.\n\n`Math.round` rounds halves towards +infinity, so -0.375 became -0.37 while 0.375 became 0.38. `roundMoney` now rounds the magnitude and puts the sign back, so a refund always mirrors its charge. Adds `refundTotal`.",
+   "closingIssuesReferences": [18]
+  }
+ ],
+ "issues": [
+  {
+   "number": 18, "title": "Refund rounds differently from the charge", "state": "CLOSED", "author": "carla", "labels": ["bug"],
+   "body": "Charged $0.375 -> customer pays $0.38. Refund the same line -> refund receipt says -$0.37. Customers see a 1 cent mismatch. A refund must round to the same magnitude as its charge."
+  },
+  {
+   "number": 20, "title": "Invoices fail ledger reconciliation by 1 cent", "state": "OPEN", "author": "dana", "labels": ["finance"],
+   "body": "The ledger follows ACC-7: amounts are rounded half to even (banker's rounding). We round half up, so ~3% of invoices are off by a cent and need manual fixes each month. Please round every booked amount the ACC-7 way."
+  }
+ ]
+}

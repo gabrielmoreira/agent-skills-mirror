@@ -3,15 +3,12 @@ name: skill-creator
 description: Guide for authoring user-defined custom UnitySkills skills inside your own Unity project - a [UnitySkill] C# method plus the conventions that let agents and the server discover and gate it
 ---
 
-> **Before calling any skill in this module:** if you are about to call a skill with parameters guessed from its name or description, STOP — read this file (or fetch its schema via `GET /skills/recommend?includeSchema=true`) first. If you already have the parameter definitions from recommend/schema, you may proceed straight to dryRun.
+# Skill Creator (advisory)
 
-## Triggers
+## When to use
 - Writing your own custom skill for your project
 - Extending what agents can do in this specific Unity project
 - Learning the [UnitySkill] metadata contract and discovery rules
-- 为自己的工程编写自定义技能、扩展 Agent 在本工程可调用的能力
-
-# Skill Creator (advisory)
 
 **Audience**: an agent (or developer) adding a **custom skill to your own Unity project**, not to the UnitySkills plugin source. A custom skill is a `public static` method marked `[UnitySkill]` compiled inside your project's Editor code; the server discovers it automatically — you never edit the plugin.
 
@@ -29,7 +26,7 @@ After you write the C# (through `script_create` with the full `content`, or by a
 Recommended agent flow:
 1. Check the name is free: `GET /skills?q=<prefix>` or read `GET /skills/schema?names=<cand>&wire=v2`.
 2. `script_create { scriptName, folder: "Assets/...", content: <full source> }` — returns `{ path, jobId, waitUrl }`.
-3. Wait for compile: `GET /jobs/<jobId>?wait=90` (retry through the reload); inspect `resultData.compilation.errors`. `script_get_compile_feedback(scriptPath)` gives on-demand diagnostics.
+3. Wait for compile: GET the returned `waitUrl` as is (`/jobs/<jobId>?wait=90&expectInstance=…`; retry through the reload); inspect `resultData.compilation.errors`. `script_get_compile_feedback(scriptPath)` gives on-demand diagnostics.
 4. Confirm registration: `GET /skills/schema?names=<your_skill>&wire=v2` should return your skill with its description and parameters.
 5. First real call with `?mode=dryRun`.
 
@@ -67,7 +64,7 @@ public static object MyGreet(
 Only the **public** surface is available to project code. Use:
 
 - `Validate.Required(x, "x")` — returns an error object to return early: `if (Validate.Required(x, "x") is object err) return err;`
-- `GameObjectFinder.FindOrError(name, instanceId, path)` — never `GameObject.Find`.
+- `GameObjectFinder.FindOrError(name, instanceId, path, entityId: entityId)` with a trailing `string entityId = null` parameter — never `GameObject.Find`. Declare `entityId` yourself: on Unity 6000.4+ `instanceId` is 0, and the `entityId` the router adds to a skill that has `instanceId` but no `entityId` can reach an object only through a path no other object shares.
 - `SkillErrorResponse.Build(SkillErrorCode.X, message, ...)` for business errors (do `throw` only for truly unknown framework errors). `SkillErrorCodeExtensions` is internal — do not try to call it.
 - Writers that mutate scene state should register `Undo` and call `WorkflowManager.SnapshotXxx(...)` when `TracksWorkflow = true`; batch with `BatchExecutor.Execute<TItem>(items, perItem, idFn)`.
 - Return a structured object (anonymous or a DTO) — it is serialized with `SkillsCommon.JsonSettings`.

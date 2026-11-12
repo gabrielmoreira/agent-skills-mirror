@@ -32,6 +32,8 @@ Windows 返回的 `protection` 表示开关配置，`coverage` 单独表示检�
 6. 告知目标、影响、保险丝与离线恢复方案，按现有 A/B/C 授权执行。首次 ON/网络中断仍须当场确认；不得让 Agent 代输终端确认或用管道确认。系统改动权限与仓库开发权限分开。
 7. 按[突发场景验收](local-firewall-prompts.md#incident-acceptance)和下面的开关验收交付。配置、基线快照、真实路径与私人证据仅保存在目标机。
 
+开关保险丝只覆盖自身后端。Windows 同时修改 DNS、代理、TUN、路由或网卡时，先读 [网络事务与独立恢复](windows-network-transaction.md)，不能把 OFF 当成这些设置的完整回滚。
+
 ## Windows 整机出口模式：代价与首次交付
 
 **选择前必须讲清楚：这套模式影响整台电脑。**代理停止或不可用时，浏览器、下载、游戏等其他软件也可能断网；国内网站未配置直连例外时同样走代理，可能增加流量、延迟或费用。局域网共享／打印、虚拟机／Cowork、其他 VPN 和远程管理必须先核对，不能承诺全部保持原状。加入直连例外意味着这些流量不再受到“只能走代理”的约束；宽泛放行会破坏防护。OFF 恢复原出站策略，可能恢复直连，不是保留保护的网络修复按钮。
@@ -47,7 +49,7 @@ Windows 返回的 `protection` 表示开关配置，`coverage` 单独表示检�
 5. 首次 ON 会重新预检，再按现有保险丝流程切换。确认前验证代理可用、独立新程序也不能绕过代理、停止代理后无非批准直连，恢复后网络正常；沿用 `network_check.py run --failure-drill` 与 `egress_verifier.py`，TCP／UDP、DNS、IPv6、WebRTC 分别记录。未完成时不输入 KEEP，不拿规则 pass 代替真实测试。
 6. 交付时保存首次真实验收结论和例外清单，说明保险丝未确认会恢复原策略，恢复后不再保证防直连。开关与文档不会自动启动 Claude 或做真实业务测试。
 
-**日常行为：**普通 Claude 更新仅改变程序目录或增加组件、未改网络策略时，默认阻止及出口允许规则仍适用，不需要每次找 Agent 重绑 Claude 路径。新安装程序若新增出站 Allow、代理核心路径／节点地址／端口、TUN 或网卡、例外、安全条件发生变化，则需复核。开关在 status／ON／KEEP 时检查，不新增常驻监控；不承诺持续拦截其他管理员或安装程序对防火墙策略的修改，也不把本次读回当实时监控。
+**日常行为：**普通 Claude 更新仅改变程序目录或增加组件、未改网络策略时，默认阻止及出口允许规则仍适用，不需要每次找 Agent 重绑 Claude 路径。新安装程序若新增出站 Allow、代理核心路径／节点地址／端口、TUN 或网卡、例外、安全条件发生变化，则需复核。开关仅在 status／ON／KEEP 时检查，不持续监控管理员或安装程序的策略变更。
 
 整机模式只在审核条件齐全、两种存储的 Allow 集合匹配时通过；开启状态还要求三档持久及有效默认出站均 Block。多出放行规则、条件变化、代理路径失效报 fail；缺依赖、权限不足、查询失败或旧快照不完整报 unknown；两者均禁止继续 ON／KEEP。网络故障先检查精确差异，不扩大白名单碰运气。快照记录的是经审查的配置，不自动证明所选例外合理或真实网络阻断有效。
 
@@ -89,6 +91,6 @@ GUI 显示实际操作后的读回结果，超过 90 秒标“需要刷新”；
 
 [入口脚本](../scripts/killswitch.py)、[GUI 与桌面生成](../scripts/killswitch_ui.py)、[Windows 后端](../assets/killswitch/windows-switch.ps1)、[配置模板](../assets/killswitch/config.example.json)。页面来自 [HTML](../assets/killswitch/switch.html)、[CSS](../assets/killswitch/switch.css)、[JavaScript](../assets/killswitch/switch.js)。
 
-图标使用本次提供的 Claude Logo（源文件 `tools/assets/claude-color.png`），由仓库 `tools/generate_switch_icon.py` 生成；重新生成使用 macOS 自带 `sips`，运行开关不需要它：[SVG](../assets/killswitch/icon.svg)、[PNG](../assets/killswitch/icon.png)、[ICO](../assets/killswitch/icon.ico)、[ICNS](../assets/killswitch/icon.icns)。修改生成器后重新生成，不手改产物。
+图标源文件为 `tools/assets/claude-color.png`，修改后运行 `tools/generate_switch_icon.py` 重新生成 SVG／PNG／ICO／ICNS，不手改产物。生成依赖 macOS `sips`，运行开关无需此依赖。
 
 无系统操作的预览：`python scripts/killswitch_ui.py --preview`。界面明确显示演示标记，所有按钮只改变演示状态。

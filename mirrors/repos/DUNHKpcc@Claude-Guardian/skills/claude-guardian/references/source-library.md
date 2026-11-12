@@ -21,7 +21,7 @@
 
 ## 清单型资料的执行反馈（#20）
 
-[S07](../sources/S07-vps-script-catalog.md)（manifest 标记 `type: checklist`）和 [trace-cleanup.md](trace-cleanup.md)（`type: checklist`）按清单逐项对照。Agent 附上这些资料时，必须同时给出**已执行项 / 未执行项 / 未执行原因**，每项写结果或下一步，不能只附链接，也不能只选记忆里的几个网站。按随包原文的实际条目逐项列出，不沿用 Issue 里的历史数量或添加原文没有的网站；同一工具的替代安装命令不重复计成已测项目。
+[S07](../sources/S07-vps-script-catalog.md)（manifest 标记 `type: checklist`）和 [trace-cleanup.md](trace-cleanup.md)（`type: checklist`）按清单逐项对照。Agent 附上这些资料时，必须同时给出**已执行项 / 未执行项 / 未执行原因**，每项写结果或下一步，不能只附链接，也不能只选记忆里的几个网站。按随包原文的实际条目逐项列出，不沿用历史数量或添加原文没有的网站；同一工具的替代安装命令不重复计成已测项目。
 
 仅解释或规划时也逐项标“未执行：本轮仅规划”，不为填清单自动跑第三方脚本、删除日志或申请额外权限。清单是执行覆盖要求，实际动作仍遵守原授权；证据不足保留 unknown/not_run。主题路由和访谈输出均带 `execution_report_required: true`，由宿主 Agent 执行并报告，CLI 不代造结果。
 
@@ -92,7 +92,7 @@
 
 ### S07：VPS IP 质量与网络测试清单（精简版）
 
-[阅读清单](../sources/S07-vps-script-catalog.md)。2026-10-21 精简为 IP 质量、网络质量、流媒体解锁、性能测试的脚本和在线网站，原目录中的重装系统、改网络、改防火墙等命令不再收录。这些是第三方脚本，多数为 `curl | bash` 远程执行：先审阅脚本内容，再在用户的 VPS 上运行：用户自己运行，或 Agent 在授权的 SSH 会话里运行（说明目标、地址和流量成本）。结果只描述当时该 IP 的观测，不能推导免封概率或 IP 纯净度门槛。
+[阅读清单](../sources/S07-vps-script-catalog.md)。收录 IP 质量、网络质量、流媒体解锁、性能测试的脚本和在线网站，不含重装系统、改网络或改防火墙的命令。这些是第三方脚本，多数为 `curl | bash` 远程执行：先审阅脚本内容，再在用户的 VPS 上运行：用户自己运行，或 Agent 在授权的 SSH 会话里运行（说明目标、地址和流量成本）。结果只描述当时该 IP 的观测，不能推导免封概率或 IP 纯净度门槛。
 
 ### S08：VPS Claude 教程（极低的封号风险）
 
@@ -103,11 +103,11 @@ VPS 路线（开发机）的主要依据：购买 VPS → SSH → 开发环境 �
 
 ### S10：Windows 本机路线、Killswitch 与自建 VPS 部署经验（完整脱敏版）
 
-[阅读完整记录](../sources/S10-windows-deployment-sanitized.md)。2026-11-02～11-03 的实战，2026-11-03 授权全文脱敏收录；全部十一节、桌面开关事故复盘、代码示例和快捷方式配方均保留。覆盖 Windows 远程 SSH、Clash Verge 运行配置、UDP、WFP 防火墙与 DNS、TUN 重建、3x-ui/REALITY/Hysteria2、PowerShell 工具及用户真实入口验收。全文开头按问题链接到各节，不必一次读完。
+[阅读完整记录](../sources/S10-windows-deployment-sanitized.md)。记录于 2026-11-02～11-03，覆盖 Windows 远程 SSH、Clash Verge 运行配置、UDP、WFP 防火墙与 DNS、TUN 重建、3x-ui/REALITY/Hysteria2、PowerShell 工具和桌面开关验收。按文首问题索引阅读所需章节。
 
-真实机器标识、地址、密码、用户路径和出口短哈希已替换，原始机器记录不公开。原作者的版本相关结论与编者注分开；本次入库不独立复验设备，不把尚未完成的浏览器、严格路由和生命周期验收记成通过。Windows 主流程仍见 [本机防火墙](local-firewall-prompts.md)，自建出口部署入口见 [固定出口 IP](egress-ip-options.md)，不因收录案例新增 Windows 写入引擎。OpenSSH、Tailscale、内网穿透和远程演练归入[本机高级扩展](local-advanced-route.md)；目标机已有 Agent 时直接做本机流程，不按案例先搭远程。
+真实机器标识、地址、密码、用户路径和出口短哈希已替换，原始机器记录不公开。原作者的版本相关结论与编者注分开；收录不代表独立复验设备，不把尚未完成的浏览器、严格路由和生命周期验收记成通过。Windows 主流程仍见 [本机防火墙](local-firewall-prompts.md)，自建出口部署入口见 [固定出口 IP](egress-ip-options.md)，不因收录案例新增 Windows 写入引擎。OpenSSH、Tailscale、内网穿透和远程演练归入[本机高级扩展](local-advanced-route.md)；目标机已有 Agent 时直接做本机流程，不按案例先搭远程。
 
-资料提供者明确确认允许公开分发本次所提供资料。本次仍保留第三方署名与声明，并对个人记录脱敏；这不授予任何操作权限，也不重新许可第三方组件。
+资料已获公开分发许可，保留第三方署名与声明，个人记录已脱敏；分发许可不授予实际操作权限，也不改变第三方组件许可。
 
 S09 为外部仓库参考，未作为阅读来源原文随包提供。
 

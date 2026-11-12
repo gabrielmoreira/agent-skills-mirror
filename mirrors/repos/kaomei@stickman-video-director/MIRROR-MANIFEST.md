@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kaomei/stickman-video-director` — 26 default patterns, 0 followed patterns, 435 file(s) materialized.
+Mirror of `kaomei/stickman-video-director` — 26 default patterns, 0 followed patterns, 449 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kaomei/stickman-video-director` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 435 |
+| Files         | 449 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -426,74 +426,88 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 365 | ✓ | [`skills/directing-stickman-videos/assets/b5/sound-spotting.json`](skills/directing-stickman-videos/assets/b5/sound-spotting.json) |
 | 366 | ✓ | [`skills/directing-stickman-videos/assets/fonts/Caveat.ttf`](skills/directing-stickman-videos/assets/fonts/Caveat.ttf) |
 | 367 | ✓ | [`skills/directing-stickman-videos/assets/fonts/NotoSans.ttf`](skills/directing-stickman-videos/assets/fonts/NotoSans.ttf) |
-| 368 | ✓ | [`skills/directing-stickman-videos/assets/fonts/OFL-Caveat.txt`](skills/directing-stickman-videos/assets/fonts/OFL-Caveat.txt) |
-| 369 | ✓ | [`skills/directing-stickman-videos/assets/fonts/OFL-NotoSans.txt`](skills/directing-stickman-videos/assets/fonts/OFL-NotoSans.txt) |
-| 370 | ✓ | [`skills/directing-stickman-videos/examples/b1/narration.m4a`](skills/directing-stickman-videos/examples/b1/narration.m4a) |
-| 371 | ✓ | [`skills/directing-stickman-videos/examples/b1/project.json`](skills/directing-stickman-videos/examples/b1/project.json) |
-| 372 | ✓ | [`skills/directing-stickman-videos/package-lock.json`](skills/directing-stickman-videos/package-lock.json) |
-| 373 | ✓ | [`skills/directing-stickman-videos/package.json`](skills/directing-stickman-videos/package.json) |
-| 374 | ✓ | [`skills/directing-stickman-videos/references/a6-finishing.md`](skills/directing-stickman-videos/references/a6-finishing.md) |
-| 375 | ✓ | [`skills/directing-stickman-videos/references/a6-reference-prompts.md`](skills/directing-stickman-videos/references/a6-reference-prompts.md) |
-| 376 | ✓ | [`skills/directing-stickman-videos/references/amber-noir.md`](skills/directing-stickman-videos/references/amber-noir.md) |
-| 377 | ✓ | [`skills/directing-stickman-videos/references/autopilot-production-qa.md`](skills/directing-stickman-videos/references/autopilot-production-qa.md) |
-| 378 | ✓ | [`skills/directing-stickman-videos/references/autopilot-runtime.md`](skills/directing-stickman-videos/references/autopilot-runtime.md) |
-| 379 | ✓ | [`skills/directing-stickman-videos/references/autopilot-sound-system.md`](skills/directing-stickman-videos/references/autopilot-sound-system.md) |
-| 380 | ✓ | [`skills/directing-stickman-videos/references/autopilot.md`](skills/directing-stickman-videos/references/autopilot.md) |
-| 381 | ✓ | [`skills/directing-stickman-videos/references/b1-minimal-handdrawn.md`](skills/directing-stickman-videos/references/b1-minimal-handdrawn.md) |
-| 382 | ✓ | [`skills/directing-stickman-videos/references/b1-production-qa.md`](skills/directing-stickman-videos/references/b1-production-qa.md) |
-| 383 | ✓ | [`skills/directing-stickman-videos/references/b2-colorful-handdrawn.md`](skills/directing-stickman-videos/references/b2-colorful-handdrawn.md) |
-| 384 | ✓ | [`skills/directing-stickman-videos/references/b3-television.md`](skills/directing-stickman-videos/references/b3-television.md) |
-| 385 | ✓ | [`skills/directing-stickman-videos/references/b4-audio-direction.md`](skills/directing-stickman-videos/references/b4-audio-direction.md) |
-| 386 | ✓ | [`skills/directing-stickman-videos/references/b4-opening-direction.md`](skills/directing-stickman-videos/references/b4-opening-direction.md) |
-| 387 | ✓ | [`skills/directing-stickman-videos/references/b4-repeatability-check.md`](skills/directing-stickman-videos/references/b4-repeatability-check.md) |
-| 388 | ✓ | [`skills/directing-stickman-videos/references/b4-survival-storytelling.md`](skills/directing-stickman-videos/references/b4-survival-storytelling.md) |
-| 389 | ✓ | [`skills/directing-stickman-videos/references/b5-accepted-baselines.md`](skills/directing-stickman-videos/references/b5-accepted-baselines.md) |
-| 390 | ✓ | [`skills/directing-stickman-videos/references/b5-avatar-motion.md`](skills/directing-stickman-videos/references/b5-avatar-motion.md) |
-| 391 | ✓ | [`skills/directing-stickman-videos/references/b5-character-explainer.md`](skills/directing-stickman-videos/references/b5-character-explainer.md) |
-| 392 | ✓ | [`skills/directing-stickman-videos/references/b5-left-stage-motion.md`](skills/directing-stickman-videos/references/b5-left-stage-motion.md) |
-| 393 | ✓ | [`skills/directing-stickman-videos/references/b5-sound-qa.md`](skills/directing-stickman-videos/references/b5-sound-qa.md) |
-| 394 | ✓ | [`skills/directing-stickman-videos/references/cozy-storytelling.md`](skills/directing-stickman-videos/references/cozy-storytelling.md) |
-| 395 | ✓ | [`skills/directing-stickman-videos/references/examples.md`](skills/directing-stickman-videos/references/examples.md) |
-| 396 | ✓ | [`skills/directing-stickman-videos/references/getting-started.md`](skills/directing-stickman-videos/references/getting-started.md) |
-| 397 | ✓ | [`skills/directing-stickman-videos/references/historical-cartoon.md`](skills/directing-stickman-videos/references/historical-cartoon.md) |
-| 398 | ✓ | [`skills/directing-stickman-videos/references/mode-execution-boundaries.md`](skills/directing-stickman-videos/references/mode-execution-boundaries.md) |
-| 399 | ✓ | [`skills/directing-stickman-videos/references/omni-flash-prompt-contract.md`](skills/directing-stickman-videos/references/omni-flash-prompt-contract.md) |
-| 400 | ✓ | [`skills/directing-stickman-videos/references/prehistoric-dark-comedy.md`](skills/directing-stickman-videos/references/prehistoric-dark-comedy.md) |
-| 401 | ✓ | [`skills/directing-stickman-videos/references/storyboard-template.md`](skills/directing-stickman-videos/references/storyboard-template.md) |
-| 402 | ✓ | [`skills/directing-stickman-videos/references/style-catalog.md`](skills/directing-stickman-videos/references/style-catalog.md) |
-| 403 | ✓ | [`skills/directing-stickman-videos/references/thumbnail-publishing-kit.md`](skills/directing-stickman-videos/references/thumbnail-publishing-kit.md) |
-| 404 | ✓ | [`skills/directing-stickman-videos/references/voice-continuity.md`](skills/directing-stickman-videos/references/voice-continuity.md) |
-| 405 | ✓ | [`skills/directing-stickman-videos/scripts/a6_finish.py`](skills/directing-stickman-videos/scripts/a6_finish.py) |
-| 406 | ✓ | [`skills/directing-stickman-videos/scripts/a6_reference_check.py`](skills/directing-stickman-videos/scripts/a6_reference_check.py) |
-| 407 | ✓ | [`skills/directing-stickman-videos/scripts/align_captions.py`](skills/directing-stickman-videos/scripts/align_captions.py) |
-| 408 | ✓ | [`skills/directing-stickman-videos/scripts/autopilot-core.mjs`](skills/directing-stickman-videos/scripts/autopilot-core.mjs) |
-| 409 | ✓ | [`skills/directing-stickman-videos/scripts/autopilot-render.mjs`](skills/directing-stickman-videos/scripts/autopilot-render.mjs) |
-| 410 | ✓ | [`skills/directing-stickman-videos/scripts/autopilot.mjs`](skills/directing-stickman-videos/scripts/autopilot.mjs) |
-| 411 | ✓ | [`skills/directing-stickman-videos/scripts/b3-graphics.mjs`](skills/directing-stickman-videos/scripts/b3-graphics.mjs) |
-| 412 | ✓ | [`skills/directing-stickman-videos/scripts/b4-opening-audio-check.mjs`](skills/directing-stickman-videos/scripts/b4-opening-audio-check.mjs) |
-| 413 | ✓ | [`skills/directing-stickman-videos/scripts/b4-production-check.mjs`](skills/directing-stickman-videos/scripts/b4-production-check.mjs) |
-| 414 | ✓ | [`skills/directing-stickman-videos/scripts/b4-runtime.mjs`](skills/directing-stickman-videos/scripts/b4-runtime.mjs) |
-| 415 | ✓ | [`skills/directing-stickman-videos/scripts/b4-style-lock.mjs`](skills/directing-stickman-videos/scripts/b4-style-lock.mjs) |
-| 416 | ✓ | [`skills/directing-stickman-videos/scripts/character-explainer.mjs`](skills/directing-stickman-videos/scripts/character-explainer.mjs) |
-| 417 | ✓ | [`skills/directing-stickman-videos/scripts/gemini-media.mjs`](skills/directing-stickman-videos/scripts/gemini-media.mjs) |
-| 418 | ✓ | [`skills/directing-stickman-videos/SKILL.md`](skills/directing-stickman-videos/SKILL.md) |
-| 419 | ✓ | [`skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs`](skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs) |
-| 420 | ✓ | [`skills/directing-stickman-videos/tests/b3-runtime.test.mjs`](skills/directing-stickman-videos/tests/b3-runtime.test.mjs) |
-| 421 | ✓ | [`skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs) |
-| 422 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs) |
-| 423 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs) |
-| 424 | ✓ | [`skills/directing-stickman-videos/tests/b4-production-check.test.mjs`](skills/directing-stickman-videos/tests/b4-production-check.test.mjs) |
-| 425 | ✓ | [`skills/directing-stickman-videos/tests/b4-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-runtime.test.mjs) |
-| 426 | ✓ | [`skills/directing-stickman-videos/tests/b4-style-lock.test.mjs`](skills/directing-stickman-videos/tests/b4-style-lock.test.mjs) |
-| 427 | ✓ | [`skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs`](skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs) |
-| 428 | ✓ | [`skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs`](skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs) |
-| 429 | ✓ | [`skills/directing-stickman-videos/tests/character-explainer.test.mjs`](skills/directing-stickman-videos/tests/character-explainer.test.mjs) |
-| 430 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json) |
-| 431 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json) |
-| 432 | ✓ | [`skills/directing-stickman-videos/tests/provider-routing.test.mjs`](skills/directing-stickman-videos/tests/provider-routing.test.mjs) |
-| 433 | ✓ | [`skills/directing-stickman-videos/tests/runtime.test.mjs`](skills/directing-stickman-videos/tests/runtime.test.mjs) |
-| 434 | ✓ | [`skills/directing-stickman-videos/tests/test_a6_references.py`](skills/directing-stickman-videos/tests/test_a6_references.py) |
-| 435 | ✓ | [`tests/scenarios/b5-left-stage-motion.md`](tests/scenarios/b5-left-stage-motion.md) |
+| 368 | ✓ | [`skills/directing-stickman-videos/assets/fonts/Nunito.ttf`](skills/directing-stickman-videos/assets/fonts/Nunito.ttf) |
+| 369 | ✓ | [`skills/directing-stickman-videos/assets/fonts/OFL-Caveat.txt`](skills/directing-stickman-videos/assets/fonts/OFL-Caveat.txt) |
+| 370 | ✓ | [`skills/directing-stickman-videos/assets/fonts/OFL-NotoSans.txt`](skills/directing-stickman-videos/assets/fonts/OFL-NotoSans.txt) |
+| 371 | ✓ | [`skills/directing-stickman-videos/assets/fonts/OFL-Nunito.txt`](skills/directing-stickman-videos/assets/fonts/OFL-Nunito.txt) |
+| 372 | ✓ | [`skills/directing-stickman-videos/assets/fonts/README.md`](skills/directing-stickman-videos/assets/fonts/README.md) |
+| 373 | ✓ | [`skills/directing-stickman-videos/examples/b1/narration.m4a`](skills/directing-stickman-videos/examples/b1/narration.m4a) |
+| 374 | ✓ | [`skills/directing-stickman-videos/examples/b1/project.json`](skills/directing-stickman-videos/examples/b1/project.json) |
+| 375 | ✓ | [`skills/directing-stickman-videos/package-lock.json`](skills/directing-stickman-videos/package-lock.json) |
+| 376 | ✓ | [`skills/directing-stickman-videos/package.json`](skills/directing-stickman-videos/package.json) |
+| 377 | ✓ | [`skills/directing-stickman-videos/references/a6-finishing.md`](skills/directing-stickman-videos/references/a6-finishing.md) |
+| 378 | ✓ | [`skills/directing-stickman-videos/references/a6-reference-prompts.md`](skills/directing-stickman-videos/references/a6-reference-prompts.md) |
+| 379 | ✓ | [`skills/directing-stickman-videos/references/amber-noir.md`](skills/directing-stickman-videos/references/amber-noir.md) |
+| 380 | ✓ | [`skills/directing-stickman-videos/references/autopilot-production-qa.md`](skills/directing-stickman-videos/references/autopilot-production-qa.md) |
+| 381 | ✓ | [`skills/directing-stickman-videos/references/autopilot-runtime.md`](skills/directing-stickman-videos/references/autopilot-runtime.md) |
+| 382 | ✓ | [`skills/directing-stickman-videos/references/autopilot-sound-system.md`](skills/directing-stickman-videos/references/autopilot-sound-system.md) |
+| 383 | ✓ | [`skills/directing-stickman-videos/references/autopilot.md`](skills/directing-stickman-videos/references/autopilot.md) |
+| 384 | ✓ | [`skills/directing-stickman-videos/references/b1-minimal-handdrawn.md`](skills/directing-stickman-videos/references/b1-minimal-handdrawn.md) |
+| 385 | ✓ | [`skills/directing-stickman-videos/references/b1-production-qa.md`](skills/directing-stickman-videos/references/b1-production-qa.md) |
+| 386 | ✓ | [`skills/directing-stickman-videos/references/b2-colorful-handdrawn.md`](skills/directing-stickman-videos/references/b2-colorful-handdrawn.md) |
+| 387 | ✓ | [`skills/directing-stickman-videos/references/b3-television.md`](skills/directing-stickman-videos/references/b3-television.md) |
+| 388 | ✓ | [`skills/directing-stickman-videos/references/b4-audio-direction.md`](skills/directing-stickman-videos/references/b4-audio-direction.md) |
+| 389 | ✓ | [`skills/directing-stickman-videos/references/b4-opening-direction.md`](skills/directing-stickman-videos/references/b4-opening-direction.md) |
+| 390 | ✓ | [`skills/directing-stickman-videos/references/b4-repeatability-check.md`](skills/directing-stickman-videos/references/b4-repeatability-check.md) |
+| 391 | ✓ | [`skills/directing-stickman-videos/references/b4-survival-storytelling.md`](skills/directing-stickman-videos/references/b4-survival-storytelling.md) |
+| 392 | ✓ | [`skills/directing-stickman-videos/references/b5-accepted-baselines.md`](skills/directing-stickman-videos/references/b5-accepted-baselines.md) |
+| 393 | ✓ | [`skills/directing-stickman-videos/references/b5-avatar-motion.md`](skills/directing-stickman-videos/references/b5-avatar-motion.md) |
+| 394 | ✓ | [`skills/directing-stickman-videos/references/b5-character-explainer.md`](skills/directing-stickman-videos/references/b5-character-explainer.md) |
+| 395 | ✓ | [`skills/directing-stickman-videos/references/b5-left-stage-motion.md`](skills/directing-stickman-videos/references/b5-left-stage-motion.md) |
+| 396 | ✓ | [`skills/directing-stickman-videos/references/b5-production-gate.md`](skills/directing-stickman-videos/references/b5-production-gate.md) |
+| 397 | ✓ | [`skills/directing-stickman-videos/references/b5-sound-qa.md`](skills/directing-stickman-videos/references/b5-sound-qa.md) |
+| 398 | ✓ | [`skills/directing-stickman-videos/references/cozy-storytelling.md`](skills/directing-stickman-videos/references/cozy-storytelling.md) |
+| 399 | ✓ | [`skills/directing-stickman-videos/references/examples.md`](skills/directing-stickman-videos/references/examples.md) |
+| 400 | ✓ | [`skills/directing-stickman-videos/references/getting-started.md`](skills/directing-stickman-videos/references/getting-started.md) |
+| 401 | ✓ | [`skills/directing-stickman-videos/references/historical-cartoon.md`](skills/directing-stickman-videos/references/historical-cartoon.md) |
+| 402 | ✓ | [`skills/directing-stickman-videos/references/mode-execution-boundaries.md`](skills/directing-stickman-videos/references/mode-execution-boundaries.md) |
+| 403 | ✓ | [`skills/directing-stickman-videos/references/omni-flash-prompt-contract.md`](skills/directing-stickman-videos/references/omni-flash-prompt-contract.md) |
+| 404 | ✓ | [`skills/directing-stickman-videos/references/prehistoric-dark-comedy.md`](skills/directing-stickman-videos/references/prehistoric-dark-comedy.md) |
+| 405 | ✓ | [`skills/directing-stickman-videos/references/storyboard-template.md`](skills/directing-stickman-videos/references/storyboard-template.md) |
+| 406 | ✓ | [`skills/directing-stickman-videos/references/style-catalog.md`](skills/directing-stickman-videos/references/style-catalog.md) |
+| 407 | ✓ | [`skills/directing-stickman-videos/references/thumbnail-publishing-kit.md`](skills/directing-stickman-videos/references/thumbnail-publishing-kit.md) |
+| 408 | ✓ | [`skills/directing-stickman-videos/references/voice-continuity.md`](skills/directing-stickman-videos/references/voice-continuity.md) |
+| 409 | ✓ | [`skills/directing-stickman-videos/scripts/a6_finish.py`](skills/directing-stickman-videos/scripts/a6_finish.py) |
+| 410 | ✓ | [`skills/directing-stickman-videos/scripts/a6_reference_check.py`](skills/directing-stickman-videos/scripts/a6_reference_check.py) |
+| 411 | ✓ | [`skills/directing-stickman-videos/scripts/align_captions.py`](skills/directing-stickman-videos/scripts/align_captions.py) |
+| 412 | ✓ | [`skills/directing-stickman-videos/scripts/autopilot-core.mjs`](skills/directing-stickman-videos/scripts/autopilot-core.mjs) |
+| 413 | ✓ | [`skills/directing-stickman-videos/scripts/autopilot-render.mjs`](skills/directing-stickman-videos/scripts/autopilot-render.mjs) |
+| 414 | ✓ | [`skills/directing-stickman-videos/scripts/autopilot.mjs`](skills/directing-stickman-videos/scripts/autopilot.mjs) |
+| 415 | ✓ | [`skills/directing-stickman-videos/scripts/b-style-motion-geometry.mjs`](skills/directing-stickman-videos/scripts/b-style-motion-geometry.mjs) |
+| 416 | ✓ | [`skills/directing-stickman-videos/scripts/b-style-quality.mjs`](skills/directing-stickman-videos/scripts/b-style-quality.mjs) |
+| 417 | ✓ | [`skills/directing-stickman-videos/scripts/b3-graphics.mjs`](skills/directing-stickman-videos/scripts/b3-graphics.mjs) |
+| 418 | ✓ | [`skills/directing-stickman-videos/scripts/b4-opening-audio-check.mjs`](skills/directing-stickman-videos/scripts/b4-opening-audio-check.mjs) |
+| 419 | ✓ | [`skills/directing-stickman-videos/scripts/b4-opening-visual-check.mjs`](skills/directing-stickman-videos/scripts/b4-opening-visual-check.mjs) |
+| 420 | ✓ | [`skills/directing-stickman-videos/scripts/b4-opening.mjs`](skills/directing-stickman-videos/scripts/b4-opening.mjs) |
+| 421 | ✓ | [`skills/directing-stickman-videos/scripts/b4-production-check.mjs`](skills/directing-stickman-videos/scripts/b4-production-check.mjs) |
+| 422 | ✓ | [`skills/directing-stickman-videos/scripts/b4-runtime.mjs`](skills/directing-stickman-videos/scripts/b4-runtime.mjs) |
+| 423 | ✓ | [`skills/directing-stickman-videos/scripts/b4-style-lock.mjs`](skills/directing-stickman-videos/scripts/b4-style-lock.mjs) |
+| 424 | ✓ | [`skills/directing-stickman-videos/scripts/b5-production-quality.mjs`](skills/directing-stickman-videos/scripts/b5-production-quality.mjs) |
+| 425 | ✓ | [`skills/directing-stickman-videos/scripts/character-explainer.mjs`](skills/directing-stickman-videos/scripts/character-explainer.mjs) |
+| 426 | ✓ | [`skills/directing-stickman-videos/scripts/gemini-media.mjs`](skills/directing-stickman-videos/scripts/gemini-media.mjs) |
+| 427 | ✓ | [`skills/directing-stickman-videos/SKILL.md`](skills/directing-stickman-videos/SKILL.md) |
+| 428 | ✓ | [`skills/directing-stickman-videos/tests/audio-bed-coverage.test.mjs`](skills/directing-stickman-videos/tests/audio-bed-coverage.test.mjs) |
+| 429 | ✓ | [`skills/directing-stickman-videos/tests/b-style-motion-windows.test.mjs`](skills/directing-stickman-videos/tests/b-style-motion-windows.test.mjs) |
+| 430 | ✓ | [`skills/directing-stickman-videos/tests/b-style-quality.test.mjs`](skills/directing-stickman-videos/tests/b-style-quality.test.mjs) |
+| 431 | ✓ | [`skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs`](skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs) |
+| 432 | ✓ | [`skills/directing-stickman-videos/tests/b3-runtime.test.mjs`](skills/directing-stickman-videos/tests/b3-runtime.test.mjs) |
+| 433 | ✓ | [`skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs) |
+| 434 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs) |
+| 435 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs) |
+| 436 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-runtime.test.mjs) |
+| 437 | ✓ | [`skills/directing-stickman-videos/tests/b4-production-check.test.mjs`](skills/directing-stickman-videos/tests/b4-production-check.test.mjs) |
+| 438 | ✓ | [`skills/directing-stickman-videos/tests/b4-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-runtime.test.mjs) |
+| 439 | ✓ | [`skills/directing-stickman-videos/tests/b4-style-lock.test.mjs`](skills/directing-stickman-videos/tests/b4-style-lock.test.mjs) |
+| 440 | ✓ | [`skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs`](skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs) |
+| 441 | ✓ | [`skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs`](skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs) |
+| 442 | ✓ | [`skills/directing-stickman-videos/tests/b5-production-quality.test.mjs`](skills/directing-stickman-videos/tests/b5-production-quality.test.mjs) |
+| 443 | ✓ | [`skills/directing-stickman-videos/tests/character-explainer.test.mjs`](skills/directing-stickman-videos/tests/character-explainer.test.mjs) |
+| 444 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json) |
+| 445 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json) |
+| 446 | ✓ | [`skills/directing-stickman-videos/tests/provider-routing.test.mjs`](skills/directing-stickman-videos/tests/provider-routing.test.mjs) |
+| 447 | ✓ | [`skills/directing-stickman-videos/tests/runtime.test.mjs`](skills/directing-stickman-videos/tests/runtime.test.mjs) |
+| 448 | ✓ | [`skills/directing-stickman-videos/tests/test_a6_references.py`](skills/directing-stickman-videos/tests/test_a6_references.py) |
+| 449 | ✓ | [`tests/scenarios/b5-left-stage-motion.md`](tests/scenarios/b5-left-stage-motion.md) |
 
 ---
 

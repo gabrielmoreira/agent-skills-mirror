@@ -100,6 +100,7 @@ release may add codes.
 | `AD_RESULT_ERR_POLICY_DENIED`         | -14   | Current action policy blocks this fallback |
 | `AD_RESULT_ERR_AMBIGUOUS_TARGET`      | -15   | Strict re-identification found multiple candidates; re-snapshot |
 | `AD_RESULT_ERR_APP_UNRESPONSIVE`      | -16   | Read-only liveness probe failed after an uncertain mutation |
+| `AD_RESULT_ERR_SANDBOX_NOT_FOUND`     | -17   | No sandbox has that name; run `agent-desktop sandbox list` |
 
 ## Ref token validation
 

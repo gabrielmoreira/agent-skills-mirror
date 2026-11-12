@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 4 followed patterns, 33 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 5 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 4 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 33 |
+| Followed pats | 5 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 4 followed patterns,
 
 - `README.md`
 - `docs/safe-local-diagnostics.md`
+- `docs/main-merge-queue.md`
 - `docs/desktop-local-acceptance.md`
 - `pull_request_template.md`
 
@@ -92,9 +93,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`scripts/README.md`](scripts/README.md) |
 | 29 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
 | 30 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
-| 31 | → | [`docs/safe-local-diagnostics.md`](docs/safe-local-diagnostics.md) |
-| 32 | → | [`pull_request_template.md`](pull_request_template.md) |
-| 33 | → | [`README.md`](README.md) |
+| 31 | → | [`docs/main-merge-queue.md`](docs/main-merge-queue.md) |
+| 32 | → | [`docs/safe-local-diagnostics.md`](docs/safe-local-diagnostics.md) |
+| 33 | → | [`pull_request_template.md`](pull_request_template.md) |
+| 34 | → | [`README.md`](README.md) |
 
 ---
 

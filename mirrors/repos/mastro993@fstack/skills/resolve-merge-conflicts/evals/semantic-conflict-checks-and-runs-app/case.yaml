@@ -1,0 +1,17 @@
+schema_version: "1.1"
+name: semantic-conflict-checks-and-runs-app
+expected_outcome: |
+  PR #33 (receipt-tax, closes #32) adds a tax line (new src/tax.js) and line totals to receipts,
+  using formatPrice. Since it branched, main got PR #31 (closes #30): formatPrice became
+  formatMoney(cents, currency) and every printed amount follows the order's currency, because
+  Berlin receipts must be all EUR. Merging origin/main conflicts in src/cart.js and bin/receipt.js.
+  Two files merge cleanly but break: main's EUR describeLine test now needs the line total too,
+  and src/tax.js still imports the removed formatPrice, which only the tests or running the CLI
+  reveal. The run merges (no rebase, no force-push), keeps line totals and the tax line, prints
+  every amount (line totals, tax, total) in the order's currency through formatMoney, ports
+  src/tax.js to formatMoney without reviving a formatPrice alias, and keeps both sides' tests
+  (main's EUR test now expecting '3 x Stift @ €1.25 = €3.75'). npm test passes, the run executes
+  bin/receipt.js on the examples (berlin-order.json prints EUR amounts only), commits the merge,
+  pushes it, and reports both intents, the semantic conflict in src/tax.js, and what it ran.
+context:
+  scaffold_script: place-files.sh

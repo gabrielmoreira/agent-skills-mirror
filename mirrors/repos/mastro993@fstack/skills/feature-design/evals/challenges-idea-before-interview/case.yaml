@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: challenges-idea-before-interview
+expected_outcome: |
+  The run grounds the idea before asking anything: it reads readwell's ADRs, glossary and code and
+  finds that push notifications contradict ADR 0001 (email only, nightly job), that unlimited
+  renewals contradict ADR 0003 (and ADR 0002 when a hold is waiting), that renewing already exists,
+  and that the real gap is the reminder, which only goes out once a loan is overdue. It tells the
+  user this plainly with the evidence and proposes a smaller shape (earlier email reminders, easier
+  renewal), uses the glossary's words (loan, renewal) instead of "booking", then asks one round of
+  at most five product questions with concrete options and a recommendation, none about how to
+  build it. It stops there and waits, with no spec, ADR or code written.
+context:
+  scaffold_script: place-files.sh

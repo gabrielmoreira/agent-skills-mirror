@@ -173,6 +173,10 @@ def _remap_comments(
         }
         if raw_c.get("url"):
             entry["url"] = str(raw_c["url"])
+        # Whether the item's own author wrote the comment, where the source
+        # said so. A comment stored without the key is unknown.
+        if isinstance(raw_c.get("is_uploader"), bool):
+            entry["is_uploader"] = raw_c["is_uploader"]
         out.append(entry)
     return out
 
@@ -491,6 +495,9 @@ def _normalize_shortform_video(
         snippet=caption,
         metadata={
             "hashtags": item.get("hashtags") or [],
+            # True only when the snippet is a spoken-word transcript, not the
+            # written description fetch_captions starts from.
+            "spoken_caption": bool(item.get("caption_is_transcript")),
             "top_comments": _remap_comments(
                 item.get("top_comments") or [],
                 # Instagram comments use comment_like_count as the vote field
@@ -959,6 +966,9 @@ def _normalize_amazon(
             # swings with keyword phrasing, so filtering can blank the lane.
             "sponsored": bool(item.get("sponsored")),
             "top_comments": top_comments,
+            # The review lane already fired for this product set (search
+            # time), so finalize must not pull again.
+            "reviews_attempted": bool(item.get("reviews_attempted")),
             "product_rating": item.get("product_rating"),
             "product_rating_count": item.get("product_rating_count") or 0,
             "star_distribution": item.get("star_distribution") or {},
@@ -1009,6 +1019,8 @@ def _normalize_polymarket(
             "outcomes_remaining": item.get("outcomes_remaining"),
             # The market and price that stand for the event in the footer.
             **({"headline": item["headline"]} if item.get("headline") else {}),
+            # What the compact output's one-line odds summary is built from.
+            **({"odds": item["odds"]} if item.get("odds") else {}),
         },
     )
 

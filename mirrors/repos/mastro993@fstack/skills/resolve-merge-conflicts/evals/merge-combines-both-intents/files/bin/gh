@@ -1,0 +1,274 @@
+#!/usr/bin/env python3
+"""Stub gh CLI for resolve-merge-conflicts evals.
+
+Serves a frozen GitHub from .gh-stub/github.json: {repo, pulls, issues}, where each pull has
+number, title, body, state (OPEN, MERGED), headRefName, baseRefName, isDraft, comments, reviews,
+closingIssuesReferences (issue numbers) and commits (SHAs, filled in by the fixture's build.sh),
+and each issue has number, title, body, state, comments. Every call is appended to
+.gh-stub/calls.log for grading. Writes (create, edit, merge, comment) are refused: resolving
+conflicts never needs them.
+"""
+
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+STUB = ROOT / ".gh-stub"
+DATA = json.loads((STUB / "github.json").read_text())
+REPO = DATA["repo"]
+OWNER, NAME = REPO.split("/")
+PULLS = {p["number"]: p for p in DATA["pulls"]}
+ISSUES = {i["number"]: i for i in DATA["issues"]}
+
+with open(STUB / "calls.log", "a") as log:
+    log.write(" ".join(sys.argv[1:]) + "\n")
+
+
+def fail(msg, code=1):
+    print(msg, file=sys.stderr)
+    sys.exit(code)
+
+
+def pr_url(n):
+    return f"https://github.com/{REPO}/pull/{n}"
+
+
+def issue_url(n):
+    return f"https://github.com/{REPO}/issues/{n}"
+
+
+def comment(c):
+    return {"author": {"login": c["author"]}, "body": c["body"]}
+
+
+def pr_json(p):
+    return {
+        "number": p["number"], "title": p["title"], "body": p["body"], "state": p["state"],
+        "url": pr_url(p["number"]), "headRefName": p["headRefName"],
+        "baseRefName": p["baseRefName"], "isDraft": p.get("isDraft", False),
+        "author": {"login": p.get("author", "fede")},
+        "mergedAt": p.get("mergedAt"), "comments": [comment(c) for c in p.get("comments", [])],
+        "reviews": [{"author": {"login": r["author"]}, "state": r.get("state", "COMMENTED"),
+                     "body": r["body"]} for r in p.get("reviews", [])],
+        "closingIssuesReferences": [{"number": n, "title": ISSUES[n]["title"], "url": issue_url(n)}
+                                    for n in p.get("closingIssuesReferences", [])],
+        "commits": [{"oid": s} for s in p.get("commits", [])],
+        "files": p.get("files", []),
+    }
+
+
+def issue_json(i):
+    return {"number": i["number"], "title": i["title"], "body": i["body"], "state": i["state"],
+            "url": issue_url(i["number"]), "author": {"login": i.get("author", "fede")},
+            "labels": [{"name": l} for l in i.get("labels", [])],
+            "comments": [comment(c) for c in i.get("comments", [])]}
+
+
+def rest_pull(p):
+    return {"number": p["number"], "title": p["title"], "body": p["body"],
+            "state": "open" if p["state"] == "OPEN" else "closed", "html_url": pr_url(p["number"]),
+            "merged_at": p.get("mergedAt"), "draft": p.get("isDraft", False),
+            "head": {"ref": p["headRefName"]}, "base": {"ref": p["baseRefName"]},
+            "user": {"login": p.get("author", "fede")}}
+
+
+def rest_issue(i):
+    return {"number": i["number"], "title": i["title"], "body": i["body"],
+            "state": i["state"].lower(), "html_url": issue_url(i["number"]),
+            "user": {"login": i.get("author", "fede")},
+            "labels": [{"name": l} for l in i.get("labels", [])]}
+
+
+def rest_comments(cs):
+    return [{"user": {"login": c["author"]}, "body": c["body"]} for c in cs]
+
+
+def flag(args, *names):
+    for name in names:
+        if name in args:
+            k = args.index(name)
+            return args[k + 1] if k + 1 < len(args) else ""
+        for a in args:
+            if a.startswith(name + "="):
+                return a.split("=", 1)[1]
+    return None
+
+
+def positional(args):
+    out, skip = [], False
+    for a in args:
+        if skip:
+            skip = False
+        elif a.startswith("-"):
+            skip = "=" not in a and a not in ("--comments", "--web", "-w")
+        else:
+            out.append(a)
+    return out
+
+
+def emit(obj, args):
+    fields = flag(args, "--json")
+    if fields and isinstance(obj, dict):
+        obj = {f: obj.get(f) for f in fields.split(",")}
+    elif fields and isinstance(obj, list):
+        obj = [{f: o.get(f) for f in fields.split(",")} for o in obj]
+    jq = flag(args, "-q", "--jq")
+    text = json.dumps(obj, indent=1)
+    if jq:
+        if not shutil.which("jq"):
+            fail("jq not available in this sandbox; drop --jq")
+        r = subprocess.run(["jq", "-r", jq], input=text, capture_output=True, text=True)
+        sys.stdout.write(r.stdout)
+        sys.stderr.write(r.stderr)
+        sys.exit(r.returncode)
+    print(text)
+
+
+def find_pull(ref):
+    if ref is None:
+        branch = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                                capture_output=True, text=True).stdout.strip()
+        ref = branch
+    ref = ref.rsplit("/", 1)[-1].lstrip("#")
+    if ref.isdigit() and int(ref) in PULLS:
+        return PULLS[int(ref)]
+    for p in PULLS.values():
+        if p["headRefName"] == ref:
+            return p
+    fail(f"no pull requests found for {ref!r}")
+
+
+def pulls_for_sha(sha):
+    return [p for p in PULLS.values() if any(c.startswith(sha) or sha.startswith(c) for c in
+                                             p.get("commits", []) if len(sha) >= 7)]
+
+
+def matches(p, term):
+    """A search term matches a PR holding that commit SHA, or with the word in its title or body."""
+    if len(term) >= 7 and all(ch in "0123456789abcdef" for ch in term.lower()):
+        return p in pulls_for_sha(term.lower())
+    return term.lower() in (p["title"] + " " + p["body"]).lower()
+
+
+def text_pr(p):
+    print(f"{p['title']} #{p['number']}\n{p['state']} • {p.get('author', 'fede')} wants to merge "
+          f"into {p['baseRefName']} from {p['headRefName']}\n\n{p['body']}\n")
+    for c in p.get("comments", []):
+        print(f"--- {c['author']}:\n{c['body']}\n")
+    print(pr_url(p["number"]))
+
+
+def text_issue(i, with_comments):
+    print(f"{i['title']} #{i['number']}\n{i['state']}\n\n{i['body']}\n")
+    if with_comments:
+        for c in i.get("comments", []):
+            print(f"--- {c['author']}:\n{c['body']}\n")
+    print(issue_url(i["number"]))
+
+
+def cmd_pr(args):
+    sub, rest = args[0], args[1:]
+    if sub == "view":
+        pos = positional(rest)
+        p = find_pull(pos[0] if pos else None)
+        return emit(pr_json(p), rest) if flag(rest, "--json") is not None else text_pr(p)
+    if sub == "list":
+        state = (flag(rest, "--state", "-s") or "open").upper()
+        query = flag(rest, "--search", "-S") or ""
+        head = flag(rest, "--head", "-H")
+        out = []
+        for p in PULLS.values():
+            if state != "ALL" and p["state"] != state and not (state == "CLOSED" and p["state"] == "MERGED"):
+                continue
+            if head and p["headRefName"] != head:
+                continue
+            if not all(matches(p, t) for t in query.split() if ":" not in t):
+                continue
+            out.append(pr_json(p))
+        if flag(rest, "--json") is not None:
+            return emit(out, rest)
+        for p in out:
+            print(f"#{p['number']}\t{p['title']}\t{p['headRefName']}\t{p['state']}")
+        return
+    if sub == "diff":
+        fail("gh pr diff is not available in this sandbox; use git log / git show on the commits")
+    fail(f"gh pr {sub} is not available in this sandbox")
+
+
+def cmd_issue(args):
+    sub, rest = args[0], args[1:]
+    if sub == "view":
+        pos = positional(rest)
+        n = int(pos[0].rsplit("/", 1)[-1].lstrip("#"))
+        if n not in ISSUES:
+            if n in PULLS:
+                return cmd_pr(["view", str(n)] + rest)
+            fail(f"issue #{n} not found")
+        i = ISSUES[n]
+        return emit(issue_json(i), rest) if flag(rest, "--json") is not None else text_issue(i, "--comments" in rest)
+    if sub == "list":
+        out = [issue_json(i) for i in ISSUES.values()]
+        if flag(rest, "--json") is not None:
+            return emit(out, rest)
+        for i in out:
+            print(f"#{i['number']}\t{i['title']}\t{i['state']}")
+        return
+    fail(f"gh issue {sub} is not available in this sandbox")
+
+
+def cmd_api(args):
+    pos = positional(args)
+    if not pos:
+        fail("gh api needs a path")
+    path = pos[0].lstrip("/").replace("{owner}", OWNER).replace("{repo}", NAME)
+    if path.startswith("graphql"):
+        fail("graphql is not available in this sandbox; use the REST paths or gh pr/issue view")
+    parts = path.split("?")[0].split("/")
+    if parts[:3] != ["repos", OWNER, NAME]:
+        fail(f"HTTP 404: Not Found ({path})")
+    p = parts[3:]
+    try:
+        if p[0] == "commits" and len(p) == 3 and p[2] == "pulls":
+            return emit([rest_pull(x) for x in pulls_for_sha(p[1])], args)
+        if p[0] == "pulls" and len(p) == 2:
+            return emit(rest_pull(PULLS[int(p[1])]), args)
+        if p[0] == "pulls" and len(p) == 3 and p[2] == "comments":
+            return emit([], args)
+        if p[0] == "pulls" and len(p) == 3 and p[2] == "reviews":
+            return emit([{"user": {"login": r["author"]}, "state": r.get("state", "COMMENTED"),
+                          "body": r["body"]} for r in PULLS[int(p[1])].get("reviews", [])], args)
+        if p[0] == "issues" and len(p) == 2:
+            n = int(p[1])
+            return emit(rest_issue(ISSUES[n]) if n in ISSUES else rest_pull(PULLS[n]), args)
+        if p[0] == "issues" and len(p) == 3 and p[2] == "comments":
+            n = int(p[1])
+            src = ISSUES[n] if n in ISSUES else PULLS[n]
+            return emit(rest_comments(src.get("comments", [])), args)
+    except (KeyError, ValueError, IndexError):
+        pass
+    fail(f"HTTP 404: Not Found ({path})")
+
+
+def main():
+    args = sys.argv[1:]
+    if not args:
+        fail("usage: gh <command>")
+    if args[0] == "pr" and len(args) > 1:
+        return cmd_pr(args[1:])
+    if args[0] == "issue" and len(args) > 1:
+        return cmd_issue(args[1:])
+    if args[0] == "api":
+        return cmd_api(args[1:])
+    if args[0] == "repo" and args[1:2] == ["view"]:
+        return emit({"nameWithOwner": REPO, "name": NAME, "owner": {"login": OWNER},
+                     "defaultBranchRef": {"name": "main"}, "url": f"https://github.com/{REPO}"}, args[2:])
+    if args[0] == "auth" and args[1:2] == ["status"]:
+        print("github.com\n  ✓ Logged in to github.com account fede (keyring)")
+        return
+    fail(f"gh {args[0]} is not available in this sandbox")
+
+
+main()

@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: go-directives-and-generated
+expected_outcome: |
+  The ratelimit branch adds ratelimit/limiter.go and the generated ratelimit/state_string.go.
+  Narration in function bodies ("create the limiter", "lock the mutex", "unlock when done", "refill
+  tokens...", "use a token") and the commented-out log line are deleted. The //go:build and
+  //go:generate directives, the Deprecated: paragraph, and the package and exported doc comments
+  that revive.toml's exported and package-comments rules require all stay (doc comments may be
+  trimmed but not removed). The mu guard comment stays: it states a concurrency invariant the code
+  can't express. state_string.go is generated and left untouched. No code changes, and the reply
+  reports what was deleted and kept.
+context:
+  scaffold_script: place-files.sh

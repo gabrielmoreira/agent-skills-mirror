@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 99 file(s) materialized.
+Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 99 |
+| Files         | 103 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -118,46 +118,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`skills/session-stripper/tests/MANUAL_VERIFICATION.md`](skills/session-stripper/tests/MANUAL_VERIFICATION.md) |
 | 58 | ✓ | [`skills/session-stripper/tests/README.md`](skills/session-stripper/tests/README.md) |
 | 59 | ✓ | [`skills/session-stripper/tests/run.sh`](skills/session-stripper/tests/run.sh) |
-| 60 | ✓ | [`skills/session-stripper/tests/test_cc_2_1_310.py`](skills/session-stripper/tests/test_cc_2_1_310.py) |
-| 61 | ✓ | [`skills/session-stripper/tests/test_chain_anchor_live_append.py`](skills/session-stripper/tests/test_chain_anchor_live_append.py) |
-| 62 | ✓ | [`skills/session-stripper/tests/test_chain_anchor_side_effects.py`](skills/session-stripper/tests/test_chain_anchor_side_effects.py) |
-| 63 | ✓ | [`skills/session-stripper/tests/test_chain_integrity_after_persist.py`](skills/session-stripper/tests/test_chain_integrity_after_persist.py) |
-| 64 | ✓ | [`skills/session-stripper/tests/test_compact_range.py`](skills/session-stripper/tests/test_compact_range.py) |
-| 65 | ✓ | [`skills/session-stripper/tests/test_current.py`](skills/session-stripper/tests/test_current.py) |
-| 66 | ✓ | [`skills/session-stripper/tests/test_fork.py`](skills/session-stripper/tests/test_fork.py) |
-| 67 | ✓ | [`skills/session-stripper/tests/test_health_gate.py`](skills/session-stripper/tests/test_health_gate.py) |
-| 68 | ✓ | [`skills/session-stripper/tests/test_image_tokens.py`](skills/session-stripper/tests/test_image_tokens.py) |
-| 69 | ✓ | [`skills/session-stripper/tests/test_marker_contract.py`](skills/session-stripper/tests/test_marker_contract.py) |
-| 70 | ✓ | [`skills/session-stripper/tests/test_migrate_persisted.py`](skills/session-stripper/tests/test_migrate_persisted.py) |
-| 71 | ✓ | [`skills/session-stripper/tests/test_pending_apply.py`](skills/session-stripper/tests/test_pending_apply.py) |
-| 72 | ✓ | [`skills/session-stripper/tests/test_persist_dir_layout.py`](skills/session-stripper/tests/test_persist_dir_layout.py) |
-| 73 | ✓ | [`skills/session-stripper/tests/test_persist_message.py`](skills/session-stripper/tests/test_persist_message.py) |
-| 74 | ✓ | [`skills/session-stripper/tests/test_persist_range.py`](skills/session-stripper/tests/test_persist_range.py) |
-| 75 | ✓ | [`skills/session-stripper/tests/test_persist_text.py`](skills/session-stripper/tests/test_persist_text.py) |
-| 76 | ✓ | [`skills/session-stripper/tests/test_preserved_thinking.py`](skills/session-stripper/tests/test_preserved_thinking.py) |
-| 77 | ✓ | [`skills/session-stripper/tests/test_replace_images_marker.py`](skills/session-stripper/tests/test_replace_images_marker.py) |
-| 78 | ✓ | [`skills/session-stripper/tests/test_reset_usage.py`](skills/session-stripper/tests/test_reset_usage.py) |
-| 79 | ✓ | [`skills/session-stripper/tests/test_strip_attachments.py`](skills/session-stripper/tests/test_strip_attachments.py) |
-| 80 | ✓ | [`skills/session-stripper/tests/test_strip_thinking_offchain.py`](skills/session-stripper/tests/test_strip_thinking_offchain.py) |
-| 81 | ✓ | [`skills/session-stripper/tests/test_strip_tools_is_error.py`](skills/session-stripper/tests/test_strip_tools_is_error.py) |
-| 82 | ✓ | [`skills/session-stripper/tests/test_thinking_signature_sizing.py`](skills/session-stripper/tests/test_thinking_signature_sizing.py) |
-| 83 | ✓ | [`skills/session-stripper/tests/test_tool_use_result_sidecar.py`](skills/session-stripper/tests/test_tool_use_result_sidecar.py) |
-| 84 | ✓ | [`skills/slopcheck/references/rules-template.md`](skills/slopcheck/references/rules-template.md) |
-| 85 | ✓ | [`skills/slopcheck/research/structure/eval_pairs.py`](skills/slopcheck/research/structure/eval_pairs.py) |
-| 86 | ✓ | [`skills/slopcheck/research/structure/extract_pairs.py`](skills/slopcheck/research/structure/extract_pairs.py) |
-| 87 | ✓ | [`skills/slopcheck/research/structure/README.md`](skills/slopcheck/research/structure/README.md) |
-| 88 | ✓ | [`skills/slopcheck/research/structure/surprisal_pairs.py`](skills/slopcheck/research/structure/surprisal_pairs.py) |
-| 89 | ✓ | [`skills/slopcheck/scripts/slopcheck`](skills/slopcheck/scripts/slopcheck) |
-| 90 | ✓ | [`skills/slopcheck/scripts/slopmark`](skills/slopcheck/scripts/slopmark) |
-| 91 | ✓ | [`skills/slopcheck/scripts/structcheck`](skills/slopcheck/scripts/structcheck) |
-| 92 | ✓ | [`skills/slopcheck/SKILL.md`](skills/slopcheck/SKILL.md) |
-| 93 | ✓ | [`skills/slopcheck/tests/run.sh`](skills/slopcheck/tests/run.sh) |
-| 94 | ✓ | [`skills/slopcheck/tests/test_pre_send_notion.py`](skills/slopcheck/tests/test_pre_send_notion.py) |
-| 95 | ✓ | [`skills/slopcheck/tests/test_structcheck.py`](skills/slopcheck/tests/test_structcheck.py) |
-| 96 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
-| 97 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
-| 98 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
-| 99 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
+| 60 | ✓ | [`skills/session-stripper/tests/test_calibration.py`](skills/session-stripper/tests/test_calibration.py) |
+| 61 | ✓ | [`skills/session-stripper/tests/test_cc_2_1_310.py`](skills/session-stripper/tests/test_cc_2_1_310.py) |
+| 62 | ✓ | [`skills/session-stripper/tests/test_chain_anchor_live_append.py`](skills/session-stripper/tests/test_chain_anchor_live_append.py) |
+| 63 | ✓ | [`skills/session-stripper/tests/test_chain_anchor_side_effects.py`](skills/session-stripper/tests/test_chain_anchor_side_effects.py) |
+| 64 | ✓ | [`skills/session-stripper/tests/test_chain_integrity_after_persist.py`](skills/session-stripper/tests/test_chain_integrity_after_persist.py) |
+| 65 | ✓ | [`skills/session-stripper/tests/test_compact_range.py`](skills/session-stripper/tests/test_compact_range.py) |
+| 66 | ✓ | [`skills/session-stripper/tests/test_compact_relink.py`](skills/session-stripper/tests/test_compact_relink.py) |
+| 67 | ✓ | [`skills/session-stripper/tests/test_current.py`](skills/session-stripper/tests/test_current.py) |
+| 68 | ✓ | [`skills/session-stripper/tests/test_fork_first.py`](skills/session-stripper/tests/test_fork_first.py) |
+| 69 | ✓ | [`skills/session-stripper/tests/test_fork.py`](skills/session-stripper/tests/test_fork.py) |
+| 70 | ✓ | [`skills/session-stripper/tests/test_health_gate.py`](skills/session-stripper/tests/test_health_gate.py) |
+| 71 | ✓ | [`skills/session-stripper/tests/test_image_tokens.py`](skills/session-stripper/tests/test_image_tokens.py) |
+| 72 | ✓ | [`skills/session-stripper/tests/test_marker_contract.py`](skills/session-stripper/tests/test_marker_contract.py) |
+| 73 | ✓ | [`skills/session-stripper/tests/test_migrate_persisted.py`](skills/session-stripper/tests/test_migrate_persisted.py) |
+| 74 | ✓ | [`skills/session-stripper/tests/test_nested_images.py`](skills/session-stripper/tests/test_nested_images.py) |
+| 75 | ✓ | [`skills/session-stripper/tests/test_pending_apply.py`](skills/session-stripper/tests/test_pending_apply.py) |
+| 76 | ✓ | [`skills/session-stripper/tests/test_persist_dir_layout.py`](skills/session-stripper/tests/test_persist_dir_layout.py) |
+| 77 | ✓ | [`skills/session-stripper/tests/test_persist_message.py`](skills/session-stripper/tests/test_persist_message.py) |
+| 78 | ✓ | [`skills/session-stripper/tests/test_persist_range.py`](skills/session-stripper/tests/test_persist_range.py) |
+| 79 | ✓ | [`skills/session-stripper/tests/test_persist_text.py`](skills/session-stripper/tests/test_persist_text.py) |
+| 80 | ✓ | [`skills/session-stripper/tests/test_preserved_thinking.py`](skills/session-stripper/tests/test_preserved_thinking.py) |
+| 81 | ✓ | [`skills/session-stripper/tests/test_replace_images_marker.py`](skills/session-stripper/tests/test_replace_images_marker.py) |
+| 82 | ✓ | [`skills/session-stripper/tests/test_reset_usage.py`](skills/session-stripper/tests/test_reset_usage.py) |
+| 83 | ✓ | [`skills/session-stripper/tests/test_strip_attachments.py`](skills/session-stripper/tests/test_strip_attachments.py) |
+| 84 | ✓ | [`skills/session-stripper/tests/test_strip_thinking_offchain.py`](skills/session-stripper/tests/test_strip_thinking_offchain.py) |
+| 85 | ✓ | [`skills/session-stripper/tests/test_strip_tools_is_error.py`](skills/session-stripper/tests/test_strip_tools_is_error.py) |
+| 86 | ✓ | [`skills/session-stripper/tests/test_thinking_signature_sizing.py`](skills/session-stripper/tests/test_thinking_signature_sizing.py) |
+| 87 | ✓ | [`skills/session-stripper/tests/test_tool_use_result_sidecar.py`](skills/session-stripper/tests/test_tool_use_result_sidecar.py) |
+| 88 | ✓ | [`skills/slopcheck/references/rules-template.md`](skills/slopcheck/references/rules-template.md) |
+| 89 | ✓ | [`skills/slopcheck/research/structure/eval_pairs.py`](skills/slopcheck/research/structure/eval_pairs.py) |
+| 90 | ✓ | [`skills/slopcheck/research/structure/extract_pairs.py`](skills/slopcheck/research/structure/extract_pairs.py) |
+| 91 | ✓ | [`skills/slopcheck/research/structure/README.md`](skills/slopcheck/research/structure/README.md) |
+| 92 | ✓ | [`skills/slopcheck/research/structure/surprisal_pairs.py`](skills/slopcheck/research/structure/surprisal_pairs.py) |
+| 93 | ✓ | [`skills/slopcheck/scripts/slopcheck`](skills/slopcheck/scripts/slopcheck) |
+| 94 | ✓ | [`skills/slopcheck/scripts/slopmark`](skills/slopcheck/scripts/slopmark) |
+| 95 | ✓ | [`skills/slopcheck/scripts/structcheck`](skills/slopcheck/scripts/structcheck) |
+| 96 | ✓ | [`skills/slopcheck/SKILL.md`](skills/slopcheck/SKILL.md) |
+| 97 | ✓ | [`skills/slopcheck/tests/run.sh`](skills/slopcheck/tests/run.sh) |
+| 98 | ✓ | [`skills/slopcheck/tests/test_pre_send_notion.py`](skills/slopcheck/tests/test_pre_send_notion.py) |
+| 99 | ✓ | [`skills/slopcheck/tests/test_structcheck.py`](skills/slopcheck/tests/test_structcheck.py) |
+| 100 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
+| 101 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
+| 102 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
+| 103 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
 
 ---
 

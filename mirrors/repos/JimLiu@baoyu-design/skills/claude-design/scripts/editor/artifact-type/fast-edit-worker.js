@@ -69019,13 +69019,75 @@ this.Function = globalThis.Function;
       re: /^while\b/
     }
   };
-  var REGEX_PREFIX_KEYWORDS = /(?:^|[^\w$.])(?:return|typeof|instanceof|in|of|new|delete|void|throw|case|do|else|yield|await)\s*$/;
   var isWhitespace = (input) => input === " " || input === "	" || input === "\r" || input === `
 `;
+  var isLineTerminator = (input) => input === `
+` || input === "\r" || input === "\u2028" || input === "\u2029";
+  var REGEX_AFTER_KEYWORDS = /^(?:return|typeof|instanceof|in|new|delete|void|throw|case|default|do|else|extends|break|continue|debugger)$/;
+  var SLASH_AMBIGUOUS_KEYWORDS = /^(?:of|yield|await|catch|class|const|enum|export|finally|for|function|if|import|super|switch|try|var|while|with)$/;
+  var CONTROL_HEAD_KEYWORDS = /^(?:if|while|for|with)$/;
+  function createSlashContext() {
+    let [kind2, word, recent, previous] = ["", "", "", ""];
+    let [wordIsProperty, newlineSince, closedControlHead, plusAfterValue, plusAtLineStart] = [false, false, false, false, false];
+    let parenHeads = [];
+    let brackets = [];
+    let opens = () => {
+      let result2 = kind2 === "" || kind2 === "p" || kind2 === "+" ? true : kind2 === "v" || kind2 === "x" ? false : kind2 === ")" ? closedControlHead : kind2 !== "w" || wordIsProperty === void 0 ? void 0 : wordIsProperty ? false : REGEX_AFTER_KEYWORDS.test(word) ? true : SLASH_AMBIGUOUS_KEYWORDS.test(word) ? void 0 : false;
+      let statementLevel = brackets.length === 0 || brackets[brackets.length - 1] === "{";
+      return newlineSince && statementLevel && result2 !== true ? void 0 : result2;
+    };
+    return {
+      opens,
+      value() {
+        [kind2, recent, newlineSince] = ["v", "", false];
+      },
+      gap(lineBreak) {
+        recent = "";
+        newlineSince ||= lineBreak;
+      },
+      see(character) {
+        if (/\s/.test(character))
+          return void this.gap(isLineTerminator(character));
+        let [adjacent, afterValue] = [
+          recent !== "",
+          !newlineSince && opens() === false
+        ];
+        recent = (recent + character).slice(-4);
+        if (/[\w$#\\]/.test(character) || character > "\x7F" || adjacent && kind2 === "w" && (character === "." ? /^\d/.test(word) : (character === "{" || character === "}") && /\\u(?:\{[\da-f]*)?$/i.test(word))) {
+          if (adjacent && kind2 === "w") word += character;
+          else
+            [wordIsProperty, kind2, word] = [
+              kind2 === "." || (kind2 === "w" && /^\d.*\.$/.test(word) ? void 0 : false),
+              "w",
+              character
+            ];
+        } else if ((character === "+" || character === "-") && adjacent && kind2 === "+" && previous === character)
+          kind2 = plusAfterValue ? "x" : "?";
+        else if (character === "+" || character === "-")
+          [kind2, plusAfterValue, plusAtLineStart] = [
+            "+",
+            afterValue,
+            newlineSince || kind2 === ""
+          ];
+        else if (character === "(") {
+          parenHeads.push(
+            kind2 !== "w" || wordIsProperty ? false : wordIsProperty === void 0 || word === "await" ? void 0 : CONTROL_HEAD_KEYWORDS.test(word)
+          );
+          kind2 = "p";
+        } else if (character === ")")
+          [kind2, closedControlHead] = [")", parenHeads.pop()];
+        else
+          kind2 = character === "]" ? "v" : character === "}" ? "}" : character === "." && recent.slice(-3) !== "..." ? "." : "p";
+        if ("([{".includes(character)) brackets.push(character);
+        else if (")]}".includes(character)) brackets.pop();
+        [previous, newlineSince] = [character, false];
+        return recent === "<!--" || recent.endsWith("-->") && plusAtLineStart;
+      }
+    };
+  }
   function createStatementStream(options2) {
     let settings2 = options2 || {};
     let joinChains = !!settings2.joinChains;
-    let regexAfterKeywords = settings2.regexAfterKeywords !== false;
     let buffer2;
     let parenDepth;
     let braceDepth;
@@ -69042,7 +69104,8 @@ this.Function = globalThis.Function;
     let regexCharacterClass;
     let escapedRegex;
     let pendingSlash;
-    let lastSignificantChar;
+    let slashContext;
+    let stopReason;
     let arrowBodyPending;
     let controlEnd;
     let continuationStart;
@@ -69066,7 +69129,8 @@ this.Function = globalThis.Function;
       regex = regexCharacterClass = escapedRegex = false;
       stopped = false;
       pendingSlash = false;
-      lastSignificantChar = "";
+      slashContext = createSlashContext();
+      stopReason = "";
       arrowBodyPending = false;
       controlEnd = -1;
       continuationStart = 0;
@@ -69170,7 +69234,9 @@ this.Function = globalThis.Function;
     }
     function acceptCharacter(input) {
       if (pendingSlash) {
-        if (pendingSlash = false, input === "/") {
+        pendingSlash = false;
+        if (input === "/" || input === "*") slashContext.gap(false);
+        if (input === "/") {
           if (lineComment = true, lineCommentStart = buffer2.length - 2, atTopLevel() && controlEnd < 0)
             finishStatement(lineCommentStart);
           return;
@@ -69179,25 +69245,40 @@ this.Function = globalThis.Function;
           blockComment = blockCommentJustOpened = true;
           return;
         }
-        if (lastSignificantChar === "" || "([{,;=!&|?:+-*%^~<>".indexOf(lastSignificantChar) >= 0 || regexAfterKeywords && REGEX_PREFIX_KEYWORDS.test(
-          buffer2.slice(Math.max(0, buffer2.length - 16), buffer2.length - 2)
-        ))
-          regex = true;
-        else lastSignificantChar = "/";
+        let opensRegex = slashContext.opens();
+        if (opensRegex === void 0) {
+          regex = false;
+          stopped = true;
+          stopReason = "a slash that may divide or open a regular expression";
+          return;
+        }
+        regex = opensRegex;
+        if (!regex) slashContext.see("/");
       }
       if (blockComment) {
         if (input === "/" && buffer2[buffer2.length - 2] === "*" && !blockCommentJustOpened) {
           if (blockComment = false, controlEnd >= 0 && atTopLevel())
             continuationStart = buffer2.length;
         }
-        if (blockCommentJustOpened = false, input === "`" && buffer2.endsWith("```") && buffer2.slice(buffer2.lastIndexOf("\n") + 1, -3).trim() === "")
+        blockCommentJustOpened = false;
+        if (isLineTerminator(input)) slashContext.gap(true);
+        if (input === "`" && buffer2.endsWith("```") && buffer2.slice(buffer2.lastIndexOf("\n") + 1, -3).trim() === "")
           stopped = true;
         return;
       }
       if (lineComment) {
+        if (input === "\u2028" || input === "\u2029" || input !== `
+` && buffer2[buffer2.length - 2] === "\r") {
+          stopped = true;
+          stopReason = "a // comment with a lone CR, U+2028 or U+2029";
+          statementStart = Math.min(statementStart, lineCommentStart);
+          return;
+        }
         if (input === `
 `) {
-          if (lineComment = false, atTopLevel()) {
+          lineComment = false;
+          slashContext.gap(true);
+          if (atTopLevel()) {
             if (controlEnd >= 0) continuationStart = buffer2.length;
             else if (statementStart >= lineCommentStart)
               statementStart = buffer2.length;
@@ -69222,13 +69303,13 @@ this.Function = globalThis.Function;
             templateDepths.push(braceDepth);
             braceDepth++;
             quote = null;
-            lastSignificantChar = "{";
+            slashContext.see("{");
             return;
           }
           templateDollar = input === "$";
         }
         if (input === quote) {
-          lastSignificantChar = input;
+          slashContext.value();
           quote = null;
           stopped = input === "`" && buffer2.endsWith("```");
         }
@@ -69257,30 +69338,31 @@ this.Function = globalThis.Function;
         }
         if (input === "/") {
           regex = false;
-          lastSignificantChar = "/";
+          slashContext.value();
         }
         return;
       }
       if (arrowBodyPending && !isWhitespace(input)) arrowBodyPending = false;
+      if (input !== "/" && input !== "'" && input !== '"' && input !== "`" && slashContext.see(input)) {
+        stopped = true;
+        stopReason = "a comment mark <!-- or -->";
+        return;
+      }
       switch (checkControlContinuation(), input) {
         case "'":
         case '"':
         case "`":
           quote = input;
-          lastSignificantChar = input;
           stopped = buffer2.endsWith("```");
           return;
         case "(":
           parenDepth++;
-          lastSignificantChar = input;
           return;
         case ")":
           if (parenDepth > 0) parenDepth--;
-          lastSignificantChar = input;
           return;
         case "{":
           braceDepth++;
-          lastSignificantChar = input;
           return;
         case "}":
           if (braceDepth > 0) braceDepth--;
@@ -69288,15 +69370,12 @@ this.Function = globalThis.Function;
             templateDepths.pop();
             quote = "`";
           }
-          lastSignificantChar = input;
           return;
         case "[":
           bracketDepth++;
-          lastSignificantChar = input;
           return;
         case "]":
           if (bracketDepth > 0) bracketDepth--;
-          lastSignificantChar = input;
           return;
         case "/":
           pendingSlash = true;
@@ -69304,7 +69383,6 @@ this.Function = globalThis.Function;
         case ">":
           if (buffer2[buffer2.length - 2] === "=" && atTopLevel())
             arrowBodyPending = true;
-          lastSignificantChar = input;
           return;
         case `
 `:
@@ -69313,14 +69391,7 @@ this.Function = globalThis.Function;
           return;
         case ";":
           if (atTopLevel()) finishAtDelimiter();
-          lastSignificantChar = input;
           return;
-        case " ":
-        case "	":
-        case "\r":
-          return;
-        default:
-          lastSignificantChar = input;
       }
     }
     function compactBuffer() {
@@ -69354,7 +69425,8 @@ this.Function = globalThis.Function;
     }
     function describeOpenSyntax() {
       let items2 = [];
-      if (stopped && !regex)
+      if (stopReason) items2.push(stopReason);
+      else if (stopped && !regex)
         items2.push("three backticks in a row, like a Markdown fence mark");
       else if (quote)
         items2.push(
@@ -69363,7 +69435,7 @@ this.Function = globalThis.Function;
       if (blockComment) items2.push("a block comment");
       if (regex)
         items2.push(
-          stopped ? "a regular expression that runs past its line, or a division taken for one" : "a regular expression"
+          stopped ? "a regular expression that runs past its line" : "a regular expression"
         );
       if (parenDepth) items2.push(parenDepth + " \xD7 (");
       if (bracketDepth) items2.push(bracketDepth + " \xD7 [");
@@ -69375,10 +69447,7 @@ this.Function = globalThis.Function;
       ended2 = true;
       let value22 = stopped || quote !== null || blockComment || regex;
       if (!value22) {
-        if (pendingSlash) {
-          pendingSlash = false;
-          lastSignificantChar = "/";
-        }
+        pendingSlash = false;
         buffer2 += `
 `;
         acceptCharacter(`
@@ -69388,7 +69457,7 @@ this.Function = globalThis.Function;
       let slice = buffer2.slice(statementStart);
       let value3 = slice.replace(TRAILING_COMMENTS, "").trim();
       let value4 = false;
-      if (value3) {
+      if (value3 || stopped) {
         let value5 = describeOpenSyntax();
         if (value5 || value22) value4 = true;
         else if (/(?<!\.)\b(else|try|do|finally)$/.test(value3) || hasUnfilledControlBody(value3) || arrowBodyPending)
@@ -69412,12 +69481,19 @@ this.Function = globalThis.Function;
           incomplete: value4
         });
     }
+    function release() {
+      if (ended2 || stopped) return;
+      if (controlEnd >= 0) flushControlStatement();
+      flushChain();
+    }
     return {
       push,
       end: value2,
+      release,
       reset,
       tail: () => buffer2.slice(statementStart),
       inTextOrComment: () => stopped || quote === "`" || templateDepths.length > 0 && quote === null || blockComment,
+      code: () => !stopped && quote === null && !lineComment && !blockComment && !regex && (!pendingSlash || slashContext.opens() === false),
       get stopped() {
         return stopped;
       },
@@ -72934,7 +73010,8 @@ this.Function = globalThis.Function;
         if (compiledPending) executePending();
         return;
       }
-      if (stream && stream.tail().trim() === "") restartStream();
+      if (stream && !stream.stopped && stream.tail().trim() === "")
+        stream.release();
     }
     function finish(..._extraArguments233) {
       if (finished || !initialized) return;

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 27
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,7 +85,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/openspec-verify-change/SKILL.md`](skills/openspec-verify-change/SKILL.md) |
 | 25 | ✓ | [`skills/README.md`](skills/README.md) |
 | 26 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 27 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
+| 27 | ✓ | [`test/fixtures/released-output/v1.10.0-amazonq/skills/openspec-explore/SKILL.md`](test/fixtures/released-output/v1.10.0-amazonq/skills/openspec-explore/SKILL.md) |
+| 28 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-apply-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-apply-change/SKILL.md) |
+| 29 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-archive-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-archive-change/SKILL.md) |
+| 30 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-bulk-archive-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-bulk-archive-change/SKILL.md) |
+| 31 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-continue-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-continue-change/SKILL.md) |
+| 32 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-explore/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-explore/SKILL.md) |
+| 33 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-ff-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-ff-change/SKILL.md) |
+| 34 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-new-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-new-change/SKILL.md) |
+| 35 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-onboard/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-onboard/SKILL.md) |
+| 36 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-propose/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-propose/SKILL.md) |
+| 37 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-sync-specs/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-sync-specs/SKILL.md) |
+| 38 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-update-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-update-change/SKILL.md) |
+| 39 | ✓ | [`test/fixtures/released-output/v1.16.0-claude-skills/openspec-verify-change/SKILL.md`](test/fixtures/released-output/v1.16.0-claude-skills/openspec-verify-change/SKILL.md) |
+| 40 | ✓ | [`test/fixtures/released-output/v1.9.0-agents-skills/openspec-propose/SKILL.md`](test/fixtures/released-output/v1.9.0-agents-skills/openspec-propose/SKILL.md) |
+| 41 | ✓ | [`test/fixtures/released-output/v1.9.0-codex-agents-skills/openspec-propose/SKILL.md`](test/fixtures/released-output/v1.9.0-codex-agents-skills/openspec-propose/SKILL.md) |
+| 42 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
 
 ---
 

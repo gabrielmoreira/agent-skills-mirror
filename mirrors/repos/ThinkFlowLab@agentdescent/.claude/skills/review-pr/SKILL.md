@@ -57,8 +57,10 @@ mkdocs build --strict                   # when docs/ or mkdocs.yml changed (need
 
 Post it as one PR comment from the `Birfy` login (self-review counts). Keep the
 block intact; the **last** `Tip SHA:` block in the comment is the one read, the
-newest report at a tip wins, and a PASS without a `Ran:` entry or without a
-`Not run:` line does not count.
+newest report at a tip wins, and the tip may be written above the verdict or
+inline in it (`Verdict: PASS (tip b0a30224)`). A PASS without a `Ran:` entry or
+without a `Not run:` line still counts, but the gate marks it `weak: no
+Ran:/Not run:` so it never passes unseen.
 
 ```text
 Self-review (Birfy)

@@ -116,8 +116,10 @@ function Get-Coverage($baseline, [switch]$Planned) {
 function Get-Snapshot {
     $p = @(Get-NetFirewallProfile -PolicyStore PersistentStore | Select-Object Name,Enabled,DefaultOutboundAction)
     $r = @(foreach ($name in $names) { Get-NetFirewallRule -PolicyStore PersistentStore -Name $name | Select-Object Name,Enabled,@{Name='conditions';Expression={Get-RuleConditions $_}} })
-    if ($p.Count -ne 3 -or $r.Count -ne $names.Count) { throw 'Incomplete baseline' }
-    @{ target=$cfg.target; mode=$settings.mode; profiles=$p; rules=$r; names=@($names | Sort-Object) }
+    $activeProfiles = @(Get-NetFirewallProfile -PolicyStore ActiveStore | Select-Object Name,Enabled,DefaultOutboundAction)
+    $activeRules = @(foreach ($name in $names) { Get-NetFirewallRule -PolicyStore ActiveStore -Name $name | Select-Object Name,Enabled })
+    if ($p.Count -ne 3 -or $r.Count -ne $names.Count -or $activeProfiles.Count -ne 3 -or $activeRules.Count -ne $names.Count) { throw 'Incomplete baseline' }
+    @{ target=$cfg.target; mode=$settings.mode; profiles=$p; rules=$r; active_profiles=$activeProfiles; active_rules=$activeRules; names=@($names | Sort-Object) }
 }
 function Read-Baseline {
     $b = Get-Content -LiteralPath $state -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -125,11 +127,32 @@ function Read-Baseline {
     if ((@($b.names) -join ',') -ne (@($names | Sort-Object) -join ',')) { throw 'Rules changed; review baseline' }
     return $b
 }
+function Assert-BaselineRestored($baseline) {
+    foreach ($store in @('PersistentStore','ActiveStore')) {
+        $current = @(Get-NetFirewallProfile -PolicyStore $store)
+        if ($current.Count -ne 3) { throw 'Restore profile readback incomplete; recovery task retained' }
+        $expectedProfiles = $baseline.profiles
+        $expectedRules = $baseline.rules
+        if ($store -eq 'ActiveStore' -and $null -ne $baseline.active_profiles) {
+            $expectedProfiles = $baseline.active_profiles; $expectedRules = $baseline.active_rules
+        }
+        foreach ($p in $expectedProfiles) {
+            $actual = @($current | Where-Object { $_.Name -eq $p.Name })
+            if ($actual.Count -ne 1 -or [int]$actual[0].Enabled -ne [int]$p.Enabled -or
+                [int]$actual[0].DefaultOutboundAction -ne [int]$p.DefaultOutboundAction) { throw 'Restore profile mismatch; recovery task retained' }
+        }
+        foreach ($r in $expectedRules) {
+            $actual = @(Get-NetFirewallRule -PolicyStore $store -Name $r.Name)
+            if ($actual.Count -ne 1 -or [int]$actual[0].Enabled -ne [int]$r.Enabled) { throw 'Restore rule mismatch; recovery task retained' }
+        }
+    }
+}
 function Restore-Baseline {
     $b = Read-Baseline
     # Restore only the settings this switch owns, not a machine-wide firewall import.
     foreach ($p in $b.profiles) { Set-NetFirewallProfile -PolicyStore PersistentStore -Profile $p.Name -Enabled $p.Enabled -DefaultOutboundAction $p.DefaultOutboundAction }
     foreach ($r in $b.rules) { Set-NetFirewallRule -PolicyStore PersistentStore -Name $r.Name -Enabled $r.Enabled }
+    Assert-BaselineRestored $b
     if (Get-ScheduledTask -TaskName $task -ErrorAction SilentlyContinue) { Unregister-ScheduledTask -TaskName $task -Confirm:$false }
 }
 function Get-State {
@@ -193,7 +216,7 @@ switch ($Action) {
         $argsText = '-NoProfile -ExecutionPolicy Bypass -File "' + $fuseScript + '" -Action Off -Config "' + $configPath + '"'
         $taskAction = New-ScheduledTaskAction -Execute "$PSHOME\powershell.exe" -Argument $argsText
         $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(180)
-        $taskSettings = New-ScheduledTaskSettingsSet -StartWhenAvailable
+        $taskSettings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
         Register-ScheduledTask -TaskName $task -Action $taskAction -Trigger $trigger -Settings $taskSettings -User SYSTEM -RunLevel Highest | Out-Null
         try {
             foreach ($name in $settings.enable_rules) { Set-NetFirewallRule -PolicyStore PersistentStore -Name $name -Enabled True }

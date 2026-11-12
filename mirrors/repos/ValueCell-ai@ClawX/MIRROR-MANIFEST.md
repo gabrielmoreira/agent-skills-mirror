@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 11 followed patterns, 28 file(s) materialized.
+Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 12 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 11 followed patterns, 28
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 28 |
+| Followed pats | 12 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `ValueCell-ai/ClawX` — 26 default patterns, 11 followed patterns, 28
 - `harness/reference/windows-sqlite-upgrade-validation-20261109.md`
 - `harness/reference/enterprise-windows-upgrade-validation-20261109.md`
 - `harness/reference/cron-inference-upgrade.md`
+- `harness/reference/gateway-undefined-launch-env-20261111.md`
 - `harness/reference/computer-use-cli-validation.md`
 - `harness/reference/computer-use-skill.md`
 - `docs/en-US/proxy-settings.md`
@@ -94,9 +95,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | → | [`harness/reference/computer-use-skill.md`](harness/reference/computer-use-skill.md) |
 | 24 | → | [`harness/reference/cron-inference-upgrade.md`](harness/reference/cron-inference-upgrade.md) |
 | 25 | → | [`harness/reference/enterprise-windows-upgrade-validation-20261109.md`](harness/reference/enterprise-windows-upgrade-validation-20261109.md) |
-| 26 | → | [`harness/reference/openclaw-2026-10-10-upgrade.md`](harness/reference/openclaw-2026-10-10-upgrade.md) |
-| 27 | → | [`harness/reference/windows-sqlite-upgrade-validation-20261109.md`](harness/reference/windows-sqlite-upgrade-validation-20261109.md) |
-| 28 | → | [`README.md`](README.md) |
+| 26 | → | [`harness/reference/gateway-undefined-launch-env-20261111.md`](harness/reference/gateway-undefined-launch-env-20261111.md) |
+| 27 | → | [`harness/reference/openclaw-2026-10-10-upgrade.md`](harness/reference/openclaw-2026-10-10-upgrade.md) |
+| 28 | → | [`harness/reference/windows-sqlite-upgrade-validation-20261109.md`](harness/reference/windows-sqlite-upgrade-validation-20261109.md) |
+| 29 | → | [`README.md`](README.md) |
 
 ---
 

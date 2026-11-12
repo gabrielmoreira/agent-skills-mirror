@@ -881,7 +881,7 @@ async function listen(server2, port, host) {
   const address = server2.address();
   return typeof address === "object" && address ? address.port : port;
 }
-var DEFAULT_PORTS = { slides: 4710, design: 4720, "design-system": 4730, dashboard: 4740, docs: 4750, motion: 4760 };
+var DEFAULT_PORTS = { slides: 4710, design: 4720, "design-system": 4730, data: 4740, docs: 4750, motion: 4760 };
 var PORT_TRIES = 100;
 var PortsTaken = class extends Error {
   code = "PORT_IN_USE";
@@ -1584,6 +1584,7 @@ ${sections || '<p class="muted">This copy has no tokens, components or guide.</p
 `;
 }
 
+import dns from "node:dns/promises";
 import { EventEmitter } from "node:events";
 import fs6 from "node:fs";
 import http from "node:http";
@@ -1639,6 +1640,7 @@ var Sharing = class _Sharing {
         if (isRecord2(link) && typeof link.token === "string" && link.token.length >= 16) state.links[role] = { token: link.token, on: link.on !== false };
       }
     }
+    if (isRecord2(raw.owner) && typeof raw.owner.token === "string" && raw.owner.token.length >= 32) state.owner = { token: raw.owner.token };
     if (Array.isArray(raw.guests)) {
       for (const g of raw.guests) {
         if (!isRecord2(g) || typeof g.id !== "string" || typeof g.secret !== "string" || !isGuestRole(g.role) || typeof g.link !== "string") continue;
@@ -1668,6 +1670,27 @@ var Sharing = class _Sharing {
       if (link.on && tokenGiven.length === link.token.length && crypto.timingSafeEqual(Buffer.from(tokenGiven), Buffer.from(link.token))) return role;
     }
     return null;
+  }
+  /** The owner's link token (`state.owner`), made and saved the first time it is asked for. */
+  ownerToken() {
+    if (!this.state.owner) {
+      this.state.owner = { token: token(32) };
+      this.save();
+    }
+    return this.state.owner.token;
+  }
+  /** Whether `given` is the owner's link token (a cookie or a link's). */
+  isOwnerToken(given) {
+    const own = this.state.owner?.token;
+    if (!given || !own) return false;
+    const a = Buffer.from(given);
+    const b = Buffer.from(own);
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+  }
+  /** A new owner's link: the old one, and every browser that came in through it, stop working. */
+  resetOwner() {
+    this.state.owner = { token: token(32) };
+    this.save();
   }
   /** The guest a cookie names, if they still have access (their link on and not reset). */
   guest(secret) {
@@ -1930,6 +1953,8 @@ var Hub = class {
   hosts = /* @__PURE__ */ new Set();
   /** One listener per LAN address while any site is open to the network. */
   lanServers = /* @__PURE__ */ new Map();
+  /** Names that resolve to an address listened on, asked for by `allowName` (lower case, no port). */
+  lanNames = /* @__PURE__ */ new Set();
   network;
   constructor(options) {
     this.echo = options.echo;
@@ -1945,7 +1970,8 @@ var Hub = class {
       },
       addresses: () => [...this.lanServers.keys()],
       open: () => this.openLan(),
-      release: () => this.releaseLan()
+      release: () => this.releaseLan(),
+      allowName: (name) => this.allowName(name)
     };
   }
   createServer() {
@@ -2064,9 +2090,9 @@ var Hub = class {
     }
     return [...this.lanServers.keys()];
   }
-  /** A site stopped sharing: the listeners stay while another is shared. */
+  /** A site stopped sharing: the listeners stay while another is shared, or open to its owner on another device. */
   releaseLan() {
-    if (![...this.sites.values()].some((site) => site.share.shared)) this.closeLan();
+    if (![...this.sites.values()].some((site) => site.share.listening)) this.closeLan();
   }
   closeLan() {
     for (const server2 of this.lanServers.values()) {
@@ -2074,8 +2100,30 @@ var Hub = class {
       server2.closeAllConnections?.();
     }
     this.lanServers.clear();
+    this.lanNames.clear();
   }
-  /** A Host header this hub answers: its own names, and while something is shared, its LAN addresses and machine name. */
+  /** The machine's own names, as hostAllowed takes them. */
+  isMachineName(name) {
+    const machine = os3.hostname().toLowerCase();
+    return name === machine || name === `${machine.replace(/\.local$/, "")}.local`;
+  }
+  /**
+   * Answer at `name` too while listening: an address listened on, the machine's name, or a name that resolves to an
+   * address listened on (looked up once, now: Tailscale's MagicDNS name, a hosts entry).
+   */
+  async allowName(name) {
+    const lower = name.toLowerCase();
+    if (!lower || !this.lanServers.size) return false;
+    if (this.lanServers.has(lower) || this.isMachineName(lower) || this.lanNames.has(lower)) return true;
+    const found = await dns.lookup(lower, { all: true, family: 4 }).catch(() => []);
+    if (!found.some((entry) => this.lanServers.has(entry.address))) return false;
+    this.lanNames.add(lower);
+    return true;
+  }
+  /**
+   * A Host header this hub answers: its own names, and while something is shared (or open to its owner on another
+   * device), its LAN addresses, its machine name and the names allowName took.
+   */
   hostAllowed(request) {
     const host = request.headers.host ?? "";
     if (this.hosts.has(host)) return true;
@@ -2083,8 +2131,7 @@ var Hub = class {
     const suffix = `:${this.port}`;
     if (!host.endsWith(suffix)) return false;
     const name = host.slice(0, -suffix.length).toLowerCase();
-    const machine = os3.hostname().toLowerCase();
-    return this.lanServers.has(name) || name === machine || name === `${machine.replace(/\.local$/, "")}.local`;
+    return this.lanServers.has(name) || this.isMachineName(name) || this.lanNames.has(name);
   }
   // ---- requests --------------------------------------------------------------------------------------------------
   /** The site whose address `pathname` is under, with the path below it. */
@@ -3202,7 +3249,7 @@ var NOUNS = {
   slides: { en: "deck", zh: "\u6F14\u793A\u6587\u7A3F", zhThis: "\u8FD9\u4EFD\u6F14\u793A\u6587\u7A3F" },
   design: { en: "design", zh: "\u8BBE\u8BA1\u7A3F", zhThis: "\u8FD9\u4EFD\u8BBE\u8BA1\u7A3F" },
   "design-system": { en: "design system", zh: "\u8BBE\u8BA1\u7CFB\u7EDF", zhThis: "\u8FD9\u4E2A\u8BBE\u8BA1\u7CFB\u7EDF" },
-  dashboard: { en: "dashboard", zh: "\u4EEA\u8868\u76D8", zhThis: "\u8FD9\u4E2A\u4EEA\u8868\u76D8" },
+  data: { en: "dashboard", zh: "\u4EEA\u8868\u76D8", zhThis: "\u8FD9\u4E2A\u4EEA\u8868\u76D8" },
   motion: { en: "animation", zh: "\u52A8\u753B", zhThis: "\u8FD9\u4E2A\u52A8\u753B" }
 };
 var ShareError = class extends Error {
@@ -3219,6 +3266,12 @@ function commentsViewer(viewer) {
 var isRecord4 = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
 var esc2 = (text) => text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 var script = (value) => JSON.stringify(value).replace(/</g, "\\u003c");
+function hostName(host) {
+  const value = host.trim().toLowerCase();
+  if (value.startsWith("[")) return value.slice(1, value.indexOf("]") > 0 ? value.indexOf("]") : void 0);
+  const colons = value.split(":").length - 1;
+  return colons === 1 ? value.slice(0, value.indexOf(":")) : value;
+}
 function localOwner() {
   let name = "You";
   try {
@@ -3235,6 +3288,8 @@ var ShareHost = class {
   page;
   /** Open to the local network now (the hub's listeners are up, for this artifact too). */
   on = false;
+  /** Open to its owner on another device (`open --remote`): the listeners are up, guests stay out unless `on`. */
+  remote = false;
   live = /* @__PURE__ */ new Set();
   constructor(options) {
     this.options = options;
@@ -3260,6 +3315,10 @@ var ShareHost = class {
   get shared() {
     return this.on;
   }
+  /** Someone may reach it over the network now (guests, or its owner on another device): the hub keeps listening. */
+  get listening() {
+    return this.on || this.remote;
+  }
   /** The artifact's name, for the join page and the list of what is open at the server's root. */
   title() {
     return this.options.title();
@@ -3282,30 +3341,61 @@ var ShareHost = class {
     this.options.log(`shared on the local network: ${addresses.map((a) => `http://${a}:${this.port}${this.page}`).join(", ") || "(no LAN address)"}`);
     return addresses;
   }
+  /**
+   * Opens the artifact to its owner on another device, or closes that, and returns the owner's link, at `host` when
+   * that is this computer's (the address the owner's browser already reaches it by), else at its first network address.
+   * Guests are not let in by it: that is `setLan`.
+   */
+  async setRemote(on, host) {
+    if (!on) {
+      this.remote = false;
+      for (const live of [...this.live]) if (live.viewer.remote) live.close("unshared");
+      this.network.release();
+      return null;
+    }
+    const addresses = await this.network.open();
+    if (!addresses.length) {
+      this.network.release();
+      throw new ShareError("This computer has no network address to open it at.");
+    }
+    this.remote = true;
+    const name = hostName(host ?? "");
+    const sorted = [...addresses].sort((a, b) => Number(isTailnet(a)) - Number(isTailnet(b)));
+    const address = name && (addresses.includes(name) || await this.network.allowName?.(name)) ? name : sorted[0];
+    const url = `http://${address.includes(":") ? `[${address}]` : address}:${this.port}${this.page}o/${this.sharing.ownerToken()}`;
+    this.options.log(`open to its owner on another device at http://${address}:${this.port}${this.page}`);
+    return { url, address };
+  }
   /** The artifact left the hub: it stays shared in .sharing.json, for the next time it opens. */
   close() {
     this.on = false;
+    this.remote = false;
     this.network.release();
   }
   // ---- who is asking ---------------------------------------------------------------------------------------------
-  cookie(request) {
+  cookie(request, name = this.options.cookieName) {
     for (const part of (request.headers.cookie ?? "").split(";")) {
       const eq = part.indexOf("=");
-      if (eq > 0 && part.slice(0, eq).trim() === this.options.cookieName) return part.slice(eq + 1).trim();
+      if (eq > 0 && part.slice(0, eq).trim() === name) return part.slice(eq + 1).trim();
     }
     return void 0;
   }
+  /** The cookie the owner's link leaves in a browser on another device. */
+  get ownerCookie() {
+    return `${this.options.cookieName}_owner`;
+  }
   /**
-   * Who a request is: the owner over loopback, a guest by their cookie (while their link is on and the artifact is
-   * shared), else nobody. Loopback is always the owner, so trying a link on this computer can't lock the owner out of
-   * their own artifact; a guest comes over a LAN address (this computer's own included: that is how the owner sees
-   * what a role sees).
+   * Who a request is: the owner over loopback, or by the owner's link's cookie while the artifact is open to them on
+   * another device; a guest by their cookie (while their link is on and the artifact is shared), else nobody. Loopback
+   * is always the owner, so trying a link on this computer can't lock the owner out of their own artifact; a guest
+   * comes over a LAN address (this computer's own included: that is how the owner sees what a role sees).
    */
   isLocal(request) {
     return this.options.local ? this.options.local(request) : isLoopback(request.socket.remoteAddress);
   }
   viewerOf(request) {
     if (this.isLocal(request)) return { role: "owner", user: this.options.owner };
+    if (this.remote && this.sharing.isOwnerToken(this.cookie(request, this.ownerCookie))) return { role: "owner", user: this.options.owner, remote: true };
     const guest = this.on ? this.sharing.guest(this.cookie(request)) : null;
     if (!guest) return null;
     this.sharing.seen(guest);
@@ -3339,7 +3429,8 @@ var ShareHost = class {
     const p = new URL(request.url ?? "/", "http://local").pathname;
     const method = request.method ?? "GET";
     const link = /^\/s\/([A-Za-z0-9_-]{16,64})$/.exec(p);
-    const ours = link || p === "/__share" || p.startsWith("/__share/");
+    const ownerLink = /^\/o\/([A-Za-z0-9_-]{16,64})$/.exec(p);
+    const ours = link || ownerLink || p === "/__share" || p.startsWith("/__share/");
     if (!ours) return false;
     if (method === "POST" && !sameOrigin(request)) {
       request.resume();
@@ -3349,6 +3440,12 @@ var ShareHost = class {
     if (link) {
       if (method === "GET" || method === "POST") await this.join(request, response, method, link[1]);
       else response.writeHead(405, { Allow: "GET, POST" }).end();
+      return true;
+    }
+    if (ownerLink) {
+      request.resume();
+      if (method === "GET" || method === "HEAD") this.ownerIn(request, response, ownerLink[1]);
+      else response.writeHead(405, { Allow: "GET" }).end();
       return true;
     }
     const viewer = this.viewerOf(request);
@@ -3434,6 +3531,24 @@ var ShareHost = class {
     const url = `http://127.0.0.1:${this.port}${this.page}`;
     return `<p class="note">${esc2(t.ownerHere)} <a href="${esc2(url)}">${esc2(url)}</a></p>`;
   }
+  /**
+   * GET /o/<token>: the owner's link. On another device it leaves the owner's cookie (while the artifact is open to them
+   * there) and goes on to the page, its query kept (`?comment=` opens a thread); over loopback it is the page anyway.
+   */
+  ownerIn(request, response, token2) {
+    const local = this.isLocal(request);
+    if (!this.sharing.isOwnerToken(token2) || !local && !this.remote) {
+      const t = this.words(request);
+      return this.sendPage(response, 404, t.linkGoneTitle, `<h1>${esc2(t.linkGoneTitle)}</h1><p>${esc2(t.linkGone)}</p>`);
+    }
+    const search = new URL(request.url ?? "/", "http://local").search;
+    const headers = { Location: `${this.page}${search}`, "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" };
+    if (!local) {
+      headers["Set-Cookie"] = `${this.ownerCookie}=${token2}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`;
+      this.options.log(`share: the owner came in from another device (${request.socket.remoteAddress})`);
+    }
+    response.writeHead(303, headers).end();
+  }
   /** GET /s/<token>: the name form (or straight in, for a guest already in through this link); POST: join. */
   async join(request, response, method, token2) {
     const t = this.words(request);
@@ -3491,6 +3606,7 @@ var ShareHost = class {
     return {
       title: this.options.title(),
       lan: this.on,
+      remote: this.remote,
       port: this.port,
       page: this.page,
       addresses,
@@ -3502,11 +3618,13 @@ var ShareHost = class {
   }
   /**
    * The owner's sharing calls: `lan` {on}, `link` {role, on}, `reset` {role} (a new link: the old one and the guests
-   * who came through it stop working), `role` {guest, role} (a guest's role, while that role's link is on), `remove`
-   * {guest}. Answers the view after.
+   * who came through it stop working; role `owner` the owner's own link), `role` {guest, role} (a guest's role, while
+   * that role's link is on), `remove` {guest}, `remote` {on, host?} (open to the owner on another device: the answer
+   * then has `remoteLink` {url, address}, the owner's link). Answers the view after.
    */
   async share(action) {
     const role = action.role;
+    let remote = null;
     switch (action.action) {
       case "lan": {
         const addresses = await this.setLan(action.on === true);
@@ -3518,8 +3636,16 @@ var ShareHost = class {
         this.sharing.setLink(role, action.on === true);
         break;
       case "reset":
-        if (!isGuestRole(role)) throw new ShareError("role: editor, commenter or viewer");
+        if (role === "owner") {
+          this.sharing.resetOwner();
+          for (const live of [...this.live]) if (live.viewer.remote) live.close("revoked");
+          break;
+        }
+        if (!isGuestRole(role)) throw new ShareError("role: owner, editor, commenter or viewer");
         this.sharing.resetLink(role);
+        break;
+      case "remote":
+        remote = await this.setRemote(action.on === true, typeof action.host === "string" ? action.host : void 0);
         break;
       case "role": {
         if (!isGuestRole(role)) throw new ShareError("role: editor, commenter or viewer");
@@ -3532,11 +3658,11 @@ var ShareHost = class {
         if (typeof action.guest !== "string" || !this.sharing.removeGuest(action.guest)) throw new ShareError("no such guest");
         break;
       default:
-        throw new ShareError("action: lan, link, reset, role or remove");
+        throw new ShareError("action: lan, link, reset, role, remove or remote");
     }
     this.options.log(`share: ${JSON.stringify(action)}`);
     this.dropRevoked();
-    return this.shareView();
+    return { ...this.shareView(), ...remote ? { remoteLink: remote } : {} };
   }
   async shareApi(request, response, method) {
     if (method === "GET") return sendJson2(response, 200, this.shareView());

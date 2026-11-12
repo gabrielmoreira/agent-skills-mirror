@@ -210,6 +210,6 @@ node "<this skill's folder>/scripts/artifact.mjs" check "<root>" > /dev/null || 
 
 ## The references
 
-Under `artifact-type/reference/` in this skill's folder: `format.md` (before a first artboard), `craft.md`, `diagrams.md` (FIRST for diagrams), `print.md` (FIRST for print), `questions.md`, `view-state.md` (before
+Under `artifact-type/reference/` in this skill's folder: `format.md` (before a first artboard), `craft.md`, `diagrams.md` (FIRST for diagrams), `print.md` (FIRST for print), `shaders.md` (FIRST for a shader, WebGL, or anything that moves like light, water, smoke or liquid; a plain gradient stays CSS unless they ask for a shader or a pointer reaction), `questions.md`, `view-state.md` (before
 acting on "this artboard" or a selection), `design-system-components.md`, `brand-colors.md`, `brand-typography.md`. An artifact (deck, animation, doc) made FROM this
 canvas: read `make-from-this.md` FIRST.

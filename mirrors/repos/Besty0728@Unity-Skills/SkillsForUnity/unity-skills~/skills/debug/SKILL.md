@@ -3,35 +3,26 @@ name: unity-debug
 description: Inspect debug, diagnostics and compile state
 ---
 
-> **Before calling any skill in this module:** if you are about to call a skill with parameters guessed from its name or description, STOP — read this file (or fetch its schema via `GET /skills/recommend?includeSchema=true`) first. If you already have the parameter definitions from recommend/schema, you may proceed straight to dryRun.
+# Debug Skills
 
-## Triggers
+Compile state, console errors and logs, system and assembly information, scripting defines and an aggregated health snapshot. Parameters come from the schema (`GET /skills/schema?category=Debug&wire=v2`). Execution and dryRun rules: root [SKILL.md](../../SKILL.md).
+
+## When to use
 - Diagnosing compile failures
 - Checking errors after a change
 - Forcing recompilation
 - Gathering system diagnostics
-- 诊断编译失败、改动后检查报错、强制重编、收集系统诊断
 
-# Debug Skills
+## Rules
+- `debug_force_recompile` and `debug_set_defines` carry `MayTriggerReload`, so they are refused under Approval and Auto (`MODE_FORBIDDEN`); only Bypass or an Allowlist entry runs them. Expect the REST server to be unavailable for a few seconds after a reload.
+- `debug_check_compilation`: `isCompiling: false` alone does not mean the last compile succeeded. After a failed compile, Unity keeps running the old assemblies; read `lastCompilation.succeeded`.
+- Call `unity_diagnose` first when triaging a problem: it combines console errors, compile state, workflow tasks, recent jobs and server stats in one response.
+- Routing: runtime console logs and pause-on-error go to the [console](../console/SKILL.md) module; play mode goes to [editor](../editor/SKILL.md); script compile feedback goes to `script_get_compile_feedback` ([script](../script/SKILL.md)).
 
-Debug utilities for error checking and diagnostics.
-
-## Operating Mode
-
-- **Approval**: 只读类 skill（`unity_diagnose` / `debug_get_errors` / `debug_get_logs` / `debug_check_compilation` / `debug_get_system_info` / `debug_get_stack_trace` / `debug_get_assembly_info` / `debug_get_defines` / `debug_get_memory_info`，全部标 `SkillMode.SemiAuto`）直接执行；`debug_force_recompile` / `debug_set_defines` 默认 `SkillMode.FullAuto`，需用户 grant，grant 后一步执行返结果。
-- **Auto / Bypass**: 直接执行。
-- **本模块含 Reload 类高危 skill**：`debug_force_recompile`（标 `MayTriggerReload=true`）必然触发 Domain Reload；`debug_set_defines` 修改 `PlayerSettings` 的 scripting defines 也会触发重编译 —— 这些 skill 在 Approval / Auto 下会被 `IsForbiddenInSemi` 自动拦截，**仅 Bypass 或 Allowlist 命中可执行**，调用后服务端会短暂不可用。
-
-**DO NOT** (common hallucinations):
-- `debug_compile` / `debug_recompile` do not exist → use `debug_force_recompile`
-- `debug_run` does not exist → use `editor_play` (editor module)
-- `debug_clear` does not exist → use `console_clear` (console module)
-- `debug_set_defines` triggers Domain Reload — server will be temporarily unavailable
-
-**Routing**:
-- For runtime console logs → use `console` module's `console_get_logs` / `console_start_capture`
-- For play mode control → use `editor` module
-- For script compile feedback → use `script` module's `script_get_compile_feedback`
+## Pitfalls
+- `debug_compile` and `debug_recompile` do not exist: use `debug_force_recompile`.
+- `debug_run` does not exist: use `editor_play`.
+- `debug_clear` does not exist: use `console_clear`.
 
 ## Skills
 
@@ -108,8 +99,3 @@ Get memory usage information.
 **Parameters:** None.
 
 **Returns:** `{ success, totalAllocatedMB, totalReservedMB, totalUnusedReservedMB, monoUsedSizeMB, monoHeapSizeMB }`
-
----
-## Exact Signatures
-
-Exact names, parameters, defaults, and returns are defined by `GET /skills/schema` or `unity_skills.get_skill_schema()`, not by this file.

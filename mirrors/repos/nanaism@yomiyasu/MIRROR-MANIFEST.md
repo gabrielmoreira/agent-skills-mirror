@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanaism/yomiyasu` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `nanaism/yomiyasu` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nanaism/yomiyasu` — 26 default patterns, 0 followed patterns, 43 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,49 +59,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/yomiyasu/.codex-plugin/plugin.json`](skills/yomiyasu/.codex-plugin/plugin.json) |
-| 2 | ✓ | [`skills/yomiyasu/assets/algo-artis.png`](skills/yomiyasu/assets/algo-artis.png) |
-| 3 | ✓ | [`skills/yomiyasu/LICENSE`](skills/yomiyasu/LICENSE) |
-| 4 | ✓ | [`skills/yomiyasu/references/audience.md`](skills/yomiyasu/references/audience.md) |
-| 5 | ✓ | [`skills/yomiyasu/references/calques.md`](skills/yomiyasu/references/calques.md) |
-| 6 | ✓ | [`skills/yomiyasu/references/doc-types/article.md`](skills/yomiyasu/references/doc-types/article.md) |
-| 7 | ✓ | [`skills/yomiyasu/references/doc-types/essay.md`](skills/yomiyasu/references/doc-types/essay.md) |
-| 8 | ✓ | [`skills/yomiyasu/references/doc-types/formal.md`](skills/yomiyasu/references/doc-types/formal.md) |
-| 9 | ✓ | [`skills/yomiyasu/references/doc-types/incident.md`](skills/yomiyasu/references/doc-types/incident.md) |
-| 10 | ✓ | [`skills/yomiyasu/references/doc-types/mail.md`](skills/yomiyasu/references/doc-types/mail.md) |
-| 11 | ✓ | [`skills/yomiyasu/references/doc-types/manual.md`](skills/yomiyasu/references/doc-types/manual.md) |
-| 12 | ✓ | [`skills/yomiyasu/references/doc-types/minutes.md`](skills/yomiyasu/references/doc-types/minutes.md) |
-| 13 | ✓ | [`skills/yomiyasu/references/doc-types/paper.md`](skills/yomiyasu/references/doc-types/paper.md) |
-| 14 | ✓ | [`skills/yomiyasu/references/doc-types/pr.md`](skills/yomiyasu/references/doc-types/pr.md) |
-| 15 | ✓ | [`skills/yomiyasu/references/doc-types/promo.md`](skills/yomiyasu/references/doc-types/promo.md) |
-| 16 | ✓ | [`skills/yomiyasu/references/doc-types/proposal.md`](skills/yomiyasu/references/doc-types/proposal.md) |
-| 17 | ✓ | [`skills/yomiyasu/references/doc-types/script.md`](skills/yomiyasu/references/doc-types/script.md) |
-| 18 | ✓ | [`skills/yomiyasu/references/doc-types/slides.md`](skills/yomiyasu/references/doc-types/slides.md) |
-| 19 | ✓ | [`skills/yomiyasu/references/domains/business.md`](skills/yomiyasu/references/domains/business.md) |
-| 20 | ✓ | [`skills/yomiyasu/references/domains/essay.md`](skills/yomiyasu/references/domains/essay.md) |
-| 21 | ✓ | [`skills/yomiyasu/references/domains/tech.md`](skills/yomiyasu/references/domains/tech.md) |
-| 22 | ✓ | [`skills/yomiyasu/references/fact-recovery-details.md`](skills/yomiyasu/references/fact-recovery-details.md) |
-| 23 | ✓ | [`skills/yomiyasu/references/fact-recovery.md`](skills/yomiyasu/references/fact-recovery.md) |
-| 24 | ✓ | [`skills/yomiyasu/references/gemini-syntax.md`](skills/yomiyasu/references/gemini-syntax.md) |
-| 25 | ✓ | [`skills/yomiyasu/references/lists/fact-gaps.txt`](skills/yomiyasu/references/lists/fact-gaps.txt) |
-| 26 | ✓ | [`skills/yomiyasu/references/lists/feelings.txt`](skills/yomiyasu/references/lists/feelings.txt) |
-| 27 | ✓ | [`skills/yomiyasu/references/lists/hedges.txt`](skills/yomiyasu/references/lists/hedges.txt) |
-| 28 | ✓ | [`skills/yomiyasu/references/lists/intensifiers.txt`](skills/yomiyasu/references/lists/intensifiers.txt) |
-| 29 | ✓ | [`skills/yomiyasu/references/lists/katakana-terms.txt`](skills/yomiyasu/references/lists/katakana-terms.txt) |
-| 30 | ✓ | [`skills/yomiyasu/references/lists/nominalization.txt`](skills/yomiyasu/references/lists/nominalization.txt) |
-| 31 | ✓ | [`skills/yomiyasu/references/lists/renyo-nouns.txt`](skills/yomiyasu/references/lists/renyo-nouns.txt) |
-| 32 | ✓ | [`skills/yomiyasu/references/lists/thin-evaluation.txt`](skills/yomiyasu/references/lists/thin-evaluation.txt) |
-| 33 | ✓ | [`skills/yomiyasu/references/persona.md`](skills/yomiyasu/references/persona.md) |
-| 34 | ✓ | [`skills/yomiyasu/references/rephrase-test.md`](skills/yomiyasu/references/rephrase-test.md) |
-| 35 | ✓ | [`skills/yomiyasu/references/review-points.md`](skills/yomiyasu/references/review-points.md) |
-| 36 | ✓ | [`skills/yomiyasu/references/slop-catalog.md`](skills/yomiyasu/references/slop-catalog.md) |
-| 37 | ✓ | [`skills/yomiyasu/scripts/markdown_visibility.py`](skills/yomiyasu/scripts/markdown_visibility.py) |
-| 38 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_check.py`](skills/yomiyasu/scripts/yomiyasu_check.py) |
-| 39 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_diff.py`](skills/yomiyasu/scripts/yomiyasu_diff.py) |
-| 40 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_hook.py`](skills/yomiyasu/scripts/yomiyasu_hook.py) |
-| 41 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_lint.py`](skills/yomiyasu/scripts/yomiyasu_lint.py) |
-| 42 | ✓ | [`skills/yomiyasu/SKILL.md`](skills/yomiyasu/SKILL.md) |
-| 43 | ✓ | [`skills/yomiyasu/UNICODE-LICENSE.txt`](skills/yomiyasu/UNICODE-LICENSE.txt) |
+| 1 | ✓ | [`skills/yomiyasu/assets/algo-artis.png`](skills/yomiyasu/assets/algo-artis.png) |
+| 2 | ✓ | [`skills/yomiyasu/LICENSE`](skills/yomiyasu/LICENSE) |
+| 3 | ✓ | [`skills/yomiyasu/references/audience.md`](skills/yomiyasu/references/audience.md) |
+| 4 | ✓ | [`skills/yomiyasu/references/calques.md`](skills/yomiyasu/references/calques.md) |
+| 5 | ✓ | [`skills/yomiyasu/references/doc-types/article.md`](skills/yomiyasu/references/doc-types/article.md) |
+| 6 | ✓ | [`skills/yomiyasu/references/doc-types/essay.md`](skills/yomiyasu/references/doc-types/essay.md) |
+| 7 | ✓ | [`skills/yomiyasu/references/doc-types/formal.md`](skills/yomiyasu/references/doc-types/formal.md) |
+| 8 | ✓ | [`skills/yomiyasu/references/doc-types/incident.md`](skills/yomiyasu/references/doc-types/incident.md) |
+| 9 | ✓ | [`skills/yomiyasu/references/doc-types/mail.md`](skills/yomiyasu/references/doc-types/mail.md) |
+| 10 | ✓ | [`skills/yomiyasu/references/doc-types/manual.md`](skills/yomiyasu/references/doc-types/manual.md) |
+| 11 | ✓ | [`skills/yomiyasu/references/doc-types/minutes.md`](skills/yomiyasu/references/doc-types/minutes.md) |
+| 12 | ✓ | [`skills/yomiyasu/references/doc-types/paper.md`](skills/yomiyasu/references/doc-types/paper.md) |
+| 13 | ✓ | [`skills/yomiyasu/references/doc-types/pr.md`](skills/yomiyasu/references/doc-types/pr.md) |
+| 14 | ✓ | [`skills/yomiyasu/references/doc-types/promo.md`](skills/yomiyasu/references/doc-types/promo.md) |
+| 15 | ✓ | [`skills/yomiyasu/references/doc-types/proposal.md`](skills/yomiyasu/references/doc-types/proposal.md) |
+| 16 | ✓ | [`skills/yomiyasu/references/doc-types/script.md`](skills/yomiyasu/references/doc-types/script.md) |
+| 17 | ✓ | [`skills/yomiyasu/references/doc-types/slides.md`](skills/yomiyasu/references/doc-types/slides.md) |
+| 18 | ✓ | [`skills/yomiyasu/references/domains/business.md`](skills/yomiyasu/references/domains/business.md) |
+| 19 | ✓ | [`skills/yomiyasu/references/domains/essay.md`](skills/yomiyasu/references/domains/essay.md) |
+| 20 | ✓ | [`skills/yomiyasu/references/domains/tech.md`](skills/yomiyasu/references/domains/tech.md) |
+| 21 | ✓ | [`skills/yomiyasu/references/fact-recovery-details.md`](skills/yomiyasu/references/fact-recovery-details.md) |
+| 22 | ✓ | [`skills/yomiyasu/references/fact-recovery.md`](skills/yomiyasu/references/fact-recovery.md) |
+| 23 | ✓ | [`skills/yomiyasu/references/gemini-syntax.md`](skills/yomiyasu/references/gemini-syntax.md) |
+| 24 | ✓ | [`skills/yomiyasu/references/lists/fact-gaps.txt`](skills/yomiyasu/references/lists/fact-gaps.txt) |
+| 25 | ✓ | [`skills/yomiyasu/references/lists/feelings.txt`](skills/yomiyasu/references/lists/feelings.txt) |
+| 26 | ✓ | [`skills/yomiyasu/references/lists/hedges.txt`](skills/yomiyasu/references/lists/hedges.txt) |
+| 27 | ✓ | [`skills/yomiyasu/references/lists/intensifiers.txt`](skills/yomiyasu/references/lists/intensifiers.txt) |
+| 28 | ✓ | [`skills/yomiyasu/references/lists/katakana-terms.txt`](skills/yomiyasu/references/lists/katakana-terms.txt) |
+| 29 | ✓ | [`skills/yomiyasu/references/lists/nominalization.txt`](skills/yomiyasu/references/lists/nominalization.txt) |
+| 30 | ✓ | [`skills/yomiyasu/references/lists/renyo-nouns.txt`](skills/yomiyasu/references/lists/renyo-nouns.txt) |
+| 31 | ✓ | [`skills/yomiyasu/references/lists/thin-evaluation.txt`](skills/yomiyasu/references/lists/thin-evaluation.txt) |
+| 32 | ✓ | [`skills/yomiyasu/references/persona.md`](skills/yomiyasu/references/persona.md) |
+| 33 | ✓ | [`skills/yomiyasu/references/rephrase-test.md`](skills/yomiyasu/references/rephrase-test.md) |
+| 34 | ✓ | [`skills/yomiyasu/references/review-points.md`](skills/yomiyasu/references/review-points.md) |
+| 35 | ✓ | [`skills/yomiyasu/references/slop-catalog.md`](skills/yomiyasu/references/slop-catalog.md) |
+| 36 | ✓ | [`skills/yomiyasu/scripts/markdown_visibility.py`](skills/yomiyasu/scripts/markdown_visibility.py) |
+| 37 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_check.py`](skills/yomiyasu/scripts/yomiyasu_check.py) |
+| 38 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_diff.py`](skills/yomiyasu/scripts/yomiyasu_diff.py) |
+| 39 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_hook.py`](skills/yomiyasu/scripts/yomiyasu_hook.py) |
+| 40 | ✓ | [`skills/yomiyasu/scripts/yomiyasu_lint.py`](skills/yomiyasu/scripts/yomiyasu_lint.py) |
+| 41 | ✓ | [`skills/yomiyasu/SKILL.md`](skills/yomiyasu/SKILL.md) |
+| 42 | ✓ | [`skills/yomiyasu/UNICODE-LICENSE.txt`](skills/yomiyasu/UNICODE-LICENSE.txt) |
 
 ---
 

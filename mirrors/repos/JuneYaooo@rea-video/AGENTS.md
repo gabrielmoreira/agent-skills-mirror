@@ -8,6 +8,7 @@
   - `docs/`：给人看的文档；`docs/dev/` 是开发文档（扩充评测集、加拍法维度）
   - `eval/`、`tests/`：评测集和测试
 - 开发约定：
+  - 开发环境：`pip install -e ".[ocr,dev]"`（dev 带 pytest 和 jsonschema，测试和能力地图校验要用）
   - 规则改动后跑 `python3 -m pytest -q` 和 `rea-video eval eval/labels.yaml` / `eval/holdout*.yaml`，结果更新到 `eval/RESULTS.md`
   - 能力地图改完跑 `python3 scripts/validate_capabilities.py --matrix`
 - 不要提交任何密钥；VLM 配置通过 `--env-file` 读取。

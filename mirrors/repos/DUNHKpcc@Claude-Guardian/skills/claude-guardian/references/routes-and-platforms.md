@@ -2,46 +2,19 @@
 
 中文执行摘要：本机默认建议须获得接受，VM/VPS 为独立可选方案。完整覆盖准备、接入、配置规划、后续交接、日常使用、更新、排障和恢复；本版不自动执行部署。Mac/Windows 是本机范围，Linux 客机/远端不被删除。宿主、客机、远端、容器和出口分别记录。
 
-All three routes cover preparation, existing-environment intake, proposed setup, later contact handoff, ordinary use, update rechecks, diagnosis, and recovery planning. The route procedures here are human guidance and plans, not an automated provisioning or deployment claim. Any separate adapter must establish its own implemented operations and target-platform evidence before use.
+## 设备与运行位置
 
-## Common concepts
+执行宿主运行 Guardian，目标环境运行 Claude，出口是流量离开网络的位置；本地编辑器可在远端执行，VPS 代理出口不等于 VPS 工作区。SSH／OAuth／API key、订阅和 API 计费分别核实。
 
-The execution host runs Guardian; the target runs the future Claude workflow; an egress is where traffic leaves a network. An editor displayed locally can execute remotely. VPS ownership or using a VPS proxy does not make a local client a remote workspace. IP/ASN describe a sampled network, DNS resolves names, and SSH/OAuth/API keys perform different roles. Product subscription and developer API billing are separate; verify current eligibility after a permitted handoff.
-
-## R-LOCAL / local (recommended, never silently selected)
-
-Scope: macOS and Windows 10/11. Identify OS/version, Edition or relevant architecture, chosen client, installation metadata, proxy boundaries, and data protections. A browser-only task does not require Code/Desktop installation. browser-only 不能豁免整机网络要求；网络准备／修复按[现行整机默认与明确例外](agent-remediation.md#ipv4-only-policy)核对，具体接管／防护机制先核验能力、说明影响并取得批准，不默认安装防火墙。Linux desktop and mobile-only users receive clearly limited general guidance; do not claim a native adapter or force a VM/VPS migration.
-
-1. Interview and authorized native metadata reads; plan only necessary changes
-2. Identify network/browser evidence gaps and post-contact compatibility checks
-3. Explain PC-G1 and scoped handoff requirements; do not open the service to fill a PC0 gap
-4. After scoped handoff, an explicitly approved manual workflow or independently validated adapter may install the chosen client and perform real PC-G2 checks; this guide does not execute those actions
-5. Record a repeatable startup plan and recheck after relevant app/core/profile/network updates
-6. Diagnose by component; plan exact recovery with project/CLI/history protection
-
-Windows: distinguish Home from Home Single Language. Display-language licensing does not prove timezone controls are disabled. Diagnose automatic versus manual timezone, user privileges, policy, and a value reverting separately. Do not use registry hacks or unofficial Home policy-editor installs. Distinguish UI language, keyboard, regional format, app/browser language, timezone, and actual clock. Record Windows 10 maintenance arrangements when relevant; do not upgrade the OS automatically. Windows sandbox/WSL metadata is not necessarily the desktop user's configuration.
-
-macOS: identify actual version/architecture and application versus system settings. A translated process does not establish native architecture support. Permission denial is unknown/blocked, never an automatic sudo request. Built-in incoming firewall settings do not prove per-process outbound isolation. No default timezone, language, or identity changes.
-
-## R-VM / vm (optional)
-
-Existing/new VM → separate host/guest resource and architecture inventory → guest network/OS plan → shared-directory/clipboard/credential boundaries → scoped preparation evidence → explicit handoff → client compatibility/authentication plan → startup/update/backup/recovery plan.
-
-Use the user's chosen hypervisor; do not force recreation. Record NAT/bridged/other mode and actual host-versus-guest proxy reachability; guest loopback is not host loopback. Check guest compatibility independently. Snapshots may include secrets and mounted data may be outside their scope. Do not copy credentials, create snapshots, install a guest, or restore anything in preview. A snapshot cannot reverse remote account enforcement. Keep host evidence separate from guest results.
-
-WSL and containers are runtime layers, not interchangeable VM products. Record machine, namespace, networking, mounts, process location, and browser location. A container inside a VPS remains part of that VPS task. Preview adapters may be unavailable even when the conceptual route is supported.
-
-## R-VPS / vps (optional)
-
-First confirm workspace versus exit-only role. For a workspace: existing/new server → project/local-dependency fit → region/resource/cost plan → SSH and independent rescue → least-privilege development user/firewall plan → network preparation → scoped handoff → required client/authentication plan → terminal/Remote-SSH/tmux operation → optional temporary browser closure → monitoring/backups/update checks.
-
-Label every step local versus server. Reuse existing machines; do not assume an empty server, reimage, benchmark production, or purchase resources. A Linux remote server remains in scope conceptually; it does not extend the native desktop collector matrix. No SSH secrets in reports. Cloud firewall and guest firewall are separate; network modifications require a working independent rescue path. Temporary GUI access needs authentication and restricted transport, never public/no-password VNC. A remote browser is optional according to actual login needs. OAuth redirects and local callbacks must match the actual approved flow; never transfer tokens through chat.
-
-If the task depends on local GUI/software/hardware or data cannot leave the machine, flag feasibility before deployment. Extra egress is an optional requirement to assess, not a mandatory purchase. Costs, legal terms, region support, and vendors remain pending current verification. Exit changes are not proof of service eligibility or a cure for suspension.
+- **本机**：范围为 macOS、Windows 10/11；记录系统／架构、客户端、代理及数据保护。仅浏览器任务无需安装 Code/Desktop，但 browser-only 不能豁免整机网络要求，按[整机默认与明确例外](agent-remediation.md#ipv4-only-policy)核验。Linux 桌面和纯手机任务只提供适用指导，不强制迁移 VM/VPS，也不宣称存在原生适配器。
+- **Windows**：区分 Home 与 Home Single Language；显示语言许可不决定时区权限。自动／手动时区、权限、组织策略和设置回退分别排查，UI 语言、键盘、区域格式、应用语言、时区与时钟分别记录。不用注册表补丁或非官方策略编辑器；不自动升级系统，相关时核对 Windows 10 维护安排。WSL／沙箱元数据不能代替桌面用户设置。
+- **macOS**：区分应用与系统设置；转译进程不证明原生架构支持，权限拒绝记 unknown/blocked，不自动提权。系统入站防火墙不证明出站隔离；不默认改语言、时区或设备身份。
+- **VM／容器**：宿主与客机分别取证，复用用户选择的虚拟化软件。客机回环不等于宿主回环；快照可能含秘密，挂载数据可能不在快照内。预览不复制凭据、创建快照、安装或恢复客机，快照不能撤销服务端限制。WSL／容器的命名空间、挂载和进程位置按 V4 核实。
+- **VPS**：先分开发工作区与仅出口用途，评估本地 GUI／硬件和数据驻留约束。复用现有机器，不默认重装、压测或购买；云与系统防火墙分开，修改网络前准备独立救援。临时 GUI 要认证和受限传输，OAuth 回调按实际获准流程；密钥、令牌不进聊天或报告。成本、地区与服务资格须当前核验，换出口不解除账号限制。
 
 ## 执行卡使用约定（M01/M08/M09）
 
-以下是可交给人的分阶段操作手册，不是自动部署能力声明。上文的 preview 指这些路线不自动执行部署；仓库某个独立适配器是否已实现，须另查其操作/版本矩阵和目标设备验收，不能由教程推断。每次只展开选中的路线。
+每次只展开选中路线。本页不是自动部署能力声明；适配器能力与目标设备验证另查对应操作／版本矩阵。
 
 - **输入**：路线、任务、目标机器/用户/命名空间、客户端类别、已有配置、预算及数据不能离开的位置；用户回答“不知道”时先安排范围有限的只读确认
 - **阶段**：Codex 在 PC0 编排；PC-G1 只证明接触前准备；用户同意具体设备、Profile、动作和目的地后才进入 PC1；PC-G2 将无需认证和登录后项目分开；PC2 登录、支付各自授权
@@ -94,7 +67,7 @@ If the task depends on local GUI/software/hardware or data cannot leave the mach
 1. 写清现行整机默认或用户明确选择的窄范围／分流例外，按[Agent 路径要求](agent-remediation.md#ipv4-only-policy)核对。指定 Profile 的 HTTPS 走既有代理只是局部观察示例，不是整机验收；不能据此写“全机安全”
 2. 按 [网络与解决方法](network-and-remedies.md) 分别检查 HTTPS、DNS、IPv6、UDP、WebRTC；中性端点也要范围批准，不主动解析 Claude 域名
 3. 对确认的差异仅拟最小配置改动，展示语义 diff、配置持久化位置、更新覆盖风险、备份与回滚；批准后仅使用已验收的适配器，否则交给用户人工完成并复验
-4. macOS 严格出站保护用系统自带 PF（[guardian-pf-killswitch.sh](../assets/mac-killswitch/guardian-pf-killswitch.sh)，逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md)，ADR-054）；不用 LuLu，它按进程拦，分不出 TUN 和直连（Issue #17）。加载和开机项是 C 档；未完成故障测试不能称已实现 kill switch，Mac PF 已验收（2026-11-09）；[Issue #25](https://github.com/DUNHKpcc/Claude-Guardian/issues/25) 为历史现场修正版通过报告，环境与版本说明见本机指引
+4. macOS 严格出站保护用系统 PF，不用 LuLu；按 [PF 指引](local-firewall-prompts.md#mac)执行。加载和开机项是 C 档；目标机未完成故障测试不能称已实现 kill switch，已验收范围见该指引。
 5. Windows 优先评估系统内置防火墙的精确程序/作用域规则（逐步提示见 [local-firewall-prompts.md](local-firewall-prompts.md#windows)）；先导出现有相关规则并核查组织策略。不要用全局 block 再假定 allow 回环能覆盖冲突；共享解释器规则可能影响其他项目
 6. 故障演练前准备离线恢复和独立控制通道，单独请求授权。分别测节点失效、GUI 退出/内核仍在、内核停止、新进程、网络切换、IPv4/IPv6 和适用 UDP；未测项保留未测
 
@@ -105,7 +78,7 @@ If the task depends on local GUI/software/hardware or data cannot leave the mach
 
 本节用于主动停用保护或回滚；正常关机、重启保留长期防火墙策略，不要求先撤规则。
 
-2026-11-07：退出 Claude Desktop、关闭浏览器中 Claude 相关标签页后，仍可能留下监听进程。窗口消失不是退出证据；监听存在也不等于已经向外发送数据。本条是操作指导，本次未独立复测具体进程及各平台行为。
+退出 Claude Desktop、关闭相关浏览器标签页后，仍可能留下后台监听。窗口消失不证明进程退出，监听存在也不证明已向外发送数据；按以下步骤核实目标机实际状态。
 
 1. **保留代理和防直连规则。**先保存工作，按现有授权正常退出 Desktop、相关 Code／IDE 会话和浏览器标签页；涉及接触 Claude 的动作仍按 C 档确认。不要先停代理或撤规则再检查。
 2. **在选定设备、用户和命名空间内核实残留。**查看相关 PID、父子关系、可执行文件路径及其 TCP 监听、TCP 连接与 UDP socket；包括 Helper、原生浏览器宿主（如 `chrome-native-host`）、相关扩展／后台任务及已确认归属的子进程。名称只能作线索，不能只查名为 Claude 的进程，也不能把所有 Node、Chrome 或浏览器进程都当作 Claude。无需读取页面内容、完整命令行或凭据。

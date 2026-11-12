@@ -3,23 +3,19 @@ name: unity-gameobject
 description: Create and manipulate GameObjects
 ---
 
-## Triggers
-- Building or restructuring scene hierarchy
-- Spawning or removing objects
-- Adjusting transforms
-- 搭建或调整场景层级、新建或删除物体、修改 Transform
-
 # Unity GameObject Skills
 
 Create, find, parent and transform scene objects. Parameters come from the schema (recommend `includeSchema=true` or `/skills/schema?names=`), which notes the non-obvious ones — never from a skill's name. Execution, dryRun and verification rules: root [SKILL.md](../../SKILL.md).
 
-## Operating Mode
-`gameobject_find` / `gameobject_get_info` are `SemiAuto` (read-only); every other skill is `FullAuto`. `gameobject_delete` / `gameobject_delete_batch` (`Operation.Delete`) are NeverInSemi: `MODE_FORBIDDEN` under Approval/Auto, run only under Bypass or an Allowlist hit → [operating mode](../../references/protocol-operating-mode.md).
+## When to use
+- Building or restructuring scene hierarchy
+- Spawning or removing objects
+- Adjusting transforms
 
-## Shared rules
+## Rules
 
-- **Identifiers**: `entityId` (string; Unity 6000.4+, where `instanceId` reads `0`), `instanceId` (int, older Unity), `path` (`"Parent/Child"`, case-insensitive, optional scene-name prefix), `name`. Give at least one; precedence `entityId > instanceId > path > name`, and a stale id or missed path falls through to the next one given.
-- **Name matching**: an exact name wins (the first in hierarchy order when several share it); otherwise a single whole-word or substring match is used. Several fuzzy matches return `TARGET_NOT_FOUND` with `candidates` (`path` + `entityId` each) instead of guessing. Non-exact resolutions are listed in top-level `resolutionNotes`.
+- **Identifiers**: `entityId` (string, any Unity; the only id on 6000.4+, where `instanceId` reads `0`), `instanceId` (int, older Unity), `path` (`"Parent/Child"`, case-insensitive, optional scene-name prefix), `name`. Give at least one; precedence `entityId > instanceId > path > name`. An id that names nothing is `TARGET_NOT_FOUND` (it may be stale), never a fallback; a missed path falls back to `name`.
+- **Name matching**: an exact name wins (the top-most in the Hierarchy when several share it, inactive too; Prefab Mode only by id); otherwise a single whole-word or substring match is used. Several fuzzy matches return `TARGET_NOT_FOUND` with `candidates` (`path` + `entityId` each) instead of guessing. Non-exact resolutions are listed in top-level `resolutionNotes`.
 - **Spaces**: `gameobject_create` `x/y/z` and `rotX/Y/Z` are local to the parent unless `space:"world"` (applied after parenting). `gameobject_set_transform` `posX/Y/Z` and `rotX/Y/Z` are world, `localPosX/Y/Z` local; it applies world position, then local position, then rotation, then scale, so local wins on a shared axis and omitted axes keep their value. `scaleX/Y/Z` is always `localScale`. RectTransform fields (`anchor*`, `pivot*`, `sizeDelta*`, `width`/`height`) are UI-only.
 - **Read-back**: create, set_transform and their batches return the Transform read back — `position` (world), `localPosition`, `rotation` (world euler, 0–360), `scale` (local), as `gameobject_get_info` reports them; no follow-up read needed.
 - **Batches** (`items` = JSON array): all-or-nothing. One failed item reverts the whole call (`rolledBack:true`, the other items `reverted:true`, error `SEMANTIC_INVALID`); fix the failed items and resend all. Unknown item keys are ignored and named in `warnings`. Items take the single skill's identifiers and fields; `gameobject_create_batch` items may parent to an item created earlier in the same call.
@@ -41,7 +37,7 @@ Use `*_batch` for 2+ objects (one call instead of N).
 | - | `gameobject_set_tag_batch` |
 | `gameobject_set_sibling_index` (index clamped) | - |
 
-Query (no batch): `gameobject_find` (name substring or regex, tag, layer, component), `gameobject_get_info` (transform, parent, children, components).
+Query (no batch): `gameobject_find` (name substring or regex, tag, layer, component; at most `limit` (50) objects, `truncated:true` + `totalMatched` report a cut), `gameobject_get_info` (transform, parent, children, components).
 
 Per-skill tables, item fields and return shapes: `reference/<skill_name>.md` — rarely needed, the schema notes the parameters.
 
@@ -51,10 +47,6 @@ Per-skill tables, item fields and return shapes: `reference/<skill_name>.md` —
 - `gameobject_get_transform` does not exist → use `gameobject_get_info`
 
 **Elsewhere**: components → `component_*` skills; material or colour → `material_*` skills; `scene_find_objects` (SemiAuto) also searches objects.
-
-## Exact Signatures
-
-Names, parameters, defaults and required flags come from `GET /skills/schema?category=GameObject` (or `?names=a,b`), not this file.
 
 ## Common Errors
 

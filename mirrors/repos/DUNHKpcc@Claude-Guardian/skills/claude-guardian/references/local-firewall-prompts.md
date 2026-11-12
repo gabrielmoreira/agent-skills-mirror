@@ -22,7 +22,7 @@
 <a id="delivery-scope"></a>
 ## 替别人交付：先说范围，按验收单交
 
-替客户、同事、家人做本机路线（Mac 和 Windows 都适用）时按下面做。起因（2026-10-30 反馈）：有人给客户做 Windows 时另写防火墙执行器和恢复程序，执行器反复出错，一天一夜没交付。
+替客户、同事、家人交付 Mac／Windows 本机路线时，按以下范围和验收单执行。
 
 1. **开工前说清 Skill 给什么：**本机路线是提示词引导（Windows 按本文第 1 到 7 步，Mac 按 PF 一节），检测和判定用 `network_check.py run` 和 `egress_verifier.py`；首次部署没有 Windows 规则生成引擎；已部署防护可用[统一开关与桌面界面](killswitch-switch.md)。没有新增常驻程序或自动恢复服务。客户要“一键全自动”时当场说。
 2. **断线保护不用另写程序：**默认出站阻止和 `guardian-*` 规则是系统防火墙的持久配置，但配置保留不等于保护已验证：现有宽放行、未启用的配置文件、TUN 重建后的接口变化都要核对（[S10 第三节](../sources/S10-windows-deployment-sanitized.md#windows-firewall)、[第九节](../sources/S10-windows-deployment-sanitized.md#tun-firewall-lifecycle)）。TUN 恢复交给客户端的服务模式和开机自启；验收须证明恢复之前只断网、不直连。客户端没有受支持的自启入口就告诉客户，不自建服务（[修复后的复验](agent-remediation.md#post-repair-stability)）。
@@ -31,7 +31,7 @@
    2. **防火墙读回：**三个配置文件都启用且默认出站都是 Block，`guardian-*` 规则齐全，并核对其他 Allow 规则是否仍放过直连。上不了网时才用分层诊断。
    3. **重启演练：**重启后、客户端起来之前外网不通；自启、TUN 恢复后正常；默认出站仍是 Block。客户本人在场的本机按 B 档，远程按 C 档（重启后可能连不回来）。
    4. **浏览器验收：**客户本人在实际用的浏览器打开 https://ip.net.coffee/claude/，除语言外全绿（[做法](whole-machine-ipv4.md#browser-acceptance)）。
-   5. **若交付[统一桌面开关](killswitch-switch.md)：**按客户的实际入口验收“双击 → UAC → 三档状态读回 → 联网/阻断行为”，不能用 SSH、SYSTEM 任务或手输带 Bypass 的调试命令代替。完整事故复盘和快捷方式配方见 [S10 晚间复盘](../sources/S10-windows-deployment-sanitized.md#desktop-launcher)，不要求所有交付都开发开关。
+   5. **若交付[统一桌面开关](killswitch-switch.md)：**按客户的实际入口验收“双击 → UAC → 三档状态读回 → 联网/阻断行为”，不能用 SSH、SYSTEM 任务或手输带 Bypass 的调试命令代替。快捷方式配方见 [S10 晚间复盘](../sources/S10-windows-deployment-sanitized.md#desktop-launcher)，不要求所有交付都开发开关。
    6. **完成[突发场景验收](#incident-acceptance)的适用项目，前四项及实际交付的开关都过，客户本人登录 Claude。**
 4. **超出 Skill 的自动化先报工作量：**一键脚本、自写执行器、常驻守护这类，先说要额外开发什么、大概多久，客户同意再做；能按第 1 到 7 步手动做完的先手动交付。
 5. **每过一项就告诉客户：**某一步重试一次仍失败，先回到安全状态（保险丝还在，或默认出站已恢复为允许），再说清卡在哪一项、下一步谁做。没全过就报哪几项过了、哪几项没过。
@@ -118,9 +118,9 @@ Mac 当前缺少联网前加载强制顺序、换网监控和新网卡自动补�
 
 ### Mac 的防火墙：PF 脚本（已验收）
 
-**当前状态（2026-11-09）：Mac PF 已验收。**范围包括故障阻断、保险丝、开机加载、重启、换网、新网卡、睡眠恢复、DNS／UDP、浏览器／WebRTC 和回滚。此日期记录验收状态更新，未新增自动测量数据。
+**验收记录（2026-11-09）：Mac PF 已验收。**范围包括故障阻断、保险丝、开机加载、重启、换网、新网卡、睡眠恢复、DNS／UDP、浏览器／WebRTC 和回滚；日期为状态更新，非新增测量。新目标机仍须按下列步骤核验。
 
-**为什么不用 LuLu（Issue #17 实测）：**LuLu 按“哪个进程发起连接”过滤，判断发生在路由之前，分不出流量是进 TUN 还是直连。只给代理核心放行时，正常经 TUN 的连接（比如 curl 连 1.1.1.1）照样被按 curl 进程拦掉；反过来给每个应用都放行，TUN 一掉它们又能直连。所以 LuLu 做不了“走 TUN 放行、直连拦截”。已经装了 LuLu 的，用 PF 前把它的默认拒绝关掉（切回放行或退出），否则会和 PF 叠加，把 TUN 流量拦掉。
+**为什么不用 LuLu：**LuLu 按“哪个进程发起连接”过滤，判断发生在路由之前，分不出流量是进 TUN 还是直连。只给代理核心放行时，正常经 TUN 的连接（比如 curl 连 1.1.1.1）照样被按 curl 进程拦掉；反过来给每个应用都放行，TUN 一掉它们又能直连。所以 LuLu 做不了“走 TUN 放行、直连拦截”。已经装了 LuLu 的，用 PF 前把它的默认拒绝关掉（切回放行或退出），否则会和 PF 叠加，把 TUN 流量拦掉。
 
 **PF 怎么拦：**按网卡，不按进程。物理网卡（Wi-Fi、有线、雷雳网桥等）只放行发往节点真实 IP 和端口的连接，加 DHCP，可选核心解析节点用的 DNS（`BOOTSTRAP_DNS`）和局域网例外（`LAN_NET`）；其余出站一律丢弃。TUN（utun）和回环不受影响。核心或 TUN 停掉后，应用流量落到物理网卡，被拦，不会直连。规则放在 `com.apple/claude-guardian` 子 anchor 里，不改 `/etc/pf.conf`；Apple 的 TN3165 说 PF 不是稳定接口，所以系统大版本更新后要重做故障演练（ADR-054）。
 
@@ -132,13 +132,13 @@ Mac 当前缺少联网前加载强制顺序、换网监控和新网卡自动补�
 4. **故障演练：**用 `network_check.py run --failure-drill` 那一次取证，停核心后确认路由已回到物理网卡、外网全部失败，再恢复。没演练就不能说 kill switch 成功。节点是域名、核心重启后连不上节点的，把核心的 `proxy-server-nameserver` 填进 `BOOTSTRAP_DNS` 重新加载。
 5. **开机加载（C 档）：**`sudo ... persist` 装 LaunchDaemon，只加载已确认的那一版规则。
 6. **日常：**`sudo ... status` 看命中计数、网卡覆盖和 DNS 路径；换节点、换网卡（出现“不在规则里”的提示）后重新 `apply` 和 `confirm`。
-   - **系统 DNS 必须手动设成公网 IPv4（2026-11-02 真机验收 R3）：**macOS 不会把发往局域网的 DNS 劫持进 TUN。网络服务的 DNS 是“自动”时，换网后会用新网络 DHCP 下发的 DNS，常见是路由器地址，查询走物理网卡被 PF 丢掉，表现是 IP 能通、域名解析失败（curl exit 6）。`bash guardian-pf-killswitch.sh dns` 只读列出每个网络服务是手动还是自动、当前 DNS 走哪张网卡。改法（B 档）：每个网络服务 `sudo networksetup -setdnsservers "<服务名>" 1.1.1.1`，恢复自动用 `empty`。不要把系统 DNS 放进 `LAN_NET`：能解析，但查询绕过代理；也不要和 `BOOTSTRAP_DNS` 用同一个地址，否则核心停掉后查询能直接发出去。
+   - **系统 DNS 必须手动设成公网 IPv4：**macOS 不会把发往局域网的 DNS 劫持进 TUN。网络服务的 DNS 是“自动”时，换网后会用新网络 DHCP 下发的 DNS，常见是路由器地址，查询走物理网卡被 PF 丢掉，表现是 IP 能通、域名解析失败（curl exit 6）。`bash guardian-pf-killswitch.sh dns` 只读列出每个网络服务是手动还是自动、当前 DNS 走哪张网卡。改法（B 档）：每个网络服务 `sudo networksetup -setdnsservers "<服务名>" 1.1.1.1`，恢复自动用 `empty`。不要把系统 DNS 放进 `LAN_NET`：能解析，但查询绕过代理；也不要和 `BOOTSTRAP_DNS` 用同一个地址，否则核心停掉后查询能直接发出去。
    - **拦了什么看 `blocked`：**`sudo bash guardian-pf-killswitch.sh blocked 60` 抓 60 秒被拦的包，按网卡、目的地类别（局域网、公网、组播等）和端口汇总，不输出 IP。正常使用时组播、链路本地、IPv6 被拦一般无害；出现公网 TCP/443、UDP/STUN 说明有流量没进 TUN，出现公网 UDP/53 多半是核心自己的上游 DNS 被拦。
 7. **回滚：**`sudo ... rollback` 撤销运行中的规则；`sudo ... uninstall` 连开机项和生成的文件一起删。脚本不在时用 `sudo pfctl -a com.apple/claude-guardian -F rules`。规则只拦网络，本机终端随时能回滚。
 
-**验证状态（2026-11-07 更新）：**[Issue #25](https://github.com/DUNHKpcc/Claude-Guardian/issues/25) 报告了 2026-11-05 的真机通过样本：macOS 26.6.2、系统 bash 3.2（C locale）、Clash Verge Rev 2.5.10、VLESS+REALITY 域名节点。报告覆盖 render → apply（180 秒保险丝）→ 三条联网检查 → confirm → 停核心后无直连 → persist；`egress_verifier` 为 `established`，8 层全部 pass，advisory 仅 OS_IPV6 未全局禁用。
+**真机样本（2026-11-05）：**macOS 26.6.2、bash 3.2、Clash Verge Rev 2.5.10、VLESS+REALITY 域名节点，使用现场修正版完成加载、联网检查、确认、停核心无直连及开机持久化；`egress_verifier` 为 `established`，8 层 pass，OS_IPV6 为 advisory。
 
-**版本说明（2026-11-09）：**Issue #25 现场修正版的 5 处 `${var}` 变量边界修复已合入随包脚本。回归测试运行实际脚本，覆盖配置缺失、跳过 IPv6 节点及 DNS 自动／手动／TUN 路径提示；本机 Bash 3.2 在 UTF-8 locale 下复现旧代码的 `unbound variable`，C locale 未复现，与报告的 locale 描述有差异。修复后两种 locale 均通过。本次没有重新加载本机 PF，项目已验收状态保持不变；新目标机按实际环境核对，操作、故障演练与恢复沿用本节步骤。
+**脚本验证（2026-11-09）：**现场变量边界修复已合入；Bash 3.2 的 UTF-8／C locale 回归均通过，未重新加载 PF。版本与证据差异见 ADR-063，不能据此扩大真机覆盖范围。
 
 ## Windows
 
@@ -171,14 +171,14 @@ Mac 当前缺少联网前加载强制顺序、换网监控和新网卡自动补�
    - TUN 网卡：`New-NetFirewallRule -DisplayName "guardian-allow-tun" -Direction Outbound -InterfaceAlias "<TUN 网卡别名>" -Action Allow`（别名用 `Get-NetAdapter` 核实）。
    - DHCP：`New-NetFirewallRule -DisplayName "guardian-allow-dhcp" -Direction Outbound -Protocol UDP -LocalPort 68 -RemotePort 67 -Action Allow`。
    - 回环和必要的局域网例外**逐项核对**，不要假定默认放行；有则加规则。
-   - **回环用接口，不用 `::1`：**部分 Windows 版本（Issue #13 的 10.0.26200）拒绝 `-RemoteAddress ::1` 或 `::1/128`，报“已指定未指定的多播、广播或环回 IPv6 地址”。改用回环软件接口：先 `Get-NetIPInterface | Where-Object InterfaceAlias -like "Loopback*"` 核实本机唯一的回环接口别名（通常是 `Loopback Pseudo-Interface 1`），再 `New-NetFirewallRule -DisplayName "guardian-allow-loopback" -Direction Outbound -InterfaceAlias "<回环接口别名>" -Action Allow`。读回时 `(Get-NetFirewallRule -DisplayName "guardian-allow-loopback" | Get-NetFirewallInterfaceFilter).InterfaceAlias` 只有一个值时是字符串，不是数组，不要取 `[0]`（会只拿到第一个字符）。
+   - **回环用接口，不用 `::1`：**部分 Windows 版本（如 10.0.26200）拒绝 `-RemoteAddress ::1` 或 `::1/128`，报“已指定未指定的多播、广播或环回 IPv6 地址”。改用回环软件接口：先 `Get-NetIPInterface | Where-Object InterfaceAlias -like "Loopback*"` 核实本机唯一的回环接口别名（通常是 `Loopback Pseudo-Interface 1`），再 `New-NetFirewallRule -DisplayName "guardian-allow-loopback" -Direction Outbound -InterfaceAlias "<回环接口别名>" -Action Allow`。读回时 `(Get-NetFirewallRule -DisplayName "guardian-allow-loopback" | Get-NetFirewallInterfaceFilter).InterfaceAlias` 只有一个值时是字符串，不是数组，不要取 `[0]`（会只拿到第一个字符）。
    - **核心程序路径以正在运行的为准：**`Get-Process | Where-Object Name -like "*mihomo*" | Select-Object Name,Path`。Clash Verge 的服务模式下跑的是服务目录里的核心，不是安装目录里的那个；路径不对，第 4 步之后核心连不上节点，所有经 TUN 的连接都会超时。节点用域名的，按当前解析结果填全部 IP，并给核心解析节点域名所需的 DNS 单独放行。
 4. **最后切换默认出站为阻止（保险丝已就位）：**`Set-NetFirewallProfile -Profile Domain,Private,Public -DefaultOutboundAction Block`。切换后立刻验证出口仍通、浏览器可用；不通就按下面“[切换后不通：分层诊断](#windows-fw-layered-diagnosis)”在保险丝时间内查，查不清就回滚，不扩大白名单碰运气。
 5. **故障演练：用 `network_check.py run --failure-drill` 那一次取证代替，不另外手动演一遍。**第 4 步的正常代理通信确认通了才做。工具会提示停一次代理核心、再打开；结果里“故障演练”一项是“停掉代理后连不出去，没有直连”就算通过，同一次取证交给 `egress_verifier.py` 判定（即[替别人交付](#delivery-scope)验收单的“一次取证”）。通过后删除保险丝任务，未通过或没跑就不删。
 6. **回滚：**`Set-NetFirewallProfile -Profile Domain,Private,Public -DefaultOutboundAction Allow`，再 `Get-NetFirewallRule -DisplayName "guardian-*" | Remove-NetFirewallRule`；必要时 `netsh advfirewall import "<备份路径>\fw-backup.wfw"` 还原整体。
 7. **更新后复查：**换节点、改端口、更新客户端后，节点 IP 和核心路径可能变，规则要同步更新，否则会断网。
 
-第 1 到 4 步在一台 Windows（10.0.26200，Clash Verge Rev 2.5.2，Issue #13）上跑过，备份、保险丝、加规则、切换和回滚都正常，碰到的 `::1` 被拒和切换后超时已补进上面和下面的诊断；该 Issue 的第 5 步故障演练还没在真机上跑通。后续 [S10](../sources/S10-windows-deployment-sanitized.md)报告了 Win10/Win11 样本的故障阻断结果及新的断网事故；这些是原作者历史实测报告，本次入库未独立复验，浏览器、严格路由和生命周期待办仍按各机器原记录保留。Windows 版本差异大，Agent 首次使用前先在 `-WhatIf` 或只读命令里确认参数和别名。
+**Windows 样本：**第 1 到 4 步在 Windows 10.0.26200、Clash Verge Rev 2.5.2 上通过，涵盖备份、保险丝、加规则、切换和回滚；该样本的第 5 步故障演练还没在真机上跑通。[S10](../sources/S10-windows-deployment-sanitized.md) 另有 Win10/Win11 故障阻断报告，未独立复验；浏览器、严格路由和生命周期待办按原记录保留。首次使用先用 `-WhatIf` 或只读命令确认参数和别名。
 
 <a id="windows-fw-layered-diagnosis"></a>
 ### 切换后不通：分层诊断
@@ -206,7 +206,7 @@ curl 退出码对照：`6` 解析失败（DNS 层）；`7` 连接被拒或被拦
 
 `New-NetFirewallRule` 的 `Windows System Error 5 / AccessDenied` 先记录准确阶段（创建、读回或删除）、规则条件类别、令牌是否提升、有效策略与管理限制，以及已有的窄范围对照结果；只读核对也须限定目标。管理员或 SYSTEM 仍拒绝时不能重复解释为“没给管理员权限”，也不能凭此断言安全软件干预或身份字段不支持。没有对照证据就记 unknown，不为诊断自行创建宽泛规则或升级到 SYSTEM。
 
-Windows 原生拒绝、Skill 门禁和 Agent 工具 `blocked by policy` 分开记录。原因不明时保留旧保护、错误摘要及本机回执，停止反复写入。Issue #28 的原生 WFP／AppID Tagging 是单机经验，尚非本项目通用后端；引入原生后端需单独评审和授权，不自动绕过管理限制。
+Windows 原生拒绝、Skill 门禁和 Agent 工具 `blocked by policy` 分开记录。原因不明时保留旧保护、错误摘要及本机回执，停止反复写入。原生 WFP／AppID Tagging 尚非本项目通用后端；引入原生后端需单独评审和授权，不自动绕过管理限制。
 
 ### 查 WFP 丢包记录
 

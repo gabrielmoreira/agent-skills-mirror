@@ -162,6 +162,8 @@ cursor; on Wayland none is drawn.
 
 ## What differs on Linux
 
+- Sandboxes are not available on Linux yet. To run agent-desktop in a container you manage yourself, see `agent-browser.dev/desktop/guides/docker-container`.
+
 - Firefox/Gecko `select` can change the selected value without firing `change`
   or `input` events, so dependent page handlers do not run. The result stays
   `delivered_unverified` even when value readback matches. Check the dependent

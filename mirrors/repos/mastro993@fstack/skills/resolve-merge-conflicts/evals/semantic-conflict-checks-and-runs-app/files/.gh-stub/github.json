@@ -1,0 +1,27 @@
+{
+ "repo": "acme/receipts",
+ "pulls": [
+  {
+   "number": 33, "title": "Show sales tax and line totals on receipts", "state": "OPEN",
+   "headRefName": "receipt-tax", "baseRefName": "main", "author": "fede",
+   "body": "Closes #32.\n\nEach receipt line now shows its line total, and the receipt ends with a tax line computed from the order's `taxRate`.",
+   "closingIssuesReferences": [32]
+  },
+  {
+   "number": 31, "title": "Receipts in the order's currency", "state": "MERGED", "mergedAt": "2026-11-10T09:12:00Z",
+   "headRefName": "currency", "baseRefName": "main", "author": "bruno",
+   "body": "Closes #30.\n\nRenames `formatPrice` to `formatMoney(cents, currency = 'USD')`, formatted with Intl, and threads the order's `currency` through everything that prints an amount. Adds examples/berlin-order.json.",
+   "closingIssuesReferences": [30]
+  }
+ ],
+ "issues": [
+  {
+   "number": 30, "title": "Berlin store needs EUR receipts", "state": "CLOSED", "author": "carla",
+   "body": "The Berlin store opens next month. Every amount on its receipts must be in EUR (orders carry `currency: \"EUR\"`). Showing $ on a German receipt is a compliance problem."
+  },
+  {
+   "number": 32, "title": "Receipts must show sales tax", "state": "OPEN", "author": "dana",
+   "body": "Receipts need a tax line (rate from the order's `taxRate`) and each line's total, so customers can check the math."
+  }
+ ]
+}

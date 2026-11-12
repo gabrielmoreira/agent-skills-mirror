@@ -21,10 +21,20 @@ Do not merely imitate the supplied screen. Read `PRODUCT-PRINCIPLES.md`, `RULESE
 1. Ingest every supplied reference and assign evidence IDs (`R1`, `R2`, ...). If a URL can be
    rendered, measure it first with `scripts/measure-reference.mjs <url> --out <dir>` (a browser
    module from `--browser`, `STYLESEED_BROWSER_MODULE`, or the project's own `playwright`; nothing
-   is installed). It writes `measurements/observations.json`, `measurements/summary.json`, a
-   twelve-axis draft, and `case.draft.json` in the format of `research/cases/README.md`. The
+   is installed). It writes `measurements/observations.json`, `measurements/summary.json`,
+   `measurements/facts.json` (structure facts with stable ids: regions, sections, columns, gaps,
+   controls, tables, motion, breakpoints), a twelve-axis draft with a "Decision (person)" column,
+   and `case.draft.json` in the format of `research/cases/README.md`. Within each page load the
+   window is scrolled to the bottom and back before measuring, so scroll-revealed content counts;
+   `--no-scroll` measures the page as loaded. Pass `--robots` to check
+   robots.txt first; follow "Sources and conduct" in `REFERENCE-COMPILER.md`. In a project, measure
+   with `--project-root . --slug <slug>` instead of `--out`: the same `measurements/` land in
+   `.styleseed/evidence/_reference/<slug>/` with a `source.json` (robots verdict, scroll pass) and no
+   case draft. `--frames` (project mode only, with `--robots` allowing the path or `--own-site`) also
+   saves one viewport screenshot per viewport there, ignored by git by default; tell the user frames
+   are theirs to keep private. Never pass `--frames` in the StyleSeed repository. The
    derived accent is the colour of filled primary actions, then of coloured links; read the
-   `roleEvidence` counts before trusting it. `--designlang` adds a pinned third-party token
+   `roleEvidence` counts before trusting it. A fact is an observation, not a decision to copy. `--designlang` adds a pinned third-party token
    extraction when `npx` is available; its `brand.primary` is not a role decision. If an image
    cannot be seen, stop claiming visual analysis for it.
    Distinguish discovery, inspected previews, and live states; deduplicate repeated projects
@@ -41,12 +51,30 @@ Do not merely imitate the supplied screen. Read `PRODUCT-PRINCIPLES.md`, `RULESE
    verification needed, and unresolved human choices. Preserve equivalent comparison patterns;
    do not convert gallery recurrence into a mandatory shape or component-count rule.
 5. Choose the nearest built-in fallback grammar and adapter, then compile the project artifacts required by
-   `REFERENCE-COMPILER.md` under `.styleseed/rulesets/<slug>/`.
+   `REFERENCE-COMPILER.md` under `.styleseed/rulesets/<slug>/`. For a measured URL, in this order:
+   - Compile: `scripts/compile-contract.mjs --project-root <dir> --slug <slug> --measurements <case>/measurements`
+     (or `.styleseed/evidence/_reference/<slug>/measurements` after a project-mode measurement)
+     prints the counts per transfer; add `--write` (and `--fallback`/`--adapter` when no single artifact
+     selects the slug yet) to write the draft `evidence.json` and the five files rendered from it.
+   - Edit transfers: the user decides, fact by fact and per token axis, `keep` (checked), `adapt`
+     (relationship), `observe` (brief only), or `avoid` (do not copy) in `evidence.json`, and writes a one-sentence
+     `note` on every kept `derived` fact. Present the proposals; never decide them for the user. Run
+     `--write` again after editing; it keeps the edits and re-renders.
+   - Approve: `--approve --reviewer <name>` with the name the user gives. Never fill it in yourself.
 6. After explicit approval of the inferred grammar, select `reference:<slug>` in the chosen artifact's project-owned configuration for registry
-   projects; only when neither registry file exists, update the legacy `STYLESEED.md`.
+   projects; only when neither registry file exists, update the legacy `STYLESEED.md`. The resolver refuses
+   a draft or a contract edited after approval. `--propose-decisions` prints ledger entries for what the
+   user kept; they paste the ones they want into `.styleseed/project.json`.
    Preserve bounded brand choices. A partial or invalid registry is an error, not a fallback.
 7. Validate transfer: apply the grammar to one representative screen not present in the source
-   set, including valid alternatives and a failure case in its checks. Run `/ss-score`, then
+   set, including valid alternatives and a failure case in its checks. Before building, write the
+   brief: `scripts/compile-brief.mjs --project-root <dir> --artifact <id> --write`
+   (`.styleseed/briefs/<id>.md`). Ask the user one question, what is wrong with the current screen,
+   and pass their own sentence as `--verdict`; never write a verdict yourself. After building, measure
+   where the screen stands: `ss-verify/scripts/drift-report.mjs <url> --out <dir> --project-root <dir>
+   --reference <slug>` writes `DISTANCE.md` (kept facts `same`/`different`/`absent`, adapted facts
+   `same`/`near`/`different`, avoided values `copied`/`clear`; one verdict line, no score); pass its
+   `distance.json` to `compile-brief.mjs --distance` for the next round. Run `/ss-score`, then
    `/ss-verify` if renderable. Within the authorized validation scope,
    fix and repeat until passing or three correction passes per gate, counting delegated passes.
    Do not reset the budget by switching skills; report actual scores and unresolved failures.

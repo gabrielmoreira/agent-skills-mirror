@@ -31,20 +31,23 @@ VLM（能看图的多模态模型）建议配，不强制，配置方法也在 `
 ```bash
 # ⓪ 先看记住了什么：用户偏好（默认引擎、是否开 VLM、给你的偏好说明）和常见纠正类型
 rea-video memory
-# ① 拆解（产出 out/<名>/breakdown.json、report.html、report.md、storyboard.jpg、audio.png、shots/、stems/）
+# ① 拆解（产出 out/<名>/REEL.md + reel/（给你读的拆片包）、report.html / report.md（给用户看）、breakdown.json、storyboard.jpg、audio.png、shots/、stems/）
 rea-video --env-file <你的 .env> decompose ref.mp4 -o out/ref --vlm --lang <zh|en>   # --lang 按用户提问的语言选（见「交付给用户」）；没有 VLM 配置就去掉 --env-file 和 --vlm；字幕/花字是日文就加 --ocr-lang ja
 # ② 看紧凑摘要：低置信镜头会被标出；先看 VLM: 那一行确认 VLM 是否生效
 rea-video summary out/ref/breakdown.json
 ```
 
-**省 token**：结果以 `rea-video summary` 为准，不要整份读 `breakdown.json`（几十万字）或 `report.md`（附录占一半）。要某一节时先 `grep -n '^##' out/ref/report.md` 找行号，只读那一节；复核时每镜看 `shots/shot_XXX.jpg` 联系表就够（已含首 / 中 / 尾帧），`_first` / `_last` 是复刻时给生成模型参照用的，不用另开。
+**省 token，按拆片包逐层读**（格式见仓库 `docs/reel.md`）：先读 `out/ref/REEL.md`（卡片 + 概览 + 地图，约 2k token），多数问题到这里就能答；要按镜头回答时读 `reel/timeline.md`（一行一镜，键名带 `~` 的是推断，不带的是画面里看得到的）；要核实某一镜再打开 `reel/shots/<编号>.md` 和它 `frames` 里的截图；某一方面（声音、包装、复刻方案）按地图打开对应的 `reel/*.md`。不要读 `breakdown.json`（几十万字）或 `report.md`（那是给人看的）。复核时每镜看 `shots/shot_XXX.jpg` 联系表就够（已含首 / 中 / 尾帧），`_first` / `_last` 是复刻时给生成模型参照用的，不用另开。旧的输出目录没有 `REEL.md` 时运行 `rea-video reel out/ref` 补出来。
 
 ### 看图复核并入（能看图的 agent 必做，开了 VLM 也建议做低置信镜头）
 
 ```bash
 rea-video review out/ref                      # 写出 review_tasks.json（每镜要看的图、工具判断、优先级）和 review_answers.json（答案模板）
-# 读 review_tasks.json 的 instructions，逐镜看 images 里的图（priority=high 必看），把 label_probs / evidence / description / embedded_assets 填进 review_answers.json；若某镜头实为多刀合并（暗底图形与暗底口播交替时容易被合成一个长镜头），可加 split_suggestion（cuts 切点秒数 + labels 各段类别 + note），报告会在该镜头标注拆分建议，镜头边界本身不变
+# 读 review_tasks.json 的 instructions，逐镜看 images 里的图（priority=high 必看），把 label_probs / evidence / description / narrative / embedded_assets 填进 review_answers.json；narrative 是「这个镜头在讲什么」：role 选叙事作用（抓注意 / 交代背景 / 补信息 / 给证据 / 转折 / 给结论 / 引导行动 / 渲染情绪），point 一句话写它讲的那一点，报告会连成「叙事线」；若某镜头实为多刀合并（暗底图形与暗底口播交替时容易被合成一个长镜头），可加 split_suggestion（cuts 切点秒数 + labels 各段类别 + note），报告会在该镜头标注拆分建议，镜头边界本身不变
 # 顶层 cast 填整片的角色 / 场景 / 道具（同一个角色跨镜头认成同一个，外观写到能据此复刻）和一句视觉风格；没开 VLM 时报告的「角色、场景与道具」一节全靠这里
+# 顶层 story 填报告开头的「核心看点」：summary 一句话、hook 开头几秒怎么抓人、highlights 2–4 条能火的做法（手法 + 第几秒 + 为什么有效）
+# 画面里拍到带字的东西（手机屏幕、包装、招牌）时，每镜填 overlay_text：这一镜后期加的字幕 / 花字原文，其余 OCR 文字报告当成画面内容
+# 同一段成片出现不止一次（开头先放预告、结尾完整放）时，在较短的那处填 same_clip_as：另一处的镜头号，复刻只生成一次
 rea-video apply-review out/ref --by <你的名字>  # 并入：重写 breakdown.json、report.md、report.html，打印改判了哪些镜头
 rea-video summary out/ref/breakdown.json      # 用并入后的结果写回复
 ```
@@ -60,14 +63,14 @@ rea-video summary out/ref/breakdown.json      # 用并入后的结果写回复
    - 打开 `shots/shot_XXX.jpg`（首、中、尾联系表）。
    - 必要时抽帧细看：`rea-video tiles ref.mp4 --start 12.3 --end 13.1 --every 0.1 -o out/ref/check.jpg`。
    - 按 `references/taxonomy.md` 的"易混对照表"逐条核对。
-3. 角色与场景：`rea-video summary` 的「角色 / 场景」几行（`report.md`「角色、场景与道具」一节）。核对同一个角色有没有被 VLM 认成几个（逐镜描述里叫法不一致是常见问题），复刻时每个角色固定一张参考图贯穿所有生成单元；不对就在 `review_answers.json` 顶层 `cast` 里改。
+3. 角色与场景：`rea-video summary` 的「角色 / 场景」几行（拆片包 `reel/cast.md`）。核对同一个角色有没有被 VLM 认成几个（逐镜描述里叫法不一致是常见问题），复刻时每个角色固定一张参考图贯穿所有生成单元；不对就在 `review_answers.json` 顶层 `cast` 里改。
 4. 声音按 `references/audio.md` 复核：先听 `stems/vocals.wav`（人声干声）和 `stems/music.wav`（配乐），再看 `rea-video summary` 里的"声音来源"一行（视频类型 → 人声 / 音乐 / 音效来源）。信号层面检出的音效只是**低置信候选**，音效清单以 VLM 听到的为准；没开 VLM 时要说明"轻音效可能漏检"。
-5. **实拍（口播 / 桌拍 / vlog / 商品）**：`rea-video summary` 末尾按维度列出「取景 / 机位 / 打光 / 剪辑 / 形式」（`report.md`「拍法、打光与剪辑」一节，含复刻拍摄方案和器材）。
+5. **实拍（口播 / 桌拍 / vlog / 商品）**：`rea-video summary` 末尾按维度列出「取景 / 机位 / 打光 / 剪辑 / 形式」（拆片包 `reel/look.md`，含复刻拍摄方案和器材）。
    工具在画面主体上测量：有人脸用人脸，没有人脸（桌拍、商品、手）用画面里最清晰的区域，后者的景别是估算。
    看图时在 `review_answers.json` 每镜的 `aspects` 和顶层 `aspects` 里补像素测不出的：机位角度、自拍还是支架、主光是什么光源、眼神光、轮廓光/背景灯、画面里的光源、推测设备、视频形式。报告里测量、VLM、看图三个来源并列，不平均。
    注意：平台转码会压暗部，软硬和补光的测量偏保守。AI / 3D 画面也会给光影描述，但标明「不是拍摄方案」，只用于写生成提示词。
 6. 真实素材按 `references/materials.md` 复核：代码模板里嵌入的截图和照片，确定性检测能找出大部分，但**暗色、半透明的背景照片会漏**。
-7. 剪辑包装（`rea-video summary` 的「包装:」几行，`report.md`「剪辑包装层」一节，文件在 `packaging/`）：
+7. 剪辑包装（`rea-video summary` 的「包装:」几行，拆片包 `reel/packaging.md`，文件在 `packaging/`）：
    - 字幕时间轴和样式是测出来的，一般可信；字体是什么要你看图补（工具只给颜色、描边、底框、字高）。
    - 贴纸：标了「需要看图确认」的，看 `packaging/sticker_XX.jpg` 和 `review_tasks.json` 里的 `frame_cmd`，在 `review_answers.json` 的 `packaging.stickers` 里填 `is_overlay` 和 `what`；工具漏掉的写进 `packaging.missed`。3D / 动画 / 版式画面里突然出现的物体工具不算贴纸，你看到是后期贴的再补。
    - 花字和标签分错类时在 `packaging.text` 里改 `kind`。
@@ -80,7 +83,7 @@ rea-video summary out/ref/breakdown.json      # 用并入后的结果写回复
 
 ## 2. 交付给用户
 
-按 `references/output-template.md` 回复：先一句话结论，再内容与角色（这条视频讲什么、主要角色和场景），然后复刻方案（按生成单元 / 拍摄场次组织）、分镜表、剪辑包装、声音、真实素材清单、不确定点，最后给 `report.html` 路径。不要把 breakdown.json 贴进对话。
+按 `references/output-template.md` 回复：先一句话结论，再内容与角色（这条视频讲什么、主要角色和场景），叙事线（每一步在抓注意、补信息还是给结论，见 `reel/content.md`；建议用户保留这条线、换成自己的案例和素材来重写，不只是换个主角），然后复刻方案（按生成单元 / 拍摄场次组织）、分镜表、剪辑包装、声音、真实素材清单、不确定点，最后给 `report.html` 路径（用户版报告：先讲三层、再给照着做的复刻步骤，用户自己就能复刻）；用户要 PDF 时运行 `rea-video pdf out/ref` 生成 `report.pdf`（需要本机有 Chrome / Chromium / Edge）。不要把 breakdown.json 贴进对话。
 
 **报告和回复都用用户的语言。**语言的判断顺序：用户明确指定的语言（「用英文出报告」「report in Chinese」）> 用户提问所用的语言 > `rea-video memory` 里的 `lang` 偏好 > 中文。
 - 工具支持 `--lang zh` 和 `--lang en`：`decompose` 时就传对，报告文件（`report.html` / `report.md`）、`summary` 输出、VLM 的画面描述和提示词都会是该语言；忘了传可以在 `apply-review out/ref --lang en` 时补上（会重新生成结论和报告文字；VLM 已写好的描述和提示词保持原语言）。看图复核时，`review_answers.json` 里的 evidence / description / prompt 也用这个语言写。

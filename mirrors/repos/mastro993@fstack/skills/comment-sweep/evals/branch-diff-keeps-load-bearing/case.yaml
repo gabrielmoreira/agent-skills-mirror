@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: branch-diff-keeps-load-bearing
+expected_outcome: |
+  The scope is the comments the orders branch adds (src/orders.ts, and the two lines added to
+  src/api.ts), not src/legacy.ts or the comment that already existed in src/api.ts, which stay byte-
+  for-byte. Narration ("Import the logger", "Loop over items", "multiply price by quantity", "Call
+  the API", "log that we fetched it"), the restating docblock, the commented-out discount code, the
+  "Updated ... as requested" note and the banner are deleted. The Stripe constraint comment with its
+  link and the eslint-disable-next-line directive stay. "Timeout is in seconds" contradicts
+  RETRY_TIMEOUT_MS and is reported as a comment/code mismatch. No code changes, and the final reply
+  reports what was deleted, kept, and why.
+context:
+  scaffold_script: place-files.sh

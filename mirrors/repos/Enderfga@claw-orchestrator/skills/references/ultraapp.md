@@ -117,7 +117,9 @@ Browsers scope cookies by host, not port, so the dashboard's `clawo_auth` cookie
 the server token, is also sent to the router when both are opened under the same hostname. The
 router removes it from the `Cookie` header before forwarding and drops any `Set-Cookie` for it
 from the app's response, so an app backend neither receives nor replaces it. Other cookies pass
-through unchanged. In `host` mode the app still runs as the same OS user, which can read
+through unchanged. For the same reason it removes `Proxy-Authorization`, and an `Authorization`
+header that carries the server token, as a reverse proxy adding the token to every request for the
+host would send; an app's own `Authorization` passes through. In `host` mode the app still runs as the same OS user, which can read
 `~/.openclaw/server-token`, and it inherits the server's environment, including
 `OPENCLAW_SERVER_TOKEN` when set. Only `docker` mode, which passes the app nothing but
 `BASE_PATH`, separates an app from the token.
@@ -217,7 +219,7 @@ classifier. Three classes:
 
 | Class        | Routes to         | Behaviour                                                                                                                                                                                                                                                                                                                                                           |
 | ------------ | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cosmetic`   | Patcher           | Copies the live version's codebase to the next `versions/vN/`, then a Claude Opus session generates a unified diff against the copy → `applyUnifiedDiff` → validate via fix-on-failure. On success the copy is recorded as `vN` (not deployed; the live app is untouched until you promote it); on any failure the copy is discarded and the reason posted to chat. |
+| `cosmetic`   | Patcher           | Copies the live version's codebase to the next `versions/vN/`, then a Claude Opus session generates a unified diff against the copy → `applyUnifiedDiff` (every file it names must resolve inside the copy, symlinks included, and a diff with one refused or conflicting file applies nothing) → validate via fix-on-failure. On success the copy is recorded as `vN` (not deployed; the live app is untouched until you promote it); on any failure the copy is discarded and the reason posted to chat. |
 | `spec-delta` | Focused interview | Flips mode back to `interview` with a bootstrap message that names the field(s) being changed. Completion auto-triggers a fresh `startBuild`, which builds the next `vN`, deploys it in place of the live version and stops the one it replaced.                                                                                                                    |
 | `structural` | Suggestion only   | Posts a narrator note: "this sounds like a different app — click + New".                                                                                                                                                                                                                                                                                            |
 

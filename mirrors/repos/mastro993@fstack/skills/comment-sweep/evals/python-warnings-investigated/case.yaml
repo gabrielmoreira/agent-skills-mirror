@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: python-warnings-investigated
+expected_outcome: |
+  Only comments the ledger-sync branch adds or changes are swept; "Half-up, as the tax office
+  requires." predates the branch and stays untouched. Warnings are checked against the code and git
+  history before a verdict. The IMPORTANT tax-before-discount comment stays (true, and nothing
+  enforces it) and the report names a test or similar encoding as the way to retire it. The "do not
+  remove" note on legacy_round is found obsolete (history shows the nightly export job was deleted
+  and nothing calls legacy_round) and is deleted, with legacy_round reported as dead code. The
+  negative-quantity TODO stays and is reported as untracked. The "switch money math to Decimal" TODO
+  is deleted as done. The click docstrings stay because they are the CLI help. "# type: ignore"
+  stays. The httpkit workaround is reported as removable code because requirements.txt pins httpkit
+  2.0.1, past the 1.5 fix. Narration comments are deleted and no code changes.
+context:
+  scaffold_script: place-files.sh

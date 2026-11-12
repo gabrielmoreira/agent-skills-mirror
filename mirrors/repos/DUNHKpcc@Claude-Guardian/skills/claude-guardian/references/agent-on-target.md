@@ -4,7 +4,7 @@
 
 Agent 在另一台机器上通过 SSH 或控制台操作目标机时，管理通道、保险丝和救援入口按各路线文档做（[VM](vm-guidance.md#4-客机防火墙fail-closed)、[进阶路线](advanced-route.md)、[VPS](vps-guidance.md)），本文不涉及。
 
-**用户反馈（2026-11-01）：**在 VM 里装 Codex 使用本 Skill，开 TUN 时 Codex 断，装 killswitch 时 Codex 也断。原因是 Agent 自己调用模型 API 的连接，走的就是正在被改的这张网络；改到一半连接没了，Agent 这一轮直接中断，后面的核对、`confirm` 和汇报都做不了。
+修改 Agent 自己使用的网络可能切断模型 API 连接，使后续核对、`confirm` 和汇报中断。恢复必须由独立的本机机制承接。
 
 ## 1. 开工前先查清 Agent 自己的连接走哪条路
 

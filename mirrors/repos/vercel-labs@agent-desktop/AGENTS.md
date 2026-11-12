@@ -197,7 +197,8 @@ remain the transitive check.
   its delivery disposition.
 - Codes: `PERM_DENIED`, `ELEMENT_NOT_FOUND`, `APP_NOT_FOUND`, `ACTION_FAILED`, `ACTION_NOT_SUPPORTED`, `STALE_REF`,
   `AMBIGUOUS_TARGET`, `WINDOW_NOT_FOUND`, `PLATFORM_NOT_SUPPORTED`, `TIMEOUT`, `INVALID_ARGS`,
-  `NOTIFICATION_NOT_FOUND`, `SNAPSHOT_NOT_FOUND`, `POLICY_DENIED`, `APP_UNRESPONSIVE`, `INTERNAL`.
+  `NOTIFICATION_NOT_FOUND`, `SNAPSHOT_NOT_FOUND`, `SANDBOX_NOT_FOUND`, `POLICY_DENIED`, `APP_UNRESPONSIVE`,
+  `INTERNAL`.
 - Exit codes: `0` success, `1` structured error, `2` argument or parse error.
 
 ## Output contract
@@ -269,11 +270,11 @@ Every command prints one envelope. `docs/json-output.md` holds the full contract
 
 ## Command surface
 
-60 commands spanning App/Window, Observation, Interaction, Scroll, Keyboard, Mouse, Notifications, Clipboard, Wait,
-System (including `session`, `trace`, `skills`) and Batch. 56 of the 60 command names are operational on macOS; the
-four held-input names (`key-down`, `key-up`, `mouse-down`, `mouse-up`) fail closed. Windows and Linux expose the same
-command names. Each platform's limits are in its skill (`skills/agent-desktop-macos/`, `skills/agent-desktop-windows/`,
-`skills/agent-desktop-linux/`).
+61 commands spanning App/Window, Observation, Interaction, Scroll, Keyboard, Mouse, Notifications, Clipboard, Wait,
+System (including `session`, `trace`, `skills`), Sandboxes (`sandbox`) and Batch.
+57 of the 61 command names are operational on macOS; the four held-input names (`key-down`, `key-up`, `mouse-down`,
+`mouse-up`) fail closed. Windows and Linux expose the same command names. Each platform's limits are in its skill
+(`skills/agent-desktop-macos/`, `skills/agent-desktop-windows/`, `skills/agent-desktop-linux/`).
 
 ## Definition of done
 

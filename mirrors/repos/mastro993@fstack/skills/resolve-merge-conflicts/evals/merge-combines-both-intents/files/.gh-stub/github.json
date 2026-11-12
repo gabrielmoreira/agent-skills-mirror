@@ -1,0 +1,28 @@
+{
+ "repo": "acme/shop",
+ "pulls": [
+  {
+   "number": 42, "title": "Apply discount per line to match invoices", "state": "OPEN",
+   "headRefName": "per-line-discount", "baseRefName": "main", "author": "fede",
+   "body": "Closes #40.\n\nBilling applies the discount to each line and rounds each line to the cent; checkout applied it once to the subtotal, so the two disagree by a cent on some orders. `lineTotal` now takes the discount and rounds per line, and `orderTotal` sums the discounted lines.",
+   "closingIssuesReferences": [40],
+   "reviews": [{"author": "alice", "state": "APPROVED", "body": "Matches what billing does. LGTM once it's mergeable."}]
+  },
+  {
+   "number": 45, "title": "Reject quantities below 1", "state": "MERGED", "mergedAt": "2026-11-10T16:02:11Z",
+   "headRefName": "validate-qty", "baseRefName": "main", "author": "bruno",
+   "body": "Fixes #44.\n\n`lineTotal` throws a `RangeError` for any quantity that isn't a whole number of at least 1, before computing anything, so a bad quantity can never reach the payment service.",
+   "closingIssuesReferences": [44]
+  }
+ ],
+ "issues": [
+  {
+   "number": 40, "title": "Checkout total is a cent off the invoice", "state": "OPEN", "author": "carla",
+   "body": "Three items at $3.33 with the 10% loyalty discount: checkout shows $8.99, the invoice says $9.00. Billing discounts and rounds every line; checkout discounts the subtotal. Checkout has to match the invoice, customers are filing tickets about it."
+  },
+  {
+   "number": 44, "title": "Negative quantity creates a refund at checkout", "state": "CLOSED", "author": "bruno", "labels": ["bug", "payments"],
+   "body": "POSTing a cart line with qty -1 gives a negative line total, and the payment service treats a negative charge as a refund. qty 1.5 and qty 0 are accepted too. Quantities must be whole numbers >= 1; reject anything else in the cart before any money math."
+  }
+ ]
+}

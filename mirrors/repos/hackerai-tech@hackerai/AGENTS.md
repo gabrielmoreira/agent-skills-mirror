@@ -250,6 +250,12 @@ When a PR has been pushed and is ready for review, wait for required CI and
 security checks. CodeRabbit is advisory: do not block completion or merging on
 its availability, quota, skipped review, or review completion.
 
+For `main`, use the direct PR-check and squash-merge policy in
+[Main merge policy](docs/main-merge-queue.md). There is no required merge queue.
+Wait for the PR's current required checks before merging. A newer `main` commit
+alone does not require updating the branch; investigate failed checks or actual
+merge conflicts instead of bypassing them.
+
 Poll once within 30-60 seconds after PR creation to confirm checks started, then
 every 2-3 minutes while CI, Vercel, or Trigger checks are active. If the user asks
 for status, report briefly and continue unless told to stop.

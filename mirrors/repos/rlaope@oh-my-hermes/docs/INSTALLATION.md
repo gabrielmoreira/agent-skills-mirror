@@ -307,7 +307,9 @@ The `omher@beta` argument adds three things to the plain install, and only with 
 The app is the newest `omher-v*` release: the `.dmg` for your Mac's architecture is checked against the release's
 `SHA256SUMS.txt`, mounted, and `omher.app` is copied to `/Applications` (or `~/Applications`, or `OMH_APP_DIR`)
 under a temporary name, then swapped for an older copy only once the copy is whole; on Windows the per-user
-installer is checked the same way and runs silently. Linux gets Hermes and OMH only, with a note.
+installer is checked the same way and runs silently. On Linux x86_64 the AppImage is checked the same way,
+put at `~/.local/bin/omher` (or `OMH_APP_DIR`) and given an app menu entry ([omher on Linux](omher-linux.md));
+other Linux machines get Hermes and OMH only, with a note.
 `OMH_WITH_HERMES=0` skips installing Hermes and `OMH_WITH_DESKTOP=0` skips the app. Run from a Hermes profile
 shell (`HERMES_HOME=<root>/profiles/<name>`), the installer looks for Hermes under `<root>`, as omher does.
 
@@ -455,11 +457,9 @@ run and approval decision stays Hermes'; the screen is OMH's.
   steer and a turn's done line are one each); older ones are
   left to the terminal's scrollback until a full redraw clears it, and from
   then on that row says how many `/history` still shows.
-- That region holds, from the top: the prompt you just sent (while the
-  turn runs, once the prompt itself has scrolled off, as `↳ you: …`, the
-  `↳ you:` in the running blue and your words dim, on your sent prompt's band
-  with a blank row above it, and a dim `…` where they are cut; a steer you
-  sent runs on the same band), the tail of the reply that is still streaming, one slot for the
+- That region holds, from the top: the tail of the reply that is still
+  streaming (a prompt you sent, a steer included, stays in the transcript
+  above it and scrolls off with it; scroll up to read it), one slot for the
   OMH plan (or a question Hermes asked, or the slash-command
   menu when it does not open under the composer), the prompts queued behind
   the running turn (`⧗`, up to three named and the rest counted; while the
@@ -480,8 +480,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   two rows; from 7 rows it has both, and under 6 rows (or 20
   columns) the composer is a bare `❯ …` row with no rule. A `/name` you type
   that names one of Hermes' commands or skills is drawn bold in the skill
-  colour, in the composer, in your prompt once it is sent and on the
-  `↳ you:` row; a resumed session's prompts are drawn again once Hermes
+  colour, in the composer and in your prompt once it is sent; a resumed
+  session's prompts are drawn again once Hermes
   names the session's commands and skills, when that moves one of the
   prompts a redraw prints. A
   path such as `src/a.py`, a `/name` nothing answers to and
@@ -636,9 +636,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   rows it stays there: what grows above it scrolls the transcript up, and a
   list or question closing there does not pull it up, its rows staying blank
   above the composer until more is printed into them. A turn's end is the one
-  exception: the `↳ you:` reminder, the blank row over it and the blank row
-  over the plan go with the turn, so the composer rises by those rows (at most
-  three, left blank under the footer) and the done line stays one blank row
+  exception: the blank row over the plan goes with the turn, so the composer
+  rises by that row (left blank under the footer) and the done line stays one blank row
   above it or the plan; the next turn's output takes it back down. The agent view under
   it takes at most a quarter of the screen, seven rows on a terminal of 28
   rows or more (so a one-row composer's input row is row 16 of 24 or 31 of
@@ -830,11 +829,14 @@ run and approval decision stays Hermes'; the screen is OMH's.
   whole, in order, at the boundary. Briefings are the TUI's own rows, not
   part of the session Hermes stores: a resumed or rewound session is drawn
   again without them. The messenger's replies are unchanged.
-- With `OMH_TUI_MOUSE=1` the OMH TUI takes the mouse on the main screen once it can tell which row
+- The OMH TUI takes the mouse on the main screen once it can tell which row
   a report lands on (once the session's output has reached the bottom of the
   screen, or after Ctrl+L). A drag over the transcript or the rows under it
   selects the text (shown reversed) and copies it when you let go, without
-  the rail a block hangs on or a reply's margin, and the row above the
+  the rail a block hangs on or a reply's margin, and with the rows the OMH
+  TUI wrapped to fit the screen joined back into the line they were written
+  as (a space where the wrap dropped one, nothing inside a long word or
+  path, code exactly as it is), so a long command pastes as one line; the row above the
   composer says `✓ copied 694 chars to clipboard` for 2 s (the copy goes out
   as the pager's does, below); a double click copies a word and a triple
   click a row, and a key, the wheel, the next click or, once it is copied,
@@ -845,8 +847,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   of the last row above them, so dragging to the bottom of the screen
   copies the transcript. During a turn that puts your draft out of a drag's
   reach too, and an approval or a value prompt, which sit under the row
-  counting how long Hermes has waited; the wheel up opens the question's own
-  view (Ctrl+O's), where a drag copies it. A question with choices, framed
+  counting how long Hermes has waited; Ctrl+O opens the question's own
+  view, where a drag copies it. A question with choices, framed
   between two rules, has no such row and can be dragged over during a turn
   as well; its rules, its bar, the `❯` on the highlighted choice and its
   key row are never copied, only the question and the choices. A drag over the transcript's rows stays on them
@@ -857,10 +859,11 @@ run and approval decision stays Hermes'; the screen is OMH's.
   copies text other than what it showed. Its highlight never goes into the
   scrollback. Ctrl+C within 2 s of a drag that copied only drops the
   selection, since Windows Terminal and VS Code copy with it; the next
-  Ctrl+C acts as always. The wheel up opens the
-  transcript view Ctrl+O opens, one notch up from its end, where the screen
-  was; it scrolls there, and q goes back. The wheel down does nothing on the
-  main screen. A row the OMH TUI did not print in this screen (the shell's
+  Ctrl+C acts as always. The wheel up scrolls the terminal's own
+  scrollback, as in any shell, and opens no view: its first notch hands the
+  mouse to the terminal, and the next key or paste takes it back, so a drag
+  copies clean again. The wheel down does nothing on the main screen while
+  the OMH TUI holds the mouse. Ctrl+O still opens the transcript view. A row the OMH TUI did not print in this screen (the shell's
   output above the session, the rows from before a Ctrl+Z) selects nothing:
   dragging from there opens the transcript view instead (the open question,
   while one is asked), and with nothing to show it opens nothing. While the
@@ -868,7 +871,7 @@ run and approval decision stays Hermes'; the screen is OMH's.
   dropped; on a terminal that ignores the erase of its scrollback (`CSI 3 J`)
   rows reflowed into the scrollback with a selection on them can keep it
   reversed there. The agent list still takes a click on its rows, and the
-  wheel over the list does nothing, as below. If you scroll the terminal's
+  wheel over the list does nothing. If you scroll the terminal's
   own scrollback (its scrollbar, Shift+PageUp) and then drag, the row a
   report names is the terminal's to say: some terminals jump back to the
   bottom first or report nothing over scrollback rows, and one that reports
@@ -887,12 +890,12 @@ run and approval decision stays Hermes'; the screen is OMH's.
   `terminal.integrated.macOptionClickForcesSelection` is on. That selection
   copies the rail, as it always has. Inside tmux the reports reach the OMH
   TUI with `set -g mouse` on or off, and with it on tmux hands the OMH TUI
-  the wheel and the drag instead of starting copy mode. Without
-  `OMH_TUI_MOUSE=1` (the default) the main screen's mouse is the terminal's:
+  the wheel and the drag instead of starting copy mode. With
+  `OMH_TUI_MOUSE=0` the main screen's mouse is the terminal's:
   the wheel scrolls its scrollback and a drag selects natively, rail
-  included, and click reports are on only while the agent list or the
+  and wrapped rows included, and click reports are on only while the agent list or the
   `/theme` picker is open, as the next item says.
-- By default the OMH TUI asks the terminal for click reports only while the agent list
+- With `OMH_TUI_MOUSE=0` the OMH TUI asks the terminal for click reports only while the agent list
   is open, so during a turn the wheel scrolls and a drag selects as in any
   shell, and the agent view is reached with Down; nothing in it, and
   nothing on the info line, is clickable while the list is closed. While the list is open a plain drag no longer selects text in
@@ -902,7 +905,7 @@ run and approval decision stays Hermes'; the screen is OMH's.
   the window is being resized. While click reports are on there, and for 0.5 s after they go off, an Esc pressed on
   its own acts after 0.3 s, the time a click report split by a slow
   connection has to arrive whole. Where the main screen takes the mouse
-  (with `OMH_TUI_MOUSE=1`) the Esc waits only where a report can still
+  (the default) the Esc waits only where a report can still
   come split: over SSH or WSL, while a mouse button is held, and for 0.5 s
   after the last report (a wheel turn, a click); otherwise it acts at the
   first silence, as with reports off. Another key typed within that time ends
@@ -939,8 +942,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   SSH. Elsewhere it
   goes out as OSC 52 with nothing to confirm it, and the footer says `⚠ copy
   sent (terminal may not support OSC 52)` (under tmux, that tmux passes it on
-  only with `set-clipboard on`). The terminal's own selection (everywhere by
-  default, or its bypass modifier with `OMH_TUI_MOUSE=1`) copies what the screen
+  only with `set-clipboard on`). The terminal's own selection (its bypass
+  modifier, or everywhere with `OMH_TUI_MOUSE=0`) copies what the screen
   shows, so it keeps each row's rail (`┃ ` in front of each row, and a
   reply's margin after it), and the terminal shows no copy notice of its
   own.
@@ -1013,7 +1016,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   puts a box before each choice: Space or its digit ticks the choice (`[x]`)
   or unticks it, Enter sends the ticked ones (the highlighted one alone when
   none is ticked), and an answer of your own joins the ticked ones. Its last row, `Type something.`, opens the
-  composer as the field for an answer of your own, and so does typing any
+  field for an answer of your own on that row itself, as Claude Code's question dialog does: what you type
+  shows there and the caret stands there (a long answer scrolls on the row), and so does typing any
   character that picks nothing, which becomes the answer's first character;
   Up or Down goes back to the list and keeps what you typed for that
   question, and Enter on an empty field does too; the next question's field
@@ -1274,8 +1278,8 @@ run and approval decision stays Hermes'; the screen is OMH's.
   Ctrl+K, Ctrl+C, Esc Esc) removes the image, and an undo puts both back.
   The prompt keeps the `[Image #N]` labels in its text so the model can name
   them, and the transcript lists under it each image Hermes accepted for it
-  (`⎿  [Image #1]`), with a small preview under each: real pixels on kitty and
-  Ghostty at truecolor, coloured half-blocks elsewhere (tmux, Terminal.app,
+  (`⎿  [Image #1]`), with a small preview under each: real pixels on kitty,
+  Ghostty and Otty at truecolor, coloured half-blocks elsewhere (tmux, Terminal.app,
   iTerm2, WezTerm, VS Code), even where Hermes' config names kitty, none under
   `NO_COLOR`; `display.inline_images: off` in Hermes' config turns it off. The
   prompt waits up to 2 seconds for its previews before it is printed, and
@@ -1353,7 +1357,7 @@ Esc closes it):
 
 | Key | Does |
 | --- | --- |
-| Enter | Sends the composer; while a turn runs, queues it for the turn's end, a slash command too (`/stop`, `/steer`, `/queue`, `/btw`, `/bg`, `/yolo`, `/effort`, `/reasoning <level>` and the commands about this terminal run at once), whatever Hermes' `busy_input_mode` says |
+| Enter | Sends the composer; while a turn runs, typed text goes into it now as a steer (shown as your prompt above the working row, read at the next tool call); a slash command, a `!` line, a prompt with images, one sent in plan mode or behind queued lines queues for the turn's end instead (`/stop`, `/steer`, `/queue`, `/btw`, `/bg`, `/yolo`, `/effort`, `/reasoning <level>` and the commands about this terminal run at once), whatever Hermes' `busy_input_mode` says |
 | `\` then Enter, Alt+Enter, Shift+Enter, Ctrl+J | Adds a line; with a list or menu focused, Ctrl+J moves down instead. Alt+Enter and Shift+Enter still add a line in an open menu; backslash then Enter may accept a completion |
 | Ctrl+Enter | While a turn runs, sends the composer's text into it now as a steer (`/steer <text>` too); idle, sends as Enter does |
 | Ctrl+Enter, Ctrl+J | While a turn runs, on an empty composer, send the oldest queued prompt into it now as a steer; the row under the queue names the key (Ctrl+J where the terminal has not shown it tells Ctrl+Enter from Enter). A queued `!` line, slash command, skill prompt or plan prompt waits its turn |
@@ -1364,12 +1368,13 @@ Esc closes it):
 | `!` | At the start of a line, makes it a shell command Hermes runs when you send it (30 s at most); it and its output are not sent to the model |
 | `?` | On an empty composer, shows this list; `/keys` does too |
 | ↑ / ↓ | Move between the composer's rows, walk the input history at its first and last row (earlier sessions' too, shared with `hermes --tui`), or move through an open completion menu (Ctrl+J / Ctrl+K and Ctrl+N / Ctrl+P move through the menu too) |
+| Ctrl+N / Ctrl+P | Move down / up in lists, menus, pickers and prompts; scroll one line in pagers, including /dag. Also work in CLI theme, model-chain and setup pickers |
 | Ctrl+R | Searches the input history; Ctrl+R again finds an older match, Enter puts it in the composer, Esc leaves the composer as it was |
 | Ctrl+X | Opens the `/sessions` picker |
 | Ctrl+S | Opens the bot board, as `/bots` does: this machine's Hermes profiles, their gateways and sessions, read-only |
 | Ctrl+P | Folds the plan above the composer to its header and the item it is on, or expands it again, while a turn runs or between turns; the header says which on its right; on an open menu, Ctrl+P and Ctrl+N move the menu instead |
 | ↑ | On an empty composer with prompts queued, takes them back into the composer to edit; a queued shell line comes back on its own |
-| ↓ | On an empty composer while the agent view under the info line shows subagents, gives its rows the keys as the agent list; in a DAG run, to its folding tree |
+| ↓ / Ctrl+N | On an empty composer while the agent view under the info line shows subagents, gives its rows the keys as the agent list; in a DAG run, to its folding tree |
 | ← / → | Move by a character; with Ctrl or Alt, by a word (Alt+B and Alt+F too) |
 | Home / End, Ctrl+A / Ctrl+E | Go to the start or the end of the line |
 | Backspace / Delete | Delete a character, or a paste chip or an `[Image #N]` token whole; deleting a token removes its image |
@@ -1378,7 +1383,7 @@ Esc closes it):
 | Ctrl+_ / Ctrl+Y | Undo or redo an edit in the composer (Ctrl+_ is what Ctrl+- and Ctrl+/ send on most terminals); a run of typed characters is one edit |
 | Esc | Closes the `/` or `@` menu; else interrupts a running turn, with a draft typed too, which stays in the composer (the activity row shows how long it has run, then `interrupting…`, and what you queued comes back to an empty composer unsent, or waits); cancels a rewind you picked; cancels an agent steer you picked and keeps what you typed; after an approval's tell row, sends nothing more and brings your draft back |
 | Esc Esc | Between turns, with text, clears it and keeps it in this session's history; on an empty composer, lists your prompts to rewind to (`/rewind` does too) |
-| Esc (vim mode) | With `display.vim_mode` on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, `h l 0 ^ $ w b e j k gg G` move, `f F t T` and a character find on the line and `; ,` repeat the find, `i a I A o O` insert, `x X dd D C cc S s r`, `d c y` with a motion, `iw aw`, a quote object (`i` or `a` with double quote, single quote or backtick; inner count 1 selects inside, count 2 or more includes the quotes, around includes quotes and adjacent blanks without extra pairs; quote objects never cross a logical line; empty inner `y` keeps the register and moves inside, `d` keeps register and caret, and `c` enters INSERT inside), or a bracket object (`i` or `a` with `(`, `)`, `[`, `]`, `{`, `}`; closing aliases identical; inner and around count selects enclosing ancestor; empty inner `y` keeps register and moves to interior, `d` keeps register and caret, and `c` enters INSERT at interior), `p P`, `u` and Ctrl+R edit, a motion or edit count scales or repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt on an empty composer, and two clear a draft as between turns. In NORMAL, Space is the leader: Space s opens sessions, Space b opens bots, Space p folds the plan, Space r or Space / searches history, Space m cycles the input mode, and Space t steps reasoning effort. Space Enter submits or steers typed text, or sends the oldest eligible queued prompt now on an empty composer; Space c interrupts a running turn, else clears the draft into session history. Esc or an unmapped key cancels the leader; Ctrl+C, Ctrl+O, Ctrl+L and Ctrl+Z cancel it and do what they always do. A picker taking input also cancels pending leader and Vim commands; a session picker waiting while you type leaves typing, leader shortcuts and Enter with the composer until ↑, ↓, Esc or Ctrl+C takes the picker. The info line says INSERT or NORMAL, or NORMAL · SPC while the leader is armed |
+| Esc (vim mode) | With display.vim_mode on in Hermes' config, the composer starts in INSERT and Esc goes to NORMAL and does nothing else; in NORMAL, . repeats the last completed local change and [n]. overrides its count rather than multiplying it. Insert/change sessions complete on Escape and undo as one transaction; put repeats its captured payload even after another yank. External paste/image edits and oversized insertion sessions do not replace the saved change. Submit, clear, history/draft replacement, masked transitions and Vim toggles reset it; motion, yank and undo do not. Repeat is local to this composer, not a macro. In NORMAL, v enters character VISUAL; motions extend its inclusive atom selection, d/c/y delete, change or yank, and v or Esc cancels (Esc drops a pending command first). Visual j/k clamp to draft rows without history; counts before v or d/c/y do not scale the selection. Visual delete/change dot repeats the selected atom length forward, with [n]. scaling that length. In NORMAL, V enters VISUAL LINE over whole hard lines; v/V converts modes retaining endpoint columns, and V again cancels line selection. Linewise d/c/y use a linewise register without a terminal separator; put supplies it. Line delete/change dot repeats the selected hard-line count forward, with [n]. scaling that count. NORMAL-only gv restores the last completed selection with exact anchor/head, type and direction; its count is ignored (vl Esc h 9999gv restores the original two atoms). Escape, toggle-out and yank save it. Text or paste/image metadata generation changes, undo/redo, submit, clear, history/draft replacement, masking and Vim toggles invalidate it, even when text becomes identical again; failed/no-op edits do not. Resize and navigation preserve it; absent/stale gv is a consumed no-op and gv inside VISUAL is unsupported. Space is not a visual leader; Enter sends unchanged text and Ctrl+V invalidates active and saved selection before attaching the clipboard image, never block visual. In NORMAL, h l 0 ^ $ w W b B e E ge gE j k gg G move, f F t T and a character find on the line and ; , repeat the find, i a I A o O insert, x X dd D C cc S s r, d c y with a motion (operator j/k select logical hard lines, never wrapped rows or history; gg/G select through the first/last hard line, or an absolute line with a count), iw aw, a quote object (i or a with double quote, single quote or backtick; inner count 1 selects inside, count 2 or more includes the quotes, around includes quotes and adjacent blanks without extra pairs; quote objects never cross a logical line; empty inner y keeps the register and moves inside, d keeps register and caret, and c enters INSERT inside), or a bracket object (i or a with (, ), [, ], {, }; closing aliases identical; inner and around count selects enclosing ancestor; empty inner y keeps register and moves to interior, d keeps register and caret, and c enters INSERT at interior), p P, u and Ctrl+R edit, a motion or edit count scales or repeats, and Esc does what it does without vim mode, except that during a turn it takes two to interrupt on an empty composer, and two clear a draft as between turns. In NORMAL, Space is the leader: Space s opens sessions, Space b opens bots, Space p folds the plan, Space r or Space / searches history, Space m cycles the input mode, and Space t steps reasoning effort. Space Enter submits or steers typed text, or sends the oldest eligible queued prompt now on an empty composer; Space c interrupts a running turn, else clears the draft into session history. Esc or an unmapped key cancels the leader; Ctrl+C, Ctrl+O, Ctrl+L and Ctrl+Z cancel it and do what they always do. A picker taking input also cancels pending leader and Vim commands; a session picker waiting while you type leaves typing, leader shortcuts and Enter with the composer until ↑, ↓, Esc or Ctrl+C or Ctrl+N / Ctrl+P takes the picker; Ctrl+J / Ctrl+K still edit a typed draft. The info line says INSERT, NORMAL, VISUAL or VISUAL LINE, NORMAL · SPC while the leader is armed (steady block), or REPLACE while r waits for one character (steady underline, CSI 4 SP q). A non-character follower cancels r without editing or firing a mode shortcut; continuous R is unsupported |
 | Ctrl+V | Attaches the clipboard image as an `[Image #N]` token at the caret |
 | Ctrl+O | Opens the whole transcript with every detail (thinking, tool output, whole diffs) at its end, or, while Hermes asks something, the whole question (it answers nothing); q leaves it |
 | Ctrl+L | Redraws the screen |
@@ -1455,13 +1460,19 @@ rest of this page says.
 
 - The terminal's cursor follows the mode, an OMH addition (Hermes keeps a
   steady block in both modes): a steady beam in INSERT, a steady block in
-  NORMAL (DECSCUSR, `CSI Ps SP q`). It is written only when the mode
-  changes. The terminal's own shape is back while a question or picker has
-  the keys, when vim mode goes off, and on exit or Ctrl+Z. On exit it is
+  NORMAL (including `NORMAL · SPC`) or VISUAL, and a steady underline in
+  `REPLACE` while `r` waits for one character (`CSI 4 SP q`). Non-character
+  followers cancel `r` without editing or firing a mode shortcut. This is
+  single-character replacement, not continuous `R` mode.
+  Shapes use DECSCUSR (`CSI Ps SP q`) and are written only when they change.
+  Non-modal question answers and picker/search filters use a steady beam
+  while vim is on. Hidden approval/list cursors return to the terminal's
+  default, as do vim-off, exit and Ctrl+Z. On exit it is
   the terminal's default shape (`CSI 0 SP q`), not whatever your shell had
   set before the TUI started, the same compromise Vim and Neovim make. A
   terminal that ignores the sequence keeps its own shape.
-- The composer starts in INSERT, and the info line says `INSERT` or `NORMAL`
+- The composer starts in INSERT, and the info line says `INSERT`, `NORMAL`,
+  `VISUAL` or `VISUAL LINE`
   first on its left, before accept or plan. In INSERT every key does what it
   does without vim mode except Esc: it goes to NORMAL, steps the caret back
   onto the character before it and closes the `/` or `@` menu (neither
@@ -1479,7 +1490,7 @@ rest of this page says.
 - In NORMAL the caret sits on a character, never after the last one on a
   line, and a character you type is a command, never text. The commands,
   all of them:
-  - motions `h` `l` (on the line), `0` `^` `$`, `w` `b` `e`, `j` `k` (a row
+  - motions `h` `l` (on the line), `0` `^` `$`, `w` `W` `b` `B` `e` `E` `ge` `gE`, `j` `k` (a row
     down or up, as ↓ and ↑, walking the input history at the first and the
     last row), `gg` and `G` (the first and the last line, or line N with a
     count, on its first character that is not blank);
@@ -1488,22 +1499,100 @@ rest of this page says.
     `T`); `;` repeats the last find and `,` repeats it the other way, and a
     repeated `t` or `T` skips the copy right beside the caret. A find that
     misses does nothing and leaves `;` as it was;
-  - into INSERT: `i` `a` `I` `A` `o` `O`;
+  - into INSERT: `i` `a` `I` `A` `o` `O`. Counts on these commands
+    repeat the completed insertion recipe on Escape, not each typed key.
+    Starting with `abc` and the caret on `a`, `2iZ<Esc>` produces `ZZabc`,
+    `2aZ<Esc>` produces `aZZbc`, `2IZ<Esc>` produces `ZZabc`,
+    `2AZ<Esc>` produces `abcZZ`, `2oZ<Esc>` produces `abc\nZ\nZ`, and
+    `2OZ<Esc>` produces `Z\nZ\nabc` (`\n` denotes a hard newline).
+    `i` inserts before the caret, `a` after it, `I` at the first nonblank,
+    `A` at the line end, and `o`/`O` open lines below/above;
   - edits: `x` `X`, `dd`, `D`, `C`, `cc` and `S`, `s`, `r<char>`; the
     operators `d` (delete), `c` (change: delete, then INSERT) and `y` (yank)
-    with a motion `h` `l` `0` `^` `$` `w` `b` `e` `f` `F` `t` `T` `;` `,`
+    with a motion `h` `l` `0` `^` `$` `w` `W` `b` `B` `e` `E` `ge` `gE` `j` `k` `gg` `G` `f` `F` `t` `T` `;` `,`
     (`dw`, `cw`, `d$`, `c$`, `yw`, `db`, `de`, `dt)`, `cf,` and so on), with
     the text objects `iw` (the word under the caret, or the blanks) and `aw`
     (the word and the blanks after it, or before it at the end of the line;
     on blanks, the blanks and the word after them), on the line (`diw`,
-    `caw`, `y2aw`), and doubled for whole lines (`dd`,
-    `cc`, `yy`); a `c` whose find misses stays in NORMAL; `dw` and `cw` stop at the end of the line, and `cw` on a word
-    changes up to its end, as Vim's does; `p` and `P` put what the last
+    `caw`, `y2aw`); quote objects (`i`/`a` with `"`, `'` or backtick) and
+    bracket objects (`i`/`a` with `(`, `)`, `[`, `]`, `{`, `}`) also work
+    with all three operators. Quote objects stay on one hard line; inner
+    count 1 excludes the quotes, count 2 or more includes them, and around
+    includes adjacent blanks without selecting extra pairs. Bracket objects
+    balance across the draft, with counts selecting enclosing same-family
+    ancestors (see the bracket policy above). Operators are doubled for whole lines (`dd`,
+    `cc`, `yy`). Operator `j` and `k` include the current logical hard line
+    and N following/preceding lines, independent of wrapping and input history;
+    `gg` and `G` select through the first/last hard line, or absolute line N
+    with a count. Counts on either side multiply once, capped at 9999
+    (`2d3G` targets line 6). These operations use linewise registers; change
+    leaves one replacement line in INSERT. Standalone `j`/`k` still move screen
+    rows and may visit history. A `c` whose find misses stays in NORMAL.
+    Single-step `dw`/`dW` on a nonblank stop before the current line's newline;
+    larger word counts may cross lines. An exclusive forward word endpoint at
+    column zero excludes the target line and promotes the selected lines only
+    when the origin is at or before its first nonblank; otherwise it remains
+    characterwise and excludes the preceding newline. Nonblank `cw`/`cW`
+    include the current run end plus count-minus-one end steps; on blanks they
+    use the exclusive `w`/`W` span. `p` and `P` put what the last
     deletion, change or yank took after or before the caret (whole lines
     below or above the line); `u` undoes and Ctrl+R redoes;
   - a count before a command or a motion repeats it: `3w`, `2dd`, `d2w`,
-    `2dw`, `3x`, `2p`, `3G`, `2f,`, `d2aw`; `i a I A o O` and `0 ^ $` take
-    none.
+    `2dw`, `3x`, `2p`, `3G`, `2f,`, `d2aw`; `0 ^ $` ignore counts.
+    Counts are capped at 9999. Counts for insertion, dot repeat and visual
+    selection follow their rules here rather than repeating raw keys.
+- In NORMAL, `.` repeats the last completed local change at the current caret;
+  `[n].` overrides its count rather than multiplying it. For example, after
+  `2x`, `3.` deletes up to three characters, and the next `.` again uses the
+  original count of two. Insert/change sessions complete on Escape and undo as
+  one transaction; each successful repeat is one undo step. The replay resolves
+  motions and text objects at the new caret; put repeats its captured payload
+  even after another yank. Repeat is local to this composer, not a macro, and
+  never sends a prompt. External paste/image edits and oversized insertion
+  sessions do not replace the saved change; motion, yank and undo/redo preserve
+  it. Failed, cancelled and no-op edits also leave it alone. Submit, clear,
+  history/draft replacement, masking and Vim toggles reset it. An over-budget
+  repeat is an atomic no-op: it leaves the draft, register and undo history
+  unchanged and rings once unless the bell is disabled.
+- In NORMAL, `v` enters character VISUAL with an inclusive selection from a fixed
+  anchor to the moving head. The motions above extend it; `j`/`k` use rendered
+  rows but clamp at draft edges, never input history. A chip, image or grapheme
+  remains one atom. `d` deletes, `c` changes in INSERT, and `y` yanks characterwise;
+  counts before `v/V` or `d/c/y` do not scale the selection; motion counts
+  still extend the head.
+  Delete/change dot repeat consumes the selected atom length forward from the new
+  caret; `[n].` scales that length and clamps at EOF. Change and replacement text
+  undo together. Yank/cancel leave the saved change alone.
+  `v` or Esc cancels character selection at the head; a pending count/find/`g`
+  takes one Esc first. `V` converts it to line selection.
+  Selection highlights override chip/mark/glow backgrounds. A selected newline
+  shows `␊` and an empty selection shows a blank cell, neither part of the draft.
+  Space is not a leader in VISUAL; unsupported commands are no-ops. Enter sends
+  the unchanged draft; Ctrl+V cancels selection before attaching at its head.
+  Submit, clear, history/draft replacement, external paste/image insertion,
+  undo/redo and Vim toggles clear the selection. The info line says `VISUAL`.
+- In NORMAL, `V` enters VISUAL LINE over whole logical hard lines, independent
+  of soft wrapping. Motions move the head as in character VISUAL; `j`/`k`
+  still use rendered rows without input history, and the selected span expands
+  to include every hard line touched. `v/V` converts modes retaining endpoint
+  columns, and `V` again cancels line selection. Linewise `d/c/y` use a
+  linewise register without a terminal separator; put supplies it. Change
+  leaves one replacement line in INSERT. Line delete/change dot repeat takes
+  the selected hard-line count forward from the new caret; `[n].` scales that
+  count and clamps at EOF. The replacement text and deletion undo together.
+  A selected newline shows `␊`; an empty or unterminated line shows a selected
+  end cell. These display cells are not draft text. Both visual modes keep
+  chip/image labels atomic and share the Enter, clipboard and cancellation
+  rules above. Block visual is unsupported.
+- NORMAL-only `gv` restores the last completed selection with exact
+  anchor/head, type and direction; its count is ignored (`vl`, Esc, `h`,
+  `9999gv` restores the original two atoms). Escape, toggle-out and yank save
+  it. Text or paste/image metadata generation changes, undo/redo, submit,
+  clear, history/draft replacement, masking and Vim toggles invalidate it,
+  even when text becomes identical again; failed/no-op edits do not. Resize
+  and navigation preserve it; absent/stale `gv` is a consumed no-op and `gv`
+  inside VISUAL is unsupported. Reselect itself changes neither the draft,
+  register, undo history nor saved dot change.
 - Enter in NORMAL always sends the composer, as Enter does in INSERT, even
   with a `\` under or before the caret; `\` then Enter adds a line in INSERT
   only, and Alt+Enter, Shift+Enter and Ctrl+J add one in both modes.
@@ -1519,9 +1608,9 @@ rest of this page says.
   and deletion, as is a character of several code points (a Hangul
   syllable, an emoji with a ZWJ or a skin tone, a letter with a combining
   mark). `p` puts a chip back with its text and a token back with its
-  image; put twice, the image goes twice. Each command is one undo step, and
-  a change (`c`, `s`, `o`, `O`) and what you type after it until Esc are
-  one.
+  image; put twice, the image goes twice. Each edit command is one undo step;
+  an insertion (`i`, `a`, `I`, `A`, `o`, `O`) or change (`c`, `s`, `S`, `C`)
+  and what you type after it until Esc are one, including counted copies.
 - On a terminal that sends no key reports, an Esc and the key after it in
   the same read arrive as Alt and that key. In INSERT that is Esc and then
   the key: NORMAL, and the key as its command (Esc then `h` moves left).
@@ -1537,13 +1626,16 @@ rest of this page says.
   approval are typed into composers of their own, which are not modal;
   approvals, pickers, the agent list and pagers keep their own keys.
 - What differs from Hermes' Vi mode (prompt_toolkit's, in `hermes --cli`):
-  there is no REPLACE mode (`R`), visual mode, named register, text object
-  but `iw` and `aw`, search (`/`), `.` repeat, `~`, `J`, `>>` or mark; `w`
-  `b` `e` move by words between blanks (Vim's `W` `B` `E`, not stopping at
-  punctuation), and `iw` `aw` take words the same way, on one line; `j` and `k` move a row on the screen, as ↑ and
-  ↓ do; a count does not repeat an insert; and Hermes keeps the cursor a
-  steady block in both modes, where OMH changes its shape with the mode (see
-  the first item above).
+  OMH supports character and linewise visual, `gv`, `.` repeat, counted inserts,
+  and quote and bracket text objects alongside `iw`/`aw`, with the composer
+  rules above rather than exhaustive Vim parity. There is no REPLACE mode
+  (`R`), block visual, named register, search (`/`), `~`, `J`, `>>` or mark.
+  `w` `b` `e` `ge` stop at keyword, punctuation and paste/image boundaries
+  while `W` `B` `E` `gE` move by words between blanks (preserving paste/image
+  boundaries), and `iw` `aw` take words between blanks on one line; standalone
+  `j` and `k` move a row on the screen, as ↑ and ↓ do, while operator `j`/`k`
+  select hard lines. Hermes keeps the cursor a steady block in both modes,
+  where OMH changes its shape with the mode (see the first item above).
 
 Shift+Tab cycles three input modes, and the info line shows the one that is
 on. Accept all turns off Hermes' approval prompts for that
@@ -1587,7 +1679,11 @@ the line as it was and says so. `/reasoning <level>` sets the level as
 `/effort <level>` does, and a typed command says the level set under it.
 
 A steer adds what you typed to the turn that is running, without interrupting
-it: Hermes reads it after its next tool call, or, while it is compressing the
+it, as Claude Code does with text you send mid-turn: Enter sends one while a
+turn runs (so do Ctrl+Enter and `/steer <text>`), unless what you typed is a
+slash command, a `!` line, a prompt with images, a prompt in plan mode, or
+lines are already queued, which queue as before. Hermes reads it after its
+next tool call, or, while it is compressing the
 context, queues it and sends it as the next prompt once compression is done.
 Hermes gives the same answer for both. The steer shows as a dim prompt row
 (`❯ <text>`) right above the working row, as Claude Code shows one, until the
@@ -1612,8 +1708,8 @@ same way. If you
 left the session (`/new`, a switch) before Hermes answered, the text comes
 back to the composer and is not sent to the session you are in, and a notice
 says so; for an agent's steer it names the agent and the session you left. The OMH TUI
-steers only with text you typed and sent this way: a queued prompt is never
-turned into a steer.
+steers only with text you typed and sent: a prompt already queued is never
+turned into a steer unless you send it now with the send-now key.
 
 A slash command you run is echoed in the transcript as `┃ ❯ /name arg` (but
 `/steer`, whose own row is its echo, and a bare `/sessions`, `/rewind`,
@@ -1624,7 +1720,7 @@ A skill command (`/<skill> <request>`) is one row: its echo gives way to the row
 once Hermes answers. That row shows the command, as Hermes names it for the turn (the row a resumed session shows)
 or else as you typed it, not the expanded skill prompt that is sent; an echo already written to the scrollback
 before Hermes answered stays, with the prompt's row under it.
-Typed during a turn, a command waits in the queue (`⧗`, as a prompt does, whatever Hermes'
+Typed during a turn, a command waits in the queue (`⧗`, as a prompt Enter cannot steer does, whatever Hermes'
 `display.busy_input_mode` says) and runs when the turn ends, in the order you sent it: a prompt queued after a
 `/compress` goes once Hermes has answered the `/compress`, and the lines queued after a `/new` or a
 `/sessions <id>` go into the session it opens. A command that opens a picker or a question (bare `/model`, a
@@ -1805,8 +1901,11 @@ there. A new profile is built whole under a dot name and renamed into place,
 so the host gateway never sees it half-built. A root `config.yaml` that
 connects a messaging platform under `platforms:` keeps bare `omh` on the
 shared gateway, with a line naming the entry. Sessions, Hermes' own memory,
-cron and kanban are the profile's. The bot board keeps reading the bots' home
-and never lists the TUI profile. `omh --hermes-home` and `omh -p <profile>`
+cron and kanban are the profile's, and so is what the TUI's own reads follow:
+the background-process row, the `✳ Waiting…` row over the composer and the
+info line's HUD read the profile's `state.db` and `processes.json`. The bot
+board alone keeps reading the bots' home, and never lists the TUI profile.
+`omh --hermes-home` and `omh -p <profile>`
 stay on the home they name; `omh --resume <id>` opens where that session is,
 whichever runtime is chosen, and says so when that differs (the id as the exit
 card printed it; a title is not looked up). `omh-tui-home.json` in the profile
@@ -1948,7 +2047,7 @@ against it: your prompts and the replies are in the terminal's own text colour,
 every other colour a word is drawn in reaches 4.5:1 contrast on that background
 and every rule or mark 3:1 (on the pager's footer, against its bar: the
 theme's own bar colour on a dark background, a light tint of it on a light
-one; the info line under the composer and the sticky prompt have no bar),
+one; the info line under the composer has no bar),
 and
 on a light background the diff bands are light tints, their words at 4.5:1 on
 each. The menus (the completion menu, the pickers, choice prompts, the agent

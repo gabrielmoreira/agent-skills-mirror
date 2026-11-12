@@ -12,12 +12,9 @@ A0: 新账号注册与使用节奏（3 节）
 
 ## accounts-and-payments.md
 
-M02/M03: accounts, subscription, and payment planning（19 节）
+M02/M03: accounts, subscription, and payment planning（16 节）
 
-- [PC0 versus checkout](accounts-and-payments.md#pc0-versus-checkout)
-- [Relevant old bills after expiry](accounts-and-payments.md#relevant-old-bills-after-expiry)
-- [Channel prerequisite trees](accounts-and-payments.md#channel-prerequisite-trees)
-- [Handoff and stopping conditions](accounts-and-payments.md#handoff-and-stopping-conditions)
+- [已到期用户的相关旧账单](accounts-and-payments.md#已到期用户的相关旧账单)
 - [操作总则与证据状态](accounts-and-payments.md#操作总则与证据状态)
 - [M02 准入、账号与安全操作卡](accounts-and-payments.md#m02-准入账号与安全操作卡)
   - [A1 接触前分流（PC0）](accounts-and-payments.md#a1-接触前分流pc0)
@@ -183,12 +180,9 @@ M14：证据、来源与发布规则（5 节）
 
 ## incidents-and-integrations.md
 
-M07/M10–M13: clients, incidents, integrations, and preservation（21 节）
+M07/M10–M13: clients, incidents, integrations, and preservation（18 节）
 
-- [Client and integration inventory (M07/M10/M11)](incidents-and-integrations.md#client-and-integration-inventory-m07m10m11)
-- [Incident triage (M12)](incidents-and-integrations.md#incident-triage-m12)
 - [Cleanup, migration, and recovery (M13 / ENV-09)](incidents-and-integrations.md#cleanup-migration-and-recovery-m13--env-09)
-- [Final incident/cleanup deliverable](incidents-and-integrations.md#final-incidentcleanup-deliverable)
 - [人工执行卡的共同边界](incidents-and-integrations.md#人工执行卡的共同边界)
 - [M10 进程—凭据—网络映射](incidents-and-integrations.md#m10-进程凭据网络映射)
   - [I1 接触前静态盘点](incidents-and-integrations.md#i1-接触前静态盘点)
@@ -342,12 +336,9 @@ M04/M05/M10: network evidence and offline remedies（6 节）
 
 ## routes-and-platforms.md
 
-M01/M06–M09: independent environment routes（34 节）
+M01/M06–M09: independent environment routes（31 节）
 
-- [Common concepts](routes-and-platforms.md#common-concepts)
-- [R-LOCAL / local (recommended, never silently selected)](routes-and-platforms.md#r-local--local-recommended-never-silently-selected)
-- [R-VM / vm (optional)](routes-and-platforms.md#r-vm--vm-optional)
-- [R-VPS / vps (optional)](routes-and-platforms.md#r-vps--vps-optional)
+- [设备与运行位置](routes-and-platforms.md#设备与运行位置)
 - [执行卡使用约定（M01/M08/M09）](routes-and-platforms.md#执行卡使用约定m01m08m09)
   - [M01：五分钟术语卡与选择题](routes-and-platforms.md#m01五分钟术语卡与选择题)
   - [共用接触交接单](routes-and-platforms.md#共用接触交接单)
@@ -494,3 +485,12 @@ Windows：Claude 本机数据清理（Agent 提示词，无内置宿主）（12 
 - [8. 官方的项目级清理](windows-cleanup.md#8-官方的项目级清理)
 - [9. 不做的事](windows-cleanup.md#9-不做的事)
 - [10. 限制](windows-cleanup.md#10-限制)
+
+## windows-network-transaction.md
+
+Windows 网络修改与恢复（4 节）
+
+- [使用前](windows-network-transaction.md#使用前)
+- [运行](windows-network-transaction.md#运行)
+- [步骤脚本](windows-network-transaction.md#步骤脚本)
+- [恢复与结果](windows-network-transaction.md#恢复与结果)

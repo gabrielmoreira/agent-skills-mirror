@@ -4,6 +4,13 @@ description: 产品经理、运营专员及综合办公文员在准备商业演�
 dependency:
   python:
     - python-pptx>=0.6.21
+display_name: PPT 一键生成
+version: 1.0.0
+author: c3b57459-6405-4180-adea-9dcff7bb7e1c
+examples:
+  - "根据这份大纲直接生成 PPT"
+  - "把周报内容做成 10 页汇报演示"
+
 ---
 
 # PPT 生成与优化器

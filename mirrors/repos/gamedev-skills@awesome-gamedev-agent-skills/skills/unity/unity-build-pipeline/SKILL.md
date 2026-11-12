@@ -1,11 +1,10 @@
 ---
 name: unity-build-pipeline
 description: >
-  Build and ship Unity 6.3 LTS players: build settings and scenes, player/quality settings, the
-  IL2CPP vs Mono scripting backend, managed code stripping, scripted BuildPipeline.BuildPlayer,
-  and CI/headless builds. Use when configuring or automating a build, choosing a scripting
-  backend, shrinking build size, or when the user mentions Unity build, player settings,
-  IL2CPP, code stripping, or Addressables.
+  Builds and ships Unity 6.3 LTS players: Build Profiles, IL2CPP vs Mono, managed stripping with
+  link.xml, scripted BuildPlayer, Addressables and CI or headless builds. Use when automating a
+  Unity build or MissingMethodException appears only in the player. Not for a build that is too
+  big (`unity-build-size`) or store uploads (`steam-publish`, `itch-publish`).
 ---
 
 # Unity Build Pipeline
@@ -22,7 +21,9 @@ backend, stripping, and headless/CI builds. Targets **Unity 6.3 LTS (6000.3)**.
 
 **When *not* to use:** authoring a CI service config end-to-end is DevOps; this skill covers
 the Unity-side build API and settings. Console/platform certification specifics are
-platform-NDA territory. Storefront submission → `steam-publish` / `itch-publish`.
+platform-NDA territory. Storefront submission → `steam-publish` / `itch-publish`. A build, APK
+or Web build that is too large (assets, compression, per-platform size settings) →
+`unity-build-size`, which sends stripping work back here.
 
 ## Core workflow
 
@@ -127,7 +128,7 @@ public static class ProfileBuild
 </linker>
 ```
 
-## Pitfalls
+## Gotchas
 
 - **A scene loads in the Editor but is missing in the build** — it isn't in the scene list
   (File → Build Profiles → Scene List, or the built profile's own list) or is disabled.
@@ -161,9 +162,10 @@ public static class ProfileBuild
   the Manual pages "Editor command line arguments" and "Manage scenes in a build", and Unity
   Manual build sections (player settings, managed code stripping). For the forward-looking
   CoreCLR backend, see the experimental note at
-  `https://docs.unity3d.com/6000.7/Documentation/Manual/scripting-backends-coreclr.html`.
+  `https://docs.unity.com/en-us/engine/6000.7/manual/programming-environment/scripting-backends/coreclr`.
 
 ## Related skills
 
 - `steam-publish` / `itch-publish` — distributing the player you just built.
 - `unity-csharp-scripting` — editor scripting conventions used by build scripts.
+- `unity-build-size` — finding and shrinking what makes a build, APK or Web build large.
