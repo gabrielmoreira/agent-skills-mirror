@@ -178,6 +178,8 @@ Moving beyond efficiency to create **defensible competitive advantages**.
 
 Use [`workshop-facilitation`](../workshop-facilitation/SKILL.md) as the default interaction protocol for this skill.
 
+**Default entry mode:** Guided · set in `pm-skills.config.yaml` (library-wide default or a per-skill override); the user's own choice in the session always wins. On the first turn, offer all three modes, then open in the default without waiting for a pick: Guided asks the first question, Context dump invites the paste, Best guess asks for a one-sentence minimum and drafts with every assumption labeled.
+
 It defines:
 - session heads-up + entry mode (Guided, Context dump, Best guess)
 - one-question turns with plain-language prompts
@@ -215,7 +217,7 @@ This interactive skill uses **adaptive questioning** to assess your maturity acr
 13. Interruption handling is mandatory: if the user asks a meta question ("how many left?", "why this label?", "pause"), answer directly first, then restate current progress and resume with the pending question.
 14. If the user says to stop or pause, halt the assessment immediately and wait for explicit resume.
 15. If the user asks for "one question at a time," keep that mode for the rest of the session unless they explicitly opt out.
-16. Before any assessment question, give a short heads-up on time/length and let the user choose an entry mode.
+16. Before any assessment question, give a short heads-up on time/length and offer the three entry modes, then open in the default entry mode in the same turn (switch if the user picks another mode).
 
 ---
 
@@ -230,12 +232,14 @@ How do you want to do this?
 2. Context dump: you paste what you already know, and I’ll skip anything redundant.
 3. Best guess mode: I’ll make reasonable assumptions where details are missing, label them, and keep moving."
 
+**Same turn, don't wait for a mode pick:** open in this skill's default entry mode (the `Default entry mode` line). If it's Guided, ask `Context Q1/8` right after the options. If it's Context dump, invite the paste. If it's Best guess, ask for a one-sentence minimum and start drafting. Switch as soon as the user picks a different mode.
+
 Accept selections as `#1`, `1`, `1 and 3`, `1,3`, or custom text.
 
 **Mode behavior:**
 
 - **If Guided mode:** Run Step 0 as written, then scoring.
-- **If Context dump:** Ask for pasted context once, summarize it, identify gaps, and:
+- **If Context dump:** Ask for pasted context once, show your read as **Known / Assumed / Missing / Conflicting** (credit where each item came from; surface conflicts rather than resolving them silently), and:
   - Skip any context questions already answered.
   - Ask only the minimum missing context needed (0-2 clarifying questions).
   - Move to scoring as soon as context is sufficient.
@@ -245,7 +249,7 @@ Accept selections as `#1`, `1`, `1 and 3`, `1,3`, or custom text.
   - Include confidence tags (`High`, `Medium`, `Low`) for each assumption.
   - Continue without blocking on unknowns.
 
-At the final summary, include an **Assumptions to Validate** section when context dump or best guess mode was used.
+Before scoring results, give the completion summary (supplied · inferred · unknown or disputed) and confirm. At the final summary, include an **Assumptions to Validate** section when context dump or best guess mode was used, ranked by how much each assumption could change the recommendation.
 
 ---
 

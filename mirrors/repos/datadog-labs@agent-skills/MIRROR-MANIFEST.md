@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,17 +119,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`dd-instrument-llmo/SKILL.md`](dd-instrument-llmo/SKILL.md) |
 | 59 | ✓ | [`dd-instrument-product-analytics/SKILL.md`](dd-instrument-product-analytics/SKILL.md) |
 | 60 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
-| 61 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 62 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 63 | ✓ | [`dd-oci-ccm/SKILL.md`](dd-oci-ccm/SKILL.md) |
-| 64 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
-| 65 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
-| 66 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
-| 67 | ✓ | [`dd-profiler-setup/SKILL.md`](dd-profiler-setup/SKILL.md) |
-| 68 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 69 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 70 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 71 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 61 | ✓ | [`dd-instrument-test-optimization/SKILL.md`](dd-instrument-test-optimization/SKILL.md) |
+| 62 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 63 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 64 | ✓ | [`dd-oci-ccm/SKILL.md`](dd-oci-ccm/SKILL.md) |
+| 65 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
+| 66 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
+| 67 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
+| 68 | ✓ | [`dd-profiler-setup/SKILL.md`](dd-profiler-setup/SKILL.md) |
+| 69 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 70 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 71 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 72 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
 
 ---
 

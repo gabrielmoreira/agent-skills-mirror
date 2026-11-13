@@ -86828,7 +86828,7 @@ function installUiCdsMessages(runtime2) {
     },
     volume: {
       defaultMessage: "Volume",
-      id: "y867VsgbzT"
+      id: "IwIJnfvATW"
     },
     timeOfTotal: {
       defaultMessage: "{time} of {total}",
@@ -104714,7 +104714,10 @@ function installUiContrastControls(runtime2) {
       children: [
         jsxForUiContrastControls.jsx("span", {
           "data-kit": "contrast-swatch",
-          className: "inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] shadow-card-ring",
+          className: (0, runtime2.joinClassNames)(
+            "inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] shadow-card-ring",
+            runtime2.FORCED_COLORS_SURFACE_CLASS
+          ),
           style: {
             backgroundColor: contrastRgbCss(
               opaqueContrastColor(
@@ -105923,7 +105926,7 @@ function installUiColorPicker(runtime2) {
             }
           ),
           "aria-describedby": value17 === void 0 ? sliderHintId : sliderHintId + " " + value17,
-          className: "relative aspect-[3/2] w-full touch-none rounded-md outline-none focus-visible:outline-hidden focus-visible:shadow-focus forced-colors:focus-visible:-outline-offset-2",
+          className: "relative aspect-[3/2] w-full touch-none rounded-md outline-none forced-color-adjust-none focus-visible:outline-hidden focus-visible:shadow-focus forced-colors:focus-visible:-outline-offset-2 forced-colors:focus-visible:outline-[color:Highlight] forced-colors:focus-visible:shadow-none",
           style: {
             background: `linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(${value2.h}, 100%, 50%))`
           },
@@ -105966,10 +105969,10 @@ function installUiColorPicker(runtime2) {
             }
           ),
           "aria-describedby": value17,
-          className: "group/slider relative touch-none pt-2 pb-1 outline-none focus-visible:outline-hidden forced-colors:focus-visible:-outline-offset-2 pointer-coarse:py-3.5",
+          className: "group/slider relative touch-none pt-2 pb-1 outline-none focus-visible:outline-hidden forced-colors:focus-visible:outline-none pointer-coarse:py-3.5",
           onPointerDown: callback11,
           children: jsxForUiColorPicker.jsx("div", {
-            className: "relative h-3 w-full rounded-md bg-[linear-gradient(to_right,#f00_0%,#ff0_17%,#0f0_33%,#0ff_50%,#00f_67%,#f0f_83%,#f00_100%)] group-focus-visible/slider:shadow-focus",
+            className: "relative h-3 w-full rounded-md bg-[linear-gradient(to_right,#f00_0%,#ff0_17%,#0f0_33%,#0ff_50%,#00f_67%,#f0f_83%,#f00_100%)] forced-color-adjust-none group-focus-visible/slider:shadow-focus forced-colors:group-focus-visible/slider:shadow-[0_0_0_2px_Canvas,0_0_0_4px_Highlight]",
             children: jsxForUiColorPicker.jsx("div", {
               className: "pointer-events-none absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.3)]",
               style: {
@@ -105998,10 +106001,10 @@ function installUiColorPicker(runtime2) {
             }
           ),
           "aria-describedby": value17,
-          className: "group/slider relative touch-none pt-1 pb-2 outline-none focus-visible:outline-hidden forced-colors:focus-visible:-outline-offset-2 pointer-coarse:py-3.5",
+          className: "group/slider relative touch-none pt-1 pb-2 outline-none focus-visible:outline-hidden forced-colors:focus-visible:outline-none pointer-coarse:py-3.5",
           onPointerDown: callback12,
           children: jsxForUiColorPicker.jsx("div", {
-            className: "relative h-3 w-full rounded-md group-focus-visible/slider:shadow-focus",
+            className: "relative h-3 w-full rounded-md forced-color-adjust-none group-focus-visible/slider:shadow-focus forced-colors:group-focus-visible/slider:shadow-[0_0_0_2px_Canvas,0_0_0_4px_Highlight]",
             style: {
               background: `linear-gradient(to right, transparent, ${value11}), ${COLOR_ALPHA_CHECKERBOARD}`
             },
@@ -106495,6 +106498,10 @@ function installEditorShapeIconPaths(runtime2) {
           connector: {
             d16: "M3.625 12.375L12.375 3.625M12.375 9.282L12.375 3.625L6.718 3.625",
             d20: "M4.625 15.375L15.375 4.625M15.375 11.696L15.375 4.625L8.304 4.625"
+          },
+          slideNavigator: {
+            d16: "M11.975 2.625L4.025 2.625C3.184 2.625 2.764 2.625 2.444 2.788C2.161 2.932 1.932 3.161 1.788 3.444C1.625 3.764 1.625 4.184 1.625 5.025L1.625 10.975C1.625 11.815 1.625 12.235 1.788 12.556C1.932 12.838 2.161 13.067 2.444 13.211C2.764 13.375 3.184 13.375 4.025 13.375L11.975 13.375C12.815 13.375 13.235 13.375 13.556 13.211C13.838 13.067 14.067 12.838 14.211 12.556C14.375 12.235 14.375 11.815 14.375 10.975L14.375 5.025C14.375 4.184 14.375 3.764 14.211 3.444C14.067 3.161 13.838 2.932 13.556 2.788C13.235 2.625 12.815 2.625 11.975 2.625ZM5.875 2.625L5.875 13.375M3.375 5.5L4.125 5.5M3.375 8L4.125 8M3.375 10.5L4.125 10.5",
+            d20: "M14.175 4.625L5.825 4.625C4.704 4.625 4.144 4.625 3.717 4.842C3.34 5.034 3.034 5.34 2.842 5.717C2.625 6.144 2.625 6.704 2.625 7.825L2.625 13.175C2.625 14.295 2.625 14.855 2.842 15.283C3.034 15.659 3.34 15.965 3.717 16.157C4.144 16.375 4.704 16.375 5.825 16.375L14.175 16.375C15.295 16.375 15.855 16.375 16.283 16.157C16.659 15.965 16.965 15.659 17.157 15.283C17.375 14.855 17.375 14.295 17.375 13.175L17.375 7.825C17.375 6.704 17.375 6.144 17.157 5.717C16.965 5.34 16.659 5.034 16.283 4.842C15.855 4.625 15.295 4.625 14.175 4.625ZM7.625 4.625L7.625 16.375M4.75 7.75L5.5 7.75M4.75 10.5L5.5 10.5M4.75 13.25L5.5 13.25"
           }
         }
       };
@@ -108466,7 +108473,7 @@ function installUiPropertyRow(runtime2) {
       );
     });
     PROPERTY_INPUT_SURFACE_CLASS = "rounded bg-fill-field text-primary shadow-field-ring outline-none transition duration-fast placeholder:text-muted enabled:hover:shadow-field-hover focus-visible:outline-hidden focus-visible:shadow-focus aria-expanded:shadow-field-hover disabled:opacity-50";
-    COLOR_SWATCH_CLASS = "relative inline-block h-4 w-4 shrink-0 overflow-hidden rounded-[4px] shadow-card-ring bg-[repeating-conic-gradient(var(--cds-alpha-2)_0_25%,transparent_0_50%)] bg-[length:8px_8px]";
+    COLOR_SWATCH_CLASS = "relative inline-block h-4 w-4 shrink-0 overflow-hidden rounded-[4px] shadow-card-ring bg-[repeating-conic-gradient(var(--cds-alpha-2)_0_25%,transparent_0_50%)] bg-[length:8px_8px] " + runtime2.FORCED_COLORS_SURFACE_CLASS;
     PROPERTY_SECTION_GUTTER_CLASS = "pl-[var(--pp-gutter-l,var(--cds-pad-lg))] pr-[var(--pp-gutter-r,var(--cds-pad-md))]";
     PROPERTY_ACTIONS_CLASS = "[&_[data-cds=Button][aria-label]:not([aria-pressed=true])]:text-secondary";
     mixedSectionCollapseWarningShown = false;
@@ -109162,7 +109169,7 @@ function installUiPropertyPopover(runtime2) {
           variant: danger ? "danger" : "default"
         }),
         "cursor-default text-left disabled:cursor-not-allowed disabled:opacity-50",
-        danger ? "enabled:hover:bg-fill-danger enabled:hover:text-on-danger focus-visible:bg-fill-danger focus-visible:text-on-danger" : "enabled:hover:bg-fill-ghost-hover focus-visible:bg-fill-ghost-hover"
+        danger ? "enabled:hover:bg-fill-danger enabled:hover:text-on-danger focus-visible:bg-fill-danger focus-visible:text-on-danger" : "enabled:hover:bg-fill-ghost-hover focus-visible:bg-fill-ghost-hover stacks:enabled:hover:bg-fill-ghost-selected stacks:focus-visible:bg-fill-ghost-selected"
       ),
       children: [
         icon !== void 0 ? jsxForUiPropertyPopover2.jsx("span", {
@@ -109724,6 +109731,7 @@ function installUiSelect(runtime2) {
   function Select({
     items,
     value,
+    repick = false,
     onChange,
     "aria-label": ariaLabel,
     placeholder,
@@ -109906,7 +109914,7 @@ function installUiSelect(runtime2) {
                         enabled.map((input) => input.label)
                       )];
                       if (pick !== void 0) {
-                        if (pick.value !== value) {
+                        if (pick.value !== value || repick) {
                           onChange(pick.value);
                         }
                         actionsRef.current?.close?.();
@@ -109983,7 +109991,7 @@ function installUiSelect(runtime2) {
                                     hint: input2.hint,
                                     rowSize: input2.labelStyle !== void 0 ? "lg" : "md",
                                     onClick: () => {
-                                      if (input2.value !== value) {
+                                      if (input2.value !== value || repick) {
                                         onChange(input2.value);
                                       }
                                     },
@@ -115422,6 +115430,9 @@ function installModelStyleSchema(runtime2) {
   var radialGradientExtentValues;
   var filterComponentSchemas;
   var transformComponentSchemas;
+  var wideTransformComponentSchemas;
+  var transformScaleRangeSchema;
+  var slideOverflowValues;
   var stylePropertyNames;
   var paintEffectProperties;
   var animatableStyleProperties;
@@ -115453,6 +115464,7 @@ function installModelStyleSchema(runtime2) {
   var defaultShadowBounds;
   var filterBounds;
   var transformBounds;
+  var wideTransformBounds;
   var gradientAngleSchema;
   var gradientStopPositionSchema;
   var radialGradientCenterSchema;
@@ -115464,6 +115476,15 @@ function installModelStyleSchema(runtime2) {
   var transitionDurationSchema;
   var transitionDelaySchema;
   var animationDurationSchema;
+  var sourceAnimationDurationSchema;
+  var sourceAnimationDelaySchema;
+  var animationOriginPattern;
+  var cubicBezierPattern;
+  var stepsEasingPattern;
+  var maxSourceAnimationKeyframes;
+  var maxFlashRate;
+  var minTransformStepMs;
+  var transformPercentCostScale;
   var animationDelaySchema;
   var animationIterationsSchema;
   var animationKeyframePositionSchema;
@@ -115946,7 +115967,10 @@ function installModelStyleSchema(runtime2) {
       case "filter":
         return normalizeStyleComponents(filterComponentSchemas, value);
       case "transform":
-        return normalizeStyleComponents(transformComponentSchemas, value);
+        return normalizeStyleComponents(
+          value2.wide === true ? wideTransformComponentSchemas : transformComponentSchemas,
+          value
+        );
       case "size":
         return normalizeCssSize(value);
       case "transition":
@@ -115956,7 +115980,9 @@ function installModelStyleSchema(runtime2) {
     }
   }
   function animationPaintComplexity(animation) {
-    let items = [], items2 = [];
+    let items = [], items2 = [], value6 = animation.keyframes.some(
+      (input) => input.style.transform !== void 0
+    );
     for (let value5 of animation.keyframes) {
       let style = value5.style;
       if (nonTransformAnimationProperties.some(
@@ -115964,10 +115990,10 @@ function installModelStyleSchema(runtime2) {
       )) {
         items.push(value5.at);
       }
-      if (style.transform !== void 0) {
+      if (style.transform !== void 0 || animation.fromSource === true && value6 && (value5.at === 0 || value5.at === 100)) {
         items2.push({
           at: value5.at,
-          t: style.transform
+          t: style.transform ?? {}
         });
       }
     }
@@ -116026,20 +116052,20 @@ function installModelStyleSchema(runtime2) {
         return Number.parseFloat(input);
       }
       return;
-    }, value = callback(transform.translateX, 0), value2 = callback(transform.translateY, 0), value3 = callback(transform.scale, 1);
-    if (value === void 0 || value2 === void 0 || value3 === void 0) {
+    }, value = callback(transform.translateX, 0), value2 = callback(transform.translateY, 0), value3 = callback(transform.scale, 1), value9 = callback(transform.translateXPct, 0), value10 = callback(transform.translateYPct, 0);
+    if (value === void 0 || value2 === void 0 || value3 === void 0 || value9 === void 0 || value10 === void 0) {
       return;
     }
-    let value4 = callback(transform.scaleX, value3), value5 = callback(transform.scaleY, value3), value6 = callback(transform.rotate, 0), value7 = callback(transform.skewX, 0), value8 = callback(transform.skewY, 0);
-    if (value4 === void 0 || value5 === void 0 || value6 === void 0 || value7 === void 0 || value8 === void 0) {
+    let value4 = callback(transform.scaleX, value3), value5 = callback(transform.scaleY, value3), value6 = callback(transform.rotate, 0), value11 = callback(transform.spin, 0), value12 = value6 === void 0 || value11 === void 0 ? void 0 : value6 + value11, value7 = callback(transform.skewX, 0), value8 = callback(transform.skewY, 0);
+    if (value4 === void 0 || value5 === void 0 || value12 === void 0 || value7 === void 0 || value8 === void 0) {
       return;
     }
     return {
-      tx: value,
-      ty: value2,
+      tx: value + value9 * transformPercentCostScale,
+      ty: value2 + value10 * transformPercentCostScale,
       sx: value4,
       sy: value5,
-      rot: value6,
+      rot: value12,
       skx: value7,
       sky: value8
     };
@@ -116109,6 +116135,12 @@ function installModelStyleSchema(runtime2) {
         style[value2],
         nodeKind
       );
+      if (value2 === "transform" && isPlainStyleRecord(value3)) {
+        let { shiftX, shiftY, ...rest } = value3;
+        void shiftX;
+        void shiftY;
+        value3 = Object.keys(rest).length > 0 ? rest : void 0;
+      }
       if (value3 === void 0 || value2 === "boxShadow" && value3.length !== 1) {
         index4 += 1;
         continue;
@@ -116121,7 +116153,174 @@ function installModelStyleSchema(runtime2) {
       dropped: index4
     };
   }
-  function normalizeStyleAnimation(animation, allowsProperty, nodeKind) {
+  function normalizeSourceEasing(easing, animation) {
+    if (typeof easing !== "string" || easing.length > 128) {
+      return;
+    }
+    let hasPaintProperty = animation.keyframes.some(
+      (keyframe) => nonTransformAnimationProperties.some(
+        (property) => keyframe.style[property] !== void 0
+      )
+    ), bezier = cubicBezierPattern.exec(easing);
+    if (bezier !== null) {
+      let [x1, y1, x2, y2] = bezier.slice(1).map(Number), inRange = (value) => hasPaintProperty ? value >= 0 && value <= 1 : value >= -0.6 && value <= 1.6;
+      return x1 <= 1 && x2 <= 1 && inRange(y1) && inRange(y2) ? easing : void 0;
+    }
+    let steps = stepsEasingPattern.exec(easing);
+    if (steps === null || steps[2] === "jump-none" && steps[1] === "1") {
+      return;
+    }
+    if (hasPaintProperty) {
+      return;
+    }
+    let transforms = animation.keyframes.map(
+      (keyframe) => transformComponentsForComplexity(keyframe.style.transform ?? {})
+    );
+    if (transforms.some((transform, index4) => {
+      let previous = transforms[index4 - 1];
+      return index4 > 0 && transform !== void 0 && previous !== void 0 && transformComplexityDistance(previous, transform) >= 1;
+    })) {
+      return;
+    }
+    return !(animation.iterations === "infinite" || animation.iterations > 1) || animation.duration / Number(steps[1]) >= maxAnimationComplexity ? easing : void 0;
+  }
+  function animationPropertyTrack(animation, property, resting) {
+    let track = animation.keyframes.filter((keyframe) => keyframe.style[property] !== void 0).map((keyframe) => ({ at: keyframe.at, v: keyframe.style[property] })), ordered = animation.direction === "reverse" ? track.map((entry) => ({ at: 100 - entry.at, v: entry.v })).reverse() : track, restingValue = resting === void 0 ? void 0 : resting[property] ?? (property === "opacity" ? 1 : void 0);
+    if (restingValue === void 0 || ordered.length === 0) {
+      return ordered;
+    }
+    let differsFromResting = (value) => JSON.stringify(value) !== JSON.stringify(restingValue), startsHidden = (animation.delay > 0 || animation.onStep === true) && animation.fill !== "backwards" && animation.fill !== "both", endsReverted = animation.fill !== "forwards" && animation.fill !== "both";
+    return [
+      ...ordered[0].at > 0 || startsHidden && differsFromResting(ordered[0].v) ? [{ at: 0, v: restingValue }] : [],
+      ...ordered,
+      ...ordered.at(-1).at < 100 || endsReverted && differsFromResting(ordered.at(-1).v) ? [{ at: 100, v: restingValue }] : []
+    ];
+  }
+  function colorLuminance(value) {
+    if (typeof value === "number") {
+      return value;
+    }
+    if (typeof value !== "string" || !/^#[0-9a-f]{6}(ff)?$/i.test(value)) {
+      return;
+    }
+    let [red, green, blue] = [1, 3, 5].map((offset4) => {
+      let channel = Number.parseInt(value.slice(offset4, offset4 + 2), 16) / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  }
+  function easingPeakSlope(easing) {
+    let points = {
+      ease: [0.25, 0.1, 0.25, 1],
+      "ease-in": [0.42, 0, 1, 1],
+      "ease-out": [0, 0, 0.58, 1],
+      "ease-in-out": [0.42, 0, 0.58, 1]
+    }[easing] ?? cubicBezierPattern.exec(easing)?.slice(1).map(Number);
+    if (points === void 0) {
+      return 1;
+    }
+    let [x1, y1, x2, y2] = points, bezier = (progress, from, to) => 3 * (1 - progress) ** 2 * progress * from + 3 * (1 - progress) * progress * progress * to + progress ** 3, start = 0, end = 1;
+    for (let step = 64; step >= 0; step--) {
+      if (bezier(step / 64, y1, y2) >= 0.1) {
+        start = bezier(step / 64, x1, x2);
+      }
+    }
+    for (let step = 0; step <= 64; step++) {
+      if (bezier(step / 64, y1, y2) <= 0.9) {
+        end = bezier((step + 1) / 64, x1, x2);
+      }
+    }
+    return Math.max(1, 0.8 / Math.max(end - start, 1e-6));
+  }
+  function animationHasFastTransformSteps(animation) {
+    if (animation.iterations === 1) {
+      return false;
+    }
+    let keyframes = animation.keyframes.filter(
+      (keyframe) => keyframe.style.transform !== void 0
+    );
+    return keyframes.slice(1).some(
+      (keyframe, index4) => JSON.stringify(keyframe.style) !== JSON.stringify(keyframes[index4].style) && (keyframe.at - keyframes[index4].at) / 100 * animation.duration < minTransformStepMs
+    );
+  }
+  function animationHasFastColorChange(animation) {
+    let slope = easingPeakSlope(animation.easing);
+    return nonTransformAnimationProperties.some((property) => {
+      let track = animation.keyframes.filter((keyframe) => keyframe.style[property] !== void 0).map((keyframe) => ({ at: keyframe.at, v: keyframe.style[property] }));
+      return track.slice(1).some((entry, index4) => {
+        let previous = track[index4];
+        if (JSON.stringify(previous.v) === JSON.stringify(entry.v)) {
+          return false;
+        }
+        let [from, to] = [colorLuminance(previous.v), colorLuminance(entry.v)];
+        return (from !== void 0 && to !== void 0 ? Math.abs(to - from) : 1) * slope / Math.max((entry.at - previous.at) / 100 * animation.duration, 1e-6) > 1 / maxFlashRate;
+      });
+    });
+  }
+  function animationReversesTooOften(animation, resting) {
+    let turns = /* @__PURE__ */ new Set(), last = 0;
+    for (let property of nonTransformAnimationProperties) {
+      let track = animationPropertyTrack(animation, property, resting), direction = 0;
+      track.slice(1).forEach((entry, index4) => {
+        let previous = track[index4];
+        if (JSON.stringify(previous.v) === JSON.stringify(entry.v)) {
+          return;
+        }
+        let [from, to] = [colorLuminance(previous.v), colorLuminance(entry.v)], sign = (from !== void 0 && to !== void 0 ? Math.sign(to - from) : 0) || -direction || 1;
+        if (sign !== direction) {
+          turns.add(previous.at);
+        }
+        direction = sign;
+        last = Math.max(last, entry.at);
+      });
+    }
+    let points = [
+      .../* @__PURE__ */ new Set([...[...turns].sort((a, b) => a - b), last])
+    ];
+    return turns.size > 1 && points.some(
+      (point, index4) => index4 > 0 && (point - points[index4 - 1]) / 100 * animation.duration < maxAnimationComplexity
+    );
+  }
+  function transformAnimationSpinsAreSafe(animation, resting) {
+    let spinTimes = [], lastTime = 0, previous, first, distance = 0;
+    for (let keyframe of animation.keyframes) {
+      let current = transformComponentsForComplexity(
+        keyframe.style.transform ?? {}
+      );
+      if (current === void 0) {
+        return false;
+      }
+      first ??= current;
+      let time = keyframe.at / 100 * animation.duration;
+      if (previous !== void 0) {
+        distance += transformComplexityDistance(previous, current);
+        if (distance >= 1) {
+          let turns = Math.max(
+            1,
+            Math.floor(Math.abs(previous.rot - current.rot) / 180)
+          );
+          for (let turn = 1; turn <= turns; turn++) {
+            spinTimes.push(lastTime + (time - lastTime) * turn / turns);
+          }
+          distance = 0;
+        }
+      }
+      lastTime = time;
+      previous = current;
+    }
+    if (resting !== void 0 && first !== void 0 && previous !== void 0 && animation.keyframes.some((keyframe) => keyframe.style.transform !== void 0)) {
+      let restingTransform = transformComponentsForComplexity(
+        resting.transform ?? {}
+      ), startsHidden = (animation.delay > 0 || animation.onStep === true) && animation.fill !== "backwards" && animation.fill !== "both", endsReverted = animation.fill !== "forwards" && animation.fill !== "both";
+      if (restingTransform !== void 0 && startsHidden && endsReverted && transformComplexityDistance(restingTransform, first) >= 1 && transformComplexityDistance(previous, restingTransform) >= 1 && animation.duration < maxAnimationComplexity) {
+        return false;
+      }
+    }
+    return spinTimes.every(
+      (time, index4) => (spinTimes[index4 + 5] ?? Number.POSITIVE_INFINITY) - time >= 1e3
+    );
+  }
+  function normalizeStyleAnimation(animation, allowsProperty, nodeKind, resting) {
     if (animation === void 0) {
       return {
         dropped: 0
@@ -116132,8 +116331,8 @@ function installModelStyleSchema(runtime2) {
         dropped: 1
       };
     }
-    let keyframes = animation.keyframes;
-    if (!Array.isArray(keyframes) || keyframes.length < minAnimationKeyframes || keyframes.length > maxAnimationKeyframes) {
+    let keyframes = animation.keyframes, fromSource = nodeKind !== void 0 && isSlideNodeStyleKind(nodeKind) && animation.fromSource === true;
+    if (!Array.isArray(keyframes) || keyframes.length < minAnimationKeyframes || keyframes.length > (fromSource ? maxSourceAnimationKeyframes : maxAnimationKeyframes)) {
       return {
         dropped: 1
       };
@@ -116154,7 +116353,11 @@ function installModelStyleSchema(runtime2) {
           dropped: index4 + 1
         };
       }
-      let value8 = normalizeAnimationStyle(value6.style, allowsProperty, nodeKind);
+      let value8 = normalizeAnimationStyle(
+        value6.style,
+        fromSource && nodeKind === "slides-text" ? (property) => property === "color" || allowsProperty(property) : allowsProperty,
+        nodeKind
+      );
       index4 += value8.dropped;
       items.push({
         at: value7,
@@ -116163,11 +116366,11 @@ function installModelStyleSchema(runtime2) {
     }
     items.sort((input, options) => input.at - options.at);
     let value = numericStyleValueOrDefault(
-      animationDurationSchema,
+      fromSource ? sourceAnimationDurationSchema : animationDurationSchema,
       animation.duration,
       1e3
     ), value2 = numericStyleValueOrDefault(
-      animationDelaySchema,
+      fromSource ? sourceAnimationDelaySchema : animationDelaySchema,
       animation.delay,
       0
     ), value3;
@@ -116184,8 +116387,19 @@ function installModelStyleSchema(runtime2) {
     let value4 = animation.direction === void 0 ? "normal" : normalizeEnumStyleValue(
       animationDirectionValues,
       animation.direction
-    ), value5 = animation.easing === void 0 ? "ease" : normalizeEnumStyleValue(easingValues, animation.easing);
-    if (value === void 0 || value2 === void 0 || value3 === void 0 || value4 === void 0 || value5 === void 0) {
+    ), value5 = animation.easing === void 0 ? "ease" : normalizeEnumStyleValue(easingValues, animation.easing), easing = value5 === void 0 && fromSource && value !== void 0 && value2 !== void 0 && value3 !== void 0 && value4 !== void 0 ? normalizeSourceEasing(animation.easing, {
+      keyframes: items,
+      duration: value,
+      delay: value2,
+      iterations: value3,
+      direction: value4
+    }) : value5, onStep = fromSource && animation.onStep === true, next = fromSource && isPlainStyleRecord(animation.next) ? normalizeStyleAnimation(
+      { ...animation.next, next: void 0 },
+      allowsProperty,
+      nodeKind,
+      resting
+    ).value : void 0;
+    if (value === void 0 || value2 === void 0 || value3 === void 0 || value4 === void 0 || easing === void 0 || onStep && value3 === "infinite") {
       return {
         dropped: index4 + 1
       };
@@ -116196,9 +116410,23 @@ function installModelStyleSchema(runtime2) {
       delay: value2,
       iterations: value3,
       direction: value4,
-      easing: value5
+      easing,
+      ...fromSource && (animation.fill === "backwards" || !onStep && (animation.fill === "forwards" || animation.fill === "both")) ? { fill: animation.fill } : {},
+      ...fromSource ? { fromSource: true } : {},
+      ...fromSource && typeof animation.count === "number" && Number.isFinite(animation.count) && value3 === 1 ? { count: animation.count } : {},
+      ...fromSource && typeof animation.origin === "string" && animationOriginPattern.test(animation.origin) ? { origin: animation.origin } : {},
+      ...next !== void 0 ? { next } : {},
+      ...onStep ? {
+        onStep: true,
+        ...animation.fill === "forwards" || animation.fill === "both" ? { fill: animation.fill } : {}
+      } : {}
     };
-    if (!animationPaintComplexity(state)) {
+    if (fromSource && value3 === 1 ? !transformAnimationSpinsAreSafe(state, resting) || animationReversesTooOften(state, resting) : !animationPaintComplexity(state)) {
+      return {
+        dropped: index4 + 1
+      };
+    }
+    if (fromSource && (animationHasFastColorChange(state) || animationHasFastTransformSteps(state))) {
       return {
         dropped: index4 + 1
       };
@@ -116270,7 +116498,8 @@ function installModelStyleSchema(runtime2) {
         let value3 = normalizeStyleAnimation(
           style[value],
           (input) => stylePropertyAppliesToNode(input, nodeKind),
-          nodeKind
+          nodeKind,
+          style
         );
         dropped += value3.dropped;
         if (value3.value !== void 0) {
@@ -116351,11 +116580,22 @@ function installModelStyleSchema(runtime2) {
         `translate(${cssPixels(transform.translateX ?? 0)}, ${cssPixels(transform.translateY ?? 0)})`
       );
     }
+    if (transform.translateXPct !== void 0 || transform.translateYPct !== void 0) {
+      items.push(
+        `translate(${transform.translateXPct ?? 0}%, ${transform.translateYPct ?? 0}%)`
+      );
+    }
     if (transform.rotate !== void 0) {
       items.push(`rotate(${transform.rotate}deg)`);
     }
+    if (transform.spin !== void 0) {
+      items.push(`rotate(${transform.spin}deg)`);
+    }
     if (transform.scale !== void 0) {
       items.push(`scale(${transform.scale})`);
+    }
+    if (transform.scaleX !== void 0 || transform.scaleY !== void 0) {
+      items.push(`scale(${transform.scaleX ?? 1}, ${transform.scaleY ?? 1})`);
     }
     if (transform.skewX !== void 0 || transform.skewY !== void 0) {
       items.push(
@@ -116469,9 +116709,14 @@ function installModelStyleSchema(runtime2) {
         css.borderRadius = value3.join(" ");
         return;
       }
-      case "transform":
-        css.transform = transformToCss(value);
+      case "transform": {
+        let transform = value;
+        css.transform = transformToCss(transform);
+        if (transform.shiftX !== void 0 || transform.shiftY !== void 0) {
+          css.translate = cssPixels(transform.shiftX ?? 0) + " " + cssPixels(transform.shiftY ?? 0);
+        }
         return;
+      }
       case "width":
       case "height":
       case "minWidth":
@@ -116558,15 +116803,21 @@ function installModelStyleSchema(runtime2) {
     let allowsProperty = nodeKind === void 0 ? () => true : (input) => stylePropertyAppliesToNode(input, nodeKind), animation = normalizeStyleAnimation(
       style.animation,
       allowsProperty,
-      nodeKind
+      nodeKind,
+      style
     ).value;
     if (animation === void 0) {
       return;
     }
-    let keyframes = [];
+    return animationToKeyframes(animation);
+  }
+  function animationToKeyframes(animation) {
+    let counts = animation.count !== void 0 && animation.keyframes.length === 2 && animation.keyframes[0].at === 0 && animation.keyframes[1].at === 100, keyframes = [];
     for (let value of animation.keyframes) {
       let state2 = {
-        offset: value.at / 100
+        offset: value.at / 100,
+        ...animation.fromSource === true && !counts ? { easing: animation.easing } : {},
+        ...animation.origin !== void 0 ? { transformOrigin: animation.origin } : {}
       }, style2 = value.style;
       for (let value2 of animatableStyleProperties) {
         if (!hasOwnStyleProperty(style2, value2)) {
@@ -116581,11 +116832,16 @@ function installModelStyleSchema(runtime2) {
       delay: animation.delay,
       iterations: animation.iterations === "infinite" ? Number.POSITIVE_INFINITY : animation.iterations,
       direction: animation.direction,
-      easing: animation.easing
+      easing: animation.fromSource === true && !counts ? "linear" : animation.easing,
+      ...animation.fill !== void 0 ? { fill: animation.fill } : {}
     };
     return {
       keyframes,
-      options: state
+      options: state,
+      ...animation.onStep === true ? { onStep: true } : {},
+      ...animation.fromSource === true ? { fromSource: true } : {},
+      ...animation.count !== void 0 ? { count: animation.count } : {},
+      ...animation.next !== void 0 ? { next: animationToKeyframes(animation.next) } : {}
     };
   }
   function hasPaintEffects(style) {
@@ -117498,6 +117754,110 @@ function installModelStyleSchema(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "wideTransformComponentSchemas",
+    () => wideTransformComponentSchemas,
+    (value) => {
+      wideTransformComponentSchemas = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "transformScaleRangeSchema",
+    () => transformScaleRangeSchema,
+    (value) => {
+      transformScaleRangeSchema = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "slideOverflowValues",
+    () => slideOverflowValues,
+    (value) => {
+      slideOverflowValues = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "wideTransformBounds",
+    () => wideTransformBounds,
+    (value) => {
+      wideTransformBounds = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "sourceAnimationDurationSchema",
+    () => sourceAnimationDurationSchema,
+    (value) => {
+      sourceAnimationDurationSchema = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "sourceAnimationDelaySchema",
+    () => sourceAnimationDelaySchema,
+    (value) => {
+      sourceAnimationDelaySchema = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "animationOriginPattern",
+    () => animationOriginPattern,
+    (value) => {
+      animationOriginPattern = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "cubicBezierPattern",
+    () => cubicBezierPattern,
+    (value) => {
+      cubicBezierPattern = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "stepsEasingPattern",
+    () => stepsEasingPattern,
+    (value) => {
+      stepsEasingPattern = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "maxSourceAnimationKeyframes",
+    () => maxSourceAnimationKeyframes,
+    (value) => {
+      maxSourceAnimationKeyframes = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "maxFlashRate",
+    () => maxFlashRate,
+    (value) => {
+      maxFlashRate = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "minTransformStepMs",
+    () => minTransformStepMs,
+    (value) => {
+      minTransformStepMs = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "transformPercentCostScale",
+    () => transformPercentCostScale,
+    (value) => {
+      transformPercentCostScale = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
     "maxAnimationKeyframes",
     () => maxAnimationKeyframes,
     (value) => {
@@ -117619,6 +117979,10 @@ function installModelStyleSchema(runtime2) {
     minAnimationKeyframes = 2;
     maxAnimationKeyframes = 8;
     maxAnimationComplexity = 333;
+    maxFlashRate = 100;
+    minTransformStepMs = 167;
+    transformPercentCostScale = 100;
+    maxSourceAnimationKeyframes = 32;
     transformTranslationCostScale = 100;
     transformAngleCostScale = 30;
     cssPixels = (input) => `${input}px`;
@@ -117745,6 +118109,7 @@ function installModelStyleSchema(runtime2) {
       visibilityValues = ["visible", "hidden"];
       overflowValues = ["visible", "hidden", "clip", "auto", "scroll"];
       pointerEventsValues = ["auto", "none"];
+      slideOverflowValues = ["visible", "hidden"];
       cursorValues = [
         "default",
         "pointer",
@@ -117849,6 +118214,42 @@ function installModelStyleSchema(runtime2) {
         {
           field: "skewY",
           cls: numberSchema(-60, 60)
+        }
+      ];
+      transformScaleRangeSchema = numberSchema(0, 100);
+      wideTransformComponentSchemas = [
+        ...transformComponentSchemas.filter((input) => input.field !== "scale"),
+        {
+          field: "scale",
+          cls: transformScaleRangeSchema
+        },
+        {
+          field: "scaleX",
+          cls: transformScaleRangeSchema
+        },
+        {
+          field: "scaleY",
+          cls: transformScaleRangeSchema
+        },
+        {
+          field: "translateXPct",
+          cls: numberSchema(-1e3, 1e3)
+        },
+        {
+          field: "translateYPct",
+          cls: numberSchema(-1e3, 1e3)
+        },
+        {
+          field: "shiftX",
+          cls: lengthSchema(-4096, 4096)
+        },
+        {
+          field: "shiftY",
+          cls: lengthSchema(-4096, 4096)
+        },
+        {
+          field: "spin",
+          cls: numberSchema(-3600, 3600)
         }
       ];
       stylePropertyNames = [
@@ -118255,6 +118656,10 @@ function installModelStyleSchema(runtime2) {
           v: {
             kind: "transform"
           },
+          slides: {
+            kind: "transform",
+            wide: true
+          },
           on: transformableNodeKinds,
           routed: slideShapeNodeKinds
         },
@@ -118300,6 +118705,7 @@ function installModelStyleSchema(runtime2) {
         },
         overflow: {
           v: enumSchema(overflowValues),
+          slides: enumSchema(slideOverflowValues),
           on: concatenateNodeKinds(
             documentBlockNodeKinds,
             documentTableCellNodeKinds,
@@ -118541,7 +118947,10 @@ function installModelStyleSchema(runtime2) {
         spread: numericSchemaBounds(shadowSpreadSchema)
       };
       filterBounds = componentSchemaBounds(filterComponentSchemas);
-      transformBounds = componentSchemaBounds(transformComponentSchemas);
+      transformBounds = componentSchemaBounds(
+        transformComponentSchemas
+      );
+      wideTransformBounds = componentSchemaBounds(wideTransformComponentSchemas);
       gradientAngleSchema = numberSchema(0, 360);
       gradientStopPositionSchema = numberSchema(0, 100);
       radialGradientCenterSchema = numberSchema(-100, 200);
@@ -118554,6 +118963,11 @@ function installModelStyleSchema(runtime2) {
       animationDelaySchema = numberSchema(0, 5e3);
       animationIterationsSchema = integerSchema(1, 1e3, 1);
       animationKeyframePositionSchema = numberSchema(0, 100);
+      sourceAnimationDurationSchema = numberSchema(100, 12e4);
+      sourceAnimationDelaySchema = numberSchema(0, 12e4);
+      animationOriginPattern = /^(?:(?:left|right|top|bottom|center|-?(?:\d{1,2}|1[0-4]\d|150)(?:\.\d{1,3})?%|-?\.\d{1,3}%|-?\d{0,3}(?:\.\d{1,3})?px|0)(?:\s+|$)){1,2}$/i;
+      cubicBezierPattern = /^cubic-bezier\(\s*((?:\d*\.)?\d+)\s*,\s*(-?(?:\d*\.)?\d+)\s*,\s*((?:\d*\.)?\d+)\s*,\s*(-?(?:\d*\.)?\d+)\s*\)$/;
+      stepsEasingPattern = /^steps\(\s*([1-9]\d{0,2})\s*(?:,\s*(start|end|jump-start|jump-end|jump-none|jump-both)\s*)?\)$/;
       transformScaleCostScale = Math.LN2;
       transitionPropertyCssNames = {
         transform: "transform",
@@ -118918,6 +119332,328 @@ function installModelArtifactLinks(runtime2) {
   };
 }
 
+function installModelMarkupGuards(runtime2) {
+  var stripCommentsAndCdata;
+  var findClosingTagOutsideComments;
+  var rewriteStyleElements;
+  var svgDataUrlNeedsSanitizing;
+  var convertPlayEffectToFade;
+  var animationFinalOpacity;
+  var holdHiddenOpacity;
+  var stripSourceAnimations;
+  var slideChildNodes;
+  var htmlEntityMap;
+  var decodeStyleText;
+  var escapeStyleText;
+  var neutralizeSvgAnimation;
+  var maxSourceSlideAnimations;
+  var initializeMarkupGuards;
+  bindRuntimeValue(
+    runtime2,
+    "stripCommentsAndCdata",
+    () => stripCommentsAndCdata,
+    (value) => {
+      stripCommentsAndCdata = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "findClosingTagOutsideComments",
+    () => findClosingTagOutsideComments,
+    (value) => {
+      findClosingTagOutsideComments = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "rewriteStyleElements",
+    () => rewriteStyleElements,
+    (value) => {
+      rewriteStyleElements = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "svgDataUrlNeedsSanitizing",
+    () => svgDataUrlNeedsSanitizing,
+    (value) => {
+      svgDataUrlNeedsSanitizing = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "convertPlayEffectToFade",
+    () => convertPlayEffectToFade,
+    (value) => {
+      convertPlayEffectToFade = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "animationFinalOpacity",
+    () => animationFinalOpacity,
+    (value) => {
+      animationFinalOpacity = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "holdHiddenOpacity",
+    () => holdHiddenOpacity,
+    (value) => {
+      holdHiddenOpacity = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "stripSourceAnimations",
+    () => stripSourceAnimations,
+    (value) => {
+      stripSourceAnimations = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "slideChildNodes",
+    () => slideChildNodes,
+    (value) => {
+      slideChildNodes = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "htmlEntityMap",
+    () => htmlEntityMap,
+    (value) => {
+      htmlEntityMap = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "decodeStyleText",
+    () => decodeStyleText,
+    (value) => {
+      decodeStyleText = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "escapeStyleText",
+    () => escapeStyleText,
+    (value) => {
+      escapeStyleText = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "neutralizeSvgAnimation",
+    () => neutralizeSvgAnimation,
+    (value) => {
+      neutralizeSvgAnimation = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "maxSourceSlideAnimations",
+    () => maxSourceSlideAnimations,
+    (value) => {
+      maxSourceSlideAnimations = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "initializeMarkupGuards",
+    () => initializeMarkupGuards,
+    (value) => {
+      initializeMarkupGuards = value;
+    }
+  );
+  stripCommentsAndCdata = (markup) => {
+    let output = "", cursor = 0, commentStart = -2, cdataStart = -2;
+    for (; ; ) {
+      if (commentStart !== -1 && commentStart < cursor) {
+        commentStart = markup.indexOf("<!--", cursor);
+      }
+      if (cdataStart !== -1 && cdataStart < cursor) {
+        cdataStart = markup.indexOf("<![CDATA[", cursor);
+      }
+      if (commentStart < 0 && cdataStart < 0) {
+        return output + markup.slice(cursor);
+      }
+      let isComment = commentStart >= 0 && (cdataStart < 0 || commentStart < cdataStart), start = isComment ? commentStart : cdataStart, end = markup.indexOf(isComment ? "-->" : "]]>", start);
+      if (end < 0) {
+        return output + markup.slice(cursor);
+      }
+      output += markup.slice(cursor, start) + (isComment ? "" : markup.slice(start + 9, end));
+      cursor = end + 3;
+    }
+  };
+  findClosingTagOutsideComments = (markup, from, tagName) => {
+    let pattern = new RegExp(
+      "<!--|<!\\[CDATA\\[|</" + tagName.replace(/[.]/g, "\\.") + "\\s*>",
+      "gi"
+    );
+    pattern.lastIndex = from;
+    for (let match = pattern.exec(markup); match !== null; match = pattern.exec(markup)) {
+      if (match[0][1] === "/") {
+        return match.index;
+      }
+      let end = markup.indexOf(
+        match[0] === "<!--" ? "-->" : "]]>",
+        match.index
+      );
+      if (end < 0) {
+        return -1;
+      }
+      pattern.lastIndex = end + 3;
+    }
+    return -1;
+  };
+  rewriteStyleElements = (markup, rewrite) => {
+    let pattern = /<!--|<!\[CDATA\[|<((?:[\w.-]+:)?style)(?=[\s/>])([^<>]*)>/gi, closedTags = new Set(
+      [...markup.matchAll(/<\/((?:[\w.-]+:)?style)\s*>/gi)].map(
+        (match) => match[1].toLowerCase()
+      )
+    ), output = "", cursor = 0;
+    for (let match = pattern.exec(markup); match !== null; match = pattern.exec(markup)) {
+      if (match[1] === void 0) {
+        let end = markup.indexOf(
+          match[0] === "<!--" ? "-->" : "]]>",
+          match.index
+        );
+        if (end < 0) {
+          break;
+        }
+        pattern.lastIndex = end + 3;
+        continue;
+      }
+      if (match[2].endsWith("/") || !closedTags.has(match[1].toLowerCase())) {
+        continue;
+      }
+      let textStart = match.index + match[0].length, textEnd = findClosingTagOutsideComments(
+        markup,
+        textStart,
+        match[1]
+      );
+      if (textEnd < 0) {
+        closedTags.delete(match[1].toLowerCase());
+        continue;
+      }
+      let elementEnd = markup.indexOf(">", textEnd) + 1;
+      output += markup.slice(cursor, match.index) + rewrite(
+        markup.slice(match.index, elementEnd),
+        match[1],
+        match[2],
+        markup.slice(textStart, textEnd)
+      );
+      cursor = elementEnd;
+      pattern.lastIndex = elementEnd;
+    }
+    return output + markup.slice(cursor);
+  };
+  svgDataUrlNeedsSanitizing = (dataUrl) => {
+    let match = /^data:image\/svg\+xml;base64,(.+)$/.exec(dataUrl);
+    if (match === null) {
+      return false;
+    }
+    try {
+      let svg = atob(match[1]);
+      return neutralizeSvgAnimation(svg) !== svg;
+    } catch {
+      return false;
+    }
+  };
+  convertPlayEffectToFade = (build) => {
+    let effect = build?.out?.effect === "play" ? build.out : build?.in?.effect === "play" ? build.in : void 0;
+    if (effect === void 0 || build === void 0) {
+      return false;
+    }
+    if (build.in === effect) {
+      delete build.in;
+    }
+    build.out = {
+      ...effect,
+      effect: "fade"
+    };
+    return true;
+  };
+  animationFinalOpacity = (animation) => {
+    let extraTurns = animation.direction === "alternate" && animation.iterations !== "infinite" ? Math.ceil(animation.iterations) - 1 : 0;
+    let keyframe = (Number(animation.direction === "reverse") + extraTurns) % 2 === 1 ? animation.keyframes[0] : animation.keyframes.at(-1);
+    return keyframe?.style?.opacity;
+  };
+  holdHiddenOpacity = (animation, style, build) => {
+    if (animationFinalOpacity(animation) === 0 && (animation.fill === "forwards" || animation.fill === "both") && !convertPlayEffectToFade(build)) {
+      style.opacity = 0;
+    }
+  };
+  slideChildNodes = (node) => node.kind === "overlay" ? [node.base, ...node.layers.map((layer) => layer.node)] : node.kind === "stack" || node.kind === "grid" ? node.children ?? [] : [];
+  decodeStyleText = (text) => stripCommentsAndCdata(text).replace(
+    /&(#x?[0-9a-f]+|amp|lt|gt|quot|apos);/gi,
+    (_match, entity) => entity[0] === "#" ? String.fromCodePoint(
+      Math.min(
+        Number.parseInt(entity.replace(/^#x?/i, ""), /x/i.test(entity) ? 16 : 10) || 0,
+        1114111
+      )
+    ) : htmlEntityMap[entity.toLowerCase()]
+  ).replace(
+    /\\([0-9a-f]{1,6})\s?|\\(.)/gi,
+    (_match, hex, other) => hex !== void 0 ? String.fromCodePoint(Math.min(Number.parseInt(hex, 16), 1114111)) : other
+  );
+  escapeStyleText = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  neutralizeSvgAnimation = (markup) => rewriteStyleElements(markup, (element, tagName, attributes, text) => {
+    let decoded = decodeStyleText(text);
+    return /keyframes|starting-style|@import/i.test(decoded) ? "<" + tagName + attributes + ">" + (decoded.includes("\\") ? "" : escapeStyleText(
+      decoded.replace(/@(-[a-z]+-)?keyframes\b/gi, "@x-keyframes").replace(/@(starting-style|import)\b/gi, "@x-$1")
+    )) + "</" + tagName + ">" : element;
+  }).replace(/<(\/?)((?:[\w.-]+:)?)(animate\w*|set|link)\b/gi, "<$1$2x-$3").replace(/<\?xml-stylesheet\b/gi, "<?x-stylesheet");
+  maxSourceSlideAnimations = 60;
+  stripSourceAnimations = (frames, limit = maxSourceSlideAnimations, stripAll = false) => {
+    let pending = [], visit = (node, build) => {
+      let style = node.style, animation = style?.animation;
+      if (style !== void 0 && animation !== void 0 && (stripAll || animation.fromSource === true)) {
+        pending.push(() => {
+          delete style.animation;
+          holdHiddenOpacity(
+            animation.next !== void 0 && animationFinalOpacity(animation.next) !== void 0 ? animation.next : animation,
+            style,
+            build
+          );
+        });
+        let next = animation.next;
+        if (next !== void 0) {
+          pending.push(() => {
+            if (style.animation === animation) {
+              delete animation.next;
+              holdHiddenOpacity(next, style, build);
+            }
+          });
+        }
+      }
+      slideChildNodes(node).forEach((child) => visit(child, child.build));
+    };
+    for (let frame of frames) {
+      visit(frame.node, frame.build ?? frame.node.build);
+    }
+    let excess = pending.slice(limit);
+    for (let strip of excess) {
+      strip();
+    }
+    return excess.length;
+  };
+  return () => {
+    initializeMarkupGuards = (0, runtime2.initializeOnce)(() => {
+      htmlEntityMap = {
+        amp: "&",
+        lt: "<",
+        gt: ">",
+        quot: '"',
+        apos: "'"
+      };
+    });
+  };
+}
+
 function installModelDeck(runtime2) {
   var SLIDE_WIDTH;
   var SLIDE_HEIGHT;
@@ -118996,6 +119732,10 @@ function installModelDeck(runtime2) {
   var tableCellKeyPattern;
   var maxSlidePaintCost;
   var maxSlideAnimations;
+  var hasSourceAnimation;
+  var hasFlatAnimation;
+  var maxImageAltLength;
+  var sourceNodeIdPattern;
   var maxDeckSections;
   var descriptionControlCharacterPattern;
   var maxDeckSlides;
@@ -119412,7 +120152,7 @@ function installModelDeck(runtime2) {
   function slidePrimaryLayoutFrame(slide) {
     let bestFrame, largestCount = -1;
     for (let value of slide.frames) {
-      if (!isFullBleedAxis(value.x) || !isFullBleedAxis(value.y) || !isFlowContainer(value.node) || value.node.children.length === 0) {
+      if (!isFullBleedAxis(value.x) || !isFullBleedAxis(value.y) || !isFlowContainer(value.node) || value.node.children.length === 0 || value.node.drawn === true) {
         continue;
       }
       let value2 = countNodeTree(value.node);
@@ -119422,6 +120162,14 @@ function installModelDeck(runtime2) {
       }
     }
     return bestFrame;
+  }
+  function sourceSlideHasNodeIds(slide) {
+    let carriesId = (node) => node.sid !== void 0 || nodeChildren(node)?.some(carriesId) === true;
+    return slide.fromSource === true && slide.frames.some((frame) => carriesId(frame.node));
+  }
+  function slideLayoutHasNodeIds(slide) {
+    let node = slidePrimaryLayoutFrame(slide)?.node;
+    return node !== void 0 && isFlowContainer(node) && node.children.some((child) => child.sid !== void 0);
   }
   function isPrimaryLayoutFrame(slide, frame) {
     return slidePrimaryLayoutFrame(slide)?.id === frame.id;
@@ -120073,11 +120821,17 @@ function installModelDeck(runtime2) {
       overlayBaseDepth2
     ), slots = normalizeNodeSlots(
       typeof node === "object" && node !== null ? node.slots : void 0
-    );
-    if (slots !== void 0) {
+    ), rawNode = typeof node === "object" && node !== null ? node : void 0, sid = rawNode?.sid, sourceId = typeof sid === "string" && sourceNodeIdPattern.test(sid) ? {
+      sid,
+      ...rawNode?.tied === true ? { tied: true } : {}
+    } : void 0, drawn = rawNode?.drawn === true ? { drawn: true } : void 0, build = normalizeFrameBuild(rawNode?.build);
+    if (slots !== void 0 || sourceId !== void 0 || drawn !== void 0 || build !== void 0) {
       return {
         ...value,
-        slots
+        ...slots !== void 0 ? { slots } : {},
+        ...sourceId,
+        ...drawn,
+        ...build !== void 0 ? { build } : {}
       };
     } else {
       return value;
@@ -120090,7 +120844,7 @@ function installModelDeck(runtime2) {
         kind: "img",
         alt: (0, runtime2.truncateUtf16Safely)(
           stringOrDefault(value.alt),
-          500
+          maxImageAltLength
         ),
         fit: value.fit === "contain" ? "contain" : "cover"
       }, value12 = stringOrDefault(value.asset);
@@ -120503,6 +121257,10 @@ function installModelDeck(runtime2) {
     }
     if (value.list === "bullet" || value.list === "number") {
       state.list = value.list;
+      let listGap = finiteNumberInRange(value.listGap, 0, 256);
+      if (listGap !== void 0 && listGap >= 0.01) {
+        state.listGap = listGap;
+      }
     } else if (Array.isArray(value.lineLists)) {
       let lineLists = value.lineLists;
       Object.assign(
@@ -120799,6 +121557,9 @@ function installModelDeck(runtime2) {
       } : {},
       ...typeof raw.transition === "string" && slideTransitionValues.includes(raw.transition) ? {
         transition: raw.transition
+      } : {},
+      ...raw.fromSource === true ? {
+        fromSource: true
       } : {}
     };
   }
@@ -120841,13 +121602,13 @@ function installModelDeck(runtime2) {
     let index4 = 0, index22 = 0, callback = (input) => {
       let style = input.style;
       if (style !== void 0) {
-        let value2 = (0, runtime2.paintEffectCost)(style);
+        let value2 = paintCostWithoutSourceAnimation(style);
         if (value2 > 0 && (index4 += value2) > maxSlidePaintCost) {
           input.style = stripPaintEffects(style);
           if (diagnostics) {
             diagnostics.droppedStyles += 1;
           }
-        } else if (style.animation !== void 0 && ++index22 > maxSlideAnimations) {
+        } else if (hasFlatAnimation(style) && ++index22 > maxSlideAnimations) {
           delete style.animation;
           if (Object.keys(style).length === 0) {
             input.style = void 0;
@@ -120862,8 +121623,76 @@ function installModelDeck(runtime2) {
         for (let value2 of value) callback(value2);
       }
     };
-    for (let value of slides)
-      for (let value2 of value.frames) callback(value2.node);
+    for (let value of slides) {
+      for (let value2 of value.frames) {
+        if (value.fromSource !== true) {
+          stripSourceFeatures(value2);
+        }
+        callback(value2.node);
+      }
+      let stripped = runtime2.stripSourceAnimations(
+        value.frames,
+        void 0,
+        value.fromSource === true
+      );
+      if (stripped && diagnostics) {
+        diagnostics.droppedStyles += stripped;
+      }
+    }
+  }
+  function paintCostWithoutSourceAnimation(style) {
+    if (!hasSourceAnimation(style)) {
+      return (0, runtime2.paintEffectCost)(style);
+    }
+    let { animation: _animation, ...rest } = style;
+    void _animation;
+    return (0, runtime2.paintEffectCost)(rest);
+  }
+  function stripSourceFeatures(frame) {
+    let strip = (node) => {
+      delete node.build;
+      if (node.kind === "text") {
+        delete node.listGap;
+      }
+      delete node.sid;
+      delete node.drawn;
+      let style = node.style;
+      if (style !== void 0 && hasSourceAnimation(style)) {
+        delete style.animation;
+      }
+      let transform = style?.transform;
+      if (transform !== void 0) {
+        if (transform.shiftX !== void 0 || transform.shiftY !== void 0) {
+          transform.translateX = (transform.translateX ?? 0) + (transform.shiftX ?? 0);
+          transform.translateY = (transform.translateY ?? 0) + (transform.shiftY ?? 0);
+        }
+        for (let field of [
+          "scaleX",
+          "scaleY",
+          "spin",
+          "translateXPct",
+          "translateYPct",
+          "shiftX",
+          "shiftY"
+        ]) {
+          delete transform[field];
+        }
+        if (transform.scale !== void 0) {
+          transform.scale = Math.min(2, Math.max(0.5, transform.scale));
+        }
+      }
+      nodeChildren(node)?.forEach(strip);
+    };
+    strip(frame.node);
+    for (let direction of ["in", "out"]) {
+      let effect = frame.build?.[direction]?.effect;
+      if (effect === "play" || effect === "count") {
+        delete frame.build[direction];
+      }
+    }
+    if (frame.build !== void 0 && Object.keys(frame.build).length === 0) {
+      delete frame.build;
+    }
   }
   function normalizeDescription(text, maxLength) {
     return (0, runtime2.truncateUtf16Safely)(
@@ -121935,6 +122764,42 @@ function installModelDeck(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "hasSourceAnimation",
+    () => hasSourceAnimation,
+    (value) => {
+      hasSourceAnimation = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "hasFlatAnimation",
+    () => hasFlatAnimation,
+    (value) => {
+      hasFlatAnimation = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "maxImageAltLength",
+    () => maxImageAltLength,
+    (value) => {
+      maxImageAltLength = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "sourceNodeIdPattern",
+    () => sourceNodeIdPattern,
+    (value) => {
+      sourceNodeIdPattern = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "sourceSlideHasNodeIds", () => sourceSlideHasNodeIds);
+  bindRuntimeValue(runtime2, "slideLayoutHasNodeIds", () => slideLayoutHasNodeIds);
+  bindRuntimeValue(runtime2, "paintCostWithoutSourceAnimation", () => paintCostWithoutSourceAnimation);
+  bindRuntimeValue(runtime2, "stripSourceFeatures", () => stripSourceFeatures);
+  bindRuntimeValue(
+    runtime2,
     "maxDeckSections",
     () => maxDeckSections,
     (value) => {
@@ -122083,6 +122948,9 @@ function installModelDeck(runtime2) {
     maxDeckTableCells = 4e4;
     maxSlidePaintCost = 1e3;
     maxSlideAnimations = 100;
+    maxImageAltLength = 500;
+    hasSourceAnimation = (style) => style.animation?.fromSource === true;
+    hasFlatAnimation = (style) => style.animation !== void 0 && !hasSourceAnimation(style);
     maxDeckSections = 100;
     normalizeSectionDescription = (input, options) => normalizeDescription(
       typeof input === "string" ? input.slice(0, options * 4) : input,
@@ -122097,6 +122965,7 @@ function installModelDeck(runtime2) {
     listIndentCss = (node, lists) => node.listIndent !== void 0 || lists === "css" ? String(node.listIndent ?? defaultListGutter) + "px" : "1.2em";
     enumStringOrUndefined = (input, options) => typeof input === "string" && options.includes(input) ? input : void 0;
     initializeSlideModel = (0, runtime2.initializeOnce)(() => {
+      (0, runtime2.initializeMarkupGuards)();
       (0, runtime2.initializeVideoLinks)();
       (0, runtime2.initializeArtifactAddresses)();
       (0, runtime2.initializeImageCrop)();
@@ -122208,6 +123077,7 @@ function installModelDeck(runtime2) {
         }
       };
       textFitValues = ["shrink", "none", "grow"];
+      sourceNodeIdPattern = /^[0-9a-z]{1,16}\.[1-9]\d{0,5}$/;
       slotNamePattern = /^[a-z][a-z0-9-]{0,31}$/;
       buildEffectValues = [
         "fade",
@@ -122216,7 +123086,9 @@ function installModelDeck(runtime2) {
         "left",
         "right",
         "scale",
-        "pop"
+        "pop",
+        "play",
+        "count"
       ];
       slideTransitionValues = ["fade", "push", "magic"];
       slideHexColorPattern = /^#[0-9a-fA-F]{3,8}$/;
@@ -124030,10 +124902,10 @@ function installCompilerCssValues(runtime2) {
     }
   }
   function diagonalGradientAngle(angle, box) {
-    let value = Math.atan(box.h / box.w) * 180 / Math.PI;
-    return (Math.round(
+    let value = Math.atan(box.h / box.w) * 180 / Math.PI, value2 = Math.round(
       (angle === 45 ? value : angle === 135 ? 180 - value : angle === 225 ? 180 + value : 360 - value) * 100
-    ) / 100 % 360 + 360) % 360;
+    ) / 100;
+    return wrapDegrees(value2);
   }
   function parseCssGradient(token, box) {
     if (token.t !== "fn") {
@@ -124078,7 +124950,7 @@ function installCompilerCssValues(runtime2) {
         if (value12 === void 0) {
           return;
         }
-        count = (value12 % 360 + 360) % 360;
+        count = wrapDegrees(value12);
         index4 = 1;
       } else if (value11.t === "ident" && value11.v === "to") {
         let value12 = value4.slice(1).map(
@@ -124310,7 +125182,13 @@ function installCompilerCssValues(runtime2) {
     }
     return state;
   }
+  function wrapDegrees(angle) {
+    return angle >= 0 && angle <= 360 ? angle : (angle % 360 + 360) % 360;
+  }
   function normalizeSignedDegrees(angle) {
+    if (angle >= -180 && angle <= 180) {
+      return angle;
+    }
     let value = ((angle + 180) % 360 + 360) % 360 - 180;
     if (value === -180) {
       return 180;
@@ -124337,7 +125215,7 @@ function installCompilerCssValues(runtime2) {
       if (value.t !== "fn") {
         return;
       }
-      let value2 = value.name.startsWith("translate") ? 0 : value.name === "rotate" ? 1 : value.name === "scale" ? 2 : 3;
+      let value2 = value.name.startsWith("translate") ? 0 : value.name === "rotate" ? 1 : value.name.startsWith("scale") ? 2 : 3;
       if (value2 < index4) {
         flag3 = true;
       }
@@ -124404,14 +125282,25 @@ function installCompilerCssValues(runtime2) {
           break;
         }
         case "scale": {
+          let value4 = cssTokenRatio(value3[0]), value5 = value3.length === 2 ? cssTokenRatio(value3[1]) : value4;
+          if (value4 === void 0 || value5 === void 0 || value3.length > 2) {
+            return;
+          }
+          if (value4 === value5) {
+            callback("scale", value4);
+          } else {
+            callback("scaleX", value4);
+            callback("scaleY", value5);
+          }
+          break;
+        }
+        case "scalex":
+        case "scaley": {
           let value4 = cssTokenRatio(value3[0]);
-          if (value4 === void 0 || value3.length > 2) {
+          if (value4 === void 0 || value3.length !== 1) {
             return;
           }
-          if (value3.length === 2 && cssTokenRatio(value3[1]) !== value4) {
-            return;
-          }
-          callback("scale", value4);
+          callback(value.name === "scalex" ? "scaleX" : "scaleY", value4);
           break;
         }
         case "skew": {
@@ -124473,7 +125362,7 @@ function installCompilerCssValues(runtime2) {
       if (value4 === void 0) {
         return;
       }
-      state[value2.field] = value2.kind === "deg" ? (value4 % 360 + 360) % 360 : value4;
+      state[value2.field] = value2.kind === "deg" ? wrapDegrees(value4) : value4;
     }
     return state;
   }
@@ -124684,6 +125573,54 @@ function installCompilerCssValues(runtime2) {
       return " \u2014 " + property + " is " + supportedHtmlCssProperties[value].v;
     }
   }
+  function splitMotionCss(css) {
+    let xPercent = 0, yPercent = 0, spin;
+    return {
+      css: css.replace(
+        /(?<![\w-])rotate\(\s*(-?(?:\d+(?:\.\d*)?|\.\d+))(deg|turn)\s*\)/gi,
+        (match, amount, unit) => {
+          let value = Number(amount) * (unit.toLowerCase() === "turn" ? 360 : 1);
+          if (Math.abs(value) < 180) {
+            return match;
+          }
+          spin = value;
+          return "";
+        }
+      ).replace(
+        /translate([xy]?)\(([^()]*)\)/gi,
+        (_match, axis, args) => {
+          let value = args.split(",").map((part, index4) => {
+            let percent = /^\s*(-?(?:\d+(?:\.\d*)?|\.\d+))%\s*$/.exec(part)?.[1];
+            if (percent === void 0) {
+              return part;
+            }
+            if ((axis.toLowerCase() || (index4 === 0 ? "x" : "y")) === "x") {
+              xPercent += Number(percent);
+            } else {
+              yPercent += Number(percent);
+            }
+            return "0";
+          });
+          return "translate" + axis + "(" + value.join(",") + ")";
+        }
+      ),
+      moves: {
+        ...xPercent !== 0 ? { translateXPct: xPercent } : {},
+        ...yPercent !== 0 ? { translateYPct: yPercent } : {},
+        ...spin !== void 0 ? { spin } : {}
+      }
+    };
+  }
+  function animationHoldsHidden(json) {
+    try {
+      let value = JSON.parse(json);
+      return (value.fill === "forwards" || value.fill === "both") && /(^|;)\s*opacity:\s*0(\.0+)?\s*(;|$)/.test(
+        value.keyframes?.at(-1)?.css ?? ""
+      );
+    } catch {
+      return false;
+    }
+  }
   function formatCssNumber(value) {
     if (!Number.isFinite(value)) {
       return "0";
@@ -124739,6 +125676,11 @@ function installCompilerCssValues(runtime2) {
     }
     if (transform.scale !== void 0) {
       items.push("scale(" + formatCssNumber(transform.scale) + ")");
+    }
+    if (transform.scaleX !== void 0 || transform.scaleY !== void 0) {
+      items.push(
+        "scale(" + formatCssNumber(transform.scaleX ?? 1) + ", " + formatCssNumber(transform.scaleY ?? 1) + ")"
+      );
     }
     if (transform.skewX !== void 0 || transform.skewY !== void 0) {
       items.push(
@@ -124827,6 +125769,9 @@ function installCompilerCssValues(runtime2) {
   bindRuntimeValue(runtime2, "parseCssGradient", () => parseCssGradient);
   bindRuntimeValue(runtime2, "parseCssShadow", () => parseCssShadow);
   bindRuntimeValue(runtime2, "parseCssBorder", () => parseCssBorder);
+  bindRuntimeValue(runtime2, "wrapDegrees", () => wrapDegrees);
+  bindRuntimeValue(runtime2, "splitMotionCss", () => splitMotionCss);
+  bindRuntimeValue(runtime2, "animationHoldsHidden", () => animationHoldsHidden);
   bindRuntimeValue(
     runtime2,
     "normalizeSignedDegrees",
@@ -125482,7 +126427,7 @@ function installCompilerCssValues(runtime2) {
         transform: {
           v: "translate(LEN[, LEN]) | translateX|Y(LEN | -50%), rotate(ANGLE), scale(N 0.5\u20132), skew[X|Y](ANGLE \xB160) \u2014 any subset in that order, each once",
           on: "any but x-connector; x-shape: rotate only",
-          alias: ["rotate"]
+          alias: ["rotate", "translate"]
         },
         "filter backdrop-filter": {
           v: "blur(LEN \u226420) brightness|contrast(N 0\u20132) saturate(N 0\u20133) grayscale|sepia|invert(N 0\u20131) hue-rotate(ANGLE) \u2014 any subset",
@@ -125884,6 +126829,8 @@ function installCompilerHtml(runtime2) {
   var xlinkNamespace;
   var htmlWindows1252CodePoints;
   var isInvalidXmlCodePoint;
+  var svgOpeningAttributePattern;
+  var svgOpeningTagEndPattern;
   var htmlCompilerCounters;
   var inheritedInlineStyles;
   var elementInlineStyle;
@@ -126490,7 +127437,7 @@ function installCompilerHtml(runtime2) {
       return css;
     }
     return css.replace(
-      /\\([0-9a-fA-F]{1,6})\s?|\\(.)/g,
+      /\\([0-9a-fA-F]{1,6})(?:\r\n|\s)?|\\(.)/g,
       (input, options, context) => {
         if (options !== void 0) {
           let value = parseInt(options, 16);
@@ -126702,8 +127649,10 @@ function installCompilerHtml(runtime2) {
     };
   }
   function validateSvgMarkup(svg, allowAnimation = false) {
-    let value = decodeHtmlEntities(svg);
-    for (let value5 of [value, decodeCssEscapes(value)]) {
+    let value = decodeHtmlEntities(dropSvgAriaLabel(svg)), value10 = /attr\(/i.test(
+      (value + decodeCssEscapes(value)).replace(/\s+/g, "")
+    ) ? decodeHtmlEntities(svg) : value;
+    for (let value5 of [value10, decodeCssEscapes(value10)]) {
       let value6 = unsafeSvgMarkupRules.find(
         ([input]) => input.test(value5)
       ) ?? (allowAnimation ? void 0 : unsupportedSvgAnimationRules.find(
@@ -126765,12 +127714,133 @@ function installCompilerHtml(runtime2) {
     if (!flag || index4 !== 0) {
       return "is not one <svg>\u2026</svg> element";
     }
-    if (!/^\s*<\/svg\s*>\s*$/i.test(
-      svg.slice(svg.toLowerCase().lastIndexOf("</svg"))
-    )) {
+    if (!/<\/svg\s*>\s*$/i.test(svg)) {
       return "is not one <svg>\u2026</svg> element";
     }
     return;
+  }
+  function dropSvgAriaLabel(svg) {
+    let value = svg.indexOf("<") + 4;
+    if (!svg.startsWith("<svg", value - 4)) {
+      return svg;
+    }
+    let value2 = "", value3 = value;
+    svgOpeningAttributePattern.lastIndex = value;
+    for (let value4 = svgOpeningAttributePattern.exec(svg); value4 !== null; value4 = svgOpeningAttributePattern.exec(svg)) {
+      value3 = svgOpeningAttributePattern.lastIndex;
+      if (value4[1].toLowerCase() !== "aria-label") {
+        value2 += value4[0];
+      }
+    }
+    svgOpeningTagEndPattern.lastIndex = value3;
+    if (svgOpeningTagEndPattern.test(svg)) {
+      return svg.slice(0, value) + value2 + svg.slice(value3);
+    } else {
+      return svg;
+    }
+  }
+  function svgTitleText(svg) {
+    let value = svgTagTokenPattern(true), index4 = 0;
+    for (let value2 = svg.indexOf("<"); value2 >= 0; value2 = svg.indexOf("<", value.lastIndex)) {
+      value.lastIndex = value2;
+      let value3 = value.exec(svg);
+      if (value3 === null) {
+        return;
+      }
+      if (value3[1] === "/") {
+        index4--;
+      } else if (index4 === 0 && value3[2].toLowerCase() === "title") {
+        return /^([^<]*)<\/title[ \t\r\n]*>/i.exec(
+          svg.slice(value.lastIndex)
+        )?.[1];
+      } else if (value3[4] !== "/") {
+        index4++;
+      }
+    }
+    return;
+  }
+  function svgDataUrlTitle(src) {
+    let value = decodeSvgDataUrl(src), value2 = value === void 0 ? void 0 : svgTitleText(parseSvgDimensions(value)?.inner ?? "");
+    return normalizeAltText(
+      value2 !== void 0 ? decodeHtmlEntities(value2) : void 0
+    );
+  }
+  function normalizeAltText(text) {
+    return runtime2.truncateUtf16Safely(
+      (text ?? "").replace(/\s+/g, " ").trim(),
+      runtime2.maxImageAltLength
+    ).trimEnd();
+  }
+  function hasEntityDeclaration(text) {
+    return /<!entity/i.test(text);
+  }
+  function collectSourceMarks(elements, prefix, marks, drawn) {
+    let stack = [...elements], isDrawnPart = (node) => node.kind === "el" ? node.attrs["data-drawn"] !== void 0 : node.text.trim() === "";
+    for (let value = stack.pop(); value !== void 0; value = stack.pop()) {
+      if (value.kind !== "el") {
+        continue;
+      }
+      if (value.attrs["data-drawn"] !== void 0 || value.tag === "p" && value.attrs["data-s"] === void 0 && value.children.some((child) => child.kind === "el") && value.children.every(isDrawnPart)) {
+        drawn.add(value);
+      }
+      delete value.attrs["data-drawn"];
+      let id = value.attrs["data-s"], tied = value.attrs["data-tied"] !== void 0;
+      delete value.attrs["data-tied"];
+      if (id !== void 0) {
+        marks.set(value, {
+          sid: prefix + "." + id,
+          ...tied ? { tied: true } : {}
+        });
+        delete value.attrs["data-s"];
+        if (value.source !== void 0) {
+          value.source = value.source.replace(' data-s="' + id + '"', "");
+        }
+      }
+      stack.push(...value.children);
+    }
+  }
+  function hoistBoxStyle(overlay) {
+    let value = overlay.base;
+    overlay.style = value.style;
+    delete value.style;
+  }
+  function elementPositionKey(element) {
+    return String(element.line) + ":" + String(element.col);
+  }
+  function guardSvgDataUrl(src) {
+    if (!/^data:image\/svg\+xml/i.test(src) || src.length > runtime2.maxInlineSvgBytes) {
+      return src;
+    }
+    let value = src.indexOf(",");
+    try {
+      let value2 = /;base64/i.test(src.slice(0, value)) ? new TextDecoder().decode(
+        Uint8Array.from(
+          atob(src.slice(value + 1)),
+          (input) => input.charCodeAt(0)
+        )
+      ) : decodeURIComponent(src.slice(value + 1));
+      if (!/^\s*<(\?xml|svg|!--|!doctype)/i.test(value2) || hasEntityDeclaration(value2)) {
+        return "";
+      }
+      let value3 = decodeHtmlEntities(value2);
+      if (/data:\s*image\/svg/i.test(
+        (value3 + decodeCssEscapes(value3)).replace(/[\t\n\r]/g, "")
+      )) {
+        return "";
+      }
+      let value4 = (0, runtime2.neutralizeSvgAnimation)(value2);
+      return value4 === value2 ? src : "data:image/svg+xml;base64," + utf8ToBase64(value4);
+    } catch {
+      return "";
+    }
+  }
+  function parseValidSvgDataUrl(src) {
+    let value = decodeSvgDataUrl(src);
+    if (value !== void 0 && validateSvgMarkup(value) === void 0) {
+      return parseSvgDimensions(value);
+    } else {
+      return void 0;
+    }
   }
   function decodeSvgDataUrl(src) {
     if (!src.startsWith("data:image/svg+xml;base64,")) {
@@ -127566,7 +128636,7 @@ function installCompilerHtml(runtime2) {
         case "overflow-y":
           callback2(
             "overflow",
-            callback11(value2, ["visible", "hidden"]),
+            callback11(value2, runtime2.slideOverflowValues),
             value,
             value2
           );
@@ -128132,12 +129202,40 @@ function installCompilerHtml(runtime2) {
               value2,
               "rotate is given both as rotate: and inside transform \u2014 write one"
             );
-          } else if (callback5(value, value4.value, runtime2.transformBounds, value2)) {
+          } else if (callback5(value, value4.value, runtime2.wideTransformBounds, value2)) {
             style.transform = {
               ...value4,
               value: {
                 ...style.transform?.value,
                 ...value4.value
+              }
+            };
+          }
+          break;
+        }
+        case "translate": {
+          let [value4, value5] = value3.map(
+            (input) => (0, runtime2.cssTokenPixels)(input)
+          );
+          if (value4 === void 0 || value3.length > 2 || value3.length === 2 && value5 === void 0) {
+            callback(value, value2, "LEN LEN");
+          } else if (callback5(
+            value,
+            {
+              shiftX: value4,
+              shiftY: value5 ?? 0
+            },
+            runtime2.wideTransformBounds,
+            value2
+          )) {
+            style.transform = {
+              centerX: false,
+              centerY: false,
+              ...style.transform,
+              value: {
+                ...style.transform?.value,
+                shiftX: value4,
+                shiftY: value5 ?? 0
               }
             };
           }
@@ -128275,7 +129373,7 @@ function installCompilerHtml(runtime2) {
     }
     return false;
   }
-  function estimateTableHeight(table, width) {
+  function estimateTableHeight(table, width, compiled) {
     let value = table.rows ?? [], value2 = Math.max(
       1,
       typeof table.cols === "number" ? table.cols : 1
@@ -128287,7 +129385,7 @@ function installCompilerHtml(runtime2) {
     ), value4 = value3.reduce(
       (input, options) => input + options,
       0
-    ), value5 = nodeFontSize(table), value6 = nodeLineHeight(table) * value5, cellPadding = table.cellPadding, value7 = cellPadding?.x !== void 0 ? 2 * cellPadding.x : 0.8 * value5, value8 = cellPadding?.y !== void 0 ? 2 * cellPadding.y : 0.7 * value5, index4 = 0;
+    ), value5 = nodeFontSize(table), value6 = nodeLineHeight(table) * value5, cellPadding = table.cellPadding, value12 = compiled ? 2 : 0, value7 = (cellPadding?.x !== void 0 ? 2 * cellPadding.x : (compiled ? 1.2 : 0.8) * value5) + value12, value8 = (cellPadding?.y !== void 0 ? 2 * cellPadding.y : 0.7 * value5) + value12, index4 = 0;
     for (let value9 of value) {
       let count = 1;
       value9.forEach((input, options) => {
@@ -128329,7 +129427,7 @@ function installCompilerHtml(runtime2) {
       word: longestWord
     };
   }
-  function estimateNodeHeight(node, width) {
+  function estimateNodeHeight(node, width, compiled) {
     let padding = nodePaddingSize(node), innerWidth = Math.max(1, width - padding.x);
     if (node.kind === "text") {
       let value = nodeFontSize(node), value2 = nodeLineHeight(node) * value, index4 = 0;
@@ -128347,7 +129445,7 @@ function installCompilerHtml(runtime2) {
       return 0;
     }
     if (node.kind === "table") {
-      return estimateTableHeight(node, innerWidth) + padding.y;
+      return estimateTableHeight(node, innerWidth, compiled) + padding.y;
     }
     if (node.kind === "img" || node.kind === "icon" || node.kind === "shape" || node.kind === "html") {
       if (typeof node.h === "number") {
@@ -128369,7 +129467,8 @@ function installCompilerHtml(runtime2) {
         for (let value4 of value) {
           let value5 = estimateNodeHeight(
             value4,
-            explicitNodeWidth(value4) ?? value3
+            explicitNodeWidth(value4) ?? value3,
+            compiled
           );
           if (value5 === void 0) {
             return;
@@ -128380,13 +129479,26 @@ function installCompilerHtml(runtime2) {
       }
       let index4 = 0;
       for (let value3 of value) {
-        let value4 = estimateNodeHeight(value3, innerWidth);
+        let value4 = estimateNodeHeight(value3, innerWidth, compiled);
         if (value4 === void 0) {
           return;
         }
         index4 += value4;
       }
       return index4 + value2 * Math.max(0, value.length - 1) + padding.y;
+    }
+    if (compiled && node.kind === "grid" && node.rows === void 0) {
+      let value = node.children ?? [], value2 = Math.max(1, node.columns?.length ?? 1), value3 = typeof node.gap === "number" ? node.gap : 0, value4 = Math.max(1, (innerWidth - value3 * (value2 - 1)) / value2), index4 = (typeof node.rowGap === "number" ? node.rowGap : value3) * Math.max(0, Math.ceil(value.length / value2) - 1);
+      for (let value5 = 0; value5 < value.length; value5 += value2) {
+        let value6 = value.slice(value5, value5 + value2).map(
+          (input) => estimateNodeHeight(input, explicitNodeWidth(input) ?? value4, compiled)
+        );
+        if (value6.includes(void 0)) {
+          return;
+        }
+        index4 += Math.max(...value6);
+      }
+      return index4 + padding.y;
     }
     return;
   }
@@ -129475,9 +130587,9 @@ function installCompilerHtml(runtime2) {
         } : sectionRoom
       }, items7 = [], items8 = [];
       for (let value16 of items2) {
-        let value17 = compiler.node(value16, state3);
-        if (value17 !== void 0) {
-          items7.push(value17);
+        let value172 = compiler.node(value16, state3);
+        if (value172 !== void 0) {
+          items7.push(value172);
           items8.push(value16);
         }
       }
@@ -129688,12 +130800,12 @@ function installCompilerHtml(runtime2) {
       runtime2.SLIDE_HEIGHT,
       compiler.slideBg
     );
+    compiler.boxesOfParts.splice(0).forEach(hoistBoxStyle);
     compiler.flushIcons();
     items.push(...items5);
-    let count = 1;
-    for (let value14 of items)
+    let count = 1, numberBuild = (build) => {
       for (let value15 of ["in", "out"]) {
-        let value16 = value14.build?.[value15];
+        let value16 = build?.[value15];
         if (value16 === void 0) {
           continue;
         }
@@ -129702,6 +130814,42 @@ function installCompilerHtml(runtime2) {
         }
         count = Math.max(count, value16.order + 1);
       }
+    }, numberTree = (node) => {
+      numberBuild(node.build);
+      if ("children" in node) {
+        for (let value15 of node.children ?? []) {
+          numberTree(value15);
+        }
+      }
+    };
+    for (let value14 of items) {
+      numberBuild(value14.build);
+      numberTree(value14.node);
+    }
+    let value17 = compiler.compiled ? (0, runtime2.stripSourceAnimations)(items) : 0;
+    if (value17 > 0) {
+      value(
+        String(value17) + (value17 === 1 ? " animation on this slide stands" : " animations on this slide stand") + " still: a slide plays at most 60. Use fewer."
+      );
+    }
+    if (compiler.motion) {
+      let unread = 0, countUnread = (element) => {
+        if (element.attrs["data-motion"] !== void 0 && !compiler.motionRead.has(elementPositionKey(element))) {
+          unread += 1;
+        }
+        for (let value15 of element.children) {
+          if (value15.kind === "el") {
+            countUnread(value15);
+          }
+        }
+      };
+      countUnread(section);
+      if (unread > 0) {
+        value(
+          (unread === 1 ? "1 animation here is" : String(unread) + " animations here are") + " left out: on something inside a line, a list or a table, or on a box that draws nothing. Put it on a block such as <p> or <div>, or make every word inline-block in a heading or paragraph."
+        );
+      }
+    }
     let values2 = /* @__PURE__ */ new Set();
     for (let value14 of items) {
       if (value14.id !== "" && values2.has(value14.id)) {
@@ -129782,6 +130930,16 @@ function installCompilerHtml(runtime2) {
       );
     }
     normalizeVideoIframes(elements);
+    compiler.compiled = options.compiled === true;
+    compiler.motion = options.motion === true;
+    if (options.marks !== void 0) {
+      collectSourceMarks(
+        elements,
+        options.marks,
+        compiler.sourceMarks,
+        compiler.drawnMarks
+      );
+    }
     let value, value2, items = [], index4 = 0, callback = (input) => {
       for (let value9 of input) {
         if (value9.kind === "text") {
@@ -130535,6 +131693,31 @@ function installCompilerHtml(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "svgOpeningAttributePattern",
+    () => svgOpeningAttributePattern,
+    (value) => {
+      svgOpeningAttributePattern = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "svgOpeningTagEndPattern",
+    () => svgOpeningTagEndPattern,
+    (value) => {
+      svgOpeningTagEndPattern = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "dropSvgAriaLabel", () => dropSvgAriaLabel);
+  bindRuntimeValue(runtime2, "hoistBoxStyle", () => hoistBoxStyle);
+  bindRuntimeValue(runtime2, "svgTitleText", () => svgTitleText);
+  bindRuntimeValue(runtime2, "svgDataUrlTitle", () => svgDataUrlTitle);
+  bindRuntimeValue(runtime2, "normalizeAltText", () => normalizeAltText);
+  bindRuntimeValue(runtime2, "hasEntityDeclaration", () => hasEntityDeclaration);
+  bindRuntimeValue(runtime2, "elementPositionKey", () => elementPositionKey);
+  bindRuntimeValue(runtime2, "guardSvgDataUrl", () => guardSvgDataUrl);
+  bindRuntimeValue(runtime2, "parseValidSvgDataUrl", () => parseValidSvgDataUrl);
+  bindRuntimeValue(
+    runtime2,
     "htmlCompilerCounters",
     () => htmlCompilerCounters,
     (value) => {
@@ -130813,7 +131996,11 @@ function installCompilerHtml(runtime2) {
         let callback = (input2) => "<" + input2.tag + (input2.attrs.id !== void 0 ? ' id="' + (0, runtime2.compactDiagnosticValue)(input2.attrs.id) + '"' : "") + ">", value2 = input.map((input2) => {
           let value4 = resolveHtmlAxisPlacement(input2.x, options), value5 = resolveHtmlAxisPlacement(input2.y, context), value6 = value4?.size, value7 = value5?.size, flag = false;
           if (value7 === void 0 && value6 !== void 0 && nodeHasVisibleContent(input2.node)) {
-            value7 = estimateNodeHeight(input2.node, value6);
+            value7 = estimateNodeHeight(
+              input2.node,
+              value6,
+              this.compiled
+            );
             flag = true;
           }
           let value8 = input2.node.kind === "overlay" ? input2.node.base : input2.node, value9 = input2.node.kind === "shape" ? {
@@ -130855,12 +132042,26 @@ function installCompilerHtml(runtime2) {
           if (value4.w !== void 0 && it.kind !== "shape") {
             this.lintWords(it, value4.w, it2, callback(it2));
           }
+          if (this.compiled && value4.x !== void 0 && value4.y !== void 0 && value4.w !== void 0 && value4.h !== void 0 && options !== void 0 && context !== void 0 && nodeHasVisibleContent(it) && (!value4.estH || it.kind === "table")) {
+            let value5 = Math.max(
+              value4.x + value4.w - options,
+              value4.y + value4.h - context
+            );
+            if (value5 > 8) {
+              this.lintAt(
+                it2,
+                callback(it2) + " runs ~" + String(Math.round(value5)) + "px past the edge of what holds it" + (value4.estH ? " (height estimated from the text)" : "") + " \u2014 move it, shorten it or make it smaller"
+              );
+            }
+          }
           if (value4.w !== void 0 && value4.h !== void 0 && !value4.estH && nodeHasVisibleContent(it)) {
-            let value5 = estimateNodeHeight(it, value4.w);
+            let value5 = estimateNodeHeight(it, value4.w, this.compiled);
             if (value5 !== void 0 && value5 > value4.h * 1.05 + 8) {
               this.lintAt(
                 it2,
-                callback(it2) + " is " + String(Math.round(value4.h)) + "px tall but holds an estimated ~" + String(Math.round(value5)) + "px of content \u2014 " + (it.kind === "text" && (it.fit ?? runtime2.defaultTextFit) === "shrink" || it.kind === "stack" && it.dir !== "h" ? value4.h / value5 >= runtime2.textFitMinimumScale ? "expect its text to shrink to ~" + String(
+                callback(it2) + " is " + String(Math.round(value4.h)) + "px tall but holds an estimated ~" + String(Math.round(value5)) + "px of content \u2014 " + (this.compiled && value4.it.root === true ? "nothing shrinks to fit, so what is too tall runs past the padding and off the slide" : this.compiled && it.kind === "stack" && (it.children ?? []).some(
+                  (input2) => input2.place?.shrink === 0
+                ) ? "what is too tall runs past the box" : it.kind === "text" && (it.fit ?? runtime2.defaultTextFit) === "shrink" || it.kind === "stack" && it.dir !== "h" ? value4.h / value5 >= runtime2.textFitMinimumScale ? "expect its text to shrink to ~" + String(
                   Math.min(99, Math.round(value4.h / value5 * 100))
                 ) + "% to fit" : "its text shrinks to the " + String(Math.round(runtime2.textFitMinimumScale * 100)) + "% floor and still does not fit" : "it may overflow") + "; budget the height, shorten the text, or let the box size itself (drop height)"
               );
@@ -131033,7 +132234,7 @@ function installCompilerHtml(runtime2) {
               estimateLongestWordWidth(value4).px + nodePaddingSize(value4).x,
               value7
             )
-          ) : void 0), value9 = input2.h ?? (value4.kind === "text" && value8 !== void 0 ? estimateNodeHeight(value4, value8) : void 0);
+          ) : void 0), value9 = input2.h ?? (value4.kind === "text" && value8 !== void 0 ? estimateNodeHeight(value4, value8, this.compiled) : void 0);
           if (value8 === void 0 || value9 === void 0) {
             return;
           }
@@ -131175,7 +132376,7 @@ function installCompilerHtml(runtime2) {
               let value37 = resolveHtmlAxisPlacement(
                 value33.y,
                 value9
-              ), value38 = value37?.size ?? estimateNodeHeight(value33.node, value36.size);
+              ), value38 = value37?.size ?? estimateNodeHeight(value33.node, value36.size, this.compiled);
               if (value37 === void 0 || value38 === void 0) {
                 continue;
               }
@@ -132230,20 +133431,20 @@ function installCompilerHtml(runtime2) {
           ).size > 1) {
             state.borderStyle = value4.style ?? "solid";
             state.borderColor = value4.color ?? "#000000";
-            for (let value14 of cssBoxSideNames) {
-              let value15 = value4.widths[value14];
+            for (let value142 of cssBoxSideNames) {
+              let value15 = value4.widths[value142];
               if (value15 !== void 0 && value15 > 0) {
-                state[cssBorderSideWidthFields[value14]] = value15;
+                state[cssBorderSideWidthFields[value142]] = value15;
               }
             }
           } else {
             if (value4.widths !== void 0) {
-              let value14 = cssBoxSideNames.filter(
+              let value142 = cssBoxSideNames.filter(
                 (input2) => (value4.widths[input2] ?? 0) > 0
               );
-              value4.width = value14.length > 0 ? value4.widths[value14[0]] : 0;
-              value4.sides = value14;
-              if (value14.length === 0) {
+              value4.width = value142.length > 0 ? value4.widths[value142[0]] : 0;
+              value4.sides = value142;
+              if (value142.length === 0) {
                 value4.style = "none";
               }
             }
@@ -132259,16 +133460,16 @@ function installCompilerHtml(runtime2) {
           if (options === "icon") {
             callback("border-radius");
           } else {
-            let value14 = "corners" in value5 ? value5.corners.map(callback3) : null;
-            if (value14 !== null && value14.some((input2) => input2 !== value14[0])) {
+            let value142 = "corners" in value5 ? value5.corners.map(callback3) : null;
+            if (value142 !== null && value142.some((input2) => input2 !== value142[0])) {
               [
                 state.borderTopLeftRadius,
                 state.borderTopRightRadius,
                 state.borderBottomRightRadius,
                 state.borderBottomLeftRadius
-              ] = value14;
+              ] = value142;
             } else {
-              state.borderRadius = value14 !== null ? value14[0] : callback3(value5);
+              state.borderRadius = value142 !== null ? value142[0] : callback3(value5);
             }
           }
         }
@@ -132289,7 +133490,9 @@ function installCompilerHtml(runtime2) {
           }
         }
         let value9 = callback2("transform");
-        if (value9 !== void 0 && Object.keys(value9.value).length > 0) {
+        if (value9 !== void 0 && (value9.value.scaleX !== void 0 || value9.value.scaleY !== void 0 || value9.value.scale !== void 0 && (value9.value.scale < 0.5 || value9.value.scale > 2)) && !this.compiled) {
+          this.rejectAt(context, "transform: scale must be one number from 0.5 to 2");
+        } else if (value9 !== void 0 && Object.keys(value9.value).length > 0) {
           state.transform = value9.value;
         }
         let value10 = callback2("filter");
@@ -132312,7 +133515,156 @@ function installCompilerHtml(runtime2) {
             callback("overflow");
           }
         }
+        let value14 = this.motion ? context.attrs?.["data-motion"] : void 0;
+        if (value14 !== void 0) {
+          this.motionRead.add(elementPositionKey(context));
+          let value15 = this.motionBag(value14, options, context, false, state);
+          if (value15 !== void 0) {
+            state.animation = value15;
+          } else if ((0, runtime2.animationHoldsHidden)(value14)) {
+            let value16 = context.attrs;
+            if (value16?.["data-build-in"] === void 0 && value16?.["data-build-out"] === void 0) {
+              state.opacity = 0;
+            } else {
+              this.leaving.add(elementPositionKey(context));
+            }
+          }
+        }
         return state;
+      }
+      /** Set by a reader of a whole deck: a keyframe value the format cannot hold is then dropped without a warning. */
+      readsAll = false;
+      /** Elements that animate away to transparent and hold, keyed by position. */
+      leaving = /* @__PURE__ */ new Set();
+      /** Elements whose `data-motion` has been read, keyed by position. */
+      motionRead = /* @__PURE__ */ new Set();
+      /**
+       * Reads a `data-motion` animation (JSON) into the format's animation value. What the
+       * format cannot hold is left out with a warning; an animation that would stand still
+       * is dropped.
+       */
+      motionBag(input, options, context, flag = false, value = {}) {
+        let state;
+        try {
+          state = JSON.parse(input);
+        } catch {
+          return;
+        }
+        if (typeof state !== "object" || state === null || !Array.isArray(state.keyframes)) {
+          return;
+        }
+        let items = state.keyframes.filter(
+          (input2) => typeof input2 === "object" && input2 !== null
+        ), ignore = () => {
+          return;
+        }, index4 = 0, list = items.map((input2) => {
+          let value22 = (0, runtime2.splitMotionCss)(String(input2.css)), value32 = (0, runtime2.parseInlineStyle)(value22.css, ignore, ignore), value42 = this.paintBag(
+            value32,
+            options,
+            {
+              ...context,
+              attrs: {}
+            },
+            /* @__PURE__ */ new Set()
+          ), style = {};
+          for (let value5 of [
+            "transform",
+            "opacity",
+            "filter",
+            "boxShadow",
+            "backgroundColor"
+          ])
+            if (value42[value5] !== void 0) {
+              style[value5] = value42[value5];
+            }
+          if (Object.keys(value22.moves).length > 0) {
+            style.transform = {
+              ...style.transform,
+              ...value22.moves
+            };
+          }
+          if (value32.color !== void 0) {
+            style.color = value32.color;
+          }
+          index4 += Math.max(
+            0,
+            value22.css.split(";").filter(
+              (input3) => input3.trim() !== "" && !/^transform:\s*(none|translate[xy]?\(\s*0(px)?(\s*,\s*0(px)?)?\s*\))$/i.test(
+                input3.trim()
+              )
+            ).length - Object.keys(style).length
+          );
+          return {
+            at: input2.at,
+            style
+          };
+        }), keys = new Set(
+          list.flatMap(
+            (input2) => Object.keys(input2.style.transform ?? {})
+          )
+        );
+        items.forEach((input2, options2) => {
+          let value22 = list[options2].style;
+          if (keys.size > 0 && /(^|;)\s*transform:/.test(String(input2.css))) {
+            value22.transform = {
+              ...Object.fromEntries(
+                [...keys].map((input3) => [input3, /^scale/.test(input3) ? 1 : 0])
+              ),
+              ...value22.transform
+            };
+          }
+        });
+        let value2 = state.next === void 0 || flag ? void 0 : this.motionBag(
+          JSON.stringify(state.next),
+          options,
+          context,
+          true,
+          value
+        ), value3 = {
+          ...state,
+          keyframes: list,
+          ...value2 !== void 0 ? {
+            next: value2
+          } : {}
+        };
+        if (value2 === void 0) {
+          delete value3.next;
+        }
+        if (index4 > 0 && this.readsAll) {
+          return;
+        }
+        if (index4 > 0) {
+          this.warnAt(
+            context,
+            "a keyframe value the format cannot hold is left out of an animation: it is past its limits"
+          );
+        }
+        let value4 = (0, runtime2.styleAnimationToKeyframes)(
+          {
+            ...value,
+            animation: value3
+          },
+          "slides-" + options
+        );
+        if (value4 !== void 0 && value4.count === void 0 && value4.keyframes.every(
+          (input2) => Object.keys(input2).every(
+            (input3) => input3 === "offset" || input3 === "easing" || input3 === "transformOrigin"
+          )
+        )) {
+          this.warnAt(
+            context,
+            "an animation has nothing this element can play: a box takes opacity, transform, background-color, filter and box-shadow, and a colour goes on the text inside"
+          );
+          return value2;
+        }
+        if (value4 === void 0 || value4.options.duration !== value3.duration || value4.options.delay !== value3.delay) {
+          this.warnAt(
+            context,
+            "an animation past the limits stands still: it flashes, moves too far too fast, or its timing is out of range"
+          );
+          return value2;
+        }
+        return value3;
       }
       textBag(input, options, context, value) {
         let value2 = this.paintBag(input, "text", context, value);
@@ -132810,6 +134162,16 @@ function installCompilerHtml(runtime2) {
         return this.rejecter(input, "<" + input.tag + "> ");
       }
       nodeEl = /* @__PURE__ */ new WeakMap();
+      /** Boxes that sit behind a part of the slide: their style moves to the stack once the slide is read. */
+      boxesOfParts = [];
+      /** Node ids (`data-s`) that elements carried in a source slide, by element. */
+      sourceMarks = /* @__PURE__ */ new WeakMap();
+      /** Elements marked `data-drawn`, or paragraphs that only wrap such marks. */
+      drawnMarks = /* @__PURE__ */ new WeakSet();
+      /** Reading a source slide: animations, builds, node ids and wide transforms are kept. */
+      compiled = false;
+      /** Reading `data-motion` animations. */
+      motion = false;
       node(input, options) {
         let value = this.nodeInner(input, options);
         this.connectorFrom = void 0;
@@ -132820,6 +134182,18 @@ function installCompilerHtml(runtime2) {
           let slots = (0, runtime2.normalizeNodeSlots)(input.attrs["data-slots"]);
           if (slots !== void 0) {
             value.slots = slots;
+          }
+        }
+        if (value !== void 0) {
+          Object.assign(value, this.sourceMarks.get(input));
+        }
+        if (value !== void 0 && this.drawnMarks.has(input)) {
+          value.drawn = true;
+        }
+        if (value !== void 0 && options.inContainer && this.compiled) {
+          let value2 = this.build(input, false);
+          if (value2 !== void 0) {
+            value.build = value2;
           }
         }
         return value;
@@ -133066,6 +134440,10 @@ function installCompilerHtml(runtime2) {
           if (listFields.lineLists !== void 0 && listIndent !== void 0) {
             state.listIndent = listIndent;
           }
+          let listGap = /^\d+(\.\d+)?$/.test(input.attrs["data-gap"] ?? "") ? Number(input.attrs["data-gap"]) : 0;
+          if (!isDataText && listGap >= 0.01 && listGap <= 256) {
+            state.listGap = listGap;
+          }
           if (isDataText && this.lists === "css" && listFields.list !== void 0) {
             value7.paddingLeft = Math.min(
               256,
@@ -133154,6 +134532,9 @@ function installCompilerHtml(runtime2) {
           if (value === "style") {
             continue;
           }
+          if ((value === "data-build-in" || value === "data-build-out") && this.compiled) {
+            continue;
+          }
           if (value === "id" || value === "data-build-in" || value === "data-build-out") {
             if (options.inContainer) {
               this.warnAt(
@@ -133163,7 +134544,7 @@ function installCompilerHtml(runtime2) {
             }
             continue;
           }
-          if (value === "data-slots") {
+          if (value === "data-slots" || value === "data-motion" && this.motion) {
             continue;
           }
           if (value === "data-fit") {
@@ -133204,6 +134585,9 @@ function installCompilerHtml(runtime2) {
             continue;
           }
           if (value === "data-role" && !insideTextBox && htmlHeadingNames.has(input.attrs[value] ?? "") && (input.tag === "ul" || input.tag === "ol" || isListTextBoxDiv(input))) {
+            continue;
+          }
+          if (value === "data-gap" && (input.tag === "ul" || input.tag === "ol")) {
             continue;
           }
           if (input.tag === "div" && value === "data-text") {
@@ -133315,7 +134699,7 @@ function installCompilerHtml(runtime2) {
         }
         if (value3 !== void 0) {
           let value5 = this.imageRef(
-            value3,
+            this.compiled ? guardSvgDataUrl(value3) : value3,
             options,
             (input2) => "<" + options.tag + "> background: url(" + input2 + ")"
           );
@@ -133360,7 +134744,7 @@ function installCompilerHtml(runtime2) {
       image(input, options, context, value) {
         let value2 = input.tag === "video", value3 = value2 ? input.attrs["aria-label"] ?? input.attrs.title ?? input.attrs.alt : input.attrs.alt, state = {
           kind: "img",
-          alt: (value3 ?? "").replace(/\s+/g, " ").trim().slice(0, 500)
+          alt: normalizeAltText(value3)
         };
         if (value3 === void 0) {
           this.warnAt(
@@ -133511,8 +134895,14 @@ function installCompilerHtml(runtime2) {
             "data-video-start / data-video-delay / data-video-sound / data-video-loop apply only with a clip (data-video, or <video src>) \u2014 dropped"
           );
         }
-        let value11 = value2 ? "poster" : "src", value12 = (input.attrs[value11] ?? "").trim();
-        if (value12 === "") {
+        let value11 = value2 ? "poster" : "src", value12 = (input.attrs[value11] ?? "").trim(), value32 = this.compiled ? guardSvgDataUrl(value12) : value12;
+        if (value32 === "" && value12 !== "") {
+          this.warnAt(
+            input,
+            "This SVG image is left out: it holds another SVG, its doctype declares entities, or its text can\u2019t be read. Save it as one UTF-8 drawing with no entities in its doctype."
+          );
+        }
+        if (value32 === "") {
           if (state.video === void 0 && value4 === void 0 && !value2) {
             this.warnAt(
               input,
@@ -133521,7 +134911,7 @@ function installCompilerHtml(runtime2) {
           }
         } else {
           let value21 = this.imageRef(
-            value12,
+            value32,
             input,
             (input2) => "<" + input.tag + " " + value11 + '="' + input2 + '">'
           );
@@ -134238,12 +135628,12 @@ function installCompilerHtml(runtime2) {
           this.errorAt(dataset, "<svg> " + value3);
           return;
         }
-        let value4 = parseSvgDimensions(value2), value5 = value2, items = [];
+        let value4 = parseSvgDimensions(value2), value31 = dropSvgAriaLabel(value2), value5 = value2, title, items = [];
         if (value4 !== void 0) {
           let callback3 = (input) => input !== void 0 && input !== "auto" && "px" in input && input.px > 0 ? input.px : void 0, state2 = {
             xmlns: svgNamespace
           };
-          if (value4.attrs["xmlns:xlink"] !== void 0 || /\bxlink:/.test(value2)) {
+          if (value4.attrs["xmlns:xlink"] !== void 0 || /\bxlink:/.test(value31)) {
             state2["xmlns:xlink"] = xlinkNamespace;
           } else if (Object.keys(value4.attrs).some(
             (input) => input.startsWith("xlink:")
@@ -134257,7 +135647,7 @@ function installCompilerHtml(runtime2) {
             value4.attrs
           )) {
             let value20 = value18.toLowerCase();
-            if (value20 === "style" || value20 === "id" || value20 === "data-slots" || value20.startsWith("data-build-") || value20 === "xmlns" || value20 === "xmlns:xlink") {
+            if (value20 === "style" || value20 === "id" || value20 === "aria-label" || value20 === "data-slots" || value20.startsWith("data-build-") || value20 === "data-motion" && this.motion || value20 === "xmlns" || value20 === "xmlns:xlink") {
               continue;
             }
             let value21 = value18.indexOf(":"), value22 = value18.startsWith("xmlns:");
@@ -134286,6 +135676,9 @@ function installCompilerHtml(runtime2) {
             ).map((input) => input.slice(6))
           ]), value17 = sanitizeSvgMarkup(value4.inner, values);
           items.push(...value17.said);
+          if (!/^true$/i.test(dataset.attrs["aria-hidden"] ?? "") && !/^\s*(none|presentation)(\s|$)/i.test(dataset.attrs.role ?? "")) {
+            title = svgTitleText(value17.xml);
+          }
           value5 = "<svg" + Object.entries(state2).map(
             ([input, input2]) => " " + input + '="' + callback4(input2) + '"'
           ).join("") + ">" + value17.xml + "</svg>";
@@ -134314,7 +135707,9 @@ function installCompilerHtml(runtime2) {
         }
         let state = {
           kind: "img",
-          alt: (dataset.attrs["aria-label"] ?? "").replace(/\s+/g, " ").trim().slice(0, 500),
+          alt: normalizeAltText(
+            dataset.attrs["aria-label"] ?? (title !== void 0 ? decodeHtmlEntities(title) : void 0)
+          ),
           src: value6,
           fit: "contain"
         };
@@ -135399,10 +136794,13 @@ function installCompilerHtml(runtime2) {
           };
           if (input.attrs["data-group"] !== void 0) {
             state2.group = true;
-            let value20 = value17;
-            if (value17 === value15 && value20.kind === "stack" && value20.children?.length === 0 && value20.style !== void 0) {
-              state2.style = value20.style;
-              delete value20.style;
+          }
+          let value30 = value17;
+          if (value17 === value15 && value30.kind === "stack" && value30.children?.length === 0 && value30.style !== void 0) {
+            if (state2.group === true) {
+              hoistBoxStyle(state2);
+            } else if (this.compiled) {
+              this.boxesOfParts.push(state2);
             }
           }
           let value19 = this.place(
@@ -135846,7 +137244,14 @@ function installCompilerHtml(runtime2) {
           this.frameFill = void 0;
           return;
         }
-        let callback2 = (input2, options2) => input2.spec.anchor === "fill" ? options2 !== void 0 ? options2 - 2 * input2.spec.margin : void 0 : input2.spec.size ?? input2.resolved, value9 = this.node(state2, {
+        let callback2 = (input2, options2) => input2.spec.anchor === "fill" ? options2 !== void 0 ? options2 - 2 * input2.spec.margin : void 0 : input2.spec.size ?? input2.resolved, value29 = this.sourceMarks.get(input);
+        if (value29 !== void 0) {
+          this.sourceMarks.set(state2, value29);
+        }
+        if (this.drawnMarks.has(input)) {
+          this.drawnMarks.add(state2);
+        }
+        let value9 = this.node(state2, {
           ...options,
           depth: options.depth,
           inContainer: false,
@@ -135909,7 +137314,7 @@ function installCompilerHtml(runtime2) {
             );
           }
         }
-        let value11 = this.build(input, extra);
+        let value11 = this.build(input, extra && !this.compiled);
         if (value11 !== void 0) {
           state3.build = value11;
         }
@@ -135930,10 +137335,12 @@ function installCompilerHtml(runtime2) {
             return;
           }
           let value3 = input2.trim().toLowerCase().split(/\s+/), value4 = value3[0] ?? "";
-          if (!runtime2.buildEffectValues.includes(value4)) {
+          if (!runtime2.buildEffectValues.includes(value4) || !this.compiled && (value4 === "play" || value4 === "count")) {
             this.warnAt(
               input,
-              options2 + '="' + (0, runtime2.compactDiagnosticValue)(input2) + '" \u2014 effects: ' + runtime2.buildEffectValues.join(", ") + " [order 1\u2013" + String(runtime2.maxBuildOrder) + "] [auto] \u2014 dropped"
+              options2 + '="' + (0, runtime2.compactDiagnosticValue)(input2) + '" \u2014 effects: ' + runtime2.buildEffectValues.filter(
+                (input3) => this.compiled || input3 !== "play" && input3 !== "count"
+              ).join(", ") + " [order 1\u2013" + String(runtime2.maxBuildOrder) + "] [auto] \u2014 dropped"
             );
             return;
           }
@@ -135972,13 +137379,16 @@ function installCompilerHtml(runtime2) {
         if (value2 !== void 0) {
           state.out = value2;
         }
+        if (this.leaving.has(elementPositionKey(input))) {
+          (0, runtime2.convertPlayEffectToFade)(state);
+        }
         return state;
       }
     };
     diagnosticCssPropertyName = (input) => diagnosticCssPropertyNames[input] ?? input;
     diagnosticHtmlTagLabel = (input) => "tag" in input && typeof input.tag === "string" ? "<" + String(input.tag) + "> " : "";
     svgTagTokenPattern = (input) => input ? /<(\/?)([A-Za-z][\w:.-]*)((?:\s+[A-Za-z_:][\w:.-]*(?:\s*=\s*(?:"[^"<]*"|'[^'<]*'|[^\s"'<>=`]+))?)*)\s*(\/?)>/y : /<(\/?)([A-Za-z][\w:.-]*)((?:\s+[A-Za-z_:][\w:.-]*(?:\s*=\s*(?:"[^"<>]*"|'[^'<>]*'|[^\s"'<>=`]+))?)*)\s*(\/?)>/y;
-    svgAttributeTokenPattern = (input) => input ? /(\s+)([A-Za-z_:][\w:.-]*)(?:\s*=\s*(?:"([^"<]*)"|'([^'<]*)'|([^\s"'<>=`]+)))?/g : /(\s+)([A-Za-z_:][\w:.-]*)(?:\s*=\s*(?:"([^"<>]*)"|'([^'<>]*)'|([^\s"'<>=`]+)))?/g;
+    svgAttributeTokenPattern = (input) => input ? /(?<!\s)(\s+)([A-Za-z_:][\w:.-]*)(?:\s*=\s*(?:"([^"<]*)"|'([^'<]*)'|([^\s"'<>=`]+)))?/g : /(?<!\s)(\s+)([A-Za-z_:][\w:.-]*)(?:\s*=\s*(?:"([^"<>]*)"|'([^'<>]*)'|([^\s"'<>=`]+)))?/g;
     svgNamespace = "http://www.w3.org/2000/svg";
     xlinkNamespace = "http://www.w3.org/1999/xlink";
     isInvalidXmlCodePoint = (input) => input < 32 ? input !== 9 && input !== 10 && input !== 13 : input === 65534 || input === 65535 || input >= 55296 && input <= 57343 || input > 1114111;
@@ -136000,6 +137410,7 @@ function installCompilerHtml(runtime2) {
       (0, runtime2.initializeVideoLinks)();
       (0, runtime2.initializeStyleSchema)();
       (0, runtime2.initializeSlideTypeScales)();
+      (0, runtime2.initializeMarkupGuards)();
       (0, runtime2.initializeCssValueParser)();
       slideHtmlPrefixPattern = /^\s*(?:<!doctype|<html|<section|<\!--)/i;
       htmlVoidElementNames = /* @__PURE__ */ new Set([
@@ -136606,6 +138017,8 @@ function installCompilerHtml(runtime2) {
         fillWalks: 0,
         commentScans: 0
       };
+      svgOpeningAttributePattern = /[ \t\n\f\r]+([A-Za-z_:][\w:.-]*)(?:[ \t\n\f\r]*=[ \t\n\f\r]*(?:"[^"<>]*"|'[^'<>]*'))?/y;
+      svgOpeningTagEndPattern = /[ \t\n\f\r]*>/y;
       inheritedInlineStyles = /* @__PURE__ */ new WeakMap();
       dataRoleElementNames = /* @__PURE__ */ new Set(["div", "p", "h1", "h2", "h3", "ul", "ol"]);
       plainCellStylePropertyPattern = /^(background(-color)?|color|padding(-(top|right|bottom|left))?|text-align|vertical-align|width|height|font-(weight|size|style|family)|border(-(top|right|bottom|left))?(-(width|style|color))?|white-space|line-height|letter-spacing|text-transform)$/;
@@ -137125,7 +138538,7 @@ function installModelTypography(runtime2) {
       mixed: slides.some((input) => !callback(input))
     };
   }
-  function clearTypographyOverrides(node, style, theme) {
+  function clearTypographyOverrides(node, style, theme, keepValues = false) {
     let {
       fontSize: value,
       fontWeight: value2,
@@ -137145,7 +138558,7 @@ function installModelTypography(runtime2) {
     } else {
       state.style = value8;
     }
-    return applyTypographyStyle(state, style, theme);
+    return applyTypographyStyle(state, style, theme, keepValues);
   }
   function typographyEmphasisVariant(node, styles, theme) {
     let value = findTypographyStyle(node, styles, theme);
@@ -137187,8 +138600,8 @@ function installModelTypography(runtime2) {
     }
     return style.source === "system" || style.source === "ladder" && theme === "neutral";
   }
-  function applyTypographyStyle(node, style, theme) {
-    let value = "source" in style && style.source === "system", value2 = value ? node.role : style.role, value3 = typeScaleForRole(value2, theme), state = {
+  function applyTypographyStyle(node, style, theme, keepValues = false) {
+    let value = "source" in style && style.source === "system", keep = keepValues || node.sid !== void 0, value2 = value || keep ? node.role : style.role, value3 = typeScaleForRole(value2, theme), state = {
       ...node.style
     }, callback = (input, options, context) => {
       if (context) {
@@ -137197,28 +138610,40 @@ function installModelTypography(runtime2) {
         state[input] = options;
       }
     };
-    callback("fontSize", style.fontSize, style.fontSize === value3.fontSize);
+    callback(
+      "fontSize",
+      style.fontSize,
+      !keep && style.fontSize === value3.fontSize
+    );
     callback(
       "lineHeight",
       style.lineHeight,
-      style.lineHeight === value3.lineHeight
+      !keep && style.lineHeight === value3.lineHeight
     );
     let value4 = typographyUsesSystemFont(style, theme), value5 = nodeTypographyCombo(node, theme), value6 = typographyComboKey(value5, theme, value4 ? "system" : void 0) === typographyComboKey(style, theme, value4 ? "system" : void 0) && (value ? value5.fontWeight === style.fontWeight && value5.italic === style.italic : typographyEmphasisMatches(value5, style)) ? value5.fontWeight : style.fontWeight;
-    callback("fontWeight", value6, value6 === value3.fontWeight);
-    callback("fontStyle", "italic", !style.italic);
+    callback("fontWeight", value6, !keep && value6 === value3.fontWeight);
+    callback(
+      "fontStyle",
+      style.italic ? "italic" : "normal",
+      !keep && !style.italic
+    );
     if (theme === "neutral" || value) {
-      callback("letterSpacing", style.letterSpacing, style.letterSpacing === 0);
+      callback(
+        "letterSpacing",
+        style.letterSpacing,
+        !keep && style.letterSpacing === 0
+      );
     }
     if (theme === "neutral") {
       callback(
         "textTransform",
-        style.textTransform,
-        style.textTransform === void 0
+        style.textTransform ?? "none",
+        !keep && style.textTransform === void 0
       );
     }
     if (style.fontFamily !== void 0) {
       state.fontFamily = style.fontFamily;
-    } else if (!value4) {
+    } else if (!value4 && !keep) {
       delete state.fontFamily;
     }
     let state2 = {
@@ -137878,6 +139303,19 @@ function installModelGeometry(runtime2) {
       delete placement.basis;
     }
   }
+  function keepSourceRowShrink(node, placement, explicit, axis, parentDirection) {
+    if (axis !== "x" || parentDirection !== "x" || node.sid === void 0) {
+      return;
+    }
+    if (explicit) {
+      placement.shrink = 0;
+    } else if (placement.shrink === 0 && nodeExplicitAxisSize(node, "x") !== void 0) {
+      delete placement.shrink;
+      if (placement.grow === 0) {
+        delete placement.grow;
+      }
+    }
+  }
   function setNodeAxisSize(node, axis, size4, parentDirection) {
     if (!nodeSupportsSizing(node)) {
       return node;
@@ -137927,6 +139365,7 @@ function installModelGeometry(runtime2) {
       } else {
         delete state.minH;
       }
+      keepSourceRowShrink(node, state, false, axis, parentDirection);
       return setNodePlacement(node, state);
     }
     clearPlacementForExplicitSize(state, axis, parentDirection);
@@ -137935,6 +139374,7 @@ function installModelGeometry(runtime2) {
     } else {
       state.minH = size4;
     }
+    keepSourceRowShrink(node, state, true, axis, parentDirection);
     return setNodePlacement(node, state);
   }
   function setNodeAxisIntrinsicSize(node, axis, size4, parentDirection) {
@@ -137951,6 +139391,7 @@ function installModelGeometry(runtime2) {
       if (axis === "x" && state.minW !== void 0 && state.minW === state.maxW) {
         delete state.minW;
         delete state.maxW;
+        keepSourceRowShrink(node, state, false, axis, parentDirection);
       }
       if (axis === "y" && state.minH !== void 0 && state.minH === state.maxH) {
         delete state.minH;
@@ -138160,7 +139601,7 @@ function installModelGeometry(runtime2) {
     if (value === void 0) {
       return;
     }
-    if ((value.rotate ?? 0) !== 0 || (value.scale ?? 1) !== 1 || !!value.skewX || !!value.skewY || !!value.translateX || !!value.translateY) {
+    if ((value.rotate ?? 0) !== 0 || (value.scale ?? 1) !== 1 || !!value.skewX || !!value.skewY || !!value.translateX || !!value.translateY || !!value.shiftX || !!value.shiftY) {
       return value;
     } else {
       return void 0;
@@ -139197,10 +140638,10 @@ function installSerializationHtml(runtime2) {
       properties.push(["white-space", "nowrap"]);
     }
     let value = style?.textDecorationLine, value2 = style?.textDecorationStyle, value3 = style?.textDecorationColor;
-    if (value !== void 0 || value2 !== void 0 || value3 !== void 0) {
+    if (value !== void 0) {
       properties.push([
         "text-decoration",
-        [value ?? "underline", value2, serializeSlideColor(value3)].filter((input) => input !== void 0).join(" ")
+        value === "none" ? value : [value, value2, serializeSlideColor(value3)].filter((input) => input !== void 0).join(" ")
       ]);
     }
     if (style?.fontVariantNumeric !== void 0) {
@@ -139317,6 +140758,12 @@ function installSerializationHtml(runtime2) {
     ).join(" ");
     if (value3 !== "") {
       properties.push(["transform", value3]);
+    }
+    if (style?.transform?.shiftX !== void 0 || style?.transform?.shiftY !== void 0) {
+      properties.push([
+        "translate",
+        (0, runtime2.formatCssPixels)(style.transform.shiftX ?? 0) + " " + (0, runtime2.formatCssPixels)(style.transform.shiftY ?? 0)
+      ]);
     }
     if (style?.filter !== void 0) {
       let value4 = (0, runtime2.serializeCssFilter)(style.filter);
@@ -139532,8 +140979,10 @@ function installSerializationHtml(runtime2) {
       properties2.set(value, value2);
     return [...properties2];
   }
-  function serializeSlideHtml(deck, slide) {
+  function serializeSlideHtml(deck, slide, options = {}) {
     let writer = new SlideHtmlWriter(deck);
+    writer.flatMark = options.flat === true;
+    writer.sourceMarks = options.marks === true;
     writer.slide(slide);
     return writer.text();
   }
@@ -139736,6 +141185,8 @@ function installSerializationHtml(runtime2) {
       neutral;
       sectionAt = /* @__PURE__ */ new Map();
       lists;
+      flatMark = false;
+      sourceMarks = false;
       constructor(input) {
         this.deck = input;
         this.neutral = input.theme === "neutral";
@@ -139826,6 +141277,18 @@ function installSerializationHtml(runtime2) {
         if (table.slots !== void 0) {
           value += ' data-slots="' + (0, runtime2.formatNodeSlots)(table.slots) + '"';
         }
+        if (this.sourceMarks && table.sid !== void 0) {
+          value += ' data-s="' + table.sid + '"';
+        }
+        if (this.sourceMarks && table.drawn === true) {
+          value += " data-drawn";
+        }
+        if (table.build?.in !== void 0) {
+          value += ' data-build-in="' + serializeBuildEffect(table.build.in) + '"';
+        }
+        if (table.build?.out !== void 0) {
+          value += ' data-build-out="' + serializeBuildEffect(table.build.out) + '"';
+        }
         let callback = (input) => items.some(([input2]) => input2 === input), value3 = callback("left") && callback("right"), value4 = callback("top") && callback("bottom");
         switch (table.kind) {
           case "text": {
@@ -139838,6 +141301,9 @@ function installSerializationHtml(runtime2) {
             }
             if (table.fit !== void 0) {
               value += ' data-fit="' + table.fit + '"';
+            }
+            if (table.list !== void 0 && table.listGap !== void 0) {
+              value += ' data-gap="' + (0, runtime2.formatCssNumber)(table.listGap) + '"';
             }
             let value6 = this.roleDecls(table), value7 = serializeTypographyStyle(
               table.style,
@@ -139909,40 +141375,51 @@ function installSerializationHtml(runtime2) {
               items2.push(...serializeNodeStyle(table.style, extra));
               this.line(
                 options,
-                '<img alt="' + escapeSlideHtmlAttribute(table.alt) + '"' + value7 + value + serializeStyleAttribute(
+                '<img alt="' + escapeSlideHtmlAttribute(
+                  (0, runtime2.normalizeAltText)(table.alt)
+                ) + '"' + value7 + value + serializeStyleAttribute(
                   orderCssProperties(deduplicateCssProperties(items2))
                 ) + ">"
               );
               return;
             }
-            let value8 = table.video === void 0 && value6 === void 0 ? (0, runtime2.decodeSvgDataUrl)(value5) : void 0, value9 = value8 !== void 0 && (0, runtime2.validateSvgMarkup)(value8) === void 0 ? (0, runtime2.parseSvgDimensions)(value8) : void 0;
+            let value9 = table.video === void 0 && value6 === void 0 ? (0, runtime2.parseValidSvgDataUrl)(value5) : void 0;
             if (value9 !== void 0) {
-              items2.push(...serializeNodeStyle(table.style, extra));
               let value10 = Object.keys(value9.attrs).map(
                 (input) => input.toLowerCase()
               ), value11 = value10.includes("xmlns") ? "" : ' xmlns="http://www.w3.org/2000/svg"';
-              if (!value10.includes("xmlns:xlink") && /\bxlink:/i.test(value8)) {
+              if (!value10.includes("xmlns:xlink") && (value10.some((input) => input.startsWith("xlink:")) || /\bxlink:/i.test(value9.inner))) {
                 value11 += ' xmlns:xlink="http://www.w3.org/1999/xlink"';
               }
               for (let [value12, value13] of Object.entries(
                 value9.attrs
               )) {
                 let value14 = value12.toLowerCase();
-                if (value14 === "style" || value14 === "width" || value14 === "height" || value14 === "id" || value14 === "data-slots" || value14.startsWith("data-build-")) {
+                if (value14 === "style" || value14 === "width" || value14 === "height" || value14 === "id" || value14 === "aria-label" || value14 === "data-slots" || value14.startsWith("data-build-")) {
                   continue;
                 }
                 value11 += " " + value12 + '="' + escapeSlideHtmlAttribute(value13) + '"';
               }
-              if (table.alt !== "" && value9.attrs["aria-label"] === void 0) {
-                value11 += ' aria-label="' + escapeSlideHtmlAttribute(table.alt) + '"';
-              }
-              this.line(
-                options,
-                "<svg" + value11 + value + serializeStyleAttribute(
-                  orderCssProperties(deduplicateCssProperties(items2))
-                ) + ">" + value9.inner + "</svg>"
+              let label = (0, runtime2.normalizeAltText)(
+                table.alt !== "" ? table.alt : value9.attrs["aria-label"]
               );
-              return;
+              if (label !== "") {
+                value11 += ' aria-label="' + escapeSlideHtmlAttribute(label) + '"';
+              } else if (/<title[\s/>]/i.test(value9.inner)) {
+                value11 += ' aria-label=""';
+              }
+              let drawing = "<svg" + value11 + value + serializeStyleAttribute(
+                orderCssProperties(
+                  deduplicateCssProperties([
+                    ...items2,
+                    ...serializeNodeStyle(table.style, extra)
+                  ])
+                )
+              ) + ">" + value9.inner + "</svg>";
+              if (label === "" || (0, runtime2.validateSvgMarkup)(drawing) === void 0) {
+                this.line(options, drawing);
+                return;
+              }
             }
             if (table.fit === "contain") {
               items2.push(["object-fit", "contain"]);
@@ -139952,7 +141429,9 @@ function installSerializationHtml(runtime2) {
             items2.push(...serializeNodeStyle(table.style, extra));
             this.line(
               options,
-              '<img src="' + escapeSlideHtmlAttribute(value5) + '" alt="' + escapeSlideHtmlAttribute(table.alt) + '"' + value7 + value + serializeStyleAttribute(
+              '<img src="' + escapeSlideHtmlAttribute(value5) + '" alt="' + escapeSlideHtmlAttribute(
+                (0, runtime2.normalizeAltText)(table.alt)
+              ) + '"' + value7 + value + serializeStyleAttribute(
                 orderCssProperties(deduplicateCssProperties(items2))
               ) + ">"
             );
@@ -140410,7 +141889,7 @@ function installSerializationHtml(runtime2) {
         }, value4 = -1;
         for (let index4 = 0; index4 < value2.length; index4++) {
           let value7 = value2[index4];
-          if (callback(value7) && isFullBleedFrame(value7, false) && (value7.node.kind === "stack" || value7.node.kind === "grid") && value7.build === void 0 && value7.node.place === void 0) {
+          if ((callback(value7) || this.sourceMarks && value7.node.sid === void 0 && value7.id.replace(/^e\d+/, "e0") === (0, runtime2.deterministicEmbedId)(value, 0)) && isFullBleedFrame(value7, false) && (value7.node.kind === "stack" || value7.node.kind === "grid") && value7.build === void 0 && value7.node.place === void 0 && value7.node.drawn !== true) {
             value4 = index4;
             break;
           }
@@ -140477,6 +141956,9 @@ function installSerializationHtml(runtime2) {
         }
         if (slots !== void 0) {
           value6 += ' data-slots="' + (0, runtime2.formatNodeSlots)(slots) + '"';
+        }
+        if (this.flatMark) {
+          value6 += " data-flat";
         }
         this.line(
           0,
@@ -140596,6 +142078,7 @@ function installSerializationHtml(runtime2) {
         "box-shadow",
         "text-shadow",
         "transform",
+        "translate",
         "filter",
         "backdrop-filter",
         "mix-blend-mode",
@@ -140935,14 +142418,14 @@ function installModelEditing(runtime2) {
   function nodeIsBold(node, theme = "anthropic") {
     return (node.style?.fontWeight ?? (theme === "neutral" ? (0, runtime2.typeScaleForRole)(node.role, theme).fontWeight : 0)) >= 600;
   }
-  function toggleNodeBold(node, theme = "anthropic", weight) {
+  function toggleNodeBold(node, theme = "anthropic", weight, keepWeight = node.sid !== void 0) {
     let style = {
       ...node.style
     }, defaultWeight = (0, runtime2.typeScaleForRole)(
       node.role,
       theme
     ).fontWeight, weight2 = !nodeIsBold(node, theme) ? weight !== void 0 && weight >= 600 ? weight : defaultWeight >= 600 ? defaultWeight : 700 : weight !== void 0 && weight < 600 ? weight : defaultWeight < 600 ? defaultWeight : 400;
-    if (weight2 === defaultWeight) {
+    if (weight2 === defaultWeight && !keepWeight) {
       delete style.fontWeight;
     } else {
       style.fontWeight = weight2;
@@ -140960,33 +142443,24 @@ function installModelEditing(runtime2) {
   function nodeIsItalic(node) {
     return node.style?.fontStyle === "italic";
   }
-  function toggleNodeItalic(node) {
-    let style = {
-      ...node.style
-    };
-    if (nodeIsItalic(node)) {
-      delete style.fontStyle;
-    } else {
-      style.fontStyle = "italic";
-    }
-    let node2 = {
-      ...node
-    };
-    if (Object.keys(style).length === 0) {
-      delete node2.style;
-    } else {
-      node2.style = style;
-    }
-    return node2;
+  function omitDefaultUnlessKept(keep, value, defaultValue) {
+    return value === defaultValue && !keep ? void 0 : value;
+  }
+  function toggleNodeItalic(node, keepNormal = node.sid !== void 0) {
+    return patchNodeStyle(node, {
+      fontStyle: nodeIsItalic(node) ? omitDefaultUnlessKept(keepNormal, "normal", "normal") : "italic"
+    });
   }
   function applyTextListFields(node, fields, lists, gutter) {
     let {
       list: oldList,
       lineLists: oldLineLists,
       listIndent,
+      listGap,
       ...rest
-    } = node, result = {
+    } = node, listGapField = listGap !== void 0 && (fields.list !== void 0 || fields.lineLists !== void 0) ? { listGap } : {}, result = {
       ...rest,
+      ...listGapField,
       ...fields.list !== void 0 ? { list: fields.list } : fields.lineLists !== void 0 ? { lineLists: fields.lineLists } : {}
     };
     if (oldLineLists !== void 0 && fields.lineLists !== void 0) {
@@ -141034,14 +142508,18 @@ function installModelEditing(runtime2) {
   function nodeIsUnderlined(node) {
     return node.style?.textDecorationLine === "underline";
   }
-  function toggleNodeUnderline(node) {
+  function toggleNodeUnderline(node, keepNone = node.sid !== void 0) {
     if (node.style?.textDecorationLine === "line-through") {
       return node;
     }
     return patchNodeStyle(
       node,
       nodeIsUnderlined(node) ? {
-        textDecorationLine: void 0,
+        textDecorationLine: omitDefaultUnlessKept(
+          keepNone,
+          "none",
+          "none"
+        ),
         textDecorationStyle: void 0,
         textDecorationColor: void 0
       } : {
@@ -141606,11 +143084,15 @@ function installModelEditing(runtime2) {
       bl: style?.borderBottomLeftRadius ?? value
     };
   }
-  function borderRadiusPatch(radii) {
+  function borderRadiusPatch(radii, style) {
     if (borderCornerNames.every((input) => radii[input] === radii.tl)) {
       return {
         ...emptyCornerRadiusPatch,
-        borderRadius: radii.tl === 0 ? void 0 : radii.tl
+        borderRadius: omitDefaultUnlessKept(
+          hasPerCornerRadius(style) || style?.borderRadius !== void 0,
+          radii.tl,
+          0
+        )
       };
     }
     return {
@@ -141626,6 +143108,12 @@ function installModelEditing(runtime2) {
       label.trim()
     );
   }
+  function imageAltLooksLikeFilename(node) {
+    return looksLikeMediaFilename(node.alt) || node.alt !== "" && node.src !== void 0 && node.alt === runtime2.svgDataUrlTitle(node.src);
+  }
+  function withDefaultListGap(node, gap) {
+    return node.list !== void 0 && node.listGap === void 0 && gap !== void 0 ? { ...node, listGap: gap } : node;
+  }
   function imageHasPoster(node) {
     return node.asset !== void 0 || node.src !== void 0;
   }
@@ -141636,7 +143124,7 @@ function installModelEditing(runtime2) {
     let posterOnly = video === void 0 && (node.video !== void 0 || node.videoLink !== void 0), state = {
       ...node,
       asset: assetId,
-      alt: !posterOnly && (node.alt === "" || looksLikeMediaFilename(node.alt)) ? label : node.alt
+      alt: !posterOnly && (node.alt === "" || imageAltLooksLikeFilename(node)) ? label : node.alt
     };
     delete state.src;
     if (!posterOnly || node.video === void 0) {
@@ -141799,7 +143287,7 @@ function installModelEditing(runtime2) {
     delete result.videoSound;
     delete result.videoLoop;
     delete result.videoStill;
-    if (looksLikeMediaFilename(result.alt)) {
+    if (imageAltLooksLikeFilename(result)) {
       result.alt = "";
     }
     return result;
@@ -142247,6 +143735,9 @@ function installModelEditing(runtime2) {
     () => borderPatchFromWidths
   );
   bindRuntimeValue(runtime2, "hasPerCornerRadius", () => hasPerCornerRadius);
+  bindRuntimeValue(runtime2, "imageAltLooksLikeFilename", () => imageAltLooksLikeFilename);
+  bindRuntimeValue(runtime2, "withDefaultListGap", () => withDefaultListGap);
+  bindRuntimeValue(runtime2, "omitDefaultUnlessKept", () => omitDefaultUnlessKept);
   bindRuntimeValue(runtime2, "borderRadiiByCorner", () => borderRadiiByCorner);
   bindRuntimeValue(runtime2, "borderRadiusPatch", () => borderRadiusPatch);
   bindRuntimeValue(
@@ -142363,6 +143854,7 @@ function installModelEditing(runtime2) {
       (0, runtime2.initializeTypographyInference)();
       (0, runtime2.initializeModelGeometry)();
       (0, runtime2.initializeHtmlWriter)();
+      (0, runtime2.initializeHtmlCompiler)();
       (0, runtime2.initializeVideoLinks)();
       borderSideNames = ["top", "right", "bottom", "left"];
       borderSideWidthFields = {
@@ -142584,8 +144076,21 @@ function installModelSelection(runtime2) {
   }
   function filterValidSelections(slide, selections) {
     return selections.filter(
-      (input) => selectedNode(slide, input) !== void 0
+      (input) => selectedNode(slide, input) !== void 0 && !selectionInDrawn(slide, input)
     );
+  }
+  function selectionInDrawn(slide, selection) {
+    let value = (0, runtime2.frameById)(
+      slide,
+      selection.frameId
+    )?.node;
+    for (let index4 of selectionNodePath(selection)) {
+      if (value?.drawn === true) {
+        return true;
+      }
+      value = value === void 0 ? void 0 : (0, runtime2.nodeChildren)(value)?.[index4];
+    }
+    return value?.drawn === true;
   }
   function toggleNodeSelection(selections, selection) {
     let value = selections.filter(
@@ -142694,7 +144199,7 @@ function installModelSelection(runtime2) {
   function resolvePaintedSelection(frameId, node, path) {
     if ((0, runtime2.isOverlayNode)(node)) {
       if (node.group === true && path.length > 0) {
-        let value2 = path[0], value3 = value2 === 0 ? isEmptyGroupBase(node) ? void 0 : node.base : node.layers[value2 - 1]?.node;
+        let value2 = path[0], value3 = value2 === 0 ? isMarkedEmptyGroupBase(node) ? void 0 : node.base : node.layers[value2 - 1]?.node;
         if (value3 === void 0) {
           return {
             frameId
@@ -142715,7 +144220,7 @@ function installModelSelection(runtime2) {
           ...value4 === null ? [] : selectionNodePath(value4)
         ]);
       }
-      if (path.length > 0) {
+      if (path.length > 0 && !(path[0] === 0 && isEmptyGroupBase(node))) {
         return createNodeSelection(frameId, [path[0]]);
       }
       if (styleHasVisiblePaint(node.style)) {
@@ -142747,7 +144252,46 @@ function installModelSelection(runtime2) {
     return null;
   }
   function isEmptyGroupBase(node) {
-    return (0, runtime2.isOverlayNode)(node) && node.group === true && node.base.kind === "stack" && node.base.children.length === 0;
+    if (!(0, runtime2.isOverlayNode)(node) || node.base.kind !== "stack" || node.base.children.length > 0) {
+      return false;
+    }
+    return node.group === true || node.base.style === void 0 && (node.sid !== void 0 || node.style !== void 0);
+  }
+  function isMarkedEmptyGroupBase(node) {
+    return isEmptyGroupBase(node) && (0, runtime2.isOverlayNode)(node) && node.group === true;
+  }
+  function overlayLayerSelection(slide, selection) {
+    let value = slide.frames.find(
+      (frame) => frame.id === selection.frameId
+    )?.node;
+    if (value === void 0 || !(0, runtime2.isOverlayNode)(value) || value.sid === void 0) {
+      return selection;
+    }
+    let value2 = selectionNodePath(selection)[0];
+    return value2 === 0 ? { frameId: selection.frameId } : value2 !== void 0 ? createNodeSelection(selection.frameId, [value2]) : selection;
+  }
+  function liftSelectionsToSource(slide, selections) {
+    let value = new Set(selections.map(selectionKey)), callback = (source) => ((0, runtime2.isFlowContainer)(source) || (0, runtime2.isOverlayNode)(source)) && source.group !== true && !styleHasVisiblePaint(source.style), callback2 = (source) => callback(source) ? (0, runtime2.nodeChildren)(source).map((child, index4) => [
+      child,
+      index4
+    ]).filter(
+      ([child]) => child.kind !== "spacer" && child.drawn !== true && !(callback(child) && callback2(child).length === 0)
+    ) : [], items = [];
+    for (let frame of slide.frames) {
+      let callback3 = (source, path) => value.has(selectionKey(createNodeSelection(frame.id, path))) || callback2(source).length > 0 && callback2(source).every(
+        ([child, index4]) => callback3(child, [...path, index4])
+      ), callback4 = (source, path) => {
+        if (value.has(selectionKey(createNodeSelection(frame.id, path))) || source.sid !== void 0 && callback3(source, path)) {
+          items.push(createNodeSelection(frame.id, path));
+        } else {
+          (0, runtime2.nodeChildren)(source)?.forEach(
+            (child, index4) => callback4(child, [...path, index4])
+          );
+        }
+      };
+      callback4(frame.node, []);
+    }
+    return items;
   }
   function resolvePointerSelection(frameId, node, path, selected, options) {
     let items = [...path];
@@ -142775,7 +144319,7 @@ function installModelSelection(runtime2) {
     }
     let value3 = value2 !== null && (0, runtime2.isOverlayNode)(node) && node.group === true && selectionNodePath(value2).length > 1 && value2 !== null ? selectionNodePath(value2)[0] === 0 ? {
       frameId
-    } : createNodeSelection(frameId, [selectionNodePath(value2)[0]]) : value2, value4 = options.textTap && value2 !== null && value !== null && !selectionsEqual(value2, value) && (0, runtime2.nodeAtPath)(node, selectionNodePath(value))?.kind === "text";
+    } : createNodeSelection(frameId, [selectionNodePath(value2)[0]]) : value2, value4 = options.textTap && value2 !== null && value !== null && !selectionsEqual(value2, value) && (0, runtime2.nodeAtPath)(node, selectionNodePath(value2))?.sid === void 0 && (0, runtime2.nodeAtPath)(node, selectionNodePath(value))?.kind === "text";
     return {
       grab: value3,
       tap: value4 ? value : value2,
@@ -142813,6 +144357,9 @@ function installModelSelection(runtime2) {
   }
   function collectMarqueeSelection(slide, rect) {
     let items = [], callback = (source, items2) => {
+      if (source.drawn === true) {
+        return;
+      }
       let value = (0, runtime2.nodeChildren)(source), value2 = items2.length > 0 && ((0, runtime2.isFlowContainer)(source) || (0, runtime2.isOverlayNode)(source)) && source.group === true;
       if (value !== void 0 && !value2 && (items2.length === 0 || !styleHasVisiblePaint(source.style))) {
         value.forEach(
@@ -142901,6 +144448,18 @@ function installModelSelection(runtime2) {
     () => resolvePaintedSelection
   );
   bindRuntimeValue(runtime2, "isEmptyGroupBase", () => isEmptyGroupBase);
+  bindRuntimeValue(
+    runtime2,
+    "isMarkedEmptyGroupBase",
+    () => isMarkedEmptyGroupBase
+  );
+  bindRuntimeValue(runtime2, "selectionInDrawn", () => selectionInDrawn);
+  bindRuntimeValue(runtime2, "overlayLayerSelection", () => overlayLayerSelection);
+  bindRuntimeValue(
+    runtime2,
+    "liftSelectionsToSource",
+    () => liftSelectionsToSource
+  );
   bindRuntimeValue(
     runtime2,
     "resolvePointerSelection",
@@ -144249,7 +145808,7 @@ function installModelNavigation(runtime2) {
   var SHOWN_TEXT_MARKER = "\uE000";
   var initializeObjectNavigation;
   function isNavigableNode(node) {
-    return node.kind !== "spacer";
+    return node.kind !== "spacer" && node.drawn !== true;
   }
   function childNavigationSelections(slide, selection) {
     let node = (0, runtime2.selectedNode)(
@@ -148335,6 +149894,8 @@ function installEmbedsFrameHost(runtime2) {
   var initializeEmbedFrameHost;
   function embedNoopInit() {
   }
+  const frameTimestampParamPattern = /^__frame_t(?:=|$)/;
+  const windowsWatchingFrameParams = /* @__PURE__ */ new WeakSet();
   function measureEmbedMessage(message, limit) {
     let size4 = 0, seen = /* @__PURE__ */ new WeakSet(), visit = (value) => {
       if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
@@ -148406,7 +149967,7 @@ function installEmbedsFrameHost(runtime2) {
     if (typeof window === "undefined" || typeof document === "undefined") {
       return;
     }
-    let value = window, value2 = document, count = 1500, count2 = 250, count3 = 1048576, count4 = 4, count5 = 4e3, count6 = 400;
+    let value = window, value2 = document, sinkAttribute = "data-embed-sink", count = 1500, count2 = 250, count3 = 1048576, count4 = 4, count5 = 4e3, count6 = 400;
     if (!/^[A-Za-z][\w-]*$/.test(config.markerAttr)) {
       throw Error("embed focus guard: invalid markerAttr " + config.markerAttr);
     }
@@ -148531,7 +150092,28 @@ function installEmbedsFrameHost(runtime2) {
         seq: index22,
         grantAt: Date.now()
       };
-    }, value10 = null, flag = false, flag2 = false, index32 = 0, flag3 = true, flag4 = false, flag5 = true;
+    }, value10 = null, person = value3["__embedPerson"] ??= {
+      here: value2.hasFocus(),
+      left: false,
+      out: false
+    }, userAgent2 = value.navigator.userAgent, inClaudeApp = / Claude(Nest|Gov)?\//.test(userAgent2) && (/ Electron\/|Android|iPad|iPhone|iPod/.test(userAgent2) || userAgent2.includes("Macintosh") && value.navigator.maxTouchPoints > 1), leavePage = () => {
+      person.left ||= person.here;
+      person.here = false;
+    }, personElsewhere = () => !person.here && (value2.hasFocus() || !person.left && !inClaudeApp), pageShown = () => value3["claude"] === void 0 || value3["__embedPageShown"] === true, flag6 = false;
+    value2.addEventListener(
+      "visibilitychange",
+      () => {
+        person.here ||= value2.visibilityState === "visible" && person.left && person.out !== true;
+      }
+    );
+    value.addEventListener(
+      "keydown",
+      (input) => {
+        person.here ||= input.isTrusted && !input.target.hasAttribute?.(sinkAttribute);
+      },
+      true
+    );
+    let flag = false, flag2 = false, index32 = 0, flag3 = true, flag4 = false, flag5 = true;
     value.addEventListener("focus", (input) => {
       if (!input.isTrusted) {
         return;
@@ -148540,9 +150122,10 @@ function installEmbedsFrameHost(runtime2) {
         flag4 = false;
         let activeElement2 = value2.activeElement;
         if (activeElement2 !== null && activeElement2.tagName !== "IFRAME") {
-          if (activeElement2 instanceof value.HTMLElement && activeElement2 !== value2.body) {
+          if (activeElement2 instanceof value.HTMLElement && activeElement2 !== value2.body && activeElement2 !== value11) {
             activeElement2.focus();
           } else {
+            person.here ||= person.left && value2.hasFocus();
             callback13();
           }
         }
@@ -148578,6 +150161,8 @@ function installEmbedsFrameHost(runtime2) {
           return;
         }
         index32 = Date.now();
+        person.here = true;
+        value3["__embedPageShown"] = true;
         let target = event.target;
         if (target === null || target.tagName === "IFRAME" && target.hasAttribute(config.markerAttr)) {
           return;
@@ -148749,7 +150334,7 @@ function installEmbedsFrameHost(runtime2) {
         }
       }
       callback26();
-      let flag6 = false, callback27 = () => {
+      let flag62 = false, callback27 = () => {
         if (state.el !== input) {
           return;
         }
@@ -148766,8 +150351,8 @@ function installEmbedsFrameHost(runtime2) {
             callback13();
           }
         }
-        if (!flag6) {
-          flag6 = true;
+        if (!flag62) {
+          flag62 = true;
           if (callback16(input, state.counted)) {
             callback19();
             return;
@@ -148923,10 +150508,14 @@ function installEmbedsFrameHost(runtime2) {
       consume: () => {
       }
     }, value11 = null, index42 = 0, callback13 = (input) => {
+      if (flag6 && !value2.hasFocus()) {
+        return;
+      }
       if (value11 === null || !value11.isConnected) {
         value11 = value2.createElement("div");
         value11.tabIndex = -1;
         value11.setAttribute("aria-hidden", "true");
+        value11.setAttribute(sinkAttribute, "");
         value11.style.cssText = "position:fixed;left:-9999px;top:0;width:1px;height:1px;padding:0;border:0;opacity:0";
         (value2.body ?? value2.documentElement).appendChild(value11);
       }
@@ -148943,7 +150532,7 @@ function installEmbedsFrameHost(runtime2) {
       }
       if (input === true) {
         setTimeout(() => {
-          if (value2.activeElement === value11 && value11 !== null) {
+          if (!flag6 && value2.activeElement === value11 && value11 !== null) {
             try {
               value11.focus({
                 preventScroll: true
@@ -149024,8 +150613,21 @@ function installEmbedsFrameHost(runtime2) {
       } else if (!flag3) {
         callback13();
       }
+      if (personElsewhere() && pageShown() && value.top !== value) {
+        flag6 = true;
+        try {
+          value2.activeElement?.blur();
+          value.top?.focus();
+        } catch {
+        }
+      }
       value.dispatchEvent(new Event(config.disabledEvent));
       setTimeout(() => {
+        let handedToTop = flag6 && !value2.hasFocus();
+        flag6 = false;
+        if (handedToTop) {
+          return;
+        }
         if (value10 !== null && value10.isConnected) {
           let activeElement3 = value2.activeElement;
           value10.focus();
@@ -149077,6 +150679,16 @@ function installEmbedsFrameHost(runtime2) {
       callback20(value15.el).consume();
     }, callback23 = () => {
       let activeElement2 = value2.activeElement;
+      if (!value2.hasFocus()) {
+        leavePage();
+        person.out ||= value2.visibilityState === "visible";
+      } else {
+        person.left = false;
+        person.out = false;
+        if (activeElement2 !== null && (activeElement2 === value9 || activeElement2.tagName !== "IFRAME" && !activeElement2.hasAttribute(sinkAttribute))) {
+          person.here = true;
+        }
+      }
       if (value9 !== null && activeElement2 !== value9) {
         value9 = null;
       }
@@ -149184,6 +150796,7 @@ function installEmbedsFrameHost(runtime2) {
         if (!value18) {
           flag3 = flag5;
           flag4 = true;
+          leavePage();
         }
         let value19 = callback5(), value20 = callback({
           markPresent: value19 !== null,
@@ -149289,10 +150902,64 @@ function installEmbedsFrameHost(runtime2) {
       callback26();
     };
   }
+  function hasFrameTimestampParam(search) {
+    return search.slice(1).split("&").some((param) => frameTimestampParamPattern.test(param));
+  }
+  function reloadOpaqueSandboxedFrames(doc) {
+    for (let frame of doc.querySelectorAll(
+      'iframe[sandbox]:not([sandbox~="allow-same-origin"])'
+    )) {
+      let { parentNode: parent, nextSibling } = frame;
+      frame.remove();
+      frame.srcdoc = "";
+      parent?.insertBefore(frame, nextSibling);
+    }
+  }
+  function stripFrameTimestampParams(win = window) {
+    try {
+      if (!windowsWatchingFrameParams.has(win)) {
+        win.addEventListener("popstate", () => {
+          if (!stripFrameTimestampParams(win)) {
+            reloadOpaqueSandboxedFrames(win.document);
+          }
+        });
+        windowsWatchingFrameParams.add(win);
+      }
+      let { search, pathname, hash } = win.location;
+      if (hasFrameTimestampParam(search)) {
+        let kept = search.slice(1).split("&").filter(
+          (param) => !frameTimestampParamPattern.test(param)
+        ).join("&");
+        win.history.replaceState(
+          win.history.state,
+          "",
+          pathname + (kept === "" ? "" : "?" + kept) + hash
+        );
+      }
+      return !hasFrameTimestampParam(win.location.search) && !hasFrameTimestampParam(new URL(win.document.baseURI).search);
+    } catch {
+      return false;
+    }
+  }
+  function noteParentSizePoke(event) {
+    if (event.source !== window.parent || event.data?.__frame_size_poke !== true) {
+      return;
+    }
+    let guardWindow = window;
+    guardWindow["__embedPageShown"] = true;
+    if (document.hasFocus()) {
+      let person = guardWindow["__embedPerson"] ??= {
+        here: true,
+        left: false
+      };
+      person.here = true;
+    }
+  }
+  var initializeParentSizePoke;
   function createEmbedFrame(options) {
-    let value = (options.doc ?? document).createElement(
-      "iframe"
-    );
+    let doc = options.doc ?? document, pageTrusted = stripFrameTimestampParams(
+      doc.defaultView ?? window
+    ), value = doc.createElement("iframe");
     value.setAttribute("sandbox", runtime2.embedSandboxPermissions);
     value.setAttribute(options.markerAttr, "");
     if (options.interactive === void 0) {
@@ -149341,8 +151008,8 @@ function installEmbedsFrameHost(runtime2) {
       ...options.onSave ? {
         keepsSaves: true
       } : {}
-    }), html = options.html, value3 = callback(html), flag2 = false;
-    if (options.interactive !== void 0 && (0, runtime2.isRefusedEmbedMarkup)(value3)) {
+    }), html = pageTrusted ? options.html : "", value3 = callback(html), flag2 = !pageTrusted;
+    if (pageTrusted && options.interactive !== void 0 && (0, runtime2.isRefusedEmbedMarkup)(value3)) {
       html = (0, runtime2.sanitizeEmbedMarkup)(options.html);
       value3 = callback(html);
       flag2 = (0, runtime2.isRefusedEmbedMarkup)(value3);
@@ -149545,7 +151212,20 @@ function installEmbedsFrameHost(runtime2) {
       initializeEmbedFrameHost = value;
     }
   );
+  bindRuntimeValue(
+    runtime2,
+    "initializeParentSizePoke",
+    () => initializeParentSizePoke,
+    (value) => {
+      initializeParentSizePoke = value;
+    }
+  );
   return () => {
+    initializeParentSizePoke = (0, runtime2.initializeOnce)(() => {
+      if (typeof window !== "undefined") {
+        window.addEventListener("message", noteParentSizePoke);
+      }
+    });
     EmbedFrameHost = class EmbedFrameHost {
       frame;
       hostWindow;
@@ -150050,6 +151730,7 @@ function installEmbedsReactFrame(runtime2) {
     onNavigated,
     onHost,
     interactive,
+    onRefused,
     state,
     onSave,
     isOwnWrite
@@ -150063,6 +151744,7 @@ function installEmbedsReactFrame(runtime2) {
       onNavigated,
       onHost,
       interactive,
+      onRefused,
       onSave,
       isOwnWrite
     });
@@ -150070,6 +151752,7 @@ function installEmbedsReactFrame(runtime2) {
       onNavigated,
       onHost,
       interactive,
+      onRefused,
       onSave,
       isOwnWrite
     };
@@ -150128,7 +151811,7 @@ function installEmbedsReactFrame(runtime2) {
       current.appendChild(value5.iframe);
       ref3.current.onHost(value5.host);
       if (value5.refused) {
-        ref3.current.interactive?.onRefused();
+        ref3.current.onRefused?.();
       }
       return () => {
         ref3.current.onHost(null);
@@ -150203,6 +151886,7 @@ function installEmbedsReactFrame(runtime2) {
       (0, runtime2.initializeEmbedDocument)();
       (0, runtime2.initializeEmbedRuntimeScript)();
       (0, runtime2.initializeEmbedCloneParts)();
+      (0, runtime2.initializeParentSizePoke)();
       (0, runtime2.initializeEmbedFrameHost)();
       (0, runtime2.initializeEmbedSanitizer)();
       initializeEmbedFrameComponent();
@@ -152533,6 +154217,7 @@ function installRenderingArtifactLinkCardViews(runtime2) {
 function installRenderingSlideSnapshots(runtime2) {
   var SlideSnapshotReact;
   var slideSnapshotsEnabledContext;
+  var slideStepContext;
   var slideSnapshotMaxSide;
   var slideSnapshotMaxEntryLength;
   var slideSnapshotCacheLimit;
@@ -152688,6 +154373,14 @@ function installRenderingSlideSnapshots(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "slideStepContext",
+    () => slideStepContext,
+    (value) => {
+      slideStepContext = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
     "slideSnapshotMaxSide",
     () => slideSnapshotMaxSide,
     (value) => {
@@ -152815,6 +154508,9 @@ function installRenderingSlideSnapshots(runtime2) {
         1
       );
       slideSnapshotsEnabledContext = SlideSnapshotReact.createContext(false);
+      slideStepContext = SlideSnapshotReact.createContext(
+        void 0
+      );
       slideSnapshotCache = /* @__PURE__ */ new Map();
       slideSnapshotPinned = /* @__PURE__ */ new Set();
       slideSnapshotSubscribers = /* @__PURE__ */ new Set();
@@ -152837,6 +154533,10 @@ function installRenderingSlides(runtime2) {
   var SLIDE_CONTENT_LANGUAGE;
   var slideEditorChromeContext;
   var slideStructureEnabledContext;
+  var slideAccessibilityTreeContext;
+  var sourceNodeContext;
+  var subgridTrackCss;
+  var tableRowCss;
   var linkModifierKeyLabel;
   var richTextDoubleTapWindowMs;
   var renderedLinkOptions;
@@ -152884,6 +154584,55 @@ function installRenderingSlides(runtime2) {
       return {};
     }
     return (0, runtime2.styleBagToCss)(style, nodeKind);
+  }
+  function overflowBorderOverlayCss(node) {
+    if (node.kind !== "stack" && node.kind !== "grid" || node.style?.overflow !== "hidden") {
+      return void 0;
+    }
+    let entries = Object.entries(
+      nodeInlineStyleCss(node.style, "slides-stack")
+    ).filter(([input]) => input.startsWith("border"));
+    return {
+      position: "absolute",
+      inset: 0,
+      overflow: "hidden",
+      boxSizing: "border-box",
+      pointerEvents: "none",
+      ...Object.fromEntries(entries),
+      borderColor: "transparent"
+    };
+  }
+  function hasDrawnWords(node) {
+    return node.kind === "text" ? /[\p{L}\p{N}]/u.test(node.text) : (0, runtime2.nodeChildren)(node)?.some(hasDrawnWords) === true;
+  }
+  function useSlideEditorLinks() {
+    let { links } = SlideRendererReact.useContext(slideLinkContext);
+    return links === "edit" || links === "view";
+  }
+  function wrapDrawnNode(node, key, element) {
+    return node.drawn === true ? SlideRendererJsx.jsx(
+      DrawnWordsShell,
+      {
+        node,
+        children: element
+      },
+      key
+    ) : element;
+  }
+  function DrawnWordsShell({
+    node,
+    children
+  }) {
+    return useSlideEditorLinks() ? SlideRendererJsx.jsx("div", {
+      style: {
+        display: "contents",
+        pointerEvents: "none"
+      },
+      "data-drawn-words": hasDrawnWords(node) ? "" : void 0,
+      children
+    }) : SlideRendererJsx.jsx(SlideRendererReact.Fragment, {
+      children
+    });
   }
   function dynamicStyleAttributes(style, animate) {
     if (!animate || !style) {
@@ -153308,11 +155057,14 @@ function installRenderingSlides(runtime2) {
     if (inTile) {
       installSlideEmbedGuards();
     }
-    let value = useSlideEmbedsDisabled(slideEmbedGuardConfig), tileDisabled = useSlideEmbedsDisabled(tileEmbedGuardConfig), [value2, value3] = SlideRendererReact.useState(false), ref = SlideRendererReact.useRef(null), ref2 = SlideRendererReact.useRef(node.html);
+    let value = useSlideEmbedsDisabled(slideEmbedGuardConfig), tileDisabled = useSlideEmbedsDisabled(tileEmbedGuardConfig), [value2, value3] = SlideRendererReact.useState(false), [refused, setRefused] = SlideRendererReact.useState(false), ref = SlideRendererReact.useRef(null), ref2 = SlideRendererReact.useRef(node.html);
     if (ref2.current !== node.html) {
       ref2.current = node.html;
       if (value2) {
         value3(false);
+      }
+      if (refused) {
+        setRefused(false);
       }
     }
     let [value4, value5] = SlideRendererReact.useState(0);
@@ -153320,20 +155072,22 @@ function installRenderingSlides(runtime2) {
       function value7(input) {
         if (input.persisted) {
           value3(false);
+          setRefused(false);
           value5((input2) => input2 + 1);
         }
       }
       window.addEventListener("pageshow", value7);
       return () => window.removeEventListener("pageshow", value7);
     }, []);
+    let step = SlideRendererReact.useContext(runtime2.slideStepContext), props = step === void 0 ? {} : { step };
     SlideRendererReact.useEffect(() => {
       ref.current?.update({
         t: 0,
         playing: false,
         selected: selected === true,
-        props: {}
+        props
       });
-    }, [selected]);
+    }, [selected, step]);
     let value6 = (0, runtime2.usePlayerHasFocus)(), snapshotsOn = SlideRendererReact.useContext(
       runtime2.slideSnapshotsEnabledContext
     ), boxWidth = box?.w, boxHeight = box?.h, still = (0, runtime2.useSlideSnapshot)(
@@ -153341,7 +155095,7 @@ function installRenderingSlides(runtime2) {
       animate || boxWidth === void 0 || boxHeight === void 0 ? void 0 : { w: boxWidth, h: boxHeight }
     ), [hostGeneration, setHostGeneration] = SlideRendererReact.useState(0), selectedRef = SlideRendererReact.useRef(selected);
     selectedRef.current = selected;
-    let live = animate === true && !value6 && !value && !value2;
+    let live = animate === true && !value6 && !value && !value2 && !refused;
     SlideRendererReact.useEffect(() => {
       let host = ref.current;
       if (!snapshotsOn || !live || hostGeneration === 0 || host === null || boxWidth === void 0 || boxHeight === void 0) {
@@ -153371,7 +155125,7 @@ function installRenderingSlides(runtime2) {
       hostGeneration,
       stillAgain
     ]);
-    if (!inTile || !animate && (value6 || value || tileDisabled || value2)) {
+    if (!inTile || !animate && (value6 || value || tileDisabled || value2 || refused)) {
       return SlideRendererJsx.jsx(MediaPlaceholder, {
         path,
         word: "embed",
@@ -153396,6 +155150,12 @@ function installRenderingSlides(runtime2) {
         word: "embedNavigated"
       });
     }
+    if (refused) {
+      return SlideRendererJsx.jsx(MediaPlaceholder, {
+        path,
+        word: "embedRefused"
+      });
+    }
     let frame = SlideRendererJsx.jsx(
       runtime2.EmbedFrame,
       {
@@ -153404,6 +155164,7 @@ function installRenderingSlides(runtime2) {
         markerAttr: guard.markerAttr,
         title: messages.embedFrame,
         onNavigated: () => value3(true),
+        onRefused: () => setRefused(true),
         onHost: (input) => {
           ref.current = input;
           if (input !== null && snapshotsOn) {
@@ -153413,7 +155174,7 @@ function installRenderingSlides(runtime2) {
             t: 0,
             playing: false,
             selected: selected === true,
-            props: {}
+            props
           });
         }
       },
@@ -153905,8 +155666,8 @@ function installRenderingSlides(runtime2) {
     let messages = SlideRendererReact.useContext(slideRendererMessagesContext), videoStills = SlideRendererReact.useContext(runtime2.videoStillsContext), value = resolveImageUrl(node, assets) ?? (node.videoLink !== void 0 ? videoStills.get(runtime2.videoStillKey(node.videoLink)) : void 0), value2 = inStack ? {
       width: node.w !== void 0 ? node.w : void 0,
       height: node.h !== void 0 ? node.h : void 0,
-      maxWidth: runtime2.SLIDE_WIDTH,
-      maxHeight: runtime2.SLIDE_HEIGHT,
+      maxWidth: node.w === void 0 ? runtime2.SLIDE_WIDTH : "none",
+      maxHeight: node.h === void 0 ? runtime2.SLIDE_HEIGHT : "none",
       ...nodePlacementCss(node, parentAlign, parentJustify)
     } : {
       width: "100%",
@@ -154903,63 +156664,78 @@ function installRenderingSlides(runtime2) {
       state.borderTop = value4;
       state.borderLeft = value4;
     }
+    let accessible = SlideRendererReact.useContext(slideAccessibilityTreeContext), roles = SlideRendererReact.useContext(slideStructureEnabledContext) && accessible && node.rows.length > 0;
     return SlideRendererJsx.jsx("div", {
       ref,
       "data-node-path": path,
+      role: roles ? "table" : void 0,
       style: state,
       children: node.rows.map(
-        (input, options) => input.map((input2, options2) => {
-          let value6 = String(options) + "." + String(options2), value7 = node.colAligns?.[options2], value8 = node.cellStyles?.[value6]?.color, value9 = node.rowStyles?.[String(options)]?.background, state2 = {
-            borderRight: value4,
-            borderBottom: value4,
-            padding: `${node.cellPadding?.y !== void 0 ? String(node.cellPadding.y) + "px" : "0.35em"} ${node.cellPadding?.x !== void 0 ? String(node.cellPadding.x) + "px" : "0.6em"}`,
-            whiteSpace: "pre-wrap",
-            overflowWrap: "break-word",
-            minWidth: 0,
-            boxSizing: "content-box",
-            minHeight: "1lh",
-            overflowY: "clip",
-            ...value7 === "center" ? {
-              textAlign: "center"
-            } : value7 === "end" ? {
-              textAlign: "right"
-            } : void 0,
-            ...value8 !== void 0 ? {
-              color: (0, runtime2.resolveSlideColor)(value8)
-            } : void 0,
-            ...node.header && options === 0 ? {
-              fontWeight: node.headerWeight ?? 600,
-              background: hexColorRgba(value3, 0.08)
-            } : void 0,
-            ...value9 !== void 0 ? {
-              background: (0, runtime2.resolveSlideColor)(value9)
-            } : void 0
-          };
-          if (editing != null && editing.cell !== void 0 && editing.cell.r === options && editing.cell.c === options2) {
-            return SlideRendererJsx.jsx(
-              EditableTableCell,
-              {
-                cellKey: value6,
-                name: messages.cellName({
-                  r: options,
-                  c: options2
-                }),
-                style: state2,
-                session: editing
-              },
-              value6
-            );
-          }
-          return SlideRendererJsx.jsx(
-            "div",
-            {
-              "data-cell": value6,
-              style: state2,
-              children: input2
-            },
-            value6
-          );
-        })
+        (input, options) => SlideRendererJsx.jsx(
+          "div",
+          {
+            role: roles ? "row" : void 0,
+            style: tableRowCss,
+            children: input.map((input2, options2) => {
+              let value6 = String(options) + "." + String(options2), cellRole = (input3) => !roles ? void 0 : node.header && options === 0 && input3.trim() !== "" ? "columnheader" : "cell", value7 = node.colAligns?.[options2], value8 = node.cellStyles?.[value6]?.color, value9 = node.rowStyles?.[String(options)]?.background, state2 = {
+                borderRight: value4,
+                borderBottom: value4,
+                padding: `${node.cellPadding?.y !== void 0 ? String(node.cellPadding.y) + "px" : "0.35em"} ${node.cellPadding?.x !== void 0 ? String(node.cellPadding.x) + "px" : "0.6em"}`,
+                whiteSpace: "pre-wrap",
+                overflowWrap: "break-word",
+                minWidth: 0,
+                boxSizing: "content-box",
+                minHeight: "1lh",
+                overflowY: "clip",
+                ...value7 === "center" ? {
+                  textAlign: "center"
+                } : value7 === "end" ? {
+                  textAlign: "right"
+                } : void 0,
+                ...value8 !== void 0 ? {
+                  color: (0, runtime2.resolveSlideColor)(value8)
+                } : void 0,
+                ...node.header && options === 0 ? {
+                  fontWeight: node.headerWeight ?? 600,
+                  background: hexColorRgba(value3, 0.08)
+                } : void 0,
+                ...value9 !== void 0 ? {
+                  background: (0, runtime2.resolveSlideColor)(value9)
+                } : void 0
+              };
+              if (editing != null && editing.cell !== void 0 && editing.cell.r === options && editing.cell.c === options2) {
+                return SlideRendererJsx.jsx(
+                  "div",
+                  {
+                    role: cellRole(editing.initialText),
+                    style: subgridTrackCss,
+                    children: SlideRendererJsx.jsx(EditableTableCell, {
+                      cellKey: value6,
+                      name: messages.cellName({
+                        r: options,
+                        c: options2
+                      }),
+                      style: state2,
+                      session: editing
+                    })
+                  },
+                  value6 + ".open"
+                );
+              }
+              return SlideRendererJsx.jsx(
+                "div",
+                {
+                  "data-cell": value6,
+                  role: cellRole(input2),
+                  style: state2,
+                  children: input2
+                },
+                value6
+              );
+            })
+          },
+          options
+        )
       )
     });
   }
@@ -155232,7 +157008,11 @@ function installRenderingSlides(runtime2) {
     let listMode = SlideRendererReact.useContext(listRenderingContext), lineContent = (runs) => runs.length === 0 ? SlideRendererJsx.jsx("br", {}) : SlideRendererJsx.jsx(RichTextRuns, {
       runs,
       editing
-    });
+    }), gap = node.list !== void 0 && node.listGap !== void 0 ? {
+      display: "flex",
+      flexDirection: "column",
+      gap: node.listGap
+    } : void 0;
     return (0, runtime2.groupTextLinesByList)(node).flatMap(
       (group, index4) => {
         if (group.list === null) {
@@ -155253,10 +157033,11 @@ function installRenderingSlides(runtime2) {
             ...listMode === "css" && node.list !== void 0 ? {
               "data-css-list": ""
             } : null,
-            style: editing ? void 0 : {
+            style: editing ? gap : {
               margin: 0,
               listStyleType: group.list === "bullet" ? "disc" : "decimal",
-              paddingInlineStart: listIndentFallback(node, listMode)
+              paddingInlineStart: listIndentFallback(node, listMode),
+              ...gap
             },
             children: group.lines.map(
               (line, lineIndex) => SlideRendererJsx.jsx(
@@ -155447,6 +157228,7 @@ function installRenderingSlides(runtime2) {
           text: session.initialText,
           marks: node.marks,
           list: node.list,
+          listGap: node.listGap,
           lineLists: node.lineLists
         },
         editing: true
@@ -155522,6 +157304,16 @@ function installRenderingSlides(runtime2) {
             if (value2 && isLinkSelectShortcut(event)) {
               event.preventDefault();
               session.onLink?.();
+              return;
+            }
+            if (value2 && (event.metaKey || event.ctrlKey) && event.shiftKey && !event.altKey && (event.code === "Digit7" || event.code === "Digit8")) {
+              event.preventDefault();
+              let list = event.code === "Digit7" ? "number" : "bullet";
+              if (!event.repeat) {
+                (0, runtime2.executeRichTextCommand)(
+                  (0, runtime2.readRichTextSelection)(event.currentTarget)?.list === list ? "outdent" : list === "number" ? "insertOrderedList" : "insertUnorderedList"
+                );
+              }
               return;
             }
             if (value2 && event.key === "Backspace" && !event.altKey && !event.ctrlKey && !event.metaKey && (0, runtime2.caretAtListItemStart)(event.currentTarget)) {
@@ -155632,11 +157424,12 @@ function installRenderingSlides(runtime2) {
     path,
     showHatch
   }) {
+    let sourceNode = SlideRendererReact.useContext(sourceNodeContext);
     return SlideRendererJsx.jsx("div", {
       "data-node-path": path,
       style: {
         ...nodePlacementCss(node),
-        ...showHatch ? {
+        ...showHatch && !sourceNode ? {
           backgroundImage: "repeating-linear-gradient(45deg, rgba(115,114,108,0.18) 0 6px, transparent 6px 12px)",
           outline: "1px dashed rgba(115,114,108,0.35)",
           outlineOffset: -1
@@ -155688,21 +157481,25 @@ function installRenderingSlides(runtime2) {
         ...nodeInlineStyleCss(node.style, "slides-stack")
       },
       children: node.children.map(
-        (input, options) => SlideRendererJsx.jsx(
-          SlideNode,
-          {
-            node: input,
-            slideBg,
-            assets,
-            inStack: true,
-            parentAlign: node.alignItems ?? "stretch",
-            parentJustify: node.justifyItems ?? "stretch",
-            path: path === "" ? String(options) : path + "." + String(options),
-            editing,
-            animate,
-            frameSelected
-          },
-          options
+        (input, options) => wrapDrawnNode(
+          input,
+          options,
+          SlideRendererJsx.jsx(
+            SlideNode,
+            {
+              node: input,
+              slideBg,
+              assets,
+              inStack: true,
+              parentAlign: node.alignItems ?? "stretch",
+              parentJustify: node.justifyItems ?? "stretch",
+              path: path === "" ? String(options) : path + "." + String(options),
+              editing,
+              animate,
+              frameSelected
+            },
+            options
+          )
         )
       )
     });
@@ -155719,7 +157516,48 @@ function installRenderingSlides(runtime2) {
     animate,
     frameSelected
   }) {
-    let value = path === "", callback = (input) => path === "" ? String(input) : path + "." + String(input);
+    let value = path === "", callback = (input) => path === "" ? String(input) : path + "." + String(input), clip = overflowBorderOverlayCss(node.base), linksLive = useSlideEditorLinks(), layers = node.layers.map((input, options) => {
+      let value2 = (0, runtime2.framePositionCss)({
+        id: "layer",
+        x: input.x,
+        y: input.y,
+        node: input.node
+      }), drawn = linksLive && input.node.drawn === true;
+      return SlideRendererJsx.jsx(
+        "div",
+        {
+          "data-overlay-layer": callback(options + 1),
+          "data-drawn-words": drawn && hasDrawnWords(input.node) ? "" : void 0,
+          style: {
+            position: "absolute",
+            ...value2,
+            boxSizing: "border-box",
+            ...clip !== void 0 ? {
+              pointerEvents: "auto"
+            } : void 0,
+            ...drawn ? {
+              pointerEvents: "none"
+            } : void 0
+          },
+          children: SlideRendererJsx.jsx(SlideNode, {
+            node: input.node,
+            slideBg,
+            assets,
+            path: callback(options + 1),
+            box: "fill",
+            editing,
+            animate,
+            frameSelected,
+            frameSize: {
+              w: input.x.anchor === "fill" ? void 0 : input.x.size,
+              h: input.y.anchor === "fill" ? void 0 : input.y.size
+            },
+            hostSized: (0, runtime2.axisSpecsAreSized)(input.x, input.y)
+          })
+        },
+        options
+      );
+    });
     return SlideRendererJsx.jsxs("div", {
       "data-node-path": path,
       ...dynamicStyleAttributes(node.style, animate),
@@ -155734,52 +157572,25 @@ function installRenderingSlides(runtime2) {
         ...nodeInlineStyleCss(node.style, "slides-stack")
       },
       children: [
-        SlideRendererJsx.jsx(SlideNode, {
-          node: node.base,
-          slideBg,
-          assets,
-          inStack,
-          path: callback(0),
-          box: "grow",
-          editing,
-          animate,
-          frameSelected
-        }),
-        node.layers.map((input, options) => {
-          let value2 = (0, runtime2.framePositionCss)({
-            id: "layer",
-            x: input.x,
-            y: input.y,
-            node: input.node
-          });
-          return SlideRendererJsx.jsx(
-            "div",
-            {
-              "data-overlay-layer": callback(options + 1),
-              style: {
-                position: "absolute",
-                ...value2,
-                boxSizing: "border-box"
-              },
-              children: SlideRendererJsx.jsx(SlideNode, {
-                node: input.node,
-                slideBg,
-                assets,
-                path: callback(options + 1),
-                box: "fill",
-                editing,
-                animate,
-                frameSelected,
-                frameSize: {
-                  w: input.x.anchor === "fill" ? void 0 : input.x.size,
-                  h: input.y.anchor === "fill" ? void 0 : input.y.size
-                },
-                hostSized: (0, runtime2.axisSpecsAreSized)(input.x, input.y)
-              })
-            },
-            options
-          );
-        })
+        wrapDrawnNode(
+          node.base,
+          0,
+          SlideRendererJsx.jsx(SlideNode, {
+            node: node.base,
+            slideBg,
+            assets,
+            inStack,
+            path: callback(0),
+            box: "grow",
+            editing,
+            animate,
+            frameSelected
+          })
+        ),
+        clip !== void 0 ? SlideRendererJsx.jsx("div", {
+          style: clip,
+          children: layers
+        }) : layers
       ]
     });
   }
@@ -155813,21 +157624,25 @@ function installRenderingSlides(runtime2) {
         ...nodeInlineStyleCss(node.style, "slides-stack")
       },
       children: node.children.map(
-        (input, options) => SlideRendererJsx.jsx(
-          SlideNode,
-          {
-            node: input,
-            slideBg,
-            assets,
-            inStack: true,
-            parentAlign: node.align,
-            parentDir: node.dir,
-            path: path === "" ? String(options) : path + "." + String(options),
-            editing,
-            animate,
-            frameSelected
-          },
-          options
+        (input, options) => wrapDrawnNode(
+          input,
+          options,
+          SlideRendererJsx.jsx(
+            SlideNode,
+            {
+              node: input,
+              slideBg,
+              assets,
+              inStack: true,
+              parentAlign: node.align,
+              parentDir: node.dir,
+              path: path === "" ? String(options) : path + "." + String(options),
+              editing,
+              animate,
+              frameSelected
+            },
+            options
+          )
         )
       )
     });
@@ -156021,10 +157836,15 @@ function installRenderingSlides(runtime2) {
     if (value2) {
       state.pointerEvents = "none";
     }
+    let drawn = useSlideEditorLinks() && frame.node.drawn === true;
+    if (drawn) {
+      state.pointerEvents = "none";
+    }
     let value3 = interactive?.selectedFrameIds?.includes(frame.id) === true;
     return SlideRendererJsx.jsx("div", {
       "data-frame-id": frame.id,
       style: state,
+      "data-drawn-words": drawn && hasDrawnWords(frame.node) ? "" : void 0,
       "data-free-group": value2 ? "" : void 0,
       ref: interactive ? (input) => interactive.registerFrame(frame.id, input) : void 0,
       onPointerDown: interactive ? (input) => interactive.onFramePointerDown(frame.id, input) : void 0,
@@ -156032,15 +157852,20 @@ function installRenderingSlides(runtime2) {
         value: value3,
         children: SlideRendererJsx.jsx(slideFrameIdContext.Provider, {
           value: frame.id,
-          children: SlideRendererJsx.jsx(SlideNode, {
-            node: frame.node,
-            slideBg,
-            assets,
-            editing: value,
-            animate,
-            frameSelected: value3,
-            frameSize: frameSizeOf(frame),
-            hostSized: (0, runtime2.axisSpecsAreSized)(frame.x, frame.y)
+          children: SlideRendererJsx.jsx(sourceNodeContext.Provider, {
+            value: frame.node.sid !== void 0 || (0, runtime2.nodeChildren)(frame.node)?.some(
+              (input) => input.sid !== void 0
+            ) === true,
+            children: SlideRendererJsx.jsx(SlideNode, {
+              node: frame.node,
+              slideBg,
+              assets,
+              editing: value,
+              animate,
+              frameSelected: value3,
+              frameSize: frameSizeOf(frame),
+              hostSized: (0, runtime2.axisSpecsAreSized)(frame.x, frame.y)
+            })
           })
         })
       })
@@ -156450,6 +158275,14 @@ function installRenderingSlides(runtime2) {
     () => slideStructureEnabledContext,
     (value) => {
       slideStructureEnabledContext = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "slideAccessibilityTreeContext",
+    () => slideAccessibilityTreeContext,
+    (value) => {
+      slideAccessibilityTreeContext = value;
     }
   );
   bindRuntimeValue(
@@ -156884,6 +158717,9 @@ function installRenderingSlides(runtime2) {
         embedNavigated: (0, runtime2.untranslatedMessage)(
           "web embed disabled \u2014 it navigated away from its content"
         ),
+        embedRefused: (0, runtime2.untranslatedMessage)(
+          "web embed not shown \u2014 it couldn\u2019t start safely here. Reload the page to try again."
+        ),
         embedOffForPlayer: (0, runtime2.untranslatedMessage)(
           "web embed off while a video player is open"
         ),
@@ -156918,11 +158754,13 @@ function installRenderingSlides(runtime2) {
       );
       slideEditorChromeContext = SlideRendererReact.createContext(false);
       slideStructureEnabledContext = SlideRendererReact.createContext(true);
+      slideAccessibilityTreeContext = SlideRendererReact.createContext(true);
       renderedLinkOptions = {
         storedUrl: true
       };
       slideLinkContext = SlideRendererReact.createContext({});
       richTextEditingContext = SlideRendererReact.createContext(false);
+      sourceNodeContext = SlideRendererReact.createContext(false);
       slideFrameIdContext = SlideRendererReact.createContext("");
       slideClipFocusContext = SlideRendererReact.createContext(
         {}
@@ -156969,6 +158807,15 @@ function installRenderingSlides(runtime2) {
         markPlayed: () => {
         }
       });
+      subgridTrackCss = {
+        display: "grid",
+        gridTemplateColumns: "subgrid",
+        gridTemplateRows: "subgrid"
+      };
+      tableRowCss = {
+        ...subgridTrackCss,
+        gridColumn: "1 / -1"
+      };
       supportsPlaintextContentEditable = (() => {
         if (typeof document === "undefined") {
           return false;
@@ -157541,17 +159388,23 @@ function installPresentationBuildEffects(runtime2) {
   var buildEffectDurationMs;
   var buildExitEasing;
   var buildEnterEasing;
+  var hiddenByPlay;
+  var restingSlides;
+  var reducedMotionSlides;
+  var svgReplayCount = 0;
+  const stepAnimationId = "step-animation";
+  const svgFreezeStyle = "<style>*{animation-delay:-9999s!important}</style>";
   var slideTransitionDurations;
   var slideTransitionEasing;
   var initializeBuildEffects;
   function slideBuildOrders(slide) {
     let orders = /* @__PURE__ */ new Set();
-    for (let value of slide.frames) {
-      if (value.build?.in !== void 0) {
-        orders.add(value.build.in.order);
+    for (let { build } of (0, runtime2.buildEntries)(slide)) {
+      if (build.in !== void 0) {
+        orders.add(build.in.order);
       }
-      if (value.build?.out !== void 0) {
-        orders.add(value.build.out.order);
+      if (build.out !== void 0) {
+        orders.add(build.out.order);
       }
     }
     return [...orders].sort((input, options) => input - options);
@@ -157559,39 +159412,316 @@ function installPresentationBuildEffects(runtime2) {
   function slideBuildCount(slide) {
     return slideBuildOrders(slide).length;
   }
-  function hiddenBuildFrameIds(slide, buildStep) {
+  function hiddenBuildKeys(slide, buildStep) {
     let orders = slideBuildOrders(slide), hidden = /* @__PURE__ */ new Set();
-    for (let value of slide.frames) {
-      let build = value.build;
-      if (build === void 0) {
-        continue;
-      }
-      let value2 = build.in !== void 0 ? orders.indexOf(build.in.order) + 1 : 0, value3 = build.out !== void 0 ? orders.indexOf(build.out.order) + 1 : 1 / 0;
+    for (let { key, build } of (0, runtime2.buildEntries)(slide)) {
+      let value2 = build.in !== void 0 && build.in.effect !== "play" && build.in.effect !== "count" ? orders.indexOf(build.in.order) + 1 : 0, value3 = build.out !== void 0 && build.out.effect !== "play" ? orders.indexOf(build.out.order) + 1 : 1 / 0;
       if (buildStep < value2 || buildStep >= value3) {
-        hidden.add(value.id);
+        hidden.add(key);
       }
     }
     return hidden;
   }
+  function playStepAnimations(slide) {
+    let orders = slideBuildOrders(slide), steps = [];
+    for (let { key, build, node } of (0, runtime2.buildEntries)(
+      slide
+    )) {
+      let play = build.in?.effect === "play" ? build.in : build.out?.effect === "play" ? build.out : void 0, spec = play === void 0 ? void 0 : (0, runtime2.nodePlaySpec)(node);
+      if (play === void 0 || spec === void 0) {
+        continue;
+      }
+      steps.push({
+        key,
+        step: orders.indexOf(play.order) + 1,
+        spec
+      });
+      if (spec.next !== void 0) {
+        steps.push({
+          key,
+          step: orders.indexOf(
+            (build.out?.effect === "play" ? build.out : play).order
+          ) + 1,
+          spec: spec.next
+        });
+      }
+    }
+    return steps;
+  }
+  function playHiddenKeys(slide, buildStep) {
+    let opacities = /* @__PURE__ */ new Map();
+    for (let step of playStepAnimations(slide).sort(
+      (input, options) => input.step - options.step
+    )) {
+      let {
+        keyframes,
+        options: { fill, direction }
+      } = step.spec;
+      if (step.step <= buildStep) {
+        let resting = restingOpacity(step.spec);
+        if (resting !== void 0) {
+          opacities.set(step.key, resting);
+        }
+      } else if (!opacities.has(step.key) && (fill === "backwards" || fill === "both")) {
+        opacities.set(
+          step.key,
+          (direction.includes("reverse") ? keyframes.at(-1) : keyframes[0])?.opacity
+        );
+      }
+    }
+    return new Set(
+      [...opacities].filter(([, value]) => value === 0).map(([key]) => key)
+    );
+  }
+  function startStepAnimation(element, spec, descriptor) {
+    try {
+      let value = element.animate(
+        spec.keyframes,
+        spec.options
+      );
+      value.id = stepAnimationId;
+      value.persist();
+      return { a: value, spec: descriptor, el: element };
+    } catch {
+      return;
+    }
+  }
+  function syncStepAnimations(root, slide, buildStep, running, mode) {
+    let seen = /* @__PURE__ */ new Set(), hidden = playHiddenKeys(slide, buildStep);
+    for (let { el: element } of running.values()) {
+      if (hiddenByPlay.delete(element)) {
+        element.removeAttribute("aria-hidden");
+      }
+    }
+    for (let [index4, step] of playStepAnimations(slide).entries()) {
+      let holder = (0, runtime2.elementOfBuildKey)(root, step.key), target = holder?.querySelector(':scope > [data-node-path=""]') ?? holder;
+      if (target === null || typeof target.animate !== "function") {
+        continue;
+      }
+      let id = String(index4);
+      seen.add(id);
+      let descriptor = JSON.stringify(step), current = running.get(id), changed = current?.spec !== descriptor || current.el !== target;
+      if (current === void 0 || changed) {
+        current?.a.cancel();
+        let started = startStepAnimation(target, step.spec, descriptor);
+        if (started === void 0) {
+          continue;
+        }
+        current = started;
+        current.a.pause();
+        running.set(id, current);
+      }
+      if (hidden.has(step.key)) {
+        hiddenByPlay.add(target);
+        target.setAttribute("aria-hidden", "true");
+      }
+      if (mode === "refresh" && !changed) {
+        continue;
+      }
+      if (buildStep < step.step) {
+        current.a.pause();
+        current.a.currentTime = -1;
+      } else if (buildStep === step.step && mode === "play") {
+        current.a.cancel();
+        let restarted = startStepAnimation(target, step.spec, descriptor);
+        if (restarted !== void 0) {
+          running.set(id, restarted);
+        }
+        if (restarted !== void 0 && step.spec.count !== void 0) {
+          (0, runtime2.startCountUp)(target, restarted.a, step.spec.count);
+        }
+      } else {
+        current.a.finish();
+      }
+    }
+    for (let [id, entry] of running) {
+      if (!seen.has(id)) {
+        entry.a.cancel();
+        running.delete(id);
+      }
+    }
+  }
+  function replaySvgImages(root, mode = false) {
+    for (let element of [root, ...root.querySelectorAll("img")]) {
+      let image = element, match = /^data:image\/svg\+xml(?:;replay=\d+)?;base64,(.+)$/.exec(
+        image.src ?? ""
+      );
+      if (match === null) {
+        continue;
+      }
+      let replay;
+      try {
+        let markup = atob(match[1]).replace(svgFreezeStyle, "");
+        if ((0, runtime2.neutralizeSvgAnimation)(markup) === markup) {
+          continue;
+        }
+        let next = mode === "still" ? (0, runtime2.neutralizeSvgAnimation)(markup) : mode ? markup.replace(/<svg\b[^>]*>/, (tag) => tag + svgFreezeStyle) : markup.replace(
+          /<style\b[^>]*>[^]*?<\/style>/g,
+          (style) => style.replace(
+            /animation[^;{}]*/g,
+            (rule) => rule.replace(/\bforwards\b/g, "both")
+          )
+        );
+        replay = "data:image/svg+xml;replay=" + String(++svgReplayCount) + ";base64," + btoa(next);
+      } catch {
+        continue;
+      }
+      image.src = replay;
+      if (mode !== false) {
+        continue;
+      }
+      image.style.clipPath = "inset(100%)";
+      image.decode?.().catch(() => {
+        return;
+      }).finally(() => {
+        if (image.src === replay) {
+          image.style.clipPath = "";
+        }
+      });
+    }
+  }
+  function restingOpacity({
+    keyframes,
+    options: { fill, direction, iterations }
+  }) {
+    if (fill !== "forwards" && fill !== "both" || iterations === 1 / 0) {
+      return;
+    }
+    let value = direction.includes("alternate") ? Math.ceil(iterations) - 1 : 0;
+    return ((Number(direction.includes("reverse")) + value) % 2 === 1 ? keyframes[0] : keyframes.at(-1))?.opacity;
+  }
+  function restingOpacities(slide) {
+    let opacities = /* @__PURE__ */ new Map();
+    for (let step of playStepAnimations(slide).sort(
+      (input, options) => input.step - options.step
+    )) {
+      let value = restingOpacity(step.spec);
+      if (value !== void 0) {
+        opacities.set(step.key, value);
+      }
+    }
+    return opacities;
+  }
+  function keysHiddenAtRest(slide) {
+    let hidden = hiddenBuildKeys(slide, slideBuildCount(slide));
+    for (let [key, value] of restingOpacities(slide)) {
+      if (value === 0) {
+        hidden.add(key);
+      }
+    }
+    return hidden;
+  }
+  function partialRestingOpacities(slide) {
+    let partial = /* @__PURE__ */ new Map();
+    for (let [key, value] of restingOpacities(slide)) {
+      if (typeof value === "number" && value > 0 && value < 1) {
+        partial.set(key, value);
+      }
+    }
+    return partial;
+  }
+  function slideAtRest(slide) {
+    let hidden = keysHiddenAtRest(slide), partial = partialRestingOpacities(slide);
+    if (hidden.size === 0 && partial.size === 0) {
+      return slide;
+    }
+    let frames = slide.frames.filter((input) => !hidden.has(input.id)), setOpacity = (key, opacity) => {
+      let [frameId, path] = key.split("\0"), nodePath = path === void 0 ? [] : path.split(".").map(Number);
+      frames = frames.map(
+        (input) => input.id === frameId ? {
+          ...input,
+          node: (0, runtime2.updateNodeAtPath)(
+            input.node,
+            nodePath,
+            (node) => ({
+              ...node,
+              style: { ...node.style, opacity }
+            })
+          )
+        } : input
+      );
+    };
+    for (let key of hidden) {
+      if (key.includes("\0")) {
+        setOpacity(key, 0);
+      }
+    }
+    for (let [key, value] of partial) {
+      if (!hidden.has(key)) {
+        setOpacity(key, value);
+      }
+    }
+    return { ...slide, frames };
+  }
+  function neutralizeSvgDataUrl(url) {
+    let match = /^data:image\/svg\+xml;base64,(.+)$/.exec(url);
+    if (match === null) {
+      return url;
+    }
+    try {
+      let markup = atob(match[1]), neutral = (0, runtime2.neutralizeSvgAnimation)(markup);
+      return neutral !== markup ? "data:image/svg+xml;base64," + btoa(neutral) : url;
+    } catch {
+      return url;
+    }
+  }
+  function neutralizeSvgValues(value) {
+    if (typeof value === "string") {
+      return neutralizeSvgDataUrl(value);
+    }
+    if (typeof value !== "object" || value === null) {
+      return value;
+    }
+    let source = value, entries = Object.entries(source).map(
+      ([key, entry]) => [key, neutralizeSvgValues(entry)]
+    );
+    if (entries.every(([key, entry]) => entry === source[key])) {
+      return value;
+    }
+    return Array.isArray(value) ? entries.map(([, entry]) => entry) : Object.fromEntries(entries);
+  }
+  function sourceSlideAtRest(slide) {
+    if (slide.fromSource !== true) {
+      return slide;
+    }
+    let cached = restingSlides.get(slide);
+    if (cached !== void 0) {
+      return cached;
+    }
+    let rest = neutralizeSvgValues(slideAtRest(slide));
+    restingSlides.set(slide, rest);
+    return rest;
+  }
+  function reducedMotionSlide(slide) {
+    if (slide.fromSource !== true || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches !== true) {
+      return slide;
+    }
+    let cached = reducedMotionSlides.get(slide) ?? neutralizeSvgValues(slide);
+    reducedMotionSlides.set(slide, cached);
+    return cached;
+  }
+  let sourceHiddenKeys = (slide) => slide.fromSource === true ? keysHiddenAtRest(slide) : /* @__PURE__ */ new Set();
   function slideBuildStepEffects(slide, buildStep) {
     let order = slideBuildOrders(slide)[buildStep - 1];
     if (order === void 0) {
       return [];
     }
     let effects = [];
-    for (let value of slide.frames) {
-      let build = value.build;
-      if (build?.in !== void 0 && build.in.order === order) {
+    for (let { key, build, node } of (0, runtime2.buildEntries)(
+      slide
+    )) {
+      if (build.in !== void 0 && build.in.order === order) {
         effects.push({
-          frame: value,
+          key,
           dir: "in",
           effect: build.in.effect,
-          auto: build.in.auto === true
+          auto: build.in.auto === true,
+          ...build.in.effect === "play" && Number((0, runtime2.nodePlaySpec)(node)?.keyframes[0]?.opacity ?? 1) > 0 ? { inView: true } : {}
         });
       }
-      if (build?.out !== void 0 && build.out.order === order) {
+      if (build.out !== void 0 && build.out.order === order) {
         effects.push({
-          frame: value,
+          key,
           dir: "out",
           effect: build.out.effect,
           auto: build.out.auto === true
@@ -157606,6 +159736,8 @@ function installPresentationBuildEffects(runtime2) {
   }
   function buildEffectTransition(effect) {
     switch (effect) {
+      case "play":
+      case "count":
       case "fade":
         return {
           transform: "",
@@ -157645,7 +159777,26 @@ function installPresentationBuildEffects(runtime2) {
   }
   bindRuntimeValue(runtime2, "slideBuildOrders", () => slideBuildOrders);
   bindRuntimeValue(runtime2, "slideBuildCount", () => slideBuildCount);
-  bindRuntimeValue(runtime2, "hiddenBuildFrameIds", () => hiddenBuildFrameIds);
+  bindRuntimeValue(runtime2, "hiddenBuildKeys", () => hiddenBuildKeys);
+  bindRuntimeValue(runtime2, "playStepAnimations", () => playStepAnimations);
+  bindRuntimeValue(runtime2, "playHiddenKeys", () => playHiddenKeys);
+  bindRuntimeValue(runtime2, "startStepAnimation", () => startStepAnimation);
+  bindRuntimeValue(runtime2, "syncStepAnimations", () => syncStepAnimations);
+  bindRuntimeValue(runtime2, "replaySvgImages", () => replaySvgImages);
+  bindRuntimeValue(runtime2, "restingOpacity", () => restingOpacity);
+  bindRuntimeValue(runtime2, "restingOpacities", () => restingOpacities);
+  bindRuntimeValue(runtime2, "keysHiddenAtRest", () => keysHiddenAtRest);
+  bindRuntimeValue(
+    runtime2,
+    "partialRestingOpacities",
+    () => partialRestingOpacities
+  );
+  bindRuntimeValue(runtime2, "slideAtRest", () => slideAtRest);
+  bindRuntimeValue(runtime2, "neutralizeSvgDataUrl", () => neutralizeSvgDataUrl);
+  bindRuntimeValue(runtime2, "neutralizeSvgValues", () => neutralizeSvgValues);
+  bindRuntimeValue(runtime2, "sourceSlideAtRest", () => sourceSlideAtRest);
+  bindRuntimeValue(runtime2, "reducedMotionSlide", () => reducedMotionSlide);
+  bindRuntimeValue(runtime2, "sourceHiddenKeys", () => sourceHiddenKeys);
   bindRuntimeValue(
     runtime2,
     "slideBuildStepEffects",
@@ -157715,6 +159866,14 @@ function installPresentationBuildEffects(runtime2) {
     buildEnterEasing = "cubic-bezier(0.2, 0.7, 0.2, 1)";
     slideTransitionEasing = "cubic-bezier(0.33, 0.01, 0.2, 1)";
     initializeBuildEffects = (0, runtime2.initializeOnce)(() => {
+      (0, runtime2.initializeMarkupGuards)();
+      (0, runtime2.initializeSlideModel)();
+      (0, runtime2.initializeModelEditing)();
+      (0, runtime2.initializeStyleSchema)();
+      (0, runtime2.initializeAnimationEngine)();
+      hiddenByPlay = /* @__PURE__ */ new WeakSet();
+      restingSlides = /* @__PURE__ */ new WeakMap();
+      reducedMotionSlides = /* @__PURE__ */ new WeakMap();
       slideTransitionDurations = {
         fade: 320,
         push: 420,
@@ -158419,6 +160578,9 @@ function installExportEmbedCapture(runtime2) {
           state.mounted.dispose();
         }
       });
+      if (state.mounted.refused) {
+        state.failed = true;
+      }
       value3.appendChild(state.mounted.iframe);
       items.push(state);
       return state;
@@ -159235,6 +161397,7 @@ function installExportFontTables(runtime2) {
 function installExportPptx(runtime2) {
   var pptxGeometryExports;
   var pptxDefaultLineHeight;
+  var pptxMaxSpacingPoints;
   var exportPixelsPerInch;
   var defaultMasterName;
   var maxMasterNameLength;
@@ -160909,6 +163072,12 @@ function installExportPptx(runtime2) {
               type: "number",
               ...lineBulletIndent(lineList)
             };
+            if (options > 0 && leaf.list !== void 0 && leaf.listGap !== void 0) {
+              state.paraSpaceBefore = Math.min(
+                pxToPoints(leaf.listGap),
+                pptxMaxSpacingPoints
+              );
+            }
           }
           if (options2 === value19.length - 1 && options < value18.length - 1) {
             state.breakLine = true;
@@ -161769,7 +163938,10 @@ function installExportPptx(runtime2) {
   function pptxLineSpacing(fontSize, lineHeight, forGoogleSlides) {
     if (!forGoogleSlides) {
       return {
-        lineSpacing: pxToPoints(fontSize * lineHeight)
+        lineSpacing: Math.min(
+          pxToPoints(fontSize * lineHeight),
+          pptxMaxSpacingPoints
+        )
       };
     }
     return {
@@ -162171,6 +164343,14 @@ function installExportPptx(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "pptxMaxSpacingPoints",
+    () => pptxMaxSpacingPoints,
+    (value) => {
+      pptxMaxSpacingPoints = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
     "exportPixelsPerInch",
     () => exportPixelsPerInch,
     (value) => {
@@ -162430,6 +164610,7 @@ function installExportPptx(runtime2) {
     });
     exportPixelsPerInch = 144;
     pptxDefaultLineHeight = 1.2;
+    pptxMaxSpacingPoints = 1584;
     defaultMasterName = "Title and body";
     maxMasterNameLength = 80;
     maxInferredFontSize = 128;
@@ -166641,7 +168822,7 @@ function installExportPdfCapture(runtime2) {
       entries.set(element, length);
       return length;
     }, entries2 = /* @__PURE__ */ new Map(), values = /* @__PURE__ */ new Set(), index4 = 0, callback2 = (input) => {
-      let parentElement = input.parentElement;
+      let parentElement = input.closest("[data-node-path]");
       if (parentElement === null || values.has(parentElement)) {
         return;
       }
@@ -166649,8 +168830,8 @@ function installExportPdfCapture(runtime2) {
       if (items2.length >= runtime2.maxPdfStructureBlocks) {
         return;
       }
-      let value4 = Array.from(parentElement.children).filter(
-        (input2) => input2.hasAttribute("data-cell")
+      let value4 = Array.from(
+        parentElement.querySelectorAll("[data-cell]")
       ), callback7 = (element) => (element.getAttribute("data-cell") ?? "").split(".").map(Number), value5 = Math.max(
         ...value4.map(
           (input2) => callback7(input2)[0] ?? NaN
@@ -168209,6 +170390,7 @@ function installExportDeckMeasurement(runtime2) {
   var IDENTITY_TRANSFORM;
   var ZERO_CORNER_RADII;
   var MEASUREMENT_TOLERANCE;
+  const minVisibleClipSize = 4, minVisibleClipFraction = 0.01, minVisibleTextArea = 0.05;
   var CANVAS_FONT_STYLE_KEYS;
   var initializeDeckMeasurement;
   function textHorizontalHold(stack, childIndex, parentPath) {
@@ -168637,7 +170819,49 @@ function installExportDeckMeasurement(runtime2) {
       ...value
     };
   }
-  function measureBoxLeaf(node, element, rectangle, slideRectangle, leaves, opacity, transform = IDENTITY_TRANSFORM) {
+  function intersectRects(first, second) {
+    let value = Math.max(first.x, second.x), value2 = Math.max(first.y, second.y);
+    return {
+      x: value,
+      y: value2,
+      w: Math.max(0, Math.min(first.x + first.w, second.x + second.w) - value),
+      h: Math.max(0, Math.min(first.y + first.h, second.y + second.h) - value2)
+    };
+  }
+  function overflowClipRect(element, slideRectangle, transform, frameElement) {
+    if (transform.rot % 360 !== 0) {
+      return;
+    }
+    let value;
+    for (let ancestor = element.parentElement; ancestor !== null; ancestor = ancestor === frameElement ? null : ancestor.parentElement) {
+      let style = getComputedStyle(ancestor);
+      if (style.overflowX === "visible" || style.overflowX === "") {
+        continue;
+      }
+      let callback = (input) => parseFloat(input) || 0, value2 = (0, runtime2.insetRect)(
+        rectangleWithinSlide(ancestor, slideRectangle, transform),
+        {
+          left: callback(style.borderLeftWidth),
+          top: callback(style.borderTopWidth),
+          right: callback(style.borderRightWidth),
+          bottom: callback(style.borderBottomWidth)
+        }
+      );
+      value = value === void 0 ? value2 : intersectRects(value, value2);
+    }
+    return value;
+  }
+  function clippedAwayByOverflow(kind, rectangle, clip) {
+    let value = intersectRects(rectangle, clip), callback = (input) => kind === "text" ? minVisibleClipSize : Math.min(minVisibleClipSize, input - minVisibleClipFraction);
+    if (value.w < callback(rectangle.w) || value.h < callback(rectangle.h)) {
+      return true;
+    }
+    return kind === "text" && value.w * value.h < minVisibleTextArea * rectangle.w * rectangle.h;
+  }
+  function tableRowCell(element, row) {
+    return element.querySelector('[data-cell="' + String(row) + '.0"]');
+  }
+  function measureBoxLeaf(node, element, rectangle, slideRectangle, leaves, opacity, transform = IDENTITY_TRANSFORM, clip) {
     let style = node.style;
     if (style === void 0) {
       return;
@@ -168667,6 +170891,9 @@ function installExportDeckMeasurement(runtime2) {
       w: value7.w,
       h: value7.h
     } : value7;
+    if (clip !== void 0 && value8.rotate === void 0) {
+      value8 = intersectRects(value8, clip);
+    }
     if (value8.w <= 0 || value8.h <= 0) {
       return;
     }
@@ -169042,7 +171269,7 @@ function installExportDeckMeasurement(runtime2) {
     );
   }
   async function measureDeck(slides, assets, faces, options) {
-    let value = document.createElement("div");
+    let atRest = assets.map(runtime2.sourceSlideAtRest), value = document.createElement("div");
     value.style.cssText = "position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;z-index:-1000;overflow:hidden;width:0;height:0;";
     value.setAttribute("data-appifact-content", "");
     document.body.appendChild(value);
@@ -169053,7 +171280,7 @@ function installExportDeckMeasurement(runtime2) {
         reactForExportDeckMeasurement.createElement(
           "div",
           null,
-          assets.map(
+          atRest.map(
             (input, options2) => reactForExportDeckMeasurement.createElement(
               "div",
               {
@@ -169147,6 +171374,11 @@ function installExportDeckMeasurement(runtime2) {
             } else {
               return 1;
             }
+          }, fitScaleOf = (fit, measured, turn) => {
+            let value14 = ((fit ?? runtime2.defaultTextFit) === "shrink" ? callback(measured) : 1) * turn.scl;
+            return value14 !== 1 ? {
+              fitScale: value14
+            } : {};
           }, value10 = collectMeasuredModelNodes(value9.node), entries = new Map(
             value10.map(
               (input2) => [
@@ -169179,6 +171411,17 @@ function installExportDeckMeasurement(runtime2) {
               callback2();
               continue;
             }
+            let nodeElement = element.querySelector(
+              '[data-node-path="' + value15 + '"],[data-text-path="' + value15 + '"],[data-img-path="' + value15 + '"],[data-icon-path="' + value15 + '"]'
+            ), clip = nodeElement !== null ? overflowClipRect(nodeElement, bounds, value19, element) : void 0;
+            if (clip !== void 0 && nodeElement !== null && value14.kind !== "stack" && value14.kind !== "grid" && value14.kind !== "overlay" && clippedAwayByOverflow(
+              value14.kind,
+              rectangleWithinSlide(nodeElement, bounds, value19),
+              clip
+            )) {
+              callback2();
+              continue;
+            }
             let value21 = measureBoxLeaf(
               value14,
               element,
@@ -169186,7 +171429,8 @@ function installExportDeckMeasurement(runtime2) {
               bounds,
               value16,
               value18,
-              value19
+              value19,
+              clip
             );
             if (value14.kind !== "text") {
               callback2();
@@ -169261,7 +171505,10 @@ function installExportDeckMeasurement(runtime2) {
                       value14.role,
                       style?.fontFamily
                     )
-                  )
+                  ),
+                  ...value14.listGap !== void 0 ? {
+                    listGap: value14.listGap * value19.scl
+                  } : {}
                 } : {},
                 ...value14.lineLists !== void 0 ? {
                   lineLists: (0, runtime2.textLineLists)(value14),
@@ -169311,7 +171558,7 @@ function installExportDeckMeasurement(runtime2) {
                   lineHeight: style.lineHeight
                 } : {},
                 ...style?.letterSpacing !== void 0 && style.letterSpacing !== 0 ? {
-                  letterSpacing: style.letterSpacing
+                  letterSpacing: style.letterSpacing * value19.scl
                 } : {},
                 ...style?.textTransform !== void 0 && style.textTransform !== "none" ? {
                   textTransform: style.textTransform
@@ -169325,9 +171572,7 @@ function installExportDeckMeasurement(runtime2) {
                 ...value14.fit !== void 0 ? {
                   fit: value14.fit
                 } : {},
-                ...(value14.fit ?? runtime2.defaultTextFit) === "shrink" && callback(value22) < 1 ? {
-                  fitScale: callback(value22)
-                } : {},
+                ...fitScaleOf(value14.fit, value22, value19),
                 ...value14.fill !== void 0 ? {
                   textFill: value14.fill
                 } : {}
@@ -169415,9 +171660,7 @@ function installExportDeckMeasurement(runtime2) {
               }
               let value22 = value14.rows.map(
                 (input2, options3) => {
-                  let element3 = element2.querySelector(
-                    ':scope > [data-cell="' + String(options3) + '.0"]'
-                  );
+                  let element3 = tableRowCell(element2, options3);
                   if (element3) {
                     return rectangleWithinSlide(element3, bounds, value19).h;
                   } else {
@@ -169508,12 +171751,13 @@ function installExportDeckMeasurement(runtime2) {
                 ...value14.style?.color !== void 0 ? {
                   color: value14.style.color
                 } : {},
+                ...value14.style?.lineHeight !== void 0 ? {
+                  lineHeight: value14.style.lineHeight
+                } : {},
                 ...ancestorGrounds(value15, entries).length > 0 ? {
                   backgrounds: ancestorGrounds(value15, entries)
                 } : {},
-                ...(value14.fit ?? runtime2.defaultTextFit) === "shrink" && callback(element2) < 1 ? {
-                  fitScale: callback(element2)
-                } : {}
+                ...fitScaleOf(value14.fit, element2, value19)
               });
             } else if (value14.kind === "html") {
               let element2 = element.querySelector(
@@ -169798,6 +172042,7 @@ function installExportDeckMeasurement(runtime2) {
     });
     MEASUREMENT_TOLERANCE = 2;
     initializeDeckMeasurement = (0, runtime2.initializeOnce)(() => {
+      (0, runtime2.initializeBuildEffects)();
       (0, runtime2.initializeSlideModel)();
       (0, runtime2.initializeModelEditing)();
       (0, runtime2.initializeVideoLinks)();
@@ -173919,6 +176164,18 @@ function installExportPageRuntime(runtime2) {
       function value9() {
         return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       }
+      function showStills() {
+        for (var index9 = 0; index9 < length; index9++) {
+          var value37 = config.slides[index9] && config.slides[index9].drawn === true ? value5[index9].querySelectorAll(
+            "img[data-still]"
+          ) : [];
+          for (var index10 = 0; index10 < value37.length; index10++)
+            value37[index10].src = value37[index10].getAttribute("data-still") || "";
+        }
+      }
+      if (value9()) {
+        showStills();
+      }
       function value10(input) {
         if (config.slides[input]) {
           return config.slides[input].steps.length - 1;
@@ -173927,8 +176184,11 @@ function installExportPageRuntime(runtime2) {
         }
       }
       function value11(input, options) {
+        var value37 = options.split("\0"), value38 = '[data-frame-id="' + value37[0].replace(/["\\]/g, function(value39) {
+          return "\\" + value39;
+        }) + '"]';
         return value5[input].querySelector(
-          '[data-frame-id="' + options.replace(/["\\]/g, "") + '"]'
+          value37[1] === void 0 ? value38 : value38 + ' [data-node-path="' + value37[1] + '"]'
         );
       }
       function value12(input) {
@@ -173978,15 +176238,56 @@ function installExportPageRuntime(runtime2) {
         value14(input);
       }
       function value17(input, options) {
-        var value37 = config.slides[input], value38 = value37 && value37.steps[options] ? value37.steps[options].hidden : [], value39 = value12(input);
-        for (var index9 = 0; index9 < value39.length; index9++) {
-          var value40 = value39[index9].getAttribute("data-frame-id") || "";
-          if (value38.indexOf(value40) >= 0) {
-            value39[index9].setAttribute("data-build-hidden", "");
-          } else {
-            value39[index9].removeAttribute("data-build-hidden");
+        var value37 = config.slides[input], value38 = value37 && value37.steps[options] ? value37.steps[options].hidden : [], value39 = value5[input].querySelectorAll("[data-build-hidden]");
+        for (var index9 = 0; index9 < value39.length; index9++)
+          value39[index9].removeAttribute("data-build-hidden");
+        for (var index10 = 0; index10 < value38.length; index10++) {
+          var value40 = value11(input, value38[index10]);
+          if (value40 !== null) {
+            value40.setAttribute("data-build-hidden", "");
           }
         }
+      }
+      var playing = {};
+      function playsAt(input, options, running) {
+        var value37 = config.slides[input];
+        for (var index9 = 0; value37 && index9 < value37.plays.length; index9++) {
+          var value38 = value37.plays[index9], value39 = value11(input, value38.id), value40 = value39 === null ? null : value39.querySelector(
+            ':scope > [data-node-path=""]'
+          ) || value39;
+          if (value40 === null || typeof value40.animate !== "function") {
+            continue;
+          }
+          var value41 = String(input) + " " + String(index9), value42 = playing[value41];
+          if (value42 === void 0) {
+            try {
+              value42 = playing[value41] = value40.animate(
+                value38.spec.keyframes,
+                value38.spec.options
+              );
+              value42.persist();
+            } catch (value43) {
+              continue;
+            }
+            value42.pause();
+          }
+          if (options < value38.step) {
+            value42.pause();
+            value42.currentTime = -1;
+          } else if (options === value38.step && running) {
+            value42.currentTime = 0;
+            value42.play();
+          } else {
+            value42.finish();
+          }
+        }
+      }
+      function cancelPlays() {
+        for (var value37 in playing) playing[value37].cancel();
+        playing = {};
+      }
+      function finishPlays() {
+        for (var value37 in playing) playing[value37].finish();
       }
       function value18() {
         for (var index9 = 0; index9 < items.length; index9++)
@@ -173997,7 +176298,7 @@ function installExportPageRuntime(runtime2) {
         var value37 = config.slides[input], value38 = value37 && value37.steps[options] ? value37.steps[options].events : [];
         for (var index9 = 0; index9 < value38.length; index9++) {
           var value39 = value38[index9], value40 = value11(input, value39.id), value41 = config.effects[value39.effect];
-          if (value40 === null || value41 === void 0 || typeof value40.animate !== "function") {
+          if (value40 === null || value41 === void 0 || value39.effect === "play" || value39.effect === "count" || typeof value40.animate !== "function") {
             continue;
           }
           var value42 = value40.style.transform !== "" && value40.style.transform !== "none" ? value40.style.transform : "", state2 = {
@@ -174069,8 +176370,38 @@ function installExportPageRuntime(runtime2) {
           }
         }
       }
+      function embedsSafe() {
+        var value37 = /^__frame_t(?:=|$)/, value38 = function(input) {
+          return input.slice(1).split("&").some(function(input2) {
+            return value37.test(input2);
+          });
+        };
+        try {
+          var value39 = window.location;
+          if (value38(value39.search)) {
+            var value40 = value39.search.slice(1).split("&").filter(function(input) {
+              return !value37.test(input);
+            });
+            window.history.replaceState(
+              window.history.state,
+              "",
+              value39.pathname + (value40.length > 0 ? "?" + value40.join("&") : "") + value39.hash
+            );
+          }
+          return !value38(value39.search) && !value38(new URL(value.baseURI).search);
+        } catch (value41) {
+          return false;
+        }
+      }
+      window.addEventListener("popstate", function() {
+        if (items2.length > 0 && !embedsSafe()) {
+          value21(
+            "Web embed disabled. It couldn\u2019t keep running safely here. Reload the page to try again."
+          );
+        }
+      });
       function value23(input) {
-        if (!config.live || flag2) {
+        if (!config.live || flag2 || !embedsSafe()) {
           return;
         }
         var value37 = config.slides[input] ? config.slides[input].embeds : [];
@@ -174410,6 +176741,7 @@ function installExportPageRuntime(runtime2) {
             value17(value37.index, value37.step);
           }
           value17(input.index, input.step);
+          playsAt(input.index, input.step, false);
           if (source.kind !== void 0 && source.from !== void 0) {
             value29(source.kind, source.back === true, source.from, input);
           }
@@ -174418,12 +176750,26 @@ function installExportPageRuntime(runtime2) {
             value13(input.index);
           }
           value14(input.index);
-        } else if (value17(input.index, input.step), input.step === value37.step + 1 && !value9()) {
+        } else if (value17(input.index, input.step), playsAt(
+          input.index,
+          input.step,
+          input.step === value37.step + 1 && !value9()
+        ), input.step === value37.step + 1 && !value9()) {
           value19(input.index, input.step);
         }
         var value38 = input.index === value37.index && input.step < value37.step, value39 = input.step + 1, value40 = config.slides[input.index];
         if (!value38 && value40 !== void 0 && value39 <= value10(input.index) && value40.steps[value39].auto) {
-          var value41 = input.index === value37.index ? config.buildMs + 140 : 600, value42 = input;
+          var value43 = config.buildMs;
+          for (var index10 = 0; index10 < value40.plays.length; index10++) {
+            var value44 = value40.plays[index10];
+            if (value44.step === input.step) {
+              value43 = Math.max(
+                value43,
+                Number(value44.spec.options.delay) + Number(value44.spec.options.duration) * Number(value44.spec.options.iterations)
+              );
+            }
+          }
+          var value41 = input.index === value37.index ? value43 + 140 : 600, value42 = input;
           index4 = window.setTimeout(function() {
             if (flag && state.index === value42.index && state.step === value42.step) {
               value30(
@@ -174545,6 +176891,7 @@ function installExportPageRuntime(runtime2) {
           if (value7 !== null) {
             value7.cleanup();
           }
+          cancelPlays();
           value18();
           clearTimeout(index4);
           value22();
@@ -174570,6 +176917,12 @@ function installExportPageRuntime(runtime2) {
       window.addEventListener("resize", value34);
       window.addEventListener("beforeprint", function() {
         value22();
+        finishPlays();
+      });
+      window.addEventListener("afterprint", function() {
+        if (flag) {
+          playsAt(state.index, state.step, false);
+        }
       });
       window.addEventListener("afterprint", function() {
         if (flag) {
@@ -175222,10 +177575,16 @@ function installExportDeckHtml(runtime2) {
       );
       (0, runtime2.labelUncapturedEmbeds)(host, slides, value3);
       let items = [];
-      for (let index4 = 0; index4 < slides.length; index4++)
+      for (let index4 = 0; index4 < slides.length; index4++) {
+        for (let key of (0, runtime2.sourceHiddenKeys)(slides[index4]))
+          (0, runtime2.elementOfBuildKey)(value.surface(index4), key)?.setAttribute(
+            "data-finished-gone",
+            ""
+          );
         items.push(
           serializeSlide(value.surface(index4), value3.get(index4), options)
         );
+      }
       let value4 = getComputedStyle(host), value5 = "font:" + (value4.font || "16px system-ui, sans-serif") + ";color:" + (value4.color || "#141413"), value6 = (0, runtime2.documentStylesheetCss)(), value7 = splitFontImports(value6), value8 = (0, runtime2.fontUsageHints)(
         value7.css,
         items.join(`
@@ -175392,10 +177751,10 @@ function installExportDeckHtml(runtime2) {
       let items = [];
       for (let index4 = 0; index4 <= (0, runtime2.slideBuildCount)(input); index4++)
         items.push({
-          hidden: [...(0, runtime2.hiddenBuildFrameIds)(input, index4)],
+          hidden: [...(0, runtime2.hiddenBuildKeys)(input, index4)],
           events: index4 === 0 ? [] : (0, runtime2.slideBuildStepEffects)(input, index4).map(
             (input2) => ({
-              id: input2.frame.id,
+              id: input2.key,
               dir: input2.dir,
               effect: input2.effect
             })
@@ -175411,14 +177770,29 @@ function installExportDeckHtml(runtime2) {
             allowScripts: runtime2.allowEmbedScripts
           })
         })
-      ) : [];
+      ) : [], value2 = (0, runtime2.playStepAnimations)(input).map(
+        (input2) => ({
+          id: input2.key,
+          step: input2.step,
+          spec: {
+            keyframes: input2.spec.keyframes,
+            options: {
+              ...input2.spec.options
+            }
+          }
+        })
+      );
       return {
         ...input.transition !== void 0 ? {
           transition: input.transition
         } : {},
         bg: (0, runtime2.slideBackgroundColor)(input.bg),
         steps: items,
-        embeds: value
+        embeds: value,
+        plays: value2,
+        ...input.fromSource === true ? {
+          drawn: true
+        } : {}
       };
     });
   }
@@ -175539,6 +177913,15 @@ function installExportDeckHtml(runtime2) {
       value.setAttribute("data-canvas-width", EXPORTED_CANVAS_WIDTH);
       value.setAttribute("data-canvas-height", EXPORTED_CANVAS_HEIGHT);
     }
+    let cells = Array.from(value.querySelectorAll("[data-cell]"));
+    for (let cell of cells) {
+      cell.removeAttribute("role");
+      cell.closest("[data-node-path]")?.removeAttribute("role");
+    }
+    for (let parent of new Set(cells.map((input) => input.parentElement)))
+      if (parent !== null && !parent.hasAttribute("data-node-path")) {
+        parent.replaceWith(...Array.from(parent.childNodes));
+      }
     (0, runtime2.replaceEmbedPlaceholders)(value, assets);
     for (let value2 of Array.from(
       value.querySelectorAll(UNSAFE_EXPORT_ELEMENT_SELECTOR)
@@ -175588,6 +177971,12 @@ function installExportDeckHtml(runtime2) {
       value4.setAttribute("style", "display:contents");
       value2.parentNode.replaceChild(value4, value2);
       value4.appendChild(value2);
+    }
+    for (let image of Array.from(value.querySelectorAll("img"))) {
+      let source = image.getAttribute("src") ?? "", still = (0, runtime2.neutralizeSvgDataUrl)(source);
+      if (still !== source) {
+        image.setAttribute("data-still", still);
+      }
     }
     value.removeAttribute("data-uncommentable");
     value.removeAttribute("lang");
@@ -175980,7 +178369,8 @@ function installExportDeckHtml(runtime2) {
         ".deck-pager[data-on]{opacity:1}"
       ];
       PAGE_STAGE_CSS = [
-        "@media screen{html.deck-stage{overflow:hidden}.deck-stage body{overflow:hidden}.deck-stage main{position:fixed;inset:0}.deck-stage .deck-slide{position:absolute;inset:0;height:auto;padding:0;z-index:1}.deck-stage .deck-slide[data-off]{opacity:0;pointer-events:none;z-index:0}.deck-stage .deck-slide[data-leaving]{z-index:2;pointer-events:none}.deck-stage [data-build-hidden],.deck-stage [data-magic-hidden],.deck-stage [data-embed-under],.deck-stage [data-embed-dead] [data-embed-pic]{visibility:hidden}.deck-stage [data-embed-dead-label]{display:flex}}",
+        "[data-finished-gone]{visibility:hidden}",
+        "@media screen{html.deck-stage{overflow:hidden}.deck-stage body{overflow:hidden}.deck-stage main{position:fixed;inset:0}.deck-stage .deck-slide{position:absolute;inset:0;height:auto;padding:0;z-index:1}.deck-stage .deck-slide[data-off]{opacity:0;pointer-events:none;z-index:0}.deck-stage .deck-slide[data-leaving]{z-index:2;pointer-events:none}.deck-stage [data-finished-gone]{visibility:inherit}.deck-stage [data-build-hidden],.deck-stage [data-magic-hidden],.deck-stage [data-embed-under],.deck-stage [data-embed-dead] [data-embed-pic]{visibility:hidden}.deck-stage [data-embed-dead-label]{display:flex}}",
         "[data-embed-dead-label]{display:none}",
         "@page{size:" + EXPORTED_CANVAS_WIDTH + "px " + EXPORTED_CANVAS_HEIGHT + "px;margin:0}"
       ];
@@ -176708,17 +179098,37 @@ function installHostAgentActivity(runtime2) {
   var CLAUDE_ACTIVITY_MESSAGE;
   var agentActivityBridge;
   var agentActivityStore;
+  const isActivityRecord = (input) => typeof input === "object" && input !== null && !Array.isArray(input);
+  function parseActivityView(input) {
+    if (!isActivityRecord(input)) {
+      return void 0;
+    }
+    let { n, state } = input;
+    return typeof n === "number" && isActivityRecord(state) ? { n, state } : void 0;
+  }
   function createAgentActivityBridge(options) {
-    let parentWindow = options.parentWindow, values = /* @__PURE__ */ new Set(), text = "unknown", flag = false, callback = (input) => {
-      if (input === text) {
-        return;
-      }
-      text = input;
-      for (let value of [...values])
+    let parentWindow = options.parentWindow, values = /* @__PURE__ */ new Set(), askers = /* @__PURE__ */ new Set(), viewers = /* @__PURE__ */ new Set(), text = "unknown", flag = false, view, listening = false, notify = (listeners) => {
+      for (let value of [...listeners])
         try {
           value();
         } catch {
         }
+    }, callback = (input, asking, shown) => {
+      let stateChanged = input !== text, askingChanged = asking !== flag, viewChanged = shown?.n !== view?.n;
+      text = input;
+      flag = asking;
+      if (viewChanged) {
+        view = shown;
+      }
+      if (stateChanged) {
+        notify(values);
+      }
+      if (askingChanged) {
+        notify(askers);
+      }
+      if (viewChanged) {
+        notify(viewers);
+      }
     }, callback2 = (dataset) => {
       if (parentWindow === null || dataset.source !== parentWindow) {
         return;
@@ -176727,16 +179137,17 @@ function installHostAgentActivity(runtime2) {
       if (typeof data !== "object" || data === null || data[CLAUDE_ACTIVITY_MESSAGE] !== true) {
         return;
       }
+      let shown = options.shellOrigin(dataset.origin) ? parseActivityView(data.view) : void 0;
       if (data.working === true) {
-        callback("working");
+        callback("working", false, shown);
       } else if (data.working === false) {
-        callback("idle");
+        callback("idle", data.asking === true, shown);
       }
     }, callback3 = () => {
-      if (flag || parentWindow === null) {
+      if (listening || parentWindow === null) {
         return;
       }
-      flag = true;
+      listening = true;
       try {
         options.ownWindow.addEventListener("message", callback2);
         parentWindow.postMessage(
@@ -176747,23 +179158,29 @@ function installHostAgentActivity(runtime2) {
         );
       } catch {
       }
+    }, callback4 = (listeners) => (input) => {
+      listeners.add(input);
+      callback3();
+      return () => void listeners.delete(input);
     };
     return {
       get: () => text,
-      subscribe(input) {
-        values.add(input);
-        callback3();
-        return () => {
-          values.delete(input);
-        };
-      },
+      asking: () => flag,
+      shows: () => view,
+      subscribe: callback4(values),
+      subscribeAsking: callback4(askers),
+      subscribeShows: callback4(viewers),
       dispose() {
-        if (flag) {
+        if (listening) {
           options.ownWindow.removeEventListener("message", callback2);
         }
-        flag = false;
+        listening = false;
         values.clear();
+        askers.clear();
+        viewers.clear();
         text = "unknown";
+        flag = false;
+        view = void 0;
       }
     };
   }
@@ -176771,7 +179188,8 @@ function installHostAgentActivity(runtime2) {
     if (agentActivityBridge === null) {
       agentActivityBridge = createAgentActivityBridge({
         ownWindow: window,
-        parentWindow: window.parent !== window ? window.parent : null
+        parentWindow: window.parent !== window ? window.parent : null,
+        shellOrigin: runtime2.isAllowedHostMessageOrigin
       });
     }
     return agentActivityBridge;
@@ -176844,7 +179262,11 @@ function installHostAgentActivity(runtime2) {
     agentActivityBridge = null;
     agentActivityStore = {
       get: () => getAgentActivityBridge().get(),
-      subscribe: (input) => getAgentActivityBridge().subscribe(input)
+      asking: () => getAgentActivityBridge().asking(),
+      subscribeAsking: (input) => getAgentActivityBridge().subscribeAsking(input),
+      shows: () => getAgentActivityBridge().shows(),
+      subscribe: (input) => getAgentActivityBridge().subscribe(input),
+      subscribeShows: (input) => getAgentActivityBridge().subscribeShows(input)
     };
   };
 }
@@ -177094,9 +179516,9 @@ function installHostFrameBridge(runtime2) {
     }
   }
   function createHostFrameBridge(options) {
-    let parentWindow = options.parentWindow, value = null, flag = false, values = /* @__PURE__ */ new Set(), words = null, rowsOff = false, noChrome = false, flag2 = false, chatHolds = 0, value2 = null, handOffCode = false, actions = [], actionHandler = null, value3 = null, value4 = null, value5 = null, value6 = null, index4 = 0, value7 = null, value8, value9 = null, value10 = null, value11 = null, values2 = /* @__PURE__ */ new Set(), callback = () => flag && value7?.saved !== void 0, callback2 = () => flag && values.has("readonly") && value7?.saved === "readonly", callback3 = () => flag && values.has("claude_tips"), offersChatToggle = () => flag && values.has("chat_toggle"), mayOfferChatToggle = () => parentWindow !== null && !rowsOff && !noChrome && !values.has("no_chat_toggle"), callback4 = () => callback() && value9 !== null && value7?.actions?.some(
+    let parentWindow = options.parentWindow, value = null, flag = false, values = /* @__PURE__ */ new Set(), words = null, rowsOff = false, noChrome = false, chatInView = false, flag2 = false, chatHolds = 0, value2 = null, handOffCode = false, actions = [], actionHandler = null, value3 = null, value4 = null, value5 = null, value6 = null, index4 = 0, value7 = null, value8, value9 = null, value10 = null, value11 = null, values2 = /* @__PURE__ */ new Set(), callback = () => flag && value7?.saved !== void 0, callback2 = () => flag && values.has("readonly") && value7?.saved === "readonly", offersChatToggle = () => flag && values.has("chat_toggle"), mayOfferChatToggle = () => parentWindow !== null && !rowsOff && !noChrome && !values.has("no_chat_toggle"), callback4 = () => callback() && value9 !== null && value7?.actions?.some(
       (input) => input.id === SAVE_NOW_COMMAND
-    ) === true, callback5 = () => String(flag) + String(callback()) + String(callback4()) + String(callback2()) + String(callback3()) + String(offersChatToggle()) + String(mayOfferChatToggle()) + JSON.stringify(words && [...words]), value12 = callback5(), callback6 = () => {
+    ) === true, callback5 = () => String(flag) + String(callback()) + String(callback4()) + String(callback2()) + String(offersChatToggle()) + String(mayOfferChatToggle()) + String(chatInView) + JSON.stringify(words && [...words]), value12 = callback5(), callback6 = () => {
       let value13 = callback5();
       if (value13 === value12) {
         return;
@@ -177220,6 +179642,7 @@ function installHostFrameBridge(runtime2) {
       if (data?.__frame_chrome_none === true) {
         value = dataset.origin;
         noChrome = true;
+        chatInView = false;
         if (value7 !== null) {
           callback10(value7, dataset.origin);
         }
@@ -177239,6 +179662,7 @@ function installHostFrameBridge(runtime2) {
         words = data?.rows === false ? /* @__PURE__ */ new Set() : values;
         rowsOff = data?.rows === false;
         noChrome = false;
+        chatInView = data?.chatInView === true;
       }
       if (value13 && value7 !== null) {
         callback10(value7, dataset.origin);
@@ -177496,6 +179920,7 @@ function installHostFrameBridge(runtime2) {
         callback8();
       },
       hostWords: () => words,
+      hostChatInView: () => chatInView,
       declineExport(input, options2 = false) {
         if (parentWindow === null || value === null || !HOST_REQUEST_ID_PATTERN.test(input)) {
           return;
@@ -177535,7 +179960,6 @@ function installHostFrameBridge(runtime2) {
       witnessed: () => flag,
       hostDrawsSave: callback,
       hostDrawsReadOnly: callback2,
-      hostDrawsAgentTips: callback3,
       hostOffersChatToggle: offersChatToggle,
       hostMayOfferChatToggle: mayOfferChatToggle,
       hostTakesRetry: callback4,
@@ -177795,13 +180219,6 @@ function installHostFrameBridge(runtime2) {
   }
   function hostDrawsReadOnly() {
     return getHostFrameBridge().hostDrawsReadOnly();
-  }
-  function useHostDrawsAgentTips() {
-    return react_z.useSyncExternalStore(
-      subscribeHostSaveChrome,
-      () => getHostFrameBridge().hostDrawsAgentTips(),
-      () => false
-    );
   }
   function setHostActions(actions, handler) {
     getHostFrameBridge().setActions(actions ?? [], handler);
@@ -178069,11 +180486,6 @@ function installHostFrameBridge(runtime2) {
   bindRuntimeValue(runtime2, "useHostFindCommand", () => useHostFindCommand);
   bindRuntimeValue(runtime2, "hostDrawsSave", () => hostDrawsSave);
   bindRuntimeValue(runtime2, "hostDrawsReadOnly", () => hostDrawsReadOnly);
-  bindRuntimeValue(
-    runtime2,
-    "useHostDrawsAgentTips",
-    () => useHostDrawsAgentTips
-  );
   bindRuntimeValue(runtime2, "hostTakesRetry", () => hostTakesRetry);
   bindRuntimeValue(
     runtime2,
@@ -179945,6 +182357,7 @@ function installUiCommitTextInput(runtime2) {
 }
 
 function installUiSidePanels(runtime2) {
+  const FORCED_COLORS_SURFACE_CLASS = "forced-color-adjust-none forced-colors:border forced-colors:border-[color:CanvasText] forced-colors:shadow-none forced-colors:outline-[color:CanvasText]";
   var reactl0;
   var reactDOMip;
   var reactb20;
@@ -181195,6 +183608,11 @@ function installUiSidePanels(runtime2) {
       PANEL_HEADER_CLASS = value;
     }
   );
+  bindRuntimeValue(
+    runtime2,
+    "FORCED_COLORS_SURFACE_CLASS",
+    () => FORCED_COLORS_SURFACE_CLASS
+  );
   bindRuntimeValue(runtime2, "PanelHeaderContent", () => PanelHeaderContent);
   bindRuntimeValue(runtime2, "usePanelHeaderTab", () => usePanelHeaderTab);
   bindRuntimeValue(runtime2, "PanelHeader", () => PanelHeader);
@@ -182165,7 +184583,7 @@ function installUiPropertyRows(runtime2) {
       onReset,
       children: [
         jsxmq.jsx("div", {
-          className: "w-[68px] shrink-0",
+          className: "w-[68px] shrink-0 pointer-coarse:w-[84px]",
           children: jsxmq.jsx(runtime2.PropertyNumberInput, {
             "aria-label": label,
             value: mixed ? void 0 : value,
@@ -182323,6 +184741,7 @@ function installUiPropertyRows(runtime2) {
     onChange,
     placeholder,
     mutedPlaceholder,
+    repick,
     popupAttrs,
     searchable,
     searchLabel,
@@ -182350,6 +184769,7 @@ function installUiPropertyRows(runtime2) {
         onChange,
         placeholder,
         mutedPlaceholder,
+        repick,
         disabled: disabled2,
         popupAttrs,
         searchable,
@@ -185089,11 +187509,13 @@ function installUiToolbarControls(runtime2) {
     }
   }
   function updateToolbarOverflowAttributes(strip, row) {
-    strip.toggleAttribute("data-mc-more-start", row.scrollLeft > 1);
-    strip.toggleAttribute(
-      "data-mc-more-end",
-      row.scrollLeft < row.scrollWidth - row.clientWidth - 1
-    );
+    let moreStart = row.scrollLeft > 1, moreEnd = row.scrollLeft < row.scrollWidth - row.clientWidth - 1;
+    strip.toggleAttribute("data-mc-more-start", moreStart);
+    strip.toggleAttribute("data-mc-more-end", moreEnd);
+    return moreStart || moreEnd;
+  }
+  function toolbarRowSignature(row) {
+    return String(row.getElementsByTagName("*").length) + ":" + (row.textContent ?? "");
   }
   function updateToolbarClickThroughAttributes() {
     if (toolbarClickThroughTimer !== null) {
@@ -185147,16 +187569,26 @@ function installUiToolbarControls(runtime2) {
       return;
     }), placeCard = reacty8.useRef(() => {
       return;
-    }), [cellsVersion, setCellsVersion] = reacty8.useState(0), cellsChanged = reacty8.useCallback(
-      () => setCellsVersion((version2) => version2 + 1),
-      []
-    ), openedByKey = reacty8.useRef(false), foldState = reacty8.useMemo(
+    }), [, setCellsVersion] = reacty8.useState(0), cellsDirty = reacty8.useRef(false), cellsChanged = reacty8.useCallback(() => {
+      cellsDirty.current = true;
+      setCellsVersion((version2) => version2 + 1);
+    }, []), openedByKey = reacty8.useRef(false), overflowing = reacty8.useRef(true), markedSignature = reacty8.useRef(null), laidOutSignature = reacty8.useRef(null), foldState = reacty8.useMemo(
       () => ({
         folded,
         cellsChanged
       }),
       [folded, cellsChanged]
-    );
+    ), refreshFoldAfterCellsChanged = () => {
+      if (!cellsDirty.current) {
+        return;
+      }
+      cellsDirty.current = false;
+      if (foldable && ref2.current !== null && toolbarRowSignature(ref2.current) === laidOutSignature.current) {
+        (0, runtime2.markToolbarFoldGroups)(ref2.current);
+      } else {
+        relayout.current();
+      }
+    };
     reacty8.useLayoutEffect(() => {
       let current = ref.current;
       if (current === null) {
@@ -185176,9 +187608,16 @@ function installUiToolbarControls(runtime2) {
         updateToolbarTouchDeadline(ref.current, coversSelection === true);
       }
       updateToolbarClickThroughAttributes();
-      if (ref.current !== null && ref2.current !== null) {
-        updateToolbarOverflowAttributes(ref.current, ref2.current);
+      if (ref.current === null || ref2.current === null) {
+        return;
       }
+      refreshFoldAfterCellsChanged();
+      let signature = foldable ? toolbarRowSignature(ref2.current) : null;
+      if (signature !== null && !overflowing.current && signature === markedSignature.current && typeof ResizeObserver !== "undefined") {
+        return;
+      }
+      markedSignature.current = signature;
+      overflowing.current = updateToolbarOverflowAttributes(ref.current, ref2.current);
     });
     reacty8.useLayoutEffect(() => {
       let current = ref.current, current2 = ref2.current;
@@ -185186,7 +187625,7 @@ function installUiToolbarControls(runtime2) {
         return;
       }
       let observer = new ResizeObserver(
-        () => updateToolbarOverflowAttributes(current, current2)
+        () => void (overflowing.current = updateToolbarOverflowAttributes(current, current2))
       );
       observer.observe(current2);
       return () => observer.disconnect();
@@ -185224,6 +187663,8 @@ function installUiToolbarControls(runtime2) {
         cancelPending = (0, runtime2.whenToolbarFoldIdle)(strip, card, () => {
           let didFold = (0, runtime2.layoutToolbarFold)(strip, row, cardRow);
           rowWidth = row.getBoundingClientRect().width;
+          laidOutSignature.current = didFold ? null : toolbarRowSignature(row);
+          overflowing.current = updateToolbarOverflowAttributes(strip, row);
           setFolded(didFold);
           if (!didFold) {
             setCardOpen(false);
@@ -185251,7 +187692,6 @@ function installUiToolbarControls(runtime2) {
         };
       };
     }, [foldable]);
-    reacty8.useLayoutEffect(() => relayout.current(), [cellsVersion]);
     reacty8.useLayoutEffect(() => {
       if (!folded && typeof maxWidth === "number" && ref.current !== null && ref.current.getBoundingClientRect().width < maxWidth) {
         return;
@@ -185364,7 +187804,7 @@ function installUiToolbarControls(runtime2) {
               "data-mc-row": "",
               onScroll: (input) => {
                 if (ref.current !== null) {
-                  updateToolbarOverflowAttributes(
+                  overflowing.current = updateToolbarOverflowAttributes(
                     ref.current,
                     input.currentTarget
                   );
@@ -186401,26 +188841,47 @@ function installUiToolbarFold(runtime2) {
       }
       let slots = element.querySelectorAll("[data-mc-slot]");
       return slots.length === 0 || Array.from(slots).some((slot) => slot.childElementCount > 0);
-    }, seenContent = false, pendingDivider = null;
+    }, shown = [], pendingDivider = null;
     for (let group of groups) {
-      group.setAttribute("data-mc-gone", "");
       if (isDivider(group)) {
-        pendingDivider ??= seenContent ? group : null;
+        pendingDivider ??= shown.length > 0 ? group : null;
       } else if (hasContent(group)) {
-        group.removeAttribute("data-mc-gone");
-        pendingDivider?.removeAttribute("data-mc-gone");
+        if (pendingDivider !== null) {
+          shown.push(pendingDivider);
+        }
+        shown.push(group);
         pendingDivider = null;
-        seenContent = true;
       }
     }
-    let shown = groups.filter((group) => !group.hasAttribute("data-mc-gone"));
+    let edges = /* @__PURE__ */ new Map();
     shown.forEach((group, index4) => {
       let filled = Array.from(group.querySelectorAll("[data-mc-slot]")).filter(
         (slot) => slot.childElementCount > 0
-      ), edgeKind = (neighbour) => neighbour === void 0 ? "edge" : isDivider(neighbour) ? "divider" : "gap";
-      filled.at(0)?.setAttribute("data-mc-hit-start", edgeKind(shown[index4 - 1]));
-      filled.at(-1)?.setAttribute("data-mc-hit-end", edgeKind(shown[index4 + 1]));
+      ), edgeKind = (neighbour) => neighbour === void 0 ? "edge" : isDivider(neighbour) ? "divider" : "gap", [first, last] = [filled.at(0), filled.at(-1)];
+      if (first !== void 0) {
+        edges.set(first, { ...edges.get(first), start: edgeKind(shown[index4 - 1]) });
+      }
+      if (last !== void 0) {
+        edges.set(last, { ...edges.get(last), end: edgeKind(shown[index4 + 1]) });
+      }
     });
+    let setAttribute = (element, name, value) => {
+      if ((element.getAttribute(name) ?? void 0) === value) {
+        return;
+      }
+      if (value === void 0) {
+        element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, value);
+      }
+    };
+    for (let group of groups) {
+      setAttribute(group, "data-mc-gone", shown.includes(group) ? void 0 : "");
+    }
+    for (let slot of Array.from(row.querySelectorAll("[data-mc-slot]"))) {
+      setAttribute(slot, "data-mc-hit-start", edges.get(slot)?.start);
+      setAttribute(slot, "data-mc-hit-end", edges.get(slot)?.end);
+    }
   }
   function layoutToolbarFold(strip, row, card) {
     let maxWidth = parseFloat(getComputedStyle(strip).maxWidth), cells = foldCells(row);
@@ -186429,15 +188890,6 @@ function installUiToolbarFold(runtime2) {
         slot.append(host);
       }
     }
-    let clearHitEdges = () => {
-      for (let element of Array.from(
-        row.querySelectorAll("[data-mc-hit-start], [data-mc-hit-end]")
-      )) {
-        element.removeAttribute("data-mc-hit-start");
-        element.removeAttribute("data-mc-hit-end");
-      }
-    };
-    clearHitEdges();
     for (let element of Array.from(row.querySelectorAll("[data-mc-gone]"))) {
       element.removeAttribute("data-mc-gone");
     }
@@ -186456,7 +188908,6 @@ function installUiToolbarFold(runtime2) {
     if (moreCell !== void 0) {
       card.append(moreCell.host);
     }
-    clearHitEdges();
     markToolbarFoldGroups(row);
     for (let index4 = cells.length - 1; index4 >= 0 && width() > maxWidth; index4--) {
       let { slot, host } = cells[index4];
@@ -186464,7 +188915,6 @@ function installUiToolbarFold(runtime2) {
         continue;
       }
       card.prepend(host);
-      clearHitEdges();
       markToolbarFoldGroups(row);
     }
     strip.removeAttribute("data-mc-fold-measuring");
@@ -186472,7 +188922,6 @@ function installUiToolbarFold(runtime2) {
       return true;
     }
     strip.setAttribute("data-mc-fold", "off");
-    clearHitEdges();
     markToolbarFoldGroups(row);
     return false;
   }
@@ -186699,6 +189148,7 @@ function installUiArtifactLoadBoundary(runtime2) {
     skeletonFlush,
     held = false,
     exposed = true,
+    lasting,
     children
   }) {
     let callback = () => {
@@ -186737,13 +189187,21 @@ function installUiArtifactLoadBoundary(runtime2) {
         });
       }
     }, [value]);
+    let ref4 = reactGQ.useRef(void 0);
+    reactGQ.useEffect(() => {
+      if (lasting === void 0 || lasting.said === ref4.current) {
+        return;
+      }
+      ref4.current = lasting.said;
+      ref3.current = true;
+    }, [lasting?.said]);
     reactGQ.useEffect(() => {
       if (value !== "failed" || !exposed || !ref3.current) {
         return;
       }
       let value6 = setTimeout(() => {
         ref3.current = false;
-        value4(ARTIFACT_LOAD_FAILURE_MESSAGE);
+        value4(lasting?.said ?? ARTIFACT_LOAD_FAILURE_MESSAGE);
       }, ARTIFACT_LOAD_DELAY_MS), value7 = setTimeout(
         () => value4(""),
         ARTIFACT_LOAD_DELAY_MS + runtime2.ANNOUNCEMENT_CLEAR_MS
@@ -186752,7 +189210,7 @@ function installUiArtifactLoadBoundary(runtime2) {
         clearTimeout(value6);
         clearTimeout(value7);
       };
-    }, [value, exposed]);
+    }, [value, exposed, lasting?.said]);
     if (value === "live" && !held) {
       return jsxX1.jsx(jsxX1.Fragment, {
         children
@@ -186784,7 +189242,10 @@ function installUiArtifactLoadBoundary(runtime2) {
             "pointer-events-none absolute inset-x-0 flex justify-center",
             skeleton != null ? "top-[calc(var(--tb-overlay-h,0px)+1rem)]" : "top-[calc(var(--tb-overlay-h,0px)+2.5rem)]"
           ),
-          children: value !== "failed" ? jsxX1.jsx(ArtifactLoadingSpinner, {}) : jsxX1.jsxs("span", {
+          children: value !== "failed" ? jsxX1.jsx(ArtifactLoadingSpinner, {}) : lasting !== void 0 ? jsxX1.jsx("div", {
+            className: "pointer-events-auto w-full max-w-2xl px-3",
+            children: lasting.notice
+          }) : jsxX1.jsxs("span", {
             className: "pointer-events-auto inline-flex items-center gap-2 rounded-md border border-border-line bg-panel px-3 py-1.5 text-xs text-fg-muted shadow-sm",
             children: [
               ARTIFACT_LOAD_FAILURE_MESSAGE,
@@ -187159,9 +189620,10 @@ function installUiAgentCursor(runtime2) {
     idle,
     action,
     busy,
-    lines
+    lines,
+    waiting
   }) {
-    let ref = reactIV0.useRef(null), ref2 = reactIV0.useRef(null), ref3 = reactIV0.useRef(null), ref4 = reactIV0.useRef(null), lineText = useAgentWorkingLabel(working, lines);
+    let ref = reactIV0.useRef(null), ref2 = reactIV0.useRef(null), ref3 = reactIV0.useRef(null), ref4 = reactIV0.useRef(null), lineText = useAgentWorkingLabel(working && waiting === void 0, lines);
     reactIV0.useLayoutEffect(() => {
       let current = ref.current, current2 = ref2.current, current3 = ref3.current;
       if (!working || !current || !current2 || !current3) {
@@ -187233,8 +189695,8 @@ function installUiAgentCursor(runtime2) {
                     tint,
                     label: {
                       kind: "words",
-                      text: lineText,
-                      shimmer: working,
+                      text: waiting ?? lineText,
+                      shimmer: working && waiting === void 0,
                       outMs: CLAUDE_WORDS_OUT_MS,
                       inMs: CLAUDE_WORDS_IN_MS
                     }
@@ -187260,7 +189722,7 @@ function installUiAgentCursor(runtime2) {
         action,
         working ? jsxsG.jsx("span", {
           className: "sr-only",
-          children: CLAUDE_WORKING_LABEL
+          children: waiting ?? CLAUDE_WORKING_LABEL
         }) : null
       ]
     });
@@ -187942,9 +190404,10 @@ function installUiToasts(runtime2) {
     let {
       add,
       close,
-      setPinned
+      setPinned,
+      toasts
     } = (0, runtime2.useToastNotifications)();
-    (0, runtime2.useToastF6Visit)();
+    (0, runtime2.useToastF6Visit)(toasts);
     let ref = reactk_.useRef(/* @__PURE__ */ new Map());
     reactk_.useEffect(() => {
       let callback = (input) => setPinned(input);
@@ -187969,11 +190432,11 @@ function installUiToasts(runtime2) {
             action: value.action,
             timeout: Math.max(0, value.durationMs),
             dedupe: false,
-            onClose: () => {
+            onClose: ({ byUser }) => (0, runtime2.closeToastRestoringFocus)(value2, byUser, () => {
               current.delete(value.id);
               closeToast(value.id);
               value.onClose?.();
-            }
+            })
           });
           current.set(value.id, value2);
         }
@@ -188087,16 +190550,67 @@ function installUiToastF6Visit(runtime2) {
   var reactToastF6Visit;
   var TOAST_F6_VISIT_ATTRIBUTE;
   var initializeToastF6Visit;
-  function useToastF6Visit() {
+  const TOAST_REGION_SELECTOR = '[data-cds="Toast"] [role="region"]';
+  var recentFocus;
+  var liveToastIds;
+  const toastOf = (target) => target instanceof Element ? target.closest('[data-cds="Toast"]') : null;
+  const canReceiveFocus = (element) => "focus" in element && !element.matches("[data-base-ui-focus-guard], iframe");
+  function holdKeysUntilFreshPress() {
+    let types = ["keydown", "keypress"], onKey = (event) => {
+      let key = event;
+      if (key.type === "keydown" && !key.repeat) {
+        if (!["Shift", "Control", "Alt", "AltGraph", "Meta"].includes(key.key)) {
+          types.forEach(
+            (type) => window.removeEventListener(type, onKey, true)
+          );
+        }
+        return;
+      }
+      key.preventDefault();
+      key.stopImmediatePropagation();
+    };
+    types.forEach((type) => window.addEventListener(type, onKey, true));
+  }
+  function closeToastRestoringFocus(toastId, byUser, close) {
+    liveToastIds.delete(toastId);
+    let focused = document.activeElement, hadVisibleFocus = byUser && focused !== null && focused.closest(TOAST_REGION_SELECTOR) !== null && focused.matches(":focus-visible");
+    close?.();
+    if (!hadVisibleFocus) {
+      return;
+    }
+    let now = document.activeElement;
+    if (now !== null && now !== document.body && now.closest(TOAST_REGION_SELECTOR) === null) {
+      return holdKeysUntilFreshPress();
+    }
+    if (liveToastIds.size > 0) {
+      return;
+    }
+    for (let element of recentFocus) {
+      element.focus();
+      if (document.activeElement === element) {
+        return holdKeysUntilFreshPress();
+      }
+    }
+  }
+  function useToastF6Visit(toasts) {
+    reactToastF6Visit.useEffect(() => {
+      liveToastIds = new Set(toasts.map((toast) => toast.id));
+    }, [toasts]);
     reactToastF6Visit.useEffect(() => {
       let visited = null, mark = (toast) => {
         visited?.removeAttribute(TOAST_F6_VISIT_ATTRIBUTE);
         toast?.setAttribute(TOAST_F6_VISIT_ATTRIBUTE, "");
         visited = toast;
-      }, toastOf = (target) => target instanceof Element ? target.closest('[data-cds="Toast"]') : null, onFocusIn = (event) => {
+      }, onFocusIn = (event) => {
         let target = event.target instanceof Element ? event.target : null, toast = toastOf(target);
         if (toast === null) {
           mark(null);
+          if (target !== null && target === document.activeElement && canReceiveFocus(target)) {
+            recentFocus = [
+              target,
+              ...recentFocus.filter((element) => element !== target)
+            ].slice(0, 5);
+          }
         } else if (target?.matches('[role="region"]')) {
           mark(toastOf(event.relatedTarget) === toast ? null : toast);
         }
@@ -188104,17 +190618,29 @@ function installUiToastF6Visit(runtime2) {
         if (event.relatedTarget === null && event.target instanceof Element && event.target.ownerDocument.activeElement !== event.target) {
           mark(null);
         }
+      }, onKeyDown = (event) => {
+        let dialog = event.key === "Escape" && event.target instanceof Element ? event.target.closest(TOAST_REGION_SELECTOR + ' > [role$="dialog"]') : null, focused = document.activeElement;
+        if (dialog !== null && focused !== null && focused !== document.body && !dialog.contains(focused)) {
+          event.preventDefault();
+        }
       };
       document.addEventListener("focusin", onFocusIn);
       document.addEventListener("focusout", onFocusOut);
+      document.addEventListener("keydown", onKeyDown);
       return () => {
         mark(null);
         document.removeEventListener("focusin", onFocusIn);
         document.removeEventListener("focusout", onFocusOut);
+        document.removeEventListener("keydown", onKeyDown);
       };
     }, []);
   }
   bindRuntimeValue(runtime2, "useToastF6Visit", () => useToastF6Visit);
+  bindRuntimeValue(
+    runtime2,
+    "closeToastRestoringFocus",
+    () => closeToastRestoringFocus
+  );
   bindRuntimeValue(
     runtime2,
     "reactToastF6Visit",
@@ -188146,6 +190672,8 @@ function installUiToastF6Visit(runtime2) {
         (0, runtime2.loadReactNamespace)(),
         1
       );
+      recentFocus = [];
+      liveToastIds = /* @__PURE__ */ new Set();
     });
   };
 }
@@ -188561,6 +191089,8 @@ function installUiToolbarPopover(runtime2) {
             focus === false ? false : focus?.current ?? (trigger?.disabled === true ? root : trigger),
             () => returnedRef.current?.()
           );
+        } else if (root != null) {
+          findControlledMenu(root)?.removeAttribute(FOOT_MENU_ATTRIBUTE);
         }
         reporter.closing("unpicked");
         return;
@@ -188604,6 +191134,7 @@ function installUiToolbarPopover(runtime2) {
       let win = at.current?.ownerDocument.defaultView;
       reported.current = rises && win != null && at.current?.closest(FOOT_TOOLBAR_SELECTOR) != null && !runtime2.coarsePointerMatches() && menuCutListed() && supportsUserActivation(win);
       if (win == null || !reported.current) {
+        popup.current?.removeAttribute(FOOT_MENU_ATTRIBUTE);
         reporter.closing();
         return;
       }
@@ -188633,6 +191164,7 @@ function installUiToolbarPopover(runtime2) {
       }
       awayClosed.current = false;
       if (!reports || runtime2.coarsePointerMatches()) {
+        popup.current?.removeAttribute(FOOT_MENU_ATTRIBUTE);
         reporter.closing();
         return;
       }
@@ -188742,7 +191274,10 @@ function installUiToolbarPopover(runtime2) {
             className: "inline-flex flex-col items-center before:invisible before:h-0 before:content-[attr(data-sizer)]",
             children: props.readout
           }),
-          jsxeQ.jsx(runtime2.ToolbarCaret, {})
+          props.wordCaret === true ? jsxeQ.jsx(runtime2.Icon, {
+            name: "CaretDown",
+            size: "sm"
+          }) : jsxeQ.jsx(runtime2.ToolbarCaret, {})
         ]
       })
     }) : jsxeQ.jsx(runtime2.Menu.Trigger, {
@@ -190268,7 +192803,6 @@ function installUiArtifactToolbar(runtime2) {
     leading,
     afterUndo,
     undoButtons = true,
-    leadingFlat = false,
     density,
     touchTargets,
     readOnly,
@@ -190382,7 +192916,7 @@ function installUiArtifactToolbar(runtime2) {
             value: value2,
             children: [
               jsx_5.jsx(ToolbarSurface, {
-                floating: value11 && !leadingFlat,
+                floating: value11,
                 comfortable: value5 === "comfortable",
                 className: "tb-card tb-card-start flex min-w-0 items-center",
                 children: jsx_5.jsx(ToolbarScrollArea, {
@@ -190847,6 +193381,7 @@ function installUiToolbarFoot(runtime2) {
   var CHAT_SLOT_ICON_CLASS;
   var reactChatSlot;
   var FRAME_BAR_TIP_KEY;
+  var FRAME_BAR_TIP_HOST_WORD;
   var FRAME_BAR_TIP_GAP;
   var FRAME_BAR_TIP_LINGER_MS;
   var FRAME_BAR_TIP_EVENTS;
@@ -191151,7 +193686,7 @@ function installUiToolbarFoot(runtime2) {
         return;
       };
     }
-    let lastPosted = "null", frame = 0, engagedUntil = 0, listed = () => words()?.has(runtime2.MENU_CUT_HOST_WORD) === true, findTip = () => {
+    let lastPosted = "null", frame = 0, engagedUntil = 0, listed = () => words()?.has(FRAME_BAR_TIP_HOST_WORD) === true || words()?.has(runtime2.MENU_CUT_HOST_WORD) === true, findTip = () => {
       if (!listed()) {
         return null;
       }
@@ -192056,6 +194591,7 @@ function installUiToolbarFoot(runtime2) {
       1
     );
     FRAME_BAR_TIP_KEY = "__frame_bar_tip";
+    FRAME_BAR_TIP_HOST_WORD = "bar_tip";
     FRAME_BAR_TIP_GAP = 8;
     FRAME_BAR_TIP_LINGER_MS = 1e3;
     FRAME_BAR_TIP_EVENTS = ["pointerover", "pointermove", "focusin"];
@@ -192164,6 +194700,9 @@ function installUiToolbarFoot(runtime2) {
   };
 }
 
+function saveFailedBeforeLoad(doc, status) {
+  return status === "error" && doc.loadState?.() === "failed" && !doc.dirty();
+}
 function installUiArtifactShell(runtime2) {
   var jsxS6;
   var NARROW_TOUCH_QUERY;
@@ -192264,7 +194803,6 @@ function installUiArtifactShell(runtime2) {
     toolbarLeading,
     toolbarTrailing,
     toolbarUndoButtons,
-    toolbarLeadingFlat,
     toolbarDensity,
     toolbarTouchTargets,
     toolbarFoot,
@@ -192308,7 +194846,7 @@ function installUiArtifactShell(runtime2) {
     (0, runtime2.useUndoKeys)(undo, undoShortcuts);
     let value4 = doc.readOnly(), value5 = doc.title(), value6 = "loadState" in doc || doc.saveMode() === "auto", status = doc.saveState().status, value7 = status === "readonly" && toolbarQuietReadOnlyReason !== void 0 && doc.saveState().message === toolbarQuietReadOnlyReason;
     (0, runtime2.useHostSaveState)(
-      !value7 && (value6 || status === "readonly") ? status : null,
+      !value7 && !saveFailedBeforeLoad(doc, status) && (value6 || status === "readonly") ? status : null,
       () => void doc.save()
     );
     runtime2.reactd3.useEffect(() => {
@@ -192373,7 +194911,6 @@ function installUiArtifactShell(runtime2) {
                   leading: toolbarLeading,
                   trailing: toolbarTrailing,
                   undoButtons: toolbarUndoButtons,
-                  leadingFlat: toolbarLeadingFlat,
                   density: toolbarDensity,
                   touchTargets: toolbarTouchTargets,
                   readOnly: value4,
@@ -192448,8 +194985,10 @@ function installUiArtifactShell(runtime2) {
                       value: value4,
                       children: [
                         commentsOnlyFoot ? null : footContent(toolbarFoot.controls),
+                        // BaoCut: the "Turn into" control the host chrome adds here is not ported (no host offers it)
                         jsxS6.jsx(runtime2.FrameCommentButton, {
-                          onScreen: !footReveal.held
+                          onScreen: !footReveal.held,
+                          handsKeyboardToPage: toolbarFoot.handsKeyboardToPage === true
                         })
                       ]
                     }),
@@ -193088,6 +195627,139 @@ function installHostRoomPresence(runtime2) {
   };
 }
 
+function installEditorFocusReturn(runtime2) {
+  var reactFocusReturn;
+  var focusedElementOf;
+  var initializeFocusReturn;
+  function retryWhenWindowFocused(retry, win) {
+    let cancel = () => {
+      win.removeEventListener("focus", onFocus);
+      win.removeEventListener("pointerdown", cancel, true);
+    }, onFocus = () => {
+      cancel();
+      retry();
+    };
+    win.addEventListener("focus", onFocus);
+    win.addEventListener("pointerdown", cancel, true);
+    return cancel;
+  }
+  function visibleFocusables(root) {
+    return (0, runtime2.collectFocusableDescendants)(root).filter(
+      (element) => element.getClientRects().length > 0
+    );
+  }
+  function withoutDisabledButtonChild(elements) {
+    return elements.filter(
+      (element) => element.querySelector(":scope > button:disabled") === null
+    );
+  }
+  function focusFirstAccepting(candidates, doc) {
+    return candidates.some((candidate) => {
+      let options = { focusVisible: true };
+      candidate.focus(options);
+      return doc.activeElement === candidate;
+    });
+  }
+  function retryWhenToolbarSettles(toolbar, retry, win) {
+    let stop = () => {
+      observer.disconnect();
+      win.removeEventListener("pointerdown", stop, true);
+      win.removeEventListener("keydown", stop, true);
+    }, observer = new win.MutationObserver(() => {
+      stop();
+      retry();
+    });
+    observer.observe(toolbar, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["disabled"]
+    });
+    win.addEventListener("pointerdown", stop, true);
+    win.addEventListener("keydown", stop, true);
+  }
+  function moveFocusOutOfRemoved(removed) {
+    let doc = removed.ownerDocument;
+    if (doc.hasFocus() && !removed.matches(":focus-visible")) {
+      return;
+    }
+    let win = doc.defaultView;
+    if (win === null) {
+      return;
+    }
+    let toolbar = removed.closest("[data-tb-foot-tips]"), attempt = () => {
+      if (!doc.hasFocus()) {
+        return void retryWhenWindowFocused(attempt, win);
+      }
+      if (focusedElementOf(doc) !== doc.body) {
+        return;
+      }
+      let tips = toolbar?.isConnected === true ? toolbar : doc.querySelector("[data-tb-foot-tips]"), candidates = tips === null ? [] : visibleFocusables(tips).reverse();
+      if (candidates.length === 0) {
+        focusFirstAccepting(
+          withoutDisabledButtonChild(visibleFocusables(doc.body)),
+          doc
+        );
+      } else if (tips !== null && !focusFirstAccepting(withoutDisabledButtonChild(candidates), doc)) {
+        retryWhenToolbarSettles(tips, attempt, win);
+      }
+    };
+    if (doc.hasFocus()) {
+      win.requestAnimationFrame(attempt);
+    } else {
+      retryWhenWindowFocused(attempt, win);
+    }
+  }
+  function FocusReturnOnUnmount({
+    within
+  }) {
+    reactFocusReturn.useLayoutEffect(
+      () => () => {
+        let element = within.current, active = element?.ownerDocument.activeElement;
+        if (element != null && active != null && active !== element.ownerDocument.body && (element.contains(active) || active.contains(element))) {
+          moveFocusOutOfRemoved(active);
+        }
+      },
+      [within]
+    );
+    return null;
+  }
+  bindRuntimeValue(
+    runtime2,
+    "reactFocusReturn",
+    () => reactFocusReturn,
+    (value) => {
+      reactFocusReturn = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "focusedElementOf",
+    () => focusedElementOf,
+    (value) => {
+      focusedElementOf = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "FocusReturnOnUnmount", () => FocusReturnOnUnmount);
+  bindRuntimeValue(
+    runtime2,
+    "initializeFocusReturn",
+    () => initializeFocusReturn,
+    (value) => {
+      initializeFocusReturn = value;
+    }
+  );
+  return () => {
+    initializeFocusReturn = (0, runtime2.initializeOnce)(() => {
+      reactFocusReturn = (0, runtime2.toModuleNamespace)(
+        (0, runtime2.loadReactNamespace)(),
+        1
+      );
+      focusedElementOf = (doc = document) => doc.hasFocus() ? doc.activeElement : null;
+    });
+  };
+}
+
 function installEditorFrameComments(runtime2) {
   var ReactFrameComments;
   var FrameCommentsJsx;
@@ -193584,7 +196256,8 @@ function installEditorFrameComments(runtime2) {
     onScreen = true,
     disabled: disabled2 = false,
     disabledTip,
-    buttonRef
+    buttonRef,
+    handsKeyboardToPage = false
   }) {
     let shown = useCommentButtonShown(), {
       on,
@@ -193644,7 +196317,7 @@ function installEditorFrameComments(runtime2) {
       forgetOpen();
       if (!wasOpen) {
         cancelReturn();
-        if ((0, runtime2.isKeyboardOrPrimaryActivation)(event)) {
+        if (handsKeyboardToPage && (0, runtime2.isKeyboardOrPrimaryActivation)(event)) {
           ref.current?.blur();
         }
       }
@@ -193653,53 +196326,60 @@ function installEditorFrameComments(runtime2) {
     if (!shown) {
       return null;
     }
-    return FrameCommentsJsx.jsx(runtime2.ToolbarButton, {
-      ref,
-      iconOnly: true,
-      icon: open4 ? "CommentFilled" : "Comment",
-      label: (0, runtime2.formatMessage)({
-        defaultMessage: "Comment",
-        id: "w318NYUUc0"
-      }),
-      tipSide: "top",
-      tipShut: returned,
-      pressed: open4,
-      count,
-      countShows: "tip",
-      countTip: (0, runtime2.formatMessage)(
-        {
-          defaultMessage: "{n, plural, one {Comment, {count} open} other {Comment, {count} open}}",
-          id: "3Or0gDOz12"
-        },
-        {
-          n: count,
-          count: (0, runtime2.formatDecimalNumber)(count, {
-            grouping: true
-          })
-        }
-      ),
-      onClick,
-      onPointerDown: (event) => {
-        if (event.button === 0) {
-          watchPress();
-        }
-      },
-      onKeyDown: (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          rememberOpen();
-        }
-      },
-      onPointerCancel: forgetOpen,
-      disabled: disabled2,
-      disabledTip,
-      onBlur: () => {
-        forgetOpen();
-        clearReturned();
-      },
-      onPointerEnter: clearReturned,
-      "data-comment-button": "",
-      "data-comment-pass": "",
-      "data-uncommentable": ""
+    return FrameCommentsJsx.jsxs(FrameCommentsJsx.Fragment, {
+      children: [
+        FrameCommentsJsx.jsx(runtime2.FocusReturnOnUnmount, {
+          within: ref
+        }),
+        FrameCommentsJsx.jsx(runtime2.ToolbarButton, {
+          ref,
+          iconOnly: true,
+          icon: open4 ? "CommentFilled" : "Comment",
+          label: (0, runtime2.formatMessage)({
+            defaultMessage: "Comment",
+            id: "w318NYUUc0"
+          }),
+          tipSide: "top",
+          tipShut: returned,
+          pressed: open4,
+          count,
+          countShows: "tip",
+          countTip: (0, runtime2.formatMessage)(
+            {
+              defaultMessage: "{n, plural, one {Comment, {count} open} other {Comment, {count} open}}",
+              id: "3Or0gDOz12"
+            },
+            {
+              n: count,
+              count: (0, runtime2.formatDecimalNumber)(count, {
+                grouping: true
+              })
+            }
+          ),
+          onClick,
+          onPointerDown: (event) => {
+            if (event.button === 0) {
+              watchPress();
+            }
+          },
+          onKeyDown: (event) => {
+            if ((event.key === "Enter" || event.key === " ") && !event.repeat) {
+              rememberOpen();
+            }
+          },
+          onPointerCancel: forgetOpen,
+          disabled: disabled2,
+          disabledTip,
+          onBlur: () => {
+            forgetOpen();
+            clearReturned();
+          },
+          onPointerEnter: clearReturned,
+          "data-comment-button": "",
+          "data-comment-pass": "",
+          "data-uncommentable": ""
+        })
+      ]
     });
   }
   bindRuntimeValue(
@@ -193927,6 +196607,7 @@ function installEditorFrameComments(runtime2) {
   );
   bindRuntimeValue(runtime2, "FrameCommentButton", () => FrameCommentButton);
   return () => {
+    (0, runtime2.initializeFocusReturn)();
     ReactFrameComments = (0, runtime2.toModuleNamespace)(
       (0, runtime2.loadReactNamespace)(),
       1
@@ -198501,6 +201182,63 @@ function installEditorCommandHistory(runtime2) {
   };
 }
 
+function installModelDeckFormat(runtime2) {
+  var SOURCE_DECK_VERSION;
+  var SOURCE_DECK_SHARED_FILES;
+  var sourceDecksDisabled;
+  const isSourceDeckSharedFile = (path) => SOURCE_DECK_SHARED_FILES.includes(path);
+  const setSourceDecksDisabled = (disabled2 = true) => {
+    sourceDecksDisabled = disabled2;
+  };
+  function classifyDeckFormat(format) {
+    if (format === void 0) {
+      return "none";
+    }
+    let { v: version2, shared } = typeof format === "object" && format !== null ? format : {};
+    let hasSharedFiles = version2 === 1 && Array.isArray(shared);
+    if (sourceDecksDisabled) {
+      return hasSharedFiles ? "unknown" : "none";
+    }
+    return hasSharedFiles && shared.every(
+      (path) => typeof path === "string" && isSourceDeckSharedFile(path)
+    ) && new Set(shared).size === shared.length ? "source" : "unknown";
+  }
+  const deckSharedFiles = (format) => classifyDeckFormat(format) === "source" ? format.shared : [];
+  bindRuntimeValue(
+    runtime2,
+    "SOURCE_DECK_VERSION",
+    () => SOURCE_DECK_VERSION,
+    (value) => {
+      SOURCE_DECK_VERSION = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SOURCE_DECK_SHARED_FILES",
+    () => SOURCE_DECK_SHARED_FILES,
+    (value) => {
+      SOURCE_DECK_SHARED_FILES = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "isSourceDeckSharedFile", () => isSourceDeckSharedFile);
+  bindRuntimeValue(
+    runtime2,
+    "sourceDecksDisabled",
+    () => sourceDecksDisabled,
+    (value) => {
+      sourceDecksDisabled = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "setSourceDecksDisabled", () => setSourceDecksDisabled);
+  bindRuntimeValue(runtime2, "classifyDeckFormat", () => classifyDeckFormat);
+  bindRuntimeValue(runtime2, "deckSharedFiles", () => deckSharedFiles);
+  return () => {
+    SOURCE_DECK_VERSION = 5;
+    SOURCE_DECK_SHARED_FILES = ["project/deck.css"];
+    sourceDecksDisabled = false;
+  };
+}
+
 function installModelDeckMetadata(runtime2) {
   var DECK_METADATA_PATH;
   var DECK_METADATA_VERSION;
@@ -198508,12 +201246,17 @@ function installModelDeckMetadata(runtime2) {
   var SLIDE_FILE_ID_PATTERN;
   var slideFilePath;
   var isMetadataObject;
+  var KNOWN_DECK_METADATA_KEYS;
+  const deckMetadataVersion = (metadata) => Math.max(
+    metadata.v,
+    metadata.format === void 0 ? DECK_METADATA_VERSION : runtime2.SOURCE_DECK_VERSION
+  );
   var conflictingUndoMessage;
   function slideIdFromFilePath(path) {
-    if (!path.startsWith("project/slides/") || !path.endsWith(".html")) {
+    if (!path.startsWith(SLIDE_FILE_DIRECTORY) || !path.endsWith(".html")) {
       return;
     }
-    let value = path.slice(15, -5);
+    let value = path.slice(SLIDE_FILE_DIRECTORY.length, -5);
     if (SLIDE_FILE_ID_PATTERN.test(value)) {
       return value;
     } else {
@@ -198548,7 +201291,7 @@ function installModelDeckMetadata(runtime2) {
     ];
     return {
       ...value,
-      v: typeof value.v === "number" ? value.v : 4,
+      v: typeof value.v === "number" ? value.v : DECK_METADATA_VERSION,
       title: typeof value.title === "string" ? value.title : "",
       ...typeof value.cover === "string" ? {
         cover: value.cover
@@ -198568,7 +201311,7 @@ function installModelDeckMetadata(runtime2) {
     }
   }
   function replaceDeckMetadata(target, metadata) {
-    target.v = 4;
+    target.v = deckMetadataVersion(target);
     target.title = metadata.title;
     if (metadata.cover === void 0) {
       delete target.cover;
@@ -198593,7 +201336,7 @@ function installModelDeckMetadata(runtime2) {
     if (before === void 0) {
       return replaceDeckMetadata(target, after);
     }
-    target.v = 4;
+    target.v = deckMetadataVersion(target);
     if (before.title !== after.title) {
       target.title = after.title;
     }
@@ -198720,6 +201463,15 @@ function installModelDeckMetadata(runtime2) {
   bindRuntimeValue(runtime2, "restoreKeptListedSlides", () => restoreKeptListedSlides);
   bindRuntimeValue(
     runtime2,
+    "KNOWN_DECK_METADATA_KEYS",
+    () => KNOWN_DECK_METADATA_KEYS,
+    (value) => {
+      KNOWN_DECK_METADATA_KEYS = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "deckMetadataVersion", () => deckMetadataVersion);
+  bindRuntimeValue(
+    runtime2,
     "conflictingUndoMessage",
     () => conflictingUndoMessage,
     (value) => {
@@ -198731,7 +201483,21 @@ function installModelDeckMetadata(runtime2) {
     DECK_METADATA_VERSION = 4;
     SLIDE_FILE_DIRECTORY = "project/slides/";
     SLIDE_FILE_ID_PATTERN = /^[\w-]{1,64}$/;
-    slideFilePath = (slideId) => "project/slides/" + slideId + ".html";
+    slideFilePath = (slideId) => SLIDE_FILE_DIRECTORY + slideId + ".html";
+    KNOWN_DECK_METADATA_KEYS = [
+      "title",
+      "cover",
+      "order",
+      "sections",
+      "faces",
+      "designSystems",
+      "attachments",
+      "lists",
+      "style",
+      "source",
+      "createdOnFiles",
+      "convertedFrom"
+    ];
     isMetadataObject = (value) => typeof value === "object" && value !== null && !Array.isArray(value);
     conflictingUndoMessage = (command) => command === "undo" ? (0, runtime2.formatMessage)({
       defaultMessage: "Someone else has reordered, added, deleted or changed slides since you did that. Nothing was changed. Press undo again to go ahead anyway: your change is undone around theirs.",
@@ -200236,6 +203002,7 @@ function installUiZoomControl(runtime2) {
     subscribeScale,
     onStepZoom,
     undo,
+    onOpened,
     zoomRowsDisabled = false,
     zoomRowsDisabledTip,
     viewToggles = [],
@@ -200265,6 +203032,7 @@ function installUiZoomControl(runtime2) {
       }
       value2(getScale2());
       value6(getLimits?.() ?? {});
+      onOpened?.();
     }, value10 = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform), callback2 = (input) => jsxh6.jsx("span", {
       "aria-hidden": "true",
       className: "pointer-coarse:hidden text-footnote text-muted",
@@ -201364,7 +204132,7 @@ function installDesignSystemThemeLooks(runtime2) {
         colors.slice(0, max2).map(
           (color, index4) => jsxForThemeLooks.jsx(
             runtime2.ColorChip,
-            { hex: color, className: NO_FORCED_COLORS },
+            { hex: color },
             String(index4) + color
           )
         ),
@@ -203071,15 +205839,19 @@ function installModelArtifactStoreRecords(runtime2) {
       ...face
     };
   }
-  function serializedSlideRecord(assets, slide, includeNotes) {
+  function serializedSlideRecord(assets, slide, includeNotes, flat = false) {
     if (includeNotes) {
       return {
-        html: (0, runtime2.serializeSlideHtml)(assets, slide)
+        html: (0, runtime2.serializeSlideHtml)(assets, slide, {
+          flat
+        })
       };
     }
     let { notes, ...remainingProps } = slide;
     return {
-      html: (0, runtime2.serializeSlideHtml)(assets, remainingProps),
+      html: (0, runtime2.serializeSlideHtml)(assets, remainingProps, {
+        flat
+      }),
       ...notes !== void 0 ? {
         notes
       } : {}
@@ -203866,6 +206638,7 @@ function installUiSessionProperties(runtime2) {
     chipText,
     options,
     onChange,
+    repick = false,
     custom,
     systemHeader
   }) {
@@ -204006,7 +206779,7 @@ function installUiSessionProperties(runtime2) {
                                   "data-testid": testid ? testid + "-" + input.value : void 0,
                                   onClick: () => {
                                     value3(false);
-                                    if (input.value !== value) {
+                                    if (input.value !== value || repick) {
                                       onChange(input.value);
                                     }
                                   },
@@ -205531,13 +208304,18 @@ function installUiStyleInspector(runtime2) {
       ...ed2,
       disabled: true,
       whyDisabled: value2
-    } : ed2, value4 = value !== void 0 && !value3.disabled ? () => ed2.commit(propKey, void 0) : void 0;
-    return jsxTJ.jsx(StyleValueRow, {
+    } : ed2, value4 = (value !== void 0 || ed2.mixedKeys?.has(propKey) === true) && !value3.disabled ? () => ed2.commit(propKey, void 0) : void 0, value5 = jsxTJ.jsx(StyleValueRow, {
       propKey,
       model,
       value,
       ed: value3,
       onReset: value4
+    });
+    return value2 === void 0 ? value5 : jsxTJ.jsx(runtime2.DisabledReasonTooltip, {
+      reason: value2,
+      side: "left",
+      wrapperClassName: "block",
+      children: value5
     });
   }
   function styleScrubProps(editor, key, convert) {
@@ -205588,7 +208366,7 @@ function installUiStyleInspector(runtime2) {
         let value4 = stylePropertyValidator(propKey, ed2.kind);
         return jsxTJ.jsx(runtime2.NumberPropertyRow, {
           label: value2,
-          title: ed2.whyDisabled,
+          description: ed2.whyDisabled,
           onReset,
           value: value3 ? void 0 : finiteStyleNumber(value),
           mixed: value3,
@@ -205615,7 +208393,7 @@ function installUiStyleInspector(runtime2) {
         let value4 = stylePropertyValidator(propKey, ed2.kind);
         return jsxTJ.jsx(runtime2.SliderPropertyRow, {
           label: value2,
-          title: ed2.whyDisabled,
+          description: ed2.whyDisabled,
           onReset,
           value: finiteStyleNumber(value) ?? model.max,
           mixed: value3,
@@ -205634,7 +208412,7 @@ function installUiStyleInspector(runtime2) {
       case "segmented":
         return jsxTJ.jsx(runtime2.ChoicePropertyRow, {
           label: value2,
-          title: ed2.whyDisabled,
+          description: ed2.whyDisabled,
           onReset,
           value: value3 ? "" : styleStringValue(value) ?? "",
           options: model.shown,
@@ -205644,7 +208422,7 @@ function installUiStyleInspector(runtime2) {
       case "select":
         return jsxTJ.jsx(runtime2.SelectPropertyRow, {
           label: value2,
-          title: ed2.whyDisabled,
+          description: ed2.whyDisabled,
           onReset,
           value: value3 ? MIXED_STYLE_CHOICE : styleStringValue(value) ?? "",
           placeholder: value3 ? runtime2.MIXED_LABEL : void 0,
@@ -205665,7 +208443,7 @@ function installUiStyleInspector(runtime2) {
       case "color":
         return jsxTJ.jsx(runtime2.ColorTextPropertyRow, {
           label: value2,
-          title: ed2.whyDisabled,
+          description: ed2.whyDisabled,
           onReset,
           value: styleStringValue(value),
           mixed: value3,
@@ -205769,7 +208547,7 @@ function installUiStyleInspector(runtime2) {
     return jsxTJ.jsx(runtime2.InspectorPropertyRow, {
       label,
       onReset,
-      title: ed2.whyDisabled,
+      description: ed2.whyDisabled,
       onPress: (element) => element.querySelector("input")?.focus(),
       children: jsxTJ.jsx(
         runtime2.TextInput,
@@ -205807,7 +208585,7 @@ function installUiStyleInspector(runtime2) {
     let value2 = styleRecordValue(value), value3 = value2 ? finiteStyleNumber(value2.pct) : void 0, value4 = value2 ? finiteStyleNumber(value2.px) : void 0, value5 = value3 !== void 0 ? "%" : "px", value6 = value3 ?? value4, value7 = value5 === "%" ? MIN_STYLE_PERCENT : 0, value8 = value5 === "%" ? MAX_STYLE_PERCENT : MAX_STYLE_LENGTH_PX;
     return jsxTJ.jsx(runtime2.NumberPropertyRow, {
       label,
-      title: ed2.whyDisabled,
+      description: ed2.whyDisabled,
       onReset,
       value: value6,
       placeholder: (0, runtime2.formatMessage)({
@@ -205894,7 +208672,7 @@ function installUiStyleInspector(runtime2) {
       children: [
         jsxTJ.jsx(runtime2.TogglePropertyRow, {
           label,
-          title: ed2.whyDisabled,
+          description: ed2.whyDisabled,
           onReset,
           checked: value3,
           disabled: ed2.disabled,
@@ -206056,7 +208834,7 @@ function installUiStyleInspector(runtime2) {
     return jsxTJ.jsx(runtime2.InspectorPropertyRow, {
       label: value2,
       disabled: ed2.disabled,
-      title: ed2.whyDisabled,
+      description: ed2.whyDisabled,
       trailing: jsxTJ.jsx(runtime2.RemovePropertyButton, {
         name: removeName,
         disabled: ed2.disabled || rec === void 0,
@@ -206197,7 +208975,7 @@ function installUiStyleInspector(runtime2) {
     return jsxTJ.jsx(runtime2.InspectorPropertyRow, {
       label,
       disabled: ed2.disabled,
-      title: ed2.whyDisabled,
+      description: ed2.whyDisabled,
       trailing: jsxTJ.jsx(runtime2.RemovePropertyButton, {
         name: removeName,
         disabled: ed2.disabled || rec === void 0,
@@ -209100,7 +211878,7 @@ function installUiBoxStyleToolbar(runtime2) {
       tr: input,
       br: input,
       bl: input
-    }), callback2 = (input) => {
+    }), keptStyle = (input) => binding.kept === true ? input : void 0, callback2 = (input) => {
       let state = {};
       for (let value of ["tl", "tr", "br", "bl"])
         if (value in input) {
@@ -209112,25 +211890,36 @@ function installUiBoxStyleToolbar(runtime2) {
       radius: (0, runtime2.hasPerCornerRadius)(binding.bag) ? ((input) => input.tl === input.tr && input.tl === input.br && input.tl === input.bl ? input.tl : void 0)((0, runtime2.borderRadiiByCorner)(binding.bag)) : binding.bag?.borderRadius,
       max: 256,
       onChange: (input) => binding.update(
-        () => (0, runtime2.borderRadiusPatch)(callback(input ?? 0))
+        (input2) => (0, runtime2.borderRadiusPatch)(
+          callback(input ?? 0),
+          input !== void 0 ? keptStyle(input2) : void 0
+        )
       ),
       onLive: (input) => binding.liveWith(
-        () => (0, runtime2.borderRadiusPatch)(callback(input))
+        (input2) => (0, runtime2.borderRadiusPatch)(callback(input), keptStyle(input2))
       ),
       onLiveEnd: binding.settle,
       corners: {
         value: (0, runtime2.borderRadiiByCorner)(binding.bag),
         onChange: (input) => binding.update(
-          (input2) => (0, runtime2.borderRadiusPatch)({
-            ...(0, runtime2.borderRadiiByCorner)(input2),
-            ...callback2(input)
-          })
+          (input2) => (0, runtime2.borderRadiusPatch)(
+            {
+              ...(0, runtime2.borderRadiiByCorner)(input2),
+              ...callback2(input)
+            },
+            Object.values(input).some(
+              (value) => value === void 0
+            ) ? void 0 : keptStyle(input2)
+          )
         ),
         onLive: (input) => binding.liveWith(
-          (input2) => (0, runtime2.borderRadiusPatch)({
-            ...(0, runtime2.borderRadiiByCorner)(input2),
-            ...callback2(input)
-          })
+          (input2) => (0, runtime2.borderRadiusPatch)(
+            {
+              ...(0, runtime2.borderRadiiByCorner)(input2),
+              ...callback2(input)
+            },
+            keptStyle(input2)
+          )
         ),
         onLiveEnd: binding.settle
       }
@@ -209259,6 +212048,7 @@ function installUiSelectionActions(runtime2) {
   var LINK_INVALID_HINT;
   var LINK_EMPTY_OPEN_HINT;
   var OPEN_LINK_LABEL;
+  var SelectionMoreIconContext;
   function LinkEditor({
     value,
     invalid: invalid2,
@@ -209375,7 +212165,7 @@ function installUiSelectionActions(runtime2) {
     moreMenu,
     testids
   }) {
-    let value = (0, runtime2.useCoarsePointer)() ? onDelete : void 0, fold = reacttv_.useContext(runtime2.ToolbarFoldContext);
+    let value = (0, runtime2.useCoarsePointer)() ? onDelete : void 0, fold = reacttv_.useContext(runtime2.ToolbarFoldContext), moreIcon = reacttv_.useContext(SelectionMoreIconContext);
     if (lead == null && onComment === null && value === void 0 && onOpenInspector === void 0 && disabledReason === void 0) {
       return null;
     }
@@ -209405,7 +212195,7 @@ function installUiSelectionActions(runtime2) {
           onClick: value
         }),
         (onOpenInspector !== void 0 || disabledReason !== void 0) && jsxNY.jsx(runtime2.ToolbarStripButton, {
-          icon: fold?.folded === true && moreMenu === void 0 ? "SidebarRight" : "DotsVertical",
+          icon: fold?.folded === true && moreMenu === void 0 ? moreIcon : "DotsVertical",
           "data-mc-more": "",
           "data-testid": testids?.more ?? "frame-more",
           title: disabledReason ?? moreMenu?.label ?? (0, runtime2.formatMessage)({
@@ -209507,6 +212297,11 @@ function installUiSelectionActions(runtime2) {
     "SelectionActionButtons",
     () => SelectionActionButtons
   );
+  bindRuntimeValue(
+    runtime2,
+    "SelectionMoreIconContext",
+    () => SelectionMoreIconContext
+  );
   return () => {
     (0, runtime2.initializeUiPropertyIcons)();
     (0, runtime2.initializeUiInspectorIcons)();
@@ -209516,6 +212311,7 @@ function installUiSelectionActions(runtime2) {
       1
     );
     jsxNY = (0, runtime2.toModuleNamespace)((0, runtime2.loadJsxNamespace)(), 1);
+    SelectionMoreIconContext = reacttv_.createContext("SidebarRight");
     TEXT_LIST_LABELS = {
       none: (0, runtime2.formatMessage)({
         defaultMessage: "None",
@@ -210267,6 +213063,61 @@ function installUiScrollbarOverlay(runtime2) {
   };
 }
 
+function installEditorPropertyGuards(runtime2) {
+  var isInlineSvgImage;
+  var blockedPropertyReason;
+  var inlineSvgImageCache;
+  var hasStepAnimation;
+  bindRuntimeValue(
+    runtime2,
+    "isInlineSvgImage",
+    () => isInlineSvgImage,
+    (value) => {
+      isInlineSvgImage = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "blockedPropertyReason",
+    () => blockedPropertyReason,
+    (value) => {
+      blockedPropertyReason = value;
+    }
+  );
+  hasStepAnimation = (node, property) => {
+    for (let animation = node.style?.animation; animation !== void 0; animation = animation.next) {
+      if (animation.onStep === true && animation.keyframes.some((keyframe) => property in keyframe.style)) {
+        return true;
+      }
+    }
+    return node.kind === "overlay" && (0, runtime2.isUnplacedFlowContainer)(node.base) && hasStepAnimation(node.base, property);
+  };
+  isInlineSvgImage = (node) => {
+    if (node.kind !== "img" || node.video !== void 0 || node.videoLink !== void 0 || node.src === void 0) {
+      return false;
+    }
+    if (inlineSvgImageCache?.src !== node.src) {
+      inlineSvgImageCache = {
+        src: node.src,
+        inline: (0, runtime2.parseValidSvgDataUrl)(node.src) !== void 0
+      };
+    }
+    return inlineSvgImageCache.inline;
+  };
+  blockedPropertyReason = (node, property, value) => {
+    if (property === "opacity" && hasStepAnimation(node, "opacity")) {
+      return "click-step";
+    }
+    if (property === "fit" && value === "cover" && isInlineSvgImage(node)) {
+      return "svg-fit";
+    }
+    return void 0;
+  };
+  return () => {
+    inlineSvgImageCache = void 0;
+  };
+}
+
 function installEditorChildSizeModes(runtime2) {
   var HUG_SIZE_LABEL;
   var FIXED_SIZE_LABEL;
@@ -210403,14 +213254,17 @@ function installEditorChildSizeModes(runtime2) {
       mode: (0, runtime2.nodeSupportsIntrinsicSizing)(node) ? "hug" : "fixed"
     };
   }
+  function childSizeModeAllowed(node, parent, dimension, mode) {
+    return !(0, runtime2.isInlineSvgImage)(node) || mode === "fixed" || mode === "fill" && placementAxisRole(parent, dimension) === "main";
+  }
   function childAxisFills(node, parent, axis) {
     let value = (0, runtime2.setNodeAxisSize)(
       node,
       axis,
       void 0,
       parentMainAxis(parent)
-    );
-    return (0, runtime2.nodeHasIntrinsicSize)(node, axis) || childSizeMode(value, parent, axis === "x" ? "w" : "h").mode === "fill";
+    ), dimension = axis === "x" ? "w" : "h", mode = childSizeMode(value, parent, dimension).mode;
+    return childSizeModeAllowed(node, parent, dimension, mode) && ((0, runtime2.nodeHasIntrinsicSize)(node, axis) || mode === "fill");
   }
   function patchNodePlacement(node, patch) {
     let state = {
@@ -210432,7 +213286,7 @@ function installEditorChildSizeModes(runtime2) {
     return state2;
   }
   function updateChildSizeMode(node, parent, dimension, mode, value) {
-    if (!(0, runtime2.nodeSupportsSizing)(node)) {
+    if (!(0, runtime2.nodeSupportsSizing)(node) || !childSizeModeAllowed(node, parent, dimension, mode)) {
       return node;
     }
     let value2 = parentMainAxis(parent);
@@ -210508,6 +213362,9 @@ function installEditorChildSizeModes(runtime2) {
     return resetChildSizeMode(node, parent, dimension) !== node;
   }
   function resetChildSizeMode(node, parent, dimension) {
+    if ((0, runtime2.isInlineSvgImage)(node)) {
+      return node;
+    }
     let value = parentMainAxis(parent), value2 = fixedNodeDimension(node, dimension) !== void 0 ? (0, runtime2.setNodeAxisIntrinsicSize)(
       node,
       dimensionToAxis(dimension),
@@ -210588,6 +213445,11 @@ function installEditorChildSizeModes(runtime2) {
   bindRuntimeValue(runtime2, "placementGrows", () => placementGrows);
   bindRuntimeValue(runtime2, "childSizeModeOptions", () => childSizeModeOptions);
   bindRuntimeValue(runtime2, "childSizeMode", () => childSizeMode);
+  bindRuntimeValue(
+    runtime2,
+    "childSizeModeAllowed",
+    () => childSizeModeAllowed
+  );
   bindRuntimeValue(runtime2, "childAxisFills", () => childAxisFills);
   bindRuntimeValue(runtime2, "patchNodePlacement", () => patchNodePlacement);
   bindRuntimeValue(runtime2, "updateChildSizeMode", () => updateChildSizeMode);
@@ -210856,7 +213718,7 @@ function installUiVideoPlaybackActions(runtime2) {
       }),
       rounded: (0, runtime2.formatMessage)({
         defaultMessage: "Rounded rectangle",
-        id: "iL10J+goqK"
+        id: "3IOReAgEvw"
       }),
       ellipse: (0, runtime2.formatMessage)({
         defaultMessage: "Ellipse",
@@ -211524,7 +214386,10 @@ function installEditorContrastBackgrounds(runtime2) {
         )) {
           return;
         }
-        let value11 = certainSolidBackground(value8.base);
+        let value13 = value8.style !== void 0 && value8.group !== true && (0, runtime2.isEmptyGroupBase)(value8) ? {
+          ...value8.base,
+          style: value8.style
+        } : value8.base, value11 = certainSolidBackground(value13);
         if (value11 !== void 0) {
           if (index4 >= value7) {
             return;
@@ -211540,7 +214405,7 @@ function installEditorContrastBackgrounds(runtime2) {
             return void 0;
           }
         }
-        if (subtreePaintsContrastSurface(value8.base)) {
+        if (subtreePaintsContrastSurface(value13)) {
           return;
         }
       }
@@ -211693,8 +214558,11 @@ function installEditorContrastBackgrounds(runtime2) {
         )
       )),
       0
-    ), value8 = (value2.borderTopWidth ?? value2.borderWidth ?? 0) + (value2.borderBottomWidth ?? value2.borderWidth ?? 0);
-    return value7 * value.fontSize * value.lineHeight + (value2.paddingTop ?? 0) + (value2.paddingBottom ?? 0) + value8;
+    ), value8 = (value2.borderTopWidth ?? value2.borderWidth ?? 0) + (value2.borderBottomWidth ?? value2.borderWidth ?? 0), value9 = node.list !== void 0 ? (node.listGap ?? 0) * (node.text.split(
+      `
+`
+    ).length - 1) : 0;
+    return value7 * value.fontSize * value.lineHeight + value9 + (value2.paddingTop ?? 0) + (value2.paddingBottom ?? 0) + value8;
   }
   function selectionContrastBackground(slide, selection, kinds, options = DEFAULT_CONTRAST_NODE_KINDS, extra = {}) {
     let items = [], value;
@@ -212218,6 +215086,9 @@ function installUiSelectionInspector(runtime2) {
   var jsxq_;
   var TABLE_HEIGHT_REASON;
   var TEXT_SHADOW_FILL_REASON;
+  var TEXT_DECORATION_FIRST_REASON;
+  var SVG_SIZE_REASON;
+  var BLOCKED_PROPERTY_MESSAGES;
   var LINE_DASH_REASON;
   var ZERO_SIDE_PLACEHOLDERS;
   var SIDE_INDEXES;
@@ -212286,6 +215157,7 @@ function installUiSelectionInspector(runtime2) {
   var CONNECTOR_DIRECTION_ARROW_ICONS;
   var CONNECTOR_DIRECTION_ICON_CHOICES;
   var lastPropertyInput;
+  var blurHandoffTarget;
   var isNonConnectorShape;
   var isDecorativePolygonShape;
   var normalizedHexRgba;
@@ -212488,21 +215360,23 @@ function installUiSelectionInspector(runtime2) {
     };
     for (let parent = element.parentElement; parent !== null; parent = parent.matches('[data-slides="properties"]') ? null : parent.parentElement) {
       let rows = [...parent.querySelectorAll("[data-property-row]")].filter(
-        (row2) => !element.contains(row2) && !row2.contains(element) && pick(row2) !== void 0
+        (row) => !element.contains(row) && !row.contains(element) && pick(row) !== void 0
       ), before = rows.filter(
-        (row2) => (element.compareDocumentPosition(row2) & element.DOCUMENT_POSITION_PRECEDING) !== 0
-      ), row = before[before.length - 1] ?? rows[0];
-      if (row !== void 0) {
-        return pick(row);
+        (row) => (element.compareDocumentPosition(row) & element.DOCUMENT_POSITION_PRECEDING) !== 0
+      );
+      if (rows.length > 0) {
+        return [...before.reverse(), ...rows.slice(before.length)].map(
+          (row) => pick(row)
+        );
       }
       let loose = propertyFocusTargets(parent, false).find(
         (input) => !element.contains(input) && input.closest("[data-property-row]") === null
       );
       if (loose !== void 0) {
-        return loose;
+        return [loose];
       }
     }
-    return void 0;
+    return [];
   }
   function suppressRepeatedKeyAfterRemoval() {
     let callback = (event) => {
@@ -212515,9 +215389,9 @@ function installUiSelectionInspector(runtime2) {
     };
     window.addEventListener("keydown", callback, true);
   }
-  function focusAfterPropertyRemoval(element, mode) {
-    let row = element.closest("[data-property-row]"), fallback = adjacentPropertyRowControl(row ?? element, mode === "key"), done = false, attempt = () => {
-      let emptied = element.childElementCount === 0 && !element.matches('button, input, [role="radio"]');
+  function focusAfterPropertyRemoval(element, mode, watch = true, blurred) {
+    let row = element.closest("[data-property-row]"), fallback = adjacentPropertyRowControl(row ?? element, mode === "key"), done = false, attempt = (retry = false) => {
+      let emptied = element.childElementCount === 0 && !element.matches('button, input, [role="radio"], [tabindex], a[href], textarea, select');
       if (done || element.isConnected && !element.matches(":disabled") && !emptied) {
         return;
       }
@@ -212525,14 +215399,17 @@ function installUiSelectionInspector(runtime2) {
       if (!doc.hasFocus()) {
         return;
       }
-      done = true;
+      if (retry && blurHandoffTarget?.isConnected === true && !blurHandoffTarget.matches(":disabled")) {
+        return;
+      }
+      done = !retry;
       if (doc.activeElement !== doc.body && doc.activeElement !== element) {
         return;
       }
-      for (let target of [
-        row?.isConnected === true ? propertyFocusTargets(row, mode === "key" || mode === "mouse", true)[0] : void 0,
-        fallback
-      ]) {
+      let first = row?.isConnected === true ? propertyFocusTargets(row, mode === "key" || mode === "mouse", true).find(
+        (control) => blurred === void 0 || control === blurred || !(control instanceof HTMLInputElement && control.value === "")
+      ) : void 0;
+      for (let target of [first, ...fallback]) {
         target?.focus();
         if (target === void 0 || doc.activeElement !== target) {
           continue;
@@ -212543,8 +215420,24 @@ function installUiSelectionInspector(runtime2) {
         return;
       }
     };
-    requestAnimationFrame(attempt);
-    setTimeout(attempt, 50);
+    requestAnimationFrame(() => attempt());
+    setTimeout(() => attempt(), 50);
+    let panel = watch === false ? null : element.closest('[data-slides="properties"]');
+    if (panel === null) {
+      return;
+    }
+    let observer = new MutationObserver(() => {
+      if (watch === true || watch !== false && watch()) {
+        attempt(true);
+      }
+    });
+    observer.observe(panel, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["disabled"]
+    });
+    setTimeout(() => observer.disconnect(), 50);
   }
   function propertyRemovalMouseHandler(event) {
     focusAfterPropertyRemoval(event.currentTarget, lastPropertyInput);
@@ -212558,10 +215451,32 @@ function installUiSelectionInspector(runtime2) {
       focusAfterPropertyRemoval(target, lastPropertyInput);
     }
   }
-  function propertyRemovalKeyHandler(event) {
+  function propertyRemovalKeyHandler(event, mouse = false) {
     let target = event.target;
-    if (event.key.startsWith("Arrow") && target.matches('[role="radio"]') || (event.key === "Enter" || event.key === "Tab") && target.matches("input")) {
-      focusAfterPropertyRemoval(event.currentTarget, "key");
+    if (!(event.key.startsWith("Arrow") && target.matches('[role="radio"]') || ["Enter", "Tab", "ArrowUp", "ArrowDown"].includes(event.key) && target.matches("input"))) {
+      return;
+    }
+    let mode = mouse || event.key.startsWith("Arrow") && target.matches("input") ? "mouse" : "key";
+    if (event.key !== "Tab") {
+      return focusAfterPropertyRemoval(event.currentTarget, mode);
+    }
+    let next = null;
+    target.addEventListener("focusout", (focusEvent) => void (next = focusEvent.relatedTarget), {
+      once: true
+    });
+    focusAfterPropertyRemoval(event.currentTarget, mode, () => next?.isConnected === false);
+  }
+  function handOffPropertyFocusOnBlur(event) {
+    let next = event.relatedTarget;
+    blurHandoffTarget = next instanceof Element ? next : null;
+    requestAnimationFrame(() => void (blurHandoffTarget = null));
+    if (event.target.matches("input") && next instanceof Element && event.currentTarget.contains(next)) {
+      focusAfterPropertyRemoval(
+        next,
+        lastPropertyInput === "key" ? "mouse" : lastPropertyInput,
+        true,
+        event.target
+      );
     }
   }
   function propertiesKeyDownCapture(event) {
@@ -212570,8 +215485,15 @@ function installUiSelectionInspector(runtime2) {
     }
     let target = event.target;
     if ((0, runtime2.undoRedoKeyCommand)(event.nativeEvent) !== void 0 && event.currentTarget.contains(target) && !target.matches("input, textarea, select") && !target.isContentEditable) {
-      focusAfterPropertyRemoval(target, "undo");
+      focusAfterPropertyRemoval(target, "undo", false);
     }
+  }
+  function keepPropertyFocusAcrossSlideChange() {
+    let active = document.activeElement;
+    if (!(active instanceof HTMLElement) || active.closest('[data-slides="properties"]') === null || active.matches("input, textarea, select") || active.isContentEditable) {
+      return;
+    }
+    focusAfterPropertyRemoval(active, "undo");
   }
   function mediaSourceKinds() {
     let videoLabel = (0, runtime2.formatMessage)({
@@ -213063,7 +215985,7 @@ function installUiSelectionInspector(runtime2) {
       swatches,
       readsContrast: true,
       contrast,
-      clearLabel: (0, runtime2.formatMessage)({ defaultMessage: "Theme default", id: "KOPK9foeQa" }),
+      clearLabel: (0, runtime2.formatMessage)({ defaultMessage: "Theme default", id: "s59VK8yIAS" }),
       onPick: (input) => updateNodes(
         callback((input2) => callback2(input2, input))
       ),
@@ -213179,15 +216101,15 @@ function installUiSelectionInspector(runtime2) {
       options: [
         {
           value: "shrink",
-          label: (0, runtime2.formatMessage)({ defaultMessage: "Shrink text to fit", id: "QkCkDV1Xzs" })
+          label: (0, runtime2.formatMessage)({ defaultMessage: "Shrink text to fit", id: "lv6xs3Fi2L" })
         },
         {
           value: "none",
-          label: (0, runtime2.formatMessage)({ defaultMessage: "Don\u2019t resize text", id: "Oqfc9E8OT/" })
+          label: (0, runtime2.formatMessage)({ defaultMessage: "Don\u2019t resize text", id: "eIdyb50Frm" })
         },
         {
           value: "grow",
-          label: (0, runtime2.formatMessage)({ defaultMessage: "Grow box to fit text", id: "sPDRO5fAw2" })
+          label: (0, runtime2.formatMessage)({ defaultMessage: "Grow box to fit text", id: "vdJegvVgjT" })
         }
       ],
       value: value2 ? "" : value[0],
@@ -213234,7 +216156,7 @@ function installUiSelectionInspector(runtime2) {
     let value = (0, runtime2.useDeckColorChoices)(
       designColors,
       slideColors
-    ), [, value2] = runtime2.reactw8.useState(0), value3 = (0, runtime2.filterValidSelections)(slide, selection), value4 = value3.length > 0 ? value3[value3.length - 1] : void 0, value5 = value4 ? (0, runtime2.selectedNode)(slide, value4) : void 0, value6 = value3.length === 1, callback = (input) => {
+    ), [, value2] = runtime2.reactw8.useState(0), value3 = (0, runtime2.filterValidSelections)(slide, selection), value4 = value3.length > 0 ? value3[value3.length - 1] : void 0, value5 = value4 ? (0, runtime2.selectedNode)(slide, value4) : void 0, value6 = value3.length === 1, keepsFields = (0, runtime2.sourceSlideHasNodeIds)(slide), callback = (input) => {
       if (value3.length < 2) {
         return false;
       }
@@ -213327,7 +216249,7 @@ function installUiSelectionInspector(runtime2) {
         state2.place = state;
       }
       return state2;
-    }, callback4 = (input) => callback13((input2) => callback3(input2, input)), callback5 = (input) => callback14((input2) => callback3(input2, input)), ref = runtime2.reactw8.useRef(null), ref2 = runtime2.reactw8.useRef(null), ref3 = runtime2.reactw8.useRef(null), ref4 = runtime2.reactw8.useRef(false), ref5 = runtime2.reactw8.useRef(onLiveChange);
+    }, callback4 = (input) => callback13((input2) => callback3(input2, input)), callback5 = (input) => callback14((input2) => callback3(input2, input)), ref = runtime2.reactw8.useRef(null), ref2 = runtime2.reactw8.useRef(null), ref3 = runtime2.reactw8.useRef(null), ref4 = runtime2.reactw8.useRef(false), borderWidthRef = runtime2.reactw8.useRef(null), ref5 = runtime2.reactw8.useRef(onLiveChange);
     ref5.current = onLiveChange;
     runtime2.reactw8.useEffect(() => {
       ref4.current = false;
@@ -213365,7 +216287,7 @@ function installUiSelectionInspector(runtime2) {
       onGestureEnd(current);
     }, [value11, value12] = runtime2.reactw8.useState(false);
     runtime2.reactw8.useEffect(() => {
-      if (unasked) {
+      if (unasked === "start" || unasked === "again" && !document.hasFocus()) {
         return;
       }
       if (document.activeElement !== document.body && document.activeElement !== null) {
@@ -213904,7 +216826,15 @@ function installUiSelectionInspector(runtime2) {
           values2.add(value43);
         }
       return values2;
-    })(), callback20 = (input, options) => value20 !== void 0 ? jsxq_.jsx(
+    })(), blockedReasonOf = (input) => {
+      for (let value42 of value3) {
+        let value43 = (0, runtime2.selectedNode)(slide, value42), value44 = value43 !== void 0 ? (0, runtime2.blockedPropertyReason)(value43, input) : void 0;
+        if (value44 !== void 0) {
+          return BLOCKED_PROPERTY_MESSAGES[value44];
+        }
+      }
+      return void 0;
+    }, callback20 = (input, options) => value20 !== void 0 ? jsxq_.jsx(
       runtime2.StyleInspector,
       {
         kind: value20,
@@ -213915,6 +216845,12 @@ function installUiSelectionInspector(runtime2) {
         },
         mixedKeys: value31,
         onlyKeys: options,
+        disabledKeys: new Map(
+          (options ?? []).flatMap((input2) => {
+            let value42 = blockedReasonOf(input2);
+            return value42 !== void 0 ? [[input2, value42]] : [];
+          })
+        ),
         onCommit: (input2, options2) => callback13(
           (input3) => videoPlayerAt(input3) !== void 0 ? (0, runtime2.patchNodeStyle)(input3, options2) : input3
         ),
@@ -213944,18 +216880,22 @@ function installUiSelectionInspector(runtime2) {
       if (!callback21(input)) {
         return input;
       }
+      let keptStyle = keepsFields && items4.every((input2) => input2.value !== void 0) ? input.style : void 0;
       if (items4.length === 4 && items4.every(
         (input2) => input2.value === items4[0].value
       )) {
         let value43 = items4[0].value ?? 0;
         return (0, runtime2.patchNodeStyle)(
           input,
-          (0, runtime2.borderRadiusPatch)({
-            tl: value43,
-            tr: value43,
-            br: value43,
-            bl: value43
-          })
+          (0, runtime2.borderRadiusPatch)(
+            {
+              tl: value43,
+              tr: value43,
+              br: value43,
+              bl: value43
+            },
+            keptStyle
+          )
         );
       }
       let value42 = (0, runtime2.borderRadiiByCorner)(input.style), items5 = [value42.tl, value42.tr, value42.br, value42.bl];
@@ -213963,17 +216903,20 @@ function installUiSelectionInspector(runtime2) {
         items5[value43.side] = value43.value ?? 0;
       return (0, runtime2.patchNodeStyle)(
         input,
-        (0, runtime2.borderRadiusPatch)({
-          tl: items5[0],
-          tr: items5[1],
-          br: items5[2],
-          bl: items5[3]
-        })
+        (0, runtime2.borderRadiusPatch)(
+          {
+            tl: items5[0],
+            tr: items5[1],
+            br: items5[2],
+            bl: items5[3]
+          },
+          keptStyle
+        )
       );
     }), value32 = value3.some((input) => {
       let value42 = (0, runtime2.selectedNode)(slide, input);
       return value42 !== void 0 && callback22(value42).some(
-        (input2, options) => input2 !== callback22(value19)[options]
+        (input2, options) => (input2 ?? 0) !== (callback22(value19)[options] ?? 0)
       );
     }), value33 = value20 !== void 0 && callback21(value19) ? jsxq_.jsx(
       runtime2.CornersPropertyRow,
@@ -214207,47 +217150,58 @@ function installUiSelectionInspector(runtime2) {
                 },
                 value13 + ":border-color"
               ),
-              jsxq_.jsx(
-                runtime2.SidesPropertyRow,
-                {
-                  label: STROKE_WIDTH_LABEL,
-                  "data-testid": "sl-border-width",
-                  values: items4,
-                  min: 0,
-                  max: isNonConnectorShape(value19) ? runtime2.maxShapeStrokeWidth : 16,
-                  mixed: value48,
-                  toggleDisabledReason: isNonConnectorShape(value19) ? runtime2.SHAPE_BORDER_SIDES_REASON : void 0,
-                  onSides: (input) => callback33(input),
-                  onScrubSides: (input) => callback33(input, true),
-                  onScrubEnd: (items6) => {
-                    if (ref4.current) {
-                      return;
-                    }
-                    callback7();
-                    if (items6.length > 0 && callback31(items6)) {
+              jsxq_.jsx("div", {
+                ref: borderWidthRef,
+                className: "contents",
+                onKeyDownCapture: (input) => propertyRemovalKeyHandler(input, true),
+                children: jsxq_.jsx(
+                  runtime2.SidesPropertyRow,
+                  {
+                    label: STROKE_WIDTH_LABEL,
+                    "data-testid": "sl-border-width",
+                    values: items4,
+                    min: 0,
+                    max: isNonConnectorShape(value19) ? runtime2.maxShapeStrokeWidth : 16,
+                    mixed: value48,
+                    toggleDisabledReason: isNonConnectorShape(value19) ? runtime2.SHAPE_BORDER_SIDES_REASON : void 0,
+                    onSides: (input) => callback33(input),
+                    onScrubSides: (input) => callback33(input, true),
+                    onScrubEnd: (items6) => {
+                      if (ref4.current) {
+                        return;
+                      }
+                      callback7();
+                      if (items6.length === 0 || !callback31(items6)) {
+                        return;
+                      }
+                      let current = borderWidthRef.current;
+                      if (current !== null && current.ownerDocument.hasFocus() && !current.ownerDocument.activeElement?.isContentEditable) {
+                        current.querySelector("input")?.focus();
+                        focusAfterPropertyRemoval(current, "mouse");
+                      }
                       callback33(items6);
-                    }
-                  },
-                  onReset: (0, runtime2.hasPerSideBorderWidths)(style) || style?.borderWidth !== void 0 && style.borderWidth !== 1 || style?.borderSides !== void 0 ? () => callback13(
-                    (input) => callback27(input) ? (0, runtime2.patchNodeStyle)(
-                      input,
-                      (0, runtime2.normalizedBorderPatch)(
-                        (0, runtime2.ensureVisibleBorderStyle)(
-                          input.style,
-                          (0, runtime2.borderPatchFromWidths)({
-                            top: 1,
-                            right: 1,
-                            bottom: 1,
-                            left: 1
-                          }),
-                          text
+                    },
+                    onReset: (0, runtime2.hasPerSideBorderWidths)(style) || style?.borderWidth !== void 0 && style.borderWidth !== 1 || style?.borderSides !== void 0 ? () => callback13(
+                      (input) => callback27(input) ? (0, runtime2.patchNodeStyle)(
+                        input,
+                        (0, runtime2.normalizedBorderPatch)(
+                          (0, runtime2.ensureVisibleBorderStyle)(
+                            input.style,
+                            (0, runtime2.borderPatchFromWidths)({
+                              top: 1,
+                              right: 1,
+                              bottom: 1,
+                              left: 1
+                            }),
+                            text
+                          )
                         )
-                      )
-                    ) : input
-                  ) : void 0
-                },
-                value13 + ":border-width"
-              )
+                      ) : input
+                    ) : void 0
+                  },
+                  value13 + ":border-width"
+                )
+              })
             ]
           }) : null
         ]
@@ -214442,7 +217396,15 @@ function installUiSelectionInspector(runtime2) {
       "paddingLeft",
       "cursor",
       ...value37 === "text" ? ["textShadow"] : []
-    ]), value39 = value19.kind === "text" && value19.fill !== void 0 ? /* @__PURE__ */ new Map([["textShadow", TEXT_SHADOW_FILL_REASON]]) : void 0, value40 = value8 !== void 0 && value4 !== void 0 && (0, runtime2.selectionNodePath)(value4).length === 1 && (0, runtime2.isPrimaryLayoutFrame)(slide, value8), value41 = value8 !== void 0 && (!value40 || value8.node.kind === "grid") ? (() => {
+    ]), noLineYet = value3.some(
+      (input) => ((0, runtime2.selectedNode)(slide, input)?.style?.textDecorationLine ?? "none") === "none"
+    ), value39 = new Map([
+      ...value19.kind === "text" && value19.fill !== void 0 ? [["textShadow", TEXT_SHADOW_FILL_REASON]] : [],
+      ...noLineYet ? [
+        ["textDecorationStyle", TEXT_DECORATION_FIRST_REASON],
+        ["textDecorationColor", TEXT_DECORATION_FIRST_REASON]
+      ] : []
+    ]), value40 = value8 !== void 0 && value4 !== void 0 && (0, runtime2.selectionNodePath)(value4).length === 1 && (0, runtime2.isPrimaryLayoutFrame)(slide, value8), value41 = value8 !== void 0 && (!value40 || value8.node.kind === "grid") ? (() => {
       let value42 = !value40, node = value8.node;
       if (!(0, runtime2.isFlowContainer)(node)) {
         return;
@@ -214499,7 +217461,7 @@ function installUiSelectionInspector(runtime2) {
         if (value49.length === 0) {
           return null;
         }
-        let value50 = input === "w" ? value45 : value46, value51 = value17 !== void 0 ? input === "w" ? value17.w : value17.h : void 0, [value52, value53] = (0, runtime2.dimensionLimitKeys)(input);
+        let modeAllowed = (input2) => (0, runtime2.childSizeModeAllowed)(value5, value44, input, input2), value50 = input === "w" ? value45 : value46, value51 = value17 !== void 0 ? input === "w" ? value17.w : value17.h : void 0, [value52, value53] = (0, runtime2.dimensionLimitKeys)(input);
         return jsxq_.jsx(runtime2.NumberPropertyRow, {
           label: options,
           value: value50.mode === "fixed" ? value50.value : void 0,
@@ -214507,9 +217469,7 @@ function installUiSelectionInspector(runtime2) {
           max: 4096,
           step: 8,
           unit: value50.mode === "fixed" ? (0, runtime2.literalMessage)("px") : void 0,
-          clearable: value49.some(
-            (input2) => input2.value === "hug"
-          ),
+          clearable: value49.some((input2) => input2.value === "hug") && modeAllowed("hug"),
           placeholder: value51 !== void 0 ? String(value51) : AUTO_LABEL,
           emptyStepFrom: value51,
           title: (0, runtime2.formatMessage)(
@@ -214569,7 +217529,13 @@ function installUiSelectionInspector(runtime2) {
               },
               { label: options }
             ),
-            items: value49,
+            items: value49.map(
+              (input2) => modeAllowed(input2.value) ? input2 : {
+                ...input2,
+                disabled: true,
+                title: SVG_SIZE_REASON
+              }
+            ),
             value: value50.mode,
             disabled: value49.length < 2,
             onChange: (input2) => {
@@ -214760,6 +217726,8 @@ function installUiSelectionInspector(runtime2) {
       onPointerDownCapture: notePropertyPointer,
       onClickCapture: propertiesClickCapture,
       onKeyDownCapture: propertiesKeyDownCapture,
+      onBlurCapture: handOffPropertyFocusOnBlur,
+      onFocusCapture: () => void (blurHandoffTarget = null),
       children: [
         value7 === void 0 ? jsxq_.jsx("p", {
           className: "mt-2 shrink-0 pr-md pl-lg text-footnote text-muted",
@@ -214912,7 +217880,8 @@ function installUiSelectionInspector(runtime2) {
                 options: [
                   {
                     value: "cover",
-                    label: COVER_LABEL
+                    label: COVER_LABEL,
+                    whyDisabled: (0, runtime2.blockedPropertyReason)(value19, "fit", "cover") !== void 0 ? BLOCKED_PROPERTY_MESSAGES["svg-fit"] : void 0
                   },
                   {
                     value: "contain",
@@ -214921,7 +217890,7 @@ function installUiSelectionInspector(runtime2) {
                 ],
                 value: value19.fit,
                 onChange: (input) => callback13(
-                  (source) => source.kind === "img" ? (0, runtime2.setImageFit)(source, input) : source
+                  (source) => source.kind === "img" && (0, runtime2.blockedPropertyReason)(source, "fit", input) === void 0 ? (0, runtime2.setImageFit)(source, input) : source
                 )
               }),
               value6 && value19.video !== void 0 && value4 !== void 0 ? jsxq_.jsx(VideoProgressPropertyRow, {
@@ -215034,6 +218003,7 @@ function installUiSelectionInspector(runtime2) {
                 label: ALT_TEXT_LABEL,
                 children: jsxq_.jsx(runtime2.TextInput, {
                   value: value19.alt,
+                  maxLength: runtime2.maxImageAltLength,
                   "aria-label": ALT_TEXT_LABEL,
                   onChange: (event) => callback13(
                     (source) => source.kind === "img" ? {
@@ -215081,7 +218051,7 @@ function installUiSelectionInspector(runtime2) {
                   value3,
                   (0, runtime2.getRenderingTheme)()
                 ),
-                clearLabel: (0, runtime2.formatMessage)({ defaultMessage: "Theme default", id: "KOPK9foeQa" }),
+                clearLabel: (0, runtime2.formatMessage)({ defaultMessage: "Theme default", id: "s59VK8yIAS" }),
                 onPick: (input) => callback13((source) => {
                   if (source.kind !== "text" && source.kind !== "icon") {
                     return source;
@@ -215628,7 +218598,7 @@ function installUiSelectionInspector(runtime2) {
               mono: (0, runtime2.formatMessage)({ defaultMessage: "Monospace", id: "ASQQ5ydSuZ" }),
               helvetica: (0, runtime2.literalMessage)("Helvetica")
             }[fontFamily] ?? fontFamily : fontFamily.family, value57 = style?.fontWeight !== void 0 || style?.fontStyle !== void 0, value58 = style?.textDecorationLine, value59 = callback(
-              (source) => source.kind === "text" ? source.style?.textDecorationLine ?? null : null
+              (source) => source.kind === "text" ? source.style?.textDecorationLine ?? "none" : null
             ), value60 = value19.lineLists !== void 0 || callback(
               (source) => source.kind === "text" ? source.lineLists !== void 0 ? "mixed" : source.list ?? "none" : null
             ), value61 = callback(
@@ -215646,7 +218616,11 @@ function installUiSelectionInspector(runtime2) {
               (source) => source.kind === "text" ? (0, runtime2.patchNodeStyle)(
                 source,
                 !value59 && value58 === input ? {
-                  textDecorationLine: void 0,
+                  textDecorationLine: (0, runtime2.omitDefaultUnlessKept)(
+                    keepsFields,
+                    "none",
+                    "none"
+                  ),
                   textDecorationStyle: void 0,
                   textDecorationColor: void 0
                 } : {
@@ -215739,7 +218713,8 @@ function installUiSelectionInspector(runtime2) {
                       (source) => source.kind === "text" ? (0, runtime2.clearTypographyOverrides)(
                         source,
                         value63,
-                        value42
+                        value42,
+                        keepsFields
                       ) : source
                     );
                   }
@@ -215830,13 +218805,21 @@ function installUiSelectionInspector(runtime2) {
                         }
                         callback13(
                           (source) => source.kind === "text" ? (0, runtime2.patchNodeStyle)(source, {
-                            fontWeight: value63.weight === Math.round(
-                              (0, runtime2.typeScaleForRole)(
-                                source.role,
-                                value42
-                              ).fontWeight / 100
-                            ) * 100 ? void 0 : value63.weight,
-                            fontStyle: value63.italic ? "italic" : void 0
+                            fontWeight: (0, runtime2.omitDefaultUnlessKept)(
+                              keepsFields && source.style?.fontWeight !== void 0,
+                              value63.weight,
+                              Math.round(
+                                (0, runtime2.typeScaleForRole)(
+                                  source.role,
+                                  value42
+                                ).fontWeight / 100
+                              ) * 100
+                            ),
+                            fontStyle: (0, runtime2.omitDefaultUnlessKept)(
+                              keepsFields && source.style?.fontStyle !== void 0,
+                              value63.italic ? "italic" : "normal",
+                              "normal"
+                            )
                           }) : source
                         );
                       }
@@ -216153,7 +219136,11 @@ function installUiSelectionInspector(runtime2) {
                     ) : void 0,
                     onChange: (input) => callback13(
                       (source) => source.kind === "text" ? (0, runtime2.patchNodeStyle)(source, {
-                        textTransform: input === "none" ? void 0 : input
+                        textTransform: (0, runtime2.omitDefaultUnlessKept)(
+                          keepsFields && source.style?.textTransform !== void 0,
+                          input,
+                          "none"
+                        )
                       }) : source
                     )
                   })
@@ -216481,6 +219468,16 @@ function installUiSelectionInspector(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "handOffPropertyFocusOnBlur",
+    () => handOffPropertyFocusOnBlur
+  );
+  bindRuntimeValue(
+    runtime2,
+    "keepPropertyFocusAcrossSlideChange",
+    () => keepPropertyFocusAcrossSlideChange
+  );
+  bindRuntimeValue(
+    runtime2,
     "MediaSourcePropertyRow",
     () => MediaSourcePropertyRow
   );
@@ -216679,6 +219676,25 @@ function installUiSelectionInspector(runtime2) {
       },
       { color: TEXT_COLOR_LABEL }
     );
+    TEXT_DECORATION_FIRST_REASON = (0, runtime2.formatMessage)({
+      defaultMessage: "Add an underline or strikethrough to each selected object first.",
+      id: "1rYH7bbpnI"
+    });
+    SVG_SIZE_REASON = (0, runtime2.formatMessage)({
+      defaultMessage: "An SVG image can\u2019t keep this size. It would become Fixed when the presentation reopens.",
+      id: "CdNwIuipVe"
+    });
+    BLOCKED_PROPERTY_MESSAGES = {
+      "svg-fit": (0, runtime2.formatMessage)({
+        defaultMessage: "A selected SVG image can\u2019t be cropped to fill its frame.",
+        id: "3jfuvswqIz"
+      }),
+      "click-step": (0, runtime2.formatMessage)({
+        // BaoCut: "the agent" wording (upstream names the assistant here)
+        defaultMessage: "A selected object\u2019s opacity is set by an animation. Ask the agent to change the animation.",
+        id: "WmjibdD+Mq"
+      })
+    };
     LINE_DASH_REASON = (0, runtime2.formatMessage)({ defaultMessage: "A line is solid (a connector can dash)", id: "utBm9bGLeq" });
     ZERO_SIDE_PLACEHOLDERS = ["0", "0", "0", "0"];
     SIDE_INDEXES = [0, 1, 2, 3];
@@ -216765,6 +219781,7 @@ function installUiSelectionInspector(runtime2) {
     ];
     PROPERTY_ROW_FOCUS_SELECTOR = 'input:not([tabindex="-1"]):not([type="file"]):not([type="hidden"]), button:not([tabindex="-1"]):not([data-kit="row-reset"]):not([data-kit="row-remove"])';
     lastPropertyInput = "key";
+    blurHandoffTarget = null;
     CONNECTOR_END_CHOICES = [
       { which: "start", label: (0, runtime2.formatMessage)({ defaultMessage: "Start", id: "oa8zqqDuTS" }) },
       { which: "end", label: (0, runtime2.formatMessage)({ defaultMessage: "End", id: "6+5L2b4h7o" }) }
@@ -217464,6 +220481,7 @@ function installEditorGrouping(runtime2) {
   var GROUP_GROWING_STACK_CHILDREN_ENABLED;
   var GROUP_MIXED_FRAME_STACK_CHILDREN_ENABLED;
   var UNGROUP_UNMARKED_STACK_ENABLED;
+  var SOURCE_NODE_SHIFT_ENABLED;
   var GROUP_REFUSAL_MESSAGES;
   var GROUP_COORDINATE_TOLERANCE;
   var roundGroupCoordinate;
@@ -217474,6 +220492,7 @@ function installEditorGrouping(runtime2) {
   var GROUP_ZERO_ANCHOR;
   var hasLeadingOverlayAnchors;
   var isLeadingOverlayGroup;
+  var isSourceWrittenGroup;
   function groupingKeyCommand(event) {
     if (!(event.metaKey || event.ctrlKey) || event.altKey) {
       return;
@@ -217838,7 +220857,7 @@ function installEditorGrouping(runtime2) {
     if (!value && rectangle === void 0) {
       return;
     }
-    let { place, ...remainingProps } = after.node, callback = (input, options) => options.size !== void 0 ? {
+    let { place, build, ...remainingProps } = after.node, callback = (input, options) => options.size !== void 0 ? {
       ...input,
       size: options.size
     } : input, value2 = !value && rectangle !== void 0 ? (0, runtime2.createFreeFrameFromNode)(after.node, rectangle) : void 0, value3 = value2 !== void 0 && rectangle !== void 0 ? (0, runtime2.normalizeNegativeFrameMargins)(
@@ -217860,10 +220879,11 @@ function installEditorGrouping(runtime2) {
       },
       node: remainingProps
     };
-    if (before.build !== void 0) {
+    let value4 = build ?? before.build;
+    if (value4 !== void 0) {
       return {
         ...value3,
-        build: before.build
+        build: value4
       };
     } else {
       return value3;
@@ -217965,6 +220985,14 @@ function installEditorGrouping(runtime2) {
     () => UNGROUP_UNMARKED_STACK_ENABLED,
     (value) => {
       UNGROUP_UNMARKED_STACK_ENABLED = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SOURCE_NODE_SHIFT_ENABLED",
+    () => SOURCE_NODE_SHIFT_ENABLED,
+    (value) => {
+      SOURCE_NODE_SHIFT_ENABLED = value;
     }
   );
   bindRuntimeValue(
@@ -218104,6 +221132,14 @@ function installEditorGrouping(runtime2) {
     "canFlattenNestedStackGroup",
     () => canFlattenNestedStackGroup
   );
+  bindRuntimeValue(
+    runtime2,
+    "isSourceWrittenGroup",
+    () => isSourceWrittenGroup,
+    (value) => {
+      isSourceWrittenGroup = value;
+    }
+  );
   return () => {
     (0, runtime2.initializeSlideModel)();
     (0, runtime2.initializeModelGeometry)();
@@ -218116,6 +221152,7 @@ function installEditorGrouping(runtime2) {
     GROUP_GROWING_STACK_CHILDREN_ENABLED = true;
     GROUP_MIXED_FRAME_STACK_CHILDREN_ENABLED = true;
     UNGROUP_UNMARKED_STACK_ENABLED = false;
+    SOURCE_NODE_SHIFT_ENABLED = true;
     GROUP_REFUSAL_MESSAGES = {
       few: (0, runtime2.formatMessage)({
         defaultMessage: "Select two or more objects to group.",
@@ -218193,6 +221230,10 @@ function installEditorGrouping(runtime2) {
       later: (0, runtime2.formatMessage)({
         defaultMessage: "That couldn\u2019t be ungrouped just now. Try again.",
         id: "1PdVqtJfGw"
+      }),
+      written: (0, runtime2.formatMessage)({
+        defaultMessage: "These can\u2019t be grouped here.",
+        id: "JpySN+CNmZ"
       })
     };
     GROUP_COORDINATE_TOLERANCE = 0.5;
@@ -218214,6 +221255,7 @@ function installEditorGrouping(runtime2) {
       )
     ].every((input) => input.anchor === "leading");
     isLeadingOverlayGroup = (frame) => (0, runtime2.isEmptyGroupBase)(frame.node) && hasLeadingOverlayAnchors(frame, frame.node);
+    isSourceWrittenGroup = (node) => node.sid !== void 0 && (node.tied === true || node.style?.animation !== void 0);
   };
 }
 
@@ -218277,7 +221319,7 @@ function installLayoutSelectionGroups(runtime2) {
           if (!(0, runtime2.canFlattenNestedStackGroup)(value3, source)) {
             return [value3];
           }
-          if (value3.children.length <= 1) {
+          if (value3.children.length === 0 || value3.children.length === 1 && !isSourceWrittenGroup(value3)) {
             return value3.children;
           }
           let value4 = source.kind === "stack" && value3.place?.grow !== void 0 ? (0, runtime2.groupedChildrenPlacement)(source, value3.children) : value3.place;
@@ -218315,6 +221357,9 @@ function installLayoutSelectionGroups(runtime2) {
       let value4 = !(0, runtime2.overlayHasVisiblePaint)(value2);
       if (value4 && value2.layers.length === 0) {
         return [];
+      }
+      if (!(0, runtime2.isMarkedEmptyGroupBase)(value2) || isSourceWrittenGroup(value2)) {
+        return [value3];
       }
       if (value4 && value2.layers.length === 1) {
         return [
@@ -218361,33 +221406,46 @@ function installLayoutSelectionGroups(runtime2) {
   function groupSelectedFramesAsOverlay(slide, selectedFrameIds, measure) {
     let value = slide.frames.filter(
       (input) => selectedFrameIds.has(input.id)
-    ), items = [];
+    ), items = [], value6 = value.flatMap(
+      (input) => (0, runtime2.isMarkedEmptyGroupBase)(input.node) ? input.node.layers.map((layer) => layer.node) : [input.node]
+    ).map((input) => input.sid !== void 0), written = value6.includes(true);
+    if (written && value6.includes(false)) {
+      return {
+        refused: writtenRefusal()
+      };
+    }
     for (let value3 of value) {
       if (value3.node.kind === "html") {
         return {
           refused: runtime2.GROUP_REFUSAL_MESSAGES.embed
         };
       }
-      if ((0, runtime2.isOverlayNode)(value3.node) && !(0, runtime2.isEmptyGroupBase)(value3.node)) {
+      if ((0, runtime2.isOverlayNode)(value3.node) && !(0, runtime2.isMarkedEmptyGroupBase)(value3.node)) {
         return {
           refused: runtime2.GROUP_REFUSAL_MESSAGES.labels
         };
       }
-      if ((0, runtime2.isEmptyGroupBase)(value3.node) && (0, runtime2.overlayHasVisiblePaint)(value3.node)) {
+      if ((0, runtime2.isMarkedEmptyGroupBase)(value3.node) && isSourceWrittenGroup(value3.node)) {
+        return {
+          refused: writtenRefusal()
+        };
+      }
+      if ((0, runtime2.isMarkedEmptyGroupBase)(value3.node) && (0, runtime2.overlayHasVisiblePaint)(value3.node)) {
         return {
           refused: runtime2.GROUP_REFUSAL_MESSAGES.painted
         };
       }
-      let value4 = (0, runtime2.isEmptyGroupBase)(value3.node) ? value3.node.layers.map(
+      let value7 = (input) => written && value3.build !== void 0 ? { ...input, build: input.build ?? value3.build } : input, value4 = (0, runtime2.isMarkedEmptyGroupBase)(value3.node) ? value3.node.layers.map(
         (input, options) => ({
           ...input,
+          node: value7(input.node),
           rect: measure.rect(
             (0, runtime2.createNodeSelection)(value3.id, [options + 1])
           )
         })
       ) : [
         {
-          node: value3.node,
+          node: value7(value3.node),
           x: value3.x,
           y: value3.y,
           rect: measure.rect({
@@ -218424,7 +221482,7 @@ function installLayoutSelectionGroups(runtime2) {
       };
     }
     let build = value[0].build;
-    if (build !== void 0 && value.every(
+    if (!written && build !== void 0 && value.every(
       (input) => (0, runtime2.structurallyEqualGroupValues)(input.build, build)
     )) {
       value2.build = build;
@@ -218446,7 +221504,7 @@ function installLayoutSelectionGroups(runtime2) {
   }
   function hasNodeTransform(node) {
     let transform = (0, runtime2.nodeTransform)(node);
-    return transform !== void 0 && ((transform.scale ?? 1) !== 1 || !!transform.skewX || !!transform.skewY || !!transform.translateX || !!transform.translateY);
+    return transform !== void 0 && ((transform.scale ?? 1) !== 1 || !!transform.skewX || !!transform.skewY || !!transform.translateX || !!transform.translateY || !!transform.shiftX || !!transform.shiftY);
   }
   function normalizeNegativeFrameMargins(frame, rect) {
     let options = (input, options2, context) => input.margin < 0 ? (0, runtime2.axisSpecFromRect)(
@@ -218509,6 +221567,19 @@ function installLayoutSelectionGroups(runtime2) {
       minted: value3
     };
   }
+  function isSourceWrittenGroup(node) {
+    return (0, runtime2.isSourceWrittenGroup)(node);
+  }
+  function ungroupUnmarkedStackEnabled() {
+    return runtime2.UNGROUP_UNMARKED_STACK_ENABLED === true;
+  }
+  function writtenRefusal() {
+    return runtime2.GROUP_REFUSAL_MESSAGES.written;
+  }
+  function groupSelectedUnitsOnSource(slide, selection, measure) {
+    let value = groupSelectedUnits(slide, selection, measure);
+    return (0, runtime2.sourceSlideHasNodeIds)(slide) && "refused" in value && (value.refused === runtime2.GROUP_REFUSAL_MESSAGES.where || value.refused === runtime2.GROUP_REFUSAL_MESSAGES.stuck || value.refused === runtime2.GROUP_REFUSAL_MESSAGES.apart) ? { refused: writtenRefusal() } : value;
+  }
   function groupSelectedUnits(slide, selection, measure) {
     let value = (0, runtime2.normalizedGroupSelection)(
       slide,
@@ -218527,7 +221598,7 @@ function installLayoutSelectionGroups(runtime2) {
       ) : void 0;
       if (value8 !== void 0 && (0, runtime2.isOverlayNode)(value8)) {
         return {
-          refused: (0, runtime2.isEmptyGroupBase)(value8) ? runtime2.GROUP_REFUSAL_MESSAGES.inside : runtime2.GROUP_REFUSAL_MESSAGES.labels
+          refused: (0, runtime2.isMarkedEmptyGroupBase)(value8) ? runtime2.GROUP_REFUSAL_MESSAGES.inside : runtime2.GROUP_REFUSAL_MESSAGES.labels
         };
       }
     }
@@ -218568,7 +221639,8 @@ function installLayoutSelectionGroups(runtime2) {
                   value16,
                   (input2) => ({
                     ...input2,
-                    group: true
+                    group: true,
+                    ...input2.sid !== void 0 ? { tied: true } : {}
                   })
                 )
               } : input
@@ -218700,9 +221772,9 @@ function installLayoutSelectionGroups(runtime2) {
   }
   function inspectUngroupTarget(slide, unit, measure, singleSelection) {
     let frame = (0, runtime2.frameById)(slide, unit.frameId), path = (0, runtime2.selectionNodePath)(unit), node = (0, runtime2.nodeAtPath)(frame.node, path);
-    if ((0, runtime2.isEmptyGroupBase)(node) && path.length === 0) {
+    if ((0, runtime2.isMarkedEmptyGroupBase)(node) && path.length === 0) {
       return {
-        kind: "free"
+        kind: isSourceWrittenGroup(node) ? "unmark" : "free"
       };
     }
     if ((0, runtime2.isOverlayNode)(node) && node.group !== true) {
@@ -218715,11 +221787,13 @@ function installLayoutSelectionGroups(runtime2) {
         refused: runtime2.GROUP_REFUSAL_MESSAGES.nothing
       };
     }
-    let value = (0, runtime2.styleHasVisiblePaint)(node.style);
+    let value = (0, runtime2.styleHasVisiblePaint)(node.style), refusal = {
+      refused: value && node.sid === void 0 ? runtime2.GROUP_REFUSAL_MESSAGES.card : runtime2.GROUP_REFUSAL_MESSAGES.nothing
+    };
     if (path.length === 0) {
-      if ((0, runtime2.isFlowContainer)(node) && !value && (0, runtime2.nodeTransform)(node) === void 0 && !measure.shrunk(unit) && !node.children.some(
+      if ((0, runtime2.isFlowContainer)(node) && node.sid === void 0 && !value && (0, runtime2.nodeTransform)(node) === void 0 && !measure.shrunk(unit) && !node.children.some(
         (source) => source.kind !== "spacer" && hasNodeTransform(source)
-      ) && frame.id !== (0, runtime2.slidePrimaryLayoutFrame)(slide)?.id && (node.group === true || runtime2.UNGROUP_UNMARKED_STACK_ENABLED && singleSelection)) {
+      ) && frame.id !== (0, runtime2.slidePrimaryLayoutFrame)(slide)?.id && (node.group === true || ungroupUnmarkedStackEnabled() && singleSelection)) {
         return {
           kind: "dissolve"
         };
@@ -218729,18 +221803,14 @@ function installLayoutSelectionGroups(runtime2) {
           kind: "unmark"
         };
       } else {
-        return {
-          refused: value ? runtime2.GROUP_REFUSAL_MESSAGES.card : runtime2.GROUP_REFUSAL_MESSAGES.nothing
-        };
+        return refusal;
       }
     }
     if (node.group !== true) {
-      return {
-        refused: value ? runtime2.GROUP_REFUSAL_MESSAGES.card : runtime2.GROUP_REFUSAL_MESSAGES.nothing
-      };
+      return refusal;
     }
     let value2 = path.slice(0, -1), value3 = (0, runtime2.nodeAtPath)(frame.node, value2);
-    if (!(0, runtime2.canFlattenNestedStackGroup)(node, value3) || value3.kind !== "stack") {
+    if (!(0, runtime2.canFlattenNestedStackGroup)(node, value3) || value3.kind !== "stack" || isSourceWrittenGroup(node)) {
       return {
         kind: "unmark"
       };
@@ -218954,6 +222024,11 @@ function installLayoutSelectionGroups(runtime2) {
     () => measureFlowGroupChildRects
   );
   bindRuntimeValue(runtime2, "groupSelectedUnits", () => groupSelectedUnits);
+  bindRuntimeValue(
+    runtime2,
+    "groupSelectedUnitsOnSource",
+    () => groupSelectedUnitsOnSource
+  );
   bindRuntimeValue(runtime2, "inspectUngroupTarget", () => inspectUngroupTarget);
   bindRuntimeValue(runtime2, "removeGroupMarker", () => removeGroupMarker);
   bindRuntimeValue(runtime2, "ungroupSelectedUnits", () => ungroupSelectedUnits);
@@ -219376,6 +222451,50 @@ function installLayoutSnapping(runtime2) {
 function installCreationTiming(runtime2) {
   var ReactGridMemo;
   var ReactGrid;
+  var ReactFocusRing;
+  var TOAST_SELECTOR;
+  function useFocusWithin(container, isVisible) {
+    let [within, setWithin] = ReactFocusRing.useState(false);
+    ReactFocusRing.useEffect(() => {
+      let element = container.current;
+      if (!element) {
+        return;
+      }
+      let doc = element.ownerDocument, timer, onFocusIn = (event) => {
+        let target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+        if (element.contains(target)) {
+          setWithin(isVisible(target, element));
+        } else if (target.closest(TOAST_SELECTOR) === null || !target.matches(":focus-visible")) {
+          setWithin(false);
+        }
+      }, recheck = () => {
+        let active = doc.activeElement;
+        if (!element.contains(active) && !active?.closest(TOAST_SELECTOR)) {
+          setWithin(false);
+        }
+      }, onFocusOut = (event) => {
+        if (event.relatedTarget !== null) {
+          return;
+        }
+        if (event.target instanceof Element && event.target.closest(TOAST_SELECTOR) !== null) {
+          timer = setTimeout(recheck, 0);
+        } else {
+          setWithin(false);
+        }
+      };
+      doc.addEventListener("focusin", onFocusIn, true);
+      doc.addEventListener("focusout", onFocusOut, true);
+      return () => {
+        clearTimeout(timer);
+        doc.removeEventListener("focusin", onFocusIn, true);
+        doc.removeEventListener("focusout", onFocusOut, true);
+      };
+    }, [container, isVisible]);
+    return [within, setWithin];
+  }
   var CREATION_TIP_INITIAL_DELAY_MS;
   var CREATION_TIP_ROTATION_MS;
   var CREATION_TIP_FADE_OUT_MS;
@@ -219412,6 +222531,23 @@ function installCreationTiming(runtime2) {
       ReactGridMemo = value;
     }
   );
+  bindRuntimeValue(
+    runtime2,
+    "ReactFocusRing",
+    () => ReactFocusRing,
+    (value) => {
+      ReactFocusRing = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "TOAST_SELECTOR",
+    () => TOAST_SELECTOR,
+    (value) => {
+      TOAST_SELECTOR = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "useFocusWithin", () => useFocusWithin);
   bindRuntimeValue(
     runtime2,
     "ReactGrid",
@@ -219655,6 +222791,12 @@ function installCreationTiming(runtime2) {
       (0, runtime2.loadReactNamespace)(),
       1
     );
+    (0, runtime2.initializeUiInputs210)();
+    ReactFocusRing = (0, runtime2.toModuleNamespace)(
+      (0, runtime2.loadReactNamespace)(),
+      1
+    );
+    TOAST_SELECTOR = '[data-cds="Toast"]';
     CREATION_TIP_INITIAL_DELAY_MS = 3e3;
     CREATION_TIP_ROTATION_MS = 5e3;
     CREATION_TIP_FADE_OUT_MS = 80;
@@ -220507,48 +223649,6 @@ function installEditorSlideRailLayout(runtime2) {
       Math.min(maxWidth, Math.round(width))
     );
   }
-  function calculateRailHeight(layout, stageHeightDelta) {
-    return layout.chrome + clampRailThumbWidth(
-      layout.pref,
-      calculateMaxRailThumbWidth(
-        layout.room - stageHeightDelta,
-        layout.chrome,
-        layout.fitW
-      )
-    ) / SLIDE_THUMB_ASPECT_RATIO;
-  }
-  function clampStageRailResizeDelta(delta, layout, minimum, maximum) {
-    if (!Number.isFinite(delta + minimum + maximum) || layout !== null && !Number.isFinite(layout.room + layout.chrome + layout.pref)) {
-      if (Number.isFinite(minimum + maximum)) {
-        return Math.max(minimum, Math.min(maximum, 0));
-      } else {
-        return 0;
-      }
-    }
-    if (maximum <= minimum) {
-      return minimum;
-    }
-    if (!layout) {
-      return Math.max(minimum, Math.min(maximum, delta));
-    }
-    let value = calculateRailHeight(layout, 0), callback = (input) => input + calculateRailHeight(layout, input) - value;
-    if (callback(minimum) >= delta) {
-      return minimum;
-    }
-    if (callback(maximum) < delta) {
-      return maximum;
-    }
-    let [items, items2] = [minimum, maximum];
-    for (let index4 = 0; index4 < 24; index4++) {
-      let value2 = (items + items2) / 2;
-      if (callback(value2) >= delta) {
-        items2 = value2;
-      } else {
-        items = value2;
-      }
-    }
-    return items2;
-  }
   function resizeRailThumbWidth(preferredWidth, heightDelta, maxWidth) {
     return clampRailThumbWidth(
       preferredWidth - heightDelta * SLIDE_THUMB_ASPECT_RATIO,
@@ -220682,17 +223782,7 @@ function installEditorSlideRailLayout(runtime2) {
         fitW: value10,
         pref: ref4.current.pref
       };
-    }, [enabled, value, layoutChanged]), value6 = options?.geometry;
-    ReactSlideRailLayout.useLayoutEffect(() => {
-      if (!value6) {
-        return;
-      }
-      value6.current = callback4;
-      return () => {
-        value6.current = null;
-      };
-    }, [value6, callback4]);
-    let callback5 = ReactSlideRailLayout.useCallback(
+    }, [enabled, value, layoutChanged]), callback5 = ReactSlideRailLayout.useCallback(
       (input = false) => {
         let value8 = ref3.current ? null : callback4();
         if (!value8) {
@@ -220730,10 +223820,7 @@ function installEditorSlideRailLayout(runtime2) {
         }
       },
       [callback4, callback, layoutChanged]
-    ), value7 = options?.paneH ?? 0;
-    ReactSlideRailLayout.useLayoutEffect(() => {
-      callback5();
-    }, [value7, callback5]);
+    );
     ReactSlideRailLayout.useLayoutEffect(() => {
       let current = enabled.current, value8 = value?.current;
       if (!current || !value8 || typeof ResizeObserver === "undefined") {
@@ -220899,12 +223986,6 @@ function installEditorSlideRailLayout(runtime2) {
   );
   bindRuntimeValue(runtime2, "canResizeSlideRail", () => canResizeSlideRail);
   bindRuntimeValue(runtime2, "clampRailThumbWidth", () => clampRailThumbWidth);
-  bindRuntimeValue(runtime2, "calculateRailHeight", () => calculateRailHeight);
-  bindRuntimeValue(
-    runtime2,
-    "clampStageRailResizeDelta",
-    () => clampStageRailResizeDelta
-  );
   bindRuntimeValue(runtime2, "resizeRailThumbWidth", () => resizeRailThumbWidth);
   bindRuntimeValue(
     runtime2,
@@ -220990,6 +224071,9 @@ function installEditorSlideMessages(runtime2) {
   var slideActionsLabel;
   var slidesActionsLabel;
   var CANVAS_LABEL;
+  var ONE_SLIDE_VIEW_LABEL;
+  var GRID_VIEW_LABEL;
+  var VIEW_MENU_LABEL;
   var PRESENT_LABEL;
   var PROPERTIES_LABEL;
   var ADVANCED_LABEL;
@@ -221092,6 +224176,9 @@ function installEditorSlideMessages(runtime2) {
   bindRuntimeValue(runtime2, "slideActionsLabel", () => slideActionsLabel);
   bindRuntimeValue(runtime2, "slidesActionsLabel", () => slidesActionsLabel);
   bindRuntimeValue(runtime2, "CANVAS_LABEL", () => CANVAS_LABEL);
+  bindRuntimeValue(runtime2, "ONE_SLIDE_VIEW_LABEL", () => ONE_SLIDE_VIEW_LABEL);
+  bindRuntimeValue(runtime2, "GRID_VIEW_LABEL", () => GRID_VIEW_LABEL);
+  bindRuntimeValue(runtime2, "VIEW_MENU_LABEL", () => VIEW_MENU_LABEL);
   bindRuntimeValue(runtime2, "PRESENT_LABEL", () => PRESENT_LABEL);
   bindRuntimeValue(runtime2, "PROPERTIES_LABEL", () => PROPERTIES_LABEL);
   bindRuntimeValue(runtime2, "ADVANCED_LABEL", () => ADVANCED_LABEL);
@@ -221200,6 +224287,18 @@ function installEditorSlideMessages(runtime2) {
       defaultMessage: "Canvas",
       id: "o+j4MlVDZH"
     });
+    ONE_SLIDE_VIEW_LABEL = (0, runtime2.formatMessage)({
+      defaultMessage: "One slide",
+      id: "z5uKqIM7ev"
+    });
+    GRID_VIEW_LABEL = (0, runtime2.formatMessage)({
+      defaultMessage: "Grid",
+      id: "j0hd5paUc4"
+    });
+    VIEW_MENU_LABEL = (0, runtime2.formatMessage)({
+      defaultMessage: "View",
+      id: "F+VHdsB14m"
+    });
     PRESENT_LABEL = (0, runtime2.formatMessage)({
       defaultMessage: "Present",
       id: "g+H2/slWuQ"
@@ -221224,8 +224323,10 @@ function installEditorSlideRail(runtime2) {
   var SELECT_ONE_SLIDE_TO_COPY_LINK_MESSAGE;
   var UNSKIP_SLIDE_LABEL;
   var HIDE_SLIDE_THUMBNAILS_LABEL;
-  var RAIL_SHOW_THUMBNAILS_LABEL;
+  var SLIDE_THUMBNAILS_LABEL;
   var ADD_SLIDE_LABEL;
+  var SLIDES_VIEW_MENU_TESTID;
+  var VIEW_MENU_CHOOSE_LABEL;
   var RAIL_COLUMN_WIDTH_CLASS;
   var RAIL_COLUMN_THUMB_WIDTH;
   var getRailScrollButtonPadding;
@@ -221244,7 +224345,6 @@ function installEditorSlideRail(runtime2) {
   var SELECTED_RAIL_THUMB_SCALE_CLASS;
   var ComfortableChromeContext;
   var RAIL_TOOLBAR_STACK_GAP_CLASS;
-  var RAIL_TOOLBAR_CARD_MIN_WIDTH_CLASS;
   var SLIDE_VIEW_SWITCH_NAVIGATION_KEYS;
   var disabledActionFromReason;
   function SlideCreationRailPlaceholder({
@@ -221430,7 +224530,6 @@ function installEditorSlideRail(runtime2) {
     personPaged = 0,
     actionsDensity,
     placement = "bottom",
-    overPage = false,
     arriving = false,
     actionRow = true,
     several
@@ -221525,7 +224624,7 @@ function installEditorSlideRail(runtime2) {
       value5(null);
       value7(null);
     }
-    let draggedIds = value4 === null ? [] : multiIds.includes(value4) ? multiIds : [value4], [value8, value9] = runtime2.ReactGrid.useState(null), [value10, value11] = runtime2.ReactGrid.useState(false), ref = runtime2.ReactGrid.useRef(0), ref2 = runtime2.ReactGrid.useRef(null), count = 1500, ref3 = runtime2.ReactGrid.useRef(null);
+    let draggedIds = value4 === null ? [] : multiIds.includes(value4) ? multiIds : [value4], [value8, value9] = runtime2.ReactGrid.useState(null), ref = runtime2.ReactGrid.useRef(0), ref2 = runtime2.ReactGrid.useRef(null), count = 1500, ref3 = runtime2.ReactGrid.useRef(null);
     ref3.current = value8;
     let ref4 = runtime2.ReactGrid.useRef(null), ref5 = runtime2.ReactGrid.useRef(null), [lookVisible, setLookVisible] = runtime2.ReactGrid.useState();
     runtime2.ReactGrid.useLayoutEffect(() => {
@@ -221544,32 +224643,7 @@ function installEditorSlideRail(runtime2) {
         )
       );
     }, [look]);
-    runtime2.ReactGrid.useEffect(() => {
-      let current = ref5.current;
-      if (!current) {
-        return;
-      }
-      let callback17 = (event) => {
-        let target = event.target;
-        if (target instanceof HTMLElement) {
-          value11(
-            target.matches(":focus-visible") || target.closest('[data-kit="thumb-actions"]') !== null
-          );
-        }
-      }, callback18 = (input) => {
-        let relatedTarget = input.relatedTarget;
-        if (!(relatedTarget instanceof Node) || !current.contains(relatedTarget)) {
-          value11(false);
-        }
-      };
-      current.addEventListener("focusin", callback17);
-      current.addEventListener("focusout", callback18);
-      return () => {
-        current.removeEventListener("focusin", callback17);
-        current.removeEventListener("focusout", callback18);
-      };
-    }, []);
-    let ref6 = runtime2.ReactGrid.useRef(0), ref7 = runtime2.ReactGrid.useRef({
+    let [value10, value11] = runtime2.useFocusWithin(ref5, railFocusShowsChrome), ref6 = runtime2.ReactGrid.useRef(0), ref7 = runtime2.ReactGrid.useRef({
       x: 0,
       y: 0
     }), ref8 = runtime2.ReactGrid.useRef(false), ref9 = runtime2.ReactGrid.useRef(0);
@@ -221638,7 +224712,7 @@ function installEditorSlideRail(runtime2) {
     runtime2.ReactGrid.useEffect(() => {
       let current = ref12.current;
       ref12.current = false;
-      let value20 = !ref13.current;
+      let value20 = !ref13.current || document.fullscreenElement !== null;
       ref13.current = true;
       if (ref3.current !== null) {
         return;
@@ -221912,7 +224986,7 @@ function installEditorSlideRail(runtime2) {
       }
       value5(null);
       value7(null);
-    }, marqueeEnabled = selection !== void 0 && !overPage && pending === void 0, marquee = (0, runtime2.useSlideRailMarquee)({
+    }, marqueeEnabled = selection !== void 0 && pending === void 0, marquee = (0, runtime2.useSlideRailMarquee)({
       scroller: ref5,
       stageThumb: ref4,
       enabled: marqueeEnabled,
@@ -222042,14 +225116,12 @@ function installEditorSlideRail(runtime2) {
     });
     return SlideRailJsx.jsxs("aside", {
       ref: callback5,
-      "data-slides-rail-panel": column && !overPage && !arriving ? "" : void 0,
+      "data-slides-rail-panel": column && !arriving ? "" : void 0,
       "data-slides-rail-arriving": column && arriving ? "" : void 0,
       inert: column && arriving,
       "data-slides-rail-drag": value4 !== null ? "" : void 0,
       className: (0, runtime2.joinClassNames)(
-        "relative flex shrink-0 flex-col border-border-line",
-        !overPage && "bg-panel",
-        "pb-[var(--sl-safe-b,0px)]",
+        "relative flex shrink-0 flex-col border-border-line bg-panel pb-[var(--sl-safe-b,0px)]",
         column ? (0, runtime2.joinClassNames)(
           RAIL_COLUMN_WIDTH_CLASS,
           "h-full min-h-0 border-r"
@@ -222070,12 +225142,9 @@ function installEditorSlideRail(runtime2) {
           max: maxW,
           gesture,
           disabled: maxW <= runtime2.MIN_RAIL_THUMB_WIDTH,
-          unavailableTip: notesOpen ? (0, runtime2.formatMessage)({
-            defaultMessage: "There is not enough height here for larger thumbnails. Closing the speaker notes may make room.",
-            id: "adHSoleI3A"
-          }) : (0, runtime2.formatMessage)({
+          unavailableTip: (0, runtime2.formatMessage)({
             defaultMessage: "There is not enough height here for larger thumbnails",
-            id: "BSOl2tTDic"
+            id: "6dTatpabht"
           }),
           onHome: () => setThumbW(runtime2.MIN_RAIL_THUMB_WIDTH),
           onEnd: () => setThumbW(1 / 0),
@@ -222084,10 +225153,7 @@ function installEditorSlideRail(runtime2) {
           grabTargetClassName: "max-w-full"
         }) : null,
         column ? SlideRailJsx.jsx("div", {
-          className: (0, runtime2.joinClassNames)(
-            "shrink-0 border-b border-border-line",
-            overPage && "invisible"
-          ),
+          className: "shrink-0 border-b border-border-line",
           children: toolbar
         }) : actionRow ? toolbar : null,
         SlideRailJsx.jsxs("div", {
@@ -222264,7 +225330,7 @@ function installEditorSlideRail(runtime2) {
                                 }) : null,
                                 SlideRailJsx.jsxs("div", {
                                   className: (0, runtime2.joinClassNames)(
-                                    "relative overflow-hidden rounded-sm outline-3 outline-offset-2 transition-transform duration-150 ease-out motion-reduce:transition-none",
+                                    "relative overflow-hidden rounded-sm ring-1 ring-border-line dark:ring-border-strong outline-3 outline-offset-2 transition-transform duration-150 ease-out motion-reduce:transition-none",
                                     !column && "origin-bottom",
                                     INHERIT_RAIL_THUMB_WIDTH_CLASS,
                                     input.id === currentId && !column && SELECTED_RAIL_THUMB_SCALE_CLASS,
@@ -222285,11 +225351,16 @@ function installEditorSlideRail(runtime2) {
                                         children: SlideRailJsx.jsx(
                                           runtime2.SlideCanvas,
                                           {
-                                            slide: look !== void 0 && lookVisible?.has(
-                                              String(
-                                                callback(input.id, options) + 1
-                                              )
-                                            ) === true ? look(input) : input,
+                                            slide: (0, runtime2.sourceSlideAtRest)(
+                                              look !== void 0 && lookVisible?.has(
+                                                String(
+                                                  callback(
+                                                    input.id,
+                                                    options
+                                                  ) + 1
+                                                )
+                                              ) === true ? look(input) : input
+                                            ),
                                             assets,
                                             width: thumbW,
                                             animate: false,
@@ -222713,6 +225784,9 @@ function installEditorSlideRail(runtime2) {
       })
     });
   }
+  function railFocusShowsChrome(target) {
+    return target.matches(":focus-visible") || target.closest('[data-kit="thumb-actions"]') !== null;
+  }
   function SlideRailToolbar({
     readOnly,
     onAdd,
@@ -222727,12 +225801,17 @@ function installEditorSlideRail(runtime2) {
     collapseDisabledReason,
     density = "compact",
     placement = "bottom",
-    sidebar
+    thumbnailsRow
   }) {
-    let beside = placement !== "bottom", inCard = placement === "card", seat = inCard ? "" : void 0, collapseButton = onCollapse && collapseDisabledReason !== void 0 ? SlideRailJsx.jsx(runtime2.Button, {
+    let beside = placement !== "bottom", addAccessibility = (0, runtime2.useButtonAccessibility)({
+      disabled: false,
+      name: ADD_SLIDE_LABEL,
+      tip: "",
+      shortcut: gridOpen ? void 0 : "ctrl+m"
+    }), inCard = placement === "card", collapseButton = onCollapse && collapseDisabledReason !== void 0 ? SlideRailJsx.jsx(runtime2.Button, {
       iconOnly: true,
       variant: "ghost",
-      icon: beside ? "Sidebar" : "CaretDown",
+      icon: "CaretDown",
       "aria-label": HIDE_SLIDE_THUMBNAILS_LABEL,
       disabled: true,
       disabledReason: collapseDisabledReason,
@@ -222740,60 +225819,68 @@ function installEditorSlideRail(runtime2) {
     }) : onCollapse ? SlideRailJsx.jsx(runtime2.Button, {
       iconOnly: true,
       variant: "ghost",
-      icon: beside ? "Sidebar" : "CaretDown",
+      icon: "CaretDown",
       "aria-label": HIDE_SLIDE_THUMBNAILS_LABEL,
       "data-slides-rail-hide": "",
       onClick: onCollapse
-    }) : null, showButton = sidebar !== void 0 ? SlideRailJsx.jsx(runtime2.Button, {
-      iconOnly: true,
-      variant: "ghost",
-      icon: "Sidebar",
-      "aria-label": RAIL_SHOW_THUMBNAILS_LABEL,
-      "data-slides-rail-show": "",
-      disabled: "off" in sidebar,
-      disabledReason: "off" in sidebar ? sidebar.off : null,
-      ..."off" in sidebar ? {} : {
-        onClick: sidebar.onShow,
-        onPointerEnter: sidebar.onPointerEnter,
-        onPointerLeave: sidebar.onPointerLeave
-      }
     }) : null;
     return SlideRailJsx.jsx(runtime2.CdsRoot, {
       density,
       className: "contents",
       children: SlideRailJsx.jsxs("div", {
         "data-rail-actions": "",
-        "data-tb-seat": seat,
         className: (0, runtime2.joinClassNames)(
           "flex items-center",
           beside ? (0, runtime2.joinClassNames)(
-            RAIL_TOOLBAR_STACK_GAP_CLASS,
-            "justify-between pointer-coarse:justify-start",
-            placement === "left" && "pointer-coarse:flex-wrap",
-            inCard && RAIL_TOOLBAR_CARD_MIN_WIDTH_CLASS
+            placement === "left" ? "flex-wrap gap-y-1 pointer-coarse:gap-x-1" : RAIL_TOOLBAR_STACK_GAP_CLASS,
+            readOnly ? "justify-start" : "justify-between pointer-coarse:justify-start"
           ) : "justify-between",
-          placement === "left" ? "pt-4 pb-4 pl-4 pe-lg pointer-coarse:pt-[17px] pointer-coarse:pb-2 pointer-coarse:pl-[17px] pointer-coarse:pe-0" : placement === "bottom" && "px-2 pt-1.5 pb-1"
+          placement === "left" ? "pt-4 pb-4 px-2 pointer-coarse:pt-[17px] pointer-coarse:pb-2 pointer-coarse:pl-[17px] pointer-coarse:pe-0" : placement === "bottom" && "px-2 pt-1.5 pb-1"
         ),
         children: [
           SlideRailJsx.jsxs("div", {
-            "data-tb-seat": seat,
             className: (0, runtime2.joinClassNames)(
               "flex items-center",
-              beside ? RAIL_TOOLBAR_STACK_GAP_CLASS : "gap-1"
+              beside ? (0, runtime2.joinClassNames)(
+                RAIL_TOOLBAR_STACK_GAP_CLASS,
+                "max-w-full empty:hidden *:max-w-full"
+              ) : "gap-1"
             ),
             children: [
-              inCard ? showButton : beside ? collapseButton : null,
-              readOnly ? null : SlideRailJsx.jsx(runtime2.TooltipWrapper, {
-                tip: ADD_SLIDE_LABEL,
-                children: SlideRailJsx.jsx(runtime2.Button, {
-                  iconOnly: true,
-                  variant: "ghost",
-                  icon: "Add",
-                  "aria-label": ADD_SLIDE_LABEL,
-                  onClick: () => onAdd()
-                })
+              readOnly ? null : SlideRailJsx.jsxs(SlideRailJsx.Fragment, {
+                children: [
+                  SlideRailJsx.jsx(runtime2.TooltipWrapper, {
+                    tip: ADD_SLIDE_LABEL,
+                    shortcut: gridOpen ? void 0 : "ctrl+m",
+                    children: beside ? SlideRailJsx.jsx(runtime2.Button, {
+                      variant: "ghost",
+                      icon: "Add",
+                      className: "max-w-full",
+                      "aria-label": ADD_SLIDE_LABEL,
+                      "aria-describedby": addAccessibility.describedBy,
+                      "aria-keyshortcuts": addAccessibility.keyShortcuts,
+                      onClick: () => onAdd(),
+                      children: SlideRailJsx.jsx("span", {
+                        className: (0, runtime2.joinClassNames)(
+                          "truncate",
+                          inCard && "@max-[30rem]/tb:max-w-[4.25rem] @max-[26rem]/tb:sr-only"
+                        ),
+                        children: ADD_SLIDE_LABEL
+                      })
+                    }) : SlideRailJsx.jsx(runtime2.Button, {
+                      iconOnly: true,
+                      variant: "ghost",
+                      icon: "Add",
+                      "aria-label": ADD_SLIDE_LABEL,
+                      "aria-describedby": addAccessibility.describedBy,
+                      "aria-keyshortcuts": addAccessibility.keyShortcuts,
+                      onClick: () => onAdd()
+                    })
+                  }),
+                  addAccessibility.mirror
+                ]
               }),
-              onToggleNotes && notesDisabledReason !== void 0 ? SlideRailJsx.jsx(runtime2.TooltipWrapper, {
+              beside ? null : onToggleNotes && notesDisabledReason !== void 0 ? SlideRailJsx.jsx(runtime2.TooltipWrapper, {
                 tip: notesDisabledReason,
                 children: SlideRailJsx.jsx(runtime2.Button, {
                   iconOnly: true,
@@ -222816,10 +225903,23 @@ function installEditorSlideRail(runtime2) {
             ]
           }),
           SlideRailJsx.jsxs("div", {
-            "data-tb-seat": seat,
             className: "flex items-center gap-1.5",
             children: [
-              onSetGridOpen ? SlideRailJsx.jsx(SlidesViewSwitch, {
+              beside ? SlideRailJsx.jsx(SlidesViewMenu, {
+                gridOpen,
+                onSetGridOpen,
+                strip: inCard ? {
+                  shown: false,
+                  ...thumbnailsRow !== void 0 && ("off" in thumbnailsRow ? { off: thumbnailsRow.off } : { onPress: thumbnailsRow.onShow })
+                } : {
+                  shown: true,
+                  onPress: onCollapse,
+                  off: collapseDisabledReason
+                },
+                notesOpen,
+                onToggleNotes,
+                notesDisabledReason
+              }) : onSetGridOpen ? SlideRailJsx.jsx(SlidesViewSwitch, {
                 gridOpen,
                 slideShortcut,
                 canvasShortcut,
@@ -222830,6 +225930,66 @@ function installEditorSlideRail(runtime2) {
           })
         ]
       })
+    });
+  }
+  function SlidesViewMenu({
+    gridOpen,
+    onSetGridOpen,
+    strip,
+    notesOpen,
+    onToggleNotes,
+    notesDisabledReason
+  }) {
+    let pickView = (grid) => () => {
+      if (grid === (gridOpen === true)) {
+        return;
+      }
+      onSetGridOpen?.(grid);
+    };
+    return SlideRailJsx.jsxs(runtime2.ToolbarPopover, {
+      readout: runtime2.VIEW_MENU_LABEL,
+      wordCaret: true,
+      label: VIEW_MENU_CHOOSE_LABEL,
+      "data-testid": SLIDES_VIEW_MENU_TESTID,
+      children: [
+        SlideRailJsx.jsxs(runtime2.Menu.Group, {
+          children: [
+            SlideRailJsx.jsx(runtime2.Menu.Item, {
+              checkedRole: "radio",
+              checked: gridOpen !== true,
+              onClick: pickView(false),
+              children: runtime2.ONE_SLIDE_VIEW_LABEL
+            }),
+            SlideRailJsx.jsx(runtime2.Menu.Item, {
+              checkedRole: "radio",
+              checked: gridOpen === true,
+              onClick: pickView(true),
+              children: runtime2.GRID_VIEW_LABEL
+            })
+          ]
+        }),
+        SlideRailJsx.jsx(runtime2.Menu.Separator, {}),
+        SlideRailJsx.jsxs(runtime2.Menu.Group, {
+          children: [
+            SlideRailJsx.jsx(runtime2.Menu.Item, {
+              checkedRole: "checkbox",
+              checked: strip.shown,
+              disabled: strip.off !== void 0,
+              disabledReason: strip.off ?? null,
+              onClick: strip.onPress,
+              children: SLIDE_THUMBNAILS_LABEL
+            }),
+            onToggleNotes ? SlideRailJsx.jsx(runtime2.Menu.Item, {
+              checkedRole: "checkbox",
+              checked: notesOpen === true,
+              disabled: notesDisabledReason !== void 0,
+              disabledReason: notesDisabledReason ?? null,
+              onClick: onToggleNotes,
+              children: runtime2.SPEAKER_NOTES_TOGGLE_LABEL
+            }) : null
+          ]
+        })
+      ]
     });
   }
   function SlidesViewSwitch({
@@ -223172,10 +226332,26 @@ function installEditorSlideRail(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
-    "RAIL_SHOW_THUMBNAILS_LABEL",
-    () => RAIL_SHOW_THUMBNAILS_LABEL,
+    "SLIDE_THUMBNAILS_LABEL",
+    () => SLIDE_THUMBNAILS_LABEL,
     (value) => {
-      RAIL_SHOW_THUMBNAILS_LABEL = value;
+      SLIDE_THUMBNAILS_LABEL = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SLIDES_VIEW_MENU_TESTID",
+    () => SLIDES_VIEW_MENU_TESTID,
+    (value) => {
+      SLIDES_VIEW_MENU_TESTID = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "VIEW_MENU_CHOOSE_LABEL",
+    () => VIEW_MENU_CHOOSE_LABEL,
+    (value) => {
+      VIEW_MENU_CHOOSE_LABEL = value;
     }
   );
   bindRuntimeValue(
@@ -223184,14 +226360,6 @@ function installEditorSlideRail(runtime2) {
     () => RAIL_TOOLBAR_STACK_GAP_CLASS,
     (value) => {
       RAIL_TOOLBAR_STACK_GAP_CLASS = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "RAIL_TOOLBAR_CARD_MIN_WIDTH_CLASS",
-    () => RAIL_TOOLBAR_CARD_MIN_WIDTH_CLASS,
-    (value) => {
-      RAIL_TOOLBAR_CARD_MIN_WIDTH_CLASS = value;
     }
   );
   bindRuntimeValue(
@@ -223382,6 +226550,7 @@ function installEditorSlideRail(runtime2) {
       SLIDE_VIEW_SWITCH_NAVIGATION_KEYS = value;
     }
   );
+  bindRuntimeValue(runtime2, "SlidesViewMenu", () => SlidesViewMenu);
   bindRuntimeValue(runtime2, "SlidesViewSwitch", () => SlidesViewSwitch);
   bindRuntimeValue(
     runtime2,
@@ -223441,9 +226610,14 @@ function installEditorSlideRail(runtime2) {
       defaultMessage: "Hide slide thumbnails",
       id: "mVZsYVZwNi"
     });
-    RAIL_SHOW_THUMBNAILS_LABEL = (0, runtime2.formatMessage)({
-      defaultMessage: "Show slide thumbnails",
-      id: "ypdKDA1W5l"
+    SLIDES_VIEW_MENU_TESTID = "slides-view-menu";
+    VIEW_MENU_CHOOSE_LABEL = (0, runtime2.formatMessage)({
+      defaultMessage: "Choose what to show",
+      id: "LByIMcL0t+"
+    });
+    SLIDE_THUMBNAILS_LABEL = (0, runtime2.formatMessage)({
+      defaultMessage: "Slide thumbnails",
+      id: "LGXUj3RWSY"
     });
     ADD_SLIDE_LABEL = (0, runtime2.formatMessage)({
       defaultMessage: "Add slide",
@@ -223480,7 +226654,6 @@ function installEditorSlideRail(runtime2) {
     ).createContext(false);
     COMMENT_PIN_CLASS = "z-20 flex size-6 items-center justify-center rounded-full rounded-bl-none border border-strong bg-surface-popover text-caption font-medium text-fg shadow-sm";
     RAIL_TOOLBAR_STACK_GAP_CLASS = "pointer-coarse:gap-1 [[data-cds-fizzy-lake~=panels]_&]:gap-1";
-    RAIL_TOOLBAR_CARD_MIN_WIDTH_CLASS = "@min-[30rem]/tb:min-w-[calc(11rem-17px)]";
     SLIDE_VIEW_SWITCH_NAVIGATION_KEYS = {
       ArrowLeft: "prev",
       ArrowUp: "prev",
@@ -223509,17 +226682,15 @@ function installEditorSlideGrid(runtime2) {
   var GRID_NOTES_MAX_WIDTH;
   var GRID_MAX_SCALE;
   var GRID_FIT_MAX_SCALE;
-  var JUMP_TO_SLIDE_KEYS_HINT;
-  var JUMP_TO_SLIDE_KEYS_LABEL;
-  var JUMP_TO_SLIDE_KEYS_CONTENT;
   var GRID_EMBED_SETTLE_MS;
   var GRID_LIVE_EMBED_LIMIT;
   var liveGridEmbeds;
   var waitingGridEmbedGates;
   var EMPTY_GRID_NOTES_HEIGHTS;
-  var JumpToSlideKeysJsx;
   var SlideGridJsx;
   var SECTION_LIMIT_MESSAGE;
+  var GRID_ADD_ICON_CLASS;
+  var GRID_ADD_CHIP_CLASS;
   var GRID_LABEL_HEIGHT;
   var GRID_TILE_CORNER_RADIUS;
   var GRID_LABEL_FONT_SIZE;
@@ -223648,13 +226819,29 @@ function installEditorSlideGrid(runtime2) {
       (row) => (b.rows.find((other) => other.key === row.key)?.notes ?? row.notes) === row.notes
     );
   }
-  function calculateGridAddButtonSize(scale) {
-    let gap = GRID_COLUMN_GAP * scale, size4 = Math.max(12, Math.min(32, gap / 2));
+  function calculateGridGapAdd(scale, end = false) {
+    let gap = GRID_COLUMN_GAP * scale, boxSize = end ? 32 : Math.min(36, gap - 12), roomy = boxSize >= 24, plus = roomy ? boxSize >= 28 ? 24 : 20 : Math.max(4, Math.min(24, gap - 2)), box = plus < 24 ? 20 : 24, target = end ? Math.max(boxSize, Math.min(gap, 56)) : Math.min(gap, 56), touch = gap >= 24 ? Math.min(32, gap / 2) : 0, reach = (extent, size4) => String((extent / size4 * box - box) / 2) + "px";
     return {
-      size: size4,
-      fits: gap >= size4 + 4,
-      fitsTouch: gap >= 24
+      mark: gap < 6 ? null : roomy ? "slot" : "bar",
+      markW: roomy ? boxSize : 2,
+      mid: end ? Math.max(gap / 2, 6 + boxSize / 2) : gap / 2,
+      target,
+      box,
+      plus,
+      bare: plus < 14,
+      touch,
+      vars: {
+        "--gap-add-box": String(box) + "px",
+        "--gap-add-k": String(plus / box / scale),
+        "--gap-add-touch-k": String(touch / box / scale),
+        "--gap-add-reach-x": reach(target, plus),
+        "--gap-add-reach-y": reach(GRID_SLIDE_HEIGHT * scale, plus),
+        "--gap-add-slop": reach(40, touch || 40)
+      }
     };
+  }
+  function gridFocusShowsChrome(target, container) {
+    return target === container ? target.matches(":focus-visible") : target.closest('[data-kit="thumb-actions"]') !== null || target.matches("[data-grid-notes]") && target.matches(":focus-visible");
   }
   function buildSlideGridLayout(sections, notesFor, rowNotes) {
     let sectioned = sections.some(
@@ -224586,6 +227773,16 @@ function installEditorSlideGrid(runtime2) {
         );
       },
       [callback9]
+    ), stepZoom = runtime2.ReactGridMemo.useCallback(
+      (direction) => callback15(
+        (0, runtime2.nextZoomStop)(
+          ref14.current.scale,
+          direction,
+          ref15.current.minScale,
+          ref15.current.maxScale
+        ) / ref14.current.scale
+      ),
+      [callback15]
     ), ref21 = runtime2.ReactGridMemo.useRef(null), callback16 = runtime2.ReactGridMemo.useCallback(() => {
       let current2 = ref21.current, value47 = current2 && ref3.current.tiles.find(
         (input2) => input2.id === current2.id
@@ -224637,7 +227834,7 @@ function installEditorSlideGrid(runtime2) {
         }),
         setScaleTo: (input2) => callback15(input2 / ref14.current.scale),
         fitAll: (input2) => input2 !== void 0 ? callback14(input2) : callback13(),
-        stepZoom: callback15,
+        stepZoom,
         glideToSlide: (input2, options, context, timing) => {
           ref33.current?.end("drop");
           if (ref26.current) {
@@ -224927,12 +228124,12 @@ function installEditorSlideGrid(runtime2) {
         if (event.key === "0") {
           callback13();
         } else {
-          callback15(event.key === "-" ? 0.8 : 1.25);
+          stepZoom(event.key === "-" ? -1 : 1);
         }
       };
       window.addEventListener("keydown", callback43);
       return () => window.removeEventListener("keydown", callback43);
-    }, [callback13, callback15]);
+    }, [callback13, stepZoom]);
     let callback19 = (event) => {
       if (value2 || value3 || event.defaultPrevented || !ref10.current?.contains(event.target)) {
         return;
@@ -225534,7 +228731,7 @@ function installEditorSlideGrid(runtime2) {
         ref33.current.sweep();
       }
     }, [value10]);
-    let ref36 = runtime2.ReactGridMemo.useRef(null);
+    let ref36 = runtime2.ReactGridMemo.useRef(null), gapAddPress = runtime2.ReactGridMemo.useRef(null);
     runtime2.ReactGridMemo.useLayoutEffect(() => {
       if (!value2) {
         return;
@@ -225545,33 +228742,7 @@ function installEditorSlideGrid(runtime2) {
       }
       ref36.current = null;
     }, [value2]);
-    let [value17, value18] = runtime2.ReactGridMemo.useState(null), [value19, value20] = runtime2.ReactGridMemo.useState(false);
-    runtime2.ReactGridMemo.useEffect(() => {
-      let current2 = ref10.current;
-      if (!current2) {
-        return;
-      }
-      let callback43 = (event) => {
-        let target = event.target;
-        if (target instanceof HTMLElement) {
-          value20(
-            target === current2 ? target.matches(":focus-visible") : target.closest('[data-kit="thumb-actions"]') !== null || target.matches("[data-grid-notes]") && target.matches(":focus-visible")
-          );
-        }
-      }, callback44 = (input2) => {
-        let relatedTarget = input2.relatedTarget;
-        if (!(relatedTarget instanceof Node) || !current2.contains(relatedTarget)) {
-          value20(false);
-        }
-      };
-      current2.addEventListener("focusin", callback43);
-      current2.addEventListener("focusout", callback44);
-      return () => {
-        current2.removeEventListener("focusin", callback43);
-        current2.removeEventListener("focusout", callback44);
-      };
-    }, []);
-    let value21 = value17 ? memo32.get(value17.id) : void 0, value22 = value17 === null ? [] : value6.slides.length > 1 && value6.slides.includes(value17.id) ? memo22.tiles.filter(
+    let [value17, value18] = runtime2.ReactGridMemo.useState(null), [value19, value20] = runtime2.useFocusWithin(ref10, gridFocusShowsChrome), value21 = value17 ? memo32.get(value17.id) : void 0, value22 = value17 === null ? [] : value6.slides.length > 1 && value6.slides.includes(value17.id) ? memo22.tiles.filter(
       (input2) => value6.slides.includes(input2.id)
     ).map((input2) => input2.id) : [value17.id], value23 = value22.length > 0 ? memo4.find(
       (input2) => input2.ids.includes(value22[0])
@@ -225828,8 +228999,9 @@ function installEditorSlideGrid(runtime2) {
         )
       ),
       [value29]
-    ), scale = value10.scale, value30 = 1 / scale, wideEnough = GRID_SLIDE_WIDTH * scale >= 112, comfortable = inheritedLarge && wideEnough, value31 = GRID_ROW_GAP * scale, value32 = GRID_SLIDE_WIDTH * scale >= 56 && value31 >= GRID_LABEL_HEIGHT + 2 + GRID_TOUCH_LABEL_FONT_SIZE + GRID_CHROME_GAP, value33 = calculateGridAddButtonSize(scale), value34 = value33.size / 24, state = {
-      "--gap-add-slop": String((40 / value34 - 24) / 2) + "px"
+    ), scale = value10.scale, value30 = 1 / scale, wideEnough = GRID_SLIDE_WIDTH * scale >= 112, comfortable = inheritedLarge && wideEnough, value31 = GRID_ROW_GAP * scale, value32 = GRID_SLIDE_WIDTH * scale >= 56 && value31 >= GRID_LABEL_HEIGHT + 2 + GRID_TOUCH_LABEL_FONT_SIZE + GRID_CHROME_GAP, value33 = {
+      between: calculateGridGapAdd(scale),
+      end: calculateGridGapAdd(scale, true)
     }, value35 = value31 < GRID_TOUCH_LABEL_FONT_SIZE + 6 + GRID_CHROME_GAP, value36 = value35 ? GRID_SELECTION_OUTSET : GRID_TOUCH_LABEL_FONT_SIZE, value37 = value32 ? GRID_LABEL_HEIGHT + 2 : value35 ? 3 : 6, value38 = Math.max(
       0.1,
       Math.min(1, (value31 - GRID_CHROME_GAP) / (value36 + value37))
@@ -225868,7 +229040,7 @@ function installEditorSlideGrid(runtime2) {
         "data-slides-grid": "",
         tabIndex: value2 ? -1 : 0,
         role: "application",
-        "aria-label": (0, runtime2.formatMessage)({
+        "aria-label": input.name ?? (0, runtime2.formatMessage)({
           defaultMessage: "Canvas",
           id: "4OyZ1AyEVy"
         }),
@@ -226172,7 +229344,7 @@ function installEditorSlideGrid(runtime2) {
                           })
                         }) : null
                       }) : null,
-                      !readOnly && !value2 && value13 === null ? memo22.rows.filter(
+                      !readOnly && !value2 && value13 === null && input.commenting !== true ? memo22.rows.filter(
                         (input3) => input3 === input2 || input3.continuation && input3.seg === input2.seg
                       ).flatMap(
                         (input3, options, items) => [
@@ -226201,10 +229373,25 @@ function installEditorSlideGrid(runtime2) {
                           col,
                           y,
                           end
+                        }) => ({
+                          id,
+                          col,
+                          y,
+                          end,
+                          add: end ? value33.end : value33.between
+                        })
+                      ).map(
+                        ({
+                          id,
+                          col,
+                          y,
+                          end,
+                          add
                         }) => SlideGridJsx.jsx(
                           "div",
                           {
-                            className: "group/split absolute z-[38]",
+                            "data-gap-end": end ? "" : void 0,
+                            className: "absolute z-[38]",
                             style: {
                               left: col * (GRID_SLIDE_WIDTH + GRID_COLUMN_GAP) - GRID_COLUMN_GAP,
                               top: y,
@@ -226216,47 +229403,103 @@ function installEditorSlideGrid(runtime2) {
                                 callback13();
                               }
                             },
-                            children: SlideGridJsx.jsx("div", {
+                            children: SlideGridJsx.jsxs("div", {
                               "data-grid-chrome": "",
-                              "data-kit": "gap-add",
+                              "data-gap-add": add.mark ?? "",
                               className: (0, runtime2.joinClassNames)(
-                                "absolute top-1/2 opacity-0 transition-opacity group-hover/split:opacity-100",
-                                !value33.fits && "pointer-fine:hidden",
-                                value33.fitsTouch ? "pointer-coarse:opacity-100" : "pointer-coarse:hidden"
+                                "absolute top-0 h-full w-0",
+                                add.touch === 0 && "pointer-coarse:hidden"
                               ),
                               style: {
-                                left: GRID_COLUMN_GAP / 2,
-                                transform: "translate(-50%, -50%) scale(" + String(value30 * value34) + ")",
-                                ...state
+                                left: add.mid * value30
                               },
-                              onPointerDown: (input3) => input3.stopPropagation(),
-                              onMouseDown: (event) => event.preventDefault(),
-                              children: SlideGridJsx.jsx(runtime2.Button, {
-                                variant: "primary",
-                                size: "xs",
-                                iconOnly: true,
-                                tabIndex: -1,
-                                icon: SlideGridJsx.jsx(runtime2.Icon, {
-                                  name: "Add",
-                                  size: "xs"
+                              children: [
+                                SlideGridJsx.jsx("span", {
+                                  "aria-hidden": "true",
+                                  className: "pointer-events-none absolute top-0 left-0 origin-top pointer-coarse:hidden",
+                                  style: {
+                                    width: add.markW,
+                                    height: GRID_SLIDE_HEIGHT * scale,
+                                    transform: "translateX(-50%) scale(" + String(value30) + ")"
+                                  },
+                                  children: SlideGridJsx.jsx("span", {
+                                    "data-gap-mark": "",
+                                    className: (0, runtime2.joinClassNames)(
+                                      "absolute inset-0 border-app-accent dark:border-blue-text",
+                                      add.mark === "slot" ? "rounded-md border border-dashed bg-app-accent/9 dark:bg-blue-text/9" : "border-l-2"
+                                    )
+                                  })
                                 }),
-                                "aria-label": (0, runtime2.formatMessage)({
-                                  defaultMessage: "Add a slide here",
-                                  id: "K6TPRgwCoz"
-                                }),
-                                tooltip: (0, runtime2.formatMessage)({
-                                  defaultMessage: "New slide here",
-                                  id: "DhP1S2co8Y"
-                                }),
-                                onClick: () => {
-                                  let value56 = end ? id : order[order.indexOf(id) - 1];
-                                  if (value56 === void 0) {
-                                    return;
-                                  }
-                                  onSelect(value56);
-                                  ref.current.onAdd();
-                                }
-                              })
+                                SlideGridJsx.jsx("div", {
+                                  "data-kit": "gap-add",
+                                  className: "absolute top-1/2 left-0 [transform:translate(-50%,-50%)_scale(var(--gap-add-k))] pointer-coarse:[transform:translate(-50%,-50%)_scale(var(--gap-add-touch-k))]",
+                                  style: add.vars,
+                                  onPointerDown: (input3) => {
+                                    input3.stopPropagation();
+                                    gapAddPress.current = input3.pointerType === "mouse" ? {
+                                      x: input3.clientX,
+                                      y: input3.clientY
+                                    } : null;
+                                  },
+                                  onMouseDown: (event) => event.preventDefault(),
+                                  children: SlideGridJsx.jsxs("span", {
+                                    "data-gap-plus": add.bare ? "bare" : "",
+                                    className: "relative flex",
+                                    children: [
+                                      SlideGridJsx.jsx("span", {
+                                        "aria-hidden": "true",
+                                        "data-gap-chip": "",
+                                        className: (0, runtime2.joinClassNames)(
+                                          "absolute inset-0 rounded-full",
+                                          GRID_ADD_CHIP_CLASS
+                                        )
+                                      }),
+                                      SlideGridJsx.jsx(runtime2.Tooltip, {
+                                        content: (0, runtime2.formatMessage)({
+                                          defaultMessage: "New slide here",
+                                          id: "DhP1S2co8Y"
+                                        }),
+                                        side: "right",
+                                        trackCursorAxis: "y",
+                                        delay: 700,
+                                        children: SlideGridJsx.jsx(runtime2.Button, {
+                                          variant: "ghost",
+                                          size: add.box === 24 ? "xs" : "xxs",
+                                          iconOnly: true,
+                                          tooltip: false,
+                                          tabIndex: -1,
+                                          className: "rounded-full",
+                                          icon: SlideGridJsx.jsx(runtime2.Icon, {
+                                            name: "Add",
+                                            size: "xs",
+                                            className: GRID_ADD_ICON_CLASS
+                                          }),
+                                          "aria-label": (0, runtime2.formatMessage)({
+                                            defaultMessage: "Add a slide here",
+                                            id: "K6TPRgwCoz"
+                                          }),
+                                          onClick: (event) => {
+                                            let press = gapAddPress.current;
+                                            gapAddPress.current = null;
+                                            if (event.detail > 0 && press !== null && Math.hypot(
+                                              event.clientX - press.x,
+                                              event.clientY - press.y
+                                            ) >= GRID_RECT_SELECTION_THRESHOLD_PX) {
+                                              return;
+                                            }
+                                            let value56 = end ? id : order[order.indexOf(id) - 1];
+                                            if (value56 === void 0) {
+                                              return;
+                                            }
+                                            onSelect(value56);
+                                            ref.current.onAdd();
+                                          }
+                                        })
+                                      })
+                                    ]
+                                  })
+                                })
+                              ]
                             })
                           },
                           (end ? "end:" : "split:") + id
@@ -226267,7 +229510,7 @@ function installEditorSlideGrid(runtime2) {
                   input2.key
                 );
               }),
-              !readOnly && !value2 && value13 === null && memo22.rows.length > 0 ? SlideGridJsx.jsx("div", {
+              !readOnly && !value2 && value13 === null && input.commenting !== true && memo22.rows.length > 0 ? SlideGridJsx.jsx("div", {
                 className: "group/end absolute z-[38]",
                 style: {
                   left: 0,
@@ -226294,17 +229537,22 @@ function installEditorSlideGrid(runtime2) {
                     SlideGridJsx.jsx("span", {
                       "data-grid-chrome": "",
                       "data-kit": "strip-action",
-                      className: "pointer-events-auto flex",
+                      className: (0, runtime2.joinClassNames)(
+                        "pointer-events-auto flex rounded-full",
+                        GRID_ADD_CHIP_CLASS
+                      ),
                       onPointerDown: (input2) => input2.stopPropagation(),
                       onMouseDown: (event) => event.preventDefault(),
                       children: SlideGridJsx.jsx(runtime2.Button, {
-                        variant: "primary",
+                        variant: "ghost",
                         size: "xs",
                         iconOnly: true,
                         tabIndex: -1,
+                        className: "rounded-full",
                         icon: SlideGridJsx.jsx(runtime2.Icon, {
                           name: "Add",
-                          size: "xs"
+                          size: "xs",
+                          className: value28 ? void 0 : GRID_ADD_ICON_CLASS
                         }),
                         "aria-label": (0, runtime2.formatMessage)({
                           defaultMessage: "Add a section here",
@@ -226840,32 +230088,8 @@ function installEditorSlideGrid(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
-    "JUMP_TO_SLIDE_KEYS_HINT",
-    () => JUMP_TO_SLIDE_KEYS_HINT,
-    (value) => {
-      JUMP_TO_SLIDE_KEYS_HINT = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "JUMP_TO_SLIDE_KEYS_LABEL",
-    () => JUMP_TO_SLIDE_KEYS_LABEL,
-    (value) => {
-      JUMP_TO_SLIDE_KEYS_LABEL = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "JUMP_TO_SLIDE_KEYS_CONTENT",
-    () => JUMP_TO_SLIDE_KEYS_CONTENT,
-    (value) => {
-      JUMP_TO_SLIDE_KEYS_CONTENT = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "calculateGridAddButtonSize",
-    () => calculateGridAddButtonSize
+    "calculateGridGapAdd",
+    () => calculateGridGapAdd
   );
   bindRuntimeValue(runtime2, "buildSlideGridLayout", () => buildSlideGridLayout);
   bindRuntimeValue(runtime2, "hitTestSlideGridDrop", () => hitTestSlideGridDrop);
@@ -227132,27 +230356,6 @@ function installEditorSlideGrid(runtime2) {
     (0, runtime2.initializeModelEditing)();
     (0, runtime2.initializeSections)();
     (0, runtime2.initializeSlideRenderer)();
-    JumpToSlideKeysJsx = (0, runtime2.toModuleNamespace)(
-      (0, runtime2.loadJsxNamespace)(),
-      1
-    );
-    JUMP_TO_SLIDE_KEYS_HINT = (0, runtime2.formatMessage)({
-      defaultMessage: "Press Home for the first slide, End for the last, or a number from 1 to 9 to go to that slide.",
-      id: "XZvyxROB5A"
-    });
-    JUMP_TO_SLIDE_KEYS_LABEL = (0, runtime2.formatMessage)({
-      defaultMessage: "Keys for jumping to a slide",
-      id: "/K30BCpdFJ"
-    });
-    JUMP_TO_SLIDE_KEYS_CONTENT = JumpToSlideKeysJsx.jsx(runtime2.FormattedMessage, {
-      defaultMessage: "Press <kbd>Home</kbd> for the first slide, <kbd>End</kbd> for the last, or a number from <kbd>1</kbd> to <kbd>9</kbd> to go to that slide.",
-      id: "PGjeqiTGaU",
-      values: {
-        kbd: (parts) => JumpToSlideKeysJsx.jsx(runtime2.Kbd, {
-          children: parts.join("")
-        })
-      }
-    });
     GRID_EMBED_SETTLE_MS = 200;
     GRID_LIVE_EMBED_LIMIT = 16;
     liveGridEmbeds = 0;
@@ -227178,6 +230381,8 @@ function installEditorSlideGrid(runtime2) {
       defaultMessage: "This presentation has as many sections as it can hold",
       id: "JWcg6XPPpg"
     });
+    GRID_ADD_ICON_CLASS = "text-app-accent dark:text-blue-text";
+    GRID_ADD_CHIP_CLASS = "bg-surface-popover shadow-panel-sm";
     GRID_LABEL_HEIGHT = 22;
     GRID_TILE_CORNER_RADIUS = 8;
     GRID_LABEL_FONT_SIZE = 18;
@@ -227207,7 +230412,7 @@ function installEditorSlideGrid(runtime2) {
       return SlideGridJsx.jsx(GridEmbedGate, {
         embeds: ghost ? 0 : (0, runtime2.countSlideEmbeds)(slide),
         children: SlideGridJsx.jsx(runtime2.SlideSurface, {
-          slide,
+          slide: (0, runtime2.sourceSlideAtRest)(slide),
           assets,
           animate: false,
           editorChrome: !readOnly
@@ -227596,6 +230801,7 @@ function installBridgeFrameViewport(runtime2) {
 
 function installCommentsCapability(runtime2) {
   var supportsCommentComposer;
+  var JUMP_TO_SLIDE_KEYS_HINT;
   function commentsAvailable() {
     return (0, runtime2.getHostCapability)("comments") !== void 0 || (0, runtime2.hasHostCapabilityLoader)();
   }
@@ -227670,12 +230876,24 @@ function installCommentsCapability(runtime2) {
     "getCommentsCapability",
     () => getCommentsCapability
   );
+  bindRuntimeValue(
+    runtime2,
+    "JUMP_TO_SLIDE_KEYS_HINT",
+    () => JUMP_TO_SLIDE_KEYS_HINT,
+    (value) => {
+      JUMP_TO_SLIDE_KEYS_HINT = value;
+    }
+  );
   return () => {
     (0, runtime2.initializeVideoAssets)();
     (0, runtime2.initializeSlideRenderer)();
     (0, runtime2.initializeClipRegistry)();
     (0, runtime2.initializeRichTextDom)();
     supportsCommentComposer = (0, runtime2.capabilityHasMethod)("openComposer");
+    JUMP_TO_SLIDE_KEYS_HINT = (0, runtime2.formatMessage)({
+      defaultMessage: "Press Home for the first slide, End for the last, or a number from 1 to 9 to go to that slide.",
+      id: "e9Z5PEnEo8"
+    });
   };
 }
 
@@ -229261,34 +232479,127 @@ function installEditorCanvas(runtime2) {
       y: -(slideRect.top - containerRect.top) / scale
     };
   }
+  const EDITOR_UNDER_MARGIN = 12;
+  const EDITOR_UNDER_SCROLL_MARGIN = 64;
   function clampEditorViewport(view, viewport) {
     if (view.scale <= 0) {
       return view;
     }
-    let padding = EDITOR_VIEWPORT_PADDING / view.scale, callback = (input, options, context, value3) => {
-      let value4 = options / view.scale;
-      if (value4 >= context) {
-        return centerViewportAxis(options, context, view.scale, value3);
+    let padding = EDITOR_VIEWPORT_PADDING / view.scale, clampAxis = (offset4, boxSize, slideSize, inset, underEdge) => {
+      let reachUnder = (limit) => underEdge !== void 0 && underEdge(EDITOR_UNDER_MARGIN) > limit ? underEdge(EDITOR_UNDER_SCROLL_MARGIN) : limit, visible = boxSize / view.scale;
+      if (visible >= slideSize) {
+        let centered = centerViewportAxis(boxSize, slideSize, view.scale, inset), reach = reachUnder(centered);
+        return reach > centered ? Math.min(reach, Math.max(centered, offset4)) : centered;
       }
-      let value5 = value3 / view.scale;
+      let insetUnits = inset / view.scale;
       return Math.min(
-        context - value4 + padding - value5,
-        Math.max(-padding - value5, input)
+        reachUnder(slideSize - visible + padding - insetUnits),
+        Math.max(-padding - insetUnits, offset4)
       );
-    }, value = callback(view.x, viewport.w, runtime2.SLIDE_WIDTH, 0), value2 = callback(
+    }, x = clampAxis(view.x, viewport.w, runtime2.SLIDE_WIDTH, 0), { tail, top = 0 } = viewport, y = clampAxis(
       view.y,
       viewport.h,
       runtime2.SLIDE_HEIGHT,
-      viewport.top ?? 0
+      top,
+      tail && ((margin) => runtime2.SLIDE_HEIGHT + (tail.h + margin - top - viewport.h - tail.room) / view.scale)
     );
-    if (value === view.x && value2 === view.y) {
+    if (x === view.x && y === view.y) {
       return view;
     }
     return {
-      x: value,
-      y: value2,
+      x,
+      y,
       scale: view.scale
     };
+  }
+  function stripSourceNodeOffset(node) {
+    let transform = node.style?.transform;
+    if (node.sid === void 0 || transform === void 0) {
+      return node;
+    }
+    let { translateX, translateY, shiftX, shiftY, ...rest } = transform, { transform: unused, ...style } = node.style;
+    return {
+      ...node,
+      style: Object.keys(rest).length > 0 ? { ...style, transform: rest } : style
+    };
+  }
+  function animationHasTransform(animation) {
+    return animation !== void 0 && (animation.keyframes.some((keyframe) => keyframe.style.transform !== void 0) || animationHasTransform(animation.next));
+  }
+  function shiftNodeBy(node, dx, dy) {
+    if (dx === 0 && dy === 0) {
+      return node;
+    }
+    let useShift = animationHasTransform(node.style?.animation) || node.style?.transform?.shiftX !== void 0 || node.style?.transform?.shiftY !== void 0, [xKey, yKey] = useShift ? ["shiftX", "shiftY"] : ["translateX", "translateY"], { [xKey]: currentX = 0, [yKey]: currentY = 0, ...others } = node.style?.transform ?? {}, nextX = currentX + dx, nextY = currentY + dy, transform = {
+      ...others,
+      ...nextX !== 0 ? { [xKey]: nextX } : {},
+      ...nextY !== 0 ? { [yKey]: nextY } : {}
+    }, { transform: unused, ...style } = node.style ?? {};
+    return {
+      ...node,
+      style: Object.keys(transform).length > 0 ? { ...style, transform } : style
+    };
+  }
+  function selectionIsPartOfEditedText() {
+    let selection = window.getSelection(), editable = document.querySelector("[data-text-path][contenteditable]"), selected = selection?.toString().trim() ?? "";
+    return editable !== null && selected !== "" && selected !== (editable.textContent ?? "").trim();
+  }
+  function toggleBoldOnSelection() {
+    let selection = window.getSelection();
+    if (selection === null || selection.rangeCount === 0) {
+      return;
+    }
+    let bold = selection.anchorNode?.parentElement?.closest("b,strong");
+    if (bold !== null && bold !== void 0) {
+      selection.selectAllChildren(bold);
+      selection.getRangeAt(0).setStartBefore(bold);
+      selection.getRangeAt(0).setEndAfter(bold);
+      document.execCommand("insertHTML", false, bold.innerHTML);
+      return;
+    }
+    let wrapper = document.createElement("b");
+    wrapper.append(selection.getRangeAt(0).cloneContents());
+    document.execCommand("insertHTML", false, wrapper.outerHTML);
+  }
+  function buildKeyIsWithin(ancestor, key) {
+    return key === ancestor || key.startsWith(ancestor + (ancestor.includes("\0") ? "." : "\0"));
+  }
+  function nodeHasOffset(node) {
+    let transform = node?.style?.transform;
+    return transform?.translateX !== void 0 || transform?.translateY !== void 0 || transform?.shiftX !== void 0 || transform?.shiftY !== void 0;
+  }
+  function sourceUnitsMoveByShift(slide, units) {
+    return runtime2.SOURCE_NODE_SHIFT_ENABLED && units.length > 0 && units.every((unit) => {
+      let frame = (0, runtime2.frameById)(slide, unit.frameId), path = (0, runtime2.selectionNodePath)(unit), node = (0, runtime2.selectedNode)(slide, unit);
+      if (frame === void 0 || path.length === 0 || node?.sid === void 0 || !["text", "img", "icon", "stack", "grid", "table"].includes(node.kind)) {
+        return false;
+      }
+      return path.every((_step, depth) => {
+        let ancestor = (0, runtime2.nodeAtPath)(frame.node, path.slice(0, depth)), transform = (0, runtime2.nodeTransform)(ancestor);
+        return (ancestor?.style?.overflow !== "hidden" || depth === 0 && (0, runtime2.isPrimaryLayoutFrame)(slide, frame)) && (transform === void 0 || (transform.rotate ?? 0) === 0 && (transform.scale ?? 1) === 1 && !transform.skewX && !transform.skewY);
+      });
+    });
+  }
+  function unitUsesFramePlacement(slide, unit) {
+    let node = (0, runtime2.frameById)(slide, unit.frameId)?.node;
+    return !sourceUnitsMoveByShift(slide, [unit]) && node?.sid === void 0 && !(node !== void 0 && (0, runtime2.nodeChildren)(node)?.some((child) => child.sid !== void 0));
+  }
+  function clampShiftToSlide(box, dx, dy) {
+    let clampAxis = (delta, start, size4, slideSize) => Math.min(Math.max(delta, Math.min(0, -start)), Math.max(0, slideSize - size4 - start));
+    return {
+      dx: clampAxis(dx, box.x, box.w, runtime2.SLIDE_WIDTH),
+      dy: clampAxis(dy, box.y, box.h, runtime2.SLIDE_HEIGHT)
+    };
+  }
+  function shiftUnits(slide, units, dx, dy) {
+    return units.reduce(
+      (current, unit) => (0, runtime2.updateSelectedNode)(
+        current,
+        unit,
+        (node) => shiftNodeBy(node, Math.round(dx), Math.round(dy))
+      ),
+      slide
+    );
   }
   function getEditorViewportBounds(element, topInset = 0) {
     let bounds = element?.getBoundingClientRect();
@@ -229640,11 +232951,13 @@ function installEditorCanvas(runtime2) {
       delete state.place;
       freeNode = state;
     }
+    let { build, ...plainNode } = stripSourceNodeOffset(freeNode);
     return {
       id: (0, runtime2.createModelId)(),
       x,
       y,
-      node: freeNode
+      node: plainNode,
+      ...build !== void 0 ? { build } : {}
     };
   }
   function fillMissingFrameSizes(frame, rect) {
@@ -229883,7 +233196,7 @@ function installEditorCanvas(runtime2) {
     if (!(0, runtime2.isFlowContainer)(frame.node)) {
       return drag2;
     }
-    if ((0, runtime2.styleHasVisiblePaint)(frame.node.style) || !flow && !(0, runtime2.nodeTransform)(frame.node)) {
+    if ((0, runtime2.styleHasVisiblePaint)(frame.node.style) || !flow && !(0, runtime2.nodeTransform)(frame.node) || frame.node.sid !== void 0 || flow && frame.node.children.some((child) => child.sid !== void 0)) {
       return collectFlowDragChildPaths(drag2, paths);
     } else {
       return drag2;
@@ -229939,6 +233252,11 @@ function installEditorCanvas(runtime2) {
             (input) => input.id !== frameId
           )
         }
+      };
+    }
+    if (frame.node.sid !== void 0) {
+      return {
+        slide
       };
     }
     let value = measure(remainingChildren[0].i);
@@ -230024,7 +233342,7 @@ function installEditorCanvas(runtime2) {
     return result;
   }
   function removeFlowNodePlacement(frame, rect) {
-    let axisSize = (input, options) => input.anchor === "fill" ? options - 2 * input.margin : input.size, node = frame.node;
+    let axisSize = (input, options) => input.anchor === "fill" ? options - 2 * input.margin : input.size, node = frame.build === void 0 || frame.node.sid === void 0 ? frame.node : { ...frame.node, build: frame.build };
     if (node.place !== void 0) {
       let state2 = {
         ...node
@@ -230080,10 +233398,10 @@ function installEditorCanvas(runtime2) {
     let value = (0, runtime2.frameById)(slide, target.frameId), value2 = value ? (0, runtime2.nodeAtPath)(value.node, target.path) : void 0, value3 = frameIds.map(
       (input) => (0, runtime2.frameById)(slide, input)
     );
-    if (!value || !value2 || !(0, runtime2.isFlowContainer)(value2) || frameIds.includes(value.id)) {
+    if (!value || !value2 || !(0, runtime2.isFlowContainer)(value2) || value2.drawn === true || frameIds.includes(value.id)) {
       return null;
     }
-    let callback = (input) => input !== void 0 && input.node.kind !== "html" && !(0, runtime2.isEmptyGroupBase)(input.node) && (!(0, runtime2.isConnectorNode)(input.node) || measure?.has(input.id) === true);
+    let callback = (input) => input !== void 0 && input.node.kind !== "html" && !(0, runtime2.isMarkedEmptyGroupBase)(input.node) && (!(0, runtime2.isConnectorNode)(input.node) && !(0, runtime2.isEmptyGroupBase)(input.node) || measure?.has(input.id) === true);
     if (!value3.every(callback) || value2.children.length + value3.length > runtime2.maxSlideFrames) {
       return null;
     }
@@ -230453,6 +233771,7 @@ function installEditorCanvas(runtime2) {
     sideInset,
     readOnly = false,
     stageOverlay,
+    under,
     surround
   }) {
     let stageRef = runtime2.reactK_.useRef(null), slideSurfaceRef = runtime2.reactK_.useRef(null), pointInsideSlide = runtime2.reactK_.useCallback(
@@ -230478,7 +233797,16 @@ function installEditorCanvas(runtime2) {
     ), [, refreshFontOptions] = runtime2.reactK_.useState(0), [manualViewport, setManualViewport] = runtime2.reactK_.useState(null), frameElementsRef = runtime2.reactK_.useRef(/* @__PURE__ */ new Map()), dragSessionRef = runtime2.reactK_.useRef(null), plainPressRef = runtime2.reactK_.useRef(true), isPlainPress = runtime2.reactK_.useCallback(
       () => plainPressRef.current,
       []
-    ), touchPressRef = runtime2.reactK_.useRef(null), longPressTimerRef = runtime2.reactK_.useRef(null), beginFrameDragRef = runtime2.reactK_.useRef(() => {
+    ), touchPressRef = runtime2.reactK_.useRef(null), longPressTimerRef = runtime2.reactK_.useRef(null);
+    runtime2.reactK_.useEffect(
+      () => () => {
+        if (longPressTimerRef.current !== null) {
+          clearTimeout(longPressTimerRef.current);
+        }
+      },
+      []
+    );
+    let beginFrameDragRef = runtime2.reactK_.useRef(() => {
     }), releasePointerRef = runtime2.reactK_.useRef(() => {
     }), applyTouchLiftRef = runtime2.reactK_.useRef(() => {
     }), clearTouchLiftRef = runtime2.reactK_.useRef(() => {
@@ -230597,17 +233925,45 @@ function installEditorCanvas(runtime2) {
       observer.observe(current);
       return () => observer.disconnect();
     }, []);
-    let usableViewport = {
+    let underRef = runtime2.reactK_.useRef(null), [underHeight, setUnderHeight] = runtime2.reactK_.useState(0), hasUnder = under !== void 0;
+    runtime2.reactK_.useLayoutEffect(() => {
+      let element = underRef.current;
+      if (!element) {
+        return setUnderScroll((scroll) => scroll.y === 0 ? scroll : { ...scroll, y: 0 });
+      }
+      setUnderHeight(element.offsetHeight);
+      let observer = new ResizeObserver(() => setUnderHeight(element.offsetHeight));
+      observer.observe(element);
+      return () => observer.disconnect();
+    }, [hasUnder]);
+    let tail = under && underHeight > 0 ? { h: underHeight, room: under.room } : void 0, usableViewport = {
       w: stageSize.w,
-      h: Math.max(0, stageSize.h - (topInset ?? 0) - (bottomInset ?? 0)),
+      h: Math.max(
+        0,
+        stageSize.h - (topInset ?? 0) - (bottomInset ?? 0) - (tail?.room ?? 0)
+      ),
       top: topInset ?? 0,
-      sidePad: sideInset || EDITOR_VIEWPORT_PADDING / 2
-    }, fittedViewport = fitSlideEditorViewport(usableViewport), ref = runtime2.reactK_.useRef(null), ref2 = runtime2.reactK_.useRef(-1 / 0), ref3 = runtime2.reactK_.useRef(null), ref4 = runtime2.reactK_.useRef(null), ref5 = runtime2.reactK_.useRef(surround);
+      sidePad: sideInset || EDITOR_VIEWPORT_PADDING / 2,
+      tail
+    }, fittedViewport = fitSlideEditorViewport(usableViewport), [underScroll, setUnderScroll] = runtime2.reactK_.useState({
+      slide: slide.id,
+      y: 0
+    }), underOffset = tail && manualViewport === null && underScroll.slide === slide.id ? underScroll.y : 0, underOffsetRef = runtime2.reactK_.useRef(underOffset);
+    underOffsetRef.current = underOffset;
+    let scrolledViewport = underOffset === 0 ? fittedViewport : clampEditorViewport(
+      {
+        ...fittedViewport,
+        y: fittedViewport.y + underOffset / fittedViewport.scale
+      },
+      usableViewport
+    ), fittedViewportRef = runtime2.reactK_.useRef(fittedViewport);
+    fittedViewportRef.current = fittedViewport;
+    let ref = runtime2.reactK_.useRef(null), ref2 = runtime2.reactK_.useRef(-1 / 0), ref3 = runtime2.reactK_.useRef(null), ref4 = runtime2.reactK_.useRef(null), ref5 = runtime2.reactK_.useRef(surround);
     ref5.current = surround;
     let callback = runtime2.reactK_.useCallback(
       (input, options) => ref5.current ? input : clampEditorViewport(input, options),
       []
-    ), value = manualViewport ?? fittedViewport, scale = value.scale, ref6 = runtime2.reactK_.useRef(null);
+    ), value = manualViewport ?? scrolledViewport, scale = value.scale, ref6 = runtime2.reactK_.useRef(null);
     if (manualViewport === null) {
       ref6.current = value;
     }
@@ -230631,7 +233987,7 @@ function installEditorCanvas(runtime2) {
       maxScale: 64
     });
     ref17.current.minScale = surround ? Math.min(surround.minScale, fittedViewport.scale) : fittedViewport.scale;
-    ref17.current.maxScale = surround ? surround.maxScale : fittedViewport.scale * 16;
+    ref17.current.maxScale = surround ? surround.maxScale : Math.max(1, fittedViewport.scale * 16);
     runtime2.reactK_.useEffect(() => {
       if (manualViewport === null || ref3.current !== null || ref.current !== null) {
         return;
@@ -230655,7 +234011,8 @@ function installEditorCanvas(runtime2) {
       value60 = callback(value60, {
         w: usableViewport.w,
         h: usableViewport.h,
-        top: usableViewport.top
+        top: usableViewport.top,
+        tail
       });
       if (value60 !== manualViewport) {
         if (manualViewport === restoredCameraRef.current) {
@@ -230670,6 +234027,8 @@ function installEditorCanvas(runtime2) {
       usableViewport.h,
       usableViewport.top,
       usableViewport.sidePad,
+      tail?.h,
+      tail?.room,
       callback,
       surround?.minScale,
       surround?.maxScale
@@ -230794,7 +234153,7 @@ function installEditorCanvas(runtime2) {
       (stageRef.current?.getBoundingClientRect().bottom ?? 0) - (bottomInset ?? 0) - (window.innerHeight - keyboardInset)
     ) : 0, state = {
       ...usableViewport,
-      h: Math.max(0, usableViewport.h - value10)
+      h: Math.max(0, usableViewport.h - Math.max(0, value10 - (tail?.room ?? 0)))
     }, ref19 = runtime2.reactK_.useRef(null), ref20 = runtime2.reactK_.useRef(null), value11 = textEdit !== null && textEdit.cell === void 0, [, value12] = runtime2.reactK_.useState(0);
     runtime2.reactK_.useEffect(() => {
       if (!value11) {
@@ -230835,13 +234194,44 @@ function installEditorCanvas(runtime2) {
       if (ref.current !== null) {
         ref.current.kept = true;
       }
-    }, []), callback3 = runtime2.reactK_.useCallback(() => {
+    }, []), applyCamera = runtime2.reactK_.useCallback(
+      (view) => {
+        callback2();
+        ref6.current = view;
+        ref8.current = view;
+        let fitted = fittedViewportRef.current;
+        if (!ref7.current && ref24.current.tail && view.scale === fitted.scale && view.x === fitted.x) {
+          underOffsetRef.current = (view.y - fitted.y) * fitted.scale;
+          return setUnderScroll({
+            slide: slideRef.current.id,
+            y: underOffsetRef.current
+          });
+        }
+        ref7.current = true;
+        setManualViewport(view);
+      },
+      [callback2]
+    ), pointerReleasedAtRef = runtime2.reactK_.useRef(-1 / 0), stageFocusedRef = runtime2.reactK_.useRef(false), settleUnder = runtime2.reactK_.useCallback(() => {
+      underOffsetRef.current = 0;
+      setUnderScroll((scroll) => scroll.y === 0 ? scroll : { ...scroll, y: 0 });
+      if (!ref7.current || ref5.current || ref3.current !== null || ref.current !== null) {
+        return;
+      }
+      let settled = clampEditorViewport(ref8.current, {
+        ...ref24.current,
+        tail: void 0
+      });
+      if (settled !== ref8.current) {
+        applyCamera(settled);
+      }
+    }, [applyCamera]), callback3 = runtime2.reactK_.useCallback(() => {
       if (ref5.current) {
         return ref5.current.onFit();
       }
       callback2();
       ref6.current = null;
       setManualViewport(null);
+      setUnderScroll((scroll) => scroll.y === 0 ? scroll : { ...scroll, y: 0 });
     }, [callback2]), ref24 = runtime2.reactK_.useRef(usableViewport);
     ref24.current = ref.current !== null ? state : usableViewport;
     let callback4 = runtime2.reactK_.useCallback(
@@ -230873,6 +234263,88 @@ function installEditorCanvas(runtime2) {
         callback4(input / current.scale);
       },
       [callback4]
+    ), stepZoom = runtime2.reactK_.useCallback(
+      (direction) => callback5(
+        (0, runtime2.nextZoomStop)(
+          ref8.current.scale,
+          direction,
+          ref17.current.minScale,
+          ref17.current.maxScale
+        )
+      ),
+      [callback5]
+    ), panUnder = runtime2.reactK_.useCallback(
+      (dx, dy) => {
+        let [box, camera, height2] = [
+          ref24.current,
+          ref8.current,
+          underRef.current?.offsetHeight
+        ];
+        if (!box.tail || height2 === void 0 || camera.scale <= 0) {
+          return;
+        }
+        let next = callback(
+          {
+            ...camera,
+            x: camera.x + dx / camera.scale,
+            y: camera.y + dy / camera.scale
+          },
+          { ...box, tail: { ...box.tail, h: height2 } }
+        );
+        if (next.x === camera.x && next.y === camera.y) {
+          return;
+        }
+        setUnderHeight(height2);
+        applyCamera(next);
+      },
+      [callback, applyCamera]
+    ), [hasSelection, isTextEditing, hasKeyboardHint] = [
+      selection.length > 0,
+      textEdit !== null,
+      returnTakenHint !== void 0
+    ];
+    runtime2.reactK_.useEffect(() => {
+      if ((hasSelection || isTextEditing || hasKeyboardHint) && performance.now() - pointerReleasedAtRef.current > 500) {
+        settleUnder();
+      }
+    }, [selectionKey2, hasSelection, isTextEditing, hasKeyboardHint, settleUnder]);
+    runtime2.reactK_.useEffect(() => settleUnder(), [slide.id, settleUnder]);
+    runtime2.reactK_.useEffect(() => {
+      let callback77 = () => {
+        if (pointerReleasedAtRef.current === 1 / 0) {
+          pointerReleasedAtRef.current = performance.now();
+        }
+      };
+      window.addEventListener("pointerup", callback77);
+      window.addEventListener("pointercancel", callback77);
+      return () => {
+        window.removeEventListener("pointerup", callback77);
+        window.removeEventListener("pointercancel", callback77);
+      };
+    }, []);
+    let showUnder = runtime2.reactK_.useCallback(
+      (rect) => {
+        let [stage, box] = [stageRef.current, ref24.current];
+        if (!stage || !box.tail) {
+          return;
+        }
+        let stageRect = stage.getBoundingClientRect(), [left, right, top, bottom] = [
+          rect.left + stage.scrollLeft,
+          rect.left + rect.width + stage.scrollLeft,
+          rect.top + stage.scrollTop,
+          rect.top + rect.height + stage.scrollTop
+        ], [minX, maxX, minY, maxY] = [
+          stageRect.left + EDITOR_UNDER_MARGIN,
+          stageRect.right - EDITOR_UNDER_MARGIN,
+          stageRect.top + box.top + EDITOR_UNDER_MARGIN,
+          stageRect.top + box.top + box.h + box.tail.room - EDITOR_UNDER_MARGIN
+        ];
+        panUnder(
+          right > maxX ? right - maxX : left < minX ? left - minX : 0,
+          bottom > maxY ? bottom - maxY : top < minY ? top - minY : 0
+        );
+      },
+      [panUnder]
     ), scale2 = ref8.current.scale, ref25 = runtime2.reactK_.useRef(onScaleChange);
     ref25.current = onScaleChange;
     runtime2.reactK_.useEffect(() => {
@@ -230918,7 +234390,7 @@ function installEditorCanvas(runtime2) {
         });
       },
       []
-    ), callback7 = runtime2.reactK_.useCallback(
+    ), resolveHoverUnit = runtime2.reactK_.useCallback(
       (input) => {
         let value59 = null;
         if (input !== null && dragSessionRef.current === null && ref26.current === null) {
@@ -230937,7 +234409,21 @@ function installEditorCanvas(runtime2) {
             value59 = null;
           }
         }
-        let value60 = value59, [items, items2] = [slideRef.current, ref8.current];
+        return value59;
+      },
+      []
+    ), pointerFacts = (event) => {
+      let target = event.target;
+      return {
+        over: resolveHoverUnit(target) !== null || target.closest("[data-resize-handle], [data-rotate-handle]") !== null ? target : null,
+        clientX: event.clientX,
+        clientY: event.clientY,
+        buttons: event.buttons,
+        slop: pointerDragThreshold(event.pointerType)
+      };
+    }, callback7 = runtime2.reactK_.useCallback(
+      (input) => {
+        let value60 = resolveHoverUnit(input), [items, items2] = [slideRef.current, ref8.current];
         setHoverTarget(
           (input2) => value60 === null ? null : input2 !== null && (0, runtime2.selectionsEqual)(input2.unit, value60) && input2.slide === items && input2.view.x === items2.x && input2.view.y === items2.y && input2.view.scale === items2.scale ? input2 : {
             unit: value60,
@@ -230946,7 +234432,7 @@ function installEditorCanvas(runtime2) {
           }
         );
       },
-      []
+      [resolveHoverUnit]
     );
     runtime2.reactK_.useEffect(() => {
       if (lastPointerSlideRef.current === slideRef.current) {
@@ -231002,12 +234488,12 @@ function installEditorCanvas(runtime2) {
         if (event.key === "0") {
           callback3();
         } else {
-          callback4(event.key === "-" ? 0.8 : 1.25);
+          stepZoom(event.key === "-" ? -1 : 1);
         }
       };
       window.addEventListener("keydown", callback77);
       return () => window.removeEventListener("keydown", callback77);
-    }, [callback3, callback4]);
+    }, [callback3, stepZoom]);
     runtime2.reactK_.useEffect(() => {
       if (selection.length === 0) {
         return;
@@ -231029,7 +234515,7 @@ function installEditorCanvas(runtime2) {
       stageRef.current?.focus({
         preventScroll: true
       });
-    }, []), value13 = runtime2.reactK_.useId(), value14 = value13 + "-slide-hint", value15 = value13 + "-object-hint", shownBeforeIdPrefix = value13 + "-object-before-", shownAfterIdPrefix = value13 + "-object-after-", selectedCountLabel = (key, name) => key === lastSelectedUnitKey && selection.length > 1 ? (0, runtime2.selectedObjectsLabel)(selection.length, name) : name, value16 = value13 + "-slide-heading", ref28 = runtime2.reactK_.useRef(null), [value17, value18] = runtime2.reactK_.useState(false), ref29 = runtime2.reactK_.useRef(0), [value19, value20] = runtime2.reactK_.useState(false);
+    }, []), value13 = runtime2.reactK_.useId(), value14 = value13 + "-slide-hint", value15 = value13 + "-object-hint", shownBeforeIdPrefix = value13 + "-object-before-", shownAfterIdPrefix = value13 + "-object-after-", selectedCountLabel = (key, name) => key === lastSelectedUnitKey && selection.length > 1 ? (0, runtime2.selectedObjectsLabel)(selection.length, name) : name, value16 = value13 + "-slide-heading", ref28 = runtime2.reactK_.useRef(null), [value17, value18] = runtime2.reactK_.useState(false), ref29 = runtime2.reactK_.useRef(0), [value19, value20] = runtime2.reactK_.useState(false), drawnWordsHintRef = runtime2.reactK_.useRef(null);
     runtime2.reactK_.useEffect(() => {
       if (value17) {
         value20(true);
@@ -231279,9 +234765,10 @@ function installEditorCanvas(runtime2) {
       if (selectionRef.current.length === 0 || !callback15()) {
         return false;
       }
+      settleUnder();
       let value59 = callback10();
       return value59 !== null && document.activeElement === value59;
-    }, [callback15, callback10]), memo4 = runtime2.reactK_.useMemo(
+    }, [callback15, callback10, settleUnder]), memo4 = runtime2.reactK_.useMemo(
       () => ({
         rect: (input) => {
           let value59 = ref44.current(input);
@@ -231374,7 +234861,9 @@ function installEditorCanvas(runtime2) {
         }),
         setScaleTo: callback5,
         returnToFit: callback3,
-        stepZoom: callback4,
+        showUnder,
+        panUnder,
+        stepZoom,
         focusSlide: callback12,
         focusSelection: callback16,
         endTextEdit: () => callback42(),
@@ -231468,7 +234957,31 @@ function installEditorCanvas(runtime2) {
         return false;
       }
       return true;
-    }, memo22 = runtime2.reactK_.useMemo(
+    };
+    runtime2.reactK_.useLayoutEffect(() => {
+      let surface = slideSurfaceRef.current;
+      if (surface === null) {
+        return;
+      }
+      let selectedKeys = selection.map(
+        (unit) => (0, runtime2.selectionNodePath)(unit).length === 0 ? unit.frameId : unit.frameId + "\0" + (0, runtime2.selectionNodePath)(unit).join(".")
+      ), hiddenElements = [];
+      for (let key of (0, runtime2.sourceHiddenKeys)(dragPreviewSlide ?? slide)) {
+        let element = (0, runtime2.elementOfBuildKey)(surface, key);
+        if (element instanceof HTMLElement && !selectedKeys.some(
+          (selectedKey) => buildKeyIsWithin(key, selectedKey)
+        )) {
+          element.style.visibility = "hidden";
+          hiddenElements.push(element);
+        }
+      }
+      return () => {
+        for (let element of hiddenElements) {
+          element.style.visibility = "";
+        }
+      };
+    }, [slide, dragPreviewSlide, selection]);
+    let memo22 = runtime2.reactK_.useMemo(
       () => new Map(
         keyboardTargets.map(
           (input) => [input.key, input]
@@ -231798,6 +235311,7 @@ function installEditorCanvas(runtime2) {
             ref7.current = false;
             ref6.current = null;
             setManualViewport(null);
+            setUnderScroll((scroll) => scroll.y === 0 ? scroll : { ...scroll, y: 0 });
           });
         } else if (value64 !== ref8.current) {
           callback28(value64, current.anchor);
@@ -232139,18 +235653,19 @@ function installEditorCanvas(runtime2) {
             (input2) => input2.frameId
           )
         ];
-        if (items.some(
-          (input2) => (0, runtime2.isEmptyGroupBase)(
-            (0, runtime2.frameById)(value62, input2)?.node ?? {
-              kind: "spacer"
-            }
-          )
-        )) {
+        let isEmptyBase = (frameId, node = (0, runtime2.frameById)(value62, frameId)?.node ?? {
+          kind: "spacer"
+        }) => (0, runtime2.isMarkedEmptyGroupBase)(node) || (0, runtime2.isEmptyGroupBase)(node) && !input.lifted.has(frameId);
+        if (items.some((frameId) => isEmptyBase(frameId))) {
           return null;
         }
         let value63 = (0, runtime2.slidePrimaryLayoutFrame)(
           value62
-        )?.id, value64 = items.map((input2) => {
+        )?.id, liftedByShift = sourceUnitsMoveByShift(input.before, input.liftedUnits), liftedParentKey = (unit) => unit.frameId + ":" + (0, runtime2.selectionNodePath)(unit).slice(0, -1).join(".");
+        if ((!liftedByShift || input.liftedUnits.length !== items.length || new Set(input.liftedUnits.map(liftedParentKey)).size > 1) && (0, runtime2.slideLayoutHasNodeIds)(input.before)) {
+          return null;
+        }
+        let value64 = items.map((input2) => {
           let value71 = frameElementsRef.current.get(input2)?.getBoundingClientRect();
           if (value71 && value71.width > 0) {
             return {
@@ -232227,7 +235742,10 @@ function installEditorCanvas(runtime2) {
               } = items2[value73], origin = input.origin, value79 = origin !== null && origin.frameId === value72.id && value74.length <= origin.path.length && value74.every(
                 (input3, options3) => input3 === origin.path[options3]
               );
-              if (value72.id === value63 && value74.length === 0 && !(value79 && (0, runtime2.styleHasVisiblePaint)(value76.style))) {
+              if (value72.id === value63 && value74.length === 0 && (liftedByShift || !(value79 && (0, runtime2.styleHasVisiblePaint)(value76.style)))) {
+                continue;
+              }
+              if (liftedByShift && (origin === null || origin.frameId !== value72.id || !(0, runtime2.nodePathsEqual)(origin.path, value74))) {
                 continue;
               }
               let value80 = (origin !== null && origin.frameId === value72.id && value74.length === origin.path.length + 1 && origin.path.every(
@@ -232289,7 +235807,16 @@ function installEditorCanvas(runtime2) {
                 value83,
                 value60,
                 value61
-              ), value85 = value78 >= 0 && value84 > value78 ? value84 - 1 : value84, value86 = origin !== null && origin.frameId === value72.id ? [...origin.pinned] : [], value87 = value76.kind === "stack" && value76.dir === "v", value88 = value76.kind === "grid" || value76.wrap ? Math.max(
+              ), value85 = value78 >= 0 && value84 > value78 ? value84 - 1 : value84;
+              if (liftedByShift && (value85 === origin?.index || nodeHasOffset(
+                (0, runtime2.selectedNode)(
+                  input.before,
+                  input.liftedUnits.at(-1)
+                )
+              ))) {
+                continue;
+              }
+              let value86 = origin !== null && origin.frameId === value72.id ? [...origin.pinned] : [], value87 = value76.kind === "stack" && value76.dir === "v", value88 = value76.kind === "grid" || value76.wrap ? Math.max(
                 0,
                 ...value64.map(
                   (input3) => input3.h
@@ -232714,6 +236241,41 @@ function installEditorCanvas(runtime2) {
             () => setDragPreviewSlide(null)
           );
         }
+        if (source.kind === "move" && source.last !== null && sourceUnitsMoveByShift(source.before, source.liftedUnits) && (!options || slideRef.current === ref51.current)) {
+          let movedFrameIds = /* @__PURE__ */ new Set([
+            source.frameId,
+            ...source.extras.map((extra) => extra.frameId)
+          ]), [shiftX, shiftY] = [
+            Math.round(source.travel.dx),
+            Math.round(source.travel.dy)
+          ], shifted = shiftUnits(
+            source.before,
+            source.liftedUnits,
+            shiftX,
+            shiftY
+          );
+          writeGesture(source, {
+            ...shifted,
+            frames: shifted.frames.map(
+              (frame) => movedFrameIds.has(frame.id) ? {
+                ...frame,
+                x: (0, runtime2.moveAxisSpecPreservingSize)(
+                  frame.x,
+                  shiftX,
+                  source.autoW.get(frame.id),
+                  runtime2.SLIDE_WIDTH
+                ),
+                y: (0, runtime2.moveAxisSpec)(frame.y, shiftY)
+              } : frame
+            )
+          });
+          onSelectionChange([
+            ...source.before.frames.filter((frame) => movedFrameIds.has(frame.id)).map((frame) => ({ frameId: frame.id })),
+            ...source.liftedUnits
+          ]);
+          onGestureEnd(finishGesture(source));
+          return;
+        }
         if (!options && source.kind === "move" && source.last !== null) {
           let slide2 = source.last.slide, value59 = (0, runtime2.applyFrameSnapAnchors)(
             source.last.frame,
@@ -233103,7 +236665,7 @@ function installEditorCanvas(runtime2) {
                 }
                 let value76 = !value70.plucked.some(
                   (input3) => isStrictPathAncestor(options, input3.path)
-                ) ? value74 : value74.place !== void 0 ? {
+                ) ? stripSourceNodeOffset(value74) : value74.place !== void 0 ? {
                   ...context,
                   place: value74.place
                 } : context;
@@ -233131,6 +236693,37 @@ function installEditorCanvas(runtime2) {
                 xSpec: value74.frame.x,
                 ySpec: value74.frame.y
               });
+            }
+            if (value69.keep) {
+              for (let value74 of value70.plucked) {
+                current2.liftedUnits[value74.frame === value72 ? "push" : "unshift"](
+                  (0, runtime2.createNodeSelection)(value69.frameId, value74.path)
+                );
+              }
+              let deepRects = value69.deep.map((input2) => {
+                let liftedNode = (0, runtime2.nodeAtPath)(
+                  (0, runtime2.frameById)(current2.before, value69.frameId).node,
+                  input2.path
+                );
+                return (liftedNode?.kind === "text" && !(0, runtime2.styleHasVisiblePaint)(liftedNode.style) ? callback39(
+                  value69.frameId,
+                  input2.path,
+                  current2.k,
+                  true
+                ) : null) ?? input2.rect;
+              }), extraRects = [
+                current2.frameId,
+                ...current2.extras.map((extra) => extra.frameId)
+              ].filter(
+                (frameId) => frameId !== value69.frameId && (0, runtime2.frameById)(current2.before, frameId) !== void 0
+              ).flatMap(
+                (frameId) => ref44.current({ frameId }) ?? []
+              );
+              current2.liftedBox = (0, runtime2.unionSelectionRectangles)([
+                ...current2.liftedBox !== null ? [current2.liftedBox] : [],
+                ...deepRects,
+                ...extraRects
+              ]);
             }
             for (let value74 of value69.selectedChildren) {
               if (value74 === value69.dragIndex) {
@@ -233258,6 +236851,9 @@ function installEditorCanvas(runtime2) {
               getRemainingFlowChildRects(value69)
             );
           }
+          if (pendingBreakouts.some((request) => request.keep === void 0)) {
+            current2.liftedUnits = [];
+          }
           if (flag) {
             current2.applyBase = applyBase2;
             current2.candidates = (0, runtime2.buildSiblingSnapCandidates)(
@@ -233333,7 +236929,30 @@ function installEditorCanvas(runtime2) {
             )
           ), breakout = current2.breakout;
           if (breakout === null) {
-            writeGesture(current2, value71);
+            let rest = current2.rest;
+            if (rest !== null && (current2.xEdge === "near" || current2.yEdge === "near")) {
+              runtime2.FrameViewportReactDom.flushSync(
+                () => writeGesture(current2, value71)
+              );
+              let measured = callback39(
+                current2.frameId,
+                current2.path,
+                current2.k
+              ), restoreX = measured !== null && current2.xEdge === "near" ? rest.x + rest.w - measured.x - measured.w : 0, restoreY = measured !== null && current2.yEdge === "near" ? rest.y + rest.h - measured.y - measured.h : 0;
+              writeGesture(
+                current2,
+                (0, runtime2.updateSelectedNode)(
+                  value71,
+                  (0, runtime2.createNodeSelection)(
+                    current2.frameId,
+                    current2.path
+                  ),
+                  (node) => shiftNodeBy(node, Math.round(restoreX), Math.round(restoreY))
+                )
+              );
+            } else {
+              writeGesture(current2, value71);
+            }
             refreshMeasurements((input2) => input2 + 1);
             return;
           }
@@ -233443,7 +237062,14 @@ function installEditorCanvas(runtime2) {
               (extra) => callback39(extra.frameId, [], moveSession.k) ?? (0, runtime2.frameBounds)(extra.xSpec, extra.ySpec)
             )
           ];
-          let clamped = (0, runtime2.clampMoveDeltaToSlide)(
+          let clamped = sourceUnitsMoveByShift(
+            moveSession.before,
+            moveSession.liftedUnits
+          ) ? clampShiftToSlide(
+            moveSession.liftedBox ?? moveSession.startRect,
+            value59,
+            value60
+          ) : (0, runtime2.clampMoveDeltaToSlide)(
             moveSession.movers,
             value59,
             value60
@@ -233453,6 +237079,7 @@ function installEditorCanvas(runtime2) {
             current2.lastSnaps = {};
             setSnapGuides([]);
           }
+          current2.travel = { dx: value59, dy: value60 };
           value68 = {
             ...value65,
             x: (0, runtime2.moveAxisSpecPreservingSize)(
@@ -234149,7 +237776,7 @@ function installEditorCanvas(runtime2) {
         }
       }
       return entries;
-    }, callback39 = (input, options, context = scale) => {
+    }, callback39 = (input, options, context = scale, textRange = false) => {
       let entry = frameElementsRef.current.get(input), value59 = entry?.offsetParent, value60 = entry?.querySelector(
         '[data-node-path="' + options.join(".") + '"]'
       );
@@ -234157,6 +237784,14 @@ function installEditorCanvas(runtime2) {
         return null;
       }
       let bounds = value59.getBoundingClientRect(), value61 = getUnliftedBoundingClientRect(value60);
+      if (textRange) {
+        let range = document.createRange();
+        range.selectNodeContents(value60);
+        value61 = range.getBoundingClientRect();
+        if (value61.width === 0) {
+          return null;
+        }
+      }
       return {
         x: (value61.left - bounds.left) / context,
         y: (value61.top - bounds.top) / context,
@@ -234206,7 +237841,7 @@ function installEditorCanvas(runtime2) {
       });
       for (let value60 of slide.frames) {
         let id = value60.id, entry = frameElementsRef.current.get(id);
-        if (entry === void 0 || (0, runtime2.isEmptyBackgroundFrame)(value60)) {
+        if (entry === void 0 || value60.node.drawn === true || (0, runtime2.isEmptyBackgroundFrame)(value60)) {
           continue;
         }
         if (id !== value59) {
@@ -234535,6 +238170,9 @@ function installEditorCanvas(runtime2) {
           candidates: (0, runtime2.buildSiblingSnapCandidates)(items3),
           lastSnaps: {},
           last: null,
+          travel: { dx: 0, dy: 0 },
+          liftedUnits: [],
+          liftedBox: null,
           origin: null,
           lifted: /* @__PURE__ */ new Map(),
           sheds: [],
@@ -234545,6 +238183,12 @@ function installEditorCanvas(runtime2) {
         };
         return;
       }
+      if (value65 !== null) {
+        value65 = (0, runtime2.overlayLayerSelection)(slide, value65);
+      }
+      value68 = value68.map(
+        (unit) => (0, runtime2.overlayLayerSelection)(slide, unit)
+      );
       if (value65 !== null && value65.child !== void 0 && value65.child >= 1 && (0, runtime2.isOverlayNode)(value67.node) && value65.child - 1 < value67.node.layers.length) {
         let entry2 = frameElementsRef.current.get(value66), value71 = entry2?.offsetParent, value72 = entry2?.querySelector(
           '[data-overlay-layer="' + String(value65.child) + '"]'
@@ -234724,6 +238368,9 @@ function installEditorCanvas(runtime2) {
         ),
         lastSnaps: {},
         last: null,
+        travel: { dx: 0, dy: 0 },
+        liftedUnits: [],
+        liftedBox: null,
         origin: null,
         lifted: /* @__PURE__ */ new Map(),
         sheds: [],
@@ -235148,7 +238795,7 @@ function installEditorCanvas(runtime2) {
           let value81 = value71 ? [value74.startRect] : value72.filter(
             (input2, options2) => options2 !== value66[0] || value66.length > 1
           ).map((input2) => input2.rect);
-          if (value78) {
+          if (value78 && unitUsesFramePlacement(slide, unit)) {
             value70 = {
               rect: value73,
               record: state2,
@@ -235183,7 +238830,8 @@ function installEditorCanvas(runtime2) {
           minW: (0, runtime2.minimumNodeResizeSize)(value64, value69.w),
           minH: (0, runtime2.minimumNodeResizeSize)(value64, value69.h),
           moved: false,
-          breakout: value70
+          breakout: value70,
+          rest: sourceUnitsMoveByShift(slide, [unit]) ? callback39(unit.frameId, value66) : null
         };
         if (options.pointerType !== "touch") {
           copySelectedUnitsToClipboard(input, value61);
@@ -235577,7 +239225,8 @@ function installEditorCanvas(runtime2) {
           list: value60.list,
           lineLists: value60.lineLists,
           pad: value60.style?.paddingLeft,
-          indent: value60.listIndent
+          indent: value60.listIndent,
+          gap: value60.listGap
         } : {}
       };
     }
@@ -235667,11 +239316,14 @@ function installEditorCanvas(runtime2) {
               } else {
                 delete state2.marks;
               }
-              let draft = ref52.current, value60 = (0, runtime2.applyTextListFields)(
-                state2,
-                options,
-                slide.lists,
-                draft !== null && draft.list === void 0 ? draft.pad ?? 0 : void 0
+              let draft = ref52.current, value60 = (0, runtime2.withDefaultListGap)(
+                (0, runtime2.applyTextListFields)(
+                  state2,
+                  options,
+                  slide.lists,
+                  draft !== null && draft.list === void 0 ? draft.pad ?? 0 : void 0
+                ),
+                draft?.gap
               );
               if (options.indents === void 0) {
                 return value60;
@@ -236032,10 +239684,14 @@ function installEditorCanvas(runtime2) {
           resolvedTypeStyles,
           resolvedDeckTypeStyles,
           value49
-        )
+        ),
+        (0, runtime2.sourceSlideHasNodeIds)(slide)
       ) : input
     ), callback75 = () => callback73(
-      (input) => (0, runtime2.nodeIsItalic)(input) === value51 ? (0, runtime2.toggleNodeItalic)(input) : input
+      (input) => (0, runtime2.nodeIsItalic)(input) === value51 ? (0, runtime2.toggleNodeItalic)(
+        input,
+        (0, runtime2.sourceSlideHasNodeIds)(slide)
+      ) : input
     ), value52 = value48 === null ? [] : selection.map(
       (input) => (0, runtime2.selectedNode)(slide, input)
     ).filter(runtime2.isEditableTextNode), value53 = value48 !== null && (0, runtime2.nodeIsUnderlined)(
@@ -236043,7 +239699,10 @@ function installEditorCanvas(runtime2) {
         (input) => input.style?.textDecorationLine !== "line-through"
       ) ?? value48
     ), callback76 = () => callback73(
-      (input) => (0, runtime2.nodeIsUnderlined)(input) === value53 ? (0, runtime2.toggleNodeUnderline)(input) : input
+      (input) => (0, runtime2.nodeIsUnderlined)(input) === value53 ? (0, runtime2.toggleNodeUnderline)(
+        input,
+        (0, runtime2.sourceSlideHasNodeIds)(slide)
+      ) : input
     ), value54 = value48 !== null ? (0, runtime2.findTypographyStyle)(
       value48,
       resolvedTypeStyles,
@@ -236064,7 +239723,9 @@ function installEditorCanvas(runtime2) {
         if (input === "underline" && !value60 && (value48.style?.textDecorationLine === "line-through" || value59?.touchesLink === true)) {
           return;
         }
-        if (value60 || value61 && value59?.[input] !== true) {
+        if (input === "bold" && value60 && (0, runtime2.sourceSlideHasNodeIds)(slide) && selectionIsPartOfEditedText()) {
+          toggleBoldOnSelection();
+        } else if (value60 || value61 && value59?.[input] !== true) {
           value62();
         } else {
           (0, runtime2.executeRichTextCommand)(input);
@@ -236214,6 +239875,7 @@ function installEditorCanvas(runtime2) {
             paddingLeft: runtime2.defaultListGutter
           } : value45.style,
           kind: (0, runtime2.nodeStyleKind)(value45),
+          kept: (0, runtime2.sourceSlideHasNodeIds)(slide),
           fillMixed: selection.some((input) => {
             let value102 = (0, runtime2.selectedNode)(
               slide,
@@ -236400,16 +240062,27 @@ function installEditorCanvas(runtime2) {
                 fonts
               ),
               onOpenChange: (input) => input && refreshFontOptions((input2) => input2 + 1),
-              onChange: (input, options) => callback80(
-                (source) => source.kind === "text" ? (0, runtime2.patchNodeStyle)(source, {
-                  fontWeight: input === Math.round(
-                    (0, runtime2.renderingTypeScaleForRole)(
-                      source.role
-                    ).fontWeight / 100
-                  ) * 100 ? void 0 : input,
-                  fontStyle: options ? "italic" : void 0
-                }) : source
-              )
+              onChange: (input, options) => {
+                let keepDefaults = (0, runtime2.sourceSlideHasNodeIds)(slide);
+                callback80(
+                  (source) => source.kind === "text" ? (0, runtime2.patchNodeStyle)(source, {
+                    fontWeight: (0, runtime2.omitDefaultUnlessKept)(
+                      keepDefaults && source.style?.fontWeight !== void 0,
+                      input,
+                      Math.round(
+                        (0, runtime2.renderingTypeScaleForRole)(
+                          source.role
+                        ).fontWeight / 100
+                      ) * 100
+                    ),
+                    fontStyle: (0, runtime2.omitDefaultUnlessKept)(
+                      keepDefaults && source.style?.fontStyle !== void 0,
+                      options ? "italic" : "normal",
+                      "normal"
+                    )
+                  }) : source
+                );
+              }
             },
             size: callback82("fontSize", 8, 400),
             lineHeight: callback82("lineHeight", 0.5, 4, 0.05),
@@ -236504,7 +240177,8 @@ function installEditorCanvas(runtime2) {
                     (input2) => (0, runtime2.applyTypographyStyle)(
                       input2,
                       value102,
-                      value49
+                      value49,
+                      (0, runtime2.sourceSlideHasNodeIds)(slide)
                     )
                   );
                 }
@@ -236582,6 +240256,7 @@ function installEditorCanvas(runtime2) {
               bold: value50,
               onBold: callback74,
               wholeBold: value55,
+              fromFile: (0, runtime2.sourceSlideHasNodeIds)(slide),
               italic: value51,
               onItalic: callback75,
               wholeItalic: value56,
@@ -237129,6 +240804,7 @@ function installEditorCanvas(runtime2) {
         value2 !== null && "select-none"
       ),
       onPointerDownCapture: (event) => {
+        pointerReleasedAtRef.current = 1 / 0;
         if (!callback21(event.target)) {
           value18(false);
         }
@@ -237248,9 +240924,7 @@ function installEditorCanvas(runtime2) {
         if (surround) {
           return;
         }
-        callback2();
-        ref6.current = null;
-        setManualViewport(null);
+        callback3();
       },
       onContextMenu: (event) => {
         let target = event.target;
@@ -237391,6 +241065,9 @@ function installEditorCanvas(runtime2) {
             if (input.pointerType === "touch") {
               callback7(null);
             }
+            if (input.button === 0) {
+              drawnWordsHintRef.current?.press(input.currentTarget, pointerFacts(input));
+            }
           },
           onPointerUpCapture: () => {
             ref29.current = performance.now();
@@ -237400,9 +241077,11 @@ function installEditorCanvas(runtime2) {
             if (relatedTarget instanceof Node && !event.currentTarget.contains(relatedTarget) && ref42.current?.contains(relatedTarget) !== true) {
               ref28.current = null;
             }
-            if (event.target === event.currentTarget) {
-              value23(false);
+            if (event.target !== event.currentTarget) {
+              return;
             }
+            value23(false);
+            stageFocusedRef.current = event.currentTarget.ownerDocument.activeElement === event.currentTarget;
           },
           onFocus: (event) => {
             ref28.current = event.target;
@@ -237410,10 +241089,13 @@ function installEditorCanvas(runtime2) {
               return;
             }
             if (performance.now() - ref29.current < 500) {
-              callback8();
-            } else {
-              value23(event.currentTarget.matches(":focus-visible"));
+              return callback8();
             }
+            value23(event.currentTarget.matches(":focus-visible"));
+            if (!stageFocusedRef.current) {
+              settleUnder();
+            }
+            stageFocusedRef.current = false;
           },
           className: "absolute shadow-lg touch-none outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-4 focus-visible:outline-app-accent",
           style: {
@@ -237436,6 +241118,7 @@ function installEditorCanvas(runtime2) {
               callback7(lastPointerTargetRef.current);
               value20(false);
             }
+            drawnWordsHintRef.current?.seek(event.currentTarget, pointerFacts(event));
             if (!onPointerNorm) {
               return;
             }
@@ -237448,21 +241131,32 @@ function installEditorCanvas(runtime2) {
               onPointerNorm(value59, value60);
             }
           },
-          onPointerLeave: () => {
+          onPointerLeave: (event) => {
             lastPointerTargetRef.current = null;
             callback6(null);
             callback7(null);
+            if (event.pointerType !== "touch") {
+              drawnWordsHintRef.current?.hide();
+            }
           },
           children: [
+            CanvasEditorJsx.jsx(runtime2.DrawnWordsHint, {
+              ref: drawnWordsHintRef,
+              slide,
+              on: !readOnly && slide.fromSource === true && !commenting && !textEdit && imageCropController.session === null && scaleMode.grips === null
+            }),
             CanvasEditorJsx.jsx(FormattingToolbarTransition, {
               on: lookPreview !== void 0,
               children: CanvasEditorJsx.jsx(runtime2.SlideCanvas, {
-                slide: imageCropController.slide ?? dragPreviewSlide ?? lookPreview ?? slide,
+                slide: (0, runtime2.reducedMotionSlide)(
+                  imageCropController.slide ?? dragPreviewSlide ?? lookPreview ?? slide
+                ),
                 assets,
                 width: runtime2.SLIDE_WIDTH * scale,
                 editorChrome: !readOnly,
                 links: readOnly ? "view" : "edit",
-                clips: covered === true ? "none" : "selected",
+                animate: covered !== true,
+                clips: "selected",
                 interactive: {
                   registerFrame: callback25,
                   onFramePointerDown: callback43,
@@ -237822,7 +241516,8 @@ function installEditorCanvas(runtime2) {
               height: runtime2.SLIDE_HEIGHT,
               transform: "scale(" + String(scale) + ")",
               transformOrigin: "top left",
-              pointerEvents: "none"
+              pointerEvents: "none",
+              zIndex: 1
             },
             children: !commenting ? CanvasEditorJsx.jsx("div", {
               ref: ref42,
@@ -237909,6 +241604,19 @@ function installEditorCanvas(runtime2) {
             }) : null
           })
         }),
+        under !== void 0 ? CanvasEditorJsx.jsx("div", {
+          ref: underRef,
+          "data-mc-chrome": "",
+          className: "pointer-events-none absolute [:root[data-mc-presentation=sheet]_&]:hidden",
+          style: {
+            left: -value.x * scale,
+            top: (runtime2.SLIDE_HEIGHT - value.y) * scale,
+            width: runtime2.SLIDE_WIDTH * scale,
+            zIndex: commenting ? 6 : void 0,
+            ["--stage-w"]: String(stageSize.w) + "px"
+          },
+          children: under.node
+        }) : null,
         value22 && (value.x > 0 || value.y > 0 || (runtime2.SLIDE_WIDTH - value.x) * scale > stageSize.w || (runtime2.SLIDE_HEIGHT - value.y) * scale > stageSize.h) ? CanvasEditorJsx.jsx("div", {
           "aria-hidden": "true",
           className: "pointer-events-none absolute inset-0 z-30 outline-2 -outline-offset-2 outline-app-accent outline-solid"
@@ -238025,6 +241733,7 @@ function installEditorCanvas(runtime2) {
     listMixed = false,
     onList,
     wholeBold = bold,
+    fromFile = false,
     wholeItalic = italic,
     session,
     extra,
@@ -238403,7 +242112,7 @@ function installEditorCanvas(runtime2) {
               }),
               "aria-pressed": value15,
               icon: "TextBold",
-              onClick: () => value && !bold && (value2?.bold === true || !wholeBold) ? callback3("bold") : onBold()
+              onClick: () => value && bold && fromFile && selectionIsPartOfEditedText() ? toggleBoldOnSelection() : value && !bold && (value2?.bold === true || !wholeBold) ? callback3("bold") : onBold()
             }),
             CanvasEditorJsx.jsx(runtime2.ToolbarStripButton, {
               title: (0, runtime2.formatMessage)(
@@ -239181,7 +242890,7 @@ function installEditorCanvas(runtime2) {
     });
     THEME_DEFAULT_LABEL = (0, runtime2.formatMessage)({
       defaultMessage: "Theme default",
-      id: "KOPK9foeQa"
+      id: "s59VK8yIAS"
     });
     SLIDE_LIFT_SCALE_ATTRIBUTE = "data-slides-lift";
     getFrameHitTestOptions = (slide, frame) => ({
@@ -239377,7 +243086,7 @@ function installEditorScaleGeometry(runtime2) {
       case "filter":
         return scaleNumberFields(value, ["blur"], factor);
       case "transform":
-        return scaleNumberFields(value, ["translateX", "translateY"], factor);
+        return scaleNumberFields(value, ["translateX", "translateY", "shiftX", "shiftY"], factor);
       case "size":
         return scaleNumberFields(value, ["px"], factor);
       case "animation": {
@@ -239565,6 +243274,9 @@ function installEditorScaleGeometry(runtime2) {
     };
   }
   function scaleNode(node, factor, context) {
+    if (node.drawn === true) {
+      return node;
+    }
     let placement = scalePlacement(node.place, factor);
     switch (node.kind) {
       case "text": {
@@ -239721,6 +243433,9 @@ function installEditorScaleGeometry(runtime2) {
           ...node,
           base: scaleNode(node.base, factor, childScaleContext(context, 0, context.flow)),
           layers: node.layers.map((layer, index4) => {
+            if (layer.node.drawn === true) {
+              return layer;
+            }
             let layerContext = childScaleContext(context, index4 + 1, false), rect = context.ctx.rect(layerContext.unit), [x, y] = [
               withMeasuredAxisSize(layer.x, layer.node, rect?.w),
               withMeasuredAxisSize(layer.y, layer.node, rect?.h)
@@ -239799,6 +243514,9 @@ function installEditorScaleGeometry(runtime2) {
       ...(0, runtime2.selectionNodePath)(unit),
       index4
     ]), visit = (node, unit) => {
+      if (node.drawn === true) {
+        return;
+      }
       let fontSize = nodeFontSize(node, context.theme);
       if (fontSize !== void 0) {
         min2 = Math.max(min2, FONT_SIZE_RANGE.lo / fontSize);
@@ -239838,6 +243556,9 @@ function installEditorScaleGeometry(runtime2) {
       if ((0, runtime2.isOverlayNode)(node)) {
         visit(node.base, childUnit(unit, 0));
         node.layers.forEach((layer, index4) => {
+          if (layer.node.drawn === true) {
+            return;
+          }
           let rect = context.rect(childUnit(unit, index4 + 1));
           [
             withMeasuredAxisSize(layer.x, layer.node, rect?.w).size,
@@ -239904,7 +243625,7 @@ function installEditorScaleGeometry(runtime2) {
           parentSize.w,
           measured.x,
           measured.w,
-          transform?.translateX ?? 0
+          (transform?.translateX ?? 0) + (transform?.shiftX ?? 0)
         ),
         x,
         layer.node,
@@ -239919,7 +243640,7 @@ function installEditorScaleGeometry(runtime2) {
           parentSize.h,
           measured.y,
           measured.h,
-          transform?.translateY ?? 0
+          (transform?.translateY ?? 0) + (transform?.shiftY ?? 0)
         ),
         y,
         layer.node,
@@ -239937,6 +243658,13 @@ function installEditorScaleGeometry(runtime2) {
         result,
         "x",
         scaleClamped(rect.w, factor, 1, runtime2.maxModelCoordinate),
+        mainAxis
+      );
+    } else if (mainAxis === "x" && original.sid !== void 0 && (0, runtime2.nodeExplicitAxisSize)(result, "x") !== void 0) {
+      result = (0, runtime2.setNodeAxisSize)(
+        result,
+        "x",
+        (0, runtime2.nodeExplicitAxisSize)(result, "x"),
         mainAxis
       );
     }
@@ -240128,6 +243856,7 @@ function installEditorScaleMode(runtime2) {
   var SCALE_KEY_IN_USE_MS;
   var scaleDroppedMessage;
   var stableSlideJson;
+  var stableSlideShapeJson;
   var handleGripName;
   function ScaleField({
     factor,
@@ -240287,8 +244016,8 @@ function installEditorScaleMode(runtime2) {
       optionsRef.current.setLive(next !== null && next.open);
       setSessionState(next);
     }, stopDragRef = ScaleModeReact.useRef(null), settleTimerRef = ScaleModeReact.useRef(void 0), lastKeyRef = ScaleModeReact.useRef(0), ownSlidesRef = ScaleModeReact.useRef(/* @__PURE__ */ new WeakSet()), slideIsOurs = (current) => {
-      let slide2 = optionsRef.current.slide();
-      return !(0, runtime2.isSlideGenerationStale)((0, runtime2.slideGeneration)(current.before), slide2) && (ownSlidesRef.current.has(slide2) || current.wrote !== null && stableSlideJson(slide2) === stableSlideJson(current.wrote));
+      let slide2 = optionsRef.current.slide(), wrote = current.wrote, compare = !current.open && current.before.fromSource === true && (0, runtime2.slideGeneration)(current.before) !== void 0 ? stableSlideShapeJson : stableSlideJson;
+      return !(0, runtime2.isSlideGenerationStale)((0, runtime2.slideGeneration)(current.before), slide2) && (ownSlidesRef.current.has(slide2) || wrote !== null && [false, true].some((skipDrawn) => compare(slide2, skipDrawn) === compare(wrote, skipDrawn)));
     }, end = ScaleModeReact.useCallback(
       (keep, why) => {
         let current = sessionRef.current;
@@ -240717,36 +244446,33 @@ function installEditorScaleMode(runtime2) {
         percent
       }
     );
-    stableSlideJson = (slide) => JSON.stringify(
+    stableSlideJson = (slide, skipDrawn = false) => JSON.stringify(
       slide,
-      (_key, value) => typeof value === "number" ? Math.round(value * 100) / 100 : typeof value === "object" && value !== null && !Array.isArray(value) ? Object.fromEntries(
+      (key, value) => key === "sid" || key === "tied" || key === "drawn" || skipDrawn && [value, value?.node].some(
+        (candidate) => candidate?.drawn === true
+      ) ? void 0 : typeof value === "number" ? Math.round(value * 100) / 100 : typeof value === "object" && value !== null && !Array.isArray(value) ? Object.fromEntries(
         Object.entries(value).sort(([a], [b]) => a < b ? -1 : 1)
       ) : value
     );
     handleGripName = (grip) => (grip.y === "top" ? "n" : grip.y === "bottom" ? "s" : "") + (grip.x === "left" ? "w" : grip.x === "right" ? "e" : "");
+    stableSlideShapeJson = (slide, skipDrawn = false) => JSON.stringify(
+      JSON.parse(stableSlideJson(slide, skipDrawn)),
+      (key, value) => /^(margin|offset|size|w|h|min[WH]|max[WH]|grow|shrink|basis|padding(Top|Right|Bottom|Left)|translate[XY])$/.test(key) ? void 0 : value
+    );
   };
 }
 
 function installEditorSpeakerNotes(runtime2) {
   var ReactSpeakerNotesEditor;
-  var SpeakerNotesEditorJsx;
-  var MIN_SPEAKER_NOTES_EDITOR_HEIGHT;
-  var DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT;
   var GridNotesJsx;
   var GRID_NOTES_GAP;
   var GRID_NOTES_MIN_HEIGHT;
   var GRID_NOTES_TEXT_CLASS;
   var GRID_NOTES_BLEED_CLASS;
   var GridNotesMeasurer;
-  function clampSpeakerNotesEditorHeight(height2) {
-    return Math.max(
-      MIN_SPEAKER_NOTES_EDITOR_HEIGHT,
-      Math.min(
-        Math.round(window.innerHeight * 0.5),
-        Math.round(height2)
-      )
-    );
-  }
+  var STAGE_NOTES_ROOM;
+  var NOTES_PAN_KEYS;
+  var READ_ONLY_NOTES_PAN_KEYS;
   function setSlideSpeakerNotes(slide, notes) {
     let updatedSlide = {
       ...slide
@@ -240798,7 +244524,9 @@ function installEditorSpeakerNotes(runtime2) {
       readOnly,
       maxLength: runtime2.maxSlideNotesLength,
       onFocus: () => {
-        ref.current = slide;
+        if (!readOnly) {
+          ref.current = slide;
+        }
       },
       onChange: (event) => {
         if (ref.current === null || ref.current.id !== slide.id) {
@@ -240833,86 +244561,6 @@ function installEditorSpeakerNotes(runtime2) {
       }
     };
   }
-  function SpeakerNotesEditor({
-    slide,
-    height: height2,
-    onResize,
-    onResizeStart,
-    heightFor,
-    atScreenBottom = false,
-    readOnly = false,
-    onLiveChange,
-    onGestureEnd,
-    onRelease
-  }) {
-    let field = useSpeakerNotesField({
-      slide,
-      readOnly,
-      onLiveChange,
-      onGestureEnd,
-      onRelease
-    }), ref3 = ReactSpeakerNotesEditor.useRef(height2), state = {
-      onResizeStart: () => {
-        ref3.current = clampSpeakerNotesEditorHeight(height2);
-        onResizeStart?.();
-      },
-      onResize: (input) => onResize(
-        clampSpeakerNotesEditorHeight(
-          heightFor ? heightFor(
-            ref3.current,
-            -input,
-            MIN_SPEAKER_NOTES_EDITOR_HEIGHT,
-            clampSpeakerNotesEditorHeight(1 / 0)
-          ) : ref3.current - input
-        )
-      ),
-      onResizeEnd: () => {
-      }
-    }, value2 = atScreenBottom ? "var(--sl-safe-b, 0px)" : "0px";
-    return SpeakerNotesEditorJsx.jsxs("div", {
-      "data-notes-tray": "",
-      className: "relative flex shrink-0 flex-col border-t border-border-line bg-panel",
-      style: {
-        height: "calc(" + String(clampSpeakerNotesEditorHeight(height2)) + "px + " + value2 + ")",
-        paddingBottom: value2
-      },
-      children: [
-        SpeakerNotesEditorJsx.jsx(runtime2.PanelResizeHandle, {
-          name: "notes",
-          label: (0, runtime2.formatMessage)({
-            defaultMessage: "Resize speaker notes",
-            id: "3Ov+88ULUU"
-          }),
-          now: clampSpeakerNotesEditorHeight(height2),
-          min: MIN_SPEAKER_NOTES_EDITOR_HEIGHT,
-          max: clampSpeakerNotesEditorHeight(1 / 0),
-          valueText: (0, runtime2.formatMessage)(
-            {
-              defaultMessage: "{n, plural, one {{count} pixels tall} other {{count} pixels tall}}",
-              id: "yhLAFTa9Cp"
-            },
-            {
-              n: clampSpeakerNotesEditorHeight(height2),
-              count: String(clampSpeakerNotesEditorHeight(height2))
-            }
-          ),
-          gesture: state,
-          onHome: () => onResize(MIN_SPEAKER_NOTES_EDITOR_HEIGHT),
-          onEnd: () => onResize(clampSpeakerNotesEditorHeight(1 / 0)),
-          onReset: () => onResize(DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT)
-        }),
-        SpeakerNotesEditorJsx.jsx("textarea", {
-          ...field,
-          placeholder: readOnly ? (0, runtime2.formatMessage)({
-            defaultMessage: "No speaker notes on this slide.",
-            id: "v2wTzhZqQa"
-          }) : runtime2.SPEAKER_NOTES_DESCRIPTION,
-          "aria-label": runtime2.SPEAKER_NOTES_FIELD_LABEL,
-          className: "min-h-0 flex-1 resize-none bg-transparent px-3 pb-2 pt-2.5 text-sm outline-none placeholder:text-fg-muted"
-        })
-      ]
-    });
-  }
   function gridNotesRowHeight(measured, editable) {
     return measured === void 0 && !editable ? 0 : (GRID_NOTES_GAP + Math.max(measured ?? 0, GRID_NOTES_MIN_HEIGHT)) / runtime2.GRID_NOTES_MIN_SCALE;
   }
@@ -240939,16 +244587,17 @@ function installEditorSpeakerNotes(runtime2) {
     return range && range.startContainer.parentNode === element ? range.startOffset : null;
   }
   function GridNotesEditor({
-    n,
+    name,
     caret,
     onClose,
     onCaret,
+    hint = runtime2.SPEAKER_NOTES_DESCRIPTION,
     ...fieldOptions
   }) {
-    let field = useSpeakerNotesField(fieldOptions), ref = ReactSpeakerNotesEditor.useRef(null), ref2 = ReactSpeakerNotesEditor.useRef(null), ref3 = ReactSpeakerNotesEditor.useRef(true), ref4 = ReactSpeakerNotesEditor.useRef([
+    let field = useSpeakerNotesField(fieldOptions), ref = ReactSpeakerNotesEditor.useRef(null), ref2 = ReactSpeakerNotesEditor.useRef(null), ref3 = ReactSpeakerNotesEditor.useRef(caret !== void 0), ref4 = ReactSpeakerNotesEditor.useRef(false), ref5 = ReactSpeakerNotesEditor.useRef(false), ref6 = ReactSpeakerNotesEditor.useRef([
       0,
       0
-    ]), ref5 = ReactSpeakerNotesEditor.useRef(false), reportCaret = () => {
+    ]), ref7 = ReactSpeakerNotesEditor.useRef(false), reportCaret = (forced = false) => {
       let [textarea, mirrorText] = [ref.current, ref2.current?.firstChild];
       if (!textarea || !(mirrorText instanceof Text) || textarea.ownerDocument.activeElement !== textarea) {
         return;
@@ -240956,12 +244605,15 @@ function installEditorSpeakerNotes(runtime2) {
       let [start, end, previous] = [
         textarea.selectionStart,
         textarea.selectionEnd,
-        ref4.current
+        ref6.current
       ];
-      ref4.current = [start, end];
-      let selecting = start !== end && (ref5.current || start !== previous[0] && end !== previous[1]);
-      ref5.current = false;
+      ref6.current = [start, end];
+      let selecting = start !== end && (ref7.current || start !== previous[0] && end !== previous[1]);
+      ref7.current = false;
       if (selecting) {
+        return;
+      }
+      if (field.readOnly && start === end && !forced) {
         return;
       }
       let offset4 = Math.min(
@@ -240974,11 +244626,11 @@ function installEditorSpeakerNotes(runtime2) {
       if (rect) {
         onCaret(rect);
       }
-    }, ref6 = ReactSpeakerNotesEditor.useRef(reportCaret);
-    ref6.current = reportCaret;
+    }, ref8 = ReactSpeakerNotesEditor.useRef(reportCaret);
+    ref8.current = reportCaret;
     ReactSpeakerNotesEditor.useLayoutEffect(() => {
       let textarea = ref.current;
-      if (!textarea) {
+      if (!textarea || caret === void 0) {
         return;
       }
       textarea.focus({
@@ -240988,7 +244640,7 @@ function installEditorSpeakerNotes(runtime2) {
       textarea.setSelectionRange(offset4, offset4);
     }, [caret]);
     ReactSpeakerNotesEditor.useLayoutEffect(
-      () => ref6.current(),
+      () => ref8.current(),
       [field.value]
     );
     ReactSpeakerNotesEditor.useEffect(() => {
@@ -240996,7 +244648,7 @@ function installEditorSpeakerNotes(runtime2) {
       if (!ownerDocument2) {
         return;
       }
-      let onSelectionChange = () => ref6.current();
+      let onSelectionChange = () => ref8.current();
       ownerDocument2.addEventListener("selectionchange", onSelectionChange);
       return () => ownerDocument2.removeEventListener(
         "selectionchange",
@@ -241006,9 +244658,14 @@ function installEditorSpeakerNotes(runtime2) {
     return GridNotesJsx.jsxs("div", {
       className: (0, runtime2.joinClassNames)(
         GRID_NOTES_BLEED_CLASS,
-        "grid grid-cols-[minmax(0,1fr)] bg-panel text-fg shadow-[0_0_0_1px_var(--t-app-accent)] outline-2 outline-transparent"
+        "grid grid-cols-[minmax(0,1fr)]",
+        caret !== void 0 ? "bg-panel text-fg shadow-[0_0_0_1px_var(--t-app-accent)] outline-2 outline-transparent" : "text-fg-secondary focus-within:bg-panel focus-within:text-fg focus-within:shadow-[0_0_0_1px_var(--t-app-accent)] focus-within:outline-2 focus-within:outline-transparent pointer-coarse:min-h-10",
+        caret === void 0 && !field.readOnly && "hover:bg-wash-1 focus-within:hover:bg-panel"
       ),
-      onPointerDown: (event) => event.stopPropagation(),
+      onPointerDown: (event) => {
+        event.stopPropagation();
+        ref4.current = event.target === ref.current;
+      },
       onMouseDown: (event) => {
         if (event.target === event.currentTarget) {
           event.preventDefault();
@@ -241031,25 +244688,37 @@ function installEditorSpeakerNotes(runtime2) {
           ...field,
           rows: 1,
           dir: "auto",
-          placeholder: runtime2.SPEAKER_NOTES_DESCRIPTION,
-          "aria-label": gridNotesFieldLabel(n),
+          placeholder: hint,
+          "aria-label": name,
           className: (0, runtime2.joinClassNames)(
             GRID_NOTES_TEXT_CLASS,
-            "resize-none overflow-hidden bg-transparent outline-none [grid-area:1/1] placeholder:text-fg-muted"
+            "resize-none overflow-hidden bg-transparent outline-none [grid-area:1/1]",
+            caret === void 0 ? "placeholder:text-fg-secondary" : "placeholder:text-fg-muted"
           ),
+          onFocus: (event) => {
+            field.onFocus();
+            if (field.readOnly && !ref4.current && !ref5.current) {
+              event.currentTarget.setSelectionRange(0, 0);
+              reportCaret(true);
+            }
+            ref5.current = true;
+          },
           onKeyDown: (event) => {
             if (event.repeat && ref3.current) {
               return event.preventDefault();
             }
             ref3.current = false;
-            ref5.current = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "a";
+            ref7.current = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "a";
             field.onKeyDown(event);
           },
           onBlur: (event) => {
+            ref4.current = false;
             field.onBlur();
-            if (event.currentTarget.ownerDocument.activeElement !== event.currentTarget) {
-              onClose();
+            if (event.currentTarget.ownerDocument.activeElement === event.currentTarget) {
+              return;
             }
+            ref5.current = false;
+            onClose?.();
           }
         })
       ]
@@ -241098,7 +244767,7 @@ function installEditorSpeakerNotes(runtime2) {
         ...fieldOptions,
         slide,
         readOnly: locked,
-        n,
+        name: gridNotesFieldLabel(n),
         caret: editing.caret,
         onClose,
         onCaret
@@ -241168,6 +244837,40 @@ function installEditorSpeakerNotes(runtime2) {
       })
     });
   }
+  function StageNotes({
+    onShow,
+    onPan,
+    ...fieldOptions
+  }) {
+    return GridNotesJsx.jsx("div", {
+      "data-stage-notes": "",
+      className: "pointer-events-auto",
+      style: {
+        ["--w"]: "min(" + String(runtime2.GRID_NOTES_LAYOUT_WIDTH) + "px, var(--stage-w) - 24px)",
+        width: "max(100%, var(--w))",
+        maxWidth: runtime2.GRID_NOTES_MAX_WIDTH,
+        marginTop: GRID_NOTES_GAP,
+        marginLeft: "min(0px, (100% - var(--w)) / 2)"
+      },
+      onKeyDown: (event) => {
+        let step = event.shiftKey || event.altKey || (event.ctrlKey || event.metaKey) && event.key !== "Home" && event.key !== "End" || event.nativeEvent.isComposing ? void 0 : (fieldOptions.readOnly === true ? READ_ONLY_NOTES_PAN_KEYS : NOTES_PAN_KEYS)[event.key];
+        if (!step) {
+          return;
+        }
+        event.preventDefault();
+        onPan(step[0] * GRID_NOTES_MIN_HEIGHT, step[1] * GRID_NOTES_MIN_HEIGHT);
+      },
+      children: GridNotesJsx.jsx(GridNotesEditor, {
+        name: runtime2.SPEAKER_NOTES_FIELD_LABEL,
+        onCaret: onShow,
+        hint: fieldOptions.readOnly === true ? (0, runtime2.formatMessage)({
+          defaultMessage: "No speaker notes on this slide.",
+          id: "v2wTzhZqQa"
+        }) : void 0,
+        ...fieldOptions
+      })
+    });
+  }
   bindRuntimeValue(
     runtime2,
     "ReactSpeakerNotesEditor",
@@ -241176,38 +244879,8 @@ function installEditorSpeakerNotes(runtime2) {
       ReactSpeakerNotesEditor = value;
     }
   );
-  bindRuntimeValue(
-    runtime2,
-    "SpeakerNotesEditorJsx",
-    () => SpeakerNotesEditorJsx,
-    (value) => {
-      SpeakerNotesEditorJsx = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "MIN_SPEAKER_NOTES_EDITOR_HEIGHT",
-    () => MIN_SPEAKER_NOTES_EDITOR_HEIGHT,
-    (value) => {
-      MIN_SPEAKER_NOTES_EDITOR_HEIGHT = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "clampSpeakerNotesEditorHeight",
-    () => clampSpeakerNotesEditorHeight
-  );
-  bindRuntimeValue(
-    runtime2,
-    "DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT",
-    () => DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT,
-    (value) => {
-      DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT = value;
-    }
-  );
   bindRuntimeValue(runtime2, "setSlideSpeakerNotes", () => setSlideSpeakerNotes);
   bindRuntimeValue(runtime2, "useSpeakerNotesField", () => useSpeakerNotesField);
-  bindRuntimeValue(runtime2, "SpeakerNotesEditor", () => SpeakerNotesEditor);
   bindRuntimeValue(
     runtime2,
     "GridNotesJsx",
@@ -241266,6 +244939,15 @@ function installEditorSpeakerNotes(runtime2) {
   );
   bindRuntimeValue(runtime2, "GridNotesEditor", () => GridNotesEditor);
   bindRuntimeValue(runtime2, "GridNotes", () => GridNotes);
+  bindRuntimeValue(
+    runtime2,
+    "STAGE_NOTES_ROOM",
+    () => STAGE_NOTES_ROOM,
+    (value) => {
+      STAGE_NOTES_ROOM = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "StageNotes", () => StageNotes);
   return () => {
     ReactSpeakerNotesEditor = (0, runtime2.toModuleNamespace)(
       (0, runtime2.loadReactNamespace)(),
@@ -241273,18 +244955,27 @@ function installEditorSpeakerNotes(runtime2) {
     );
     (0, runtime2.initializeSlideModel)();
     (0, runtime2.initializeSlideRenderer)();
-    SpeakerNotesEditorJsx = (0, runtime2.toModuleNamespace)(
-      (0, runtime2.loadJsxNamespace)(),
-      1
-    );
-    MIN_SPEAKER_NOTES_EDITOR_HEIGHT = 72;
-    DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT = 104;
     GridNotesJsx = (0, runtime2.toModuleNamespace)(
       (0, runtime2.loadJsxNamespace)(),
       1
     );
     GRID_NOTES_GAP = 8;
     GRID_NOTES_MIN_HEIGHT = 18;
+    STAGE_NOTES_ROOM = 72;
+    NOTES_PAN_KEYS = {
+      PageUp: [0, -12],
+      PageDown: [0, 12]
+    };
+    READ_ONLY_NOTES_PAN_KEYS = {
+      ...NOTES_PAN_KEYS,
+      ArrowUp: [0, -3],
+      ArrowDown: [0, 3],
+      ArrowLeft: [-3, 0],
+      ArrowRight: [3, 0],
+      " ": [0, 12],
+      Home: [0, -1e4],
+      End: [0, 1e4]
+    };
     GRID_NOTES_TEXT_CLASS = "text-[13px] leading-[18px] break-words whitespace-pre-wrap";
     GRID_NOTES_BLEED_CLASS = "-mx-1.5 -my-0.5 rounded-md px-1.5 py-0.5";
     GridNotesMeasurer = ReactSpeakerNotesEditor.memo(function({
@@ -241457,6 +245148,13 @@ function installEditorDamagedSlide(runtime2) {
   var UNREADABLE_SLIDE_MESSAGE;
   var SLIDE_REPAIR_REQUEST_TIMEOUT_MS;
   var VIEW_ONLY_SLIDE_REPAIR_MESSAGE;
+  var WAITING_STYLES_SLIDE_MESSAGE;
+  var SLIDE_STILL_READING_MESSAGE;
+  var READING_STOPPED_SLIDE_MESSAGE;
+  var NO_WORKER_SLIDE_MESSAGE;
+  var FLAT_SLIDE_TOO_LARGE_MESSAGE;
+  var SHORTEN_SLIDE_HINT;
+  var WAITING_STYLES_REVEAL_MS;
   function buildSlideDiagnosticRequest({ slideId, scope }, perspective, readFailed) {
     let quotedId = DIAGNOSTIC_SLIDE_ID_PATTERN.test(slideId) ? "`" + slideId + "`" : null, value = scope !== void 0 && scope !== "" ? "the slide " + (quotedId ?? "on screen") + " of the deck " + (perspective === "I" ? "I have" : "the viewer has") + " open in this page" + (DIAGNOSTIC_SLIDE_ID_PATTERN.test(scope) ? " (deck `" + scope + "`)" : "") : quotedId !== null ? "`slides/" + slideId + "`" : "the slide on screen";
     if (readFailed) {
@@ -241522,7 +245220,7 @@ The deck\u2019s title, from its saved document:
     canAsk,
     className
   }) {
-    let ref = ReactDamagedSlide.useRef(null), ref2 = ReactDamagedSlide.useRef(true), ref3 = ReactDamagedSlide.useRef(0), ref4 = ReactDamagedSlide.useRef(0), [value, value2] = ReactDamagedSlide.useState(false), [value3, value4] = ReactDamagedSlide.useState(null), callback = ReactDamagedSlide.useCallback(() => {
+    let ref = ReactDamagedSlide.useRef(null), ref2 = ReactDamagedSlide.useRef(true), ref3 = ReactDamagedSlide.useRef(0), ref4 = ReactDamagedSlide.useRef(0), [value, value2] = ReactDamagedSlide.useState(false), [value3, value4] = ReactDamagedSlide.useState(null), [waited, setWaited] = ReactDamagedSlide.useState(false), callback = ReactDamagedSlide.useCallback(() => {
       let value6 = ++ref4.current;
       (0, runtime2.availableAgentSessionRoom)().then(
         (input) => {
@@ -241551,6 +245249,13 @@ The deck\u2019s title, from its saved document:
       value2(false);
       value4(null);
     }, [slideId, diagnostic]);
+    ReactDamagedSlide.useEffect(() => {
+      if (diagnostic !== runtime2.WAITING_FOR_STYLES_DIAGNOSTIC) {
+        return;
+      }
+      let timer = setTimeout(() => setWaited(true), WAITING_STYLES_REVEAL_MS);
+      return () => clearTimeout(timer);
+    }, [diagnostic]);
     async function value5() {
       if (value) {
         return;
@@ -241581,16 +245286,16 @@ The deck\u2019s title, from its saved document:
         callback();
       }
     }
-    let message = blank ? UNREADABLE_SLIDE_MESSAGE : DAMAGED_SLIDE_MESSAGE;
+    let limits = runtime2.SLIDE_LIMIT_MESSAGES, patient = diagnostic === runtime2.WAITING_FOR_STYLES_DIAGNOSTIC && !waited || diagnostic === limits.unread || diagnostic === limits.stalled || diagnostic === limits.noWorker, message = diagnostic === limits.unread ? SLIDE_STILL_READING_MESSAGE : diagnostic === limits.noWorker ? NO_WORKER_SLIDE_MESSAGE : diagnostic === limits.stalled ? READING_STOPPED_SLIDE_MESSAGE : diagnostic === limits.flatSize ? FLAT_SLIDE_TOO_LARGE_MESSAGE : patient ? WAITING_STYLES_SLIDE_MESSAGE : blank ? UNREADABLE_SLIDE_MESSAGE : DAMAGED_SLIDE_MESSAGE;
     return DamagedSlideJsx.jsxs("div", {
       "data-testid": "slides-held-notice",
       className,
       children: [
         DamagedSlideJsx.jsx(runtime2.Callout, {
-          variant: "warning",
+          variant: diagnostic === limits.unread ? "neutral" : "warning",
           role: "none",
           actionAlign: "center",
-          action: canAsk ? DamagedSlideJsx.jsx(runtime2.Button, {
+          action: canAsk && !patient ? DamagedSlideJsx.jsx(runtime2.Button, {
             variant: "secondary",
             busy: value,
             onPointerEnter: callback,
@@ -241603,7 +245308,7 @@ The deck\u2019s title, from its saved document:
               id: "bEWItWM6/Q"
             })
           }) : void 0,
-          children: canAsk ? message : (0, runtime2.joinMessages)(message, VIEW_ONLY_SLIDE_REPAIR_MESSAGE)
+          children: patient ? message : canAsk ? diagnostic === limits.flatSize ? (0, runtime2.joinMessages)(message, SHORTEN_SLIDE_HINT) : message : (0, runtime2.joinMessages)(message, VIEW_ONLY_SLIDE_REPAIR_MESSAGE)
         }),
         value3 !== null ? DamagedSlideJsx.jsxs("div", {
           className: "mt-1.5 flex flex-col gap-1",
@@ -241709,6 +245414,62 @@ The deck\u2019s title, from its saved document:
       VIEW_ONLY_SLIDE_REPAIR_MESSAGE = value;
     }
   );
+  bindRuntimeValue(
+    runtime2,
+    "WAITING_STYLES_SLIDE_MESSAGE",
+    () => WAITING_STYLES_SLIDE_MESSAGE,
+    (value) => {
+      WAITING_STYLES_SLIDE_MESSAGE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SLIDE_STILL_READING_MESSAGE",
+    () => SLIDE_STILL_READING_MESSAGE,
+    (value) => {
+      SLIDE_STILL_READING_MESSAGE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READING_STOPPED_SLIDE_MESSAGE",
+    () => READING_STOPPED_SLIDE_MESSAGE,
+    (value) => {
+      READING_STOPPED_SLIDE_MESSAGE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "NO_WORKER_SLIDE_MESSAGE",
+    () => NO_WORKER_SLIDE_MESSAGE,
+    (value) => {
+      NO_WORKER_SLIDE_MESSAGE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "FLAT_SLIDE_TOO_LARGE_MESSAGE",
+    () => FLAT_SLIDE_TOO_LARGE_MESSAGE,
+    (value) => {
+      FLAT_SLIDE_TOO_LARGE_MESSAGE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SHORTEN_SLIDE_HINT",
+    () => SHORTEN_SLIDE_HINT,
+    (value) => {
+      SHORTEN_SLIDE_HINT = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "WAITING_STYLES_REVEAL_MS",
+    () => WAITING_STYLES_REVEAL_MS,
+    (value) => {
+      WAITING_STYLES_REVEAL_MS = value;
+    }
+  );
   bindRuntimeValue(runtime2, "DamagedSlideNotice", () => DamagedSlideNotice);
   return () => {
     (0, runtime2.initializeUiInputs210)();
@@ -241730,7 +245491,33 @@ The deck\u2019s title, from its saved document:
       defaultMessage: "This slide can\u2019t be shown or edited, because the editor couldn\u2019t read it. What was saved is still there.",
       id: "PUOqFyFawj"
     });
+    WAITING_STYLES_SLIDE_MESSAGE = (0, runtime2.formatMessage)({
+      defaultMessage: "This slide is waiting for the presentation\u2019s styles to load, so it can\u2019t be shown or edited yet.",
+      id: "1B+7i9N+Ju"
+    });
+    SLIDE_STILL_READING_MESSAGE = (0, runtime2.formatMessage)({
+      defaultMessage: "This slide is still being read, so it can\u2019t be shown or edited yet.",
+      id: "D4ad7sy7+U"
+    });
+    READING_STOPPED_SLIDE_MESSAGE = (0, runtime2.formatMessage)({
+      defaultMessage: "Reading stopped at this slide or one before it, so this slide isn\u2019t shown. Reload to try again. What was saved is still there.",
+      id: "tS/Dlt6AFt"
+    });
+    NO_WORKER_SLIDE_MESSAGE = (0, runtime2.formatMessage)({
+      defaultMessage: "This slide can\u2019t be shown here, because the page couldn\u2019t start reading it in the background. Reload to try again. What was saved is still there.",
+      id: "+SVLTx0Zh0"
+    });
+    FLAT_SLIDE_TOO_LARGE_MESSAGE = (0, runtime2.formatMessage)({
+      defaultMessage: "This slide is over the 1 MB limit, so it can\u2019t be shown or edited. What was saved is still there.",
+      id: "SU0uPRQIJf"
+    });
+    SHORTEN_SLIDE_HINT = (0, runtime2.formatMessage)({
+      // BaoCut: "the agent" wording
+      defaultMessage: "Choose Ask the agent to fix to shorten or split it.",
+      id: "rHMnIvRZru"
+    });
     SLIDE_REPAIR_REQUEST_TIMEOUT_MS = 1e4;
+    WAITING_STYLES_REVEAL_MS = 2e4;
     VIEW_ONLY_SLIDE_REPAIR_MESSAGE = (0, runtime2.formatMessage)({
       // BaoCut: "the agent" wording
       defaultMessage: "Someone who can edit this presentation can ask the agent to fix the slide.",
@@ -241997,6 +245784,39 @@ function installEditorClipboard(runtime2) {
   var PASTE_EMBEDS_FULL_MESSAGE;
   var PASTE_IMAGE_STORE_FULL_MESSAGE;
   var PASTE_TABLE_TOO_LARGE_MESSAGE;
+  var ZOOM_STOPS;
+  var ZOOM_STOP_EPSILON;
+  function nextZoomStop(scale, direction, minScale, maxScale) {
+    let stops = ZOOM_STOPS.filter(
+      (input) => input > minScale + ZOOM_STOP_EPSILON && input < maxScale - ZOOM_STOP_EPSILON
+    );
+    return direction === 1 ? stops.find((input) => input > scale + ZOOM_STOP_EPSILON) ?? maxScale : stops.filter((input) => input < scale - ZOOM_STOP_EPSILON).at(-1) ?? minScale;
+  }
+  function frameForSlide(frame, slide) {
+    if ((0, runtime2.sourceSlideHasNodeIds)(slide)) {
+      return frame;
+    }
+    if (slide.fromSource === true) {
+      return JSON.parse(
+        JSON.stringify(
+          frame,
+          (key, value2) => key === "sid" || key === "drawn" ? void 0 : value2
+        )
+      );
+    }
+    let value = JSON.parse(JSON.stringify(frame));
+    (0, runtime2.stripSourceFeatures)(value);
+    return value;
+  }
+  function stripPastedSourceAnimations(slide, pasted) {
+    if (slide.fromSource === true) {
+      (0, runtime2.stripSourceAnimations)(
+        [...structuredClone(slide.frames), ...pasted],
+        void 0,
+        true
+      );
+    }
+  }
   function payloadHasOversizedTable(value, depth = 0) {
     if (typeof value !== "object" || value === null || depth > 64) {
       return false;
@@ -242062,6 +245882,9 @@ function installEditorClipboard(runtime2) {
       )
     ).join(`
 `) : input, visit = (source) => {
+      if (source.drawn === true) {
+        return;
+      }
       if (source.kind === "text" && source.text !== "") {
         parts.push(cleanText(source.text));
       } else if (source.kind === "img" && source.alt !== "") {
@@ -242366,14 +246189,21 @@ function installEditorClipboard(runtime2) {
       (input) => nodeContainsVideo(input.node)
     ), value8 = value2.map(
       (input) => ({
-        ...input,
-        id: (0, runtime2.createModelId)(),
-        node: sanitizePastedNode(
-          remapNodeAssets(input.node, value5.map),
-          value6
-        )
+        ...frameForSlide(
+          {
+            ...input,
+            node: sanitizePastedNode(
+              remapNodeAssets(input.node, value5.map),
+              value6
+            )
+          },
+          slide
+        ),
+        id: (0, runtime2.createModelId)()
       })
-    ), addAssets = value5.addAssets;
+    );
+    stripPastedSourceAnimations(slide, value8);
+    let addAssets = value5.addAssets;
     if (assets.size + addAssets.length > runtime2.maxDeckAssets) {
       return {
         error: PASTE_IMAGE_STORE_FULL_MESSAGE,
@@ -242383,7 +246213,7 @@ function installEditorClipboard(runtime2) {
     let callback = (input) => slide.frames.some(
       (input2) => JSON.stringify(input2.x) === JSON.stringify(input.x) && JSON.stringify(input2.y) === JSON.stringify(input.y)
     ), callback2 = (input) => input.some(callback);
-    for (let index4 = 0; index4 < 20 && callback2(value8); index4++)
+    for (let index4 = 0; index4 < 20 && (callback2(value8) || index4 === 0 && (0, runtime2.slideLayoutHasNodeIds)(slide) && value8.some((input) => input.node.sid !== void 0)); index4++)
       value8 = value8.map(
         (input) => ({
           ...input,
@@ -242403,8 +246233,8 @@ function installEditorClipboard(runtime2) {
     let effects = 0, animated = 0, visit = (input) => {
       let style = input.style;
       if (style !== void 0) {
-        effects += (0, runtime2.paintEffectCost)(style);
-        if (style.animation !== void 0) {
+        effects += (0, runtime2.paintCostWithoutSourceAnimation)(style);
+        if ((0, runtime2.hasFlatAnimation)(style)) {
           animated += 1;
         }
       }
@@ -242465,7 +246295,21 @@ function installEditorClipboard(runtime2) {
     }
     let value3 = value.map(
       (input) => (0, runtime2.normalizeSlide)(input, (0, runtime2.createModelId)())
-    ), value4 = (0, runtime2.countDeckTableCells)(value3);
+    );
+    if (!slides.some((input) => input.fromSource === true)) {
+      for (let value10 of value3) {
+        delete value10.fromSource;
+        value10.frames.forEach(runtime2.stripSourceFeatures);
+      }
+    }
+    for (let value11 of value3) {
+      (0, runtime2.stripSourceAnimations)(
+        value11.frames,
+        void 0,
+        value11.fromSource === true
+      );
+    }
+    let value4 = (0, runtime2.countDeckTableCells)(value3);
     if (value4 > 0 && (0, runtime2.countDeckTableCells)(slides) + value4 > runtime2.maxDeckTableCells) {
       return {
         error: (0, runtime2.formatMessage)({
@@ -242501,7 +246345,7 @@ function installEditorClipboard(runtime2) {
         frames: input.frames.map(
           (input2) => ({
             ...input2,
-            id: callback(input2.id),
+            id: input.fromSource === true && /^e\d+-[0-9a-z]+$/.test(input2.id) ? input2.id : callback(input2.id),
             node: sanitizePastedNode(
               remapNodeAssets(input2.node, value6.map),
               value7
@@ -242722,6 +246566,7 @@ function installEditorClipboard(runtime2) {
     "clipboardPressTargetMatches",
     () => clipboardPressTargetMatches
   );
+  bindRuntimeValue(runtime2, "nextZoomStop", () => nextZoomStop);
   return () => {
     (0, runtime2.initializeSlideModel)();
     (0, runtime2.initializeStyleSchema)();
@@ -242741,6 +246586,24 @@ function installEditorClipboard(runtime2) {
     CLIPBOARD_TEXT_LEADING_SPACE_PATTERN = /^[\s"\u200c\u200d]+/;
     CLIPBOARD_LEADING_JOINER_PATTERN = /[\u200c\u200d]/g;
     MAX_PASTED_FRAMES = runtime2.maxSlideFrames;
+    ZOOM_STOPS = [
+      0.01,
+      0.02,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      1,
+      1.25,
+      1.5,
+      2,
+      3,
+      4,
+      6,
+      8
+    ];
+    ZOOM_STOP_EPSILON = 5e-3;
     PASTE_SLIDE_FULL_MESSAGE = (0, runtime2.formatMessage)({
       defaultMessage: "This slide is full \u2014 remove an element first.",
       id: "rVJPt03VKF"
@@ -243168,6 +247031,106 @@ function installPresentationAnnouncements(runtime2) {
       values
     );
   }
+  function drawnWordsRangeAt(root, pointer2) {
+    let doc = root.ownerDocument;
+    for (let drawn of root.querySelectorAll("[data-drawn-words]")) {
+      if (pointer2.over !== null && (pointer2.over.compareDocumentPosition(drawn) & 2) !== 0) {
+        continue;
+      }
+      for (let walker = doc.createTreeWalker(drawn, 4), textNode = walker.nextNode(); textNode !== null; textNode = walker.nextNode()) {
+        let range = doc.createRange();
+        range.selectNodeContents(textNode);
+        for (let rect of range.getClientRects()) {
+          if (pointer2.clientX >= rect.left && pointer2.clientX <= rect.right && pointer2.clientY >= rect.top && pointer2.clientY <= rect.bottom) {
+            return range;
+          }
+        }
+      }
+    }
+    return null;
+  }
+  const drawnWordsMessage = () => (0, runtime2.formatMessageText)({
+    // BaoCut: "the agent" wording
+    defaultMessage: "The presentation adds this text automatically, so you can\u2019t edit it directly. Ask the agent to change or remove it.",
+    id: "UC7JgwmJzN"
+  });
+  function DrawnWordsHint({
+    on,
+    slide,
+    restMs = 300,
+    ref
+  }) {
+    let [value, value2] = ReactSlideAnnouncement.useState(null), ref2 = ReactSlideAnnouncement.useRef(null), ref3 = ReactSlideAnnouncement.useRef(void 0), ref4 = ReactSlideAnnouncement.useRef({
+      x: Infinity,
+      y: Infinity
+    }), callback = ReactSlideAnnouncement.useCallback(
+      (range, delay = restMs) => {
+        if ((range?.startContainer ?? null) === ref2.current) {
+          return;
+        }
+        ref2.current = range?.startContainer ?? null;
+        clearTimeout(ref3.current);
+        value2(delay === 0 ? range : null);
+        if (range !== null && delay > 0) {
+          ref3.current = setTimeout(() => value2(range), delay);
+        }
+      },
+      [restMs]
+    ), callback2 = ReactSlideAnnouncement.useCallback(
+      () => callback(null),
+      [callback]
+    );
+    ReactSlideAnnouncement.useImperativeHandle(
+      ref,
+      () => ({
+        seek: (root, pointer2) => {
+          if (pointer2.buttons === 0) {
+            callback(on ? drawnWordsRangeAt(root, pointer2) : null);
+          } else if (Math.hypot(
+            pointer2.clientX - ref4.current.x,
+            pointer2.clientY - ref4.current.y
+          ) > pointer2.slop) {
+            callback(null);
+          }
+        },
+        press: (root, pointer2) => {
+          ref4.current = { x: pointer2.clientX, y: pointer2.clientY };
+          let range = on ? drawnWordsRangeAt(root, pointer2) : null;
+          if (range === null) {
+            return;
+          }
+          callback(range, 0);
+          (0, runtime2.announceLiveMessage)(drawnWordsMessage());
+        },
+        hide: callback2
+      }),
+      [callback, callback2, on]
+    );
+    ReactSlideAnnouncement.useEffect(callback2, [callback2, on, slide]);
+    ReactSlideAnnouncement.useEffect(() => {
+      if (!on) {
+        return;
+      }
+      let events = ["pointerdown", "keydown", "wheel"];
+      for (let event of events) {
+        window.addEventListener(event, callback2, true);
+      }
+      return () => {
+        for (let event of events) {
+          window.removeEventListener(event, callback2, true);
+        }
+        callback2();
+      };
+    }, [callback2, on]);
+    if (value === null) {
+      return null;
+    }
+    return SlideAnnouncementJsx.jsx(runtime2.Tooltip, {
+      anchor: value,
+      open: true,
+      content: drawnWordsMessage()
+    });
+  }
   bindRuntimeValue(
     runtime2,
     "ReactSlideAnnouncement",
@@ -243194,6 +247157,7 @@ function installPresentationAnnouncements(runtime2) {
     "formatSlideOfCountAnnouncement",
     () => formatSlideOfCountAnnouncement
   );
+  bindRuntimeValue(runtime2, "DrawnWordsHint", () => DrawnWordsHint);
   return () => {
     ReactSlideAnnouncement = (0, runtime2.toModuleNamespace)(
       (0, runtime2.loadReactNamespace)(),
@@ -244321,11 +248285,1338 @@ function installDocumentsMigrationMarkers(runtime2) {
   };
 }
 
+function installModelSlideLimits(runtime2) {
+  var RAW_TEXT_ELEMENTS;
+  var FOREIGN_BREAKOUT_ELEMENTS;
+  var lastTagEndedSelfClosing;
+  function findTagEnd(text, from) {
+    let index4 = from, length = text.length;
+    lastTagEndedSelfClosing = false;
+    while (index4 < length) {
+      let code = text.charCodeAt(index4);
+      if (code === 62) {
+        return index4;
+      }
+      if (lastTagEndedSelfClosing = code === 47, code === 61) {
+        lastTagEndedSelfClosing = false;
+        index4++;
+        while (index4 < length && text.charCodeAt(index4) <= 32) {
+          index4++;
+        }
+        if (code = text.charCodeAt(index4), code === 34 || code === 39) {
+          let quoteEnd = text.indexOf(String.fromCharCode(code), index4 + 1);
+          if (quoteEnd < 0) {
+            return -1;
+          }
+          index4 = quoteEnd + 1;
+        } else {
+          while (index4 < length && text.charCodeAt(index4) > 32 && text.charCodeAt(index4) !== 62) {
+            index4++;
+          }
+        }
+        continue;
+      }
+      index4++;
+    }
+    return -1;
+  }
+  var HTML_COMMENT_END;
+  function scanHtmlTags(text, rawRanges, commentRanges) {
+    let tags = [], lowerCodeAt = (index4) => {
+      let code = text.charCodeAt(index4);
+      return code >= 65 && code <= 90 ? code + 32 : code;
+    }, lowerNames = /* @__PURE__ */ new Map(), cursor = 0, svgDepth = 0, mathDepth = 0;
+    for (; ; ) {
+      let lessThan = text.indexOf("<", cursor);
+      if (lessThan < 0) {
+        break;
+      }
+      if (text.startsWith("<!--", lessThan)) {
+        let commentEnd;
+        if (text.startsWith(">", lessThan + 4)) {
+          commentEnd = lessThan + 5;
+        } else if (text.startsWith("->", lessThan + 4)) {
+          commentEnd = lessThan + 6;
+        } else {
+          HTML_COMMENT_END.lastIndex = lessThan + 4;
+          let closing = HTML_COMMENT_END.exec(text);
+          commentEnd = closing === null ? text.length : closing.index + closing[0].length;
+        }
+        commentRanges?.push([lessThan, commentEnd]);
+        cursor = commentEnd;
+        continue;
+      }
+      let first = lowerCodeAt(lessThan + 1), startsTag = first >= 97 && first <= 122;
+      if (first === 33 || first === 63) {
+        let declarationEnd = text.indexOf(">", lessThan + 2);
+        if (declarationEnd < 0) {
+          break;
+        }
+        tags.push({
+          name: "",
+          start: lessThan,
+          end: declarationEnd + 1
+        });
+        cursor = declarationEnd + 1;
+        continue;
+      }
+      let isClosing = first === 47 && lowerCodeAt(lessThan + 2) >= 97 && lowerCodeAt(lessThan + 2) <= 122;
+      if (!startsTag && !isClosing) {
+        cursor = lessThan + 1;
+        continue;
+      }
+      let nameEnd = lessThan + (isClosing ? 2 : 1);
+      for (let code = lowerCodeAt(nameEnd); code >= 97 && code <= 122 || code >= 48 && code <= 57 || code === 45; code = lowerCodeAt(++nameEnd)) ;
+      let rawName = text.slice(lessThan + (isClosing ? 2 : 1), nameEnd), name = lowerNames.get(rawName);
+      if (name === void 0) {
+        name = rawName.toLowerCase();
+        if (lowerNames.size < 1024 && rawName.length < 64) {
+          lowerNames.set(rawName, name);
+        }
+      }
+      let tagEnd = findTagEnd(text, nameEnd);
+      if (tagEnd < 0) {
+        break;
+      }
+      tags.push({
+        name: isClosing ? "" : name,
+        start: lessThan,
+        end: tagEnd + 1
+      });
+      cursor = tagEnd + 1;
+      if (name === "svg" && !(!isClosing && lastTagEndedSelfClosing)) {
+        svgDepth = Math.max(0, svgDepth + (isClosing ? -1 : 1));
+      } else if (name === "math" && !(!isClosing && lastTagEndedSelfClosing)) {
+        mathDepth = Math.max(0, mathDepth + (isClosing ? -1 : 1));
+      } else if (!isClosing && svgDepth + mathDepth > 0 && FOREIGN_BREAKOUT_ELEMENTS.has(name)) {
+        svgDepth = mathDepth = 0;
+      }
+      if (!isClosing && RAW_TEXT_ELEMENTS.includes(name) && svgDepth + mathDepth === 0) {
+        let closingTag = new RegExp("</" + name, "gi"), searchFrom = cursor;
+        for (; ; ) {
+          closingTag.lastIndex = searchFrom;
+          searchFrom = closingTag.exec(text)?.index ?? -1;
+          if (searchFrom < 0) {
+            searchFrom = text.length;
+            break;
+          }
+          let after = text.charCodeAt(searchFrom + 2 + name.length);
+          if (after === 62 || after === 47 || after === 32 || after >= 9 && after <= 13 || Number.isNaN(after)) {
+            break;
+          }
+          searchFrom += 2;
+        }
+        rawRanges?.push([cursor, searchFrom]);
+        cursor = searchFrom;
+      }
+    }
+    return tags;
+  }
+  var VOID_ELEMENTS;
+  function tagTextEnd(tag) {
+    let end = tag.length;
+    if (end > 0 && tag[end - 1] === ">") {
+      end--;
+      while (end > 0 && /\s/.test(tag[end - 1])) {
+        end--;
+      }
+      if (end > 0 && tag[end - 1] === "/") {
+        end--;
+      }
+    }
+    return end;
+  }
+  var isSelfClosingTag = (tag) => {
+    let end = tagTextEnd(tag);
+    return tag.endsWith(">") && tag[end] === "/";
+  };
+  var skipToNextAttribute = (tag, from) => {
+    while (from < tag.length && /[\s/]/.test(tag[from])) {
+      from++;
+    }
+    return from + 1;
+  };
+  function findTagAttribute(tag, name) {
+    let attributePattern = /[\s/]*([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/y, index4 = /^<[a-zA-Z][a-zA-Z0-9-]*/.exec(tag)?.[0].length ?? 1, end = tagTextEnd(tag);
+    while (index4 < end) {
+      attributePattern.lastIndex = index4;
+      let match = attributePattern.exec(tag);
+      if (match === null) {
+        index4 = skipToNextAttribute(tag, index4);
+        continue;
+      }
+      if (match.index + match[0].length > end) {
+        break;
+      }
+      if (match[1].toLowerCase() === name) {
+        return {
+          start: match.index,
+          end: match.index + match[0].length,
+          value: match[2] ?? match[3] ?? match[4] ?? ""
+        };
+      }
+      index4 = match.index + match[0].length;
+    }
+    return void 0;
+  }
+  var readTagAttribute = (tag, name) => findTagAttribute(tag, name)?.value;
+  var SHAPE_ID_MARK;
+  var TIED_MARK;
+  var MOTION_MARK;
+  var DRAWN_MARK;
+  var GENERATED_MARKS;
+  var OWN_MARK;
+  var ALL_MARKS;
+  function closesOpenElement(open4, next) {
+    if (open4 === next && /^(li|p|dt|dd|tr|option|td|th)$/.test(open4)) {
+      return true;
+    }
+    if (open4 === "dt" && next === "dd" || open4 === "dd" && next === "dt") {
+      return true;
+    }
+    if ((open4 === "td" || open4 === "th") && (next === "td" || next === "th" || next === "tr")) {
+      return true;
+    }
+    if (open4 === "p" && /^(div|ul|ol|li|dt|dd|td|th|tr|h[1-6]|table|section|header|footer|blockquote|figure|hr|pre|form|nav|aside|article|main)$/.test(
+      next
+    )) {
+      return true;
+    }
+    return false;
+  }
+  var SLIDE_LIMITS;
+  function fingerprintText(text) {
+    let high = 3735928559, low = 1103547991;
+    for (let index4 = 0; index4 < text.length; index4++) {
+      let code = text.charCodeAt(index4);
+      high = Math.imul(high ^ code, 2654435761);
+      low = Math.imul(low ^ code, 1597334677);
+    }
+    high = Math.imul(high ^ high >>> 16, 2246822507) ^ Math.imul(low ^ low >>> 13, 3266489909);
+    low = Math.imul(low ^ low >>> 16, 2246822507) ^ Math.imul(high ^ high >>> 13, 3266489909);
+    return (low >>> 0).toString(16).padStart(8, "0") + (high >>> 0).toString(16).padStart(8, "0");
+  }
+  var SLIDE_LIMIT_MESSAGES;
+  var TAG_ATTRIBUTE_PATTERN;
+  var UNCOUNTED_ATTRIBUTE_NAMES;
+  var ENTITY_OR_URL_PATTERN;
+  function measureTag(tag) {
+    let measure = {
+      attrs: 0,
+      chars: tag.length,
+      classChars: 0,
+      styleDecls: 0
+    };
+    for (let index4 = tag.search(/[\s/]/); index4 >= 0 && index4 < tag.length - 1; ) {
+      TAG_ATTRIBUTE_PATTERN.lastIndex = index4;
+      let match = TAG_ATTRIBUTE_PATTERN.exec(tag);
+      if (match === null) {
+        index4++;
+        continue;
+      }
+      index4 += match[0].length;
+      measure.attrs++;
+      let attributeName = match[1].toLowerCase(), value = match[2] ?? match[3] ?? match[4] ?? "";
+      if (UNCOUNTED_ATTRIBUTE_NAMES.test(attributeName)) {
+        measure.chars -= value.length;
+      }
+      if (attributeName === "class") {
+        measure.classChars = Math.max(measure.classChars, value.length);
+      }
+      if (attributeName === "style") {
+        measure.styleDecls = Math.max(
+          measure.styleDecls,
+          value.replace(ENTITY_OR_URL_PATTERN, "").split(";").length
+        );
+      }
+    }
+    return measure;
+  }
+  function measureSlideHtml(html) {
+    let elements = 0, shapes = 0, svgDepth = 0, maxDepth = 0, styles = 0, attrs = 0, lessThanCount = 0, scanned = 0, widest = {
+      attrs: 0,
+      chars: 0,
+      classChars: 0,
+      styleDecls: 0
+    }, open4 = [], closeTo = (depth) => {
+      while (open4.length > depth) {
+        if (open4.pop() === "svg") {
+          svgDepth--;
+        }
+      }
+    }, commentRanges = [], rawRanges = [], tags = scanHtmlTags(html, rawRanges, commentRanges), skipRanges = [...commentRanges, ...rawRanges].sort(
+      (left, right) => left[0] - right[0]
+    ), skipIndex = 0, countStrayLessThan = (limit) => {
+      for (let index4 = html.indexOf("<", scanned); index4 >= 0 && index4 < limit; index4 = html.indexOf("<", index4 + 1)) {
+        while (skipIndex < skipRanges.length && skipRanges[skipIndex][1] <= index4) {
+          skipIndex++;
+        }
+        if (skipIndex < skipRanges.length && skipRanges[skipIndex][0] <= index4) {
+          index4 = skipRanges[skipIndex][1] - 1;
+        } else {
+          lessThanCount++;
+        }
+      }
+    };
+    for (let tag of tags) {
+      let tagText = html.slice(tag.start, tag.end);
+      countStrayLessThan(tag.start);
+      scanned = tag.end;
+      if (tagText.startsWith("<!") || tagText.startsWith("<?")) {
+        shapes++;
+        continue;
+      }
+      if (tagText.startsWith("</")) {
+        let closingName = (/^<\/([a-zA-Z][a-zA-Z0-9-]*)/.exec(tagText)?.[1] ?? "").toLowerCase(), index4 = open4.length - 1, floor2 = Math.max(0, open4.length - 64);
+        while (index4 >= floor2 && open4[index4] !== closingName) {
+          index4--;
+        }
+        if (index4 >= floor2) {
+          closeTo(index4);
+        } else {
+          shapes++;
+        }
+        continue;
+      }
+      while (open4.length > 0 && closesOpenElement(open4[open4.length - 1], tag.name)) {
+        closeTo(open4.length - 1);
+      }
+      let measure = measureTag(tagText);
+      attrs += measure.attrs;
+      widest.attrs = Math.max(widest.attrs, measure.attrs);
+      widest.chars = Math.max(widest.chars, measure.chars);
+      widest.classChars = Math.max(widest.classChars, measure.classChars);
+      widest.styleDecls = Math.max(widest.styleDecls, measure.styleDecls);
+      shapes++;
+      if (tag.name === "style" && svgDepth === 0) {
+        styles++;
+      }
+      if (svgDepth === 0) {
+        elements++;
+      }
+      if (VOID_ELEMENTS.has(tag.name) || isSelfClosingTag(tagText)) {
+        continue;
+      }
+      if (tag.name === "svg") {
+        svgDepth++;
+      }
+      open4.push(tag.name);
+      maxDepth = Math.max(maxDepth, open4.length);
+    }
+    countStrayLessThan(html.length);
+    return {
+      elements,
+      shapes: shapes + lessThanCount + commentRanges.length,
+      attrs,
+      widest,
+      depth: maxDepth,
+      styles
+    };
+  }
+  function flatSlideLimitMessage(html, limits) {
+    if (html.length > limits.maxFlatChars) {
+      return SLIDE_LIMIT_MESSAGES.flatSize;
+    }
+    return measureSlideHtml(html).shapes > limits.maxShapes ? SLIDE_LIMIT_MESSAGES.elements : void 0;
+  }
+  var CHAR_COST;
+  var ATTR_COST;
+  var textCost = (text) => text.length * CHAR_COST;
+  var readingCost = (text, facts) => textCost(text) + facts.attrs * ATTR_COST + Math.floor(facts.shapes * Math.sqrt(facts.shapes)) * 20;
+  bindRuntimeValue(
+    runtime2,
+    "RAW_TEXT_ELEMENTS",
+    () => RAW_TEXT_ELEMENTS,
+    (value) => {
+      RAW_TEXT_ELEMENTS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "FOREIGN_BREAKOUT_ELEMENTS",
+    () => FOREIGN_BREAKOUT_ELEMENTS,
+    (value) => {
+      FOREIGN_BREAKOUT_ELEMENTS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "lastTagEndedSelfClosing",
+    () => lastTagEndedSelfClosing,
+    (value) => {
+      lastTagEndedSelfClosing = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "findTagEnd", () => findTagEnd);
+  bindRuntimeValue(
+    runtime2,
+    "HTML_COMMENT_END",
+    () => HTML_COMMENT_END,
+    (value) => {
+      HTML_COMMENT_END = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "scanHtmlTags", () => scanHtmlTags);
+  bindRuntimeValue(
+    runtime2,
+    "VOID_ELEMENTS",
+    () => VOID_ELEMENTS,
+    (value) => {
+      VOID_ELEMENTS = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "tagTextEnd", () => tagTextEnd);
+  bindRuntimeValue(runtime2, "isSelfClosingTag", () => isSelfClosingTag);
+  bindRuntimeValue(runtime2, "skipToNextAttribute", () => skipToNextAttribute);
+  bindRuntimeValue(runtime2, "findTagAttribute", () => findTagAttribute);
+  bindRuntimeValue(runtime2, "readTagAttribute", () => readTagAttribute);
+  bindRuntimeValue(
+    runtime2,
+    "SHAPE_ID_MARK",
+    () => SHAPE_ID_MARK,
+    (value) => {
+      SHAPE_ID_MARK = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "TIED_MARK",
+    () => TIED_MARK,
+    (value) => {
+      TIED_MARK = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "MOTION_MARK",
+    () => MOTION_MARK,
+    (value) => {
+      MOTION_MARK = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "DRAWN_MARK",
+    () => DRAWN_MARK,
+    (value) => {
+      DRAWN_MARK = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "GENERATED_MARKS",
+    () => GENERATED_MARKS,
+    (value) => {
+      GENERATED_MARKS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "OWN_MARK",
+    () => OWN_MARK,
+    (value) => {
+      OWN_MARK = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "ALL_MARKS",
+    () => ALL_MARKS,
+    (value) => {
+      ALL_MARKS = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "closesOpenElement", () => closesOpenElement);
+  bindRuntimeValue(
+    runtime2,
+    "SLIDE_LIMITS",
+    () => SLIDE_LIMITS,
+    (value) => {
+      SLIDE_LIMITS = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "fingerprintText", () => fingerprintText);
+  bindRuntimeValue(
+    runtime2,
+    "SLIDE_LIMIT_MESSAGES",
+    () => SLIDE_LIMIT_MESSAGES,
+    (value) => {
+      SLIDE_LIMIT_MESSAGES = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "TAG_ATTRIBUTE_PATTERN",
+    () => TAG_ATTRIBUTE_PATTERN,
+    (value) => {
+      TAG_ATTRIBUTE_PATTERN = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "UNCOUNTED_ATTRIBUTE_NAMES",
+    () => UNCOUNTED_ATTRIBUTE_NAMES,
+    (value) => {
+      UNCOUNTED_ATTRIBUTE_NAMES = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "ENTITY_OR_URL_PATTERN",
+    () => ENTITY_OR_URL_PATTERN,
+    (value) => {
+      ENTITY_OR_URL_PATTERN = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "measureTag", () => measureTag);
+  bindRuntimeValue(runtime2, "measureSlideHtml", () => measureSlideHtml);
+  bindRuntimeValue(
+    runtime2,
+    "flatSlideLimitMessage",
+    () => flatSlideLimitMessage
+  );
+  bindRuntimeValue(
+    runtime2,
+    "CHAR_COST",
+    () => CHAR_COST,
+    (value) => {
+      CHAR_COST = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "ATTR_COST",
+    () => ATTR_COST,
+    (value) => {
+      ATTR_COST = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "textCost", () => textCost);
+  bindRuntimeValue(runtime2, "readingCost", () => readingCost);
+  return () => {
+    RAW_TEXT_ELEMENTS = [
+      "script",
+      "style",
+      "textarea",
+      "title",
+      "xmp",
+      "iframe",
+      "noembed",
+      "noframes",
+      "noscript"
+    ];
+    FOREIGN_BREAKOUT_ELEMENTS = new Set(
+      "b big blockquote body br center code dd div dl dt em embed h1 h2 h3 h4 h5 h6 head hr i img li listing menu meta nobr ol p pre ruby s small span strong strike sub sup table tt u ul var font".split(
+        " "
+      )
+    );
+    lastTagEndedSelfClosing = false;
+    HTML_COMMENT_END = /--!?>/g;
+    VOID_ELEMENTS = /* @__PURE__ */ new Set([
+      "area",
+      "base",
+      "br",
+      "col",
+      "embed",
+      "hr",
+      "img",
+      "input",
+      "link",
+      "meta",
+      "source",
+      "track",
+      "wbr"
+    ]);
+    SHAPE_ID_MARK = "data-s";
+    TIED_MARK = "data-tied";
+    MOTION_MARK = "data-motion";
+    DRAWN_MARK = "data-drawn";
+    GENERATED_MARKS = /* @__PURE__ */ new Set([SHAPE_ID_MARK, TIED_MARK, DRAWN_MARK]);
+    OWN_MARK = "data-own";
+    ALL_MARKS = /* @__PURE__ */ new Set([...GENERATED_MARKS, MOTION_MARK, OWN_MARK]);
+    SLIDE_LIMITS = {
+      maxSlideChars: 245760,
+      maxFlatChars: 1048576,
+      maxElements: 800,
+      maxShapes: 3e3,
+      maxTagAttrs: 64,
+      maxTagChars: 4096,
+      maxClassChars: 1024,
+      maxStyleDecls: 128,
+      maxDepth: 24,
+      maxSheetChars: 245760,
+      maxSheetWeight: 8e3,
+      maxMatches: 12e5,
+      maxValueChars: 1024,
+      maxExpansion: 2e6,
+      maxFitElements: 1200,
+      maxDeckCost: 2e7
+    };
+    SLIDE_LIMIT_MESSAGES = {
+      size: "This slide is over the 240 KB limit. Split it into two slides.",
+      flatSize: "This slide is over the 1 MB limit. Split it into two slides.",
+      elements: "This slide has more than 800 elements, or 3,000 counting its comments and what is inside its drawings. Split it, or simplify it.",
+      tag: "A tag on this slide is past a limit: 64 attributes, 1,024 characters of class, 128 style declarations, or 4,096 characters leaving out sources, paths, styles and data. Shorten that tag.",
+      depth: "This slide nests elements more than 24 deep. Flatten it.",
+      work: "This slide has too many elements for the size of the deck\u2019s stylesheet. Remove rules from the stylesheet, or split the slide.",
+      output: "With the deck\u2019s stylesheet applied, this slide is too large. Shorten the rules that apply to it, or split it.",
+      sheet: "The deck\u2019s stylesheet is over its limit, so no slide that uses it can be shown. Shorten it.",
+      slideSheet: "This slide\u2019s <style> and the deck\u2019s stylesheet together are over the rule limit. Shorten the <style>.",
+      deck: "This deck takes too much work to read, so this slide and the ones after it were not read. Remove slides, or shorten the stylesheet.",
+      failed: "This slide could not be compiled. Check that its tags are closed, and simplify what it asks of the stylesheet.",
+      unread: "This slide is still being read.",
+      stalled: "Reading stopped at this slide or one before it, so this slide is not shown. Reload to try again.",
+      noWorker: "This page could not start its background reader, so this slide is not shown. Reload to try again."
+    };
+    TAG_ATTRIBUTE_PATTERN = /([^\s=/>"']+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]*)))?/y;
+    UNCOUNTED_ATTRIBUTE_NAMES = /^(src|srcset|poster|href|xlink:href|d|inkscape:original-d|points|values|content|style|data-.*)$/;
+    ENTITY_OR_URL_PATTERN = /&#?\w+;|url\([^()]*\)/g;
+    CHAR_COST = 2;
+    ATTR_COST = 16;
+  };
+}
+
+function installFilesSlideReader(runtime2) {
+  var sourceReaderHook;
+  var FLAT_SLIDE_ATTRIBUTE;
+  var WAITING_FOR_STYLES_DIAGNOSTIC;
+  var STYLES_UNREADABLE_DIAGNOSTIC;
+  var CANNOT_HOLD_PATTERN;
+  var MAX_REPORTED_DIAGNOSTICS;
+  var MAX_DIAGNOSTIC_CHARS;
+  var NO_COMPILE_DIAGNOSTICS;
+  var INLINE_READ_WORKER_SOURCE;
+  var READ_WORKER_PATH;
+  var READ_WORKER_START_MS;
+  var READ_WORKER_STALL_MS;
+  var READ_WORKER_IDLE_MS;
+  var READ_WORKER_TICK_MS;
+  var READ_WORKER_FETCH_RETRY_MS;
+  var READ_WORKER_HIDDEN_TICK_MAX_MS;
+  var READ_SLICE_MS;
+  var STALLED_READ;
+  var NO_WORKER_READ;
+  var defaultReadWorker;
+  var readWorkerSourceRequest;
+  const classifyUnsupported = (message) => CANNOT_HOLD_PATTERN.test(message) ? "cannot-hold" : "compile-gap";
+  const heldDeckRead = () => ({
+    form: "source",
+    held: runtime2.SLIDE_LIMIT_MESSAGES.deck,
+    drops: [],
+    cost: 0
+  });
+  const isHtmlSpaceCode = (code) => code === 32 || code >= 9 && code <= 13;
+  const endsAttributeName = (code) => isHtmlSpaceCode(code) || code === 61 || code === 62 || code === 47;
+  function scanTagAttributes(html, from, visit) {
+    let length = html.length;
+    for (; ; ) {
+      let start = from;
+      while (from < length && (isHtmlSpaceCode(html.charCodeAt(from)) || html[from] === "/")) {
+        from++;
+      }
+      if (from >= length) {
+        return -1;
+      }
+      if (html[from] === ">") {
+        return from + 1;
+      }
+      let nameStart = from;
+      while (from < length && !endsAttributeName(html.charCodeAt(from))) {
+        from++;
+      }
+      if (from === nameStart) {
+        from += 1;
+      }
+      let name = html.slice(nameStart, from).toLowerCase(), cursor = from;
+      while (cursor < length && isHtmlSpaceCode(html.charCodeAt(cursor))) {
+        cursor++;
+      }
+      let value = "";
+      if (html[cursor] === "=") {
+        cursor += 1;
+        while (cursor < length && isHtmlSpaceCode(html.charCodeAt(cursor))) {
+          cursor++;
+        }
+        let quote = html[cursor];
+        if (quote === '"' || quote === "'") {
+          let close = html.indexOf(quote, cursor + 1);
+          if (close < 0) {
+            return -1;
+          }
+          value = html.slice(cursor + 1, close);
+          from = close + 1;
+        } else {
+          from = cursor;
+          while (from < length && !isHtmlSpaceCode(html.charCodeAt(from)) && html[from] !== ">") {
+            from++;
+          }
+          value = html.slice(cursor, from);
+        }
+      }
+      if (visit(name, value, start, from)) {
+        return from;
+      }
+    }
+  }
+  function findSectionAttribute(html, name) {
+    let length = html.length, cursor = 0;
+    for (; ; ) {
+      while (cursor < length && isHtmlSpaceCode(html.charCodeAt(cursor))) {
+        cursor++;
+      }
+      if (!html.startsWith("<!--", cursor)) {
+        break;
+      }
+      let end = html.indexOf("-->", cursor + 4);
+      if (end < 0) {
+        return;
+      }
+      cursor = end + 3;
+    }
+    if (html.slice(cursor, cursor + 8).toLowerCase() !== "<section" || !endsAttributeName(html.charCodeAt(cursor + 8))) {
+      return;
+    }
+    let found;
+    scanTagAttributes(html, cursor + 8, (attribute, _value, start, end) => {
+      if (attribute !== name) {
+        return false;
+      }
+      found = [start, end];
+      return true;
+    });
+    return found;
+  }
+  const isFlatSlideHtml = (html) => findSectionAttribute(html, FLAT_SLIDE_ATTRIBUTE) !== void 0;
+  function createPlacedSourceReader(sharedKey, facts, heldMessage = () => runtime2.SLIDE_LIMIT_MESSAGES.unread) {
+    return {
+      key: "source:" + (sharedKey ?? WAITING_FOR_STYLES_DIAGNOSTIC),
+      get placed() {
+        return facts.placed;
+      },
+      read: (_id, html) => ({
+        form: "source",
+        held: sharedKey === void 0 && !isFlatSlideHtml(html) ? WAITING_FOR_STYLES_DIAGNOSTIC : heldMessage(),
+        drops: [],
+        cost: 0
+      }),
+      pastBudget: (_html, spent) => spent > runtime2.SLIDE_LIMITS.maxDeckCost,
+      deckDrops: () => facts.drops,
+      waiting: () => []
+    };
+  }
+  function summarizeCompileDiagnostics(result, format = (diagnostic) => runtime2.formatCompileDiagnostic(diagnostic)) {
+    let messages = [];
+    for (let diagnostic of [
+      ...result.errors,
+      ...result.unsupported,
+      ...result.warnings
+    ]) {
+      if (messages.length >= MAX_REPORTED_DIAGNOSTICS) {
+        break;
+      }
+      messages.push(format(diagnostic).slice(0, MAX_DIAGNOSTIC_CHARS));
+    }
+    let cannotHold = result.unsupported.filter(
+      (diagnostic) => classifyUnsupported(diagnostic.message) === "cannot-hold"
+    ).length;
+    return {
+      errors: result.errors.length,
+      unsupported: result.unsupported.length,
+      warnings: result.warnings.length,
+      refused: {
+        cannotHold,
+        compileGaps: result.unsupported.length - cannotHold
+      },
+      messages
+    };
+  }
+  const reportedDrops = (drops) => drops.slice(0, MAX_REPORTED_DIAGNOSTICS).map((drop) => ({
+    what: drop.what.slice(0, MAX_DIAGNOSTIC_CHARS),
+    kind: drop.kind
+  }));
+  function slideReportEntry(id, reading, summary = NO_COMPILE_DIAGNOSTICS, held = reading.held) {
+    return {
+      id,
+      form: reading.form,
+      ...held !== void 0 ? { held } : {},
+      drops: reportedDrops(reading.drops),
+      ...summary
+    };
+  }
+  function buildSourceReport(slides, shared, deck) {
+    let total = (count) => slides.reduce((sum, entry) => sum + count(entry), 0);
+    return {
+      v: 1,
+      shared,
+      deck,
+      slides,
+      totals: {
+        slides: slides.length,
+        source: total((entry) => entry.form === "source" ? 1 : 0),
+        flat: total((entry) => entry.form === "flat" ? 1 : 0),
+        held: total((entry) => entry.held !== void 0 ? 1 : 0),
+        cannotHold: total(
+          (entry) => entry.drops.filter((drop) => drop.kind === "cannot-hold").length + entry.refused.cannotHold
+        ),
+        compileGaps: total(
+          (entry) => entry.drops.filter((drop) => drop.kind === "compile-gap").length + entry.refused.compileGaps
+        ),
+        errors: total((entry) => entry.errors),
+        unsupported: total((entry) => entry.unsupported),
+        warnings: total((entry) => entry.warnings)
+      }
+    };
+  }
+  function publishSourceReport(report) {
+    globalThis.__slidesSourceReport = report;
+  }
+  function motionSignature(deck) {
+    let moves = (node) => node.style !== void 0 && runtime2.hasSourceAnimation(node.style) || node.kind === "img" && node.src !== void 0 && runtime2.svgDataUrlNeedsSanitizing(node.src), whole = (node) => (moves(node) ? "1" : "0") + (runtime2.nodeChildren(node) ?? []).map(whole).join(""), drawn = [], outer = (node) => node.drawn === true ? (drawn.push(whole(node)), "") : (moves(node) ? "1" : "0") + (runtime2.nodeChildren(node) ?? []).map(outer).join("");
+    return deck.frames.map((frame) => outer(frame.node)).join("") + "/" + drawn.join("");
+  }
+  function signatureGain(signature, other) {
+    let ones = (text) => text.split("1").length - 1, [outer = "", drawn = ""] = signature.split("/"), [otherOuter = "", otherDrawn = ""] = other.split("/");
+    if (outer.length !== otherOuter.length || drawn.length !== otherDrawn.length) {
+      return Math.max(0, ones(signature) - ones(other));
+    }
+    return [...outer].filter((mark, at) => mark === "1" && otherOuter[at] !== "1").length + Math.max(0, ones(drawn) - ones(otherDrawn));
+  }
+  const serializeSlideForMarks = (deck, slide, inlineNotes, marks) => {
+    const serialize = runtime2.serializeSlideHtml;
+    if (inlineNotes) {
+      return serialize(deck, slide, { marks });
+    }
+    let { notes: _notes, ...rest } = slide;
+    return serialize(deck, rest, { marks });
+  };
+  const heldRead = (message) => ({
+    slide: void 0,
+    error: message,
+    reading: {
+      form: "source",
+      held: message,
+      drops: [],
+      cost: 0
+    }
+  });
+  function createReadWorker(options) {
+    let stallMs = options.stallMs ?? READ_WORKER_STALL_MS, worker, up = false, generation = 0, starting = false, dead = false, everUp = false, idleTimer, queue = Promise.resolve(), current, stop = () => {
+      worker?.terminate();
+      worker = void 0;
+      up = false;
+      starting = false;
+      generation += 1;
+    };
+    async function start() {
+      if (worker !== void 0 || starting || dead) {
+        return;
+      }
+      clearTimeout(idleTimer);
+      starting = true;
+      let mine = ++generation;
+      try {
+        let address = await options.address();
+        if (mine !== generation) {
+          return;
+        }
+        starting = false;
+        let started = new Worker(address);
+        worker = started;
+        let fail = () => {
+          if (worker !== started) {
+            return;
+          }
+          dead ||= !everUp;
+          stop();
+          current?.failed();
+        };
+        started.onerror = fail;
+        started.onmessageerror = fail;
+        started.onmessage = (event) => {
+          if (worker !== started) {
+            return;
+          }
+          if (event.data.kind !== "up") {
+            return current?.reply(event.data);
+          }
+          up = true;
+          everUp = true;
+          if (address.startsWith("blob:")) {
+            URL.revokeObjectURL(address);
+          }
+          current?.up();
+        };
+      } catch {
+        if (mine !== generation) {
+          return;
+        }
+        starting = false;
+        dead ||= !everUp;
+        current?.failed();
+      }
+    }
+    let run = (request, onReply, signal) => new Promise((resolve) => {
+      if (signal?.aborted === true) {
+        return resolve("done");
+      }
+      if (dead) {
+        return resolve("no worker");
+      }
+      clearTimeout(idleTimer);
+      let ticker, posted = false, finish = (end) => {
+        clearInterval(ticker);
+        signal?.removeEventListener("abort", onAbort);
+        current = void 0;
+        if (end === "done") {
+          idleTimer = setTimeout(stop, options.idleMs ?? READ_WORKER_IDLE_MS);
+        } else {
+          stop();
+        }
+        resolve(end);
+      }, onAbort = () => {
+        stop();
+        finish("done");
+      }, watch = (budget, end) => {
+        clearInterval(ticker);
+        let tick = Math.min(READ_WORKER_TICK_MS, budget), left = budget, last = performance.now();
+        ticker = setInterval(() => {
+          let now = performance.now();
+          left -= globalThis.document?.hidden === true ? Math.min(
+            Math.max(now - last, tick),
+            READ_WORKER_HIDDEN_TICK_MAX_MS
+          ) : tick;
+          last = now;
+          if (left > 0) {
+            return;
+          }
+          dead ||= end === "no worker" && !everUp;
+          finish(end);
+        }, tick);
+      }, post = () => {
+        posted = true;
+        try {
+          worker.postMessage(request);
+        } catch {
+          return finish("stopped");
+        }
+        watch(stallMs, "stopped");
+      };
+      signal?.addEventListener("abort", onAbort);
+      current = {
+        up: post,
+        reply(reply) {
+          if (reply.kind === "done") {
+            return finish("done");
+          }
+          watch(stallMs, "stopped");
+          onReply(reply);
+        },
+        failed: () => finish(posted ? "stopped" : "no worker")
+      };
+      if (up) {
+        post();
+      } else {
+        watch(options.startMs ?? READ_WORKER_START_MS, "no worker");
+        void start();
+      }
+    });
+    return {
+      offPage: options.address !== void 0,
+      warm: () => {
+        if (options.address !== void 0) {
+          void start();
+        }
+      },
+      run(request, onReply, signal) {
+        let next = queue.then(() => run(request, onReply, signal));
+        queue = next;
+        return next;
+      }
+    };
+  }
+  async function fetchReadWorkerSource() {
+    for (let attempt = 0; ; attempt++) {
+      let status = 0;
+      try {
+        let response = await fetch(new URL(READ_WORKER_PATH, document.baseURI));
+        status = response.status;
+        if (response.ok) {
+          return await response.text();
+        }
+      } catch {
+        status = 0;
+      }
+      if (attempt >= READ_WORKER_FETCH_RETRY_MS.length || status !== 0 && status !== 401 && status !== 403) {
+        throw Error("slides: could not fetch the reading Worker\u2019s file");
+      }
+      await new Promise((resolve) => {
+        setTimeout(resolve, READ_WORKER_FETCH_RETRY_MS[attempt]);
+      });
+    }
+  }
+  const readWorkerSource = () => readWorkerSourceRequest ??= fetchReadWorkerSource().catch((error) => {
+    readWorkerSourceRequest = void 0;
+    throw error;
+  });
+  async function readWorkerAddress() {
+    if (READ_WORKER_PATH === "" && INLINE_READ_WORKER_SOURCE === "") {
+      throw Error("slides: this build carries no reading Worker");
+    }
+    return URL.createObjectURL(
+      new Blob(
+        [
+          READ_WORKER_PATH !== "" ? await readWorkerSource() : INLINE_READ_WORKER_SOURCE
+        ],
+        { type: "text/javascript" }
+      )
+    );
+  }
+  const yieldToEventLoop = () => new Promise((resolve) => {
+    let { port1, port2 } = new MessageChannel();
+    port1.onmessage = () => {
+      port1.close();
+      resolve();
+    };
+    port2.postMessage(0);
+  });
+  async function readSlidesOnPage(job, onSlide, options) {
+    if (sourceReaderHook === void 0) {
+      return;
+    }
+    let reader = sourceReaderHook.jobReader(job);
+    options.facts?.({
+      placed: reader.placed,
+      drops: reader.deckDrops()
+    });
+    let sliceStart = performance.now();
+    for (let [at, record] of sourceReaderHook.readSlides(job, reader)) {
+      if (options.signal?.aborted === true) {
+        return;
+      }
+      onSlide(at, record);
+      if (performance.now() - sliceStart > READ_SLICE_MS) {
+        await yieldToEventLoop();
+        sliceStart = performance.now();
+      }
+    }
+  }
+  async function readSlides(job, onSlide, options = {}) {
+    if (!job.slides.some((slide) => "html" in slide) || options.signal?.aborted === true) {
+      return;
+    }
+    let worker = options.reader ?? defaultReadWorker;
+    if (!worker.offPage) {
+      return readSlidesOnPage(job, onSlide, options);
+    }
+    let next = 0, end = await worker.run(
+      { kind: "read", job },
+      (reply) => {
+        if (reply.kind === "facts") {
+          options.facts?.(reply);
+        } else if (reply.kind === "slide") {
+          onSlide(reply.at, reply.record);
+          next = reply.at + 1;
+        }
+      },
+      options.signal
+    );
+    if (end === "no worker" && runtime2.isSlideModelEmulator() && sourceReaderHook !== void 0) {
+      return readSlidesOnPage(job, onSlide, options);
+    }
+    if (end === "done") {
+      return;
+    }
+    let first = job.slides.findIndex(
+      (slide, at) => at >= next && "html" in slide
+    );
+    if (first < 0) {
+      return;
+    }
+    console.warn(
+      "slides: reading ended at place " + String(first) + " of the " + String(job.slides.length) + " it was given (" + end + ")"
+    );
+    for (let at = first; at < job.slides.length; at++) {
+      if (end === "stopped") {
+        onSlide(at, STALLED_READ);
+      } else if ("html" in job.slides[at]) {
+        onSlide(at, NO_WORKER_READ);
+      }
+    }
+  }
+  async function patchSlide(job, worker = defaultReadWorker) {
+    let result = {}, end = await worker.run({ kind: "patch", job }, (reply) => {
+      if (reply.kind === "patched") {
+        result = reply;
+      }
+    });
+    if (end === "stopped") {
+      console.warn("slides: a patch was stopped, so the edit is saved flat");
+    }
+    if (end !== "no worker" || !runtime2.isSlideModelEmulator() || sourceReaderHook === void 0) {
+      return end === "stopped" ? { stopped: true } : result;
+    }
+    await yieldToEventLoop();
+    return sourceReaderHook.workedPatch(
+      job,
+      sourceReaderHook.jobReader(job)
+    );
+  }
+  bindRuntimeValue(
+    runtime2,
+    "sourceReaderHook",
+    () => sourceReaderHook,
+    (value) => {
+      sourceReaderHook = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "heldDeckRead", () => heldDeckRead);
+  bindRuntimeValue(
+    runtime2,
+    "FLAT_SLIDE_ATTRIBUTE",
+    () => FLAT_SLIDE_ATTRIBUTE,
+    (value) => {
+      FLAT_SLIDE_ATTRIBUTE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "WAITING_FOR_STYLES_DIAGNOSTIC",
+    () => WAITING_FOR_STYLES_DIAGNOSTIC,
+    (value) => {
+      WAITING_FOR_STYLES_DIAGNOSTIC = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "STYLES_UNREADABLE_DIAGNOSTIC",
+    () => STYLES_UNREADABLE_DIAGNOSTIC,
+    (value) => {
+      STYLES_UNREADABLE_DIAGNOSTIC = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "CANNOT_HOLD_PATTERN",
+    () => CANNOT_HOLD_PATTERN,
+    (value) => {
+      CANNOT_HOLD_PATTERN = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "classifyUnsupported", () => classifyUnsupported);
+  bindRuntimeValue(runtime2, "isHtmlSpaceCode", () => isHtmlSpaceCode);
+  bindRuntimeValue(runtime2, "endsAttributeName", () => endsAttributeName);
+  bindRuntimeValue(runtime2, "scanTagAttributes", () => scanTagAttributes);
+  bindRuntimeValue(runtime2, "findSectionAttribute", () => findSectionAttribute);
+  bindRuntimeValue(runtime2, "isFlatSlideHtml", () => isFlatSlideHtml);
+  bindRuntimeValue(
+    runtime2,
+    "createPlacedSourceReader",
+    () => createPlacedSourceReader
+  );
+  bindRuntimeValue(
+    runtime2,
+    "MAX_REPORTED_DIAGNOSTICS",
+    () => MAX_REPORTED_DIAGNOSTICS,
+    (value) => {
+      MAX_REPORTED_DIAGNOSTICS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "MAX_DIAGNOSTIC_CHARS",
+    () => MAX_DIAGNOSTIC_CHARS,
+    (value) => {
+      MAX_DIAGNOSTIC_CHARS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "summarizeCompileDiagnostics",
+    () => summarizeCompileDiagnostics
+  );
+  bindRuntimeValue(
+    runtime2,
+    "NO_COMPILE_DIAGNOSTICS",
+    () => NO_COMPILE_DIAGNOSTICS,
+    (value) => {
+      NO_COMPILE_DIAGNOSTICS = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "reportedDrops", () => reportedDrops);
+  bindRuntimeValue(runtime2, "slideReportEntry", () => slideReportEntry);
+  bindRuntimeValue(runtime2, "buildSourceReport", () => buildSourceReport);
+  bindRuntimeValue(runtime2, "publishSourceReport", () => publishSourceReport);
+  bindRuntimeValue(runtime2, "motionSignature", () => motionSignature);
+  bindRuntimeValue(runtime2, "signatureGain", () => signatureGain);
+  bindRuntimeValue(
+    runtime2,
+    "serializeSlideForMarks",
+    () => serializeSlideForMarks
+  );
+  bindRuntimeValue(
+    runtime2,
+    "INLINE_READ_WORKER_SOURCE",
+    () => INLINE_READ_WORKER_SOURCE,
+    (value) => {
+      INLINE_READ_WORKER_SOURCE = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_PATH",
+    () => READ_WORKER_PATH,
+    (value) => {
+      READ_WORKER_PATH = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_START_MS",
+    () => READ_WORKER_START_MS,
+    (value) => {
+      READ_WORKER_START_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_STALL_MS",
+    () => READ_WORKER_STALL_MS,
+    (value) => {
+      READ_WORKER_STALL_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_IDLE_MS",
+    () => READ_WORKER_IDLE_MS,
+    (value) => {
+      READ_WORKER_IDLE_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_TICK_MS",
+    () => READ_WORKER_TICK_MS,
+    (value) => {
+      READ_WORKER_TICK_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_FETCH_RETRY_MS",
+    () => READ_WORKER_FETCH_RETRY_MS,
+    (value) => {
+      READ_WORKER_FETCH_RETRY_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_WORKER_HIDDEN_TICK_MAX_MS",
+    () => READ_WORKER_HIDDEN_TICK_MAX_MS,
+    (value) => {
+      READ_WORKER_HIDDEN_TICK_MAX_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "READ_SLICE_MS",
+    () => READ_SLICE_MS,
+    (value) => {
+      READ_SLICE_MS = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "heldRead", () => heldRead);
+  bindRuntimeValue(
+    runtime2,
+    "STALLED_READ",
+    () => STALLED_READ,
+    (value) => {
+      STALLED_READ = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "NO_WORKER_READ",
+    () => NO_WORKER_READ,
+    (value) => {
+      NO_WORKER_READ = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "createReadWorker", () => createReadWorker);
+  bindRuntimeValue(
+    runtime2,
+    "fetchReadWorkerSource",
+    () => fetchReadWorkerSource
+  );
+  bindRuntimeValue(
+    runtime2,
+    "readWorkerSourceRequest",
+    () => readWorkerSourceRequest,
+    (value) => {
+      readWorkerSourceRequest = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "readWorkerSource", () => readWorkerSource);
+  bindRuntimeValue(runtime2, "readWorkerAddress", () => readWorkerAddress);
+  bindRuntimeValue(
+    runtime2,
+    "defaultReadWorker",
+    () => defaultReadWorker,
+    (value) => {
+      defaultReadWorker = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "yieldToEventLoop", () => yieldToEventLoop);
+  bindRuntimeValue(runtime2, "readSlidesOnPage", () => readSlidesOnPage);
+  bindRuntimeValue(runtime2, "readSlides", () => readSlides);
+  bindRuntimeValue(runtime2, "patchSlide", () => patchSlide);
+  return () => {
+    sourceReaderHook = void 0;
+    (0, runtime2.initializeHtmlWriter)();
+    (0, runtime2.initializeHtmlCompiler)();
+    (0, runtime2.initializeMarkupGuards)();
+    (0, runtime2.initializeSlideModel)();
+    CANNOT_HOLD_PATTERN = /inline <(span|b|i|u|em|strong|a)> takes|is not supported on table cells|vertical-align is not in this format|font-size on a cell|style on <(tr|li|thead|tbody)>|z-index is not in this format|text-overflow is not in this format|overflow does not apply|border-(collapse|spacing) is not in this format|no vendor properties|mask-image is not in this format/;
+    FLAT_SLIDE_ATTRIBUTE = "data-flat";
+    WAITING_FOR_STYLES_DIAGNOSTIC = "This slide is waiting for the presentation\u2019s styles to load.";
+    STYLES_UNREADABLE_DIAGNOSTIC = "This presentation\u2019s styles could not be read, so this slide can\u2019t be shown.";
+    MAX_REPORTED_DIAGNOSTICS = 40;
+    MAX_DIAGNOSTIC_CHARS = 200;
+    NO_COMPILE_DIAGNOSTICS = {
+      errors: 0,
+      unsupported: 0,
+      warnings: 0,
+      refused: {
+        cannotHold: 0,
+        compileGaps: 0
+      },
+      messages: []
+    };
+    INLINE_READ_WORKER_SOURCE = "";
+    READ_WORKER_PATH = "artifact-type/read-worker.js";
+    READ_WORKER_START_MS = 2e4;
+    READ_WORKER_STALL_MS = 3e4;
+    READ_WORKER_IDLE_MS = 6e4;
+    READ_WORKER_TICK_MS = 500;
+    READ_WORKER_FETCH_RETRY_MS = [1500, 6e3];
+    READ_WORKER_HIDDEN_TICK_MAX_MS = 5e3;
+    READ_SLICE_MS = 12;
+    STALLED_READ = heldRead(runtime2.SLIDE_LIMIT_MESSAGES.stalled);
+    NO_WORKER_READ = heldRead(runtime2.SLIDE_LIMIT_MESSAGES.noWorker);
+    defaultReadWorker = createReadWorker({
+      address: readWorkerAddress
+    });
+  };
+}
+
 function installDocumentsSlideCodec(runtime2) {
   var DECK_HTML_DOCUMENT_PATH;
   var DECK_ASSETS_DOCUMENT_PATH;
   var MAX_SYNC_DOCUMENT_BYTES;
   var MAX_SYNC_TOTAL_BYTES;
+  var DECK_SHARED_DOCUMENT_PATH;
+  var MIN_REMEMBERED_MARKS;
+  var REMEMBERED_MARKS_PER_SLIDE;
   var SYNC_RECORD_ID_PATTERN;
   var SLIDE_READ_FAILED_DIAGNOSTIC;
   var decomposedSlideRecordCache;
@@ -244349,20 +249640,22 @@ function installDocumentsSlideCodec(runtime2) {
     }
     return cached;
   }
-  function cachedDecomposeSlideHtml(content, slide, inlineNotes) {
+  function cachedDecomposeSlideHtml(content, slide, inlineNotes, flat) {
     let cached = decomposedSlideRecordCache.get(slide);
-    if (cached !== void 0 && cached.theme === content.theme && cached.assets === content.assets && cached.inline === inlineNotes) {
+    if (cached !== void 0 && cached.theme === content.theme && cached.assets === content.assets && cached.inline === inlineNotes && cached.flat === flat) {
       return cached.rec;
     }
     let record = (0, runtime2.serializedSlideRecord)(
       content,
       slide,
-      inlineNotes
+      inlineNotes,
+      flat
     );
     decomposedSlideRecordCache.set(slide, {
       theme: content.theme,
       assets: content.assets,
       inline: inlineNotes,
+      flat,
       rec: record
     });
     return record;
@@ -244427,8 +249720,75 @@ function installDocumentsSlideCodec(runtime2) {
       return void 0;
     }
   }
+  const readCacheKey = (source, index4, lists, id, facesKey, html) => (source !== void 0 ? source.key + "\0" + (source.placed ? String(index4) : "") + "\0" : "") + (lists ?? "") + "\0" + id + "\0" + facesKey + "\0" + html;
+  function readSlideRecordNow(head, faceCount, id, html, lists, source, index4) {
+    let reading;
+    try {
+      reading = source?.read(id, html, index4, { marks: true });
+      if (reading?.held !== void 0) {
+        return {
+          slide: void 0,
+          error: reading.held,
+          reading
+        };
+      }
+      let prefix = `<!doctype html><html>
+` + head + `<body>
+`, compileOptions = {
+        sectionId: id,
+        compiled: reading !== void 0,
+        motion: reading?.form === "source",
+        ...lists !== void 0 ? {
+          lists
+        } : {},
+        ...reading?.mark !== void 0 ? {
+          marks: reading.mark
+        } : {}
+      }, result = (0, runtime2.compileSlideHtml)(
+        prefix + (reading?.html ?? html) + `
+</body></html>`,
+        compileOptions
+      ), offset4 = prefix.split(`
+`).length - 1, order = Array.isArray(result.content.order) ? result.content.order : [], slides = result.content.slides ?? {}, slide = Object.hasOwn(slides, id) ? slides[id] : void 0, error = result.errors[0] !== void 0 ? offsetHtmlDiagnosticLines(result.errors[0], offset4) : void 0;
+      if (error === void 0 && order.length !== 1) {
+        error = "a slide record holds exactly one <section> (found " + String(order.length) + ")";
+      }
+      let extraFaces = (Array.isArray(result.content.faces) ? result.content.faces.length : 0) - faceCount;
+      if (error === void 0 && (result.hoisted > 0 || result.title !== void 0 || extraFaces > 0)) {
+        error = "a slide record may not carry <title>, <link> or <style> (typefaces are fonts/<family> documents)";
+      }
+      return {
+        slide,
+        ...error !== void 0 ? {
+          error
+        } : {},
+        ...reading !== void 0 ? {
+          reading,
+          diags: runtime2.summarizeCompileDiagnostics(
+            result,
+            (diagnostic) => offsetHtmlDiagnosticLines(diagnostic, offset4)
+          )
+        } : {}
+      };
+    } catch (error) {
+      console.error(
+        "slides: slide " + id + " could not be parsed (" + (error instanceof Error ? error.name : "a throw") + ")"
+      );
+      return {
+        slide: void 0,
+        error: SLIDE_READ_FAILED_DIAGNOSTIC,
+        ...reading !== void 0 ? {
+          reading
+        } : {}
+      };
+    }
+  }
+  const isReadFailureDiagnostic = (message) => message === SLIDE_READ_FAILED_DIAGNOSTIC || message === runtime2.SLIDE_LIMIT_MESSAGES.failed || message === runtime2.SLIDE_LIMIT_MESSAGES.stalled || message === runtime2.SLIDE_LIMIT_MESSAGES.noWorker || message === runtime2.WAITING_FOR_STYLES_DIAGNOSTIC || message === runtime2.STYLES_UNREADABLE_DIAGNOSTIC;
   function createSlideDocumentCodec(options = {}) {
-    let parsedSlideCache = /* @__PURE__ */ new Map(), heldSlideHtml = /* @__PURE__ */ new Map(), slideHtmlErrors = /* @__PURE__ */ new Map(), hasMissingSlides = false, missingSlideCount = 0, outline = EMPTY_AWAITING_SLIDE_LIST, seenSlideIds = /* @__PURE__ */ new Set(), assets = {}, rawDeckMeta, hideMovedDeck = false, notesBySlide = /* @__PURE__ */ new Map(), missingNotesSince = /* @__PURE__ */ new Map(), notesStreamSettled = false, now = options.now ?? (() => Date.now()), hasShownSlides = false, awaitingSlides = /* @__PURE__ */ new Set();
+    let reader = options.reader ?? runtime2.defaultReadWorker, parsedSlideCache = /* @__PURE__ */ new Map(), heldSlideHtml = /* @__PURE__ */ new Map(), slideHtmlErrors = /* @__PURE__ */ new Map(), hasMissingSlides = false, missingSlideCount = 0, outline = EMPTY_AWAITING_SLIDE_LIST, seenSlideIds = /* @__PURE__ */ new Set(), sourceDeck = false, current, pending, readsByKey = /* @__PURE__ */ new Map(), lastRecords = /* @__PURE__ */ new Map(), unreadIds = /* @__PURE__ */ new Set(), readAheadStarted = false, stalledKey, vouchedKeys = /* @__PURE__ */ new Map(), sourceReport, marked = /* @__PURE__ */ new Map(), recentMarks = /* @__PURE__ */ new Map(), goneMarks = /* @__PURE__ */ new Map(), findMarked = (mark) => recentMarks.get(mark) ?? goneMarks.get(mark) ?? [...marked.values()].find((entry) => entry.mark === mark), deckHead = {
+      head: "",
+      lists: void 0
+    }, headCache, assets = {}, rawDeckMeta, hideMovedDeck = false, notesBySlide = /* @__PURE__ */ new Map(), missingNotesSince = /* @__PURE__ */ new Map(), notesStreamSettled = false, now = options.now ?? (() => Date.now()), hasShownSlides = false, awaitingSlides = /* @__PURE__ */ new Set();
     function decompose(input, options2, context) {
       let content = input.content;
       assets = content.assets;
@@ -244460,15 +249820,30 @@ function installDocumentsSlideCodec(runtime2) {
         } else if (!notesStreamSettled && value5.notes === void 0 && notesBySlide.has(value4) && !missingNotesSince.has(value4)) {
           missingNotesSince.set(value4, now());
         }
+        let known = marked.get(value4);
+        if (known !== void 0) {
+          known.slide ??= value5;
+        }
         let value6 = runtime2.SLIDE_STORE_COLLECTION + "/" + value4, value7 = reuseEqualDocumentRecord(
           options2,
           value6,
-          cachedDecomposeSlideHtml(content, value5, values.has(value4))
+          cachedDecomposeSlideHtml(
+            content,
+            value5,
+            values.has(value4),
+            sourceDeck
+          )
         );
         if (slideHtmlErrors.has(value4)) {
           let entry = heldSlideHtml.get(value4);
           if (entry === void 0) {
             heldSlideHtml.set(value4, optionalString(value7.html) ?? "");
+          } else if (sourceDeck && entry !== value7.html) {
+            entries.set(value6, {
+              ...value7,
+              html: entry
+            });
+            continue;
           } else if (entry !== value7.html) {
             let entries2 = new Map(slideHtmlErrors);
             entries2.delete(value4);
@@ -244495,51 +249870,329 @@ function installDocumentsSlideCodec(runtime2) {
       );
       return entries;
     }
-    function parseSlideRecord(input, options2, context, value, extra, detail, argument) {
-      let value2 = (argument ?? "") + "\0" + value + "\0" + options2 + "\0" + extra, value3 = parsedSlideCache.get(value2) ?? detail.get(value2);
-      if (value3 === void 0) {
-        try {
-          let value4 = `<!doctype html><html>
-` + input + `<body>
-`, value5 = (0, runtime2.compileSlideHtml)(
-            value4 + extra + `
-</body></html>`,
-            {
-              sectionId: value,
-              ...argument !== void 0 ? {
-                lists: argument
-              } : {}
-            }
-          ), value6 = value4.split(`
-`).length - 1, value7 = Array.isArray(value5.content.order) ? value5.content.order : [], value8 = value5.content.slides ?? {}, value9 = Object.hasOwn(value8, value) ? value8[value] : void 0, value10 = value5.errors[0] !== void 0 ? offsetHtmlDiagnosticLines(value5.errors[0], value6) : void 0;
-          if (value10 === void 0 && value7.length !== 1) {
-            value10 = "a slide record holds exactly one <section> (found " + String(value7.length) + ")";
-          }
-          let value11 = (Array.isArray(value5.content.faces) ? value5.content.faces.length : 0) - context;
-          if (value10 === void 0 && (value5.hoisted > 0 || value5.title !== void 0 || value11 > 0)) {
-            value10 = "a slide record may not carry <title>, <link> or <style> (typefaces are fonts/<family> documents)";
-          }
-          value3 = {
-            slide: value9,
-            ...value10 !== void 0 ? {
-              error: value10
-            } : {}
-          };
-        } catch (error) {
-          console.error(
-            "slides: slide " + value + " could not be parsed (" + (error instanceof Error ? error.name : "a throw") + ")"
-          );
-          value3 = {
-            slide: void 0,
-            error: SLIDE_READ_FAILED_DIAGNOSTIC
-          };
+    function sourceFor(deck) {
+      let families = (deck.faces ?? []).map((face) => face.family), facesKey = families.join("");
+      if (current === void 0 || current.shared === void 0 || facesKey === current.faces) {
+        return {
+          source: current?.reader,
+          head: deckHead.head
+        };
+      }
+      if (headCache?.faces !== facesKey || headCache.under !== current) {
+        headCache = {
+          faces: facesKey,
+          under: current,
+          source: runtime2.sourceReaderHook?.createSourceReader(
+            current.texts,
+            families
+          ),
+          head: headFor(families)
+        };
+      }
+      return headCache;
+    }
+    let marksIn = (html) => (0, runtime2.scanHtmlTags)(html).flatMap(
+      (span) => (0, runtime2.readTagAttribute)(
+        html.slice(span.start, span.end),
+        runtime2.SHAPE_ID_MARK
+      )?.split(".", 1) ?? []
+    );
+    function findBasis(id, html) {
+      let own = marked.get(id), marks = new Set(marksIn(html));
+      if (own !== void 0 && (marks.size === 0 || marks.has(own.mark))) {
+        return own;
+      }
+      for (let mark of marks) {
+        let found = findMarked(mark);
+        if (found !== void 0) {
+          return found;
         }
       }
-      detail.set(value2, value3);
-      return value3;
+      return;
     }
+    function patchBasis(deck, id, inlineNotes) {
+      let slide = deck.slides[id];
+      if (slide === void 0 || current === void 0) {
+        return;
+      }
+      let base = findBasis(
+        id,
+        runtime2.serializeSlideForMarks(deck, slide, inlineNotes, true)
+      );
+      if (base?.slide === void 0) {
+        return;
+      }
+      let after = runtime2.serializeSlideForMarks(
+        deck,
+        {
+          ...slide,
+          id: base.slide.id
+        },
+        inlineNotes,
+        true
+      );
+      base.before ??= runtime2.serializeSlideForMarks(
+        deck,
+        base.slide,
+        inlineNotes,
+        true
+      );
+      if (base.before === after && base.slide.id === id) {
+        return {
+          html: base.source,
+          how: "same"
+        };
+      }
+      let earlier = Object.fromEntries(
+        marksIn(after).flatMap((mark) => {
+          let found = findMarked(mark);
+          return found === void 0 ? [] : [[mark, found.source]];
+        })
+      );
+      return {
+        base,
+        ask: {
+          id,
+          readAs: base.slide.id,
+          source: base.source,
+          mark: base.mark,
+          index: base.index,
+          before: base.before,
+          after,
+          motion: runtime2.motionSignature(slide),
+          earlier,
+          deck: {
+            ...deck,
+            slides: {},
+            order: []
+          },
+          inlineNotes,
+          ...base.saved !== void 0 ? {
+            saved: base.saved
+          } : {},
+          ...deckHead.lists !== void 0 ? {
+            lists: deckHead.lists
+          } : {}
+        }
+      };
+    }
+    function patchedSlide(deck, id, inlineNotes) {
+      let basis = patchBasis(deck, id, inlineNotes);
+      if (basis === void 0 || "html" in basis) {
+        return basis;
+      }
+      let { source, head } = sourceFor(deck);
+      if (source === void 0) {
+        return;
+      }
+      let outcome = runtime2.sourceReaderHook?.patchOf(basis.ask, source, head);
+      if (outcome !== void 0) {
+        basis.base.saved = outcome.touched;
+      }
+      return outcome?.patched;
+    }
+    async function patchAhead(deck, id, inlineNotes, worker) {
+      let basis = patchBasis(deck, id, inlineNotes);
+      if (basis === void 0) {
+        return {};
+      }
+      if ("html" in basis) {
+        return {
+          patched: basis
+        };
+      }
+      if (!worker) {
+        return {};
+      }
+      let under = current, families = (deck.faces ?? []).map((face) => face.family), { outcome, record, stopped } = await runtime2.patchSlide(
+        {
+          ...jobBase(under, headFor(families), families, basis.ask.lists),
+          ask: basis.ask
+        },
+        reader
+      );
+      if (outcome === void 0) {
+        return stopped === true ? {
+          stopped
+        } : {};
+      }
+      basis.base.saved = outcome.touched;
+      if (record !== void 0) {
+        readsByKey.set(
+          readCacheKey(
+            under.reader,
+            basis.ask.index,
+            basis.ask.lists,
+            id,
+            families.join(""),
+            outcome.patched.html
+          ),
+          record
+        );
+      }
+      return {
+        patched: outcome.patched
+      };
+    }
+    function parseSlideRecord(head, facesKey, faceCount, id, html, detail, lists, source, index4) {
+      let key = readCacheKey(source, index4, lists, id, facesKey, html), found = readsByKey.get(key) ?? parsedSlideCache.get(key) ?? detail.get(key) ?? readSlideRecordNow(head, faceCount, id, html, lists, source, index4);
+      readsByKey.delete(key);
+      if (found.error === runtime2.SLIDE_LIMIT_MESSAGES.unread) {
+        unreadIds.add(id);
+      } else {
+        detail.set(key, found);
+      }
+      return found;
+    }
+    let headFor = (families) => (0, runtime2.serializeDeckHead)(
+      families.length > 0 ? {
+        faces: families.map((family) => ({
+          family,
+          src: INVALID_FONT_PLACEHOLDER_DATA_URI
+        }))
+      } : {},
+      ""
+    );
+    function readFontRecords(input) {
+      let entries = /* @__PURE__ */ new Map();
+      for (let [path, record] of [...input].filter(
+        ([path2]) => path2.startsWith(runtime2.FONT_STORE_COLLECTION + "/")
+      ).sort(([left], [right]) => left < right ? -1 : 1)) {
+        if (typeof record.family !== "string") {
+          continue;
+        }
+        let key = (0, runtime2.fontStoreKey)(record.family);
+        if (!entries.has(key) || (0, runtime2.basenameDocumentPath)(path) === key) {
+          entries.set(key, record);
+        }
+      }
+      let rawFaces = [...entries].sort(([left], [right]) => left < right ? -1 : 1).map(([, record]) => record), faces = (0, runtime2.normalizeFontFaces)(rawFaces), families = (faces ?? []).map((face) => face.family);
+      return {
+        rawFaces,
+        faces,
+        families,
+        head: headFor(families)
+      };
+    }
+    let lacksShared = (meta, input) => {
+      let files = input.get(DECK_SHARED_DOCUMENT_PATH)?.files;
+      return (0, runtime2.deckSharedFiles)(meta?.format).some(
+        (path) => typeof files?.[path] !== "string"
+      );
+    };
+    function sourceStateFor(meta, input, families) {
+      let files = input.get(DECK_SHARED_DOCUMENT_PATH)?.files, texts = lacksShared(meta, input) ? void 0 : (0, runtime2.deckSharedFiles)(meta?.format).map(
+        (path) => files?.[path]
+      ), shared = texts?.join("\0"), facesKey = families.join(""), found = [current, pending].find(
+        (state) => state !== void 0 && state.shared === shared && state.faces === facesKey
+      );
+      if (found !== void 0) {
+        return found;
+      }
+      let facts = {
+        placed: false,
+        drops: []
+      };
+      return {
+        shared,
+        faces: facesKey,
+        texts: texts ?? [],
+        facts,
+        reader: reader.offPage || runtime2.sourceReaderHook === void 0 ? (0, runtime2.createPlacedSourceReader)(
+          shared === void 0 ? void 0 : (0, runtime2.fingerprintText)(shared),
+          facts,
+          () => readAheadStarted ? runtime2.SLIDE_LIMIT_MESSAGES.unread : runtime2.SLIDE_LIMIT_MESSAGES.noWorker
+        ) : runtime2.sourceReaderHook.createSourceReader(texts, families)
+      };
+    }
+    async function readAhead(input, signal) {
+      readAheadStarted = true;
+      let meta = input.get(DECK_HTML_DOCUMENT_PATH);
+      if ((0, runtime2.classifyDeckFormat)(meta?.format) !== "source" || options.hideMovedDeck === true && !hasShownSlides && (0, runtime2.readMovedToMarker)(meta) !== null) {
+        return;
+      }
+      let lacking = lacksShared(meta, input), { families, head } = readFontRecords(input), state = sourceStateFor(meta, input, families);
+      pending = state;
+      let lists = (0, runtime2.normalizeListRenderingMode)(meta?.lists), places = (Array.isArray(meta?.order) ? [...new Set(meta.order)] : []).filter(
+        (id) => typeof id === "string" && SYNC_RECORD_ID_PATTERN.test(id) && input.has(runtime2.SLIDE_STORE_COLLECTION + "/" + id)
+      ).slice(0, runtime2.maxDeckSlides).flatMap((id, index4) => {
+        let html = optionalString(
+          input.get(runtime2.SLIDE_STORE_COLLECTION + "/" + id)?.html
+        );
+        return html === void 0 || lacking && !runtime2.isFlatSlideHtml(html) ? [] : [{ id, html, index: index4 }];
+      }), facesKey = families.join(""), keyOf = (place) => readCacheKey(
+        state.reader,
+        place.index,
+        lists,
+        place.id,
+        facesKey,
+        place.html
+      );
+      if (stalledKey !== void 0 && !places.some((place) => keyOf(place) === stalledKey)) {
+        stalledKey = void 0;
+        for (let reads of [parsedSlideCache, readsByKey]) {
+          for (let [key, read] of reads) {
+            if (read === runtime2.STALLED_READ) {
+              reads.delete(key);
+            }
+          }
+        }
+      }
+      let keys = /* @__PURE__ */ new Set(), slides = [], stalled = false;
+      for (let place of places) {
+        let key = keyOf(place);
+        keys.add(key);
+        let known = readsByKey.get(key) ?? parsedSlideCache.get(key);
+        stalled ||= known === runtime2.STALLED_READ;
+        if (stalled) {
+          readsByKey.set(key, runtime2.STALLED_READ);
+        } else {
+          slides.push(
+            known !== void 0 && known.error !== runtime2.SLIDE_LIMIT_MESSAGES.noWorker ? { cost: known.reading?.cost ?? 0 } : place
+          );
+        }
+      }
+      for (let key of [...readsByKey.keys()]) {
+        if (!keys.has(key)) {
+          readsByKey.delete(key);
+        }
+      }
+      await runtime2.readSlides(
+        {
+          ...jobBase(state, head, families, lists),
+          slides
+        },
+        (at, record) => {
+          let key = keyOf(places[at]);
+          if (record === runtime2.STALLED_READ) {
+            stalledKey ??= key;
+          }
+          readsByKey.set(key, record);
+        },
+        {
+          reader,
+          facts: (facts) => {
+            Object.assign(state.facts, facts);
+          },
+          ...signal !== void 0 ? {
+            signal
+          } : {}
+        }
+      );
+    }
+    let jobBase = (state, head, families, lists) => ({
+      shared: state.texts,
+      faces: families,
+      head,
+      emulator: runtime2.isSlideModelEmulator(),
+      ...lists !== void 0 ? {
+        lists
+      } : {}
+    });
     function compose(input, options2) {
       let entry = input.get(DECK_HTML_DOCUMENT_PATH);
+      lastRecords = input;
+      unreadIds = /* @__PURE__ */ new Set();
       rawDeckMeta = entry;
       (0, runtime2.publishDesignSystems)(input.get(DECK_ASSETS_DOCUMENT_PATH));
       (0, runtime2.setDeckDesignSystemsRecord)(
@@ -244591,42 +250244,71 @@ function installDocumentsSlideCodec(runtime2) {
           "slides: " + String(index4) + " order entr" + (index4 === 1 ? "y" : "ies") + " not shown (id outside [A-Za-z0-9_-]{1,64} or past " + String(runtime2.maxDeckSlides) + " slides); kept in the order"
         );
       }
-      let entries = /* @__PURE__ */ new Map();
-      for (let [value12, value13] of [...input].filter(
-        ([input2]) => input2.startsWith(runtime2.FONT_STORE_COLLECTION + "/")
-      ).sort(([input2], [options3]) => input2 < options3 ? -1 : 1)) {
-        if (typeof value13.family !== "string") {
-          continue;
-        }
-        let value14 = (0, runtime2.fontStoreKey)(value13.family);
-        if (!entries.has(value14) || (0, runtime2.basenameDocumentPath)(value12) === value14) {
-          entries.set(value14, value13);
-        }
-      }
-      let value3 = [...entries].sort(([input2], [options3]) => input2 < options3 ? -1 : 1).map(([, input2]) => input2), value4 = (0, runtime2.normalizeFontFaces)(value3), value5 = (value4 ?? []).map((input2) => input2.family), value6 = (0, runtime2.serializeDeckHead)(
-        value5.length > 0 ? {
-          faces: value5.map((input2) => ({
-            family: input2,
-            src: INVALID_FONT_PLACEHOLDER_DATA_URI
-          }))
-        } : {},
-        ""
-      ), value7 = /* @__PURE__ */ Object.create(null), items5 = [], entries2 = /* @__PURE__ */ new Map(), entries3 = /* @__PURE__ */ new Map(), value8 = (0, runtime2.readMovedToMarker)(entry) !== null;
+      let { rawFaces, faces, families, head } = readFontRecords(input), value7 = /* @__PURE__ */ Object.create(null), items5 = [], entries2 = /* @__PURE__ */ new Map(), entries3 = /* @__PURE__ */ new Map(), value8 = (0, runtime2.readMovedToMarker)(entry) !== null;
       notesStreamSettled = value8;
       let value9 = (0, runtime2.normalizeListRenderingMode)(entry?.lists);
-      items.forEach((input2) => {
+      sourceDeck = (0, runtime2.classifyDeckFormat)(entry?.format) === "source";
+      let lacking = sourceDeck && lacksShared(entry, input);
+      if (sourceDeck) {
+        current = sourceStateFor(entry, input, families);
+      }
+      let source = sourceDeck ? current?.reader : void 0, spent = 0, reports = [];
+      deckHead = {
+        head,
+        lists: value9
+      };
+      let previousMarked = new Map(marked);
+      marked.clear();
+      items.forEach((input2, place) => {
         seenSlideIds.add(input2);
-        let entry2 = input.get(
-          runtime2.SLIDE_STORE_COLLECTION + "/" + input2
-        ), value12 = optionalString(entry2.html), value13 = value12 !== void 0 ? parseSlideRecord(
-          value6,
-          value5.join(""),
-          value5.length,
+        let entry2 = input.get(runtime2.SLIDE_STORE_COLLECTION + "/" + input2), value12 = optionalString(entry2.html), held = value12 !== void 0 && source?.pastBudget(value12, spent) === true ? runtime2.heldDeckRead() : void 0, value13 = value12 === void 0 ? void 0 : held !== void 0 ? {
+          slide: void 0,
+          error: held.held,
+          reading: held
+        } : parseSlideRecord(
+          head,
+          families.join(""),
+          families.length,
           input2,
           value12,
           entries3,
-          value9
-        ) : void 0, value14 = optionalString(entry2.notes), value15 = value13?.slide?.notes, value16 = value14 ?? (typeof value15 === "string" ? value15 : void 0);
+          value9,
+          source,
+          place
+        );
+        spent += value13?.reading?.cost ?? 0;
+        let mark = value13?.reading?.mark;
+        if (value12 !== void 0 && mark !== void 0 && value13?.slide !== void 0 && value13.error === void 0) {
+          let before = previousMarked.get(input2);
+          marked.set(
+            input2,
+            before?.mark === mark ? before : {
+              source: value12,
+              mark,
+              index: place
+            }
+          );
+        }
+        if (source !== void 0) {
+          reports.push(
+            value13?.reading !== void 0 ? runtime2.slideReportEntry(
+              input2,
+              value13.reading,
+              value13.diags,
+              value13.slide === void 0 || value13.error !== void 0 ? value13.error : void 0
+            ) : runtime2.slideReportEntry(
+              input2,
+              {
+                form: "source",
+                drops: [],
+                cost: 0
+              },
+              void 0,
+              value13?.error ?? "the record has no html string"
+            )
+          );
+        }
+        let value14 = optionalString(entry2.notes), value15 = value13?.slide?.notes, value16 = value14 ?? (typeof value15 === "string" ? value15 : void 0);
         if (value16 !== void 0) {
           notesBySlide.set(input2, value16);
           missingNotesSince.delete(input2);
@@ -244670,7 +250352,29 @@ function installDocumentsSlideCodec(runtime2) {
           entries2.set(input2, value13.error);
         }
       });
+      for (let [id, before] of previousMarked) {
+        if (marked.get(id) === before) {
+          continue;
+        }
+        let into = marked.has(id) ? recentMarks : goneMarks;
+        into.delete(before.mark);
+        into.set(before.mark, before);
+        for (let mark of into.keys()) {
+          if (into.size <= (into === recentMarks ? Math.max(
+            MIN_REMEMBERED_MARKS,
+            REMEMBERED_MARKS_PER_SLIDE * items.length
+          ) : runtime2.maxDeckSlides)) {
+            break;
+          }
+          into.delete(mark);
+        }
+      }
       parsedSlideCache = entries3;
+      sourceReport = source !== void 0 ? runtime2.buildSourceReport(
+        reports,
+        lacking ? "missing" : "read",
+        source.deckDrops()
+      ) : void 0;
       slideHtmlErrors = entries2;
       hasMissingSlides = items3.length > 0;
       missingSlideCount = items3.filter(
@@ -244690,8 +250394,8 @@ function installDocumentsSlideCodec(runtime2) {
           order: items,
           slides: value7,
           assets,
-          ...value4 !== void 0 ? {
-            faces: value3
+          ...faces !== void 0 ? {
+            faces: rawFaces
           } : {},
           ...entry !== void 0 && typeof entry.sections === "object" && entry.sections !== null && !Array.isArray(entry.sections) ? {
             sections: entry.sections
@@ -244728,6 +250432,44 @@ function installDocumentsSlideCodec(runtime2) {
         refuse: validateSyncDocumentSize
       },
       slideHtmlHold: (input) => slideHtmlErrors.get(input),
+      sourceReport: () => sourceReport,
+      readAhead: (input, signal) => readAhead(input, signal).catch(() => {
+        return;
+      }),
+      reader,
+      vouch(id, html, index4, slide) {
+        let earlier = vouchedKeys.get(id);
+        if (earlier !== void 0) {
+          readsByKey.delete(earlier);
+        }
+        if (current === void 0) {
+          return;
+        }
+        let key = readCacheKey(
+          current.reader,
+          index4,
+          deckHead.lists,
+          id,
+          current.faces,
+          html
+        );
+        vouchedKeys.set(id, key);
+        readsByKey.set(key, {
+          slide,
+          reading: {
+            form: "flat",
+            drops: [],
+            cost: (0, runtime2.flatSlideLimitMessage)(html, runtime2.SLIDE_LIMITS) === void 0 ? (0, runtime2.readingCost)(html, (0, runtime2.measureSlideHtml)(html)) : (0, runtime2.textCost)(html)
+          }
+        });
+      },
+      unreadSlides: () => unreadIds,
+      readUnread: (signal) => readAhead(lastRecords, signal).catch(() => {
+        return;
+      }),
+      readsByPlace: () => current?.reader.placed === true,
+      patchedSlide,
+      patchAhead: (deck, id, inlineNotes, worker) => patchAhead(deck, id, inlineNotes, worker).catch(() => ({})),
       awaitingSlides: () => hasMissingSlides,
       awaitedSlideCount: () => missingSlideCount,
       slideOutline: () => outline,
@@ -244745,6 +250487,18 @@ function installDocumentsSlideCodec(runtime2) {
         missingNotesSince.clear();
         notesStreamSettled = false;
         parsedSlideCache = /* @__PURE__ */ new Map();
+        sourceDeck = false;
+        current = void 0;
+        pending = void 0;
+        readsByKey.clear();
+        lastRecords = /* @__PURE__ */ new Map();
+        unreadIds = /* @__PURE__ */ new Set();
+        stalledKey = void 0;
+        vouchedKeys.clear();
+        sourceReport = void 0;
+        marked.clear();
+        recentMarks.clear();
+        goneMarks.clear();
         slideHtmlErrors = /* @__PURE__ */ new Map();
         hasMissingSlides = false;
         missingSlideCount = 0;
@@ -244782,6 +250536,37 @@ function installDocumentsSlideCodec(runtime2) {
   function getSlideDocumentCodec(document2) {
     return slideDocumentCodecByDocument.get(document2) ?? defaultSlideDocumentCodec;
   }
+  bindRuntimeValue(
+    runtime2,
+    "DECK_SHARED_DOCUMENT_PATH",
+    () => DECK_SHARED_DOCUMENT_PATH,
+    (value) => {
+      DECK_SHARED_DOCUMENT_PATH = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "MIN_REMEMBERED_MARKS",
+    () => MIN_REMEMBERED_MARKS,
+    (value) => {
+      MIN_REMEMBERED_MARKS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "REMEMBERED_MARKS_PER_SLIDE",
+    () => REMEMBERED_MARKS_PER_SLIDE,
+    (value) => {
+      REMEMBERED_MARKS_PER_SLIDE = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "readCacheKey", () => readCacheKey);
+  bindRuntimeValue(runtime2, "readSlideRecordNow", () => readSlideRecordNow);
+  bindRuntimeValue(
+    runtime2,
+    "isReadFailureDiagnostic",
+    () => isReadFailureDiagnostic
+  );
   bindRuntimeValue(
     runtime2,
     "SLIDE_READ_FAILED_DIAGNOSTIC",
@@ -244972,6 +250757,9 @@ function installDocumentsSlideCodec(runtime2) {
     (0, runtime2.initializeSlideModel)();
     DECK_HTML_DOCUMENT_PATH = runtime2.DECK_STORE_COLLECTION + "/" + runtime2.DECK_META_STORE_KEY;
     DECK_ASSETS_DOCUMENT_PATH = runtime2.DECK_STORE_COLLECTION + "/" + runtime2.designSystemsCapabilityName;
+    DECK_SHARED_DOCUMENT_PATH = runtime2.DECK_STORE_COLLECTION + "/shared";
+    MIN_REMEMBERED_MARKS = 32;
+    REMEMBERED_MARKS_PER_SLIDE = 4;
     MAX_SYNC_DOCUMENT_BYTES = runtime2.maxDeckFontCssBytes;
     MAX_SYNC_TOTAL_BYTES = runtime2.maxDeckAssetBytes;
     SYNC_RECORD_ID_PATTERN = /^[\w-]{1,64}$/;
@@ -245334,7 +251122,7 @@ function installPresentationSpeakerPanel(runtime2) {
                       win,
                       className: "sn-slot",
                       children: (width) => Jsx.jsx(runtime2.SlideCanvas, {
-                        slide: next,
+                        slide: (0, runtime2.sourceSlideAtRest)(next),
                         assets,
                         width,
                         animate: false,
@@ -245496,26 +251284,38 @@ function installPresentationSpeakerPanel(runtime2) {
   }) {
     let ref = runtime2.ReactSpeakerNotesPanel.useRef(
       null
-    );
+    ), ref2 = runtime2.ReactSpeakerNotesPanel.useRef(/* @__PURE__ */ new Map()), ref3 = runtime2.ReactSpeakerNotesPanel.useRef(/* @__PURE__ */ new Set());
     runtime2.ReactSpeakerNotesPanel.useLayoutEffect(() => {
       let current = ref.current;
       if (current === null) {
         return;
       }
-      let value = step === void 0 ? /* @__PURE__ */ new Set() : (0, runtime2.hiddenBuildFrameIds)(slide, step);
-      for (let value2 of slide.frames) {
-        let element = current.querySelector(
-          '[data-frame-id="' + value2.id.replace(/["\\]/g, "") + '"]'
+      let value = step === void 0 ? /* @__PURE__ */ new Set() : (0, runtime2.hiddenBuildKeys)(slide, step);
+      for (let held of ref3.current) held.style.visibility = "";
+      ref3.current.clear();
+      for (let key of /* @__PURE__ */ new Set([
+        ...slide.frames.map((input) => input.id),
+        ...(0, runtime2.buildEntries)(slide).map((input) => input.key)
+      ])) {
+        let element = (0, runtime2.elementOfBuildKey)(
+          current,
+          key
         );
         if (element !== null) {
-          element.style.visibility = value.has(value2.id) ? "hidden" : "";
+          element.style.visibility = value.has(key) ? "hidden" : "";
         }
+        if (element !== null && value.has(key)) {
+          ref3.current.add(element);
+        }
+      }
+      if (step !== void 0) {
+        (0, runtime2.syncStepAnimations)(current, slide, step, ref2.current, "jump");
       }
     }, [slide, step, width]);
     return SpeakerNotesPanelJsx.jsx("div", {
       ref,
       children: SpeakerNotesPanelJsx.jsx(runtime2.SlideCanvas, {
-        slide,
+        slide: step === void 0 ? (0, runtime2.sourceSlideAtRest)(slide) : (0, runtime2.reducedMotionSlide)(slide),
         assets,
         width,
         animate: false
@@ -245589,7 +251389,7 @@ function installPresentationSpeakerPanel(runtime2) {
             win,
             className: "sn-slot",
             children: (input) => slide !== void 0 ? SpeakerNotesPanelJsx.jsx(runtime2.SlideCanvas, {
-              slide,
+              slide: (0, runtime2.sourceSlideAtRest)(slide),
               assets,
               width: input,
               animate: false,
@@ -246063,6 +251863,12 @@ function installPresentationAnimationEngine(runtime2) {
   var REDUCED_MOTION_MEDIA_QUERY;
   var HOVER_CAPABILITY_MEDIA_QUERY;
   var animationEnginesByRoot;
+  var initializeAnimationEngine;
+  var countUps;
+  const styleAnimationId = "style-animation";
+  const showTextFilter = 4;
+  const isDigitCode = (code) => code >= 48 && code <= 57;
+  const isNumberCode = (code) => isDigitCode(code) || code === 44 || code === 46;
   function camelCaseToCssProperty(name) {
     return name.replace(/[A-Z]/g, (input) => "-" + input.toLowerCase());
   }
@@ -246122,6 +251928,129 @@ function installPresentationAnimationEngine(runtime2) {
     } catch {
     }
   }
+  function nodePlaySpec(node) {
+    let spec = node.style === void 0 ? void 0 : runtime2.styleAnimationToKeyframes(
+      node.style,
+      runtime2.nodeStyleKind(node)
+    );
+    return spec?.onStep === true ? spec : void 0;
+  }
+  function buildEntries(slide) {
+    let entries = [], add = (key, build, node) => {
+      let noSpec = (effect) => effect?.effect === "play" && nodePlaySpec(node) === void 0, bothPlay = build.in?.effect === "play" && build.out?.effect === "play" && nodePlaySpec(node)?.next === void 0, kept = {
+        ...build.in !== void 0 ? {
+          in: noSpec(build.in) ? { ...build.in, effect: "fade" } : build.in
+        } : {},
+        ...build.out !== void 0 && !noSpec(build.out) && !bothPlay ? { out: build.out } : {}
+      };
+      if (kept.in !== void 0 || kept.out !== void 0) {
+        entries.push({ key, build: kept, node });
+      }
+    }, walk = (node, frameId, path) => {
+      if (path !== "" && node.build !== void 0) {
+        add(frameId + "\0" + path, node.build, node);
+      }
+      runtime2.nodeChildren(node)?.forEach(
+        (child, index4) => walk(
+          child,
+          frameId,
+          path === "" ? String(index4) : path + "." + String(index4)
+        )
+      );
+    };
+    for (let frame of slide.frames) {
+      if (frame.build !== void 0) {
+        add(frame.id, frame.build, frame.node);
+      }
+      walk(frame.node, frame.id, "");
+    }
+    return entries;
+  }
+  function elementOfBuildKey(root, key) {
+    let [frameId, path] = key.split("\0"), selector = '[data-frame-id="' + frameId.replace(/["\\]/g, (c) => "\\" + c) + '"]';
+    return root.querySelector(
+      path === void 0 ? selector : selector + ' [data-node-path="' + path + '"]'
+    );
+  }
+  function findCountNumber(text) {
+    let first = 0;
+    while (first < text.length && !isDigitCode(text.charCodeAt(first))) {
+      first++;
+    }
+    if (first === text.length) {
+      return;
+    }
+    let start = first;
+    while (start > 0 && isNumberCode(text.charCodeAt(start - 1))) {
+      start--;
+    }
+    let end = first + 1;
+    for (let index4 = end; index4 < text.length && isNumberCode(text.charCodeAt(index4)); index4++) {
+      if (isDigitCode(text.charCodeAt(index4))) {
+        end = index4 + 1;
+      }
+    }
+    let sign = start > 0 && "-\u2212+".includes(text[start - 1]) && !/[\p{L}\p{N}]/u.test(text[start - 2] ?? "") ? text[start - 1] : "";
+    return {
+      at: start - sign.length,
+      end,
+      sign,
+      number: text.slice(start, end)
+    };
+  }
+  function parseCountNumber(text) {
+    if (!/^(?:\d*|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(text)) {
+      return;
+    }
+    let value = parseFloat(text.replaceAll(",", ""));
+    return Number.isFinite(value) ? {
+      value,
+      places: Math.min(20, (text.split(".")[1] ?? "").length),
+      grouped: text.includes(",")
+    } : void 0;
+  }
+  function startCountUp(element, animation, from) {
+    let walker = element.ownerDocument.createTreeWalker(
+      element,
+      showTextFilter
+    ), textNode = walker.nextNode();
+    while (textNode !== null && !/\d/.test(textNode.nodeValue ?? "")) {
+      textNode = walker.nextNode();
+    }
+    let full = (textNode === null ? void 0 : countUps.get(textNode)?.full) ?? textNode?.nodeValue ?? "", found = findCountNumber(full);
+    if (textNode === null || found === void 0) {
+      return;
+    }
+    let { at, end, sign, number: digits } = found, parsed = parseCountNumber(digits);
+    if (parsed === void 0) {
+      return;
+    }
+    let { places, grouped } = parsed, target = sign === "-" || sign === "\u2212" ? -parsed.value : parsed.value, node = textNode;
+    countUps.set(node, { a: animation, full });
+    let shown = node.nodeValue, tick = () => {
+      if (countUps.get(node)?.a !== animation) {
+        return;
+      }
+      if (node.nodeValue !== shown) {
+        countUps.delete(node);
+        return;
+      }
+      if (!element.isConnected || animation.playState === "idle" || animation.playState === "finished" || animation.playState === "paused" && Number(animation.currentTime ?? 0) < 0) {
+        node.nodeValue = full;
+        countUps.delete(node);
+        return;
+      }
+      let current = from + (target - from) * (animation.effect?.getComputedTiming().progress ?? 0), body = Math.abs(current).toLocaleString("en-US", {
+        minimumFractionDigits: places,
+        maximumFractionDigits: places,
+        useGrouping: grouped
+      }), prefix = !/[1-9]/.test(body) ? "" : current < 0 ? sign === "\u2212" ? sign : "-" : sign === "+" ? "+" : "";
+      shown = full.slice(0, at) + prefix + body + full.slice(end);
+      node.nodeValue = shown;
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
   function createSlideAnimationEngine(options) {
     let { root } = options, document2 = root.ownerDocument, window2 = document2.defaultView, animations = /* @__PURE__ */ new Map(), value, flag = false;
     function value2(input) {
@@ -246136,7 +252065,10 @@ function installPresentationAnimationEngine(runtime2) {
     }
     let value3 = value2(REDUCED_MOTION_MEDIA_QUERY), value4 = value2(HOVER_CAPABILITY_MEDIA_QUERY), value5 = value3?.matches ?? false;
     function value6(input, options2) {
-      if (value5 && isRepeatingAnimation(options2)) {
+      if (options2.fromSource === true && options.stylesheetMotion !== true) {
+        return;
+      }
+      if (value5 && (isRepeatingAnimation(options2) || options2.fromSource === true)) {
         return;
       }
       if (typeof input.animate !== "function") {
@@ -246150,14 +252082,23 @@ function installPresentationAnimationEngine(runtime2) {
         delay: options3.delay,
         iterations: options3.iterations,
         direction: options3.direction === "reverse" || options3.direction === "alternate" ? options3.direction : "normal",
-        easing: options3.easing
+        easing: options3.easing,
+        ...options3.fill !== void 0 ? { fill: options3.fill } : {}
       };
       try {
-        return input.animate(items, state);
+        let value16 = input.animate(items, state);
+        value16.id = styleAnimationId;
+        if (options2.count !== void 0) {
+          startCountUp(input, value16, options2.count);
+        }
+        return value16;
       } catch {
         return;
       }
     }
+    let startAnimations = (element, spec) => [spec, spec.next].flatMap(
+      (value16) => value16 === void 0 ? [] : value6(element, value16) ?? []
+    );
     function value7() {
       let values = /* @__PURE__ */ new Set();
       for (let value16 of collectAnimatedElements(root)) {
@@ -246174,7 +252115,7 @@ function installPresentationAnimationEngine(runtime2) {
         } catch {
           continue;
         }
-        if (!value18) {
+        if (!value18 || value18.onStep === true) {
           continue;
         }
         values.add(value16);
@@ -246182,29 +252123,31 @@ function installPresentationAnimationEngine(runtime2) {
         if (entry && entry.key === value19) {
           continue;
         }
-        cancelElementAnimation(entry?.anim);
+        entry?.anims.forEach(cancelElementAnimation);
         animations.set(value16, {
           key: value19,
           spec: value18,
-          anim: value6(value16, value18)
+          anims: startAnimations(value16, value18)
         });
       }
       for (let [value16, value17] of animations) {
         if (values.has(value16)) {
           continue;
         }
-        cancelElementAnimation(value17.anim);
+        value17.anims.forEach(cancelElementAnimation);
         animations.delete(value16);
       }
     }
     function value8() {
       for (let [value16, value17] of animations) {
-        let value18 = value5 && isRepeatingAnimation(value17.spec);
-        if (value18 && value17.anim) {
-          cancelElementAnimation(value17.anim);
-          value17.anim = void 0;
-        } else if (!value18 && !value17.anim) {
-          value17.anim = value6(value16, value17.spec);
+        let value18 = value5 && [value17.spec, value17.spec.next].some(
+          (value19) => value19 !== void 0 && (isRepeatingAnimation(value19) || value19.fromSource === true)
+        );
+        if (value18 && value17.anims.length > 0) {
+          value17.anims.forEach(cancelElementAnimation);
+          value17.anims = [];
+        } else if (!value18 && value17.anims.length === 0) {
+          value17.anims = startAnimations(value16, value17.spec);
         }
       }
     }
@@ -246371,7 +252314,7 @@ function installPresentationAnimationEngine(runtime2) {
       }
       flag = true;
       for (let value16 of animations.values())
-        cancelElementAnimation(value16.anim);
+        value16.anims.forEach(cancelElementAnimation);
       animations.clear();
       value13();
       root.removeEventListener("pointerover", callback2);
@@ -246446,14 +252389,33 @@ function installPresentationAnimationEngine(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "initializeAnimationEngine",
+    () => initializeAnimationEngine,
+    (value) => {
+      initializeAnimationEngine = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "buildEntries", () => buildEntries);
+  bindRuntimeValue(runtime2, "nodePlaySpec", () => nodePlaySpec);
+  bindRuntimeValue(runtime2, "elementOfBuildKey", () => elementOfBuildKey);
+  bindRuntimeValue(runtime2, "startCountUp", () => startCountUp);
+  bindRuntimeValue(runtime2, "findCountNumber", () => findCountNumber);
+  bindRuntimeValue(runtime2, "parseCountNumber", () => parseCountNumber);
+  bindRuntimeValue(runtime2, "styleAnimationId", () => styleAnimationId);
+  bindRuntimeValue(
+    runtime2,
     "createSlideAnimationEngine",
     () => createSlideAnimationEngine
   );
   return () => {
-    (0, runtime2.initializeStyleSchema)();
     REDUCED_MOTION_MEDIA_QUERY = "(prefers-reduced-motion: reduce)";
     HOVER_CAPABILITY_MEDIA_QUERY = "(hover: hover)";
-    animationEnginesByRoot = /* @__PURE__ */ new WeakMap();
+    initializeAnimationEngine = (0, runtime2.initializeOnce)(() => {
+      (0, runtime2.initializeStyleSchema)();
+      countUps = /* @__PURE__ */ new WeakMap();
+      animationEnginesByRoot = /* @__PURE__ */ new WeakMap();
+    });
+    initializeAnimationEngine();
   };
 }
 
@@ -247275,6 +253237,8 @@ function installPresentationPlayer(runtime2) {
   var PRESENTATION_NAVIGATION_KEYS;
   var presentationModeActive;
   var pendingPresentationFullscreenRequest;
+  const SWIPE_IGNORE_SELECTOR = "a, [data-present-pager], [data-video-control]";
+  let transitionAnimationStyles = [];
   function richMessage(descriptor, values) {
     let parts = (0, runtime2.formatMessage)(descriptor, values);
     return typeof parts === "string" ? parts : ReactPresentation.createElement(
@@ -247348,6 +253312,54 @@ function installPresentationPlayer(runtime2) {
   function presentationPrefersReducedMotion() {
     return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
+  function startCountEffect(element) {
+    let textNode = document.createTreeWalker(element, NodeFilter.SHOW_TEXT).nextNode(), full = textNode?.nodeValue ?? "", found = (0, runtime2.findCountNumber)(full), parsed = found === void 0 ? void 0 : (0, runtime2.parseCountNumber)(found.number);
+    if (textNode === null || found === void 0 || parsed === void 0) {
+      return () => {
+        return;
+      };
+    }
+    let node = textNode, { at, end, sign } = found, { value, places, grouped } = parsed, startedAt = performance.now(), frame = 0, tick = (now) => {
+      let progress = Math.min(1, (now - startedAt) / 1100), shown = (value * (1 - (1 - progress) ** 4)).toLocaleString("en-US", {
+        minimumFractionDigits: places,
+        maximumFractionDigits: places,
+        useGrouping: grouped
+      });
+      node.nodeValue = progress < 1 ? full.slice(0, at) + (/[1-9]/.test(shown) ? sign : "") + shown + full.slice(end) : full;
+      if (progress < 1) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      node.nodeValue = full;
+    };
+  }
+  function captureTransitionAnimationStyles(root) {
+    transitionAnimationStyles = (root?.getAnimations?.({ subtree: true }) ?? []).flatMap((animation) => {
+      let target = animation.effect?.target, frameId = target?.closest("[data-frame-id]")?.getAttribute("data-frame-id");
+      if (animation.id !== runtime2.styleAnimationId || target === null || target === void 0 || frameId === null || frameId === void 0) {
+        return [];
+      }
+      let path = target.getAttribute("data-node-path");
+      if (path === null && !target.hasAttribute("data-frame-id")) {
+        return [];
+      }
+      let { opacity, transform, color, filter } = getComputedStyle(target);
+      return [
+        {
+          el: frameAttributeSelector(frameId) + (path === null ? "" : ' [data-node-path="' + path + '"]'),
+          style: {
+            opacity,
+            transform,
+            color,
+            filter
+          }
+        }
+      ];
+    });
+  }
   function PresentationView({
     slides,
     assets,
@@ -247406,10 +253418,9 @@ function installPresentationPlayer(runtime2) {
       () => (0, runtime2.fullscreenAvailable)()
     ), [value20, value21] = ReactPresentation.useState(
       () => (0, runtime2.getFullscreenElement)() !== null
-    ), [value22, value23] = ReactPresentation.useState(false), ref11 = ReactPresentation.useRef(value20), ref12 = ReactPresentation.useRef(false), [keysTipOpen, setKeysTipOpen] = ReactPresentation.useState(false), keysTipOpenRef = ReactPresentation.useRef(false);
+    ), [value22, value23] = ReactPresentation.useState(false), ref11 = ReactPresentation.useRef(value20), ref12 = ReactPresentation.useRef(false);
     ref12.current = value22;
-    keysTipOpenRef.current = keysTipOpen;
-    let keysTipClosedAt = ReactPresentation.useRef(-Infinity), pressClosedTip = ReactPresentation.useRef(false), clickClosedTip = ReactPresentation.useRef(false), keysTipFocusVisible = ReactPresentation.useRef(null), pressStart = ReactPresentation.useRef(null), clickPressStart = ReactPresentation.useRef(null);
+    let pressStart = ReactPresentation.useRef(null), clickPressStart = ReactPresentation.useRef(null), touchStart = ReactPresentation.useRef(null);
     let ref13 = ReactPresentation.useRef(0), ref14 = ReactPresentation.useRef(false), ref15 = ReactPresentation.useRef(false), ref16 = ReactPresentation.useRef(
       fullscreenRequest === "next" && (0, runtime2.fullscreenAvailable)()
     ), callback = ReactPresentation.useCallback(() => {
@@ -247431,9 +253442,6 @@ function installPresentationPlayer(runtime2) {
         clearTimeout(ref2.current);
       }
       ref2.current = setTimeout(() => {
-        if (keysTipOpenRef.current) {
-          return;
-        }
         let current = ref4.current;
         if (!(ref3.current && focusKeeper.current === null && current !== null && current.contains(current.ownerDocument.activeElement))) {
           value10(false);
@@ -247500,6 +253508,9 @@ function installPresentationPlayer(runtime2) {
             step: 0
           };
           if (value29.transition !== void 0 && !presentationPrefersReducedMotion()) {
+            captureTransitionAnimationStyles(
+              value29.fromSource === true ? ref8.current : null
+            );
             value6({
               from: state,
               to: state2,
@@ -247525,6 +253536,9 @@ function installPresentationPlayer(runtime2) {
             step: (0, runtime2.slideBuildCount)(value30)
           };
           if (value30.transition !== void 0 && !presentationPrefersReducedMotion()) {
+            captureTransitionAnimationStyles(
+              value29.fromSource === true ? ref8.current : null
+            );
             value6({
               from: state,
               to: state2,
@@ -247618,16 +253632,11 @@ function installPresentationPlayer(runtime2) {
             value23(false);
             return;
           }
-          let value28 = ref13.current !== 0 && Date.now() - ref13.current >= PRESENTATION_CONTROLS_HIDE_DELAY_MS && !ref14.current && !ref15.current && document.hasFocus(), tipOpen = value28 && keysTipOpenRef.current;
-          ref16.current = ref15.current || tipOpen;
+          let value28 = ref13.current !== 0 && Date.now() - ref13.current >= PRESENTATION_CONTROLS_HIDE_DELAY_MS && !ref14.current && !ref15.current && document.hasFocus();
+          ref16.current = ref15.current;
           ref14.current = false;
           ref15.current = false;
           ref13.current = 0;
-          if (tipOpen) {
-            setKeysTipOpen(false);
-            keysTipClosedAt.current = performance.now();
-            return;
-          }
           if (value28) {
             ref24.current(ref21.current);
           }
@@ -247802,15 +253811,6 @@ function installPresentationPlayer(runtime2) {
           case "Escape":
             event.preventDefault();
             if (event.repeat) {
-              break;
-            }
-            if (keysTipOpenRef.current) {
-              setKeysTipOpen(false);
-              keysTipClosedAt.current = performance.now();
-              if ((0, runtime2.getFullscreenElement)() !== null) {
-                ref15.current = true;
-              }
-              callback3();
               break;
             }
             ref24.current(ref21.current);
@@ -248044,6 +254044,7 @@ function installPresentationPlayer(runtime2) {
       }
       let value27 = (0, runtime2.createSlideAnimationEngine)({
         root: current,
+        stylesheetMotion: true,
         resolveBag: (input) => replayClickedNodeAnimation(ref36.current, input)
       });
       ref37.current = value27;
@@ -248057,44 +254058,95 @@ function installPresentationPlayer(runtime2) {
     }, [value4, slides]);
     let ref38 = ReactPresentation.useRef(
       null
-    ), ref39 = ReactPresentation.useRef([]), ref40 = ReactPresentation.useRef(void 0);
+    ), ref39 = ReactPresentation.useRef([]), hiddenHeld = ReactPresentation.useRef(/* @__PURE__ */ new Set()), stepRunning = ReactPresentation.useRef(
+      /* @__PURE__ */ new Map()
+    ), countStops = ReactPresentation.useRef([]), ref40 = ReactPresentation.useRef(void 0);
     ReactPresentation.useLayoutEffect(() => {
       let current = ref35.current, value27 = ref19.current[value4.index];
       if (current === null || value27 === void 0) {
         return;
       }
-      let callback15 = (input) => current.querySelector(frameAttributeSelector(input)), value28 = (0, runtime2.hiddenBuildFrameIds)(
+      let callback15 = (input) => (0, runtime2.elementOfBuildKey)(current, input), value28 = (0, runtime2.hiddenBuildKeys)(
         value27,
         value4.step
-      ), current2 = ref38.current;
+      ), buildKeys = [
+        .../* @__PURE__ */ new Set([
+          ...value27.frames.map((input) => input.id),
+          ...(0, runtime2.buildEntries)(value27).map((input) => input.key)
+        ])
+      ], current2 = ref38.current;
       if (current2 !== null && current2.index === value4.index && current2.step === value4.step) {
         let values = new Set(
           ref39.current.filter((input) => input.playState === "running").map((input) => input.effect?.target)
         );
-        for (let value31 of value27.frames) {
-          let value32 = callback15(value31.id);
+        for (let value31 of buildKeys) {
+          let value32 = callback15(value31);
           if (value32 !== null && !values.has(value32)) {
-            value32.style.visibility = value28.has(value31.id) ? "hidden" : "";
+            value32.style.visibility = value28.has(value31) ? "hidden" : "";
           }
         }
+        (0, runtime2.syncStepAnimations)(
+          current,
+          value27,
+          value4.step,
+          stepRunning.current,
+          "refresh"
+        );
         return;
       }
       ref38.current = value4;
       for (let value31 of ref39.current) value31.cancel();
       ref39.current = [];
-      for (let value31 of value27.frames) {
-        let value32 = callback15(value31.id);
+      for (let stop of countStops.current) stop();
+      countStops.current = [];
+      for (let held of hiddenHeld.current) held.style.visibility = "";
+      hiddenHeld.current.clear();
+      for (let value31 of buildKeys) {
+        let value32 = callback15(value31);
         if (value32 !== null) {
-          value32.style.visibility = value28.has(value31.id) ? "hidden" : "";
+          value32.style.visibility = value28.has(value31) ? "hidden" : "";
+        }
+        if (value32 !== null && value28.has(value31)) {
+          hiddenHeld.current.add(value32);
         }
       }
-      if (current2 !== null && current2.index === value4.index && value4.step === current2.step + 1 && !presentationPrefersReducedMotion()) {
+      let playing = current2 !== null && current2.index === value4.index && value4.step === current2.step + 1 && !presentationPrefersReducedMotion();
+      (0, runtime2.syncStepAnimations)(
+        current,
+        value27,
+        value4.step,
+        stepRunning.current,
+        playing ? "play" : "jump"
+      );
+      let still = presentationPrefersReducedMotion() && value27.fromSource === true;
+      if (value27.fromSource === true && value4.step === 0 && (current2 === null || value4.index > current2.index) && (still || !presentationPrefersReducedMotion())) {
+        (0, runtime2.replaySvgImages)(current, still ? "still" : false);
+      } else if (value27.fromSource === true && current2 !== null && value4.index < current2.index) {
+        (0, runtime2.replaySvgImages)(current, still ? "still" : true);
+      }
+      if (playing) {
         for (let value31 of (0, runtime2.slideBuildStepEffects)(
           value27,
           value4.step
         )) {
-          let value32 = callback15(value31.frame.id);
-          if (value32 === null) {
+          let value32 = callback15(value31.key);
+          if (value32 !== null && value27.fromSource === true && value31.dir === "in" && value31.inView !== true) {
+            (0, runtime2.replaySvgImages)(value32);
+          }
+          if (value32 === null || value31.effect === "play") {
+            continue;
+          }
+          if (value31.key.includes("\0") && !value31.auto) {
+            for (let animation of value32.closest("[data-frame-id]")?.getAnimations?.({ subtree: true }) ?? []) {
+              if (animation.id === runtime2.styleAnimationId && animation.effect?.getComputedTiming().endTime !== Infinity && (animation.effect?.target?.contains(
+                value32
+              ) ?? false)) {
+                animation.finish();
+              }
+            }
+          }
+          if (value31.effect === "count") {
+            countStops.current.push(startCountEffect(value32));
             continue;
           }
           let value33 = (0, runtime2.buildEffectTransition)(
@@ -248138,7 +254190,12 @@ function installPresentationPlayer(runtime2) {
       }
       let value29 = current2 !== null && current2.index === value4.index && value4.step < current2.step, value30 = value4.step + 1;
       if (!value29 && value30 <= (0, runtime2.slideBuildCount)(value27) && (0, runtime2.slideBuildStepIsAutomatic)(value27, value30)) {
-        let value31 = current2 !== null && current2.index === value4.index ? runtime2.buildEffectDurationMs + 140 : 600;
+        let value36 = Math.max(
+          runtime2.buildEffectDurationMs,
+          ...(0, runtime2.playStepAnimations)(value27).filter((input) => input.step === value4.step).map(
+            (input) => input.spec.options.delay + input.spec.options.duration * input.spec.options.iterations
+          )
+        ), value31 = current2 !== null && current2.index === value4.index ? value36 + 140 : 600;
         ref40.current = setTimeout(() => {
           let current3 = ref17.current;
           if (current3.index === value4.index && current3.step === value4.step) {
@@ -248149,6 +254206,18 @@ function installPresentationPlayer(runtime2) {
           }
         }, value31);
       }
+    }, [value4, slides]);
+    let ref41 = ReactPresentation.useRef(value4.index);
+    ReactPresentation.useEffect(() => {
+      let current = ref35.current, value27 = ref19.current[value4.index];
+      if (current !== null && value27?.fromSource === true && value4.index < ref41.current) {
+        for (let animation of current.getAnimations?.({ subtree: true }) ?? []) {
+          if (animation.id === runtime2.styleAnimationId && animation.effect?.getComputedTiming().iterations !== Infinity) {
+            animation.finish();
+          }
+        }
+      }
+      ref41.current = value4.index;
     }, [value4, slides]);
     ReactPresentation.useEffect(
       () => () => {
@@ -248164,9 +254233,6 @@ function installPresentationPlayer(runtime2) {
       ),
       [slides, index4]
     ), value26 = slides[index4];
-    if (!value24 && keysTipOpen) {
-      setKeysTipOpen(false);
-    }
     if (!value26) {
       return null;
     }
@@ -248199,12 +254265,15 @@ function installPresentationPlayer(runtime2) {
             press: (0, runtime2.pointerPositionForMouse)(input),
             selected: selectionWithin(ref9.current) !== null
           };
-          pressClosedTip.current = keysTipOpenRef.current || keysTipClosedAt.current >= input.timeStamp;
+        },
+        onTouchStartCapture: (input) => {
+          if (input.touches.length > 1) {
+            touchStart.current = null;
+          }
         },
         onPointerCancelCapture: (input) => {
           ref5.current = null;
           pressStart.current = null;
-          pressClosedTip.current = false;
           if (input.pointerType === "touch" || input.pointerType === "pen") {
             callback4();
           }
@@ -248214,8 +254283,6 @@ function installPresentationPlayer(runtime2) {
           ref5.current = null;
           clickPressStart.current = pressStart.current;
           pressStart.current = null;
-          clickClosedTip.current = pressClosedTip.current;
-          pressClosedTip.current = false;
         },
         onClick: (input) => {
           let current = ref6.current, started = input.detail !== 0 ? clickPressStart.current : null, selection = selectionWithin(ref9.current);
@@ -248223,9 +254290,6 @@ function installPresentationPlayer(runtime2) {
             return;
           }
           selection?.removeAllRanges();
-          if (clickClosedTip.current) {
-            return;
-          }
           if (callback9()) {
             return;
           }
@@ -248261,6 +254325,34 @@ function installPresentationPlayer(runtime2) {
               id: "LmFNiA0+V0"
             }),
             className: "relative min-h-0 flex-1 outline-none",
+            onTouchStart: (input) => {
+              let touch = input.touches[0], onControl = input.target.closest(SWIPE_IGNORE_SELECTOR) !== null;
+              touchStart.current = touch !== void 0 && input.touches.length === 1 && !onControl ? {
+                x: touch.clientX,
+                y: touch.clientY,
+                at: input.timeStamp
+              } : null;
+            },
+            onTouchEnd: (input) => {
+              let start = touchStart.current, touch = input.changedTouches[0];
+              touchStart.current = null;
+              if (start === null || touch === void 0 || selectionWithin(ref9.current) !== null) {
+                return;
+              }
+              let dx = touch.clientX - start.x;
+              if (input.timeStamp - start.at > 700 || Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(touch.clientY - start.y) * 1.2) {
+                return;
+              }
+              if (input.cancelable) {
+                input.preventDefault();
+              }
+              callback4();
+              if (dx < 0) {
+                advance();
+              } else {
+                callback5(-1);
+              }
+            },
             children: [
               PresentationJsx.jsxs("div", {
                 style: {
@@ -248285,27 +254377,36 @@ function installPresentationPlayer(runtime2) {
                       runtime2.slideSnapshotsEnabledContext.Provider,
                       {
                         value: false,
-                        children: PresentationJsx.jsx(runtime2.SlideSurface, {
-                          slide: value26,
-                          assets,
-                          clips: "all",
-                          links: "open",
-                          onLinkOpen: callback10,
-                          underlay: value5 !== null && value5.kind === "magic" && slides[value5.from.index] !== void 0 && slides[value5.from.index].bg !== value26.bg ? PresentationJsx.jsx(
-                            "div",
-                            {
-                              "data-bg-veil": "",
-                              style: {
-                                position: "absolute",
-                                inset: 0,
-                                background: (0, runtime2.slideBackgroundColor)(
-                                  slides[value5.from.index].bg
-                                )
+                        children: PresentationJsx.jsx(
+                          runtime2.slideStepContext.Provider,
+                          {
+                            value: value26.fromSource === true ? value4.step : void 0,
+                            children: PresentationJsx.jsx(
+                              runtime2.SlideSurface,
+                              {
+                                slide: value26,
+                                assets,
+                                clips: "all",
+                                links: "open",
+                                onLinkOpen: callback10,
+                                underlay: value5 !== null && value5.kind === "magic" && slides[value5.from.index] !== void 0 && slides[value5.from.index].bg !== value26.bg ? PresentationJsx.jsx(
+                                  "div",
+                                  {
+                                    "data-bg-veil": "",
+                                    style: {
+                                      position: "absolute",
+                                      inset: 0,
+                                      background: (0, runtime2.slideBackgroundColor)(
+                                        slides[value5.from.index].bg
+                                      )
+                                    }
+                                  },
+                                  value5.key
+                                ) : void 0
                               }
-                            },
-                            value5.key
-                          ) : void 0
-                        })
+                            )
+                          }
+                        )
                       }
                     )
                   }),
@@ -248350,13 +254451,6 @@ function installPresentationPlayer(runtime2) {
                   if (event.target !== focusKeeper.current) {
                     ref3.current = event.target.matches(":focus-visible");
                   }
-                  let restoreVisible = keysTipFocusVisible.current, from = event.relatedTarget;
-                  if (restoreVisible !== null && !keysTipOpenRef.current && event.target.tagName === "BUTTON" && event.target.getAttribute("aria-label") === runtime2.JUMP_TO_SLIDE_KEYS_LABEL && !(from instanceof Node && ref8.current?.contains(from) === true)) {
-                    keysTipFocusVisible.current = null;
-                    if (event.target !== focusKeeper.current) {
-                      ref3.current = restoreVisible;
-                    }
-                  }
                   focusKeeper.current = null;
                   callback4();
                 },
@@ -248370,9 +254464,6 @@ function installPresentationPlayer(runtime2) {
                 },
                 onPointerDown: () => {
                   ref3.current = false;
-                  if (keysTipFocusVisible.current !== null) {
-                    keysTipFocusVisible.current = false;
-                  }
                 },
                 onClick: (input) => {
                   input.stopPropagation();
@@ -248405,25 +254496,6 @@ function installPresentationPlayer(runtime2) {
                         )
                       }
                     )
-                  }),
-                  PresentationJsx.jsx(runtime2.CdsRoot, {
-                    mode: "dark",
-                    className: "contents",
-                    children: PresentationJsx.jsx(runtime2.InfoTip, {
-                      content: runtime2.JUMP_TO_SLIDE_KEYS_CONTENT,
-                      "aria-label": runtime2.JUMP_TO_SLIDE_KEYS_LABEL,
-                      open: keysTipOpen,
-                      onOpenChange: (open4) => {
-                        setKeysTipOpen(open4);
-                        if (open4) {
-                          keysTipFocusVisible.current = ref3.current;
-                        }
-                        if (!open4) {
-                          keysTipClosedAt.current = performance.now();
-                          callback3();
-                        }
-                      }
-                    })
                   }),
                   PresentationJsx.jsx(PresentationControlButton, {
                     icon: "CaretRight",
@@ -248652,10 +254724,10 @@ function installPresentationPlayer(runtime2) {
         duration: value3,
         easing: runtime2.slideTransitionEasing,
         fill: "forwards"
-      }, items = [], callback = (element, options) => element.querySelector(frameAttributeSelector(options)), value4 = (0, runtime2.hiddenBuildFrameIds)(
+      }, items = [], callback = (element, options) => element.querySelector(frameAttributeSelector(options)), value4 = (0, runtime2.hiddenBuildKeys)(
         value,
         trans.from.step
-      ), value5 = (0, runtime2.hiddenBuildFrameIds)(
+      ), value5 = (0, runtime2.hiddenBuildKeys)(
         value2,
         trans.to.step
       );
@@ -248667,6 +254739,28 @@ function installPresentationPlayer(runtime2) {
         if (value4.has(value7.id) || (0, runtime2.countNodeEmbeds)(value7.node) > 0) {
           value8.style.visibility = "hidden";
         }
+      }
+      for (let key of value4) {
+        let held = (0, runtime2.elementOfBuildKey)(current, key);
+        if (held !== null) {
+          held.style.visibility = "hidden";
+        }
+      }
+      (0, runtime2.syncStepAnimations)(
+        current,
+        value,
+        trans.from.step,
+        /* @__PURE__ */ new Map(),
+        "jump"
+      );
+      for (let held of transitionAnimationStyles) {
+        let target = current.querySelector(held.el);
+        if (target !== null) {
+          Object.assign(target.style, held.style);
+        }
+      }
+      if (value.fromSource === true) {
+        (0, runtime2.replaySvgImages)(current, true);
       }
       if (trans.kind === "fade") {
         items.push(
@@ -248751,7 +254845,13 @@ function installPresentationPlayer(runtime2) {
                       opacity: 0
                     }
                   ],
-                  state
+                  {
+                    ...state,
+                    duration: Math.min(
+                      value3,
+                      runtime2.slideTransitionDurations.magic
+                    )
+                  }
                 )
               );
             }
@@ -249203,7 +255303,7 @@ function installCreationOverlay(runtime2) {
         at: null,
         ground: void 0,
         overSlide: false
-      }), [value3, value4] = ReactCreationOverlay.useState(0), value5 = view.tag === "tips", value6 = (0, runtime2.useHostDrawsAgentTips)(), value7 = useCreationTipIndex(value5), ref4 = ReactCreationOverlay.useRef(null), ref5 = ReactCreationOverlay.useRef(null);
+      }), [value3, value4] = ReactCreationOverlay.useState(0), value5 = view.tag === "tips", value7 = useCreationTipIndex(value5), ref4 = ReactCreationOverlay.useRef(null), ref5 = ReactCreationOverlay.useRef(null);
       ReactCreationOverlay.useEffect(() => {
         let callback = () => value4((input) => input + 1), value16 = typeof ResizeObserver === "function" ? new ResizeObserver(callback) : null, value17 = ref3.current?.closest(".mc-claude-cursor") ?? null;
         for (let value18 of [
@@ -249439,7 +255539,7 @@ function installCreationOverlay(runtime2) {
                 glideMs: value11,
                 hidden: view.cursorHidden,
                 arrowRef: ref3,
-                label: value5 && !value6 ? {
+                label: value5 ? {
                   kind: "words",
                   text: getCreationTip(value7),
                   index: value7,
@@ -249478,10 +255578,9 @@ function installEditorSlideTicks(runtime2) {
     insetTop,
     insetBottom,
     coverId = null,
-    commentCounts,
-    covered = false
+    commentCounts
   }) {
-    let stripRef = ReactSlideTicks.useRef(null), listRef = ReactSlideTicks.useRef(null), placement = useSlideTicksPlacement(stripRef, stage, insetTop, insetBottom), areaRef = ReactSlideTicks.useRef(null), reachable = useSlideTicksReach(areaRef, listRef, stage), [pointer2, setPointer] = ReactSlideTicks.useState(null), [focused, setFocused] = ReactSlideTicks.useState(false);
+    let stripRef = ReactSlideTicks.useRef(null), listRef = ReactSlideTicks.useRef(null), placement = useSlideTicksPlacement(stripRef, stage, insetTop, insetBottom), areaRef = ReactSlideTicks.useRef(null), reachable = useSlideTicksReach(areaRef, listRef, stage), [pointer2, setPointer] = ReactSlideTicks.useState(null);
     useSlideTicksFocusFollow(listRef, currentId);
     let currentIndex = slides.findIndex(
       (slide) => slide.id === currentId
@@ -249514,15 +255613,7 @@ function installEditorSlideTicks(runtime2) {
     return SlideTicksJsx.jsx("div", {
       ref: stripRef,
       "data-slides-ticks": "",
-      inert: covered && !focused,
       className: "pointer-events-none absolute inset-y-0 left-0 z-10 w-12",
-      onFocus: () => setFocused(true),
-      onBlur: (event) => {
-        if (event.relatedTarget === null && !document.hasFocus()) {
-          return;
-        }
-        setFocused(event.currentTarget.contains(event.relatedTarget));
-      },
       children: placement !== null ? SlideTicksJsx.jsx("div", {
         ref: areaRef,
         className: "absolute inset-x-0 flex flex-col justify-center",
@@ -249549,7 +255640,6 @@ function installEditorSlideTicks(runtime2) {
                 hoverable: false,
                 handover: "glide",
                 lazy: true,
-                disabled: covered,
                 children: [
                   SlideTicksJsx.jsx(runtime2.PreviewCard.Trigger, {
                     render: SlideTicksJsx.jsx("div", {
@@ -249591,7 +255681,7 @@ function installEditorSlideTicks(runtime2) {
                       "data-current": index4 === currentIndex ? "" : void 0,
                       className: "w-fit overflow-hidden rounded-[inherit] border border-strong dark:border-gray-150 dark:bg-gray-150 data-current:bg-fill-accent data-current:outline-2 data-current:-outline-offset-1 data-current:outline-fill-accent",
                       children: SlideTicksJsx.jsx(runtime2.SlideCanvas, {
-                        slide,
+                        slide: (0, runtime2.sourceSlideAtRest)(slide),
                         assets,
                         width: 148,
                         animate: false,
@@ -251215,6 +257305,7 @@ function installEditorEarlySlide(runtime2) {
         sidePad: pad
       } : {}
     });
+    let earlySlide = content.slides[early.id];
     return EarlySlideJsx.jsxs("div", {
       ref: callback,
       "aria-hidden": true,
@@ -251227,7 +257318,7 @@ function installEditorEarlySlide(runtime2) {
         memo4 !== "" ? EarlySlideJsx.jsx("style", {
           children: memo4
         }) : null,
-        value4.w > 0 ? EarlySlideJsx.jsx("div", {
+        value4.w > 0 && earlySlide !== void 0 ? EarlySlideJsx.jsx("div", {
           style: {
             position: "absolute",
             left: -value6.x * value6.scale,
@@ -251238,7 +257329,7 @@ function installEditorEarlySlide(runtime2) {
             transformOrigin: "top left"
           },
           children: EarlySlideJsx.jsx(runtime2.SlideSurface, {
-            slide: content.slides[early.id],
+            slide: (0, runtime2.sourceSlideAtRest)(earlySlide),
             assets: memo22,
             animate: false
           })
@@ -253055,17 +259146,61 @@ function installCommentsPin(runtime2) {
 
 function installCommentsHighlights(runtime2) {
   var CommentHighlightsJsx;
-  function CommentTargetHighlight({
-    rect
+  var COMMENT_RING_INSET;
+  var COMMENT_KEY_RING_BAND;
+  var COMMENT_RING_CLEAR_GROW;
+  var commentRingCutout;
+  var commentRingClipPath;
+  commentRingCutout = (rect, clear, slack) => {
+    if (!clear) {
+      return null;
+    }
+    let left = clear.left - rect.left - COMMENT_RING_CLEAR_GROW, top = clear.top - rect.top - COMMENT_RING_CLEAR_GROW, width = clear.width + 2 * COMMENT_RING_CLEAR_GROW, height2 = clear.height + 2 * COMMENT_RING_CLEAR_GROW, outside = left + width <= -slack || top + height2 <= -slack || left >= rect.width + slack || top >= rect.height + slack, inside = left >= COMMENT_RING_INSET && top >= COMMENT_RING_INSET && left + width <= rect.width - COMMENT_RING_INSET && top + height2 <= rect.height - COMMENT_RING_INSET, covers = left <= -slack && top <= -slack && left + width >= rect.width + slack && top + height2 >= rect.height + slack;
+    if (outside || inside || covers) {
+      return null;
+    }
+    let cornerRadius = (corner) => {
+      let radius = clear.radii?.[corner] ?? 0;
+      return radius > 0 ? Math.min(radius, clear.width / 2, clear.height / 2) + COMMENT_RING_CLEAR_GROW : 0;
+    };
+    return {
+      left,
+      top,
+      width,
+      height: height2,
+      radii: [cornerRadius(0), cornerRadius(1), cornerRadius(2), cornerRadius(3)]
+    };
+  };
+  commentRingClipPath = (rect, clear, slack) => {
+    let cutout = commentRingCutout(rect, clear, slack);
+    if (!cutout) {
+      return void 0;
+    }
+    let round2 = (value) => String(+value.toFixed(2)), [left, top, right, bottom] = [
+      cutout.left,
+      cutout.top,
+      cutout.left + cutout.width,
+      cutout.top + cutout.height
+    ], [topLeft, topRight, bottomRight, bottomLeft] = cutout.radii, arc = (radius, x, y) => radius > 0 ? "A" + round2(radius) + " " + round2(radius) + " 0 0 1 " + round2(x) + " " + round2(y) : "";
+    return 'path(evenodd, "M-99999 -99999H99999V99999H-99999Z ' + ("M" + round2(left + topLeft) + " " + round2(top) + "H" + round2(right - topRight) + arc(topRight, right, top + topRight) + "V" + round2(bottom - bottomRight) + arc(bottomRight, right - bottomRight, bottom) + "H" + round2(left + bottomLeft) + arc(bottomLeft, left, bottom - bottomLeft) + "V" + round2(top + topLeft) + arc(topLeft, left + topLeft, top) + "Z") + '")';
+  };
+  function CommentHoverRing({
+    rect,
+    clear
   }) {
     return CommentHighlightsJsx.jsx("div", {
       "aria-hidden": true,
+      "data-testid": "comment-hover-ring",
       className: "pointer-events-none absolute rounded-sm border-[1.5px] border-editor-comment-target",
-      style: rect
+      style: {
+        ...rect,
+        clipPath: commentRingClipPath(rect, clear, 0)
+      }
     });
   }
-  function CommentKeyHighlight({
-    rect
+  function CommentKeyRing({
+    rect,
+    clear
   }) {
     return CommentHighlightsJsx.jsx("div", {
       "aria-hidden": true,
@@ -253073,7 +259208,8 @@ function installCommentsHighlights(runtime2) {
       className: "pointer-events-none absolute rounded-sm border-2 border-editor-comment-target",
       style: {
         ...rect,
-        boxShadow: "0 0 0 2px #fff"
+        boxShadow: "0 0 0 " + String(COMMENT_KEY_RING_BAND) + "px #fff",
+        clipPath: commentRingClipPath(rect, clear, COMMENT_KEY_RING_BAND)
       }
     });
   }
@@ -253093,12 +259229,51 @@ function installCommentsHighlights(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
-    "CommentTargetHighlight",
-    () => CommentTargetHighlight
+    "COMMENT_RING_INSET",
+    () => COMMENT_RING_INSET,
+    (value) => {
+      COMMENT_RING_INSET = value;
+    }
   );
-  bindRuntimeValue(runtime2, "CommentKeyHighlight", () => CommentKeyHighlight);
+  bindRuntimeValue(
+    runtime2,
+    "COMMENT_KEY_RING_BAND",
+    () => COMMENT_KEY_RING_BAND,
+    (value) => {
+      COMMENT_KEY_RING_BAND = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "COMMENT_RING_CLEAR_GROW",
+    () => COMMENT_RING_CLEAR_GROW,
+    (value) => {
+      COMMENT_RING_CLEAR_GROW = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "commentRingCutout",
+    () => commentRingCutout,
+    (value) => {
+      commentRingCutout = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "commentRingClipPath",
+    () => commentRingClipPath,
+    (value) => {
+      commentRingClipPath = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "CommentHoverRing", () => CommentHoverRing);
+  bindRuntimeValue(runtime2, "CommentKeyRing", () => CommentKeyRing);
   bindRuntimeValue(runtime2, "CommentKeyPin", () => CommentKeyPin);
   return () => {
+    COMMENT_RING_INSET = 2;
+    COMMENT_KEY_RING_BAND = 2;
+    COMMENT_RING_CLEAR_GROW = 1;
     CommentHighlightsJsx = (0, runtime2.toModuleNamespace)(
       (0, runtime2.loadJsxNamespace)(),
       1
@@ -254320,12 +260495,17 @@ function installCommentsSlideLayer(runtime2) {
         }
         ctl.exitMode?.();
       };
+      let exitOnNotesClick = (event) => {
+        if (event.target instanceof Element && event.target.closest("[data-stage-notes]") !== null) {
+          ctl.exitMode?.();
+        }
+      };
       document.addEventListener("pointerdown", callback30, true);
-      return () => document.removeEventListener(
-        "pointerdown",
-        callback30,
-        true
-      );
+      document.addEventListener("click", exitOnNotesClick, true);
+      return () => {
+        document.removeEventListener("pointerdown", callback30, true);
+        document.removeEventListener("click", exitOnNotesClick, true);
+      };
     }, [ctl, on2, keepsMode]);
     let ref17 = runtime2.ReactSlideComments.useRef(
       (0, runtime2.createCommentOperationToken)()
@@ -255075,7 +261255,7 @@ function installCommentsSlideLayer(runtime2) {
           handle: !!drawn && !marquee && !value7,
           kind: marquee ? "marquee" : value7 ? "thread" : "drawn"
         }) : null,
-        value && !marquee ? SlideCommentLayerJsx.jsx(runtime2.CommentTargetHighlight, {
+        value && !marquee ? SlideCommentLayerJsx.jsx(runtime2.CommentHoverRing, {
           rect: value
         }) : null,
         SlideCommentLayerJsx.jsx("div", {
@@ -255143,7 +261323,7 @@ function installCommentsSlideLayer(runtime2) {
           hidden: true,
           children: (0, runtime2.commentKeyboardInstructions)("element")
         }),
-        value25 && !marquee ? SlideCommentLayerJsx.jsx(runtime2.CommentKeyHighlight, {
+        value25 && !marquee ? SlideCommentLayerJsx.jsx(runtime2.CommentKeyRing, {
           rect: value25
         }) : null,
         value26 && !marquee ? SlideCommentLayerJsx.jsx(runtime2.CommentKeyPin, {
@@ -255262,7 +261442,9 @@ function installCommentsGridLayer(runtime2) {
   var GRID_COMMENT_AREA_MIN_SIZE_PX;
   var GRID_COMMENT_UNIT_RECT;
   var clampGridCommentFraction;
+  var gridCommentClearsEqual;
   var gridCommentPinsEqual;
+  var gridCommentTargetsEqual;
   function SlideGridCommentLayer({
     ctl,
     on: on2,
@@ -255344,8 +261526,10 @@ function installCommentsGridLayer(runtime2) {
       reveal,
       onRevealed
     };
-    let [value2, value3] = ReactGridComments.useState(null), callback = (input) => value3(
-      (input2) => (0, runtime2.parseCommentCell)(input2, input) ? input2 : input
+    let [value2, value3] = ReactGridComments.useState(
+      null
+    ), callback = (input) => value3(
+      (input2) => gridCommentTargetsEqual(input2, input) ? input2 : input
     ), [value4, value5] = ReactGridComments.useState(null), callback2 = (input) => value5(
       (input2) => (0, runtime2.parseCommentCell)(input2, input) ? input2 : input
     ), [value6, value7] = ReactGridComments.useState(null), callback3 = (input) => value7(
@@ -255391,7 +261575,27 @@ function installCommentsGridLayer(runtime2) {
         ref9.current.delete(input);
       }
       return value26;
-    }, callback5 = (input, options, context) => {
+    }, tileCountClear = (element, origin) => {
+      let badge = element.closest("[data-grid-tile]")?.querySelector(':scope > [data-kit="comment-count"]'), style = badge ? getComputedStyle(badge) : null;
+      if (!badge || !style || style.visibility === "hidden") {
+        return null;
+      }
+      let box = (0, runtime2.getCommentElementRect)(badge, origin), scale = badge.offsetWidth > 0 ? box.width / badge.offsetWidth : 1, length = (input) => /infinity/i.test(input) ? 1 / 0 : parseFloat(input);
+      return {
+        ...box,
+        radii: [
+          style.borderTopLeftRadius,
+          style.borderTopRightRadius,
+          style.borderBottomRightRadius,
+          style.borderBottomLeftRadius
+        ].map(
+          (input) => (input.endsWith("%") ? length(input) / 100 * box.width : length(input) * scale) || 0
+        )
+      };
+    }, ringTarget = (element, origin) => ({
+      rect: (0, runtime2.getCommentElementRect)(element, origin),
+      clear: tileCountClear(element, origin)
+    }), callback5 = (input, options, context) => {
       let value26 = context !== void 0 ? ref10.current.get(context) : void 0;
       if (value26 === null || value26?.isConnected) {
         return value26;
@@ -255526,9 +261730,7 @@ function installCommentsGridLayer(runtime2) {
         let current2 = ref3.current;
         if (current2 && !value11.drawing()) {
           let value36 = callback7(current2.x, current2.y);
-          callback(
-            value36 ? (0, runtime2.getCommentElementRect)(value36.el, bounds) : null
-          );
+          callback(value36 ? ringTarget(value36.el, bounds) : null);
         }
         let slides2 = ref.current.slides, value31 = slides2[0] ? callback4(slides2[0].id)?.getBoundingClientRect() : void 0, value32 = slides2.length > 1 ? callback4(
           slides2[slides2.length - 1].id
@@ -255551,7 +261753,7 @@ function installCommentsGridLayer(runtime2) {
         let current3 = ref18.current, value34 = current3 !== null ? ref2.current.find(
           (input) => input.id === current3
         ) : void 0, value35 = value34 ? callback20(value34.id, bounds) : null;
-        if (value34 && value35 && (value35.parked !== value34.parked || !(0, runtime2.parseCommentCell)(value35.rect, value34.rect))) {
+        if (value34 && value35 && (value35.parked !== value34.parked || !(0, runtime2.parseCommentCell)(value35.rect, value34.rect) || !gridCommentClearsEqual(value35.clear, value34.clear))) {
           value9(
             (input) => input.map(
               (input2) => input2.id === value34.id ? {
@@ -255981,11 +262183,11 @@ function installCommentsGridLayer(runtime2) {
       let activeElement2 = document.activeElement;
       return document.hasFocus() && (activeElement2 === null || activeElement2 === document.body || activeElement2 === document.documentElement || activeElement2 === containerRef.current || ref6.current?.contains(activeElement2) === true);
     }, callback20 = (input, options) => {
-      let value26 = callback4(input)?.getBoundingClientRect();
-      if (!value26) {
+      let value29 = callback4(input);
+      if (!value29) {
         return null;
       }
-      let state = {
+      let value26 = value29.getBoundingClientRect(), state = {
         left: value26.left - options.left,
         top: value26.top - options.top,
         width: value26.width,
@@ -255999,7 +262201,8 @@ function installCommentsGridLayer(runtime2) {
       if (value28) {
         return {
           rect: value28,
-          parked: false
+          parked: false,
+          clear: tileCountClear(value29, options)
         };
       } else {
         return {
@@ -256012,7 +262215,8 @@ function installCommentsGridLayer(runtime2) {
             width: 1,
             height: 1
           },
-          parked: true
+          parked: true,
+          clear: null
         };
       }
     }, callback21 = (input) => {
@@ -256331,10 +262535,7 @@ function installCommentsGridLayer(runtime2) {
         }
         let current = containerRef.current, value26 = callback7(input.clientX, input.clientY);
         callback(
-          value26 && current ? (0, runtime2.getCommentElementRect)(
-            value26.el,
-            current.getBoundingClientRect()
-          ) : null
+          value26 && current ? ringTarget(value26.el, current.getBoundingClientRect()) : null
         );
       },
       onPointerLeave: () => {
@@ -256351,8 +262552,9 @@ function installCommentsGridLayer(runtime2) {
           handle: !!drawn && !marquee && !value6,
           kind: marquee ? "marquee" : value6 ? "thread" : "drawn"
         }) : null,
-        value2 && !marquee ? GridCommentsJsx.jsx(runtime2.CommentTargetHighlight, {
-          rect: value2
+        value2 && !marquee ? GridCommentsJsx.jsx(runtime2.CommentHoverRing, {
+          rect: value2.rect,
+          clear: value2.clear
         }) : null,
         value8.map((input, options) => {
           let value26 = input.parked && value12 === input.id && value18 === input.id;
@@ -256406,6 +262608,17 @@ function installCommentsGridLayer(runtime2) {
                 if (containerRef.current) {
                   containerRef.current.scrollTop = containerRef.current.scrollLeft = 0;
                 }
+                let value28 = containerRef.current?.getBoundingClientRect(), value29 = value28 ? callback20(input.id, value28) : null;
+                if (value29) {
+                  value9(
+                    (input2) => input2.map(
+                      (input3) => input3.id === input.id ? {
+                        id: input3.id,
+                        ...value29
+                      } : input3
+                    )
+                  );
+                }
                 if (!value27) {
                   return;
                 }
@@ -256447,8 +262660,9 @@ function installCommentsGridLayer(runtime2) {
           hidden: true,
           children: runtime2.SCROLLED_OUT_COMMENT_TARGET_MESSAGE
         }),
-        value24 && !marquee ? GridCommentsJsx.jsx(runtime2.CommentKeyHighlight, {
-          rect: value24.rect
+        value24 && !marquee ? GridCommentsJsx.jsx(runtime2.CommentKeyRing, {
+          rect: value24.rect,
+          clear: value24.clear
         }) : null,
         value25 && !marquee ? GridCommentsJsx.jsx(runtime2.CommentKeyPin, {
           at: value25
@@ -256649,10 +262863,26 @@ function installCommentsGridLayer(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "gridCommentClearsEqual",
+    () => gridCommentClearsEqual,
+    (value) => {
+      gridCommentClearsEqual = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
     "gridCommentPinsEqual",
     () => gridCommentPinsEqual,
     (value) => {
       gridCommentPinsEqual = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "gridCommentTargetsEqual",
+    () => gridCommentTargetsEqual,
+    (value) => {
+      gridCommentTargetsEqual = value;
     }
   );
   bindRuntimeValue(
@@ -256681,9 +262911,11 @@ function installCommentsGridLayer(runtime2) {
       h: 1
     };
     clampGridCommentFraction = (fraction) => Math.min(1, Math.max(0, fraction));
+    gridCommentClearsEqual = (left, right) => (0, runtime2.parseCommentCell)(left, right) && String(left?.radii ?? "") === String(right?.radii ?? "");
     gridCommentPinsEqual = (left, right) => left === right || left.length === right.length && left.every(
-      (input, options) => input.id === right[options].id && input.parked === right[options].parked && (0, runtime2.parseCommentCell)(input.rect, right[options].rect)
+      (input, options) => input.id === right[options].id && input.parked === right[options].parked && (0, runtime2.parseCommentCell)(input.rect, right[options].rect) && gridCommentClearsEqual(input.clear, right[options].clear)
     );
+    gridCommentTargetsEqual = (left, right) => left === right || !!left && !!right && (0, runtime2.parseCommentCell)(left.rect, right.rect) && gridCommentClearsEqual(left.clear, right.clear);
   };
 }
 
@@ -260451,6 +266683,8 @@ function installEditorCopyProperties(runtime2) {
   var COPY_EFFECT_KEYS;
   var COPY_TEXT_STYLE_KEYS;
   var COPY_TYPE_SCALE_KEYS;
+  var COPY_RESET_VALUES;
+  var COPY_SOURCE_KEPT_KEYS;
   var COPY_NODE_PROPERTY_KEYS;
   var COPY_PROPERTY_GROUPS;
   var COPY_SELECT_ONE_HINT;
@@ -260480,8 +266714,9 @@ function installEditorCopyProperties(runtime2) {
     if ((0, runtime2.isConnectorNode)(node)) {
       return COPY_BORDER_KEYS;
     }
+    let isCopyable = (key) => (0, runtime2.blockedPropertyReason)(node, key) === void 0;
     if ((0, runtime2.isLineShapeNode)(node)) {
-      return [...COPY_EFFECT_KEYS, "borderColor"];
+      return [...COPY_EFFECT_KEYS, "borderColor"].filter(isCopyable);
     }
     let nodeKind = (0, runtime2.nodeStyleKind)(node);
     if (nodeKind === void 0) {
@@ -260502,7 +266737,7 @@ function installEditorCopyProperties(runtime2) {
           (0, runtime2.stylePropertyAppliesToNode)(
             key,
             nodeKind
-          )
+          ) && isCopyable(key)
         )
       ),
       ...COPY_NODE_PROPERTY_KEYS[node.kind] ?? []
@@ -260546,9 +266781,10 @@ function installEditorCopyProperties(runtime2) {
     let fontFamily = look.fontFamily;
     return typeof fontFamily === "object" && fontFamily !== null && "family" in fontFamily && typeof fontFamily.family === "string" ? fontFamily.family : void 0;
   }
-  function applyCopiedProperties(node, copied, theme) {
+  function applyCopiedProperties(node, copied, theme, sourceTextColor) {
+    let isSource = sourceTextColor !== void 0;
     if (isStyledOverlay(node)) {
-      let base = applyCopiedProperties(node.base, copied, theme);
+      let base = applyCopiedProperties(node.base, copied, theme, sourceTextColor);
       return base !== void 0 ? { ...node, base } : void 0;
     }
     let { family, look } = copied, keys = copyablePropertyKeys(node), hasValueInGroup = (key) => look[key] !== void 0 || COPY_PROPERTY_GROUPS.some(
@@ -260558,6 +266794,19 @@ function installEditorCopyProperties(runtime2) {
         (key) => key in look && (family === copiedPropertiesFamily(node) || hasValueInGroup(key))
       ).map((key) => [key, look[key]])
     );
+    if (isSource) {
+      delete patch.role;
+    }
+    if (isSource) {
+      for (let key of [
+        ...COPY_SOURCE_KEPT_KEYS,
+        ...node.kind === "table" ? ["color"] : []
+      ]) {
+        if (patch[key] === void 0) {
+          delete patch[key];
+        }
+      }
+    }
     if ("borderWidth" in patch && !("borderSides" in patch) && "borderSides" in look) {
       patch.borderWidth = Math.max(
         ...Object.values(
@@ -260642,7 +266891,11 @@ function installEditorCopyProperties(runtime2) {
       if (!(key in patch)) {
         continue;
       }
-      if (patch[key] === void 0) {
+      if (patch[key] === void 0 && key === "color" && isSource && updated.kind === "text" && (updated.color ?? updated.fill) !== void 0) {
+        Object.assign(updated, {
+          color: sourceTextColor
+        });
+      } else if (patch[key] === void 0) {
         Reflect.deleteProperty(updated, key);
       } else if (key !== "color" || (0, runtime2.isSlideColor)(String(patch[key]))) {
         Object.assign(updated, {
@@ -260651,12 +266904,40 @@ function installEditorCopyProperties(runtime2) {
       }
       delete patch[key];
     }
+    let keepsValue = (key) => isSource && node.style?.[key] !== void 0;
     if (updated.kind === "text" || updated.kind === "table") {
       for (let key of COPY_TYPE_SCALE_KEYS) {
-        if (patch[key] === (0, runtime2.typeScaleForRole)(updated.role ?? "body", theme)[key]) {
-          patch[key] = void 0;
+        if (key in patch) {
+          patch[key] = (0, runtime2.omitDefaultUnlessKept)(
+            keepsValue(key),
+            patch[key],
+            (0, runtime2.typeScaleForRole)(updated.role ?? "body", theme)[key]
+          );
         }
       }
+    }
+    for (let [key, resetValue] of Object.entries(COPY_RESET_VALUES)) {
+      if (key in patch && patch[key] === void 0) {
+        patch[key] = (0, runtime2.omitDefaultUnlessKept)(
+          keepsValue(key),
+          resetValue,
+          resetValue
+        );
+      }
+    }
+    if (COPY_BORDER_RADIUS_KEYS.every((key) => key in patch && patch[key] === void 0)) {
+      Object.assign(
+        patch,
+        (0, runtime2.borderRadiusPatch)(
+          {
+            tl: 0,
+            tr: 0,
+            br: 0,
+            bl: 0
+          },
+          isSource ? node.style : void 0
+        )
+      );
     }
     for (let key of ["color", "borderColor", "backgroundColor"]) {
       let value = patch[key];
@@ -260683,12 +266964,17 @@ function installEditorCopyProperties(runtime2) {
     );
   }
   function pasteCopiedProperties(slide, selections, copied, theme) {
-    let [fitted, changed] = [0, 0], effects = [], pasted = selections.reduce(
+    let [fitted, changed] = [0, 0], effects = [], sourceTextColor = (0, runtime2.sourceSlideHasNodeIds)(slide) ? (0, runtime2.slideTextColor)(slide.bg).toLowerCase() : void 0, pasted = selections.reduce(
       (current, selection) => (0, runtime2.updateSelectedNode)(
         current,
         selection,
         (node) => {
-          let updated = applyCopiedProperties(node, copied, theme);
+          let updated = applyCopiedProperties(
+            node,
+            copied,
+            theme,
+            sourceTextColor
+          );
           if (updated === void 0) {
             return node;
           }
@@ -260808,6 +267094,22 @@ function installEditorCopyProperties(runtime2) {
     () => COPY_TYPE_SCALE_KEYS,
     (value) => {
       COPY_TYPE_SCALE_KEYS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "COPY_RESET_VALUES",
+    () => COPY_RESET_VALUES,
+    (value) => {
+      COPY_RESET_VALUES = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "COPY_SOURCE_KEPT_KEYS",
+    () => COPY_SOURCE_KEPT_KEYS,
+    (value) => {
+      COPY_SOURCE_KEPT_KEYS = value;
     }
   );
   bindRuntimeValue(
@@ -260979,6 +267281,21 @@ function installEditorCopyProperties(runtime2) {
       "textAlign"
     ];
     COPY_TYPE_SCALE_KEYS = ["fontSize", "fontWeight", "lineHeight"];
+    COPY_RESET_VALUES = {
+      opacity: 1,
+      fontStyle: "normal",
+      textTransform: "none",
+      textDecorationLine: "none",
+      letterSpacing: 0
+    };
+    COPY_SOURCE_KEPT_KEYS = [
+      "fontFamily",
+      "fontVariantNumeric",
+      "textStrokeWidth",
+      "textStrokeColor",
+      "mixBlendMode",
+      "headerWeight"
+    ];
     COPY_NODE_PROPERTY_KEYS = {
       text: ["role", "color", "align", "fill"],
       icon: ["color"],
@@ -261168,6 +267485,14 @@ function installDocumentsArtifactDocument(runtime2) {
   var wornPeerColor;
   var subscribePeerColor;
   var useWornPeerColor;
+  var MAX_SAVED_SLIDE_LOG;
+  function recordSavedSlide(slide, as, stilled) {
+    let host = globalThis, log = host.__slidesSaved ??= [];
+    log.push({ slide, as, stilled });
+    if (log.length > MAX_SAVED_SLIDE_LOG) {
+      log.shift();
+    }
+  }
   function normalizeArtifactTitle(title) {
     if (typeof title === "string" && title.length > 0) {
       return (0, runtime2.truncateUtf16Safely)(title, MAX_ARTIFACT_TITLE_CHARS);
@@ -262575,9 +268900,19 @@ function installDocumentsArtifactDocument(runtime2) {
       useWornPeerColor = value;
     }
   );
+  bindRuntimeValue(
+    runtime2,
+    "MAX_SAVED_SLIDE_LOG",
+    () => MAX_SAVED_SLIDE_LOG,
+    (value) => {
+      MAX_SAVED_SLIDE_LOG = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "recordSavedSlide", () => recordSavedSlide);
   return () => {
     (0, runtime2.initializeCompiledPage)();
     (0, runtime2.initializeAssetStorage)();
+    MAX_SAVED_SLIDE_LOG = 200;
     MAX_ARTIFACT_TITLE_CHARS = 200;
     AUTOSAVE_RETRYING_MESSAGE = (0, runtime2.formatMessage)({
       defaultMessage: "Autosave failed \u2014 retrying.",
@@ -263622,17 +269957,14 @@ function installEditorCurrentSlide(runtime2) {
           currentSlideStorageKey(memoryScope, PANELS_PREFERENCE_PREFIX)
         ) ?? "null"
       );
-      if (typeof stored !== "object" || stored === null || !("notes" in stored && "notesH" in stored && "properties" in stored && "strip" in stored)) {
+      if (typeof stored !== "object" || stored === null || !("notes" in stored && "properties" in stored && "strip" in stored)) {
         return;
       }
-      let { notes, notesH, properties, strip } = stored;
+      let { notes, properties, strip } = stored;
       if (typeof notes !== "boolean" || typeof properties !== "boolean" || typeof strip !== "boolean" && strip !== null) {
         return;
       }
-      if (typeof notesH !== "number" || !Number.isFinite(notesH)) {
-        return;
-      }
-      return { notes, notesH, properties, strip };
+      return { notes, properties, strip };
     } catch {
       return;
     }
@@ -265174,6 +271506,10 @@ function installEditorTemplates(runtime2) {
         defaultMessage: "web embed disabled \u2014 it navigated away from its content",
         id: "xWQ5UwV1p7"
       }),
+      embedRefused: (0, runtime2.formatMessage)({
+        defaultMessage: "web embed not shown \u2014 it couldn\u2019t start safely here. Reload the page to try again.",
+        id: "HVMQwugs4y"
+      }),
       embedOffForPlayer: (0, runtime2.formatMessage)({
         defaultMessage: "web embed off while a video player is open",
         id: "wwm2xX5ZLi"
@@ -266086,211 +272422,6 @@ function installEditorRailPlacement(runtime2) {
   };
 }
 
-function installEditorRailPeek(runtime2) {
-  var ReactRailPeek;
-  var RAIL_PEEK_CLOSE_DELAY_MS;
-  var RAIL_PEEK_ATTRIBUTE;
-  var RAIL_PEEK_SELECTOR;
-  var RAIL_PEEK_HOVER_SELECTOR;
-  function useRailPeek(enabled, onClose) {
-    let [open4, setOpen] = ReactRailPeek.useState(false), closeTimerRef = ReactRailPeek.useRef(void 0), heldRef = ReactRailPeek.useRef(false), releaseHoldRef = ReactRailPeek.useRef(() => {
-    }), draggingRef = ReactRailPeek.useRef(false), onCloseRef = ReactRailPeek.useRef(onClose);
-    onCloseRef.current = onClose;
-    let cancelClose = ReactRailPeek.useCallback(() => {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = void 0;
-    }, []), close = ReactRailPeek.useCallback(() => {
-      cancelClose();
-      setOpen(false);
-    }, [cancelClose]), closeWhenIdle = ReactRailPeek.useCallback(() => {
-      if (draggingRef.current || document.querySelector("[data-mc-menu]") !== null) {
-        closeTimerRef.current = window.setTimeout(
-          closeWhenIdle,
-          RAIL_PEEK_CLOSE_DELAY_MS
-        );
-        return;
-      }
-      closeTimerRef.current = void 0;
-      if (document.querySelector(RAIL_PEEK_HOVER_SELECTOR) !== null) {
-        return;
-      }
-      onCloseRef.current?.();
-      setOpen(false);
-    }, []), scheduleClose = ReactRailPeek.useCallback(() => {
-      cancelClose();
-      closeTimerRef.current = window.setTimeout(
-        closeWhenIdle,
-        RAIL_PEEK_CLOSE_DELAY_MS
-      );
-    }, [cancelClose, closeWhenIdle]), openRef = ReactRailPeek.useRef(false);
-    openRef.current = open4;
-    ReactRailPeek.useEffect(() => {
-      if (enabled) {
-        return;
-      }
-      if (openRef.current) {
-        onCloseRef.current?.();
-      }
-      close();
-    }, [enabled, close]);
-    ReactRailPeek.useEffect(
-      () => () => {
-        cancelClose();
-        releaseHoldRef.current();
-      },
-      [cancelClose]
-    );
-    let holdUntilLeave = ReactRailPeek.useCallback(() => {
-      heldRef.current = true;
-      releaseHoldRef.current();
-      let callback = (event) => {
-        if (event.target instanceof Element && event.target.closest("[data-slides-rail-show]") !== null) {
-          return;
-        }
-        heldRef.current = false;
-        releaseHoldRef.current();
-      };
-      window.addEventListener("pointermove", callback, true);
-      releaseHoldRef.current = () => window.removeEventListener("pointermove", callback, true);
-    }, []);
-    ReactRailPeek.useEffect(() => {
-      if (!open4) {
-        return;
-      }
-      let onKeyDown = (event) => {
-        if (event.key !== "Escape" || event.defaultPrevented || event.isComposing || document.querySelector("[data-mc-menu]") !== null) {
-          return;
-        }
-        onCloseRef.current?.();
-        holdUntilLeave();
-        close();
-      }, onPointerOut = (event) => {
-        if (event.pointerType === "mouse" && event.relatedTarget === null) {
-          scheduleClose();
-        }
-      }, onPointerMove = (event) => {
-        if (event.pointerType !== "mouse" || event.buttons !== 0) {
-          return;
-        }
-        draggingRef.current = false;
-        if (closeTimerRef.current !== void 0) {
-          return;
-        }
-        if (!(event.target instanceof Element) || event.target.closest(RAIL_PEEK_SELECTOR + ", [data-mc-menu]") === null) {
-          scheduleClose();
-        }
-      }, onDragStart = () => {
-        draggingRef.current = true;
-      }, onDragEnd = () => {
-        draggingRef.current = false;
-        cancelClose();
-      };
-      window.addEventListener("keydown", onKeyDown);
-      window.addEventListener("pointerout", onPointerOut, true);
-      window.addEventListener("pointermove", onPointerMove, true);
-      window.addEventListener("dragstart", onDragStart, true);
-      window.addEventListener("dragend", onDragEnd, true);
-      return () => {
-        window.removeEventListener("keydown", onKeyDown);
-        window.removeEventListener("pointerout", onPointerOut, true);
-        window.removeEventListener("pointermove", onPointerMove, true);
-        window.removeEventListener("dragstart", onDragStart, true);
-        window.removeEventListener("dragend", onDragEnd, true);
-        void draggingRef.current;
-      };
-    }, [open4, close, scheduleClose, cancelClose, holdUntilLeave]);
-    let leftThePeek = (event) => !(event.relatedTarget instanceof Element && event.relatedTarget.closest(RAIL_PEEK_SELECTOR) !== null);
-    return {
-      peeking: open4 && enabled,
-      trigger: {
-        onPointerEnter: (event) => {
-          if (event.pointerType !== "mouse" || !enabled) {
-            return;
-          }
-          cancelClose();
-          if (!heldRef.current) {
-            setOpen(true);
-          }
-        },
-        onPointerLeave: (event) => {
-          if (event.pointerType !== "mouse") {
-            return;
-          }
-          heldRef.current = false;
-          if (open4 && leftThePeek(event)) {
-            scheduleClose();
-          }
-        }
-      },
-      panel: {
-        onPointerEnter: (event) => {
-          if (event.pointerType === "mouse") {
-            cancelClose();
-          }
-        },
-        onPointerLeave: (event) => {
-          if (event.pointerType === "mouse" && open4 && leftThePeek(event)) {
-            scheduleClose();
-          }
-        }
-      },
-      close,
-      holdUntilLeave
-    };
-  }
-  bindRuntimeValue(
-    runtime2,
-    "ReactRailPeek",
-    () => ReactRailPeek,
-    (value) => {
-      ReactRailPeek = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "RAIL_PEEK_CLOSE_DELAY_MS",
-    () => RAIL_PEEK_CLOSE_DELAY_MS,
-    (value) => {
-      RAIL_PEEK_CLOSE_DELAY_MS = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "RAIL_PEEK_ATTRIBUTE",
-    () => RAIL_PEEK_ATTRIBUTE,
-    (value) => {
-      RAIL_PEEK_ATTRIBUTE = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "RAIL_PEEK_SELECTOR",
-    () => RAIL_PEEK_SELECTOR,
-    (value) => {
-      RAIL_PEEK_SELECTOR = value;
-    }
-  );
-  bindRuntimeValue(
-    runtime2,
-    "RAIL_PEEK_HOVER_SELECTOR",
-    () => RAIL_PEEK_HOVER_SELECTOR,
-    (value) => {
-      RAIL_PEEK_HOVER_SELECTOR = value;
-    }
-  );
-  bindRuntimeValue(runtime2, "useRailPeek", () => useRailPeek);
-  return () => {
-    ReactRailPeek = (0, runtime2.toModuleNamespace)(
-      (0, runtime2.loadReactNamespace)(),
-      1
-    );
-    RAIL_PEEK_CLOSE_DELAY_MS = 180;
-    RAIL_PEEK_ATTRIBUTE = "data-slides-peek";
-    RAIL_PEEK_SELECTOR = "[" + RAIL_PEEK_ATTRIBUTE + "], .tb-card:has([" + RAIL_PEEK_ATTRIBUTE + "])";
-    RAIL_PEEK_HOVER_SELECTOR = "[" + RAIL_PEEK_ATTRIBUTE + "]:hover, .tb-card:has([" + RAIL_PEEK_ATTRIBUTE + "]):hover";
-  };
-}
-
 function installBridgeBottomToolbar(runtime2) {
   var ReactBottomToolbar;
   var BOTTOM_TOOLBAR_FLAG;
@@ -266409,6 +272540,9 @@ function installEditorApp(runtime2) {
   var EDITOR_TAB_TARGET_SELECTOR;
   var isCanvasEditorFocusTarget;
   var ACTIVE_SLIDES_VIEW_SWITCH_SELECTOR;
+  var SLIDES_VIEW_MENU_SELECTOR;
+  var EXPANDED_SLIDES_VIEW_MENU_SELECTOR;
+  var SLIDES_RAIL_CARD_ATTRIBUTE;
   var VIDEO_UPLOAD_TIMEOUT_MS;
   var ignoreGlobalFileDrop;
   var COPIED_VIDEO_OMISSION_MESSAGE;
@@ -266471,6 +272605,13 @@ function installEditorApp(runtime2) {
       }
     });
   }
+  function isAddSlideChord(event) {
+    if (typeof event.key !== "string" || !event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+      return false;
+    }
+    let nonLatinLetter = /^[\p{L}\p{M}]$/u.test(event.key) && !/\p{Script=Latin}/u.test(event.key);
+    return event.key.toLowerCase() === "m" || event.code === "KeyM" && nonLatinLetter;
+  }
   function railFocusReturnSelector(element) {
     let option = RAIL_FOCUSABLE_OPTION_SELECTOR;
     if (element.getAttribute("role") === "option") return option;
@@ -266479,7 +272620,8 @@ function installEditorApp(runtime2) {
     }
     let label = element.getAttribute("aria-label");
     if (label === null || element.closest("[data-rail-actions]") === null) return null;
-    return '[data-rail-actions] [aria-label="' + label.replace(/["\\]/g, "\\$&") + '"]';
+    if (element.matches(ACTIVE_SLIDES_VIEW_SWITCH_SELECTOR)) return ACTIVE_SLIDES_VIEW_SWITCH_SELECTOR;
+    return '[data-rail-actions] [aria-label="' + label.replace(/["\\]/g, "\\$&") + '"], ' + SLIDES_VIEW_MENU_SELECTOR;
   }
   function isTypingInField() {
     let active = document.activeElement;
@@ -267436,7 +273578,7 @@ function installEditorApp(runtime2) {
         setCreationPeek(false);
         requestAnimationFrame(() => {
           document.querySelector(
-            input ? "[data-slides-rail-hide]" : "[data-slides-rail-show]"
+            (input ? "[data-slides-rail-hide], " : "[data-slides-rail-show], ") + SLIDES_VIEW_MENU_SELECTOR
           )?.focus({
             preventScroll: true
           });
@@ -267631,7 +273773,9 @@ function installEditorApp(runtime2) {
     let phoneRemote = phoneRemoteFlag === true && host === void 0, [exportDelivery, setExportDelivery] = runtime2.reactd0.useState(null), [exportNotes, setExportNotes] = runtime2.reactd0.useState(null), [templatePickerOpen, setTemplatePickerOpen] = runtime2.reactd0.useState(false), [templatePickerReturnFocus, setTemplatePickerReturnFocus] = runtime2.reactd0.useState(void 0), openTemplatePicker = (input) => {
       setTemplatePickerReturnFocus(() => input?.returnFocus);
       setTemplatePickerOpen(true);
-    }, [insertMenuOpen, setInsertMenuOpen] = runtime2.reactd0.useState(false), [toolbarFolded, setToolbarFolded] = runtime2.reactd0.useState(false), compactInsert = smallCoarsePointer || toolbarFolded, [focusInsertMenuOnOpen, setFocusInsertMenuOnOpen] = runtime2.reactd0.useState(true), [insertOpenedByKey, setInsertOpenedByKey] = runtime2.reactd0.useState(true);
+    }, [insertMenuOpen, setInsertMenuOpen] = runtime2.reactd0.useState(false), [toolbarFolded, setToolbarFolded] = runtime2.reactd0.useState(false), compactInsert = smallCoarsePointer || toolbarFolded, [focusInsertMenuOnOpen, setFocusInsertMenuOnOpen] = runtime2.reactd0.useState(true), [insertOpenedByKey, setInsertOpenedByKey] = runtime2.reactd0.useState(true), insertMenuControlsRef = runtime2.reactd0.useRef(
+      null
+    );
     runtime2.reactd0.useEffect(() => {
       if (readOnly) {
         setTextEditState(null);
@@ -267639,7 +273783,17 @@ function installEditorApp(runtime2) {
         setInspectorOpen(false);
       }
     }, [readOnly]);
-    let editorZoomApiRef = runtime2.reactd0.useRef(null), editorScaleSubscribers = runtime2.reactd0.useRef(/* @__PURE__ */ new Set()), editorScaleRef = runtime2.reactd0.useRef(null), subscribeEditorScale = runtime2.reactd0.useCallback(
+    let editorZoomApiRef = runtime2.reactd0.useRef(null), focusSelectionOrSlide = runtime2.reactd0.useCallback(() => {
+      if (editorZoomApiRef.current?.focusSelection() !== true) {
+        editorZoomApiRef.current?.focusSlide();
+      }
+    }, []), showStageNotes = runtime2.reactd0.useCallback(
+      (rect) => editorZoomApiRef.current?.showUnder(rect),
+      []
+    ), panStageNotes = runtime2.reactd0.useCallback(
+      (dx, dy) => void editorZoomApiRef.current?.panUnder(dx, dy),
+      []
+    ), editorScaleSubscribers = runtime2.reactd0.useRef(/* @__PURE__ */ new Set()), editorScaleRef = runtime2.reactd0.useRef(null), subscribeEditorScale = runtime2.reactd0.useCallback(
       (input) => {
         editorScaleSubscribers.current.add(input);
         if (editorScaleRef.current !== null) {
@@ -267725,32 +273879,29 @@ function installEditorApp(runtime2) {
       window.addEventListener("resize", callback);
       return () => window.removeEventListener("resize", callback);
     }, [topRowLayout, phoneLayout]);
-    let notesShown = notesOpen && !gridOpen && !editingGridSlide, chatSlotReported = hostOffersChatToggle && !notesShown && !(phoneLayout && textEdit !== null), footToolbarShown = (topRowLayout || phoneLayout) && (!readOnlyOrPaused || chatSlotReported || commentButtonShown), wideViewport = (0, runtime2.useMediaQuery)("(min-width: 768px)"), chatMayCome = (0, runtime2.useHostMayOfferChatToggle)(wideViewport) && !notesShown, footToolbarReveal = (0, runtime2.useFootToolbarReveal)({
+    let stageNotesRoom = notesOpen && !editingGridSlide ? runtime2.STAGE_NOTES_ROOM : 0, chatSlotReported = hostOffersChatToggle && !(phoneLayout && textEdit !== null), footToolbarShown = (topRowLayout || phoneLayout) && (!readOnlyOrPaused || chatSlotReported || commentButtonShown), wideViewport = (0, runtime2.useMediaQuery)("(min-width: 768px)"), chatMayCome = (0, runtime2.useHostMayOfferChatToggle)(wideViewport), footToolbarReveal = (0, runtime2.useFootToolbarReveal)({
       shown: footToolbarShown,
       chatMayCome,
       slotReported: chatSlotReported
-    }), chatMayComeEver = (0, runtime2.useHostMayOfferChatToggle)(true), footRowFilled = (0, runtime2.useHostWitnessed)() && chatMayComeEver && topRowLayout && !chatSlotReported, [notesHeight, setNotesHeight] = runtime2.reactd0.useState(
-      panelsPreference?.notesH ?? runtime2.DEFAULT_SPEAKER_NOTES_EDITOR_HEIGHT
-    ), [thumbWidth, setThumbWidth] = runtime2.reactd0.useState(
+    }), chatMayComeEver = (0, runtime2.useHostMayOfferChatToggle)(true), footRowFilled = (0, runtime2.useHostWitnessed)() && chatMayComeEver && topRowLayout && !chatSlotReported, [thumbWidth, setThumbWidth] = runtime2.reactd0.useState(
       runtime2.readRailThumbWidthPreference
-    ), railGeometryRef = runtime2.reactd0.useRef(null), notesResizeGeometryRef = runtime2.reactd0.useRef(null), [inspectorOpen, setInspectorOpen] = runtime2.reactd0.useState(
+    ), [inspectorOpen, setInspectorOpen] = runtime2.reactd0.useState(
       panelsPreference?.properties === true && !gridRequested
-    ), [inspectorUnasked, setInspectorUnasked] = runtime2.reactd0.useState(inspectorOpen);
-    if (inspectorUnasked && !inspectorOpen) {
-      setInspectorUnasked(false);
+    ), [inspectorUnasked, setInspectorUnasked] = runtime2.reactd0.useState(inspectorOpen ? "start" : void 0);
+    if (inspectorUnasked !== void 0 && !inspectorOpen) {
+      setInspectorUnasked(void 0);
     }
     let [inspectorTab, setInspectorTab] = runtime2.reactd0.useState("properties");
     runtime2.reactd0.useEffect(() => {
       (0, runtime2.writeEditorPanelsPreference)(
         {
           notes: notesOpen,
-          notesH: notesHeight,
           properties: inspectorOpen,
           strip: stripPreferenceRef.current
         },
         host?.memoryScope
       );
-    }, [notesOpen, notesHeight, inspectorOpen, railDrawn, host?.memoryScope]);
+    }, [notesOpen, inspectorOpen, railDrawn, host?.memoryScope]);
     let inspectorContentRef = runtime2.reactd0.useRef(null), inspectorRegion = runtime2.reactd0.useCallback(
       () => inspectorContentRef.current?.closest(
         '[role="complementary"], [role="dialog"]'
@@ -267805,6 +273956,8 @@ function installEditorApp(runtime2) {
     }
     let focusInFoot = () => !gridOpen && (insertMenuRef.current?.contains(document.activeElement) === true || document.activeElement?.closest(
       "[data-mc-menu][data-slides-holds-foot-bar]"
+    ) != null || insertMenuRef.current?.querySelector(
+      EXPANDED_SLIDES_VIEW_MENU_SELECTOR
     ) != null), refocusRailShowRef = runtime2.reactd0.useRef(false), railDrawnRef = runtime2.reactd0.useRef(railDrawn);
     if (railDrawnRef.current !== railDrawn) {
       railDrawnRef.current = railDrawn;
@@ -267816,30 +273969,13 @@ function installEditorApp(runtime2) {
       }
       refocusRailShowRef.current = false;
       let value = requestAnimationFrame(
-        () => document.querySelector("[data-slides-rail-show]")?.focus({
+        () => document.querySelector(SLIDES_VIEW_MENU_SELECTOR)?.focus({
           preventScroll: true
         })
       );
       return () => cancelAnimationFrame(value);
     }, [railDrawn]);
-    let peekHadFocusRef = runtime2.reactd0.useRef(false), railPeek = (0, runtime2.useRailPeek)(
-      topRowLayout && !railDrawn && !gridShown && presentationStartIndex === null,
-      () => {
-        if (insertMenuRef.current?.contains(document.activeElement) === true) {
-          peekHadFocusRef.current = true;
-        }
-      }
-    );
-    runtime2.reactd0.useLayoutEffect(() => {
-      if (railPeek.peeking || !peekHadFocusRef.current) {
-        return;
-      }
-      peekHadFocusRef.current = false;
-      document.querySelector("[data-slides-rail-show]")?.focus({
-        preventScroll: true
-      });
-    }, [railPeek.peeking]);
-    let peekZIndex = (0, runtime2.useCdsLayerAwareZIndex)(20), railKeyboardFocusRef = runtime2.reactd0.useRef(false), [insertMenuRecentlyActive, setInsertMenuRecentlyActive] = runtime2.reactd0.useState(false), insertGestureActiveRef = runtime2.reactd0.useRef(false), lastInsertGestureAtRef = runtime2.reactd0.useRef(-1 / 0), insertGestureSequenceRef = runtime2.reactd0.useRef(0), pointerHeldRef = runtime2.reactd0.useRef(false);
+    let railKeyboardFocusRef = runtime2.reactd0.useRef(false), [insertMenuRecentlyActive, setInsertMenuRecentlyActive] = runtime2.reactd0.useState(false), insertGestureActiveRef = runtime2.reactd0.useRef(false), lastInsertGestureAtRef = runtime2.reactd0.useRef(-1 / 0), insertGestureSequenceRef = runtime2.reactd0.useRef(0), pointerHeldRef = runtime2.reactd0.useRef(false);
     runtime2.reactd0.useEffect(() => {
       let callback = () => {
         lastInsertGestureAtRef.current = performance.now();
@@ -267980,6 +274116,9 @@ function installEditorApp(runtime2) {
             false
           )) {
             setInspectorOpen(value2.panel);
+            if (value2.panel) {
+              setInspectorUnasked("start");
+            }
           }
           return;
         }
@@ -268032,9 +274171,9 @@ function installEditorApp(runtime2) {
       [commentMode, commentController.threads, slides]
     ), commentModePersistent = runtime2.reactd0.useCallback(
       (input) => insertMenuRef.current?.contains(input) === true || gridTransitionActiveRef.current && gridLeavingPanelRef.current?.contains(input) === true || input.closest(
-        "[data-slides-zoom], [data-mc-scrim], [data-slides-ticks], [" + runtime2.RAIL_PEEK_ATTRIBUTE + "]"
+        "[data-slides-zoom], [data-mc-scrim], [data-slides-ticks], [" + SLIDES_RAIL_CARD_ATTRIBUTE + "]"
       ) !== null || input.closest('[data-slides-foot-row="stage"]') !== null && input.closest("[data-tb-foot]") === null || input.closest(runtime2.OPEN_OVERLAY_SELECTOR) !== null && document.querySelector(
-        '[data-slides-zoom] [aria-expanded="true"]'
+        '[data-slides-zoom] [aria-expanded="true"], ' + EXPANDED_SLIDES_VIEW_MENU_SELECTOR
       ) !== null,
       []
     ), presentableSlides = runtime2.reactd0.useMemo(
@@ -268145,7 +274284,11 @@ function installEditorApp(runtime2) {
         deckTypeStyles,
         snapshot.meta.theme
       ]
-    ), slideHtmlError = currentSlide !== void 0 ? slideHtmlHold2(currentSlide.id) : void 0, currentSlideReadOnly = readOnly || slideHtmlError !== void 0, canShowEmptyCreation = !currentSlide && !readOnly && (documentStore.bootReport.htmlErrors ?? 0) === 0 && !hidingMovedDeck(), creationController = (0, runtime2.useSlideCreation)({
+    ), slideHtmlError = currentSlide !== void 0 ? slideHtmlHold2(currentSlide.id) : void 0, currentSlideReadOnly = readOnly || slideHtmlError !== void 0;
+    if (inspectorOpen && inspectorUnasked === void 0 && (currentSlideReadOnly || !currentSlide)) {
+      setInspectorUnasked("again");
+    }
+    let canShowEmptyCreation = !currentSlide && !readOnly && (documentStore.bootReport.htmlErrors ?? 0) === 0 && !hidingMovedDeck(), creationController = (0, runtime2.useSlideCreation)({
       doc: documentStore.doc,
       codec: codecState,
       readOnly,
@@ -268157,7 +274300,7 @@ function installEditorApp(runtime2) {
       (input) => input.as === "box"
     ) ?? false)), showAwaitingPlaceholder = resolvedAwaitingSlides && !creationCanShowPlaceholder, creationControllerRef = runtime2.reactd0.useRef(creationController);
     creationControllerRef.current = creationController;
-    let railSlidesShown = !editingGridSlide && (currentSlide !== void 0 || creationView.cells !== null), railSelectionLive = railSlidesShown && !gridOpen && presentationStartIndex === null && (railDrawn || railPeek.peeking);
+    let railSlidesShown = !editingGridSlide && (currentSlide !== void 0 || creationView.cells !== null), railSelectionLive = railSlidesShown && !gridOpen && presentationStartIndex === null && railDrawn;
     runtime2.reactd0.useEffect(() => {
       if (!railSelectionLive) {
         collapseSlideSelection();
@@ -268175,6 +274318,14 @@ function installEditorApp(runtime2) {
     undoRedoListenerRef.current = (kind) => {
       if (insertMenuRef.current?.contains(document.activeElement) === true) {
         refocusRailAfterRemoval(insertMenuRef);
+      }
+      let focusedElement = document.activeElement;
+      if (focusedElement !== null && focusedElement === document.querySelector(ACTIVE_SLIDE_SURFACE_SELECTOR)) {
+        requestAnimationFrame(() => {
+          if (document.activeElement === focusedElement) {
+            editorZoomApiRef.current?.focusSelection();
+          }
+        });
       }
       let order = documentStore.doc.content().order, restored = order.filter((input) => !slideOrderIds.includes(input)), removed = slideOrderIds.filter((input) => !order.includes(input));
       if (railSelectionLive && restored.length > 1) {
@@ -268305,8 +274456,10 @@ function installEditorApp(runtime2) {
     let creationPeekWanted = topRowLayout && smViewport && !presentationSheetOpen && stripPreferenceRef.current !== false && (creationPeek ? creationBuilding : creationWantsPeek && !creationPeekDismissedRef.current);
     if (creationPeekWanted !== creationPeek && !editorBusyPredicate()) {
       if (creationPeekWanted) {
-        let railSelector = "[data-slides-ticks], [" + runtime2.RAIL_PEEK_ATTRIBUTE + "]";
-        if (railPeek.peeking || document.activeElement?.closest(railSelector) != null || document.querySelector(":is(" + railSelector + "):hover") !== null) {
+        let railSelector = "[data-slides-ticks], [" + SLIDES_RAIL_CARD_ATTRIBUTE + "]";
+        if (document.activeElement?.closest(railSelector) != null || document.querySelector(
+          ":is(" + railSelector + "):hover, [" + SLIDES_RAIL_CARD_ATTRIBUTE + "] " + EXPANDED_SLIDES_VIEW_MENU_SELECTOR
+        ) !== null) {
           creationPeekDismissedRef.current = true;
         } else {
           setCreationPeek(true);
@@ -268395,6 +274548,7 @@ function installEditorApp(runtime2) {
           return false;
         }
         let previous = documentStore.getSlide(input.id);
+        (0, runtime2.keepPropertyFocusAcrossSlideChange)();
         documentStore.setSlide(input);
         if (documentStore.getSlide(input.id) !== previous) {
           lastEditedRevisionsRef.current.set(
@@ -269758,6 +275912,7 @@ function installEditorApp(runtime2) {
               return;
             }
             documentStore.setAssetEntry(value20, src);
+            (0, runtime2.keepPropertyFocusAcrossSlideChange)();
             documentStore.setSlide(value22);
             value23.drop();
           },
@@ -271321,10 +277476,10 @@ function installEditorApp(runtime2) {
       if (!value) {
         return [];
       }
-      let value2 = (0, runtime2.filterValidSelections)(
+      let value4 = (0, runtime2.filterValidSelections)(
         value,
         selection
-      ), items = [], current = editorElementRef.current, values = new Set(
+      ), value2 = (0, runtime2.sourceSlideHasNodeIds)(value) ? (0, runtime2.liftSelectionsToSource)(value, value4) : value4, items = [], current = editorElementRef.current, values = new Set(
         value2.filter((input) => {
           if (input.child === void 0) {
             return true;
@@ -271340,11 +277495,11 @@ function installEditorApp(runtime2) {
         value,
         value2
       )) {
-        let value4 = (0, runtime2.frameById)(value, value3.frameId);
-        if (!value4) {
+        let value42 = (0, runtime2.frameById)(value, value3.frameId);
+        if (!value42) {
           continue;
         }
-        let value5 = value3.child !== void 0 && (0, runtime2.isOverlayNode)(value4.node) && value3.child === 0;
+        let value5 = value3.child !== void 0 && (0, runtime2.isOverlayNode)(value42.node) && value3.child === 0;
         if (value3.child !== void 0 && !value5 && values.has(value3.frameId)) {
           continue;
         }
@@ -271357,7 +277512,7 @@ function installEditorApp(runtime2) {
             unit: value3.child === void 0 ? value3 : {
               frameId: value3.frameId
             },
-            frame: value4
+            frame: value42
           });
           continue;
         }
@@ -271586,7 +277741,7 @@ function installEditorApp(runtime2) {
       if (!value) {
         return;
       }
-      let value2 = (0, runtime2.groupSelectedUnits)(
+      let value2 = (0, runtime2.groupSelectedUnitsOnSource)(
         value,
         items,
         current.groupMeasure
@@ -271716,7 +277871,7 @@ function installEditorApp(runtime2) {
       if (!value || value2 === void 0) {
         return;
       }
-      let value3 = (input === "group" ? runtime2.groupSelectedUnits : runtime2.ungroupSelectedUnits)(value, selection, value2);
+      let value3 = (input === "group" ? runtime2.groupSelectedUnitsOnSource : runtime2.ungroupSelectedUnits)(value, selection, value2);
       if ("refused" in value3) {
         (0, runtime2.showToast)(value3.refused);
         return;
@@ -271809,7 +277964,7 @@ function installEditorApp(runtime2) {
       if (node?.kind !== "text") {
         return;
       }
-      let theme = snapshot.meta.theme, isOn = (input) => chord === "i" ? (0, runtime2.nodeIsItalic)(input) : chord === "u" ? (0, runtime2.nodeIsUnderlined)(input) : (0, runtime2.nodeIsBold)(input, theme), toggle = (input) => chord === "i" ? (0, runtime2.toggleNodeItalic)(input) : chord === "u" ? (0, runtime2.toggleNodeUnderline)(input) : (0, runtime2.toggleNodeBold)(
+      let theme = snapshot.meta.theme, keepsFields = (0, runtime2.sourceSlideHasNodeIds)(slide), isOn = (input) => chord === "i" ? (0, runtime2.nodeIsItalic)(input) : chord === "u" ? (0, runtime2.nodeIsUnderlined)(input) : (0, runtime2.nodeIsBold)(input, theme), toggle = (input) => chord === "i" ? (0, runtime2.toggleNodeItalic)(input, keepsFields) : chord === "u" ? (0, runtime2.toggleNodeUnderline)(input, keepsFields) : (0, runtime2.toggleNodeBold)(
         input,
         theme,
         (0, runtime2.resolveTypographyEmphasisVariant)(
@@ -271817,7 +277972,8 @@ function installEditorApp(runtime2) {
           currentTypeStyles,
           deckTypeStyles,
           theme
-        )
+        ),
+        keepsFields
       ), sample = chord === "u" ? units.map((input) => (0, runtime2.selectedNode)(slide, input)).find(
         (input) => input?.kind === "text" && input.style?.textDecorationLine !== "line-through"
       ) : void 0, turnOn = !isOn(sample?.kind === "text" ? sample : node), next = units.reduce(
@@ -271914,10 +278070,7 @@ function installEditorApp(runtime2) {
         if (!readOnly && (0, runtime2.isDuplicateShortcut)(event)) {
           event.preventDefault();
         }
-        let slideJumpKey = !(event.metaKey || event.ctrlKey || event.altKey) && (event.key === "Home" || event.key === "End" || /^[1-9]$/.test(event.key)) && (0, runtime2.hasOpenOverlay)() && [...document.querySelectorAll(runtime2.OPEN_OVERLAY_SELECTOR)].every(
-          (input) => (0, runtime2.isOverlayClosed)(input) || input.getAttribute("aria-label") === runtime2.JUMP_TO_SLIDE_KEYS_LABEL
-        );
-        if ((0, runtime2.hasOpenOverlay)() && !slideJumpKey) {
+        if ((0, runtime2.hasOpenOverlay)()) {
           return;
         }
         let gridOpenNow = gridOpenRef.current;
@@ -271973,9 +278126,6 @@ function installEditorApp(runtime2) {
             }
             return;
           }
-        }
-        if (slideJumpKey) {
-          return;
         }
         let enterOnObject = event.key === "Enter" && !event.repeat && !value2 && !event.shiftKey && !event.altKey && !insertMenuRecentlyActive && selection.length === 1 && (target === document.body || target.tabIndex < 0) && !editorHasBlockingOverlay();
         if (enterOnObject && (0, runtime2.canEmbedAnyVideoProvider)() && (0, runtime2.toggleClipHandle)(
@@ -272072,7 +278222,7 @@ function installEditorApp(runtime2) {
         if (event.key.startsWith("Arrow") && selection.length > 0 && value7) {
           event.preventDefault();
           let value11 = event.shiftKey ? 1 : 8, value12 = event.key === "ArrowLeft" ? -value11 : event.key === "ArrowRight" ? value11 : 0, value13 = event.key === "ArrowUp" ? -value11 : event.key === "ArrowDown" ? value11 : 0, values = new Set(
-            selection.filter((input) => input.child === void 0).map((input) => input.frameId)
+            (0, runtime2.filterValidSelections)(value8, selection).filter((input) => input.child === void 0).map((input) => input.frameId)
           );
           if (values.size === 0) {
             return;
@@ -272133,6 +278283,56 @@ function installEditorApp(runtime2) {
       slideSelection.selected,
       insertMenuRecentlyActive
     ]);
+    let addSlideRef = runtime2.reactd0.useRef(pickSlideTemplate);
+    addSlideRef.current = pickSlideTemplate;
+    let addSlideChordRef = runtime2.reactd0.useRef(
+      (_event, _fromSlideText) => {
+      }
+    );
+    addSlideChordRef.current = (event, fromSlideText) => {
+      if (event.defaultPrevented || event.isComposing || event.keyCode === 229 || !isAddSlideChord(event)) {
+        return;
+      }
+      let target = event.target, inSlideText = target.isContentEditable === true && target.closest("[data-slide-surface]") !== null;
+      if (inSlideText !== fromSlideText) {
+        return;
+      }
+      let inField = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT" || target.isContentEditable === true || target instanceof Element && target.getAttribute("role") === "textbox";
+      if (readOnly || saveStatus === "loading" || currentSlide === void 0 && saveStatus === "error" || hidingMovedDeck() || presentationStartIndex !== null || (0, runtime2.hasOpenOverlay)() || gridOpenRef.current || editingGridSlideRef.current || gridLeavingRef.current) {
+        return;
+      }
+      if (editorGestureHeld() || document.querySelector("[data-slides-rail-drag]") !== null || commentPress(target) || !inSlideText && (inField || textEdit !== null)) {
+        return;
+      }
+      event.preventDefault();
+      if (event.repeat) {
+        return;
+      }
+      if (inSlideText && editorZoomApiRef.current?.endTextEdit() === false) {
+        return;
+      }
+      editorZoomApiRef.current?.endCrop();
+      let focused = document.activeElement;
+      addSlideRef.current(
+        runtime2.SLIDE_TEMPLATES.find((template) => template.id === "blank").make()
+      );
+      if (insertMenuRef.current?.contains(focused) === true) {
+        refocusRailAfterRemoval(insertMenuRef);
+      } else if (focused instanceof HTMLElement && focused !== document.body) {
+        requestAnimationFrame(
+          () => void (focused.isConnected || findActiveCommentSlideTarget(null)?.focus({ preventScroll: true }))
+        );
+      }
+    };
+    runtime2.reactd0.useEffect(() => {
+      let onCapture = (event) => addSlideChordRef.current(event, true), onBubble = (event) => addSlideChordRef.current(event, false);
+      window.addEventListener("keydown", onCapture, true);
+      window.addEventListener("keydown", onBubble);
+      return () => {
+        window.removeEventListener("keydown", onCapture, true);
+        window.removeEventListener("keydown", onBubble);
+      };
+    }, []);
     runtime2.reactd0.useEffect(() => {
       if (presentationStartIndex !== null || !textToolOn && textEdit === null && selection.length === 0) {
         return;
@@ -272898,8 +279098,6 @@ function installEditorApp(runtime2) {
       settle: [
         railDrawn,
         railPlacement,
-        notesOpen,
-        notesHeight,
         thumbWidth,
         gridOpen,
         editingGridSlide,
@@ -272948,7 +279146,7 @@ function installEditorApp(runtime2) {
           editorZoomApiRef.current?.endTextEdit();
           (0, runtime2.blurEditingTargetForFind)(
             document,
-            "[data-notes-tray]"
+            "[data-stage-notes]"
           );
           findNavigationSequenceRef.current++;
           setCurrentSlideId(input);
@@ -272981,7 +279179,7 @@ function installEditorApp(runtime2) {
       isOurs: (input) => !ownsPageFind || (0, runtime2.canHandleSlidesFindShortcut)(input),
       ownsStepChord: handleClipboardShortcut,
       viewMoves: () => findNavigationSequenceRef.current,
-      restoreFocus: () => editorZoomApiRef.current?.focusSlide()
+      restoreFocus: focusSelectionOrSlide
     }), creationStageRef = runtime2.reactd0.useCallback(
       (input) => {
         editorElementRef.current = input;
@@ -272989,7 +279187,7 @@ function installEditorApp(runtime2) {
         setRailSlidesView(input);
       },
       [registerEditorElement, setRailSlidesView]
-    ), railFootGap = railPlacement === "left" && railDrawn && !editingGridSlide && !notesOpen && !footToolbarShown ? runtime2.RAIL_FOOT_GAP : 0, stageSideInset = topRowLayout && !railDrawn && currentSlide !== void 0 && !editingGridSlide ? Math.max(sideInset, runtime2.SLIDE_TICKS_GUTTER) : sideInset, getFittedSlideScale = runtime2.reactd0.useCallback(() => {
+    ), railFootGap = railPlacement === "left" && railDrawn && !editingGridSlide && !footToolbarShown ? runtime2.RAIL_FOOT_GAP : 0, stageSideInset = topRowLayout && !railDrawn && currentSlide !== void 0 && !editingGridSlide ? Math.max(sideInset, runtime2.SLIDE_TICKS_GUTTER) : sideInset, getFittedSlideScale = runtime2.reactd0.useCallback(() => {
       let value = editorElementRef.current?.getBoundingClientRect();
       if (value === void 0) {
         return;
@@ -272998,12 +279196,18 @@ function installEditorApp(runtime2) {
         w: value.width,
         h: Math.max(
           0,
-          value.height - topInset - pageOcclusionBand - railFootGap
+          value.height - topInset - pageOcclusionBand - railFootGap - stageNotesRoom
         ),
         top: topInset,
         sidePad: stageSideInset > 0 ? stageSideInset : void 0
       }).scale;
-    }, [topInset, stageSideInset, pageOcclusionBand, railFootGap]), designPaletteRef = runtime2.reactd0.useRef(
+    }, [
+      topInset,
+      stageSideInset,
+      pageOcclusionBand,
+      railFootGap,
+      stageNotesRoom
+    ]), designPaletteRef = runtime2.reactd0.useRef(
       EMPTY_EXTRA_EXPORT_FORMATS
     ), designPalette = runtime2.reactd0.useMemo(() => {
       if (liveGestureRef.current) {
@@ -273056,9 +279260,6 @@ function installEditorApp(runtime2) {
         );
       };
     }, [inspectorRegion]);
-    if (inspectorUnasked && !inspectorOpen) {
-      setInspectorUnasked(false);
-    }
     let inspectorWasOpenRef = runtime2.reactd0.useRef(inspectorOpen);
     runtime2.reactd0.useEffect(() => {
       let current = inspectorWasOpenRef.current;
@@ -273155,7 +279356,7 @@ function installEditorApp(runtime2) {
           }
           if (creationControllerRef.current.view.sheet !== "none") {
             return document.querySelector(
-              "[data-slides-rail-hide], [data-slides-rail-show]"
+              "[data-slides-rail-hide], [data-slides-rail-show], " + SLIDES_VIEW_MENU_SELECTOR
             );
           }
           if (lastInsertGestureAtRef.current === -1 / 0) {
@@ -273312,7 +279513,7 @@ function installEditorApp(runtime2) {
         inlineLocalDeckResources(presentableSlides, snapshot.assets)
       ]), value11 = Date.now() + runtime2.fontReadyTimeoutMs, licenceLists = input === "current" && extraExportFormats && usesLinkedFamily(value.slides, snapshot.faces, snapshot.fonts) ? (0, runtime2.loadGoogleFontLicences)({
         dir: runtime2.GOOGLE_FONT_LISTS_DIR,
-        deadline: Date.now() + FONT_LICENCE_LISTS_TIMEOUT_MS
+        deadline: Date.now() + EXPORT_FONT_DEADLINE_MS
       }) : void 0, value12 = input === "current" && extraExportFormats ? await value9(
         value8(document),
         value.slides,
@@ -273445,7 +279646,10 @@ function installEditorApp(runtime2) {
           (0, runtime2.initializeNotesPages)();
           return runtime2.notesPageExports;
         }) : void 0,
-        inlineLocalDeckResources(presentableSlides, snapshot.assets)
+        inlineLocalDeckResources(
+          presentableSlides.map(runtime2.sourceSlideAtRest),
+          snapshot.assets
+        )
       ]), value7 = (0, runtime2.defaultBodyTypographyStyle)(
         deckTypeStyles
       ), value8 = value2?.planNotesPages(
@@ -273782,7 +279986,7 @@ function installEditorApp(runtime2) {
         "png"
       ), callback = async (input) => {
         let value6 = await value4(
-          value2.slides[0],
+          (0, runtime2.sourceSlideAtRest)(value2.slides[0] ?? value),
           value2.assets,
           input.scale,
           {
@@ -274229,7 +280433,16 @@ function installEditorApp(runtime2) {
           SlidesAppJsx.jsx(runtime2.Menu.Item, {
             icon: "BookText",
             disabled: !speakerNotesAvailable && speakerNotesSession === null,
-            disabledReason: speakerNotesAvailable || speakerNotesSession !== null ? null : (0, runtime2.formatMessage)(
+            disabledReason: speakerNotesAvailable || speakerNotesSession !== null ? null : topRowLayout ? readOnly ? NO_DECK_SPEAKER_NOTES_MESSAGE : (0, runtime2.formatMessage)(
+              {
+                defaultMessage: "No speaker notes in this presentation yet\u2014to add them, open the {viewMenu} menu and choose {speakerNotes}",
+                id: "1ifTfaWNKu"
+              },
+              {
+                viewMenu: runtime2.VIEW_MENU_LABEL,
+                speakerNotes: runtime2.SPEAKER_NOTES_TOGGLE_LABEL
+              }
+            ) : (0, runtime2.formatMessage)(
               {
                 defaultMessage: "No speaker notes in this presentation yet\u2014add them under a slide ({speakerNotes}, by the thumbnails)",
                 id: "Dfm9g171BQ"
@@ -274239,7 +280452,7 @@ function installEditorApp(runtime2) {
             onClick: () => startPresentation(true),
             children: (0, runtime2.formatMessage)({
               defaultMessage: "Present with speaker notes",
-              id: "G/Qs4MCBIL"
+              id: "X0z4OEAT6o"
             })
           })
         ]
@@ -274422,7 +280635,9 @@ function installEditorApp(runtime2) {
                 defaultMessage: "That\u2019s as far out as the {canvas} view goes",
                 id: "SH96sWFFDc"
               },
-              { canvas: runtime2.CANVAS_LABEL }
+              {
+                canvas: topRowLayout ? runtime2.GRID_VIEW_LABEL : runtime2.CANVAS_LABEL
+              }
             ) : (0, runtime2.formatMessage)({
               defaultMessage: "Smaller than the slide fits \u2014 that\u2019s as far out as it goes",
               id: "tx68w396MZ"
@@ -274430,7 +280645,7 @@ function installEditorApp(runtime2) {
           },
           onPickScale: (input) => gridOpen ? gridZoomApiRef.current?.setScaleTo(input) : editorZoomApiRef.current?.setScaleTo(input),
           onFit: () => gridOpen ? gridZoomApiRef.current?.fitAll() : editorZoomApiRef.current?.returnToFit(),
-          onStepZoom: (input) => (gridOpen ? gridZoomApiRef.current : editorZoomApiRef.current)?.stepZoom(input === 1 ? 1.25 : 0.8),
+          onStepZoom: (direction) => (gridOpen ? gridZoomApiRef.current : editorZoomApiRef.current)?.stepZoom(direction),
           undo: readOnly ? void 0 : undoHistory,
           zoomRowsDisabled: stageCanShowSlide,
           zoomRowsDisabledTip: (0, runtime2.formatMessage)({
@@ -274445,7 +280660,7 @@ function installEditorApp(runtime2) {
             },
             {
               keys: ZOOM_KEYBOARD_SHORTCUT_LABEL,
-              canvas: runtime2.CANVAS_LABEL
+              canvas: topRowLayout ? runtime2.GRID_VIEW_LABEL : runtime2.CANVAS_LABEL
             }
           ) : (0, runtime2.formatMessage)(
             {
@@ -274569,119 +280784,127 @@ function installEditorApp(runtime2) {
           )
         )
       ]
-    }), insertControls = compactInsert ? SlidesAppJsx.jsx("span", {
-      className: "contents",
-      onPointerDownCapture: () => setInsertOpenedByKey(false),
-      onKeyDownCapture: () => setInsertOpenedByKey(true),
-      onClickCapture: (input) => {
-        if (pointerOutsideMenu(input)) {
-          setInsertOpenedByKey(
-            (0, runtime2.isKeyboardOrPrimaryActivation)(input)
-          );
-        }
-      },
-      children: SlidesAppJsx.jsxs(runtime2.ToolbarPopover, {
-        iconOnly: true,
-        caret: true,
-        icon: "Add",
-        label: INSERT_LABEL,
-        disabled: insertMenuDisabled && !phoneLayout,
-        tip: phoneLayout ? (0, runtime2.formatMessage)({
-          defaultMessage: "Add a slide, or insert text, an image or video, a table, a shape or a line",
-          id: "Uu+qN4Xgfg"
-        }) : insertActionTip(
-          (0, runtime2.formatMessage)({
-            defaultMessage: "Insert text, an image or video, a table, a shape or a line",
-            id: "j6Z0f0+afk"
-          }),
-          (0, runtime2.formatMessage)({
-            defaultMessage: "Insert onto the selected slide",
-            id: "7PvaPstt6w"
-          })
-        ),
-        side: insertMenuSide,
-        finalFocus: smallCoarsePointer || insertOpenedByKey,
-        children: [
-          phoneLayout ? SlidesAppJsx.jsxs(SlidesAppJsx.Fragment, {
-            children: [
-              SlidesAppJsx.jsx(runtime2.Menu.Item, {
-                icon: "Add",
-                onClick: () => slideActions.onAdd(),
-                children: ADD_SLIDE_LABEL
+    }), insertControls = compactInsert ? SlidesAppJsx.jsxs(SlidesAppJsx.Fragment, {
+      children: [
+        phoneLayout ? SlidesAppJsx.jsx(runtime2.FocusReturnOnUnmount, {
+          within: insertMenuControlsRef
+        }) : null,
+        SlidesAppJsx.jsx("span", {
+          ref: insertMenuControlsRef,
+          className: "contents",
+          onPointerDownCapture: () => setInsertOpenedByKey(false),
+          onKeyDownCapture: () => setInsertOpenedByKey(true),
+          onClickCapture: (input) => {
+            if (pointerOutsideMenu(input)) {
+              setInsertOpenedByKey(
+                (0, runtime2.isKeyboardOrPrimaryActivation)(input)
+              );
+            }
+          },
+          children: SlidesAppJsx.jsxs(runtime2.ToolbarPopover, {
+            iconOnly: true,
+            caret: true,
+            icon: "Add",
+            label: INSERT_LABEL,
+            disabled: insertMenuDisabled && !phoneLayout,
+            tip: phoneLayout ? (0, runtime2.formatMessage)({
+              defaultMessage: "Add a slide, or insert text, an image or video, a table, a shape or a line",
+              id: "Uu+qN4Xgfg"
+            }) : insertActionTip(
+              (0, runtime2.formatMessage)({
+                defaultMessage: "Insert text, an image or video, a table, a shape or a line",
+                id: "j6Z0f0+afk"
               }),
-              SlidesAppJsx.jsx(runtime2.Menu.Separator, {})
-            ]
-          }) : null,
-          SlidesAppJsx.jsx(runtime2.Menu.Item, {
-            ...phoneInsertItemProps,
-            icon: runtime2.textFindResultIcon,
-            onClick: () => insertText(),
-            children: (0, runtime2.formatMessage)({
-              defaultMessage: "Text",
-              id: "+Qww+Uk0bP"
-            })
-          }),
-          SlidesAppJsx.jsx(runtime2.Menu.Item, {
-            ...phoneInsertItemProps,
-            icon: "Image",
-            onClick: (input) => clickUploadInput(
-              (0, runtime2.isKeyboardOrPrimaryActivation)(input)
+              (0, runtime2.formatMessage)({
+                defaultMessage: "Insert onto the selected slide",
+                id: "7PvaPstt6w"
+              })
             ),
-            children: (0, runtime2.formatMessage)({
-              defaultMessage: "Image or video\u2026",
-              id: "uBALFfCpva"
-            })
-          }),
-          embeddableVideoProviders.length > 0 ? SlidesAppJsx.jsx(runtime2.Menu.Item, {
-            ...phoneInsertItemProps,
-            icon: "Upload",
-            onClick: (input) => clickUploadInput(
-              (0, runtime2.isKeyboardOrPrimaryActivation)(input),
-              videoUploadInputRef
-            ),
-            children: UPLOAD_VIDEO_LABEL
-          }) : null,
-          embeddableVideoProviders.length > 0 ? SlidesAppJsx.jsx(runtime2.Menu.Item, {
-            ...phoneInsertItemProps,
-            icon: "Recording",
-            onClick: (input) => void askVideoUrl(
-              (0, runtime2.isKeyboardOrPrimaryActivation)(input)
-            ),
-            children: EMBED_VIDEO_LINK_LABEL
-          }) : null,
-          SlidesAppJsx.jsx(runtime2.Menu.Item, {
-            ...phoneInsertItemProps,
-            icon: "Table",
-            onClick: (input) => insertTable({
-              byKey: (0, runtime2.isKeyboardOrPrimaryActivation)(input)
-            }),
-            children: (0, runtime2.formatMessage)({
-              defaultMessage: "Table",
-              id: "KuVEbmhtsi"
-            })
-          }),
-          phoneLayout ? SlidesAppJsx.jsxs(runtime2.Menu.Submenu, {
+            side: insertMenuSide,
+            finalFocus: smallCoarsePointer || insertOpenedByKey,
             children: [
-              SlidesAppJsx.jsx(runtime2.Menu.SubmenuTrigger, {
-                disabled: insertMenuDisabled,
-                icon: "Shapes",
+              phoneLayout ? SlidesAppJsx.jsxs(SlidesAppJsx.Fragment, {
+                children: [
+                  SlidesAppJsx.jsx(runtime2.Menu.Item, {
+                    icon: "Add",
+                    onClick: () => slideActions.onAdd(),
+                    children: ADD_SLIDE_LABEL
+                  }),
+                  SlidesAppJsx.jsx(runtime2.Menu.Separator, {})
+                ]
+              }) : null,
+              SlidesAppJsx.jsx(runtime2.Menu.Item, {
+                ...phoneInsertItemProps,
+                icon: runtime2.textFindResultIcon,
+                onClick: () => insertText(),
                 children: (0, runtime2.formatMessage)({
-                  defaultMessage: "Shapes",
-                  id: "UK+62Mf3TN"
+                  defaultMessage: "Text",
+                  id: "+Qww+Uk0bP"
                 })
               }),
-              SlidesAppJsx.jsx(runtime2.Menu.Popup, {
-                children: quickShapeMenuItems
+              SlidesAppJsx.jsx(runtime2.Menu.Item, {
+                ...phoneInsertItemProps,
+                icon: "Image",
+                onClick: (input) => clickUploadInput(
+                  (0, runtime2.isKeyboardOrPrimaryActivation)(input)
+                ),
+                children: (0, runtime2.formatMessage)({
+                  defaultMessage: "Image or video\u2026",
+                  id: "uBALFfCpva"
+                })
+              }),
+              embeddableVideoProviders.length > 0 ? SlidesAppJsx.jsx(runtime2.Menu.Item, {
+                ...phoneInsertItemProps,
+                icon: "Upload",
+                onClick: (input) => clickUploadInput(
+                  (0, runtime2.isKeyboardOrPrimaryActivation)(input),
+                  videoUploadInputRef
+                ),
+                children: UPLOAD_VIDEO_LABEL
+              }) : null,
+              embeddableVideoProviders.length > 0 ? SlidesAppJsx.jsx(runtime2.Menu.Item, {
+                ...phoneInsertItemProps,
+                icon: "Recording",
+                onClick: (input) => void askVideoUrl(
+                  (0, runtime2.isKeyboardOrPrimaryActivation)(input)
+                ),
+                children: EMBED_VIDEO_LINK_LABEL
+              }) : null,
+              SlidesAppJsx.jsx(runtime2.Menu.Item, {
+                ...phoneInsertItemProps,
+                icon: "Table",
+                onClick: (input) => insertTable({
+                  byKey: (0, runtime2.isKeyboardOrPrimaryActivation)(input)
+                }),
+                children: (0, runtime2.formatMessage)({
+                  defaultMessage: "Table",
+                  id: "KuVEbmhtsi"
+                })
+              }),
+              phoneLayout ? SlidesAppJsx.jsxs(runtime2.Menu.Submenu, {
+                children: [
+                  SlidesAppJsx.jsx(runtime2.Menu.SubmenuTrigger, {
+                    disabled: insertMenuDisabled,
+                    icon: "Shapes",
+                    children: (0, runtime2.formatMessage)({
+                      defaultMessage: "Shapes",
+                      id: "UK+62Mf3TN"
+                    })
+                  }),
+                  SlidesAppJsx.jsx(runtime2.Menu.Popup, {
+                    children: quickShapeMenuItems
+                  })
+                ]
+              }) : SlidesAppJsx.jsxs(SlidesAppJsx.Fragment, {
+                children: [
+                  SlidesAppJsx.jsx(runtime2.Menu.Separator, {}),
+                  quickShapeMenuItems
+                ]
               })
             ]
-          }) : SlidesAppJsx.jsxs(SlidesAppJsx.Fragment, {
-            children: [
-              SlidesAppJsx.jsx(runtime2.Menu.Separator, {}),
-              quickShapeMenuItems
-            ]
           })
-        ]
-      })
+        })
+      ]
     }) : SlidesAppJsx.jsxs(SlidesAppJsx.Fragment, {
       children: [
         SlidesAppJsx.jsx(runtime2.ToolbarButton, {
@@ -274863,21 +281086,18 @@ function installEditorApp(runtime2) {
       children: [
         insertControls,
         topRowLayout ? SlidesAppJsx.jsx(runtime2.FrameCommentButton, {
-          onScreen: !footToolbarReveal.held && presentationStartIndex === null
+          onScreen: !footToolbarReveal.held && presentationStartIndex === null,
+          handsKeyboardToPage: true
         }) : null
       ]
     }), collapseRail = () => {
-      if (document.querySelector("[data-slides-rail-hide]:hover") !== null) {
-        railPeek.holdUntilLeave();
-      }
       chooseRailOpen(false);
     }, railCardInGrid = (gridOpen || editingGridSlide) && !deckEmpty, railCard = topRowLayout && presentationStartIndex === null && (railCardInGrid || gridLeaving && !deckEmpty || !railDrawn && (!deckEmpty || creationView.cells !== null || creationView.addSlideOnStage)) ? SlidesAppJsx.jsx("div", {
       ...{
-        [runtime2.RAIL_PEEK_ATTRIBUTE]: ""
+        [SLIDES_RAIL_CARD_ATTRIBUTE]: ""
       },
       className: "contents",
       inert: gridLeaving,
-      ...railPeek.panel,
       children: SlidesAppJsx.jsx(runtime2.SlideRailToolbar, {
         placement: "card",
         readOnly,
@@ -274886,37 +281106,51 @@ function installEditorApp(runtime2) {
         onToggleNotes: () => setNotesOpen((input) => !input),
         notesDisabledReason: (gridOpen || editingGridSlide) && readOnly && !(0, runtime2.slidesHaveSpeakerNotes)(slides) ? NO_DECK_SPEAKER_NOTES_MESSAGE : void 0,
         gridOpen: railCardInGrid,
-        slideShortcut: gridOpen ? "esc" : void 0,
-        canvasShortcut: gridOpen ? void 0 : "shift+cmd+0",
         onSetGridOpen: setGridOpen,
         density: toolbarDensity,
-        sidebar: railCardInGrid ? {
+        thumbnailsRow: railCardInGrid ? {
           off: gridOpen ? CANVAS_VIEW_NO_THUMBNAIL_PANEL_MESSAGE : CANVAS_EDIT_NO_THUMBNAIL_PANEL_MESSAGE
-        } : {
-          onShow: () => {
-            railPeek.close();
-            chooseRailOpen(true);
-          },
-          ...railPeek.trigger
-        }
+        } : { onShow: () => chooseRailOpen(true) }
       })
     }) : void 0, toolbarExtras = topRowLayout ? railCard : phoneLayout ? void 0 : SlidesAppJsx.jsx(runtime2.ToolbarWhenVisible, {
       children: insertControls
     }), [footToolbarElement, setFootToolbarElement] = runtime2.reactd0.useState(null), foldedAtWidthRef = runtime2.reactd0.useRef(0), measureToolbarFoldRef = runtime2.reactd0.useRef(
       () => {
       }
-    );
+    ), restoreFootFocus = (toolbar) => {
+      if (!document.hasFocus() || !toolbar.contains(document.activeElement)) {
+        return () => {
+        };
+      }
+      let gestureActive = insertGestureActiveRef.current;
+      return () => {
+        if (document.activeElement !== document.body) {
+          return;
+        }
+        toolbar.querySelector(
+          'button:not([disabled]):not([data-comment-button]), [role="button"][aria-disabled="true"]'
+        )?.focus();
+        if (gestureActive) {
+          insertGestureActiveRef.current = true;
+        }
+      };
+    };
     runtime2.reactd0.useLayoutEffect(
       () => setToolbarFolded(false),
       [
         topRowLayout,
-        chatSlotReported,
         embeddableVideoProviders.length,
         gridOpen,
         footToolbarShown,
         touchLayout
       ]
     );
+    runtime2.reactd0.useLayoutEffect(() => {
+      if (footToolbarElement !== null) {
+        queueMicrotask(restoreFootFocus(footToolbarElement));
+      }
+      setToolbarFolded(false);
+    }, [chatSlotReported]);
     runtime2.reactd0.useLayoutEffect(() => {
       let toolbar = footToolbarElement, row = toolbar?.closest("[data-slides-foot-row]");
       measureToolbarFoldRef.current = () => {
@@ -274943,17 +281177,9 @@ function installEditorApp(runtime2) {
         if (!settle) {
           return setToolbarFolded(fold);
         }
-        let hadFocus = document.hasFocus() && toolbar.contains(document.activeElement), gestureActive = insertGestureActiveRef.current;
+        let restore = restoreFootFocus(toolbar);
         runtime2.reactDOMN3_.flushSync(() => setToolbarFolded(fold));
-        if (!hadFocus || toolbar.contains(document.activeElement)) {
-          return;
-        }
-        toolbar.querySelector(
-          'button:not([disabled]):not([data-comment-button]), [role="button"][aria-disabled="true"]'
-        )?.focus();
-        if (gestureActive) {
-          insertGestureActiveRef.current = true;
-        }
+        restore();
       };
       measureToolbarFoldRef.current = measure;
       measure(false);
@@ -275012,7 +281238,8 @@ function installEditorApp(runtime2) {
           ),
           children: [
             quiet ? SlidesAppJsx.jsx(runtime2.FrameCommentButton, {
-              onScreen: !footToolbarReveal.held && presentationStartIndex === null
+              onScreen: !footToolbarReveal.held && presentationStartIndex === null,
+              handsKeyboardToPage: true
             }) : saveStatus === "loading" ? SlidesAppJsx.jsx("fieldset", {
               disabled: true,
               "aria-busy": "true",
@@ -275187,9 +281414,8 @@ function installEditorApp(runtime2) {
           children: SlidesAppJsx.jsx(runtime2.ToolbarButton, {
             iconOnly: true,
             glyph: SlidesAppJsx.jsx(runtime2.Icon, {
-              name: "SidebarRight",
-              size: "auto",
-              className: "max-md:rotate-90"
+              name: "Sliders",
+              size: "auto"
             }),
             label: runtime2.PROPERTIES_LABEL,
             tip: gridOpen ? (0, runtime2.formatMessage)({
@@ -275212,7 +281438,7 @@ function installEditorApp(runtime2) {
           })
         })
       ]
-    }), renderSlideRail = (overPage) => SlidesAppJsx.jsx("div", {
+    }), renderSlideRail = () => SlidesAppJsx.jsx("div", {
       className: "contents",
       children: SlidesAppJsx.jsx(runtime2.SlideThumbnailRail, {
         rootRef: insertMenuRef,
@@ -275236,7 +281462,7 @@ function installEditorApp(runtime2) {
         onAdd: creationPeek ? (options) => openTemplatePickerFromRail(options?.returnFocus) : slideActions.onAdd,
         onDuplicateAt: (input2, options) => duplicateSlide(input2, options),
         onCollapse: collapseRail,
-        onEnterSlide: () => editorZoomApiRef.current?.focusSlide(),
+        onEnterSlide: focusSelectionOrSlide,
         gridOpen: false,
         onSetGridOpen: setGridOpen,
         notesOpen,
@@ -275247,1350 +281473,1324 @@ function installEditorApp(runtime2) {
         resize: phoneLayout ? void 0 : {
           canvas: editorElementRef,
           thumbW: thumbWidth,
-          onThumbW: setThumbWidth,
-          paneH: notesOpen ? (0, runtime2.clampSpeakerNotesEditorHeight)(notesHeight) : 0,
-          geometry: railGeometryRef
+          onThumbW: setThumbWidth
         },
         actionRow: !phoneLayout,
         actionsDensity: toolbarDensity,
-        overPage,
-        arriving: topRowLayout && gridLeaving && !overPage,
+        arriving: topRowLayout && gridLeaving,
         several: railSeveral
       })
-    }), slideRail = railDrawn && railSlidesShown ? renderSlideRail(false) : null;
+    }), slideRail = railDrawn && railSlidesShown ? renderSlideRail() : null;
     return SlidesAppJsx.jsx(runtime2.slideRendererMessagesContext.Provider, {
       value: runtime2.SLIDE_RENDERER_MESSAGES,
-      children: SlidesAppJsx.jsx(runtime2.slideSnapshotsEnabledContext.Provider, {
-        value: true,
-        children: SlidesAppJsx.jsx(runtime2.videoStillsContext.Provider, {
-          value: videoStills,
-          children: SlidesAppJsx.jsx(runtime2.SidePanelWidthContext.Provider, {
-            value: panelWidth,
-            children: SlidesAppJsx.jsx(runtime2.ComfortableChromeContext.Provider, {
-              value: topRowLayout,
-              children: SlidesAppJsx.jsxs(runtime2.ArtifactShell, {
-                doc: documentStore.doc,
-                undo: undoHistory,
-                undoShortcuts: presentationStartIndex === null && !readOnly,
-                toolbarExtras,
-                toolbarExtrasEnd,
-                toolbarTrailing,
-                toolbarUndoButtons: false,
-                toolbarLeadingFlat: railPeek.peeking && railSlidesShown,
-                toolbarTouchTargets: "square",
-                toolbarDensity: toolbarDensity ?? "compact",
-                toolbarVariant: host ? "docked" : "floating",
-                alwaysShowExtras: true,
-                skeleton: SlidesAppJsx.jsx(SlidesAppLoadingSkeleton, {
-                  doc: documentStore.doc,
-                  railOpen: railDrawn,
-                  placement: railPlacement,
-                  footBar: footToolbarShown,
-                  ticks: topRowLayout && !railDrawn
-                }),
-                skeletonFlush: true,
-                leading: host?.leading,
-                aboveContent: host?.aboveContent,
-                children: [
-                  SlidesAppJsx.jsx("style", {
-                    children: runtime2.SLIDES_PRINT_STYLES
-                  }),
-                  SlidesAppJsx.jsx(runtime2.HotRestoreRevealGate, {
-                    box: currentSlide === void 0 ? null : () => (slideSurface() ?? editorElementRef.current ?? gridViewElementRef.current?.querySelector(
-                      "[data-grid-surface]"
-                    ))?.getBoundingClientRect()
-                  }),
-                  fontCss !== "" ? SlidesAppJsx.jsx("style", {
-                    children: fontCss
-                  }) : null,
-                  SlidesAppJsx.jsx("span", {
-                    ref: railLayout.groundProbe,
-                    "aria-hidden": true,
-                    className: "hidden bg-editor-canvas"
-                  }),
-                  SlidesAppJsx.jsx("input", {
-                    ref: imageUploadInputRef,
-                    type: "file",
-                    accept: "image/*," + runtime2.videoFileAccept,
-                    className: "hidden",
-                    onChange: (event) => {
-                      let value = event.target.files?.[0];
-                      if (value) {
-                        insertImageFromInput(value, {
-                          byKey: uploadInvocationRef.current
-                        });
-                      }
-                      event.target.value = "";
-                    }
-                  }),
-                  SlidesAppJsx.jsx("input", {
-                    ref: videoUploadInputRef,
-                    type: "file",
-                    accept: runtime2.videoFileAccept,
-                    className: "hidden",
-                    onChange: (event) => {
-                      let value = event.target.files?.[0];
-                      if (value) {
-                        insertImageFromInput(value, {
-                          byKey: uploadInvocationRef.current
-                        });
-                      }
-                      event.target.value = "";
-                    }
-                  }),
-                  SlidesAppJsx.jsxs("div", {
-                    ref: gridLeaveStageRef,
-                    className: (0, runtime2.joinClassNames)(
-                      "flex h-full min-h-0 flex-col",
-                      topRowLayout && "relative"
-                    ),
-                    "data-enter-phase": gridEnterMotion ?? void 0,
+      children: SlidesAppJsx.jsx(runtime2.slideAccessibilityTreeContext.Provider, {
+        value: presentationStartIndex === null,
+        children: SlidesAppJsx.jsx(runtime2.SelectionMoreIconContext.Provider, {
+          value: "Sliders",
+          children: SlidesAppJsx.jsx(runtime2.slideSnapshotsEnabledContext.Provider, {
+            value: true,
+            children: SlidesAppJsx.jsx(runtime2.videoStillsContext.Provider, {
+              value: videoStills,
+              children: SlidesAppJsx.jsx(runtime2.SidePanelWidthContext.Provider, {
+                value: panelWidth,
+                children: SlidesAppJsx.jsx(runtime2.ComfortableChromeContext.Provider, {
+                  value: topRowLayout,
+                  children: SlidesAppJsx.jsxs(runtime2.ArtifactShell, {
+                    doc: documentStore.doc,
+                    undo: undoHistory,
+                    undoShortcuts: presentationStartIndex === null && !readOnly,
+                    toolbarExtras,
+                    toolbarExtrasEnd,
+                    toolbarTrailing,
+                    toolbarUndoButtons: false,
+                    toolbarTouchTargets: "square",
+                    toolbarDensity: toolbarDensity ?? "compact",
+                    toolbarVariant: host ? "docked" : "floating",
+                    alwaysShowExtras: true,
+                    skeleton: SlidesAppJsx.jsx(SlidesAppLoadingSkeleton, {
+                      doc: documentStore.doc,
+                      railOpen: railDrawn,
+                      placement: railPlacement,
+                      footBar: footToolbarShown,
+                      ticks: topRowLayout && !railDrawn
+                    }),
+                    skeletonFlush: true,
+                    leading: host?.leading,
+                    aboveContent: host?.aboveContent,
                     children: [
-                      gridGlideEnter && railPanelShownAtGridOpenRef.current ? SlidesAppJsx.jsx("div", {
-                        "aria-hidden": true,
-                        "data-slides-panel-slab": "",
-                        className: (0, runtime2.joinClassNames)(
-                          "pointer-events-none absolute inset-y-0 left-0 z-30 border-r border-border-line bg-panel",
-                          runtime2.RAIL_COLUMN_WIDTH_CLASS
-                        )
+                      SlidesAppJsx.jsx("style", {
+                        children: runtime2.SLIDES_PRINT_STYLES
+                      }),
+                      SlidesAppJsx.jsx(runtime2.HotRestoreRevealGate, {
+                        box: currentSlide === void 0 ? null : () => (slideSurface() ?? editorElementRef.current ?? gridViewElementRef.current?.querySelector(
+                          "[data-grid-surface]"
+                        ))?.getBoundingClientRect()
+                      }),
+                      fontCss !== "" ? SlidesAppJsx.jsx("style", {
+                        children: fontCss
                       }) : null,
+                      SlidesAppJsx.jsx("span", {
+                        ref: railLayout.groundProbe,
+                        "aria-hidden": true,
+                        className: "hidden bg-editor-canvas"
+                      }),
+                      SlidesAppJsx.jsx("input", {
+                        ref: imageUploadInputRef,
+                        type: "file",
+                        accept: "image/*," + runtime2.videoFileAccept,
+                        className: "hidden",
+                        onChange: (event) => {
+                          let value = event.target.files?.[0];
+                          if (value) {
+                            insertImageFromInput(value, {
+                              byKey: uploadInvocationRef.current
+                            });
+                          }
+                          event.target.value = "";
+                        }
+                      }),
+                      SlidesAppJsx.jsx("input", {
+                        ref: videoUploadInputRef,
+                        type: "file",
+                        accept: runtime2.videoFileAccept,
+                        className: "hidden",
+                        onChange: (event) => {
+                          let value = event.target.files?.[0];
+                          if (value) {
+                            insertImageFromInput(value, {
+                              byKey: uploadInvocationRef.current
+                            });
+                          }
+                          event.target.value = "";
+                        }
+                      }),
                       SlidesAppJsx.jsxs("div", {
-                        className: "relative min-h-0 flex-1",
-                        onPointerMove: (input) => {
-                          lastGridPointerRef.current = (gridOpen || editingGridSlide) && input.pointerType !== "touch" ? {
-                            clientX: input.clientX,
-                            clientY: input.clientY,
-                            at: Date.now()
-                          } : null;
-                          publishGridPointer(input);
-                        },
-                        onWheel: (input) => {
-                          if (gridOpen || editingGridSlide) {
-                            lastGridPointerRef.current = {
-                              clientX: input.clientX,
-                              clientY: input.clientY,
-                              at: Date.now()
-                            };
-                          }
-                        },
-                        onPointerLeave: (input) => {
-                          lastGridPointerRef.current = null;
-                          if ((gridOpen || editingGridSlide) && input.pointerType !== "touch") {
-                            cursorPublisherRef.current?.clear();
-                          }
-                        },
-                        onPointerDownCapture: (event) => {
-                          if (creationView.sheet !== "none" && currentSlide !== void 0 && isCanvasEditorFocusTarget(event.target)) {
-                            creationController.stageTouched();
-                          }
-                        },
-                        onKeyDownCapture: (event) => {
-                          if (creationView.sheet !== "none" && currentSlide !== void 0 && isCanvasEditorFocusTarget(event.target)) {
-                            creationController.stageTouched();
-                          }
-                        },
-                        onFocusCapture: (event) => {
-                          if (creationView.sheet !== "none" && currentSlide !== void 0 && isCanvasEditorFocusTarget(event.target)) {
-                            creationController.stageTouched();
-                          }
-                        },
+                        ref: gridLeaveStageRef,
+                        className: (0, runtime2.joinClassNames)(
+                          "flex h-full min-h-0 flex-col",
+                          topRowLayout && "relative"
+                        ),
+                        "data-enter-phase": gridEnterMotion ?? void 0,
                         children: [
-                          SlidesAppJsx.jsx(runtime2.FindBar, {
-                            ...findController.bar
-                          }),
-                          gridShown ? SlidesAppJsx.jsx("div", {
+                          gridGlideEnter && railPanelShownAtGridOpenRef.current ? SlidesAppJsx.jsx("div", {
+                            "aria-hidden": true,
+                            "data-slides-panel-slab": "",
                             className: (0, runtime2.joinClassNames)(
-                              "absolute inset-0",
-                              gridLeaving ? "z-20" : gridOpen ? "z-10" : "z-0"
-                            ),
-                            "data-slides-grid-leaving": gridLeaving ? "" : void 0,
-                            children: SlidesAppJsx.jsxs("div", {
-                              className: (0, runtime2.joinClassNames)(
-                                "flex h-full flex-col",
-                                gridLeaving && "pointer-events-none"
-                              ),
-                              children: [
-                                SlidesAppJsx.jsx("div", {
-                                  ref: registerGridElementAndRail,
-                                  className: "min-h-0 flex-1",
-                                  "aria-busy": presentationBusy && gridOpen ? true : void 0,
-                                  children: SlidesAppJsx.jsx(
-                                    runtime2.SlideGrid,
-                                    {
-                                      markLeave: topRowLayout,
-                                      directCamera: topRowLayout,
-                                      stagedEnter: gridGlideEnter,
-                                      onEntered: clearGridEnterMotion,
-                                      topInset: gridTopInset,
-                                      bottomInset: gridFootBandRef.current,
-                                      order: snapshot.meta.order,
-                                      sections: snapshot.sections,
-                                      slides: railSlides,
-                                      assets: snapshot.assets,
-                                      currentId: currentSlide?.id ?? null,
-                                      readOnly,
-                                      zoomApiRef: gridZoomApiRef,
-                                      onScaleChange: onGridScaleChange,
-                                      enterFrom: gridEnterFromRectRef.current,
-                                      startCamera: cameraPreferenceRef.current?.canvas === true ? cameraPreferenceRef.current.view : null,
-                                      unasked: cameraPreferenceRef.current?.canvas === true,
-                                      onCamera: saveCanvasCamera,
-                                      inert: editingGridSlide || gridLeaving && wasEditingWhenGridLeftRef.current,
-                                      behind: editingGridSlide && currentSlide ? currentSlide.id : null,
-                                      onSelectionChange: gridOpen && !gridLeaving ? setGridSelection : void 0,
-                                      notesShown: notesOpen,
-                                      notesEdit: notesEditGesture,
-                                      commentCounts: openCommentCounts,
-                                      commenting: commentMode && gridOpen,
-                                      commentLayer: !gridOpen || !commentMode ? gridCommentPinsShown ? (input) => SlidesAppJsx.jsx(
-                                        runtime2.GridCommentPinsLayer,
+                              "pointer-events-none absolute inset-y-0 left-0 z-30 border-r border-border-line bg-panel",
+                              runtime2.RAIL_COLUMN_WIDTH_CLASS
+                            )
+                          }) : null,
+                          SlidesAppJsx.jsxs("div", {
+                            className: "relative min-h-0 flex-1",
+                            onPointerMove: (input) => {
+                              lastGridPointerRef.current = (gridOpen || editingGridSlide) && input.pointerType !== "touch" ? {
+                                clientX: input.clientX,
+                                clientY: input.clientY,
+                                at: Date.now()
+                              } : null;
+                              publishGridPointer(input);
+                            },
+                            onWheel: (input) => {
+                              if (gridOpen || editingGridSlide) {
+                                lastGridPointerRef.current = {
+                                  clientX: input.clientX,
+                                  clientY: input.clientY,
+                                  at: Date.now()
+                                };
+                              }
+                            },
+                            onPointerLeave: (input) => {
+                              lastGridPointerRef.current = null;
+                              if ((gridOpen || editingGridSlide) && input.pointerType !== "touch") {
+                                cursorPublisherRef.current?.clear();
+                              }
+                            },
+                            onPointerDownCapture: (event) => {
+                              if (creationView.sheet !== "none" && currentSlide !== void 0 && isCanvasEditorFocusTarget(event.target)) {
+                                creationController.stageTouched();
+                              }
+                            },
+                            onKeyDownCapture: (event) => {
+                              if (creationView.sheet !== "none" && currentSlide !== void 0 && isCanvasEditorFocusTarget(event.target)) {
+                                creationController.stageTouched();
+                              }
+                            },
+                            onFocusCapture: (event) => {
+                              if (creationView.sheet !== "none" && currentSlide !== void 0 && isCanvasEditorFocusTarget(event.target)) {
+                                creationController.stageTouched();
+                              }
+                            },
+                            children: [
+                              SlidesAppJsx.jsx(runtime2.FindBar, {
+                                ...findController.bar
+                              }),
+                              gridShown ? SlidesAppJsx.jsx("div", {
+                                className: (0, runtime2.joinClassNames)(
+                                  "absolute inset-0",
+                                  gridLeaving ? "z-20" : gridOpen ? "z-10" : "z-0"
+                                ),
+                                "data-slides-grid-leaving": gridLeaving ? "" : void 0,
+                                children: SlidesAppJsx.jsxs("div", {
+                                  className: (0, runtime2.joinClassNames)(
+                                    "flex h-full flex-col",
+                                    gridLeaving && "pointer-events-none"
+                                  ),
+                                  children: [
+                                    SlidesAppJsx.jsx("div", {
+                                      ref: registerGridElementAndRail,
+                                      className: "min-h-0 flex-1",
+                                      "aria-busy": presentationBusy && gridOpen ? true : void 0,
+                                      children: SlidesAppJsx.jsx(
+                                        runtime2.SlideGrid,
                                         {
-                                          ...commentController,
-                                          slides,
-                                          containerRef: input,
+                                          name: topRowLayout ? runtime2.GRID_VIEW_LABEL : void 0,
+                                          markLeave: topRowLayout,
+                                          directCamera: topRowLayout,
+                                          stagedEnter: gridGlideEnter,
+                                          onEntered: clearGridEnterMotion,
                                           topInset: gridTopInset,
-                                          bottomInset: footRowFilled ? pageOcclusionBand : 0,
-                                          clipRef: editingGridSlide ? editorElementRef : void 0
-                                        }
-                                      ) : void 0 : (input) => SlidesAppJsx.jsx(
-                                        runtime2.SlideGridCommentLayer,
-                                        {
-                                          ...commentController,
-                                          slides,
-                                          typeStyles: allTypeStyles,
-                                          containerRef: input,
+                                          bottomInset: gridFootBandRef.current,
+                                          order: snapshot.meta.order,
+                                          sections: snapshot.sections,
+                                          slides: railSlides,
+                                          assets: snapshot.assets,
                                           currentId: currentSlide?.id ?? null,
-                                          keepsMode: commentModePersistent,
-                                          topInset: gridTopInset,
-                                          bottomInset: footRowFilled ? pageOcclusionBand : 0,
-                                          showSlide: showCommentSlide,
-                                          settling: commentViewSettling,
-                                          reveal: commentViewReveal,
-                                          onRevealed: () => setCommentViewReveal(null)
-                                        }
+                                          readOnly,
+                                          zoomApiRef: gridZoomApiRef,
+                                          onScaleChange: onGridScaleChange,
+                                          enterFrom: gridEnterFromRectRef.current,
+                                          startCamera: cameraPreferenceRef.current?.canvas === true ? cameraPreferenceRef.current.view : null,
+                                          unasked: cameraPreferenceRef.current?.canvas === true,
+                                          onCamera: saveCanvasCamera,
+                                          inert: editingGridSlide || gridLeaving && wasEditingWhenGridLeftRef.current,
+                                          behind: editingGridSlide && currentSlide ? currentSlide.id : null,
+                                          onSelectionChange: gridOpen && !gridLeaving ? setGridSelection : void 0,
+                                          notesShown: notesOpen,
+                                          notesEdit: notesEditGesture,
+                                          commentCounts: openCommentCounts,
+                                          commenting: commentMode && gridOpen,
+                                          commentLayer: !gridOpen || !commentMode ? gridCommentPinsShown ? (input) => SlidesAppJsx.jsx(
+                                            runtime2.GridCommentPinsLayer,
+                                            {
+                                              ...commentController,
+                                              slides,
+                                              containerRef: input,
+                                              topInset: gridTopInset,
+                                              bottomInset: footRowFilled ? pageOcclusionBand : 0,
+                                              clipRef: editingGridSlide ? editorElementRef : void 0
+                                            }
+                                          ) : void 0 : (input) => SlidesAppJsx.jsx(
+                                            runtime2.SlideGridCommentLayer,
+                                            {
+                                              ...commentController,
+                                              slides,
+                                              typeStyles: allTypeStyles,
+                                              containerRef: input,
+                                              currentId: currentSlide?.id ?? null,
+                                              keepsMode: commentModePersistent,
+                                              topInset: gridTopInset,
+                                              bottomInset: footRowFilled ? pageOcclusionBand : 0,
+                                              showSlide: showCommentSlide,
+                                              settling: commentViewSettling,
+                                              reveal: commentViewReveal,
+                                              onRevealed: () => setCommentViewReveal(null)
+                                            }
+                                          ),
+                                          peerLayer: touchLayout ? void 0 : (input, options) => {
+                                            let value = creationView.phase === "quiet" ? options.find(
+                                              (input2) => input2.id === agentSlideId
+                                            ) : void 0;
+                                            return SlidesAppJsx.jsxs(
+                                              SlidesAppJsx.Fragment,
+                                              {
+                                                children: [
+                                                  SlidesAppJsx.jsx(
+                                                    runtime2.GridPeerCursorLayers,
+                                                    {
+                                                      tiles: options,
+                                                      surfaceOf: scopedSlideKey,
+                                                      glyphScale: input
+                                                    }
+                                                  ),
+                                                  value !== void 0 ? SlidesAppJsx.jsx(
+                                                    runtime2.AgentCursor,
+                                                    {
+                                                      tint: "orange",
+                                                      label: AGENT_CURSOR_LABEL,
+                                                      at: {
+                                                        left: value.x + AGENT_CURSOR_OFFSET.left,
+                                                        top: value.y + AGENT_CURSOR_OFFSET.top
+                                                      },
+                                                      glyphScale: input
+                                                    }
+                                                  ) : null
+                                                ]
+                                              }
+                                            );
+                                          },
+                                          onCameraChange: republishGridPointerOnCameraChange,
+                                          onSelect: (input) => {
+                                            setCurrentSlideId(input);
+                                            setSelection([]);
+                                            setTextEditState(null);
+                                          },
+                                          onOpen: handleGridOpenSlide,
+                                          onClose: closeGridFromButton,
+                                          onMoveSlidesTo: (input, options, extra) => {
+                                            if (readOnly || documentStore.doc.readOnly()) {
+                                              return;
+                                            }
+                                            commitStructuralChange(
+                                              input.length > 1 ? "move slides" : "move slide",
+                                              (input2) => (0, runtime2.moveSlidesToSection)(
+                                                input2,
+                                                input,
+                                                options,
+                                                extra
+                                              )
+                                            );
+                                          },
+                                          ...slideActions,
+                                          onStartSectionWithSlides: (input, options) => {
+                                            commitStructuralChange(
+                                              "new section",
+                                              (input2) => (0, runtime2.moveSlidesIntoNewSection)(
+                                                input2,
+                                                input,
+                                                options
+                                              )
+                                            );
+                                          },
+                                          onMoveSections: (items, options) => {
+                                            commitStructuralChange(
+                                              items.length > 1 ? "move sections" : "move section",
+                                              (input) => (0, runtime2.moveSectionsToGap)(
+                                                input,
+                                                items,
+                                                options
+                                              )
+                                            );
+                                          },
+                                          onDeleteSlides: (input) => void deleteSlides(input),
+                                          onDuplicateSlides: duplicateSlides,
+                                          onCopySlides: copySlidesToClipboard,
+                                          onSetSlidesSkipped: setSlidesSkipped,
+                                          onSectionFromSlides: (input) => void commitStructuralChange(
+                                            "new section",
+                                            (input2) => (0, runtime2.createSectionFromSlides)(
+                                              input2,
+                                              input
+                                            )
+                                          ),
+                                          onSetSectionDescription: (input, options) => void commitStructuralChange(
+                                            "describe section",
+                                            (input2) => input === null ? input2.order[0] !== void 0 ? (0, runtime2.addSectionAtSlide)(
+                                              input2,
+                                              input2.order[0],
+                                              options
+                                            ) : void 0 : (0, runtime2.renameSection)(
+                                              input2,
+                                              input,
+                                              options
+                                            )
+                                          ),
+                                          onRemoveSection: (input) => void commitStructuralChange(
+                                            "remove section",
+                                            (input2) => (0, runtime2.deleteSection)(
+                                              input2,
+                                              input
+                                            )
+                                          ),
+                                          onAddSection: (input) => void commitStructuralChange(
+                                            "new section",
+                                            (input2) => (0, runtime2.appendEmptySection)(
+                                              input2,
+                                              input
+                                            )
+                                          )
+                                        },
+                                        gridMountGeneration
+                                      )
+                                    }),
+                                    gridLeaving && railPlacement === "bottom" ? SlidesAppJsx.jsx("aside", {
+                                      inert: true,
+                                      "aria-hidden": true,
+                                      className: (0, runtime2.joinClassNames)(
+                                        "shrink-0",
+                                        footPanelClassSheet
                                       ),
-                                      peerLayer: touchLayout ? void 0 : (input, options) => {
-                                        let value = creationView.phase === "quiet" ? options.find(
-                                          (input2) => input2.id === agentSlideId
-                                        ) : void 0;
-                                        return SlidesAppJsx.jsxs(
+                                      children: SlidesAppJsx.jsx("div", {
+                                        className: "contents",
+                                        children: SlidesAppJsx.jsx(
+                                          runtime2.SlideRailToolbar,
+                                          {
+                                            placement: railPlacement,
+                                            readOnly,
+                                            onAdd: slideActions.onAdd,
+                                            notesOpen,
+                                            onToggleNotes: () => {
+                                            },
+                                            ...wasEditingWhenGridLeftRef.current ? {} : {
+                                              notesDisabledReason: phoneLayout ? PHONE_SIDEWAYS_NOTES_MESSAGE : readOnly && !(0, runtime2.slidesHaveSpeakerNotes)(
+                                                slides
+                                              ) ? NO_DECK_SPEAKER_NOTES_MESSAGE : void 0
+                                            },
+                                            gridOpen: false,
+                                            onSetGridOpen: () => {
+                                            },
+                                            onCollapse: () => {
+                                            },
+                                            collapseDisabledReason: CANVAS_VIEW_NO_THUMBNAILS_MESSAGE,
+                                            density: toolbarDensity
+                                          }
+                                        )
+                                      })
+                                    }) : null
+                                  ]
+                                })
+                              }) : null,
+                              gridOpen ? presentationStartIndex !== null ? SlidesAppJsx.jsx("div", {
+                                className: "h-full bg-editor-canvas"
+                              }) : SlidesAppJsx.jsx(
+                                runtime2.SlideNavigationAnnouncement,
+                                {
+                                  slideKey: currentSlide?.id,
+                                  message: slideNavigationMessage
+                                }
+                              ) : SlidesAppJsx.jsx("div", {
+                                className: "relative z-10 h-full min-h-0",
+                                children: !currentSlide && hidingMovedDeck() ? SlidesAppJsx.jsx("div", {
+                                  className: "h-full bg-editor-canvas",
+                                  "data-testid": "mc-moved-deck"
+                                }) : !currentSlide && !creationOnEmptyDeck ? phoneLayout ? SlidesAppJsx.jsxs("div", {
+                                  className: "flex h-full min-h-0 flex-col",
+                                  children: [
+                                    SlidesAppJsx.jsx("div", {
+                                      ref: railLayout.stage,
+                                      className: "min-h-0 flex-1",
+                                      children: SlidesAppJsx.jsx(
+                                        EmptyPresentationView,
+                                        {
+                                          readOnly,
+                                          why: saveMessage,
+                                          busy: presentationBusy,
+                                          arriving: showAwaitingPlaceholder,
+                                          onAdd: addSlideFromRail
+                                        }
+                                      )
+                                    }),
+                                    footToolbar("row", true, true)
+                                  ]
+                                }) : SlidesAppJsx.jsx(EmptyPresentationView, {
+                                  readOnly,
+                                  why: saveMessage,
+                                  busy: presentationBusy,
+                                  arriving: showAwaitingPlaceholder,
+                                  onAdd: addSlideFromRail
+                                }) : SlidesAppJsx.jsxs("div", {
+                                  className: "relative flex h-full min-h-0",
+                                  children: [
+                                    railPlacement === "left" ? SlidesAppJsx.jsxs("div", {
+                                      className: "contents [:root[data-mc-presentation=sheet]_&]:hidden",
+                                      children: [
+                                        slideRail ?? (topRowLayout && currentSlide !== void 0 && !editingGridSlide ? SlidesAppJsx.jsx(
+                                          runtime2.SlideTicks,
+                                          {
+                                            slides,
+                                            assets: snapshot.assets,
+                                            currentId: currentSlide.id,
+                                            onSelect: selectRailSlide,
+                                            onEnterSlide: focusSelectionOrSlide,
+                                            stage: editorElementRef,
+                                            insetTop: topInset,
+                                            insetBottom: pageOcclusionBand + railFootGap + stageNotesRoom,
+                                            coverId: host === void 0 ? snapshot.cover : null,
+                                            commentCounts: openCommentCounts
+                                          }
+                                        ) : null)
+                                      ]
+                                    }) : null,
+                                    SlidesAppJsx.jsxs("div", {
+                                      className: "relative flex h-full min-h-0 min-w-0 flex-1 flex-col",
+                                      children: [
+                                        !currentSlide ? SlidesAppJsx.jsxs("div", {
+                                          className: "relative flex min-h-0 flex-1",
+                                          children: [
+                                            SlidesAppJsx.jsx("div", {
+                                              ref: creationStageRef,
+                                              "data-creation-stage": "",
+                                              className: "relative min-w-0 flex-1 bg-editor-canvas",
+                                              "aria-busy": presentationBusy && !showSlideContent ? true : void 0,
+                                              children: showSlideContent ? SlidesAppJsx.jsx(
+                                                "div",
+                                                {
+                                                  className: (0, runtime2.joinClassNames)(
+                                                    "absolute inset-0",
+                                                    creationView.toEmptyDeck && "sl-creation-empty",
+                                                    creationView.fromEmptyDeck && "sl-creation-empty-out"
+                                                  ),
+                                                  inert: creationView.fromEmptyDeck,
+                                                  children: SlidesAppJsx.jsx(
+                                                    EmptyPresentationView,
+                                                    {
+                                                      readOnly,
+                                                      why: saveMessage,
+                                                      busy: presentationBusy && !creationView.fromEmptyDeck,
+                                                      arriving: showAwaitingPlaceholder,
+                                                      onAdd: addSlideFromRail,
+                                                      still: creationView.fromEmptyDeck
+                                                    }
+                                                  )
+                                                }
+                                              ) : null
+                                            }),
+                                            topRowLayout ? footToolbar("stage") : creationView.addSlideOnStage ? SlidesAppJsx.jsx(
+                                              "div",
+                                              {
+                                                ref: creationRailRef,
+                                                className: "pointer-events-none absolute inset-x-0 bottom-3 z-30 flex justify-center pb-[var(--sl-safe-b,0px)] [:root[data-mc-presentation=sheet]_&]:hidden",
+                                                children: SlidesAppJsx.jsxs(
+                                                  runtime2.Surface,
+                                                  {
+                                                    elevation: runtime2.PANEL_ELEVATION,
+                                                    className: "pointer-events-auto flex items-center gap-0.5 rounded-full p-2.25 select-none",
+                                                    children: [
+                                                      SlidesAppJsx.jsx(
+                                                        runtime2.Button,
+                                                        {
+                                                          variant: "ghost",
+                                                          size: toolbarButtonSize,
+                                                          onClick: addSlideFromRail,
+                                                          children: ADD_SLIDE_LABEL
+                                                        }
+                                                      ),
+                                                      SlidesAppJsx.jsx(
+                                                        "span",
+                                                        {
+                                                          className: "mx-0.5 h-4 w-px bg-border-line"
+                                                        }
+                                                      ),
+                                                      SlidesAppJsx.jsx(
+                                                        runtime2.Button,
+                                                        {
+                                                          iconOnly: true,
+                                                          variant: "ghost",
+                                                          size: toolbarButtonSize,
+                                                          icon: "Slides",
+                                                          "aria-label": SHOW_SLIDE_THUMBNAILS_LABEL,
+                                                          "data-slides-rail-show": "",
+                                                          onClick: () => chooseRailOpen(
+                                                            true
+                                                          )
+                                                        }
+                                                      )
+                                                    ]
+                                                  }
+                                                )
+                                              }
+                                            ) : null
+                                          ]
+                                        }) : SlidesAppJsx.jsxs(
                                           SlidesAppJsx.Fragment,
                                           {
                                             children: [
-                                              SlidesAppJsx.jsx(
-                                                runtime2.GridPeerCursorLayers,
-                                                {
-                                                  tiles: options,
-                                                  surfaceOf: scopedSlideKey,
-                                                  glyphScale: input
-                                                }
-                                              ),
-                                              value !== void 0 ? SlidesAppJsx.jsx(
-                                                runtime2.AgentCursor,
-                                                {
-                                                  tint: "orange",
-                                                  label: AGENT_CURSOR_LABEL,
-                                                  at: {
-                                                    left: value.x + AGENT_CURSOR_OFFSET.left,
-                                                    top: value.y + AGENT_CURSOR_OFFSET.top
-                                                  },
-                                                  glyphScale: input
-                                                }
-                                              ) : null
-                                            ]
-                                          }
-                                        );
-                                      },
-                                      onCameraChange: republishGridPointerOnCameraChange,
-                                      onSelect: (input) => {
-                                        setCurrentSlideId(input);
-                                        setSelection([]);
-                                        setTextEditState(null);
-                                      },
-                                      onOpen: handleGridOpenSlide,
-                                      onClose: closeGridFromButton,
-                                      onMoveSlidesTo: (input, options, extra) => {
-                                        if (readOnly || documentStore.doc.readOnly()) {
-                                          return;
-                                        }
-                                        commitStructuralChange(
-                                          input.length > 1 ? "move slides" : "move slide",
-                                          (input2) => (0, runtime2.moveSlidesToSection)(
-                                            input2,
-                                            input,
-                                            options,
-                                            extra
-                                          )
-                                        );
-                                      },
-                                      ...slideActions,
-                                      onStartSectionWithSlides: (input, options) => {
-                                        commitStructuralChange(
-                                          "new section",
-                                          (input2) => (0, runtime2.moveSlidesIntoNewSection)(
-                                            input2,
-                                            input,
-                                            options
-                                          )
-                                        );
-                                      },
-                                      onMoveSections: (items, options) => {
-                                        commitStructuralChange(
-                                          items.length > 1 ? "move sections" : "move section",
-                                          (input) => (0, runtime2.moveSectionsToGap)(
-                                            input,
-                                            items,
-                                            options
-                                          )
-                                        );
-                                      },
-                                      onDeleteSlides: (input) => void deleteSlides(input),
-                                      onDuplicateSlides: duplicateSlides,
-                                      onCopySlides: copySlidesToClipboard,
-                                      onSetSlidesSkipped: setSlidesSkipped,
-                                      onSectionFromSlides: (input) => void commitStructuralChange(
-                                        "new section",
-                                        (input2) => (0, runtime2.createSectionFromSlides)(
-                                          input2,
-                                          input
-                                        )
-                                      ),
-                                      onSetSectionDescription: (input, options) => void commitStructuralChange(
-                                        "describe section",
-                                        (input2) => input === null ? input2.order[0] !== void 0 ? (0, runtime2.addSectionAtSlide)(
-                                          input2,
-                                          input2.order[0],
-                                          options
-                                        ) : void 0 : (0, runtime2.renameSection)(
-                                          input2,
-                                          input,
-                                          options
-                                        )
-                                      ),
-                                      onRemoveSection: (input) => void commitStructuralChange(
-                                        "remove section",
-                                        (input2) => (0, runtime2.deleteSection)(
-                                          input2,
-                                          input
-                                        )
-                                      ),
-                                      onAddSection: (input) => void commitStructuralChange(
-                                        "new section",
-                                        (input2) => (0, runtime2.appendEmptySection)(
-                                          input2,
-                                          input
-                                        )
-                                      )
-                                    },
-                                    gridMountGeneration
-                                  )
-                                }),
-                                gridLeaving && railPlacement === "bottom" ? SlidesAppJsx.jsx("aside", {
-                                  inert: true,
-                                  "aria-hidden": true,
-                                  className: (0, runtime2.joinClassNames)(
-                                    "shrink-0",
-                                    footPanelClassSheet
-                                  ),
-                                  children: SlidesAppJsx.jsx("div", {
-                                    className: "contents",
-                                    children: SlidesAppJsx.jsx(
-                                      runtime2.SlideRailToolbar,
-                                      {
-                                        placement: railPlacement,
-                                        readOnly,
-                                        onAdd: slideActions.onAdd,
-                                        notesOpen,
-                                        onToggleNotes: () => {
-                                        },
-                                        ...wasEditingWhenGridLeftRef.current ? {} : {
-                                          notesDisabledReason: phoneLayout ? PHONE_SIDEWAYS_NOTES_MESSAGE : readOnly && !(0, runtime2.slidesHaveSpeakerNotes)(
-                                            slides
-                                          ) ? NO_DECK_SPEAKER_NOTES_MESSAGE : void 0
-                                        },
-                                        gridOpen: false,
-                                        onSetGridOpen: () => {
-                                        },
-                                        onCollapse: () => {
-                                        },
-                                        collapseDisabledReason: CANVAS_VIEW_NO_THUMBNAILS_MESSAGE,
-                                        density: toolbarDensity
-                                      }
-                                    )
-                                  })
-                                }) : null
-                              ]
-                            })
-                          }) : null,
-                          gridOpen ? presentationStartIndex !== null ? SlidesAppJsx.jsx("div", {
-                            className: "h-full bg-editor-canvas"
-                          }) : SlidesAppJsx.jsx(
-                            runtime2.SlideNavigationAnnouncement,
-                            {
-                              slideKey: currentSlide?.id,
-                              message: slideNavigationMessage
-                            }
-                          ) : SlidesAppJsx.jsx("div", {
-                            className: "relative z-10 h-full min-h-0",
-                            children: !currentSlide && hidingMovedDeck() ? SlidesAppJsx.jsx("div", {
-                              className: "h-full bg-editor-canvas",
-                              "data-testid": "mc-moved-deck"
-                            }) : !currentSlide && !creationOnEmptyDeck ? phoneLayout ? SlidesAppJsx.jsxs("div", {
-                              className: "flex h-full min-h-0 flex-col",
-                              children: [
-                                SlidesAppJsx.jsx("div", {
-                                  ref: railLayout.stage,
-                                  className: "min-h-0 flex-1",
-                                  children: SlidesAppJsx.jsx(
-                                    EmptyPresentationView,
-                                    {
-                                      readOnly,
-                                      why: saveMessage,
-                                      busy: presentationBusy,
-                                      arriving: showAwaitingPlaceholder,
-                                      onAdd: addSlideFromRail
-                                    }
-                                  )
-                                }),
-                                footToolbar("row", true, true)
-                              ]
-                            }) : SlidesAppJsx.jsx(EmptyPresentationView, {
-                              readOnly,
-                              why: saveMessage,
-                              busy: presentationBusy,
-                              arriving: showAwaitingPlaceholder,
-                              onAdd: addSlideFromRail
-                            }) : SlidesAppJsx.jsxs("div", {
-                              className: "relative flex h-full min-h-0",
-                              children: [
-                                railPlacement === "left" ? SlidesAppJsx.jsxs("div", {
-                                  className: "contents [:root[data-mc-presentation=sheet]_&]:hidden",
-                                  children: [
-                                    slideRail ?? (topRowLayout && currentSlide !== void 0 && !editingGridSlide ? SlidesAppJsx.jsx(
-                                      runtime2.SlideTicks,
-                                      {
-                                        slides,
-                                        assets: snapshot.assets,
-                                        currentId: currentSlide.id,
-                                        onSelect: selectRailSlide,
-                                        onEnterSlide: () => editorZoomApiRef.current?.focusSlide(),
-                                        stage: editorElementRef,
-                                        insetTop: topInset,
-                                        insetBottom: pageOcclusionBand + railFootGap,
-                                        coverId: host === void 0 ? snapshot.cover : null,
-                                        commentCounts: openCommentCounts,
-                                        covered: railPeek.peeking
-                                      }
-                                    ) : null),
-                                    railPeek.peeking && railSlidesShown ? SlidesAppJsx.jsx("div", {
-                                      ...{
-                                        [runtime2.RAIL_PEEK_ATTRIBUTE]: ""
-                                      },
-                                      className: "sl-panel-peek absolute inset-y-0 left-0 flex bg-surface-popover shadow-popover",
-                                      style: {
-                                        zIndex: peekZIndex
-                                      },
-                                      ...railPeek.panel,
-                                      children: renderSlideRail(true)
-                                    }) : null
-                                  ]
-                                }) : null,
-                                SlidesAppJsx.jsxs("div", {
-                                  className: "relative flex h-full min-h-0 min-w-0 flex-1 flex-col",
-                                  children: [
-                                    !currentSlide ? SlidesAppJsx.jsxs("div", {
-                                      className: "relative flex min-h-0 flex-1",
-                                      children: [
-                                        SlidesAppJsx.jsx("div", {
-                                          ref: creationStageRef,
-                                          "data-creation-stage": "",
-                                          className: "relative min-w-0 flex-1 bg-editor-canvas",
-                                          "aria-busy": presentationBusy && !showSlideContent ? true : void 0,
-                                          children: showSlideContent ? SlidesAppJsx.jsx(
-                                            "div",
-                                            {
-                                              className: (0, runtime2.joinClassNames)(
-                                                "absolute inset-0",
-                                                creationView.toEmptyDeck && "sl-creation-empty",
-                                                creationView.fromEmptyDeck && "sl-creation-empty-out"
-                                              ),
-                                              inert: creationView.fromEmptyDeck,
-                                              children: SlidesAppJsx.jsx(
-                                                EmptyPresentationView,
-                                                {
-                                                  readOnly,
-                                                  why: saveMessage,
-                                                  busy: presentationBusy && !creationView.fromEmptyDeck,
-                                                  arriving: showAwaitingPlaceholder,
-                                                  onAdd: addSlideFromRail,
-                                                  still: creationView.fromEmptyDeck
-                                                }
-                                              )
-                                            }
-                                          ) : null
-                                        }),
-                                        topRowLayout ? footToolbar(
-                                          "stage",
-                                          !notesOpen
-                                        ) : creationView.addSlideOnStage ? SlidesAppJsx.jsx(
-                                          "div",
-                                          {
-                                            ref: creationRailRef,
-                                            className: "pointer-events-none absolute inset-x-0 bottom-3 z-30 flex justify-center pb-[var(--sl-safe-b,0px)] [:root[data-mc-presentation=sheet]_&]:hidden",
-                                            children: SlidesAppJsx.jsxs(
-                                              runtime2.Surface,
-                                              {
-                                                elevation: runtime2.PANEL_ELEVATION,
-                                                className: "pointer-events-auto flex items-center gap-0.5 rounded-full p-2.25 select-none",
-                                                children: [
-                                                  SlidesAppJsx.jsx(
-                                                    runtime2.Button,
-                                                    {
-                                                      variant: "ghost",
-                                                      size: toolbarButtonSize,
-                                                      onClick: addSlideFromRail,
-                                                      children: ADD_SLIDE_LABEL
-                                                    }
-                                                  ),
-                                                  SlidesAppJsx.jsx(
-                                                    "span",
-                                                    {
-                                                      className: "mx-0.5 h-4 w-px bg-border-line"
-                                                    }
-                                                  ),
-                                                  SlidesAppJsx.jsx(
-                                                    runtime2.Button,
-                                                    {
-                                                      iconOnly: true,
-                                                      variant: "ghost",
-                                                      size: toolbarButtonSize,
-                                                      icon: "Slides",
-                                                      "aria-label": SHOW_SLIDE_THUMBNAILS_LABEL,
-                                                      "data-slides-rail-show": "",
-                                                      onClick: () => chooseRailOpen(
-                                                        true
-                                                      )
-                                                    }
-                                                  )
-                                                ]
-                                              }
-                                            )
-                                          }
-                                        ) : null
-                                      ]
-                                    }) : SlidesAppJsx.jsxs(
-                                      SlidesAppJsx.Fragment,
-                                      {
-                                        children: [
-                                          showAwaitingPlaceholder ? SlidesAppJsx.jsx(
-                                            "div",
-                                            {
-                                              "data-testid": "slides-arriving-notice",
-                                              className: "mt-[var(--tb-overlay-h,0px)] shrink-0 px-3.5 py-1.5",
-                                              children: SlidesAppJsx.jsx(
-                                                runtime2.Callout,
-                                                {
-                                                  variant: "neutral",
-                                                  role: "none",
-                                                  children: formatPresentationBuildProgress(
-                                                    slides.length,
-                                                    slides.length + resolvedAwaitedSlideCount
-                                                  )
-                                                }
-                                              )
-                                            }
-                                          ) : null,
-                                          SlidesAppJsx.jsxs("div", {
-                                            role: "status",
-                                            className: "shrink-0",
-                                            children: [
-                                              pausedReadOnly ? SlidesAppJsx.jsx(
+                                              showAwaitingPlaceholder ? SlidesAppJsx.jsx(
                                                 "div",
                                                 {
-                                                  "data-testid": "slides-paused-notice",
-                                                  className: (0, runtime2.joinClassNames)(
-                                                    !showAwaitingPlaceholder && "mt-[var(--tb-overlay-h,0px)]",
-                                                    "px-3.5 py-1.5"
-                                                  ),
+                                                  "data-testid": "slides-arriving-notice",
+                                                  className: "mt-[var(--tb-overlay-h,0px)] shrink-0 px-3.5 py-1.5",
                                                   children: SlidesAppJsx.jsx(
                                                     runtime2.Callout,
                                                     {
-                                                      variant: "warning",
+                                                      variant: "neutral",
                                                       role: "none",
-                                                      children: saveMessage
+                                                      children: formatPresentationBuildProgress(
+                                                        slides.length,
+                                                        slides.length + resolvedAwaitedSlideCount
+                                                      )
                                                     }
                                                   )
                                                 }
                                               ) : null,
-                                              slideHtmlError !== void 0 ? SlidesAppJsx.jsx(
-                                                runtime2.DamagedSlideNotice,
+                                              SlidesAppJsx.jsxs("div", {
+                                                role: "status",
+                                                className: "shrink-0",
+                                                children: [
+                                                  pausedReadOnly ? SlidesAppJsx.jsx(
+                                                    "div",
+                                                    {
+                                                      "data-testid": "slides-paused-notice",
+                                                      className: (0, runtime2.joinClassNames)(
+                                                        !showAwaitingPlaceholder && "mt-[var(--tb-overlay-h,0px)]",
+                                                        "px-3.5 py-1.5"
+                                                      ),
+                                                      children: SlidesAppJsx.jsx(
+                                                        runtime2.Callout,
+                                                        {
+                                                          variant: "warning",
+                                                          role: "none",
+                                                          children: saveMessage
+                                                        }
+                                                      )
+                                                    }
+                                                  ) : null,
+                                                  slideHtmlError !== void 0 ? SlidesAppJsx.jsx(
+                                                    runtime2.DamagedSlideNotice,
+                                                    {
+                                                      slideId: currentSlide.id,
+                                                      scope: memoryScope,
+                                                      deckTitle: snapshot.meta.title,
+                                                      diagnostic: slideHtmlError,
+                                                      blank: currentSlide.frames.length === 0,
+                                                      canAsk: !readOnly || pausedEditing?.mayEdit === true,
+                                                      className: (0, runtime2.joinClassNames)(
+                                                        !showAwaitingPlaceholder && !pausedReadOnly && "mt-[var(--tb-overlay-h,0px)]",
+                                                        "px-3.5 py-1.5"
+                                                      )
+                                                    },
+                                                    currentSlide.id
+                                                  ) : null
+                                                ]
+                                              }),
+                                              SlidesAppJsx.jsx(
+                                                runtime2.SlideNavigationAnnouncement,
                                                 {
-                                                  slideId: currentSlide.id,
-                                                  scope: memoryScope,
-                                                  deckTitle: snapshot.meta.title,
-                                                  diagnostic: slideHtmlError,
-                                                  blank: currentSlide.frames.length === 0,
-                                                  canAsk: !readOnly || pausedEditing?.mayEdit === true,
-                                                  className: (0, runtime2.joinClassNames)(
-                                                    !showAwaitingPlaceholder && !pausedReadOnly && "mt-[var(--tb-overlay-h,0px)]",
-                                                    "px-3.5 py-1.5"
+                                                  slideKey: currentSlideId !== null ? currentSlide?.id : void 0,
+                                                  message: () => currentSlideIndex < 0 || presentationStartIndex !== null || document.activeElement?.closest(
+                                                    '[role="listbox"]'
+                                                  ) != null ? null : (0, runtime2.formatSlideOfCountAnnouncement)(
+                                                    currentSlideIndex,
+                                                    slides.length,
+                                                    (0, runtime2.slideTitleSnippet)(
+                                                      currentSlide
+                                                    )
                                                   )
-                                                },
-                                                currentSlide.id
-                                              ) : null
-                                            ]
-                                          }),
-                                          SlidesAppJsx.jsx(
-                                            runtime2.SlideNavigationAnnouncement,
-                                            {
-                                              slideKey: currentSlideId !== null ? currentSlide?.id : void 0,
-                                              message: () => currentSlideIndex < 0 || presentationStartIndex !== null || document.activeElement?.closest(
-                                                '[role="listbox"]'
-                                              ) != null ? null : (0, runtime2.formatSlideOfCountAnnouncement)(
-                                                currentSlideIndex,
-                                                slides.length,
-                                                (0, runtime2.slideTitleSnippet)(
-                                                  currentSlide
-                                                )
-                                              )
-                                            }
-                                          ),
-                                          SlidesAppJsx.jsxs("div", {
-                                            className: "relative flex min-h-0 flex-1",
-                                            children: [
-                                              SlidesAppJsx.jsxs(
-                                                "div",
-                                                {
-                                                  ref: creationStageRef,
-                                                  "data-slides-editor": "",
-                                                  className: "relative min-w-0 flex-1",
-                                                  children: [
-                                                    SlidesAppJsx.jsx(
-                                                      runtime2.SlideCanvasEditor,
-                                                      {
-                                                        startCamera: cameraPreferenceRef.current?.canvas === false ? cameraPreferenceRef.current.view : null,
-                                                        onCamera: saveSlideCamera,
-                                                        designColors: designPalette,
-                                                        slideColors: slidePalette,
-                                                        pickImage: currentSlideReadOnly ? void 0 : async (input) => (await prepareImageAsset(
-                                                          input
-                                                        )).src,
-                                                        slide: currentSlide,
-                                                        lookPreview: pendingLook?.(
-                                                          currentSlide
-                                                        ),
-                                                        slideNumber: slides.indexOf(
-                                                          currentSlide
-                                                        ) + 1,
-                                                        slideName: (0, runtime2.formatSlideOfCountAnnouncement)(
-                                                          currentSlideIndex,
-                                                          slides.length,
-                                                          (0, runtime2.slideTitleSnippet)(
-                                                            currentSlide
-                                                          )
-                                                        ),
-                                                        busy: presentationBusy,
-                                                        assets: snapshot.assets,
-                                                        pending: pendingUploads.filter(
-                                                          (input) => input.slideId === currentSlide.id
-                                                        ),
-                                                        covered: presentationStartIndex !== null,
-                                                        onPointerNorm: (input, options) => cursorPublisherRef.current?.move(
-                                                          scopedSlideKey(
-                                                            currentSlide.id
-                                                          ),
-                                                          input,
-                                                          options
-                                                        ),
-                                                        peerLayer: (input, options) => SlidesAppJsx.jsxs(
-                                                          SlidesAppJsx.Fragment,
+                                                }
+                                              ),
+                                              SlidesAppJsx.jsxs("div", {
+                                                className: "relative flex min-h-0 flex-1",
+                                                children: [
+                                                  SlidesAppJsx.jsxs(
+                                                    "div",
+                                                    {
+                                                      ref: creationStageRef,
+                                                      "data-slides-editor": "",
+                                                      className: "relative min-w-0 flex-1",
+                                                      children: [
+                                                        SlidesAppJsx.jsx(
+                                                          runtime2.SlideCanvasEditor,
                                                           {
-                                                            children: [
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.SlidePeerSelections,
-                                                                {
-                                                                  hosted: host?.presence !== void 0,
-                                                                  deck: memoryScope === "" ? null : (0, runtime2.frameContextId)(
-                                                                    memoryScope
-                                                                  ),
-                                                                  slideId: currentSlide.id,
-                                                                  measure: options,
-                                                                  scale: 1 / input
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.PeerCursors,
-                                                                {
-                                                                  surface: scopedSlideKey(
-                                                                    currentSlide.id
-                                                                  ),
-                                                                  toLocal: (input2, options2) => ({
-                                                                    left: input2 * runtime2.SLIDE_WIDTH,
-                                                                    top: options2 * runtime2.SLIDE_HEIGHT
-                                                                  }),
-                                                                  glyphScale: input
-                                                                }
-                                                              ),
-                                                              agentSlideId === currentSlide.id && creationView.phase === "quiet" ? SlidesAppJsx.jsx(
-                                                                runtime2.AgentCursor,
-                                                                {
-                                                                  tint: "orange",
-                                                                  label: AGENT_CURSOR_LABEL,
-                                                                  at: AGENT_CURSOR_OFFSET,
-                                                                  glyphScale: input
-                                                                }
-                                                              ) : null
-                                                            ]
-                                                          }
-                                                        ),
-                                                        deckCellCount: (0, runtime2.countDeckTableCells)(
-                                                          slides
-                                                        ),
-                                                        withinStyleBudget: canAddStyledNodes,
-                                                        selection,
-                                                        onSelectionChange: (input) => {
-                                                          setSelection(
-                                                            input
-                                                          );
-                                                          if (textEdit && !input.some(
-                                                            (input2) => input2.frameId === textEdit.frameId
-                                                          )) {
-                                                            setTextEditState(
-                                                              null
-                                                            );
-                                                          }
-                                                        },
-                                                        onLiveChange,
-                                                        onGestureEnd,
-                                                        dragLiveRef: dragActiveRef,
-                                                        textEdit,
-                                                        onTextEdit: (input) => {
-                                                          setTextEditState(
-                                                            input
-                                                          );
-                                                          if (input !== null) {
-                                                            setProtectedEditorSlide(
-                                                              currentSlide.id
-                                                            );
-                                                          }
-                                                        },
-                                                        onDropImage: dropFilesOnSlide,
-                                                        onReplaceImage: (input, options, context) => void uploadAndInsertImage(
-                                                          input,
-                                                          options,
-                                                          context
-                                                        ),
-                                                        faces: snapshot.faces,
-                                                        facesFull: fullFontFaces,
-                                                        fonts: snapshot.fonts,
-                                                        typeStyles: currentTypeStyles,
-                                                        deckTypeStyles,
-                                                        onDropInsert,
-                                                        onCropStart: () => stopTextTool(
-                                                          true
-                                                        ),
-                                                        returnTakenHint: textToolOn ? (0, runtime2.formatMessage)(
-                                                          {
-                                                            defaultMessage: "Text tool on. Press {key} to add a text box in the middle of the slide, or Escape to cancel.",
-                                                            id: "qGfs/tPl7n"
-                                                          },
-                                                          {
-                                                            key: (0, runtime2.shortcutKeyName)(
-                                                              (0, runtime2.isApplePlatform)() ? "return" : "enter"
-                                                            )
-                                                          }
-                                                        ) : void 0,
-                                                        onOpenInspector: (input) => {
-                                                          if (runtime2.ENABLE_OBJECT_PROPERTIES_MENU) {
-                                                            let [
-                                                              items,
-                                                              items2
-                                                            ] = [
-                                                              input.currentTarget,
-                                                              (0, runtime2.isKeyboardOrPrimaryActivation)(
-                                                                input
+                                                            startCamera: cameraPreferenceRef.current?.canvas === false ? cameraPreferenceRef.current.view : null,
+                                                            onCamera: saveSlideCamera,
+                                                            designColors: designPalette,
+                                                            slideColors: slidePalette,
+                                                            pickImage: currentSlideReadOnly ? void 0 : async (input) => (await prepareImageAsset(
+                                                              input
+                                                            )).src,
+                                                            slide: currentSlide,
+                                                            lookPreview: pendingLook?.(
+                                                              currentSlide
+                                                            ),
+                                                            slideNumber: slides.indexOf(
+                                                              currentSlide
+                                                            ) + 1,
+                                                            slideName: (0, runtime2.formatSlideOfCountAnnouncement)(
+                                                              currentSlideIndex,
+                                                              slides.length,
+                                                              (0, runtime2.slideTitleSnippet)(
+                                                                currentSlide
                                                               )
-                                                            ], bounds = items.getBoundingClientRect();
-                                                            openContextMenu(
-                                                              {
-                                                                x: bounds.left,
-                                                                y: bounds.bottom + 6,
-                                                                from: "more",
-                                                                keyboard: items2
-                                                              },
-                                                              selection
-                                                            );
-                                                            if (items2 && items.isConnected) {
-                                                              items.focus(
-                                                                {
-                                                                  preventScroll: true
-                                                                }
-                                                              );
-                                                            }
-                                                            return;
-                                                          }
-                                                          inspectorPointerInvocationRef.current = (0, runtime2.isKeyboardOrPrimaryActivation)(
-                                                            input
-                                                          );
-                                                          setInspectorTab(
-                                                            "properties"
-                                                          );
-                                                          setInspectorOpen(
-                                                            true
-                                                          );
-                                                        },
-                                                        moreMenu: runtime2.ENABLE_OBJECT_PROPERTIES_MENU ? {
-                                                          label: (0, runtime2.formatMessage)({
-                                                            defaultMessage: "More actions",
-                                                            id: "UBT/4o2Mgg"
-                                                          }),
-                                                          open: contextMenu?.at.from === "more"
-                                                        } : void 0,
-                                                        onDeleteSelection: currentSlideReadOnly ? void 0 : deleteSelection,
-                                                        onMenu: currentSlideReadOnly ? void 0 : openContextMenu,
-                                                        selectionMenuHidden: inspectorOpen,
-                                                        onChangeSlide,
-                                                        presenting: presentationStartIndex !== null,
-                                                        commenting: commentsOn,
-                                                        commentStop: commentController.ctl !== null,
-                                                        readOnly: currentSlideReadOnly,
-                                                        zoomApiRef: editorZoomApiRef,
-                                                        onScaleChange: setToolbarScale,
-                                                        bottomInset: pageOcclusionBand + railFootGap,
-                                                        topInset,
-                                                        sideInset,
-                                                        surround: editorSurround,
-                                                        onStageMoved: remeasureCommentsOnStageMove,
-                                                        stageOverlay: SlidesAppJsx.jsxs(
-                                                          SlidesAppJsx.Fragment,
-                                                          {
-                                                            children: [
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.SlideCommentLayer,
-                                                                {
-                                                                  ...commentController,
-                                                                  slide: currentSlide,
-                                                                  slides,
-                                                                  typeStyles: allTypeStyles,
-                                                                  containerRef: editorElementRef,
-                                                                  topInset,
-                                                                  bottomInset: footRowFilled ? pageOcclusionBand : 0,
-                                                                  hidden: presentationStartIndex !== null,
-                                                                  keepsMode: commentModePersistent,
-                                                                  remeasureRef: commentRemeasureRef,
-                                                                  pinsQuiet: gridLeaving
-                                                                }
+                                                            ),
+                                                            busy: presentationBusy,
+                                                            assets: snapshot.assets,
+                                                            pending: pendingUploads.filter(
+                                                              (input) => input.slideId === currentSlide.id
+                                                            ),
+                                                            covered: presentationStartIndex !== null,
+                                                            onPointerNorm: (input, options) => cursorPublisherRef.current?.move(
+                                                              scopedSlideKey(
+                                                                currentSlide.id
                                                               ),
-                                                              textToolOn ? SlidesAppJsx.jsx(
-                                                                TextToolLayer,
-                                                                {
-                                                                  overSlide,
-                                                                  startsOverSlide: () => slideSurface()?.matches(
-                                                                    ":hover"
-                                                                  ) ?? false,
-                                                                  keeps: (input) => input instanceof Node && (textButtonRef.current?.contains(
-                                                                    input
-                                                                  ) ?? false),
-                                                                  slideRect: () => slideSurface()?.getBoundingClientRect(),
-                                                                  lineHeight: () => bodyLineHeight() * (slideSurface()?.getBoundingClientRect().width ?? 0) / runtime2.SLIDE_WIDTH,
-                                                                  minWidth: () => MIN_TEXT_INSERT_WIDTH * (slideSurface()?.getBoundingClientRect().width ?? 0) / runtime2.SLIDE_WIDTH,
-                                                                  onPlace: placeTextAt,
-                                                                  onCancel: () => stopTextTool()
-                                                                }
-                                                              ) : null
-                                                            ]
-                                                          }
-                                                        )
-                                                      },
-                                                      editingGridSlide ? "in-place" : "plain"
-                                                    ),
-                                                    SlidesAppJsx.jsx(
-                                                      runtime2.CanvasContextMenu,
-                                                      {
-                                                        at: contextMenu?.at ?? null,
-                                                        objects: contextMenu?.objects ?? 0,
-                                                        fitLabel: fitViewLabel,
-                                                        copyLink: slideActions.onCopyLink !== void 0,
-                                                        refusals: contextMenu?.refusals ?? {},
-                                                        returnFocus: (input) => {
-                                                          if (input !== null && (input.closest(
-                                                            "[data-object-proxy]"
-                                                          ) === null || input.hasAttribute(
-                                                            "data-object-cursor"
-                                                          ))) {
-                                                            return input;
-                                                          }
-                                                          if (editorZoomApiRef.current?.focusSelection() !== true) {
-                                                            editorZoomApiRef.current?.focusSlide();
-                                                          }
-                                                          return null;
-                                                        },
-                                                        onCommand: runContextMenuCommand,
-                                                        onClose: () => setContextMenu(
-                                                          null
-                                                        )
-                                                      }
-                                                    ),
-                                                    topRowLayout ? footToolbar(
-                                                      "stage",
-                                                      !notesShown
-                                                    ) : !railDrawn && !editingGridSlide ? SlidesAppJsx.jsx(
-                                                      "div",
-                                                      {
-                                                        ref: creationRailRef,
-                                                        "data-slides-pager": "",
-                                                        className: (0, runtime2.joinClassNames)(
-                                                          "pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center [:root[data-mc-presentation=sheet]_&]:hidden",
-                                                          !notesOpen && "pb-[var(--sl-safe-b,0px)]",
-                                                          touchLayout && textEdit !== null && "invisible"
-                                                        ),
-                                                        children: SlidesAppJsx.jsxs(
-                                                          runtime2.Surface,
-                                                          {
-                                                            elevation: runtime2.PANEL_ELEVATION,
-                                                            className: "pointer-events-auto flex items-center gap-0.5 rounded-full p-2.25 select-none",
-                                                            children: [
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.Button,
-                                                                {
-                                                                  iconOnly: true,
-                                                                  variant: "ghost",
-                                                                  size: toolbarButtonSize,
-                                                                  icon: "CaretLeft",
-                                                                  "aria-label": (0, runtime2.formatMessage)({
-                                                                    defaultMessage: "Previous slide",
-                                                                    id: "9kFV3Etv1z"
-                                                                  }),
-                                                                  tooltip: currentSlideIndex <= 0 ? runtime2.FIRST_SLIDE_LABEL : (0, runtime2.formatMessage)(
+                                                              input,
+                                                              options
+                                                            ),
+                                                            peerLayer: (input, options) => SlidesAppJsx.jsxs(
+                                                              SlidesAppJsx.Fragment,
+                                                              {
+                                                                children: [
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.SlidePeerSelections,
                                                                     {
-                                                                      defaultMessage: "Previous slide (\u2190)",
-                                                                      id: "0l7VgYDKPW"
+                                                                      hosted: host?.presence !== void 0,
+                                                                      deck: memoryScope === "" ? null : (0, runtime2.frameContextId)(
+                                                                        memoryScope
+                                                                      ),
+                                                                      slideId: currentSlide.id,
+                                                                      measure: options,
+                                                                      scale: 1 / input
                                                                     }
                                                                   ),
-                                                                  ...disabledInsertControlProps(
-                                                                    currentSlideIndex <= 0
-                                                                  ),
-                                                                  onClick: () => pageSlide(
-                                                                    -1
-                                                                  )
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                "span",
-                                                                {
-                                                                  className: "px-1 text-[11px] tabular-nums whitespace-nowrap text-fg-muted pointer-coarse:text-body",
-                                                                  children: (0, runtime2.formatMessage)(
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.PeerCursors,
                                                                     {
-                                                                      defaultMessage: "{n} / {count}",
-                                                                      id: "ri4wsquft4"
-                                                                    },
-                                                                    {
-                                                                      n: String(
-                                                                        currentSlideIndex + 1
+                                                                      surface: scopedSlideKey(
+                                                                        currentSlide.id
                                                                       ),
-                                                                      count: String(
-                                                                        slides.length
+                                                                      toLocal: (input2, options2) => ({
+                                                                        left: input2 * runtime2.SLIDE_WIDTH,
+                                                                        top: options2 * runtime2.SLIDE_HEIGHT
+                                                                      }),
+                                                                      glyphScale: input
+                                                                    }
+                                                                  ),
+                                                                  agentSlideId === currentSlide.id && creationView.phase === "quiet" ? SlidesAppJsx.jsx(
+                                                                    runtime2.AgentCursor,
+                                                                    {
+                                                                      tint: "orange",
+                                                                      label: AGENT_CURSOR_LABEL,
+                                                                      at: AGENT_CURSOR_OFFSET,
+                                                                      glyphScale: input
+                                                                    }
+                                                                  ) : null
+                                                                ]
+                                                              }
+                                                            ),
+                                                            deckCellCount: (0, runtime2.countDeckTableCells)(
+                                                              slides
+                                                            ),
+                                                            withinStyleBudget: canAddStyledNodes,
+                                                            selection,
+                                                            onSelectionChange: (input) => {
+                                                              setSelection(
+                                                                input
+                                                              );
+                                                              if (textEdit && !input.some(
+                                                                (input2) => input2.frameId === textEdit.frameId
+                                                              )) {
+                                                                setTextEditState(
+                                                                  null
+                                                                );
+                                                              }
+                                                            },
+                                                            onLiveChange,
+                                                            onGestureEnd,
+                                                            dragLiveRef: dragActiveRef,
+                                                            textEdit,
+                                                            onTextEdit: (input) => {
+                                                              setTextEditState(
+                                                                input
+                                                              );
+                                                              if (input !== null) {
+                                                                setProtectedEditorSlide(
+                                                                  currentSlide.id
+                                                                );
+                                                              }
+                                                            },
+                                                            onDropImage: dropFilesOnSlide,
+                                                            onReplaceImage: (input, options, context) => void uploadAndInsertImage(
+                                                              input,
+                                                              options,
+                                                              context
+                                                            ),
+                                                            faces: snapshot.faces,
+                                                            facesFull: fullFontFaces,
+                                                            fonts: snapshot.fonts,
+                                                            typeStyles: currentTypeStyles,
+                                                            deckTypeStyles,
+                                                            onDropInsert,
+                                                            onCropStart: () => stopTextTool(
+                                                              true
+                                                            ),
+                                                            returnTakenHint: textToolOn ? (0, runtime2.formatMessage)(
+                                                              {
+                                                                defaultMessage: "Text tool on. Press {key} to add a text box in the middle of the slide, or Escape to cancel.",
+                                                                id: "qGfs/tPl7n"
+                                                              },
+                                                              {
+                                                                key: (0, runtime2.shortcutKeyName)(
+                                                                  (0, runtime2.isApplePlatform)() ? "return" : "enter"
+                                                                )
+                                                              }
+                                                            ) : void 0,
+                                                            onOpenInspector: (input) => {
+                                                              if (runtime2.ENABLE_OBJECT_PROPERTIES_MENU) {
+                                                                let [
+                                                                  items,
+                                                                  items2
+                                                                ] = [
+                                                                  input.currentTarget,
+                                                                  (0, runtime2.isKeyboardOrPrimaryActivation)(
+                                                                    input
+                                                                  )
+                                                                ], bounds = items.getBoundingClientRect();
+                                                                openContextMenu(
+                                                                  {
+                                                                    x: bounds.left,
+                                                                    y: bounds.bottom + 6,
+                                                                    from: "more",
+                                                                    keyboard: items2
+                                                                  },
+                                                                  selection
+                                                                );
+                                                                if (items2 && items.isConnected) {
+                                                                  items.focus(
+                                                                    {
+                                                                      preventScroll: true
+                                                                    }
+                                                                  );
+                                                                }
+                                                                return;
+                                                              }
+                                                              inspectorPointerInvocationRef.current = (0, runtime2.isKeyboardOrPrimaryActivation)(
+                                                                input
+                                                              );
+                                                              setInspectorTab(
+                                                                "properties"
+                                                              );
+                                                              setInspectorOpen(
+                                                                true
+                                                              );
+                                                            },
+                                                            moreMenu: runtime2.ENABLE_OBJECT_PROPERTIES_MENU ? {
+                                                              label: (0, runtime2.formatMessage)({
+                                                                defaultMessage: "More actions",
+                                                                id: "UBT/4o2Mgg"
+                                                              }),
+                                                              open: contextMenu?.at.from === "more"
+                                                            } : void 0,
+                                                            onDeleteSelection: currentSlideReadOnly ? void 0 : deleteSelection,
+                                                            onMenu: currentSlideReadOnly ? void 0 : openContextMenu,
+                                                            selectionMenuHidden: inspectorOpen,
+                                                            onChangeSlide,
+                                                            presenting: presentationStartIndex !== null,
+                                                            commenting: commentsOn,
+                                                            commentStop: commentController.ctl !== null,
+                                                            readOnly: currentSlideReadOnly,
+                                                            zoomApiRef: editorZoomApiRef,
+                                                            onScaleChange: setToolbarScale,
+                                                            bottomInset: pageOcclusionBand + railFootGap,
+                                                            topInset,
+                                                            sideInset,
+                                                            under: stageNotesRoom > 0 ? {
+                                                              room: stageNotesRoom,
+                                                              node: SlidesAppJsx.jsx(
+                                                                runtime2.StageNotes,
+                                                                {
+                                                                  slide: currentSlide,
+                                                                  readOnly: currentSlideReadOnly,
+                                                                  onShow: showStageNotes,
+                                                                  onPan: panStageNotes,
+                                                                  onLiveChange: notesEditGesture.live,
+                                                                  onGestureEnd: notesEditGesture.end,
+                                                                  onRelease: focusSelectionOrSlide
+                                                                }
+                                                              )
+                                                            } : void 0,
+                                                            surround: editorSurround,
+                                                            onStageMoved: remeasureCommentsOnStageMove,
+                                                            stageOverlay: SlidesAppJsx.jsxs(
+                                                              SlidesAppJsx.Fragment,
+                                                              {
+                                                                children: [
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.SlideCommentLayer,
+                                                                    {
+                                                                      ...commentController,
+                                                                      slide: currentSlide,
+                                                                      slides,
+                                                                      typeStyles: allTypeStyles,
+                                                                      containerRef: editorElementRef,
+                                                                      topInset,
+                                                                      bottomInset: footRowFilled ? pageOcclusionBand : 0,
+                                                                      hidden: presentationStartIndex !== null,
+                                                                      keepsMode: commentModePersistent,
+                                                                      remeasureRef: commentRemeasureRef,
+                                                                      pinsQuiet: gridLeaving
+                                                                    }
+                                                                  ),
+                                                                  textToolOn ? SlidesAppJsx.jsx(
+                                                                    TextToolLayer,
+                                                                    {
+                                                                      overSlide,
+                                                                      startsOverSlide: () => slideSurface()?.matches(
+                                                                        ":hover"
+                                                                      ) ?? false,
+                                                                      keeps: (input) => input instanceof Node && (textButtonRef.current?.contains(
+                                                                        input
+                                                                      ) ?? false),
+                                                                      slideRect: () => slideSurface()?.getBoundingClientRect(),
+                                                                      lineHeight: () => bodyLineHeight() * (slideSurface()?.getBoundingClientRect().width ?? 0) / runtime2.SLIDE_WIDTH,
+                                                                      minWidth: () => MIN_TEXT_INSERT_WIDTH * (slideSurface()?.getBoundingClientRect().width ?? 0) / runtime2.SLIDE_WIDTH,
+                                                                      onPlace: placeTextAt,
+                                                                      onCancel: () => stopTextTool()
+                                                                    }
+                                                                  ) : null
+                                                                ]
+                                                              }
+                                                            )
+                                                          },
+                                                          editingGridSlide ? "in-place" : "plain"
+                                                        ),
+                                                        SlidesAppJsx.jsx(
+                                                          runtime2.CanvasContextMenu,
+                                                          {
+                                                            at: contextMenu?.at ?? null,
+                                                            objects: contextMenu?.objects ?? 0,
+                                                            fitLabel: fitViewLabel,
+                                                            copyLink: slideActions.onCopyLink !== void 0,
+                                                            refusals: contextMenu?.refusals ?? {},
+                                                            returnFocus: (input) => {
+                                                              if (input !== null && (input.closest(
+                                                                "[data-object-proxy]"
+                                                              ) === null || input.hasAttribute(
+                                                                "data-object-cursor"
+                                                              ))) {
+                                                                return input;
+                                                              }
+                                                              focusSelectionOrSlide();
+                                                              return null;
+                                                            },
+                                                            onCommand: runContextMenuCommand,
+                                                            onClose: () => setContextMenu(
+                                                              null
+                                                            )
+                                                          }
+                                                        ),
+                                                        topRowLayout ? footToolbar("stage") : !railDrawn && !editingGridSlide ? SlidesAppJsx.jsx(
+                                                          "div",
+                                                          {
+                                                            ref: creationRailRef,
+                                                            "data-slides-pager": "",
+                                                            className: (0, runtime2.joinClassNames)(
+                                                              "pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center pb-[var(--sl-safe-b,0px)] [:root[data-mc-presentation=sheet]_&]:hidden",
+                                                              touchLayout && textEdit !== null && "invisible"
+                                                            ),
+                                                            children: SlidesAppJsx.jsxs(
+                                                              runtime2.Surface,
+                                                              {
+                                                                elevation: runtime2.PANEL_ELEVATION,
+                                                                className: "pointer-events-auto flex items-center gap-0.5 rounded-full p-2.25 select-none",
+                                                                children: [
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.Button,
+                                                                    {
+                                                                      iconOnly: true,
+                                                                      variant: "ghost",
+                                                                      size: toolbarButtonSize,
+                                                                      icon: "CaretLeft",
+                                                                      "aria-label": (0, runtime2.formatMessage)({
+                                                                        defaultMessage: "Previous slide",
+                                                                        id: "9kFV3Etv1z"
+                                                                      }),
+                                                                      tooltip: currentSlideIndex <= 0 ? runtime2.FIRST_SLIDE_LABEL : (0, runtime2.formatMessage)(
+                                                                        {
+                                                                          defaultMessage: "Previous slide (\u2190)",
+                                                                          id: "0l7VgYDKPW"
+                                                                        }
+                                                                      ),
+                                                                      ...disabledInsertControlProps(
+                                                                        currentSlideIndex <= 0
+                                                                      ),
+                                                                      onClick: () => pageSlide(
+                                                                        -1
+                                                                      )
+                                                                    }
+                                                                  ),
+                                                                  SlidesAppJsx.jsx(
+                                                                    "span",
+                                                                    {
+                                                                      className: "px-1 text-[11px] tabular-nums whitespace-nowrap text-fg-muted pointer-coarse:text-body",
+                                                                      children: (0, runtime2.formatMessage)(
+                                                                        {
+                                                                          defaultMessage: "{n} / {count}",
+                                                                          id: "ri4wsquft4"
+                                                                        },
+                                                                        {
+                                                                          n: String(
+                                                                            currentSlideIndex + 1
+                                                                          ),
+                                                                          count: String(
+                                                                            slides.length
+                                                                          )
+                                                                        }
+                                                                      )
+                                                                    }
+                                                                  ),
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.Button,
+                                                                    {
+                                                                      iconOnly: true,
+                                                                      variant: "ghost",
+                                                                      size: toolbarButtonSize,
+                                                                      icon: "CaretRight",
+                                                                      "aria-label": (0, runtime2.formatMessage)({
+                                                                        defaultMessage: "Next slide",
+                                                                        id: "sB+MZWfpbx"
+                                                                      }),
+                                                                      tooltip: currentSlideIndex >= slides.length - 1 ? runtime2.LAST_SLIDE_LABEL : (0, runtime2.formatMessage)(
+                                                                        {
+                                                                          defaultMessage: "Next slide (\u2192)",
+                                                                          id: "KM3rbfwIm4"
+                                                                        }
+                                                                      ),
+                                                                      ...disabledInsertControlProps(
+                                                                        currentSlideIndex >= slides.length - 1
+                                                                      ),
+                                                                      onClick: () => pageSlide(
+                                                                        1
+                                                                      )
+                                                                    }
+                                                                  ),
+                                                                  SlidesAppJsx.jsx(
+                                                                    "span",
+                                                                    {
+                                                                      className: "mx-0.5 h-4 w-px bg-border-line"
+                                                                    }
+                                                                  ),
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.Button,
+                                                                    {
+                                                                      iconOnly: true,
+                                                                      variant: "ghost",
+                                                                      size: toolbarButtonSize,
+                                                                      icon: "BookText",
+                                                                      "aria-label": runtime2.SPEAKER_NOTES_TOGGLE_LABEL,
+                                                                      tooltip: notesOpen ? runtime2.HIDE_SPEAKER_NOTES_LABEL : runtime2.SHOW_SPEAKER_NOTES_LABEL,
+                                                                      pressed: notesOpen,
+                                                                      onClick: () => setNotesOpen(
+                                                                        (input) => !input
+                                                                      )
+                                                                    }
+                                                                  ),
+                                                                  SlidesAppJsx.jsx(
+                                                                    runtime2.Button,
+                                                                    {
+                                                                      iconOnly: true,
+                                                                      variant: "ghost",
+                                                                      size: toolbarButtonSize,
+                                                                      icon: "Slides",
+                                                                      "aria-label": SHOW_SLIDE_THUMBNAILS_LABEL,
+                                                                      "data-slides-rail-show": "",
+                                                                      onClick: () => chooseRailOpen(
+                                                                        true
                                                                       )
                                                                     }
                                                                   )
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.InfoTip,
+                                                                ]
+                                                              }
+                                                            )
+                                                          }
+                                                        ) : null
+                                                      ]
+                                                    }
+                                                  ),
+                                                  SlidesAppJsx.jsx(
+                                                    runtime2.SidePanel,
+                                                    {
+                                                      id: "slides-inspector",
+                                                      title: (() => {
+                                                        if (themeTabEnabled && inspectorTab === "theme") {
+                                                          return THEME_TAB_LABEL;
+                                                        }
+                                                        let value = (0, runtime2.filterValidSelections)(
+                                                          currentSlide,
+                                                          selection
+                                                        );
+                                                        if (value.length > 1) {
+                                                          return (0, runtime2.formatMessage)(
+                                                            {
+                                                              defaultMessage: "{n, plural, one {{count} selected} other {{count} selected}}",
+                                                              id: "k6RWoDd1vR"
+                                                            },
+                                                            { n: value.length, count: String(value.length) }
+                                                          );
+                                                        }
+                                                        let value2 = value[value.length - 1], value3 = value2 ? (0, runtime2.selectedNode)(
+                                                          currentSlide,
+                                                          value2
+                                                        ) : void 0;
+                                                        switch (value3?.kind) {
+                                                          case "text":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Text", id: "WFXw+p83RL" });
+                                                          case "img":
+                                                            return value3.video !== void 0 || value3.videoLink !== void 0 ? (0, runtime2.formatMessage)({ defaultMessage: "Video", id: "EvjmM1OeDX" }) : (0, runtime2.formatMessage)({ defaultMessage: "Image", id: "cejRVGve1a" });
+                                                          case "icon":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Icon", id: "8Ra0ohzrRF" });
+                                                          case "table":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Table", id: "kjpzgAY/cI" });
+                                                          case "stack":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Group", id: "z0eXh8fHFb" });
+                                                          case "grid":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Grid", id: "9jderzwF/Z" });
+                                                          case "shape":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Shape", id: "/31jCTpJtt" });
+                                                          case "html":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Embed", id: "NaqIGbqHDv" });
+                                                          case "spacer":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Spacer", id: "f8SkckHhD2" });
+                                                          case "overlay":
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Overlay", id: "/MQYjZP1jC" });
+                                                          default:
+                                                            return (0, runtime2.formatMessage)({ defaultMessage: "Slide", id: "mD36CnusIY" });
+                                                        }
+                                                      })(),
+                                                      open: inspectorOpen,
+                                                      onClose: () => setInspectorOpen(
+                                                        false
+                                                      ),
+                                                      hideTitle: true,
+                                                      wideHeader: false,
+                                                      resizeLabel: themeTabEnabled ? (0, runtime2.formatMessage)({ defaultMessage: "Resize side panel", id: "oNfHwva6rJ" }) : (0, runtime2.formatMessage)({ defaultMessage: "Resize properties panel", id: "ivdjmehNvU" }),
+                                                      ...themeTabEnabled ? {
+                                                        tabs: PROPERTY_PANEL_TABS,
+                                                        tab: inspectorTab,
+                                                        onTabChange: (input) => setInspectorTab(
+                                                          input === "theme" ? "theme" : "properties"
+                                                        )
+                                                      } : {},
+                                                      children: SlidesAppJsx.jsx(
+                                                        "div",
+                                                        {
+                                                          ref: inspectorContentRef,
+                                                          className: "contents",
+                                                          onFocus: () => setInspectorUnasked(
+                                                            "again"
+                                                          ),
+                                                          children: currentSlideReadOnly ? SlidesAppJsx.jsx(
+                                                            "p",
+                                                            {
+                                                              className: "p-3.5 text-xs text-fg-muted",
+                                                              children: slideHtmlError !== void 0 ? runtime2.HELD_SLIDE_EDIT_MESSAGE : (0, runtime2.formatMessage)(
                                                                 {
-                                                                  content: runtime2.JUMP_TO_SLIDE_KEYS_CONTENT,
-                                                                  "aria-label": runtime2.JUMP_TO_SLIDE_KEYS_LABEL
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.Button,
-                                                                {
-                                                                  iconOnly: true,
-                                                                  variant: "ghost",
-                                                                  size: toolbarButtonSize,
-                                                                  icon: "CaretRight",
-                                                                  "aria-label": (0, runtime2.formatMessage)({
-                                                                    defaultMessage: "Next slide",
-                                                                    id: "sB+MZWfpbx"
-                                                                  }),
-                                                                  tooltip: currentSlideIndex >= slides.length - 1 ? runtime2.LAST_SLIDE_LABEL : (0, runtime2.formatMessage)(
-                                                                    {
-                                                                      defaultMessage: "Next slide (\u2192)",
-                                                                      id: "KM3rbfwIm4"
-                                                                    }
-                                                                  ),
-                                                                  ...disabledInsertControlProps(
-                                                                    currentSlideIndex >= slides.length - 1
-                                                                  ),
-                                                                  onClick: () => pageSlide(
-                                                                    1
-                                                                  )
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                "span",
-                                                                {
-                                                                  className: "mx-0.5 h-4 w-px bg-border-line"
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.Button,
-                                                                {
-                                                                  iconOnly: true,
-                                                                  variant: "ghost",
-                                                                  size: toolbarButtonSize,
-                                                                  icon: "BookText",
-                                                                  "aria-label": runtime2.SPEAKER_NOTES_TOGGLE_LABEL,
-                                                                  tooltip: notesOpen ? runtime2.HIDE_SPEAKER_NOTES_LABEL : runtime2.SHOW_SPEAKER_NOTES_LABEL,
-                                                                  pressed: notesOpen,
-                                                                  onClick: () => setNotesOpen(
-                                                                    (input) => !input
-                                                                  )
-                                                                }
-                                                              ),
-                                                              SlidesAppJsx.jsx(
-                                                                runtime2.Button,
-                                                                {
-                                                                  iconOnly: true,
-                                                                  variant: "ghost",
-                                                                  size: toolbarButtonSize,
-                                                                  icon: "Slides",
-                                                                  "aria-label": SHOW_SLIDE_THUMBNAILS_LABEL,
-                                                                  "data-slides-rail-show": "",
-                                                                  onClick: () => chooseRailOpen(
-                                                                    true
-                                                                  )
+                                                                  defaultMessage: "This presentation is read-only here, so its properties can\u2019t be edited.",
+                                                                  id: "HJ6NQPAawd"
                                                                 }
                                                               )
-                                                            ]
-                                                          }
-                                                        )
-                                                      }
-                                                    ) : null
-                                                  ]
-                                                }
-                                              ),
-                                              SlidesAppJsx.jsx(
-                                                runtime2.SidePanel,
-                                                {
-                                                  id: "slides-inspector",
-                                                  title: (() => {
-                                                    if (themeTabEnabled && inspectorTab === "theme") {
-                                                      return THEME_TAB_LABEL;
-                                                    }
-                                                    let value = (0, runtime2.filterValidSelections)(
-                                                      currentSlide,
-                                                      selection
-                                                    );
-                                                    if (value.length > 1) {
-                                                      return (0, runtime2.formatMessage)(
-                                                        {
-                                                          defaultMessage: "{n, plural, one {{count} selected} other {{count} selected}}",
-                                                          id: "k6RWoDd1vR"
-                                                        },
-                                                        { n: value.length, count: String(value.length) }
-                                                      );
-                                                    }
-                                                    let value2 = value[value.length - 1], value3 = value2 ? (0, runtime2.selectedNode)(
-                                                      currentSlide,
-                                                      value2
-                                                    ) : void 0;
-                                                    switch (value3?.kind) {
-                                                      case "text":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Text", id: "WFXw+p83RL" });
-                                                      case "img":
-                                                        return value3.video !== void 0 || value3.videoLink !== void 0 ? (0, runtime2.formatMessage)({ defaultMessage: "Video", id: "EvjmM1OeDX" }) : (0, runtime2.formatMessage)({ defaultMessage: "Image", id: "cejRVGve1a" });
-                                                      case "icon":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Icon", id: "8Ra0ohzrRF" });
-                                                      case "table":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Table", id: "kjpzgAY/cI" });
-                                                      case "stack":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Group", id: "z0eXh8fHFb" });
-                                                      case "grid":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Grid", id: "9jderzwF/Z" });
-                                                      case "shape":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Shape", id: "/31jCTpJtt" });
-                                                      case "html":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Embed", id: "NaqIGbqHDv" });
-                                                      case "spacer":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Spacer", id: "f8SkckHhD2" });
-                                                      case "overlay":
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Overlay", id: "/MQYjZP1jC" });
-                                                      default:
-                                                        return (0, runtime2.formatMessage)({ defaultMessage: "Slide", id: "mD36CnusIY" });
-                                                    }
-                                                  })(),
-                                                  open: inspectorOpen,
-                                                  onClose: () => setInspectorOpen(
-                                                    false
-                                                  ),
-                                                  hideTitle: true,
-                                                  wideHeader: false,
-                                                  resizeLabel: themeTabEnabled ? (0, runtime2.formatMessage)({ defaultMessage: "Resize side panel", id: "oNfHwva6rJ" }) : (0, runtime2.formatMessage)({ defaultMessage: "Resize properties panel", id: "ivdjmehNvU" }),
-                                                  ...themeTabEnabled ? {
-                                                    tabs: PROPERTY_PANEL_TABS,
-                                                    tab: inspectorTab,
-                                                    onTabChange: (input) => setInspectorTab(
-                                                      input === "theme" ? "theme" : "properties"
-                                                    )
-                                                  } : {},
-                                                  children: SlidesAppJsx.jsx(
-                                                    "div",
-                                                    {
-                                                      ref: inspectorContentRef,
-                                                      className: "contents",
-                                                      children: currentSlideReadOnly ? SlidesAppJsx.jsx(
-                                                        "p",
-                                                        {
-                                                          className: "p-3.5 text-xs text-fg-muted",
-                                                          children: slideHtmlError !== void 0 ? runtime2.HELD_SLIDE_EDIT_MESSAGE : (0, runtime2.formatMessage)(
+                                                            }
+                                                          ) : themeTabEnabled && inspectorTab === "theme" ? SlidesAppJsx.jsx(
+                                                            runtime2.ThemePanel,
                                                             {
-                                                              defaultMessage: "This presentation is read-only here, so its properties can\u2019t be edited.",
-                                                              id: "HJ6NQPAawd"
+                                                              restyle: deckRestyle,
+                                                              slide: currentSlide ?? void 0,
+                                                              assets: snapshot.assets,
+                                                              designColors: designPalette,
+                                                              faces: snapshot.faces,
+                                                              facesFull: fullFontFaces,
+                                                              fonts: snapshot.fonts,
+                                                              editsAreUndoSteps: textEdit === null
+                                                            }
+                                                          ) : SlidesAppJsx.jsx(
+                                                            runtime2.SelectionInspector,
+                                                            {
+                                                              unasked: inspectorUnasked,
+                                                              editsAreUndoSteps: textEdit === null,
+                                                              designColors: designPalette,
+                                                              slideColors: slidePalette,
+                                                              assets: snapshot.assets,
+                                                              onReplaceImage: (input, options, extra, extra2) => void uploadAndInsertImage(
+                                                                input,
+                                                                options,
+                                                                extra,
+                                                                {
+                                                                  as: extra2
+                                                                }
+                                                              ),
+                                                              onRemoveImages: removeSelectedImages,
+                                                              onRemoveCover: (input, options) => void removeCoverImage(
+                                                                input,
+                                                                options
+                                                              ),
+                                                              onChangeVideoLink: embeddableVideoProviders.length > 0 ? (input, options) => void changeVideoLink(
+                                                                input,
+                                                                options
+                                                              ) : void 0,
+                                                              slide: currentSlide,
+                                                              selection,
+                                                              deckCellCount: (0, runtime2.countDeckTableCells)(
+                                                                slides
+                                                              ),
+                                                              typeStyles: currentTypeStyles,
+                                                              deckTypeStyles,
+                                                              faces: snapshot.faces,
+                                                              facesFull: fullFontFaces,
+                                                              fonts: snapshot.fonts,
+                                                              onChange: onChangeSlide,
+                                                              onLiveChange,
+                                                              onGestureEnd,
+                                                              onSelectUnit: (input) => setSelection(
+                                                                [
+                                                                  input
+                                                                ]
+                                                              ),
+                                                              measure: (input) => editorZoomApiRef.current?.measureUnit(
+                                                                input
+                                                              ),
+                                                              pickImage: currentSlideReadOnly ? void 0 : async (input) => (await prepareImageAsset(
+                                                                input
+                                                              )).src
                                                             }
                                                           )
-                                                        }
-                                                      ) : themeTabEnabled && inspectorTab === "theme" ? SlidesAppJsx.jsx(
-                                                        runtime2.ThemePanel,
-                                                        {
-                                                          restyle: deckRestyle,
-                                                          slide: currentSlide ?? void 0,
-                                                          assets: snapshot.assets,
-                                                          designColors: designPalette,
-                                                          faces: snapshot.faces,
-                                                          facesFull: fullFontFaces,
-                                                          fonts: snapshot.fonts,
-                                                          editsAreUndoSteps: textEdit === null
-                                                        }
-                                                      ) : SlidesAppJsx.jsx(
-                                                        runtime2.SelectionInspector,
-                                                        {
-                                                          unasked: inspectorUnasked,
-                                                          editsAreUndoSteps: textEdit === null,
-                                                          designColors: designPalette,
-                                                          slideColors: slidePalette,
-                                                          assets: snapshot.assets,
-                                                          onReplaceImage: (input, options, extra, extra2) => void uploadAndInsertImage(
-                                                            input,
-                                                            options,
-                                                            extra,
-                                                            {
-                                                              as: extra2
-                                                            }
-                                                          ),
-                                                          onRemoveImages: removeSelectedImages,
-                                                          onRemoveCover: (input, options) => void removeCoverImage(
-                                                            input,
-                                                            options
-                                                          ),
-                                                          onChangeVideoLink: embeddableVideoProviders.length > 0 ? (input, options) => void changeVideoLink(
-                                                            input,
-                                                            options
-                                                          ) : void 0,
-                                                          slide: currentSlide,
-                                                          selection,
-                                                          deckCellCount: (0, runtime2.countDeckTableCells)(
-                                                            slides
-                                                          ),
-                                                          typeStyles: currentTypeStyles,
-                                                          deckTypeStyles,
-                                                          faces: snapshot.faces,
-                                                          facesFull: fullFontFaces,
-                                                          fonts: snapshot.fonts,
-                                                          onChange: onChangeSlide,
-                                                          onLiveChange,
-                                                          onGestureEnd,
-                                                          onSelectUnit: (input) => setSelection(
-                                                            [
-                                                              input
-                                                            ]
-                                                          ),
-                                                          measure: (input) => editorZoomApiRef.current?.measureUnit(
-                                                            input
-                                                          ),
-                                                          pickImage: currentSlideReadOnly ? void 0 : async (input) => (await prepareImageAsset(
-                                                            input
-                                                          )).src
                                                         }
                                                       )
                                                     }
                                                   )
-                                                }
-                                              )
+                                                ]
+                                              })
                                             ]
-                                          })
-                                        ]
-                                      }
-                                    ),
-                                    phoneLayout ? footToolbar("row", false) : null,
-                                    SlidesAppJsx.jsxs("div", {
-                                      className: "contents [:root[data-mc-presentation=sheet]_&]:hidden",
-                                      children: [
-                                        notesOpen && currentSlide ? SlidesAppJsx.jsx(
-                                          runtime2.SpeakerNotesEditor,
-                                          {
-                                            slide: currentSlide,
-                                            height: notesHeight,
-                                            onResize: setNotesHeight,
-                                            onResizeStart: () => {
-                                              notesResizeGeometryRef.current = railGeometryRef.current?.() ?? null;
-                                            },
-                                            heightFor: (input, options, context, value) => input + (0, runtime2.clampStageRailResizeDelta)(
-                                              options,
-                                              notesResizeGeometryRef.current,
-                                              context - input,
-                                              value - input
-                                            ),
-                                            atScreenBottom: !railDrawn || railPlacement === "left",
-                                            readOnly: currentSlideReadOnly,
-                                            onLiveChange: notesEditGesture.live,
-                                            onGestureEnd: notesEditGesture.end,
-                                            onRelease: () => editorZoomApiRef.current?.focusSlide()
                                           }
-                                        ) : null,
-                                        railPlacement === "bottom" ? slideRail : null
+                                        ),
+                                        phoneLayout ? footToolbar("row", false) : null,
+                                        SlidesAppJsx.jsx("div", {
+                                          className: "contents [:root[data-mc-presentation=sheet]_&]:hidden",
+                                          children: railPlacement === "bottom" ? slideRail : null
+                                        })
                                       ]
-                                    })
+                                    }),
+                                    creationView.phase !== "quiet" || creationView.toEmptyDeck ? SlidesAppJsx.jsx(
+                                      runtime2.SlideCreationOverlay,
+                                      {
+                                        view: creationView,
+                                        stage: editorElementRef,
+                                        rail: insertMenuRef,
+                                        railPlacement,
+                                        insetTop: topInset,
+                                        insetBottom: pageOcclusionBand + railFootGap + stageNotesRoom,
+                                        insetSide: sideInset,
+                                        hidden: editingGridSlide || presentationStartIndex !== null,
+                                        onFit: creationFitsEmptyStage ? setToolbarScale : void 0
+                                      }
+                                    ) : null
                                   ]
-                                }),
-                                creationView.phase !== "quiet" || creationView.toEmptyDeck ? SlidesAppJsx.jsx(
-                                  runtime2.SlideCreationOverlay,
-                                  {
-                                    view: creationView,
-                                    stage: editorElementRef,
-                                    rail: insertMenuRef,
-                                    railPlacement,
-                                    insetTop: topInset,
-                                    insetBottom: pageOcclusionBand + railFootGap,
-                                    insetSide: sideInset,
-                                    hidden: editingGridSlide || presentationStartIndex !== null,
-                                    onFit: creationFitsEmptyStage ? setToolbarScale : void 0
-                                  }
-                                ) : null
-                              ]
-                            })
+                                })
+                              }),
+                              // BaoCut: upstream's follow announcer (AAt: following collaborators and the agent across slides)
+                              // and its phone-remote offer (Ggt) are not ported.
+                              gridOpen && topRowLayout ? footToolbar("stage") : null
+                            ]
                           }),
-                          // BaoCut: upstream's follow announcer (AAt: following collaborators and the agent across slides)
-                          // and its phone-remote offer (Ggt) are not ported.
-                          gridOpen && topRowLayout ? footToolbar("stage") : null
+                          gridOpen && phoneLayout ? footToolbar("row", false) : null,
+                          railPlacement === "bottom" && railCardInGrid && presentationStartIndex === null ? SlidesAppJsx.jsx("aside", {
+                            ref: gridLeavingPanelRef,
+                            className: (0, runtime2.joinClassNames)("shrink-0", footPanelClass),
+                            children: SlidesAppJsx.jsx(runtime2.SlideRailToolbar, {
+                              placement: "bottom",
+                              readOnly,
+                              onAdd: slideActions.onAdd,
+                              notesOpen,
+                              onToggleNotes: () => setNotesOpen((input) => !input),
+                              notesDisabledReason: phoneLayout ? PHONE_SIDEWAYS_NOTES_MESSAGE : (gridOpen || editingGridSlide) && readOnly && !(0, runtime2.slidesHaveSpeakerNotes)(slides) ? NO_DECK_SPEAKER_NOTES_MESSAGE : void 0,
+                              gridOpen: true,
+                              slideShortcut: gridOpen ? "esc" : void 0,
+                              canvasShortcut: editingGridSlide ? "shift+cmd+0" : void 0,
+                              onSetGridOpen: setGridOpen,
+                              onCollapse: () => chooseRailOpen(false),
+                              collapseDisabledReason: gridOpen ? CANVAS_VIEW_NO_THUMBNAILS_MESSAGE : (0, runtime2.formatMessage)(
+                                {
+                                  defaultMessage: "Editing among the slides: the {canvas} around this slide stands in for the thumbnail strip",
+                                  id: "RsGDsnCFmz"
+                                },
+                                { canvas: runtime2.CANVAS_LABEL }
+                              ),
+                              density: toolbarDensity
+                            })
+                          }) : null
                         ]
                       }),
-                      gridOpen && phoneLayout ? footToolbar("row", false) : null,
-                      railPlacement === "bottom" && railCardInGrid && presentationStartIndex === null ? SlidesAppJsx.jsx("aside", {
-                        ref: gridLeavingPanelRef,
-                        className: (0, runtime2.joinClassNames)("shrink-0", footPanelClass),
-                        children: SlidesAppJsx.jsx(runtime2.SlideRailToolbar, {
-                          placement: "bottom",
-                          readOnly,
-                          onAdd: slideActions.onAdd,
-                          notesOpen,
-                          onToggleNotes: () => setNotesOpen((input) => !input),
-                          notesDisabledReason: phoneLayout ? PHONE_SIDEWAYS_NOTES_MESSAGE : (gridOpen || editingGridSlide) && readOnly && !(0, runtime2.slidesHaveSpeakerNotes)(slides) ? NO_DECK_SPEAKER_NOTES_MESSAGE : void 0,
-                          gridOpen: true,
-                          slideShortcut: gridOpen ? "esc" : void 0,
-                          canvasShortcut: editingGridSlide ? "shift+cmd+0" : void 0,
-                          onSetGridOpen: setGridOpen,
-                          onCollapse: () => chooseRailOpen(false),
-                          collapseDisabledReason: gridOpen ? CANVAS_VIEW_NO_THUMBNAILS_MESSAGE : (0, runtime2.formatMessage)(
-                            {
-                              defaultMessage: "Editing among the slides: the {canvas} around this slide stands in for the thumbnail strip",
-                              id: "RsGDsnCFmz"
-                            },
-                            { canvas: runtime2.CANVAS_LABEL }
-                          ),
-                          density: toolbarDensity
+                      SlidesAppJsx.jsx(runtime2.SlideTemplatePicker, {
+                        open: templatePickerOpen,
+                        onClose: () => setTemplatePickerOpen(false),
+                        onPick: pickSlideTemplate,
+                        restyle: templateRestyler,
+                        returnFocus: templatePickerReturnFocus
+                      }),
+                      SlidesAppJsx.jsx(runtime2.ExportDeliveryDialog, {
+                        delivery: exportDelivery,
+                        onClose: () => setExportDelivery(null)
+                      }),
+                      presentationStartIndex !== null && presentableSlides.length > 0 ? SlidesAppJsx.jsx(runtime2.slideAccessibilityTreeContext.Provider, {
+                        value: true,
+                        children: SlidesAppJsx.jsx(runtime2.PresentationView, {
+                          slides: presentableSlides,
+                          assets: snapshot.assets,
+                          fontCss,
+                          heldSlide: slideHtmlHold2,
+                          editNotes: readOnly ? void 0 : notesEditGesture,
+                          remote: phoneRemote,
+                          startIndex: presentationStartIndex,
+                          dockNotes: dockSpeakerNotes,
+                          fullscreenRequest,
+                          onIndexChange: setPresentationCurrentIndex,
+                          onExit: (input) => exitPresentation(
+                            presentableSlides[input === presentableSlides.length - 1 ? 0 : input]?.id
+                          )
                         })
-                      }) : null
+                      }) : null,
+                      // BaoCut: upstream's phone-remote view (Wgt) is not ported.
+                      SlidesAppJsx.jsx(runtime2.LiveAnnouncer, {}),
+                      SlidesAppJsx.jsx(PresentationWaitingAnnouncement, {
+                        waiting: resolvedAwaitingSlides,
+                        slideCount: slides.length,
+                        turnBusy: presentationBusy,
+                        startSaidElsewhere: () => creationControllerRef.current.willCount(),
+                        onStartSaid: () => creationControllerRef.current.startSaid()
+                      }),
+                      SlidesAppJsx.jsx(runtime2.EditorDialogHost, {}),
+                      exportNotes === null ? null : SlidesAppJsx.jsx(
+                        runtime2.ExportNotesDialog,
+                        {
+                          notes: exportNotes.notes,
+                          onClosed: () => setExportNotes(
+                            (input) => input?.nth === exportNotes.nth ? null : input
+                          )
+                        },
+                        exportNotes.nth
+                      ),
+                      SlidesAppJsx.jsx(runtime2.PdfExportOptionsHost, {
+                        warning: resolvedAwaitingSlides ? incompleteDeckPdfWarning(
+                          presentableSlides.length,
+                          slides.length + resolvedAwaitedSlideCount
+                        ) : void 0,
+                        notesAvailable: speakerNotesAvailable
+                      }),
+                      SlidesAppJsx.jsx(runtime2.VideoShrinkToastBridge, {
+                        hidden: presentationStartIndex !== null
+                      }),
+                      readOnly ? null : SlidesAppJsx.jsx(runtime2.useRemoteChangeAnnouncer, {
+                        doc: documentStore.doc,
+                        empty: canShowEmptyCreation,
+                        items: () => (0, runtime2.createSlideAnnouncementFingerprints)(
+                          documentStore.doc.content()
+                        ),
+                        words: runtime2.PRESENTATION_CHANGE_ANNOUNCEMENTS,
+                        onBusy: setPresentationBusy
+                      }),
+                      runtime2.reactDOMN3_.createPortal(
+                        SlidesAppJsx.jsx("div", {
+                          className: "slides-print-sheet",
+                          "data-appifact-content": "",
+                          children: presentableSlides.map(runtime2.sourceSlideAtRest).map(
+                            (input) => SlidesAppJsx.jsx(
+                              "div",
+                              {
+                                className: "slides-print-slide",
+                                children: SlidesAppJsx.jsx(runtime2.slideRendererMessagesContext.Provider, {
+                                  value: runtime2.DEFAULT_SLIDE_RENDERER_MESSAGES,
+                                  children: SlidesAppJsx.jsx(runtime2.SlideSurface, {
+                                    slide: input,
+                                    assets: snapshot.assets,
+                                    animate: false
+                                  })
+                                })
+                              },
+                              input.id
+                            )
+                          )
+                        }),
+                        document.body
+                      )
                     ]
-                  }),
-                  SlidesAppJsx.jsx(runtime2.SlideTemplatePicker, {
-                    open: templatePickerOpen,
-                    onClose: () => setTemplatePickerOpen(false),
-                    onPick: pickSlideTemplate,
-                    restyle: templateRestyler,
-                    returnFocus: templatePickerReturnFocus
-                  }),
-                  SlidesAppJsx.jsx(runtime2.ExportDeliveryDialog, {
-                    delivery: exportDelivery,
-                    onClose: () => setExportDelivery(null)
-                  }),
-                  presentationStartIndex !== null && presentableSlides.length > 0 ? SlidesAppJsx.jsx(runtime2.PresentationView, {
-                    slides: presentableSlides,
-                    assets: snapshot.assets,
-                    fontCss,
-                    heldSlide: slideHtmlHold2,
-                    editNotes: readOnly ? void 0 : notesEditGesture,
-                    remote: phoneRemote,
-                    startIndex: presentationStartIndex,
-                    dockNotes: dockSpeakerNotes,
-                    fullscreenRequest,
-                    onIndexChange: setPresentationCurrentIndex,
-                    onExit: (input) => exitPresentation(presentableSlides[input]?.id)
-                  }) : null,
-                  // BaoCut: upstream's phone-remote view (Wgt) is not ported.
-                  SlidesAppJsx.jsx(runtime2.LiveAnnouncer, {}),
-                  SlidesAppJsx.jsx(PresentationWaitingAnnouncement, {
-                    waiting: resolvedAwaitingSlides,
-                    slideCount: slides.length,
-                    turnBusy: presentationBusy,
-                    startSaidElsewhere: () => creationControllerRef.current.willCount(),
-                    onStartSaid: () => creationControllerRef.current.startSaid()
-                  }),
-                  SlidesAppJsx.jsx(runtime2.EditorDialogHost, {}),
-                  exportNotes === null ? null : SlidesAppJsx.jsx(
-                    runtime2.ExportNotesDialog,
-                    {
-                      notes: exportNotes.notes,
-                      onClosed: () => setExportNotes(
-                        (input) => input?.nth === exportNotes.nth ? null : input
-                      )
-                    },
-                    exportNotes.nth
-                  ),
-                  SlidesAppJsx.jsx(runtime2.PdfExportOptionsHost, {
-                    warning: resolvedAwaitingSlides ? incompleteDeckPdfWarning(
-                      presentableSlides.length,
-                      slides.length + resolvedAwaitedSlideCount
-                    ) : void 0,
-                    notesAvailable: speakerNotesAvailable
-                  }),
-                  SlidesAppJsx.jsx(runtime2.VideoShrinkToastBridge, {
-                    hidden: presentationStartIndex !== null
-                  }),
-                  readOnly ? null : SlidesAppJsx.jsx(runtime2.useRemoteChangeAnnouncer, {
-                    doc: documentStore.doc,
-                    empty: canShowEmptyCreation,
-                    items: () => (0, runtime2.createSlideAnnouncementFingerprints)(
-                      documentStore.doc.content()
-                    ),
-                    words: runtime2.PRESENTATION_CHANGE_ANNOUNCEMENTS,
-                    onBusy: setPresentationBusy
-                  }),
-                  runtime2.reactDOMN3_.createPortal(
-                    SlidesAppJsx.jsx("div", {
-                      className: "slides-print-sheet",
-                      "data-appifact-content": "",
-                      children: presentableSlides.map(
-                        (input) => SlidesAppJsx.jsx(
-                          "div",
-                          {
-                            className: "slides-print-slide",
-                            children: SlidesAppJsx.jsx(runtime2.slideRendererMessagesContext.Provider, {
-                              value: runtime2.DEFAULT_SLIDE_RENDERER_MESSAGES,
-                              children: SlidesAppJsx.jsx(runtime2.SlideSurface, {
-                                slide: input,
-                                assets: snapshot.assets,
-                                animate: false
-                              })
-                            })
-                          },
-                          input.id
-                        )
-                      )
-                    }),
-                    document.body
-                  )
-                ]
+                  })
+                })
               })
             })
           })
@@ -277287,6 +283487,7 @@ function installEditorApp(runtime2) {
       runtime2.languageOf
     );
     (0, runtime2.initializeUiPointerMedia)();
+    (0, runtime2.initializeFocusReturn)();
     SlidesAppJsx = (0, runtime2.toModuleNamespace)(
       (0, runtime2.loadJsxNamespace)(),
       1
@@ -277345,8 +283546,8 @@ function installEditorApp(runtime2) {
     });
     DEFAULT_VIDEO_FRAME_SIZE = { w: 960, h: 540 };
     DAMAGED_SLIDE_ACTION_MESSAGE = (0, runtime2.formatMessage)({
-      defaultMessage: "That slide can\u2019t be edited until its saved content is fixed. Nothing changed.",
-      id: "byGni1ohUd"
+      defaultMessage: "That slide can\u2019t be edited right now. Nothing changed.",
+      id: "ALgiMD+bL0"
     });
     LOADING_PRESENTATION_PASTE_MESSAGE = (0, runtime2.formatMessage)({
       defaultMessage: "This presentation is still opening, so nothing was pasted. Paste again in a moment.",
@@ -277450,7 +283651,10 @@ function installEditorApp(runtime2) {
     };
     EDITOR_TAB_TARGET_SELECTOR = "[data-slides-editor] [tabindex]";
     isCanvasEditorFocusTarget = (element) => element instanceof Element && element.closest("[data-slides-editor]") !== null && element.closest("[data-slides-pager], [data-slides-foot-row]") === null;
-    ACTIVE_SLIDES_VIEW_SWITCH_SELECTOR = '[data-slides-view-switch] [role="radio"][aria-checked="true"]';
+    SLIDES_VIEW_MENU_SELECTOR = '[data-testid="' + runtime2.SLIDES_VIEW_MENU_TESTID + '"]';
+    EXPANDED_SLIDES_VIEW_MENU_SELECTOR = SLIDES_VIEW_MENU_SELECTOR + '[aria-expanded="true"]';
+    SLIDES_RAIL_CARD_ATTRIBUTE = "data-slides-rail-card";
+    ACTIVE_SLIDES_VIEW_SWITCH_SELECTOR = '[data-slides-view-switch] [role="radio"][aria-checked="true"], ' + SLIDES_VIEW_MENU_SELECTOR;
     VIDEO_UPLOAD_TIMEOUT_MS = 3e4;
     ignoreGlobalFileDrop = () => {
     };
@@ -277493,7 +283697,7 @@ function installEditorApp(runtime2) {
     MAX_IMAGES_PLACED_AT_ONCE = 6;
     INSERT_STAGGER_STEP = 32;
     UPLOAD_TIMEOUT_PER_FILE_MS = 9e4;
-    FONT_LICENCE_LISTS_TIMEOUT_MS = 1e4;
+    FONT_LICENCE_LISTS_TIMEOUT_MS = 3e4;
     PHONE_REMOTE_FLAG = "slides_phone_remote";
     CLICK_TO_START_VIDEO_BOX = { w: 960, h: 540 };
     RAIL_FOCUSABLE_OPTION_SELECTOR = '[role="option"][tabindex="0"]';
@@ -277610,14 +283814,20 @@ function installEditorApp(runtime2) {
       },
       { canvas: runtime2.CANVAS_LABEL }
     );
-    CANVAS_VIEW_NO_THUMBNAIL_PANEL_MESSAGE = (0, runtime2.formatMessage)({
-      defaultMessage: "Canvas view shows every slide, so it has no thumbnail panel. Switch to Slide view to show it.",
-      id: "GLkjE+wMHL"
-    });
-    CANVAS_EDIT_NO_THUMBNAIL_PANEL_MESSAGE = (0, runtime2.formatMessage)({
-      defaultMessage: "This slide is open for editing in Canvas view, which has no thumbnail panel. Switch to Slide view to show it.",
-      id: "/kgAJrmYTY"
-    });
+    CANVAS_VIEW_NO_THUMBNAIL_PANEL_MESSAGE = (0, runtime2.formatMessage)(
+      {
+        defaultMessage: "{grid} already shows every slide, so slide thumbnails aren\u2019t available. Switch to {oneSlide} first.",
+        id: "8DJ64+XLRk"
+      },
+      { grid: runtime2.GRID_VIEW_LABEL, oneSlide: runtime2.ONE_SLIDE_VIEW_LABEL }
+    );
+    CANVAS_EDIT_NO_THUMBNAIL_PANEL_MESSAGE = (0, runtime2.formatMessage)(
+      {
+        defaultMessage: "Slide thumbnails aren\u2019t available while you\u2019re editing a slide in {grid}. Switch to {oneSlide} first.",
+        id: "7pk4vVzy3w"
+      },
+      { grid: runtime2.GRID_VIEW_LABEL, oneSlide: runtime2.ONE_SLIDE_VIEW_LABEL }
+    );
     TEXT_INPUT_TYPES = /* @__PURE__ */ new Set([
       "text",
       "search",
@@ -278175,6 +284385,10 @@ function installEditorThumbnailApp(runtime2) {
       (input) => input.skipped !== true && hasFrames(input)
     ) ?? slides.find(hasFrames);
   }
+  function thumbnailCoverIsShown(slides, coverId) {
+    let cover = chooseThumbnailCoverSlide(slides, coverId);
+    return cover !== void 0 && (cover.id === coverId || cover.skipped !== true);
+  }
   function SlidesThumbnailApp() {
     let memo4 = ReactSlidesThumbnail.useMemo(
       () => new runtime2.SlidesDocumentStore(),
@@ -278272,7 +284486,7 @@ function installEditorThumbnailApp(runtime2) {
               transformOrigin: "top left"
             },
             children: slide !== void 0 ? SlidesThumbnailJsx.jsx(runtime2.SlideSurface, {
-              slide,
+              slide: (0, runtime2.sourceSlideAtRest)(slide),
               assets,
               animate: false
             }) : title !== void 0 ? SlidesThumbnailJsx.jsx(SlidesTitleCover, {
@@ -278345,6 +284559,11 @@ function installEditorThumbnailApp(runtime2) {
     runtime2,
     "chooseThumbnailCoverSlide",
     () => chooseThumbnailCoverSlide
+  );
+  bindRuntimeValue(
+    runtime2,
+    "thumbnailCoverIsShown",
+    () => thumbnailCoverIsShown
   );
   bindRuntimeValue(runtime2, "SlidesThumbnailApp", () => SlidesThumbnailApp);
   bindRuntimeValue(runtime2, "SlidesThumbnailSlide", () => SlidesThumbnailSlide);
@@ -278546,6 +284765,17 @@ function installEditorCoverTitle(runtime2) {
 
 function installDocumentsStashRecoveryMessage(runtime2) {
   var STASH_DISCARD_LABEL;
+  var SOURCE_DECKS_FLAG;
+  function applySourceDecksFlag() {
+    runtime2.setSourceDecksDisabled();
+    return (0, runtime2.getFeatureFlagAsync)(SOURCE_DECKS_FLAG, false).then(
+      (enabled) => {
+        if (enabled) {
+          runtime2.setSourceDecksDisabled(false);
+        }
+      }
+    );
+  }
   function stashedSlideRestoreConfirmation(context) {
     if (context.gone && context.moved) {
       return {
@@ -278603,10 +284833,20 @@ function installDocumentsStashRecoveryMessage(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
+    "SOURCE_DECKS_FLAG",
+    () => SOURCE_DECKS_FLAG,
+    (value) => {
+      SOURCE_DECKS_FLAG = value;
+    }
+  );
+  bindRuntimeValue(runtime2, "applySourceDecksFlag", () => applySourceDecksFlag);
+  bindRuntimeValue(
+    runtime2,
     "stashedSlideRestoreConfirmation",
     () => stashedSlideRestoreConfirmation
   );
   return () => {
+    SOURCE_DECKS_FLAG = "slides_source_decks";
     STASH_DISCARD_LABEL = (0, runtime2.formatMessage)({
       defaultMessage: "Discard",
       id: "Syf7OOpAC2"
@@ -278617,7 +284857,7 @@ function installDocumentsStashRecoveryMessage(runtime2) {
 function installFilesSlideCodec(runtime2) {
   var optionalFileRecordString;
   var defaultSlidesFileCodec;
-  function composeSlidesFilesEnvelope(codec, fileEnvelope, carry) {
+  function filesEnvelopeRecords(fileEnvelope) {
     let records = /* @__PURE__ */ new Map(), order = [];
     for (let [value2, value3] of fileEnvelope.files) {
       let value4 = (0, runtime2.slideIdFromFilePath)(value2);
@@ -278653,15 +284893,26 @@ function installFilesSlideCodec(runtime2) {
       } : {},
       ...index4.style !== void 0 ? {
         style: index4.style
+      } : {},
+      ...index4.format !== void 0 ? {
+        format: index4.format
       } : {}
     });
+    if (fileEnvelope.shared !== void 0) {
+      records.set(runtime2.DECK_SHARED_DOCUMENT_PATH, {
+        files: Object.fromEntries(fileEnvelope.shared)
+      });
+    }
     if (fileEnvelope.designSystems !== void 0) {
       records.set(
         runtime2.DECK_ASSETS_DOCUMENT_PATH,
         fileEnvelope.designSystems
       );
     }
-    let value = codec.compose(records, carry);
+    return records;
+  }
+  function composeSlidesFilesEnvelope(codec, fileEnvelope, carry) {
+    let value = codec.compose(filesEnvelopeRecords(fileEnvelope), carry);
     return {
       ...value,
       dangling: value.dangling.map(
@@ -278756,6 +285007,11 @@ function installFilesSlideCodec(runtime2) {
     (value) => {
       optionalFileRecordString = value;
     }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "filesEnvelopeRecords",
+    () => filesEnvelopeRecords
   );
   bindRuntimeValue(
     runtime2,
@@ -279011,7 +285267,7 @@ function installDesignSystemSlideStyles(runtime2) {
     };
   }
   function withTextLook(node, look, declared) {
-    let scale = (0, runtime2.typeScaleForRole)(node.role, THEME), {
+    let scale = (0, runtime2.typeScaleForRole)(node.role, THEME), keeps = (key) => node.sid !== void 0 && node.style?.[key] !== void 0, {
       fontSize: _fontSize,
       fontWeight: _fontWeight,
       lineHeight: _lineHeight,
@@ -279022,18 +285278,19 @@ function installDesignSystemSlideStyles(runtime2) {
       ...rest
     } = node.style ?? {}, transform = look.textTransform === "uppercase" || look.textTransform === "lowercase" || look.textTransform === "capitalize" ? look.textTransform : void 0, style = {
       ...rest,
-      ...look.fontSize !== scale.fontSize ? { fontSize: look.fontSize } : {},
-      ...look.fontWeight !== scale.fontWeight ? { fontWeight: look.fontWeight } : {},
-      ...look.lineHeight !== scale.lineHeight ? { lineHeight: look.lineHeight } : {},
-      ...look.letterSpacing !== 0 ? { letterSpacing: look.letterSpacing } : {},
-      ...look.italic ? { fontStyle: "italic" } : {},
-      ...transform !== void 0 ? { textTransform: transform } : {},
+      ...keeps("fontSize") || look.fontSize !== scale.fontSize ? { fontSize: look.fontSize } : {},
+      ...keeps("fontWeight") || look.fontWeight !== scale.fontWeight ? { fontWeight: look.fontWeight } : {},
+      ...keeps("lineHeight") || look.lineHeight !== scale.lineHeight ? { lineHeight: look.lineHeight } : {},
+      ...keeps("letterSpacing") || look.letterSpacing !== 0 ? { letterSpacing: look.letterSpacing } : {},
+      ...keeps("fontStyle") || look.italic ? { fontStyle: look.italic ? "italic" : "normal" } : {},
+      ...keeps("textTransform") || transform !== void 0 ? { textTransform: transform ?? "none" } : {},
       ...look.family !== void 0 ? { fontFamily: restyleFaceFontFamily(look.family, declared) } : {}
     };
     return { ...node, style };
   }
   const isLadderRole = (role) => role === "h1" || role === "h2" || role === "h3" || role === "display";
   function walkNode(node, ground, visitor, pages) {
+    if (node.drawn === true) return node;
     let slots = {}, recolor = (value, prop, slotName, on, small2 = false) => {
       let hex = normalizedHex(value);
       if (hex === void 0) return value;
@@ -279341,6 +285598,7 @@ function installDesignSystemSlideStyles(runtime2) {
 
 function installFilesCrashStash(runtime2) {
   var CRASH_STASH_MAX_AGE_MS;
+  const isCoworkArtifactPage = () => typeof location !== "undefined" && location.protocol === "cowork-artifact:";
   var CRASH_STASH_MAX_ENTRIES;
   var CRASH_STASH_MAX_ARTIFACT_CHARS;
   var CRASH_STASH_MAX_TOTAL_CHARS;
@@ -279577,6 +285835,7 @@ function installFilesCrashStash(runtime2) {
     await value2?.purgeOtherViewers();
     return value2;
   }
+  bindRuntimeValue(runtime2, "isCoworkArtifactPage", () => isCoworkArtifactPage);
   bindRuntimeValue(
     runtime2,
     "CRASH_STASH_MAX_AGE_MS",
@@ -280122,6 +286381,53 @@ function installFilesUnsavedSlides(runtime2) {
 }
 
 function installFilesUnloadFlush(runtime2) {
+  var LAST_UNLOAD_FLUSH_KEY;
+  var paneWatcherCache;
+  function createPaneVisibilityWatcher(win = globalThis) {
+    let away = false, listeners = /* @__PURE__ */ new Set(), callback = (event) => {
+      let message = event, visible = message.source === win.parent ? message.data?.__frame_host_visible?.visible : void 0;
+      if (typeof visible !== "boolean") {
+        return;
+      }
+      away = !visible;
+      if (!away) {
+        return;
+      }
+      for (let listener of [...listeners]) {
+        try {
+          listener();
+        } catch {
+        }
+      }
+    };
+    win?.addEventListener?.("message", callback);
+    return {
+      away: () => away,
+      onAway: (listener) => {
+        listeners.add(listener);
+        return () => void listeners.delete(listener);
+      },
+      stop: () => win?.removeEventListener?.("message", callback)
+    };
+  }
+  function sharedPaneWatcher() {
+    let key = globalThis.addEventListener;
+    if (paneWatcherCache !== void 0 && paneWatcherCache.of === key) {
+      return paneWatcherCache.pane;
+    }
+    let pane = createPaneVisibilityWatcher();
+    paneWatcherCache = { of: key, pane };
+    return pane;
+  }
+  function onPaneAway(callback, win) {
+    if (win === void 0 || win === globalThis) {
+      return sharedPaneWatcher().onAway(callback);
+    }
+    let watcher = createPaneVisibilityWatcher(win);
+    watcher.onAway(callback);
+    return watcher.stop;
+  }
+  const pageHiddenOrPaneAway = () => typeof document !== "undefined" && document.visibilityState === "hidden" || sharedPaneWatcher().away();
   function installUnloadSaveFlush(document2, options = {}) {
     let window2 = options.win ?? globalThis;
     if (typeof window2?.addEventListener !== "function") {
@@ -280138,10 +286444,10 @@ function installFilesUnloadFlush(runtime2) {
     })(), callback = (input) => {
       try {
         if (input === null) {
-          storage?.removeItem("slides-files/last-unload-flush");
+          storage?.removeItem(LAST_UNLOAD_FLUSH_KEY);
         } else {
           storage?.setItem(
-            "slides-files/last-unload-flush",
+            LAST_UNLOAD_FLUSH_KEY,
             JSON.stringify({
               ...input,
               at: now()
@@ -280210,7 +286516,9 @@ function installFilesUnloadFlush(runtime2) {
     window2.addEventListener("pagehide", callback3);
     value2.addEventListener("visibilitychange", callback4);
     window2.addEventListener("beforeunload", callback5);
+    let stopPaneWatch = runtime2.onPaneAway(() => value("pane put away"), window2);
     return () => {
+      stopPaneWatch();
       window2.removeEventListener("pagehide", callback3);
       value2.removeEventListener("visibilitychange", callback4);
       window2.removeEventListener("beforeunload", callback5);
@@ -280225,16 +286533,32 @@ function installFilesUnloadFlush(runtime2) {
       }
     })();
     try {
-      let value = resolvedStorage?.getItem("slides-files/last-unload-flush") ?? null;
+      let value = resolvedStorage?.getItem(LAST_UNLOAD_FLUSH_KEY) ?? null;
       if (value === null) {
         return;
       }
-      resolvedStorage?.removeItem("slides-files/last-unload-flush");
+      resolvedStorage?.removeItem(LAST_UNLOAD_FLUSH_KEY);
       return JSON.parse(value);
     } catch {
       return;
     }
   }
+  bindRuntimeValue(
+    runtime2,
+    "LAST_UNLOAD_FLUSH_KEY",
+    () => LAST_UNLOAD_FLUSH_KEY,
+    (value) => {
+      LAST_UNLOAD_FLUSH_KEY = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "createPaneVisibilityWatcher",
+    () => createPaneVisibilityWatcher
+  );
+  bindRuntimeValue(runtime2, "sharedPaneWatcher", () => sharedPaneWatcher);
+  bindRuntimeValue(runtime2, "onPaneAway", () => onPaneAway);
+  bindRuntimeValue(runtime2, "pageHiddenOrPaneAway", () => pageHiddenOrPaneAway);
   bindRuntimeValue(
     runtime2,
     "installUnloadSaveFlush",
@@ -280246,6 +286570,7 @@ function installFilesUnloadFlush(runtime2) {
     () => readLastUnloadFlushReport
   );
   return () => {
+    LAST_UNLOAD_FLUSH_KEY = "slides-files/last-unload-flush";
   };
 }
 
@@ -284815,8 +291140,8 @@ function installFilesBrowserPort(runtime2) {
     };
   }
   function createBrowserFilesPort(options = {}) {
-    let fetchFile = options.fetch ?? ((input) => globalThis.fetch(input)), fetchFresh = options.fetchFresh ?? fetchFile, freshReads = false, now = () => globalThis.performance?.now() ?? Date.now(), fetchWithReadTelemetry = async (input) => {
-      let value = freshReads, value2 = now();
+    let fetchFile = options.fetch ?? ((input) => globalThis.fetch(input)), fetchFresh = options.fetchFresh ?? fetchFile, freshReads = false, now = () => globalThis.performance?.now() ?? Date.now(), fetchWithReadTelemetry = async (input, options2 = false) => {
+      let value = freshReads || options2, value2 = now();
       try {
         let value3 = await (value ? fetchFresh : fetchFile)(input);
         try {
@@ -285005,7 +291330,7 @@ function installFilesBrowserPort(runtime2) {
         return value === listingGeneration && value2 === currentFrameVersion() && !publishedFileOverrides.has(input) && (value3 || value5 === firstListingShas?.get(input)) ? value5 : void 0;
       };
     }
-    async function readFileBytes(input, options2 = false) {
+    async function readFileBytes(input, options2 = false, options3 = false) {
       let entry = publishedFileOverrides.get(input);
       if (entry === null) {
         throw {
@@ -285023,7 +291348,7 @@ function installFilesBrowserPort(runtime2) {
           raw: false
         };
       }
-      let entry2 = fileReadCache.get(input);
+      let entry2 = options3 ? void 0 : fileReadCache.get(input);
       if (entry2 !== void 0 && (listingCache?.get(input)?.sha256 ?? entry2.sha256) === entry2.sha256) {
         return {
           ...entry2,
@@ -285031,7 +291356,10 @@ function installFilesBrowserPort(runtime2) {
         };
       }
       let value = currentFrameVersion(), value2 = listingShaForRead(input), [value3] = await Promise.all([
-        fetchWithReadTelemetry((0, runtime2.encodeFileUrlPath)(input)),
+        fetchWithReadTelemetry(
+          (0, runtime2.encodeFileUrlPath)(input),
+          options3
+        ),
         listingCache !== void 0 ? void 0 : ensureListing()
       ]);
       if (!options2) {
@@ -285278,8 +291606,8 @@ function installFilesBrowserPort(runtime2) {
         value2 === void 0 || value2 === value ? options2 : value2
       );
     }
-    async function readFileText(input, options2) {
-      let value4 = ++heldShaStamp, value = await readFileBytes(input, options2), value2 = fileTextDecoder.decode(value.bytes);
+    async function readFileText(input, options2, options3 = false) {
+      let value4 = ++heldShaStamp, value = await readFileBytes(input, options2, options3), value2 = fileTextDecoder.decode(value.bytes);
       if (value.raw && (0, runtime2.isHtmlFilePath)(input)) {
         value2 = (0, runtime2.stripFrameRuntimeBlock)(value2);
       }
@@ -285394,6 +291722,7 @@ function installFilesBrowserPort(runtime2) {
       peekRows: () => listingCache === void 0 ? void 0 : listingToFiles(listingCache),
       readText: (input) => readFileText(input, false),
       readTextUnchecked: (input) => readFileText(input, true),
+      readTextFresh: (input) => readFileText(input, false, true),
       publish: enqueuePublish,
       onRemoteChange(input) {
         remoteChangeSubscribers.add(input);
@@ -286089,6 +292418,23 @@ function installFilesIndexStore(runtime2) {
   var DECK_INDEX_MERGE_SCHEMA;
   var emptyDeckIndex;
   var IndexFileError;
+  function schemaAcceptsValue(schema, value) {
+    if (schema?.kind === "list") {
+      return (0, runtime2.isStringArray)(value);
+    }
+    if (schema?.kind === "records") {
+      return Array.isArray(value) || (0, runtime2.isMergeObject)(value);
+    }
+    if (schema?.kind !== "map") {
+      return true;
+    }
+    return (0, runtime2.isMergeObject)(value) && Object.keys(value).every(
+      (key) => schemaAcceptsValue(
+        schema.keys !== void 0 && Object.hasOwn(schema.keys, key) ? schema.keys[key] : schema.of,
+        value[key]
+      )
+    );
+  }
   function sortIndexDocumentKeys(value, versionFirst) {
     if (Array.isArray(value)) {
       return value.map((input) => sortIndexDocumentKeys(input, false));
@@ -286119,6 +292465,21 @@ function installFilesIndexStore(runtime2) {
   }
   function createIndexFileStore(input) {
     let value = input.empty(), value2 = (0, runtime2.cloneMergeValue)(value), value3 = null, value4, items = [], flag = false;
+    function lacksOnlyVersion(document2) {
+      let allowed = input.keysWithoutV;
+      if (allowed === void 0 || document2.v !== void 0 && document2.v !== null) {
+        return false;
+      }
+      let empty = (member) => member === null || Array.isArray(member) && member.length === 0;
+      return Object.keys(document2).every(
+        (key) => key === "v" || allowed.includes(key)
+      ) && schemaAcceptsValue(
+        input.schema,
+        Object.fromEntries(
+          Object.entries(document2).filter(([, member]) => !empty(member))
+        )
+      );
+    }
     function value5(input2) {
       let value6;
       try {
@@ -286126,13 +292487,16 @@ function installFilesIndexStore(runtime2) {
       } catch {
         throw new IndexFileError("unreadable", input.path + " is not JSON", true);
       }
+      let value7 = input.empty();
+      if ((0, runtime2.isMergeObject)(value6) && lacksOnlyVersion(value6)) {
+        value6.v = value7.v;
+      }
       if (!(0, runtime2.isMergeObject)(value6) || typeof value6.v !== "number") {
         throw new IndexFileError(
           "unreadable",
           input.path + " has no numeric v"
         );
       }
-      let value7 = input.empty();
       if (value6.v > (input.maxVersion ?? value7.v)) {
         throw new IndexFileError(
           "newer_version",
@@ -287497,7 +293861,7 @@ function installFilesSaveQueue(runtime2) {
       }
       return new Promise((input) => settleWaiters.push(input));
     }
-    return {
+    let queue = {
       markDirty,
       commit,
       settle,
@@ -287570,6 +293934,16 @@ function installFilesSaveQueue(runtime2) {
         clearStuckIfClean();
         clearSavedStash();
       },
+      withdrawAll() {
+        for (let value of /* @__PURE__ */ new Set([
+          ...dirtyEntries.keys(),
+          ...inFlightGenerations.keys(),
+          ...conflictedEntries.keys(),
+          ...unsendableReasons.keys()
+        ])) {
+          queue.withdraw(value);
+        }
+      },
       withdrawn: () => withdrawnPaths,
       retryNow() {
         if (disposed || dirtyEntries.size === 0) {
@@ -287639,6 +294013,7 @@ function installFilesSaveQueue(runtime2) {
         });
       }
     };
+    return queue;
   }
   bindRuntimeValue(
     runtime2,
@@ -289947,9 +296322,12 @@ function installFilesSlidesDocument(runtime2) {
   var SLIDES_FILES_SAVE_DEBOUNCE_MS;
   var SLIDES_FILES_SHARED_MAX_WAIT_MS;
   var SLIDES_FILES_SOLO_MAX_WAIT_MS;
-  var SLIDES_FILES_MAX_PARALLEL_READS;
-  var SLIDES_FILES_BOOT_REFRESH_MS;
-  var SLIDES_FILES_RECONNECT_TIMEOUT_MS;
+  var SLIDES_FILES_BURST_PUBLISHES;
+  var SLIDES_FILES_BURST_MAX_WAIT_MS;
+  var SLIDES_FILES_BURST_WINDOW_MS;
+  var SLIDES_FILES_PATCH_RESUME_MS;
+  var SLIDES_FILES_PATCH_BUDGET_MS;
+  var SLIDES_FILES_PATCH_CHAR_BUDGET;
   var SLIDES_FILES_STALE_SYNC_TIMEOUT_MS;
   var SLIDES_FILES_ERROR_NOTIFY_MS;
   var SLIDES_FILES_MAX_RECOVERY_ATTEMPTS;
@@ -289959,7 +296337,7 @@ function installFilesSlidesDocument(runtime2) {
   var SlidesContentUnbuildableError;
   var isPermanentSlidesLoadFailure;
   function createSlidesFilesDocument(options) {
-    let timers = options.timers ?? slidesFilesTimers, mayWrite = options.port.mayWrite ?? options.port.canWrite, canWrite = mayWrite, listingNarrowed = false, newDeckUsesCssLists = false, codecState = options.codec ?? (0, runtime2.createSlideDocumentCodec)(), notesStoredInFiles = options.notes === void 0, fileCodec = (0, runtime2.createSlidesFileCodec)(
+    let timers = options.timers ?? slidesFilesTimers, mayWrite = options.port.mayWrite ?? options.port.canWrite, canWrite = mayWrite, listingNarrowed = false, newDeckUsesCssLists = false, portCanWrite = mayWrite, deckFormatUnknown = false, sharedFiles = /* @__PURE__ */ new Map(), slidesAwaitingPatch = /* @__PURE__ */ new Set(), slideLimitToasts = /* @__PURE__ */ new Map(), patchRun, patchSpentMs = 0, patchTimer, patchResults = /* @__PURE__ */ new Map(), patchedSlideText = /* @__PURE__ */ new Map(), unloadingPage = false, flushingForUnload = false, composeCount = 0, unreadRun, deferredIndexBind, remoteChangeSeq = 0, publishedAtRemoteSeq = /* @__PURE__ */ new Map(), codecState = options.codec ?? (0, runtime2.createSlideDocumentCodec)(), readsOffPage = codecState.reader.offPage, notesStoredInFiles = options.notes === void 0, fileCodec = (0, runtime2.createSlidesFileCodec)(
       codecState.codec,
       {
         notesInFiles: notesStoredInFiles
@@ -289981,7 +296359,7 @@ function installFilesSlidesDocument(runtime2) {
       title: (0, runtime2.normalizeArtifactTitle)(options.defaultTitle) ?? (0, runtime2.untranslatedMessage)("Untitled"),
       content: options.initialContent,
       comments: []
-    }, decomposedEnvelope, codecCarry, loadState = "loading", loadFailureMessage, contentUnbuildable = false, decompositionPending = false, idleCommitTimer, maxWaitCommitTimer, lastSyncedAt, lastSaveError, stuckSave, unsendableFiles, unsendableNoticeShown = false, saveTrouble = false, gestureActive = false, commitOwed = false, disposed = false, documentSubscribers = /* @__PURE__ */ new Set(), saveSubscribers = /* @__PURE__ */ new Set(), loadSubscribers = /* @__PURE__ */ new Set(), listUnlessNarrowed = options.port.listUnlessNarrowed, savePort = {
+    }, decomposedEnvelope, codecCarry, loadState = "loading", readAbort = new AbortController(), readAheadAbort = new AbortController(), loadFailureMessage, contentUnbuildable = false, decompositionPending = false, idleCommitTimer, maxWaitCommitTimer, lastSyncedAt, lastSaveError, stuckSave, unsendableFiles, unsendableNoticeShown = false, saveTrouble = false, gestureActive = false, commitOwed = false, disposed = false, documentSubscribers = /* @__PURE__ */ new Set(), saveSubscribers = /* @__PURE__ */ new Set(), loadSubscribers = /* @__PURE__ */ new Set(), listUnlessNarrowed = options.port.listUnlessNarrowed, savePort = {
       get canWrite() {
         return options.port.canWrite;
       },
@@ -290031,11 +296409,12 @@ function installFilesSlidesDocument(runtime2) {
           }
         }
         recentPublishTimes.push(timers.now());
-        let value = await options.port.publish(input, options2);
+        let publishSeq = remoteChangeSeq, value = await options.port.publish(input, options2);
         if (!value.ok) {
           return value;
         }
         for (let [value2, value3] of entries) {
+          publishedAtRemoteSeq.set(value2, publishSeq);
           inFlightSlidePaths.delete(value2);
           rebasedSlideShas.delete(value2);
           if (value3 === null) {
@@ -290138,19 +296517,21 @@ function installFilesSlidesDocument(runtime2) {
         readText: readTextWithRetries
       },
       path: runtime2.DECK_METADATA_PATH,
+      maxVersion: runtime2.SOURCE_DECK_VERSION,
       schema: runtime2.DECK_INDEX_MERGE_SCHEMA,
-      empty: () => (0, runtime2.normalizeDeckMetadata)((0, runtime2.emptyDeckIndex)())
+      empty: () => (0, runtime2.normalizeDeckMetadata)((0, runtime2.emptyDeckIndex)()),
+      keysWithoutV: runtime2.KNOWN_DECK_METADATA_KEYS
     }), originalIndexMerge = indexStore.mergeFrom.bind(indexStore), designSystemTracker = (0, runtime2.createInstalledDesignSystemTracker)(
       {
         list: () => (0, runtime2.listWritableFiles)(options.port),
         readText: readTextWithRetries
       },
       () => savePort.version().version,
-      () => {
+      () => runAfterReads(() => {
         if (!disposed && loadState === "live") {
           recomposeFromFiles(true);
         }
-      }
+      })
     );
     indexStore.mergeFrom = (input) => {
       let items = [...indexStore.base().order], items2 = [...indexStore.get().order], value = indexStore.base().lists === void 0 && input.lists === void 0, value2 = originalIndexMerge(input);
@@ -290177,6 +296558,17 @@ function installFilesSlidesDocument(runtime2) {
       replayMergedOrderChanges(items, items2, value3);
       return value2;
     };
+    let originalIndexBind = indexStore.bind;
+    indexStore.bind = (input) => originalIndexBind(
+      input === void 0 ? void 0 : (value, value2, value3) => {
+        if (slidesPatchPending() || deferredIndexBind !== void 0) {
+          deferredIndexBind = () => input(value, value2, value3);
+          saveQueue.withdraw(value);
+        } else {
+          input(value, value2, value3);
+        }
+      }
+    );
     let saveQueue = (0, runtime2.createFilesSaveQueue)({
       port: savePort,
       index: indexStore,
@@ -290240,7 +296632,7 @@ function installFilesSlidesDocument(runtime2) {
         }
         let value = gestureActive;
         gestureActive = input.inFlight;
-        if (value && !gestureActive && commitOwed) {
+        if (value && !gestureActive && commitOwed && !sourceSlideOpen()) {
           commitChanges();
         }
         notifySaveSubscribers();
@@ -290283,7 +296675,10 @@ function installFilesSlidesDocument(runtime2) {
       if (!canWrite) {
         return {
           status: "readonly",
-          message: contentUnbuildable ? (0, runtime2.formatMessage)({
+          message: deckFormatUnknown ? (0, runtime2.formatMessage)({
+            defaultMessage: "This presentation was saved by a newer version of Slides, so it opens read-only here and may not look right. Reload this page to get the newest version.",
+            id: "k45KaiqimR"
+          }) : contentUnbuildable ? (0, runtime2.formatMessage)({
             defaultMessage: "A newer version of this presentation couldn\u2019t be opened, so you\u2019re seeing the one before it.",
             id: "NpkxP0U0lP"
           }) : waitingForReadableListing ? (0, runtime2.formatMessage)({
@@ -290301,7 +296696,15 @@ function installFilesSlidesDocument(runtime2) {
             defaultMessage: "Your latest changes have not been saved yet.",
             id: "HBR07mUCMF"
           }),
-          durable ? (0, runtime2.formatMessage)(
+          durable && (0, runtime2.isCoworkArtifactPage)() ? (0, runtime2.formatMessage)(
+            {
+              defaultMessage: "{days, plural, one {They are kept while Claude stays open, for up to # day, even if this page closes.} other {They are kept while Claude stays open, for up to # days, even if this page closes.}}",
+              id: "4B6Ku6qEnX"
+            },
+            {
+              days: runtime2.CRASH_STASH_MAX_AGE_MS / 864e5
+            }
+          ) : durable ? (0, runtime2.formatMessage)(
             {
               defaultMessage: "{days, plural, one {They are kept in this browser for # day, even if this tab closes.} other {They are kept in this browser for # days, even if this tab closes.}}",
               id: "W6CEg0uIk3"
@@ -290396,7 +296799,7 @@ function installFilesSlidesDocument(runtime2) {
         };
       }
       let value5 = countBlockedFiles();
-      if (inFlightSlidePaths.size > value5.slides || value4.unsaved > 0 && dirtySlidePaths.size === 0 && !indexStore.dirty()) {
+      if (gestureActive && inFlightSlidePaths.size > value5.slides || value4.unsaved > 0 && dirtySlidePaths.size === 0 && !indexStore.dirty()) {
         return {
           status: "saving",
           message: (0, runtime2.formatMessage)({
@@ -290484,7 +296887,7 @@ function installFilesSlidesDocument(runtime2) {
       if (!value.every((input2) => isSlideOrDeck(input2.path))) {
         return (0, runtime2.formatLostSlideEditsMessage)(value);
       }
-      let stashed = allPathsStashed(value.map((input2) => input2.path)), first = value[0], days = runtime2.CRASH_STASH_MAX_AGE_MS / 864e5, values = {
+      let stashed = allPathsStashed(value.map((input2) => input2.path)), inCowork = stashed && (0, runtime2.isCoworkArtifactPage)(), first = value[0], days = runtime2.CRASH_STASH_MAX_AGE_MS / 864e5, values = {
         slide: String(callback(first.path)),
         why: (0, runtime2.describeFileRejection)(
           first,
@@ -290505,7 +296908,13 @@ function installFilesSlidesDocument(runtime2) {
             values
           );
         }
-        return stashed ? (0, runtime2.formatMessage)(
+        return inCowork ? (0, runtime2.formatMessage)(
+          {
+            defaultMessage: "{days, plural, one {Everything else is saved, but slide {slide} is not: {why}. Until then it is kept while Claude stays open, for up to # day, even if this page closes.} other {Everything else is saved, but slide {slide} is not: {why}. Until then it is kept while Claude stays open, for up to # days, even if this page closes.}}",
+            id: "aWeWTAhLas"
+          },
+          values
+        ) : stashed ? (0, runtime2.formatMessage)(
           {
             defaultMessage: "{days, plural, one {Everything else is saved, but slide {slide} is not: {why}. Until then it is kept in this browser for # day, even if this tab closes.} other {Everything else is saved, but slide {slide} is not: {why}. Until then it is kept in this browser for # days, even if this tab closes.}}",
             id: "yXP2dI91q7"
@@ -290528,7 +296937,13 @@ function installFilesSlidesDocument(runtime2) {
           values
         );
       }
-      return stashed ? (0, runtime2.formatMessage)(
+      return inCowork ? (0, runtime2.formatMessage)(
+        {
+          defaultMessage: "{n, plural, one {{days, plural, one {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept while Claude stays open, for up to {dayCount} day, even if this page closes.} other {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept while Claude stays open, for up to {dayCount} days, even if this page closes.}}} other {{days, plural, one {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept while Claude stays open, for up to {dayCount} day, even if this page closes.} other {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept while Claude stays open, for up to {dayCount} days, even if this page closes.}}}}",
+          id: "TnBWP9BCUD"
+        },
+        values
+      ) : stashed ? (0, runtime2.formatMessage)(
         {
           defaultMessage: "{n, plural, one {{days, plural, one {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept in this browser for {dayCount} day, even if this tab closes.} other {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept in this browser for {dayCount} days, even if this tab closes.}}} other {{days, plural, one {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept in this browser for {dayCount} day, even if this tab closes.} other {Everything else is saved, but {count} slides are not. The first, slide {slide}: {why}. Until then they are kept in this browser for {dayCount} days, even if this tab closes.}}}}",
           id: "R+/2YIQ9o0"
@@ -290627,12 +297042,22 @@ function installFilesSlidesDocument(runtime2) {
       }
       return value;
     }
+    let sharedRecords = () => sharedFiles.size > 0 ? {
+      shared: new Map(
+        [...sharedFiles].map(([value, value2]) => [value, value2.text])
+      )
+    } : {};
     function composeFromFiles() {
       if (decompositionPending) {
         flushPendingDecomposition();
       }
+      applyPatchedSlides();
+      composeCount += 1;
       try {
-        let value3 = (0, runtime2.normalizeDeckMetadata)(indexStore.get()), value = fileCodec.compose(
+        let value3 = (0, runtime2.normalizeDeckMetadata)(indexStore.get());
+        deckFormatUnknown = (0, runtime2.classifyDeckFormat)(value3.format) === "unknown";
+        canWrite = portCanWrite && !deckFormatUnknown;
+        let value = fileCodec.compose(
           {
             files: composeCurrentFiles(),
             index: newDeckUsesCssLists && (0, runtime2.readFileMigrationMarker)(value3) === null ? {
@@ -290640,7 +297065,8 @@ function installFilesSlidesDocument(runtime2) {
               lists: "css"
             } : value3,
             notes: notesBySlide,
-            designSystems: designSystemTracker.current()
+            designSystems: designSystemTracker.current(),
+            ...sharedRecords()
           },
           codecCarry
         ), content = protectLocallyRevisedSlides(
@@ -290662,6 +297088,12 @@ function installFilesSlidesDocument(runtime2) {
         );
         codecCarry = value.carry;
         envelope = composed;
+        if (codecState.sourceReport() !== void 0 && codecState.unreadSlides().size === 0) {
+          (0, runtime2.publishSourceReport)(codecState.sourceReport());
+        }
+        if (codecState.unreadSlides().size > 0) {
+          readUnreadSlides();
+        }
       } catch (value3) {
         console.error(
           "slides (files): compose failed; keeping the current content (" + (value3 instanceof Error ? value3.name : "a throw") + ")"
@@ -290696,6 +297128,31 @@ function installFilesSlidesDocument(runtime2) {
       } else if (!wasUnbuildable) {
         notifyDocumentSubscribers(false);
       }
+    }
+    function recomposeWhenUnheld(paths, stillWanted = () => true) {
+      if (disposed || !stillWanted()) {
+        return;
+      }
+      if (isHeldOrOpen(paths())) {
+        timers.setTimeout(
+          () => recomposeWhenUnheld(paths, stillWanted),
+          SLIDES_FILES_SAVE_DEBOUNCE_MS
+        );
+      } else {
+        runAfterReads(() => {
+          if (isHeldOrOpen(paths())) {
+            recomposeWhenUnheld(paths, stillWanted);
+          } else if (stillWanted()) {
+            recomposeFromFiles(false);
+          }
+        });
+      }
+    }
+    function readUnreadSlides() {
+      unreadRun ??= codecState.readUnread(readAbort.signal).then(() => {
+        unreadRun = void 0;
+        runAfterReads(() => recomposeFromFiles(false));
+      });
     }
     function protectLocallyRevisedSlides(input) {
       let slides = input.slides;
@@ -290798,7 +297255,7 @@ function installFilesSlidesDocument(runtime2) {
       }
     }
     function updateLocalEnvelope(input) {
-      if (contentUnbuildable) {
+      if (contentUnbuildable || deckFormatUnknown) {
         return;
       }
       envelope = normalizeLocalEnvelope(input);
@@ -290818,7 +297275,7 @@ function installFilesSlidesDocument(runtime2) {
       if (!canWrite || loadState !== "live") {
         return void notifySaveSubscribers();
       }
-      let flag = false, flag2 = false, deletedPaths = [], handedDeletes = [];
+      let flag = false, flag2 = false, flag3 = false, deletedPaths = [], handedDeletes = [];
       for (let [value3, value4] of value.files) {
         let value5 = value2?.files.get(value3);
         if (value5 === value4) {
@@ -290828,9 +297285,52 @@ function installFilesSlidesDocument(runtime2) {
           flag = true;
         }
         localSlideOverrides.set(value3, value4);
+        if (codecState.sourceReport() !== void 0) {
+          slidesAwaitingPatch.add(value3);
+        }
         dirtySlidePaths.add(value3);
         touchedSlidePaths.add(value3);
         stashLocalSlideEdit(value3, value4, value.index.order);
+        if (slidesAwaitingPatch.has(value3)) {
+          scheduleSlidePatch();
+        }
+        let slide = envelope.content.slides[(0, runtime2.slideIdFromFilePath)(value3) ?? ""], limitMessage = slidesAwaitingPatch.has(value3) ? (0, runtime2.flatSlideLimitMessage)(value4, runtime2.SLIDE_LIMITS) : void 0;
+        if (limitMessage === void 0) {
+          (0, runtime2.closeToast)(slideLimitToasts.get(value3) ?? 0);
+          slideLimitToasts.delete(value3);
+        } else if (!slideLimitToasts.has(value3) && slide !== void 0) {
+          slideLimitToasts.set(
+            value3,
+            (0, runtime2.showToast)(
+              limitMessage === runtime2.SLIDE_LIMIT_MESSAGES.flatSize ? (0, runtime2.formatMessage)(
+                {
+                  defaultMessage: "Slide {n} is over 1 MB, so it won\u2019t show after a reload. It\u2019s saved. Use fewer or smaller pictures, or split it into two slides.",
+                  id: "ZY/eis6zCN"
+                },
+                {
+                  n: getSlideNumber(slide.id)
+                }
+              ) : (0, runtime2.formatMessage)(
+                {
+                  defaultMessage: "Slide {n} has over 3,000 elements, so it won\u2019t show after a reload. It\u2019s saved. Remove some, or split it into two slides.",
+                  id: "Xv29P05nWj"
+                },
+                {
+                  n: getSlideNumber(slide.id)
+                }
+              ),
+              0
+            )
+          );
+        }
+        if (readsOffPage && slide !== void 0 && slidesAwaitingPatch.has(value3)) {
+          codecState.vouch(
+            slide.id,
+            value4,
+            value.index.order.indexOf(slide.id),
+            slide
+          );
+        }
         flag2 = true;
       }
       for (let value3 of value2?.files.keys() ?? []) {
@@ -290851,7 +297351,7 @@ function installFilesSlidesDocument(runtime2) {
       }
       if (value2 === void 0 || JSON.stringify(value2.index) !== JSON.stringify(value.index)) {
         if (value2 !== void 0 && JSON.stringify(value2.index.order) !== JSON.stringify(value.index.order)) {
-          flag = true;
+          flag = flag3 = true;
         }
         indexStore.update(
           (input) => (0, runtime2.patchDeckMetadata)(
@@ -290866,7 +297366,7 @@ function installFilesSlidesDocument(runtime2) {
         flag2 = flag2 || indexStore.dirty();
       }
       for (let value3 of deletedPaths)
-        if (LOCAL_SLIDE_RECOVERY_ORIGIN === "mine" && (!inFlightSlidePaths.has(value3) || saveQueue.unsendable().has(value3))) {
+        if (LOCAL_SLIDE_RECOVERY_ORIGIN === "mine" && !slidesPatchPending() && (!inFlightSlidePaths.has(value3) || saveQueue.unsendable().has(value3))) {
           handDeleteToSaveQueue(
             value3,
             liveSlideFiles.get(value3)?.sha ?? null
@@ -290901,17 +297401,245 @@ function installFilesSlidesDocument(runtime2) {
       if (flag) {
         structureTouched = true;
         commitChanges("structural");
+        if (flag3 && codecState.readsByPlace()) {
+          readAheadFromFiles();
+        }
       } else {
         scheduleIdleCommit();
         scheduleMaxWaitCommit();
       }
       notifySaveSubscribers();
     }
+    function readAheadFromFiles() {
+      readAheadAbort.abort();
+      let controller = readAheadAbort = new AbortController();
+      (async () => codecState.readAhead(
+        (0, runtime2.filesEnvelopeRecords)({
+          files: composeCurrentFiles(),
+          index: (0, runtime2.normalizeDeckMetadata)(indexStore.get()),
+          ...sharedRecords()
+        }),
+        controller.signal
+      ))().catch(() => {
+        return;
+      }).then(
+        () => recomposeWhenUnheld(
+          () => composeCurrentFiles().keys(),
+          () => !controller.signal.aborted
+        )
+      );
+    }
+    let isHeldOrOpen = (paths) => [...paths].some((input) => {
+      let value = slideDocumentPathForFile(input);
+      return value !== void 0 && (options.holdRemote?.(value) === true || options.inSlide?.(value) === true);
+    });
+    function scheduleSlidePatch() {
+      if (!readsOffPage || patchTimer !== void 0) {
+        return;
+      }
+      patchTimer = timers.setTimeout(() => {
+        patchTimer = void 0;
+        if (!disposed) {
+          runSlidePatches();
+        }
+      }, SLIDES_FILES_PATCH_RESUME_MS);
+    }
+    function runSlidePatches() {
+      if (patchRun !== void 0) {
+        return patchRun;
+      }
+      let allPatched = true, sliceStart = timers.now();
+      patchRun = (async () => {
+        for (let value of [...slidesAwaitingPatch]) {
+          if (patchSpentMs >= SLIDES_FILES_PATCH_BUDGET_MS && timers.now() - sliceStart > 50) {
+            await runtime2.yieldToEventLoop();
+            sliceStart = timers.now();
+          }
+          if (disposed) {
+            break;
+          }
+          if (decompositionPending) {
+            flushPendingDecomposition();
+          }
+          let slideId = (0, runtime2.slideIdFromFilePath)(value), text = localSlideOverrides.get(value);
+          if (!slidesAwaitingPatch.has(value) || slideId === void 0 || typeof text !== "string" || patchResults.get(value)?.text === text) {
+            continue;
+          }
+          let overBudget = patchSpentMs >= SLIDES_FILES_PATCH_BUDGET_MS, composedThen = composeCount, started = timers.now(), { patched, stopped } = await codecState.patchAhead(
+            envelope.content,
+            slideId,
+            notesStoredInFiles,
+            !overBudget
+          );
+          if (overBudget && patched === void 0) {
+            emitEvent("patch-skipped", {
+              slide: slideId,
+              why: "the patches before it took too long"
+            });
+          }
+          if (patched === void 0) {
+            allPatched = false;
+          }
+          if (!overBudget) {
+            sliceStart = timers.now();
+          }
+          patchSpentMs += Math.max(
+            0,
+            Math.min(timers.now() - started, runtime2.READ_WORKER_STALL_MS)
+          );
+          if (stopped === true) {
+            emitEvent("patch-failed", {
+              slide: slideId,
+              why: "stopped"
+            });
+          }
+          patchResults.set(value, {
+            text,
+            got: composedThen === composeCount ? patched : void 0
+          });
+        }
+      })().finally(() => {
+        patchRun = void 0;
+        if (disposed) {
+          return;
+        }
+        applyPatchedSlides();
+        if (slidesAwaitingPatch.size === 0 || allPatched && patchSpentMs < SLIDES_FILES_PATCH_BUDGET_MS) {
+          patchSpentMs = 0;
+        }
+        if (slidesAwaitingPatch.size > 0) {
+          scheduleSlidePatch();
+        }
+        if (slidesAwaitingPatch.size === 0 && dirtySlidePaths.size === 0) {
+          releaseDeferredIndexBind();
+        }
+        if (commitOwed && !gestureActive && !sourceSlideOpen() && !slidesPatchPending()) {
+          commitChanges();
+        }
+      });
+      return patchRun;
+    }
+    let slidesPatchPending = () => readsOffPage && !unloadingPage && [...slidesAwaitingPatch].some((input) => {
+      let value = patchResults.get(input)?.got?.html;
+      return value === void 0 || value === patchedSlideText.get(input);
+    });
+    function releaseDeferredIndexBind() {
+      deferredIndexBind?.();
+      deferredIndexBind = void 0;
+    }
+    function runAfterReads(action) {
+      if (!readsOffPage) {
+        return action();
+      }
+      (async () => {
+        do {
+          await settlePatches();
+          await codecState.readAhead(
+            (0, runtime2.filesEnvelopeRecords)({
+              files: composeCurrentFiles(),
+              index: (0, runtime2.normalizeDeckMetadata)(indexStore.get()),
+              ...sharedRecords()
+            }),
+            readAbort.signal
+          );
+        } while (!disposed && (slidesAwaitingPatch.size > 0 || decompositionPending));
+        if (!disposed) {
+          action();
+        }
+      })();
+    }
+    async function settlePatches() {
+      for (; ; ) {
+        if (decompositionPending) {
+          flushPendingDecomposition();
+        }
+        if (!readsOffPage || disposed || slidesAwaitingPatch.size === 0) {
+          return;
+        }
+        await runSlidePatches();
+      }
+    }
+    function applyPatchedSlides() {
+      if (slidesAwaitingPatch.size === 0) {
+        return;
+      }
+      let charBudget = runtime2.SLIDES_FILES_PATCH_CHAR_BUDGET, copied = [];
+      for (let value of [...slidesAwaitingPatch]) {
+        let slideId = (0, runtime2.slideIdFromFilePath)(value), text = localSlideOverrides.get(value);
+        if (slideId === void 0 || typeof text !== "string") {
+          slidesAwaitingPatch.delete(value);
+          continue;
+        }
+        let patched;
+        if (readsOffPage) {
+          let result = patchResults.get(value);
+          if (result?.text !== text && !unloadingPage) {
+            continue;
+          }
+          patched = result?.text === text ? result.got : void 0;
+        } else {
+          if (charBudget <= 0) {
+            emitEvent("patch-skipped", {
+              slide: slideId,
+              why: "too much changed at once"
+            });
+          } else {
+            try {
+              patched = codecState.patchedSlide(
+                envelope.content,
+                slideId,
+                notesStoredInFiles
+              );
+            } catch (value2) {
+              emitEvent("patch-failed", {
+                slide: slideId,
+                why: value2 instanceof Error ? value2.name : "a throw"
+              });
+            }
+          }
+          if (patched?.how !== "same") {
+            charBudget -= text.length;
+          }
+        }
+        slidesAwaitingPatch.delete(value);
+        patchResults.delete(value);
+        if (patched !== void 0) {
+          localSlideOverrides.set(value, patched.html);
+          stashLocalSlideEdit(value, patched.html, indexStore.get().order);
+          if (patched.copied === true || patched.how === "element") {
+            copied.push(value);
+          }
+        }
+        if (codecState.sourceReport() !== void 0) {
+          let slide = envelope.content.slides[slideId], stilled = patched !== void 0 ? patched.stilled ?? 0 : slide === void 0 ? 0 : (0, runtime2.signatureGain)(
+            (0, runtime2.motionSignature)(slide),
+            ""
+          );
+          emitEvent("slide-saved", {
+            slide: slideId,
+            as: patched?.how ?? "flat",
+            stilled
+          });
+          (0, runtime2.recordSavedSlide)(slideId, patched?.how ?? "flat", stilled);
+        }
+      }
+      if (copied.length > 0) {
+        timers.setTimeout(() => recomposeWhenUnheld(() => copied), 0);
+      }
+    }
+    let sourceSlideOpen = () => codecState.sourceReport() !== void 0 && [...dirtySlidePaths].some((input) => {
+      let value = slideDocumentPathForFile(input);
+      return value !== void 0 && options.inSlide?.(value) === true;
+    });
     function scheduleIdleCommit() {
       timers.clearTimeout(idleCommitTimer);
       idleCommitTimer = timers.setTimeout(() => {
         idleCommitTimer = void 0;
-        commitChanges("idle");
+        if (sourceSlideOpen()) {
+          scheduleIdleCommit();
+        } else {
+          commitChanges("idle");
+        }
       }, SLIDES_FILES_SAVE_DEBOUNCE_MS);
     }
     function getMaxCommitWait() {
@@ -290919,10 +297647,10 @@ function installFilesSlidesDocument(runtime2) {
         return SLIDES_FILES_SOLO_MAX_WAIT_MS;
       }
       let value = timers.now();
-      while (recentPublishTimes.length > 0 && value - recentPublishTimes[0] >= SLIDES_FILES_RECONNECT_TIMEOUT_MS)
+      while (recentPublishTimes.length > 0 && value - recentPublishTimes[0] >= SLIDES_FILES_BURST_WINDOW_MS)
         recentPublishTimes.shift();
-      if (recentPublishTimes.length >= SLIDES_FILES_MAX_PARALLEL_READS) {
-        return SLIDES_FILES_BOOT_REFRESH_MS;
+      if (recentPublishTimes.length >= SLIDES_FILES_BURST_PUBLISHES) {
+        return SLIDES_FILES_BURST_MAX_WAIT_MS;
       } else {
         return SLIDES_FILES_SHARED_MAX_WAIT_MS;
       }
@@ -290937,7 +297665,7 @@ function installFilesSlidesDocument(runtime2) {
         let value2 = [...dirtySlidePaths].filter(
           (input) => !slideConflicts.has(input)
         );
-        if (value2.length === 0 && !indexStore.dirty()) {
+        if (value2.length === 0 && !indexStore.dirty() || sourceSlideOpen()) {
           return;
         }
         emitEvent("max-wait-flush", {
@@ -290951,6 +297679,11 @@ function installFilesSlidesDocument(runtime2) {
       }, value);
     }
     let readLocalOverride = (input) => () => {
+      applyPatchedSlides();
+      let patched = slidesAwaitingPatch.has(input) ? patchedSlideText.get(input) : void 0;
+      if (patched !== void 0) {
+        return patched;
+      }
       if (localSlideOverrides.has(input)) {
         return localSlideOverrides.get(input) ?? null;
       }
@@ -291032,6 +297765,12 @@ function installFilesSlidesDocument(runtime2) {
       if (decompositionPending) {
         flushPendingDecomposition();
       }
+      applyPatchedSlides();
+      if (slidesPatchPending()) {
+        commitOwed = true;
+        runSlidePatches();
+        return;
+      }
       if (options.startEmpty === true && !contentUnbuildable && (dirtySlidePaths.size > 0 || indexStore.dirty()) && (0, runtime2.readFileMigrationMarker)(indexStore.get()) === null) {
         indexStore.update((input2) => {
           input2[runtime2.CREATED_ON_FILES_MARKER_FIELD] = (0, runtime2.createdOnFilesMarker)({
@@ -291060,6 +297799,7 @@ function installFilesSlidesDocument(runtime2) {
         return;
       }
       commitOwed = false;
+      releaseDeferredIndexBind();
       let items = [];
       for (let value of [...dirtySlidePaths]) {
         let value2 = knownSlideShas.has(value) ? knownSlideShas.get(value) ?? null : null, value3 = liveSlideFiles.get(value)?.sha ?? null, movedOn = value3 !== value2 && !inFlightSlidePaths.has(value) && !(rebasedSlideShas.has(value) && rebasedSlideShas.get(value) === value2);
@@ -291087,7 +297827,16 @@ function installFilesSlidesDocument(runtime2) {
         dirtySlidePaths.delete(value);
         inFlightSlidePaths.add(value);
         items.push(value);
+        let text = slidesAwaitingPatch.has(value) ? patchResults.get(value)?.got?.html : localSlideOverrides.get(value);
+        if (typeof text === "string") {
+          patchedSlideText.set(value, text);
+        }
         saveQueue.markDirty(value, readLocalOverride(value), value2);
+      }
+      for (let value of slidesAwaitingPatch) dirtySlidePaths.add(value);
+      if (slidesAwaitingPatch.size > 0) {
+        scheduleIdleCommit();
+        scheduleMaxWaitCommit();
       }
       if (items.length > 0 || indexStore.dirty()) {
         emitEvent("commit", {
@@ -291097,6 +297846,9 @@ function installFilesSlidesDocument(runtime2) {
         });
       }
       saveQueue.commit();
+      if ((0, runtime2.pageHiddenOrPaneAway)() && !flushingForUnload) {
+        saveQueue.flushNow();
+      }
       notifySaveSubscribers();
     }
     function flushForUnload(input) {
@@ -291110,7 +297862,13 @@ function installFilesSlidesDocument(runtime2) {
         index: indexStore.dirty(),
         owed: gestureActive
       };
+      unloadingPage = input === "pagehide";
+      flushingForUnload = true;
       commitChanges(input);
+      flushingForUnload = unloadingPage = false;
+      if (slidesAwaitingPatch.size > 0) {
+        commitOwed = true;
+      }
       saveQueue.flushNow();
       emitEvent("unload-flush", {
         why: input,
@@ -291253,7 +298011,7 @@ function installFilesSlidesDocument(runtime2) {
     }
     function restoreStashedSlide(input) {
       let entry = stashedSlideOffers.get(input);
-      if (entry === void 0) {
+      if (entry === void 0 || !canWrite) {
         return;
       }
       stashedSlideOffers.delete(input);
@@ -291367,7 +298125,7 @@ function installFilesSlidesDocument(runtime2) {
       });
       recomposeFromFiles(true);
       let value3 = decomposedEnvelope?.files.get(value2);
-      if (value3 !== void 0) {
+      if (value3 !== void 0 && codecState.slideHtmlHold(value) === void 0) {
         localSlideOverrides.set(value2, value3);
       }
       dirtySlidePaths.add(value2);
@@ -291788,8 +298546,8 @@ function installFilesSlidesDocument(runtime2) {
       if (loadState === "loading") {
         remoteChangedWhileLoading = true;
       }
-      let value = remoteApplyChain.then(
-        () => applyRemoteChange(input, options2)
+      let seq = ++remoteChangeSeq, value = remoteApplyChain.then(
+        () => applyRemoteChange(input, options2, seq)
       );
       remoteApplyChain = value.catch(() => {
         return;
@@ -291797,7 +298555,7 @@ function installFilesSlidesDocument(runtime2) {
       return value;
     }
     let remoteRereadDelays = [5e3, 2e4];
-    async function applyRemoteChange(input, options2) {
+    async function applyRemoteChange(input, options2, seq) {
       if (disposed) {
         return;
       }
@@ -291818,7 +298576,7 @@ function installFilesSlidesDocument(runtime2) {
         });
       }
       let value = input.changed.filter(
-        (input2) => input2.path === runtime2.DECK_METADATA_PATH || (0, runtime2.slideIdFromFilePath)(input2.path) !== void 0
+        (input2) => input2.path === runtime2.DECK_METADATA_PATH || runtime2.isSourceDeckSharedFile(input2.path) || (0, runtime2.slideIdFromFilePath)(input2.path) !== void 0
       );
       if (value.length === 0) {
         return;
@@ -291828,7 +298586,9 @@ function installFilesSlidesDocument(runtime2) {
       );
       newDeckUsesCssLists = false;
       await readFilesConcurrently(
-        value.filter((input2) => input2.path !== runtime2.DECK_METADATA_PATH),
+        value.filter(
+          (input2) => input2.path !== runtime2.DECK_METADATA_PATH && !runtime2.isSourceDeckSharedFile(input2.path)
+        ),
         async (input2) => {
           if (input2.sha256 === null) {
             return void (liveSlideFiles.has(input2.path) || localSlideOverrides.has(input2.path) ? entries.set(input2.path, null) : void 0);
@@ -291874,6 +298634,33 @@ function installFilesSlidesDocument(runtime2) {
           }
         }, remoteRereadDelays[options2]);
       }
+      let newIndex = value2 ? await readTextWithRetries(runtime2.DECK_METADATA_PATH).then((input2) => indexStore.parse(input2.text)).catch(() => void 0) : void 0, shared = value.some((input2) => runtime2.isSourceDeckSharedFile(input2.path)) || value2 && (0, runtime2.deckSharedFiles)(
+        (newIndex ?? indexStore.get()).format
+      ).some((input2) => !sharedFiles.has(input2)) ? await readSharedAfterRemoteChange(
+        input,
+        options2,
+        value,
+        value2,
+        entries,
+        newIndex
+      ) : void 0, skip = (input2) => (publishedAtRemoteSeq.get(input2) ?? 0) >= seq || dirtySlidePaths.has(input2) || inFlightSlidePaths.has(input2) || isHeldOrOpen([input2]);
+      if (readsOffPage) {
+        await settlePatches();
+        await readAheadWithRemote(
+          entries,
+          shared?.next ?? sharedFiles,
+          newIndex,
+          skip
+        );
+      } else if (shared?.moved !== true && (entries.size > 1 || newIndex !== void 0 && (listsOrFacesDiffer(newIndex) || !(0, runtime2.stringArraysEqual)(
+        indexStore.base().order,
+        newIndex.order
+      ) && codecState.readsByPlace()))) {
+        await readAheadWithRemote(entries, sharedFiles, newIndex);
+      }
+      if (disposed) {
+        return;
+      }
       if (value2 && decompositionPending) {
         flushPendingDecomposition();
       }
@@ -291913,15 +298700,65 @@ function installFilesSlidesDocument(runtime2) {
           }
         }
       }
+      while (readsOffPage && !disposed) {
+        await settlePatches();
+        await readAheadWithRemote(
+          entries,
+          shared?.next ?? sharedFiles,
+          void 0,
+          skip
+        );
+        if (slidesAwaitingPatch.size === 0 && !decompositionPending) {
+          break;
+        }
+      }
+      if (shared !== void 0) {
+        sharedFiles.clear();
+        for (let [value3, value4] of shared.next) {
+          sharedFiles.set(value3, value4);
+        }
+      }
+      let moved = shared?.moved === true;
+      if (value2 && newIndex === void 0 && options2 < remoteRereadDelays.length && (0, runtime2.deckSharedFiles)(indexStore.get().format).some(
+        (input2) => !sharedFiles.has(input2)
+      )) {
+        let value3 = value.find(
+          (input2) => input2.path === runtime2.DECK_METADATA_PATH
+        );
+        timers.setTimeout(() => {
+          if (!disposed) {
+            enqueueRemoteChange(
+              {
+                ...input,
+                changed: [value3]
+              },
+              options2 + 1
+            );
+          }
+        }, remoteRereadDelays[options2]);
+      }
       if (disposed) {
         return;
       }
       if (decompositionPending) {
         flushPendingDecomposition();
       }
+      if (moved) {
+        for (let [value3, value4] of composeCurrentFiles()) {
+          let value5 = slideDocumentPathForFile(value3);
+          if (runtime2.isFlatSlideHtml(value4) || value5 !== void 0 && (options.holdRemote?.(value5) === true || options.inSlide?.(value5) === true)) {
+            continue;
+          }
+          bumpSlideLocalRevision(value3);
+        }
+      }
       let flag2 = false;
       for (let [value3, value4] of entries) {
         let entry = liveSlideFiles.get(value3);
+        if ((publishedAtRemoteSeq.get(value3) ?? 0) >= seq) {
+          entries.delete(value3);
+          continue;
+        }
         if (entry !== void 0 && value4 !== null && entry.sha === value4.sha && entry.text === value4.text) {
           entries.delete(value3);
           continue;
@@ -292019,7 +298856,7 @@ function installFilesSlidesDocument(runtime2) {
           bumpSlideLocalRevision(value3);
         }
       }
-      if (entries.size === 0 && !value2) {
+      if (entries.size === 0 && !value2 && !moved) {
         return;
       }
       if (LOCAL_SLIDE_RECOVERY_ORIGIN === "mine") {
@@ -292047,6 +298884,91 @@ function installFilesSlidesDocument(runtime2) {
         } : {}
       });
       recomposeFromFiles(true);
+    }
+    let listsOrFacesDiffer = (input) => input.lists !== indexStore.base().lists || JSON.stringify(input.faces) !== JSON.stringify(indexStore.base().faces);
+    async function readAheadWithRemote(changes, shared, index4 = indexStore.get(), skip) {
+      let files = composeCurrentFiles();
+      for (let [value, value2] of changes) {
+        if (skip?.(value) === true) {
+          continue;
+        }
+        if (value2 === null) {
+          files.delete(value);
+        } else {
+          files.set(value, value2.text);
+        }
+      }
+      await codecState.readAhead(
+        (0, runtime2.filesEnvelopeRecords)({
+          files,
+          index: (0, runtime2.normalizeDeckMetadata)(index4),
+          ...shared.size > 0 ? {
+            shared: new Map(
+              [...shared].map(([value, value2]) => [value, value2.text])
+            )
+          } : {}
+        }),
+        readAbort.signal
+      );
+    }
+    async function readSharedAfterRemoteChange(input, options2, changed, indexChanged, entries, newIndex) {
+      let names = (0, runtime2.deckSharedFiles)(
+        (newIndex ?? indexStore.get()).format
+      ), next = new Map(sharedFiles);
+      for (let value of changed) {
+        if (runtime2.isSourceDeckSharedFile(value.path) && !names.includes(value.path)) {
+          next.delete(value.path);
+        }
+      }
+      let moved = false;
+      for (let value of names) {
+        let value2 = changed.find((input2) => input2.path === value);
+        if (value2 === void 0 && !(indexChanged && !next.has(value))) {
+          continue;
+        }
+        let before = next.get(value)?.text;
+        if (value2?.sha256 === null) {
+          next.delete(value);
+        } else {
+          try {
+            let value3 = await readTextWithRetries(value);
+            next.set(value, {
+              text: value3.text,
+              sha: value3.sha256
+            });
+          } catch (value3) {
+            console.warn(
+              "slides (files): could not read " + value + " after a remote change",
+              value3
+            );
+            if (value2 !== void 0 && options2 < remoteRereadDelays.length) {
+              emitEvent("remote-reread", {
+                paths: [value],
+                inMs: remoteRereadDelays[options2]
+              });
+              timers.setTimeout(() => {
+                if (!disposed) {
+                  enqueueRemoteChange(
+                    {
+                      ...input,
+                      changed: [value2]
+                    },
+                    options2 + 1
+                  );
+                }
+              }, remoteRereadDelays[options2]);
+            }
+            continue;
+          }
+        }
+        if (next.get(value)?.text !== before) {
+          moved = true;
+        }
+      }
+      if (moved) {
+        await readAheadWithRemote(entries, next, newIndex);
+      }
+      return { next, moved };
     }
     function replayMergedOrderChanges(input, options2, context) {
       let value = (0, runtime2.longestCommonSubsequence)(input, options2);
@@ -292163,7 +299085,9 @@ function installFilesSlidesDocument(runtime2) {
       if (value2 !== void 0) {
         retryDirtySlide(value2);
       }
-      commitChanges("hold-released");
+      if (!sourceSlideOpen()) {
+        commitChanges("hold-released");
+      }
     }
     let earlySlide, earlySlideSubscribers = /* @__PURE__ */ new Set(), bootGeneration = 0;
     function setEarlySlide(input) {
@@ -292184,20 +299108,23 @@ function installFilesSlidesDocument(runtime2) {
         } catch {
           return options3;
         }
-      }, value, value2, flag = false, entries = /* @__PURE__ */ new Map(), callback2 = (input2, options3) => {
+      }, value, value2, flag = false, deckShared = /* @__PURE__ */ new Map(), entries = /* @__PURE__ */ new Map(), callback2 = (input2, options3) => {
         if (flag || disposed || options2 !== bootGeneration || loadState !== "loading") {
           return;
         }
-        if (input2 === runtime2.DECK_METADATA_PATH) {
+        if (runtime2.isSourceDeckSharedFile(input2)) {
+          deckShared.set(input2, options3);
+        } else if (input2 === runtime2.DECK_METADATA_PATH) {
           if (value !== void 0) {
             return;
           }
           let value5 = callback(() => {
-            let value6 = JSON.parse(options3);
-            if (typeof value6.v !== "number" || value6.v > runtime2.DECK_METADATA_VERSION) {
-              return null;
+            value = (0, runtime2.normalizeDeckMetadata)(
+              indexStore.parse(options3)
+            );
+            if (runtime2.classifyDeckFormat(value.format) === "source") {
+              codecState.reader.warm();
             }
-            value = (0, runtime2.normalizeDeckMetadata)(value6);
             return input.landing(value.order);
           }, null);
           if (value5 === null || (0, runtime2.slideIdFromFilePath)(
@@ -292221,39 +299148,63 @@ function installFilesSlidesDocument(runtime2) {
         if (entry === void 0) {
           return;
         }
+        let kind = runtime2.classifyDeckFormat(value.format);
+        if ((0, runtime2.deckSharedFiles)(value.format).some(
+          (input3) => !deckShared.has(input3)
+        ) && !runtime2.isFlatSlideHtml(entry)) {
+          return;
+        }
         flag = true;
         entries.clear();
-        let value3 = (0, runtime2.slideIdFromFilePath)(value2), value4 = callback(() => {
-          if (input.allowed?.() === false) {
+        if (kind === "unknown") {
+          return;
+        }
+        let value3 = (0, runtime2.slideIdFromFilePath)(value2), earlyCodec = (0, runtime2.createSlideDocumentCodec)({
+          reader: codecState.reader
+        }), envelope2 = {
+          files: /* @__PURE__ */ new Map([[value2, entry]]),
+          index: {
+            ...value,
+            order: [value3]
+          },
+          designSystems: designSystemTracker.current(),
+          shared: deckShared
+        };
+        if (callback(() => input.allowed?.() === false, true)) {
+          return;
+        }
+        earlyCodec.readAhead(
+          callback(
+            () => (0, runtime2.filesEnvelopeRecords)(envelope2),
+            /* @__PURE__ */ new Map()
+          ),
+          readAbort.signal
+        ).then(() => {
+          if (disposed || options2 !== bootGeneration || loadState !== "loading") {
             return;
           }
-          let value5 = (0, runtime2.createSlidesFileCodec)(
-            (0, runtime2.createSlideDocumentCodec)().codec,
-            {
-              notesInFiles: notesStoredInFiles
+          let value4 = callback(() => {
+            if (input.allowed?.() === false) {
+              return;
             }
-          ).compose(
-            {
-              files: /* @__PURE__ */ new Map([[value2, entry]]),
-              index: {
-                ...value,
-                order: [value3]
-              },
-              designSystems: designSystemTracker.current()
-            },
-            void 0
-          );
-          return input.parse(value5.content);
-        }, void 0);
-        if (value4?.slides[value3] !== void 0) {
-          setEarlySlide({
-            id: value3,
-            content: value4
-          });
-        }
+            let value5 = (0, runtime2.createSlidesFileCodec)(
+              earlyCodec.codec,
+              {
+                notesInFiles: notesStoredInFiles
+              }
+            ).compose(envelope2, void 0);
+            return input.parse(value5.content);
+          }, void 0);
+          if (value4?.slides[value3] !== void 0) {
+            setEarlySlide({
+              id: value3,
+              content: value4
+            });
+          }
+        });
       };
       return (input2, options3) => {
-        if (!flag && (input2 === runtime2.DECK_METADATA_PATH || input2.startsWith(runtime2.SLIDE_FILE_DIRECTORY))) {
+        if (!flag && (input2 === runtime2.DECK_METADATA_PATH || runtime2.isSourceDeckSharedFile(input2) || input2.startsWith(runtime2.SLIDE_FILE_DIRECTORY))) {
           options3.then(
             (input3) => callback2(input2, input3.text),
             () => {
@@ -292369,6 +299320,29 @@ function installFilesSlidesDocument(runtime2) {
         slidesListed: index4
       };
     }
+    let sharedReads = /* @__PURE__ */ new Map();
+    let sharedFilesOfIndexText = (input) => {
+      try {
+        return (0, runtime2.deckSharedFiles)(JSON.parse(input)?.format);
+      } catch {
+        return [];
+      }
+    };
+    async function readSharedFiles(listing) {
+      sharedFiles.clear();
+      for (let value of (0, runtime2.deckSharedFiles)(indexStore.get().format)) {
+        let value2 = listing?.find((input) => input.path === value), value3 = await sharedReads.get(value) ?? null;
+        if (value2 !== void 0 && value3?.sha256 !== value2.sha256) {
+          value3 = await readTextWithRetries(value).catch(() => null);
+        }
+        if (value3 !== null) {
+          sharedFiles.set(value, {
+            text: value3.text,
+            sha: value3.sha256
+          });
+        }
+      }
+    }
     async function loadDocument() {
       bootFailureAt = timers.now();
       let value = ++bootGeneration;
@@ -292393,8 +299367,31 @@ function installFilesSlidesDocument(runtime2) {
           flag = await callback();
         }
         waitingForReadableListing = flag;
-        let value3 = value2, flag2 = false, value4 = options.firstSlide !== void 0 && !flag ? createEarlySlideReader(options.firstSlide, value) : void 0, value5 = value3 === void 0 && value4 === void 0 ? options.port : new Proxy(options.port, {
-          get: (input, options2, context) => options2 === "list" && value3 !== void 0 ? () => flag2 ? input.list() : (flag2 = true, Promise.resolve(value3)) : options2 === "readText" && value4 !== void 0 ? (input2) => value4(input2, input.readText(input2)) : Reflect.get(input, options2, context)
+        sharedReads.clear();
+        let value3 = value2, flag2 = false, value4 = options.firstSlide !== void 0 && !flag ? createEarlySlideReader(options.firstSlide, value) : void 0, trackShared = (input, options2) => {
+          if (input === runtime2.DECK_METADATA_PATH) {
+            options2.then(
+              (input2) => {
+                for (let value72 of sharedFilesOfIndexText(input2.text)) {
+                  if (!sharedReads.has(value72)) {
+                    sharedReads.set(
+                      value72,
+                      (value4?.(value72, savePort.readText(value72)) ?? savePort.readText(value72)).catch(() => null)
+                    );
+                  }
+                }
+              },
+              () => {
+                return;
+              }
+            );
+          }
+          return options2;
+        }, value5 = new Proxy(options.port, {
+          get: (input, options2, context) => options2 === "list" && value3 !== void 0 ? () => flag2 ? input.list() : (flag2 = true, Promise.resolve(value3)) : options2 === "readText" ? (input2) => trackShared(
+            input2,
+            value4 !== void 0 ? value4(input2, input.readText(input2)) : input.readText(input2)
+          ) : Reflect.get(input, options2, context)
         }), value6 = flag ? {
           narrowed: true,
           index: null,
@@ -292421,8 +299418,8 @@ function installFilesSlidesDocument(runtime2) {
           if (!(options.startEmpty === true && input instanceof runtime2.BootReadError && input.code === "no_index")) {
             throw input;
           }
-          let value7 = await readBootIndex();
-          if (value7 === null) {
+          let value72 = await readBootIndex();
+          if (value72 === null) {
             throw new runtime2.BootReadError(
               "unreadable",
               runtime2.DECK_METADATA_PATH,
@@ -292432,18 +299429,27 @@ function installFilesSlidesDocument(runtime2) {
               input
             );
           }
-          return value7;
+          return value72;
         });
-        if (earlySlide !== void 0 && options.firstSlide?.painted !== void 0) {
+        if (value6.index !== null && /"format"/.test(value6.index.text)) {
+          await options.sourceDecksRead;
+        }
+        let lastPainted, waitForPaint = async () => {
+          if (earlySlide === void 0 || earlySlide === lastPainted || options.firstSlide?.painted === void 0) {
+            return;
+          }
+          lastPainted = earlySlide;
           await options.firstSlide.painted().catch(() => {
             return;
           });
-          if (disposed || value !== bootGeneration) {
-            return;
-          }
+        };
+        await waitForPaint();
+        if (disposed || value !== bootGeneration) {
+          return;
         }
         listingNarrowed = value6.narrowed === true || mayWrite && options.port.narrowed === true;
-        canWrite = options.port.canWrite && !listingNarrowed;
+        portCanWrite = options.port.canWrite && !listingNarrowed;
+        canWrite = portCanWrite;
         newDeckUsesCssLists = value6.index === null && "slidesListed" in value6 && value6.slidesListed === 0 && canWrite;
         if (waitingForReadableListing) {
           scheduleListingRetry();
@@ -292464,13 +299470,38 @@ function installFilesSlidesDocument(runtime2) {
         }
         liveSlideFiles.clear();
         knownSlideShas.clear();
-        for (let [value7, value8] of value6.files) {
-          liveSlideFiles.set(value7, {
+        await readSharedFiles(value6.listing);
+        if (disposed) {
+          return;
+        }
+        await waitForPaint();
+        if (disposed || value !== bootGeneration) {
+          return;
+        }
+        await codecState.readAhead(
+          (0, runtime2.filesEnvelopeRecords)({
+            files: new Map(
+              [...value6.files].map(([value72, value8]) => [value72, value8.text])
+            ),
+            index: (0, runtime2.normalizeDeckMetadata)(indexStore.get()),
+            ...sharedRecords()
+          }),
+          readAbort.signal
+        );
+        if (disposed || value !== bootGeneration) {
+          return;
+        }
+        await waitForPaint();
+        if (disposed || value !== bootGeneration) {
+          return;
+        }
+        for (let [value72, value8] of value6.files) {
+          liveSlideFiles.set(value72, {
             text: value8.text,
             sha: value8.sha256
           });
           rememberSlideText(value8.sha256, value8.text);
-          knownSlideShas.set(value7, value8.sha256);
+          knownSlideShas.set(value72, value8.sha256);
         }
         bootRetryAttempt = 0;
         loadFailureMessage = void 0;
@@ -292485,10 +299516,28 @@ function installFilesSlidesDocument(runtime2) {
         unbuildableAttempts = 0;
         loadState = "live";
         notifyDocumentSubscribers(true);
-        for (let value7 of [...loadSubscribers]) value7();
+        for (let value72 of [...loadSubscribers]) value72();
         notifySaveSubscribers();
         offerStashedSlides();
         loadKeptVersions();
+        let value7 = value6.listing?.filter(
+          (input) => (0, runtime2.deckSharedFiles)(indexStore.get().format).includes(
+            input.path
+          ) && !sharedFiles.has(input.path)
+        ) ?? [];
+        if (value7.length > 0) {
+          timers.setTimeout(() => {
+            if (!disposed && value === bootGeneration) {
+              enqueueRemoteChange(
+                {
+                  to: savePort.version(),
+                  changed: value7
+                },
+                1
+              );
+            }
+          }, remoteRereadDelays[0]);
+        }
       } catch (value2) {
         loadFailureMessage = value2 instanceof Error ? value2.message : String(
           value2?.message ?? value2
@@ -292675,6 +299724,9 @@ function installFilesSlidesDocument(runtime2) {
         if (loadState === "failed") {
           return void retryLoad("save");
         }
+        if (readsOffPage) {
+          await settlePatches();
+        }
         commitChanges("save");
         options.notes?.retry?.();
         saveQueue.flushNow();
@@ -292720,27 +299772,37 @@ function installFilesSlidesDocument(runtime2) {
       }),
       dispose() {
         disposed = true;
+        readAbort.abort();
+        readAheadAbort.abort();
         timers.clearTimeout(idleCommitTimer);
         timers.clearTimeout(maxWaitCommitTimer);
         timers.clearTimeout(stashOfferTimer);
         timers.clearTimeout(bootRetryTimer);
         timers.clearTimeout(listingRetryTimer);
+        timers.clearTimeout(patchTimer);
         unsubscribeRemoteChange();
         saveQueue.dispose();
       },
       commit: commitChanges,
       flushForUnload,
       settle: async () => {
-        if (decompositionPending) {
-          flushPendingDecomposition();
-        }
+        await settlePatches();
+        await unreadRun;
+        await settlePatches();
         await saveQueue.settle();
       },
       ready: () => readyPromise,
       applyRemote: enqueueRemoteChange,
-      paused: () => contentUnbuildable && loadState === "live" ? {
+      paused: () => (contentUnbuildable || deckFormatUnknown) && loadState === "live" ? {
         mayEdit: canWrite
       } : void 0,
+      unshown: (paths = [...liveSlideFiles.keys()]) => contentUnbuildable || paths.some(
+        (input) => runtime2.isReadFailureDiagnostic(
+          codecState.slideHtmlHold(
+            (0, runtime2.slideIdFromFilePath)(input) ?? ""
+          )
+        )
+      ),
       conflicts: () => [...slideConflicts.values()],
       resolveConflict: (input, options2) => {
         resolveSlideConflict(input, options2);
@@ -292757,12 +299819,11 @@ function installFilesSlidesDocument(runtime2) {
       structureRev: () => structureRevision,
       takeTouched: takeTouchedPaths,
       clashLocal: clashLocalSlide,
-      knownShas: () => new Map([
-        ...[...liveSlideFiles].map(([input, input2]) => [
-          input,
-          input2.sha
-        ])
-      ]),
+      knownShas: () => new Map(
+        [...liveSlideFiles, ...sharedFiles].map(
+          ([input, input2]) => [input, input2.sha]
+        )
+      ),
       debugFiles() {
         return [
           .../* @__PURE__ */ new Set([
@@ -292851,26 +299912,50 @@ function installFilesSlidesDocument(runtime2) {
   );
   bindRuntimeValue(
     runtime2,
-    "SLIDES_FILES_MAX_PARALLEL_READS",
-    () => SLIDES_FILES_MAX_PARALLEL_READS,
+    "SLIDES_FILES_BURST_PUBLISHES",
+    () => SLIDES_FILES_BURST_PUBLISHES,
     (value) => {
-      SLIDES_FILES_MAX_PARALLEL_READS = value;
+      SLIDES_FILES_BURST_PUBLISHES = value;
     }
   );
   bindRuntimeValue(
     runtime2,
-    "SLIDES_FILES_BOOT_REFRESH_MS",
-    () => SLIDES_FILES_BOOT_REFRESH_MS,
+    "SLIDES_FILES_BURST_MAX_WAIT_MS",
+    () => SLIDES_FILES_BURST_MAX_WAIT_MS,
     (value) => {
-      SLIDES_FILES_BOOT_REFRESH_MS = value;
+      SLIDES_FILES_BURST_MAX_WAIT_MS = value;
     }
   );
   bindRuntimeValue(
     runtime2,
-    "SLIDES_FILES_RECONNECT_TIMEOUT_MS",
-    () => SLIDES_FILES_RECONNECT_TIMEOUT_MS,
+    "SLIDES_FILES_BURST_WINDOW_MS",
+    () => SLIDES_FILES_BURST_WINDOW_MS,
     (value) => {
-      SLIDES_FILES_RECONNECT_TIMEOUT_MS = value;
+      SLIDES_FILES_BURST_WINDOW_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SLIDES_FILES_PATCH_RESUME_MS",
+    () => SLIDES_FILES_PATCH_RESUME_MS,
+    (value) => {
+      SLIDES_FILES_PATCH_RESUME_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SLIDES_FILES_PATCH_BUDGET_MS",
+    () => SLIDES_FILES_PATCH_BUDGET_MS,
+    (value) => {
+      SLIDES_FILES_PATCH_BUDGET_MS = value;
+    }
+  );
+  bindRuntimeValue(
+    runtime2,
+    "SLIDES_FILES_PATCH_CHAR_BUDGET",
+    () => SLIDES_FILES_PATCH_CHAR_BUDGET,
+    (value) => {
+      SLIDES_FILES_PATCH_CHAR_BUDGET = value;
     }
   );
   bindRuntimeValue(
@@ -292951,9 +300036,12 @@ function installFilesSlidesDocument(runtime2) {
     SLIDES_FILES_SAVE_DEBOUNCE_MS = 800;
     SLIDES_FILES_SHARED_MAX_WAIT_MS = runtime2.FILE_SAVE_DEBOUNCE_POLICY.shared.maxWaitMs;
     SLIDES_FILES_SOLO_MAX_WAIT_MS = runtime2.FILE_SAVE_DEBOUNCE_POLICY.solo.maxWaitMs;
-    SLIDES_FILES_MAX_PARALLEL_READS = 6;
-    SLIDES_FILES_BOOT_REFRESH_MS = 2500;
-    SLIDES_FILES_RECONNECT_TIMEOUT_MS = 6e4;
+    SLIDES_FILES_BURST_PUBLISHES = 6;
+    SLIDES_FILES_BURST_MAX_WAIT_MS = 2500;
+    SLIDES_FILES_BURST_WINDOW_MS = 6e4;
+    SLIDES_FILES_PATCH_RESUME_MS = 150;
+    SLIDES_FILES_PATCH_BUDGET_MS = 6e4;
+    SLIDES_FILES_PATCH_CHAR_BUDGET = 1e5;
     SLIDES_FILES_STALE_SYNC_TIMEOUT_MS = 1e4;
     SLIDES_FILES_ERROR_NOTIFY_MS = 3e3;
     SLIDES_FILES_MAX_RECOVERY_ATTEMPTS = 8;
@@ -292975,7 +300063,7 @@ function installFilesSlidesDocument(runtime2) {
 
 function installFilesEarlySlides(runtime2) {
   var MAX_EARLY_FILE_SLIDES;
-  async function readEarlySlidesFilesEnvelope(readText) {
+  async function readEarlySlidesFilesEnvelope(readText, onFirstSlide = () => Promise.resolve(false)) {
     let indexText = await readText(runtime2.DECK_METADATA_PATH), rawIndex;
     try {
       rawIndex = indexText === null ? null : JSON.parse(indexText);
@@ -292992,22 +300080,34 @@ function installFilesEarlySlides(runtime2) {
       (input) => (0, runtime2.slideIdFromFilePath)(
         (0, runtime2.slideFilePath)(input)
       ) !== void 0
-    ).slice(0, MAX_EARLY_FILE_SLIDES), entries = /* @__PURE__ */ new Map();
-    for (let value of order) {
-      let value2 = await readText((0, runtime2.slideFilePath)(value));
-      if (value2 !== null) {
-        entries.set((0, runtime2.slideFilePath)(value), value2);
+    ).slice(0, MAX_EARLY_FILE_SLIDES), shared = /* @__PURE__ */ new Map();
+    for (let path of runtime2.deckSharedFiles(index4.format)) {
+      let text = await readText(path);
+      if (text !== null) {
+        shared.set(path, text);
       }
     }
-    return {
+    let entries = /* @__PURE__ */ new Map(), coverFirst = index4.cover === void 0 || index4.cover === index4.order[0], snapshot = () => ({
       index: {
         ...index4,
         order: index4.order.filter(
           (input) => entries.has((0, runtime2.slideFilePath)(input))
         )
       },
-      files: entries
-    };
+      files: entries,
+      shared
+    });
+    for (let value of order) {
+      let text = await readText((0, runtime2.slideFilePath)(value));
+      if (text === null) {
+        continue;
+      }
+      entries.set((0, runtime2.slideFilePath)(value), text);
+      if (coverFirst && await onFirstSlide(snapshot())) {
+        break;
+      }
+    }
+    return snapshot();
   }
   bindRuntimeValue(
     runtime2,
@@ -293037,6 +300137,7 @@ function installBootstrap(runtime2) {
   var EMPTY_BOOT_PRESENTATION;
   var SlidesRootApp;
   var slidesWriteAccessPromise;
+  var sourceDecksRead;
   var getSlidesWriteAccess;
   var filesBootPortOptions;
   var createSlidesBootFilesPort;
@@ -293188,6 +300289,9 @@ function installBootstrap(runtime2) {
   }
   function showStashedSlideRecovery(document2, offer) {
     let chooseAction = (input) => () => {
+      if (document2.saveState().status === "readonly") {
+        return;
+      }
       (0, runtime2.closeToast)(value);
       if (input) {
         document2.restoreStashed(offer.slideId);
@@ -293238,6 +300342,7 @@ function installBootstrap(runtime2) {
             }
           }
         }), value2 = (0, runtime2.createSlidesFilesDocument)({
+          sourceDecksRead,
           port,
           parseContent: options.parseContent,
           initialContent: options.initialContent,
@@ -293384,35 +300489,53 @@ function installBootstrap(runtime2) {
     win.addEventListener("message", onMessage);
   }
   async function bootThumbnailFromEarlyFiles() {
-    let value = await (0, runtime2.readEarlySlidesFilesEnvelope)(
-      async (input) => {
-        try {
-          let value3 = await fetch(input);
-          if (value3.ok) {
-            return await value3.text();
-          } else {
-            return null;
-          }
-        } catch {
+    let readText = async (input) => {
+      try {
+        let value3 = await fetch(input);
+        if (value3.ok) {
+          return await value3.text();
+        } else {
           return null;
         }
+      } catch {
+        return null;
       }
-    ).catch(() => null);
-    if (value === null) {
-      return false;
-    }
-    let value2;
-    try {
-      value2 = runtime2.defaultSlidesFileCodec.compose(
-        {
-          files: value.files,
-          index: value.index
-        },
-        void 0
+    }, composed, readCover = async (envelope) => {
+      let input = {
+        files: envelope.files,
+        index: envelope.index,
+        shared: envelope.shared
+      };
+      await runtime2.defaultSlideDocumentCodec.readAhead(
+        (0, runtime2.filesEnvelopeRecords)(input)
       );
+      composed = runtime2.defaultSlidesFileCodec.compose(input, void 0);
+      let { order, slides, cover } = (0, runtime2.normalizeDeck)(
+        composed.content
+      );
+      return (0, runtime2.thumbnailCoverIsShown)(
+        order.flatMap((id) => slides[id] ?? []),
+        cover
+      );
+    };
+    try {
+      let value = await (0, runtime2.readEarlySlidesFilesEnvelope)(
+        readText,
+        readCover
+      );
+      if (value === null) {
+        return false;
+      }
+      if (composed === void 0) {
+        await readCover(value);
+      }
     } catch {
       return false;
     }
+    if (composed === void 0) {
+      return false;
+    }
+    let value2 = composed;
     (0, runtime2.configureArtifactDocument)({
       embeddedState: {
         title: value2.title,
@@ -293687,6 +300810,7 @@ function installBootstrap(runtime2) {
     };
     SlidesRootApp = (0, runtime2.isFrameCaptureMode)() ? runtime2.SlidesThumbnailApp : runtime2.SlidesApp;
     getSlidesWriteAccess = () => slidesWriteAccessPromise ??= (0, runtime2.determineSlidesWriteAccess)();
+    sourceDecksRead = (0, runtime2.applySourceDecksFlag)();
     filesBootPortOptions = {
       fetchFresh: (input) => fetch(input, {
         cache: "no-store"
@@ -293793,6 +300917,7 @@ function createSlidesRuntime(options = {}) {
     installModelTypeScales(runtime2),
     installModelStyleSchema(runtime2),
     installModelArtifactLinks(runtime2),
+    installModelMarkupGuards(runtime2),
     installModelDeck(runtime2),
     installDesignSystemTokens(runtime2),
     installDesignSystemStore(runtime2),
@@ -293834,6 +300959,8 @@ function createSlidesRuntime(options = {}) {
     installRenderingSlideSnapshots(runtime2),
     installRenderingSlides(runtime2),
     installFontsFetch(runtime2),
+    // Before build-effects: its init starts the animation engine's init, which must already exist.
+    installPresentationAnimationEngine(runtime2),
     installPresentationBuildEffects(runtime2),
     installExportExportNotes(runtime2),
     installFontsReadiness(runtime2),
@@ -293899,6 +301026,7 @@ function createSlidesRuntime(options = {}) {
     installHostArtifactText(runtime2),
     installHostClipboardText(runtime2),
     installHostRoomPresence(runtime2),
+    installEditorFocusReturn(runtime2),
     installEditorFrameComments(runtime2),
     installHostAgentSession(runtime2),
     installHostHandoffPreference(runtime2),
@@ -293913,6 +301041,7 @@ function createSlidesRuntime(options = {}) {
     installMediaVideoWorker(runtime2),
     installMediaVideoShrinkQueue(runtime2),
     installEditorCommandHistory(runtime2),
+    installModelDeckFormat(runtime2),
     installModelDeckMetadata(runtime2),
     installEditorDeckCommandHistory(runtime2),
     installEditorSlideGestureHistory(runtime2),
@@ -293937,6 +301066,7 @@ function createSlidesRuntime(options = {}) {
     installUiEditContextMenu(runtime2),
     installUiRovingFocus(runtime2),
     installUiScrollbarOverlay(runtime2),
+    installEditorPropertyGuards(runtime2),
     installEditorChildSizeModes(runtime2),
     installUiVideoPlaybackActions(runtime2),
     installEditorContrastBackgrounds(runtime2),
@@ -293977,10 +301107,11 @@ function createSlidesRuntime(options = {}) {
     installDocumentsJsonRecords(runtime2),
     installDocumentsCommentRecords(runtime2),
     installDocumentsMigrationMarkers(runtime2),
+    installModelSlideLimits(runtime2),
+    installFilesSlideReader(runtime2),
     installDocumentsSlideCodec(runtime2),
     installPresentationSpeakerPanel(runtime2),
     installPresentationSpeakerSession(runtime2),
-    installPresentationAnimationEngine(runtime2),
     installDesignSystemThemePanel(runtime2),
     installPresentationPlayer(runtime2),
     installCreationOverlay(runtime2),
@@ -294029,7 +301160,6 @@ function createSlidesRuntime(options = {}) {
     installEditorTemplateRestyling(runtime2),
     installDeliveryDialog(runtime2),
     installEditorRailPlacement(runtime2),
-    installEditorRailPeek(runtime2),
     installBridgeBottomToolbar(runtime2),
     installEditorApp(runtime2),
     installDocumentsWriteAccess(runtime2),

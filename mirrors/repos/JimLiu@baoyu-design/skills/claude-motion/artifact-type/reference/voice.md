@@ -32,7 +32,7 @@ Chat can hide what you write ahead of a tool call. So they are told in **the las
   screen." goes with it. When kinds.md turns the whole film down, leave the voice out of that no (it is two sentences,
   with no "can't"). If they take the film it offers, tell them as for any new film.
 - **A close** (of a film, a plan or a rough cut): a sentence of its own, after its first sentence ("Here's your animation.")
-  and the link, if there is one. It isn't the close's one short sentence more.
+  and the film's url, if that close gives one. It isn't the close's one short sentence more.
 
 **A new film, with the form.** That turn ends on the form, with nothing after it. So they are told in three places:
 ahead of the form, in it, and again in the next close. Each is needed; none stands in for another.

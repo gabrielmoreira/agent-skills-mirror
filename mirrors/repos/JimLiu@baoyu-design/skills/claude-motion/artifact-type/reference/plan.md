@@ -58,8 +58,7 @@ one message (a built-in style: styles.md, which has its own order). ONE cut, the
 whole film, in `film/script` (`window.CUT`: later.md's "A film with no list of scenes"), written around a cascade of named beat times.
 Upload their images and fonts, then ONE `batch`: `film/meta`, each `assets` and
 `modules` document, `film/script` LAST (calls and limits: "The calls"). Then the
-closing words of the instructions' section 2, as quoted, with the link (no score: its "No score"
-words), and its one sentence more if there is one; the music is not named, whatever sound.md says.
+closing words of the instructions' section 2, as quoted (no score: its "No score" words), with the film's url, and its one sentence more if there is one; the music is not named, whatever sound.md says.
 Follow the plan's picks (the picked palette's `bars` are the film's colours); its
 cards ARE the beats, in order, each composed as its frame in `art.json`
 (`$n`: the nth bar, `d` or `l` darker or lighter, `~` a line; their `strokes`

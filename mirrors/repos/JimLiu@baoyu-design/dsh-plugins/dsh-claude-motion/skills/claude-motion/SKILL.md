@@ -35,7 +35,7 @@ user says it will be true by the time it's shown. A caution in your reply doesn'
 **No other company's proprietary design, in a plan or a film, unless the user works there:** refuse and offer an
 original one. questions.md says how to ask (in full: the end of `artifact-type/reference/recreate-ui.md`).
 
-**A film with `modules/{recut,retouched}.json`: whatever the ask, read all of `artifact-type/reference/by-hand.md` too.**
+**A film with `modules/{retyped,recolored,recut,retouched}.json`: whatever the ask, read all of `artifact-type/reference/by-hand.md` too.**
 
 **On any turn after the one that made the film, in this chat or a new one (answering the form isn't one): whatever the
 ask, with `artifact-type/reference/later.md` not in full here, first `read-db <root> modules`, then read all of it.**
@@ -296,8 +296,8 @@ below, whatever yours is called.
   words. Decide, say what you picked in one line (questions.md's end), go on.
 
 Decide without asking (after questions.md) when they said so ("just make it", "surprise me"), when the request settles
-all three, when it's the same film again in another aspect ratio (same answers), or when nobody is there to answer. Say
-your picks in one line and go on in the same turn.
+all three (questions.md), when it's the same film again in another aspect ratio (same answers), or when nobody is there
+to answer. Say your picks in one line and go on.
 
 Whatever comes back is the answer: `Animation details — Style: … · Colors: … · Length: …`, a skipped or empty form, or
 words of their own. You decide what it leaves open. **Never ask again** (a narrated film's lines, and a voice not yet
@@ -327,11 +327,11 @@ The user is watching the film arrive, so keep moving: from the answer to the las
    its `write-db`: "Reading the references locally"), each finished the first time (no `rough: true`), sent the moment
    it is written: the user is watching, and speed matters more than your seeing it. No scene in a batch, and nothing of
    the film rendered unasked, whatever another page says.
-5. LAST, ONE `write-db` batch: the score (read sound.md first; no score if they asked for silence) and `scenes.json`,
+5. LAST, ONE `write-db` batch: the score (read sound.md first; no score: finalize.md says when) and `scenes.json`,
    whole, `"stage":"final"`. Then `check <root>` once (it reads the store, renders nothing); fix what it lists, one
    document at a time.
-6. **Then stop.** Your whole reply (and the `url` and the folder, if the film isn't open beside the chat or you can't
-   tell):
+6. **Then stop.** Your whole reply, in both closes, with the film's `url` from `open` (and its folder) after "Here's
+   your animation", unless it is plainly open beside the chat already:
 
 > Here's your animation. Tell me if the music doesn't fit, or what else to change.
 

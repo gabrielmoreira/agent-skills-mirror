@@ -1,0 +1,14 @@
+:root {
+  --primary: #7c3aed;
+  --on-primary: #ffffff;
+  --surface: #ffffff;
+  --on-surface: #1f1b2e;
+  --border: #e4e1ec;
+  --danger: #b42318;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+}

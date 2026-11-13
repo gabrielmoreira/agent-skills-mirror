@@ -1,0 +1,1 @@
+cache/repos/github.com/pingdotgg@t3code/.repos/alchemy-effect/.claude/skills/harden/../../../.agents/skills/harden/SKILL.md

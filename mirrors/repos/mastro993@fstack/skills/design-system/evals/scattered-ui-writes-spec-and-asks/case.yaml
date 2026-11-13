@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: scattered-ui-writes-spec-and-asks
+expected_outcome: |
+  acme-dash has no design system module and no DESIGN.md, but src/styles/theme.css holds Tailwind
+  theme tokens. The run maps the stack (React, Tailwind v4, Radix Dialog, Vitest), writes a
+  DESIGN.md at acme-dash/ in Google's format with values taken from theme.css (primary #2f5bea,
+  danger #c8372d, radii 4/8/12px), leaves theme.css untouched, and hunts the opportunities: Button
+  and Btn are one component declared twice, ConfirmModal hand-builds what the installed Radix Dialog
+  gives, the card markup is repeated with drift (rounded-lg/rounded-xl, p-4/p-[18px]), Avatar is a
+  generic component in a feature folder, and raw hex values duplicate theme tokens. In a skimmable
+  reply it proposes a flat module with its components listed under atom, molecule, and organism
+  headings, then stops to ask the user to confirm and to choose between a plan, issues, or both. It
+  writes no component code, no plan file, and opens no issues.
+context:
+  scaffold_script: place-files.sh

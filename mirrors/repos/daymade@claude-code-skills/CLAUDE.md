@@ -183,6 +183,10 @@ including refused/unavailable checks and reviewable handoff. DOCX comparison fol
 [the input-identity and coverage procedure](daymade-docs/read-docx-review/references/full-comparison.md);
 keep sending evidence, revision-view selection and comparison limits with that owner.
 
+For Word questionnaires or generated list labels, follow
+[DOCX numbering](daymade-docs/doc-to-markdown/references/docx-numbering.md)
+for conversion and independent source comparison.
+
 For PDF → Markdown manuals or question banks, enter
 [docs-router](daymade-docs/docs-router/SKILL.md) and follow
 [PDF acceptance](daymade-docs/doc-to-markdown/references/pdf-acceptance.md).
@@ -349,6 +353,8 @@ focus or filtered-selection changes, use its
 [reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
 For long-document outlines, active-section cues or source sidebars, follow its
 [reading-position recipe](frontend-visual-qa/references/journey-and-page-contracts.md#long-document-reading-positions).
+For timed course text with an original-video player, use
+[course video reading](frontend-visual-qa/references/course-video-reading.md).
 For browser visibility, hidden-page polling (query eligibility, scheduling opportunities or product cancellation), selected read modes, request/capture timing or long JSONL input problems, load its
 [browser-driving and observation traps](frontend-visual-qa/references/browser-driving-and-observation-traps.md);
 keep adapter requirements and invocation examples in that reference.
@@ -557,6 +563,12 @@ For local correction tests and repository CI ownership, follow the
 keep maintainer-only repository resources distinct from installed Skill paths.
 Context-veto CLI regressions live in
 [test_trap_demotion.py](daymade-audio/transcript-fixer/scripts/tests/test_trap_demotion.py).
+
+### Feishu User Login Recovery
+
+When the version-matched identity guide requires restoring an authorized user
+login, enter [authorization recovery](lark-cli-router/references/auth-recovery.md).
+Keep device-flow commands, continuation and account/result verification there.
 
 ### Feishu Recording Lookup
 

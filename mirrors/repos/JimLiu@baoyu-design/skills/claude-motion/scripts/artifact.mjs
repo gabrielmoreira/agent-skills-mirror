@@ -6827,6 +6827,7 @@ var DATA_URI = /^data:(image\/(png|jpeg|gif|webp|svg\+xml)|font\/(woff2|woff|ttf
 var MODULE_KINDS = ["js", "css", "html", "json", "text"];
 var ASSET_MIMES = ["image/png", "image/jpeg", "image/gif", "image/webp", "image/svg+xml", "font/woff2", "font/woff", "font/ttf", "font/otf", "video/mp4", "video/webm", "application/pdf", "audio/mpeg", "audio/wav"];
 var REPLACE_ONLY_DOCS = /* @__PURE__ */ new Set(["modules/fetched-fonts.json", "modules/recolored.json", "modules/retouched.json", "modules/retyped.json"]);
+var PAGE_ONLY_DOCS = /* @__PURE__ */ new Set(["modules/fetched-fonts.json", "modules/recolored.json", "modules/recut.json", "modules/refaced.json", "modules/retouched.json", "modules/retyped.json"]);
 var UNSPLIT_MODULES = ["edits.json", "fetched-fonts.json", "recolored.json", "recut.json", "refaced.json", "retouched.json", "retyped.json", "tweaks.json"];
 var CONTENT_TYPES = {
   html: "text/html; charset=utf-8",
@@ -7061,6 +7062,7 @@ function applyWrites(root, writes, { agent = true } = {}) {
     const p = segs.join("/");
     if (seen.has(p)) throw new CliError("DUPLICATE_DOCUMENT", `${where}: ${p} appears twice; address each document once per batch.`);
     seen.add(p);
+    if (agent && PAGE_ONLY_DOCS.has(p)) throw new CliError("PAGE_ONLY", `${where}: ${p} is the page's own record of what was set by hand there; never write or delete it (artifact-type/reference/by-hand.md says what to do instead).`);
     let data;
     if (op !== "delete") {
       if (w.data === void 0 === (w.file_path === void 0)) throw new CliError("INVALID_WRITE", `${where} (${op}) needs exactly one of "data" or "file_path".`);
@@ -8447,6 +8449,8 @@ Usage:
   node scripts/artifact.mjs serve    <root> [--port n] [--lan]   the same server, in the foreground
                                      [--agent-hook "<command>"]  open/serve: run this for each comment sent to the agent
                                                                   (the comment as JSON on stdin); --lan: shared too
+                                     [--remote[=<host>]]         open: also open it to you on another device (<host>: how
+                                                                  that device reaches this computer); prints remoteUrl
   node scripts/artifact.mjs stop     <root>                      stop the background player
   node scripts/artifact.mjs share    <root>                      share on the local network; prints a link per role
                                      [--off] [--reset R] [--enable R] [--disable R]
@@ -8454,8 +8458,6 @@ Usage:
                                      [--role G=R,...]            give guest G (an id it prints) role R
                                                                   (link options only: shared or not stays as it was)
   node scripts/artifact.mjs comments <root> [--all]              the open comments people left in the player (--all:
-                                     [--remote[=<host>]]         open: also open it to you on another device (<host>: how
-                                                                  that device reaches this computer); prints remoteUrl
                                                                   resolved too)
   node scripts/artifact.mjs comments <root> --wait [--timeout s] wait for a comment sent to the agent from the open player, or a request from its buttons
   node scripts/artifact.mjs comment-reply <root> <id> <text|-> [--resolve]

@@ -22,8 +22,8 @@ Shared flags (the rest, codec defaults and `--hw`: `references/flags.md`):
 `--overwrite` (step 7), `--timeout SECONDS` (default 1800, `0` = none; `kind: timeout`).
 
 Writing tools run nothing under `--dry-run`; the measuring tools (`probe`, `check`, `sync`, `multicam`,
-`scenes`, `cropdetect`, `report`, `silence`, `loudness`, `stabilize`, `overlay`) may still run
-ffmpeg/ffprobe without writing artifacts; `verify` ignores the flag. Per tool: `contract --json` `dry_run`.
+`scenes`, `cropdetect`, `report`, `silence`, `loudness`, `stabilize`, `overlay`, `metadata`, `cut`, `render`,
+`batch`) may still run ffmpeg/ffprobe without writing artifacts; `verify` ignores the flag. Per tool: `contract --json` `dry_run`.
 
 Audio-only files work in the audio tools; picture tools refuse them (`references/workflow.md#audio-only-files`).
 
@@ -109,6 +109,7 @@ Variants, caveats and extra flags per row: `references/requests.md`.
 | "cut out the pauses", "jump cuts" | `silence.py in.mp4` |
 | "cut the ums and uhs" | `silence.py in.mp4 --filler --words words.json` |
 | "just the real pauses, not inside a sentence" | `silence.py in.mp4 --speech-aware` |
+| "tighter inside a sentence, more room after one" | `silence.py in.mp4 --words w.json --min-silence 0.2 --sentence-min-silence 0.3 --sentence-margin-tail 0.3` |
 | "a 60 s highlight from this hour" | `scenes.py long.mp4 --highlights 6 --target 60 --edl picks.txt` (then `cut.py --segments` with picks.txt's lines joined by commas) |
 | "cut on the beat" | `cut.py in.mp4 --segments ... --snap beats --snap-source beats.json` (`scenes.py --beats`; a WAV/MP3 music bed too) |
 | "speed up here, slow-mo there" | `speedramp.py in.mp4 --segment 0-3:1.0 --segment 3-4:0.25` |

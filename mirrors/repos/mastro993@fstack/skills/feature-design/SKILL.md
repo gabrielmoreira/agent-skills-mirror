@@ -1,7 +1,7 @@
 ---
 name: feature-design
 description: Use when the user has a rough idea for a feature, product change, or new capability and wants to brainstorm, shape, design, or spec it before building, such as "I'm thinking of adding…", "how should we approach…", "help me design…", or "write a spec for…".
-compatibility: Works best with a question tool (AskUserQuestion or the harness's equivalent), the Exa MCP for research, a harness that renders HTML or diagrams inline, and an issue tracker CLI or MCP for the handoff.
+compatibility: Needs the domain-driven-design, ux-brainstorm, and test-driven-development skills from the same plugin. Works best with a question tool (AskUserQuestion or the harness's equivalent), the Exa MCP for research, a harness that renders HTML or diagrams inline, and an issue tracker CLI or MCP for the handoff.
 ---
 
 # Feature design
@@ -74,13 +74,9 @@ Each question:
 - an example with realistic data ("Ana offers her Friday shift; Ben sees…"), often enough by itself;
 - a diagram for flows, states, or how parts relate (Mermaid when the harness renders it, otherwise ASCII);
 - side-by-side mockups in the question tool's option previews, when it has them;
-- a small interactive HTML prototype when the choice is about feel or a multi-step flow, rendered inline when the harness can and opened in the browser otherwise. When the whole question is what a screen should look like and the ux-brainstorm skill is installed, hand that part to it.
+- a small interactive HTML prototype when the choice is about feel or a multi-step flow, rendered inline when the harness can and opened in the browser otherwise. When the whole question is what a screen should look like, hand that part to the ux-brainstorm skill.
 
-**Sharpen the glossary.** Each time a word comes up:
-
-- When it conflicts with the glossary or the code, say so and use the project's term.
-- When it is vague or covers two concepts ("account": the customer or the login?), settle it from the grounding, or make telling them apart one of the round's questions, with a concrete scenario as the test.
-- Write the term into the glossary in the same turn it is settled.
+**Sharpen the glossary.** Settle the words that come up per the domain-driven-design skill's [language rules](../domain-driven-design/references/language.md); its questions join this round.
 
 After each round, record the answers as numbered decisions. When the third round is answered, or no remaining question would change the spec, turn every question still open into an assumption, using the option you would have recommended.
 
@@ -88,7 +84,7 @@ Done when every ranked question has a numbered decision or an assumption.
 
 ## 4. Design
 
-Make every technical decision: architecture, data, interfaces, libraries, rollout. Shape each one from the numbered decisions and the project's constraints (existing architecture, ADRs, stack, scale), research anything you plan to depend on, and choose the smallest design that makes the agreed behavior hold.
+Make every technical decision: architecture, data, interfaces, libraries, rollout. Run the domain-driven-design skill's Architecture part first; the boundaries, architecture, and aggregates it hands back are technical decisions, and its ADRs and context map are linked from the spec. Shape each one from the numbered decisions and the project's constraints (existing architecture, ADRs, stack, scale), research anything you plan to depend on, and choose the smallest design that makes the agreed behavior hold.
 
 Done when each technical decision names the numbered decision or constraint that calls for it.
 
@@ -96,8 +92,8 @@ Done when each technical decision names the numbered decision or constraint that
 
 Write everything into the repository, so the next session and the next feature design start from files. Formats are in [references/formats.md](references/formats.md); where the project already keeps a glossary, ADRs, or specs, its location and format win.
 
-- **ADRs**, in `docs/adr/`: one per non-trivial decision, product or technical. Non-trivial means a real alternative existed and a future reader would wonder why. Record the alternative that lost, above all one the user turned down. When a decision replaces an earlier ADR, mark the old one superseded and link both ways, so the ADRs agree with each other.
-- **Glossary**, in `GLOSSARY.md` at the repository root: every term settled during the interview.
+- **ADRs**, in `docs/adr/`: one per non-trivial decision, product or technical, that domain-driven-design hasn't already recorded. When a decision replaces an earlier ADR, mark the old one superseded and link both ways, so the ADRs agree with each other.
+- **Glossary and context map**: domain-driven-design keeps them as terms and boundaries settle; check they hold every one agreed here.
 - **Existing docs**: update every page under `docs/` whose description the feature makes wrong.
 - **Spec**, in `docs/specs/<slug>.md`: the numbered decisions, the assumptions, the design with a link to each ADR, the acceptance checks, and the slices in implementation order, each with its own checks and what it depends on.
 

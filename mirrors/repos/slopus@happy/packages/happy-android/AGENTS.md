@@ -355,8 +355,45 @@ win:
   a page goes in its `*PageEntries` too; `SettingsSearchTest` checks they
   agree. An agent's home search finds its Settings rows the same way, from
   `agentSettingsIndex()` (iOS's `SettingsIndex.computer`):
-  `openAgentSettingsRow` opens the agent's Settings or Appearance page with
-  `reveal`, or Chief of Staff with the ask for name and avatar.
+  `openAgentSettingsRow` opens the agent's Settings, Appearance or
+  Notifications page with `reveal`, or Chief of Staff with the ask for name
+  and avatar.
+- **Settings › Notifications** is Steve's "Sharing is notifications": one
+  row on every agent connection, after Data and Storage in the first card,
+  a bell on a red tile (`AgentSharingTags.ROW`, which `CloudPushTags.ROW`
+  names too). Its page (`AgentNotificationsPage`, `AgentSharing.kt`) has,
+  on a Happy Cloud server, the push settings first ("Notifications from
+  this server", Device permission, Enable on this device, with their
+  footer; `CloudPushGroups`), then on every connection the two "Join other
+  people's…" switches with theirs. `AgentSharingRoute` (with `reveal`),
+  `CloudPushSettingsRoute` and the `sharing` link all open it. There is no
+  Sharing row and no separate push row; Team is Members alone, on Cloud,
+  with no header where it is empty. Search finds "Notifications" once, and
+  the page's switches by their own titles (`AgentSettingsPlace.Notifications`).
+- **Settings › Usage** (`ui/connection/AgentUsage.kt`, every agent
+  connection; the last row of AGENTS) is desktop's
+  HappyAgentUsageSettings and UsageActivityGrid. Read on opening and every
+  minute while open: `GET /v0/usage` (`UsageAccount.parse`: plan windows
+  and each model's day, week and month tokens) and, behind
+  `DailyUsageSource` (`agent/UsageHistory.kt`), `GET
+  /v0/usage/daily?days=371&tz=<zone>`, asked only where `GET /v0/health`
+  says `capabilities.dailyUsage: true` (read once per page open, as iOS; the route and the flag ship together,
+  so a false or missing flag, or no capabilities, asks nothing; a health
+  that can't be read is read again at the next refresh). The live source
+  answers null on any failure and, after a 404 or 501, never asks that
+  connection again; a failed
+  read keeps what was shown. The year grid (the later of `since` and
+  today−364, through today) is weeks as columns, Monday on top, 10 cells
+  on a 12 pitch, levels the quartiles of its own non-zero days
+  (`activityLevels`), the link colour at 25/45/70/100%; tokens are input +
+  output + cacheWrite. It scrolls sideways and opens on today; a tapped
+  cell shows a callout (date with year, tokens, top three models, or "No
+  usage"). Then services and their accounts, most history tokens first:
+  each with its 30-day strip (only if it spent), week and session rows,
+  "Updated …", and one line per model that spent. Nothing failed is ever
+  put into words: no error text, and an account with no windows, no
+  model tokens and no history is left out (`usageVendors`).
+  `UsageFixtures` is the test and shot data (`UsageShots`).
 - **Agent home search** looks and moves as iOS's
   (`HappyCore/Agents/Search.swift`, `SearchShown.swift`,
   `ui/connection/AgentSearch.kt`) and lists what desktop's ⌘K palette
@@ -1150,13 +1187,41 @@ change its wire behaviour on Android alone.
   open-hands, desktop's Lottie files minified, and its words) as the first
   screen's `StartGallery`, with desktop's scenes drifting down the sides
   (`CloudDrift`), then Sign in with Apple where Start is and Sign in with
-  GitHub under it where Use Happy Cloud is (iOS's). Each opens the
-  **account** sign-in in an Auth Tab (androidx.browser, ephemeral; a Custom
-  Tab where there is none): PKCE against the accounts origin's `/authorize`
-  and `/token`, `client_id` `happy`, `resource` the accounts origin, nothing
-  discovered, and `provider=apple` or `github` (`CloudProvider`), which skips
-  the page's chooser. Both are web sign-ins: Apple has no native one on
-  Android, and the service refuses Google. The account
+  GitHub under it where Use Happy Cloud is (iOS's), with Continue with
+  Google 12 over them (Google's branded button: its G, the neutral pill in
+  the dark theme, the light one with its stroke in the light). Apple and
+  GitHub open the **account** sign-in in an Auth Tab (androidx.browser,
+  ephemeral; a Custom Tab where there is none): PKCE against the accounts
+  origin's `/authorize` and `/token`, `client_id` `happy`, `resource` the
+  accounts origin, nothing discovered, and `provider=apple` or `github`
+  (`CloudProvider`), which skips the page's chooser. Apple has no native
+  sign-in on Android. Google's is native (`connection/GoogleSignIn.kt`,
+  `CloudAccount.signInWithGoogle`): Credential Manager's
+  `GetSignInWithGoogleOption` for the accounts service's web client
+  (`BuildConfig.GOOGLE_SERVER_CLIENT_ID`, one public ID for every variant;
+  `HAPPY_CLOUD_GOOGLE_CLIENT_ID` or `-Phappy.cloudGoogleClientId` points a
+  build elsewhere) with a fresh random nonce, then `POST /v1/auth/native`
+  `{provider: "google", idToken, nonce}` (the raw nonce) for the same
+  hour's pass, its `aud` checked as the browser's; a 401 there is the ID
+  token refused, never a pass ending. Closing the sheet says nothing; no
+  Google account or Play services on the phone (`NoCredentialException`
+  and the like) opens Google's web sign-in (`provider=google`) in the Auth
+  Tab instead. Google knows each variant by package and signing SHA-1,
+  registered as Android clients in project happy-coder-9fe36: a build
+  signed with another key (any machine's own debug keystore) gets no Google
+  sign-in from the sheet. Under them, the quiet "Continue with email"
+  signs in with no browser (WorkOS Magic Auth behind the accounts service):
+  the address (`CloudEmailRoute`, `POST /v1/auth/email/start`), then the
+  6-digit code mailed to it (`CloudEmailCodeRoute`, `POST
+  /v1/auth/email/verify`, checked as its sixth digit comes; the field
+  carries the one-time-code autofill hint), for the same hour's pass as the
+  password sign-in below (`CloudAccount.startEmail`/`verifyEmail`,
+  `EmailSignIn`). Resend waits 60 s after each code and Change email goes
+  back. `invalid_email`, `invalid_code` and `unavailable` read in our words;
+  `unsupported_provider` and `429 rate_limited` show the service's own
+  `error`, and a 429 holds Send code, Verify and Resend for its
+  `Retry-After` (else `retryAfter`, else 60 s), counting down in m:ss. The
+  account
   token is a pass of about an hour with no refresh (token lifetimes v4): held
   in memory only, never stored, never refreshed, and only ever sent to the
   accounts API. Past its hour (two minutes' margin), or on any 401 from the
@@ -1172,12 +1237,32 @@ change its wire behaviour on Android alone.
   screen) and reads Joined once it is on the phone. Continue appears once one
   is, and opens the last joined. Under them, "Bootstrap a new one" (a name
   typed after an `@`, checked with `GET /v1/servers/availability` as the
-  person pauses, then `POST /v1/servers`) and "Join with an invite" (name and
-  invite code, `POST /v1/servers/join`), each going straight into its server.
+  person pauses, then `POST /v1/servers`), going straight into its server.
   An account with no servers opens on Bootstrap (`CloudCreateRoute(first)`).
+  There is no join with a code: an invite is a private link,
+  `https://INVITE/#<token>` (`HAPPY_CLOUD_INVITE`, default
+  join.happy.engineering) or the older `https://WEB/join#<token>`, the
+  token 43 characters of base64url in the fragment (`CloudInvite.parse`).
+  In debug and preview (the builds with Happy Cloud) both hosts are
+  `autoVerify` app links (`src/debug` and `src/preview` manifests, alike),
+  verified when the host's `assetlinks.json` lists the build's package and
+  signing certificate; elsewhere the browser's join page takes it. In the
+  app, `DeepLink.CloudServerInvite` hands the token to `CloudInvites` (in
+  memory only, never a route or saved state; it never prints) and opens
+  `CloudInviteRoute`: `CloudInviteFlow` previews it (`POST
+  /v1/invites/preview`, no account token) and shows the server and role
+  with Join. Join accepts (`POST /v1/invites/accept`, the account token)
+  and opens the server as Join on the list does; signed out, it goes
+  through the Cloud sign-in, which hands back to the invite once signed in
+  (`Cloud` pops to `CloudInviteRoute`), and accepts with the same token.
+  Expired, revoked, used up, unknown and another address's invites say so
+  (`CloudInviteRefusal`); another address's offers signing in with another
+  account. Join a server also loads its list again each time the app comes
+  back to the foreground (`serversOnReturn`), and the first Bootstrap gives
+  way to the list, still signed in, once the account has a server.
   Back on Join a server, or on that first Bootstrap, signs the account out,
-  so Continue can use another (desktop's); not while a join runs. Joining,
-  creating or joining with an invite signs in with no browser: `POST /v1/servers/:id/token` with the account token
+  so Continue can use another (desktop's); not while a join runs. Joining
+  or creating signs in with no browser: `POST /v1/servers/:id/token` with the account token
   (`CloudAccount.serverToken`, `ServerSignInFlow.startWith`) gives the server's
   access and refresh tokens, its `aud` checked as any; then as the sign-in
   below (checked with the server, a name if new, kept). That server token is
@@ -1188,11 +1273,27 @@ change its wire behaviour on Android alone.
   out of it, the server's own browser sign-in opens by itself. Each server is its own connection; one already here
   just opens. The addresses are the app's own, never typed or pasted, so no
   code and no `instanceId` check them.
-  Every Happy Cloud screen (welcome, Join a server, Bootstrap, the invite, and the
+  Every Happy Cloud screen (welcome, Join a server, Bootstrap, and the
   server sign-in, which reads "Connecting to @name…") is full screen on the
   first screen's Grain Gradient (`StartSpec` palettes, onboarding's 28/34
   title, a scene above it) with one primary action at the bottom
   (`CloudScreens.kt`, `CloudFrame`); servers are cards on it.
+  A new member, whose profile has no name yet (`userId: null`, or the
+  profile gate on a server already kept, `ServerSignInFlow.onboard`), gets
+  Create your profile (`CloudProfileScreen`, its column at most 420): their
+  picture 120 round in the scene's place, the placeholder the server's own
+  (`HappyCloud.serverName`, as its connection wears it; never the name),
+  with a camera badge; it and
+  "Add photo" (then "Change photo") open Settings › Profile's picker and
+  crop (`rememberProfilePhotoPicker`, `ProfilePhoto.prepare`), the JPEG kept
+  in `NeedsName.photo`. The field starts from `GET /v0/profile`'s name (on
+  Happy Cloud, the account's: Android's web sign-in learns none from Apple
+  or GitHub itself), the cursor after it, with the keyboard up. Continue PATCHes the name, with
+  the suggested email if there is one, then PUTs the picture
+  (`ServerAuthClient.savePhoto`), spinning through both, each refreshed once
+  on a 401. A name that fails says so in plain words, never the server's; a
+  picture that fails still lands, with a toast to add it later
+  (`ServerSignInState.Done.photoFailed`).
   Besides Apple and GitHub, one sign-in is hidden: the welcome's slide art pressed ten
   times within four seconds (`CloudWelcome`) reveal a test account's login
   and password, for people and agents testing without Apple or GitHub.
@@ -1400,6 +1501,28 @@ thread from registration (after the first frame) and in
   different Firebase project needs its key uploaded to Expo);
 - the device has Play services (otherwise unsupported, as FCM has no
   token there).
+
+## Time zone and language
+
+happy-ios docs/SERVER-SIGN-IN.md "Time zone and language", ported. A
+computer whose health says `capabilities.userEnvironment` is told this
+phone's environment (happy-agent API.md, "User environment") by
+`PUT /v0/environment`, so its agents know the person's time zone,
+languages, clock, first weekday and calendar.
+
+- `deviceId` is expo's InstallationId, the same one the push exchanges
+  send, from one shared instance (`AppGraph.installationId`). `deviceKind`
+  is `tablet` at a smallest width of 600dp and `phone` otherwise.
+- `hourCycle` follows the system clock setting (`h23` or `h12`). A field
+  the API can't take is left out, because one bad field refuses the whole
+  report (`UserEnvironment.of`).
+- The open connection's computer is told when it is opened, when the app
+  comes back to the foreground, and on `ACTION_TIMEZONE_CHANGED` and
+  `ACTION_LOCALE_CHANGED` (`UserEnvironmentRuntime`). It is told only when
+  the report differs from what that computer was last told. A failed
+  report goes again at the next trigger, and a 404 stops the reports.
+- Sends name the device only once the computer takes reports, because an
+  older one refuses the whole send (`UserEnvironmentReports.sendingDeviceId`).
 
 ## Purchases
 
@@ -1710,78 +1833,12 @@ secretbox has checked the MAC, and a sent picture is kept at upload, so the
 sender never downloads it. A legacy download is one request with progress
 from the body; it can't pause.
 
-### Chat UI
+### Chat components
 
-An agent shows typed components in a conversation and suggests quick
-replies (happy-agent protocol 35). Every request to an agent connection
-says `Happy-Protocol: 35` (`TailcatHttp.requestHead`); without it the
-daemon sends fallback text and leaves attempt records out.
-
-The contract is happy-agent's client package, vendored into
-`app/src/test/resources/ui/` by `tools/chat-ui/vendor.sh <happy-agent
-checkout> <commit>`: `ui.schema.json` (the catalog, secret fields marked
-`x-happy-secret`), `actions.fixtures.json` (its conformance vectors) and
-`vendored.json` (the commit and each file's SHA-256, which
-`UiContractTest` checks). Never edit them by hand; run the script again
-when the catalog changes. Tests read them through `UiContract`. A vector
-section no test reads is not depended on: today `result` (no action this
-build sends has one) and `mediaLayout`'s desktop row height.
-
-- **Wire** (`conversation/ui/UiWire.kt`, `QuickReplies.kt`): a `ui` block
-  of an agent message, the `ui` presentation of a `show_ui` call (its
-  `items` are media items a `media` component names by index), the
-  `action` block of an attempt record, and `quick_replies` as a block or a
-  `suggest_replies` call's presentation. A block that doesn't decode is
-  skipped, never its message. Each is kept on the phone as it came (`raw`).
-- **A component is drawn whole or not at all.** `UiComponent` reads the
-  types this build draws strictly, as their schemas say; any other type, a
-  known one whose props don't fit, and a `media` naming an item its call
-  doesn't have, is its `fallback` line. `provider_sign_in` is a fallback
-  line. Adding a type: its class and strict parse in `UiWire.kt`, its row
-  in `ConversationRowBuilder.uiRows`, its view, and tests of all three
-  against the schema.
-- **Rows.** A component is a `ConversationRow.Ui`; a `media` component is a
-  `ConversationRow.UiMedia`, a row of its own kind rather than a flag on
-  `Media`, because it lays files out among the pictures by the shared rule
-  (`UiMediaLayout`, a port of `layoutMedia` checked against the vectors)
-  and labels each item. What `show_ui` or `suggest_replies` showed stands
-  in its call's place, with no tool line.
-- **A press** is `Conversation.press(offer, action)`: one
-  `POST /v0/agents/:id/actions`, no bubble. `UiPresses` holds how presses
-  stand: one of an offer at a time; the attempt ID kept across the
-  request's retries and, when no answer came, for the same press again;
-  only the action's redacted form while it goes. `UiActions` is the
-  catalog of what this build sends: the fields kept (never one marked
-  secret; an action it doesn't know keeps no payload) and the permission
-  needed, both held to the schema by `UiActionsTest`. Nothing of a payload
-  is logged or stored.
-- **Attempt records** show on their component as `UiWork`, never as a row:
-  busy while a press goes or the newest attempt is pending; a refusal only
-  while it is news (learned while the chat is open, until the offer is
-  pressed again, a later attempt goes through, or the component's live
-  state is read again after it). They live in standalone runs
-  (`Run.standalone`, `kind: "standalone"`), which never change whether
-  the agent is working and draw no end of a turn.
-- **Results.** No action this build sends answers with a result, so
-  `ConversationApi.act` reads none. One that does keeps its result in the
-  conversation, by offer, and publishes it with the row: never in a row's
-  `remember`, which a lazy list drops as it scrolls away.
-- **Live components** draw from the server's state, not their props:
-  `default_model` from `ConversationState.catalog`, read again on
-  `config.updated`.
-- **Views** (`ui/conversation/UiComponentViews.kt`, `UiDefaultModelView.kt`,
-  `UiMediaViews.kt`, `QuickReplyViews.kt`) act through one object,
-  `ConversationRowActions.ui` (`UiRowActions`); where it is null the rows
-  are only read. No link a server sends is opened; if one ever is, only
-  `https`.
-- **Quick replies.** `QuickReplyPlacement` puts each stack under all the
-  agent wrote in its turn before a person's message; `QuickReplyRows.mark`
-  sets the option sent from the message's `quickReply` and lets only the
-  newest stack take a tap, until someone writes. A tap is
-  `Conversation.sendReply`: an ordinary send of the option with
-  `quickReply { messageId, toolCallId?, index }`. The optional `ui` list
-  is ignored.
-- Words are in `strings_chat_ui.xml`.
+Chat onboarding is deferred. Future widgets belong in Settings, top-level
+MCP-app-like tools, or a general Card/Button/Text/Column UI system. Historical
+widget and quick reply tool calls use generic tool rows; durable questions
+and permission options remain supported.
 
 ### Context meter and usage ring
 

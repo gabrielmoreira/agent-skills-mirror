@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: existing-ds-critiqued-asks-before-spec-edit
+expected_outcome: |
+  orbit already has a design system in src/ui and a DESIGN.md. The run takes the module as its base
+  but critiques it: tiers are mirrored in atoms/, molecules/ and organisms/ folders; UserMenu imports
+  the session store and the router, so it isn't self-contained; Input hard-codes values that tokens
+  already hold. It finds that DESIGN.md says primary #6D28D9 while src/ui/tokens.css says #7C3AED,
+  and asks the user which is right instead of editing either file. Narrowing the hunt to selects, it
+  finds RangeSelect (reports) and RoleDropdown (team) as the two hand-built versions the new Select
+  should absorb. It proposes the Select with a tier and a consistent API, then asks the user to
+  confirm and to choose a plan, issues, or both. It changes no file under orbit/.
+context:
+  scaffold_script: place-files.sh

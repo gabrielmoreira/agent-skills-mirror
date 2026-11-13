@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: rust-session-lifetime-inline-tests
+expected_outcome: |
+  The run adds a configurable max lifetime (12h default) to Session in sessions-rs/src/session.rs,
+  test-first, with the new tests in the file's own #[cfg(test)] mod tests, the Rust convention this
+  crate follows. It makes time injectable (a clock or an Instant passed in) so tests need no
+  thread::sleep, and rewrites or removes the sleep-based tests (session_expires_after_idle_timeout,
+  touch_keeps_session_alive) as slow and flaky. It merges the duplicate "not expired" tests. It states
+  what happens at exactly max_lifetime, consistent with the idle timeout's strict comparison or asked
+  as an open question. cargo test passes.
+context:
+  scaffold_script: place-files.sh

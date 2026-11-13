@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuneYaooo/rea-video` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `JuneYaooo/rea-video` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JuneYaooo/rea-video` — 26 default patterns, 0 followed patterns, 11
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,11 +65,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/rea-video/references/materials.md`](skills/rea-video/references/materials.md) |
 | 5 | ✓ | [`skills/rea-video/references/memory.md`](skills/rea-video/references/memory.md) |
 | 6 | ✓ | [`skills/rea-video/references/output-template.md`](skills/rea-video/references/output-template.md) |
-| 7 | ✓ | [`skills/rea-video/references/remake.md`](skills/rea-video/references/remake.md) |
-| 8 | ✓ | [`skills/rea-video/references/review.md`](skills/rea-video/references/review.md) |
-| 9 | ✓ | [`skills/rea-video/references/setup.md`](skills/rea-video/references/setup.md) |
-| 10 | ✓ | [`skills/rea-video/references/taxonomy.md`](skills/rea-video/references/taxonomy.md) |
-| 11 | ✓ | [`skills/rea-video/SKILL.md`](skills/rea-video/SKILL.md) |
+| 7 | ✓ | [`skills/rea-video/references/remake-tools.md`](skills/rea-video/references/remake-tools.md) |
+| 8 | ✓ | [`skills/rea-video/references/remake.md`](skills/rea-video/references/remake.md) |
+| 9 | ✓ | [`skills/rea-video/references/review.md`](skills/rea-video/references/review.md) |
+| 10 | ✓ | [`skills/rea-video/references/setup.md`](skills/rea-video/references/setup.md) |
+| 11 | ✓ | [`skills/rea-video/references/taxonomy.md`](skills/rea-video/references/taxonomy.md) |
+| 12 | ✓ | [`skills/rea-video/SKILL.md`](skills/rea-video/SKILL.md) |
 
 ---
 

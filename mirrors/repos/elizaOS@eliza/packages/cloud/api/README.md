@@ -24,22 +24,15 @@ Worker and accounting hosts. Enroll an organization through the internal
 `withInferencePolicyMutation({organizationIds, enable: true}, ...)` transaction.
 All policy writers must use the managed mutation service; the database rejects
 an unfenced change for an enrolled organization.
-Request routes (chat, responses, messages, embeddings, speech and the other
-paid routes) never take the delegated lane or its rate window: they are admitted
-from the cached auth entry and counted per isolate whatever the flag says. The
-flag selects the delegated lane only for a fixed-price Worker session that
-commits its lease at dispatch (the speech relay). A host without a Worker
-lifetime never takes the delegated lane: it reserves synchronously against the
-primary, and the flag only switches its rate limit to the budget rate window.
-
-A request route records nothing durable before its provider call. If its
-isolate dies after the provider call and before the post-response lease commit,
-that request's provider cost is not charged; once the lease is committed the
-gate alarm recovers it. Revocation of an API key reaches the inference routes
-through writer invalidation and the entry's aged refresh, which checks the gate
-and writes a denial when the gate holds a fence. Every other route that
-authenticates through `requireGenerativeRouteCaller` checks the gate on each
-request unless it passes `cachedDecisionIsFinal`.
+Inference may reuse cached identity and funding snapshots, but every consumed
+API-key decision checks the durable credential fence. Worker request limits use
+the shared organization Durable Object, and paid provider work requires an
+acknowledged durable lease/dispatch receipt before invocation. Post-response
+accounting settles that same recoverable owner. Refusing stale funding snapshots
+are rechecked against the published projection and primary before returning a
+funding refusal; settlement also repairs the request's cached funding standing.
+The fixed-price speech relay may use the delegated session lane. Hosts without a
+Worker lifetime reserve synchronously against the primary.
 
 Migration 0553 also rejects an unfenced policy write in a repeatable-read or
 serializable transaction with SQLSTATE `40001`. Restart that whole transaction
@@ -57,9 +50,9 @@ that takes these locks in another order can be retried after a deadlock; it
 cannot skip the policy fence. Enroll a deployment only after its key and user
 policy writers use the managed mutation helpers.
 
-Bounded, direct Cerebras chat requests use the delegated path. The refill amount
-is a target, not a request limit: a larger request can claim the full available
-balance. Other operations retain primary admission and can reclaim idle funds.
+Fixed-price speech sessions may use the delegated path. Its refill amount is a
+target, not a request limit: a larger session can claim the full available balance.
+Request routes retain shared durable leases and can reclaim idle delegated funds.
 Funds backing active requests remain reserved. Drain and reconcile all grants,
 then use `disableInferenceBudgetAdmission` before turning off the mode.
 
@@ -227,7 +220,7 @@ registry's callback is authoritative; the admin does not infer an environment
 from a hostname. Review each environment's registry before repair.
 Set `ELIZA_MOBILE_APP_AUTH_TARGET_CLIENT_ID` to select the same client for the
 standalone verifier. With the protected environment variables present, run
-`node packages/scripts/cloud/admin/verify-mobile-app-auth-registration.ts
+`bun packages/scripts/cloud/admin/verify-mobile-app-auth-registration.ts
 --skip-database --verify-live` to check its public metadata without a database read.
 Omitting the selector checks the primary client. Release gates use `--all-clients`
 to check the primary client and every enabled additional client, both in the
@@ -521,7 +514,7 @@ the current and next two monthly periods funded; missed months do not accumulate
   off while unset. The numbers are not selected yet; `placeholder` enables
   unselected test values only. Latency benchmark:
   `bun --conditions=eliza-source packages/cloud/scripts/plan-request-limit-latency.ts`.
-  Against a deployment, `node packages/cloud/scripts/plan-admission-deployed-latency.ts
+  Against a deployment, `bun packages/cloud/scripts/plan-admission-deployed-latency.ts
   --config <file.json> --confirm-real-requests` reports client and Server-Timing
   p50/p95 on the existing completion and geocode routes for accounts a person
   prepares (normal, cache-miss, exhausted, expired, billing outage), minus an

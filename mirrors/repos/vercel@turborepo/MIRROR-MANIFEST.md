@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/turborepo` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `vercel/turborepo` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/turborepo` — 26 default patterns, 0 followed patterns, 9 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,7 +67,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`examples/basic/AGENTS.md`](examples/basic/AGENTS.md) |
 | 7 | ✓ | [`examples/with-nextjs-elysia/apps/web/AGENTS.md`](examples/with-nextjs-elysia/apps/web/AGENTS.md) |
 | 8 | ✓ | [`examples/with-nextjs-elysia/apps/web/CLAUDE.md`](examples/with-nextjs-elysia/apps/web/CLAUDE.md) |
-| 9 | ✓ | [`skills/turborepo/SKILL.md`](skills/turborepo/SKILL.md) |
+| 9 | ✓ | [`skills/add/SKILL.md`](skills/add/SKILL.md) |
+| 10 | ✓ | [`skills/turborepo/SKILL.md`](skills/turborepo/SKILL.md) |
 
 ---
 

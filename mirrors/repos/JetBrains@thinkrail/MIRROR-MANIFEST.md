@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JetBrains/thinkrail` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `JetBrains/thinkrail` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JetBrains/thinkrail` — 26 default patterns, 0 followed patterns, 13
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`packages/pi-todos/skills/todos/SKILL.md`](packages/pi-todos/skills/todos/SKILL.md) |
 | 12 | ✓ | [`packages/server/skills/managing-mcp-servers/SKILL.md`](packages/server/skills/managing-mcp-servers/SKILL.md) |
 | 13 | ✓ | [`packages/spec-graph/skills/spec-graph/SKILL.md`](packages/spec-graph/skills/spec-graph/SKILL.md) |
+| 14 | ✓ | [`thinkrail-extensions/web-access/skills/librarian/SKILL.md`](thinkrail-extensions/web-access/skills/librarian/SKILL.md) |
 
 ---
 

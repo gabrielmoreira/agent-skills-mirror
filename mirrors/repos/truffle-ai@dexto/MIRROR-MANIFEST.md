@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `truffle-ai/dexto` — 26 default patterns, 0 followed patterns, 80 file(s) materialized.
+Mirror of `truffle-ai/dexto` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `truffle-ai/dexto` — 26 default patterns, 0 followed patterns, 80 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 80 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,66 +79,55 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`agents/coding-agent/coding-agent.yml`](agents/coding-agent/coding-agent.yml) |
 | 19 | ✓ | [`agents/coding-agent/README.md`](agents/coding-agent/README.md) |
 | 20 | ✓ | [`agents/coding-agent/skills/code-review.md`](agents/coding-agent/skills/code-review.md) |
-| 21 | ✓ | [`agents/database-agent/data/example.db`](agents/database-agent/data/example.db) |
-| 22 | ✓ | [`agents/database-agent/database-agent-example.sql`](agents/database-agent/database-agent-example.sql) |
-| 23 | ✓ | [`agents/database-agent/database-agent.yml`](agents/database-agent/database-agent.yml) |
-| 24 | ✓ | [`agents/database-agent/README.md`](agents/database-agent/README.md) |
-| 25 | ✓ | [`agents/database-agent/setup-database.sh`](agents/database-agent/setup-database.sh) |
-| 26 | ✓ | [`agents/default-agent.yml`](agents/default-agent.yml) |
-| 27 | ✓ | [`agents/examples/email_slack.yml`](agents/examples/email_slack.yml) |
-| 28 | ✓ | [`agents/examples/linear-task-manager.yml`](agents/examples/linear-task-manager.yml) |
-| 29 | ✓ | [`agents/examples/notion.yml`](agents/examples/notion.yml) |
-| 30 | ✓ | [`agents/examples/ollama.yml`](agents/examples/ollama.yml) |
-| 31 | ✓ | [`agents/examples/README.md`](agents/examples/README.md) |
-| 32 | ✓ | [`agents/examples/website_designer.yml`](agents/examples/website_designer.yml) |
-| 33 | ✓ | [`agents/explore-agent/explore-agent.yml`](agents/explore-agent/explore-agent.yml) |
-| 34 | ✓ | [`agents/gaming-agent/gaming-agent.yml`](agents/gaming-agent/gaming-agent.yml) |
-| 35 | ✓ | [`agents/github-agent/github-agent.yml`](agents/github-agent/github-agent.yml) |
-| 36 | ✓ | [`agents/github-agent/README.md`](agents/github-agent/README.md) |
-| 37 | ✓ | [`agents/image-editor-agent/image-editor-agent.yml`](agents/image-editor-agent/image-editor-agent.yml) |
-| 38 | ✓ | [`agents/image-editor-agent/Lenna.webp`](agents/image-editor-agent/Lenna.webp) |
-| 39 | ✓ | [`agents/image-editor-agent/README.md`](agents/image-editor-agent/README.md) |
-| 40 | ✓ | [`agents/image-gen-agent/image-gen-agent.yml`](agents/image-gen-agent/image-gen-agent.yml) |
-| 41 | ✓ | [`agents/logger-agent/logger-agent.yml`](agents/logger-agent/logger-agent.yml) |
-| 42 | ✓ | [`agents/music-agent/music-agent.yml`](agents/music-agent/music-agent.yml) |
-| 43 | ✓ | [`agents/music-agent/README.md`](agents/music-agent/README.md) |
-| 44 | ✓ | [`agents/nano-banana-agent/nano-banana-agent.yml`](agents/nano-banana-agent/nano-banana-agent.yml) |
-| 45 | ✓ | [`agents/nano-banana-agent/README.md`](agents/nano-banana-agent/README.md) |
-| 46 | ✓ | [`agents/podcast-agent/podcast-agent.yml`](agents/podcast-agent/podcast-agent.yml) |
-| 47 | ✓ | [`agents/podcast-agent/README.md`](agents/podcast-agent/README.md) |
-| 48 | ✓ | [`agents/product-analysis-agent/product-analysis-agent.yml`](agents/product-analysis-agent/product-analysis-agent.yml) |
-| 49 | ✓ | [`agents/product-name-researcher/product-name-researcher.yml`](agents/product-name-researcher/product-name-researcher.yml) |
-| 50 | ✓ | [`agents/product-name-researcher/README.md`](agents/product-name-researcher/README.md) |
-| 51 | ✓ | [`agents/README.md`](agents/README.md) |
-| 52 | ✓ | [`agents/sora-video-agent/README.md`](agents/sora-video-agent/README.md) |
-| 53 | ✓ | [`agents/sora-video-agent/sora-video-agent.yml`](agents/sora-video-agent/sora-video-agent.yml) |
-| 54 | ✓ | [`agents/talk2pdf-agent/README.md`](agents/talk2pdf-agent/README.md) |
-| 55 | ✓ | [`agents/talk2pdf-agent/talk2pdf-agent.yml`](agents/talk2pdf-agent/talk2pdf-agent.yml) |
-| 56 | ✓ | [`agents/triage-demo/billing-agent.yml`](agents/triage-demo/billing-agent.yml) |
-| 57 | ✓ | [`agents/triage-demo/docs/billing-policies.md`](agents/triage-demo/docs/billing-policies.md) |
-| 58 | ✓ | [`agents/triage-demo/docs/company-overview.md`](agents/triage-demo/docs/company-overview.md) |
-| 59 | ✓ | [`agents/triage-demo/docs/escalation-policies.md`](agents/triage-demo/docs/escalation-policies.md) |
-| 60 | ✓ | [`agents/triage-demo/docs/product-features.md`](agents/triage-demo/docs/product-features.md) |
-| 61 | ✓ | [`agents/triage-demo/docs/technical-documentation.md`](agents/triage-demo/docs/technical-documentation.md) |
-| 62 | ✓ | [`agents/triage-demo/escalation-agent.yml`](agents/triage-demo/escalation-agent.yml) |
-| 63 | ✓ | [`agents/triage-demo/product-info-agent.yml`](agents/triage-demo/product-info-agent.yml) |
-| 64 | ✓ | [`agents/triage-demo/README.md`](agents/triage-demo/README.md) |
-| 65 | ✓ | [`agents/triage-demo/technical-support-agent.yml`](agents/triage-demo/technical-support-agent.yml) |
-| 66 | ✓ | [`agents/triage-demo/test-scenarios.md`](agents/triage-demo/test-scenarios.md) |
-| 67 | ✓ | [`agents/triage-demo/triage-agent.yml`](agents/triage-demo/triage-agent.yml) |
-| 68 | ✓ | [`agents/workflow-builder-agent/workflow-builder-agent.yml`](agents/workflow-builder-agent/workflow-builder-agent.yml) |
-| 69 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 70 | ✓ | [`docs/docs/architecture/skills.md`](docs/docs/architecture/skills.md) |
-| 71 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
-| 72 | ✓ | [`examples/skills/echo-custom-mcp/SKILL.md`](examples/skills/echo-custom-mcp/SKILL.md) |
-| 73 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 74 | ✓ | [`packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md`](packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md) |
-| 75 | ✓ | [`packages/tui/src/AGENTS.md`](packages/tui/src/AGENTS.md) |
-| 76 | ✓ | [`packages/tui/src/CLAUDE.md`](packages/tui/src/CLAUDE.md) |
-| 77 | ✓ | [`packages/tui/src/GEMINI.md`](packages/tui/src/GEMINI.md) |
-| 78 | ✓ | [`packages/webui/AGENTS.md`](packages/webui/AGENTS.md) |
-| 79 | ✓ | [`packages/webui/CLAUDE.md`](packages/webui/CLAUDE.md) |
-| 80 | ✓ | [`packages/webui/GEMINI.md`](packages/webui/GEMINI.md) |
+| 21 | ✓ | [`agents/coding-agent/skills/import-chats.md`](agents/coding-agent/skills/import-chats.md) |
+| 22 | ✓ | [`agents/database-agent/data/example.db`](agents/database-agent/data/example.db) |
+| 23 | ✓ | [`agents/database-agent/database-agent-example.sql`](agents/database-agent/database-agent-example.sql) |
+| 24 | ✓ | [`agents/database-agent/database-agent.yml`](agents/database-agent/database-agent.yml) |
+| 25 | ✓ | [`agents/database-agent/README.md`](agents/database-agent/README.md) |
+| 26 | ✓ | [`agents/database-agent/setup-database.sh`](agents/database-agent/setup-database.sh) |
+| 27 | ✓ | [`agents/default-agent.yml`](agents/default-agent.yml) |
+| 28 | ✓ | [`agents/examples/email_slack.yml`](agents/examples/email_slack.yml) |
+| 29 | ✓ | [`agents/examples/linear-task-manager.yml`](agents/examples/linear-task-manager.yml) |
+| 30 | ✓ | [`agents/examples/notion.yml`](agents/examples/notion.yml) |
+| 31 | ✓ | [`agents/examples/ollama.yml`](agents/examples/ollama.yml) |
+| 32 | ✓ | [`agents/examples/README.md`](agents/examples/README.md) |
+| 33 | ✓ | [`agents/examples/website_designer.yml`](agents/examples/website_designer.yml) |
+| 34 | ✓ | [`agents/explore-agent/explore-agent.yml`](agents/explore-agent/explore-agent.yml) |
+| 35 | ✓ | [`agents/gaming-agent/gaming-agent.yml`](agents/gaming-agent/gaming-agent.yml) |
+| 36 | ✓ | [`agents/github-agent/github-agent.yml`](agents/github-agent/github-agent.yml) |
+| 37 | ✓ | [`agents/github-agent/README.md`](agents/github-agent/README.md) |
+| 38 | ✓ | [`agents/image-editor-agent/image-editor-agent.yml`](agents/image-editor-agent/image-editor-agent.yml) |
+| 39 | ✓ | [`agents/image-editor-agent/Lenna.webp`](agents/image-editor-agent/Lenna.webp) |
+| 40 | ✓ | [`agents/image-editor-agent/README.md`](agents/image-editor-agent/README.md) |
+| 41 | ✓ | [`agents/image-gen-agent/image-gen-agent.yml`](agents/image-gen-agent/image-gen-agent.yml) |
+| 42 | ✓ | [`agents/logger-agent/logger-agent.yml`](agents/logger-agent/logger-agent.yml) |
+| 43 | ✓ | [`agents/music-agent/music-agent.yml`](agents/music-agent/music-agent.yml) |
+| 44 | ✓ | [`agents/music-agent/README.md`](agents/music-agent/README.md) |
+| 45 | ✓ | [`agents/nano-banana-agent/nano-banana-agent.yml`](agents/nano-banana-agent/nano-banana-agent.yml) |
+| 46 | ✓ | [`agents/nano-banana-agent/README.md`](agents/nano-banana-agent/README.md) |
+| 47 | ✓ | [`agents/podcast-agent/podcast-agent.yml`](agents/podcast-agent/podcast-agent.yml) |
+| 48 | ✓ | [`agents/podcast-agent/README.md`](agents/podcast-agent/README.md) |
+| 49 | ✓ | [`agents/product-analysis-agent/product-analysis-agent.yml`](agents/product-analysis-agent/product-analysis-agent.yml) |
+| 50 | ✓ | [`agents/product-name-researcher/product-name-researcher.yml`](agents/product-name-researcher/product-name-researcher.yml) |
+| 51 | ✓ | [`agents/product-name-researcher/README.md`](agents/product-name-researcher/README.md) |
+| 52 | ✓ | [`agents/README.md`](agents/README.md) |
+| 53 | ✓ | [`agents/sora-video-agent/README.md`](agents/sora-video-agent/README.md) |
+| 54 | ✓ | [`agents/sora-video-agent/sora-video-agent.yml`](agents/sora-video-agent/sora-video-agent.yml) |
+| 55 | ✓ | [`agents/talk2pdf-agent/README.md`](agents/talk2pdf-agent/README.md) |
+| 56 | ✓ | [`agents/talk2pdf-agent/talk2pdf-agent.yml`](agents/talk2pdf-agent/talk2pdf-agent.yml) |
+| 57 | ✓ | [`agents/workflow-builder-agent/workflow-builder-agent.yml`](agents/workflow-builder-agent/workflow-builder-agent.yml) |
+| 58 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 59 | ✓ | [`docs/docs/architecture/skills.md`](docs/docs/architecture/skills.md) |
+| 60 | ✓ | [`docs/static/llms.txt`](docs/static/llms.txt) |
+| 61 | ✓ | [`examples/skills/echo-custom-mcp/SKILL.md`](examples/skills/echo-custom-mcp/SKILL.md) |
+| 62 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 63 | ✓ | [`packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md`](packages/core/src/prompts/providers/__fixtures__/my-test-skill/SKILL.md) |
+| 64 | ✓ | [`packages/tui/src/AGENTS.md`](packages/tui/src/AGENTS.md) |
+| 65 | ✓ | [`packages/tui/src/CLAUDE.md`](packages/tui/src/CLAUDE.md) |
+| 66 | ✓ | [`packages/tui/src/GEMINI.md`](packages/tui/src/GEMINI.md) |
+| 67 | ✓ | [`packages/webui/AGENTS.md`](packages/webui/AGENTS.md) |
+| 68 | ✓ | [`packages/webui/CLAUDE.md`](packages/webui/CLAUDE.md) |
+| 69 | ✓ | [`packages/webui/GEMINI.md`](packages/webui/GEMINI.md) |
 
 ---
 

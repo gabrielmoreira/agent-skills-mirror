@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns, 368 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns, 367 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 3 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 368 |
+| Files         | 367 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -340,95 +340,94 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 277 | ✓ | [`skills/media-use/scripts/transcript-cut.mjs`](skills/media-use/scripts/transcript-cut.mjs) |
 | 278 | ✓ | [`skills/media-use/scripts/transcript-cut.test.mjs`](skills/media-use/scripts/transcript-cut.test.mjs) |
 | 279 | ✓ | [`skills/media-use/SKILL.md`](skills/media-use/SKILL.md) |
-| 280 | ✓ | [`skills/python-encoding.test.mjs`](skills/python-encoding.test.mjs) |
-| 281 | ✓ | [`skills/remotion-to-hyperframes/assets/.gitkeep`](skills/remotion-to-hyperframes/assets/.gitkeep) |
-| 282 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/.gitignore) |
-| 283 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/run.sh`](skills/remotion-to-hyperframes/assets/test-corpus/run.sh) |
-| 284 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/.gitignore) |
-| 285 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/expected.json) |
-| 286 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/compositions/title.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/compositions/title.html) |
-| 287 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/index.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/index.html) |
-| 288 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/README.md) |
-| 289 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/package.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/package.json) |
-| 290 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/remotion.config.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/remotion.config.ts) |
-| 291 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/index.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/index.ts) |
-| 292 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/Root.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/Root.tsx) |
-| 293 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/TitleCard.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/TitleCard.tsx) |
-| 294 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/tsconfig.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/tsconfig.json) |
-| 295 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/.gitignore) |
-| 296 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/expected.json) |
-| 297 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-1.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-1.html) |
-| 298 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-2.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-2.html) |
-| 299 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-3.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-3.html) |
-| 300 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/index.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/index.html) |
-| 301 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/README.md) |
-| 302 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/package.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/package.json) |
-| 303 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/remotion.config.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/remotion.config.ts) |
-| 304 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/index.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/index.ts) |
-| 305 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/MultiScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/MultiScene.tsx) |
-| 306 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/Root.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/Root.tsx) |
-| 307 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/tsconfig.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/tsconfig.json) |
-| 308 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/setup.sh`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/setup.sh) |
-| 309 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/.gitignore) |
-| 310 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/expected.json) |
-| 311 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-1.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-1.html) |
-| 312 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-2.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-2.html) |
-| 313 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-3.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-3.html) |
-| 314 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/index.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/index.html) |
-| 315 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/README.md) |
-| 316 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/package.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/package.json) |
-| 317 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/remotion.config.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/remotion.config.ts) |
-| 318 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/AnimatedNumber.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/AnimatedNumber.tsx) |
-| 319 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/StatCard.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/StatCard.tsx) |
-| 320 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/UnderlinedText.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/UnderlinedText.tsx) |
-| 321 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/index.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/index.ts) |
-| 322 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Root.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Root.tsx) |
-| 323 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/OutroScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/OutroScene.tsx) |
-| 324 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/StatsScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/StatsScene.tsx) |
-| 325 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/TitleScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/TitleScene.tsx) |
-| 326 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Stargazed.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Stargazed.tsx) |
-| 327 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/tsconfig.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/tsconfig.json) |
-| 328 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/01-use-state.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/01-use-state.tsx) |
-| 329 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/02-use-effect-deps.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/02-use-effect-deps.tsx) |
-| 330 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/03-async-metadata.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/03-async-metadata.tsx) |
-| 331 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/04-third-party-react.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/04-third-party-react.tsx) |
-| 332 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/05-lambda-config.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/05-lambda-config.tsx) |
-| 333 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/06-warnings-only.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/06-warnings-only.tsx) |
-| 334 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/07-custom-hook.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/07-custom-hook.tsx) |
-| 335 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/08-mixed.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/08-mixed.tsx) |
-| 336 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/expected.json) |
-| 337 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/README.md) |
-| 338 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/validate.sh`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/validate.sh) |
-| 339 | ✓ | [`skills/remotion-to-hyperframes/references/api-map.md`](skills/remotion-to-hyperframes/references/api-map.md) |
-| 340 | ✓ | [`skills/remotion-to-hyperframes/references/escape-hatch.md`](skills/remotion-to-hyperframes/references/escape-hatch.md) |
-| 341 | ✓ | [`skills/remotion-to-hyperframes/references/eval.md`](skills/remotion-to-hyperframes/references/eval.md) |
-| 342 | ✓ | [`skills/remotion-to-hyperframes/references/fonts.md`](skills/remotion-to-hyperframes/references/fonts.md) |
-| 343 | ✓ | [`skills/remotion-to-hyperframes/references/limitations.md`](skills/remotion-to-hyperframes/references/limitations.md) |
-| 344 | ✓ | [`skills/remotion-to-hyperframes/references/lottie.md`](skills/remotion-to-hyperframes/references/lottie.md) |
-| 345 | ✓ | [`skills/remotion-to-hyperframes/references/media.md`](skills/remotion-to-hyperframes/references/media.md) |
-| 346 | ✓ | [`skills/remotion-to-hyperframes/references/parameters.md`](skills/remotion-to-hyperframes/references/parameters.md) |
-| 347 | ✓ | [`skills/remotion-to-hyperframes/references/sequencing.md`](skills/remotion-to-hyperframes/references/sequencing.md) |
-| 348 | ✓ | [`skills/remotion-to-hyperframes/references/timing.md`](skills/remotion-to-hyperframes/references/timing.md) |
-| 349 | ✓ | [`skills/remotion-to-hyperframes/references/transitions.md`](skills/remotion-to-hyperframes/references/transitions.md) |
-| 350 | ✓ | [`skills/remotion-to-hyperframes/scripts/.gitkeep`](skills/remotion-to-hyperframes/scripts/.gitkeep) |
-| 351 | ✓ | [`skills/remotion-to-hyperframes/scripts/lint_source.py`](skills/remotion-to-hyperframes/scripts/lint_source.py) |
-| 352 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs`](skills/remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs) |
-| 353 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx) |
-| 354 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx) |
-| 355 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/smoke.sh`](skills/remotion-to-hyperframes/scripts/tests/smoke.sh) |
-| 356 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
-| 357 | ✓ | [`skills/reverse-any-video/references/animated.md`](skills/reverse-any-video/references/animated.md) |
-| 358 | ✓ | [`skills/reverse-any-video/references/match.md`](skills/reverse-any-video/references/match.md) |
-| 359 | ✓ | [`skills/reverse-any-video/references/people.md`](skills/reverse-any-video/references/people.md) |
-| 360 | ✓ | [`skills/reverse-any-video/references/start.md`](skills/reverse-any-video/references/start.md) |
-| 361 | ✓ | [`skills/reverse-any-video/SKILL.md`](skills/reverse-any-video/SKILL.md) |
-| 362 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
-| 363 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
-| 364 | ✓ | [`skills/style-sampling/references/remix.md`](skills/style-sampling/references/remix.md) |
-| 365 | ✓ | [`skills/style-sampling/SKILL.md`](skills/style-sampling/SKILL.md) |
-| 366 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 367 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 368 | → | [`TRIAGE.md`](TRIAGE.md) |
+| 280 | ✓ | [`skills/remotion-to-hyperframes/assets/.gitkeep`](skills/remotion-to-hyperframes/assets/.gitkeep) |
+| 281 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/.gitignore) |
+| 282 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/run.sh`](skills/remotion-to-hyperframes/assets/test-corpus/run.sh) |
+| 283 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/.gitignore) |
+| 284 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/expected.json) |
+| 285 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/compositions/title.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/compositions/title.html) |
+| 286 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/index.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/hf-src/index.html) |
+| 287 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/README.md) |
+| 288 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/package.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/package.json) |
+| 289 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/remotion.config.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/remotion.config.ts) |
+| 290 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/index.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/index.ts) |
+| 291 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/Root.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/Root.tsx) |
+| 292 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/TitleCard.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/src/TitleCard.tsx) |
+| 293 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/tsconfig.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-1-title-card/remotion-src/tsconfig.json) |
+| 294 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/.gitignore) |
+| 295 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/expected.json) |
+| 296 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-1.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-1.html) |
+| 297 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-2.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-2.html) |
+| 298 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-3.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/compositions/scene-3.html) |
+| 299 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/index.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/hf-src/index.html) |
+| 300 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/README.md) |
+| 301 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/package.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/package.json) |
+| 302 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/remotion.config.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/remotion.config.ts) |
+| 303 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/index.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/index.ts) |
+| 304 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/MultiScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/MultiScene.tsx) |
+| 305 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/Root.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/src/Root.tsx) |
+| 306 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/tsconfig.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/remotion-src/tsconfig.json) |
+| 307 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/setup.sh`](skills/remotion-to-hyperframes/assets/test-corpus/tier-2-multi-scene/setup.sh) |
+| 308 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/.gitignore`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/.gitignore) |
+| 309 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/expected.json) |
+| 310 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-1.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-1.html) |
+| 311 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-2.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-2.html) |
+| 312 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-3.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/compositions/scene-3.html) |
+| 313 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/index.html`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/hf-src/index.html) |
+| 314 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/README.md) |
+| 315 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/package.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/package.json) |
+| 316 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/remotion.config.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/remotion.config.ts) |
+| 317 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/AnimatedNumber.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/AnimatedNumber.tsx) |
+| 318 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/StatCard.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/StatCard.tsx) |
+| 319 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/UnderlinedText.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/components/UnderlinedText.tsx) |
+| 320 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/index.ts`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/index.ts) |
+| 321 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Root.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Root.tsx) |
+| 322 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/OutroScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/OutroScene.tsx) |
+| 323 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/StatsScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/StatsScene.tsx) |
+| 324 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/TitleScene.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/scenes/TitleScene.tsx) |
+| 325 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Stargazed.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/src/Stargazed.tsx) |
+| 326 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/tsconfig.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-3-data-driven/remotion-src/tsconfig.json) |
+| 327 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/01-use-state.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/01-use-state.tsx) |
+| 328 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/02-use-effect-deps.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/02-use-effect-deps.tsx) |
+| 329 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/03-async-metadata.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/03-async-metadata.tsx) |
+| 330 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/04-third-party-react.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/04-third-party-react.tsx) |
+| 331 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/05-lambda-config.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/05-lambda-config.tsx) |
+| 332 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/06-warnings-only.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/06-warnings-only.tsx) |
+| 333 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/07-custom-hook.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/07-custom-hook.tsx) |
+| 334 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/08-mixed.tsx`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/cases/08-mixed.tsx) |
+| 335 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/expected.json`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/expected.json) |
+| 336 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/README.md`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/README.md) |
+| 337 | ✓ | [`skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/validate.sh`](skills/remotion-to-hyperframes/assets/test-corpus/tier-4-escape-hatch/validate.sh) |
+| 338 | ✓ | [`skills/remotion-to-hyperframes/references/api-map.md`](skills/remotion-to-hyperframes/references/api-map.md) |
+| 339 | ✓ | [`skills/remotion-to-hyperframes/references/escape-hatch.md`](skills/remotion-to-hyperframes/references/escape-hatch.md) |
+| 340 | ✓ | [`skills/remotion-to-hyperframes/references/eval.md`](skills/remotion-to-hyperframes/references/eval.md) |
+| 341 | ✓ | [`skills/remotion-to-hyperframes/references/fonts.md`](skills/remotion-to-hyperframes/references/fonts.md) |
+| 342 | ✓ | [`skills/remotion-to-hyperframes/references/limitations.md`](skills/remotion-to-hyperframes/references/limitations.md) |
+| 343 | ✓ | [`skills/remotion-to-hyperframes/references/lottie.md`](skills/remotion-to-hyperframes/references/lottie.md) |
+| 344 | ✓ | [`skills/remotion-to-hyperframes/references/media.md`](skills/remotion-to-hyperframes/references/media.md) |
+| 345 | ✓ | [`skills/remotion-to-hyperframes/references/parameters.md`](skills/remotion-to-hyperframes/references/parameters.md) |
+| 346 | ✓ | [`skills/remotion-to-hyperframes/references/sequencing.md`](skills/remotion-to-hyperframes/references/sequencing.md) |
+| 347 | ✓ | [`skills/remotion-to-hyperframes/references/timing.md`](skills/remotion-to-hyperframes/references/timing.md) |
+| 348 | ✓ | [`skills/remotion-to-hyperframes/references/transitions.md`](skills/remotion-to-hyperframes/references/transitions.md) |
+| 349 | ✓ | [`skills/remotion-to-hyperframes/scripts/.gitkeep`](skills/remotion-to-hyperframes/scripts/.gitkeep) |
+| 350 | ✓ | [`skills/remotion-to-hyperframes/scripts/lint_source.py`](skills/remotion-to-hyperframes/scripts/lint_source.py) |
+| 351 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs`](skills/remotion-to-hyperframes/scripts/tests/boxSizing.test.mjs) |
+| 352 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/blocker.tsx) |
+| 353 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx) |
+| 354 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/smoke.sh`](skills/remotion-to-hyperframes/scripts/tests/smoke.sh) |
+| 355 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
+| 356 | ✓ | [`skills/reverse-any-video/references/animated.md`](skills/reverse-any-video/references/animated.md) |
+| 357 | ✓ | [`skills/reverse-any-video/references/match.md`](skills/reverse-any-video/references/match.md) |
+| 358 | ✓ | [`skills/reverse-any-video/references/people.md`](skills/reverse-any-video/references/people.md) |
+| 359 | ✓ | [`skills/reverse-any-video/references/start.md`](skills/reverse-any-video/references/start.md) |
+| 360 | ✓ | [`skills/reverse-any-video/SKILL.md`](skills/reverse-any-video/SKILL.md) |
+| 361 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
+| 362 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
+| 363 | ✓ | [`skills/style-sampling/references/remix.md`](skills/style-sampling/references/remix.md) |
+| 364 | ✓ | [`skills/style-sampling/SKILL.md`](skills/style-sampling/SKILL.md) |
+| 365 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 366 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 367 | → | [`TRIAGE.md`](TRIAGE.md) |
 
 ---
 

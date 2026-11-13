@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,13 +88,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`firmware/src/boards/waveshare_amoled_216_c6/CLAUDE.md`](firmware/src/boards/waveshare_amoled_216_c6/CLAUDE.md) |
 | 28 | ✓ | [`firmware/src/boards/waveshare_amoled_216/CLAUDE.md`](firmware/src/boards/waveshare_amoled_216/CLAUDE.md) |
 | 29 | ✓ | [`firmware/src/boards/waveshare_epaper_154/CLAUDE.md`](firmware/src/boards/waveshare_epaper_154/CLAUDE.md) |
-| 30 | ✓ | [`firmware/src/boards/waveshare_lcd_154/CLAUDE.md`](firmware/src/boards/waveshare_lcd_154/CLAUDE.md) |
-| 31 | ✓ | [`firmware/src/boards/waveshare_lcd_183/CLAUDE.md`](firmware/src/boards/waveshare_lcd_183/CLAUDE.md) |
-| 32 | ✓ | [`firmware/src/boards/waveshare_lcd_2/CLAUDE.md`](firmware/src/boards/waveshare_lcd_2/CLAUDE.md) |
-| 33 | ✓ | [`firmware/src/boards/waveshare_lcd_21/CLAUDE.md`](firmware/src/boards/waveshare_lcd_21/CLAUDE.md) |
-| 34 | ✓ | [`firmware/src/boards/waveshare_lcd_4/CLAUDE.md`](firmware/src/boards/waveshare_lcd_4/CLAUDE.md) |
-| 35 | ✓ | [`firmware/src/boards/xingzhi_cube_183/CLAUDE.md`](firmware/src/boards/xingzhi_cube_183/CLAUDE.md) |
-| 36 | ✓ | [`research/clawd-official/CLAUDE.md`](research/clawd-official/CLAUDE.md) |
+| 30 | ✓ | [`firmware/src/boards/waveshare_lcd_147/CLAUDE.md`](firmware/src/boards/waveshare_lcd_147/CLAUDE.md) |
+| 31 | ✓ | [`firmware/src/boards/waveshare_lcd_154/CLAUDE.md`](firmware/src/boards/waveshare_lcd_154/CLAUDE.md) |
+| 32 | ✓ | [`firmware/src/boards/waveshare_lcd_183/CLAUDE.md`](firmware/src/boards/waveshare_lcd_183/CLAUDE.md) |
+| 33 | ✓ | [`firmware/src/boards/waveshare_lcd_2/CLAUDE.md`](firmware/src/boards/waveshare_lcd_2/CLAUDE.md) |
+| 34 | ✓ | [`firmware/src/boards/waveshare_lcd_21/CLAUDE.md`](firmware/src/boards/waveshare_lcd_21/CLAUDE.md) |
+| 35 | ✓ | [`firmware/src/boards/waveshare_lcd_4/CLAUDE.md`](firmware/src/boards/waveshare_lcd_4/CLAUDE.md) |
+| 36 | ✓ | [`firmware/src/boards/xingzhi_cube_183/CLAUDE.md`](firmware/src/boards/xingzhi_cube_183/CLAUDE.md) |
+| 37 | ✓ | [`research/clawd-official/CLAUDE.md`](research/clawd-official/CLAUDE.md) |
 
 ---
 

@@ -17,7 +17,7 @@ Done when every slice has an issue, every blocker is named by number, and the us
 
 ## New session
 
-Start a new session with the harness's own means (a new thread, session, or background agent). Without one, give the user a prompt to paste. The prompt names the spec, the ADRs, and the first slice or issue, and says to implement from them as decided.
+Start a new session with the harness's own means (a new thread, session, or background agent). Without one, give the user a prompt to paste. The prompt names the spec, the ADRs, and the first slice or issue, and says to implement from them as decided, test-first with the test-driven-development skill, turning each acceptance check into a test.
 
 A new session sees only what is on disk in its checkout: start it in this checkout, or in one that has the commit.
 

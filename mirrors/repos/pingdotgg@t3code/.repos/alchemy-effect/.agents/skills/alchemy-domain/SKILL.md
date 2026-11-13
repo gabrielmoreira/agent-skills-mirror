@@ -1,0 +1,1 @@
+cache/repos/github.com/pingdotgg@t3code/.repos/alchemy-effect/.agents/skills/alchemy-domain/../../../packages/domain/skills/alchemy-domain/SKILL.md

@@ -58,7 +58,7 @@ write it first. `look.json` stands. Then ONE `batch`, so that the film loads onc
 `film/script` (`if_version`), the moving cut below, with each frame's own time,
 fades, one or two pushes, chapters and the score, at the same whole length; LAST
 `modules/scenes.json` (`if_version`), `{"v":1,"stage":"final"}`. Then the closing
-words of the instructions' section 2, as quoted (no score: its "No score" words), and its one
+words of the instructions' section 2, as quoted (no score: its "No score" words), with the film's url, and its one
 sentence more if there is one; the music is not named, whatever sound.md says.
 
 ### modules/look.json (`kind` json)

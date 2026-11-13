@@ -25,8 +25,13 @@ built-in style's `look.json` stands.
 **Whatever the ask, style, palette or `desc`, never draw:** a red rising sun with rays, the
 Confederate flag, the Nazi swastika, SS runes and death's head, the hammer and sickle, KKK
 robes, a burning cross, a noose, the ISIS flag, the fasces, the black sun; a spread eagle or
-heroic figure against a red or pale disc or such rays; anything that passes for a regime's
-flag or war poster. Fine: red, a sun or a bird alone; a nation's flag or arms today, as is;
+heroic figure against a red or pale disc or such rays; a bird spread flat and level, wings
+mirrored, seen from front, back, above or below, whatever is behind it (turn it: profile,
+diving, perched, in a flock, or banking), unless the person's own words ask for that very view
+(a mascot with its wings out, a chart that compares sizes): a style, a subject or a scene of
+your own is no such ask, and even then it keeps its own colours and markings, never a plain
+dark shape, never on red, a disc or rays; anything that passes for a regime's flag or war
+poster. Fine: red, a sun or a bird alone; a nation's flag or arms today, as is;
 an exhibit in a real history film.
 
 ## 2. Movement
@@ -41,7 +46,7 @@ an exhibit in a real history film.
 
 **Lifelike motion on objects:** a small anticipation before a big move, overshoot and settle on arrival (`eob` 1.4–1.9, or `spring`), squash and stretch on impact (15% at most), arcs rather than straight lines, and a smear on anything crossing the frame fast (2–3 trailing copies at earlier `t`, with falling opacity). Product UI only eases. Nothing snaps: arrivals ease out, exits ease in, cross-fades take 350–600 ms. Move things smoothly: a stepped or jumping value reads as a fault unless the look is hand-drawn boil.
 
-**Sound is half of it:** a wordless score and effects on the exact frames of events (sound.md), silent only if asked.
+**Sound is half of it:** a wordless score and effects on the exact frames of events (sound.md), silent only if asked, or on a loop, a GIF or a booth or lobby screen with no sound asked for. A film left silent unasked spends the close's one sentence more on "It's silent; ask if you'd like music.", unless that sentence has something else it must say.
 
 ## 3. Type
 

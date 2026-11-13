@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `moby/moby` — 26 default patterns, 8 followed patterns, 317 file(s) materialized.
+Mirror of `moby/moby` — 26 default patterns, 9 followed patterns, 318 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `moby/moby` — 26 default patterns, 8 followed patterns, 317 file(s) 
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 317 |
+| Followed pats | 9 |
+| Files         | 318 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `moby/moby` — 26 default patterns, 8 followed patterns, 317 file(s) 
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `TESTING.md`
 - `project/GOVERNANCE.md`
+- `THREAT_MODEL.md`
 - `project/BRANCHES-AND-TAGS.md`
 
 ## File Index
@@ -383,6 +384,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 315 | → | [`README.md`](README.md) |
 | 316 | → | [`SECURITY.md`](SECURITY.md) |
 | 317 | → | [`TESTING.md`](TESTING.md) |
+| 318 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
 
 ---
 

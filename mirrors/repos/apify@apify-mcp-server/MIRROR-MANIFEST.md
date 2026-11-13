@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `apify/apify-mcp-server` — 26 default patterns, 8 followed patterns, 24 file(s) materialized.
+Mirror of `apify/apify-mcp-server` — 26 default patterns, 9 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `apify/apify-mcp-server` — 26 default patterns, 8 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 24 |
+| Followed pats | 9 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `apify/apify-mcp-server` — 26 default patterns, 8 followed patterns,
 - `TOOL_GUIDELINES.md`
 - `DEVELOPMENT.md`
 - `res/index.md`
+- `.github/pull_request_template.md`
 - `src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`
 - `README.md`
 - `LICENSE.md`
@@ -82,14 +83,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
 | 15 | ✓ | [`src/web/AGENTS.md`](src/web/AGENTS.md) |
 | 16 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 18 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
-| 19 | → | [`LICENSE.md`](LICENSE.md) |
-| 20 | → | [`README.md`](README.md) |
-| 21 | → | [`res/index.md`](res/index.md) |
-| 22 | → | [`src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`](src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md) |
-| 23 | → | [`tests/UNIT_TESTING_GUIDE.md`](tests/UNIT_TESTING_GUIDE.md) |
-| 24 | → | [`TOOL_GUIDELINES.md`](TOOL_GUIDELINES.md) |
+| 17 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
+| 20 | → | [`LICENSE.md`](LICENSE.md) |
+| 21 | → | [`README.md`](README.md) |
+| 22 | → | [`res/index.md`](res/index.md) |
+| 23 | → | [`src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md`](src/web/DESIGN_SYSTEM_AGENT_INSTRUCTIONS.md) |
+| 24 | → | [`tests/UNIT_TESTING_GUIDE.md`](tests/UNIT_TESTING_GUIDE.md) |
+| 25 | → | [`TOOL_GUIDELINES.md`](TOOL_GUIDELINES.md) |
 
 ---
 

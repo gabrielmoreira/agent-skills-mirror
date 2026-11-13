@@ -4,9 +4,16 @@
 
 ---
 
-## Project Status (Last updated: Mon Aug 10 2026)
+## Project Status (Last updated: Thu Nov 12 2026)
 
-### Current State: v0.84 (77 skills)
+### Current State: v0.84 (77 skills) + unreleased work on main
+
+**Nov 12, 2026 session (unreleased, on main). Handoff brief: `12NOV26.md`**
+- **Guided Context Capture:** `skills/workshop-facilitation/SKILL.md` upgraded (Known/Assumed/Missing/Conflicting read-back, completion summary before generating, `(Recommended)` decision ladder, ranked Assumptions to Validate, replay-on-correction, resume recap). Explainer: `docs/guided-context-capture.md`. Skills **link** to the rulebook; never copy its text
+- **Configurable default entry mode:** `pm-skills.config.yaml` (`default_entry_mode` + per-skill `overrides`; ships `guided`, `incoming-request-advisor: context-dump`). 33 skills carry one `**Default entry mode:**` line so lone ZIPs know their default. `scripts/apply-entry-mode.py` applies it; `--check` runs in `validate-skills.sh`. User's in-session choice always wins
+- **Docs guide:** `docs/writing-for-our-readers.md` (Practitioner / Adopter / Builder; layer, don't split; first screen belongs to the Practitioner). Em-dash rule deliberately deferred
+- **Pending:** `dist/` rebuild (ZIPs hold pre-Nov-12 text), docs readability program, v0.85 release
+
 
 **77 Skills**
 - 28 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools + intelligence disciplines + EOL artifacts + lifecycle plays)
@@ -173,6 +180,8 @@
 - `research/finance/Finance_Metrics_Additions_Reference.md` — Common mistakes reference
 
 **What's Next:**
+- Docs readability program (from `docs/writing-for-our-readers.md`): README first screen + `START_HERE.md` + install docs (`INSTALL-CLAUDE-DESKTOP.md` is missing packs 06/07; `START_HERE.md` still says "New in v0.65") → prose-count drift check → audit the ~25 "Using PM Skills with…" guides → optional docs style checker
+- Future em-dash sweep (deferred Nov 12, 2026): decide whether to limit em dashes and in what scope. Skill bodies need special care; dashes there often carry teaching beats
 - Complete remaining Phase 6 skills (evals, observability, maintenance)
 - Build final workflow skill that orchestrates all 5 AI PM disciplines
 - Potential Phase 8: Pricing & Monetization Suite (7 comprehensive pricing skills)
@@ -186,6 +195,7 @@
 
 **Important Notes for Claude:**
 - Always check `git status` and recent commits before starting new work
+- For reader-facing docs (README, `START_HERE.md`, install guides, "Using PM Skills with…" guides, `dist/README.md`), follow `docs/writing-for-our-readers.md`: three readers (Practitioner / Adopter / Builder), layer don't split, the first screen belongs to the Practitioner
 - Dogfood first: use this repo's own standards/scripts/skill definitions as the source of truth before making recommendations
 - For facilitation behavior changes, update `skills/workshop-facilitation/SKILL.md` first, then use `docs/maintenance/facilitation-scope.md` to find and patch all linked skills
 - For category decisions (Component vs Interactive vs Workflow), anchor to criteria in this file and `README.md` before giving an answer
@@ -218,6 +228,7 @@
   - **Content-level, never byte-level** — rebuilt ZIPs differ every run from embedded timestamps
   - Runs as its **own CI step**, NOT inside `validate-skills.sh`: `build-dist.sh` → `build-release.sh` → `validate-skills.sh`, so a check there would abort the command that fixes the staleness. Also step 7 of `test-library.sh`
   - Fix drift with: `python3 scripts/generate-catalog.py` then `bash scripts/build-dist.sh`
+- **`scripts/apply-entry-mode.py`** — Applies `pm-skills.config.yaml`'s default entry mode to every protocol-running skill (or a packaged copy via `--skills-dir`); `--check` fails on drift, bad values, unknown overrides, or a skill that uses `workshop-facilitation` without the `**Default entry mode:**` line. Runs inside `validate-skills.sh` (safe there: its fix is itself, not a rebuild)
 - **`scripts/test-a-skill.sh`** — Skill quality gate
   - Runs strict conformance checks (`check-skill-metadata.py`)
   - Verifies linked `skills/*/SKILL.md` references resolve
@@ -458,7 +469,7 @@ After user selects, the skill should:
 ## Tone & Style Rules for Skills
 
 ### Do:
-- Write like you're teaching a smart junior PM
+- Write like you're teaching a smart, less experienced or emerging PM
 - Use short sentences and active voice
 - Name the tradeoffs (not just "best practices")
 - Include one vivid metaphor or label when it clarifies (e.g., "feature factory")

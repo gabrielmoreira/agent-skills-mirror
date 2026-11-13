@@ -25,8 +25,8 @@ bottom 420 and right 120 px (Shorts: bottom 670). An overlay for words sits abov
 `kit.stage` is the box, exactly W×H px, scaled by the player. `kit.fx` is the 2D context of a full-size canvas above everything, cleared
 before each `render`. Destructure what you use: `const { seg, lerp, eo, eio, eob, Camera, TextFx } = kit;`.
 
-**DOM and content.** `kit.el(tag, {class, style, text, html, attrs:{…}}, [children])`; `kit.h('<div>…</div>')`, the first
-element; `kit.esc(s)`; `kit.css(text)` adds a style inside the stage. `kit.module(name)`, `kit.json(name)`. `kit.assets.url(name)`,
+**DOM and content.** `kit.el(tag, {class, style, text, html, attrs:{…}}, [children])`; `kit.h('<div>…</div>')`, that element, or for several roots a box-less parent: move and select them, not it; a trailing `<style>` is dropped;
+`kit.esc(s)`; `kit.css(text)` adds a style inside the stage. `kit.module(name)`, `kit.json(name)`. `kit.assets.url(name)`,
 `.image(name)` (a Promise: await it in `init`), `.has(name)`, `.list()`. `kit.video(name, {start, loop, class, style})` makes a
 muted clip for you to add to the stage, shown at film time `t − start` (in a scene, from its beginning); `kit.seek(video, s)` in `render` shows second `s`. `kit.fonts.sans`, `.serif`, `.mono`,
 `(kit.fonts.display || kit.fonts.sans)` hold double quotes, so inside a `style="…"` write the stack as `base.css` does. `kit.W`, `kit.H`.

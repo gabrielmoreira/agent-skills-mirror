@@ -68,6 +68,7 @@ The same tree works under `~/.archon/workflows/` for home-scoped workflows. Exis
 | `worktree.enabled` | `false` always runs in the live checkout, and `--branch` or `--from` is an error. `true` always uses a worktree, and `--no-worktree` is an error. Omit it to let the caller decide; the default is a worktree. |
 | `container` | `enabled` and `write_back` (`approve` or `auto`) for container runs of folder projects. |
 | `mutates_checkout` | `false` asserts that runs of this workflow never write to their checkout, so the engine skips the path lock and several runs can share one checkout. Default `true`. See [Running sub-runs side by side](#running-sub-runs-side-by-side). |
+| `resource` | The resource every run of this workflow holds a slot on, however it starts, including a binding start: `resource: build`, or `resource: { name: build, capacity: 3 }` to set the capacity its hand starts declare, and its binding starts when the binding sets none (default 1). A start waits while the resource is full; `archon workflow run --no-wait` refuses instead. An included workflow, and a `workflow:` sub-run whose ancestor holds the same resource, share the parent's slot. See [Workflows that declare a resource](/guides/workflow-triggers/#workflows-that-declare-a-resource). |
 | `budget` | Ceiling on the run's total work and spend. See [Run budgets](#run-budgets). |
 | `persist_sessions` | Default for every AI node's `persist_session`. See [Persistent sessions](#persistent-sessions-across-re-runs). |
 | `requires` | `[github]` refuses the run before any work unless the triggering user has connected a GitHub identity. Enforced only when per-user GitHub is enabled (GitHub App mode with `TOKEN_ENCRYPTION_KEY`). `github` is the only value. |
@@ -315,6 +316,10 @@ nodes:
     effort: low      # Per-node override — ignores workflow-level effort
 ```
 
+A skip caused by an include's gate retains the include identity and the condition expression or upstream origin in its cause. False include conditions use `when_condition`. A reference-resolution error fails the entry node with the include name and reference diagnostic; descendants are skipped with `when_condition_parse_error`. Invalid or unsupported expression syntax is rejected when workflows load. If an invalid expression reaches execution, it skips the entire block with `when_condition_parse_error`. Real runs report these diagnostic skips once per include boundary for the run, including across loop iterations and resume. Dry-run traces show the same entry failures, skip reasons and cause details.
+
+Diagnostic delivery is best-effort. Skip persistence and platform notification are separate operations: if the process stops after storing a skip but before reporting it, resume retains the recorded cause but does not resend the diagnostic.
+
 ### `trigger_rule` Values
 
 | Value | Behavior |
@@ -437,11 +442,12 @@ there is no prior output, so it resolves to `''` and the non-empty equality abov
 - `$nodeId.output.field` accesses a JSON field (for `output_format` nodes)
 - `$nodeId.output.a.b` accesses nested object fields, checked against every declared schema
   segment. Paths stop at arrays; indexing, wildcards, and expressions are unsupported.
-- A field used in a scalar condition must resolve to a string, number, boolean, or null. A present object or array fails the gated node; expose a scalar decision field or inspect structured data in a script node.
+- A field used in a scalar condition must resolve to a string, number, boolean, or null. A present object or array makes the condition unevaluable; expose a scalar decision field or inspect structured data in a script node.
 - `$INPUTS.<name>` references a declared input supplied by a caller's `with:` (or a direct
-  run's `--input`). A name this run does not carry **fails the node**: it never quietly
+  run's `--input`). A name this run does not carry makes the condition unevaluable; it never quietly
   becomes an empty string. `INPUTS` is a reserved scope: a node cannot be given that id
   (the loader rejects it), so `$INPUTS.x` always means an input.
+- A reference-resolution error in a condition fails the node. For an include gate, it fails the entry node with the include name and reference diagnostic; descendants are skipped with `when_condition_parse_error`, retaining the include and expression in the cause. Real runs report the descendant skips once per boundary; dry runs show the same failure and skip diagnostics.
 - Invalid or unsupported expression syntax is rejected when workflows load and by `archon validate workflows`.
 - A numeric operator (`<`, `>`, `<=`, `>=`) needs a number on the right-hand side, quoted or bare; any other literal is rejected at load. If the left-hand value is not a number at run time, the node is skipped (fail-closed).
 - Grouping parentheses are not supported. Use AND/OR precedence or compute a decision in a `script:` node and gate on its scalar output.
@@ -2328,7 +2334,7 @@ bindings:
   sweep:                              # the binding id: lowercase letters, digits, hyphens
     workflow: review-sweep            # a workflow of this pack
     resource: sweep                   # last segment of the resource name
-    capacity: 1                       # optional, default 1
+    capacity: 1                       # optional, default the workflow's, else 1
     overlap: skip                     # skip | queue
     isolation: { kind: worktree }     # optional, default { kind: default }
     schedule: { interval_seconds: 1800 }
@@ -2362,12 +2368,15 @@ it. Setting both is refused, and so is a `schedule:` or `event:` key with an inv
 [binding](/guides/workflow-triggers/#choose-a-resource-capacity-and-overlap-policy). The
 resource is written as `<pack>:<host>/<owner>/<name>:<resource>`, so bindings that declare the
 same `resource` share its slots. With `resource_scope: host` it is
-`<pack>:<host id>:<resource>`, for work that spans every repository on the host.
+`<pack>:<host id>:<resource>`, for work that spans every repository on the host. When the
+bound workflow declares a top-level `resource:`, its runs hold that resource instead, and the
+binding's `capacity` applies to it. An omitted `capacity` means the workflow's declared
+`resource.capacity`, or 1 when it declares none.
 
 The declaration is validated when the pack loads, and an invalid one fails every workflow of
 the pack, naming the file and the binding. Beyond each binding's shape, a `{ binding: <id> }`
-input must name a declared timer or fire-only binding, an `{ event: <field> }` input belongs to an event
-binding, and bindings sharing a resource must declare the same capacity. An `event:` selector
+input must name a declared timer or fire-only binding, and an `{ event: <field> }` input belongs to an
+event binding. Bindings sharing a resource need not agree on its capacity. An `event:` selector
 and its fields are checked against the source plugin when a binding is generated, not at load.
 
 ## Launching a Separate Governed Run with `workflow:`

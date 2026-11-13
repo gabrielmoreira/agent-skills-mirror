@@ -2,47 +2,7 @@
 
 Use these when the project has no format of its own. When it does (an existing glossary, ADR folder, or spec folder), follow its location, numbering, and template instead. Create files and folders only when there is something to write.
 
-## Glossary: `GLOSSARY.md`
-
-```md
-# Glossary
-
-**Swap**:
-A request by one staff member to hand a shift to a named colleague.
-_Avoid_: trade, exchange
-
-**Cover request**:
-A shift offered to anyone qualified, with no named colleague.
-_Avoid_: open swap
-```
-
-- One or two sentences per term, saying what it is, not how it is implemented.
-- Be opinionated: one word per concept, and the words not to use under `_Avoid_`.
-- Only the project's own concepts. General programming terms stay out.
-- Group terms under subheadings once clusters appear.
-
-## ADR: `docs/adr/NNNN-slug.md`
-
-Number after the highest existing one (`0001`, `0002`, …).
-
-```md
-# Swaps inside the weekly-hours limit approve themselves
-
-Status: accepted (supersedes [0002](0002-swaps-need-manager-approval.md))
-
-Managers approved every swap, and staff arranged them over text because approval took days. Swaps
-that keep both people inside their weekly hours and role now approve at once, and the manager is
-told afterwards; anything else still waits for the manager.
-
-Considered: keeping approval for every swap with a 4-hour reminder (still too slow for same-day
-swaps); no approval at all (breaks the weekly-hours rule that 0002 protects).
-```
-
-- A title that states the decision, then one to three sentences: the context, the decision, and why.
-- **Status** only when it isn't simply accepted: `superseded by [NNNN](…)` on the old record, `supersedes [NNNN](…)` on the new one.
-- **Considered** when the rejected options are worth remembering, above all the ones the user turned down.
-- **Consequences** only when the effects aren't obvious.
-- A decision qualifies when a real alternative existed and a future reader would wonder why. Easy-to-reverse details and the only sensible option stay in the spec.
+The glossary and ADRs use [domain-driven-design's formats](../../domain-driven-design/references/formats.md).
 
 ## Spec: `docs/specs/<slug>.md`
 

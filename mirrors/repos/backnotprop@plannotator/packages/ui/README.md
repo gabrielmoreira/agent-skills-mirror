@@ -42,6 +42,7 @@ configurePlannotatorUI({
   crossRepoRefsWithoutRepo,    // true | { host }: owner/repo#123 links on github.com, or that host, where InlineMarkdown has no githubRepo (default false: plain text); may be set again, mounted text re-renders
   touchSelectionToolbar,       // true: on a touch screen the selection toolbar goes below the selection (clear of iOS's edit menu), inside the screen, with 44px buttons (default false)
   refCardTransport,            // (href, ref, signal) => card data for an issue / PR / MR link; with one, useRefHoverCards(rootRef) draws hover cards (default: none, no card, no request). refCardRouteTransport(route) builds one over a server route
+  refCardBitbucket,            // true: Bitbucket Cloud pull request links get a hover card too (default: false, plain links); only for a host whose transport reads them
   deferOffscreenCodeHighlight, // true: a code fence off screen stays plain until it comes near (highlighted before it shows), the rest in idle time (default false)
   codeHighlightWorker,         // { html(code, lang, theme) }: with deferOffscreenCodeHighlight, a waiting fence's markup made off the main thread (default: none)
   loadSettingsFromBackend,     // true: re-hydrate settings from your (synchronous) storageBackend after install, applied last
@@ -472,6 +473,25 @@ slot and mentions on the edit box (0.45.0)".
   Enter or click outside to accept" (the Inbox: "Enter or ✓ adds to your
   reply · Esc cancels"). Omit it and the line is as before.
 
+### Comment picture uploads per subtree (`CommentUploadContext`; next ui)
+
+`utils/upload` exports `CommentUploadContext`, a React context holding an
+`UploadTransport`. A host whose pictures go to a different place per document
+(the Inbox: the machine a thread is on) provides one around those comment
+boxes. Under it the picture button (`AttachmentsButton`) uploads only through
+it, names the file after the picture (`pictureFileName`: `login-mockup.png`),
+passes `{ onProgress, signal }` as `upload`'s new optional second argument,
+shows "Uploading picture 42%", says "Picture not added" with Retry and × when
+the upload fails, offers no typed path or URL, and holds the comment's Submit
+while a picture is pending (`onPendingChange`). `ImageAnnotator` takes `sourceBlob` (the
+picture's bytes, accepted as they are when nothing is drawn, instead of a
+`fetch` of its `blob:` URL, which a `connect-src 'self'` page refuses); the
+button passes it under the context. `comment-card.css` puts the status on its
+own line over the card's tools. `restoreCommentDraft` takes
+the pictures too (third argument, default none). Without a provider
+(Plannotator's apps) nothing changes: the configured `uploadTransport`, the
+path field and the old upload are as before.
+
 ### WebMCP provider (`@plannotator/ui/webmcp`; 0.32.0)
 
 The engine that lets a browser-integrated agent (Chrome/Edge WebMCP, `document.modelContext`) call in-page tools on a document surface. Feature-detected once; a browser without the API sees no registration, no DOM, no network, no timers. Seam: `configurePlannotatorUI({ webmcp: { enabled, namePrefix } })`, default enabled with the `plannotator.` prefix; pass `enabled: false` to keep a host page tool-free, or your own prefix to namespace the tools beside your own. There is deliberately no confirmation seam: the catalog is read-and-comment only (no approve / submit / close tools), and the agent may only edit or remove comments stamped `source: "browser-agent"`.
@@ -528,7 +548,7 @@ See HANDOFF.md § "Decision toggle on any question, and an opener for the host's
 
 **Answers without comments (ui 0.53.0).** `Viewer` `answerOnly`: annotation authoring and the document actions (Global comment, Copy) are off as under `readOnly`, while question cards and checkboxes keep their handlers, for a host that shows a message to answer, not a document to annotate. See HANDOFF.md § "Viewer `answerOnly` (ui 0.53.0)".
 
-**Comments on an answer-only document (ui 0.53.1).** `Viewer` `textComments`, with `answerOnly`: the text-selection toolbar (comment-only; `textDeletions` adds Delete back, unreleased) and its composer come back, a diagram's parts take comments too (ui 0.56.0), question cards stay out of selection, nothing else of authoring does. See HANDOFF.md § "Viewer `textComments` (ui 0.53.1)".
+**Comments on an answer-only document (ui 0.53.1).** `Viewer` `textComments`, with `answerOnly`: the text-selection toolbar (comment-only; `textDeletions` adds Delete back, unreleased) and its composer come back, a diagram's parts take comments too (ui 0.56.0), question cards stay out of selection unless the host also passes `questionTextComments` (unreleased, default off), nothing else of authoring does. See HANDOFF.md § "Viewer `textComments` (ui 0.53.1)".
 
 **Local links decided by the host (ui 0.53.0).** `Viewer` `resolveLocalLink`: the host decides what a link to a local path does (open it itself, or draw it as inert text), markdown and raw HTML alike. See HANDOFF.md § "Viewer `resolveLocalLink` (ui 0.53.0)".
 

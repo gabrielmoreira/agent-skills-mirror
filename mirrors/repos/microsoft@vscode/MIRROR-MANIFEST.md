@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 3 followed patterns, 231 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 3 followed patterns, 232 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 3 followed patterns, 231 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 231 |
+| Files         | 232 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -274,24 +274,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 211 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
 | 212 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
 | 213 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 214 | ✓ | [`src/vs/sessions/test/e2e/README.md`](src/vs/sessions/test/e2e/README.md) |
-| 215 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
-| 216 | ✓ | [`src/vs/workbench/contrib/modernUI/README.md`](src/vs/workbench/contrib/modernUI/README.md) |
-| 217 | ✓ | [`src/vs/workbench/contrib/onboarding/README.md`](src/vs/workbench/contrib/onboarding/README.md) |
-| 218 | ✓ | [`src/vs/workbench/contrib/terminalContrib/README.md`](src/vs/workbench/contrib/terminalContrib/README.md) |
-| 219 | ✓ | [`src/vs/workbench/services/themes/README.md`](src/vs/workbench/services/themes/README.md) |
-| 220 | ✓ | [`src/vscode-dts/README.md`](src/vscode-dts/README.md) |
-| 221 | ✓ | [`test/automation/README.md`](test/automation/README.md) |
-| 222 | ✓ | [`test/integration/browser/README.md`](test/integration/browser/README.md) |
-| 223 | ✓ | [`test/monaco/README.md`](test/monaco/README.md) |
-| 224 | ✓ | [`test/README.md`](test/README.md) |
-| 225 | ✓ | [`test/sanity/README.md`](test/sanity/README.md) |
-| 226 | ✓ | [`test/smoke/README.md`](test/smoke/README.md) |
-| 227 | ✓ | [`test/smoke/src/areas/policy/README.md`](test/smoke/src/areas/policy/README.md) |
-| 228 | ✓ | [`test/unit/README.md`](test/unit/README.md) |
-| 229 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 230 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 231 | → | [`README.md`](README.md) |
+| 214 | ✓ | [`src/vs/sessions/skills/vscode-ui/SKILL.md`](src/vs/sessions/skills/vscode-ui/SKILL.md) |
+| 215 | ✓ | [`src/vs/sessions/test/e2e/README.md`](src/vs/sessions/test/e2e/README.md) |
+| 216 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 217 | ✓ | [`src/vs/workbench/contrib/modernUI/README.md`](src/vs/workbench/contrib/modernUI/README.md) |
+| 218 | ✓ | [`src/vs/workbench/contrib/onboarding/README.md`](src/vs/workbench/contrib/onboarding/README.md) |
+| 219 | ✓ | [`src/vs/workbench/contrib/terminalContrib/README.md`](src/vs/workbench/contrib/terminalContrib/README.md) |
+| 220 | ✓ | [`src/vs/workbench/services/themes/README.md`](src/vs/workbench/services/themes/README.md) |
+| 221 | ✓ | [`src/vscode-dts/README.md`](src/vscode-dts/README.md) |
+| 222 | ✓ | [`test/automation/README.md`](test/automation/README.md) |
+| 223 | ✓ | [`test/integration/browser/README.md`](test/integration/browser/README.md) |
+| 224 | ✓ | [`test/monaco/README.md`](test/monaco/README.md) |
+| 225 | ✓ | [`test/README.md`](test/README.md) |
+| 226 | ✓ | [`test/sanity/README.md`](test/sanity/README.md) |
+| 227 | ✓ | [`test/smoke/README.md`](test/smoke/README.md) |
+| 228 | ✓ | [`test/smoke/src/areas/policy/README.md`](test/smoke/src/areas/policy/README.md) |
+| 229 | ✓ | [`test/unit/README.md`](test/unit/README.md) |
+| 230 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 231 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 232 | → | [`README.md`](README.md) |
 
 ---
 

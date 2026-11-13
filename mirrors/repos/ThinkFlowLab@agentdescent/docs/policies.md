@@ -40,6 +40,44 @@ aggregator hands the engine's verifier and config to any policy exposing the
 optional `bind(verifier)` / `configure(config)` hooks
 ([details](acceptance-policies.md#installing-a-policy-the-two-optional-hooks)).
 
+## Which version of this bundle is a run using?
+
+A commit records its artifact and its diff; it did not record the rules that let
+it through, so a three-line change to an acceptance threshold could move a run's
+acceptance rate with nothing in the ledger to separate the commits on either
+side of it. `policy_digest()` is that missing version — a 64-hex content hash of
+the whole procedure:
+
+```python
+from agentdescent import Policies, policy_digest
+from agentdescent.aggregator import AggregatorConfig
+
+policy_digest(Policies(), config=AggregatorConfig(base_delta=0.05))
+# '3f2a…'  -> change base_delta, or swap a policy class, and this changes
+```
+
+The engine computes it once per run, from the **resolved** bundle (legacy
+keyword arguments folded in), the aggregator config and the verifier that
+actually measures, and stamps it on:
+
+- every `MergeContext` (`ctx.policy_digest`) and so every acceptance decision;
+- the ledger commit message, as a `policy-digest: <hash>` trailer, alongside a
+  `DecisionRecord.policy_digest`;
+- `RunManifest.policy_digest` and `EvolutionResult.policy_digest` — recorded
+  beside the manifest id, never inside it, so the same inputs judged by a new
+  policy are the same run with a different procedure rather than a second id.
+
+Flags, numbers and strings are hashed **by value**, and a replaceable piece is
+hashed by class plus its optional `policy_fingerprint()` method — which is how a
+rule that keeps its knobs on the instance stays visible: `StableDistanceAcceptance(strength=0.1)`
+and `strength=0.9` hash differently, and so do two `AdaptiveTrustRegion`s with a
+different `window`. Live state is never hashed: a policy's caches, counters and
+spend change while a run spends them, and hashing those would report a policy
+change every round. The honest limitation is that a class which keeps an
+admission-affecting argument on the instance and does not implement the hook is
+identified by its class alone. Nothing here reads the environment, the clock or
+the filesystem.
+
 ## Which seam is my mechanism?
 
 An algorithm's distinctive mechanism lives in exactly one of three layers:

@@ -21,9 +21,12 @@ homepage: https://clawdcursor.com
 source: https://github.com/AmrDab/clawdcursor
 privacy: >
   All processing runs locally. Server binds to 127.0.0.1 only - not
-  network-accessible. No telemetry, no analytics. Screenshots stay in
-  memory and go only to the MCP client that requested them; clawdcursor
-  calls no model itself.
+  network-accessible. Screenshots stay in memory and go only to the MCP
+  client that requested them; clawdcursor calls no model itself. It sends
+  anonymous error reports by default (result codes, timings and its own
+  file:line, never screen content; https://github.com/AmrDab/clawdcursor/blob/main/docs/telemetry.md).
+  When the user asks to turn them off, call system
+  {action:"telemetry_optout"}; the user can also run `clawdcursor optout`.
 metadata:
   openclaw:
     requires: {}
@@ -115,7 +118,7 @@ of the granular surface's ~19,000 - so small models (Haiku, Kimi, Ollama) stay f
 
 **I want to read the screen:**
 - Structured (buttons, fields, text with coords)? → `accessibility {"action":"read_tree"}`. First choice.
-- The exact text of a page or document? → `system {"action":"copy_all_text"}`.
+- The exact text of a page or document? → `system {"action":"copy_all_text"}` (one value in a long page: add `"find":"<text>"`).
 - Raw OCR fallback (tree empty)? → `system {"action":"ocr"}`.
 - Pixel image? → `computer {"action":"screenshot"}`. Last resort - expensive.
 
@@ -369,6 +372,28 @@ system {"action":"pause_for_user","message":"Send this email to recipient@x.com?
 accessibility {"action":"invoke","name":"Send"}
 // verify: accessibility read_tree - is the sent-folder visible?
 ```
+
+**Draw on a canvas (whiteboards such as Miro, FigJam, Excalidraw, tldraw, Freeform; Paint; a CAD viewport):**
+
+The board has no names: `read_tree` shows the toolbar, and an `Opaque area` line for the board itself. Drive the toolbar by name and draw from a screenshot.
+1. **Import before drawing.** If the app builds a diagram from text (a Mermaid or text-to-diagram dialog, or pasting a diagram's source), use it: `system clipboard_write` + paste, then check once.
+2. **Pick the tool by name** (`accessibility invoke`; `help="…"` on a `read_tree` line is the button's tooltip), then `computer wait` about 1 s: the first canvas click right after switching tools can be dropped.
+3. **One screenshot, then one batch.** Shapes first, connectors second. Rectangles, ellipses and straight lines: the shape or line tool with `drag`. Pen points: one `click` with `path`. Never click an existing pen point again, as some pen tools drop that click and the next one.
+4. **Check once:** `computer screenshot_region` of only the changed area with `max_edge` 512, plus `system ocr` for labels you typed.
+5. **Take a new screenshot before the next group of strokes.** The board can pan between shapes, so old coordinates may point at empty canvas. Report what exists, and resume from the last check.
+
+```json
+batch({"steps":[
+  {"name":"accessibility","arguments":{"action":"invoke","name":"Rectangle"}},
+  {"name":"computer","arguments":{"action":"wait","seconds":1}},
+  {"name":"computer","arguments":{"action":"drag","startX":300,"startY":200,"endX":460,"endY":280}},
+  {"name":"accessibility","arguments":{"action":"invoke","name":"Pen"}},
+  {"name":"computer","arguments":{"action":"wait","seconds":1}},
+  {"name":"computer","arguments":{"action":"click","path":[{"x":500,"y":240},{"x":560,"y":240},{"x":560,"y":320}],"interval_ms":150}},
+  {"name":"computer","arguments":{"action":"screenshot_region","x":280,"y":180,"width":320,"height":160,"max_edge":512}}
+]})
+```
+The batch returns the region image with its trace, so drawing and checking take one call.
 
 ---
 

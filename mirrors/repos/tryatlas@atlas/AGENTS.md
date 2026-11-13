@@ -89,8 +89,8 @@ bun run test src/lib/time-ago.test.ts
 cargo test -p atlas-native-agent --test engine_turn   # -p resolves from anywhere
 ```
 
-Generated files — the TOML/SVG is the source, the committed output is derived, and a
-suite fails the moment they disagree. Edit the source and regenerate:
+Generated files — the TOML/SVG/Rust is the source, the committed output is derived,
+and a suite fails the moment they disagree. Edit the source and regenerate:
 
 ```bash
 bun run theme:keys     # @tryatlas/design's keys.toml, themes, Rust tables → crates/atlas-theme; schema, docs
@@ -98,6 +98,7 @@ bun run icons:render   # macOS app icons
 bun run settings:gen   # settings-registry.toml → TS, Rust, docs; then
                        # ATLAS_BLESS=1 cargo test -p atlas config_default
                        # for docs/reference/config.default.toml
+bun run bindings:gen   # atlas-agent-wire's Rust types → src/bindings/agent-wire/ (ts-rs)
 ```
 
 The design system (primitives, scales, theme engine, `keys.toml`, built-in themes,
@@ -144,7 +145,9 @@ free; xterm, pixi, recharts and friends cannot, so they must hear the change.
 **The IPC and event seams are opaque strings to `tsc`.** `invoke("name")`, the
 `atlas:*` channel names, and even the _field names_ inside a payload are checked by
 `ipc-contract`, `event-contract`, `state-payload-contract` and `wire-shape-contract`
-and by nothing else. Check `event-contract.test.ts` before inventing a channel name.
+and by nothing else. The exception is the session-delta payload, whose TypeScript is
+generated from `crates/atlas-agent-wire` into `src/bindings/agent-wire/`, so `tsc`
+checks its fields. Check `event-contract.test.ts` before inventing a channel name.
 
 **Three cargo-workspace rules, each failing quietly** (`cargo-workspace.test.ts`):
 `[patch]` tables are honored only in the manifest cargo was invoked on — always the
@@ -220,7 +223,8 @@ Each of these is a multi-file edit where missing one compiles fine.
 Frontend is organised by **feature**, not file type: `src/features/<feature>/` holds
 `components/`, `stores/`, `lib/`. Cross-feature widgets in `src/components/`, primitives
 from `@tryatlas/design`, shared helpers in `src/lib/`; `@/` aliases `src/`. **Filenames are
-kebab-case** (`center-panel.tsx`), the sole exception being `src/App.tsx`. Zustand +
+kebab-case** (`center-panel.tsx`), the exceptions being `src/App.tsx` and the
+generated `src/bindings/`, named after their Rust types. Zustand +
 Immer stores wrapped in `createSelectors` so `useStore.use.x()` works; stores never call
 other stores — cross-feature coordination is `getState()` at an action boundary or a
 `window.dispatchEvent(new CustomEvent("atlas:…"))`. Tailwind composed via `cn()`.
@@ -257,7 +261,8 @@ start path has a timeout (0008).
 
 The session-delta wire is **additive-only**. Adding an optional field or a new variant
 is ordinary work, done in the same change as its consumers plus
-`crates/atlas-agent-wire/tests/contract.rs` and `tests/wire-shape-contract.test.ts`.
+`crates/atlas-agent-wire/tests/contract.rs` and `bun run bindings:gen`, which
+regenerates the TypeScript the frontend reads it through.
 Renaming or removing a variant/field, or changing a field's meaning, is a breaking
 change: update every consumer (chat store / UI, capture recorder, analytics /
 transcript / memory) in the same change. The contract tests are the authority;

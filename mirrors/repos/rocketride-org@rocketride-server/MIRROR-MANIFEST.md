@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `rocketride-org/rocketride-server` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `rocketride-org/rocketride-server` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rocketride-org/rocketride-server` — 26 default patterns, 0 followed
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,19 +59,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 2 | ✓ | [`.cursorrules`](.cursorrules) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`docs/agents/context/stubs/AGENTS.md`](docs/agents/context/stubs/AGENTS.md) |
-| 6 | ✓ | [`docs/agents/context/stubs/CLAUDE.md`](docs/agents/context/stubs/CLAUDE.md) |
-| 7 | ✓ | [`docs/agents/context/stubs/copilot-instructions.md`](docs/agents/context/stubs/copilot-instructions.md) |
-| 8 | ✓ | [`docs/agents/skills/rocketride-building-pipelines/SKILL.md`](docs/agents/skills/rocketride-building-pipelines/SKILL.md) |
-| 9 | ✓ | [`docs/agents/skills/rocketride-configuring-pipelines/SKILL.md`](docs/agents/skills/rocketride-configuring-pipelines/SKILL.md) |
-| 10 | ✓ | [`docs/agents/skills/rocketride-debugging-pipelines/SKILL.md`](docs/agents/skills/rocketride-debugging-pipelines/SKILL.md) |
-| 11 | ✓ | [`docs/agents/skills/rocketride-designing-pipelines/SKILL.md`](docs/agents/skills/rocketride-designing-pipelines/SKILL.md) |
-| 12 | ✓ | [`docs/agents/skills/rocketride-running-pipelines/SKILL.md`](docs/agents/skills/rocketride-running-pipelines/SKILL.md) |
-| 13 | ✓ | [`nodes/AGENTS.md`](nodes/AGENTS.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
+| 3 | ✓ | [`.cursorrules`](.cursorrules) |
+| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`docs/agents/context/stubs/AGENTS.md`](docs/agents/context/stubs/AGENTS.md) |
+| 7 | ✓ | [`docs/agents/context/stubs/CLAUDE.md`](docs/agents/context/stubs/CLAUDE.md) |
+| 8 | ✓ | [`docs/agents/context/stubs/copilot-instructions.md`](docs/agents/context/stubs/copilot-instructions.md) |
+| 9 | ✓ | [`docs/agents/skills/rocketride-building-pipelines/SKILL.md`](docs/agents/skills/rocketride-building-pipelines/SKILL.md) |
+| 10 | ✓ | [`docs/agents/skills/rocketride-configuring-pipelines/SKILL.md`](docs/agents/skills/rocketride-configuring-pipelines/SKILL.md) |
+| 11 | ✓ | [`docs/agents/skills/rocketride-debugging-pipelines/SKILL.md`](docs/agents/skills/rocketride-debugging-pipelines/SKILL.md) |
+| 12 | ✓ | [`docs/agents/skills/rocketride-designing-pipelines/SKILL.md`](docs/agents/skills/rocketride-designing-pipelines/SKILL.md) |
+| 13 | ✓ | [`docs/agents/skills/rocketride-running-pipelines/SKILL.md`](docs/agents/skills/rocketride-running-pipelines/SKILL.md) |
+| 14 | ✓ | [`nodes/AGENTS.md`](nodes/AGENTS.md) |
 
 ---
 

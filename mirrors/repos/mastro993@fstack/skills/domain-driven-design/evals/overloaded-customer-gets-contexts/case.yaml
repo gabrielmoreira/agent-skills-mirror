@@ -1,0 +1,15 @@
+schema_version: "1.1"
+name: overloaded-customer-gets-contexts
+expected_outcome: |
+  The run reads shopkeep's code and the Slack export and sees that "customer" means three things:
+  a lead who signed a quote (sales), whoever has a Stripe account (billing), and whoever receives a
+  shipment, often a warehouse (fulfillment). It proposes Sales, Billing, and Fulfillment bounded
+  contexts, each with its own model of that party, as modules in the existing app unless it states a
+  concrete reason for separate services; draws the context map with direction, pattern, and
+  integration style, and gives each context its own tables. It flags, with file references, the
+  Stripe types inside Order.ts (an anticorruption layer), the status codes and rules in
+  OrderService.updateStatus (move them onto domain objects named with domain verbs), and the generic
+  CustomerManager.update. It writes GLOSSARY.md with a section per context and leaves src/ unchanged.
+  Questions to the user, if any, are at most five domain scenarios.
+context:
+  scaffold_script: place-files.sh

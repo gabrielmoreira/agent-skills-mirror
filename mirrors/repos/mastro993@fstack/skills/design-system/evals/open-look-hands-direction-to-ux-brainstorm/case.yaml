@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: open-look-hands-direction-to-ux-brainstorm
+expected_outcome: |
+  tidy has no tokens, no theme, and no design system, and the user gives only a rough feel and asks
+  for inspiration, so the look is open. The run maps the app first (React, Tailwind v4 with no
+  theme, placeholder gray/blue/green classes), then hands the direction to the ux-brainstorm skill
+  (invoking it or following its SKILL.md), scoped to gathering inspiration and choosing a
+  direction. It shows two or three named directions that differ on a real axis (such as density,
+  contrast, shape, or tone), each with its references, and asks the user to pick one. It stops
+  there: no DESIGN.md with final values, no theme tokens, and no component code before the pick,
+  and tells the user that DESIGN.md comes from the pick, followed by the audit and a proposed system.
+context:
+  scaffold_script: place-files.sh

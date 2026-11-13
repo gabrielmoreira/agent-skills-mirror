@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `emilkowalski/skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `emilkowalski/skills` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `emilkowalski/skills` — 26 default patterns, 0 followed patterns, 27
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,14 +78,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`skills/improve-animations/AUDIT.md`](skills/improve-animations/AUDIT.md) |
 | 18 | ✓ | [`skills/improve-animations/PLAN-TEMPLATE.md`](skills/improve-animations/PLAN-TEMPLATE.md) |
 | 19 | ✓ | [`skills/improve-animations/SKILL.md`](skills/improve-animations/SKILL.md) |
-| 20 | ✓ | [`skills/mobile-native/SKILL.md`](skills/mobile-native/SKILL.md) |
-| 21 | ✓ | [`skills/pick-ui-library/SKILL.md`](skills/pick-ui-library/SKILL.md) |
-| 22 | ✓ | [`skills/prototype/PICKER.md`](skills/prototype/PICKER.md) |
-| 23 | ✓ | [`skills/prototype/SKILL.md`](skills/prototype/SKILL.md) |
-| 24 | ✓ | [`skills/remove-animations/SKILL.md`](skills/remove-animations/SKILL.md) |
-| 25 | ✓ | [`skills/review-animations/SKILL.md`](skills/review-animations/SKILL.md) |
-| 26 | ✓ | [`skills/review-animations/STANDARDS.md`](skills/review-animations/STANDARDS.md) |
-| 27 | ✓ | [`skills/write-swift/SKILL.md`](skills/write-swift/SKILL.md) |
+| 20 | ✓ | [`skills/learn-taste/SKILL.md`](skills/learn-taste/SKILL.md) |
+| 21 | ✓ | [`skills/mobile-native/SKILL.md`](skills/mobile-native/SKILL.md) |
+| 22 | ✓ | [`skills/pick-ui-library/SKILL.md`](skills/pick-ui-library/SKILL.md) |
+| 23 | ✓ | [`skills/prototype/PICKER.md`](skills/prototype/PICKER.md) |
+| 24 | ✓ | [`skills/prototype/SKILL.md`](skills/prototype/SKILL.md) |
+| 25 | ✓ | [`skills/remove-animations/SKILL.md`](skills/remove-animations/SKILL.md) |
+| 26 | ✓ | [`skills/review-animations/SKILL.md`](skills/review-animations/SKILL.md) |
+| 27 | ✓ | [`skills/review-animations/STANDARDS.md`](skills/review-animations/STANDARDS.md) |
+| 28 | ✓ | [`skills/write-swift/SKILL.md`](skills/write-swift/SKILL.md) |
 
 ---
 

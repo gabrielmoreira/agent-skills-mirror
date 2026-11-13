@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 12 file(s) materialized.
+Mirror of `AmrDab/clawdcursor` — 26 default patterns, 7 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 12 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
+| Followed pats | 7 |
 | Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -52,9 +52,11 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 5 followed patterns, 12 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `CHANGELOG.md`
-- `docs/MACOS-SETUP.md`
+- `bench/README.md`
 - `SECURITY.md`
+- `docs/telemetry.md`
+- `docs/MACOS-SETUP.md`
+- `CHANGELOG.md`
 - `CONTRIBUTING.md`
 
 ## File Index
@@ -63,16 +65,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`bench/README.md`](bench/README.md) |
-| 2 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
-| 3 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 4 | ✓ | [`native/README.md`](native/README.md) |
-| 5 | ✓ | [`seed-registry/README.md`](seed-registry/README.md) |
-| 6 | ✓ | [`SKILL.md`](SKILL.md) |
-| 7 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
-| 8 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/MACOS-SETUP.md`](docs/MACOS-SETUP.md) |
+| 1 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
+| 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 3 | ✓ | [`native/README.md`](native/README.md) |
+| 4 | ✓ | [`SKILL.md`](SKILL.md) |
+| 5 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
+| 6 | → | [`bench/README.md`](bench/README.md) |
+| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`docs/MACOS-SETUP.md`](docs/MACOS-SETUP.md) |
+| 10 | → | [`docs/telemetry.md`](docs/telemetry.md) |
 | 11 | → | [`README.md`](README.md) |
 | 12 | → | [`SECURITY.md`](SECURITY.md) |
 

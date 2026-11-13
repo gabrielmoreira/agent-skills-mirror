@@ -65,7 +65,7 @@ The user has seen the rough cut, so keep the same ids, names, order and seconds,
 For any film: have finalize.md, motion.md, film-api.md and rough-cut.md in this conversation (recreate-ui.md too if it shows their product), and `list` `modules` unless you just did. Before you reread any scene, read `shared.js`: mend a fault there, and on an older film with no `window.W` start it with `window.W = window.W || {};` (`if_version`). A scene named in "Scenes left" that has a module either failed when the page ran it or is listed by mistake, because the sentence can be copied early and pasted late. Read the scene for a bug and fix it (`if_version`). If you find none, leave the scene as it is and say in one line that you found nothing to mend, and to tell you if it still fails. Only if they then say so, or "Scenes left" names it again, write it again, more simply, keeping its head.
 
 - **The stage says final** (scenes missing or failing): work on those alone, meaning the named ones, any other whose code you see is broken, and any with no module in your `list`, which you write as in finalize.md. Past that mend of `shared.js`, don't touch the world, the score or the close. Say in one line what you mended. If nothing is missing and there's no bug, the first time, change nothing and say only that you found nothing to mend, and to tell you if it still fails.
-- **The stage says rough:** draw the world only if `base.css` is still the first batch's few lines. Write each scene that has no module (new) or is rough (redrawn, as above), in film order. Then finalize.md's step 5, whole: read sound.md and write `score.js` (unless they asked for silence), then `"final"`, and the close.
+- **The stage says rough:** draw the world only if `base.css` is still the first batch's few lines. Write each scene that has no module (new) or is rough (redrawn, as above), in film order. Then finalize.md's step 5, whole: read sound.md and write `score.js` (unless finalize.md says no score), then `"final"`, and the close.
 
 ## Scenes missing or broken
 
@@ -101,7 +101,7 @@ kit.scene('pour', {
 
 ## What to say about fonts
 
-The close's one sentence says only these, as quoted, where they fit (X is the family; Y is yours; Z is the shipped face underneath, or "a system font" for words the ten can't spell). As the one sentence more they rank: what you refused, or the file they asked for (Export); A, D or E; what else you could not do; a design system's colors that they didn't pick; B or C. After a font note, what you made up gets a short sentence of its own.
+The close's one sentence says only these, as quoted, where they fit (X is the family; Y is yours; Z is the shipped face underneath, or "a system font" for words the ten can't spell). As the one sentence more they rank: what you refused, or the file they asked for (Export, with the film's url); A, D or E; what else you could not do; a design system's colors that they didn't pick; B or C. After a font note, what you made up gets a short sentence of its own.
 
 - A. They named X, which isn't Google's: "X isn't on Google Fonts, so I chose Y, the closest match there, and I'll use X if you send me its font files."
 - B. They named X, fetched, or ask what a fetched face is called: "X loads from Google Fonts when the animation opens, and Z shows instead if X can't load."

@@ -10,11 +10,34 @@ command with the same verbs. A run is an evolution: N workers propose edits in
 parallel, a merger keeps the ones that improve held-out reward, and nothing is
 written back until the user says so.
 
-**Path A only by default.** The MCP server exposes doctor → plan → start →
-status/show → apply (plus cancel/resume, diagnose, list/describe/algorithm_spec).
+**Path A only by default.** The MCP server exposes `demo` (zero-key smoke) →
+doctor → plan → start → status/show → apply (plus cancel/resume, diagnose,
+list/describe/algorithm_spec).
 Do not reach for audit_*, release, platform, experience, or other satellites
 unless the user asked and the server was started with `--advanced` /
 `AGENTDESCENT_MCP_ADVANCED=1`. See docs/mcp-path-a.md.
+
+## Zero-key try first
+
+When the user wants to see AgentDescent work, has no cases yet, has no
+provider key, or just wants to know whether a named algorithm card can run,
+do this **before** The procedure below (`doctor` → `plan` → `start` need a
+real model and a key):
+
+- **With MCP:** call `demo` (optional `algorithm` such as `gepa`, `ace`,
+  `dgm`, `skillopt`, `rrsi`, `archive_selection`, or `evoskill`; optional
+  `kind` of `text`, `skill_dir`, or `skill_library`). It needs no key, does
+  not write the user's files, and returns `initial_reward`, `final_reward`,
+  `learned`, and `next`. Report the reward change and what it learned.
+  `evoskill` defaults to the `skill_library` fixture.
+- **Without MCP:** run `agentdescent demo [--algorithm NAME] --json` and
+  report the same fields.
+
+Then continue with The procedure for a real run on the user's files. If
+`demo` refuses a card (unknown name, or a kind with no offline fixture),
+surface that error — the same words the CLI prints — and offer
+`algorithm_spec` (or `agentdescent algorithms run NAME <path> <cases.jsonl>`)
+after `doctor`. Do not invent a keyless path for those cards.
 
 ## The procedure
 
@@ -384,6 +407,7 @@ to the user rather than looking for a tool.
 ## Without MCP
 
 ```
+agentdescent demo [--algorithm NAME] --json   # zero-key smoke; try this first
 agentdescent doctor
 agentdescent plan   spec.json
 agentdescent evolve spec.json --detach

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mikeyobrien/ralph-orchestrator` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `mikeyobrien/ralph-orchestrator` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mikeyobrien/ralph-orchestrator` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,40 +84,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`.agents/summary/workflows.md`](.agents/summary/workflows.md) |
 | 24 | ✓ | [`.claude/skills/code-assist/SKILL.md`](.claude/skills/code-assist/SKILL.md) |
 | 25 | ✓ | [`.claude/skills/code-task-generator/SKILL.md`](.claude/skills/code-task-generator/SKILL.md) |
-| 26 | ✓ | [`.claude/skills/evaluate-presets/SKILL.md`](.claude/skills/evaluate-presets/SKILL.md) |
-| 27 | ✓ | [`.claude/skills/find-code-tasks/SKILL.md`](.claude/skills/find-code-tasks/SKILL.md) |
-| 28 | ✓ | [`.claude/skills/pdd/SKILL.md`](.claude/skills/pdd/SKILL.md) |
-| 29 | ✓ | [`.claude/skills/playwriter/SKILL.md`](.claude/skills/playwriter/SKILL.md) |
-| 30 | ✓ | [`.claude/skills/pr-demo/SKILL.md`](.claude/skills/pr-demo/SKILL.md) |
-| 31 | ✓ | [`.claude/skills/release-bump/SKILL.md`](.claude/skills/release-bump/SKILL.md) |
-| 32 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
-| 33 | ✓ | [`.claude/skills/test-driven-development/SKILL.md`](.claude/skills/test-driven-development/SKILL.md) |
-| 34 | ✓ | [`.claude/skills/tmux-terminal/SKILL.md`](.claude/skills/tmux-terminal/SKILL.md) |
-| 35 | ✓ | [`.claude/skills/tui-debug-in-pane/SKILL.md`](.claude/skills/tui-debug-in-pane/SKILL.md) |
-| 36 | ✓ | [`.claude/skills/tui-validate/SKILL.md`](.claude/skills/tui-validate/SKILL.md) |
-| 37 | ✓ | [`.cursor/Dockerfile`](.cursor/Dockerfile) |
-| 38 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
-| 39 | ✓ | [`.ralph/specs/diagnostics/research/architecture.md`](.ralph/specs/diagnostics/research/architecture.md) |
-| 40 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 41 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 42 | ✓ | [`crates/ralph-core/tests/fixtures/skills/complex-test-skill/SKILL.md`](crates/ralph-core/tests/fixtures/skills/complex-test-skill/SKILL.md) |
-| 43 | ✓ | [`docs/advanced/architecture.md`](docs/advanced/architecture.md) |
-| 44 | ✓ | [`prompts/WEB_PROMPT.md`](prompts/WEB_PROMPT.md) |
-| 45 | ✓ | [`skills/ralph-docs/agents/openai.yaml`](skills/ralph-docs/agents/openai.yaml) |
-| 46 | ✓ | [`skills/ralph-docs/references/common-questions.md`](skills/ralph-docs/references/common-questions.md) |
-| 47 | ✓ | [`skills/ralph-docs/references/contributing.md`](skills/ralph-docs/references/contributing.md) |
-| 48 | ✓ | [`skills/ralph-docs/references/llms-txt-map.md`](skills/ralph-docs/references/llms-txt-map.md) |
-| 49 | ✓ | [`skills/ralph-docs/SKILL.md`](skills/ralph-docs/SKILL.md) |
-| 50 | ✓ | [`skills/ralph-hats/agents/openai.yaml`](skills/ralph-hats/agents/openai.yaml) |
-| 51 | ✓ | [`skills/ralph-hats/references/commands.md`](skills/ralph-hats/references/commands.md) |
-| 52 | ✓ | [`skills/ralph-hats/references/examples.md`](skills/ralph-hats/references/examples.md) |
-| 53 | ✓ | [`skills/ralph-hats/references/schema.md`](skills/ralph-hats/references/schema.md) |
-| 54 | ✓ | [`skills/ralph-hats/SKILL.md`](skills/ralph-hats/SKILL.md) |
-| 55 | ✓ | [`skills/ralph-loop/agents/openai.yaml`](skills/ralph-loop/agents/openai.yaml) |
-| 56 | ✓ | [`skills/ralph-loop/references/commands.md`](skills/ralph-loop/references/commands.md) |
-| 57 | ✓ | [`skills/ralph-loop/references/diagnostics.md`](skills/ralph-loop/references/diagnostics.md) |
-| 58 | ✓ | [`skills/ralph-loop/SKILL.md`](skills/ralph-loop/SKILL.md) |
-| 59 | ✓ | [`skills/README.md`](skills/README.md) |
+| 26 | ✓ | [`.claude/skills/dogfood-ralph/SKILL.md`](.claude/skills/dogfood-ralph/SKILL.md) |
+| 27 | ✓ | [`.claude/skills/evaluate-presets/SKILL.md`](.claude/skills/evaluate-presets/SKILL.md) |
+| 28 | ✓ | [`.claude/skills/find-code-tasks/SKILL.md`](.claude/skills/find-code-tasks/SKILL.md) |
+| 29 | ✓ | [`.claude/skills/pdd/SKILL.md`](.claude/skills/pdd/SKILL.md) |
+| 30 | ✓ | [`.claude/skills/playwriter/SKILL.md`](.claude/skills/playwriter/SKILL.md) |
+| 31 | ✓ | [`.claude/skills/pr-demo/SKILL.md`](.claude/skills/pr-demo/SKILL.md) |
+| 32 | ✓ | [`.claude/skills/release-bump/SKILL.md`](.claude/skills/release-bump/SKILL.md) |
+| 33 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
+| 34 | ✓ | [`.claude/skills/test-driven-development/SKILL.md`](.claude/skills/test-driven-development/SKILL.md) |
+| 35 | ✓ | [`.claude/skills/tmux-terminal/SKILL.md`](.claude/skills/tmux-terminal/SKILL.md) |
+| 36 | ✓ | [`.claude/skills/tui-debug-in-pane/SKILL.md`](.claude/skills/tui-debug-in-pane/SKILL.md) |
+| 37 | ✓ | [`.claude/skills/tui-validate/SKILL.md`](.claude/skills/tui-validate/SKILL.md) |
+| 38 | ✓ | [`.cursor/Dockerfile`](.cursor/Dockerfile) |
+| 39 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
+| 40 | ✓ | [`.ralph/specs/diagnostics/research/architecture.md`](.ralph/specs/diagnostics/research/architecture.md) |
+| 41 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 42 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 43 | ✓ | [`crates/ralph-core/tests/fixtures/skills/complex-test-skill/SKILL.md`](crates/ralph-core/tests/fixtures/skills/complex-test-skill/SKILL.md) |
+| 44 | ✓ | [`docs/advanced/architecture.md`](docs/advanced/architecture.md) |
+| 45 | ✓ | [`prompts/WEB_PROMPT.md`](prompts/WEB_PROMPT.md) |
+| 46 | ✓ | [`skills/ralph-docs/agents/openai.yaml`](skills/ralph-docs/agents/openai.yaml) |
+| 47 | ✓ | [`skills/ralph-docs/references/common-questions.md`](skills/ralph-docs/references/common-questions.md) |
+| 48 | ✓ | [`skills/ralph-docs/references/contributing.md`](skills/ralph-docs/references/contributing.md) |
+| 49 | ✓ | [`skills/ralph-docs/references/llms-txt-map.md`](skills/ralph-docs/references/llms-txt-map.md) |
+| 50 | ✓ | [`skills/ralph-docs/SKILL.md`](skills/ralph-docs/SKILL.md) |
+| 51 | ✓ | [`skills/ralph-hats/agents/openai.yaml`](skills/ralph-hats/agents/openai.yaml) |
+| 52 | ✓ | [`skills/ralph-hats/references/commands.md`](skills/ralph-hats/references/commands.md) |
+| 53 | ✓ | [`skills/ralph-hats/references/design.md`](skills/ralph-hats/references/design.md) |
+| 54 | ✓ | [`skills/ralph-hats/references/examples.md`](skills/ralph-hats/references/examples.md) |
+| 55 | ✓ | [`skills/ralph-hats/references/schema.md`](skills/ralph-hats/references/schema.md) |
+| 56 | ✓ | [`skills/ralph-hats/SKILL.md`](skills/ralph-hats/SKILL.md) |
+| 57 | ✓ | [`skills/ralph-loop/agents/openai.yaml`](skills/ralph-loop/agents/openai.yaml) |
+| 58 | ✓ | [`skills/ralph-loop/references/commands.md`](skills/ralph-loop/references/commands.md) |
+| 59 | ✓ | [`skills/ralph-loop/references/diagnostics.md`](skills/ralph-loop/references/diagnostics.md) |
+| 60 | ✓ | [`skills/ralph-loop/references/headless-runs.md`](skills/ralph-loop/references/headless-runs.md) |
+| 61 | ✓ | [`skills/ralph-loop/SKILL.md`](skills/ralph-loop/SKILL.md) |
+| 62 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

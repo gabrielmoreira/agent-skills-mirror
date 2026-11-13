@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: crud-tool-stays-light
+expected_outcome: |
+  The run treats equipment lending for a 40-person office as a supporting or generic subdomain that
+  earns light DDD: one Next.js app over Postgres with simple layering that keeps the lending rules
+  out of components and route handlers, and no microservices, no event sourcing, and no CQRS, each
+  declined with a reason tied to the app's size. It still keeps the cheap wins: a glossary (loan,
+  item, borrower and the like, with words to avoid) written to GLOSSARY.md, value objects where a
+  primitive carries rules, and the one real invariant (an item is lent to one person at a time)
+  enforced in one place such as a small Loan model plus a database constraint. It writes no
+  application code.

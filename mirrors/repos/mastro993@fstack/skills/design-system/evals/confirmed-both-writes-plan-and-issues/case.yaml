@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: confirmed-both-writes-plan-and-issues
+expected_outcome: |
+  The user confirmed the proposal, approved one spec change and declined the other, and chose both
+  deliveries. The run adds primary-dark, surface-dark, on-surface-dark and border-dark to DESIGN.md
+  and leaves theme.css unchanged. It writes acme-dash/docs/design-system/plan.md with the catalog
+  (every component with its tier), the opportunities with their call sites, the README outline,
+  the declined rename recorded as declined, and the five slices in order with acceptance checks and
+  dependencies, and commits it with DESIGN.md. It opens one issue per slice on acme/acme-dash with
+  gh, module and tokens first and Button before ConfirmDialog, each naming its blockers by number
+  and linking the plan. It replies with the issue links and the build order, asks whether to start
+  building in a new session, and changes nothing under acme-dash/src.
+context:
+  scaffold_script: place-files.sh

@@ -3798,6 +3798,47 @@ turning every adopter into a Node.js-first repository. The written
 decision tables remain the canonical protocol regardless of which helper
 profile is selected.
 
+### idd-auto-decision-records
+
+`idd-auto-decision-records` (kurone-kito/idd-skill#4963) reads the auto-decide
+confirmation records. It never writes. Its modes are:
+
+- `--pending-count`: the number of open issues that carry the confirmation
+  label, for the pending cap.
+- `--records --class <class> [--source <number>] [--claim <id> | --set <id>]
+  [--subject <value>] --state open|all`: the counting records of one class,
+  with their confirmation issue numbers. `--state open` lists only records
+  whose confirmation issue is still open.
+- `--confirmation <number>`: one confirmation issue, with whether it still
+  carries the authoring label.
+- `--links --issue <number>`: the link markers that point at one source issue.
+
+Each mode takes `--owner` and `--repo` (or reads them from the checkout) and an
+optional `--base-ref`. A caller on a pull request passes the base repository's
+`--owner` and `--repo` and the pull request's base branch name as `--base-ref`,
+as the trusted read above requires, never a head or feature ref. Without a
+pull request, it passes the same owner and repo and omits `--base-ref`, so the
+helper reads the live default branch. In a fork checkout, omitting `--owner`
+and `--repo` reads the fork's `origin` instead. The confirmation and authoring
+label names and the trust rule come from the trusted repository policy at that
+ref, never from the local checkout, so a worktree whose configuration names
+another label cannot change the result.
+
+Output is one JSON object with `status` (`readable`, `unreadable`, or
+`usage-error`), `mode`, `repository`, and the mode's own fields. A usage error
+has `status: "usage-error"` and an `error` message instead. Exit codes:
+
+- `0`: the result was read. The output may still be an empty list.
+- `1`: the result is `unreadable`. A failed or malformed GitHub read, a missing
+  page, or a policy file that is present but unreadable all give this result,
+  never an empty list. A caller treats it as a count that cannot be read.
+- `2`: a usage error, with `status: "usage-error"`. The arguments were not
+  valid.
+
+Network reads: GitHub GraphQL and REST reads of issues and their comments in
+the named repository, and one read of the repository policy at the trusted
+ref. The command writes nothing to GitHub or to the checkout.
+
 ### Practical footprint guidance
 
 Practical loop pressure depends on the helper runtime choice:
@@ -7290,7 +7331,8 @@ that runs it is
 
   ```sh
   node scripts/local-worktree-recovery.mjs --issue <n> --worktree <path> \
-    [--operator-confirmed-no-live-session] [--apply] \
+    [--operator-confirmed-no-live-session | --mechanical-evidence \
+      [--confirmation <owner>/<repo>#<n> --decision <id>]] [--apply] \
     [--agent-id <id>] [--owner <owner> --repo <repo>] [--policy <path>] \
     [--now <ISO8601>] [--preserve-dir <path>]
   ```
@@ -7301,7 +7343,8 @@ that runs it is
 
   ```sh
   npm run idd:local-worktree-recovery -- --issue <n> --worktree <path> \
-    [--operator-confirmed-no-live-session] [--apply] \
+    [--operator-confirmed-no-live-session | --mechanical-evidence \
+      [--confirmation <owner>/<repo>#<n> --decision <id>]] [--apply] \
     [--agent-id <id>] [--owner <owner> --repo <repo>] [--policy <path>] \
     [--now <ISO8601>] [--preserve-dir <path>]
   ```
@@ -7313,7 +7356,8 @@ that runs it is
   ```sh
   npx --yes --package <helper-package-spec> \
     idd-local-worktree-recovery --issue <n> --worktree <path> \
-    [--operator-confirmed-no-live-session] [--apply] \
+    [--operator-confirmed-no-live-session | --mechanical-evidence \
+      [--confirmation <owner>/<repo>#<n> --decision <id>]] [--apply] \
     [--agent-id <id>] [--owner <owner> --repo <repo>] [--policy <path>] \
     [--now <ISO8601>] [--preserve-dir <path>]
   ```
@@ -7352,11 +7396,13 @@ that runs it is
     (`path.relative`-based, correct on both `/`- and `\`-separated paths)
     the cwd guard above uses — a backup destination there would be
     deleted by the very removal it exists to survive.
-  - **Step 2** (rule out a live session) is never checked mechanically —
+  - **Step 2** (rule out a live session) never reads a recorded process ID —
     `claim-lock.mts`'s own header documents why no local process-liveness
-    signal is recorded. `--operator-confirmed-no-live-session` is your own
-    explicit attestation for this step; every mutation refuses without it,
-    regardless of `--apply` or what step 1 finds.
+    signal is recorded. Its default basis is
+    `--operator-confirmed-no-live-session`, your own explicit attestation;
+    every mutation refuses without that flag or the evidence mode below,
+    regardless of `--apply` or what step 1 finds. Giving both flags is a
+    usage error.
   - **Step 3** detects an in-progress merge/rebase/cherry-pick/bisect
     (backing up the pre-operation tip — `orig-head` for rebase, the
     `BISECT_START` ref's own tip for bisect (never the mid-bisect `HEAD`,
@@ -7415,10 +7461,100 @@ that runs it is
     pre-checkout one) — deleting only the lock this final check
     positively observed, and reporting failure (never a silent
     best-effort no-op) if resolving or deleting it fails.
+- **Mechanical evidence** (`--mechanical-evidence`,
+  `kurone-kito/idd-skill#4969`) is the alternative basis for step 2, for a
+  repository whose `worktreeRemnant` auto-decide class is enabled in the
+  trusted policy. It is for a session that means to take the issue over at the
+  Claim (A5(e)) and Resume stops that route to §LWR, or for an operator; it
+  runs inside the
+  [auto-decide procedure](idd-workflow.md#auto-decide-at-a-stop). The order is
+  a dry run, then the record on a confirmation issue, then `--apply` with
+  `--confirmation <owner>/<repo>#<n>` and `--decision <id>`; both are optional
+  without `--apply` and required with it. The conditions live in
+  `worktree-remnant-evidence.mts`. An apply refuses before any stash, ref,
+  copy, or removal unless all of them hold:
+  1. The trusted read of the live default branch reports `worktreeRemnant` as
+     `enabled`, and, when step 1's reason starts with `stale-claim-`, the
+     stale age the routing used (`stale_age_ms` in its JSON) is at least
+     `PT24H`. That is the configured `claimTiming.staleAge`, not the claim's own
+     age, so a repository that sets a shorter one is refused here and keeps
+     the attestation path. A released claim needs no age.
+  2. The target is a linked worktree: not the primary worktree, and not a
+     primary-recovery resume.
+  3. Step 1 confirms the block with a `stale-claim-` or `released-claim-`
+     reason and a claim ID, and its lock check passes. A legacy release
+     refuses, and so does an explicit-absence routing whose reason has neither
+     prefix (such as `active-claim-stale` or `no-active-claim`); both keep the
+     attestation path. The prunable shortcut reached through a reason ending
+     `-local-worktree-unreadable` still skips the lock check, as before.
+  4. No entry under the worktree or under its private git-admin directory
+     (`git rev-parse --absolute-git-dir`, walked whole) changed within the
+     trusted `quietWindow` (default `PT2H`). A non-directory entry with more
+     than one link counts by its modification time only, because pnpm
+     hard-links store files into every worktree and another worktree's
+     install changes their change time; every other entry, a directory
+     included, counts by the later of its modification and change times. The
+     walk does not follow symlinks, a time in the future counts as recent, an
+     unreadable entry fails the condition, and it uses the real clock, never
+     `--now`. A plain `git status` in the worktree rewrites its index and
+     restarts the window (replayed on git 2.53.0); the helper's own dry-run
+     probes pass `--no-optional-locks` so they do not. For the prunable
+     shortcut, only the admin directory that `findWorktreeAdminDir` reports is
+     walked, if any.
+  5. No process of the current user has its working directory inside the
+     worktree (its git-admin directory is not part of this check, except for
+     the prunable shortcut, where it is all that is left), compared by both the
+     lexical and the resolved path. On Linux it reads `/proc/<pid>/cwd`: an
+     exited process (`ENOENT`) is skipped, a process of another user is not
+     counted, a process whose entry denies the read (`EACCES`) and whose owner
+     is the current user or root is listed in the report as not inspected and
+     does not refuse, and any other read error fails the condition. On a
+     platform where the check cannot run, or where the current user is
+     unknown, the condition fails. Finding no process is only the absence of a
+     known use.
+  6. The confirmation issue and decision match a trusted record read through
+     `idd-auto-decision-records`' reader: open, carrying the configured
+     confirmation label, no longer carrying the authoring label, with
+     `class=worktreeRemnant`, `source` equal to this issue, `claim` equal to
+     the claim step 1 recovered, that `decision`, and a `Subject:` code span
+     equal to the target path (absolute, parent resolved, last component kept
+     as written). The decision is not voided and has no counting `location` or
+     `failure` note. A dry run reports this condition as unmet without
+     refusing.
+
+  After the clone lock is held and the existing recheck passes, conditions 1,
+  6, 4, and 5 are evaluated again in that order, right before step 3; every
+  later routing read must still meet the `stale-claim-`/`released-claim-`
+  basis, the claim ID, and the age floor. The preserve directory is always
+  `<state>/idd-skill/lwr-preserved/<issue>-<UTC timestamp>/` under the shared
+  preserve-destination guards (`--preserve-dir` is refused); the primary path
+  and every worktree record, the target included, go to that inspection, which
+  also runs before the lock, so an unsafe state root refuses in a dry run; the
+  records are read again under the lock, and no registered worktree path, an
+  absent one included, may contain the destination. The directory is created
+  only after the recheck passes, and its identity is rechecked before step 3
+  writes into it. A directory that fails the privacy or identity check stops
+  the run before step 3 and the report names its path; the caller posts a
+  `failure` note. A creation step that fails after it made or restricted a
+  parent still marks the run as mutated and names what it changed. The report
+  (`evidence` in the JSON) lists every condition with its result, the
+  processes that were not inspected, the stash tag, the backup refs, and the
+  preserve directory, and says that the basis was evidence, not an
+  attestation, and that the evidence does not prove the other session is gone.
+  The caller comments the locations on the confirmation issue. After a partial
+  apply (preservation done, removal failed) a retry refuses while any walked
+  entry changed within the quiet window, whatever the cause, and names it; the
+  caller comments the failure, then retries after the window or uses the
+  attestation. Open risks that the report names: the window between the
+  recheck and step 3, the PR `#3550` race in which a same-claim session
+  re-acquires its lock just before recovery takes the clone lock, and the
+  resolution of a state root that is a link (preventive; no observed incident
+  yet).
 - Default mode is dry-run (no mutation): prints exactly what step 1 found
   and what step 3/4 would do (the full stash/backup-ref/removal plan),
   without mutating anything. `--apply` performs the mutation, still gated
-  on `--operator-confirmed-no-live-session`. `--now` is accepted only in
+  on `--operator-confirmed-no-live-session` or the evidence mode above.
+  `--now` is accepted only in
   dry-run mode to make the routing observation reproducible; combining it
   with `--apply` is rejected so a mutation cannot use a synthetic clock.
   This is preventive hardening; no observed incident yet.

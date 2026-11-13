@@ -81,7 +81,7 @@ def missing_modules_message() -> str | None:
 
 
 TOOL = "codeart2d/rig_animate.py"
-TOOL_VERSION = forge_core.FORGE_PACKAGE_VERSION if _MISSING is None else "0.5.0"  # D29: the package version
+TOOL_VERSION = forge_core.FORGE_PACKAGE_VERSION if _MISSING is None else "0.6.0"  # D29: the package version
 RASTER_BACKENDS = ("resvg_py", "resvg_js_cli", "chrome")  # codeart_core.RASTER_BACKENDS, for --help without numpy
 RIG_ANIM_SCHEMA = "codeart2d.rig_anim.v1"
 RIG_ANIM_ALIASES = ("codeart.rig_anim.v1",)  # spelling of the design prototype
@@ -2322,13 +2322,13 @@ def _run(argv: Sequence[str] | None = None) -> int:
 
 
 def published_fail_status(summary: dict) -> int:
-    """D26: an output published with QA status fail (no --strict-qc) still exits 1, with one error line that
-    names the failed checks and the report; pass and warn exit 0. fx_build uses it too."""
+    """An output published with QA status fail (no --strict-qc) exits 4 (forge_core.EXIT_PUBLISHED_FAIL), with
+    one error line that names the failed checks and the report; pass and warn exit 0. fx_build uses it too."""
     if summary.get("qa") != "fail":
         return 0
     print(forge_core.ascii_text(f"error: published with QA status fail: {', '.join(summary['failed_checks'])} "
                                 f"(see {summary['report']})"), file=sys.stderr)
-    return 1
+    return forge_core.EXIT_PUBLISHED_FAIL
 
 
 def main(argv: Sequence[str] | None = None) -> int:

@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: ts-coupon-limits-colocated
+expected_outcome: |
+  The run adds maxDiscountCents and minSubtotalCents to coupons in shopcart/src/cart/pricing.ts, test-first:
+  each new test is run and seen failing before the code that makes it pass. New tests go in the
+  co-located src/cart/pricing.test.ts, not a new tests/ folder. The boundaries (subtotal exactly at
+  the minimum, discount exactly at the cap) are covered, preferably as rows of a table. It spots that
+  "gives no happy hour discount outside happy hour" reads the real clock and fixes it by passing a
+  time, and merges or removes the duplicate subtotal tests ("computes the subtotal for several
+  items", "subtotalCents adds price times quantity") with a reason. npm test passes, no existing
+  assertion is loosened, and the reply lists the tests added and removed.
+context:
+  scaffold_script: place-files.sh

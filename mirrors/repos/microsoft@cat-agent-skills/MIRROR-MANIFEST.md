@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/cat-agent-skills` — 26 default patterns, 0 followed patterns, 302 file(s) materialized.
+Mirror of `microsoft/cat-agent-skills` — 26 default patterns, 0 followed patterns, 303 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/cat-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 302 |
+| Files         | 303 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -356,11 +356,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 295 | ✓ | [`submissions/wikipedia-human-style-writing/SKILL.md`](submissions/wikipedia-human-style-writing/SKILL.md) |
 | 296 | ✓ | [`submissions/work-brief/SKILL.md`](submissions/work-brief/SKILL.md) |
 | 297 | ✓ | [`submissions/work-iq-signalboard/SKILL.md`](submissions/work-iq-signalboard/SKILL.md) |
-| 298 | ✓ | [`submissions/work-order-assist/knowledge-retrieve/SKILL.md`](submissions/work-order-assist/knowledge-retrieve/SKILL.md) |
-| 299 | ✓ | [`submissions/work-order-assist/parts-readiness/SKILL.md`](submissions/work-order-assist/parts-readiness/SKILL.md) |
-| 300 | ✓ | [`submissions/work-order-assist/similar-work-rank/SKILL.md`](submissions/work-order-assist/similar-work-rank/SKILL.md) |
-| 301 | ✓ | [`submissions/work-order-assist/wo-intake/SKILL.md`](submissions/work-order-assist/wo-intake/SKILL.md) |
-| 302 | ✓ | [`submissions/work-order-assist/work-order-writeup/SKILL.md`](submissions/work-order-assist/work-order-writeup/SKILL.md) |
+| 298 | ✓ | [`submissions/work-iq-sphere/SKILL.md`](submissions/work-iq-sphere/SKILL.md) |
+| 299 | ✓ | [`submissions/work-order-assist/knowledge-retrieve/SKILL.md`](submissions/work-order-assist/knowledge-retrieve/SKILL.md) |
+| 300 | ✓ | [`submissions/work-order-assist/parts-readiness/SKILL.md`](submissions/work-order-assist/parts-readiness/SKILL.md) |
+| 301 | ✓ | [`submissions/work-order-assist/similar-work-rank/SKILL.md`](submissions/work-order-assist/similar-work-rank/SKILL.md) |
+| 302 | ✓ | [`submissions/work-order-assist/wo-intake/SKILL.md`](submissions/work-order-assist/wo-intake/SKILL.md) |
+| 303 | ✓ | [`submissions/work-order-assist/work-order-writeup/SKILL.md`](submissions/work-order-assist/work-order-writeup/SKILL.md) |
 
 ---
 

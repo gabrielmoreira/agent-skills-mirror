@@ -1,7 +1,7 @@
 ---
 name: ux-brainstorm
 description: Use when the user wants to brainstorm, explore, mock up, or prototype a UI or UX before building it, such as a new screen, flow, or component, a redesign, or "what should this look like?".
-compatibility: Works best with the Mobbin MCP, subagents, and a harness that renders HTML inline in the chat (T3 Code's html_render); otherwise opens the prototypes in the browser.
+compatibility: Needs the domain-driven-design skill from the same plugin. Works best with the Mobbin MCP, subagents, and a harness that renders HTML inline in the chat (T3 Code's html_render); otherwise opens the prototypes in the browser.
 ---
 
 # UX brainstorm
@@ -40,6 +40,8 @@ Ask about behavior, rules, scope, and edge cases. Layout belongs to the prototyp
 With nothing to map, or when the request doesn't say what problem it solves, also cover what the request and the mapping leave open: who uses it and when, the job and its one primary action, content with realistic volumes, constraints (platform, brand, accessibility), products they like or dislike for this, and what's out of scope.
 
 Push vague answers until they name a behavior: "simple" → which step goes away; "smart" → what it does on its own, and when. Taste answers ("clean", "like Linear") go to inspiration as references, not into decisions.
+
+Name things with the glossary's terms in questions, decisions, and copy. When a domain word comes up that the glossary lacks or that means two things, settle it per the domain-driven-design skill's [language rules](../domain-driven-design/references/language.md); its questions join the next round.
 
 After each round, turn the answered items in `decisions.md` into numbered rules. After the last round, restate the decisions in one message; when any answer was free text, ask the user to confirm the restatement before going on. Done when every open item, and every fallback item the request left open, has a decision.
 

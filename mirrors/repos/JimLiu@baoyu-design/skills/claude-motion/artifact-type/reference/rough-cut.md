@@ -62,12 +62,12 @@ The ten. Text: `plus-jakarta-sans` (wide), `manrope` (round), `space-grotesk` (a
 `fraunces` (serif), `dm-mono`, `departure-mono` (pixel), these two of one weight. Headlines: `fraunces-display` (hairline,
 one weight, the only italic), `inter-display` (loud, to 900), `shantell-sans` (hand-drawn, slants from 600 up). `manrope` goes to 800.
 
-**Type is Inter and Space Grotesk unless the brief calls for other lettering.** With Western European words, no design
-system, and no family or lettering asked for in the request or in `Style (other)`, `display` is `space-grotesk` and `sans` is
-`{"family":"Inter","or":"instrument-sans"}`. A Style option alone leaves this default in place. Inter sets wider than
-`instrument-sans`, so leave each line room for it. If only `display` is named, `sans` still takes that default; if a text face
-is named, leave `display` unnamed. For other lettering, think what kind of face is at home there (a hymn book, a shop
-sign), then a family of that kind fit for work. Two faces are enough; a third only as `mono`, for code or figures in
+**Plain films lean to Inter and Space Grotesk.** With Western European words, no design system, and no family or lettering
+asked for in the request or in `Style (other)`, a film you've called plain starts from `display` `space-grotesk` and `sans`
+`{"family":"Inter","or":"instrument-sans"}`. A rich film, or one whose look or Style pick wants other lettering, picks for
+itself: think what kind of face is at home there (a hymn book, a shop sign), then a family of that kind fit for work. Inter sets wider than
+`instrument-sans`, so leave each line room for it. If only `display` is named, `sans` still takes Inter; if a text face is
+named, leave `display` unnamed. Two faces are enough; a third only as `mono`, for code or figures in
 columns; figures that count up need `tabular-nums` in a mono, `instrument-sans`, `space-grotesk`, `plus-jakarta-sans` or
 `inter-display`.
 
@@ -128,7 +128,7 @@ kit.scene('pour', {
   thumbnail: never blank.
 - A scene's class names and ids begin with its id (`pour-ladle`). `scenes.json`, `base.css`, `shared.js`, `score.js` and any
   name that begins `scene-` or `layer-` are the player's: name no other module so.
-- Helpers: `kit.el`, `kit.h` (returns ONE element: wrap siblings in one root), `seg(t,a,b)` (0 to 1 across a to b), `lerp`,
+- Helpers: `kit.el`, `kit.h` (wrap siblings in one root), `seg(t,a,b)` (0 to 1 across a to b), `lerp`,
   `clamp01`, `eo` `ei` `eio` (eases). The rest is in film-api.md.
 
 Three things the page's own tools depend on:

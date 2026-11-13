@@ -147,7 +147,7 @@ La LFSS 2026 (loi n° 2025-1403 du 30/12/2025, art. 12) a porté la CSG sur les 
 
 **Conséquence pratique** : pour la déclaration 2026 (revenus 2025), une PV mobilière sur compte-titres est imposée à **31,4 % au PFU** (12,8 % IR + 18,6 % PS), alors qu'un dividende encaissé en 2025 reste à **30 %** (12,8 % IR + 17,2 % PS). Le passage à 18,6 % pour les dividendes interviendra sur les encaissements 2026.
 
-- **CSG déductible : 6,8 %** — **uniquement si option barème** ; déduite l'année même pour les revenus dont les PS sont prélevés à la source (dividendes, intérêts), l'année suivante pour les PS par voie de rôle (plus-values)
+- **CSG déductible : 6,8 points** sur les revenus imposés au barème : sur option pour les dividendes, intérêts et plus-values mobilières relevant du PFU, ou de plein droit notamment pour les revenus fonciers et le LMNP soumis aux PS du patrimoine. Déduite du revenu global de l'année de son paiement (art. 154 quinquies, II CGI) : l'année même pour les PS prélevés à la source (dividendes, intérêts), l'année suivante pour les PS par voie de rôle (plus-values, revenus fonciers, LMNP). Aucune déduction sur les revenus imposés au PFU.
 - **Option barème globale** : concerne TOUS les revenus du capital de l'année
 
 ### PER (versements 2025, déclaration 2026)
@@ -158,7 +158,7 @@ La LFSS 2026 (loi n° 2025-1403 du 30/12/2025, art. 12) a porté la CSG sur les 
 - **Report** : plafonds non utilisés des 3 années précédentes (2022 à 2024 pour les versements 2025) ; **5 ans pour les reliquats nés à partir de 2026** (LFI 2026, art. 9 et 10 ; BOI-IR-BASE-20-50-30 § 80) : les versements 2026 n'utilisent que les reliquats 2023 à 2025, la fenêtre complète de cinq ans n'est atteinte qu'en 2031. Imputation sur le plafond de l'année d'abord, puis sur les reliquats du plus ancien au plus récent
 - **Mutualisation couple** : case 6QR sur la 2042 ; sans objet l'année qui suit les 70 ans d'un conjoint
 - **70 ans et plus** : versements non déductibles à compter du 01/01/2026 (LFI 2026, art. 9)
-- **RFR** : le versement déduit est réintégré dans le RFR (art. 1417, IV CGI) : sans effet sur la CEHR, la CDHR et les seuils de CSG sur l'ARE ou les pensions
+- **RFR** : le versement déduit est réintégré dans le RFR (art. 1417, IV CGI) : sans effet sur la CEHR et les seuils de CSG sur l'ARE ou les pensions. La base CDHR reste inchangée, mais la baisse d'IR peut augmenter la CDHR et absorber tout ou partie de l'économie attendue si le plancher s'applique (voir `references/per.md`).
 
 ### IFI
 
@@ -254,6 +254,7 @@ Pour la fraîcheur des données : `python fiscaliste/scripts/update_data.py`.
 | Crypto-actifs | [references/crypto.md](references/crypto.md) |
 | IFI | [references/ifi.md](references/ifi.md) |
 | PER et épargne retraite | [references/per.md](references/per.md) |
+| Pinel en cours (mise en location, plafonds de loyer et de ressources, prorogation, remise en cause, case 7QH) | [references/pinel.md](references/pinel.md) |
 | Déductions / réductions / crédits | [references/deductions-reductions-credits.md](references/deductions-reductions-credits.md) |
 | Départ de France, non-résidents (année du départ, taux minimum, foncier, PS 7,5 %, ex-RP, exit tax) | [references/non-residents.md](references/non-residents.md) |
 | Cas particuliers (revenus exceptionnels, CEHR, DOM, impatriation) | [references/cas-speciaux.md](references/cas-speciaux.md) |
@@ -338,6 +339,7 @@ Ces points sont systématiquement vérifiés par les utilisateurs exigeants — 
 - Micro-BIC **longue durée** : abattement **50 %**, plafond **77 700 €** (revenus 2025 ; **83 600 €** pour 2026-2028, BOI-BAREME-000044).
 - Micro-BIC **meublé tourisme non classé** : abattement **30 %**, plafond 15 000 € (Loi Le Meur ; inchangé 2026-2028).
 - Micro-BIC **meublé tourisme classé** : abattement 50 %, plafond 77 700 € (83 600 € pour 2026-2028).
+- **Non classé + autres meublés** chez le même déclarant : deux limites séparées (15 000 € et 77 700 / 83 600 €), **pas de plafond commun** ; abattement par catégorie (30 % + 50 %) ; seuils appréciés par membre du foyer pour les biens propres, bien indivis entre époux en principe au réel (BOI-BIC-DECLA-10-10-20 § 70 et 80).
 - Plafond apprécié sur N-1 ou N-2 : le réel devient obligatoire après **deux années consécutives** de dépassement.
 - Seuil LMP : recettes > **23 000 €** ET recettes > autres revenus d'activité du foyer, **pensions et rentes viagères comprises** (art. 155 IV 2 CGI, renvoi à l'art. 79).
 - Amortissements au réel : plafonnés au loyer diminué des autres charges, ils **ne peuvent ni créer ni accroître un déficit** (art. 39 C ; BOI-BIC-CHAMP-40-20 § 57).

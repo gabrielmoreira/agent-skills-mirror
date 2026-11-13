@@ -66,7 +66,7 @@ they call it off.
 
 ## 2. The call
 
-Every call asks them to allow it, on a card that shows the words: as few calls as can be, at most 10 lines a call.
+A call may ask them to allow it, on a card that shows the words: as few calls as can be, at most 10 lines a call.
 **Never pass `voice`:** there is only one. Until the call has answered, promise no voice, not even in the line on what
 you picked: they may decline. The example is another film's: don't reuse its words.
 
@@ -138,7 +138,7 @@ script, `set` it (`if_version`). Every later write of the script keeps the state
 
 ## The close
 
-When a film first speaks, this whole close in place of the one SKILL.md quotes (and finalize.md's "Stop"):
+When a film first speaks, this whole close in place of the one SKILL.md quotes (and finalize.md's "Stop"), with the film's url after its first sentence, unless a tool's reply plainly says a card is showing:
 
 > Here's your animation. It has captions and a voiceover in one of Claude's synthetic voices, and starts muted: the speaker button turns the sound on.
 > Only you, and your organization if you have one, hear the voice from the link;

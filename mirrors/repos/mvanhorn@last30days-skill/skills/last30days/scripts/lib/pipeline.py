@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import copy
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Callable, Iterable, Iterator, Mapping
 import math
 import queue
 import re
@@ -96,10 +96,14 @@ _DISCOVERY_GENERIC_DOMAIN_TERMS = {
     "ai", "artificial", "intelligence", "tech", "technology", "trending", "trend",
 }
 
+# ``digg_stream_limit`` is how many Digg stories one search keeps once the
+# Digg bar has sorted them. It is higher than ``per_stream_limit`` because a
+# Digg search now returns the highest-scored stories as well as the most
+# relevant ones.
 DEPTH_SETTINGS = {
-    "quick": {"per_stream_limit": 6, "pool_limit": 15, "rerank_limit": 12},
-    "default": {"per_stream_limit": 12, "pool_limit": 40, "rerank_limit": 40},
-    "deep": {"per_stream_limit": 20, "pool_limit": 60, "rerank_limit": 60},
+    "quick": {"per_stream_limit": 6, "digg_stream_limit": 6, "pool_limit": 15, "rerank_limit": 12},
+    "default": {"per_stream_limit": 12, "digg_stream_limit": 20, "pool_limit": 40, "rerank_limit": 40},
+    "deep": {"per_stream_limit": 20, "digg_stream_limit": 30, "pool_limit": 60, "rerank_limit": 60},
 }
 
 SEARCH_ALIAS = {
@@ -278,7 +282,7 @@ def _resolve_depth_settings(depth: str, config: dict[str, Any]) -> dict[str, int
     Returns a copy so the module-level DEPTH_SETTINGS is never mutated. Overrides
     are set directly (not max()) so callers can also lower a cap. `--max-results`
     raises the final ranked pool (pool_limit/rerank_limit); `--max-per-source`
-    raises the per-stream truncation applied before pooling. The per-source fetch
+    raises the per-stream truncation applied before pooling, Digg's included. The per-source fetch
     cap (`--max-source-fetches`) is applied separately at the fetch site.
     """
     settings = dict(DEPTH_SETTINGS[depth])
@@ -287,6 +291,7 @@ def _resolve_depth_settings(depth: str, config: dict[str, Any]) -> dict[str, int
     max_per_source = config.get("_max_per_source")
     if max_per_source is not None:
         settings["per_stream_limit"] = int(max_per_source)
+        settings["digg_stream_limit"] = int(max_per_source)
     max_results = config.get("_max_results")
     if max_results is not None:
         settings["pool_limit"] = int(max_results)
@@ -685,9 +690,15 @@ def _fetch_discovery_source(
         errors = result.get("errors") or []
         return items, "; ".join(errors) or None
     if source == "digg":
-        result = digg.search_digg(plan.domain, from_date, to_date, depth=depth)
-        items = digg.parse_digg_response(result, query=plan.domain)
-        # Digg's AI and Tech sections are a broad listing, so keep only domain-bearing
+        if plan.domain.strip():
+            result = digg.search_digg(plan.domain, from_date, to_date, depth=depth)
+            items = digg.parse_digg_response(result, query=plan.domain, from_date=from_date)
+        else:
+            # Global trending has nothing to search for: Digg's own top
+            # stories across every topic are its "what is hot" listing.
+            result = digg.top_stories(depth=depth)
+            items = digg.parse_top_response(result, from_date=from_date)
+        # Digg is a broad listing, so keep only domain-bearing
         # clusters when scoped; global trending keeps the whole feed.
         if keyword_gate:
             items = [
@@ -2512,6 +2523,10 @@ def run(
     bundle = schema.RetrievalBundle(artifacts={"grounding": []})
     deferred_retryable_failures: dict[str, dict[str, Any]] = {}
     out_of_time_sources: set[str] = set()
+    # Searches an enablement plan runs for the capability alone. Their Digg
+    # stories are not expected to name the run topic.
+    capability_searches = fusion.capability_labels(plan)
+    digg_bar_dropped = False
     if envelope is not None:
         # The footer names the X provenance (render._render_stats).
         bundle.artifacts["x_provenance"] = envelope.provenance
@@ -2922,6 +2937,7 @@ def run(
                 )
             if isinstance(artifact, dict):
                 artifact.pop("_x_backup_not_rate_limited", None)
+            bar_notes: list[str] = []
             normalized = _normalize_score_dedupe(
                 source, raw_items, from_date, to_date,
                 freshness_mode=plan.freshness_mode,
@@ -2931,6 +2947,10 @@ def run(
                 # X defers its relevance floor until resolved_handles exists.
                 # Everything else prunes here as before.
                 defer_relevance_prune=(source == "x"),
+                before_dedupe=_digg_bar_before_dedupe(
+                    settings, topic, subquery.label, bar_notes,
+                    judged=subquery.label not in capability_searches,
+                ) if source == "digg" else None,
             )
             # Jobs is exempt from per_stream_limit: a careers board is a complete
             # snapshot of open roles, and truncating it to the default 12 drops
@@ -2938,7 +2958,17 @@ def run(
             # A host-fetched envelope serves every topic row to the first X
             # stream, so that one stream carries what the backend's X streams
             # together would have (per_stream_limit x the X fetch cap).
-            if source != "jobs":
+            if source == "digg":
+                # The bar already ran before de-duplication; this pass only
+                # applies the limits to what is left.
+                normalized, _ = _apply_digg_bar(
+                    normalized, settings, topic, subquery.label,
+                    judged=subquery.label not in capability_searches,
+                )
+                for bar_note in bar_notes:
+                    digg_bar_dropped = True
+                    bundle.record_detail(source, bar_note)
+            elif source != "jobs":
                 stream_limit = settings["per_stream_limit"]
                 host_fetched_x = source == "x" and config.get("_x_envelope") is not None
                 if host_fetched_x:
@@ -2970,6 +3000,15 @@ def run(
             if artifact:
                 bundle.artifacts.setdefault("grounding", []).append(artifact)
 
+    # Sources of the prominent Digg stories, fetched once per run and before the
+    # supplemental searches add their own calls. The quotes land on the
+    # stories now; the match keys mark confirmed candidates after fusion.
+    _check_research(config)
+    digg_sources_spent = _DiggSourcesSpent()
+    digg_story_by_key = _digg_story_sources(
+        bundle, topic=topic, depth=depth, config=config, spent=digg_sources_spent,
+    )
+
     # Phase 2: supplemental entity-based searches
     _check_research(config)
     supplemental_handles: list[str] = []
@@ -2997,6 +3036,10 @@ def run(
         _github_skip_retry.add("github")
     if jobs_past_window:
         _github_skip_retry.add("jobs")
+    if digg_bar_dropped and not bundle.items_by_source.get("digg"):
+        # Digg returned stories and none named the topic. It has shown it
+        # does not cover this topic, so a second search would only repeat that.
+        _github_skip_retry.add("digg")
     pre_retry_counts = {
         source: len(bundle.items_by_source.get(source, []))
         for source in deferred_retryable_failures
@@ -3024,6 +3067,12 @@ def run(
         run_started=run_started,
         out_of_time_sources=out_of_time_sources,
     )
+    # Digg stories the retry found get their sources too, out of whatever
+    # story budget and time the first pass left. Without this they carry no
+    # quotes and cannot confirm other results.
+    digg.merge_stories(digg_story_by_key, _digg_story_sources(
+        bundle, topic=topic, depth=depth, config=config, spent=digg_sources_spent,
+    ))
     for source, outcome in deferred_retryable_failures.items():
         if (
             source in bundle.errors_by_source
@@ -3153,6 +3202,24 @@ def run(
         range_to=to_date,
         first_party_handles=resolved_handles,
         primary_handle=x_handle,
+    )
+    # Only a Digg story that is certain to stay in the report may confirm
+    # another result: one the filters above kept, and that the subject prune
+    # after reranking cannot remove. The confirmation feeds the rerank score,
+    # so it has to be settled here, before that prune runs.
+    digg_prunable = {
+        item.url
+        for candidate in candidates
+        if not rerank.escapes_entity_miss_prune(candidate, topic=topic)
+        for item in candidate.source_items
+        if item.source == "digg"
+    }
+    digg.tag_confirmed_candidates(
+        candidates,
+        digg.surviving_stories(digg_story_by_key, [
+            item for item in items_by_source.get("digg", [])
+            if item.url not in digg_prunable
+        ]),
     )
     private_candidates = [
         candidate
@@ -3583,6 +3650,59 @@ def _apply_reddit_stream_keepers(
     return kept[:limit]
 
 
+def _apply_digg_bar(
+    items: list[schema.SourceItem],
+    settings: Mapping[str, Any],
+    topic: str,
+    label: str,
+    *,
+    judged: bool = True,
+    capped: bool = True,
+) -> tuple[list[schema.SourceItem], str | None]:
+    """Cut one Digg search to the stories the Digg bar keeps, in its order.
+
+    Prominent stories lead by Digg Score, ordinary ones follow in the order
+    they ranked, and the stories that do not name the topic are removed. The
+    second value is a note saying how many were removed, or None.
+
+    ``judged=False`` is for a search that is deliberately not about the run
+    topic: its stories keep their order and none is removed. Clusters from
+    digg-pp-cli 2026.10.x are never judged and keep the shared limit.
+
+    ``capped=False`` applies the bar without the limits. It is the pass made
+    before near-duplicates are removed, so that a prominent story is the
+    copy kept and a story the bar drops cannot displace one it keeps.
+    """
+    result = digg.apply_bar(topic if judged else "", items)
+    stories = result.prominent + result.ordinary
+    if capped:
+        stories = stories[: settings["digg_stream_limit"]]
+    note = None
+    if result.dropped:
+        note = (
+            f"{len(result.dropped)} of {len(items) - len(result.legacy)} stories dropped "
+            f"for not naming the topic ({label} search)"
+        )
+        digg._log(note)
+    legacy = result.legacy[: settings["per_stream_limit"]] if capped else result.legacy
+    return stories + legacy, note
+
+
+def _digg_bar_before_dedupe(
+    settings: Mapping[str, Any], topic: str, label: str, notes: list[str], *, judged: bool = True,
+) -> Callable[[list[schema.SourceItem]], list[schema.SourceItem]]:
+    """The Digg bar as the ``before_dedupe`` step of ``_normalize_score_dedupe``.
+
+    Any note about dropped stories is appended to ``notes``.
+    """
+    def apply(items: list[schema.SourceItem]) -> list[schema.SourceItem]:
+        kept, note = _apply_digg_bar(items, settings, topic, label, judged=judged, capped=False)
+        if note:
+            notes.append(note)
+        return kept
+
+    return apply
+
 
 def _creator_first_party_by_source(
     tiktok_creators: Iterable[str] | None,
@@ -3659,8 +3779,15 @@ def _normalize_score_dedupe(
     first_party_handles: Iterable[str] | None = None,
     first_party_by_source: Mapping[str, Iterable[str]] | None = None,
     defer_relevance_prune: bool = False,
+    before_dedupe: Callable[[list[schema.SourceItem]], list[schema.SourceItem]] | None = None,
 ) -> list[schema.SourceItem]:
     """Normalize, annotate, prune, dedupe, and extract snippets for a batch of raw items.
+
+    ``before_dedupe`` filters and reorders the batch just before
+    near-duplicates are removed. De-duplication keeps the earlier of two
+    similar items, so a source that drops items by its own rule has to do it
+    first: otherwise an item it would drop can displace a similar one it
+    would keep.
 
     ``defer_relevance_prune`` skips the relevance floor here so the caller can
     apply it once the run has resolved who the topic's subject is. Pruning X
@@ -3702,13 +3829,38 @@ def _normalize_score_dedupe(
             # case where the handle never appears in the topic at all
             # ("Peter Steinberger" -> @steipete).
             floor_handles |= _batch_subject_handles(raw_items)
-        pre_prune_count = len(normalized)
-        normalized = signals.prune_low_relevance(
-            normalized,
-            first_party_handles=floor_handles,
-            first_party_by_source=first_party_by_source,
-        )
+        # A Digg story with a UUID is judged by the Digg bar at the stream
+        # cut, not by this floor: the floor scores against the planner's
+        # ranking query, whose filler words push a story that names the topic
+        # in its title under it. Clusters from digg-pp-cli 2026.10.x have no
+        # UUID and stay under the floor.
+        bar_judged = [
+            item for item in normalized
+            if source == "digg" and item.metadata.get(digg.STORY_ID_KEY)
+        ]
+        if bar_judged:
+            exempt = {id(item) for item in bar_judged}
+            floor_judged = [item for item in normalized if id(item) not in exempt]
+            kept = exempt | {
+                id(item)
+                for item in signals.prune_low_relevance(
+                    floor_judged,
+                    first_party_handles=floor_handles,
+                    first_party_by_source=first_party_by_source,
+                )
+            }
+            pre_prune_count = len(normalized)
+            normalized = [item for item in normalized if id(item) in kept]
+        else:
+            pre_prune_count = len(normalized)
+            normalized = signals.prune_low_relevance(
+                normalized,
+                first_party_handles=floor_handles,
+                first_party_by_source=first_party_by_source,
+            )
         _log_prune_drop(source, pre_prune_count, len(normalized))
+    if before_dedupe is not None:
+        normalized = before_dedupe(normalized)
     normalized = dedupe.dedupe_items(normalized)
     for item in normalized:
         item.snippet = snippet.extract_best_snippet(item, prepared_query)
@@ -3728,11 +3880,22 @@ def _finalize_items_by_source(
     for source, items in items_by_source_raw.items():
         _check_research(config or {})
         items = sorted(items, key=lambda item: item.local_rank_score or 0.0, reverse=True)
+        if source == "digg":
+            # De-duplication keeps the earlier of two similar stories. Two
+            # searches can return the same event as a prominent story and as
+            # a smaller one, so prominent stories go first here and the copy
+            # kept is the one that carries the fetched quotes and can
+            # confirm other results.
+            prominent = digg.apply_bar(topic, items).prominent
+            leading = {id(item) for item in prominent}
+            items = prominent + [item for item in items if id(item) not in leading]
         # Same thread from two subquery streams: fold the enriched copy into
         # the first before the text-similarity dedupe, which would otherwise
         # keep whichever copy ranked higher and drop its comments.
         items = collapse_duplicate_urls(items)
         items = dedupe.dedupe_items(items)
+        if source == "digg":
+            items = sorted(items, key=lambda item: item.local_rank_score or 0.0, reverse=True)
         enrichment_request = {
             "source": source,
             "phase": "post_ranking_enrichment",
@@ -3772,11 +3935,13 @@ def _finalize_items_by_source(
             keywords = config.get("_polymarket_keywords") if isinstance(config, dict) else None
             if keywords:
                 items = polymarket.filter_items_against_keywords(items, keywords)
-        if source == "digg" and items:
-            # Pull top-ranked X posts only for the survivors that will appear
-            # in the brief. Spending the enrichment budget here (rather than
-            # at retrieval time) keeps the inline 'via Digg' quotes
-            # paired with the clusters dedupe actually kept.
+        if source == "digg" and any(not item.metadata.get(digg.STORY_ID_KEY) for item in items):
+            # Clusters from digg-pp-cli 2026.10.x only; all-topic stories got
+            # their quotes from _digg_story_sources. Pull top-ranked X posts
+            # only for the survivors that will appear in the brief. Spending
+            # the enrichment budget here (rather than at retrieval time)
+            # keeps the inline 'via Digg' quotes paired with the clusters
+            # dedupe actually kept.
             matched, replayed = http.fixture_source_replay(enrichment_request)
             if matched:
                 items = _merge_replayed_enrichment(items, replayed)
@@ -3821,6 +3986,87 @@ def _finalize_items_by_source(
                 http.fixture_source_record(enrichment_request, schema.to_dict(items))
         finalized[source] = items
     return finalized
+
+
+@dataclass
+class _DiggSourcesSpent:
+    """What a run's story-source passes have used of their shared allowance.
+
+    ``story_ids`` are the stories offered to the fetch, not every story seen.
+    """
+
+    story_ids: set[str] = field(default_factory=set)
+    seconds: float = 0.0
+
+
+def _digg_story_sources(
+    bundle: schema.RetrievalBundle,
+    *,
+    topic: str,
+    depth: str,
+    config: dict[str, Any],
+    spent: _DiggSourcesSpent | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Fetch the prominent Digg stories' sources and attach their quotes.
+
+    Returns the map from source match key to story that
+    ``digg.tag_confirmed_candidates`` reads after fusion. Only the stories
+    the Digg bar finds prominent for ``topic`` are offered to the fetch, so
+    no other story has its sources read or confirms another result. The
+    fetch is bounded by the run's deadline and cancel signal, and a
+    comparison's runs share one story budget between them. Empty at quick
+    depth, when the run holds no prominent Digg story, and when every fetch
+    fails. Recorded and replayed as its own fixture exchange so the eval
+    harness stays offline.
+
+    ``spent`` holds the ids of the stories earlier calls in this run offered
+    to the fetch and the seconds they used, and is updated in place. A call
+    after the first offers only prominent stories that arrived since, and
+    gets only the story budget and the time those earlier calls left, so the
+    run's total stays within one budget and one
+    ``digg.SOURCES_TOTAL_SECONDS``.
+    """
+    spent = spent if spent is not None else _DiggSourcesSpent()
+    seen = spent.story_ids
+    later_pass = bool(seen)
+    entity_count = _comparison_entity_count(config)
+    budget = digg.story_budget(depth, entity_count) - min(
+        len(seen), digg.story_budget(depth, entity_count),
+    )
+    seconds_left = digg.SOURCES_TOTAL_SECONDS - spent.seconds
+    # Asked again here because the bar writes nothing on the items.
+    stories = [
+        item for item in digg.apply_bar(topic, bundle.items_by_source.get("digg", [])).prominent
+        if str(item.metadata[digg.STORY_ID_KEY]) not in seen
+    ]
+    seen.update(str(item.metadata[digg.STORY_ID_KEY]) for item in stories)
+    if not stories or budget <= 0 or seconds_left <= 0:
+        return {}
+    request = {"source": "digg", "phase": "story_sources", "topic": topic, "depth": depth}
+    if later_pass:
+        # Its own exchange, so it never replays the first pass's recording.
+        request["pass"] = "retry"
+    if entity_count > 1:
+        # A comparison run fetches fewer stories, so it never replays a
+        # single-topic recording; those keep their original keys.
+        request["comparison_entity_count"] = entity_count
+    matched, replayed = http.fixture_source_replay(request)
+    if matched:
+        fetched = replayed if isinstance(replayed, dict) else {}
+    else:
+        started = time.monotonic()
+        fetched = digg.fetch_story_sources(
+            stories, depth, stopped=lambda: _research_stopped(config),
+            # The time this run's passes have left, or the run's own
+            # deadline when that comes first.
+            deadline=_research_deadline(config, seconds_left),
+            cancel=config.get("_enrich_cancel"),
+            entity_count=entity_count,
+            budget=budget,
+        )
+        spent.seconds += time.monotonic() - started
+        http.fixture_source_record(request, fetched)
+    return digg.apply_story_sources(stories, fetched)
 
 
 def _merge_replayed_enrichment(
@@ -4679,9 +4925,9 @@ def _finalize_source_status(
         elif state == health.OK and not count:
             state = outcome.lane_failure_state or schema.NO_RESULTS
         elif state == schema.PARTIAL and not count:
-            if source == "digg" and digg.is_stale_note(detail):
-                # A stale Digg copy that matched nothing is an empty answer
-                # with a coverage note, not a failed search.
+            if source == "digg" and digg.is_upgrade_note(detail):
+                # An older Digg CLI that matched nothing is an empty answer
+                # with an upgrade note, not a failed search.
                 state = schema.NO_RESULTS
             else:
                 state = http.classify_failure(message=detail or "")
@@ -5436,6 +5682,7 @@ def _retry_thin_sources(
         detail_note = artifact.get("_source_outcome_detail") if isinstance(artifact, dict) else None
         detail_state = artifact.get("_source_outcome_detail_state") if isinstance(artifact, dict) else None
         out_of_time = isinstance(artifact, dict) and bool(artifact.get("_source_out_of_time"))
+        bar_notes: list[str] = []
         normalized = _normalize_score_dedupe(
             source,
             raw_items,
@@ -5451,15 +5698,25 @@ def _retry_thin_sources(
             # later resolved-handle floor cannot recover a post that never
             # entered the bundle.
             defer_relevance_prune=(source == "x"),
+            before_dedupe=_digg_bar_before_dedupe(
+                settings, topic, retry_subquery.label, bar_notes,
+            ) if source == "digg" else None,
         )
         if source == "jobs":
             return (
                 source, normalized, outcome_note, (detail_note, detail_state), out_of_time,
                 (artifact, list(raw_items)) if _is_jobs_board(source, artifact) else None,
             )
-        normalized = _apply_reddit_stream_keepers(
-            source, normalized, settings["per_stream_limit"], topic
-        )
+        if source == "digg":
+            normalized, _ = _apply_digg_bar(
+                normalized, settings, topic, retry_subquery.label,
+            )
+            for bar_note in bar_notes:
+                detail_note = f"{detail_note}; {bar_note}" if detail_note else bar_note
+        else:
+            normalized = _apply_reddit_stream_keepers(
+                source, normalized, settings["per_stream_limit"], topic
+            )
         if isinstance(artifact, dict) and artifact.get("_source_outcome_deferred"):
             outcome_note = outcome_note or artifact["_source_outcome_deferred"]
         if not normalized and isinstance(artifact, dict):
@@ -6802,17 +7059,29 @@ def _retrieve_stream_impl(
         # subquery's search, so share the identical CLI call within a run.
         result = fetch_memo.fetch_once(
             ("digg", subquery.search_query, from_date, to_date, depth),
-            lambda: digg.search_digg(subquery.search_query, from_date, to_date, depth=depth),
+            lambda: digg.search_digg(
+                subquery.search_query, from_date, to_date, depth=depth,
+                include_top_scored=True,
+                deadline=config.get("_research_deadline"),
+                cancel=config.get("_enrich_cancel"),
+            ),
             timeout=_memo_wait_seconds(config),
             cacheable=_clean_search_result,
         )
-        items = digg.parse_digg_response(result, query=subquery.search_query)
+        items = digg.parse_digg_response(
+            result, query=subquery.search_query, from_date=from_date,
+        )
         # Enrichment with attached X posts is deferred to
         # _finalize_items_by_source so it runs on the items that actually
         # survive dedupe rather than on top-K of the raw fanout.
-        stale = digg.stale_note(result)
-        if stale:
-            return items, _outcome_artifact(health.PARTIAL, stale)
+        upgrade = digg.upgrade_note(result)
+        if upgrade:
+            return items, _outcome_artifact(health.PARTIAL, upgrade)
+        score_pass = digg.score_pass_note(result)
+        if score_pass:
+            # The most relevant stories arrived, so Digg stays OK and the
+            # lost highest-scored half is a note on its outcome.
+            return items, {"_source_outcome_detail": score_pass}
         return items, _result_outcome_artifact(source, result)
     if source == "arxiv":
         result = arxiv.search_arxiv(subquery.search_query, from_date, to_date, depth=depth)

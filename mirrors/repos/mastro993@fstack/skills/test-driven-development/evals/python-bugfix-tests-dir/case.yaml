@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: python-bugfix-tests-dir
+expected_outcome: |
+  The run first adds a regression test for "1h30m" to the existing tests/test_duration.py (the repo
+  keeps tests in tests/, so not beside the module), runs it and sees it fail with 1800, then fixes the
+  accumulation bug in timeparse/duration.py. It notices that test_two_hours_fifteen expects 900 for
+  "2h15m", which pins the bug, changes it to 8100, and says so in the reply. It merges the near-duplicate
+  minute tests (test_minutes, test_minutes_with_spaces, test_uppercase) into a table or explains keeping
+  them, adds few tests, and the unittest suite passes.
+context:
+  scaffold_script: place-files.sh

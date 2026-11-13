@@ -107,7 +107,10 @@ Setting `enabled: no` disables the whole plugin. Handler instances belong to eac
 keeps shared stores open until a clean shutdown.
 
 Six process Functions use the regular Netdata Function transport: `rum-sites`, `rum-pages`, `rum-live`, `rum-sessions`,
-`rum-errors`, and `rum-session-events`. Runtime observations include only admitted site jobs. Consumers join native
+`rum-errors`, and `rum-session-events`. Viewing them, and the `synthetics-*` Functions, requires a signed-in member of
+the node's Netdata Cloud Space with permission to view sensitive data, on a paid plan or an active trial; collection and
+history storage are not restricted.
+Runtime observations include only admitted site jobs. Consumers join native
 DynCfg state to show disabled or failed configurations. Journal history remains queryable after a site stops. History range
 arguments select when the Agent originally received an observation, using inclusive Unix seconds: both endpoints include
 their entire second. Negative values are offsets from one captured now; explicit zero means epoch. With omitted bounds,
@@ -152,9 +155,10 @@ retention policy, defaulting to 7 days and 2 GiB.
 
 `dem-history-status` reports the effective policy, sampled file bytes/count, observation time, latest cleanup attempt,
 last successful cleanup, and separate inventory, cleanup, writer and policy reload errors. It is a read-only member
-Function available even with all collectors disabled, with no arguments, payload or time filters. Unknown or unattempted
-values are `null`; an inventory failure does not erase cleanup or writer facts. These facts help diagnose storage pressure
-and maintenance failures, but cannot explain whether an absent event expired, was sampled out or was never collected.
+Function that, like every DEM Function, requires a signed-in member of the node's Space with permission to view
+sensitive data, on a paid plan or an active trial. It works even with all collectors
+disabled, with no arguments, payload or time filters. Unknown or unattempted values are `null`; an inventory failure
+does not erase cleanup or writer facts. These facts help diagnose storage pressure and maintenance failures, but cannot explain whether an absent event expired, was sampled out or was never collected.
 Unusable history at startup still stops the plugin before Functions register; inspect process logs in that case.
 
 Queued events flush every five seconds or 500 records.
@@ -565,6 +569,9 @@ The setting is not a hard memory limit or a count of every child process. Concur
 runtime contract probe per runtime consumer; probes run outside browser slots so a long audit cannot block activation.
 A later activation checks the runtime again. Standalone administration commands have their own process budget.
 
+See [DEM performance and sizing](PERFORMANCE.md) for a measured mixed browser/RUM workload, its resource use,
+startup behavior and measurement limits.
+
 Browser jobs require Linux amd64 or arm64 and an unprivileged plugin identity. Chromium sandboxing stays enabled;
 containers need compatible namespace/seccomp support. RUM does not require a browser runtime.
 
@@ -632,7 +639,7 @@ the stuck process before retrying removal or repair.
 
 **Restart DEM after installation, update or repair, including the first installation.** Each process keeps the runtime it
 acquired at startup. A process started without a runtime stays unavailable until restarted. Runtime releases can
-update their components without an Agent upgrade while preserving execution contract 1. Runs record the actual
+update their components without an Agent upgrade while preserving execution contract 2. Runs record the actual
 release version, archive digest and execution contract for investigation.
 
 Explicit installation enables automatic preparation by default and prints this policy before proceeding. Use
@@ -772,6 +779,34 @@ A journey succeeds only when all ordinary declared tests actually pass. Unexpect
 incomplete coverage. Skipped, expected-failure, empty or incomplete suites are inconclusive unless there is a real
 unexpected failure/timeout. Errors loading/running the monitor are execution inability. Cancellation and an interrupted
 start are distinct from a failed target. A workflow failure means a declared check failed, not proof of a service-wide outage.
+
+Journey timeouts start when a browser slot is admitted, including runtime startup. The runner reserves up to five
+seconds inside the effective budget for Playwright's final diagnostic report (one fifth of budgets below 25 seconds).
+An earlier caller deadline shortens that budget. When the work interval expires, the runner requests a graceful
+Playwright stop. A cooperative interrupted test can report its locator error and an opted-in screenshot; its actual
+status remains `interrupted`, not a fabricated test timeout. Script-specified test timeouts remain supported.
+Lighthouse does not use this reporting reserve.
+
+Run detail and run lists expose `termination_reason` independently of the first reported `error`:
+
+| Reason | Meaning |
+| --- | --- |
+| `execution_budget` | The journey runner exhausted its work interval and requested a graceful stop before receiving the terminal report. |
+| `test_timeout` | Playwright reported a timed-out test. |
+| `suite_timeout` | Playwright reported a suite timeout. |
+| `execution_deadline` | The configured hard execution deadline expired before verified shutdown. |
+| `caller_deadline` | An earlier caller deadline expired before verified shutdown. |
+| `cancelled` | The caller cancelled, or Playwright reported interruption without a runner budget stop. |
+
+Other outcomes and older history may have no termination reason. A previously reported assertion error can coexist
+with a later timeout reason. A terminal report received before the graceful-stop timer is preserved, but shutdown
+still must finish within the hard deadline. Hung hooks, blocked workers and forced termination may prevent reporting
+or screenshots. Caller cancellation takes precedence and does not publish interrupted-test screenshots; already
+reported ordinary failure captures retain their existing policy. Captures are never recovered by scanning output files.
+
+The execution timeout does not bound the entire call: verified process-tree drainage precedes artifact publication and
+history completion, which use the existing separate ten-second completion budget. The browser slot remains held until
+completion. Cleanup uncertainty preserves work and closes admission; it never authorizes publication.
 
 Use the journey configuration's **Test** action to execute an unsaved draft on the selected Agent with its resolved
 secrets and installed browser runtime. Test returns pass/fail; failed, skipped/incomplete, interrupted or unavailable

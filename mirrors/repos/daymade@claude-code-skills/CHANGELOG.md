@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **design-style-picker** (`daymade-codex` v2.4.9): Compare candidates around the user's unresolved choice, preserve approved dimensions and review stages, and stop once the current decision is possible. Replace fixed sample quotas with comparable, readable alternatives.
+
+- **frontend-visual-qa** (v1.21.47): Add relationship-map semantic zoom cases for distant and nearby task handoffs, offscreen anchors, clipped module titles, search recovery and relationship-label activation.
+
+- **frontend-visual-qa** (v1.21.46): Route timed course reading from the repository instructions to its QA procedure; resolve the calibration fixture from the loaded Skill root and derive required video coverage from its offered timestamps.
+
+- **frontend-visual-qa** (v1.21.45): Add course text/video reading journeys and known-answer controls for scrolling players, covered targets and orientation resets.
+
+- **doc-to-markdown** (`daymade-docs` v1.29.7): Resolve Pandoc image references from the Markdown output directory, route generated numbering checks to their original-OOXML owner, replace bypass conversion examples with the maintained converter, and remove derived inventories and metadata templates.
+
+- **doc-to-markdown** (`daymade-docs` v1.29.6): Preserve unambiguous implicit DOCX list levels in a disposable Pandoc input and independently check original OOXML decimal numbering, nesting and restarts against Markdown.
+
+- **lark-cli-router** (v1.0.2): Complete authorized device login in a session-owned background worker, retain expiry and identity binding across continuation, and require domain verification after credential recovery.
+- **frontend-visual-qa** (v1.21.44): Judge illustrated fill-in grids by recognizable thumbnails, readable labels and usable entry fields; retain the dense-first-screen failure case without prescribing a universal row count or height.
+
 - **ghostty-use** (v1.13.0): Store snapshot source rows and lifecycle events without duplicate canonical views or inventory aggregates; derive reporting views and supported command totals on read while retaining legacy-input compatibility. Align documentation entry points with their canonical owners.
 
 - **ghostty-use** (v1.11.6 → v1.12.0): Snapshot all local interactive Codex/Claude CLIs by default, including non-Ghostty and headless terminals; retain Ghostty-only automatic backups, cross-terminal restore deduplication and explicit process/history acceptance boundaries.

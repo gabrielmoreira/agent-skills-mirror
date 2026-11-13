@@ -31,7 +31,7 @@ curl -fsS \
 ```
 
 Wait for discovery before connecting. `serve --timeout` uses seconds;
-`fetch --timeout` uses milliseconds. Layout supplies upload-widget geometry.
+`fetch --timeout-ms` uses milliseconds. Layout supplies upload-widget geometry.
 Hidden file inputs can accept `setInputFiles`; camera controls may need a DOM
 `element.click()` when locator clicks fail. Broad `page.route` interception
 stalled the recorded client.
@@ -563,7 +563,7 @@ if (!uuid) throw new Error('Unsplash upload returned no UUID');
 Then outside CDP:
 
 ```bash
-moli fetch --dump markdown --wait-until done \
+moli fetch --dump markdown --wait done \
   "https://unsplash.com/s/visual/$UUID"
 ```
 

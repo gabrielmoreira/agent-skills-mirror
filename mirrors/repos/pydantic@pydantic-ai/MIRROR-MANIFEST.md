@@ -218,7 +218,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 112 | ✓ | [`docs/harness/conversation-search.md`](docs/harness/conversation-search.md) |
 | 113 | ✓ | [`docs/harness/day-ai.md`](docs/harness/day-ai.md) |
 | 114 | ✓ | [`docs/harness/detect-loops.md`](docs/harness/detect-loops.md) |
-| 115 | ✓ | [`docs/harness/docker-sandbox.md`](docs/harness/docker-sandbox.md) |
+| 115 | ✓ | [`docs/harness/docker-container.md`](docs/harness/docker-container.md) |
 | 116 | ✓ | [`docs/harness/dynamic-workflow.md`](docs/harness/dynamic-workflow.md) |
 | 117 | ✓ | [`docs/harness/exa-search.md`](docs/harness/exa-search.md) |
 | 118 | ✓ | [`docs/harness/filesystem.md`](docs/harness/filesystem.md) |

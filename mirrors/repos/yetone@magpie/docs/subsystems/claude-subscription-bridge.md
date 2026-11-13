@@ -869,7 +869,10 @@ lifetime with `runTTLFor`:
   `caller.claudeHere`), it is this computer's, read as `claudeRunTTL`
   reads it. For a request another magpie passed on, it is what that
   magpie named in `X-Magpie-Claude-Cache-TTL` (`ClaudeCacheTTLHeader`):
-  `5m`, `1h`, or `default` for no pick. `passOnCaller` sends it on every
+  `5m`, `1h`, or `default` for no pick. Claude Desktop (`claude-desktop`)
+  with no such header is `default` too: its gateway key makes Claude Code
+  mark 5 minutes with no ttl, which says no pick (`TestClaudeDesktopRunKeepsAnHour`).
+  `passOnCaller` sends it on every
   request to a Remote magpie whose caller is Claude Code here, or that
   came with it. `callerFrom` takes it from a `magpie/` request alone, and
   `withCaller` takes it off what comes in, so no vendor is sent it.
@@ -1892,8 +1895,25 @@ waits for the bridge's turns, and for none of the gateway's other requests
 the new one serves once it has the socket; a `claude-mcp` token the new one
 doesn't know is forwarded to the old one's callback socket
 (`ForwardCallbacks`, `forwardCallback`), which serves it until it quits
-(`ServeCallbacks`). A run idle between turns ends with the old process,
-and the next turn starts a run in the new one, as after any restart.
+(`ServeCallbacks`). A run idle between turns ends with the old process, but
+its session does not (#6292, recih on X): as the gateway ends
+(`abortAll`), `keepShelf` shelves every idle run and writes the shelf to
+`claude-shelf.json` beside the settings (temp and rename;
+[`claude_persist.go`](../../internal/gateway/claude_persist.go)). Each entry
+has the conversation's fingerprint (`turnKey`, which holds the account, the
+model and the settings), Claude Code's session id, its project folders (the
+config folder, so HOME, and the work folder), the account, the tools it was
+told of, and the cache marks. The next gateway's `unshelve`, when its shelf
+has nothing for a turn, reads the file once it changed (`loadShelf`, which
+takes the file away, so a session that went on in a run is never resumed
+from a record of where it stood) and the turn starts Claude Code with
+`--resume`, told the turn alone. A file that doesn't parse whole, another
+version, an entry whose session file is gone, whose folder isn't a Claude
+Code project folder, or that waited longer than `idleLongest` is unknown,
+and the turn is told whole to a new run, as after a crash (no file is
+written then). A conversation a client rewrote (`looseTurn`) is not kept,
+and a run in a turn or parked on tool results at the stop is not either.
+`TestClaudeIdleRunSurvivesARestart`, `TestClaudeShelfFileUnreadableFallsBackToReplay`.
 
 ## Verification
 

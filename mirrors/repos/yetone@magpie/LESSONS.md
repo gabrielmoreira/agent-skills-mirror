@@ -357,6 +357,19 @@ could match the same key.**
   it once with TZ=UTC and once in a far zone.
 - Seen 1× (2026-10-15).
 
+**A test never swaps time.Local: the code it tests takes its zone from a
+variable of its own.**
+- 4028687b8 (11-12) set time.Local to +08:00 in
+  TestMemorySearchDatesInLocalTime. Every time.Now reads time.Local, so
+  the swap raced an http conn goroutine an earlier test had left
+  finishing, and main's Test run at 727e23637 went red on macOS -race.
+  af212c945 gave memoryStamp a memoryZone variable and moved the
+  saved-zone check into memory, where the clock is already a variable.
+- #2949 (TestHeldClock) and #4360 (testenv.Zone's cleanup) are the same
+  race and still open. testenv.Zone waits for its own stand-ins only, not
+  for whatever another test left running.
+- Seen 1× (2026-11-12).
+
 **Work added to a path every request or poll takes is costed at that
 rate and at its largest input.**
 - 644f4316f's Codex model/effort consumption was read again on every 15s
@@ -495,6 +508,18 @@ push.**
   can't be spelled by a port, an id, a time or a hash.
 - Seen 2× (2026-10-10, 2026-11-10).
 
+**A script Settings loads runs in every mode the GUI has: the window,
+the panel and gateway mode.**
+- 22f2759d7 (11-11) added navpages.js, which read `$("#nav")` before
+  checking the mode. The panel has no #nav, so each Settings draw there
+  threw, and openAgentPrefs, which waits on that draw, opened no sheet
+  from the panel's menu. agent-prefs was red in both engines and all
+  five languages for two days. #6139 got two "seen again" comments and
+  a duplicate (#6311) before 41e330bdf fixed it.
+- Run the GUI files that open Settings in the panel too (`?mode=panel`),
+  and read the `pageerror` stack before calling a timeout load.
+- Seen 1× (2026-11-13).
+
 **Playwright's WebKit is not WebKitGTK.** A GUI change with motion or a new
 browser API is tried in the real Linux app too.
 - 18e82adc6 (10-11) traded the layouts in a view transition. The GUI suite
@@ -575,6 +600,20 @@ Two habits from them:
   TestProviderListReadsSettingsOnce's 2s bar, now a count of parses
   (a36319d60), and TestCursorEditorCopiedOncePerChange's 100ms linger
   (2efb71ea0).
+
+**A test that breaks a shared file puts its bytes back, and its cleanup
+checks the write.**
+- ea3dee96a (10-16) had TestFetchPrivateEntries write "{not json" to the
+  gateway package's shared settings.json and restore it with
+  `t.Cleanup(func() { settings.Save(was) })`. Save refuses to write over
+  a file it can't parse, and the cleanup dropped the error, so the
+  broken file waited for the next test that saved settings without
+  fresh(t). TestRemoteMagpieAskedToFollow went red on ubuntu CI at
+  836d074f1 (11-12), and the two tests run alone were red every time.
+  aa744b9ed writes back the bytes it read, and reports a failed write.
+- A cleanup that goes through the code under test inherits its guards.
+  Restore with the bytes read before, or give the test its own HOME.
+- Seen 1× (2026-11-13).
 
 **A value put in a request's context lives as long as anything that
 holds the context, a stopped timer included.**
@@ -786,7 +825,13 @@ before the merge, are in the code standards.)
   out to a plugin (#5918). A budget that counts comments makes them the
   cheapest thing to cut. Measure what the budget is about, and run the
   sub-second guard before pushing a change near it.
-- Seen 2× (2026-10-17, 2026-11-10).
+- 11-12: coreScriptBudget was raised four times in one afternoon, by
+  367 (d96403141), 151 (05cadcafd), 458 (4519eea71) and 113 (09e2eef0d),
+  1,089 bytes in all, each saying there was no page left to move it to.
+  09e2eef0d's 113 came from a rebase: 6055f626e fit at its base and the
+  two commits that landed under it filled the room.
+- Seen 3× (2026-10-17, 2026-11-10, 2026-11-12); moved to the code
+  standards.
 
 **A release published after a newer one takes Latest, and with it the
 update feed and the tap, unless the publish step checks.**
@@ -829,9 +874,44 @@ it doesn't.**
   (quotatable.js and its test deleted, its app.js, app.css and i18n
   hunks reverted) and 88d2962e0's 16-byte sessions hashes (digest.go
   deleted). Both were gone from main until c14fa0ce9 put them back.
+- The same day, three hours later: d31988c95 ("the Mac's plain title
+  bar is done as the main window is first shown") also reversed
+  1648fcfe2 and 95eab9a66, Mistral's prompt_cache_key: gateway.go's
+  withMistralCacheKey, mistral_cache_key_test.go and two
+  TestOwnCacheKey rows, none of them in its body. 2858566a1 put them
+  back. A GUI change has no reason to touch internal/gateway.
 - Before pushing, read `git show --stat HEAD` after the rebase. A deleted
   file or a hunk in a package the goal never names means the tree is
   stale: rebuild the change on origin/main, don't push the old tree.
+- Seen 1× (2026-11-12).
+
+**State added for one provider or one feature is keyed by it, not
+held process-wide.**
+- b70563ec6 kept one "accounts reordered at" stamp for the whole
+  gateway. Reordering Claude's accounts dropped every other provider's
+  conversation stick, so a Codex conversation lost its account and its
+  prompt cache on the next turn. In tests, any earlier reorder made
+  three cache tests red in package runs (#6249 and #6262, filed twice
+  for one cause). 04e38e604 keys the stamp by provider and has tests
+  forget it.
+- A test of such a value resets it in `t.Cleanup`, and a case where
+  another provider changes it shows the scope is right.
+- A process-local value set by the CLI never reaches the running
+  gateway (#6265).
+- Seen 1× (2026-11-12).
+
+**A commit saved early stays local until it is finished; "wip" never
+reaches main.**
+- f1e6705c5 (11-12 12:10), subject "wip" and no body, pushed the
+  turn-effort and thinking-summary code to main. Its test change came
+  35 minutes later in 9d47b441e, a one-line commit that carries the
+  whole record, and in between
+  TestClaudeSubscriptionPromptKeepsForeignHarnessOutOfSystem was red on
+  main (the CLI's --settings gained showThinkingSummaries). Its CI run
+  was cancelled, so nothing showed it.
+- Committing at once (the machine reboots) is right; pushing it isn't.
+  Before a push, `git log origin/main..HEAD --format=%s` names no
+  "wip", and the change and its tests go out as one commit.
 - Seen 1× (2026-11-12).
 
 **A squash merge's message is written, not GitHub's default.** Give
@@ -846,6 +926,24 @@ own change and what was run at the reviewed head.
 - 10-14: b6e82c6c5 put a paragraph in the subject line. The subject is one
   short line; the rest goes in the body.
 - Seen 2× (2026-10-13, 2026-10-14).
+
+**A commit message file is made fresh for this commit, and its subject
+is read back before the push.**
+- plugins bc9f611e (11-12) went out as "qoder 0.2.60: the business record
+  names the model", another session's stale message file. Its content was
+  qoder 0.2.67, a different change; 7b42e404 had to note it after the
+  push, since main isn't rewritten.
+- 10-15: ce1251cc9, the Windows dsh fix, shipped under a lessons subject
+  for the same reason: zsh's noclobber made `cat >` onto the existing
+  file fail, and the commit took the old text.
+- Name the file for this change in your own scratch folder, write it with
+  `>|`, and check `git log -1 --format=%s` against the diff before
+  pushing.
+- Seen 2× (2026-10-15, 2026-11-12).
+
+**A commit's `--stat` names only the files its change touched** is in
+the code standards since 11-13. See
+[Moved to the code standards](#moved-to-the-code-standards).
 
 **A community PR that changes how a page looks is not merged on review
 alone.**
@@ -863,6 +961,10 @@ standards since 10-18, widened to a worktree and its logs. See
 
 ## Moved to the code standards
 
+- **A commit's `--stat` names only the files its change touched; any
+  other file is a stale tree** (11-11, 11-12, 11-13). On 11-13 8c7328f3a
+  (remote quotas) wrote 21 files back to 35aaaa4b9^ and took out three
+  commits; 926b1e7df put them back.
 - **A red's issue is read to its last comment, and a patch on it is
   taken first** (10-12, 10-17, 10-27, 10-28). On 10-28 JoeyWu-tech's
   #3568 patch sat three days until CI went red on it again (11c427eaa).
@@ -882,6 +984,9 @@ each one.
   answered psikent (/v1/models says every model takes tools) and windy
   (a group's Context hint names the member a longer conversation skips)
   under one subject that names only the first.
+- **A size budget is met, not raised** (10-17, 11-10, 11-12). On 11-12
+  coreScriptBudget rose four times in one afternoon (d96403141,
+  05cadcafd, 4519eea71, 09e2eef0d), 1,089 bytes, with nothing moved out.
 - **Never let magpie's default override a value the user set themselves**
   (10-05, 10-10, 10-17). On 10-17 5a2414acd brought every plugins.yml
   without `settled` up once, Essentials to All. A user who had run
@@ -1156,6 +1261,43 @@ each one.
     Their CI runs were cancelled by the next push, and ubuntu fails at
     apt (#6198), so no run showed it. A new package-level value runs
     `go test .` at the root too.
+- **11-12, criteria still missed.**
+  - The same root guard a fourth day running: 36eebea13 (the Update
+    pill) put `regexp.MustCompile` at package level in
+    internal/update/behind.go, and TestNoEagerPackageRegexps was red on
+    ubuntu and macOS CI at 67f61bd78 until 10e783080. Its body names no
+    run of `.`. The rule has been written here on 11-10 and 11-11 and is
+    still missed, so writing it again won't hold it: the guard should
+    run where every chosen-package run already goes (a vet check, or
+    the same test in each package that has package-level vars), not only
+    in the root package.
+  - A test swapped time.Local (4028687b8), and main went red under
+    -race; see "A test never swaps time.Local" above.
+  - The same guard again three hours later: 4519eea71 (Settings ›
+    About's Report a problem) put a package-level regexp in
+    internal/gui/feedback.go, and gave GET /api/feedback no command and
+    no notYet line, so TestNoEagerPackageRegexps and
+    TestEveryRouteHasACommandOrIsNamed were red at d0a4e0be6 until
+    f97415bc0. Its body lists the gui tests and vet it ran, and neither
+    guard's package. A new package-level var runs `go test .`; a new
+    route runs internal/cli's parity test.
+- **11-13, criteria still missed.**
+  - A budget's pass recorded at a tree it wasn't run at: 5a0e0378c's
+    body says TestCoreScriptBudget passed "rebased on 7583ed65c", but
+    the core had 40 bytes of room there and the commit added 344 to
+    plugins.js. Main was red on it from 06:00 (CI first at e9e63c6d7)
+    until 5a44051eb moved the hook into plugingrid.js. The budget is
+    pure arithmetic over the files: a copy of codeBytes over `git show`
+    gives the number for any sha in a second, so "passes" can be
+    checked at the pushed head without a build.
+  - ee1553913 wrote its "+1,112" budget reason twice in one comment for
+    one raise. A reason that is in the line twice reads as two raises.
+  - A patch on a red's issue taken first: yinwu01 posted 86e12bbd on
+    #5948 (TestGroupFailoverTimesEachTry, a fixed 80ms gap) on 11-10,
+    with every injected red written out. Nobody ported it for three
+    days, and it went red on macos CI at dbb2e5dd2 in a shape the issue
+    hadn't named (Millis == FirstText at :264). It was ported unchanged
+    as ff865b47a, the CI shape reproduced on mica with a 240ms hold.
 - **Done right on 10-17.** The retire stack (0f1666b38 to de671719a)
   diffed staticcheck's U1000 against its base for dead code, b98f906b1
   was red on the old code for an own-account gap, and 8 subscriptions

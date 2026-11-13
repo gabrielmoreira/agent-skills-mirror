@@ -123,7 +123,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 49 | ✓ | [`claude/skills/preview/SKILL.md`](claude/skills/preview/SKILL.md) |
 | 50 | ✓ | [`claude/skills/prototype/SKILL.md`](claude/skills/prototype/SKILL.md) |
 | 51 | ✓ | [`claude/skills/quick-finalize/SKILL.md`](claude/skills/quick-finalize/SKILL.md) |
-| 52 | ✓ | [`claude/skills/recall-rationale/SKILL.md`](claude/skills/recall-rationale/SKILL.md) |
+| 52 | ✓ | [`claude/skills/recall-session/SKILL.md`](claude/skills/recall-session/SKILL.md) |
 | 53 | ✓ | [`claude/skills/refine-plan/SKILL.md`](claude/skills/refine-plan/SKILL.md) |
 | 54 | ✓ | [`claude/skills/reply-to-pr-conversation/SKILL.md`](claude/skills/reply-to-pr-conversation/SKILL.md) |
 | 55 | ✓ | [`claude/skills/reply-to-pr-threads/SKILL.md`](claude/skills/reply-to-pr-threads/SKILL.md) |
@@ -197,7 +197,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 123 | ✓ | [`codex/skills/preview/SKILL.md`](codex/skills/preview/SKILL.md) |
 | 124 | ✓ | [`codex/skills/prototype/SKILL.md`](codex/skills/prototype/SKILL.md) |
 | 125 | ✓ | [`codex/skills/quick-finalize/SKILL.md`](codex/skills/quick-finalize/SKILL.md) |
-| 126 | ✓ | [`codex/skills/recall-rationale/SKILL.md`](codex/skills/recall-rationale/SKILL.md) |
+| 126 | ✓ | [`codex/skills/recall-session/SKILL.md`](codex/skills/recall-session/SKILL.md) |
 | 127 | ✓ | [`codex/skills/refine-plan/SKILL.md`](codex/skills/refine-plan/SKILL.md) |
 | 128 | ✓ | [`codex/skills/reply-to-pr-conversation/SKILL.md`](codex/skills/reply-to-pr-conversation/SKILL.md) |
 | 129 | ✓ | [`codex/skills/reply-to-pr-threads/SKILL.md`](codex/skills/reply-to-pr-threads/SKILL.md) |

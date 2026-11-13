@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `reactive-resume/reactive-resume` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `reactive-resume/reactive-resume` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `reactive-resume/reactive-resume` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,43 +81,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
 | 21 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`apps/android/AGENTS.md`](apps/android/AGENTS.md) |
-| 24 | ✓ | [`apps/android/CLAUDE.md`](apps/android/CLAUDE.md) |
-| 25 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 26 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`plugins/reactive-resume/skills/academic-cv/SKILL.md`](plugins/reactive-resume/skills/academic-cv/SKILL.md) |
-| 29 | ✓ | [`plugins/reactive-resume/skills/accomplishment-inventory/SKILL.md`](plugins/reactive-resume/skills/accomplishment-inventory/SKILL.md) |
-| 30 | ✓ | [`plugins/reactive-resume/skills/application-answers/SKILL.md`](plugins/reactive-resume/skills/application-answers/SKILL.md) |
-| 31 | ✓ | [`plugins/reactive-resume/skills/career-change-resume/SKILL.md`](plugins/reactive-resume/skills/career-change-resume/SKILL.md) |
-| 32 | ✓ | [`plugins/reactive-resume/skills/cover-letter-writer/SKILL.md`](plugins/reactive-resume/skills/cover-letter-writer/SKILL.md) |
-| 33 | ✓ | [`plugins/reactive-resume/skills/customer-success-resume/SKILL.md`](plugins/reactive-resume/skills/customer-success-resume/SKILL.md) |
-| 34 | ✓ | [`plugins/reactive-resume/skills/data-resume/SKILL.md`](plugins/reactive-resume/skills/data-resume/SKILL.md) |
-| 35 | ✓ | [`plugins/reactive-resume/skills/designer-resume/SKILL.md`](plugins/reactive-resume/skills/designer-resume/SKILL.md) |
-| 36 | ✓ | [`plugins/reactive-resume/skills/educator-resume/SKILL.md`](plugins/reactive-resume/skills/educator-resume/SKILL.md) |
-| 37 | ✓ | [`plugins/reactive-resume/skills/entry-level-resume/SKILL.md`](plugins/reactive-resume/skills/entry-level-resume/SKILL.md) |
-| 38 | ✓ | [`plugins/reactive-resume/skills/executive-resume/SKILL.md`](plugins/reactive-resume/skills/executive-resume/SKILL.md) |
-| 39 | ✓ | [`plugins/reactive-resume/skills/finance-resume/SKILL.md`](plugins/reactive-resume/skills/finance-resume/SKILL.md) |
-| 40 | ✓ | [`plugins/reactive-resume/skills/healthcare-resume/SKILL.md`](plugins/reactive-resume/skills/healthcare-resume/SKILL.md) |
-| 41 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
-| 42 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
-| 43 | ✓ | [`plugins/reactive-resume/skills/linkedin-profile-writer/SKILL.md`](plugins/reactive-resume/skills/linkedin-profile-writer/SKILL.md) |
-| 44 | ✓ | [`plugins/reactive-resume/skills/marketing-resume/SKILL.md`](plugins/reactive-resume/skills/marketing-resume/SKILL.md) |
-| 45 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
-| 46 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
-| 47 | ✓ | [`plugins/reactive-resume/skills/operations-resume/SKILL.md`](plugins/reactive-resume/skills/operations-resume/SKILL.md) |
-| 48 | ✓ | [`plugins/reactive-resume/skills/portfolio-case-study/SKILL.md`](plugins/reactive-resume/skills/portfolio-case-study/SKILL.md) |
-| 49 | ✓ | [`plugins/reactive-resume/skills/product-manager-resume/SKILL.md`](plugins/reactive-resume/skills/product-manager-resume/SKILL.md) |
-| 50 | ✓ | [`plugins/reactive-resume/skills/project-manager-resume/SKILL.md`](plugins/reactive-resume/skills/project-manager-resume/SKILL.md) |
-| 51 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
-| 52 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
-| 53 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
-| 54 | ✓ | [`plugins/reactive-resume/skills/resume-proofreader/SKILL.md`](plugins/reactive-resume/skills/resume-proofreader/SKILL.md) |
-| 55 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
-| 56 | ✓ | [`plugins/reactive-resume/skills/resume-writer/SKILL.md`](plugins/reactive-resume/skills/resume-writer/SKILL.md) |
-| 57 | ✓ | [`plugins/reactive-resume/skills/sales-resume/SKILL.md`](plugins/reactive-resume/skills/sales-resume/SKILL.md) |
-| 58 | ✓ | [`plugins/reactive-resume/skills/software-engineer-resume/SKILL.md`](plugins/reactive-resume/skills/software-engineer-resume/SKILL.md) |
-| 59 | ✓ | [`plugins/reactive-resume/skills/technical-writer-resume/SKILL.md`](plugins/reactive-resume/skills/technical-writer-resume/SKILL.md) |
+| 23 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 24 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 25 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 26 | ✓ | [`plugins/reactive-resume/skills/academic-cv/SKILL.md`](plugins/reactive-resume/skills/academic-cv/SKILL.md) |
+| 27 | ✓ | [`plugins/reactive-resume/skills/accomplishment-inventory/SKILL.md`](plugins/reactive-resume/skills/accomplishment-inventory/SKILL.md) |
+| 28 | ✓ | [`plugins/reactive-resume/skills/application-answers/SKILL.md`](plugins/reactive-resume/skills/application-answers/SKILL.md) |
+| 29 | ✓ | [`plugins/reactive-resume/skills/career-change-resume/SKILL.md`](plugins/reactive-resume/skills/career-change-resume/SKILL.md) |
+| 30 | ✓ | [`plugins/reactive-resume/skills/cover-letter-writer/SKILL.md`](plugins/reactive-resume/skills/cover-letter-writer/SKILL.md) |
+| 31 | ✓ | [`plugins/reactive-resume/skills/customer-success-resume/SKILL.md`](plugins/reactive-resume/skills/customer-success-resume/SKILL.md) |
+| 32 | ✓ | [`plugins/reactive-resume/skills/data-resume/SKILL.md`](plugins/reactive-resume/skills/data-resume/SKILL.md) |
+| 33 | ✓ | [`plugins/reactive-resume/skills/designer-resume/SKILL.md`](plugins/reactive-resume/skills/designer-resume/SKILL.md) |
+| 34 | ✓ | [`plugins/reactive-resume/skills/educator-resume/SKILL.md`](plugins/reactive-resume/skills/educator-resume/SKILL.md) |
+| 35 | ✓ | [`plugins/reactive-resume/skills/entry-level-resume/SKILL.md`](plugins/reactive-resume/skills/entry-level-resume/SKILL.md) |
+| 36 | ✓ | [`plugins/reactive-resume/skills/executive-resume/SKILL.md`](plugins/reactive-resume/skills/executive-resume/SKILL.md) |
+| 37 | ✓ | [`plugins/reactive-resume/skills/finance-resume/SKILL.md`](plugins/reactive-resume/skills/finance-resume/SKILL.md) |
+| 38 | ✓ | [`plugins/reactive-resume/skills/healthcare-resume/SKILL.md`](plugins/reactive-resume/skills/healthcare-resume/SKILL.md) |
+| 39 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
+| 40 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
+| 41 | ✓ | [`plugins/reactive-resume/skills/linkedin-profile-writer/SKILL.md`](plugins/reactive-resume/skills/linkedin-profile-writer/SKILL.md) |
+| 42 | ✓ | [`plugins/reactive-resume/skills/marketing-resume/SKILL.md`](plugins/reactive-resume/skills/marketing-resume/SKILL.md) |
+| 43 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
+| 44 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
+| 45 | ✓ | [`plugins/reactive-resume/skills/operations-resume/SKILL.md`](plugins/reactive-resume/skills/operations-resume/SKILL.md) |
+| 46 | ✓ | [`plugins/reactive-resume/skills/portfolio-case-study/SKILL.md`](plugins/reactive-resume/skills/portfolio-case-study/SKILL.md) |
+| 47 | ✓ | [`plugins/reactive-resume/skills/product-manager-resume/SKILL.md`](plugins/reactive-resume/skills/product-manager-resume/SKILL.md) |
+| 48 | ✓ | [`plugins/reactive-resume/skills/project-manager-resume/SKILL.md`](plugins/reactive-resume/skills/project-manager-resume/SKILL.md) |
+| 49 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
+| 50 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
+| 51 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
+| 52 | ✓ | [`plugins/reactive-resume/skills/resume-proofreader/SKILL.md`](plugins/reactive-resume/skills/resume-proofreader/SKILL.md) |
+| 53 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
+| 54 | ✓ | [`plugins/reactive-resume/skills/resume-writer/SKILL.md`](plugins/reactive-resume/skills/resume-writer/SKILL.md) |
+| 55 | ✓ | [`plugins/reactive-resume/skills/sales-resume/SKILL.md`](plugins/reactive-resume/skills/sales-resume/SKILL.md) |
+| 56 | ✓ | [`plugins/reactive-resume/skills/software-engineer-resume/SKILL.md`](plugins/reactive-resume/skills/software-engineer-resume/SKILL.md) |
+| 57 | ✓ | [`plugins/reactive-resume/skills/technical-writer-resume/SKILL.md`](plugins/reactive-resume/skills/technical-writer-resume/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 123 file(s) materialized.
+Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 124 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 123 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 123 |
+| Files         | 124 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,69 +119,70 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`packages/daemon/specs/agents/shared/skills/process/systematic-debugging/SKILL.md`](packages/daemon/specs/agents/shared/skills/process/systematic-debugging/SKILL.md) |
 | 59 | ✓ | [`packages/daemon/specs/agents/shared/skills/process/test-driven-development/SKILL.md`](packages/daemon/specs/agents/shared/skills/process/test-driven-development/SKILL.md) |
 | 60 | ✓ | [`packages/daemon/specs/agents/shared/skills/process/verification-before-completion/SKILL.md`](packages/daemon/specs/agents/shared/skills/process/verification-before-completion/SKILL.md) |
-| 61 | ✓ | [`skills/_canonical/core/agent-starters/SKILL.md`](skills/_canonical/core/agent-starters/SKILL.md) |
-| 62 | ✓ | [`skills/_canonical/core/agent-startup-and-context-ingestion/SKILL.md`](skills/_canonical/core/agent-startup-and-context-ingestion/SKILL.md) |
-| 63 | ✓ | [`skills/_canonical/core/cross-host-rig-commands/SKILL.md`](skills/_canonical/core/cross-host-rig-commands/SKILL.md) |
-| 64 | ✓ | [`skills/_canonical/core/human-in-the-loop/SKILL.md`](skills/_canonical/core/human-in-the-loop/SKILL.md) |
-| 65 | ✓ | [`skills/_canonical/core/messaging-the-human/SKILL.md`](skills/_canonical/core/messaging-the-human/SKILL.md) |
-| 66 | ✓ | [`skills/_canonical/core/openrig-architect/SKILL.md`](skills/_canonical/core/openrig-architect/SKILL.md) |
-| 67 | ✓ | [`skills/_canonical/core/openrig-cmux/SKILL.md`](skills/_canonical/core/openrig-cmux/SKILL.md) |
-| 68 | ✓ | [`skills/_canonical/core/openrig-herdr/SKILL.md`](skills/_canonical/core/openrig-herdr/SKILL.md) |
-| 69 | ✓ | [`skills/_canonical/core/openrig-skills/SKILL.md`](skills/_canonical/core/openrig-skills/SKILL.md) |
-| 70 | ✓ | [`skills/_canonical/core/openrig-software-factory/references/worked-example.md`](skills/_canonical/core/openrig-software-factory/references/worked-example.md) |
-| 71 | ✓ | [`skills/_canonical/core/openrig-software-factory/SKILL.md`](skills/_canonical/core/openrig-software-factory/SKILL.md) |
-| 72 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/backup-sqlite.mjs`](skills/_canonical/core/openrig-upgrade/scripts/backup-sqlite.mjs) |
-| 73 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/inspect-upgrade.mjs`](skills/_canonical/core/openrig-upgrade/scripts/inspect-upgrade.mjs) |
-| 74 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/migrate-telemetry-state-0.5.9.mjs`](skills/_canonical/core/openrig-upgrade/scripts/migrate-telemetry-state-0.5.9.mjs) |
-| 75 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/refresh-managed-plugin.mjs`](skills/_canonical/core/openrig-upgrade/scripts/refresh-managed-plugin.mjs) |
-| 76 | ✓ | [`skills/_canonical/core/openrig-upgrade/SKILL.md`](skills/_canonical/core/openrig-upgrade/SKILL.md) |
-| 77 | ✓ | [`skills/_canonical/core/rig-bundles-and-shareable-artifacts/SKILL.md`](skills/_canonical/core/rig-bundles-and-shareable-artifacts/SKILL.md) |
-| 78 | ✓ | [`skills/_canonical/core/rig-lifecycle/SKILL.md`](skills/_canonical/core/rig-lifecycle/SKILL.md) |
-| 79 | ✓ | [`skills/_canonical/core/session-source-fork/SKILL.md`](skills/_canonical/core/session-source-fork/SKILL.md) |
-| 80 | ✓ | [`skills/_canonical/core/specification-system/SKILL.md`](skills/_canonical/core/specification-system/SKILL.md) |
-| 81 | ✓ | [`skills/_canonical/core/topology-mutation-and-seat-management/SKILL.md`](skills/_canonical/core/topology-mutation-and-seat-management/SKILL.md) |
-| 82 | ✓ | [`skills/_canonical/core/watchdog/SKILL.md`](skills/_canonical/core/watchdog/SKILL.md) |
-| 83 | ✓ | [`skills/_canonical/core/working-with-an-openrig-team/SKILL.md`](skills/_canonical/core/working-with-an-openrig-team/SKILL.md) |
-| 84 | ✓ | [`skills/_canonical/pm/backlog-capture/SKILL.md`](skills/_canonical/pm/backlog-capture/SKILL.md) |
-| 85 | ✓ | [`skills/_canonical/pm/context-builder/SKILL.md`](skills/_canonical/pm/context-builder/SKILL.md) |
-| 86 | ✓ | [`skills/_canonical/pm/exec-summary/SKILL.md`](skills/_canonical/pm/exec-summary/SKILL.md) |
-| 87 | ✓ | [`skills/_canonical/pm/office-hours/SKILL.md`](skills/_canonical/pm/office-hours/SKILL.md) |
-| 88 | ✓ | [`skills/_canonical/pm/plan-review/SKILL.md`](skills/_canonical/pm/plan-review/SKILL.md) |
-| 89 | ✓ | [`skills/_canonical/pm/requirements-writer/SKILL.md`](skills/_canonical/pm/requirements-writer/SKILL.md) |
-| 90 | ✓ | [`skills/_canonical/pm/ui-mockup/SKILL.md`](skills/_canonical/pm/ui-mockup/SKILL.md) |
-| 91 | ✓ | [`skills/_canonical/pods/development-team/references/refactoring.md`](skills/_canonical/pods/development-team/references/refactoring.md) |
-| 92 | ✓ | [`skills/_canonical/pods/development-team/SKILL.md`](skills/_canonical/pods/development-team/SKILL.md) |
-| 93 | ✓ | [`skills/_canonical/pods/orchestration-team/SKILL.md`](skills/_canonical/pods/orchestration-team/SKILL.md) |
-| 94 | ✓ | [`skills/_canonical/pods/oversight-team/SKILL.md`](skills/_canonical/pods/oversight-team/SKILL.md) |
-| 95 | ✓ | [`skills/_canonical/pods/review-team/SKILL.md`](skills/_canonical/pods/review-team/SKILL.md) |
-| 96 | ✓ | [`skills/_canonical/process/agent-browser/LICENSE.txt`](skills/_canonical/process/agent-browser/LICENSE.txt) |
-| 97 | ✓ | [`skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md`](skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md) |
-| 98 | ✓ | [`skills/_canonical/process/agent-browser/OPENRIG.md`](skills/_canonical/process/agent-browser/OPENRIG.md) |
-| 99 | ✓ | [`skills/_canonical/process/agent-browser/SKILL.md`](skills/_canonical/process/agent-browser/SKILL.md) |
-| 100 | ✓ | [`skills/_canonical/process/context-engineering/SKILL.md`](skills/_canonical/process/context-engineering/SKILL.md) |
-| 101 | ✓ | [`skills/_canonical/process/dogfood/LICENSE.txt`](skills/_canonical/process/dogfood/LICENSE.txt) |
-| 102 | ✓ | [`skills/_canonical/process/dogfood/references/issue-taxonomy.md`](skills/_canonical/process/dogfood/references/issue-taxonomy.md) |
-| 103 | ✓ | [`skills/_canonical/process/dogfood/SKILL.md`](skills/_canonical/process/dogfood/SKILL.md) |
-| 104 | ✓ | [`skills/_canonical/process/dogfood/templates/dogfood-report-template.md`](skills/_canonical/process/dogfood/templates/dogfood-report-template.md) |
-| 105 | ✓ | [`skills/_canonical/process/frontend-design/LICENSE.txt`](skills/_canonical/process/frontend-design/LICENSE.txt) |
-| 106 | ✓ | [`skills/_canonical/process/frontend-design/SKILL.md`](skills/_canonical/process/frontend-design/SKILL.md) |
-| 107 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts`](skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts) |
-| 108 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting.md`](skills/_canonical/process/systematic-debugging/condition-based-waiting.md) |
-| 109 | ✓ | [`skills/_canonical/process/systematic-debugging/defense-in-depth.md`](skills/_canonical/process/systematic-debugging/defense-in-depth.md) |
-| 110 | ✓ | [`skills/_canonical/process/systematic-debugging/find-polluter.sh`](skills/_canonical/process/systematic-debugging/find-polluter.sh) |
-| 111 | ✓ | [`skills/_canonical/process/systematic-debugging/LICENSE.txt`](skills/_canonical/process/systematic-debugging/LICENSE.txt) |
-| 112 | ✓ | [`skills/_canonical/process/systematic-debugging/root-cause-tracing.md`](skills/_canonical/process/systematic-debugging/root-cause-tracing.md) |
-| 113 | ✓ | [`skills/_canonical/process/systematic-debugging/SKILL.md`](skills/_canonical/process/systematic-debugging/SKILL.md) |
-| 114 | ✓ | [`skills/_canonical/process/test-driven-development/LICENSE.txt`](skills/_canonical/process/test-driven-development/LICENSE.txt) |
-| 115 | ✓ | [`skills/_canonical/process/test-driven-development/SKILL.md`](skills/_canonical/process/test-driven-development/SKILL.md) |
-| 116 | ✓ | [`skills/_canonical/process/test-driven-development/testing-anti-patterns.md`](skills/_canonical/process/test-driven-development/testing-anti-patterns.md) |
-| 117 | ✓ | [`skills/_canonical/process/verification-before-completion/LICENSE.txt`](skills/_canonical/process/verification-before-completion/LICENSE.txt) |
-| 118 | ✓ | [`skills/_canonical/process/verification-before-completion/references/performance-claims.md`](skills/_canonical/process/verification-before-completion/references/performance-claims.md) |
-| 119 | ✓ | [`skills/_canonical/process/verification-before-completion/SKILL.md`](skills/_canonical/process/verification-before-completion/SKILL.md) |
-| 120 | ✓ | [`skills/CHANGELOG.md`](skills/CHANGELOG.md) |
-| 121 | ✓ | [`skills/LICENSE`](skills/LICENSE) |
-| 122 | ✓ | [`skills/README.md`](skills/README.md) |
-| 123 | ✓ | [`skills/rigs/SKILL.md`](skills/rigs/SKILL.md) |
+| 61 | ✓ | [`plugins/claude-directory/skills/working-with-an-openrig-team/SKILL.md`](plugins/claude-directory/skills/working-with-an-openrig-team/SKILL.md) |
+| 62 | ✓ | [`skills/_canonical/core/agent-starters/SKILL.md`](skills/_canonical/core/agent-starters/SKILL.md) |
+| 63 | ✓ | [`skills/_canonical/core/agent-startup-and-context-ingestion/SKILL.md`](skills/_canonical/core/agent-startup-and-context-ingestion/SKILL.md) |
+| 64 | ✓ | [`skills/_canonical/core/cross-host-rig-commands/SKILL.md`](skills/_canonical/core/cross-host-rig-commands/SKILL.md) |
+| 65 | ✓ | [`skills/_canonical/core/human-in-the-loop/SKILL.md`](skills/_canonical/core/human-in-the-loop/SKILL.md) |
+| 66 | ✓ | [`skills/_canonical/core/messaging-the-human/SKILL.md`](skills/_canonical/core/messaging-the-human/SKILL.md) |
+| 67 | ✓ | [`skills/_canonical/core/openrig-architect/SKILL.md`](skills/_canonical/core/openrig-architect/SKILL.md) |
+| 68 | ✓ | [`skills/_canonical/core/openrig-cmux/SKILL.md`](skills/_canonical/core/openrig-cmux/SKILL.md) |
+| 69 | ✓ | [`skills/_canonical/core/openrig-herdr/SKILL.md`](skills/_canonical/core/openrig-herdr/SKILL.md) |
+| 70 | ✓ | [`skills/_canonical/core/openrig-skills/SKILL.md`](skills/_canonical/core/openrig-skills/SKILL.md) |
+| 71 | ✓ | [`skills/_canonical/core/openrig-software-factory/references/worked-example.md`](skills/_canonical/core/openrig-software-factory/references/worked-example.md) |
+| 72 | ✓ | [`skills/_canonical/core/openrig-software-factory/SKILL.md`](skills/_canonical/core/openrig-software-factory/SKILL.md) |
+| 73 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/backup-sqlite.mjs`](skills/_canonical/core/openrig-upgrade/scripts/backup-sqlite.mjs) |
+| 74 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/inspect-upgrade.mjs`](skills/_canonical/core/openrig-upgrade/scripts/inspect-upgrade.mjs) |
+| 75 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/migrate-telemetry-state-0.5.9.mjs`](skills/_canonical/core/openrig-upgrade/scripts/migrate-telemetry-state-0.5.9.mjs) |
+| 76 | ✓ | [`skills/_canonical/core/openrig-upgrade/scripts/refresh-managed-plugin.mjs`](skills/_canonical/core/openrig-upgrade/scripts/refresh-managed-plugin.mjs) |
+| 77 | ✓ | [`skills/_canonical/core/openrig-upgrade/SKILL.md`](skills/_canonical/core/openrig-upgrade/SKILL.md) |
+| 78 | ✓ | [`skills/_canonical/core/rig-bundles-and-shareable-artifacts/SKILL.md`](skills/_canonical/core/rig-bundles-and-shareable-artifacts/SKILL.md) |
+| 79 | ✓ | [`skills/_canonical/core/rig-lifecycle/SKILL.md`](skills/_canonical/core/rig-lifecycle/SKILL.md) |
+| 80 | ✓ | [`skills/_canonical/core/session-source-fork/SKILL.md`](skills/_canonical/core/session-source-fork/SKILL.md) |
+| 81 | ✓ | [`skills/_canonical/core/specification-system/SKILL.md`](skills/_canonical/core/specification-system/SKILL.md) |
+| 82 | ✓ | [`skills/_canonical/core/topology-mutation-and-seat-management/SKILL.md`](skills/_canonical/core/topology-mutation-and-seat-management/SKILL.md) |
+| 83 | ✓ | [`skills/_canonical/core/watchdog/SKILL.md`](skills/_canonical/core/watchdog/SKILL.md) |
+| 84 | ✓ | [`skills/_canonical/core/working-with-an-openrig-team/SKILL.md`](skills/_canonical/core/working-with-an-openrig-team/SKILL.md) |
+| 85 | ✓ | [`skills/_canonical/pm/backlog-capture/SKILL.md`](skills/_canonical/pm/backlog-capture/SKILL.md) |
+| 86 | ✓ | [`skills/_canonical/pm/context-builder/SKILL.md`](skills/_canonical/pm/context-builder/SKILL.md) |
+| 87 | ✓ | [`skills/_canonical/pm/exec-summary/SKILL.md`](skills/_canonical/pm/exec-summary/SKILL.md) |
+| 88 | ✓ | [`skills/_canonical/pm/office-hours/SKILL.md`](skills/_canonical/pm/office-hours/SKILL.md) |
+| 89 | ✓ | [`skills/_canonical/pm/plan-review/SKILL.md`](skills/_canonical/pm/plan-review/SKILL.md) |
+| 90 | ✓ | [`skills/_canonical/pm/requirements-writer/SKILL.md`](skills/_canonical/pm/requirements-writer/SKILL.md) |
+| 91 | ✓ | [`skills/_canonical/pm/ui-mockup/SKILL.md`](skills/_canonical/pm/ui-mockup/SKILL.md) |
+| 92 | ✓ | [`skills/_canonical/pods/development-team/references/refactoring.md`](skills/_canonical/pods/development-team/references/refactoring.md) |
+| 93 | ✓ | [`skills/_canonical/pods/development-team/SKILL.md`](skills/_canonical/pods/development-team/SKILL.md) |
+| 94 | ✓ | [`skills/_canonical/pods/orchestration-team/SKILL.md`](skills/_canonical/pods/orchestration-team/SKILL.md) |
+| 95 | ✓ | [`skills/_canonical/pods/oversight-team/SKILL.md`](skills/_canonical/pods/oversight-team/SKILL.md) |
+| 96 | ✓ | [`skills/_canonical/pods/review-team/SKILL.md`](skills/_canonical/pods/review-team/SKILL.md) |
+| 97 | ✓ | [`skills/_canonical/process/agent-browser/LICENSE.txt`](skills/_canonical/process/agent-browser/LICENSE.txt) |
+| 98 | ✓ | [`skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md`](skills/_canonical/process/agent-browser/LOCAL-INSIGHTS.md) |
+| 99 | ✓ | [`skills/_canonical/process/agent-browser/OPENRIG.md`](skills/_canonical/process/agent-browser/OPENRIG.md) |
+| 100 | ✓ | [`skills/_canonical/process/agent-browser/SKILL.md`](skills/_canonical/process/agent-browser/SKILL.md) |
+| 101 | ✓ | [`skills/_canonical/process/context-engineering/SKILL.md`](skills/_canonical/process/context-engineering/SKILL.md) |
+| 102 | ✓ | [`skills/_canonical/process/dogfood/LICENSE.txt`](skills/_canonical/process/dogfood/LICENSE.txt) |
+| 103 | ✓ | [`skills/_canonical/process/dogfood/references/issue-taxonomy.md`](skills/_canonical/process/dogfood/references/issue-taxonomy.md) |
+| 104 | ✓ | [`skills/_canonical/process/dogfood/SKILL.md`](skills/_canonical/process/dogfood/SKILL.md) |
+| 105 | ✓ | [`skills/_canonical/process/dogfood/templates/dogfood-report-template.md`](skills/_canonical/process/dogfood/templates/dogfood-report-template.md) |
+| 106 | ✓ | [`skills/_canonical/process/frontend-design/LICENSE.txt`](skills/_canonical/process/frontend-design/LICENSE.txt) |
+| 107 | ✓ | [`skills/_canonical/process/frontend-design/SKILL.md`](skills/_canonical/process/frontend-design/SKILL.md) |
+| 108 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts`](skills/_canonical/process/systematic-debugging/condition-based-waiting-example.ts) |
+| 109 | ✓ | [`skills/_canonical/process/systematic-debugging/condition-based-waiting.md`](skills/_canonical/process/systematic-debugging/condition-based-waiting.md) |
+| 110 | ✓ | [`skills/_canonical/process/systematic-debugging/defense-in-depth.md`](skills/_canonical/process/systematic-debugging/defense-in-depth.md) |
+| 111 | ✓ | [`skills/_canonical/process/systematic-debugging/find-polluter.sh`](skills/_canonical/process/systematic-debugging/find-polluter.sh) |
+| 112 | ✓ | [`skills/_canonical/process/systematic-debugging/LICENSE.txt`](skills/_canonical/process/systematic-debugging/LICENSE.txt) |
+| 113 | ✓ | [`skills/_canonical/process/systematic-debugging/root-cause-tracing.md`](skills/_canonical/process/systematic-debugging/root-cause-tracing.md) |
+| 114 | ✓ | [`skills/_canonical/process/systematic-debugging/SKILL.md`](skills/_canonical/process/systematic-debugging/SKILL.md) |
+| 115 | ✓ | [`skills/_canonical/process/test-driven-development/LICENSE.txt`](skills/_canonical/process/test-driven-development/LICENSE.txt) |
+| 116 | ✓ | [`skills/_canonical/process/test-driven-development/SKILL.md`](skills/_canonical/process/test-driven-development/SKILL.md) |
+| 117 | ✓ | [`skills/_canonical/process/test-driven-development/testing-anti-patterns.md`](skills/_canonical/process/test-driven-development/testing-anti-patterns.md) |
+| 118 | ✓ | [`skills/_canonical/process/verification-before-completion/LICENSE.txt`](skills/_canonical/process/verification-before-completion/LICENSE.txt) |
+| 119 | ✓ | [`skills/_canonical/process/verification-before-completion/references/performance-claims.md`](skills/_canonical/process/verification-before-completion/references/performance-claims.md) |
+| 120 | ✓ | [`skills/_canonical/process/verification-before-completion/SKILL.md`](skills/_canonical/process/verification-before-completion/SKILL.md) |
+| 121 | ✓ | [`skills/CHANGELOG.md`](skills/CHANGELOG.md) |
+| 122 | ✓ | [`skills/LICENSE`](skills/LICENSE) |
+| 123 | ✓ | [`skills/README.md`](skills/README.md) |
+| 124 | ✓ | [`skills/rigs/SKILL.md`](skills/rigs/SKILL.md) |
 
 ---
 

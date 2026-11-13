@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: mega-aggregate-split-keeps-invariant
+expected_outcome: |
+  The run diagnoses Product (src/domain/Product.ts) as an aggregate that holds every backlog item,
+  sprint, and release, so unrelated edits collide on one version. It proposes BacklogItem, Sprint,
+  and Release as their own aggregates that refer to the product by ProductId, keeps the optimistic
+  locking that ADR 0001 records, and calls the retry loop in handlers.ts a workaround. It spots that
+  commitToSprint enforces a real invariant across items and a sprint (committed estimates within
+  capacity) and keeps it protected: inside one aggregate's boundary (for example a Sprint holding its
+  commitments and their estimates) or by asking the user what goes wrong if a sprint is briefly over
+  capacity. Cross-aggregate updates use past-tense domain events such as BacklogItemCommitted. It
+  records the split in an ADR and changes no file under src/.
+context:
+  scaffold_script: place-files.sh

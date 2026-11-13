@@ -32,6 +32,19 @@ cortex plugin update maxa-spec
 
 In a running session, run `/plugin reload` (or restart Cortex Code) to pick up a new install. Skills use the same `maxa-spec:` namespace as below.
 
+### Databricks Genie Code
+
+Genie Code reads the skill folders directly, so the same skills install with no separate build. Each user registers them once:
+
+1. In your workspace, go to **Workspace > Home > Create > Git folder** and enter `https://github.com/maxa-ai/maxa-skills`. No Git credentials are needed.
+2. Open the Genie Code panel, then **⋮ > Customizations > Skills**. Click **Create skills folder** if it is shown.
+3. Click **Add skill**, enter `/Workspace/Users/<your-email>/maxa-skills/plugins/maxa-spec/skills`, then **Add folder**.
+4. Start a new chat.
+
+To update, open the `maxa-skills` Git folder, click its branch name (`main`), then **Pull**.
+
+To install for every user instead, a workspace admin copies the three folders under `plugins/maxa-spec/skills/` into `/Workspace/.assistant/skills/`. Then they share `/Workspace/.assistant` with **All workspace users** at **Can View**. Without the share, other users don't see the skills. Skills have no `maxa-spec:` prefix in Genie Code: type `@build-data-model` to invoke one, or let Genie Code pick it from your request.
+
 ## Usage
 
 Once installed, invoke skills with the plugin namespace:
