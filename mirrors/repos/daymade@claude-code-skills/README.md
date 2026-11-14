@@ -39,7 +39,7 @@ This is a **production-hardened fork** of [Anthropic's official skill-creator](h
 | Know the architecture options | Not mentioned | Inline vs Fork decision guide with examples (choosing wrong silently breaks your skill) |
 | Validate before shipping | Basic YAML check | Expanded structural validator plus provenance-checked old-vs-new capability audit; packaging re-verifies the completed review instead of trusting a marker |
 | Match validation cost to risk | One full create-test-review loop | Risk tier and evaluation spend are separate: targeted checks first; paired benchmarks require explicit authorization or a decision-bearing evidence plan plus opt-in |
-| Catch security issues | No tooling | `security_scan.py` with gitleaks integration — hard gate before packaging |
+| Check secrets and archive paths | No tooling | `security_scan.py`: Gitleaks plus scoped Python archive-path analysis; required before packaging |
 | Learn from real failures | No failure cases | Battle-tested methodology with documented failure patterns and gotchas |
 | Distill past conversations safely | Not covered | Explicit local manifest, message-level time window, redaction, opaque source IDs, ignored `.enrich/` staging, and manual promotion into references/scripts |
 | Turn approved artifacts into skill behavior | Not covered | Artifact-corpus distillation workflow: script-measured pattern extraction (≥3-artifact threshold), cataloging≠distillation gate, invariant-vs-register boundary, independent completeness audit |
@@ -1481,36 +1481,7 @@ Selects the installed StepFun ASR, StepFun TTS, or transcript-to-minutes special
 
 > **Install**: `claude plugin install daymade-audio@daymade-skills` (suite-only — invoked as `daymade-audio:meeting-minutes-taker`)
 
-Transform meeting transcripts into high-fidelity, structured meeting minutes with iterative human review.
-
-**When to use:**
-- Meeting transcript provided and minutes/notes/summaries requested
-- Multiple versions of meeting minutes need merging without content loss
-- Existing minutes need review against original transcript for missing items
-
-**Key features:**
-- Multi-pass parallel generation with UNION merge strategy
-- Evidence-based recording with speaker quotes
-- Mermaid diagrams for architecture discussions
-- Iterative human-in-the-loop refinement workflow
-- Cross-AI comparison for bias reduction
-- Completeness checklist for systematic review
-
-**Example usage:**
-```bash
-# Install the full audio suite (includes meeting-minutes-taker)
-claude plugin install daymade-audio@daymade-skills
-
-# Then provide a meeting transcript and request minutes
-```
-
-**🎬 Live Demo**
-
-*Coming soon*
-
-📚 **Documentation**: See [daymade-audio/meeting-minutes-taker/SKILL.md](./daymade-audio/meeting-minutes-taker/SKILL.md) for complete workflow and template guidance.
-
-**Requirements**: None
+📚 [Canonical inputs, workflow, prerequisites and templates](./daymade-audio/meeting-minutes-taker/SKILL.md#quick-start).
 
 ---
 
@@ -2337,7 +2308,7 @@ The essential meta-skill for building your own skills. It scales verification to
 **Key features:**
 - Prior-art research across the live conversation, explicitly approved prior history, local SOPs, installed plugins/MCPs, skills.sh, official plugins, npm/PyPI — to reuse infrastructure and encode only the user's unique methodology
 - The inline-vs-`context: fork` decision guide (subagents can't spawn subagents or call skills) and composable/orthogonal skill design
-- `init_skill.py` scaffolding, `package_skill.py` (auto-validates), and `security_scan.py` (gitleaks-based secret/PII detection)
+- `init_skill.py` scaffolding, `package_skill.py` (auto-validates), and `security_scan.py` (Gitleaks secrets plus local Semgrep Python archive-path checks; scoped coverage, not a general safety audit)
 - Existing-skill migration gate: tool-attested snapshot or verified Git-commit baseline, runtime-reachability-aware capability audit, explicit dispositions, and package-time re-verification that a clean commit or hand-written marker cannot bypass
 - Risk-scaled verification router: Tier 1 targeted checks, Tier 2 sampled behavior replay, and Tier 3 broad/high-risk classification without automatic fan-out
 - Separately authorized full-eval harness: with-skill + baseline runs, assertions, grading, benchmark aggregation, and an HTML viewer after an explicit request, or after a decision-bearing evidence plan receives opt-in
@@ -2355,7 +2326,7 @@ claude plugin install daymade-skill@daymade-skills
 "benchmark this skill against a no-skill baseline"
 ```
 
-**Requirements**: Python 3, `uv`, PyYAML (validation/packaging), gitleaks (security scan). `claude` CLI only for agent evals and description-optimization runs.
+**Requirements**: Follow [Skill Creator prerequisites](daymade-skill/skill-creator/references/prerequisites.md) for runtime, scanner and phase-specific dependencies.
 
 ---
 
@@ -3865,7 +3836,7 @@ Use **excel-automation** to create formatted workbooks, parse complex `.xlsm` mo
 Use **capture-screen** to script repeatable app-window screenshots. Combine with **excel-automation** to generate report-ready workbook visuals.
 
 ### For Meeting Documentation
-Use **meeting-minutes-taker** to transform raw meeting transcripts into structured, evidence-based minutes. Combine with **transcript-fixer** to clean up ASR errors before generating minutes. Features multi-pass generation with UNION merge to avoid content loss.
+Use [meeting-minutes-taker](./daymade-audio/meeting-minutes-taker/SKILL.md#quick-start).
 
 ### For QA Testing & Quality Assurance
 Use [qa-expert](./qa-expert/SKILL.md) for QA setup, test cases, execution tracking, reporting and third-party handoffs.

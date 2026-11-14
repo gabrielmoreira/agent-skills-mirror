@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 18 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 18 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,20 +75,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`contrib/langchain-go-micro/CONTRIBUTING.md`](contrib/langchain-go-micro/CONTRIBUTING.md) |
 | 4 | ✓ | [`internal/docs/THESIS.md`](internal/docs/THESIS.md) |
-| 5 | ✓ | [`internal/website/CONTRIBUTING.md`](internal/website/CONTRIBUTING.md) |
-| 6 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
-| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 8 | → | [`CODEX.md`](CODEX.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`internal/docs/CONTINUOUS_IMPROVEMENT.md`](internal/docs/CONTINUOUS_IMPROVEMENT.md) |
-| 11 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
-| 12 | → | [`internal/website/content/en/docs/guides/durability.md`](internal/website/content/en/docs/guides/durability.md) |
-| 13 | → | [`internal/website/content/en/docs/project/adoption.md`](internal/website/content/en/docs/project/adoption.md) |
-| 14 | → | [`internal/website/content/en/docs/project/version-support.md`](internal/website/content/en/docs/project/version-support.md) |
-| 15 | → | [`internal/website/content/en/docs/roadmap.md`](internal/website/content/en/docs/roadmap.md) |
-| 16 | → | [`internal/website/content/en/docs/v7.md`](internal/website/content/en/docs/v7.md) |
-| 17 | → | [`internal/website/README.md`](internal/website/README.md) |
-| 18 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 5 | ✓ | [`internal/website/content/en/docs/guides/agent-run-records.md`](internal/website/content/en/docs/guides/agent-run-records.md) |
+| 6 | ✓ | [`internal/website/CONTRIBUTING.md`](internal/website/CONTRIBUTING.md) |
+| 7 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
+| 8 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 9 | → | [`CODEX.md`](CODEX.md) |
+| 10 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 11 | → | [`internal/docs/CONTINUOUS_IMPROVEMENT.md`](internal/docs/CONTINUOUS_IMPROVEMENT.md) |
+| 12 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
+| 13 | → | [`internal/website/content/en/docs/guides/durability.md`](internal/website/content/en/docs/guides/durability.md) |
+| 14 | → | [`internal/website/content/en/docs/project/adoption.md`](internal/website/content/en/docs/project/adoption.md) |
+| 15 | → | [`internal/website/content/en/docs/project/version-support.md`](internal/website/content/en/docs/project/version-support.md) |
+| 16 | → | [`internal/website/content/en/docs/roadmap.md`](internal/website/content/en/docs/roadmap.md) |
+| 17 | → | [`internal/website/content/en/docs/v7.md`](internal/website/content/en/docs/v7.md) |
+| 18 | → | [`internal/website/README.md`](internal/website/README.md) |
+| 19 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

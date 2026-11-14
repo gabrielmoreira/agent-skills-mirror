@@ -5,11 +5,22 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createCanvas} from '@napi-rs/canvas';
-import {ROOT, FFMPEG, run, save, loadProject, hashFile} from '../scripts/autopilot-core.mjs';
+import {ROOT, FFMPEG, FFPROBE, run, save, loadProject, hashFile} from '../scripts/autopilot-core.mjs';
 import {BRIAN} from '../scripts/b4-runtime.mjs';
 import {B4_HOOK, makeB4Opening} from '../scripts/b4-opening.mjs';
 import {painter} from '../scripts/autopilot-render.mjs';
 import {checkB4OpeningPaint, checkB4OpeningFile} from '../scripts/b4-opening-visual-check.mjs';
+
+const isB4HookFont = (input, api = path) => input.sha256 === B4_HOOK.font_sha256 && api.basename(input.path) === 'Nunito.ttf';
+
+test('B4 font input assertion preserves SHA and filename checks on Windows and POSIX', () => {
+  for (const [api, dir] of [[path.win32, 'C:\\skill'], [path.posix, '/skill']]) {
+    const input = {path: api.join(dir, 'assets', 'fonts', 'Nunito.ttf'), sha256: B4_HOOK.font_sha256};
+    assert.ok(isB4HookFont(input, api));
+    assert.equal(isB4HookFont({...input, sha256: 'wrong-sha'}, api), false);
+    assert.equal(isB4HookFont({...input, path: api.join(dir, 'assets', 'fonts', 'other-Nunito.ttf')}, api), false);
+  }
+});
 
 const command = args => spawnSync(process.execPath, [path.join(ROOT, 'scripts/autopilot.mjs'), ...args], {encoding: 'utf8', timeout: 120000});
 test('B4 ships baked heavy glyphs, not a variable font silently rendered at its default weight', () => {
@@ -46,6 +57,14 @@ function fixture(t) {
   const project = {version: 1, style: 'B4', width: 640, height: 360, fps: 15,
     voice: {path: 'tone.wav', ...BRIAN}, captions: [{start: 0, end: 3, text: 'Synthetic timing fixture.'}],
     opening: hook.opening, shots: [hook.shot], ambience: [{path: 'tone.wav', start: 0, end: 3, gain: .02}], sfx: [], dialogue: [], audio_cuts: []};
+  const after = hook.shot.layers.find(layer => layer.id === hook.opening.picture.after), change = after.from, reveal = B4_HOOK.reveal_seconds;
+  project.picture_motion = {author_id: 'synthetic-opening-fixture-author', shots: [{shot: 0, kind: 'state_reveal',
+    intent: 'Synthetic door state visibly changes; no story-quality acceptance is asserted', before: 'Door closed', after: 'Door opening visible',
+    layer_ids: [hook.opening.picture.before, hook.opening.picture.after], region: hook.opening.picture.region,
+    times: {before: Math.floor((change - .1) * project.fps) / project.fps,
+      mid: Math.round((change + reveal / 2) * project.fps) / project.fps,
+      after: Math.ceil((change + reveal + .05) * project.fps) / project.fps,
+      hold: Math.floor(Math.min(hook.shot.end - .08, change + reveal + .4) * project.fps) / project.fps}}]};
   const file = path.join(dir, 'project.json'), write = () => save(file, project); write();
   const check = async () => { const p = loadProject(file); return checkB4OpeningPaint(p, {draw: await painter(p), picture: await painter(p, {pictureOnly: true})}); };
   return {dir, file, project, write, art, check, layer: id => project.shots[0].layers.find(l => l.id === id)};
@@ -79,7 +98,7 @@ test('B4 locks rounded typography, colors, hierarchy and the whole-block settle'
     assert.throws(() => loadProject(f.file), /fixed|bundled rounded|covered/);
   }
   Object.assign(f.project, structuredClone(original)); f.write();
-  assert.ok(loadProject(f.file).inputs.some(i => i.sha256 === B4_HOOK.font_sha256 && i.path.endsWith('/Nunito.ttf')));
+  assert.ok(loadProject(f.file).inputs.some(i => isB4HookFont(i)));
 });
 
 test('B4 rejects static renamed assets, camera drift, flash-only and offscreen states', t => {
@@ -161,24 +180,91 @@ test('B4 encoded checks reject missing picture motion and wrong title timing, ev
   }
 });
 
-test('B4 checks actual title visibility/overflow and preserves native portrait proportions', async t => {
+test('B4 checks actual landscape title visibility and overflow', async t => {
   const f = fixture(t), original = structuredClone(f.project);
   f.project.shots[0].layers.push({type: 'image', path: 'before.png', x: 0, y: 0, w: 650, h: 720}); f.write();
   await assert.rejects(f.check, /title\/emphasis/);
   Object.assign(f.project, structuredClone(original)); f.layer('hook-setup').text = 'THIS APPROVED GROUP IS MUCH TOO LONG TO FIT IN THE LEFT BLOCK'; f.write();
   await assert.rejects(f.check, /overlap or overflow/);
-  Object.assign(f.project, structuredClone(original));
-  const hook = makeB4Opening({setup: 'WOULD YOU', payoff: 'OPEN IT?', before: 'before.png', after: 'after.png', meaning: 'Synthetic portrait test', width: 360, height: 640, region: {x: 800, y: 900, w: 350, h: 500}});
-  f.project.width = 360; f.project.height = 640; f.project.opening = hook.opening; f.project.shots = [hook.shot]; f.write();
-  assert.equal((await f.check()).status, 'paint_diagnostic_pass');
 });
 
 test('B4 explicit visual exception is reported, not falsely certified as a motion pass', async t => {
-  const f = fixture(t); f.project.opening = {user_override: 'Synthetic explicit user choice: static memorial opening'}; f.write();
+  const f = fixture(t); f.project.opening.user_override = 'Synthetic explicit user choice: static memorial opening'; f.write();
   const report = await f.check();
   assert.equal(report.status, 'user_exception'); assert.match(report.reason, /static memorial/);
   // A visual exception never grants an audio exception.
-  f.project.voice.lead = .3; f.project.shots[0].end = 3.3; f.project.shots[0].kind = 'exceptional_hold';
-  f.project.shots[0].reason = 'Synthetic fixture'; f.project.shots[0].user_approval = 'Synthetic fixture'; f.write();
+  f.project.voice.lead = .3;
+  // Keep every shot within the hard cap so this fixture isolates the audio gate.
+  f.project.shots.push({start: 3, end: 3.3, layers: [{type: 'image', path: 'before.png', x: 0, y: 0, w: 640, h: 360}]}); f.write();
   assert.throws(() => loadProject(f.file), /silent title pad/);
+});
+
+test('B4 selected fonts cannot silently fall back for uncovered language glyphs', async () => {
+  const {requireB4Glyphs} = await import('../scripts/b4-font-coverage.mjs');
+  assert.doesNotThrow(() => requireB4Glyphs(path.join(ROOT, 'assets/fonts/Anton.ttf'), 'YOUR MOVE. RULE 01', 'poster'));
+  assert.throws(() => requireB4Glyphs(path.join(ROOT, 'assets/fonts/Anton.ttf'), '不要出警', 'poster'), /lacks glyphs.*explicit story-matched font/);
+});
+
+test('B4 localized captions animate as whole semantic cues and can be isolated from the scene', async t => {
+  const f = fixture(t), p = loadProject(f.file), draw = await painter(p);
+  const raw = at => Buffer.from(draw(at, {focusIds:['caption-0']}).getContext('2d').getImageData(0, 0, p.width, p.height).data);
+  assert.notDeepEqual(raw(0), raw(1 / p.fps));
+  assert.notDeepEqual(raw(1 / p.fps), raw(.2));
+  assert.deepEqual(raw(.2), raw(1), 'readable hold should settle without constant jitter');
+  const hidden = Buffer.from(draw(1, {focusIds:['__b4_typography_empty__']}).getContext('2d').getImageData(0, 0, p.width, p.height).data);
+  assert.notDeepEqual(raw(1), hidden, 'isolation retains the actual subtitle');
+});
+
+test('B4 preview evidence remains pending and unknown independent text or picture review cannot grant acceptance', async t => {
+  const f = fixture(t); f.project.typography = {author_id:'fixture-author'}; f.write();
+  const r = command(['preview', f.file, '--seconds','3']); assert.equal(r.status, 0, r.stderr);
+  const report = JSON.parse(fs.readFileSync(path.join(f.dir, 'output/preview-report.json')));
+  assert.equal(report.typography.status, 'pending_independent_review');
+  assert.equal(report.picture_motion.status, 'pending_independent_review');
+  assert.equal(report.picture_motion.diagnostic_status, 'technical_only');
+  assert.equal(report.picture_motion.delivery_ready, false);
+  assert.equal(report.visual_acceptance, 'pending_independent_review');
+  assert.equal(report.delivery_ready, false);
+  // Reusing valid encoded pixels must not inherit forged acceptance in its report.
+  const reportPath = path.join(f.dir, 'output/preview-report.json');
+  save(reportPath, {...report, delivery_ready:true, visual_acceptance:'accepted', typography:{...report.typography,status:'accepted'}, picture_motion:{...report.picture_motion,status:'accepted',delivery_ready:true}});
+  const reused = command(['preview', f.file, '--seconds','3']); assert.equal(reused.status,0,reused.stderr);
+  const reusedReport = JSON.parse(reused.stdout);
+  assert.equal(reusedReport.reused,true);
+  assert.equal(reusedReport.output_sha256,report.output_sha256);
+  assert.equal(reusedReport.delivery_ready,false);
+  assert.equal(reusedReport.visual_acceptance,'pending_independent_review');
+  assert.equal(reusedReport.typography.status,'pending_independent_review');
+  assert.equal(reusedReport.picture_motion.status,'pending_independent_review');
+  assert.equal(reusedReport.picture_motion.delivery_ready,false);
+  assert.deepEqual(JSON.parse(fs.readFileSync(reportPath)),reusedReport,'persisted evidence must not retain forged acceptance either');
+  const absent = command(['approve',f.file,'--note','Synthetic approval']);
+  assert.notEqual(absent.status,0); assert.match(absent.stderr,/independent typography review/);
+  const unknown = command(['approve',f.file,'--note','Synthetic approval','--text-review',report.typography.template_file]);
+  assert.notEqual(unknown.status,0); assert.match(unknown.stderr,/independent reviewer|pending|failed/);
+  const pictureUnknown = JSON.parse(fs.readFileSync(report.picture_motion.template_file, 'utf8'));
+  assert.equal(pictureUnknown.full_playback.status, 'unknown');
+  assert.ok(pictureUnknown.shots.every(shot => Object.values(shot.checks).every(check => check.status === 'unknown')));
+  // A distinct synthetic reviewer identity cannot turn an unperformed review into acceptance.
+  pictureUnknown.reviewer = {id: 'synthetic-independent-negative-fixture', kind: 'agent',
+    method: 'Negative validation fixture only; actual review deliberately remains unknown', independent: true};
+  const pictureReview = path.join(f.dir, 'unknown-picture-review.json'); save(pictureReview, pictureUnknown);
+  const p = loadProject(f.file), {verifyB4PictureReview} = await import('../scripts/b4-picture-review.mjs');
+  const painterDraw = await painter(p), pictureDraw = await painter(p, {pictureOnly: true});
+  await assert.rejects(() => verifyB4PictureReview(p, {file: report.output, draw: painterDraw,
+    picture: pictureDraw, evidenceDir: path.dirname(report.picture_motion.ledger_file), reviewFile: fs.realpathSync(pictureReview),
+    projectFingerprint: p.fingerprint, ffmpeg: FFMPEG, ffprobe: FFPROBE}), /complete picture playback is pending\/failed/);
+  assert.equal(fs.existsSync(path.join(f.dir,'output/approval.json')),false);
+});
+
+test('B4 story-specific display treatments retain text proportions and render a distinct local finish', async t => {
+  const f=fixture(t), {planB4Typography}=await import('../scripts/b4-typography-review.mjs');
+  const hook=planB4Typography(loadProject(f.file)).moments.find(m=>m.id==='opening-hook');
+  const warning={id:'warning',type:'text',text:'DO NOT DISPATCH',b4Type:'cinematic',x:700,y:410,w:500,size:50,keys:[{t:0,y:422},{t:.3,y:410}]};
+  f.project.shots[0].layers.push(warning);
+  f.project.typography={author_id:'fixture-author',moments:[hook,{id:'warning',shot:0,layer_ids:['warning'],region:{x:680,y:390,w:580,h:130},times:{entry:0,mid:1/15,settled:.3,hold:2.8},intent:'Warning board in the story world',treatment:'Narrow heavy poster with layered cream ink and dark offset shadow'}]};f.write();
+  const p=loadProject(f.file), draw=await painter(p), cinematic=draw(1,{focusIds:['warning']}).toBuffer('image/png');
+  const hand=structuredClone(p);hand.shots[0].layers.at(-1).b4Type='handwritten';
+  assert.notDeepEqual(cinematic,(await painter(hand))(1,{focusIds:['warning']}).toBuffer('image/png'));
+  warning.scaleX=1.2;warning.scaleY=1;f.write();assert.throws(()=>loadProject(f.file),/letter proportions/);
 });

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/github-mcp-server` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `github/github-mcp-server` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/github-mcp-server` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`pkg/skills/catalog/skills/account-and-team-context/SKILL.md`](pkg/skills/catalog/skills/account-and-team-context/SKILL.md) |
+| 3 | ✓ | [`pkg/skills/catalog/skills/codebase-exploration/SKILL.md`](pkg/skills/catalog/skills/codebase-exploration/SKILL.md) |
+| 4 | ✓ | [`pkg/skills/catalog/skills/copilot-task-delegation/SKILL.md`](pkg/skills/catalog/skills/copilot-task-delegation/SKILL.md) |
+| 5 | ✓ | [`pkg/skills/catalog/skills/discussion-participation/SKILL.md`](pkg/skills/catalog/skills/discussion-participation/SKILL.md) |
+| 6 | ✓ | [`pkg/skills/catalog/skills/issue-authoring/SKILL.md`](pkg/skills/catalog/skills/issue-authoring/SKILL.md) |
+| 7 | ✓ | [`pkg/skills/catalog/skills/issue-backlog-triage/SKILL.md`](pkg/skills/catalog/skills/issue-backlog-triage/SKILL.md) |
+| 8 | ✓ | [`pkg/skills/catalog/skills/label-scheme-management/SKILL.md`](pkg/skills/catalog/skills/label-scheme-management/SKILL.md) |
+| 9 | ✓ | [`pkg/skills/catalog/skills/notification-triage/SKILL.md`](pkg/skills/catalog/skills/notification-triage/SKILL.md) |
+| 10 | ✓ | [`pkg/skills/catalog/skills/project-planning/SKILL.md`](pkg/skills/catalog/skills/project-planning/SKILL.md) |
+| 11 | ✓ | [`pkg/skills/catalog/skills/pull-request-authoring/SKILL.md`](pkg/skills/catalog/skills/pull-request-authoring/SKILL.md) |
+| 12 | ✓ | [`pkg/skills/catalog/skills/pull-request-code-review/SKILL.md`](pkg/skills/catalog/skills/pull-request-code-review/SKILL.md) |
+| 13 | ✓ | [`pkg/skills/catalog/skills/pull-request-review-feedback/SKILL.md`](pkg/skills/catalog/skills/pull-request-review-feedback/SKILL.md) |
+| 14 | ✓ | [`pkg/skills/catalog/skills/release-preparation/SKILL.md`](pkg/skills/catalog/skills/release-preparation/SKILL.md) |
+| 15 | ✓ | [`pkg/skills/catalog/skills/repository-content-changes/SKILL.md`](pkg/skills/catalog/skills/repository-content-changes/SKILL.md) |
+| 16 | ✓ | [`pkg/skills/catalog/skills/repository-discovery/SKILL.md`](pkg/skills/catalog/skills/repository-discovery/SKILL.md) |
+| 17 | ✓ | [`pkg/skills/catalog/skills/repository-health-review/SKILL.md`](pkg/skills/catalog/skills/repository-health-review/SKILL.md) |
+| 18 | ✓ | [`pkg/skills/catalog/skills/security-alert-triage/SKILL.md`](pkg/skills/catalog/skills/security-alert-triage/SKILL.md) |
+| 19 | ✓ | [`pkg/skills/catalog/skills/workflow-failure-triage/SKILL.md`](pkg/skills/catalog/skills/workflow-failure-triage/SKILL.md) |
 
 ---
 

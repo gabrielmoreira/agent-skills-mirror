@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Proves the hangup race of Neovim's pty jobs that the termopen wrapper in tests/minimal_init.lua guards against. Neovim
-# forks a pty job's child with its own signal handlers. The child runs setsid() first and resets the handlers in the
-# calls after it, so for a moment it is a copy of Neovim. A hangup in that gap runs libuv's handler in the child,
-# which writes into the signal pipe that it shares with Neovim, so Neovim reads a SIGHUP of its own and exits. A shim
-# loaded with LD_PRELOAD holds the child in that gap, in the signal(SIGCHLD, SIG_DFL) call that follows setsid(), so
-# the case is not a matter of luck.
+# Proves the hangup race of Neovim's pty jobs that the termopen wrapper in tests/helpers/termopen_wait.lua guards
+# against (tests/minimal_init.lua installs it). Neovim forks a pty job's child with its own signal handlers. The child
+# runs setsid() first and resets the handlers in the calls after it, so for a moment it is a copy of Neovim. A hangup in
+# that gap runs libuv's handler in the child, which writes into the signal pipe that it shares with Neovim, so Neovim
+# reads a SIGHUP of its own and exits. A shim loaded with LD_PRELOAD holds the child in that gap, in the
+# signal(SIGCHLD, SIG_DFL) call that follows setsid(), so the case is not a matter of luck.
 # Usage: proof-pty-child-hangup.sh [tree]     tree: a checkout with tests/minimal_init.lua (default: this checkout)
 # VCN_NVIM=<path> runs that Neovim (0.8 or newer). It must be the Neovim binary itself, not a shim of a version manager.
 # Cases, each one headless Neovim that starts `sleep` in a terminal job and stops it 50 ms later:
@@ -36,7 +36,14 @@ command -v "$nvim" >/dev/null || {
   exit 2
 }
 
+# The work folder holds the shim and the probe. LD_PRELOAD splits the shim path at a space or a colon, and `-c "luafile
+# <path>"` ends the name at a space and expands % and #. CI also runs under TMPDIR="odd tmp 50%", so a folder with any
+# other character than these goes to /tmp.
 work=$(mktemp -d) || exit 2
+if [[ ! $work =~ ^[A-Za-z0-9/._+-]+$ ]]; then
+  rmdir -- "$work"
+  work=$(mktemp -d /tmp/claudecode.XXXXXX) || exit 2
+fi
 [[ -n $work && -d $work ]] || exit 2
 
 # reap_job: kills the job's child that the last case saved, when the process with that PID still has the saved start
@@ -55,25 +62,7 @@ reap_job() {
 }
 trap 'reap_job; rm -rf -- "$work"' EXIT
 
-cat >"$work/shim.c" <<'C'
-#define _GNU_SOURCE
-#include <dlfcn.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-static pid_t main_pid;
-__attribute__((constructor)) static void remember_main(void) { main_pid = getpid(); }
-
-/* init_child() calls setsid() first, then signal(SIGCHLD, SIG_DFL) and the other resets. This waits in the first reset. */
-sighandler_t signal(int sig, sighandler_t handler) {
-  static sighandler_t (*real)(int, sighandler_t);
-  if (!real) real = (sighandler_t (*)(int, sighandler_t))dlsym(RTLD_NEXT, "signal");
-  if (getpid() != main_pid && sig == SIGCHLD && handler == SIG_DFL) usleep(400000);
-  return real(sig, handler);
-}
-C
-"$cc" -shared -fPIC -o "$work/shim.so" "$work/shim.c" -ldl || {
+"$cc" -shared -fPIC -o "$work/shim.so" "$here/../../../../tests/helpers/hold_pty_child.c" -ldl || {
   echo "SKIP: the shim did not compile"
   exit 2
 }

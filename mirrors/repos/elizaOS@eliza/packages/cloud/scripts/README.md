@@ -5,43 +5,22 @@ workspace imports locally so they do not invalidate unrelated build caches.
 Invoke operations through their documented root commands; run the script test
 lane with `bun run test:scripts` from the repository root.
 
-The protected Pages configuration preflight reads the environment variable
-`ELIZA_NATIVE_AUTH_CALLBACKS_JSON` (with a same-name secret fallback). Its value
-is a JSON array of `{ "redirectUri", "androidPackage", "appName" }` objects.
-Each consumer can also supply `browserSignIn` with `startPath`, `returnPath`,
-`storageKey`, `apiOrigin` and `tenant`. These public values belong to the consumer's
-deployment configuration. There is no built-in consumer package, route or routine
-selection. The start path is on the callback's HTTPS origin; the return path is on
-the exact initiating loopback origin. Paths and storage keys must be distinct
-between consumers on one origin. The API origin must match the selected Cloud
-environment. Configure the complete registration before deploying the new Pages
-artifact; an entry without `browserSignIn` provides only the native fallback.
-The callback script binds the pending state to that exact registered callback,
-expires it after ten minutes and consumes it once. It never sends a code through
-the Android intent fallback.
-Use exact HTTPS callbacks on that environment's canonical app or marketing
-origin. The existing native callback contract rejects unknown fields, duplicate
-URLs and protocol/asset routes. `[]` explicitly removes all native fallbacks;
-an absent value preserves the selected live Pages callback binding. The
-preflight passes only the validated public fields to the deployment job. A
-configured value that GitHub masks or fails to transfer stops deployment;
-use the environment variable for this public configuration.
-`build-pages` bundles `pages-native-auth-callbacks.ts` into the immutable Pages
-artifact so the deployment job needs no installed workspace dependencies.
-The helper copies the canonical Pages configuration into a
-private temporary directory, keeps its other bindings and uses the existing
-built Worker. Pinned Wrangler reads that directory without `--config` or
-`--env`. The release verifies each public fallback body and privacy header after
-deployment, then removes the temporary configuration. For a callback that ends
-in `/auth/callback` it also probes the derived checkout return
-(`/billing/return`) and requires the exact script-free page that forwards only
-a well-formed session id and the result. This does not register an
-OAuth client or change Android App Link verification.
+Staging Stripe catalog updates require the test secret key and all four approved
+Plus/Pro product and monthly price IDs together. An entirely blank source
+preserves the deployed catalog; a partial source refuses the release. The
+read-only catalog preflight checks the complete test catalog before atomic
+publication. Optional webhook and publishable keys are also staging-only;
+production Stripe bindings are not changed by this path.
 
-Gateway deployment, verification, homepage readiness, and DNS operations belong
-here. Invoke them with `bun run --cwd packages/cloud/scripts sms-gateway:verify:cloud-prod`
-or the corresponding `sms-gateway:*` command in this package. Device installation
-and pairing remain in the app package.
+Native App Auth clients, exact callbacks, Android packages and signing
+fingerprints are registered in the database. Pages resolves native sign-in and
+billing returns through the same Cloud registration. A reviewed database change
+updates a client without a Worker or Pages release. Unknown or disabled clients
+fail closed. The canonical Pages configuration retains the environment's API
+service binding; it has no per-client callback variable.
+
+Homepage readiness and DNS operations belong here. Invoke them with
+`bun run --cwd packages/cloud/scripts homepage:check` or `homepage:dns`.
 
 The protected Environment variable `ELIZA_LOGIN_API_URL` selects a login hosting
 cutover for the canonical Cloud CF release. Set it only after state transfer and
@@ -261,7 +240,6 @@ Remaining gates: populated restore coverage beyond the synthetic financial
 fixtures, uncertain-outcome read-only reconciliation, protected backup/restore
 rehearsal, maintenance fencing and reviewed business impact. Production readiness
 must remain failed until recovery and normal release verification pass.
-
 
 The optional `pitr_provisioning_plan=true` input requires a fixed restore target.
 It privately reads the existing environment config without decrypted variables,

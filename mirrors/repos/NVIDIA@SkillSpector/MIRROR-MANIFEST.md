@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/SkillSpector` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `NVIDIA/SkillSpector` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/SkillSpector` — 26 default patterns, 0 followed patterns, 33
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,37 +61,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/skill-inspector/SKILL.md`](skills/skill-inspector/SKILL.md) |
 | 2 | ✓ | [`tests/fixtures/as3_self_reference/SKILL.md`](tests/fixtures/as3_self_reference/SKILL.md) |
-| 3 | ✓ | [`tests/fixtures/malicious_skill/SKILL.md`](tests/fixtures/malicious_skill/SKILL.md) |
-| 4 | ✓ | [`tests/fixtures/mcp_clean_skill/SKILL.md`](tests/fixtures/mcp_clean_skill/SKILL.md) |
-| 5 | ✓ | [`tests/fixtures/mcp_mismatched_skill/SKILL.md`](tests/fixtures/mcp_mismatched_skill/SKILL.md) |
-| 6 | ✓ | [`tests/fixtures/mcp_overprivileged_skill/SKILL.md`](tests/fixtures/mcp_overprivileged_skill/SKILL.md) |
-| 7 | ✓ | [`tests/fixtures/mcp_poisoned_tool/SKILL.md`](tests/fixtures/mcp_poisoned_tool/SKILL.md) |
-| 8 | ✓ | [`tests/fixtures/mcp_underdeclared_skill/SKILL.md`](tests/fixtures/mcp_underdeclared_skill/SKILL.md) |
-| 9 | ✓ | [`tests/fixtures/pe3_bare_keyring/SKILL.md`](tests/fixtures/pe3_bare_keyring/SKILL.md) |
-| 10 | ✓ | [`tests/fixtures/safe_skill/SKILL.md`](tests/fixtures/safe_skill/SKILL.md) |
-| 11 | ✓ | [`tests/fixtures/sdi/sdi_clean/SKILL.md`](tests/fixtures/sdi/sdi_clean/SKILL.md) |
-| 12 | ✓ | [`tests/fixtures/sdi/sdi1_mismatch/SKILL.md`](tests/fixtures/sdi/sdi1_mismatch/SKILL.md) |
-| 13 | ✓ | [`tests/fixtures/sdi/sdi2_inappropriate/SKILL.md`](tests/fixtures/sdi/sdi2_inappropriate/SKILL.md) |
-| 14 | ✓ | [`tests/fixtures/sdi/sdi3_scope_creep/SKILL.md`](tests/fixtures/sdi/sdi3_scope_creep/SKILL.md) |
-| 15 | ✓ | [`tests/fixtures/sdi/sdi4_divergence/SKILL.md`](tests/fixtures/sdi/sdi4_divergence/SKILL.md) |
-| 16 | ✓ | [`tests/fixtures/sqp/sqp1_clean/SKILL.md`](tests/fixtures/sqp/sqp1_clean/SKILL.md) |
-| 17 | ✓ | [`tests/fixtures/sqp/sqp1_vague_triggers/SKILL.md`](tests/fixtures/sqp/sqp1_vague_triggers/SKILL.md) |
-| 18 | ✓ | [`tests/fixtures/sqp/sqp2_clean/SKILL.md`](tests/fixtures/sqp/sqp2_clean/SKILL.md) |
-| 19 | ✓ | [`tests/fixtures/sqp/sqp2_missing_warnings/SKILL.md`](tests/fixtures/sqp/sqp2_missing_warnings/SKILL.md) |
-| 20 | ✓ | [`tests/fixtures/sqp/sqp2_tool_catalog_clean/SKILL.md`](tests/fixtures/sqp/sqp2_tool_catalog_clean/SKILL.md) |
-| 21 | ✓ | [`tests/fixtures/sqp/sqp2_tool_descriptive_step/SKILL.md`](tests/fixtures/sqp/sqp2_tool_descriptive_step/SKILL.md) |
-| 22 | ✓ | [`tests/fixtures/sqp/sqp2_tool_instructed/SKILL.md`](tests/fixtures/sqp/sqp2_tool_instructed/SKILL.md) |
-| 23 | ✓ | [`tests/fixtures/sqp/sqp3_clean/SKILL.md`](tests/fixtures/sqp/sqp3_clean/SKILL.md) |
-| 24 | ✓ | [`tests/fixtures/sqp/sqp3_forced_language/SKILL.md`](tests/fixtures/sqp/sqp3_forced_language/SKILL.md) |
-| 25 | ✓ | [`tests/fixtures/sqp/sqp3_locale_forcing/SKILL.md`](tests/fixtures/sqp/sqp3_locale_forcing/SKILL.md) |
-| 26 | ✓ | [`tests/fixtures/sqp/sqp3_plain_english_clean/SKILL.md`](tests/fixtures/sqp/sqp3_plain_english_clean/SKILL.md) |
-| 27 | ✓ | [`tests/fixtures/sqp/sqp3_plain_english_override/SKILL.md`](tests/fixtures/sqp/sqp3_plain_english_override/SKILL.md) |
-| 28 | ✓ | [`tests/fixtures/ssd/ssd_clean/SKILL.md`](tests/fixtures/ssd/ssd_clean/SKILL.md) |
-| 29 | ✓ | [`tests/fixtures/ssd/ssd1_semantic_injection/SKILL.md`](tests/fixtures/ssd/ssd1_semantic_injection/SKILL.md) |
-| 30 | ✓ | [`tests/fixtures/ssd/ssd2_novel_phrasing/SKILL.md`](tests/fixtures/ssd/ssd2_novel_phrasing/SKILL.md) |
-| 31 | ✓ | [`tests/fixtures/ssd/ssd3_nl_exfiltration/SKILL.md`](tests/fixtures/ssd/ssd3_nl_exfiltration/SKILL.md) |
-| 32 | ✓ | [`tests/fixtures/ssd/ssd4_narrative_deception/SKILL.md`](tests/fixtures/ssd/ssd4_narrative_deception/SKILL.md) |
-| 33 | ✓ | [`tests/fixtures/tp4_markdown_fenced_code/SKILL.md`](tests/fixtures/tp4_markdown_fenced_code/SKILL.md) |
+| 3 | ✓ | [`tests/fixtures/e2_shell_env_harvest/SKILL.md`](tests/fixtures/e2_shell_env_harvest/SKILL.md) |
+| 4 | ✓ | [`tests/fixtures/malicious_skill/SKILL.md`](tests/fixtures/malicious_skill/SKILL.md) |
+| 5 | ✓ | [`tests/fixtures/mcp_clean_skill/SKILL.md`](tests/fixtures/mcp_clean_skill/SKILL.md) |
+| 6 | ✓ | [`tests/fixtures/mcp_mismatched_skill/SKILL.md`](tests/fixtures/mcp_mismatched_skill/SKILL.md) |
+| 7 | ✓ | [`tests/fixtures/mcp_overprivileged_skill/SKILL.md`](tests/fixtures/mcp_overprivileged_skill/SKILL.md) |
+| 8 | ✓ | [`tests/fixtures/mcp_poisoned_tool/SKILL.md`](tests/fixtures/mcp_poisoned_tool/SKILL.md) |
+| 9 | ✓ | [`tests/fixtures/mcp_underdeclared_skill/SKILL.md`](tests/fixtures/mcp_underdeclared_skill/SKILL.md) |
+| 10 | ✓ | [`tests/fixtures/pe3_bare_keyring/SKILL.md`](tests/fixtures/pe3_bare_keyring/SKILL.md) |
+| 11 | ✓ | [`tests/fixtures/safe_skill/SKILL.md`](tests/fixtures/safe_skill/SKILL.md) |
+| 12 | ✓ | [`tests/fixtures/sdi/sdi_clean/SKILL.md`](tests/fixtures/sdi/sdi_clean/SKILL.md) |
+| 13 | ✓ | [`tests/fixtures/sdi/sdi1_mismatch/SKILL.md`](tests/fixtures/sdi/sdi1_mismatch/SKILL.md) |
+| 14 | ✓ | [`tests/fixtures/sdi/sdi2_inappropriate/SKILL.md`](tests/fixtures/sdi/sdi2_inappropriate/SKILL.md) |
+| 15 | ✓ | [`tests/fixtures/sdi/sdi3_scope_creep/SKILL.md`](tests/fixtures/sdi/sdi3_scope_creep/SKILL.md) |
+| 16 | ✓ | [`tests/fixtures/sdi/sdi4_divergence/SKILL.md`](tests/fixtures/sdi/sdi4_divergence/SKILL.md) |
+| 17 | ✓ | [`tests/fixtures/sqp/sqp1_clean/SKILL.md`](tests/fixtures/sqp/sqp1_clean/SKILL.md) |
+| 18 | ✓ | [`tests/fixtures/sqp/sqp1_vague_triggers/SKILL.md`](tests/fixtures/sqp/sqp1_vague_triggers/SKILL.md) |
+| 19 | ✓ | [`tests/fixtures/sqp/sqp2_clean/SKILL.md`](tests/fixtures/sqp/sqp2_clean/SKILL.md) |
+| 20 | ✓ | [`tests/fixtures/sqp/sqp2_missing_warnings/SKILL.md`](tests/fixtures/sqp/sqp2_missing_warnings/SKILL.md) |
+| 21 | ✓ | [`tests/fixtures/sqp/sqp2_tool_catalog_clean/SKILL.md`](tests/fixtures/sqp/sqp2_tool_catalog_clean/SKILL.md) |
+| 22 | ✓ | [`tests/fixtures/sqp/sqp2_tool_descriptive_step/SKILL.md`](tests/fixtures/sqp/sqp2_tool_descriptive_step/SKILL.md) |
+| 23 | ✓ | [`tests/fixtures/sqp/sqp2_tool_instructed/SKILL.md`](tests/fixtures/sqp/sqp2_tool_instructed/SKILL.md) |
+| 24 | ✓ | [`tests/fixtures/sqp/sqp3_clean/SKILL.md`](tests/fixtures/sqp/sqp3_clean/SKILL.md) |
+| 25 | ✓ | [`tests/fixtures/sqp/sqp3_forced_language/SKILL.md`](tests/fixtures/sqp/sqp3_forced_language/SKILL.md) |
+| 26 | ✓ | [`tests/fixtures/sqp/sqp3_locale_forcing/SKILL.md`](tests/fixtures/sqp/sqp3_locale_forcing/SKILL.md) |
+| 27 | ✓ | [`tests/fixtures/sqp/sqp3_plain_english_clean/SKILL.md`](tests/fixtures/sqp/sqp3_plain_english_clean/SKILL.md) |
+| 28 | ✓ | [`tests/fixtures/sqp/sqp3_plain_english_override/SKILL.md`](tests/fixtures/sqp/sqp3_plain_english_override/SKILL.md) |
+| 29 | ✓ | [`tests/fixtures/ssd/ssd_clean/SKILL.md`](tests/fixtures/ssd/ssd_clean/SKILL.md) |
+| 30 | ✓ | [`tests/fixtures/ssd/ssd1_semantic_injection/SKILL.md`](tests/fixtures/ssd/ssd1_semantic_injection/SKILL.md) |
+| 31 | ✓ | [`tests/fixtures/ssd/ssd2_novel_phrasing/SKILL.md`](tests/fixtures/ssd/ssd2_novel_phrasing/SKILL.md) |
+| 32 | ✓ | [`tests/fixtures/ssd/ssd3_nl_exfiltration/SKILL.md`](tests/fixtures/ssd/ssd3_nl_exfiltration/SKILL.md) |
+| 33 | ✓ | [`tests/fixtures/ssd/ssd4_narrative_deception/SKILL.md`](tests/fixtures/ssd/ssd4_narrative_deception/SKILL.md) |
+| 34 | ✓ | [`tests/fixtures/tp4_markdown_fenced_code/SKILL.md`](tests/fixtures/tp4_markdown_fenced_code/SKILL.md) |
 
 ---
 

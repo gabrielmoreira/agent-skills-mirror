@@ -1,6 +1,6 @@
 # Mobile release workflow
 
-`.github/workflows/mobile-release.yml` is the only mobile workflow. It builds the app in `apps/mobile` on Blacksmith
+`.github/workflows/mobile-release.yml` builds and uploads every release. It builds the app in `apps/mobile` on Blacksmith
 runners (Linux for Android, Apple Silicon macOS for iOS): Expo Prebuild generates fresh native projects, Gradle and
 Xcode compile them, and Fastlane (`tooling/mobile/fastlane/Fastfile`) signs and uploads them. There is no EAS Build,
 EAS Submit or EAS Update, no `eas.json` and no `EXPO_TOKEN`. How a change reaches users:
@@ -10,10 +10,7 @@ EAS Submit or EAS Update, no `eas.json` and no `EXPO_TOKEN`. How a change reache
 
 - **Push to `main`** touching `apps/mobile/**`, `packages/**`, `patches/**`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`,
   `tooling/mobile/**` or the workflow file runs a release.
-- **Dispatch** with `task=release` (on `main` only) reruns a release. `task=forme-build` rebuilds the Forme native
-  libraries as a workflow artifact; `task=forme-publish` also publishes them as a prerelease. Releases never use that
-  output: they fetch the archive pinned in the reviewed `packages/forme-native/scripts/prebuilt.json`
-  (`packages/forme-native/README.md` has the pinning steps).
+- **Dispatch** (on `main` only) reruns a release.
 
 A release runs three jobs:
 
@@ -35,6 +32,17 @@ A release runs three jobs:
 Runs queue (`cancel-in-progress: false`, `queue: max`) so each one reads the numbers the previous one uploaded. Never
 rerun an old run after a newer one uploaded; dispatch a fresh release instead. Production submission and App Review
 are done by hand in the store consoles from a tested internal build.
+
+## Android APK mirror
+
+`.github/workflows/mobile-android-apk.yml` polls every 15 minutes (and on dispatch) on a free hosted runner. Lane
+`android production_release` reads the newest Play production release with status `completed` or `inProgress`; when
+GitHub has no release `android-<versionCode>` yet, lane `android universal_apk` downloads the universal APK Play
+generated from that bundle and the workflow publishes it, tagged at the commit Mobile release built it from (found
+through the build's 90-day artifact, else `main`). Play signs the APK with the app-signing key, so it updates and is
+updated by Play Store installs. It uses `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` from `mobile-store`, the same account that
+reads tracks; it can also list and download generated APKs (checked 2026-11-14). A failed download (Play still generating the APK) retries on the next
+poll.
 
 ## Secrets and environments
 

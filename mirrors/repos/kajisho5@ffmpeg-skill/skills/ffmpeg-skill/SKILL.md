@@ -19,7 +19,7 @@ MCP `tools/list` shows the core 12; the other 30 of the 42 tools stay callable b
 
 Shared flags (the rest, codec defaults and `--hw`: `references/flags.md`):
 `--dry-run` (plan, write nothing), `--json` (output, probe, commands), `--json-brief` (status + `summary`),
-`--overwrite` (step 7), `--timeout SECONDS` (default 1800, `0` = none; `kind: timeout`).
+`--overwrite` (step 7), `--timeout SECONDS` (default 1800, `verify` 600 per step, `0` = none; `kind: timeout`).
 
 Writing tools run nothing under `--dry-run`; the measuring tools (`probe`, `check`, `sync`, `multicam`,
 `scenes`, `cropdetect`, `report`, `silence`, `loudness`, `stabilize`, `overlay`, `metadata`, `cut`, `render`,
@@ -41,6 +41,7 @@ Every step in full: `references/workflow.md`.
    A delivery request is one `render.py --template`; three or more steps: a `render.py` project.
 5. **Check** with `check.py OUTPUT --platform X --expect-identity S:M` (the writer's `output_identity`):
    fix format rows; fix duration, aspect, fps or loudness only when the request implies it. Mention WARNs.
+   A `basis: guidance` WARN (length, size) is the table's upload limit: the uploader checks the current one.
 6. **Verify** from the writer's `--json` probe or `probe.py`: exit 0 and the requested numbers, or it failed.
 7. **Keep originals:** never overwrite a source; `--overwrite` only for this job's files or ones the user
    asked to replace.
@@ -114,7 +115,7 @@ Variants, caveats and extra flags per row: `references/requests.md`.
 | "cut on the beat" | `cut.py in.mp4 --segments ... --snap beats --snap-source beats.json` (`scenes.py --beats`; a WAV/MP3 music bed too) |
 | "speed up here, slow-mo there" | `speedramp.py in.mp4 --segment 0-3:1.0 --segment 3-4:0.25` |
 | "freeze the last frame" | `freeze.py clip.mp4 --hold 2` |
-| "smooth slow motion" | `fit.py in.mp4 --duration 2x --smooth interpolate` |
+| "smooth slow motion" | `fit.py in.mp4 --duration 20 --smooth interpolate` (a 10 s clip at half speed; `--duration` is the target length) |
 | "reverse this clip" | `reverse.py in.mp4` |
 | "loop it to fill 30 seconds", "seamless loop" | `loop.py clip.mp4 --duration 30` (`--crossfade 0.5` hides the seam) |
 | "make it vertical / 9:16 / square" | `fit.py in.mp4 --aspect 9:16 --fit pad` (or `crop`, `blur`) |
@@ -153,6 +154,8 @@ Variants, caveats and extra flags per row: `references/requests.md`.
 | "wider stereo" | `audio.py band.wav --stereo-widen 0.5` |
 | "swap in the narration track" | `audio.py in.mp4 --replace narration.wav` |
 | "give me the sound as WAV" | `audio.py in.mp4 -o in.wav` |
+| "speed the line up, same pitch", "exactly 96000 samples long" | `audio.py line.wav --tempo 1.2 --length-samples 96000 -o fit.wav` |
+| "just the third mic", "resample to 48 kHz" | `audio.py room.wav --channel 2 --sample-rate 48000 -o mic3.wav` |
 | "compress the voice", "limit the peaks", "gate the noise" | `audio.py in.mp4 --compress` (or `--limit`, `--gate`) |
 | "audiogram", "turn this podcast into a video" | `render.py --template audiogram ep.m4a --image cover.png` |
 | "make this a Reel / TikTok / Short / YouTube" | `render.py --template reels in.mp4 --cues cues.txt` |
@@ -167,7 +170,7 @@ Variants, caveats and extra flags per row: `references/requests.md`.
 | "is it broadcast legal?" | `check.py final.mp4 --levels ebu-r103` (clamp: `color.py in.mp4 --correct --legalize ebu-r103`) |
 | "send me a summary of what you did" | `report.py --before raw.mov --after final.mp4 -o report.html` |
 | "title card", "Ken Burns on a photo" | `insert.py title.png --duration 3` (`--zoom in --pan right`) |
-| "a blank colour clip" | `background.py -o bg.mp4 --duration 3 --color 0x101010` |
+| "a blank colour clip" | `background.py -o bg.mp4 --duration 3 --width 1920 --height 1080 --color 0x101010` |
 | "grade it but keep the alpha" | `color.py logo.mov --correct --exposure 0.3 --keep-alpha -o graded.mov` |
 | "lower third as a transparent layer" | `background.py --transparent -o canvas.mov --duration 5 --width 1920 --height 1080`, then `graphics.py canvas.mov --template lower-third --name "Ada" --keep-alpha -o lt.mov` |
 | "numbered frames into a video" | `sequence.py --dir frames --pattern "frame_%04d.png" --fps 24` |

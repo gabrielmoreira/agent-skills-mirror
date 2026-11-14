@@ -64,24 +64,26 @@ openmotion 围绕已有 Agent 用户的产品演示、参考复刻、动态图�
 
 ### 复制到 Codex 安装并体验
 
-适用于 macOS / Linux。先克隆本公开仓库的 `feature/motion` 分支，并用 Codex 打开该目录。需要支持插件的 Codex CLI、Git 和 Node.js 22.18+（含 npm）。将下面这段发到 Codex 对话框：
+适用于 macOS / Linux。先克隆本公开仓库的 `main` 分支，并用 Codex 打开该目录。需要支持插件的 Codex CLI、Git 和 Node.js 22.18+（含 npm）。将下面这段发到 Codex 对话框：
 
 ```text
 请在当前仓库目录运行 bash scripts/install-motion.command 安装 openmotion。
-安装成功后，按安装指南中的回复要求介绍能力并邀请体验；我确认后再创建独立可编辑工程。
+安装成功后直接打开编辑器的模板库，先不创建项目；我选好模板并点击“打开并编辑”或明确告诉你模板后，再创建独立可编辑工程。
 ```
 
 安装脚本使用当前检出版本，安装依赖、构建编辑器、注册本地插件并预检 MCP 连接。它不会安装系统软件或重启 Codex。请保留仓库目录供插件继续使用。导出 MP4 还需要浏览器和媒体工具，详见下文。
 
 ### 安装完成后的引导（Codex / Agent）
 
-All Agent installation entries share the [installation-success reply rules and examples](install.md#installation-success-reply). After successful setup, say only that installation is complete, then invite the user to try a real template: one by default, or three confirmed candidates for an explicit comparison request. Keep technical verification internal. Do not ask for refresh/reconnection, restart or a new chat unless an actual tool call or requested operation is blocked and user action is necessary.
+All Agent installation entries share the [installation-success reply rules](install.md#installation-success-reply). Briefly confirm installation and open the template library with `openmotion_open_preview({target:"templates"})`, or setup's `onboarding.preview.previewUrl` before native discovery. Report the actual presentation result; do not create a placeholder project. Keep technical verification internal. Missing or stale native tools can use `onboarding.directAccess` under its installed transport and policy checks, without requesting a restart or a new chat by default.
 
 ### 首次体验默认规则
 
-用户接受单模板邀请或明确选择候选后，进入 [openmotion-template-to-video](../skills/openmotion-template-to-video/SKILL.md)，沿用本次邀请的准确模板 ID、原生时长和默认内容。三候选只回复“是”时先澄清；拒绝或暂不体验则停止。不固定为某个模板，不重复追问可选素材，也不静默替换失败模板。
+浏览、筛选、查看模板详情和播放预览均不创建工程。用户选择可编辑模板的“打开并编辑”后，Studio 才创建独立副本；Agent 后续继续该工程，不再重复创建。仅有参考视频的条目仍需用户明确要求复刻。
 
-创建独立工程，保留原有工作；同一次体验已创建则续用。按 [首次体验交付规则](../skills/openmotion-production/references/templates.md#first-run-experience-defaults) 打开并检查真实可编辑工程，宿主不支持自动打开时给出实际链接和限制。用户要求视频文件时才导出。工具尚未加载时，在接受后按宿主支持的方式刷新或接续，保留已经选择的模板。
+用户明确要求 Agent 使用某个模板时，进入 [openmotion-template-to-video](../skills/openmotion-template-to-video/SKILL.md)，沿用准确模板 ID、原生时长和默认内容。未选模板只回复“体验”时先问具体模板；拒绝或暂不体验则停止。不固定推荐模板，不重复追问可选素材，也不静默替换失败模板。
+
+创建后保留原有工作；同一次体验已创建则续用。按[首次体验交付规则](../skills/openmotion-production/references/templates.md#first-run-experience-defaults)打开并检查真实可编辑工程，用户要求视频文件时才导出。
 
 ### 开始创作
 
@@ -212,7 +214,7 @@ npm run package:plugin
 
 打包产物为 `dist/openmotion-0.6.3-phase1.zip`，包含编辑器构建产物、设计系统与字体许可、原生模板、完整目录与已校验封面、技能、lockfile、AGENTS.md、CLAUDE.md 和产品文档，排除个人媒体、草稿、node_modules 和原生程序。`bash scripts/install-motion.command` 可注册并安装本地插件，并按 Codex 实际解析的启动配置验证 MCP 握手；它不会重启 Codex。代码改动和打包不会自动替换用户已安装的插件版本。
 
-主要实现：`hyperframes.ts` 管理锁定的上游 CLI 与 Studio 进程；`workspace.ts` 管理原生文件、迁移和快照；`server.ts` 提供薄壳与后台任务；`mcp.ts` 向 Agent 暴露工具；`template-library.ts` 创建官方模板的可编辑副本，`template-catalog.ts` 提供完整参考目录及热度；`editor-server.ts` 提供自有编辑器资源并流式转发原生 API；`studio/src/motion/` 是我们的界面入口，`web/design-system/` 是共享设计规范。`shared/legacy.ts` 仅用于读取旧版工程。
+主要实现：`hyperframes.ts` 管理锁定的上游 CLI 与 Studio 进程；`workspace.ts` 管理原生文件、迁移和快照；`server.ts` 提供薄壳与后台任务；`mcp.ts` 向 Agent 暴露工具；`template-library.ts` 创建官方模板的可编辑副本，`template-catalog.ts` 提供完整参考目录及热度；`editor-server.ts` 提供自有编辑器资源并流式转发原生 API；`studio/src/motion/` 是我们的界面入口，`packages/design-system/` 是共享设计规范。`shared/legacy.ts` 仅用于读取旧版工程。
 
 Hyperframes 使用 Apache-2.0 许可证，依赖从 npm 官方包安装；其源码和许可证见[上游仓库](https://github.com/heygen-com/hyperframes)。Motion 运行的上游进程默认关闭匿名遥测。
 

@@ -84,6 +84,50 @@ workflow and by refreshing the local checkout, for example with
 `git pull --ff-only` before a run. Both current portable gitcrawl tables and the
 older legacy cluster tables are supported on a best-effort basis.
 
+### Service-backed review context
+
+An explicit service selector replaces SQLite discovery for review context:
+
+```text
+CLAWSWEEPER_GITCRAWL_ENDPOINT=https://archive.example.org
+CLAWSWEEPER_GITCRAWL_ARCHIVE=public-clusters
+CLAWSWEEPER_GITCRAWL_READER_TOKEN=<reader token>
+```
+
+Use HTTPS, or loopback HTTP for an isolated preview. Do not also set
+`CLAWSWEEPER_GITCRAWL_DB`. A token alone does not select the service. Review
+preparation fails if the selected service is unavailable or unqualified; it
+never falls back to SQLite or treats that failure as an empty cluster.
+
+Each service probe reads the current immutable binding, then queries at that
+same completed snapshot. The reader admits only the public durable cluster
+profile, bounds responses and related issues, and retains native IDs as decimal
+text. Explicit links and local report relations still merge through the existing
+dedupe and 12-item context limit. No acquisition runs during a probe.
+
+Cluster completeness describes the retained historical view, not current GitHub
+freshness. Positive related evidence marks structural sensitivity; an empty
+service result remains unknown even when the view is structurally complete.
+Context includes capture and source/analysis clocks without inventing a freshness
+threshold. Credentials and service URLs are not included in context or errors.
+
+Service-selected review-start reservations check the live issue and comments or
+PR head without hydrating related context. Their queue authority, revision checks,
+and owned-lease cleanup still apply. `apply-artifacts` can publish completed
+review records and their work plans without reading cluster context. Its live
+GitHub state checks and reconciliation behavior are unchanged. `apply-decisions`
+prepares service relations for each item and its known issue counterparts at one
+immutable snapshot before processing that item. It then discards preliminary
+GitHub reads and refetches the primary item. Existing live source, comment,
+label, lease, and close guards still run before each mutation attempt.
+
+The prepared service view supplies historical relationship evidence, not live
+GitHub authority. A counterpart discovered later cannot borrow another item's
+context: its guard holds until a later run can prepare it. Direct synchronous
+context hydration still refuses service mode. The metadata-only oversized-PR
+policy does not hydrate relation context. No service selector preserves the
+existing SQLite behavior.
+
 ## Guardrails
 
 - Related discovery does not create new labels.

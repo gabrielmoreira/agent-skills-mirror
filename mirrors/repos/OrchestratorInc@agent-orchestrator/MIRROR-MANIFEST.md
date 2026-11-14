@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OrchestratorInc/agent-orchestrator` — 26 default patterns, 18 followed patterns, 56 file(s) materialized.
+Mirror of `OrchestratorInc/agent-orchestrator` — 26 default patterns, 18 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OrchestratorInc/agent-orchestrator` — 26 default patterns, 18 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 18 |
-| Files         | 56 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,51 +87,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 10 | ✓ | [`assets/brand/README.md`](assets/brand/README.md) |
 | 11 | ✓ | [`assets/social/README.md`](assets/social/README.md) |
-| 12 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
-| 13 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | ✓ | [`docs/documentation-coverage.md`](docs/documentation-coverage.md) |
-| 16 | ✓ | [`docs/performance/chat-responsiveness/README.md`](docs/performance/chat-responsiveness/README.md) |
-| 17 | ✓ | [`docs/posthog-cost-controls.md`](docs/posthog-cost-controls.md) |
-| 18 | ✓ | [`docs/README.md`](docs/README.md) |
-| 19 | ✓ | [`docs/screenshots/issue-5280/README.md`](docs/screenshots/issue-5280/README.md) |
-| 20 | ✓ | [`docs/screenshots/pr-4924/README.md`](docs/screenshots/pr-4924/README.md) |
-| 21 | ✓ | [`docs/screenshots/pr-4925/README.md`](docs/screenshots/pr-4925/README.md) |
-| 22 | ✓ | [`docs/screenshots/pr-4926/README.md`](docs/screenshots/pr-4926/README.md) |
-| 23 | ✓ | [`docs/screenshots/pr-4928/README.md`](docs/screenshots/pr-4928/README.md) |
-| 24 | ✓ | [`docs/screenshots/pr-4932/README.md`](docs/screenshots/pr-4932/README.md) |
-| 25 | ✓ | [`frontend/src/docs/src/app/llms.txt/route.ts`](frontend/src/docs/src/app/llms.txt/route.ts) |
-| 26 | ✓ | [`integrations/grok-bot/README.md`](integrations/grok-bot/README.md) |
-| 27 | ✓ | [`integrations/grok-bot/skills/ao-actions/SKILL.md`](integrations/grok-bot/skills/ao-actions/SKILL.md) |
-| 28 | ✓ | [`integrations/grok-bot/skills/ao-answer/SKILL.md`](integrations/grok-bot/skills/ao-answer/SKILL.md) |
-| 29 | ✓ | [`integrations/grok-bot/skills/ao-orchestrator/SKILL.md`](integrations/grok-bot/skills/ao-orchestrator/SKILL.md) |
-| 30 | ✓ | [`integrations/grok-bot/skills/ao-rules/SKILL.md`](integrations/grok-bot/skills/ao-rules/SKILL.md) |
-| 31 | ✓ | [`integrations/grok-bot/skills/ao-setup/SKILL.md`](integrations/grok-bot/skills/ao-setup/SKILL.md) |
-| 32 | ✓ | [`integrations/grok-bot/skills/ao-status/SKILL.md`](integrations/grok-bot/skills/ao-status/SKILL.md) |
-| 33 | ✓ | [`integrations/grok-bot/skills/ao-update/SKILL.md`](integrations/grok-bot/skills/ao-update/SKILL.md) |
-| 34 | ✓ | [`packages/cloud-client/README.md`](packages/cloud-client/README.md) |
-| 35 | ✓ | [`packages/mobile/README.md`](packages/mobile/README.md) |
-| 36 | ✓ | [`packages/mobile/scripts/README.md`](packages/mobile/scripts/README.md) |
-| 37 | ✓ | [`packages/product-ui/README.md`](packages/product-ui/README.md) |
-| 38 | ✓ | [`test/cli/README.md`](test/cli/README.md) |
-| 39 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 40 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 41 | → | [`DESIGN.md`](DESIGN.md) |
-| 42 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 43 | → | [`docs/backend-code-structure.md`](docs/backend-code-structure.md) |
-| 44 | → | [`docs/cli/README.md`](docs/cli/README.md) |
-| 45 | → | [`docs/development.md`](docs/development.md) |
-| 46 | → | [`docs/documentation-map.md`](docs/documentation-map.md) |
-| 47 | → | [`docs/STATUS.md`](docs/STATUS.md) |
-| 48 | → | [`docs/telemetry.md`](docs/telemetry.md) |
-| 49 | → | [`README.md`](README.md) |
-| 50 | → | [`translations/README.de.md`](translations/README.de.md) |
-| 51 | → | [`translations/README.es.md`](translations/README.es.md) |
-| 52 | → | [`translations/README.fr.md`](translations/README.fr.md) |
-| 53 | → | [`translations/README.ja.md`](translations/README.ja.md) |
-| 54 | → | [`translations/README.ko.md`](translations/README.ko.md) |
-| 55 | → | [`translations/README.pt-BR.md`](translations/README.pt-BR.md) |
-| 56 | → | [`translations/README.zh-CN.md`](translations/README.zh-CN.md) |
+| 12 | ✓ | [`backend/internal/skillassets/bug-triage/SKILL.md`](backend/internal/skillassets/bug-triage/SKILL.md) |
+| 13 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
+| 14 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`docs/documentation-coverage.md`](docs/documentation-coverage.md) |
+| 17 | ✓ | [`docs/performance/chat-responsiveness/README.md`](docs/performance/chat-responsiveness/README.md) |
+| 18 | ✓ | [`docs/posthog-cost-controls.md`](docs/posthog-cost-controls.md) |
+| 19 | ✓ | [`docs/README.md`](docs/README.md) |
+| 20 | ✓ | [`docs/screenshots/issue-5280/README.md`](docs/screenshots/issue-5280/README.md) |
+| 21 | ✓ | [`docs/screenshots/pr-4924/README.md`](docs/screenshots/pr-4924/README.md) |
+| 22 | ✓ | [`docs/screenshots/pr-4925/README.md`](docs/screenshots/pr-4925/README.md) |
+| 23 | ✓ | [`docs/screenshots/pr-4926/README.md`](docs/screenshots/pr-4926/README.md) |
+| 24 | ✓ | [`docs/screenshots/pr-4928/README.md`](docs/screenshots/pr-4928/README.md) |
+| 25 | ✓ | [`docs/screenshots/pr-4932/README.md`](docs/screenshots/pr-4932/README.md) |
+| 26 | ✓ | [`frontend/src/docs/src/app/llms.txt/route.ts`](frontend/src/docs/src/app/llms.txt/route.ts) |
+| 27 | ✓ | [`integrations/grok-bot/README.md`](integrations/grok-bot/README.md) |
+| 28 | ✓ | [`integrations/grok-bot/skills/ao-actions/SKILL.md`](integrations/grok-bot/skills/ao-actions/SKILL.md) |
+| 29 | ✓ | [`integrations/grok-bot/skills/ao-answer/SKILL.md`](integrations/grok-bot/skills/ao-answer/SKILL.md) |
+| 30 | ✓ | [`integrations/grok-bot/skills/ao-orchestrator/SKILL.md`](integrations/grok-bot/skills/ao-orchestrator/SKILL.md) |
+| 31 | ✓ | [`integrations/grok-bot/skills/ao-rules/SKILL.md`](integrations/grok-bot/skills/ao-rules/SKILL.md) |
+| 32 | ✓ | [`integrations/grok-bot/skills/ao-setup/SKILL.md`](integrations/grok-bot/skills/ao-setup/SKILL.md) |
+| 33 | ✓ | [`integrations/grok-bot/skills/ao-status/SKILL.md`](integrations/grok-bot/skills/ao-status/SKILL.md) |
+| 34 | ✓ | [`integrations/grok-bot/skills/ao-update/SKILL.md`](integrations/grok-bot/skills/ao-update/SKILL.md) |
+| 35 | ✓ | [`packages/cloud-client/README.md`](packages/cloud-client/README.md) |
+| 36 | ✓ | [`packages/mobile/README.md`](packages/mobile/README.md) |
+| 37 | ✓ | [`packages/mobile/scripts/README.md`](packages/mobile/scripts/README.md) |
+| 38 | ✓ | [`packages/product-ui/README.md`](packages/product-ui/README.md) |
+| 39 | ✓ | [`test/cli/README.md`](test/cli/README.md) |
+| 40 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 41 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 42 | → | [`DESIGN.md`](DESIGN.md) |
+| 43 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 44 | → | [`docs/backend-code-structure.md`](docs/backend-code-structure.md) |
+| 45 | → | [`docs/cli/README.md`](docs/cli/README.md) |
+| 46 | → | [`docs/development.md`](docs/development.md) |
+| 47 | → | [`docs/documentation-map.md`](docs/documentation-map.md) |
+| 48 | → | [`docs/STATUS.md`](docs/STATUS.md) |
+| 49 | → | [`docs/telemetry.md`](docs/telemetry.md) |
+| 50 | → | [`README.md`](README.md) |
+| 51 | → | [`translations/README.de.md`](translations/README.de.md) |
+| 52 | → | [`translations/README.es.md`](translations/README.es.md) |
+| 53 | → | [`translations/README.fr.md`](translations/README.fr.md) |
+| 54 | → | [`translations/README.ja.md`](translations/README.ja.md) |
+| 55 | → | [`translations/README.ko.md`](translations/README.ko.md) |
+| 56 | → | [`translations/README.pt-BR.md`](translations/README.pt-BR.md) |
+| 57 | → | [`translations/README.zh-CN.md`](translations/README.zh-CN.md) |
 
 ---
 

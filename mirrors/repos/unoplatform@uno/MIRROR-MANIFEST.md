@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `unoplatform/uno` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `unoplatform/uno` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `unoplatform/uno` — 26 default patterns, 0 followed patterns, 28 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,14 +79,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`.claude/skills/speckit-taskstoissues/SKILL.md`](.claude/skills/speckit-taskstoissues/SKILL.md) |
 | 19 | ✓ | [`.claude/skills/winui-port/SKILL.md`](.claude/skills/winui-port/SKILL.md) |
 | 20 | ✓ | [`.claude/skills/winui-runtime-tests/SKILL.md`](.claude/skills/winui-runtime-tests/SKILL.md) |
-| 21 | ✓ | [`.github/prompts/speckit.git.commit.prompt.md`](.github/prompts/speckit.git.commit.prompt.md) |
-| 22 | ✓ | [`.github/prompts/speckit.git.feature.prompt.md`](.github/prompts/speckit.git.feature.prompt.md) |
-| 23 | ✓ | [`.github/prompts/speckit.git.initialize.prompt.md`](.github/prompts/speckit.git.initialize.prompt.md) |
-| 24 | ✓ | [`.github/prompts/speckit.git.remote.prompt.md`](.github/prompts/speckit.git.remote.prompt.md) |
-| 25 | ✓ | [`.github/prompts/speckit.git.validate.prompt.md`](.github/prompts/speckit.git.validate.prompt.md) |
-| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`doc/articles/llms/llms.txt`](doc/articles/llms/llms.txt) |
+| 21 | ✓ | [`.claude/skills/winui-sync-onboard/SKILL.md`](.claude/skills/winui-sync-onboard/SKILL.md) |
+| 22 | ✓ | [`.github/prompts/speckit.git.commit.prompt.md`](.github/prompts/speckit.git.commit.prompt.md) |
+| 23 | ✓ | [`.github/prompts/speckit.git.feature.prompt.md`](.github/prompts/speckit.git.feature.prompt.md) |
+| 24 | ✓ | [`.github/prompts/speckit.git.initialize.prompt.md`](.github/prompts/speckit.git.initialize.prompt.md) |
+| 25 | ✓ | [`.github/prompts/speckit.git.remote.prompt.md`](.github/prompts/speckit.git.remote.prompt.md) |
+| 26 | ✓ | [`.github/prompts/speckit.git.validate.prompt.md`](.github/prompts/speckit.git.validate.prompt.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`doc/articles/llms/llms.txt`](doc/articles/llms/llms.txt) |
 
 ---
 

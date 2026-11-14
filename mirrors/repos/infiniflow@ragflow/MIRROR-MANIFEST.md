@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 5 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/rules/named.md`](.agents/rules/named.md) |
 | 2 | ✓ | [`.agents/skills/go-naming/SKILL.md`](.agents/skills/go-naming/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 3 | ✓ | [`.agents/skills/react-doctor/references/explain.md`](.agents/skills/react-doctor/references/explain.md) |
+| 4 | ✓ | [`.agents/skills/react-doctor/SKILL.md`](.agents/skills/react-doctor/SKILL.md) |
+| 5 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
 
 ---
 

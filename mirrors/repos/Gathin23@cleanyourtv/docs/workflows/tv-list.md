@@ -58,10 +58,11 @@
    story two screens below the card. `tests/test_press_counts.py` reads the pair out of the sentence and holds it
    to the alt text beside it (`README.de.md states (TV models, brands) (380, 101) in its story sentence and its
    card states (387, 103)`), so they move in the same commit. The sentence is not only on those five pages:
-   `README.pt-BR.md`, `README.he.md`, `README.uz.md` and `README.fr.md` carry the story paragraph without the
-   card, so `tools/gen_tables.py` writes nothing there and the same check holds their pair to `README.md`'s alt
-   text in the same words a card page's pair is held to - a regeneration that bumps the five pages above and
-   stops leaves those four red. A translation that copies the story paragraph joins them the day it lands.
+   `README.pt-BR.md`, `README.he.md`, `README.uz.md`, `README.fr.md` and `README.es.md` carry the story
+   paragraph without the card, so `tools/gen_tables.py` writes nothing there and the same check holds their
+   pair to `README.md`'s alt text in the same words a card page's pair is held to - a regeneration that bumps
+   the five pages above and stops leaves those five red. A translation that copies the story paragraph joins
+   them the day it lands.
    The brand grid itself is hand-kept on one page:
    `README.he.md` carries neither the card nor the `tv-brands` markers, so `tools/gen_tables.py` cannot write
    it and `tests/test_readme_he_brand_block.py` reads its grid, its two-list line, its single-list names and
@@ -120,4 +121,6 @@ why in the header; keeping it enabled is preferred. `pm hide` or `pm block` need
 Edits to someone else's list are judgement calls, so say in the PR which TV you tested on and for how long. If the
 row should say something new, change the folder's `tv.json`, not the tables.
 
-Then run the tests: `python3 -m unittest discover -s tests -v`.
+Then run the tests with the checkout's venv: `tools/venv/bin/python -m unittest discover -s tests -v`.
+[`README.md`'s by-hand block](../../README.md) builds it, and it is where `tools/requirements.txt` puts the
+`adb_shell` and Pillow the suite imports - under the system `python3` those checks skip and the run still says OK.

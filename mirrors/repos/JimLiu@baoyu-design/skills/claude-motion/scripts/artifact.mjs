@@ -55,7 +55,7 @@ var gitignoreLines = (kind) => [STATE_FILE, LOG_FILE, ".sharing.json", ...kind =
 function writeGitignore(root, kind) {
   const file = path.join(root, GITIGNORE_FILE);
   try {
-    fs.writeFileSync(file, ["# Written by baoyu-design when the editor first opened this folder: what only this computer's editor server needs.", ...gitignoreLines(kind), ""].join("\n"), { flag: "wx" });
+    fs.writeFileSync(file, ["# Written by open-artifacts when the editor first opened this folder: what only this computer's editor server needs.", ...gitignoreLines(kind), ""].join("\n"), { flag: "wx" });
   } catch {
   }
 }
@@ -701,7 +701,8 @@ var Hub = class {
       }
       if (this.echo) process.stderr.write(text);
     };
-    const site = await this.factory(root, { log: log3, network: this.network, ...agentHook ? { agentHook } : {} });
+    const open2 = (other2) => this.add(other2, agentHook ? { agentHook } : {}).then((state2) => new URL(state2.url).pathname);
+    const site = await this.factory(root, { log: log3, network: this.network, ...agentHook ? { agentHook } : {}, open: open2 });
     const other = this.sites.get(site.page);
     if (other) {
       site.close();
@@ -2895,16 +2896,21 @@ function agentWhere(main2, count, label) {
 }
 var AGENT_COLOR = "#d25f25";
 var MAX_PEERS = 64;
-var MAX_PATCH_BYTES = 16 << 10;
+var MAX_BODY_BYTES = 64 << 10;
 var MAX_FIELDS = 12;
 var MAX_PRESENCE_BYTES = 6 << 10;
 var BROADCAST_MS = 50;
+var EVENT_TOPIC = /^[a-z][a-z0-9_.-]{0,47}$/;
+var MAX_EVENT_BYTES = 4096;
+var EVENTS_PER_SECOND = 40;
+var EVENT_BURST = 80;
 var LEAVE_GRACE_MS = 4e3;
 var AGENT_LINGER_MS = 2e4;
 var AGENT_PEER = "agent-claude";
 var PresenceHub = class {
   peers = /* @__PURE__ */ new Map();
-  listeners = /* @__PURE__ */ new Set();
+  /** Every open stream, with the peer it belongs to ('' for one that hears the others but isn't on the list). */
+  listeners = /* @__PURE__ */ new Map();
   agent = null;
   timer = null;
   /** Adds a page's stream; `send` writes one SSE frame to it. Returns what to call when the stream closes. */
@@ -2915,7 +2921,7 @@ var PresenceHub = class {
       peer = "";
     }
     if (peer && !entry && this.peers.size < MAX_PEERS) {
-      entry = { viewer, presence: {}, updatedAt: Date.now(), streams: 0 };
+      entry = { viewer, presence: {}, updatedAt: Date.now(), streams: 0, budget: EVENT_BURST, toppedAt: Date.now() };
       this.peers.set(peer, entry);
     }
     if (entry) {
@@ -2923,7 +2929,7 @@ var PresenceHub = class {
       if (entry.leaving) clearTimeout(entry.leaving);
       entry.leaving = void 0;
     }
-    this.listeners.add(send);
+    this.listeners.set(send, entry ? peer : "");
     send(this.frame());
     this.schedule();
     let open2 = true;
@@ -2960,6 +2966,35 @@ var PresenceHub = class {
     this.schedule();
     return true;
   }
+  /**
+   * Sends a page's room events on to every other open page; false when the peer isn't this person's open page or an
+   * event is bad (then none is sent). Those over the page's budget are dropped, as the room contract drops them.
+   */
+  relay(peer, viewer, events) {
+    const entry = this.peers.get(peer);
+    if (!entry || entry.viewer.user.id !== viewer.user.id || !Array.isArray(events)) return false;
+    const frames = [];
+    for (const event of events) {
+      if (typeof event !== "object" || event === null || Array.isArray(event)) return false;
+      const { topic, data } = event;
+      if (typeof topic !== "string" || !EVENT_TOPIC.test(topic)) return false;
+      if (data !== void 0 && Buffer.byteLength(JSON.stringify(data)) > MAX_EVENT_BYTES) return false;
+      const message = { peer, by: entry.viewer.user.id, topic, ...data === void 0 ? {} : { data } };
+      frames.push(`event: room
+data: ${JSON.stringify(message)}
+
+`);
+    }
+    const now = Date.now();
+    entry.budget = Math.min(EVENT_BURST, entry.budget + (now - entry.toppedAt) / 1e3 * EVENTS_PER_SECOND);
+    entry.toppedAt = now;
+    for (const frame of frames) {
+      if (entry.budget < 1) break;
+      entry.budget -= 1;
+      for (const [send, owner] of this.listeners) if (owner !== peer) send(frame);
+    }
+    return true;
+  }
   /** The agent changed the artifact: it shows on the list (with `context`, where it worked) for a while. */
   agentActive(agent = {}) {
     if (this.agent) clearTimeout(this.agent.timer);
@@ -2988,7 +3023,7 @@ var PresenceHub = class {
     }
     return views;
   }
-  /** Answers POST `__presence` ({peer, patch}); GET gives the list. */
+  /** Answers POST `__presence` ({peer, patch?, events?}); GET gives the list. */
   async handle(request, response, viewer) {
     const method = request.method ?? "GET";
     if (method === "GET") return sendJson(response, 200, { peers: this.list() });
@@ -3002,13 +3037,20 @@ var PresenceHub = class {
     }
     let body;
     try {
-      body = JSON.parse((await readBody(request, MAX_PATCH_BYTES)).toString("utf8"));
+      body = JSON.parse((await readBody(request, MAX_BODY_BYTES)).toString("utf8"));
     } catch {
-      return sendJson(response, 400, { code: "invalid_argument", message: `Expected {peer, patch} under ${MAX_PATCH_BYTES} bytes.` });
+      return sendJson(response, 400, { code: "invalid_argument", message: `Expected {peer, patch?, events?} under ${MAX_BODY_BYTES} bytes.` });
     }
-    const { peer, patch } = typeof body === "object" && body !== null ? body : {};
-    if (typeof peer !== "string" || !PEER_ID.test(peer)) return sendJson(response, 400, { code: "invalid_argument", message: "Expected {peer, patch}." });
-    if (!this.update(peer, viewer, patch)) return sendJson(response, 409, { code: "not_joined", message: "That page is not open here (its event stream is closed)." });
+    const { peer, patch, events } = typeof body === "object" && body !== null ? body : {};
+    if (typeof peer !== "string" || !PEER_ID.test(peer) || patch === void 0 && events === void 0) {
+      return sendJson(response, 400, { code: "invalid_argument", message: "Expected {peer, patch?, events?}." });
+    }
+    const entry = this.peers.get(peer);
+    if (!entry || entry.viewer.user.id !== viewer.user.id) return sendJson(response, 409, { code: "not_joined", message: "That page is not open here (its event stream is closed)." });
+    if (events !== void 0 && !this.relay(peer, viewer, events)) {
+      return sendJson(response, 400, { code: "invalid_argument", message: `Events are {topic, data}: a topic matching ${EVENT_TOPIC.source}, data at most ${MAX_EVENT_BYTES} bytes of JSON.` });
+    }
+    if (patch !== void 0 && !this.update(peer, viewer, patch)) return sendJson(response, 409, { code: "not_joined", message: "That patch was not applied (not an object, or the presence would be too big)." });
     response.writeHead(204, { "Cache-Control": "no-store" }).end();
   }
   /** Ends the timers (the server is closing). */
@@ -3030,7 +3072,7 @@ data: ${JSON.stringify({ peers: this.list() })}
     this.timer = setTimeout(() => {
       this.timer = null;
       const frame = this.frame();
-      for (const send of this.listeners) send(frame);
+      for (const send of this.listeners.keys()) send(frame);
     }, BROADCAST_MS);
     this.timer.unref?.();
   }
@@ -3418,7 +3460,7 @@ var PRESENCE_CHECK_MS = 5e3;
 var SSE_KEEPALIVE_MS = 25e3;
 var WATCH_DEBOUNCE_MS = 100;
 var POLL_MS = 2e3;
-var MAX_BODY_BYTES = 256 * 1024;
+var MAX_BODY_BYTES2 = 256 * 1024;
 var TooLarge2 = class extends Error {
 };
 function sendJson2(response, status, body) {
@@ -3442,7 +3484,7 @@ function readJson(request) {
     let size = 0;
     request.on("data", (chunk) => {
       size += chunk.length;
-      if (size > MAX_BODY_BYTES) {
+      if (size > MAX_BODY_BYTES2) {
         reject(new TooLarge2());
         request.destroy();
         return;

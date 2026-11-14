@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Q00/ouroboros` — 26 default patterns, 2 followed patterns, 37 file(s) materialized.
+Mirror of `Q00/ouroboros` — 26 default patterns, 2 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Q00/ouroboros` — 26 default patterns, 2 followed patterns, 37 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 37 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,10 +93,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`skills/tutorial/SKILL.md`](skills/tutorial/SKILL.md) |
 | 32 | ✓ | [`skills/unstuck/SKILL.md`](skills/unstuck/SKILL.md) |
 | 33 | ✓ | [`skills/update/SKILL.md`](skills/update/SKILL.md) |
-| 34 | ✓ | [`skills/welcome/SKILL.md`](skills/welcome/SKILL.md) |
-| 35 | ✓ | [`tests/fixtures/router/skills/frontmatter-body/run/SKILL.md`](tests/fixtures/router/skills/frontmatter-body/run/SKILL.md) |
-| 36 | → | [`docs/contributing/ci-gates.md`](docs/contributing/ci-gates.md) |
-| 37 | → | [`docs/contributing/developing.md`](docs/contributing/developing.md) |
+| 34 | ✓ | [`skills/welcome/scripts/migrate_codex_models.py`](skills/welcome/scripts/migrate_codex_models.py) |
+| 35 | ✓ | [`skills/welcome/scripts/record_codex_model_migration.py`](skills/welcome/scripts/record_codex_model_migration.py) |
+| 36 | ✓ | [`skills/welcome/scripts/record_welcome_completed.py`](skills/welcome/scripts/record_welcome_completed.py) |
+| 37 | ✓ | [`skills/welcome/scripts/welcome_state.py`](skills/welcome/scripts/welcome_state.py) |
+| 38 | ✓ | [`skills/welcome/SKILL.md`](skills/welcome/SKILL.md) |
+| 39 | ✓ | [`tests/fixtures/router/skills/frontmatter-body/run/SKILL.md`](tests/fixtures/router/skills/frontmatter-body/run/SKILL.md) |
+| 40 | → | [`docs/contributing/ci-gates.md`](docs/contributing/ci-gates.md) |
+| 41 | → | [`docs/contributing/developing.md`](docs/contributing/developing.md) |
 
 ---
 

@@ -1,0 +1,1 @@
+cache/repos/github.com/browseros-ai@BrowserOS/packages/browseros-agent/apps/app/CLAUDE.md

@@ -26,6 +26,8 @@ pip install "rea-video[ocr,asr] @ git+https://github.com/JuneYaooo/rea-video"   
 
 装了之后 `decompose` 会自动在分离出的人声干声上识别（SenseVoice，中 / 英 / 日 / 韩 / 粤；首次使用下载约 160 MB 模型到 `$REA_VIDEO_MODELS`，默认 `~/.cache/rea-video/models`），
 一分钟的片子几秒钟。结果在 `breakdown.json` 的 `speech.lines`（每句有起止时间），报告「脚本」表和 `review_tasks.json` 每镜的 `said` 会用它。`--no-asr` 可跳过。
+台词是孟加拉语时加 `--asr-lang bn`（或 `rea-video prefs asr_lang bn` 设成默认）：SenseVoice 不认孟加拉语，会把它听成英 / 日 / 韩文的乱码；
+`bn` 换用孟加拉语的流式识别模型（另下约 90 MB），`speech.language` 是 `bn`，识别出的句子不带标点。
 同一个可选包还会分出说话人（另下约 35 MB 模型）：多人对话时台词带上是谁说的，并给每人输出一条音轨，见 `audio.md`。
 
 这是机器听写，会有同音错字、专有名词听错：画面上有字幕时以字幕为准，VLM 给了台词时报告用 VLM 的；引用台词给用户时注明"语音识别，未校对"。

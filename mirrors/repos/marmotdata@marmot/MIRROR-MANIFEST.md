@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `marmotdata/marmot` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
+Mirror of `marmotdata/marmot` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `marmotdata/marmot` — 26 default patterns, 0 followed patterns, 69 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 69 |
+| Files         | 81 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -110,24 +110,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 49 | ✓ | [`web/docs/versioned_docs/version-0.12/Plugins/index.md`](web/docs/versioned_docs/version-0.12/Plugins/index.md) |
 | 50 | ✓ | [`web/docs/versioned_docs/version-0.12/Populating/index.md`](web/docs/versioned_docs/version-0.12/Populating/index.md) |
 | 51 | ✓ | [`web/docs/versioned_docs/version-0.12/SDK/index.md`](web/docs/versioned_docs/version-0.12/SDK/index.md) |
-| 52 | ✓ | [`web/docs/versioned_docs/version-0.8/Configure/Authentication/index.md`](web/docs/versioned_docs/version-0.8/Configure/Authentication/index.md) |
-| 53 | ✓ | [`web/docs/versioned_docs/version-0.8/Configure/index.md`](web/docs/versioned_docs/version-0.8/Configure/index.md) |
-| 54 | ✓ | [`web/docs/versioned_docs/version-0.8/Deploy/index.md`](web/docs/versioned_docs/version-0.8/Deploy/index.md) |
-| 55 | ✓ | [`web/docs/versioned_docs/version-0.8/MCP/index.md`](web/docs/versioned_docs/version-0.8/MCP/index.md) |
-| 56 | ✓ | [`web/docs/versioned_docs/version-0.8/MCP/skills.md`](web/docs/versioned_docs/version-0.8/MCP/skills.md) |
-| 57 | ✓ | [`web/docs/versioned_docs/version-0.8/Notifications/index.md`](web/docs/versioned_docs/version-0.8/Notifications/index.md) |
-| 58 | ✓ | [`web/docs/versioned_docs/version-0.8/Plugins/index.md`](web/docs/versioned_docs/version-0.8/Plugins/index.md) |
-| 59 | ✓ | [`web/docs/versioned_docs/version-0.8/Populating/index.md`](web/docs/versioned_docs/version-0.8/Populating/index.md) |
-| 60 | ✓ | [`web/docs/versioned_docs/version-0.9/Agents/index.md`](web/docs/versioned_docs/version-0.9/Agents/index.md) |
-| 61 | ✓ | [`web/docs/versioned_docs/version-0.9/Configure/Authentication/index.md`](web/docs/versioned_docs/version-0.9/Configure/Authentication/index.md) |
-| 62 | ✓ | [`web/docs/versioned_docs/version-0.9/Configure/index.md`](web/docs/versioned_docs/version-0.9/Configure/index.md) |
-| 63 | ✓ | [`web/docs/versioned_docs/version-0.9/Deploy/index.md`](web/docs/versioned_docs/version-0.9/Deploy/index.md) |
-| 64 | ✓ | [`web/docs/versioned_docs/version-0.9/MCP/index.md`](web/docs/versioned_docs/version-0.9/MCP/index.md) |
-| 65 | ✓ | [`web/docs/versioned_docs/version-0.9/MCP/skills.md`](web/docs/versioned_docs/version-0.9/MCP/skills.md) |
-| 66 | ✓ | [`web/docs/versioned_docs/version-0.9/Notifications/index.md`](web/docs/versioned_docs/version-0.9/Notifications/index.md) |
-| 67 | ✓ | [`web/docs/versioned_docs/version-0.9/Plugins/index.md`](web/docs/versioned_docs/version-0.9/Plugins/index.md) |
-| 68 | ✓ | [`web/docs/versioned_docs/version-0.9/Populating/index.md`](web/docs/versioned_docs/version-0.9/Populating/index.md) |
-| 69 | ✓ | [`web/docs/versioned_docs/version-0.9/SDK/index.md`](web/docs/versioned_docs/version-0.9/SDK/index.md) |
+| 52 | ✓ | [`web/docs/versioned_docs/version-0.13/Agents/index.md`](web/docs/versioned_docs/version-0.13/Agents/index.md) |
+| 53 | ✓ | [`web/docs/versioned_docs/version-0.13/Cloud/index.md`](web/docs/versioned_docs/version-0.13/Cloud/index.md) |
+| 54 | ✓ | [`web/docs/versioned_docs/version-0.13/Configure/Authentication/index.md`](web/docs/versioned_docs/version-0.13/Configure/Authentication/index.md) |
+| 55 | ✓ | [`web/docs/versioned_docs/version-0.13/Configure/index.md`](web/docs/versioned_docs/version-0.13/Configure/index.md) |
+| 56 | ✓ | [`web/docs/versioned_docs/version-0.13/Deploy/index.md`](web/docs/versioned_docs/version-0.13/Deploy/index.md) |
+| 57 | ✓ | [`web/docs/versioned_docs/version-0.13/MCP/index.md`](web/docs/versioned_docs/version-0.13/MCP/index.md) |
+| 58 | ✓ | [`web/docs/versioned_docs/version-0.13/MCP/skills.md`](web/docs/versioned_docs/version-0.13/MCP/skills.md) |
+| 59 | ✓ | [`web/docs/versioned_docs/version-0.13/MRNs/index.md`](web/docs/versioned_docs/version-0.13/MRNs/index.md) |
+| 60 | ✓ | [`web/docs/versioned_docs/version-0.13/Notifications/index.md`](web/docs/versioned_docs/version-0.13/Notifications/index.md) |
+| 61 | ✓ | [`web/docs/versioned_docs/version-0.13/Plugins/index.md`](web/docs/versioned_docs/version-0.13/Plugins/index.md) |
+| 62 | ✓ | [`web/docs/versioned_docs/version-0.13/Populating/index.md`](web/docs/versioned_docs/version-0.13/Populating/index.md) |
+| 63 | ✓ | [`web/docs/versioned_docs/version-0.13/SDK/index.md`](web/docs/versioned_docs/version-0.13/SDK/index.md) |
+| 64 | ✓ | [`web/docs/versioned_docs/version-0.8/Configure/Authentication/index.md`](web/docs/versioned_docs/version-0.8/Configure/Authentication/index.md) |
+| 65 | ✓ | [`web/docs/versioned_docs/version-0.8/Configure/index.md`](web/docs/versioned_docs/version-0.8/Configure/index.md) |
+| 66 | ✓ | [`web/docs/versioned_docs/version-0.8/Deploy/index.md`](web/docs/versioned_docs/version-0.8/Deploy/index.md) |
+| 67 | ✓ | [`web/docs/versioned_docs/version-0.8/MCP/index.md`](web/docs/versioned_docs/version-0.8/MCP/index.md) |
+| 68 | ✓ | [`web/docs/versioned_docs/version-0.8/MCP/skills.md`](web/docs/versioned_docs/version-0.8/MCP/skills.md) |
+| 69 | ✓ | [`web/docs/versioned_docs/version-0.8/Notifications/index.md`](web/docs/versioned_docs/version-0.8/Notifications/index.md) |
+| 70 | ✓ | [`web/docs/versioned_docs/version-0.8/Plugins/index.md`](web/docs/versioned_docs/version-0.8/Plugins/index.md) |
+| 71 | ✓ | [`web/docs/versioned_docs/version-0.8/Populating/index.md`](web/docs/versioned_docs/version-0.8/Populating/index.md) |
+| 72 | ✓ | [`web/docs/versioned_docs/version-0.9/Agents/index.md`](web/docs/versioned_docs/version-0.9/Agents/index.md) |
+| 73 | ✓ | [`web/docs/versioned_docs/version-0.9/Configure/Authentication/index.md`](web/docs/versioned_docs/version-0.9/Configure/Authentication/index.md) |
+| 74 | ✓ | [`web/docs/versioned_docs/version-0.9/Configure/index.md`](web/docs/versioned_docs/version-0.9/Configure/index.md) |
+| 75 | ✓ | [`web/docs/versioned_docs/version-0.9/Deploy/index.md`](web/docs/versioned_docs/version-0.9/Deploy/index.md) |
+| 76 | ✓ | [`web/docs/versioned_docs/version-0.9/MCP/index.md`](web/docs/versioned_docs/version-0.9/MCP/index.md) |
+| 77 | ✓ | [`web/docs/versioned_docs/version-0.9/MCP/skills.md`](web/docs/versioned_docs/version-0.9/MCP/skills.md) |
+| 78 | ✓ | [`web/docs/versioned_docs/version-0.9/Notifications/index.md`](web/docs/versioned_docs/version-0.9/Notifications/index.md) |
+| 79 | ✓ | [`web/docs/versioned_docs/version-0.9/Plugins/index.md`](web/docs/versioned_docs/version-0.9/Plugins/index.md) |
+| 80 | ✓ | [`web/docs/versioned_docs/version-0.9/Populating/index.md`](web/docs/versioned_docs/version-0.9/Populating/index.md) |
+| 81 | ✓ | [`web/docs/versioned_docs/version-0.9/SDK/index.md`](web/docs/versioned_docs/version-0.9/SDK/index.md) |
 
 ---
 

@@ -4,21 +4,29 @@
 
 ---
 
-## Project Status (Last updated: Thu Nov 12 2026)
+## Project Status (Last updated: Fri Nov 13 2026)
 
-### Current State: v0.84 (77 skills) + unreleased work on main
+### Current State: v0.86 (95 skills), released Nov 13, 2026
 
 **Nov 12, 2026 session (unreleased, on main). Handoff brief: `12NOV26.md`**
 - **Guided Context Capture:** `skills/workshop-facilitation/SKILL.md` upgraded (Known/Assumed/Missing/Conflicting read-back, completion summary before generating, `(Recommended)` decision ladder, ranked Assumptions to Validate, replay-on-correction, resume recap). Explainer: `docs/guided-context-capture.md`. Skills **link** to the rulebook; never copy its text
 - **Configurable default entry mode:** `pm-skills.config.yaml` (`default_entry_mode` + per-skill `overrides`; ships `guided`, `incoming-request-advisor: context-dump`). 33 skills carry one `**Default entry mode:**` line so lone ZIPs know their default. `scripts/apply-entry-mode.py` applies it; `--check` runs in `validate-skills.sh`. User's in-session choice always wins
 - **Docs guide:** `docs/writing-for-our-readers.md` (Practitioner / Adopter / Builder; layer, don't split; first screen belongs to the Practitioner). Em-dash rule deliberately deferred
-- **Pending:** `dist/` rebuild (ZIPs hold pre-Nov-12 text), docs readability program, v0.85 release
+- **Shipped in v0.86 (Nov 13):** the 12 skills added after v0.85 (Dig, Decode, Drumbeat, Delineate, Deepen), the docs readability pass (README first screen, `START_HERE.md`, Desktop install, `scripts/check-docs-style.py`), and the retirement of older packs 02-07. Release note: `docs/announcements/2026-11-13-v0-86-the-everyday-work-of-product.md`
+
+**Nov 13, 2026 session (unreleased, on main): lifecycle bundles**
+- **Five lifecycle bundles + Drive + Core**, all D-named: **Determine** (Context) → **Discover** → **Define** → **Develop** (the build) → **Deliver**; **Drive** (stakeholders + career) runs under all five; **Core** (facilitation, navigator, investigation, authoring) ships inside every bundle. Each bundle has D-named **motions** (e.g. Define → De-risk, Differentiate; Deliver → Debut, Dollars, Demand, Dashboard, Decommission). Aligned with the Productside Blueprint / SDLC / ADLC arc
+- **The mapping is the source of truth:** `bundles:` + `core:` in `pm-skills.config.yaml`, one home per skill, validated by `scripts/check-bundles.py` (in `validate-skills.sh`). **`skills/` is NOT reorganized** (it is load-bearing: ~25 files reference the path). Everything else is generated from the mapping
+- **Generated from it:** `plugins/pm-<bundle>/` + bundle entries in `marketplace.json` (`scripts/build-plugins.py`, `--check` in `validate-skills.sh`; cross-bundle links rewritten to absolute URLs in the copies only); `dist/packages/pm-<bundle>-pack.zip` (`bundle-skills.py` → pack builder); `catalog/skills-by-bundle.md`; the Streamlit browser groups by bundle and motion; the navigator skill's map (`check-bundles.py --write-navigator`)
+- **New skill `pm-skills-navigator`** (Interactive, Core): "what's on my desk" → phase by evidence (validated vs assumed) → route. Library at **95**. Real install verified end to end (`/plugin install pm-define@pm-skills`)
+- **GTM gap-fill (Nov 13):** `launch-plan` (Workflow, Debut: tiers, four dates, go/no-go, scorecard, premortem) and `launch-metrics` (Component, Dashboard: leading/lagging, triggers, 30/90/180 reviews). Debut now also holds `message-house` (Component), `sales-value-narrative` (Component; hands the card to `battle-card-builder`) and `buying-journey-enablement` (Workflow). Debut is complete. **Discover gained two motions (Nov 13):** Dig (`survey-design-advisor`, `usage-data-investigation`, `discovery-habits-advisor`) and Decode (`research-synthesis`, `assumption-mapping`). **Develop gained a Drumbeat motion (Nov 13):** `backlog-refinement-advisor`, `sprint-planning`, `release-readiness`. **Drive gained a Delineate motion:** `decision-rights-matrix`, `pm-role-charter`. **Deliver gained a Deepen motion:** `activation-design`, `retention-diagnostic-advisor`. Gaps closed (Nov 13); remaining ideas: reconcile duplicate frameworks (Porter's, Ansoff, Lean UX) across repos, more Discover/Develop depth. Other gaps: execution rituals, governance/decision rights, post-launch growth
+- Older themed packs `02`-`07` stay on the shelf one release, then retire. `LICENSING.md` added (answers issue #27); OpenCode install guide added (PR #20 closed with credit)
 
 
-**77 Skills**
-- 28 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools + intelligence disciplines + EOL artifacts + lifecycle plays)
-- 29 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement + intel triage + EOL readiness + lifecycle play triage)
-- 20 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel + market-intelligence investigations + EOL process)
+**95 Skills**
+- 36 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools + intelligence disciplines + EOL artifacts + lifecycle plays)
+- 34 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement + intel triage + EOL readiness + lifecycle play triage)
+- 25 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel + market-intelligence investigations + EOL process)
 - License: CC BY-NC-SA 4.0
 - All skills restructured to Anthropic-compliant format (`skills/skill-name/SKILL.md`)
 - **Metadata complete (Aug 10, 2026):** all 77 skills carry `theme`, `best_for`, `scenarios`, `estimated_time`. 13 themes; `validation-experiments` added for pol-probe / pol-probe-advisor / derisk-measurement-advisor / lean-ux-canvas / recommendation-canvas. Trigger audit passes library-wide with zero warnings
@@ -229,6 +237,9 @@
   - Runs as its **own CI step**, NOT inside `validate-skills.sh`: `build-dist.sh` → `build-release.sh` → `validate-skills.sh`, so a check there would abort the command that fixes the staleness. Also step 7 of `test-library.sh`
   - Fix drift with: `python3 scripts/generate-catalog.py` then `bash scripts/build-dist.sh`
 - **`scripts/apply-entry-mode.py`** — Applies `pm-skills.config.yaml`'s default entry mode to every protocol-running skill (or a packaged copy via `--skills-dir`); `--check` fails on drift, bad values, unknown overrides, or a skill that uses `workshop-facilitation` without the `**Default entry mode:**` line. Runs inside `validate-skills.sh` (safe there: its fix is itself, not a rebuild)
+- **`scripts/check-bundles.py`** — Validates the bundle mapping (one home per skill, D-names, no motion named like its bundle, gaps recorded) and that the navigator's embedded map matches the config. `--write-navigator` regenerates it
+- **`scripts/build-plugins.py`** — Generates `plugins/` and marketplace bundle entries from the mapping; `--check` fails on staleness. Fix drift: run it, then `generate-catalog.py` and `build-dist.sh`
+- **`scripts/check-docs-style.py`** — Style guard for reader-facing docs (README, `START_HERE.md`, install guides, "Using PM Skills with…" guides). Hard failures: "click here" links, stale "New in vX" lines, stale pack names outside an older-packs context, menu paths in backticks instead of bold. Warnings only: jargon (repo, clone, terminal…) in the first 40 lines of Practitioner-facing files. Runs inside `validate-skills.sh`
 - **`scripts/test-a-skill.sh`** — Skill quality gate
   - Runs strict conformance checks (`check-skill-metadata.py`)
   - Verifies linked `skills/*/SKILL.md` references resolve

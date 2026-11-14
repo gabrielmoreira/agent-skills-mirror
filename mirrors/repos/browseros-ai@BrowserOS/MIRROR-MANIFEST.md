@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,11 +65,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/writing-plans/SKILL.md`](.claude/skills/writing-plans/SKILL.md) |
 | 5 | ✓ | [`packages/browseros-agent/.agents/skills/ai-sdk/SKILL.md`](packages/browseros-agent/.agents/skills/ai-sdk/SKILL.md) |
 | 6 | ✓ | [`packages/browseros-agent/.claude/skills/test-ui/SKILL.md`](packages/browseros-agent/.claude/skills/test-ui/SKILL.md) |
-| 7 | ✓ | [`packages/browseros-agent/apps/app/CLAUDE.md`](packages/browseros-agent/apps/app/CLAUDE.md) |
-| 8 | ✓ | [`packages/browseros-agent/apps/server/CLAUDE.md`](packages/browseros-agent/apps/server/CLAUDE.md) |
-| 9 | ✓ | [`packages/browseros-agent/CLAUDE.md`](packages/browseros-agent/CLAUDE.md) |
-| 10 | ✓ | [`packages/browseros-agent/resources/skills/browserclaw/SKILL.md`](packages/browseros-agent/resources/skills/browserclaw/SKILL.md) |
-| 11 | ✓ | [`skills/browseros-neo/SKILL.md`](skills/browseros-neo/SKILL.md) |
+| 7 | ✓ | [`packages/browseros-agent/AGENTS.md`](packages/browseros-agent/AGENTS.md) |
+| 8 | ✓ | [`packages/browseros-agent/apps/app/AGENTS.md`](packages/browseros-agent/apps/app/AGENTS.md) |
+| 9 | ✓ | [`packages/browseros-agent/apps/app/CLAUDE.md`](packages/browseros-agent/apps/app/CLAUDE.md) |
+| 10 | ✓ | [`packages/browseros-agent/apps/server/AGENTS.md`](packages/browseros-agent/apps/server/AGENTS.md) |
+| 11 | ✓ | [`packages/browseros-agent/apps/server/CLAUDE.md`](packages/browseros-agent/apps/server/CLAUDE.md) |
+| 12 | ✓ | [`packages/browseros-agent/CLAUDE.md`](packages/browseros-agent/CLAUDE.md) |
+| 13 | ✓ | [`packages/browseros-agent/crates/neo-sdk/AGENTS.md`](packages/browseros-agent/crates/neo-sdk/AGENTS.md) |
+| 14 | ✓ | [`packages/browseros-agent/crates/neo-sdk/CLAUDE.md`](packages/browseros-agent/crates/neo-sdk/CLAUDE.md) |
+| 15 | ✓ | [`packages/browseros-agent/resources/skills/browserclaw/SKILL.md`](packages/browseros-agent/resources/skills/browserclaw/SKILL.md) |
+| 16 | ✓ | [`skills/browseros-neo/SKILL.md`](skills/browseros-neo/SKILL.md) |
 
 ---
 

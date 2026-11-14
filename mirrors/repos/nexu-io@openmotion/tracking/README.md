@@ -9,14 +9,11 @@ For new events, start with the [integration guide and agent task template](INTEG
 
 ## Reporting and user control
 
-Reporting is **on by default in stable releases** into the existing OpenDesign project (420348).
-Test and other prerelease/local application versions never report. This is enforced
-from the packaged application version, independently of CI environment variables,
-the saved preference, a custom collector or test-run overrides. The test-build
-Privacy switch is locked off and does not overwrite a saved stable-release choice.
-Stable and test clients cannot reuse each other's same-workspace backend authority;
-use the separate installation/data directories already provided by DEV packages.
-Compatible updates within the same release policy retain normal backend reuse.
+Reporting is **on by default in every application environment and version**, including
+stable releases, test/prerelease packages and local builds, into the existing
+OpenDesign project (420348). Application version and environment remain event
+properties; they do not disable collection. DEV packages retain their separate
+installation/data directories and template routing.
 OM events carry `product=openmotion`; OM reports must filter by that property,
 and shared-project reports must distinguish OM from other products. The project's
 public, write-only token and ingestion host are distributed in
@@ -29,7 +26,7 @@ to both MCP and Studio, including already-running processes and future restarts.
 Disabling clears pending queues and aborts in-flight delivery; accepted events
 cannot be recalled. A filesystem watcher propagates preference changes, and each
 enqueue/flush also checks the saved preference. Corrupt preference files fail closed.
-On stable releases, re-enabling resumes collection of new events in MCP and Studio
+Re-enabling resumes collection of new events in MCP and Studio
 without restarting. Events discarded while disabled are not buffered or replayed.
 
 `OPENMOTION_TELEMETRY=0` (also `false`/`off`) or `DO_NOT_TRACK=1` forces all collection
@@ -51,9 +48,9 @@ Use `OPENMOTION_TRACKING_ENV=test` and a UUID in
 out of product dashboards. Normal environments are `production` and `development`.
 Node/Vitest tests suppress collection unless explicitly given a test run ID; CI
 also forces collection off. No test should silently report into production funnels.
-Marked live-ingestion checks require a stable-version application running with
-`env=test`; a `-test.N` package cannot be opted into reporting. Deterministic checks
-use fake senders and extracted stable/test packages without external requests.
+Marked live-ingestion checks use `env=test` with any application version.
+Deterministic checks use fake senders and extracted stable/test/local packages
+without external requests.
 
 Studio retrieves only an enabled flag and submits semantic events to the same-origin
 `/motion-api/tracking` endpoint. The server validates the complete batch, rejects
@@ -101,28 +98,118 @@ producers retain their own settings. Upstream engine telemetry stays disabled.
 Runtime and TypeScript event contracts whitelist required fields, enums, UUIDs and
 bounded counts. No prompts, messages, source files, URLs, local paths, titles, raw
 exceptions or credentials are accepted. Safe error categories are explicitly mapped.
+The sole bounded free-text exception is the settled template-search keyword,
+described below; it does not enable text on other event fields.
 All retries retain the original event UUID/timestamp and PostHog `$insert_id`.
+Bounded numeric rules also preserve fractional timings, playback rates and signed
+audio/geometry measurements; non-finite or out-of-range values are rejected.
+
+### Host Agent attribution
+
+Every event has `host_agent` and `host_agent_source`. Known declared clients map
+to `codex`, `deepseek` (DeepSeek Harness/DSH), `claude`, `cursor`, `opencode`,
+`gemini`, `workbuddy` or `chatgpt`; another declared client maps to `other`.
+Missing evidence is `unknown`, never inferred from an installed executable,
+model provider, browser user agent or the last caller of a shared backend.
+`mcp_client_name` is included only for a bounded implementation identifier;
+`mcp_client_version` is the client's declared numeric version, not a verified
+host-application version. DSH currently declares its MCP adapter version.
+
+The stdio runtime captures `initialize.params.clientInfo` per connection and also
+recognizes standard per-request `io.modelcontextprotocol/clientInfo` metadata.
+An absent declaration can fall back to `OPENMOTION_HOST_AGENT`, `CODEX_THREAD_ID`
+or `CLAUDECODE=1` in that MCP process, labeled `launch_environment`. Environment
+values and thread IDs themselves are never reported. Client metadata is
+self-declared analytics context, not authenticated identity or an entitlement.
+
+The calling context follows domain operations and is persisted on export jobs
+for the worker. Editor handoffs receive an opaque `tracking_context` query token;
+the local service associates it with that opener for at most 24 hours and 256
+live contexts, in memory only. The browser submits the token to its same-origin
+collector and cannot supply host properties in an event. Repeated handoffs retain
+their connection's token, project navigation preserves it, and another client
+cannot replace an existing association. A manually opened, expired, evicted or
+restarted page context reports `unknown`. No global last-used-host attribution is
+used. These tokens are metadata references, not authorization credentials.
+
+The research sources are the [supported MCP lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle),
+[Codex's MCP client](https://github.com/openai/codex/blob/main/codex-rs/rmcp-client/src/utils.rs)
+and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/mcp/mcp-client/src/connection.ts).
 
 ## Implemented signals and limits
 
-- All eleven phase-one stdio tools: accepted start and observed finish, including
+- All registered phase-one stdio tools: accepted start and observed finish, including
   early-return catalog tools, input rejection, partial import and idempotent replay.
 - Domain results: create/open/edit/import/restore and export request/cancel. Replayed
   operations do not manufacture additional domain completions. Preview returned by
   a tool does not imply the host opened it.
 - Worker export terminal state, after render and available technical verification;
   it is distinct from queue acceptance and does not assert human content acceptance.
-- Studio home/project page readiness, editor load outcome, new/recent-session and
-  template-selection intent, plus actual instruction-copy/fallback results.
+- Studio project readiness and load outcome, plus project-sidebar creation/switching.
+- All 78 retained Studio event names are registered in
+  [studio-events.ts](studio-events.ts) and included in the same derived browser
+  admission registry: startup/preview/render/performance, editor interaction,
+  feedback/desktop, save/error/transaction, SDK, WebMCP status and audio FX.
+  Existing `trackEvent` and `trackStudioEvent` callers use the OpenMotion transport.
+  Their [adapter](studio-properties.ts) removes private fields before queueing;
+  upstream tokens, transports and automatic experiment enrollment remain disabled.
+  Feature visibility and SDK gates do not change: hidden feedback, desktop and
+  audio-FX features emit only when their existing producer actually runs.
+- The editor's template library reports with the names of the shared OpenMotion
+  tracking sheet, so its funnel lines up with the website's: `surface_view` for
+  the library, a gallery card, a template's detail and the instruction to copy;
+  `ui_click` areas `template_card`, `template_detail`, `template_instruction` and
+  `template_discovery`; `template_search_result`, `template_filter_result` and
+  `resource_download_result`. A template is identified by `template_id` only
+  (a bounded slug); titles, authors and URLs are never fields. `placement` says
+  how a detail was reached: `catalog`, `related`, `random` (Surprise me) or
+  `navigation` (previous/next). `detail_view_id`, `copy_attempt_id`,
+  `download_attempt_id` and `search_id` are random UUIDs that tie a click to its
+  result. Recreate and Recreate-and-submit report `start_use` with
+  `template_action`; the instruction panel's Copy reports `copy_instruction`;
+  every copy reports `template_instruction_copy_result`, and only
+  `clipboard_written` is a successful copy. `host_product` and `target_agent`
+  name the instruction variant that was copied (the library builds the Codex
+  one), not the client the user later pastes it into. A category or filter option is sent
+  as a lowercase slug of the stable catalogue value and omitted when it cannot be
+  reduced to one. `template_search_result.search_keyword` is the one free-text
+  field in the registry: the settled search-box value, trimmed and capped at 100
+  characters, sent once per keyword 500 ms after typing stops and never per
+  keystroke. A card impression (`template_card` / `card`) is reported once the
+  card has been at least half visible for one unbroken second and is not covered
+  by the detail, once per search, filter and sort combination, so click-through
+  per card can be read. Hover, scroll depth, autoplay and video progress are not
+  reported. These events carry no project fields yet.
+  Library exposure records the actual dialog opening, including pending or failed
+  catalog loads; it omits `result_count` because that count is not known at opening.
+  Loading retries and locale changes do not create another opening. Instruction
+  exposure waits until at least 1% of its text enters the viewport in a visible tab, once per
+  detail view. Recreate and Recreate-and-submit carry the same `copy_attempt_id`
+  on their `start_use` click and copy result; Open-and-edit has no copy attempt.
 
-This first integration does not implement the entire tracking specification:
-installer/integration/resource-read events, WebMCP execution, every editor save,
-timeline/history/import gesture, review/adoption and optional media events remain
-outside this change. Worker origin is `worker`; request-to-worker operation context
-is not yet persisted. Pending export cancellation has a cancel result but no worker
-completion because no worker claimed it.
+The adapter preserves fixed actions, counts, booleans and safe catalog/control
+identifiers. It drops messages/stacks, file paths, selectors, composition/block
+names, free-text feedback, breadcrumb text and arbitrary error names. Feedback
+retains `has_comment`, rating and fixed question/answer categories; resolver
+mismatches become per-kind counts, and attempt rollups retain total attempts and
+distinct-operation counts without raw JSON keys. Audio parameter numbers are
+bounded; string parameters retain only a fixed engine-catalog `value_category` and
+`value_kind=category`. Custom effect/preset/parameter identifiers become `other`.
+Unknown event names are ignored. Invalid required fields prevent the event from
+being queued; optional invalid fields are omitted. The server still rejects
+unknown fields and forged common properties rather than applying this adapter.
 
-The queue is process-local: 64 events, batches of 16, one in-flight request, a one-day
+Coverage follows the existing producers; it does not invent new product actions.
+Installer/integration/resource-read events, actual WebMCP tool-execution outcomes,
+every successful editor save/import gesture and human review/adoption results
+still need their own confirmed completion semantics. WebMCP status signals and
+save-failure/blocked signals are not those missing success/result events.
+Worker origin is `worker`; its caller's host context is persisted, while a full
+request-to-worker operation context is not. Pending cancellation has a cancel
+result but no worker completion because no worker claimed it.
+
+The compatibility adapter bounds initialization-waiting calls at 64. The queue is
+process-local: 64 events, batches of 16, one in-flight request, a one-day
 TTL and retry backoff capped at one minute. Disabling aborts and drops pending data;
 shutdown drains for at most two seconds. Crashes, queue overflow, page termination
 or permanent collector rejection may lose events. Add durable delivery if product

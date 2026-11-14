@@ -2,7 +2,7 @@
 
 All default public names use **OpenMotion**: plugin and MCP server `openmotion`, Tools `openmotion_*`, core Skills `openmotion-*`, and resources `openmotion://`. Only canonical Tools/resources are advertised by MCP discovery. The optional Library Skills use the same `openmotion-` prefix.
 
-Old `motion_*` / legacy `design_*` Tool names and `motion://` resource addresses are accepted at the compatibility boundary. Old Skill names are small forwarding entries with implicit model invocation disabled (`disable-model-invocation: true` and Codex `policy.allow_implicit_invocation: false`); the canonical Skill contains the production rules. Library resources live only in canonical folders. From a checkout or full plugin ZIP, `node scripts/install-library-skill.mjs <skill-name> <destination-skills-directory>` installs a selected canonical Skill, or a legacy alias together with its canonical dependency. Repeated selections reuse identical content and refuse to overwrite customized folders. Generic single-folder installers can still copy an old alias alone; its first invocation installs the matching canonical Skill from an immutable source URL in the same host/scope before continuing. That recovery requires network access once; dependency-aware local installation and complete ZIPs work offline. Packages include these aliases so existing explicit invocations keep working. An existing `motion` MCP registration may still launch this runtime; new generated configurations register only `openmotion`.
+Old `motion_*` / legacy `design_*` Tool names and `motion://` resource addresses remain accepted at the compatibility boundary. Retired Skill names are no longer shipped or callable: use the five `openmotion-*` production entries and the three canonical Library names. Library resources live only in canonical folders. From a checkout or full plugin ZIP, `node scripts/install-library-skill.mjs <openmotion-skill-name> <destination-skills-directory>` installs one Library Skill, reuses identical content and refuses to overwrite customized canonical folders. It removes only an unchanged retired Library forwarding folder verified by its complete file hashes; customized, extra-file and symlink folders are preserved and reported as `preservedLegacy` for manual review. Re-run the helper for each Library Skill previously installed separately. npm setup replaces owned bundles and removes obsolete flat entries belonging to the same host/home, with rollback on registration failure. Unowned entries and other installations are preserved; remove any separately installed old core entries manually after checking their contents. Refresh host Skill discovery and update saved invocations to canonical names. An existing `motion` MCP registration may still launch this runtime; new configurations register only `openmotion`.
 
 Renaming does not change schemas, defaults, engine versions, permissions or project data formats. Internal request identities and telemetry keys retain their original names so retries cannot duplicate saved changes or exports. Compatible running backends are negotiated using either Tool spelling. See [installation and migration](npm-installation.md#public-names-and-compatibility). Generic terms such as motion graphics and motion blur remain animation terminology.
 
@@ -21,6 +21,10 @@ Renaming does not change schemas, defaults, engine versions, permissions or proj
 Director and its existing quality references now cover concrete visual events, joint material/motion design, recognizable action windows, representative prototypes and reuse of accepted implementations. Shared intake/runtime guidance covers scoped material acquisition; edit and verification own timing-evidence invalidation and evidence classification. No Skill, Resource section, public Tool or media service is added.
 
 The current five-route, eleven-Tool contract, editor-first handoff, requested-export behavior and distribution layout remain unchanged. This guidance does not establish cross-task creative reliability or native audiovisual model-review capability. See [the director guide](openmotion-director.md). Version-specific statements below describe their historical snapshots.
+
+## Reference reconstruction guidance
+
+The recreate route carries a shot/action-unit process with concrete worker briefs, source ownership, time/coordinate mapping and inspected-source handoffs. Reference observations become timed controls consumed by the renderer, with conditional methods for camera transforms, relative part motion, changing shapes, mark-based materials, text and exposure. Local iteration compares observed and intermediate states, repairs the responsible mechanism, and rechecks shared assets, overlap and the complete layer stack after integration. One Agent can execute the same units sequentially. Observation density and implementation remain scene-dependent. The guidance is based on segment-production retrospectives that include reused implementations and directed corrections. Reliability across fresh sessions and different references still requires evaluation. See [the reconstruction reference](../skills/openmotion-recreate/references/rebuild.md#establish-a-difficult-visual-system).
 
 ## 职责与入口
 
@@ -81,7 +85,7 @@ A prior local trial used only “做一个哈利波特宣传片” in a fresh gp
 
 原创制作按任务读取动作脚本、动态表现和短句参考，无需用户额外说“Motion 感”。多段/截图/状态延续、声音设计和动态审片按职责加载相应参考。模板与复刻按影响复用相同标准，不强制换成原创叙事、固定动效或固定音乐结构。
 
-一期公开接口已收敛为 [11 个 openmotion_ Tool](mcp-phase1-tools.md)（9 个工程 Tool 加目录获取和模板详情）。旧 28 项实现只留内部兼容；读文件、任务查询及技术校验分别并入项目读取与导出流程。一期插件和四宿主薄适配器包含上述五个入口及其参考，reference-video 仅保留源码兼容入口。核心 Skill 指引同步使用新契约；不新增制作引擎或自动复刻算法。
+一期公开接口已收敛为 [12 个 openmotion_ Tool](mcp-phase1-tools.md)（9 个工程 Tool、目录获取、模板详情与 media-use）。旧 28 项实现只留内部兼容；读文件、任务查询及技术校验分别并入项目读取与导出流程。一期插件和四宿主薄适配器包含上述五个入口及其参考，reference-video 仅保留源码兼容入口。核心 Skill 指引同步使用新契约；不新增制作引擎或自动复刻算法。
 
 ## openmotion-recreate 能力扩展点
 
@@ -91,7 +95,7 @@ A prior local trial used only “做一个哈利波特宣传片” in a fresh gp
 | --- | --- | --- |
 | [SKILL.md](../skills/openmotion-recreate/SKILL.md) frontmatter description | 触发范围按动态图形复刻描述 | 支持新视频类型后同步触发范围，并重跑选路测试 |
 | SKILL.md Role and goal 第二段 | 只支持动态图形；实拍、口播、AI 视频说明不支持，不暗示给素材就能复刻，只提出动态图形版 | 放宽支持范围，缩小拒绝条件 |
-| SKILL.md §3 素材缺口（“This package exposes no generation Tool”） | Within supported media scope, use shared materials guidance for missing assets; ask only for unresolved inputs or access/capability limits. No generation Tool is added | 本包公开生成 Tool 时改写此句，补调用、采用结果和失败处理规则 |
+| SKILL.md §3 素材缺口（“Read the selected provider reference for the public media-use Tool”） | Within supported media scope, use shared materials guidance for missing assets; ask only for unresolved inputs or access/capability limits. The BYOK extension adds openmotion_media_use; creative workflow scope remains unchanged | 本包公开生成 Tool 时改写此句，补调用、采用结果和失败处理规则 |
 | [production.md](../skills/openmotion-production/references/production.md) 第 3 条 | 一期 MCP 包不提供生成 Tool，生成交给宿主或 Studio | 与上一行同步修改 |
 | SKILL.md §5 Sound | 默认沿用原片音轨并重新对齐；删去念出原品牌的旁白 | 有 TTS 后可改为重新配音，不只删除 |
 | SKILL.md §5 原片作底层（用户自有成片只改几处细节） | 仅此情况可把原片放在时间线上并打补丁 | 支持实拍局部修改或分镜混排时扩展适用条件 |
@@ -168,3 +172,7 @@ MT05 原先同批补读/执行的问题未重现，但读取完整性未全面�
 相关接口/文档测试 7 项、仓库检查和四个入口格式校验通过，七份质量参考原哈希保持。正常速度播放和试听受宿主设置限制，未验证。实验归档为 `multiturn-routing-20261105-r3`；每题一次，不能外推总体稳定率。
 
 复测期间当前分支另有首次体验、角色说明改动，director 更新为 v1.4.4。已保留这些改动及共享 edit 接入；冻结实验副本未变化。当前合并文本另通过 7 项接口/文档回归和仓库检查，完整真实会话结果仅对应冻结 v1.4.3，不自动认证合并后的行为。
+
+## Temporary BYOK debug media guidance
+
+BYOK provider references are part of the existing production guidance, available locally and through `openmotion://workflow/production/{fal,opendesign,atlascloud,wavespeed}`; no separate media debugging Skill is distributed. `openmotion_media_use` reads configured fal.ai, OpenDesign Cloud, Atlas Cloud or WaveSpeedAI credentials inside the service and returns task state and real imported assets; the Agent never needs to read the key file. Formal creative media guidance remains separate.

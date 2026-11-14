@@ -869,7 +869,7 @@ var gitignoreLines = (kind) => [STATE_FILE, LOG_FILE, ".sharing.json", ...kind =
 function writeGitignore(root, kind) {
   const file = path2.join(root, GITIGNORE_FILE);
   try {
-    fs3.writeFileSync(file, ["# Written by baoyu-design when the editor first opened this folder: what only this computer's editor server needs.", ...gitignoreLines(kind), ""].join("\n"), { flag: "wx" });
+    fs3.writeFileSync(file, ["# Written by open-artifacts when the editor first opened this folder: what only this computer's editor server needs.", ...gitignoreLines(kind), ""].join("\n"), { flag: "wx" });
   } catch {
   }
 }
@@ -2041,7 +2041,8 @@ var Hub = class {
       }
       if (this.echo) process.stderr.write(text);
     };
-    const site = await this.factory(root, { log, network: this.network, ...agentHook ? { agentHook } : {} });
+    const open = (other2) => this.add(other2, agentHook ? { agentHook } : {}).then((state2) => new URL(state2.url).pathname);
+    const site = await this.factory(root, { log, network: this.network, ...agentHook ? { agentHook } : {}, open });
     const other = this.sites.get(site.page);
     if (other) {
       site.close();
@@ -3944,16 +3945,21 @@ function agentWhere(main2, count, label) {
 }
 var AGENT_COLOR = "#d25f25";
 var MAX_PEERS = 64;
-var MAX_PATCH_BYTES = 16 << 10;
+var MAX_BODY_BYTES2 = 64 << 10;
 var MAX_FIELDS = 12;
 var MAX_PRESENCE_BYTES = 6 << 10;
 var BROADCAST_MS = 50;
+var EVENT_TOPIC = /^[a-z][a-z0-9_.-]{0,47}$/;
+var MAX_EVENT_BYTES = 4096;
+var EVENTS_PER_SECOND = 40;
+var EVENT_BURST = 80;
 var LEAVE_GRACE_MS = 4e3;
 var AGENT_LINGER_MS = 2e4;
 var AGENT_PEER = "agent-claude";
 var PresenceHub = class {
   peers = /* @__PURE__ */ new Map();
-  listeners = /* @__PURE__ */ new Set();
+  /** Every open stream, with the peer it belongs to ('' for one that hears the others but isn't on the list). */
+  listeners = /* @__PURE__ */ new Map();
   agent = null;
   timer = null;
   /** Adds a page's stream; `send` writes one SSE frame to it. Returns what to call when the stream closes. */
@@ -3964,7 +3970,7 @@ var PresenceHub = class {
       peer = "";
     }
     if (peer && !entry && this.peers.size < MAX_PEERS) {
-      entry = { viewer, presence: {}, updatedAt: Date.now(), streams: 0 };
+      entry = { viewer, presence: {}, updatedAt: Date.now(), streams: 0, budget: EVENT_BURST, toppedAt: Date.now() };
       this.peers.set(peer, entry);
     }
     if (entry) {
@@ -3972,7 +3978,7 @@ var PresenceHub = class {
       if (entry.leaving) clearTimeout(entry.leaving);
       entry.leaving = void 0;
     }
-    this.listeners.add(send);
+    this.listeners.set(send, entry ? peer : "");
     send(this.frame());
     this.schedule();
     let open = true;
@@ -4009,6 +4015,35 @@ var PresenceHub = class {
     this.schedule();
     return true;
   }
+  /**
+   * Sends a page's room events on to every other open page; false when the peer isn't this person's open page or an
+   * event is bad (then none is sent). Those over the page's budget are dropped, as the room contract drops them.
+   */
+  relay(peer, viewer, events) {
+    const entry = this.peers.get(peer);
+    if (!entry || entry.viewer.user.id !== viewer.user.id || !Array.isArray(events)) return false;
+    const frames = [];
+    for (const event of events) {
+      if (typeof event !== "object" || event === null || Array.isArray(event)) return false;
+      const { topic, data } = event;
+      if (typeof topic !== "string" || !EVENT_TOPIC.test(topic)) return false;
+      if (data !== void 0 && Buffer.byteLength(JSON.stringify(data)) > MAX_EVENT_BYTES) return false;
+      const message = { peer, by: entry.viewer.user.id, topic, ...data === void 0 ? {} : { data } };
+      frames.push(`event: room
+data: ${JSON.stringify(message)}
+
+`);
+    }
+    const now = Date.now();
+    entry.budget = Math.min(EVENT_BURST, entry.budget + (now - entry.toppedAt) / 1e3 * EVENTS_PER_SECOND);
+    entry.toppedAt = now;
+    for (const frame of frames) {
+      if (entry.budget < 1) break;
+      entry.budget -= 1;
+      for (const [send, owner] of this.listeners) if (owner !== peer) send(frame);
+    }
+    return true;
+  }
   /** The agent changed the artifact: it shows on the list (with `context`, where it worked) for a while. */
   agentActive(agent = {}) {
     if (this.agent) clearTimeout(this.agent.timer);
@@ -4037,7 +4072,7 @@ var PresenceHub = class {
     }
     return views;
   }
-  /** Answers POST `__presence` ({peer, patch}); GET gives the list. */
+  /** Answers POST `__presence` ({peer, patch?, events?}); GET gives the list. */
   async handle(request, response, viewer) {
     const method = request.method ?? "GET";
     if (method === "GET") return sendJson2(response, 200, { peers: this.list() });
@@ -4051,13 +4086,20 @@ var PresenceHub = class {
     }
     let body;
     try {
-      body = JSON.parse((await readBody(request, MAX_PATCH_BYTES)).toString("utf8"));
+      body = JSON.parse((await readBody(request, MAX_BODY_BYTES2)).toString("utf8"));
     } catch {
-      return sendJson2(response, 400, { code: "invalid_argument", message: `Expected {peer, patch} under ${MAX_PATCH_BYTES} bytes.` });
+      return sendJson2(response, 400, { code: "invalid_argument", message: `Expected {peer, patch?, events?} under ${MAX_BODY_BYTES2} bytes.` });
     }
-    const { peer, patch } = typeof body === "object" && body !== null ? body : {};
-    if (typeof peer !== "string" || !PEER_ID.test(peer)) return sendJson2(response, 400, { code: "invalid_argument", message: "Expected {peer, patch}." });
-    if (!this.update(peer, viewer, patch)) return sendJson2(response, 409, { code: "not_joined", message: "That page is not open here (its event stream is closed)." });
+    const { peer, patch, events } = typeof body === "object" && body !== null ? body : {};
+    if (typeof peer !== "string" || !PEER_ID.test(peer) || patch === void 0 && events === void 0) {
+      return sendJson2(response, 400, { code: "invalid_argument", message: "Expected {peer, patch?, events?}." });
+    }
+    const entry = this.peers.get(peer);
+    if (!entry || entry.viewer.user.id !== viewer.user.id) return sendJson2(response, 409, { code: "not_joined", message: "That page is not open here (its event stream is closed)." });
+    if (events !== void 0 && !this.relay(peer, viewer, events)) {
+      return sendJson2(response, 400, { code: "invalid_argument", message: `Events are {topic, data}: a topic matching ${EVENT_TOPIC.source}, data at most ${MAX_EVENT_BYTES} bytes of JSON.` });
+    }
+    if (patch !== void 0 && !this.update(peer, viewer, patch)) return sendJson2(response, 409, { code: "not_joined", message: "That patch was not applied (not an object, or the presence would be too big)." });
     response.writeHead(204, { "Cache-Control": "no-store" }).end();
   }
   /** Ends the timers (the server is closing). */
@@ -4079,7 +4121,7 @@ data: ${JSON.stringify({ peers: this.list() })}
     this.timer = setTimeout(() => {
       this.timer = null;
       const frame = this.frame();
-      for (const send of this.listeners) send(frame);
+      for (const send of this.listeners.keys()) send(frame);
     }, BROADCAST_MS);
     this.timer.unref?.();
   }
@@ -4089,6 +4131,7 @@ var KIND = "";
 var NOUN = "";
 var INDEX_FILE = "";
 var DESIGN_SYSTEMS = false;
+var VIDEO_PLAYERS_ON = false;
 var LAYOUT;
 var pageScriptSrc;
 var sessionExtras;
@@ -4205,6 +4248,14 @@ function isWireEntry(value) {
   if (entry.ifMatch !== void 0 && entry.ifMatch !== null && typeof entry.ifMatch !== "string") return false;
   return typeof entry.base64 === "string" && typeof entry.contentType === "string";
 }
+var VIDEO_PLAYERS = {
+  frames: ["https://www.youtube-nocookie.com/embed/", "https://player.vimeo.com/video/", "https://www.loom.com/embed/", "https://drive.google.com/file/d/"],
+  thumbnails: ["https://i.ytimg.com/vi/", "https://i.vimeocdn.com/video/", "https://cdn.loom.com/sessions/thumbnails/"],
+  oembed: ["https://vimeo.com/api/oembed.json", "https://www.loom.com/v1/oembed"]
+};
+var withPlayers = (sources, extra) => VIDEO_PLAYERS_ON ? [sources, ...extra].join(" ") : sources;
+var frameSrc = () => `frame-src ${withPlayers("'self' blob: data:", VIDEO_PLAYERS.frames)}`;
+var imgSrc = () => `img-src ${withPlayers("'self' data: blob:", VIDEO_PLAYERS.thumbnails)}`;
 function pageCsp(scriptSrc) {
   const fonts = "https://fonts.googleapis.com https://fonts.gstatic.com";
   return [
@@ -4212,15 +4263,22 @@ function pageCsp(scriptSrc) {
     scriptSrc,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "img-src 'self' data: blob:",
+    imgSrc(),
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
-    `connect-src 'self' data: blob: ${fonts}`,
-    "frame-src 'self' blob: data:",
+    `connect-src ${withPlayers(`'self' data: blob: ${fonts}`, VIDEO_PLAYERS.oembed)}`,
+    frameSrc(),
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'none'"
   ].join("; ");
+}
+function withPlayersMeta(html) {
+  if (!VIDEO_PLAYERS_ON) return html;
+  const at = html.search(/<head(\s[^>]*)?>/i);
+  if (at < 0) return html;
+  const end = html.indexOf(">", at) + 1;
+  return `${html.slice(0, end)}<meta http-equiv="Content-Security-Policy" content="${frameSrc()}; ${imgSrc()}">${html.slice(end)}`;
 }
 function versionOf(files) {
   const digest = sha2562(
@@ -4896,7 +4954,7 @@ data: ${JSON.stringify(event)}
       const key = parts.join("/");
       let page = pageCache.get(key);
       if (!page || page.mtimeMs !== info.mtimeMs) {
-        const html = await fsp4.readFile(file, "utf8");
+        const html = withPlayersMeta(await fsp4.readFile(file, "utf8"));
         page = { mtimeMs: info.mtimeMs, html, csp: pageCsp(pageScriptSrc(html)) };
         pageCache.set(key, page);
       }
@@ -5257,6 +5315,7 @@ function createArtifactServer(kind, moduleUrl) {
   NOUN = kind.noun;
   INDEX_FILE = kind.indexFile;
   DESIGN_SYSTEMS = kind.designSystems === true;
+  VIDEO_PLAYERS_ON = kind.videoPlayers === true;
   LAYOUT = kind.layout;
   pageScriptSrc = kind.pageScriptSrc;
   sessionExtras = kind.sessionExtras;

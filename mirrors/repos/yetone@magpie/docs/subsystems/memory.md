@@ -43,7 +43,7 @@ and refuses empty or over-long text, an unknown kind and a bad scope
 ### MCP server
 
 [internal/gateway/memory_mcp.go](../../internal/gateway/memory_mcp.go):
-`memory_search`, `memory_save`, `memory_forget`, Streamable HTTP at
+`memory_search`, `memory_save`, `memory_forget`, `memory_context`, Streamable HTTP at
 `MemoryMCPPath` (`/mcp/magpie/memory`), served like the search server
 (`serveMCP`) but to the agents on this computer alone, as the hub gives it
 (`HereOnly`): memory is what is known about this computer's user, and its
@@ -58,12 +58,24 @@ away (`TestMemoryMCPGuarded`).
   which relays stdio to the gateway with the folder the agent started it in
   (`X-Magpie-Cwd`) and the client name from `initialize`
   (`X-Magpie-Mcp-Client`).
+- `magpie tool memory_*` names its folder the same way, and reads an
+  answer sent as an event stream, answering a server's roots/list
+  (`TestToolMemoryThroughTheGateway`, #6049).
 - Behind the [MCP router](mcp-router.md) the hub passes the caller in the
   call's `_meta` instead (`HubRootsMeta`, `HubClientMeta`;
   `TestMemoryMCPHubMetaNamesTheProject`).
 - Without a folder the server can't name the project, nor the agent without
   a client name: such a save says so instead of guessing, and a save with
   no scope is kept for everyone (`TestMemoryMCPSaysWhatItCantKnow`).
+- A search or save may name another project (`project`: a folder,
+  absolute or under the caller's, or a key memory knows;
+  `memoryCaller.inProject`), so a migration run from one project keeps
+  memories for another. A project named goes with scope project (or a
+  search's all). Every answer names what it used: a memory's line says
+  `this project (<key>)` and `only for you (<agent>)`, and a search ends
+  `(looked in: …)`. `memory_context` says who the caller is taken for,
+  the project, and how each was found, as text and `structuredContent`
+  (`TestMemoryMCPProjectArgumentAndContext`).
 - A save through MCP is active at once, origin `agent`.
 
 ### Other memory services
@@ -193,7 +205,14 @@ further (`State.Since`), unless a range is picked.
   range reads at once; a bad level or range is a 400,
   `TestDistillRangeAndEffortRoutes`) and
   `POST /api/memory/distill/run`. The row polls every 2s while a run
-  goes and reloads the memories when it ends.
+  goes and reloads the memories when it ends. Search by meaning's row
+  polls the same way while the model downloads or memories wait to be
+  read. A poll that reads nothing new draws nothing; one that does
+  redraws its own row only (`redrawRow`), and the whole tab only when the
+  memories changed. A render keeps an editor that was open (`.lib-detail`
+  with the same `data-detail`) from playing its entrance again
+  (Nietzsche_Li on X: the open memory jittered every 2s;
+  `library-memory-steady.test.cjs`).
 
 ### Dreaming
 

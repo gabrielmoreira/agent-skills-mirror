@@ -13,7 +13,11 @@ Use only the OpenMotion MCP Tools actually returned by tools/list. Read [Native 
 | Export | openmotion_export_request: immutable snapshot, background MP4, automatic lint and technical verification |
 | Cancel | openmotion_export_cancel: explicit owned job, distinguish cancelling/cancelled/completed |
 
-For missing or inadequate media, use [asset decisions](../../openmotion-director/references/production-decisions.md) to choose generation, retrieval or a suitable graphic medium within the current task. Use available host tools or Studio and existing authorization; do not invent tool names or silently add paid dependencies. Inspect completed media at its actual largest framing before composing. A queued generation or imported file does not establish visual quality.
+When selecting, obtaining or replacing media, apply the [shared material policy](materials.md) within the selected workflow and existing authorization.
+
+## Inline video progress and playback
+
+In a host that supports MCP Apps, default to an inline video frame for each actual video creation or content-edit turn. Begin one work round before the first content write with `openmotion_open_preview({action:"begin",projectId,requestId,mode:"create"|"modify"})`. Reuse the returned `inlineWork.id` as `workId` in each save and the final export. Render once the round is ready, not after intermediate saves. The MCP App polls that fixed work identity and enables click-to-play only after its own export passes technical verification. Keep earlier frames and their versions. Explicit editor-only requests, unchanged template opening, review-only and existing-link requests retain their current scope and do not begin or render a round. This final inline preview is part of the video turn and does not require a separate MP4-download request. Hosts without MCP Apps retain their existing workflow. Inline playback supplements the editable Studio handoff; it does not prove editor visibility or creative acceptance.
 
 ## Execution
 
@@ -36,7 +40,7 @@ If only an independent folder can be produced, state that the editable Studio ha
 
 1. Reuse complete guidance already read. Installed Skills and MCP resources/read provide the same documents; production start only routes a task that lacks a specialist. Changes to existing content use [edit workflow](edit.md). Missing instructions/source reads return to the model before dependent writes.
 2. Reuse the target projectId or explicitly create a new one. Read its current revision and content version. No global most-recent project fallback. Five is a list page size, not a retention policy.
-3. Use returned asset paths and native HTML/CSS/JS. Import and file save are separate operations. Images/footage/music generation belongs to the host's available tools or Studio; no generation Tool is exposed by this phase-one MCP package. Missing media capabilities must be stated.
+3. Use returned asset paths and native HTML/CSS/JS. Import and file save are separate operations. For configured BYOK media generation, use openmotion_media_use and read action=reference for the selected provider. Host media tools remain available within the request's scope. Missing media capabilities must be stated.
 4. Follow the [native loop](native.md), preserve locked content and existing Studio manifests. Inspect actual frames, motion and sound. A saved source file or successful lint is not creative acceptance.
 5. Export only when requested. Reuse an applicable job before submitting another. Save a stable requestId per action: exact retry returns the original outcome; changed input with the same requestId is rejected. Failed request correction uses a new requestId.
 6. Poll the named job through project details. Only completed exposes its real MP4 and technical verification. Inspect [final playback and evidence](verification.md) separately; record unavailable checks as not_run.

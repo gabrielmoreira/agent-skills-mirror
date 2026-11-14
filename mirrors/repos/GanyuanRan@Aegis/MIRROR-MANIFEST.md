@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `GanyuanRan/Aegis` — 26 default patterns, 0 followed patterns, 55 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,25 +95,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`skills/systematic-debugging/root-cause-claim-contract.md`](skills/systematic-debugging/root-cause-claim-contract.md) |
 | 35 | ✓ | [`skills/systematic-debugging/root-cause-tracing.md`](skills/systematic-debugging/root-cause-tracing.md) |
 | 36 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
-| 37 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 38 | ✓ | [`skills/ui-ux-governance/references/experience-rules.md`](skills/ui-ux-governance/references/experience-rules.md) |
-| 39 | ✓ | [`skills/ui-ux-governance/references/verification.md`](skills/ui-ux-governance/references/verification.md) |
-| 40 | ✓ | [`skills/ui-ux-governance/SKILL.md`](skills/ui-ux-governance/SKILL.md) |
-| 41 | ✓ | [`skills/update-aegis/SKILL.md`](skills/update-aegis/SKILL.md) |
-| 42 | ✓ | [`skills/using-aegis/references/antigravity-tools.md`](skills/using-aegis/references/antigravity-tools.md) |
-| 43 | ✓ | [`skills/using-aegis/references/codex-tools.md`](skills/using-aegis/references/codex-tools.md) |
-| 44 | ✓ | [`skills/using-aegis/references/complexity-governance.md`](skills/using-aegis/references/complexity-governance.md) |
-| 45 | ✓ | [`skills/using-aegis/references/copilot-tools.md`](skills/using-aegis/references/copilot-tools.md) |
-| 46 | ✓ | [`skills/using-aegis/references/skill-discipline.md`](skills/using-aegis/references/skill-discipline.md) |
-| 47 | ✓ | [`skills/using-aegis/SKILL.md`](skills/using-aegis/SKILL.md) |
-| 48 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
-| 49 | ✓ | [`skills/verification-before-completion/expanded-closeout.md`](skills/verification-before-completion/expanded-closeout.md) |
-| 50 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
-| 51 | ✓ | [`skills/writing-plans/expanded-planning-guidance.md`](skills/writing-plans/expanded-planning-guidance.md) |
-| 52 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
-| 53 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
-| 54 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 55 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 37 | ✓ | [`skills/test-driven-development/examples.md`](skills/test-driven-development/examples.md) |
+| 38 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 39 | ✓ | [`skills/ui-ux-governance/references/experience-rules.md`](skills/ui-ux-governance/references/experience-rules.md) |
+| 40 | ✓ | [`skills/ui-ux-governance/references/verification.md`](skills/ui-ux-governance/references/verification.md) |
+| 41 | ✓ | [`skills/ui-ux-governance/SKILL.md`](skills/ui-ux-governance/SKILL.md) |
+| 42 | ✓ | [`skills/update-aegis/SKILL.md`](skills/update-aegis/SKILL.md) |
+| 43 | ✓ | [`skills/using-aegis/references/antigravity-tools.md`](skills/using-aegis/references/antigravity-tools.md) |
+| 44 | ✓ | [`skills/using-aegis/references/codex-tools.md`](skills/using-aegis/references/codex-tools.md) |
+| 45 | ✓ | [`skills/using-aegis/references/complexity-governance.md`](skills/using-aegis/references/complexity-governance.md) |
+| 46 | ✓ | [`skills/using-aegis/references/copilot-tools.md`](skills/using-aegis/references/copilot-tools.md) |
+| 47 | ✓ | [`skills/using-aegis/references/skill-discipline.md`](skills/using-aegis/references/skill-discipline.md) |
+| 48 | ✓ | [`skills/using-aegis/SKILL.md`](skills/using-aegis/SKILL.md) |
+| 49 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
+| 50 | ✓ | [`skills/verification-before-completion/expanded-closeout.md`](skills/verification-before-completion/expanded-closeout.md) |
+| 51 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
+| 52 | ✓ | [`skills/writing-plans/expanded-planning-guidance.md`](skills/writing-plans/expanded-planning-guidance.md) |
+| 53 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
+| 54 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
+| 55 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 56 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

@@ -54,7 +54,7 @@ var gitignoreLines = (kind) => [STATE_FILE, LOG_FILE, ".sharing.json", ...kind =
 function writeGitignore(root, kind) {
   const file = path.join(root, GITIGNORE_FILE);
   try {
-    fs.writeFileSync(file, ["# Written by baoyu-design when the editor first opened this folder: what only this computer's editor server needs.", ...gitignoreLines(kind), ""].join("\n"), { flag: "wx" });
+    fs.writeFileSync(file, ["# Written by open-artifacts when the editor first opened this folder: what only this computer's editor server needs.", ...gitignoreLines(kind), ""].join("\n"), { flag: "wx" });
   } catch {
   }
 }
@@ -699,7 +699,8 @@ var Hub = class {
       }
       if (this.echo) process.stderr.write(text);
     };
-    const site = await this.factory(root, { log, network: this.network, ...agentHook ? { agentHook } : {} });
+    const open2 = (other2) => this.add(other2, agentHook ? { agentHook } : {}).then((state2) => new URL(state2.url).pathname);
+    const site = await this.factory(root, { log, network: this.network, ...agentHook ? { agentHook } : {}, open: open2 });
     const other = this.sites.get(site.page);
     if (other) {
       site.close();
@@ -2885,16 +2886,21 @@ function agentWhere(main2, count, label) {
 }
 var AGENT_COLOR = "#d25f25";
 var MAX_PEERS = 64;
-var MAX_PATCH_BYTES = 16 << 10;
+var MAX_BODY_BYTES = 64 << 10;
 var MAX_FIELDS = 12;
 var MAX_PRESENCE_BYTES = 6 << 10;
 var BROADCAST_MS = 50;
+var EVENT_TOPIC = /^[a-z][a-z0-9_.-]{0,47}$/;
+var MAX_EVENT_BYTES = 4096;
+var EVENTS_PER_SECOND = 40;
+var EVENT_BURST = 80;
 var LEAVE_GRACE_MS = 4e3;
 var AGENT_LINGER_MS = 2e4;
 var AGENT_PEER = "agent-claude";
 var PresenceHub = class {
   peers = /* @__PURE__ */ new Map();
-  listeners = /* @__PURE__ */ new Set();
+  /** Every open stream, with the peer it belongs to ('' for one that hears the others but isn't on the list). */
+  listeners = /* @__PURE__ */ new Map();
   agent = null;
   timer = null;
   /** Adds a page's stream; `send` writes one SSE frame to it. Returns what to call when the stream closes. */
@@ -2905,7 +2911,7 @@ var PresenceHub = class {
       peer = "";
     }
     if (peer && !entry && this.peers.size < MAX_PEERS) {
-      entry = { viewer, presence: {}, updatedAt: Date.now(), streams: 0 };
+      entry = { viewer, presence: {}, updatedAt: Date.now(), streams: 0, budget: EVENT_BURST, toppedAt: Date.now() };
       this.peers.set(peer, entry);
     }
     if (entry) {
@@ -2913,7 +2919,7 @@ var PresenceHub = class {
       if (entry.leaving) clearTimeout(entry.leaving);
       entry.leaving = void 0;
     }
-    this.listeners.add(send);
+    this.listeners.set(send, entry ? peer : "");
     send(this.frame());
     this.schedule();
     let open2 = true;
@@ -2950,6 +2956,35 @@ var PresenceHub = class {
     this.schedule();
     return true;
   }
+  /**
+   * Sends a page's room events on to every other open page; false when the peer isn't this person's open page or an
+   * event is bad (then none is sent). Those over the page's budget are dropped, as the room contract drops them.
+   */
+  relay(peer, viewer, events) {
+    const entry = this.peers.get(peer);
+    if (!entry || entry.viewer.user.id !== viewer.user.id || !Array.isArray(events)) return false;
+    const frames = [];
+    for (const event of events) {
+      if (typeof event !== "object" || event === null || Array.isArray(event)) return false;
+      const { topic, data } = event;
+      if (typeof topic !== "string" || !EVENT_TOPIC.test(topic)) return false;
+      if (data !== void 0 && Buffer.byteLength(JSON.stringify(data)) > MAX_EVENT_BYTES) return false;
+      const message = { peer, by: entry.viewer.user.id, topic, ...data === void 0 ? {} : { data } };
+      frames.push(`event: room
+data: ${JSON.stringify(message)}
+
+`);
+    }
+    const now = Date.now();
+    entry.budget = Math.min(EVENT_BURST, entry.budget + (now - entry.toppedAt) / 1e3 * EVENTS_PER_SECOND);
+    entry.toppedAt = now;
+    for (const frame of frames) {
+      if (entry.budget < 1) break;
+      entry.budget -= 1;
+      for (const [send, owner] of this.listeners) if (owner !== peer) send(frame);
+    }
+    return true;
+  }
   /** The agent changed the artifact: it shows on the list (with `context`, where it worked) for a while. */
   agentActive(agent = {}) {
     if (this.agent) clearTimeout(this.agent.timer);
@@ -2978,7 +3013,7 @@ var PresenceHub = class {
     }
     return views;
   }
-  /** Answers POST `__presence` ({peer, patch}); GET gives the list. */
+  /** Answers POST `__presence` ({peer, patch?, events?}); GET gives the list. */
   async handle(request, response, viewer) {
     const method = request.method ?? "GET";
     if (method === "GET") return sendJson(response, 200, { peers: this.list() });
@@ -2992,13 +3027,20 @@ var PresenceHub = class {
     }
     let body;
     try {
-      body = JSON.parse((await readBody(request, MAX_PATCH_BYTES)).toString("utf8"));
+      body = JSON.parse((await readBody(request, MAX_BODY_BYTES)).toString("utf8"));
     } catch {
-      return sendJson(response, 400, { code: "invalid_argument", message: `Expected {peer, patch} under ${MAX_PATCH_BYTES} bytes.` });
+      return sendJson(response, 400, { code: "invalid_argument", message: `Expected {peer, patch?, events?} under ${MAX_BODY_BYTES} bytes.` });
     }
-    const { peer, patch } = typeof body === "object" && body !== null ? body : {};
-    if (typeof peer !== "string" || !PEER_ID.test(peer)) return sendJson(response, 400, { code: "invalid_argument", message: "Expected {peer, patch}." });
-    if (!this.update(peer, viewer, patch)) return sendJson(response, 409, { code: "not_joined", message: "That page is not open here (its event stream is closed)." });
+    const { peer, patch, events } = typeof body === "object" && body !== null ? body : {};
+    if (typeof peer !== "string" || !PEER_ID.test(peer) || patch === void 0 && events === void 0) {
+      return sendJson(response, 400, { code: "invalid_argument", message: "Expected {peer, patch?, events?}." });
+    }
+    const entry = this.peers.get(peer);
+    if (!entry || entry.viewer.user.id !== viewer.user.id) return sendJson(response, 409, { code: "not_joined", message: "That page is not open here (its event stream is closed)." });
+    if (events !== void 0 && !this.relay(peer, viewer, events)) {
+      return sendJson(response, 400, { code: "invalid_argument", message: `Events are {topic, data}: a topic matching ${EVENT_TOPIC.source}, data at most ${MAX_EVENT_BYTES} bytes of JSON.` });
+    }
+    if (patch !== void 0 && !this.update(peer, viewer, patch)) return sendJson(response, 409, { code: "not_joined", message: "That patch was not applied (not an object, or the presence would be too big)." });
     response.writeHead(204, { "Cache-Control": "no-store" }).end();
   }
   /** Ends the timers (the server is closing). */
@@ -3020,7 +3062,7 @@ data: ${JSON.stringify({ peers: this.list() })}
     this.timer = setTimeout(() => {
       this.timer = null;
       const frame = this.frame();
-      for (const send of this.listeners) send(frame);
+      for (const send of this.listeners.keys()) send(frame);
     }, BROADCAST_MS);
     this.timer.unref?.();
   }
@@ -3408,7 +3450,7 @@ var PRESENCE_CHECK_MS = 5e3;
 var SSE_KEEPALIVE_MS = 25e3;
 var WATCH_DEBOUNCE_MS = 100;
 var POLL_MS = 2e3;
-var MAX_BODY_BYTES = 256 * 1024;
+var MAX_BODY_BYTES2 = 256 * 1024;
 var TooLarge2 = class extends Error {
 };
 function sendJson2(response, status, body) {
@@ -3432,7 +3474,7 @@ function readJson(request) {
     let size = 0;
     request.on("data", (chunk) => {
       size += chunk.length;
-      if (size > MAX_BODY_BYTES) {
+      if (size > MAX_BODY_BYTES2) {
         reject(new TooLarge2());
         request.destroy();
         return;
@@ -3960,7 +4002,7 @@ var MAX_STATE = 16384;
 var MAX_LABEL = 200;
 var MAX_BATCH_WRITES = 50;
 var MAX_BATCH_BYTES = 1024 * 1024;
-var MAX_UPLOAD_BYTES = 16 * 1024 * 1024;
+var MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 var SEGMENT = /^(?!\.\.?$)[A-Za-z0-9_\-.~:@+]{1,200}$/;
 var ELEMENT_ID = /^(?!\.{1,40}$)[A-Za-z0-9_.~:@+-]{1,40}$/;
 var LOCAL_USER_ID = "local";
@@ -4007,6 +4049,8 @@ function linkHref(href) {
   return out.length <= MAX_HREF ? out : null;
 }
 var IMAGE_MIMES = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+var VIDEO_MIMES = ["video/mp4", "video/webm"];
+var NOT_VIDEO_BRANDS = /* @__PURE__ */ new Set(["avif", "avis", "heic", "heix", "heim", "heis", "hevc", "hevx", "hevm", "hevs", "mif1", "mif2", "msf1", "miaf", "jp2 ", "jpx ", "jpm ", "mjp2", "crx ", "M4A ", "M4B ", "M4P ", "F4A ", "F4B "]);
 var REPLACE_ONLY_DOCS = /* @__PURE__ */ new Set(["board/timer"]);
 var CONTENT_TYPES = {
   html: "text/html; charset=utf-8",
@@ -4175,7 +4219,11 @@ function hasDeleteMarker(v) {
 function imageSrcProblem(root, src) {
   if (typeof src !== "string" || src === "") return `src is an upload's url ("_blob/<id>", from upload) or a data:image/\u2026 URI.`;
   const blob = BLOB_URL.exec(src);
-  if (blob) return fs10.existsSync(blobFile(root, blob[1])) ? null : `${src} is not in this board's _blobs/. Upload the image first (${cmd("upload", root, "<file>")}) and use the url it prints.`;
+  if (blob) {
+    if (!fs10.existsSync(blobFile(root, blob[1]))) return `${src} is not in this board's _blobs/. Upload the image first (${cmd("upload", root, "<file>")}) and use the url it prints.`;
+    if (readBlobMeta(root, blob[1])?.contentType.startsWith("video/")) return `${src} is a video; src is the picture shown for it (its still), and the video goes in "video".`;
+    return null;
+  }
   if (src.startsWith("data:image/svg+xml")) {
     if (src.length > MAX_DOC_BYTES) return "the SVG is too large for one element.";
     if (src.startsWith("data:image/svg+xml,") && src.includes("#")) return 'a "#" in an SVG data URI ends it: write a colour as %23F6BD78 (and a lone % as %25).';
@@ -4201,6 +4249,14 @@ function svgText(src) {
   } catch {
     return null;
   }
+}
+function videoProblem(root, video) {
+  const blob = typeof video === "string" ? BLOB_URL.exec(video) : null;
+  if (!blob) return 'video is an upload of this board ("_blob/<id>") holding a video; the page drops any other value. Keep it as the page wrote it.';
+  if (!fs10.existsSync(blobFile(root, blob[1]))) return `video: ${video} is not in this board's _blobs/; the page shows the still alone.`;
+  const type = readBlobMeta(root, blob[1])?.contentType;
+  if (type !== void 0 && !type.startsWith("video/")) return `video: ${video} is a ${type}, not a video.`;
+  return null;
 }
 var colorOk = (v, names) => v === void 0 || typeof v === "string" && (names.includes(v) || COLOR_HEX.test(v));
 var endOk = (v) => typeof v === "string" && ELEMENT_ID.test(v) || Array.isArray(v) && v.length === 2 && v.every(isNum);
@@ -4241,7 +4297,8 @@ function elementProblem(root, data) {
     }
     case "image": {
       const bad = imageSrcProblem(root, data.src);
-      return bad ? `image: ${bad}` : null;
+      if (bad) return `image: ${bad}`;
+      return data.video === void 0 ? null : videoProblem(root, data.video);
     }
     case "html":
       if (typeof data.html !== "string" || data.html === "") return 'an embed needs "html", the page it runs.';
@@ -4294,6 +4351,7 @@ function documentProblem(root, segs, data, { agent, strict = agent, before }) {
     if (!ELEMENT_ID.test(id)) return `${p}: an element id is 1\u201340 of A\u2013Z a\u2013z 0\u20139 _ . ~ : @ + -, not all dots; the page drops any other.`;
     if (agent) {
       if (PEOPLE_TYPES.includes(data.type) && before?.type !== data.type) return `${p}: a ${data.type} is people's; a note is a rounded yellow shape, and stickers are left as they are.`;
+      if (before?.type === "image" && before.video !== void 0 && data.type === "image" && data.video === void 0) return `${p}: this image plays a video someone added; keep its "video" (move or resize it with update) or delete the element.`;
       if (!AGENT_TYPES.includes(data.type) && !PEOPLE_TYPES.includes(data.type)) return `${p}: type ${JSON.stringify(data.type)} is not one the agent writes (${AGENT_TYPES.join(", ")}).`;
     }
     if (agent || strict && AGENT_TYPES.includes(data.type)) {
@@ -4431,6 +4489,14 @@ function sniffType(b) {
   if (b.length >= 3 && b[0] === 255 && b[1] === 216 && b[2] === 255) return "image/jpeg";
   if (ascii(0, "GIF87a") || ascii(0, "GIF89a")) return "image/gif";
   if (ascii(0, "RIFF") && ascii(8, "WEBP")) return "image/webp";
+  if (b.length >= 12 && ascii(4, "ftyp")) return NOT_VIDEO_BRANDS.has(b.toString("latin1", 8, 12)) ? null : "video/mp4";
+  if (b.length >= 4 && b.readUInt32BE(0) === 440786851) {
+    const head = b.subarray(0, 64);
+    const at = head.indexOf(Buffer.from([66, 130]));
+    const len = at > 0 ? head[at + 2] : void 0;
+    if (len === void 0 || !(len & 128)) return null;
+    return head.toString("latin1", at + 3, at + 3 + (len & 127)) === "webm" ? "video/webm" : null;
+  }
   return null;
 }
 function imageSize(b, type) {
@@ -4490,6 +4556,7 @@ function upload(root, given, flags) {
     throw new CliError("SVG_NOT_UPLOADED", 'An SVG is never uploaded: write it as an image element whose src is data:image/svg+xml,<svg \u2026> (a drawing, with "by": "claude").');
   }
   const type = sniffType(bytes);
+  if (type?.startsWith("video/")) throw new CliError("UNSUPPORTED_TYPE", `${given} is a video. A person adds a video by dropping it on the board (the page makes its still); upload takes images only.`);
   if (!type) throw new CliError("UNSUPPORTED_TYPE", `${given} is not an image the board shows (png, jpeg, gif, webp). Convert it first.`);
   const result = putBlob(root, bytes, name, type);
   const src = result.url.slice(1);
@@ -4583,6 +4650,9 @@ function check(root) {
     }
   }
   for (const [id, data] of elements) {
+    if (data.type === "image" && data.video !== void 0 && data.href !== void 0) warn(`elements/${id}`, "an image that plays a video keeps no link; the page drops its href.");
+  }
+  for (const [id, data] of elements) {
     if (data.type !== "image" || typeof data.src !== "string" || !data.src.startsWith("data:image/svg+xml")) continue;
     const svg = svgText(data.src) ?? "";
     if (/<text[\s>]/i.test(svg)) warn(`elements/${id}`, "its SVG holds <text>; the page shows the whole picture as a grey box. Put the words in a block or a text beside it.");
@@ -4600,6 +4670,17 @@ function check(root) {
     ...warnings.length ? { warnings } : {}
   };
   return { result, problems: problems.length };
+}
+function byteRange(header, size) {
+  const m = /^bytes=(\d*)-(\d*)$/.exec(String(header ?? "").trim());
+  if (!m || m[1] === "" && m[2] === "") return null;
+  if (m[1] === "") {
+    const n = Number(m[2]);
+    return n === 0 || size === 0 ? "unsatisfiable" : [Math.max(0, size - n), size - 1];
+  }
+  const first = Number(m[1]);
+  const last = m[2] === "" ? size - 1 : Math.min(Number(m[2]), size - 1);
+  return first >= size || last < first ? "unsatisfiable" : [first, last];
 }
 var runningServer2 = (root) => runningServer(root, KIND, "_api/session");
 function serverFlags(flags) {
@@ -4747,9 +4828,16 @@ data: ${JSON.stringify(data)}
   const serveFile = (req, res, file, type, cache) => {
     fs10.stat(file, (error, stat) => {
       if (error || !stat.isFile()) return json(res, 404, { code: "not_found", message: "Not found" });
-      res.writeHead(200, { "Content-Type": type, "Content-Length": stat.size, "Cache-Control": cache, "X-Content-Type-Options": "nosniff" });
+      const headers = { "Content-Type": type, "Cache-Control": cache, "X-Content-Type-Options": "nosniff", "Accept-Ranges": "bytes" };
+      const range = byteRange(req.headers.range, stat.size);
+      if (range === "unsatisfiable") {
+        res.writeHead(416, { ...headers, "Content-Range": `bytes */${stat.size}` });
+        return res.end();
+      }
+      if (range) res.writeHead(206, { ...headers, "Content-Range": `bytes ${range[0]}-${range[1]}/${stat.size}`, "Content-Length": range[1] - range[0] + 1 });
+      else res.writeHead(200, { ...headers, "Content-Length": stat.size });
       if (req.method === "HEAD") return res.end();
-      const stream = fs10.createReadStream(file);
+      const stream = fs10.createReadStream(file, range ? { start: range[0], end: range[1] } : {});
       stream.on("error", () => res.destroy());
       res.on("close", () => stream.destroy());
       stream.pipe(res);
@@ -4827,6 +4915,10 @@ data: ${JSON.stringify(data)}
       }
       if (req.method === "GET" && p === "/_api/session") {
         return json(res, 200, { ok: true, kind: KIND, ...viewer.guest ? {} : { root }, userId: viewer.user.id, userName: viewer.user.name, role: viewer.role, canEdit: editing });
+      }
+      if (req.method === "GET" && p === "/_api/people") {
+        const people = [{ id: owner.id, name: owner.name }, ...share2.sharing.state.guests.map((g) => ({ id: guestUser(g).id, name: g.name }))];
+        return json(res, 200, { people });
       }
       if (req.method === "GET" && p === "/_api/events") {
         res.writeHead(200, { "Content-Type": "text/event-stream", "Cache-Control": "no-store", Connection: "keep-alive" });
@@ -4930,7 +5022,7 @@ data: ${JSON.stringify(data)}
         } catch {
         }
         const type = sniffType(bytes);
-        if (!type || !IMAGE_MIMES.includes(type)) return json(res, 400, { code: "invalid_argument", message: "Only png, jpeg, gif and webp images are uploaded to a board." });
+        if (!type || !(IMAGE_MIMES.includes(type) || VIDEO_MIMES.includes(type))) return json(res, 400, { code: "invalid_argument", message: "Only png, jpeg, gif and webp images and mp4, mov and webm videos are uploaded to a board." });
         const result = putBlob(root, bytes, name, type);
         log(`uploaded ${name} as ${result.url}${viewer.guest ? ` (${viewer.user.name})` : ""}`);
         return json(res, 200, result);

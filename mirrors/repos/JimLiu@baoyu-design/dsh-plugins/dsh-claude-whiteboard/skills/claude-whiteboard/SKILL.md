@@ -1,7 +1,7 @@
 ---
 name: claude-whiteboard
 description: "Use this for a local Whiteboard: a shared space for laying out thinking in whatever form it needs (a diagram, a flow, a map of ideas, a plan, a comparison, a drawn explanation, a small working embed) that opens in the bundled board editor, where people move, draw, comment and send comments to the agent. Its content lives in the board's own store, written with this skill's script, never in files you edit by hand. Read it before you create a board or change one. Not for a slide deck, a document, a film or a static HTML page."
-license: "Mixed. The skill text, references and editor adapted from Anthropic's claude.ai Artifact types stay Anthropic's and are not MIT-licensed; the local tooling is MIT. Complete terms in NOTICE.md: https://github.com/JimLiu/baoyu-design/blob/main/NOTICE.md"
+license: "Mixed. The skill text, references and editor adapted from Anthropic's claude.ai Artifact types stay Anthropic's and are not MIT-licensed; the local tooling is MIT. Complete terms in NOTICE.md: https://github.com/JimLiu/open-artifacts/blob/main/NOTICE.md"
 ---
 
 # Whiteboard
@@ -68,10 +68,10 @@ whole. They are the type's own, word for word, so they name claude.ai's calls:
 `write-db`. `if_version` is not in this script's input: leave it out. A write to
 `data/users/me/idea` goes to the board owner's own corner of the store.
 
-**What doesn't run here.** The board's own assistant (the "Ask" box, cursor chat,
-read-aloud and dictation) needs claude.ai's model and speech services: it stays
-off, and the person reaches you through comments instead. Link cards preview only
-claude.ai artifacts.
+**What doesn't run here.** The board's own assistant (the "Ask" box, asking it
+from cursor chat, read-aloud and dictation) needs claude.ai's model and speech
+services: it stays off, and the person reaches you through comments instead.
+Link cards preview only claude.ai artifacts.
 
 ## A good board
 
@@ -147,7 +147,7 @@ Colours, never more than four marks on a board: a block or section takes yellow 
   // sides: top | right | bottom | left; "head": end | both | none; "dash": true; left out: head end, color ink. "heads": [from, to], each none | arrow | circle, wins over "head" (people's arrows carry it); [arrow, none|circle] points to→from. To reverse an arrow, swap from/to and their sides, not its heads, and drop its "bends"
   // "bends" plans its route, see An arrow's route
 { "type": "image", "x": 0, "y": 0, "w": 320, "h": 200, "src": "_blob/<id>" }
-  // a picture. src: an upload's url as `upload` prints it, or a data:image/(webp|jpeg|png) URI up to 100 KB. "crop": {zoom (1+), x, y (0 to 1; 0.5: the middle)}. "href": an http(s) page to open
+  // a picture. src: an upload's url as `upload` prints it, or a data:image/(webp|jpeg|png) URI up to 100 KB. "crop": {zoom (1+), x, y (0 to 1; 0.5: the middle)}. "href": an http(s) page to open. "video": "_blob/<id>": a video someone dropped on the board, playing over its still (src); it keeps no href
 { "type": "image", "x": 0, "y": 0, "w": 440, "h": 300, "by": "claude", "src": "data:image/svg+xml,…" }
   // a drawing of yours, see Drawing
 { "type": "html", "x": 0, "y": 0, "w": 400, "h": 300, "html": "<title>Tip calculator</title><p>…</p>" }
@@ -158,7 +158,7 @@ Colours, never more than four marks on a board: a block or section takes yellow 
 
 `by: "claude"` marks a drawing or embed as yours: the page reads that value, so write it as it is.
 
-Don't add `note` elements: people's. A note or sticky is a rounded yellow `shape`. A `sticker`, people's drawing, follows the item its `on` names: move only the item. A face sticker is a person's vote, so count those. Leave stickers as they are and add none.
+Don't add `note` elements: people's. A note or sticky is a rounded yellow `shape`. A `sticker`, people's drawing, follows the item its `on` names: move only the item. A face sticker is a person's vote, so count those. Leave stickers as they are and add none. Videos are people's too: an `image` with a `video` is one someone dropped on the board (an mp4, mov or webm up to 20 MB), so move or resize it with `update`, which keeps its `video` and `src`, and add none (`upload` takes images only).
 
 An embed holds about 16,000 characters, so stay well under that. Beyond that it's cut off, script and all. localStorage, alert, confirm, prompt, eval and a form's submit don't work in it, and nobody tells you whether its script ran, so keep the script plain. What runs past its box is cut off unless a part of it has overflow: auto.
 
@@ -213,4 +213,4 @@ People comment on the open board: on an item, a point or a region they drag. Eac
 
 ## Sharing
 
-`share <root>` opens the board to the local network and prints a link for each role: editors change it, commenters comment, viewers look. Everyone on a link sees the others' cursors and edits live. `--off` closes it again; `--reset <role>` makes a new link for a role (the old one stops working). Give a link only to people the user names.
+`share <root>` opens the board to the local network and prints a link for each role: editors change it, commenters comment, viewers look. Everyone on a link sees the others' cursors, cursor chat and edits live, and can follow one another's view. `--off` closes it again; `--reset <role>` makes a new link for a role (the old one stops working). Give a link only to people the user names.

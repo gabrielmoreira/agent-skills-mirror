@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `langbot-app/LangBot` — 26 default patterns, 2 followed patterns, 285 file(s) materialized.
+Mirror of `langbot-app/LangBot` — 26 default patterns, 3 followed patterns, 286 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `langbot-app/LangBot` — 26 default patterns, 2 followed patterns, 28
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 285 |
+| Followed pats | 3 |
+| Files         | 286 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `langbot-app/LangBot` — 26 default patterns, 2 followed patterns, 28
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `dev-docs/CROSS_COMPONENT_TESTING.md`
 - `dev-docs/architecture/application-api.md`
 - `dev-docs/architecture/backend-i18n.md`
 
@@ -345,6 +346,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 283 | ✓ | [`skills/test/test_complex_agent_task_verify.py`](skills/test/test_complex_agent_task_verify.py) |
 | 284 | → | [`dev-docs/architecture/application-api.md`](dev-docs/architecture/application-api.md) |
 | 285 | → | [`dev-docs/architecture/backend-i18n.md`](dev-docs/architecture/backend-i18n.md) |
+| 286 | → | [`dev-docs/CROSS_COMPONENT_TESTING.md`](dev-docs/CROSS_COMPONENT_TESTING.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Gathin23/cleanyourtv` — 26 default patterns, 37 followed patterns, 247 file(s) materialized.
+Mirror of `Gathin23/cleanyourtv` — 26 default patterns, 38 followed patterns, 249 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Gathin23/cleanyourtv` — 26 default patterns, 37 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 37 |
-| Files         | 247 |
+| Followed pats | 38 |
+| Files         | 249 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,7 @@ Mirror of `Gathin23/cleanyourtv` — 26 default patterns, 37 followed patterns, 
 - `docs/workflows/perf-ab.md`
 - `SECURITY.md`
 - `docs/devices/samsung-tizen.md`
+- `docs/devices/lg-webos.md`
 - `examples/README.md`
 - `tools/native-adb.md`
 - `tools/docker-build.md`
@@ -295,53 +296,55 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 198 | ✓ | [`examples/xiaomi-mitv-moor0/README.md`](examples/xiaomi-mitv-moor0/README.md) |
 | 199 | ✓ | [`examples/xiaomi-mitv-moor2/README.md`](examples/xiaomi-mitv-moor2/README.md) |
 | 200 | ✓ | [`examples/xiaomi-mitv-mssp1/README.md`](examples/xiaomi-mitv-mssp1/README.md) |
-| 201 | ✓ | [`examples/xiaomi-mitv-mssp2/README.md`](examples/xiaomi-mitv-mssp2/README.md) |
-| 202 | ✓ | [`examples/xiaomi-mitv-mssp3-android9/README.md`](examples/xiaomi-mitv-mssp3-android9/README.md) |
-| 203 | ✓ | [`examples/xiaomi-mitv-mssp3/README.md`](examples/xiaomi-mitv-mssp3/README.md) |
-| 204 | ✓ | [`examples/xiaomi-mitv4i-magnolia/README.md`](examples/xiaomi-mitv4i-magnolia/README.md) |
-| 205 | ✓ | [`examples/xvision-50xyu765/README.md`](examples/xvision-50xyu765/README.md) |
-| 206 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 207 | ✓ | [`themes/cinematic/README.md`](themes/cinematic/README.md) |
-| 208 | ✓ | [`themes/CREATE_A_THEME.md`](themes/CREATE_A_THEME.md) |
-| 209 | ✓ | [`themes/glass-gallery/README.md`](themes/glass-gallery/README.md) |
-| 210 | ✓ | [`themes/retro/README.md`](themes/retro/README.md) |
-| 211 | → | [`addons/README.md`](addons/README.md) |
-| 212 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 213 | → | [`docs/app-library.md`](docs/app-library.md) |
-| 214 | → | [`docs/devices/samsung-tizen.md`](docs/devices/samsung-tizen.md) |
-| 215 | → | [`docs/devices/xiaomi-mitv4-ansm0.md`](docs/devices/xiaomi-mitv4-ansm0.md) |
-| 216 | → | [`docs/DOS-AND-DONTS.md`](docs/DOS-AND-DONTS.md) |
-| 217 | → | [`docs/firmware-updates.md`](docs/firmware-updates.md) |
-| 218 | → | [`docs/launcher.md`](docs/launcher.md) |
-| 219 | → | [`docs/modules.md`](docs/modules.md) |
-| 220 | → | [`docs/PRESS.md`](docs/PRESS.md) |
-| 221 | → | [`docs/privacy.md`](docs/privacy.md) |
-| 222 | → | [`docs/REMOTE.md`](docs/REMOTE.md) |
-| 223 | → | [`docs/restore.md`](docs/restore.md) |
-| 224 | → | [`docs/switches.md`](docs/switches.md) |
-| 225 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 226 | → | [`docs/workflows/addon.md`](docs/workflows/addon.md) |
-| 227 | → | [`docs/workflows/docs-notes.md`](docs/workflows/docs-notes.md) |
-| 228 | → | [`docs/workflows/input-sources.md`](docs/workflows/input-sources.md) |
-| 229 | → | [`docs/workflows/launcher-switch.md`](docs/workflows/launcher-switch.md) |
-| 230 | → | [`docs/workflows/perf-ab.md`](docs/workflows/perf-ab.md) |
-| 231 | → | [`docs/workflows/press.md`](docs/workflows/press.md) |
-| 232 | → | [`docs/workflows/showcase.md`](docs/workflows/showcase.md) |
-| 233 | → | [`docs/workflows/theme.md`](docs/workflows/theme.md) |
-| 234 | → | [`docs/workflows/translation.md`](docs/workflows/translation.md) |
-| 235 | → | [`docs/workflows/tv-list.md`](docs/workflows/tv-list.md) |
-| 236 | → | [`examples/README.md`](examples/README.md) |
-| 237 | → | [`PROMPT.md`](PROMPT.md) |
-| 238 | → | [`README.md`](README.md) |
-| 239 | → | [`SECURITY.md`](SECURITY.md) |
-| 240 | → | [`SHOWCASE.md`](SHOWCASE.md) |
-| 241 | → | [`themes/README.md`](themes/README.md) |
-| 242 | → | [`tools/docker-build.md`](tools/docker-build.md) |
-| 243 | → | [`tools/flamechart.md`](tools/flamechart.md) |
-| 244 | → | [`tools/native-adb.md`](tools/native-adb.md) |
-| 245 | → | [`tools/relay.md`](tools/relay.md) |
-| 246 | → | [`tools/screendiff.md`](tools/screendiff.md) |
-| 247 | → | [`tools/trace.md`](tools/trace.md) |
+| 201 | ✓ | [`examples/xiaomi-mitv-mssp2-android11/README.md`](examples/xiaomi-mitv-mssp2-android11/README.md) |
+| 202 | ✓ | [`examples/xiaomi-mitv-mssp2/README.md`](examples/xiaomi-mitv-mssp2/README.md) |
+| 203 | ✓ | [`examples/xiaomi-mitv-mssp3-android9/README.md`](examples/xiaomi-mitv-mssp3-android9/README.md) |
+| 204 | ✓ | [`examples/xiaomi-mitv-mssp3/README.md`](examples/xiaomi-mitv-mssp3/README.md) |
+| 205 | ✓ | [`examples/xiaomi-mitv4i-magnolia/README.md`](examples/xiaomi-mitv4i-magnolia/README.md) |
+| 206 | ✓ | [`examples/xvision-50xyu765/README.md`](examples/xvision-50xyu765/README.md) |
+| 207 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 208 | ✓ | [`themes/cinematic/README.md`](themes/cinematic/README.md) |
+| 209 | ✓ | [`themes/CREATE_A_THEME.md`](themes/CREATE_A_THEME.md) |
+| 210 | ✓ | [`themes/glass-gallery/README.md`](themes/glass-gallery/README.md) |
+| 211 | ✓ | [`themes/retro/README.md`](themes/retro/README.md) |
+| 212 | → | [`addons/README.md`](addons/README.md) |
+| 213 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 214 | → | [`docs/app-library.md`](docs/app-library.md) |
+| 215 | → | [`docs/devices/lg-webos.md`](docs/devices/lg-webos.md) |
+| 216 | → | [`docs/devices/samsung-tizen.md`](docs/devices/samsung-tizen.md) |
+| 217 | → | [`docs/devices/xiaomi-mitv4-ansm0.md`](docs/devices/xiaomi-mitv4-ansm0.md) |
+| 218 | → | [`docs/DOS-AND-DONTS.md`](docs/DOS-AND-DONTS.md) |
+| 219 | → | [`docs/firmware-updates.md`](docs/firmware-updates.md) |
+| 220 | → | [`docs/launcher.md`](docs/launcher.md) |
+| 221 | → | [`docs/modules.md`](docs/modules.md) |
+| 222 | → | [`docs/PRESS.md`](docs/PRESS.md) |
+| 223 | → | [`docs/privacy.md`](docs/privacy.md) |
+| 224 | → | [`docs/REMOTE.md`](docs/REMOTE.md) |
+| 225 | → | [`docs/restore.md`](docs/restore.md) |
+| 226 | → | [`docs/switches.md`](docs/switches.md) |
+| 227 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 228 | → | [`docs/workflows/addon.md`](docs/workflows/addon.md) |
+| 229 | → | [`docs/workflows/docs-notes.md`](docs/workflows/docs-notes.md) |
+| 230 | → | [`docs/workflows/input-sources.md`](docs/workflows/input-sources.md) |
+| 231 | → | [`docs/workflows/launcher-switch.md`](docs/workflows/launcher-switch.md) |
+| 232 | → | [`docs/workflows/perf-ab.md`](docs/workflows/perf-ab.md) |
+| 233 | → | [`docs/workflows/press.md`](docs/workflows/press.md) |
+| 234 | → | [`docs/workflows/showcase.md`](docs/workflows/showcase.md) |
+| 235 | → | [`docs/workflows/theme.md`](docs/workflows/theme.md) |
+| 236 | → | [`docs/workflows/translation.md`](docs/workflows/translation.md) |
+| 237 | → | [`docs/workflows/tv-list.md`](docs/workflows/tv-list.md) |
+| 238 | → | [`examples/README.md`](examples/README.md) |
+| 239 | → | [`PROMPT.md`](PROMPT.md) |
+| 240 | → | [`README.md`](README.md) |
+| 241 | → | [`SECURITY.md`](SECURITY.md) |
+| 242 | → | [`SHOWCASE.md`](SHOWCASE.md) |
+| 243 | → | [`themes/README.md`](themes/README.md) |
+| 244 | → | [`tools/docker-build.md`](tools/docker-build.md) |
+| 245 | → | [`tools/flamechart.md`](tools/flamechart.md) |
+| 246 | → | [`tools/native-adb.md`](tools/native-adb.md) |
+| 247 | → | [`tools/relay.md`](tools/relay.md) |
+| 248 | → | [`tools/screendiff.md`](tools/screendiff.md) |
+| 249 | → | [`tools/trace.md`](tools/trace.md) |
 
 ---
 

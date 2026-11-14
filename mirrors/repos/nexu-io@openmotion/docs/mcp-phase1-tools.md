@@ -1,18 +1,33 @@
-# OpenMotion 一期 11 Tool 契约与实现范围
+# OpenMotion 一期 12 Tool 契约与实现范围
 
 
 ## 结论与本次落地范围
 
-本地候选包版本为0.6.3，避免误复用缺少模板目录接口的旧服务和宿主缓存；尚未发布。源码和默认导出均使用 `phase1`，只公开以下 11 个 `motion_` Tool。发现、调用门禁、接入元数据和构建使用同一注册表；旧名不可绕过调用。原有领域服务、Studio、渲染器和内部兼容 handler 保留。适配不只是改名：补了项目身份、批量导入、请求去重、版本和保存保护、取消终态、自动导出校验。
+本地候选包版本为0.6.3，避免误复用缺少模板目录接口的旧服务和宿主缓存；尚未发布。源码和默认导出均使用 `phase1`，只公开以下 12 个 `openmotion_` Tool。发现、调用门禁、接入元数据和构建使用同一注册表；旧名不可绕过调用。原有领域服务、Studio、渲染器和内部兼容 handler 保留。适配不只是改名：补了项目身份、批量导入、请求去重、版本和保存保护、取消终态、自动导出校验。
 
 Skill 是指导文档，与公开 Tool 数量分开。本次后续命名与分发对齐后，一期装入 openmotion-production、openmotion-director、openmotion-template-to-video、openmotion-recreate、openmotion-video-to-template 五个入口及其参考。模板使用与视频转模板保留已有实际流程；openmotion-recreate 包含实际复刻流程，规则与测量脚本随 Skill 分发，不新增自动创作算法或 Tool。原九个工程 Tool 保留，本次新增目录获取和模板详情入口；详见 [Skill 路由与能力边界](skills.md)。
 
-## 一期公开这 11 个 Tool
+## Optional native template presentation
+
+The twelve domain tools and their HTTP API remain unchanged. A phase-one stdio connection may additionally discover `openmotion_show_template_recommendations` when its `initialize` capabilities declare `extensions["io.modelcontextprotocol/ui"].mimeTypes` containing `text/html;profile=mcp-app`, the feature is enabled and the local presentation assets are valid. Do not infer this capability from a client name or protocol date. Clients without that declaration, including the installed direct CLI client, still discover exactly twelve tools; the legacy profile remains twenty-eight.
+
+This read-only adapter extension accepts exactly three distinct `templateIds` from `product-promo`, `nyt-graph` and `decision-tree`, preserving their supplied order. It neither enters the shared HTTP backend nor creates/selects a project. Cards stay in a compact three-column layout, with visible complete previews muted and looping. Optional `onboarding: true` adds the persistent first-run welcome above those same cards after the caller has observed the right-hand library. The ordinary call omits this flag and retains its existing result shape. The welcome lives in the component so host-collapsed commentary cannot hide it; successful onboarding needs no trailing Agent status paragraph. The Recreate template button uses the negotiated OpenAI `ui/message` extension with `_meta["openai/message"]: {target: "active", send: false}` to append an editable brief with the actual template title/ID; it never submits a task. Unsupported hosts receive no message and show a copyable prompt. Only a pending append temporarily disables the buttons. Completion restores every template button and clears transient feedback; no persistent success message or composer-submission observer is used. Only a later user-submitted brief authorizes the Agent's existing workflow. The returned frozen `createArgs` remain compatible with explicitly accepted unchanged samples; customized requirements/attachments and requested HTML/MP4 delivery use their actual intent, never those sample defaults. Unknown write outcomes still require reconciliation before retrying.
+
+The Agent always supplies `language` from the latest user request or their explicit output-language preference: `zh`, `en`, `ja`, `ko`, `fr`, `es` or `pt`. This explicit per-result language overrides host context for the welcome, descriptions, all controls/status labels and the editable composer prompt. Template names and IDs remain canonical identifiers, and previews are unchanged. Descriptions are localized at render time; canonical payload/media validation remains intact. Regional host locales (including `pt-BR` and `pt-PT`) map to the base language. Omitted `language` preserves compatibility with older callers by falling back to the host locale, then Chinese when absent; unsupported host languages fall back to English. The Agent uses English for unsupported request languages. The component does not read or classify chat messages itself.
+
+UI-capable connections list and read one immutable `ui://openmotion/template-recommendations/<contentHash>/index.html` resource. Its local CSP allows only the required Blob media scheme and no network connections. Existing workflow and engine resources retain their original semantics. Resource identities include the browser bundle, approved media, source fingerprints and presentation metadata; an old connection keeps the old bytes after a compatible installation update. Missing/corrupt optional presentation assets disable only the extension, not the domain tools. `OPENMOTION_TEMPLATE_CARDS=0` disables the presentation on new connections without changing projects or stopping exports.
+
+Production reads a prebuilt browser bundle and three integrity-locked full MP4 previews. It does not depend on the browser SDK package at runtime, render previews on installation, download template media or use online catalog credentials. Source packaging rejects missing or stale browser builds using the shipped build identity, and verifies the full media/source manifest and response budget before accepting an artifact. The 1.5 MiB final response budget is a build constraint, not a general host limit. Publication metadata records this optional extension separately from the twelve domain tools. Native host discovery, visible presentation, actual playback and project creation require separate evidence.
+
+## 一期公开这 12 个 Tool
+
 
 | 公开 Tool | 复用来源 | 本次实现到的边界 |
 | --- | --- | --- |
+| openmotion_media_use | Shared Model Gateway | Enabled-provider discovery, bundled references, model list, generate/status/cancel for fal.ai, OpenDesign Cloud, Atlas Cloud and WaveSpeedAI; service-owned keys, explicit project, stable request ID, imported media results; does not edit the composition |
 | openmotion_list_templates | Local repository or configured CMS catalog | No query arguments; returns source, a local JSONL index, count and catalog version for local search |
 | openmotion_get_template | Same local/CMS reader | Exact ID; repository entries return local instructions, motionDocument content and absolute localSource paths |
+| openmotion_media_use | Fixture-based provider references, discovery, authenticated requests, job ownership, output validation and import, and rejection without paid retries | tests/byok.test.ts |
 | openmotion_create_project | 项目目录、空白工程、模板复制、会话归属 | 新建独立载体、保存需求/来源、返回初始内容版本；宿主 Agent 制作影片 |
 | openmotion_open_preview | 原预览、项目选择、原生 lint | 打开指定已有工程；仅明确绑定的 OpenMotion 会话可省 projectId；返回真实 URL |
 | openmotion_import_assets | 素材目录、FFprobe/FFmpeg | 实际本机媒体批量持久化、逐项结果、稳定素材 ID、去重；不自动排入时间线 |
@@ -47,6 +62,10 @@ List has no arguments and returns source, indexPath, total and catalogVersion. S
 返回 projectId、sessionId、project（directory、html、files）、revision、version、currentVersionId/currentVersionNumber、需求/来源、previewUrl，以及 creationComplete=true、filmComplete=false。参考只记录来源，不在创建时假装看片或生成成片；外部 URL 可达性/内容由宿主实际检查。输入不符、模板不可复制或 ID 不存在时明确失败，保留旧项目。
 
 ### openmotion_open_preview
+
+For user-facing catalog browsing, comparison or recommendation, prepare `target=templates` and complete its host page handoff in the same turn unless the user requested text-only/no opening. Recommendations do not authorize creation. Use the shared [browsing policy](../skills/openmotion-production/references/templates.md#browsing-and-recommendations); background directory queries retain their read-only behavior. Verify actual native panel visibility and library content, retry failed presentation once, and report persistent display failures separately from unavailable host capability. Do not count a prepared URL or queued acknowledgment as display success.
+
+`target=templates` opens the editor template library without a project/session binding, native project initialization, lint, template-source download or active-project switch. It accepts only action=open (or omitted), embedded and presentation; project, session, revision and review/display fields are rejected. The result contains target, previewUrl, projectCreated=false and a page previewHandoff without revision/version. The host presents and observes this page; project record_display receipts do not apply. Studio creates an independent project only after the user selects an editable template's Open and edit action. Template details and playback alone do not create projects.
 
 Default action=open accepts an explicit projectId or bound sessionId, optional embedded, presentation, expectedRevision and expectedVersionId. When supplied, both identities are checked before and after lint/open. The result includes previewHandoff, previewUrl, preflight, selectionSource and openedByHost=false; the host must present the existing project. No project is created implicitly.
 
@@ -108,7 +127,7 @@ The open editor also shows these restore refusals through its shared dismissible
 
 ## 注册、构建与兼容
 
-- shared/mcp-profiles.json 是11项唯一公开清单，shared/mcp-release.json 默认 phase1；mcpRegistry 同时控制发现与调用，禁止运行时环境变量扩大列表。新增/缺失实现由构建完整性检查拦截。
+- shared/mcp-profiles.json 是12项唯一公开清单，shared/mcp-release.json 默认 phase1；mcpRegistry 同时控制发现与调用，禁止运行时环境变量扩大列表。新增/缺失实现由构建完整性检查拦截。
 - npm run package:phase1 构建 Studio 并生成 dist/openmotion-0.6.3-phase1.zip；npm run package:plugin 默认也沿用 phase1。该插件 ZIP 不带原生 Node/浏览器/FFmpeg：使用支持的本机 Node、首次安装锁定依赖，FFmpeg/ffprobe 需本机可用。
 - 四宿主薄适配器从同一运行时导出，scope.json 记录 profile，复制上述5个 Skill；不另维护 allowlist。数据目录放在 runtime/插件缓存之外。资源指导通过本地文件或 resources/list、resources/read 取得，不另增加 workflow Tool。
 - 完整原生测试包的 build <target> <beta-version> [phase1|legacy] 使用同表检查并写 release.json；本次不声称重新制作/验收各平台原生安装包。
@@ -116,7 +135,7 @@ The open editor also shows these restore refusals through its shared dismissible
 
 ### Phase-one API compatibility
 
-`shared/phase1-tools.ts` defines API protocol 1 and the available Tool names. Both editor and preview health advertise these capabilities. A phase-one stdio adapter can forward to another version/build only when the backend explicitly supports the same API protocol and requested Tool and has the same stable/test tracking policy; the backend validates the complete input again before execution. Stable and test clients use separate data directories; cross-policy authority reuse is rejected without stopping the existing service. Service, workspace, instance and authority protocol checks still apply. Internal legacy calls retain exact version/build checks.
+`shared/phase1-tools.ts` defines API protocol 1 and the available Tool names. Both editor and preview health advertise these capabilities. A phase-one stdio adapter can forward to another version/build only when the backend explicitly supports the same API protocol and requested Tool; the backend validates the complete input again before execution. Release channels do not impose an additional tracking-policy compatibility gate. DEV packages retain their separate data directories and template routing. Service, workspace, instance and authority protocol checks still apply. Internal legacy calls retain exact version/build checks.
 
 Protocol 1 preserves existing request/response shapes and semantics. New Tools and optional fields are additive; incompatible required fields, removed fields or changed semantics must increment the protocol. A supported older connection keeps its project binding, stable request IDs and existing export queries through a compatible plugin or backend replacement without another MCP initialization. Running exports stay with the live authority; recovery does not terminate it or replay an uncertain mutation. An already-closed host transport and an incompatible protocol cannot be repaired by this negotiation.
 
@@ -138,7 +157,7 @@ Protocol 1 preserves existing request/response shapes and semantics. New Tools a
 
 公开 schema 在 shared/phase1-tools.ts，注册在 shared/mcp-registry.ts；业务适配在 phase1.ts，原生历史及文件保护在 phase1-versions.ts，导出状态在 workspace.ts/server.ts。核心回归为 tests/phase1.test.ts、tests/phase1-runtime.test.ts、tests/mcp-registry.test.ts、tests/workflow.test.ts、tests/adapters.test.ts。旧逻辑通过内部兼容回归继续保护。
 
-## 11个Tool自测对照
+## Public Tool verification
 
 以下是已执行的本地主流程与异常检查，不等于覆盖所有输入组合、平台或人工验收。自动检查调用真实实现及临时隔离项目；示例命名不是新增需求编号。
 
@@ -174,3 +193,11 @@ CI不按路径过滤、不跳过渲染、无失败重试或continue-on-error；�
 **合并门禁还依赖仓库配置：** 管理员需为main开启分支保护，启用必需状态检查，并将实际CI产生的phase1-package-e2e检查上下文（以及现有assemble检查）设为必需；禁止跳过检查合并。工作流文件不能自行修改仓库权限。2026-11-05用户确认先不配置分支保护：本期先交付自动E2E与失败标红，按CI全绿才合并执行；平台暂不会强制锁住合并按钮。后续启用硬门禁仍需管理员配置，不能把CI接入等同于“服务端已禁止失败合并”。
 
 参数拒绝另有回归：顶层/嵌套的constructor、__proto__、toString等未声明字段，以及类型不正确的分页游标，必须明确失败。不能把schema中的additionalProperties=false单独当作运行时校验已完成。
+
+## BYOK media-use extension
+
+Read action=reference for the selected provider, or `openmotion://workflow/production/{fal,opendesign,atlascloud,wavespeed}`. The provider references belong to the existing production guidance; no separate media debugging Skill is distributed. `action=generate` requires provider, provider-native model ID, projectId, requestId, modality and prompt. Provider parameters use the selected model API schema; no key argument is accepted. The queued job is polled with action=status and the same projectId/jobId; completed means actual validated files were imported under assets/generated. Cancellation is local and best effort remotely, without a refund promise. Edits still require a fresh project revision/version. Saving a key in editor Media providers enables that provider. Cloud also requires its public HTTPS gateway origin. Configuration and live model discovery are not proof of paid generation success.
+
+## Inline work rounds
+
+For video playback deliverables, `openmotion_open_preview(action=begin)` starts one persisted work round. Optional `workId` on saves/exports keeps the resulting video bound to that round; `openmotion_get_project(workId,includeVideo=true)` exposes status and component-private media. Existing project Tools, legacy aliases, editor-only delivery and template browsing remain compatible. See [inline progress, states and validation limits](inline-video.md).

@@ -179189,6 +179189,9 @@ function installHostAgentActivity(runtime2) {
       agentActivityBridge = createAgentActivityBridge({
         ownWindow: window,
         parentWindow: window.parent !== window ? window.parent : null,
+        // BaoCut: opened on its own the page has no claude.ai shell to ask; the local host stands in for one
+        // (the comments layer's agent presence: working while the agent is on a comment or request it took).
+        ...globalThis.__baoyuAgentActivityFrame,
         shellOrigin: runtime2.isAllowedHostMessageOrigin
       });
     }
@@ -196827,6 +196830,9 @@ function installHostAgentSession(runtime2) {
             value2,
             CLAUDE_SEND_TIMEOUT_MS
           );
+          if (objectProperty(value3, "to") === "agent") {
+            return "sent";
+          }
           if (options.deliver === "send" && isAgentSessionDestination(value3)) {
             return "started";
           } else {

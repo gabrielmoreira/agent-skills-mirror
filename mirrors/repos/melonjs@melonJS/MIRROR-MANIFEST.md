@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `melonjs/melonJS` — 26 default patterns, 3 followed patterns, 31 file(s) materialized.
+Mirror of `melonjs/melonJS` — 26 default patterns, 3 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `melonjs/melonJS` — 26 default patterns, 3 followed patterns, 31 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,17 +81,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`packages/melonjs/skills/melonjs-particles-and-trails/SKILL.md`](packages/melonjs/skills/melonjs-particles-and-trails/SKILL.md) |
 | 19 | ✓ | [`packages/melonjs/skills/melonjs-performance/SKILL.md`](packages/melonjs/skills/melonjs-performance/SKILL.md) |
 | 20 | ✓ | [`packages/melonjs/skills/melonjs-physics/SKILL.md`](packages/melonjs/skills/melonjs-physics/SKILL.md) |
-| 21 | ✓ | [`packages/melonjs/skills/melonjs-plugins/SKILL.md`](packages/melonjs/skills/melonjs-plugins/SKILL.md) |
-| 22 | ✓ | [`packages/melonjs/skills/melonjs-renderables/SKILL.md`](packages/melonjs/skills/melonjs-renderables/SKILL.md) |
-| 23 | ✓ | [`packages/melonjs/skills/melonjs-renderer-backends/SKILL.md`](packages/melonjs/skills/melonjs-renderer-backends/SKILL.md) |
-| 24 | ✓ | [`packages/melonjs/skills/melonjs-scenes-and-state/SKILL.md`](packages/melonjs/skills/melonjs-scenes-and-state/SKILL.md) |
-| 25 | ✓ | [`packages/melonjs/skills/melonjs-sprites-and-animation/SKILL.md`](packages/melonjs/skills/melonjs-sprites-and-animation/SKILL.md) |
-| 26 | ✓ | [`packages/melonjs/skills/melonjs-tilemaps/SKILL.md`](packages/melonjs/skills/melonjs-tilemaps/SKILL.md) |
-| 27 | ✓ | [`packages/melonjs/skills/melonjs-ui-and-text/SKILL.md`](packages/melonjs/skills/melonjs-ui-and-text/SKILL.md) |
-| 28 | ✓ | [`packages/melonjs/skills/melonjs/SKILL.md`](packages/melonjs/skills/melonjs/SKILL.md) |
-| 29 | → | [`BACKERS.md`](BACKERS.md) |
-| 30 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 31 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 21 | ✓ | [`packages/melonjs/skills/melonjs-platforms/SKILL.md`](packages/melonjs/skills/melonjs-platforms/SKILL.md) |
+| 22 | ✓ | [`packages/melonjs/skills/melonjs-plugins/SKILL.md`](packages/melonjs/skills/melonjs-plugins/SKILL.md) |
+| 23 | ✓ | [`packages/melonjs/skills/melonjs-renderables/SKILL.md`](packages/melonjs/skills/melonjs-renderables/SKILL.md) |
+| 24 | ✓ | [`packages/melonjs/skills/melonjs-renderer-backends/SKILL.md`](packages/melonjs/skills/melonjs-renderer-backends/SKILL.md) |
+| 25 | ✓ | [`packages/melonjs/skills/melonjs-scenes-and-state/SKILL.md`](packages/melonjs/skills/melonjs-scenes-and-state/SKILL.md) |
+| 26 | ✓ | [`packages/melonjs/skills/melonjs-sprites-and-animation/SKILL.md`](packages/melonjs/skills/melonjs-sprites-and-animation/SKILL.md) |
+| 27 | ✓ | [`packages/melonjs/skills/melonjs-tilemaps/SKILL.md`](packages/melonjs/skills/melonjs-tilemaps/SKILL.md) |
+| 28 | ✓ | [`packages/melonjs/skills/melonjs-ui-and-text/SKILL.md`](packages/melonjs/skills/melonjs-ui-and-text/SKILL.md) |
+| 29 | ✓ | [`packages/melonjs/skills/melonjs/SKILL.md`](packages/melonjs/skills/melonjs/SKILL.md) |
+| 30 | → | [`BACKERS.md`](BACKERS.md) |
+| 31 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

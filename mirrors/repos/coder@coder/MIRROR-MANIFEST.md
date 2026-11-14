@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 67 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 67 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 16 |
-| Files         | 67 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,47 +100,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`.agents/skills/dogfood/SKILL.md`](.agents/skills/dogfood/SKILL.md) |
 | 25 | ✓ | [`.agents/skills/pull-requests/SKILL.md`](.agents/skills/pull-requests/SKILL.md) |
 | 26 | ✓ | [`.agents/skills/refine-plan/SKILL.md`](.agents/skills/refine-plan/SKILL.md) |
-| 27 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
-| 28 | ✓ | [`.claude/skills/doc-check/output.md`](.claude/skills/doc-check/output.md) |
-| 29 | ✓ | [`.claude/skills/doc-check/path-priors.md`](.claude/skills/doc-check/path-priors.md) |
-| 30 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
-| 31 | ✓ | [`.claude/skills/frontend-deep-review/SKILL.md`](.claude/skills/frontend-deep-review/SKILL.md) |
-| 32 | ✓ | [`.claude/skills/frontend-review/SKILL.md`](.claude/skills/frontend-review/SKILL.md) |
-| 33 | ✓ | [`.claude/skills/write-docs/SKILL.md`](.claude/skills/write-docs/SKILL.md) |
-| 34 | ✓ | [`.cursorrules`](.cursorrules) |
-| 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 36 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
-| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 38 | ✓ | [`docs/.style/style-guide/accessibility-and-inclusion.md`](docs/.style/style-guide/accessibility-and-inclusion.md) |
-| 39 | ✓ | [`docs/.style/style-guide/audience-and-scope.md`](docs/.style/style-guide/audience-and-scope.md) |
-| 40 | ✓ | [`docs/.style/style-guide/capitalization-and-punctuation.md`](docs/.style/style-guide/capitalization-and-punctuation.md) |
-| 41 | ✓ | [`docs/.style/style-guide/editor-setup.md`](docs/.style/style-guide/editor-setup.md) |
-| 42 | ✓ | [`docs/.style/style-guide/formatting.md`](docs/.style/style-guide/formatting.md) |
-| 43 | ✓ | [`docs/.style/style-guide/numbers-units-and-dates.md`](docs/.style/style-guide/numbers-units-and-dates.md) |
-| 44 | ✓ | [`docs/.style/style-guide/procedural-writing.md`](docs/.style/style-guide/procedural-writing.md) |
-| 45 | ✓ | [`docs/.style/style-guide/voice-and-tone.md`](docs/.style/style-guide/voice-and-tone.md) |
-| 46 | ✓ | [`docs/.style/style-guide/word-choice.md`](docs/.style/style-guide/word-choice.md) |
-| 47 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 48 | ✓ | [`docs/ai-governance/ai-gateway/reference.md`](docs/ai-governance/ai-gateway/reference.md) |
-| 49 | ✓ | [`docs/templates/template-permissions.md`](docs/templates/template-permissions.md) |
-| 50 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 51 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
-| 52 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
-| 53 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
-| 54 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
-| 55 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
-| 56 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
-| 57 | → | [`.claude/docs/FRONTEND_PATTERNS.md`](.claude/docs/FRONTEND_PATTERNS.md) |
-| 58 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
-| 59 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
-| 60 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
-| 61 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
-| 62 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
-| 63 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
-| 64 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
-| 65 | → | [`coderd/x/chatd/ARCHITECTURE.md`](coderd/x/chatd/ARCHITECTURE.md) |
-| 66 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
-| 67 | → | [`docs/.style/style-guide/README.md`](docs/.style/style-guide/README.md) |
+| 27 | ✓ | [`.agents/skills/test-audit/CAMPAIGN.md`](.agents/skills/test-audit/CAMPAIGN.md) |
+| 28 | ✓ | [`.agents/skills/test-audit/NOTICE.md`](.agents/skills/test-audit/NOTICE.md) |
+| 29 | ✓ | [`.agents/skills/test-audit/SKILL.md`](.agents/skills/test-audit/SKILL.md) |
+| 30 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
+| 31 | ✓ | [`.claude/skills/doc-check/output.md`](.claude/skills/doc-check/output.md) |
+| 32 | ✓ | [`.claude/skills/doc-check/path-priors.md`](.claude/skills/doc-check/path-priors.md) |
+| 33 | ✓ | [`.claude/skills/doc-check/SKILL.md`](.claude/skills/doc-check/SKILL.md) |
+| 34 | ✓ | [`.claude/skills/frontend-deep-review/SKILL.md`](.claude/skills/frontend-deep-review/SKILL.md) |
+| 35 | ✓ | [`.claude/skills/frontend-review/SKILL.md`](.claude/skills/frontend-review/SKILL.md) |
+| 36 | ✓ | [`.claude/skills/write-docs/SKILL.md`](.claude/skills/write-docs/SKILL.md) |
+| 37 | ✓ | [`.cursorrules`](.cursorrules) |
+| 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 39 | ✓ | [`aibridge/AGENTS.md`](aibridge/AGENTS.md) |
+| 40 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 41 | ✓ | [`docs/.style/style-guide/accessibility-and-inclusion.md`](docs/.style/style-guide/accessibility-and-inclusion.md) |
+| 42 | ✓ | [`docs/.style/style-guide/audience-and-scope.md`](docs/.style/style-guide/audience-and-scope.md) |
+| 43 | ✓ | [`docs/.style/style-guide/capitalization-and-punctuation.md`](docs/.style/style-guide/capitalization-and-punctuation.md) |
+| 44 | ✓ | [`docs/.style/style-guide/editor-setup.md`](docs/.style/style-guide/editor-setup.md) |
+| 45 | ✓ | [`docs/.style/style-guide/formatting.md`](docs/.style/style-guide/formatting.md) |
+| 46 | ✓ | [`docs/.style/style-guide/numbers-units-and-dates.md`](docs/.style/style-guide/numbers-units-and-dates.md) |
+| 47 | ✓ | [`docs/.style/style-guide/procedural-writing.md`](docs/.style/style-guide/procedural-writing.md) |
+| 48 | ✓ | [`docs/.style/style-guide/voice-and-tone.md`](docs/.style/style-guide/voice-and-tone.md) |
+| 49 | ✓ | [`docs/.style/style-guide/word-choice.md`](docs/.style/style-guide/word-choice.md) |
+| 50 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 51 | ✓ | [`docs/ai-governance/ai-gateway/reference.md`](docs/ai-governance/ai-gateway/reference.md) |
+| 52 | ✓ | [`docs/templates/template-permissions.md`](docs/templates/template-permissions.md) |
+| 53 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 54 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 55 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
+| 56 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
+| 57 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
+| 58 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
+| 59 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
+| 60 | → | [`.claude/docs/FRONTEND_PATTERNS.md`](.claude/docs/FRONTEND_PATTERNS.md) |
+| 61 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
+| 62 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
+| 63 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
+| 64 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
+| 65 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
+| 66 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
+| 67 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
+| 68 | → | [`coderd/x/chatd/ARCHITECTURE.md`](coderd/x/chatd/ARCHITECTURE.md) |
+| 69 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
+| 70 | → | [`docs/.style/style-guide/README.md`](docs/.style/style-guide/README.md) |
 
 ---
 

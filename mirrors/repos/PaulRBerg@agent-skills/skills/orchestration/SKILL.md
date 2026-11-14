@@ -59,10 +59,10 @@ Adapters specialize runtime mechanics. They cannot weaken the shared contract or
 
 Before launching each new research or implementation brief, follow
 [Jev configuration routing](references/jev-routing.md). Use Jev through Vercel to choose only unconstrained model and
-effort dimensions from the selected adapter's allowed candidates. Keep the adapter's existing task tiers as the local
-fallback. If all dimensions are fixed, skip the network request. Any routing failure, uncertainty, or dubious selection
-uses that fallback without retry, approval, or interruption. Record the selection source and a concise confidence or
-fallback reason in the worker's manifest brief.
+effort dimensions from the selected adapter's allowed candidates. Route all new briefs of a wave in one helper call.
+Keep the adapter's existing task tiers as the local fallback. If all dimensions are fixed, skip the network request. Any
+routing failure, uncertainty, or dubious selection uses that fallback without retry, approval, or interruption. Record
+the selection source and a concise confidence or fallback reason in the worker's manifest brief.
 
 If a requested agent or model cannot run through the available route, report the exact incompatibility. Ask before using
 a different agent or model. Do not change the worker family because a preferred tool is unavailable.
@@ -305,7 +305,8 @@ not start dependents or polish, and do not silently take over implementation.
 - A `status: blocked` result identifying a related in-repository fix or evidence change outside the worker's scope that
   is necessary for the requested outcome is follow-on work under the Contract's scope-expansion authority. It does not
   require fresh authorization. Let already-started independent agents finish. Gate dependents. Extend the manifest with
-  the smallest sufficient scope. Satisfy repository coordination for that scope.
+  the smallest sufficient scope. Resubmit `ai-coord start` with the complete updated scope union. A `start` that lists
+  only the new paths replaces the existing claim and leaves running agents unclaimed.
 
   Launch a new or reused implementation agent. Repeat until the outcome is complete or a genuine authorization boundary
   is reached.

@@ -1,8 +1,8 @@
 # OpenMotion standalone repository
 
-OpenMotion replaces the former HTML Anything application at the repository root on `main`. The repository name remains `nexu-io/html-anything`; existing commits, issues and pull requests remain in the same repository. The cutover preserves Git history.
+OpenMotion replaces the former HTML Anything application at the repository root on `main`. The repository is `nexu-io/openmotion`; existing commits, issues and pull requests remain in the same repository. The cutover preserves Git history.
 
-Daily Motion changes branch from the latest `feature/motion` and open PRs with that base. The previous application is preserved at [`legacy`](https://github.com/nexu-io/html-anything/tree/legacy). The default branch remains `main`. Package publication remains a separate, explicitly authorized operation.
+Daily Motion changes branch from the latest `main`, open PRs targeting `main`, and merge directly into `main` when authorized. `feature/motion` is no longer an intermediate integration branch. The previous application is preserved at [`legacy`](https://github.com/nexu-io/openmotion/tree/legacy). Package publication remains a separate, explicitly authorized operation.
 
 ## Upstream synchronization checkpoint
 
@@ -12,7 +12,7 @@ The complete tree comparison found 2,626 identical entries, three files differin
 
 - Public licenses, contribution guides, installation URLs, documentation and source attribution replace source-repository-specific instructions and internal material.
 - GitHub CI and the positive distribution list retain standalone packaging checks and disabled publication; source-repository upload/release helpers are excluded.
-- Browser telemetry and automatic experiment assignment remain disabled, with matching tests.
+- Upstream browser telemetry and automatic experiment assignment remain disabled; explicit Studio events use the installation-owned OpenMotion collector.
 - Recreation guidance retains the npm native-cache instructions alongside the complete ZIP runtime paths.
 
 No additional runtime change is needed for this source snapshot. Future synchronization should compare against this recorded snapshot and review incoming changes while retaining these public adaptations. Open pull requests are separate changes until they land in their source branch; this checkpoint does not include them or authorize merging or publishing.
@@ -31,7 +31,7 @@ npm run package:npm
 
 The npm output in `dist/npm-local/` contains an installer `.tgz`, application `.tar.gz`, manifest and SHA256. The application runs from its selected install directory, not transient npx cache. Node, browser and media tool requirements are pinned; native tools come from public sources and are cached on first use. See [installation](npm-installation.md).
 
-`install.sh` clones this repository's `feature/motion` branch and invokes `scripts/install-motion.command` from the root. `OPENMOTION_REF` can select a reviewed commit or another existing branch. Source installation requires Node/npm; complete ZIPs include a platform runtime. None of these installers relocates existing user projects.
+`install.sh` clones this repository's `main` branch and invokes `scripts/install-motion.command` from the root. `OPENMOTION_REF` can select a reviewed commit or another existing branch. Source installation requires Node/npm; complete ZIPs include a platform runtime. None of these installers relocates existing user projects.
 
 ## Public source and package contents
 
@@ -39,7 +39,7 @@ The import includes the completed recreation workflow and its measurement valida
 
 All three artifact formats use the positive file list in `scripts/distribution.ts`: required runtime modules (including the macOS Perl launcher), built editor assets, explicitly approved docs, the five phase-one Skills, their shared discovery module and references, approved bilingual guides/Motion MD assets, and licenses. Tests, Studio development source/fixtures, sourcemaps and unapproved docs/scripts do not ship. npm tar creation disables macOS resource metadata. New docs and scripts require an explicit distribution decision.
 
-Upstream Studio/template attribution and font notices remain intact. Motion removes the embedded upstream browser analytics identifiers and both sending transports, preserving caller-compatible functions. Browser measurement and automatic experiment enrolment are disabled; engine subprocesses keep `HYPERFRAMES_NO_TELEMETRY=1`. Third-party npm packages and native executables retain their pinned identities.
+Upstream Studio/template attribution and font notices remain intact. Motion removes the embedded upstream browser analytics identifiers and both upstream sending transports. The caller-compatible functions now forward registered explicit events through OpenMotion's own field adapter, installation identity and opt-out policy; upstream measurement and automatic experiment enrolment remain disabled. Engine subprocesses keep `HYPERFRAMES_NO_TELEMETRY=1`. Third-party npm packages and native executables retain their pinned identities.
 
 ## CI and acceptance
 

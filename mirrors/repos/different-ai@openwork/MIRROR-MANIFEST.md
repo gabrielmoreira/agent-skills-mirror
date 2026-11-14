@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,21 +87,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
 | 27 | ✓ | [`.opencode/skills/speed-up-ci/SKILL.md`](.opencode/skills/speed-up-ci/SKILL.md) |
 | 28 | ✓ | [`.opencode/skills/upload-photo/SKILL.md`](.opencode/skills/upload-photo/SKILL.md) |
-| 29 | ✓ | [`.opencode/skills/validate-a-release/SKILL.md`](.opencode/skills/validate-a-release/SKILL.md) |
-| 30 | ✓ | [`.opencode/skills/verify-openwork/SKILL.md`](.opencode/skills/verify-openwork/SKILL.md) |
-| 31 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
-| 32 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 33 | ✓ | [`ee/apps/den-web/AGENTS.md`](ee/apps/den-web/AGENTS.md) |
-| 34 | ✓ | [`ee/apps/den-web/CLAUDE.md`](ee/apps/den-web/CLAUDE.md) |
-| 35 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md) |
-| 36 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md) |
-| 37 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md) |
-| 38 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md) |
-| 39 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 40 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 41 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
-| 42 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
-| 43 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 29 | ✓ | [`.opencode/skills/verify-openwork/SKILL.md`](.opencode/skills/verify-openwork/SKILL.md) |
+| 30 | ✓ | [`.opencode/skills/write-a-spec/SKILL.md`](.opencode/skills/write-a-spec/SKILL.md) |
+| 31 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 32 | ✓ | [`ee/apps/den-web/AGENTS.md`](ee/apps/den-web/AGENTS.md) |
+| 33 | ✓ | [`ee/apps/den-web/CLAUDE.md`](ee/apps/den-web/CLAUDE.md) |
+| 34 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/connect-openwork-mcp/SKILL.md) |
+| 35 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/install-openwork/SKILL.md) |
+| 36 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-slack/SKILL.md) |
+| 37 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md) |
+| 38 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 39 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 40 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
+| 41 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
+| 42 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
 
 ---
 

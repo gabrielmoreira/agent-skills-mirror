@@ -45,6 +45,31 @@ To update, open the `maxa-skills` Git folder, click its branch name (`main`), th
 
 To install for every user instead, a workspace admin copies the three folders under `plugins/maxa-spec/skills/` into `/Workspace/.assistant/skills/`. Then they share `/Workspace/.assistant` with **All workspace users** at **Can View**. Without the share, other users don't see the skills. Skills have no `maxa-spec:` prefix in Genie Code: type `@build-data-model` to invoke one, or let Genie Code pick it from your request.
 
+### dbt Wizard
+
+The dbt Wizard CLI reads the Claude Code marketplace and plugin manifests directly, so the same plugin installs with no separate build.
+
+```bash
+# Add the marketplace (once)
+wizard plugin marketplace add maxa-ai/maxa-skills
+
+# Install (enabled immediately)
+wizard plugin add maxa-spec@maxa-skills
+
+# Pull the latest version
+wizard plugin marketplace upgrade maxa-skills
+```
+
+Start a new session to pick up a new install or update. Skills keep the `maxa-spec:` namespace: type `$` to pick one (for example `$maxa-spec:build-data-model`), name it in your request, or let Wizard pick it from your request.
+
+Plugins work only in the CLI. In the Studio IDE, Wizard reads skills from the dbt project's repository instead:
+
+1. Copy the three folders under `plugins/maxa-spec/skills/` into `.agents/skills/` at the dbt project root, so each skill sits at `.agents/skills/<skill-name>/SKILL.md`.
+2. Commit them to the project's repository.
+3. In the dbt Wizard panel, click **Start new dbt Wizard chat**.
+
+Skills copied this way have no `maxa-spec:` prefix: name one in your request (for example "Use check-data-model to audit fct_monthly_gross_margin"), or let Wizard pick it from your request. The copies don't update from this repository; copy them again for each new version. Each dbt project needs its own copy.
+
 ## Usage
 
 Once installed, invoke skills with the plugin namespace:

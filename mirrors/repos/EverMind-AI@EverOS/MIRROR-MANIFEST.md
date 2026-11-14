@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EverMind-AI/EverOS` — 26 default patterns, 4 followed patterns, 18 file(s) materialized.
+Mirror of `EverMind-AI/EverOS` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 4 followed patterns, 18 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 18 |
+| Followed pats | 5 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 4 followed patterns, 18 
 - `docs/engineering.md`
 - `docs/github-sync.md`
 - `.claude/rules/init-py-and-reexport.md`
+- `benchmarks/README.md`
 
 ## File Index
 
@@ -69,17 +70,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/pr/SKILL.md`](.claude/skills/pr/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/verify-everos/SKILL.md`](.claude/skills/verify-everos/SKILL.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`docs/api.md`](docs/api.md) |
-| 10 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
-| 11 | ✓ | [`docs/custom_instructions.md`](docs/custom_instructions.md) |
-| 12 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
-| 13 | ✓ | [`docs/overview.md`](docs/overview.md) |
-| 14 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
-| 15 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
-| 16 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 17 | → | [`docs/engineering.md`](docs/engineering.md) |
-| 18 | → | [`docs/github-sync.md`](docs/github-sync.md) |
+| 8 | ✓ | [`benchmarks/README.zh.md`](benchmarks/README.zh.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`docs/api.md`](docs/api.md) |
+| 11 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
+| 12 | ✓ | [`docs/custom_instructions.md`](docs/custom_instructions.md) |
+| 13 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
+| 14 | ✓ | [`docs/overview.md`](docs/overview.md) |
+| 15 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
+| 16 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
+| 17 | → | [`benchmarks/README.md`](benchmarks/README.md) |
+| 18 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 19 | → | [`docs/engineering.md`](docs/engineering.md) |
+| 20 | → | [`docs/github-sync.md`](docs/github-sync.md) |
 
 ---
 

@@ -94,3 +94,11 @@ The dismiss chain runs in order: the `AXDismiss` and `AXRemoveFromParent` action
 **Cause.** The shortcut used `ctrl` where macOS uses `cmd`, or the keys went to the wrong app.
 
 **Fix.** Use `cmd+...`. To send keys to one app without focusing it, use `press cmd+s --app "App"`.
+
+## Sandbox answers needs_setup
+
+**Symptom.** `agent-desktop sandbox status <name>` answers `needs_setup` for a sandbox that worked before.
+
+**Cause.** The guest agent, `agent-desktop-guest`, is not running in the guest, or Accessibility is off for it. The agent starts with each login to the guest account, so the guest needs automatic login.
+
+**Fix.** Run `agent-desktop sandbox stop <name>`, then `agent-desktop sandbox start <name> --window`, and in the guest turn on automatic login, run `sh "/Volumes/My Shared Files/guest-setup.sh"` in Terminal, and switch on **agent-desktop-guest** in System Settings > Privacy & Security > Accessibility. Then check `status` on the host. A sandbox set up by agent-desktop 1.3.0 needs this once.

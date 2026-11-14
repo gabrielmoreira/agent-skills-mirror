@@ -1,6 +1,6 @@
 # @elizaos/app
 
-Eliza application host, renderer, and native platform tooling for web, desktop, iOS, and
+Eliza application host, renderer, and native platform tooling for web, iOS, and
 Android.
 
 `@elizaos/app` is the Node host API. Use `@elizaos/app/browser`
@@ -550,7 +550,8 @@ instrumentation), runs lint and product APK verification, then archives only the
 selected APKs plus verification manifest and host metadata. It never signs, installs
 or publishes a release. Hosts select environment, distribution names and archive
 identity. `lint: false` and `androidTest: false` skip lint and the instrumentation
-APKs, and the archive's `build-checks.json` records which of the two ran. A prepare
+APKs, and the archive's `build-checks.json` records which of the two ran.
+`release: false` builds only the debug APKs for a local build and cannot archive. A prepare
 step may also be a synchronous function or `{ gradleTasks }`, which adds tasks to the
 same Gradle run instead of starting another one; a step has exactly one of these
 shapes. The generated `variables.gradle` exposes `rootProject.ext.consumerIdentity`

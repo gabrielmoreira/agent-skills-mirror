@@ -1624,9 +1624,31 @@ gained lines is all additions too, and git calls it modified.
   the sheet opens; Android 14's partial access lists what was chosen and
   offers Manage), numbered multi-select, a caption that is the draft, and a
   File tab (Browse through the system picker, the system photo picker as
-  files, Paste, and the files sent from here before, `RecentFiles`). Picks
-  are copied into the cache on Send (`AttachmentStaging`: photos normalized
-  as below, the rest as they are). What a chat offers is `AttachAccepts`:
+  files, Paste, and the files sent from here before, `RecentFiles`). A
+  cell's picture opens the preview, whose top-right check picks the one in
+  view and whose foot holds the caption, Send and the photo's Crop and Draw
+  (`ui/photoedit/`, Telegram's crop and brushes, `AttachEdits`: the edited
+  JPEG is what the grid shows and what goes); its check picks, through the cell's 48 dp top-right corner
+  (Telegram's `checkFrame` is the 42 corner). No Telegram blue: the checks,
+  the confirm pill and the selected tab take the composer's send colours
+  (`AttachColors`: text filled, the surface on it). The
+  caption bar's Send sends the picks with the caption at once (gallery
+  photos as their thumbnails, read after). The header's far end holds the
+  confirm pill (a check and the count): it sends nothing. The picks are
+  copied into the cache (`AttachmentStaging`: photos normalized as below,
+  the rest as they are, three at a time), put in the composer with the
+  draft, and the sheet goes and the composer takes the keyboard (iOS does
+  the same). The caption bar is drawn as the chat's composer (its glass
+  pill, corners, type, placeholder and send circle, without + and the
+  model chips); it grows to five lines, then scrolls; the in-sheet camera's tile stops at the foot bar's top, so it
+  never covers the caption over the keyboard. A photo the camera takes lands
+  at the grid's head picked, the first opens the preview, and Back returns
+  to the camera with its shots in a strip and their count by the shutter,
+  as Telegram-Android's camera does; there is no Use Photo. The camera keeps one zoom
+  request in flight (`PhotoZoomRequests`, a pinch's latest queued) and
+  never ramps the ratio per frame, and Samsung captures without zero
+  shutter lag (`photoCaptureMode`): there a ZSL session's preview froze
+  once a zoom crossed onto another lens (an S22 at 2x). What a chat offers is `AttachAccepts`:
   a Happy Agent conversation takes photos, videos and files (pictures
   inline, the rest written into the agent's workspace first,
   `conversation/WorkspaceUploads`, as iOS does); a relay session takes
@@ -1984,6 +2006,66 @@ home's project folders read the wire's `avatar`: `kind: "image"` is
 anything else the placeholder (happy-ios still looks for a `url` the wire
 doesn't carry).
 
+### Gen UI
+
+A `gen_ui` artifact is drawn natively from its version's
+`.genui/render.json` (the render document the computer compiles), never from
+its entry. The contract is happy-agent `docs/genui` (RENDER.md,
+`render/catalog.json`, `theme.json`); `tools/genui/sync.sh <happy-agent>`
+copies its compiled examples into the debug fixtures and its conformance
+cases into `app/src/test/resources/genui/conformance`. `genui/GenUi.kt`
+parses (never fails: unknown primitives drop, unknown values default, a
+`genuiRender` other than 1 keeps only its fallback, an action this build
+can't run is `Action.Unsupported` and its button stays, disabled).
+`ui/genui/GenUiView` draws the 15 primitives; `GenUiHost` says which
+actions run (`supports`) and reads pictures (`cached`/`load`).
+
+Height is a pure function of document, width and text size (RENDER.md
+"Measuring"): images reserve their box from the document, a `switch` picks
+by its own width at 560 dp with both branches composed and one measured (no
+subcomposition, so intrinsics work), a `scroll` measures every card and only
+moves them when scrolled, a chosen button never gains a glyph. Choices live
+in a `GenUiState` the host keeps per version. `GenUiMeasuringTest` runs the
+spec's `measuring.json`; `GenUiLazyListTest` checks first-frame height and
+that scrolling 100 blocks measures each once. `GenUiPlannedLayoutTest`
+holds every fixture's height at six widths and two text sizes against
+`test/resources/genui/planned.txt` (delete it to record a deliberate
+change). As iOS: a row with `fixed` text is a `KeyRow` (Row's own measure,
+then it stacks its children at the start, 2 apart, when the fixed text
+would leave a sibling under its widest piece), and an identifier breaks
+after its `_`s only in a column narrower than it (`IdentifierText`).
+Debug builds have "Gen UI fixtures", `GenUiGymActivity` (shots, `tools/genui/shoot.sh`) and
+`GenUiArtifactGymActivity` (a fixture through the real artifact screen).
+
+Actions (SPEC.md rule 7): `genui/GenUiActions.enabled` is the pure rule per
+host (origin agent, `/v0/health` `capabilities.artifactSecretActions` and
+`plugins`, missing = false), checked by `GenUiActionsTest` against
+`actions.json`; never probe a route to find out. A `secret` prefill is
+validated closed (a value anywhere makes it no action). Its form is
+`ui/genui/GenUiSecretSheet` over `SecretDraft` (every field editable; a
+stored name opens change mode, blank keeps, removed is `null`, `ifMatch` the
+version) and saves only through `POST
+/v0/artifacts/:id/versions/:n/actions` with a retry id; values stay in the
+sheet's memory. `plugin` opens `NavHostController.openPlugin` where the
+session's `pluginsAvailable` is true. `cluster_secret` (Happy Cloud
+connections, `AgentClient.cloud`) is `GenUiClusterSecretSheet` over
+`ClusterSecretDraft`: owners from `GET /v0/permissions`, the type's fields,
+prefilled public metadata it doesn't show (ports, methods) sent as it came.
+With `secret.id` it changes that secret: words and values only, its public
+metadata (where values go, their names) read-only, so a blank value is a
+kept `null` and `version` stands for `If-Match`. Same route, `grant: true`;
+a 400 or 403 shows the server's `error`.
+
+Cost: `bench/GenUiBenchmark` (androidTest, a `-Phappy.debuggable=false`
+chatbench build as research/telegram-chat.md runs it) flings the chat gym
+against plain rows in ABBA rounds (`genui_scroll`; `-e window F` compares a
+lazy cache window instead) and splits each fixture's composing frame into
+animation (composition), layout and draw with main-thread CPU
+(`genui_first_frame`; `-e strip icons|text` attributes it). A block's first
+frame is per-element Compose work (composition and text measure), not text
+length or glyphs. Charts record into a layer per size and glyphs are decoded
+once per density, so neither is redone as rows enter or a list scrolls.
+
 ### Mermaid
 
 `ui/components/MermaidView.kt` renders ```` ```mermaid ```` blocks the way
@@ -2237,6 +2319,34 @@ every locale, not happy-i18n.
   own duration.
 - Tests: `vaults/*Test` (listing, events, uploads against a fake daemon,
   routes, presets) and `ui/vaults/VaultLayoutTest`.
+
+### Plugins
+
+A Happy Cloud server's plugins (happy-cluster API.md, "Plugins"; desktop's
+plugin pages). `plugins/` is the wire and state, `ui/plugins/` the pages;
+words are `strings_plugins.xml` in every locale.
+
+- **Where:** home's Plugins row under Artifacts (`AgentFeedRow.Plugins`,
+  `MainPanelKey.PLUGINS` on the tablet), shown while
+  `AgentSession.pluginsAvailable`: health's `capabilities.plugins`, kept per
+  connection so the row doesn't come and go, and for servers deployed before
+  the flag a marked fallback probe of `GET /v0/plugins` (404/501: none).
+  Happy Agent hosts don't advertise it and show no row.
+- **Wire:** `PluginsBackend` (`ClusterPlugins`) reads the catalog and the
+  installations (`canManage` from that answer, else `mcp.manage`);
+  `PluginsSource` reads again on `plugins.changed`, role changes, each
+  reconnect, after every write and when a page resumes (back from a sign-in
+  in the browser). Refusals are a typed `PluginRefusal`; refused setup fields
+  show under their field in the server's words.
+- **Pages:** the list (Installed, then Available), a plugin (Install, Install
+  again where it may be installed more than once, its installations and
+  tools), an installation (Set up by OAuth in a Custom Tab or by fields,
+  Signed in with per-account Disconnect, Remove; each confirmed). Someone
+  whose role can't manage plugins reads them. `NavHostController.openPlugin`
+  opens one plugin from anywhere (Gen UI's `plugin` action).
+- **Fixture:** debug builds have `ui.plugins.PluginsFixturesActivity`: the
+  real pages over an in-memory server (`--ez plugins.member true` for a
+  member).
 
 ## Autocomplete
 

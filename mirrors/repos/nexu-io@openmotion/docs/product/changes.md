@@ -1,5 +1,34 @@
 # 公开变更记录
 
+## 2026-11-13: Show per-round inline video progress and playback
+
+- Add an MCP App frame for video playback deliverables, with real persisted work/export state, manual playback after verification and independent historical versions.
+- Preserve eleven public Tools, legacy naming aliases, template browsing, display receipts, revision guards and editable Studio handoff. Add optional work identity fields to existing calls rather than a second renderer or project store.
+- Keep MP4/cover bytes private to the component, validate media identity and declare embedded media origins. Missing, changed, oversized, failed, cancelled and disconnected results remain explicit; the inline MP4 cap is 32 MiB.
+- A prior development prototype passed user-observed Codex two-round/reopen playback. Public-main integration checks are separate evidence; this entry does not claim release, other-host acceptance or creative quality improvement.
+
+
+
+## 2026-11-13: Open the template library for recommendations (OPEND-5205)
+
+- Route catalog browsing, comparisons and recommendations through the existing project-free template library handoff in both Skill and MCP-only discovery. Respect text-only requests, keep browsing separate from creation, and continue directly when a selected template is explicitly requested.
+- Require actual host presentation evidence, preserve the calling chat, retry a failed presentation once and report capability/display failures honestly. Existing chats must load refreshed Tool descriptions and Skills; backend compatibility alone does not refresh their context.
+- Validation: 66 relevant local checks, static checks and Studio typecheck/build passed. Three paired MCP-only trials did not open the library on the baseline and did on the candidate; nine candidate discovery trials reached a loaded directory in an isolated headless test browser. Native desktop browsing/playback was inspected separately with user-confirmed display; inconsistent host visibility telemetry remains unverified. No Tool schema, project-write, history or export behavior is changed, and no release is implied.
+
+## 2026-11-13: Share material sourcing priorities across production routes
+
+- Centralize source priority, acquisition and usability checks in one shared material reference: explicit choices first, suitable existing assets next, original sources for established subjects, and generated/procedural content for original or supporting expression.
+- Link all five canonical Skills conditionally, retain compatibility forwarding entries, and expose the reference through the canonical workflow resource and legacy URI alias. Existing media support, reference fidelity and preview/export-only scope remain unchanged.
+- Consolidate the director, intake, template and execution rules rather than maintaining competing acquisition policies. No new media service, Tool, permission or release is introduced.
+- Retain the prior local Harry Potter trial as a single execution observation: one user message, original footage retrieved and used, ten excerpts totaling 20.5 seconds in a 32-second film. It is an existing example and a prior local snapshot, not a behavioral rerun of this PR head, a generalization result or a listening/visual acceptance claim. The viewing copy is attached to the PR; film media and private traces are excluded from product distributions.
+
+## 2026-11-13: Add an original repository template contribution
+
+- Add Orbit Launch, a six-second original motion recipe with an offline interactive HTML example, motion specification, small poster, preview media and all eleven catalog locale slots. It remains guidance rather than a directly copyable Studio project.
+- Validate MCP index identities against the registered repository and built-in templates, so a valid new contribution does not fail an obsolete fixed template-count assertion.
+- Let catalog inspection accept contribution videos; the existing staged policy continues to validate their LFS attributes, identities and size limits, while duplicate archives remain forbidden.
+- Preserve the existing source, publication and distribution boundaries. Technical checks and original-source rights notes do not establish human visual acceptance.
+
 ## 2026-11-12: Version motion guidance source in the product repository
 
 - Import 286 public guidance templates with stable IDs, existing eleven-locale metadata and authored text examples; preserve pending conversion state and original source attribution.
@@ -9,10 +38,10 @@
 - Export the existing CMS catalog shape for review, including collection facets; CMS publication remains separate. Source-only catalog files are excluded from npm/plugin distribution.
 
 
-## 2026-11-12: Match stable installation reports to the candidate manifest
+## 2026-11-13: Remove Tool and Skill count gates
 
-- Stable promotion and archive recovery compare native MCP Tool and Skill counts with the verified candidate manifest. Packages with compatibility Skill aliases no longer fail the obsolete five-Skill assertion, while mismatched reports still block promotion.
-- Regression coverage includes ten-Skill promotion and archiving, older five-Skill candidates, and missing or extra Tools/Skills on either platform. The existing stable npm packaging test also passes its real generated manifest through the promotion report gate, catching contract drift during both PR checks and candidate builds. Native reports and external writes are simulated; publication remains a separate authorized operation.
+- Stable promotion and archive recovery verify native installation results and immutable candidate identity. MCP Tool and Skill counts are informational and do not block promotion; registration and packaged file lists are checked against their actual manifests.
+- Regression coverage accepts native reports without Tool/Skill counts and verifies promotion and archiving. Registry and package tests compare actual names and files with their configured manifests, without an independently hard-coded quantity. Native reports and external writes are simulated; publication remains a separate authorized operation.
 
 ## 2026-11-12: Save SVG styles and initialize the initial project on open
 

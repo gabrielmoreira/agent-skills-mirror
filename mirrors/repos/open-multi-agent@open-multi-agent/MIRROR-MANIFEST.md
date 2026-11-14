@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 14 followed patterns, 52 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 8 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 14 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 52 |
+| Followed pats | 8 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,13 +58,7 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 14 follow
 - `CONTRIBUTORS.md`
 - `.github/CONTRIBUTING.md`
 - `.github/RELEASING.md`
-- `docs/tool-configuration.md`
-- `docs/sandbox-and-shell.md`
-- `docs/context-management.md`
-- `docs/external-agents.md`
-- `docs/run-store.md`
 - `docs/observability.md`
-- `docs/evaluation.md`
 
 ## File Index
 
@@ -80,50 +74,54 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs/checkpoint.md`](docs/checkpoint.md) |
 | 7 | ✓ | [`docs/cli.md`](docs/cli.md) |
 | 8 | ✓ | [`docs/consensus.md`](docs/consensus.md) |
-| 9 | ✓ | [`docs/coordinator.md`](docs/coordinator.md) |
-| 10 | ✓ | [`docs/durable-approvals.md`](docs/durable-approvals.md) |
-| 11 | ✓ | [`docs/egress-policy.md`](docs/egress-policy.md) |
-| 12 | ✓ | [`docs/errors.md`](docs/errors.md) |
-| 13 | ✓ | [`docs/evaluation-ci.md`](docs/evaluation-ci.md) |
-| 14 | ✓ | [`docs/evaluation-routing.md`](docs/evaluation-routing.md) |
-| 15 | ✓ | [`docs/execution-routing.md`](docs/execution-routing.md) |
-| 16 | ✓ | [`docs/featured-partner.md`](docs/featured-partner.md) |
-| 17 | ✓ | [`docs/glossary.md`](docs/glossary.md) |
-| 18 | ✓ | [`docs/hooks-and-callbacks.md`](docs/hooks-and-callbacks.md) |
-| 19 | ✓ | [`docs/image-generation.md`](docs/image-generation.md) |
-| 20 | ✓ | [`docs/mcp.md`](docs/mcp.md) |
-| 21 | ✓ | [`docs/model-routing.md`](docs/model-routing.md) |
-| 22 | ✓ | [`docs/observability-migration.md`](docs/observability-migration.md) |
-| 23 | ✓ | [`docs/plan-replay.md`](docs/plan-replay.md) |
-| 24 | ✓ | [`docs/production-checklist.md`](docs/production-checklist.md) |
-| 25 | ✓ | [`docs/providers-atlascloud_zh.md`](docs/providers-atlascloud_zh.md) |
-| 26 | ✓ | [`docs/providers-atlascloud.md`](docs/providers-atlascloud.md) |
-| 27 | ✓ | [`docs/providers.md`](docs/providers.md) |
-| 28 | ✓ | [`docs/run-journal.md`](docs/run-journal.md) |
-| 29 | ✓ | [`docs/run-viewer.md`](docs/run-viewer.md) |
-| 30 | ✓ | [`docs/self-hosting.md`](docs/self-hosting.md) |
-| 31 | ✓ | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 32 | ✓ | [`docs/streaming.md`](docs/streaming.md) |
-| 33 | ✓ | [`docs/structured-input.md`](docs/structured-input.md) |
-| 34 | ✓ | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
-| 35 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
-| 36 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
-| 37 | ✓ | [`packages/create-oma-app/AGENTS.md`](packages/create-oma-app/AGENTS.md) |
-| 38 | ✓ | [`packages/create-oma-app/CLAUDE.md`](packages/create-oma-app/CLAUDE.md) |
-| 39 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 40 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 41 | → | [`bench/README.md`](bench/README.md) |
-| 42 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
-| 43 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 44 | → | [`docs/evaluation.md`](docs/evaluation.md) |
-| 45 | → | [`docs/external-agents.md`](docs/external-agents.md) |
-| 46 | → | [`docs/observability.md`](docs/observability.md) |
-| 47 | → | [`docs/README.md`](docs/README.md) |
-| 48 | → | [`docs/run-store.md`](docs/run-store.md) |
-| 49 | → | [`docs/sandbox-and-shell.md`](docs/sandbox-and-shell.md) |
-| 50 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 51 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
-| 52 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 9 | ✓ | [`docs/context-management.md`](docs/context-management.md) |
+| 10 | ✓ | [`docs/coordinator.md`](docs/coordinator.md) |
+| 11 | ✓ | [`docs/durable-approvals.md`](docs/durable-approvals.md) |
+| 12 | ✓ | [`docs/egress-policy.md`](docs/egress-policy.md) |
+| 13 | ✓ | [`docs/errors.md`](docs/errors.md) |
+| 14 | ✓ | [`docs/evaluation-ci.md`](docs/evaluation-ci.md) |
+| 15 | ✓ | [`docs/evaluation-routing.md`](docs/evaluation-routing.md) |
+| 16 | ✓ | [`docs/evaluation.md`](docs/evaluation.md) |
+| 17 | ✓ | [`docs/execution-routing.md`](docs/execution-routing.md) |
+| 18 | ✓ | [`docs/external-agents.md`](docs/external-agents.md) |
+| 19 | ✓ | [`docs/featured-partner.md`](docs/featured-partner.md) |
+| 20 | ✓ | [`docs/glossary.md`](docs/glossary.md) |
+| 21 | ✓ | [`docs/hooks-and-callbacks.md`](docs/hooks-and-callbacks.md) |
+| 22 | ✓ | [`docs/image-generation.md`](docs/image-generation.md) |
+| 23 | ✓ | [`docs/mcp.md`](docs/mcp.md) |
+| 24 | ✓ | [`docs/model-routing.md`](docs/model-routing.md) |
+| 25 | ✓ | [`docs/observability-migration.md`](docs/observability-migration.md) |
+| 26 | ✓ | [`docs/plan-replay.md`](docs/plan-replay.md) |
+| 27 | ✓ | [`docs/production-checklist.md`](docs/production-checklist.md) |
+| 28 | ✓ | [`docs/providers-atlascloud_zh.md`](docs/providers-atlascloud_zh.md) |
+| 29 | ✓ | [`docs/providers-atlascloud.md`](docs/providers-atlascloud.md) |
+| 30 | ✓ | [`docs/providers.md`](docs/providers.md) |
+| 31 | ✓ | [`docs/run-journal.md`](docs/run-journal.md) |
+| 32 | ✓ | [`docs/run-store.md`](docs/run-store.md) |
+| 33 | ✓ | [`docs/run-viewer.md`](docs/run-viewer.md) |
+| 34 | ✓ | [`docs/sandbox-and-shell.md`](docs/sandbox-and-shell.md) |
+| 35 | ✓ | [`docs/self-hosting.md`](docs/self-hosting.md) |
+| 36 | ✓ | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 37 | ✓ | [`docs/streaming.md`](docs/streaming.md) |
+| 38 | ✓ | [`docs/structured-input.md`](docs/structured-input.md) |
+| 39 | ✓ | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
+| 40 | ✓ | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 41 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
+| 42 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
+| 43 | ✓ | [`packages/create-oma-app/AGENTS.md`](packages/create-oma-app/AGENTS.md) |
+| 44 | ✓ | [`packages/create-oma-app/CLAUDE.md`](packages/create-oma-app/CLAUDE.md) |
+| 45 | ✓ | [`packages/otel/AGENTS.md`](packages/otel/AGENTS.md) |
+| 46 | ✓ | [`packages/otel/CLAUDE.md`](packages/otel/CLAUDE.md) |
+| 47 | ✓ | [`packages/release-bot/AGENTS.md`](packages/release-bot/AGENTS.md) |
+| 48 | ✓ | [`packages/release-bot/CLAUDE.md`](packages/release-bot/CLAUDE.md) |
+| 49 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 50 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 51 | → | [`bench/README.md`](bench/README.md) |
+| 52 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 53 | → | [`docs/observability.md`](docs/observability.md) |
+| 54 | → | [`docs/README.md`](docs/README.md) |
+| 55 | → | [`packages/core/README_zh.md`](packages/core/README_zh.md) |
+| 56 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

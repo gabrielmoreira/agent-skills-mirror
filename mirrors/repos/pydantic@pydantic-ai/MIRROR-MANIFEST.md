@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 299 file(s) materialized.
+Mirror of `pydantic/pydantic-ai` — 26 default patterns, 47 followed patterns, 300 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 46 |
-| Files         | 299 |
+| Followed pats | 47 |
+| Files         | 300 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,6 +97,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 46 followed patterns, 
 - `docs/harness/daytona-sandbox.md`
 - `src/pydantic_clai2/PLUGINS.md`
 - `docs/harness/subagents.md`
+- `docs/harness/peers.md`
 
 ## File Index
 
@@ -379,30 +380,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 273 | → | [`docs/harness/index.md`](docs/harness/index.md) |
 | 274 | → | [`docs/harness/memory.md`](docs/harness/memory.md) |
 | 275 | → | [`docs/harness/modal-sandbox.md`](docs/harness/modal-sandbox.md) |
-| 276 | → | [`docs/harness/shell.md`](docs/harness/shell.md) |
-| 277 | → | [`docs/harness/sprites-sandbox.md`](docs/harness/sprites-sandbox.md) |
-| 278 | → | [`docs/harness/ssh-workspace.md`](docs/harness/ssh-workspace.md) |
-| 279 | → | [`docs/harness/step-persistence.md`](docs/harness/step-persistence.md) |
-| 280 | → | [`docs/harness/subagents.md`](docs/harness/subagents.md) |
-| 281 | → | [`docs/harness/tool-output-limits.md`](docs/harness/tool-output-limits.md) |
-| 282 | → | [`docs/input.md`](docs/input.md) |
-| 283 | → | [`docs/logfire.md`](docs/logfire.md) |
-| 284 | → | [`docs/mcp/client.md`](docs/mcp/client.md) |
-| 285 | → | [`docs/message-history.md`](docs/message-history.md) |
-| 286 | → | [`docs/models/overview.md`](docs/models/overview.md) |
-| 287 | → | [`docs/output.md`](docs/output.md) |
-| 288 | → | [`docs/persistence.md`](docs/persistence.md) |
-| 289 | → | [`docs/realtime/deployment.md`](docs/realtime/deployment.md) |
-| 290 | → | [`docs/timeouts.md`](docs/timeouts.md) |
-| 291 | → | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
-| 292 | → | [`docs/tools.md`](docs/tools.md) |
-| 293 | → | [`docs/ui/overview.md`](docs/ui/overview.md) |
-| 294 | → | [`docs/version-policy.md`](docs/version-policy.md) |
-| 295 | → | [`docs/web.md`](docs/web.md) |
-| 296 | → | [`docs/workspace.md`](docs/workspace.md) |
-| 297 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
-| 298 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
-| 299 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
+| 276 | → | [`docs/harness/peers.md`](docs/harness/peers.md) |
+| 277 | → | [`docs/harness/shell.md`](docs/harness/shell.md) |
+| 278 | → | [`docs/harness/sprites-sandbox.md`](docs/harness/sprites-sandbox.md) |
+| 279 | → | [`docs/harness/ssh-workspace.md`](docs/harness/ssh-workspace.md) |
+| 280 | → | [`docs/harness/step-persistence.md`](docs/harness/step-persistence.md) |
+| 281 | → | [`docs/harness/subagents.md`](docs/harness/subagents.md) |
+| 282 | → | [`docs/harness/tool-output-limits.md`](docs/harness/tool-output-limits.md) |
+| 283 | → | [`docs/input.md`](docs/input.md) |
+| 284 | → | [`docs/logfire.md`](docs/logfire.md) |
+| 285 | → | [`docs/mcp/client.md`](docs/mcp/client.md) |
+| 286 | → | [`docs/message-history.md`](docs/message-history.md) |
+| 287 | → | [`docs/models/overview.md`](docs/models/overview.md) |
+| 288 | → | [`docs/output.md`](docs/output.md) |
+| 289 | → | [`docs/persistence.md`](docs/persistence.md) |
+| 290 | → | [`docs/realtime/deployment.md`](docs/realtime/deployment.md) |
+| 291 | → | [`docs/timeouts.md`](docs/timeouts.md) |
+| 292 | → | [`docs/tools-advanced.md`](docs/tools-advanced.md) |
+| 293 | → | [`docs/tools.md`](docs/tools.md) |
+| 294 | → | [`docs/ui/overview.md`](docs/ui/overview.md) |
+| 295 | → | [`docs/version-policy.md`](docs/version-policy.md) |
+| 296 | → | [`docs/web.md`](docs/web.md) |
+| 297 | → | [`docs/workspace.md`](docs/workspace.md) |
+| 298 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
+| 299 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
+| 300 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
 
 ---
 

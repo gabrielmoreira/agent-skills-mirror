@@ -57,7 +57,46 @@
 
   var MAX_PRESENCE_BYTES = 4096;
   var EMPTY = Object.freeze([]);
+  var EVENT_TOPIC = /^[a-z][a-z0-9_.-]{0,47}$/;
+  var MAX_EVENT_BYTES = 4096;
+  var EVENTS_PER_SECOND = 40;
+  var EVENT_BURST = 80;
+  var MAX_POST_BYTES = 48 << 10;
   var bytesOf = (value) => new TextEncoder().encode(JSON.stringify(value)).length;
+  function plainJson(value) {
+    let left = 16384;
+    const stack = [[value, 0]];
+    while (stack.length) {
+      if (left-- <= 0) return false;
+      const [item, depth] = stack.pop();
+      if (item === null || typeof item !== "object") {
+        if (typeof item === "function" || typeof item === "symbol" || typeof item === "bigint") return false;
+        continue;
+      }
+      if (depth > 24) return false;
+      if (Array.isArray(item)) {
+        if (item.length > 4096) return false;
+        for (const entry of item) stack.push([entry, depth + 1]);
+        continue;
+      }
+      if (ArrayBuffer.isView(item)) return false;
+      const proto = Object.getPrototypeOf(item);
+      if (proto !== Object.prototype && proto !== null) return false;
+      const keys = Object.keys(item);
+      if (keys.length > 4096) return false;
+      for (const key of keys) stack.push([item[key], depth + 1]);
+    }
+    return true;
+  }
+  function report(error) {
+    try {
+      if (typeof reportError === "function") reportError(error);
+      else setTimeout(() => {
+        throw error;
+      }, 0);
+    } catch {
+    }
+  }
   function createRoomClient(options) {
     const serverMe = options.serverMe ?? options.me;
     const local = (by) => by === serverMe ? options.me : by;
@@ -73,8 +112,28 @@
     let published = {};
     let queued = null;
     let waiters = [];
+    let outbox = [];
     let sending = false;
     let frame = false;
+    let followHandler = null;
+    const topics = /* @__PURE__ */ new Map();
+    let budget = EVENT_BURST;
+    let toppedAt = Date.now();
+    let reportedLimit = false;
+    const withinBudget = () => {
+      const now = Date.now();
+      budget = Math.min(EVENT_BURST, budget + Math.max(0, now - toppedAt) / 1e3 * EVENTS_PER_SECOND);
+      toppedAt = now;
+      if (budget < 1) {
+        if (!reportedLimit) {
+          reportedLimit = true;
+          report(new Error("room: rate limit - dropping emits sent faster than the budget (about 40/s; the page keeps working; high-rate state belongs in presence; this is reported once per page load)"));
+        }
+        return false;
+      }
+      budget -= 1;
+      return true;
+    };
     const peerOf = (view, previous) => {
       const presence2 = view.peer === options.peer ? published : view.presence;
       const json = JSON.stringify(presence2);
@@ -133,17 +192,26 @@
       nextFrame(deliver2);
     };
     const flush2 = async () => {
-      if (sending || !queued || !open) return;
+      if (sending || !queued && !outbox.length || !open) return;
       sending = true;
       const patch = queued;
-      const done = waiters;
       queued = null;
+      let bytes = patch ? bytesOf(patch) : 0;
+      let take = 0;
+      while (take < outbox.length && (take === 0 || bytes + outbox[take].bytes <= MAX_POST_BYTES)) bytes += outbox[take++].bytes;
+      const events = outbox.slice(0, take);
+      outbox = outbox.slice(take);
+      const done = [...waiters, ...events];
       waiters = [];
       try {
         const res = await doFetch(`${options.base}__presence`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ peer: options.peer, patch })
+          body: JSON.stringify({
+            peer: options.peer,
+            ...patch ? { patch } : {},
+            ...events.length ? { events: events.map((e) => e.data === void 0 ? { topic: e.topic } : { topic: e.topic, data: e.data }) } : {}
+          })
         });
         if (res.status === 409) {
           for (const w of done) w.resolve();
@@ -155,10 +223,10 @@
         for (const w of done) w.reject(typeof error === "object" && error !== null && "code" in error ? error : { code: "upstream_error", message: String(error) });
       } finally {
         sending = false;
-        if (queued && open) void flush2();
+        if ((queued || outbox.length) && open) void flush2();
       }
     };
-    const room = {
+    const room2 = {
       presence(patch) {
         if (typeof patch !== "object" || patch === null || Array.isArray(patch)) {
           return Promise.reject({ code: "invalid_argument", message: "presence(patch) takes an object." });
@@ -191,8 +259,53 @@
         connectionListeners.add(onChange);
         return () => void connectionListeners.delete(onChange);
       },
-      emit: () => Promise.resolve(),
-      on: () => () => {
+      emit(topic, data) {
+        if (typeof topic !== "string" || !EVENT_TOPIC.test(topic)) {
+          return Promise.reject({ code: "invalid_argument", message: "emit topic must match ^[a-z][a-z0-9_.-]{0,47}$ (colon-free)" });
+        }
+        let size = 0;
+        let copy;
+        if (data !== void 0) {
+          try {
+            if (!plainJson(data)) throw new Error("not plain");
+            const json = JSON.stringify(data);
+            size = new TextEncoder().encode(json).length;
+            copy = JSON.parse(json);
+          } catch {
+            return Promise.reject({ code: "invalid_argument", message: "emit data must be plain JSON data" });
+          }
+          if (size > MAX_EVENT_BYTES) return Promise.reject({ code: "invalid_argument", message: `emit data serializes over ${MAX_EVENT_BYTES} bytes` });
+        }
+        if (!withinBudget() || !open) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          outbox.push({ topic, data: copy, bytes: size + topic.length + 32, resolve, reject });
+          void flush2();
+        });
+      },
+      on(topic, handler, onError) {
+        if (typeof handler !== "function") throw new TypeError("room.on requires a handler function");
+        const entry = { fn: handler, err: typeof onError === "function" ? onError : void 0, dead: false };
+        if (typeof topic !== "string" || !EVENT_TOPIC.test(topic)) {
+          queueMicrotask(() => {
+            if (entry.dead) return;
+            entry.dead = true;
+            try {
+              entry.err?.({ code: "invalid_argument", message: "on topic must match ^[a-z][a-z0-9_.-]{0,47}$ (colon-free)" });
+            } catch (error) {
+              report(error);
+            }
+          });
+          return () => void (entry.dead = true);
+        }
+        let listeners = topics.get(topic);
+        if (!listeners) topics.set(topic, listeners = /* @__PURE__ */ new Set());
+        const set = listeners;
+        set.add(entry);
+        return () => {
+          entry.dead = true;
+          set.delete(entry);
+          if (!set.size && topics.get(topic) === set) topics.delete(topic);
+        };
       }
     };
     const page = {
@@ -201,6 +314,14 @@
       subscribe(onChange) {
         pageListeners.add(onChange);
         return () => void pageListeners.delete(onChange);
+      },
+      following() {
+        if (!followHandler) return void 0;
+        const follow = published.follow;
+        return typeof follow === "object" && follow !== null && typeof follow.of === "string" ? follow.of : null;
+      },
+      follow(peer) {
+        followHandler?.(peer);
       }
     };
     if (typeof window !== "undefined") {
@@ -211,15 +332,28 @@
       if (open === next) return;
       open = next;
       for (const listener of connectionListeners) listener(next);
+      if (!next) {
+        const dropped = outbox;
+        outbox = [];
+        for (const e of dropped) e.resolve();
+      }
       if (next) {
         if (Object.keys(published).length) queued = { ...published };
         void flush2();
       }
     };
     return {
-      room,
+      room: room2,
       page,
       nameOf: (by) => views.find((v) => v.kind !== "agent" && local(v.by) === by)?.name,
+      offerFollow(handler) {
+        if (followHandler === null === (handler === null)) {
+          followHandler = handler;
+          return;
+        }
+        followHandler = handler;
+        for (const listener of pageListeners) listener();
+      },
       attach(source2) {
         source2.addEventListener("peers", (event) => {
           let list;
@@ -237,6 +371,36 @@
           setOpen(true);
           rebuild();
           schedule();
+        });
+        source2.addEventListener("room", (event) => {
+          let body;
+          try {
+            body = JSON.parse(event.data);
+          } catch {
+            return;
+          }
+          if (typeof body !== "object" || body === null || typeof body.peer !== "string" || typeof body.by !== "string" || typeof body.topic !== "string") return;
+          const listeners = topics.get(body.topic);
+          if (!listeners) return;
+          const agent = body.kind === "agent";
+          const message = Object.freeze({
+            peer: body.peer,
+            by: agent ? null : local(body.by),
+            isMe: !agent && body.by === serverMe,
+            sameTab: body.peer === options.peer,
+            kind: agent ? "agent" : "viewer",
+            guest: false,
+            topic: body.topic,
+            data: body.data
+          });
+          for (const entry of [...listeners]) {
+            if (entry.dead) continue;
+            try {
+              entry.fn(message);
+            } catch (error) {
+              report(error);
+            }
+          }
         });
         source2.addEventListener("error", () => {
           if (source2.readyState !== EventSource.OPEN) setOpen(false);
@@ -456,7 +620,22 @@
     }
   };
   var self = { publish: async () => ({}) };
-  var capabilities = { db, assets, user: users, downloads, self };
+  var agentRequests = globalThis.__baoyuAgentRequests;
+  var REQUEST_LIMITS = { text: 1e4, label: 1e3, selection: 4e3 };
+  var ABOUT_SELECTION = "About this part of the dashboard.";
+  var room = {
+    canSendToClaudeSession: async () => AT === null && (await sessionReady, user.owner) ? "available_if_opened" : "unavailable",
+    async sendToClaudeSession(payload) {
+      const words = typeof payload?.request === "string" ? payload.request.trim() : "";
+      const label = typeof payload?.label === "string" ? payload.label.trim().slice(0, REQUEST_LIMITS.label) : "";
+      const selection = typeof payload?.selectedText === "string" ? payload.selectedText.slice(0, REQUEST_LIMITS.selection) : "";
+      const text = (words || (label || selection.trim() ? ABOUT_SELECTION : "")).slice(0, REQUEST_LIMITS.text);
+      const sent = text !== "" && agentRequests !== void 0 && await agentRequests.send({ text, ...label ? { label } : {}, ...selection.trim() ? { selection } : {} });
+      if (sent) return { to: "agent" };
+      throw Object.assign(new Error("No agent is waiting for requests from this page."), { code: "claude_unavailable" });
+    }
+  };
+  var capabilities = { db, assets, user: users, downloads, self, ...agentRequests ? { room } : {} };
   globalThis.claude = {
     ...capabilities,
     use: async (name) => {

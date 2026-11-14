@@ -2,6 +2,9 @@
 import path from 'node:path';
 import {walkLayers} from './b3-graphics.mjs';
 import {isSceneScaleMotion} from './b-style-motion-geometry.mjs';
+import {requireB4Glyphs} from './b4-font-coverage.mjs';
+import {planBStylePortrait, bStyleCaptionLayout, isBStylePortrait} from './b-style-portrait.mjs';
+import {planB3Semantics} from './b3-semantic-motion.mjs';
 
 export const CAPTION_PRESETS = Object.freeze({B1: 34, B2: 40, B3: 34});
 const text = x => typeof x === 'string' && x.trim().length > 0;
@@ -12,17 +15,35 @@ function* layerTree(layers, ancestors = []) {
     if (layer.type === 'group') yield* layerTree(layer.children, [...ancestors, layer]);
   }
 }
+// The accepted B1 portrait uses the same handwritten family for scene labels
+// and captions. Caveat is a licensed portable candidate, not an assertion that
+// future output matches the approved sample's supplied Chalkboard/Hand font.
+export function defaultBStyleCaptionFont(p, {root, mediaPath}) {
+  if (p.style === 'B1' && isBStylePortrait(p))
+    return p.font ? mediaPath(p.base, p.font) : process.env.AUTOPILOT_FONT ? mediaPath(p.base, process.env.AUTOPILOT_FONT) : path.join(root, 'assets/fonts/Caveat.ttf');
+  return path.join(root, 'assets/fonts/NotoSans.ttf');
+}
 export function prepareBStyleQuality(p, {root, hashFile, mediaPath}) {
   if (!(p.style in CAPTION_PRESETS)) return [];
+  planBStylePortrait(p);
+  const b3=planB3Semantics(p);
+  const presetSize = bStyleCaptionLayout({...p, captionSize: undefined}).font_size;
   const override = p.caption_override;
-  const changedFont = p.captionFont && hashFile(mediaPath(p.base, p.captionFont)) !== hashFile(path.join(root, 'assets/fonts/NotoSans.ttf'));
-  const changedSize = p.captionSize !== undefined && p.captionSize !== CAPTION_PRESETS[p.style];
+  const defaultFont = defaultBStyleCaptionFont(p, {root, mediaPath});
+  const defaultTreatment = p.style === 'B1' && isBStylePortrait(p) ? 'selected handwritten portrait font' : 'bundled Noto Sans';
+  const changedFont = p.captionFont && hashFile(mediaPath(p.base, p.captionFont)) !== hashFile(defaultFont);
+  const changedSize = p.captionSize !== undefined && p.captionSize !== presetSize;
   if ((changedFont || changedSize) && !(text(override?.reason) && text(override?.user_approval))) {
     // A scoped script/language fallback may replace glyph coverage, not restyle the video.
     if (!(changedFont && !changedSize && override?.kind === 'language_fallback' && text(override.language) && text(override.reason)))
-      throw Error(`${p.style} caption preset invalidated: use the bundled Noto Sans/${CAPTION_PRESETS[p.style]} treatment or record caption_override reason and actual user_approval`);
+      throw Error(`${p.style} caption preset invalidated: use the ${defaultTreatment}/${presetSize} treatment or record caption_override reason and actual user_approval`);
+    const renderedText = p.captions.map(c => p.style === 'B3' ? c.text.toUpperCase() : c.text).join(' ');
+    let needsCoverage = false;
+    try { requireB4Glyphs(defaultFont, renderedText, 'default caption', p.style); }
+    catch (error) { if (!error.message.includes('selected font lacks glyphs')) throw error; needsCoverage = true; }
+    if (!needsCoverage) throw Error(`${p.style} caption preset invalidated: language_fallback requires actual missing glyphs in the current caption scope; restyling needs actual user_approval`);
   }
-  const intervals = [], ids = new Set();
+  let intervals = []; const ids = new Set();
   for (const shot of p.shots) for (const {layer, ancestors} of layerTree(shot.layers)) {
     if (layer.id) { if (ids.has(layer.id)) throw Error('Motion diagnostics require unique layer ids across the project'); ids.add(layer.id); }
     if (!layer.motion) continue;
@@ -44,6 +65,11 @@ export function prepareBStyleQuality(p, {root, hashFile, mediaPath}) {
         if (end > start && Math.abs(b[prop] - a[prop]) >= delta) intervals.push({id: layer.id, start, end, reason: layer.motion.reason});
       }
     }
+  }
+  if(b3) {
+    const plannedIds=new Set(p.shots.filter(s=>s.b3_semantics).flatMap(s=>[...walkLayers(s.layers||[])].map(l=>l.id)));
+    const windows=b3.shots.flatMap(s=>s.eligible_motion_windows||[]);
+    intervals=intervals.flatMap(i=>!plannedIds.has(i.id)?[i]:windows.filter(w=>w.id===i.id).map(w=>({...i,start:Math.max(i.start,w.start),end:Math.min(i.end,w.end)})).filter(w=>w.end>w.start));
   }
   let end = 0;
   for (const item of [...intervals].sort((a, b) => a.start - b.start)) {

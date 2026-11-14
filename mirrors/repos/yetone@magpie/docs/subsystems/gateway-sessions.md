@@ -90,7 +90,19 @@ header id of its own, and omp sends that id, not the main session's, in
 the gateway's `omp|<sub id>` is its own in the same places as Raft's `pi|`
 key, and is never a second session counted again (Jumy, Discord 10-30:
 `TestOmpSubagentsAreTheSessionsToTheGateway`,
-`TestOmpSubagentCountedOnceWithTheGateway`). A Claude Code session's
+`TestOmpSubagentCountedOnceWithTheGateway`). A Pi session stands for the
+subagents pi-subagents ran for it the same way: each runs as a Pi of its
+own, its file `<run id>/run-<n>/session.jsonl` (async and parallel runs a
+folder deeper) in the folder named for the lead's file, or under the
+`defaultSessionDir` of `extensions/subagent/config.json`, where its
+header's `parentSession` names the lead's file (`piFilesIn`,
+`piSubagentFiles` in [`pi.go`](../../internal/sessions/pi.go)). Its calls
+are the lead session's, on its own model and provider, and the lead's
+`subagent` tool result, which carries their usage summed, counts nothing
+once those files are read (`piSubagentsRead`). Before, a lead on magpie's
+entry left a DeepSeek subagent on no page: its files went unread and the
+sum went under the lead's model, the gateway's to count (nzvzbmz78932 on
+X, `TestPiSubagentCalls`). A Claude Code session's
 copies (`Copies`) are among its keys the same way. A ZCode session stands
 for its bare id too: a request names it by the id its database gives with
 a prefix stripped (`sess_…`, a subagent's `sess_subagent_agent_…`:
@@ -122,7 +134,8 @@ reads only the agent shown and the agents with gateway sessions (#2776).
 It answers before a first read of a long history (hey_boyce on X: the page
 stood on its placeholder rows on its first open). A file it would read whole
 (no parse kept, an older index, a file written over, or a Claude Code or
-Codex parse that can't be read on after a restart) is read behind the
+Codex parse that can't be read on after a restart because its window
+wasn't kept on disk) is read behind the
 answer once more than `quickBytes` (32 MB) of them is waiting; until then its
 row stands on the parse kept, or on a glance at its first 256 KB (id,
 folder, first prompt, start) and, for Claude Code, the titles in its last
@@ -132,6 +145,21 @@ glance is never saved in the index (`savable`) nor taken by a refresh as a
 parse (`parsed`). See
 [`internal/sessions/manage_quick.go`](../../internal/sessions/manage_quick.go),
 `TestManageAnswersBeforeFirstReads` and `sessions-pending-fill.test.cjs`.
+A file being written (changed within the hour, `workingRevision`) keeps
+what its reads have seen on disk with where they stopped, so after a
+restart the next line it gains is read on from there, not from its first
+line. A Claude Code session's is in `sessions.json` and its shard's `.rev`
+file (#3493). A Codex rollout's summary window goes in
+`codex-windows/<hash>.gob` beside `sessions.json`, written with it and
+taken away once the cache drops that window, and its calls' window
+(`cxRun`) in the shard's `.rev` file. Each names the parser and window
+versions it was written by, the size, offset and content hash of its read,
+and is taken only when all match. Before this, the first line a 100 MB
+rollout gained after a restart had it read whole twice, 2.2 s of the
+Sessions list on an M5 and over ten seconds on a slower Windows PC
+(shangyuan0818 on X). See
+[`internal/sessions/codex_window.go`](../../internal/sessions/codex_window.go)
+and `TestCodexSessionReadOnAfterRestart`.
 A Claude Code session's folder is its first line's `cwd`, unless
 Claude Code's `/cd` moved it: the file goes to the new folder's project
 directory with a `{"type":"relocated","relocatedCwd":…}` line, while the
@@ -744,6 +772,28 @@ a large body shows as a burst. `TestTrafficCountsWhatRowsCount`,
 `TestUsageTrafficSaysWhatTheGatewayCounted` and `usage-traffic.test.cjs`
 cover it.
 
+What the bytes up were made of (theforeveriris on X: 8.6 GB up over 8169
+requests). Every request resends the whole conversation, so ~1 MB a request
+is a long context, not a leak. The prompt reader (`promptOf`, already run off
+the request path by `inspectPrompt`) adds each piece's length as it reads it
+into `Prompt.sent`: the system prompt (with skills and memory), the tools'
+definitions, images, and everything read (`all`). A tool result shared by the
+files it read counts once (`again`). `upParts` scales those to the bytes
+that went on the wire into the row's `UpParts`. A row gets none when its
+bytes up aren't its body's: a Responses WebSocket delta, a body whose images
+went as files, or a body not read. The request page keeps the parts in
+255ths of `UpBytes` in the packed row (`upMix`, flag `rowUpParts`, still 152
+bytes). `Totals` sum `UpCalls` (requests that sent any bytes), `UpMeasured`
+(the bytes of those with parts) and the three parts, per period and per
+agent, model or provider. The Requests card's ↑ opens `#ledUp`. It shows the
+bytes a request, a bar of the conversation, tools, system prompt, images and
+what wasn't measured, and the bytes of each agent and model. A request's
+details say "Made of". `TestPromptKnowsWhatItsBytesWere` (fails if a shared
+tool result is counted per file), `TestUpPartsScaleToTheWire`,
+`TestLedgerKeepsUpParts`, `TestRowUpPartsKept`, `TestTotalsSumUpParts` and
+`usage-upload.test.cjs` cover it. `BenchmarkPromptOfLargeBody` times the
+reader on a 1.2 MB body.
+
 ### Calls read from the agents' own files
 
 A call an agent made without magpie reaches Usage only when its own files
@@ -771,7 +821,17 @@ with the account that answered: Kimi Code's are the ones whose
 `usage.record`s in every agent's `wire.jsonl` under
 `$KIMI_CODE_HOME/sessions` (else `~/.kimi-code`), protocols 1.4 and 1.5;
 a fork repeats its parent's records, so each is keyed by agent, time,
-model and usage and counted once. Pi's and omp's calls are the session
+model and usage and counted once. The Kimi desktop app's Work (Daimon,
+which runs the Kimi Code runtime; CNSA0422 on X,
+[`kimi_work.go`](../../internal/sessions/kimi_work.go)) keeps the same
+files under `<share>/daimon/runtime/kimi-code/home/sessions`, its share
+being `kimi-desktop/daimon-share` in Electron's userData, the absolute
+`shareDir` of `daimon-storage.json` there, or `~/.kimi`; they count as
+Kimi Code's. A record's model there is Daimon's alias, read as its
+`model` in the runtime's `config.toml`, and a call whose alias's provider
+`base_url` is a loopback address (magpie's kimi-desktop plugin bridge) is
+the gateway's. That file is the current setting only
+(`TestKimiWorkCalls`). Pi's and omp's calls are the session
 files' assistant messages, and the calls beside them that Sessions counts
 too ("usage" and omp's "model_usage" entries, a compaction's, a branch
 summary's and a tool result's usage, on the model and provider in use);

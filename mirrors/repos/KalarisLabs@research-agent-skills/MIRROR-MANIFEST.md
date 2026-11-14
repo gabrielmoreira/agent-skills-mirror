@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KalarisLabs/research-agent-skills` — 26 default patterns, 0 followed patterns, 2428 file(s) materialized.
+Mirror of `KalarisLabs/research-agent-skills` — 26 default patterns, 0 followed patterns, 2429 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `KalarisLabs/research-agent-skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2428 |
+| Files         | 2429 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -2487,6 +2487,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2426 | ✓ | [`skills/zarr-python/references/storage_backends.md`](skills/zarr-python/references/storage_backends.md) |
 | 2427 | ✓ | [`skills/zarr-python/references/v3_migration.md`](skills/zarr-python/references/v3_migration.md) |
 | 2428 | ✓ | [`skills/zarr-python/SKILL.md`](skills/zarr-python/SKILL.md) |
+| 2429 | ✓ | [`web/llms.txt`](web/llms.txt) |
 
 ---
 

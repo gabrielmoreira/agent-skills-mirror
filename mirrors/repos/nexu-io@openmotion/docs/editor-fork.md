@@ -57,7 +57,7 @@ Model configuration and media generation are hidden in the MVP editor. `MediaGat
 | 模板画廊、视频预览、出处与热度 | `web/template-gallery.ts`、`web/template-gallery.css`、`template-catalog.ts` |
 | 内置原生模板与工程副本 | `template-library.ts`、`template-library/` |
 | MCP 与模板统一弹框、配置下载与 Agent 指引 | `studio/src/motion/ConnectionDialog.tsx`、`web/connect.*`、`shared/integration.ts` |
-| 设计变量 | `web/design-system/tokens.json`，执行 `npm run design:tokens` |
+| 设计变量 | `packages/design-system/tokens.json`，执行 `npm run design:tokens` |
 | 编辑器主题 | `studio/src/motion/theme.css` |
 | Dock 与面板注册 | `studio/src/components/dock/` |
 | Legacy preview/layout presets (hidden in MVP) | `studio/src/motion/MotionLayoutControls.tsx` |
@@ -103,6 +103,6 @@ npm run package:plugin
 
 MVP regressions cover fixed panels, excluded-panel guards, divider persistence, embedded sidebar state and hidden controls alongside retained edits/exports. Legacy Dock regressions still cover free layouts outside the MVP host. 历史集成测试使用真实服务验证保留版本在重启后仍存在，恢复不删除后续记录，并可撤销恢复。面板测试覆盖保存失败与原生恢复拒绝，确保失败时不重新加载或替换工程。
 
-The editor template modal reuses the gallery controller but hides integration sections. The standalone integration page retains Codex, Claude Code, DeepSeek Harness and stdio configuration/guides. 配置中的数据目录、Node 路径和端口来自当前运行服务；ChatGPT 云端接入尚无远程端点。一期目录发现由 Studio 或指引链接提供，`openmotion_create_project` 的 template 类型只复制实际内置原生模板；旧目录/详情/应用 handler 仅作内部兼容，不能按一期 Tool 调用。外部参考由 Agent 分析后写入可编辑原生源文件。数据、封面与热度的维护见 [模板目录](template-catalog.md)。
+The editor template library uses a full-window discovery gallery and detail dialog backed by the shared catalog reader. Its bounded viewport autoplay, category/search/facet filters, random discovery and related-template navigation remain separate from the standalone website gallery controller; integration sections stay hidden. The standalone integration page retains Codex, Claude Code, DeepSeek Harness and stdio configuration/guides. 配置中的数据目录、Node 路径和端口来自当前运行服务；ChatGPT 云端接入尚无远程端点。一期目录发现由 Studio 或指引链接提供，`openmotion_create_project` 的 template 类型只复制实际内置原生模板；旧目录/详情/应用 handler 仅作内部兼容，不能按一期 Tool 调用。外部参考由 Agent 分析后写入可编辑原生源文件。数据、封面与热度的维护见 [模板目录](template-catalog.md)。
 
 Language regression tests cover all eleven preferences, unavailable storage, same-origin synchronization, interpolation, plural forms and complete dictionary keys. DOM tests check stable section IDs, native property values and label updates without recreating editor inputs, preview iframes or the connection gallery. Real-browser checks remain separate from native-speaker translation and cross-platform acceptance.

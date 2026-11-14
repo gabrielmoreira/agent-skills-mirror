@@ -21,6 +21,28 @@ For published motion guidance source and locale metadata, use the [catalog contr
 
 ## PR workflow
 
+### Submit a video with your Agent
+
+Share your video, reference or editable project with your Agent and paste this brief:
+
+```text
+Create a reusable OpenMotion template from the video or project I provide.
+Read https://github.com/nexu-io/openmotion/blob/main/CONTRIBUTING.md and the linked
+template catalog contribution guide. Use the OpenMotion video-to-template workflow
+for a reference video; preserve editable source for an existing project.
+Include a preview, replaceable content, TEMPLATE.md, motion guidance, source
+attribution and asset licenses. Register catalog entries and locale metadata only
+as described in the catalog guide. Run the applicable template and storage checks.
+Prepare a focused pull request against nexu-io/openmotion with an English title
+and description, and show me the template and validation results for review.
+Do not merge or publish packages or CMS content.
+```
+
+Studio's **Submit video** link opens this guide. **Recreate and submit** copies a
+brief that also identifies the selected template; **Recreate template** copies only
+the recreation brief. Paste either into your Agent to continue. These controls do
+not upload media or create a pull request by themselves.
+
 Work from the repository root; read [AGENTS.md](AGENTS.md) and the [architecture](docs/product/architecture.md). Use the pinned CI Node version. Keep `package-lock.json` and `scripts/runtime-lock.json` in sync with any intentional dependency change.
 
 Before opening a PR, follow the [local validation guidance](AGENTS.md#local-validation) and report the checks you actually ran. Studio unit tests use `npm run test:studio`. Model creation and visual acceptance require separate evidence. Do not overwrite real user data or host configuration to test an installer.
@@ -37,4 +59,4 @@ Contributions are licensed under the repository's [Apache-2.0 license](LICENSE);
 
 ## Repository media and size
 
-Keep embedded README previews directly readable. Full videos and optional template archives use Git LFS with downloads excluded by default. Follow [storage, scoped downloads and contribution checks](docs/repository-storage.md); run `npm run storage:check` after staging. For contributed media, use the documented **Prepare PR media** Action after final review; contributors do not need upload credentials.
+Keep embedded README previews directly readable. Large existing previews use public R2 URLs registered in `repository-media.json`; small artwork, template source and browser dependencies stay local. The ordinary Git checkout budget is 180 MiB. Full videos and optional template archives use Git LFS with downloads excluded by default. Follow [storage, scoped downloads and contribution checks](docs/repository-storage.md); run `npm run storage:check` after staging. For contributed media, use the documented **Prepare PR media** Action after final review; contributors do not need upload credentials.

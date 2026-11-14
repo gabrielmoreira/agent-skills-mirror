@@ -273,12 +273,15 @@ The application layer has two jobs, kept in separate modules:
 - **Assembly** — `service/bootstrap.py`. `build_application(settings)` selects
   application providers (`build_providers`), storage adapters, the OME engine with
   strategies registered, the event bus, the cascade orchestrator and the domain
-  pipelines and managers, and returns an `Application`: three facades plus a
-  `Capabilities` snapshot of which optional providers were configured.
+  pipelines and managers, and returns an `Application`: four facades (memory,
+  knowledge, ops, purge) plus a `Capabilities` snapshot of which optional
+  providers were configured.
   `Application.start()` first acquires the memory root's existing exclusive
-  OME lock, then brings up the system DB, the index, the
+  OME lock, then brings up the system DB (restoring an unfinished purge's
+  mark and tombstones before anything writes), the index, the
   cascade, OME and the `async_mode` queue in that order (the queue publishes
-  into OME, so it starts last and stops first), and `aclose()` unwinds what was
+  into OME, so it starts after it and stops before it), then the purge
+  runner, and `aclose()` unwinds what was
   started, then closes the storage connections whether or not `start()` ran.
   The lock is released after storage closes, including on startup failure.
   The server's OME engine borrows this lock; standalone replay engines still
@@ -348,7 +351,9 @@ change partial-write failure behavior.
 - `exception_handlers.py` — one table from exception class to status code /
   `ErrorCode`.
 - `middleware/` — the HTTP middleware (CORS defaults, request id, Prometheus
-  metrics, profiling); it reaches logging and metrics through
+  metrics, profiling, and write tracking, which stamps each non-GET
+  request's arrival time and registers it while it runs so a purge can
+  wait for it); it reaches logging and metrics through
   `core.observability`.
 
 `entrypoints/cli/`: `main.py` registers the command groups, `commands/` holds
@@ -363,7 +368,7 @@ Do not add process-wide accessors for business services or providers.
 
 | Package | Protocol | Implementations | Factory |
 |---|---|---|---|
-| `llm` | `everalgo.llm.LLMClient` | `OpenAIProvider` | `build_llm_provider(resolve_*_config(settings), observer=observer_for(settings))` |
+| `llm` | `everalgo.llm.LLMClient` | `OpenAIProvider` | per task: `build_llm_task_providers({t: llm_client_config(r) for t, r in resolve_llm_tasks(settings).items()}, observer=...)`; multimodal: `build_llm_provider(resolve_multimodal_config(settings), observer=...)` |
 | `embedding` | `EmbeddingProvider` | `OpenAIEmbeddingProvider` | `build_embedding_provider(settings.embedding)` |
 | `rerank` | `RerankProvider` | DeepInfra / vLLM / DashScope providers | `build_rerank_provider(settings.rerank)` |
 | `parser` | everalgo parser entry | — | `aparse_file(raw, llm=...)` takes the multimodal LLM from its caller |
@@ -377,11 +382,12 @@ passed explicitly; deliberate live configuration needs an explicit source and
 compatibility rules for existing environment overrides.
 
 A factory raises when its section is missing or wrong
-(`LLMNotConfiguredError` / `ValueError`). The extraction LLM is required:
-`build_providers` lets its `LLMNotConfiguredError` propagate, so neither the
-server nor a CLI command that builds the application gets past assembly
-without `[llm]`, and nothing downstream of the bootstrap types the LLM (or
-the decider, which falls back to `[llm]`) as optional. For embedding, rerank
+(`LLMNotConfiguredError` / `ValueError`). Every task's LLM is required (one
+client per task in `LLMClients`, each `[llm]` with that task's `[llm.<task>]`
+laid over it): `build_providers` lets its `LLMNotConfiguredError` propagate, so
+neither the server nor a CLI command that builds the application gets past
+assembly without `[llm]`, and nothing downstream of the bootstrap types an LLM
+as optional. For embedding, rerank
 and multimodal the bootstrap turns the error into `None` with a warning, and
 the `None` is the whole "not configured" signal: search refuses with a 422,
 cascade writes rows without vectors, knowledge uploads refuse, and parsing a

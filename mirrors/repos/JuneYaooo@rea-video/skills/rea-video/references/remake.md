@@ -14,6 +14,8 @@
 - **AI 类镜头**：用原镜头首尾帧加 VLM 提示词，通过 [capsule-cinema](https://github.com/JuneYaooo/capsule-cinema) 生成（会计费，先 `--dry-run`，并征得用户同意）。
 - **静态图推拉、静帧**：本地按测得的运动参数重建。
 - **代码渲染**：用 Remotion 重建，或在 ChatCut 里生成动效图形。用 Remotion 时，把报告「代码合成」一节（每镜做法、逐镜动效时间轴、色值）连同 `shots/` 里的元素截图、关键帧条和 `packaging/overlays.ass` 一起交给写代码的人或 LLM；按时间轴的时间和位置写动画，按截图重画图形，图标 / Logo / 插画这类画不出来的直接抠图用。
+  - 拆片包的 `frames/` 里每个场景有原尺寸帧、画上去那一层的抠图（`scene_XX_layer.png`）和采样点（`points/`，x、y 为 0–1 坐标）：粒子、线条、图形照着摆或描，不要照文字描述去猜形状。旧目录没有 `frames/` 时运行 `rea-video frames out/ref`。
+  - 做完用 `rea-video compare 原片 成片 --scenes out/ref/frames/scenes.json -o 对比目录` 打分，先改 `compare_worst.jpg` 里分数最低的时刻。
 - **真实素材**：列清单让用户提供；拿到后用 `rea-video assemble` 拼回原时间线，或放进 ChatCut 按原片节奏剪。
 - **声音**：TTS、BGM（按 BPM / 调性 / 情绪）、音效（按时间点）三条轨分别准备。
 - **剪辑包装（字幕、花字、贴纸）**：不进生成。生成模型只出干净的人和画面，包装层最后按「剪辑包装层」的时间轴叠上去，这样字不会被模型画糊，换文案时也只改包装层。

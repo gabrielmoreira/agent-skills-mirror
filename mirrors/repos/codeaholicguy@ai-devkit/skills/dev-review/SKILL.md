@@ -13,7 +13,7 @@ Run final pre-push review for configured AI docs features. Before changing docs 
 2. If working on a named feature, run `npx ai-devkit@latest lint --feature <name>`.
 3. Check `git status -sb` and `git diff --stat`.
 4. Read feature docs and relevant changed files before findings.
-5. Apply the `verify` skill before claiming readiness. Run `dev-smoke` when the change touches user-facing flows.
+5. Load `verify` with your skill tool before claiming readiness. Load `dev-smoke` with your skill tool when the change touches a user-facing entry point (CLI command, API route or RPC handler, UI screen, daemon or wire protocol); skipping it requires a stated reason.
 6. If parent `dev-lifecycle` established usable task tracing, emit review phase, progress, blocker/finding, next-step, and final evidence/readiness events per `task`.
 
 ## Code Review
@@ -32,10 +32,11 @@ Use for Phase 9. Take a holistic review stance: findings first, ordered by sever
 10. Check dependency health, including circular dependencies or version conflicts from new imports.
 11. Check breaking changes. For public/external APIs, recommend parallel change and deprecation over in-place mutation. For in-repo-only callers, all callers should be migrated and legacy APIs deleted.
 12. Check rollback safety, especially irreversible migrations or one-way data/state changes.
-13. Review file by file for correctness, logic, edge cases, redundancy, security, performance, error handling, and test coverage.
-14. Check cross-cutting concerns: naming conventions, documentation updates, missing tests, config/migration changes.
-15. Summarize blocking issues, important follow-ups, and nice-to-haves. Per finding include file, issue, impact severity, and recommendation.
-16. If task tracing is available, add blockers and set `blocked` for blocking findings; if review passes with final evidence, close the task per `task`.
-17. Complete final checklist: design match, no logic gaps, security addressed, integration points verified, tests cover changes, docs updated.
+13. For bug fixes, check the fix lands at the owner of the broken invariant, not only at the caller that triggered it; flag other paths that can still violate it.
+14. Review file by file for correctness, logic, edge cases, redundancy, security, performance, error handling, and test coverage.
+15. Check cross-cutting concerns: naming conventions, documentation updates, missing tests, config/migration changes.
+16. Summarize blocking issues, important follow-ups, and nice-to-haves. Per finding include file, issue, impact severity, and recommendation.
+17. If task tracing is available, add blockers and set `blocked` for blocking findings; if review passes with final evidence, close the task per `task`.
+18. Complete final checklist: design match, no logic gaps, security addressed, integration points verified, tests cover changes, docs updated.
 
 Done: if the checklist passes, the feature is ready to push and create a PR. If blocking issues remain, return to `dev-implementation` or `dev-testing`.

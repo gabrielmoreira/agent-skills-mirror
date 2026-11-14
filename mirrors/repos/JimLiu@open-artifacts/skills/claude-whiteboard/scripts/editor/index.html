@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" class="cds-root" data-density="comfortable" data-thumb-defer>
+<head>
+<meta charset="utf-8">
+<script>
+(function(){var values={"appifact_icon_set":true,"whiteboard_off_claude":false,"whiteboard_off_embed_script":false,"whiteboard_off_chat_handoff":false,"whiteboard_read_aloud":false};function kind(v){return v===null?"null":Array.isArray(v)?"array":typeof v}function copy(v){return JSON.parse(JSON.stringify(v))}function get(key,fallback){if(!Object.prototype.hasOwnProperty.call(values,key))return fallback;if(fallback!==null&&kind(values[key])!==kind(fallback))return fallback;return copy(values[key])}globalThis.__appifact_flags={version:"appifact-flags:v2",ready:function(){return Promise.resolve(true)},get:get,latest:function(key,fallback){var v=get(key,fallback);return typeof v==="boolean"?v:fallback},onLatest:function(){return function(){}},askAgain:function(){},all:function(){return copy(values)}};})();
+</script>
+<title>Whiteboard</title>
+<!--
+  claude-whiteboard: the claude.ai Whiteboard type page, served locally by scripts/artifact.mjs serve.
+  A board's content is its store, <root>/db/<collection>/<doc_id>.json (board/meta, elements/<id>, …);
+  local-host.js gives the page globalThis.claude (db, assets, user, downloads, comments, room) over HTTP to that
+  server. Prebuilt; see SKILL.md.
+-->
+<meta name="appifact-capabilities" content="{&quot;downloads&quot;:{},&quot;comments&quot;:{&quot;customAnchors&quot;:true},&quot;room&quot;:{},&quot;db&quot;:{&quot;rules&quot;:[{&quot;path&quot;:&quot;&quot;,&quot;write&quot;:&quot;admin&quot;}]},&quot;assets&quot;:{},&quot;user&quot;:{&quot;scopes&quot;:[&quot;profile&quot;]}}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="claude:viewport-fit-sides" content="cover">
+<script id="appifact-mode">(function(){var h=document.documentElement;function s(){var t=h.getAttribute('data-theme');if(t==='light'||t==='dark'){h.setAttribute('data-mode',t)}else{h.removeAttribute('data-mode')}}s();if(typeof MutationObserver==='function'){new MutationObserver(s).observe(h,{attributes:true,attributeFilter:['data-theme']})}})();</script>
+  <link rel="stylesheet" href="./artifact-type/app.css">
+</head>
+<body>
+<div id="root"></div>
+<script src="./local-host.js"></script>
+<script src="./artifact-type/app.js"></script>
+</body>
+</html>

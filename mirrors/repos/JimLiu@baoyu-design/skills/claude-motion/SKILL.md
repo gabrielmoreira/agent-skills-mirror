@@ -1,7 +1,7 @@
 ---
 name: claude-motion
 description: "Use this for a local Motion film: a short animated video (10–30 s unless asked for more, 900 s at most), such as an explainer, product walkthrough or UI demo, launch teaser, logo sting, social clip, animated chart or title sequence, that plays in the bundled Motion player and exports from there to MP4 or GIF. A narrated one carries a voice track: a take a scene, made here with a speech provider of the user's or recorded by them, spoken and captioned by the player, the motion timed to its words. Everything on screen is code, a pure function of time, written scene by scene into the film's own store with this skill's script while the user watches it fill in. Read it when creating, continuing, finalizing or revising one. Not for editing real footage, subtitles or audio (that is a video editor), a still picture, a slide deck or a static HTML page."
-license: "Mixed. The skill text, references and editors adapted from Anthropic's claude.ai Artifact types stay Anthropic's and are not MIT-licensed; the local tooling is MIT. Complete terms in NOTICE.md: https://github.com/JimLiu/baoyu-design/blob/main/NOTICE.md"
+license: "Mixed. The skill text, references and editors adapted from Anthropic's claude.ai Artifact types stay Anthropic's and are not MIT-licensed; the local tooling is MIT. Complete terms in NOTICE.md: https://github.com/JimLiu/open-artifacts/blob/main/NOTICE.md"
 ---
 
 # Motion — the shared type

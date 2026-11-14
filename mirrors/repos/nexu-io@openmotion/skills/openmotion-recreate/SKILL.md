@@ -40,7 +40,7 @@ Parts the request does not cover keep the original. Requested changes are in sco
 
 ## 3. Ask at most once
 
-Ask only when the workspace and the request together still lack something only the user can supply (brand, product, claims, numbers, prices, logos, images), or when an ambiguity would materially change the result. With usable material in the workspace, do not ask who the film is for. Offer "you decide" where it fits. This package exposes no generation Tool: when a needed image, clip or sound is missing, use the user's material, ask for it, or offer a generation tool the host actually has; never generate a real logo, product photo or factual claim.
+Ask only when the workspace and the request together still lack something only the user can supply (brand, product, claims, numbers, prices, logos, images), or when an ambiguity would materially change the result. With usable material in the workspace, do not ask who the film is for. Offer "you decide" where it fits. When selecting, obtaining or replacing an image, clip or sound, apply the [shared material policy](../openmotion-production/references/materials.md) within this workflow's supported media scope. Ask for a material gap only when it cannot be resolved within the current scope, available sources and authorization. For configured BYOK generation, use openmotion_media_use and read action=reference for the selected provider; this does not expand the creative scope of the request.
 
 Ask all of it in one batch through the host's question interface, in the user's language. If nothing is missing, do not ask. Do not ask about technical choices, intermediate approval or storyboards. After the answers, work through to the finished film without stopping.
 
@@ -52,7 +52,7 @@ Read `openmotion_get_project({projectId})` for the directory, revision, current 
 
 ## 5. Rebuild, then change
 
-Follow [rebuild](references/rebuild.md) for understanding the video, choosing an editable representation, measuring and rebuilding. Build the user's version directly: rebuild the parts that stay faithfully and put the user's content into the rebuilt structure. Do not build a complete copy of the reference first only to change it again.
+Follow [rebuild](references/rebuild.md) for understanding the video, choosing an editable representation, measuring and rebuilding. Build the user's version directly: rebuild the parts that stay faithfully and put the user's content into the rebuilt structure. Do not build a complete copy of the reference first only to change it again. For dense multi-shot work, use the [segment reconstruction process](references/rebuild.md#establish-a-difficult-visual-system) to prepare concrete shot/action briefs, assign independent units when delegation is available and authorized, and integrate their inspected source. For unfamiliar or inaccurate movement, turn reference observations into timed controls consumed by the renderer, then compare actual intermediate states before extending that implementation. Carry local comparison evidence and unresolved differences into whole-film review.
 
 Import real media with `openmotion_import_assets` and use the returned paths; save text files (HTML, CSS, JS, SVG, JSON) with `openmotion_edit_project` using the latest `expectedRevision` and `expectedVersionId`. Re-read the project after a conflict instead of replaying an old batch.
 

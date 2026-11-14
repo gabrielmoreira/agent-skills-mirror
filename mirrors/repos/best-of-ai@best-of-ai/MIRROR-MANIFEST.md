@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `best-of-ai/best-of-ai` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `best-of-ai/best-of-ai` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `best-of-ai/best-of-ai` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,10 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`content_es/tools/claude.md`](content_es/tools/claude.md) |
 | 2 | ✓ | [`content_es/tools/gemini.md`](content_es/tools/gemini.md) |
-| 3 | ✓ | [`content/alternatives/claude.md`](content/alternatives/claude.md) |
-| 4 | ✓ | [`content/alternatives/gemini.md`](content/alternatives/gemini.md) |
-| 5 | ✓ | [`content/tools/claude.md`](content/tools/claude.md) |
-| 6 | ✓ | [`content/tools/gemini.md`](content/tools/gemini.md) |
+| 3 | ✓ | [`content_fr/tools/claude.md`](content_fr/tools/claude.md) |
+| 4 | ✓ | [`content_fr/tools/gemini.md`](content_fr/tools/gemini.md) |
+| 5 | ✓ | [`content/alternatives/claude.md`](content/alternatives/claude.md) |
+| 6 | ✓ | [`content/alternatives/gemini.md`](content/alternatives/gemini.md) |
+| 7 | ✓ | [`content/tools/claude.md`](content/tools/claude.md) |
+| 8 | ✓ | [`content/tools/gemini.md`](content/tools/gemini.md) |
 
 ---
 

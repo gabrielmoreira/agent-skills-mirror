@@ -87,13 +87,13 @@ FACTS=(NativeMarkBeforeTermopen OwnedUnstartedIsNotEnded OwnedLiveNeedsMark Owne
   SnacksOpenSkipsDuringStart
   SnacksMarksStartedTerminal SnacksEntriesAdopt SnacksEntriesForgetEndedJob SnacksCloseAdopts SnacksExitForgets
   SnacksForgetChecksInstance
-  SnacksCloseForgetsFirst SnacksHideKeepsLastWindow SnacksFailCleansUp SnacksStopsNativeClaude
+  SnacksCloseForgetsFirst SnacksCloseClearsMark SnacksHideKeepsLastWindow SnacksFailCleansUp SnacksStopsNativeClaude
   SnacksAvailabilityCached OwnedStopOtherStops)
 
-# native.lua: the mark goes on the new buffer before the window shows it (nvim_win_set_buf fires BufEnter) and before
+# native.lua: the mark goes on the new buffer before the window shows it (the swap in utils.win_set_buf_in_split fires BufEnter) and before
 # termopen (TermOpen), so an open() from either autocmd adopts the terminal being started.
 fact[NativeMarkBeforeTermopen]=$(as_bool in_order '^  local new_bufnr = vim\.api\.nvim_create_buf\(' \
-  '^  vim\.b\[new_bufnr\]\[OWNED_MARK\] = true$' '^  vim\.api\.nvim_win_set_buf\(new_winid, new_bufnr\)$' \
+  '^  vim\.b\[new_bufnr\]\[OWNED_MARK\] = true$' '^  utils\.win_set_buf_in_split\(new_winid, new_bufnr\)$' \
   'pcall\(vim\.fn\.termopen, term_cmd_arg, termopen_opts\)' <<<"$start_terminal")
 # owned.lua: a buffer whose job has not started (channel 0) has not ended, so the autocmd's open() can adopt it.
 fact[OwnedUnstartedIsNotEnded]=$(as_bool grep -qE \
@@ -171,7 +171,7 @@ fact[NativeCloseClearsMark]=$(as_bool in_order '^  local closing_bufnr, closing_
 # closes the split) never unloads it: with 'nohidden' that would end the job, or start a second terminal on 0.8. The start
 # sets it again after termopen, because an autocmd of the start can have changed it (to wipe, for example).
 fact[NativeKeepsHiddenJob]=$(as_bool in_order '^  vim\.b\[new_bufnr\]\[OWNED_MARK\] = true$' \
-  '^  vim\.bo\[new_bufnr\]\.bufhidden = "hide"$' '^  vim\.api\.nvim_win_set_buf\(new_winid, new_bufnr\)$' \
+  '^  vim\.bo\[new_bufnr\]\.bufhidden = "hide"$' '^  utils\.win_set_buf_in_split\(new_winid, new_bufnr\)$' \
   '^  jobid = termopen_result$' '^  vim\.bo\[bufnr\]\.bufhidden = "hide"$' <<<"$start_terminal")
 # A fix that skips the last window or pcalls the close flips this fact.
 native_hide_keeps_last_window() {
@@ -225,7 +225,7 @@ owned_stop_other_stops() {
   in_order '^  if not M\.find\(mark\) then$' '^    return false$' '^  local buf = M\.find\(mark\)$' '^  while buf do$' \
     '^    if not stop_buffer\(buf, mark\) then$' '^      return false$' '^    buf = M\.find\(mark\)$' '^  return true$' \
     <<<"$owned_stop_other" &&
-    in_order '^  vim\.b\[buf\]\[mark\] = nil$' 'vim\.fn\.jobstop\(vim\.bo\[buf\]\.channel\) == 1' \
+    in_order '^  vim\.b\[buf\]\[mark\] = nil$' '^  M\.wait_for_exec\(channel\)$' '^  if vim\.api\.nvim_buf_is_valid\(buf\) and vim\.fn\.jobstop\(channel\) == 1 then$' \
       '^    vim\.wait\(1000, function\(\)$' '^    vim\.api\.nvim_buf_delete\(buf, \{ force = true \}\)$' \
       '^  return not vim\.api\.nvim_buf_is_valid\(buf\)$' <<<"$owned_stop_buffer"
 }
@@ -272,6 +272,12 @@ fact[SnacksForgetChecksInstance]=$(as_bool in_order '^  local function forget\(\
   '^      terminal = nil$' <<<"$snacks_events")
 fact[SnacksCloseForgetsFirst]=$(as_bool in_order '^  local closing = terminal$' '^  terminal = nil$' 'vim\.wait\(' \
   '^    closing:close\(\)$' <<<"$snacks_close")
+# snacks.lua: the mark of the terminal that closes goes before the wait for the exec, which runs scheduled callbacks while
+# the job still runs, so an open() among them cannot adopt it by its mark. The model has no such wait: it counts a closing
+# terminal as ended (`JobEnded`), so this fact breaks a rule only together with OwnedLiveSkipsEndedJob, as in native.
+fact[SnacksCloseClearsMark]=$(as_bool in_order '^  local closing = terminal$' '^  terminal = nil$' \
+  '^    vim\.b\[closing_bufnr\]\[OWNED_MARK\] = nil$' '^      owned\.wait_for_exec\(jobid\)$' \
+  '^    vim\.fn\.jobstop\(jobid\)$' <<<"$snacks_close")
 fact[SnacksHideKeepsLastWindow]=$(as_bool grep -qE '^    if pcall\(vim\.api\.nvim_win_close, win, false\) then$' \
   <<<"$cc_hide")
 fact[SnacksFailCleansUp]=$(as_bool in_order '^  opts\.win\.on_buf = function\(instance\)$' '^    shown_instance = instance$' \
@@ -302,7 +308,7 @@ LIVE=()
 EXPECT=(
   ["NativeMarkBeforeTermopen+NativeOpenSkipsDuringStart"]=AtMostOneClaude
   ["OwnedUnstartedIsNotEnded+NativeOpenSkipsDuringStart"]=AtMostOneClaude
-  [OwnedLiveSkipsEndedJob]=CloseNeverReuses
+  [OwnedLiveSkipsEndedJob]=OpenShowsLiveClaude
   ["OwnedLiveNeedsMark+OwnedLiveSkipsEndedJob"]=CloseNeverReuses
   [NativeAdoptsHiddenTerminal]=AtMostOneClaude
   [NativeShowsAdoptedHidden]=OpenShowsLiveClaude
@@ -331,6 +337,7 @@ EXPECT=(
   ["SnacksExitForgets+SnacksEntriesForgetEndedJob"]=OpenShowsLiveClaude
   ["SnacksForgetChecksInstance+SnacksCloseAdopts"]=CloseStopsClaude
   [SnacksCloseForgetsFirst]=CloseNeverReuses
+  ["SnacksCloseClearsMark+OwnedLiveSkipsEndedJob"]=CloseNeverReuses
   [SnacksHideKeepsLastWindow]=HideNoError
   [SnacksFailCleansUp]=FailedStartLeavesNoWindow
   [SnacksStopsNativeClaude]=AtMostOneClaude

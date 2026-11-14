@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 1 followed patterns, 23 file(s) materialized.
+Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 2 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 1 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 23 |
+| Followed pats | 2 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `hashgraph-online/hol-guard` — 26 default patterns, 1 followed patte
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/guard/extensions/contributing.md`
+- `docs/guard/extensions/cloud-action-pack-contributing.md`
 
 ## File Index
 
@@ -81,7 +82,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/alpha-plugin/skills/example/SKILL.md) |
 | 21 | ✓ | [`tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md`](tests/fixtures/multi-plugin-repo/plugins/beta-plugin/skills/example/SKILL.md) |
 | 22 | ✓ | [`tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md`](tests/fixtures/skills-no-frontmatter/skills/bad-skill/SKILL.md) |
-| 23 | → | [`docs/guard/extensions/contributing.md`](docs/guard/extensions/contributing.md) |
+| 23 | → | [`docs/guard/extensions/cloud-action-pack-contributing.md`](docs/guard/extensions/cloud-action-pack-contributing.md) |
+| 24 | → | [`docs/guard/extensions/contributing.md`](docs/guard/extensions/contributing.md) |
 
 ---
 
