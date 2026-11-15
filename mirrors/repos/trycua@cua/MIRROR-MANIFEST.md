@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 6 followed patterns, 108 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 6 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trycua/cua` — 26 default patterns, 6 followed patterns, 108 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 108 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -149,29 +149,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 83 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
 | 84 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/WINDOWS.md`](libs/cua-driver/rust/Skills/cua-driver/WINDOWS.md) |
 | 85 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/WORKFLOW.md`](libs/cua-driver/rust/Skills/cua-driver/WORKFLOW.md) |
-| 86 | ✓ | [`libs/cua/skills/cua-driver/BROWSER.md`](libs/cua/skills/cua-driver/BROWSER.md) |
-| 87 | ✓ | [`libs/cua/skills/cua-driver/EMBEDDING.md`](libs/cua/skills/cua-driver/EMBEDDING.md) |
-| 88 | ✓ | [`libs/cua/skills/cua-driver/LINUX.md`](libs/cua/skills/cua-driver/LINUX.md) |
-| 89 | ✓ | [`libs/cua/skills/cua-driver/MACOS.md`](libs/cua/skills/cua-driver/MACOS.md) |
-| 90 | ✓ | [`libs/cua/skills/cua-driver/RECORDING.md`](libs/cua/skills/cua-driver/RECORDING.md) |
-| 91 | ✓ | [`libs/cua/skills/cua-driver/RUNTIME.md`](libs/cua/skills/cua-driver/RUNTIME.md) |
-| 92 | ✓ | [`libs/cua/skills/cua-driver/SKILL.md`](libs/cua/skills/cua-driver/SKILL.md) |
-| 93 | ✓ | [`libs/cua/skills/cua-driver/WINDOWS.md`](libs/cua/skills/cua-driver/WINDOWS.md) |
-| 94 | ✓ | [`libs/cua/skills/cua-driver/WORKFLOW.md`](libs/cua/skills/cua-driver/WORKFLOW.md) |
-| 95 | ✓ | [`libs/cua/skills/cua-sandboxes/SKILL.md`](libs/cua/skills/cua-sandboxes/SKILL.md) |
-| 96 | ✓ | [`libs/cua/skills/cua-spaces/SKILL.md`](libs/cua/skills/cua-spaces/SKILL.md) |
-| 97 | ✓ | [`libs/cua/skills/cua-volume/SKILL.md`](libs/cua/skills/cua-volume/SKILL.md) |
-| 98 | ✓ | [`libs/cua/skills/gui-automation/SKILL.md`](libs/cua/skills/gui-automation/SKILL.md) |
-| 99 | ✓ | [`libs/cua/skills/supercomputer/SKILL.md`](libs/cua/skills/supercomputer/SKILL.md) |
-| 100 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 101 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
-| 102 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
-| 103 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 104 | → | [`docs/component-release-workflow.md`](docs/component-release-workflow.md) |
-| 105 | → | [`docs/contributing/Development.md`](docs/contributing/Development.md) |
-| 106 | → | [`docs/contributing/releasing-cua-spaces.md`](docs/contributing/releasing-cua-spaces.md) |
-| 107 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
-| 108 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
+| 86 | ✓ | [`libs/cua/skills/cua-sandboxes/SKILL.md`](libs/cua/skills/cua-sandboxes/SKILL.md) |
+| 87 | ✓ | [`libs/cua/skills/cua-spaces/SKILL.md`](libs/cua/skills/cua-spaces/SKILL.md) |
+| 88 | ✓ | [`libs/cua/skills/cua-volume/SKILL.md`](libs/cua/skills/cua-volume/SKILL.md) |
+| 89 | ✓ | [`libs/cua/skills/gui-automation/SKILL.md`](libs/cua/skills/gui-automation/SKILL.md) |
+| 90 | ✓ | [`libs/cua/skills/supercomputer/SKILL.md`](libs/cua/skills/supercomputer/SKILL.md) |
+| 91 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 92 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 93 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
+| 94 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 95 | → | [`docs/component-release-workflow.md`](docs/component-release-workflow.md) |
+| 96 | → | [`docs/contributing/Development.md`](docs/contributing/Development.md) |
+| 97 | → | [`docs/contributing/releasing-cua-spaces.md`](docs/contributing/releasing-cua-spaces.md) |
+| 98 | → | [`docs/contributing/TESTING.md`](docs/contributing/TESTING.md) |
+| 99 | → | [`docs/rfcs/README.md`](docs/rfcs/README.md) |
 
 ---
 

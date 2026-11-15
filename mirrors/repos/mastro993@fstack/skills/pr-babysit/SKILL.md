@@ -6,16 +6,16 @@ compatibility: Needs the gh CLI (authenticated), git, python3, a checkout of the
 
 # PR babysit
 
-Stay with the PR until it is merged or closed, or the user says stop. Green CI and **ready** (open, checks green, approved or no review required, no review request or requested changes outstanding, mergeable and up to date, no thread awaiting a reply) are milestones, not the end: a late review or another PR landing on the base can break a ready PR without anyone touching it. If the user only asked to be told ("let me know when CI finishes"), report and change nothing.
+Stay with the PR until it is merged or closed, or the user says stop. Green CI and **ready** (open and not a draft, checks green, approved or no review required, no review request or requested changes outstanding, mergeable and up to date, no thread awaiting a reply) are milestones, not the end: a late review or another PR landing on the base can break a ready PR without anyone touching it. A request that names a milestone ("babysit it until it's green", "till it's mergeable") still means the whole watch: say when the PR gets there and keep going. If the user only asked to be told ("let me know when CI finishes"), report and change nothing.
 
 ## Watching
 
 `scripts/pr_watch.py` (in this skill's directory) reads everything in one command:
 
 - `python3 <skill-dir>/scripts/pr_watch.py snapshot [PR]`: state, failing checks, threads awaiting reply, and a `READY:` line with the blockers. Start with it; anything already failing or unanswered is your first work.
-- `python3 <skill-dir>/scripts/pr_watch.py wait [PR]`: polls every 15 s and exits on the next new event (check failed or passed, review or comment, conflict, branch behind base, merged or closed) with a fresh snapshot, or after 25 min with `NO CHANGE`. It skips your own comments.
+- `python3 <skill-dir>/scripts/pr_watch.py wait [PR]`: polls every 15 s and exits on the next new event (check failed or passed, review or comment, conflict, branch behind base, draft marked ready for review or converted back, merged or closed) with a fresh snapshot, or after 25 min with `NO CHANGE`. It skips your own comments. Starting a `wait` takes over from an older one on the same PR, which exits with `SUPERSEDED`: ignore that one.
 
-Wait with a host PR-watch tool if you have one (e.g. `watch_pull_request`). Otherwise run `wait` as a background command and end your turn; handle its notification, then start it again. Without background commands, run it in the foreground. On `NO CHANGE`, re-arm silently: a ready PR can sit for hours before someone merges it.
+Wait with a host PR-watch tool if you have one (e.g. `watch_pull_request`). Otherwise run `wait` as a background command with a timeout of at least 30 minutes (it can run for 25) and end your turn; handle its notification, then start it again. Without background commands, run it in the foreground. On `NO CHANGE`, re-arm silently: a ready PR can sit for hours before someone merges it.
 
 ## Acting
 
@@ -35,7 +35,7 @@ Fix failures and review comments as you normally would, minding these:
   ```
   Leave threads unresolved: resolving is how the reviewer says they're satisfied.
 - **Re-review.** Once every thread from a human reviewer has a reply, `gh pr edit <n> --add-reviewer <login>`; hold off while one of their questions waits on the user.
-- **Merging.** Only if the user asked. Leave a draft a draft.
+- **Merging.** Only if the user asked. Leave a draft a draft, and read whether it is one from the latest snapshot's `state` line, not from memory: its author can mark it ready on GitHub at any moment, even a PR you opened as a draft yourself.
 
 After each push, tell the user in a line what changed, then go back to waiting.
 
@@ -45,4 +45,4 @@ When the PR becomes ready, tell the user in a line, with the link, and keep wait
 
 If you're blocked on the user, ask, say you'll resume once they answer, and leave a background `wait` running so other events still reach you.
 
-Once the PR is merged or closed, or the user says stop, report the outcome with the PR link, stop any background `wait` (or unwatch with the host tool), and remove any worktree you created.
+Once the PR is merged or closed, or the user says stop, report the outcome with the PR link and a short recap of what you did along the way (pushes with their short SHAs, reruns, replies, anything left for the user), since the user may not have read every line in between. Stop any background `wait` (or unwatch with the host tool), and remove any worktree you created.

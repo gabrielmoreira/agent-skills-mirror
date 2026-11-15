@@ -1,0 +1,58 @@
+---
+title: Notifications runbook
+description: What to check when notifications are late, missing, or duplicated.
+---
+
+# Notifications runbook
+
+{/* ===================== Runbook ===================== */}
+
+## Notifications are late
+
+Check the queue depth first:
+
+```bash
+redis-cli llen notifications:ready
+redis-cli zcard notifications:delayed
+redis-cli llen notifications:processing
+```
+
+- `ready` growing: the worker is down or too slow. Check `kubectl get pods -l app=relay-worker`
+  and scale the deployment.
+- `delayed` growing: a provider is throttling or failing, and jobs are waiting out their
+  backoff. Look for `retrying` lines in the worker logs.
+- `processing` stuck above zero with no worker running: a worker died mid-job. The next worker
+  to start moves those jobs back to `ready`.
+
+## A notification never arrived
+
+Find its rows by user and kind:
+
+```sql
+SELECT id, channel, status, attempts, "sentAt", "createdAt"
+FROM "Notification"
+WHERE "userId" = $1 AND kind = $2
+ORDER BY "createdAt" DESC
+LIMIT 20;
+```
+
+- No row: the person turned that kind off, or push was over the hourly limit.
+- `PENDING` for minutes: see "Notifications are late".
+- `FAILED`: the worker logs say why. Dead-lettered jobs stay in `notifications:dead` until
+  someone clears them.
+- `SENT` but not received: for email, look the message up in SES by the `providerId` in the
+  row's `data`; for push, the browser may have dropped the subscription.
+
+## A notification arrived twice
+
+Duplicates mean a row was delivered, then sent again while still `PENDING`. Check the worker
+logs for a crash between the provider call and the status update, and check whether the
+sweeper re-enqueued the row (`re-enqueued N stale notifications`).
+
+## Rotating secrets
+
+| Secret                  | Used for                         | Rotation                                   |
+| ----------------------- | -------------------------------- | ------------------------------------------ |
+| `VAPID_PRIVATE_KEY`     | Signing Web Push requests        | Every browser must subscribe again         |
+| `NOTIFY_WEBHOOK_SECRET` | Signing webhook deliveries       | Tell receivers first; they verify with it  |
+| `UNSUBSCRIBE_SECRET`    | Signing unsubscribe links        | Links in emails already sent stop working  |

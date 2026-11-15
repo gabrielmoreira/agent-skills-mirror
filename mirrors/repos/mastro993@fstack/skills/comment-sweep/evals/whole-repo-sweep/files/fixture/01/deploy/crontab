@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+15 2 * * * wx ingest --day "$(date -u -d yesterday +\%F)" >> /var/log/wx/ingest.log 2>&1
+40 3 * * * python -m wxdata.cron_export --out /data/exports >> /var/log/wx/export.log 2>&1
+0 4 * * 0 /app/scripts/backup.sh >> /var/log/wx/backup.log 2>&1

@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: whole-repo-sweep
+expected_outcome: |
+  The user explicitly asks for the whole repository, so the sweep covers every tracked file, not the
+  branch diff (main has no branch changes at all). The comment inventory is delegated to cheap scout
+  subagents, and it reaches file types a naive lexer misses: code-cell comments in the .ipynb, {# #}
+  comments in the .j2 templates, the Makefile, the Dockerfile, the shell scripts, the Terraform
+  (#, //, /* */), pyproject.toml, and the .pyi stub. The vendored retrying_lite, the generated
+  readings_pb2.py, and the Alembic migrations under migrations/versions/ are skipped and stay
+  byte-identical. Noise is deleted everywhere, including "# Fixed the connection leak from last
+  sprint" from the first commit. Directives stay (type: ignore, noqa: E501, pragma: no cover,
+  shellcheck disable, tflint-ignore, fmt: off/on, the Dockerfile syntax line), as do the MIT licence
+  header in textutil.py, the click docstrings that are the CLI help, the SkyFeed page-size "why" with
+  its docs link, and the TODO linking issue #142. The IMPORTANT normalize-before-dedupe guard is true
+  and unenforced, so it stays as a reshape target. The "do not remove: used by the cron export" guard
+  is deleted because history shows the cron export was removed and nothing calls to_legacy_csv, which
+  is reported as dead code. "# timeout in seconds" is reported as a mismatch, since HTTP_TIMEOUT is in
+  milliseconds. Only comments change, and the notebook stays valid JSON with its markdown, code, and
+  metadata untouched.
+context:
+  scaffold_script: place-files.sh

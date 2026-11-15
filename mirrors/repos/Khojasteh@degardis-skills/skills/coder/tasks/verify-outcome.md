@@ -1,7 +1,7 @@
 ---
 title: Verify a software outcome
 cues:
-- whether existing software, or a claim about it, passes a check or meets a criterion as it stands is asked
+- whether existing software passes a specific check, or whether what it does meets a criterion, as it stands is asked
 goal: The named claim has a pass, fail, or unverified verdict tied to criteria fixed before execution and to current evidence from the identified project state, with no project source changed.
 knowledge:
 - authorized-software-surface

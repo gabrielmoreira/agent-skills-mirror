@@ -12,7 +12,7 @@ description: >
 license: MIT
 metadata:
   author: redamon
-  version: "1.0.0"
+  version: "1.1.0"
   scope: [recon]
   auto_invoke:
     - "Adding a new tool to the recon pipeline"
@@ -67,6 +67,23 @@ For the graph write, use `graph-db-writes`. For the settings, use
   the correct execution group in [recon/main.py](../../recon/main.py); never
   parallelize across a dependency boundary (a tool needing live URLs cannot run
   before GROUP 4).
+- **NEVER hand a pool worker the live `combined_result`.** Take one
+  `_fan_out_snapshot(combined_result)` ([main.py](../../recon/main.py)) before a
+  fan-out's first `submit` and hand every worker that copy. A wrapper copies its
+  input inside its worker thread while the main thread merges finished answers
+  into `combined_result`; a copy of the live dict then raises "dictionary
+  changed size during iteration" and that tool silently does not run (R-31).
+  Keep merging each answer as it lands (Phase A queues its graph update right
+  after), and record a failed worker in `metadata.phase_errors` and with
+  `_note_phase_error`. A test fails any `submit(...)` in `main.py` that is
+  handed `combined_result` itself.
+- **NEVER let a wrapper write into what it was handed, at any depth.** All the
+  workers of one fan-out share that one copy, so the wrapper deep-copies it
+  before its module runs, never `copy.copy`: a shallow copy shares the nested
+  dicts the module may append to.
+  [test_regression_fan_out_snapshot.py](../../recon/tests/test_regression_fan_out_snapshot.py)
+  lists every wrapper `main.py` fans out, and fails until a new one is listed
+  there and leaves its input untouched.
 - **ALWAYS route a new external call through
   [recon/helpers/circuit_breaker.py](../../recon/helpers/circuit_breaker.py).** An
   API endpoint goes through a `Breaker` (`guarded_call`, or a `provider:endpoint`
@@ -84,6 +101,16 @@ For the graph write, use `graph-db-writes`. For the settings, use
   and the run shows `partial — N sources skipped`. `host_source` must equal the
   `source` value the tool writes to the graph. A tool whose findings carry no host
   field passes `host_field=False` (the skip is reported at the source level).
+- **NEVER start a `docker run` its timeout cannot stop.** A timeout on
+  `subprocess.run`, or a killed `Popen`, ends only the docker CLI: the container
+  goes on scanning the target after the run moved on. Every `docker run` under
+  `recon/` goes through `run_tool_container`
+  ([docker_helpers.py](../../recon/helpers/docker_helpers.py)), which names the
+  container (`tool_container_name`) and kills it by that name on timeout. A tool
+  whose output is streamed or read by a `Popen` puts a `--name` in its argv and
+  calls `kill_container` on every path that stops the CLI.
+  [test_docker_run_through_helper.py](../../recon/tests/test_docker_run_through_helper.py)
+  fails on any other `docker run`.
 - **A new tool setting FAILS THE BUILD until it is in the registry.** Every
   parameter is described once in
   [recon_settings/registry.yaml](../../recon_settings/registry.yaml),
@@ -126,12 +153,23 @@ def run_censys_enrichment(combined_result: dict, settings: dict) -> dict:
 def run_censys_enrichment_isolated(combined_result: dict, settings: dict) -> dict:
     """Thread-safe: does not mutate combined_result. The fan-out + test call path."""
     import copy
-    snapshot = copy.deepcopy(combined_result)
+    snapshot = copy.deepcopy(combined_result)        # deep: the input is shared
     run_censys_enrichment(snapshot, settings)
     return snapshot.get("censys", {})                 # returns only this tool's payload
 ```
 
 From [recon/main_recon_modules/censys_enrich.py](../../recon/main_recon_modules/censys_enrich.py).
+The fan-out starts it on its one frozen copy, never on the live dict:
+
+```python
+with ThreadPoolExecutor(max_workers=len(tools)) as pool:
+    snapshot = _fan_out_snapshot(combined_result)     # once, before any submit
+    futures = {pool.submit(fn, snapshot, settings): key for key, fn in tools.items()}
+    for fut in as_completed(futures):
+        _merge_isolated_result(combined_result, futures[fut], fut.result())
+```
+
+From `_run_phase_a_fan_out` in [recon/main.py](../../recon/main.py).
 
 A module that writes **more than one** top-level key hands every one back, by name:
 

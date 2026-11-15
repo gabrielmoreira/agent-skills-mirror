@@ -58,7 +58,7 @@ Use relative source imports from the application; the package exports document i
 
 Changing the package changes application chrome. Timeline coordinates, user-selected colors, template source, project iframes, screenshots and exported films remain independent content. Existing legacy utility names and upstream compatibility entry points forward to this package; they are not new authoring APIs. The legacy color-literal ratchet still tracks older domain code, and does not authorize new hard-coded interface values.
 
-The Library's old Brandkit and art-direction paths are navigation entries. Brand art direction is creative context supplied explicitly to an Agent, not an automatically applied video theme. Public README artwork and editor identity remain distinct documented brand roles; this extraction does not redesign either mark.
+The Library's old Brandkit and art-direction paths are navigation entries. Brand art direction is creative context supplied explicitly to an Agent, not an automatically applied video theme. The editor header, project drawer and template library consume `react/BrandLogo.tsx` and the shared lockup recipe in `studio.css`. They use the maintained product logo and its original symbol; theme changes affect the mask color, while narrow header containers can retain only the symbol.
 
 ## Acknowledgements
 

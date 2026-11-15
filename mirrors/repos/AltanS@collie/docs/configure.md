@@ -1062,7 +1062,7 @@ logged. A folder that is not on disk at launch time falls back to home.
 
 ## Usage windows
 
-The dots beside the model show your 5-hour and 7-day limits for Claude and Codex, with no setup.
+The figures beside the model show your 5-hour and 7-day limits for Claude and Codex, with no setup. They read as a percentage of what is used (`7d 83%`) unless you choose dots in Settings, Appearance, Usage row.
 
 ```bash
 # turn every source off
@@ -1100,7 +1100,7 @@ Each source reads a different thing.
 
 `collie doctor` shows every source in its `account-windows` row: on or off, the file it reads and the host it asks. [Terminals](multiplexers.md#collie-writes-hooks-into-claudes-own-settings) has the statusLine road.
 
-The context dot needs no setting. For pi, OMP, Codex and OpenCode, Collie reads the tokens of the last turn from the session log. It reads the model's window from Codex's log, or from the harness's own model list on disk (pi's `models-store.json`, OMP's `models.db`, OpenCode's `~/.cache/opencode/models.json`). A model that list does not name gets no context dot; the model name still shows. The tag also shows the session's cost in dollars after the dots when the harness reports one: Claude Code through the wrapped status line, pi, OMP and OpenCode from their logs. Codex has none, so its tag shows no cost.
+The context figure needs no setting. For pi, OMP, Codex and OpenCode, Collie reads the tokens of the last turn from the session log. It reads the model's window from Codex's log, or from the harness's own model list on disk (pi's `models-store.json`, OMP's `models.db`, OpenCode's `~/.cache/opencode/models.json`). A model that list does not name gets no context figure; the model name still shows. The tag also shows the session's cost in dollars after the figures when the harness reports one: Claude Code through the wrapped status line, pi, OMP and OpenCode from their logs. Codex has none, so its tag shows no cost.
 
 ## Dark mode / light mode
 
@@ -1345,9 +1345,17 @@ session has no Chat or History. Set `kiro_root` when Kiro keeps its sessions som
 dsh-tui needs no Herdr integration for Chat. It reports its state to Herdr itself, but Herdr does
 not pass its session on, so Collie asks the kernel which session lock (`session.lock`, held with
 `flock`) the pane's foreground dsh process holds, and reads that session's log under
-`$DSH_HOME/sessions`, or `~/.dsh/sessions`, compressed or plain. This works on Linux only, where
-`/proc/locks` lists every lock and who holds it; elsewhere a dsh-tui pane keeps its terminal view.
-Set `dsh_root` when dsh keeps its sessions somewhere else.
+`$DSH_HOME/sessions`, or `~/.dsh/sessions`, compressed or plain. This works on Linux, where
+`/proc/locks` lists every lock and who holds it, and on macOS, where Collie asks `lsof` which files
+the process holds open, and those of the processes in its group. On Windows, or on a Mac without
+`lsof`, a dsh-tui pane keeps its terminal view. Set `dsh_root` when dsh keeps its sessions somewhere
+else.
+
+Grok needs no Herdr integration for Chat either. Collie reads the list of live sessions Grok keeps
+(`active_sessions.json`, in `$GROK_HOME` or `~/.grok`) and takes the one its process holds. When the
+list does not name the process, Collie asks `lsof` which `chat_history.jsonl` the process holds open.
+That works on Linux and macOS, not on Windows. When two Grok panes sit in one folder, a pane that
+the list does not name yet keeps its terminal view rather than show the other pane's chat.
 
 Antigravity CLI (`agy`, which Herdr may also call `antigravity`) needs no Herdr integration for Chat
 either. Collie asks `lsof` which `presence/<uuid>.lock` file the pane's foreground agy process holds,

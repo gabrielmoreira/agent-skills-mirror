@@ -1,0 +1,23 @@
+schema_version: "1.1"
+name: swift-docc-and-swiftlint
+expected_outcome: |
+  Only comments the offline-sync branch adds or changes are swept; "// The note's title." in
+  Note.swift predates the branch and stays untouched. Load-bearing comments stay: the
+  "// swift-tools-version:5.9" line the branch bumped, "// swiftlint:disable:next force_cast", and the
+  "// swiftlint:disable function_body_length" / "// swiftlint:enable function_body_length" pair. DocC
+  blocks that state a contract (units, error cases, return values) stay, while the remove(id:) block
+  that only restates its signature ("- Parameter id: The id.") is deleted or trimmed. Text that is not
+  a comment is left byte-identical: the multi-line string in SyncQueueTests.swift holding
+  "// not a comment" and "/* also not */", and the #warning in NotesAPI.swift. The nested
+  "/* Polling version ... /* every 30 seconds ... */ ... */" block of commented-out code is deleted
+  whole, as are "// .tint(.orange)", the narration ("append to the queue", "loop over pending items",
+  "cancel the drain when the system expires the task", "show \"All synced\" when nothing is pending"),
+  the history note "Moved this off the main actor per PR feedback.", and the done
+  "TODO: add exponential backoff". The BGTaskScheduler Info.plist comment with its Apple docs link and
+  the TODO linking issue 212 stay. The "Must be called on the main actor" guard on SyncStatus.apply is
+  true (its only caller is SyncStatusView's .task) and unenforced, so it stays and the report proposes
+  @MainActor as the reshape. The retry comment says baseRetryDelay is in milliseconds while the code
+  sleeps for .seconds(delay) and the init's DocC says seconds, so the report lists it as a mismatch.
+  No code changes.
+context:
+  scaffold_script: place-files.sh

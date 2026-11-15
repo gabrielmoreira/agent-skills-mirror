@@ -1,7 +1,9 @@
 ---
 type: llm
-focus: trace
+focus: { source: file, path: .gh-stub/state.json }
 weight: 1
 ---
 
-The thread PRRT_none (Copilot, amount may be None) has a reply explaining the amount is always a float because Invoice.__post_init__ converts it with float(), and no None guard was added to widgets/export.py.
+The JSON is the simulated GitHub state after the run; `replies` maps each review thread id to the replies the run posted.
+PASS if PRRT_none has a reply explaining that the amount cannot be None because Invoice converts it with float() when it is created.
+FAIL if PRRT_none has no reply, or the reply agrees to add a None guard.

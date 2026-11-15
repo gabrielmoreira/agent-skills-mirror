@@ -185,7 +185,8 @@ repository and `magpie github upload`, rather than WebDAV's recovery path.
 A local file that is there but can't be read is unknown, never empty or the
 defaults. `backup.Collect` stops on an unreadable providers.json (with its groups
 and order), settings.json (`settings.LoadChecked`: unreadable, or
-not parsing with no good `.bak`) or library.json, and on a gateway key
+not parsing with no good `.bak`), library.json or memory (its meta.json, see
+[Memory](memory.md#source-of-truth)), and on a gateway key
 store that fails to export. A backup, an export and a sync all end with that
 error, nothing sealed or pushed; the sync's status shows it. A missing or
 empty settings.json is still none (`TestCollectStopsOnUnreadableSettings`,
@@ -535,6 +536,35 @@ running bilis are asked to reload after one is written
 `TestBiliFileDSNNotInKeylessBackup`, `TestBiliFileInLibraryPart`). A sync's preview names it as
 the file `billion-context.json`, added, changed or removed
 (`TestBiliFileInPreview`).
+
+Claude Code's own plugins, the ones installed through its `/plugin`
+marketplaces (`library.Bundle.ClaudePlugins`,
+[`claude_plugins.go`](../../internal/library/claude_plugins.go)), go in the
+library part too. What goes is each marketplace's source (from
+`plugins/known_marketplaces.json` and settings.json's
+`extraKnownMarketplaces`, with only `source` and `autoUpdate` kept) and the
+plugin ids settings.json's `enabledPlugins` has on, under
+`CLAUDE_CONFIG_DIR` when it is set. `installLocation`, `installPath` and the
+downloaded code in `plugins/marketplaces` and `plugins/cache` stay: they are
+this computer's, and Claude Code fetches them again from the sources. A
+marketplace from a local folder or file, or one whose source has a user or
+token in a URL or request headers, is not carried, and neither are its
+plugins. Claude Code adds `claude-plugins-official` itself, so only its
+plugins go. On the other computer they are added to settings.json's
+`extraKnownMarketplaces` and `enabledPlugins`, the setup Claude Code
+installs from at its next interactive start (tried with 2.1.319 in a
+sandbox; `claude -p` does not install). Claude Code's own
+`known_marketplaces.json` and `installed_plugins.json` are never written.
+The file is patched in place (comments and other keys kept) and renamed in
+from a temporary file, and the one it replaces is kept with the backups.
+It only adds: a marketplace known here under that name, and a plugin with
+any value here (turned off too), stay as they are, so a plugin removed on
+one computer is not removed on the others. A settings.json either side
+can't read is neither carried as none nor written over. A computer with no
+such plugins carries none and hashes as before (`TestClaudePluginsCollected`,
+`TestClaudePluginsNoneOrUnknown`, `TestClaudePluginsPut`,
+`TestClaudePluginsInLibraryPart`). The preview names each marketplace and
+plugin (`TestClaudePluginsInPreview`).
 
 ## Verification
 

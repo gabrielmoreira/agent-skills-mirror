@@ -7,7 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- **qa-expert** (v1.2.15): Exercise real incremental capture and drift repair across three rounds, prove negative fixtures changed their selected field, and bound completed results behind ordered concurrent publication.
+- **peer-message** (v1.26.0): Derive native send arguments and commit identity from the original prepare result; execute the documented return-driven flow without manually copying envelopes or UUIDs, and retain unknown transport outcomes.
+- **tech-selection** (`daymade-claude-code` v5.1.15): Challenge unnecessary bindings, version/path pins and compatibility constraints against current user requirements and actual consumers before preserving them.
+- **feishu-doc-scraper v1.14.1 / report-with-html v1.7.1**: Make archive commands independent of the caller's working directory, document PDF adapter imports, remove copied implementation limits and add repository task routes.
+
+- **auto-repo-setup** (v2.2.1): Select checks from the actual input changes, reuse matching successful evidence, and distinguish guard maintenance and diagnostic success from verified publication recovery.
+- **prior-work-retrieval** (`daymade-claude-code` v5.1.14): Skip impossible include matches before materializing Git scope paths while retaining ripgrep's final decision; reject incomplete required coverage before freshness probes. Change type: bug fix.
+- **peer-message** (v1.25.8): Read existing current-schema coordination status without write initialization or cleanup, preserving first-use bootstrap, legacy migration and integrity rejection.
+
+- **github-ops** (v1.16.4): Materialize tracked checker configuration before sparse publication, restore omitted inputs from the pinned ref, and rerun the original checks without changing policy or payload.
+- **tunnel-doctor** (v1.17.17): Correct Shadowrocket rule-order and module-activation guidance; preserve backups and original VPN intent, and separate dated compile experiments from current route verification.
+- **feishu-doc-scraper** (v1.14.0): Add account-bound Wiki Base/Sheet capture with structured CLI error parsing, pagination/revision checks, readable records and explicit attachment/field gaps.
+- **report-with-html** (v1.7.0): Add a reusable course hierarchy reader that preserves material IDs and historical nodes, plus registered PDF page rendering through existing asset servers.
+
+- **git-safety-net** (v1.28.3): Reuse retained history for explicitly verified rebase withdrawals, preserve other reflog work, and bind the opt-in boundary to a versioned recovery checkpoint.
+- **macos-cleaner** (`daymade-macos` v1.32.1): Align relocation recovery, prerequisite and progress guidance with the executor; add the repository entry route and remove redundant retention history and duplicated Git retirement procedures. Change type: documentation correction and SSOT consolidation.
+
+- **competitors-analysis** (v1.6.7): Respect source-storage migration handoffs, preserve read-only pinned analysis, and expand open-ended discovery by the user's workflow alternatives.
+
+- **macos-cleaner** (`daymade-macos` v1.32.0): Replace full-directory hashing in external relocation with inventory, Git/local-only work checks and bounded content checks. Add journaled cutover, consumer-failure rollback and resumable exact internal retirement. Change type: authorized workflow redesign and additive execution capability.
+- **report-with-html** (v1.6.2): Reuse unaffected review evidence after local edits, recheck changed axes, and preserve blind-reader and source checks without automatically restarting full acceptance.
+- **macos-watchdog** (`daymade-macos` v1.31.2): Print exact-job registration and idle-job commands with the selected domain's privileges; align repository operator entries with the native-update and retrieval-completion SOPs.
+
+- **qa-expert** (v1.2.16): Remove repeated resource/workflow summaries and the stale OWASP-section example; preserve the canonical execution routes, handoff steps and isolation requirements.
+- **claude-switch-models-setup** (`daymade-claude-code` v5.1.13): Keep shared-helper calibration expectations in the executable fixture matrices and remove historical watcher timing from operating guidance. Route affected QA and takeover work from the repository instructions.
+
+- **qa-expert** (v1.2.15): Exercise real incremental capture and drift repair, prove negative fixtures changed their selected field, and bound completed results behind ordered concurrent publication.
+- **local-codex / debugging-network-issues / peer-message** (`daymade-codex` v2.4.12, `debugging-network-issues` v1.12.2, `peer-message` v1.25.7): Route repository instructions to the diagnostic SOPs and consolidate request provenance, attribution and native recovery in their owning references.
+
+- **stepfun-tts** (`daymade-audio` v1.58.4): Distinguish literal parentheses from delivery instructions, count the complete tagged input, and preserve native request forwarding without treating transport fidelity as audible control.
+- **local-codex / macos-watchdog** (`daymade-codex` v2.4.10, `daymade-macos` v1.31.1): Verify native updater ownership and channel eligibility per component; keep extra scheduled updaters opt-in and preserve explicitly requested watchdogs.
+- **prior-work-retrieval** (`daymade-claude-code` v5.1.12): Direct temporary Git verification failures to a same-run retry while retaining scope-change and required-carrier checks.
+- **local-codex** (`daymade-codex` v2.4.11): Trace model-request errors through the actual runtime and transport, preserve request provenance, and verify configuration adoption and recovery on the original session.
+- **debugging-network-issues** (v1.12.1): Add same-byte HTTP compression comparisons with lossless decoding, bounded return controls and explicit limits on original-incident attribution.
+- **peer-message** (v1.25.6): Distinguish diagnostic coordination text from execution isolation and verify actual actions before claiming restrictions were followed.
+
+- **github-ops** (v1.16.3): Route normal PR merges to the existing explicit setup-failure exception case; align repository operator entries with their owning contracts.
+
+- **git-safety-net** (v1.28.2): Route ordinary linked worktrees and explicitly rebuildable dependency caches through the existing retirement helper; preserve unique configuration and detect later changes.
+- **github-ops** (v1.16.2): Clarify explicitly authorized task-level merge exceptions after service initialization fails, preserving repository-required gates and distinct validation, deployment and repair authority.
+
 - **continue-codex-work / claude-switch-models-setup** (`daymade-claude-code` v5.1.11): Identify and finish in-flight CI before rerunning it; calibrate shared helper locking and required launch preparation in isolated fixtures.
 
 - **app-evolver 1.1.14** — Trace implicit state through actual consumers, operation identity, recovery boundaries and declared audit coverage.

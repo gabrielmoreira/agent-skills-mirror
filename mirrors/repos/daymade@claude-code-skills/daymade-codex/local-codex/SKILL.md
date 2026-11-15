@@ -158,7 +158,14 @@ rather than a second parameter or output-field table.
 
 ## Session Management
 
-Before an authorized shared-daemon restart or package replacement, read
+For a session reporting `400 Bad Request` or another model-request failure, use
+[model-request diagnostics](references/model-request-diagnostics.md) before
+changing configuration or resuming work. It covers complete error capture,
+verified HTTP/WebSocket transport, request-byte provenance, compression controls
+and recovery checks on the original SID.
+
+For native automatic-update eligibility or an authorized shared-daemon restart
+or package replacement, read
 [shared daemon maintenance](references/shared-daemon-maintenance.md). Preserve
 affected work, retain an independent operation receipt, and verify continuation
 under the original session IDs; a new daemon is not proof that tasks resumed.

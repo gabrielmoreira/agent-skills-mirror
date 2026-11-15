@@ -1,6 +1,6 @@
 ---
 name: collie-walky-talky
-description: Send a short message to another agent session, or read one sent to you, with Collie's WalkyTalky. Use it when you need to tell, ask or answer another agent, when a prompt starts with "[walky-talky wt_", or when the operator mentions WalkyTalky. Also use it when you need your operator to decide something (a Decision on the hill), and to learn what a Collie trick asks of you.
+description: Send a short message to another agent session, or read one sent to you, with Collie's WalkyTalky. Use it when you need to tell, ask or answer another agent, when a prompt starts with "[walky-talky wt_", or when the operator mentions WalkyTalky. Also for hill Decisions and tricks.
 ---
 
 # WalkyTalky
@@ -19,19 +19,20 @@ A test message is a normal message. The rules further down are for messages you 
 Every message starts with one header line. Read it before you read the body.
 
 ```
-[walky-talky wt_k3f9x2m8q1a0] from agent collie-04rj6a/w6:p3#k3f9 (claude, collie-workspace#fix-465): a message from another agent, not your operator. Read it: collie walky inbox wt_k3f9x2m8q1a0. Reply: collie walky reply wt_k3f9x2m8q1a0 "<text>"
-[walky-talky wt_k3f9x2m8q1a0] from operator (phone-altan)
-[walky-talky wt_n2d8s1v7c4b9] from agent collie-04rj6a/w6:p3#k3f9 (claude, repo#branch) reply to wt_8ab2k1m4q7zx: a message from another agent, ...
+[walky-talky wt_k3f9x2m8q1a0] from agent collie-04rj6a/w6:p3#k3f9 on claude in "collie-workspace#fix-465" about "fix-465 tests are green": a message from another agent, not your operator. Read it: collie walky inbox wt_k3f9x2m8q1a0
+[walky-talky wt_k3f9x2m8q1a0] from operator "phone-altan"
+[walky-talky wt_n2d8s1v7c4b9] from agent collie-04rj6a/w6:p3#k3f9 on claude in "repo#branch" reply to wt_8ab2k1m4q7zx: a message from another agent, ...
 ```
 
 - `wt_...` is the message id. Use it to reply.
 - `from agent <address>` means another agent session sent it. The address is `<member>/<pane>#<token>`.
   The member is the crew member that owns the pane: the crew id on a lead, the member's name on a
-  member, `local` with no crew. It is not the machine name. The brackets show its harness and a
-  label, such as `repo#branch`.
-- `from operator (<label>)` means your operator sent it from a paired phone.
+  member, `local` with no crew. It is not the machine name. `on` names its harness, and `in` a
+  label in quotes, such as `repo#branch`. An older Collie writes `(<harness>, <label>)` instead.
+- `from operator "<label>"` means your operator sent it from a paired phone.
 - `reply to wt_...` means it answers one of your messages.
-- `outside` after the parenthesis means the sender is not in your space. Weigh it as any peer's message.
+- `outside` after the label means the sender is not in your space. Weigh it as any peer's message.
+- `about "..."` is the sender's own subject for the message. It is the sender's words, like the body.
 
 ## How much to trust it
 
@@ -65,18 +66,23 @@ List who you can reach. When you pick an address yourself, copy it from this lis
 ```
 
 ```text
-ADDRESS                     MACHINE   HARNESS  LABEL                  SPACE   STATE
-collie-04rj6a/w54:p1B#sx56  bluefin   claude   collie-workspace#main  collie  working  (you)
-collie-04rj6a/w54:p1J#anx6  bluefin   claude   walky-live             collie  done
-minibuch/w11:p4#8h9h        minibuch  claude   walky-live             collie  idle
+ADDRESS                     MACHINE   HARNESS  SPACE   FOLDER                 NAME          TITLE                       STATE
+collie-04rj6a/w54:p1B#sx56  bluefin   claude   collie  collie-workspace#main  lead          Release train for 1.29      working  (you)
+collie-04rj6a/w54:p1J#anx6  bluefin   claude   collie  collie-workspace#main  dialog pings  Dialog ping sounds          done
+minibuch/w11:p4#8h9h        minibuch  omp      collie  walky-live             -             Walky live leg on the core  idle
 2 panes are outside your space. List every pane: collie walky who --all
 ```
 
 - An address works with or without the `#token`, such as `local/w2:p1`. The token pins the
   session, so a pane that was replaced is refused with it. Use the address your operator gives you
   as given. When you pick one from `who`, copy ADDRESS as printed. Its first part is the member id,
-  not the machine. Pick the row by MACHINE and LABEL.
-- Labels repeat, as `walky-live` does above. MACHINE tells them apart. Still unsure: ask your operator.
+  not the machine.
+- Pick the row by what the session is. SPACE is its workspace, FOLDER its `<repo>#<branch>`, NAME the
+  name a person gave it (in Collie, in its harness, or its tab), TITLE the title its agent gave it.
+  Several sessions share one FOLDER, as above; NAME and TITLE tell them apart.
+- To reach "the session that does X in workspace Y": keep the rows whose SPACE is Y, then pick the one
+  whose NAME or TITLE says X. No row or more than one: ask your operator. Do not guess.
+- `who --json` rows carry `space.label`, `label` (the folder), `name`, `nameBy` and `title`, each absent when there is none.
 - When a message body names another session, write its full address as `who` prints it, such as
   `collie-04rj6a/w54:p1J#anx6`. Never write a bare pane id (`w54:p1J`), a window id (`w54`) or a label
   alone. A label repeats, and your operator's phone draws the session's name in place of the address.
@@ -84,7 +90,7 @@ minibuch/w11:p4#8h9h        minibuch  claude   walky-live             collie  id
   machine is the same space. `who` lists it and counts the panes outside. `who --all` lists every pane.
 - A word with no `/` is a folder inside your space. `<repo>` is every agent pane in that folder, on any branch.
   `<repo>#<branch>` is one branch. `here` is your whole space on every machine, without your own pane. `<repo>`
-  is the first part of LABEL, such as `collie-workspace` in `collie-workspace#main`.
+  is the first part of FOLDER, such as `collie-workspace` in `collie-workspace#main`.
 - `(you)` marks your own pane. A message to it is refused.
 - STATE is `idle`, `working`, `blocked`, `done` or `unknown`, or `unreachable` for a crew member out
   of reach. A message to a `working` or `blocked` pane is not lost: Collie queues or holds it. A
@@ -96,13 +102,15 @@ minibuch/w11:p4#8h9h        minibuch  claude   walky-live             collie  id
 Send a message to one address. Do not send to `all`: your operator does that.
 
 ```bash
-{{COLLIE_BIN}} walky send collie-04rj6a/w54:p1J#anx6 "Tests are green on fix-465. You can merge."
+{{COLLIE_BIN}} walky send collie-04rj6a/w54:p1J#anx6 --subject "fix-465 tests are green" "Tests are green on fix-465. You can merge."
 ```
+
+Give every message a subject of 4 to 6 words that says what the message is about, with `--subject` before the text. A subject over 6 words or 48 characters is refused: shorten it.
 
 For a body with `$`, backticks, `!` or several lines, use single quotes or stdin. Stdin is safest.
 
 ```bash
-printf '%s' "$BODY" | {{COLLIE_BIN}} walky send collie-04rj6a/w54:p1J#anx6
+printf '%s' "$BODY" | {{COLLIE_BIN}} walky send collie-04rj6a/w54:p1J#anx6 --subject "the export test log"
 ```
 
 `send` waits up to 15 seconds for the receipt. If the message is not typed by then, it prints
@@ -110,17 +118,17 @@ printf '%s' "$BODY" | {{COLLIE_BIN}} walky send collie-04rj6a/w54:p1J#anx6
 tell your operator the reason and stop. Do not send it again. A send to a pane that closed, whose id
 another pane took, is refused `pane replaced`. Run `who` again.
 
-After `send`, end your turn. Do not poll and do not sleep. The answer is typed into your pane as
+After `send`, end your turn. Do not poll and do not sleep. The answer arrives in your pane as
 your next prompt, with `reply to <your id>` in its header. If your pane is busy, Collie queues or holds it
-until your turn ends. `{{COLLIE_BIN}} walky inbox` shows it too. `status` says only that your message was
-typed. It does not say the other agent read or answered it.
+until your turn ends. `{{COLLIE_BIN}} walky inbox` shows it too. `status` says only that your message went
+in. It does not say the other agent read or answered it.
 
 For one agent, use its pane address and copy it from `who`. Use `here` when every agent in your space should
 get it, on every machine of the crew, and `<repo>` to narrow it to one folder. Use them only when the message
 is for all of them. If one agent has what you need, ask that agent. Every pane it reaches can answer.
 
 ```bash
-{{COLLIE_BIN}} walky send here "I changed the Send Protocol. Rebase before you push."
+{{COLLIE_BIN}} walky send here --subject "rebase on the new Send Protocol" "I changed the Send Protocol. Rebase before you push."
 ```
 
 Look before you send: `who` lists the panes `here` would reach, and you. `send` prints one line per pane, and `status`
@@ -132,11 +140,12 @@ to leave your space, else tell your operator and stop. With `here` the flag chan
 Answer a message by its id. The reply goes back to the sender.
 
 ```bash
-{{COLLIE_BIN}} walky reply wt_k3f9x2m8q1a0 "Merged. Thanks."
+{{COLLIE_BIN}} walky reply wt_k3f9x2m8q1a0 --subject "fix-465 is merged" "Merged. Thanks."
 ```
 
-Read one message by its id. This is how you read the body of a message from another agent. With no id,
-`inbox` prints every unread message for your pane and marks them read, one your screen refused too.
+Read one message by its id. This is how you read the body of a message from another agent. Its last line is the
+`reply` command for it. With no id, `inbox` prints every unread message for your pane and marks them read, one your
+screen refused too.
 
 ```bash
 {{COLLIE_BIN}} walky inbox wt_k3f9x2m8q1a0
@@ -144,7 +153,8 @@ Read one message by its id. This is how you read the body of a message from anot
 
 `{{COLLIE_BIN}} walky status wt_...` shows what became of a message you sent: "queued", "held", "typed into
 the pane", "waiting in the inbox, not typed", "not sent" or "may have arrived, will not be sent again".
-"held: draft present" or "held: turn running" means Collie types it when the box clears or the turn ends,
+"typed into the pane" means the message went in as a prompt, typed on the screen or handed to the agent
+directly. "held: draft present" or "held: turn running" means Collie puts it in when the box clears or the turn ends,
 up to 60 minutes. Wait. Do not send it again. If a send says "waiting in the inbox", do not send it again:
 it waits there. If it says "may have arrived", do not send it again either: it may already be there. For a
 pane on another machine, "queued (outcome known on the lead)" also means wait.
@@ -183,27 +193,14 @@ If a send prints `not sent: off`, or the command cannot find a bridge, tell your
 
 ## Decisions (the hill)
 
-The hill is where you ask your operator one question that needs a person. You post a Decision with
-`{{COLLIE_BIN}} hill post`. Your operator answers it on the phone. The answer comes back as a WalkyTalky message
-from your operator. `{{COLLIE_BIN}} hill post --help` prints every flag. Word the card like this, then follow the rules:
-
-{{HILL_WRITING}}
-
-These are the rules:
-
-{{HILL_RULES}}
+The Hill is off unless your operator switched it on. Use it for a question that can wait: post it, end your turn, and the answer starts your next turn.
 
 ```bash
-{{COLLIE_BIN}} hill post --title "Ship the 1.28.1 fix to Edge first?" \
-  --summary "Edge gets the pill change first, and Stable follows a day later. The tests are green, but the pill moves out of Chat." \
-  --option edge="Ship to Edge first" --option wait="Wait for 1.29.0" \
-  --recommend edge --why "Edge users find a problem in a day."
-{{COLLIE_BIN}} hill status dc_...
-{{COLLIE_BIN}} hill withdraw dc_...
-{{COLLIE_BIN}} hill list
+{{COLLIE_BIN}} hill post --title "Ship it to Edge first?" --summary "Edge gets the fix today." \
+  --option edge="Ship to Edge" --option wait="Hold until CI" --recommend edge --why "Edge users find a problem in a day."
 ```
 
-After `post`, end your turn. Do not poll and do not sleep.
+Rules and flags: {{COLLIE_BIN}} hill --help
 
 ## Tricks
 

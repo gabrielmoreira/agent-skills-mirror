@@ -1,0 +1,36 @@
+{# Updated header per design review #}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{{ title }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f5f7;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#1f2933;">
+  {# Outlook ignores max-width on divs, so the 600px column is a table: https://www.caniemail.com/features/css-max-width/ #}
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f5f7;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;background:#ffffff;border-radius:8px;">
+          <tr>
+            <td style="padding:20px 32px;border-bottom:1px solid #e4e7eb;">
+              <a href="{{ appUrl }}" style="text-decoration:none;color:#1f2933;font-weight:700;font-size:18px;">Relay</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px;">
+              {% block content %}{% endblock %}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 32px;border-top:1px solid #e4e7eb;">
+              {% include "partials/footer.njk" %}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

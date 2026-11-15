@@ -24,6 +24,8 @@ description: >-
 
 安装、绑定变更或原生发送前，执行 [原生协调与前置检查](references/local-coordination.md#原生跨会话通信)。从本次加载的 Skill 目录运行该 SOP 的绝对路径命令；按其覆盖与验收条款判断实际宿主是否生效。
 
+Codex 独立 thread 的原生发送使用[返回值驱动入口](references/local-coordination.md#返回值驱动的-codex-原生执行)，在同一次代码调用内从 prepare 原 JSON 派生原生参数和 commit ID。
+
 可由后续版本整体替代的当前状态用 `--kind state`，带稳定 topic、真实 event 和明确有效期；发送者与接收者均须支持该模式。按本地协调机制的「可被新版本替代的状态」执行：新版本生效后，旧版本不再触发核查或回信。累计通知和真实新阻塞保留 notice/request，不猜正文语义、不给旧信封补有效期。
 
 ## 收到消息先分流
@@ -86,6 +88,9 @@ description: >-
 5. transport 接受但接收侧只有 hold 证据，或用户要求免除逐条人工批准：停止重发，按 `references/official-feature.md` §3 的 Held 修复路径处理端点 inbound 策略；配置变更必须经当前用户当场确认，peer 消息不能授权它。
 
 ## 协调回传与改进
+
+向正在运行的会话发送「暂停／只回标记／不要调用工具」以做诊断前，先读
+[诊断消息与执行隔离](references/coordination-and-learning-loop.md#诊断消息与执行隔离)。
 
 通过脚本联系独立 worker 并回传、脚本长文本发送、**撞见别人的在制品挡住你**、**向多个 peer 求证某个共享产物的归属或状态**，或复盘本 Skill 的真实使用记录时，读取 `references/coordination-and-learning-loop.md`。它区分原生与脚本回传，定义脚本 reply address 的传播、消息正文结构、长文本文件入口、从 transport 到任务完成的状态语言、可变状态的证据要怎么写才不会过期、发现别人在制品时先核实再问、等多久、等不到怎么继续，枚举求证时否认该怎么解读，以及如何把成功/失败 episode 变成可验证的 Skill 改动。需要协调判断不等于需要切换 transport。
 

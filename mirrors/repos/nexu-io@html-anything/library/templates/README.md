@@ -4,23 +4,24 @@ Start from an editable Studio project or a local template package. Their source 
 
 | Project | Duration | Try changing |
 | --- | --- | --- |
+| [OpenMotion Welcome](../../template-library/openmotion-welcome/TEMPLATE.md) | 37.3 seconds | Brand name, welcome copy, motion artwork and closing invitation. This is the first-run editor project. |
 | [Product Promo](../../template-library/product-promo/) | 20 seconds | Headline, product screenshots, reveal timing and closing copy. |
 | [NYT Graph](../../template-library/nyt-graph/) | 15 seconds | Values, labels, chart explanation and annotations. |
 | [Decision Tree](../../template-library/decision-tree/) | 10 seconds | Question, branch labels and reveal order. |
 
-These are editable examples with source and posters. Open **Studio → Templates → Ready to edit** to create an independent project. Use [openmotion-template-to-video](../../skills/openmotion-template-to-video/SKILL.md) for adaptation. Preserve the [upstream license and notices](../../template-library/NOTICE.md); validate your own changed copy and export.
+These are editable examples with source and posters. Open **Studio → Templates → Ready to edit** to create an independent project. Use [openmotion-template-to-video](../../skills/openmotion-template-to-video/SKILL.md) for adaptation. Validate your own changed copy and export.
 
 To contribute another template, use the [entry checklist](../ENTRY_TEMPLATE.md), supply the editable source, preview and `TEMPLATE.md` instructions, and record the version and changes you actually tested. Follow the existing [template-production workflow](../../skills/openmotion-video-to-template/SKILL.md) when producing a reusable template from a video. Adding a folder here alone does not register a Studio template.
 
 ## Published motion guidance source
 
-Browse the [repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog) for unpacked text source, localized metadata and small local images. Larger images load from existing CMS links. Videos stay remote; source edits can be reviewed in PRs. These guidance examples remain separate from the three directly editable Studio projects.
+Browse the [repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog) for unpacked text source, localized metadata and small local images. Larger images load from existing CMS links. Videos stay remote; source edits can be reviewed in PRs. These guidance examples remain separate from the four directly editable Studio projects.
 
 ## Presenter Tech · local template package
 
 [**Get Presenter Tech**](presenter-tech/README.md) for a landscape presenter-led film with metallic typography, motion cards and visual explanations. The local package includes editable source, parameters, fonts, sound recipes and its runner. [Download package](presenter-tech/presenter-tech.motion) · [Adaptation guide](presenter-tech/TEMPLATE.md) · [Motion Design](presenter-tech/MOTION_DESIGN.md).
 
-Use the included runner through your Agent; this Library package is separate from the three Studio-native templates above. See its [verification record](presenter-tech/verification.json) for actual local checks and [acknowledgments](presenter-tech/NOTICE.md) for source and license terms.
+Use the included runner through your Agent; this Library package is separate from the four Studio-native templates above. See its [verification record](presenter-tech/verification.json) for actual local checks and [acknowledgments](presenter-tech/NOTICE.md) for source and license terms.
 
 ## Agent-ready template direction
 
@@ -38,4 +39,8 @@ For **real people + motion**, browse the [nine creator-video references](../../R
 | Demonstrate a workflow | [Workflow demo](../skills/openmotion-presenter-story/references/workflow-demo/MOTION_DESIGN.md) | Camera take, screen recording, actual speech timing |
 | Explain a product | [Product walkthrough](../skills/openmotion-presenter-story/references/product-walkthrough/MOTION_DESIGN.md) | Presenter, real product capture, result and approved facts |
 
-[Presenter Tech](presenter-tech/README.md) adds a local template package with its own runner. The three built-in projects above remain the templates opened directly in Studio.
+[Presenter Tech](presenter-tech/README.md) adds a local template package with its own runner. The four built-in projects above remain the templates opened directly in Studio.
+
+## Acknowledgements
+
+The three upstream examples retain their [source and license notices](../../template-library/NOTICE.md). The official welcome retains [reference, artwork, audio and dependency attribution](../../template-library/openmotion-welcome/NOTICE.md).

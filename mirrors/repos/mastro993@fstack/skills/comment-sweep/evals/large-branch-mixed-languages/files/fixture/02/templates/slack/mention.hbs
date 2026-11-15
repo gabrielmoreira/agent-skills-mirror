@@ -1,0 +1,5 @@
+{{!-- Render the user name --}}
+{{#if actor}}*<{{actor.url}}|{{actor.name}}>* · {{/if}}*{{title}}*
+{{!-- Slack mrkdwn links are <url|text>, not Markdown's [text](url): https://api.slack.com/reference/surfaces/formatting#linking-urls --}}
+> {{body}}
+<{{url}}|Open in Relay> · `{{kind}}`

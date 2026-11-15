@@ -59,7 +59,7 @@ It exposes three generic tools rather than one tool per interface:
   of date-ascending data.
 
 The same data often has several sources (A-share daily bars:
-`stock_zh_a_hist` from Eastmoney, `stock_zh_a_daily` from Sina,
+`stock_zh_a_hist_em` from Eastmoney, `stock_zh_a_daily_sina` from Sina,
 `stock_zh_a_hist_tx` from Tencent). Interfaces with `rate_limit:
 "eastmoney_push2"` (source `东方财富·行情（频繁访问易限流）`, about 100
 quote, K-line, board and fund-flow interfaces) hit Eastmoney's push2 quote
@@ -69,6 +69,13 @@ another source; other Eastmoney interfaces (macro, financial statements)
 are not limited. On a ban `get_data` returns a 429 error that says how long
 to wait and lists the registered same-data interfaces from other sources
 (the hand-curated `alternatives`; none are guessed; AKTools >= 0.1.6).
+AKTools >= 0.1.9 requires AKShare >= 1.20.58: an old (renamed or removed)
+interface name passed to `describe_interface` / `get_data` returns an error
+naming the current interface or the removal version, and `search_interfaces`
+ranks the current name first and says so in `hint`.
+AKTools >= 0.1.8 requires AKShare >= 1.20.48 and uses the interface names of
+that release (273 interfaces were renamed in 1.20.41-1.20.46 and 45 more in
+1.20.48; see the rename table at the end of docs/changelog.md).
 
 Search by data type (`港股 日线`, `期货 分钟`), not by security name or code.
 An empty search result carries a `hint`; an unknown interface name (typo,
@@ -136,11 +143,16 @@ names without manually grepping through `docs/data/`:
   input parameters, output columns, an example snippet, and `rate_limit`
   (`"eastmoney_push2"` for interfaces on Eastmoney's IP-banning push2 quote
   servers, else `None`; since 1.20.37) and `alternatives` (hand-curated
-  names of same-data interfaces from other sources, e.g. `stock_zh_a_hist`
-  -> `stock_zh_a_daily`, `stock_zh_a_hist_tx`; since 1.20.39). Switch to an
+  names of same-data interfaces from other sources, e.g. `stock_zh_a_hist_em`
+  -> `stock_zh_a_daily_sina`, `stock_zh_a_hist_tx`; since 1.20.39). Switch to an
   alternative when a source is rate-limited; parameters and columns differ,
   so read its `interface_info` first.
 - `ak.list_categories()`: lists all categories with interface counts.
+- `ak.renamed_info(name)`: where an old interface name went (since 1.20.58).
+  Returns `{name, status, new_name, version, url}` with status `renamed` or
+  `removed`, or `None` for a name that was never renamed. Calling an old name
+  raises an AttributeError carrying the same hint, and `ak.search("<old name>")`
+  ranks the current name first.
 
 This registry is entirely offline: its data ships inside the package and
 no network request is made, so it is safe to call before deciding whether
@@ -155,7 +167,7 @@ language intent.
 import akshare as ak
 
 ak.search("A股 历史行情")
-ak.interface_info("stock_zh_a_hist")
+ak.interface_info("stock_zh_a_hist_em")
 ```
 
 ## Core Usage Pattern
@@ -220,7 +232,7 @@ When helping users with AKShare:
   the AKTools MCP server (`uvx --from aktools aktools-mcp`) — see
   "MCP Server For AI Assistants" above.
 - Prefer documented public functions over internal helpers.
-- Prefer top-level calls such as `ak.stock_zh_a_hist(...)` instead of submodule
+- Prefer top-level calls such as `ak.stock_zh_a_hist_em(...)` instead of submodule
   imports.
 - Check `docs/data/` before guessing interface names.
 - Many interfaces depend on upstream public websites and may break when
@@ -240,15 +252,15 @@ When helping users with AKShare:
 Representative examples:
 
 - `ak.stock_zh_a_spot_em()`
-- `ak.stock_zh_a_hist(...)`
+- `ak.stock_zh_a_hist_em(...)`
 - `ak.stock_individual_info_em(...)`
 - `ak.fund_open_fund_info_em(...)`
-- `ak.futures_zh_spot()`
-- `ak.option_current_em()`
-- `ak.bond_zh_hs_cov_spot()`
+- `ak.futures_zh_contract_realtime_sina()`
+- `ak.option_realtime_em()`
+- `ak.bond_cb_realtime_sina()`
 - `ak.macro_china_cpi()`
-- `ak.news_cctv()`
-- `ak.crypto_js_spot()`
+- `ak.alternative_news_cctv()`
+- `ak.crypto_realtime_js()`
 
 ## Project Structure
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `holaboss-ai/holaOS` — 26 default patterns, 0 followed patterns, 35 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,18 +82,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`runtime/api-server/src/embedded-capabilities/competitor-watch/skills/competitor-analysis/SKILL.md`](runtime/api-server/src/embedded-capabilities/competitor-watch/skills/competitor-analysis/SKILL.md) |
 | 22 | ✓ | [`runtime/api-server/src/embedded-capabilities/content-repurposer/skills/repurpose-content/SKILL.md`](runtime/api-server/src/embedded-capabilities/content-repurposer/skills/repurpose-content/SKILL.md) |
 | 23 | ✓ | [`runtime/api-server/src/embedded-capabilities/linkedin-ghostwriter/skills/linkedin-post/SKILL.md`](runtime/api-server/src/embedded-capabilities/linkedin-ghostwriter/skills/linkedin-post/SKILL.md) |
-| 24 | ✓ | [`runtime/harnesses/src/embedded-skills/app-builder-sdk/SKILL.md`](runtime/harnesses/src/embedded-skills/app-builder-sdk/SKILL.md) |
-| 25 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md) |
-| 26 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md) |
-| 27 | ✓ | [`runtime/harnesses/src/embedded-skills/build-dashboard/SKILL.md`](runtime/harnesses/src/embedded-skills/build-dashboard/SKILL.md) |
-| 28 | ✓ | [`runtime/harnesses/src/embedded-skills/capability-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/capability-creator/SKILL.md) |
-| 29 | ✓ | [`runtime/harnesses/src/embedded-skills/customize-capability/SKILL.md`](runtime/harnesses/src/embedded-skills/customize-capability/SKILL.md) |
-| 30 | ✓ | [`runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md`](runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md) |
-| 31 | ✓ | [`runtime/harnesses/src/embedded-skills/interface-design/SKILL.md`](runtime/harnesses/src/embedded-skills/interface-design/SKILL.md) |
-| 32 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |
-| 33 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md) |
-| 34 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md) |
-| 35 | ✓ | [`runtime/harnesses/src/embedded-skills/stop-slop/SKILL.md`](runtime/harnesses/src/embedded-skills/stop-slop/SKILL.md) |
+| 24 | ✓ | [`runtime/api-server/src/embedded-capabilities/local-model-review/skills/draft-review-posts/SKILL.md`](runtime/api-server/src/embedded-capabilities/local-model-review/skills/draft-review-posts/SKILL.md) |
+| 25 | ✓ | [`runtime/api-server/src/embedded-capabilities/local-model-review/skills/run-model-eval/SKILL.md`](runtime/api-server/src/embedded-capabilities/local-model-review/skills/run-model-eval/SKILL.md) |
+| 26 | ✓ | [`runtime/api-server/src/embedded-capabilities/local-model-review/skills/write-conclusion-pack/SKILL.md`](runtime/api-server/src/embedded-capabilities/local-model-review/skills/write-conclusion-pack/SKILL.md) |
+| 27 | ✓ | [`runtime/harnesses/src/embedded-skills/app-builder-sdk/SKILL.md`](runtime/harnesses/src/embedded-skills/app-builder-sdk/SKILL.md) |
+| 28 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-core-efficient/SKILL.md) |
+| 29 | ✓ | [`runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md`](runtime/harnesses/src/embedded-skills/browser-qa/SKILL.md) |
+| 30 | ✓ | [`runtime/harnesses/src/embedded-skills/build-dashboard/SKILL.md`](runtime/harnesses/src/embedded-skills/build-dashboard/SKILL.md) |
+| 31 | ✓ | [`runtime/harnesses/src/embedded-skills/capability-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/capability-creator/SKILL.md) |
+| 32 | ✓ | [`runtime/harnesses/src/embedded-skills/customize-capability/SKILL.md`](runtime/harnesses/src/embedded-skills/customize-capability/SKILL.md) |
+| 33 | ✓ | [`runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md`](runtime/harnesses/src/embedded-skills/frontend-design/SKILL.md) |
+| 34 | ✓ | [`runtime/harnesses/src/embedded-skills/interface-design/SKILL.md`](runtime/harnesses/src/embedded-skills/interface-design/SKILL.md) |
+| 35 | ✓ | [`runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md`](runtime/harnesses/src/embedded-skills/mcp-configurator/SKILL.md) |
+| 36 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-creator/SKILL.md) |
+| 37 | ✓ | [`runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md`](runtime/harnesses/src/embedded-skills/skill-installer/SKILL.md) |
+| 38 | ✓ | [`runtime/harnesses/src/embedded-skills/stop-slop/SKILL.md`](runtime/harnesses/src/embedded-skills/stop-slop/SKILL.md) |
 
 ---
 

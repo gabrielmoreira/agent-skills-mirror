@@ -5,6 +5,8 @@ applicability:
 x-claim-provenance:
 - claim: Architecture is expressed through significant design decisions and evaluated against stakeholder concerns and quality attributes.
   source: https://www.computer.org/education/bodies-of-knowledge/software-engineering/topics
+- claim: Dependencies between packages should run in the direction of stability, each package depending only on packages more stable than itself.
+  source: http://www.objectmentor.com/resources/articles/stability.pdf
 ---
 
 Compare candidate designs at the level where their tradeoffs differ, not as code sketches whose incidental syntax hides the decision. Start from the accepted contract, project architecture, fixed constraints, affected consumers, and existing mechanisms. Compare viable alternatives before editing, at the level of responsibility, dependency direction, state authority, representation, lifecycle, abstraction, and boundary placement. Generate alternatives only while they expose a real unresolved choice; do not manufacture patterns to reach a quota. If only one design remains viable, establish what rules the alternatives out instead of treating absence of comparison as evidence.
@@ -12,7 +14,7 @@ Compare candidate designs at the level where their tradeoffs differ, not as code
 Challenge each viable candidate with concrete architectural and coding heuristics. These are diagnostic questions rather than independent requirements, and the set is not exhaustive:
 
 - **Ownership and cohesion:** does each policy, invariant, state transition, and responsibility have a clear owner, with behavior that changes together kept together and independently varying behavior separated?
-- **Coupling and dependencies:** does the design minimize unnecessary knowledge between units, preserve the project's intended dependency direction, avoid cycles and backchannels, and limit how many places one future change must touch?
+- **Coupling and dependencies:** does the design minimize unnecessary knowledge between units, preserve the project's intended dependency direction or, where the project states none, point dependencies toward the more stable unit, avoid cycles and backchannels, and limit how many places one future change must touch?
 - **Information hiding and invariants:** are volatile representation and validation rules hidden behind the narrowest semantic boundary that can keep the invariant true, rather than leaked for callers to coordinate?
 - **Authority and state:** is each fact or policy authoritative in one place, with derived representations and mutation paths unable to become competing sources of truth?
 - **Local reasoning:** can the common path be understood from explicit inputs, dependencies, state, and effects without reconstructing distant globals, temporal setup, mode flags, or surprising callbacks?

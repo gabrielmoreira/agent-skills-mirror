@@ -6,7 +6,7 @@
   - `skills/rea-video/`：给 agent 用的 skill（流程 + references），只写怎么用，不放开发文档
   - `rea_video/`：CLI 和拆解逻辑；模型能力地图在 `rea_video/capabilities/`，capsule-cinema 对接脚本在 `rea_video/integrations/`
   - `docs/`：给人看的文档；`docs/dev/` 是开发文档（扩充评测集、加拍法维度）
-  - `eval/`、`tests/`：评测集和测试
+  - `eval/`：评测集；`tests/`：本地测试，已在 .gitignore 里，不进仓库
 - 开发约定：
   - 开发环境：`pip install -e ".[ocr,dev]"`（dev 带 pytest 和 jsonschema，测试和能力地图校验要用）
   - 规则改动后跑 `python3 -m pytest -q` 和 `rea-video eval eval/labels.yaml` / `eval/holdout*.yaml`，结果更新到 `eval/RESULTS.md`

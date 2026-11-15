@@ -64,8 +64,10 @@ sessions (`client.capabilities`, `session.create`, `session.resume`,
 `session.close`), sends only what this bullet names below, plus
 `session.history` again when Hermes refuses a rewind; in the `/sessions`
 picker, only on the person's keys, `session.title` (the highlighted session's
-new title, after Ctrl+R and Enter) and `session.delete` (after a second
-Ctrl+D; never the session it is in), which the gateway child sends to a
+new title, after Ctrl+R and Enter), `session.delete` (after a second
+Ctrl+D; never the session it is in) and `session.transcript` (after Enter on
+a row Hermes lists as not resumable, a read that writes nothing), the first
+two of which the gateway child sends to a
 shared gateway as the owner's revision-fenced `session.mutate rename` and
 `delete`, reading the revision first with `session.resume`; when no turn runs, a
 steer Hermes refused as an ordinary prompt; and, at once, the decline frame for
@@ -271,6 +273,18 @@ signal 0 and reads that process's start time and state (`/proc` on Linux,
 memory (`/proc/<pid>/statm`, or `proc_pidinfo`, which answers only for this
 user's processes); it sends no other signal, and nothing to the gateway. It reads on one thread for the session, never on the render path,
 and reads nothing while the board is closed.
+
+## The reasoning before a silent question
+
+When Hermes opens a clarify question, the TUI reads its own session's newest
+assistant row from the session's `state.db` (`src/tui/silent_lead.py`),
+opened `mode=ro` (immutable when no connection has it open, as the bot board
+opens it), once per question, waiting at most a quarter second on a writer.
+Only when that row made the very clarify call being opened (matched by its
+call id), wrote no reply text and carries reasoning does the question show
+that reasoning, dim, above itself. It writes nothing, sends nothing to the
+gateway, keeps the text only while the question is open, and draws nothing
+when anything is missing or the read fails.
 
 ## Sessions it refuses, and what it writes
 

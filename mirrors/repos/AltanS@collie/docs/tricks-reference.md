@@ -6,7 +6,7 @@ This page lists every place, part, manifest key, limit and command of a ColliePW
 
 ## Places
 
-A place is a spot on the phone where a trick can show (a surface). A program trick, a program on your machine that prints parts, draws in the first five. An agent view, one screen that the session's own agent draws, is the sixth.
+A place is a spot on the phone where a trick can show (a surface). A program trick, a program on your machine that prints parts, draws in the first six. An agent view, one screen that the session's own agent draws, is the seventh.
 
 | Place | Name | Where it shows | Drawn by |
 | --- | --- | --- | --- |
@@ -15,6 +15,7 @@ A place is a spot on the phone where a trick can show (a surface). A program tri
 | `dashboard` | Dashboard tile | A round tile in the strip at the top of the Dashboard. The strip is hidden while no trick has a tile. | A program |
 | `status` | Status chip | One chip in the status line above the Belt, after Collie's own items. | A program |
 | `tabbar` | Bottom bar item | An item in the Dashboard's bottom bar, after the Hill. | A program |
+| `menu` | Session settings rows | Rows in a session's settings (the sheet of the session's ⋮ button), in a group of the trick's own after Collie's rows and Close, under the heading "From the trick", then the trick's name. Agent sessions only. Adds rows to a session's settings. | A program |
 | `agent-view` | Agent view | A view of one agent session, beside Terminal and Chat. The session's own agent draws it, and the person switches it on per session. | A session's agent |
 
 ### `belt`
@@ -27,10 +28,11 @@ A place is a spot on the phone where a trick can show (a surface). A program tri
 
 | Limit | Value |
 | --- | --- |
-| Parts of this place per trick | one |
+| Parts of this place per trick | one unbound, and up to 8 bound ones with `sessions`. No session is named by two parts |
 | `label`, the face word | at most 12 characters |
 | `badge` | a count from 0 to 9999 as text, or "" for a dot |
 | A mark needs | at least one of `icon`, `label` and `badge` |
+| `sessions`, contract 2 | 1 to 8 of the facts' session ids, agent sessions only. The part shows only in those sessions, in place of the trick's unbound part of this place there. Left out, the part is unbound |
 | One part, as compact JSON | at most 16 KiB |
 
 A program prints:
@@ -46,6 +48,38 @@ A program prints:
         "icon": "check",
         "label": "23/34",
         "tone": "ok",
+        "intent": "open"
+      }
+    }
+  ]
+}
+```
+
+A program prints:
+
+```json
+{
+  "v": 2,
+  "parts": [
+    {
+      "at": "belt",
+      "id": "legs",
+      "mark": {
+        "icon": "check",
+        "label": "23/34",
+        "tone": "ok"
+      }
+    },
+    {
+      "at": "belt",
+      "id": "legs-here",
+      "sessions": [
+        "lodge:w1:2"
+      ],
+      "mark": {
+        "icon": "flask",
+        "label": "2 red",
+        "tone": "danger",
         "intent": "open"
       }
     }
@@ -221,6 +255,94 @@ A program prints:
 }
 ```
 
+### `menu`
+
+**Where.** Rows in a session's settings (the sheet of the session's ⋮ button), in a group of the trick's own after Collie's rows and Close, under the heading "From the trick", then the trick's name. Agent sessions only. Adds rows to a session's settings.
+
+**Shows.** Rows: a `button` or a `switch`, each with a `label`, an `icon` and an `intent`. A switch shows the `on` of the last document and never flips before the program answers.
+
+**A tap.** A tap runs it and tells it which session. Collie gives it no way to type there. A button sends its intent; a switch sends its intent with the state asked for as `value`, "on" or "off". With `confirm` a button arms on the first tap and shows its whole label.
+
+| Limit | Value |
+| --- | --- |
+| Contract | 2 |
+| Rows | 1 to 6 in a part. Each `id` and each `intent` once |
+| A row | `id`, `kind` (`button` or `switch`), `label`, `intent`, and optionally `icon`, `disabled`, `on` (required on a switch) and `confirm` (a button only). Nothing else |
+| `label` | 1 to 24 characters, refused when longer, never cut. No hidden character. It may not read as one of the sheet's own rows in any language Collie speaks, hold the word `Collie`, `WalkyTalky`, `Hill`, `view`, or start with `Allow`, `Approve`, `Deny`, `Grant`, `Trust`, `Yes`, `Always`, or with a word of the permission card's buttons in any language Collie speaks. Look-alike letters count as the letters they pass for: `C0llie` is `Collie` |
+| Parts of this place per trick | one unbound, for every agent session of this machine, and up to 8 bound ones with `sessions`, the only way rows show on a crew member's session. No session is named by two parts |
+| `sessions`, contract 2 | 1 to 8 of the facts' session ids, agent sessions only. The part shows only in those sessions, in place of the trick's unbound part of this place there. Left out, the part is unbound |
+| Rows in one sheet | 12 of every trick together. A trick's group is shown whole or left out whole, in the order of the trick ids, and the sheet says how many tricks it left out |
+| One part, as compact JSON | at most 16 KiB |
+
+A program prints:
+
+```json
+{
+  "v": 2,
+  "parts": [
+    {
+      "at": "menu",
+      "id": "ci",
+      "rows": [
+        {
+          "id": "rerun",
+          "kind": "button",
+          "label": "Rerun CI",
+          "icon": "refresh",
+          "intent": "rerun",
+          "confirm": true
+        },
+        {
+          "id": "watch",
+          "kind": "switch",
+          "label": "Watch branch",
+          "icon": "flag",
+          "intent": "watch",
+          "on": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+In `trick.toml`:
+
+```toml
+id = "ci"
+name = "CI"
+run = "program.ts"
+contract = 2
+places = ["menu"]
+```
+
+A program prints:
+
+```json
+{
+  "v": 2,
+  "parts": [
+    {
+      "at": "menu",
+      "id": "ci-workshop",
+      "sessions": [
+        "m_workshop:w3:1"
+      ],
+      "rows": [
+        {
+          "id": "deploy",
+          "kind": "button",
+          "label": "Deploy here",
+          "icon": "upload",
+          "intent": "deploy",
+          "confirm": true
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### `agent-view`
 
 **Where.** A view of one agent session, beside Terminal and Chat. The session's own agent draws it, and the person switches it on per session.
@@ -285,7 +407,7 @@ The agent passes `show` this file:
 
 ## The Hill
 
-A page of Decisions: questions that a program or an agent asks the person, each answered with one tap. It is built in. A trick does not list it in `places`. Settings → Tricks shows it as the first row, tagged "Built in", with its one switch.
+A page of Decisions: questions that a program or an agent asks the person, each answered with one tap. It ships with Collie as an experiment, off until the person switches it on in Settings → Experiments. A trick does not list it in `places`.
 
 **From a program.** A program lists Decisions in the `decisions` key of its output (the helper's `t.decide`). The list is declarative: after each run that succeeded, Collie makes the Hill agree with it, as [The list is the truth](#the-list-is-the-truth) says below. A document lists at most 20.
 
@@ -304,7 +426,7 @@ A Decision a program lists has these keys:
 | `priority` | word | no | one of `now`, `today`, `later`. Default `today` | A request, not a fact. Only `now` sends a notification, and one sender holds at most 3 open `now` Decisions. |
 | `text` | word | no | one of `none`, `optional`, `required`. Default `optional` | Whether the person may, must, or may not add words to the answer. `none` needs at least one option. |
 | `about` | session id | no | an `id` from the facts' sessions, `memberId:paneId` | The session the card is about. The card opens its Chat. |
-| `replyTo` | session id | no | an `id` from the facts' sessions | The session that gets the person's words, as the person's own WalkyTalky message. |
+| `replyTo` | session id | no | an `id` from the facts' sessions. Only for a trick whose `trick.toml` says `decides = "reply"` | The session that gets the person's words, as the person's own WalkyTalky message. Without `decides = "reply"` the Decision is refused. |
 | `media` | list | no | at most 4; each `file` (a PNG, JPEG or WebP in the trick's folder, 2 MiB at most) and optionally `caption` (at most 80 characters) | Pictures on the card. |
 | `links` | list | no | at most 5; each `label` (at most 40) and `href` (an https or http address, at most 500 characters) | Web pages that give more. |
 | `expiresAt` | instant | no | epoch milliseconds. Left out, 14 days; never more than 30 days | When the Decision closes by itself, as expired. |
@@ -380,6 +502,7 @@ After each run that succeeded, Collie makes the Hill agree with the list of `dec
 | A document with no `decisions` key | Changes nothing. |
 | `decisions` is `[]` | Withdraws every open card of the trick. |
 | A Decision the parser or the Hill refuses, or that names a session that is not there | Changes nothing for its key: the version on the Hill stays. It shows as a refusal. |
+| A Decision with `replyTo` from a trick whose `trick.toml` does not say `decides = "reply"` | Refused with "This trick did not say that its Decisions reply to a session." An open card of its key is withdrawn, so no answer reaches a session. |
 | A failed or timed-out run | Changes nothing. |
 | The trick switched off or removed | Every open card of the trick is withdrawn at once, "the trick is off". |
 | The Hill switched off | No post, replace or withdraw happens, and the trick still runs. Its row says its Decisions are not shown. |
@@ -1130,12 +1253,14 @@ These are all the keys of `trick.toml`. At the same contract, any other key is r
 | `mode` | word | no | `once` or `serve`. Default `once` | 1 | `once` runs once per trigger and prints one document. `serve` is kept for a later Collie. |
 | `contract` | whole number | no | 1 to 999. Default 1. This Collie speaks 1 to 2 | 1 | The contract the trick is written for. Write 2 to read files with `inputs` or to add an agent view. A higher number than this Collie knows is refused with one line. |
 | `icon` | word | no | one of the icon words in Shared values. Default `plug` | 1 | The trick's icon. `collie trick check` names a wrong one. |
-| `places` | list of words | yes | 1 to 16 of `belt`, `session`, `dashboard`, `status`, `tabbar`, `agent-view`. Each once | 1 | Where its parts draw. Each place a part uses must be listed. `agent-view` adds an agent view and needs contract 2. |
+| `places` | list of words | yes | 1 to 16 of `belt`, `session`, `dashboard`, `status`, `tabbar`, `menu`, `agent-view`. Each once | 1 | Where its parts draw. Each place a part uses must be listed. `agent-view` adds an agent view and needs contract 2. |
 | `env` | list of names | no | at most 32 names of at most 64 characters: letters, digits and `_`, not starting with a digit | 1 | Environment names the program gets beyond the base list, such as `GH_TOKEN`. The person sees each one. |
 | `inputs` | list of globs | no | at most 8 globs of at most 256 characters and 6 steps, relative to a session's folder | 2 | Files the program reads from each agent session's folder. They are untrusted data: show them, never run them. |
 | `description` | text | no | at most 140 characters, plain text | 1 | One plain line that says what the trick does. Settings shows it under the name. |
 | `about` | text | no | at most 1200 characters, plain text, a blank line splits paragraphs | 1 | The text of the About sheet. |
+| `version` | text | no | 1 to 24 characters: letters, digits, `.`, `+` and `-`, such as `1.2.0` | 1 | The trick's own version. The About sheet shows it. Collie never compares it and reads no tag. |
 | `rules` | file name | yes, with `agent-view`; refused without it | a file in the trick's folder of at most 64 characters ending in `.md`, such as `rules.md` | 2 | The instructions the agent of a session reads. The person reads them whole before they switch the trick on. |
+| `decides` | word | no | `reply`. Refused on a trick that is only an agent view | 1 | Whether its Decisions answer into a session. `reply` lets a Decision name `replyTo`, and the person's answer is typed into that session as their own message. Without it, a Decision with `replyTo` is refused. It is a right: a version that adds it asks again. |
 
 In `trick.toml`:
 
@@ -1199,6 +1324,8 @@ The kinds `watch` and `event` are in the facts schema for a later Collie. This C
 
 A tap on a control of the trick's own part has `node` set to the part's id (`belt` for the Belt mark). Its `intent` is the control's, its `value` the control's one fixed text, and its `from` the session open on the phone, as `{ "session": ... }`, when there is one.
 
+A tap on a row in a session's settings (contract 2) always has `from`: the session whose sheet it was. For a bound part, a belt mark or a menu part with `sessions`, it is one of the part's sessions, at the pane it was bound to; Collie refuses the rest before the program runs.
+
 An answer to a Decision is a tap too: its `node` is `hill/<key>`, and its `seen` is the hash of the version the person saw. See [The Hill](#the-hill).
 
 `rid` is a UUID. A retried tap has the same `rid`, and Collie runs nothing twice for one `rid`: it answers with the first receipt. A program that records an answer keys the record on `rid`. The same `rid` with a different tap is refused.
@@ -1257,7 +1384,8 @@ Collie checks strictly what a person or an agent writes: `trick.toml`, `collie h
 | --- | --- |
 | `t.facts`, `t.config`, `t.tap` | The facts, `config.toml` parsed (`{}` when there is none), and the tap that started the run or `null`. A tap has `rid`, `node`, `intent`, `value`, `decision` (the key of the Decision it answers, or `null`), `text`, `from` and `seen`. |
 | `t.status({ text, icon?, tone? })` | The chip in the status line. `text` is at most 12 characters. |
-| `t.belt({ label, icon?, tone?, badge?, intent? })` | The mark at the end of the Belt. |
+| `t.belt({ label, icon?, tone?, badge?, intent?, sessions?, id? })` | The mark at the end of the Belt. With `sessions` (contract 2) it shows only in those sessions; a bound mark without an `id` is numbered `belt-1`, `belt-2`. |
+| `t.menu(rows, { sessions?, id? })` | Rows in a session's settings (contract 2): buttons `{ kind: "button", id, label, intent, icon?, confirm? }` and switches `{ kind: "switch", id, label, intent, on, icon? }`. The phone shows a switch's `on` from your next document, never a guess. |
 | `t.dashboard(item)`, `t.tabbar(item)` | The Dashboard tile and the bottom bar item: `{ label, icon?, badge?, tone? }`. |
 | `t.session({ id?, name?, icon?, tone?, subtitle?, badge?, progress?, actions?, view })` | The trick's own Page. Keep the default id `main`. |
 | `v.card`, `v.list`, `v.row`, and one builder for each other kind in Parts | Build a view. `v.table` makes the `col` and `cell` kids, so those two have no builder. `v.checks`, `v.stat` and `v.beforeAfter` put kinds together. |
@@ -1369,6 +1497,14 @@ Tricks do not run on a Windows machine yet. [Collie on Windows](windows.md) says
 | A spark | 2 to 32 numbers |
 | A progress | `max` 1 to 12 |
 | A button's or an action's `value` | at most 1024 bytes |
+
+### Bound parts, contract 2
+
+| Limit | Value |
+| --- | --- |
+| Sessions one part names | 1 to 8, agent sessions of this run's facts. Another id is dropped with a note |
+| Bound parts of one place per trick | 8, beside one unbound part |
+| A part with no session left | not kept, with a note. It never shows in every session instead |
 
 ### Facts
 
@@ -1558,7 +1694,6 @@ A trick that names one of these still runs. This Collie leaves the word out, say
 | Kind | Word | What it will be |
 | --- | --- | --- |
 | place | `header.line` | A line in the header. |
-| place | `menu` | An entry in a menu, as `menu:<match>`. |
 | place | `settings` | A part of the Settings screen. |
 | manifest key | `watch` | Run again when a watched file changes (manifest key `watch`). |
 | manifest key | `on` | Run on an event, such as `session.status` (manifest key `on`). |

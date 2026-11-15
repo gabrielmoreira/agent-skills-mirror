@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heydamir/unslop` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `heydamir/unslop` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heydamir/unslop` — 26 default patterns, 0 followed patterns, 14 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,12 +67,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/unslop/references/refs/story-dashboard-frames.webp`](skills/unslop/references/refs/story-dashboard-frames.webp) |
 | 7 | ✓ | [`skills/unslop/references/refs/unslop-dashboard-after.webp`](skills/unslop/references/refs/unslop-dashboard-after.webp) |
 | 8 | ✓ | [`skills/unslop/references/refs/unslop-hero-after.webp`](skills/unslop/references/refs/unslop-hero-after.webp) |
-| 9 | ✓ | [`skills/unslop/references/signs.md`](skills/unslop/references/signs.md) |
-| 10 | ✓ | [`skills/unslop/references/tokens.md`](skills/unslop/references/tokens.md) |
-| 11 | ✓ | [`skills/unslop/references/visuals.md`](skills/unslop/references/visuals.md) |
-| 12 | ✓ | [`skills/unslop/scripts/snapshot.mjs`](skills/unslop/scripts/snapshot.mjs) |
-| 13 | ✓ | [`skills/unslop/scripts/story.mjs`](skills/unslop/scripts/story.mjs) |
-| 14 | ✓ | [`skills/unslop/SKILL.md`](skills/unslop/SKILL.md) |
+| 9 | ✓ | [`skills/unslop/references/rtl.md`](skills/unslop/references/rtl.md) |
+| 10 | ✓ | [`skills/unslop/references/signs.md`](skills/unslop/references/signs.md) |
+| 11 | ✓ | [`skills/unslop/references/tokens.md`](skills/unslop/references/tokens.md) |
+| 12 | ✓ | [`skills/unslop/references/visuals.md`](skills/unslop/references/visuals.md) |
+| 13 | ✓ | [`skills/unslop/scripts/snapshot.mjs`](skills/unslop/scripts/snapshot.mjs) |
+| 14 | ✓ | [`skills/unslop/scripts/story-path.mjs`](skills/unslop/scripts/story-path.mjs) |
+| 15 | ✓ | [`skills/unslop/scripts/story.mjs`](skills/unslop/scripts/story.mjs) |
+| 16 | ✓ | [`skills/unslop/SKILL.md`](skills/unslop/SKILL.md) |
 
 ---
 

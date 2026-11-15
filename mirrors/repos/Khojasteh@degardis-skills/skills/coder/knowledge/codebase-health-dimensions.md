@@ -10,7 +10,7 @@ A broad assessment always weighs three dimensions that repository evidence can e
 
 - **Concrete risk:** evidenced correctness, security, data-integrity, concurrency, compatibility, reliability, resource, or operational failure with a reaching scenario and impact. Leaked or unbounded resources that can make behavior fail belong here; measured cost belongs to performance.
 - **Test adequacy:** behavioral coverage, independent oracles, meaningful boundaries and failures, determinism, isolation, and test level, judged from test code, configuration, and recorded results.
-- **Structure:** cohesion, coupling, duplicated knowledge, control flow, abstraction cost, testability, granularity, fragmentation, or repetitive layering only when it imposes a demonstrated cost on a real change or behavior path.
+- **Structure:** cohesion, coupling, dependency direction, duplicated knowledge, control flow, abstraction cost, testability, granularity, fragmentation, or repetitive layering, within code units or across components and their boundaries, only when it imposes a demonstrated cost on a real change or behavior path.
 
 Seven more dimensions open only when the request names them or evidence in the assessed surface states their problem or runs through them:
 

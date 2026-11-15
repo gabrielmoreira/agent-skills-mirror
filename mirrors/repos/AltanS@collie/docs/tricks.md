@@ -27,19 +27,21 @@ everything:
 
 ## Where a trick can show
 
-A trick can show in seven places on the phone, and nowhere else.
+A trick can show in eight places on the phone, and nowhere else.
 
 A place is a spot on the phone where a trick can show (a surface). Collie owns every place. A trick
 names the places it wants in its manifest, and its parts appear there, drawn by the phone with
 Collie's own look.
 
-- **Five places take a program's parts.** On the Dashboard: a tile in the strip at the top, a row
+- **Six places take a program's parts.** On the Dashboard: a tile in the strip at the top, a row
   under Tricks that opens the trick's own Page, and an item in the bottom bar. In an agent
-  session: a chip in the status line, and a mark at the end of the Belt.
-- **The agent view is the sixth.** It is a view of one agent session, beside Terminal and Chat, and
+  session: a chip in the status line, a mark at the end of the Belt, and rows in the session's
+  settings.
+- **The agent view is the seventh.** It is a view of one agent session, beside Terminal and Chat, and
   that session's own agent draws it.
-- **The Hill is the seventh, and it is built in.** It is the page of questions that wait for you. A
-  trick posts a question there, a Decision, and does not list the Hill in its `places`.
+- **The Hill is the eighth, and it ships with Collie.** It is the page of questions that wait for you,
+  and an experiment: off until you switch it on in Settings → Experiments. A trick posts a question
+  there, a Decision, and does not list the Hill in its `places`.
 
 The [Places](tricks-reference.md#places) section of the reference describes each place: where it
 shows, what it takes, what a tap does, its limits and an example.
@@ -50,6 +52,23 @@ trick's program once, with your tap.
 
 A part for a place that this Collie does not know is left out, with a note, and the other parts still
 show. So a trick written for a newer Collie still works on an older one.
+
+### Session settings rows
+
+A trick can add rows to the settings of an agent session, the sheet that opens from the session's
+⋮ button. Its rows come after Collie's own rows and Close, in a group of their own under "From the
+trick", then the trick's name. A row is a button or a switch.
+
+- A tap runs the trick and tells it which session. Collie gives it no way to type there.
+- A switch shows what the trick last said. It does not flip when you tap it: it waits, with a
+  spinner, until the trick answers.
+- A row with a confirm asks for a second tap and shows its whole label.
+- The rows stay as they were when the sheet opened. A row the trick adds shows the next time.
+- A line under the group says when the trick does not answer, refuses, or is switched off.
+
+The switch of an agent view is in its trick's group too. A trick can also bind a row, or a mark
+on the Belt, to some sessions only. See [Session settings rows](tricks-reference.md#menu) in the
+reference.
 
 > **Note.** A part that is out of date shows without its colour. A trick tells Collie how long its
 > parts stay fresh. After that time the phone shows them as old, and says how old.
@@ -346,9 +365,12 @@ official repository. Any other https git repository takes an address, then optio
 folder, and `#` and a branch, a tag or a full 40-digit commit. An address with a user name or a
 password is refused, and so is any address that is not https.
 
-On the phone, Settings → Tricks lists the official tricks with an Add button. A tap makes one git
-fetch, then checks the hash of what arrived. The Hill is the first row of that card, tagged "Built
-in": it comes with Collie, it is not a trick, and it cannot be removed.
+On the phone, Settings → Tricks is one list. The official tricks come first, in the order of the
+release's list, then your other tricks by name. Each row says Official or Community. An official trick
+you have not added shows an Add button in its place. A tap makes one git fetch, then checks the hash of
+what arrived. The added trick stays in the same place, with its switch. Adding a trick or switching it
+changes its row, never its place. The Hill is not a row of that card: it is not a trick, and its
+switch is in Settings → Experiments.
 
 `add` copies the trick into `tricks/` in Collie's config folder. That folder is `~/.config/collie` on
 a binary install, and Herdr's plugin config folder on a Herdr-managed install
@@ -415,8 +437,9 @@ that, it can do what you can do.
 
 **Powers.** A power is something a trick may reach beyond its own code: the environment names it asks
 for (`env`), the places it draws in (`places`), and the files it reads from your agent sessions
-(`inputs`). The About sheet lists them. A new version that changes one always asks you again. Collie's
-own text also calls a power a right.
+(`inputs`). The About sheet lists them. A new version that changes one always asks you again. The
+`menu` place is a power like any other place, and a Belt mark that names `sessions` only shows in fewer
+sessions, so it needs no new yes. Collie's own text also calls a power a right.
 
 **The environment.** A program gets only the variables a shell tool needs, such as `PATH` and `HOME`.
 A trick lists any more by name, and the About sheet shows each name. Collie never passes a `COLLIE_`
@@ -446,7 +469,9 @@ Tricks to open it.
 - **What it does** holds only facts Collie knows: "Draws in: ...", the files it reads, the
   environment names it asks for, the warnings of the text search, and a view's rules, shown whole.
 - **Where it comes from** says "From owner/repo @ 3f2a91c" for a trick added from a repository, or
-  "Added on this machine."
+  "Added on this machine." A trick from a repository has a link to it, with the host shown in full.
+  For a repository on `github.com`, the link also shows its stars and the date of its last commit,
+  once Collie has read them. The version shows when the trick's author wrote one in `trick.toml`.
 - **Updates** holds the "Take changes without asking" switch, for a trick that is on.
 
 The description and the longer text are the author's own words, and nothing checks them against the
@@ -509,13 +534,14 @@ Most problems show in the trick's row in Settings → Tricks, or in `collie tric
 | No Tricks section in Settings | The config folder has no `tricks/` folder yet. `collie trick add` or `collie trick init <id>` makes it |
 | "Manifest refused: ..." | `trick.toml` has an error. Run `collie trick check <folder>` and fix each line it prints |
 | "A new version waits for your yes." | The folder moved past the approved copy. Open the card on the Hill, or run `collie trick on <id>` |
+| "A new version waits. Switch the Hill on in Settings, Experiments, to read it." | The same, and the Hill is off, so its card cannot be read. Switch the Hill on in Settings → Experiments, or run `collie hill on` |
 | "The approved copy changed on disk, so the trick stopped. ..." | A program edited the approved copy. Read the code, then switch the trick on again |
 | "The approved copy holds a symbolic link, so the trick stopped. ..." | A trick holds regular files only. Replace the link, then switch it on again |
 | "No version of this trick is approved yet. ..." | The switch file has no approved code for the trick. Switch it on again |
 | "Stopped after repeated failures" | The program failed after 1, 5 and 30 minutes. Fix it, then switch it off and on, or tap its mark |
 | "Last run failed" | The phone keeps the last good version. "Why" shows the error, and "Copy for an agent" copies it |
 | "This Collie cannot draw this part" | A crew member's older Collie does not know the kind. Update Collie |
-| "The Hill is off: this trick's Decisions are not shown." | Switch the Hill on in Settings → Alerts, or run `collie hill on` |
+| "The Hill is off: this trick's Decisions are not shown." | Switch the Hill on in Settings → Experiments, or run `collie hill on` |
 | "Tricks run on the lead of this crew. This machine runs none." | You are on a member. Switch tricks on from the lead |
 | "Could not switch <name>. Try again." | The phone could not write the switch. Check that the device may write, and that the bridge answers |
 | "error: collie trick on is a person's yes to the code, ..." | An agent ran the command. Run it in a shell pane, or tap the switch on the phone |

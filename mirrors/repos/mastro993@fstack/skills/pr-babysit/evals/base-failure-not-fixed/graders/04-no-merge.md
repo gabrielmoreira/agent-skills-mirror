@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: .gh-stub/state.json }
+pattern: '"merged": false'
 weight: 1
 ---
 
-The run never called gh pr merge.
+The PR was not merged.

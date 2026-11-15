@@ -5,28 +5,33 @@ description: Edit, preview, and verify the standalone interactive talk deck in d
 
 # Cracktro talk deck
 
-The deck is published at `https://github.github.com/gh-aw/cracktro/`. It is a sixteen-slide deck with no dependencies, separate from the docs homepage slideshow.
+Use Claude Opus 5.5 (`claude-opus-5.5`) for deck work, including any subagents you delegate to.
+
+The deck is published at `https://github.github.com/gh-aw/cracktro/`. It is a deck laid out as horizontal bands (Prezi-style) with no dependencies, separate from the docs homepage slideshow.
 
 ## Files
 
-- `docs/public/cracktro/index.html`: only loads `deck.js`.
-- `docs/public/cracktro/deck.js`: about 200 KB holding everything (CSS, slides, navigation, synth, background). **Never read it whole.** Use `grep -n` on the `// ---------- <section> ----------` and `// <Slide title>` comment markers, then `view_range`.
-- `docs/public/cracktro/assets/avatars/{pelikhan,lpcox,dsyme,mnkiefer}.jpg`: the only allowed assets, which a test enforces. Diagrams are inline SVG built in `deck.js` (for example slide 2's CI-to-agentic `GA_RUNS` pipeline).
+- `docs/public/cracktro/index.html`: loads `deck.js` and holds the SEO/Open Graph/Twitter meta (absolute `https://github.github.com/gh-aw/cracktro/` URLs).
+- `docs/public/cracktro/og-image.png`: 1200x630 social card rendered from slide 1 with the dots/count/sound/progress UI hidden. Keep it outside `assets/` (the asset test only allows avatars there).
+- `docs/public/cracktro/deck.js`: about 575 KB holding everything (CSS, slides, navigation, synth, background). **Never read it whole.** Use `grep -n` on the `// ---------- <section> ----------` and `// <Slide title>` comment markers, then `view_range`.
+- `docs/public/cracktro/assets/avatars/{mona,ducky}.jpg`: the fake users Mona and Ducky (GitHub's mascots), plus `mona-full.png` (transparent full-body Mona for the Trust the process slide); the only allowed assets, which a test enforces. Diagrams are inline SVG built in `deck.js` (for example slide 2's CI-to-agentic `GA_RUNS` pipeline).
 - `docs/public/cracktro/fonts/`: Monaspace Neon plus its OFL licence. Mona Sans comes from `docs/public/fonts/`.
-- `docs/tests/talk.spec.ts`: Playwright tests. They contain the list of sixteen slide headings, so update it when a heading changes.
+- `docs/tests/talk.spec.ts`: Playwright tests. They read `.github/skills/cracktro/slides.md`.
+- `.github/skills/cracktro/slides.md`: the single ordered slide list (headings, band headers included, and which notes must say illustrative). A slide's number is its row; never write slide numbers or counts anywhere else. Edit one row per slide in the same change as `deck.js`.
 - `docs/README.md`, "Interactive talk" section: user-facing description (keys, public-content rules).
 
 ## deck.js layout (search for these markers)
 
 | Marker | Contents |
 |---|---|
-| `---------- styles ----------` | A single CSS template string. Slide-specific classes use prefixes such as `fm-`, `rpa-`, `mra-`, `sec-`, `ch-` and `pf-`. |
+| `---------- styles ----------` | A single CSS template string. Slide-specific classes use prefixes such as `fm-`, `atk-`, `rpa-`, `mra-`, `eph-`, `fv-`, `sec-`, `ch-`, `pf-` and `bh-` (band header slides). Check that a new prefix is unused before adding it. |
 | `---------- helpers ----------` | `h(tag, attrs, ...kids)` creates DOM; `letters(text, cls)` builds per-letter headings with classes like `l-grad` and `l-out`; `resetIndex()`. |
 | `---------- slides ----------` | One `{ ... slides.push({...}) }` block per slide, each preceded by a `// Title: summary` comment. |
 | `const OCTI` | Octicon path map (calendar, issue, pr, merge, person, copilot, ...) used by `ico(name,x,y,size,fill)`. |
-| `---------- sound:` | WebAudio synth `sfx`: `slide, step, cut, techno, pop, key, compile, review, notify, omen, route, toggle, unlock`. `THEMES` holds the per-slide melodies. |
+| `---------- sound:` | WebAudio synth `sfx`: `slide, band, step, cut, techno, pop, key, compile, review, notify, omen, route, mr, toggle, unlock`. `MUSIC` holds one theme per band; `slide(dir, music, shift)` transposes `tone`/`bell`/`pad` by `shift` semitones. |
+| `---------- band themes ----------` | `THEME`: per-band background, grid, angle, accent, red wash and music (see `mechanics.md`). |
 | `---------- navigation ----------` | `go()`, `show(n, horiz)`, keys, dots, notes, hash. |
-| `---------- animated background ----------` | Canvas background tinted by the slide's `palette`. |
+| `---------- animated background ----------` | Canvas background and grid driven by the current band's `THEME`. |
 
 The stage is a fixed 1920x1080 frame (`W`/`H`), scaled to fit the window.
 
@@ -34,11 +39,8 @@ The stage is a fixed 1920x1080 frame (`W`/`H`), scaled to fit the window.
 
 ```js
 slides.push({
-  sound: "loop",          // THEMES key played on entry
-  palette: [c1, c2, c3, c4],
   notes: "...",           // speaker notes (N key); public text
-  trans: "up" | "down",   // optional vertical transition (reversed going back)
-  red: true,              // optional: red wash, then slides in from right ("left-in")
+  group: "security",      // band id; picks the THEME (colours, grid, music, red wash); crossing groups slides up
   techno: 1,              // optional techno layer level
   el: h("section", { class: "slide" }, ...),
   enter(dir) {},          // reset per-slide state; dir = 1 forward, -1 back
@@ -47,27 +49,23 @@ slides.push({
 });
 ```
 
-## Mechanics worth knowing
+## Reference files (load only what the task needs)
 
-- **Transitions:** the default is a reveal-style horizontal push using `slide-in`/`slide-out` keyframes. `show()` sets `--dx` to `100%` going forward, `-100%` going back, and `0%` on first load. Up/down transitions use the `up-in`/`up-out` and `down-in`/`down-out` classes; red slides use `left-in`. The old slide keeps the `.leaving` class until a timeout clears it.
-- **Audio isolation:** `master` is a persistent gain that feeds the compressor and delay. `out` is a per-slide bus. `show()` calls `sfx.cut()`, which fades the current bus and replaces it, so long themes cannot leak into the next slide. Any new sound must connect to `out`, or to `master` if it must persist across slides (as techno does).
-- **CSS animations restart** through `void el.offsetWidth` before `.active` is added. Prefer `.active .x { animation: ... }` for entry effects.
-- **Animated SVG flow diagrams** (for example "Research · Assign · Refine"):
-  - Built with helpers such as `agent()`, `dev()`, `box()`, `codeScan()` and `ico()`.
-  - `EDGES` entries are `[id, svgPath, class, labelLines, lx, ly, anchor]`.
-  - `SEQ` entries are `[edgeId|null, nodeLitOnArrival, durationMs?]`.
-  - `LANE` maps each node to its lane.
-  - The loop length is `START + steps * STEP + HOLD`.
-  - On cycle reset, `.on`, `.hot` and `.seen` are removed from the whole SVG, so keep any persistent state (such as counters) outside those classes.
-- **Repeated ids:** several slides reuse ids such as `nIssue`, `nDev1` and `nDev2`, and constants such as `HOLD`. When editing, make `old_str` unique by including nearby slide-specific context.
+| File | Load when |
+|---|---|
+| `mechanics.md` | Changing bands, slide order or `group`, navigation, transitions, backgrounds, audio, or animated SVG flows (`EDGES`/`SEQ`/`LANE`). |
+| `content-rules.md` | Adding any public text, data, avatar or image; contains the per-slide Exception bullets for measured data. |
+| `workflow-prompts.md` | Adding or refreshing a slide's `/agentic-workflows` prompt line (`PROMPTS` table and phone dialog); holds the prompt-mining algorithm and the exact PR/task/session references. |
+| `data-refresh.md` | Adding, changing or refreshing a data slide; holds the refresh mini-skill convention and the slide→`refresh/<slug>.md` index. |
 
-## Content rules (enforced by tests)
+## People and mascots
 
-- Everything is public. Use only synthetic examples and role icons, never people. Do not include private repos, `github/<repo>`-style references, 40-hex SHAs, or `who:` fields.
-- Exception: the avatars of `pelikhan`, `lpcox`, `dsyme`, and `mnkiefer` only, as local files `assets/avatars/<login>.jpg` referenced from SVG `<image>` elements. No other avatars or `<image>` sources.
-- The only URL allowed in `deck.js` is `https://github.github.com/gh-aw/introduction/overview/`.
-- Speaker notes for slides 2, 5, and 7–16 must match `/illustrative|synthetic|simulated/i`.
-- No external requests and no page errors.
+- Never use a real GitHub user's avatar, handle or name for a person, in slides, speaker notes or comments. Never fetch `github.com/<login>.png`.
+- People are only the fake users `mona` and `ducky`, drawn from `assets/avatars/{mona,ducky}.jpg`. Mona is the maintainer; Ducky is the external contributor (community user). A `Developer` can be either: mix them across slides, and use both when a slide shows two developers.
+- Follow https://brand.github.com/graphic-elements/mascots: use mascots sparingly, never as logos, and never on serious topics (security, enterprise, money). Use role icons there.
+- Never generate or redraw mascots. Both avatars are 160x160 clips of official brand.github.com art in the modern three-quarter 3D style: `mona.jpg` is the dark-mode purple Mona from `mona-2026-versions.png`, `ducky.jpg` the middle Ducky from `mascots-03.png`. Their backgrounds are recoloured to the deck's `#0d1117` (never white) so they blend into the dark avatar circles.
+
+Core rules (details in `content-rules.md`): everything is public; no real GitHub avatars, handles or people, only the fake users Mona and Ducky (per the brand mascot guidelines); no 40-hex SHAs or private repos; the only URLs are `https://github.github.com/gh-aw/introduction/overview/` and the For PMs source link `https://github.com/chrizbo/agentics-beyond-code`; speaker notes of illustrative slides must match `/illustrative|synthetic|simulated/i`.
 
 ## Preview loop
 
@@ -75,7 +73,7 @@ There is no build step. Serve the static folder and open it in the browser canva
 
 ```bash
 python3 -m http.server 4329 --bind 127.0.0.1 --directory docs/public   # run async + detached
-# open http://127.0.0.1:4329/cracktro/#9   (#N = slide N)
+# open http://127.0.0.1:4329/cracktro/#11   (#N = row N of slides.md)
 ```
 
 After each edit:

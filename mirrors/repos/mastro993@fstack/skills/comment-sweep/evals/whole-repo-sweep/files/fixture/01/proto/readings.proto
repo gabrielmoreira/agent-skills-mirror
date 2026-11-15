@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package wxdata;
+
+message Reading {
+  string station_id = 1;
+  int64 observed_at_unix = 2;
+  double temperature_c = 3;
+  double pressure_hpa = 4;
+  double humidity_pct = 5;
+}
+
+message ReadingBatch {
+  repeated Reading readings = 1;
+}

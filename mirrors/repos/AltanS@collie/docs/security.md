@@ -570,10 +570,25 @@ member runs 1.18.0.
 If the lead cannot read a member's answer to mask it, it does not pass the answer on. The phone then
 shows that read as failed, as it does for a member it cannot reach.
 
-A push notification also names a pane only by the name you gave it: the pane's label, Claude's
-`/rename` name, or a one-pane tab's name. It never uses the title a program in the pane set, because
-any program can set that title, and a title can hold a path, a command or a secret. A pane with no
-such name is called by its harness, for example `claude`.
+A push notification names a pane by its session name, in this order: the pane's label in Collie, a
+name you set in the harness (Claude Code's `/rename`, pi's `/name`), the title the agent gave its
+session in its own log, or a one-pane tab's name. A pane with none of these is called by its harness,
+for example `claude`. A push never uses the terminal title, which any program in the pane can set
+with an escape sequence.
+
+The agent's own title is text the agent wrote, so it can hold a path, a command or a secret. Collie
+strips control and direction characters from it and cuts it to 80 characters. With `COLLIE_REDACT`
+on, Collie masks it in the app and in the push, as it masks the terminal title. With the mask off, a
+push can show that title on your lock screen and send it through the browser's push service.
+
+Collie keeps the last names of up to 512 sessions in `session-titles.json` in its state folder, with
+owner-only access, so a name stays after a restart. With `COLLIE_REDACT` on, it keeps only the name you
+set there, never the agent's title.
+
+The prompt cache watch list names a pane the same way, after its workspace. Collie stores that label
+in `cache-watch.json` in its state folder and shows it in the watch list. With `COLLIE_REDACT` on,
+Collie masks the label before it stores it and again when it lists it, so a label stored with the mask
+off is masked in the list too.
 
 ## Sent: the shell lines you sent
 
@@ -662,15 +677,23 @@ error, with the fix. A folder that Collie cannot check is a warning: `cannot con
 From 1.27.0 each Collie bridge sends one small anonymous ping a day to our own analytics. It carries
 the Collie version, the operating system, how Collie was installed, and whether the bridge runs
 alone or in a crew, under a random ID made on your machine. No IP address is stored with the ping.
-Nothing else is sent: no host name, no folder, nothing you type or read. We need these numbers to
+No host name, no folder and nothing you type or read is sent. We need these numbers to
 spot regressions and slow degradations after a release, and to steer what gets built next. Up to
 1.26.x Collie sent nothing ([ADR 0129](../.adr/0129-an-anonymous-install-count-on-by-default.md)).
 
-When Collie shows one of its two trouble cards, the next ping also carries how often, in six fields:
-which card, the name and version of the agent program, the multiplexer it ran on, a count and, from
-1.27.4, a screen field on a dialog card. The screen field is a short hash of the dialog's key-hint
+When Collie shows one of its two trouble cards, the next ping also carries how often:
+which card, the name and version of the agent program, the multiplexer it ran on, whether the optional
+data link was on for that pane, a count and, from 1.27.4, a screen field on a dialog card. The screen field is a short hash of the dialog's key-hint
 row only, never a row with your text, never the screen or what you typed. It is absent unless that
 row is a short list of key hints, such as `enter select · esc back`.
+
+The ping also says which agents ran on which multiplexers since the last ping, about a day, one row per
+pair, for example `claude` on `tmux`. Each row has one more fact: whether the optional data link was on
+for at least one session of that pair (`collie harness link`). A row of the trouble count above carries
+the same fact for its own pane. The names come from fixed lists in Collie, and any other name reads
+`other`. It is never how many sessions ran, and never a name, folder, title, prompt or model. The bridge
+keeps only the pairs it has seen, in its state file, and the list goes with the install ID when the count
+is off. A crew member reports its own agents and pings for itself.
 
 Turning it off is one switch: Settings, System, **Telemetry**. `COLLIE_TELEMETRY=0`,
 `telemetry = false` in `config.toml` or `DO_NOT_TRACK=1` do the same, and so does blocking the one
@@ -683,6 +706,19 @@ start of a build that has it. The exact message is written down in the contract 
 Besides the daily ping, the one unprompted outbound call is the update check: an anonymous HTTPS `GET` to GitHub's public
 tags API (`bridge/update.ts`) that compares your version to the newest tag. It carries no data about
 you or your machine, only the static user-agent `collie-update-check`.
+
+A trick's About sheet adds one more read, made by the bridge and never by the phone. When a trick came
+from a repository on `github.com`, the sheet shows its stars and the date of its last commit. The bridge
+asks GitHub's public API once per repository with an anonymous HTTPS `GET`, with the user-agent
+`collie-trick-facts` and nothing about you:
+
+```text
+https://api.github.com/repos/<owner>/<repo>
+```
+
+It reads only when a paired phone lists your tricks, never on a timer. It keeps a good answer for 6 hours
+and a failed one for an hour, in the `tricks` folder of its state folder, and makes at most 20 such reads an
+hour. It follows no redirect, gives up after 5 seconds or 64 KB, and keeps only the two numbers it shows.
 
 The Whistle model download is another outbound call. It happens only when a person taps **Download
 to host** or runs `collie stt whistle`, and it sends no data about you ([The speech engine

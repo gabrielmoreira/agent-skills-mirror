@@ -1433,6 +1433,29 @@ file (`KNOWN_FOREIGN_CLAIMS` in `harness/agy/agy.test.ts`).
 | `claude--v2303-permission-bash-bg-agent-rm--w160.txt` | A background agent's Bash permission, pointer on `1. Yes`, a 26-row command and the warning `Dangerous rm operation on possibly-empty variable path: $D/*.wav in ...`. Lifts `prompt-select` (`permission`, `Do you want to proceed?`, Yes `1`, No `2`) from the `─` edge, with the header, the description, the command and the warning as its subject; the ask has a region, so a tap sends its digit | `blocked` |
 | `claude--v2303-permission-bash-bg-agent-rm--w80.txt` | The same screen at 80 columns: a 33-row command and a three-row warning. Lifts the same way | `blocked` |
 
+## Claude Code 2.1.322 permission taller than the screen (constructed 2026-11-12)
+
+**Not a capture.** The incident of 2026-11-12 on the dev lane (Chat view on the phone, Claude Code
+2.1.322): a subagent asked for a Bash permission whose command was a heredoc of about 100 rows, on a
+61-row pane. Claude runs on the alt screen, so the read is the visible grid and nothing above it
+(HERDR_API.md, `pane.read`): the dialog's `─` edge, its header and the start of the command were
+above the screen. The card showed `Permission required / Do you want to proceed? / Yes / No`, and
+the warning row `Dangerous rm operation not ruled out — the shell may read this command differently
+than it was parsed` was on the screen but not on the card. The dialog was answered before anyone
+captured it, so this screen is built: the layout, the ANSI, the `│` gutter, the `╌` rule, the bare
+`1. Yes` / `2. No` rows and the background-agents footer are the 2.1.303 file below's, byte for byte;
+the 53 command rows are a neutral stand-in in the shape of the incident's (the end of a TypeScript
+heredoc, a `python3 -c` shuffle, a `for` loop over `./run.sh`), paths under `/home/dev`; the warning
+row is the incident's own words, from the phone's screenshot of the terminal. 160 columns, 61 rows,
+CRLF, no trailing newline, no row above the first command row.
+
+It names Claude nowhere, so agy's grammar claims it, the same named exception as the 2.1.291 and
+2.1.303 files (`KNOWN_FOREIGN_CLAIMS` in `harness/agy/agy.test.ts`).
+
+| Fixture | State / what's in it | Grammar state |
+|---|---|---|
+| `claude--v2322-permission-bash-cut-top--w160.txt` | A subagent's Bash permission, pointer on `1. Yes`, the read starting inside the command: 53 command rows, the `╌` rule, the warning row, the question. Lifts `prompt-select` (`permission`, `Do you want to proceed?`, Yes `1`, No `2`) with `subjectCut` and the 53 rows and the warning (marked `tone: "warning"`) as its subject; the ask has no region, so a tap is still refused and the card says to open Screen | `blocked` |
+
 ## Claude Code 2.1.296 question that ends in a fullwidth question mark (reporter's capture, issue 543, 2026-10-20)
 
 A Japanese AskUserQuestion on Claude Code 2.1.296 (Herdr 0.9.0, macOS), captured by the reporter with
@@ -3331,6 +3354,67 @@ Claude dialog captures do, so the echo rule never reads them. Pinned by `cues.te
 | `claude--v2-1-310-resume-two-sessions--w119.txt` | `/resume` with two past sessions: `  ❯ Fruit taste descriptions list` over `    1 minute ago · master · 196KB`, the second session, the two-row key footer. No box. Lifts an ask; the cues alone read strong |
 | `claude--v2-1-310-rewind--w119.txt` | Escape Escape on an empty box: `Rewind`, one earlier prompt, `  ❯ (current)`, `Enter to continue · Esc to cancel`. No box. Lifts an ask; the cues alone read strong |
 
+## The Remote Control row under the box (built 2026-11-11, Claude Code 2.1.319, 100 columns)
+
+**Built, not captured.** A phone screenshot of a pane on Claude Code 2.1.319 with Remote Control on
+showed four rows under an empty box: a custom statusline, the mode row, `✔ Update installed · Restart
+to update`, and a lone `/rc`. A send to that pane was held "Something is open at the box" while Claude
+sat idle. The file rebuilds that footer in the corpus's colours over a neutral transcript; no row of
+the screenshot's transcript or titles is in it. The statusline is a stand-in of the same shape.
+
+`/rc` is Claude Code's Remote Control status row. The 2.1.319 bundle labels it `/rc connecting…`,
+`/rc active`, `/rc reconnecting` and `/rc failed`, and shortens `/rc active` to `/rc` once the badge
+has been seen five times. It is drawn only at 60 columns or more. Focused from the keyboard it reads
+`/rc · enter to view`, and Enter then opens the Remote Control view. The screen reads free with the
+row there; the bridge's own count of rows under the box (`idle.volatile.below.hints`) leaves the
+unfocused labels out, so the row coming or going while Collie types fails no probe. Pinned by
+`bridge/surface/protocol.claude-rc-footer.test.ts` and `fold.corpus.test.ts`.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2319-rc-footer-idle--w100.txt` | An empty box under a finished turn; under it the statusline, `⏵⏵ bypass permissions on (shift+tab to cycle)`, the update notice and `/rc`. Reads `idle`, `none`, `empty`. Labelled `idle` |
+
+## Claude Code 2.1.323 with Remote Control on and off (captured 2026-11-13, 100 columns)
+
+**Captured**, in a private tmux server (`tmux -L`, `capture-pane -p -e`, 100 x 40, LF line ends, 256-colour SGR), with an
+isolated `CLAUDE_CONFIG_DIR` holding only an access token, no hooks and no plugins, in a scratch git folder,
+`--permission-mode default`. Remote Control came from `claude --remote-control <name>` or `/remote-control`, and every
+session was ended with its Disconnect row afterwards. One sanitization pass, length-preserving: the scratch path
+under the home directory became `/home/dev/rc-lab/sample-project` padded with `-` (it wraps the option row of the
+Bash dialog, so its length is kept), the Remote Control session code in the link text and in the OSC 8 hyperlink
+(`https://claude.ai/code/session_…`) became zeros, and the weekly-limit row's time zone became `Europe/Lisbon`.
+No account name, e-mail address or host name was on any screen.
+
+What Remote Control draws, which the 2.1.319 field report only guessed at: the pill `/rc active` (it shortens to
+`/rc` after five sightings, and the banner's header carries the same pill) in the **footer under the box**, right-aligned
+to the last column, as an OSC 8 hyperlink (`ESC ] 8 ; id=… ; <url> ESC \ /rc active ESC [ 39 m ESC ] 8 ; ; ESC \`) in
+colour 114. It sits on the **mode row** when that row leaves room (`⏸ manual mode on · ? for shortcuts` plus the
+pill), and takes **a row of its own** when a full-width row is above it: the tmux focus-events notice, the usage row, a
+running turn's mode row with `Ctrl+Y to paste deleted text`. So the count of rows under the box moves between one
+and three as a notice comes or goes, which is what the profile's `idle.volatile.below.hints` pattern
+`^\s*/rc(?: …)?$` (issue 767) answers: it matches the row of its own, leading spaces and all. The pill drops out of
+dialogs: a dialog (AskUserQuestion, a Bash permission, `/rewind`, the slash list) replaces the footer, so no `/rc`
+row stands under one, and the readers need nothing for it.
+
+| Fixture | State / what's in it |
+|---|---|
+| `claude--v2323-rc-on-idle-notice--w100.txt` | Empty box, mode row, the focus-events notice (cut by `…`), the pill on a row of its own. Reads `idle`, `none`, `empty`. Labelled `idle` |
+| `claude--v2323-rc-on-idle-usage--w100.txt` | The same with the weekly-limit row where the notice was (`Europe/Lisbon`). Labelled `idle` |
+| `claude--v2323-rc-on-idle-joined--w100.txt` | Empty box after a turn, no notice: the pill shares the mode row, one footer row. Labelled `idle` |
+| `claude--v2323-rc-on-draft--w100.txt` | `hello there` in the box, mode row, notice, pill on its own row. Labelled `draft` |
+| `claude--v2323-rc-on-running--w100.txt` | A turn running (`✶ Ruminating…`), the mode row `esc to interrupt`, the pill on its own row. **One edit:** the mode row also carried `Ctrl+Y to paste deleted text` (a hint Claude draws after Ctrl+U), which the unread-dialog card read as a modal key; it was blanked, same width, because it is no part of the Remote Control case. Labelled `running` |
+| `claude--v2323-rc-on-ask-single--w100.txt` | An AskUserQuestion select (`Drink`, Tea or Coffee, two described options, `Type something.`, `Chat about this`) with Remote Control on. No footer, no pill. Labelled `dialog` |
+| `claude--v2323-rc-on-permission-bash--w100.txt` | A Bash permission (`touch demo2.txt`, four options) with Remote Control on. Labelled `dialog` |
+| `claude--v2323-rc-on-slash-list--w100.txt` | `/` in the box, the command list filling the screen (ten rows plus wrapped descriptions). Reads as an autocomplete block; the surface read is `unreadable` as on `claude--v21314-core-slash-list--w120.txt`, with Remote Control off too. Labelled `popup` |
+| `claude--v2323-rc-on-rewind--w100.txt` | `/rewind` with three turns listed (`↑ 11 more` is left out by the capture: this build shows a few at a time). Lifts a menu with Continue and Cancel. Labelled `dialog` |
+| `claude--v2323-rc-off-idle--w100.txt`, `-ask-single--`, `-permission-bash--` | The same idle box, ask and permission dialog with Remote Control off. The dialogs read as the on-captures do (`remote-control.test.ts`). Labelled `idle`, `dialog`, `dialog` |
+
+The Send Protocol is pinned over these footers in `bridge/surface/protocol.claude-rc-footer.test.ts` (the footer
+changing from the joined shape to the own-row shape, and back, while Collie types fails without the hint). The
+tall `/rewind` list in `region-top.test.ts` is **constructed** from `claude--v2323-rc-on-rewind--w100.txt` (the
+extra turns are copies of its own entries): a rewind taller than 30 rows under its plain `─` border is the case the
+border window of 60 rows (`BORDER_SCAN_WINDOW`) reads.
+
 ## omp fuzzy command list under the box (captured 2026-10-25, omp 18.6.1 and 18.12.6, omp-gang testers 01 and 02)
 
 Real pane reads from the testers' rig: a scratch Herdr with its own bridge, `omp` on `openrouter/anthropic/claude-haiku-4.5`,
@@ -3948,3 +4032,18 @@ running turn read (composer found, no card); these screens did not. Privacy: the
 | `codex--v0167-resume-tall--w120.txt` | `/resume` with one session: the title on row 1, the footer on rows 59 and 60 | menu (the title used to be out of reach) |
 | `codex--v0167-working--w120.txt` | A turn running: `• Working (4s • esc to interrupt) · 1 background terminal running`, the box, the status row, `← for agents · ? for shortcuts` | raw, composer found, no card |
 | `codex--v0167-command-center--w120.txt` | The agent command center, one task, a detail pane, `? help  esc back  ↑/↓ move  enter open  n new` | the unread-dialog card, by design |
+
+## Claude Code 2.1.322 on macOS: `⏺ main` background-agents footer (captured 2026-11-11)
+
+On macOS, stock Claude Code 2.1.322 draws the background-agents footer header with `⏺` (`U+23FA`,
+`  ⏺ main` and `❯ ⏺ main`) where Linux draws `●` (`U+25CF`, `  ● main` and `❯ ● main`). Captured in a
+disposable 80 x 45 tmux server (`tmux -f /dev/null`) running stock `claude --setting-sources ""` with an
+empty `CLAUDE_CONFIG_DIR` (`{"hasCompletedOnboarding":true}` only; no hooks, plugins or statusline), read
+with `tmux capture-pane -e -p`. Privacy: the scratch folder prefix on row 3 was replaced with neutral text
+of the exact same length (`00000000-0000-0000-0000-000000000000/sample-lab`); nothing else was changed.
+
+| Fixture | Source | What's in it |
+| --- | --- | --- |
+| `claude--v2322-macos-agents-panel-working--w80.txt` | Captured during the turn that started two background `Agent` calls (`tmux capture-pane -e -p`) | Running turn (`✽ Sprouting… (5s · ↓ 267 tokens)`), empty box, two status rows (`⏸ manual mode on · esc to interrupt · ← for agents · ↓ to manage`, `◐ medium · /effort`), blank row, `  ⏺ main`, two `◯ general-purpose` rows truncated with `…`. Reads `running` |
+| `claude--v2322-macos-agents-panel-focused--w80.txt` | Same tmux pane after the turn finished, after pressing `Down` (`tmux send-keys Down`) | `✻ Waiting for 2 background agents to finish`, empty box, `↑/↓ to select` + `◐ medium · /effort`, blank row, `❯ ⏺ main`, two `◯ general-purpose` rows. Reads `idle` |
+| `claude--v2322-macos-agents-panel-idle--w80.txt` | Second disposable 80 x 45 tmux lab run (`demo-project3`), captured idle after READY | `✻ Waiting for 2 background agents to finish`, empty box, two status rows, blank row, `  ⏺ main` (rendered as three bold spans) and two `◯ general-purpose` rows. Reads `idle` |

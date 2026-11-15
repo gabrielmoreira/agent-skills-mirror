@@ -68,8 +68,9 @@ your-project/
 │   │   │
 │   │   ├── oma-mobile/
 │   │   │   ├── SKILL.md
-│   │   │   ├── resources/              ← execution, tech stack, screen templates, checks
-│   │   │   └── stack/                  ← created by /stack-set (Flutter, React Native, or Swift)
+│   │   │   ├── resources/              ← execution, tech stack index, checks
+│   │   │   ├── variants/               ← platform references (Flutter, React Native, Swift, Kotlin): stack.yaml, tech-stack.md, snippets.md
+│   │   │   └── stack/                  ← created by /stack-set from the detected project
 │   │   │
 │   │   ├── oma-db/
 │   │   │   ├── SKILL.md
@@ -87,28 +88,19 @@ your-project/
 │   │   │
 │   │   ├── oma-design/
 │   │   │   ├── SKILL.md
-│   │   │   ├── resources/
-│   │   │   │   ├── execution-protocol.md
-│   │   │   │   ├── anti-patterns.md
-│   │   │   │   ├── checklist.md
-│   │   │   │   ├── design-md-spec.md
-│   │   │   │   ├── design-tokens.md
-│   │   │   │   ├── prompt-enhancement.md
-│   │   │   │   ├── stitch-integration.md
-│   │   │   │   ├── redesign-protocol.md
-│   │   │   │   ├── asset-strategy.md
-│   │   │   │   ├── getdesign-fetcher.md
-│   │   │   │   └── error-playbook.md
-│   │   │   └── reference/
-│   │   │       ├── typography.md
-│   │   │       ├── color-and-contrast.md
-│   │   │       ├── spatial-design.md
-│   │   │       ├── motion-design.md
-│   │   │       ├── responsive-design.md
-│   │   │       ├── component-patterns.md
-│   │   │       ├── accessibility.md
-│   │   │       ├── visual-hierarchy.md
-│   │   │       └── shader-and-3d.md
+│   │   │   └── resources/
+│   │   │       ├── execution-protocol.md
+│   │   │       ├── external-design-skills.md
+│   │   │       ├── product-interface-review.md
+│   │   │       ├── redesign-protocol.md
+│   │   │       ├── design-md-spec.md
+│   │   │       ├── design-tokens.md
+│   │   │       ├── data-grid.md
+│   │   │       ├── asset-strategy.md
+│   │   │       ├── getdesign-fetcher.md
+│   │   │       ├── stitch-integration.md
+│   │   │       ├── checklist.md
+│   │   │       └── error-playbook.md
 │   │   │
 │   │   ├── oma-pm/
 │   │   │   ├── SKILL.md
@@ -116,7 +108,6 @@ your-project/
 │   │   │       ├── execution-protocol.md
 │   │   │       ├── examples.md
 │   │   │       ├── iso-planning.md
-│   │   │       ├── plan-phase-protocol.md
 │   │   │       ├── task-template.json
 │   │   │       └── error-playbook.md
 │   │   │
@@ -126,14 +117,12 @@ your-project/
 │   │   │       ├── execution-protocol.md
 │   │   │       ├── iso-quality.md
 │   │   │       ├── checklist.md
-│   │   │       ├── error-playbook.md
-│   │   │       └── verify-ship-protocol.md
+│   │   │       └── error-playbook.md
 │   │   │
 │   │   ├── oma-debug/
 │   │   │   ├── SKILL.md
 │   │   │   └── resources/
 │   │   │       ├── execution-protocol.md
-│   │   │       ├── common-patterns.md
 │   │   │       ├── debugging-checklist.md
 │   │   │       ├── bug-report-template.md
 │   │   │       ├── checklist.md
@@ -154,10 +143,9 @@ your-project/
 │   │   ├── oma-dev-workflow/
 │   │   │   ├── SKILL.md
 │   │   │   └── resources/
+│   │   │       ├── mise-basics.md
 │   │   │       ├── validation-pipeline.md
-│   │   │       ├── database-patterns.md
-│   │   │       ├── api-workflows.md
-│   │   │       ├── i18n-patterns.md
+│   │   │       ├── example-task-wiring.md
 │   │   │       ├── release-coordination.md
 │   │   │       ├── tooling-profiles.md
 │   │   │       ├── affected-checks.py
@@ -168,6 +156,7 @@ your-project/
 │   │   │   └── resources/
 │   │   │       ├── translation-rubric.md
 │   │   │       ├── anti-ai-patterns.md
+│   │   │       ├── style-skills.md
 │   │   │       └── lang/
 │   │   │           ├── _template.md
 │   │   │           ├── en.md
@@ -184,7 +173,6 @@ your-project/
 │   │   │   │   ├── spawn-agent.sh
 │   │   │   │   ├── parallel-run.sh
 │   │   │   │   └── verify.sh
-│   │   │   ├── templates/
 │   │   │   └── config/
 │   │   │       └── cli-config.yaml
 │   │   │
@@ -203,14 +191,14 @@ your-project/
 │   │           ├── merge-risk.md
 │   │           └── ...
 │   │
-│   ├── workflows/                    ← 21 process definitions
+│   ├── workflows/                    ← 20 process definitions
 │   │   ├── orchestrate.md             ← Persistent: automated parallel execution
 │   │   ├── work.md                    ← Persistent: step-by-step coordination
 │   │   ├── ultrawork.md               ← Persistent: 5-phase quality workflow
 │   │   ├── ralph.md                   ← Persistent: repeated execution + judge
 │   │   ├── plan.md / brainstorm.md / architecture.md
 │   │   ├── deepinit.md / review.md / security.md / debug.md / design.md
-│   │   ├── scm.md / tools.md / stack-set.md / convert.md
+│   │   ├── scm.md / stack-set.md / convert.md
 │   │   ├── docs.md / explain.md / recap.md / schedule.md / video.md
 │   │   └── ...                         ← Keep this list aligned with `.agents/workflows/`
 │   │
@@ -297,17 +285,17 @@ your-project/
 
 **`_shared/`**：所有智能体共用的资源：
 - `core/`：执行策略、代码智能规则、路由、上下文加载、提示结构、澄清协议、上下文预算、难度评估、质量原则、测试方法、供应商检测、会话指标、通用检查清单、经验教训和 API 契约模板
-- `runtime/`：内存协议、事件规范、结果契约以及供应商专用执行协议
+- `runtime/`：记忆协议、事件规范、结果契约以及供应商专用执行协议
 - `conditional/`：质量评分、实验账本、探索循环协议和图表引擎（仅在触发时加载）
 
 **`oma-{skill}/`**：按技能划分的目录。每个目录包含：
 - `SKILL.md`：第一层，路由到该技能时加载，包含身份、路由和核心规则
 - `resources/`：第二层，按需加载，包含执行协议、示例、检查清单、错误处理手册、技术栈、代码片段和模板
-- 某些技能还有额外子目录：`stack/`（安装时选择的后端变体，或由 `/stack-set` 生成的参考资料；源码仓库将种子保存在 `variants/` 中）、`reference/`（oma-design）以及技能专用脚本或配置
+- 某些技能还有额外子目录：`stack/`（安装时选择的后端变体，或由 `/stack-set` 生成的参考资料）、`variants/`（随附的栈参考资料；未选定变体就安装的技能会保留其 `variants/` 目录，并读取其中匹配的变体）以及技能专用脚本或配置
 
 ### workflows/
 
-定义斜杠命令行为的 21 个 Markdown 文件。每个文件包含：
+定义斜杠命令行为的 20 个 Markdown 文件。每个文件包含：
 - 带 `description` 的 YAML 前置元数据
 - 强制规则部分（响应语言、步骤顺序和 MCP 工具要求）
 - 供应商检测指令
@@ -315,7 +303,7 @@ your-project/
 - 关卡定义（适用于持久化工作流）
 
 持久化工作流：`orchestrate.md`、`work.md`、`ultrawork.md` 和 `ralph.md`。
-非持久化工作流包括 `plan.md`、`brainstorm.md`、`architecture.md`、`deepinit.md`、`review.md`、`security.md`、`debug.md`、`design.md`、`scm.md`、`tools.md`、`stack-set.md`、`convert.md`、`docs.md`、`explain.md`、`recap.md`、`schedule.md` 和 `video.md`。
+非持久化工作流包括 `plan.md`、`brainstorm.md`、`architecture.md`、`deepinit.md`、`review.md`、`security.md`、`debug.md`、`design.md`、`scm.md`、`stack-set.md`、`convert.md`、`docs.md`、`explain.md`、`recap.md`、`schedule.md` 和 `video.md`。
 
 ### agents/
 
@@ -328,7 +316,7 @@ your-project/
 
 ### plan-\{sessionId\}.json
 
-由 `/plan` 工作流生成，包含带智能体分配、优先级、依赖关系和验收标准的结构化任务分解。`/orchestrate` 和 `/work` 会使用它。配套的人类可读跟踪文件位于 `docs/plans/work/{NNN}-{name}.md`，其生命周期通过 `Status` 字段管理。永久设计参考与其并列保存在 `docs/plans/designs/{NNN}-{name}.md` 下。
+由 `/plan` 工作流生成，包含带智能体分配、优先级、依赖关系和验收标准的结构化任务分解。`/orchestrate` 和 `/work` 会使用它。配套的人类可读跟踪文件位于 `docs/plans/work/{NNN}-{name}.md`，其生命周期通过 `Status` 字段管理。保留下来的方案提案和决策位于 `docs/decisions/{NNN}-{name}.md` 下。
 
 ### state/
 
@@ -344,8 +332,7 @@ your-project/
 
 MCP 服务器配置，包括：
 - 服务器定义（Serena 等）
-- 内存配置：`memoryConfig.provider`、`memoryConfig.basePath`、`memoryConfig.tools`（读、写、编辑工具名称）
-- `/tools` 管理使用的工具组定义
+- 记忆配置：`memoryConfig.provider`、`memoryConfig.basePath`、`memoryConfig.tools`（读、写、编辑工具名称）
 
 ---
 
@@ -492,7 +479,7 @@ echo '{"cwd":"/path/to/project"}' \
 
 ## `.agents/state/memories/`：运行时状态 {#agentsstatememories-runtime-state}
 
-智能体在编排会话期间写入进度的位置。这是规范的协调记忆存储；CLI 会优先解析它，并为迁移前创建的项目回退到传统 `.serena/memories/` 路径。仪表盘会监视此目录，以实时更新。
+智能体在编排会话期间写入进度的位置。这是规范的协调记忆存储；CLI 会优先解析它，并为迁移前创建的项目回退到传统 `.serena/memories/` 路径。会话文件和任务板文件包含会话 ID；进度文件和结果文件包含智能体、任务、运行和会话 ID。仪表盘会监视此目录，以实时更新。
 
 | 文件 | 所有者 | 用途 |
 |------|-------|------|
@@ -509,7 +496,7 @@ echo '{"cwd":"/path/to/project"}' \
 | `session-cost-{sessionId}.md` | 系统 | 每个会话的启动成本遥测 |
 | `archive/metrics-{date}.md` | 系统 | 归档的会话指标（保留 30 天） |
 
-内存文件路径和工具名称可以通过 `.agents/mcp.json` 中的 `memoryConfig` 配置。
+记忆文件路径和工具名称可以通过 `.agents/mcp.json` 中的 `memoryConfig` 配置。
 
 Serena 自己的引导记忆（`code_style.md`、`project_purpose.md` 及类似知识文件）仍位于 `.serena/memories/`，与这些协调产物分开。
 
@@ -561,7 +548,7 @@ oh-my-agent/
 ## 另请参阅 {#see-also}
 
 - [工作流](./workflows.md)：`.agents/workflows/` 下每个文件的作用
-- [并行执行](./parallel-execution.md)：运行范围内存文件如何生成
+- [并行执行](./parallel-execution.md)：运行范围的记忆文件如何生成
 - [全局安装](../guide/global-install.md)：项目模式和全局模式
 - [配置参考](../guide/configuration-reference.md)
 - [oma-config 语义](../guide/oma-config-semantics.md)

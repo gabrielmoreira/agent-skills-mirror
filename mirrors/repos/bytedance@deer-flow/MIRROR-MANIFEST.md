@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 67 followed patterns, 286 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 68 followed patterns, 288 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 67 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 67 |
-| Files         | 286 |
+| Followed pats | 68 |
+| Files         | 288 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,6 +84,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 67 followed patterns, 2
 - `Install.md`
 - `backend/docs/CONFIGURATION.md`
 - `backend/README.md`
+- `docs/guide/sharing.md`
 - `CHANGELOG.md`
 - `SECURITY.md`
 - `.github/pull_request_template.md`
@@ -344,73 +345,75 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 217 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
 | 218 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
 | 219 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
-| 220 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 221 | → | [`backend/docs/BATCH_CONTINUATION.md`](backend/docs/BATCH_CONTINUATION.md) |
-| 222 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
-| 223 | → | [`backend/docs/extension-model-invocation.md`](backend/docs/extension-model-invocation.md) |
-| 224 | → | [`backend/docs/FILE_UPLOAD.md`](backend/docs/FILE_UPLOAD.md) |
-| 225 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
-| 226 | → | [`backend/docs/KNOWLEDGE.md`](backend/docs/KNOWLEDGE.md) |
-| 227 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
-| 228 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
-| 229 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
-| 230 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
-| 231 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
-| 232 | → | [`backend/packages/harness/deerflow/community/tenki/README.md`](backend/packages/harness/deerflow/community/tenki/README.md) |
-| 233 | → | [`backend/README.md`](backend/README.md) |
-| 234 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
-| 235 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
-| 236 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 237 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 238 | → | [`docker/lark-cli-broker/README.md`](docker/lark-cli-broker/README.md) |
-| 239 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
-| 240 | → | [`docs/agent-service-topology.md`](docs/agent-service-topology.md) |
-| 241 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 242 | → | [`docs/capability-center.md`](docs/capability-center.md) |
-| 243 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
-| 244 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
-| 245 | → | [`docs/guide/api-and-client.md`](docs/guide/api-and-client.md) |
-| 246 | → | [`docs/guide/browser-control.md`](docs/guide/browser-control.md) |
-| 247 | → | [`docs/guide/configuration.md`](docs/guide/configuration.md) |
-| 248 | → | [`docs/guide/context.md`](docs/guide/context.md) |
-| 249 | → | [`docs/guide/deployment.md`](docs/guide/deployment.md) |
-| 250 | → | [`docs/guide/file-previews.md`](docs/guide/file-previews.md) |
-| 251 | → | [`docs/guide/im-channels.md`](docs/guide/im-channels.md) |
-| 252 | → | [`docs/guide/knowledge-retrieval.md`](docs/guide/knowledge-retrieval.md) |
-| 253 | → | [`docs/guide/mcp.md`](docs/guide/mcp.md) |
-| 254 | → | [`docs/guide/memory.md`](docs/guide/memory.md) |
-| 255 | → | [`docs/guide/observability.md`](docs/guide/observability.md) |
-| 256 | → | [`docs/guide/projects.md`](docs/guide/projects.md) |
-| 257 | → | [`docs/guide/sandbox.md`](docs/guide/sandbox.md) |
-| 258 | → | [`docs/guide/scheduled-tasks.md`](docs/guide/scheduled-tasks.md) |
-| 259 | → | [`docs/guide/security.md`](docs/guide/security.md) |
-| 260 | → | [`docs/guide/skills-and-tools.md`](docs/guide/skills-and-tools.md) |
-| 261 | → | [`docs/guide/subagents.md`](docs/guide/subagents.md) |
-| 262 | → | [`docs/guide/tui.md`](docs/guide/tui.md) |
-| 263 | → | [`docs/guide/workspace.md`](docs/guide/workspace.md) |
-| 264 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
-| 265 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 266 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
-| 267 | → | [`docs/task-continuity.md`](docs/task-continuity.md) |
-| 268 | → | [`examples/deerflow-extension-agent-teams/README.md`](examples/deerflow-extension-agent-teams/README.md) |
-| 269 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
-| 270 | → | [`examples/deerflow-extension-jev-screening/README.md`](examples/deerflow-extension-jev-screening/README.md) |
-| 271 | → | [`examples/deerflow-extension-knowledge-management/README.md`](examples/deerflow-extension-knowledge-management/README.md) |
-| 272 | → | [`examples/deerflow-extension-knowledge-management/VALIDATION.md`](examples/deerflow-extension-knowledge-management/VALIDATION.md) |
-| 273 | → | [`examples/deerflow-extension-knowledge-platform/README.md`](examples/deerflow-extension-knowledge-platform/README.md) |
-| 274 | → | [`examples/deerflow-extension-retrieval/README.md`](examples/deerflow-extension-retrieval/README.md) |
-| 275 | → | [`examples/deerflow-extension-weknora/README.md`](examples/deerflow-extension-weknora/README.md) |
-| 276 | → | [`examples/deerflow-extension-workflows/README.md`](examples/deerflow-extension-workflows/README.md) |
-| 277 | → | [`Install.md`](Install.md) |
-| 278 | → | [`README_fr.md`](README_fr.md) |
-| 279 | → | [`README_ja.md`](README_ja.md) |
-| 280 | → | [`README_ko.md`](README_ko.md) |
-| 281 | → | [`README_pt.md`](README_pt.md) |
-| 282 | → | [`README_ru.md`](README_ru.md) |
-| 283 | → | [`README_zh.md`](README_zh.md) |
-| 284 | → | [`README.md`](README.md) |
-| 285 | → | [`RELEASING.md`](RELEASING.md) |
-| 286 | → | [`SECURITY.md`](SECURITY.md) |
+| 220 | ✓ | [`tests/skills/fixtures/legacy-xls/README.md`](tests/skills/fixtures/legacy-xls/README.md) |
+| 221 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 222 | → | [`backend/docs/BATCH_CONTINUATION.md`](backend/docs/BATCH_CONTINUATION.md) |
+| 223 | → | [`backend/docs/CONFIGURATION.md`](backend/docs/CONFIGURATION.md) |
+| 224 | → | [`backend/docs/extension-model-invocation.md`](backend/docs/extension-model-invocation.md) |
+| 225 | → | [`backend/docs/FILE_UPLOAD.md`](backend/docs/FILE_UPLOAD.md) |
+| 226 | → | [`backend/docs/IM_CHANNEL_CONNECTIONS.md`](backend/docs/IM_CHANNEL_CONNECTIONS.md) |
+| 227 | → | [`backend/docs/KNOWLEDGE.md`](backend/docs/KNOWLEDGE.md) |
+| 228 | → | [`backend/docs/MCP_SERVER.md`](backend/docs/MCP_SERVER.md) |
+| 229 | → | [`backend/docs/MEMORY_SETTINGS_REVIEW.md`](backend/docs/MEMORY_SETTINGS_REVIEW.md) |
+| 230 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
+| 231 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
+| 232 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
+| 233 | → | [`backend/packages/harness/deerflow/community/tenki/README.md`](backend/packages/harness/deerflow/community/tenki/README.md) |
+| 234 | → | [`backend/README.md`](backend/README.md) |
+| 235 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
+| 236 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
+| 237 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 238 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 239 | → | [`docker/lark-cli-broker/README.md`](docker/lark-cli-broker/README.md) |
+| 240 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
+| 241 | → | [`docs/agent-service-topology.md`](docs/agent-service-topology.md) |
+| 242 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 243 | → | [`docs/capability-center.md`](docs/capability-center.md) |
+| 244 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
+| 245 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
+| 246 | → | [`docs/guide/api-and-client.md`](docs/guide/api-and-client.md) |
+| 247 | → | [`docs/guide/browser-control.md`](docs/guide/browser-control.md) |
+| 248 | → | [`docs/guide/configuration.md`](docs/guide/configuration.md) |
+| 249 | → | [`docs/guide/context.md`](docs/guide/context.md) |
+| 250 | → | [`docs/guide/deployment.md`](docs/guide/deployment.md) |
+| 251 | → | [`docs/guide/file-previews.md`](docs/guide/file-previews.md) |
+| 252 | → | [`docs/guide/im-channels.md`](docs/guide/im-channels.md) |
+| 253 | → | [`docs/guide/knowledge-retrieval.md`](docs/guide/knowledge-retrieval.md) |
+| 254 | → | [`docs/guide/mcp.md`](docs/guide/mcp.md) |
+| 255 | → | [`docs/guide/memory.md`](docs/guide/memory.md) |
+| 256 | → | [`docs/guide/observability.md`](docs/guide/observability.md) |
+| 257 | → | [`docs/guide/projects.md`](docs/guide/projects.md) |
+| 258 | → | [`docs/guide/sandbox.md`](docs/guide/sandbox.md) |
+| 259 | → | [`docs/guide/scheduled-tasks.md`](docs/guide/scheduled-tasks.md) |
+| 260 | → | [`docs/guide/security.md`](docs/guide/security.md) |
+| 261 | → | [`docs/guide/sharing.md`](docs/guide/sharing.md) |
+| 262 | → | [`docs/guide/skills-and-tools.md`](docs/guide/skills-and-tools.md) |
+| 263 | → | [`docs/guide/subagents.md`](docs/guide/subagents.md) |
+| 264 | → | [`docs/guide/tui.md`](docs/guide/tui.md) |
+| 265 | → | [`docs/guide/workspace.md`](docs/guide/workspace.md) |
+| 266 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
+| 267 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 268 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
+| 269 | → | [`docs/task-continuity.md`](docs/task-continuity.md) |
+| 270 | → | [`examples/deerflow-extension-agent-teams/README.md`](examples/deerflow-extension-agent-teams/README.md) |
+| 271 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
+| 272 | → | [`examples/deerflow-extension-jev-screening/README.md`](examples/deerflow-extension-jev-screening/README.md) |
+| 273 | → | [`examples/deerflow-extension-knowledge-management/README.md`](examples/deerflow-extension-knowledge-management/README.md) |
+| 274 | → | [`examples/deerflow-extension-knowledge-management/VALIDATION.md`](examples/deerflow-extension-knowledge-management/VALIDATION.md) |
+| 275 | → | [`examples/deerflow-extension-knowledge-platform/README.md`](examples/deerflow-extension-knowledge-platform/README.md) |
+| 276 | → | [`examples/deerflow-extension-retrieval/README.md`](examples/deerflow-extension-retrieval/README.md) |
+| 277 | → | [`examples/deerflow-extension-weknora/README.md`](examples/deerflow-extension-weknora/README.md) |
+| 278 | → | [`examples/deerflow-extension-workflows/README.md`](examples/deerflow-extension-workflows/README.md) |
+| 279 | → | [`Install.md`](Install.md) |
+| 280 | → | [`README_fr.md`](README_fr.md) |
+| 281 | → | [`README_ja.md`](README_ja.md) |
+| 282 | → | [`README_ko.md`](README_ko.md) |
+| 283 | → | [`README_pt.md`](README_pt.md) |
+| 284 | → | [`README_ru.md`](README_ru.md) |
+| 285 | → | [`README_zh.md`](README_zh.md) |
+| 286 | → | [`README.md`](README.md) |
+| 287 | → | [`RELEASING.md`](RELEASING.md) |
+| 288 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

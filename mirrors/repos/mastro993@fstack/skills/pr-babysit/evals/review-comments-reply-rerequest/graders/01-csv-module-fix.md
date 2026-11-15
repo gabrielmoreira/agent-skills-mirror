@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: .gh-stub/pushed.diff }
+pattern: '^(?![\s\S]*\n\+[^\n]*\bNone\b)[\s\S]*\n\+[^\n]*csv\.(?:writer|DictWriter)'
 weight: 1
 ---
 
-widgets/export.py on the pushed head writes rows with the csv module (csv.writer or csv.DictWriter) and the test check passes on that head.
+The pushed change writes rows with the csv module and adds no None guard.

@@ -46,7 +46,7 @@ World Monitor is a real-time global intelligence dashboard built as a TypeScript
         │ CoinGeck│ │  FRED   │ │ FIRMS   │
         │   ...   │ │   ...   │ │   ...   │
         └─────────┘ └─────────┘ └─────────┘
-           878 observed source hosts
+           884 observed source hosts
 ```
 
 **Source files**: `package.json`, `vercel.json`
@@ -477,8 +477,7 @@ gates.
 ├── cli/                    Official `worldmonitor` npm CLI (zero-dep ESM, MCP-first; published via cli-v* tag)
 ├── consumer-prices-core/   Consumer-price collection service (Playwright scrapers, per-country baskets; Railway/Docker)
 ├── convex/                 Convex backend (billing/entitlements, user state, broadcast, forms, intel history)
-├── data/                   Static data (telegram channels, OREF threat translations, gamma irradiators)
-├── deploy/                 Deployment configs (nginx)
+├── data/                   Static data (telegram channels, X accounts, OREF threat translations, forecast cohorts)
 ├── docker/                 Dockerfile + nginx config for Railway
 ├── docs/                   Mintlify documentation site
 ├── e2e/                    Playwright E2E specs

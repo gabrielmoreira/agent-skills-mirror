@@ -1,0 +1,1 @@
+Remove the cron export; the warehouse reads Postgres directly now

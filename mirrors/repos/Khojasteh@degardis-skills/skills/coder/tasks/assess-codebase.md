@@ -2,8 +2,8 @@
 title: Assess a codebase and prioritize improvements
 cues:
 - an existing codebase or software surface should be assessed for which improvements it needs and in what order
-- the overall condition of an existing codebase or software surface should be assessed
-goal: An evidence-backed account of the named software surface at the fixed depth, made of its overall condition when the request asks for it and a prioritized roadmap unless the request asks only for that condition, distinguishes inspected, sampled, and unreached parts, and leaves project source unchanged.
+- the quality of the code in an existing codebase or software surface as it stands should be appraised, overall, in a named concern, or against a named standard
+goal: An evidence-backed account of the named software surface at the fixed depth, made of the quality of its code, overall, in the named concern, or against the named standard, when the request asks for it and a prioritized roadmap unless the request asks only for that quality, distinguishes inspected, sampled, and unreached parts, and leaves project source unchanged.
 knowledge:
 - authorized-software-surface
 - project-grounding
@@ -22,6 +22,7 @@ guides:
 - structural-cost
 - structural-transformations
 - abstraction-boundaries
+- component-architecture
 - value-boundaries
 - failure-behavior
 - removal-and-compatibility
@@ -62,7 +63,7 @@ Bind recorded evidence to the revision, configuration, date, and scope it can de
 
 **Roadmap.** Recommend an action only when evidence supports both the problem and its direction. A suspected production defect, unknown intended behavior, unreliable baseline, or unapproved compatibility change can make a nominally behavior-preserving action preserve the wrong result, turn an accident into a contract, or claim safety from evidence that cannot carry it. These are common shapes, not a closed list: any unsettled condition with the same effect is a finding the dependent actions must wait on. Name it as a prerequisite of every action whose safety depends on it and hold only those actions; independent areas continue. A small diff, easy reversal, or low implementation cost does not settle the condition, so a dependent behavior-preserving change waits for a separately scoped defect repair, contract decision, or baseline. Tests that record current behavior make a later change observable while intended behavior remains unknown, but that record does not establish that the behavior is correct or must be preserved, and a passing suite cannot override contradictory contract evidence.
 
-Write the result for the reader who will act on it, including a later reader who did not observe the assessment. Name the assessed surface, revision or working tree, intended reader, coverage boundary, and any first action before background. When the request asks for the surface's overall condition, lead with it: for each dimension in scope, name the established findings it holds by identifier, or state that the covered material showed none or that the dimension did not open, each of which reports coverage rather than health. If the evidence supports no action, say so without implying health for sampled or unreached material. Keep demonstrated defects distinct from the actions that address them, and give a defect a stable identifier when more than one action or later reference needs to point to it. Rank defect severity, when useful, by impact and confidence, and rank actions by prerequisite and readiness into these horizons, omitting any that holds no action:
+Write the result for the reader who will act on it, including a later reader who did not observe the assessment. Name the assessed surface, revision or working tree, intended reader, coverage boundary, and any first action before background. When the request asks for the quality of the surface's code, lead with it: for each dimension in scope, name the established findings it holds by identifier, or state that the covered material showed none or that the dimension did not open, each of which reports coverage rather than health. If the evidence supports no action, say so without implying health for sampled or unreached material. Keep demonstrated defects distinct from the actions that address them, and give a defect a stable identifier when more than one action or later reference needs to point to it. Rank defect severity, when useful, by impact and confidence, and rank actions by prerequisite and readiness into these horizons, omitting any that holds no action:
 
 - **Now:** established, unblocked work the reader should start next, including conditions that must be settled and high-risk correctness or safety work.
 - **Next:** supported work whose prerequisite, decision, or earlier action prevents it from starting now.

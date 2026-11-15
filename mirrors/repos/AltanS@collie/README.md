@@ -307,22 +307,32 @@ the code.
 - **Pull requests:** open them against `main`. [`CONTRIBUTING.md`](./CONTRIBUTING.md) has the CI
   checks and the version rules.
 
-### The states playground
+### The design reference
 
-A local test page renders UI components across mock states (boot, idle, dashboard, crew,
-settings) without active agents. The tab shows a red icon to identify it as test-only.
+A local page renders every final state of the UI (boot, idle, dashboard, crew, settings and the rest)
+from mock data, without active agents. The tab shows a red icon to mark it as test-only.
 
 ```
-cd web && COLLIE_DEV_HOSTS=bluefin,localhost bun run playground
+cd web && bun run design
 ```
 
-Open `http://<host>:5199/playground.html`. Port 5199 disables `/api` calls to ensure it never hits
-a live instance. `bun run playground:build` outputs the test assets to `web/dist-playground/`
-without touching `dist/`. The view shows one section at a time, tracked via the URL hash (`#pane`,
-`#pane/<card-handle>`, `#changes:one-file`). Add states by adding a `<Card>` to a `Group` in
-`web/src/playground/sections/` and mock entries to `web/src/playground/fixtures.ts`. Add sections
-by exporting `DEF` and a component from a new file, then register it in `SECTIONS` inside
-`web/src/playground/app.tsx`. Use `Round` (`web/src/playground/round.tsx`) to evaluate layout variants.
+It listens on `127.0.0.1` only. To open it from a phone, bind it to this machine's tailnet address
+and allow the machine name: `COLLIE_DEV_HOST=$(tailscale ip -4) COLLIE_DEV_HOSTS=bluefin bun run design`.
+Open `http://<host>:5199/design.html` (`bun run playground` is the same command, and the old address
+`playground.html` forwards to the new one). Port 5199 answers `/api` calls itself, so the page never
+hits a live instance. `bun run playground:build` writes the static pages to `web/dist-playground/`
+without touching `dist/`.
+
+The search field at the top finds an entry by its title, its id or its keywords (component names
+and feature words). The page shows one entry at a time. The address carries it: `#pane`,
+`#pane/<card-handle>` for one card, `#changes:one-file` for one group, `?q=walky` for a search.
+Add a state by adding a `<Card>` to a `Group` in `web/src/playground/sections/` and mock data to
+`web/src/playground/fixtures.ts`. Add an entry by exporting `DEF` and a component from a new file,
+then registering it in `ENTRIES` in `web/src/playground/registry.tsx` with an id, a title, a group
+and keywords.
+The reference holds only final states. A design round where an option is picked is declared as
+one file under `web/src/pick/rounds/` and one line in `web/src/pick/rounds.ts`, to the contract in
+`web/src/pick/types.ts`. `CLAUDE.md` has the rules.
 
 For Herdr adapter development, refer to upstream documentation for the plugin system:
 [authoring](https://herdr.dev/docs/plugins/) ·
@@ -338,8 +348,10 @@ instance with its own state folder) sends one small ping to `ping.colliepwa.dev`
 on your machine, the day, the version, the OS, the CPU, the install kind, the release line (Stable
 or Edge) and whether the bridge runs alone, leads a crew or is a member. When a trouble card showed
 ("Cannot read a dialog" or "Send not landing"), it also carries a count: which card, the agent
-program's name and version, the multiplexer and, from 1.27.4, for a dialog a short hash of its
-key-hint row. No IP address is stored. No usage, no content, nothing you type or read.
+program's name and version, the multiplexer, whether its pane had the optional data link on and,
+from 1.27.4, for a dialog a short hash of its key-hint row. It also says which agents ran on which multiplexers (for example `claude` on `tmux`) and
+whether the optional data link was on for them, never how many. No IP
+address is stored. No content, nothing you type or read.
 
 Turn it off on each machine in Settings, System, **Telemetry**, with `COLLIE_TELEMETRY=0` (in the
 instance's `.env` for a service), `telemetry = false` in `config.toml` or `DO_NOT_TRACK=1`. Blocking

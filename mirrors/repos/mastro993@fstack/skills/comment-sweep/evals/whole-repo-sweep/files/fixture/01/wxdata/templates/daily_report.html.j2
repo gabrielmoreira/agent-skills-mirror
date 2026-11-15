@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Station report — {{ day }}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; color: #1d2433; margin: 2rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 0.35rem 0.6rem; border-bottom: 1px solid #d8dde6; }
+    th { background: #eef1f6; text-align: left; }
+    .hot { color: #b00020; font-weight: 600; }
+    .muted { color: #6b7385; }
+  </style>
+</head>
+<body>
+  <h1>Station report for {{ day }}</h1>
+  <p class="muted">{{ stats|length }} stations · <a href="#coverage">coverage</a></p>
+
+  {# Render the table #}
+  <table>
+    <thead>
+      <tr>
+        <th>Station</th><th>Readings</th><th>Mean °C</th><th>Median °C</th>
+        <th>Min °C</th><th>Max °C</th><th>Pressure hPa</th>
+      </tr>
+    </thead>
+    <tbody>
+    {# Loop over stations #}
+    {% for s in stats %}
+      <tr id="{{ s.station_id|slug }}"{% if s in hottest %} class="hot"{% endif %}>
+        <td>{{ s.station_id }}</td>
+        <td>{{ s.count }}</td>
+        <td>{{ "%.1f"|format(s.mean_c) }}</td>
+        <td>{{ "%.1f"|format(s.median_c) }}</td>
+        <td>{{ "%.1f"|format(s.min_c) }}</td>
+        <td>{{ "%.1f"|format(s.max_c) }}</td>
+        <td>{{ s.mean_pressure_hpa if s.mean_pressure_hpa is not none else "—" }}</td>
+        {# <td>{{ s.humidity }}</td> #}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Coverage section -->
+  <h2 id="coverage">Coverage</h2>
+  {% if low_coverage %}
+  <p>Stations below 80% of their expected readings:</p>
+  <ul>
+  {% for station_id in low_coverage %}
+    <li><a href="#{{ station_id|slug }}">{{ station_id }}</a></li>
+  {% endfor %}
+  </ul>
+  {% else %}
+  <p>Every station delivered at least 80% of its expected readings.</p>
+  {% endif %}
+
+  <footer class="muted">
+    Observations © SkyFeed, used under its <a href="{{ terms_url }}">terms</a>.
+  </footer>
+</body>
+</html>

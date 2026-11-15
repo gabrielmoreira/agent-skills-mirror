@@ -1,6 +1,6 @@
 # Coder
 
-**Version:** `1.6.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
+**Version:** `1.7.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
 
 Guide your coding agent through software work, with evidence you can check.
 
@@ -39,6 +39,7 @@ Coder also has guidance for the design decisions that make software easy or hard
 
 - **Designs are compared, not taken from a first draft.** Before editing, the agent compares the workable designs where they really differ: who owns each responsibility, which way dependencies point, where state lives, and where the boundaries are. The first working idea, the smallest diff, or the closest existing pattern doesn't win automatically. A mechanism your project already has is one of the options. A design that removes a guarantee it gives must name that guarantee and the evidence for giving it up.
 - **Architecture rules as questions, not slogans.** Each option is tested for clear ownership and cohesion, coupling and dependency direction, information hiding, one source of truth for each fact, code you can follow without hidden globals or mode flags, and how far the next change would spread. These questions show consequences. They don't force a pattern or score designs by acronym.
+- **Architecture judged against your rules, not a style.** When the agent assesses or reviews how your software is arranged, it maps the dependencies the code really has, including ones made through configuration or shared files. It compares them with the rules your project adopted, such as a decision record or an architecture test. A style such as layered or hexagonal counts only where your project or your request adopts it, and then by its defining rules. A folder layout isn't part of any rule. Code that breaks a rule fails it. The agent reports it as worth fixing only when a real change or workload pays for it.
 - **Abstractions only where they help.** Better names and existing boundaries come before a new layer. An interface comes from what its callers need. An extension point comes from alternatives your software actually supports. No factory, strategy, or wrapper is added just to fit a pattern. Code that only looks similar stays separate when the rules behind it can change separately.
 - **Code that fits your project.** In code your project keeps, the agent follows your required style rules and the code around the change, so new code looks familiar to its maintainers. It checks relevant tool suggestions, including ones a normal build may not show. It replaces familiar syntax only when your project is adopting a new form or you ask for one. Any syntax it uses must work in all supported language versions. Formatting follows your project's rules without unrelated restyling.
 - **Code built for its purpose, not only for this request.** Your request shows one use of the code. Unless the code exists for that one use alone, its names say what it is or does, not which task produced it. The cases it handles, its shape, and where it lives come from what it's for and every way it will be used. Before delivering, the agent checks the work against a use that differs from your request in exactly what the code claims to cover.
@@ -118,6 +119,14 @@ Assess the test suite of this codebase and tell me where better tests would help
 ```
 
 You get a prioritized roadmap. It says which parts the agent read, sampled, or didn't reach.
+
+**Check code against its architecture**
+
+```text
+Does our code still follow the layering rules in docs/architecture.md?
+```
+
+You get an answer for each rule, with every place the code breaks it. Which breaks are worth fixing is reported separately, each with the change or workload that would pay for it.
 
 **Learn how something works**
 

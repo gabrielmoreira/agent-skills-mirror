@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id            String                   @id @default(cuid())
+  email         String                   @unique
+  name          String?
+  createdAt     DateTime                 @default(now())
+  notifications Notification[]
+  preferences   NotificationPreference[]
+  pushTargets   PushSubscription[]
+}
+
+// Added notifications models
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  WEBHOOK
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Notification {
+  /// The id of the notification
+  id        String              @id @default(cuid())
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String
+  channel   NotificationChannel
+  status    NotificationStatus  @default(PENDING)
+  title     String
+  body      String
+  data      Json                @default("{}")
+  attempts  Int                 @default(0)
+  /// Null until a provider accepts the message; set in the same transaction that flips
+  /// status to SENT, so a SENT row always has it.
+  sentAt    DateTime?
+  readAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  @@index([userId, readAt])
+  @@index([status, createdAt])
+}
+
+model NotificationPreference {
+  userId  String
+  user    User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind    String
+  channel NotificationChannel
+  enabled Boolean             @default(true)
+
+  @@id([userId, kind, channel])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}

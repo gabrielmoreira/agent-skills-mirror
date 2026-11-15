@@ -1321,7 +1321,9 @@ def _company_for_jobs(
 ) -> dict:
     """The company the jobs lane searches for the main topic.
 
-    The company Wikidata resolved, as it is. When Wikidata named none (it
+    The company Wikidata resolved, as it is; when that company is the topic
+    and came with no site, the topic's official site is added as
+    ``topic_site``. When Wikidata named none (it
     failed, or the topic is a person it is not certain about):
 
     - the topic's own official site, when the run knows one, is added as
@@ -1337,6 +1339,14 @@ def _company_for_jobs(
       board.
     """
     if company.get("company"):
+        if (
+            official_site.strip() and not company.get("company_site")
+            and yahoo_finance._same_company_name(topic, str(company["company"]))
+        ):
+            # A company named with no site (the Yahoo fallback after a
+            # failed Wikidata lookup) is the topic itself, so the site the
+            # run knows is its site.
+            return {**company, "topic_site": official_site.strip()}
         return company
     found = dict(company)
     if official_site.strip():
@@ -3679,6 +3689,9 @@ def main() -> int:
     # Use parse_known_args so setup sub-flags (--device-auth, --github,
     # --openclaw) pass through without argparse hard-exiting.
     args, extra_argv = parser.parse_known_args()
+    if args.as_of_date and dates.is_today(args.as_of_date):
+        # Naming today is a live run: every lane takes its live path.
+        args.as_of_date = None
     option_argv = sys.argv[1:sys.argv.index("--")] if "--" in sys.argv else sys.argv[1:]
     option_tokens = {token.split("=", 1)[0] for token in option_argv}
     args._explicit_options = {

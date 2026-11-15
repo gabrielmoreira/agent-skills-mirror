@@ -2579,7 +2579,26 @@ def credential_store_path(normalized: str) -> bool:
         ".tsx",
         ".vue",
     }
-    return credential_directory and credential_data_file and not skill_instruction_path(path)
+    return (
+        credential_directory
+        and credential_data_file
+        and not skill_instruction_path(path)
+    )
+
+
+def rfc_source_path(path: Path) -> bool:
+    # Only immediate, named companions of numbered public RFCs are source.
+    # Never exempt nested stores, arbitrary Markdown, or other sensitive titles.
+    parts = path.parts
+    if (
+        len(parts) != 4
+        or parts[:2] not in {("specs", "rfcs"), ("docs", "rfcs")}
+        or re.fullmatch(r"[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*", parts[2]) is None
+        or parts[3] not in {"README.md", "index.md", "contracts.md", "design.md", "security.md"}
+    ):
+        return False
+    title = re.sub(r"(?<=-)credentials?(?=-|$)", "source", parts[2])
+    return not any(pattern.search(title) for pattern in SENSITIVE_NAME_PATTERNS)
 
 
 def skill_instruction_path(path: Path) -> bool:
@@ -2615,7 +2634,7 @@ def tracked_sensitive_repo_path_risk(rel: str, *, regular_file: bool = True) -> 
         or f"/{normalized.lower()}".endswith("/.docker/config.json")
         or parts & TRACKED_SENSITIVE_PATH_PARTS
         or (credential_store_path(normalized)
-            and not (regular_file and credential_document_path(path)))
+            and not (regular_file and (credential_document_path(path) or rfc_source_path(path))))
         or token_credential_store_path(normalized)
     ):
         return "sensitive path"
@@ -2808,7 +2827,8 @@ def capture_added_branch_images(
             )
         if binary and not image_path:
             raise SystemExit(
-                f"refusing unsupported or malformed image in branch diff:\n- {display_escape(path, 500)}"
+                "refusing unsupported binary in branch diff "
+                f"(only added PNG/JPEG/WebP images are supported):\n- {display_escape(path, 500)}"
             )
         if change == "A" and new_mode in {"100644", "100755"} and image_path:
             encoded_size = int(git(repo, "cat-file", "-s", new_oid).strip())
@@ -2836,10 +2856,15 @@ def capture_added_branch_images(
                 "refusing binary changes in branch diff "
                 f"(only added images are supported):\n- {display_escape(path, 500)}"
             )
+        if not image_path:
+            raise SystemExit(
+                "refusing unsupported binary in branch diff "
+                f"(only added PNG/JPEG/WebP images are supported):\n- {display_escape(path, 500)}"
+            )
         media_type = image_media_type(path, content)
         if media_type is None:
             raise SystemExit(
-                f"refusing unsupported or malformed image in branch diff:\n- {display_escape(path, 500)}"
+                f"refusing malformed image in branch diff:\n- {display_escape(path, 500)}"
             )
         image_bytes += len(content)
         images.append(ImageEvidence(path, media_type, hashlib.sha256(content).hexdigest(), content))
@@ -6076,10 +6101,11 @@ def load_codex_auth_fallback_route(
     return provider, route
 
 
-def codex_subscription_login_missing(codex_bin: str, cwd: Path) -> bool:
+def codex_subscription_login_missing(repo: Path, codex_bin: str, cwd: Path) -> bool:
+    env = safe_engine_env(repo, [Path(codex_bin).parent], engine="codex")
     try:
         result = subprocess.run(
-            [codex_bin, "login", "status"], cwd=cwd, env=os.environ.copy(),
+            [codex_bin, "login", "status"], cwd=cwd, env=env,
             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             text=True, encoding=SUBPROCESS_TEXT_ENCODING, errors=SUBPROCESS_TEXT_ERRORS,
             timeout=10, check=False,
@@ -6238,7 +6264,7 @@ def run_codex(args: argparse.Namespace, repo: Path, prompt: str) -> str:
                 if allow_fallback and not command_auth else None
             )
             if auth_fallback is not None and codex_subscription_login_missing(
-                resolve_command(args.codex_bin, repo), temp_root,
+                repo, resolve_command(args.codex_bin, repo), temp_root,
             ):
                 provider, route = auth_fallback
                 command_auth = True

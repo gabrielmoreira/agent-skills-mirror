@@ -1,0 +1,14 @@
+included:
+  - Sources
+  - Tests
+disabled_rules:
+  - trailing_comma
+opt_in_rules:
+  - force_unwrapping
+  - implicit_return
+line_length:
+  warning: 120
+  error: 160
+function_body_length:
+  warning: 20
+  error: 60

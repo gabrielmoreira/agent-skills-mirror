@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
+Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 4 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 2 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 3 |
+| Followed pats | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,10 @@ Mirror of `alchaincyf/darwin-skill` — 26 default patterns, 2 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `references/skilllens-evidence.md`
+- `references/v3-evidence.md`
+- `references/eval-protocol.md`
 - `references/runtime-neutrality.md`
+- `references/skilllens-evidence.md`
 
 ## File Index
 
@@ -61,8 +63,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | → | [`references/runtime-neutrality.md`](references/runtime-neutrality.md) |
-| 3 | → | [`references/skilllens-evidence.md`](references/skilllens-evidence.md) |
+| 2 | → | [`references/eval-protocol.md`](references/eval-protocol.md) |
+| 3 | → | [`references/runtime-neutrality.md`](references/runtime-neutrality.md) |
+| 4 | → | [`references/skilllens-evidence.md`](references/skilllens-evidence.md) |
+| 5 | → | [`references/v3-evidence.md`](references/v3-evidence.md) |
 
 ---
 

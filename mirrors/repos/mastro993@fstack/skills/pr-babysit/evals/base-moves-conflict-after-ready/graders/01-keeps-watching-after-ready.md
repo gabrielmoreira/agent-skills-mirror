@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: trace
+pattern: 'READY: yes[\s\S]*MERGE CONFLICT with main'
 weight: 1
 ---
 
-After CI passed and the PR was ready to merge, the run kept watching instead of ending its work, and it noticed the merge conflict with main.
+After the PR was ready the run kept watching, and its watch reported the merge conflict with main.

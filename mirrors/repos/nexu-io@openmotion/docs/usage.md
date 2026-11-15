@@ -95,9 +95,9 @@ macOS 同一数据目录中的多个 MCP 会话现在共用一个后台，每个
 
 点击全局「连接 Agent」或编辑器「模板库」，在同一个弹框里连接 Agent、浏览模板、观看视频并一键复制复刻指令。模板入口会直接定位到画廊，接入指南也在弹框中展开。旧的 `?templates=1` 与 `/connect` 链接仍可使用。
 
-包含 **891 条 Hyperframes 目录**：42 个完整参考、393 个创作片段、210 个动效模板、238 个组件和 8 个影片范例。再加上三个可直接打开的官方示例，共 **894 条**。完整目录通过 MCP 搜索与分页读取。
+包含 **891 条 Hyperframes 目录**：42 个完整参考、393 个创作片段、210 个动效模板、238 个组件和 8 个影片范例。再加上四个可直接打开的官方示例，共 **895 条**。完整目录通过 MCP 搜索与分页读取。
 
-画廊优先展示成片效果，保留精选、视频复刻、产品宣传、动态设计和口播内容五类。**551 张参考封面已下载或从原视频提取并校验**，加上三个本地示例，展示 554 条有真实封面的内容；暂时没有有效封面的 340 条保留在 MCP 目录中。视频占据卡片主体，点击放大播放；下方显示作者和可跳转的 X、Instagram、GitHub 或原始视频出处。同源片段在预览中可切换，每个版本仍对应自己的 ID。
+画廊优先展示成片效果，保留精选、视频复刻、产品宣传、动态设计和口播内容五类。**551 张参考封面已下载或从原视频提取并校验**，加上四个本地示例，展示 555 条有真实封面的内容；暂时没有有效封面的 340 条保留在 MCP 目录中。视频占据卡片主体，点击放大播放；下方显示作者和可跳转的 X、Instagram、GitHub 或原始视频出处。同源片段在预览中可切换，每个版本仍对应自己的 ID。
 
 卡片与预览同时展示**原帖播放数据和内容种类**，例如 `42K 次查看`、产品展示、开场、A-roll Cuts。已从 Hyperframes 公开清单同步 382 条有热度的记录，覆盖 X、Instagram、YouTube 和 TikTok；悬停数字可看精确数值与同步日期。没有数据的条目省略热度，同源片段不重复累计。运行 `npm run catalog:metadata` 更新快照。
 
@@ -107,7 +107,7 @@ macOS 同一数据目录中的多个 MCP 会话现在共用一个后台，每个
 
 链接由当前工作区生成；详细配置、工作区目录、视频/源码、制作流程和原生 MCP 步骤放在链接里。Agent 读取真实来源后，通过 `openmotion_create_project`、`openmotion_import_assets`、`openmotion_edit_project` 制作可编辑的 Hyperframes 工程，检查实际预览。复制按钮不会修改当前工程，也不会把其他示例冒充复刻结果。完整来源与更新方式见 [模板目录说明](template-catalog.md)。
 
-三个可直接打开的官方示例是 **Product Promo**（20 秒产品宣传）、**NYT Graph**（15 秒动态图表）、**Decision Tree**（10 秒流程动画）。首页模板先选择再提交，内置模板创建可二次剪辑的独立工程；外部参考保存模板身份并由 Agent 制作。原工程始终保留在所属会话中。统一接入弹框仍提供精确参考的复制指令。源码、真实渲染封面与 Apache-2.0 许可证已内置，GSAP 使用本地依赖；首次使用模板字体仍可能需要联网。
+四个可直接打开的官方示例是 **OpenMotion Welcome**（37.3 秒品牌欢迎片，首次打开编辑器时的初始工程）、**Product Promo**（20 秒产品宣传）、**NYT Graph**（15 秒动态图表）、**Decision Tree**（10 秒流程动画）。首页模板先选择再提交，内置模板创建可二次剪辑的独立工程；外部参考保存模板身份并由 Agent 制作。原工程始终保留在所属会话中。统一接入弹框仍提供精确参考的复制指令。源码、真实渲染封面与 Apache-2.0 许可证已内置，GSAP 使用本地依赖；首次使用模板字体仍可能需要联网。
 
 新增的 [npm 轻量安装渠道](npm-installation.md) 可在本地为 Codex、Claude Code、DeepSeek Harness、WorkBuddy 同时安装 MCP 与 Skills，并共用一份应用与依赖缓存，首次工程操作需要本地服务时按需准备固定媒体工具和浏览器；当前可本地构建或由 Actions 生成测试制品，不发布 npm。运行 `npm run package:npm` 构建，具体隔离安装命令与边界见专题。
 
@@ -210,7 +210,7 @@ npm test
 npm run package:plugin
 ```
 
-`npm run dev` 先构建编辑器再启动服务；只改前端后可运行 `npm run build:studio` 并刷新页面。`npm run test:studio` 运行上游单元/DOM 回归与宿主集成测试；`npm run typecheck:studio` 检查前端类型；`npm run design:check` 检查主题变量与对比度。`check` 校验清单、版本、锁定依赖、技能入口、服务 TypeScript 语法及设计规范。测试覆盖原生源文件共享、并发 revision、路径隔离、旧工程迁移、Studio 编辑数据快照、真实 stdio MCP、原生 Studio HTTP 接口、完整目录与同源版本、封面筛选、短指令与参数化指南、三个官方模板的打开/编辑/切换/保留和带音轨的真实 MP4 渲染。没有 FFmpeg 或 Chrome 的机器会跳过渲染集成测试；PR CI 的 phase1-package-e2e 独立任务安装 Chromium、FFmpeg/ffprobe，重新构建并隔离安装真实ZIP，自动跑全部11个Tool；依赖缺失或测试失败直接标红，日志与MP4证据保留14天。合并阻断须同时启用main的必需状态检查，配置与边界见[测试覆盖](mcp-phase1-tools.md#测试代码与ci范围)。
+`npm run dev` 先构建编辑器再启动服务；只改前端后可运行 `npm run build:studio` 并刷新页面。`npm run test:studio` 运行上游单元/DOM 回归与宿主集成测试；`npm run typecheck:studio` 检查前端类型；`npm run design:check` 检查主题变量与对比度。`check` 校验清单、版本、锁定依赖、技能入口、服务 TypeScript 语法及设计规范。测试覆盖原生源文件共享、并发 revision、路径隔离、旧工程迁移、Studio 编辑数据快照、真实 stdio MCP、原生 Studio HTTP 接口、完整目录与同源版本、封面筛选、短指令与参数化指南、四个官方模板的打开/编辑/切换/保留和带音轨的真实 MP4 渲染。没有 FFmpeg 或 Chrome 的机器会跳过渲染集成测试；PR CI 的 phase1-package-e2e 独立任务安装 Chromium、FFmpeg/ffprobe，重新构建并隔离安装真实ZIP，自动跑全部11个Tool；依赖缺失或测试失败直接标红，日志与MP4证据保留14天。合并阻断须同时启用main的必需状态检查，配置与边界见[测试覆盖](mcp-phase1-tools.md#测试代码与ci范围)。
 
 打包产物为 `dist/openmotion-0.6.3-phase1.zip`，包含编辑器构建产物、设计系统与字体许可、原生模板、完整目录与已校验封面、技能、lockfile、AGENTS.md、CLAUDE.md 和产品文档，排除个人媒体、草稿、node_modules 和原生程序。`bash scripts/install-motion.command` 可注册并安装本地插件，并按 Codex 实际解析的启动配置验证 MCP 握手；它不会重启 Codex。代码改动和打包不会自动替换用户已安装的插件版本。
 

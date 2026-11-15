@@ -4,7 +4,7 @@ In a source checkout, download the optional archive and demo first: `git lfs pul
 
 **A local OpenMotion Library template package for presenter-led explainers, animated keywords and visual demonstrations.** Editable source, input schemas, fonts, native sound recipes and the runner are included in [presenter-tech.motion](presenter-tech.motion). The `.motion` file is a ZIP archive; keep the original and create a separate working copy.
 
-**1920 × 1080 · 60 fps · landscape.** Replace the presenter, topic, wording, screen assets and measured captions. Use the supplied template runner through your Agent. This library package is separate from the three templates opened directly in Studio; it does not add general `.motion` importing to Studio.
+**1920 × 1080 · 60 fps · landscape.** Replace the presenter, topic, wording, screen assets and measured captions. Use the supplied template runner through your Agent. This library package is separate from the four templates opened directly in Studio; it does not add general `.motion` importing to Studio.
 
 [Motion Design](MOTION_DESIGN.md) · [Adaptation instructions](TEMPLATE.md) · [Verification](verification.json) · [Credits and license](NOTICE.md)
 

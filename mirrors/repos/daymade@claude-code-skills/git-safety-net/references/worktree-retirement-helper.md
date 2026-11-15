@@ -7,6 +7,19 @@ change refs, remove worktrees, establish business containment or grant deletion 
 Keep the Mode E worktree procedure's ownership, scheduler, occupancy, containment,
 normal-removal and post-removal gates.
 
+The same commands below support ordinary linked worktrees without submodules. For a
+task-created dependency tree, add
+`--rebuildable 'node_modules=pnpm install --frozen-lockfile from tracked package.json and pnpm-lock.yaml'`
+to preparation and resume after verifying that the command and tracked inputs reproduce
+every covered entry. Reuse the helper's ignored-file inventory rather than a one-off script.
+
+Keep environment files, hand edits and unknown data outside that declaration. Their existing
+copy/retained-copy preservation rules still apply. A rebuildable declaration avoids copying
+that payload; it does not skip the frozen inventory or permit changes after preparation.
+Resume with the same declaration, run `verify-current`, then finish the separate Mode E
+removal gates. After removal, `verify-recovery` must still read preserved unique configuration
+and verify the retained carrier. Do not infer faster hashing or weaker checks from this route.
+
 ```bash
 SKILL_ROOT="<absolute-loaded-git-safety-net-directory>"
 python3 "$SKILL_ROOT/scripts/git_prepare_worktree_retirement.py" prepare \
@@ -25,6 +38,20 @@ commit being retired, the root uses that ref as its exact-object carrier; otherw
 the helper packs only the target HEAD/reflog history. Content containment after a
 squash still needs the separate Mode E check. Neither a primary checkout nor its
 unrelated WIP is a removal target.
+
+For explicitly withdrawn rebase commits, pass repeated `--known-withdrawal OLD=RETAINED`
+pairs with full commit IDs. The exact current tip must be in the retained base;
+OLD must be an unretained commit from this root's reflog, and RETAINED must be in
+the base. Both must be nonempty single-parent commits with matching stable and
+verbatim patch IDs, so whitespace changes are not silently discarded. The checkpoint
+freezes these declarations and keeps the original reflog metadata, but does not
+promise recovery of the withdrawn commit's exact object identity. Frozen parent chains
+must reach retained history; undeclared ancestors and other unretained history still
+get the existing root pack. Supplied pairs with missing,
+empty, mismatched or changed IDs fail before new evidence is written. Repeat the same pairs on
+`prepare --resume`; verification reads only the frozen checkpoint.
+Opt-in withdrawal checkpoints use version 2, which old helpers reject; ordinary
+version 1 checkpoints keep their existing meaning and remain readable.
 
 Each initialized module must have its own Git/common directory inside this linked
 worktree's admin directory. The helper inventories module HEAD, gitlink, refs and

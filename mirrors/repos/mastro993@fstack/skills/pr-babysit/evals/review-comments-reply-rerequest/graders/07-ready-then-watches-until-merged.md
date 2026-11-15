@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: trace
+pattern: 'READY: yes[\s\S]*?"type":"text","text":"(?:[^"\\]|\\.)*?(?:Ready|\bready\b|[Mm]ergeable|[Cc]an (?:now )?(?:be merged|merge))[\s\S]*(?:PR MERGED|state MERGED)'
 weight: 1
 ---
 
-Once alice approved and CI passed, the run gave a short account of what was changed and answered, told the user it was ready to merge and kept watching instead of ending there; after a maintainer merged it, the final reply reports the PR merged, and the run never called gh pr merge.
+After the watch showed the PR ready, a message to the user said so, and the run was still watching when the PR was merged.

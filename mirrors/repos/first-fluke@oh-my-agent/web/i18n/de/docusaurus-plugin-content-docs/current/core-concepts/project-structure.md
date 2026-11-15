@@ -1,11 +1,11 @@
 ---
 title: Projektstruktur
-description: Leserorientierte Übersicht einer oh-my-agent-Installation mit der SSOT unter .agents/, repräsentativen Skill-Ressourcen, Workflows, versionierten Agentendefinitionen, Laufzeitstatus, Anbieterintegrationen und dem Layout des Quell-Repositorys.
+description: Leserorientierte Übersicht einer oh-my-agent-Installation mit der SSOT unter .agents/, repräsentativen Skill-Ressourcen, Workflows, versionierten Agentendefinitionen, Laufzeitstatus, Vendor-Integrationen und dem Layout des Quell-Repositorys.
 ---
 
 # Projektstruktur
 
-Nach der Installation von oh-my-agent erhält Ihr Projekt zwei zentrale Verzeichnisbäume: `.agents/` (die einzige Wahrheitsquelle einschließlich des Koordinationsspeichers `.agents/state/memories/`) und Laufzeit-Integrationsschichten wie `.claude/`, `.cursor/` und `.codex/`. Wenn Serena als Anbieter für Code-Intelligence ausgewählt ist, kann zusätzlich das optionale Verzeichnis `.serena/` für Serenas Onboarding-Memories vorhanden sein. Bei der Fehlersuche sind die gemeinsamen Dateien sowie optionale und generierte Pfade relevant.
+Nach der Installation von oh-my-agent erhält Ihr Projekt zwei zentrale Verzeichnisbäume: `.agents/` (die einzige Wahrheitsquelle, einschließlich des Koordinationsspeichers `.agents/state/memories/`) und Laufzeit-Integrationsschichten (z. B. `.claude/`, `.cursor/`, `.codex/`). Wenn Serena der Anbieter für Code-Intelligence ist, kann ein optionales Verzeichnis `.serena/` Serenas Onboarding-Memories enthalten.
 
 ---
 
@@ -68,8 +68,9 @@ your-project/
 │   │   │
 │   │   ├── oma-mobile/
 │   │   │   ├── SKILL.md
-│   │   │   ├── resources/              ← execution, tech stack, screen templates, checks
-│   │   │   └── stack/                  ← created by /stack-set (Flutter, React Native, or Swift)
+│   │   │   ├── resources/              ← execution, tech stack index, checks
+│   │   │   ├── variants/               ← platform references (Flutter, React Native, Swift, Kotlin): stack.yaml, tech-stack.md, snippets.md
+│   │   │   └── stack/                  ← created by /stack-set from the detected project
 │   │   │
 │   │   ├── oma-db/
 │   │   │   ├── SKILL.md
@@ -87,28 +88,19 @@ your-project/
 │   │   │
 │   │   ├── oma-design/
 │   │   │   ├── SKILL.md
-│   │   │   ├── resources/
-│   │   │   │   ├── execution-protocol.md
-│   │   │   │   ├── anti-patterns.md
-│   │   │   │   ├── checklist.md
-│   │   │   │   ├── design-md-spec.md
-│   │   │   │   ├── design-tokens.md
-│   │   │   │   ├── prompt-enhancement.md
-│   │   │   │   ├── stitch-integration.md
-│   │   │   │   ├── redesign-protocol.md
-│   │   │   │   ├── asset-strategy.md
-│   │   │   │   ├── getdesign-fetcher.md
-│   │   │   │   └── error-playbook.md
-│   │   │   └── reference/
-│   │   │       ├── typography.md
-│   │   │       ├── color-and-contrast.md
-│   │   │       ├── spatial-design.md
-│   │   │       ├── motion-design.md
-│   │   │       ├── responsive-design.md
-│   │   │       ├── component-patterns.md
-│   │   │       ├── accessibility.md
-│   │   │       ├── visual-hierarchy.md
-│   │   │       └── shader-and-3d.md
+│   │   │   └── resources/
+│   │   │       ├── execution-protocol.md
+│   │   │       ├── external-design-skills.md
+│   │   │       ├── product-interface-review.md
+│   │   │       ├── redesign-protocol.md
+│   │   │       ├── design-md-spec.md
+│   │   │       ├── design-tokens.md
+│   │   │       ├── data-grid.md
+│   │   │       ├── asset-strategy.md
+│   │   │       ├── getdesign-fetcher.md
+│   │   │       ├── stitch-integration.md
+│   │   │       ├── checklist.md
+│   │   │       └── error-playbook.md
 │   │   │
 │   │   ├── oma-pm/
 │   │   │   ├── SKILL.md
@@ -116,7 +108,6 @@ your-project/
 │   │   │       ├── execution-protocol.md
 │   │   │       ├── examples.md
 │   │   │       ├── iso-planning.md
-│   │   │       ├── plan-phase-protocol.md
 │   │   │       ├── task-template.json
 │   │   │       └── error-playbook.md
 │   │   │
@@ -126,14 +117,12 @@ your-project/
 │   │   │       ├── execution-protocol.md
 │   │   │       ├── iso-quality.md
 │   │   │       ├── checklist.md
-│   │   │       ├── error-playbook.md
-│   │   │       └── verify-ship-protocol.md
+│   │   │       └── error-playbook.md
 │   │   │
 │   │   ├── oma-debug/
 │   │   │   ├── SKILL.md
 │   │   │   └── resources/
 │   │   │       ├── execution-protocol.md
-│   │   │       ├── common-patterns.md
 │   │   │       ├── debugging-checklist.md
 │   │   │       ├── bug-report-template.md
 │   │   │       ├── checklist.md
@@ -154,10 +143,9 @@ your-project/
 │   │   ├── oma-dev-workflow/
 │   │   │   ├── SKILL.md
 │   │   │   └── resources/
+│   │   │       ├── mise-basics.md
 │   │   │       ├── validation-pipeline.md
-│   │   │       ├── database-patterns.md
-│   │   │       ├── api-workflows.md
-│   │   │       ├── i18n-patterns.md
+│   │   │       ├── example-task-wiring.md
 │   │   │       ├── release-coordination.md
 │   │   │       ├── tooling-profiles.md
 │   │   │       ├── affected-checks.py
@@ -168,6 +156,7 @@ your-project/
 │   │   │   └── resources/
 │   │   │       ├── translation-rubric.md
 │   │   │       ├── anti-ai-patterns.md
+│   │   │       ├── style-skills.md
 │   │   │       └── lang/
 │   │   │           ├── _template.md
 │   │   │           ├── en.md
@@ -184,7 +173,6 @@ your-project/
 │   │   │   │   ├── spawn-agent.sh
 │   │   │   │   ├── parallel-run.sh
 │   │   │   │   └── verify.sh
-│   │   │   ├── templates/
 │   │   │   └── config/
 │   │   │       └── cli-config.yaml
 │   │   │
@@ -203,14 +191,14 @@ your-project/
 │   │           ├── merge-risk.md
 │   │           └── ...
 │   │
-│   ├── workflows/                    ← 21 process definitions
+│   ├── workflows/                    ← 20 process definitions
 │   │   ├── orchestrate.md             ← Persistent: automated parallel execution
 │   │   ├── work.md                    ← Persistent: step-by-step coordination
 │   │   ├── ultrawork.md               ← Persistent: 5-phase quality workflow
 │   │   ├── ralph.md                   ← Persistent: repeated execution + judge
 │   │   ├── plan.md / brainstorm.md / architecture.md
 │   │   ├── deepinit.md / review.md / security.md / debug.md / design.md
-│   │   ├── scm.md / tools.md / stack-set.md / convert.md
+│   │   ├── scm.md / stack-set.md / convert.md
 │   │   ├── docs.md / explain.md / recap.md / schedule.md / video.md
 │   │   └── ...                         ← Keep this list aligned with `.agents/workflows/`
 │   │
@@ -273,19 +261,18 @@ your-project/
 
 ## `.agents/`: die zentrale Wahrheitsquelle {#agents-the-source-of-truth}
 
-Für das Verhalten der Agenten ist nur dieses Verzeichnis maßgeblich; alle anderen Verzeichnisse werden daraus abgeleitet.
+Dies ist das Kernverzeichnis. Alles, was Agenten brauchen, liegt hier. Für das Verhalten der Agenten zählt nur dieses Verzeichnis. Alle anderen Verzeichnisse werden daraus abgeleitet.
 
 ### oma-config.cue und oma-config.yaml
 
 **`oma-config.yaml`** ist die zentrale Konfigurationsdatei mit:
-
 - `language`: Sprachcode für Antworten (en, ko, ja, zh, es, fr, de, pt, ru, nl, pl)
 - `date_format`: Format der Zeitstempel (`ISO`, `US` oder `EU`; Standard `ISO`)
 - `timezone`: IANA-Zeitzonenkennung; wenn der Wert fehlt, wird die Systemzeitzone verwendet
 - `model_preset`: Aktiver Schlüssel für ein Modell-Preset (standardmäßig `auto` oder ein festes bzw. benutzerdefiniertes Preset)
 - `providers`: Anbieter für Docs, Web, Code-Intelligence und semantisches Memory
 - `auto_update_cli`: Hintergrundprüfung auf Updates (Standard `true`, mit `false` deaktivierbar)
-- `telemetry`: Anbieter-Telemetrie (Standard `false`)
+- `telemetry`: Opt-in für Vendor-Telemetrie (Standard `false`)
 - `mcp.devtools_browsers`: Optionale Browserliste; ohne Wert bleiben vorhandene Einträge erhalten
 - `agents`: Optionale Überschreibungen pro Agent (nur `AgentSpec`-Objekte)
 - `models`: Optionale, vom Benutzer definierte Modell-Slugs
@@ -298,33 +285,29 @@ Diese Liste deckt die gebräuchlichsten Schlüssel ab. Die unterstützten Schlü
 Hier liegt das Fachwissen der Skills. Der aktuelle Katalog enthält 33 Skill-Verzeichnisse zusätzlich zu den gemeinsamen `_shared`-Ressourcen; das Preset `all` wird aus diesem aktuellen Baum abgeleitet.
 
 **`_shared/`** enthält Ressourcen für alle Agenten:
-
-- `core/`: Ausführungsrichtlinie, Regeln für Code-Intelligence, Routing, Kontextladen, Prompt-Struktur, Klärungsprotokoll, Kontextbudget, Schwierigkeitsbewertung, Qualitätsprinzipien, Testansatz, Anbietererkennung, Sitzungsmetriken, gemeinsame Checkliste, Lessons Learned und Vorlagen für API-Verträge
-- `runtime/`: Memory-Protokoll, Event-Spezifikation, Ergebnisvertrag und anbieterspezifische Ausführungsprotokolle
-- `conditional/`: Messung des Qualitätsscores, Führung des Experimentprotokolls, Protokoll für Explorationsschleifen und Diagramm-Engine (wird nur bei entsprechender Auslösung geladen)
+- `core/`: Ausführungsrichtlinie, Regeln für Code-Intelligence, Routing, Kontextladen, Prompt-Struktur, Klärungsprotokoll, Kontextbudget, Schwierigkeitsbewertung, Qualitätsprinzipien, Testansatz, Vendor-Erkennung, Sitzungsmetriken, gemeinsame Checkliste, Lessons Learned und Vorlagen für API-Verträge
+- `runtime/`: Memory-Protokoll, Event-Spezifikation, Ergebnisvertrag und Vendor-spezifische Ausführungsprotokolle
+- `conditional/`: Messung des Qualitätsscores, Nachverfolgung des Experiment-Ledgers, Protokoll der Explorationsschleife, Diagramm-Engine (nur geladen, wenn ausgelöst)
 
 **`oma-{skill}/`** enthält die Verzeichnisse der einzelnen Skills. Jedes enthält:
-
 - `SKILL.md`: Ebene 1, die beim Routing des Skills geladen wird; Identität, Routing und Kernregeln
 - `resources/`: Ebene 2, bedarfsgesteuert; Ausführungsprotokolle, Beispiele, Checklisten, Fehler-Playbooks, Tech-Stacks, Snippets und Vorlagen
-- Einige Skills haben zusätzliche Unterverzeichnisse: `stack/` (die bei der Installation gewählte Backend-Variante oder von `/stack-set` generierte Referenzen; das Quell-Repository hält die Seeds in `variants/`), `reference/` (bei `oma-design`) sowie skill-spezifische Skripte und Konfigurationen
+- Einige Skills haben zusätzliche Unterverzeichnisse: `stack/` (die bei der Installation gewählte Backend-Variante oder von `/stack-set` generierte Referenzen), `variants/` (die mitgelieferten Stack-Referenzen; ein ohne gewählte Variante installierter Skill behält sein `variants/`-Verzeichnis und liest die passende Variante) sowie skill-spezifische Skripte und Konfigurationen
 
 ### workflows/
 
-21 Markdown-Dateien definieren das Verhalten der Slash-Befehle. Jede Datei enthält:
-
+20 Markdown-Dateien definieren das Verhalten der Slash-Befehle. Jede Datei enthält:
 - YAML-Frontmatter mit `description`
 - Abschnitt mit Pflichtregeln (Antwortsprache, Reihenfolge der Schritte, Anforderungen an MCP-Tools)
-- Anweisungen für die Anbietererkennung
+- Anweisungen für die Vendor-Erkennung
 - Schrittweises Ausführungsprotokoll
 - Gate-Definitionen für persistente Workflows
 
-Persistente Workflows sind `orchestrate.md`, `work.md`, `ultrawork.md` und `ralph.md`. Zu den nicht persistenten Workflows gehören `plan.md`, `brainstorm.md`, `architecture.md`, `deepinit.md`, `review.md`, `security.md`, `debug.md`, `design.md`, `scm.md`, `tools.md`, `stack-set.md`, `convert.md`, `docs.md`, `explain.md`, `recap.md`, `schedule.md` und `video.md`.
+Persistente Workflows sind `orchestrate.md`, `work.md`, `ultrawork.md` und `ralph.md`. Zu den nicht persistenten Workflows gehören `plan.md`, `brainstorm.md`, `architecture.md`, `deepinit.md`, `review.md`, `security.md`, `debug.md`, `design.md`, `scm.md`, `stack-set.md`, `convert.md`, `docs.md`, `explain.md`, `recap.md`, `schedule.md` und `video.md`.
 
 ### agents/
 
-12 Definitionsdateien für Subagenten werden verwendet, wenn Agenten über das Agent-Tool von Claude Code oder über die CLI gestartet werden; hinzu kommen anbieterspezifische Einstellungen in `variants/`. Jede Datei definiert:
-
+12 Definitionsdateien für Subagenten werden verwendet, wenn Agenten über das Agent-Tool von Claude Code oder über die CLI gestartet werden; hinzu kommen Vendor-spezifische Einstellungen in `variants/`. Jede Datei definiert:
 - Frontmatter: `name`, `description` und `skills` (der zu ladende Skill)
 - Verweis auf das Ausführungsprotokoll (Ergebnisvertrag und laufbezogene Ergebnisdatei)
 - Architekturzusammenfassung
@@ -333,25 +316,23 @@ Persistente Workflows sind `orchestrate.md`, `work.md`, `ultrawork.md` und `ralp
 
 ### plan-\{sessionId\}.json
 
-Wird vom Workflow `/plan` erzeugt. Die Datei enthält die strukturierte Aufgabenzerlegung mit Agentenzuweisungen, Prioritäten, Abhängigkeiten und Akzeptanzkriterien. `/orchestrate` und `/work` verwenden sie. Der zugehörige menschenlesbare Tracker liegt unter `docs/plans/work/{NNN}-{name}.md` und wird über das Feld `Status` verwaltet. Dauerhafte Design-Referenzen liegen daneben unter `docs/plans/designs/{NNN}-{name}.md`.
+Wird vom Workflow `/plan` erzeugt. Die Datei enthält die strukturierte Aufgabenzerlegung mit Agentenzuweisungen, Prioritäten, Abhängigkeiten und Akzeptanzkriterien. `/orchestrate` und `/work` verwenden sie. Der zugehörige menschenlesbare Tracker liegt unter `docs/plans/work/{NNN}-{name}.md` (Lebenszyklus über das Feld `Status`). Beibehaltene Ansatzvorschläge und Entscheidungen liegen unter `docs/decisions/{NNN}-{name}.md`.
 
 ### state/
 
-Hier liegen die aktiven Zustandsdateien persistenter Workflows. Diese JSON-Dateien existieren nur, solange ein persistenter Workflow läuft. Wenn Sie sie löschen oder „Workflow abgeschlossen“ sagen, wird der persistente Modus deaktiviert.
+Hier liegen die aktiven Zustandsdateien persistenter Workflows. Diese JSON-Dateien existieren nur, solange ein persistenter Workflow läuft. Wenn Sie sie löschen oder „workflow done“ sagen, wird der Workflow deaktiviert.
 
 Das Unterverzeichnis `state/memories/` ist der kanonische Koordinationsspeicher: Es enthält den Sitzungszustand des Orchestrators, das Aufgabenboard, Fortschritts- und Ergebnisdateien pro Agent, Sitzungsmetriken und Kostentelemetrie. Die Dashboards überwachen diesen Pfad, und die CLI löst ihn zuerst auf; ältere Projekte verwenden ersatzweise den früheren Pfad `.serena/memories/`. Siehe unten [`.agents/state/memories/`: Laufzeitstatus](#agentsstatememories-runtime-state).
 
 ### results/
 
-Ergebnisdateien der Agenten. Abgeschlossene Agenten erstellen sie mit Status (abgeschlossen/fehlgeschlagen), Zusammenfassung, Liste der geänderten Dateien und einer Checkliste der Akzeptanzkriterien. Der Orchestrator liest sie beim Sammeln, und Dashboards verwenden sie zur Überwachung.
+Ergebnisdateien der Agenten. Abgeschlossene Agenten erstellen sie mit Status (completed/failed), Zusammenfassung, geänderten Dateien und einer Checkliste der Akzeptanzkriterien. Der Orchestrator liest sie beim Sammeln, und Dashboards verwenden sie zur Überwachung.
 
 ### mcp.json
 
 MCP-Server-Konfiguration einschließlich:
-
 - Serverdefinitionen (Serena und weitere)
 - Speicherkonfiguration: `memoryConfig.provider`, `memoryConfig.basePath` und `memoryConfig.tools` (Namen der Lese-, Schreib- und Bearbeitungswerkzeuge)
-- Definitionen von Toolgruppen für die Verwaltung über `/tools`
 
 ---
 
@@ -385,20 +366,19 @@ Der Eintrag `statusLine` bleibt ein direkter `bun`-Pfad (Anzeige im Hot Path, ni
 
 ### hooks/
 
-Das `hooks/`-Verzeichnis eines Anbieters enthält **nur die Dateien, die aus diesem Verzeichnis zur Laufzeit ausgeführt oder gelesen werden**. Die Handlerkette selbst (Schlüsselworterkennung, persistenter Modus, Skill-Injektion usw.) läuft innerhalb des `oma`-Binaries über `oma hook run`; die `.ts`-Handler werden beim Build in die CLI gebündelt und **nicht** in Anbieter-Verzeichnissen materialisiert.
+Das `hooks/`-Verzeichnis eines Vendors enthält **nur die Dateien, die aus diesem Verzeichnis zur Laufzeit ausgeführt oder gelesen werden**. Die Handlerkette selbst (Schlüsselworterkennung, persistenter Modus, Skill-Injektion usw.) läuft innerhalb des `oma`-Binaries über `oma hook run`; die `.ts`-Handler werden beim Build in die CLI gebündelt und **nicht** in Vendor-Verzeichnissen materialisiert.
 
-**`oma-hook.sh`** ist ein generiertes Wrapper-Skript, das `oma link`, `oma install` oder `oma update` schreibt. Jedes Anbieter-Hook-Ereignis läuft über diese Datei. Die Auflösungsreihenfolge zur Laufzeit lautet: `$OMA_BIN` (explizite Überschreibung) → `command -v oma` (PATH) → bekannte Installationsverzeichnisse wie `$HOME/.bun/bin` und `$HOME/.local/share/mise/shims` (über die GUI gestartete Agenten erben einen verkürzten PATH) → `exit 0` (fail-open; der Agent wird niemals blockiert). Das Skript enthält nichts Rechnerspezifisches, ist daher für alle Entwickler byte-identisch und kann sicher versioniert werden. Es reicht `"$@"` unverändert weiter, damit `--vendor`, `--event` und `--matcher` unverändert bei `oma hook run` ankommen. Die Präambel zur Selbstentdoppelung unterdrückt doppelte Auslösungen, wenn sowohl eine Projekt- als auch eine globale Installation dasselbe Ereignis registriert.
+**`oma-hook.sh`** ist ein generiertes Wrapper-Skript, das `oma link`, `oma install` oder `oma update` schreibt. Jedes Vendor-Hook-Ereignis läuft über diese Datei. Die Auflösungsreihenfolge zur Laufzeit lautet: `$OMA_BIN` (explizite Überschreibung) → `command -v oma` (PATH) → bekannte Installationsverzeichnisse wie `$HOME/.bun/bin` und `$HOME/.local/share/mise/shims` (über die GUI gestartete Agenten erben einen verkürzten PATH) → `exit 0` (fail-open; der Agent wird niemals blockiert). Das Skript enthält nichts Rechnerspezifisches, ist daher für alle Entwickler byte-identisch und kann sicher versioniert werden. Es reicht `"$@"` unverändert weiter, damit `--vendor`, `--event` und `--matcher` unverändert bei `oma hook run` ankommen. Die Präambel zur Selbstentdoppelung unterdrückt doppelte Auslösungen, wenn sowohl eine Projekt- als auch eine globale Installation dasselbe Ereignis registriert.
 
-**`hud.ts`** rendert den `[OMA]`-Indikator in der Statusleiste mit Modellnamen, Kontextverbrauch (farbcodiert: grün/gelb/rot) und dem Status des aktiven Workflows. Er wird direkt unter `statusLine` registriert, nicht über `oma hook run`, damit die Renderlatenz im Hot Path niedrig bleibt. Er wird nur für Anbieter materialisiert, deren Variante ein `statusLine`- oder nur für den HUD bestimmtes Ereignis registriert, etwa Claude, Antigravity und Qwen. Das Skript erkennt das Dialektformat des Anbieters aus seinem eigenen Installationspfad; die Kopie pro Anbieter ist deshalb für die Ausführung erforderlich.
+**`hud.ts`** rendert den `[OMA]`-Indikator in der Statusleiste mit Modellnamen, Kontextverbrauch (farbcodiert: grün/gelb/rot) und dem Status des aktiven Workflows. Er wird direkt unter `statusLine` registriert, nicht über `oma hook run`, damit die Renderlatenz im Hot Path niedrig bleibt. Er wird nur für Vendors materialisiert, deren Variante ein `statusLine`- oder nur für den HUD bestimmtes Ereignis registriert, etwa Claude, Antigravity und Qwen. Das Skript erkennt das Dialektformat des Vendors aus seinem eigenen Installationspfad; die Kopie pro Vendor ist deshalb für die Ausführung erforderlich.
 
-**`filter-test-output.sh`** ist ein Shell-Filter, der störende Ausgaben von Test-Runnern kürzt. Der prozessinterne Testfilter schreibt erkannte Bash-Testbefehle so um, dass sie über `<hookDir>/oma/filter-test-output.sh` geleitet werden. Deshalb wird diese Datei für jeden Anbieter materialisiert, dessen Variante `test-filter.ts` registriert (alle außer Cursor).
+**`filter-test-output.sh`** ist ein Shell-Filter, der störende Ausgaben von Test-Runnern kürzt. Der prozessinterne Testfilter schreibt erkannte Bash-Testbefehle so um, dass sie über `<hookDir>/oma/filter-test-output.sh` geleitet werden. Deshalb wird diese Datei für jeden Vendor materialisiert, dessen Variante `test-filter.ts` registriert (alle außer Cursor).
 
 #### Wo die Handlerlogik tatsächlich liegt
 
 Die Handlerquellen sind unter `.agents/hooks/core/` die SSOT und laufen prozessintern über `oma hook run`:
 
 **`keyword-detector.ts`** ist ein reiner Handler (`run(input, ctx): HandlerResult | null`) für die Schlüsselworterkennung. Die Logik:
-
 1. Bereinigt die Eingabe (entfernt Codeblöcke, zitierte Zeichenketten und eingefügte System-Echo-Blöcke)
 2. Durchsucht die bereinigte Eingabe nach Trigger-`keywords` (wörtlich) und `patterns` (reguläre Ausdrücke)
 3. Prüft in einem Fenster von 60 Zeichen um jeden Treffer auf Informationsmuster
@@ -412,22 +392,20 @@ Die Handlerquellen sind unter `.agents/hooks/core/` die SSOT und laufen prozessi
 **`code-intelligence-guard.ts`** ist ein reiner Handler (`run()`) für `PreToolUse`, der die Regel „Code Search“ mechanisch durchsetzt. Solange `providers.code_intelligence` zu `serena` (oder `gortex`) aufgelöst wird und `providers.code_intelligence_guard` nicht `off` ist, blockiert er die nativen Suchwerkzeuge (`Grep`, `Glob` in Claude Code) sowie Shell-Befehle, deren führendes Binary eine rekursive Codesuche ist (`rg`, `ag`, `ack`, `fd`, `grep -r`, `find -name`/`-path`, `git grep`); der Blockierungsgrund nennt das stattdessen zu verwendende Provider-Tool (`search_for_pattern`, `find_file`, `find_symbol`). Nicht rekursives `grep` (Pipe-Filter, einzelne Dateien), `find` ohne Namensprädikat und Lesezugriffe bleiben immer unberührt. Er wird für Claude, Codex, Cursor, Grok, Kimi, Kiro und Qwen unmittelbar nach `scm-guard` registriert; der Installer bildet die Vereinigung der Matcher der Kette, sodass der `PreToolUse`-Eintrag von Claude zu `Bash|Grep|Glob` wird. Ein Shell-Befehl, der `OMA_CI_ALLOW_NATIVE=1` enthält, umgeht den Guard weiterhin, aber nur als Operator-Notausgang für Suchen in Ressourcen außerhalb des Projekts oder in ignorierten Pfaden, die der Guard nicht erkannt hat. Der Blockierungsgrund nennt dieses Präfix nicht, und es ist kein Ausweichweg für Projektquellcode.
 
 **`triggers.json`** ist die Zuordnung von Schlüsselwörtern zu Workflows. Sie wird beim Build statisch in das `oma`-Binary eingebettet (Quelle: `.agents/hooks/core/triggers.json`). Sie definiert:
-
 - `workflows`: Map von Workflownamen auf `{ persistent: boolean, keywords: { language: [...] }, patterns?: { language: [...] }, explicit?: [...] }`. `keywords` sind wörtliche Phrasen; `patterns` sind rohe Regex-Zeichenketten (mit den Flags `iu` kompiliert). `explicit` (nur persistente Workflows) listet die Schlüsselwörter auf, die als expliziter Aufruf gelten — nur diese aktivieren den persistenten Modus; jeder andere Treffer wird als Vorschlag eingefügt
 - `informationalPatterns`: Phrasen, die Fragen kennzeichnen und aus der automatischen Erkennung herausgefiltert werden
 - `excludedWorkflows`: Workflows, die einen expliziten Aufruf über `/command` verlangen
 
 Für die Sprachabschnitte in `keywords`, `patterns` und `informationalPatterns` gilt:
-
 - `*`: Universal/Englisch
 - `en`: funktional gleichwertig mit `*`
 - `ko`/`ja`/`zh`/usw.: sprachspezifische Formulierungen
 
 Jeder Abschnitt wird immer geladen; die Einstellung `language` in `.agents/oma-config.yaml` steuert nur die Antwortsprache. Wortgrenzen hängen vom Schlüsselwort selbst ab: ASCII-Schlüsselwörter passen nur auf ganze Wörter, Schlüsselwörter mit Nicht-ASCII-Text passen als Teilzeichenketten.
 
-#### Materialisierung pro Anbieter: vorher → nachher
+#### Materialisierung pro Vendor: vorher → nachher
 
-Ältere Installationen kopierten den **gesamten** Satz unter `.agents/hooks/core/` (etwa 20 Dateien) in jedes Anbieter-Hook-Verzeichnis, obwohl die prozessinterne Weiterleitung die meisten davon zu ungenutzten Dateien machte:
+Ältere Installationen kopierten den **gesamten** Satz unter `.agents/hooks/core/` (etwa 20 Dateien) in jedes Vendor-Hook-Verzeichnis, obwohl die prozessinterne Weiterleitung die meisten davon zu ungenutzten Dateien machte:
 
 ```text
 # BEFORE — every vendor hookDir (.claude/hooks, .codex/hooks, .cursor/hooks, …)
@@ -450,13 +428,13 @@ hooks/
 ```
 
 
-Der Installer leitet jetzt aus der Varianten-JSON eines Anbieters (`requiredVariantScripts` in `cli/platform/hooks-composer.ts`) eine Whitelist ab und materialisiert nur, was dieser Anbieter ausführt oder liest. `oma-hook.sh` bleibt im Stamm des Hook-Verzeichnisses; die übrigen Skripte landen in dessen Unterverzeichnis `oma/`:
+Der Installer leitet jetzt aus der Varianten-JSON eines Vendors (`requiredVariantScripts` in `cli/platform/hooks-composer.ts`) eine Whitelist ab und materialisiert nur, was dieser Vendor ausführt oder liest. `oma-hook.sh` bleibt im Stamm des Hook-Verzeichnisses; die übrigen Skripte landen in dessen Unterverzeichnis `oma/`:
 
 <!-- oma-docs:ignore-start -->
 
 
 
-| Anbieter | Materialisierte Dateien | Grund |
+| Vendor | Materialisierte Dateien | Grund |
 |---|---|---|
 | claude, qwen | `oma-hook.sh`, `oma/hud.ts`, `oma/filter-test-output.sh` | statusLine + test-filter |
 | codex, grok, kiro | `oma-hook.sh`, `oma/filter-test-output.sh` | test-filter, kein statusLine |
@@ -488,11 +466,11 @@ echo '{"cwd":"/path/to/project"}' \
 ```
 
 
-`oma hook run` beendet sich immer mit 0 (fail-open). Leere Standardausgabe bedeutet, dass die Kette für dieses Ereignis keine Aktion ausgeführt hat. Wenn ein Handler auslöst, wird das JSON im Dialekt des Anbieters (oder für Kiro einfacher Text) nach stdout geschrieben.
+`oma hook run` beendet sich immer mit 0 (fail-open). Leere Standardausgabe bedeutet, dass die Kette für dieses Ereignis keine Aktion ausgeführt hat. Wenn ein Handler auslöst, wird das JSON im Dialekt des Vendors (oder für Kiro einfacher Text) nach stdout geschrieben.
 
 #### Installationen älter als oma 8.43.0 aktualisieren {#migration-from-pre-019-installs}
 
-Installationen älter als oma 8.43.0 mit den alten Einträgen `bun "$CLAUDE_PROJECT_DIR/.claude/hooks/keyword-detector.ts"` werden automatisch migriert, sobald Sie `oma install`, `oma update` oder `oma link` erneut ausführen. Der Installer ersetzt nur OMA-verwaltete Hook-Gruppen anhand von Markern (erkennbar an ihren `name`-/`command`-Mustern); von Ihnen hinzugefügte Hook-Gruppen bleiben in ihrer ursprünglichen Reihenfolge erhalten. Der Pfad für `statusLine` bzw. HUD bleibt unverändert. Die prozessinterne Pi-Bridge ist davon nicht betroffen. Siehe `cli/commands/hook/command.ts` für die Router-Implementierung und `cli/platform/hooks-composer/` für die Materialisierungslogik pro Anbieter.
+Installationen älter als oma 8.43.0 mit den alten Einträgen `bun "$CLAUDE_PROJECT_DIR/.claude/hooks/keyword-detector.ts"` werden automatisch migriert, sobald Sie `oma install`, `oma update` oder `oma link` erneut ausführen. Der Installer ersetzt nur OMA-verwaltete Hook-Gruppen anhand von Markern (erkennbar an ihren `name`-/`command`-Mustern); von Ihnen hinzugefügte Hook-Gruppen bleiben in ihrer ursprünglichen Reihenfolge erhalten. Der Pfad für `statusLine` bzw. HUD bleibt unverändert. Die prozessinterne Pi-Bridge ist davon nicht betroffen. Siehe `cli/commands/hook/command.ts` für die Router-Implementierung und `cli/platform/hooks-composer/` für die Materialisierungslogik pro Vendor.
 
 ### skills/
 
@@ -520,7 +498,7 @@ Hier schreiben Agenten während Orchestrierungssitzungen ihren Fortschritt. Dies
 | `session-work.md` | Work-Workflow | Sitzungsstatus des Work-Workflows |
 | `session-ultrawork.md` | Ultrawork-Workflow | Sitzungsstatus des Ultrawork-Workflows |
 | `session-ralph-{sessionId}.md` | Ralph-Workflow | Kriterien, Iterationsprotokolle und Judge-Ergebnisse für einen Ralph-Lauf |
-| `session-cost-{sessionId}.md` | System | Kostentelemetrie pro Sitzung |
+| `session-cost-{sessionId}.md` | System | Spawn-Kostentelemetrie pro Sitzung |
 | `archive/metrics-{date}.md` | System | Archivierte Sitzungsmetriken (Aufbewahrung 30 Tage) |
 
 Pfade für Memory-Dateien und Toolnamen können in `.agents/mcp.json` über `memoryConfig` konfiguriert werden.
@@ -565,7 +543,6 @@ oh-my-agent/
 Im Quell-Repository dürfen `.agents/`-Dateien geändert werden; dies ist die SSOT-Ausnahme für das Quell-Repository selbst. Die `.agents/`-Regeln, die Änderungen an diesem Verzeichnis untersagen, gelten für Consumer-Projekte, nicht für das oh-my-agent-Repository.
 
 Entwicklungsbefehle (vom Repository-Stammverzeichnis aus):
-
 - `bun run test`: CLI-Tests (vitest)
 - `bun run lint`: CLI- und Web-Workspaces linten
 - `bun run build`: CLI-Build

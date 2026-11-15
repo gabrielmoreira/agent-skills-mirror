@@ -12,7 +12,7 @@ argument-hint: "[command] [url|property]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.6.0"
+  version: "2.6.1"
   category: seo
 ---
 
@@ -186,6 +186,8 @@ Notify Google of a URL update.
 
 The Indexing API is officially for JobPosting and BroadcastEvent/VideoObject pages.
 Always inform the user of this restriction. Daily quota: 200 publish requests.
+An OAuth sign-in is read-only unless made with `google_auth.py --auth --indexing`;
+when the script reports `missing_indexing_scope`, relay the command it prints.
 
 ### `/seo google index-batch <file>`
 

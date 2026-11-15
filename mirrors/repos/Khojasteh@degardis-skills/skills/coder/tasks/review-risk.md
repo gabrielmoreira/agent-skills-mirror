@@ -20,6 +20,7 @@ guides:
 - structural-cost
 - structural-transformations
 - abstraction-boundaries
+- component-architecture
 - change-sites
 - value-boundaries
 - failure-behavior

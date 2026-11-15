@@ -1,0 +1,15 @@
+mention:
+  label: Mentions
+  channels: [EMAIL, PUSH]
+comment.reply:
+  label: Replies to your comments
+  channels: [PUSH]
+invoice.paid:
+  label: Paid invoices
+  channels: [EMAIL]
+invoice.failed:
+  label: Failed payments
+  channels: [EMAIL, PUSH, WEBHOOK]
+digest.weekly:
+  label: Weekly digest
+  channels: [EMAIL]

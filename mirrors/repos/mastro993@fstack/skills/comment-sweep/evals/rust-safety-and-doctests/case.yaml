@@ -1,0 +1,21 @@
+schema_version: "1.1"
+name: rust-safety-and-doctests
+expected_outcome: |
+  Only comments the ring-buffer branch adds or changes are swept; "// loop over every sample and
+  update the running totals" in src/metrics.rs predates the branch and stays untouched. The crate
+  denies missing_docs and clippy::undocumented_unsafe_blocks, so every `// SAFETY:` comment stays,
+  every pub item keeps a doc comment, and the ```rust doctest examples and `//!` module docs stay.
+  The `///` on Producer::capacity that restates its signature ("# Arguments", "# Returns") is
+  trimmed to a short summary but not removed. The nested block comment holding the old peek() is
+  deleted whole, inner `/* */` included. Narration ("load the tail", "check if full", "increment
+  the tail", "increment the head", "if the push fails, bump the dropped counter", "drain the ring
+  buffer"), the "switched to AtomicUsize per review" history note, the "====== helpers ======"
+  banner, and the done TODO about dropping unread values (Drop for Inner already does it) are
+  deleted. The TODO(#42) linking a GitHub issue stays. The "Acquire here pairs with the Release in
+  push(); do not weaken" guard is true and unenforced, so it stays and is reported as a reshape
+  target (a loom test or similar). The doc on ring::channel says capacity must be a power of two,
+  but the code only rejects zero and wraps with `%`, so it is reported as a mismatch. The raw string
+  FORMAT_HELP and the "/var/spool/tally/*.lp" string are code and stay byte-identical, as does
+  `#[allow(clippy::cast_precision_loss)]`. No code changes.
+context:
+  scaffold_script: place-files.sh

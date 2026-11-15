@@ -47,10 +47,12 @@ icon = "clock"
 places = ["status", "dashboard", "session"]
 contract = 1
 description = "Lists agents idle for 20 minutes or more, and asks before you wake one."
+decides = "reply"
 ```
 
 It draws in three places: a chip in the status line, a tile on the Dashboard, and a Page of its
-own. Every key is in [Manifest keys](tricks-reference.md#manifest-keys).
+own. `decides = "reply"` says that its Decisions name a session with `replyTo`: without it, Collie
+refuses such a Decision. Every key is in [Manifest keys](tricks-reference.md#manifest-keys).
 
 `program.ts`:
 
@@ -120,6 +122,7 @@ trick idle-watch (Idle watch) in /tmp/tricks-doc-lab/idle-watch
   places: status, dashboard, session
   every:  1m
   run:    program.ts
+  decides: reply. Your answers to its Decisions go to a session as your own message.
   code:   sha256 63bc959b… (what `collie trick on` approves)
   helper: trick.ts is collie trick helper v4, Collie's own code, not checked line by
           line
@@ -144,6 +147,39 @@ program as the answer to that Decision. Every flag of `check` and `dev` is in
 
 To use the trick, the person reads the code and runs `collie trick on idle-watch` in a shell of their
 own, or uses the switch in Settings → Tricks.
+
+## Session settings rows
+
+A trick with contract 2 can add rows to a session's settings. List `menu` in `places`, and print a
+`menu` part:
+
+```json
+{
+  "v": 2,
+  "parts": [
+    {
+      "at": "menu",
+      "id": "ci",
+      "rows": [
+        { "id": "rerun", "kind": "button", "label": "Rerun CI", "icon": "refresh", "intent": "rerun", "confirm": true },
+        { "id": "watch", "kind": "switch", "label": "Watch branch", "icon": "flag", "intent": "watch", "on": true }
+      ]
+    }
+  ]
+}
+```
+
+A tap runs the program with the row's `intent` and the session in `from.session`. A switch tap
+also has `value`, `"on"` or `"off"`, the state the person asked for. The phone never flips the
+switch itself, so print the new `on` in the answer. A label that reads like one of Collie's own rows
+is refused, never cut.
+
+Add `sessions` to a `menu` part or a `belt` mark to show it only in those sessions, by the facts'
+session ids. Collie binds each id to the pane and the conversation that are open now. A pane id that
+goes to a new session, or a session that starts a new conversation (`/clear`), shows nothing until
+your next run names it again. A part without `sessions` shows in every agent session of this machine; to
+reach a crew member's session, name it. The [menu place](tricks-reference.md#menu) lists every
+limit.
 
 ## An agent view
 

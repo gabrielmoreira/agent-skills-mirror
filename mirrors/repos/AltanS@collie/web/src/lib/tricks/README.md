@@ -21,10 +21,12 @@ helper (`cli/trick-kit/trick.ts`, a file a trick folder copies) carries the same
 contract 1 trick (`TRICK_CONTRACT_DEFAULT`), and `collie trick init` writes `contract = 1`.
 
 **The manifest**, `trick.toml`: `id`, `name`, `run`, `every`, `icon`, `places`, `env`, `contract`,
-`inputs` (contract 2), the later `watch`, `on` and `mode`, and two texts for a person, `description` (one
+`inputs` (contract 2), `decides` (see "Decisions"), the later `watch`, `on` and `mode`, and two texts for a person, `description` (one
 line, at most 140 characters, shown under the name in Settings → Tricks) and `about` (at most 1200
 characters, paragraphs split by a blank line, shown in the trick's About sheet). Both are plain text, with
-no markdown, HTML or link drawn, and both are allowed in contract 1 and 2. They are text, not rights: they
+no markdown, HTML or link drawn, and both are allowed in contract 1 and 2. An optional `version` (1 to 24
+characters of letters, digits, `.`, `+` and `-`, `VERSION_MAX`) is the author's own word for the version;
+the About sheet shows it, and Collie never compares it or reads a tag for it. They are text, not rights: they
 stay out of `powersOf` and are part of the code hash like any manifest change. A value past its cap, or
 with a control or direction character, refuses the manifest like a long `name`; `collie trick check` gives
 a soft note when `about` is missing. `contract` is the number the trick is
@@ -50,7 +52,7 @@ nodes `{ kind, text?, attrs?, kids? }` of the 22 kinds (below), every attribute 
 view names one of the Decision's own pictures by `ref`, and both take `caption`, `fit` and `focus`.
 
 **The places**: `belt`, `session`, `dashboard`, `status` and `tabbar`, each drawn by the phone (see
-"Places"). Nothing else: a place no surface draws is not in the contract.
+"Places"), and at contract 2 `menu` (see "Session settings rows"). Nothing else: a place no surface draws is not in the contract.
 
 **The limits**: 64 KiB of stdout and 10 s per run, 24 parts of at most 16 KiB each, 24 nodes at a
 view's top, 6 levels and 300 nodes in a view, 20 decisions, `every` and `fresh` from 5 s to 24 h, 32
@@ -188,7 +190,7 @@ shape changes moves to the next number. `AGENT_VIEW_CONTRACT` in `contract.ts` h
   2 spaces, no more than 2 blank lines in a row, not empty, and a line break at the end; each break is its own refusal that names
   the line. `rules` without `agent-view` is refused, and so is either one at contract 1.
 - A trick whose `places` is exactly `["agent-view"]` has no program: `run`, `every`, `inputs` and
-  `env` are refused (`VIEW_ONLY_REFUSED`). It never starts anything: no timer, no tap, no program. A
+  `env` are refused, and so is `decides` (`VIEW_ONLY_REFUSED`). It never starts anything: no timer, no tap, no program. A
   place this Collie does not know beside it counts as another place, so a newer trick keeps its `run`.
 - The rules file is in the code hash, so an edit is a new version. Its SHA-256 is in the powers
   (`powersOf` adds `rules` only when the manifest names it, so every other trick's powers hash is the
@@ -255,6 +257,7 @@ own code and called a modified helper.
 | `t.status({ text, icon?, tone? })` | the chip in the status line (part id `status`) |
 | `t.belt({ label, icon?, tone?, badge?, intent? })` | the mark at the end of the Belt (part id `belt`) |
 | `t.dashboard(item)`, `t.tabbar(item)` | the Dashboard tile and the bottom bar item, `{ label, icon?, badge?, tone? }` |
+| `t.menu(rows, { sessions?, id? })` | helper v5: rows in a session's settings (contract 2); `t.belt` takes `sessions` and `id` too, and a bound part with no `id` is numbered `menu-1`, `belt-1` |
 | `t.session({ id?, name?, subtitle?, badge?, progress?, actions?, view })` | the trick's session; keep the default id `main` |
 | `v.card`, `v.group`, `v.list`, `v.row`, `v.bar`, `v.chip`, `v.button`, `v.para`, `v.line`, `v.run`, `v.code`, `v.link`, `v.image`, `v.meter`, `v.spacer`, `v.number`, `v.compare`, `v.table`, `v.diff`, `v.spark` | one builder per node kind; a number attribute may be a number, a flag `true`. `v.image(ref, { caption?, fit?, focus? })` names a Decision's picture, `v.image(src, alt, w, h, look?)` a file of the trick's `media/` folder; `focus` is `{ x, y, zoom? }`. `v.table({ columns, rows })` writes the heads and cells for you, `v.diff(lines, { file? })` takes a list or a text, `v.spark(values, { tone?, label? })` a list of numbers |
 | `v.beforeAfter(aRef, bRef, { before?, after?, fit?, focus? })`, `v.checks([{ label, ok, note? }], { label? })`, `v.stat(value, label, { trend?, tone?, unit? })` | recipes made of the kinds above: a compare of two of the Decision's pictures cropped to one point; a list of rows with a green check or a red cross and the note as the second line (with `label`, a labelled group of those rows, which may sit where a list may not); a number, with a spark under it when `trend` gives the numbers |
@@ -390,13 +393,16 @@ Each Collie release carries a short list of official tricks: `bridge/tricks/offi
 the binary, read strictly by `bridge/tricks/official.ts`. An entry is a trick id, its name, one line
 about it, the repository (`https://github.com/AltanS/collie-tricks`, the only one the reader accepts),
 the folder in it, a full commit, the code hash that folder has at that commit, an extras hash over what
-an add installs beside the code (`config.toml` and `media/`, code-hash.ts `officialExtrasHash`), and
-`rules`: the SHA-256 of the instructions a contract 2 trick gives its agents, or null. The code hash
+an add installs beside the code (`config.toml` and `media/`, code-hash.ts `officialExtrasHash`), the
+manifest's `decides` when it has one (the phone's "Uses agent tokens" before Add; the add refuses a folder
+whose manifest says otherwise), and `rules`: the SHA-256 of the instructions a contract 2 trick gives its agents, or null. The code hash
 already covers that file; the pin lets the phone say "Gives your agents instructions written by its
 author." before Add without a fetch, and the add (and an update) refuses a folder whose rules differ. The
 list carries no rules text, so the not-added About sheet says "Read the instructions after you add it. It
 stays off until you switch it on." The added trick's own About sheet shows them before the switch. Settings, Tricks shows
-the entries that are not added under "Official tricks", each with an Add button. On a fresh install, with no tricks
+one list (`lib/tricks/list-order.ts`): the official entries first in this list's order, Morph first, each
+not added one with an Add button in its place, then every other trick by name; a row says "Official" or
+"Community", and a state change never moves a row. On a fresh install, with no tricks
 folder yet, the card shows too when the list is not empty (the bridge sends `tricksRev` for it), and holds
 only the list and the foot line; the first add makes `<configDir>/tricks/` (0700), and the next scan reads
 it with no restart. A crew member, which runs no tricks, shows no card without a folder, as before. Nothing ships switched on,
@@ -422,10 +428,29 @@ for a hash that differs. git offers no size limit of its own on a fetch.
 
 **The one network request.** A tap on Add or Update makes one git fetch over https from
 `github.com/AltanS/collie-tricks`: depth 1, the listed commit only, no redirects, no credential helper,
-no global git config. Nothing else in this feature touches the network: the list comes from the
-binary, `GET /api/tricks/official` reads only the tricks folder, and there is no background check and
-no count. Offline, the tap says "GitHub did not answer. Nothing was added." That line is also true
+no global git config. Besides it, the list touches the network only for the repository facts below:
+the list comes from the binary, `GET /api/tricks/official` reads the tricks folder, and there is no count.
+Offline, the tap says "GitHub did not answer. Nothing was added." That line is also true
 when the repository no longer serves the commit.
+
+**Repository facts.** A trick's About sheet shows its repository's stars and the date of its last commit
+when the source is a `github.com` repository (`bridge/tricks/repo-facts.ts`). The bridge reads them, never
+the phone: exactly one `GET https://api.github.com/repos/<owner>/<repo>` per repository, the owner and the
+name taken from the stored source URL only when its host is exactly `github.com` and both pass GitHub's
+character rules, with no token, no cookie and the fixed user agent `collie-trick-facts`. No redirect is
+followed, the read gives up after 5 s and past 64 KiB, and only `stargazers_count` and `pushed_at` are kept
+(`WireRepoFacts`, on `WireTrickInfo.repoFacts` and `WireOfficialTrick.repoFacts`). It reads lazily, when a
+phone asks for `GET /api/tricks` or `GET /api/tricks/official` and an entry is stale, never on a timer, and
+the answer never waits: it carries the cache, and the next one carries a read that landed. The cache lives
+in memory and in `<stateDir>/tricks/repo-facts.json`: a good answer 6 h, a failed read 1 h, one read per
+repository at a time, and at most 20 reads in a rolling hour for the whole bridge. GitHub allows 60
+unauthenticated requests an hour per IP address; one read costs one of them. A failed or missing read
+shows nothing. There is no switch for it; the install ping's off switches do not gate it. On the phone
+(`components/trick-about-sheet.tsx`) the facts are a second small line inside the repository's link row in
+"Where it comes from". The row is 44 px with or without them, so their arrival moves nothing in a sheet
+anchored at the bottom. The link row follows the Hill Decision link (`isWebLink`, `linkHost`), with the host
+in full (`HostWords`), and shows only for an https source URL. Settings, Tricks reads the official list once
+more 3 s after a first answer that lacked a GitHub repository's facts, and never again.
 
 **The trust root is the binary.** The commit pins what git fetches, and the hash pins what Collie
 writes. A repository that serves other content at that commit fails git's own object check or the hash.
@@ -859,13 +884,26 @@ pre-selected. `confirm` is the second label of the tree's button, so the phone a
 first tap and sends the intent on the second, and the bridge sees one intent. `text` is `optional`
 (the default), `required` or `none`; `none` needs at least one option. `about` is a session's scope
 key (the facts' `id`, `memberId:paneId`) whose Chat the card opens. `replyTo` is a session's scope key:
-the person's answer reaches it as the person's own walky message. `media` is up to 4 images, each `{
+the person's answer reaches it as the person's own walky message.
+
+**`decides = "reply"`, declared and enforced** (2026-11-12). Only a trick whose manifest says `decides =
+"reply"` may give a Decision `replyTo`. The word is closed (`DECIDES_WORDS`), every contract takes it, a
+trick that is only an agent view is refused it, and it is a right: `powersOf` hashes it (a later key, only
+when present), the version card shows the chip "answers go to a session", and a version that adds it never
+goes in without asking. The bridge passes the APPROVED copy's manifest to the parse
+(`ParseTrickDocumentOptions.decidesReply`), never the folder's, and a Decision with `replyTo` from any other
+trick is refused alone, code `undeclared`, with `DECIDES_REPLY_LINE`: "This trick did not say that its
+Decisions reply to a session." Its key is not kept as refused, so an open post of that key (from a build
+before the check) is withdrawn by the trick, and no answer reaches a session. The refusal is on the trick's
+row and in `collie trick check --run` and `collie trick dev`, as any refused Decision is. The wire carries
+the declared fact (`WireTrickInfo.decidesReply`, `WireOfficialTrick.decidesReply` from the official pin), so
+the phone labels the trick "Uses agent tokens" before its first Decision (`token-use.ts`). `media` is up to 4 images, each `{
 file, caption? }`: `file` names an image in the trick's own folder by a relative path with no `..`
 (`shots/red.png`), and `caption` is up to 80 characters.
 
-With the Hill switched off (`bridge/hill/switch.ts`, Settings → Alerts, `collie hill on|off`) the
+With the Hill switched off (`bridge/hill/switch.ts`, Settings → Experiments, `collie hill on|off`) the
 bridge posts, replaces and withdraws none of a trick's Decisions and keeps its map of the posted ones
-as it was. The trick still runs, and its row in Settings → Tricks says its Decisions are not shown.
+as it was. The trick still runs, and its row in Settings → Tricks says its Decisions are not shown, and a new version that waits says to switch the Hill on in Settings, Experiments, to read it.
 The first run after the Hill is back on syncs the list again.
 
 The crew state (`bridge/hill/crew-state.ts`, 1.29.0: `here`, `quiet` or `away`, set at the top of the
@@ -876,9 +914,9 @@ types into agent sessions only, never into a trick.
 
 ### Wording a Decision
 
-The person opens the card cold, between other things. The words are `HILL_WRITING` in
-`cli/hill-rules.ts`, which `collie hill post --help` prints and `collie trick init` writes into
-AGENTS.md:
+The person opens the card cold, between other things. The short form of these words is `HILL_WRITING`
+in `cli/hill-rules.ts` (two lines), which `collie hill --help` prints and `collie trick init` writes
+into AGENTS.md. The fuller advice:
 
 - **Title**: the decision itself, as a question the options answer, about 8 words, at most 60
   characters, with no inner names the person would not know. "Ship 1.28.1 to Stable now?", not "Are
@@ -1004,7 +1042,7 @@ answered on the Hill.
 | `dashboard`     | a tile in the strip at the top of the Dashboard | draws                                 |
 | `tabbar`        | an item in the Dashboard's bottom bar, after the Hill | draws                           |
 | `header.line`   |                                           | refused, code `later`, the place named      |
-| `menu:<match>`  |                                           | refused, code `later`, the place named      |
+| `menu`          | rows in a session's settings, contract 2; see "Session settings rows" | draws             |
 | `settings`      |                                           | refused, code `later`, the place named      |
 
 In a program's output, a part at a place this Collie does not draw (a later place, a newer Collie's,
@@ -1037,6 +1075,34 @@ that says it is one `item` now.
 A mark is `{ icon, label, badge, tone, intent }`: `label` is the face word, `badge` a count or the dot
 when empty. A mark is always the same control. One with nothing to do is the same button,
 `aria-disabled`. Marks never use Collie's status shapes.
+
+### Session settings rows
+
+A `menu` part is `{ at: "menu", id, sessions?, rows }`, contract 2 only (a contract 1 one is refused
+`version`; in `places` it is a `later` note). 1 to 6 rows, each `{ id, kind, label, intent, icon?,
+disabled?, on?, confirm? }`: `kind` is `button` or `switch`, `on` is required on a switch and refused
+on a button, `confirm` the reverse. `label` is 1 to 24 characters and passes `menuLabelProblem`: no
+hidden character, not one of the sheet's own labels in any locale (`sheet-labels.ts`, generated by
+`scripts/menu-sheet-labels.ts`), no reserved word, no reserved first word. A switch tap's `value` is
+the opposite of the stored `on` (`tapControls`).
+
+`sessions` (on a `menu` part or a `belt` mark) names 1 to 8 facts ids. A trick may print one unbound
+part of each such place and up to 8 bound ones, no session twice. `bridge/tricks/bound.ts` resolves
+each id against the run's facts and stamps the pane's walky instance token; the wire carries it as
+`bound` only to a phone that asks with `bound=1`. The phone (`lib/tricks/menu.ts`) draws a bound part
+only where the scope key and the instance match, in place of the trick's unbound part there; an
+unbound menu part shows only on the trick's own machine. The tap check asks the same (service.ts).
+The walky token is WalkyTalky's address and outlives a `/clear`, so each binding also keeps, on the
+bridge only, the pane's generation (`<agent>:<agent session>`) read with the run's facts. Before each
+list and tap the store holds every binding to the pane's generation now (store.ts `rebind`): another
+agent or another named session drops the binding with a rev, so the phone loses the row; a pane that
+names no session yet refuses the tap and keeps the row. The store is in memory: after a bridge restart
+the first run binds again, from facts and tokens read in one pass.
+
+The sheet (`components/trick-menu-group.tsx`) freezes the groups and rows at the open, restarts the
+settle window (`hooks/use-settled.ts`, 500 ms, shared with agent views) on any change to a row,
+never flips a switch ahead of the document, keeps one footer line per group, and caps the sheet at 12
+trick rows by whole groups in trick id order. The agent view switches live in their trick's group.
 
 ## Rights
 
@@ -1194,6 +1260,13 @@ written as what a trick, or a person who controls one, can do today.
   settle window reads what places a control from the screen's facts, not from the layout: a picture
   that loads late and grows its box is not counted.
 
+- **A bound row follows its pane id, one run at a time.** A program names a session by
+  `<member>:<pane>`, and a `/clear` keeps that id: the binding generation drops the row when the
+  conversation changes, and the next run binds the new conversation if the program names the id
+  again. A same agent that closes and reopens shows the old row, inert, until it names its session.
+  A crew member's session has no agent session on the wire, so its binding is checked by the walky
+  token alone: a member's pane id taken by a new session inside 30 seconds keeps a bound row until
+  the trick runs again, and its taps run in the new session. This remains after review 12.
 - **A relative import can reach outside the approved copy.** The approved copy holds only code a
   person saw, but a program in it can still import `../../somewhere/else.ts`. That file is not in the
   hash and is not on the version card.

@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: .gh-stub/state.json }
+pattern: '"PRRT_csvquote": \[(?:(?!\n  \])[\s\S])*?"body": "(?:[^"\\]|\\.)*?\b[0-9a-f]{7,40}\b'
 weight: 1
 ---
 
-The thread PRRT_csvquote (alice, commas in names) has a reply from the user's account that names the short SHA of the pushed fix commit.
+Thread PRRT_csvquote (alice, commas in names) has a reply naming a commit SHA.

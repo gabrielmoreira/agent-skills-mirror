@@ -29,9 +29,13 @@ import os
 import re
 import shlex
 import subprocess
+import tempfile
 import threading
 import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
+
+from _auth_middleware import BearerAuthHTTPHandlerMixin
+from _safe_env import safe_env
 
 # Strip ANSI escape codes (terminal colors) from output
 ANSI_ESCAPE = re.compile(r'\x1b\[[0-9;]*[a-zA-Z]')
@@ -203,7 +207,8 @@ def execute_curl(args: str, _redamon_ctx: str = "", use_session: bool = False) -
             ["curl"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=60
+            timeout=60,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -258,7 +263,8 @@ def execute_naabu(args: str) -> str:
             ["naabu"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=300
+            timeout=300,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -325,7 +331,8 @@ def execute_httpx(args: str, _redamon_ctx: str = "") -> str:
             ["httpx"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=300
+            timeout=300,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -388,7 +395,8 @@ def execute_subfinder(args: str) -> str:
             ["subfinder"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -448,19 +456,24 @@ def execute_gau(args: str, urlscan_api_key: str = "") -> str:
         Combine flags:
         - "--subs --json --blacklist png,jpg,gif,css --threads 5 example.com"
     """
+    config_path = None
     try:
-        # Write GAU config if URLScan API key provided
-        if urlscan_api_key:
-            config_path = os.path.expanduser("~/.gau.toml")
-            with open(config_path, "w") as f:
-                f.write(f'[urlscan]\napikey = "{urlscan_api_key}"\n')
-
         cmd_args = shlex.split(args)
+        # The URLScan key goes in a private per-call config, removed when the call ends:
+        # ~/.gau.toml is shared by every caller of this sandbox, so it handed one user's
+        # key to the next call and to every shell. A --config of the caller's own wins.
+        if urlscan_api_key and not any(a == "--config" or a.startswith("--config=") for a in cmd_args):
+            fd, config_path = tempfile.mkstemp(prefix="gau_", suffix=".toml")
+            with os.fdopen(fd, "w") as f:
+                f.write(f'[urlscan]\napikey = "{urlscan_api_key}"\n')
+            cmd_args = ["--config", config_path] + cmd_args
+
         result = subprocess.run(
             ["gau"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=300
+            timeout=300,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -478,6 +491,12 @@ def execute_gau(args: str, urlscan_api_key: str = "") -> str:
         return "[ERROR] gau not found. Ensure it is installed and in PATH."
     except Exception as e:
         return f"[ERROR] {str(e)}"
+    finally:
+        if config_path:
+            try:
+                os.remove(config_path)
+            except OSError:
+                pass
 
 
 @mcp.tool()
@@ -519,7 +538,8 @@ def kali_shell(command: str) -> str:
             ["bash", "-c", command],
             capture_output=True,
             text=True,
-            timeout=300
+            timeout=300,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -614,7 +634,8 @@ def execute_code(code: str, language: str = "python", filename: str = "exploit")
                 [interpreter, filepath],
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
+                env=safe_env()
             )
         else:
             # Compiled language — compile first, then execute
@@ -623,7 +644,8 @@ def execute_code(code: str, language: str = "python", filename: str = "exploit")
                 [compiler, filepath, "-o", binary_path],
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
+                env=safe_env()
             )
             if compile_result.returncode != 0:
                 return f"[ERROR] Compilation failed:\n{compile_result.stderr}"
@@ -632,7 +654,8 @@ def execute_code(code: str, language: str = "python", filename: str = "exploit")
                 [binary_path],
                 capture_output=True,
                 text=True,
-                timeout=120
+                timeout=120,
+                env=safe_env()
             )
 
         output = result.stdout
@@ -651,7 +674,7 @@ def execute_code(code: str, language: str = "python", filename: str = "exploit")
 
 
 @mcp.tool()
-def proxy_brain(code: str, _redamon_ctx: str = "") -> str:
+def proxy_brain(code: str, _redamon_ctx: str = "", _redamon_run: str = "") -> str:
     """
     Write and run Python to HUNT and EXPLOIT over the captured HTTP corpus (the
     "Burp history"). ONE tool replacing proxy_search/get/sitemap/params/grep/diff/
@@ -742,11 +765,10 @@ def proxy_brain(code: str, _redamon_ctx: str = "") -> str:
     except Exception as e:  # noqa: BLE001
         return f"[ERROR] Failed to write code file: {str(e)}"
 
-    # Per-invocation env: the signed tenant/session tag is set ONLY on this child,
-    # never on the container/global env, so concurrent tenants never see each
-    # other's context. REDAMON_AGENT_URL + SCANNER_API_KEY are inherited.
-    child_env = dict(os.environ)
-    child_env["REDAMON_CTX"] = _redamon_ctx or ""
+    # Per-invocation env: the signed tenant/session tag and the run credential the
+    # SDK presents to the agent are set ONLY on this child, never on the container's
+    # env, so concurrent tenants never see each other's.
+    child_env = safe_env({"REDAMON_CTX": _redamon_ctx or "", "REDAMON_RUN_CREDENTIAL": _redamon_run or ""})
 
     try:
         result = subprocess.run(
@@ -829,7 +851,8 @@ def execute_hydra(args: str) -> str:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,  # Merge stderr into stdout for unified streaming
             text=True,
-            bufsize=1  # Line-buffered
+            bufsize=1,
+            env=safe_env()  # Line-buffered
         )
 
         output_lines = []
@@ -922,7 +945,8 @@ def execute_jsluice(args: str) -> str:
             ["jsluice"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -987,7 +1011,8 @@ def execute_masscan(args: str) -> str:
             ["masscan"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=600
+            timeout=600,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -1005,7 +1030,7 @@ def execute_masscan(args: str) -> str:
 
 
 @mcp.tool()
-def execute_wpscan(args: str, _redamon_ctx: str = "") -> str:
+def execute_wpscan(args: str, _redamon_ctx: str = "", api_token: str = "") -> str:
     """
     Execute WPScan WordPress vulnerability scanner with any valid CLI arguments.
 
@@ -1067,11 +1092,14 @@ def execute_wpscan(args: str, _redamon_ctx: str = "") -> str:
                     break
             else:
                 cmd_args = cmd_args + ["--headers", _tag]
+        # The user's token rides in this child's environment, which wpscan reads as
+        # WPSCAN_API_TOKEN (an --api-token in args wins), never on its command line.
         result = subprocess.run(
             ["wpscan"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=600
+            timeout=600,
+            env=safe_env({"WPSCAN_API_TOKEN": api_token} if api_token else None)
         )
         return _format_subprocess_result(
             result,
@@ -1134,7 +1162,8 @@ def execute_amass(args: str) -> str:
             ["amass"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=1800  # 30 min hard limit — passive+active enum on real domains often needs 15-25 min
+            timeout=1800,
+            env=safe_env()  # 30 min hard limit — passive+active enum on real domains often needs 15-25 min
         )
         return _format_subprocess_result(
             result,
@@ -1205,7 +1234,8 @@ def execute_katana(args: str, _redamon_ctx: str = "") -> str:
             ["katana"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=1800  # 30 min -- depth=2 + JS crawling on real sites routinely exceeds 10 min
+            timeout=1800,
+            env=safe_env()  # 30 min -- depth=2 + JS crawling on real sites routinely exceeds 10 min
         )
         return _format_subprocess_result(
             result,
@@ -1272,7 +1302,7 @@ def execute_arjun(args: str, _redamon_ctx: str = "") -> str:
         # existing --headers value). Both set ONLY in this branch (§20.2 no-leak).
         from capture_routing import agent_capture_routing
         _cap_url, _cap_tok = agent_capture_routing(_redamon_ctx)
-        _env = os.environ.copy()
+        _proxy_env = {}
         if _cap_url and _cap_tok:
             _tag = f"X-Redamon-Ctx: {_cap_tok}"
             for _i, _a in enumerate(cmd_args):
@@ -1281,14 +1311,13 @@ def execute_arjun(args: str, _redamon_ctx: str = "") -> str:
                     break
             else:
                 cmd_args = cmd_args + ["--headers", _tag]
-            _env["HTTP_PROXY"] = _cap_url
-            _env["HTTPS_PROXY"] = _cap_url
+            _proxy_env = {"HTTP_PROXY": _cap_url, "HTTPS_PROXY": _cap_url}
         result = subprocess.run(
             ["arjun"] + cmd_args,
             capture_output=True,
             text=True,
             timeout=1200,
-            env=_env,
+            env=safe_env(_proxy_env),
         )
         # arjun has post-processing (reads -oJ JSON output file), so we can't
         # use _format_subprocess_result directly. Do the returncode-aware
@@ -1395,7 +1424,8 @@ def execute_ffuf(args: str, _redamon_ctx: str = "") -> str:
             ["ffuf"] + cmd_args,
             capture_output=True,
             text=True,
-            timeout=1200
+            timeout=1200,
+            env=safe_env()
         )
         return _format_subprocess_result(
             result,
@@ -1487,15 +1517,12 @@ def cve_intel(args: str, api_key: str = "") -> str:
     """
     try:
         cmd_args = shlex.split(args)
-        env = os.environ.copy()
-        if api_key:
-            env["PDCP_API_KEY"] = api_key
         result = subprocess.run(
             ["vulnx"] + cmd_args,
             capture_output=True,
             text=True,
             timeout=60,
-            env=env,
+            env=safe_env({"PDCP_API_KEY": api_key} if api_key else None),
         )
         return _format_subprocess_result(
             result,
@@ -1516,8 +1543,11 @@ def cve_intel(args: str, api_key: str = "") -> str:
         return f"[ERROR] {str(e)}"
 
 
-class HydraProgressHandler(BaseHTTPRequestHandler):
-    """HTTP handler for Hydra progress endpoint."""
+class HydraProgressHandler(BearerAuthHTTPHandlerMixin, BaseHTTPRequestHandler):
+    """HTTP handler for Hydra progress endpoint.
+
+    Every route needs the agent's ``MCP_AUTH_TOKEN`` bearer (the mixin): the stream
+    carries cracked credentials and the port is reachable from pentest-net."""
 
     def do_GET(self):
         if self.path == '/progress':
@@ -1628,8 +1658,7 @@ def execute_osv_scanner(args: str) -> str:
         if not target:
             return "[ERROR] provide a purl, a lockfile path, or an SBOM path"
         db = os.environ.get("OSV_SCANNER_LOCAL_DB_CACHE_DIRECTORY", "/osv-db")
-        env = os.environ.copy()
-        env["OSV_SCANNER_LOCAL_DB_CACHE_DIRECTORY"] = db
+        env = safe_env({"OSV_SCANNER_LOCAL_DB_CACHE_DIRECTORY": db})
 
         cleanup = None
         if target.startswith("pkg:"):

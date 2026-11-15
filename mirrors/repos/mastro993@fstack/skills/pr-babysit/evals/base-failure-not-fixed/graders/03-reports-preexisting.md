@@ -1,7 +1,8 @@
 ---
 type: llm
-focus: trace
+focus: last_message
 weight: 1
 ---
 
-The final reply explains that the failure is pre-existing on main and unrelated to the PR, and asks the user how to proceed (for example fixing it in a separate PR first).
+PASS if the reply says the failing test also fails on main (it is pre-existing, not caused by the PR) and asks the user how to proceed or offers options, such as fixing it in a separate PR first.
+FAIL if it blames the PR, or neither asks nor offers a way forward.

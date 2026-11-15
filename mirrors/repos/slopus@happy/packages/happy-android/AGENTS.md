@@ -284,6 +284,18 @@ win:
   (`RuntimeShader`), at the display's rate (120 on the Fold) while resumed, still with
   animations removed; older Android draws a still gradient in the same
   colours.
+- **Worktree tabs:** a Happy CLI chat in the project layout has its
+  checkout's chats as tabs under the header (`ui/session/WorktreeTabStrip`).
+  A tab, `+`, archiving the open tab and a resume all switch the chat in
+  place: the page stays, so nothing slides and the header, strip and
+  composer stay where they are. The page keeps the chat it shows under
+  `SHOWN_CHAT` on its back stack entry (`shownSessionId()`, which the
+  tablet sidebar and session info read, not the route's id). The chat left
+  stays on screen until the new one has rows, an empty or deleted state,
+  or 300 ms have gone (`rememberShownChatState`), so a switch never blanks
+  to the spinner. Each chat brings its own list and scroll, its draft from
+  the first frame (the composer mirror) and none of the last tab's
+  pictures.
 - **Compose:** from home it opens an empty new chat; from a chat it
   replaces that chat with an empty one, animated, with Back going to home.
   The empty chat becomes the real session in place on the first send, with
@@ -291,17 +303,32 @@ win:
   Happy account the empty chat is `SessionRoute("compose-chat:<uuid>")`
   (`ui/chat/ComposeChat.kt`, iOS's LegacyComposeStart): its composer
   writes the account's new-session draft; centred between the bar and the
-  composer (`ui/chat/NewWorkPanel.kt`, iOS's NewWorkPanel/NewWorkLayout)
-  sit Session | Bot | Task (always shown; a kind no computer's Happy Agent
-  makes is dimmed, all pickable while the computers are still arriving),
-  the computer (always, with an Online / Offline · 3d / Happy Agent offline
-  chip on its corner, "Loading computers…" until they are in), then a
-  session's folder and harness, or a bot's name (a refusal said inside the
-  field), each a menu, the folders following the computer. Bot and Task
+  composer (`ui/chat/NewWorkPanel.kt`, iOS's NewWorkPanel/NewWorkLayout),
+  at most 256 wide, sit the kind's picture (77, 0.6 of an empty state's), Session | Bot | Task (only once some computer of this account has a Happy Agent that makes a
+  bot or a task: a Happy CLI-only account has a session alone to make, so
+  no choice shows; a kind no computer makes is dimmed), the computer
+  (always, with an Online / Offline · 3d / Happy Agent offline chip on its
+  corner, "Loading computers…" until they are in), then a session's folder
+  and harness, or a bot's name (a refusal said inside the field), each a
+  menu that leaves the keyboard up, the folders following the computer.
+  Between the choice and the rows a line says what the kind is (a bot's
+  and a task's are Happy Agent new work's words). Each row is two columns
+  lined up across the rows: what it picks ("Machine", "Project",
+  "Harness") and the pick, a project's path cut from its start so its
+  folder shows. While the kind is a choice the block keeps its tallest
+  kind's room (picture, longest line, three rows), so the choice holds
+  still as it changes (Kirill). The block lays out where the
+  tallest keyboard seen would leave it (`reservingKeyboard`), so the
+  keyboard coming or going moves nothing. Bot and Task
   go to a computer whose Happy Agent makes them and answers
   (`MachineTarget`, `NewSessionServices.setKind`), moved off an offline
-  one unless the person picked it. Short of room the block drops its note,
-  then tightens. Its first send starts the session, bot or task (Happy
+  one unless the person picked it. Short of room (the keyboard up, the
+  composer grown) it moves as Happy Agent's new work does: nothing closes
+  or shrinks; it stands 12 over the composer and runs up under the bar,
+  picture first. The bar has no glass while a chat is being started
+  (`GlassBarLayout(clear = true)`): only Back draws there, so the picture
+  stays seen as it slides under it (Kirill). Nothing of it shows until the account's computers are
+  known (stored, or the first sync's), so the choice never flashes in or out. Its first send starts the session, bot or task (Happy
   Agent's `target: {kind: "task"}`) with that text and images, and the
   screen then shows it. A send to a computer that doesn't answer, or
   before the computers are in, is refused in full before anything starts;
@@ -1417,9 +1444,54 @@ change its wire behaviour on Android alone.
   matching says "This link belongs to a Happy server you're not connected to."
   and never falls back. Internal Happy links and `happy-file://` from outside,
   and malformed ones, open nothing. Inside an artifact a Happy link means that
-  connection; `openOutside` never hands a Happy URL to the system. Sharing a
-  bundled artifact's page shares its external link, and isn't offered when the
-  server has no `instanceId`. Chat doesn't render `happy://` links as links yet.
+  connection; `openOutside` never hands a Happy URL to the system. A bare
+  `happy://` URL in chat (not a Markdown link) isn't a link, as on desktop.
+- **Share links** (desktop 5a4c075c, `agent/HappyShareLinks.kt`): what leaves
+  the app is `https://link.happy.page/#1/<instanceId>/<rest>[?as=…|version=…|lines=…]`,
+  carrying the instance link; the grammar is link.happy.page's own, ported
+  exactly with the page's vectors (`HappyShareLinksTest`), and anything else is
+  refused whole. Every copy writes one, named by kind ("Copy link to task / bot
+  / subtask / subagent / conversation / artifact", `share_link_copy_*`): the
+  agent page's bar (`as` from `AgentKind`), the artifact viewer's bar, a held
+  artifact row, and a bundled artifact page's share menu. No `instanceId`, no
+  copy. Tapped anywhere in the app (chat, artifacts, documents, the in-app
+  browser), a share link goes to `HappyLinks` as the instance link it carries,
+  so the same instance match and "not connected" apply; it has no browser
+  menu. From outside, production's overlay (`src/release/AndroidManifest.xml`)
+  claims `https://link.happy.page` path `/` with `autoVerify` (the payload is
+  the fragment, which no filter can match), and `DeepLinks` opens what parses
+  as a share link; anything else there opens nothing. The host's
+  `assetlinks.json` (slopus/happy-link, `link.happy.page/src/wellKnown.ts`)
+  names `com.ex3ndr.happy` with the Play app-signing fingerprint
+  app.happy.engineering uses. Debug and preview leave share links to the
+  browser (`AppLinksManifestTest`).
+- **Links in messages and documents** (Kirill's rules, the same on desktop
+  and iOS): nothing shown or copied carries a private scheme, and a link keeps
+  the address it was written with. A Happy link written as Markdown, a share
+  link or a `happy://` one (agents write `[](https://link.happy.page/…)`),
+  reads as the current name of what it names, whatever its label (labels go
+  stale on a rename): `HappyReferences.markdown` writes the name over the
+  label, a person as "@name" (drawn in the strong face, opening nothing). What
+  isn't found, archived, malformed or another server's reads as desktop's
+  placeholder ("an unavailable agent", by kind; `?as` is ignored), never the
+  label: a share link stays a link, so a tap goes to `HappyLinks` and says
+  "not connected", and a `happy://` one is words. As on desktop, a deleted
+  artifact is its last title as words, a file link its path, a settings link
+  "Settings"; a button keeps its words. A bare link is its address (a bare
+  share link opens in the app; a bare `happy://` isn't a link). What a drawn
+  link opens is read from its address (`HappyReferences.target`,
+  `References.resolve`, `ReferenceOpener`), and a link to a conversation at
+  work (`ReferenceReader.busy`, home's `running`) shimmers under
+  `LocalBusyLinks`, as desktop's `data-busy` reference does (`shimmerBoxes`
+  sweeps each line of the link over the drawn words, faded into the bubble's
+  colour under `LocalLinkGround`). A tag (`<happy-agent id/>`) reads the same,
+  as a link to the Happy URL it names. Copied text is exactly what was
+  written; only tags read as their names (`HappyReferences.plain`). The
+  person's own bubble reads the same as an agent's. An artifact's Markdown
+  document may name its links (Kirill): there `markdown(labels = true)` keeps
+  a labelled Happy link as written, resolving or not, still opening and
+  shimmering by its address; `[](…)` still reads as the name. Bold and italic are
+  parsed again inside (`addSpans`), so `**[](url)**` is one bold link.
 - **Settings links and buttons** (API.md "Happy links", `ui/connection/SettingsLinks.kt`):
   `happy://settings/<page>` is a closed list of pages (`HappyUrls.SETTINGS_PAGES`).
   The Markdown parser splits a link's title from its destination; a well-formed
@@ -1649,15 +1721,38 @@ gained lines is all additions too, and git calls it modified.
   never ramps the ratio per frame, and Samsung captures without zero
   shutter lag (`photoCaptureMode`): there a ZSL session's preview froze
   once a zoom crossed onto another lens (an S22 at 2x). What a chat offers is `AttachAccepts`:
-  a Happy Agent conversation takes photos, videos and files (pictures
-  inline, the rest written into the agent's workspace first,
-  `conversation/WorkspaceUploads`, as iOS does); a relay session takes
+  a Happy Agent conversation takes photos, videos and files (as the
+  agent's attachments, below; to a computer before happy-agent
+  v2026.11.6-preview.4, pictures inline and the rest written into the
+  agent's workspace first, `conversation/WorkspaceUploads`, as iOS does); a relay session takes
   pictures only, since happy-cli reads only images from `file` events,
   unless a rig v1 policy lists more. No thumbhash on Android, as on
   happy-app native.
 - **Showing**: `file` tool rows render `FileMessageView`, which downloads
   and decrypts on demand through `AttachmentTransfers` (50-entry LRU of
   decrypted blobs, one download per ref).
+- **Happy Agent attachments** (happy-agent API.md "Attachments", the same
+  on Happy Cloud; iOS sends them alike): a message's pictures and files go
+  as `file` blocks naming uploads, never their bytes.
+  `conversation/AttachmentUploads` hashes each file first; up to 8 MiB it
+  goes in one `PUT …/attachments/:sha256`, a larger one asks where its
+  upload stands (`Content-Range: bytes */size`) and sends the first missing
+  range 8 MiB at a time. A broken connection or a `5xx` waits, asks again and
+  goes on from `received`; five failures in a row without a range taken fail
+  the send, whose Retry resumes it (the digest and attachment ID stay on the
+  `OutgoingFile`). A file uploaded before is asked after (`bytes */size`) on
+  every try and sent again where it is gone, since an unsent upload expires
+  after 24 h; a send refused `attachment_not_found` does that once more under
+  the same message ID. Past the request limit (`400`) the upload is deleted
+  and sent again once; `409 hash_mismatch` fails. A `404` on a send's first
+  upload is a computer without the route (`AttachmentRoute`, per connection,
+  forgotten after 10 minutes as on iOS): its sends go the old way. The sender's bytes are kept in the
+  connection's `MediaLibrary` under `attachment/<agentId>/<sha256>`, so it
+  never downloads its own. A message's `file` blocks are `MediaRef`s with
+  `attachment` set (`Block.File.ref`): pictures and recordings flow under its
+  words as tool media do (thumbhash first, read a range at a time from
+  `…/attachments/:sha256`, in the viewer and the agent page), other files are
+  cards. A `404` there is a file no longer available: the tile's failed glyph.
 
 ### Conversation media and the viewer
 
@@ -1815,8 +1910,9 @@ and a white arc for the share written; the arc turns while it fills. Its cross
 takes that picture out (`Conversation.removePicture`, iOS `removeAttachment`):
 the write in flight stops and the rest goes again under the same id, and a
 message left empty is taken back. The share comes from the request body as the
-transport writes it. `BodyProgress` in the coroutine context gets each chunk,
-and `UploadRanges` finds where each picture's base64 sits in the body, so
+transport writes it. `BodyProgress` in the coroutine context gets each chunk:
+an attachment's own upload reports its bytes, and an inline send's
+`UploadRanges` finds where each picture's base64 sits in the body, so
 `UploadBoard` can hold a share per picture. Before any bytes go, the arc is
 short and turning. Once the computer takes the message, every ring fills and
 then shrinks away. The photos are movable content: a message of pictures alone
@@ -2122,9 +2218,20 @@ is `packages/happy-ios`. The wire keeps its own names
   broke. The relay is pinged and replaced only if it doesn't answer within
   two seconds, every direct path is probed and one that stopped answering
   dropped, and an expired session rekeys; clients, requests under way and
-  live sessions stay. tailcat-kotlin watches no network itself, so a network
+  live sessions stay. Tailcat's reads block their thread (`runInterruptible`),
+  so `AgentSession` runs its link in a coroutine of its own: on the thread
+  collecting foreground and sign-in, a blocked read would keep a background
+  from stopping it. tailcat-kotlin watches no network itself, so a network
   that returns gets the same check on every kept client
   (`Transport.networkChanged`, from `AgentSession.networkReturned`). A
+  relay can also go dead with nothing said (a NAT rebinding, a handoff on
+  the same interface): a request with nothing back over its client for 3 s,
+  and the event stream silent for 20 s (its heartbeat is every 15 s), get
+  the same check on that client, at most once every 5 s
+  (`TailcatClients`' `Lease.watch`, iOS's 5a960ac2e). A request's flow given up
+  on before its answer is whole, and an event stream let go of, are reset
+  (`TailcatConnection.abort`), so the computer stops sending; a FIN would
+  have it send the rest, taken in and discarded (iOS's 934460ea4). A
   default network that moves to another one with no loss between (Wi-Fi to
   cellular, `NetworkChange.Moved` from `defaultNetwork().changes()`, iOS's
   4760daf0c) is different: what was open went out the old way and can hang
@@ -2139,10 +2246,13 @@ is `packages/happy-ios`. The wire keeps its own names
   variant) into `vendor/maven`, which `settings.gradle.kts` reads for the
   `io.tailcat` group only; the catalog pins the version. When it is
   published, switch the catalog and delete both. `tools/tailcat/patches`
-  holds fixes not yet in tailcat-kotlin, applied on top of the commit
-  (the version's `-p<n>`): today tailcat-swift 69a661b's closing-flow
-  limits, without which the in-app browser's short requests run the stack
-  out of connections. Upstream them and drop the patch.
+  would hold fixes not yet in tailcat-kotlin, applied on top of the commit
+  (the version's `-p<n>`); there are none today. The pinned commit has
+  tailcat-swift's recovery fixes to its 7cad775 except SACK (rejoin on a
+  restarted computer's `meow\x03`, 15 s unanswered and 5 s owed-data
+  rejoins, resend of what each flow owes after a rejoin or a relay
+  replaced) and its transport (window scaling, full receive queues, NewReno,
+  paced DERP sends).
 - **Live check:** `LivePairingTest` pairs with a real Happy Agent
   when `HAPPY_PAIRING_LINK` holds a fresh code, writes the emoji for the
   person confirming in Happy Agent, then reads health and config with the

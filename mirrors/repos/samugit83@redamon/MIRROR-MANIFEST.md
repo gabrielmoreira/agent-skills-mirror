@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `samugit83/redamon` — 26 default patterns, 1 followed patterns, 82 file(s) materialized.
+Mirror of `samugit83/redamon` — 26 default patterns, 1 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `samugit83/redamon` — 26 default patterns, 1 followed patterns, 82 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 82 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,63 +84,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`mcp/requirements.txt`](mcp/requirements.txt) |
 | 24 | ✓ | [`mcp/servers/__init__.py`](mcp/servers/__init__.py) |
 | 25 | ✓ | [`mcp/servers/_auth_middleware.py`](mcp/servers/_auth_middleware.py) |
-| 26 | ✓ | [`mcp/servers/browser_launch.py`](mcp/servers/browser_launch.py) |
-| 27 | ✓ | [`mcp/servers/capture_routing.py`](mcp/servers/capture_routing.py) |
-| 28 | ✓ | [`mcp/servers/metasploit_server.py`](mcp/servers/metasploit_server.py) |
-| 29 | ✓ | [`mcp/servers/network_recon_server.py`](mcp/servers/network_recon_server.py) |
-| 30 | ✓ | [`mcp/servers/nmap_server.py`](mcp/servers/nmap_server.py) |
-| 31 | ✓ | [`mcp/servers/nuclei_server.py`](mcp/servers/nuclei_server.py) |
-| 32 | ✓ | [`mcp/servers/playwright_server.py`](mcp/servers/playwright_server.py) |
-| 33 | ✓ | [`mcp/servers/proxy_brain_manual.md`](mcp/servers/proxy_brain_manual.md) |
-| 34 | ✓ | [`mcp/servers/redagraph.py`](mcp/servers/redagraph.py) |
-| 35 | ✓ | [`mcp/servers/redamon.py`](mcp/servers/redamon.py) |
-| 36 | ✓ | [`mcp/servers/run_servers.py`](mcp/servers/run_servers.py) |
-| 37 | ✓ | [`mcp/servers/terminal_server.py`](mcp/servers/terminal_server.py) |
-| 38 | ✓ | [`mcp/servers/test_arjun_tool.py`](mcp/servers/test_arjun_tool.py) |
-| 39 | ✓ | [`mcp/servers/tests/test_auth_middleware.py`](mcp/servers/tests/test_auth_middleware.py) |
-| 40 | ✓ | [`mcp/servers/tests/test_browser_launch.py`](mcp/servers/tests/test_browser_launch.py) |
-| 41 | ✓ | [`mcp/servers/tests/test_capture_wiring.py`](mcp/servers/tests/test_capture_wiring.py) |
-| 42 | ✓ | [`mcp/servers/tests/test_code_file_write.py`](mcp/servers/tests/test_code_file_write.py) |
-| 43 | ✓ | [`mcp/servers/tests/test_metasploit_interact.py`](mcp/servers/tests/test_metasploit_interact.py) |
-| 44 | ✓ | [`mcp/servers/tests/test_metasploit_progress.py`](mcp/servers/tests/test_metasploit_progress.py) |
-| 45 | ✓ | [`mcp/servers/tests/test_playwright_capture.py`](mcp/servers/tests/test_playwright_capture.py) |
-| 46 | ✓ | [`mcp/servers/tests/test_sse_auth_integration.py`](mcp/servers/tests/test_sse_auth_integration.py) |
-| 47 | ✓ | [`mcp/servers/tunnel_manager.py`](mcp/servers/tunnel_manager.py) |
-| 48 | ✓ | [`mcp/tests/__init__.py`](mcp/tests/__init__.py) |
-| 49 | ✓ | [`mcp/tests/test_curl_globoff.py`](mcp/tests/test_curl_globoff.py) |
-| 50 | ✓ | [`mcp/tests/test_network_recon_wrapper_format.py`](mcp/tests/test_network_recon_wrapper_format.py) |
-| 51 | ✓ | [`mcp/tests/test_redagraph_ask_auth.py`](mcp/tests/test_redagraph_ask_auth.py) |
-| 52 | ✓ | [`recon_orchestrator/AGENTS.md`](recon_orchestrator/AGENTS.md) |
-| 53 | ✓ | [`recon_orchestrator/CLAUDE.md`](recon_orchestrator/CLAUDE.md) |
-| 54 | ✓ | [`recon/AGENTS.md`](recon/AGENTS.md) |
-| 55 | ✓ | [`recon/CLAUDE.md`](recon/CLAUDE.md) |
-| 56 | ✓ | [`scanners/capture_proxy/AGENTS.md`](scanners/capture_proxy/AGENTS.md) |
-| 57 | ✓ | [`scanners/capture_proxy/CLAUDE.md`](scanners/capture_proxy/CLAUDE.md) |
-| 58 | ✓ | [`scanners/supply_chain_scan/AGENTS.md`](scanners/supply_chain_scan/AGENTS.md) |
-| 59 | ✓ | [`scanners/supply_chain_scan/CLAUDE.md`](scanners/supply_chain_scan/CLAUDE.md) |
-| 60 | ✓ | [`skills/add-community-skill/SKILL.md`](skills/add-community-skill/SKILL.md) |
-| 61 | ✓ | [`skills/add-partial-recon/SKILL.md`](skills/add-partial-recon/SKILL.md) |
-| 62 | ✓ | [`skills/agent-in-the-loop/SKILL.md`](skills/agent-in-the-loop/SKILL.md) |
-| 63 | ✓ | [`skills/agentic-tool-integration/SKILL.md`](skills/agentic-tool-integration/SKILL.md) |
-| 64 | ✓ | [`skills/builtin-agent-skill/SKILL.md`](skills/builtin-agent-skill/SKILL.md) |
-| 65 | ✓ | [`skills/graph-db-writes/SKILL.md`](skills/graph-db-writes/SKILL.md) |
-| 66 | ✓ | [`skills/llm-provider-integration/SKILL.md`](skills/llm-provider-integration/SKILL.md) |
-| 67 | ✓ | [`skills/mcp-server-tools/SKILL.md`](skills/mcp-server-tools/SKILL.md) |
-| 68 | ✓ | [`skills/orchestrator-container-spawn/SKILL.md`](skills/orchestrator-container-spawn/SKILL.md) |
-| 69 | ✓ | [`skills/plugin-platform/SKILL.md`](skills/plugin-platform/SKILL.md) |
-| 70 | ✓ | [`skills/priority-board-triage/SKILL.md`](skills/priority-board-triage/SKILL.md) |
-| 71 | ✓ | [`skills/project-settings-cascade/SKILL.md`](skills/project-settings-cascade/SKILL.md) |
-| 72 | ✓ | [`skills/recon-ai-enrichment/SKILL.md`](skills/recon-ai-enrichment/SKILL.md) |
-| 73 | ✓ | [`skills/recon-tool-integration/SKILL.md`](skills/recon-tool-integration/SKILL.md) |
-| 74 | ✓ | [`skills/redamon-testing/SKILL.md`](skills/redamon-testing/SKILL.md) |
-| 75 | ✓ | [`skills/skill-sync/assets/citation-check.sh`](skills/skill-sync/assets/citation-check.sh) |
-| 76 | ✓ | [`skills/skill-sync/assets/drift-audit.sh`](skills/skill-sync/assets/drift-audit.sh) |
-| 77 | ✓ | [`skills/skill-sync/assets/sync.sh`](skills/skill-sync/assets/sync.sh) |
-| 78 | ✓ | [`skills/supply-chain-scan/SKILL.md`](skills/supply-chain-scan/SKILL.md) |
-| 79 | ✓ | [`skills/traffic-capture/SKILL.md`](skills/traffic-capture/SKILL.md) |
-| 80 | ✓ | [`webapp/AGENTS.md`](webapp/AGENTS.md) |
-| 81 | ✓ | [`webapp/CLAUDE.md`](webapp/CLAUDE.md) |
-| 82 | → | [`docs/readmes/skills_management/SKILLS_MANAGEMENT.md`](docs/readmes/skills_management/SKILLS_MANAGEMENT.md) |
+| 26 | ✓ | [`mcp/servers/_run_registry.py`](mcp/servers/_run_registry.py) |
+| 27 | ✓ | [`mcp/servers/_safe_env.py`](mcp/servers/_safe_env.py) |
+| 28 | ✓ | [`mcp/servers/browser_launch.py`](mcp/servers/browser_launch.py) |
+| 29 | ✓ | [`mcp/servers/capture_routing.py`](mcp/servers/capture_routing.py) |
+| 30 | ✓ | [`mcp/servers/metasploit_server.py`](mcp/servers/metasploit_server.py) |
+| 31 | ✓ | [`mcp/servers/network_recon_server.py`](mcp/servers/network_recon_server.py) |
+| 32 | ✓ | [`mcp/servers/nmap_server.py`](mcp/servers/nmap_server.py) |
+| 33 | ✓ | [`mcp/servers/nuclei_server.py`](mcp/servers/nuclei_server.py) |
+| 34 | ✓ | [`mcp/servers/playwright_server.py`](mcp/servers/playwright_server.py) |
+| 35 | ✓ | [`mcp/servers/proxy_brain_manual.md`](mcp/servers/proxy_brain_manual.md) |
+| 36 | ✓ | [`mcp/servers/redagraph.py`](mcp/servers/redagraph.py) |
+| 37 | ✓ | [`mcp/servers/redamon.py`](mcp/servers/redamon.py) |
+| 38 | ✓ | [`mcp/servers/run_servers.py`](mcp/servers/run_servers.py) |
+| 39 | ✓ | [`mcp/servers/terminal_server.py`](mcp/servers/terminal_server.py) |
+| 40 | ✓ | [`mcp/servers/test_arjun_tool.py`](mcp/servers/test_arjun_tool.py) |
+| 41 | ✓ | [`mcp/servers/tests/test_auth_middleware.py`](mcp/servers/tests/test_auth_middleware.py) |
+| 42 | ✓ | [`mcp/servers/tests/test_browser_launch.py`](mcp/servers/tests/test_browser_launch.py) |
+| 43 | ✓ | [`mcp/servers/tests/test_capture_wiring.py`](mcp/servers/tests/test_capture_wiring.py) |
+| 44 | ✓ | [`mcp/servers/tests/test_code_file_write.py`](mcp/servers/tests/test_code_file_write.py) |
+| 45 | ✓ | [`mcp/servers/tests/test_metasploit_interact.py`](mcp/servers/tests/test_metasploit_interact.py) |
+| 46 | ✓ | [`mcp/servers/tests/test_metasploit_progress.py`](mcp/servers/tests/test_metasploit_progress.py) |
+| 47 | ✓ | [`mcp/servers/tests/test_playwright_capture.py`](mcp/servers/tests/test_playwright_capture.py) |
+| 48 | ✓ | [`mcp/servers/tests/test_sse_auth_integration.py`](mcp/servers/tests/test_sse_auth_integration.py) |
+| 49 | ✓ | [`mcp/servers/tunnel_manager.py`](mcp/servers/tunnel_manager.py) |
+| 50 | ✓ | [`mcp/tests/__init__.py`](mcp/tests/__init__.py) |
+| 51 | ✓ | [`mcp/tests/test_curl_globoff.py`](mcp/tests/test_curl_globoff.py) |
+| 52 | ✓ | [`mcp/tests/test_network_recon_wrapper_format.py`](mcp/tests/test_network_recon_wrapper_format.py) |
+| 53 | ✓ | [`mcp/tests/test_redagraph_ask_auth.py`](mcp/tests/test_redagraph_ask_auth.py) |
+| 54 | ✓ | [`recon_orchestrator/AGENTS.md`](recon_orchestrator/AGENTS.md) |
+| 55 | ✓ | [`recon_orchestrator/CLAUDE.md`](recon_orchestrator/CLAUDE.md) |
+| 56 | ✓ | [`recon/AGENTS.md`](recon/AGENTS.md) |
+| 57 | ✓ | [`recon/CLAUDE.md`](recon/CLAUDE.md) |
+| 58 | ✓ | [`scanners/capture_proxy/AGENTS.md`](scanners/capture_proxy/AGENTS.md) |
+| 59 | ✓ | [`scanners/capture_proxy/CLAUDE.md`](scanners/capture_proxy/CLAUDE.md) |
+| 60 | ✓ | [`scanners/supply_chain_scan/AGENTS.md`](scanners/supply_chain_scan/AGENTS.md) |
+| 61 | ✓ | [`scanners/supply_chain_scan/CLAUDE.md`](scanners/supply_chain_scan/CLAUDE.md) |
+| 62 | ✓ | [`skills/add-community-skill/SKILL.md`](skills/add-community-skill/SKILL.md) |
+| 63 | ✓ | [`skills/add-partial-recon/SKILL.md`](skills/add-partial-recon/SKILL.md) |
+| 64 | ✓ | [`skills/agent-in-the-loop/SKILL.md`](skills/agent-in-the-loop/SKILL.md) |
+| 65 | ✓ | [`skills/agentic-tool-integration/SKILL.md`](skills/agentic-tool-integration/SKILL.md) |
+| 66 | ✓ | [`skills/builtin-agent-skill/SKILL.md`](skills/builtin-agent-skill/SKILL.md) |
+| 67 | ✓ | [`skills/graph-db-writes/SKILL.md`](skills/graph-db-writes/SKILL.md) |
+| 68 | ✓ | [`skills/llm-provider-integration/SKILL.md`](skills/llm-provider-integration/SKILL.md) |
+| 69 | ✓ | [`skills/mcp-server-tools/SKILL.md`](skills/mcp-server-tools/SKILL.md) |
+| 70 | ✓ | [`skills/orchestrator-container-spawn/SKILL.md`](skills/orchestrator-container-spawn/SKILL.md) |
+| 71 | ✓ | [`skills/plugin-platform/SKILL.md`](skills/plugin-platform/SKILL.md) |
+| 72 | ✓ | [`skills/priority-board-triage/SKILL.md`](skills/priority-board-triage/SKILL.md) |
+| 73 | ✓ | [`skills/project-settings-cascade/SKILL.md`](skills/project-settings-cascade/SKILL.md) |
+| 74 | ✓ | [`skills/rbac-authz/SKILL.md`](skills/rbac-authz/SKILL.md) |
+| 75 | ✓ | [`skills/recon-ai-enrichment/SKILL.md`](skills/recon-ai-enrichment/SKILL.md) |
+| 76 | ✓ | [`skills/recon-tool-integration/SKILL.md`](skills/recon-tool-integration/SKILL.md) |
+| 77 | ✓ | [`skills/redamon-testing/SKILL.md`](skills/redamon-testing/SKILL.md) |
+| 78 | ✓ | [`skills/skill-sync/assets/citation-check.sh`](skills/skill-sync/assets/citation-check.sh) |
+| 79 | ✓ | [`skills/skill-sync/assets/drift-audit.sh`](skills/skill-sync/assets/drift-audit.sh) |
+| 80 | ✓ | [`skills/skill-sync/assets/sync.sh`](skills/skill-sync/assets/sync.sh) |
+| 81 | ✓ | [`skills/supply-chain-scan/SKILL.md`](skills/supply-chain-scan/SKILL.md) |
+| 82 | ✓ | [`skills/traffic-capture/SKILL.md`](skills/traffic-capture/SKILL.md) |
+| 83 | ✓ | [`webapp/AGENTS.md`](webapp/AGENTS.md) |
+| 84 | ✓ | [`webapp/CLAUDE.md`](webapp/CLAUDE.md) |
+| 85 | → | [`docs/readmes/skills_management/SKILLS_MANAGEMENT.md`](docs/readmes/skills_management/SKILLS_MANAGEMENT.md) |
 
 ---
 

@@ -1091,15 +1091,21 @@ Architecture impact: major; Desktop-only product chain expanded to shared Deskto
 
 `electron/appQuitLifecycle` 是 Electron 退出事件的唯一协调入口；`main` 只注入
 原有同步资源清理、`appServerHost.stop` 与错误记录。`before-quit` 仅准备一次，
-`will-quit` 阻止退出并等待同一异步清理，完成或拒绝后再调用 `app.quit()`；恢复的
+阻止窗口提前销毁并等待同一异步清理，完成或拒绝后再调用 `app.quit()`；恢复的
 退出事件不重复清理。它不接管 sidecar 连接、终止策略或业务状态。
 
 ```text
-Electron before-quit -> Main 同步资源清理（once）
-Electron will-quit -> preventDefault -> AppServerHost.stop
+Electron before-quit -> preventDefault -> Main 同步资源清理（once）
+  -> BrowserTabHost.prepareShutdown -> CloudDesktopWindows.stop / AppServerHost.stop
   -> existing SidecarLifecycle.stop -> existing sidecar.close
   -> fulfilled / rejected -> app.quit -> resumed will-quit
 ```
+
+`MacOSNativeHostClient` 与 `WindowsNativeHostClient` 的 `dispose` 是终态；迟到的权限
+或窗口查询返回 `stopped`，不能重新启动 helper。macOS readiness 的异步边界后再次检查
+终态，避免清理完成后继续注册请求。原生资源继续归现役客户端，不增加全局进程扫描、
+第二清理 owner 或强制退出成功兜底。此边界的架构影响为 minor，root 于 2026-11-14
+确认依赖方向不变；真实正常退出及云端同 Thread 接续按 Cloud 执行计划独立验收。
 
 此顺序依据同版本安装包的 REA `eZe` / `u7` 静态证据；上游完整 flush 集合、
 context 资源树与五秒 dispose 界限不等同于 Lime 的资源合同。Lime 复用既有 sidecar
@@ -2056,7 +2062,7 @@ wire 上的 `items` 保持 Codex opaque JSON shape，但 RuntimeCore 必须在�
 扩展字段；Chat Completions、Anthropic 与其他不支持 raw Responses item 的 route 在发网前拒绝。当前 method
 boundary 不关闭 P0-03 的全局 canonical history/rollout、rollback/fork/replay 与未知记录一致性缺口。
 
-session start 返回成功前必须先同步写入 rollout metadata 首行并提交 Thread metadata row，再把 session 暴露到 RuntimeCore 内存状态；文件或 SQLite 失败都不得留下 memory-only session，DB commit 失败后的 metadata 文件由同 identity 重试接管而不是覆盖。canonical `session_id`、`thread_id` 与非空 `rollout_path` 均为唯一 identity，跨 RuntimeCore 重启也不得一对多。显式 session delete 与 import replace 的文件/metadata 原子协议尚未完成，当前入口不得被描述为安全清理能力；GUI、AgentSession adapter 和首事件 lazy create 都不能充当 empty Thread fallback。首事件 ensure 只保留为防御式幂等边界，不再拥有 Thread 创建时点。
+session start 返回成功前必须先同步写入 rollout metadata 首行并提交 Thread metadata row，再把 session 暴露到 RuntimeCore 内存状态；文件或 SQLite 失败都不得留下 memory-only session，DB commit 失败后的 metadata 文件由同 identity 重试接管而不是覆盖。canonical `session_id`、`thread_id` 与非空 `rollout_path` 均为唯一 identity，跨 RuntimeCore 重启也不得一对多。显式 session delete 与 import replace 的文件/metadata 原子协议尚未完成，当前入口不得被描述为安全清理能力；GUI、AgentSession adapter 和首事件 lazy create 都不能充当 empty Thread fallback。首事件 ensure 只保留为防御式幂等边界，不再拥有 Thread 创建时点。 Codex 聊天历史导入的 current owner 是 v2 `thread/import`：Desktop Host 只解析 rollout 的 user/assistant 文本与 source turn 边界，RuntimeCore 用 canonical `turn.started`/`item.completed`/`turn.completed` 事件经现有 materializer 生成真实 Turn/Item，再走 `ProjectionStore::create_thread` + `apply_history_with_runtime_sync` 持久化到 canonical history/rollout；source identity 的 UUID v5 决定 thread/session id 以提供幂等。`thread/inject_items` 仍为 provider-only，不得冒充可见历史导入 owner。
 
 action-required/approval 与 ask-user 的 live continuation 归 `agent-runtime` session/turn scoped pending state；可持久化恢复事实归 RuntimeCore canonical events。Codex v2 typed server request 必须先从 canonical descriptor 恢复 scope，再校验 caller 参数；不得信任 caller type、从 presentation/read-model JSON 二次解析、或让 RuntimeBackend 回读 AppDataSource。重启后只能恢复 typed descriptor，不能伪造原 oneshot；无 continuation 时返回结构化 `action_not_resumable` 且不得写 resolved。ask-user 的否定响应必须消费 waiter 并投影 canceled。MCP server-originated elicitation 不属于 approval 链，不能写入这些 runtime event 或 canonical Item。
 
@@ -2084,9 +2090,15 @@ App Server / RuntimeCore tool dispatch
 
 `BING_SEARCH_ENDPOINT` 与 `GOOGLE_SEARCH_ENDPOINT` 仅覆盖对应工具 API 的完整 URL；缺省或空白继续使用供应商地址，非法 URL 或非 HTTP(S) scheme 作为单个提供商失败进入既有回退链。API key、Google engine ID、请求参数、响应格式及工具权限仍由原 owner 处理。该配置不属于模型 Provider 控制面，不新增持久化、协议、搜索后端或网络策略旁路。按敏感路径门禁完成架构确认；责任开发者 root 已核对目录归属、数据流、依赖方向、协议边界与定向回归，实际影响为既有工具 API 的配置扩展。
 
-Codex `thread/realtime/*` 的WebRTC/session control与通知已纳入planned，必须在同一App Server
-Thread/Turn生命周期中重建；当前没有该exact接线，不据此声明已交付。旧录音、麦克风和
-realtime voice GUI保持dead，不能恢复成第二套Thread lifecycle或Renderer音频后端。
+Lime 实时语音采用 OpenAI Realtime WebRTC 的 renderer 会话，不走 Codex 的
+`thread/realtime/*` native thread 生命周期，也不使用 Codex Cloud auth。`model-provider::realtime`
+是唯一 provider wire：用宿主内标准 OpenAI API key 向官方 `/v1/realtime/client_secrets` 兑换
+短时 `ek_...` secret；App Server `voiceRealtime/clientSecret/create` 只向 renderer 返回短时
+secret 与官方 `/v1/realtime/calls` URL，标准 key 不进入 renderer。Renderer 的
+`RTCPeerConnection` + `oai-events` data channel 负责麦克风、远端音频、转录/错误/关闭事件；
+Voice 设置只在默认 provider、API key、显式模型/音色与 WebRTC 路径全部可用时声明
+`realtime=true`。旧录音、麦克风进程内实时入口保持 dead，不能恢复成第二套 Thread lifecycle
+或 Renderer 音频后端。
 音频、语音和媒体能力仍以 Codex 的产品/runtime 语义为准；保留 Lime 多模型、多协议，
 仅参考 grok-build 的适用多模型机制，由 `model-provider` 承接 catalog/capability/readiness 与 sampling/lowering，再由
 `voice-core` / `media-runtime` 承接领域执行和 artifact 生命周期。
@@ -7036,8 +7048,8 @@ OSS V4 互操作合同固定参考 Alibaba SDK revision `d3474aa038242301669f48b
 上传前配置并读回 `runtime/` 的一天对象及未完成分块过期规则；这是供应商异步过期兜底，
 不保证精确二十四小时删除，也不代替正常清理。清理只删除原对象和空桶，未知内容阻止删桶。
 只读 `checkRuntimeRelease` 保留为二十秒的描述与 HEAD 可用性检查，不代表本机缓存已准备。
-正式发布复用 Linux CLI 的 release 构建，经过 loader、二进制版本和 guest manifest 校验后
-先上传 guest 与描述，再发布应用版本；不覆盖既有版本资产。工作流接线不表示产物已经发布。
+正式发布仅包含 macOS arm64/x64 与 Windows x64 的 Desktop、CLI 产物，不构建或上传 Linux guest。
+当前没有官方 guest 资产，release 来源的自动安装与购买前准备返回 `CLOUD_INSTALL_RELEASE_UNAVAILABLE`，不会继续云端操作。
 用户自行构建通过同一 `linux-guest-build.mjs --profile release` 选择正式模式；省略时使用 dev。
 Cargo 模式、读取的 target 目录与 guest manifest 一致，构建与 staging 均不执行上传。
 
@@ -7753,8 +7765,10 @@ flowchart TD
 父收据摘要在序列化前递归排序 JSON 对象，避免 Cargo feature 合并启用
 `serde_json/preserve_order` 后改变同一请求的摘要；读取仍只接受唯一摘要，不改写旧收据。
 重新准备网络前，原网络栈必须读回三项原物理资源均已删除。ROS 在
-`DELETE_COMPLETE` 后清空标签时，仅此前已验证的原栈可结合不变的栈身份和完整删除清单
-确认结束；未验证的原栈、错误标签、保留资源或变化的物理身份继续阻断重建。
+`DELETE_COMPLETE` 后清空标签与物理 ID 时，仅此前已验证的原栈可结合不变的栈身份、
+三项固定资源的完整删除清单，以及原交换机／安全组 ID 的独立查无确认结束；
+返回的非空物理 ID 仍须匹配。未验证原栈、错误标签、保留资源、变化的物理身份、
+仍存在的原资源或不完整的查询结果继续阻断重建。
 释放前重用原镜像保护核验，完成再比对原释放收据及精确实例不存在；保留资源费用和应用验证独立。
 取消在同一操作锁内判定，仅停止后续步骤，已创建备份保留；删除意图持久化后不能取消。
 外部控制台仍可修改资源，用户须保持源机停止且不在控制台操作；当前实例查询无法证明外部

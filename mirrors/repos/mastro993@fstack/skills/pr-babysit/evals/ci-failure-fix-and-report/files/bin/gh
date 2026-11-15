@@ -4,13 +4,15 @@
 Simulates one GitHub pull request on top of a local bare repository (remote.git). CI for a head
 commit stays pending for scenario["ci_delay_seconds"] after the stub first sees it, then runs
 scenario["ci_command"] on that commit: exit 0 is a pass. Review threads, reviews, and comments
-come from the scenario; replies, comments, and review requests are recorded in state.json, and
-every call is appended to calls.log for grading.
+come from the scenario; replies, comments, and review requests are recorded in state.json, every
+call is appended to calls.log, and what was pushed to the PR branch is kept in pushed.diff, all
+for grading.
 
 Optional scenario keys simulate the world moving on:
   base_moves_after_seconds        another PR lands: the base branch jumps to refs/stub/base-next
   require_up_to_date              mergeStateStatus is BEHIND while the head lacks the base tip
   merge_when_ready_after_seconds  a maintainer merges once the PR has been ready this long
+  marked_ready_after_seconds      the author marks a draft PR ready for review on GitHub
 
 and describe the PR and repo:
   pr_exists          false: no PR until `gh pr create` (pair with setup-fixture.sh's head_pushed)
@@ -69,7 +71,8 @@ def pr_exists():
 
 def draft():
     initial = STATE["created"]["draft"] if "created" in STATE else SCN.get("draft", False)
-    return initial and not STATE["ready"]
+    marked = "marked_ready_after_seconds" in SCN and visible({"after_seconds": SCN["marked_ready_after_seconds"]})
+    return initial and not STATE["ready"] and not marked
 
 
 def pr_text(key):
@@ -95,6 +98,18 @@ def git(*args, cwd=None):
 
 def head():
     return branch_sha(SCN["head"])
+
+
+def record_pushed():
+    """Write pushed.diff: whether the PR branch still contains its original head, then everything
+    pushed to it since, as a diff."""
+    try:
+        first, now = SCN["initial_head"], head()
+        kept = subprocess.run(["git", "--git-dir", str(REMOTE), "merge-base", "--is-ancestor", first, now]).returncode == 0
+        diff = git("--git-dir", str(REMOTE), "diff", first, now)
+    except subprocess.CalledProcessError:
+        return  # the PR branch isn't on the remote yet
+    (STUB / "pushed.diff").write_text(f"history: {'kept' if kept else 'rewritten'}\n{diff}\n")
 
 
 def maybe_move_base():
@@ -721,6 +736,7 @@ def main():
         print(f"stub: unsupported command gh {' '.join(args)}", file=sys.stderr)
         return 1
     finally:
+        record_pushed()
         save()
 
 

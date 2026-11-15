@@ -1,0 +1,20 @@
+schema_version: "1.1"
+name: kotlin-kdoc-and-detekt
+expected_outcome: |
+  Only comments the checkout-flow branch adds or changes are swept; "// loop over the items and add
+  up price times quantity" in cart/Cart.kt predates the branch and stays untouched even though the
+  branch edits that file. config/detekt.yml turns on UndocumentedPublicClass and
+  UndocumentedPublicFunction, so every KDoc on a public class or function stays: the restating
+  "Gets the cart. @param id the id @return the cart" KDoc on CheckoutRepository.getCart is trimmed,
+  not removed, and the placeOrder KDoc keeps its minor-units and IllegalStateException contract.
+  The Retrofit no-leading-slash note with its link and the TODO linking issue 412 stay. The nested
+  "Old LiveData version" block comment, the other commented-out code, narration ("call the api",
+  "update the state", ...), the "refactored to use StateFlow as discussed" history, the "=====
+  State =====" banners, and the done "TODO: throw when the cart is empty" are deleted. The
+  "Must be called on the main thread" note on onPaymentResult stays and is reported as a reshape
+  target (annotate with @MainThread). "amount in euros" on OrderRequest.amount is reported as a
+  mismatch: the repository sends cart.subtotalCents(). ktlint-disable/enable comments,
+  //noinspection, @file:Suppress, and @Suppress("MagicNumber") are unchanged, strings that look
+  like comments are byte-identical, and no code changes.
+context:
+  scaffold_script: place-files.sh

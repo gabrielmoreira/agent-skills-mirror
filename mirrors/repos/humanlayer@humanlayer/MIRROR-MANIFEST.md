@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `humanlayer/humanlayer` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
+Mirror of `humanlayer/humanlayer` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `humanlayer/humanlayer` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 84 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,66 +83,67 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.claude/skills/no-use-effect/SKILL.md`](.claude/skills/no-use-effect/SKILL.md) |
 | 23 | ✓ | [`.claude/skills/react-doctor/SKILL.md`](.claude/skills/react-doctor/SKILL.md) |
 | 24 | ✓ | [`.claude/skills/rebase-drizzle-migration/SKILL.md`](.claude/skills/rebase-drizzle-migration/SKILL.md) |
-| 25 | ✓ | [`.claude/skills/show-me-the-components/SKILL.md`](.claude/skills/show-me-the-components/SKILL.md) |
-| 26 | ✓ | [`.claude/skills/storybook/SKILL.md`](.claude/skills/storybook/SKILL.md) |
-| 27 | ✓ | [`.claude/skills/stripe-billing-verification/SKILL.md`](.claude/skills/stripe-billing-verification/SKILL.md) |
-| 28 | ✓ | [`.claude/skills/subagent-orchestrator/SKILL.md`](.claude/skills/subagent-orchestrator/SKILL.md) |
-| 29 | ✓ | [`.claude/skills/sync/durable-streams-yjs/SKILL.md`](.claude/skills/sync/durable-streams-yjs/SKILL.md) |
-| 30 | ✓ | [`.claude/skills/test-it-locally/references/local-cli-testing/SKILL.md`](.claude/skills/test-it-locally/references/local-cli-testing/SKILL.md) |
-| 31 | ✓ | [`.claude/skills/test-it-locally/SKILL.md`](.claude/skills/test-it-locally/SKILL.md) |
-| 32 | ✓ | [`.claude/skills/ui-copy/SKILL.md`](.claude/skills/ui-copy/SKILL.md) |
-| 33 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 34 | ✓ | [`apps/riptide-api/CLAUDE.md`](apps/riptide-api/CLAUDE.md) |
-| 35 | ✓ | [`apps/riptide-cloud/CLAUDE.md`](apps/riptide-cloud/CLAUDE.md) |
-| 36 | ✓ | [`apps/riptide-daemon/CLAUDE.md`](apps/riptide-daemon/CLAUDE.md) |
-| 37 | ✓ | [`apps/riptide-humanlayer-claude-plugin/skills/orchestrate/SKILL.md`](apps/riptide-humanlayer-claude-plugin/skills/orchestrate/SKILL.md) |
-| 38 | ✓ | [`apps/riptide-humanlayer-claude-plugin/skills/show-me/SKILL.md`](apps/riptide-humanlayer-claude-plugin/skills/show-me/SKILL.md) |
-| 39 | ✓ | [`apps/riptide-humanlayer-claude-plugin/skills/teleport/SKILL.md`](apps/riptide-humanlayer-claude-plugin/skills/teleport/SKILL.md) |
-| 40 | ✓ | [`apps/riptide-pi-extension/skills/create-design-discussion/SKILL.md`](apps/riptide-pi-extension/skills/create-design-discussion/SKILL.md) |
-| 41 | ✓ | [`apps/riptide-pi-extension/skills/create-prd/SKILL.md`](apps/riptide-pi-extension/skills/create-prd/SKILL.md) |
-| 42 | ✓ | [`apps/riptide-pi-extension/skills/create-research-questions/SKILL.md`](apps/riptide-pi-extension/skills/create-research-questions/SKILL.md) |
-| 43 | ✓ | [`apps/riptide-pi-extension/skills/create-research/SKILL.md`](apps/riptide-pi-extension/skills/create-research/SKILL.md) |
-| 44 | ✓ | [`apps/riptide-pi-extension/skills/create-structure-outline/SKILL.md`](apps/riptide-pi-extension/skills/create-structure-outline/SKILL.md) |
-| 45 | ✓ | [`apps/riptide-pi-extension/skills/create-tech-design/SKILL.md`](apps/riptide-pi-extension/skills/create-tech-design/SKILL.md) |
-| 46 | ✓ | [`apps/riptide-pi-extension/skills/describe-pr/SKILL.md`](apps/riptide-pi-extension/skills/describe-pr/SKILL.md) |
-| 47 | ✓ | [`apps/riptide-pi-extension/skills/implement-outline/SKILL.md`](apps/riptide-pi-extension/skills/implement-outline/SKILL.md) |
-| 48 | ✓ | [`apps/riptide-pi-extension/skills/implement-plan/SKILL.md`](apps/riptide-pi-extension/skills/implement-plan/SKILL.md) |
-| 49 | ✓ | [`apps/riptide-pi-extension/skills/iterate-design-discussion/SKILL.md`](apps/riptide-pi-extension/skills/iterate-design-discussion/SKILL.md) |
-| 50 | ✓ | [`apps/riptide-pi-extension/skills/iterate-implementation/SKILL.md`](apps/riptide-pi-extension/skills/iterate-implementation/SKILL.md) |
-| 51 | ✓ | [`apps/riptide-pi-extension/skills/iterate-prd/SKILL.md`](apps/riptide-pi-extension/skills/iterate-prd/SKILL.md) |
-| 52 | ✓ | [`apps/riptide-pi-extension/skills/iterate-research-questions/SKILL.md`](apps/riptide-pi-extension/skills/iterate-research-questions/SKILL.md) |
-| 53 | ✓ | [`apps/riptide-pi-extension/skills/iterate-research/SKILL.md`](apps/riptide-pi-extension/skills/iterate-research/SKILL.md) |
-| 54 | ✓ | [`apps/riptide-pi-extension/skills/iterate-structure-outline/SKILL.md`](apps/riptide-pi-extension/skills/iterate-structure-outline/SKILL.md) |
-| 55 | ✓ | [`apps/riptide-pi-extension/skills/iterate-tech-design/SKILL.md`](apps/riptide-pi-extension/skills/iterate-tech-design/SKILL.md) |
-| 56 | ✓ | [`apps/riptide-pi-extension/skills/show-me/SKILL.md`](apps/riptide-pi-extension/skills/show-me/SKILL.md) |
-| 57 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/ci-commit/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/ci-commit/SKILL.md) |
-| 58 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/configure-workspaces/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/configure-workspaces/SKILL.md) |
-| 59 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-design-discussion/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-design-discussion/SKILL.md) |
-| 60 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-plan/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-plan/SKILL.md) |
-| 61 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-prd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-prd/SKILL.md) |
-| 62 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-research-questions/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-research-questions/SKILL.md) |
-| 63 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-research/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-research/SKILL.md) |
-| 64 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-structure-outline/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-structure-outline/SKILL.md) |
-| 65 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-tdd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-tdd/SKILL.md) |
-| 66 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/describe-pr/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/describe-pr/SKILL.md) |
-| 67 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/implement-outline/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/implement-outline/SKILL.md) |
-| 68 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/implement-plan/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/implement-plan/SKILL.md) |
-| 69 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-design-discussion/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-design-discussion/SKILL.md) |
-| 70 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-implementation/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-implementation/SKILL.md) |
-| 71 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-plan/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-plan/SKILL.md) |
-| 72 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-prd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-prd/SKILL.md) |
-| 73 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-research-questions/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-research-questions/SKILL.md) |
-| 74 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-research/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-research/SKILL.md) |
-| 75 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-structure-outline/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-structure-outline/SKILL.md) |
-| 76 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-tdd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-tdd/SKILL.md) |
-| 77 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/review-artifact-comments/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/review-artifact-comments/SKILL.md) |
-| 78 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/setup-worktree/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/setup-worktree/SKILL.md) |
-| 79 | ✓ | [`apps/riptide-ui/CLAUDE.md`](apps/riptide-ui/CLAUDE.md) |
-| 80 | ✓ | [`apps/riptide-ui/src/minimalist/AGENTS.md`](apps/riptide-ui/src/minimalist/AGENTS.md) |
-| 81 | ✓ | [`apps/riptide-ui/src/minimalist/CLAUDE.md`](apps/riptide-ui/src/minimalist/CLAUDE.md) |
-| 82 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 83 | ✓ | [`packages/logger/CLAUDE.md`](packages/logger/CLAUDE.md) |
-| 84 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
+| 25 | ✓ | [`.claude/skills/self-host-humanlayer/SKILL.md`](.claude/skills/self-host-humanlayer/SKILL.md) |
+| 26 | ✓ | [`.claude/skills/show-me-the-components/SKILL.md`](.claude/skills/show-me-the-components/SKILL.md) |
+| 27 | ✓ | [`.claude/skills/storybook/SKILL.md`](.claude/skills/storybook/SKILL.md) |
+| 28 | ✓ | [`.claude/skills/stripe-billing-verification/SKILL.md`](.claude/skills/stripe-billing-verification/SKILL.md) |
+| 29 | ✓ | [`.claude/skills/subagent-orchestrator/SKILL.md`](.claude/skills/subagent-orchestrator/SKILL.md) |
+| 30 | ✓ | [`.claude/skills/sync/durable-streams-yjs/SKILL.md`](.claude/skills/sync/durable-streams-yjs/SKILL.md) |
+| 31 | ✓ | [`.claude/skills/test-it-locally/references/local-cli-testing/SKILL.md`](.claude/skills/test-it-locally/references/local-cli-testing/SKILL.md) |
+| 32 | ✓ | [`.claude/skills/test-it-locally/SKILL.md`](.claude/skills/test-it-locally/SKILL.md) |
+| 33 | ✓ | [`.claude/skills/ui-copy/SKILL.md`](.claude/skills/ui-copy/SKILL.md) |
+| 34 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 35 | ✓ | [`apps/riptide-api/CLAUDE.md`](apps/riptide-api/CLAUDE.md) |
+| 36 | ✓ | [`apps/riptide-cloud/CLAUDE.md`](apps/riptide-cloud/CLAUDE.md) |
+| 37 | ✓ | [`apps/riptide-daemon/CLAUDE.md`](apps/riptide-daemon/CLAUDE.md) |
+| 38 | ✓ | [`apps/riptide-humanlayer-claude-plugin/skills/orchestrate/SKILL.md`](apps/riptide-humanlayer-claude-plugin/skills/orchestrate/SKILL.md) |
+| 39 | ✓ | [`apps/riptide-humanlayer-claude-plugin/skills/show-me/SKILL.md`](apps/riptide-humanlayer-claude-plugin/skills/show-me/SKILL.md) |
+| 40 | ✓ | [`apps/riptide-humanlayer-claude-plugin/skills/teleport/SKILL.md`](apps/riptide-humanlayer-claude-plugin/skills/teleport/SKILL.md) |
+| 41 | ✓ | [`apps/riptide-pi-extension/skills/create-design-discussion/SKILL.md`](apps/riptide-pi-extension/skills/create-design-discussion/SKILL.md) |
+| 42 | ✓ | [`apps/riptide-pi-extension/skills/create-prd/SKILL.md`](apps/riptide-pi-extension/skills/create-prd/SKILL.md) |
+| 43 | ✓ | [`apps/riptide-pi-extension/skills/create-research-questions/SKILL.md`](apps/riptide-pi-extension/skills/create-research-questions/SKILL.md) |
+| 44 | ✓ | [`apps/riptide-pi-extension/skills/create-research/SKILL.md`](apps/riptide-pi-extension/skills/create-research/SKILL.md) |
+| 45 | ✓ | [`apps/riptide-pi-extension/skills/create-structure-outline/SKILL.md`](apps/riptide-pi-extension/skills/create-structure-outline/SKILL.md) |
+| 46 | ✓ | [`apps/riptide-pi-extension/skills/create-tech-design/SKILL.md`](apps/riptide-pi-extension/skills/create-tech-design/SKILL.md) |
+| 47 | ✓ | [`apps/riptide-pi-extension/skills/describe-pr/SKILL.md`](apps/riptide-pi-extension/skills/describe-pr/SKILL.md) |
+| 48 | ✓ | [`apps/riptide-pi-extension/skills/implement-outline/SKILL.md`](apps/riptide-pi-extension/skills/implement-outline/SKILL.md) |
+| 49 | ✓ | [`apps/riptide-pi-extension/skills/implement-plan/SKILL.md`](apps/riptide-pi-extension/skills/implement-plan/SKILL.md) |
+| 50 | ✓ | [`apps/riptide-pi-extension/skills/iterate-design-discussion/SKILL.md`](apps/riptide-pi-extension/skills/iterate-design-discussion/SKILL.md) |
+| 51 | ✓ | [`apps/riptide-pi-extension/skills/iterate-implementation/SKILL.md`](apps/riptide-pi-extension/skills/iterate-implementation/SKILL.md) |
+| 52 | ✓ | [`apps/riptide-pi-extension/skills/iterate-prd/SKILL.md`](apps/riptide-pi-extension/skills/iterate-prd/SKILL.md) |
+| 53 | ✓ | [`apps/riptide-pi-extension/skills/iterate-research-questions/SKILL.md`](apps/riptide-pi-extension/skills/iterate-research-questions/SKILL.md) |
+| 54 | ✓ | [`apps/riptide-pi-extension/skills/iterate-research/SKILL.md`](apps/riptide-pi-extension/skills/iterate-research/SKILL.md) |
+| 55 | ✓ | [`apps/riptide-pi-extension/skills/iterate-structure-outline/SKILL.md`](apps/riptide-pi-extension/skills/iterate-structure-outline/SKILL.md) |
+| 56 | ✓ | [`apps/riptide-pi-extension/skills/iterate-tech-design/SKILL.md`](apps/riptide-pi-extension/skills/iterate-tech-design/SKILL.md) |
+| 57 | ✓ | [`apps/riptide-pi-extension/skills/show-me/SKILL.md`](apps/riptide-pi-extension/skills/show-me/SKILL.md) |
+| 58 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/ci-commit/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/ci-commit/SKILL.md) |
+| 59 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/configure-workspaces/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/configure-workspaces/SKILL.md) |
+| 60 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-design-discussion/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-design-discussion/SKILL.md) |
+| 61 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-plan/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-plan/SKILL.md) |
+| 62 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-prd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-prd/SKILL.md) |
+| 63 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-research-questions/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-research-questions/SKILL.md) |
+| 64 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-research/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-research/SKILL.md) |
+| 65 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-structure-outline/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-structure-outline/SKILL.md) |
+| 66 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/create-tdd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/create-tdd/SKILL.md) |
+| 67 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/describe-pr/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/describe-pr/SKILL.md) |
+| 68 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/implement-outline/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/implement-outline/SKILL.md) |
+| 69 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/implement-plan/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/implement-plan/SKILL.md) |
+| 70 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-design-discussion/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-design-discussion/SKILL.md) |
+| 71 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-implementation/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-implementation/SKILL.md) |
+| 72 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-plan/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-plan/SKILL.md) |
+| 73 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-prd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-prd/SKILL.md) |
+| 74 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-research-questions/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-research-questions/SKILL.md) |
+| 75 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-research/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-research/SKILL.md) |
+| 76 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-structure-outline/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-structure-outline/SKILL.md) |
+| 77 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/iterate-tdd/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/iterate-tdd/SKILL.md) |
+| 78 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/review-artifact-comments/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/review-artifact-comments/SKILL.md) |
+| 79 | ✓ | [`apps/riptide-rpi-claude-plugin/skills/setup-worktree/SKILL.md`](apps/riptide-rpi-claude-plugin/skills/setup-worktree/SKILL.md) |
+| 80 | ✓ | [`apps/riptide-ui/CLAUDE.md`](apps/riptide-ui/CLAUDE.md) |
+| 81 | ✓ | [`apps/riptide-ui/src/minimalist/AGENTS.md`](apps/riptide-ui/src/minimalist/AGENTS.md) |
+| 82 | ✓ | [`apps/riptide-ui/src/minimalist/CLAUDE.md`](apps/riptide-ui/src/minimalist/CLAUDE.md) |
+| 83 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 84 | ✓ | [`packages/logger/CLAUDE.md`](packages/logger/CLAUDE.md) |
+| 85 | ✓ | [`packages/ui/CLAUDE.md`](packages/ui/CLAUDE.md) |
 
 ---
 

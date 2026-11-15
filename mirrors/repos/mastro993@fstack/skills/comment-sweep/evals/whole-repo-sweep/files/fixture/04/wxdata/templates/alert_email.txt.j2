@@ -1,0 +1,13 @@
+{# Email body #}
+Subject: Heat alert for {{ day }}: {{ stations|length }} station(s) at or above {{ threshold }} °C
+
+{{ stations|length }} station(s) reported a maximum at or above {{ threshold }} °C on {{ day }}:
+
+{% for s in stations %}
+  - {{ s.station_id }}: max {{ "%.1f"|format(s.max_c) }} °C, mean {{ "%.1f"|format(s.mean_c) }} °C
+{% endfor %}
+
+Full report: {{ report_url }}
+
+--
+wxdata · questions go to #wx-ops on Slack

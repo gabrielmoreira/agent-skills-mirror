@@ -1,0 +1,105 @@
+---
+title: Notifications
+description: How Relay creates, delivers, and lets people control notifications.
+---
+
+import { Callout } from "../web/src/docs/Callout";
+
+# Notifications
+
+{/* This page was generated with AI and reviewed by Fede on Nov 2 */}
+
+Relay notifies people when something needs their attention: someone mentions them, replies to
+their comment, or a payment goes through or fails. A notification can go out on three channels:
+
+| Channel   | Delivered by                       | Shown in the bell |
+| --------- | ---------------------------------- | ----------------- |
+| `EMAIL`   | Amazon SES                         | No                |
+| `PUSH`    | Web Push (VAPID) to every browser  | Yes               |
+| `WEBHOOK` | A signed POST to `NOTIFY_WEBHOOK_URL` | No             |
+
+## Sending a notification
+
+Code that wants to notify someone calls `notify()` from `src/notifications/service.ts`:
+
+```ts
+import { notify } from "../notifications/service.js";
+
+await notify({
+  userId: invoice.ownerId,
+  kind: "invoice.failed",
+  title: `Payment for ${invoice.number} failed`,
+  body: "We couldn't charge the card on file. Update it to keep your plan active.",
+  data: { url: `/billing/invoices/${invoice.id}` },
+});
+```
+
+`notify()` picks the channels, drops the ones the person turned off, and writes one row per
+channel. It then puts one delivery job per row on the Redis queue and returns the row ids. It
+never sends anything itself: the worker does.
+
+Leave out `channels` to use the kind's defaults from `notification-kinds.yaml`. Pass
+`channels` only when a notification must go somewhere the defaults don't send it.
+
+<Callout type="warning">
+  Add a new kind to `notification-kinds.yaml` and run `npm run gen:kinds`. Don't edit
+  `src/generated/notification-kinds.ts` by hand: the next generation overwrites it.
+</Callout>
+
+## Delivery
+
+The worker (`npm run worker`, or the `worker` Docker target) claims jobs from Redis one at a
+time, sends them through the channel, and records the result:
+
+1. A job whose row is no longer `PENDING` is dropped, so a redelivered job never sends twice.
+2. On success the row becomes `SENT`, with `sentAt` set, and the job is acknowledged.
+3. A retryable failure (a throttle, a 5xx, a timeout) goes back on the queue with exponential
+   backoff, from 2 seconds up to 5 minutes.
+4. On a failure that retrying can't fix, or when the fifth attempt fails too, the row becomes
+   `FAILED`. Jobs that ran out of attempts also move to the dead-letter list.
+
+A sweeper re-enqueues rows that have been `PENDING` for more than 30 minutes, which covers
+jobs lost when Redis restarts without persistence.
+
+### Push limits
+
+Each person gets at most 20 push notifications an hour. Past that, `notify()` still sends the
+other channels and skips push.
+
+{/* TODO: document the preferences endpoint */}
+
+## Preferences
+
+Every person can turn each kind on or off per channel. Rows they never touched fall back to
+the defaults in `src/notifications/defaults.ts`.
+
+```bash
+curl -X PUT https://relay.acme.dev/api/notifications/preferences \
+  -H "authorization: Bearer $TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"preferences":[{"kind":"comment.reply","channel":"PUSH","enabled":false}]}'
+```
+
+The response holds the full matrix after the change. Every email carries a `List-Unsubscribe`
+header and a footer link: both turn off every email kind for that person at once.
+
+## API
+
+| Method   | Path                                     | What it does                              |
+| -------- | ---------------------------------------- | ----------------------------------------- |
+| `GET`    | `/api/notifications?unread=&cursor=`     | One page of the bell's notifications      |
+| `GET`    | `/api/notifications/unread-count`        | The unread count and the badge text       |
+| `POST`   | `/api/notifications/:id/read`            | Marks one as read                         |
+| `POST`   | `/api/notifications/read-all`            | Marks all as read                         |
+| `GET`    | `/api/notifications/preferences`         | The preference matrix                     |
+| `PUT`    | `/api/notifications/preferences`         | Changes some preferences                  |
+| `POST`   | `/api/notifications/push-subscriptions`  | Registers this browser for push           |
+| `DELETE` | `/api/notifications/push-subscriptions`  | Removes this browser                      |
+| `POST`   | `/api/notifications/test`                | Sends yourself a test notification        |
+
+## Webhooks
+
+Webhook deliveries are signed the way [Standard Webhooks](https://www.standardwebhooks.com/)
+describes: `webhook-id`, `webhook-timestamp`, and `webhook-signature` headers, with an
+HMAC-SHA256 over `id.timestamp.body`. Receivers can verify them with `verifyPayload()` from
+`src/util/sign.ts` or any Standard Webhooks library.

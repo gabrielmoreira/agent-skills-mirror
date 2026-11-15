@@ -7,11 +7,13 @@ description: >
   missing the tenant key silently merges one project's data into another's.
   Trigger: editing anything under graph_db/mixins/; adding or changing an
   update_graph_from_* method; writing a Cypher MERGE/CREATE that adds a node,
-  relationship or property; adding a new node label to the graph.
+  relationship or property; adding a new node label to the graph; editing the
+  restore of an import or version (webapp/src/lib/graphRestore.ts) or the
+  re-tenant of an ownership transfer (graph_db/mixins/tenancy_mixin.py).
 license: MIT
 metadata:
   author: redamon
-  version: "1.1.0"
+  version: "1.3.0"
   scope: [root]
   auto_invoke:
     - "Writing to the Neo4j graph or editing a graph_db mixin"
@@ -76,6 +78,11 @@ graph-write rules it depends on.
   does NOT mean "gone". The caller passes `keep_hosts` (anchored regexes, matched
   against `_KEEP_HOST_FIELDS` with `toStringOrNull`, passed as a Cypher parameter)
   to `prune_unseen_findings`, and skips the prune entirely for a degraded source.
+  A finding that names hosts in a list (`source_urls`) is matched on every
+  element too (`_KEEP_HOST_LIST_FIELDS`): `toStringOrNull` of a list is null, so
+  a list field missing from that tuple keeps nothing. Host names may contain `_`
+  (`_dmarc.example.com`); the coverage accumulator and `_KEEP_HOST_CHARS` must
+  keep accepting it, or such a host drops out of every note.
   What was cut is recorded on the coverage record of the **org** `Domain` (one per
   registrable domain), merged across the run's groups of that org —
   `recon_coverage_at`, `recon_coverage_gaps` (each entry tagged with its scan
@@ -85,6 +92,31 @@ graph-write rules it depends on.
   one locked unit of work: the first group of a run overwrites, later ones merge).
   They are in the webapp's `VOLATILE_PROPERTIES`, so they never make a `Domain`
   read as "changed" in the Recon Delta.
+- **ALWAYS give a new host-bound prune source positive coverage.** Record the
+  hosts it actually re-checked with `circuit_breaker.note_checked(source,
+  hosts=[...], checks=[...])` (a 09.1 coverage record does it through
+  `coverage_stamps.note_rows_checked`): the prune then deletes its findings only
+  on those hosts (`prune_unseen_findings(..., only_hosts=, types=)`), so a host
+  it never reached keeps its findings even when nobody called `note_degraded`.
+  Degraded still wins. Skip it when switched off by configuration, and for a
+  source whose findings carry no host field. A host the source's own filter
+  dropped before asking (a CDN edge, a private address) was decided, not
+  skipped: record it as checked (`note_cve_coverage(considered=...)` in
+  [passive_cve_coverage.py](../../recon/helpers/passive_cve_coverage.py) does
+  this for the passive CVE lookups). A source that records only some of
+  its finding types (`checks=`, as `security_check` does for its DNS and service
+  probes) also gets one source-level prune for every other type
+  (`_checked_prune_batches` passes `exclude_types=`), so the types it does not
+  record still prune as before.
+- **NEVER queue a background writer of findings without a `_WRITER_SOURCES`
+  row** in [recon/main.py](../../recon/main.py) naming the
+  `_PHASE_FINDING_SOURCES` phase whose sources it writes. A finding the write
+  did not MERGE keeps last run's `updated_at`, so the prune reads it as gone;
+  with the row, a writer that raises, reports an item error, finds Neo4j
+  unreachable or is never queued notes those sources degraded
+  (`graph write failed (<writer>)`), which wins over `note_checked`. A writer
+  of assets only goes in the test's `ASSET_ONLY` instead:
+  `recon/tests/test_graph_writer_failures.py` fails a queued writer in neither.
 - **NEVER attach to `Domain {name: <scan root>}`.** A writer decides scope and
   attach separately (`graph_db/mixins/recon/scope.py`): `scan_root_for_host` /
   `attach_for_host` say whether a host is in scope, and `org_for_scan_root` names
@@ -97,6 +129,41 @@ graph-write rules it depends on.
   database and `MATCH (n {id: $id})` can read or write another project's node.
   Every read and write carries `user_id`/`project_id`; agent-facing queries go
   through `scope_query`, never `inject_tenant_filter` alone.
+- **NEVER move a project's graph to another owner by hand; call `retenant_project`.**
+  An ownership transfer sets `Project.userId` to the new owner, and the nodes
+  follow only through `TenancyMixin.retenant_project(project_id, from_user_id,
+  to_user_id)` in [graph_db/mixins/tenancy_mixin.py](../../graph_db/mixins/tenancy_mixin.py),
+  reached by the agent's master-key `POST /graph/retenant` (`graph_retenant` in
+  [agentic/api.py](../../agentic/api.py)), which the webapp calls while it holds the
+  project lock ([ownershipTransfer.ts](../../webapp/src/lib/authz/ownershipTransfer.ts)).
+  It changes `user_id` and nothing else: no node is recreated (relationships and
+  element ids survive), `updated_at` stays (the prune and the Recon Delta read it),
+  ids keep the user id they were minted with (Postgres rows reference them),
+  `muted_by` keeps naming the person, reference labels are never touched. It
+  refuses when the new owner already holds a node with the same key in the project
+  (`retenant_conflict`, nothing moved) and runs itself back when a write fails
+  (`retenant_failed`; `retenant_rollback_failed` leaves the project split, and the
+  same call again completes it). It moves label by label through `TENANT_LABELS`,
+  built from the uniqueness keys ending in `(user_id, project_id)` and the
+  `(user_id, project_id)` tenant indexes in `graph_db/schema.py`, then sweeps any
+  label left: give a new per-project label one of the two. Do not put the user id
+  in a new label's natural id: a transfer keeps it, so the new owner's next scan
+  mints a second node for the same finding.
+- **NEVER let a restore MERGE on an id that carries no tenant.** `restoreGraph` in
+  [webapp/src/lib/graphRestore.ts](../../webapp/src/lib/graphRestore.ts) (the project
+  import and version activation) stamps `project_id` from its caller and MERGEs on
+  the label's constraint keys plus `project_id`, plus `user_id` when it re-owns
+  (an import). The agent-session labels (`SESSION_ID_KEYS`: `AttackChain`,
+  `ChainStep`, `ChainFinding`, `ChainDecision`, `ChainFailure`) are unique on their
+  own id alone in `schema_keys.py`, so they get fresh ids first
+  (`freshSessionIds`: a step's `chain_id` follows its chain; the import passes
+  `renamedChainIds` so a chain takes its imported conversation's session id).
+  Merged on the exported ids, an import into the database that still held the
+  source project matched the source's chain nodes, re-stamped them into the import,
+  and the import's delete removed them. A new label keyed on a global id is
+  either a reference label (never restored, `isReferenceNode`) or joins
+  `SESSION_ID_KEYS`; [graphRestore.globalIds.test.ts](../../webapp/src/lib/graphRestore.globalIds.test.ts)
+  reads `schema_keys.py` and fails until it is decided.
 - **ALWAYS reuse an existing node label before inventing one.** Discovered
   hostnames are `Subdomain`, not a new label. Check
   [graph_db/schema_sections.md](../../graph_db/schema_sections.md) first - that
@@ -149,6 +216,7 @@ Copied from [graph_db/mixins/graphql_mixin.py](../../graph_db/mixins/graphql_mix
 | vuln scan (GVM) | [gvm_mixin.py](../../graph_db/mixins/gvm_mixin.py) |
 | GraphQL probes | [graphql_mixin.py](../../graph_db/mixins/graphql_mixin.py) |
 | supply-chain packages | [supply_chain_mixin.py](../../graph_db/mixins/supply_chain_mixin.py) |
+| a project's move to a new owner (re-tenant) | [tenancy_mixin.py](../../graph_db/mixins/tenancy_mixin.py) |
 
 ## Resources
 
@@ -156,4 +224,5 @@ Copied from [graph_db/mixins/graphql_mixin.py](../../graph_db/mixins/graphql_mix
 - [graph_db/schema_keys.py](../../graph_db/schema_keys.py) - each label's uniqueness key; schema.py renders its constraints from it
 - [docs/readmes/GRAPH.SCHEMA.md](../../docs/readmes/GRAPH.SCHEMA.md) - the rationale: design principles, tenancy strategy, the Muted label. No longer lists labels
 - [graph_db/neo4j_client.py](../../graph_db/neo4j_client.py) - the mixin MRO (do not edit; edit a mixin)
-- Related skill: `recon-tool-integration`
+- [tests/test_graph_retenant.py](../../tests/test_graph_retenant.py), [agentic/tests/test_graph_retenant_route.py](../../agentic/tests/test_graph_retenant_route.py) - the re-tenant and its route
+- Related skills: `recon-tool-integration`; `rbac-authz` for who owns a project (the tenant)

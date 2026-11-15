@@ -13,10 +13,17 @@ skills provide the workflow framework; this skill adds worktrunk conventions.
 
 ## Filing issues in other repos
 
-Standing exception granted: file directly in agent-equipped targets (per
-**Filing issues** in the bundled `act-in-other-repos` skill)
-without asking permission here first. The default rule (open an issue here asking
-permission first) still applies when the target shows no agent signals.
+Standing exceptions granted, each filing directly without asking permission
+here first:
+
+- agent-equipped targets (per **Filing issues** in the bundled
+  `act-in-other-repos` skill)
+- any project the weekly digest finds copying Worktrunk's code without its
+  license notice (`references/feedback-digest.md`, "Projects that copy
+  Worktrunk's code")
+
+The default rule (open an issue here asking permission first) applies to every
+other target.
 
 ## Codecov Monitoring
 
@@ -394,6 +401,11 @@ What to flag:
 - **Changed plugin install mechanisms** — `wt config plugins {claude,codex,opencode} install` and the Gemini extension manifest break if the marketplace or plugins-directory contract changes.
 
 Don't open a PR speculatively. File one issue per relevant change, linking the upstream entry and noting what Worktrunk would need to do. If nothing changed, say so and move on.
+
+## Weekly Maintenance: Feedback Digest
+
+Post a digest of public feedback on Worktrunk since the previous one to the
+open `feedback-digest` issue, following `references/feedback-digest.md`.
 
 ## README Date Check
 

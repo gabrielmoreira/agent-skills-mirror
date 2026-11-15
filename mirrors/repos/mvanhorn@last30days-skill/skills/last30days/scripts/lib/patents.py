@@ -8,7 +8,8 @@ that publish nothing new, and reads the text of a few of the rest.
 One call makes one anonymous session, two list searches over the window
 (published applications by applicant name, grants by assignee name), one list
 search over the twelve months before the window, and up to ``DETAIL_SLOTS``
-document reads, all inside one wall-clock budget.
+document reads, all inside one wall-clock budget. The baseline search gets at
+most a third of it, so the reads are left time.
 
 - Whose filings: every name a row was filed under is classified against the
   company (``lib.company_names``). Rows are grouped by that name; a group is
@@ -65,8 +66,11 @@ GRANTS = "USPAT"
 # database -> (search field, the row field holding the filed-under names)
 _NAME_FIELDS = {APPLICATIONS: ("aanm", "applicantName"), GRANTS: ("asnm", "assigneeName")}
 
-# Everything one run spends on the lane, measured from ``start``.
-LANE_BUDGET_SECONDS = 30.0
+# Everything one run spends on the lane, measured from ``start``. The lane
+# runs beside a pipeline that takes minutes, so this rarely lengthens a run.
+LANE_BUDGET_SECONDS = 90.0
+# The most of the lane's budget the year-back baseline search may take.
+BASELINE_SHARE = 1 / 3
 COLLECT_GRACE_SECONDS = 2.0
 REQUEST_TIMEOUT_SECONDS = 8.0
 REQUEST_ATTEMPTS = 2
@@ -86,8 +90,12 @@ MIN_BASELINE_ROWS = 20
 # An application filed more than 13 months after the earliest application it
 # is related to continues it. A provisional is at most 12 months older.
 CONTINUING_AFTER_DAYS = 396
-ABSTRACT_CHARS = 400
-FIRST_CLAIM_CHARS = 700
+ABSTRACT_CHARS = 1_000
+FIRST_CLAIM_CHARS = 1_200
+# Confirmed filers other than the company's own name (a subsidiary named by
+# Wikidata) that are each given one of the detailed slots, so the parent's
+# filings cannot take every slot.
+MAX_RESERVED_FILERS = 3
 MAX_CPC_CODES = 5
 
 _FIRST = "first_publications"
@@ -112,6 +120,12 @@ class _OutOfTime(Exception):
     """The lane's budget ran out before a request could be sent."""
 
 
+# lib.http raises this when a request's deadline passes; every document read
+# carries the lane's own deadline. Bound here so a test transport standing in
+# for ``http`` does not have to provide it.
+_LANE_DEADLINE_PASSED = http.DeadlineExceeded
+
+
 def _log(message: str) -> None:
     log.source_log("Patents", message, tty_only=False)
 
@@ -119,8 +133,16 @@ def _log(message: str) -> None:
 class _Budget:
     """The wall-clock allowance for everything one call does."""
 
-    def __init__(self, seconds: float) -> None:
-        self.deadline = time.monotonic() + max(0.0, float(seconds))
+    def __init__(self, seconds: float, *, within: _Budget | None = None) -> None:
+        self.seconds = max(0.0, float(seconds))
+        self.deadline = time.monotonic() + self.seconds
+        if within is not None:
+            self.deadline = min(self.deadline, within.deadline)
+
+    def share(self, fraction: float) -> _Budget:
+        """A budget of ``fraction`` of this one's seconds, from now, ending no
+        later than this one."""
+        return _Budget(self.seconds * fraction, within=self)
 
     def bounds(self) -> dict[str, Any]:
         """The limits of the next request: its own timeout clipped to what is
@@ -142,7 +164,7 @@ def fetch_patent_data(
     date_to: str,
     config: dict | None = None,
     *,
-    budget_seconds: float = 30.0,
+    budget_seconds: float = LANE_BUDGET_SECONDS,
 ) -> dict:
     """Return the company's filings published between two YYYY-MM-DD dates.
 
@@ -269,6 +291,11 @@ def _fetch(company: dict, date_from: str, date_to: str, budget: _Budget) -> dict
     groups, other_names = _group(rows, classify)
     if not groups:
         return {"state": "none", "other_names": other_names}
+    for group in groups:
+        group["other_filer"] = (
+            group["kind"] == CONFIRMED
+            and classify_applicant(group["name"], company.get("company")) != CONFIRMED
+        )
 
     # The company's own counts are of confirmed groups. Of a name-matched
     # group, which may be a stranger's, only the first publications are
@@ -288,9 +315,9 @@ def _fetch(company: dict, date_from: str, date_to: str, budget: _Budget) -> dict
 
     frequencies = None
     if candidates:
-        frequencies = _baseline(session, phrases, day_from, classify, budget)
-    ordered = _order(candidates, frequencies)
-    entries, demoted, rest = _read_details(session, ordered, budget)
+        frequencies = _baseline(session, phrases, day_from, classify, budget.share(BASELINE_SHARE))
+    ordered, reserved = _order(candidates, frequencies)
+    entries, demoted, rest = _read_details(session, ordered, budget, reserved)
     for candidate in demoted:
         if candidate["group_kind"] == CONFIRMED:
             counts[_FIRST] -= 1
@@ -475,7 +502,8 @@ def _baseline(
     budget: _Budget,
 ) -> Counter[str] | None:
     """How many of the company's recent applications named each CPC subclass,
-    or None when that cannot be said. The sample is one page: the newest
+    or None when that cannot be said, including when the search outlasts
+    ``budget``, the baseline's own share of the lane's. The sample is one page: the newest
     ``PAGE_SIZE`` applications of the twelve months before the window, which
     for a large filer covers only the latest months of that year. It says what
     the company has been filing lately, not what it filed all year."""
@@ -497,17 +525,40 @@ def _baseline(
 
 
 def _read_details(
-    session: dict[str, Any], ordered: list[dict], budget: _Budget,
+    session: dict[str, Any], ordered: list[dict], budget: _Budget, reserved: set[str] = frozenset(),
 ) -> tuple[list[dict], list[dict], list[dict]]:
     """Read candidates in order until the slots are full.
 
     Returns the entries built, the candidates their own continuity data showed
     to continue an older application, and the candidates left with list data
-    only. Any failed read ends the reading; what was built stays.
+    only: those whose read failed, then those never read. A read that fails
+    or times out costs only its own document, and the reading goes on. The
+    reading ends, keeping what was built, when the lane's budget is spent,
+    when the site rate-limits past its one honoured wait, or when it asks for
+    sign-in.
+
+    A filer in ``reserved`` keeps its slot: when its candidate is demoted or
+    its read fails before it has an entry, its next candidate is read next,
+    within the same number of reads.
     """
+    ordered = list(ordered)
     entries: list[dict] = []
     demoted: list[dict] = []
+    failed: list[dict] = []
+    filled: set[str] = set()
     position = 0
+
+    def keep_reserved_slot(candidate: dict) -> None:
+        key = candidate["group_key"]
+        if key not in reserved or key in filled:
+            return
+        later = next(
+            (index for index in range(position, len(ordered)) if ordered[index]["group_key"] == key),
+            None,
+        )
+        if later is not None:
+            ordered.insert(position, ordered.pop(later))
+
     while (
         position < len(ordered)
         and len(entries) < DETAIL_SLOTS
@@ -529,15 +580,26 @@ def _read_details(
                 raise
             _log(f"stopped reading documents after {len(entries)}: sign-in required")
             break
-        except (http.HTTPError, _OutOfTime, TypeError) as exc:
+        except (_OutOfTime, _LANE_DEADLINE_PASSED) as exc:
             _log(f"stopped reading documents after {len(entries)}: {exc}")
             break
+        except (http.HTTPError, TypeError) as exc:
+            if isinstance(exc, http.HTTPError) and exc.status_code == 429:
+                _log(f"stopped reading documents after {len(entries)}: {exc}")
+                break
+            _log(f"no text for {candidate['number']}, reading on: {exc}")
+            failed.append(candidate)
+            position += 1
+            keep_reserved_slot(candidate)
+            continue
         position += 1
         if _CONTINUES_A_PARENT.search(" ".join(_strings(document.get("continuityData")))):
             demoted.append(candidate)
+            keep_reserved_slot(candidate)
         else:
             entries.append(_entry(candidate, document))
-    return entries, demoted, ordered[position:]
+            filled.add(candidate["group_key"])
+    return entries, demoted, failed + ordered[position:]
 
 
 # --- whose filing -----------------------------------------------------------
@@ -666,28 +728,59 @@ def _candidate(database: str, row: dict, group: dict) -> dict:
         "cpc": _cpc_codes(row),
         "filed_as": group["name"],
         "group_kind": group["kind"],
+        "other_filer": bool(group.get("other_filer")),
     }
 
 
-def _order(candidates: list[dict], frequencies: Counter[str] | None) -> list[dict]:
-    """The order candidates are read in.
+def _order(
+    candidates: list[dict], frequencies: Counter[str] | None,
+) -> tuple[list[dict], set[str]]:
+    """The order candidates are read in, and the filers given a reserved slot.
 
     Without a baseline, newest first. With one, the first half of the slots
     (rounded up) goes to the candidates whose rarest CPC subclass the company
     filed in least in its recent filings, a subclass absent from them first;
     everything else follows newest first. The newer candidate wins a tie.
+
+    Then each confirmed filer other than the company's own name, up to
+    ``MAX_RESERVED_FILERS`` and largest first, is given one slot: when none of
+    its candidates is already among the first ``DETAIL_SLOTS``, its best one
+    takes the place of the lowest-ranked newest-first candidate there, which
+    moves to the head of the refills.
     """
     newest = sorted(candidates, key=lambda candidate: candidate["published"], reverse=True)
-    if frequencies is None:
-        return newest
+    rare: list[dict] = []
+    if frequencies is not None:
+        def rarity(candidate: dict) -> float:
+            subclasses = _subclasses(candidate["cpc"])
+            return min((frequencies[subclass] for subclass in subclasses), default=float("inf"))
 
-    def rarity(candidate: dict) -> float:
-        subclasses = _subclasses(candidate["cpc"])
-        return min((frequencies[subclass] for subclass in subclasses), default=float("inf"))
-
-    rare = sorted(newest, key=rarity)[:(DETAIL_SLOTS + 1) // 2]
+        rare = sorted(newest, key=rarity)[:(DETAIL_SLOTS + 1) // 2]
     chosen = {id(candidate) for candidate in rare}
-    return rare + [candidate for candidate in newest if id(candidate) not in chosen]
+    ordered = rare + [candidate for candidate in newest if id(candidate) not in chosen]
+
+    filers = Counter(candidate["group_key"] for candidate in ordered if candidate.get("other_filer"))
+    reserved = {key for key, _count in filers.most_common(MAX_RESERVED_FILERS)}
+    for key in sorted(reserved, key=lambda key: -filers[key]):
+        slots = ordered[:DETAIL_SLOTS]
+        if any(candidate["group_key"] == key for candidate in slots):
+            continue
+        # The lowest-ranked slot that is not a rare-class pick and is not a
+        # reserved filer's only slot; a reserved filer's extra slots can go.
+        held = Counter(candidate["group_key"] for candidate in slots)
+        replaceable = [
+            position for position, candidate in enumerate(slots)
+            if id(candidate) not in chosen
+            and (candidate["group_key"] not in reserved or held[candidate["group_key"]] > 1)
+        ]
+        if not replaceable:
+            break
+        best = next(candidate for candidate in ordered if candidate["group_key"] == key)
+        ordered.remove(best)
+        displaced = ordered[replaceable[-1]]
+        ordered[replaceable[-1]] = best
+        ordered.insert(DETAIL_SLOTS, displaced)
+    return ordered, reserved
 
 
 def _entry(candidate: dict, document: dict) -> dict:

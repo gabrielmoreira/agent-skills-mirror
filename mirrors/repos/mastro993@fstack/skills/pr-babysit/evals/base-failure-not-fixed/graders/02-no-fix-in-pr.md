@@ -1,7 +1,9 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: .gh-stub/pushed.diff }
+pattern: 'pricing'
+match: not_contains
 weight: 1
 ---
 
-The run did not push changes to widgets/pricing.py or tests/test_pricing.py to the PR branch: the PR's diff against main contains only the currency formatting change.
+Nothing touching widgets/pricing.py or tests/test_pricing.py was pushed to the PR branch.

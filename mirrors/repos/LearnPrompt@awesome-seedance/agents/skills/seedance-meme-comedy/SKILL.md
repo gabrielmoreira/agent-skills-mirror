@@ -7,7 +7,7 @@ description: "A short skit where every beat is laid down to serve one punchline.
 
 A short skit where every beat is laid down to serve one punchline. The joke has to land on something visible, and the absurdity only works when the camera and the physics stay dead serious.
 
-This Skill carries one prompt structure distilled from 46 human-verified Seedance cases on [goodcase.ai](https://goodcase.ai). It is a sibling of `seedance-prompt-library` (all templates in one Skill); install this one when you only want this kind of clip. Do not invent structure from general video-generation knowledge: follow the structure below and ground the draft in one anchor case from `references/cases.md`.
+This Skill carries one prompt structure distilled from 44 source-checked Seedance cases on [goodcase.ai](https://goodcase.ai). It is a sibling of `seedance-prompt-library` (all templates in one Skill); install this one when you only want this kind of clip. Do not invent structure from general video-generation knowledge: follow the structure below and ground the draft in one anchor case from `references/cases.md`.
 
 ## Use when
 
@@ -89,4 +89,4 @@ For users who would rather paste into a chat model than run this Skill, hand the
 
 - `references/cases.md` is generated from `data/` in [LearnPrompt/awesome-seedance](https://github.com/LearnPrompt/awesome-seedance) and refreshed daily; do not hand-edit an installed copy.
 - Prompts in the reference file belong to their creators (linked on every card). Transfer the structure; do not present a close copy as original work.
-- For the full library across every model, install the `goodcase` Skill from [LearnPrompt/goodcase-lite](https://github.com/LearnPrompt/goodcase-lite).
+- For the full library across every model, install the `goodcase` Skill from [LearnPrompt/goodcase](https://github.com/LearnPrompt/goodcase).

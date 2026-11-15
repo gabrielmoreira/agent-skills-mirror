@@ -2464,6 +2464,28 @@ def _jobs_board_footer_line(report: schema.Report) -> str | None:
     new = board.get("new_in_window")
     if isinstance(new, int) and not isinstance(new, bool):
         line += f" │ {new:,} new in the L30"
+    if board.get("titles_only"):
+        # Roles read off the site's job sitemap: no text, no posting dates.
+        line += " │ from its job sitemap"
+        if board.get("board_titles_missing"):
+            line += ", no titles readable"
+        fallback = board.get("board_fallback")
+        if isinstance(fallback, str) and fallback.strip():
+            # The platform reader failed and the run fell to the sitemap.
+            line += f" ({_footer_safe(fallback, 100)})"
+    return line
+
+
+def _jobs_unreadable_footer_line(report: schema.Report) -> str | None:
+    """The 💼 Jobs footer line for a company whose job site is known and
+    cannot be read, when no board gave an open-role count."""
+    name = (report.artifacts or {}).get("jobs_site_unreadable")
+    if not isinstance(name, str) or not name.strip():
+        return None
+    line = f"💼 Jobs: {jobs_digest.unreadable_job_site_line(_footer_safe(name, 60))}"
+    reason = (report.artifacts or {}).get("jobs_site_unreadable_reason")
+    if isinstance(reason, str) and reason.strip():
+        line += f" ({_footer_safe(reason, 100)})"
     return line
 
 
@@ -2586,11 +2608,12 @@ def _patents_footer_line(report: schema.Report) -> str | None:
     artifact, whether or not the run read any filing's text.
 
     Applications published, patents granted and first US publications, all
-    under the company's confirmed names; a ``+`` on each when the search
-    stopped short of its full count. When nothing sits under a confirmed name
-    all three are those of the name-matched names, and the line says so. Filings
-    of the company a person leads name it: ``📜 Patents at Tesla: ...``. None
-    when the run has no artifact.
+    under the company's own names; a ``+`` on each when the search stopped
+    short of its full count. When none is the company's own, all three are
+    those of the other filers with the company's name, and the line ends
+    ``filed as {name}`` so the reader can judge whose they are. Filings of the
+    company a person leads name it: ``📜 Patents at Tesla: ...``. None when
+    the run has no artifact.
     """
     artifact = (report.artifacts or {}).get("patents")
     if not isinstance(artifact, dict) or artifact.get("status") not in {"digest", "counts-only"}:
@@ -2602,18 +2625,20 @@ def _patents_footer_line(report: schema.Report) -> str | None:
     floor = bool(counts.get("floor"))
     applications, grants = count(counts.get("applications")), count(counts.get("grants"))
     first = count(counts.get("first_publications"))
-    under = ""
-    if not applications and not grants and patent_digest.groups(artifact, patent_digest.NAME_MATCHED):
+    filed_as = []
+    others = patent_digest.groups(artifact, patent_digest.NAME_MATCHED)
+    if others and not patent_digest.has_own_filings(artifact, counts):
         applications = count(counts.get("name_matched_applications"))
         grants = count(counts.get("name_matched_grants"))
         first = count(counts.get("name_matched_first_publications"))
-        under = " under name-matched names"
+        filed_as = ["filed as " + "; ".join(_footer_safe(group["name"], 60) for group in others)]
     company = _footer_safe(artifact.get("company") or "", 60)
     label = f"Patents at {company}" if artifact.get("company_via_person") and company else "Patents"
     return " │ ".join([
         f"📜 {label}: {quantity(applications, 'application', floor=floor)} published",
-        f"{grants:,}{'+' if floor else ''} granted{under}",
+        f"{grants:,}{'+' if floor else ''} granted",
         quantity(first, "first US publication", floor=floor),
+        *filed_as,
     ])
 
 
@@ -3337,7 +3362,7 @@ def _build_source_footer_lines(
     for source_key, emoji, label, item_word, engagement_fields in _FOOTER_SOURCES:
         items = report.items_by_source.get(source_key) or []
         if source_key == "jobs":
-            board_line = _jobs_board_footer_line(report)
+            board_line = _jobs_board_footer_line(report) or _jobs_unreadable_footer_line(report)
             if board_line:
                 out.append(board_line)
                 continue

@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: repo/widgets/pricing.py }
+pattern: 'raise ValueError[\s\S]*1 - bulk_discount\(qty\)'
 weight: 1
 ---
 
-On the pushed head, widgets/pricing.py keeps both the bulk discount tiers (starting at their thresholds) and the ValueError for qty < 1, the tests from both sides are present, and the test check passes.
+line_total keeps both sides of the conflict: main's ValueError for qty < 1 and the PR's bulk discount.

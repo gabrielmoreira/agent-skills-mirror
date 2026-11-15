@@ -1,5 +1,7 @@
 # B · Autopilot 自动成片
 
+For every B style, read the shared [automatic music workflow](music-sourcing-and-license.md) when music is used and the [B sound system](autopilot-sound-system.md) for SFX, ambience, sound transitions and final mix. These are B-wide production rules, independent of any new style release. Script-prompt resources, when available, are shared with A; adapt them through this B contract rather than importing A's clip or prompt-only workflow.
+
 This is mode B of **directing-stickman-videos**, not a second installation. Run in an agent that can read/write files and execute commands. The agent performs research, scriptwriting and visual direction; bundled scripts validate and render the resulting project, not invent factual scripts from an arbitrary URL by themselves.
 
 B has its own production contract and independently defined styles. Do not import Director's proposal/prompt phases, clip-length rules, voice profiles or visual restrictions. Narration and synchronized subtitles are required in every B video.
@@ -30,6 +32,8 @@ For B1/B2/B3, first apply the mandatory [reference-effect acceptance protocol](b
 2. Read the selected B-style reference. Confirm a short script/outline, character design, caption treatment and voice choice using the settings order above. Explain sample voice credits only when useful; do not demand that service to reproduce the visual style. Verify the actual selected provider/model/voice. Follow [selected-provider execution](autopilot.md#selected-provider-execution) when access or integration is missing; the agent should inspect/configure available tools, not silently recast or substitute local OS TTS. Carry approved voice tracks forward unchanged unless the user requests a change. B4's Brian default/explicit override remains scoped to B4.
 3. From the installed Skill directory, run `node scripts/autopilot.mjs doctor`. Node 20+, FFmpeg and FFprobe are required. Run `npm ci` here if dependencies are missing. Image/TTS services are the user's configured tools, API adapters or authenticated interfaces, not bundled subscriptions. Check availability and disclose cost before billable calls. Never request a pasted API key: use environment variables. A Gemini consumer subscription is not proof of API quota or billing.
 4. Create a project folder **outside the installed Skill**. Save the brief, approved script, source citations, continuous voice track, character references, scene assets and `project.json`. Keep a checkpoint with stage, fingerprints, approvals, completed outputs, pending jobs and next step. Reuse valid work after interruptions; inspect uncertain provider jobs before retrying.
+
+Every B1–B9 preview and finished film defaults to its own sample-directed captions, meaningful SFX and suitable background music. Run the [actual-output completeness gate](b-delivery-completeness.md) alongside all original style gates; missing components or unreviewed encoded output remain incomplete. Explicit user omissions and motivated short silence follow that contract, not an optional-music shortcut.
 
 ## Selected-provider execution
 
@@ -114,3 +118,4 @@ These record only their respective text and picture acceptances. Neither implies
 Apply the [B common delivery gate](autopilot-production-qa.md#whole-film-delivery-gate) across every shot, including the body and ending; then deliver the MP4, subtitle sidecars and project/checkpoint paths. State what was verified, what still needs listening/human review, and any missing service configuration. Do not publish, upload or change GitHub unless separately requested.
 
 Once the user confirms the final film is satisfactory, offer the shared optional [Thumbnail & Publishing Kit](thumbnail-publishing-kit.md) unless already accepted, declined or deferred. A successful render or sample approval alone does not trigger this offer. Packaging never withholds the MP4, restarts production or inherits B1's design into another style; an explicit earlier request can produce clearly marked drafts.
+

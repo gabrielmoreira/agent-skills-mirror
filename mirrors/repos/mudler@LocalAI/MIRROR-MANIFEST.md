@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 48 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 48 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 48 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,7 +53,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 48 file
 
 - `CONTRIBUTING.md`
 - `.impeccable.md`
-- `docs/content/development/addon-testing.md`
+- `docs/content/addons/testing.md`
 
 ## File Index
 
@@ -105,10 +105,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
 | 43 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
 | 44 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
-| 45 | ✓ | [`docs/content/reference/ai-coding-assistants.md`](docs/content/reference/ai-coding-assistants.md) |
-| 46 | → | [`.impeccable.md`](.impeccable.md) |
-| 47 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 48 | → | [`docs/content/development/addon-testing.md`](docs/content/development/addon-testing.md) |
+| 45 | ✓ | [`docs/content/contributing/ai-coding-assistants.md`](docs/content/contributing/ai-coding-assistants.md) |
+| 46 | ✓ | [`examples/addon-hello/skills/hello/SKILL.md`](examples/addon-hello/skills/hello/SKILL.md) |
+| 47 | → | [`.impeccable.md`](.impeccable.md) |
+| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 49 | → | [`docs/content/addons/testing.md`](docs/content/addons/testing.md) |
 
 ---
 

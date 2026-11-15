@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ashhart/TensorFold` — 26 default patterns, 53 followed patterns, 121 file(s) materialized.
+Mirror of `ashhart/TensorFold` — 26 default patterns, 54 followed patterns, 123 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 53 followed patterns, 12
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 53 |
-| Files         | 121 |
+| Followed pats | 54 |
+| Files         | 123 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,6 +89,7 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 53 followed patterns, 12
 - `docs/cortheon.md`
 - `docs/memory-diagnostics.md`
 - `docs/profiles.md`
+- `docs/serve-config.md`
 - `docs/api.md`
 - `docs/speech-redraws.md`
 - `docs/recall.md`
@@ -145,93 +146,95 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`docs/receipts/prompt-tail-gemma-nemo/README.md`](docs/receipts/prompt-tail-gemma-nemo/README.md) |
 | 33 | ✓ | [`docs/receipts/qwen-cuda-first-token/README.md`](docs/receipts/qwen-cuda-first-token/README.md) |
 | 34 | ✓ | [`docs/receipts/rocm-host-identity/README.md`](docs/receipts/rocm-host-identity/README.md) |
-| 35 | ✓ | [`docs/receipts/tp-tcp-kind-e0378087/README.md`](docs/receipts/tp-tcp-kind-e0378087/README.md) |
-| 36 | ✓ | [`docs/recipes/adding-a-cuda-family.md`](docs/recipes/adding-a-cuda-family.md) |
-| 37 | ✓ | [`docs/recipes/adding-a-zig-family.md`](docs/recipes/adding-a-zig-family.md) |
-| 38 | ✓ | [`docs/recipes/cuda-sass-identity.md`](docs/recipes/cuda-sass-identity.md) |
-| 39 | ✓ | [`docs/recipes/exl3.md`](docs/recipes/exl3.md) |
-| 40 | ✓ | [`docs/recipes/flash-next-vision.md`](docs/recipes/flash-next-vision.md) |
-| 41 | ✓ | [`docs/recipes/gemma4-living-weights.md`](docs/recipes/gemma4-living-weights.md) |
-| 42 | ✓ | [`docs/recipes/glm-5.3-flash.md`](docs/recipes/glm-5.3-flash.md) |
-| 43 | ✓ | [`docs/recipes/README.md`](docs/recipes/README.md) |
-| 44 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
-| 45 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
-| 46 | ✓ | [`docs/recipes/startup-receipt.md`](docs/recipes/startup-receipt.md) |
-| 47 | ✓ | [`docs/request-seeds.md`](docs/request-seeds.md) |
-| 48 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
-| 49 | ✓ | [`docs/vision.md`](docs/vision.md) |
-| 50 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
-| 51 | ✓ | [`tools/zig/cuda_host/README.md`](tools/zig/cuda_host/README.md) |
-| 52 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
-| 53 | ✓ | [`tools/zig/mcdma_pair/README.md`](tools/zig/mcdma_pair/README.md) |
-| 54 | ✓ | [`web/README.md`](web/README.md) |
-| 55 | ✓ | [`web/ui/src/assets/hardware/README.md`](web/ui/src/assets/hardware/README.md) |
-| 56 | ✓ | [`web/ui/src/assets/logos/README.md`](web/ui/src/assets/logos/README.md) |
-| 57 | ✓ | [`web/ui/src/assets/models/README.md`](web/ui/src/assets/models/README.md) |
-| 58 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
-| 59 | ✓ | [`zig/src/fabric/stage/fixtures/README.md`](zig/src/fabric/stage/fixtures/README.md) |
-| 60 | ✓ | [`zig/src/fabric/tp/README.md`](zig/src/fabric/tp/README.md) |
-| 61 | ✓ | [`zig/src/families/dots_mocr/fixtures/README.md`](zig/src/families/dots_mocr/fixtures/README.md) |
-| 62 | ✓ | [`zig/src/families/lighton_ocr/fixtures/README.md`](zig/src/families/lighton_ocr/fixtures/README.md) |
-| 63 | ✓ | [`zig/src/server/fixtures/deepseek_v41_encoder/README.md`](zig/src/server/fixtures/deepseek_v41_encoder/README.md) |
-| 64 | ✓ | [`zig/src/server/fixtures/thinking/README.md`](zig/src/server/fixtures/thinking/README.md) |
-| 65 | ✓ | [`zig/src/server/ocr/fixtures/README.md`](zig/src/server/ocr/fixtures/README.md) |
-| 66 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
-| 67 | ✓ | [`zig/tests/fixtures/lane_prompt/README.md`](zig/tests/fixtures/lane_prompt/README.md) |
-| 68 | ✓ | [`zig/tests/server/README.md`](zig/tests/server/README.md) |
-| 69 | → | [`app/README.md`](app/README.md) |
-| 70 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 71 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 72 | → | [`docs/api.md`](docs/api.md) |
-| 73 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
-| 74 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
-| 75 | → | [`docs/cortheon.md`](docs/cortheon.md) |
-| 76 | → | [`docs/credits.md`](docs/credits.md) |
-| 77 | → | [`docs/drama-http-voices.md`](docs/drama-http-voices.md) |
-| 78 | → | [`docs/evaluating.md`](docs/evaluating.md) |
-| 79 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
-| 80 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
-| 81 | → | [`docs/known-issues.md`](docs/known-issues.md) |
-| 82 | → | [`docs/living-weights.md`](docs/living-weights.md) |
-| 83 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
-| 84 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
-| 85 | → | [`docs/optimizing.md`](docs/optimizing.md) |
-| 86 | → | [`docs/profiles.md`](docs/profiles.md) |
-| 87 | → | [`docs/recall.md`](docs/recall.md) |
-| 88 | → | [`docs/receipts/flashnext-mtp-chain-2026-10-10/README.md`](docs/receipts/flashnext-mtp-chain-2026-10-10/README.md) |
-| 89 | → | [`docs/receipts/glm-fp4local-80517fc3/README.md`](docs/receipts/glm-fp4local-80517fc3/README.md) |
-| 90 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
-| 91 | → | [`docs/recipes/dots-mocr-cuda.md`](docs/recipes/dots-mocr-cuda.md) |
-| 92 | → | [`docs/recipes/dots-mocr-hip.md`](docs/recipes/dots-mocr-hip.md) |
-| 93 | → | [`docs/recipes/flash-next-cuda.md`](docs/recipes/flash-next-cuda.md) |
-| 94 | → | [`docs/recipes/flint.md`](docs/recipes/flint.md) |
-| 95 | → | [`docs/recipes/fluid-subgraph-residency.md`](docs/recipes/fluid-subgraph-residency.md) |
-| 96 | → | [`docs/recipes/gemma-4-12b-native.md`](docs/recipes/gemma-4-12b-native.md) |
-| 97 | → | [`docs/recipes/gemma-4-native.md`](docs/recipes/gemma-4-native.md) |
-| 98 | → | [`docs/recipes/glm-5.3-flash-cuda.md`](docs/recipes/glm-5.3-flash-cuda.md) |
-| 99 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
-| 100 | → | [`docs/recipes/lfm2.5-24b-a2b.md`](docs/recipes/lfm2.5-24b-a2b.md) |
-| 101 | → | [`docs/recipes/minimax-m3.1-flash.md`](docs/recipes/minimax-m3.1-flash.md) |
-| 102 | → | [`docs/recipes/moss-image-cuda.md`](docs/recipes/moss-image-cuda.md) |
-| 103 | → | [`docs/recipes/moss-image.md`](docs/recipes/moss-image.md) |
-| 104 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
-| 105 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
-| 106 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
-| 107 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
-| 108 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
-| 109 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
-| 110 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
-| 111 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
-| 112 | → | [`docs/speech-controls.md`](docs/speech-controls.md) |
-| 113 | → | [`docs/speech-redraws.md`](docs/speech-redraws.md) |
-| 114 | → | [`docs/speech-sampling.md`](docs/speech-sampling.md) |
-| 115 | → | [`docs/web.md`](docs/web.md) |
-| 116 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
-| 117 | → | [`packaging/README.md`](packaging/README.md) |
-| 118 | → | [`README.md`](README.md) |
-| 119 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
-| 120 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 121 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 35 | ✓ | [`docs/receipts/tp-hip-device-954e82df/README.md`](docs/receipts/tp-hip-device-954e82df/README.md) |
+| 36 | ✓ | [`docs/receipts/tp-tcp-kind-e0378087/README.md`](docs/receipts/tp-tcp-kind-e0378087/README.md) |
+| 37 | ✓ | [`docs/recipes/adding-a-cuda-family.md`](docs/recipes/adding-a-cuda-family.md) |
+| 38 | ✓ | [`docs/recipes/adding-a-zig-family.md`](docs/recipes/adding-a-zig-family.md) |
+| 39 | ✓ | [`docs/recipes/cuda-sass-identity.md`](docs/recipes/cuda-sass-identity.md) |
+| 40 | ✓ | [`docs/recipes/exl3.md`](docs/recipes/exl3.md) |
+| 41 | ✓ | [`docs/recipes/flash-next-vision.md`](docs/recipes/flash-next-vision.md) |
+| 42 | ✓ | [`docs/recipes/gemma4-living-weights.md`](docs/recipes/gemma4-living-weights.md) |
+| 43 | ✓ | [`docs/recipes/glm-5.3-flash.md`](docs/recipes/glm-5.3-flash.md) |
+| 44 | ✓ | [`docs/recipes/README.md`](docs/recipes/README.md) |
+| 45 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
+| 46 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
+| 47 | ✓ | [`docs/recipes/startup-receipt.md`](docs/recipes/startup-receipt.md) |
+| 48 | ✓ | [`docs/request-seeds.md`](docs/request-seeds.md) |
+| 49 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
+| 50 | ✓ | [`docs/vision.md`](docs/vision.md) |
+| 51 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
+| 52 | ✓ | [`tools/zig/cuda_host/README.md`](tools/zig/cuda_host/README.md) |
+| 53 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
+| 54 | ✓ | [`tools/zig/mcdma_pair/README.md`](tools/zig/mcdma_pair/README.md) |
+| 55 | ✓ | [`web/README.md`](web/README.md) |
+| 56 | ✓ | [`web/ui/src/assets/hardware/README.md`](web/ui/src/assets/hardware/README.md) |
+| 57 | ✓ | [`web/ui/src/assets/logos/README.md`](web/ui/src/assets/logos/README.md) |
+| 58 | ✓ | [`web/ui/src/assets/models/README.md`](web/ui/src/assets/models/README.md) |
+| 59 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
+| 60 | ✓ | [`zig/src/fabric/stage/fixtures/README.md`](zig/src/fabric/stage/fixtures/README.md) |
+| 61 | ✓ | [`zig/src/fabric/tp/README.md`](zig/src/fabric/tp/README.md) |
+| 62 | ✓ | [`zig/src/families/dots_mocr/fixtures/README.md`](zig/src/families/dots_mocr/fixtures/README.md) |
+| 63 | ✓ | [`zig/src/families/lighton_ocr/fixtures/README.md`](zig/src/families/lighton_ocr/fixtures/README.md) |
+| 64 | ✓ | [`zig/src/server/fixtures/deepseek_v41_encoder/README.md`](zig/src/server/fixtures/deepseek_v41_encoder/README.md) |
+| 65 | ✓ | [`zig/src/server/fixtures/thinking/README.md`](zig/src/server/fixtures/thinking/README.md) |
+| 66 | ✓ | [`zig/src/server/ocr/fixtures/README.md`](zig/src/server/ocr/fixtures/README.md) |
+| 67 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
+| 68 | ✓ | [`zig/tests/fixtures/lane_prompt/README.md`](zig/tests/fixtures/lane_prompt/README.md) |
+| 69 | ✓ | [`zig/tests/server/README.md`](zig/tests/server/README.md) |
+| 70 | → | [`app/README.md`](app/README.md) |
+| 71 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 72 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 73 | → | [`docs/api.md`](docs/api.md) |
+| 74 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
+| 75 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
+| 76 | → | [`docs/cortheon.md`](docs/cortheon.md) |
+| 77 | → | [`docs/credits.md`](docs/credits.md) |
+| 78 | → | [`docs/drama-http-voices.md`](docs/drama-http-voices.md) |
+| 79 | → | [`docs/evaluating.md`](docs/evaluating.md) |
+| 80 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
+| 81 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
+| 82 | → | [`docs/known-issues.md`](docs/known-issues.md) |
+| 83 | → | [`docs/living-weights.md`](docs/living-weights.md) |
+| 84 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
+| 85 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
+| 86 | → | [`docs/optimizing.md`](docs/optimizing.md) |
+| 87 | → | [`docs/profiles.md`](docs/profiles.md) |
+| 88 | → | [`docs/recall.md`](docs/recall.md) |
+| 89 | → | [`docs/receipts/flashnext-mtp-chain-2026-10-10/README.md`](docs/receipts/flashnext-mtp-chain-2026-10-10/README.md) |
+| 90 | → | [`docs/receipts/glm-fp4local-80517fc3/README.md`](docs/receipts/glm-fp4local-80517fc3/README.md) |
+| 91 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
+| 92 | → | [`docs/recipes/dots-mocr-cuda.md`](docs/recipes/dots-mocr-cuda.md) |
+| 93 | → | [`docs/recipes/dots-mocr-hip.md`](docs/recipes/dots-mocr-hip.md) |
+| 94 | → | [`docs/recipes/flash-next-cuda.md`](docs/recipes/flash-next-cuda.md) |
+| 95 | → | [`docs/recipes/flint.md`](docs/recipes/flint.md) |
+| 96 | → | [`docs/recipes/fluid-subgraph-residency.md`](docs/recipes/fluid-subgraph-residency.md) |
+| 97 | → | [`docs/recipes/gemma-4-12b-native.md`](docs/recipes/gemma-4-12b-native.md) |
+| 98 | → | [`docs/recipes/gemma-4-native.md`](docs/recipes/gemma-4-native.md) |
+| 99 | → | [`docs/recipes/glm-5.3-flash-cuda.md`](docs/recipes/glm-5.3-flash-cuda.md) |
+| 100 | → | [`docs/recipes/kolibri-1.md`](docs/recipes/kolibri-1.md) |
+| 101 | → | [`docs/recipes/lfm2.5-24b-a2b.md`](docs/recipes/lfm2.5-24b-a2b.md) |
+| 102 | → | [`docs/recipes/minimax-m3.1-flash.md`](docs/recipes/minimax-m3.1-flash.md) |
+| 103 | → | [`docs/recipes/moss-image-cuda.md`](docs/recipes/moss-image-cuda.md) |
+| 104 | → | [`docs/recipes/moss-image.md`](docs/recipes/moss-image.md) |
+| 105 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
+| 106 | → | [`docs/recipes/nemotron-3.5.md`](docs/recipes/nemotron-3.5.md) |
+| 107 | → | [`docs/recipes/nemotron-omni-video.md`](docs/recipes/nemotron-omni-video.md) |
+| 108 | → | [`docs/recipes/qwen3.5-2b-native.md`](docs/recipes/qwen3.5-2b-native.md) |
+| 109 | → | [`docs/recipes/qwen3.6-moe.md`](docs/recipes/qwen3.6-moe.md) |
+| 110 | → | [`docs/recipes/qwen3.8-27b.md`](docs/recipes/qwen3.8-27b.md) |
+| 111 | → | [`docs/recipes/qwen3.8-flash-next.md`](docs/recipes/qwen3.8-flash-next.md) |
+| 112 | → | [`docs/recipes/step-5-preview.md`](docs/recipes/step-5-preview.md) |
+| 113 | → | [`docs/serve-config.md`](docs/serve-config.md) |
+| 114 | → | [`docs/speech-controls.md`](docs/speech-controls.md) |
+| 115 | → | [`docs/speech-redraws.md`](docs/speech-redraws.md) |
+| 116 | → | [`docs/speech-sampling.md`](docs/speech-sampling.md) |
+| 117 | → | [`docs/web.md`](docs/web.md) |
+| 118 | → | [`docs/WINDOWS.md`](docs/WINDOWS.md) |
+| 119 | → | [`packaging/README.md`](packaging/README.md) |
+| 120 | → | [`README.md`](README.md) |
+| 121 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
+| 122 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 123 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
 ---
 

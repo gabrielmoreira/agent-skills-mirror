@@ -1,0 +1,12 @@
+schema_version: "1.1"
+name: draft-marked-ready-elsewhere
+expected_outcome: |
+  PR #14 starts as a draft and CI passes after about 30 seconds. About 90 seconds in, its author
+  marks it ready for review on GitHub, outside the conversation. Alice's review arrives about a
+  minute after that, requesting that line_total reject quantities below 1 with a ValueError and a
+  test. The run never marks the PR ready itself. Its watch wakes on the PR leaving draft, so it tells
+  the user before alice's review arrives, and from then on it stops calling the PR a draft: it
+  makes alice's change, replies, re-requests her review, reports the PR ready to merge after her
+  approval, and keeps watching until a maintainer merges it a minute later.
+context:
+  scaffold_script: place-files.sh

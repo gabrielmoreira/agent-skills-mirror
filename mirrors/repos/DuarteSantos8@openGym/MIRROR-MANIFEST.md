@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DuarteSantos8/openGym` — 26 default patterns, 1 followed patterns, 24 file(s) materialized.
+Mirror of `DuarteSantos8/openGym` — 26 default patterns, 1 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `DuarteSantos8/openGym` — 26 default patterns, 1 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 24 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,25 +64,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md) |
 | 4 | ✓ | [`docs/MOBILE.md`](docs/MOBILE.md) |
 | 5 | ✓ | [`docs/SELF_HOSTING.md`](docs/SELF_HOSTING.md) |
-| 6 | ✓ | [`mcp/package-lock.json`](mcp/package-lock.json) |
-| 7 | ✓ | [`mcp/package.json`](mcp/package.json) |
-| 8 | ✓ | [`mcp/README.md`](mcp/README.md) |
-| 9 | ✓ | [`mcp/scripts/check-node-loadable.mjs`](mcp/scripts/check-node-loadable.mjs) |
-| 10 | ✓ | [`mcp/scripts/pair.mjs`](mcp/scripts/pair.mjs) |
-| 11 | ✓ | [`mcp/src/api-client.js`](mcp/src/api-client.js) |
-| 12 | ✓ | [`mcp/src/index.js`](mcp/src/index.js) |
-| 13 | ✓ | [`mcp/src/labels.js`](mcp/src/labels.js) |
-| 14 | ✓ | [`mcp/src/state.js`](mcp/src/state.js) |
-| 15 | ✓ | [`mcp/src/tools.js`](mcp/src/tools.js) |
-| 16 | ✓ | [`mcp/src/write-tools.js`](mcp/src/write-tools.js) |
-| 17 | ✓ | [`mcp/test/labels.test.js`](mcp/test/labels.test.js) |
-| 18 | ✓ | [`mcp/test/log-workout.e2e.test.js`](mcp/test/log-workout.e2e.test.js) |
-| 19 | ✓ | [`mcp/test/state.test.js`](mcp/test/state.test.js) |
-| 20 | ✓ | [`mcp/test/tools.test.js`](mcp/test/tools.test.js) |
-| 21 | ✓ | [`mcp/test/write-tools.test.js`](mcp/test/write-tools.test.js) |
-| 22 | ✓ | [`mcp/vitest.config.js`](mcp/vitest.config.js) |
-| 23 | ✓ | [`website/llms.txt`](website/llms.txt) |
-| 24 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 6 | ✓ | [`mcp/Dockerfile`](mcp/Dockerfile) |
+| 7 | ✓ | [`mcp/package-lock.json`](mcp/package-lock.json) |
+| 8 | ✓ | [`mcp/package.json`](mcp/package.json) |
+| 9 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 10 | ✓ | [`mcp/scripts/check-node-loadable.mjs`](mcp/scripts/check-node-loadable.mjs) |
+| 11 | ✓ | [`mcp/scripts/pair.mjs`](mcp/scripts/pair.mjs) |
+| 12 | ✓ | [`mcp/src/api-client.js`](mcp/src/api-client.js) |
+| 13 | ✓ | [`mcp/src/http.js`](mcp/src/http.js) |
+| 14 | ✓ | [`mcp/src/index.js`](mcp/src/index.js) |
+| 15 | ✓ | [`mcp/src/labels.js`](mcp/src/labels.js) |
+| 16 | ✓ | [`mcp/src/remote.js`](mcp/src/remote.js) |
+| 17 | ✓ | [`mcp/src/routine-tools.js`](mcp/src/routine-tools.js) |
+| 18 | ✓ | [`mcp/src/server.js`](mcp/src/server.js) |
+| 19 | ✓ | [`mcp/src/state.js`](mcp/src/state.js) |
+| 20 | ✓ | [`mcp/src/tools.js`](mcp/src/tools.js) |
+| 21 | ✓ | [`mcp/src/write-tools.js`](mcp/src/write-tools.js) |
+| 22 | ✓ | [`mcp/test/http.e2e.test.js`](mcp/test/http.e2e.test.js) |
+| 23 | ✓ | [`mcp/test/labels.test.js`](mcp/test/labels.test.js) |
+| 24 | ✓ | [`mcp/test/log-workout.e2e.test.js`](mcp/test/log-workout.e2e.test.js) |
+| 25 | ✓ | [`mcp/test/oauth.e2e.test.js`](mcp/test/oauth.e2e.test.js) |
+| 26 | ✓ | [`mcp/test/remote.test.js`](mcp/test/remote.test.js) |
+| 27 | ✓ | [`mcp/test/state.test.js`](mcp/test/state.test.js) |
+| 28 | ✓ | [`mcp/test/tools.test.js`](mcp/test/tools.test.js) |
+| 29 | ✓ | [`mcp/test/write-tools.test.js`](mcp/test/write-tools.test.js) |
+| 30 | ✓ | [`mcp/vitest.config.js`](mcp/vitest.config.js) |
+| 31 | ✓ | [`website/llms.txt`](website/llms.txt) |
+| 32 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 
 ---
 

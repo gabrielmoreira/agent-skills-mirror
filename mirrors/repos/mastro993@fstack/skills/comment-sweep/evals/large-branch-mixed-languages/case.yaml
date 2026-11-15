@@ -1,0 +1,29 @@
+schema_version: "1.1"
+name: large-branch-mixed-languages
+expected_outcome: |
+  The notifications branch adds or changes about 45 files (over 2,000 lines) across TypeScript,
+  TSX, HTML, Nunjucks, Handlebars, MDX, Prisma, tsconfig, a Dockerfile, and a CI workflow, so the
+  comment inventory goes to cheap scout subagents in batches. Comments that predate the branch
+  stay, even in files the branch touched ("// Strict mode on", "// User model", "// Start the
+  server", "// Fetch the current user", "# Install dependencies", "# Checkout the code"). The
+  vendored vendor/backoff.js, the generated src/generated/notification-kinds.ts, and the Prisma
+  migration SQL are skipped and stay byte-for-byte, and the comment-like text inside the template
+  literal in scripts/gen-kinds.ts is a string, not a comment. Noise is deleted in every file type:
+  narration ("Import dependencies", "Send the email", "Loop forever and process jobs", "Get the
+  token from the URL", "{# Loop over the notifications #}", "{{!-- Render the user name --}}",
+  "{/* Render the bell icon */}"), restated JSDoc and the "/// The id of the notification" doc,
+  commented-out code (audit.log, console.log, the filter useState, the "Old version" fetch in the
+  unsubscribe page's script), history ("Updated per review", "Now uses Prisma transactions",
+  "Added for the webhook refactor", "Added for the worker", "Added notifications models",
+  "Updated header per design review", the "generated with AI and reviewed by Fede" MDX note),
+  banners, "<!-- Main content -->", and the done TODOs ("add retry support", "document the
+  preferences endpoint"). The eslint-disable-next-line, @ts-expect-error, and prettier-ignore
+  directives and the Svix licence header stay, as do the tsconfig comment linking TypeScript issue
+  13195, the TODO linking issue 412, the Apple push payload-limit comment, the Outlook max-width
+  comment in the email layout, the Slack mrkdwn link comment, the /// sentAt invariant in the
+  schema, the "Order matters" ack guard, and the "Keep in sync with enum NotificationChannel"
+  guard (both true and unenforced, so reshape targets). "Gives up after 3 attempts" contradicts
+  MAX_ATTEMPTS = 5 and is reported as a mismatch. No code changes, and the final reply reports
+  what was deleted, kept, and why.
+context:
+  scaffold_script: place-files.sh

@@ -10,7 +10,7 @@ For application npm DEV builds, isolated installation and source MCP overrides, 
 
 模板通过一个 Prism Resource 的 `main.json` 发布。当前绑定 Resource `1500c9af-186b-457f-b74d-a58113f657d8`，默认语言 `zh-CN`。消费现有 `content[locale].templates`：templateId、sortOrder、original 展示信息、coverUrl、previewUrl 和 files（path/url/bytes/sha256）。不新增后台接口或另一套模板 Schema。
 
-Studio and MCP share one TemplateCatalog reader: repository files in a source checkout, or a published CMS resource in a distribution without those files. Both include the three built-in editable examples. Historical reference snapshots remain internal compatibility data. Guidance-only entries remain distinct from executable projects.
+Studio and MCP share one TemplateCatalog reader: repository files in a source checkout, or a published CMS resource in a distribution without those files. Both include four built-in editable examples, including the official first-run OpenMotion welcome. Historical reference snapshots remain internal compatibility data. Guidance-only entries remain distinct from executable projects.
 
 <a id="环境与构建"></a>
 
@@ -69,13 +69,13 @@ OpenDesign 完整迁入 Personal video agent 的 891 条 Hyperframes 目录。�
 
 未取得有效封面的 340 条暂时不展示在画廊，仍可通过完整 MCP 目录精确查找。原视频从原始 HTTPS 地址按需播放；加载失败时保留本地真实封面与原始出处。
 
-README 的[七个创作场景](examples.zh-CN.md)从现有目录精选七个外部参考，提供短 GIF、静态预览与可复制简报；[片段清单](readme/examples/manifest.json)记录精确 ID、来源与时间范围。它们是创作输入，不是 OpenMotion 生成的验收样片，也不新增内置模板、目录条目或改变应用画廊的排序。原三项可编辑模板仍通过 [Library 模板入口](../library/templates/README.md)使用。
+README 的[七个创作场景](examples.zh-CN.md)从现有目录精选七个外部参考，提供短 GIF、静态预览与可复制简报；[片段清单](readme/examples/manifest.json)记录精确 ID、来源与时间范围。它们是创作输入，不是 OpenMotion 生成的验收样片，也不新增内置模板、目录条目或改变应用画廊的排序。The four bundled editable templates are available through the [Library template index](../library/templates/README.md).
 
 资源展示区另设 [18 个动态精选](README.zh-CN.md#motion-gallery)，按产品界面、品牌发布、动态文字、光影材质、空间镜头和生成艺术分为六组。默认全部使用真实视频片段制成的循环 GIF，点击播放完整视频，署名链接指向原始条目；仅在读者启用减少动态效果时切换到已有封面。其 [来源清单](readme/gallery/manifest.json)记录 8 支参考片与 10 个 registry 组件的准确 ID、片段范围及校验值。此选择只作用于 README，不改变 Studio 画廊、目录总数、内置模板数量或接入行为。
 
 ## 页面与数据
 
-首页 Motion 模式提供分类模板，默认展示三个「可以二次剪辑」模板。「使用模板」先选入输入框，提交后才创建会话：内置模板创建独立工程，外部参考保留精确 ID 并由 Agent 制作。接入弹框继续支持直接打开内置模板和复制参考指令；会话内直接打开模板会新增一个产物，之前工程保留。首页支持搜索、分页、同源版本预览，与弹框共用目录 API；详细行为见 [会话与 Artifact 浏览器](project-workspace.md)。
+首页 Motion 模式提供分类模板，默认展示四个「可以二次剪辑」模板（含官方 OpenMotion Welcome）。「使用模板」先选入输入框，提交后才创建会话：内置模板创建独立工程，外部参考保留精确 ID 并由 Agent 制作。接入弹框继续支持直接打开内置模板和复制参考指令；会话内直接打开模板会新增一个产物，之前工程保留。首页支持搜索、分页、同源版本预览，与弹框共用目录 API；详细行为见 [会话与 Artifact 浏览器](project-workspace.md)。
 
 MCP 接入与模板库使用同一弹框中的一张滚动页面。整体接入结构沿用源工程；模板展示参考 Hyperframes 的视频卡片与大幅预览，保留精选顺序、五类标签、三列网格和同源版本选择。作者出处可跳转，复制动作称为「一键复刻」。浏览更多每次加载六组；搜索匹配名称、ID、作者、标签和描述。同源卡片保留所有版本，不删除重复视频对应的原始记录。
 
@@ -85,14 +85,14 @@ MCP 接入与模板库使用同一弹框中的一张滚动页面。整体接入�
 
 显示 `42K 次查看` 等紧凑数字；悬停可查看精确数值、平台和同步日期，点击仍打开原帖。数字是 Hyperframes 收录的快照，不代表平台实时值；没有数据时省略热度，真实的零值仍显示。同源版本共享原帖数字，不叠加计数。内部目录列表和详情同时返回 `social` 中的原始数值、平台、出处、同步时间与数据来源。
 
-`GET /motion-api/template-catalog?category=featured&query=&offset=0&limit=6&grouped=true&covered=true` 返回卡片及分页信息。`total` 是当前过滤后的卡片组数，`entryTotal` 是这些组包含的原始条目数，`catalogTotal` 为全部 894 条（891 个外部条目 + 3 个本地模板）。`galleryTotal` 为当前有真实封面的 554 条；`covered=true` 将无封面条目过滤。`next=null` 表示已经读完。内部目录列表默认不分组，可按原始 ID 分页读取完整目录；当时一期九个公开 Tool 未开放目录查询；当前协议见上文。
+`GET /motion-api/template-catalog?category=featured&query=&offset=0&limit=6&grouped=true&covered=true` returns cards and pagination metadata. `total` counts the filtered card groups, and `entryTotal` counts their original entries. `catalogTotal` is 895 entries: 891 external entries and four bundled templates. `galleryTotal` is 555 entries with actual covers; `covered=true` filters out entries without covers. `next=null` marks the end of the results. Internal catalog listings are ungrouped by default and support pagination by original ID. The original phase-one set of nine public tools did not expose catalog queries; see the current protocol above.
 
 ## Agent 复刻
 
 1. 卡片只复制一句提示、一个链接和精确模板 ID，链接为 `/connect/guide?host=...&template=...`。详细步骤放在链接中，未知 ID 返回错误，不回退到其他示例。
 2. Agent 读取指引 URL 中的实际来源、准确 ID、kind 和路线。`builtin` / 可编辑 `registry` 进入 openmotion-template-to-video；视频 `reference` 进入已实现的 openmotion-recreate；明确要求可复用模板时进入 openmotion-video-to-template。通过本地 Skill 或对应 MCP Resources 读取正文和共享 context，不回总入口重新选模板。旧版本未开放模板详情 Tool；当前版本使用 openmotion_get_template。
 3. 外部参考由宿主 Agent 实际分析视频或源码，导入支持的素材，并通过 `openmotion_edit_project` 携带 projectId、requestId、expectedRevision 和 expectedVersionId 写原生 Hyperframes HTML compositions 与可 seek 的 GSAP 动画。Tool 不替 Agent 分析视频或自动执行远程源码。
-4. `kind=builtin` 的三个本地模板使用 `openmotion_create_project`，传 projectType=template、templateId、requestId、title 与 requirements 创建独立工程。外部 ID 不会被映射成任意本地示例。
+4. The four local `kind=builtin` templates use `openmotion_create_project` with projectType=template, templateId, requestId, title and requirements to create independent projects. External IDs never map to an arbitrary local example.
 5. 检查 lint/timeline/info 与实际预览，保留可继续编辑的工程。不将原视频整段放入时间轴就宣称复刻完成；只有用户要求时才导出并验证成片。
 
 ## 从源工程更新
@@ -113,4 +113,4 @@ npm test
 
 ## Presenter-led README selection
 
-The README now also highlights nine existing `hf-reference-aroll-*` entries, three original/upstream-remix pairs and the Presenter Tech package demo. See the [creator gallery](../README.md#creator-video-gallery), [Motion Design examples](motion-design-examples.md#presenter-motion) and [source manifest](readme/people/manifest.json). The three new Presenter Story documents are design recipes; [Presenter Tech](../library/templates/presenter-tech/README.md) now includes the pinned template archive and its own runner in the Library. This does not add a Studio catalog entry, change catalog ordering or increase the three Studio-native template count.
+The README now also highlights nine existing `hf-reference-aroll-*` entries, three original/upstream-remix pairs and the Presenter Tech package demo. See the [creator gallery](../README.md#creator-video-gallery), [Motion Design examples](motion-design-examples.md#presenter-motion) and [source manifest](readme/people/manifest.json). The three new Presenter Story documents are design recipes; [Presenter Tech](../library/templates/presenter-tech/README.md) now includes the pinned template archive and its own runner in the Library. These README selections and Library resources do not register additional Studio templates or change catalog ordering. The bundled Studio template count remains four.

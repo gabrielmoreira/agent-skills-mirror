@@ -137,6 +137,21 @@ SSH key.
   layer you trust in front (Cloudflare Access, Tailscale, mTLS) and let the proxy inject the token, as
   [dashboard.md](./dashboard.md#hosted-access-via-reverse-proxy-recommended) describes. Never put the token in a
   shared URL.
+- **Engines:** engine CLIs (sessions and the one-shot Claude CLI management calls), ACP agents and custom engines
+  run as the server's user with its environment, minus `OPENCLAW_SERVER_TOKEN` and `CLAWO_AUTH_TOKEN`, even when a
+  preset's or agent's own `env` sets them: no engine needs the server's token, so it is not handed to them. They
+  can still read the token file, like any process of that user, and a `clawo` command run inside a session reads
+  the token from that file.
+- **Commands:** commands run through `kernel/exec.ts` (a contract's `command` checks, which usually run code the
+  agent wrote, the Git reads behind verification, a screenshot check's browser and a Claude account's
+  `tokenCommand`) also start without `OPENCLAW_SERVER_TOKEN` and `CLAWO_AUTH_TOKEN`, even when the caller passes its
+  own `env`; the rest of the environment is passed as before.
+- **Agent-written code elsewhere:** UltraApp's host mode (`npm install`, `npm run build` and the running app) and the
+  autoloop's commits, which run the workspace's Git hooks, start without both variables too, even when the deploy's
+  `env` or build args set them. They can still read the token file, like any process of that user.
+- **Git in agent workspaces:** Council's git calls in its project repository (which run that repository's hooks) and
+  the session manager's Git reads of an autoloop workspace (which repository config such as `core.fsmonitor` can
+  turn into a command) start without both variables too.
 - **Rotating a leaked token:** delete the token file and restart the server (under OpenClaw, the Gateway), or
   change `OPENCLAW_SERVER_TOKEN` when the token comes from there.
 

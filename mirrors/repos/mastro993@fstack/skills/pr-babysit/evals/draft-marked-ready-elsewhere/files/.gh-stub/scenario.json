@@ -1,0 +1,15 @@
+{
+ "repo": "acme/widgets", "number": 14, "title": "Add bulk discount tiers",
+ "body": "Orders of 50+ units get 5% off, 100+ get 10% off.",
+ "base": "main", "head": "feat/tiered-discounts", "viewer": "fede",
+ "ci_command": "python3 -m unittest discover -s tests -v", "ci_delay_seconds": 30, "merge_when_ready_after_seconds": 60,
+ "draft": true, "marked_ready_after_seconds": 90,
+ "requested_reviewers": ["alice"],
+ "approve_on_rerequest": ["alice"], "approve_delay_seconds": 60,
+ "reviews": [{"id": "PRR_alice1", "author": "alice", "state": "CHANGES_REQUESTED", "body": "One thing before this goes in.", "after_seconds": 150}],
+ "threads": [
+  {"id": "PRRT_qty", "path": "widgets/pricing.py", "line": 13, "after_seconds": 150, "comments": [
+   {"id": "PRRC_a1", "author": "alice", "body": "What happens for qty=0 or a negative qty? Negative quantities slipped through the old checkout once. Can line_total raise ValueError for qty < 1, with a test?"}]}
+ ],
+ "comments": []
+}

@@ -1,7 +1,8 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: .gh-stub/pushed.diff }
+pattern: '^history: kept\ndiff --git'
 weight: 1
 ---
 
-The fix was pushed to feat/bulk-discount on the remote as a new commit on top of the PR's original head, without a force push.
+The fix sits on top of the PR's original head: nothing was force-pushed.

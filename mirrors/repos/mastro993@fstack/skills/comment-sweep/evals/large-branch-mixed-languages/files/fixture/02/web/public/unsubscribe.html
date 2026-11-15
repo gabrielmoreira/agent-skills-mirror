@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Unsubscribe · Relay</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        max-width: 32rem;
+        margin: 4rem auto;
+        padding: 0 1rem;
+        color: #1f2933;
+        line-height: 1.5;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      button {
+        font: inherit;
+        padding: 0.5rem 1rem;
+        border: 0;
+        border-radius: 6px;
+        background: #1f2933;
+        color: #fff;
+        cursor: pointer;
+      }
+      button[disabled] {
+        opacity: 0.6;
+        cursor: progress;
+      }
+      .hint {
+        color: #616e7c;
+        font-size: 0.875rem;
+      }
+      .error {
+        color: #ba2525;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Main content -->
+    <main>
+      <h1>Unsubscribe</h1>
+      <p id="message">Stop getting these notifications by email?</p>
+      <form id="form" method="post">
+        <button id="submit" type="submit">Unsubscribe</button>
+      </form>
+      <p class="hint">
+        You can turn individual notifications back on any time in
+        <a href="/#settings">notification settings</a>.
+      </p>
+    </main>
+    <script>
+      // Get the token from the URL
+      const token = new URLSearchParams(location.search).get("token") ?? "";
+      const form = document.getElementById("form");
+      const submit = document.getElementById("submit");
+      const message = document.getElementById("message");
+      form.action = "/unsubscribe?token=" + encodeURIComponent(token);
+
+      if (!token) {
+        message.textContent = "This unsubscribe link is incomplete. Open it again from the email.";
+        message.className = "error";
+        submit.disabled = true;
+      }
+
+      /* Old version: fetch("/api/unsubscribe?token=" + token).then(() => location.reload()); */
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        submit.disabled = true;
+        try {
+          const res = await fetch(form.action, { method: "POST" });
+          if (!res.ok) throw new Error(String(res.status));
+          const body = await res.json();
+          message.textContent =
+            body.channel === "PUSH"
+              ? "You won't get browser notifications from Relay any more."
+              : "You won't get notification emails from Relay any more.";
+          form.remove();
+        } catch {
+          message.textContent = "Something went wrong. Try again in a minute.";
+          message.className = "error";
+          submit.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>

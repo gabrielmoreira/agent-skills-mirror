@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    // Strict mode on
+    "strict": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
+    "skipLibCheck": true,
+    // Added for the worker
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    // Left off on purpose: Prisma's generated input types declare optional fields as
+    // `field?: T`, and with this flag on, spreading a partial update that holds
+    // `undefined` no longer type-checks. https://github.com/microsoft/TypeScript/issues/13195
+    "exactOptionalPropertyTypes": false
+  },
+  "include": ["src"]
+}

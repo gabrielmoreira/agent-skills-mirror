@@ -1,6 +1,7 @@
 ---
-type: llm
-focus: trace
+type: regex
+target: { source: file, path: .gh-stub/state.json }
+pattern: '"resolved": \[\]'
 weight: 1
 ---
 

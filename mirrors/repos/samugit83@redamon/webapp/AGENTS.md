@@ -12,6 +12,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | ------ | ----- |
 | Adding a built-in attack skill to the agent | `builtin-agent-skill` |
 | Adding a non-chat provider type, or a path that picks any provider row | `llm-provider-integration` |
+| Adding a path a project collaborator can reach, or a ticket, token or job that carries a tenant and an actor | `rbac-authz` |
 | Adding an agent model call site, a retry loop, or a path that builds an LLM from a model id | `agent-in-the-loop` |
 | Adding or integrating an LLM provider | `llm-provider-integration` |
 | Adding, removing or changing a tool on the inbound MCP server | `mcp-server-tools` |
@@ -24,7 +25,9 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Editing model-id routing or provider credential handling | `llm-provider-integration` |
 | Editing the Agent in the Loop broker, adapter, routes or loop MCP tools | `agent-in-the-loop` |
 | Editing the Priority Board, the triage graph mixin, or the MCP triage tools | `priority-board-triage` |
+| Editing the caller-supplied Cypher filters (injectProjectFilter.ts, graph_db/tenant_filter.py) | `rbac-authz` |
 | Editing the plugin platform: the plugins lib or routes, the plugin runner, or the Gateway | `plugin-platform` |
+| Editing webapp/src/lib/authz, a route's permission guard, or the route manifest | `rbac-authz` |
 
 ---
 
@@ -58,6 +61,15 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
   `upstreamErrorResponse`. The browser reads a failure with `readApiError` /
   `fetchJson` ([apiError.ts](src/lib/apiError.ts)), whose message carries the
   code and HTTP status, so a screenshot is enough to tell the causes apart.
+- **NEVER check ownership or admin rights outside
+  [src/lib/authz/](src/lib/authz/); call `can()` / `projectAccess()`.** A route
+  asks its permission through `requirePermission` ([guards.ts](src/lib/authz/guards.ts)),
+  `requireSelfPermission` or `requireSessionPermission`, lists projects through
+  `visibleProjectsWhere()` and per-user rows through `ownsRow()`; an inline
+  `project.userId === user` or `role === 'admin'` is a second policy that the
+  next permission or sharing change misses ([authzStaticGuard.test.ts](src/lib/authz/authzStaticGuard.test.ts)
+  fails on one). The route's manifest entry names the same permission
+  ([routePermissions.test.ts](src/lib/authz/routePermissions.test.ts)).
 
 ---
 

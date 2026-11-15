@@ -19,6 +19,8 @@ import subprocess
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+from _safe_env import safe_env
+
 PORT = 8015
 
 # Track tunnel processes
@@ -67,6 +69,7 @@ def _start_ngrok(authtoken: str) -> subprocess.Popen | None:
          "--log=stdout", "--log-level=info"],
         stdout=open("/var/log/ngrok.log", "w"),
         stderr=subprocess.STDOUT,
+        env=safe_env(),
     )
     print(f"[tunnel_manager] ngrok started (pid {proc.pid}, API at http://0.0.0.0:4040)")
     return proc
@@ -76,19 +79,19 @@ def _start_chisel(server_url: str, auth: str) -> subprocess.Popen | None:
     if not server_url:
         return None
 
-    cmd = ["chisel", "client"]
-    if auth:
-        cmd += ["--auth", auth]
     # STRIDE I19: only expose the reverse-shell handler port (4444). The former
     # web-delivery reverse mapping on port 8080 published an internal HTTP
     # listener to the internet with no reverse-shell justification and is dropped.
-    cmd += [server_url, "R:4444:localhost:4444"]
+    cmd = ["chisel", "client", server_url, "R:4444:localhost:4444"]
 
     print(f"[tunnel_manager] Starting chisel reverse tunnel to {server_url}...")
     proc = subprocess.Popen(
         cmd,
         stdout=open("/var/log/chisel.log", "w"),
         stderr=subprocess.STDOUT,
+        # chisel reads AUTH when --auth is absent: the credential stays off the
+        # command line, which `ps` shows to every process here and on the host.
+        env=safe_env({"AUTH": auth} if auth else None),
     )
     print(f"[tunnel_manager] chisel started (pid {proc.pid}, tunneling port 4444)")
     return proc

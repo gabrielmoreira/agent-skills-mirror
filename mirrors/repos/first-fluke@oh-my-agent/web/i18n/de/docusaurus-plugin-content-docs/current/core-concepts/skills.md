@@ -97,53 +97,42 @@ Quelle: `cli/commands/agent/spawn-status.ts`, `cli/platform/agent-config/loaders
 │   ├── orm-reference.md              ← Domain-specific (ORM queries, N+1, transactions)
 │   ├── checklist.md
 │   └── error-playbook.md
-└── variants/                          ← Starter seeds for /stack-set
+└── variants/                          ← Stack presets; an install with a chosen preset has stack/ instead
     ├── stack.schema.json
-    ├── node/
-    ├── python/
-    └── rust/
+    ├── node/                          ← stack.yaml, tech-stack.md, snippets.md, api-template.ts
+    ├── python/                        ← stack.yaml, tech-stack.md, snippets.md, api-template.py
+    └── rust/                          ← stack.yaml, tech-stack.md, snippets.md, api-template.rs
 
 .agents/skills/oma-mobile/
 ├── SKILL.md
 ├── resources/
 │   ├── execution-protocol.md
-│   ├── tech-stack.md
-│   ├── screen-template.dart
-│   ├── screen-template.swift         ← Swift native iOS screen template
-│   ├── screen-template.tsx            ← React Native screen template
+│   ├── tech-stack.md                 ← Platform index and shared response-cache contract
 │   ├── checklist.md
 │   └── error-playbook.md
-└── variants/                          ← Platform seeds for /stack-set
+└── variants/                          ← Platform variants; read directly when stack/ does not exist
     ├── README.md
     ├── stack.schema.json
-    ├── flutter/                       ← stack.yaml, tech-stack.md, snippets.md, api-template.dart
-    ├── react-native/                  ← stack.yaml, tech-stack.md, snippets.md, api-template.ts
-    └── swift-ios/                     ← stack.yaml, tech-stack.md, snippets.md, api-template.swift
+    ├── flutter/                       ← stack.yaml, tech-stack.md, snippets.md
+    ├── kotlin-android/                ← stack.yaml, tech-stack.md, snippets.md
+    ├── react-native/                  ← stack.yaml, tech-stack.md, snippets.md
+    └── swift-ios/                     ← stack.yaml, tech-stack.md, snippets.md
 
 .agents/skills/oma-design/
 ├── SKILL.md
-├── resources/
-│   ├── execution-protocol.md
-│   ├── anti-patterns.md
-│   ├── asset-strategy.md
-│   ├── checklist.md
-│   ├── design-md-spec.md
-│   ├── design-tokens.md
-│   ├── getdesign-fetcher.md
-│   ├── prompt-enhancement.md
-│   ├── redesign-protocol.md
-│   ├── stitch-integration.md
-│   └── error-playbook.md
-└── reference/                         ← Deep reference material
-    ├── typography.md
-    ├── color-and-contrast.md
-    ├── spatial-design.md
-    ├── motion-design.md
-    ├── responsive-design.md
-    ├── component-patterns.md
-    ├── accessibility.md
-    ├── visual-hierarchy.md
-    └── shader-and-3d.md
+└── resources/
+    ├── execution-protocol.md         ← Operation scope, artifacts, and handoff
+    ├── external-design-skills.md     ← Supplier selection (Interface Design, Taste, Impeccable)
+    ├── product-interface-review.md   ← Post-implementation product-interface review
+    ├── redesign-protocol.md          ← Preserve vs Overhaul for an existing product
+    ├── design-md-spec.md             ← Creating or materially revising DESIGN.md
+    ├── design-tokens.md              ← Semantic token handoff to implementation
+    ├── data-grid.md                  ← Data table and grid rules
+    ├── asset-strategy.md             ← Actual assets, claims, provenance, placeholders
+    ├── getdesign-fetcher.md          ← Requested vendor inspiration
+    ├── stitch-integration.md         ← Requested Stitch operation
+    ├── checklist.md                  ← Affected-result verification
+    └── error-playbook.md             ← Observed supplier or design-tool failure
 ```
 
 ---
@@ -157,10 +146,10 @@ Quelle: `cli/commands/agent/spawn-status.ts`, `cli/platform/agent-config/loaders
 | **Fehler-Playbook** | `error-playbook.md` | Schritte vom Symptom zur Wiederherstellung; fehlende Informationen oder Befugnisse pausieren nur die davon abhängige Aktion | Nur nach einem beobachteten Fehler |
 | **Checkliste** | `checklist.md` | Domänenspezifische Qualitätsverifikation | Relevante Abschnitte, für offene Verifikation |
 | **Snippets** | `snippets.md` | Kopierbereite Code-Muster | Ungewohnte Implementierung oder Ausgabeform |
-| **Beispiele** | `examples.md` | Ausgearbeitete Ein-/Ausgabebeispiele (oma-pm, oma-db, oma-tf-infra, oma-observability, oma-search) | Ungewohnte Implementierung oder Ausgabeform |
-| **Varianten** | `variants/`-Verzeichnis | Sprach-/Framework-Starter-Seeds. Backend liefert `node`, `python` und `rust`; Mobile liefert `flutter`, `react-native` und `swift-ios`. `/stack-set` erzeugt daraus das `stack/` des Projekts. | Wenn ein passender Stack eingerichtet wird |
-| **Vorlagen** | `screen-template.{dart,swift,tsx}` (oma-mobile), `variants/*/api-template.*` | Boilerplate für einen neuen Screen oder ein neues API-Modul | Beim Erstellen dieser Datei |
-| **Domänenreferenz** | `orm-reference.md`, `anti-patterns.md` usw. | Vertiefte Domänenkenntnisse für spezifische Teilaufgaben | Aufgabentypspezifisch |
+| **Beispiele** | `examples.md` | Ausgearbeitete Ein-/Ausgabebeispiele (oma-pm, oma-db, oma-tf-infra, oma-observability) | Ungewohnte Implementierung oder Ausgabeform |
+| **Varianten** | `variants/`-Verzeichnis | Sprach-/Framework-Stack-Referenzen. Backend liefert `node`, `python` und `rust`; Mobile liefert `flutter`, `react-native`, `swift-ios` und `kotlin-android`. Ein Skill nutzt `stack/`, sofern vorhanden, und andernfalls die passende Variante; `/stack-set` erzeugt das `stack/` des Projekts anhand einer Variante. | Wenn das Projekt kein `stack/` hat oder ein passender Stack eingerichtet wird |
+| **Vorlagen** | `api-template.*` in der Backend-Stack-Referenz; Mobile hält seine Screen- und API-Muster in `variants/<platform>/snippets.md` | Boilerplate für ein neues API-Modul oder einen neuen Screen | Beim Erstellen dieser Datei |
+| **Domänenreferenz** | `orm-reference.md`, `vector-db.md`, `data-grid.md` usw. | Vertiefte Domänenkenntnisse für spezifische Teilaufgaben | Aufgabentypspezifisch |
 
 ---
 
@@ -194,7 +183,7 @@ Alle Agenten teilen gemeinsame Grundlagen aus `.agents/skills/_shared/`. Diese s
 
 | Ressource | Zweck |
 |----------|---------|
-| **`result-contract.md`** | Run-Identität, Claim-Pfad und Abschlussvertrag für Agentenergebnisse. Wird in jeden `oma agent spawn`-Prompt injiziert; native Agenten befolgen ihn mit `oma agent begin`, `oma agent verify` und `oma agent finish`. |
+| **`result-contract.md`** | Run-Identität, Pfad der Ergebnisdeklaration und Abschlussvertrag für Agentenergebnisse. Wird in jeden `oma agent spawn`-Prompt injiziert; native Agenten befolgen ihn mit `oma agent begin`, `oma agent verify` und `oma agent finish`. |
 | **`memory-protocol.md`** | Speicherdateiformat und Operationen für CLI-Subagenten. Definiert die Protokolle On Start, During Execution und On Completion mit konfigurierbaren Speicherwerkzeugen (read/write/edit). Enthält eine Erweiterung zur Experimentverfolgung. |
 | **`event-spec.md`** | Vertrag für dauerhafte Workflow-Ereignisse, die an `events.jsonl` im OMA-Home-Profil angehängt und mit `oma state get` oder `oma state list` geprüft werden. |
 | **`execution-protocols/claude.md`** | Claude-Code-spezifische Ausführungsmuster. Wird von `oma agent spawn` bei Vendor `claude` injiziert. |
@@ -313,15 +302,15 @@ Dies sind Beispiele für Referenzen, die herangezogen werden, wenn die Aufgabe s
 
 | Aufgabentyp | Erforderliche Ressourcen |
 |-----------|-------------------|
-| CRUD-API-Erstellung | `stack/snippets.md` und `stack/api-template.*` des Projekts (von `/stack-set` erzeugt), sofern vorhanden; andernfalls vorhandener Projektcode |
-| Authentifizierung | `stack/snippets.md` + `stack/tech-stack.md`, sofern vorhanden |
-| DB-Migration | `stack/snippets.md`, sofern vorhanden; Schemadesign geht an oma-db |
+| CRUD-API-Erstellung | `snippets.md` und `api-template.*` aus der Stack-Referenz (`stack/`, sofern vorhanden, andernfalls das passende `variants/<language>/`), zusammen mit vorhandenem Projektcode |
+| Authentifizierung | `snippets.md` + `tech-stack.md` aus der Stack-Referenz |
+| DB-Migration | `snippets.md` aus der Stack-Referenz; Schemadesign geht an oma-db |
 | Performance-Optimierung | `orm-reference.md` und passende vom Skill bereitgestellte Beispiele |
-| Vorhandenen Code modifizieren | projektweiter Code-Intelligence-Provider und relevante Ausführungsressourcen |
+| Vorhandenen Code modifizieren | Code-Intelligence-Provider des Projekts und relevante Ausführungsressourcen |
 
 <!-- oma-docs:ignore-end -->
 
-`variants/node`, `variants/python` und `variants/rust` sind Starter-Seeds für `/stack-set`; Agenten lesen sie nicht für Änderungen an bestehendem Code.
+Die Stack-Referenz ist ergänzend: Projektmanifeste und bestehender Code gehen vor. Ein installiertes Projekt mit gewähltem Preset hat `stack/` und kein `variants/`; die Plugin- und Quell-Layouts haben `variants/node`, `variants/python` und `variants/rust` und kein `stack/`.
 
 ### Frontend-Agent {#frontend-agent}
 
@@ -337,12 +326,14 @@ Dies sind Beispiele für Referenzen, die herangezogen werden, wenn die Aufgabe s
 
 | Aufgabentyp | Erforderliche Ressourcen |
 |-----------|-------------------|
-| Design-System-Erstellung | reference/typography.md + reference/color-and-contrast.md + reference/spatial-design.md + design-md-spec.md |
-| Landingpage-Design | reference/component-patterns.md + reference/motion-design.md + prompt-enhancement.md |
-| Design-Audit | checklist.md + anti-patterns.md |
-| Design-Token-Export | design-tokens.md |
-| 3D- / Shader-Effekte | reference/shader-and-3d.md + reference/motion-design.md |
-| Barrierefreiheits-Review | reference/accessibility.md + checklist.md |
+| Jeder Design-Vorgang | execution-protocol.md + external-design-skills.md (einen Supplier wählen) |
+| Erstellung oder Überarbeitung eines Design-Systems | design-md-spec.md |
+| Redesign einer bestehenden Website oder App | redesign-protocol.md |
+| Übergabe von Design-Tokens | design-tokens.md |
+| Produkt-Interface-Review nach der Implementierung | product-interface-review.md |
+| Oberfläche rund um eine Datentabelle oder ein Data-Grid | data-grid.md |
+| Bilder, Markenzeichen oder Platzhalter | asset-strategy.md |
+| Design-Audit oder Vorab-Verifikation vor Auslieferung | checklist.md |
 
 ### QA-Agent {#qa-agent}
 
@@ -364,17 +355,17 @@ Wenn der Orchestrator einen Subagenten-Prompt schreibt (`oma-orchestration/resou
 - Beim nativen Dispatch die Pfade dieser Dateien und des zuständigen Skills übergeben, wenn die Laufzeit sie nicht bereitgestellt hat.
 - Einen Abschnitt aus dem Fehler-Playbook erst nach einem beobachteten Fehler hinzufügen und `runtime/memory-protocol.md` nur, wenn der Agent dauerhaften Aufgabenzustand koordiniert oder fortsetzt.
 
-Diese zielgerichtete Zusammenstellung vermeidet unnötige Ressourcen und maximiert den verfügbaren Kontext des Subagenten für die eigentliche Arbeit.
+Der zielgerichtete Prompt hält nicht zugehörige Ressourcen heraus und lässt mehr Kontext für die Aufgabe verfügbar.
 
 ---
 
 ## Sitzungsnachweise und retrospektive Auswertung {#session-evidence-and-retrospective-review}
 
-Sitzungsaufzeichnungen halten wesentliche Korrekturen, Umfangsänderungen, Nacharbeit und beurteilte Review-Befunde mit Nachweisen fest. Notwendige Klärung zieht keine Strafe nach sich. Die früheren gewichteten CD- und EA-Scores sowie die durch Schwellenwerte ausgelösten RCA-Regeln wurden entfernt; sie waren Prompt-Anweisungen und keine per CLI berechneten Metriken.
+Sitzungsaufzeichnungen halten wesentliche Korrekturen, Umfangsänderungen, Nacharbeit und beurteilte Review-Befunde mit Nachweisen fest. Notwendige Klärung zieht keine Strafe nach sich, und für Fragen, Korrekturen oder Review-Urteile werden keine Punkte vergeben.
 
 Nach Möglichkeit vorhandene Aufgabenergebnisse verwenden. Eine separate `session-metrics-{sessionId}.md` ist im konfigurierten Koordinationsspeicher optional. Ein wiederholter Fehlschlag oder eine angeforderte Retrospektive kann eine Lesson rechtfertigen; eine gewöhnliche fehlschlagende Prüfung oder ein strittiger Befund begründet jedoch nicht automatisch eine. Historische Protokolle beibehalten und nicht in das neue Format umschreiben.
 
-`oma stats` meldet die Produktivität sowie erfasste Nutzungs- und Kostenzusammenfassungen. `oma retro` gruppiert tatsächliche Ereignisse (Gate, Blocker, fehlende Entscheidung) zu Vorschlägen. Keiner von beiden berechnet CD-/EA-Scores aus diesen Markdown-Artefakten.
+`oma stats` meldet die Produktivität sowie erfasste Nutzungs- und Kostenzusammenfassungen. `oma retro` gruppiert tatsächliche Ereignisse (Gate, Blocker, fehlende Entscheidung) zu Vorschlägen. Keiner von beiden verwandelt diese Markdown-Artefakte in Punktwerte.
 
 ## Aufgabenzerlegung und Kontextwiederherstellung {#task-decomposition-and-context-recovery}
 

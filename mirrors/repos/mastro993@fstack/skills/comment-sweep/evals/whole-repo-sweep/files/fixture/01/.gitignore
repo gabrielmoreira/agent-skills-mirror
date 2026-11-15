@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+wxdata.yaml
+.ipynb_checkpoints/
+.terraform/
+*.tfstate*

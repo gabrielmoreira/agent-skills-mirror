@@ -5,10 +5,21 @@ Provides a WebSocket endpoint that spawns an interactive bash shell
 with full PTY support. Used by the RedAmon Terminal tab in the webapp.
 
 Runs on port 8016 inside the kali-sandbox container.
+
+Only the agent's /ws/kali-terminal proxy may connect (NF-04). The port is on the
+Docker networks every lab container shares, and it hands out a root shell, so the
+upgrade must carry the bearer MCP_AUTH_TOKEN (which only the agent holds; unset
+refuses everyone), checked before any PTY is forked. The proxy has verified the
+browser's ticket and names the user and project in the upgrade's query; the
+browser's own init frame is read and dropped, its ids ignored. The proxy also
+sends the connection's graph credential (X-Redamon-Run), which the shell gets as
+REDAMON_RUN_CREDENTIAL for redagraph. The shell gets no service secret: its
+environment is built by safe_env().
 """
 
 import asyncio
 import fcntl
+import hmac
 import os
 import sys
 import pty
@@ -17,6 +28,12 @@ import struct
 import termios
 import json
 import logging
+import re
+from http import HTTPStatus
+from urllib.parse import parse_qs, urlsplit
+
+from _auth_middleware import configured_token
+from _safe_env import safe_env
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [terminal] %(message)s")
 logger = logging.getLogger("terminal-server")
@@ -26,6 +43,7 @@ MAX_SESSIONS = int(os.getenv("TERMINAL_MAX_SESSIONS") or "5")
 
 _active_sessions = 0
 _session_lock = asyncio.Lock()
+_warned_no_token = False
 
 
 def _effective_max_sessions() -> int:
@@ -53,9 +71,66 @@ def _effective_max_sessions() -> int:
         return MAX_SESSIONS
 
 
+def _bearer(headers) -> str:
+    value = headers.get("Authorization", "") or ""
+    return value[7:].strip() if value[:7].lower() == "bearer " else ""
+
+
+def _tenant_env(path: str):
+    """The shell's identity from the proxy's query, or None when it lacks one."""
+    query = parse_qs(urlsplit(path or "").query)
+    user_id = (query.get("user_id") or [""])[0].strip()
+    project_id = (query.get("project_id") or [""])[0].strip()
+    if not user_id or not project_id:
+        return None
+    return {"REDAMON_USER_ID": user_id, "REDAMON_PROJECT_ID": project_id}
+
+
+# b64url(claims).b64url(hmac): the only shape the agent mints. Anything else never
+# reaches the shell's environment.
+_RUN_CREDENTIAL = re.compile(r"[A-Za-z0-9_-]{1,4096}\.[A-Za-z0-9_-]{1,128}")
+
+
+def _shell_env(request):
+    """_tenant_env plus the run credential the proxy sent, or None without an identity."""
+    env = _tenant_env(request.path)
+    if env is None:
+        return None
+    credential = (request.headers.get("X-Redamon-Run", "") or "").strip()
+    if _RUN_CREDENTIAL.fullmatch(credential):
+        env["REDAMON_RUN_CREDENTIAL"] = credential
+    elif credential:
+        logger.warning("Dropped a malformed run credential from the terminal upgrade")
+    return env
+
+
+def _process_request(connection, request):
+    """Refuse the upgrade, before the handler runs, unless the agent's proxy sent it."""
+    global _warned_no_token
+    expected = configured_token()
+    if not expected:
+        if not _warned_no_token:
+            logger.warning("MCP_AUTH_TOKEN is not set - refusing every terminal connection (fail-closed)")
+            _warned_no_token = True
+        return connection.respond(HTTPStatus.UNAUTHORIZED, "Unauthorized\n")
+    presented = _bearer(request.headers)
+    if not presented or not hmac.compare_digest(presented.encode(), expected.encode()):
+        logger.warning("Refused a terminal upgrade without the agent's bearer")
+        return connection.respond(HTTPStatus.UNAUTHORIZED, "Unauthorized\n")
+    if _tenant_env(request.path) is None:
+        logger.warning("Refused a terminal upgrade that names no user or project")
+        return connection.respond(HTTPStatus.BAD_REQUEST, "Missing identity\n")
+    return None
+
+
 async def _pty_session(ws):
     """Handle a single WebSocket connection with a PTY bash shell."""
     global _active_sessions
+
+    tenant_env = _shell_env(ws.request)
+    if tenant_env is None:
+        await ws.close(1008, "Missing identity")
+        return
 
     async with _session_lock:
         eff_max = _effective_max_sessions()
@@ -68,58 +143,42 @@ async def _pty_session(ws):
     logger.info("Terminal session started (active: %d)", _active_sessions)
 
     try:
-        await _run_pty_session(ws)
+        await _run_pty_session(ws, tenant_env)
     finally:
         async with _session_lock:
             _active_sessions -= 1
         logger.info("Terminal session ended (active: %d)", _active_sessions)
 
 
-async def _read_init_frame(ws, timeout: float = 0.5):
+async def _read_init_frame(ws, timeout: float = 0.5) -> bytes:
     """
-    Try to read an optional `init` JSON frame from the browser before forking.
+    Read the browser's optional first `init` frame before forking, so it is not
+    typed into the shell. Its ids are ignored: the identity is the proxy's.
 
-    Expected shape: {"type": "init", "user_id": "...", "project_id": "..."}.
-    Returns (tenant_env, replay_bytes):
-      - tenant_env: dict of env vars to inject into the shell (may be empty)
-      - replay_bytes: the first frame's raw bytes if it was NOT an init frame,
-        so the PTY loop can replay it (preserves backward compat with clients
-        that don't send init).
+    Returns the first frame's raw bytes when it was NOT an init frame, so the PTY
+    loop can replay it (clients that send no init keep working), else b"".
     """
-    tenant_env: dict = {}
-    replay: bytes = b""
     try:
         first = await asyncio.wait_for(ws.recv(), timeout=timeout)
     except (asyncio.TimeoutError, Exception):
-        return tenant_env, replay
+        return b""
 
     if isinstance(first, str):
         try:
             msg = json.loads(first)
             if isinstance(msg, dict) and msg.get("type") == "init":
-                user_id = str(msg.get("user_id", "")).strip()
-                project_id = str(msg.get("project_id", "")).strip()
-                if user_id:
-                    tenant_env["REDAMON_USER_ID"] = user_id
-                if project_id:
-                    tenant_env["REDAMON_PROJECT_ID"] = project_id
-                logger.info(
-                    "Init frame received (user=%s project=%s)",
-                    user_id or "<none>", project_id or "<none>",
-                )
-                return tenant_env, replay
+                return b""
         except (json.JSONDecodeError, TypeError):
             pass
-        replay = first.encode("utf-8")
-    elif isinstance(first, (bytes, bytearray)):
-        replay = bytes(first)
+        return first.encode("utf-8")
+    if isinstance(first, (bytes, bytearray)):
+        return bytes(first)
+    return b""
 
-    return tenant_env, replay
 
-
-async def _run_pty_session(ws):
-    """Run the actual PTY session for a WebSocket connection."""
-    tenant_env, replay_bytes = await _read_init_frame(ws)
+async def _run_pty_session(ws, tenant_env=None):
+    """Run the actual PTY session for a WebSocket connection, as `tenant_env`."""
+    replay_bytes = await _read_init_frame(ws)
 
     master_fd, slave_fd = pty.openpty()
     pid = os.fork()
@@ -138,11 +197,12 @@ async def _run_pty_session(ws):
         if slave_fd > 2:
             os.close(slave_fd)
 
-        env = os.environ.copy()
-        env["TERM"] = "xterm-256color"
-        env["SHELL"] = "/bin/bash"
-        env["PS1"] = r"\[\033[1;31m\]redamon\[\033[0m\]@\[\033[1;36m\]kali\[\033[0m\]:\[\033[1;33m\]\w\[\033[0m\]$ "
-        env.update(tenant_env)
+        env = safe_env({
+            "TERM": "xterm-256color",
+            "SHELL": "/bin/bash",
+            "PS1": r"\[\033[1;31m\]redamon\[\033[0m\]@\[\033[1;36m\]kali\[\033[0m\]:\[\033[1;33m\]\w\[\033[0m\]$ ",
+            **(tenant_env or {}),
+        })
 
         os.execvpe("/bin/bash", ["/bin/bash", "--login"], env)
         # Never reached
@@ -294,21 +354,29 @@ def _set_pty_size(fd: int, rows: int, cols: int):
         pass
 
 
-def main():
-    """Start the WebSocket terminal server."""
+def serve(host: str, port: int):
+    """The terminal's WebSocket server: every upgrade passes _process_request first."""
     import websockets
 
+    return websockets.serve(
+        _pty_session,
+        host,
+        port,
+        process_request=_process_request,
+        ping_interval=30,
+        ping_timeout=60,
+        max_size=2**20,
+    )
+
+
+def main():
+    """Start the WebSocket terminal server."""
     logger.info(f"Starting terminal WebSocket server on port {PORT}")
+    if not configured_token():
+        logger.warning("MCP_AUTH_TOKEN is not set - every terminal connection will be refused")
 
     async def _run():
-        async with websockets.serve(
-            _pty_session,
-            "0.0.0.0",
-            PORT,
-            ping_interval=30,
-            ping_timeout=60,
-            max_size=2**20,
-        ):
+        async with serve("0.0.0.0", PORT):
             logger.info(f"Terminal server listening on ws://0.0.0.0:{PORT}")
             await asyncio.Future()  # Run forever
 

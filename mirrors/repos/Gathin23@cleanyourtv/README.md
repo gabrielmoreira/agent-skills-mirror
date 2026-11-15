@@ -16,11 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://trendshift.io/repositories/310225"><img src="docs/trending-badge.png" alt="#1 trending repo of the week, Oct 19–25 2026, via trendshift.io" width="360"></a>
-</p>
-
-<p align="center">
-  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="472 TV models · 129 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 518 more: 534 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher." width="800"></a>
+  <a href="docs/PRESS.md"><img src="docs/card.jpg" alt="472 TV models · 129 brands · 31 languages · 572 KB launcher. Featured in TechCrunch, TechRadar, Tom's Guide, Mashable, Android Authority, XDA, FlatpanelsHD, It's FOSS, Phandroid, GIGAZINE, Xataka, WinFuture, Frandroid, Macitynet, Techaeris, TechPP and 530 more: 546 articles from 57 countries. Before: stock Google TV home with a sponsored ad. After: the Clean Your TV launcher. #1 trending repo of the week, Oct 19–25 2026, via trendshift.io." width="800"></a>
 </p>
 
 ## Start here
@@ -536,9 +532,9 @@ their own TVs, and their replies turned into the lists here: 170+ TV models from
 first four days. The repo was called tv-vibehack until the 19th; old links work.
 
 Two weeks on, it was the #1 trending repository on GitHub for the week of 19–25 October, with over 46K stars
-and 5.7K forks, and 1.4M views and 260K clones in 14 days. The lists now cover 472 TV models from 129 brands.
-The coverage: 534 articles from 57 countries and 663 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
-(numbers as of 9 November 2026).
+and 5.7K forks, and 1.4M views and 260K clones in 14 days. By 14 November it had 57K stars and 7.4K forks. The lists now cover 472 TV models from 129 brands.
+The coverage: 546 articles from 57 countries and 674 videos on YouTube and Bilibili, all in [docs/PRESS.md](docs/PRESS.md)
+(numbers as of 14 November 2026).
 
 ## Contributing
 
