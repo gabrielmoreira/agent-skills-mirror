@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
+Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 8 foll
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 10 |
+| Followed pats | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,7 +58,6 @@ Mirror of `PenglongHuang/chinese-novelist-skill` — 26 default patterns, 8 foll
 - `references/flows/phase2-planning.md`
 - `references/flows/phase3-writing.md`
 - `references/flows/phase4-validation.md`
-- `references/flows/shared-infrastructure.md`
 
 ## File Index
 
@@ -75,7 +74,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | → | [`references/flows/phase2-planning.md`](references/flows/phase2-planning.md) |
 | 8 | → | [`references/flows/phase3-writing.md`](references/flows/phase3-writing.md) |
 | 9 | → | [`references/flows/phase4-validation.md`](references/flows/phase4-validation.md) |
-| 10 | → | [`references/flows/shared-infrastructure.md`](references/flows/shared-infrastructure.md) |
 
 ---
 

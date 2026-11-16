@@ -7,6 +7,7 @@
 ## Name and message
 
 - **Name:** OpenMotion. Capital O and M. Command and directory names retain their actual spelling.
+- **Website metadata:** OpenDesign Motion — AI Video & Motion Design. Social cards use **OpenDesign Motion — Create with your AI agent**. Retain **The fullstack agentic video editor** as the positioning tagline. Keep these titles across interface languages and localize descriptions of the editable workflow, brand templates, references and image/video/music/voice generation. The shared source is `../metadata.js`; generate both HTML entries with `npm run design:tokens`. Catalogue counts require a verified source; recreation is a workflow, not a guarantee of fidelity or reach.
 - **Central topic:** AI 剪辑 / **AI editing**. Use **AI video editing** for the full category and **AI editing** in concise headings. The core positioning is **The AI-native, open-source CapCut alternative.**
 - **Product headline:** The All-in-One AI-native Studio for AI editing & Motion.
 - **Experience:** Edit videos with your agent. Tell your story.
@@ -42,6 +43,7 @@ These are artwork guidance, not replacements for the application's [UI tokens](.
 
 ## Assets
 
+- [Website social image](https://releases.open-design.ai/open-motion/media/sha256/730e1d6235820d39ba8adde42810d1165377992136a3b20290ad5d504abb527b.jpg): the current GitHub README hero, reused unchanged at 1586 × 992. Open Graph and Twitter use the same public image; [footage and edit credits](../../../docs/readme/reverse-engineering-cover.md) remain applicable. Earlier cover assets below retain their own provenance.
 - [Cover](https://releases.open-design.ai/open-motion/media/sha256/cfeb12861412bd36d34000ee1fe6d7f4e7b124ac9cad680d595c3cb44708eead.png), [animated cover](https://releases.open-design.ai/open-motion/media/sha256/6f6379825bac5cc67ee2d8fdc328ec25a16eea64fdac420f358092ddae95ad47.gif) and [social preview](https://releases.open-design.ai/open-motion/media/sha256/9683e195639f5f6a54524f33fe4c7c3f4ec47efebb97fc93e4ec38895dd08412.jpg): generated brand artwork.
 - [Library artwork](https://releases.open-design.ai/open-motion/media/sha256/e84a6ce63123aac0c1e48e78a2faf261638f9cfa75bf3e92b9c35192802f85bd.png): the same painterly family.
 - [Workspace](https://releases.open-design.ai/open-motion/media/sha256/98f02a127ec68acb7cde4d5278acc66ef53c0e91625aebccd1274fe1d74da0d7.jpg) and [editor](https://releases.open-design.ai/open-motion/media/sha256/c98d8eeff73abaa8af85d01028f3953c95cfd5b0e4821148e887b008276469e5.jpg): real Studio snapshots at commit `7aee372`; preserve original labels and capture-commit context.

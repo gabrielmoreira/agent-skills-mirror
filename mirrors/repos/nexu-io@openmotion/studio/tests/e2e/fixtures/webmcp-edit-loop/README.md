@@ -1,8 +1,10 @@
-# WebMCP edit-loop acceptance fixture
+# Retained nested-source fixture
 
 Two nested source files intentionally author the same `id` and `data-hf-id` for their headline.
-The browser acceptance test must use the source-safe handle returned by `studio_look`, edit only one
-headline, and prove the sibling source stays byte-for-byte unchanged.
+The fixture remains available for investigating source-safe element handles returned by
+`openmotion_studio_look` and checking that source edits preserve sibling compositions.
 
-The runner copies this fixture to scratch and symlinks that copy into Studio's ignored
-`data/projects` directory. It never mutates the checked-in fixture.
+The active `studio/tests/e2e/webmcp-edit-loop.mjs` runner creates its own isolated
+OpenMotion project and edits source through `openmotion_get_project` and
+`openmotion_edit_project`; it no longer copies or symlinks this fixture.
+Atomic Studio content-writing tools are not registered through WebMCP.

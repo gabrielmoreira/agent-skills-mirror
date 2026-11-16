@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 124 file(s) materialized.
+Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mvschwarz/openrig` — 26 default patterns, 0 followed patterns, 124 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 124 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -182,7 +182,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 121 | ✓ | [`skills/CHANGELOG.md`](skills/CHANGELOG.md) |
 | 122 | ✓ | [`skills/LICENSE`](skills/LICENSE) |
 | 123 | ✓ | [`skills/README.md`](skills/README.md) |
-| 124 | ✓ | [`skills/rigs/SKILL.md`](skills/rigs/SKILL.md) |
+| 124 | ✓ | [`skills/rigs/references/installing-for-someone.md`](skills/rigs/references/installing-for-someone.md) |
+| 125 | ✓ | [`skills/rigs/SKILL.md`](skills/rigs/SKILL.md) |
 
 ---
 

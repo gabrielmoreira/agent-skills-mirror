@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tangency-labs/solidcraft` — 26 default patterns, 64 followed patterns, 217 file(s) materialized.
+Mirror of `tangency-labs/solidcraft` — 26 default patterns, 64 followed patterns, 219 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tangency-labs/solidcraft` — 26 default patterns, 64 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 64 |
-| Files         | 217 |
+| Files         | 219 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -262,83 +262,85 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 138 | ✓ | [`solidcore/fixtures/topology.brep_p6/README.md`](solidcore/fixtures/topology.brep_p6/README.md) |
 | 139 | ✓ | [`solidcore/harness/callgraph/README.md`](solidcore/harness/callgraph/README.md) |
 | 140 | ✓ | [`solidcore/harness/mathprobe/README.md`](solidcore/harness/mathprobe/README.md) |
-| 141 | ✓ | [`solidcore/plan/findings/README.md`](solidcore/plan/findings/README.md) |
-| 142 | ✓ | [`solidcore/plan/upstream-issues/README.md`](solidcore/plan/upstream-issues/README.md) |
-| 143 | ✓ | [`solidcore/README.md`](solidcore/README.md) |
-| 144 | ✓ | [`solidcore/site/README.md`](solidcore/site/README.md) |
-| 145 | ✓ | [`tests/kernel-cases/README.md`](tests/kernel-cases/README.md) |
-| 146 | ✓ | [`tests/oracle/README.md`](tests/oracle/README.md) |
-| 147 | ✓ | [`tests/ssi-corpus/README.md`](tests/ssi-corpus/README.md) |
-| 148 | ✓ | [`tests/step-conformance/README.md`](tests/step-conformance/README.md) |
-| 149 | ✓ | [`tests/step-regressions/README.md`](tests/step-regressions/README.md) |
-| 150 | ✓ | [`tools/freecad-oracle/README.md`](tools/freecad-oracle/README.md) |
-| 151 | ✓ | [`tools/oracle-analytic/README.md`](tools/oracle-analytic/README.md) |
-| 152 | ✓ | [`tools/render-library/README.md`](tools/render-library/README.md) |
-| 153 | ✓ | [`vendor/README.md`](vendor/README.md) |
-| 154 | → | [`ATTRIBUTION.md`](ATTRIBUTION.md) |
-| 155 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 156 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
-| 157 | → | [`docs/3d-mouse.md`](docs/3d-mouse.md) |
-| 158 | → | [`docs/action-matrix.md`](docs/action-matrix.md) |
-| 159 | → | [`docs/agent-chat.md`](docs/agent-chat.md) |
-| 160 | → | [`docs/ambient-occlusion.md`](docs/ambient-occlusion.md) |
-| 161 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 162 | → | [`docs/book/src/dev/libraries.md`](docs/book/src/dev/libraries.md) |
-| 163 | → | [`docs/book/src/dev/local-libraries.md`](docs/book/src/dev/local-libraries.md) |
-| 164 | → | [`docs/book/src/dev/testing.md`](docs/book/src/dev/testing.md) |
-| 165 | → | [`docs/book/src/guide/updates.md`](docs/book/src/guide/updates.md) |
-| 166 | → | [`docs/browser-api.md`](docs/browser-api.md) |
-| 167 | → | [`docs/building.md`](docs/building.md) |
-| 168 | → | [`docs/capabilities.md`](docs/capabilities.md) |
-| 169 | → | [`docs/compatibility.md`](docs/compatibility.md) |
-| 170 | → | [`docs/configurations.md`](docs/configurations.md) |
-| 171 | → | [`docs/contact-sets.md`](docs/contact-sets.md) |
-| 172 | → | [`docs/control-protocol.md`](docs/control-protocol.md) |
-| 173 | → | [`docs/crash-reports.md`](docs/crash-reports.md) |
-| 174 | → | [`docs/design-container.md`](docs/design-container.md) |
-| 175 | → | [`docs/downloads.md`](docs/downloads.md) |
-| 176 | → | [`docs/drawing-foundations.md`](docs/drawing-foundations.md) |
-| 177 | → | [`docs/features.md`](docs/features.md) |
-| 178 | → | [`docs/formats/3mf-face-tags.md`](docs/formats/3mf-face-tags.md) |
-| 179 | → | [`docs/kernel-ladder.md`](docs/kernel-ladder.md) |
-| 180 | → | [`docs/layers.md`](docs/layers.md) |
-| 181 | → | [`docs/mcp.md`](docs/mcp.md) |
-| 182 | → | [`docs/mutation-testing.md`](docs/mutation-testing.md) |
-| 183 | → | [`docs/nix.md`](docs/nix.md) |
-| 184 | → | [`docs/occurrence-workflows.md`](docs/occurrence-workflows.md) |
-| 185 | → | [`docs/oracle.md`](docs/oracle.md) |
-| 186 | → | [`docs/perf.md`](docs/perf.md) |
-| 187 | → | [`docs/physical-material-cards.md`](docs/physical-material-cards.md) |
-| 188 | → | [`docs/plugin-runtime.md`](docs/plugin-runtime.md) |
-| 189 | → | [`docs/plugin-test-guide.md`](docs/plugin-test-guide.md) |
-| 190 | → | [`docs/plugins.md`](docs/plugins.md) |
-| 191 | → | [`docs/point-clouds.md`](docs/point-clouds.md) |
-| 192 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 193 | → | [`docs/render-backends.md`](docs/render-backends.md) |
-| 194 | → | [`docs/render-film.md`](docs/render-film.md) |
-| 195 | → | [`docs/render-hdr-input.md`](docs/render-hdr-input.md) |
-| 196 | → | [`docs/render-integration.md`](docs/render-integration.md) |
-| 197 | → | [`docs/render-jobs.md`](docs/render-jobs.md) |
-| 198 | → | [`docs/render-opaque-pbr.md`](docs/render-opaque-pbr.md) |
-| 199 | → | [`docs/render-portable-surfaces-and-stages.md`](docs/render-portable-surfaces-and-stages.md) |
-| 200 | → | [`docs/render-settings.md`](docs/render-settings.md) |
-| 201 | → | [`docs/render-starter-appearances.md`](docs/render-starter-appearances.md) |
-| 202 | → | [`docs/render-surface.md`](docs/render-surface.md) |
-| 203 | → | [`docs/render-texture-input.md`](docs/render-texture-input.md) |
-| 204 | → | [`docs/render-texture-normalization.md`](docs/render-texture-normalization.md) |
-| 205 | → | [`docs/render-visual-mapping.md`](docs/render-visual-mapping.md) |
-| 206 | → | [`docs/render-workspace.md`](docs/render-workspace.md) |
-| 207 | → | [`docs/rfcs/0002-plugins.md`](docs/rfcs/0002-plugins.md) |
-| 208 | → | [`docs/roadmap-detail.md`](docs/roadmap-detail.md) |
-| 209 | → | [`docs/scripts.md`](docs/scripts.md) |
-| 210 | → | [`docs/showcase.md`](docs/showcase.md) |
-| 211 | → | [`docs/step-import.md`](docs/step-import.md) |
-| 212 | → | [`docs/view-dxf.md`](docs/view-dxf.md) |
-| 213 | → | [`docs/wip-reconciliation.md`](docs/wip-reconciliation.md) |
-| 214 | → | [`README.md`](README.md) |
-| 215 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 216 | → | [`solidcore/docs/definitions-and-certificates.md`](solidcore/docs/definitions-and-certificates.md) |
-| 217 | → | [`solidcore/docs/layers.md`](solidcore/docs/layers.md) |
+| 141 | ✓ | [`solidcore/plan/findings/geom.local_solve_nd--solidcraft-integration-2026-11-15/README.md`](solidcore/plan/findings/geom.local_solve_nd--solidcraft-integration-2026-11-15/README.md) |
+| 142 | ✓ | [`solidcore/plan/findings/geom.local_solve_nd--solidcraft-integration-2026-11-15/wr383-schematic/README.md`](solidcore/plan/findings/geom.local_solve_nd--solidcraft-integration-2026-11-15/wr383-schematic/README.md) |
+| 143 | ✓ | [`solidcore/plan/findings/README.md`](solidcore/plan/findings/README.md) |
+| 144 | ✓ | [`solidcore/plan/upstream-issues/README.md`](solidcore/plan/upstream-issues/README.md) |
+| 145 | ✓ | [`solidcore/README.md`](solidcore/README.md) |
+| 146 | ✓ | [`solidcore/site/README.md`](solidcore/site/README.md) |
+| 147 | ✓ | [`tests/kernel-cases/README.md`](tests/kernel-cases/README.md) |
+| 148 | ✓ | [`tests/oracle/README.md`](tests/oracle/README.md) |
+| 149 | ✓ | [`tests/ssi-corpus/README.md`](tests/ssi-corpus/README.md) |
+| 150 | ✓ | [`tests/step-conformance/README.md`](tests/step-conformance/README.md) |
+| 151 | ✓ | [`tests/step-regressions/README.md`](tests/step-regressions/README.md) |
+| 152 | ✓ | [`tools/freecad-oracle/README.md`](tools/freecad-oracle/README.md) |
+| 153 | ✓ | [`tools/oracle-analytic/README.md`](tools/oracle-analytic/README.md) |
+| 154 | ✓ | [`tools/render-library/README.md`](tools/render-library/README.md) |
+| 155 | ✓ | [`vendor/README.md`](vendor/README.md) |
+| 156 | → | [`ATTRIBUTION.md`](ATTRIBUTION.md) |
+| 157 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 158 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
+| 159 | → | [`docs/3d-mouse.md`](docs/3d-mouse.md) |
+| 160 | → | [`docs/action-matrix.md`](docs/action-matrix.md) |
+| 161 | → | [`docs/agent-chat.md`](docs/agent-chat.md) |
+| 162 | → | [`docs/ambient-occlusion.md`](docs/ambient-occlusion.md) |
+| 163 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 164 | → | [`docs/book/src/dev/libraries.md`](docs/book/src/dev/libraries.md) |
+| 165 | → | [`docs/book/src/dev/local-libraries.md`](docs/book/src/dev/local-libraries.md) |
+| 166 | → | [`docs/book/src/dev/testing.md`](docs/book/src/dev/testing.md) |
+| 167 | → | [`docs/book/src/guide/updates.md`](docs/book/src/guide/updates.md) |
+| 168 | → | [`docs/browser-api.md`](docs/browser-api.md) |
+| 169 | → | [`docs/building.md`](docs/building.md) |
+| 170 | → | [`docs/capabilities.md`](docs/capabilities.md) |
+| 171 | → | [`docs/compatibility.md`](docs/compatibility.md) |
+| 172 | → | [`docs/configurations.md`](docs/configurations.md) |
+| 173 | → | [`docs/contact-sets.md`](docs/contact-sets.md) |
+| 174 | → | [`docs/control-protocol.md`](docs/control-protocol.md) |
+| 175 | → | [`docs/crash-reports.md`](docs/crash-reports.md) |
+| 176 | → | [`docs/design-container.md`](docs/design-container.md) |
+| 177 | → | [`docs/downloads.md`](docs/downloads.md) |
+| 178 | → | [`docs/drawing-foundations.md`](docs/drawing-foundations.md) |
+| 179 | → | [`docs/features.md`](docs/features.md) |
+| 180 | → | [`docs/formats/3mf-face-tags.md`](docs/formats/3mf-face-tags.md) |
+| 181 | → | [`docs/kernel-ladder.md`](docs/kernel-ladder.md) |
+| 182 | → | [`docs/layers.md`](docs/layers.md) |
+| 183 | → | [`docs/mcp.md`](docs/mcp.md) |
+| 184 | → | [`docs/mutation-testing.md`](docs/mutation-testing.md) |
+| 185 | → | [`docs/nix.md`](docs/nix.md) |
+| 186 | → | [`docs/occurrence-workflows.md`](docs/occurrence-workflows.md) |
+| 187 | → | [`docs/oracle.md`](docs/oracle.md) |
+| 188 | → | [`docs/perf.md`](docs/perf.md) |
+| 189 | → | [`docs/physical-material-cards.md`](docs/physical-material-cards.md) |
+| 190 | → | [`docs/plugin-runtime.md`](docs/plugin-runtime.md) |
+| 191 | → | [`docs/plugin-test-guide.md`](docs/plugin-test-guide.md) |
+| 192 | → | [`docs/plugins.md`](docs/plugins.md) |
+| 193 | → | [`docs/point-clouds.md`](docs/point-clouds.md) |
+| 194 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 195 | → | [`docs/render-backends.md`](docs/render-backends.md) |
+| 196 | → | [`docs/render-film.md`](docs/render-film.md) |
+| 197 | → | [`docs/render-hdr-input.md`](docs/render-hdr-input.md) |
+| 198 | → | [`docs/render-integration.md`](docs/render-integration.md) |
+| 199 | → | [`docs/render-jobs.md`](docs/render-jobs.md) |
+| 200 | → | [`docs/render-opaque-pbr.md`](docs/render-opaque-pbr.md) |
+| 201 | → | [`docs/render-portable-surfaces-and-stages.md`](docs/render-portable-surfaces-and-stages.md) |
+| 202 | → | [`docs/render-settings.md`](docs/render-settings.md) |
+| 203 | → | [`docs/render-starter-appearances.md`](docs/render-starter-appearances.md) |
+| 204 | → | [`docs/render-surface.md`](docs/render-surface.md) |
+| 205 | → | [`docs/render-texture-input.md`](docs/render-texture-input.md) |
+| 206 | → | [`docs/render-texture-normalization.md`](docs/render-texture-normalization.md) |
+| 207 | → | [`docs/render-visual-mapping.md`](docs/render-visual-mapping.md) |
+| 208 | → | [`docs/render-workspace.md`](docs/render-workspace.md) |
+| 209 | → | [`docs/rfcs/0002-plugins.md`](docs/rfcs/0002-plugins.md) |
+| 210 | → | [`docs/roadmap-detail.md`](docs/roadmap-detail.md) |
+| 211 | → | [`docs/scripts.md`](docs/scripts.md) |
+| 212 | → | [`docs/showcase.md`](docs/showcase.md) |
+| 213 | → | [`docs/step-import.md`](docs/step-import.md) |
+| 214 | → | [`docs/view-dxf.md`](docs/view-dxf.md) |
+| 215 | → | [`docs/wip-reconciliation.md`](docs/wip-reconciliation.md) |
+| 216 | → | [`README.md`](README.md) |
+| 217 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 218 | → | [`solidcore/docs/definitions-and-certificates.md`](solidcore/docs/definitions-and-certificates.md) |
+| 219 | → | [`solidcore/docs/layers.md`](solidcore/docs/layers.md) |
 
 ---
 

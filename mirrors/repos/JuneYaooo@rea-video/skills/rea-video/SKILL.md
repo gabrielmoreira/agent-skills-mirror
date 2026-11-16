@@ -45,6 +45,7 @@ rea-video summary out/ref/breakdown.json
 rea-video review out/ref                      # 写出 review_tasks.json（每镜要看的图、工具判断、优先级）和 review_answers.json（答案模板）
 # 读 review_tasks.json 的 instructions，逐镜看 images 里的图（priority=high 必看），把 label_probs / evidence / description / narrative / embedded_assets 填进 review_answers.json；narrative 是「这个镜头在讲什么」：role 选叙事作用（抓注意 / 交代背景 / 补信息 / 给证据 / 转折 / 给结论 / 引导行动 / 渲染情绪），point 一句话写它讲的那一点，报告会连成「叙事线」；若某镜头实为多刀合并（暗底图形与暗底口播交替时容易被合成一个长镜头），可加 split_suggestion（cuts 切点秒数 + labels 各段类别 + note），报告会在该镜头标注拆分建议，镜头边界本身不变
 # 有人在演的镜头填 performance：主情绪、强度、看得见的表情和动作、镜头里的变化、说话的语气；复刻提示词和配音会照它还原表演
+# 大幅度全身动作本身是看点（舞蹈、打斗、健身）的镜头再填 performance.move / movers / full_body / backdrop，复刻会改走「动作驱动」，按背景杂不杂、神态重不重要选驱动方式；带货、口播、边唱边小幅度动的不填（对口型 / 数字人就能做）
 # 顶层 cast 填整片的角色 / 场景 / 道具（同一个角色跨镜头认成同一个，外观写到能据此复刻）和一句视觉风格；没开 VLM 时报告的「角色、场景与道具」一节全靠这里
 # 顶层 story 填报告开头的「核心看点」：summary 一句话、hook 开头几秒怎么抓人、highlights 2–4 条能火的做法（手法 + 第几秒 + 为什么有效）
 # 画面里拍到带字的东西（手机屏幕、包装、招牌）时，每镜填 overlay_text：这一镜后期加的字幕 / 花字原文，其余 OCR 文字报告当成画面内容
@@ -97,7 +98,7 @@ rea-video summary out/ref/breakdown.json      # 用并入后的结果写回复
 
 用户要自己动手做时，先给报告「自己复刻」开头的「照着做」步骤（按视频类型排的顺序，内容全是这条原片的测量值），不要先讲模型规则和输入表。
 
-先跑 `rea-video remake out/ref`：能自动做的镜头先做掉（代码渲染重画、静图重建），其余原片占位，拼回原时间线，`remake/status.md` 逐镜写了还要做什么；拿到新镜头写进 `remake/mine.json` 再跑一次。细节见 `references/remake.md`；可用的工具和方式（capsule-cinema、ChatCut、自己动手）和各自的特点列在 `references/remake-tools.md`。在本工具里直接跑：AI 镜头走 capsule-cinema（会计费，先 `rea-video remake-run --dry-run` 并征得用户同意）；实拍给拍摄方案；代码渲染先跑 `rea-video code-remake out/ref` 出第一版（可改的工程 + 成片 + 打分），在它上面改，不要从零写；用户自己的素材用 `rea-video assemble` 拼回原时间线。代码渲染和用户自己的素材也可以在 ChatCut 里做。
+先跑 `rea-video remake out/ref`：能自动做的镜头先做掉（代码渲染重画、静图重建），其余原片占位，拼回原时间线，`remake/status.md` 逐镜写了还要做什么；拿到新镜头写进 `remake/mine.json` 再跑一次。细节见 `references/remake.md`；可用的工具和方式（capsule-cinema、ChatCut、自己动手）和各自的特点列在 `references/remake-tools.md`。在本工具里直接跑：AI 镜头走 capsule-cinema（会计费，先 `rea-video remake-run --dry-run` 并征得用户同意）；实拍给拍摄方案；舞蹈 / 动作镜头用 `rea-video drive out/ref` 出驱动视频（见 `references/remake.md`）；代码渲染先跑 `rea-video code-remake out/ref` 出第一版（可改的工程 + 成片 + 打分），在它上面改，不要从零写；用户自己的素材用 `rea-video assemble` 拼回原时间线。代码渲染和用户自己的素材也可以在 ChatCut 里做。
 
 ## 参考文件
 

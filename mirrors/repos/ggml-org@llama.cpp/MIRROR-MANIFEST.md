@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ggml-org/llama.cpp` — 26 default patterns, 28 followed patterns, 90 file(s) materialized.
+Mirror of `ggml-org/llama.cpp` — 26 default patterns, 29 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ggml-org/llama.cpp` — 26 default patterns, 28 followed patterns, 90
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 28 |
-| Files         | 90 |
+| Followed pats | 29 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,6 +71,7 @@ Mirror of `ggml-org/llama.cpp` — 26 default patterns, 28 followed patterns, 90
 - `docs/backend/VirtGPU.md`
 - `tools/cli/README.md`
 - `tools/completion/README.md`
+- `docs/multimodal/tts.md`
 - `grammars/README.md`
 - `docs/android.md`
 - `docs/multi-gpu.md`
@@ -168,14 +169,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 80 | → | [`docs/docker.md`](docs/docker.md) |
 | 81 | → | [`docs/models.md`](docs/models.md) |
 | 82 | → | [`docs/multi-gpu.md`](docs/multi-gpu.md) |
-| 83 | → | [`docs/release.md`](docs/release.md) |
-| 84 | → | [`docs/xcframework.md`](docs/xcframework.md) |
-| 85 | → | [`grammars/README.md`](grammars/README.md) |
-| 86 | → | [`README.md`](README.md) |
-| 87 | → | [`tools/cli/README.md`](tools/cli/README.md) |
-| 88 | → | [`tools/completion/README.md`](tools/completion/README.md) |
-| 89 | → | [`tools/server/README-dev.md`](tools/server/README-dev.md) |
-| 90 | → | [`tools/server/README.md`](tools/server/README.md) |
+| 83 | → | [`docs/multimodal/tts.md`](docs/multimodal/tts.md) |
+| 84 | → | [`docs/release.md`](docs/release.md) |
+| 85 | → | [`docs/xcframework.md`](docs/xcframework.md) |
+| 86 | → | [`grammars/README.md`](grammars/README.md) |
+| 87 | → | [`README.md`](README.md) |
+| 88 | → | [`tools/cli/README.md`](tools/cli/README.md) |
+| 89 | → | [`tools/completion/README.md`](tools/completion/README.md) |
+| 90 | → | [`tools/server/README-dev.md`](tools/server/README-dev.md) |
+| 91 | → | [`tools/server/README.md`](tools/server/README.md) |
 
 ---
 

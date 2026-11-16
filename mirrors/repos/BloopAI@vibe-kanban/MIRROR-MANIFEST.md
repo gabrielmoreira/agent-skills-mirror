@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `BloopAI/vibe-kanban` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `BloopAI/vibe-kanban` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `BloopAI/vibe-kanban` — 26 default patterns, 0 followed patterns, 6 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 6 |
+| Followed pats | 1 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `BloopAI/vibe-kanban` — 26 default patterns, 0 followed patterns, 6 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `RELEASING.md`
 
 ## File Index
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 5 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 | 6 | ✓ | [`packages/local-web/AGENTS.md`](packages/local-web/AGENTS.md) |
+| 7 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

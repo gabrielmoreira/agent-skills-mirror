@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
+Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Ar9av/obsidian-wiki` — 26 default patterns, 0 followed patterns, 79
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 79 |
+| Files         | 81 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,21 +123,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`skills/wiki-history-ingest/SKILL.md`](skills/wiki-history-ingest/SKILL.md) |
 | 63 | ✓ | [`skills/wiki-import/SKILL.md`](skills/wiki-import/SKILL.md) |
 | 64 | ✓ | [`skills/wiki-ingest/references/ingest-prompts.md`](skills/wiki-ingest/references/ingest-prompts.md) |
-| 65 | ✓ | [`skills/wiki-ingest/references/pageindex.md`](skills/wiki-ingest/references/pageindex.md) |
-| 66 | ✓ | [`skills/wiki-ingest/references/url-sources.md`](skills/wiki-ingest/references/url-sources.md) |
-| 67 | ✓ | [`skills/wiki-ingest/SKILL.md`](skills/wiki-ingest/SKILL.md) |
-| 68 | ✓ | [`skills/wiki-lint/SKILL.md`](skills/wiki-lint/SKILL.md) |
-| 69 | ✓ | [`skills/wiki-narrate/references/voices.md`](skills/wiki-narrate/references/voices.md) |
-| 70 | ✓ | [`skills/wiki-narrate/SKILL.md`](skills/wiki-narrate/SKILL.md) |
-| 71 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
-| 72 | ✓ | [`skills/wiki-rebuild/SKILL.md`](skills/wiki-rebuild/SKILL.md) |
-| 73 | ✓ | [`skills/wiki-research/SKILL.md`](skills/wiki-research/SKILL.md) |
-| 74 | ✓ | [`skills/wiki-setup/SKILL.md`](skills/wiki-setup/SKILL.md) |
-| 75 | ✓ | [`skills/wiki-stage-commit/SKILL.md`](skills/wiki-stage-commit/SKILL.md) |
-| 76 | ✓ | [`skills/wiki-status/SKILL.md`](skills/wiki-status/SKILL.md) |
-| 77 | ✓ | [`skills/wiki-switch/SKILL.md`](skills/wiki-switch/SKILL.md) |
-| 78 | ✓ | [`skills/wiki-synthesize/SKILL.md`](skills/wiki-synthesize/SKILL.md) |
-| 79 | ✓ | [`skills/wiki-update/SKILL.md`](skills/wiki-update/SKILL.md) |
+| 65 | ✓ | [`skills/wiki-ingest/references/meeting-sources.md`](skills/wiki-ingest/references/meeting-sources.md) |
+| 66 | ✓ | [`skills/wiki-ingest/references/pageindex.md`](skills/wiki-ingest/references/pageindex.md) |
+| 67 | ✓ | [`skills/wiki-ingest/references/url-sources.md`](skills/wiki-ingest/references/url-sources.md) |
+| 68 | ✓ | [`skills/wiki-ingest/SKILL.md`](skills/wiki-ingest/SKILL.md) |
+| 69 | ✓ | [`skills/wiki-lint/SKILL.md`](skills/wiki-lint/SKILL.md) |
+| 70 | ✓ | [`skills/wiki-narrate/references/voices.md`](skills/wiki-narrate/references/voices.md) |
+| 71 | ✓ | [`skills/wiki-narrate/SKILL.md`](skills/wiki-narrate/SKILL.md) |
+| 72 | ✓ | [`skills/wiki-playbook-review/SKILL.md`](skills/wiki-playbook-review/SKILL.md) |
+| 73 | ✓ | [`skills/wiki-query/SKILL.md`](skills/wiki-query/SKILL.md) |
+| 74 | ✓ | [`skills/wiki-rebuild/SKILL.md`](skills/wiki-rebuild/SKILL.md) |
+| 75 | ✓ | [`skills/wiki-research/SKILL.md`](skills/wiki-research/SKILL.md) |
+| 76 | ✓ | [`skills/wiki-setup/SKILL.md`](skills/wiki-setup/SKILL.md) |
+| 77 | ✓ | [`skills/wiki-stage-commit/SKILL.md`](skills/wiki-stage-commit/SKILL.md) |
+| 78 | ✓ | [`skills/wiki-status/SKILL.md`](skills/wiki-status/SKILL.md) |
+| 79 | ✓ | [`skills/wiki-switch/SKILL.md`](skills/wiki-switch/SKILL.md) |
+| 80 | ✓ | [`skills/wiki-synthesize/SKILL.md`](skills/wiki-synthesize/SKILL.md) |
+| 81 | ✓ | [`skills/wiki-update/SKILL.md`](skills/wiki-update/SKILL.md) |
 
 ---
 

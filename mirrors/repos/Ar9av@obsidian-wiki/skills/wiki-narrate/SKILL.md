@@ -57,6 +57,23 @@ Markdown link; otherwise use the vault's `[[wikilink]]` form.
 
 Ensure every factual sentence has adjacent supporting citations. Mark inferred connections `^[inferred]`; mark unresolved conflicts `^[ambiguous]`. Never use web knowledge, model memory, or invented examples to close a gap. Omit unsupported claims and name the gap in Coverage. An inference or ambiguity marker supplements, rather than replaces, adjacent citations.
 
+## Approved Facts Gate
+
+If `$OBSIDIAN_VAULT_PATH/_meta/facts.md` exists, read its approved rows before
+drafting. They are the claims about the owner and their company that may be repeated
+in public. Before returning the readout, pipe the draft through
+`obsidian-wiki facts check - --vault "$OBSIDIAN_VAULT_PATH" --json`:
+
+- `retired`: the sentence uses a claim the owner has retired. Replace it with the
+  current approved fact, or drop it. Never ship a retired claim.
+- `unsupported`, about the owner or their company (their numbers, customers,
+  rankings, certifications): keep it only if an adjacent vault citation supports it,
+  and list it in `## Coverage` under "Not in approved facts". In filtered mode
+  ("public only", "user-facing"), drop it instead.
+- `unsupported`, about anything else: no action. The check is a heuristic.
+
+If the file is missing or the command is unavailable, skip this gate silently.
+
 ## Drafting and Output
 
 Read `references/voices.md` and use exactly the requested voice skeleton. The selected
@@ -73,6 +90,19 @@ Return Markdown only, structured as:
 If evidence is weak or contradictory, produce only the supported portion. Mark each
 unresolved conflict `^[ambiguous]` with citations to all conflicting pages, and list
 the remaining gaps in `## Coverage`.
+
+## Owner Voice
+
+If `$OBSIDIAN_VAULT_PATH/_meta/voice.md` exists, read it with
+`obsidian-wiki voice show --json --vault "$OBSIDIAN_VAULT_PATH"` before drafting.
+Open a few of the `love` pages for rhythm and word choice, and skim the `hate` pages
+for what to avoid. The voice file shapes prose only. It never adds a claim the
+ledger lacks, and it never changes the selected voice's section skeleton.
+
+Before returning, pipe the draft through `obsidian-wiki voice check -`. Rewrite every
+flagged word or phrase, using the suggested replacement when one is given, and check
+again. Quoted source text keeps its original words. If the file is missing or the
+command is unavailable, skip this step silently.
 
 ## Persistence
 

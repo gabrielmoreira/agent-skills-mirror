@@ -19,8 +19,9 @@ attribution — not process cleanup.
 
 **A fleet-wide symptom is an environment problem until proven otherwise.** When
 independent apps, hooks or agents all start timing out or crawling at the same
-time, none of them is the suspect — something is starving them all. Check the
-machine first; debug individuals only after the machine reads clean.
+time, check shared resource pressure before blaming each component. Check the
+machine first; pursue an individual defect when its own evidence distinguishes
+it from that shared pressure.
 
 ## Triage (READ-DO, in order)
 
@@ -32,10 +33,16 @@ sysctl -n vm.loadavg; uptime
 
 Expected: three numbers, e.g. `{ 3.12 4.01 5.20 }`. Read against the core
 count, not an absolute: single digits are calm on a modern Mac; tens are busy;
-**hundreds mean the run queue is many times oversubscribed and everything on
-the machine is a victim** — hooks time out, keystrokes lag, pushes stall. A
+**hundreds signal severe scheduling or wait pressure and everything on
+the machine can be affected** — hooks time out, keystrokes lag, pushes stall. A
 load in the hundreds with no obvious culprit in the CPU column usually means
 hundreds of small processes, not one big one.
+
+Treat load as a triage signal, not a causal verdict or a count of busy CPU cores.
+Overload can coexist with an individual hook's repeated work. Before deriving a
+CPU rate or process-creation rate, use the
+[measurement controls](references/incident-playbook.md#measurement-controls):
+calibrate units, measure elapsed time and state the sampler's coverage.
 
 ### 2. Process census — run the bundled script
 
@@ -83,6 +90,11 @@ die), and who is allowed to stop it.
 
 ### 4. Classify the shape before proposing a fix
 
+For an idle Node/Vite preview, follow
+[development preview watchers](references/dev-server-watchers.md) before changing
+the shared process. It covers effective watcher scope, safe reuse and page/HMR
+preservation alongside CPU measurement.
+
 | Shape | Signature | Typical cause |
 |---|---|---|
 | **Leak candidate** | retained child count grows after comparable work finishes, or helpers outlive their documented lifecycle | missing cleanup; confirm workload and lifecycle before calling it a leak |
@@ -98,6 +110,12 @@ scan disabled, a cascade wants fewer new processes, not faster ones.
 ### 5. Act within the boundary
 
 On a shared machine, **diagnosis is read-only; remediation has an owner**.
+
+A verified PID identifies the target; it does not establish exclusive use.
+In a Spotlight case, normal exit was followed immediately by launchd restart
+for unfinished work or IPC despite disabled overrides. Treat that observation
+as a failed durable stop, not permission to chase new PIDs or restart the login
+session. A lost override's cause remains unknown unless its change is traced.
 
 - Never terminate another session's, agent's or user's processes. A "service
   restart" whose side effect is killing the daemon's children is the same
@@ -185,10 +203,12 @@ precedent for the report you are about to write.
 ## Troubleshooting
 
 - **Load is high but every reading looks normal**: the suspects are short-lived
-  — measure the fork rate directly: two `ps -Ao pid=` snapshots a few seconds
-  apart, count the PIDs that appear only in the second
+  — two `ps -Ao pid=` snapshots a few seconds apart identify surviving new PIDs:
+  count the PIDs that appear only in the second
   (`comm -13 <(sort old.txt) <(sort new.txt) | wc -l`, divided by the interval).
-  Dozens per second is a storm; a few is normal churn.
+  This is a lower bound, not the fork rate: children born and exited between
+  snapshots are invisible. A small difference does not rule out a storm. Follow
+  the measurement controls above when this gap could change the diagnosis.
 - **The obvious big-CPU process is innocent**: WindowServer, a terminal, or a
   screen-sharing client at high CPU is often *downstream* of the real cause
   (hundreds of GUI app copies each needing window service). Keep tracing.

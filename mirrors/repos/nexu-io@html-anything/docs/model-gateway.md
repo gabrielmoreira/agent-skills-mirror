@@ -1,6 +1,6 @@
 # Model Router / Gateway
 
-更新：2026-11-13。
+Updated: 2026-11-15.
 
 本文维护当前能力、接口和运行限制。跨模块的产品目标、对象归属、D1–D11 设计取舍、时间轴交互和扩展准入条件见 [素材生成设计与架构决策](product/media-generation-design.md)，整体分层见 [产品架构](product/architecture.md#职责分层与依赖方向)。
 
@@ -8,21 +8,21 @@
 
 已有 Agent 用户需要在制作视频时知道哪些图片、视频、音乐或语音模型可以调用，并让生成结果继续参与手工编辑。此前只能自行生成文件后导入；Studio 与 MCP 没有共同的生成入口。
 
-当前实现为工作区级 Model Gateway：本地 Agent 检测、供应商 Key、模型目录、默认路由、异步任务和素材落盘共用一个服务。工程格式、时间轴与渲染仍使用 Hyperframes。它不提供新的聊天模型或用户账户系统。
+当前实现为工作区级 Model Gateway：本地 Agent 检测、供应商 Key、模型目录、默认路由、异步任务和素材落盘共用一个服务。工程格式、时间轴与渲染仍使用 Hyperframes。It does not itself run a conversational Agent; the [Assets conversation service](assets.md) orchestrates local Codex and submits library jobs through this same gateway; OpenDesign account authorization and subscription state are integrated through a separate connector.
 
-在 OpenDesign 通用会话架构中，Gateway 服务于 Motion 产物：会话拥有产物，产物引用原生工程，生成任务固定该工程。模型设置管理工作区配置；MVP 的项目侧栏底部提供多模态供应商入口，完整和嵌入编辑器均可使用。旧时间轴生成浮层保留为内部兼容接口。各入口复用同一 Gateway。创作模式与媒体模态、供应商模型的职责划分见[会话技术架构](session-architecture.md#会话编排与媒体生成的分层)。
+在 OpenDesign 通用会话架构中，Gateway 服务于 Motion 产物：会话拥有产物，产物引用原生工程，生成任务固定该工程。模型设置管理工作区配置；The application rail opens a full settings center for providers, models and account connections in standalone and embedded editors.旧时间轴生成浮层保留为内部兼容接口。各入口复用同一 Gateway。创作模式与媒体模态、供应商模型的职责划分见[会话技术架构](session-architecture.md#会话编排与媒体生成的分层)。
 
 验收条件：检测结果可解释；Studio 与 MCP 查询一致；真正生成的文件落在发起工程；可以预览、放入指定时段并撤销；重复提交、取消与失败不会产生静默重试；图片可以组合为可编辑工程并导出真实 MP4。
 
 ## Current editor and public MCP entry
 
-The editor project drawer footer exposes **Media providers** for fal.ai, Atlas Cloud and WaveSpeedAI. OpenDesign Cloud setup is temporarily hidden; existing Cloud credentials, references and backend calls remain supported. Save a key to enable that provider; remove the saved key to stop using that source. An environment key can remain active, and is reported as such. No separate enable switch is needed. Keys are masked and never returned by HTTP/MCP. The retained Cloud adapter requires the gateway origin shown on its workspace API key page; a trailing `/v1` is normalized away. The settings page links to key setup and the bundled provider usage reference; it does not display or fetch model catalogues. Agents follow the Skill references and use the models action to query supplier capabilities through the service.
+The application rail and bottom account menu open the settings center. **Model providers** includes dedicated media adapters, the provider preset directory, custom connections and account models. Users can save/remove masked keys, enable providers, sync/search/filter models, add exact model IDs and select defaults. Environment keys remain separately identified. **Account** connects an OpenDesign identity, retrieves subscription/balance and synchronizes enabled models alongside BYOK. The existing OpenDesign Cloud origin/key configuration remains a separate connection. See [provider settings](provider-settings.md) for protocol coverage, private storage and account limitations.
 
-The public `openmotion_media_use` Tool has inspect, reference, models, generate, status and cancel actions. The existing [shared material guidance](../skills/openmotion-production/references/materials.md#byok-provider-references) links to the four provider references, available through action=reference and production workflow resources. Generate requires explicit projectId and stable requestId. Provider-native model IDs may be used without permanently registering a custom model. The service reads credentials, constructs supported provider requests, persists the task, downloads and validates output and imports it under the initiating project's assets/generated. Poll the original job instead of submitting again. A completed task does not place media on the timeline; re-read current revision/version before editing project source.
+The public `openmotion_media_use` Tool has inspect, reference, models, generate, status and cancel actions. The existing [shared material guidance](../skills/openmotion-production/references/materials.md#byok-provider-references) links to the provider references, including account and compatible API guides, available through action=reference and production workflow resources. Generate requires explicit projectId and stable requestId. Dedicated media adapters can accept provider-native model IDs directly. Compatible/account generation uses registered or remotely discovered media models. The service reads credentials, constructs supported provider requests, persists the task, downloads and validates output and imports it under the initiating project's assets/generated. Poll the original job instead of submitting again. A completed task does not place media on the timeline; re-read current revision/version before editing project source.
 
 fal, Atlas Cloud and WaveSpeedAI support image/video/audio model endpoints with model-specific parameters. Atlas Cloud reuses its prediction adapter; WaveSpeed submits to /api/v3/{model} and polls /api/v3/predictions/{id}/result. WaveSpeed discovery uses the saved key, while Atlas/fal catalogues are public. Environment alternatives are ATLASCLOUD_API_KEY and WAVESPEED_API_KEY. For speech, mode=text-to-speech maps the prompt to text. Cloud supports text-to-image, text-to-video and speech; audio requires parameters.voice and a matching voice model. Cloud music, local reference uploads and image edits are not implemented by this extension. Parameters can include references already hosted according to the provider contract; local paths are not uploaded automatically.
 
-Existing local Codex configuration, generation UI and legacy Gateway APIs remain internal compatible paths. Atlas Cloud is also exposed through the BYOK settings and public media-use tool. Default-route settings and manual generation UI are not added to the MVP editor by this extension.
+Existing local Codex configuration, generation UI and legacy Gateway APIs remain internal compatible paths. Atlas Cloud is also exposed through the BYOK settings and public media-use tool. Default-route selection is available in settings and the application header; generation continues through the existing Agent and gateway interfaces.
 
 ## 能力状态与路由
 
@@ -36,7 +36,7 @@ Existing local Codex configuration, generation UI and legacy Gateway APIs remain
 | verification verified / rejected | 云供应商生成请求返回过媒体结果，或收到 401/403；更换 Key 重置状态。验证通过不保证后续下载/入库或未来请求成功 |
 | job completed | 文件已下载、类型校验并保存；不是仅收到远端任务 ID |
 
-本地检测包括 Codex、Claude Code、Gemini CLI。当前只有 Codex 注册了本地媒体适配器，其他 Agent 的安装结果不会被当成生图能力。Codex 要求 CLI 支持 `--ephemeral`，`codex login status` 显示已登录，`codex features list` 的 `image_generation` 开启。使用用户已有 CLI 配置和登录，以独立临时工作目录运行 `codex exec`；不读取或复制 OAuth token，不调用私有后端接口。成功与否最终以真实输出文件为准。
+本地检测包括 Codex、Claude Code、Gemini CLI。当前只有 Codex 注册了本地媒体适配器，其他 Agent 的安装结果不会被当成生图能力。Codex 要求 CLI 支持 `--ephemeral`，`codex login status` 显示已登录，`codex features list` 的 `image_generation` 开启。使用用户已有 CLI 配置和登录，以独立临时工作目录运行 `codex exec`；不读取或复制 OAuth token，不调用私有后端接口。Success requires one newly created, regular raster file in the isolated job directory and the existing media-signature validation. The adapter reads bounded JSON completion/error events and relevant image-service diagnostics; it does not persist the raw CLI transcript. Reference files, stale outputs, symlinks and arbitrary paths in model replies are excluded. The CLI inherits the user's active Codex provider, endpoint and authentication configuration. A CLI login check does not establish image-service authorization. A proxy response of `personal engine key required` is reported separately from general authorization failures: verify that Codex `model_provider` selects the intended configured provider and that its endpoint and authentication match. Merely defining a provider does not select it, and signing in again does not supply a proxy key. OpenMotion does not edit Codex configuration or copy credentials. Other authorization failures direct users to inspect the active provider and account session without asserting that the login expired. No automatic retry or provider switch occurs.
 
 请求中的明确模型优先，其次是该模态的默认路由，最后才自动选择可用的文本生成模型（图片优先本地 Codex）。已配置的路由不可用时明确失败，不自动换成另一个付费供应商。
 
@@ -109,7 +109,7 @@ Studio 与 MCP 复用 `ModelGateway` 业务层及工作区文件，但不要求�
 
 ## 数据、并发与限制
 
-配置、目录、任务、临时输出位于 `MOTION_DATA_DIR/model-gateway/`，不在工程目录中。`secrets.json` 为本地明文文件，权限 `0600`，目录 `0700`；目前未接入操作系统 Keychain。API/MCP 不返回 Key；插件和工程导出不包含它。可改用 `ATLASCLOUD_API_KEY`、`FAL_KEY` 或 `OPENDESIGN_API_KEY`；已存 Key 优先，移除后环境 Key 仍可能有效，若环境 Key 仍存在，移除已保存 Key 后供应商仍会启用。
+Configuration, catalogues, jobs and staging files live under `MOTION_DATA_DIR/model-gateway/`, outside project source. `secrets.json` and `connection-secrets.json` are local plaintext credential files with `0600` permissions in private `0700` directories; no OS keychain is used. HTTP/MCP responses and project/distribution exports omit keys. Existing media adapters also accept `ATLASCLOUD_API_KEY`, `FAL_KEY`, `WAVESPEED_API_KEY` or `OPENDESIGN_API_KEY`. Saved keys take priority; an environment key can remain active after a saved key is removed.
 
 - 任务提交时固定工程、模型和参数；切换当前工程不改变输出位置。前端的放置回调固定工程/合成，切换或卸载后拒绝旧放置操作。
 - 凭据不进入任务快照；开始执行时读取当前供应商配置并复查可用性。服务关闭时中断本地运行，保留任务记录；当前不提供远端任务的自动续接或断点恢复。
@@ -119,7 +119,7 @@ Studio 与 MCP 复用 `ModelGateway` 业务层及工作区文件，但不要求�
 - 下载仅允许公共 HTTPS（或媒体 data URL）；逐跳校验 DNS，禁止内网/本机目标，不将 Key 发送到媒体 CDN。限制大小 256 MB，并检查图片、视频或音频文件签名；Codex 文件另外限制 80 MB。
 - 在工作区锁下将完整文件链接进目标工程并写完成状态；不修改合成，现有原生文件监听负责刷新素材库。源文件与素材的 revision 会随新增文件改变。
 - 任务保留初始素材路径。之后在素材库重命名/删除，任务查询会将原路径标记 `available:false`；从素材库使用新路径。生成成功记录不会被改写成失败。
-- 不提供统一计费、价格估算、余额管理、自动收费重试或跨供应商故障转移。远端可用性、输入约束和收费由用户账户及供应商决定。
+- Account subscription and available balance can be read from OpenDesign, with subscription management opened in its console. There is no cross-provider billing, price estimate, automatic paid retry or cross-provider failover. Entitlements and charges are decided by the actual account/provider.
 
 ## 验证与依据
 
@@ -132,3 +132,13 @@ Studio 与 MCP 复用 `ModelGateway` 业务层及工作区文件，但不要求�
 ## OpenDesign Cloud adapter
 
 Cloud uses a workspace Bearer key and the supplied media API contract: authenticated models discovery, image generations, video tasks and audio speech. Each remote submission sends a stable Idempotency-Key; task queries retain the returned task_id. Successful image/audio URLs are downloaded without API credentials; video content uses the same-origin authenticated content endpoint. Custom origins require public HTTPS, with validated and pinned DNS and no authenticated redirect forwarding. Queued jobs retain their Cloud origin and fail before submission if it changes. Local cancellation does not promise remote cancellation or refund. Cloud follows the workspace allowance/recharge billing policy; examples do not prove workspace entitlement or production rollout.
+
+## Application settings and account boundary
+
+The `/motion-api/settings/` endpoints expose the provider directory, custom connection CRUD, catalogue synchronization, model enablement and capability defaults. Account endpoints expose summary, login, cancel and logout. They share the existing Host/Origin write checks and never return keys. `connections.json` stores API connection metadata, registered models and language/embedding defaults; media defaults remain in gateway routes. Account runtime, CLI-owned credentials, session identity and cached models live under the data directory’s `account/` folder. The [settings guide](provider-settings.md) describes the exact boundary and connector installation.
+
+`tests/provider-settings.test.ts` covers compatible catalogue protocols, key isolation, revision-bound queue execution and subprocess account authorization/media fixtures. `tests/byok-browser.mjs` drives the real editor HTTP server in an isolated Chrome profile. These deterministic checks do not prove live authorization, billing entitlement or paid generation acceptance.
+
+## Model-specific creation controls
+
+See [generation options](generation-options.md) for the shared Studio/MCP parameter profiles, native field types, model defaults, Codex reasoning controls and validation boundaries. Asset navigation and the creator can be resized by dragging or keyboard, with remembered widths.

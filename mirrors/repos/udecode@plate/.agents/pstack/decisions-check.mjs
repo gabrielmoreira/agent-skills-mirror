@@ -36,6 +36,11 @@
 //        above end once it holds a row whose decision starts with "redesign run:"
 //        followed by text, in phase owner, or in phase verdict with evidence naming
 //        another existing .md or .decisions.tsv file in the plans directory.
+//        Both append forms refuse an open row whose patch: names a new plan in the plans
+//        directory when this log, or a log before it that named its plan the same way,
+//        already names another new plan since its last delivery row "landed as <sha>",
+//        unless an owner row whose decision starts with "second plan:" and quotes the
+//        owner in double quotes comes after the last new plan this log named.
 //        node .agents/pstack/decisions-check.mjs rounds <log>
 //        (exits 1 when the log is at the cap of panel rounds before a build, the
 //        maxRounds in .agents/pstack.json or 3)
@@ -91,7 +96,7 @@ import { findLead, leadLabel, maxEffort, runtimeFolder } from './lead.mjs';
 import { cli as pageStop } from './page-stop.mjs';
 import { contextOf, pageUrlOf, parsePlan } from './plan-page.mjs';
 import { board, boardState, briefOf, CHIP_STATES, cleanupOf, chipRowProblems, baseRedProblems, gitMerges, groupsOf, hasToken, ledgerPath, namesOwner, newChipRowProblems, newId, offeredAt, readShip, readTasks, recordRow, renderBoard, renderGroups, SESSION, staleReport, startedOverlaps, withoutPlannedWrites } from './tasks.mjs';
-import { acceptedWord, bracketSeats, committedLines, decisionLogs, defaultsWords, isAcceptingWord, isHandOffReview, NOT_PASSED, proofLabels, proofStates, PROVEN, runPaths, seatRoster, SEATS, SEVERITIES, STAGE_PHASES, stageOfRow, STATUSES, statusOf } from './status.mjs';
+import { acceptedWord, bracketSeats, committedLines, decisionLogs, defaultsWords, isAcceptingWord, isHandOffReview, NOT_PASSED, proofLabels, proofStates, PROVEN, runPaths, seatRoster, SEATS, severityOf, STAGE_PHASES, stageOfRow, STATUSES, statusOf } from './status.mjs';
 
 const HEADER = 'ts\tphase\tdecision\twhy\tevidence\tresult';
 const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/u;
@@ -236,9 +241,10 @@ function rowProblems(line, where, roster, chips) {
     found.push(`${where}: a ${status} result needs "scope:" in its evidence naming what the proof covered, or a partial result that states the gap`);
   }
   if (rest[0] === 'panel' && !SEATS.test(rest[1])) {
-    if (!SEVERITIES.includes(rest[1].split(/\s/u)[0])) found.push(`${where}: a panel row's decision starts with "seats" or a severity: critical, warning or nit; any other phase, such as build or trail, takes a row that is neither`);
+    const severity = severityOf(rest[1]);
+    if (!severity) found.push(`${where}: a panel row's decision starts with "seats" or a severity: critical, warning or nit; any other phase, such as build or trail, takes a row that is neither`);
     else if (!roster) found.push(`${where}: a panel finding needs a "seats" row before it`);
-    else if (rest[1].split(/\s/u)[0] === 'critical') found.push(...unnamedSeats(rest[1], roster, where));
+    else if (severity === 'critical') found.push(...unnamedSeats(rest[1], roster, where));
     if (!/^(applied|dismissed|deferred|open)\b\W+\w/u.test(rest[4])) found.push(`${where}: a panel finding's result starts with "applied", "dismissed", "deferred" or "open" and gives the reason`);
     else if (/^deferred\b/u.test(rest[4])) {
       if (rest[1].startsWith('critical')) found.push(`${where}: a critical panel finding is never deferred: apply it or pivot the run to it, dismiss it on proof that it is no defect or is rare, or, when its own case fails the same way on the run's base, this run neither causes, worsens nor increases exposure to it, it breaks no outcome or property the typed ask states and it shows no requirement of this run's design unmet, log it open with patch: none, owner:, stop: and each line it limits in the result, and proof: none and the base run in the evidence`);
@@ -266,7 +272,7 @@ function missingFindingPaths(cells, where) {
 function newRowProblems(cells, where, chips, writer) {
   const found = [];
   if (cells[0] === 'chip' && chips) found.push(...missingFindingPaths(cells, where));
-  return [...found, ...(cells[0] === 'chip' && chips ? newChipRowProblems(cells, chips, where, git, writer, shipList) : []), ...baseRedProblems(cells[3], chips ?? currentLedger(), where)];
+  return [...found, ...(cells[0] === 'chip' && chips ? newChipRowProblems(cells, chips, where, git, writer, shipList, invokedFrom) : []), ...baseRedProblems(cells[3], chips ?? currentLedger(), where)];
 }
 
 const transcriptOf = (run) => (run ? basename(run.transcript, '.jsonl') : null);
@@ -363,6 +369,57 @@ function redesignProblems(state, cells, where) {
   ];
 }
 
+const PLAN_PATCH = /\bpatch:\s*`?([^\s`;,]+\.md)(?![\w-])/u;
+const planOfLog = (log) => basename(log).replace(/\.decisions\.tsv$/u, '.md');
+const pivotPlanOf = ([, , , , result = '']) => {
+  const path = /^open\b/u.test(result) ? result.match(PLAN_PATCH)?.[1] : null;
+  return path && (dirname(path) === '.' || resolve(dirname(path)) === resolve(plansDir())) ? basename(path) : null;
+};
+const landsWork = ([phase, decision = '']) => phase === 'delivery' && /\blanded as [0-9a-f]{7,40}\b/iu.test(decision);
+const allowsNextPlan = ([phase, decision = '']) => phase === 'owner' && /^second plan:[^"]*"[^"]+"/u.test(decision);
+const rowsOf = (log) => readFileSync(log, 'utf8').split('\n').slice(1).filter(Boolean).map((line) => line.split('\t').slice(1));
+
+function trackPlans(state, cells) {
+  const plan = pivotPlanOf(cells);
+  if (landsWork(cells)) Object.assign(state, { plans: new Set(), allowed: false, landed: true });
+  else if (allowsNextPlan(cells)) state.allowed = true;
+  else if (plan && plan !== state.own && !state.plans.has(plan)) {
+    state.plans.add(plan);
+    state.allowed = false;
+  }
+}
+
+function plansState(log, rows) {
+  const state = { own: planOfLog(log), plans: new Set(), allowed: false, landed: false };
+  for (const cells of rows) trackPlans(state, cells);
+  return state;
+}
+
+function chainPlansSinceLanding(log, seen = new Set([resolve(log)])) {
+  if (!existsSync(plansDir())) return 0;
+  const plan = planOfLog(log);
+  for (const other of decisionLogs(plansDir())) {
+    if (seen.has(resolve(other))) continue;
+    const rows = rowsOf(other);
+    if (!rows.some((cells) => pivotPlanOf(cells) === plan)) continue;
+    seen.add(resolve(other));
+    const state = plansState(other, rows);
+    if (!state.plans.has(plan)) return 0;
+    return state.plans.size + (state.landed ? 0 : chainPlansSinceLanding(other, seen));
+  }
+  return 0;
+}
+
+function secondPlanProblems(state, cells, where, earlier) {
+  const plan = pivotPlanOf(cells);
+  if (!plan || plan === state.own || state.plans.has(plan) || state.allowed) return [];
+  const count = state.plans.size + (state.landed ? 0 : earlier());
+  if (count === 0) return [];
+  return [
+    `${where}: this starts the new plan ${plan} after ${count} new plan${count === 1 ? '' : 's'} since the run's last landing, and the Second plan rule in .agents/pstack/rules/long-runs.md stops the run for the owner before each new plan after the first. Ask the owner that rule's one question, and keep landing the steps that do not depend on the answer. When the owner picks the new plan, log before this row an owner row whose decision starts with "second plan:" and quotes their answer in double quotes. When they keep the base's behavior, log this finding open with patch: none and their answer quoted`,
+  ];
+}
+
 function problems(path) {
   const lines = readFileSync(path, 'utf8').split('\n');
   if (lines[0] !== HEADER) return [`${path}:1: header must be "${HEADER.replaceAll('\t', ' ')}"`];
@@ -409,6 +466,8 @@ function append(path, batch, run, miss = null) {
   for (const line of existing.slice(1).filter(Boolean)) trackRedesign(redesign, line.split('\t').slice(1));
   const steps = trunk() ? { built: new Set(), unlanded: new Set(), landing: false } : null;
   if (steps) for (const line of existing.slice(1)) trackStep(steps, line);
+  const plans = plansState(path, existing.slice(1).filter(Boolean).map((line) => line.split('\t').slice(1)));
+  let earlier = null;
   const chips = readTasks(existing.slice(1));
   const ledger = resolve(path) === resolve(ledgerFile());
   const writer = run ? { session: null, transcript: transcriptOf(run) } : null;
@@ -435,6 +494,8 @@ function append(path, batch, run, miss = null) {
     }
     found.push(...redesignProblems(redesign, cells, where));
     trackRedesign(redesign, cells);
+    found.push(...secondPlanProblems(plans, cells, where, () => (earlier ??= chainPlansSinceLanding(path))));
+    trackPlans(plans, cells);
     if (opens(row) && roster && !written) {
       found.push(`${where}: a later round's seats row needs a writing row after the previous seats row: log the round's writing passes under phase writing, or log a writing row that says why none ran`);
     }

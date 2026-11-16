@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 49 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 3 followed patterns, 49 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,49 +67,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.agents/api-endpoints-and-auth.md`](.agents/api-endpoints-and-auth.md) |
 | 5 | ✓ | [`.agents/backend-signing.md`](.agents/backend-signing.md) |
 | 6 | ✓ | [`.agents/building-and-testing.md`](.agents/building-and-testing.md) |
-| 7 | ✓ | [`.agents/ci-caching.md`](.agents/ci-caching.md) |
-| 8 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
-| 9 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
-| 10 | ✓ | [`.agents/distributed-seams.md`](.agents/distributed-seams.md) |
-| 11 | ✓ | [`.agents/distributed-state.md`](.agents/distributed-state.md) |
-| 12 | ✓ | [`.agents/ds4-backend.md`](.agents/ds4-backend.md) |
-| 13 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
-| 14 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
-| 15 | ✓ | [`.agents/preparing-a-release.md`](.agents/preparing-a-release.md) |
-| 16 | ✓ | [`.agents/sandbox-profiles-and-media.md`](.agents/sandbox-profiles-and-media.md) |
-| 17 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
-| 18 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 19 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 20 | ✓ | [`addons/calendar/skills/calendar/SKILL.md`](addons/calendar/skills/calendar/SKILL.md) |
-| 21 | ✓ | [`addons/contacts/skills/contacts/SKILL.md`](addons/contacts/skills/contacts/SKILL.md) |
-| 22 | ✓ | [`addons/home-assistant/skills/home-assistant/SKILL.md`](addons/home-assistant/skills/home-assistant/SKILL.md) |
-| 23 | ✓ | [`addons/jellyfin/skills/jellyfin/SKILL.md`](addons/jellyfin/skills/jellyfin/SKILL.md) |
-| 24 | ✓ | [`addons/office/skills/docx/SKILL.md`](addons/office/skills/docx/SKILL.md) |
-| 25 | ✓ | [`addons/office/skills/pdf/SKILL.md`](addons/office/skills/pdf/SKILL.md) |
-| 26 | ✓ | [`addons/office/skills/pptx/SKILL.md`](addons/office/skills/pptx/SKILL.md) |
-| 27 | ✓ | [`addons/office/skills/xlsx/SKILL.md`](addons/office/skills/xlsx/SKILL.md) |
-| 28 | ✓ | [`addons/pikvm/skills/pikvm/SKILL.md`](addons/pikvm/skills/pikvm/SKILL.md) |
-| 29 | ✓ | [`addons/sandbox/skills/docx/SKILL.md`](addons/sandbox/skills/docx/SKILL.md) |
-| 30 | ✓ | [`addons/sandbox/skills/pdf/SKILL.md`](addons/sandbox/skills/pdf/SKILL.md) |
-| 31 | ✓ | [`addons/sandbox/skills/pptx/SKILL.md`](addons/sandbox/skills/pptx/SKILL.md) |
-| 32 | ✓ | [`addons/sandbox/skills/xlsx/SKILL.md`](addons/sandbox/skills/xlsx/SKILL.md) |
-| 33 | ✓ | [`addons/ssh/skills/ssh/SKILL.md`](addons/ssh/skills/ssh/SKILL.md) |
-| 34 | ✓ | [`addons/tables/skills/tables-readonly/SKILL.md`](addons/tables/skills/tables-readonly/SKILL.md) |
-| 35 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 36 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 37 | ✓ | [`core/services/studio/builtinskills/tree/assemble-media/SKILL.md`](core/services/studio/builtinskills/tree/assemble-media/SKILL.md) |
-| 38 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
-| 39 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
-| 40 | ✓ | [`core/services/studio/builtinskills/tree/localai/SKILL.md`](core/services/studio/builtinskills/tree/localai/SKILL.md) |
-| 41 | ✓ | [`core/services/studio/builtinskills/tree/media-prompting/SKILL.md`](core/services/studio/builtinskills/tree/media-prompting/SKILL.md) |
-| 42 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
-| 43 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
-| 44 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
-| 45 | ✓ | [`docs/content/contributing/ai-coding-assistants.md`](docs/content/contributing/ai-coding-assistants.md) |
-| 46 | ✓ | [`examples/addon-hello/skills/hello/SKILL.md`](examples/addon-hello/skills/hello/SKILL.md) |
-| 47 | → | [`.impeccable.md`](.impeccable.md) |
-| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 49 | → | [`docs/content/addons/testing.md`](docs/content/addons/testing.md) |
+| 7 | ✓ | [`.agents/ci-bot-pull-requests.md`](.agents/ci-bot-pull-requests.md) |
+| 8 | ✓ | [`.agents/ci-caching.md`](.agents/ci-caching.md) |
+| 9 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
+| 10 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
+| 11 | ✓ | [`.agents/distributed-seams.md`](.agents/distributed-seams.md) |
+| 12 | ✓ | [`.agents/distributed-state.md`](.agents/distributed-state.md) |
+| 13 | ✓ | [`.agents/ds4-backend.md`](.agents/ds4-backend.md) |
+| 14 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
+| 15 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
+| 16 | ✓ | [`.agents/preparing-a-release.md`](.agents/preparing-a-release.md) |
+| 17 | ✓ | [`.agents/sandbox-profiles-and-media.md`](.agents/sandbox-profiles-and-media.md) |
+| 18 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
+| 19 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 20 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 21 | ✓ | [`addons/calendar/skills/calendar/SKILL.md`](addons/calendar/skills/calendar/SKILL.md) |
+| 22 | ✓ | [`addons/contacts/skills/contacts/SKILL.md`](addons/contacts/skills/contacts/SKILL.md) |
+| 23 | ✓ | [`addons/home-assistant/skills/home-assistant/SKILL.md`](addons/home-assistant/skills/home-assistant/SKILL.md) |
+| 24 | ✓ | [`addons/jellyfin/skills/jellyfin/SKILL.md`](addons/jellyfin/skills/jellyfin/SKILL.md) |
+| 25 | ✓ | [`addons/office/skills/docx/SKILL.md`](addons/office/skills/docx/SKILL.md) |
+| 26 | ✓ | [`addons/office/skills/pdf/SKILL.md`](addons/office/skills/pdf/SKILL.md) |
+| 27 | ✓ | [`addons/office/skills/pptx/SKILL.md`](addons/office/skills/pptx/SKILL.md) |
+| 28 | ✓ | [`addons/office/skills/xlsx/SKILL.md`](addons/office/skills/xlsx/SKILL.md) |
+| 29 | ✓ | [`addons/pikvm/skills/pikvm/SKILL.md`](addons/pikvm/skills/pikvm/SKILL.md) |
+| 30 | ✓ | [`addons/sandbox/skills/docx/SKILL.md`](addons/sandbox/skills/docx/SKILL.md) |
+| 31 | ✓ | [`addons/sandbox/skills/pdf/SKILL.md`](addons/sandbox/skills/pdf/SKILL.md) |
+| 32 | ✓ | [`addons/sandbox/skills/pptx/SKILL.md`](addons/sandbox/skills/pptx/SKILL.md) |
+| 33 | ✓ | [`addons/sandbox/skills/xlsx/SKILL.md`](addons/sandbox/skills/xlsx/SKILL.md) |
+| 34 | ✓ | [`addons/ssh/skills/ssh/SKILL.md`](addons/ssh/skills/ssh/SKILL.md) |
+| 35 | ✓ | [`addons/tables/skills/tables-readonly/SKILL.md`](addons/tables/skills/tables-readonly/SKILL.md) |
+| 36 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 38 | ✓ | [`core/services/studio/builtinskills/tree/assemble-media/SKILL.md`](core/services/studio/builtinskills/tree/assemble-media/SKILL.md) |
+| 39 | ✓ | [`core/services/studio/builtinskills/tree/localai-apps/SKILL.md`](core/services/studio/builtinskills/tree/localai-apps/SKILL.md) |
+| 40 | ✓ | [`core/services/studio/builtinskills/tree/localai-workspace/SKILL.md`](core/services/studio/builtinskills/tree/localai-workspace/SKILL.md) |
+| 41 | ✓ | [`core/services/studio/builtinskills/tree/localai/SKILL.md`](core/services/studio/builtinskills/tree/localai/SKILL.md) |
+| 42 | ✓ | [`core/services/studio/builtinskills/tree/media-prompting/SKILL.md`](core/services/studio/builtinskills/tree/media-prompting/SKILL.md) |
+| 43 | ✓ | [`core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md`](core/services/studio/builtinskills/tree/memory-check-own-files/SKILL.md) |
+| 44 | ✓ | [`core/services/studio/builtinskills/tree/memory/SKILL.md`](core/services/studio/builtinskills/tree/memory/SKILL.md) |
+| 45 | ✓ | [`core/services/studio/builtinskills/tree/writing-skills/SKILL.md`](core/services/studio/builtinskills/tree/writing-skills/SKILL.md) |
+| 46 | ✓ | [`docs/content/contributing/ai-coding-assistants.md`](docs/content/contributing/ai-coding-assistants.md) |
+| 47 | ✓ | [`examples/addon-hello/skills/hello/SKILL.md`](examples/addon-hello/skills/hello/SKILL.md) |
+| 48 | → | [`.impeccable.md`](.impeccable.md) |
+| 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 50 | → | [`docs/content/addons/testing.md`](docs/content/addons/testing.md) |
 
 ---
 

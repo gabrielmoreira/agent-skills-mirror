@@ -1,6 +1,6 @@
 # 本机路线：Clash 与防火墙（Agent 提示词）
 
-适用：用户已选**本机路线**（Mac 或 Windows），出口 IP 已经定了来源（见[固定出口 IP 的来源](egress-ip-options.md)），现在要在自己的电脑上让**所有公网流量只走同一个代理出口**，代理掉线时不直连（fail-closed）。Windows 不提供脚本，**全部用提示词引导**；Mac 用一个 PF 脚本加提示词：Agent 一步一步问、说明、出变更卡，用户在自己的电脑上操作，或经逐项批准后由 Agent 在获准的会话里执行。
+适用：用户已选**本机路线**（Mac 或 Windows），出口 IP 已经定了来源（见[固定出口 IP 的来源](egress-ip-options.md)），现在要在自己的电脑上让**所有公网流量只走同一个代理出口**，代理掉线时不直连（fail-closed）。Windows 由 Agent 配置白名单规则，使用随包 PowerShell 开关；Mac 用 PF 脚本：Agent 一步一步问、说明、出变更卡，用户在自己的电脑上操作，或经逐项批准后由 Agent 在获准的会话里执行。
 
 - **Windows：**用系统自带的 Windows 防火墙（Windows Defender 防火墙）。
 - **Mac：**用系统自带的 PF，经 [guardian-pf-killswitch.sh](../assets/mac-killswitch/guardian-pf-killswitch.sh) 按网卡拦（ADR-054）。不再用 LuLu 做 kill switch，原因见下面 Mac 一节。
@@ -31,7 +31,7 @@
    2. **防火墙读回：**三个配置文件都启用且默认出站都是 Block，`guardian-*` 规则齐全，并核对其他 Allow 规则是否仍放过直连。上不了网时才用分层诊断。
    3. **重启演练：**重启后、客户端起来之前外网不通；自启、TUN 恢复后正常；默认出站仍是 Block。客户本人在场的本机按 B 档，远程按 C 档（重启后可能连不回来）。
    4. **浏览器验收：**客户本人在实际用的浏览器打开 https://ip.net.coffee/claude/，除语言外全绿（[做法](whole-machine-ipv4.md#browser-acceptance)）。
-   5. **若交付[统一桌面开关](killswitch-switch.md)：**按客户的实际入口验收“双击 → UAC → 三档状态读回 → 联网/阻断行为”，不能用 SSH、SYSTEM 任务或手输带 Bypass 的调试命令代替。快捷方式配方见 [S10 晚间复盘](../sources/S10-windows-deployment-sanitized.md#desktop-launcher)，不要求所有交付都开发开关。
+   5. **若交付[统一桌面开关](killswitch-switch.md)：**按客户的实际入口验收“双击 → UAC → 三档状态读回 → 联网/阻断行为”，不能用 SSH、SYSTEM 任务或手输带 Bypass 的调试命令代替。Windows 使用随包的两个快捷方式，不要求所有交付都开发开关；历史启动问题见 [S10 晚间复盘](../sources/S10-windows-deployment-sanitized.md#desktop-launcher)。
    6. **完成[突发场景验收](#incident-acceptance)的适用项目，前四项及实际交付的开关都过，客户本人登录 Claude。**
 4. **超出 Skill 的自动化先报工作量：**一键脚本、自写执行器、常驻守护这类，先说要额外开发什么、大概多久，客户同意再做；能按第 1 到 7 步手动做完的先手动交付。
 5. **每过一项就告诉客户：**某一步重试一次仍失败，先回到安全状态（保险丝还在，或默认出站已恢复为允许），再说清卡在哪一项、下一步谁做。没全过就报哪几项过了、哪几项没过。
@@ -120,7 +120,7 @@ Mac 当前缺少联网前加载强制顺序、换网监控和新网卡自动补�
 
 **验收记录（2026-11-09）：Mac PF 已验收。**范围包括故障阻断、保险丝、开机加载、重启、换网、新网卡、睡眠恢复、DNS／UDP、浏览器／WebRTC 和回滚；日期为状态更新，非新增测量。新目标机仍须按下列步骤核验。
 
-**为什么不用 LuLu：**LuLu 按“哪个进程发起连接”过滤，判断发生在路由之前，分不出流量是进 TUN 还是直连。只给代理核心放行时，正常经 TUN 的连接（比如 curl 连 1.1.1.1）照样被按 curl 进程拦掉；反过来给每个应用都放行，TUN 一掉它们又能直连。所以 LuLu 做不了“走 TUN 放行、直连拦截”。已经装了 LuLu 的，用 PF 前把它的默认拒绝关掉（切回放行或退出），否则会和 PF 叠加，把 TUN 流量拦掉。
+已经装了 LuLu 的，用 PF 前把它的默认拒绝关掉（切回放行或退出），否则会和 PF 叠加，把 TUN 流量拦掉。
 
 **PF 怎么拦：**按网卡，不按进程。物理网卡（Wi-Fi、有线、雷雳网桥等）只放行发往节点真实 IP 和端口的连接，加 DHCP，可选核心解析节点用的 DNS（`BOOTSTRAP_DNS`）和局域网例外（`LAN_NET`）；其余出站一律丢弃。TUN（utun）和回环不受影响。核心或 TUN 停掉后，应用流量落到物理网卡，被拦，不会直连。规则放在 `com.apple/claude-guardian` 子 anchor 里，不改 `/etc/pf.conf`；Apple 的 TN3165 说 PF 不是稳定接口，所以系统大版本更新后要重做故障演练（ADR-054）。
 
@@ -153,7 +153,9 @@ Mac 当前缺少联网前加载强制顺序、换网监控和新网卡自动补�
 
 ### Windows 的防火墙：系统自带
 
-**整机方案的用户代价必须先说明：**代理停用时其他软件也可能断网；国内网站可能转走代理并增加流量／延迟／费用，局域网、打印、虚拟机／Cowork、其他 VPN 和远程访问须先核对例外。例外会放宽防直连约束。首次部署后使用 [Switch 整机出口模式](killswitch-switch.md#windows-整机出口模式代价与首次交付)审计完整允许规则集合；普通 Claude 版本目录变化无需重绑应用路径，网络规则变化仍须复核。
+**整机方案的用户代价必须先说明：**代理停用时其他软件也可能断网；国内网站可能转走代理并增加流量／延迟／费用，局域网、打印、虚拟机／Cowork、其他 VPN 和远程访问须先核对例外。例外会放宽防直连约束。首次开启前使用 [Switch 整机出口模式](killswitch-switch.md#windows-整机出口模式代价与首次交付)审计完整允许规则集合；普通 Claude 版本目录变化无需重绑应用路径，网络规则变化仍须复核。
+
+Windows 日常入口使用[两个 PowerShell 桌面快捷方式](killswitch-switch.md)，只部署整机白名单。首次执行前须说明整机影响和直连例外并取得确认；旧模式仅用于恢复，不作为供用户选择的另一条路线。
 
 **先决条件：**用管理员 PowerShell；电脑不是组织管理（组策略或 MDM 管理的防火墙，停下，不由用户决定）；TUN 已跑通并确认出口；**节点真实 IP 和端口**已知（从 profile 里读，域名解析成真实 IP 时要排除 Fake-IP 的 198.18.0.0/15）。
 
@@ -163,22 +165,20 @@ Mac 当前缺少联网前加载强制顺序、换网监控和新网卡自动补�
    - `netsh advfirewall export "<备份路径>\fw-backup.wfw"`
    - `Get-NetFirewallProfile | Format-Table Name,Enabled,DefaultInboundAction,DefaultOutboundAction`
    把输出里的默认出站动作记下来，这是回滚依据。
-2. **布置保险丝（先于任何阻止动作）：**创建一个几分钟后自动把默认出站改回允许的计划任务，用户确认规则有效后再删除它。命令形式（时间换成当前时间加 3 分钟，先在用户机器上核实可用）：
-   `schtasks /Create /TN guardian-fw-rollback /SC ONCE /ST HH:MM /RU SYSTEM /TR "powershell -NoProfile -Command Set-NetFirewallProfile -Profile Domain,Private,Public -DefaultOutboundAction Allow" /F`
-   确认后删除：`schtasks /Delete /TN guardian-fw-rollback /F`。
+2. **准备独立恢复：**将完整 Skill 放在固定位置，核实本机管理员终端可用。第 4 步 ON 会在首次写入前自动布置 SYSTEM 保险丝；记录原配置、基线和 `windows-switch.ps1 -Action Off -Config <私有配置>` 的离线恢复路径。远程目标还须准备不依赖当前链路的救援方式。
 3. **先加允许规则（此时默认动作仍是允许，不会断网）：**规则名统一以 `guardian-` 开头，方便整体回滚。
-   - 代理核心到节点：`New-NetFirewallRule -DisplayName "guardian-allow-proxy-core" -Direction Outbound -Program "<核心程序完整路径>" -RemoteAddress <节点IP> -RemotePort <端口> -Protocol TCP -Action Allow`，UDP 节点（如 Hysteria2、TUIC）再加一条 UDP。
-   - TUN 网卡：`New-NetFirewallRule -DisplayName "guardian-allow-tun" -Direction Outbound -InterfaceAlias "<TUN 网卡别名>" -Action Allow`（别名用 `Get-NetAdapter` 核实）。
-   - DHCP：`New-NetFirewallRule -DisplayName "guardian-allow-dhcp" -Direction Outbound -Protocol UDP -LocalPort 68 -RemotePort 67 -Action Allow`。
+   - 代理核心到节点：`New-NetFirewallRule -Name "guardian-allow-proxy-core" -DisplayName "guardian-allow-proxy-core" -Direction Outbound -Program "<核心程序完整路径>" -RemoteAddress <节点IP> -RemotePort <端口> -Protocol TCP -Action Allow`，UDP 节点（如 Hysteria2、TUIC）再加一条 UDP。
+   - TUN 网卡：`New-NetFirewallRule -Name "guardian-allow-tun" -DisplayName "guardian-allow-tun" -Direction Outbound -InterfaceAlias "<TUN 网卡别名>" -Action Allow`（别名用 `Get-NetAdapter` 核实）。
+   - DHCP：`New-NetFirewallRule -Name "guardian-allow-dhcp" -DisplayName "guardian-allow-dhcp" -Direction Outbound -Protocol UDP -LocalPort 68 -RemotePort 67 -Action Allow`。
    - 回环和必要的局域网例外**逐项核对**，不要假定默认放行；有则加规则。
-   - **回环用接口，不用 `::1`：**部分 Windows 版本（如 10.0.26200）拒绝 `-RemoteAddress ::1` 或 `::1/128`，报“已指定未指定的多播、广播或环回 IPv6 地址”。改用回环软件接口：先 `Get-NetIPInterface | Where-Object InterfaceAlias -like "Loopback*"` 核实本机唯一的回环接口别名（通常是 `Loopback Pseudo-Interface 1`），再 `New-NetFirewallRule -DisplayName "guardian-allow-loopback" -Direction Outbound -InterfaceAlias "<回环接口别名>" -Action Allow`。读回时 `(Get-NetFirewallRule -DisplayName "guardian-allow-loopback" | Get-NetFirewallInterfaceFilter).InterfaceAlias` 只有一个值时是字符串，不是数组，不要取 `[0]`（会只拿到第一个字符）。
+   - **回环用接口，不用 `::1`：**部分 Windows 版本（如 10.0.26200）拒绝 `-RemoteAddress ::1` 或 `::1/128`，报“已指定未指定的多播、广播或环回 IPv6 地址”。改用回环软件接口：先 `Get-NetIPInterface | Where-Object InterfaceAlias -like "Loopback*"` 核实本机唯一的回环接口别名（通常是 `Loopback Pseudo-Interface 1`），再 `New-NetFirewallRule -Name "guardian-allow-loopback" -DisplayName "guardian-allow-loopback" -Direction Outbound -InterfaceAlias "<回环接口别名>" -Action Allow`。读回时 `(Get-NetFirewallRule -DisplayName "guardian-allow-loopback" | Get-NetFirewallInterfaceFilter).InterfaceAlias` 只有一个值时是字符串，不是数组，不要取 `[0]`（会只拿到第一个字符）。
    - **核心程序路径以正在运行的为准：**`Get-Process | Where-Object Name -like "*mihomo*" | Select-Object Name,Path`。Clash Verge 的服务模式下跑的是服务目录里的核心，不是安装目录里的那个；路径不对，第 4 步之后核心连不上节点，所有经 TUN 的连接都会超时。节点用域名的，按当前解析结果填全部 IP，并给核心解析节点域名所需的 DNS 单独放行。
-4. **最后切换默认出站为阻止（保险丝已就位）：**`Set-NetFirewallProfile -Profile Domain,Private,Public -DefaultOutboundAction Block`。切换后立刻验证出口仍通、浏览器可用；不通就按下面“[切换后不通：分层诊断](#windows-fw-layered-diagnosis)”在保险丝时间内查，查不清就回滚，不扩大白名单碰运气。
-5. **故障演练：用 `network_check.py run --failure-drill` 那一次取证代替，不另外手动演一遍。**第 4 步的正常代理通信确认通了才做。工具会提示停一次代理核心、再打开；结果里“故障演练”一项是“停掉代理后连不出去，没有直连”就算通过，同一次取证交给 `egress_verifier.py` 判定（即[替别人交付](#delivery-scope)验收单的“一次取证”）。通过后删除保险丝任务，未通过或没跑就不删。
-6. **回滚：**`Set-NetFirewallProfile -Profile Domain,Private,Public -DefaultOutboundAction Allow`，再 `Get-NetFirewallRule -DisplayName "guardian-*" | Remove-NetFirewallRule`；必要时 `netsh advfirewall import "<备份路径>\fw-backup.wfw"` 还原整体。
+4. **保存基线，再开启整机白名单（C 档）：**按 [Windows 开关配置](killswitch-switch.md#windows-整机出口模式代价与首次交付)填写白名单精确 Name，在原出站策略为 Allow 时运行 Preview／Snapshot，审核计划停用的其他出站 Allow。由用户双击“开启保护”，确认目标与影响；脚本先布置保险丝，再切换规则与三档默认出站 Block。核对实际网络后输入 KEEP，成功读回才撤销保险丝。已有 Block 部署先按部署前备份恢复，不能直接把它保存为 OFF 基线。不通就按“[切换后不通：分层诊断](#windows-fw-layered-diagnosis)”查，查不清就恢复，不扩大白名单碰运气。
+5. **故障演练：用 `network_check.py run --failure-drill` 那一次取证代替，不另外手动演一遍。**第 4 步的正常代理通信确认通了才做。工具会提示停一次代理核心、再打开；结果里“故障演练”一项是“停掉代理后连不出去，没有直连”就算通过，同一次取证交给 `egress_verifier.py` 判定（即[替别人交付](#delivery-scope)验收单的“一次取证”）。首次验证须在 KEEP 截止前完成，超时先恢复再安排下一次；验证失败时按原配置 Off 恢复。
+6. **回滚：**日常关闭先退出受保护应用，再双击“关闭保护”；离线恢复在管理员终端运行 `windows-switch.ps1 -Action Off -Config <私有配置>`，恢复原规则启停和三档出站策略。卸载按精确清单清理本次新增规则，保留其他软件规则。整体 `netsh import` 仅按已审核的应急方案使用，恢复范围比开关更大。
 7. **更新后复查：**换节点、改端口、更新客户端后，节点 IP 和核心路径可能变，规则要同步更新，否则会断网。
 
-**Windows 样本：**第 1 到 4 步在 Windows 10.0.26200、Clash Verge Rev 2.5.2 上通过，涵盖备份、保险丝、加规则、切换和回滚；该样本的第 5 步故障演练还没在真机上跑通。[S10](../sources/S10-windows-deployment-sanitized.md) 另有 Win10/Win11 故障阻断报告，未独立复验；浏览器、严格路由和生命周期待办按原记录保留。首次使用先用 `-WhatIf` 或只读命令确认参数和别名。
+**Windows 样本：**此前手动部署在 Windows 10.0.26200、Clash Verge Rev 2.5.2 上通过，涵盖备份、保险丝、加规则、切换和回滚；该样本的第 5 步故障演练还没在真机上跑通。新 PowerShell 双快捷方式仍需在目标机走桌面验收。[S10](../sources/S10-windows-deployment-sanitized.md) 另有 Win10/Win11 故障阻断报告，未独立复验；浏览器、严格路由和生命周期待办按原记录保留。首次使用先用 `-WhatIf` 或只读命令确认参数和别名。
 
 <a id="windows-fw-layered-diagnosis"></a>
 ### 切换后不通：分层诊断
@@ -196,11 +196,11 @@ curl 退出码对照：`6` 解析失败（DNS 层）；`7` 连接被拒或被拦
 
 ### Windows 更新覆盖与规则替换
 
-更新后、恢复业务前，分别盘点当前包版本／包内主程序与辅助 EXE、包外桌面托管 Code 运行时、Cowork 服务的实际路径与服务身份；组件数不固定。比较新旧清单、签名／包身份、Program/Service/Interface 条件以及 PersistentStore/ActiveStore。新辅助组件或包外运行时未验证时记 unknown，旧路径消失或条件失配记 fail；不能凭旧规则存在或开关 on 自动启动受保护应用。
+整机白名单不依赖 Claude 包目录、辅助 EXE 或 Code 运行时路径。普通 Claude 更新后无需重新枚举组件；检查是否新增出站 Allow，以及代理核心路径、节点、服务、TUN／物理接口和必要例外是否变化。变化后运行 `windows-switch.ps1 -Action Audit`，对照 PersistentStore／ActiveStore 与审核基线，再完成出口验收。Guardian Switch 不监控更新、不自动启动应用。
 
-路径重扫与重绑只能证明当前版本的配置，不能证明更新后的首次联网受保护。持续覆盖须在更新前验证既有默认阻断及例外是否足够，或另行评审版本无关的身份过滤方案；没有这一证据就暂停受保护业务，先验收后恢复。固定包身份、发布者标签仍可能随证书、包身份和网卡变化失效。Guardian Switch 不监控更新、不启动应用。旧应用路径模式不自动发现新增组件，其应用覆盖 unknown 不能当 pass；整机出口模式不依赖 Claude 组件清单，检查完整出站 Allow 集合及审核条件，规则 pass 仍不能代替真实出口验收。
+规则替换先保存精确旧规则和条件，保留旧保护；新规则使用终止错误处理，核实两种存储的启用、方向、动作、程序／服务、接口、地址和端口。失败只恢复本批精确变更，确认完成后才按清单撤销旧规则。更新开关基线须先 Off、备份旧基线，再按新计划 Snapshot；不要覆盖活动恢复材料或通配清空规则。
 
-规则替换：先保存精确旧规则与条件的本机回执，保留旧保护；以独立批次创建新规则，使用终止错误处理，逐条核实两种存储中的数量、启用、方向、动作、程序／包／服务、接口、地址和端口。第 N 条创建失败或读回失配时不报成功，只回退本批精确变更，回退失败明确记录并保留回执。完整验收后才按已确认清单撤销旧规则；不要通配清空再重建。来源 S05 的修订示例仅部署当前包路径，不代表完整方案。重启、换网、证书更新、真实 Claude/Cowork 任务分别取证，独立测试程序不能代填。
+旧应用路径配置仅用于 Off／Recover／Uninstall 恢复；来源 S05 的路径规则示例作为历史材料保留，不再作为新部署入口。恢复旧保护后按整机计划重新配置，不直接修改 mode 冒充迁移完成。
 
 ### Windows Error 5 分诊
 
@@ -227,7 +227,6 @@ Agent 的执行工具返回 `blocked by policy` 之类的拒绝，是**宿主的
 1. 停下这一步，不换工具、不换写法、不拆成小命令绕过去；用户授权也解除不了宿主限制。
 2. 先确认系统处在安全状态：保险丝任务还在，或默认出站已恢复为允许、`guardian-*` 临时规则已清理。
 3. 交接给用户：说明被拒的是哪一步、它要做什么，把完整命令或脚本交给用户在自己的管理员终端里运行，或者就此收尾。
-4. 在报告里写成“宿主拒绝”，不写成脚本失败或 Windows 故障。
 
 ### 最小反馈清单
 

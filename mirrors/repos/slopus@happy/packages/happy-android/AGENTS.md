@@ -980,10 +980,9 @@ ANDROID_SERIAL=<device> ./gradlew :benchmark:connectedBenchmarkBenchAndroidTest 
 - Shipping goes through the `release` skill like every other release.
 - Release and preview bundles request native debug symbols at `FULL`; inspect
   their `BUNDLE-METADATA` before upload and follow the release skill's "Debug symbols" rules.
-- CI: `.github/workflows/happy-android.yml` runs `assembleDebug
-  assembleRelease testDebugUnitTest :crypto:test` on changes under
-  `packages/happy-android/` and shared mobile resources. It has no signing
-  secrets and no voice agent (`HAPPY_RELEASE_WITHOUT_CALL_AGENT=1`).
+- There is no Android CI: run `assembleDebug assembleRelease
+  testDebugUnitTest :crypto:test` locally. Without signing secrets or a voice
+  agent, set `HAPPY_RELEASE_WITHOUT_CALL_AGENT=1`.
 
 The JDK toolchain (21) is provisioned by the foojay resolver if the machine
 only has a JRE. In the agent sandbox Gradle needs network and local sockets:
@@ -1174,6 +1173,12 @@ verifies with, so a Play-distributed build should verify as it does; a build
 signed with only the upload key won't. Signed out, only the screens that need
 no account (server, restore, troubleshoot, changelog, onboarding settings)
 open; other links are dropped rather than pushed onto empty signed-in screens.
+A terminal link is never dropped: with an agent connection open, or none,
+the Happy CLI account it goes to opens first (`AccountRegistry.forTerminal`:
+the one open last, kept as `lastHappyId`, else the newest added) and its
+stack shows the confirm screen; with no Happy CLI account on the phone the
+confirm screen says a new one is made, and Accept makes it, as Add does.
+The confirm screen names the account ("Account" in Connection Details).
 
 ### Team servers behind SSO (edge SSO)
 
@@ -2269,8 +2274,12 @@ iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
   provides one per open account (`ProvideLinks`, which also replaces
   `LocalUriHandler`). With an agent connection open, a tap on a web link
   pushes `BrowserRoute`: the in-app browser through the agent, the local
-  host workspace's network; a conversation narrows that to its agent's
-  workspace. Other schemes go to the system. On a Happy (relay) account a
+  host workspace's network; a conversation narrows that to its agent's own
+  network, the one its commands run in (`agentNetwork`: `GET
+  /v0/workspaces/:ws/agents/:id/proxy` names it, then every tunnel is
+  `CONNECT /v0/networks/:networkId/proxy`, on a computer and on Happy Cloud
+  alike; a paired computer that names none has its workspace's proxy, a
+  server signed in to nothing). Other schemes go to the system. On a Happy (relay) account a
   tap does exactly what it did before (the system handler). A long press
   on a link gives a haptic and a bottom sheet: Open in Happy browser
   (through the agent; on a relay account a Custom Tab on the phone's
@@ -2300,7 +2309,20 @@ iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
 - **Remote only.** Every WebView request goes through `ProxyController`'s
   override to the loopback `BrowserProxy`, with no bypass rules, applied
   before the first load; a WebView without `PROXY_OVERRIDE` shows
-  "unsupported" and loads nothing. There is no direct fallback.
+  "unsupported" and loads nothing. There is no direct fallback, but the proxy
+  itself dials past the loopback of a network that carries only that (below).
+- **Loopback-only networks** (`BrowserDestinations`, iOS's docs/browser-proxy.md):
+  the agent's network lookup may say `destinations: "loopback"` (Happy
+  Cloud). Then only `localhost`, `*.localhost`, `127.0.0.0/8` and `::1`, by
+  the host as written and never resolved, go through its tunnels; the proxy
+  dials the rest from the phone over plain TCP (`BrowserDirect`), the page's
+  TLS end to end and nothing of the agent's with it. Absent, every
+  destination is tunnelled as before. A nested CONNECT refused
+  `403 destination_not_allowed` past the loopback teaches the page the same
+  (`Page.dial`); one to a loopback port (a reserved one, `3128`) stays a 403
+  and is never dialed. The trade-off: a page's public requests leave from
+  the phone's network, so a page can reach the phone's LAN, where through
+  the tunnel it could only reach the computer's loopback.
 - **Android limits and what we do:**
   - The proxy override is process-wide, not per WebView as WKWebView's.
     While a browser page is open, every WebView of the app (Mermaid's too)
@@ -2331,12 +2353,36 @@ iOS's `docs/browser-proxy.md` is the contract; `browser/` ports it
     can't reach.
 - **Pooling** (`BrowserConnectionPool`, `BrowserResponseBody`): artifact
   `/api/*` requests lease keep-alive connections per page (6 idle, 5 s),
-  returned only after an exact, self-delimited answer; everything else
-  closes after one answer. `BrowserProxyTest` runs OkHttp through the
+  returned only after an exact, self-delimited answer. Plain http through
+  a network keeps its tunnel for as long as WebView keeps its connection
+  to the proxy and asks the same host (`PageConnection`, `relayKeeping`):
+  on Happy Cloud each tunnel is a session the person has eight of, so one
+  Vite page load is 3 tunnels, not 9. A kept tunnel the dev server let go
+  of while idle is replaced and the request sent again. Upgrades, chunked
+  or oversized uploads and `Connection: close` still close after one
+  answer. `BrowserProxyTest` runs OkHttp through the
   proxy against a byte-level fake daemon; `BrowserWebViewDeviceTest`
   (androidTest, an emulator) does the same with real WebViews: two artifact
   pages in their own profiles at once, the computer's localhost, and the
   cleartext refusal.
+- **Compute disconnected** (`BrowserCompute`, iOS's docs/browser-proxy.md):
+  on Happy Cloud a chat's page follows its agent's `compute`
+  (`browserAgentCompute`: read, then `agent.updated`, read again after a
+  `hello`; only once it said online or offline, since a computer's own
+  agents say `type: "none"`). Detached or offline sets `page` to null, so
+  the WebView and the proxy page go, and shows Compute Disconnected;
+  online bumps `attempt` at the same address. Tunnel refusals close it
+  first: `409 no_compute` or `503 compute_offline`/`runner_unavailable`/
+  `draining` (JSON code) on the lookup, the network route or the nested
+  CONNECT, and an open twin closed `1001 no_compute`/`compute_offline`
+  (`BrowserRelay.duplex` throws it once both sides closed). `1000 idle`,
+  `1008`, `429` and `502 proxy_target_unavailable` are not the compute.
+  A closed page probes a tunnel (`computeAnswers`) every 3 s doubling to
+  30 s while the compute last said it was there: a compute back within
+  its grace sends no news. A page reopened so whose server isn't
+  responding yet (a dev server still starting) loads again after 2, 4, 8
+  and 15 s (`BrowserState.reopenRetryMillis`), then leaves Try Again; an
+  ordinary load never retries by itself.
 - **App mode** (`<meta name="happy-page-mode" content="app">`, the
   contract shared with desktop and iOS, as agents read it in
   happy-agent's docs/DESIGN.md §1.8). `artifacts/ArtifactPageMode` reads the entry's first

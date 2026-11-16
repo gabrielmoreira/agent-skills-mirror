@@ -61,17 +61,18 @@ partial success must show which operations need attention. A vnode does not own 
 retention budgets, and referencing it does not deploy jobs to other Agents.
 
 DEM Functions remain global on the collecting Agent. Invoke their existing names through that Agent or Cloud and
-select a site by its configured vnode name, for example `synthetics-runs vnode:storefront` or
+select a site by its configured vnode name, for example `synthetics-journey-runs vnode:storefront` or
 `rum-pages vnode:storefront`. The name is the exact resource name used by the job's `vnode` option, not its display
 hostname. Name lookup uses current vnode configuration, including when all jobs are disabled or no jobs reference it.
 Renamed or removed names stop resolving; reusing a name selects its current GUID, without aliases to earlier identities.
 
 Use `vnode_guid` with the recorded canonical GUID to query an earlier identity or retained history after its vnode is
-removed, for example `synthetics-runs vnode_guid:12345678-1234-4234-8234-123456789abc`. Supply only one selector;
+removed, for example `synthetics-journey-runs vnode_guid:12345678-1234-4234-8234-123456789abc`. Supply only one selector;
 empty or unknown vnode names and requests containing both selectors are rejected, even if either value is empty.
 Omitting both selectors, or supplying only an empty `vnode_guid`, includes all vnodes and unassigned data.
-These selectors apply to all six RUM Functions and `synthetics-checks`, `synthetics-runs`, and `synthetics-artifacts`;
-`synthetics-run` and `synthetics-artifact` keep their existing detail parameters.
+These selectors apply to all six RUM Functions and `synthetics-checks`, `synthetics-journey-runs`,
+`synthetics-lighthouse-runs` and `synthetics-artifacts`; `synthetics-run` and `synthetics-artifact` keep their existing
+detail parameters.
 
 The selectors filter data under the existing Agent-level access model; they are not a per-site authorization boundary.
 Functions are not registered on each vnode. Frontend consumers retain the collecting Agent relationship when selecting
@@ -89,7 +90,7 @@ receiver service and retention remain shared by the collecting Agent.
 
 ## Investigate journey failures
 
-`synthetics-runs` includes the first unexpected test failure, the last observed running step and pending-before-cleanup context when the runtime
+`synthetics-journey-runs` includes the first unexpected test failure, the last observed running step and pending-before-cleanup context when the runtime
 supports structured journey evidence. `synthetics-run` also returns `run.failure_evidence`: test observations,
 step identities and parent relationships, source locations, bounded error excerpts, and the first failure's step path.
 The overall outcome and termination reason remain separate. An earlier assertion can be retained even when a later
@@ -119,7 +120,7 @@ current browser activity. Captures keep their existing access rules and publicat
 ## Optional journey browser error summaries
 
 Set `browser_error_summary: true` in a journey job to collect browser error counts and bounded primitive samples,
-including on passing tests. It defaults to `false`. The `synthetics-runs` columns `browser_summary_status` and
+including on passing tests. It defaults to `false`. The `synthetics-journey-runs` columns `browser_summary_status` and
 `browser_errors` show reporting status and observed counts; `synthetics-run` returns typed `run.browser_summary`
 with coverage, aggregate counts, interesting test rows, samples and explicit omissions. Failed configuration
 rehearsals include a text summary; successful rehearsals retain their existing success response and do not save runs.
@@ -134,7 +135,9 @@ outcomes, trigger retries or extend deadlines. Summary finalization does not wai
 Console samples contain only whole primitive values or explicit omissions; objects are not rendered. Unavailable,
 pending, unsupported and oversized values remain explicit. No headers, response bodies or cookies are captured.
 Structured URLs have credentials, query strings and fragments removed, and recognized embedded HTTP(S) URLs in
-text receive best-effort stripping. Known configured secret values are redacted before clipping or byte checks.
+text receive best-effort stripping. A request URL that is too long or cannot be parsed is omitted, with
+`url_omitted` set to `too_long` or `unavailable`. Known configured secret values are redacted before clipping or
+byte checks.
 Arbitrary page-derived text is not anonymized and can contain sensitive content.
 
 Owned detail is bounded to 64 interesting test rows and four representative samples per category, with sixteen
@@ -156,7 +159,7 @@ reverse-proxy path prefix. The receiver serves the pinned Faro 2.11.0 SDK and op
 SDK CDN connection. Client IP addresses are used for rate limiting/geolocation and are not stored.
 
 `dem-history-status` is always announced. The six RUM Functions appear once a RUM site is active or RUM history is
-retained; the five synthetics Functions appear once a journey or Lighthouse job is active, or synthetic history or
+retained; the six synthetics Functions appear once a journey or Lighthouse job is active, or synthetic history or
 published captures are retained. Retained data makes the corresponding group available after restart even without
 jobs. A receiver alone does not enable RUM Functions. Once announced, a group stays available for that framework run,
 even after the last job stops or its data expires. A process restart reconstructs availability from data present when
@@ -171,6 +174,10 @@ Six process Functions use the regular Netdata Function transport: `rum-sites`, `
 `rum-errors`, and `rum-session-events`. Viewing them, and the `synthetics-*` Functions, requires a signed-in member of
 the node's Netdata Cloud Space with permission to view sensitive data, on a paid plan or an active trial; collection and
 history storage are not restricted.
+Every DEM Function takes its parameters as `key:value` (or `key=value`) arguments or as fields of a JSON request body,
+at its top level or under `selections`, which is how the Netdata Cloud Function table sends them. Arguments win over
+`selections`, which win over top-level fields. Unknown parameters are rejected, except the table's request fields
+(`timeout`, `last`, `_auxiliary` and an empty `query`) and, for `info`, a time range the Function does not use.
 Runtime observations include only admitted site jobs. Consumers join native
 DynCfg state to show disabled or failed configurations. Journal history remains queryable after a site stops. History range
 arguments select when the Agent originally received an observation, using inclusive Unix seconds: both endpoints include
@@ -180,7 +187,7 @@ Delayed session promotion preserves that original receipt time, so late-saved co
 past range shows currently retained evidence, not what was known at the time. Browser clocks do not define the native
 history axis.
 
-`rum-live` returns an opaque string `next` cursor, passed unchanged as `after` on the next request. Each event has a
+`rum-live` returns an opaque string `next` cursor, passed unchanged as `cursor` on the next request. Each event has a
 string identity combining site, runtime generation and sequence. Cursors track independent streams so a busy site cannot
 advance a quiet site's position. A replaced site's runtime starts a fresh stream. Missing Web Vitals are `null` in
 Functions and gaps in charts; an available but quiet receiver measures zero traffic. Receiver outages leave site jobs
@@ -197,8 +204,9 @@ retained occurrences by fingerprint; affected-session, top-page and browser stat
 filter selects the group to investigate. `rum-session-events` returns the full retained and pending timeline for a
 session, ordered by Agent observation time in Unix microseconds, without range filtering. Activity-only presence records
 contribute to summaries but stay out of timelines. Session rows sort by `last_observed_us` at microsecond precision
-before limiting; first/last observations and their span describe only the selected activity. A gap between observations
-does not prove continuous presence.
+before limiting to 2000 rows with an explicit truncation flag; narrow the range or the site selection when truncated.
+First/last observations and their span describe only the selected activity. A gap between observations does not prove
+continuous presence.
 
 One process-owned retention worker applies one shared history budget across RUM, synthetic runs, disabled jobs and
 retained machine identities. Defaults are 30 days and 1 GiB; `history.max_bytes` must be at least 8 MiB. Accounting uses
@@ -218,7 +226,7 @@ retention policy, defaulting to 7 days and 2 GiB.
 last successful cleanup, and separate inventory, cleanup, writer and policy reload errors. It is a read-only member
 Function that, like every DEM Function, requires a signed-in member of the node's Space with permission to view
 sensitive data, on a paid plan or an active trial. It works even with all collectors
-disabled, with no arguments, payload or time filters. Unknown or unattempted values are `null`; an inventory failure
+disabled and takes no parameters or time filters. Unknown or unattempted values are `null`; an inventory failure
 does not erase cleanup or writer facts. These facts help diagnose storage pressure and maintenance failures, but cannot explain whether an absent event expired, was sampled out or was never collected.
 Unusable history at startup still stops the plugin before Functions register; inspect process logs in that case.
 
@@ -705,10 +713,11 @@ release version, archive digest and execution contract for investigation.
 
 Explicit installation enables automatic preparation by default and prints this policy before proceeding. Use
 `--manual-updates` on install or repair to disable it. The running plugin checks roughly daily with jitter, downloads
-and qualifies a newer signed release beside the working release, and reports that restart is required. It never
-restarts the Agent. Security fixes remain inactive until the administrator or deployment system restarts DEM.
-Qualification shares the browser execution allowance, so monitors can wait while these local checks run. Failures preserve
-the selected release and appear as update maintenance errors, separately from website measurements.
+and qualifies a newer signed release beside the working release, and selects it for the next DEM start; `runtime
+status` shows the selected release. It never restarts the Agent. Security fixes remain inactive until the
+administrator or deployment system restarts DEM. Qualification shares the browser execution allowance, so monitors can
+wait while these local checks run. Failures preserve the selected release and are logged as `DEM runtime update
+failed` warnings, with a notice when a later check recovers, separately from website measurements.
 
 Signatures authenticate publication order and complete preparation instructions. They cannot detect withheld updates
 or guarantee freshness on a new installation. Online trust follows the canonical HTTPS key endpoint and system TLS
@@ -891,16 +900,17 @@ qualification failures.
 Functions show current execution and retained diagnosis.
 
 Lighthouse performance is a desktop lab score in points from 0 to 100; FCP, LCP, TBT and Speed Index are milliseconds,
-and CLS is dimensionless. Missing values are gaps/null, distinct from measured zero. Audit completion is separate from
-page performance. A failed optional report save marks capture unavailable and retains its diagnostic while preserving
-completed audit measurements. These lab measurements are not browser field Web Vitals; no lab-score alert threshold is
-enabled.
+and CLS is dimensionless. `synthetics-lighthouse-runs` lists them for each retained audit. Missing values are gaps/null,
+distinct from measured zero. Audit completion is separate from page performance. A failed optional report save marks
+capture unavailable and retains its diagnostic while preserving completed audit measurements. These lab measurements are
+not browser field Web Vitals; no lab-score alert threshold is enabled.
 
 ## Synthetic diagnosis and captures
 
-Process Functions use the regular Netdata transport: `synthetics-checks` for active observations, `synthetics-runs`
-for retained history, `synthetics-run` for one run's full diagnosis, `synthetics-artifacts` for retained capture sets and
-storage status, and `synthetics-artifact` for one set's metadata or bytes.
+Process Functions use the regular Netdata transport: `synthetics-checks` for active observations,
+`synthetics-journey-runs` and `synthetics-lighthouse-runs` for retained history of each kind (journey test counts and
+failure evidence; Lighthouse lab measurements), `synthetics-run` for one run's full diagnosis, `synthetics-artifacts`
+for retained capture sets and storage status, and `synthetics-artifact` for one set's metadata or bytes.
 Use the advertised `job_id`, `run_id` and other parameters. Disabled/failed-startup jobs remain in native configuration
 status. Last success/failure and freshness describe the current activation and vnode association; reassignment resets
 these observations. They do not reconstruct a historical incident. A running or
@@ -941,7 +951,7 @@ Active or unverified workspace, unclassified files and pending deletions are rep
 retained-capture allowance. Total disk use can exceed the allowance, including growth between sweeps; sizes are logical
 file lengths, not allocated disk space. `synthetics-artifacts` reports global storage observations, effective policy,
 cleanup status and policy reload errors even when `job_id` filters its rows. Its newest-first list accepts an optional
-`limit` from 1 to 2000 and a returned `next` cursor as `before`; captures can expire between pages.
+`limit` from 1 to 2000 and a returned `next` cursor as `cursor`; captures can expire between pages.
 
 Capture discovery and downloads remain available after run history expires and after a monitor is disabled or deleted.
 Capture states distinguish disabled, not needed, unavailable and published evidence. Retained history may also outlive
@@ -966,7 +976,7 @@ remains `too_large`; earlier size skips are not separately preserved. It reports
 candidate rejected by stop policy, and `not_in_final_report` for metadata
 without an accepted final candidate. Without a final candidate report, earlier captures are not recovered.
 These are historical decisions, separate from current artifact availability. An absent `run.captures` means reporting
-was not recorded, not zero captures. Metadata may be partial, unsupported,
+was not recorded, not zero captures. Metadata may be unavailable, partial, unsupported,
 invalid or truncated; none means zero captures. Labels use exact-secret redaction before clipping; this does not
 sanitize screenshot, trace or report content.
 
@@ -999,8 +1009,8 @@ or publish captures; the script can still direct its own recording.
 `synthetics-artifact` labels retained ZIPs `Trace` and includes their test title. Fetch and base64-decode the artifact
 bytes, save a `.zip` file, and open it with the standard local Playwright Trace Viewer. Byte access requires existing
 administrator-equivalent permissions. `synthetics-run` exposes `run.captures.trace` as `supported`, `unsupported`,
-`negotiation_not_reported` or `invalid` when requested. This reports runtime capability, not guaranteed trace retention;
-PNG accepted/unaccepted counts keep their screenshot-only meaning.
+`unavailable` (never acknowledged) or `invalid` when requested. This reports runtime capability, not guaranteed trace
+retention; PNG accepted/unaccepted counts keep their screenshot-only meaning.
 
 Downgrading to an Agent without trace support makes mixed capture sets unreadable, including their screenshots.
 These sets become unclassified and are excluded from retention cleanup until re-upgrade. Preserved files become

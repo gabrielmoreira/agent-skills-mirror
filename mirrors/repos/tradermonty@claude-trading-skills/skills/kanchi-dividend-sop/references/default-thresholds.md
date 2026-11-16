@@ -70,3 +70,69 @@ Use these as practical defaults:
 - High-yield bucket (REIT/telecom/utilities combined): `<= 35%`.
 
 Override only when user explicitly chooses a different policy.
+
+## Step 5 dividend-basis compatibility (schema version 3, Issue #769)
+
+When declared-dividend history supplies a regular-only current numerator, the
+provider's historical ratios are not a verified regular-only five-year average.
+The current transport has no matching regular-only annual yield/price history,
+so Step 5 withholds its average, target yield, buy price and drop-needed fields:
+`signal=ASSUMPTION-REQUIRED`, `target_withheld_reason=regular_only_average_unavailable`,
+and T1 orders are blocked. No guessed price or reverse-engineered substitute is
+emitted. This applies even when the available history shows no special payment;
+that absence does not establish the provider's five-year basis. A nonempty but
+unusable history produces `regular_dividend_unavailable` rather than silently
+falling back to a profile-based target.
+
+JSON/CSV record `annual_dividend_basis`, `historical_yield_basis`, `yield_basis`
+and `target_withheld_reason`. `provider_avg_5y_yield_pct` and
+`provider_yield_observation_count` retain raw provider diagnostics; they are not
+an actionable regular-only target basis. `yield_observation_count` counts usable
+observations (zero for a withheld target). Markdown lists the withholding reason.
+The legacy no-history library path retains its provider-total calculation with
+both sides explicitly marked `provider_total_unverified`; it does not claim a
+regular-only target. Live history-enabled CLI rows use the guarded path.
+
+A future regular-only historical series must use the same special classification
+as dividend_basis and demonstrably matching yearly dividend/price periods before
+it can enable target calculation. This fix does not add that data acquisition or
+assert the evaluator's ORI figures are live market data. Freeze/strong-safety
+conditional eligibility alone does not establish an entry level: unresolved
+basis evidence keeps such a row HOLD-REVIEW with T1 blocked.
+## Issue #768 safety guards
+
+- `BANK_CET1_MIN`: 0.07 (fraction units); below the screening floor is CAUTION, invalid/missing values also block CLEAN-PASS. This is not an issuer-specific regulatory requirement; see sector-step2-modules.md.
+- A material decrease of more than `DIVIDEND_CUT_REL_TOL` (0.05 = 5%) below the trailing `DIVIDEND_CUT_LOOKBACK_DAYS` (365) regular-rate peak sets `cut_flag`, even if the year-over-year rate grew. Specials are removed first. For semiannual payers, compare rolling two-payment annual totals to avoid interim/final seasonality. The year-over-year rate comparison uses the same cut tolerance.
+- Non-positive supplied EPS/consumer FCF yields HOLD-REVIEW, never a negative payout interpreted as safe. The utility FCF exemption is preserved.
+
+### PR #774 review follow-up: cut persistence and scope
+
+The trailing-year material-cut test stays active through subsequent unchanged
+payments until the high reference leaves the window or the rate recovers within
+tolerance. A 0.40 -> 0.35 -> 0.35 stream remains a cut. A 0.55 -> 0.53 currency-like
+variation does not hard-fail as a cut, and a recurring 0.40/0.60 semiannual pattern
+does not compare the lower interim payment directly with the larger final.
+The 5% threshold is a configurable screening policy, not proof of an issuer's
+board-declared cut or its original-currency cause; a larger FX change can still
+require source review. This input has no original-currency declaration evidence.
+
+`DIVIDEND_EQUALITY_EPS` still governs increase/freeze comparisons. Issue #770
+separately owns the finer monthly-raise tolerance, TTM evaluation-date window and
+price-date provenance; those changes are not folded into #768.
+
+A supplied non-positive GAAP EPS deliberately HOLDs even when adjusted EPS is
+positive: this conservative gate runs before one-off/divergence classification.
+It can therefore require manual review of an impairment-only loss instead of
+using the otherwise-positive adjusted anchor. This differs from the previous
+one-off interpretation and is not a claim that adjusted earnings are negative.
+CET1 values use fraction units (0.125 = 12.5%); 12.5 itself is invalid/CAUTION,
+not silently rescaled. Issue #772's future input path must normalize source units.
+
+Withheld entry targets are non-actionable: a Step-1-passing row is capped at
+HOLD-REVIEW with the withholding reason, regardless of event-scan result.
+Hard FAIL and Step-1 data rechecks keep their stricter dispositions. The
+trader-memory-core adapter therefore rejects these rows instead of registering
+an entry with a null target. A clean payout-safety freeze reports the missing
+entry basis rather than claiming safety was unconfirmed. Provider observations
+remain diagnostic and are not reported missing merely because the usable
+regular-only average is withheld.

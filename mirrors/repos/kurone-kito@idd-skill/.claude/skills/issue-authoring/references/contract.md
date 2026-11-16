@@ -1060,6 +1060,15 @@ preventive (no observed incident yet).
   like a path — backtick-quoted or a bare bulleted leading token — is
   parsed as a candidate file, so keep unrelated notes, caveats, or
   subheadings outside the section.
+- A required edit is a bullet that begins `Required edit:` and names
+  one backticked repository path. List that path under
+  `## Candidate files` too: the effort limit counts only the listed
+  paths, and a body that named a required edit but left it out of the
+  list was observed on closed issue `#4809`.
+  `audit-authored-issue` reports each such path that the section does
+  not list as a warning (`required-edit-candidate-files`). The audit
+  still passes, and the path is not added to the effort count. A body
+  that does not use the bullet is never warned.
 
 ### Orphan issue
 
@@ -1266,7 +1275,20 @@ between a check and the act, which item 4 describes. The refusals in items 4
 to 6 take precedence, so the open risk applies only where no item refuses the
 case.
 
-Observed incident:
+**Reference inventory.** This requirement applies on its own, whether or not
+one of the six cases applies, and it replaces none of them. A drafted change
+that deletes, renames, or moves a repository path or tree includes, before
+publication, an inventory of the repository references to that path and of its
+executable consumers. The inventory covers prose documentation that names the
+path, and links, tests, hooks, workflows, templates, and scripts that read,
+open, or point at it. Like the restating-site search in
+[Codebase-fidelity validation](#codebase-fidelity-validation), it adds each
+reference or consumer that must change to Candidate files, and the body names
+each one that stays valid with the reason it remains valid; that statement is
+body prose, not an acceptance criterion. The completed-draft critique checklist
+asks the reviewer to check this; `audit-authored-issue` does not.
+
+Observed incidents:
 
 - Observed 2026-10-12 to 2026-10-13, PR `kurone-kito/idd-skill#4073`, closed
   without merging, for issue `kurone-kito/idd-skill#3825`: the issue's
@@ -1277,6 +1299,15 @@ Observed incident:
   and managed data paths that followed a symlink component, so writes
   resolved outside the data root (cases 4 and 6, comment 4249375009). Cases
   3 and 5 have no observed incident yet; they are preventive.
+- For the reference inventory, observed in issue `kurone-kito/dotfiles#680`,
+  closed 2026-10-28 on the merge of PR `kurone-kito/dotfiles#691`: its
+  Candidate files listed two instruction and skill directories, two docs, and
+  two helper tests. At the parent commit
+  `8681c44c7dfc4c0e1bbdc55f5ba74c58c8512f8f`, at least six references to the
+  removed paths sat outside that list, among them two tests that open an
+  instruction file, a doc that names one in prose, a docs index that links the
+  instruction set, an issue template that links the skill, and a hook that
+  points at an instruction file.
 
 ## Drafted issue prose language
 
@@ -1475,6 +1506,12 @@ instructions.
   [Destructive operations](#destructive-operations), or names the guard that
   makes the case impossible; the reviewer flags a destructive operation whose
   criteria leave a case unanswered
+- a draft that deletes, renames, or moves a repository path or tree includes
+  the reference inventory under [Destructive operations](#destructive-operations):
+  repository references, including prose documentation that names the path, and
+  executable consumers (links, tests, hooks, workflows, templates, and scripts);
+  the reviewer flags a draft with no inventory, or one where a reference or
+  consumer is neither in Candidate files nor explained as still valid
 
 ### Resolver
 
@@ -2354,6 +2391,20 @@ as a false child. Unlike every other check above, a
 changes the linter's exit code: it prompts the author to either
 convert the prose into a proper dependency marker or consciously
 confirm the reference is a mere breadcrumb.
+
+For the `orphan` and `child` shapes, the linter emits a second
+**advisory, warning-severity-only** finding,
+`required-edit-candidate-files`. A required edit is a bullet that begins
+`Required edit:` and names one backticked repository path (see
+[Candidate files format](#candidate-files-format)). The finding names,
+in one warning, each such path that `## Candidate files` does not list.
+It reads the first backticked path of a bullet, including the bullet's
+wrapped continuation lines, and compares the same normalized path keys
+the effort count uses, so an `idd-template/` source and its mirror count
+as one file. It ignores a bullet quoted in a code block or an HTML
+comment, and it never warns a body that has no such bullet. Like
+`prose-dependency`, it never flips `passed` to `false` and never
+changes the linter's exit code, so publication still passes.
 
 ```sh
 node scripts/audit-authored-issue.mjs --shape <orphan|roadmap|child|carrier> \
@@ -3726,7 +3777,23 @@ only approval boundary.
   left under the ordinary human-gated boundary above, that deferred
   work would sit under the authoring label indefinitely on a fully
   autonomous repository, silently defeating the point of deferring it
-  at all (preventive; no observed incident yet). **Roadmap-anchor
+  at all (preventive; no observed incident yet). **Reused-issue
+  provenance stays manual:** the `authoring-owner-provenance` helper
+  reads only the target's own owner-marker log, under every verdict,
+  and never follows an anchor to another issue. It does not perform the
+  anchor-log step of the rule for a non-anchor target ("A non-anchor
+  target cannot prove that its previous set finished" above): the
+  trusted `mode=release-complete` check on the anchor's log before a
+  fresh `mode=acquire` of an issue that an earlier set released. That
+  step is performed by hand, and no verdict stands in for it: `pass`
+  shows only that the target's first acquire still matches the live
+  body. On an issue an earlier set held, the helper may report
+  `not-found` (for example, its first acquire names another anchor) or
+  `mismatch` (the body changed since that acquire), as on issue `#4703`
+  (observed 2026-10-31) and issue `#4694`. Either result means the
+  helper did not do the step, and neither authorizes acquiring the
+  issue as a new set.
+  **Roadmap-anchor
   scope (accepted limitation, `#2877`):** the "never to a roadmap
   anchor" exclusion above is permanent, not a gap awaiting a fix — a
   roadmap anchor carrying this marker under `issue-scope: roadmap`

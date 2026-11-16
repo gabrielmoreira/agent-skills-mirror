@@ -1,6 +1,5 @@
-"""Unprivileged, short-lived local UI and native desktop launchers for killswitch.py."""
+"""Mac/Linux local UI and desktop launchers for killswitch.py; Windows uses PowerShell."""
 import argparse
-import base64
 import json
 import os
 from pathlib import Path
@@ -21,18 +20,11 @@ CLI = Path(__file__).with_name('killswitch.py')
 ACTIONS = {'status', 'on', 'off', 'uninstall'}
 
 
-def ps_quote(value):
-    return "'" + str(value).replace("'", "''") + "'"
-
-
 def launch_terminal(action, config, receipt, directory):
     argv = [sys.executable, str(CLI), action, '--config', str(config), '--receipt', str(receipt)]
     system = platform.system()
     if system == 'Windows':
-        command = '& ' + ' '.join(ps_quote(a) for a in argv) + '; Read-Host "Press Enter to close"'
-        encoded = base64.b64encode(command.encode('utf-16le')).decode()
-        outer = "Start-Process powershell.exe -Verb RunAs -ArgumentList '-NoProfile -NoExit -EncodedCommand " + encoded + "'"
-        return subprocess.Popen(['powershell.exe', '-NoProfile', '-Command', outer])
+        raise RuntimeError('Windows 请使用 PowerShell 桌面开关。')
     script = directory / ('action-' + secrets.token_hex(6) + '.command')
     script.write_text('#!/bin/sh\nsudo ' + shlex.join(argv) + '\nprintf "\\n按回车关闭窗口。"\nread answer\n', encoding='utf-8')
     script.chmod(0o700)
@@ -46,6 +38,8 @@ def launch_terminal(action, config, receipt, directory):
 
 
 def desktop(config, output):
+    if platform.system() == 'Windows':
+        raise ValueError('Windows 请使用 windows-shortcuts.ps1。')
     output.mkdir(parents=True, exist_ok=False)
     system = platform.system()
     argv = [sys.executable, str(CLI), 'gui', '--config', str(config)]
@@ -62,16 +56,6 @@ def desktop(config, output):
             plistlib.dump({'CFBundleName': 'Guardian Switch', 'CFBundleDisplayName': 'Guardian Switch',
                           'CFBundleIdentifier': 'org.claude-guardian.switch', 'CFBundlePackageType': 'APPL',
                           'CFBundleExecutable': 'guardian-switch', 'CFBundleIconFile': 'guardian.icns'}, out)
-    elif system == 'Windows':
-        icon = output / 'guardian.ico'
-        shutil.copyfile(ASSETS / 'icon.ico', icon)
-        # A normal-user launcher; elevation is requested only for an explicit action.
-        pythonw = Path(sys.executable).with_name('pythonw.exe')
-        target = pythonw if pythonw.is_file() else Path(sys.executable)
-        args = subprocess.list2cmdline(argv[1:])
-        command = ('$s=(New-Object -ComObject WScript.Shell).CreateShortcut(' + ps_quote(output / 'Guardian Switch.lnk') + ');'
-                   '$s.TargetPath=' + ps_quote(target) + ';$s.Arguments=' + ps_quote(args) + ';$s.IconLocation=' + ps_quote(icon) + ';$s.Save()')
-        subprocess.run(['powershell.exe', '-NoProfile', '-Command', command], check=True, timeout=30)
     else:
         icon = output / 'guardian.png'
         shutil.copyfile(ASSETS / 'icon.png', icon)
@@ -187,12 +171,10 @@ def handler_for(session):
 
 
 def serve(config, cfg, preview=False, open_browser=True):
+    if platform.system() == 'Windows':
+        raise ValueError('Windows 不再提供浏览器开关，请使用 PowerShell 桌面入口。')
     if not preview:
-        if os.name == 'nt':
-            import ctypes
-            elevated = ctypes.windll.shell32.IsUserAnAdmin()
-        else:
-            elevated = os.geteuid() == 0
+        elevated = os.geteuid() == 0
         if elevated:
             raise ValueError('请以普通用户启动界面，操作时再提权。')
     with tempfile.TemporaryDirectory(prefix='guardian-switch-') as tmp:

@@ -10,6 +10,7 @@
 | **🎞️ 模板** | [Studio 可编辑起点](templates/README.md) · [Presenter Tech](templates/presenter-tech/README.md) | 完整工程、预览、替换与改编说明。 |
 | **🧩 Motion 组件** | [标题揭示配方](components/title-reveal/README.md) | 标题、转场、图表或场景，说明时序、可修改项与接入方式。 |
 | **🎨 动效设计体系** | [Ink & Water](design-systems/ink-water/MOTION_DESIGN.md) | 用 `MOTION_DESIGN.md` 记录字体、构图、节奏、运动和声音规则。 |
+| **便携创作包** | [规范](../docs/motion-package-spec.md) · [工具与 Product Story 示例](../packages/motion-package/README.md) | 通过动效文档引用独立设计文档，携带素材、精确依赖与可选 Agent 使用方法。 |
 | **💼 Brandkits** | [OpenMotion](brandkits/openmotion/BRANDKIT.md) | 品牌事实、可用文案、配色、字体、素材入口与使用规则。 |
 
 ```text

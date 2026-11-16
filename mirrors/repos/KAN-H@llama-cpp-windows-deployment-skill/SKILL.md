@@ -7,7 +7,7 @@ user-invocable: true
 
 # llama.cpp Windows 多模型部署与优化集成技能
 
-> **版本**: v3.9.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b11836 | **更新**: 2026-10-24（并发专项：np 阶梯实测 + `--kv-unified` + np×MTP 耦合绿屏复盘 + `scripts/np_probe.py` 双显存安全闸）
+> **版本**: v3.11.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b12359 | **更新**: 2026-11-15（版本升级与 MoE 专家缓存专项：v1.0.0/b12359 可平滑替换但收益仅 0–6.5%；「驱动 2.2 倍」前提是显存能空出十几 GiB 缓存，16GB 卡不成立；新增 `scripts/moe_bench.ps1` + `scripts/router_args_probe.ps1`，并修正 §5.1 的 `--fit` 结论）
 >
 > 📚 **references 导航**：先看 [`./references/INDEX.md`](./references/INDEX.md) —— 目录结构、每份文档的用途，以及**权威代码路径表**（历史文档中的旧路径一律以该表为准）。
 
@@ -35,6 +35,8 @@ user-invocable: true
 | Qwen3.8 部署 | "Qwen3.8", "qwen35", "reasoning_effort", "128K", "长上下文", "长会话" |
 | GSQ-RCO 非均匀量化 | "GSQ-RCO", "GSQ", "非均匀量化", "IQ3_S", "全层 GPU", "CPU 卸载断崖" |
 | VS Code 模型接入 | "VS Code", "customendpoint", "chat-completions", "ECONNREFUSED", "8084" |
+| 视觉 OCR / 整本 PDF | "PDF", "OCR", "GLM-OCR", "扫描件", "图片识别", "413", "100 MiB", "Unable to connect to server", "上下文超限" → [`references/sessions/20261104-glmocr-pdf-100mib-webui-report.md`](./references/sessions/20261104-glmocr-pdf-100mib-webui-report.md) |
+| 版本升级 / 驱动提速 | "1.0.0", "b12xxx", "升级后没变快", "2.2 倍", "moe-cache", "moe-cache-mib", "专家缓存", "余量体检" → [`references/guides/version-upgrade-and-vram-budget.md`](./references/guides/version-upgrade-and-vram-budget.md) ｜ 实测 [`references/sessions/20261115-v1-upgrade-moe-cache-report.md`](./references/sessions/20261115-v1-upgrade-moe-cache-report.md) |
 
 ## 二、Prerequisites（前置条件）
 
@@ -354,6 +356,45 @@ pause
 
 📎 完整档案（KV 阶梯 / batch 对比 / 显存方程 / 采样参数）：[`./references/guides/qwen38-gsqrco-27b-tuning.md`](./references/guides/qwen38-gsqrco-27b-tuning.md) ｜ 原始数据：[`_q6_results.json`](./references/sessions/_q6_results.json)＋[`_q6_metadata.json`](./references/sessions/_q6_metadata.json) ｜ 探针集：[`./scripts/q6-tuning/README.md`](./scripts/q6-tuning/README.md)
 
+#### 3H：视觉 OCR（GLM-OCR 系）与整本 PDF ⭐ 2026-11-04 实测
+
+**核心事实：WebUI 的「上传 PDF」不是分页阅读，而是一次性全量。** b11960 的前端实现是
+`pdf.js` 逐页 `canvas` 渲染（`scale = 1.5`）→ `toDataURL('image/png')` → **所有页塞进同一条 chat 请求**
+（无页范围、无分批），并且还会额外带一份 PDF 本体 base64。
+
+**两堵墙（实测，非估算）**：
+
+| 墙 | 数值 | 表现 |
+|---|---|---|
+| 请求体上限 | **100 MiB（编译期常量，无 CLI 开关）** | 99 MiB → 200；100 MiB → **413 空 body，0.1 s**；router 与子实例都一样 |
+| 上下文 | 每页 ≈ **1.3K prompt tokens**（832×1200 扫描页 @scale1.5） | 16K ctx 只能 12 页；14 页 → `400 exceed_context_size_error` |
+
+⇒ 一本 **561 页**扫描书 = **~215 MiB / ~730K tokens**，两个上限各超 2 倍与 45 倍，**WebUI 永远跑不通**。
+
+**⚠️ 报错文案会误导**：超大 body 时服务端按 `Content-Length` **提前拒绝并关连接**，浏览器还在上传 →
+`fetch` 抛 `TypeError` → WebUI 显示 **"Unable to connect to server - please check if the server is running"**。
+**这句文案只在传输层失败时出现**（HTTP 4xx/5xx 会显示别的），所以「连不上」≠ 服务挂了 —— 先看 `/health`。
+
+**正确做法（按推荐度）**：
+
+1. **逐页脚本**（唯一能处理整本）：[`./scripts/ocr_pdf.py`](./scripts/ocr_pdf.py) ——
+   pymupdf 渲染 → 每页一次 `/v1/chat/completions` → `NNNN.txt` + 合并 md；断点续跑、
+   `413/400` 自适应、自动探测模型与 `n_ctx`。实测 **≈1.4 s/页**（0.9B 模型），561 页约 12–15 分钟。
+   ⚠️ **`--batch > 1` 不可靠**：模型不输出页分隔符且会漏页（实测 20 页一批只回 316 token）⇒ 默认 1。
+2. **抬 ctx 换批大小**（可选）：16K → 64K 显存 **+1.1 GB**，每批 12 页 → ~45 页；仍解决不了整本。
+3. **包成 MCP 工具给 agent 用**：`ocr_pdf_submit / status / read / health`。
+   agent 应该**调工具**，而不是把 PDF 塞进模型上下文。两个实现坑：stdio 必须显式
+   `reconfigure(encoding="utf-8")`（Windows 默认 cp936）；进度采集必须开线程
+   （`for line in proc.stdout` 会阻塞到 EOF）。
+
+**GLM-OCR 模型侧参数（本机实测）**：`glm4` 架构、0.9B、17 层、`context_length = 131072`、
+自带 `nextn_predict_layers=1`；mmproj `clip.vision.image_size=336 / patch=14 / projector=glm4v`；
+KV q4_0 约 **21.8 KiB/token**（16K→0.36 GB，64K→1.4 GB，131K→2.8 GB）。
+采样 `temp 0.7 / top-p 0.95 / top-k 20`，提示词 `Text Recognition:` 即可。
+**它是 image-to-text 专用模型，没有工具调用能力，不要注册成 agent 的主模型。**
+
+📎 完整证据链（前端反查 / 体积测算 / 复现命令）→ [`references/sessions/20261104-glmocr-pdf-100mib-webui-report.md`](./references/sessions/20261104-glmocr-pdf-100mib-webui-report.md)
+
 ### Step 4：安全配置（WSL2 + Agent 对接）
 
 ```bat
@@ -472,18 +513,32 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 > 面向 16GB 卡跑 20GB+ MoE 模型（Qwen3.6-35B-A3B / Gemma4-26B-A4B 等）。
 > 详细实测数据与推导见 [`./references/guides/20260913-moe-offload-community-research.md`](./references/guides/20260913-moe-offload-community-research.md)。
 
-### 5.1 ★★★ `--fit` 与 `--n-cpu-moe` **互斥**（最易踩的机制坑）
+### 5.1 ★★★ `--fit` 与 `--n-cpu-moe`：机制真相（v3.11 修订）
 
-`--n-cpu-moe N` 内部就是编译成一组 `-ot` 张量覆盖（`blk.0..N-1` 的 `ffn_*_exps = CPU`），
-而 **`common_fit_params()` 只要发现 `tensor_buft_overrides` 非空就直接放弃 fit**。
+`--n-cpu-moe N` 内部编译成一组 `-ot` 张量覆盖（`blk.0..N-1` 的 `ffn_*_exps = CPU`）。
+**旧结论「fit 因此从未运行」已被推翻** —— 机制与操作建议要分开看：
 
-| 后果 | 说明 |
-|------|------|
-| `--fit on` 在 MoE 条目上是**装饰性的，从未生效** | 一并解释了为何 `--fit-target` 怎么改都没差别 |
-| **MoE 模型没有自动降级兜底** | ❌ **不能**把 `--fit on` 当安全网 —— `n-cpu-moe` 设错的后果是 **OOM，不是优雅降级** |
-| ⚠️ 日志里**不一定**出现 fit abort 提示 | 26B-A4B 就**没有**提示但 fit 同样无效 ⇒ **只有 A/B 对拍才算证据** |
+| 观察 | 事实 |
+|---|---|
+| 早期 build 的 A/B：`--fit on` 开/关**测速无差别**（26B-A4B） | fit **运行了**，只是判定 `no changes needed`（配置本来就够），**不等于没运行** |
+| b12274 / b12359 实测（262K + 34 层 + MTP + mmproj） | fit 用 **1.01 s** 跑完并输出判决行：`projected to use 12236 MiB ... will leave 2935 >= 2129 MiB, no changes needed` |
+| 投影**不足**时它会不会真的下调 | ⚠️ **未验证**（无 `--no-alloc` 类零风险探针；强行试 = OOM/不稳定） |
 
-**正确写法**：MoE 条目**只输出 `--n-cpu-moe N`**，不要同时挂 `--fit`。
+⇒ **操作建议不变、理由要改**：MoE 条目仍**只写 `--n-cpu-moe N`**，但原因不是"fit 无效"，而是：
+
+1. fit 只能**验证**余量，**不能证明**它在不足时会救你 ⇒ **不能当安全网**；
+2. 显存预算必须自己算（§5.2）；
+3. 但体检时**值得**临时加 `--fit on` + `-lv 5`（判决行是 TRACE 级），把那行当健康指标：
+
+```
+projected to use 12236 MiB of device memory vs. 15172 MiB of free device memory
+will leave 2935 >= 2129 MiB of free device memory, no changes needed
+                ↑ 投影余量 X   ↑ 程序要求的最低余量 Y（本机 2129）
+```
+
+**真实富余 = X − Y**。实测：262K 生产配置只剩 **204 MiB**（🔴 红线）；
+同配置换成 36 层可回到 >1 GiB（🟢，但 prefill 慢 2%–5.3%）。
+判决行怎么读、三档判定、升级验收流程见 [`references/guides/version-upgrade-and-vram-budget.md`](./references/guides/version-upgrade-and-vram-budget.md)。
 
 ### 5.2 显存预算方程（替代粗糙的固定比例）
 
@@ -531,15 +586,53 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 | 25 | Gemma4-26B-A4B | 65536 | 40.0 |
 | 27 | Qwen3.6-35B-A3B (Q5) | 65536 | 62.0 |
 | 30 | Gemma4-26B-A4B | 65536 | 36.0 |
+| 34 | Qwen3.6-35B-A3B (Q4_K_P + MTP) | 262144 | 55.6 |
+| 36 | Qwen3.6-35B-A3B (Q4_K_P + MTP) | 262144 | 58.2 |
 
 ⇒ 同模型同 ctx 下，**卸载层数越多越慢**（Q5：n=20 → 68.8 vs n=27 → 62.0）
 ⇒ 卸载量应**贴住显存判据下限**，而不是「越保守越好」。
+
+> ⚠️ **Qwen3.6 那两行不是"越卸载越快"的反例**：它们测的是 **25-token 短 prompt 的 decode**，
+> 且 34→36 把 MTP 接受率从 0.486 推到 0.532（配置级、三组交错一致）；同一配置在 **12.9K 长上下文**下
+> 36 层 **prefill 反而慢 2%–5.3%**、decode 持平。这正是"不能跨工作点横比"的活例子。
+> ⇒ **不要为提速改 `n-cpu-moe`**；只在需要显存安全垫时上调（余量 2333 → 3593 MiB，代价 ~1 GiB RAM）。
 
 ### 5.6 ⚠️ 两条路径必须同步（FND-064 会复发）
 
 菜单启动器（`.bat`）与 Router（`models-config.ini`）是**两套独立生成路径**。
 **手动改了 override 后必须跑一次更新器**，否则 `.bat` 侧仍是旧值 ——
 不走 Router 直接双击启动器 = **再次 OOM**。（本会话断言上线后立刻抓到此复发。）
+
+**补充（2026-11-15）：Router 的 CLI 参数会覆盖 preset。** 源码 `tools/server/server-models.cpp`：
+
+```cpp
+// overlay router's own CLI args on top of every model preset
+for (auto & [name, preset] : final_presets) { preset.merge(base_preset); }
+```
+
+⇒ ini 写 `parallel = 3`、启动器写 `-np 1` ⇒ **生效的是 1 槽**（`parallel` 是死参数）。
+⇒ 反过来也别以为"ini 写了就安全"：真把 `-np` 调到 3，同一份 34 层配置只剩 **2189 MiB**（越线）。
+⇒ **判断参数是否生效不要读文件**，用 [`scripts/router_args_probe.ps1`](../scripts/router_args_probe.ps1) 向运行中的 Router 要渲染结果。
+
+### 5.7 `--moe-cache-mib`：默认关；这类卡上开了大概率更慢（2026-11-15 实测）
+
+`--moe-cache-mib N` 把**留在 CPU 的** MoE 专家按 LRU 缓进显存，只有 miss 才上传；主要作用于**小批量解码**（≤32 token/批），大批量 prefill 走另一条路径。默认 `0`（关），**仅升级驱动/二进制不会自动开启**。
+
+| 前提 | 判据 |
+|---|---|
+| ① 显存能空出 **≥ 10% 专家总量** | 上游建议值；先算 §5.1 的真实富余 |
+| ② 负载以小批量解码为主 | Agent 单流 ✅ / 批量离线 ❌ |
+| ③ 能观测命中率与传输开销 | 拿不到 ⇒ 变慢也无法归因，先别开 |
+
+实测（16GB + Qwen3.6-35B-A3B + 34 层 CPU 专家 + MTP + mmproj，**8K 上下文**）：
+
+| 缓存 MiB | 0 | 256 | 512 | 1024 |
+|---|---:|---:|---:|---:|
+| 解码 vs 关闭 | 基线 | **-31% ~ -34%** | **-34% ~ -41%** | **-36%** |
+
+262K 上下文**放不下**（真实富余仅 204 MiB）：这是"不做该实验"的原因，不是"没测出来"。
+⇒ **本类配置保持 `--moe-cache-mib 0`**；上游 2.2× 的前提是 93.7 GiB 模型 + 18.6 GiB 缓存 + RTX 5090，与本机无关。
+详见 [`references/sessions/20261115-v1-upgrade-moe-cache-report.md`](./references/sessions/20261115-v1-upgrade-moe-cache-report.md)。
 
 ## 六、MTP Health Diagnostics（健康诊断）
 
@@ -601,6 +694,7 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 | ④ | `maxInputTokens` 是否超限 | 必须 ≤ 服务端 `-c`（64K→60000；128K→128000） |
 | ⑤ | `reasoningEffort` 值域 | 勿含 `none`（llama-server 不支持），用 low/medium/high |
 | ⑥ | 参数是否 silent fail | 生成器注入后核对 `--reasoning-budget 8192` 等关键参数出现次数（见 6A 工程经验） |
+| ⑦ | WebUI 报「Unable to connect to server」 | **先 `curl /health`**：200 = 服务活着 → 是**传输层**失败（十有八九是请求体超 100 MiB 的 413 提前断连），见 §3H |
 
 ## 七、Troubleshooting（常见故障排查）
 
@@ -639,6 +733,14 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 | VS Code 调用 `ECONNREFUSED 127.0.0.1:<port>` | ① 端口无服务 ② VS Code 在 WSL 远程，localhost 指 WSL 内部 | 先启动服务；URL 改宿主机 IP（resolv.conf nameserver）或开 mirrored |
 | `--cache-reuse` 提示 not supported | 当前 context 类型不支持 | 移除该参数（自动禁用，无效） |
 | `--no-mmap`/`--defrag-thold` DEPRECATED | 新 build 弃用 | `--load-mode mmap`；KV 碎片已内建管理 |
+| WebUI 上传整本 PDF 报 **Unable to connect to server** | WebUI 把**每页**渲染成 PNG 塞进一条请求 → 请求体超 **100 MiB**（或 ctx 超限），服务端提前 413 关连接，浏览器侧表现为网络错误 | 不要用 WebUI 传整本；用 [`scripts/ocr_pdf.py`](./scripts/ocr_pdf.py) 逐页跑（≈1.4 s/页），或包成 MCP 工具给 agent 调。见 §3H |
+| 请求返回 **HTTP 413 且 body 为空** | llama-server 请求体硬上限 **100 MiB**（编译期常量，无参数可调；router 与子实例同） | 拆分请求：按页/按图分批，单条 body ≤ 90 MiB（留余量）。脚本已内置切分 |
+| `400 exceed_context_size_error` | 多图请求的 prompt tokens 超 `-c`；**每页 ≈1.3K tokens**（832×1200 扫描页） | 按 `ctx ÷ (每页 tokens + 每页输出)` 限批；16K ≈ 12 页；或抬高该模型 `ctx-size` 后**重启 router** |
+| 改了 Router 的 ini，模型参数没变 | preset 只在 router **启动时**读取 | 重新生成配置 + 重启 router；同时同步模型 ID 里的 `16K/64K` 标记 |
+| ini 里 `parallel` / `-np` 改了不生效 | **Router 的 CLI 覆盖 preset**（`preset.merge(base_preset)`） | 改启动器的 `-np`；用 `scripts/router_args_probe.ps1` 核实渲染结果 |
+| 开了 `--moe-cache-mib` 反而慢 | 命中率/传输开销，且 16GB 卡上余量本就不够 | 回 `0`；先按 §5.7 三条前提判断，别再盲试 |
+| 升级后同样请求给不出可见答案 | 新 build **思考更长**，384/512 输出上限被思考段吃光 | 客户端 `max_tokens ≥ 2048`；这是行为差异不是模型坏了 |
+| 换新 build / 新驱动后「没变快」 | 2.2× 的前提是"显存能空出十几 GiB 专家缓存"，16GB 卡不成立；版本差实测 0–6.5% | 先做 §5.1 余量体检；别用加缓存/加并发去凑 |
 
 **参考脚本编码现状说明（2026-08-05 修订）**：`references/assets/gemma4-menu-scripts.bat`、`qwen-scripts.bat`、`start-CPU-Toolcall-Launcher.bat` 已统一为 **UTF-8 + 全英文（纯 ASCII）+ 无 chcp**，任意 Windows cmd 可直接运行无乱码（方案 B）。实测教训：UTF-8 中文注释 + `chcp 65001` 的混合脚本在中文 Windows cmd 下会被 GBK 误解析导致命令错乱（如 `llama-server.exe` 被截断成 `erver.exe` 报错），因此参考脚本不再使用中文。用户自建脚本若需中文界面，请用方案 A（GBK 编码 + 删 chcp + 去 emoji）。
 
@@ -650,6 +752,8 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 | b10070+ | `--defrag-thresh 0.1` | ⚠️ 新 build（b101xx+）已废弃为 `--defrag-thold (DEPRECATED)`，KV 碎片改由内建管理，可不加 |
 | 迁移到 `--draft-*` 命名 | 见下方「spec→draft 映射表」 | 参考脚本默认按 b10056 `--spec-*` 编写；新版 build 检测到 `--draft-*` 后按映射表切换 |
 | b10158+ | `--jinja` / `--tools all` | 工具调用内置功能；`--tools all` 需配合 `--jinja` |
+| **b12274** | `-ctk/-ctv f8_e4m3`（FP8 KV） | FP8 是 **KV 格式**，不是专家缓存、也不是 NVFP4。与 q8_0 需单独对照（显存 / 长上下文检索 / 质量），**不要与升级同期改** |
+| **b12359 / v1.0.0** | 无需改 ini，**整套替换二进制**即可 | 含 OCP FP8、专家缓存 CPU share / LRFU 替换、服务端与 UI 改动。实测**收益 0–6.5%**（短请求 +6.5%、12.9K prefill 持平、decode +1.5~3%）；新版**思考更长** ⇒ 客户端 `max_tokens ≥ 2048`。Router 模式读旧 ini 端到端通过 |
 
 #### spec→draft 参数映射表（build 迁移到 `--draft-*` 命名时）
 
@@ -661,6 +765,20 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 | `--model-draft <path>` | `--draft-model <path>` | 外挂 Draft 模型 |
 
 > 迁移后用 `llama-server.exe --help` 验证新参数存在（Step 1 指纹检测），并在日志确认 `draft acceptance` 健康。
+
+#### 升级验收（3 条 + 回滚条件）
+
+| # | 检查 | 期望 |
+|---|---|---|
+| 1 | `curl http://127.0.0.1:<port>/health` | `{"status":"ok"}` |
+| 2 | 一次小请求（`max_tokens ≥ 2048`，要求输出 `FINAL: <n>`） | 有**可见**答案且正确 |
+| 3 | 一次 ~12K 上下文请求 | prefill 与升级前同量级（本机参考 1600–1700 t/s），答案正确 |
+
+**回滚条件**（任一即回滚整套备份）：可见答案变空/被思考吃光、prefill 掉 >15%、
+启动日志出现新警告、显存余量比升级前低 >500 MiB、CUDA error / 系统级不稳定。
+
+> 完整流程（fit 判决行判读、三档余量判定、交错 A/B 协议、必先排除的三个混淆）→
+> [`references/guides/version-upgrade-and-vram-budget.md`](./references/guides/version-upgrade-and-vram-budget.md)
 
 ## 九、Verification Checklist（验证清单）
 
@@ -674,6 +792,8 @@ N = ceil( (W_non + KV + mmproj + draft + compute_buf − (VRAM − margin)) / E_
 - [ ] **工具调用**：Phase 1 探测 + Phase 2 两轮工具循环（如适用；Phi-4-mini 预期不支持）
 - [ ] **脚本可启动**：双击 .bat 不闪退（中文 Windows 注意编码，见 Troubleshooting）
 - [ ] **CPU 模式**：`-ngl 0` 时 `nvidia-smi` 无 llama 进程（确认不占 GPU）
+- [ ] **显存富余**（MoE 大 ctx 必备）：启动日志 `will leave X >= Y MiB`，且 `X − Y ≥ 800 MiB`
+- [ ] **前缀缓存**：同一上下文第二轮 `cached_tokens ≈ prompt_tokens`，`prompt eval time` 显著下降
 
 ## 十、技能版本维护 SOP（2026-08-29 新增）
 

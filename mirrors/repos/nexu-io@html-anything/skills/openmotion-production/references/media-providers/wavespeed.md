@@ -4,7 +4,7 @@ Checked against official documentation on 2026-11-13. Sections: discovery, reque
 
 ## Setup and discovery
 
-Save the key in editor **Media providers**. `WAVESPEED_API_KEY` is the environment alternative; a saved key wins. The service injects `Authorization: Bearer ...`. Agents use `openmotion_media_use`; never read credential files or put keys in tool arguments. Shell examples document the wire protocol for service implementation or user-run diagnostics, using environment placeholders only.
+Save the key in editor **Model providers**. `WAVESPEED_API_KEY` is the environment alternative; a saved key wins. The service injects `Authorization: Bearer ...`. Agents use `openmotion_media_use`; never read credential files or put keys in tool arguments. Shell examples document the wire protocol for service implementation or user-run diagnostics, using environment placeholders only.
 
 ```json
 {"action":"models","provider":"wavespeed","refresh":true,"modality":"video","query":"hunyuan","limit":20}

@@ -57,9 +57,15 @@ It exposes three generic tools rather than one tool per interface:
   to `max_rows` rows (default 100, max 1000) plus the total row count.
   A negative `offset` counts from the end, e.g. `-20` for the latest 20 rows
   of date-ascending data.
+- `save_data(name, params)` (stdio only, AKTools >= 0.1.12): writes the
+  complete table, with no 1000-row limit, to a CSV file under
+  `~/.aktools/data` (or `AKTOOLS_DATA_DIR`) and returns its absolute `path`,
+  `total_rows`, per-column descriptions with units and the first 5 rows. It
+  is not read-only, so clients usually ask for confirmation. Use it to hand
+  data to another program such as AKQuant.
 
 The same data often has several sources (A-share daily bars:
-`stock_zh_a_hist_em` from Eastmoney, `stock_zh_a_daily_sina` from Sina,
+`stock_zh_a_hist_em` from Eastmoney, `stock_zh_a_hist_sina` from Sina,
 `stock_zh_a_hist_tx` from Tencent). Interfaces with `rate_limit:
 "eastmoney_push2"` (source `东方财富·行情（频繁访问易限流）`, about 100
 quote, K-line, board and fund-flow interfaces) hit Eastmoney's push2 quote
@@ -93,7 +99,11 @@ its own official MCP server, registered as `io.github.akfamily/akquant`
 (`uvx --from "akquant[mcp]" akquant-mcp --root <project dir>`). For a
 request such as "install the official MCP servers of AKShare and AKQuant",
 configure both AKTools and AKQuant; see
-`https://akquant.akfamily.xyz/llms.txt`.
+`https://akquant.akfamily.xyz/llms.txt`. To backtest data other than
+A-share daily bars, call AKTools `save_data` and pass the returned `path`
+to AKQuant's `prepare_data` as `{"source": "file", "path": ..., "symbol":
+...}`; point `AKTOOLS_DATA_DIR` inside AKQuant's `--root` and use an
+interface with English OHLC columns (names ending in `_sina` or `_tx`).
 
 ## Python Entry Point
 
@@ -117,7 +127,7 @@ AKShare internals.
 
 Main entry points:
 
-- `README.md`
+- `README.md` (Chinese) and `README_EN.md` (English)
 - `docs/tutorial.md`
 - `docs/data/`
 - Online docs: `https://akshare.akfamily.xyz/`
@@ -144,7 +154,7 @@ names without manually grepping through `docs/data/`:
   (`"eastmoney_push2"` for interfaces on Eastmoney's IP-banning push2 quote
   servers, else `None`; since 1.20.37) and `alternatives` (hand-curated
   names of same-data interfaces from other sources, e.g. `stock_zh_a_hist_em`
-  -> `stock_zh_a_daily_sina`, `stock_zh_a_hist_tx`; since 1.20.39). Switch to an
+  -> `stock_zh_a_hist_sina`, `stock_zh_a_hist_tx`; since 1.20.39). Switch to an
   alternative when a source is rate-limited; parameters and columns differ,
   so read its `interface_info` first.
 - `ak.list_categories()`: lists all categories with interface counts.
@@ -232,7 +242,7 @@ When helping users with AKShare:
   the AKTools MCP server (`uvx --from aktools aktools-mcp`) — see
   "MCP Server For AI Assistants" above.
 - Prefer documented public functions over internal helpers.
-- Prefer top-level calls such as `ak.stock_zh_a_hist_em(...)` instead of submodule
+- Prefer top-level calls such as `ak.stock_zh_a_hist_sina(...)` instead of submodule
   imports.
 - Check `docs/data/` before guessing interface names.
 - Many interfaces depend on upstream public websites and may break when
@@ -252,6 +262,7 @@ When helping users with AKShare:
 Representative examples:
 
 - `ak.stock_zh_a_spot_em()`
+- `ak.stock_zh_a_hist_sina(...)`
 - `ak.stock_zh_a_hist_em(...)`
 - `ak.stock_individual_info_em(...)`
 - `ak.fund_open_fund_info_em(...)`

@@ -115,6 +115,8 @@ macOS 同一数据目录中的多个 MCP 会话现在共用一个后台，每个
 
 视频渲染需要 FFmpeg 和 Chrome/Chromium，成片技术校验还需要 ffprobe。可用 `HYPERFRAMES_BROWSER_PATH`、`HYPERFRAMES_FFMPEG_PATH`、`HYPERFRAMES_FFPROBE_PATH` 指定本机程序；旧的 `FFMPEG_PATH` / `FFPROBE_PATH` 也会传给 Hyperframes，原生变量优先。渲染失败返回上游错误，未生成 MP4 不会报告完成。
 
+Source startup also reuses completed native tools from the default OpenMotion installation caches (`~/.local/share/openmotion` on macOS, `%LOCALAPPDATA%/openmotion` on Windows, followed by `openmotion-dev`). It checks `cache/native` before the legacy `cache` layout and accepts only the current platform and hashes pinned in `scripts/runtime-lock.json`, with matching completion markers and executable files. Explicit paths above, including `MOTION_BROWSER_PATH`, take priority. Discovery completes before Studio starts, so waveform decoding and rendering inherit the same paths. It does not download tools or change installation/workspace configuration; when no matching cache exists, normal system-tool discovery remains available. Custom installation homes still require explicit executable paths. After changing paths or updating startup code, stop an idle existing service using the [shared-editor procedure](shared-editor.md) before restarting, since `npm start` can reuse a running backend.
+
 开发调试：
 
 ```sh

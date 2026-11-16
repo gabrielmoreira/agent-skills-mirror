@@ -42,6 +42,12 @@ OpenMotion は、**エージェントが動画制作の全工程を担う初の�
 
 <a id="快速开始"></a> <a id="quick-start"></a>
 
+### ChatGPT Marketplace からインストール
+
+**ワンクリックでインストール。手動設定は不要です。** インストール後は、会話の中でモーション動画をゼロから作成したり、参考動画を再現したり、テンプレートから制作を始めたりできます。
+
+**[ChatGPT に OpenMotion をインストール →](https://chatgpt.com/plugins/plugins_6a742d13e88481919b42002864b1bb26)**
+
 <a id="start-in-codex"></a>
 
 ### エージェントでインストール
@@ -376,7 +382,9 @@ https://github.com/nexu-io/openmotion/blob/main/docs/install.md を読み、手�
 
 OpenMotion が提案する **Motion.md** は、ショットの順序、長さ、トランジション、置き換え可能な素材を Markdown で記録する形式です。オンラインライブラリでは、参考動画とモーションガイドを同じ詳細ページで確認できます。
 
-Brand Kit セクションには、ロゴ、配色、フォント、語り口、確認済みの製品情報を記録します。参考動画の動きやテンポを保ちながら、自分のブランドを表現できます。
+Brand Kit セクションには、ブランド情報、語り口、確認済みの製品情報を記録します。Design セクションから独立した `DESIGN.md` を参照し、視覚ルールを再利用できます。参考動画の動きやテンポを保ちながら、自分のブランドを表現できます。
+
+業界やブランドの制作体系を共有するには、[Motion Package v0.2 草案](motion-package-spec.md)と[作成ツール](../packages/motion-package/README.md)を使えます。デザインとモーションの文書、素材、依存関係、任意の `SKILL.md` をまとめます。同梱レシピは二つの入力例を示します。パッケージ検証は、Studio への自動取り込みや映像の再現性の検証とは別です。
 
 ![Motion.md and brand context](readme/diagrams/creative-context.svg)
 

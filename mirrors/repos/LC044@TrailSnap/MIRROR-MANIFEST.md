@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `LC044/TrailSnap` — 26 default patterns, 10 followed patterns, 62 file(s) materialized.
+Mirror of `LC044/TrailSnap` — 26 default patterns, 10 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LC044/TrailSnap` — 26 default patterns, 10 followed patterns, 62 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 62 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,37 +99,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`package/official-site/public/install.md`](package/official-site/public/install.md) |
 | 30 | ✓ | [`package/official-site/public/showcase/README.md`](package/official-site/public/showcase/README.md) |
 | 31 | ✓ | [`package/official-site/README.md`](package/official-site/README.md) |
-| 32 | ✓ | [`package/requirement-platform/README.md`](package/requirement-platform/README.md) |
-| 33 | ✓ | [`package/server/alembic_sqlite/README.md`](package/server/alembic_sqlite/README.md) |
-| 34 | ✓ | [`package/server/alembic/README.md`](package/server/alembic/README.md) |
-| 35 | ✓ | [`package/server/app/service/agent/skills/album-doctor/SKILL.md`](package/server/app/service/agent/skills/album-doctor/SKILL.md) |
-| 36 | ✓ | [`package/server/app/service/agent/skills/album-organizer/SKILL.md`](package/server/app/service/agent/skills/album-organizer/SKILL.md) |
-| 37 | ✓ | [`package/server/app/service/agent/skills/memory-detective/SKILL.md`](package/server/app/service/agent/skills/memory-detective/SKILL.md) |
-| 38 | ✓ | [`package/server/app/service/agent/skills/nine-grid-selection/SKILL.md`](package/server/app/service/agent/skills/nine-grid-selection/SKILL.md) |
-| 39 | ✓ | [`package/server/app/service/agent/skills/person-timeline/SKILL.md`](package/server/app/service/agent/skills/person-timeline/SKILL.md) |
-| 40 | ✓ | [`package/server/app/service/agent/skills/trailsnap-search/SKILL.md`](package/server/app/service/agent/skills/trailsnap-search/SKILL.md) |
-| 41 | ✓ | [`package/server/app/service/agent/skills/travel-album/SKILL.md`](package/server/app/service/agent/skills/travel-album/SKILL.md) |
-| 42 | ✓ | [`package/server/app/service/agent/skills/travel-story/SKILL.md`](package/server/app/service/agent/skills/travel-story/SKILL.md) |
-| 43 | ✓ | [`package/trailsnap-cli/README.md`](package/trailsnap-cli/README.md) |
-| 44 | ✓ | [`package/website/ios/App/CapApp-SPM/README.md`](package/website/ios/App/CapApp-SPM/README.md) |
-| 45 | ✓ | [`package/website/README.md`](package/website/README.md) |
-| 46 | ✓ | [`skills/trailsnap-agent/references/workflows.md`](skills/trailsnap-agent/references/workflows.md) |
-| 47 | ✓ | [`skills/trailsnap-agent/SKILL.md`](skills/trailsnap-agent/SKILL.md) |
-| 48 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
-| 49 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
-| 50 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
-| 51 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
-| 52 | ✓ | [`tests/performance/README.md`](tests/performance/README.md) |
-| 53 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 54 | → | [`doc/architecture_design.md`](doc/architecture_design.md) |
-| 55 | → | [`doc/backend_analysis.md`](doc/backend_analysis.md) |
-| 56 | → | [`doc/developer_guide.md`](doc/developer_guide.md) |
-| 57 | → | [`doc/frontend_analysis.md`](doc/frontend_analysis.md) |
-| 58 | → | [`doc/README_en.md`](doc/README_en.md) |
-| 59 | → | [`doc/user_guide.md`](doc/user_guide.md) |
-| 60 | → | [`package/server/README.md`](package/server/README.md) |
-| 61 | → | [`README.md`](README.md) |
-| 62 | → | [`tests/README.md`](tests/README.md) |
+| 32 | ✓ | [`package/server/alembic_sqlite/README.md`](package/server/alembic_sqlite/README.md) |
+| 33 | ✓ | [`package/server/alembic/README.md`](package/server/alembic/README.md) |
+| 34 | ✓ | [`package/server/app/service/agent/skills/album-doctor/SKILL.md`](package/server/app/service/agent/skills/album-doctor/SKILL.md) |
+| 35 | ✓ | [`package/server/app/service/agent/skills/album-organizer/SKILL.md`](package/server/app/service/agent/skills/album-organizer/SKILL.md) |
+| 36 | ✓ | [`package/server/app/service/agent/skills/memory-detective/SKILL.md`](package/server/app/service/agent/skills/memory-detective/SKILL.md) |
+| 37 | ✓ | [`package/server/app/service/agent/skills/nine-grid-selection/SKILL.md`](package/server/app/service/agent/skills/nine-grid-selection/SKILL.md) |
+| 38 | ✓ | [`package/server/app/service/agent/skills/person-timeline/SKILL.md`](package/server/app/service/agent/skills/person-timeline/SKILL.md) |
+| 39 | ✓ | [`package/server/app/service/agent/skills/trailsnap-search/SKILL.md`](package/server/app/service/agent/skills/trailsnap-search/SKILL.md) |
+| 40 | ✓ | [`package/server/app/service/agent/skills/travel-album/SKILL.md`](package/server/app/service/agent/skills/travel-album/SKILL.md) |
+| 41 | ✓ | [`package/server/app/service/agent/skills/travel-story/SKILL.md`](package/server/app/service/agent/skills/travel-story/SKILL.md) |
+| 42 | ✓ | [`package/trailsnap-cli/README.md`](package/trailsnap-cli/README.md) |
+| 43 | ✓ | [`package/website/ios/App/CapApp-SPM/README.md`](package/website/ios/App/CapApp-SPM/README.md) |
+| 44 | ✓ | [`package/website/README.md`](package/website/README.md) |
+| 45 | ✓ | [`skills/trailsnap-agent/references/workflows.md`](skills/trailsnap-agent/references/workflows.md) |
+| 46 | ✓ | [`skills/trailsnap-agent/SKILL.md`](skills/trailsnap-agent/SKILL.md) |
+| 47 | ✓ | [`skills/trailsnap-cli/examples/simple.md`](skills/trailsnap-cli/examples/simple.md) |
+| 48 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
+| 49 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
+| 50 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
+| 51 | ✓ | [`tests/performance/README.md`](tests/performance/README.md) |
+| 52 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 53 | → | [`doc/architecture_design.md`](doc/architecture_design.md) |
+| 54 | → | [`doc/backend_analysis.md`](doc/backend_analysis.md) |
+| 55 | → | [`doc/developer_guide.md`](doc/developer_guide.md) |
+| 56 | → | [`doc/frontend_analysis.md`](doc/frontend_analysis.md) |
+| 57 | → | [`doc/README_en.md`](doc/README_en.md) |
+| 58 | → | [`doc/user_guide.md`](doc/user_guide.md) |
+| 59 | → | [`package/server/README.md`](package/server/README.md) |
+| 60 | → | [`README.md`](README.md) |
+| 61 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

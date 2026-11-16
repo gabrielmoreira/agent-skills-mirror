@@ -1099,12 +1099,27 @@ above `maxPendingConfirmations` or `maxDecisionsPerClaim`.
   of `--source`: its confirmation identity is the authoring set, so a
   source-only lookup can find another set's issue. For each distinct issue,
   `--confirmation <number>` shows whether it still carries the authoring label.
-  - With no open issue for the same class and key (the source, or the set
-    for `authoringChoice`), the session publishes a new one.
-  - With exactly one, and it is released, the session appends to it.
-  - With one that still carries the authoring label, or with two or more,
-    it does neither: the decision is not recorded, the stop stays as it is
-    today, and the session reports it.
+  That list omits a voided record, yet its confirmation issue can stay open with
+  the authoring label, and a later session would then call the class and key
+  free and publish a second issue for it (observed 2026-11-11,
+  kurone-kito/idd-skill#5177, found while reviewing
+  kurone-kito/idd-skill#5168). So before it treats the class and key as free,
+  the session also runs
+  `--open-issues --class <class> --source <source>` (`--set <set ID>` in place
+  of `--source` for `authoringChoice`), with the same trusted flags. That
+  separate read lists every open confirmation issue for the class and key,
+  including one whose record was voided, and reports `publication` as
+  `blocked` when it lists any. Like `--records`, it sees only an issue whose
+  body record counts.
+  - With `publication` `free` (no open issue for the same class and key: the
+    source, or the set for `authoringChoice`), the session publishes a new one.
+  - With exactly one, which `--records` lists too, and it is released, the
+    session appends to it.
+  - With one that still carries the authoring label, one that `--records` does
+    not list (its record was voided), two or more, or a lookup that cannot be
+    read (exit 1), it does neither: the decision is not recorded, the stop
+    stays as it is today, and the session reports it. It never publishes
+    another issue while `publication` is `blocked`.
 - **New issue.** The session publishes with
   `publish-authoring-hold --shape confirmation`, passing `--owner` and
   `--repo` for the base repository that the trusted verdict names. Without
@@ -1181,8 +1196,12 @@ for `worktreeRemnant`. It reads the class verdict again, then:
   note is verified. If its action turns out incomplete, the session posts a
   `failure` note and keeps today's stop.
 - A `runtimeQuestion` or `authoringChoice` record with no note is verified or
-  completed, and gets the matching note. The label state of its issue is not
-  consulted.
+  completed, and gets the matching note, only when a counting record names the
+  decision: a record that [Record, then act](#record-then-act) counts as
+  recorded. A `recovery-hold` result, including one whose void marker was
+  never written, is not that evidence (kurone-kito/idd-skill#5184). That
+  decision is not recorded, so it keeps today's stop and the session reports
+  it. The label state of its issue is not consulted.
 - A `worktreeRemnant` or `b1Leftover` record with no note is neither
   completed nor verified against its subject, because the claim step can
   recreate the subject and a new leftover can share it. The session posts a
@@ -1191,11 +1210,11 @@ for `worktreeRemnant`. It reads the class verdict again, then:
 - When the class is not `enabled`, or the read fails, no action is completed
   under any of these rules.
 
-Two accepted risks follow (both preventive; no observed incident yet). A crash
-between a `recovery-hold` and its void marker, or a lost `failure` note, lets a
-`runtimeQuestion` or `authoringChoice` decision be completed once more under its
-record. A lost `location` note on a `worktreeRemnant` or `b1Leftover` decision
-costs one extra decision toward the caps.
+Two accepted risks follow (both preventive; no observed incident yet). A lost
+`failure` note lets a `runtimeQuestion` or `authoringChoice` decision be
+completed once more under its record. A lost `location` note on a
+`worktreeRemnant` or `b1Leftover` decision costs one extra decision toward the
+caps.
 
 ### Pull request
 
@@ -1370,7 +1389,8 @@ for `authoringChoice`.
 | `recovery-hold` with `issue: null`                                                                                                                          | Not recorded; no void marker possible; token reported                                                                        |
 | Resume finds a voided decision, a record with a `failure` note, one in a closed issue, or a `worktreeRemnant` or `b1Leftover` record with a `location` note | Not resumed; a further attempt is a new decision through the whole procedure                                                 |
 | Resume finds a `runtimeQuestion` or `authoringChoice` record with only a `location` note                                                                    | Verified; a `failure` note and today's stop if incomplete                                                                    |
-| Resume finds a `runtimeQuestion` or `authoringChoice` record with no note, class `enabled`                                                                  | Verified or completed; the matching note; label state not consulted                                                          |
+| Resume finds a `runtimeQuestion` or `authoringChoice` record with no note that a counting record names, class `enabled`                                     | Verified or completed; the matching note; label state not consulted                                                          |
+| Resume finds a `runtimeQuestion` or `authoringChoice` record with no note and no counting record, such as a `recovery-hold`                                 | Not completed; today's stop; reported                                                                                        |
 | Resume finds a `worktreeRemnant` or `b1Leftover` record with no note                                                                                        | `failure` note; today's stop; a further attempt is a new decision                                                            |
 | Resume with the class no longer `enabled`, or the read fails                                                                                                | No action completed                                                                                                          |
 | Pull request exists, or is opened later                                                                                                                     | "Auto-decide confirmations:" list maintained; not the follow-up section                                                      |

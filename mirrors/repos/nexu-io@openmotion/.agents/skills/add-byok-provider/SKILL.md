@@ -31,7 +31,7 @@ Inspect these boundaries and update the ones the provider needs:
 | Credentials and availability | `gateway/service.ts` | Resolve the provider's environment key and service-owned saved key, retaining saved-key priority and existing save/remove semantics. A configured key enables the provider; it does not prove successful generation. |
 | Model discovery | `gateway/catalog.ts`, `gateway/service.ts`, optionally `gateway/providers.ts` | Query the documented catalogue with the correct authentication. Normalize only supported media outputs; preserve pagination, caching and unavailable-catalogue warnings. Built-in fallback entries are optional examples, not a replacement for live discovery. |
 | Generation | `gateway/providers.ts`, or a focused provider module | Implement `ProviderAdapter.generate` and register it in `providerAdapters`. Reuse persisted jobs, progress/remoteId, validation, downloads and project import. |
-| Editor configuration | `studio/src/motion/ModelSettings.tsx` | Include the provider card with the correct key-setup/usage links. Do not let a new provider fall through to another supplier's key URL. Keep the model catalogue out of settings. OpenDesign setup is intentionally hidden. |
+| Editor configuration | `studio/src/motion/ModelSettings.tsx` | Include the provider card with the correct key-setup/usage links. Do not let a new provider fall through to another supplier's key URL. Integrate catalogue sync, capability filtering and defaults in the settings center. Keep account authorization separate from provider API keys. Distinguish listed presets from implemented execution protocols. |
 | Reference delivery | `shared/workflow.ts`, `server.ts`, `gateway/media-use.ts` | Register the provider document under production resources and include its HTTP reference route. Confirm inspect/reference/models accept and return the new ID. |
 | User guidance | `skills/openmotion-production/references/media-providers/`, `references/materials.md` in that production Skill, relevant `docs/` | Maintain one provider reference, linked from shared material guidance and available through the Tool. |
 
@@ -60,11 +60,11 @@ Use deterministic fixtures to cover the new provider's real boundaries:
 - Model discovery/authentication and normalization, including exclusion of unsupported output types.
 - Public media Tool -> exact provider URL/auth/body -> original task polling -> validated project-owned file, for each implemented modality. Assert that an idempotent replay submits once.
 - Rejected authentication/input and unsafe task/output destinations; errors or cancellation must not trigger another paid submission or expose a key.
-- Configuration save/clear/remove, correct setup/reference links, and no model queries from the settings page.
+- Configuration save/clear/remove, correct setup/reference links, catalogue refresh/error recovery, and default model selection.
 - Reference delivery through Tool, MCP resources and HTTP, plus inclusion of the reference in distribution artifacts.
 
 Adapt existing tests in `tests/byok.test.ts`, `studio/src/motion/ModelSettings.test.tsx`, `tests/workflow.test.ts`, `tests/npm-package.test.ts` and `tests/byok-browser.mjs`. Add assertions for observable behavior, not documentation wording. Ensure a new test file is included in the repository's explicit CI runner.
 
-For runtime/Studio changes run `npm run check`, `npm run typecheck:studio`, `npm run build:studio` and affected deterministic/packaging checks under the pinned Node version. Use the shared browser-lock lane for real browser tests and an isolated test project/data directory. Follow `AGENTS.md` when selecting narrower checks for documentation-only work.
+For runtime/Studio changes run `npm run check`, `npm run typecheck:studio`, `npm run build:studio` and affected deterministic/packaging checks under the pinned Node version. Use the shared browser-lock lane for real browser tests when available, or the exclusive isolated lane in `tests/byok-browser.mjs`; always use an isolated test project/data directory. Follow `AGENTS.md` when selecting narrower checks for documentation-only work.
 
 Review `docs/product/architecture.md` and update it only if product behavior or boundaries changed. Report implemented modalities, references, actual checks, untested live-provider behavior and remaining limits. Run real paid generation only within the user's requested scope; fixture success is not account/billing or audiovisual acceptance. Commit/push/PR/merge/publication follow the current task authorization separately.

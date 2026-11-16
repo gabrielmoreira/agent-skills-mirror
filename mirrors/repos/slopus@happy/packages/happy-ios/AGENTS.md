@@ -458,6 +458,13 @@ and fixtures remain. Preserve credential and push compatibility on upgrades.
       account, or "Happy account" (rule 10).
     - A registry rebuilt from the Keychain after corruption loses the
       origin, so those accounts come back as legacy.
+  - **A computer's code goes to an account already here.** Opened as a
+    link or scanned to connect, a `happy://terminal?` code goes to the
+    Happy account in use; with an agent connection shown, to the one used
+    last (the registry's active one), which is shown first
+    (`accountForComputer`, `ScanRoute.connectComputerSwitching`).
+    Authenticate Terminal names that account. Only with none here is a new
+    one made; Add account always makes one.
   - **Account id.** The account's anonymous id, derived from its secret,
     so it is known offline and the same account is never listed twice.
   - **Separate caches.** Each account has its own directory,
@@ -714,6 +721,9 @@ and preview ship the same number on their own listings.
 - `CFBundleVersion` (`CURRENT_PROJECT_VERSION`) stays the build number:
   production's is set in `App/Info-Production.plist` and the Happy target's
   Release settings; preview uploads let Xcode pick the next free one.
+- Settings › Version shows both, `2026.11.1 (160)`, as Android shows
+  `versionName (versionCode)`; outside production the variant follows
+  (`2026.11.1 (171) / preview`).
 - The version also goes out as `X-Happy-Client: ios/<version>` and in
   `POST /v1/version` (the server's semver range `>=1.4.1` admits it). The
   server uses the header only for metrics labels.

@@ -10,7 +10,7 @@ Video generation and editing do not mount chat progress or video components. Int
 4. Request the final MP4, then wait for the owned job to complete and pass automatic technical verification. Saving or queueing does not mean a video is available.
 5. In a negotiated MCP Apps connection, call the discovered `openmotion_show_video({projectId,workId})` once. This read-only presentation Tool rejects unfinished, failed, missing, changed or oversized media; it never creates a project, work round or export. Other clients retain their existing player/file delivery path.
 
-The twelve existing domain Tools keep their names and non-App contract. An MCP Apps connection additionally discovers the final-video presentation Tool; the independent template-card extension remains optional. Ordinary preview/open, save, review and display-receipt operations have no video UI binding. The legacy begin action remains available without presenting progress UI.
+The thirteen existing domain Tools keep their names and non-App contract. An MCP Apps connection additionally discovers the final-video presentation Tool; the independent template-card extension remains optional. Ordinary preview/open, save, review and display-receipt operations have no video UI binding. The legacy begin action remains available without presenting progress UI.
 
 ## Playback and identity
 

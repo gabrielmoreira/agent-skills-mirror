@@ -6,11 +6,13 @@
 
 A great reference carries more than a color palette: a hook, a sequence of reveals, a camera move, a reading rhythm, and moments where sound makes an idea land. **`MOTION_DESIGN.md` records those decisions so an Agent can keep the motion language while making a video about something else.** A reusable Skill package adds the method, editable implementation, replacement inputs and evidence that make those decisions practical.
 
-**Motion.md is the complete creative specification. Brand Kit is a section inside it**, alongside story, motion, sound and review rules. Record the logo, palette, typography, voice, product facts and approved assets in that section. Existing brand files can supply linked material; a separate `BRANDKIT.md` is not required as a second creative specification.
+**Motion.md assembles the complete creative context.** Its Design section can reference an independent `DESIGN.md` for visual identity and tokens; its Brand Kit section records product facts, voice and approved assets alongside story, motion, sound and review rules. Reuse the referenced design values instead of maintaining a second palette. Existing `BRANDKIT.md` files remain useful linked material.
 
 [Six reference/remix comparisons](motion-design-examples.md) · [Runnable Skill package](../library/skills/openmotion-design-remix/SKILL.md) · [Ink & Water system](../library/design-systems/ink-water/MOTION_DESIGN.md) · [Brandkit](../library/brandkits/openmotion/BRANDKIT.md)
 
-**Status:** Motion.md is a v0.1 authoring proposal. Agents read the file as explicit context; there is no automatic Motion.md importer, parser, registry or cross-engine execution guarantee. The example Skill includes a source-copy helper for six specific compositions. That helper applies recorded replacements; it does not interpret Markdown or reconstruct arbitrary videos.
+**Status:** The v0.1 creative-document proposal remains readable. The new [Motion Package v0.2 draft](motion-package-spec.md) adds a manifest, DESIGN.md references, optional SKILL.md, declared dependencies and a hashed file inventory. The [local toolkit and complete sample](../packages/motion-package/README.md) check and assemble portable folders. Agents still read creative documents as explicit context; there is no automatic Motion.md importer, animation parser, registry or cross-engine execution guarantee. The existing Remix Skill's source-copy helper remains specific to its six compositions.
+
+Start with the [package specification](motion-package-spec.md) to author a new reusable industry or brand package. The sections below explain the original creative-document model and existing examples; they do not require every package to include a Skill or an executable project.
 
 ## 1. The reusable unit: a motion design Skill package
 
@@ -46,13 +48,16 @@ hook · shots · camera · rhythm · sound             copy · product · logo �
 
 | Layer | Artifact | Responsibility | Example |
 | --- | --- | --- | --- |
-| Creative specification | `MOTION_DESIGN.md` | Brand Kit, story beats, composition, timing, movement, sound and review rules. | One design context guides the brand and the motion. |
-| Brand Kit within the specification | `MOTION_DESIGN.md` → Brand Kit section | Names, facts, logo, type, palette, voice and approved material; inline or linked. | Replace the product identity without inventing claims. |
+| Creative specification | `MOTION.md` or legacy `MOTION_DESIGN.md` | Design reference, Brand Kit, story beats, composition, timing, movement, sound and review rules. | One assembled context guides the brand and the motion. |
+| Visual identity | Linked `DESIGN.md` | Independent visual tokens and rationale, preserved in their original format. | Reuse a design document across web and motion work. |
+| Brand Kit within the specification | Motion document → Brand Kit section | Names, facts, logo, voice and approved material; visual identity comes from the design reference. | Replace the product identity without inventing claims. |
 | Agent procedure | `SKILL.md` | Choose inputs, adapt, review, deliver; route only to needed instructions. | Read the portal profile; replace headline and phrase; inspect the main hold. |
 | Replacement contract | Preset or parameter schema | Editable fields, limits, asset roles and missing-input behavior. | Title ≤ 18 characters; preserve scene timing. |
 | Executable project | HTML/CSS/JS + assets | Geometry, animation, rendering and editable media. | The original portal implementation and native timeline. |
 | Review evidence | Paired previews + revision / hashes | Which source, edits, time range and output were checked. | Original and remix rendered at matching source timestamps. |
 | Distribution | Folder, Git revision, optional archive | Stable identity, complete files, provenance and licenses. | A reviewed source commit plus a named content preset. |
+
+For the v0.2 portable profile, `motion-package.json` declares these entries and the exact shipped inventory. It is separate from an npm `package.json`, a rendering timeline and the optional Skill frontmatter.
 
 The existing `openmotion-video-to-template` workflow still uses **`TEMPLATE.md` as its single handoff document**. Link a Motion Design description when useful; do not require every existing template to adopt a second manifest. A portable folder, an Agent Skill and a `.motion` archive are related ideas with distinct contracts.
 

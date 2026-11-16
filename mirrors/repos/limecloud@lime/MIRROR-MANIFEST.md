@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `limecloud/lime` — 26 default patterns, 2 followed patterns, 53 file(s) materialized.
+Mirror of `limecloud/lime` — 26 default patterns, 2 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `limecloud/lime` — 26 default patterns, 2 followed patterns, 53 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 53 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,31 +88,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`internal/roadmap/workflow/architecture.md`](internal/roadmap/workflow/architecture.md) |
 | 27 | ✓ | [`internal/roadmap/Writing/architecture.md`](internal/roadmap/Writing/architecture.md) |
 | 28 | ✓ | [`internal/roadmap/zuanjia/architecture.md`](internal/roadmap/zuanjia/architecture.md) |
-| 29 | ✓ | [`lime-rs/resources/default-skills/analysis/SKILL.md`](lime-rs/resources/default-skills/analysis/SKILL.md) |
-| 30 | ✓ | [`lime-rs/resources/default-skills/article-writer/SKILL.md`](lime-rs/resources/default-skills/article-writer/SKILL.md) |
-| 31 | ✓ | [`lime-rs/resources/default-skills/broadcast_generate/SKILL.md`](lime-rs/resources/default-skills/broadcast_generate/SKILL.md) |
-| 32 | ✓ | [`lime-rs/resources/default-skills/content_post_with_cover/SKILL.md`](lime-rs/resources/default-skills/content_post_with_cover/SKILL.md) |
-| 33 | ✓ | [`lime-rs/resources/default-skills/content-reviewer/SKILL.md`](lime-rs/resources/default-skills/content-reviewer/SKILL.md) |
-| 34 | ✓ | [`lime-rs/resources/default-skills/cover_generate/SKILL.md`](lime-rs/resources/default-skills/cover_generate/SKILL.md) |
-| 35 | ✓ | [`lime-rs/resources/default-skills/form_generate/SKILL.md`](lime-rs/resources/default-skills/form_generate/SKILL.md) |
-| 36 | ✓ | [`lime-rs/resources/default-skills/image_generate/SKILL.md`](lime-rs/resources/default-skills/image_generate/SKILL.md) |
-| 37 | ✓ | [`lime-rs/resources/default-skills/knowledge-builder/SKILL.md`](lime-rs/resources/default-skills/knowledge-builder/SKILL.md) |
-| 38 | ✓ | [`lime-rs/resources/default-skills/library/SKILL.md`](lime-rs/resources/default-skills/library/SKILL.md) |
-| 39 | ✓ | [`lime-rs/resources/default-skills/modal_resource_search/SKILL.md`](lime-rs/resources/default-skills/modal_resource_search/SKILL.md) |
-| 40 | ✓ | [`lime-rs/resources/default-skills/pdf_read/SKILL.md`](lime-rs/resources/default-skills/pdf_read/SKILL.md) |
-| 41 | ✓ | [`lime-rs/resources/default-skills/personal-ip-knowledge-builder/SKILL.md`](lime-rs/resources/default-skills/personal-ip-knowledge-builder/SKILL.md) |
-| 42 | ✓ | [`lime-rs/resources/default-skills/presentation_generate/SKILL.md`](lime-rs/resources/default-skills/presentation_generate/SKILL.md) |
-| 43 | ✓ | [`lime-rs/resources/default-skills/report_generate/SKILL.md`](lime-rs/resources/default-skills/report_generate/SKILL.md) |
-| 44 | ✓ | [`lime-rs/resources/default-skills/research/SKILL.md`](lime-rs/resources/default-skills/research/SKILL.md) |
-| 45 | ✓ | [`lime-rs/resources/default-skills/summary/SKILL.md`](lime-rs/resources/default-skills/summary/SKILL.md) |
-| 46 | ✓ | [`lime-rs/resources/default-skills/transcription_generate/SKILL.md`](lime-rs/resources/default-skills/transcription_generate/SKILL.md) |
-| 47 | ✓ | [`lime-rs/resources/default-skills/translation/SKILL.md`](lime-rs/resources/default-skills/translation/SKILL.md) |
-| 48 | ✓ | [`lime-rs/resources/default-skills/typesetting/SKILL.md`](lime-rs/resources/default-skills/typesetting/SKILL.md) |
-| 49 | ✓ | [`lime-rs/resources/default-skills/url_parse/SKILL.md`](lime-rs/resources/default-skills/url_parse/SKILL.md) |
-| 50 | ✓ | [`lime-rs/resources/default-skills/video_generate/SKILL.md`](lime-rs/resources/default-skills/video_generate/SKILL.md) |
-| 51 | ✓ | [`lime-rs/resources/default-skills/webpage_generate/SKILL.md`](lime-rs/resources/default-skills/webpage_generate/SKILL.md) |
-| 52 | → | [`internal/aiprompts/codex-source-alignment.md`](internal/aiprompts/codex-source-alignment.md) |
-| 53 | → | [`internal/aiprompts/commands.md`](internal/aiprompts/commands.md) |
+| 29 | ✓ | [`lime-rs/crates/exec-server/src/sandbox_integrity/AGENTS.md`](lime-rs/crates/exec-server/src/sandbox_integrity/AGENTS.md) |
+| 30 | ✓ | [`lime-rs/crates/skills-upstream/src/assets/samples/imagegen/SKILL.md`](lime-rs/crates/skills-upstream/src/assets/samples/imagegen/SKILL.md) |
+| 31 | ✓ | [`lime-rs/crates/skills-upstream/src/assets/samples/openai-docs/SKILL.md`](lime-rs/crates/skills-upstream/src/assets/samples/openai-docs/SKILL.md) |
+| 32 | ✓ | [`lime-rs/crates/skills-upstream/src/assets/samples/review-agent/SKILL.md`](lime-rs/crates/skills-upstream/src/assets/samples/review-agent/SKILL.md) |
+| 33 | ✓ | [`lime-rs/crates/skills-upstream/src/assets/samples/skill-creator/SKILL.md`](lime-rs/crates/skills-upstream/src/assets/samples/skill-creator/SKILL.md) |
+| 34 | ✓ | [`lime-rs/crates/skills-upstream/src/assets/samples/skill-installer/SKILL.md`](lime-rs/crates/skills-upstream/src/assets/samples/skill-installer/SKILL.md) |
+| 35 | ✓ | [`lime-rs/resources/default-skills/analysis/SKILL.md`](lime-rs/resources/default-skills/analysis/SKILL.md) |
+| 36 | ✓ | [`lime-rs/resources/default-skills/article-writer/SKILL.md`](lime-rs/resources/default-skills/article-writer/SKILL.md) |
+| 37 | ✓ | [`lime-rs/resources/default-skills/broadcast_generate/SKILL.md`](lime-rs/resources/default-skills/broadcast_generate/SKILL.md) |
+| 38 | ✓ | [`lime-rs/resources/default-skills/content_post_with_cover/SKILL.md`](lime-rs/resources/default-skills/content_post_with_cover/SKILL.md) |
+| 39 | ✓ | [`lime-rs/resources/default-skills/content-reviewer/SKILL.md`](lime-rs/resources/default-skills/content-reviewer/SKILL.md) |
+| 40 | ✓ | [`lime-rs/resources/default-skills/cover_generate/SKILL.md`](lime-rs/resources/default-skills/cover_generate/SKILL.md) |
+| 41 | ✓ | [`lime-rs/resources/default-skills/form_generate/SKILL.md`](lime-rs/resources/default-skills/form_generate/SKILL.md) |
+| 42 | ✓ | [`lime-rs/resources/default-skills/image_generate/SKILL.md`](lime-rs/resources/default-skills/image_generate/SKILL.md) |
+| 43 | ✓ | [`lime-rs/resources/default-skills/knowledge-builder/SKILL.md`](lime-rs/resources/default-skills/knowledge-builder/SKILL.md) |
+| 44 | ✓ | [`lime-rs/resources/default-skills/library/SKILL.md`](lime-rs/resources/default-skills/library/SKILL.md) |
+| 45 | ✓ | [`lime-rs/resources/default-skills/modal_resource_search/SKILL.md`](lime-rs/resources/default-skills/modal_resource_search/SKILL.md) |
+| 46 | ✓ | [`lime-rs/resources/default-skills/pdf_read/SKILL.md`](lime-rs/resources/default-skills/pdf_read/SKILL.md) |
+| 47 | ✓ | [`lime-rs/resources/default-skills/personal-ip-knowledge-builder/SKILL.md`](lime-rs/resources/default-skills/personal-ip-knowledge-builder/SKILL.md) |
+| 48 | ✓ | [`lime-rs/resources/default-skills/presentation_generate/SKILL.md`](lime-rs/resources/default-skills/presentation_generate/SKILL.md) |
+| 49 | ✓ | [`lime-rs/resources/default-skills/report_generate/SKILL.md`](lime-rs/resources/default-skills/report_generate/SKILL.md) |
+| 50 | ✓ | [`lime-rs/resources/default-skills/research/SKILL.md`](lime-rs/resources/default-skills/research/SKILL.md) |
+| 51 | ✓ | [`lime-rs/resources/default-skills/summary/SKILL.md`](lime-rs/resources/default-skills/summary/SKILL.md) |
+| 52 | ✓ | [`lime-rs/resources/default-skills/transcription_generate/SKILL.md`](lime-rs/resources/default-skills/transcription_generate/SKILL.md) |
+| 53 | ✓ | [`lime-rs/resources/default-skills/translation/SKILL.md`](lime-rs/resources/default-skills/translation/SKILL.md) |
+| 54 | ✓ | [`lime-rs/resources/default-skills/typesetting/SKILL.md`](lime-rs/resources/default-skills/typesetting/SKILL.md) |
+| 55 | ✓ | [`lime-rs/resources/default-skills/url_parse/SKILL.md`](lime-rs/resources/default-skills/url_parse/SKILL.md) |
+| 56 | ✓ | [`lime-rs/resources/default-skills/video_generate/SKILL.md`](lime-rs/resources/default-skills/video_generate/SKILL.md) |
+| 57 | ✓ | [`lime-rs/resources/default-skills/webpage_generate/SKILL.md`](lime-rs/resources/default-skills/webpage_generate/SKILL.md) |
+| 58 | → | [`internal/aiprompts/codex-source-alignment.md`](internal/aiprompts/codex-source-alignment.md) |
+| 59 | → | [`internal/aiprompts/commands.md`](internal/aiprompts/commands.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 9 followed patterns, 10 file(s) materialized.
+Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 12 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 9 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 10 |
+| Followed pats | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,9 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 9 
 
 - `references/INDEX.md`
 - `references/sessions/20261024-concurrency-np-kv-unified-report.md`
+- `references/sessions/20261104-glmocr-pdf-100mib-webui-report.md`
+- `references/guides/version-upgrade-and-vram-budget.md`
+- `references/sessions/20261115-v1-upgrade-moe-cache-report.md`
 - `references/guides/first-time-setup.md`
 - `references/sessions/20260803-session-experience.md`
 - `references/sessions/20260816-session-experience.md`
@@ -72,11 +75,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | → | [`references/guides/first-time-setup.md`](references/guides/first-time-setup.md) |
 | 4 | → | [`references/guides/mtp-head-grafting.md`](references/guides/mtp-head-grafting.md) |
 | 5 | → | [`references/guides/qwen38-gsqrco-27b-tuning.md`](references/guides/qwen38-gsqrco-27b-tuning.md) |
-| 6 | → | [`references/INDEX.md`](references/INDEX.md) |
-| 7 | → | [`references/sessions/20260803-session-experience.md`](references/sessions/20260803-session-experience.md) |
-| 8 | → | [`references/sessions/20260816-session-experience.md`](references/sessions/20260816-session-experience.md) |
-| 9 | → | [`references/sessions/20261024-concurrency-np-kv-unified-report.md`](references/sessions/20261024-concurrency-np-kv-unified-report.md) |
-| 10 | → | [`scripts/q6-tuning/README.md`](scripts/q6-tuning/README.md) |
+| 6 | → | [`references/guides/version-upgrade-and-vram-budget.md`](references/guides/version-upgrade-and-vram-budget.md) |
+| 7 | → | [`references/INDEX.md`](references/INDEX.md) |
+| 8 | → | [`references/sessions/20260803-session-experience.md`](references/sessions/20260803-session-experience.md) |
+| 9 | → | [`references/sessions/20260816-session-experience.md`](references/sessions/20260816-session-experience.md) |
+| 10 | → | [`references/sessions/20261024-concurrency-np-kv-unified-report.md`](references/sessions/20261024-concurrency-np-kv-unified-report.md) |
+| 11 | → | [`references/sessions/20261104-glmocr-pdf-100mib-webui-report.md`](references/sessions/20261104-glmocr-pdf-100mib-webui-report.md) |
+| 12 | → | [`references/sessions/20261115-v1-upgrade-moe-cache-report.md`](references/sessions/20261115-v1-upgrade-moe-cache-report.md) |
+| 13 | → | [`scripts/q6-tuning/README.md`](scripts/q6-tuning/README.md) |
 
 ---
 

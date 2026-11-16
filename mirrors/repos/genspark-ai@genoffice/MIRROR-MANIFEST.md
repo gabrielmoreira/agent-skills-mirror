@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `genspark-ai/genoffice` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
+Mirror of `genspark-ai/genoffice` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `genspark-ai/genoffice` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 65 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,42 +88,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`skills/recommended/locales/fr.json`](skills/recommended/locales/fr.json) |
 | 28 | ✓ | [`skills/recommended/locales/he.json`](skills/recommended/locales/he.json) |
 | 29 | ✓ | [`skills/recommended/locales/hi.json`](skills/recommended/locales/hi.json) |
-| 30 | ✓ | [`skills/recommended/locales/id.json`](skills/recommended/locales/id.json) |
-| 31 | ✓ | [`skills/recommended/locales/it.json`](skills/recommended/locales/it.json) |
-| 32 | ✓ | [`skills/recommended/locales/ja.json`](skills/recommended/locales/ja.json) |
-| 33 | ✓ | [`skills/recommended/locales/ko.json`](skills/recommended/locales/ko.json) |
-| 34 | ✓ | [`skills/recommended/locales/ms.json`](skills/recommended/locales/ms.json) |
-| 35 | ✓ | [`skills/recommended/locales/nl.json`](skills/recommended/locales/nl.json) |
-| 36 | ✓ | [`skills/recommended/locales/pl.json`](skills/recommended/locales/pl.json) |
-| 37 | ✓ | [`skills/recommended/locales/pt.json`](skills/recommended/locales/pt.json) |
-| 38 | ✓ | [`skills/recommended/locales/ru.json`](skills/recommended/locales/ru.json) |
-| 39 | ✓ | [`skills/recommended/locales/th.json`](skills/recommended/locales/th.json) |
-| 40 | ✓ | [`skills/recommended/locales/tr.json`](skills/recommended/locales/tr.json) |
-| 41 | ✓ | [`skills/recommended/locales/vi.json`](skills/recommended/locales/vi.json) |
-| 42 | ✓ | [`skills/recommended/locales/zh-TW.json`](skills/recommended/locales/zh-TW.json) |
-| 43 | ✓ | [`skills/recommended/locales/zh.json`](skills/recommended/locales/zh.json) |
-| 44 | ✓ | [`skills/recommended/meeting-minutes/SKILL.md`](skills/recommended/meeting-minutes/SKILL.md) |
-| 45 | ✓ | [`skills/recommended/nda-drafter/SKILL.md`](skills/recommended/nda-drafter/SKILL.md) |
-| 46 | ✓ | [`skills/recommended/okr-planner/SKILL.md`](skills/recommended/okr-planner/SKILL.md) |
-| 47 | ✓ | [`skills/recommended/onboarding-plan/SKILL.md`](skills/recommended/onboarding-plan/SKILL.md) |
-| 48 | ✓ | [`skills/recommended/performance-review/SKILL.md`](skills/recommended/performance-review/SKILL.md) |
-| 49 | ✓ | [`skills/recommended/personal-finance/SKILL.md`](skills/recommended/personal-finance/SKILL.md) |
-| 50 | ✓ | [`skills/recommended/policy-compliance/SKILL.md`](skills/recommended/policy-compliance/SKILL.md) |
-| 51 | ✓ | [`skills/recommended/product-launch/SKILL.md`](skills/recommended/product-launch/SKILL.md) |
-| 52 | ✓ | [`skills/recommended/proposal-writer/SKILL.md`](skills/recommended/proposal-writer/SKILL.md) |
-| 53 | ✓ | [`skills/recommended/quiz-maker/SKILL.md`](skills/recommended/quiz-maker/SKILL.md) |
-| 54 | ✓ | [`skills/recommended/resume-polisher/SKILL.md`](skills/recommended/resume-polisher/SKILL.md) |
-| 55 | ✓ | [`skills/recommended/sales-forecast/SKILL.md`](skills/recommended/sales-forecast/SKILL.md) |
-| 56 | ✓ | [`skills/recommended/seo-content/SKILL.md`](skills/recommended/seo-content/SKILL.md) |
-| 57 | ✓ | [`skills/recommended/slide-planner/SKILL.md`](skills/recommended/slide-planner/SKILL.md) |
-| 58 | ✓ | [`skills/recommended/social-media/SKILL.md`](skills/recommended/social-media/SKILL.md) |
-| 59 | ✓ | [`skills/recommended/sop-writer/SKILL.md`](skills/recommended/sop-writer/SKILL.md) |
-| 60 | ✓ | [`skills/recommended/study-plan/SKILL.md`](skills/recommended/study-plan/SKILL.md) |
-| 61 | ✓ | [`skills/recommended/survey-analyst/SKILL.md`](skills/recommended/survey-analyst/SKILL.md) |
-| 62 | ✓ | [`skills/recommended/swot-strategy/SKILL.md`](skills/recommended/swot-strategy/SKILL.md) |
-| 63 | ✓ | [`skills/recommended/terms-of-service/SKILL.md`](skills/recommended/terms-of-service/SKILL.md) |
-| 64 | ✓ | [`skills/recommended/thesis-advisor/SKILL.md`](skills/recommended/thesis-advisor/SKILL.md) |
-| 65 | ✓ | [`skills/recommended/weekly-report/SKILL.md`](skills/recommended/weekly-report/SKILL.md) |
+| 30 | ✓ | [`skills/recommended/locales/hu.json`](skills/recommended/locales/hu.json) |
+| 31 | ✓ | [`skills/recommended/locales/id.json`](skills/recommended/locales/id.json) |
+| 32 | ✓ | [`skills/recommended/locales/it.json`](skills/recommended/locales/it.json) |
+| 33 | ✓ | [`skills/recommended/locales/ja.json`](skills/recommended/locales/ja.json) |
+| 34 | ✓ | [`skills/recommended/locales/ko.json`](skills/recommended/locales/ko.json) |
+| 35 | ✓ | [`skills/recommended/locales/ms.json`](skills/recommended/locales/ms.json) |
+| 36 | ✓ | [`skills/recommended/locales/nl.json`](skills/recommended/locales/nl.json) |
+| 37 | ✓ | [`skills/recommended/locales/pl.json`](skills/recommended/locales/pl.json) |
+| 38 | ✓ | [`skills/recommended/locales/pt.json`](skills/recommended/locales/pt.json) |
+| 39 | ✓ | [`skills/recommended/locales/ru.json`](skills/recommended/locales/ru.json) |
+| 40 | ✓ | [`skills/recommended/locales/th.json`](skills/recommended/locales/th.json) |
+| 41 | ✓ | [`skills/recommended/locales/tr.json`](skills/recommended/locales/tr.json) |
+| 42 | ✓ | [`skills/recommended/locales/vi.json`](skills/recommended/locales/vi.json) |
+| 43 | ✓ | [`skills/recommended/locales/zh-TW.json`](skills/recommended/locales/zh-TW.json) |
+| 44 | ✓ | [`skills/recommended/locales/zh.json`](skills/recommended/locales/zh.json) |
+| 45 | ✓ | [`skills/recommended/meeting-minutes/SKILL.md`](skills/recommended/meeting-minutes/SKILL.md) |
+| 46 | ✓ | [`skills/recommended/nda-drafter/SKILL.md`](skills/recommended/nda-drafter/SKILL.md) |
+| 47 | ✓ | [`skills/recommended/okr-planner/SKILL.md`](skills/recommended/okr-planner/SKILL.md) |
+| 48 | ✓ | [`skills/recommended/onboarding-plan/SKILL.md`](skills/recommended/onboarding-plan/SKILL.md) |
+| 49 | ✓ | [`skills/recommended/performance-review/SKILL.md`](skills/recommended/performance-review/SKILL.md) |
+| 50 | ✓ | [`skills/recommended/personal-finance/SKILL.md`](skills/recommended/personal-finance/SKILL.md) |
+| 51 | ✓ | [`skills/recommended/policy-compliance/SKILL.md`](skills/recommended/policy-compliance/SKILL.md) |
+| 52 | ✓ | [`skills/recommended/product-launch/SKILL.md`](skills/recommended/product-launch/SKILL.md) |
+| 53 | ✓ | [`skills/recommended/proposal-writer/SKILL.md`](skills/recommended/proposal-writer/SKILL.md) |
+| 54 | ✓ | [`skills/recommended/quiz-maker/SKILL.md`](skills/recommended/quiz-maker/SKILL.md) |
+| 55 | ✓ | [`skills/recommended/resume-polisher/SKILL.md`](skills/recommended/resume-polisher/SKILL.md) |
+| 56 | ✓ | [`skills/recommended/sales-forecast/SKILL.md`](skills/recommended/sales-forecast/SKILL.md) |
+| 57 | ✓ | [`skills/recommended/seo-content/SKILL.md`](skills/recommended/seo-content/SKILL.md) |
+| 58 | ✓ | [`skills/recommended/slide-planner/SKILL.md`](skills/recommended/slide-planner/SKILL.md) |
+| 59 | ✓ | [`skills/recommended/social-media/SKILL.md`](skills/recommended/social-media/SKILL.md) |
+| 60 | ✓ | [`skills/recommended/sop-writer/SKILL.md`](skills/recommended/sop-writer/SKILL.md) |
+| 61 | ✓ | [`skills/recommended/study-plan/SKILL.md`](skills/recommended/study-plan/SKILL.md) |
+| 62 | ✓ | [`skills/recommended/survey-analyst/SKILL.md`](skills/recommended/survey-analyst/SKILL.md) |
+| 63 | ✓ | [`skills/recommended/swot-strategy/SKILL.md`](skills/recommended/swot-strategy/SKILL.md) |
+| 64 | ✓ | [`skills/recommended/terms-of-service/SKILL.md`](skills/recommended/terms-of-service/SKILL.md) |
+| 65 | ✓ | [`skills/recommended/thesis-advisor/SKILL.md`](skills/recommended/thesis-advisor/SKILL.md) |
+| 66 | ✓ | [`skills/recommended/weekly-report/SKILL.md`](skills/recommended/weekly-report/SKILL.md) |
 
 ---
 

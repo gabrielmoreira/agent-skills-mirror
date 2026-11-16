@@ -1,0 +1,155 @@
+# Repository Guidelines
+
+> `CLAUDE.md` links to this file. Edit `AGENTS.md` only.
+
+## Where to look
+
+- `src/process/`: OS process handling plus reusable worker supervision.
+- `src/events/`: durable topic event log used by ACP and plugins.
+- `src/migrations/`: versioned migrations for persisted data.
+- `tests/e2e/`: full-binary tests. See [E2E tests](#e2e-tests).
+- `aoe-plugin-api/`: public plugin manifest and capability types.
+- `docs/development/`: contributor and architecture references.
+
+## Commands
+
+```sh
+cargo build                         # TUI + daemon, no Node needed
+cargo build --features web          # web dashboard, requires Node and npm
+cargo build --profile dev-release   # optimized local build without LTO
+cargo test
+cargo fmt
+cargo clippy
+AGENT_OF_EMPIRES_DEBUG=1 cargo run
+```
+
+Debug builds use an isolated app directory, tmux socket and `aoe_dev_` session
+prefix, with `aoe serve` on port 8081. Release and `dev-release` builds use the
+installed app's namespace and port 8080. `AOE_TMUX_SOCKET` overrides the socket.
+
+For web commands and tests, read `web/AGENTS.md`.
+
+Stay on one feature set per worktree. Each distinct combination of features is a
+separate build hash, so cargo keeps a full extra copy of the crate in `target/`
+for every one you run: plain `cargo test` and `cargo test --features web` cost
+roughly twice the disk of either alone. Pick the narrowest set that covers your
+change rather than running several to be thorough. `--all-targets` links all
+twenty-odd test binaries separately; keep it for a pre-push check, not routine
+iteration.
+
+Run cargo in the foreground. Do not detach it with `&`, `nohup`, or
+`sh -c '...' &`: if that cargo is killed, its `rustc` children keep running
+under PID 1, each holding several GB of memory with no consumer.
+
+## Code rules
+
+- Let `cargo fmt` and `cargo clippy` decide style; fix warnings.
+- Do not add dead code or `#[allow(dead_code)]`.
+- Keep comments short and precise. Add one only when the code cannot clearly express a
+  non-obvious reason or invariant; do not restate code or preserve
+  implementation history.
+- Leave the comments around a change shorter than you found them: prune
+  narration, repeated rationale, and implementation history as you touch them.
+- Add standalone documentation only for a durable user workflow, public
+  contract, or cross-cutting invariant. Keep implementation details with the
+  code; do not add feature inventories, rollout history, or duplicate guides.
+- Link to one canonical source instead of restating it. Delete or update stale
+  documentation in the same change that makes it stale.
+- Do not use em dashes or `--` as prose separators in hand-written docs and
+  comments.
+- Keep OS-specific behavior in `src/process/{macos,linux}.rs`.
+- Breaking changes do not need compatibility shims unless explicitly requested.
+
+Settings are declared once on their `Config` field with `#[setting(...)]`.
+Read `docs/development/adding-settings.md` before adding one; do not create
+parallel field registries or override structs.
+
+## Tests
+
+Use in-module unit tests for pure logic and `tests/` for integration behavior.
+Tests must be deterministic, isolated from user state, and clean up resources.
+CI runs the non-e2e suites with `cargo nextest run`, one process per test, so
+every test must pass when run alone. nextest skips doctests; write examples
+that need checking as unit tests.
+Tmux sockets isolate servers, not user configuration. Fixtures targeting `^.0`
+must use managed session creation or reuse `append_pane_base_index_args` from
+`src/tmux/utils.rs`.
+Use table cases inside one test when setup is shared. Do not test constants,
+derived implementations, trivial getters, or rendering without an asserted
+behavior.
+
+Do not use fixed sleeps to assume another task has progressed. Use a channel,
+barrier, or an observable predicate with a deadline. A deadline bounds failure;
+it does not establish completion. Before negative assertions, establish the
+causal precondition and retain the relevant observation window.
+Use paused Tokio time only when every clock affecting the assertion is Tokio,
+and still await completion after advancing it.
+
+Choose the cheapest test that can catch the regression. Rust unit tests and
+Vitest are preferred; browser and full-binary tests are for behavior that needs
+those environments. Test code is a major part of Rust compile time, so avoid
+duplicating cases across test functions.
+
+### E2E tests
+
+Run `cargo test --features e2e-tests --test e2e`; add `web` for dashboard
+coverage. New e2e tests use `#[parallel]`. Reserve `#[serial]` for tests
+that mutate process-global state. The harness already isolates HOME,
+tmux sockets, and session names. Tests auto-skip unavailable external tools.
+
+Use `RECORD_E2E=1` to record local review artifacts. See `tests/e2e/harness.rs`
+for the harness API.
+
+## Pull requests
+
+Follow [CONTRIBUTING.md](CONTRIBUTING.md) for branches, titles and the PR
+template, and [MAINTAINERS.md](MAINTAINERS.md) for review and merge rules.
+
+- Before review, run `cargo fmt`, `cargo clippy`, and `cargo test`, adding
+  `--features web` when relevant.
+- For `web/` changes also run its format, lint, type, and applicable test checks
+  from `web/AGENTS.md`, including the coverage matrix requirement.
+- Do not request reviewers; CODEOWNERS routes each PR.
+- Keep a PR within one owner area where possible; split changes that cross
+  areas.
+- When reviewing, follow the [rubric](CONTRIBUTING.md#review-rubric).
+
+Codecov gates web changes at 75% patch coverage and prevents a project drop
+beyond its threshold. Do not add tautological tests merely to move coverage.
+Rust-only changes carry the web flag forward.
+
+Do not change git configuration without explicit approval. Adding a contributor
+fork remote for review is the only exception.
+
+## Stored data and generated content
+
+Persisted schema or path changes require a migration in `src/migrations/`; see
+`docs/development/adding-a-migration.md`. Do not add inline compatibility paths.
+
+`docs/cli/reference.md` is generated from clap help via `cargo xtask gen-docs`.
+Edit the CLI source and regenerate it. Documentation content lives in `docs/`;
+the website publishes only the pages listed in `website/scripts/sync-docs.mjs`.
+Follow `docs/development/adding-a-website-page.md` for new pages.
+
+Every non-Rust, non-TOML asset embedded with `include_*` must be added to
+`commonArgs.src` in `flake.nix`; CI checks this with
+`scripts/check-nix-embedded-assets.py`.
+
+Runtime state belongs in the platform app directory, never in commits. Use
+ignored paths for experiments.
+
+Read `DESIGN.md` before visual changes.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for `agent-of-empires/agent-of-empires`, via `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Only `needs-triage` and `ready-for-agent` exist. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `CONTEXT.md` plus `docs/adr/`. See `docs/agents/domain.md`.

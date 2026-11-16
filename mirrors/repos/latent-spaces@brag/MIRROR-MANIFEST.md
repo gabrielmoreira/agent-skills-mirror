@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `latent-spaces/brag` — 26 default patterns, 0 followed patterns, 290 file(s) materialized.
+Mirror of `latent-spaces/brag` — 26 default patterns, 0 followed patterns, 291 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `latent-spaces/brag` — 26 default patterns, 0 followed patterns, 290
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 290 |
+| Files         | 291 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -346,9 +346,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 285 | ✓ | [`skills/brag/references/tones.md`](skills/brag/references/tones.md) |
 | 286 | ✓ | [`skills/brag/scripts/analyze_music_cues.py`](skills/brag/scripts/analyze_music_cues.py) |
 | 287 | ✓ | [`skills/brag/scripts/pyproject.toml`](skills/brag/scripts/pyproject.toml) |
-| 288 | ✓ | [`skills/brag/scripts/uv.lock`](skills/brag/scripts/uv.lock) |
-| 289 | ✓ | [`skills/brag/SKILL.md`](skills/brag/SKILL.md) |
-| 290 | ✓ | [`skills/brag/slim.md`](skills/brag/slim.md) |
+| 288 | ✓ | [`skills/brag/scripts/tests/test_analyze_music_cues.py`](skills/brag/scripts/tests/test_analyze_music_cues.py) |
+| 289 | ✓ | [`skills/brag/scripts/uv.lock`](skills/brag/scripts/uv.lock) |
+| 290 | ✓ | [`skills/brag/SKILL.md`](skills/brag/SKILL.md) |
+| 291 | ✓ | [`skills/brag/slim.md`](skills/brag/slim.md) |
 
 ---
 

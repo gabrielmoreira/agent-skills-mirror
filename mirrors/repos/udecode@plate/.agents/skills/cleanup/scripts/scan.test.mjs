@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, renameSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+import { zstdCompressSync } from 'node:zlib';
 
-import { brief, classifyWorktree, deleteSafe, landed, removeLanded, scan } from './scan.mjs';
+import { autoCleanup, brief, classifyWorktree, deleteSafe, landed, removeLanded, scan } from './scan.mjs';
+
+Object.assign(process.env, { CODEX_HOME: mkdtempSync(join(tmpdir(), 'cleanup-codex-')), GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1' });
 
 const DAY = 86_400_000;
 const SCAN = join(dirname(fileURLToPath(import.meta.url)), 'scan.mjs');
@@ -95,7 +98,8 @@ test('only folders no open session, process or server uses are marked safe', asy
     assert.equal(byPath[f.archived], 'safe', 'an archived session whose worktree is clean');
     assert.equal(byPath[f.landed], 'safe', 'an archived session whose changes the checkout already holds');
     assert.equal(byPath[f.unlanded], 'safe', 'an archived session whose patch the checkout has since changed');
-    assert.equal(byPath[f.orphan], 'safe', 'a session left open but idle does not keep its worktree');
+    assert.equal(byPath[f.orphan], 'keep', 'a session left open but idle keeps its worktree for a day');
+    assert.equal(verdicts(scan({ repo: f.main, sessions: f.sessions, sizes: false, now: now + 2 * DAY }).items)[f.orphan], 'safe', 'and not after a quiet day');
     assert.equal(byPath[join(f.caches, '.next', 'dev')], 'keep', "a build output's dev folder whose lock a running server holds");
     assert.equal(byPath[join(f.caches, '.next', 'cache')], 'keep', 'the build cache beside a running dev server');
     assert.equal(byPath[join(f.caches, '.next-plite', 'dev')], 'keep', 'a dev folder whose manifests changed today');
@@ -117,15 +121,31 @@ test('only folders no open session, process or server uses are marked safe', asy
   }
 });
 
+function quietGit(path, days) {
+  const admin = git(path, 'rev-parse', '--absolute-git-dir').trim();
+  const log = join(admin, 'logs', 'HEAD');
+  const old = Math.floor((Date.now() - days * DAY) / 1000);
+  writeFileSync(log, readFileSync(log, 'utf8').replace(/> \d+ /gu, `> ${old} `));
+  for (const file of ['index', 'HEAD']) age(join(admin, file), days);
+}
+
 test('a gc that rewrites every reflog today does not reset a worktree idle for days', () => {
   const f = fixture();
-  const admin = git(f.orphan, 'rev-parse', '--absolute-git-dir').trim();
-  const log = join(admin, 'logs', 'HEAD');
-  const old = Math.floor((Date.now() - 3 * DAY) / 1000);
-  writeFileSync(log, readFileSync(log, 'utf8').replace(/> \d+ /gu, `> ${old} `));
-  for (const file of ['index', 'HEAD']) age(join(admin, file), 3);
+  quietGit(f.orphan, 3);
   const unclaimed = f.sessions.filter((session) => session.cwd !== f.orphan);
   assert.equal(verdictOf({ ...f, sessions: unclaimed }, f.orphan), 'safe');
+});
+
+test('a file written in the last day keeps a worktree no session claims, however old its git history', () => {
+  const f = fixture();
+  quietGit(f.orphan, 3);
+  mkdirSync(join(f.orphan, 'artifacts'));
+  const proof = join(f.orphan, 'artifacts', 'proof.log');
+  writeFileSync(proof, 'written just now\n');
+  const unclaimed = { ...f, sessions: f.sessions.filter((session) => session.cwd !== f.orphan) };
+  assert.equal(verdictOf(unclaimed, f.orphan), 'keep');
+  age(proof, 3);
+  assert.equal(verdictOf(unclaimed, f.orphan), 'safe');
 });
 
 test('--repos judges each checkout in a folder that has linked worktrees', () => {
@@ -144,7 +164,7 @@ test('--repos judges each checkout in a folder that has linked worktrees', () =>
 });
 
 test('a worktree outside the folders agents use is asked about even when an archived session owned it', () => {
-  const facts = { agentMade: false, heldCaches: 0, hoursIdle: 48, invoking: false, locked: null, missing: false, nested: null, processes: 0, repos: 0, scratchHoursQuiet: null, session: { state: null, title: 'done' }, unreached: 0 };
+  const facts = { agentMade: false, codex: 0, heldCaches: 0, hoursQuiet: 48, ignored: { overflow: false, unique: [] }, invoking: false, locked: null, missing: false, nested: null, processes: 0, repos: 0, session: { state: null, title: 'done' }, unreached: 0 };
   assert.equal(classifyWorktree(facts)[0], 'ask');
   assert.equal(classifyWorktree({ ...facts, agentMade: true })[0], 'safe');
 });
@@ -176,13 +196,6 @@ test('--landed passes a change the checkout holds beside another landed patch to
   writeFileSync(join(f.archived, 'dup.txt'), card);
   writeFileSync(join(f.main, 'dup.txt'), card.replace('tail 9', 'TAIL 9'));
   assert.equal(landedOf(f.archived), 'safe');
-});
-
-test('--landed asks about an ignored file the checkout lacks', () => {
-  const f = fixture();
-  mkdirSync(join(f.archived, 'artifacts', 'run'), { recursive: true });
-  writeFileSync(join(f.archived, 'artifacts', 'run', 'proof.log'), 'exit 0\n');
-  assert.equal(landedOf(f.archived), 'ask');
 });
 
 test('--landed passes ignored copies of the checkout and folders an install or build recreates', () => {
@@ -378,6 +391,133 @@ test('--landed passes for a worktree whose changes the checkout holds and fails 
   assert.equal(spawnSync(process.execPath, [SCAN, '--landed', f.landed]).status, 1);
 });
 
+test('--delete copies the ignored files the checkout lacks or holds with other content before it removes a worktree, in a pstack project only run artifacts', () => {
+  const f = fixture();
+  writeFileSync(join(f.archived, '.env.local'), 'ONLY_HERE=1\n');
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item, 'an ignored file the checkout lacks does not keep the worktree');
+  assert.equal(readFileSync(join(item.saved, 'ignored', '.env.local'), 'utf8'), 'ONLY_HERE=1\n');
+  const p = pstackFixture();
+  mkdirSync(join(p.archived, 'apps', 'www', '.source'), { recursive: true });
+  writeFileSync(join(p.archived, 'apps', 'www', '.source', 'browser.ts'), 'generated\n');
+  mkdirSync(join(p.archived, 'docs', 'plans', 'artifacts', 'run'), { recursive: true });
+  writeFileSync(join(p.archived, 'docs', 'plans', 'artifacts', 'run', 'proof.log'), 'exit 0\n');
+  writeFileSync(join(p.archived, 'docs', 'plans', 'artifacts', 'run', 'page.html'), 'worktree render\n');
+  mkdirSync(join(p.main, 'docs', 'plans', 'artifacts', 'run'), { recursive: true });
+  writeFileSync(join(p.main, 'docs', 'plans', 'artifacts', 'run', 'page.html'), 'checkout render\n');
+  const folder = deleteSafe({ repo: p.main, sessions: p.sessions }).removed.find((each) => each.path === p.archived)?.saved;
+  assert.ok(folder, 'a run artifact the checkout lacks does not keep the worktree');
+  const saved = join(folder, 'ignored');
+  assert.equal(readFileSync(join(saved, 'docs', 'plans', 'artifacts', 'run', 'proof.log'), 'utf8'), 'exit 0\n');
+  assert.equal(readFileSync(join(saved, 'docs', 'plans', 'artifacts', 'run', 'page.html'), 'utf8'), 'worktree render\n', 'a run artifact the checkout holds with other content');
+  assert.ok(!existsSync(join(saved, 'apps')), 'generated output outside the run folders is not copied');
+});
+
+test('--delete saves a staged version that differs from the file on disk', () => {
+  const f = fixture();
+  writeFileSync(join(f.archived, 'a.txt'), 'draft\n');
+  git(f.archived, 'add', 'a.txt');
+  writeFileSync(join(f.archived, 'a.txt'), 'one\n');
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item?.saved, 'the worktree goes with a save');
+  assert.match(readFileSync(join(item.saved, 'staged.patch'), 'utf8'), /^\+draft$/mu);
+});
+
+test('--delete removes a worktree with a FIFO among its ignored files and copies the rest', () => {
+  const f = fixture();
+  mkdirSync(join(f.archived, 'artifacts'));
+  execFileSync('mkfifo', [join(f.archived, 'artifacts', 'pipe')]);
+  writeFileSync(join(f.archived, 'artifacts', 'proof.log'), 'exit 0\n');
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item, 'a FIFO holds no content to save');
+  assert.equal(readFileSync(join(item.saved, 'ignored', 'artifacts', 'proof.log'), 'utf8'), 'exit 0\n');
+});
+
+test('--delete keeps a worktree whose save fails and leaves no part of the save behind', { skip: process.getuid?.() === 0 && 'root reads a file whose mode hides it' }, () => {
+  const f = fixture();
+  mkdirSync(join(f.archived, 'artifacts'));
+  for (const name of ['a.log', 'b.log', 'c.log']) writeFileSync(join(f.archived, 'artifacts', name), `${name}\n`);
+  const locked = join(f.archived, 'artifacts', 'b.log');
+  chmodSync(locked, 0);
+  try {
+    const item = deleteSafe({ repo: f.main, sessions: f.sessions }).items.find((each) => each.path === f.archived);
+    assert.match(item.reason, /^removal failed: /u);
+    assert.ok(existsSync(locked), 'the worktree stays');
+    const cleanup = join(f.main, '.git', 'cleanup');
+    assert.deepEqual(readdirSync(cleanup).filter((name) => name.startsWith('archived-')), [], 'the failed save is gone');
+  } finally {
+    chmodSync(locked, 0o644);
+  }
+});
+
+test('two worktrees with the same folder name saved in the same millisecond keep separate saves', () => {
+  const f = fixture();
+  const paths = ['x', 'y'].map((parent) => {
+    const path = join(f.root, parent, 'proof');
+    git(f.main, 'worktree', 'add', '-q', '-b', `proof-${parent}`, path);
+    mkdirSync(join(path, 'artifacts'));
+    writeFileSync(join(path, 'artifacts', 'p.log'), `${parent}\n`);
+    return path;
+  });
+  const sessions = [...f.sessions, ...paths.map((cwd) => ({ cwd, isArchived: true, title: 'done' }))];
+  const clock = Date.now;
+  // A millisecond clock can floor below a write it follows, which reads as a write during the save.
+  const at = clock() + 1000;
+  Date.now = () => at;
+  let removed;
+  try {
+    ({ removed } = deleteSafe({ repo: f.main, sessions }));
+  } finally {
+    Date.now = clock;
+  }
+  for (const [path, parent] of [[paths[0], 'x'], [paths[1], 'y']]) {
+    const saved = removed.find((each) => each.path === path)?.saved;
+    assert.ok(saved, `the ${parent} worktree goes with a save of its own`);
+    assert.equal(readFileSync(join(saved, 'ignored', 'artifacts', 'p.log'), 'utf8'), `${parent}\n`);
+  }
+});
+
+test('--delete saves a file git add -f tracks although an ignore rule matches it', () => {
+  const f = fixture();
+  mkdirSync(join(f.archived, 'artifacts'));
+  writeFileSync(join(f.archived, 'artifacts', 'proof.log'), 'proof\n');
+  git(f.archived, 'add', '-f', 'artifacts/proof.log');
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item?.saved, 'the worktree goes with a save');
+  assert.match(readFileSync(join(item.saved, 'changes.patch'), 'utf8'), /^\+proof$/mu);
+});
+
+test('an unresolved merge is asked about and --remove keeps it, because a patch cannot save its index stages', () => {
+  const f = fixture();
+  git(f.archived, 'switch', '-q', '-c', 'theirs');
+  writeFileSync(join(f.archived, 'a.txt'), 'theirs\n');
+  git(f.archived, 'commit', '-q', '-am', 'theirs');
+  git(f.archived, 'switch', '-q', 'archived');
+  writeFileSync(join(f.archived, 'a.txt'), 'mine\n');
+  git(f.archived, 'commit', '-q', '-am', 'mine');
+  assert.equal(spawnSync('git', ['merge', '-q', 'theirs'], { cwd: f.archived }).status, 1, 'the merge stops on a conflict');
+  assert.equal(verdictOf(f, f.archived), 'ask');
+  const [result] = removeLanded({ repo: f.main, worktrees: [f.archived] });
+  assert.equal(result.removed, false);
+  assert.match(result.reason, /unresolved merge/u);
+  assert.ok(existsSync(f.archived), 'the worktree stays');
+});
+
+test('--delete drops the temporary refs and partial saves a run that died left more than a day ago', () => {
+  const f = fixture();
+  const head = git(f.main, 'rev-parse', 'HEAD').trim();
+  const name = (at) => `proof-${at.toString(36)}-abcdef`;
+  const [stale, fresh] = [name(Date.now() - 2 * DAY), name(Date.now())];
+  const cleanup = join(f.main, '.git', 'cleanup');
+  for (const each of [stale, fresh]) {
+    git(f.main, 'update-ref', `refs/cleanup/${each}/1`, head);
+    mkdirSync(join(cleanup, `${each}.partial`), { recursive: true });
+  }
+  deleteSafe({ repo: f.main, sessions: f.sessions });
+  assert.equal(git(f.main, 'for-each-ref', '--format=%(refname)', 'refs/cleanup/').trim(), `refs/cleanup/${fresh}/1`, 'a ref a running save may still hold stays');
+  assert.deepEqual(readdirSync(cleanup).filter((each) => each.endsWith('.partial')), [`${fresh}.partial`], 'a partial save a running save may still write stays');
+});
+
 test('a worktree a running process works in is neither marked safe nor deleted', async () => {
   const f = fixture();
   const shell = spawn('tail', ['-f', '/dev/null'], { cwd: f.archived, stdio: 'ignore' });
@@ -396,18 +536,20 @@ test('delete removes the safe set and leaves every other folder', () => {
   const { removed } = deleteSafe({ repo: f.main, sessions: f.sessions });
   assert.deepEqual(
     removed.map((item) => item.path).sort(),
-    [f.archived, f.landed, f.unlanded, f.orphan, f.keptCache, join(f.caches, '.next-3002'), join(f.caches, '.next-chip-a1'), join(f.caches, '.next', 'dev'), join(f.caches, '.next', 'cache'), join(f.caches, '.next-plite', 'cache')].sort()
+    [f.archived, f.landed, f.unlanded, f.keptCache, join(f.caches, '.next-3002'), join(f.caches, '.next-chip-a1'), join(f.caches, '.next', 'dev'), join(f.caches, '.next', 'cache'), join(f.caches, '.next-plite', 'cache')].sort()
   );
   assert.ok(removed.every((item) => item.bytes !== null), 'each removed folder was measured');
-  for (const kept of [f.open, join(f.caches, '.next', 'server'), join(f.caches, '.next-plite', 'dev'), join(f.caches, '.next-3000')]) assert.ok(existsSync(kept), `${kept} stays`);
+  for (const kept of [f.open, f.orphan, join(f.caches, '.next', 'server'), join(f.caches, '.next-plite', 'dev'), join(f.caches, '.next-3000')]) assert.ok(existsSync(kept), `${kept} stays`);
   const listed = execFileSync('git', ['worktree', 'list'], { cwd: f.main, encoding: 'utf8' });
   assert.ok(![f.archived, f.landed, f.unlanded].some((path) => listed.includes(path)), 'git no longer lists the removed worktrees');
-  const patchOf = (path) => removed.find((item) => item.path === path).patch;
-  assert.equal(patchOf(f.archived), null, 'a clean worktree saves no patch');
-  assert.equal(patchOf(f.landed), null, 'a worktree whose changes the checkout holds saves no patch');
-  assert.match(readFileSync(patchOf(f.unlanded), 'utf8'), /^\+three$/mu, 'the uncommitted change is saved before the worktree goes');
+  const savedOf = (path) => removed.find((item) => item.path === path).saved;
+  assert.equal(savedOf(f.archived), undefined, 'a clean worktree saves nothing');
+  assert.equal(savedOf(f.landed), undefined, 'a worktree whose changes the checkout holds saves nothing');
+  assert.match(readFileSync(join(savedOf(f.unlanded), 'worktree'), 'utf8'), /^branch refs\/heads\/unlanded$/mu, 'the save names the branch it came from');
+  const patch = join(savedOf(f.unlanded), 'changes.patch');
+  assert.match(readFileSync(patch, 'utf8'), /^\+three$/mu, 'the uncommitted change is saved before the worktree goes');
   git(f.main, 'checkout', '-q', '--', 'a.txt');
-  git(f.main, 'apply', '--check', patchOf(f.unlanded));
+  git(f.main, 'apply', '--check', patch);
 });
 
 test('a worktree in a session scratch folder stays while that session writes its transcript', () => {
@@ -433,6 +575,82 @@ test('a worktree in a session scratch folder stays while that session writes its
   }
 });
 
+test('a worktree stays a day after a session working in it last wrote its transcript', () => {
+  const f = fixture();
+  const config = join(f.root, 'claude-config');
+  const transcript = join(config, 'projects', f.orphan.replace(/[^a-zA-Z0-9]/gu, '-'), 'session.jsonl');
+  mkdirSync(dirname(transcript), { recursive: true });
+  writeFileSync(transcript, '{}\n');
+  const later = Date.now() + 2 * DAY;
+  const saved = process.env.CLAUDE_CONFIG_DIR;
+  process.env.CLAUDE_CONFIG_DIR = config;
+  try {
+    const at = (now) => verdicts(scan({ repo: f.main, sizes: false, now }).items)[f.orphan];
+    utimesSync(transcript, new Date(later - 3_600_000), new Date(later - 3_600_000));
+    assert.equal(at(later), 'keep', 'a transcript written an hour ago');
+    age(transcript, 0);
+    assert.equal(at(later), 'safe', 'a transcript quiet for two days');
+  } finally {
+    if (saved === undefined) delete process.env.CLAUDE_CONFIG_DIR;
+    else process.env.CLAUDE_CONFIG_DIR = saved;
+  }
+});
+
+test('a worktree stays a day after a Codex chat working in it last wrote its rollout, compressed or not', () => {
+  const f = fixture();
+  const day = join(process.env.CODEX_HOME, 'sessions', '2026', '11', '15');
+  mkdirSync(day, { recursive: true });
+  const meta = `${JSON.stringify({ type: 'session_meta', payload: { cwd: join(f.orphan, 'apps') } })}\n{}\n`;
+  const later = Date.now() + 2 * DAY;
+  const at = () => verdicts(scan({ repo: f.main, sizes: false, now: later }).items)[f.orphan];
+  const write = (name, bytes) => {
+    const path = join(day, name);
+    writeFileSync(path, bytes);
+    utimesSync(path, new Date(later - 3_600_000), new Date(later - 3_600_000));
+    return path;
+  };
+  try {
+    assert.equal(at(), 'safe', 'no Codex chat');
+    const plain = write('rollout-a.jsonl', meta);
+    assert.equal(at(), 'keep', 'a rollout written an hour ago');
+    age(plain, 0);
+    assert.equal(at(), 'safe', 'a rollout quiet for two days');
+    const packed = write('rollout-b.jsonl.zst', zstdCompressSync(meta));
+    assert.equal(at(), 'keep', 'a compressed rollout written an hour ago');
+    rmSync(packed);
+    write('rollout-c.jsonl.zst', zstdCompressSync(meta).subarray(0, 8));
+    assert.equal(at(), 'keep', 'a recent rollout the scan cannot read');
+  } finally {
+    rmSync(join(process.env.CODEX_HOME, 'sessions'), { force: true, recursive: true });
+  }
+});
+
+test('the session-start cleanup starts once a day unless the models sheet turns it off', () => {
+  const f = fixture();
+  const config = join(f.root, 'claude-config');
+  mkdirSync(config);
+  const saved = process.env.CLAUDE_CONFIG_DIR;
+  process.env.CLAUDE_CONFIG_DIR = config;
+  const started = [];
+  const start = (repo, stamp) => started.push([repo, stamp]);
+  try {
+    const now = Date.now();
+    const stamp = autoCleanup({ repo: f.orphan, now, start });
+    assert.equal(stamp, join(f.main, '.git', 'cleanup', 'last-run'));
+    assert.deepEqual(started, [[f.orphan, stamp]], 'it runs from the session worktree, so the run keeps that one');
+    assert.equal(autoCleanup({ repo: f.main, now, start }), null, 'a second session that day starts none');
+    age(stamp, 2);
+    writeFileSync(join(config, 'pstack-models.md'), 'default effort: high\nauto cleanup: off\n');
+    assert.equal(autoCleanup({ repo: f.main, now, start }), null, 'the user turned it off');
+    writeFileSync(join(config, 'pstack-models.md'), 'auto cleanup: on\n');
+    assert.equal(autoCleanup({ repo: f.main, now, start }), stamp, 'a day later it starts again');
+    assert.equal(started.length, 2);
+  } finally {
+    if (saved === undefined) delete process.env.CLAUDE_CONFIG_DIR;
+    else process.env.CLAUDE_CONFIG_DIR = saved;
+  }
+});
+
 test('a worktree whose folder is gone loses only its record', () => {
   const f = fixture();
   renameSync(f.archived, `${f.archived}-moved`);
@@ -447,14 +665,14 @@ test('a worktree that lost its .git link goes when it holds no files and is aske
   rmSync(f.archived, { recursive: true });
   mkdirSync(join(f.archived, 'packages', 'p'), { recursive: true });
   symlinkSync(f.main, join(f.archived, 'node_modules'));
-  rmSync(join(f.orphan, '.git'));
+  rmSync(join(f.landed, '.git'));
   assert.equal(verdictOf(f, f.archived), 'safe');
-  assert.equal(verdictOf(f, f.orphan), 'ask');
+  assert.equal(verdictOf(f, f.landed), 'ask');
   deleteSafe({ repo: f.main, sessions: f.sessions });
   assert.ok(!git(f.main, 'worktree', 'list').includes(`${f.archived} `), 'git no longer lists the empty one');
   assert.ok(!existsSync(f.archived), 'its empty folder is gone');
   assert.ok(existsSync(join(f.main, 'a.txt')), 'the symlink target stays');
-  assert.ok(existsSync(join(f.orphan, 'a.txt')), 'the one holding files stays');
+  assert.ok(existsSync(join(f.landed, 'a.txt')), 'the one holding files stays');
 });
 
 test('--remove keeps a worktree that lost its .git link while it holds files', () => {
@@ -489,7 +707,7 @@ test('--remove stops the processes in a landed worktree, saves its uncommitted c
   assert.equal(result.stopped, 1);
   await exited;
   assert.ok(!existsSync(f.open), 'the folder is gone though a session still claims it and a process worked in it');
-  assert.match(readFileSync(result.patch, 'utf8'), /^\+four$/mu, 'the uncommitted change is saved first');
+  assert.match(readFileSync(join(result.saved, 'changes.patch'), 'utf8'), /^\+four$/mu, 'the uncommitted change is saved first');
 });
 
 test("--remove runs the companion's detach in a worktree that holds its git directory before removing it", () => {
@@ -523,44 +741,93 @@ function commitOnDetachedHead(path) {
   return git(path, 'rev-parse', 'HEAD').trim();
 }
 
-test('a worktree holding a commit no ref reaches is asked about by the scan and --landed until a branch keeps it', () => {
+function unbundle(root, bundle) {
+  const fresh = mkdtempSync(join(root, 'fresh-'));
+  git(fresh, 'init', '-q');
+  git(fresh, 'fetch', '-q', bundle, 'refs/cleanup/*:refs/restored/*');
+  const tip = git(fresh, 'for-each-ref', '--format=%(objectname)', 'refs/restored').trim().split('\n')[0];
+  return { tip, show: (rev) => git(fresh, 'show', rev) };
+}
+
+test('--landed asks about a commit no ref reaches until a branch keeps it, and --delete bundles it, merges included, before removing the worktree', () => {
   const f = fixture();
   const lost = commitOnDetachedHead(f.archived);
-  const item = () => scan({ repo: f.main, sessions: f.sessions, sizes: false }).items.find((each) => each.path === f.archived);
-  assert.equal(item().verdict, 'ask', 'the commit sits on a detached HEAD');
-  assert.match(item().reason, /1 commit that no branch, tag or remote reaches/u);
+  git(f.archived, 'switch', '-q', '-c', 'side', 'next');
+  writeFileSync(join(f.archived, 'side.txt'), 'side\n');
+  git(f.archived, 'add', 'side.txt');
+  git(f.archived, 'commit', '-q', '-m', 'side');
+  git(f.archived, 'switch', '-q', '--detach', lost);
+  git(f.archived, 'merge', '-q', '--no-ff', '--no-commit', 'side');
+  writeFileSync(join(f.archived, 'resolution.txt'), 'only in the merge\n');
+  git(f.archived, 'add', 'resolution.txt');
+  git(f.archived, 'commit', '-q', '-m', 'merge side');
+  const merge = git(f.archived, 'rev-parse', 'HEAD').trim();
   git(f.archived, 'switch', '-q', 'archived');
-  assert.equal(item().verdict, 'ask', 'only the HEAD history keeps the commit after the switch back');
-  assert.equal(landedOf(f.archived), 'ask');
-  git(f.main, 'branch', 'saved', lost);
-  assert.equal(item().verdict, 'safe', 'a branch now keeps the commit');
-  assert.equal(landedOf(f.archived), 'safe');
+  assert.equal(landedOf(f.archived), 'ask', 'only the HEAD history keeps the merge after the switch back');
+  git(f.main, 'branch', 'saved', merge);
+  assert.equal(landedOf(f.archived), 'safe', 'a branch now keeps it');
+  git(f.main, 'branch', '-D', '-q', 'saved');
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item?.saved, 'a commit the checkout lacks does not keep the worktree');
+  const restored = unbundle(f.root, join(item.saved, 'commits.bundle'));
+  assert.equal(restored.tip, merge, 'the bundle keeps the merge itself');
+  assert.equal(restored.show(`${merge}:resolution.txt`), 'only in the merge\n');
 });
 
-test('the scan removes a worktree whose unreached commits the checkout holds, saving them as a patch', () => {
+test('a bundle holds the commits under it that only a pull-request branch reached, so pruning that branch loses nothing', () => {
+  const f = fixture();
+  const remote = join(f.root, 'remote.git');
+  git(f.root, 'init', '-q', '--bare', '-b', 'next', remote);
+  git(f.main, 'remote', 'add', 'origin', remote);
+  git(f.main, 'push', '-q', 'origin', 'next');
+  git(f.main, 'remote', 'set-head', 'origin', 'next');
+  git(f.archived, 'switch', '-q', '-c', 'pr');
+  writeFileSync(join(f.archived, 'pr.txt'), 'pull request\n');
+  git(f.archived, 'add', 'pr.txt');
+  git(f.archived, 'commit', '-q', '-m', 'pull request');
+  git(f.archived, 'push', '-q', 'origin', 'pr');
+  const lost = commitOnDetachedHead(f.archived);
+  git(f.archived, 'switch', '-q', 'archived');
+  git(f.main, 'branch', '-D', '-q', 'pr');
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item?.saved, 'a commit on a pull-request branch does not keep the worktree');
+  git(f.main, 'push', '-q', 'origin', '--delete', 'pr');
+  git(f.main, 'reflog', 'expire', '--expire=now', '--expire-unreachable=now', '--all');
+  git(f.main, 'gc', '-q', '--prune=now');
+  git(f.main, 'fetch', '-q', join(item.saved, 'commits.bundle'), 'refs/cleanup/*:refs/restored/*');
+  assert.equal(git(f.main, 'show', `${lost}:pr.txt`), 'pull request\n');
+});
+
+test("a worktree whose folder is gone has its unreached commits bundled from git's record before the record goes", () => {
+  const f = fixture();
+  const lost = commitOnDetachedHead(f.archived);
+  git(f.archived, 'switch', '-q', 'archived');
+  renameSync(f.archived, `${f.archived}-moved`);
+  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
+  assert.ok(item?.saved, 'the record goes with a save');
+  assert.equal(unbundle(f.root, join(item.saved, 'commits.bundle')).show(`${lost}:lost.txt`), 'only here\n');
+});
+
+test('--landed passes a worktree whose unreached commits the checkout holds', () => {
   const f = fixture();
   commitOnDetachedHead(f.archived);
   git(f.archived, 'switch', '-q', 'archived');
   writeFileSync(join(f.main, 'lost.txt'), 'only here\n');
   git(f.main, 'add', 'lost.txt');
   git(f.main, 'commit', '-q', '-m', 'landed squash');
-  const item = deleteSafe({ repo: f.main, sessions: f.sessions }).removed.find((each) => each.path === f.archived);
-  assert.ok(item, 'a commit whose change the checkout holds does not keep the worktree');
-  assert.match(readFileSync(item.commits, 'utf8'), /^Subject: \[PATCH\] made on a detached HEAD$/mu);
+  assert.equal(landedOf(f.archived), 'safe');
 });
 
-test('--remove saves a commit no ref reaches as a patch and removes the landed worktree', () => {
+test('--remove bundles a commit no ref reaches and removes the landed worktree', () => {
   const f = fixture();
-  commitOnDetachedHead(f.archived);
+  const lost = commitOnDetachedHead(f.archived);
   git(f.archived, 'switch', '-q', 'archived');
   const run = spawnSync(process.execPath, [SCAN, '--repo', f.main, '--remove', f.archived], { encoding: 'utf8' });
   assert.equal(run.status, 0, run.stdout);
-  const saved = run.stdout.match(/ {2}commits (\S+)$/mu)?.[1];
+  const saved = run.stdout.match(/ {2}saved (\S+)/u)?.[1];
   assert.ok(saved, run.stdout);
   assert.ok(!existsSync(f.archived), 'the worktree is gone');
-  const patch = readFileSync(saved, 'utf8');
-  assert.match(patch, /^Subject: \[PATCH\] made on a detached HEAD$/mu);
-  assert.match(patch, /^\+only here$/mu);
+  assert.equal(unbundle(f.root, join(saved, 'commits.bundle')).show(`${lost}:lost.txt`), 'only here\n');
 });
 
 test('--remove takes only the paths before the next flag', () => {

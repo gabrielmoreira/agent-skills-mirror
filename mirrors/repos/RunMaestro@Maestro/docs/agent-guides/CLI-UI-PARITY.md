@@ -50,6 +50,7 @@ field still gets the old behaviour, and `--focus` restores it from the CLI.
 | `open-file`                                       | `open_file_tab`                                       | focuses                                 |
 | `open-terminal`                                   | `open_terminal_tab`                                   | focuses                                 |
 | `open-browser`                                    | `open_browser_tab`                                    | focuses                                 |
+| `browser-pick`                                    | `pick_browser_element`                                | focuses (switches to the AI tab)        |
 | `tab new`                                         | `new_tab` / `new_ai_tab_with_prompt`                  | focuses                                 |
 | `dispatch --new-tab`                              | `new_ai_tab_with_prompt`                              | **background** (as it always was)       |
 | `dispatch` (no `--new-tab`)                       | `send_command`                                        | selects the target agent                |
@@ -287,6 +288,7 @@ Notification center history uses the live desktop `notificationStore` over a req
 | Auto Run: save as a playbook (documents must sit in the Auto Run folder)                                                  | `auto-run --save-as <name> <docs...>` (read back with `playbook <id> --dry-run`)                 |
 | Auto Run panel: Change folder                                                                                             | `auto-run-folder <path> -a <agent>`                                                              |
 | Thought Stream: Steer Auto Run (send a note, cancel one, read replies)                                                    | `steer-auto-run send <note> -a <agent>`, `steer-auto-run list`, `steer-auto-run cancel <id>`     |
+| Git Diff review comments (add, edit, remove, discard, send, compose)                                                      | `diff-review add <path> <lines> <text>`, `edit`, `list`, `remove`, `clear`, `send --compose`     |
 | Playbook Exchange: browse, README, install                                                                                | `marketplace list`, `marketplace show <id>`, `marketplace import`                                |
 | Usage Dashboard: Tokens tab and Overview token speed (avg / peak tok/s)                                                   | `stats-tokens [-r <range>] [--refresh] [--json]`                                                 |
 | Usage Dashboard: Activity tab Prompts section (prompt cadence)                                                            | `stats [-r <range>] [--json]` (JSON under `prompts`)                                             |
@@ -301,6 +303,7 @@ Notification center history uses the live desktop `notificationStore` over a req
 | Usage Dashboard: Export button (JSON, or a zip of CSVs)                                                                   | `stats-export -o <path> [-f csv\|json] [-r <range>] [--json]`                                    |
 | Left Bar: Archive / Unarchive a group chat                                                                                | `group-chat archive <chat>` / `--restore` (read back with `group-chat list --all`)               |
 | Group chat: add an agent by @mention in a message                                                                         | `group-chat add <chat> <agent>` (ID, ID prefix or name; read back with `group-chat status`)      |
+| Browser Design Mode: add a picked element to the message (pick card)                                                      | `browser-pick <tab> -s <css> [--note]`; read: its `--json` text, `image list`                    |
 
 ## Open gaps
 
@@ -375,6 +378,12 @@ pipeline` reaches the graph but cannot name what it shows. Pure view state
     reachable without it: an agent reads the file, quotes `path:lines` itself,
     and hands the text over with `dispatch` / `send`; replacing text is an edit
     to the file on disk, which an agent makes directly and `open-file` shows.
+14. **Turn browser Design Mode on or off** (address-bar pointer button,
+    Cmd+Shift+C, palette "Design Mode: Pick an Element"). The mode only arms
+    a hover overlay for a person's pointer; there is nothing for a script to
+    point with once it is on. The outcome it leads to, an element added to the
+    message, is covered by `browser-pick <tab> --selector <css>`, which runs
+    the same describe, crop, and delivery code without the overlay.
 
 ### Audit backlog (2026-09-27)
 

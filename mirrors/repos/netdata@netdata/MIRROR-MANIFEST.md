@@ -564,7 +564,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 503 | ✓ | [`src/go/plugin/dem/README.md`](src/go/plugin/dem/README.md) |
 | 504 | ✓ | [`src/go/plugin/dem/rum/faro/assets/README.md`](src/go/plugin/dem/rum/faro/assets/README.md) |
 | 505 | ✓ | [`src/go/plugin/dem/synthetic/artifacts/README.md`](src/go/plugin/dem/synthetic/artifacts/README.md) |
-| 506 | ✓ | [`src/go/plugin/dem/synthetic/runtime/README.md`](src/go/plugin/dem/synthetic/runtime/README.md) |
+| 506 | ✓ | [`src/go/plugin/dem/synthetic/browserruntime/README.md`](src/go/plugin/dem/synthetic/browserruntime/README.md) |
 | 507 | ✓ | [`src/go/plugin/dem/synthetic/runtimehost/README.md`](src/go/plugin/dem/synthetic/runtimehost/README.md) |
 | 508 | ✓ | [`src/go/plugin/framework/chartengine/README.md`](src/go/plugin/framework/chartengine/README.md) |
 | 509 | ✓ | [`src/go/plugin/framework/charttpl/README.md`](src/go/plugin/framework/charttpl/README.md) |

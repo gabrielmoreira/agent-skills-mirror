@@ -61,6 +61,8 @@ depends_on_binary: []
 - `/guide test [操作]`: 用来记录测试用例清单或触发执行测试验证（详见 `references/test.md`）。
 - `/guide log [简述]`: 用于快速收尾：开发日志到 backlog、更新 TODO.md 并提交（Git Commit）所有变更（详见 `references/log.md`）。
 - `/guide handoff [焦点]`: 跨 Agent 会话工程开发交接文档生成（详见 `references/handoff.md`）。
+- `/guide help`: 简洁列出所有子命令（含未在此处列出的扩展子命令，详见 `references/help.md`）。
+- 其他扩展子命令 `/guide <name> [参数]`: 收到指令时直接按名称读取 `references/<name>.md` 并执行，平时不占用上下文；若对应文件不存在，则读取 `references/help.md` 提示可用子命令。
 
 ## 5. 主要工作循环
 

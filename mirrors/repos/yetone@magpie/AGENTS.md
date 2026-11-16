@@ -77,11 +77,25 @@ Two cases decide it:
   nothing; a line over the Providers list says so, with why and a Move
   (`providers.unmoved`, `unmovedLine` in app.js). With no row of its own,
   the Add sheet leaves it to the Plugins page (`unusedSub`). Every
-  subscription in the table above is retired (10-17) except Antigravity,
-  which is moved but whose built-in code is still there until every
-  account has gone over (11-10); gates ask `provider.PluginServes(id)`
-  (moved or retired). Gemini CLI (`gemini`) and the agy agent stay built
-  in.
+  subscription in the table above is retired (10-17; Antigravity 11-15);
+  gates ask `provider.PluginServes(id)` (moved or retired). Gemini CLI
+  (`gemini`) and the agy agent stay built in.
+- **Antigravity's plugin is withdrawn for anyone new** (the owner, 11-15:
+  正在使用的继续正常，加个提示，新用户不让下载): Google bans accounts it
+  sees on Code Assist through Antigravity's own client. The built-in's code
+  is still in the tree, but `googleLogins` lists nothing once the plugin
+  serves it, so it asks Google for nothing; the mover reads
+  `googleSavedLogins`. The plugin (0.2.1, the mover's min) serves as
+  before for whoever has it, and the Providers page tells them the risk
+  and points to Antigravity (local agy CLI),
+  `@magpie-community/opencode-agy-cli-auth`, which runs the user's own agy
+  over ACP (`withdrawn` in `/api/providers`). `plugin.Add` turns it away
+  for anyone who doesn't have it listed (`plugin.RefuseWithdrawn`); the
+  mover installs it for the user's own accounts under
+  `plugin.KeepWithdrawn`, and it left the registry. Don't offer it to
+  anyone new. The built-in route's tests serve it again through
+  `provider.AntigravityBuiltinForTest()` until its code is taken out
+  (#6723).
 
 The plugin does everything: sign-in, refresh, models, requests, usage and
 errors. It runs in the plugin host (`internal/plugin`). The built-ins'

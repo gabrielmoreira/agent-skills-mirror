@@ -76,11 +76,33 @@ Model configuration and media generation are hidden in the MVP editor. `MediaGat
 
 `/motion-api/` 为产品 API，`/api/` 为原生 Studio API。流式代理保留文件版本头、上传体、媒体 Range、SSE 文件变化和渲染进度；只有通过本机 Host/Origin 检查的请求才会转发。
 
-切换工程前等待原生保存队列完成，切换后重新加载文档以释放旧编辑会话。原生渲染、版本写入或写冲突期间，所有入口禁止新建、切换工程、返回首页或应用模板。空白项目和四个官方模板均创建为独立工程，原工程与素材保留。通过 URL 恢复工程时只验证工程及会话归属，再挂载对应 Studio 页面；不会切换其他页面。一个原生服务进程按工程请求复用原生宿主上下文，文件版本冲突仍拒绝覆盖。
+Project switches wait for the native save queue and replace only the project viewer after validating project/session ownership and opening its scoped native context. The application shell stays mounted. Rendering, version writes and conflicts block project creation, switching and template application; visiting settings or returning to the already mounted editor does not switch projects. Blank projects and the four official templates create independent copies. A bookmarked project does not switch another editor tab, and native file-version conflicts still reject overwrites.
 
 新工程使用 CLI 默认的官方 Catalog。启动旧工程时，只移除先前版本误写的 `https://hyperframes.heygen.com/registry`，该地址返回 404；用户自定义 Registry 与其他配置不变。
 
 UI 主题不会写入影片 HTML、CSS、GSAP 或 Studio 编辑数据，预览与导出均由原版播放器和渲染器处理。MCP 仍共享同一组原生文件与 revision。
+
+## Workspace page routes
+
+The application shell reads its destination from the URL query. The native editor continues to own `#project/<id>?…`, including composition, playhead and selection state. Shell navigation preserves that hash, project/session identity and embedding/tracking parameters.
+
+| Destination | Query parameters |
+| --- | --- |
+| Current editor | No `page` or `templates` parameter |
+| Asset workspace | `page=assets` opens the shared asset library independently of the retained project |
+| MCP onboarding | `page=mcp&host=codex`; `setup=manual` opens manual configuration |
+| Settings | `page=settings&section=general` |
+| Provider detail | `page=settings&section=providers&provider=openai` |
+| Template library | `templates=1` |
+| Template preview | `templates=1&template=<catalog-id>` |
+
+Settings sections are `account`, `subscription`, `providers`, `models`, `local`, `general`, `appearance`, `privacy`, `help` and `about`. MCP uses the dedicated page; `section=mcp` is also readable. Client IDs are `codex`, `claude`, `cursor`, `deepseek`, `desktop`, `chatgpt` and `mcp`. Template parameters may accompany a settings/MCP page, allowing the library to close back to that destination. Existing project, session and project-free library links remain supported.
+
+`workspacePageRouting.ts` parses and builds shell destinations; `workspaceHistory.ts` writes same-origin history entries and notifies the shell. `useWorkspace.ts` handles browser history, waits for saves only when changing projects or leaving the template library, and ignores stale pending transitions. Owned history entries retain an index through editor hash updates so a refused transition can return with `history.go` without truncating Forward history. An older entry without an index uses URL replacement as its recovery fallback. Repeated navigation to the current URL does not add an entry.
+
+The upper-left Back/Forward controls share this browser stack in the editor, settings, MCP onboarding, template library and template preview. A visit identity and index in `history.state` bound product navigation; the last reachable index is retained in tab-scoped `sessionStorage` without storing URLs or project content. Refresh preserves availability, a copied link starts a new visit, and navigating after Back discards the abandoned Forward branch. Disabled controls cannot leave the product for an earlier browser page. Storage failures retain in-memory navigation until reload. Native browser navigation and product controls use the same save guards.
+
+Refresh and copied links restore the selected page, MCP client/setup tab, provider and template preview. Settings/MCP can load without opening the retained native project; the editor resolves it when needed. Unknown page, section or client values use the editor, General or Codex fallback. A missing catalog entry shows a recovery action. Links do not contain search/filter drafts, credentials or unsaved form values. Page navigation preserves the current editor instance; project navigation creates a new viewer after validation.
 
 ## 构建与验证
 

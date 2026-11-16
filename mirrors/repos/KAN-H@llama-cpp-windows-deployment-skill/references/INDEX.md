@@ -27,6 +27,7 @@
 │   ├── mtp_graft.py                  MTP head 嫁接
 │   ├── _mtp_verify.py / _ub_probe.py 实测探针
 │   ├── np_probe.py                   并发（n_parallel / kv-unified）探针
+│   ├── ocr_pdf.py                    整本 PDF 逐页 OCR 驱动（断点续跑 + 自适应降批）
 │   ├── launcher_gen/                 启动器生成器 + 交互门面
 │   ├── q6-tuning/                    Q6 批次探针集（GSQ-RCO 调优，见其 README）
 │   └── tests/                        闸门测试
@@ -61,6 +62,8 @@
 | [`20260913`](./sessions/20260913-session-experience.md) | MoE 参数智能化、回归方法论、MTP 嫁接 | **新守卫必须先在已知可用样本上跑**（否则守卫自己成为 bug） | 加模型、写断言、做嫁接 |
 | [`20261012`](./sessions/20261012-qwen38-gsqrco-27b-tuning-report.md) | Qwen3.8-27B **GSQ-RCO**（非均匀量化）16GB 调优 + 启动器回写（专题报告体） | **dense + MTP 的 CPU 卸载断崖（-48%）** —— 与 MoE 经验完全相反 | 配 GSQ-RCO / 非均匀量化模型；dense+MTP 显存不足 |
 | [`20261024`](./sessions/20261024-concurrency-np-kv-unified-report.md) | 并发 np 阶梯、`--kv-unified`、np×MTP 耦合绿屏、客户端 `contextWindow` 对齐 | **np>1 与 MTP 在 16 GiB 卡上是耦合的**；`--kv-unified` 让并发不花上下文；首请求因 GPU 低温只有 1/3 速度 | 开并发、算显存预算、看到 `HYPERVISOR_ERROR` |
+| [`20261104`](./sessions/20261104-glmocr-pdf-100mib-webui-report.md) | WebUI 上传整本 PDF 到视觉 OCR 模型 | **请求体硬上限 100 MiB（413 空 body、提前断连）+ 每页 ≈1.3K tokens**；"Unable to connect" 其实是传输层失败 | 用 WebUI 传 PDF、遇 413 / 上下文超限、给 agent 接 OCR |
+| [`20261115`](./sessions/20261115-v1-upgrade-moe-cache-report.md) | v1.0.0 升级实测、MoE 专家缓存边界、「驱动 2.2 倍」辨析（专题报告体） | **2.2× 要求显存能空出十几 GiB 缓存**；16GB 卡真实富余只剩 204 MiB ⇒ 缓存必关；版本收益 0–6.5%；`parallel` 被 CLI 覆盖 | 换 build / 换驱动、想加 `--moe-cache-mib`、怀疑"升级没变快" |
 
 > 原始数据（Q6 批次）：[`_q6_results.json`](./sessions/_q6_results.json)（18 条实测记录）
 > ＋[`_q6_metadata.json`](./sessions/_q6_metadata.json)（GGUF 元数据基线；入库时脱敏的**快照**）—— 由
@@ -76,6 +79,7 @@
 | [`mtp-head-grafting.md`](./guides/mtp-head-grafting.md) | 给**没有 MTP head 的微调模型**嫁接官方 head | 实测 **+34.6% 解码**（64.28 → 86.51 t/s，acceptance 0.736）；四个陷阱；**显存代价 = 权重字节 × 3** |
 | [`20260913-moe-offload-community-research.md`](./guides/20260913-moe-offload-community-research.md) | MoE 卸载的**社区现状**调研 | 社区**无最优共识、无可用自动脚本**；但有两个可直接抄的杠杆（`-ub 2048`、`--load-mode none`） |
 | [`qwen38-gsqrco-27b-tuning.md`](./guides/qwen38-gsqrco-27b-tuning.md) | **GSQ-RCO 非均匀量化 + 内置 MTP** 的 16GB 实机调优档案（Qwen3.8-27B） | **CPU 参与断崖**：dense+MTP 下卸 3 层 CPU = -48%（与 MoE 完全相反）；MTP@45K +31.5%/代价 1,536 MiB；GSQ-RCO IQ3_S 任务无损 |
+| [`version-upgrade-and-vram-budget.md`](./guides/version-upgrade-and-vram-budget.md) | **换 build / 换驱动 / 想开专家缓存**时的判定与验收 | **先量余量再谈参数**：`will leave X >= 2129 MiB` 里 `X−2129` 就是真实富余；<200 MiB = 红线，什么都别加；升级只换二进制、一次只动一个变量 |
 
 ---
 
@@ -130,6 +134,8 @@
 | [`scripts/_mtp_verify.py`](../scripts/_mtp_verify.py) | 嫁接 A/B 验证（baseline vs `--spec-type draft-mtp`，同会话对比） |
 | [`scripts/_ub_probe.py`](../scripts/_ub_probe.py) | batch / ubatch 探针（`-ub` 单独改无效的实证工具） |
 | [`scripts/np_probe.py`](../scripts/np_probe.py) | **并发探针**（`n_parallel` / `--kv-unified`）：np 阶梯、每流与聚合吞吐、`n_ctx_slot`、显存余量、质量一致性；内置 `--prior-headroom` / `--min-headroom` **两道显存安全闸** |
+| [`scripts/moe_bench.ps1`](../scripts/moe_bench.ps1) | **MoE 隔离测速/冒烟台**（PowerShell，纯 ASCII）：短请求 / 12K 长上下文（prefill + 前缀缓存复用 + 答案校验 + 图片）/ 工具调用三模式；输出 t/s、`draft acceptance`、显存/内存/提交低谷、**fit 判决行**；内置四道资源闸，只停自己起的 PID |
+| [`scripts/router_args_probe.ps1`](../scripts/router_args_probe.ps1) | **反查 Router 实际生效参数**：向运行中的 Router 要 `/models` 的渲染结果（CLI 会覆盖 preset），自动脱敏 api key；只读，不触发 reload |
 | [`scripts/launcher_gen/update_launchers.py`](../scripts/launcher_gen/update_launchers.py) | **启动器生成器**：扫描 → 渲染 3 个菜单 `.bat` + `models-config.ini`；读 `LAUNCHER_DIR` / `CHAT_DIR` |
 | [`scripts/launcher_gen/update-launchers.bat`](../scripts/launcher_gen/update-launchers.bat) | 生成器的 Windows 入口（纯 ASCII） |
 | [`scripts/launcher_gen/llama_hub.py`](../scripts/launcher_gen/llama_hub.py) | 交互式门面：菜单 / `--guide` / `--diagnose` / `--write-docs` |
@@ -239,7 +245,7 @@
 | 仓库根下的 `models-config.ini` | ❌ 位置错误 | 生成物在 `<models-dir>/models-config.ini` |
 | `--mmap` / `--no-mmap` | ⚠️ 已废弃 | `--load-mode mmap` / `none` |
 | `-fittarget` | ❌ 非法短名 | `-fitt` 或 `--fit-target` |
-| `--fit on` + `--n-cpu-moe N` 同现 | ❌ 互斥 | MoE 条目只写 `--n-cpu-moe N` |
+| `--fit on` + `--n-cpu-moe N` 同现 | ⚠️ **非互斥**（v3.11 修订） | 旧结论"fit 从未生效"已被推翻：b12274/v1.0.0 实测 fit 会运行并输出 `will leave X >= 2129 MiB` 判决行。但**仍不能当安全网**（投影不足时是否真下调未验证）⇒ MoE 条目只写 `--n-cpu-moe N`，体检时临时加 `--fit on -lv 5` |
 
 ---
 

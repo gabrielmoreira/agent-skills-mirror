@@ -176,6 +176,24 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
 
 - All registered phase-one stdio tools: accepted start and observed finish, including
   early-return catalog tools, input rejection, partial import and idempotent replay.
+- All eighteen page WebMCP tools: `webmcp_tool_started` and
+  `webmcp_tool_finished`, correlated by a fresh `call_id` per invocation, with
+  the public `tool_name`, `transport=webmcp`, observed `outcome` and bounded
+  `duration_ms`. These are browser-call measurements, separate from stdio MCP
+  events and committed business results; a replayed call is still a call.
+  Structured error replies and thrown failures count as failed calls, even when
+  their applied effect is uncertain. Explicit aborts count as `cancelled`; missing
+  or malformed replies count as `unknown`. A late abort does not turn a successful
+  reply into a cancelled operation. Arguments, results, handles, paths and raw errors are
+  excluded. Host Agent fields retain their existing page-handoff meaning; the
+  transport marker does not identify the calling browser agent.
+- WebMCP registration: `webmcp_registration_result` records one result per
+  attempted tool registration (`success`, `failure` or `cancelled`), including
+  validation/duplicate refusals and teardown cancellation. Use this event for
+  registration counts; existing native/polyfill and registration-error events
+  remain diagnostic signals. A disabled tool preference or absent modelContext
+  makes no tool-registration attempt. The existing consent, Do Not Track,
+  configuration retry and best-effort delivery policies apply to all three events.
 - Domain results: create/open/edit/import/restore and export request/cancel. Replayed
   operations do not manufacture additional domain completions. Preview returned by
   a tool does not imply the host opened it.

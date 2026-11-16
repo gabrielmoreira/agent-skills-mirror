@@ -91,7 +91,7 @@ description: 带着作者和社区的真实经验，陪用户准备 Claude 的�
 | 手机端（注册、选择 Apple/Google 内购、仅手机） | [mobile-guidance.md](references/mobile-guidance.md)、[S03 经验 PDF 第 4 页](sources/S03-claude-experience.pdf)（必附） |
 | VM 路线（客机系统、网卡、出口、防火墙脚本） | [vm-guidance.md](references/vm-guidance.md)、[egress-ip-options.md](references/egress-ip-options.md)（必附）、[VPS 推荐报告索引 R01](sources/vps-recommendations/INDEX.md)（出口选自建梯、要选 VPS 时）、[S07 IP 质量清单](sources/S07-vps-script-catalog.md)（检查出口 IP 时）、[VM 搭建脚本](assets/vm-killswitch/enable-guest-ssh.sh)（开客机 SSH）、[FlClash TUN 安装](assets/vm-killswitch/install-flclash-tun.sh)、[VM 防火墙脚本](assets/vm-killswitch/install-flclash-killswitch.sh)（Linux 客机，按这个顺序） |
 | 进阶路线（VM／VPS：远端 Linux 管理） | [advanced-route.md](references/advanced-route.md)、[VM 指引](references/vm-guidance.md)（必附）、[反向隧道](assets/remote-hardening/install-reverse-tunnel.sh)、[自愈](assets/remote-hardening/flclash-crash-heal.sh)、[防火墙](assets/vm-killswitch/install-flclash-killswitch.sh)（最后装，C 档） |
-| 防直连开关与 GUI | [使用指引](references/killswitch-switch.md) |
+| Windows 整机白名单双开关；Mac/Linux GUI | [指引](references/killswitch-switch.md) |
 | 本机路线：Clash（TUN）与防火墙 | [本机流程与退出复查](references/local-firewall-prompts.md)（[交付验收](references/local-firewall-prompts.md#delivery-scope)）、[Mac DNS](references/macos-dns-case-lessons.md)、[S05](sources/S05-local-protection.md)、[S10 本机经验](sources/S10-windows-deployment-sanitized.md#windows-baseline) |
 | 本机高级扩展（异机协助：OpenSSH／Tailscale／内网穿透） | [远程协助](references/local-advanced-route.md)（明确需要异机协助时） |
 | Windows 本机：关闭网卡 IPv6（默认，B 档） | [agent-remediation.md 的 Windows 网卡 IPv6](references/agent-remediation.md#windows-adapter-ipv6-hint) |

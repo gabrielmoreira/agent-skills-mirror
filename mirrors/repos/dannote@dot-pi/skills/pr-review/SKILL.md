@@ -46,6 +46,12 @@ gh pr diff <number>
 gh api repos/OWNER/REPO/pulls/<number>/comments
 ```
 
+## Before reporting a state
+
+- Read every CodeRabbit comment before saying anything about a PR: inline threads, review bodies, outside-diff and nitpick findings in the review summary, and earlier rounds, not only the latest review.
+- Search open and recently merged PRs and issues for ones that overlap the change by what they do, not by one keyword. Say so before any line review when the PR duplicates another or another makes it obsolete.
+- A ready-to-merge answer covers CI, conflicts, open threads, CodeRabbit's state (reviewed the current head, paused, or rate limited), and related PRs, and names each PR by its link.
+
 ## Review lenses
 
 Check only lenses relevant to the change, but always check codebase fit:

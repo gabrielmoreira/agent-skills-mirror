@@ -60,11 +60,17 @@ For executable handoffs, including instruction-only cross-owner workflows, bind 
 [intended-consumer boundary](daymade-skill/skill-creator/references/change-verification.md#bind-the-intended-consumer-before-verification)
 and follow its [first-use route](daymade-skill/skill-creator/references/first-use-and-resume.md).
 Use its selected workflow for regression review, validation, initialization, and packaging.
+For a self-contained executable delivery, follow its
+[shipping-set acceptance](daymade-skill/skill-creator/references/publishing-and-packaging.md#self-contained-executable-acceptance).
 For capability extraction or reuse across business callers, follow its
 [ownership decision](daymade-skill/skill-creator/references/authoring-and-reuse.md#the-extend-vs-create-check--runs-before-any-specialized-branch).
 
 Operational or code-bearing Skill edits complete directly affected document alignment
 before the first candidate freeze; follow skill-creator's Edit workflow.
+For reusable Skill discovery within a project, follow
+[local repository search](daymade-skill/skills-search/references/local-repository-search.md).
+When splitting or renumbering an instruction owner, use the
+[reference-and-self-application check](daymade-skill/skill-creator/references/existing-skill-migration.md#reference-and-self-application-check).
 For meeting transcripts, participant-note reconciliation or minute-draft merges,
 enter [meeting-minutes-taker](daymade-audio/meeting-minutes-taker/SKILL.md#quick-start).
 When data-visualization delivery-gate text changes, use the
@@ -126,6 +132,10 @@ For evidence-based improvement of an existing application, enter
 [app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
 load its [Skill composition route](app-evolver/references/skill-composition.md);
 keep specialist selection and handoff boundaries in that owner.
+For publication value and delivery-scope acceptance, use its
+[publication case](app-evolver/references/implementation-and-acceptance.md#synthetic-pair-a-publications-first-useful-result).
+For integrating an approved workspace into an existing application, use its
+[application-integration case](app-evolver/references/implementation-and-acceptance.md#synthetic-pair-an-approved-workspace-inside-the-existing-application).
 Before collecting Mobbin screens or flows or selecting an adaptation, follow its
 [Mobbin evidence recipe](app-evolver/references/mobbin-evidence.md).
 For domain-role extraction or scattered policy, use its
@@ -144,6 +154,8 @@ For work becoming eligible after prerequisites arrive, use its
 
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
+For recovery/cache-test prerequisites, fixture isolation or invalid-fixture triage,
+use its [recovery-test recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#establish-recovery-test-prerequisites).
 For resumable writes to human-edited state, use its
 [interrupted-write controls](daymade-skill/skill-creator/references/stateful-script-verification.md#interrupted-writes-and-later-human-changes).
 
@@ -219,7 +231,8 @@ handling, while the worker owns event identity and delivery state.
 
 For Terraform publication, linked releases, shared-route replacement, approval, first mutation,
 expired plans, saved-plan input-type mismatches, frozen approval-input verification,
-environment isolation or initialization-cache changes, enter
+environment isolation, contract-selected validation environments, catalog-derived schema
+recovery or initialization-cache changes, enter
 [`terraform-skill`](terraform-skill/SKILL.md). Certificate rotation or another recurring
 maintenance change uses its [publisher and maintenance-cycle validation](terraform-skill/references/pre-deploy-validation.md#replay-the-next-maintenance-cycle-through-every-gate).
 
@@ -265,6 +278,8 @@ For transcript speaker-label updates, later reconciliation and consumer readback
 follow its [maintenance contract](report-with-html/references/long-lived-report-maintenance.md).
 For a hierarchical course/archive reader,
 use the [archive reader procedure](report-with-html/references/archive-reader.md).
+For bookmark and annotation source readers, follow
+[reading-surface disclosure](report-with-html/references/reading-surface-disclosure.md).
 
 For citation previews and in-place source inspection, enter
 [report-with-html's interaction owner](report-with-html/references/interaction-components.md)
@@ -338,6 +353,8 @@ For build reuse across source refs or a target redeployed during acceptance, loa
 [delivery verification procedure](frontend-visual-qa/references/delivery-verification.md).
 For changed asynchronous loading or saving, or nested zoomable workspaces, use its
 [journey and state matrix](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix).
+For continuous zoom and level-of-detail changes on the same map, use its
+[continuous-map recipe](frontend-visual-qa/references/journey-and-page-contracts.md#continuous-zoomable-maps).
 For collection readiness, exact report reading or retained drafts and return state, use its
 [collection and context checks](frontend-visual-qa/references/journey-and-page-contracts.md#collection-readiness-and-retained-context).
 For save or confirmation controls replaced by a result, follow its
@@ -426,7 +443,7 @@ For Skill eval grading, aggregation or previous-iteration review, follow
 and [the viewer workflow](daymade-skill/skill-creator/references/paired-evaluation.md#step-4-grade-aggregate-and-launch-the-viewer).
 Keep assertion identity, missing-data semantics and viewer startup instructions in those owners.
 
-When review, replay or evaluation needs input copies, follow
+When review, replay or evaluation needs input copies or task-output closeout, follow
 [the materialization SOP](daymade-skill/skill-creator/references/materialization-budget.md)
 from the locked skill-creator project above. Its
 [CLI](daymade-skill/skill-creator/scripts/materialize.py) owns argument parsing,
@@ -434,6 +451,8 @@ accounting, retry eligibility and cleanup behavior. For disk diagnosis, cleanup
 recovery, or capacity checks before necessary backup/copy/extraction, use
 [macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
 [necessary-copy capacity preflight](daymade-macos/macos-cleaner/references/safety_rules.md#necessary-copy-capacity-preflight).
+For classifying generated dependencies, build outputs, retired Apps or releases, use
+[generated-payload plans](daymade-macos/macos-cleaner/references/generated-payload-plans.md).
 For exact-file allocation or an already collected inventory, use the
 [read-only diagnosis CLI](daymade-macos/macos-cleaner/references/storage-diagnosis.md).
 When changing measurement, run the SOP's targeted regression suite before shipping.
@@ -441,6 +460,8 @@ For an already-copied directory moving to an external disk, enter
 [macos-cleaner's relocation SOP](daymade-macos/macos-cleaner/references/external-cold-archives.md#verify-an-already-copied-directory-lightly).
 For OrbStack image discovery and physical-release diagnosis, use its
 [Docker reference](daymade-macos/macos-cleaner/references/docker_analysis.md#step-2b-orbstack-specific-analysis).
+For Docker build-cache eviction, enter the
+[exact-record BuildKit procedure](daymade-macos/macos-cleaner/references/docker_analysis.md#exact-record-buildkit-eviction).
 For uv cache diagnosis or retirement, enter
 [macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
 [uv target semantics](daymade-macos/macos-cleaner/references/cleanup_targets.md#uv-cache-retirement).
@@ -470,8 +491,10 @@ For CI demand, notification overload, exhausted allowance or repeated validation
 enter [github-ops' CI demand workflow](github-ops/references/ci-demand-and-notifications.md).
 For missing PR checks or fork runs awaiting approval, follow
 [the run-state diagnosis](github-ops/references/workflow_operations.md#resolve-missing-checks-and-fork-approval).
-For self-hosted routing, resource limits or cache persistence, follow its
+For self-hosted routing, resource limits, checkout-dependent cache resolution or cache persistence, follow its
 [runner acceptance](github-ops/references/workflow_operations.md#self-hosted-runner-capacity-and-acceptance).
+For failed jobs whose workspace is cleaned, follow its
+[failure-evidence lifecycle](github-ops/references/workflow_operations.md#preserve-failure-evidence-across-workspace-cleanup).
 Keep demand selection, validation-reuse and capacity acceptance in those owners.
 
 For application native automatic updates, automatic observers or recovery jobs,
@@ -574,6 +597,9 @@ Context-veto CLI regressions live in
 When the version-matched identity guide requires restoring an authorized user
 login, enter [authorization recovery](lark-cli-router/references/auth-recovery.md).
 Keep device-flow commands, continuation and account/result verification there.
+For interrupted permission batches, enter
+[permission-batch recovery](lark-cli-router/references/permission-batch-recovery.md)
+after the version-matched Drive/Wiki guides.
 
 ### Feishu Recording Lookup
 
@@ -884,32 +910,29 @@ For cross-runtime staged-content validation or isolated task-copy setup, enter
 [auto-repo-setup's Git safety reference](auto-repo-setup/references/git_safety.md).
 Before choosing a task checkout's storage location, follow its
 [isolated checkout preparation](auto-repo-setup/references/git_safety.md#isolated-checkout-preparation).
+For a new authorized sparse worktree or an index/scope check, enter
+[sparse preparation](git-safety-net/references/prevention_practices.md#initialize-an-authorized-sparse-worktree).
 
 For already-authorized delivery in a shared checkout, enter
 [auto-repo-setup's scoped delivery route](auto-repo-setup/references/git_safety.md#authorized-shared-checkout-delivery).
-It owns the authorization/tool gate, bounded coordination, partial-result recovery and final closure;
-keep ordinary sync, publication and recovery boundaries with their existing owners.
+For staged-set inspection, deletions or entries outside this task, follow
+[commit-scope hygiene](git-safety-net/references/prevention_practices.md#commit-scope-hygiene-dont-sweep-unrelated-staged-work).
 
 For inbound coordination during delivery or closeout, use
 [peer-message's receiving route](peer-message/SKILL.md#收到消息先分流).
-Keep the receiving and user-delivery procedure with that owner rather than duplicating it here.
 
-Stage only explicit owned file paths; never `git add -A` / `git add .`.
-Inspect the staged file list, including deletions,
-in a separate call before committing; investigate any entry outside the intended
-scope through `git-safety-net`. For branch publication and PR creation, follow
+For branch publication or PR creation, read
 [the publication recipe](github-ops/references/pr_operations.md#basic-pr-creation)
-before the first push. Keep its policy preflight, pinned source and remote readback
-in that owner rather than maintaining another push example here.
+before preparing the task checkout, including sparse and `--no-checkout` worktrees.
 
-For task closeout, enter
+For repository recovery or convergence under concurrent work, enter
 [git-safety-net's Outcome contract](git-safety-net/SKILL.md#outcome-contract--keep-the-safety-net-subordinate-to-the-users-job).
-Use this entry for recovery or repository convergence under concurrent work.
+For consolidating completed-task evidence, enter
+[task evidence closeout](daymade-macos/macos-cleaner/references/task-evidence-closeout.md).
 For stash export or independent recovery, follow the
 [stash recovery procedure](git-safety-net/references/recovery_playbook.md#export-and-recover-selected-stashes).
 For final resource readback against the original inventory, follow the
 [terminal-state procedure](git-safety-net/references/merge_verification.md#5-prove-the-user-visible-terminal-state).
-Keep runtime requirements, artifact layouts and verification commands in those owners.
 For a failed fast-forward or a partly synchronized checkout, use its
 [guarded checkout recovery procedure](git-safety-net/references/prevention_practices.md#guarded-checkout-recovery).
 For local snapshot failures involving an index lock or commit-hook refusal, use its
@@ -976,7 +999,8 @@ The existing pre-push entry checks committed current-review evidence for the exa
 `.githooks/pre-commit` and `.githooks/pre-push` dispatch to
 `scripts/git-mainline-guard.mjs`, which rejects direct local-main work and stale
 marketplace manifests or reused plugin versions against current main. The
-dispatchers preserve the shared PII guard when it is installed. Activate this
+shared PII delegate's runtime, deadline and recovery procedure live in
+[repository PII dispatch](references/ci-operations.md#repository-pii-dispatch). Activate this
 repository **from the canonical primary main checkout** with
 `git config core.hooksPath "$(pwd -P)/.githooks"`. The absolute path matters:
 `core.hooksPath` is shared by linked worktrees, so a relative path would let a
@@ -1029,8 +1053,12 @@ claiming the whole checkout is current.
 
 For divergent local `main`, recovery-material selection or branch/worktree retirement,
 follow [git-safety-net](git-safety-net/SKILL.md).
-For linked-worktree recovery preparation, including dependency-cache declarations, use its
-[preservation helper](git-safety-net/references/worktree-retirement-helper.md).
+For named linked-worktree retirement, retained recovery refs after squash, interrupted preparation
+or dependency-cache declarations, follow its complete
+[worktree retirement procedure](git-safety-net/references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal).
+If local Skill release receipts reference the review checkout being retired, first use
+[review archive relocation](daymade-skill/skill-creator/references/release-readiness.md#retire-a-temporary-review-checkout),
+then resume the worktree retirement procedure.
 When current content differs from an older published review, use the
 [historical publication example](git-safety-net/references/merge_verification.md#worked-example--old-review-content-landed-through-another-ref)
 before deciding supersession.
@@ -1127,9 +1155,10 @@ exemption. Select shipped-change review eligibility through
 A shared checkout's `marketplace.json` may already carry another session's staged
 or saved version bump; that working copy cannot establish the baseline.
 
-For a stale marketplace guard, a foreign plugin's apparent version regression,
-or a release candidate missing current main, follow
-[integration before review binding](daymade-skill/skill-creator/references/release-readiness.md#integrate-current-main-before-binding-review).
+Diagnose CI version comparisons through the
+[workflow's event-pair contract](.github/workflows/ci.yml). For source review,
+branch merge admission or snapshot/tag publication, follow
+[release readiness](daymade-skill/skill-creator/references/release-readiness.md).
 
 ## Available Skills
 

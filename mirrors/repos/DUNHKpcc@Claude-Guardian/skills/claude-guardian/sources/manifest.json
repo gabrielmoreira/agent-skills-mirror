@@ -10,7 +10,6 @@
       "original_filename": "服务器行业黑话.md",
       "original_sha256": "e2660c1b049d73e7a927594743f079cb0a5f10be9f72bad7928f10a5838bb68b",
       "path": "sources/S01-server-glossary.md",
-      "distributed_sha256": "e2660c1b049d73e7a927594743f079cb0a5f10be9f72bad7928f10a5838bb68b",
       "changes": [],
       "attribution": "来源页 https://www.nodeseek.com/post-1033-1；保留原文来源声明",
       "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
@@ -22,7 +21,6 @@
       "original_filename": "AI 所有支付方式汇总_核验版.md",
       "original_sha256": "9fc0962d5386011d3c292fd30a8f8530544899a82bda62d9c574ff62d4e52c75",
       "path": "sources/S02-ai-payments.md",
-      "distributed_sha256": "9fc0962d5386011d3c292fd30a8f8530544899a82bda62d9c574ff62d4e52c75",
       "changes": [],
       "attribution": "原文署名 DUNHKPcc；保留免费开源声明与证据来源",
       "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
@@ -41,7 +39,6 @@
       "companions": [
         {
           "path": "sources/S03-extracted-text.md",
-          "sha256": "63939e28f7dfb777fc7fb3cf4364bdc07605eba30d1a1f5e8f686e759ce1bc70",
           "limitations": [
             "仅提取 PDF 文字层；第 4 页手机表格和第 5 页事件表格需阅读 PDF 图片",
             "未经完整人工转录，不作为完整原文替代"
@@ -49,7 +46,6 @@
         },
         {
           "path": "sources/S03-source-text.md",
-          "sha256": "9789083417f707a303d4f5b920b75f35e4fe0044410d48bb7355dd1abf202de6",
           "limitations": [
             "所有者提供的 Markdown 源文本，与 PDF 文字略有出入；第 4、5 页的表格以 PDF 图片为准",
             "2026-10-21 按所有者要求删除末尾一段（“尽量不要在机房环境，模拟海外环境使用”），该段为原资料错误；其余内容不变"
@@ -64,7 +60,6 @@
       "original_filename": "Anthropic claude code 防封策略2.md",
       "original_sha256": "281b2881c5a016b5188aa71c1e7162e1742c98170d9685f2a4e24503ee7a5992",
       "path": "sources/S04-claude-guide.md",
-      "distributed_sha256": "281b2881c5a016b5188aa71c1e7162e1742c98170d9685f2a4e24503ee7a5992",
       "changes": [],
       "attribution": "原文指向 Fishason/Claude-anti-ban 并声明 MIT；原引用 LICENSE 和 CONTRIBUTING.md 未随输入提供",
       "redistribution": "用户已确认公开分发；保留第三方原有署名和许可声明，不构成统一重新许可"
@@ -76,7 +71,6 @@
       "original_filename": "Claude本地防护实战_月落惊征.md",
       "original_sha256": "f2a975d359161312763f02d6c5d2b4e796e52a57edf2a9ecb233445c8d2389d9",
       "path": "sources/S05-local-protection.md",
-      "distributed_sha256": "e37e3f97e585ccd336744f789048b41c05a479d3d78e4a7c7699d75f3fcc38cc",
       "changes": [
         "2026-11-11 Issue #28：标注维护者修订，替换步骤 4 部署示例，保留旧规则、失败清理精确新增批次、双存储读回；取消固定组件数量及跨版本保证，限定数量检查含义。其余原文及署名保留。"
       ],
@@ -90,7 +84,6 @@
       "original_filename": "macOS Claude 清理教程 保留 CLI.md",
       "original_sha256": "c49c3bfab9823e15a46bc13aeccf2045dd16bb8d3e553b90ae3aca2f52d75f99",
       "path": "sources/S06-macos-cleanup-sanitized.md",
-      "distributed_sha256": "2fc1d7694bd636b2bd449a31961872958155af78855b921caf9f72a796498a91",
       "changes": [
         "增加公开脱敏阅读版说明",
         "移除原第 230–259 行个人用户名、私有备份路径和机器执行历史；替换为通用验收提示",
@@ -107,7 +100,6 @@
       "original_filename": "NodeSeek_常用VPS脚本_可直接执行版(1).md",
       "original_sha256": "ba1c1f4b4a7c6f9737436c9b488bcb6d34f69c8e9687fdfcbb75b66eeb3767a3",
       "path": "sources/S07-vps-script-catalog.md",
-      "distributed_sha256": "ffbc46c8835389ee68fcc476570a7bac87ee498a80f9d0437e77034bd0a49663",
       "changes": [
         "2026-10-21 所有者将原目录精简为 IP 质量与网络测试清单，删除其余命令（重装系统、改网络、改防火墙等）"
       ],
@@ -138,7 +130,6 @@
       "companions": [
         {
           "path": "sources/S08-extracted-text.md",
-          "sha256": "c806fd5e26da8721f97ad2cc0bc11cdecf1114d12d9ca3c80453fafb0c09c505",
           "limitations": [
             "提取 PDF 文字层，并在文末转述第 3 到 5 页的截图",
             "未经完整人工转录，不作为完整原文替代"
@@ -153,12 +144,12 @@
       "original_filename": "Claude-Guardian-Windows部署经验记录.md",
       "original_sha256": "f9f61642cd72607045bc61dca1d5903717ebf4c463735d9762670005f650dddf",
       "path": "sources/S10-windows-deployment-sanitized.md",
-      "distributed_sha256": "4193e4a1ff0194f6f8d82ad3b9f15af2ee413b3bdf93221fe4a15cdebf7f6bb1",
       "changes": [
         "2026-11-03 所有者授权整份脱敏收录；保留全部章节、代码示例、部署结果、待办和晚间桌面开关事故复盘",
         "替换真实主机名、用户名、用户路径、Tailnet/路由器/出口地址、密码与出口短哈希；不随包提供原始机器记录",
         "新增按主题的章节导航和稳定锚点；编者注区分原作者观察、版本相关判断、工具实际能力与未验证状态",
-        "2026-11-04 按所有者归类，在编者注和导航中将远程操作指向本机高级扩展；本机从第二节开始，完整案例正文与顺序不变"
+        "2026-11-04 按所有者归类，在编者注和导航中将远程操作指向本机高级扩展；本机从第二节开始，完整案例正文与顺序不变",
+        "2026-11-15 dd739ba 精简来源说明、Tailnet 示例和第一台设备的状态待办；保留其余步骤与事故复盘，分发哈希同步更新"
       ],
       "attribution": "项目所有者 DUNHKPcc 提供的 2026-11-02～11-03 实战记录；新增说明标为编者注",
       "redistribution": "所有者 2026-11-03 明确授权全文脱敏后收录项目；保留原文第三方项目名称与链接，不重新许可第三方组件",
@@ -178,7 +169,6 @@
       "original_filename": "VPS 推荐 业务 / 性价比 / 高端家宽 三个文件夹（17 份 PDF）",
       "original_sha256": "7b16eb6c06c9aa98f06078c537681dad9bcd2b052aea7bf4ef60fd16e697d243",
       "path": "sources/vps-recommendations/INDEX.md",
-      "distributed_sha256": "7b16eb6c06c9aa98f06078c537681dad9bcd2b052aea7bf4ef60fd16e697d243",
       "changes": [
         "2026-10-21 所有者提供；PDF 用 Ghostscript（/ebook，图像 130dpi）压缩以减小体积，页面内容与链接保留，个别字符的文字层提取可能略有缺失；含 emoji 的中文文件名改为 ASCII 文件名（原名与原始哈希见各 companion）；INDEX.md 为本项目编写的索引"
       ],
@@ -303,7 +293,6 @@
       "original_filename": "VPS 线路优化与家宽中转教程.md",
       "original_sha256": "5401ecd636699bf2d41e3196c44f52e1a892443c9e409860a497e97890768ce6",
       "path": "sources/R02-vps-line-optimization.md",
-      "distributed_sha256": "c339fd4c511c5c2a007eb6f912211feb0a199dacaeb36ca840f80c87d14edcfb",
       "changes": [
         "2026-10-21 将 Obsidian 的 ![[图源/…png]] 图片链接改为相对路径图片，将 [[…]] 内部链接改为指向 R01 报告 PDF 的相对链接；其余文字不变"
       ],

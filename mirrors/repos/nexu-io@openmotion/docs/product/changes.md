@@ -1,5 +1,13 @@
 # 公开变更记录
 
+## 2026-11-15: Keep template browsing on Home and restore project title controls
+
+- Keep one template-library entry in the left application rail below Home, remove the duplicate editor template-library entries, and use the four-circle glyph so the remaining entry is recognizable.
+- Remove the folder glyph from the editable project title, restore a strong focus ring around the title input, and keep rail hover targets square so the navigation controls retain a consistent shape.
+- Simplify the layout menu to a single-choice list of three presets with a visible check mark for the selected preset.
+- Keep the default timeline compact at 224px, enough for the ruler and two standard tracks; deliberate divider resizing can still expand it.
+- Validation: targeted navigation, layout-menu and Dock tests passed, Studio type checking passed, and the production Studio build completed. This is a UI-only change; project/session, template selection and Agent connection behavior remain unchanged.
+
 ## 2026-11-13: Show per-round inline video progress and playback
 
 - Add an MCP App frame for video playback deliverables, with real persisted work/export state, manual playback after verification and independent historical versions.

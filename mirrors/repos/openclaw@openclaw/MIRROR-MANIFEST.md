@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 761 file(s) materialized.
+Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 762 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/openclaw` — 26 default patterns, 22 followed patterns, 761
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 22 |
-| Files         | 761 |
+| Files         | 762 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -812,35 +812,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 730 | ✓ | [`test/fixtures/mcp-events/README.md`](test/fixtures/mcp-events/README.md) |
 | 731 | ✓ | [`test/fixtures/model-catalog/README.md`](test/fixtures/model-catalog/README.md) |
 | 732 | ✓ | [`test/fixtures/sqlite/README.md`](test/fixtures/sqlite/README.md) |
-| 733 | ✓ | [`test/fixtures/state-corpus/README.md`](test/fixtures/state-corpus/README.md) |
-| 734 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
-| 735 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 736 | ✓ | [`ui/docs/design-system/README.md`](ui/docs/design-system/README.md) |
-| 737 | ✓ | [`ui/public/cloud-provider-icons/README.md`](ui/public/cloud-provider-icons/README.md) |
-| 738 | ✓ | [`ui/src/assets/themes/README.md`](ui/src/assets/themes/README.md) |
-| 739 | ✓ | [`ui/src/lib/reactive/README.md`](ui/src/lib/reactive/README.md) |
-| 740 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 741 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 742 | → | [`docs/auth-credential-semantics.md`](docs/auth-credential-semantics.md) |
-| 743 | → | [`docs/cli/mcp.md`](docs/cli/mcp.md) |
-| 744 | → | [`docs/gateway/audit.md`](docs/gateway/audit.md) |
-| 745 | → | [`docs/gateway/doctor/config-migrations.md`](docs/gateway/doctor/config-migrations.md) |
-| 746 | → | [`docs/gateway/secrets.md`](docs/gateway/secrets.md) |
-| 747 | → | [`docs/help/testing/suites.md`](docs/help/testing/suites.md) |
-| 748 | → | [`docs/help/testing/writing-tests.md`](docs/help/testing/writing-tests.md) |
-| 749 | → | [`docs/install/node.md`](docs/install/node.md) |
-| 750 | → | [`docs/plugins/codex-harness.md`](docs/plugins/codex-harness.md) |
-| 751 | → | [`docs/plugins/sdk-channel-plugins.md`](docs/plugins/sdk-channel-plugins.md) |
-| 752 | → | [`docs/plugins/sdk-provider-plugins/model-catalogs.md`](docs/plugins/sdk-provider-plugins/model-catalogs.md) |
-| 753 | → | [`docs/reference/database-schemas.md`](docs/reference/database-schemas.md) |
-| 754 | → | [`docs/reference/pull-request-review-flow.md`](docs/reference/pull-request-review-flow.md) |
-| 755 | → | [`docs/reference/RELEASING.md`](docs/reference/RELEASING.md) |
-| 756 | → | [`docs/security/incident-response.md`](docs/security/incident-response.md) |
-| 757 | → | [`docs/tools/plugin.md`](docs/tools/plugin.md) |
-| 758 | → | [`README.md`](README.md) |
-| 759 | → | [`SECURITY.md`](SECURITY.md) |
-| 760 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 761 | → | [`VISION.md`](VISION.md) |
+| 733 | ✓ | [`test/fixtures/state-corpus-populated/README.md`](test/fixtures/state-corpus-populated/README.md) |
+| 734 | ✓ | [`test/fixtures/state-corpus/README.md`](test/fixtures/state-corpus/README.md) |
+| 735 | ✓ | [`test/helpers/AGENTS.md`](test/helpers/AGENTS.md) |
+| 736 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 737 | ✓ | [`ui/docs/design-system/README.md`](ui/docs/design-system/README.md) |
+| 738 | ✓ | [`ui/public/cloud-provider-icons/README.md`](ui/public/cloud-provider-icons/README.md) |
+| 739 | ✓ | [`ui/src/assets/themes/README.md`](ui/src/assets/themes/README.md) |
+| 740 | ✓ | [`ui/src/lib/reactive/README.md`](ui/src/lib/reactive/README.md) |
+| 741 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 742 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 743 | → | [`docs/auth-credential-semantics.md`](docs/auth-credential-semantics.md) |
+| 744 | → | [`docs/cli/mcp.md`](docs/cli/mcp.md) |
+| 745 | → | [`docs/gateway/audit.md`](docs/gateway/audit.md) |
+| 746 | → | [`docs/gateway/doctor/config-migrations.md`](docs/gateway/doctor/config-migrations.md) |
+| 747 | → | [`docs/gateway/secrets.md`](docs/gateway/secrets.md) |
+| 748 | → | [`docs/help/testing/suites.md`](docs/help/testing/suites.md) |
+| 749 | → | [`docs/help/testing/writing-tests.md`](docs/help/testing/writing-tests.md) |
+| 750 | → | [`docs/install/node.md`](docs/install/node.md) |
+| 751 | → | [`docs/plugins/codex-harness.md`](docs/plugins/codex-harness.md) |
+| 752 | → | [`docs/plugins/sdk-channel-plugins.md`](docs/plugins/sdk-channel-plugins.md) |
+| 753 | → | [`docs/plugins/sdk-provider-plugins/model-catalogs.md`](docs/plugins/sdk-provider-plugins/model-catalogs.md) |
+| 754 | → | [`docs/reference/database-schemas.md`](docs/reference/database-schemas.md) |
+| 755 | → | [`docs/reference/pull-request-review-flow.md`](docs/reference/pull-request-review-flow.md) |
+| 756 | → | [`docs/reference/RELEASING.md`](docs/reference/RELEASING.md) |
+| 757 | → | [`docs/security/incident-response.md`](docs/security/incident-response.md) |
+| 758 | → | [`docs/tools/plugin.md`](docs/tools/plugin.md) |
+| 759 | → | [`README.md`](README.md) |
+| 760 | → | [`SECURITY.md`](SECURITY.md) |
+| 761 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 762 | → | [`VISION.md`](VISION.md) |
 
 ---
 

@@ -1277,7 +1277,20 @@ in this preamble, since the fallback differs per helper.
   Stage 1 acquire that leaves no authoring-owner token at all — deleting
   it outright, or editing it into ordinary prose — which cannot be
   detected by a live comment-log reader (PR #2901 review rounds 5-7,
-  chatgpt-codex-connector and Copilot)
+  chatgpt-codex-connector and Copilot). Reused-issue provenance stays
+  manual: the helper reads only the target's own owner-marker log, under
+  every verdict, and never follows an anchor to another issue, so it
+  does not perform the anchor-log step of contract.md's rule for a
+  non-anchor target (the trusted `mode=release-complete` check on the
+  anchor's log before a fresh `mode=acquire` of an issue that an
+  earlier set released). That step is performed by hand, and no verdict
+  stands in for it: `pass` shows only that the target's first acquire
+  still matches the live body. On an issue an earlier set held, the
+  helper may report `not-found` (for example, its first acquire names
+  another anchor) or `mismatch` (the body changed since that acquire),
+  as on issue `#4703` (observed 2026-10-31) and issue `#4694`. Either
+  result means the helper did not do the step, and neither authorizes
+  acquiring the issue as a new set
 
 **Review & Merge Phase Helpers:**
 
@@ -3809,6 +3822,18 @@ confirmation records. It never writes. Its modes are:
   [--subject <value>] --state open|all`: the counting records of one class,
   with their confirmation issue numbers. `--state open` lists only records
   whose confirmation issue is still open.
+- `--open-issues --class <class> --source <number>`, or `--open-issues --class
+  authoringChoice --set <id>`: the open confirmation issues for one class and
+  key, with `publication` `blocked` when it lists any and `free` otherwise
+  (kurone-kito/idd-skill#5177). The key is the source for every class but
+  `authoringChoice`, whose key is its set. The other key, or both, is a usage
+  error, because it would match a narrower or a different set of issues and
+  could report `free` while an open issue holds the class and key. A trusted void
+  marker removes a record from `--records` but never an issue from this list:
+  an issue stays listed, with `voided` true, while it is open and its body
+  record counts. A closed issue is never listed. Like `--records`, it does not
+  see an issue whose body record does not count, so it is `unreadable` rather
+  than `free` when the trusted policy lists no marker actor.
 - `--confirmation <number>`: one confirmation issue, with whether it still
   carries the authoring label.
 - `--links --issue <number>`: the link markers that point at one source issue.
@@ -6097,7 +6122,171 @@ marker does not change the stored scope or decision.
 This record is durable issue evidence: it is not added to the transient
 `OPERATIONAL_MARKERS` cleanup or hide-at-post-time registries.
 
+### Scope-decision owner opt-out design
+
+Design only. On 2026-11-15 the operator chose, in issue `#5222`, to describe a
+repository setting that would accept one other explicit owner decision in place
+of the exact `Scope decision: accept head <full 40-character SHA>` comment
+above. This section is that description. It adds no configuration key, no
+schema entry, and no code, and it changes no current merge-readiness result.
+Issue `#5221` owns the separate question of whether a count-only difference
+should be advisory; this section does not touch that classification.
+
+Today only the exact comment counts. F2 and F3 readiness accept it when its
+author is in the resolved trusted-actor set, its `lastEditedAt` is explicitly
+`null`, it carries no `idd-agent-authored` marker, and its SHA equals both the
+recorded post-push head and the live head. The resolved set is the
+authenticated viewer plus the first non-empty of the `--trusted-marker-logins`
+flag, the `IDD_TRUSTED_MARKER_ACTORS` environment variable, and the base
+config's `trustedMarkerActors`, plus collaborator logins when collaborator
+marker trust is enabled. The exact-comment rule is the default and stays in
+force unless the setting below is present and valid.
+
+#### Scope-decision opt-out setting contract
+
+- **Where it is read.** Only from schema-valid trusted base configuration:
+  `.github/idd/config.json` at the pull request's base ref, through the same
+  trusted-ref read that `collectPreMergeReadiness` uses for its other gates.
+  It is never read from the worktree or the pull request head. That reader
+  calls `loadTrustedIddConfig` with its default arguments, so on a confirmed
+  404 it can fall back to user-global layers; the opt-out reader must instead
+  pass `userGlobalFallback: false` and treat a 404 as absent.
+- **What valid means.** The whole file passes `schemas/policy.schema.json` and
+  the setting's own value matches its schema entry. Today the collector reads
+  the file as a plain JSON object and each gate defaults a bad section on its
+  own, so the opt-out reader would add the whole-file check. The root schema
+  sets `additionalProperties: false` and admits only `x-` extension keys
+  beyond its listed properties, so a setting written under any other name
+  before its schema entry exists makes the file schema-invalid, and an `x-`
+  key is never read as the setting.
+- **Absent, invalid, or unreadable.** The exact comment stays in force. An
+  unreadable file (any failure other than a confirmed 404) already stops the
+  whole readiness run with a `cannot confirm .github/idd/config.json` error,
+  which is stricter still; this design does not relax that stop.
+- **Who cannot select it.** A flag, an environment variable, a local file (a
+  user-global file included), the pull request head, and a worker assertion
+  cannot select it. Like `standingApprovals`, it would be repository-owned, so
+  a user-global value is ignored and rejected.
+- **Left open.** The key name and its schema entry belong to a later change.
+  Trusted actors do not change.
+
+#### Scope-decision opt-out sources
+
+Both sources need the same five bindings, and a decision counts only when each
+one matches live records:
+
+- the verified claim: the active claim's claim ID, verified the way every
+  other gate verifies it;
+- the accepted issue body: a digest of the body the claim accepted, so a later
+  edit to the issue cannot rewrite what was accepted;
+- the pull request: its number and the branch of its head;
+- the exact head and base: the full 40-character head SHA, equal to the live
+  head, and the base ref with its merge-base SHA;
+- the canonical path set: the sorted candidate path set that the
+  `scope-overrun` record stores and readiness recomputes against the merge
+  base.
+
+Source one is a review by a repository owner that names the changed scope and
+carries those bindings. The same review can be checked for edits (an explicit
+unedited state), authority (a trusted actor under the authority policy the
+repository already names), and freshness (the latest review of that author,
+bound to the live head, neither dismissed nor withdrawn by a later review). A
+review that only says the pull request looks fine is not this source: it names
+no scope and carries no binding. Accepting one would be a failure mode
+(preventive; no observed incident yet).
+
+Source two is a class that trusted base configuration already names, with the
+same bindings: an existing decision or authority class whose record carries
+all five bindings above.
+
+If neither source can be authenticated from existing records, the exact
+comment stays in force.
+
+#### Scope-decision opt-out: what existing records bind
+
+Each existing candidate, with what it binds and what it lacks:
+
+- **Approving pull request review** (`hasTrustedHeadApproval` in
+  `advisory-convergence.mts`, added for decision-rule diffs under issue
+  `#4015`). It binds a login in the resolved trusted actors (flag, environment
+  variable, or base config; no viewer or collaborator logins), the `APPROVED`
+  state, a review commit equal to the live head, and latest-review freshness (a
+  later `CHANGES_REQUESTED` review withdraws it, and a dismissal changes its
+  state). It lacks scope, claim, issue body, base, and path set. It also lacks
+  edit state: no review reader selects `PullRequestReview.lastEditedAt`. The
+  node-id edit lookup covers issue comments and review-thread comments only,
+  and `audit-pr-cleanup` reads a review's `updatedAt`, which the edit-state
+  contract above rejects as an edit check. An edited review cannot be
+  detected, and scope-overrun readiness consults no review today.
+- **Exact comment plus `scope-overrun` record** (today's source). The record
+  binds issue, effort, canonical path set, pull request number, branch, and
+  head; the decision is trusted, unedited, not agent-marked, and names the
+  head. It lacks the claim ID (the record carries only the writing agent ID),
+  an issue-body digest, and the base: readiness recomputes the path set against
+  the merge base, but the record does not store the base.
+- **`idd-external-check-waiver` marker.** It binds agent ID, claim ID, head
+  SHA, a check selector, a reason, and an expiry; its authority policy is
+  `ciGate.externalCheckWaivers.authorityPolicy`, and an edited marker is
+  ignored. It waives one named CI check, not a scope, and binds no issue body,
+  base, or path set. It is the closest structural precedent, not a source.
+- **Provisional decision record** (`provisional-decision-state.mts`). It binds
+  the source repository and issue number, a title and body snapshot
+  (`bodySha256`), bundle and decision generations, claim lineage, and evidence
+  references. It records pickup choices for a needs-decision source, not a
+  scope acceptance, and binds no base or path set; a head appears only as
+  completion evidence.
+- **Decision classes** (`autoDecide.*` and `standingApprovals.*`).
+  `runtimeQuestion` leaves a B3 scope overrun on its own route, so its
+  confirmation records cannot serve. The `split` standing record carries only
+  class, set, anchor, ceiling, and option. The other classes cover other
+  subjects: needs-decision pickup, authoring choices, worktree remnants, B1
+  leftovers, budget raises, and held-set release. None binds a pull request
+  head, base, or path set.
+- **Authority classes** (`trustedMarkerActors`, `maintainerApprovalActorPolicy`,
+  and `ciGate.externalCheckWaivers.authorityPolicy`). They prove who may act,
+  not what was accepted.
+
+No existing record carries all five bindings together and can be checked for
+review edits, so neither source can be authenticated from existing records
+today.
+
+#### Scope-decision opt-out: what stays blocking
+
+- A genuine scope expansion still needs an explicit owner decision.
+- Missing, stale, edited, or self-authored evidence stays blocking, and so does
+  a moved head: a review left on an older head, or an edited review, is not the
+  decision for the live head.
+- Where agents and maintainers share one GitHub login (this source repository
+  does), a trusted-actor check cannot tell an owner's review from an
+  agent-written one, and GitHub does not let the author of a pull request
+  approve it. The `idd-agent-authored` suffix stays attribution only, as
+  raised during review of pull request `#4688` on 2026-10-24
+  ([attribution marker](https://github.com/kurone-kito/idd-skill/pull/4688#discussion_r4368595779)).
+  A verifier built from this design must show that a review was not
+  self-authored before it can count.
+- The trusted actor list does not change.
+
+#### Scope-decision opt-out: missing verifier
+
+The missing verifier is a scope-bound owner-review verifier. It would read each
+pull request review together with its edit state (`lastEditedAt`) and review
+commit; parse one canonical review-body grammar that names the claim ID, the
+issue-body digest, the pull request number, the head SHA, the base ref and
+merge-base SHA, and the canonical path set; compare each of them against live
+records; and apply the same trusted-actor, edit, and freshness rules as the
+exact comment, plus a rule that shows the review was not self-authored. The
+exact comment's actor set can today come from a flag or an environment
+variable, so the verifier must also name which actor set authenticates a
+review. Its
+design is the follow-up. This issue implements none of it and adds no setting.
+
+<!-- markdownlint-disable MD013 -->
+
+Recommendation: no existing source proves another owner decision. The exact comment stays in force. Smallest follow-up: name the missing verifier here, and do not add a setting in this issue.
+
 ### Local validation evidence helper
+
+<!-- markdownlint-enable MD013 -->
 
 - Command:
   `node scripts/local-validation-evidence.mjs --pr <n> --head-sha <40-hex>
@@ -7735,6 +7924,14 @@ that runs it is
   --candidate-files '<JSON array>'` and only `--target issue`; optionally
   add `--pull-request --branch --head-sha` together for the post-push record
   (see the [scope-overrun evidence marker](#scope-overrun-evidence-marker)).
+- Commit inventory (`commit-inventory`, kurone-kito/idd-skill#5213) takes
+  `--agent-id --branch --base-sha --head-sha --entries '<JSON array>'` and only
+  `--target issue`. Each entry has a full `sha`, `paths`, a `disposition` of
+  `child`, `in-base`, or `not-reusable`, and a `reach` of `pushed` or
+  `unpushed`; an entry without a valid reach is refused. `marker-helpers.mts`
+  holds the reference selector for this rule. The cleanup procedure applies the
+  same rule by reading the comments, and it accepts the record only when exactly
+  one trusted, unedited one exists for the live head.
 - One-command watermark (`watermark` only): `--from-pr <n>` derives
   `--head-sha` / `--max-activity-at` / `--total-item-count` /
   `--ci-completed-at` from a fresh `review-activity-snapshot` of PR `<n>` and
@@ -8821,6 +9018,26 @@ Compare the live base and default for D3.5 with
   blocker, whose detail names the extra/missing issue numbers (an extra
   number's detail names `--closing-issues` as the remedy for a genuine
   multi-issue close) and each stray commit's `sha` + issue number.
+- `provisionalRead` (#5237) is the trusted read of the claimed source
+  issue's provisional-decision history, taken before the `closingSet`
+  evidence is built. It is evidence for a later closing-set exception
+  only: it adds no blocker, changes neither `ready` nor `closingSet`, and
+  grants no provisional treatment by itself. A claim-bound run always
+  emits it (optional in the schema); `--claimless` omits it. `status` is
+  `"bound"` when the replayed history of the source, with every record
+  marker trusted and unedited, holds unconfirmed work whose verified claim
+  lineage contains this run's claim and whose claim branch equals the live
+  head ref of the PR; no provisional record carries a head before merge,
+  so that binding is derived and the evaluated head is `prHeadSha`. It then
+  names the source, PR, head, claim, branch, bundle generation, and each
+  bound decision's latest record id. `"stopped"` names a `reason`: a
+  missing record (`record-missing`, every ordinary issue, which costs no
+  extra read), an untrusted or edited record marker, an unreadable history,
+  an unverifiable claim or completion proof, a replay refusal (with its
+  issue codes), a confirmed or reworked source, or a claim or head
+  mismatch. `"unavailable"` means the profile is `instructions-only` (or
+  names no helper runtime), so the replay is not called. A stop never
+  creates the exception.
 - `deferFollowUps` (#3624) is the deferred-follow-up merge-gate evidence:
   `{ checked, unverifiedReason, items: [{ number, heldByAuthoringLabel,
   origin, reconciled }] }`. A follow-up is an open issue carrying the
@@ -10162,7 +10379,7 @@ and that helper detail is the next action.
 | `primary-update-failed`         | Hold. The primary worktree update failed for a reason this helper does not classify. Nothing was removed. The operator inspects the primary worktree. Do not reset or stash.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `inconsistent-worktree-state`   | Hold. The worktree path, its git registration, and the claim branch disagree, or git could not read them. Nothing was removed. The operator checks git worktree list and the claim.                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `dirty-worktree`                | Hold. Any other untracked, modified, or ignored content remains in the worktree. Nothing was removed. When the detail says the helper did not move `node_modules/`, preserve that directory by hand too; preserve all other content outside the worktree, including reproducible configured-command output, then rerun.                                                                                                                                                                                                                                                                                         |
-| `submodule-worktree`            | Hold. The worktree holds a populated submodule. Nothing was removed. The F4 session preserves that content outside the worktree by hand. The operator then runs `git -C <issue-worktree-path> submodule deinit --all` with the worktree still registered, and the helper is rerun.                                                                                                                                                                                                                                                                                                                              |
+| `submodule-worktree`            | Hold. The worktree holds a populated submodule. Nothing was removed. The F4 session preserves that content outside the worktree by hand. The operator then runs `git -C <issue-worktree-path> submodule deinit --all` with the worktree still registered, and the helper is rerun. A later run does not remove the worktree while the modules directory of its git directory remains.                                                                                                                                                                                                                           |
 | `branch-tip-mismatch`           | Hold. The local branch tip does not equal the proof branch tip, or the ref is missing while its worktree exists. Nothing was removed. The operator checks the branch state.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `local-branch-unmerged-commits` | Hold. git branch -d refused, and the local tip is not the proof head. The operator comments on the issue and makes a fresh claim check before any forced deletion; keep any preserved `node_modules/` destination named in the step 5 record.                                                                                                                                                                                                                                                                                                                                                                   |
 | `worktree-remove-refused`       | Failed. git worktree remove refused after the checks passed, so the worktree may be partly changed. The step 5 record names any preserved `node_modules/` destination; keep it while inspecting the worktree. A rerun reads the proof again and posts nothing.                                                                                                                                                                                                                                                                                                                                                  |
@@ -11039,10 +11256,11 @@ reporting `branch_outcome: retained_unmerged` (issue #2331).
   submodules cannot be moved or removed`. Under the removal helper, a
   populated submodule is refused (`submodule-worktree`). The operator runs
   `git -C <issue-worktree-path> submodule deinit --all` with the worktree still
-  registered, and then reruns the helper. `git worktree remove --force` is a
-  manual operator action only, outside F4, and it unregisters the path, so the
-  helper cannot finish
-  afterward (`idd-merge.instructions.md`).
+  registered, and then reruns the helper. A later run does not remove the
+  worktree while the modules directory of its git directory remains.
+  `git worktree remove --force` is a manual operator action only, outside F4,
+  and it unregisters the path, so the helper cannot finish afterward
+  (`idd-merge.instructions.md`).
 - **`merge.autoStash=true` hides a dirty primary worktree** (step 4): F4
   holds a dirty primary worktree as `primary-worktree-dirty` and never
   stashes, but a plain `git merge --ff-only` stashes for itself when
@@ -12013,6 +12231,89 @@ proposal as a held split draft: it holds this issue, publishes a held roadmap
 whose children record `Split out of #<n>`, and comments the link. If refused,
 the comment stands. Never add needs-decision or ask a human. Do not edit or
 roll back the issue body. See the [scope-overrun rationale](idd-design-rationale.md#b3--scope-overrun-returns-to-authoring).
+
+### Advisory estimate drift evidence at F2/F3
+
+Issue `#5221` asked for the smallest existing evidence that could keep a
+count-only difference between a checked S or M estimate and the canonical
+changed paths advisory at merge readiness, or a statement that no such
+evidence exists. This section records the answer. It changes no merge-readiness
+result: `resolveScopeOverrunReadiness`, the claim-bound readiness gate, and
+`claimed-push` are unchanged, the issue body effort marker is untouched, and a
+plan comment stays evidence, not an owner acceptance and not permission to
+merge.
+
+The two readers disagree today. D2 (`claimed-push`) reports a count over a
+coherent S or M estimate as `advisory-drift` and lets the push continue (see
+[B3 scope assessment outcomes](#b3-scope-assessment-outcomes)). F2/F3 reads the
+same count through `resolveScopeOverrunReadiness` and returns status `missing`
+with reason `no-record`; the `scope-overrun` blocker then stays until a trusted
+owner names the exact head (see the
+[Scope-overrun evidence marker](#scope-overrun-evidence-marker)). That is the
+case for an S estimate of 3 against 5, 9, or 12 canonical paths and for an M
+estimate of 8 against 9 or 12. Counts at 3 and at 8 are within the estimate and
+raise no blocker.
+
+#### Trust table
+
+`Verified evidence` means a helper recomputes the binding from provider, git, or
+trusted-marker data and a reviewer can rerun that computation. `Worker
+assertion` means the binding rests on what the worker wrote, or on a value that
+neither F2/F3 nor D2 rechecks against an owner act.
+
+<!-- dprint-ignore-start -->
+| Binding | Where it comes from | Trust | What it does not show |
+| --- | --- | --- | --- |
+| Active claim | The `claim-ownership` gate reads the trusted `claimed-by` markers and the activation nonce winner; D2 runs `resume-claim-routing --assert` with the worktree lock and token record | Verified evidence | Who owns the work. The scope audit takes no claim input, so a held claim does not soften the count, and a lost claim keeps its own blocker next to it |
+| Accepted issue body | The live issue title and body from the provider, and a SHA-256 of the body bytes in the D2 assessment | Worker assertion | That the owner accepted this text, or that the change still meets it. No record ties the body to an owner act, and neither the readiness collector nor `claimed-push` reads the body's edit history. The checksum shows only that the bytes are the ones assessed |
+| Branch and pull request | The pull request number and head ref from the provider; a scope record's fields must match them, or the result is `record-conflict` | Verified evidence | What the change is for. It names which change is audited |
+| Merge base | `git merge-base` of `refs/remotes/origin/<base>` and the pull request head, computed locally | Verified evidence | That the local base ref is fresh. The helper does not fetch, so a stale ref is the caller's to catch; a missing ref fails closed |
+| Exact head | The pull request head SHA from the provider; a scope record and an owner decision each name one 40-character SHA | Verified evidence | Why the bytes changed. A new head needs its own record and decision; the evidence of an earlier head returns `current-head-mismatch` or `decision-head-mismatch` |
+| Numerical audit | The `effort-candidate-file-limit` finding of `audit-authored-issue`, run on the body and on the body led by the canonical paths | Verified evidence | Intent, complexity, safety, or the ability to finish. It measures breadth only, and anyone can rerun the arithmetic |
+| Canonical change set | The pull request's changed files plus rename sources, minus sync targets and generated mirrors read at the merge base, in UTF-8 byte order | Verified evidence | That the paths serve the accepted intent. A different deliverable can reuse the same names and the same count |
+| B2 plan comment | A free-form comment the worker posts on the issue | Worker assertion | Anything the audit reads: neither F2/F3 nor D2 reads it, and the trusted-login filter cannot tell a worker's comment from an owner's when both post as one login |
+<!-- dprint-ignore-end -->
+
+A checksum, a self-authored plan, and matching file names do not by themselves
+show the same intent. Anyone can recompute a checksum from the public inputs,
+and a forged plan can copy the issue number, claim, branch, pull request, head,
+effort, and both path lists (preventive; no observed incident yet). The only
+existing path that makes the count over a checked S or M
+estimate non-blocking is an exact-head owner decision on a trusted, unedited
+post-push scope record. That is a human acceptance of one head, not advisory
+evidence, and it is outside this decision.
+
+#### Fixtures
+
+The tests named below carry the prefix `advisory evidence (#5221)`. Each asserts
+the result of the unchanged code; none relabels a blocked count as advisory.
+
+- `tests/pre-merge-readiness.test.mts`: a count-only S or M difference stays
+  `missing` with reason `no-record`, and counts within the estimate return no
+  scope result; an added deliverable, a permissions path, and a safety path at the
+  same count return the count-only result; incomplete evidence throws or stays
+  blocked; a lost claim and unfinished validation keep their own blockers next
+  to the count block; a stale decision or an `idd-agent-authored` decision stays
+  `invalid`; a forged plan whose copied identifiers all match is deep-equal to
+  the no-plan result.
+- `tests/claimed-push.test.mts`: the same S and M counts are `advisory-drift` at
+  D2, and only S 3 against 5 takes the S-to-M copy; the same count with an
+  added deliverable, a permissions path, or a safety path keeps the
+  disposition but changes the checksum; an unreadable issue, a lost claim, a
+  failing validation gate, and a stale expected checksum each refuse or stop the
+  push; plan-like text copied into a case that already refuses leaves the
+  refusal unchanged.
+
+#### Finding
+
+None of the verified bindings ties the change to the accepted intent. The one
+binding that would, the accepted issue body measured against the diff, is a
+worker assertion, and the B2 plan comment is another. Existing evidence
+therefore cannot separate a count-only difference from a new scope. Counts, a
+checksum, or matching names can make a difference look small; only an owner act
+accepts it. This section files no follow-up and removes none that other issues
+already name. <!-- markdownlint-disable-next-line MD013 -->
+Recommendation: existing evidence cannot separate them. Leave the count blocked at merge readiness. No follow-up in this issue.
 
 ## Dead-export audit (kurone-kito/idd-skill#3478)
 

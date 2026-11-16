@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 4 followed patterns, 49 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 4 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 4 followed patterns, 49 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 49 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,50 +67,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/e2e-cucumber-playwright/references/cucumber-best-practices.md`](.agents/skills/e2e-cucumber-playwright/references/cucumber-best-practices.md) |
 | 4 | ✓ | [`.agents/skills/e2e-cucumber-playwright/references/playwright-best-practices.md`](.agents/skills/e2e-cucumber-playwright/references/playwright-best-practices.md) |
 | 5 | ✓ | [`.agents/skills/e2e-cucumber-playwright/SKILL.md`](.agents/skills/e2e-cucumber-playwright/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/frontend-code-review/references/accessibility-ui.md`](.agents/skills/frontend-code-review/references/accessibility-ui.md) |
-| 7 | ✓ | [`.agents/skills/frontend-code-review/references/code-quality.md`](.agents/skills/frontend-code-review/references/code-quality.md) |
-| 8 | ✓ | [`.agents/skills/frontend-code-review/references/component-architecture.md`](.agents/skills/frontend-code-review/references/component-architecture.md) |
-| 9 | ✓ | [`.agents/skills/frontend-code-review/references/data-query-contracts.md`](.agents/skills/frontend-code-review/references/data-query-contracts.md) |
-| 10 | ✓ | [`.agents/skills/frontend-code-review/references/dify-ui.md`](.agents/skills/frontend-code-review/references/dify-ui.md) |
-| 11 | ✓ | [`.agents/skills/frontend-code-review/references/performance.md`](.agents/skills/frontend-code-review/references/performance.md) |
-| 12 | ✓ | [`.agents/skills/frontend-code-review/references/testing.md`](.agents/skills/frontend-code-review/references/testing.md) |
-| 13 | ✓ | [`.agents/skills/frontend-code-review/SKILL.md`](.agents/skills/frontend-code-review/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/how-to-write-component/references/data.md`](.agents/skills/how-to-write-component/references/data.md) |
-| 16 | ✓ | [`.agents/skills/how-to-write-component/references/interactions.md`](.agents/skills/how-to-write-component/references/interactions.md) |
-| 17 | ✓ | [`.agents/skills/how-to-write-component/references/ownership.md`](.agents/skills/how-to-write-component/references/ownership.md) |
-| 18 | ✓ | [`.agents/skills/how-to-write-component/references/runtime.md`](.agents/skills/how-to-write-component/references/runtime.md) |
-| 19 | ✓ | [`.agents/skills/how-to-write-component/references/state.md`](.agents/skills/how-to-write-component/references/state.md) |
-| 20 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
-| 21 | ✓ | [`.github/instructions/code-review.instructions.md`](.github/instructions/code-review.instructions.md) |
-| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
-| 24 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 25 | ✓ | [`cli/src/commands/AGENTS.md`](cli/src/commands/AGENTS.md) |
-| 26 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
-| 27 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 28 | ✓ | [`e2e/features/agent-v2/AGENTS.md`](e2e/features/agent-v2/AGENTS.md) |
-| 29 | ✓ | [`e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md`](e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md) |
-| 30 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 31 | ✓ | [`skills/difyctl/references/build-workflow.md`](skills/difyctl/references/build-workflow.md) |
-| 32 | ✓ | [`skills/difyctl/references/build-workflow/build.md`](skills/difyctl/references/build-workflow/build.md) |
-| 33 | ✓ | [`skills/difyctl/references/build-workflow/change.md`](skills/difyctl/references/build-workflow/change.md) |
-| 34 | ✓ | [`skills/difyctl/references/build-workflow/dsl.md`](skills/difyctl/references/build-workflow/dsl.md) |
-| 35 | ✓ | [`skills/difyctl/references/build-workflow/handover.md`](skills/difyctl/references/build-workflow/handover.md) |
-| 36 | ✓ | [`skills/difyctl/references/build-workflow/plan.md`](skills/difyctl/references/build-workflow/plan.md) |
-| 37 | ✓ | [`skills/difyctl/references/build-workflow/spec.md`](skills/difyctl/references/build-workflow/spec.md) |
-| 38 | ✓ | [`skills/difyctl/references/operations.md`](skills/difyctl/references/operations.md) |
-| 39 | ✓ | [`skills/difyctl/references/plugins.md`](skills/difyctl/references/plugins.md) |
-| 40 | ✓ | [`skills/difyctl/references/setup.md`](skills/difyctl/references/setup.md) |
-| 41 | ✓ | [`skills/difyctl/references/workspace-skills.md`](skills/difyctl/references/workspace-skills.md) |
-| 42 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
-| 43 | ✓ | [`skills/README.md`](skills/README.md) |
-| 44 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 45 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
-| 46 | → | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
-| 47 | → | [`docs/BACKEND_DATABASE_SCHEMA.md`](docs/BACKEND_DATABASE_SCHEMA.md) |
-| 48 | → | [`docs/BACKEND_REPOSITORIES.md`](docs/BACKEND_REPOSITORIES.md) |
-| 49 | → | [`docs/BACKEND_SQLALCHEMY.md`](docs/BACKEND_SQLALCHEMY.md) |
+| 6 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/how-to-write-component/references/data.md`](.agents/skills/how-to-write-component/references/data.md) |
+| 8 | ✓ | [`.agents/skills/how-to-write-component/references/interactions.md`](.agents/skills/how-to-write-component/references/interactions.md) |
+| 9 | ✓ | [`.agents/skills/how-to-write-component/references/ownership.md`](.agents/skills/how-to-write-component/references/ownership.md) |
+| 10 | ✓ | [`.agents/skills/how-to-write-component/references/runtime.md`](.agents/skills/how-to-write-component/references/runtime.md) |
+| 11 | ✓ | [`.agents/skills/how-to-write-component/references/state.md`](.agents/skills/how-to-write-component/references/state.md) |
+| 12 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
+| 13 | ✓ | [`.github/instructions/code-review.instructions.md`](.github/instructions/code-review.instructions.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
+| 16 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
+| 17 | ✓ | [`cli/src/commands/AGENTS.md`](cli/src/commands/AGENTS.md) |
+| 18 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
+| 19 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
+| 20 | ✓ | [`e2e/features/agent-v2/AGENTS.md`](e2e/features/agent-v2/AGENTS.md) |
+| 21 | ✓ | [`e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md`](e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md) |
+| 22 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
+| 23 | ✓ | [`skills/difyctl/references/build-workflow.md`](skills/difyctl/references/build-workflow.md) |
+| 24 | ✓ | [`skills/difyctl/references/build-workflow/build.md`](skills/difyctl/references/build-workflow/build.md) |
+| 25 | ✓ | [`skills/difyctl/references/build-workflow/change.md`](skills/difyctl/references/build-workflow/change.md) |
+| 26 | ✓ | [`skills/difyctl/references/build-workflow/dsl.md`](skills/difyctl/references/build-workflow/dsl.md) |
+| 27 | ✓ | [`skills/difyctl/references/build-workflow/handover.md`](skills/difyctl/references/build-workflow/handover.md) |
+| 28 | ✓ | [`skills/difyctl/references/build-workflow/plan.md`](skills/difyctl/references/build-workflow/plan.md) |
+| 29 | ✓ | [`skills/difyctl/references/build-workflow/spec.md`](skills/difyctl/references/build-workflow/spec.md) |
+| 30 | ✓ | [`skills/difyctl/references/operations.md`](skills/difyctl/references/operations.md) |
+| 31 | ✓ | [`skills/difyctl/references/plugins.md`](skills/difyctl/references/plugins.md) |
+| 32 | ✓ | [`skills/difyctl/references/setup.md`](skills/difyctl/references/setup.md) |
+| 33 | ✓ | [`skills/difyctl/references/workspace-skills.md`](skills/difyctl/references/workspace-skills.md) |
+| 34 | ✓ | [`skills/difyctl/SKILL.md`](skills/difyctl/SKILL.md) |
+| 35 | ✓ | [`skills/README.md`](skills/README.md) |
+| 36 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 37 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
+| 38 | → | [`docs/BACKEND_ARCHITECTURE.md`](docs/BACKEND_ARCHITECTURE.md) |
+| 39 | → | [`docs/BACKEND_DATABASE_SCHEMA.md`](docs/BACKEND_DATABASE_SCHEMA.md) |
+| 40 | → | [`docs/BACKEND_REPOSITORIES.md`](docs/BACKEND_REPOSITORIES.md) |
+| 41 | → | [`docs/BACKEND_SQLALCHEMY.md`](docs/BACKEND_SQLALCHEMY.md) |
 
 ---
 

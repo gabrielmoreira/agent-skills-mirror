@@ -1,10 +1,10 @@
 # fal.ai BYOK
 
-Checked against official documentation on 2026-11-13. Sections: discovery, request templates, polling, errors, sources.
+Checked against official documentation on 2026-11-15. Sections: discovery, request templates, polling, errors, sources.
 
 ## Setup and discovery
 
-Save the key in editor **Media providers**. `FAL_KEY` is the environment alternative; a saved key wins. The service injects `Authorization: Key ...` (not Bearer). Agents use `openmotion_media_use`; never read credential files or put keys in tool arguments. Shell examples describe the wire protocol for service implementation or user-run diagnostics, using environment placeholders only.
+Save the key in editor **Model providers**. `FAL_KEY` is the environment alternative; a saved key wins. The service injects `Authorization: Key ...` (not Bearer). Agents use `openmotion_media_use`; never read credential files or put keys in tool arguments. Shell examples describe the wire protocol for service implementation or user-run diagnostics, using environment placeholders only.
 
 Call the tool with:
 
@@ -43,9 +43,9 @@ Speech — [Kokoro schema](https://fal.ai/models/fal-ai/kokoro/american-english/
 {"action":"generate","provider":"fal","projectId":"project","requestId":"fal-speech-01","model":"fal-ai/kokoro/american-english","modality":"audio","mode":"text-to-audio","prompt":"Welcome to a quiet morning.","parameters":{"voice":"af_heart","speed":1}}
 ```
 
-Kokoro expects **`prompt`**, so this adapter requires `mode: "text-to-audio"` even for spoken content. For a different speech model whose schema expects **`text`**, use `mode: "text-to-speech"`. This mode controls the input field, not whether the output contains speech. Do not assume every TTS model uses `text`.
+Kokoro expects **`prompt`**. The exact `fal-ai/kokoro/american-english` adapter preserves that field for both audio and speech modes. For a different speech model whose schema expects **`text`**, use `mode: "text-to-speech"`. This mode controls the input field, not whether the output contains speech. Do not assume every TTS model uses `text`.
 
-Wire mapping: POST `https://queue.fal.run/{full model ID}` with `{...parameters,prompt}`; replace `prompt` with `text` only for `text-to-speech`. The full model ID stays in the URL, not the JSON body. The image template becomes:
+Wire mapping: POST `https://queue.fal.run/{full model ID}` with `{...parameters,prompt}`; replace `prompt` with `text` for other `text-to-speech` endpoints. The full model ID stays in the URL, not the JSON body. The image template becomes:
 
 ```bash
 curl --fail-with-body --silent --show-error 'https://queue.fal.run/fal-ai/flux/schnell' \
@@ -95,3 +95,5 @@ Current OpenMotion non-2xx handling does **not** expose the provider's raw body 
 
 - [Key setup](https://fal.ai/dashboard/keys), [catalogue API](https://fal.ai/docs/platform-apis/v1/models)
 - [Queue overview](https://fal.ai/docs/documentation/model-apis/inference/queue), [submit](https://fal.ai/docs/api-reference/inference-api/queue/submit), [status](https://fal.ai/docs/api-reference/inference-api/queue/status), [result](https://fal.ai/docs/api-reference/inference-api/queue/result), [cancel](https://fal.ai/docs/api-reference/inference-api/queue/cancel)
+
+Maintained model discovery includes `generationOptions` for FLUX Schnell, Wan 2.2 and Kokoro. Studio and MCP use these same native keys and types; unspecified endpoints require their own current schema.

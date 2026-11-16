@@ -14,6 +14,7 @@
 - [README 本地资源清单与校验](readme/RESOURCES.md)
 - [产品演示：Codex、独立 Studio、Claude Code 与模板交接](product-tour.md)
 - [Motion MD：架构与 Skill 包](motion-md.md) / [中文](motion-md.zh-CN.md)
+- [Motion Package v0.2 specification](motion-package-spec.md) / [Authoring toolkit and example package](../packages/motion-package/README.md)
 - [真人叙事配方与六组 Motion Design 前后对比](motion-design-examples.zh-CN.md) / [English](motion-design-examples.md)
 - [Presenter Tech 科技风口播模板](../library/templates/presenter-tech/README.md) — 本地包、制作指南与验证记录
 - [资源索引](collections/README.md) / [中文](collections/README.zh-CN.md)
@@ -26,7 +27,10 @@
 - [editor-fork.md](editor-fork.md)
 - [hyperframes.md](hyperframes.md)
 - [mcp-phase1-tools.md](mcp-phase1-tools.md)
+- [Workspace assets, versions and Agent creation](assets.md)
 - [model-gateway.md](model-gateway.md)
+- [Application settings and model connections](provider-settings.md)
+- [Local Agent installation, sign-in and model selection](local-agents.md)
 - [openmotion-director.md](openmotion-director.md)
 - [motion-extension-scope.md](motion-extension-scope.md)
 - [npm-installation.md](npm-installation.md)
@@ -45,6 +49,7 @@
 - [Repository template source, storage checks and CMS publication](template-repository.md)
 - [templates/requirement.md](templates/requirement.md)
 - [test-packages.md](test-packages.md)
+- [Timeline interaction regression matrix](testing/timeline-interactions.md)
 - [Tracking integration and agent task template](../tracking/INTEGRATION.md)
 
 ## 分发与验证
@@ -52,3 +57,5 @@
 npm、插件 ZIP 和完整 ZIP 共用 `scripts/distribution.ts` 的文件清单，文档必须逐项批准；源码仓库的存在不表示应当随包发送。运行时必须保留 Skill 引用、MCP 契约和许可证。工程、用户配置、凭据、构建日志与验收媒体留在包外。
 
 使用项目自身的确定性检查，按变化运行相应类型检查、单测与真实环境验收。区分本地通过、CI 通过、目标机安装、宿主加载、模型创作和人工视觉验收，不将一种证据替代另一种。
+
+- [Generation options](generation-options.md): shared model-specific controls, parameter types and resizable asset panes.

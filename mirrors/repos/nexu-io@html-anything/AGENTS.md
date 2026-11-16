@@ -35,7 +35,7 @@ All Agents must use [packages/design-system](packages/design-system/README.md) f
 4. **Change the source, then generate.** Run `npm run design:tokens` after changing token values or mirrored brand assets. Do not hand-edit generated CSS or compatibility mirrors. Old entry paths may forward to the package but must not become independent implementations. Preserve upstream attribution and font licenses.
 5. **Verify propagation.** For shared visual changes, check the affected surfaces together, including both themes, startup/loading, controls and dialogs, template browsing and narrow layouts where applicable. Run `npm run design:check` and the boundary-appropriate validation above. Keep automated checks, browser inspection and human visual acceptance distinct.
 6. **Keep the visual workbench independent.** `npm run design:dev` launches only the package-owned workbench. Its UI and Node service may depend on design-system sources and Node built-ins, never Studio, application services, project data or business modules. UI saves and Agent edits share `tokens.json`; downstream modules consume the generated system through their normal build/refresh. Run `npm run design:test` for workbench changes.
-7. **Keep every Agent aligned.** `AGENTS.md` is authoritative; `CLAUDE.md` and `cloud.md` point to this section. Include this requirement in delegated task context and code reviews. A feature-local style exception must have a concrete domain reason; an older hard-coded value elsewhere is not permission to add another one.
+7. **Keep every Agent aligned.** `AGENTS.md` is authoritative; `CLAUDE.md` points to this section. Include this requirement in delegated task context and code reviews. A feature-local style exception must have a concrete domain reason; an older hard-coded value elsewhere is not permission to add another one.
 
 The package is a local source module within the standalone root npm application. Do not add workspace-only dependencies or publish it without separate authorization.
 
@@ -58,6 +58,17 @@ Follow [the shared design system](docs/design-system.md#interaction-and-feedback
 - Reserve geometry for slow content with shared Skeletons and poster fallbacks. Resource errors replace their reserved content and provide recovery; do not leave indefinite loading after a known failure. Stop offscreen/background video work.
 - Verify actual opened menus, Toasts, loading/error states and narrow layouts in both themes. A component rendered in source is not evidence that it layers or behaves correctly in the browser.
 
+## Core capabilities and shared APIs
+
+Every new or extended core product capability must be callable by external Agents through the public MCP contract. This includes asset creation and management, model execution, references and versions, project import and editing, preview and export. Keep operations usable independently so external Agents can compose them into their own workflows.
+
+1. **One capability implementation.** Define atomic operations in shared domain services with maintained inputs, outputs and error semantics. MCP adapters and application API routes call that same implementation and use the same persisted data, jobs and provider integrations.
+2. **Product interfaces compose the same operations.** Build controls, workflows and in-app Agent experiences around developer and user needs. They invoke the same API or MCP capabilities exposed to external callers. HTTP and MCP may use different transport adapters, including browser file upload, while converging on the same validation and business execution. Keep presentation state in the UI and business rules in the shared service.
+3. **Preserve operation semantics across entry points.** Carry explicit workspace/project/asset identities, pinned references and versions, request deduplication, conflict protection, job status and cancellation through each applicable entry point. Reuse the existing credential boundary and native editing/save authority; do not create parallel state or execution paths for interface actions.
+4. **Maintain both access paths together.** When adding or changing a capability, update its public schema/discovery, applicable UI consumer, MCP onboarding and documentation in the same change. Verify equivalent results and relevant failure/conflict behavior through the affected adapters. Distinguish implemented coverage from planned capabilities and document any remaining gap explicitly.
+
+`AGENTS.md` owns this requirement; `CLAUDE.md` links here. Apply it when designing, implementing and reviewing product capabilities.
+
 ## Product architecture review
 
 For every change, review the entire [product architecture](docs/product/architecture.md) and decide whether it still accurately describes the product. Consider positioning, core user flows, module responsibilities, dependencies, data and API boundaries, implemented capabilities, and current limitations together.
@@ -74,8 +85,16 @@ Choose the entry for the current intent directly. Original creation, narrative/m
 
 A directly selected specialist reads shared context and continues; do not bounce back to the production start. Small edits, audio-only changes, review-only and export-only requests resume their affected scope. Keep existing decisions and locked content. Repository development and documentation do not trigger video production.
 
-Phase one retains twelve domain openmotion_ Tools for non-App clients; negotiated MCP Apps connections additionally discover the read-only final-video presentation Tool (template recommendations remain an independent optional extension), defined in [the contract](docs/mcp-phase1-tools.md). MCP-only clients read the same guidance through resources/list and resources/read, beginning at openmotion://workflow/production/start or the already-selected specialist. The pinned engine guide is openmotion://engine/SKILL.md. The workflow-reading Tool is internal compatibility only. Provider references in the existing production workflow describe the BYOK media-use tool; the five creative routes remain unchanged. Follow conditional references and reuse complete document bodies. Native authoring belongs to the shared production/native guide. Technical export verification, visual quality and actual playback remain separate. See [Skill routing](docs/skills.md).
+Phase one retains thirteen domain openmotion_ Tools for non-App clients; negotiated MCP Apps connections additionally discover the read-only final-video presentation Tool (template recommendations remain an independent optional extension), defined in [the contract](docs/mcp-phase1-tools.md). MCP-only clients read the same guidance through resources/list and resources/read, beginning at openmotion://workflow/production/start or the already-selected specialist. The pinned engine guide is openmotion://engine/SKILL.md. The workflow-reading Tool is internal compatibility only. Provider references in the existing production workflow describe the BYOK media-use tool; the five creative routes remain unchanged. Follow conditional references and reuse complete document bodies. Native authoring belongs to the shared production/native guide. Technical export verification, visual quality and actual playback remain separate. See [Skill routing](docs/skills.md).
 
+
+## MCP onboarding and capability maintenance
+
+The Studio **MCP · Connect Agent** page is the maintained product entry for connecting local Agents and discovering OpenMotion capabilities. Its plug icon is distinct from the model-provider sparkle icon. Keep `studio/src/motion/McpConnectionPage.tsx`, `mcpCapabilities.ts`, their interface translations and `shared/integration.ts` aligned with the actual public contract and installation.
+
+When changing local MCP tools, media-generation capabilities, production Skills, host adapters, template handoff or optional MCP Apps presentation, review and update this page in the same change. Cover the affected setup steps, example prompts, template actions, capability descriptions, client compatibility, limits and FAQ. Use the installation's actual transport/configuration and the shared template catalogue; do not invent a remote endpoint, universal model access, free quota or verified Agent connection. Explain image/video/music/speech discovery, provider configuration, job tracking and the separation between generated assets and composition edits where relevant. Distinguish thirteen domain tools from negotiated presentation extensions.
+
+Run `tests/mcp-onboarding.test.ts` to verify public-tool coverage and the affected Studio connection/model tests. Check opened client tabs, copy Toasts, manual configuration, loading/recovery, template handoff and narrow layouts in both themes. Workspace reachability, native host connection, paid media generation and human visual acceptance remain separate evidence. `CLAUDE.md` points to these shared requirements.
 
 ## Template production and reuse
 

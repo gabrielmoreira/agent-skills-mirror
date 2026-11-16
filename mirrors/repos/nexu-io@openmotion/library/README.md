@@ -11,6 +11,7 @@
 | **🧩 Motion components** | [Title reveal recipe](components/title-reveal/README.md) | A reusable title, transition, chart or scene with a clear timing and editing contract. |
 | **🎨 Motion design systems** | [Ink & Water](design-systems/ink-water/MOTION_DESIGN.md) | `MOTION_DESIGN.md`: typography, composition, pacing, movement and sound decisions. |
 | **💼 Brandkits** | [OpenMotion](brandkits/openmotion/BRANDKIT.md) | Brand facts, approved copy, colors, type, asset locations and usage rules. |
+| **Portable packages** | [Specification](../docs/motion-package-spec.md) · [Toolkit and Product Story example](../packages/motion-package/README.md) | A motion document referencing an independent design document, materials, exact dependencies and optional Agent instructions. |
 
 ```text
 library/

@@ -308,6 +308,39 @@ export function maxEffort(root = process.cwd()) {
 
 export const capEffort = (effort, max) => (max && EFFORTS.indexOf(effort) > EFFORTS.indexOf(max) ? max : effort);
 
+// A sheet without one of these lines falls back to pstack's own seat defaults, which name Claude models these
+// projects never dispatch. Any other model may take a seat, so a one-family sheet such as Codex-only passes, but
+// Sonnet, Haiku or an effort below maxEffort runs a weaker panel than the project asks for (owner's word, 2026-11-15).
+const SEAT_ROLES = ['interrogate reviewers', 'architect runners', 'arena runners'];
+const NEVER = /\b(?:sonnet|haiku)\b/gu;
+
+export const modelsSheet = (runtime, env = process.env) =>
+  runtime === 'claude' ? join(env.HOME ?? homedir(), '.claude/pstack-models.md') : join(env.CODEX_HOME ?? join(env.HOME ?? homedir(), '.codex'), 'pstack-models.md');
+
+/** Each way a models sheet seats the wrong models, written as the edit that fixes it. */
+export function sheetMisses(text, max) {
+  const roles = new Map(
+    (text ?? '')
+      .split('\n')
+      .map((line) => line.match(/^([a-z][a-z ,-]*):\s*(.*)$/u))
+      .filter(Boolean)
+      .map(([, role, value]) => [role, value])
+  );
+  const misses = [...roles].flatMap(([role, value]) => [...new Set(value.match(NEVER))].map((model) => `\`${role}:\` names ${model}, which no pstack project dispatches`));
+  for (const role of SEAT_ROLES) {
+    const value = roles.get(role);
+    if (value === undefined) {
+      misses.push(`add the line \`${role}: opus, codex:gpt-6.1-sol\`, or \`${role}: codex:gpt-6.1-sol\` without Claude Code`);
+      continue;
+    }
+    for (const [model, at] of value.split(',').map((entry) => entry.trim().split(/\s+/u))) {
+      const effort = at?.match(/^@(\w+)$/u)?.[1];
+      if (effort && max && EFFORTS.indexOf(effort) < EFFORTS.indexOf(max)) misses.push(`\`${role}:\` runs ${model} @${effort}, below this project's maxEffort ${max}`);
+    }
+  }
+  return misses;
+}
+
 if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const { run, miss } = findLead();
   if (!run) {

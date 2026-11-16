@@ -195,9 +195,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 133 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 134 | ✓ | [`docs/src/content/docs/engines/claude.md`](docs/src/content/docs/engines/claude.md) |
 | 135 | ✓ | [`docs/src/content/docs/engines/gemini.md`](docs/src/content/docs/engines/gemini.md) |
-| 136 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
-| 137 | ✓ | [`docs/src/content/docs/reference/engines/claude.md`](docs/src/content/docs/reference/engines/claude.md) |
-| 138 | ✓ | [`docs/src/content/docs/reference/engines/gemini.md`](docs/src/content/docs/reference/engines/gemini.md) |
+| 136 | ✓ | [`docs/src/content/docs/reference/engines/claude.md`](docs/src/content/docs/reference/engines/claude.md) |
+| 137 | ✓ | [`docs/src/content/docs/reference/engines/gemini.md`](docs/src/content/docs/reference/engines/gemini.md) |
+| 138 | ✓ | [`docs/src/content/docs/reference/experiments.md`](docs/src/content/docs/reference/experiments.md) |
 | 139 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
 | 140 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
 | 141 | ✓ | [`SKILL.md`](SKILL.md) |

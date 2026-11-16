@@ -133,9 +133,11 @@ Treat “unsupported” as a hypothesis and investigate alternative documented p
 - For any necessary review/eval input copies, declare exact immutable inputs,
   cumulative bytes, reserve and session owner, then use
   [materialization prepare → run → finish](references/materialization-budget.md).
-  Finish inputs after success, failure or interruption. Explicitly register
-  task-created rebuildable preview/build/handoff/transport payloads and retire them
-  after their consumers finish; preserve modified inputs, evidence and unique work.
+  Finish inputs after success, failure or interruption. Classify all task-created
+  outputs; register rebuildable preview/build/handoff/transport payloads and retire
+  them after their consumers finish. Preserve modified inputs, evidence and unique
+  work with explicit retained classifications. `finish` exits 24 while output
+  disposition is unresolved; input cleanup alone is not completed task closeout.
 - For overlapping installed skills, follow
   [precedence and coexistence](references/skill-precedence-and-coexistence.md).
   Run the official-creator presence check there; absent/already configured means
@@ -253,6 +255,10 @@ set. Packaging an existing skill re-verifies its completed regression review;
 a marker or commit alone is not authority. Clear scan/runtime errors, keep scan
 and review evidence bound to current content, and bump the registered plugin's
 release identity for shipped changes. Preserve unrelated registry entries.
+
+For a requested or claimed self-contained executable delivery, complete
+[shipping-set acceptance](references/publishing-and-packaging.md#self-contained-executable-acceptance)
+before declaring readiness, even when no archive is requested.
 
 For repository publication, follow [release readiness](references/release-readiness.md)
 with committed exact-candidate independent evidence. Reuse an unchanged complete

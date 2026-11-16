@@ -29,7 +29,7 @@ def ensure_supported_python(version_info: tuple[int, int, int] | object | None =
         return
     req = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
     sys.stderr.write(
-        f"last30days v3 requires Python {req}+.\n"
+        f"last30days v4 requires Python {req}+.\n"
         f"Detected Python {major}.{minor}.{micro}.\n"
         f"Install with:\n"
         f"  Mac:     brew install python@{req}\n"
@@ -3733,6 +3733,9 @@ def _quality_research_results(report, diag, yt_fetch_stats):
         ),
         "youtube_transcript_fetch_attempts": yt_fetch_stats["attempts"],
         "youtube_transcript_fetch_failures": yt_fetch_stats["failures"],
+        "youtube_transcript_target": yt_fetch_stats.get("target", 0),
+        "youtube_bot_checked": yt_fetch_stats.get("blocked", 0),
+        "youtube_sc_rescued": yt_fetch_stats.get("sc_rescued", 0),
         "instagram_items_count": len(instagram_items),
     }
 

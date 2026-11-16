@@ -395,6 +395,9 @@ The load-bearing few:
   and hooks, and do not copy ignored dependencies. When approved, a linked worktree is safer than
   an invisible independent clone but remains a separately audited retirement target.
   (§ Audit every authorized worktree before retirement.)
+- **For an authorized sparse worktree, initialize and verify the complete index** through
+  [Initialize an authorized sparse worktree](references/prevention_practices.md#initialize-an-authorized-sparse-worktree)
+  before editing and after staging; a path-limited checkout does not seed the baseline.
 - **Handoff and merge by exact commit, then finish with an AND gate.** Record branch, local `HEAD`,
   and fresh remote tip; require them to equal the handoff SHA. Direct merges name that SHA, not the
   branch. Hosted merges use an expected-head-SHA precondition when available, or an immediately
@@ -589,29 +592,13 @@ early draft; judge content against the current base, never the name. Worked exam
 rungs (including the squash-artifact and absorbed-into-refactor cases):
 **[references/merge_verification.md](references/merge_verification.md)** § Supersession triage.
 
-**Step 2 — after deletion authority exists and immediately before deletion, preserve exactly what
-that deletion threatens:**
+**Step 2 — after deletion authority exists, finish preparation, then freeze and preserve exactly
+what deletion threatens:**
 
 Apply [the preservation decision](references/merge_verification.md#preservation-before-retirement)
-before exporting. A clean temporary checkout whose exact tip is already an ancestor of an
-independently verified, retained remote main needs no redundant history bundle. Keep a ref-to-full-SHA
-manifest and recheck both the tip and retained carrier immediately before deletion. Content-only
-containment after a squash is not this exact-object exemption. Unique WIP, ignored files, independent
-clone metadata and submodule objects still need their existing preservation checks.
-
-For a known discarded rebase commit, the helper accepts explicit `--known-withdrawal OLD=RETAINED`
-full commit IDs. Its current tip must be retained, OLD must occur in that root's reflog, and RETAINED
-must be in the retained base with the same nonempty single-parent patch (stable and whitespace-preserving
-patch IDs). This preserves the retained replacement, not the withdrawn commit's exact identity.
-Undeclared reflog work and unique ancestors still require their recovery carrier; never classify every old reflog entry
-as disposable merely because the current tip landed. Repeat the same pairs on `--resume`.
-
-For a clean linked worktree, including one without submodules, use
-[the resumable worktree preparation helper](references/worktree-retirement-helper.md).
-It handles ordinary dependency caches as well as initialized submodules and borrowed module
-objects. Reuse its checkpoints and verified carriers instead of writing a separate inventory
-script; it never removes the target or replaces Mode E's containment, ownership, occupancy
-and action-time checks.
+before choosing an export. For linked worktrees, follow the complete
+[worktree retirement procedure](references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal),
+including retained carriers, rebase withdrawals, dependency caches, submodules and interrupted preparation.
 
 ```bash
 # Only when the preservation decision requires a recovery export.
@@ -631,8 +618,7 @@ incremental bundle or a size limit. Inspect the selected object scope and destin
 exporting. `--all-refs` captures branches, tags, stashes, hidden backup
 refs, and linked-worktree HEAD refs, so it is valid only when that whole captured set is authorized;
 add `--all-stashes` only when stashes are also deletion targets. `--verify-current` is the final
-compare-and-swap gate: it exits 1 if any recorded ref moved or disappeared. Refresh remote authority
-before it, and reclassify a changed tip before rebuilding a required bundle. Without a bundle, compare
+compare-and-swap gate: it exits 1 if any recorded ref moved or disappeared. Without a bundle, compare
 against the frozen ref manifest instead. Keep backups outside the repository; never turn
 one branch into a repo export.
 
@@ -648,26 +634,7 @@ and final branch-count gates that a single-branch retirement does not need.
 
 - Stashes: drop from the **highest index down** (`drop stash@{2}` before `stash@{1}`) — indices
   shift as you drop, and top-down keeps every number meaning what your backup filenames say.
-- Linked worktrees: require an empty `git -C <path> status --porcelain=v1 --untracked-files=all`,
-  then inventory ignored paths separately with `--ignored`. A normal clean status hides `!!`
-  files, and no bundle can preserve them; copy out anything not proven reproducible, preserve its
-  relative path, and verify it against a recorded pre-removal content hash.
-  Record the exact HEAD, prove it contained/superseded against a freshly fetched base, apply the
-  preservation decision above, retain its exact ref manifest or required verified bundle, and obtain
-  deletion authority per the authority definition in the Outcome contract above. As the final
-  pre-remove gate, re-run the empty status and
-  the complete ignored inventory. Require exact equality with the frozen
-  pre-removal manifest for every ignored path, entry type, file hash, and symlink target, and
-  re-verify each preserved source and backup copy; any difference aborts. Removal must be the next
-  operation. Try `git worktree remove <absolute-path>` without force first. Only a clean,
-  fully preserved submodule worktree refused specifically because of its submodules may use
-  the controlled single-`--force` branch in the referenced § Worktree retirement procedure; dirty, unknown,
-  locked, occupied, or incompletely backed-up state still stops removal. Afterwards prove the path and
-  registration are gone while the recorded HEAD still resolves through the kept branch/base or the
-  verified bundle and every copied ignored item still matches its recorded hash. Never remove the
-  primary/current checkout; retire its branch only as a separate action under the authority
-  definition in the Outcome contract above. Follow
-  **[references/merge_verification.md](references/merge_verification.md)** § Worktree retirement.
+- Linked worktrees: complete [Worktree retirement](references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal).
 - Local branches: prefer `git branch -d` (refuses unmerged); use `-D` only for items Step 1
   proved superseded, backed up, and the user authorized deleting. **A squash-merge is the usual
   reason `-d` refuses a branch whose content is fully merged**: `-d` judges by commit ancestry, and
@@ -794,9 +761,11 @@ never tell a user to run bare `git_verify_branch_merged.sh` unless `command -v` 
 | `scripts/git_export_before_drop.sh --verify-current BUNDLE` | Fail if any bundled ref moved or disappeared since export | Nothing (read-only) |
 | `scripts/git_verify_closeout.py --repo PATH --expected-common-dir PATH --target-manifest TSV --expected-manifest-sha256 SHA256 [postcondition options]` | Verify only requested resource postconditions against the first frozen original manifest: ref absence or explicit caller retention, exact path/worktree absence, and optional primary-main/cleanliness conditions. JSON keeps business content delivery unassessed; initial-inventory completeness, semantic delivery, publication, and deletion authority remain with the caller | Nothing (read-only, no fetch or writes to refs, objects, index, worktrees, or files) |
 | `scripts/git_prepare_clone_retirement.sh --clone PATH --survivor PATH --out DIR [--full-backup]` | Default: prove every clone object retained by an independent survivor's refs, record exact recovery identities and copy only unique metadata. Refuse gaps rather than silently creating a full bundle; `--full-backup` explicitly retains the self-contained export branch. Run `--verify-current DIR` after standalone occupancy and immediately before the authorized removal/move. | Writes only the new external evidence directory and any necessary metadata/export; disables lazy fetch/fsmonitor; never moves/deletes or changes refs |
-| `scripts/git_prepare_worktree_retirement.py prepare --worktree PATH --out DIR [--resume]` | Prepare/reuse scoped root and module recovery carriers plus ignored-file inventory. Follow [the helper's prerequisites, final verification and recovery readback](references/worktree-retirement-helper.md). | Writes only external evidence; never changes source refs or removes a worktree |
+| `scripts/git_prepare_worktree_retirement.py` | Use within [Worktree retirement](references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal) for supported layouts. | Writes only external evidence; never changes source refs or removes a worktree |
+| `scripts/git_prepare_sparse_worktree.py init` / `verify` | Use [sparse initialization](references/prevention_practices.md#initialize-an-authorized-sparse-worktree) for a new authorized worktree and read-only baseline/scope verification after staging. | `init`: adds only a new task branch/worktree, seeds its full index and selected files; refuses existing targets. `verify`: read-only, never repairs an index |
 
-These helpers run from the repository root. They use read-only enumeration/configuration commands such as
+The sparse helper accepts an explicit repository root; run the other helpers from the repository root.
+They use read-only enumeration/configuration commands such as
 `find`, `config`, `symbolic-ref`, `submodule status`, `status`, `cat-file`, `rev-list`, `rev-parse`,
 `fsck`, `for-each-ref`, and `remote get-url`; plus scoped `fetch`, `archive`, `bundle create/verify`,
 metadata hashing/archive, and (preserve only) `update-ref` where each script's table row says so.

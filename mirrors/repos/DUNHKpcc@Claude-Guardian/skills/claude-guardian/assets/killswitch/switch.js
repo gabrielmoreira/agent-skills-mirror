@@ -12,14 +12,13 @@ function render(s) {
   const known = !s.stale && !s.failed;
   const active = known && s.protection === 'on';
   const coverage = s.coverage;
-  const wholeMachine = coverage?.scope === 'whole_machine';
-  $('coverage-label').textContent = wholeMachine ? (coverage.stage === 'planned' ? '开启前预检' : '整机出口配置') : '应用覆盖';
+  $('coverage-label').textContent = '应用覆盖';
   const verified = active && (!coverage || coverage.status === 'pass');
   $('coverage-row').hidden = !coverage;
-  $('coverage').textContent = !known ? '需要刷新' : coverage?.status === 'fail' ? '失败，暂停使用' : coverage?.status === 'pass' ? (wholeMachine ? '规则已核实' : '已核实') : '待核实';
+  $('coverage').textContent = !known ? '需要刷新' : coverage?.status === 'fail' ? '失败，暂停使用' : coverage?.status === 'pass' ? '已核实' : '待核实';
   const off = known && s.protection === 'off';
-  $('title').textContent = s.pending ? '在本机完成确认' : active ? (verified ? '保护已开启' : coverage.status === 'fail' ? (wholeMachine ? '出口配置变化，请检查' : '应用覆盖失败，暂停使用') : '配置已开启，覆盖待核实') : off ? '保护已关闭' : '先看看当前状态';
-  $('summary').textContent = s.pending ? '操作终端已打开，完成后会更新这里。' : active ? (verified ? (wholeMachine ? '整机出站规则与审核基线一致，实际出口另行验收。' : '防直连规则已生效。') : (wholeMachine ? '请核对出站放行规则、代理与网卡条件。' : '恢复应用前，请让 Agent 核对当前版本和组件覆盖。')) : off ? '当前未启用这套防直连保护。' : '读取系统防火墙，确认保护是否生效。';
+  $('title').textContent = s.pending ? '在本机完成确认' : active ? (verified ? '保护已开启' : coverage.status === 'fail' ? '应用覆盖失败，暂停使用' : '配置已开启，覆盖待核实') : off ? '保护已关闭' : '先看看当前状态';
+  $('summary').textContent = s.pending ? '操作终端已打开，完成后会更新这里。' : active ? (verified ? '防直连规则已生效。' : '恢复应用前，请让 Agent 核对当前版本和组件覆盖。') : off ? '当前未启用这套防直连保护。' : '读取系统防火墙，确认保护是否生效。';
   $('symbol').className = 'symbol' + (verified ? ' on' : off ? ' off' : '');
   $('protection').textContent = s.stale ? '需要刷新' : active ? '已开启' : off ? '已关闭' : '待核实';
   $('startup').textContent = s.stale ? '需要刷新' : s.startup === true ? '已开启' : s.startup === false ? '已关闭' : '待核实';

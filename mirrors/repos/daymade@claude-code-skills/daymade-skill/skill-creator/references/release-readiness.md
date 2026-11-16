@@ -27,15 +27,24 @@ Report which gate actually passed; a same-repository release is not a successful
 helper attestation. If no applicable gate is defined, resolve the publication
 contract before pushing rather than inventing a readiness claim.
 
-## Integrate current main before binding review
+<a id="integrate-current-main-before-binding-review"></a>
+
+## Separate source review from current publication admission
 
 Resolve the named remote's current main branch through GitHub Operations'
 [publication preflight](https://github.com/daymade/claude-code-skills/blob/main/github-ops/references/pr_operations.md#coordinate-publication-before-expensive-checks).
 Apply the repository's update/check policy before freezing the candidate. Integrate
 when that policy, a conflict or changed validation inputs require it; preserve
-parallel work. An unrelated base advance alone does not require a new PR head or
-another CI run. Keep the final-tree comparison, version checks and exact-candidate
-review binding; do not reopen unrelated Skills merely because main advanced.
+parallel work.
+
+Independent review and its receipt bind the exact source commit. For a PR from
+a non-default branch, the repository's publication gates may admit that same
+commit through a real three-way merge projection against one fresh full base.
+An unrelated base advance with a clean projection preserves the reviewed head;
+it does not require integration, a new binding or another CI run. A conflict,
+an actual version-counter collision or changed source requires reconciliation
+and a binding for the resulting exact candidate. Review only the changed delta
+and reuse unaffected evidence.
 
 ### Case: two releases share a plugin version
 
@@ -73,14 +82,11 @@ fast-forward accepts staged content that equals the target; ort never does.
 Preserve other writers' changes throughout this recovery. Stage and commit as
 separate commands under the repository's commit contract.
 
-Resolve the selected candidate with `git rev-parse HEAD`, then run the version
-check before binding review evidence:
-
-```bash
-python3 <marketplace-path>/scripts/ci/check_version_progression.py \
-  --repo <source-worktree> --base <fetched-main-full-sha> \
-  --candidate <integrated-candidate-full-sha>
-```
+Resolve the selected candidate with `git rev-parse HEAD`, then run the repository's
+version checks in the selected publication frame before binding evidence. After
+attestation, run the release gate against that same frame.
+Use their declared PR-projection mode only for that admission route; CI event
+snapshots, default-branch updates and tags retain their existing snapshot policy.
 
 Read the merged CHANGELOG and confirm its entries remain under the intended
 heading; a union merge preserves lines, not their placement. Review this candidate,
@@ -119,6 +125,9 @@ the shared PII guard still receives the original update set. CI does not have
 access to the private archive and does not run this
 local evidence check.
 
+A historical receipt or tag does not establish that a candidate can merge into
+today's base; a projected PR merge does not replace an actual snapshot's checks.
+
 Before attesting a public release, check that the private review records the
 [public-distribution axes](independent-review-protocol.md#public-distribution-axes)
 against this exact candidate and the public files declared for that pass. Use the
@@ -155,8 +164,6 @@ python3 <skill-creator-path>/scripts/release_readiness.py attest \
   --skill-path <skill-root> \
   --review-repo <private-knowledge-worktree> \
   --review-commit <archive-full-sha> --review-path <review-relative-path>
-python3 <marketplace-path>/scripts/ci/check_skill_release.py \
-  --repo <source-worktree> --base <fetched-main-full-sha> --candidate <reviewed-full-sha>
 ```
 
 Repeat `--skill-path` for multiple roots. The receipt is local under Git's common
@@ -166,6 +173,50 @@ archive commits are allowed. A missing, dirty, replaced, stale or non-passed rev
 blocks push. A new candidate commit needs a new review binding. A nonzero or
 ambiguous result pauses dependent mutations until its documented meaning and
 the required readback establish readiness; do not batch unchecked mutations.
+
+## Retire a temporary review checkout
+
+Before removing a review worktree, inspect the affected source repository's local
+release receipts for its exact `review_repo` path. Prefer the private archive's
+maintained checkout for the durable binding; a receipt pointing at a temporary
+checkout keeps that checkout in use even after publication. Keep private receipt
+paths and review content out of the public distribution.
+
+1. Record each affected receipt's candidate, exact Skill scope, review commit,
+   path and blob, plus its current verification outcome. Separate a currently
+   valid binding from an already stale or missing historical review. A pre-existing
+   failure is not a relocation failure or evidence that the review never passed.
+   Include derived schema-2 receipts naming an affected `original_candidate`:
+   they pin `original_receipt_sha256`, which changes even for a locator-only edit.
+   If a required dependent cannot retain its verification through the owning
+   workflow, stop before rewriting the original receipt and retain the checkout.
+   Do not patch dependent digests to manufacture a passing relocation.
+2. Land useful review changes in the maintained private archive through its normal
+   publication flow. Preserve the original review commits when receipts refer to
+   them; a squash replacement alone does not retain their identities. Read back
+   each recorded commit/path/blob from the retained repository. For a currently
+   valid binding, also require its current HEAD and working file to match that
+   blob and remain clean, as required by `evidence()` in `release_readiness.py`.
+3. For a currently valid binding, rerun the existing `attest` command with the
+   retained checkout as `--review-repo`, keeping the original candidate, Skill
+   scope, review commit and path. Independently run `verify` and compare the
+   resulting receipt: only the repository locator may change. Stop on changed
+   identity/content or a new verification failure; retain the temporary checkout.
+4. Keep obsolete records as historical evidence, not fresh release approvals.
+   When relocating their local receipt locator, back up the exact old record,
+   compare before writing to avoid overwriting a concurrent edit, and preserve
+   every other field. Compare verification outcomes before and after and confirm
+   the original commit/path/blob remains readable. Do not rewrite the historical
+   review to make it match today's HEAD or report an unchanged stale result as a
+   successful current validation. Report those limits separately.
+5. Confirm no affected consumer still needs the temporary path, then resolve the
+   installed Git Safety Net or its verified source and follow its
+   [worktree retirement procedure](https://github.com/daymade/claude-code-skills/blob/main/git-safety-net/references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal).
+   That separate owner is not bundled with standalone Skill Creator; if its
+   required procedure/tools are unavailable, retain the checkout.
+   Check the current binding again from the retained checkout after removal.
+   Unavailable required evidence or an unresolved live consumer keeps retirement
+   pending; an unrelated obsolete record does not require reviving its release.
 
 ## Rebind an unchanged distribution after main integration
 
@@ -218,8 +269,11 @@ fetched main. Rebased or rewritten ancestry needs a normal reviewed binding.
 Rebind writes a schema-2 local receipt and leaves both the original receipt and
 committed review untouched. The verifier reopens the original archive, checks its
 current committed clean path, original receipt digest, source identity, complete
-distribution equality and current fetched-main integration. A changed original
-receipt or stale candidate blocks verification. Repeated identical rebind is
+distribution equality and the recorded base's commit identity and ancestry.
+It recomputes this historical proof without substituting today's main. A changed
+original receipt or invalid recorded base blocks verification; later unrelated
+main advances leave that proof intact. Creating a rebind still requires current
+fetched-main integration. Repeated identical rebind is
 idempotent; existing different evidence is never overwritten.
 
 The exact-head publication checker consumes the new receipt. Version progression,

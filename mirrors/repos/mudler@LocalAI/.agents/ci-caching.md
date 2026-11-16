@@ -164,7 +164,7 @@ The volume is real: 13 gallery-only PRs merged that week with 10 open at once, a
 
 Version-pin bumps dominate PR volume: 48 `update/*` PRs in the week to 2026-07-30, from 16 pins, each a two-line diff. Most edit nothing but one `backend/*/<name>/Makefile`.
 
-Neither of those two workflows can observe such a change. `make build` is `go build ./cmd/local-ai`, GoReleaser builds the same plus `./cmd/launcher`, and the core image's final stage ships only `entrypoint.sh`, `healthcheck.sh` and that binary. The per-backend trees are copied into the builder but nothing in them reaches the output.
+Neither of those two workflows can observe such a change. `make build` is `go build ./cmd/local-ai`, GoReleaser builds the same, and the core image's final stage ships only `entrypoint.sh`, `healthcheck.sh` and that binary. The per-backend trees are copied into the builder but nothing in them reaches the output.
 
 What still triggers a full run, because none of it lives under those prefixes:
 
@@ -335,8 +335,6 @@ concurrency:
 ### Image workflows are deliberately not cancelled
 
 `image.yml` and `backend.yml` keep the per-SHA group. Both decide what to build from the diff of one push (`event.before` to `sha`): the `changes` job in `image.yml`, `scripts/changed-backends.js` in `backend.yml`. If a queued run were replaced by a newer one, the newer run would only see its own diff. A code commit followed by a gallery-only commit would then build nothing. Do not add a pending-replacement group to them until the diff base is the last commit that was actually built.
-
-`generate_intel_image.yaml` pushes one fixed tag, so its group is `intel-cache-<event>-<repo>` with `cancel-in-progress: false`: a running build finishes, and a newer pending run replaces an older pending one.
 
 ## Self-warming, no separate populator
 

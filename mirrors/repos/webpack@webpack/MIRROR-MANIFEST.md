@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `webpack/webpack` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
+Mirror of `webpack/webpack` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `webpack/webpack` — 26 default patterns, 7 followed patterns, 9 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 9 |
+| Followed pats | 8 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `webpack/webpack` — 26 default patterns, 7 followed patterns, 9 file
 - `docs/pull-requests.md`
 - `docs/runtime.md`
 - `docs/caching.md`
+- `tooling/COMPARE_TOOLS.md`
 
 ## File Index
 
@@ -74,6 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | → | [`docs/pull-requests.md`](docs/pull-requests.md) |
 | 8 | → | [`docs/runtime.md`](docs/runtime.md) |
 | 9 | → | [`TESTING_DOCS.md`](TESTING_DOCS.md) |
+| 10 | → | [`tooling/COMPARE_TOOLS.md`](tooling/COMPARE_TOOLS.md) |
 
 ---
 

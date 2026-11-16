@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 1 | ✓ | [`integrations/claude-code/skills/drift/SKILL.md`](integrations/claude-code/skills/drift/SKILL.md) |
 
 ---
 

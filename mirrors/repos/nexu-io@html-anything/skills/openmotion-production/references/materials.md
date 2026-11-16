@@ -33,4 +33,6 @@ Read only the selected provider's document for model queries, request templates,
 - [fal.ai](media-providers/fal.md)
 - [Atlas Cloud](media-providers/atlascloud.md)
 - [WaveSpeedAI](media-providers/wavespeed.md)
-- [OpenDesign Cloud](media-providers/opendesign.md) (setup is temporarily hidden in the editor; existing service configuration is retained)
+- [OpenDesign Cloud](media-providers/opendesign.md)
+- [OpenDesign account](media-providers/account.md)
+- [Registered compatible APIs](media-providers/compatible.md)

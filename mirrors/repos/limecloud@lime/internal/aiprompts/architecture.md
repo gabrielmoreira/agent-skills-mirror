@@ -1869,8 +1869,8 @@ Environment registry 的 current owner 是 App Server `processor::environment::E
 registry event bus 投影给当前选中该 Environment 的 Thread；archive/delete/unsubscribe 会撤销索引。该 owner 只负责
 transport、生命周期与选择 lowering。执行 Environment identity 必须沿 `ToolCall -> RuntimeToolExecutionContext ->
 RuntimeUnifiedExecToolRequest -> LiveExecutionRequest` 传到 App Server process owner；当前本机
-`ExecutionProcessServer` 对任何非 `local` identity 返回 `UnsupportedEnvironment`。exec-server `process/*` 与
-`fs/*` transport 注入完成前，远端 turn 仍不得静默降级到 local。
+`ExecutionProcessServer` 对任何非 `local` identity 返回 `UnsupportedEnvironment`。exec-server crate 已迁入并编译，但 `process/*` 与
+`fs/*` transport 注入和本地 shell owner 替换尚未完成前，远端 turn 仍不得静默降级到 local。
 
 状态模型与 Codex 对齐：Thread 是会话上下文，Turn 是一次执行，Item 是可恢复的输入、输出、工具或审批活动。`ThreadStore` 的 raw canonical append 与独立 metadata patch 是持久化 contract；App Server `ProjectionStore` 只能是该 contract 的实现，queue payload、stream buffer 与 renderer cache 不得反向成为事实源。
 
@@ -2075,7 +2075,16 @@ action-required/approval 与 ask-user 的 live continuation 归 `agent-runtime` 
 | `tool-runtime`                                   | tool definition、参数解析、approval/sandbox、执行 dispatch、MCP connection、tool result normalization。                                  |
 | `mcp`                                            | MCP server/client 的领域集成。                                                                                                           |
 | `skills`                                         | skill discovery、读取与运行时集成。                                                                                                      |
-| `patch-apply`                                    | 受控 patch 应用领域能力。                                                                                                                |
+| `apply-patch`                                    | patch 语法、streaming parser、seek 与受控落盘执行；唯一 patch owner。                                                                     |
+| `exec-server`                                    | 本地 filesystem/process executor 与 exec-server JSON-RPC；远端 transport 与本地 process 接线仍按迁移进度接入。                            |
+| `account-provider` | Lime Core/Cloud 账号边界 trait；不承载上游账号实现。 |
+| `state`                                          | SQLite runtime state、migration 与回收。                                                                                                  |
+| `history`                                        | retained history 与来源顺序。                                                                                                            |
+| `rollout`                                        | rollout 文件、索引、压缩与搜索。                                                                                                          |
+| `agent-graph-store`                              | agent graph 持久化。                                                                                                                      |
+
+| `sandboxing`                                     | macOS/Linux/Windows sandbox 命令构造与 launch。                                                                                          |
+| `shell-command`                                  | shell detection、命令解析、危险命令判定与 shell snapshot。                                                                                |
 | `browser-runtime`、`media-runtime`、`voice-core` | 浏览器、媒体、语音等独立 runtime domain。                                                                                                |
 
 本地网页搜索的地址配置仍归 `tool-runtime::web_search`：
@@ -5757,6 +5766,11 @@ SHA-256 `75e397e2280dde93b70a85aa926f4282c728eacc84dfeb15ba7fb6ddd84628af`；其
 完整原生等价的实施路线是维护一个锁定源码/补丁的 Electron/Chromium 引擎，在同一 Profile 内集成服务；
 不增加第二引擎、daemon 或 Agent runtime。源码/补丁固定、实际编译与 Forge archive 接入均尚未完成，
 现阶段没有替换 npm 引擎依赖。原生路线 N0–N6 与完整 G01–G12 以 Browser 执行计划为验收事实源。
+
+Chrome 扩展导入由 `ElectronHostCommands` 消费组合根注入的 AppDataRoot，复制的第三方扩展包唯一位于
+`AppDataRoot/chrome-extensions/<id>-<version>`；`BrowserExtensionStore` 在
+`AppDataRoot/browser-extensions.json` 保存安装路径与启用状态，Chromium session 负责加载。
+该目录不承载 Lime Native Messaging connector、AgentRoot 或第二 runtime。
 
 用户在同一个 native `WebContentsView` 中产生 `mouseDown`、`contextMenu`、`mouseWheel` 或 `keyDown` 时，
 `BrowserTabHost` 必须立即让用户优先：detach debugger、递增 page revision、清除 snapshot 与该 tab 的 pending

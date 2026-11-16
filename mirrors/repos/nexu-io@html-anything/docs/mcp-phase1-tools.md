@@ -1,15 +1,15 @@
-# OpenMotion 一期 12 Tool 契约与实现范围
+# OpenMotion 一期 13 Tool 契约与实现范围
 
 
 ## 结论与本次落地范围
 
-本地候选包版本为0.6.3，避免误复用缺少模板目录接口的旧服务和宿主缓存；尚未发布。源码和默认导出均使用 `phase1`，只公开以下 12 个 `openmotion_` Tool。发现、调用门禁、接入元数据和构建使用同一注册表；旧名不可绕过调用。原有领域服务、Studio、渲染器和内部兼容 handler 保留。适配不只是改名：补了项目身份、批量导入、请求去重、版本和保存保护、取消终态、自动导出校验。
+本地候选包版本为0.6.3，避免误复用缺少模板目录接口的旧服务和宿主缓存；尚未发布。源码和默认导出均使用 `phase1`，只公开以下 13 个 `openmotion_` Tool。发现、调用门禁、接入元数据和构建使用同一注册表；旧名不可绕过调用。原有领域服务、Studio、渲染器和内部兼容 handler 保留。适配不只是改名：补了项目身份、批量导入、请求去重、版本和保存保护、取消终态、自动导出校验。
 
 Skill 是指导文档，与公开 Tool 数量分开。本次后续命名与分发对齐后，一期装入 openmotion-production、openmotion-director、openmotion-template-to-video、openmotion-recreate、openmotion-video-to-template 五个入口及其参考。模板使用与视频转模板保留已有实际流程；openmotion-recreate 包含实际复刻流程，规则与测量脚本随 Skill 分发，不新增自动创作算法或 Tool。原九个工程 Tool 保留，本次新增目录获取和模板详情入口；详见 [Skill 路由与能力边界](skills.md)。
 
 ## Optional native template presentation
 
-The twelve domain tools and their HTTP API remain unchanged. A phase-one stdio connection may additionally discover `openmotion_show_template_recommendations` when its `initialize` capabilities declare `extensions["io.modelcontextprotocol/ui"].mimeTypes` containing `text/html;profile=mcp-app`, the feature is enabled and the local presentation assets are valid. Do not infer this capability from a client name or protocol date. Clients without that declaration, including the installed direct CLI client, still discover exactly twelve tools; the legacy profile remains twenty-eight.
+The thirteen domain tools share the same HTTP authority; `openmotion_assets` adds workspace assets without changing existing project calls. A phase-one stdio connection may additionally discover `openmotion_show_template_recommendations` when its `initialize` capabilities declare `extensions["io.modelcontextprotocol/ui"].mimeTypes` containing `text/html;profile=mcp-app`, the feature is enabled and the local presentation assets are valid. Do not infer this capability from a client name or protocol date. Clients without that declaration, including the installed direct CLI client, still discover exactly thirteen tools; the legacy profile remains twenty-eight.
 
 This read-only adapter extension accepts exactly three distinct `templateIds` from `product-promo`, `nyt-graph` and `decision-tree`, preserving their supplied order. It neither enters the shared HTTP backend nor creates/selects a project. Cards stay in a compact three-column layout, with visible complete previews muted and looping. Optional `onboarding: true` adds the persistent first-run welcome above those same cards after the caller has observed the right-hand library. The ordinary call omits this flag and retains its existing result shape. The welcome lives in the component so host-collapsed commentary cannot hide it; successful onboarding needs no trailing Agent status paragraph. The Recreate template button uses the negotiated OpenAI `ui/message` extension with `_meta["openai/message"]: {target: "active", send: false}` to append an editable brief with the actual template title/ID; it never submits a task. Unsupported hosts receive no message and show a copyable prompt. Only a pending append temporarily disables the buttons. Completion restores every template button and clears transient feedback; no persistent success message or composer-submission observer is used. Only a later user-submitted brief authorizes the Agent's existing workflow. The returned frozen `createArgs` remain compatible with explicitly accepted unchanged samples; customized requirements/attachments and requested HTML/MP4 delivery use their actual intent, never those sample defaults. Unknown write outcomes still require reconciliation before retrying.
 
@@ -17,17 +17,18 @@ The Agent always supplies `language` from the latest user request or their expli
 
 UI-capable connections list and read one immutable `ui://openmotion/template-recommendations/<contentHash>/index.html` resource. Its local CSP allows only the required Blob media scheme and no network connections. Existing workflow and engine resources retain their original semantics. Resource identities include the browser bundle, approved media, source fingerprints and presentation metadata; an old connection keeps the old bytes after a compatible installation update. Missing/corrupt optional presentation assets disable only the extension, not the domain tools. `OPENMOTION_TEMPLATE_CARDS=0` disables the presentation on new connections without changing projects or stopping exports.
 
-Production reads a prebuilt browser bundle and three integrity-locked full MP4 previews. It does not depend on the browser SDK package at runtime, render previews on installation, download template media or use online catalog credentials. Source packaging rejects missing or stale browser builds using the shipped build identity, and verifies the full media/source manifest and response budget before accepting an artifact. The 1.5 MiB final response budget is a build constraint, not a general host limit. Publication metadata records this optional extension separately from the twelve domain tools. Native host discovery, visible presentation, actual playback and project creation require separate evidence.
+Production reads a prebuilt browser bundle and three integrity-locked full MP4 previews. It does not depend on the browser SDK package at runtime, render previews on installation, download template media or use online catalog credentials. Source packaging rejects missing or stale browser builds using the shipped build identity, and verifies the full media/source manifest and response budget before accepting an artifact. The 1.5 MiB final response budget is a build constraint, not a general host limit. Publication metadata records this optional extension separately from the thirteen domain tools. Native host discovery, visible presentation, actual playback and project creation require separate evidence.
 
-## 一期公开这 12 个 Tool
+## 一期公开这 13 个 Tool
 
 
 | 公开 Tool | 复用来源 | 本次实现到的边界 |
 | --- | --- | --- |
-| openmotion_media_use | Shared Model Gateway | Enabled-provider discovery, bundled references, model list, generate/status/cancel for fal.ai, OpenDesign Cloud, Atlas Cloud and WaveSpeedAI; service-owned keys, explicit project, stable request ID, imported media results; does not edit the composition |
+| openmotion_assets | Workspace asset library and Model Gateway | List/get/upload, generate/jobs/status/cancel, rename/trash/restore, immutable versions/references and explicit version import into projects; see [Assets](assets.md) |
+| openmotion_media_use | Shared Model Gateway | Enabled-provider discovery, bundled references, model list, generate/status/cancel for dedicated media adapters, OpenDesign account models and registered compatible image/speech APIs; service-owned keys, explicit project, stable request ID, imported media results; does not edit the composition |
 | openmotion_list_templates | Local repository or configured CMS catalog | No query arguments; returns source, a local JSONL index, count and catalog version for local search |
 | openmotion_get_template | Same local/CMS reader | Exact ID; repository entries return local instructions, motionDocument content and absolute localSource paths |
-| openmotion_media_use | Fixture-based provider references, discovery, authenticated requests, job ownership, output validation and import, and rejection without paid retries | tests/byok.test.ts |
+| openmotion_media_use | Fixture-based provider references, discovery, authenticated requests, job ownership, output validation and import, and rejection without paid retries | tests/byok.test.ts, tests/provider-settings.test.ts |
 | openmotion_create_project | 项目目录、空白工程、模板复制、会话归属 | 新建独立载体、保存需求/来源、返回初始内容版本；宿主 Agent 制作影片 |
 | openmotion_open_preview | 原预览、项目选择、原生 lint | 打开指定已有工程；仅明确绑定的 OpenMotion 会话可省 projectId；返回真实 URL |
 | openmotion_import_assets | 素材目录、FFprobe/FFmpeg | 实际本机媒体批量持久化、逐项结果、稳定素材 ID、去重；不自动排入时间线 |
@@ -38,9 +39,22 @@ Production reads a prebuilt browser bundle and three integrity-locked full MP4 p
 | openmotion_restore_version | Studio history 与保留的媒体内容 | 旧快照恢复成新版本；保留后续历史；历史资源缺失或并发冲突时拒绝覆盖 |
 | openmotion_export_cancel | 现有导出队列、进程生命周期 | 指定项目/任务；排队取消、运行中 cancelling、进程退出后 cancelled；完成竞态保持 completed |
 
+## WebMCP access from Studio
+
+Studio registers five `openmotion_studio_*` tools for observation and navigation: `openmotion_studio_look`, `openmotion_studio_select`, `openmotion_studio_seek`, `openmotion_studio_frame` and `openmotion_studio_inspect`. Selection and seeking change editor state, not project source. Video content changes use `openmotion_get_project` followed by `openmotion_edit_project`, which saves native source files with revision/version checks. The seven content-writing editor tools (`set_text`, `set_style`, `transform`, `add_animation`, `update_animation`, `add_keyframe` and `delete_animation`) are not registered or callable through WebMCP. Studio's manual editing handlers remain available. The `can` flags returned by observation tools describe manual editor capabilities, not additional WebMCP tools. Old `studio_*` names are not aliases. Refresh the page and rediscover its tools after upgrading.
+
+While Studio is open, its Motion host registers the same thirteen domain `openmotion_*` tools using the shared definitions, for eighteen page tools in total. Browser Agents can discover and call them through WebMCP. Native WebMCP is preferred, with the existing Studio fallback for browsers without it. The `agentToolsEnabled` preference controls both sets and takes effect after reloading Studio. Closing or navigating away unregisters the page tools. Ordinary MCP discovery, resources and negotiated MCP App presentation are unchanged.
+
+WebMCP calls forward to the existing same-origin `/motion-api/phase1/call` service. Names, input schemas and successful service payloads are preserved, including request deduplication, explicit project/session binding, revision/version checks and export job identities. The adapter does not infer the target from the globally active project. Import `sourcePath` and template `indexPath`/`localSource` retain their host-filesystem meaning; browser-only clients need host file access for those paths. The asset library accepts user-selected image/video/audio uploads through its bounded same-origin endpoint; MCP imports still require real host file paths. No arbitrary filesystem reader or private service credential is exposed to the page.
+
+Failures resolve with `{isError:true,error:{code,message,applied}}`, because rejected WebMCP callbacks can lose their error messages. Local validation and cancellation before dispatch report `applied=false`; a lost reply or cancellation after dispatch reports `applied="unknown"`. Cancellation does not roll back a committed edit or cancel a queued render; use `openmotion_export_cancel` for the named export. No automatic retry is performed: inspect the project/history or original job, and retain the original request ID when recovering an uncertain mutation. Browser/Agent permission and real end-to-end acceptance remain separate from page registration.
+
+
+The shared WebMCP registrar measures all eighteen page tools through the existing Studio tracking transport. `webmcp_tool_started` and `webmcp_tool_finished` correlate one invocation by `call_id`, with the public `tool_name`, `transport=webmcp`, observed outcome and elapsed milliseconds. `webmcp_registration_result` measures each attempted registration, including refusal and cleanup cancellation. Collection remains asynchronous and respects existing privacy settings and Do Not Track; analytics failures never retry a tool or replace its result. No tool arguments, returned content, handles, paths or raw errors are recorded. These browser events are separate from unchanged stdio MCP events and existing domain-operation results; a failed or cancelled invocation does not establish whether a mutation was applied or rolled back. See [tracking coverage and limits](../tracking/README.md#implemented-signals-and-limits).
+
 ## 共用约束
 
-- projectId 是作品身份；sessionId 是 OpenMotion 内部会话，不能把宿主聊天 ID 自动当成它。所有数据写入明确项目。新 MCP 客户端未绑定时，默认预览报 PROJECT_NOT_BOUND，不猜全局最近工程。
+- projectId 是作品身份；sessionId 是 OpenMotion 内部会话，不能把宿主聊天 ID 自动当成它。Project writes require explicit project identity; workspace asset operations use asset/version identity and need no project until import_to_project.新 MCP 客户端未绑定时，默认预览报 PROJECT_NOT_BOUND，不猜全局最近工程。
 - versionId 是历史身份；versionNumber 显示 vN；revision 是内容哈希。恢复后哈希可与旧版相同，版本身份仍是新的。GUI 的已保存改动也进入原生历史。
 - 有副作用的保存使用稳定 requestId。同 ID 同输入找回原结果（导出/取消同时刷新同一任务状态）；异输入报 REQUEST_ID_CONFLICT。修正失败输入时使用新 ID。对进程中断但无法确认结果的请求返回 REQUEST_STATE_UNKNOWN，不自动重复写入。
 - 编辑/恢复以 Studio 原生独占窗口协调 GUI 写入，暂存文件和恢复日志保护整批写入。进程重启先恢复未完成写入；发现外部第三种内容报 RECOVERY_CONFLICT 并保留副本。普通文件系统的多文件提交不等于断电级数据库事务；macOS共享后台持有系统所有权锁后才回收旧私有锁；独立旧服务的workspace.lock仍明确阻塞，不能自动强删。
@@ -50,6 +64,10 @@ Production reads a prebuilt browser bundle and three integrity-locked full MP4 p
 - 技术验证、视觉/声音/播放审阅和用户采用分开。record_review 只保存所声明的真实依据，verifiedUserAdoption 固定为 false，不证明用户实际采用。
 
 ## 各 Tool 的输入、返回与失败边界
+
+### openmotion_assets
+
+The additive protocol-1 asset tool manages a workspace library independently of projects. Actions are `list`, `get`, `import`, `update`, `generate`, `jobs`, `status`, `cancel` and `import_to_project`. Import and generation use stable request IDs. Versions preserve bytes, hashes, prompt/model/parameters and pinned references; changing the current version does not rewrite historical files. Trash is reversible. Project import requires explicit projectId and versionId and reuses the ordinary project import/history transaction. Model support and costs remain gateway-owned; local Codex image editing accepts one image reference. See [asset architecture and limits](assets.md).
 
 ### openmotion_list_templates / openmotion_get_template
 
@@ -127,7 +145,7 @@ The open editor also shows these restore refusals through its shared dismissible
 
 ## 注册、构建与兼容
 
-- shared/mcp-profiles.json 是12项唯一公开清单，shared/mcp-release.json 默认 phase1；mcpRegistry 同时控制发现与调用，禁止运行时环境变量扩大列表。新增/缺失实现由构建完整性检查拦截。
+- shared/mcp-profiles.json 是13项唯一公开清单，shared/mcp-release.json 默认 phase1；mcpRegistry 同时控制发现与调用，禁止运行时环境变量扩大列表。新增/缺失实现由构建完整性检查拦截。
 - npm run package:phase1 构建 Studio 并生成 dist/openmotion-0.6.3-phase1.zip；npm run package:plugin 默认也沿用 phase1。该插件 ZIP 不带原生 Node/浏览器/FFmpeg：使用支持的本机 Node、首次安装锁定依赖，FFmpeg/ffprobe 需本机可用。
 - 四宿主薄适配器从同一运行时导出，scope.json 记录 profile，复制上述5个 Skill；不另维护 allowlist。数据目录放在 runtime/插件缓存之外。资源指导通过本地文件或 resources/list、resources/read 取得，不另增加 workflow Tool。
 - 完整原生测试包的 build <target> <beta-version> [phase1|legacy] 使用同表检查并写 release.json；本次不声称重新制作/验收各平台原生安装包。
@@ -196,8 +214,8 @@ CI不按路径过滤、不跳过渲染、无失败重试或continue-on-error；�
 
 ## BYOK media-use extension
 
-Read action=reference for the selected provider, or `openmotion://workflow/production/{fal,opendesign,atlascloud,wavespeed}`. The provider references belong to the existing production guidance; no separate media debugging Skill is distributed. `action=generate` requires provider, provider-native model ID, projectId, requestId, modality and prompt. Provider parameters use the selected model API schema; no key argument is accepted. The queued job is polled with action=status and the same projectId/jobId; completed means actual validated files were imported under assets/generated. Cancellation is local and best effort remotely, without a refund promise. Edits still require a fresh project revision/version. Saving a key in editor Media providers enables that provider. Cloud also requires its public HTTPS gateway origin. Configuration and live model discovery are not proof of paid generation success.
+Read action=reference for the selected provider, or `openmotion://workflow/production/{fal,opendesign,atlascloud,wavespeed,account,compatible}`. The provider references belong to the existing production guidance; no separate media debugging Skill is distributed. `action=generate` requires provider, provider-native model ID, projectId, requestId, modality and prompt. Provider parameters use the selected model API schema; no key argument is accepted. The queued job is polled with action=status and the same projectId/jobId; completed means actual validated files were imported under assets/generated. Cancellation is local and best effort remotely, without a refund promise. Edits still require a fresh project revision/version. Settings → Model providers manages keys, compatible endpoints, catalogues and defaults. Account authorization registers a separate provider and its entitled models. OpenDesign Cloud retains its separate workspace key and public HTTPS gateway origin. The inspect result includes configured defaults and supported reference URIs. See [provider settings](provider-settings.md) for protocol and execution boundaries; configuration and live discovery are not proof of paid generation success.
 
 ## Final video presentation
 
-Creation and content edits use `openmotion_open_preview(action=begin)` as silent business state, carrying workId through saves and final export. Production saves defer editor presentation until the final authored video is ready to preview. Only then open the right-hand Studio. After the MP4 completes and passes verification, call the discovered read-only `openmotion_show_video({projectId,workId})` once. Only this negotiated presentation extension binds the final-video App; ordinary open/save/review/display operations do not mount chat video areas. It reads the existing fixed work result and private media, rejects unfinished or unavailable exports and creates no project or render. Non-App clients retain twelve domain Tools; the template-card extension stays independent. See [final video playback and limits](inline-video.md).
+Creation and content edits use `openmotion_open_preview(action=begin)` as silent business state, carrying workId through saves and final export. Production saves defer editor presentation until the final authored video is ready to preview. Only then open the right-hand Studio. After the MP4 completes and passes verification, call the discovered read-only `openmotion_show_video({projectId,workId})` once. Only this negotiated presentation extension binds the final-video App; ordinary open/save/review/display operations do not mount chat video areas. It reads the existing fixed work result and private media, rejects unfinished or unavailable exports and creates no project or render. Non-App clients retain thirteen domain Tools; the template-card extension stays independent. See [final video playback and limits](inline-video.md).

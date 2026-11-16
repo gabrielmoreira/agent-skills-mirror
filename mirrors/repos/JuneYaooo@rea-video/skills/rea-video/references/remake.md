@@ -25,6 +25,7 @@
   - 往下改都从这一版开始：先改 `spec.json` 里的数（粒子数 `count`、大小 `dot`、亮度 `gain`、运动 `motion`、背景光 `glow`）；要换成新形状，就把 `points` 换成自己的点文件；要做原片没有的效果再改 `render.py`，或照着它改写成 Remotion / Three.js。改完重跑同一条命令，改过的 `spec.json` 会保留，`--reset` 才会从头重建。`python code/render.py --frame 12.5` 可以只出一帧来看。
   - 按输出里 `lowest_scenes` 的 `advice` 改，先改分数最低的场景，对照 `code/compare/compare_worst.jpg` 看。
   - 报告「代码合成」一节的每镜画面描述、`shots/` 里的元素截图和关键帧条，用来补工具测不到的东西：标注怎么入场、图形是什么含义。
+- **舞蹈 / 动作镜头**（看图时 `performance.move` 标出的）：不走首尾帧，报告「动作驱动」写了路线和提示词：默认直接拿原片当参考视频；原背景杂乱或新场景差很多才转深度、做白模；神态要复刻时留在直接参考（深度和白模会丢表情）。先跑 `rea-video drive out/ref` 出去字幕、按停顿切好的驱动视频（`drive/README.md` 有每段的情况），先看 `drive/segments.jpg` 有没有擦坏手脚；生成好的段写进 `drive/results.json` 再 `rea-video drive out/ref --join`，然后 `rea-video remake`。
 - **真实素材**：列清单让用户提供；拿到后写进 `remake/mine.json` 再跑 `rea-video remake`，或放进 ChatCut 按原片节奏剪。
 - **表演和情绪**：报告「表演与情绪」一节逐镜写了情绪、表情、动作和语气，生成单元的提示词里已经带上表情和动作。改写提示词时保留看得见的表情和动作，不要换成「开心」「难过」这类词，也不要把幅度写大；有台词的镜头先做有语气的配音，再让画面跟着声音演。
 - **声音**：TTS（按脚本表里每句的语气）、BGM（按 BPM / 调性 / 情绪）、音效（按时间点）三条轨分别准备。

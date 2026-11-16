@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **macos-load-doctor** (`daymade-macos` v1.34.4): Add scoped development-preview watcher diagnosis, exact-instance reuse and idle CPU plus page/HMR acceptance; distinguish shared-service respawn from a durable stop.
+- **prior-work-retrieval** (`daymade-claude-code` v5.1.20): Clarify valid-receipt reuse for follow-up questions and the current strong-signal rearm boundary without weakening hook or source requirements.
+- **macos-load-doctor** (`daymade-macos` v1.34.1 → v1.34.2): Calibrate CPU counters, distinguish surviving PIDs from observed process births, and verify application health after profiler cleanup. Treat retained children as fan-out until lifecycle evidence establishes a leak.
+- **claude-code-hooks** (`daymade-claude-code` v5.1.17 → v5.1.18): Allow shared machine pressure and individual hook defects to coexist; localize inherited shell startup and quoted-path lookup cost, and require synthetic regression inputs to reproduce the known-bad predicate.
+- **Claude Code profiles** (`daymade-claude-code` v5.1.16 → v5.1.17): Verify non-secret environment pins with an exact approved condition through the profile launcher, without printing environment values; distinguish tool success from process exit and bind acceptance to the tested model, permissions and consumer. Clarify absolute file-rule syntax without changing global permission defaults.
+
+- **tunnel-doctor** (v1.17.17 → v1.17.18): Bind Peer Relay acceptance to the observed business path and network topology; separate relay availability, workload throughput and LAN capacity claims while preserving existing trust and change authority.
+- **ASR voiceprint identification** (`daymade-audio` v1.59.0 → v1.60.0): Accept pinned daudio reference banks through an explicit user-configured reader, retain exact bank inputs in dispatch, and keep local JSON enrollment, native matching thresholds and legacy candidate output unchanged. Reject missing readers, unpinned banks, scope/model failures and URI enrollment before loading a model.
+
+- **report-with-html** (v1.7.3): Keep reading disclosure rules in their canonical reference; use repository, Skill and overview-example entries only as routes instead of duplicating those rules.
+- **ASR / transcript-fixer / StepFun ASR and TTS** (`daymade-audio` v1.58.4 → v1.59.0): Add optional user-configured external dispatch at the real audio CLI entries, preserving standalone execution, original arguments, streams and exit behavior. Reject configured dispatch failures instead of silently bypassing the orchestrator; reuse completed ASR caches only across pinned dispatch-only source transitions while preserving original receipts and input/model/parameter checks.
+
+- **macos-cleaner** (`daymade-macos` v1.34.0 → v1.34.1): Consolidate Docker cleanup instructions into their canonical procedure, remove the stale blanket-prune prohibition and copied object commands, preserve stopped-container checks, and correct rollback selection and Dockerfile working directories. Route build-cache operations from the project instructions, refresh maintained validation quotes to their canonical sources, and align the idle-probe documentation with its exit-status and stripped-output checks.
+- **app-evolver** (v1.1.15 → v1.1.16): Distinguish a standalone prototype, a stale embedded document and the requested application increment; preserve approved structure and interaction during integration.
+- **frontend-visual-qa** (v1.21.48 → v1.21.49): Exercise continuous-map disclosure at intermediate and reversed zoom, in the real host viewport, with affected navigation and return paths.
+- **macos-cleaner** (`daymade-macos` v1.34.0): Check each literal `rm` operand, including `--` and quoted Unicode paths; reject incomplete command coverage instead of returning a warning-only pass. Expand retirement sources only from the exact hash-bound evidence manifest; preserve read-only probes, explicit non-proposals and existing retention gates. Change types: bug fix and authorized workflow/safety redesign.
+
+- **macos-cleaner** (`daymade-macos` v1.32.2 → v1.33.0): Support verified exact-record BuildKit eviction with a named builder and literal cache ID; retain broad-prune exclusions, unknown-state protection and activation approval for unattended deletion. Calibrate the plan checker against literal, empty, dynamic and widened selector forms.
+- **app-evolver** (v1.1.14 → v1.1.15): Add a publication example that separates a useful website increment from optional delivery infrastructure, preserves explicitly requested executable or contribution deliverables, and distinguishes comprehension from external use.
+- **report-with-html** (v1.7.2): Show primary passages expanded in annotation/bookmark readers while retaining collapsed overview details and secondary diagnostics; verify reading after filtering through the served page.
+
+- **github-ops** (v1.16.5 → v1.16.6): Preserve failed-command evidence before disposable runner workspace cleanup, verify later retrieval, and bind cache preparation to each job's actual checkout and service identity.
+- **terraform-skill** (v1.5.15 → v1.5.16): Select validation environments from the authorized release contract, preserve required staging evidence without inserting optional staging into direct production, and derive supported schema transitions from the fixed candidate's canonical catalog.
+- **macos-cleaner** (`daymade-macos` v1.34.0): Consolidate exact inactive task evidence with original-path manifests, streamed archive verification and hash-bound resumable retirement; preserve active, protected and unclassified files.
+
+- **skill-creator** (`daymade-skill` v1.81.0): Gate task closeout on explicit output disposition. Preserve unclassified work and report exit 24 until disposable outputs are consumed and retired; support exact registration replacement and explicit retained-only inventories for worktrees, links and necessary evidence without implicit deletion.
+
+- **git-safety-net** (v1.28.6 → v1.28.7): Initialize a complete baseline index before sparse materialization and verify the explicit change scope without repairing existing work.
+- **auto-repo-setup** (v2.2.1 → v2.2.2): Route isolated sparse preparation through the protected initializer and its read-only scope check.
+- **peer-message** (v1.27.0 → v1.27.1): Close accepted informational records without a reply while retaining request, integrity and unknown-send barriers.
+- **macos-cleaner** (`daymade-macos` v1.32.1 → v1.32.2): Require payload facts in cleanup plans, protect live or unique state, and reject unsupported historical retention and backup copies.
+
+- **skills-search** (`daymade-skill` v1.80.2): Align coverage documentation with source-row and overall statuses, document blocked ancestors, and add repository routes for project discovery and split-reference checks.
+
+- **skill-creator** (`daymade-skill` v1.80.1): Relocate temporary review-checkout bindings without changing the reviewed identities; distinguish current release verification from preserved historical evidence and verify consumers after retirement.
+- **git-safety-net** (v1.28.6): Check known external path consumers, including local Git metadata, before retiring a linked worktree; resolve live references through their owning workflow and preserve obsolete evidence without renewing approval.
+- **skills-search / skill-creator** (`daymade-skill` v1.80.0): Search explicitly scoped project Skills alongside owned catalogs with immutable readback; detect Chinese numbered references and cover owner changes after splitting documents.
+
+- **local-codex** (`daymade-codex` v2.4.13 → v2.4.14): Route the fault-driven daemon scenario into the skill — description and Session Management section now trigger on daemon restart, hooks failing with 'Too many open files' and fd exhaustion diagnostics; anchor the observed fd baseline to its version.
+- **lark-cli-router** (v1.0.4): Make authorization handoff identify the bound operator and direct link; resume permission batches from verified per-target state and distinguish transient errors from refusals and source-binding failures.
+
+- **local-codex** (`daymade-codex` v2.4.12 → v2.4.13): Add the fault-driven restart route for daemon fd exhaustion — diagnose per-process lsof against system limits, distinguish a leak from a post-restart reconnection burst by trend sampling, and recover through the managed daemon start.
+- **peer-message** (v1.26.0 → v1.27.0): Add the codex-fork attribution lead (branch suffix ↔ fork session ID) to the shared-WIP ownership checklist.
+- **claude-code-hooks** (`daymade-claude-code` v5.1.16): Diagnose scanner-backed guard cost by route, cache and measured stage; preserve findings and ordinary dispatcher behavior while isolating verification resources.
+- **skill-creator** (`daymade-skill` v1.79.5): Verify recovery-test prerequisites independently, distinguish invalid fixtures from product failures, and isolate state and execution-slot namespaces from live callers.
+
+- **github-ops** (v1.16.5): Clarify sparse checkout initialization and checker input roots; route repository instructions to the preparation SOP and remove derived routing recaps.
+
+- **lark-cli-router** (v1.0.3): Distinguish one explicitly authorized shared-audience parent from separate customer permission parents, preserving existing nodes and future child-page inheritance.
+
+- **git-safety-net** (v1.28.5): Consolidate linked-worktree retirement in one procedure, route source entries to it, and keep helper options and checkpoint semantics in their owning reference.
+
+- **git-safety-net** (v1.28.4): Prefer an existing verified carrier. Do not fetch, move the carrier or change metadata between `prepare` and removal.
+- **skill-creator** (`daymade-skill` v1.79.4): Verify self-contained executable claims against the actual shipping set outside the source checkout, including promised self-checks, configuration failures and separate runtime adoption.
+- **debugging-network-issues** (v1.12.3): Route Codex request failures and fix-timing questions to the dedicated diagnostics Skill when available, retaining native-evidence fallback without a private dependency requirement.
+
 - **peer-message** (v1.26.0): Derive native send arguments and commit identity from the original prepare result; execute the documented return-driven flow without manually copying envelopes or UUIDs, and retain unknown transport outcomes.
 - **tech-selection** (`daymade-claude-code` v5.1.15): Challenge unnecessary bindings, version/path pins and compatibility constraints against current user requirements and actual consumers before preserving them.
 - **feishu-doc-scraper v1.14.1 / report-with-html v1.7.1**: Make archive commands independent of the caller's working directory, document PDF adapter imports, remove copied implementation limits and add repository task routes.
@@ -3410,6 +3466,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **terraform-skill** (v1.5.13 → v1.5.14): Route restoration through the existing release checks; verify separately owned DNS, consumer hostname TLS and selected SSH arguments before resuming application acceptance.
 - **peer-message** (v1.25.2 → v1.25.3): Add owner-release, successor-claim and readback steps; distinguish resource-window release from responsibility for the consumer's result.
 - **tech-selection** (`daymade-claude-code` v5.1.4 → v5.1.5): Assign hosted-database and object-storage responsibilities before capacity comparisons; retain justified binary fields and unknown provider/account constraints.
+
+- **git-safety-net v1.28.8 / auto-repo-setup v2.2.3 / peer-message v1.27.2 / daymade-macos v1.34.5**: Keep hook-dependency preparation, staged-set inspection and peer receipt rules in their canonical SOPs, resolve sparse setup across plugin boundaries, and remove derived payload-example summaries.
+
+- **skill-creator** (`daymade-skill` v1.81.0 → v1.81.1): Verify schema-2 evidence against its recorded integration base while recomputing the original review, receipt and distribution; retain current-main checks when creating a rebind and distinguish exact source review from current PR admission.
 
 ## [1.82.0] - 2026-07-07
 

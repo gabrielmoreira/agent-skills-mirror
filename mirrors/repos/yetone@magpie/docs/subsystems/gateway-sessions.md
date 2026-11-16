@@ -635,6 +635,64 @@ for the line filter), `TestContainsFold`, `TestMayHoldSkipsAFileWithoutTheWords`
 `TestGatewayTitleAndSearch`, `TestSessionsSearch*`; browser
 `sessions-search.test.cjs`.
 
+### What was said in every agent's sessions
+
+The same search over every agent at once (cryingLiu on X) can't read the
+files each query: this computer's Claude Code history alone is 29 GB in
+7,390 files. `sessions.SearchSaid` asks an index of the words said in them,
+`said-v1.db` beside `sessions.json`: an SQLite FTS5 table with no text kept,
+only which words are in which session (`content=''`, `detail='none'`; the
+user's and the model's text, about 1% of the bytes). It is made the first
+time a search asks, in the background, the newest sessions first, from the
+sessions `sessions.json` already lists (`saidSessions`), and brought up to
+date by the next search more than 10 s on (`saidStale`): a Claude Code or
+Codex file that grew is read from where the last read ended (`upto`, at a
+line's end), any other session again whole when its files changed, and a
+session gone or rewritten is dropped. A search waits for that at most 2 s
+(`saidWait`) and is otherwise answered from what is indexed, saying
+`indexed` of `total`; while the first listing of the sessions is still
+running (about 50 s over a 29 GB Claude Code and 60 GB Codex history with
+a cold `sessions.json`) it says `listing` instead, so neither the page nor
+the MCP server reads an empty first answer as "no session says it". Words are letter-or-digit runs matched by their start
+(`auth` finds `authentication`); Chinese, Japanese and Korean go as each
+two characters side by side (`saidWords`, `saidTerms`). The index only says
+which sessions are worth reading: those are read newest first with
+`SearchSession` for the hit and the words round it, to `limit` hits.
+An agent magpie may not read (`Reads`, Settings › Sessions and gateway
+mode) is left out of every answer at once and out of the index on its next
+update; turning gateway mode on or off closes the index (`Reset` →
+`ForgetSaid`, which stops a refresh running at the next session).
+
+- `GET /api/sessions/said?q=&agent=&limit=` is the Sessions page's: under
+  the agent's own list, the sessions of other agents that said the words
+  (Other agents), asked again every 3 s while the index is still reading.
+  The page asks nothing in gateway mode.
+- `GET /api/sessions/transcript?…&find=` reads the conversation from a few
+  messages before the first part that says the words (`TranscriptAt`,
+  `transcriptLead`), with `from` the parts left out. A hit, in the agent's
+  list or another's, opens the conversation sheet there: the part is ringed
+  (`sess-found`), its words marked with the CSS Custom Highlight API where
+  the browser has it, and the sheet, never the page, scrolled to it once.
+- The `magpie-sessions` MCP server (`SessionsMCPPath`,
+  `/mcp/magpie/sessions`, [`sessions_mcp.go`](../../internal/gateway/sessions_mcp.go))
+  gives an agent `search_sessions(query, agent?, limit)` and
+  `read_session(session, find?, from?, max_chars?)`, as text: each hit's
+  `agent:id`, title, folder, time and the words round it; a read numbers
+  each message, shortens tool calls and answers, leaves thinking out, and
+  says how to go on (`from=`). Like Magpie Memory it answers the agents on
+  this computer alone, never another computer's key or a web page. The
+  Library offers it as opt-in, run as `magpie mcp sessions`
+  (`browsermcp.RunSessions`).
+
+Implementation: [`internal/sessions/said_index.go`](../../internal/sessions/said_index.go),
+`TranscriptAt` in [`transcript.go`](../../internal/sessions/transcript.go),
+the `said` route in [`sessions_manage.go`](../../internal/gui/sessions_manage.go).
+Verification: `TestSearchSaid*` (`TestSearchSaidReadsAGrownFileFromWhereItEnded`,
+`TestSearchSaidLeavesOutAgentsNotRead`), `TestSaidWords`, `TestSaidTerms`,
+`TestTranscriptAtStartsBeforeTheHit`, `TestSessionsMCP*`,
+`TestSessionsServerInDiscover`, `TestGatewayModeListsNoOwnSessions`;
+browser `sessions-said.test.cjs`, `library-sessions-mcp.test.cjs`.
+
 Verification: `TestGatewayConversation*` (`TestGatewayConversationNeedsTheClientsSession`
 and `TestGatewayConversationClientRequestPrefixedSession` for the two rules above), `TestGatewaySessionHistoryAndCalendar`,
 `TestGatewaySessionsNativeWinsBeforeLimits`,
@@ -1229,6 +1287,19 @@ the session itself was hidden as a fork's copy. See
 `TestClaudeBranchNamesItsSession` and
 `TestClaudeCopyBeforeACompactionIsCounted`; the fixtures in
 `testdata/claude-forks` are Claude Code 2.1.312's own files.
+
+A group's verdict is kept on disk by its files' sizes and times
+(`cc_family_memo.go`), and each copy's rest by both files. While the
+process runs, the uuids read of a group's files stay in memory, a group
+found on disk included, so when the keeper grows (the live session the
+copies were made of) the group is judged on the added lines only. A copy
+that didn't change keeps its rest while the keeper only grew and holds
+none of the rest's messages; one it now holds has the rest read again. A
+long session resumed into copies of ~100 MB each re-read every copy whole
+on each turn, a second or more per change on the Sessions page (on X).
+After a start, the first change to such a group still reads each file's
+uuids once. See `TestClaudeKeeperTurnReadsNoCopy` and
+`TestClaudeKeeperTurnTheBranchHeldIsCountedOnce`.
 
 A session whose agent keeps its subagents' conversations beside its own
 lists them in `subagents` on the sessions API (`/api/sessions`, `one`, `manage`; #2261,

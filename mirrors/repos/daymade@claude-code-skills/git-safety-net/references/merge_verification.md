@@ -896,16 +896,18 @@ Apply the preceding clone procedure's complete survivor proof to independent clo
 ancestry alone cannot exempt their metadata, reflogs or unreachable objects. Submodule repositories,
 stashes and unique uncommitted bytes retain their own preservation procedures.
 
-1. Freeze the authorized ref (or detached HEAD), its full 40-hex tip and the retained carrier's
-   identity. Refresh the exact remote main, resolve it locally, verify its hosted SHA with a separate
-   remote query, and require `git merge-base --is-ancestor <tip> <verified-main-sha>` to exit 0.
+1. Refresh the exact remote main, resolve it locally and verify its hosted SHA with a separate
+   remote query before freezing the authorized ref (or detached HEAD), its full 40-hex tip and
+   retained carrier. To use remote main as the exact-object carrier, require
+   `git merge-base --is-ancestor <tip> <verified-main-sha>` to exit 0.
    Check command errors separately from a genuine non-ancestor result.
 2. When that exact commit remains reachable through the retained remote main, and the checkout's
    tracked, untracked and ignored inventories contain no unique bytes threatened by removal, skip
    the redundant history bundle. Record the refs and SHAs in the existing task manifest instead.
    This is exact-object preservation: squash/content-only containment does not establish it.
-3. Otherwise preserve the unique state through its existing recovery procedure. A content-contained
-   squash tip whose exact identity is still required needs a durable ref or verified export; do not
+3. Otherwise preserve the unique state through its existing recovery procedure. Prefer an existing
+   durable carrier before choosing a history export. A content-contained squash tip whose exact
+   identity is still required needs a durable ref or verified export; do not
    infer that the replacement commit preserves every original object. Preserve dirty/ignored bytes
    separately because a Git bundle cannot capture them.
 4. `git_export_before_drop.sh --branch <ref>` includes all reachable ancestors, even for a tiny
@@ -938,6 +940,18 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    for its absolute path (launchd plists in `~/Library/LaunchAgents`, `crontab -l`, systemd units).
    Real case: a detached "deploy" worktree with no open handles and no file change in ten days was
    the working copy of a LaunchAgent that ran every 30 minutes.
+   Check known consumers outside the checkout too: task manifests, artifact indexes or local
+   release receipts can store its absolute path, including files in another repository's Git
+   metadata. Search the exact path only in the task's known consumer stores; do not infer global
+   non-use from a clean status, no open handles or a scan of tracked files alone. Resolve each
+   live reference through its owning workflow before freezing retirement evidence. For Skill
+   release receipts, resolve the installed Skill Creator or its verified source and use
+   [the archive relocation procedure](https://github.com/daymade/claude-code-skills/blob/main/daymade-skill/skill-creator/references/release-readiness.md#retire-a-temporary-review-checkout).
+   It is a separate owner, not a bundled tool; unavailable required relocation keeps the
+   checkout pending rather than authorizing ad-hoc receipt repairs.
+   Distinguish an already obsolete record from a live dependency: preserve its original evidence
+   and report its existing validation limit without inventing a new release approval. Recheck
+   relocated consumers after removal; unknown required consumer coverage stops that retirement.
 2. **Inspect tracked and untracked state in the linked checkout itself:** run
    `git -C <worktree-path> status --porcelain=v1 --untracked-files=all --ignore-submodules=none`.
    The output must be empty. Do not substitute the primary checkout's status. Enumerate the
@@ -979,10 +993,35 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    `scripts/git_verify_branch_merged.sh <recorded-head> <base>`. An
    ancestor/content-contained verdict proves the committed state is on the base; NEEDS REVIEW
    requires manual supersession triage or preserving the commit under a branch/ref.
+   Finish preliminary ownership, scheduler and occupancy checks and any metadata-changing
+   preparation before step 6 freezes its checkpoint. Do not fetch,
+   move the carrier or change metadata afterward. If a required refresh or an external writer
+   changes the frozen state, reclassify and prepare new evidence instead of weakening verification.
 6. **Preserve threatened state:** apply [Preservation before retirement](#preservation-before-retirement).
-   Retain the exact ref-to-SHA manifest even when no bundle is needed. When export is required,
-   select the named branch or create one collision-checked `refs/recovery/<worktree-id>` at the
-   detached HEAD, then verify its export. Do not pin unrelated danglers or use `--all-refs` unless
+   Retain the exact ref-to-SHA manifest even when no bundle is needed. For a supported linked
+   worktree, select a fully qualified retained ref outside the retiring branch, then use the
+   [helper reference](worktree-retirement-helper.md) for preparation, interrupted resume,
+   rebase-withdrawal declarations and dependency-cache handling. Its `root_carrier` result
+   determines whether that ref covers the threatened history or a scoped pack remains necessary.
+
+   If an existing verified ref covers the history, use it as `retained_ref` and omit creation.
+   After a squash, main's replacement commit does not retain the original commit identities;
+   within the exact task's preservation/removal authority, create a task recovery ref:
+
+   ```bash
+   primary="<absolute-kept-checkout>"
+   target="<exact-linked-worktree>"
+   target_head=$(git -C "$target" rev-parse --verify 'HEAD^{commit}') || exit 1
+   retained_ref="refs/recovery/worktree-retirement/<unique-task-id>"
+   git -C "$primary" update-ref "$retained_ref" "$target_head" "" || exit 1
+   ```
+
+   The empty old value requires a new ref; a collision stops this recipe. Keep the ref through
+   removal and recovery readback. Creating it does not prove content delivery, authorize other
+   targets, or authorize retiring the recovery ref itself.
+   When a separate export is required, select the named branch or create one collision-checked
+   `refs/recovery/<worktree-id>` at the detached HEAD, then verify its export.
+   Do not pin unrelated danglers or use `--all-refs` unless
    separately authorized. Keep unique ignored-file copies from step 3 outside the worktree—the
    bundle does not contain them.
    For every local submodule repository threatened by removal, obtain preservation authority for
@@ -1011,7 +1050,9 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    types, regular-file hashes, and symlink targets must exactly equal the frozen step 3 manifest;
    any added or missing path, type change, content change, or link-target change aborts removal.
    Also require every preserved source and backup copy to match that manifest, and recheck all
-   module identities, refs, reflogs, object inventories and backups from steps 2/6. Finish the Git
+   module identities, refs, reflogs, object inventories and backups from steps 2/6. When preparation
+   used the helper, run its `verify-current --out <evidence-directory>` for these frozen-state
+   checks; it does not lock out writers. Finish the Git
    probes before running the platform's process-occupancy probe against the exact target and any
    module Git stores removal threatens. On macOS, `/usr/sbin/lsof +D <absolute-target>` is one
    available probe. Inspect its rows and diagnostics; any genuine process user or unknown result
@@ -1028,6 +1069,8 @@ the worktree itself has no uncommitted files, and a detached worktree HEAD is ab
    ignored file at its backup-relative path and compare it with the pre-removal manifest; merely
    seeing a destination file is not an integrity check. Independently re-open each module backup,
    verify its bundle and frozen refs/reflogs/objects, and verify every copied module-private file.
+   When preparation used the helper, run `verify-recovery --out <evidence-directory>` as well.
+   Separately prove the kept checkout's recorded HEAD and index/worktree state are unchanged.
 9. **Retire its branch separately:** prefer `git branch -d <branch>`. Worktree-removal authority
    does not authorize branch deletion. If Git refuses after a
    proven squash/supersession case, require the verified backup and explicit deletion authority

@@ -14,4 +14,6 @@ Use this checklist in a new collection folder's README. It is an authoring aid, 
 | License | Code, fonts, images, music and footage may have different terms; record them. |
 | Verification | What you opened, changed, exported and reviewed, with versions and known gaps. |
 
+For a portable Motion Package, follow the [v0.2 draft](../docs/motion-package-spec.md): link DESIGN.md from the motion document, declare the manifest inventory and dependencies, preserve licenses, and verify a relocated package. SKILL.md is optional. The [Product Story example](../packages/motion-package/examples/product-story/README.md) demonstrates the recipe level without claiming a rendered result.
+
 Keep one maintained source for shared assets. Link the entry from the collection index and update affected docs and the [change record](../docs/product/changes.md). Public distribution uses an explicit [file list](../scripts/distribution.ts); a new folder is not automatically shipped or loaded by Studio.

@@ -61,12 +61,21 @@ arm measures the noise that load leaves in the candidate. Noise in base moves
 every arm in a packet together, so no same-code gap sees it. The furthest pair
 from its arm's median shows how far noise that differs from pair to pair, base's
 included, moves one ratio. Noise that every pair shares stays unmeasured.
-Only that noise and a planted arm
-decide whether a line is conclusive, and a planted arm that reads far from
-the ratio it plants shows the line measured something other than the plant.
+That noise, a planted arm and the
+budget's room decide whether a line is conclusive. A planted arm that reads
+far from the ratio it plants shows the line measured something other than the
+plant. A budget more than twice the candidate's ratio makes the line
+inconclusive, because the candidate could more than double and still pass,
+unless the config's `wideRoom` gives that cohort's reason.
 Compare only ratios within one run, because absolute medians drift between
 runs. An inconclusive line reruns now,
-or its claim narrows to what a deterministic work count proves. An unpaired
+or its claim narrows to what a deterministic work count proves. A headless
+line that times one synchronous operation may judge the process CPU time it
+took, read with `process.cpuUsage()` around it and printed beside wall time,
+because a host with more runnable work than cores can move wall time by more
+than a 1.5 budget's room. A cohort a full run leaves inconclusive reruns
+alone, with its bench limited to that cohort, and the cohorts the run decided
+keep their verdicts, because the runner judges each cohort apart. An unpaired
 run never rewrites a tracked receipt or accepts a target. In Chromium, count per-keystroke work through CDP
 `Performance.getMetrics`: `LayoutCount`, `RecalcStyleCount` and
 `TaskDuration`. Frame latency through `requestAnimationFrame` moves in steps of

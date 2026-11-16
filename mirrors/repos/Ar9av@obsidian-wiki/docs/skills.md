@@ -26,7 +26,7 @@ You need three skills to get value from the vault. Everything else on this page 
 
 | Skill | What it does | Slash command |
 |---|---|---|
-| `wiki-ingest` | The catch-all. Distills documents, PDFs, chat exports, logs, transcripts, images, and URLs into wiki pages | `/wiki-ingest` |
+| `wiki-ingest` | The catch-all. Distills documents, PDFs, chat exports, logs, images, and URLs into wiki pages. Meeting transcripts and voice notes (VTT, SRT, Granola / Wispr Flow / Otter exports) get a dedicated branch: one meeting page, then decisions, customer quotes and commitments spread to the entity, project and playbook pages they belong on | `/wiki-ingest` |
 | `wiki-capture` | Save the current conversation as a wiki note; `--quick` stages findings to `_raw/` in under 60 seconds | `/wiki-capture` |
 | `wiki-update` | Sync the current project's knowledge into the vault — works from any repo | `/wiki-update` |
 | `wiki-research` | Autonomous multi-round web research, filed straight into the vault | `/wiki-research [topic]` |
@@ -46,6 +46,7 @@ You need three skills to get value from the vault. Everything else on this page 
 | `wiki-query` | Answer questions from the vault with citations. Tiered — reads summaries before page bodies. Say "challenge this" to have it argue against a plan using your own past decisions and failures | `/wiki-query` |
 | `wiki-narrate` | Render a cited briefing, plain-language explanation, or progressive lecture from a topic | `/wiki-narrate <topic>` |
 | `wiki-digest` | Newsletter-style summary of what you learned over a day, week, or month | `/wiki-digest [period]` |
+| `wiki-playbook-review` | The weekly loop: finds the `skills/` playbooks this week's meetings, journals and new pages touched, rewrites each one from that evidence (what worked, what failed, new cases, a dated *Stop doing* list and changelog), and stages the revisions for you to approve with `/wiki-stage-commit`. Never writes a live page | `/wiki-playbook-review [--since 7d]` |
 | `wiki-context-pack` | Produce a token-bounded context slice for a downstream agent or skill | `/wiki-context-pack` |
 | `memory-bridge` | Browse and diff knowledge by which AI tool wrote it | `/memory-bridge` |
 
@@ -64,7 +65,7 @@ These two build a retrieval index over your raw agent sessions. They write a sid
 
 | Skill | What it does | Slash command |
 |---|---|---|
-| `wiki-status` | What's ingested, what's pending, the delta — plus vault-shape insights (hubs, bridges, clusters) and an equilibrium check across the maintenance skills | `/wiki-status` |
+| `wiki-status` | What's ingested, what's pending, the delta — plus vault-shape insights (hubs, bridges, clusters), an equilibrium check across the maintenance skills, and a costs mode: spend and pages produced per recurring job, flagging jobs that cost money and produce nothing | `/wiki-status` |
 | `wiki-lint` | Find broken links, orphans, stale content, contradictions, missing frontmatter | `/wiki-lint` |
 | `wiki-dedup` | Identity resolution — merge pages covering the same concept under different names | `/wiki-dedup` |
 | `cross-linker` | Auto-discover unlinked mentions and weave them into the graph with `[[wikilinks]]` | `/cross-linker` |
@@ -89,7 +90,7 @@ These two build a retrieval index over your raw agent sessions. They write a sid
 |---|---|---|
 | `llm-wiki` | The core pattern and architecture reference every other skill defers to | `/llm-wiki` |
 | `skill-creator` | Create, edit, and eval new skills | `/skill-creator` |
-| `vault-skill-factory` | Turn a cluster of mature vault pages into a portable "digital expert" skill | `/vault-skill-factory` |
+| `vault-skill-factory` | Turn a cluster of mature vault pages into a portable "digital expert" skill, or turn one narrated recording of a job (screen recording, call, voice note) into a small skill with *when to use*, *steps*, *checks* and *mistakes to avoid*. Secrets and example customer data are redacted; output goes to a review dir and is never installed for you | `/vault-skill-factory` |
 | `impl-validator` | Validate an implementation against its stated goal | `/impl-validator` |
 
 ## Recommended companion: Obsidian Skills by Kepano

@@ -186,11 +186,16 @@ and scale, type sizes, radii, fonts, and control heights per screen with a basel
 palette roles when `--project-root` points at a StyleSeed project, otherwise the majority across
 the screens. `DRIFT.md` holds the table and a one-line verdict; `drift.json` holds the same data.
 
+Control heights are those of visible control boxes (a wrapped field at its box, action buttons with a
+box and a one-line label); if the project recorded a `controlHeights` decision from an earlier report,
+check it against a run without `--gate` first (see the decisions ledger guide).
+
 With `--gate`, at-rest drift on accent, ink, canvas, or spacing base exits 3 (INV-05: no unexplained
 role drift) so CI can block on it. Record approved decisions and exceptions in the project's
 `decisions` ledger instead of lowering the gate (see the
 [decisions ledger guide](../ss-resolve/references/decisions.md)): the report reads it from
-`.styleseed/project.json` with `--project-root`, or from `--decisions <file.json>`. A recorded decision
+`.styleseed/project.json` with `--project-root` (from `.styleseed/decisions.json` when the project has no
+registry), or from `--decisions <file.json>`. A recorded decision
 becomes the baseline for the screens it covers, so a value outside it reads `violates D-…`; a value
 an approved exception covers reads `approved D-…` and is not drift. `--gate` also exits 3 on any
 decision violation.
@@ -212,6 +217,15 @@ finding names its class, viewport, and box; nothing is scored. `--gate` fails on
 catalog rule has priority `blocks`, and an approved ledger exception to a default rule waives it per
 screen; the other classes report. The drift files are byte for byte what the run writes without the
 flag. Definitions, thresholds, and limits: [render faults](references/render-faults.md).
+
+With `--inventory`, the run also counts what the screens at rest render, from the same observations, and
+writes `INVENTORY.md` and `inventory.json` beside the drift files: every control height (fields and
+buttons separately as well as together), radius, and type size in use, each with its count, its share,
+the screens that render it, and the screens whose drift row lists it, and each screen's spacing base. It
+is a count of what the screens render; it does not say which values are right.
+`propose-system.mjs --own <dir>/inventory.json` turns it into proposals from the product's own screens
+([system proposals](../ss-resolve/references/proposals.md)). The drift files are byte for byte what the
+run writes without the flag.
 
 With `--reference <slug>` (and `--project-root`), the run also measures the distance from one screen
 (`--screen <label>`, default the first) to the project's approved generated contract

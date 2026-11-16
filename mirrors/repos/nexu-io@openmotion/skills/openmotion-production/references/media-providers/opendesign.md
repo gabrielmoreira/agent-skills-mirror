@@ -4,7 +4,7 @@ Based on the supplied Cloud media API contract; reviewed 2026-11-13. This is a t
 
 ## Setup and discovery
 
-Open the [Cloud dashboard](https://open-design.ai/cloud/dashboard), select the workspace and open API keys. Save its Cloud Key and the gateway origin shown there in editor **Media providers**. Do not substitute the website origin. A trailing `/v1` is normalized away. Environment alternatives are `OPENDESIGN_API_KEY` and `OPENDESIGN_MEDIA_ORIGIN`; the saved configuration takes priority.
+Open the [Cloud dashboard](https://open-design.ai/cloud/dashboard), select the workspace and open API keys. Save its Cloud Key and the gateway origin shown there in editor **Model providers**. Do not substitute the website origin. A trailing `/v1` is normalized away. Environment alternatives are `OPENDESIGN_API_KEY` and `OPENDESIGN_MEDIA_ORIGIN`; the saved configuration takes priority.
 
 The service injects `Authorization: Bearer ...`. Agents use `openmotion_media_use`, never credential files or key arguments. Shell examples describe the contract for implementation or user-run diagnostics, using environment placeholders only. Set `OPENDESIGN_MEDIA_ORIGIN` to the dashboard's HTTPS origin without `/v1` or a trailing slash.
 

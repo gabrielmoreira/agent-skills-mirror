@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Significant-Gravitas/AutoGPT` — 26 default patterns, 0 followed pat
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,34 +66,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.claude/skills/pr-polish/SKILL.md`](.claude/skills/pr-polish/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
 | 7 | ✓ | [`.claude/skills/pr-test/SKILL.md`](.claude/skills/pr-test/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/setup-repo/SKILL.md`](.claude/skills/setup-repo/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/vercel-react-best-practices/AGENTS.md`](.claude/skills/vercel-react-best-practices/AGENTS.md) |
-| 10 | ✓ | [`.claude/skills/vercel-react-best-practices/SKILL.md`](.claude/skills/vercel-react-best-practices/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/worktree/SKILL.md`](.claude/skills/worktree/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/write-frontend-tests/SKILL.md`](.claude/skills/write-frontend-tests/SKILL.md) |
-| 13 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 15 | ✓ | [`autogpt_platform/AGENTS.md`](autogpt_platform/AGENTS.md) |
-| 16 | ✓ | [`autogpt_platform/backend/AGENTS.md`](autogpt_platform/backend/AGENTS.md) |
-| 17 | ✓ | [`autogpt_platform/backend/backend/copilot/bot/AGENTS.md`](autogpt_platform/backend/backend/copilot/bot/AGENTS.md) |
-| 18 | ✓ | [`autogpt_platform/backend/backend/copilot/bot/CLAUDE.md`](autogpt_platform/backend/backend/copilot/bot/CLAUDE.md) |
-| 19 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md`](autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md) |
-| 20 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md`](autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md) |
-| 21 | ✓ | [`autogpt_platform/backend/CLAUDE.md`](autogpt_platform/backend/CLAUDE.md) |
-| 22 | ✓ | [`autogpt_platform/backend/test/fixtures/skills/webapp-testing/SKILL.md`](autogpt_platform/backend/test/fixtures/skills/webapp-testing/SKILL.md) |
-| 23 | ✓ | [`autogpt_platform/CLAUDE.md`](autogpt_platform/CLAUDE.md) |
-| 24 | ✓ | [`autogpt_platform/frontend/AGENTS.md`](autogpt_platform/frontend/AGENTS.md) |
-| 25 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
-| 26 | ✓ | [`autogpt_platform/frontend/src/tests/AGENTS.md`](autogpt_platform/frontend/src/tests/AGENTS.md) |
-| 27 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
-| 28 | ✓ | [`classic/CLAUDE.md`](classic/CLAUDE.md) |
-| 29 | ✓ | [`classic/direct_benchmark/CLAUDE.md`](classic/direct_benchmark/CLAUDE.md) |
-| 30 | ✓ | [`classic/forge/CLAUDE.md`](classic/forge/CLAUDE.md) |
-| 31 | ✓ | [`classic/original_autogpt/CLAUDE.md`](classic/original_autogpt/CLAUDE.md) |
-| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 33 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 34 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 35 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
+| 8 | ✓ | [`.claude/skills/process-vulnerability-report/SKILL.md`](.claude/skills/process-vulnerability-report/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/setup-repo/SKILL.md`](.claude/skills/setup-repo/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/vercel-react-best-practices/AGENTS.md`](.claude/skills/vercel-react-best-practices/AGENTS.md) |
+| 11 | ✓ | [`.claude/skills/vercel-react-best-practices/SKILL.md`](.claude/skills/vercel-react-best-practices/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/worktree/SKILL.md`](.claude/skills/worktree/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/write-frontend-tests/SKILL.md`](.claude/skills/write-frontend-tests/SKILL.md) |
+| 14 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 16 | ✓ | [`autogpt_platform/AGENTS.md`](autogpt_platform/AGENTS.md) |
+| 17 | ✓ | [`autogpt_platform/backend/AGENTS.md`](autogpt_platform/backend/AGENTS.md) |
+| 18 | ✓ | [`autogpt_platform/backend/backend/copilot/bot/AGENTS.md`](autogpt_platform/backend/backend/copilot/bot/AGENTS.md) |
+| 19 | ✓ | [`autogpt_platform/backend/backend/copilot/bot/CLAUDE.md`](autogpt_platform/backend/backend/copilot/bot/CLAUDE.md) |
+| 20 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md`](autogpt_platform/backend/backend/copilot/graphiti/AGENTS.md) |
+| 21 | ✓ | [`autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md`](autogpt_platform/backend/backend/copilot/graphiti/CLAUDE.md) |
+| 22 | ✓ | [`autogpt_platform/backend/CLAUDE.md`](autogpt_platform/backend/CLAUDE.md) |
+| 23 | ✓ | [`autogpt_platform/backend/test/fixtures/skills/webapp-testing/SKILL.md`](autogpt_platform/backend/test/fixtures/skills/webapp-testing/SKILL.md) |
+| 24 | ✓ | [`autogpt_platform/CLAUDE.md`](autogpt_platform/CLAUDE.md) |
+| 25 | ✓ | [`autogpt_platform/frontend/AGENTS.md`](autogpt_platform/frontend/AGENTS.md) |
+| 26 | ✓ | [`autogpt_platform/frontend/CLAUDE.md`](autogpt_platform/frontend/CLAUDE.md) |
+| 27 | ✓ | [`autogpt_platform/frontend/src/tests/AGENTS.md`](autogpt_platform/frontend/src/tests/AGENTS.md) |
+| 28 | ✓ | [`autogpt_platform/frontend/src/tests/CLAUDE.md`](autogpt_platform/frontend/src/tests/CLAUDE.md) |
+| 29 | ✓ | [`classic/CLAUDE.md`](classic/CLAUDE.md) |
+| 30 | ✓ | [`classic/direct_benchmark/CLAUDE.md`](classic/direct_benchmark/CLAUDE.md) |
+| 31 | ✓ | [`classic/forge/CLAUDE.md`](classic/forge/CLAUDE.md) |
+| 32 | ✓ | [`classic/original_autogpt/CLAUDE.md`](classic/original_autogpt/CLAUDE.md) |
+| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 34 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 35 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 36 | ✓ | [`docs/platform/gemini.md`](docs/platform/gemini.md) |
 
 ---
 

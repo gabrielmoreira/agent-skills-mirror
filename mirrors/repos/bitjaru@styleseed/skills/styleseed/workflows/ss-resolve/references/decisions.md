@@ -50,7 +50,7 @@ catalog: `engine/rules/catalog.json` never holds a project's decisions.
 | `statement` | Required. One line, at most 300 characters. This is what an agent reads. |
 | `approvedBy` | Required. Who approved it, at most 80 characters. |
 | `date` | Required. `YYYY-MM-DD`. |
-| `source` | Optional. Where it was decided, at most 200 characters: a review batch, a reference fact, a meeting. A decision proposed from an approved reference contract reads `reference:<slug>#<fact-id>` (for example `reference:ops-console#density.table.rowHeight`), or `reference:<slug>#tokens.<axis>` for a token axis. |
+| `source` | Optional. Where it was decided, at most 200 characters: a review batch, a reference fact, a meeting. A decision proposed from an approved reference contract reads `reference:<slug>#<fact-id>` (for example `reference:ops-console#density.table.rowHeight`), or `reference:<slug>#tokens.<axis>` for a token axis. A proposal from `propose-system.mjs` reads `corpus:<run>#<claim>@<page type>/<viewport>`, `measured:<slug>#tokens.<axis>` (or `#<fact id>`), or `engine-default:<what> (not measured)`; values the person added themselves are listed after `chosen:`. |
 
 The resolver validates the ledger with the rest of `project.json`. It refuses, with the entry id and
 what to change: duplicate ids, unknown rule ids, an exception without `rule` or `to`, a `to` that is
@@ -152,6 +152,23 @@ date; edit either if the person deciding for the project is someone else. Mappin
 one entry per axis. Accent, ink, and canvas are never proposed from a reference, and nothing is proposed
 for a fact or axis whose transfer is adapt, observe, or avoid.
 
+## Proposed with a basis
+
+`ss-resolve/scripts/propose-system.mjs --project-root . --surface pointer|touch` prints, for control height, type
+sizes, corner radius, table row height, and spacing unit (and for the other measured axes when it has a basis), a
+value, the counts behind it, and a ready entry with `approvedBy` and `date` left empty. It writes no ledger. An entry
+whose `approvedBy` is empty does not compile, so a proposal cannot reach a bundle before a person has put their name
+on it. Corpus counts describe what the published demo screens of a few design systems rendered on the run's date;
+they are not a review of this project. See [system proposals](proposals.md).
+
+## A project without a registry
+
+A project that has `STYLESEED.md` and no registry keeps the same ledger as a JSON array in
+`.styleseed/decisions.json`. The resolver compiles it into `.styleseed/effective-rules.md` exactly as above, and the
+drift report reads it with `--project-root`. `scope.artifacts` is refused there (one artifact); `scope.screens`
+works. When the project later gets a registry, move the array into `decisions` in `.styleseed/project.json` and
+delete the file; the resolver stops until that is done.
+
 ## Worked examples
 
 **A product-wide control height, with one approved toolbar.** The team decides 36px form controls
@@ -160,6 +177,14 @@ approves 32px for that screen only (`D-002`). The `app-orders` bundle shows both
 `CRAFT-control-heights` with `Project exception: D-002`. On the next drift run, a 32px control on
 `orders` reads `approved D-002`; a 32px control that appears on `settings` reads `violates D-001`,
 and `--gate` fails until someone either fixes `settings` or records why it is different there.
+
+**Control heights are those of visible boxes.** The drift report reads a field at the box a person
+sees and counts only action buttons that have a box and a one-line label
+(`engine/REFERENCE-COMPILER.md`, "Measurement and evidence levels"). A `controlHeights` decision
+recorded from an earlier report may list an inner height (22 for a field whose box is 32px), a
+toggle's size, or a text area's height, and the gate then names the real height as a violation. Run
+the report once without `--gate`, read the control-heights row, and let the decision's owner correct
+the values; the tool never edits the ledger.
 
 **An accent that a partner page may break.** A project decides its teal accent for every screen:
 

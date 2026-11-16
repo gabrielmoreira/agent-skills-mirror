@@ -39,9 +39,11 @@ $OBSIDIAN_VAULT_PATH/
 ├── hot.md                  # Session hot cache — ~500-word semantic snapshot (generated)
 ├── .manifest.json          # Tracks every ingested source: path, timestamps, pages produced
 ├── _meta/
+│   ├── voice.md            # The owner's public voice: posts to imitate, posts to avoid, never-use words
 │   ├── taxonomy.md         # Controlled tag vocabulary
 │   ├── profile.md          # Durable facts about the vault owner (memory skill)
 │   ├── todos.md            # Open threads carried between sessions (memory skill)
+│   ├── facts.md            # Approved claims agents may make in public writing (`obsidian-wiki facts`)
 │   └── *.base              # Obsidian Bases dashboard definitions (wiki-dashboard skill)
 ├── _insights.md            # Graph analysis output (hubs, bridges, dead ends)
 ├── _raw/                   # Staging area — drop rough notes here, next ingest promotes them
@@ -66,7 +68,7 @@ Skills live in `skills/<name>/SKILL.md`. Match the user's intent to the right sk
 |---|---|
 | "set up my wiki" / "initialize" | `wiki-setup` |
 | "/wiki-history-ingest claude" / "/wiki-history-ingest copilot" / "/wiki-history-ingest codex" / "/wiki-history-ingest hermes" / "/wiki-history-ingest openclaw" / "/wiki-history-ingest pi" | `wiki-history-ingest` |
-| "ingest" / "add this to the wiki" / "process these docs" / "process this export" / "ingest this data" / logs, transcripts / "/ingest-url <url>" / "add this URL" / "ingest this link" / "save this page" | `wiki-ingest` |
+| "ingest" / "add this to the wiki" / "process these docs" / "process this export" / "ingest this data" / logs, transcripts / "ingest my meetings" / "pull my Granola / Wispr notes" / voice notes / "/ingest-url <url>" / "add this URL" / "ingest this link" / "save this page" | `wiki-ingest` |
 | "import my Claude history" / "mine my conversations" | `claude-history-ingest` |
 | "import my Codex history" / "mine my Codex sessions" | `codex-history-ingest` |
 | "import my Hermes history" / "mine my Hermes memories" / "ingest ~/.hermes" | `hermes-history-ingest` |
@@ -76,6 +78,7 @@ Skills live in `skills/<name>/SKILL.md`. Match the user's intent to the right sk
 | "what's the status" / "what's been ingested" / "show the delta" | `wiki-status` |
 | "wiki insights" / "hubs" / "wiki structure" | `wiki-status` (insights mode) |
 | "is my vault at equilibrium" / "wiki equilibrium" / "is maintenance done" / "are my skills fighting" | `wiki-status` (equilibrium mode) |
+| "what is the wiki costing me" / "cost per job" / "which jobs are worth it" | `wiki-status` (costs mode) |
 | "what do I know about X" / "find info on Y" / any question | `wiki-query` |
 | "challenge this" / "argue against X" / "what did I decide about X?" | `wiki-query` (challenge query) |
 | "use my vault as context" / "context pack for X" / "bounded context" | `wiki-context-pack` |
@@ -95,7 +98,7 @@ Skills live in `skills/<name>/SKILL.md`. Match the user's intent to the right sk
 | "create a dashboard" / "vault dashboard" / "show all X as a table" / "dynamic view" | `wiki-dashboard` |
 | "synthesize my wiki" / "find connections" / "what concepts keep coming up together" / "/wiki-synthesize" | `wiki-synthesize` |
 | "create a new skill" | `skill-creator` |
-| "/vault-skill-factory" / "make a skill from my wiki" / "turn these pages into a skill" / "package my notes on X as a skill" / "build a domain-expert skill from my vault" | `vault-skill-factory` |
+| "/vault-skill-factory" / "make a skill from my wiki" / "turn these pages into a skill" / "package my notes on X as a skill" / "build a domain-expert skill from my vault" / "turn this recording into a skill" / "I did it once out loud, make it a skill" | `vault-skill-factory` |
 | "/wiki-claude [topic]" / "/wiki-codex [topic]" / "/wiki-hermes [topic]" / "/wiki-openclaw [topic]" / "/wiki-copilot [topic]" / "/wiki-pi [topic]" | `wiki-agent` |
 | "/memory-bridge" / "browse codex memory" / "what did codex know about X" / "compare tool memories" / "cross-tool memory" | `memory-bridge` |
 | "/session-brain" / "build my session map" / "cluster my claude sessions" / "rebuild the session graph" / "what topics have gone stale" | `session-brain` |
@@ -103,6 +106,7 @@ Skills live in `skills/<name>/SKILL.md`. Match the user's intent to the right sk
 | "/daily-update" / "morning sync" / "refresh the wiki index" / "set up the daily cron" / "install terminal notification" | `daily-update` |
 | "/impl-validator" / "check this implementation" / "validate what you did" / "is this correct?" | `impl-validator` |
 | "/wiki-switch NAME" / "switch to my work wiki" / "switch vault" / "change wiki" / "list my wikis" / "show my vaults" / "create a new vault config" | `wiki-switch` |
+| "/wiki-playbook-review" / "review my playbooks" / "update the playbooks from this week" / "friday playbook rewrite" / "what should we stop doing" | `wiki-playbook-review` |
 | "/wiki-digest" / "what did I learn this week" / "weekly digest" / "knowledge summary" / "what's new in my wiki" / "summarize my recent learning" / "monthly review" | `wiki-digest` |
 | "/wiki-context-pack" / "make a context pack" / "context slice for X" / "pack the wiki for my agent" / "bounded context for Y" | `wiki-context-pack` |
 | "/wiki-stage-commit" / "review staged pages" / "commit staged writes" / "promote staged pages" / "what's waiting in staging" | `wiki-stage-commit` |
@@ -171,7 +175,7 @@ See `wiki-query` and `wiki-export` skills for how the filter is applied.
 - **Frontmatter is required.** Every wiki page needs: `title`, `category`, `tags`, `sources`, `created`, `updated`.
 - **Single source of truth.** Visibility tags shape how content is surfaced — they don't duplicate or separate it.
 - **Keep context warm.** `hot.md` is a ~500-word semantic snapshot of recent activity. Every write skill updates it so the next session can pick up where the last one left off without crawling the full vault.
-- **Write memory through the CLI.** `index.md`, `log.md`, `hot.md`, `_meta/profile.md`, and `_meta/todos.md` are maintained by `obsidian-wiki memory`, which locks and writes atomically. Call `obsidian-wiki memory sync --verb <VERB> --field k=v` after a write operation instead of editing those files by hand — hand edits in a parallel run drop whichever write lands second. The one exception is `## Key Takeaways` in `hot.md`, which is yours: replacements require the reviewed current revision (see llm-wiki/references/MEMORY.md); pass it with `memory hot --takeaways`.
+- **Write memory through the CLI.** `index.md`, `log.md`, `hot.md`, `_meta/profile.md`, and `_meta/todos.md` are maintained by `obsidian-wiki memory`, which locks and writes atomically. Call `obsidian-wiki memory sync --verb <VERB> --field k=v` after a write operation instead of editing those files by hand — hand edits in a parallel run drop whichever write lands second. `_meta/facts.md` goes through `obsidian-wiki facts add` / `retire` the same way. The one exception is `## Key Takeaways` in `hot.md`, which is yours: replacements require the reviewed current revision (see llm-wiki/references/MEMORY.md); pass it with `memory hot --takeaways`.
 
 ## Architecture Reference
 

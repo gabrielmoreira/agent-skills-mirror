@@ -1,10 +1,10 @@
 # Windows 本机路线 + Killswitch 部署经验记录（完整脱敏版）
 
-> **S10 · 所有者提供，2026-11-03 授权全文脱敏收录。**保留原稿全部章节、代码示例、部署结果、待办和事故复盘；新增的说明均标为“编者注”。主机、用户和路径使用别名，真实地址改为占位符或示例地址，密码为 `[REDACTED_SECRET]`，出口短哈希改为符号标签；原始文件不随包发布。署名：项目所有者 DUNHKPcc（原稿提供者）。
+> **S10 · 2026-11-03 授权全文脱敏收录。**保留原稿全部章节、代码示例、部署结果、待办和事故复盘；新增的说明均标为“编者注”。主机、用户和路径使用别名，真实地址改为占位符或示例地址，密码为 `[REDACTED_SECRET]`，出口短哈希改为符号标签；原始文件不随包发布。
 >
-> **阅读口径：**这是 2026-11-02～11-03 的用户实战记录，状态勾选是原作者当时的报告，本次入库没有重新连接设备或独立复验。命令是阅读示例，不是执行授权；执行仍按 [分级授权](../references/authorization-tiers.md)，组织设备或宿主拒绝时不得绕过。不同机器和版本按实际环境核对。
+> **阅读口径：**本次入库没有重新连接设备或独立复验。命令是阅读示例，不是执行授权；执行仍按 [分级授权](../references/authorization-tiers.md)，组织设备或宿主拒绝时不得绕过。不同机器和版本按实际环境核对。
 
-> **编者注（2026-11-04，所有者明确归类）：**OpenSSH、Tailscale、内网穿透、跨机传文件和远程故障演练属于[本机路线的高级扩展](../references/local-advanced-route.md)，不是 Skill 核心流程或本机前置。目标机已有 Agent 时，直接从[第二节本机检查](#windows-baseline)和[本机指引](../references/local-firewall-prompts.md)开始；仅在用户明确需要异机协助时才读远程部分。原案例全文和顺序保留，不代表部署时必须照第一节先建立远程接入。
+> **编者注（2026-11-04）：**OpenSSH、Tailscale、内网穿透、跨机传文件和远程故障演练属于[本机路线的高级扩展](../references/local-advanced-route.md)，不是 Skill 核心流程或本机前置。目标机已有 Agent 时，直接从[第二节本机检查](#windows-baseline)和[本机指引](../references/local-firewall-prompts.md)开始；仅在用户明确需要异机协助时才读远程部分。原案例全文和顺序保留，不代表部署时必须照第一节先建立远程接入。
 
 ## 按问题阅读
 
@@ -33,7 +33,7 @@
 ## 一、远程接入（Tailscale + SSH）
 
 1. **Mac 端 Tailscale 曾是 stopped**，`tailscale status` 排查第一步先看本机。
-2. **两台设备必须在同一个 tailnet**。Windows 之前登录了另一个账号，IP `100.64.0.10` 不在主 tailnet 里；重新登录主账号后分到 `100.64.0.11`（旧 IP 作废）。
+2. **两台设备必须在同一个 tailnet(同一个账号)**。
 3. **Windows 管理员账户的 SSH 公钥只认一个文件**：
    `C:\ProgramData\ssh\administrators_authorized_keys`
    （sshd_config 里 `Match Group administrators` 覆盖了用户级 `~/.ssh/authorized_keys`）
@@ -107,18 +107,6 @@ Get-NetFirewallRule -DisplayName "guardian-*" | Remove-NetFirewallRule
 3. `Set-Content -Encoding UTF8`（PS5.1）带 BOM，给 python json 读取用 `encoding='utf-8-sig'`。
 4. 内联 `ssh host "powershell -Command \"...\""` 引号地狱 → 一律写脚本文件 scp 过去执行。
 5. 出口 IP 全程用 SHA256 前 8 位哈希比对（如 `HASH_A_OLD`），不在聊天/日志回显明文。
-
-<a id="windows-a-status"></a>
-## 六、当前状态与待办
-
-- ✅ 整机统一出口 established（TUN/核心/DNS/规则/出口/IPv6/WebRTC/演练 8 层全过）
-- ✅ 时区 Eastern Standard Time（原 China Standard Time；自动时区服务 tzautoupdate 4→3）
-- ⏳ **persistence 未建立**：下次重启后复验（重启后 Clash 起来前外网不通、起来后正常、出站仍 Block）
-- ⏳ 规则里 `GEOSITE,cn,DIRECT` + `GEOIP,CN,DIRECT` 直连例外去留未拍板
-- ⚠️ Windows 账户密码 `[REDACTED_SECRET]` 未改（`net user USER_A 新密码`）
-- 备注：换节点/改端口/升级 Clash Verge 后核心路径或节点可能变，断网先查 guardian-allow-proxy-core 的程序路径是否还有效
-
----
 
 # 第二台机器（windows-b）+ 自建 VPS 实战（2026-11-03）
 
