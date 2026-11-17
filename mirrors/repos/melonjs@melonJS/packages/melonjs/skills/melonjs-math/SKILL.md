@@ -1,6 +1,6 @@
 ---
 name: melonjs-math
-description: "Use this skill for vector and matrix maths in melonJS — Vector2d, Vector3d, their observable variants, Matrix2d, Matrix3d, and the math utility functions. Covers which methods mutate and which allocate, the vector pool and when clone() is the wrong tool, interpolation with lerp, slerp, damp and moveTowards, and the argument defaults that silently drop a component. Triggers on: Vector2d, Vector3d, ObservableVector2d, ObservableVector3d, Matrix2d, Matrix3d, vector, vector maths, dot, cross, normalize, length, distance, angle, lerp, slerp, damp, moveTowards, project, clamp, degToRad, radToDeg, clone, vector pool, vector3dPool, setMuted, setCallback, my vector is wrong, z is zero, scale ignores z, moveTowards ignores z, setPosition, projectN, currentTransform, setTransform, matrix, transform matrix, column-major, val, Float32Array, basis matrix, orientation matrix, Noise, getNoise1d, flicker, wobble."
+description: "Use this skill for vector and matrix maths in melonJS — Vector2d, Vector3d, their observable variants, Matrix2d, Matrix3d, and the math utility functions. Covers which methods mutate and which allocate, the vector pool and when clone() is the wrong tool, interpolation with lerp, slerp, damp and moveTowards, and the argument defaults that silently drop a component. Triggers on: Vector2d, Vector3d, ObservableVector2d, ObservableVector3d, Matrix2d, Matrix3d, Quaternion, vector, vector maths, dot, cross, normalize, length, distance, angle, lerp, slerp, damp, moveTowards, project, clamp, degToRad, radToDeg, clone, vector pool, vector3dPool, setMuted, setCallback, my vector is wrong, z is zero, scale ignores z, moveTowards ignores z, setPosition, projectN, currentTransform, setTransform, matrix, transform matrix, column-major, val, Float32Array, basis matrix, orientation matrix, Noise, getNoise1d, flicker, wobble, Color, toArray, color components."
 license: MIT
 ---
 
@@ -286,6 +286,63 @@ rounded to single precision. That is where they were always heading, since
 this is what reaches the GPU, but it means a value read back out is not
 bit-identical to the double you wrote.
 
+### Orientations: `Quaternion`
+
+A `Quaternion` is an orientation in 3D: what a 3D physics adapter's
+`getRotation` returns and `setRotation` takes. It turns without the gimbal
+lock of three angles, and blends between two orientations along the shortest
+arc with `slerp`.
+
+It reads as a `Matrix3d` does: a new one is no turn, and the same calls build
+the same turn, so code moves between the two unchanged.
+
+```js
+const q = new Quaternion().rotate(Math.PI / 2, new Vector3d(0, 1, 0));
+const m = new Matrix3d().rotate(Math.PI / 2, new Vector3d(0, 1, 0)); // the same turn
+q.rotate(0.3);                    // turned further, about Z by default, as m.rotate(0.3)
+q.apply(v);                       // turns v IN PLACE (+X goes to -Z here)
+q.applyInverse(v);                // and back
+a.multiply(b);                    // a = a × b: b is applied first, then a
+a.slerp(b, 0.25);                 // a quarter of the way from a to b, in place
+q.setFromUnitVectors(from, to);   // the shortest turn taking direction `from` onto `to`
+mesh.rotate(q);                   // a renderable, or a Matrix3d, turned by q
+m.compose(position, q, scale);    // a whole matrix: scale, then turn, then move
+```
+
+Like the vectors, its methods mutate `this` and return it, so `clone()` first
+to keep the original. The two that write somewhere else return what they
+wrote, as their `Matrix3d` namesakes do: `apply(v)` returns `v`, and
+`toMatrix3d(out)` returns the matrix. `length2()` is the squared length, as on
+a vector.
+
+`rotate(angle, axis)` **adds** to the turn, `this = this × R`, the new turn
+applied first, exactly as `Matrix3d#rotate` does: to set a turn outright,
+`identity()` first. `fromMat3d(m)` reads a turn back out of a matrix, as
+`Matrix2d#fromMat3d` does, and takes a scale out on the way, so a
+renderable's `currentTransform` can be read as it is; `toMatrix3d(out)` goes
+the other way. An angle or an axis that is not finite, or an axis too short to
+turn about (under `1e-6`, the same cut-off as `Matrix3d#rotate`), turns
+nothing, on a quaternion and on a matrix alike; a zero quaternion normalized
+gives the identity rather than `NaN`.
+
+To point something modeled along an axis at a direction, use
+`setFromUnitVectors(axis, direction)`, which needs neither the angle nor the
+axis of the turn, and works for any two directions, opposite ones included
+(a half turn). Neither has to be of unit length. To set a renderable's turn
+outright rather than add to it, start from `currentTransform.identity()`:
+
+```js
+// a beam modeled along +X, laid from a to b
+const along = b.clone().sub(a);
+beam.currentTransform.identity();
+beam.rotate(new Quaternion().setFromUnitVectors(new Vector3d(1, 0, 0), along));
+beam.currentTransform.scale(along.length(), 1, 1);
+```
+
+`Matrix3d#rotate(q)` and `Renderable#rotate(q)` normalize `q`, and a zero or
+`NaN` one turns nothing. `Matrix3d#compose(t, q, s)` overwrites the whole
+matrix; a missing `z` is 0 for the position and 1 for the scale.
+
 ## Utilities
 
 ```js
@@ -324,6 +381,17 @@ about ±0.6), `frequency` is in changes per unit of the input, and the same seed
 gives the same field every run. A sum of sines repeats where people notice it,
 and `Math.random()` every frame jitters instead of drifting.
 
+## `Color#toArray()` is the colour itself
+
+The same rule holds for colours: `color.toArray()` hands back the colour's own
+`Float32Array` of normalized `[r, g, b, a]`, not a copy. Write into it and the
+colour changes; keep it and it changes when the colour does. Copy what you
+mean to keep or change:
+
+```js
+const rgb = color.toArray().slice(0, 3);   // three numbers in 0..1, yours
+```
+
 ## Symptoms
 
 | symptom | cause |
@@ -337,12 +405,17 @@ and `Math.random()` every frame jitters instead of drifting.
 | memory climbs in a loop | `clone()` or `negate()`/`floor()`/`ceil()` per frame |
 | memory taken by dropped `clone()`s never comes back | before 20.9 the pool kept every instance it handed out; upgrade, and release what you clone |
 | two helper results are the same object | a shared scratch vector was returned |
+| a colour changes by itself, or values read from one change later | `Color#toArray()` is the colour's own array: `slice()` it before changing or keeping it |
 | `.z` is a type error | `Renderable.pos` is declared `Vector2d` (#1510) |
 | rotation eases oddly between directions | `lerp` on directions; use `slerp` |
+| an orientation came back applied in the wrong order | `a.multiply(b)` applies `b` first; `premultiply` for the other order |
+| a quaternion built in a loop turns further every frame | `rotate` adds to the turn, as on a matrix: `q.identity().rotate(angle, axis)` to set it |
 | you built your own 16-number array | `Renderable.currentTransform` is already a `Matrix3d`; write its `val` |
 | a value read back from a matrix differs | `val` is `Float32Array`; it holds float32 |
 | easing differs at 120fps | per-frame `lerp`; use `damp` |
 | a flicker or sway looks mechanical, or visibly repeats | a sum of sines or a per-frame `Math.random()`: sample `Noise#getNoise1d(time)` |
+| a mesh pointed along a direction flips, spins or goes NaN when the direction is opposite its axis | an angle from `acos` and an axis from a cross product, which is zero there: `Quaternion#setFromUnitVectors(axis, direction)` |
+| a mesh turned by `rotate(q)` keeps turning further every frame | `rotate` adds to the turn: `currentTransform.identity()` first to set it outright |
 
 ## Related skills
 

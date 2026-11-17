@@ -18,8 +18,9 @@ Checked on 2026-11-15 against the following official endpoint schemas and curren
 | `fal:fal-ai/wan/v2.2-a14b/text-to-video` | Ratio, resolution, frames, frame rate, prompt expansion, negative prompt, seed | [fal schema](https://fal.ai/models/fal-ai/wan/v2.2-a14b/text-to-video/api) |
 | `fal:fal-ai/kokoro/american-english` | Voice and speed; spoken input uses `prompt` | [fal schema](https://fal.ai/models/fal-ai/kokoro/american-english/api) |
 | OpenDesign Cloud/account speech | Required voice ID | Current Cloud/account adapter contract |
+| OpenDesign account music | Optional whole-second duration | Connector `audio music --duration`; the catalogue publishes no range |
 
-These controls cover a maintained subset, not all models or all provider parameters. Custom model names and live catalogue labels do not establish wire compatibility. Provider-native types remain intact: Seedance duration is an integer, audio is a boolean, and Wan takes frames rather than a fabricated duration field. Local asset references remain limited to the implemented Codex image adapter. No local-upload support is inferred from a model accepting remote reference URLs.
+These controls cover a maintained subset, not all models or all provider parameters. Custom model names and live catalogue labels do not establish wire compatibility. Provider-native types remain intact: Seedance duration is an integer, audio is a boolean, and Wan takes frames rather than a fabricated duration field. Local asset references are limited to image models that report `supportsImageReference`: the Codex image adapter and OpenDesign account image models whose catalogue publishes `edits`. No local-upload support is inferred from a model accepting remote reference URLs.
 
 The embedded Codex conversation separately exposes model selection and discovered reasoning efforts. Effort is passed as `turn/start.effort`, with `null` restoring the model default on subsequent turns. This field was checked against the installed Codex app-server JSON schema. Other Agents continue to use external MCP; selecting a local CLI in settings does not add an embedded runner.
 

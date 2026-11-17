@@ -1,16 +1,16 @@
 # 模板目录
 
-## Repository source and CMS delivery
+## Repository source and hosted delivery
 
-The current production motion guidance templates now have reviewable source and localized metadata in [the repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog). Guides, examples and images at most 100 KB are directly available in Git; larger images load from existing CMS rendition links; reference videos and original ZIP downloads keep their CMS URLs. Open a template's source/preview.html without a build step (linked images require internet access). [Repository contribution and publication](template-repository.md) documents storage checks, remote asset identities and the CMS-compatible metadata export. Source checkouts now use this local catalog for Studio and MCP; instructions and paths are read from the loaded plugin, independently of the client working directory. Applications without the catalog and the website continue to read CMS publications. Source imports and PR merges do not publish CMS content.
+The current production motion guidance templates now have reviewable source and localized metadata in [the repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog). Guides, examples and images at most 100 KB are directly available in Git; larger images load from existing CMS rendition links; reference videos and original ZIP downloads keep their CMS URLs. Open a template's source/preview.html without a build step (linked images require internet access). [Repository contribution and publication](template-repository.md) documents storage checks, remote asset identities and the CMS-compatible metadata export. Source checkouts now use this local catalog for Studio and MCP; instructions and paths are read from the loaded plugin, independently of the client working directory. NPM applications without the catalog read the latest published `main` catalog from OpenMotion's R2-backed CDN, while the website continues to read the CMS publication. Source imports and PR merges do not publish CMS content.
 
-## Local repository and published CMS sources
+## Repository, hosted and CMS sources
 
 For application npm DEV builds, isolated installation and source MCP overrides, follow [test template data](npm-installation.md#test-template-data-dev). npm tags select software versions. Newly built test npm versions embed DEV defaults; stable versions embed prod. Previously published versions keep their embedded environment.
 
-模板通过一个 Prism Resource 的 `main.json` 发布。当前绑定 Resource `1500c9af-186b-457f-b74d-a58113f657d8`，默认语言 `zh-CN`。消费现有 `content[locale].templates`：templateId、sortOrder、original 展示信息、coverUrl、previewUrl 和 files（path/url/bytes/sha256）。不新增后台接口或另一套模板 Schema。
+CMS mode reads a Prism Resource's `main.json` (Resource `1500c9af-186b-457f-b74d-a58113f657d8`, default locale `zh-CN`). All three sources preserve the existing `content[locale].templates` structure: templateId, sortOrder, original display metadata, coverUrl, previewUrl and files (path/url/bytes/sha256).
 
-Studio and MCP share one TemplateCatalog reader: repository files in a source checkout, or a published CMS resource in a distribution without those files. Both include four built-in editable examples, including the official first-run OpenMotion welcome. Historical reference snapshots remain internal compatibility data. Guidance-only entries remain distinct from executable projects.
+Studio and MCP share one TemplateCatalog reader: repository files in a source checkout, the latest hosted main source in an NPM distribution, or a published CMS resource when CMS mode is explicitly selected. All modes include four built-in editable examples, including the official first-run OpenMotion welcome. Historical reference snapshots remain internal compatibility data. Guidance-only entries remain distinct from executable projects.
 
 <a id="环境与构建"></a>
 
@@ -21,22 +21,23 @@ Studio and MCP share one TemplateCatalog reader: repository files in a source ch
 | `npm start`, `npm run dev`, `npm run mcp` in a checkout | Repository source under `library/templates/catalog/` by default |
 | `MOTION_TEMPLATE_SOURCE=cms MOTION_TEMPLATE_ENV=dev` | Explicit CMS DEV source |
 | `npm run package:phase1` | 线上：`r.open-design.ai` |
+| `npm run package:npm` | Latest published `main` catalog at `https://releases.open-design.ai/open-motion/templates/main/catalog.json` |
 | `npm run package:phase1 -- --template-env=dev` | DEV，ZIP 文件名带 `-dev` |
 | `npm run package:npm -- dist/npm-dev --template-env=dev` | Unversioned local DEV artifact (private); explicit `X.Y.Z-test.N` npm builds default to DEV, stable builds to prod |
 | `npm run package:test -- build <target> <release-version> --template-env=dev` | DEV 完整运行包；省略环境参数则为线上 |
 | Actions → Run workflow → `template_environment` | Select `dev` (default) or `prod` for npm and backup ZIP builds |
 
-环境写入包内 `shared/template-config.json`，不要求安装用户另设变量，GUI 和 MCP 读取同一配置。正式构建默认线上，不受打包机器的 `MOTION_TEMPLATE_ENV` 影响。For CMS mode, MOTION_TEMPLATE_ENV overrides the embedded environment. Source checkouts select repository mode unless MOTION_TEMPLATE_SOURCE=cms is set. Local read paths and tool responses are documented in [the repository workflow](template-repository.md#run-from-a-local-clone).
+Packaging writes the environment and source to `shared/template-config.json`; Studio and MCP share it without requiring installation-time variables. NPM packages select `hosted` and follow the latest published main catalog independently of the application's version or DEV/prod setting. Template metadata and files belong to one immutable snapshot selected by that moving pointer. Source checkouts select `repository`; `MOTION_TEMPLATE_SOURCE=cms` explicitly selects CMS, where `MOTION_TEMPLATE_ENV` overrides the embedded environment. Local paths and Tool responses are documented in [the repository workflow](template-repository.md#run-from-a-local-clone).
 
 DEV 的默认工作区另加 `-dev`，与线上后台进程、工程和缓存分开。显式 `MOTION_DATA_DIR` 仍优先；同一工作区切换配置后需退出旧后台。缓存再按来源和语言隔离。线上目录未发布时返回错误，不回退 DEV。
 
-### CMS cache and repository refresh
+### Catalog cache and refresh
 
-- In CMS mode, `MOTION_TEMPLATE_RESOURCE_ID` and `MOTION_TEMPLATE_LOCALE` select the Resource and language. The managed cache lives under the active Motion data directory; do not edit generated cache files. Repository mode reads the loaded checkout on every catalog request, with no CMS fallback.
-- 按需用 ETag / If-None-Match 检查发布，304 复用已下载内容；DEV 最短间隔 2 秒，prod 60 秒。The full multilingual main.json is cached once; UI language changes reuse that publication rather than downloading one catalog per locale.
-- 发布成功的目录整体替换；网络或内容读取失败时保留上次有效缓存并返回 warning。首次读取无缓存时明确失败。
-- Template files download with at most four concurrent requests. Verified bytes are cached locally and rechecked against the manifest before reuse; each project gets independent files. A corrupt cache entry is downloaded again. Failed copies wait for pending writes before removing the incomplete project.
-- The open template dialog checks the catalog version every five seconds and preserves its filters when the list changes. Repository metadata/source-manifest edits change the local version; refresh source manifests after source edits. CMS drafts appear only after publication. Existing projects are not rewritten.
+- Hosted mode checks OpenMotion's main pointer every five minutes and persists a valid catalog snapshot on disk. Failed refreshes retain the last valid snapshot with a warning, including after restart. A first request without network or cache still exposes the four bundled examples with a warning. Remote templates require their source files to be available online or already cached.
+- Repository mode reads the loaded checkout on every catalog request, without substituting a remote catalog. Project files use local bytes; an unfetched Git LFS pointer can download its exact registered `entry.files` URL when the pointer, manifest and published hash/length all agree. Verified downloads are cached without modifying the checkout. Missing URLs retain the scoped LFS-pull error, and corrupt local files never fall back to a download. Metadata and source-manifest changes update the catalog version; refresh source manifests after source edits.
+- CMS mode uses `MOTION_TEMPLATE_RESOURCE_ID` and `MOTION_TEMPLATE_LOCALE` to select the Resource and default language. It checks publication ETags at intervals of two seconds in DEV or sixty seconds in prod. All locale slots share one cached publication. Failed refreshes retain valid cached content with a warning; a cold CMS failure is explicit.
+- Template files download with at most four concurrent requests. Verified source bytes are cached locally and rechecked against the manifest before project copying; each project gets independent files. A corrupt cache entry is downloaded again. Failed copies wait for pending writes before removing the incomplete project. Generated caches live under the active Motion data directory and should not be edited.
+- The open template dialog polls the catalog version every five seconds and preserves its filters. Hosted catalog refresh follows the five-minute reader interval; CMS drafts appear only after publication. Existing projects are not rewritten.
 
 ### MCP
 
@@ -48,13 +49,13 @@ DEV 的默认工作区另加 `-dev`，与线上后台进程、工程和缓存分
 
 ### 界面
 
-`GET /motion-api/template-catalog` accepts locale, query, category, offset, limit, grouped and covered parameters for Studio search/pagination. It and MCP share the selected repository or CMS reader. Source checkouts serve registered guide files through `/api/template-source/<id>/<path>`; small assets are local, while linked images and videos remain remote. Only entries with actual project files can open directly as editable projects. Recreate prompts use the connected local plugin in repository mode.
+`GET /motion-api/template-catalog` accepts locale, query, category, offset, limit, grouped and covered parameters for Studio search/pagination. It and MCP share the selected repository, hosted CDN or CMS reader. Source checkouts and hosted installations serve registered guide and source files through `/api/template-source/<id>/<path>`; linked CMS media remains remote when it is retained as an existing asset identity. Only entries with actual project files can open directly as editable projects. Recreate prompts use the same localized creative brief for repository, hosted and CMS catalogs, with the public GitHub repository link and the selected template title and ID.
 
 ### Template languages and motion.md
 
 The website and editor support `en`, `zh`/`zh-CN`, `ja`, `ko`, `de`, `fr`, `ru`, `es`, `pt-br`/`pt-BR`, `it`, and `tr`. Prism keeps one shared Schema and a `templates` collection in each native locale slot. The editor requests its UI locale; missing locale content falls back to English, then the Resource default. The MCP index/detail defaults remain controlled by `MOTION_TEMPLATE_LOCALE`.
 
-Keep template IDs, project file manifests, ordering, provenance and media URLs identical across locales. Translate display names, summaries, use cases, video types and guide text. Template prompt text uses the selected UI language: the connected local plugin in repository mode, or the configured DEV/prod installation URL in CMS mode. Changing language does not translate the video or modify an existing project.
+Keep template IDs, project file manifests, ordering, provenance and media URLs identical across locales. Translate display names, summaries, use cases, video types and guide text. Template prompt text uses the selected UI language and the same public GitHub installation link for every catalog source and environment. It preserves the main motion and style by default, requests HTML and MP4, and leaves a blank requirements section for the user. Changing language does not translate the video or modify an existing project.
 
 In CMS mode, each locale can use its existing `motionDocumentUrl` and `motionGuideUrl` fields for a localized download or HTML guide. Repository mode serves the checked-in original-language Markdown and HTML; localized metadata does not imply translated source. A motion.md download keeps the filename `motion.md` and the original ZIP bytes. Translate explanatory Markdown/HTML inside the archive; reuse executable examples and media unless a localized video is explicitly supplied. Never treat a translated catalog title as proof of a translated package. Missing package URLs keep download disabled; shared original-language packages need accurate language disclosure from the content publisher before publication. No package translation or new archive format is introduced here.
 

@@ -35,10 +35,13 @@ if [ ! -f "$SKILL_DIR/scripts/last30days.py" ]; then
   exit 1
 fi
 
-COMPARISON_TOPIC=$(cat <<'TOPIC_EOF'
+# Keep the quoted heredoc outside command substitution: macOS Bash 3.2
+# can misparse apostrophes/backticks in a heredoc nested inside $(...).
+IFS= read -r -d '' COMPARISON_TOPIC <<'TOPIC_EOF' || true
 {TOPIC_A} vs {TOPIC_B} vs {TOPIC_C}
 TOPIC_EOF
-)
+# read reaches EOF without a NUL delimiter; drop the heredoc's final newline.
+COMPARISON_TOPIC=${COMPARISON_TOPIC%$'\n'}
 TOPIC_A_HANDLE=$(cat <<'HANDLE_EOF'
 {TOPIC_A_HANDLE}
 HANDLE_EOF
@@ -88,10 +91,13 @@ On a Grok Bot with the official X connector, follow `grok-bot-x.md` to fetch and
 
 ```bash
 (
-COMPARISON_TOPIC=$(cat <<'TOPIC_EOF'
+# Keep the quoted heredoc outside command substitution: macOS Bash 3.2
+# can misparse apostrophes/backticks in a heredoc nested inside $(...).
+IFS= read -r -d '' COMPARISON_TOPIC <<'TOPIC_EOF' || true
 {TOPIC_A} vs {TOPIC_B} vs {TOPIC_C}
 TOPIC_EOF
-)
+# read reaches EOF without a NUL delimiter; drop the heredoc's final newline.
+COMPARISON_TOPIC=${COMPARISON_TOPIC%$'\n'}
 MAIN_TARGETING=()
 COMPETITORS_PLAN_ARGS=()
 if [ "${LAST30DAYS_HOST:-}" = "grok-bot" ] && [ "${LAST30DAYS_X_HOST_LANE:-}" = "1" ]; then
@@ -220,7 +226,7 @@ I've compared {TOPIC_A} vs {TOPIC_B} [vs ...] using the latest community data. S
 - [follow-up on the emerging-stack combination pattern]
 ````
 
-**On Claude Code** (`CLAUDECODE` set), `references/synthesis.md` NO MARKDOWN LISTS applies here too: write the Strengths, Weaknesses, and follow-up bullets as `• ` lines with a blank line between them, not `- ` lists.
+**On Claude Code** (`CLAUDECODE` set), `references/synthesis.md` NO MARKDOWN LISTS applies here too: follow the checklist's list line, and without one write the Strengths, Weaknesses, and follow-up bullets as `• ` lines, each but the last ending in `\`, not `- ` lists.
 
 **Do NOT:**
 - Use `What I learned:` prose label (that is general-query voice)

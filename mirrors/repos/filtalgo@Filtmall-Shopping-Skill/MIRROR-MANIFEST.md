@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `filtalgo/Filtmall-Shopping-Skill` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `filtalgo/Filtmall-Shopping-Skill` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `filtalgo/Filtmall-Shopping-Skill` — 26 default patterns, 1 followed
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `filtalgo/Filtmall-Shopping-Skill` — 26 default patterns, 1 followed
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `third_party/README.md`
 - `references/protocol.md`
 
 ## File Index
@@ -62,6 +63,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
 | 3 | → | [`references/protocol.md`](references/protocol.md) |
+| 4 | → | [`third_party/README.md`](third_party/README.md) |
 
 ---
 

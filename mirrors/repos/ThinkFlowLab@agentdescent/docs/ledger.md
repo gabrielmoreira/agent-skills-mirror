@@ -197,3 +197,10 @@ b912f19 genesis
 
 Or open the repo with any git tool you already know — it is an ordinary
 repository.
+
+## Lineage on a portable snapshot
+
+The ledger already has the identifiers a snapshot needs: artifact id, integer
+version, and the git parent of `artifacts/<id>.json`.
+[Portable snapshots](snapshot.md) read those as `id` / `parent` / `root`
+(`{artifact_id}@v{version}`) rather than inventing a second store.

@@ -1,0 +1,20 @@
+# Inspect and adopt media
+
+Read when inspecting completed candidates, adopting selected versions or handing back results.
+
+## Inspect a fixed version, then adopt it
+
+Only `state: "completed"` and real `libraryAssets` confirm saved library candidates. Pin each chosen `{assetId, versionId}`; `get` returns its metadata, including measured dimensions/duration. `read` through `openmotion_assets_use` returns bounded image previews, up to four requested video frames or a mono 16 kHz audio excerpt (maximum 15 seconds). These previews do not prove full-video playback or complete listening; record checks unavailable in the host as unverified.
+
+1. **Inspect before adopting**: use the exact library version for visual/audio checks, rather than the asset's changing current-version pointer. Reuse already approved assets. A standalone request can deliver its pinned version without creating a film project.
+2. **Import only selected candidates into the film**: call the asset Tool with `action: "import_to_project"`, explicit `projectId`, stable `requestId`, `assetId` and `versionId`. Check per-item results and returned project-relative paths; import records a managed version but does not place media on the timeline. Then `openmotion_get_project({ projectId })` and use its refreshed `revision` / `currentVersionId` for editing. Probe the actual adopted file with `ffprobe` or available local media tools for width, height, real duration, frame rate and audio streams before timeline placement. Avoid concurrent project edits during adoption. Old `media_use` files are already in the project and must not be imported again.
+3. **Inspect visual and audio usability**:
+   - **Images**: inspect decoded frames at intended crop and scale for subject fidelity, clean edges, artifacting and text-safe space.
+   - **Video**: inspect sampled frames across the usable motion window for identity stability, unintended scene cuts, crop safety and embedded audio tracks. When a generated video includes native or ambient audio, explicitly mute (`muted` / `volume = 0`) or mix that track in the composition so it does not collide with narration or music.
+   - **Speech and music**: verify spoken words, pronunciation, pacing and clean phrase endings; use `ffprobe` for container duration and `ffmpeg -af silencedetect` (or waveform inspection) to measure leading/trailing silence and actual spoken phrase end so composition cues, cuts and captions align to real speech rather than clipped endings or unintended black frames. If direct listening or visual inspection is unavailable in the host, record that check as unverified rather than passed.
+
+## Hand back to the calling workflow
+
+In the delivery reply, name every part that is not generated as planned (for example local TTS, code-synthesized music or user/retrieved media) so the user knows what they received. For a standalone asset request, report the pinned asset/version identity and available file location, provider/model/job identity, measured dimensions or duration, and any quality or review limitations.
+
+Inside a film workflow, continue with `openmotion_edit_project` using the refreshed `expectedRevision` and `expectedVersionId`. Generation produces candidate media, not a finished film: keep shot selection, native typography/layout, timeline choreography, Studio preview handoff and final audiovisual review in the active creative or production workflow. Generated assets never relax that workflow's own checks: segments using them pass the active workflow's applicable visual, text and measurement checks. In recreation, its [check and deliver](../../openmotion-recreate/references/verify.md) step defines which measurements gate generated shots.

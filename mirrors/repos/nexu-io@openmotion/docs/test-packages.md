@@ -85,3 +85,7 @@ node scripts/smoke-test-package.mjs <最终ZIP路径> .tools/codex-cli/node_modu
 ## Local diagnostic handoff
 
 Test and stable packages both include the local diagnostic ZIP collector. In Studio use Privacy settings → Export diagnostic ZIP; without a working Studio/MCP connection use `openmotion diagnostics --home /absolute/installation-home --output /absolute/support.zip` from the exact installed package. Plugin/complete-ZIP users can run the shipped `scripts/diagnostics.mjs` with `--data-dir`. Collection is local, bounded and redacted, and does not publish/upload data or run an MCP probe. Review the ZIP before sharing, include reproduction steps, and keep its exact version/build identity with the defect. See [scope, commands and limits](npm-installation.md#export-a-local-diagnostic-zip).
+
+## Recreation vision tools
+
+Complete platform packages include `runtime/vision-assets`, containing the pinned Python distribution and NumPy/OpenCV wheels. The recreation Skill entry prepares a private cached environment from these local assets on first use, including offline. Use the package's Node executable with `skills/openmotion-recreate/scripts/vision-tools.mjs prepare` to prepare explicitly. The measurement helpers support macOS 13+ arm64 and Windows 11+ x64. Their original licenses remain inside the included archives and installed distributions.

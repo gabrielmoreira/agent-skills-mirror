@@ -122,4 +122,4 @@
 - [iart motion-art-direction](https://github.com/iart-ai/motion-design-skills/blob/main/skills/motion-art-direction/SKILL.md)：参考运动主次、克制和品牌判断；不把单一曲线、单一能量走向或高潮数量作为通则。
 - [Remotion 官方 Skill](https://github.com/remotion-dev/skills/blob/main/skills/remotion-best-practices/SKILL.md)：参考按任务读取实现规范与预览检查；没有使用 Remotion 时不加载它。
 
-这些内容是工作方法参考，不是本 Skill 已被证明提升成片质量的证据。具体行为验证与成片验证按 [审片标准](motion-review.md) 进行。
+这些内容是工作方法参考，不是本 Skill 已被证明提升成片质量的证据。具体成片验证按 [审片标准](../../openmotion-production/references/review.md) 进行。

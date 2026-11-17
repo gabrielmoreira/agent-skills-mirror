@@ -11,6 +11,18 @@ import { autoCleanup, brief, classifyWorktree, deleteSafe, landed, removeLanded,
 
 Object.assign(process.env, { CODEX_HOME: mkdtempSync(join(tmpdir(), 'cleanup-codex-')), GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1' });
 
+// lsof walks every process on the machine, which took most of this file's run time on a busy
+// host. A stand-in on PATH reports that no process works in or holds anything, and the tests that
+// start a process call realLsof to reach the real one.
+const LSOF = execFileSync('sh', ['-c', 'command -v lsof'], { encoding: 'utf8' }).trim();
+const BIN = mkdtempSync(join(tmpdir(), 'cleanup-bin-'));
+writeFileSync(join(BIN, 'lsof'), `#!/bin/sh\n[ -n "$CLEANUP_REAL_LSOF" ] && exec '${LSOF}' "$@"\ncase " $* " in *" cwd "*) exit 0 ;; esac\nexit 1\n`, { mode: 0o755 });
+process.env.PATH = `${BIN}:${process.env.PATH}`;
+const realLsof = (t) => {
+  process.env.CLEANUP_REAL_LSOF = '1';
+  t.after(() => delete process.env.CLEANUP_REAL_LSOF);
+};
+
 const DAY = 86_400_000;
 const SCAN = join(dirname(fileURLToPath(import.meta.url)), 'scan.mjs');
 const BLOCK = (word) => `a\nb\nc\n${word}\nd\ne\nf\n`;
@@ -87,7 +99,8 @@ const verdicts = (items) => Object.fromEntries(items.map((item) => [item.path, i
 const verdictOf = (f, path) => scan({ repo: f.main, sessions: f.sessions, sizes: false }).items.find((item) => item.path === path)?.verdict;
 const landedOf = (path) => landed({ worktree: path })[0];
 
-test('only folders no open session, process or server uses are marked safe', async () => {
+test('only folders no open session, process or server uses are marked safe', async (t) => {
+  realLsof(t);
   const f = fixture();
   const server = spawn('tail', ['-f', f.lock, f.buildLock], { stdio: 'ignore' });
   await new Promise((done) => setTimeout(done, 300));
@@ -167,6 +180,18 @@ test('a worktree outside the folders agents use is asked about even when an arch
   const facts = { agentMade: false, codex: 0, heldCaches: 0, hoursQuiet: 48, ignored: { overflow: false, unique: [] }, invoking: false, locked: null, missing: false, nested: null, processes: 0, repos: 0, session: { state: null, title: 'done' }, unreached: 0 };
   assert.equal(classifyWorktree(facts)[0], 'ask');
   assert.equal(classifyWorktree({ ...facts, agentMade: true })[0], 'safe');
+});
+
+test('a quiet worktree on a codex/ branch beside the checkout is safe, and one on another branch is asked about', () => {
+  const f = fixture();
+  const codex = join(f.root, 'ellie-codex-lane');
+  git(f.main, 'worktree', 'add', '-q', '-b', 'codex/lane', codex);
+  quietGit(codex, 3);
+  quietGit(f.orphan, 3);
+  const elsewhere = realpathSync(mkdtempSync(join(f.root, 'tmp-')));
+  const run = spawnSync(process.execPath, [SCAN, '--repo', f.main, '--no-sizes'], { encoding: 'utf8', env: { ...process.env, TMPDIR: elsewhere } });
+  assert.match(run.stdout, new RegExp(`SAFE .*${codex} `), run.stdout);
+  assert.match(run.stdout, new RegExp(`ASK .*${f.orphan}  it sits outside the folders agents make worktrees in`), run.stdout);
 });
 
 test('a scan run from inside a worktree keeps that worktree and judges the others against the real checkout', () => {
@@ -370,7 +395,8 @@ test('a registered worktree named like a cache is never listed as a cache', () =
   assert.deepEqual(rows.map((item) => item.kind), ['worktree']);
 });
 
-test('a server holding a cache deep inside a worktree keeps it', async () => {
+test('a server holding a cache deep inside a worktree keeps it', async (t) => {
+  realLsof(t);
   const f = fixture();
   const deep = join(f.archived, 'l1', 'l2', 'l3', 'l4', '.next-deep', 'dev');
   mkdirSync(deep, { recursive: true });
@@ -518,7 +544,24 @@ test('--delete drops the temporary refs and partial saves a run that died left m
   assert.deepEqual(readdirSync(cleanup).filter((each) => each.endsWith('.partial')), [`${fresh}.partial`], 'a partial save a running save may still write stays');
 });
 
-test('a worktree a running process works in is neither marked safe nor deleted', async () => {
+test('--delete deletes each save a week after it was written and keeps the run report', () => {
+  const f = fixture();
+  const cleanup = join(f.main, '.git', 'cleanup');
+  const [folder, patch, recent, report] = ['old-worktree-mvbdgkzl-abcdef', 'old-clone-mvbdgkzl.patch', 'recent-clone.patch', 'last-run'].map((name) => join(cleanup, name));
+  mkdirSync(folder, { recursive: true });
+  writeFileSync(join(folder, 'changes.patch'), 'x\n');
+  for (const path of [patch, recent, report]) writeFileSync(path, 'x\n');
+  for (const path of [folder, patch, report]) age(path, 8);
+  age(recent, 6);
+  deleteSafe({ repo: f.main, sessions: f.sessions });
+  assert.ok(!existsSync(folder), 'a save folder goes a week after it was written');
+  assert.ok(!existsSync(patch), 'a patch an older scan wrote goes too');
+  assert.ok(existsSync(recent), 'a save written within the week stays');
+  assert.ok(existsSync(report), 'the daily run report stays');
+});
+
+test('a worktree a running process works in is neither marked safe nor deleted', async (t) => {
+  realLsof(t);
   const f = fixture();
   const shell = spawn('tail', ['-f', '/dev/null'], { cwd: f.archived, stdio: 'ignore' });
   await new Promise((done) => setTimeout(done, 300));
@@ -696,7 +739,8 @@ test('the session-start hint counts only folders with no writes for three days t
   );
 });
 
-test('--remove stops the processes in a landed worktree, saves its uncommitted change and removes it without judging it', async () => {
+test('--remove stops the processes in a landed worktree, saves its uncommitted change and removes it without judging it', async (t) => {
+  realLsof(t);
   const f = fixture();
   const server = spawn('tail', ['-f', '/dev/null'], { cwd: f.open, stdio: 'ignore' });
   await new Promise((done) => setTimeout(done, 300));

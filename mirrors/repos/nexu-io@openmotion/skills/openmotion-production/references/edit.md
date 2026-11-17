@@ -39,7 +39,7 @@ Before the first content write and after the saved batch, apply the [continuing-
 
 对完全锁定的源文件，可用字节或哈希核对；引擎缓存、历史记录及自动补写 ID 与内容变化分开说明，不能把全部差异一概排除。调整过的文件也要核对未授权变化；只检查“改动文件名单”不足以证明局部性。技术 lint 不替代画面、动态或声音检查；检查能力不足时标明具体缺口。
 
-沿用 [审片标准](../../openmotion-director/references/motion-review.md)，按影响应用 [制作决策](../../openmotion-director/references/production-decisions.md) 与 [声音叙事](../../openmotion-director/references/sound-narrative.md)。已读正文直接使用，不为每一轮重读，也不为修改任务加载无关创作规范。
+沿用 [审片标准](review.md)，按影响应用 [制作决策](decisions.md) 与 [声音执行](sound.md)。已读正文直接使用，不为每一轮重读，也不为修改任务加载无关创作规范。
 
 ## 让下一轮接着当前结果
 
@@ -49,4 +49,4 @@ Before the first content write and after the saved batch, apply the [continuing-
 
 ## Inline playback for an edit round
 
-For an actual content edit in an MCP Apps host, follow [the inline work-round contract](production.md#inline-video-progress-and-playback) with mode=modify before writing. Explicit editor-only, review-only and existing-link requests retain their scope. Preserve previous work frames; the new round must bind its own saved version and final export.
+For an actual content edit in an MCP Apps host, follow [the inline work-round contract](production.md#final-video-delivery) with mode=modify before writing. Explicit editor-only, review-only and existing-link requests retain their scope. Preserve previous work frames; the new round must bind its own saved version and final export.

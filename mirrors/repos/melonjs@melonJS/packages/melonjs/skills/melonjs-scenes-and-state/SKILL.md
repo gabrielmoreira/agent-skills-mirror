@@ -1,6 +1,6 @@
 ---
 name: melonjs-scenes-and-state
-description: "Use this skill for scene structure and game flow in melonJS — Stage subclasses, the state manager, transitions, pausing, the update loop, timers and tweens. Covers onResetEvent versus the constructor, state.set before state.change, the camera and world lifecycle per stage, and pause-aware timing. Triggers on: Tween, easing, fade out, flash, pulse, punch, shrink back, ease in, ease out, animate over time, countdown in update, Stage, state, state.set, state.change, state.transition, pixelate, Trigger transition, retry level, state.pause, pauseOnBlur, resumeOnFocus, onResetEvent, onDestroyEvent, onActivateEvent, onDeactivateEvent, PLAY, MENU, LOADING, update loop, GAME_UPDATE, timer, setTimeout, setInterval, Tween, freeze, setFocusEvents, focusEvents, host or portal pause, YouTube Playables onPause, save, save.add, setStorage, createCloudStorage, flush, localStorage, cloud save, high score persistence."
+description: "Use this skill for scene structure and game flow in melonJS — Stage subclasses, the state manager, transitions, pausing, the update loop, timers and tweens. Covers onResetEvent versus the constructor, state.set before state.change, the camera and world lifecycle per stage, and pause-aware timing. Triggers on: Tween, easing, fade out, flash, pulse, punch, shrink back, ease in, ease out, animate over time, countdown in update, Stage, state, state.set, state.change, state.transition, pixelate, Trigger transition, retry level, play again, restart, state.reload, state.pause, pauseOnBlur, resumeOnFocus, onResetEvent, onDestroyEvent, onActivateEvent, onDeactivateEvent, PLAY, MENU, LOADING, update loop, GAME_UPDATE, timer, setTimeout, setInterval, Tween, freeze, setFocusEvents, focusEvents, host or portal pause, YouTube Playables onPause, save, save.add, setStorage, createCloudStorage, flush, localStorage, cloud save, high score persistence."
 license: MIT
 ---
 
@@ -61,9 +61,21 @@ registered for that id, and `state.set` throws if the second argument is not a
 
 A change to the state that is **already current does nothing**: no
 `onDestroyEvent`, no `onResetEvent`, no transition. So a "Retry" that calls
-`state.change(state.PLAY)` from `PLAY` is ignored; reload the level with
-`level.reload()`, or go through another state (a game-over or `READY` screen)
-and back.
+`state.change(state.PLAY)` from `PLAY` is ignored. Build the current stage
+again with `state.reload()` (since 20.16): `onDestroyEvent`, the world reset and
+`onResetEvent`, with the arguments the state was entered with, or new ones.
+`level.reload()` reloads just the Tiled map, keeping the stage.
+
+```js
+// "Play again" on the game-over card, from inside PLAY
+new UITextButton(x, y, { text: "AGAIN", onClick: () => state.reload() });
+// restart on another level: replaces the arguments for later reloads too
+state.reload(false, { level: 2 });
+```
+
+Like `state.change`, it waits for the next frame unless `forceChange` is
+`true`, and it throws when no state has been entered yet. It plays no
+transition.
 
 ### Always leave `state.LOADING` — it is transitional
 
@@ -469,6 +481,12 @@ if (score > store.hiscore) { /* ... */ }
 Chained calls accumulate, so `save.add({ a: 0 }).add({ b: "" })` is typed with
 both.
 
+**No `localStorage`, no error.** Where there is none, or reading it throws (a
+sandboxed iframe such as an embedded playable page, cookies blocked), `save`
+keeps the keys in memory for the session: `add`, reads and writes all work,
+and nothing outlives the page. No `try` / `catch` is needed around it;
+`device.localStorage` is `false` when the keys will not be kept.
+
 **Somewhere other than `localStorage`.** Two calls, one for each kind of
 storage:
 
@@ -547,11 +565,12 @@ When `setStorage()` switches storage:
 | the platform refuses saves (Facebook's `PENDING_REQUEST`), or the game floods it with them | a hand-written storage saving on every `setItem()`; `save.createCloudStorage()` saves the changes together, one write at a time |
 | progress made just before the player left is lost | the last save was still waiting; call the cloud storage's `flush()` on the platform's pause |
 | a saved key is gone after `save.setStorage()` | only keys registered with `save.add()` are carried over to the new storage; register it (before or after) |
+| the high score is back at its default on every visit, with no error | there is no `localStorage` there (a sandboxed iframe, cookies blocked), so `save` kept it in memory; `device.localStorage` is `false`, and `save.setStorage()` can keep it elsewhere |
 | the game pauses or goes quiet when the tab is hidden, on a portal that must decide that itself | the window still drives the focus: `device.setFocusEvents(false)`, then emit `event.BLUR` / `event.FOCUS` from the portal's callbacks |
 | a host's pause stops the game's updates but it keeps drawing | `pauseOnBlur` keeps drawing; set `stopOnBlur = true` and `pauseOnBlur = false` |
 | a host's pause does nothing, after turning `pauseOnBlur` off so the tab would not pause the game | the flags apply to every `event.BLUR`, the host's included; keep them, and stop the window reporting with `device.setFocusEvents(false)` |
 | `Undefined Stage for state 'N'` thrown | no `state.set` for that id first |
-| `state.change(state.PLAY)` from `PLAY` does nothing ("Retry" ignored) | a change to the current state is a no-op — `level.reload()`, or go through another state |
+| `state.change(state.PLAY)` from `PLAY` does nothing ("Retry" ignored) | a change to the current state is a no-op — `state.reload()` (20.16), `level.reload()` for the map alone |
 | a level change through a `Trigger` ignores `state.transition` | it is a level change, not a state change: set `color` and `duration` (and `transition`) on the trigger |
 | the game stops updating for good after one very slow update, such as a heavy first frame (20.12 and 20.13) | the loop could no longer save enough time to step the world: update |
 | the game resumes under its own pause menu after a tab switch (before 20.9) | focus undid any pause; update, only the blur pause is undone |

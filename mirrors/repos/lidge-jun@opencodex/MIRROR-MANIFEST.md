@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 98 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 100 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 98
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 98 |
+| Files         | 100 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,47 +120,49 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`structure/advisor.md`](structure/advisor.md) |
 | 56 | ✓ | [`structure/AGENTS.md`](structure/AGENTS.md) |
 | 57 | ✓ | [`structure/catalog-effort-clamp.md`](structure/catalog-effort-clamp.md) |
-| 58 | ✓ | [`structure/catalog-routed-ownership.md`](structure/catalog-routed-ownership.md) |
-| 59 | ✓ | [`structure/catalog-vendor-context.md`](structure/catalog-vendor-context.md) |
-| 60 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
-| 61 | ✓ | [`structure/cli-management.md`](structure/cli-management.md) |
-| 62 | ✓ | [`structure/codex-account-controls.md`](structure/codex-account-controls.md) |
-| 63 | ✓ | [`structure/codex-cli-update.md`](structure/codex-cli-update.md) |
-| 64 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
-| 65 | ✓ | [`structure/codex-prompts.md`](structure/codex-prompts.md) |
-| 66 | ✓ | [`structure/codex-provider-routing.md`](structure/codex-provider-routing.md) |
-| 67 | ✓ | [`structure/companion.md`](structure/companion.md) |
-| 68 | ✓ | [`structure/config-ownership.md`](structure/config-ownership.md) |
-| 69 | ✓ | [`structure/config-proxy.md`](structure/config-proxy.md) |
-| 70 | ✓ | [`structure/config.md`](structure/config.md) |
-| 71 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
-| 72 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
-| 73 | ✓ | [`structure/desktop-recovery.md`](structure/desktop-recovery.md) |
-| 74 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
-| 75 | ✓ | [`structure/desktop-start-at-login.md`](structure/desktop-start-at-login.md) |
-| 76 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
-| 77 | ✓ | [`structure/fallback-policy.md`](structure/fallback-policy.md) |
-| 78 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 79 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
-| 80 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 81 | ✓ | [`structure/pricing.md`](structure/pricing.md) |
-| 82 | ✓ | [`structure/provider-completion-diagnostic.md`](structure/provider-completion-diagnostic.md) |
-| 83 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
-| 84 | ✓ | [`structure/quota-pool.md`](structure/quota-pool.md) |
-| 85 | ✓ | [`structure/quota-snapshots.md`](structure/quota-snapshots.md) |
-| 86 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
-| 87 | ✓ | [`structure/remote-messaging.md`](structure/remote-messaging.md) |
-| 88 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 89 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 90 | ✓ | [`structure/subagent-capacity.md`](structure/subagent-capacity.md) |
-| 91 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 92 | ✓ | [`structure/telemetry.md`](structure/telemetry.md) |
-| 93 | ✓ | [`structure/usage-client-attribution.md`](structure/usage-client-attribution.md) |
-| 94 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 95 | → | [`CREDITS.md`](CREDITS.md) |
-| 96 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 97 | → | [`SECURITY.md`](SECURITY.md) |
-| 98 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 58 | ✓ | [`structure/catalog-routed-defaults.md`](structure/catalog-routed-defaults.md) |
+| 59 | ✓ | [`structure/catalog-routed-ownership.md`](structure/catalog-routed-ownership.md) |
+| 60 | ✓ | [`structure/catalog-vendor-context.md`](structure/catalog-vendor-context.md) |
+| 61 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
+| 62 | ✓ | [`structure/cli-management.md`](structure/cli-management.md) |
+| 63 | ✓ | [`structure/codex-account-controls.md`](structure/codex-account-controls.md) |
+| 64 | ✓ | [`structure/codex-cli-update.md`](structure/codex-cli-update.md) |
+| 65 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
+| 66 | ✓ | [`structure/codex-prompts.md`](structure/codex-prompts.md) |
+| 67 | ✓ | [`structure/codex-provider-routing.md`](structure/codex-provider-routing.md) |
+| 68 | ✓ | [`structure/codex-reserve-capability.md`](structure/codex-reserve-capability.md) |
+| 69 | ✓ | [`structure/companion.md`](structure/companion.md) |
+| 70 | ✓ | [`structure/config-ownership.md`](structure/config-ownership.md) |
+| 71 | ✓ | [`structure/config-proxy.md`](structure/config-proxy.md) |
+| 72 | ✓ | [`structure/config.md`](structure/config.md) |
+| 73 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
+| 74 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
+| 75 | ✓ | [`structure/desktop-recovery.md`](structure/desktop-recovery.md) |
+| 76 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
+| 77 | ✓ | [`structure/desktop-start-at-login.md`](structure/desktop-start-at-login.md) |
+| 78 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
+| 79 | ✓ | [`structure/fallback-policy.md`](structure/fallback-policy.md) |
+| 80 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 81 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
+| 82 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 83 | ✓ | [`structure/pricing.md`](structure/pricing.md) |
+| 84 | ✓ | [`structure/provider-completion-diagnostic.md`](structure/provider-completion-diagnostic.md) |
+| 85 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 86 | ✓ | [`structure/quota-pool.md`](structure/quota-pool.md) |
+| 87 | ✓ | [`structure/quota-snapshots.md`](structure/quota-snapshots.md) |
+| 88 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
+| 89 | ✓ | [`structure/remote-messaging.md`](structure/remote-messaging.md) |
+| 90 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 91 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 92 | ✓ | [`structure/subagent-capacity.md`](structure/subagent-capacity.md) |
+| 93 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 94 | ✓ | [`structure/telemetry.md`](structure/telemetry.md) |
+| 95 | ✓ | [`structure/usage-client-attribution.md`](structure/usage-client-attribution.md) |
+| 96 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 97 | → | [`CREDITS.md`](CREDITS.md) |
+| 98 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 99 | → | [`SECURITY.md`](SECURITY.md) |
+| 100 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

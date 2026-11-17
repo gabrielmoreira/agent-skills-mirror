@@ -4,6 +4,10 @@
 
 目标是封装原生 Studio 与渲染能力，让 Agent 创作和手工编辑共享原生工程。
 
+## Engine documentation scope
+
+The pinned upstream guide and engine resources remain intact technical references. Before reading them, Agents apply the [OpenMotion engine boundary](../skills/openmotion-production/references/native.md#engine-guidance-boundary). Composition, media timing, seeking, lint and renderer constraints remain authoritative for the installed engine. Supplier setup, upstream Skill/slash-command routes, mandatory creative stages and soundtrack defaults do not become OpenMotion workflow requirements. Material acquisition follows the [shared policy](../skills/openmotion-production/references/materials.md#tool-selection-and-discovery): sources follow content need, OpenMotion takes priority for matching available capabilities, and external tools can fill capability gaps. This guidance does not implement a runtime tool block or alter third-party package files and licenses.
+
 ```mermaid
 flowchart LR
   Agent --> MCP[Motion MCP]
@@ -33,6 +37,8 @@ Editor URL contract: application launch output, preview responses and project/te
 导出链是版本校验 → 复制并校验内容快照 → 记录快照尺寸/fps/时长 → 后台独占领取 → 上游 lint/render → 实际 MP4 头检查 → completed。渲染日志和预期规格保留，结束后删除媒体快照，查询返回原请求版本。一期 `openmotion_export_request` 在 completed 前自动按任务规格检查实际 MP4、完整解码视频/音频并执行代表帧 seek；通过 `openmotion_get_project` 的 exportJobId 查询报告；视觉、声音内容与实际播放器检查仍独立执行。旧浏览器 WebM 上传端点、claim/fail 协议、Canvas renderer、MediaRecorder、离线打包和 IndexedDB 草稿已删除。
 
 OpenMotion preview and export preflight run the pinned native `lintProject` with `host: "studio"` in an isolated child process, retaining timeout, cancellation, referenced-file checks and native finding locations/fix hints. Root composition structure errors are rejected before opening Studio or invoking the renderer; ordinary warnings remain non-blocking. The same check is available from `node scripts/lint-project.mjs RUNTIME_ROOT PROJECT_DIRECTORY` (exit 0 for no errors, 1 for validation errors). Direct upstream `hyperframes lint` retains its CLI warning policy; its success alone is not Studio acceptance. `info` and `timeline` keep their original CLI behavior.
+
+Render and Studio child environments preload `shared/hyperframes-capture-fix.mjs` through a file URL in `NODE_OPTIONS`, preserving caller options and propagation to native Node workers. The load hook changes only the two pinned 0.9.7 capture bundles in memory and rejects unexpected replacement sites; installed files and user projects remain unchanged. Accelerated canvas injection retains legacy `layoutsubtree` and uses `content="drawable"` plus a drawable composition root when the browser exposes the current canvas API. Native macOS arm64 preparation pins the complete Chrome for Testing application at the same browser version, avoiding the headless-shell GPU child's ICU resource lookup failure; it remains private to the managed cache. Screenshot compatibility gates and accelerated-frame self-verification remain active. Socket-buffer exhaustion (`net::ERR_NO_BUFFER_SPACE`) enters the existing transient-browser recovery path. Parallel disk capture retries only missing frames once, with fresh sessions and halved concurrency; a second buffer failure preserves its cause and logs advice to close unused applications/exports and retry manually (`--workers 1` for CLI isolation). Zero captured frames alone no longer imply broken composition structure. Content errors and cancellation keep their existing handling; sequential capture retains its bounded transient retry. Review or remove the compatibility fix and its pinned-bundle tests when upgrading the engine. Deterministic fault-injection tests establish classification, retry limits and preload propagation, not Windows resource-exhaustion reproduction.
 
 测试包含真实 Studio API 的 If-Match 编辑、MCP 反向编辑、原生模板 lint/timeline、旧文件保留、路径/链接隔离、缓存与 manifest 的区别，以及无浏览器页面参与的带音轨渲染。集成测试验证 320×180、24fps、H.264、音频、时长、移动图形帧差和下载字节。没有本机渲染依赖时显式跳过集成测试。
 

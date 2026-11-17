@@ -62,6 +62,8 @@ The Judge Agent must:
 
 4. **Show ONLY % odds. NEVER mention dollar volumes, liquidity, or betting amounts.**
 
+5. **`## Polymarket Markets` lists ranked candidates.** Lead with the most interesting open question among the top entries, not automatically the first. Always mention a team's title odds when shown, even when low, and a related person leading a race.
+
 ### X Reply Cluster Weighting
 
 When you see a cluster of replies to a recommendation-request tweet (someone asking "what's the best X?" and getting multiple independent responses), call this out prominently. This is the strongest form of community endorsement - real people independently making the same recommendation without coordination. Example: "In a thread where @ecom_cork asked for Loom alternatives, every reply said Tella."
@@ -131,7 +133,7 @@ Identify from the ACTUAL RESEARCH OUTPUT:
 
 **ODDS LINE.** Polymarket odds for a market that names the topic and bears on a story go on its own blockquote line under that story's paragraph: `> 📊 Polymarket · Huang divorce: 9.5% by Dec 31 (down 1 pt today) · 18% by Mar 31, 2027`. Copy the whole odds line from `## Polymarket Markets`, up to the ` — ` before its URL. At most three in the report, apart from the six quote lines. The paragraph says what the market is about and links it, and does not repeat the line's numbers. Other markets may be cited inline. Not in `exec`, RECOMMENDATIONS, or COMPARISON.
 
-**NO MARKDOWN LISTS ON CLAUDE CODE.** When `CLAUDECODE` is set, write no markdown list in the reply: while a list streams, Claude Code can redraw every link as `label (url)`. Write numbered markers as `1\.` (escaped period) and bullets as `• ` instead of `- `, with a blank line between each (renderers merge single breaks). Other hosts keep normal lists.
+**NO MARKDOWN LISTS ON CLAUDE CODE.** With `CLAUDECODE` set, the report checklist's list line decides the format. Without one, write no markdown list (a streaming list can redraw every link as `label (url)`): write `1\.` and `• ` lines, each but the block's last ending in `\` (label line too), no blank lines between. Other hosts keep normal lists.
 
 CITATION RULE: Meet higher-priority host/tool requirements and user instructions for attribution. Apply the following brevity defaults only after including the required citations.
 - In the "What I learned" intro: cite 1-2 top sources total, not every sentence

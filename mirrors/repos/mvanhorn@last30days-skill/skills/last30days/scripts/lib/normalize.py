@@ -29,7 +29,11 @@ def filter_by_date_range(
                 filtered.append(item)
             continue
         if item.published_at < from_date or item.published_at > to_date:
-            continue
+            # A Reddit comment-search hit stays when the comment it matched is
+            # in the window, even on an older thread (the thread date is kept).
+            matched = str((item.metadata or {}).get("matched_comment_date") or "")
+            if not (matched and from_date <= matched <= to_date):
+                continue
         filtered.append(item)
     return filtered
 
@@ -354,6 +358,23 @@ def _normalize_reddit(
         metadata={
             "top_comments": top_comments,
             "comment_insights": item.get("comment_insights") or [],
+            # Where the score and the comments came from (reddit_refs labels),
+            # so a merge keeps the live score and render can say "score pending".
+            **{
+                key: item[key]
+                for key in ("engagement_source", "comments_source")
+                if item.get(key)
+            },
+            # The comment a logged-in comment search matched: its date keeps
+            # an older thread in the window, and render labels it.
+            **(
+                {
+                    "matched_comment_date": item["matched_comment"]["date"],
+                    "matched_comment_url": item["matched_comment"].get("url") or "",
+                }
+                if isinstance(item.get("matched_comment"), dict) and item["matched_comment"].get("date")
+                else {}
+            ),
         },
     )
 
@@ -1003,6 +1024,8 @@ def _normalize_polymarket(
 ) -> schema.SourceItem:
     title = str(item.get("title") or "").strip()
     question = str(item.get("question") or "").strip()
+    matched = item.get("matched_market") if isinstance(item.get("matched_market"), dict) else None
+    matched_question = str((matched or {}).get("question") or "").strip()
     engagement = {
         "volume": item.get("volume1mo") or item.get("volume24hr") or 0,
         "liquidity": item.get("liquidity") or 0,
@@ -1013,7 +1036,9 @@ def _normalize_polymarket(
         title=title or question or f"Polymarket event {index + 1}",
         body="\n".join(
             part
-            for part in [title, question, str(item.get("price_movement") or "")]
+            for part in dict.fromkeys(
+                [title, question, matched_question, str(item.get("price_movement") or "")]
+            )
             if part
         ),
         url=str(item.get("url") or ""),
@@ -1035,6 +1060,16 @@ def _normalize_polymarket(
             **({"headline": item["headline"]} if item.get("headline") else {}),
             # What the compact output's one-line odds summary is built from.
             **({"odds": item["odds"]} if item.get("odds") else {}),
+            # The subject's own market and the selection rule's verdict on it;
+            # render orders the Markets block and footer by them.
+            **(
+                {
+                    "matched_market": matched,
+                    "selection_score": item.get("selection_score"),
+                    "selection_tier": item.get("selection_tier"),
+                }
+                if matched else {}
+            ),
         },
     )
 

@@ -56,7 +56,7 @@ Use explicit `unresolved` entries only in production documents. Never copy them 
 
 ## Storyboard contract
 
-Use the [director action script](../../openmotion-director/references/action-script.md) for original work; reuse its records rather than creating a duplicate storyboard. The following fields are an integration checklist, not a fixed shot structure or mandatory table:
+Reuse the selected workflow's existing action script or storyboard; this integration checklist does not require original creative intake or a second storyboard. The following fields are an integration checklist, not a fixed shot structure or mandatory table:
 
 `scene/element ID | frames [in,out) / seconds | viewer takeaway | asset path + source start/end | exact copy and audio | typography/layout/crop | entry → exit/next cut | acceptance check`
 

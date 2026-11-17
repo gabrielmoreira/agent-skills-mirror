@@ -162,6 +162,10 @@ Atlassian Confluence from the terminal. List spaces, browse pages, view content 
 
 Formulate and evaluate constrained allocation, routing and scheduling decisions with explicit feasibility, objective units, exact or heuristic baselines, repeatable comparisons and honest solver-status evidence.
 
+### [copy-editor](copy-editor/SKILL.md)
+
+Copyedit text for correctness, consistency, clarity and faithful meaning across publishing contexts. Includes intervention judgment, author queries, style sheets, protected technical material, coordinated editing passes and reusable handoff templates.
+
 ### [crewai](crewai/SKILL.md)
 
 An expert-level skill for building **role-based multi-agent teams** with CrewAI. Agents are defined as Roles with Goals and Backstories; crews are composed with sequential or hierarchical workflows.
@@ -389,6 +393,10 @@ Operate llama.cpp from hardware-aware installation and GGUF selection through ve
 ### [llamaindex](llamaindex/SKILL.md)
 
 An expert-level skill for building LLM applications over your data with LlamaIndex. RAG pipelines, multi-agent orchestration, event-driven workflows, knowledge graph construction, and production deployment.
+
+### [managing-editor](managing-editor/SKILL.md)
+
+Coordinate editorial work from intake through publication across news, books, journals, magazines, digital content, and organizational publishing. Includes decision-right mapping, quality and correction workflows, contributor communication, bounded subagent delegation, and reusable planning and release templates.
 
 ### [meetings](meetings/SKILL.md)
 
@@ -762,6 +770,10 @@ Design and build honest, resilient waitlist portals for anticipated goods and se
 ### [web-accessibility](web-accessibility/SKILL.md)
 
 Design, build, and review accessible web interfaces through native semantics, keyboard and focus contracts, error recovery, adaptive UI, assistive-technology testing, and WCAG 2.2-informed evidence without mistaking automated scans for conformance.
+
+### [wonderer-methodology](wonderer-methodology/SKILL.md)
+
+Explore adjacent ideas and overlooked angles without prematurely choosing an answer. Produces bounded maps of distinct leads tethered to a seed, with explicit speculative status, search limits, and a handoff to deeper research. Adapted from hermes-profiles.
 
 ### [woodpecker-ci](woodpecker-ci/SKILL.md)
 Operate self-hosted Woodpecker CI from installation through production troubleshooting. Covers Forgejo/Gitea integration, server and agent setup, Docker and Kubernetes backends, workflow syntax, secrets, plugins, matrices, CLI/local execution, upgrades, security, and incident response.

@@ -20,12 +20,25 @@ The [Discord badge](badges/discord.svg), text-only [Feishu badge](badges/feishu.
 
 The local agent gallery and setup buttons use client marks from the [source icon collection](https://github.com/nexu-io/open-design/tree/07a86b1041531bfa0bec1006d9c0993985fee560/apps/web/public/agent-icons) and the [individual client artwork credits](models/README.md). Each mark identifies its respective client.
 
+## Skills page covers
+
+The Skills page bundles short screen recordings from `studio/src/motion/skill-covers/` (MP4 plus a JPEG poster each). The skill detail shows each cover's source next to the upstream repository. Other covers are hotlinked from the upstream pages named in `studio/src/motion/skillCatalog.ts`.
+
+| Cover | Source and license |
+| --- | --- |
+| three-js | Recording of the [Three.js keyframes example](https://threejs.org/examples/#webgl_animation_keyframes) (Three.js, MIT). Model *Littlest Tokyo* by Glen Fox, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). |
+| babylon-js | Rendered with [Babylon.js](https://github.com/BabylonJS/Babylon.js) (Apache-2.0). Model *AntiqueCamera* by UX3D, CC0, from [KhronosGroup/glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). |
+| lume | Recording of the [LUME](https://lume.io/) demo (LUME, MIT). |
+| proton | Recording of the [Proton fireworks example](https://drawcall.github.io/Proton/examples/sparks/firework/fireworks.html) (Proton, MIT). |
+| gifenc, motion-canvas, ola, shifty, two-js, tween-js, konva, blender | OpenMotion samples made for this page with each library; no third-party footage. |
+
 ## Asset inventory
 
 | Asset | Source and use |
 | --- | --- |
 | [GitHub Star animation](https://releases.open-design.ai/open-motion/media/sha256/eb32b6cd4736cbbf42a537af24ed1ab8745192efcd7f3f69ffd5f2d569fe1607.gif) | User-supplied animation of the OpenMotion GitHub page, used for the closing Star invitation in all README languages. Copied without resizing or re-encoding at 1138 × 640. SHA-256: `eb32b6cd4736cbbf42a537af24ed1ab8745192efcd7f3f69ffd5f2d569fe1607`. |
-| [README cover](https://releases.open-design.ai/open-motion/media/sha256/730e1d6235820d39ba8adde42810d1165377992136a3b20290ad5d504abb527b.jpg) · [简体中文](https://releases.open-design.ai/open-motion/media/sha256/45ee17734fb1315decef29c116fdd6794ee275fe83239328526b982a8ebe17ac.jpg) · [日本語](https://releases.open-design.ai/open-motion/media/sha256/1b567187bc527cc99f8ef2c91c41c9adf5fa91fa9bbc5f8e2f579ad9c7837a46.jpg) | Dan Martell’s talking-head reference and the OpenMotion caption remake with @careerwithriya, with a capture of the editable Studio timeline. The English hero is also reused unchanged for website Open Graph and Twitter sharing at 1586 × 992. The desktop and mobile covers open the [2.4-second comparison](media/presenter-caption-remake.mp4). [Footage and edit credits](reverse-engineering-cover.md) |
+| [README cover](capcut-claude-motion-cover.webp) · [简体中文](capcut-claude-motion-cover.zh-CN.webp) · [日本語](capcut-claude-motion-cover.ja.webp) | OpenMotion positioning and feature labels on a watercolor background. The presenter comparison, Studio timeline and agent lineup use the corresponding language version of the prior cover. Model marks use the [credited icon collection](models/README.md), including its Kling mark and the OpenAI mark from the design system. Versions reflect the [provider catalog](https://fal.ai/explore/models). [Footage and edit credits](reverse-engineering-cover.md) |
+| [Prior README cover](https://releases.open-design.ai/open-motion/media/sha256/730e1d6235820d39ba8adde42810d1165377992136a3b20290ad5d504abb527b.jpg) · [简体中文](https://releases.open-design.ai/open-motion/media/sha256/45ee17734fb1315decef29c116fdd6794ee275fe83239328526b982a8ebe17ac.jpg) · [日本語](https://releases.open-design.ai/open-motion/media/sha256/1b567187bc527cc99f8ef2c91c41c9adf5fa91fa9bbc5f8e2f579ad9c7837a46.jpg) | Dan Martell’s talking-head reference and the OpenMotion caption remake with @careerwithriya, with a capture of the editable Studio timeline. The English hero is also reused unchanged for website Open Graph and Twitter sharing at 1586 × 992. The desktop and mobile covers open the [2.4-second comparison](media/presenter-caption-remake.mp4). [Footage and edit credits](reverse-engineering-cover.md) |
 | [Earlier cover](https://releases.open-design.ai/open-motion/media/sha256/cfeb12861412bd36d34000ee1fe6d7f4e7b124ac9cad680d595c3cb44708eead.png) | Previous AI-editing positioning, preserved as artwork history; no longer the main README cover. |
 | [Animated cover](https://releases.open-design.ai/open-motion/media/sha256/6f6379825bac5cc67ee2d8fdc328ec25a16eea64fdac420f358092ddae95ad47.gif) | Optional 800 × 400 camera-breath loop from the same cover; 32 frames, approximately 4 seconds, infinite loop. Brand motion, not recorded application behavior. |
 | [Social preview](https://releases.open-design.ai/open-motion/media/sha256/9683e195639f5f6a54524f33fe4c7c3f4ec47efebb97fc93e4ec38895dd08412.jpg) | 1280 × 640 sharing image derived from the cover. |
@@ -374,10 +387,12 @@ Change only the bold slogan "Edit with AI." into the exact text "Edit videos wit
 All 38 full films used by the README, scenarios, comparisons and curated collections are now local; see the [media manifest](media/manifest.json) and [resource contract](RESOURCES.md). GIF source hashes continue to identify those same complete files. The six editable profiles include reference films and local dependencies; Presenter Story carries its three pairs. The original template demo is [local](../../library/templates/presenter-tech/preview.mp4). This supersedes earlier descriptions of temporary-only source videos and CDN-dependent rendering.
 
 
-## Current online catalog and Studio captures — 2026-11-12
+## Online catalog and Studio captures
 
 The README uses locally stored excerpts from the public template catalog. Each card links once to its online detail page. Source URLs and file hashes are recorded in [the template manifest](live-templates/manifest.json). Presenter references remain local and have no online-template link.
 
-The English, Simplified Chinese and Japanese screenshots show the installed OpenMotion 0.6.5 template library, template detail and recreation dialog, captured in an isolated demo workspace using the production catalog. [Capture manifest](live-product/manifest.json). These are real UI captures, without generated or composited interface elements.
+The English, Simplified Chinese and Japanese screenshots were captured on 2026-11-16 in a clean Studio workspace using the production catalog. Each image shows the complete Studio viewport inside the same light gray frame with a 56 px margin. Browser title bars are excluded.
 
-The full-stack workflow section also includes [a user-provided Studio screenshot](https://releases.open-design.ai/open-motion/media/sha256/f20ae0f17f9db97f1950f8fd4624e296caf014eb5f774d6cb005afa344900073.png), retained as the original PNG with its Chinese interface. It shows imported media, playback and the editing timeline. Its runtime version is unspecified; the file hash and provenance are recorded separately in the capture manifest.
+The editor shows the bundled OpenMotion Sample Video and its timeline. The library shows the full set of Notion search results. The Custom Agents detail image shows the template preview, and the handoff image shows the expanded instruction, recreate button and copy confirmation together. The [capture manifest](live-product/manifest.json) records the source revision, catalog publication, template ID and file hashes.
+
+The [earlier user-provided Studio capture](https://releases.open-design.ai/open-motion/media/sha256/f20ae0f17f9db97f1950f8fd4624e296caf014eb5f774d6cb005afa344900073.png) is available in its original form.

@@ -786,6 +786,27 @@ for labels, comment-and-stop defaults, and close boundaries:
 - configured ready-label approval ownership is separate from trusted
   marker actor authority for operational claim/review markers.
 
+### Check 1 fixture cues (A4.5)
+
+A negative regression fixture or expected-rejection example is descriptive
+context, not a live prerequisite, only when an explicit, positively framed
+fixture/rejection cue precedes the external-access phrase in the same
+Markdown paragraph or list item. The accepted cues are `negative fixture:`,
+`regression fixture:`, `expected rejection:`, and `expected failure:` (the
+last two may also be written with a hyphen), each followed by a colon. On a
+list marker line, the cue and phrase must remain in the same sentence; a
+separate sentence is part of the same
+context only when it is a correctly indented loose-list continuation
+paragraph whose cue text also identifies the external/access context. A
+heading at the list item's indentation ends that context. Inline-code terms
+remain scannable when they occur in a live prerequisite, while fixture cues
+inside inline code, strikethrough, and inline-code-only examples are
+ignored. A separate live prerequisite still fails this check, while
+unrelated or negated cues (including `non-`/`not-` prefixed variants), a cue
+after the access phrase, a cue in another paragraph, and ambiguous wording
+remain fail-closed. This boundary follows the observed false positive in
+issue #3522.
+
 ## Grooming pass for rejected and below-floor issues (optional)
 
 A4.5 rejections and below-floor autopilot-suitability scores
@@ -990,6 +1011,264 @@ The statements about recording on the source and keeping the source open
 apply to needs-decision sources only, and the no-waiver statement above
 applies to every class, including these two. This exception is recorded by
 [issue #4528](https://github.com/kurone-kito/idd-skill/issues/4528).
+
+### Resolving a confirmation-pending source
+
+This applies to a needs-decision source whose current bundle has verified
+completed work for every decision. The `runProvisionalResolution` function
+of `provisional-decision.mts` runs it; the `idd-provisional-decision`
+command does not call it yet. It reads no opt-in switch, so confirmation
+and rework still work after `dangerouslyAutoDecide` is turned off.
+
+1. **Coordination claim.** Take the review under a fresh claim on the
+   source, posted through the normal claim protocol with a branch of the
+   form `issue/<number>-<slug>`. It is separate from implementation
+   execution: it needs no worktree. The request names the claim's ID, agent,
+   and branch, and all three must match the active claim marker. The
+   resolution refuses when another claim is active or when the active claim
+   is one that the bundle's records name as having run the implementation. An
+   uncertain release of an earlier coordination claim is reconciled first,
+   because that claim stays active.
+2. **Present.** A dry run reports the presentation: for every decision its
+   question, the selected option, the verified result, and each alternative
+   with its consequences and the rework it implies, plus a SHA-256 digest
+   of that presentation, the next step, and `needsUserAnswer`. When it is
+   true, the user has not answered yet: show the presentation and ask
+   `Were the implemented choices above acceptable? [y/N]`. When it is
+   false, the user has already given an answer (including a no or an
+   abort), a persisted answer resumes, or a finishing step runs, so ask
+   nothing.
+3. **Read the actual answer.** The input adapter reads one reported event
+   and never creates input; a pending question produces no answer by itself.
+   An answer must also carry the digest it answered, so a changed source,
+   bundle, or result makes it stale.
+4. **Persist, close, release.** For an affirmative answer the helper
+   appends the answer comment (a one-line note, then its JSON), reads it
+   back, appends one `confirmed` record for each decision the answer applies
+   to, replays the history to show them, closes the source as completed once
+   every decision of the bundle is confirmed, reads the closed state back,
+   and releases the coordination claim. A source that is closed for any other
+   reason is a recovery hold, not a confirmed close. Each write is preceded
+   by a second fresh plan that must name the same step, and followed by a
+   fresh read that must show it.
+
+| Reported input                                                      | Verdict                                   |
+| ------------------------------------------------------------------- | ----------------------------------------- |
+| `y` or `yes` typed by a user at an interactive prompt               | Accepted                                  |
+| A user's conversation reply that the agent reads as acceptance      | Accepted, with the reply kept verbatim    |
+| `option <id> <rationale>` or a reply naming a recorded alternative  | Alternate preference for one decision     |
+| `n`, Enter, EOF, cancellation, timeout, missing or unclear input    | Pending; the claim is released, no record |
+| A generic request to resolve, or a preselected option               | Pending                                   |
+| Assistant-written user dialogue, agent-fed or piped terminal input  | Pending; origin is not the user           |
+| A prior answer that no longer matches the bundle, source, or result | Ignored; it is stale or partial           |
+
+An answer comment keeps the canonical shape described above and adds the
+question that was asked and the decisions it applies to, so one answer can
+confirm some decisions of a bundle while another receives a different
+preference. The reply is stored verbatim, with its whitespace. An at-sign in
+it, or in a source title, is JSON-escaped in every comment the flow writes,
+so none notifies anybody. The first valid answer in history wins, and a
+valid persisted answer or confirmation resumes without another prompt; only
+an answer that carries the canonical question and was recorded while a
+coordination claim was active, never one the implementation session wrote on
+its own or one posted between two claims, is reused (preventive; no observed
+incident yet). A later input that agrees
+with it, or none, resumes it. A conflicting input is refused, because a
+confirmation cannot be undone: an N or a conversational no, Enter, EOF,
+cancellation, an unclear reply, or another option. The same refusal applies
+after the confirmation or rework request record is stored, and before any
+write when any targeted decision already has one. While another targeted
+decision is still undecided, an N, an abort, or an unclear reply only keeps
+that decision pending, unless a valid persisted answer already covers it.
+A resumed request should name only the undecided decisions, because an
+accepted or alternate reading is compared with every persisted response of
+the decisions it names. A generic request to resolve is not a conflict.
+
+Agents follow an input-boundary rule: never write the user's reply, and
+never feed `y` to a prompt the agent is waiting on (preventive; no observed
+incident yet). A TTY only shows that a prompt can be displayed. It does not
+authenticate anyone, and the adapter does not try to identify who supplied
+the bytes; a deliberately dishonest authorized caller is outside the
+guarantee.
+
+Every next step is derived from fresh reads, so a crash or uncertain write
+resumes exactly the remaining step and never executes the implementation
+again (preventive; no observed incident yet). A write that throws is checked
+by one fresh read: one whose own content is in place (a trusted, unedited
+comment with the same content, or a source closed as completed) is counted
+and reported in `warnings`, and one that is still absent is a recovery hold,
+not a retry. `warnings` also names downstream results that could not be
+recorded. The close step passes what the plan evaluated: the open state, the
+title and the SHA-256 hex digest of the body's UTF-8 bytes, and the
+coordination claim that must still be active. A store should verify them as
+far as its API allows, so a close never overwrites an intervening close and
+never runs under a claim that was taken over; the planner re-reads just
+before the write. A record step is compared by its whole content before it is
+written. Every refusal and recovery hold keeps the coordination claim until
+its cause is fixed. If the confirmation is stored but the close failed, only
+the close resumes. If the close succeeded but the claim release failed, only
+the release resumes and the issue is not closed again. A pending outcome
+records nothing new and only releases the claim; it reports
+`rework-handoff-recorded` when a rework request for the bundle is already
+stored. A release that a fresh read cannot
+confirm is reported as `reconciled` with `nextStep` set to `release-claim`,
+and the next run repeats it while the claim is still active; `reconciled`
+without a `nextStep` means everything is already done. A refusal with action
+`none` means nothing can be resolved yet and keeps the claim, so release it
+with the normal unclaim.
+
+An alternate preference persists the answer and one `rework-requested`
+record for the one decision it names. The record carries a `handoff` with
+a stable identity shared by the bundle, the authoring set and session
+preallocated for the rework, the source issue as the anchor, the completed
+results it affects, and any downstream results the recorder knows. The
+downstream results are kept in the answer too, so a retry recovers them, and
+a later request of the bundle adds its own to the earlier ones; read the
+union of the bundle's handoffs. It grants no publication permission and
+never reuses an earlier set, and replay refuses a handoff that does. If the
+handoff write fails, the coordination claim is kept as a recovery hold
+(preventive; no observed incident yet) and a retry reuses the persisted
+answer. After the write succeeds, the claim is released before the
+authoring pass acquires ownership, unless the source was closed meanwhile,
+which is a recovery hold because the rework needs the source open. The same
+request cannot produce another handoff or erase an earlier choice.
+
+The `rework-authored` transition is a separate guarded request. It needs
+the coordination claim to be released and to be one that recorded a rework
+request of the bundle, a source that the authoring pass already rewrote, an
+authoring owner that is trusted, fresh, and matches the handoff's set,
+session, and anchor, an audited roadmap on the same source, and real child
+issues wired under it. The evidence names the title and body digest of the
+source as it was when the audit began, which the caller captures before it
+reads the roadmap and its children, and they must still match the source
+when the record is written, and the store appends it only while that still
+holds, so a source closed or edited after the final check holds the run and
+records nothing. The source must still be open: a closed source is a recovery
+hold, while an authoring that is already recorded stays recoverable after the
+roadmap closes. It only appends the record. It never releases the authoring
+hold, and unknown ownership or wiring refuses it. It is
+terminal only when every decision of the bundle is confirmed or has its
+record.
+
+### Provisional plan assessment (A4 and A4.5)
+
+This applies only to a needs-decision source, and only when the trusted
+read of the `decisionIssue` class says `enabled`. The master switch is part
+of that read. A4 and A4.5 are the last checks before a claim on every path,
+A0-T included, so each one reads the trusted verdict again (a fresh
+`idd-effective-config --trusted-auto-decide` read of the repository's own
+policy, never a feature branch) instead of relying on an earlier selection.
+With the class absent, false, or unreadable, the current needs-decision route
+stays, and so it does when the plan's choices exceed `maxDecisionsPerClaim`
+from that same read or the cap cannot be read. A source whose body names no
+choice word (decision, option, whether, and similar; a keyword check, not a
+judgment of the choice, and code blocks, inline code, and comments do not
+count) is not a decision source, whatever its label says. A source that
+already has records, or whose record state is inconsistent, is not assessed
+afresh. A fresh assessment starts a new decision bundle, so the generations
+the bundle would hold after selection are exactly the plan's pickup choices.
+Runtime questions later in the same
+claim count against the same cap
+([issue #4955](https://github.com/kurone-kito/idd-skill/issues/4955)).
+
+The session does the reasoning: it reads the repository evidence, compares
+the feasible alternatives, and writes a structured plan to a scratch file
+outside the worktree. Helper code only validates the plan, the replayed
+record state, and the trusted verdict. It ranks nothing and never fills in a
+missing recommendation, measurement, or evidence. Pass the file to both
+gates, which run the same assessment and report it as a `provisional` block:
+
+```sh
+node scripts/discover-viability-gate.mjs --issue <n> --provisional-plan <file>
+node scripts/suitability-triage.mjs --issue <n> --provisional-plan <file>
+```
+
+The plan is one JSON object with `schemaVersion` 1 and these keys, all
+required except `suitability`; an unknown key is refused, so a plan cannot
+claim approval (preventive; no observed incident yet):
+
+- `source`: an object with `repository` (`owner/repo`), `issueNumber`, and
+  `bodySha256`, the SHA-256 of the issue body, so a plan for another issue or
+  an edited body is stale. A refusal names the current hash.
+- `humanChoiceCriteria`: the original human-choice criteria, copied from the
+  source; each must be an excerpt of its body (case and spacing aside). They
+  stay pending; no plan marks them satisfied or speaks as a maintainer.
+- `recordedChoices`: each operator choice already recorded in the source: a
+  `reference` that is a verbatim excerpt of it, a `summary`, and
+  `respected: true`. A source that records one needs at least one entry, and
+  a `false` blocks.
+- `choices`: one entry per choice, in the shape of the `selected` event of
+  the decision record: `question`, `selectedOption`, `feasibleAlternatives`
+  (at least one, so at least two feasible options, all distinct), and
+  `executionCriteria`, each, like the selected option's `verification`,
+  checkable without a person's opinion and depending on no approval or
+  credential; a deliverable's `purpose` depends on none either.
+- `deliverables`: the concrete edit or deliverable surface, each a `file` (a
+  repository-relative path), a `document`, or an `issue-comment`, within the
+  effort estimate's limit on the number of deliverables, of any kind (3 for
+  S, 8 for M; effort L stays refused under
+  `autopilotSuitability.effortL: "refuse"`). When the issue lists
+  `## Candidate files`, every file deliverable must be one of them, and a
+  section that lists no path blocks, so the plan never widens the source into
+  other code changes (preventive; no observed incident yet).
+- `evidence`: the repository references the choice rests on.
+- `evidenceGaps`: each open gap with an authorized measurement. A gap closes
+  only when that measurement ran and its result and reference are recorded.
+  A proposed measurement, an unavailable one, or a result without a run
+  blocks.
+- `independentObstacles`: anything other than the input choice that blocks
+  the work; any entry blocks.
+- `suitability` (optional): for an authored score below the floor, whether
+  the input choice alone causes it, with a reassessed score at or above the
+  floor and its rationale. The floor, the authored marker, and the effort
+  limits are never changed.
+
+The result is `eligible` with `route: "claim-and-record"` and the normalized
+plan, or a list of precise blockers. Every other route keeps today's
+behavior: `current-route` for a class that is off, an unreadable policy,
+cap, or state, a missing or stale plan, or records that Resume owns, and
+`no-new-execution` for a source whose recorded work awaits confirmation.
+
+Only an eligible assessment relaxes anything, and only what the choice
+itself causes:
+
+- A4's `autonomous_completion` skips a `human decision` or `maintainer
+  decision` phrase whose own clause names no approval, credential, or other
+  authority.
+- A4.5 Check 5 accepts the plan's deliverables and criteria for the missing
+  scope and acceptance detail. Check 6 waives the needs-decision label (only
+  when A4's autonomy criterion also passes for the same body) and decision
+  or unresolved-choice phrases. Check 7 accepts the plan's execution criteria
+  for a missing verification signal and for a decision or preference line.
+- Each phrase is judged on its own, so a later credential or sign-off
+  phrase still blocks. Under a relaxation, A4's autonomy criterion fails and
+  A4.5 Check 6 stays blocked while the title or body names an approval,
+  sign-off, or authorization requirement in any sentence (inline code
+  included), in either
+  word order and at any distance, unless a phrase in it denies that very
+  requirement, such as "does not need any approval". The needs-decision label
+  was the only catch-all before. This lexical net is not complete: the plan's
+  `independentObstacles` is where a session declares such a requirement.
+- An assessment relaxes only the issue and body snapshot it was computed
+  for, and only an assessment that the helper made in the same process; the
+  number and the body hash must match the source under evaluation.
+
+Never relaxed: Checks 1 to 4; the blocked-by-human label, title prefix, and
+authoring-bucket marker; approval, sign-off, credential, secret, and
+production-access requirements, as far as the lexical scans above and the
+plan's `independentObstacles` declaration reach; an empty
+`## Candidate files` section; the
+standing-rejection pre-check; effort limits; and authoring, claim, and open
+pull request conflicts.
+
+An eligible plan is only a candidate. After ownership is acquired and before
+any execution, persist and verify it through the provisional-decision
+`selected` transition: `optionComparisonValid` is true only for an eligible
+assessment, and `policyTrusted` is true only when the same trusted read
+reports the `decisionIssue` class `enabled`. Do not begin B2 or B3 work on
+the choice until that record reads back verified. The source keeps its
+needs-decision label, and its original human-choice criteria stay pending
+until a person confirms the work.
 
 ## Auto-decide at a stop
 

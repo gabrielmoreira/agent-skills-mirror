@@ -104,9 +104,9 @@ and the speaker's intent. Preview the edit; deliver the project and MP4.
 
 ```text
 Read the README, this fact sheet and the linked product documentation.
-Lead with “The All-in-One AI-native Studio for AI editing & Motion.” Present
-AI-native CapCut as the core timeline experience, with Claude Motion informing
-the motion-creation direction. Introduce our Super Motion Video Agent concept
+Lead with “The All-in-One AI-native Studio for AI editing & Motion.” Introduce
+Claude Motion as the reference for motion creation and CapCut as the reference
+for the AI-native timeline experience. Describe our Super Motion Video Agent concept
 and the planned operations and knowledge loop: publish, collect outcomes,
 retrieve personal/team context, evaluate improvements and reuse Skills. Explain intelligent cuts and story organization,
 media generation and search, and multiplatform input/output with their status.

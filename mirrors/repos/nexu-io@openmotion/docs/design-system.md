@@ -96,7 +96,7 @@ shared/integration.ts                  客户端配置与 Agent 指引
 
 `tokens.json` 以 `motion.ui-tokens@1` 标识版本。`shared` 定义跨主题变量，`themes` 定义同名的亮暗变量，统一生成 `--motion-*`。原参考项目的 `--mc-*` 改为独立命名空间；保留编辑器与接入内容需要的变量。小字号辅助文字、错误/警告与时间轴领域色保留 Motion 的可读性适配，未机械复制 OD 的较浅文字色；正文及状态文字对比度通过 4.5:1 检查。视频预览仍用独立深色遮罩，作品 iframe 不加载宿主样式。
 
-Connection setup keeps its native dialog. Template discovery has a separate full-viewport gallery and detail dialog; Escape closes the active menu or detail before returning to the gallery. Cards use immersive media and hover metadata, while author/source links, downloads and repository links remain in detail. Recreate copies the Agent instruction directly and reports success through the floating Toast layer. The right-aligned filter trigger shows only its icon, with an accessible name and a small active indicator; its menu aligns to the trigger's end and remains within viewport bounds. The legacy `/connect` address redirects to `?panel=connections`, while `?templates=1` opens discovery. See [template catalog data rules](template-catalog.md).
+Connection setup keeps its native dialog. Template discovery has a separate full-viewport gallery and detail dialog; Escape closes the active menu or detail before returning to the gallery. The package's `motion-media-label` recipe shares the gallery overlay surface, typography and rounded shape with the persistent purpose badges in onboarding video cards. Cards use immersive media and hover metadata, while author/source links, downloads and repository links remain in detail. Recreate copies the Agent instruction directly and reports success through the floating Toast layer. The right-aligned filter trigger shows only its icon, with an accessible name and a small active indicator; its menu aligns to the trigger's end and remains within viewport bounds. The legacy `/connect` address redirects to `?panel=connections`, while `?templates=1` opens discovery. See [template catalog data rules](template-catalog.md).
 
 ## 复用
 
@@ -158,6 +158,15 @@ chevron spacing. The gallery has no separate playback toolbar button. Purpose
 categories describe intended videos; style, industry and other facets remain
 independently selectable. The full-window detail provides direct copy actions and
 repository links without a second recreation modal.
+
+Discovery headers and toolbars compose the shared `om-control-row`, `om-button`
+and `om-field` recipes. The `om-search-field` variant keeps its icon, input and
+shortcut centered with one outer focus treatment; `om-filter-pill` retains the
+rounded category shape and semantic selected state. Search, categories, dropdowns
+and icon actions share the 32px control height, with 6px control corners, 16px
+icons and 8px gaps. The library owns responsive geometry: a 320px desktop search,
+a reserved GitHub badge width, equal industry/sort widths and a full-width search
+row on narrow screens. Long dropdown labels truncate without moving the chevron.
 
 The shared `Skeleton` primitive uses `skeleton-base` and `skeleton-highlight` tokens in both themes, with reduced-motion support. Catalog placeholders reserve the final card geometry; lazy poster placeholders stay static to avoid animating offscreen cards. Detail preview buffering and retry states stay inside the media frame. Discovery filter menus are non-modal, keep checkbox selection open, and expose removable condition chips. Search uses a single outer focus treatment; detail action rows and guide summaries share inset padding and rounded hover surfaces. Recreate and submit uses the bundled Remix git-branch icon.
 

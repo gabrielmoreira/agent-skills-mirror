@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 13 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,13 +65,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.agents/skills/zed-cherry-pick/SKILL.md`](.agents/skills/zed-cherry-pick/SKILL.md) |
 | 5 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
 | 6 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
-| 7 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
-| 8 | ✓ | [`docs/.conventions/brand-writer/SKILL.md`](docs/.conventions/brand-writer/SKILL.md) |
-| 9 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 10 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
-| 11 | ✓ | [`docs/src/ai/external-agents.md`](docs/src/ai/external-agents.md) |
-| 12 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
-| 13 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
+| 9 | ✓ | [`docs/.conventions/brand-writer/SKILL.md`](docs/.conventions/brand-writer/SKILL.md) |
+| 10 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 11 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
+| 12 | ✓ | [`docs/src/ai/external-agents.md`](docs/src/ai/external-agents.md) |
+| 13 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
+| 14 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
 
 ---
 

@@ -245,8 +245,10 @@ Frontend is organised by **feature**, not file type: `src/features/<feature>/` h
 from `@tryatlas/design`, shared helpers in `src/lib/`; `@/` aliases `src/`. **Filenames are
 kebab-case** (`center-panel.tsx`), the exceptions being `src/App.tsx` and the
 generated `src/bindings/`, named after their Rust types. Zustand +
-Immer stores wrapped in `createSelectors` so `useStore.use.x()` works; stores never call
-other stores — cross-feature coordination is `getState()` at an action boundary or a
+Immer stores, read as `useXStore((s) => s.x)`: the build runs the React Compiler, which
+knows a hook only by its `useX` name, so a hook behind any other name (the retired
+`useXStore.use.x()`) is cached after one render (`react-compiler-contract.test.ts`).
+Stores never call other stores — cross-feature coordination is `getState()` at an action boundary or a
 window event, declared in the map in `src/lib/window-events.ts` and sent and heard
 only through its `emitWindowEvent` / `onWindowEvent` / `useWindowEvent`. Tailwind
 composed via `cn()`.

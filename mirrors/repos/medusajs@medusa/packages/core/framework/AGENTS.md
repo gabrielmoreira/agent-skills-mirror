@@ -62,10 +62,11 @@ export default defineMiddlewares({
 })
 ```
 
-- A middleware route's `audit` setting controls how matching requests are recorded when the Audit Module (`@medusajs/medusa/audit`) is installed. `POST`/`PUT`/`PATCH`/`DELETE` under `/admin`, `/rbac`, and `/auth` are recorded by default; `audit: false` excludes a route, `audit: true` includes one (e.g. a `GET` or `/store` route), and an `AuditRouteConfig` object (`action`, `resource(req, body)`, `requestData(req)`, `responseData(req, body)`) includes it and overrides the defaults. Bodies are never stored, only what those functions return; `body` is the JSON response, passed only on success.
+- A middleware route's `audit` setting controls how matching requests are recorded when the Audit Module (`@medusajs/medusa/audit`) is installed. `POST`/`PUT`/`PATCH`/`DELETE` under `/admin`, `/rbac`, and `/auth` are recorded by default; `audit: false` excludes a route, `audit: true` includes one (e.g. a `GET` or `/store` route), and an `AuditRouteConfig` object (`action`, `resource(req, body)`, `requestData(req)`, `responseData(req, body)`, `metadata(req, body)`) includes it and overrides the defaults. `metadata` is merged into the record's `metadata`, and the values the framework sets (`auth_identity_id`, `api_key_created_by`, `connection_closed`) win over it. Bodies are never stored, only what those functions return; `body` is the JSON response, passed only on success.
 - Route files must be named `route.ts`/`route.js`; dynamic segments use `[param]` directories. Export `AUTHENTICATE = false` or `CORS = false` from a route file to opt out of the defaults (both default to `true`).
 - Subscribers export a default handler plus `config: SubscriberConfig` with `event`; a subscriber missing `config` or `config.event` is skipped with a warning, not an error.
 - Scheduled jobs export `config` with `name` and `schedule`; missing either throws at load.
+- `src/jobs` and `src/subscribers` are scanned recursively: every `.ts`/`.js` file at any depth is loaded, except `index` files, `_`-prefixed files, `.d.ts`, `.spec`/`.test` files, and anything under `__tests__/`. Put helpers shared by several jobs in a `_`-prefixed file or outside the directory.
 - Docs: https://docs.medusajs.com/learn/fundamentals/framework.md, https://docs.medusajs.com/learn/configurations/medusa-config.md, https://docs.medusajs.com/learn/fundamentals/api-routes/middlewares.md, https://docs.medusajs.com/learn/fundamentals/api-routes/validation.md, https://docs.medusajs.com/learn/fundamentals/medusa-container.md
 
 ## Architecture

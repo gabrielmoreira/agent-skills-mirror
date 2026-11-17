@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aipoch/open-science` — 26 default patterns, 13 followed patterns, 101 file(s) materialized.
+Mirror of `aipoch/open-science` — 26 default patterns, 13 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aipoch/open-science` — 26 default patterns, 13 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 101 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -146,32 +146,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 73 | ✓ | [`resources/skills/literature-review/SKILL.md`](resources/skills/literature-review/SKILL.md) |
 | 74 | ✓ | [`resources/skills/openfold3/SKILL.md`](resources/skills/openfold3/SKILL.md) |
 | 75 | ✓ | [`resources/skills/paper-narrative/SKILL.md`](resources/skills/paper-narrative/SKILL.md) |
-| 76 | ✓ | [`resources/skills/proteinmpnn/SKILL.md`](resources/skills/proteinmpnn/SKILL.md) |
-| 77 | ✓ | [`resources/skills/remote-compute-ssh/SKILL.md`](resources/skills/remote-compute-ssh/SKILL.md) |
-| 78 | ✓ | [`resources/skills/scgpt/SKILL.md`](resources/skills/scgpt/SKILL.md) |
-| 79 | ✓ | [`resources/skills/scvi-tools/SKILL.md`](resources/skills/scvi-tools/SKILL.md) |
-| 80 | ✓ | [`resources/skills/self-awareness/SKILL.md`](resources/skills/self-awareness/SKILL.md) |
-| 81 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
-| 82 | ✓ | [`resources/skills/solublempnn/SKILL.md`](resources/skills/solublempnn/SKILL.md) |
-| 83 | ✓ | [`scripts/fixtures/linux-prisma/README.md`](scripts/fixtures/linux-prisma/README.md) |
-| 84 | ✓ | [`scripts/fixtures/windows-update-notice/README.md`](scripts/fixtures/windows-update-notice/README.md) |
-| 85 | ✓ | [`scripts/windows-upgrade-diagnostics/README.md`](scripts/windows-upgrade-diagnostics/README.md) |
-| 86 | ✓ | [`src/main/remote-access/README.md`](src/main/remote-access/README.md) |
-| 87 | ✓ | [`src/main/skill-marketplace/__fixtures__/marketplace/README.md`](src/main/skill-marketplace/__fixtures__/marketplace/README.md) |
-| 88 | ✓ | [`test/fixtures/pdf-translation/README.md`](test/fixtures/pdf-translation/README.md) |
-| 89 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 90 | → | [`docs/ci.md`](docs/ci.md) |
-| 91 | → | [`docs/compatibility.md`](docs/compatibility.md) |
-| 92 | → | [`docs/development-quick-reference.md`](docs/development-quick-reference.md) |
-| 93 | → | [`docs/native-components.md`](docs/native-components.md) |
-| 94 | → | [`docs/package-workflows.md`](docs/package-workflows.md) |
-| 95 | → | [`docs/reproducibility-cases/README.md`](docs/reproducibility-cases/README.md) |
-| 96 | → | [`docs/standalone-runtime.md`](docs/standalone-runtime.md) |
-| 97 | → | [`docs/testing.md`](docs/testing.md) |
-| 98 | → | [`packages/open-science/CLI.md`](packages/open-science/CLI.md) |
-| 99 | → | [`packages/open-science/README.md`](packages/open-science/README.md) |
-| 100 | → | [`README.md`](README.md) |
-| 101 | → | [`scripts/windows-reset/README.md`](scripts/windows-reset/README.md) |
+| 76 | ✓ | [`resources/skills/pdf-generation/README.md`](resources/skills/pdf-generation/README.md) |
+| 77 | ✓ | [`resources/skills/pdf-generation/SKILL.md`](resources/skills/pdf-generation/SKILL.md) |
+| 78 | ✓ | [`resources/skills/pptx-generation/README.md`](resources/skills/pptx-generation/README.md) |
+| 79 | ✓ | [`resources/skills/pptx-generation/SKILL.md`](resources/skills/pptx-generation/SKILL.md) |
+| 80 | ✓ | [`resources/skills/proteinmpnn/SKILL.md`](resources/skills/proteinmpnn/SKILL.md) |
+| 81 | ✓ | [`resources/skills/remote-compute-ssh/SKILL.md`](resources/skills/remote-compute-ssh/SKILL.md) |
+| 82 | ✓ | [`resources/skills/scgpt/SKILL.md`](resources/skills/scgpt/SKILL.md) |
+| 83 | ✓ | [`resources/skills/scvi-tools/SKILL.md`](resources/skills/scvi-tools/SKILL.md) |
+| 84 | ✓ | [`resources/skills/self-awareness/SKILL.md`](resources/skills/self-awareness/SKILL.md) |
+| 85 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
+| 86 | ✓ | [`resources/skills/solublempnn/SKILL.md`](resources/skills/solublempnn/SKILL.md) |
+| 87 | ✓ | [`scripts/fixtures/linux-prisma/README.md`](scripts/fixtures/linux-prisma/README.md) |
+| 88 | ✓ | [`scripts/fixtures/windows-update-notice/README.md`](scripts/fixtures/windows-update-notice/README.md) |
+| 89 | ✓ | [`scripts/windows-upgrade-diagnostics/README.md`](scripts/windows-upgrade-diagnostics/README.md) |
+| 90 | ✓ | [`src/main/remote-access/README.md`](src/main/remote-access/README.md) |
+| 91 | ✓ | [`src/main/skill-marketplace/__fixtures__/marketplace/README.md`](src/main/skill-marketplace/__fixtures__/marketplace/README.md) |
+| 92 | ✓ | [`test/fixtures/pdf-translation/README.md`](test/fixtures/pdf-translation/README.md) |
+| 93 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 94 | → | [`docs/ci.md`](docs/ci.md) |
+| 95 | → | [`docs/compatibility.md`](docs/compatibility.md) |
+| 96 | → | [`docs/development-quick-reference.md`](docs/development-quick-reference.md) |
+| 97 | → | [`docs/native-components.md`](docs/native-components.md) |
+| 98 | → | [`docs/package-workflows.md`](docs/package-workflows.md) |
+| 99 | → | [`docs/reproducibility-cases/README.md`](docs/reproducibility-cases/README.md) |
+| 100 | → | [`docs/standalone-runtime.md`](docs/standalone-runtime.md) |
+| 101 | → | [`docs/testing.md`](docs/testing.md) |
+| 102 | → | [`packages/open-science/CLI.md`](packages/open-science/CLI.md) |
+| 103 | → | [`packages/open-science/README.md`](packages/open-science/README.md) |
+| 104 | → | [`README.md`](README.md) |
+| 105 | → | [`scripts/windows-reset/README.md`](scripts/windows-reset/README.md) |
 
 ---
 

@@ -1,0 +1,16 @@
+# Provider discovery and setup
+
+Read for a new generation plan, provider setup or the MCP handbook handoff. Apply the entry's provider preference and spend authorization before submission.
+
+## Media handbook handoff
+
+The MCP handbook media-generation example is an explicit request for multimodal guidance. Start with read-only `inspect` even when the user has yet to supply a concrete asset brief. When a provider is available, continue the existing request or ask what they want to generate or which reference they want to recreate. Preserve any reference, brief and project context already supplied.
+
+Follow the setup below and the [job procedure](jobs.md) when generation is needed. Read-only onboarding can proceed without creating a project or starting generation.
+
+## Inspect providers and resolve setup
+
+1. Call `openmotion_media_use` with `action: "inspect"`. It lists each provider with `configured`, `available`, `verification` and `reason`, plus `defaults` (the model selected for each modality) and `settings` (where keys are managed). Saving a key in Studio's **Model providers** settings (Chinese UI: **模型供应商**, in the left rail or Settings) enables that provider, and signing in to an OpenDesign account adds its entitled models; configuration alone does not prove entitlement, quota or balance. Handle these setup cases in plain user language, folded into the workflow's single upfront question when it has one:
+   - **No usable provider** (no provider has `available: true`): call `openmotion_open_preview` with `{ target: "providers" }` and follow its page handoff. Guide the user in plain words to sign in to their OpenDesign account: **Settings → Account → Sign in with OpenDesign** (Chinese UI: **设置 → 账户 → 使用 OpenDesign 登录**). Tell them a paid OpenDesign plan provides multimodal generation such as images, video and voice, managed from **Subscription & usage → Manage subscription** (Chinese UI: **订阅与用量 → 管理订阅**). Mention in one short sentence that an API key they already have from another provider can be saved under **Model providers** (**模型供应商**) instead, or that they can supply their own files. Ask them to tell you once done, then run `inspect` again and continue the same task. If a provider shows `configured: true` with `verification: "rejected"`, say the saved key was rejected (wrong, expired or lacking permission) and ask them to replace it in the same place. When they say it is saved, run `inspect` again and continue the same task.
+   - **Key works but a needed kind is missing**: check each needed kind with `action: "models", provider, modality, refresh: true` (`image`, `video` or `audio`; among audio models, the discovered `mode` follows the model's operation: speech uses `text-to-speech`, music and sound effects use `text-to-audio`; an input named `text` does not by itself mean speech). If no usable provider offers it, tell the user what their key can and cannot make, explain both supported and missing parts in the consent question, including the proposed alternative (for example locally synthesized BGM if available, user-supplied music or no music). Generate supported parts after consent. Do not silently downgrade a requested capability; if existing authorization does not cover an alternative, keep that part pending and continue independent work.
+   - Never silently switch to an unapproved paid provider.

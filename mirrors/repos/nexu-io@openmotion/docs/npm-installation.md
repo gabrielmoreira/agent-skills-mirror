@@ -1,12 +1,14 @@
 # Motion application npm package
 
+> Repository installation defaults to the [source guide](../install.md). Published npm installation is an explicit alternative through the [application guide](install.md). Candidate builds, publication and snapshot recovery use the manual [release workflow](release-workflows.md); merging changes does not publish a package or update hosted guides.
+
 For a download-once cold installation, build on the target machine with `node --experimental-strip-types scripts/package-npm.mjs OUTPUT_DIR --bundle-runtime`. This option installs locked production npm dependencies at build time and embeds them in an XZ application archive, omitting `.map` debug sidecars while retaining application sources, executable modules, declarations and licenses. The manifest pins OS/CPU and dependency lock SHA256. Setup rejects another target before changing installation state, verifies the embedded marker, lock and direct package versions, then skips dependency downloads. Select the exact reviewed artifact for the machine; this is not a universal package. Lightweight builds retain target-machine npm installation. Frontend libraries compiled into Studio are development dependencies; editing/export dependencies remain production dependencies. No browser/media binaries are added, and packaging does not publish anything.
 
 The npm tgz contains the installer, a prebuilt Motion application archive and its pinned release manifest. One `setup` installs the application, eleven public MCP Tools and five Skills for the selected host. No adjacent application archive or `--manifest` is needed. The application runs from a managed, writable directory, never from the npx cache; projects remain outside application/cache directories.
 
 After successful host registration, setup starts/reuses the headless local service and returns `onboarding.preview` with a project-free template-library URL and host presentation handoff. The Agent opens that page immediately, using `openmotion_open_preview({target:"templates"})` when loaded or the returned URL before current-chat MCP discovery. Setup itself does not launch an OS browser. Preparing or browsing the library never initializes/selects a native project; Open and edit creates a copy only after user selection. A page-start failure is reported as `onboarding.preview.status=unavailable` without rolling back a successful installation or creating a fallback project. Browser-less hosts receive the actual link. Published packages keep the behavior embedded in their own source version.
 
-Codex setup now prepares the production welcome/cards document by default through the same flow as source setup and the desktop plugin setup Skill. No presentation flag is required. `--onboarding-output /absolute/chat-readable/openmotion-onboarding.html` remains an optional path override. The selected workspace contains the default document under `onboarding/`; the active host must publish the verified document into its explicitly permitted chat visualization directory, then deliver the published content reference and real template-library handoff. Preparation alone is not automatic visible delivery, and CLI registration does not run the desktop plugin callback. The renderer checks approved MP4s and source fingerprints, requires no development dependencies, and preserves the copyable-brief fallback. See the [shared presentation contract](install.md#codex-inline-document-presentation-without-host-hot-reload).
+Codex setup shares the source/plugin preparation flow and needs no presentation flag. Default onboarding samples three distinct references from the nine-entry pool once and returns `inlinePresentation.status=native_required`, the frozen native Tool arguments with `onboarding:false`, and separate `welcomeMarkdown`. A compatible native MCP Apps connection mounts the cards in the conversation with its declared media origin; each result binds its immutable resource URI and recommendation-specific widget session. The Agent then streams the welcome as ordinary final-reply text after the native cards. Neither a right-hand webpage nor a component-owned welcome replaces this delivery. Legacy explicit `onboarding:true` remains an API compatibility mode. For self-contained builtin examples only, setup can still prepare a cards-only fragment under the workspace onboarding directory; `--onboarding-output /absolute/chat-readable/openmotion-onboarding.html` overrides that path, and the host publishes its verified bytes into the permitted chat visualization directory. Preparation is not visible delivery or native discovery, and CLI registration does not run the desktop callback. Stale discovery requires the supported host refresh. See the [shared presentation contract](install-onboarding.md#installation-success-reply).
 
 `@openmotion/app@0.6.4-test.6` is available from npm through the `test` channel. It was published separately after authorization; ordinary CI still does not publish packages. Its anonymous registry download, isolated macOS Codex setup, repeat setup, eleven MCP Tools and five Skills have been verified. Use the exact version for reproduction. See the [delivery record and known limitations](release-guide.md#published-test-candidate-064-test6), including the production template catalog and the registry's unexpected `latest` tag.
 
@@ -28,7 +30,7 @@ Source builds after the OpenMotion naming change register the plugin/MCP server 
 
 Users provide Node.js 22.18+ with npm and their Agent host. Builds use the Node version pinned in CI. npm installs locked production dependencies with `npm ci --omit=dev --ignore-scripts`. Setup starts FFmpeg, ffprobe and browser preparation in a detached background worker. MCP connection, source editing and ordinary preview do not wait; Studio displays readiness and retry. `prepare` remains an explicit wait/retry command. Node, native binaries, node_modules, user projects and credentials are not bundled in this npm format. It is not an offline package. Complete platform ZIPs remain a backup.
 
-The embedded application uses `scripts/distribution.ts`'s positive file list: MCP/backend, prebuilt Studio, five Skills and references, bundled examples, npm/native locks, licenses and approved documentation. Remote Prism templates are fetched separately. The embedded manifest omits the containing tgz's hash; the external delivery manifest records that hash without a circular self-reference.
+The embedded application uses `scripts/distribution.ts`'s positive file list: MCP/backend, prebuilt Studio, five Skills and references, bundled examples, npm/native locks, licenses and approved documentation. The installed application fetches the latest OpenMotion template catalog from the OpenMotion hosted CDN `main` pointer; the website continues to use its CMS publication. The embedded manifest omits the containing tgz's hash; the external delivery manifest records that hash without a circular self-reference.
 
 The npm page uses the repository's product `README.md`. Packaging resolves its relative documentation and image links against the exact source commit, while the embedded application keeps the original local links. The installation manual remains in the application docs; it is not the npm landing page. Published test.6 contains the earlier installation-manual README; the correction takes effect with the next separately authorized npm version, not by editing GitHub alone.
 
@@ -79,7 +81,7 @@ These are documented commands, not proof of Windows acceptance. Use a directly e
 
 ## Test template data (DEV)
 
-New explicitly versioned test npm packages default to **DEV**; stable packages default to **prod**. Existing published versions retain their original environment (test.6 used prod). To test Prism templates, publish the resource to **DEV**, then download an accepted DEV candidate or build one locally:
+New explicitly versioned test npm packages default to **DEV**; stable packages default to **prod**. Existing published versions retain their original environment (test.6 used prod). New NPM packages read the same hosted main template catalog in both environments. DEV/prod controls workspace defaults and explicit CMS routing. To test a DEV application, download an accepted candidate or build one locally:
 
 ```sh
 npm run package:npm -- dist/npm-dev 0.6.4-test.1 --template-env=dev
@@ -91,7 +93,7 @@ The environment is embedded in `shared/template-config.json`; the resulting `ins
 
 For **source development**, Studio and MCP now default to repository templates when `library/templates/catalog/` exists. Use `MOTION_TEMPLATE_SOURCE=cms MOTION_TEMPLATE_ENV=dev MOTION_DATA_DIR=/absolute/isolated-dev-data npm run mcp` only when testing the DEV CMS publication. The local template startup and plugin paths are documented in [the repository workflow](template-repository.md#run-from-a-local-clone). For an installed package, advanced overrides must be supplied to the actual MCP/Agent process and inherited by the backend. Setting a shell variable only while running setup does not persist it into a later GUI host. Stop the owned old backend and reconnect after changing configuration. Prefer the embedded DEV package over editing installed files or sharing production data.
 
-There is no automatic fallback from prod to DEV and no `switch-env` CLI. This selects the template catalog, not model keys, accounts or every remote service.
+There is no automatic fallback from prod to DEV and no `switch-env` CLI. In explicit CMS mode the environment selects the template catalog; hosted main discovery is independent of it. It does not select model keys, accounts or every remote service.
 
 ## Host adapters and ownership
 
@@ -102,7 +104,7 @@ There is no automatic fallback from prod to DEV and no `switch-env` CLI. This se
 | DeepSeek Harness | `dsh plugin --profile web add <managed bundle> --ignore-scripts` | Its dedicated bundle/provider Skill root |
 | WorkBuddy | Merge `mcpServers.openmotion` into its `mcp.json` | Flat entries under its configuration root |
 
-Select `--host codex|claude|deepseek|workbuddy`. `--skills-dir` selects the Codex/Claude/WorkBuddy root; Harness uses its own provider. Executable overrides are `--codex`, `--claude`, `--dsh`; Harness also accepts `--profile`. Isolate host configuration with `CODEX_HOME`, `CLAUDE_CONFIG_DIR`, `DSH_HOME` or `WORKBUDDY_CONFIG_DIR`; `--home` controls the application installation, not the host profile.
+Select `--host codex|claude|deepseek|workbuddy` for a registration adapter, or the current Agent's lowercase name for [any other local Agent](#other-local-agents). `--skills-dir` selects the Codex/Claude/WorkBuddy/other-Agent root; Harness uses its own provider. Executable overrides are `--codex`, `--claude`, `--dsh`; Harness also accepts `--profile`. Isolate host configuration with `CODEX_HOME`, `CLAUDE_CONFIG_DIR`, `DSH_HOME` or `WORKBUDDY_CONFIG_DIR`; `--home` controls the application installation, not the host profile.
 
 Use the same installation flow for every host: collect the platform and Node/npm facts once, select the current Agent, run its setup adapter, then verify actual host loading while video components prepare in the background. An explicit `--host` takes precedence over host context; do not choose a host merely because its CLI is installed. The CLI retains its Codex default for compatibility, so Agent-driven installs should always pass `--host`. Only ask for the missing host/profile when reliable context is unavailable. `openmotion --help`, `setup --help`, `prepare --help` and `--version` work without installing or modifying configuration.
 
@@ -119,9 +121,37 @@ Harness callers should pass the actual current profile from their host context, 
 
 After setup, use working native tools or the direct commands below to continue in the same chat. Refresh native discovery only when needed. Confirm all eleven public Tools and five Skills, and call `openmotion_get_project` to verify the expected data directory. Do not impose another host's restart or refresh procedure, or substitute an on-disk registration for host loading evidence.
 
-The internal ownership marker remains stable across the npm package rename so earlier local installations can be upgraded in place. An installation can serve multiple hosts using the same home/data. `install.json.hosts` retains each host. Skill documentation links are rewritten for flat layouts; Codex/Harness retain bundle-relative links. Re-run setup for each installed host when upgrading Skills. Unowned same-name MCP/Skills are refused. Unrelated settings/Skills and existing projects are retained. Registration failure restores the prior install state and Skills; checked application caches remain available for retry.
+The internal ownership marker remains stable across the npm package rename so earlier local installations can be upgraded in place. An installation can serve multiple hosts using the same home/data. `install.json.hosts` retains each host. Skill documentation links are rewritten for flat layouts; Codex/Harness retain bundle-relative links. Re-run setup for each installed host when upgrading Skills. Unowned same-name MCP/Skills are refused. Unrelated settings/Skills and existing projects are retained. A registration failure before the profile changes restores the prior install state and Skills. If Harness has already switched to the new owned bundle, setup retains that bundle and its state even when registration or later onboarding reports an error; rerunning setup reconciles owned profile/state differences. Checked application caches remain available for retry.
 
 Compatible phase-one updates do not require closing existing MCP connections or stopping the same workspace's backend. Connections negotiate the API protocol and requested Tool, retaining running exports and completed results; see [shared editor recovery](shared-editor.md). The installer does not terminate existing processes. Incompatible protocols or internal legacy ABIs still require updating the connection and idle backend together. Refresh the host to discover new Tools or reload changed Skills; an already-closed transport needs host reconnection.
+
+<a id="other-local-agents"></a>
+
+### Other local Agents
+
+Any `--host` value outside the four adapters, such as `opencode`, `cursor-agent` or `gemini`, uses the same application, launcher, data directory and Skills. Setup does not read or write that host's configuration. It copies flat Skills to `~/.agents/skills` (or `--skills-dir`), records the host in `install.json.hosts` and returns:
+
+```json
+"agentRegistration": {
+  "serverName": "openmotion",
+  "transport": { "type": "stdio", "command": "/absolute/node", "args": ["/absolute/installHome/run-mcp.mjs"] },
+  "skillsDirectory": "/absolute/.agents/skills"
+}
+```
+
+The calling Agent adds this local stdio server using its own documented MCP format, preserving unrelated settings, then refreshes MCP and calls `openmotion_get_project`. Use the launcher exactly as returned: `run-mcp.mjs` reads `install.json` and configures the workspace, browser and media paths. Do not register a bare `mcp.ts`. `command` is the absolute Node executable that ran setup (`node.exe` on Windows), so no `.cmd` shim is involved. Adapter-less Agents share one Skills owner in that root, so installing a second such Agent reuses the same entries. `tools`, `call` and `diagnose` accept the same `--host` value; `diagnose` probes the launcher but cannot read that host's configuration.
+
+Example for OpenCode (`~/.config/opencode/opencode.json`; OpenCode also reads `~/.agents/skills`):
+
+```json
+{
+  "mcp": {
+    "openmotion": { "type": "local", "command": ["/absolute/node", "/absolute/installHome/run-mcp.mjs"], "enabled": true }
+  }
+}
+```
+
+Run `opencode mcp list` to confirm `openmotion` is connected and `opencode debug skill` to confirm the `openmotion-*` Skills. A host that cannot add a local stdio MCP server can still use `onboarding.directAccess` from a shell-capable chat. Adapter-less setup is not a compatibility claim for every listed Agent; each host's MCP loading is verified in that host.
 
 ## Continue in the current Agent chat
 
@@ -140,7 +170,7 @@ This is an installed MCP client, not native host discovery or reconnection. It s
 
 Explicit builds accept `MAJOR.MINOR.PATCH-test.N[.N]` or `MAJOR.MINOR.PATCH`. CI-generated candidates use next-patch `test.<run>.<attempt>`; manually assigned candidates can use `test.1`, `test.2`. Every artifact has one identity across the installer, app package/lock and plugin metadata. Build numbers never overwrite old output; source versions are not bumped by packaging.
 
-Source package manifests remain `private:true`. Only an explicit test/DEV or stable/prod build produces publishable tgz metadata. Test artifacts default to `candidate`; the manual publisher advances `test` only after matching Mac/Windows registry installation checks. Stable artifacts default to `stage`; stable publication and `latest` promotion are separate follow-ups. Local/default and channel/environment-mismatched artifacts remain private. No command here publishes or changes npm tags. See [test and stable acceptance](release-guide.md) for separate maintainer authorization and gates.
+Source package manifests remain `private:true`. Only an explicit test/DEV or stable/prod build produces publishable tgz metadata. Test artifacts default to `candidate`; the manual publisher advances `test` after registry propagation and runs non-blocking Mac/Windows installation checks afterward. Stable artifacts default to `stage`; both matching prod installation checks must pass before `latest` advances. Local/default and channel/environment-mismatched artifacts remain private. No command here publishes or changes npm tags. See [test and stable acceptance](release-guide.md) for separate maintainer authorization and gates.
 
 After publication, the intended user entry is `npx --yes --package @openmotion/app@<exact-version> -- openmotion setup --host codex`, followed by native discovery or direct installed access in the same chat; `prepare` is optional when an explicit wait or retry is needed. `@test` and `@latest` select channels; acceptance always records the exact resolved version. Installing/running npx alone, publishing a new package or moving a tag does not update an existing managed app.
 
@@ -218,3 +248,26 @@ For defects, include exact package/app version, source SHA, OS/CPU, Node/Agent v
 The hosted [installation guide template](install.md) provides the short Agent entry. Ordinary CI retains a candidate preview; the separate test publication workflow verifies the accepted candidate, publishes the same bytes, checks the exact registry installation and archives immutable version instructions before advancing the moving test guide. Repository R2 configuration, channel acceptance and enabled manual workflow entries are prerequisites. See [hosted instruction publication](release-guide.md#hosted-installation-instructions).
 
 Maintainers: see [manual candidate and test publication workflows](release-workflows.md) for fixed source/version selection, immutable snapshots, registry verification and recovery. A candidate artifact is not a published npm version.
+
+## Managed recreation analysis
+
+Recreation measurement and registration use a private Python environment with the exact Python, NumPy and headless OpenCV versions and platform hashes in `scripts/runtime-lock.json`. First use of `skills/openmotion-recreate/scripts/vision-tools.mjs` prepares it in the installation cache. `openmotion prepare --home DIR` also prepares it explicitly. User-installed Python, pip and uv are unnecessary. Preparation downloads the locked archives once, installs only those local wheels without an index or dependency resolution, and publishes the environment atomically after checking imports and versions. Completed environments are reused across application versions sharing the same runtime identity.
+
+Complete platform ZIPs include the Python archive and both wheels in `runtime/vision-assets` for offline preparation. Lightweight npm installations need network access on first use. The vision tools support macOS 13+ arm64 and Windows 11+ x64. Host execution and network permissions still apply. Preparation failures report an error and can be retried with the same entry's `prepare` command. Project HTML/JavaScript and exported MP4s do not acquire a Python runtime dependency.
+
+The original Python distribution license files, NumPy distribution licenses and OpenCV wheel licenses (including bundled native-library notices) are retained in the shipped archives and installed environment. Source provenance is recorded in the pinned public URLs and hashes.
+
+
+## Windows legacy installation recovery
+
+Published npm installation remains retired; these repairs preserve existing managed installations without enabling publication. Windows Codex, Claude and DeepSeek host adapters resolve supported npm `.cmd`/`.ps1` shims to the JavaScript or native executable and keep arguments outside a shell. Unsupported wrappers fail with an executable-path hint. Missing commands fail immediately; command deadlines are cleared on spawn failure, exit and timeout.
+
+Harness setup writes a fresh `hosts/deepseek-<id>` bundle on each run and registers that path instead of renaming the bundle a running host may hold open. The previous owned bundle is retained, including the original `hosts/deepseek` layout. Refresh the host's Tools/Skills after setup. Superseded owned paths are recorded in `install.json.hosts.deepseek.retainedBundles`; setup also inventories older owned bundles after an interrupted run. Inspect cleanup with `node scripts/cleanup-harness-bundles.mjs --home "<actual installation home>"`. After stopping every Harness process using that installation, rerun with `--confirm-all-processes-stopped`. Cleanup preserves both the currently registered and state-selected bundles, refuses unverifiable ownership, retains directories it cannot remove and reports them for retry. Automatic cleanup of potentially open bundles is disabled. Project data and unrelated host configuration remain separate.
+
+New runtime locks record their owner and recover after its process exits. On hosts without the shared editor, including Windows, a legacy empty `workspace.lock` has no trustworthy owner and is not deleted automatically by the workspace runtime. The macOS shared-editor startup already removes an empty regular legacy lock; use offline recovery only if the lock still blocks startup. From the updated source checkout or application root, inspect it with:
+
+```sh
+node --experimental-strip-types scripts/recover-workspace-lock.ts --data-dir "<actual workspace data directory>"
+```
+
+This first command changes nothing. Stop every Studio/backend, connected Agent and export using that exact directory. Only after verifying they have stopped, rerun with `--confirm-all-processes-stopped`. Recovery quarantines the empty file beside its original path, preserves project data and refuses nonempty or symbolic-link locks. Restart using the same data directory. The confirmation is an operator assertion, not automatic proof that no legacy process is alive; do not run recovery against an active workspace.

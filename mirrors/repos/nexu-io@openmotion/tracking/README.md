@@ -67,6 +67,37 @@ confirmed, and never treats a valid opt-out as a retryable failure. Callers can
 inspect local queue/configuration statuses and a content-free status snapshot;
 see [diagnostics and retry semantics](INTEGRATION.md#diagnose-without-logging-event-contents).
 
+## North-star evidence and task ledger
+
+The runtime now records a local export task ledger before returning an accepted
+export request. Each export keeps its task ID, project, optional work-round ID,
+acceptance time, explicit deadline, terminal time and observed outcome. A worker
+terminal result updates the same ledger and emits `task_terminal`; unknown or
+cancelled results remain separate from success. An export whose worker vanished or
+whose deadline passed is reconciled once with outcome `unknown`, so its accepted
+entry also gets a terminal time and the same event; whichever caller closes the task
+(the worker tick or a status read) states that evidence. A tick never
+reconciles an export this process is still rendering, and a worker whose job was
+closed that way does not restate its terminal outcome. The ledger is
+installation-local, atomic and does not contain prompts, source content or
+credentials.
+
+Host run boundaries use the existing work-round ID returned by
+`openmotion_open_preview(action=begin)`. The MCP boundary emits
+`host_run_started` and `host_state_changed`; a host-reported visible preview with
+verified content emits `host_preview_observed` and `host_run_delivered`. A verified
+technical export can also close the same run with `host_run_delivered`. A failed or
+cancelled export emits the corresponding host terminal event. These events do not
+claim a run boundary when the host did not provide a work-round ID.
+
+Quality evidence is explicit. Technical export, preview visibility and recorded
+content review each emit `check_required` and `check_completed` with a version,
+checklist, checker type and bounded evidence reference. A technical export check
+does not assert visual or human acceptance. Queue workers emit `queue_snapshot` at
+most once per minute and `worker_heartbeat` with bounded counts. Confirmed
+correctness incidents and recovery evidence use `incident_confirmed` and
+`recovery_recorded`; ordinary task failures are not incidents.
+
 ## Identity, properties and privacy
 
 One random `installation_id` UUID is persisted atomically in `tracking/identity.json`
@@ -176,7 +207,7 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
 
 - All registered phase-one stdio tools: accepted start and observed finish, including
   early-return catalog tools, input rejection, partial import and idempotent replay.
-- All eighteen page WebMCP tools: `webmcp_tool_started` and
+- All nineteen page WebMCP tools: `webmcp_tool_started` and
   `webmcp_tool_finished`, correlated by a fresh `call_id` per invocation, with
   the public `tool_name`, `transport=webmcp`, observed `outcome` and bounded
   `duration_ms`. These are browser-call measurements, separate from stdio MCP
@@ -187,6 +218,25 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
   reply into a cancelled operation. Arguments, results, handles, paths and raw errors are
   excluded. Host Agent fields retain their existing page-handoff meaning; the
   transport marker does not identify the calling browser agent.
+- Asset call action: `mcp_tool_started/finished` and
+  `webmcp_tool_started/finished` include an optional closed `action` category for
+  asset tools: `list`, `get`, `import`, `update`, `generate`, `jobs`, `status`,
+  `cancel`, `import_to_project`, `read`. The shared extractor ignores other tools,
+  missing/malformed actions and unknown values; no raw arguments or media are sent.
+  The action is captured once at invocation start and retained on finish, including
+  failure and input rejection. Stdio keeps `tool_name=motion_assets` for both public
+  asset names; WebMCP keeps their public names. Historical events without action
+  remain valid and cannot be backfilled. Registration has no action.
+  To measure `read`, filter `product=openmotion`, exclude `env=test`, select the
+  appropriate `*_tool_finished` event and `action=read`: count distinct `call_id`
+  for observed calls, divide successful calls (`outcome=success`) by all observed
+  calls for success rate, and aggregate `duration_ms` (e.g. median/p95) for latency.
+  Stdio rejected inputs have `accepted=false` and no start event; use finished
+  events for the denominator, or filter `accepted=true` explicitly when measuring
+  accepted executions only. Each invocation, including replay, is a new call.
+  Browser and stdio are separate transports; do not sum starts and finishes or add
+  domain-result events to call counts. This measures observed call outcomes, not
+  paid generation completion, human media acceptance or guaranteed billing usage.
 - WebMCP registration: `webmcp_registration_result` records one result per
   attempted tool registration (`success`, `failure` or `cancelled`), including
   validation/duplicate refusals and teardown cancellation. Use this event for
@@ -220,11 +270,12 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
   `navigation` (previous/next). `detail_view_id`, `copy_attempt_id`,
   `download_attempt_id` and `search_id` are random UUIDs that tie a click to its
   result. Recreate and Recreate-and-submit report `start_use` with
-  `template_action`; the instruction panel's Copy reports `copy_instruction`;
-  every copy reports `template_instruction_copy_result`, and only
-  `clipboard_written` is a successful copy. `host_product` and `target_agent`
-  name the instruction variant that was copied (the library builds the Codex
-  one), not the client the user later pastes it into. A category or filter option is sent
+  `template_action` and copy that same instruction; the instruction panel has no
+  Copy control of its own, so no separate copy click is reported. Every copy
+  reports `template_instruction_copy_result`, and only `clipboard_written` is a
+  successful copy. `host_product` names the instruction variant that was copied
+  (the library builds the Codex one), not the client the user later pastes it
+  into. A category or filter option is sent
   as a lowercase slug of the stable catalogue value and omitted when it cannot be
   reduced to one. `template_search_result.search_keyword` is the one free-text
   field in the registry: the settled search-box value, trimmed and capped at 100
@@ -270,3 +321,22 @@ or permanent collector rejection may lose events. Add durable delivery if produc
 decisions require guaranteed counts. Public ingest tokens are not read/admin keys,
 but forged events and quota abuse still require collector-side rate limiting and
 monitoring; this package is not an anti-fraud boundary.
+
+## AI asset generation
+
+The shared model gateway owns three worker events for Studio and MCP. Each carries
+`modality` (`image`, `video`, or `audio`); speech and music both use `audio`.
+
+| Event | Emission point | Additional fields |
+| --- | --- | --- |
+| `media_generation_requested` | A generation submission reaches the gateway with a recognized modality, before validation and routing. | None |
+| `media_generation_submitted` | The gateway persists a new queued job. Replaying its idempotency key returns the original job. | `job_id` |
+| `media_generation_result` | The gateway persists a completed, failed, cancelled or interrupted job. Interrupted workers produce a failed result. | `job_id`, `job_state`, `asset_count` |
+
+Count distinct anonymous installations per modality and window, and distinct
+submitted jobs. Attribute results to the original submission date. A job succeeds
+when it completes with at least one saved asset. The success rate divides those
+jobs by all submitted jobs, including cancelled, failed and unresolved jobs at
+the report cutoff. Inspect, list and status calls do not enter this cohort.
+A local save retry can update the terminal result for the same job. Use the latest result per job at the report cutoff. It does not add a model request or submission. Count outputs saved to the workspace library or project once per output.
+Generation uses the existing telemetry preference and installation identity.

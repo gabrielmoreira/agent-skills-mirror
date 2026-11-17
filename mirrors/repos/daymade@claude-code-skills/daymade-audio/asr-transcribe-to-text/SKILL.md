@@ -887,9 +887,11 @@ isolation. This section covers the pieces.
   a dominant near-field speaker beats session-level ASR. Everything else uses
   the decoupled default.
 - **Voiceprint identification** — diarization labels are anonymous
-  (`SPEAKER_00`…) and per-file. To map them to real names, unify a speaker
-  across files, or collapse diarization's over-segmentation, use CAM++
-  voiceprints via `scripts/voiceprint_id.py`. Recipe **and the critical
+  (`SPEAKER_00`…) and per-file. To collect name candidates across files or
+  investigate over-segmentation, use CAM++ voiceprints via `scripts/voiceprint_id.py`.
+  Match saves source-bound candidates, scores and refusal reasons without changing
+  existing labels; legacy thresholds and source claims cannot confirm identity.
+  Recipe **and the critical
   acoustic-domain caveat** — a voiceprint built from one mic type matches the
   same person on a different mic far less well:
   `references/voiceprint_speaker_id.md`.
@@ -928,6 +930,21 @@ per-item decisions; do not treat an alias as an independently verified identity.
 After diarization you get a CSV per file (`file,start,end,duration,speaker,text`). The bundled audit HTML generator turns those CSVs into a single, reader-first review page with audio playback, per-turn flags/notes, speaker aliasing, and export.
 
 Generate it from a speaker-transcribe output directory:
+
+Projects explicitly adopted in a shared viewer registry refresh their separate
+data through its installed `asr_entry.py`; they do not regenerate a standalone
+UI. Select the registry with `MESSAGE_VIEWER_CONFIG` (default:
+`~/.config/daymade/message-viewer/service.json`). Missing migration prerequisites
+or a failed handoff stop without replacing the existing reader. Unregistered
+projects retain the offline generator below. This optional handoff requires a
+separately installed shared-viewer owner: the registry's `service_script` points
+to its `viewer_service.py`, beside `asr_entry.py`.
+Title, subtitle, known-speaker colors and material keywords are forwarded to the
+installed owner and retained in that source's registry. Default title/subtitle
+values do not replace its existing configuration. An older owner that rejects an
+option stops without regenerating the old UI. `--storage-key` remains unsupported
+for adopted projects: their dataset identity owns review storage; retain/export
+the old report before migrating its annotations.
 
 ```bash
 uv run ${CLAUDE_SKILL_DIR}/scripts/generate_audit_html.py \
@@ -1037,7 +1054,7 @@ Substitute the resolved absolute path for `${CLAUDE_SKILL_DIR}` everywhere in th
 - `word_timestamps_whisper.py` — mlx-whisper word-level timestamps → JSON timing lattice (Apple Silicon)
 - `speaker_transcribe_cascade.py` — LEGACY cut-then-transcribe variant (extremely noisy / heavy-overlap audio only)
 - `diarize_speakers.py` — Speaker diarization alone (pyannote 3.1 @ MPS) → per-segment JSON
-- `voiceprint_id.py` — CAM++ voiceprint enroll/match: map anonymous SPEAKER_xx to real names
+- `voiceprint_id.py` — CAM++ enroll/match: preserve speaker-name candidates without relabeling originals
 - `overlap_merge_transcribe.py` — Chunked transcription with overlap merge (remote API fallback)
 - `generate_audit_html.py` — Build a self-contained HTML audit/review page from speaker-transcribe CSV outputs
 

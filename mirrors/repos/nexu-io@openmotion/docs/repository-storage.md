@@ -52,15 +52,15 @@ For a contributed catalog template, use the [template-specific pull command](tem
 
 Contributors edit their original PR normally. A new catalog video, audio file or large image/font can be committed under `<id>/source/assets/` (at most 50 MiB per file). Git LFS remains a supported input, not a required account or separate upload step. Keep small imported assets and small README artwork in ordinary Git. Raw media can make the policy check red until final preparation; do not repeatedly transfer every draft update.
 
-After the content review, a maintainer opens **Actions → Prepare PR media → Run workflow**, selects `main` and enters the original PR number. This performs one final preparation:
+After the content review, a maintainer opens **Actions → Prepare and merge PR → Run workflow**, selects `main` and enters the original PR number. Starting this workflow authorizes preparation and subsequent Squash merge of the prepared commit:
 
 1. Lock the current PR commit and check maintainer identity, fork edit permission and Squash-only repository settings.
 2. Build and validate a cleanup commit without running PR code, hooks, dependencies or `.lfsconfig`.
 3. Upload only changed media to immutable `open-motion/media/sha256/` keys in the public R2 bucket. Read the public objects back and verify their SHA-256 and sizes.
 4. Push one cleanup commit to the original PR. Catalog media becomes `template.json.remoteAssets`; relative guide references become public URLs. Other optional media is registered in `repository-media.json`, with its local path ignored by Git.
-5. Wait for the new commit's CI and any renewed review required by branch rules, then use **Squash and merge**. The workflow does not merge or approve the PR.
+5. A separate job, without R2 credentials, waits up to 30 minutes for the prepared commit's CI, resolved review threads and required reviews. It calls GitHub's Squash merge API with that exact head SHA. A contributor push, CI failure, change request, conflict or hold stops the merge. Missing checks or pending reviews time out with the PR open; fix the blocker and start a fresh run.
 
-The PR author stays unchanged. On a personal-account fork, the contributor must enable **Allow edits from maintainers**. Missing permission, a changed PR head, failed upload, wrong public bytes or a rejected push stops preparation. Failed attempts can leave harmless immutable objects in storage; they do not merge anything. Reruns reuse already verified objects. If the contributor edits media after preparation, process that new revision before merging.
+The PR author stays unchanged. On a personal-account fork, the contributor must enable **Allow edits from maintainers**. Missing permission, a changed PR head, failed upload, wrong public bytes or a rejected push stops preparation. Failed attempts can leave harmless immutable objects in storage; they do not advance to the merge job. Reruns reuse already verified objects. If the contributor edits media after preparation, process that new revision before merging.
 
 ### One-time maintainer setup
 
@@ -69,7 +69,9 @@ The PR author stays unchanged. On a personal-account fork, the contributor must 
 - Add Actions secret `OPENMOTION_MEDIA_MAINTAINER_TOKEN` for a maintainer user identity with upstream write access and access to allowed fork edits. A classic PAT with `public_repo` access is suitable for public repositories; organization SSO and token policies still apply. A base-repository installation token or default `GITHUB_TOKEN` cannot edit an arbitrary fork. Do not store a token in a checked-in file.
 - The workflow reuses the existing `CLOUDFLARE_R2_RELEASES_AK` / `CLOUDFLARE_R2_RELEASES_SK` secrets and bucket/endpoint variables. It writes only under the media prefix and never publishes an application or changes installation guides. No contributor receives these credentials.
 
-Only a maintainer starts the Action after review. There is no upload on PR open, push or approval, no contribution label, replacement PR or contributor-applied patch. Ordinary PR CI has no storage or maintainer token. The workflow checks out only its trusted main commit and reads PR blobs as data.
+Ordinary code PRs with no changed media skip upload and cleanup and keep their original head; fork edit permission is needed only when a cleanup commit must be pushed. Template metadata/text changes still receive normal policy checks but do not upload media.
+
+Only a maintainer starts the Action after review. There is no upload on PR open, push or approval, no contribution label, replacement PR or contributor-applied patch. Ordinary PR CI has no storage or maintainer token. The workflow checks out only its trusted main commit and reads PR blobs as data. It is an explicit Actions merge entry, not a hook on GitHub's native Merge button. The native button does not start media preparation.
 
 For a read-only local preview of the plan, use `npm run media:prepare -- <PR-number>` with GitHub CLI authentication. `--apply` performs the same transfer/write operation using the maintainer identity and configured AWS CLI credentials; use the Action to reuse the repository's R2 credentials.
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hyhmrright/brooks-lint` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `hyhmrright/brooks-lint` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hyhmrright/brooks-lint` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,13 +82,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`skills/brooks-debt/debt-guide.md`](skills/brooks-debt/debt-guide.md) |
 | 22 | ✓ | [`skills/brooks-debt/SKILL.md`](skills/brooks-debt/SKILL.md) |
 | 23 | ✓ | [`skills/brooks-health/health-guide.md`](skills/brooks-health/health-guide.md) |
-| 24 | ✓ | [`skills/brooks-health/SKILL.md`](skills/brooks-health/SKILL.md) |
-| 25 | ✓ | [`skills/brooks-review/pr-review-guide.md`](skills/brooks-review/pr-review-guide.md) |
-| 26 | ✓ | [`skills/brooks-review/SKILL.md`](skills/brooks-review/SKILL.md) |
-| 27 | ✓ | [`skills/brooks-sweep/SKILL.md`](skills/brooks-sweep/SKILL.md) |
-| 28 | ✓ | [`skills/brooks-sweep/sweep-guide.md`](skills/brooks-sweep/sweep-guide.md) |
-| 29 | ✓ | [`skills/brooks-test/SKILL.md`](skills/brooks-test/SKILL.md) |
-| 30 | ✓ | [`skills/brooks-test/test-guide.md`](skills/brooks-test/test-guide.md) |
+| 24 | ✓ | [`skills/brooks-health/score-ledger.md`](skills/brooks-health/score-ledger.md) |
+| 25 | ✓ | [`skills/brooks-health/scripts/deliver-dashboard.mjs`](skills/brooks-health/scripts/deliver-dashboard.mjs) |
+| 26 | ✓ | [`skills/brooks-health/scripts/score-dashboard.mjs`](skills/brooks-health/scripts/score-dashboard.mjs) |
+| 27 | ✓ | [`skills/brooks-health/SKILL.md`](skills/brooks-health/SKILL.md) |
+| 28 | ✓ | [`skills/brooks-review/pr-review-guide.md`](skills/brooks-review/pr-review-guide.md) |
+| 29 | ✓ | [`skills/brooks-review/SKILL.md`](skills/brooks-review/SKILL.md) |
+| 30 | ✓ | [`skills/brooks-sweep/SKILL.md`](skills/brooks-sweep/SKILL.md) |
+| 31 | ✓ | [`skills/brooks-sweep/sweep-guide.md`](skills/brooks-sweep/sweep-guide.md) |
+| 32 | ✓ | [`skills/brooks-test/SKILL.md`](skills/brooks-test/SKILL.md) |
+| 33 | ✓ | [`skills/brooks-test/test-guide.md`](skills/brooks-test/test-guide.md) |
 
 ---
 

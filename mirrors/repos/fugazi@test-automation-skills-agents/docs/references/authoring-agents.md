@@ -31,7 +31,7 @@ infer: true
 
 > **Tool-agnostic note — what is portable vs. what is an adapter field.**
 > The **portable** part of an agent is its body: the role, Constitution, workflow, and prompts. Only `description` is universally required for discovery.
-> The optional fields below — `tools`, `mcp-servers`, `handoffs`, `infer`, `target` — are **adapter fields specific to GitHub Copilot / VS Code**. Other harnesses (Claude Code, Cursor, Windsurf, OpenCode) do not recognize them and will ignore or map them to their own equivalents. Treat them as per-tool optimization, not as the source of truth. The body must remain usable and self-describing even if every adapter field is stripped.
+> The optional fields below — `tools`, `mcp-servers`, `handoffs`, `infer`, `target` — are **adapter fields specific to GitHub Copilot / VS Code**. Other harnesses (Claude Code, Cursor, Devin Desktop, OpenCode) do not recognize them and will ignore or map them to their own equivalents. Treat them as per-tool optimization, not as the source of truth. The body must remain usable and self-describing even if every adapter field is stripped.
 
 ### Core Frontmatter Properties
 
@@ -302,6 +302,8 @@ All aliases are case-insensitive:
 | `agent`   | custom-agent, Task                   | Agent invocation | Invoke other custom agents                  |
 | `web`     | WebSearch, WebFetch                  | Web access       | Fetch web content and search                |
 | `todo`    | TodoWrite                            | Task management  | Create and manage task lists (VS Code only) |
+
+> **Portable names (recommended).** Prefer the canonical names in the *Alternative Names* column — `Read`, `Edit`, `Write`, `Grep`, `Glob`, `Bash`, `Task`, `WebFetch`, `WebSearch`, `TodoWrite`. They are valid Copilot aliases and the names Claude Code expects, so the same agent file resolves in both harnesses.
 
 ### Built-in MCP Server Tools
 
@@ -1046,8 +1048,9 @@ Each level can override settings from previous levels.
 
 ### Related Files
 
-- [Prompt Files Guidelines](./prompt.instructions.md) - For creating prompt files
-- [Instructions Guidelines](./instructions.instructions.md) - For creating instruction files
+- [Skill Authoring Guidelines](./authoring-skills.md) - Frontmatter fields and formatting for skills
+- [Section Details Guide](./section-details-guide.md) - How much detail each section needs
+- [Writing Principles](./writing-principles.md) - Voice, structure, and progressive disclosure
 
 ## Version Compatibility Notes
 

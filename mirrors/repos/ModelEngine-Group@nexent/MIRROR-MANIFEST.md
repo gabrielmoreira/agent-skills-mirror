@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
+Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 85 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,63 +87,64 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`.agents/skills/nexent-frontend/references/components/resource-add-button.md`](.agents/skills/nexent-frontend/references/components/resource-add-button.md) |
 | 27 | ✓ | [`.agents/skills/nexent-frontend/references/components/resource-picker.md`](.agents/skills/nexent-frontend/references/components/resource-picker.md) |
 | 28 | ✓ | [`.agents/skills/nexent-frontend/references/components/route-loading-skeleton.md`](.agents/skills/nexent-frontend/references/components/route-loading-skeleton.md) |
-| 29 | ✓ | [`.agents/skills/nexent-frontend/references/components/selected-resource-row.md`](.agents/skills/nexent-frontend/references/components/selected-resource-row.md) |
-| 30 | ✓ | [`.agents/skills/nexent-frontend/references/components/style.md`](.agents/skills/nexent-frontend/references/components/style.md) |
-| 31 | ✓ | [`.agents/skills/nexent-frontend/references/components/table.md`](.agents/skills/nexent-frontend/references/components/table.md) |
-| 32 | ✓ | [`.agents/skills/nexent-frontend/references/components/theme.md`](.agents/skills/nexent-frontend/references/components/theme.md) |
-| 33 | ✓ | [`.agents/skills/nexent-frontend/references/components/thread-history-pins.md`](.agents/skills/nexent-frontend/references/components/thread-history-pins.md) |
-| 34 | ✓ | [`.agents/skills/nexent-frontend/references/components/tour.md`](.agents/skills/nexent-frontend/references/components/tour.md) |
-| 35 | ✓ | [`.agents/skills/nexent-frontend/references/hooks.md`](.agents/skills/nexent-frontend/references/hooks.md) |
-| 36 | ✓ | [`.agents/skills/nexent-frontend/references/pages.md`](.agents/skills/nexent-frontend/references/pages.md) |
-| 37 | ✓ | [`.agents/skills/nexent-frontend/references/types.md`](.agents/skills/nexent-frontend/references/types.md) |
-| 38 | ✓ | [`.agents/skills/nexent-frontend/SKILL.md`](.agents/skills/nexent-frontend/SKILL.md) |
-| 39 | ✓ | [`.agents/skills/nexent-python-tests/SKILL.md`](.agents/skills/nexent-python-tests/SKILL.md) |
-| 40 | ✓ | [`.agents/skills/nexent-spec-coding/references/bugfix-design-template.md`](.agents/skills/nexent-spec-coding/references/bugfix-design-template.md) |
-| 41 | ✓ | [`.agents/skills/nexent-spec-coding/references/design-template.md`](.agents/skills/nexent-spec-coding/references/design-template.md) |
-| 42 | ✓ | [`.agents/skills/nexent-spec-coding/references/proposal-template.md`](.agents/skills/nexent-spec-coding/references/proposal-template.md) |
-| 43 | ✓ | [`.agents/skills/nexent-spec-coding/references/spec-maintenance-guide.md`](.agents/skills/nexent-spec-coding/references/spec-maintenance-guide.md) |
-| 44 | ✓ | [`.agents/skills/nexent-spec-coding/references/task-template.md`](.agents/skills/nexent-spec-coding/references/task-template.md) |
-| 45 | ✓ | [`.agents/skills/nexent-spec-coding/references/test-design-guide.md`](.agents/skills/nexent-spec-coding/references/test-design-guide.md) |
-| 46 | ✓ | [`.agents/skills/nexent-spec-coding/references/verification-guide.md`](.agents/skills/nexent-spec-coding/references/verification-guide.md) |
-| 47 | ✓ | [`.agents/skills/nexent-spec-coding/SKILL.md`](.agents/skills/nexent-spec-coding/SKILL.md) |
-| 48 | ✓ | [`.agents/skills/nexent-test-assets/references/acceptance-integrity.md`](.agents/skills/nexent-test-assets/references/acceptance-integrity.md) |
-| 49 | ✓ | [`.agents/skills/nexent-test-assets/references/bugfix.md`](.agents/skills/nexent-test-assets/references/bugfix.md) |
-| 50 | ✓ | [`.agents/skills/nexent-test-assets/references/case-design.md`](.agents/skills/nexent-test-assets/references/case-design.md) |
-| 51 | ✓ | [`.agents/skills/nexent-test-assets/references/deployment-exceptions.md`](.agents/skills/nexent-test-assets/references/deployment-exceptions.md) |
-| 52 | ✓ | [`.agents/skills/nexent-test-assets/references/lifecycle.md`](.agents/skills/nexent-test-assets/references/lifecycle.md) |
-| 53 | ✓ | [`.agents/skills/nexent-test-assets/references/manifest.md`](.agents/skills/nexent-test-assets/references/manifest.md) |
-| 54 | ✓ | [`.agents/skills/nexent-test-assets/references/migration.md`](.agents/skills/nexent-test-assets/references/migration.md) |
-| 55 | ✓ | [`.agents/skills/nexent-test-assets/references/mock-profiles.md`](.agents/skills/nexent-test-assets/references/mock-profiles.md) |
-| 56 | ✓ | [`.agents/skills/nexent-test-assets/references/runtime-migration.md`](.agents/skills/nexent-test-assets/references/runtime-migration.md) |
-| 57 | ✓ | [`.agents/skills/nexent-test-assets/references/test-backfill.md`](.agents/skills/nexent-test-assets/references/test-backfill.md) |
-| 58 | ✓ | [`.agents/skills/nexent-test-assets/references/test-implementation.md`](.agents/skills/nexent-test-assets/references/test-implementation.md) |
-| 59 | ✓ | [`.agents/skills/nexent-test-assets/SKILL.md`](.agents/skills/nexent-test-assets/SKILL.md) |
-| 60 | ✓ | [`.claude/skills/external-memory-plugin/SKILL.md`](.claude/skills/external-memory-plugin/SKILL.md) |
-| 61 | ✓ | [`.claude/skills/prompts-writing/examples.md`](.claude/skills/prompts-writing/examples.md) |
-| 62 | ✓ | [`.claude/skills/prompts-writing/references/best-practices.md`](.claude/skills/prompts-writing/references/best-practices.md) |
-| 63 | ✓ | [`.claude/skills/prompts-writing/references/templates.md`](.claude/skills/prompts-writing/references/templates.md) |
-| 64 | ✓ | [`.claude/skills/prompts-writing/SKILL.md`](.claude/skills/prompts-writing/SKILL.md) |
-| 65 | ✓ | [`.claude/skills/skill-creator/SKILL.md`](.claude/skills/skill-creator/SKILL.md) |
-| 66 | ✓ | [`.cursor/rules/backend/app_layer_rules.mdc`](.cursor/rules/backend/app_layer_rules.mdc) |
-| 67 | ✓ | [`.cursor/rules/backend/database_layer_rules.mdc`](.cursor/rules/backend/database_layer_rules.mdc) |
-| 68 | ✓ | [`.cursor/rules/backend/service_layer_rules.mdc`](.cursor/rules/backend/service_layer_rules.mdc) |
-| 69 | ✓ | [`.cursor/rules/copyright_header.mdc`](.cursor/rules/copyright_header.mdc) |
-| 70 | ✓ | [`.cursor/rules/english_comments.mdc`](.cursor/rules/english_comments.mdc) |
-| 71 | ✓ | [`.cursor/rules/environment_variable.mdc`](.cursor/rules/environment_variable.mdc) |
-| 72 | ✓ | [`.cursor/rules/frontend/component_layer_rules.mdc`](.cursor/rules/frontend/component_layer_rules.mdc) |
-| 73 | ✓ | [`.cursor/rules/frontend/frontend_overview_rules.mdc`](.cursor/rules/frontend/frontend_overview_rules.mdc) |
-| 74 | ✓ | [`.cursor/rules/frontend/hook_layer_rules.mdc`](.cursor/rules/frontend/hook_layer_rules.mdc) |
-| 75 | ✓ | [`.cursor/rules/frontend/page_layer_rules.mdc`](.cursor/rules/frontend/page_layer_rules.mdc) |
-| 76 | ✓ | [`.cursor/rules/frontend/service_layer_rules.mdc`](.cursor/rules/frontend/service_layer_rules.mdc) |
-| 77 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
-| 78 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
-| 79 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
-| 80 | ✓ | [`.cursor/rules/test_asset_rules.mdc`](.cursor/rules/test_asset_rules.mdc) |
-| 81 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 82 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
-| 83 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
-| 84 | ✓ | [`test-e2e/infra/assets/skills/SKILL.md`](test-e2e/infra/assets/skills/SKILL.md) |
-| 85 | ✓ | [`test-e2e/infra/assets/tool-fastpath/skill/SKILL.md`](test-e2e/infra/assets/tool-fastpath/skill/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/nexent-frontend/references/components/runtime-output.md`](.agents/skills/nexent-frontend/references/components/runtime-output.md) |
+| 30 | ✓ | [`.agents/skills/nexent-frontend/references/components/selected-resource-row.md`](.agents/skills/nexent-frontend/references/components/selected-resource-row.md) |
+| 31 | ✓ | [`.agents/skills/nexent-frontend/references/components/style.md`](.agents/skills/nexent-frontend/references/components/style.md) |
+| 32 | ✓ | [`.agents/skills/nexent-frontend/references/components/table.md`](.agents/skills/nexent-frontend/references/components/table.md) |
+| 33 | ✓ | [`.agents/skills/nexent-frontend/references/components/theme.md`](.agents/skills/nexent-frontend/references/components/theme.md) |
+| 34 | ✓ | [`.agents/skills/nexent-frontend/references/components/thread-history-pins.md`](.agents/skills/nexent-frontend/references/components/thread-history-pins.md) |
+| 35 | ✓ | [`.agents/skills/nexent-frontend/references/components/tour.md`](.agents/skills/nexent-frontend/references/components/tour.md) |
+| 36 | ✓ | [`.agents/skills/nexent-frontend/references/hooks.md`](.agents/skills/nexent-frontend/references/hooks.md) |
+| 37 | ✓ | [`.agents/skills/nexent-frontend/references/pages.md`](.agents/skills/nexent-frontend/references/pages.md) |
+| 38 | ✓ | [`.agents/skills/nexent-frontend/references/types.md`](.agents/skills/nexent-frontend/references/types.md) |
+| 39 | ✓ | [`.agents/skills/nexent-frontend/SKILL.md`](.agents/skills/nexent-frontend/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/nexent-python-tests/SKILL.md`](.agents/skills/nexent-python-tests/SKILL.md) |
+| 41 | ✓ | [`.agents/skills/nexent-spec-coding/references/bugfix-design-template.md`](.agents/skills/nexent-spec-coding/references/bugfix-design-template.md) |
+| 42 | ✓ | [`.agents/skills/nexent-spec-coding/references/design-template.md`](.agents/skills/nexent-spec-coding/references/design-template.md) |
+| 43 | ✓ | [`.agents/skills/nexent-spec-coding/references/proposal-template.md`](.agents/skills/nexent-spec-coding/references/proposal-template.md) |
+| 44 | ✓ | [`.agents/skills/nexent-spec-coding/references/spec-maintenance-guide.md`](.agents/skills/nexent-spec-coding/references/spec-maintenance-guide.md) |
+| 45 | ✓ | [`.agents/skills/nexent-spec-coding/references/task-template.md`](.agents/skills/nexent-spec-coding/references/task-template.md) |
+| 46 | ✓ | [`.agents/skills/nexent-spec-coding/references/test-design-guide.md`](.agents/skills/nexent-spec-coding/references/test-design-guide.md) |
+| 47 | ✓ | [`.agents/skills/nexent-spec-coding/references/verification-guide.md`](.agents/skills/nexent-spec-coding/references/verification-guide.md) |
+| 48 | ✓ | [`.agents/skills/nexent-spec-coding/SKILL.md`](.agents/skills/nexent-spec-coding/SKILL.md) |
+| 49 | ✓ | [`.agents/skills/nexent-test-assets/references/acceptance-integrity.md`](.agents/skills/nexent-test-assets/references/acceptance-integrity.md) |
+| 50 | ✓ | [`.agents/skills/nexent-test-assets/references/bugfix.md`](.agents/skills/nexent-test-assets/references/bugfix.md) |
+| 51 | ✓ | [`.agents/skills/nexent-test-assets/references/case-design.md`](.agents/skills/nexent-test-assets/references/case-design.md) |
+| 52 | ✓ | [`.agents/skills/nexent-test-assets/references/deployment-exceptions.md`](.agents/skills/nexent-test-assets/references/deployment-exceptions.md) |
+| 53 | ✓ | [`.agents/skills/nexent-test-assets/references/lifecycle.md`](.agents/skills/nexent-test-assets/references/lifecycle.md) |
+| 54 | ✓ | [`.agents/skills/nexent-test-assets/references/manifest.md`](.agents/skills/nexent-test-assets/references/manifest.md) |
+| 55 | ✓ | [`.agents/skills/nexent-test-assets/references/migration.md`](.agents/skills/nexent-test-assets/references/migration.md) |
+| 56 | ✓ | [`.agents/skills/nexent-test-assets/references/mock-profiles.md`](.agents/skills/nexent-test-assets/references/mock-profiles.md) |
+| 57 | ✓ | [`.agents/skills/nexent-test-assets/references/runtime-migration.md`](.agents/skills/nexent-test-assets/references/runtime-migration.md) |
+| 58 | ✓ | [`.agents/skills/nexent-test-assets/references/test-backfill.md`](.agents/skills/nexent-test-assets/references/test-backfill.md) |
+| 59 | ✓ | [`.agents/skills/nexent-test-assets/references/test-implementation.md`](.agents/skills/nexent-test-assets/references/test-implementation.md) |
+| 60 | ✓ | [`.agents/skills/nexent-test-assets/SKILL.md`](.agents/skills/nexent-test-assets/SKILL.md) |
+| 61 | ✓ | [`.claude/skills/external-memory-plugin/SKILL.md`](.claude/skills/external-memory-plugin/SKILL.md) |
+| 62 | ✓ | [`.claude/skills/prompts-writing/examples.md`](.claude/skills/prompts-writing/examples.md) |
+| 63 | ✓ | [`.claude/skills/prompts-writing/references/best-practices.md`](.claude/skills/prompts-writing/references/best-practices.md) |
+| 64 | ✓ | [`.claude/skills/prompts-writing/references/templates.md`](.claude/skills/prompts-writing/references/templates.md) |
+| 65 | ✓ | [`.claude/skills/prompts-writing/SKILL.md`](.claude/skills/prompts-writing/SKILL.md) |
+| 66 | ✓ | [`.claude/skills/skill-creator/SKILL.md`](.claude/skills/skill-creator/SKILL.md) |
+| 67 | ✓ | [`.cursor/rules/backend/app_layer_rules.mdc`](.cursor/rules/backend/app_layer_rules.mdc) |
+| 68 | ✓ | [`.cursor/rules/backend/database_layer_rules.mdc`](.cursor/rules/backend/database_layer_rules.mdc) |
+| 69 | ✓ | [`.cursor/rules/backend/service_layer_rules.mdc`](.cursor/rules/backend/service_layer_rules.mdc) |
+| 70 | ✓ | [`.cursor/rules/copyright_header.mdc`](.cursor/rules/copyright_header.mdc) |
+| 71 | ✓ | [`.cursor/rules/english_comments.mdc`](.cursor/rules/english_comments.mdc) |
+| 72 | ✓ | [`.cursor/rules/environment_variable.mdc`](.cursor/rules/environment_variable.mdc) |
+| 73 | ✓ | [`.cursor/rules/frontend/component_layer_rules.mdc`](.cursor/rules/frontend/component_layer_rules.mdc) |
+| 74 | ✓ | [`.cursor/rules/frontend/frontend_overview_rules.mdc`](.cursor/rules/frontend/frontend_overview_rules.mdc) |
+| 75 | ✓ | [`.cursor/rules/frontend/hook_layer_rules.mdc`](.cursor/rules/frontend/hook_layer_rules.mdc) |
+| 76 | ✓ | [`.cursor/rules/frontend/page_layer_rules.mdc`](.cursor/rules/frontend/page_layer_rules.mdc) |
+| 77 | ✓ | [`.cursor/rules/frontend/service_layer_rules.mdc`](.cursor/rules/frontend/service_layer_rules.mdc) |
+| 78 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
+| 79 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
+| 80 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
+| 81 | ✓ | [`.cursor/rules/test_asset_rules.mdc`](.cursor/rules/test_asset_rules.mdc) |
+| 82 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 83 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
+| 84 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
+| 85 | ✓ | [`test-e2e/infra/assets/skills/SKILL.md`](test-e2e/infra/assets/skills/SKILL.md) |
+| 86 | ✓ | [`test-e2e/infra/assets/tool-fastpath/skill/SKILL.md`](test-e2e/infra/assets/tool-fastpath/skill/SKILL.md) |
 
 ---
 

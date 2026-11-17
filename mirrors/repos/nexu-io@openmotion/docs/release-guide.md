@@ -1,5 +1,7 @@
 # Test and stable package acceptance
 
+> Repository installation defaults to the [source guide](../install.md). Published npm installation is an explicit alternative through the [application guide](install.md). Candidate builds, publication and snapshot recovery use the manual [release workflow](release-workflows.md); merging changes does not publish a package or update hosted guides.
+
 This is the maintainer and tester manual for the application npm format. It defines required checks, not a claim that all platforms or a published registry version have passed. [Installation](npm-installation.md) supplies macOS/PowerShell commands, DEV template setup, host adapters and recovery boundaries. Ordinary CI retains candidate installation instructions for review; npm, R2 and Release publication remain separate controlled actions.
 
 ## One record per candidate
@@ -61,7 +63,7 @@ Each defect needs exact package/source/OS/host/environment/catalog identity, pro
 
 ## Hosted installation instructions
 
-[docs/install.md](install.md) is the public Agent-facing source template. The generator reads the actual complete npm tgz and its embedded manifest, pins the npm name/version and built source SHA, and records the guide and package hashes. It does not build or publish the application.
+[docs/templates/npm-install.md](templates/npm-install.md) is the public Agent-facing guide template, and the shared onboarding contract in [docs/install-onboarding.md](install-onboarding.md#installation-success-reply) is inlined into every generated guide. The generator reads the actual complete npm tgz and its embedded manifest, pins the npm name/version and built source SHA, and records the guide and package hashes. It does not build or publish the application. `docs/install.md` is not a generator input, but it is the source-repository entry that routes explicitly selected npm installations to the published stable or test guide; the default repository route stays `install.md`.
 
 Ordinary npm/DEV CI builds generate a **candidate-only** guide and retain it as an Actions artifact for 14 days. The publisher rejects candidate previews. Public guides require test/DEV or stable/prod identity; private builds cannot produce them.
 

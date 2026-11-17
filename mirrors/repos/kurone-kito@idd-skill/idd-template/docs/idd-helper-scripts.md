@@ -386,6 +386,7 @@ for every stop of an `--apply` run after the pre-checks; it exits `1` as
 | `select-desynced-index.mjs`        | a missing `--token` or `--band-size`, or an unknown flag                                                                                            | none today                                                                                                                                                  |
 | `idd-worker-budget.mjs`            | a missing or invalid `--running` / `--startable` / `--harness-limit` value, an invalid `--instructions-since` value, or an unknown flag             | none today                                                                                                                                                  |
 | `idd-load-gate.mjs`                | an unknown flag, a missing value, a non-positive or malformed `--max-load`, or a malformed `--timeout-ms` or `--poll-ms`                            | exit `3` when the timeout ends with the load still at or above the limit (the JSON line on stdout has `passed` set to `false`)                              |
+| `idd-provisional-decision.mjs`     | bad `--issue`/`--repo` or no `--request` (`2`); flag without a value or unknown flag (`1`); `fix-input` refusal or bad request file (`4`)           | exit `0` for `none`; `2` for `reconcile`; `3` for `recovery-hold`. Dry run by default; `--apply` writes                                                     |
 | `idd-activation.mjs`               | an unknown flag, or an empty `--cwd` value                                                                                                          | none today                                                                                                                                                  |
 | `claim-approval-gate.mjs`          | a missing `--issue`, or an unknown flag                                                                                                             | none today                                                                                                                                                  |
 | `claim-issue.mjs`                  | a missing or invalid `--issue`, `--agent-id`, `--project-status`, `--confirmation`, `--decision`, a B1 flag used out of place, or an unknown flag   | exit `1` for every ineligible result, including a failed check, and for every stop of an `--apply` run                                                      |
@@ -6122,6 +6123,46 @@ marker does not change the stored scope or decision.
 This record is durable issue evidence: it is not added to the transient
 `OPERATIONAL_MARKERS` cleanup or hide-at-post-time registries.
 
+#### Historical scope-overrun evidence
+
+Issue `#5219` asks whether F2/F3 can tell a past scope overrun from the
+current head using only the records that exist today, without a new receipt.
+Reports on pull request `#5205` and pull request `#5212` showed a count over
+the estimate and no usable scope record; they do not show that either pull
+request may merge. This section is read-only evidence: it adds no helper, no
+marker field, and no change to any F2/F3 result. The tests whose names start
+with `scope-overrun historical evidence` in `tests/pre-merge-readiness.test.mts`
+pin the facts below against the unchanged `resolveScopeOverrunReadiness()`.
+
+<!-- dprint-ignore-start -->
+| Binding | What current records and live reads supply | Reconstructible from current records |
+| --- | --- | --- |
+| Claim identity | A record carries only a self-reported `agent=` token. `resolveScopeOverrunEvidence()` and the readiness input take no claim ID, and the audit reads every comment on the claimed issue. | No. An agent-id and timestamp comparison against `claimed-by` markers could approximate it, but no helper binds a record to one claim lineage. |
+| Unchanged issue scope | A record snapshots `effort` and the changed-path set (`files=`). The audit reads the live issue body for the effort marker and `## Candidate files`; ordinary body edits are intentionally not an input. | No. No record holds the declared candidate files or a body digest, so an unchanged declared scope cannot be checked. |
+| Pull request and branch | A post-push record carries `pr=` and `branch=`. Once an owner decision names the recorded head and that head is the live head, the audit compares them with the live PR number and head ref, and a mismatch is `record-conflict`. A pre-push record carries neither. | Yes for a post-push record, checked only after such a decision. No for a pre-push record. |
+| Historical base and head | A post-push record names its head in `head=`. No record stores a base SHA, and the audit computes a merge base only for the live head. | Head: yes, as the record's own statement; the audit does not check that the commit is still reachable. Base: no. Recomputing it from Git needs the earlier head commit to stay reachable, and no helper does that. |
+| Current base and head | The audit reads the live PR head and the merge base of `refs/remotes/origin/<base>` and that head (`readMergeBaseSha`). | Yes at audit time. The scope audit does not store them. |
+| Canonical path sets | The earlier set is the record's `files=` list, supplied by the caller through `--candidate-files` and never recomputed from Git. The current set is recomputed live from changed files, rename sources, sync targets, and generated mirrors read at the merge base. A lineage holds one set: every record must share `effort` and the sorted set, so a record with another set is `record-conflict`. | Current set: yes. Earlier set: only as the author's list; no helper recomputes it at a recorded head, and the lineage cannot hold a second set for the current head. |
+| Record authorship | The GitHub comment author (`authorLogin`) is checked against the trusted marker actors resolved at audit time. `agent=` is self-reported, and a shared GitHub login cannot say which process or person wrote an unmarked comment. | Author login: yes. Which actor wrote it: no. |
+| Edit status | `lastEditedAt` must be explicitly `null` for each record and decision; any other value or an unknown one is `record-edited-or-unknown` or `decision-edited-or-unknown`. | Whether a comment was edited at all: yes. What an edited comment said before: no. |
+<!-- dprint-ignore-end -->
+
+For the historical pair, an earlier head over the estimate and a current head
+inside the declared scope with no owner acceptance of the current head, the
+unchanged function returns `invalid` with reason `no-decision` and the earlier
+head as `recordedHeadSha`; it never returns `valid`. With an owner decision for
+the earlier head only, it returns `invalid` with `current-head-mismatch`. A
+record for the current head with its own path set conflicts with the lineage.
+The rows marked not reconstructible are the ones a check would need before it
+could treat the earlier head's record as history rather than as a pending
+decision on the current head.
+
+<!-- markdownlint-disable MD013 -->
+
+Recommendation: existing records cannot prove that distinction. Smallest follow-up: a versioned receipt, not implemented here.
+
+<!-- markdownlint-enable MD013 -->
+
 ### Scope-decision owner opt-out design
 
 Design only. On 2026-11-15 the operator chose, in issue `#5222`, to describe a
@@ -8864,9 +8905,13 @@ reflexively as any other CLI option.
   `--expected-claim-id` alias) unless `--claimless` is passed
   (`#3252`). Optional `--closing-issues <n>[,<n>...]` (#3298) declares
   the deliberate multi-issue closing set for the `closingSet` gate
-  below; it must include `--claim-issue`'s own number and cannot
-  combine with `--claimless`. Omit it for the ordinary single-issue
-  case, where the claimed issue alone is the deliberate set.
+  below; it must include `--claim-issue`'s own number, except that it
+  must leave out a claimed issue whose `provisionalRead` is `"bound"` (#4532;
+  see below), and it cannot combine with `--claimless`. The collector checks
+  this after the provisional read, so the usage error appears once the PR
+  has been read, and it names a stopped read that left a record behind.
+  Omit it for the ordinary single-issue case, where the claimed issue alone
+  is the deliberate set (the empty set for a bound source).
 
 #### Readiness branch fixture (#4697)
 
@@ -9018,11 +9063,35 @@ Compare the live base and default for D3.5 with
   blocker, whose detail names the extra/missing issue numbers (an extra
   number's detail names `--closing-issues` as the remedy for a genuine
   multi-issue close) and each stray commit's `sha` + issue number.
+  A claimed source whose `provisionalRead` is `"bound"` (#4532) is a
+  protected source: the deliberate set leaves it out (`--closing-issues`
+  when given, else empty, so `expected` omits it), and a closing reference
+  to it blocks on every base branch, including the non-default one whose
+  other references are exempt. The references read are GitHub's own
+  `closingIssuesReferences` (a manual link counts, and a malformed entry
+  fails closed), a closing keyword in the PR title or body (both scanned
+  as raw commit-message text, with no code or quote masking, because the
+  merge commit can copy either verbatim; the `GH-N`, same-repository
+  qualified, and URL forms count), which is added to `actual` and `extra`
+  because GitHub's registration can lag, and every branch commit message
+  (bare, `GH-N`, qualified, and URL forms), reported in
+  `strayCommitCloses`. An unreadable title (a blank title counts), body,
+  or commit list, or a commit with no message, fails closed to
+  `"unavailable"`; so does, on a non-default base, a registered reference
+  whose repository payload cannot be read. The blocker detail's `--closing-issues`
+  remedy does not apply to a protected source, which `--closing-issues`
+  cannot include: reword the reference to `Refs` instead. A body that
+  names the claimed issue only with `Refs` expects no close (#5149), and
+  keeps that result for every unbound claim. Only a
+  `"bound"` read changes the closing set, so a missing record, an untrusted
+  or edited marker, a head or claim mismatch, the `instructions-only`
+  profile, and `--claimless` never create the exception, and none of them
+  adds a block.
 - `provisionalRead` (#5237) is the trusted read of the claimed source
   issue's provisional-decision history, taken before the `closingSet`
-  evidence is built. It is evidence for a later closing-set exception
-  only: it adds no blocker, changes neither `ready` nor `closingSet`, and
-  grants no provisional treatment by itself. A claim-bound run always
+  evidence is built. It adds no blocker of its own, and only a `"bound"`
+  read changes `closingSet` (above, #4532); every other status leaves the
+  closing set as an ordinary claim has it. A claim-bound run always
   emits it (optional in the schema); `--claimless` omits it. `status` is
   `"bound"` when the replayed history of the source, with every record
   marker trusted and unedited, holds unconfirmed work whose verified claim
@@ -9037,7 +9106,10 @@ Compare the live base and default for D3.5 with
   issue codes), a confirmed or reworked source, or a claim or head
   mismatch. `"unavailable"` means the profile is `instructions-only` (or
   names no helper runtime), so the replay is not called. A stop never
-  creates the exception.
+  creates the exception. `idd-merge-execute` (F3) recomputes its gates from
+  a fresh collector report, at the first gate and again just before the
+  merge, so F2 and F3 apply the same rule with no verdict field of their
+  own.
 - `deferFollowUps` (#3624) is the deferred-follow-up merge-gate evidence:
   `{ checked, unverifiedReason, items: [{ number, heldByAuthoringLabel,
   origin, reconciled }] }`. A follow-up is an open issue carrying the

@@ -2,7 +2,7 @@
 name: maplibre-mapbox-migration
 description: Migrating from Mapbox GL JS to MapLibre GL JS — package, import and namespace changes, removing the access token, replacing mapbox:// styles, tile sources, plugin equivalents (draw, geocoder, directions, compare), and Mapbox v2-only APIs such as setFog and the free camera. Use when moving an existing Mapbox map to MapLibre, or when a migrated map shows a blank map, a mapbox:// or 401 error, or a missing Mapbox method or plugin.
 metadata:
-  status: provisional
+  status: verified
 ---
 
 # Mapbox to MapLibre Migration
@@ -133,26 +133,8 @@ MapLibre forked from Mapbox GL JS v1.13 in December 2020, so a Mapbox GL JS v2 m
 
 | Mapbox GL JS v2                                                                  | MapLibre GL JS                                                                                                       | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `map.setFog({...})`, root-level `fog` in the style                               | `map.setSky({...})` / `map.getSky()`, root-level [`sky`](https://maplibre.org/maplibre-style-spec/sky/) in the style | MapLibre has **no `setFog` method in any version**; `sky` and `setSky` exist from GL JS v4.5.0. Atmosphere lives in `sky` (properties in the example below, and in [maplibre-terrain-rendering](../maplibre-terrain-rendering/SKILL.md)), which the style spec marks experimental.                                                                                                                                                                                                                                                                          |
+| `map.setFog({...})`, root-level `fog` in the style                               | `map.setSky({...})` / `map.getSky()`, root-level [`sky`](https://maplibre.org/maplibre-style-spec/sky/) in the style | MapLibre has **no `setFog` method in any version**; `sky` and `setSky` exist from GL JS v4.5.0. For an analogous effect, see [maplibre-terrain-rendering](../maplibre-terrain-rendering/SKILL.md).                                                                                                                                                                                                                                                                                                                                                          |
 | `map.getFreeCameraOptions()` / `map.setFreeCameraOptions()`, `FreeCameraOptions` | `map.calculateCameraOptionsFromCameraLngLatAltRotation(...)` → `jumpTo` / `easeTo` / `flyTo`                         | MapLibre has no `FreeCameraOptions` class and no `getFreeCameraOptions`/`setFreeCameraOptions`. Its `CameraOptions` are `center`, `zoom`, `pitch`, `bearing`, plus `elevation` and `roll` (both v5.0.0). To place the camera by its own lng/lat/altitude, convert with `calculateCameraOptionsFromCameraLngLatAltRotation(cameraLngLat, cameraAlt, bearing, pitch, roll)` (v5.0.0) — or `calculateCameraOptionsFromTo(from, altitudeFrom, to, altitudeTo)` (v2.4.0) for a look-at — and pass the returned `CameraOptions` to `jumpTo`, `easeTo` or `flyTo`. |
-
-```javascript
-// Mapbox GL JS v2
-map.setFog({ 'horizon-blend': 0.3, color: '#ffffff' });
-
-// MapLibre GL JS — the same idea, but not a property-by-property conversion; tune visually
-map.setSky({
-  'sky-color': '#199EF3',
-  'horizon-color': '#ffffff',
-  'fog-color': '#0000ff',
-  'fog-ground-blend': 0.5,
-  'horizon-fog-blend': 0.5,
-  'sky-horizon-blend': 0.5,
-  'atmosphere-blend': 1.0
-});
-```
-
-MapLibre has no `sky` layer type: `sky` is a root style property, and it takes only the seven properties in the example above.
 
 Verify any other v2 method against the [Map API reference](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/) before assuming an upgrade will restore it.
 

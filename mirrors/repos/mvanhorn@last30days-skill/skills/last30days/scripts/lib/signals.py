@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from collections.abc import Iterable, Mapping
 
-from . import dates, relevance, schema
+from . import dates, reddit_refs, relevance, schema
 
 # Editorial signal-to-noise scores. Grounding (Google Search) is 1.0 baseline;
 # social platforms discounted for noise.
@@ -509,6 +509,10 @@ def prune_low_relevance(
     exempt a same-name account on a *different* platform: username reuse
     across platforms is common, and an unrelated account would otherwise
     bypass the relevance and engagement floors.
+
+    A Polymarket item carrying ``matched_market`` passed the entity matcher
+    at parse and is exempt the same way; ``polymarket.filter_items_against_topic``
+    is its topic bar.
     """
     sources_present = {item.source for item in items}
     first_party = {
@@ -543,13 +547,25 @@ def prune_low_relevance(
         # provenance, not by lexical overlap with the topic.
         if _is_first_party(item):
             return True
+        # A Polymarket market the entity matcher kept names the subject (or a
+        # related name the host supplied), judged on the stable research
+        # topic. Its token overlap with the planner's ranking query says
+        # nothing more: "Vikings vs. 49ers" scored 0.15-0.21 by phrasing.
+        if item.source == "polymarket" and item.metadata.get("matched_market"):
+            return True
         rel = item.local_relevance if item.local_relevance is not None else 0.0
         if rel < minimum:
             return False
         # Key the stricter social gate on genuinely absent engagement (no
         # counts at all), not on a rounded score: a handful of likes is still
         # engagement even where the 0-100 scale rounds it low.
-        if item.source in _SOCIAL_SOURCES and not engagement_raw(item):
+        # A Reddit thread whose score is pending has unknown engagement, not
+        # absent engagement.
+        if (
+            item.source in _SOCIAL_SOURCES
+            and not engagement_raw(item)
+            and not reddit_refs.score_pending(item.metadata)
+        ):
             if rel < minimum * 1.5:
                 return False
         sole_source = sources_present == {item.source}

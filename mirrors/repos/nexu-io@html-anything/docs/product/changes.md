@@ -1,5 +1,18 @@
 # 公开变更记录
 
+## 2026-11-17: Play a bounded preview for large final videos in chat
+
+- Codex's MCP stdio transport drops message lines above 16 MiB, so final videos over roughly 12 MiB never appeared in chat and the host waited indefinitely. The former 32 MiB inline cap was above that ceiling.
+- Verified exports up to 8 MiB still embed their own bytes. Larger exports embed a re-encoded H.264/AAC preview (720p, 540p, then 360p within 45 seconds) that must fit under 8 MiB and decode; it is cached per job and verified hash and discarded if the source changes while encoding. If no preview fits, the Agent hands over the verified MP4 file.
+- Verification, exports and the delivered MP4 are unchanged.
+
+## 2026-11-16: Choose, prepare and retain fonts by text role
+
+- Add 40 curated font families with language, construction, role, conditional brand fit, phone-reading risks, pairing advice and pinned resource/license identities. Fill rounded, slab, stencil, comic, script, pixel and multilingual gaps while preserving the original 20 records.
+- Share typography guidance across creation, template adaptation, recreation and review: preserve identity scope, compare actual copy, distinguish text roles and review at the intended display width and reading window.
+- Expose a compact font index and per-family MCP resources. Prepare selected weights into a verified cache, optionally build an offline actual-copy specimen, and import local fonts/licenses through the existing versioned asset transaction. Retain current media checks, pinned-library hashes, mixed-batch results and history protection. Resolve parsers through the existing locked runtime for extracted plugins and cover their real font/license import plus offline specimen execution.
+- Include a [fixed-scene evaluation and comparison](../reports/typography-evaluation.md). Two independent blinded model reviewers saw a limited local improvement in the final synthesis while all original copy/artwork/animation/audio were retained. This historical 20-family experiment does not establish stable new-Skill superiority or a creative benefit from the additional 20 fonts. Examples and media stay outside runtime distributions.
+
 ## 2026-11-15: Keep template browsing on Home and restore project title controls
 
 - Keep one template-library entry in the left application rail below Home, remove the duplicate editor template-library entries, and use the four-circle glyph so the remaining entry is recognizable.

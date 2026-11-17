@@ -12,7 +12,7 @@ can detect and tolerate schema evolution.
 from __future__ import annotations
 
 # JSON output contract version (WS-1 / MJ-10).
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 5
 
 # --- Step 1: yield floor + entry alpha ---
 DEFAULT_ALPHA_PP = 0.5
@@ -49,9 +49,13 @@ SPECIAL_REVERT_MULTIPLE = 1.2
 # payer (e.g. CALM pays ~1/3 of net income).
 VARIABLE_POLICY_COV = 0.35
 
-# Equality epsilon for freeze/cut comparisons of regular per-payment rates
-# (absolute USD per share). Differences within this tolerance are "equal".
-DIVIDEND_EQUALITY_EPS = 0.005
+# Raise/freeze tolerance for regular per-payment rates (#770). The old
+# absolute DIVIDEND_EQUALITY_EPS (0.005 USD) hid real raises on small
+# monthly pays (a $0.002 raise on $0.27). The tolerance is now relative:
+# max(absolute floor, relative tol * prior amount), so a ~0.9% monthly
+# raise is detected while sub-cent rounding noise stays "equal".
+DIVIDEND_EQUALITY_MIN_EPS = 0.0005
+DIVIDEND_EQUALITY_REL_TOL = 0.005
 # Material cut screen; independent of the finer raise/freeze tolerance (#770).
 DIVIDEND_CUT_REL_TOL = 0.05
 DIVIDEND_CUT_LOOKBACK_DAYS = 365
@@ -77,6 +81,11 @@ BANK_CET1_MIN = 0.07
 BANK_DEPOSIT_BETA_HIGH = 0.50  # deposit cost passes through fast -> margin risk
 UTILITY_FFO_DEBT_MIN = 0.13  # below this, regulated leverage is stretched
 INSURER_OP_EPS_PAYOUT_MAX = 0.85  # operating-EPS payout hard ceiling
+# REIT AFFO payout ceilings (issue #771; AFFO is the REIT anchor per
+# references/default-thresholds.md — "Prefer AFFO if available"). Mirrors
+# the consumer EPS-payout bands: 0.85 caution, above 1.00 unsustainable.
+REIT_AFFO_PAYOUT_MAX = 0.85
+REIT_AFFO_PAYOUT_HIGH_RISK = 1.00
 # GAAP vs Adjusted EPS divergence above which a Step-4 one-off flag fires.
 # Marked calibratable (MN-4): initial value, revisit with a payout-gap
 # distribution study across Dividend Aristocrats.

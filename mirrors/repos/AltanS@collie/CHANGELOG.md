@@ -173,6 +173,7 @@ Running a crew? Update the lead first; members follow on their own. Details:
 
 ### Fixed
 
+- **Changes applies the deny list and the folder bound of Files.** Also shipped in 1.28.5.
 - **A proposal or new-version card whose code fits one card waits for you to read it.** It no longer folds, and its yes stays off until its end was on screen, with "Scroll to the end of the code first." "Not now" and "Keep the old version" stay open. The bridge checks it too: a yes from an app that did not show the code to its end is not accepted.
 - **A new version you changed by hand says which lines it shows masked.** For each file, card 1 says how many lines Collie could not show as they are, and names the file.
 - **A proposal with a stray carriage return says so.** A carriage return inside a line now gets its own words about line ends and names the file. Plain Windows line ends were already accepted.
@@ -250,8 +251,6 @@ Running a crew? Update the lead first; members follow on their own. Details:
 - **A Hill card closes when its machine's last agent leaves.** The Hill closed a card whose session ended only while some agent was still running on that machine, so the cards of a machine with no agent left waited 14 days. The sweep now trusts an empty list when the multiplexer answered the read, and closes such a card after two sweeps, 15 to 30 seconds. A read that failed, or a bridge that has not read its multiplexer yet, closes nothing.
 - **A note you typed into a Hill card is not lost when the card leaves.** When a card closed while you wrote a note in it, the note went with the card. It now stays under Answered as "Your answer, not delivered" with Copy until you leave the page, and so do the words of an answer that did not arrive, after its card left the Hill.
 - **A Hill card for a machine removed from the crew closes.** When a member leaves the crew, with `collie crew remove` on the lead or `collie leave` on the member, the open cards whose answer would go to that machine close as undeliverable at the next sweep, with nothing typed. A member that only does not answer keeps its cards, as before.
-- **A message queued while Claude Code compacts shows its queued card in Chat.** A message sent from the phone during a compaction gets the same card, with Send now, as one queued during a normal turn.
-- **A command sent right after you answer a menu is no longer refused while the agent is still catching up.** When the agent prints its queued messages after the answer, the screen keeps moving for a few seconds with no spinner. A command sent then, such as `/login`, now goes in the way a message already did on that screen, on harnesses that take a command during a turn. A command that must never wait, such as `/clear`, is still refused there.
 - **A launcher line that sets a variable first is still read for a no-prompts flag.** In `CODEX_HOME=~/.codex-work codex -a never`, the agent's own short flags now count, as they do without the variable, so the No prompts mark shows.
 
 ### Docs
@@ -263,6 +262,16 @@ Running a crew? Update the lead first; members follow on their own. Details:
 - **The tricks reference and the guides follow the agent view rules.** Collie marks the pick, so a button takes no `pressed` and a decision block no `picked`. A link goes to a web address only, Collie's own words are refused in an agent's text, and the Hill is an experiment, off until you switch it on in Settings, Experiments. The reference, Write a trick, Tricks and The Hill say so, and a test pins every limit that moved into one file to its old value.
 - **Session settings rows have a section in each tricks page.** The reference lists the `menu` place with a bound example, the `sessions` key on a belt mark and a menu part, and a "Bound parts" group of limits; `docs/tricks.md`, `docs/tricks-authoring.md` and `collie trick guide` each say in a few lines what the rows do, how a switch waits for the trick, and how a part binds to sessions.
 - **The tricks guide says what asks you again for session rows.** The `menu` place is a power like any other place, so a version that adds it asks again; a Belt mark that names `sessions` only shows in fewer sessions and needs no new yes.
+- **The decision records have a topic map and a check.** `.adr/README.md` opens with a map by topic and the rules for stubs, size and pointers, and `scripts/check-adr.ts`, run by `bun run test`, fails a record that has no `Status` or `Date`, a pointer without its back pointer, or a record the map does not list.
+- **Ten topic records state the send, update, crew, launch, durable agent, layout, look, usage, files and dialog rules.** ADR 0142 holds the rule for sends and the screens Collie cannot read, ADR 0143 the rule for how an install updates and what a release offers it, ADR 0144 the rule for the crew and the deputy, ADR 0145 the rule for launching and worktrees, ADR 0146 the rule for durable agents and their wire, ADR 0147 the rule for the pane lists and the dashboard's footer, ADR 0148 the rule for themes, fonts and the mark, ADR 0149 the rule for the usage figures and the account windows, ADR 0150 the rule for Files and Changes, and ADR 0151 the rule for how a dialog becomes a card. The records they replace are stubs that point to them, or are retired into the code header that holds the rule: 72 of the 150 records are stubs now.
+
+## [1.28.5] - 2026-11-16
+
+### Fixed
+
+- **Changes applies the deny list and the folder bound of Files.** The Changes view never lists or diffs a `.git` folder, Collie's own state and config folders, or a file named like a Collie state secret, and it reads an untracked file through the same checked reader as Files. A workspace folder that is a link to home or above it shows no folder, as in Files. A pane's own folder at home or above it, and a repo found at home or above it, also through a `.git` file, show only to a device with the Files right, decided on a crew member by that member's own device rules. With no `COLLIE_DEVICE_HEADER` set, every paired device has the right.
+- **A command sent right after you answer a menu is no longer refused while the agent is still catching up.** When the agent prints its queued messages after the answer, the screen keeps moving for a few seconds with no spinner. A command sent then, such as `/login`, now goes in the way a message already did on that screen, on harnesses that take a command during a turn. A command that must never wait, such as `/clear`, is still refused there.
+- **A message queued while Claude Code compacts shows its queued card in Chat.** A message sent from the phone during a compaction gets the same card, with Send now, as one queued during a normal turn.
 
 ## [1.28.4] - 2026-11-14
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 188 file(s) materialized.
+Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 191 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 188
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 188 |
+| Files         | 191 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -238,15 +238,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 177 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
 | 178 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
 | 179 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
-| 180 | ✓ | [`skills/webmcp-gen/.gitignore`](skills/webmcp-gen/.gitignore) |
-| 181 | ✓ | [`skills/webmcp-gen/LICENSE.txt`](skills/webmcp-gen/LICENSE.txt) |
-| 182 | ✓ | [`skills/webmcp-gen/package.json`](skills/webmcp-gen/package.json) |
-| 183 | ✓ | [`skills/webmcp-gen/pnpm-lock.yaml`](skills/webmcp-gen/pnpm-lock.yaml) |
-| 184 | ✓ | [`skills/webmcp-gen/scripts/compile.mjs`](skills/webmcp-gen/scripts/compile.mjs) |
-| 185 | ✓ | [`skills/webmcp-gen/scripts/generate-stagehand-example.mjs`](skills/webmcp-gen/scripts/generate-stagehand-example.mjs) |
-| 186 | ✓ | [`skills/webmcp-gen/scripts/scaffold.mjs`](skills/webmcp-gen/scripts/scaffold.mjs) |
-| 187 | ✓ | [`skills/webmcp-gen/scripts/validate.mjs`](skills/webmcp-gen/scripts/validate.mjs) |
-| 188 | ✓ | [`skills/webmcp-gen/SKILL.md`](skills/webmcp-gen/SKILL.md) |
+| 180 | ✓ | [`skills/verified-eval/evals/evals.json`](skills/verified-eval/evals/evals.json) |
+| 181 | ✓ | [`skills/verified-eval/LICENSE.txt`](skills/verified-eval/LICENSE.txt) |
+| 182 | ✓ | [`skills/verified-eval/SKILL.md`](skills/verified-eval/SKILL.md) |
+| 183 | ✓ | [`skills/webmcp-gen/.gitignore`](skills/webmcp-gen/.gitignore) |
+| 184 | ✓ | [`skills/webmcp-gen/LICENSE.txt`](skills/webmcp-gen/LICENSE.txt) |
+| 185 | ✓ | [`skills/webmcp-gen/package.json`](skills/webmcp-gen/package.json) |
+| 186 | ✓ | [`skills/webmcp-gen/pnpm-lock.yaml`](skills/webmcp-gen/pnpm-lock.yaml) |
+| 187 | ✓ | [`skills/webmcp-gen/scripts/compile.mjs`](skills/webmcp-gen/scripts/compile.mjs) |
+| 188 | ✓ | [`skills/webmcp-gen/scripts/generate-stagehand-example.mjs`](skills/webmcp-gen/scripts/generate-stagehand-example.mjs) |
+| 189 | ✓ | [`skills/webmcp-gen/scripts/scaffold.mjs`](skills/webmcp-gen/scripts/scaffold.mjs) |
+| 190 | ✓ | [`skills/webmcp-gen/scripts/validate.mjs`](skills/webmcp-gen/scripts/validate.mjs) |
+| 191 | ✓ | [`skills/webmcp-gen/SKILL.md`](skills/webmcp-gen/SKILL.md) |
 
 ---
 

@@ -96,7 +96,27 @@ rea-video summary out/ref/breakdown.json      # 用并入后的结果写回复
 
 ## 3. 复刻（需要时）
 
-用户要自己动手做时，先给报告「自己复刻」开头的「照着做」步骤（按视频类型排的顺序，内容全是这条原片的测量值），不要先讲模型规则和输入表。
+报告分两部分：第一部分是拆解（结构，和用什么模型无关），第二部分是复刻方案（按一个模型排）。拆解不要因为复刻去合并镜头。
+
+有 AI 镜头时，复刻方案按用户的意图和实际用的模型来排：
+1. 问用户：用哪个模型或平台（即梦 / Seedance、可灵、Veo、海螺……，不要替用户选）；整条都用模型重做，还是只生成原片里 AI 做的镜头；要换什么、换成什么、有没有参考图。写进 `out/ref/remake/intent.yaml`：
+
+   ```yaml
+   model: seedance-2.5
+   generate: all          # all：整条用模型生成；ai（默认）：只生成 AI 镜头，实拍的出拍摄方案
+   swaps:
+     - from: 女主播
+       to: 三十岁左右的男主播，短发，深色西装
+     - from: 原片的口红
+       to: 用户的保温杯
+       image: /绝对路径/product.jpg
+   ```
+2. 方案按这个模型的最新实际情况来：`rea-video models <id>` 看能力地图里的资料和核实日期，再上网核对它最新的官方文档和更新（有没有新版本，单次时长、参考视频 / 参考图的数量和时长、一次多镜头、首尾帧、原生音频、提示词写法有没有变）。能力地图里没有、或和最新资料不一致的，按能力地图的格式写进 `~/.rea-video/capabilities/models/<id>.yaml`（同 id 会覆盖自带的），写上来源和核实日期。
+3. `rea-video plan out/ref`：按意图和模型出报告第二部分，并做方案检查。工具按模型能吃什么选输入方式（参考原片视频 / 每镜一张原片关键帧 / 首尾帧 / 纯文字），在单次时长和参考数量以内用最少的调用装下所有镜头，原片参考擦掉字幕后放在 `remake/refs/`。
+4. 按这个模型的提示词写法（`rea-video models <id>`，或这个模型的提示词 skill）把每个单元的草稿写成最终提示词，放进 `out/ref/remake/prompts.json`（`{"G1": "..."}`，图片编号按单元里参考图的顺序），再跑一次 `rea-video plan`，直到方案检查没有 ❌。
+5. 把方案给用户看（调用次数、每次喂什么、检查结果），用户同意后再生成。
+
+用户要自己动手做时，先给报告第二部分「照着做」的步骤，不要先讲模型规则和输入表。
 
 先跑 `rea-video remake out/ref`：能自动做的镜头先做掉（代码渲染重画、静图重建），其余原片占位，拼回原时间线，`remake/status.md` 逐镜写了还要做什么；拿到新镜头写进 `remake/mine.json` 再跑一次。细节见 `references/remake.md`；可用的工具和方式（capsule-cinema、ChatCut、自己动手）和各自的特点列在 `references/remake-tools.md`。在本工具里直接跑：AI 镜头走 capsule-cinema（会计费，先 `rea-video remake-run --dry-run` 并征得用户同意）；实拍给拍摄方案；舞蹈 / 动作镜头用 `rea-video drive out/ref` 出驱动视频（见 `references/remake.md`）；代码渲染先跑 `rea-video code-remake out/ref` 出第一版（可改的工程 + 成片 + 打分），在它上面改，不要从零写；用户自己的素材用 `rea-video assemble` 拼回原时间线。代码渲染和用户自己的素材也可以在 ChatCut 里做。
 

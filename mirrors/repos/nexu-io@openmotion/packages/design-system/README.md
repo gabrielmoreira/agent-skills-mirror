@@ -14,6 +14,7 @@ It is a private source package in the standalone root application. The visual wo
 | `tailwind.css` | Studio's token/utility adapter; import after Tailwind, with source discovery owned by the consumer. |
 | `studio.css` | Editor control states, materials, feedback and adapter recipes. |
 | `loading.css` | Startup shell and loading-boundary appearance. |
+| `inline-feedback.ts`, `studio/feedback.css` | Floating, localized action feedback for isolated non-React host documents; shares the package tokens and avoids layout changes. |
 | `index.js` | Shared brand identity, asset URLs, icon sprite and positive public-asset list. |
 | `metadata.js` | Localized titles, descriptions, favicon links and social-card metadata; shared by generated HTML and Studio. |
 | `provider-icons.js`, `providers/` | Local provider artwork, explicit identity mapping and complete source/license metadata. |

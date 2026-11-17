@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `loopx-project/loopx` — 26 default patterns, 114 followed patterns, 486 file(s) materialized.
+Mirror of `loopx-project/loopx` — 26 default patterns, 115 followed patterns, 487 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 114 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 114 |
-| Files         | 486 |
+| Followed pats | 115 |
+| Files         | 487 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 114 followed patterns, 
 - `docs/architecture/rfcs/typescript-control-plane-migration-v0.md`
 - `docs/development/good-smokes.md`
 - `README.zh-CN.md`
+- `README.ja.md`
 - `docs/guides/installing-loopx.md`
 - `docs/product/releases/v2.0.0.md`
 - `docs/product/use-cases/cross-runtime/README.md`
@@ -656,8 +657,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 482 | → | [`loopx/kunluncode_goal_mode/README.md`](loopx/kunluncode_goal_mode/README.md) |
 | 483 | → | [`packages/dsh-loopx-plugin/README.md`](packages/dsh-loopx-plugin/README.md) |
 | 484 | → | [`packages/loopx-core/README.md`](packages/loopx-core/README.md) |
-| 485 | → | [`README.md`](README.md) |
-| 486 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 485 | → | [`README.ja.md`](README.ja.md) |
+| 486 | → | [`README.md`](README.md) |
+| 487 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

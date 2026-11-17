@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **audio-router / transcript-fixer** (`daymade-audio` v1.64.2 → v1.65.0): Guide configured deployments through independent thin SDKs and distinguish self-introduction, address and quotation before speaker identity writes.
+- **skill-creator** (`daymade-skill` v1.81.1 → v1.81.2): Check actual installed consumer bindings and exercise optional-dependency imports through the repository runner.
+
+- **asr-transcribe-to-text** (`daymade-audio` v1.64.0 → v1.64.1): Forward adopted-viewer titles, subtitles, speaker colors and material keywords to the existing data owner without replacing its UI or default configuration.
+- **local-codex** (`daymade-codex` v2.4.14 → v2.4.15): Route existing Account Manager sessions through their deployed routine-switch SOP before native recovery; retain exact session and original-request boundaries.
+- **peer-message** (v1.27.3 → v1.27.4): Make the existing value-derived Codex native recipe the direct entry, align its route table, and send received envelopes to the complete-original intake procedure.
+- **transcript-fixer** (`daymade-audio` v1.63.2 → v1.64.0): Use the independent daudio thin client for Stage 1 history resources by default. Keep explicit trusted local-worker operation, original/native bytes, nonconflicting human edits and interrupted-publication recovery.
+
+- **audio-router** (`daymade-audio` v1.63.0 → v1.63.1): Keep the existing speech routes and Chinese/English acoustic diagnostic signals visible in the native Codex catalog window; align the prefix regression with actual host readback.
+- **asr-transcribe-to-text** (`daymade-audio` v1.62.0 → v1.63.0): Route explicitly adopted projects from the legacy audit command to their installed shared-viewer data entry. Preserve standalone output for unregistered projects and stop failed handoffs without overwriting the existing reader.
+- **macos-permissions** (`daymade-macos` v1.34.5 → v1.34.6): Signed-app replacement with an enabled but ineffective grant.
+- **peer-message** (v1.27.2 → v1.27.3): Check and declare independent work atomically across clones and Forks, return existing owner/result leads before duplicate work, and retain unknown occupancy and current-host identity boundaries.
+
+- **daymade-claude-code** (v5.1.21 → v5.1.22): Run independent Codex takeover through PeerMessage's existing work-entry check before edits, reruns or dispatch, preserving its result and exit code.
+
+- **frontend-visual-qa** (v1.21.49 → v1.21.50): Verify one selected local artifact and every declared retired link by content digest and explicit redirect identity, while retaining real-browser acceptance.
+
+- **audio-router** (`daymade-audio` v1.61.0 → v1.62.0): Route waveform, edit-boundary and tail-level diagnosis to an explicitly available daudio runtime. Preserve source clocks and report acoustic risk separately from transcription, speaker identity and perceptual evaluation.
+- **tunnel-doctor** (v1.17.18 → v1.17.19): Diagnose container-injected proxies separately from daemon pull proxies; verify internal RPC/self-client paths from the failing consumer and retain private startup evidence without restarting shared Docker services.
+
+- **github-ops** (v1.17.0 → v1.17.1): Correct shell continuation and path quoting in the publication-preflight example; route repository instructions to that procedure.
+- **github-ops** (v1.16.6 → v1.17.0): Inspect the authenticated repository's live visibility, paginated active branch rules and legacy protection before selecting direct publication or a pull request. Keep unreadable or unclassified policy unknown and retain existing checks, approvals and bypass boundaries.
+- **transcript-fixer** (`daymade-audio` v1.64.1 → v1.64.2): Make the Stage 1 result contract the shared documentation entry for callers and CLI parameters, preserving the inactive-boundary and degraded-API distinctions.
+- **transcript-fixer** (`daymade-audio` v1.63.1 → v1.63.2): Bind auto-finalized Stage 1 results to a versioned canonical-path/SHA-256 receipt so callers distinguish an already-promoted result from a no-op without reapplying corrections.
+
+- **ghostty-use** (v1.14.1 → v1.14.2): Deployment freshness becomes mechanically observable: install stamps the recorded source, `status` reports `deploy: current/stale/source-unavailable/no-stamp`, and every cycle persists the same verdict into its health record, so a merged watcher change that was never refreshed is visible within one round instead of silently running old copies.
+
+- **ghostty-use** (v1.14.0 → v1.14.1): Automatic change-only backups now record the Ghostty window/tab tree with tab titles, `name override` values and TTY-to-session anchors on each publish, with the same known/unknown mapping contract as manual snapshots. Refreshing installed watcher copies is required after upgrade; the pre-reboot manual snapshot stays authoritative for tab order and titles.
+
+- **ghostty-use** (v1.13.0 → v1.14.0): Manual snapshots capture the Ghostty window/tab tree via the scripting dictionary (tab titles, `name override`, per-surface TTY/PID/cwd) and join tab TTYs to session anchors, with best-effort degradation to unknown mapping. Restore does not yet re-apply titles automatically; the recorded tree is evidence for manual re-tiling and re-titling.
+
+- **transcript-fixer** (`daymade-audio` v1.60.2 → v1.61.0): Optionally retain complete Stage 1 input/output baselines in daudio and recompute derived versions after shared rule or context updates. Preserve nonconflicting manual edits through guarded three-way file projection; retain conflicts, missing baselines and interrupted publication as pending without rerunning ASR or Stage 2.
+
+- **Claude Code profiles** (`daymade-claude-code` v5.1.20 → v5.1.21): Keep headless verification in a dedicated reference, route it from the Skill and repository instructions, and require an existing reviewed probe when the task is read-only. Preserve the exact-command and actual-result acceptance recipe.
+
+- **asr-transcribe-to-text** (`daymade-audio` v1.60.1 → v1.60.2): retain native voiceprint matches as source-bound candidates; cosine thresholds and legacy bank claims no longer rewrite speaker names. Existing human labels and committed bundles remain unchanged; the common identity evaluator provides diagnostics without being treated as verified decision readback.
+
+- **transcript-fixer** (`daymade-audio` v1.60.0 → v1.60.1): Read pinned shared dictionary, people-roster and domain-context sources through optional configured commands. Preserve native edits, exact-pair disables, risk policies and local writer IDs; pass selected source-bound context to Stage 2 and retain postcommit publication work without retrying the original correction or adding a scheduler.
+
 - **macos-load-doctor** (`daymade-macos` v1.34.4): Add scoped development-preview watcher diagnosis, exact-instance reuse and idle CPU plus page/HMR acceptance; distinguish shared-service respawn from a durable stop.
 - **prior-work-retrieval** (`daymade-claude-code` v5.1.20): Clarify valid-receipt reuse for follow-up questions and the current strong-signal rearm boundary without weakening hook or source requirements.
 - **macos-load-doctor** (`daymade-macos` v1.34.1 → v1.34.2): Calibrate CPU counters, distinguish surviving PIDs from observed process births, and verify application health after profiler cleanup. Treat retained children as fan-out until lifecycle evidence establishes a leak.

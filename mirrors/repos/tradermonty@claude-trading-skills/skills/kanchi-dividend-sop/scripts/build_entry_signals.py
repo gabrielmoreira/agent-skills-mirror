@@ -84,6 +84,33 @@ def to_float(value: Any) -> float | None:
         return None
 
 
+def _quote_price_date(quote: dict[str, Any] | None) -> str | None:
+    """ISO price date from an FMP quote row (#770).
+
+    FMP /stable/quote carries `timestamp` (Unix epoch seconds). A
+    millisecond epoch is divided down; a `date` string is accepted as a
+    fallback. Returns None when neither is usable, so a missing date is
+    explicit instead of silently defaulting to the run date.
+    """
+    if not isinstance(quote, dict):
+        return None
+    ts = to_float(quote.get("timestamp"))
+    if ts is not None:
+        if ts > 1e12:  # millisecond epoch
+            ts /= 1000
+        try:
+            return datetime.fromtimestamp(ts, tz=timezone.utc).date().isoformat()
+        except (ValueError, OverflowError, OSError):
+            return None
+    raw = quote.get("date")
+    if isinstance(raw, str) and raw.strip():
+        try:
+            return datetime.strptime(raw.strip(), "%Y-%m-%d").date().isoformat()
+        except ValueError:
+            return None
+    return None
+
+
 def normalize_metrics_yields(metrics: list[dict[str, Any]], max_points: int = 5) -> list[float]:
     yields_pct: list[float] = []
     for item in metrics:
@@ -180,7 +207,9 @@ class FMPClient(SharedFMPClient):
             return [row for row in data if isinstance(row, dict)]
         return []
 
-    def get_financials(self, ticker: str, sector: str | None = None) -> dict[str, Any]:
+    def get_financials(
+        self, ticker: str, sector: str | None = None, industry: str | None = None
+    ) -> dict[str, Any]:
         """WS-2 (5th-review F1): minimal financials for the payout triad.
 
         Adjusted EPS is NOT in FMP -> source UNAVAILABLE by design (the
@@ -211,6 +240,7 @@ class FMPClient(SharedFMPClient):
                 fcf_ps = fcf / shares
         return {
             "sector": sector,
+            "industry": industry,
             "gaap_eps": gaap_eps,
             "adjusted_eps": None,
             "adjusted_eps_source": "UNAVAILABLE",
@@ -231,6 +261,10 @@ def build_entry_row(
     as_of: str | None = None,
 ) -> dict[str, Any]:
     price = to_float((quote or {}).get("price"))
+    # #770 finding 3: record the date the price is as of, and flag it when it
+    # differs from the run's as_of (a stale quote silently skews yields).
+    price_date = _quote_price_date(quote)
+    price_date_mismatch = bool(price_date and as_of and price_date != as_of)
 
     # WS-1: prefer the regular run-rate from declared-dividend history over
     # profile.lastDiv (which is a trailing/TTM figure that lagged the latest
@@ -241,6 +275,8 @@ def build_entry_row(
             dividend_history,
             price,
             issuer_language=(profile or {}).get("issuer_language"),
+            issuer_currency=(profile or {}).get("currency"),
+            is_adr=(profile or {}).get("isAdr") is True,
             floor_pct=floor_pct,
             as_of_date=as_of,
         )
@@ -305,6 +341,8 @@ def build_entry_row(
 
     if target_withheld_reason:
         notes.append(target_withheld_reason)
+    if price_date_mismatch:
+        notes.append("price_date_mismatch")
 
     row: dict[str, Any] = {
         "ticker": ticker,
@@ -315,6 +353,8 @@ def build_entry_row(
         "provider_avg_5y_yield_pct": provider_avg_yield,
         "signal": signal,
         "price": round(price, 2) if price is not None else None,
+        "price_date": price_date,
+        "price_date_mismatch": price_date_mismatch,
         "annual_dividend_per_share": round(annual_dividend, 4)
         if annual_dividend is not None
         else None,
@@ -342,6 +382,9 @@ def build_entry_row(
             "special_dividend_flag": basis.special_dividend_flag,
             "variable_policy_flag": basis.variable_policy_flag,
             "cut_flag": basis.cut_flag,
+            "cut_confirmation_required": basis.cut_confirmation_required,
+            "cut_amount_basis": basis.cut_amount_basis,
+            "original_dividend_currency": basis.original_dividend_currency,
             "freeze_flag": basis.freeze_flag,
             "suspension_flag": basis.suspension_flag,
             "last_increase_date": basis.last_increase_date,
@@ -368,6 +411,8 @@ def build_entry_row(
             notes.append("floor_borderline")
 
     pre_order_blockers: list[str] = []
+    if basis is not None and basis.cut_confirmation_required:
+        pre_order_blockers.append("dividend_cut_currency_basis_unconfirmed")
     if target_withheld_reason:
         pre_order_blockers.append(target_withheld_reason)
     if basis is not None:
@@ -412,8 +457,13 @@ def build_entry_row(
     # flows from the event scan (High3) so FITB/Comerica GAAP distortion is
     # caught from the real path, not only when financials carries the flag.
     if financials is not None:
+        # FMP industry is finer than sector (issue #771): insurers hide
+        # under "Financial Services", REITs under "Real Estate". Industry
+        # comes from the profile first, then the financials dict.
         safety = assess_payout_safety(
             sector=financials.get("sector") or (profile or {}).get("sector"),
+            industry=financials.get("industry") or (profile or {}).get("industry"),
+            sector_kind_override=financials.get("sector_kind_override"),
             annual_dividend=annual_dividend,
             gaap_eps=financials.get("gaap_eps"),
             adjusted_eps=financials.get("adjusted_eps"),
@@ -426,13 +476,16 @@ def build_entry_row(
             bank_metrics=financials.get("bank_metrics"),
             utility_metrics=financials.get("utility_metrics"),
             insurer_metrics=financials.get("insurer_metrics"),
+            reit_metrics=financials.get("reit_metrics"),
         )
         row["payout_safety"] = {
             "sector_kind": safety.sector_kind,
+            "sector_kind_source": safety.sector_kind_source,
             "safety_verdict": safety.safety_verdict,
             "gaap_eps_payout": safety.gaap_eps_payout,
             "adjusted_eps_payout": safety.adjusted_eps_payout,
             "fcf_payout": safety.fcf_payout,
+            "affo_payout": safety.affo_payout,
             "adjusted_eps_source": safety.adjusted_eps_source,
             "gaap_adj_divergence": safety.gaap_adj_divergence,
             "one_off_flag": safety.one_off_flag,
@@ -461,6 +514,7 @@ def build_entry_row(
     row["verdict_reasons"] = final.reasons
     row["provenance"] = {
         "price_source": "fmp_quote" if quote else None,
+        "price_date": price_date,
         "dividend_source": "fmp_stock_dividend" if dividend_history else "fmp_profile_lastDiv",
         "dividend_dates_used": (basis.dividend_dates_used if basis else []),
         "payout_source": (financials or {}).get("adjusted_eps_source", "UNAVAILABLE"),
@@ -512,9 +566,9 @@ def render_markdown(rows: list[dict[str, Any]], as_of: str, alpha_pp: float) -> 
         "Step-5 timing — never act on it alone (a TRIGGERED row can be "
         "HOLD-REVIEW / T1-blocked).",
         "",
-        "| Ticker | Verdict | T1 Blocked | Signal | Price | Reg Yield% | "
+        "| Ticker | Verdict | T1 Blocked | Signal | Price | Price Date | Reg Yield% | "
         "TTM Yield% | Step1 | Safety | Event Scan | Pre-order Blockers |",
-        "|---|---|---|---|---:|---:|---:|---|---|---|---|",
+        "|---|---|---|---:|---|---:|---:|---|---|---|---|---|",
     ]
 
     for row in rows:
@@ -523,13 +577,14 @@ def render_markdown(rows: list[dict[str, Any]], as_of: str, alpha_pp: float) -> 
         ev = row.get("event_scan", {})
         blockers = ";".join(row.get("pre_order_blockers", [])) or "-"
         lines.append(
-            "| {ticker} | {verdict} | {t1} | {signal} | {price} | {ry} | "
+            "| {ticker} | {verdict} | {t1} | {signal} | {price} | {pdate} | {ry} | "
             "{ty} | {s1} | {safety} | {ev} | {blk} |".format(
                 ticker=row.get("ticker", ""),
                 verdict=row.get("verdict", "-"),
                 t1="YES" if row.get("t1_blocked") else "no",
                 signal=row.get("signal", ""),
                 price=row.get("price", ""),
+                pdate=row.get("price_date") or "-",
                 ry=db.get("regular_forward_yield_pct", ""),
                 ty=db.get("ttm_yield_pct", ""),
                 s1=row.get("step1_verdict", "-"),
@@ -550,6 +605,15 @@ def render_markdown(rows: list[dict[str, Any]], as_of: str, alpha_pp: float) -> 
                     f"`{row['historical_yield_basis']}`.",
                 ]
             )
+    for row in rows:
+        if row.get("price_date_mismatch"):
+            lines.extend(
+                [
+                    "",
+                    f"- {row['ticker']}: price as of `{row.get('price_date')}` "
+                    f"differs from run as_of `{as_of}`.",
+                ]
+            )
     lines.append("")
     return "\n".join(lines)
 
@@ -567,9 +631,14 @@ def write_csv(rows: list[dict[str, Any]], output_path: Path) -> None:
         "event_scan_result",
         "pre_order_blockers",
         "price",
+        "price_date",
+        "price_date_mismatch",
         "annual_dividend_per_share",
         "regular_forward_yield_pct",
         "ttm_yield_pct",
+        "cut_confirmation_required",
+        "cut_amount_basis",
+        "original_dividend_currency",
         "current_yield_pct",
         "avg_5y_yield_pct",
         "alpha_pp",
@@ -598,6 +667,9 @@ def write_csv(rows: list[dict[str, Any]], output_path: Path) -> None:
             output["pre_order_blockers"] = ";".join(row.get("pre_order_blockers", []))
             output["regular_forward_yield_pct"] = db.get("regular_forward_yield_pct")
             output["ttm_yield_pct"] = db.get("ttm_yield_pct")
+            output["cut_confirmation_required"] = db.get("cut_confirmation_required", False)
+            output["cut_amount_basis"] = db.get("cut_amount_basis", "unconfirmed")
+            output["original_dividend_currency"] = db.get("original_dividend_currency")
             output["payout_safety_verdict"] = ps.get("safety_verdict")
             output["event_scan_result"] = ev.get("result", "NOT_SCANNED")
             writer.writerow(output)
@@ -678,7 +750,8 @@ def main() -> int:
         dividend_history = client.get_stock_dividend(ticker)
         event_scan = scanner.scan(ticker, args.as_of) if scanner else None
         sector = (profiles.get(ticker) or {}).get("sector")
-        financials = client.get_financials(ticker, sector=sector)
+        industry = (profiles.get(ticker) or {}).get("industry")
+        financials = client.get_financials(ticker, sector=sector, industry=industry)
         row = build_entry_row(
             ticker=ticker,
             alpha_pp=args.alpha_pp,

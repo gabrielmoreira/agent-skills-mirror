@@ -1,7 +1,7 @@
 ---
 name: cloudbase-platform
 description: CloudBase platform overview and routing guide. This skill should be used when users need high-level capability selection, platform concepts, console navigation, realtime (broadcast / presence / live database changes), or cross-platform best practices before choosing a more specific implementation skill.
-version: 2.37.6
+version: 2.37.7
 license: MIT
 alwaysApply: false
 ---
@@ -249,7 +249,7 @@ When a task explicitly requires recording operation steps or results to a file (
 
 ### Web Authentication
 - **Must use SDK built-in authentication**: CloudBase Web SDK provides complete authentication features
-- **Recommended method**: SMS login with `auth.getVerification()`, for detailed, refer to web auth related docs
+- **Recommended method**: email verification-code login with `auth.signInWithOtp({ email })` + `data.verifyOtp({ token })`. Phone SMS login needs the user's own SMS provider before codes can be delivered — see https://docs.cloudbase.net/authentication-v2/auth/custom-sms-provider; enabling the phone switch alone is not enough
 - **Forbidden behavior**: Do not use cloud functions to implement login authentication logic
 - **Session management**: For route guards and login proof, use `auth.getSession()` and require `data.session`; do not use deprecated `getLoginState()` or `auth.getUser()` / `auth.getCurrentUser()` as proof of real login.
 - **Provider and login-method setup**: Use `queryAppAuth` / `manageAppAuth`, not the MCP `auth` tool

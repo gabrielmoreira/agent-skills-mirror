@@ -39,9 +39,13 @@ MCP-only 使用 resources/read `openmotion://workflow/director/start` 读取本�
 
 ### 1. 形成创作判断
 
+Typography: before choosing faces for new text, redesigning text hierarchy or addressing a font/style complaint, read [Typography](../openmotion-production/references/typography.md). Use its role-led, actual-copy comparison for open choices; carry the observed choice into a representative frame or clip and the existing creative record.
+
 确认受众、主要信息、期望感受或行动、发布规格、事实依据、素材与声音需求。检查实际工具、素材和渲染能力；真实界面演示与概念化表达分开标注。
 
-需要选择、获取或替换素材时读取 [共享素材规范](../openmotion-production/references/materials.md)。现有主视觉质感不足，或任务含截图、跨段复现、多段落及展示感问题时，另按需读取 [制作决策与状态延续](references/production-decisions.md)，落实材料与动作、占时及状态复用的关系。
+需要选择、获取或替换素材时读取 [共享素材规范](../openmotion-production/references/materials.md)。现有主视觉质感不足，或任务含截图、跨段复现、多段落及展示感问题时，另按需读取 [制作决策与状态延续](../openmotion-production/references/decisions.md)，落实材料与动作、占时及状态复用的关系。
+
+按共享的 [生成边界](../openmotion-production/references/materials.md#generation-boundary) 判断是否进入素材生成。
 
 已有成片或审片反馈时，先看实际问题区间，把仍未解决的现象与保留的有效部分作为本次创作输入；不要把用户指出的展示感缩减成几个接点或字号问题。
 
@@ -67,7 +71,7 @@ MCP-only 使用 resources/read `openmotion://workflow/director/start` 读取本�
 
 声音承担叙事、用户指出配乐单调／与画面脱节，或需要重新设计声音时，读取 [声音叙事](references/sound-narrative.md)。先确定声音要支持的理解、期待、情绪与注意力，再选音乐、音效、环境声、人声或静默；它们都不是必选层。
 
-有音乐或音效时，按 [动作脚本](references/action-script.md) 的声画锚点规划关键关系；粗稿后从实际画面相位与真实声音事件双向复核，检查主要场内动作是否被遗漏。BPM 相同或都在整数秒不等于已经卡点；没有关键音频职责时不强填。
+有音乐或音效时，按 [共享声音执行](../openmotion-production/references/sound.md) 的声画锚点规划关键关系；粗稿后从实际画面相位与真实声音事件双向复核，检查主要场内动作是否被遗漏。BPM 相同或都在整数秒不等于已经卡点；没有关键音频职责时不强填。
 
 先规划全片的信息和节奏关系，再展开难点。强 Motion 简报应能指出中后段实际值得观看的事件及其可辨认窗口，而不只写开场有冲击、后面依次展示；具体粒度按动作脚本与动态表现参考展开。可以用连续表演、剪辑蒙太奇、文字节奏、产品操作或其他结构。镜头边界不必等于场景文件边界。
 
@@ -83,7 +87,7 @@ MCP-only 使用 resources/read `openmotion://workflow/director/start` 读取本�
 
 用样片验证场间交接时，区间须覆盖前段最后的有效状态、交接过程和后段已可跟随的状态；止于接点的单场预览不算验证该交接。复用现有时间线与预览，异常时再用密帧定位。
 
-依据 [审片标准](references/motion-review.md) 检查表达、注意力、时间和连接。若同一质量问题在自评通过后仍反复被用户或外部审片指出，在扩建/精修前用可用的独立视角检查实际动态粗稿（另一评议上下文、已有用户反馈或人工评议）；提供目标与实际产物，不提供预期胜者。无需为所有任务启动多 Agent；没有独立评议能力时，明确该边界，保留反对当前方案的具体证据。样片中发现结构问题就改编排；不是等全片精修后再修。特别检查：观众能看到所声称的变化吗，还是只能从标题得知？去掉外围装饰后是否仍有具体的时间发展？若不成立，改表达单位或素材策略，先不要精修缓动。情绪、文字节奏与品牌片按其体验判断，不强迫它们证明产品功能。
+依据 [审片标准](../openmotion-production/references/review.md) 检查表达、注意力、时间和连接。若同一质量问题在自评通过后仍反复被用户或外部审片指出，在扩建/精修前用可用的独立视角检查实际动态粗稿（另一评议上下文、已有用户反馈或人工评议）；提供目标与实际产物，不提供预期胜者。无需为所有任务启动多 Agent；没有独立评议能力时，明确该边界，保留反对当前方案的具体证据。样片中发现结构问题就改编排；不是等全片精修后再修。特别检查：观众能看到所声称的变化吗，还是只能从标题得知？去掉外围装饰后是否仍有具体的时间发展？若不成立，改表达单位或素材策略，先不要精修缓动。情绪、文字节奏与品牌片按其体验判断，不强迫它们证明产品功能。
 
 用样片分别检查内容表达与动态组织。关键变化未成立时，区分素材缺少控制能力，还是已有材料未被有效编排；相应补/换材料或重组主体、环境、构图、剪辑与时间。关键动作被删去或替换，要同步重排相关段落与时长，再复看实际片段。脚本写具体、对象在动或技术检查通过都不是审美证据；无法判断的原速体验保留未验证。
 
@@ -103,7 +107,7 @@ Once this turn's final video HTML and assets are complete and ready for preview,
 
 ### 5. 观看、修正、交付
 
-读取 [审片标准](references/motion-review.md)，观看实际输出并用时间点记录问题。先修正表达和结构，再修正节奏与运动细节；技术缺陷按影响优先处理。
+读取 [审片标准](../openmotion-production/references/review.md)，观看实际输出并用时间点记录问题。先修正表达和结构，再修正节奏与运动细节；技术缺陷按影响优先处理。
 
 修复后复看受影响区间及接点；交付全片前检查当前版本的完整播放。达到要求即停止，不能为追求抽象“高级感”无限增加效果或循环自评。
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `n8n-io/n8n` — 26 default patterns, 14 followed patterns, 321 file(s) materialized.
+Mirror of `n8n-io/n8n` — 26 default patterns, 14 followed patterns, 322 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 14 followed patterns, 321 file(s
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 14 |
-| Files         | 321 |
+| Files         | 322 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -326,73 +326,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 252 | ✓ | [`packages/frontend/editor-ui/src/experiments/agentBuilder/README.md`](packages/frontend/editor-ui/src/experiments/agentBuilder/README.md) |
 | 253 | ✓ | [`packages/frontend/editor-ui/src/features/agents/AGENTS.md`](packages/frontend/editor-ui/src/features/agents/AGENTS.md) |
 | 254 | ✓ | [`packages/modules/apps/frontend/README.md`](packages/modules/apps/frontend/README.md) |
-| 255 | ✓ | [`packages/modules/execution-ledger/backend/README.md`](packages/modules/execution-ledger/backend/README.md) |
-| 256 | ✓ | [`packages/modules/execution-limits/backend/README.md`](packages/modules/execution-limits/backend/README.md) |
-| 257 | ✓ | [`packages/modules/inbox/frontend/README.md`](packages/modules/inbox/frontend/README.md) |
-| 258 | ✓ | [`packages/modules/insights/frontend/README.md`](packages/modules/insights/frontend/README.md) |
-| 259 | ✓ | [`packages/modules/instance-registry/frontend/README.md`](packages/modules/instance-registry/frontend/README.md) |
-| 260 | ✓ | [`packages/modules/mcp/frontend/README.md`](packages/modules/mcp/frontend/README.md) |
-| 261 | ✓ | [`packages/modules/otel/frontend/README.md`](packages/modules/otel/frontend/README.md) |
-| 262 | ✓ | [`packages/modules/promotions/frontend/README.md`](packages/modules/promotions/frontend/README.md) |
-| 263 | ✓ | [`packages/modules/quick-connect/backend/README.md`](packages/modules/quick-connect/backend/README.md) |
-| 264 | ✓ | [`packages/modules/README.md`](packages/modules/README.md) |
-| 265 | ✓ | [`packages/modules/self-healing/frontend/README.md`](packages/modules/self-healing/frontend/README.md) |
-| 266 | ✓ | [`packages/modules/type-availability-policies/frontend/README.md`](packages/modules/type-availability-policies/frontend/README.md) |
-| 267 | ✓ | [`packages/modules/workflow-builder/backend/README.md`](packages/modules/workflow-builder/backend/README.md) |
-| 268 | ✓ | [`packages/node-dev/README.md`](packages/node-dev/README.md) |
-| 269 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
-| 270 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
-| 271 | ✓ | [`packages/nodes-base/nodes/Aws/ELB/test/README.md`](packages/nodes-base/nodes/Aws/ELB/test/README.md) |
-| 272 | ✓ | [`packages/nodes-base/nodes/Stripe/README.md`](packages/nodes-base/nodes/Stripe/README.md) |
-| 273 | ✓ | [`packages/nodes-base/README.md`](packages/nodes-base/README.md) |
-| 274 | ✓ | [`packages/quality/AGENTS.md`](packages/quality/AGENTS.md) |
-| 275 | ✓ | [`packages/quality/efficiency/AGENTS.md`](packages/quality/efficiency/AGENTS.md) |
-| 276 | ✓ | [`packages/quality/efficiency/images/README.md`](packages/quality/efficiency/images/README.md) |
-| 277 | ✓ | [`packages/quality/efficiency/memory/idle/README.md`](packages/quality/efficiency/memory/idle/README.md) |
-| 278 | ✓ | [`packages/quality/efficiency/microbenchmarks/README.md`](packages/quality/efficiency/microbenchmarks/README.md) |
-| 279 | ✓ | [`packages/quality/efficiency/README.md`](packages/quality/efficiency/README.md) |
-| 280 | ✓ | [`packages/quality/efficiency/scale/benchmark/README.md`](packages/quality/efficiency/scale/benchmark/README.md) |
-| 281 | ✓ | [`packages/quality/environments/AGENTS.md`](packages/quality/environments/AGENTS.md) |
-| 282 | ✓ | [`packages/quality/environments/README.md`](packages/quality/environments/README.md) |
-| 283 | ✓ | [`packages/quality/policy/AGENTS.md`](packages/quality/policy/AGENTS.md) |
-| 284 | ✓ | [`packages/quality/policy/README.md`](packages/quality/policy/README.md) |
-| 285 | ✓ | [`packages/quality/policy/rules-engine/README.md`](packages/quality/policy/rules-engine/README.md) |
-| 286 | ✓ | [`packages/quality/README.md`](packages/quality/README.md) |
-| 287 | ✓ | [`packages/quality/testing/AGENTS.md`](packages/quality/testing/AGENTS.md) |
-| 288 | ✓ | [`packages/quality/testing/janitor/CLAUDE.md`](packages/quality/testing/janitor/CLAUDE.md) |
-| 289 | ✓ | [`packages/quality/testing/janitor/README.md`](packages/quality/testing/janitor/README.md) |
-| 290 | ✓ | [`packages/quality/testing/playwright/AGENTS.md`](packages/quality/testing/playwright/AGENTS.md) |
-| 291 | ✓ | [`packages/quality/testing/playwright/CLAUDE.md`](packages/quality/testing/playwright/CLAUDE.md) |
-| 292 | ✓ | [`packages/quality/testing/playwright/CONTRIBUTING.md`](packages/quality/testing/playwright/CONTRIBUTING.md) |
-| 293 | ✓ | [`packages/quality/testing/playwright/scripts/__fixtures__/sizing-matrix/README.md`](packages/quality/testing/playwright/scripts/__fixtures__/sizing-matrix/README.md) |
-| 294 | ✓ | [`packages/quality/testing/playwright/tests/cli-workflows/README.md`](packages/quality/testing/playwright/tests/cli-workflows/README.md) |
-| 295 | ✓ | [`packages/quality/testing/playwright/tests/e2e/instance-ai/README.md`](packages/quality/testing/playwright/tests/e2e/instance-ai/README.md) |
-| 296 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/benchmarks-local/README.md`](packages/quality/testing/playwright/tests/infrastructure/benchmarks-local/README.md) |
-| 297 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md`](packages/quality/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md) |
-| 298 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/benchmarks/README.md`](packages/quality/testing/playwright/tests/infrastructure/benchmarks/README.md) |
-| 299 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/encryption/README.md`](packages/quality/testing/playwright/tests/infrastructure/encryption/README.md) |
-| 300 | ✓ | [`packages/quality/testing/playwright/tests/performance/README.md`](packages/quality/testing/playwright/tests/performance/README.md) |
-| 301 | ✓ | [`packages/quality/testing/README.md`](packages/quality/testing/README.md) |
-| 302 | ✓ | [`packages/quality/testing/test-impact/README.md`](packages/quality/testing/test-impact/README.md) |
-| 303 | ✓ | [`packages/workflow/README.md`](packages/workflow/README.md) |
-| 304 | ✓ | [`scripts/dev-metrics/README.md`](scripts/dev-metrics/README.md) |
-| 305 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
-| 306 | ✓ | [`scripts/mutation-health/README.md`](scripts/mutation-health/README.md) |
-| 307 | ✓ | [`security/sca/README.md`](security/sca/README.md) |
-| 308 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
-| 309 | → | [`.devcontainer/codespaces/README.md`](.devcontainer/codespaces/README.md) |
-| 310 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
-| 311 | → | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
-| 312 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 313 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 314 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
-| 315 | → | [`docs/adr/README.md`](docs/adr/README.md) |
-| 316 | → | [`docs/backend/README.md`](docs/backend/README.md) |
-| 317 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
-| 318 | → | [`packages/quality/environments/containers/README.md`](packages/quality/environments/containers/README.md) |
-| 319 | → | [`packages/quality/policy/code-health/README.md`](packages/quality/policy/code-health/README.md) |
-| 320 | → | [`packages/quality/testing/playwright/README.md`](packages/quality/testing/playwright/README.md) |
-| 321 | → | [`README.md`](README.md) |
+| 255 | ✓ | [`packages/modules/code-sandbox/backend/README.md`](packages/modules/code-sandbox/backend/README.md) |
+| 256 | ✓ | [`packages/modules/execution-ledger/backend/README.md`](packages/modules/execution-ledger/backend/README.md) |
+| 257 | ✓ | [`packages/modules/execution-limits/backend/README.md`](packages/modules/execution-limits/backend/README.md) |
+| 258 | ✓ | [`packages/modules/inbox/frontend/README.md`](packages/modules/inbox/frontend/README.md) |
+| 259 | ✓ | [`packages/modules/insights/frontend/README.md`](packages/modules/insights/frontend/README.md) |
+| 260 | ✓ | [`packages/modules/instance-registry/frontend/README.md`](packages/modules/instance-registry/frontend/README.md) |
+| 261 | ✓ | [`packages/modules/mcp/frontend/README.md`](packages/modules/mcp/frontend/README.md) |
+| 262 | ✓ | [`packages/modules/otel/frontend/README.md`](packages/modules/otel/frontend/README.md) |
+| 263 | ✓ | [`packages/modules/promotions/frontend/README.md`](packages/modules/promotions/frontend/README.md) |
+| 264 | ✓ | [`packages/modules/quick-connect/backend/README.md`](packages/modules/quick-connect/backend/README.md) |
+| 265 | ✓ | [`packages/modules/README.md`](packages/modules/README.md) |
+| 266 | ✓ | [`packages/modules/self-healing/frontend/README.md`](packages/modules/self-healing/frontend/README.md) |
+| 267 | ✓ | [`packages/modules/type-availability-policies/frontend/README.md`](packages/modules/type-availability-policies/frontend/README.md) |
+| 268 | ✓ | [`packages/modules/workflow-builder/backend/README.md`](packages/modules/workflow-builder/backend/README.md) |
+| 269 | ✓ | [`packages/node-dev/README.md`](packages/node-dev/README.md) |
+| 270 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
+| 271 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
+| 272 | ✓ | [`packages/nodes-base/nodes/Aws/ELB/test/README.md`](packages/nodes-base/nodes/Aws/ELB/test/README.md) |
+| 273 | ✓ | [`packages/nodes-base/nodes/Stripe/README.md`](packages/nodes-base/nodes/Stripe/README.md) |
+| 274 | ✓ | [`packages/nodes-base/README.md`](packages/nodes-base/README.md) |
+| 275 | ✓ | [`packages/quality/AGENTS.md`](packages/quality/AGENTS.md) |
+| 276 | ✓ | [`packages/quality/efficiency/AGENTS.md`](packages/quality/efficiency/AGENTS.md) |
+| 277 | ✓ | [`packages/quality/efficiency/images/README.md`](packages/quality/efficiency/images/README.md) |
+| 278 | ✓ | [`packages/quality/efficiency/memory/idle/README.md`](packages/quality/efficiency/memory/idle/README.md) |
+| 279 | ✓ | [`packages/quality/efficiency/microbenchmarks/README.md`](packages/quality/efficiency/microbenchmarks/README.md) |
+| 280 | ✓ | [`packages/quality/efficiency/README.md`](packages/quality/efficiency/README.md) |
+| 281 | ✓ | [`packages/quality/efficiency/scale/benchmark/README.md`](packages/quality/efficiency/scale/benchmark/README.md) |
+| 282 | ✓ | [`packages/quality/environments/AGENTS.md`](packages/quality/environments/AGENTS.md) |
+| 283 | ✓ | [`packages/quality/environments/README.md`](packages/quality/environments/README.md) |
+| 284 | ✓ | [`packages/quality/policy/AGENTS.md`](packages/quality/policy/AGENTS.md) |
+| 285 | ✓ | [`packages/quality/policy/README.md`](packages/quality/policy/README.md) |
+| 286 | ✓ | [`packages/quality/policy/rules-engine/README.md`](packages/quality/policy/rules-engine/README.md) |
+| 287 | ✓ | [`packages/quality/README.md`](packages/quality/README.md) |
+| 288 | ✓ | [`packages/quality/testing/AGENTS.md`](packages/quality/testing/AGENTS.md) |
+| 289 | ✓ | [`packages/quality/testing/janitor/CLAUDE.md`](packages/quality/testing/janitor/CLAUDE.md) |
+| 290 | ✓ | [`packages/quality/testing/janitor/README.md`](packages/quality/testing/janitor/README.md) |
+| 291 | ✓ | [`packages/quality/testing/playwright/AGENTS.md`](packages/quality/testing/playwright/AGENTS.md) |
+| 292 | ✓ | [`packages/quality/testing/playwright/CLAUDE.md`](packages/quality/testing/playwright/CLAUDE.md) |
+| 293 | ✓ | [`packages/quality/testing/playwright/CONTRIBUTING.md`](packages/quality/testing/playwright/CONTRIBUTING.md) |
+| 294 | ✓ | [`packages/quality/testing/playwright/scripts/__fixtures__/sizing-matrix/README.md`](packages/quality/testing/playwright/scripts/__fixtures__/sizing-matrix/README.md) |
+| 295 | ✓ | [`packages/quality/testing/playwright/tests/cli-workflows/README.md`](packages/quality/testing/playwright/tests/cli-workflows/README.md) |
+| 296 | ✓ | [`packages/quality/testing/playwright/tests/e2e/instance-ai/README.md`](packages/quality/testing/playwright/tests/e2e/instance-ai/README.md) |
+| 297 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/benchmarks-local/README.md`](packages/quality/testing/playwright/tests/infrastructure/benchmarks-local/README.md) |
+| 298 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md`](packages/quality/testing/playwright/tests/infrastructure/benchmarks/AGENTS.md) |
+| 299 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/benchmarks/README.md`](packages/quality/testing/playwright/tests/infrastructure/benchmarks/README.md) |
+| 300 | ✓ | [`packages/quality/testing/playwright/tests/infrastructure/encryption/README.md`](packages/quality/testing/playwright/tests/infrastructure/encryption/README.md) |
+| 301 | ✓ | [`packages/quality/testing/playwright/tests/performance/README.md`](packages/quality/testing/playwright/tests/performance/README.md) |
+| 302 | ✓ | [`packages/quality/testing/README.md`](packages/quality/testing/README.md) |
+| 303 | ✓ | [`packages/quality/testing/test-impact/README.md`](packages/quality/testing/test-impact/README.md) |
+| 304 | ✓ | [`packages/workflow/README.md`](packages/workflow/README.md) |
+| 305 | ✓ | [`scripts/dev-metrics/README.md`](scripts/dev-metrics/README.md) |
+| 306 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
+| 307 | ✓ | [`scripts/mutation-health/README.md`](scripts/mutation-health/README.md) |
+| 308 | ✓ | [`security/sca/README.md`](security/sca/README.md) |
+| 309 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
+| 310 | → | [`.devcontainer/codespaces/README.md`](.devcontainer/codespaces/README.md) |
+| 311 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
+| 312 | → | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
+| 313 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 314 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 315 | → | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
+| 316 | → | [`docs/adr/README.md`](docs/adr/README.md) |
+| 317 | → | [`docs/backend/README.md`](docs/backend/README.md) |
+| 318 | → | [`packages/cli/test/integration/eventbus/README-manual-test-syslog.md`](packages/cli/test/integration/eventbus/README-manual-test-syslog.md) |
+| 319 | → | [`packages/quality/environments/containers/README.md`](packages/quality/environments/containers/README.md) |
+| 320 | → | [`packages/quality/policy/code-health/README.md`](packages/quality/policy/code-health/README.md) |
+| 321 | → | [`packages/quality/testing/playwright/README.md`](packages/quality/testing/playwright/README.md) |
+| 322 | → | [`README.md`](README.md) |
 
 ---
 

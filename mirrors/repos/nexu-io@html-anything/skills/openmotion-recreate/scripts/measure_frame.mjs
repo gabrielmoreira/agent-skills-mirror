@@ -17,9 +17,12 @@
 //
 // Usage:
 //   node measure_frame.mjs REF REMIX --t 12.0 [--ref-t 12.4]
+//   node measure_frame.mjs REF REMIX --frame 360 [--ref-frame 372]
 //        [--region x,y,w,h] [--ref-region x,y,w,h]
 //        [--size 1920x1080] [--threshold 60]
 // Times are in seconds; regions are in pixels of --size (default: remix size).
+// Frame indices are zero-based decoded video frames. Use them for short events
+// whose exact frame could be skipped by a rounded seek time.
 // ffmpeg/ffprobe: HYPERFRAMES_FFMPEG_PATH / FFMPEG_PATH (and the FFPROBE
 // equivalents) when set, then the copies beside the Node running this script,
 // then PATH. No npm dependencies.
@@ -61,11 +64,16 @@ function probeSize(file) {
   return [w, h];
 }
 
-function rgbFrame(file, t, w, h) {
-  const raw = run(ffmpeg, ['-v', 'error', '-ss', String(t), '-i', file, '-frames:v', '1',
-    '-vf', `scale=${w}:${h}:flags=area,format=rgb24`, '-f', 'rawvideo', '-']);
+function rgbFrame(file, selection, w, h) {
+  const indexed = selection.frame !== undefined;
+  const seek = indexed ? [] : ['-ss', String(selection.time)];
+  const select = indexed ? `select=eq(n\\,${selection.frame}),` : '';
+  const raw = run(ffmpeg, ['-v', 'error', ...seek, '-i', file, '-frames:v', '1',
+    '-vf', `${select}scale=${w}:${h}:flags=area,format=rgb24`,
+    ...(indexed ? ['-fps_mode', 'passthrough'] : []), '-f', 'rawvideo', '-']);
   const n = w * h;
-  if (raw.length < n * 3) fail(`could not decode a frame at ${t}s from ${file}`);
+  const description = indexed ? `frame ${selection.frame}` : `${selection.time}s`;
+  if (raw.length < n * 3) fail(`could not decode ${description} from ${file}`);
   const gray = new Uint8Array(n);
   let chroma = 0;
   for (let i = 0; i < n; i++) {
@@ -74,6 +82,21 @@ function rgbFrame(file, t, w, h) {
     if (Math.max(r, g, b) - Math.min(r, g, b) > 60) chroma++;
   }
   return { gray, chroma };
+}
+
+function frameSelection(time, frame, fallback, label) {
+  if (time !== undefined && frame !== undefined) fail(`Specify only one time or frame index for ${label}`);
+  if (frame !== undefined) {
+    const index = Number(frame);
+    if (frame.trim() === '' || !Number.isSafeInteger(index) || index < 0) fail(`${label} frame index must be a nonnegative safe integer`);
+    return { frame: index };
+  }
+  if (time !== undefined) {
+    const seconds = Number(time);
+    if (time.trim() === '' || !Number.isFinite(seconds) || seconds < 0) fail(`${label} time must be finite and nonnegative`);
+    return { time: seconds };
+  }
+  return fallback;
 }
 
 const round = (value, digits) => Number(value.toFixed(digits));
@@ -133,22 +156,25 @@ const { values: a, positionals } = parseArgs({
   allowPositionals: true,
   options: {
     t: { type: 'string' }, 'ref-t': { type: 'string' }, region: { type: 'string' }, 'ref-region': { type: 'string' },
+    frame: { type: 'string' }, 'ref-frame': { type: 'string' },
     size: { type: 'string' }, threshold: { type: 'string', default: '60' }, help: { type: 'boolean', short: 'h' },
   },
 });
-if (a.help || positionals.length !== 2 || a.t === undefined) {
-  console.log('usage: node measure_frame.mjs REF REMIX --t SECONDS [--ref-t SECONDS] [--region x,y,w,h] [--ref-region x,y,w,h] [--size WxH] [--threshold 60]');
+if (a.help || positionals.length !== 2 || (a.t === undefined && a.frame === undefined)) {
+  console.log('usage: node measure_frame.mjs REF REMIX (--t SECONDS | --frame INDEX) [--ref-t SECONDS | --ref-frame INDEX] [--region x,y,w,h] [--ref-region x,y,w,h] [--size WxH] [--threshold 60]');
   process.exit(a.help ? 0 : 2);
 }
 const [refFile, remixFile] = positionals;
 const [w, h] = a.size ? a.size.toLowerCase().split('x').map(Number) : probeSize(remixFile);
 if (!(Number.isInteger(w) && Number.isInteger(h) && w > 0 && h > 0)) fail(`invalid frame size ${w}x${h}`);
-const t = Number(a.t), refT = a['ref-t'] === undefined ? t : Number(a['ref-t']);
+const remixSelection = frameSelection(a.t, a.frame, undefined, 'remix');
+const refSelection = frameSelection(a['ref-t'], a['ref-frame'], remixSelection, 'reference');
 const threshold = Number(a.threshold);
-const refFrame = rgbFrame(refFile, refT, w, h), mixFrame = rgbFrame(remixFile, t, w, h);
+const refFrame = rgbFrame(refFile, refSelection, w, h), mixFrame = rgbFrame(remixFile, remixSelection, w, h);
 const ref = wholeFrame(refFrame, w, h), mix = wholeFrame(mixFrame, w, h);
 const out = {
-  size: [w, h], ref_t: refT, remix_t: t, ref, remix: mix,
+  size: [w, h], ref_t: refSelection.time ?? null, remix_t: remixSelection.time ?? null,
+  ref_frame: refSelection.frame, remix_frame: remixSelection.frame, ref, remix: mix,
   brightness_ok: mix.mean_luma >= ref.mean_luma * 0.9,
   detail_ok: mix.detail >= ref.detail * 0.7,
   accent_ok: ref.accent < 0.002 || mix.accent >= ref.accent * 0.6,

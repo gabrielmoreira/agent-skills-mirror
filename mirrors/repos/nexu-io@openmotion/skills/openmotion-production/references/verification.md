@@ -1,10 +1,14 @@
 # Review and delivery verification
 
-Unchanged template delivery follows openmotion-template-to-video: confirm the template loaded and plays in the editor, without rendering, comparison or a fabricated export job. The fresh-export and job/revision checks below apply when a new render is required.
+## Verification scope
+
+Apply checks to the requested delivery stage and actual changes. Opening already accepted content checks the loaded source and editor playback, without a fabricated export job. Requested HTML/project files need package/source identity and editor checks; no MP4 render/playback is required unless requested. An explicit MP4 request needs the completed job/revision checks in §3 and actual full-play/seek/replay in §4, including opening, main content and closing, even when the source was unchanged.
+
+An unchanged source does not require creative redesign, a new storyboard, full reference comparison or multiple prose reports. A defect returns to the affected repair flow. Modified content uses the relevant visual/sound review below. Keep unavailable evidence explicit and separate editor presentation from file verification.
 
 Use separate evidence for creative quality, technical media integrity and playback. Each check is `passed`, `failed` or `not_run`; a missing tool or an unseen render cannot become `passed`. Scores are optional diagnostics, never the acceptance criterion.
 
-For dynamic creative work, also read the shared [Motion review](../../openmotion-director/references/motion-review.md); use it within the current route, without restarting director's full creation workflow. Local changes review the affected interval and adjacent joins; full-film delivery reviews the whole film. Export-only checks the requested file without authorizing creative rewrites. Apply the checks relevant to the requested stage: draft/review tasks do not trigger export.
+For dynamic creative work, also read the shared [Motion review](review.md); use it within the current route, without restarting director's full creation workflow. Local changes review the affected interval and adjacent joins; full-film delivery reviews the whole film. Export-only checks the requested file without authorizing creative rewrites. Apply the checks relevant to the requested stage: draft/review tasks do not trigger export.
 
 Keep audiovisual evidence tied to the actual picture/audio pair and export revision. After timing or audio-source changes, apply the affected-scope invalidation rules in [edit](edit.md); an earlier listen or an unchanged duration does not verify the new pair. Record technical integrity, player operation, event/phase timing and normal-speed audiovisual perception separately. A running player, RMS peaks, matching timestamps or a shared event table cannot establish audible continuity or perceived synchronization. If reliable listening is unavailable, prepare the actual auditionable result, mark that check `not_run` and state the limitation; do not claim audiovisual acceptance or add a default user-approval gate.
 
@@ -43,7 +47,7 @@ Recheck: changed frames, neighboring cuts and new result
 Status: open or resolved with evidence
 ```
 
-Prioritize up to three defects per pass. Reinspect after each repair. Two unsuccessful local repairs of the same defect require a blocker report and user direction or a concrete capability fix. Do not automatically do three rounds when the first result passes; do not lower the criteria to finish. Minor intentional tradeoffs can be documented; blocking defects must be resolved before claiming final completion.
+Prioritize a small set of consequential defects per pass and reinspect after each repair. When repeated local changes fail, record what each attempt changed and reassess the cause, source control, material or representation before trying again. Continue repairs within the user's authorization. Request user direction when progress depends on missing user information, a changed requirement or additional authorization; report a concrete capability gap when available methods cannot resolve it. Stop iterating when the requested result passes. Document minor intentional tradeoffs and resolve blocking defects before claiming final completion.
 
 Local source edits are supported; each OpenMotion export renders a fresh snapshot of the whole composition. Reuse unaffected design decisions, not stale exported-file verification.
 
@@ -83,6 +87,8 @@ Verify:
 3. Seek to beginning, middle and near the end; picture updates and playback resumes.
 4. Replay from the beginning after reaching the end.
 5. Inspect the final export's opening, each shot, boundaries and closing against the storyboard. Pay special attention to the last frame and source cuts.
+
+Final chat presentation follows the [bounded delivery call](production.md#final-video-delivery): invoke `openmotion_show_video` alone, with at most about 60 seconds of waiting. If no result returns, finish with the already verified MP4's absolute path and the pending presentation status. Do not inspect plugin source, create a custom player page or retry in a loop. Retain all actual-file playback checks above and their evidence status; this fallback neither completes missing checks nor confirms the editable editor's `record_display`.
 
 Record the player/browser, time, file identity and observations. When accessible, also inspect media error/readiness state and surfaced console/runtime errors. Do not fabricate console access or report “zero errors” from an unobserved log.
 

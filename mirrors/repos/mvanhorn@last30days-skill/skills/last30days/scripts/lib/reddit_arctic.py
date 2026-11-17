@@ -24,8 +24,9 @@ from . import http
 
 API = "https://arctic-shift.photon-reddit.com/api/posts/ids"
 SEARCH_API = "https://arctic-shift.photon-reddit.com/api/posts/search"
-COMMENTS_API = "https://arctic-shift.photon-reddit.com/api/comments/search"
+COMMENTS_TREE_API = "https://arctic-shift.photon-reddit.com/api/comments/tree"
 BATCH = 50          # ids per request
+IDS_BATCH = 100     # ids per hydration request; the archive documents a 500-id limit
 TIMEOUT = 15
 MAX_BATCHES = 3     # cap total requests per run (bounds latency + rate-limit risk)
 PACE_SECONDS = 0.4  # gap between batches; arctic-shift answers 422 "slow down"
@@ -43,9 +44,14 @@ _LISTING_SUPPLEMENT_MULTIPLIER = 2  # fetch 2x posts when supplementing multi-so
 # Total deadline for listing fetches to prevent unbounded stalls when many
 # subreddits are requested and arctic is slow/unreachable.
 _LISTING_DEADLINE_SECONDS = 45  # ~3 subs at 15s timeout each
-# Comment fallback: fetch a wide recency slice, then rank by score client-side
-# (the archive's sort_type only supports created_utc).
+# Comment tree rows read by hydration (fetch_comment_tree).
 MAX_COMMENT_ROWS = 100
+# Comment fallback (fetch_post_comments) rows. The archive's comment search
+# sorts only by created_utc, so a capped search slice of a busy thread held only
+# its newest replies and missed its most upvoted ones. The fallback reads the
+# comment tree instead and ranks by score client-side; on a 628-reply thread a
+# 500-row tree kept the same top replies as an uncapped one (#1467).
+FALLBACK_COMMENT_ROWS = 500
 # In-run memo: base36 id -> {score, num_comments}. Module-level so repeated
 # fetch_scores calls within one `/last30days` run (e.g. across subqueries) reuse
 # results, but capped at CACHE_MAX entries (never reached in a normal CLI run).
@@ -448,6 +454,157 @@ def fetch_listings(
     return unique
 
 
+def _archive_get(url: str, deadline: float) -> Any:
+    """One serial archive request through the shared keyless Reddit limiter,
+    retried once after a pause when the archive answers 422."""
+    http.REDDIT_KEYLESS_LIMITER.acquire()
+    return _fetch_search(url, deadline, retry_422=True)
+
+
+def fetch_posts_by_ids(
+    post_ids: List[str], deadline: Optional[float] = None,
+) -> tuple:
+    """Hydrate posts by base36 id: ``({id: listing-shaped post}, state)``.
+
+    Batches of ``IDS_BATCH`` ids, one request at a time through the shared
+    keyless limiter. Each post is normalized with ``_normalize_listing_row``
+    and keeps the archive's raw ``created_utc``. ``state`` is ``"ok"``,
+    ``"throttled"`` when the archive refused a batch with 422 twice (no later
+    batch is sent), or ``"down"`` when a batch failed any other way (later
+    batches are still tried). Never raises.
+    """
+    todo = list(dict.fromkeys(p for p in post_ids if p))
+    end = deadline if deadline is not None else time.monotonic() + _LISTING_DEADLINE_SECONDS
+    out: Dict[str, Dict[str, Any]] = {}
+    state = "ok"
+    for start in range(0, len(todo), IDS_BATCH):
+        batch = todo[start:start + IDS_BATCH]
+        if end - time.monotonic() <= 0:
+            _log(f"post lookup stopped at its deadline; {len(todo) - start} ids left")
+            # Unasked ids are not an archive answer: never report them as ok.
+            if state == "ok":
+                state = "down"
+            break
+        try:
+            data = _archive_get(f"{API}?ids={','.join(batch)}", end)
+        except Exception as exc:  # network error / non-200 — degrade, never raise
+            if _is_slow_down(exc):
+                _log(f"post lookup throttled (422 twice); {len(todo) - start} ids left")
+                return out, "throttled"
+            _log(f"post lookup failed ({exc}); {len(batch)} ids left")
+            state = "down"
+            continue
+        rows = (data or {}).get("data")
+        if not isinstance(rows, list):
+            _log(f"unexpected post lookup response: {str(data)[:80]}")
+            if "slow down" in str((data or {}).get("error") or "").lower():
+                return out, "throttled"
+            state = "down"
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            post = _normalize_listing_row(row)
+            pid = post["metadata"]["post_id"]
+            if pid and post["url"]:
+                post["why_relevant"] = "Reddit thread (arctic-shift)"
+                out[pid] = post
+    return out, state
+
+
+def _tree_rows(nodes: Any) -> List[Dict[str, Any]]:
+    """Every comment in an archive comment tree, parents before their replies."""
+    rows: List[Dict[str, Any]] = []
+    stack = list(reversed(nodes)) if isinstance(nodes, list) else []
+    while stack:
+        node = stack.pop()
+        if not isinstance(node, dict) or node.get("kind") != "t1":
+            continue
+        data = node.get("data")
+        if not isinstance(data, dict):
+            continue
+        rows.append(data)
+        replies = data.get("replies")
+        children = ((replies or {}).get("data") or {}).get("children") if isinstance(replies, dict) else None
+        if isinstance(children, list):
+            stack.extend(reversed(children))
+    return rows
+
+
+# Whether the last fetch_comment_tree failure was the archive asking to slow
+# down (422 or 429) rather than an outage. Hydration fetches trees serially.
+last_tree_throttled = False
+
+
+def fetch_comment_tree(
+    post_id: str, deadline: Optional[float] = None,
+) -> Optional[List[Dict[str, Any]]]:
+    """Comments of a post from the archive's ``/comments/tree``, flattened.
+
+    Each comment carries id, score, author, body, excerpt, permalink, url,
+    date, ``created_utc`` and ``depth`` (0 for a top-level comment). Deleted
+    and removed comments are left out. Returns ``None`` when the request
+    failed, so a caller can tell a failure from a thread with no comments.
+    """
+    pid = str(post_id or "").removeprefix("t3_")
+    if not pid:
+        return None
+    end = deadline if deadline is not None else time.monotonic() + TIMEOUT
+    if end - time.monotonic() < 1:
+        return None
+    global last_tree_throttled
+    last_tree_throttled = False
+    try:
+        data = _archive_get(f"{COMMENTS_TREE_API}?link_id=t3_{pid}&limit={MAX_COMMENT_ROWS}", end)
+    except Exception as exc:  # network error / non-200 — degrade, never raise
+        last_tree_throttled = _is_slow_down(exc) or getattr(exc, "status_code", None) == 429
+        _log(f"comment tree failed t3_{pid}: {exc}")
+        return None
+    nodes = (data or {}).get("data")
+    if not isinstance(nodes, list):
+        _log(f"unexpected comment tree response for t3_{pid}: {str(data)[:80]}")
+        return None
+
+    from .snippet import cut_quote
+
+    comments: List[Dict[str, Any]] = []
+    for row in _tree_rows(nodes):
+        author = row.get("author") or "[deleted]"
+        body = row.get("body") or ""
+        if author in ("[deleted]", "[removed]") or body in ("[deleted]", "[removed]"):
+            continue
+        try:
+            score = int(row.get("score") or 0)
+        except (TypeError, ValueError):
+            score = 0
+        try:
+            depth = int(row.get("depth") or 0)
+        except (TypeError, ValueError):
+            depth = 0
+        permalink = row.get("permalink") or ""
+        comments.append({
+            "id": str(row.get("id") or "").removeprefix("t1_"),
+            "score": score,
+            "author": author,
+            "body": body[:300],
+            "excerpt": cut_quote(body),
+            "permalink": permalink,
+            "date": _epoch_to_date(row.get("created_utc")),
+            "created_utc": row.get("created_utc"),
+            "url": f"https://reddit.com{permalink}" if permalink else "",
+            "depth": depth,
+        })
+    return comments
+
+
+def _row_depth(row: Dict[str, Any]) -> int:
+    """A tree row's depth; without one, a reply to the post itself is top-level."""
+    try:
+        return int(row["depth"])
+    except (KeyError, TypeError, ValueError):
+        return 0 if str(row.get("parent_id") or "t3_").startswith("t3_") else 1
+
+
 def fetch_post_comments(
     post_id: str,
     limit: int = 10,
@@ -474,7 +631,7 @@ def fetch_post_comments(
         return []
     try:
         data = _search_once(
-            f"{COMMENTS_API}?link_id=t3_{pid}&limit={MAX_COMMENT_ROWS}&sort=desc", end,
+            f"{COMMENTS_TREE_API}?link_id=t3_{pid}&limit={FALLBACK_COMMENT_ROWS}", end,
         )
     except Exception as e:  # network error / non-200 — degrade, never raise
         _log(f"comments lookup failed t3_{pid}: {e}")
@@ -487,9 +644,7 @@ def fetch_post_comments(
     from .snippet import cut_quote
 
     comments: List[Dict[str, Any]] = []
-    for row in rows:
-        if not isinstance(row, dict):
-            continue
+    for row in _tree_rows(rows):
         author = row.get("author") or "[deleted]"
         body = row.get("body") or ""
         if author in ("[deleted]", "[removed]") or body in ("[deleted]", "[removed]"):
@@ -509,6 +664,7 @@ def fetch_post_comments(
             "permalink": permalink,
             "date": _epoch_to_date(row.get("created_utc")),
             "url": f"https://reddit.com{permalink}" if permalink else "",
+            "depth": _row_depth(row),
         })
     comments.sort(key=lambda c: c.get("score", 0), reverse=True)
     return comments[:limit]

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 38 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 38 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 38 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,15 +93,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
 | 28 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 | 29 | ✓ | [`vllm/models/deepseek_v41/nvidia/specialized_decode/AGENTS.md`](vllm/models/deepseek_v41/nvidia/specialized_decode/AGENTS.md) |
-| 30 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
-| 31 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
-| 32 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
-| 33 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 34 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
-| 35 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 36 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 37 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 38 | → | [`SECURITY.md`](SECURITY.md) |
+| 30 | ✓ | [`vllm/models/minimax_m3/nvidia/specialized_decode/AGENTS.md`](vllm/models/minimax_m3/nvidia/specialized_decode/AGENTS.md) |
+| 31 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
+| 32 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
+| 33 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
+| 34 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 35 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
+| 36 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 37 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 38 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 39 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -2,6 +2,20 @@
 
 需要选择、获取或替换视觉与声音素材时读取；仅查看、预览或导出既有内容不触发本页。各制作入口共用此规则，沿用当前工程与创作决定，不重新选路。
 
+## Generation boundary
+
+Without an explicit request to generate an asset, when native visuals meet the brief and no new narration or music is needed, do not call, suggest or ask about media generation. Native visuals do not mean the soundtrack is already supplied: new speech or music can still require generation. Enter [media generation](../../openmotion-media/SKILL.md) only for an explicit generation request or a real missing visual/audio asset, within the user's existing authorization; obtain spend consent when it is missing. Preserve user-provided media and approved material instead of generating replacements without need.
+
+## Tool selection and discovery
+
+Choose the material source from its content role before selecting tools, following the source rules below. Real events and identifiable subjects need corresponding original material; original scenes and supporting expression may use generation or native graphics. For a League of Legends champion's award-ceremony photo, search official or original published photos. Image generation is not a matching capability for retrieving that real event.
+
+For each required operation, inspect OpenMotion's actual available capabilities. Prefer OpenMotion when it can meet that operation's content and output requirements. When it lacks a suitable available capability, use an appropriate external search, browsing, stock-media or generation tool, including tools from other video-production platforms such as ChatCut. This fallback does not require the user to name the platform; retain existing authorization and explicit source/tool preferences. Retrieval and generation are different operations, as are finding an existing soundtrack and composing a new one.
+
+Use external tools for the operation that needs them and identify their contribution. Continue supported project authoring, editing, preview and export in OpenMotion; sourcing one asset does not move the whole production workflow to another platform. OpenMotion's configured BYOK generation remains available through the supporting Skill below when generation is the appropriate source.
+
+If available tools cannot supply the material, report the specific gap and continue independent work within scope. Use a suitable alternative when it preserves the request; keep original and generated material distinct and report missing media accurately.
+
 ## 按素材职责确定来源
 
 用户明确的必用素材、参考用途、来源限制与视觉要求优先于以下默认顺序。同一视频可组合不同来源，逐项判断当前素材承担的是身份呈现、事实证据、主体表演、图解还是氛围。
@@ -22,11 +36,11 @@
 
 在实际最大取景下检查主体轮廓、细节、结构与文字、光影材质、身份一致性，以及裁切、背景能否支撑构图和所需动作。不合格就更换或修正，再扩建影片。声音素材核对内容、可用时段和用途；实际听感另行试听，未审听如实记录。生成成功、标称分辨率高或文件已导入，都不能替代可用性检查。
 
-复用现有简报、动作脚本或素材记录，保留实际采用文件、来源、用途及重要限制，无需另建必填表。材料与具体动作、占时和跨段状态的配合，按需应用[制作决策与状态延续](../../openmotion-director/references/production-decisions.md)。
+复用现有简报、动作脚本或素材记录，保留实际采用文件、来源、用途及重要限制，无需另建必填表。材料与具体动作、占时和跨段状态的配合，按需应用[制作决策与状态延续](decisions.md)。
 
 ## BYOK provider references
 
-For configured BYOK generation, call openmotion_media_use with action=inspect, then action=reference for the selected provider. The service injects saved credentials; never read key files or put a key in a prompt. Query action=models with refresh=true and check the selected model's current schema before generating. Use an explicit projectId and stable requestId; poll the original local job with action=status rather than resubmitting. Only completed assets are usable; composition edits require the latest revision/version. Missing provider detail is unknown, not proof of an invalid key. Inspect the original task/history before another paid submission.
+Apply the [generation boundary](#generation-boundary) above. When it selects generation, follow [openmotion-media](../../openmotion-media/SKILL.md); it owns provider setup, key-spend consent, job polling, project snapshots and how generated assets serve the motion design. The service injects saved credentials; never read key files or put a key in a prompt.
 
 Read only the selected provider's document for model queries, request templates, polling and error interpretation:
 

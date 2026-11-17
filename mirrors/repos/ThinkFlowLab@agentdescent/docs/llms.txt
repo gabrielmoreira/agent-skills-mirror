@@ -1,0 +1,18 @@
+# AgentDescent
+> A parallel, asynchronous framework for self-evolving LLM agents. Diffs are the gradients; the aggregator is the optimizer.
+
+Canonical: https://thinkflowlab.github.io/agentdescent/
+Repository: https://github.com/ThinkFlowLab/agentdescent
+PyPI: https://pypi.org/project/agentdescent/
+DeepWiki: https://deepwiki.com/ThinkFlowLab/agentdescent
+DeepWiki MCP: https://mcp.deepwiki.com/mcp
+
+## Start
+- Install and first run: https://thinkflowlab.github.io/agentdescent/start/
+- Website quickstart: https://thinkflowlab.github.io/agentdescent/install/
+- Plugin quickstart: https://thinkflowlab.github.io/agentdescent/plugin-quickstart/
+- Concepts: https://thinkflowlab.github.io/agentdescent/concepts/
+- Architecture: https://thinkflowlab.github.io/agentdescent/architecture/
+- Measured results: https://thinkflowlab.github.io/agentdescent/results/
+- Algorithms: https://thinkflowlab.github.io/agentdescent/self-evolution-examples/
+- API: https://thinkflowlab.github.io/agentdescent/api/

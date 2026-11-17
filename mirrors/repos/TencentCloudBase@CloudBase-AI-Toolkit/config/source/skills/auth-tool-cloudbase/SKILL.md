@@ -1,7 +1,7 @@
 ---
 name: auth-tool-cloudbase
 description: CloudBase auth provider configuration and login-readiness guide. This skill should be used when users need to inspect, enable, disable, or configure auth providers, publishable-key prerequisites, login methods, SMS/email sender setup, or other provider-side readiness before implementing a client or backend auth flow.
-version: 2.37.6
+version: 2.37.7
 license: MIT
 alwaysApply: false
 ---
@@ -56,6 +56,8 @@ If a referenced sibling skill file is missing from this environment, ask the use
 ## Overview
 
 Configure CloudBase authentication providers: Anonymous, Username/Password, SMS, Email, WeChat, Google, and more.
+
+**Default login path**: use email verification-code login to get a login flow working. Phone SMS login requires the user to bring their own SMS provider — enabling `patch.phone = true` alone will not deliver codes. Point the user to https://docs.cloudbase.net/authentication-v2/auth/custom-sms-provider for the SMS channel setup (the guide also covers other SMS providers through a cloud function). See `references/extended-guide.md` §4.
 
 **Prerequisites**: CloudBase environment ID (`env`)
 

@@ -128,6 +128,8 @@ Whenever the item is costly to reverse (its resolution establishes a pattern oth
 
 Run `${CLAUDE_SKILL_DIR}/scripts/fetch-pr-data.sh` again, once. When it shows unresolved threads, review bodies, issue comments, or failing checks that pass Step 1's filters and that Steps 2 to 6 have not yet taken up, use `TaskUpdate` to set this step's task subject and description to running Steps 2 to 6 on only those items, then the rest of this step. Take the new threads, review bodies, and issue comments through Steps 2 to 6. Read a newly failing check's findings as in Step 1 and take them through Steps 5 and 6. Then continue with this step without fetching again.
 
+Use `TaskUpdate` to record every item in the Step 13 task description: its source and identifier, its file and line, and for an item without a thread its author and observation text. Add its outcome: Addressed with the commit SHA, Apply, Skip with its reasoning and whether it refuted the finding, declined it, or neither, a question with its reconciled intent, or a clarification with the user-directed question. Add each unreadable check's name, title, and link. After a compaction, Steps 8 through 13 read the record back from that task.
+
 If there are no accepted findings to implement, skip to Step 9.
 
 Run the `/implement-findings` skill on the accepted findings from Step 5, including any items reclassified in Step 6. It commits and pushes before returning; Steps 11 and 12 replies reference that commit SHA.
@@ -140,7 +142,7 @@ For each finding that was fixed in Step 7, verify the fix actually addresses the
 2. Compare against the reviewer's comment (and `diffHunk` when available).
 3. Confirm the specific concern is resolved.
 
-If the fix did not address the concern (wrong location, incomplete change, or the issue is still present), downgrade the item to Skip. Record the reason (the attempted fix did not resolve the reviewer's concern, with a brief explanation of what remains) so Step 11 (for inline threads), Step 12 (for the issue-comment findings it replies to), and Step 13 (for the rest) report it correctly.
+If the fix did not address the concern (wrong location, incomplete change, or the issue is still present), downgrade the item to Skip. Use `TaskUpdate` to add the downgrade and its reason (the attempted fix did not resolve the reviewer's concern, with a brief explanation of what remains) to the record in the Step 13 task description, keeping the rest of it, so Step 11 (for inline threads), Step 12 (for the issue-comment findings it replies to), and Step 13 (for the rest) report it correctly.
 
 ## Step 9: Answer Reviewer Questions
 
@@ -164,7 +166,7 @@ Then, whether or not that wait ran, run `${CLAUDE_SKILL_DIR}/scripts/fetch-pr-da
 
 A reviewer whose comment was posted counts as re-reviewing. Record every other reviewer that skipped the pushed commit, with its check's `title`, for the Step 13 summary.
 
-When a reviewer is re-reviewing, use the Monitor tool with an until-loop that polls the PR's reviews (`reviews(last: 20) { nodes { author { login } commit { oid } } }`) and ends once each reviewer found re-reviewing has submitted a review whose commit is the pushed head, or after 15 minutes. Record each reviewer whose comment was posted and whose review had not arrived when the loop ended for the Step 13 summary.
+When a reviewer is re-reviewing, use the Monitor tool with an until-loop that polls the PR's reviews (`reviews(last: 20) { nodes { author { login } commit { oid } } }`) and runs `${CLAUDE_SKILL_DIR}/scripts/fetch-pr-data.sh` for its `checks`, and ends once each reviewer found re-reviewing has submitted a review whose commit is the pushed head or, while `meta.headRefOid` is the pushed commit, has a completed check whose `title` does not report a skip, or after 15 minutes. Record for the Step 13 summary each reviewer whose comment was posted and whose review had not arrived when the loop ended, and each other reviewer whose check completed without a review on the pushed head.
 
 Wait for checks when Step 7 fixed a check finding: use the Monitor tool with an until-loop that runs `${CLAUDE_SKILL_DIR}/scripts/fetch-pr-data.sh` and ends once `meta.headRefOid` is the pushed commit, every check whose finding was fixed appears in `checks`, and no check has the `state` `pending`, or after 15 minutes.
 
@@ -247,6 +249,7 @@ After processing all items, present a summary grouped by source.
 **AI reviewers:**
 - Skipped the pushed commit and not asked for a review (list reviewer and its check's title)
 - Asked for a review that had not arrived when Step 10's wait ended (list reviewer)
+- Completed its check on the pushed commit without a review when Step 10's wait ended (list reviewer)
 
 **Overall:** list of files modified.
 

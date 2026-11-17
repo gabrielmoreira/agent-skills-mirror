@@ -14,6 +14,7 @@ misclassified as a CALM-style variable payer.
 
 from __future__ import annotations
 
+import math
 import statistics
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
@@ -21,7 +22,8 @@ from datetime import date, datetime, timedelta
 from thresholds import (
     DIVIDEND_CUT_LOOKBACK_DAYS,
     DIVIDEND_CUT_REL_TOL,
-    DIVIDEND_EQUALITY_EPS,
+    DIVIDEND_EQUALITY_MIN_EPS,
+    DIVIDEND_EQUALITY_REL_TOL,
     FLOOR_FRESHNESS_BAND_PP,
     FREEZE_GRACE_DAYS,
     MIN_REGULAR_PAYS,
@@ -84,6 +86,9 @@ class DividendBasis:
     special_dividend_flag: bool = False
     variable_policy_flag: bool = False
     cut_flag: bool = False
+    cut_confirmation_required: bool = False
+    cut_amount_basis: str = "unconfirmed"
+    original_dividend_currency: str | None = None
     freeze_flag: bool = False
     suspension_flag: bool = False
     latest_declared_confirmed: bool = False
@@ -121,6 +126,23 @@ def _is_explicit_special(label: object) -> bool:
     return any(k in low for k in _SPECIAL_KEYWORDS)
 
 
+def _rate_increased(new: float, old: float) -> bool:
+    """True when `new` exceeds `old` by more than the raise tolerance (#770).
+
+    The tolerance is max(absolute floor, relative tol * prior amount), so a
+    small monthly raise is detected while sub-cent noise stays "equal".
+    """
+    return new > old + max(DIVIDEND_EQUALITY_MIN_EPS, DIVIDEND_EQUALITY_REL_TOL * abs(old))
+
+
+def _rates_equal(a: float, b: float) -> bool:
+    """True when two per-payment rates are equal within the tolerance (#770)."""
+    return abs(a - b) <= max(
+        DIVIDEND_EQUALITY_MIN_EPS,
+        DIVIDEND_EQUALITY_REL_TOL * max(abs(a), abs(b)),
+    )
+
+
 def _sum_window(pays: list[tuple[date, float]], end: date, start_days: int, end_days: int) -> float:
     """Sum amounts with (end - start_days) <= d < (end - end_days) days old."""
     total = 0.0
@@ -131,12 +153,70 @@ def _sum_window(pays: list[tuple[date, float]], end: date, start_days: int, end_
     return total
 
 
+def _original_regular_series(history, regular):
+    """Use explicit issuer-currency amounts only; never infer from quote currency."""
+    evidence = {}
+    for item in history or []:
+        evidence.setdefault(str(item.get("date", "")), []).append(item)
+    result = []
+    currency = None
+    for day, _ in regular:
+        items = evidence.get(day.isoformat(), [])
+        if len(items) != 1:
+            return None, None
+        item = items[0]
+        value = item.get("original_dividend")
+        unit = item.get("original_currency")
+        source = item.get("original_dividend_source")
+        try:
+            finite = math.isfinite(value) if isinstance(value, (int, float)) else False
+        except OverflowError:
+            finite = False
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not finite
+            or value <= 0
+            or not isinstance(unit, str)
+            or len(unit) != 3
+            or not unit.isascii()
+            or not unit.isalpha()
+            or not isinstance(source, str)
+            or not source.strip()
+        ):
+            return None, None
+        unit = unit.upper()
+        if currency is not None and unit != currency:
+            return None, None
+        currency = unit
+        result.append((day, value))
+    return result, currency
+
+
+def _material_rate_cut(series, cadence, ppy):
+    cutoff = series[-1][0] - timedelta(days=DIVIDEND_CUT_LOOKBACK_DAYS)
+    if cadence == "semiannual":
+        recent = [
+            series[i - 1][1] + series[i][1] for i in range(1, len(series)) if series[i][0] >= cutoff
+        ]
+        current = series[-2][1] + series[-1][1]
+    else:
+        recent = [amount for day, amount in series if day >= cutoff]
+        current = series[-1][1]
+    recent_cut = current < max(recent) * (1 - DIVIDEND_CUT_REL_TOL)
+    prior = len(series) - 1 - ppy if ppy else -1
+    yearly_cut = prior >= 0 and series[-1][1] < series[prior][1] * (1 - DIVIDEND_CUT_REL_TOL)
+    return recent_cut or yearly_cut
+
+
 def analyze_dividends(
     history: list[dict],
     price: float | None,
     *,
     issuer_language: str | None = None,
     floor_pct: float | None = None,
+    issuer_currency: str | None = None,
+    is_adr: bool = False,
     as_of_date: str | None = None,
 ) -> DividendBasis:
     """Analyze a stock_dividend `historical` list into a DividendBasis.
@@ -230,13 +310,39 @@ def analyze_dividends(
     latest_date, latest_amt = regular[-1]
     latest_annualized = latest_amt * ppy if ppy else None
 
-    asof = all_dates[-1]
+    # #770 finding 2: the TTM window ends at the evaluation date, not at the
+    # latest payment. Without an evaluation date the window still ends at the
+    # latest payment (previous behavior).
+    ref_date = _parse_date(str(as_of_date)) if as_of_date else None
+    asof = ref_date if ref_date is not None else all_dates[-1]
     asof_reg = regular[-1][0]
     regular_ttm = _sum_window(regular, asof, 366, 0)
     incl_special_ttm = _sum_window(all_pays, asof, 366, 0)
 
+    # Classify policy in issuer currency when fully sourced; USD remains the
+    # valuation basis above and below. Profile currency is only a review hint.
+    original, original_currency = _original_regular_series(history, regular)
+    policy_regular = original if original is not None else regular
+    currency_hint = issuer_currency.strip().upper() if isinstance(issuer_currency, str) else ""
+    foreign_hint = (
+        len(currency_hint) == 3
+        and currency_hint.isascii()
+        and currency_hint.isalpha()
+        and currency_hint != "USD"
+    )
+    partial_evidence = any(
+        any(
+            key in item
+            for key in ("original_dividend", "original_currency", "original_dividend_source")
+        )
+        for item in history or []
+    )
+    needs_currency_confirmation = original is None and (
+        foreign_hint or is_adr is True or partial_evidence
+    )
+
     # --- Step 5: variable-policy on the *residual* (post-special) stream ---
-    window = [a for _, a in regular[-max(ppy or 4, 8) :]]
+    window = [a for _, a in policy_regular[-max(ppy or 4, 8) :]]
     variable_flag = False
     if len(window) >= MIN_REGULAR_PAYS:
         mean = statistics.fmean(window)
@@ -247,48 +353,48 @@ def analyze_dividends(
         low = issuer_language.lower()
         if any(k in low for k in _STRONG_VARIABLE_KEYWORDS):
             variable_flag = True
+            reasons.append("explicit_issuer_variable_dividend_policy")
         elif not variable_flag and any(k in low for k in _WEAK_PAYOUT_KEYWORDS):
             reasons.append("weak_payout_language_only_review_policy")
 
     # --- last increase date (ascending scan over regular amounts) ---
     last_increase: date | None = None
-    for i in range(1, len(regular)):
-        if regular[i][1] > regular[i - 1][1] + DIVIDEND_EQUALITY_EPS:
-            last_increase = regular[i][0]
+    for i in range(1, len(policy_regular)):
+        if _rate_increased(policy_regular[i][1], policy_regular[i - 1][1]):
+            last_increase = policy_regular[i][0]
 
     # --- freeze / cut via year-over-year per-pay RATE (frequency-independent,
     #     robust to rolling-window pay-count drift; v2.1 R-2) ---
-    eps = DIVIDEND_EQUALITY_EPS
     # Keep a material reduction visible through subsequent flat payments.
     # Semiannual interim/final payments can differ seasonally: compare their
     # rolling annual sums instead of comparing the larger final with interim.
-    cutoff = regular[-1][0] - timedelta(days=DIVIDEND_CUT_LOOKBACK_DAYS)
+    cutoff = policy_regular[-1][0] - timedelta(days=DIVIDEND_CUT_LOOKBACK_DAYS)
     if cadence == "semiannual":
         recent_rates = [
-            regular[i - 1][1] + regular[i][1]
-            for i in range(1, len(regular))
-            if regular[i][0] >= cutoff
+            policy_regular[i - 1][1] + policy_regular[i][1]
+            for i in range(1, len(policy_regular))
+            if policy_regular[i][0] >= cutoff
         ]
-        current_rate = regular[-2][1] + regular[-1][1]
+        current_rate = policy_regular[-2][1] + policy_regular[-1][1]
     else:
-        recent_rates = [amount for day, amount in regular if day >= cutoff]
-        current_rate = regular[-1][1]
+        recent_rates = [amount for day, amount in policy_regular if day >= cutoff]
+        current_rate = policy_regular[-1][1]
     peak_rate = max(recent_rates)
     cut_flag = current_rate < peak_rate * (1 - DIVIDEND_CUT_REL_TOL)
     if cut_flag:
         reasons.append("sequential_regular_rate_cut")
         reasons.append("material_cut_below_trailing_year_peak")
     freeze_flag = False
-    cur_rate = regular[-1][1]
-    prior_idx = len(regular) - 1 - ppy if ppy else -1
-    prior_rate = regular[prior_idx][1] if prior_idx >= 0 else None
+    cur_rate = policy_regular[-1][1]
+    prior_idx = len(policy_regular) - 1 - ppy if ppy else -1
+    prior_rate = policy_regular[prior_idx][1] if prior_idx >= 0 else None
     lang_maintains = bool(
         issuer_language and any(k in issuer_language.lower() for k in _MAINTAIN_KEYWORDS)
     )
     if prior_rate is not None:
         if cur_rate < prior_rate * (1 - DIVIDEND_CUT_REL_TOL):
             cut_flag = True
-        elif abs(cur_rate - prior_rate) <= eps:
+        elif _rates_equal(cur_rate, prior_rate):
             cadence_days = {"monthly": 30, "quarterly": 91, "semiannual": 182}.get(cadence, 365)
             days_since_increase = (asof_reg - last_increase).days if last_increase else 10_000
             time_confirms = days_since_increase > cadence_days + FREEZE_GRACE_DAYS
@@ -301,13 +407,23 @@ def analyze_dividends(
         if lang_maintains:
             freeze_flag = True
 
+    cut_amount_basis = "original_currency" if original is not None else "usd_history"
+    cut_confirmation_required = cut_flag and needs_currency_confirmation
+    if cut_confirmation_required:
+        cut_amount_basis = "unconfirmed"
+        reasons.append("dividend_cut_currency_basis_unconfirmed")
+    if original is not None:
+        if cut_flag:
+            reasons.append("original_currency_dividend_cut")
+        elif _material_rate_cut(regular, cadence, ppy):
+            reasons.append("fx_like_decline_original_dividend_not_cut")
+
     # --- suspension: an expected regular declaration is overdue (4th-review
     #     point 4). Distinct from cut (rate down) and freeze (rate held). ---
     cadence_days = {"monthly": 30, "quarterly": 91, "semiannual": 182, "annual": 365}.get(
         cadence, 365
     )
     suspension_flag = False
-    ref_date = _parse_date(str(as_of_date)) if as_of_date else None
     if ref_date is not None:
         days_since_last_pay = (ref_date - asof_reg).days
         if days_since_last_pay > cadence_days + FREEZE_GRACE_DAYS:
@@ -343,6 +459,9 @@ def analyze_dividends(
         special_dividend_flag=special_flag,
         variable_policy_flag=variable_flag,
         cut_flag=cut_flag,
+        cut_confirmation_required=cut_confirmation_required,
+        cut_amount_basis=cut_amount_basis,
+        original_dividend_currency=original_currency,
         freeze_flag=freeze_flag,
         suspension_flag=suspension_flag,
         latest_declared_confirmed=declared.get(regular[-1][0], False),
@@ -362,8 +481,10 @@ def step1_decision(
 ) -> tuple[str, str]:
     """Map a DividendBasis to a Step-1 verdict per the v2 decision matrix.
 
-    Returns (verdict, reason). Verdicts: FAIL / STEP1-RECHECK / HOLD-REVIEW /
-    STEP1-PASS (caller refines STEP1-PASS into the full tier via WS-2/WS-5).
+    Returns (verdict, reason). CURRENCY-REVIEW maps to a final HOLD-REVIEW.
+    Other verdicts: FAIL / STEP1-RECHECK / HOLD-REVIEW /
+    STEP1-PASS / CURRENCY-REVIEW. CURRENCY-REVIEW maps to a non-actionable
+    final HOLD-REVIEW, while HOLD-REVIEW here denotes a dividend freeze.
     """
     if basis.status == "NO-DIVIDEND":
         return "FAIL", "no_dividend"
@@ -371,6 +492,10 @@ def step1_decision(
         return "STEP1-RECHECK", ";".join(basis.reasons) or "assumption_required"
     if basis.suspension_flag:
         return "FAIL", "dividend_suspension_suspected"
+    if basis.variable_policy_flag and "explicit_issuer_variable_dividend_policy" in basis.reasons:
+        return "FAIL", "variable_dividend_policy"
+    if basis.cut_confirmation_required:
+        return "CURRENCY-REVIEW", "dividend_cut_currency_basis_unconfirmed"
     if basis.variable_policy_flag:
         return "FAIL", "variable_dividend_policy"
     if basis.cut_flag:

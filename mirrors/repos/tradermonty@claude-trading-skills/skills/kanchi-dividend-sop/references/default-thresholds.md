@@ -116,9 +116,13 @@ The 5% threshold is a configurable screening policy, not proof of an issuer's
 board-declared cut or its original-currency cause; a larger FX change can still
 require source review. This input has no original-currency declaration evidence.
 
-`DIVIDEND_EQUALITY_EPS` still governs increase/freeze comparisons. Issue #770
-separately owns the finer monthly-raise tolerance, TTM evaluation-date window and
-price-date provenance; those changes are not folded into #768.
+Increase/freeze comparisons use a relative tolerance (#770):
+`max(DIVIDEND_EQUALITY_MIN_EPS, DIVIDEND_EQUALITY_REL_TOL * prior amount)`,
+so a small monthly raise is detected while sub-cent noise stays "equal".
+The TTM window ends at the run's evaluation date, not at the latest payment,
+and each row records its price date (`price_date`, from the FMP quote
+`timestamp`) with a `price_date_mismatch` flag when it differs from the run's
+`as_of`.
 
 A supplied non-positive GAAP EPS deliberately HOLDs even when adjusted EPS is
 positive: this conservative gate runs before one-off/divergence classification.
@@ -127,6 +131,45 @@ using the otherwise-positive adjusted anchor. This differs from the previous
 one-off interpretation and is not a claim that adjusted earnings are negative.
 CET1 values use fraction units (0.125 = 12.5%); 12.5 itself is invalid/CAUTION,
 not silently rescaled. Issue #772's future input path must normalize source units.
+
+## Original-currency evidence gate (schema 4 follow-up)
+
+A material decrease in USD-converted payments is an observation, not proof of a
+board-declared cut. Every compared regular record must carry explicit
+`original_dividend` (finite positive number), `original_currency` (consistent
+three-letter code), and `original_dividend_source` (nonempty issuer/source
+reference). Generic quote/profile currency is never substituted for this evidence.
+The producer/caller is responsible for verifying that the cited source actually
+contains those issuer-currency amounts; the presence of a string is not an
+independent source-verification service.
+
+With complete evidence, material-cut and variable-policy calculations use the
+original-currency series (including semiannual annual-total comparison), while
+USD current yield still uses the original USD cash field and quote. A native
+cut hidden by FX remains a cut; an unchanged native rate with falling USD cash
+does not become a cut or a variable-payment policy. Other independent yield,
+suspension, or policy failures still apply.
+
+Ordinary USD histories without original-currency metadata keep the USD cut
+classification (`cut_amount_basis=usd_history`): a material cut sets `cut_flag`
+and FAIL. A validated non-USD profile currency, boolean `isAdr=true`, or partial
+original-currency metadata requires confirmation when a cut is observed without
+complete evidence. Profile currency is only a review hint, never native proof.
+The observed `cut_flag=True` is retained for the downstream T6 review monitor.
+`cut_confirmation_required=True` yields Step 1 `CURRENCY-REVIEW`, mapped directly
+to final HOLD-REVIEW with `t1_blocked=True`, even without CLI-added blockers.
+Legacy callers carrying the currency blocker receive the same final cap. This
+review is distinct from a freeze's income-cash-cow CONDITIONAL-PASS path.
+
+With complete original evidence, freeze and last-increase date also use the
+native series. An FX-only USD decline can clear the cut flag but cannot hide a
+native freeze. USD yield/entry valuation remains unchanged.
+
+CSV/JSON expose `cut_confirmation_required`, `cut_amount_basis` and
+`original_dividend_currency`. Schema 5 includes the integrated schema-3 entry
+basis change plus the #770 tolerance, TTM-window and price-date changes. The
+provider does not acquire original amounts: identified foreign or ADR declines
+require manual confirmation. No native values are guessed.
 
 Withheld entry targets are non-actionable: a Step-1-passing row is capped at
 HOLD-REVIEW with the withholding reason, regardless of event-scan result.

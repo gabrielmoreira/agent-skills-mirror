@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 5 |
+| Followed pats | 1 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `integrations/runtime/compatibility.md`
 
 ## File Index
 
@@ -61,9 +61,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`plugins/ipollowork-suite/AGENTS.md`](plugins/ipollowork-suite/AGENTS.md) |
-| 4 | ✓ | [`plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md`](plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md) |
-| 5 | ✓ | [`services/ipollowork/AGENTS.md`](services/ipollowork/AGENTS.md) |
+| 3 | ✓ | [`integrations/runtime/compatibility.zh.md`](integrations/runtime/compatibility.zh.md) |
+| 4 | ✓ | [`plugins/data-annotation/skills/labelu-data-annotation/SKILL.md`](plugins/data-annotation/skills/labelu-data-annotation/SKILL.md) |
+| 5 | ✓ | [`plugins/ipollowork-suite/AGENTS.md`](plugins/ipollowork-suite/AGENTS.md) |
+| 6 | ✓ | [`plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md`](plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md) |
+| 7 | ✓ | [`plugins/operation-recorder/skills/record-operations/SKILL.md`](plugins/operation-recorder/skills/record-operations/SKILL.md) |
+| 8 | ✓ | [`services/ipollowork/AGENTS.md`](services/ipollowork/AGENTS.md) |
+| 9 | → | [`integrations/runtime/compatibility.md`](integrations/runtime/compatibility.md) |
 
 ---
 

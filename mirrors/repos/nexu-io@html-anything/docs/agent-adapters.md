@@ -6,7 +6,7 @@ Codex、Claude Code、DeepSeek Harness（DSH）与 WorkBuddy 从同一份已安�
 
 各宿主分别启动 stdio MCP 进程，业务能力仍由同一份 `mcp.ts`、会话/工程、Model Gateway、Hyperframes 编辑器和渲染器提供。它们可以使用相同或不同的 `MOTION_DATA_DIR`；共用代码不代表共用一个 MCP 进程。macOS 同一数据目录的连接现在复用完整编辑器后台，各自保留工程绑定，Studio 仍只有一个活动工程；协议、版本或代码不兼容时拒绝复用，见 [共享编辑器](shared-editor.md)。Windows / Linux 保留原预览服务复用。Agent 仍需按最新工具契约读取会话、选择产物和校验 revision。
 
-本地也可以使用 [npm 轻量安装器](npm-installation.md) 的 `setup --host codex|claude|deepseek|workbuddy`，自动安装对应入口与 Skills，并共用一份应用和原生依赖缓存。下文的导出方式保留，生成配置与自动注册是不同操作。
+新安装使用[源码安装指南](../install.md)。Codex 运行源码自动安装脚本；其他宿主连接同一源码运行时并按下文生成适配器。生成配置与自动注册是不同操作。
 
 ## 两种入口，共用同一工程
 
@@ -36,7 +36,7 @@ npx skills add ./skills --skill openmotion-director openmotion-production openmo
 
 显式选择五个正式入口，保留相互引用的同级目录；源码中的 `reference-video` 仅为兼容入口，不作为第六个正式 Skill。选择目标宿主后按 CLI 提示安装，不使用 `--all` 扩大安装范围。Skills CLI 有自己的 Node 要求；README 使用 CI 固定的 Node 26.11.1。
 
-此路径仅复制制作指引及 Skill 内参考，不安装运行时、浏览器或媒体工具，也不注册 MCP。需另按下文连接已安装应用，保留源码 checkout 的共享文档，并按运行时返回的路径读取固定引擎指南。完整同装与宿主配置保护仍使用 [npm 安装器](npm-installation.md)。本机验证的发现/文件安装不代表宿主模型已完成创作。
+此路径仅复制制作指引及 Skill 内参考，不安装运行时、浏览器或媒体工具，也不注册 MCP。需另按下文连接已安装应用，保留源码 checkout 的共享文档，并按运行时返回的路径读取固定引擎指南。完整安装与配置保护使用[源码安装指南](../install.md)。本机验证的发现/文件安装不代表宿主模型已完成创作。
 
 ## 生成
 

@@ -46,6 +46,7 @@ from . import (
     instagram,
     jobs,
     jobs_digest,
+    jobs_story,
     linkedin,
     library,
     library_index,
@@ -60,10 +61,12 @@ from . import (
     providers,
     query,
     reddit,
+    reddit_envelope,
+    reddit_health,
     reddit_keyless,
     reddit_listing,
     reddit_public,
-    reddit_search,
+    reddit_session,
     relevance,
     rerank,
     schema,
@@ -1301,7 +1304,8 @@ def _best_community_comment(items: list[schema.SourceItem]) -> str | None:
     for item in items:
         comments = item.metadata.get("top_comments") or []
         for comment in comments:
-            if not isinstance(comment, dict):
+            # A pending comment's score is withheld, so it has no vote strength.
+            if not isinstance(comment, dict) or comment.get("score_pending"):
                 continue
             body = (comment.get("excerpt") or comment.get("text") or comment.get("body") or "").strip()
             if len(body) < 12:
@@ -2270,6 +2274,7 @@ def run(
     corpus_dirs: list[str] | None = None,
     corpus_all_time: bool = False,
     x_posts: x_envelope.Envelope | None = None,
+    reddit_threads: reddit_envelope.Envelope | None = None,
 ) -> schema.Report:
     _check_research(config)
     # ``suppress_x_host_lane`` is distinct from ``internal_subrun``: comparison
@@ -2303,6 +2308,23 @@ def run(
     corpus_requested = bool(requested_sources and "corpus" in requested_sources)
     if corpus_enabled and requested_sources and "corpus" not in requested_sources:
         requested_sources = [*requested_sources, "corpus"]
+    # The --search list as the user gave it, before the engine attaches its
+    # own lanes, so the dropped-source warning can tell what it would drop.
+    search_list = list(requested_sources or [])
+    # A run about a company keeps the jobs lane under a --search list that
+    # omits it: hosts routinely pass full source lists and would silently
+    # lose the lane. EXCLUDE_SOURCES=jobs is the opt-out; quick runs keep
+    # their small source budget.
+    company_signal = str(config.get("_company_signal") or "")
+    company_jobs_attached = bool(
+        requested_sources
+        and company_signal
+        and depth != "quick"
+        and "jobs" not in requested_sources
+        and "jobs" not in excluded_sources
+    )
+    if company_jobs_attached:
+        requested_sources = [*requested_sources, "jobs"]
 
     # Host-fetched X lane. EXCLUDE_SOURCES=x or a --search list without
     # x wins: the envelope is ignored with a receipt line and stays unconsumed.
@@ -2333,6 +2355,22 @@ def run(
         config["_x_envelope"] = envelope
         config["_x_lane_missing"] = x_lane_missing
 
+    # Host-found Reddit thread refs (--reddit-threads). They serve every
+    # Reddit stream of the run; a run that excludes Reddit ignores them.
+    reddit_refs_envelope = reddit_threads
+    if reddit_refs_envelope is not None and (
+        "reddit" in excluded_sources
+        or (requested_sources and "reddit" not in requested_sources)
+    ):
+        log.source_log(
+            "reddit", "host Reddit threads: envelope ignored (reddit is excluded from this run)",
+            tty_only=False,
+        )
+        reddit_refs_envelope = None
+    if reddit_refs_envelope is not None:
+        config = dict(config)
+        config["_reddit_envelope"] = reddit_refs_envelope
+
     # Gate StockTwits to ticker/crypto topics. Single chokepoint: when False,
     # available_sources() never registers stocktwits, so the planner can't
     # assign it (eligible_sources = available ∩ capabilities).
@@ -2345,6 +2383,7 @@ def run(
     if mock:
         runtime = providers.mock_runtime(config, depth)
         reasoning_provider = None
+        available_before_search = list(MOCK_AVAILABLE_SOURCES)
         available = list(requested_sources or MOCK_AVAILABLE_SOURCES)
         if corpus_enabled and "corpus" not in available:
             available.append("corpus")
@@ -2359,6 +2398,7 @@ def run(
             suppress_x_host_lane=suppress_x_host_lane,
             x_envelope=envelope is not None,
         )
+        available_before_search = list(available)
         if requested_sources:
             available = [source for source in available if source in requested_sources]
     # Keep an explicitly requested but unconfigured corpus in the plan long
@@ -2379,7 +2419,6 @@ def run(
     # names it: the lane is free and bounded, and a host that forgets one
     # word must not cost the run a working board. Quick runs keep the
     # sanitizer's two-source budget, as for the installed lanes below.
-    company_signal = str(config.get("_company_signal") or "")
     if (
         host_plan
         and not requested_sources
@@ -2442,6 +2481,16 @@ def run(
         )
         if depth != "quick" and not hiring_signals_mode:
             _ensure_company_jobs_in_host_plan(plan, available, company_signal)
+        if search_list:
+            _warn_search_dropped_plan_sources(
+                external_plan,
+                search_list,
+                available_before_search,
+                excluded_sources,
+                jobs_attached=company_jobs_attached,
+                jobs_past_window=jobs_past_window,
+                company_signal=company_signal,
+            )
         plan_source = "external"
     else:
         _check_research(config)
@@ -2480,7 +2529,11 @@ def run(
         # Drill plans re-fetch only the sources that contributed to the matched
         # cluster, and host plans name their final source set; the company-topic
         # jobs injection must not widen either.
-        _ensure_jobs_in_plan(plan, available, explicit=hiring_signals_mode, topic=topic)
+        _ensure_jobs_in_plan(
+            plan, available,
+            explicit=hiring_signals_mode or company_jobs_attached,
+            topic=topic,
+        )
         _ensure_devto_in_plan(plan, available)
     if "corpus" in available and plan.subqueries:
         # Corpus is deterministic and user-registered, so it always gets one
@@ -2523,6 +2576,18 @@ def run(
             )
     else:
         print("[Planner]   (no subqueries in plan)", file=sys.stderr)
+
+    polymarket_hints = getattr(plan, "polymarket_hints", None)
+    if polymarket_hints:
+        config = dict(config)
+        config["_polymarket_hints"] = polymarket_hints
+
+    if reddit_refs_envelope is not None:
+        # Each Reddit stream receives the host threads its terms match.
+        reddit_refs_envelope.bind_subqueries(
+            (sq.label, (sq.search_query, sq.ranking_query))
+            for sq in plan.subqueries if "reddit" in sq.sources
+        )
 
     bundle = schema.RetrievalBundle(artifacts={"grounding": []})
     deferred_retryable_failures: dict[str, dict[str, Any]] = {}
@@ -2733,6 +2798,13 @@ def run(
     # lane's time budget for this topic (see ``_jobs_lane_budget``).
     # It goes into a copy, so the caller's config is left as it was.
     config = {**config, "_jobs_lane": {}}
+    if not jobs_past_window and "jobs" in available and any(
+        "jobs" in subquery.sources for subquery in plan.subqueries
+    ):
+        # The stories the jobs lane searches each board for, fixed before
+        # the first jobs stream starts because that stream settles the
+        # lane's budget.
+        config["_jobs_story_terms"] = _jobs_story_terms(plan, topic, config)
     stream_config = dict(config)
     stream_config["_research_deadline"] = _research_deadline(config, STREAM_FUTURE_TIMEOUT_SECONDS)
     with _abandoning_executor(max_workers=max_workers) as executor:
@@ -2973,6 +3045,11 @@ def run(
                     digg_bar_dropped = True
                     bundle.record_detail(source, bar_note)
             elif source != "jobs":
+                if source == "polymarket":
+                    # The parser already ranked these markets for the subject;
+                    # a related player's award race shares no words with the
+                    # topic, so token relevance would cut it first.
+                    normalized = polymarket.by_selection(normalized)
                 stream_limit = settings["per_stream_limit"]
                 host_fetched_x = source == "x" and config.get("_x_envelope") is not None
                 if host_fetched_x:
@@ -3899,6 +3976,8 @@ def _finalize_items_by_source(
     for source, items in items_by_source_raw.items():
         _check_research(config or {})
         items = sorted(items, key=lambda item: item.local_rank_score or 0.0, reverse=True)
+        if source == "polymarket":
+            items = polymarket.by_selection(items)
         if source == "digg":
             # De-duplication keeps the earlier of two similar stories. Two
             # searches can return the same event as a prominent story and as
@@ -3942,13 +4021,15 @@ def _finalize_items_by_source(
                     entity_count=_comparison_entity_count(config),
                 )
                 http.fixture_source_record(enrichment_request, schema.to_dict(items))
-        # Post-merge topic-relevance filter for Polymarket: comparison queries
-        # fan out into per-entity subqueries ("Hermes", "OpenClaw") whose topic
-        # is too narrow for Gamma API to filter meaningfully. Re-validating the
-        # merged list against the full original topic drops off-topic markets
+        # Post-merge topic bar for Polymarket: the entity matcher, with the
+        # run's hints, over each item's matched market and event title. It
+        # stands in for the generic relevance floor, which exempts matched
+        # markets (signals.prune_low_relevance), and drops off-topic markets
         # (e.g., WTI crude oil, Elon tweet counts) before footer emission.
         if source == "polymarket" and topic:
-            items = polymarket.filter_items_against_topic(topic, items)
+            items = polymarket.filter_items_against_topic(
+                topic, items, (config or {}).get("_polymarket_hints"),
+            )
             # --polymarket-keywords (via config): additional keyword filter
             # for ambiguous single-token topics (e.g., "Warriors" → nba,gsw).
             keywords = config.get("_polymarket_keywords") if isinstance(config, dict) else None
@@ -4126,6 +4207,38 @@ def _jobs_lane_budget(config: dict[str, Any]) -> jobs.LaneBudget:
         if isinstance(holder, dict):
             holder["budget"] = budget
     return budget
+
+
+def _jobs_story_terms(
+    plan: schema.QueryPlan, topic: str, config: dict[str, Any],
+) -> list[str]:
+    """The run's story terms: the host plan's, else drawn from its subqueries.
+
+    Drawn terms leave out the topic (the company, or the person it names),
+    the company the topic resolved to and those the host named, and every
+    entity of a comparison.
+    """
+    if plan.jobs_queries:
+        terms, origin = list(plan.jobs_queries), "host plan"
+    else:
+        company = config.get("_company") or {}
+        excluded = [
+            topic,
+            str(company.get("company") or ""),
+            *_host_companies(company),
+            *(config.get("_comparison_entities") or []),
+            *planner._comparison_entities(topic),
+        ]
+        terms = jobs_story.derive_terms(
+            (subquery.search_query for subquery in plan.subqueries), excluded,
+        )
+        origin = "drawn from the plan's subqueries"
+    log.source_log(
+        "Jobs",
+        f"story terms ({origin}): {', '.join(terms) or 'none'}",
+        tty_only=False,
+    )
+    return terms
 
 
 def _host_companies(company: dict[str, Any]) -> list[str]:
@@ -4568,6 +4681,63 @@ def _ensure_company_jobs_in_host_plan(
     )
 
 
+# Lanes the engine attaches on its own. A --search list never drops them in
+# the sense a host needs to hear about.
+ENGINE_ATTACHED_SOURCES = frozenset(
+    {"grounding", "corpus", "perplexity", "amazon", "meta_ads"}
+)
+
+
+def _warn_search_dropped_plan_sources(
+    external_plan: dict,
+    search_list: list[str],
+    available_before_search: list[str],
+    excluded_sources: set[str],
+    *,
+    jobs_attached: bool,
+    jobs_past_window: bool,
+    company_signal: str,
+) -> None:
+    """Name, once, each --plan source that only the --search list removed.
+
+    A source counts when the plan names it, the run could serve it, and
+    EXCLUDE_SOURCES does not list it. Engine-attached lanes never count, nor
+    does jobs on a past window, where the lane is skipped whatever --search
+    says. ``jobs_attached`` means the jobs lane survived the --search list
+    because the run is about a company; the line then says so.
+    """
+    can_serve = set(available_before_search) - excluded_sources
+    named: list[str] = []
+    for subquery in external_plan.get("subqueries") or []:
+        if not isinstance(subquery, dict):
+            continue
+        for source in subquery.get("sources") or []:
+            if isinstance(source, str) and source not in named:
+                named.append(source)
+    dropped = [
+        source for source in named
+        if source in can_serve
+        and source not in search_list
+        and source not in ENGINE_ATTACHED_SOURCES
+        and not (source == "jobs" and (jobs_attached or jobs_past_window))
+    ]
+    parts: list[str] = []
+    if dropped:
+        them = "it" if len(dropped) == 1 else "them"
+        parts.append(
+            f"--search dropped {', '.join(dropped)}: the --plan names {them} "
+            f"and the run could search {them}, but --search does not list {them}."
+        )
+    if jobs_attached and not jobs_past_window and "jobs" in named:
+        parts.append(
+            "The --plan names jobs and --search would have dropped it; kept "
+            f"because the run is about a company ({company_signal}) "
+            "(set EXCLUDE_SOURCES=jobs to skip it)."
+        )
+    if parts:
+        log.source_log("Planner", " ".join(parts), tty_only=False)
+
+
 def _external_plan_names_source(external_plan: Any, source: str) -> bool:
     if not isinstance(external_plan, dict):
         return False
@@ -4803,17 +4973,34 @@ def _run_reddit_backfill(config: dict[str, Any], call) -> Any:
         executor.shutdown(wait=False, cancel_futures=True)
 
 
-def _reddit_search_blocked_artifact(items: list[dict]) -> dict[str, Any]:
-    """Mark Reddit partial when its site search was refused and threads came
-    from subreddit listings alone; ``{}`` when search worked or nothing came."""
-    reason = reddit_search.failed_reason()
-    if not reason or not items:
+def _reddit_served_artifact(
+    items: list[dict], paths: dict[str, str], *, extra: tuple[str, ...] = (),
+    count: int | None = None,
+) -> dict[str, Any]:
+    """The served-path detail for a Reddit lane that delivered items.
+
+    The source stays ``ok`` whichever path served (#959, #1083): a refused
+    site search with threads from the web floor reads
+    ``web+arctic served 14; search blocked``, never partial. No detail
+    state is set, so a failed path never lands in ``rate_limited_sources``.
+    """
+    if not items and not count:
         return {}
-    return _outcome_artifact(
-        health.PARTIAL,
-        f"Reddit site search was blocked ({reason}); threads come from subreddit "
-        "listings only",
-    )
+    return {
+        "_source_outcome_detail": reddit_health.served_detail(
+            items, paths, extra=extra, count=count,
+        ),
+    }
+
+
+def _with_reddit_lane_notes(artifact: dict[str, Any], notes: list[str]) -> dict[str, Any]:
+    """``artifact`` with the Reddit lane's notes appended to its detail."""
+    if not notes:
+        return artifact
+    artifact = dict(artifact)
+    prior = artifact.get("_source_outcome_detail")
+    artifact["_source_outcome_detail"] = "; ".join([prior, *notes] if prior else notes)
+    return artifact
 
 
 def _outcome_artifact(
@@ -5953,15 +6140,35 @@ def _merge_reddit_items(free: list[dict], sc: list[dict]) -> list[dict]:
     """Merge free + ScrapeCreators Reddit items, free first, deduped by post id.
 
     Used when the thinness-floor trigger backfills a thin free run with SC, so a
-    thread present in both is never double-listed.
+    thread present in both is never double-listed. A thread both hold keeps the
+    free copy, with SC's live score and comments folded in field by field, so
+    a pending or unknown archive score never hides the live one.
     """
+    from . import reddit_hydrate
+
     merged = list(free)
-    seen = {_reddit_post_key(it) for it in free}
+    by_key = {_reddit_post_key(it): it for it in free}
     for it in sc:
         key = _reddit_post_key(it)
-        if key and key not in seen:
-            seen.add(key)
+        if not key:
+            continue
+        existing = by_key.get(key)
+        if existing is None:
+            by_key[key] = it
             merged.append(it)
+            continue
+        if existing is it:
+            continue
+        incoming = dict(it)
+        engagement = dict(incoming.get("engagement") or {})
+        engagement.setdefault("score", incoming.get("score"))
+        engagement.setdefault("num_comments", incoming.get("num_comments"))
+        incoming["engagement"] = engagement
+        incoming.setdefault("engagement_source", reddit_hydrate.LIVE)
+        if incoming.get("top_comments"):
+            incoming["top_comments"] = reddit_hydrate._stamp_depth(incoming["top_comments"])
+            incoming.setdefault("comments_source", "sc")
+        reddit_hydrate.merge_post(existing, incoming)
     return merged
 
 
@@ -5984,6 +6191,11 @@ def _merge_youtube_items(free: list[dict], sc: list[dict]) -> list[dict]:
 
 def _detail_rate_limits_source(source: str, artifact: dict) -> bool:
     if artifact.get("_source_outcome_detail_state") != health.RATE_LIMITED:
+        return False
+    if source == "reddit":
+        # Reddit delivered items, so some path still serves: a throttled
+        # path (site search, a web rung, a listing) skips only itself for the
+        # run (reddit_health) and is a detail note, never a source skip.
         return False
     return source != "x" or not bool(artifact.get("_x_backup_not_rate_limited"))
 
@@ -6553,6 +6765,12 @@ def _retrieve_stream_impl(
         )
         if sc_first:
             # env.REDDIT_BACKEND_PIN_VAR=scrapecreators: SC primary, public fallback
+            if config.get("_reddit_envelope") is not None:
+                log.source_log(
+                    "reddit",
+                    "host Reddit threads are not used while Reddit is pinned to ScrapeCreators",
+                    tty_only=False,
+                )
             primary_failure: Exception | None = None
             try:
                 result = reddit.search_and_enrich_memo(
@@ -6622,8 +6840,17 @@ def _retrieve_stream_impl(
             - (REDDIT_SC_BACKFILL_RESERVE_SECONDS if has_sc_key else 0.0)
             if research_deadline is not None else None
         )
+        lane_notes: list[str] = []
+        lane_paths: dict[str, str] = {}
+        # The consented logged-in session, when its gate passes (read once per
+        # run; None otherwise). Its budget is spent per entity.
+        lane_session = reddit_session.session_for(config, topic=raw_topic or reddit_query)
         try:
-            with reddit_keyless.lane_deadline(lane_deadline):
+            with reddit_keyless.lane_deadline(lane_deadline), \
+                    reddit_keyless.lane_notes() as lane_notes, \
+                    reddit_keyless.lane_paths() as lane_paths, \
+                    reddit_session.lane(lane_session, raw_topic or reddit_query), \
+                    reddit_envelope.lane(config.get("_reddit_envelope"), subquery.label):
                 public_results = reddit_public.search_reddit_public(
                     reddit_query, from_date, to_date, depth=depth,
                     subreddits=subreddits, dedicated_subreddits=dedicated_subreddits,
@@ -6649,6 +6876,14 @@ def _retrieve_stream_impl(
                 health.TIMEOUT,
                 "Reddit had no time left in the run's budget before it found threads",
             )
+        free_failed = (
+            not public_results and public_failure is None
+            and reddit_health.every_path_failed(lane_paths)
+        )
+        if free_failed and not has_sc_key:
+            # Every path Reddit was asked through refused or failed: a
+            # transport failure, never a topic nobody posted about.
+            return [], _outcome_artifact(*reddit_health.failure_outcome(lane_paths))
         # The floor counts the free threads that are on topic for this stream,
         # the ones its relevance prune will keep. Enough of them, or no key to
         # backfill with -> done. max(min_items, 1) keeps the default
@@ -6659,7 +6894,9 @@ def _retrieve_stream_impl(
             subquery.ranking_query or reddit_query, freshness_mode,
         ) if has_sc_key and min_items > 0 else len(public_results)
         if on_topic >= max(min_items, 1) or not has_sc_key:
-            return public_results, _reddit_search_blocked_artifact(public_results)
+            return public_results, _with_reddit_lane_notes(
+                _reddit_served_artifact(public_results, lane_paths), lane_notes,
+            )
         if public_results:
             sys.stderr.write(
                 f"[Reddit] Free path returned {len(public_results)} "
@@ -6698,22 +6935,28 @@ def _retrieve_stream_impl(
             if public_results:
                 # The free path delivered: Reddit is working. The failed
                 # backfill is a detail note, never the source's outcome.
+                served = _reddit_served_artifact(public_results, lane_paths)
                 artifact = {
-                    "_source_outcome_detail": (
+                    "_source_outcome_detail": "; ".join(filter(None, [
+                        served.get("_source_outcome_detail"),
                         f"ScrapeCreators backfill failed after "
-                        f"{len(public_results)} free items: {exc}"
-                    ),
+                        f"{len(public_results)} free items: {exc}",
+                    ])),
                 }
                 if state != health.RATE_LIMITED:
                     # A ScrapeCreators rate limit says nothing about
                     # reddit.com (and the run memo already stops a retry).
                     artifact["_source_outcome_detail_state"] = state
                 return public_results, artifact
+            failed_paths = reddit_health.failures(lane_paths)
             return public_results, _outcome_artifact(
                 state,
-                f"Reddit backup failed after {len(public_results)} public items: {exc}",
+                f"Reddit backup failed after {len(public_results)} public items: {exc}"
+                + "".join(f"; {failed}" for failed in failed_paths),
             )
         merged = _merge_reddit_items(public_results, sc_items)
+        if not merged and free_failed:
+            return [], _outcome_artifact(*reddit_health.failure_outcome(lane_paths))
         if public_failure is not None:
             state = reddit.classify_run_failure(str(public_failure))
             return merged, _outcome_artifact(
@@ -6731,7 +6974,13 @@ def _retrieve_stream_impl(
         if backfill_failures:
             summary = _summarize_lane_failures(backfill_failures, "reddit")
             backfill_detail = f"{backfill_detail}; ScrapeCreators backfill lost {summary}"
-        return merged, {"_source_outcome_detail": backfill_detail}
+        added = len(merged) - len(public_results)
+        served = _reddit_served_artifact(
+            public_results, lane_paths, extra=("sc",) if added else (), count=len(merged),
+        ).get("_source_outcome_detail")
+        if served:
+            backfill_detail = f"{served}; {backfill_detail}"
+        return merged, _with_reddit_lane_notes({"_source_outcome_detail": backfill_detail}, lane_notes)
     if source == "x":
         if config.get("_x_lane_missing"):
             # The model declared the connector lane but passed no envelope.
@@ -7288,24 +7537,40 @@ def _retrieve_stream_impl(
         result = truthsocial.search_truthsocial(subquery.search_query, from_date, to_date, depth=depth, config=config)
         return truthsocial.parse_truthsocial_response(result), _result_outcome_artifact(source, result)
     if source == "polymarket":
-        # Same sharing as digg: only the search is memoized; parsing still
-        # runs per caller with its own relevance topic.
+        # Polymarket searches the stable research topic (plus the host's
+        # aliases and related names), not the per-subquery search_query, so
+        # every subquery and the thin-source retry share one search. The same
+        # topic judges relevance: a narrowed subquery would let off-topic
+        # markets through on broad passes and drop everything on narrow ones.
+        relevance_topic = raw_topic or topic or subquery.search_query
+        hints = polymarket.PolymarketHints.coerce((config or {}).get("_polymarket_hints"))
         result = fetch_memo.fetch_once(
-            ("polymarket", subquery.search_query, from_date, to_date, depth),
+            ("polymarket", relevance_topic, hints, from_date, to_date, depth),
             lambda: polymarket.search_polymarket(
-                subquery.search_query, from_date, to_date, depth=depth,
+                relevance_topic, from_date, to_date, depth=depth, hints=hints,
+                deadline=_research_deadline(config, STREAM_FUTURE_TIMEOUT_SECONDS),
             ),
             timeout=_memo_wait_seconds(config),
             cacheable=_clean_search_result,
         )
-        # Relevance filtering keys off the stable original research topic, not the
-        # per-subquery search_query (which narrows differently on each fanout pass
-        # and would let off-topic markets through on broad subqueries while dropping
-        # everything on narrow ones).
-        relevance_topic = raw_topic or topic or subquery.search_query
+        if result.get("partial"):
+            # Some term searches failed while others returned events: keep
+            # what came back, report the lane partial, and (via `error`) keep
+            # the incomplete result out of the fetch memo.
+            artifact = {
+                "_source_outcome": {
+                    "state": schema.PARTIAL,
+                    "detail": str(result.get("error") or "partial"),
+                    "attempted": True,
+                }
+            }
+        else:
+            artifact = _result_outcome_artifact(source, result)
         return (
-            polymarket.parse_polymarket_response(result, topic=relevance_topic),
-            _result_outcome_artifact(source, result),
+            polymarket.parse_polymarket_response(
+                result, topic=relevance_topic, hints=hints, to_date=to_date,
+            ),
+            artifact,
         )
     if source == "github":
         # Resolve once at the pipeline boundary so search and enrich

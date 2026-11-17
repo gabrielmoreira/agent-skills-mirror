@@ -12,8 +12,6 @@ OpenMotion 的模板库把视频参考、Motion.md 和复刻指令放在同一�
 
 打开模板详情，播放完整参考视频，查看视觉风格与制作注意事项。点击 **下载 motion.md** 可以保存这份指南。
 
-![模板详情](readme/live-product/detail.zh-CN.jpg)
-
 ## 3. 交给 Agent 复刻
 
 点击 **复刻模板**，复制包含准确模板名称和 ID 的指令，粘贴到自己的 Agent，再补充品牌规范、文案与素材。尚未安装时，指令会引导 Agent 阅读官方安装指南。
@@ -26,4 +24,4 @@ OpenMotion 的模板库把视频参考、Motion.md 和复刻指令放在同一�
 
 Agent 创建工程后，打开返回的 Studio 链接。检查镜头、字幕和声音，在时间轴中调整，再导出成片。参考视频与 Motion.md 提供创作指导；只有带可编辑源码的模板才可以直接创建源码副本。
 
-[安装指南](https://github.com/nexu-io/openmotion/blob/main/docs/install.md) · [Agent 接入](agent-adapters.md)
+[安装指南](https://github.com/nexu-io/openmotion/blob/main/install.md) · [Agent 接入](agent-adapters.md)

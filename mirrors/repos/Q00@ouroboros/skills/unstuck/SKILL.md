@@ -96,7 +96,7 @@ The dispatch block distinguishes declared `host_driven`, capability-neutral `hos
 1. Show the visible markdown under a short "what the lateral toolkit suggests" header.
 2. With `host_action="spawn_subagents"`, or `host_action="dispatch_subagents_if_supported"` when the runtime has a native parallel primitive, use the active runtime's `orchestrate_subagents` capability: one isolated child per payload, launched together, each given its `prompt` verbatim plus its `context`.
 3. Await all children and correlate each result by `result_correlation_key` (normally `context.persona`).
-4. Optional Round 2 cross-attack, only when Round 1 answers diverge: give each persona short summaries of the others and ask "Identify one weakness in each. 200 words max."
+4. Optional Round 2 cross-attack, only when Round 1 answers diverge: give each persona short summaries of the others and ask "Identify one weakness in each, briefly."
 5. Synthesize (below).
 
 ##### Debate, constrained runtime without sub-agent dispatch
@@ -125,6 +125,6 @@ In unstuck mode, present options, not a verdict:
 
 In both modes the choice is the user's: never auto-progress to the next workflow step on their behalf.
 
-## RFC #1392 State Breadcrumb Footer
+## State Breadcrumb Footer
 
 End the final response with exactly one line `◆ <current state> → next: <recommended action>`. Derive the state from live session state via `ouroboros_session_status` when available, otherwise from this skill's actual outcome. Never use a linear `Step N of M` footer; when the next step is a real choice, list 2-3 options.

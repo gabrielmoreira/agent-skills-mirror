@@ -77,6 +77,10 @@ Wait for an in-flight observation before applying an update that would reload th
 job. Do not boot it out to speed up deployment. Read back the installed script
 copies against the selected source and verify a completed native round as below;
 an install receipt or source-link update alone does not prove the observer changed.
+A refreshed install writes `watcher/install-source.json`; `status` reports
+`deploy: current` only while the installed copies match that recorded source and
+`stale` once the source moves on — treat a merged watcher change as delivered only
+when a completed native round reports `deploy: current`.
 
 The default suits recovery metadata for long-lived sessions: IDs, working
 directories and launch parameters. Chat-body persistence belongs to the conversation
@@ -134,6 +138,15 @@ an automatic manifest once. Later equal observations write health only. The defa
 `latest.json` route points at the newest saved manifest; manual snapshot archives
 remain available. Restore selection and retry options follow the
 [canonical quick start](../SKILL.md#quick-start).
+
+Each published automatic manifest also records the Ghostty window/tab tree with
+tab titles, `name override` values and TTY-to-session anchors
+(`window_tab_mapping: known` on success); the tree refreshes only when a change
+triggers a publish, so the pre-reboot manual snapshot stays authoritative for
+tab order and titles. The launchd runtime needs one-time Automation
+(Apple-events) authorization for its Python to control Ghostty; without it the
+capture degrades to `captured: false` with that reason, and the last manual
+archive keeps the authoritative manual tree.
 
 ## Partial UUID coverage
 

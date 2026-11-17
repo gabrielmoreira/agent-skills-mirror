@@ -75,7 +75,7 @@ openmotion 围绕已有 Agent 用户的产品演示、参考复刻、动态图�
 
 ### 安装完成后的引导（Codex / Agent）
 
-All Agent installation entries share the [installation-success reply rules](install.md#installation-success-reply). Briefly confirm installation and open the template library with `openmotion_open_preview({target:"templates"})`, or setup's `onboarding.preview.previewUrl` before native discovery. Report the actual presentation result; do not create a placeholder project. Keep technical verification internal. Missing or stale native tools can use `onboarding.directAccess` under its installed transport and policy checks, without requesting a restart or a new chat by default.
+All Agent installation entries share the [installation-success reply rules](install-onboarding.md#installation-success-reply). Briefly confirm installation and open the template library with `openmotion_open_preview({target:"templates"})`, or setup's `onboarding.preview.previewUrl` before native discovery. Report the actual presentation result; do not create a placeholder project. Keep technical verification internal. Missing or stale native tools can use `onboarding.directAccess` under its installed transport and policy checks, without requesting a restart or a new chat by default.
 
 ### 首次体验默认规则
 
@@ -83,7 +83,7 @@ All Agent installation entries share the [installation-success reply rules](inst
 
 用户明确要求 Agent 使用某个模板时，进入 [openmotion-template-to-video](../skills/openmotion-template-to-video/SKILL.md)，沿用准确模板 ID、原生时长和默认内容。未选模板只回复“体验”时先问具体模板；拒绝或暂不体验则停止。不固定推荐模板，不重复追问可选素材，也不静默替换失败模板。
 
-创建后保留原有工作；同一次体验已创建则续用。按[首次体验交付规则](../skills/openmotion-production/references/templates.md#first-run-experience-defaults)打开并检查真实可编辑工程，用户要求视频文件时才导出。
+创建后保留原有工作；同一次体验已创建则续用。按[首次体验交付规则](../skills/openmotion-template-to-video/references/first-use.md#first-run-experience-defaults)打开并检查真实可编辑工程，用户要求视频文件时才导出。
 
 ### 开始创作
 
@@ -233,3 +233,7 @@ The plugin name, install script, data directory and Studio ports are the team ba
 ## Preview after continued edits
 
 Each saved content edit or restore requests the latest preview in the calling chat. The default preserves your current chat: show the right panel here, or queue it while you are elsewhere and open it when you return. Only an explicit show-now request permits switching back for that turn. Background requests skip presentation. A queued acknowledgment, saved source or hidden screenshot does not prove you saw the latest result; the Agent checks live content and visibility separately. See the [shared handoff](../skills/openmotion-production/references/native.md#continuing-edits) for host capabilities and receipt limits.
+
+## Share editable projects offline
+
+Open the project sidebar and choose **All projects** to search and open saved projects, export one project, or **Export all projects**. The project action menu also provides **Export project**. **Import projects** accepts an OpenMotion ZIP or a native project ZIP, validates it and creates independent copies. Existing projects and the active selection remain unchanged. To reuse an existing HyperFrames project, follow the [import quick start](project-archives.md#import-from-hyperframes). See [Project archives](project-archives.md) for the package format and limits.

@@ -53,7 +53,21 @@ curl --fail-with-body --silent --show-error 'https://queue.fal.run/fal-ai/flux/s
   --data '{"prompt":"A ceramic cup on a wooden table, soft morning light","image_size":"square_hd","num_images":1,"num_inference_steps":4,"output_format":"png"}'
 ```
 
-Reference-image/video/audio fields, if supported by the chosen model, belong in `parameters` under their exact schema names. Supply publicly reachable URLs; this tool does not upload local paths. Arbitrary text, 3D and training outputs are outside the media-file adapter.
+For fal models, reference-image/video/audio fields, if supported, belong in `parameters` under their exact schema names. Supply publicly reachable URLs or schema-supported data URIs. The new top-level `referenceAsset` is for adapters with implemented local image editing; fal local-path upload is not implemented. Arbitrary text, 3D and training outputs are outside the media-file adapter.
+
+## Music and sound effects
+
+Reviewed 2026-11-16 against the [ElevenLabs music schema](https://fal.ai/models/fal-ai/elevenlabs/music/api), [Sound Effects V2 schema](https://fal.ai/models/fal-ai/elevenlabs/sound-effects/v2/api) and [Sound Effects V3 OpenAPI](https://fal.ai/api/openapi/queue/openapi.json?endpoint_id=elevenlabs/sound-effects/v3). Audio output alone does not establish speech: choose the model’s actual operation.
+
+```json
+{"action":"generate","provider":"fal","projectId":"project","requestId":"music-01","model":"fal-ai/elevenlabs/music","modality":"audio","mode":"text-to-audio","prompt":"Gentle piano background music, warm and calm","parameters":{"music_length_ms":10000,"force_instrumental":true}}
+```
+
+```json
+{"action":"generate","provider":"fal","projectId":"project","requestId":"sfx-01","model":"elevenlabs/sound-effects/v3","modality":"audio","mode":"text-to-audio","prompt":"A gentle wind chime tinkling in a soft breeze","parameters":{"duration_seconds":2,"loop":true}}
+```
+
+Music sends the brief in `prompt`. ElevenLabs Sound Effects, Sound Effects V2 and Sound Effects V3 send it in `text` while retaining `text-to-audio`; they are not relabeled as speech and require no voice. Other parameters pass through under their native keys. Do not apply music duration units or speech voice options to SFX. Availability, accepted options and billing remain model-specific; inspect the current catalogue and schema. These examples do not submit a request by themselves.
 
 ## Polling and result
 

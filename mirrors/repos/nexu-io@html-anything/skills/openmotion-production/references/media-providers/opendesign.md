@@ -1,6 +1,6 @@
 # OpenDesign Cloud media
 
-Based on the supplied Cloud media API contract; reviewed 2026-11-13. This is a test-stage contract. Sections: discovery, request templates, polling, errors, boundaries.
+Based on the Cloud media API contract; reviewed 2026-11-16. This is a test-stage contract. Sections: discovery, request templates, polling, errors, boundaries.
 
 ## Setup and discovery
 
@@ -21,6 +21,10 @@ curl --fail-with-body --silent --show-error \
 ```
 
 The response is `{models:[{model,kind,capabilities}]}`. Change/omit modality to discover video/audio. Account/workspace availability comes from this list, not the example names below. Tool entries are normalized; check the current contract/model capabilities for required options. Cached entries do not establish current entitlement. Billing and credentials belong to the Cloud workspace, not its upstream model vendor; workspace allowance is used first and additional use may consume recharge balance.
+
+The catalogue is bound to the configured key and API origin. Use `action: "models"` with `refresh: true` or Settings → Sync models to refresh it. Explicit `capabilities.edits: false` disables image references; absent or malformed values mean unknown and remain disabled. Refreshing never submits a generation request. Model names and generic image-input metadata do not establish editing access.
+
+Cloud catalogue kinds `audio_speech` and `audio_music` both appear as `modality: "audio"`, with `mode: "text-to-speech"` and `mode: "text-to-audio"` respectively. Legacy `audio` entries retain speech behavior. Use the discovered model's mode; a vendor name alone does not establish whether it generates speech or music.
 
 ## Request templates
 
@@ -46,6 +50,28 @@ Speech:
 
 A contract alternative is model `byteplus-tts-2` with voice `zh_female_vv_uranus_bigtts`; choose a voice belonging to the selected model. Neither example proves workspace access.
 
+Image edit and image-to-video take workspace library references through `openmotion_assets_use` (`references: [{assetId, versionId}]`), not provider asset IDs; OpenMotion uploads them. Check `supportsImageReference`, `maxInputImages` and `nativeOptions` from discovery first. For example, edit with two references:
+
+```json
+{"action":"generate","requestId":"cloud-edit-01","model":"opendesign:gpt-image-2.6-flare","modality":"image","prompt":"Keep the banana from the first image; light it like the second","references":[{"assetId":"A","versionId":"A1"},{"assetId":"B","versionId":"B1"}],"parameters":{"quality":"low"}}
+```
+
+Image-to-video with one first frame:
+
+```json
+{"action":"generate","requestId":"cloud-i2v-01","model":"opendesign:wan-2.7","modality":"video","prompt":"The camera slowly moves closer","references":[{"assetId":"A","versionId":"A1"}],"parameters":{"duration":5,"resolution":"720p","ratio":"16:9"}}
+```
+
+Native speech options pass through `parameters` unchanged, such as ElevenLabs `voice_settings.speed` or BytePlus `audio_params.speech_rate`. Seedream 5.5 and both video models currently accept one input image; first-and-last-frame video is rejected by the service.
+
+Music:
+
+```json
+{"action":"generate","provider":"opendesign","projectId":"project","requestId":"cloud-music-01","model":"elevenlabs-music-v2","modality":"audio","mode":"text-to-audio","prompt":"Gentle instrumental piano, warm and calm, no vocals","parameters":{"music_length_ms":10000}}
+```
+
+`elevenlabs-music-v2` is a built-in entry: the Cloud catalogue does not list it yet, so discovery shows it with `source: "builtin"`. Like the speech examples, it does not prove workspace access. Music does not require a voice. The example requests 10 seconds using the provider-native `music_length_ms` option; accepted parameters and duration limits depend on the selected model. OpenMotion passes music options through without rounding the duration to a preset.
+
 Wire mapping (all paths are relative to the dashboard API origin):
 
 | Type | POST path | JSON body | Poll path |
@@ -53,6 +79,7 @@ Wire mapping (all paths are relative to the dashboard API origin):
 | Image | `/api/v1/media/images/generations` | `{model,prompt,...parameters}` | `/api/v1/media/images/tasks/{task_id}` |
 | Video | `/api/v1/media/videos/tasks` | `{model,prompt,...parameters}` | `/api/v1/media/videos/tasks/{task_id}` |
 | Speech | `/api/v1/media/audio/speech` | `{model,voice,parameters:{text,...options}}` | `/api/v1/media/audio/tasks/{task_id}` |
+| Music | `/api/v1/media/audio/music` | `{model,parameters:{prompt,...options}}` | `/api/v1/media/audio/tasks/{task_id}` |
 
 The speech adapter extracts `parameters.voice` and nests the remaining options, using the tool's prompt as `parameters.text`. Do not send fal-style flat speech fields. For example, the speech wire request is:
 
@@ -109,4 +136,10 @@ Current OpenMotion non-2xx handling does not expose raw Cloud error bodies/heade
 
 The contract supplied for this integration is the source for the paths and examples above; no public per-endpoint specification is asserted. Use the [Cloud dashboard](https://open-design.ai/cloud/dashboard) for current API origin, workspace models and access instructions. Verify changed test-stage behavior against the current contract before adapting requests.
 
-Cloud music has no submit endpoint in the supplied contract and is not exposed here. Local-reference upload, image edits and signed-upload/commit are not implemented in this debug adapter. Cancellation stops local work without promising a remote cancellation or refund; polling errors/timeouts never trigger automatic paid resubmission.
+Cloud speech and music use distinct submit endpoints and share audio task polling and asset retrieval. Reference images are snapshotted when queued, then uploaded with the three-step upload (create, credential-free PUT, commit). Image models whose catalogue publishes `capabilities.edits: true` submit the returned asset IDs as `images` to `/api/v1/media/images/edits`, up to their `max_input_images`; video models that publish `max_input_images` receive one as `images:[{asset_id, role:"first_frame"}]` on `/api/v1/media/videos/tasks`. Speech result metadata (ElevenLabs character `alignment`, BytePlus `sentences` with word timings) is kept as `job.result` and returned by `status`. Cancellation stops local work without promising a remote cancellation or refund; polling errors/timeouts never trigger automatic paid resubmission.
+
+## Original Cloud task recovery
+
+Use resume with the original jobId and a stable requestId to check a failed/interrupted Cloud task with a known remoteId, without uploading inputs or submitting another paid generation. Cancelled jobs and confirmed remote failures cannot resume. Use retry_save only for retained local outputs (savePending); regeneration is a separate paid request requiring authorization. Studio offers Check original task on eligible failed jobs. Reference counts follow the selected model before any reference file is read; there is no fixed library count ceiling. Local Codex/account editing remains one image, video remains one first frame, and project referenceAsset remains image-only.
+
+Cloud tasks keep bounded read retries (five attempts) and local timeouts (30 minutes for video, 15 for other media). Interrupted tasks remain failed until explicitly resumed; reconnection never retries upload or generation POSTs. Status and generated asset versions preserve bounded, redacted structured result metadata. Confirmed remote failures retain short error codes and retryable flags and cannot resume, even if the provider labels them retryable. Every returned output is saved with existing media validation. Non-empty parameters.images selects image edits; combining it with pinned local references is rejected before submission.

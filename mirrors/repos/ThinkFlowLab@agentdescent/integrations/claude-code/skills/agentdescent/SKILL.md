@@ -77,7 +77,9 @@ after `doctor`. Do not invent a keyless path for those cards.
      `agentdescent algorithms list` / `show`. To build the spec for one,
      call `algorithm_spec` (name, absolute `path`, absolute `cases`, optional
      `params` object, `rounds`/`workers` 1/1 for a quick trial): it writes the
-     starter spec beside the target, plans it, and returns `spec` to pass to
+     starter spec under `$AGENTDESCENT_HOME` (`agentdescent.<name>.spec.json`,
+     inside the operator's write allowlist; pass `out` for another allowed root,
+     never inside a directory target), plans it, and returns `spec` to pass to
      `start` after the user's yes -- the MCP form of `agentdescent algorithms
      run`. Hosts that expose slash
      commands also ship `/algorithms` (Claude `/agentdescent:algorithms`,
