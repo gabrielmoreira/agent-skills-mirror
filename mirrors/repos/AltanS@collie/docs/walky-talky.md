@@ -211,11 +211,11 @@ machines is one folder. The lead reads the FOLDER column of its merged `who` lis
 pane in your space whose `<repo>` matches, and makes one delivery per pane. The sender's own pane is
 never one of them. Each delivery has its own receipt.
 
-Check the scope first. `who` lists your space, the panes `here` would reach and you. `who --workspace
-<repo>` keeps only the panes of one folder inside the list that is shown, so a folder of another space
-shows only with `--all`. `--here` is the same as the default, and it needs a pane. `--all` and
-`--here` are not allowed together. A folder name in another space is not reached, unless you add
-`--outside`.
+Check the scope first. `who` lists your space, the panes `here` would reach and you.
+`who --workspace <repo>` keeps only the panes of one folder inside the list that is shown, so a
+folder of another space shows only with `--all`. `--here` is the same as the default, and it needs a
+pane. `--all` and `--here` are not allowed together. A folder name in another space is not reached,
+unless you add `--outside`.
 
 ```sh
 collie walky who --workspace my-app
@@ -379,9 +379,10 @@ message never steers, whoever sends it.
 | `claude` | queue | Enter queues it in the harness, and it runs after the turn |
 | `codex` | queue key | Tab queues it; Enter would steer, so Collie never presses it there |
 | `cursor` | queue | Enter queues it in the harness, and it runs after the turn |
-| `grok` | hold | Collie holds it and types it when the pane is free |
+| `grok` | queue | Enter queues it in the harness, and it runs after the turn |
 | `hermes` | hold | Collie holds it and types it when the pane is free |
 | `kiro` | hold | Collie holds it and types it when the pane is free |
+| `mcode` | hold | Collie holds it and types it when the pane is free |
 | `muse` | queue key | Tab queues it; Enter would steer, so Collie never presses it there |
 | `omp` | queue key | Ctrl+Q queues it; Enter would steer, so Collie never presses it there |
 | `opencode` | queue | Enter queues it in the harness, and it runs after the turn |
@@ -440,8 +441,9 @@ collie walky cancel wt_n2d8s1v7c4b9
 - `inbox` prints this pane's unread messages and marks them read. `--keep` leaves them unread.
 - `inbox --all` prints the last 50 that reached the pane. Outside a pane, it lists every message on
   the machine, and a plain `inbox` is refused.
-- `who` lists the panes of your space, and `who --all` lists every pane. `who --workspace
-  <repo>[#<branch>]` lists one folder in the space, and `who --here` is the default
+- `who` lists the panes of your space, and `who --all` lists every pane.
+  `who --workspace <repo>[#<branch>]` lists one folder in the space, and `who --here` is the
+  default
   ([Send to a space or a folder](#send-to-a-space-or-a-folder)).
 - `status <id>` prints the id, then one line per pane. Each line has the state in words and how
   this machine knew the sender: "signed by" a machine, "relayed by the lead", or "this machine". A
@@ -572,7 +574,8 @@ phone has Cancel instead, on its row and on the line under the box. Its row then
 `cancelled by sender`. A message that was already typed answers "Already typed. Nothing to take
 back." The line and the buttons go when nothing is held any more.
 
-On a Claude Code session linked with `collie harness link claude`, a message that waits for your text
+On a Claude Code session linked with the experimental `collie harness link claude` (see
+[Send by data](claude-code-on-your-phone.md#send-by-data-optional-experimental)), a message that waits for your text
 also has Deliver now: on the line above the box when it is the only one, with "Your text stays in the
 box.", and on its row in the sheet. A tap hands that message to the agent at once, and your text stays
 in the box as you left it. Its row then reads "Delivered. Your text is still in the box." Deliver now
@@ -656,8 +659,9 @@ collie skill install claude
 `collie skill install all` installs into every harness whose config folder exists. A running agent
 reads its instructions at start, so restart it after an install.
 
-Only `collie update`, `collie skill install` and `collie skill sync` write those files. The bridge
-never writes them, and no bridge start touches them.
+Only `collie update`, `collie skill install`, `collie skill sync` and a change of the Hill's switch
+write those files. No bridge start touches them. The skill holds the Hill's section only while the
+Hill is on ([Switch the Hill on or off](hill.md#switch-the-hill-on-or-off)).
 
 ### Where the skill goes
 
@@ -813,7 +817,7 @@ These are the limits that stay on. Each bridge counts them for its own panes, on
 | --- | --- |
 | 30 messages per sender in 10 minutes. A sender is its kind, machine and pane, never its label. The Hill's "Tell all sessions now" counts in a budget of its own, so it never uses up the one your answers go out on | `rate limit` |
 | Your broadcast to `all` or `<member>/all` counts one message per pane it reaches | `rate limit` |
-| 6 messages in 10 minutes between the same two panes, either direction. `COLLIE_WALKY_PAIR_LIMIT` (`walky_pair_limit` in the `[bridge]` section of the config file) sets it, from 1 to 100, and each machine counts for itself | `pair limit` |
+| 12 messages in 10 minutes between the same two panes, either direction. `COLLIE_WALKY_PAIR_LIMIT` (`walky_pair_limit` in the `[bridge]` section of the config file) sets it, from 1 to 100, and each machine counts for itself | `pair limit` |
 | On a lead, 60 messages in 10 minutes from one machine, all its panes together | `rate limit` |
 | A body over 4,000 characters, after control bytes are removed | `body over 4,000 characters` |
 | A reply chain deeper than 4 replies | `thread depth` |

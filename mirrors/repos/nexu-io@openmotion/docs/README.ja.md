@@ -534,7 +534,7 @@ npx skills add ./skills --skill openmotion-director openmotion-production openmo
 }
 ```
 
-**公開 MCP ツール 11 個**で、テンプレート検索・詳細取得、作成、読み取り、編集、プレビュー、素材の読み込み、出力、版の復元、キャンセルを扱います。共通の手順とエンジンガイドは MCP resources から取得できます。[ツール契約](mcp-phase1-tools.md)
+**公開 MCP 名 16 個（素材ライブラリの互換エイリアス 1 個を含む）**で、テンプレート検索・詳細取得、プロジェクトの作成と読み取り、編集、プレビュー、素材の読み込みと BYOK 生成、再利用素材のバージョン、プロジェクト管理と ZIP 共有、出力、版の復元、キャンセルを扱います。共通の手順とエンジンガイドは MCP resources から取得できます。[ツール契約](mcp-phase1-tools.md)
 
 `openmotion_list_templates` でテンプレートを探し、`openmotion_get_template` で詳細を確認します。`openmotion_create_project` で編集用のコピーを作成できます。[テンプレート一覧](template-catalog.md)
 
@@ -639,7 +639,7 @@ MP4 + 編集可能なソース + 素材 + 版と出力の検証記録
 
 </details>
 
-BYOA は既存クライアントを使い、BYOK は対応するモデルアカウントを接続します。Studio とローカルサービスが作品を管理し、認証情報はプロジェクト外へ。第 1 段階の公開 MCP は**プロジェクト用 9 個とテンプレートカタログ用 2 個、合計 11 個のツール**です。モデル生成は Studio とローカル Gateway から利用し、この図は生成・公開ツールを公開 MCP に追加するものではありません。
+BYOA は既存の Agent クライアントを使い、素材ワークスペースではモデルによる直接生成と素材の再利用ができます。BYOK は対応するモデルアカウントを接続します。Studio とローカルサービスが編集可能な作品を管理し、認証情報はプロジェクトファイルの外に保たれます。第 1 段階の公開 MCP は**16 個の名前：プロジェクト用 9 個、テンプレートカタログ用 2 個、プロジェクトアーカイブ用 1 個、プロジェクト管理用 1 個、BYOK メディア用 1 個、同じ素材ライブラリ機能の名前 2 個**です。Studio でプロバイダーキーを設定し、`openmotion_media_use` でモデルを探してローカル Gateway 経由でメディアを生成します。`openmotion_assets_use`（`openmotion_assets` も互換）で再利用素材のアップロード・確認・生成、バージョン保持、選んだバージョンの作品への読み込みを行います。[素材ライブラリガイド](assets.md)。キーはサービス内に留まり、公開 MCP 契約に公開（パブリッシュ）機能は含まれません。
 
 #### 技術スタックとソースの索引
 
@@ -721,9 +721,9 @@ BYOA は既存クライアントを使い、BYOK は対応するモデルアカ�
 
 [リソース提出時のチェックリスト](../library/ENTRY_TEMPLATE.md) · [貢献ガイド](../CONTRIBUTING.md) · [問題を報告](https://github.com/nexu-io/openmotion/issues) · [コントリビューター](https://github.com/nexu-io/openmotion/graphs/contributors) · [メディア向け資料](media-kit.md)
 
-OpenMotion の専用サイトは `open-design.ai/openmotion` に開設予定です。
+このリポジトリの名前は `nexu-io/html-anything` から [`nexu-io/openmotion`](https://github.com/nexu-io/openmotion) に変わりました。
 
-[OpenDesign の動画ギャラリー](https://open-design.ai/ja/motion/) · [OpenDesign Go](https://go.open-design.ai/?utm_source=github&utm_medium=referral&utm_campaign=openmotion&utm_content=readme_ja) · [Discord](https://discord.com/invite/M7NnHS9gNa) · [Feishu](https://applink.feishu.cn/client/chat/chatter/add_by_link?link_token=b6cs46dc-acb2-48ed-941d-c45642ead841) · [X @OpenDesignDevs](https://x.com/OpenDesignDevs) · [X @OpenDesignHQ](https://x.com/OpenDesignHQ) · [YouTube](https://www.youtube.com/channel/UChtshixMhvtgBWzoD9R_Qfg)
+[OpenMotion 公式サイト](https://open-design.ai/ja/motion/) · [OpenDesign Go](https://go.open-design.ai/?utm_source=github&utm_medium=referral&utm_campaign=openmotion&utm_content=readme_ja) · [Discord](https://discord.com/invite/M7NnHS9gNa) · [Feishu](https://applink.feishu.cn/client/chat/chatter/add_by_link?link_token=b6cs46dc-acb2-48ed-941d-c45642ead841) · [X @OpenDesignDevs](https://x.com/OpenDesignDevs) · [X @OpenDesignHQ](https://x.com/OpenDesignHQ) · [YouTube](https://www.youtube.com/channel/UChtshixMhvtgBWzoD9R_Qfg)
 
 [**GitHub で OpenMotion にスターを付ける**](https://github.com/nexu-io/openmotion)
 
@@ -739,7 +739,7 @@ OpenMotion のライセンスは [Apache-2.0](../LICENSE)です。第三者の�
 
 | 出典 | 関係 |
 | --- | --- |
-| [OpenDesign](https://github.com/nexu-io/open-design) | UI の由来、リソース構成、ブランドの方針。[デザインシステム](design-system.md) と [Motion ショーケース](https://open-design.ai/ja/motion/) |
+| [OpenDesign](https://github.com/nexu-io/open-design) | OpenMotion の開発元。UI デザイン、リソース構成、ブランド方針を担当。[デザインシステム](design-system.md) と [Motion ショーケース](https://open-design.ai/ja/motion/) |
 | [Hyperframes](https://github.com/heygen-com/hyperframes) | HTML 動画合成、Studio、レンダリングの基盤（0.9.7 固定）。制作者の参考、外部改編デモ、部品ソース。[エンジンの説明](hyperframes.md)、[テンプレートの告知](../template-library/NOTICE.md) と[カタログの出典](template-catalog.md) |
 | [MotionGit](https://motiongit.com/) / adunext | Kinetic Tech ソースを Presenter Tech として収録。[ライセンスとクレジット](../library/templates/presenter-tech/NOTICE.md) |
 | [Hypit](https://github.com/hypit-ai/hypit) | エージェントによる話題の動画の再構築と編集可能な派生版の着想。ランタイムの導入なし |
@@ -753,3 +753,14 @@ OpenMotion のライセンスは [Apache-2.0](../LICENSE)です。第三者の�
 [素材の出典](readme/ASSETS.md) · [その他の展示素材の出典](readme/brand-showcase/README.md) · [フォントのライセンス](../web/design-system/fonts/NOTICES.txt) · [Studio のライセンス](../studio/LICENSE)
 
 旧 HTML Anything アプリは [`legacy` ブランチ](https://github.com/nexu-io/openmotion/tree/legacy)に保存されています。現在のブランチと配布範囲は[リポジトリ移行ガイド](repository-migration.md) を参照してください。
+
+## スター数の推移
+
+<a href="https://www.star-history.com/?repos=nexu-io%2Fopenmotion&amp;type=date">
+  <picture>
+    <source media="screen" srcset="https://raw.githubusercontent.com/nexu-io/openmotion/readme-charts/star-history.svg">
+    <img alt="毎日更新される OpenMotion の GitHub スター数の推移" src="readme/star-history.svg">
+  </picture>
+</a>
+
+[オフライン用のスナップショット](readme/star-history.svg)

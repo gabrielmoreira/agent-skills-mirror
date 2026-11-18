@@ -20,7 +20,7 @@ npm start
 
 The checked-in `.lfsconfig` excludes LFS downloads by default. Normal clones with Git LFS installed keep pointers until you request the media. Without Git LFS installed, pointers remain ordinary text files. GitHub and local Markdown viewers load registered public README images/GIFs directly, without CMS authentication or an LFS download. Those previews require internet access. Built-in Studio templates and repository catalog source retain their local dependencies. Linked CMS references are not made available offline.
 
-The preview migration removes 134,065,890 bytes from the default working tree. It preserves all catalog entries and their local source assets. The WebP conversion reduces 2,008 local images from 74.2 MB to 23.0 MB without an additional download step. The Git checkout budget is 128 MiB; it includes every tracked path even when identical files share a Git blob. Installed dependencies, optional downloads and old history are separate from this budget.
+The preview migration removes 134,065,890 bytes from the default working tree. It preserves all catalog entries and their local source assets. The WebP conversion reduces 2,008 local images from 74.2 MB to 23.0 MB without an additional download step. The Git checkout has an advisory target of 128 MiB; it includes every tracked path even when identical files share a Git blob. Exceeding that total reports a warning without blocking contributions or media cleanup. Installed dependencies, optional downloads and old history are separate from this total.
 
 ## Download only what you need
 
@@ -95,7 +95,7 @@ Only those registered files are downloaded, with size/hash verification and atom
 
 ### Checks and history
 
-Stage changes, then run `npm run templates:check` and `npm run storage:check` to validate the final tree. Ordinary Git checkout contents are limited to 128 MiB; newly staged ordinary files above 1 MiB fail. Catalog small assets are limited to 100 KB, media files to 50 MiB and total assets per template to 150 MiB. Metadata, source manifests, canonical URLs, identities and duplicate local/remote storage are checked without downloading media.
+Stage changes, then run `npm run templates:check` and `npm run storage:check` to validate the final tree. Ordinary Git checkout contents above 128 MiB produce an advisory warning, including the measured size, rather than a validation failure. This applies to PR CI, local checks and media preparation, including new growth. The catalog has no separate aggregate hard cap. Preparation still fetches the exact PR base and validates the cleaned index before uploading or pushing. Newly staged ordinary files above 1 MiB still fail. Catalog small assets are limited to 100 KB, media files to 50 MiB and total assets per template to 150 MiB. Metadata, source manifests, canonical URLs, identities and duplicate local/remote storage are checked without downloading media.
 
 PR CI uses `--final-tree` with the PR base to check the final merge tree after verifying Squash-only settings. Passing a base SHA to the local checkers additionally checks every intermediate branch commit; that stricter history audit intentionally rejects raw files added and later removed. It is not the merge gate for this final-preparation flow. Squash commits the sanitized final tree; merge/rebase would retain the intermediate media, so they must stay disabled.
 

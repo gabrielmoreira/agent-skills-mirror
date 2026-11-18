@@ -398,9 +398,10 @@ rate and at its largest input.**
   on the largest reply a test has.
 - Seen 2× (2026-10-14, 2026-10-18).
 
-**A new route or setting runs the packages whose guards list them.**
-TestEveryRouteHasACommandOrIsNamed (internal/cli) lists every route, and
-TestSettingsSaveKeepsWhatItDoesNotSend (internal/gui) every setting.
+**A new route, setting or agent runs the packages whose guards list
+them.** TestEveryRouteHasACommandOrIsNamed (internal/cli) lists every
+route, TestSettingsSaveKeepsWhatItDoesNotSend (internal/gui) every
+setting, and TestEveryAgentInLibrary (internal/library) every agent.
 - 11-11: 747632890 (context-cap) and eb56de0b5 (the catalog's model list)
   ran chosen tests and turned both guards red on CI at 8aae124b0. An hour
   later 58fb07095 (named proxies, 1,714 lines) did it again with three
@@ -416,7 +417,16 @@ TestSettingsSaveKeepsWhatItDoesNotSend (internal/gui) every setting.
   TestEveryRouteIsNamedForTheCLI fails on a route that the CLI's list
   doesn't name. When a rule keeps being missed, put its check where
   the work already runs.
-- Seen 2× (2026-11-11, 2026-11-15).
+- 11-17: 00b2c11a6 (Open Code Review) added an agent and ran chosen
+  internal/agent tests, a real ocr review and both cross-OS vets, but
+  pushed before its full suite. The suite then found
+  TestEveryAgentInLibrary red, and effdd1beb added the noLibrary line
+  half an hour later. That guard was red on main for a new agent on
+  11-10 twice (399010bef, 68cb92e8e), 11-12 (7e8214d60) and now. The
+  check now also runs where agents are added: internal/agent's
+  TestEveryAgentNamedForTheLibrary fails on an agent that targetOf's
+  cases and noLibrary both leave unnamed.
+- Seen 3× (2026-11-11, 2026-11-15, 2026-11-17).
 
 **A byte-for-byte check of a stream allows what the protocol allows,
 and its failure message counts against what it compared.**
@@ -474,7 +484,13 @@ back every line after it, and the log moves in bursts.
   which isn't among the five it names (a8098a886). Write the record once
   the run has ended. A change that adds a box that scrolls on its own
   runs every GUI file that wheels the page (`reach`, `wheelTo`).
-- Seen 2× (2026-10-17, 2026-10-28).
+- 11-18: 97e0ecdaa (saved-proxy Test) recorded the whole GUI suite as
+  "still running at push: 3736 tests in, 127 red, none in a proxy or
+  provider file", named issues for some files and left "the rest" to
+  another session's rerun. A red counted before the run ends can't be
+  told from one the change made later in the same run.
+- Seen 3× (2026-10-17, 2026-10-28, 2026-11-18); moved to the code
+  standards.
 
 **A red only CI's OS shows is probed on CI's runners, with the
 suspect switched on and off, not rerun.** Start from what changed in
@@ -591,6 +607,31 @@ measures every label beside its control, in every editor it opens.
   editor is added to it.
 - Seen 1× (2026-11-12).
 
+**A guard test reads what it guards from the code, not from a list
+kept by hand.**
+- old-webkit's check that every script is loaded by index.html exempted
+  lazy files through a hand list. headerpresets.js (0d0462d4a),
+  navpages.js and pasteread.js were each added without joining it, so
+  the test was red on main for a week (#6030) and every GUI run's record
+  cited it. 4b8c5948e reads the exemptions from the scripts'
+  import("./x.js") calls, and an unimported file still turns it red.
+- Done right on 11-17: tui_zh_named_test.go and library_named_test.go
+  in internal/agent read the other package's files, so the change that
+  adds a label or an agent goes red in its own run.
+- Seen 1× (2026-11-17).
+
+**A guard that needs no browser runs on CI, or it guards nothing.**
+- nav-timeout.test.cjs reads the test sources only, yet CI ran no GUI
+  file, so it was red on main from 11-06 (#5425, 4 files) to 11-18 (24
+  files): every new test copied a 5s default, and each push's record
+  cited the red. skygunner's patch for the first nine sat on the issue
+  for ten days. 549813abb fixed all 24 and runs nav-timeout, i18n-keys
+  and i18n-en-no-cjk in test.yml's Linux job.
+- A guard test written for a class of mistake goes where every push
+  runs it. A patch posted on an issue is taken, with credit, before
+  another "seen again".
+- Seen 1× (2026-11-18).
+
 **Playwright's WebKit is not WebKitGTK.** A GUI change with motion or a new
 browser API is tried in the real Linux app too.
 - 18e82adc6 (10-11) traded the layouts in a view transition. The GUI suite
@@ -653,6 +694,19 @@ too.**
 - Seen 1× (2026-10-08).
 
 ## Concurrency and tests
+
+**A check and what it counts are one step, and a reading counts what it
+had when it was taken, not when it is looked at.**
+- #6958: TestCapHoldsUnderParallelSessions went red on ubuntu CI at 93%
+  of a 90% cap. A turn found not near its cap was counted on the account
+  only once it took its lane, so turns checking in that gap passed
+  together. The account's usage came from replies that began while a
+  round was out, so the reading lacked that round. turnSpends still took
+  every turn come back as read, and halved what a turn spends.
+- Widen the gap in a test hook to find such a red, not by rerunning. A
+  hook placed inside the lock it is testing hides the gap: the first
+  cut's test was green with the fix taken out.
+- Seen 1× (2026-11-17).
 
 **A fake or child process a test starts ends when the test does**, and
 **a timing test leaves room on both sides**, are in the code standards
@@ -887,6 +941,11 @@ cause:
     for three days, and it went red on ubuntu CI again at 0a7633136. It
     was ported unchanged as 11c427eaa. Now in the code standards (a
     red's issue is read to its last comment, 77898391d).
+  - 11-17: a filed red cited instead of taken. #6877 (i18n-keys, a
+    one-line fix the issue itself named) was red on main for a day, and
+    efcf8d9c0 and 50c5a52db each named it as "red on origin/main, filed"
+    and shipped. Nobody commented or took it; db02200ce fixed it at the
+    check. A red a commit cites twice is one to take, not to cite again.
   - 11-15: a claim with no work behind it holds a red as long as no
     comment at all. #2903 ("the plugin answered no response", ubuntu
     race) was claimed on 10-19 ("I'm on it: finding the cause by
@@ -954,6 +1013,14 @@ cause:
     on llms-full.txt and on public/search/*.json, the index b70c45048
     added on 11-15 (fixed in f5f27070a). Docs pages now feed two
     generated files: run `node search-index.mjs` too.
+    11-16 dbbb2f26b (fixed in 9d5d8baf2) and 11-17 00b2c11a6 (a new
+    agent's docs row, cli (linux/amd64) red at 2f25728dd, fixed in
+    f7e0c2763) did the same: five times in five days, each by a Go
+    change that also touched a docs page and ran only Go tests. Now in
+    the code standards' criterion 3.
+    Then testenv got the check: every package's run fails while a docs
+    page differs from site/docs-index.sums, which either generator now
+    writes with both files.
   - 10-28: of main's last 58 Test runs, 49 were cancelled by the next
     push. 0b99b8fbe's new allocation bound went red in macOS's Race job
     (sync.Pool lets go under -race) at 25df3187b, the first run after it
@@ -1023,6 +1090,21 @@ before the merge, are in the code standards.)
   two commits that landed under it filled the room.
 - Seen 3× (2026-10-17, 2026-11-10, 2026-11-12); moved to the code
   standards.
+
+**A byte budget is never paid for with behaviour the change isn't
+about.**
+- 286e3b6d5 (11-10, the panel's Usage tab account menu) fit under the
+  core budget with "no comments cut and no raise". Its diff also took
+  `aria-expanded="false"` off seven menu buttons on other pages (account
+  switch, sign-in proxy, window cap, both Thinking chips, reply model,
+  the local model's two pickers), so a screen reader no longer heard
+  them as shut, and openProtoMenu, which changes the attribute only
+  where it is set, stopped saying they opened. The body doesn't name
+  them. side-effort was red in all 10 cases from then on (#6353, found
+  a week later).
+- Diff a budget-tight change for removed lines in functions it is not
+  about, and name every one in the body.
+- Seen 1× (2026-11-18).
 
 **A release published after a newer one takes Latest, and with it the
 update feed and the tap, unless the publish step checks.**
@@ -1172,6 +1254,9 @@ standards since 10-18, widened to a worktree and its logs. See
 
 ## Moved to the code standards
 
+- **A record is written once its run has ended** (10-17, 10-28,
+  11-18). On 11-18 97e0ecdaa was pushed with the GUI suite at 3736
+  tests and 127 red, "the rest" of them left to another session.
 - **One full suite runs on a machine at a time** (10-16, 10-17, 11-16).
   On 11-16 64c426158 ran the GUI suite on mica beside another session's
   full suite, was pushed with it still running, and named its 90 reds by
@@ -1687,6 +1772,11 @@ each one.
     request (#6688, cd030691a). 0b8c4bfc3's new field left
     TestEveryWordHasZh red (e9fcc6229). A change that adds a route or a
     label runs internal/cli, internal/gateway and internal/tui whole.
+    11-17: 618bfc1a9 gave Kimi Code a "subagent pool" field and ran
+    internal/agent and internal/gui only (both machines were loaded),
+    so TestEveryWordHasZh was red again (fixed in the commit after
+    it). internal/agent's TestEveryFieldLabelHasTUIZh now fails on such
+    a label in the package the change runs.
   - A red with an issue still needs an owner. #6677 was red on main for
     about three hours. A session that met it commented "Not taking it"
     and shipped past it, and the review fixed it in 4c86b0ab4. The four

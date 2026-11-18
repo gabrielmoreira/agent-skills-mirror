@@ -93,6 +93,22 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   listens for ADB there`, a set that cannot be reached prints `could not reach`, and
   `tools/adb-closed.py <tv ip>` answers it in its exit status - 0 the TV itself refused, 1 the port is
   open, 2 it could not tell.
+- **Debugging is off, so the closing check should say "closed", but it answers 2 again and again: the
+  set drops packets to closed ports instead of refusing them.** Seen on a [Philips 58PUS7304/12,
+  TPM191E (`PH9M_EA_5599`), Android TV 12,
+  `STT2.230526.001`](https://github.com/Gathin23/cleanyourtv/issues/3890) on Ethernet: USB debugging
+  off, authorisations revoked, `adb_wifi_enabled` 0, and that firmware has no Network or Wireless
+  debugging entry either. `tools/adb-closed.py <tv ip>` answered `could not check <tv ip>:5555: it did
+  not answer in 3 s` before and after a reboot and from an ordinary terminal, and ports 1 and 5556
+  timed out the same way, while 1925 accepted a connection in the same second - so the TV was awake
+  and reachable, and the silence was the set's own behaviour, not the network, the router or a VPN.
+  `adb connect <tv ip>:5555` gave `WSAETIMEDOUT` (10060) as well, and 5555 had accepted at once while
+  debugging was still on. On a board like this the closing step cannot reach "closed" by the letter of
+  the rule, and a timeout says nothing either way, so read it as unproven rather than as still open:
+  say that when you hand the TV back instead of reporting the port as confirmed closed, leave
+  debugging off, and check once more after the reboot. The one thing worth reading in that state is a
+  port that is known to be open on that board answering while 5555 does not - on a Philips that is 1925
+  (or 1926), the JointSpace API `tools/philips-api.py` reads.
 - **A cable to the computer gives no device in `adb devices`**: a TV's USB-A ports are usually host
   ports, for a drive, a keyboard or an Ethernet adapter, and the cable route in the bullet above needs
   one that carries ADB device mode instead - the exception, as on the Xiaomi boxes below. On the GX655
@@ -786,6 +802,31 @@ Things that bit us or contributors, so they don't bite you. Commands use `tools/
   MOKA `R4_GTV`, Google TV 14): the firmware re-enables setupwraith at every cold boot and its
   `.RecoveryActivity` takes Home. `logcat | grep RecoveryActivity` shows it starting several times a
   second. Re-enable launcherx as above. [Notes](devices/acer-r4g.md).
+- **The TV comes back on the setup wizard, then goes black after the language choice**, seen on a
+  TCL 55DC760 (product "Percee TV", `tcl_eu`, `mt5891`, Android TV 8.0,
+  `V8-T658T01-LF1V602` / `OTT1.180130.001`, the same platform as
+  [`tcl-50dp660`](../examples/tcl-50dp660/debloat.txt),
+  [#4071](https://github.com/Gathin23/cleanyourtv/issues/4071)). A list based on that folder's had
+  run for a week and through one control reboot, with `com.google.android.tvlauncher`,
+  `com.tcl.partnercustomizer`, `android.autoinstalls.config.tcl.device` and two of the three
+  PERSISTENT packages disabled and `com.gathin.tvhome` Home, when a spontaneous reboot landed on
+  the first-run wizard: the language choice works, and then the screen is black with only power
+  working, on every power cycle, and 5555 refuses. Nothing is bricked. With the stock launcher
+  disabled the wizard has no Home to hand over to, so it finishes into nothing, and
+  `tools/restore.sh` cannot run because `adb_enabled` is 0 again. The reading that fits all three
+  symptoms is Android's RescueParty, whose escalation resets saved settings to their defaults
+  before it offers a wipe: `user_setup_complete` and `adb_enabled` back to 0, the disabled packages
+  untouched. No log survived the recovery, so the cause is unproven, but this build carries
+  RescueParty (`getprop sys.rescue_boot_count` answered 1 on the reflashed set). No command reaches
+  a set in that state: the recovery menu's factory data reset turns every disabled package back on,
+  and on this platform the full firmware over USB does the same and re-provisions the vendor data
+  (step 3 of the NVM-reset sequence in [its notes](devices/tcl-50dp660.txt)). To avoid it on this
+  board, keep the stock launcher: the same unit rebuilt the list with
+  `com.google.android.tvlauncher`, `com.tcl.partnercustomizer`,
+  `android.autoinstalls.config.tcl.device` and all three PERSISTENT packages left enabled, reached
+  Home through `stock_home_redirect` with the key helper filtering Home presses and
+  `home_long_press_home`, and has come through three control reboots with `user_setup_complete`
+  and `adb_enabled` still 1.
 - **Black screen at every boot after the launcher change, LED on, remote dead** (Vision
   2024VISION43STV, CVTE, Android 13: [its list](../examples/vision-2024vision43stv/debloat.txt) has the
   details). With file-based encryption (`getprop ro.crypto.type` says `file`) Android starts Home before

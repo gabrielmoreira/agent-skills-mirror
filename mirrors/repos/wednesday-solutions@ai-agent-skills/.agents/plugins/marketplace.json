@@ -1,0 +1,125 @@
+{
+  "name": "off-grid-ai",
+  "interface": {
+    "displayName": "Off Grid AI skills"
+  },
+  "plugins": [
+    {
+      "name": "review",
+      "source": {
+        "source": "local",
+        "path": "./review"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "Your AI changes 50 files and you can't tell what broke. You get one page with every screen it touched, before and after, and only the calls that need you."
+    },
+    {
+      "name": "testing",
+      "source": {
+        "source": "local",
+        "path": "./testing"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "You fix one bug and two old features break. Every change gets tested by tapping through your app like a real user, with no mocks hiding the breakage."
+    },
+    {
+      "name": "codebase",
+      "source": {
+        "source": "local",
+        "path": "./codebase"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "You inherit a codebase nobody fully understands, and every change is a guess. Your AI maps it first, shows you what each change will break, and adds tests before it touches anything risky."
+    },
+    {
+      "name": "design",
+      "source": {
+        "source": "local",
+        "path": "./design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "Most vibe-coded apps look the same. Every screen has to clear a real design bar and reuse your best components, and a note on one screen fixes all of them."
+    },
+    {
+      "name": "cto",
+      "source": {
+        "source": "local",
+        "path": "./cto"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "No CTO? Your AI picks what's urgent, tells you when you're wrong, keeps building overnight and picks up any old chat where you left it."
+    },
+    {
+      "name": "launch",
+      "source": {
+        "source": "local",
+        "path": "./launch"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "It worked on your laptop and broke on your phone. Every release gets tried on real phones first, then ships with notes people actually read."
+    },
+    {
+      "name": "growth",
+      "source": {
+        "source": "local",
+        "path": "./growth"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "Your landing page reads like ChatGPT wrote it. With these, your copy sounds like a person, it sells, and AI search starts naming you."
+    },
+    {
+      "name": "revenue",
+      "source": {
+        "source": "local",
+        "path": "./revenue"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "You have Stripe, analytics and store numbers but no idea what to change. You get the three moves that should grow revenue most, and big calls laid out on one page."
+    },
+    {
+      "name": "games",
+      "source": {
+        "source": "local",
+        "path": "./games"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "Making a game alone with AI? You get a director, an art director and a QA team that playtests every scene."
+    }
+  ]
+}

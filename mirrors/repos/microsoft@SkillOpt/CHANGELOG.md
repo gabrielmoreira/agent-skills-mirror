@@ -7,6 +7,18 @@ All notable changes to SkillOpt are documented here. This project adheres to
 ## [Unreleased]
 
 ### Added
+- **SkillOpt-Sleep leave-one-out edit ablation** (`gate_edit_ablation`, off by
+  default): each skill or memory candidate the night accepts is replayed
+  without each of its edits, and the per-edit observation (gate score with and
+  without the edit, `observed_change`, changed validation tasks, source task
+  and session IDs) is recorded on the trial in `report.md`, `report.json`,
+  `diagnostics.json`, the CLI's `--json` output, and the evidence log. A row is
+  an observed change on one replay, not a causal attribution. Ablation runs
+  after every gate decision of the night, including all fan-out groups, so
+  decisions and accepted edits are unchanged even when the token budget binds.
+  A single-edit candidate needs no extra replay; an N-edit candidate costs up
+  to N validation replays, which are included in `tokens used` and checked
+  against `max_tokens_per_night` one replay at a time. Follow-up to #174.
 - **OfficeQA Parallel Search MCP** as an opt-in `env.search_mode=parallel`
   provider for `openai_chat`/`qwen_chat`. The default stays `offline` and no
   config selects Parallel automatically. Selecting it sends the generated
@@ -129,6 +141,33 @@ All notable changes to SkillOpt are documented here. This project adheres to
   value is rejected with a clear error.
 
 ### Fixed
+- Repeated rollouts of a SkillOpt-Sleep tool task are separate samples again.
+  `replay_one` forwarded `sample_id` on the text route only, so with
+  `dream_rollouts > 1` a `tool_called` task on a backend without a real tool
+  loop (Pi, Azure, mock) was answered once and that answer was reused for
+  every rollout. `attempt_with_tools` now accepts `sample_id` on every shipped
+  backend; custom overrides without that parameter keep working.
+- SkillOpt-Sleep no longer harvests its own Claude replay sessions as user
+  tasks. The Claude backend now starts every prompt it sends with a
+  `[skillopt-sleep:claude-engine:v1]` producer marker, the same kind of marker
+  the Codex backend uses, and the harvester drops a single-turn session only
+  when its prompt starts with it. This covers custom prompt templates, and a
+  user session that quotes an engine prompt is kept (#310).
+- `insert_after` with a target that ends in a newline now inserts right
+  after that line instead of after the next one, which could file the new
+  text under the following heading or inside a protected region (#407).
+- A flat `--cfg-options` key for an `env` setting (for example `workers=4`)
+  now overrides the YAML value with a structured config instead of being
+  silently replaced by it (#409).
+- In the default force-write slow-update mode
+  (`optimizer.slow_update_gate_with_selection: false`), the skill that receives
+  the epoch-end guidance is now measured once on the selection split, and later
+  step gates compare candidates against that score. Before, the current score
+  stayed at the pre-injection value, and the selection cache stored that gate
+  score with a soft score of `0.0` for the new skill, so a byte-identical later
+  candidate reused both numbers. This adds one selection rollout per epoch
+  boundary in force-write mode (none when the exact skill text is already
+  cached). The validation-best skill and gated mode are unchanged (#404).
 - Close four ways invalid evidence could reach the SkillOpt-Sleep gate: recall
   no longer brings a content twin of tonight's held-out task into training,
   a measured tool route no longer credits a self-reported `TOOL_CALL:` marker,
@@ -180,6 +219,17 @@ All notable changes to SkillOpt are documented here. This project adheres to
   Code, Codex and Pi transcript timestamps as instants rather than strings.
   East of UTC, sessions that ended in the hours after a harvest were never
   harvested (thanks @1AbdullahButt).
+- Treat a SearchQA gold answer given as a single string as one answer instead
+  of a sequence of characters, in scoring and in the gold answers recorded on
+  rollout rows. The correct answer was scored as wrong and a one-letter answer
+  as correct (thanks @Shizoqua).
+- Keep the DocVQA answer when a stray `<answer>` or `</answer>` follows the
+  final answer, instead of scoring the wrong text and giving a correct answer
+  ANLS 0 (thanks @Shizoqua).
+- Keep numeric `0` gold answers and ids when loading OfficeQA JSON splits
+  instead of treating them as missing, and load integral floats such as
+  `1776.0` as `1776`, so a correct integer answer is no longer scored wrong
+  (thanks @Shizoqua).
 
 ### Security
 - Prevent managed-identity credentials from being sent to non-Azure or

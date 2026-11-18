@@ -3,6 +3,23 @@
 每次更新的详细发布说明。
 
 
+## v0.22.12 — 2026-11-18
+
+### 🚀 日更：新增 6 个 Skills，总计 3226
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `dora-readiness` — Use when a bank, payment or e-money institution, investment firm, insurer, crypto-asset service provider or fund manager
+- `nis2-readiness` — Use when a cyberattack, ransomware or outage hits a hospital, utility, transport, digital-infrastructure or other EU com
+- `support-ops` — Use for any customer support operations question - SLA attainment and breaches (first response, resolution, business hou
+- `mobile-release` — Use when shipping an iOS or Android app update to the App Store or Google Play - Apple or Google rejected or warned abou
+- `cloud-finops` — Use for any cloud cost question on AWS, Azure or Google Cloud - a bill that jumped or one service that spiked (NAT gatew
+- `readme-polish` — Use when an existing README must be upgraded, audited, or made scannable: polish/美化/升级/优化/打磨 README, add badges, mermaid
+
+---
+
+
 ## v0.22.11 — 2026-11-17
 
 ### 🚀 日更：新增 1 个 Skills，总计 3220

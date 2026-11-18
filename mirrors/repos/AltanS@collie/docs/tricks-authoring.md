@@ -2,6 +2,11 @@
 
 A trick is a folder: a manifest, and a program or a rules file. This page builds one of each.
 
+Tricks are experimental. They may change, lose settings, or be withdrawn in a patch release. They are
+off until you switch them on at the top of Settings → Tricks, or with `collie tricks on`
+([Switch tricks on or off](tricks.md#switch-tricks-on-or-off)). `collie trick dev` and
+`collie trick check --run` run a folder once in your terminal with tricks off too.
+
 ```sh
 collie trick init my-trick
 collie trick dev my-trick
@@ -33,6 +38,8 @@ A trick lives in `tricks/<id>/` in Collie's config folder, `~/.config/collie` on
 - An agent view has the file that `rules` names, such as `rules.md`.
 - `config.toml` holds settings the program reads. It is not part of the code you approve, so you can
   edit it freely.
+- `[[field]]` in `trick.toml` names the settings the person sets on the phone. See
+  [Settings a trick asks you for](#settings-a-trick-asks-you-for).
 - `AGENTS.md` is the contract for an agent that grows the trick. `init` writes it.
 - `media/` holds pictures the trick shows: PNG, JPEG or WebP.
 
@@ -195,6 +202,50 @@ your next run names it again. A part without `sessions` shows in every agent ses
 reach a crew member's session, name it. The [menu place](tricks-reference.md#menu) lists every
 limit.
 
+## Settings a trick asks you for
+
+A trick with contract 3 can ask the person for values, such as a repository, a branch or how many rows to
+show. List them in `trick.toml`, one `[[field]]` table each:
+
+```toml
+contract = 3
+
+[[field]]
+key = "repo"
+kind = "text"
+label = "Repository"
+hint = "owner/name"
+required = true
+
+[[field]]
+key = "rows"
+kind = "number"
+label = "Rows"
+min = 1
+max = 50
+default = 10
+```
+
+There are four kinds: `text` (one line), `choice` (`options`, 2 to 8), `switch` and `number` (`min`
+and `max`, whole numbers). The person sets them on the phone, in the trick's About sheet, under
+Settings. Collie keeps the values on the machine that runs the trick, in its state folder, as
+`.collie/values.json`. A person or an agent who edits that file by hand is the same case as an edit of
+`config.toml`: it is accepted, and Collie reads the file through the field rules on the next look.
+
+The program gets them in its facts as `values`, each field's value or its `default`, by key. The helper
+reads them as `t.values`. A required field with no value is absent: draw a part that says what to set.
+Collie never puts a value on a command line, in a log line, on a Hill card or in a push.
+
+A value is the person's data and untrusted for the program: show it, never run it. Never pass it to a
+shell or build a command from it.
+
+A field is in `trick.toml`, so a new or changed field is a new version and asks the person again. A new
+value asks nothing and runs the trick once.
+
+A setting is never a secret. Do not put a token, a password or a key in a field: the value is stored as
+plain text, shown on every paired phone, and readable by the trick's program. A key goes in `env`. Every limit is in
+[Fields](tricks-reference.md#fields-contract-3).
+
 ## An agent view
 
 Triage lets the agent of one session answer with one screen of what failed. It has no program.
@@ -266,19 +317,37 @@ of the agent's may say Collie's own words, such as "From Collie" or "Tap again t
 
 ## Propose a trick to the person
 
-An agent that wrote a program trick hands it to the person. It never switches it on itself.
+An agent that wrote a program trick hands it to the person. Collie offers an agent no way to switch
+a trick on. A program that runs as you can still do it, so an agent hands the trick over and stops.
 
 ```sh
 collie trick propose ~/work/idle-watch
 ```
 
 `propose` takes the draft from the agent's own work folder, such as the `./<id>/` that `init` made.
-It adds nothing to this machine's tricks. `propose` runs the same check as `collie trick check`, then sends the files to the person's Hill as a
-card, "Switch on the trick idle-watch?". It leaves dot files, `node_modules/`, logs, `inputs/`,
+It adds nothing to this machine's tricks. `propose` runs the same check as `collie trick check`, then sends the files to the person as a
+card, "Switch on the trick idle-watch?". The card shows in the agent's own session on the phone, and
+in Settings, Tricks under "Waiting for your yes", and on the Hill too while the Hill is on. One tap on
+Switch it on approves exactly the code the card showed and switches the trick on. Not now closes the
+card in the session, and the trick still waits in Settings, Tricks. It leaves dot files, `node_modules/`, logs, `inputs/`,
 `media/`, `captures/` and `config.toml` behind. It prints the card's id. Read the answer with
-`collie hill status <id>`, or wait for it as a message.
+`collie hill status <id>`, or wait for it as a message. The message says what happened: the trick is
+installed and on, or the person declined and nothing was installed.
+
+A trick must work with no `config.toml`. When the folder has one, `propose` first runs the trick
+once without it, as the bridge runs it after the yes. If the trick then draws nothing, fails or prints
+a part Collie refuses, `propose` prints a warning and still sends it, and the card tells the person
+it may show nothing until they add the settings file. Draw a short message for a missing setting
+instead. A status text is 12 characters at most, so "not set up" fits and "no folder set" does not.
 
 The card shows every file of the code, and recommends nothing: the person's own reading is the check.
+The helper `trick.ts` and the `AGENTS.md` that `init` wrote are named, not shown, while they are
+byte for byte what Collie ships. A changed `AGENTS.md` shows only the change.
+
+The text search reads every file the `run` line names as code, and every file such a file imports by
+a relative path, whatever its name or folder: a test, a fixture or a `.txt` file too. A `run` line
+that hands a shell or an interpreter something the search did not read, such as a binary file, a path
+outside the trick or code on the line itself, gets a warning of its own.
 Nothing runs before their yes. A trick with `rules` or an agent view cannot be proposed: "A trick that
 gives agents instructions cannot be proposed by an agent. Ask your person to add it on the machine."
 The limits are in [A proposal from an agent](tricks-reference.md#a-proposal-from-an-agent).
@@ -296,6 +365,30 @@ The part after `//` names the folder, and `#` names a branch, a tag or a full co
 whole trick, with its own `trick.toml`. A program imports only files in its own folder, so two tricks
 share no code: copy a helper into each. `collie trick update <id>` fetches the same folder again, and
 the new code waits for the person's yes.
+
+List the tricks in a `collie-tricks.json` file at the top of the repository, so people can see what
+it holds without knowing the folder names:
+
+```json
+{
+  "contract": 1,
+  "tricks": [
+    { "folder": "idle-watch", "name": "Idle Watch", "about": "Marks a session that waits for you." },
+    { "folder": "triage", "name": "Triage", "about": "Sorts the open issues by label." }
+  ]
+}
+```
+
+The file is a list and nothing more. `folder` is spelled as a trick id and names a folder at the top;
+`name` and `about` are one line each. Collie refuses a key it does not know, more than 50 tricks, a file
+over 32 KiB, and a `contract` it does not read. The other limits are in the
+[reference](tricks-reference.md#a-repositorys-index-collie-tricksjson).
+
+`collie trick add https://github.com/owner/tricks` then prints the list and adds nothing. On the phone,
+Settings → Tricks → "Add from a repository" shows the list and adds one trick per tap, from `github.com`,
+`gitlab.com` and `codeberg.org` only. The list grants nothing: each trick is still fetched, checked and
+added off, and its own `trick.toml` wins over the list's name and line. A repository's list never
+makes a trick Official.
 
 Add the GitHub topic `colliepwa-tricks` to the repository, so people find it. The official tricks are
 kept the same way, in `https://github.com/AltanS/collie-tricks`.

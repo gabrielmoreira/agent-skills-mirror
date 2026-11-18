@@ -1,6 +1,6 @@
 {
   "name": "agent-skills-standard-mcp",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "MCP server that lets any AI agent (Claude, Cursor, Antigravity, Kiro, Continue, Gemini) load and audit skills from agent-skills-standard.",
   "main": "dist/index.js",
   "exports": {
@@ -9,10 +9,13 @@
       "default": "./dist/index.js"
     },
     "./session-journal-cli": "./dist/session-journal-cli.js",
+    "./dispatch-usage-cli": "./dist/dispatch-usage-cli.js",
     "./dist/index": "./dist/index.js",
     "./dist/index.js": "./dist/index.js",
     "./dist/session-journal-cli": "./dist/session-journal-cli.js",
     "./dist/session-journal-cli.js": "./dist/session-journal-cli.js",
+    "./dist/dispatch-usage-cli": "./dist/dispatch-usage-cli.js",
+    "./dist/dispatch-usage-cli.js": "./dist/dispatch-usage-cli.js",
     "./dist/windows-private.ps1": "./dist/windows-private.ps1",
     "./package.json": "./package.json",
     "./README.md": "./README.md",
@@ -22,15 +25,26 @@
   "bin": {
     "agent-skills-standard-mcp": "dist/index.js",
     "ags-mcp": "dist/index.js",
-    "ags-mcp-session-report": "dist/session-journal-cli.js"
+    "ags-mcp-session-report": "dist/session-journal-cli.js",
+    "ags-mcp-dispatch-usage": "dist/dispatch-usage-cli.js"
   },
   "files": [
     "dist",
+    "native",
+    "prebuilds/darwin-arm64/secure_ingress.node",
+    "prebuilds/darwin-arm64/manifest.json",
+    "prebuilds/darwin-x64/secure_ingress.node",
+    "prebuilds/darwin-x64/manifest.json",
+    "prebuilds/linux-arm64-gnu/secure_ingress.node",
+    "prebuilds/linux-arm64-gnu/manifest.json",
+    "prebuilds/linux-x64-gnu/secure_ingress.node",
+    "prebuilds/linux-x64-gnu/manifest.json",
     "README.md",
     "SESSION_REPORT.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/session-journal-cli.ts --format cjs --target node20 --shims --clean && node -e \"require('node:fs').copyFileSync('src/retrospective/windows-private.ps1','dist/windows-private.ps1')\"",
+    "build": "tsup src/index.ts src/session-journal-cli.ts src/dispatch-usage-cli.ts --format cjs --target node20 --shims --clean && node -e \"require('node:fs').copyFileSync('src/retrospective/windows-private.ps1','dist/windows-private.ps1')\"",
+    "verify:native-assets": "node native/secure-ingress/verify-assets.mjs",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "retrospective": "tsx src/index.ts retrospective",

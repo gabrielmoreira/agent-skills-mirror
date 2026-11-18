@@ -51,20 +51,20 @@ Mirror of `oil-oil/oil-ui` — 26 default patterns, 15 followed patterns, 19 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `references/tools.md`
-- `references/workdir.md`
+- `references/light-path.md`
 - `references/image-ideation.md`
+- `references/workdir.md`
 - `references/task-explore.md`
 - `references/layout-and-viewport.md`
 - `references/task-review.md`
-- `references/design-direction.md`
-- `references/play.md`
 - `references/direction-persuasion.md`
+- `references/play.md`
+- `references/design-direction.md`
 - `references/visual-language.md`
 - `references/media.md`
 - `references/motion.md`
 - `references/scroll-narrative.md`
-- `references/visual-review.md`
+- `references/tools.md`
 - `references/ux-review.md`
 
 ## File Index
@@ -73,24 +73,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`references/reviewer-manual.md`](references/reviewer-manual.md) |
-| 2 | ✓ | [`references/style-explorer.md`](references/style-explorer.md) |
-| 3 | ✓ | [`references/ux-reviewer.md`](references/ux-reviewer.md) |
+| 1 | ✓ | [`references/style-explorer.md`](references/style-explorer.md) |
+| 2 | ✓ | [`references/ux-reviewer.md`](references/ux-reviewer.md) |
+| 3 | ✓ | [`references/visual-review.md`](references/visual-review.md) |
 | 4 | ✓ | [`SKILL.md`](SKILL.md) |
 | 5 | → | [`references/design-direction.md`](references/design-direction.md) |
 | 6 | → | [`references/direction-persuasion.md`](references/direction-persuasion.md) |
 | 7 | → | [`references/image-ideation.md`](references/image-ideation.md) |
 | 8 | → | [`references/layout-and-viewport.md`](references/layout-and-viewport.md) |
-| 9 | → | [`references/media.md`](references/media.md) |
-| 10 | → | [`references/motion.md`](references/motion.md) |
-| 11 | → | [`references/play.md`](references/play.md) |
-| 12 | → | [`references/scroll-narrative.md`](references/scroll-narrative.md) |
-| 13 | → | [`references/task-explore.md`](references/task-explore.md) |
-| 14 | → | [`references/task-review.md`](references/task-review.md) |
-| 15 | → | [`references/tools.md`](references/tools.md) |
-| 16 | → | [`references/ux-review.md`](references/ux-review.md) |
-| 17 | → | [`references/visual-language.md`](references/visual-language.md) |
-| 18 | → | [`references/visual-review.md`](references/visual-review.md) |
+| 9 | → | [`references/light-path.md`](references/light-path.md) |
+| 10 | → | [`references/media.md`](references/media.md) |
+| 11 | → | [`references/motion.md`](references/motion.md) |
+| 12 | → | [`references/play.md`](references/play.md) |
+| 13 | → | [`references/scroll-narrative.md`](references/scroll-narrative.md) |
+| 14 | → | [`references/task-explore.md`](references/task-explore.md) |
+| 15 | → | [`references/task-review.md`](references/task-review.md) |
+| 16 | → | [`references/tools.md`](references/tools.md) |
+| 17 | → | [`references/ux-review.md`](references/ux-review.md) |
+| 18 | → | [`references/visual-language.md`](references/visual-language.md) |
 | 19 | → | [`references/workdir.md`](references/workdir.md) |
 
 ---

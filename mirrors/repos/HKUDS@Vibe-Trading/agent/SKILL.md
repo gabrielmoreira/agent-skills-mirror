@@ -133,7 +133,7 @@ Comprehensive knowledge base covering:
 
 Use `load_skill(name)` to access full methodology docs with code templates.
 
-## Available MCP Tools (84)
+## Available MCP Tools (85)
 
 | Tool | Description | API Key |
 |------|-------------|---------|
@@ -153,6 +153,7 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 | `alpha_bench` | Benchmark one alpha or a complete zoo | None* |
 | `analyze_options` | Black-Scholes price + Greeks | None |
 | `analyze_options_payoff` | Multi-leg expiry payoff + spot/IV scenarios | None |
+| `compare_options_strategies` | Compare named option strategies on shared expiry and spot/IV grids | None |
 | `pattern_recognition` | Detect chart patterns (H&S, double top, etc.) | None |
 | `get_market_data` | Fetch OHLCV data (auto-detect + ordered fallback across 28 sources) | None* |
 | `get_fund_flow` | Capital fund-flow (main/retail net inflow) | None* |
@@ -215,7 +216,7 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 | `etf_holdings` | ETF look-through — SEC N-PORT (US) and full-book A-share fund reports | None |
 | `prediction_market` | Event-contract search/market/history as labelled implied probability | None |
 | `research_papers` | arXiv + OpenAlex search/read with source-anchored claim extraction | None |
-| `quantlib_call` | Pure-compute finance math — 309 functions across 25 quantlib modules | None |
+| `quantlib_call` | Pure-compute finance math: 235 read-only callables across 25 modules (311 library exports) | None |
 | `cashflow_performance` | XIRR / MOIC / DPI / TVPI / TWR / Modified Dietz over dated cash flows | None |
 | `orderbook_depth` | Crypto L2 ladder — spread bps, depth imbalance, impact cost | None |
 | `sentiment` | Local lexicon text scoring + crypto Fear & Greed Index | None |

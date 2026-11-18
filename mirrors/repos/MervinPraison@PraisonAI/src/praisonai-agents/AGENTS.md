@@ -306,7 +306,7 @@ grep -r "class.*Protocol" praisonaiagents/ --include="*.py"
 dependencies = [
     "pydantic>=2.10.0",    # Type validation
     "rich",                # Terminal UI
-    "openai>=2.0.0",       # OpenAI client
+    "openai>=1.68.2",      # OpenAI client
     "posthog>=3.0.0",      # Telemetry
     "aiohttp>=3.8.0"       # Async HTTP
 ]
@@ -513,7 +513,7 @@ from praisonaiagents import Agent, MemoryConfig, HooksConfig
 agent = Agent(
     name="assistant",
     llm="gpt-4o-mini",
-    memory=MemoryConfig(provider="chroma", use_long_term=True),
+    memory=MemoryConfig(backend="chroma"),
     hooks=HooksConfig(on_tool_call=my_tool_logger, middleware=[my_validator]),
     guardrail=my_guardrail
 )
@@ -538,7 +538,9 @@ Agent parameters are consolidated into Config objects following the pattern:
 | `caching=CachingConfig(...)` | `cache`, `prompt_caching` |
 | `web=WebConfig(...)` | `web_search`, `web_fetch` |
 
-**Deprecated standalone params still work** (backward compatible) but emit `DeprecationWarning`.
+**Still accepted, with a `DeprecationWarning`:** `allow_delegation`, `allow_code_execution`, `auto_save`, `verification_hooks`. `code_execution_mode` and `rate_limiter` are still accepted too.
+
+**Removed — these raise `TypeError` naming the replacement:** `verbose`, `markdown`, `stream`, `metrics` (use `output=`); `self_reflect`, `max_reflect`, `min_reflect` (use `reflection=`); `system_template` (use `templates=`); `cache` (use `caching=`); `web_search` (use `web=`); `max_iter` (use `execution=`); `temperature`, `max_tokens` (set on the model: `model={"model": ..., "temperature": ...}`).
 
 > **📢 Deprecation Notice:** `ExecutionConfig.context_compaction` currently defaults to `False` during a deprecation period. In the next release, it will default to `True` for automatic proactive context overflow protection. To opt out explicitly, set `context_compaction=False`. To use the new behavior early, set `context_compaction=True`.
 

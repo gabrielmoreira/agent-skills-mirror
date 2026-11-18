@@ -655,7 +655,11 @@ from a subagent is not about the pane, so it never changes what Collie reads the
 
 A send from the phone can show as **Confirmed**. That happens when a prompt edge carries the same
 text soon after the send. The window is 30 seconds, or ten minutes for a send queued behind a turn.
-The edge carries a salted hash of the prompt, never the text itself.
+The edge carries a salted hash of the prompt, never the text itself. A send that ended "cannot tell
+if this was sent" waits in the same window for that edge: when it comes with the same text, the send
+shows as Confirmed. Until then the receipt says how long it waits. A send that goes through the plugin
+waits the same way. When the agent changed the text (a folded paste, an image path, several queued
+messages taken as one), no edge matches, and the send stays "cannot tell" after the window.
 
 Claude Code and Codex take a message or a command during a turn. Collie types it at once, and the
 harness runs it after the turn. A harness that cannot take a send during its turn gets a held send
@@ -663,7 +667,7 @@ instead. So does a message that finds the input box not free, for example under 
 screen that changes between Collie's two reads, or a probe character that failed and that one
 Backspace took back out of a box Collie read clean again. Such a message goes after five free polls over ten
 seconds, or after a turn Collie sees. A command there is still refused, and so is a send on a
-screen you confirmed with Type here. A send on a pane with no profile is never held. Collie keeps the text and shows a card that floats over the bottom of the terminal view: "Queued.
+screen you confirmed with Send anyway. A send on a pane with no profile is never held. Collie keeps the text and shows a card that floats over the bottom of the terminal view: "Queued.
 Sends when the turn ends." On an agent whose version Collie could not read, the card says so and
 points to `collie doctor`: Collie types into a running turn only on a version the agent reported. The card shows the text and a Cancel button. Collie sends it after the turn ends, once the
 pane reads free on two polls in a row, oldest first. Each later held send waits for the turn that
@@ -693,6 +697,37 @@ most one line per reason and process each minute. An edge older than 30 seconds,
 not an edge, is counted but never logged. An edge from a pane of another multiplexer on the same
 machine, for example a Herdr TUI pane seen by a bridge that drives the Herdr core, is counted as
 `foreign-mux` and not logged.
+
+#### Send anyway
+
+When Collie cannot send your message as it stands, the card and the notice under the box both offer
+**Send anyway**. The word does not say whether Enter goes: what happened is in
+the answer after your tap. This works on
+every screen except four: a sign-in field (enter the code again there), a question or permission
+Collie read (answer it on its own card), a screen that changed since you looked, and a screen that
+shows a menu or a yes/no prompt. A screen that changed comes back with the rows as they are now; look
+at them and tap again. On a menu, use the keys to pick an option, because typed text could pick one.
+
+Where Collie can still place and check your text, on a screen that takes the manual Send, your second
+tap sends it, Enter included: you tapped twice with the screen in view. If only a number on the screen
+changed since you looked, Collie types your text but presses no key, so you check it first. Where it cannot, on a box that
+is not free, a box that already holds a draft, a turn it cannot read or does not queue into, or a stale
+or torn read, Collie pastes your text into the box in one piece and presses no key at all. A menu on
+the screen stops both. The card
+then says your text is in the box, and offers the keys: check the screen, and press Enter there when
+it is right. When the box already held a draft, the card can say so: your text went in after it. A message of more than one line goes this way only on Herdr, which pastes it whole;
+elsewhere send it one line at a time. On a turn the agent queues into, it goes in as any send does. Collie never holds a
+message you typed this way, and one tap types it at most once. When the box already holds the same
+text, left there by an earlier send, Collie types nothing again: press Enter on the Keys pad.
+
+On an agent Collie has no profile for, no message goes into a screen that shows a menu or a yes/no
+prompt at its bottom, whether you sent it or Collie did; answer the menu with the keys. On Herdr and
+the Herdr core, Collie also asks which program runs in the pane: a plain shell at its prompt takes every
+message, also with a numbered list or an answered `[Y/n]` above the prompt. On tmux, zellij, tuios and
+Tern Collie cannot ask, so it reads only the bottom of the screen: output above a shell prompt is no menu.
+
+A held send that waits two minutes or longer is marked as waiting long, so the phone can show the
+screen with a way to send it now or cancel it.
 
 #### Which bridges get the edges
 
@@ -884,7 +919,9 @@ Collie checks that the character lands in the box, then removes it.
   A pi dialog opens between the same two rules.
   So Collie reads the key hints and the list from the top rule down.
   In pi, Enter steers a running turn, but Alt+Enter sends on an idle box and queues in a turn.
-  So Collie sends with Alt+Enter, and with Ctrl+Q on Windows and in WSL.
+  So Collie sends with Alt+Enter, and with Ctrl+Q on Windows.
+  In WSL, pi takes Ctrl+Q only when `WSL_DISTRO_NAME` or `WSL_INTEROP` is set in its own environment.
+  Under Herdr and the Herdr core, Collie reads the pi process's environment and sends the same key; elsewhere it sends Ctrl+Q in WSL.
   pi shows a queued message as a `Follow-up:` row above the box.
   A box taller than 30 rows does not read as a box. The screen reads as unknown, and a send needs your tap.
   Gentle Shell 4.5.1, which bundles pi 1.4.0, draws a float editor instead: a left rail of `▎` rows

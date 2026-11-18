@@ -48,6 +48,9 @@ claude plugin install daymade-skill@daymade-skills
 
 ### Skill Validation and Packaging
 
+For applications already served by daudio, use the
+[shared-service access route](daymade-audio/audio-router/references/shared-service-access.md).
+
 For StepFun speech controls, literal-text/directive ambiguity, cloning or streaming changes, read
 [`stepfun-tts`'s native API reference](daymade-audio/stepfun-tts/references/api_reference.md).
 Verify both the standalone CLI and the actual flat `llmreg.wrapper_for` loader;
@@ -158,6 +161,9 @@ For recovery/cache-test prerequisites, fixture isolation or invalid-fixture tria
 use its [recovery-test recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#establish-recovery-test-prerequisites).
 For resumable writes to human-edited state, use its
 [interrupted-write controls](daymade-skill/skill-creator/references/stateful-script-verification.md#interrupted-writes-and-later-human-changes).
+For frozen helpers or separate interpreters, use its
+[installed-consumer checks](daymade-skill/skill-creator/references/stateful-script-verification.md#installed-consumer-projection);
+optional Python imports follow the [repository-runner controls](daymade-skill/skill-creator/references/stateful-script-verification.md#optional-dependencies-and-the-repository-test-entry).
 
 For its audit, release or source-contract commands from another working directory,
 or Agent-facing materialization from any directory, use the
@@ -249,7 +255,8 @@ as the route rather than a second copy of those procedures.
 For customer-approved report forms, follow
 [skill-creator's report-template contract](daymade-skill/skill-creator/references/authoring-and-reuse.md#show-the-result-not-just-the-work).
 
-For Codex login, credential recovery, quota-query ownership or quota-driven continuation, enter
+For Codex login, account switching, credential recovery or session recovery after login changes,
+quota-query ownership or quota-driven continuation, enter
 [local-codex authentication](daymade-codex/local-codex/SKILL.md#authentication-chatgpt-oauth).
 For existing unmanaged/legacy Ghostty Codex windows around a manual account switch, enter
 [ghostty-use's switch workflow](ghostty-use/SKILL.md#codex-account-switch). Minions
@@ -305,6 +312,9 @@ when verifying an existing baseline; consult
 [source snapshot archives](daymade-skill/skill-creator/references/source-snapshot-archives.md)
 before archiving or restoring it.
 
+Before remote bulk SSH copies, enter
+[tunnel-doctor's transfer preflight](tunnel-doctor/references/transfer-path-preflight.md).
+
 For hook creation, consolidation, Skill-entry enforcement, registration or recovery, load
 [`daymade-claude-code:claude-code-hooks`](daymade-claude-code/claude-code-hooks/SKILL.md)
 and follow its Build order and installer-owned recovery contract. Follow that
@@ -312,7 +322,7 @@ Skill's loop and reminder contract; keep current thresholds in the
 owning implementation.
 For an owner crash, historical replay timeout or recovery that remains pending,
 use the Skill's [recovery failure triage](daymade-claude-code/claude-code-hooks/references/recovery-failure-triage.md).
-For an existing hook's usefulness, duplicate execution or latency, follow the
+For an existing hook's usefulness, repeated work, verdict reuse or latency, follow the
 [effect and cost audit](daymade-claude-code/claude-code-hooks/references/effect-and-cost-audit.md).
 For shared selection, source refresh, deadlines, status or rollback changes, load
 the Skill's [lifecycle regression template](daymade-claude-code/claude-code-hooks/references/shared-engine-lifecycle.md).
@@ -346,6 +356,8 @@ For persistent Python service installation, environment reuse or startup, follow
 
 For acceptance of rendered UI and visible behavior, enter
 [frontend-visual-qa](frontend-visual-qa/SKILL.md) and follow its current entry route.
+For reader consolidation, nested message actions, or changes to large-list
+navigation, follow [Refactor Preservation](frontend-visual-qa/references/journey-and-page-contracts.md#refactor-preservation).
 For publication-wide clutter or AI Slop despite passing local checks, including
 controls, deks and expanded summaries, use its
 [publication journey calibration](frontend-visual-qa/references/publication-journey-cases.md).
@@ -376,7 +388,7 @@ For audits of asset-ledger hierarchy, row selection or issue resolution, follow 
 For shared controls or help mounted outside the workspace's style scope, use its
 [scoped-style and portal checks](frontend-visual-qa/references/journey-and-page-contracts.md#scoped-styles-and-portal-content).
 For embedded-reader sizing, surrounding navigation, overlays, zoom, reading/return,
-focus or filtered-selection changes, use its
+focus, filtered selection or changes to how the list identifies the reader's record, use its
 [reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
 For long-document outlines, active-section cues or source sidebars, follow its
 [reading-position recipe](frontend-visual-qa/references/journey-and-page-contracts.md#long-document-reading-positions).
@@ -515,7 +527,7 @@ For stopping or persistently disabling a job, follow its
 [stop semantics](daymade-macos/macos-watchdog/SKILL.md#stop-semantics-the-deprecated-trap).
 Before replacing an existing launchd job, enter its
 [authorized unload and replacement procedure](daymade-macos/macos-watchdog/references/event-driven-observers.md#wait-for-an-authorized-unload-before-replacement).
-Before choosing or changing any periodic observer's cadence, follow
+Before deploying or integrating a periodic observer, or choosing or changing its cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
 Before choosing an observer's failure-notification threshold, follow
 [observation-failure timing](daymade-macos/macos-watchdog/references/alert-discipline.md#observation-failure-timing).
@@ -528,11 +540,15 @@ For idle Node/Vite previews, enter its
 For memory pressure or suspected child-process leaks, enter that Skill's
 [triage](daymade-macos/macos-load-doctor/SKILL.md#triage-read-do-in-order) and
 [memory evidence](daymade-macos/macos-load-doctor/SKILL.md#memory-evidence) before attributing the cause.
+For a confirmed hot preservation or verification script, use
+[measurement controls](daymade-macos/macos-load-doctor/references/incident-playbook.md#measurement-controls).
 The observation contract above owns delayed-sampling acceptance; keep its tests
 and the diagnostic stop conditions in those Skills.
 For changed operating defaults or thresholds in an already-required review,
 or behavior-replay dispatch and coverage claims, use
 [skill-creator's independent-review protocol](daymade-skill/skill-creator/references/independent-review-protocol.md).
+For metadata-keyed digest reuse in that review, use
+[file identity and cached content proofs](daymade-skill/skill-creator/references/independent-review-protocol.md#file-identity-and-cached-content-proofs).
 Keep decision criteria and verification details in those owners.
 
 ### Acoustic diagnostics
@@ -542,12 +558,16 @@ For waveform, speech-cut or tail-level diagnosis, enter
 
 ### Transcript Correction
 
+For refreshing an adopted audit dataset, generating offline review HTML, or
+migrating browser-local review reports, enter [ASR audit export](daymade-audio/asr-transcribe-to-text/SKILL.md#offline-audit-export).
+
 For local audio listening, speaker decisions, word edits and recovery of saved
 judgments, use [Listening Desk](daymade-audio/asr-transcribe-to-text/references/review_workbench.md).
 Its saving, recovery and verification sections govern the browser and local
 service; keep the operating procedure there rather than in review artifacts.
 
-For explicit single-task speaker-inference requests, load
+For explicit single-task speaker-inference requests, including telephone
+self-introductions, forms of address and quoted names, load
 [scoped speaker inference](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md).
 
 Use [transcript-fixer](daymade-audio/transcript-fixer/SKILL.md) for transcript
@@ -584,8 +604,7 @@ authoring, enter the [Domain Context Guide](daymade-audio/transcript-fixer/refer
 For project-bound queue appends or domain-only metadata repair, enter
 [queue domain admission and repair](daymade-audio/transcript-fixer/references/queue_domain_repair.md).
 For remaining pending rows or a received occurrence-specific human verdict on an
-already reviewed file, enter [pending continuation](daymade-audio/transcript-fixer/references/pending-continuation.md)
-for queue resolution and its finalization, learning and propagation owners.
+already reviewed file, enter [pending continuation](daymade-audio/transcript-fixer/references/pending-continuation.md).
 For source-audio export, identity and timeline pairing, follow
 [the audio setup SOP](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#source-audio-and-timeline-pairing)
 and its [audio helper](daymade-audio/transcript-fixer/scripts/fetch_minute_audio.py).
@@ -651,7 +670,8 @@ Wiki Base/Sheets capture uses
 
 For an explicit prior-work, reuse or history request, follow the
 [Prior Work operating contract](daymade-claude-code/prior-work-retrieval/SKILL.md).
-For follow-ups after a completed retrieval, use its
+For follow-ups after a completed retrieval or a request to reuse current
+execution results, use its
 [receipt reuse and rearm procedure](daymade-claude-code/prior-work-retrieval/SKILL.md#3-retrieve-across-declared-carriers).
 Requests to repeat a previously successful method or reuse/improve an older rendered artifact enter its
 [candidate verification](daymade-claude-code/prior-work-retrieval/SKILL.md#4-verify-candidates-at-authority).
@@ -683,6 +703,8 @@ For input appended after an operation's current-thread request, use [read-codex-
 
 For conversation-backup health checks or recent unfinished-request inventories, follow
 [`local-conversation-history`](daymade-claude-code/local-conversation-history/SKILL.md).
+For scheduled history refresh or index recovery, use
+[build and refresh](daymade-claude-code/read-claude-code-history/references/hybrid_history_recall.md#build-and-refresh).
 
 For the latest Codex conversation about a topic across continuations, enter
 [latest-topic discovery](daymade-claude-code/read-codex-history/SKILL.md#latest-topic-across-continuations).
@@ -771,10 +793,13 @@ For blocked/delegated reopening, follow its
 [original-set route](ghostty-use/references/codex-account-switch.md#reopen-the-original-recorded-set-not-a-blank-session).
 Before selecting a recovery set or assessing completeness, follow the
 [recovery entry decision tree](ghostty-use/SKILL.md#entry-decision-tree).
-For observer freshness, follow
-[observation-health verification](ghostty-use/references/automatic-snapshots.md#verify-observation-health).
+For observer upgrades and deployment freshness, follow
+[upgrade an existing observer](ghostty-use/references/automatic-snapshots.md#upgrade-an-existing-observer), then
+[verify observation health](ghostty-use/references/automatic-snapshots.md#verify-observation-health).
 Before a restore or retry, follow its
 [current-set reconciliation](ghostty-use/references/restore_mechanics.md#reconcile-the-current-wanted-set).
+For recorded relative tab order and custom-title restoration, follow
+[recorded tab layout restoration](ghostty-use/references/restore_mechanics.md#restore-recorded-tab-order-and-titles).
 After process reconciliation, and before a complete GUI acceptance pass that must
 not foreground Ghostty, follow
 [history-readiness acceptance](ghostty-use/references/restore_mechanics.md#verify-history-readiness-after-process-reconciliation).
@@ -805,12 +830,6 @@ backend restart, enter
 For selected-site Cookie copying between local profiles of the same macOS Chrome,
 enter [cookie-copy](cookie-copy/SKILL.md). For its quota-query caller, follow
 [Tibo's Cookie Copy handoff](tibo-reset-codex/references/browser-session-migration.md).
-
-Before switching an existing Codex session, or recovering one after login changes, start at
-[Local Codex existing-owner recovery](daymade-codex/local-codex/references/oauth-guide.md#existing-native-owner-recovery).
-For a remote Codex sign-in prompt or choosing existing-login reuse versus new authorization, start at
-[Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
-Keep quota checks on the separate route below.
 
 For stopping a Tibo monitor or ending reset tracking, enter the
 [host lifecycle route](tibo-reset-codex/SKILL.md#停用监控先走宿主操作).
@@ -982,7 +1001,8 @@ follow the contributor entry's route to [github-review-pr](github-review-pr/SKIL
 For behavioral changes and review-led repairs, the review Skill's
 [impact procedure](github-review-pr/references/behavioral-impact-review.md) owns
 consumer tracing, preservation evidence and finding closure.
-Before expensive checks on a concurrently edited base, follow GitHub Operations'
+Before expensive checks on a concurrently edited base, when release logs conflict,
+or when local entries block post-merge synchronization, follow
 [publication coordination](github-ops/references/pr_operations.md#coordinate-publication-before-expensive-checks).
 Before diagnosing conflicts or differing local and hosted merge results, use its
 [fresh-base verification](github-ops/references/pr_operations.md#fresh-base-verification).
@@ -1076,9 +1096,9 @@ claiming the whole checkout is current.
 
 For divergent local `main`, recovery-material selection or branch/worktree retirement,
 follow [git-safety-net](git-safety-net/SKILL.md).
-For named linked-worktree retirement, retained recovery refs after squash, interrupted preparation
-or dependency-cache declarations, follow its complete
-[worktree retirement procedure](git-safety-net/references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal).
+For named linked-worktree retirement, follow the
+[worktree retirement procedure](git-safety-net/references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal)
+for preparation, recovery and current-state verification.
 If local Skill release receipts reference the review checkout being retired, first use
 [review archive relocation](daymade-skill/skill-creator/references/release-readiness.md#retire-a-temporary-review-checkout),
 then resume the worktree retirement procedure.

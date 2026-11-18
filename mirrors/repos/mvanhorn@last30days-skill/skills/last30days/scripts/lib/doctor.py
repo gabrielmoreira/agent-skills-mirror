@@ -143,6 +143,8 @@ def audit_state(
             return AUDIT_UNVERIFIED
         return AUDIT_NOT_WORKING
     if probe_result is not None:
+        if probe_result.get("partial"):
+            return AUDIT_UNVERIFIED
         if probe_result.get("ok"):
             return AUDIT_WORKING
         # A transient refusal (host rate-limited THIS probe) is not evidence the
@@ -674,16 +676,9 @@ def _youtube_record(config):
     if record["status"] != health.OK:
         return record
     notes: List[str] = []
-    # yt-dlp already provides search + transcripts. A transcription key only
-    # backfills captions for the occasional caption-free video - an enhancement,
-    # not a sign YouTube is broken.
-    if not env.transcription_providers(config):
-        entry = prescriptions.get("youtube", "transcription_key_missing")
-        notes.append(
-            "search + transcripts work; a transcription key only adds "
-            "captions for caption-free videos"
-        )
-        record["fix"] = _fix_text(entry)
+    # No transcription-key advice here: the caption-free transcription module
+    # (lib/transcribe.py) is not called by any source yet, so a GROQ_API_KEY or
+    # OPENAI_API_KEY would change nothing.
     # Comment *text* is free via yt-dlp, so this caveat only fires when yt-dlp
     # is absent and the legacy ScrapeCreators path is the only one left. Never
     # prescribe a paid key for something the installed toolchain already does.
@@ -692,8 +687,7 @@ def _youtube_record(config):
             "comment text needs yt-dlp (free) or a ScrapeCreators key "
             "+ youtube_comments opt-in"
         )
-        # Actionable fix, matching the transcription branch. The transcription
-        # fix takes precedence when both caveats fire (one fix line per record).
+        # Actionable fix for the comment-text caveat.
         if not record["fix"]:
             if not config.get("SCRAPECREATORS_API_KEY"):
                 record["fix"] = _sc_fix()
@@ -1626,6 +1620,8 @@ def _audit_source_line(name: str, record: Dict[str, Any], state: str) -> str:
         descriptors.append(record["detail"])
     if descriptors:
         parts.append(" — " + "; ".join(descriptors))
+    if (record.get("probe") or {}).get("partial"):
+        parts.append("; " + str(record["probe"].get("detail") or "partial probe"))
     evidence = _run_evidence_suffix(record, state)
     if evidence:
         parts.append(evidence)
@@ -2347,6 +2343,23 @@ def _probe_source(name: str, config: Dict[str, Any], timeout: float) -> Optional
         if first:
             _record_probe_health(first[0], res)
         follow_ups = _PROBE_FOLLOW_UPS.get(name) or ()
+        if (name == "reddit" and not res.get("ok")
+                and not res.get("transient")
+                and res.get("detail") != "probe exceeded deadline"):
+            remaining = deadline - time.monotonic()
+            if remaining > 0:
+                listing = _probe_url(
+                    name, reddit_health.arctic_listing_probe_url(), remaining, deadline,
+                    headers={"User-Agent": http.USER_AGENT, "Accept": "application/json"},
+                    body_check=reddit_health.arctic_probe_body,
+                )
+                if listing.get("ok") and listing.get("detail") == "HTTP 200":
+                    return {
+                        "ok": False,
+                        "partial": True,
+                        "detail": f"Brave: {res['detail']}; Arctic Shift listings reachable",
+                        "probed": True,
+                    }
         if not res.get("ok") or not follow_ups:
             return res
         details = [f"{first[1]} {res['detail']}" if first else res["detail"]]

@@ -5,6 +5,8 @@
 - [Final video playback and editor delivery](inline-video.md)
 ## 阅读入口
 
+- [Changelog and stable release descriptions](https://github.com/nexu-io/openmotion/blob/main/CHANGELOG.md)
+
 - [English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 - [使用与首次体验](usage.md)
 - [All-in-One Studio 产品蓝图与 Super Motion Video Agent](product/studio-vision.md)
@@ -29,6 +31,7 @@
 - [mcp-phase1-tools.md](mcp-phase1-tools.md)
 - [Project import quick start, offline sharing and ZIP format](project-archives.md)
 - [Workspace assets, versions and Agent creation](assets.md)
+- [Transcripts, recordings, editable captions and platform/language versions](transcripts.md)
 - [Curated fonts and on-demand import](fonts.md)
 - [Typography evaluation and fixed-scene comparison](reports/typography-evaluation.md)
 - [model-gateway.md](model-gateway.md)
@@ -43,6 +46,7 @@
 - [npm release acceptance](release-guide.md)
 - [Manual npm publication workflow](release-workflows.md)
 - [product/architecture.md](product/architecture.md)
+- [Platform export: user stories, Agent handoff and verification](product/platform-export.md)
 - [product/media-generation-design.md](product/media-generation-design.md)
 - [project-workspace.md](project-workspace.md)
 - [repository-migration.md](repository-migration.md)

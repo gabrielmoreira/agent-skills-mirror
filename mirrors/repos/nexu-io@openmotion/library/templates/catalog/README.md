@@ -6,7 +6,7 @@ Browse imported motion guidance and original community examples. Guides, HTML ex
 
 Open [the first template's guide](motion-f4b325fd-64ba-42da-9f7e-6a6b77cfafd2/source/preview.html) in a browser and play its authored examples. No build step is needed. Templates with large reference images need an internet connection to load their CMS renditions; small images stay local. Read its [motion.md](motion-f4b325fd-64ba-42da-9f7e-6a6b77cfafd2/source/motion.md) for the motion specification; `TEMPLATE.md` links the separate reference video.
 
-These are **reference guidance with authored HTML examples**, not verified complete Studio projects. Their existing `pending` status and empty project-file manifests are preserved. The four editable Studio examples remain in `template-library/`.
+Entries without project-file manifests remain **reference guidance with authored HTML examples**. Nine entries now include editable project candidates, identified by their root `index.html` file and usage notes in `TEMPLATE.md`; human visual acceptance is still pending. The four bundled Studio examples remain in `template-library/`.
 
 For an original contribution example, open [Orbit Launch](motion-orbit-launch/TEMPLATE.md): a six-second launch-title recipe with offline HTML playback, motion rules, a small local poster and a separately stored preview video. Its metadata includes all eleven locale slots; the motion guide and example use English.
 
@@ -28,17 +28,18 @@ Edit files directly. After source changes, refresh the manifest, then stage and 
 npm run templates:manifest -- <template-id>
 git add library/templates/catalog
 npm run templates:check -- <full-base-commit-sha>
+npm run storage:check -- <full-base-commit-sha>
 node --test tests/template-library.test.ts
 ```
 
-The checker reads staged contents. The base SHA also enables checks of new Git history: deleting a mistakenly committed large file or video in a later commit does not remove it from history. New entries need a stable ID registered in `catalog.json`, all locale slots, required guide files and actual source/rights notes in `TEMPLATE.md`.
+The checkers read staged contents. The base SHA also enables checks of new Git history: deleting a mistakenly committed large file or video in a later commit does not remove it from history. `storage:check` reports the repository-wide ordinary Git total and warns when it exceeds the advisory target; that total does not block contributions. New entries need a stable ID registered in `catalog.json`, all locale slots, required guide files and actual source/rights notes in `TEMPLATE.md`.
 
 | Files | Storage and limit |
 | --- | --- |
 | Code, documentation and measurements | Ordinary Git, at most 1 MiB per file |
 | Small images/fonts | Ordinary Git under `source/assets/`, at most 100 KB (100,000 bytes) per asset |
 | Images/fonts over 100 KB | Git LFS under `source/assets/lfs/`; existing imported CMS links retain their recorded identities |
-| Complete catalog in ordinary Git | At most 128 MiB; about 58 MB after reference-image optimization |
+| Complete catalog in ordinary Git | Included in the repository-wide 128 MiB advisory target; larger totals warn without blocking contributions |
 | Video and audio | Git LFS under `source/assets/lfs/`; existing imported references retain CMS links |
 | LFS media budgets | At most 50 MiB per file and 150 MiB total local media per template |
 | Original ZIP downloads | Existing links only; archives are not contribution source |
@@ -50,13 +51,17 @@ Submit PRs against `main`. CI runs **Template library policy** without CMS publi
 
 ## Publishing boundary
 
-Source Studio and MCP load this directory directly. See [local startup and plugin paths](../../../docs/template-repository.md#run-from-a-local-clone). The website and installed applications without the repository catalog continue to consume CMS publications. A merged source change does not publish CMS content. To export metadata for review:
+Source Studio and MCP load this directory directly. See [local startup and plugin paths](../../../docs/template-repository.md#run-from-a-local-clone). For editable projects, commit unpacked source and keep `template.json.entry.files` paths, byte lengths and SHA-256 hashes aligned with `source/manifest.json`. Project-file URLs and a ZIP download are optional for repository/hosted entries; contributors do not need to upload files to the old CMS service. See [the editable-project checklist](../../../docs/template-repository.md#contribute-editable-project-files).
+
+After final review, a maintainer runs **Prepare and merge PR** to transfer eligible media and merge the prepared change. Merging to `main` automatically publishes source objects and hosted metadata, then updates `https://releases.open-design.ai/open-motion/templates/main/catalog.json` for hosted NPM consumers. The website and explicit CMS-mode clients continue to consume CMS publications; updating them is a separate internal task. A merged source change does not publish CMS content.
+
+To export CMS-compatible metadata for review:
 
 ```sh
 npm run templates:export -- .artifacts/catalog-candidate.json
 ```
 
-This writes a CMS-compatible file, including all locale overrides and collection facets. It does not upload or publish. The imported publication identity is retained for comparison and must not be reused for changed content. After editing source, package and upload it through the existing CMS workflow, update `sourceArchive` and affected download URLs, and publish a new content revision. Existing translated downloads do not silently change with local source edits.
+This writes a file with all locale overrides and collection facets; it does not upload or publish. The imported publication identity is retained for comparison. Only an explicitly requested website CMS publication requires packaging/uploading source and updating CMS archive identities and download links. Repository PRs use the automatic hosted workflow above. Existing translated CMS downloads do not silently change with local source edits.
 
 See [the contribution and publication workflow](../../../docs/template-repository.md). The catalog and developer tools are excluded from application/npm packages.
 

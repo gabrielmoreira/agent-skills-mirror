@@ -51,10 +51,20 @@
 //        the first one included, unless the first path under <plans>/artifacts/ in any
 //        prior-art: of its evidence or result is an existing file there, read without a
 //        :line suffix, quotes, asterisks or trailing punctuation and with its .. segments
-//        resolved.
-//        node .agents/pstack/decisions-check.mjs rounds <log>
-//        (exits 1 when the log is at the cap of panel rounds before a build, the
-//        maxRounds in .agents/pstack.json or 3)
+//        resolved. Both append forms take a "recorded" result on a row whose decision starts
+//        with "critical", in any phase, only with step: <n> in it and proof: <existing file
+//        under <plans>/artifacts/> in its evidence, and refuse a build row whose decision
+//        starts with "built:" and holds reach: <text> while such a row has no later panel or
+//        build row whose evidence names the same proof: file and whose result starts with
+//        applied, dismissed, fixed or verified.
+//        node .agents/pstack/decisions-check.mjs rounds <log> [--patch <file>]
+//        (exits 1 when the log is at the cap of panel rounds since its last restart, the
+//        maxRounds in .agents/pstack.json or 1, plus one round after a round that applied
+//        three or more critical findings; a built: row restarts the count only for a step
+//        the log has not built before; with --patch, also exits 1 when the patch
+//        changes more product lines than stepBudget.lines in .agents/pstack.json, 400 by
+//        default, not counting tests, specs, fixtures, Markdown or stepBudget.exclude
+//        globs, unless an owner row starting "big step:" follows the last seats row)
 //        node .agents/pstack/decisions-check.mjs chips [--fetch] [--session <id>] [<ledger>]
 //        (prints every open suggested task as ready, started, waiting or unmigrated,
 //        by priority, listing P0 and P1 in full and counting the rest unless chips all,
@@ -107,7 +117,7 @@ import { findLead, leadLabel, maxEffort, runtimeFolder } from './lead.mjs';
 import { cli as pageStop } from './page-stop.mjs';
 import { contextOf, pageUrlOf, parsePlan } from './plan-page.mjs';
 import { board, boardState, briefOf, CHIP_STATES, cleanupOf, chipRowProblems, baseRedProblems, gitMerges, groupsOf, hasToken, ledgerPath, namesOwner, newChipRowProblems, newId, offeredAt, readShip, readTasks, recordRow, renderBoard, renderGroups, SESSION, staleReport, startedOverlaps, withoutPlannedWrites } from './tasks.mjs';
-import { acceptedWord, bracketSeats, committedLines, decisionLogs, defaultsWords, isAcceptingWord, isHandOffReview, NOT_PASSED, proofLabels, proofStates, PROVEN, runPaths, seatRoster, SEATS, severityOf, STAGE_PHASES, stageOfRow, STATUSES, statusOf, tidy } from './status.mjs';
+import { acceptedWord, bracketSeats, committedLines, decisionLogs, defaultsWords, globMatcher, isAcceptingWord, isHandOffReview, NOT_PASSED, proofLabels, proofStates, PROVEN, runPaths, seatRoster, SEATS, severityOf, STAGE_PHASES, stageOfRow, STATUSES, statusOf, tidy } from './status.mjs';
 
 const HEADER = 'ts\tphase\tdecision\twhy\tevidence\tresult';
 const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/u;
@@ -118,17 +128,56 @@ const opens = (line) => {
   return phase === 'panel' && SEATS.test(decision);
 };
 const roundCap = () => {
-  const { maxRounds: cap = 3 } = projectConfig();
+  const { maxRounds: cap = 1 } = projectConfig();
   if (!Number.isInteger(cap) || cap < 1) throw new Error(`.agents/pstack.json: maxRounds is ${JSON.stringify(cap)}, not a whole number of 1 or more`);
   return cap;
 };
-const restartsRoundCount = (line) => {
-  const [, phase, decision = '', , , result = ''] = line.split('\t');
-  if (phase === 'build') return /^built:\s*\S/u.test(decision) && /^(applied|fixed|partial|proven|recorded|verified)\b/u.test(result);
-  return phase === 'owner' && /^another round:\s*\S/u.test(decision);
-};
-const roundsSince = (lines) => lines.slice(lines.findLastIndex(restartsRoundCount) + 1).filter(opens).length;
+const EXTRA_ROUND_FIXES = 3;
 const STEP_BUILT = /^built:\s*step\s+(\d+[a-z]?)(?![a-z0-9])/iu;
+const ROUND_STEP = /^built:\s*step\s+([a-z0-9]+(?:\.[a-z0-9]+)*)(?![a-z0-9]|\.[a-z0-9])/iu;
+// A built: row for a step the log has built before records that step's fixes, not a new diff, so it starts no count.
+function trackRound(state, line) {
+  const [, phase, decision = '', , , result = ''] = line.split('\t');
+  if (phase === 'build' && /^built:\s*\S/u.test(decision) && /^(applied|fixed|partial|proven|recorded|verified)\b/u.test(result)) {
+    const step = decision.match(ROUND_STEP)?.[1].toLowerCase();
+    if (!step || !state.steps.has(step)) Object.assign(state, { rounds: 0, applied: 0 });
+    if (step) state.steps.add(step);
+  } else if (phase === 'owner' && /^another round:\s*\S/u.test(decision)) Object.assign(state, { rounds: 0, applied: 0 });
+  else if (opens(line)) Object.assign(state, { rounds: state.rounds + 1, applied: 0 });
+  else if (phase === 'panel' && /^critical\b/u.test(decision) && /^applied\b/u.test(result)) state.applied += 1;
+}
+const roundState = (lines) => {
+  const state = { rounds: 0, applied: 0, steps: new Set() };
+  for (const line of lines) trackRound(state, line);
+  return state;
+};
+const STEP_EXCLUDE = ['**/*.test.*', '**/*.spec.*', '**/__tests__/**', '**/fixtures/**', '**/*.md', '**/*.mdx'];
+const stepBudget = () => {
+  const { stepBudget: { lines = 400, exclude = [] } = {} } = projectConfig();
+  if (!Number.isInteger(lines) || lines < 1) throw new Error(`.agents/pstack.json: stepBudget.lines is ${JSON.stringify(lines)}, not a whole number of 1 or more`);
+  return { lines, excluded: globMatcher([...STEP_EXCLUDE, ...exclude]) };
+};
+function patchLines(patch, excluded) {
+  const count = { product: 0, other: 0 };
+  let file = null;
+  let inHunk = false;
+  for (const line of patch.split('\n')) {
+    const header = line.match(/^diff --git a\/.+ b\/(.+)$/u);
+    if (header) [file, inHunk] = [header[1], false];
+    else if (line.startsWith('@@')) inHunk = true;
+    else if (file && inHunk && /^[+-]/u.test(line)) count[excluded(file) ? 'other' : 'product'] += 1;
+  }
+  return count;
+}
+// An owner's "big step:" row lifts the step budget for the next round only, so a seats row after it ends the lift.
+const bigStep = (lines) => lines.reduce((lifted, line) => {
+  const [, phase, decision = ''] = line.split('\t');
+  if (phase === 'owner' && /^big step:\s*\S/u.test(decision)) return true;
+  return opens(line) ? false : lifted;
+}, false);
+const capMessage = ({ rounds }) =>
+  `this would be panel round ${rounds + 1} since the last restart, past the cap of ${roundCap()}, and the last round applied fewer than ${EXTRA_ROUND_FIXES} critical findings, or already was the one extra round. Stop reviewing: settle each open finding as applied, dismissed on its proof, recorded when no user can reach its case, deferred with its owner when it is not critical, or open with its patch:, owner: and stop: when the Panel review rule lets it stay open, then build the plan or land the step. A built: row for a step this log has not built yet, or an owner row whose decision starts with "another round:" and quotes the owner, starts the count again; a built: row for a step already built does not`;
+const pastCap = ({ rounds, applied }) => rounds >= roundCap() && !(rounds === roundCap() && applied >= EXTRA_ROUND_FIXES);
 const STEP_LANDED = /(?:^|\bstep\s+)(\d+[a-z]?)(?![a-z0-9])[^\t]*?\b(?:landed|published|dropped)\b/iu;
 const stepOf = (line, phase, pattern) => {
   const cells = line.split('\t');
@@ -234,6 +283,32 @@ function unnamedSeats(decision, seatsRow, where) {
   return [`${where}: a critical panel finding opens "critical [<seat>, ...]: <finding>" and names each seat that raised it at any severity, from its round's seats row: ${models.length ? `${models.join(', ')} or lead` : 'lead'}`];
 }
 
+function recordedProblems(severity, [, , , evidence, result], where) {
+  if (severity !== 'critical') return [`${where}: only a critical finding is recorded; a warning or nit is applied, dismissed or deferred with its owner:`];
+  const labels = proofLabels(evidence, plansDir(), onDisk).filter((label) => label.path);
+  const found = labels.filter((label) => !label.exists).map((label) => `${where}: proof: ${label.path} names no file`);
+  if (labels.length === 0) found.push(`${where}: a recorded critical finding names the seat's saved case as "proof: <file under ${plansDir()}/artifacts/>" in its evidence`);
+  if (!/(?:^|[\s;,(])step:\s*\S/u.test(result)) found.push(`${where}: a recorded critical finding names the plan step that fixes it as "step: <n>" in its result, a step that lands no later than the plan's reach step`);
+  return found;
+}
+
+// A recorded finding waits in code no user can reach, so the step that lets users reach that code waits for it.
+const REACH = /(?:^|[\s;,(])reach:\s*\S/u;
+const isRecorded = ([, decision = '', , , result = '']) => /^critical\b/u.test(decision) && /^recorded\b/u.test(result);
+const settlesRecorded = ([phase, , , , result = '']) => ['panel', 'build'].includes(phase) && /^(applied|dismissed|fixed|verified)\b/u.test(result);
+const caseKeys = (evidence) => proofLabels(evidence, plansDir(), onDisk).filter((label) => label.path).map((label) => label.key);
+
+function trackRecorded(recorded, cells) {
+  if (isRecorded(cells)) for (const key of caseKeys(cells[3])) recorded.set(key, cells[1]);
+  else if (settlesRecorded(cells)) for (const key of caseKeys(cells[3])) recorded.delete(key);
+}
+
+function reachProblems(recorded, [phase, decision = ''], where) {
+  if (phase !== 'build' || !/^built:/u.test(decision) || !REACH.test(decision) || recorded.size === 0) return [];
+  const count = recorded.size === 1 ? 'a recorded critical finding is' : `${recorded.size} recorded critical findings are`;
+  return [`${where}: this built: row names its step's reach:, and ${count} not settled: ${[...recorded.values()].join('; ')}. Before users can reach that code, fix each in the step its row's step: names, and log a panel or build row whose evidence names the same proof: file with a result that starts applied, dismissed, fixed or verified`];
+}
+
 function rowProblems(line, where, roster, chips) {
   const cells = line.split('\t');
   if (cells.length !== 6) return [`${where}: ${cells.length} cells, expected 6`];
@@ -257,14 +332,16 @@ function rowProblems(line, where, roster, chips) {
     if (!severity) found.push(`${where}: a panel row's decision starts with "seats" or a severity: critical, warning or nit; any other phase, such as build or trail, takes a row that is neither`);
     else if (!roster) found.push(`${where}: a panel finding needs a "seats" row before it`);
     else if (severity === 'critical') found.push(...unnamedSeats(rest[1], roster, where));
-    if (!/^(applied|dismissed|deferred|open)\b\W+\w/u.test(rest[4])) found.push(`${where}: a panel finding's result starts with "applied", "dismissed", "deferred" or "open" and gives the reason`);
+    if (!/^(applied|dismissed|deferred|open|recorded)\b\W+\w/u.test(rest[4])) found.push(`${where}: a panel finding's result starts with "applied", "dismissed", "deferred", "open" or, for a critical finding no user can reach yet, "recorded", and gives the reason`);
+    else if (/^recorded\b/u.test(rest[4])) found.push(...recordedProblems(severity, rest, where));
     else if (/^deferred\b/u.test(rest[4])) {
-      if (rest[1].startsWith('critical')) found.push(`${where}: a critical panel finding is never deferred: apply it or pivot the run to it, dismiss it on proof that it is no defect or is rare, or, when its own case fails the same way on the run's base, this run neither causes, worsens nor increases exposure to it, it breaks no outcome or property the typed ask states and it shows no requirement of this run's design unmet, log it open with patch: none, owner:, stop: and each line it limits in the result, and proof: none and the base run in the evidence`);
+      if (rest[1].startsWith('critical')) found.push(`${where}: a critical panel finding is never deferred: apply it or pivot the run to it, record it when no user can reach its case yet, dismiss it on proof that it is no defect or is rare, or, when its own case fails the same way on the run's base, log it open with patch: none, owner:, stop: and each line it limits in the result, and proof: none and the base run in the evidence`);
       else if (!/\bowner:\s*\S/u.test(rest[4])) found.push(`${where}: a deferred panel finding names its owner:`);
     } else if (/^open\b/u.test(rest[4]) && !(/\bpatch:\s*\S/u.test(rest[4]) && /\bowner:\s*\S/u.test(rest[4]))) {
       found.push(`${where}: an open panel finding names its patch: and owner:`);
     }
   }
+  if (rest[0] !== 'panel' && isRecorded(rest)) found.push(...recordedProblems('critical', rest, where));
   if (rest[0] !== 'chip' && CHIP_STATES.includes(status)) {
     found.push(`${where}: ${/^[aeiou]/u.test(status) ? 'an' : 'a'} ${status} result belongs only in a chip row; a run's log records the same step as applied, decided, fixed or verified`);
   }
@@ -508,10 +585,12 @@ function append(path, batch, run, miss = null) {
   let roster = existing.findLast(opens)?.split('\t')[2] ?? null;
   const isWriting = (line) => line.split('\t')[1] === 'writing';
   let written = isWriting(existing.findLast((line) => opens(line) || isWriting(line)) ?? '');
-  let rounds = roundsSince(existing);
+  const round = roundState(existing);
   let openCriticals = existing.slice(1).filter((line) => isOpenCritical(line.split('\t').slice(1))).length;
   const redesign = { log: path, playbook: redesignPlaybook(path), redesign: false, plan: false, kinds: 0, owners: 1 };
   for (const line of existing.slice(1).filter(Boolean)) trackRedesign(redesign, line.split('\t').slice(1));
+  const recorded = new Map();
+  for (const line of existing.slice(1).filter(Boolean)) trackRecorded(recorded, line.split('\t').slice(1));
   const steps = trunk() ? { built: new Set(), unlanded: new Set(), landing: false } : null;
   if (steps) for (const line of existing.slice(1)) trackStep(steps, line);
   const plans = batch.some((cells) => pivotPlanOf(cells)) ? runPlanState(path, existing) : null;
@@ -539,7 +618,8 @@ function append(path, batch, run, miss = null) {
       if (openCriticals > 0 && !(redesign.playbook && redesign.redesign)) found.push(...designQuestionProblems(path, cells, where, openCriticals));
       openCriticals += 1;
     }
-    found.push(...redesignProblems(redesign, cells, where));
+    trackRecorded(recorded, cells);
+    found.push(...redesignProblems(redesign, cells, where), ...reachProblems(recorded, cells, where));
     trackRedesign(redesign, cells);
     if (plans) {
       found.push(...secondPlanProblems(plans, cells, where), ...priorArtProblems(plans, cells, where));
@@ -548,18 +628,14 @@ function append(path, batch, run, miss = null) {
     if (opens(row) && roster && !written) {
       found.push(`${where}: a later round's seats row needs a writing row after the previous seats row: log the round's writing passes under phase writing, or log a writing row that says why none ran`);
     }
-    if (opens(row) && rounds >= roundCap()) {
-      found.push(`${where}: this would be panel round ${rounds + 1} since the last restart, past the cap of ${roundCap()}. Stop reviewing: settle each open finding as applied, dismissed on its proof, deferred with its owner when it is not critical, or open with its patch:, owner: and stop: when the Panel review rule lets it stay open, pivoting the run for a critical the lead must apply, then build a plan or move a diff to its next gate. A build row whose decision starts with "built:" and names the files a plan's build changed, with a result that starts applied, fixed, partial, proven, recorded or verified, or an owner row whose decision starts with "another round:" and quotes the owner, starts the count again`);
-    }
+    if (opens(row) && pastCap(round)) found.push(`${where}: ${capMessage(round)}`);
     if (steps) {
       found.push(...stepInFlightProblems(steps, row, where));
       trackStep(steps, row);
     }
-    if (restartsRoundCount(row)) rounds = 0;
-    if (opens(row)) {
-      written = false;
-      rounds += 1;
-    } else if (isWriting(row)) written = true;
+    trackRound(round, row);
+    if (opens(row)) written = false;
+    else if (isWriting(row)) written = true;
     if (opens(row)) roster = cells[1];
     recordRow(chips, cells, stamp);
     rows.push(row);
@@ -625,14 +701,32 @@ function dispatch() {
   }
   if (args[0] === 'rounds') {
     if (!args[1] || !existsSync(args[1])) {
-      console.error(args[1] ? `no log at ${args[1]}` : 'Usage: node .agents/pstack/decisions-check.mjs rounds <log.decisions.tsv>');
+      console.error(args[1] ? `no log at ${args[1]}` : 'Usage: node .agents/pstack/decisions-check.mjs rounds <log.decisions.tsv> [--patch <file>]');
       return 2;
     }
     const lines = readFileSync(args[1], 'utf8').split('\n');
-    const rounds = roundsSince(lines);
-    const cap = roundCap();
-    console.info(`${rounds} panel round(s) since the last restart; the cap is ${cap}`);
-    return rounds >= cap ? 1 : 0;
+    const round = roundState(lines);
+    console.info(`${round.rounds} panel round(s) since the last restart, the last applying ${round.applied} critical finding(s); the cap is ${roundCap()}, plus one round after a round that applies ${EXTRA_ROUND_FIXES} or more`);
+    let status = 0;
+    if (pastCap(round)) {
+      console.error(capMessage(round));
+      status = 1;
+    }
+    const patchFile = args[args.indexOf('--patch') + 1];
+    if (args.includes('--patch')) {
+      if (!patchFile || !existsSync(patchFile)) {
+        console.error(patchFile ? `no patch at ${patchFile}` : 'Usage: node .agents/pstack/decisions-check.mjs rounds <log.decisions.tsv> --patch <file>');
+        return 2;
+      }
+      const budget = stepBudget();
+      const { product, other } = patchLines(readFileSync(patchFile, 'utf8'), budget.excluded);
+      console.info(`the patch changes ${product} product line(s), and ${other} more in tests, fixtures, Markdown and stepBudget.exclude globs; the step budget is ${budget.lines}`);
+      if (product > budget.lines && !bigStep(lines)) {
+        console.error(`the patch changes ${product} product lines, past the step budget of ${budget.lines}. Split the step into lettered steps that land one by one, such as step 4a and step 4b, each with its own diff round, or log an owner row whose decision starts "big step:" and quotes the owner, which lifts the budget for one round`);
+        status = 1;
+      }
+    }
+    return status;
   }
   if (args[0] === 'chips') {
     const fetch = args.includes('--fetch');

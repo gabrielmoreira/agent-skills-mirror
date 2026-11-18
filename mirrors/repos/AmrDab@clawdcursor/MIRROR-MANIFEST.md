@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmrDab/clawdcursor` — 26 default patterns, 7 followed patterns, 12 file(s) materialized.
+Mirror of `AmrDab/clawdcursor` — 26 default patterns, 8 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 7 followed patterns, 12 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 12 |
+| Followed pats | 8 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 7 followed patterns, 12 
 - `docs/telemetry.md`
 - `docs/MACOS-SETUP.md`
 - `CHANGELOG.md`
+- `docs/pill-host.md`
 - `CONTRIBUTING.md`
 
 ## File Index
@@ -74,9 +75,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 9 | → | [`docs/MACOS-SETUP.md`](docs/MACOS-SETUP.md) |
-| 10 | → | [`docs/telemetry.md`](docs/telemetry.md) |
-| 11 | → | [`README.md`](README.md) |
-| 12 | → | [`SECURITY.md`](SECURITY.md) |
+| 10 | → | [`docs/pill-host.md`](docs/pill-host.md) |
+| 11 | → | [`docs/telemetry.md`](docs/telemetry.md) |
+| 12 | → | [`README.md`](README.md) |
+| 13 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

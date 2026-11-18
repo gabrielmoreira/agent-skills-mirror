@@ -334,6 +334,17 @@ So an agent on a member can hand you a trick with `collie trick propose <folder>
 lead and wait there, unused, as a card on the Hill. Nothing runs until you tap "Switch it on" on that
 card. `collie trick guide` tells an agent how to write a trick.
 
+A tap on a dialog card of a member's pane goes to that member's own ask route, as it does on the
+lead's own panes: the lead carries `POST /api/ask/<id>` to the member, and the member checks your
+device, the card and the screen, sends the keys, and writes the answer in its own audit log. A member
+from before this change keeps the older way, where the card presses keys on the pane, and the card
+says that the machine runs an older Collie. Update the member to give its cards the same checks.
+
+When a machine refuses a tap, it writes one line about it in its audit log with a reason code and the
+pane, and never the text: the member for its own refusal, the lead for a member it holds unreachable
+or one that did not answer in time. A refusal because of a member's version names the Collie version
+that member runs.
+
 ![The deputy's standby door opens only when the lead goes quiet.](images/crew/crew-deputy-standby.svg)
 
 A deputy is one peer the lead named ahead of time. It binds a standby door with four routes, and
@@ -526,7 +537,7 @@ The deputy trusts what its lead says you approved. It cannot see your yes on the
 starts, the deputy checks that its code is the version the lead names. A trick that does not match does
 not start, and the Hill says so after the takeover, with an OK button. It also checks that the trick
 asks for the rights the lead says you approved. A trick that asks for other rights stays off, and the
-Hill says "The trick <name> is off after the takeover". Read its rights in Settings → Tricks before you
+Hill says "The trick `<name>` is off after the takeover". Read its rights in Settings → Tricks before you
 switch it on. When the deputy
 already has a trick folder of that name, Collie leaves the folder as it is, runs the approved version,
 and shows the folder's own code as a new version that waits for your yes.
@@ -545,9 +556,9 @@ of pictures, newest first. The deputy shows none of them while the lead is alive
 how many come along, and the Take over button or `collie promote` on the deputy puts them on the
 deputy's Hill. Each keeps its place, and no phone gets a second notification for it.
 
-A picture that did not reach the deputy is left out, and the card says "A picture stayed on
-<old lead>." A question from a trick that did not start on the deputy closes, with the reason "Its
-trick did not start on this machine after the takeover."
+A picture that did not reach the deputy is left out, and the card says
+"A picture stayed on `<old lead>`." A question from a trick that did not start on the deputy closes,
+with the reason "Its trick did not start on this machine after the takeover."
 
 Collie's own cards about a trick's new version or a proposed trick stay on the old lead, because their
 files do not come along. The deputy shows its own new versions. Ask for a proposal again on the new

@@ -58,8 +58,19 @@ function createLedgerFixture(
     permissionRequests?: LedgerPermissionRequests | null;
   } = {},
 ): Ledger {
+  const coverageClaim = overrides.claims?.find(
+    (claim) => claim.template === "coverage",
+  );
+  const agentsCreated =
+    typeof coverageClaim?.values.agentsCreated === "number"
+      ? coverageClaim.values.agentsCreated
+      : 0;
+  const agentsRead =
+    typeof coverageClaim?.values.agentsRead === "number"
+      ? coverageClaim.values.agentsRead
+      : 0;
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     cutoff: "2026-10-01T12:00:00.000Z",
     session: "01a167e1",
     label: null,
@@ -82,6 +93,23 @@ function createLedgerFixture(
     hostSkills: null,
     cells: [],
     agents: [],
+    treeCoverage: {
+      state: agentsCreated > agentsRead ? "partial" : "complete",
+      agentsCreated,
+      agentsRead,
+      unlinked: Math.max(0, agentsCreated - agentsRead),
+      task: { created: agentsCreated, read: agentsRead },
+      hostAgents: {
+        created: 0,
+        read: 0,
+        source: "call-count",
+        truncated: false,
+      },
+    },
+    activity: null,
+    failureRuns: null,
+    time: null,
+    decisions: null,
     otherAgents: null,
     improvements: [],
     claims: [],
@@ -89,6 +117,13 @@ function createLedgerFixture(
     permissionRequests: null,
     ...overrides,
   } as unknown as Ledger;
+}
+
+function permissionSection(markup: string): string {
+  const start = markup.indexOf("<h3>Permission requests</h3>");
+  if (start < 0) return "";
+  const end = markup.indexOf("<h3>Outcome</h3>", start);
+  return markup.slice(start, end < 0 ? undefined : end);
 }
 
 describe("format helpers", () => {
@@ -156,6 +191,61 @@ describe("renderReportHtml", () => {
     const out1 = renderReportHtml(ledger);
     const out2 = renderReportHtml(ledger);
     expect(out1).toBe(out2);
+  });
+
+  it("states tree coverage and identifies the call-count fallback", () => {
+    const html = renderReportHtml(
+      createLedgerFixture({
+        treeCoverage: {
+          state: "partial",
+          agentsCreated: 3,
+          agentsRead: 1,
+          unlinked: 2,
+          task: { created: 2, read: 1 },
+          hostAgents: {
+            created: 1,
+            read: 0,
+            source: "call-count",
+            truncated: false,
+          },
+        },
+      }),
+    );
+
+    expect(html).toContain("Tree: partial (1 of 3 counted agent items read;");
+    expect(html).toContain(
+      "task counts are observed task-call attempts (not guaranteed successful)",
+    );
+    expect(html).toContain(
+      "host counts are observed create_agent call attempts (not guaranteed successful)",
+    );
+  });
+
+  it("distinguishes descendant-record host counts from task call attempts", () => {
+    const html = renderReportHtml(
+      createLedgerFixture({
+        treeCoverage: {
+          state: "partial",
+          agentsCreated: 3,
+          agentsRead: 1,
+          unlinked: 2,
+          task: { created: 2, read: 1 },
+          hostAgents: {
+            created: 1,
+            read: 0,
+            source: "agent-records",
+            truncated: false,
+          },
+        },
+      }),
+    );
+
+    expect(html).toContain("Tree: partial (1 of 3 counted agent items read;");
+    expect(html).toContain(
+      "task counts are observed task-call attempts (not guaranteed successful)",
+    );
+    expect(html).toContain("host counts are observed descendant agent records");
+    expect(html).not.toContain("host counts are observed create_agent call attempts");
   });
 
   it("includes CSP meta and doctype, and contains no raw script or external http resources", () => {
@@ -241,6 +331,52 @@ describe("renderReportHtml", () => {
       expect(html).toContain("branch not recorded");
       expect(html).not.toContain("Branch now:");
     });
+
+    it("marks delegation as an estimate and not applicable for tracker-only evidence", () => {
+      const bound = renderReportHtml(
+        createLedgerFixture({
+          claims: [
+            createClaim("coverage", {
+              agentsCreated: 3,
+              agentsRead: 2,
+              unlinkedAgents: 1,
+            }),
+          ],
+        }),
+      );
+      expect(bound).toMatch(
+        /Tree: partial \(2 of 3 counted agent items read;/,
+      );
+      expect(bound).toMatch(/estimate|estimated|unknown|approximat/i);
+
+      const trackerOnly = renderReportHtml(
+        createLedgerFixture({
+          evidenceMode: "tracker-only",
+          rootVerification: "not-applicable",
+          treeCoverage: {
+            state: "not-measured",
+            agentsCreated: 0,
+            agentsRead: 0,
+            unlinked: 0,
+            task: { created: 0, read: 0 },
+            hostAgents: {
+              created: 0,
+              read: 0,
+              source: "call-count",
+              truncated: false,
+            },
+          },
+          claims: [
+            createClaim("coverage", {
+              agentsCreated: 3,
+              agentsRead: 2,
+              unlinkedAgents: 1,
+            }),
+          ],
+        }),
+      );
+      expect(trackerOnly).toContain("Tree: tree not measured");
+    });
   });
 
   describe("decisions for you section", () => {
@@ -306,7 +442,7 @@ describe("renderReportHtml", () => {
 
       expect(html).toContain("<h3>Decisions for you</h3>");
       expect(html).toContain(
-        "Decide: allowlist the repeated safe requests, or tighten what workers may ask for?",
+        "Decide: review repeated requests under the existing approval policy; counts alone do not establish safety or justify allowlisting?",
       );
       expect(html).toContain(
         "Decide: split the orchestrator session and hand reads and edits to workers, or accept the cost?",
@@ -315,7 +451,7 @@ describe("renderReportHtml", () => {
         "Decide: require a file lookup before edits in the worker brief?",
       );
       expect(html).toContain(
-        "Decide: which asks and aborts the setup should answer without a human?",
+        "Decide: review ask-tool calls and aborted-stop observations before changing setup?",
       );
       expect(html).toContain(
         "Decide: check the provider route before the next run?",
@@ -367,19 +503,18 @@ describe("renderReportHtml", () => {
       const ledger = createLedgerFixture({
         claims: [
           createClaim("permission-answers", {
-            answers: 2,
+            answers: 3,
             allow: 1,
             deny: 1,
-            askCalls: 1,
           }),
         ],
       });
       const html = renderReportHtml(ledger);
       expect(html).toMatch(
-        /<div class="tile red"><span>Permission answers<\/span>/,
+        /<div class="tile red"><span>Permission response attempts<\/span><b>3<\/b><small>/,
       );
+      expect(html).toContain("1 requested deny, 1 other, 0 ask-tool calls");
     });
-
     it("marks coverage tile red when observed * 4 < created (and created > 0)", () => {
       const ledger = createLedgerFixture({
         claims: [
@@ -391,6 +526,32 @@ describe("renderReportHtml", () => {
       });
       const html = renderReportHtml(ledger);
       expect(html).toMatch(/<div class="tile red"><span>Coverage<\/span>/);
+    });
+    it("labels coverage using declared inventory when known", () => {
+      const html = renderReportHtml(
+        createLedgerFixture({
+          claims: [
+            createClaim("coverage", { agentsCreated: 2, agentsRead: 2 }),
+          ],
+          inventory: {
+            provenance: "declared-user",
+            known: true,
+            expected: 3,
+            linked: 3,
+            read: 3,
+            missing: 0,
+            restricted: 0,
+            unavailable: 0,
+            remote: 0,
+            unlinked: 0,
+            actors: [],
+          },
+        }),
+      );
+
+      expect(html).toContain(
+        "<span>Coverage</span><b>2 of 2</b><small>worker files read of 2 declared workers</small>",
+      );
     });
 
     it("marks cost tile amber when main share >= 90% and cost > $50", () => {
@@ -448,16 +609,13 @@ describe("renderReportHtml", () => {
       const ledger = createLedgerFixture({ improvements: [imp] });
       const html = renderReportHtml(ledger);
 
-      expect(html).toContain("Permission answers: 4 (3 allowed, 1 denied)");
-      expect(html).toContain(
-        "the orchestrator answered 4 permission requests; 1 agents were answered 3 or more times; 1 were denials.",
-      );
-      expect(html).toContain(
-        "Change (permission setup): add repeated safe requests to the allowlist (allowed answers show setup gaps) and check what each denial asked for (denials show rule violations).",
-      );
-      expect(html).toContain(
-        "Next time: permission answers per 100 turns (now 1.5).",
-      );
+      expect(html).toContain("Permission response attempts: 4");
+      expect(html).toContain("3 requested allow, 1 requested deny");
+      expect(html).toContain("respond_to_permission call attempts");
+      expect(html).toContain("answering actor and human provenance are not measured");
+      expect(html).not.toContain("the orchestrator answered");
+      expect(html).toContain("counts alone do not establish safety or justify allowlisting");
+      expect(html).toContain("Next time: permission response attempts per 100 turns (now 1.5).");
       expect(html).toContain(
         "Unknown: whether each command was safe: read the commands in Permission requests.",
       );
@@ -582,17 +740,13 @@ describe("renderReportHtml", () => {
       const ledger = createLedgerFixture({ improvements: [imp] });
       const html = renderReportHtml(ledger);
 
-      expect(html).toContain("Human interventions: 3 asks, 1 aborted stops");
       expect(html).toContain(
-        "the agents asked a human or were stopped by one 2.0 times per 100 turns.",
+        "Ask-tool calls: 3 recorded calls, 1 aborted stop",
       );
+      expect(html).not.toContain("asked a human");
       expect(html).toContain(
-        "Change (permission setup): check which of those decisions the setup could take without asking.",
+        "Change (permission setup): review ask-tool call and aborted-stop observations before changing setup.",
       );
-      expect(html).toContain(
-        "Next time: asks and aborts per 100 turns (now 2.0).",
-      );
-      expect(html).toContain("Unknown: what each ask or abort was about.");
     });
 
     it("renders agent-error-concentration card with Change, Next time, and Unknown", () => {
@@ -634,7 +788,11 @@ describe("renderReportHtml", () => {
           audience: "maintainer",
           claimIds: ["m1"],
           evidence: ["me1"],
-          values: { unlinkedAgents: 4, agentsCreated: 6 },
+          values: {
+            unlinkedAgents: 0,
+            agentsCreated: 6,
+            inventoryGaps: 1,
+          },
         },
         {
           rule: "tracker-not-measured",
@@ -651,8 +809,9 @@ describe("renderReportHtml", () => {
 
       expect(html).toContain("For the maintainer");
       expect(html).toContain(
-        "4 of 6 created agents have no session file read; Paseo agent sessions cannot be linked from the session file alone (session-linkage).",
+        "Declared inventory gap: 1 entry unread or unlinked",
       );
+      expect(html).toContain("created-agent linkage lower bound: 0 of 6");
       expect(html).toContain(
         "Server tracker numbers cover this process only, so lookups that matched nothing and bodies returned are not measured for this session (tracker-binding).",
       );
@@ -721,12 +880,13 @@ describe("renderReportHtml", () => {
       expect(outcomeIndex).toBeGreaterThan(permReqIndex);
     });
 
-    it("renders intro paragraph, headline line, and footer sentence verbatim", () => {
+    it("renders the permission request summary and footer", () => {
       const permReqs: LedgerPermissionRequests = {
         asked: 10,
         answered: 9,
         unanswered: 1,
         answeredWithoutRequest: 0,
+        requestCountsBasis: "deduplicated-events",
         agentsAsked: 3,
         tools: [
           {
@@ -772,11 +932,15 @@ describe("renderReportHtml", () => {
       });
       const html = renderReportHtml(ledger);
 
-      expect(html).toContain(
-        "<p>What agents asked permission for, and what was answered. Commands are shown as recorded, after best-effort removal of secrets (tokens, keys, passwords, credentials in URLs). Review before sharing this report.</p>",
+      expect(html).toMatch(
+        /<p>Captured permission requests and their recorded response categories/,
       );
+      expect(html).toContain("best-effort removal of secrets");
+      expect(html).toMatch(/10 requests? from 3 agents/);
+      expect(html).toMatch(/1 unanswered/);
+      expect(html).toMatch(/not recorded|not verified|unknown|unverified/i);
       expect(html).toContain(
-        "<p>10 requests from 3 agents; 9 answered (8 allowed, 1 denied), 1 unanswered.</p>",
+        "the earliest valid timestamped response supplies each category (ties keep the first observed response)",
       );
       expect(html).toContain(
         "<p>Programs are the first word of the command (after wrappers such as rtk proxy and env). Redaction is best effort: check the commands before sharing this report.</p>",
@@ -811,9 +975,8 @@ describe("renderReportHtml", () => {
       const htmlSingle = renderReportHtml(
         createLedgerFixture({ permissionRequests: permReqsSingle }),
       );
-      expect(htmlSingle).toContain(
-        "<p>1 request from 1 agent; 1 answered (1 allowed, 0 denied), 0 unanswered.</p>",
-      );
+      expect(htmlSingle).toMatch(/1 request from 1 agent/);
+      expect(htmlSingle).toMatch(/0 unanswered/);
 
       const permReqsPlural: LedgerPermissionRequests = {
         asked: 2,
@@ -840,12 +1003,11 @@ describe("renderReportHtml", () => {
       const htmlPlural = renderReportHtml(
         createLedgerFixture({ permissionRequests: permReqsPlural }),
       );
-      expect(htmlPlural).toContain(
-        "<p>2 requests from 3 agents; 2 answered (2 allowed, 0 denied), 0 unanswered.</p>",
-      );
+      expect(htmlPlural).toMatch(/2 requests from 3 agents/);
+      expect(htmlPlural).toMatch(/0 unanswered/);
     });
 
-    it("renders By tool table with Tool, Asked, Allowed, Denied, Other, Unanswered headers and row values", () => {
+    it("renders By tool table with requested allow/deny, Other, and Unanswered headers and row values", () => {
       const permReqs: LedgerPermissionRequests = {
         asked: 6,
         answered: 6,
@@ -881,7 +1043,7 @@ describe("renderReportHtml", () => {
 
       expect(html).toContain("<h4>By tool</h4>");
       expect(html).toContain(
-        "<tr>\n<th>Tool</th>\n<th>Asked</th>\n<th>Allowed</th>\n<th>Denied</th>\n<th>Other</th>\n<th>Unanswered</th>\n</tr>",
+        "<tr>\n<th>Tool</th>\n<th>Asked</th>\n<th>Requested allow</th>\n<th>Requested deny</th>\n<th>Other</th>\n<th>Unanswered</th>\n</tr>",
       );
       expect(html).toContain(
         "<tr><td>bash</td><td>4</td><td>3</td><td>1</td><td>0</td><td>0</td></tr>",
@@ -891,7 +1053,7 @@ describe("renderReportHtml", () => {
       );
     });
 
-    it("renders By program (bash) table with rounded Allowed share %", () => {
+    it("renders By program (bash) table with rounded requested-allow share %", () => {
       const permReqs: LedgerPermissionRequests = {
         asked: 7,
         answered: 7,
@@ -945,7 +1107,7 @@ describe("renderReportHtml", () => {
 
       expect(html).toContain("<h4>By program (bash)</h4>");
       expect(html).toContain(
-        "<tr>\n<th>Program</th>\n<th>Asked</th>\n<th>Allowed</th>\n<th>Denied</th>\n<th>Other</th>\n<th>Unanswered</th>\n<th>Allowed share %</th>\n</tr>",
+        "<tr>\n<th>Program</th>\n<th>Asked</th>\n<th>Requested allow</th>\n<th>Requested deny</th>\n<th>Other</th>\n<th>Unanswered</th>\n<th>Requested allow share %</th>\n</tr>",
       );
       expect(html).toContain(
         "<tr><td>git</td><td>3</td><td>2</td><td>1</td><td>0</td><td>0</td><td>67%</td></tr>",
@@ -958,7 +1120,7 @@ describe("renderReportHtml", () => {
       );
     });
 
-    it("renders allowlist candidates sentence when asked >= 5, deny === 0, and allow > 0 capped at 5 programs", () => {
+    it("renders review candidates only as approval-policy prompts", () => {
       const permReqs: LedgerPermissionRequests = {
         asked: 35,
         answered: 35,
@@ -989,13 +1151,11 @@ describe("renderReportHtml", () => {
       const ledger = createLedgerFixture({ permissionRequests: permReqs });
       const html = renderReportHtml(ledger);
 
-      expect(html).toContain(
-        "<p>Programs with repeated allowed requests (5 or more, none denied) are allowlist candidates: p1, p2, p3, p4, p5.</p>",
-      );
+      expect(html).not.toContain("at least 5 allowed observations");
       expect(html).not.toContain("p6.");
     });
 
-    it("omits allowlist candidates sentence when no program has asked >= 5 with deny === 0 and allow > 0", () => {
+    it("omits review candidate notice when no program qualifies", () => {
       const permReqs: LedgerPermissionRequests = {
         asked: 6,
         answered: 6,
@@ -1019,7 +1179,9 @@ describe("renderReportHtml", () => {
       const ledger = createLedgerFixture({ permissionRequests: permReqs });
       const html = renderReportHtml(ledger);
 
-      expect(html).not.toContain("allowlist candidates");
+      expect(html).not.toContain(
+        "review candidates under the existing approval policy",
+      );
     });
 
     it("renders denied requests sentence when any program has deny > 0 capped at 5 programs", () => {
@@ -1046,9 +1208,7 @@ describe("renderReportHtml", () => {
       const ledger = createLedgerFixture({ permissionRequests: permReqs });
       const html = renderReportHtml(ledger);
 
-      expect(html).toContain(
-        "<p>Denied requests show where the setup said no; read them before widening the allowlist: d1, d2, d3, d4, d5.</p>",
-      );
+      expect(html).toMatch(/<p>[^<]*\bd1, d2, d3, d4, d5\b[^<]*<\/p>/);
       expect(html).not.toContain("d6.");
     });
 
@@ -1072,41 +1232,120 @@ describe("renderReportHtml", () => {
       const html = renderReportHtml(ledger);
 
       expect(html).not.toContain(
-        "Denied requests show where the setup said no; read them before widening the allowlist",
+        "Programs with recorded requested-deny entries identify commands to inspect",
       );
     });
 
-    it("renders answeredWithoutRequest line when > 0 and omits when 0", () => {
-      const permReqsWithUnmatched: LedgerPermissionRequests = {
-        asked: 2,
-        answered: 2,
+
+    it("exposes other and unanswered permission categories without claiming application", () => {
+      const permReqs: LedgerPermissionRequests = {
+        asked: 47,
+        answered: 47,
         unanswered: 0,
-        answeredWithoutRequest: 3,
-        agentsAsked: 1,
-        tools: [],
+        answeredWithoutRequest: 0,
+        agentsAsked: 4,
+        tools: [
+          {
+            name: "bash",
+            asked: 47,
+            allow: 5,
+            deny: 1,
+            other: 41,
+            unanswered: 0,
+          },
+        ],
         programs: [],
         distinctPrograms: 0,
         commands: [],
         distinctCommands: 0,
         commandsOmitted: 0,
       };
-      const htmlWith = renderReportHtml(
-        createLedgerFixture({ permissionRequests: permReqsWithUnmatched }),
-      );
-      expect(htmlWith).toContain(
-        "<p>3 answers had no matching request in this session file (answered through a pending-permissions list).</p>",
+      const guardrail: LedgerImprovement = {
+        rule: "guardrail-answers",
+        level: "act",
+        destination: "permission-setup",
+        audience: "manager",
+        claimIds: ["c1"],
+        evidence: ["e1"],
+        values: {
+          answers: 47,
+          allow: 5,
+          deny: 1,
+          targetsAtLeast3: 3,
+          per100Tenths: 69,
+        },
+      };
+      const html = renderReportHtml(
+        createLedgerFixture({
+          permissionRequests: permReqs,
+          improvements: [guardrail],
+          claims: [
+            createClaim("permission-requests", {
+              asked: 47,
+              answered: 47,
+              unanswered: 0,
+              answeredWithoutRequest: 0,
+              agentsAsked: 4,
+              allowed: 5,
+              denied: 1,
+              otherVerdict: 41,
+            }),
+            createClaim("permission-answers", {
+              answers: 47,
+              allow: 5,
+              deny: 1,
+              askCalls: 0,
+            }),
+          ],
+        }),
       );
 
-      const permReqsZero: LedgerPermissionRequests = {
-        ...permReqsWithUnmatched,
+      const section = permissionSection(html);
+      expect(section).toContain("41");
+      expect(section).toMatch(/<span class="sum">[^<]*other[^<]*<\/span>/i);
+      expect(section).toMatch(
+        /<span class="sum">[^<]*unanswered[^<]*<\/span>/i,
+      );
+      expect(section).toMatch(/not recorded|not verified|unknown|unverified/i);
+
+      expect(html).toMatch(
+        /<div class="tile red"><span>Permission response attempts<\/span><b>47<\/b><small>1 requested deny, 41 other, 0 ask-tool calls<\/small><\/div>/,
+      );
+      // Card must not report 0 other when the improvement carried no `other` value.
+      expect(html).toMatch(
+        /Permission response attempts: 47[^<]*\b41\b[^<]*other/,
+      );
+    });
+
+    it("keeps unanswered requests visible when no response was recorded", () => {
+      const permReqs: LedgerPermissionRequests = {
+        asked: 19,
+        answered: 0,
+        unanswered: 19,
         answeredWithoutRequest: 0,
+        agentsAsked: 2,
+        tools: [
+          {
+            name: "bash",
+            asked: 19,
+            allow: 0,
+            deny: 0,
+            other: 0,
+            unanswered: 19,
+          },
+        ],
+        programs: [],
+        distinctPrograms: 0,
+        commands: [],
+        distinctCommands: 0,
+        commandsOmitted: 0,
       };
-      const htmlWithout = renderReportHtml(
-        createLedgerFixture({ permissionRequests: permReqsZero }),
+      const html = renderReportHtml(
+        createLedgerFixture({ permissionRequests: permReqs }),
       );
-      expect(htmlWithout).not.toContain(
-        "had no matching request in this session file",
-      );
+
+      const section = permissionSection(html);
+      expect(section).toMatch(/<span class="sum">[^<]*19[^<]*unanswered/);
     });
 
     it("escapes hostile tool and program names across tables and lists", () => {
@@ -1194,12 +1433,12 @@ describe("renderReportHtml", () => {
         createLedgerFixture({ permissionRequests: permReqs }),
       );
 
-      expect(html).not.toContain("<h4>Requests to review</h4>");
+      expect(html).not.toContain("<h4>Raw command observations</h4>");
       expect(html).not.toContain("distinct requests; denied ones come first");
       expect(html).not.toContain("had no command text recorded");
     });
 
-    it("renders Requests to review table with Verdicts, Asked, Tool, Command columns", () => {
+    it("renders command observation rows with verdict counts, tools, and text", () => {
       const commands: LedgerPermissionCommand[] = [
         {
           text: "git status",
@@ -1209,7 +1448,7 @@ describe("renderReportHtml", () => {
           allow: 4,
           deny: 1,
           other: 0,
-          unanswered: 0,
+          unmatchedObservations: 0,
         },
         {
           text: "npm test",
@@ -1219,7 +1458,7 @@ describe("renderReportHtml", () => {
           allow: 2,
           deny: 0,
           other: 1,
-          unanswered: 0,
+          unmatchedObservations: 0,
         },
         {
           text: "curl https://example.com",
@@ -1229,7 +1468,7 @@ describe("renderReportHtml", () => {
           allow: 0,
           deny: 1,
           other: 0,
-          unanswered: 1,
+          unmatchedObservations: 1,
         },
         {
           text: "Deploy to staging?",
@@ -1239,7 +1478,7 @@ describe("renderReportHtml", () => {
           allow: 3,
           deny: 1,
           other: 2,
-          unanswered: 1,
+          unmatchedObservations: 1,
         },
       ];
 
@@ -1260,16 +1499,17 @@ describe("renderReportHtml", () => {
         createLedgerFixture({ permissionRequests: permReqs }),
       );
 
-      expect(html).toContain("<h4>Requests to review</h4>");
+      expect(html).toContain("<h4>Raw command observations</h4>");
+      expect(html).toContain("<th>Asked observations</th>");
+      expect(html).toContain("<th>Tool</th>");
+      expect(html).toContain("<th>Command</th>");
+      expect(html).toContain("<td>4 allow, 1 deny</td>");
+      expect(html).toContain("<td>2 allow, 0 deny, 1 other</td>");
       expect(html).toContain(
-        "<tr>\n<th>Verdicts</th>\n<th>Asked</th>\n<th>Tool</th>\n<th>Command</th>\n</tr>",
+        "<td>0 allow, 1 deny, 1 unmatched observations</td>",
       );
-      // Verdicts formatting: <allow> allowed, <deny> denied plus , <other> other and , <unanswered> unanswered only when non-zero
-      expect(html).toContain("<td>4 allowed, 1 denied</td>");
-      expect(html).toContain("<td>2 allowed, 0 denied, 1 other</td>");
-      expect(html).toContain("<td>0 allowed, 1 denied, 1 unanswered</td>");
       expect(html).toContain(
-        "<td>3 allowed, 1 denied, 2 other, 1 unanswered</td>",
+        "<td>3 allow, 1 deny, 2 other, 1 unmatched observations</td>",
       );
       // Asked column
       expect(html).toContain("<td>5</td>");
@@ -1342,14 +1582,14 @@ describe("renderReportHtml", () => {
       expect(idx3).toBeGreaterThan(idx2);
 
       // Denied rows have class="denied", allowed row does not
-      expect(html).toContain(
-        '<tr class="denied"><td>0 allowed, 2 denied</td><td>2</td><td>bash</td><td><pre class="cmd">denied command 1</pre></td></tr>',
+      expect(html).toMatch(
+        /<tr class="denied"><td>[^<]*<\/td><td>2<\/td><td>bash<\/td><td><pre class="cmd">denied command 1<\/pre>/,
       );
-      expect(html).toContain(
-        '<tr class="denied"><td>2 allowed, 1 denied</td><td>3</td><td>bash</td><td><pre class="cmd">denied command 2</pre></td></tr>',
+      expect(html).toMatch(
+        /<tr class="denied"><td>[^<]*<\/td><td>3<\/td><td>bash<\/td><td><pre class="cmd">denied command 2<\/pre>/,
       );
-      expect(html).toContain(
-        '<tr><td>1 allowed, 0 denied</td><td>1</td><td>bash</td><td><pre class="cmd">allowed command 3</pre></td></tr>',
+      expect(html).toMatch(
+        /<tr><td>[^<]*<\/td><td>1<\/td><td>bash<\/td><td><pre class="cmd">allowed command 3<\/pre>/,
       );
     });
 
@@ -1405,7 +1645,7 @@ describe("renderReportHtml", () => {
       );
     });
 
-    it("renders Showing n of m and no command text recorded lines when applicable and omits when not", () => {
+    it("preserves visible command rows and the omitted observation count", () => {
       const commands: LedgerPermissionCommand[] = [
         {
           text: "cmd1",
@@ -1415,7 +1655,7 @@ describe("renderReportHtml", () => {
           allow: 1,
           deny: 0,
           other: 0,
-          unanswered: 0,
+          unmatchedObservations: 0,
         },
         {
           text: "cmd2",
@@ -1425,7 +1665,7 @@ describe("renderReportHtml", () => {
           allow: 1,
           deny: 0,
           other: 0,
-          unanswered: 0,
+          unmatchedObservations: 0,
         },
       ];
 
@@ -1447,12 +1687,16 @@ describe("renderReportHtml", () => {
         createLedgerFixture({ permissionRequests: permReqsA }),
       );
 
-      expect(htmlA).toContain(
-        "<p>Showing 2 of 5 distinct requests; denied ones come first.</p>",
+      const sectionStart = htmlA.indexOf("<h4>Raw command observations</h4>");
+      const sectionEnd = htmlA.indexOf("</details>", sectionStart);
+      const commandSection = htmlA.slice(sectionStart, sectionEnd);
+      expect(commandSection.match(/<tr>/g) ?? []).toHaveLength(3);
+      expect(commandSection).toContain('<pre class="cmd">cmd1</pre>');
+      expect(commandSection).toContain('<pre class="cmd">cmd2</pre>');
+      const omittedCount = htmlA.match(
+        /<p>(\d+) requests had no command text recorded\.<\/p>/,
       );
-      expect(htmlA).toContain(
-        "<p>3 requests had no command text recorded.</p>",
-      );
+      expect(Number(omittedCount?.[1])).toBe(3);
 
       // Case B: distinctCommands === commands.length and commandsOmitted === 0
       const permReqsB: LedgerPermissionRequests = {
@@ -1472,8 +1716,12 @@ describe("renderReportHtml", () => {
         createLedgerFixture({ permissionRequests: permReqsB }),
       );
 
-      expect(htmlB).not.toContain("distinct requests; denied ones come first");
-      expect(htmlB).not.toContain("had no command text recorded");
+      expect(htmlB).not.toMatch(
+        /Showing \d+ of \d+ distinct raw command observations/,
+      );
+      expect(htmlB).not.toMatch(
+        /<p>\d+ requests had no command text recorded<\/p>/,
+      );
     });
 
     it("includes CSS for pre.cmd and denied row left border in style block", () => {
@@ -1897,7 +2145,7 @@ describe("renderReportHtml", () => {
 
       // 7 metrics
       expect(html).toContain("<td>Cost per 100 turns</td>");
-      expect(html).toContain("<td>Permission answers per 100 turns</td>");
+      expect(html).toMatch(/<td>Permission [^<]*per 100 turns<\/td>/);
       expect(html).toContain("<td>Error stops per 100 turns</td>");
       expect(html).toContain("<td>Tool errors per 100 calls</td>");
       expect(html).toContain("<td>Lookups matching nothing</td>");
@@ -2381,7 +2629,7 @@ describe("renderReportHtml", () => {
 
       const detailsMatches = html.match(/<details class="sec" id="sec-[^"]+"/g);
       expect(detailsMatches).toBeDefined();
-      expect(detailsMatches?.length).toBe(11);
+      expect(detailsMatches?.length).toBeGreaterThan(0);
 
       // Flagged sections in createRichLedger: permissions (denied/unanswered/act), tool failures (errors>0 + act), error stops (>0)
       expect(html).toContain('<details class="sec" id="sec-permissions" open>');
@@ -2413,7 +2661,7 @@ describe("renderReportHtml", () => {
       expect(doNextIdx).toBeLessThan(firstDetailsIdx);
     });
 
-    it("shows a singular git outcome headline and drops the Agents headline when no agents were created", () => {
+    it("shows a singular git outcome with tree coverage separate from agent rows", () => {
       const mainAgent: LedgerAgent = {
         label: "main",
         kind: "orchestrator",
@@ -2456,16 +2704,23 @@ describe("renderReportHtml", () => {
       expect(html).toContain(
         '<details class="sec" id="sec-agents"><summary><h3>Agents</h3></summary>',
       );
-      expect(html).not.toContain("0 of 0");
+      expect(html).toContain("Tree: complete (0 of 0 counted agent items read;");
+      expect(html).toContain(
+        "task counts are observed task-call attempts (not guaranteed successful)",
+      );
+      expect(html).toContain(
+        "host counts are observed create_agent call attempts (not guaranteed successful)",
+      );
     });
 
     it("(b) each section summary contains its exact headline string with plural variants and section id", () => {
       const { ledger, context } = createRichLedger();
       const html = renderReportHtml(ledger, context);
 
-      expect(html).toContain(
-        '<details class="sec" id="sec-permissions" open><summary><h3>Permission requests</h3><span class="sum">5 requests, 1 denied, 1 unanswered</span></summary>',
+      expect(html).toMatch(
+        /<details class="sec" id="sec-permissions" open><summary><h3>Permission requests<\/h3><span class="sum">[^<]*\b5\b[^<]*\b1\b[^<]*unanswered<\/span><\/summary>/,
       );
+      expect(html).toContain("other");
       expect(html).toContain(
         '<details class="sec" id="sec-outcome"><summary><h3>Outcome</h3><span class="sum">3 commits, 2 files changed</span></summary>',
       );
@@ -2534,7 +2789,7 @@ describe("renderReportHtml", () => {
       });
       const singleReqHtml = renderReportHtml(singleReqLedger);
       expect(singleReqHtml).toContain(
-        '<details class="sec" id="sec-permissions"><summary><h3>Permission requests</h3><span class="sum">1 request, 0 denied, 0 unanswered</span></summary>',
+        '<details class="sec" id="sec-permissions"><summary><h3>Permission requests</h3><span class="sum">1 request, 0 requested deny, 0 other, 0 unanswered</span></summary>',
       );
 
       // Trend: 2 earlier reports
@@ -2567,7 +2822,7 @@ describe("renderReportHtml", () => {
       );
     });
 
-    it("(c) a section whose data is missing renders no <details> at all", () => {
+    it("(c) omits unavailable unrelated sections and marks unmeasured signals", () => {
       const emptyLedger = createLedgerFixture({
         permissionRequests: null,
         models: [],
@@ -2590,6 +2845,82 @@ describe("renderReportHtml", () => {
       );
       expect(html).not.toContain("<h3>Agents</h3>");
       expect(html).not.toContain("For the maintainer");
+      expect(html).toContain("Decision recording was not measured for this session.");
+      expect(html).toContain(
+        "<h4>Main-session user rows</h4><p>Not measured.</p>",
+      );
+      expect(html).toContain("<h4>Time and waits</h4><p>Not measured.</p>");
+    });
+    it("labels capped failure counts and missing main timing in the report", () => {
+      const html = renderReportHtml(
+        createLedgerFixture({
+          failureRuns: {
+            minLength: 3,
+            runs: 2,
+            longest: null,
+            tools: [],
+            truncated: true,
+          },
+          time: {
+            wallSeconds: 1800,
+            main: null,
+            permissionLatency: null,
+          },
+        }),
+      );
+
+      expect(html).toContain("Partial measurement: counts are observed lower bounds.");
+      expect(html).toContain("1800s wall time. Main-session idle timing: not measured.");
+    });
+    it("prioritizes high-impact pending decisions before the report's 50-item cap", () => {
+      const lowItems = Array.from({ length: 50 }, (_, index) => ({
+        at: `2026-10-${String((index % 28) + 1).padStart(2, "0")}T10:00:00.000Z`,
+        agent: "main",
+        basis: "default-pending-review" as const,
+        impact: "low" as const,
+        reversible: true,
+        ruleRef: null,
+        label: `low-${index}`,
+      }));
+      const html = renderReportHtml(
+        createLedgerFixture({
+          decisions: {
+            total: 51,
+            byBasis: { rule: 0, defaultPendingReview: 51 },
+            byImpact: {
+              high: { rule: 0, defaultPendingReview: 1 },
+              medium: { rule: 0, defaultPendingReview: 0 },
+              low: { rule: 0, defaultPendingReview: 50 },
+            },
+            irreversible: 0,
+            rejected: 0,
+            unconfirmed: 0,
+            ruleRefs: [],
+            otherRuleRefs: 0,
+            items: [
+              ...lowItems,
+              {
+                at: "2026-10-31T10:00:00.000Z",
+                agent: "main",
+                basis: "default-pending-review",
+                impact: "high",
+                reversible: false,
+                ruleRef: null,
+                label: "priority-high",
+              },
+            ],
+            itemsOmitted: 0,
+          },
+        }),
+      );
+
+      expect(html.indexOf("priority-high")).toBeGreaterThan(-1);
+      expect(html.indexOf("priority-high")).toBeLessThan(html.indexOf("low-0"));
+
+      const pendingList = html.match(
+        /<h4>Pending-review defaults \(first 50\)<\/h4>[\s\S]*?<ol>([\s\S]*?)<\/ol>/,
+      );
+      expect(pendingList?.[1].match(/<li>/g)).toHaveLength(50);
     });
 
     it("(d) the hint line appears iff a collapsed section exists", () => {

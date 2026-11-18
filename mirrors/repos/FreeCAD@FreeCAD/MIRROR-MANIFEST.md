@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `FreeCAD/FreeCAD` — 26 default patterns, 13 followed patterns, 45 file(s) materialized.
+Mirror of `FreeCAD/FreeCAD` — 26 default patterns, 13 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `FreeCAD/FreeCAD` — 26 default patterns, 13 followed patterns, 45 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 45 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,23 +99,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`src/Mod/PartDesign/fcsprocket/README.md`](src/Mod/PartDesign/fcsprocket/README.md) |
 | 27 | ✓ | [`src/Mod/Plot/README.md`](src/Mod/Plot/README.md) |
 | 28 | ✓ | [`src/Mod/Start/README.md`](src/Mod/Start/README.md) |
-| 29 | ✓ | [`src/Mod/TechDraw/Templates/ISO/localized/README.md`](src/Mod/TechDraw/Templates/ISO/localized/README.md) |
-| 30 | ✓ | [`src/Tools/python_api/README.md`](src/Tools/python_api/README.md) |
-| 31 | ✓ | [`src/Tools/typing/README.md`](src/Tools/typing/README.md) |
-| 32 | ✓ | [`tests/visual/fonts/README.md`](tests/visual/fonts/README.md) |
-| 33 | → | [`AI_POLICY.md`](AI_POLICY.md) |
-| 34 | → | [`contrib/guidelines/architecture.md`](contrib/guidelines/architecture.md) |
-| 35 | → | [`contrib/guidelines/code-reuse.md`](contrib/guidelines/code-reuse.md) |
-| 36 | → | [`contrib/guidelines/contributing-changes.md`](contrib/guidelines/contributing-changes.md) |
-| 37 | → | [`contrib/guidelines/design-proposals.md`](contrib/guidelines/design-proposals.md) |
-| 38 | → | [`contrib/guidelines/documents-and-geometry.md`](contrib/guidelines/documents-and-geometry.md) |
-| 39 | → | [`contrib/guidelines/gui-and-translations.md`](contrib/guidelines/gui-and-translations.md) |
-| 40 | → | [`contrib/guidelines/README.md`](contrib/guidelines/README.md) |
-| 41 | → | [`contrib/guidelines/reviewing-changes.md`](contrib/guidelines/reviewing-changes.md) |
-| 42 | → | [`contrib/guidelines/testing-and-validation.md`](contrib/guidelines/testing-and-validation.md) |
-| 43 | → | [`contrib/guidelines/writing-code.md`](contrib/guidelines/writing-code.md) |
-| 44 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 45 | → | [`README.md`](README.md) |
+| 29 | ✓ | [`src/Tools/python_api/README.md`](src/Tools/python_api/README.md) |
+| 30 | ✓ | [`src/Tools/typing/README.md`](src/Tools/typing/README.md) |
+| 31 | ✓ | [`tests/visual/fonts/README.md`](tests/visual/fonts/README.md) |
+| 32 | → | [`AI_POLICY.md`](AI_POLICY.md) |
+| 33 | → | [`contrib/guidelines/architecture.md`](contrib/guidelines/architecture.md) |
+| 34 | → | [`contrib/guidelines/code-reuse.md`](contrib/guidelines/code-reuse.md) |
+| 35 | → | [`contrib/guidelines/contributing-changes.md`](contrib/guidelines/contributing-changes.md) |
+| 36 | → | [`contrib/guidelines/design-proposals.md`](contrib/guidelines/design-proposals.md) |
+| 37 | → | [`contrib/guidelines/documents-and-geometry.md`](contrib/guidelines/documents-and-geometry.md) |
+| 38 | → | [`contrib/guidelines/gui-and-translations.md`](contrib/guidelines/gui-and-translations.md) |
+| 39 | → | [`contrib/guidelines/README.md`](contrib/guidelines/README.md) |
+| 40 | → | [`contrib/guidelines/reviewing-changes.md`](contrib/guidelines/reviewing-changes.md) |
+| 41 | → | [`contrib/guidelines/testing-and-validation.md`](contrib/guidelines/testing-and-validation.md) |
+| 42 | → | [`contrib/guidelines/writing-code.md`](contrib/guidelines/writing-code.md) |
+| 43 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 44 | → | [`README.md`](README.md) |
 
 ---
 

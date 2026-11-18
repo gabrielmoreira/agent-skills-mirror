@@ -4,6 +4,8 @@
 
 This is the maintainer and tester manual for the application npm format. It defines required checks, not a claim that all platforms or a published registry version have passed. [Installation](npm-installation.md) supplies macOS/PowerShell commands, DEV template setup, host adapters and recovery boundaries. Ordinary CI retains candidate installation instructions for review; npm, R2 and Release publication remain separate controlled actions.
 
+Stable release owners prepare the exact-version English/Chinese descriptions using the [changelog authoring guide](https://github.com/nexu-io/openmotion/blob/main/docs/CHANGELOG/README.md) before candidate construction. Unreleased copy is a draft; only descriptions at the frozen source SHA for that exact version enter authored stable Notes. Inspect the sealed Notes with the package and record actual acceptance privately. Existing candidates keep their original copy.
+
 ## One record per candidate
 
 Record package name/exact version, full source SHA, CI run/attempt, tgz SHA256 and npm integrity when available, application/manifest and both lock hashes, template environment/Resource/locale/catalog version, OS/CPU/Node/npm/Agent versions, installation paths, results and evidence links, known problems, acceptance owner and prior usable version. Keep internal logs, credentials and user material outside public packages.
@@ -24,7 +26,7 @@ Recommended local checks before a test publication (not a manual workflow gate; 
 
 1. Freeze a reviewed `main` commit. Run the required check/typecheck/Studio build, affected deterministic tests and current-head CI. Verify final package contents, public-boundary/secret scans, dependencies, licenses and disabled upstream telemetry.
 2. Build the **final tgz once** into a new directory. Check all identities and hashes. Copy only that tgz to a clean consumer directory; no application sidecar or source checkout may be required by setup.
-3. On each promised OS/CPU, use a clean npm cache, isolated Agent profile, app home, data and Skills roots. Install with the exact tgz, run prepare, reconnect and compare the actual Tools/Skills/resources with its manifest (currently 11 Tools and 5 Skills).
+3. On each promised OS/CPU, use a clean npm cache, isolated Agent profile, app home, data and Skills roots. Install with the exact tgz, run prepare, reconnect and compare actual host discovery with the exact release manifest's `mcp.tools` and `skills` names, allowing additional negotiated presentation Tools, and verify MCP resources.
 4. Test initial native downloads, checked executables, second-run cache reuse, same-version setup, wrong checksum, interrupted download/retry, ownership conflicts and failed host registration. Preserve existing user content and unrelated host settings.
 5. In Studio and the actual Agent, find the same published template, read detail, create an independent editable copy and record the catalog/publication version. Test DEV/prod isolation, first-load failure, existing-cache warning, catalog refresh and preservation of existing projects as relevant.
 6. Use fixed material and a real Agent task: create/adapt, preview, change copy/media, save/reopen and export MP4. Record project/revision and output. Technical decoded audio/video, real model creation and normal-speed human visual/audio playback have distinct results. Include version restore/cancel and other affected Tools when changed.
@@ -32,6 +34,14 @@ Recommended local checks before a test publication (not a manual workflow gate; 
 A first test candidate may be distributed with declared, accepted non-blocking issues after local package checks. Credential leakage, destructive updates, mixed environments, broken installation or missing required export are blockers. After separately authorized publication, repeat a **real registry cold install of the exact test version**; local tgz acceptance cannot prove registry availability. File failures against that identity and issue a new test version after fixes.
 
 Mac arm64 and Windows x64 require separate results; absent runners are not passes. A fixture-tested adapter is not proof of a real host conversation. Mark PASS / FAIL / NOT RUN explicitly; flaky or infrastructure failures do not count as acceptance.
+
+## Onboarding media development acceptance
+
+Compare the complete Tool/Skill inventory against the exact package manifest in development/release acceptance; ordinary installation only needs the selected workspace read.
+
+When changing onboarding media or card rendering, verify image decoding and advancing full-video playback in the mounted cards, including enlarged preview, for the affected inline/native routes and current recommendation pool. Check decoded image dimensions, complete video duration, advancing playback time and decoded frames, and media/CSP/runtime errors. A cover image or HTTP success alone does not prove playback. Record the source/resource identity, host, selected IDs and evidence; a browser test host does not establish actual native-host delivery. Human audiovisual review remains separate.
+
+These are developer/release checks, never work required of the installing Agent. Do not delay installation completion, repeat setup or invalidate installation/connection results because media acceptance is failed, unavailable or not run. Track those results separately from visible card delivery and automatic MCP activation.
 
 ## Stable acceptance
 
@@ -69,7 +79,7 @@ Ordinary npm/DEV CI builds generate a **candidate-only** guide and retain it as 
 
 Maintainers follow [build → download and accept → publish](release-workflows.md): first run Motion candidate build from `main` with `channel=test` and version empty for automatic numbering (or an explicit new test version), or `channel=stable` with an explicit new stable version, download its frozen candidate and follow the included `candidate-install.md` to install the local tgz in an isolated host. Keep completed `acceptance.md` privately. Run Motion npm publication from `main` with the same channel and that exact version. Starting the manual workflow authorizes publication; no acceptance checkbox is required. Candidate lookup and hashes are automatic; no independent approval environment is enabled. The same candidate bytes receive immutable snapshots before the moving guide advances; test native registry checks follow delivery and report warnings; stable requires both checks before `latest`. Snapshot-only recovery is a separate maintenance entry. The former CI guide-only upload route is removed so it cannot bypass these checks. Ordinary PR CI remains read-only.
 
-The entries support test/DEV and stable/prod candidates. Stable uses stage → both native checks → latest → prod snapshots/default guide. Skills platform/marketplace distribution remains outside this implementation; each real publication requires separate authorization. Bundling five Skills and registering them locally does not publish them to a platform. Partial retries retain the actual successful producer artifact IDs; automatic npm provenance is disabled for prebuilt candidates while OIDC authentication remains enabled. See the workflow manual for the source/hash evidence and recovery limits.
+The entries support test/DEV and stable/prod candidates. Stable uses stage → both native checks → latest → prod snapshots/default guide. Skills platform/marketplace distribution remains outside this implementation; each real publication requires separate authorization. Bundling Skills and registering them locally does not publish them to a platform. Partial retries retain the actual successful producer artifact IDs; automatic npm provenance is disabled for prebuilt candidates while OIDC authentication remains enabled. See the workflow manual for the source/hash evidence and recovery limits.
 
 The short test/stable version URL contract and historical `/versions/` URLs remain as documented in that manual. New test software uses DEV template defaults. DEV service access still depends on network/authentication; private template snapshots and credentials must never be embedded. The earlier test.6 retains prod defaults.
 
@@ -78,3 +88,7 @@ The configured destination bucket is `open-design-releases` and the public origi
 The new entries require separate trusted default-branch registration and npm trusted-publisher setup before use. Those administrative steps are not performed by this feature PR. Existing R2 credentials are reused only in the final snapshot job. No workflow was dispatched or package published as part of implementing these controls. See [setup, records and recovery](release-workflows.md).
 
 Default installation guides use floating npm tags (`@test` for DEV, `@latest` for stable) and state the current version separately. Versioned guides remain pinned for reproduction. Native cold-install results are post-delivery evidence for test and a required gate before stable `latest`. Neither establishes real creation or human acceptance.
+
+## Active version series
+
+The active stable series starts at 0.0.1; 0.6.x is reserved for historical packages. Follow the release manual for publication ordering. Stable still requires both exact prod native checks before latest and the default guide advance. Existing ^0.6.x dependencies and lockfiles require an explicit version migration; use the latest-tag guide or an exact new version. No old package or snapshot is overwritten.

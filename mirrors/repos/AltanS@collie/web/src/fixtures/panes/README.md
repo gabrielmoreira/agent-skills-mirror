@@ -847,6 +847,20 @@ Grok's composer is a rounded box at the tail: `╭─…─╮` / `│ ❯ … �
 | `grok--model-effort-moved.txt` | Same live effort list after Down points at Medium, without submitting; the captured pair must preserve identity while rejecting stale taps | `idle` |
 | `grok--output-scrollbar.txt` | Grok Build 1.0.46 on macOS, 2026-10-08: tail of the live browser-send capture, from the code reply through the composer, byte-faithful except one status line, whose text was replaced with neutral text of the same width; its ANSI styling is unchanged. The code keeps its rgb(28,28,28) surface; the right-edge track is a separate `█` segment with foreground and background rgb(25,25,25), preceded by uncoloured rgb(20,20,20) canvas padding. A dark block following coloured message text must remain. Its empty viewport rows and full terminal-width padding must not inflate the wrapped phone mirror. Original screen rows remain intact for grammar and guard probes | `done` |
 | `grok--working.txt` | Mid-turn; empty box; working hint row under the box | `working` |
+| `grok--v1.0.77-idle-optin--w120.txt` | Grok Build 1.0.77, harness lab 2026-11-16, scratch tmux at 120 columns: the welcome card, then the `Help improve Grok` opt-in card with `[Opt out] [Opt in]` right over an empty box. Typing goes into the box while the card stands, so it reads free. The `[Opt in]` choice was never answered | `idle` |
+| `grok--v1.0.77-done--w120.txt` | Same lab: the end of two turns (`pong`, then the queued `ping`), `Worked for 3.5s` over an empty box | `idle` |
+| `grok--v1.0.77-draft-wrapped--w61.txt` | Same lab at 61 columns: a typed draft wrapped onto four rows. Before `idle.frame.ownPrompt` the `❯` on the prompt row and the wrapped rows under it read as a pointed list, so the box read `unreadable` | `draft` |
+| `grok--v1.0.77-draft-wrapped--w80.txt` | The same draft at 80 columns, three rows; read `unreadable` before `ownPrompt` too | `draft` |
+| `grok--v1.0.77-draft-six-rows--w120.txt` | A pasted single line of 120 words (no fold) wrapped onto six rows at 120 columns | `draft` |
+| `grok--v1.0.77-draft-lines--w61.txt` | A draft typed with Ctrl+J between lines, one line blank, at 61 columns | `draft` |
+| `grok--v1.0.77-paste-fold--w120.txt` | A bracketed paste of 30 lines: the box holds `[Pasted: 30 lines]` (1.0.77 folds four lines and more, with a colon), and a preview card stands over the box until the next key. One Backspace removes the whole fold | `draft` |
+| `grok--v1.0.77-slash-ghost--w120.txt` | `/stat` typed: the slash list between two rules over the box, and the box paints the rest of `/statusline` after the typed text in grey `rgb(108,108,108)`, read as blank through `idle.inlineHint`. A user skill row in the list was replaced with neutral text of the same length | `popup` |
+| `grok--v1.0.77-running--w120.txt` | A turn in flight: the spinner row `⠋ Waiting for response… 0.6s … [stop]` over the opt-in card, and the hint row `Shift+Tab:mode │ Ctrl+c:cancel │ Ctrl+x:shortcuts` under the box (1.0.41 said `Esc:cancel`) | `running` |
+| `grok--v1.0.77-running-draft--w120.txt` | A draft typed in a turn: the hint row says `Enter:queue │ … │ Ctrl+c:cancel │ Enter Enter:send now` | `running` |
+| `grok--v1.0.77-queued--w120.txt` | Scratch Herdr, 2026-11-16: Collie's send into a running turn, queued: `▾ Queued 1` and `#1 Answer with the single word pong.` right over the empty box, the hint row `Enter:send now │ … │ Ctrl+;:queue`. The text ran after the turn | `running` |
+| `grok--v1.0.77-model-picker--w61.txt` | `/model` at 61 columns: the list between two rules, the box holding `/model <model> [window] [effort]` | `blocked` |
+| `grok--v1.0.77-settings--w61.txt` | `/settings` at 61 columns: the settings panel over the whole screen, the box hidden | `blocked` |
+| `grok--v1.0.77-trust--w80.txt` | Grok Build 1.0.77 started in an EMPTY new folder at 80 columns: the trust prompt shows there too (1.0.52 showed it only where the folder held something for Grok to load). The home part of the path was replaced with one of the same length | `blocked` |
 | `grok--startup.txt` | Fresh-session welcome screen: banner box (logo, menu) above an idle composer whose under-box row is the bare `[stable]` channel chip, not the hint bar. composerReady must be TRUE. Byte-faithful `format:ansi` 2026-08-22 | `idle` |
 | `grok--welcome-card.txt` | Grok Build 1.0.52, signed in with an API key: the changelog welcome card sits right on top of the composer with no `Tip:` row between, and the under-box row reads `Logged in with API key  │  [stable]`. composerReady must be TRUE. Visible-screen `format:ansi` read 2026-10-15 in a throwaway Herdr session; the cwd row became `/tmp/collie-grok-sandbox` and the model label `mini` | `idle` |
 | `grok--slash-popup-exact.txt` | Grok Build 1.0.52, `/statusline` typed: the slash-command popup between two rules right on top of the composer, `❯ /statusline` highlighted. The box stays live and the draft reads `/statusline`. Visible-screen read 2026-10-15; a local hook notice above was blanked and the cwd row became `/tmp/collie-grok-sandbox` | `idle` |
@@ -4098,9 +4112,9 @@ finished login: the screens after sign-in (security notes, terminal setup, folde
 
 | Fixture | State | Reads as |
 | --- | --- | --- |
-| `claude--v2325-first-run-theme--w61.txt` | `Let's get started.`, `Choose the text style…`, seven unnumbered rows, `❯ ✔ Dark mode`, a diff preview, no footer | modal unreadable, the unread-dialog card: no grammar offers a key (no key printed, ADR 0009), and the profile's `idle.dialogRows` names `Let's get started.` |
-| `claude--v2325-first-run-theme--w40.txt` | The same at 40 columns, no art | the unread-dialog card |
-| `claude--v2325-first-run-theme-moved--w61.txt` | After one `Down`: `❯` on `Light mode`, the preview recoloured | the unread-dialog card |
+| `claude--v2325-first-run-theme--w61.txt` | `Let's get started.`, `Choose the text style…`, seven unnumbered rows, `❯ ✔ Dark mode`, a diff preview, no footer | the first-run theme grammar (claude/first-run-theme.ts): a choice card of the seven rows, a tap walks the `❯` with Down or Up and sends Enter (measured live 2026-11-16: the list clamps at both ends, Enter accepts the pointed row, digits and Esc do nothing); the diff preview is not an option. The profile's `idle.dialogRows` still names `Let's get started.` |
+| `claude--v2325-first-run-theme--w40.txt` | The same at 40 columns, no art | the same choice card |
+| `claude--v2325-first-run-theme-moved--w61.txt` | After one `Down`: `❯` on `Light mode`, the preview recoloured | the same choice card, the walk counted from `Light mode`; its walk pair with the w61 capture |
 | `claude--v2325-first-run-methods--w61.txt` | Under the art, `Select login method:`, three rows, nothing under them | prompt-select, digit keys, no caption (login-methods.ts) |
 | `claude--v2325-first-run-methods--w40.txt` | The same at 40 columns: `Welcome to Claude Code v2.1.325` and no art | prompt-select |
 | `claude--v2325-first-run-methods--w120.txt` | The same at 120 columns | prompt-select |
@@ -4116,6 +4130,21 @@ finished login: the screens after sign-in (security notes, terminal setup, folde
 | `claude--v2325-first-run-url-typed--w40.txt` | The same 21 at 40 columns: `********`, `********`, `STATE` (the last row shows at most its own characters clear) | field secret, draft wrapped |
 | `claude--v2325-first-run-url-pasted--w61.txt` | 99 characters: three rows of 29 `*`, then `******ateEND`, 31 columns in, never cut | field secret, draft wrapped |
 | `claude--v2325-first-run-url-pasted--w120.txt` | 132 characters at 120 columns, two rows | field secret, draft wrapped |
+| `claude--v2325-first-run-url-fullscreen--w{61,80,120,200,219}.txt` | Lab 2026-11-16 (M102 spec 09): a `shared` account folder the bridge made, whose linked settings set `tui: "fullscreen"`, started in a scratch `sign-in` folder. The same screen, plus a hint row `Hold Shift (Option in iTerm2, Fn in Terminal.app) while selecting to use your terminal's native copy` (two rows at 61 and 80 columns) between the address and the field. Every character of the address after `authorize?` is `X` | sign-in card; field secret, empty |
+
+### After the code: the first run signed in (captured live 2026-11-16, Claude Code 2.1.325, 219 columns)
+
+The screens after a code Claude Code took, from a real sign-in into an empty config folder, recorded by
+the operator in tmux. Each capture began with the host shell's banner; only the agent's rows were kept.
+Privacy: the account address is `person@example.com`, every link is `https://example.invalid/masked`,
+the home folder is `/home/user`, and the trust dialog's list of tool permissions is masked. The moment between the submit key and `Login successful.` was not captured. Read by
+`lib/harness/claude/first-run-continue.test.ts` and `bridge/surface/protocol.sign-in.test.ts`.
+
+| Fixture | State | Reads as |
+| --- | --- | --- |
+| `claude--v2325-first-run-login-ok--w219.txt` | Under the art: `Logged in as …`, `Login successful. Press Enter to continue…` | a menu card, one action: Continue, Enter (first-run-continue.ts); after a code send, the evidence it was taken |
+| `claude--v2325-first-run-security-notes--w219.txt` | After Enter: `Security notes:`, two numbered notes, `Press Enter to continue…` | a menu card, one action: Continue, Enter; the numbered notes are text, never options |
+| `claude--v2325-first-run-trust--w219.txt` | After Enter: `Accessing workspace:`, `Quick safety check`, `❯ No, exit`, `Yes, I trust this folder`, `Enter to confirm · Esc to cancel` | prompt-select: No is Enter, Yes is Down and Enter |
 
 ### `/theme` in an onboarded session (captured 2026-11-15, Claude Code 2.1.325, 40 and 61 columns)
 
@@ -4128,3 +4157,23 @@ Read by `lib/surface/sign-in.test.ts`.
 | --- | --- | --- |
 | `claude--v2325-theme-command--w61.txt` | `❯ /theme` in the chat, the theme list under it, `❯ ✔ Dark mode`, the footer | modal unreadable, the unread-dialog card (as before `idle.dialogRows`) |
 | `claude--v2325-theme-command--w40.txt` | The same at 40 columns | the unread-dialog card |
+## MiniMax Code 0.7.7 on herdr-core (captured 2026-11-15, hc 0.1.21)
+
+`mcode--v077-*.txt` is MiniMax Code 0.7.7 (npm `@minimax-ai/code`) in a throwaway herdr-core 0.1.21
+terminal (`hc run --bg mcode`), in an empty scratch folder holding a `README.md` and a `notes.txt`,
+driven by typed prompts. The model behind the capture was a local Anthropic-Messages stub
+(`mcode provider add --api-format anthropic-messages`), because these were made without a MiniMax
+account: the two replies and the `ls -la` call are the stub's, and everything else is as MiniMax Code
+drew it.
+
+These are **plain text**, because that is what the bridge reads here: herdr-core's `terminal.read`
+gives no colour (`bridge/mux/herdr-core/client.ts`). The bridge only meets an `mcode` pane on
+herdr-core — the herdr 0.9.x line does not detect MiniMax Code at all — so a styled capture would be
+a screen Collie never sees. `hc read` appends its own `[hc] incomplete: older output may be missing`
+line to a partial read; that line is removed here, and trailing blank rows with it, and nothing else.
+Privacy: the scratch folder reads `~/project`, and the stub model names itself `stub-model`.
+
+| Fixture | What's in it | Reads as |
+| --- | --- | --- |
+| `mcode--v077-idle-w200.txt` | The welcome panel (`v0.7.7 … ● Ready`), three tip rows, the what's-new box, the `Start · @ file or Plugin · / autocomplete` row, the composer between two rules with `›  Ask Mcode to do anything`, and the status row `~/project │ Auto │ ✦ stub-model · Thinking On │ Context 100K` | idle, composer found and empty |
+| `mcode--v077-turn-suggestion-w200.txt` | One finished turn: the prompt row, `└ • Ran  ls -la · 5 output lines`, the reply, `└ Completed in 1s · ⚡ 1667 tok/s`, then `Suggested next message · Tab accept` over a composer whose text is the grey suggestion — plain text cannot mark it grey, so the bridge reads a draft | draft |

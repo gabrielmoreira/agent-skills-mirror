@@ -100,6 +100,27 @@ correctness incidents and recovery evidence use `incident_confirmed` and
 
 ## Identity, properties and privacy
 
+`account_sign_in_result` reports each finished OpenDesign connector attempt with
+`source_product=openmotion`, `source_detail=openmotion_editor_login`, and an
+`entry_id` / `entry_occurred_at` pair created when the editor starts sign-in.
+Attempts replaced within that sign-in retain the entry pair while their
+`attempt_id` changes. A new explicit sign-in creates a new entry pair. Success
+is reported only after the connector completes credential acceptance and the
+local account setup finishes; browser opening or approval alone is not success.
+Successful completion also reports the confirmed account ID as `amr_user_id`,
+so account counts can deduplicate across installations and join AMR account facts.
+Failures and cancellations omit that ID. The existing collection controls apply;
+`distinct_id` remains the installation ID, without identify/alias or person merging.
+Email, names, activation URLs, authorization codes and credentials are omitted.
+These fields describe the local OM result; AMR handoff attribution is separate.
+
+The account and subscription settings' **Manage subscription** link carries
+`od_origin=openmotion`, `od_entry_source=openmotion_manage_subscription`, and a
+fresh `od_entry_id` / UTC `od_entry_at` for each primary or middle click. The link
+retains `billing=plan` and contains no account, installation or credential data.
+AMR must accept the OpenMotion origin and entry source in its attribution
+validation before these parameters can reach its subscription/payment events.
+
 One random `installation_id` UUID is persisted atomically in `tracking/identity.json`
 under each owned data directory, outside projects and versioned application caches.
 Different data directories remain separate installations.
@@ -138,8 +159,8 @@ WHERE timestamp >= now() - INTERVAL 2 DAY
 
 This measures OS-device identities, not people or immutable physical hardware. Shared
 machines count once, a person on two machines counts twice, cloned OS identifiers can
-collide, and an OS reinstall can change Windows/Linux identifiers. No account identity,
-MAC address, raw platform identifier or probabilistic fingerprint is sent. The package can
+collide, and an OS reinstall can change Windows/Linux identifiers. Device context contains
+no account identity, MAC address, raw platform identifier or probabilistic fingerprint. The package can
 initialize an identity with a validated source label; existing identities retain
 their first source. Landing-page attribution and installer `--source` plumbing are
 a separate change. Unknown source remains null.
@@ -250,6 +271,41 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
 - Worker export terminal state, after render and available technical verification;
   it is distinct from queue acceptance and does not assert human content acceptance.
 - Studio project readiness and load outcome, plus project-sidebar creation/switching.
+- Motion editor exports started from the Studio UI: one `studio_export_request_result`
+  per start attempt (accepted or rejected with a safe code) and one
+  `studio_export_result` per accepted render when that tab observes its terminal
+  state, joined by a browser-minted `export_id`. These renders run in the editor's
+  own pipeline and never reach the worker `export_result`, which stays MCP-only.
+- Motion editor manual edits: one `studio_edit_result` per committed history entry,
+  emitted where Studio claims the entry, with a closed `edit_kind` and the `surface`
+  the gesture started on. Coalesced claims of one entry report once. Writes
+  dispatched by an in-page Agent tool are skipped; MCP edits never reach this path.
+  Project rename and asset rename/delete report from their own commit points, and
+  save failures report `outcome=failure` with a status class only.
+- Undo/redo outcomes, UI asset imports (counts, entry point, safe category),
+  notices actually shown (missing FFmpeg, external file conflict, unreachable
+  project) and editor intent clicks through `ui_click` with `page_name=studio`;
+  theme, language and privacy-settings choices made in the settings center use area `settings`.
+  `ui_click.option` carries the chosen value of a control with a small fixed set.
+- UI export events carry `video_duration_bucket` for the composition being rendered;
+  the request event and `studio_load_result` carry `clip_count_bucket`,
+  `asset_count_bucket` and `composition_count_bucket`. They are read from what the
+  editor already holds in memory at that moment and report `unknown` otherwise:
+  at load the timeline and file tree have usually not arrived, so the load values
+  are mostly `unknown` and the export request is the reliable reading. No raw
+  duration, count or file size is sent.
+- The template gallery shared with the website (`web/template-gallery.ts`, shown in the
+  connection dialog):
+  copy click and the actual copy result, preview open, use, category change and
+  one search per query, through `ui_click` area `templates` and
+  `template_instruction_copy_result`. `template_id` is the catalogue id and is
+  accepted only as a `slug`; a non-matching id is omitted and the event still
+  sent. Titles, authors and URLs are never fields. When the workspace catalogue
+  records the template a project was created from, the same id is added to
+  `studio_load_result` and both UI export events.
+- Editor events carry `project_scope`; `project_id` is sent only when the Studio
+  project id is a UUID. The built-in local project (id `project`) reports
+  `project_scope=default` and no id; names and titles are never sent.
 - All 78 retained Studio event names are registered in
   [studio-events.ts](studio-events.ts) and included in the same derived browser
   admission registry: startup/preview/render/performance, editor interaction,
@@ -259,6 +315,20 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
   upstream tokens, transports and automatic experiment enrollment remain disabled.
   Feature visibility and SDK gates do not change: hidden feedback, desktop and
   audio-FX features emit only when their existing producer actually runs.
+- Manual import/export recovery uses `studio_io_action` and `studio_io_result`,
+  joined by one random `attempt_id` per intentional action. The Studio-only
+  `beginStudioIo` helper reports at most one result; automatic reads and background
+  render updates do not create actions. Import counts cover only the files selected
+  in that attempt, and a subsequent listing failure does not turn confirmed imports
+  into failed imports. A successful render recheck means the query succeeded, even
+  when `state_after=failed`. An inaccessible file is `failure/unavailable`; a network
+  result that cannot confirm availability is `unknown/unknown`. Opening a new window
+  is `success` with `delivery_status=opened`; a blocked popup is `failure` with
+  `delivery_status=popup_blocked`. Passing a download to the browser reports
+  `outcome=unknown`, `file_status=available` and
+  `delivery_status=browser_save_requested`; it does not confirm a saved file.
+  Only fixed actions, outcomes, statuses and aggregate counts are allowed: no
+  project/task identity, file names, paths, content or full error messages.
 - The editor's template library reports with the names of the shared OpenMotion
   tracking sheet, so its funnel lines up with the website's: `surface_view` for
   the library, a gallery card, a template's detail and the instruction to copy;
@@ -312,6 +382,12 @@ save-failure/blocked signals are not those missing success/result events.
 Worker origin is `worker`; its caller's host context is persisted, while a full
 request-to-worker operation context is not. Pending cancellation has a cancel
 result but no worker completion because no worker claimed it.
+Editor UI coverage has known gaps: a render whose tab reloads before it finishes, or
+whose cancel the server never confirmed, has a request result but no terminal result;
+caption and beat undo stacks, keyboard playback, frame stepping and source-editor saves
+are not reported; `edit_kind` is derived from Studio's fixed history labels, so an
+unmapped label reports `other`. Turning sharing off is itself not reported, because
+the preference applies before the event could be sent.
 
 The compatibility adapter bounds initialization-waiting calls at 64. The queue is
 process-local: 64 events, batches of 16, one in-flight request, a one-day
@@ -340,3 +416,5 @@ jobs by all submitted jobs, including cancelled, failed and unresolved jobs at
 the report cutoff. Inspect, list and status calls do not enter this cohort.
 A local save retry can update the terminal result for the same job. Use the latest result per job at the report cutoff. It does not add a model request or submission. Count outputs saved to the workspace library or project once per output.
 Generation uses the existing telemetry preference and installation identity.
+
+Studio recovery keeps request acknowledgement separate from execution outcome. An uncertain export receipt reports `studio_export_request_result.outcome=unknown`; a later identity-matched lookup can report one terminal result with the same browser `export_id`. Progress loss, cancelling and an inactive unknown record never produce a failed or cancelled terminal event. `studio_asset_import_result` retains its entry-point categories and reports confirmed failure, unknown and pending counts separately; unknown/pending items are not counted as failed. The manual `reload_editor` recovery action records only an unknown handoff outcome, not confirmed recovery.

@@ -33,17 +33,27 @@ is faked behind `FlashHardware`.
   machine: `next_write` / `mark_written`), `autostart` (systemd / XDG /
   LaunchAgent / Run key, legacy-daemon detection + `disable_legacy`),
   `launch`, `platform`.
-- `clawdmeter-ble`: btleplug link. Adapters come from one `Bluetooth` handle
-  per runtime: on Linux every btleplug `Manager` is a D-Bus connection that
-  is never closed, so never make one per attempt. On a failed `adapters()`
-  a throwaway connection checks whether a new one would fare better; only
-  then, and if a retry on the same connection fails too (bluetoothd may
-  just have come back), is the manager replaced and the loss counted. The
-  watcher reopens on a bump, and dead streams are leaked, not dropped
-  (`MessageStream::drop` unwraps a `RemoveMatch`, which panics on a dead
-  connection and aborts release builds). Connects only to OS-known
+- `clawdmeter-ble`: btleplug link. The manager and adapter come from one
+  `Bluetooth` handle per runtime (`bluetooth.rs`), kept for good: on Linux
+  every btleplug `Manager` is a D-Bus connection that is never closed, on
+  macOS every `adapters()` call a CoreBluetooth thread that never exits.
+  On a failed `adapters()` a throwaway connection checks whether a new one
+  would fare better; only then, and if a retry on the same connection fails
+  too (bluetoothd may just have come back), is the manager replaced and the
+  loss counted. An adapter reading off is relisted on Linux/Windows and
+  replaced only by a different one. The watcher reopens on either. A
+  finished BlueZ stream (the watcher's, a dropped link's notifications) is
+  dropped once its connection answers a listing and leaked once it is known
+  dead; while bluetoothd doesn't answer over a live bus it asks again every
+  5 s (`MessageStream::drop` unwraps a `RemoveMatch`, which panics on a dead
+  connection and aborts release builds; upstream fixes in #271). Each
+  link's notification forwarder stops when its `DeviceLink` drops (each
+  holds a match rule, capped at 512 per connection). Windows clears the
+  adapter's peripherals before each attempt; macOS never does (its clear
+  cancels every tracked connection). Connects only to OS-known
   devices (custom service, or HID + exact name); address cache, REQ
-  subscription, zombie-write breaker, BlueZ trust, macOS stale-bond unpair via `blueutil`,
+  subscription, zombie-write breaker (a zombie link is disconnected before
+  it's dropped), BlueZ trust, macOS stale-bond unpair via `blueutil`,
   Windows bonded-address fallback (PnP / `CLAWDMETER_BLE_ADDRESS`).
 - `clawdmeter-flash`: downloads the release `manifest.json`, matches boards by
   chip + flash size, writes with espflash.
@@ -331,8 +341,10 @@ runs or shows (bar the Accounts page's trial note).
 - Nothing competes for the serial port: the flasher (`ui/flasher.rs`) touches
   USB only while on screen (`set_active`), the Device page probes only while
   shown, and the sidebar locks while a board is being written.
-- App updates (`ui/update.rs`, `Page::Update`): when the daily check's tag
-  (`StatusSnapshot::app_update`, or the check's cache file with no tray) is
+- App updates (`ui/update.rs`, `Page::Update`): when the update check's tag
+  (every 6 h, an hour after one that couldn't reach GitHub:
+  `release::UpdateCheck`;
+  `StatusSnapshot::app_update`, or the check's cache file with no tray) is
   newer than a release build's version, the sidebar footer shows "Update
   available" until that release is skipped (`skipped_update`; a later one
   is announced again). It opens the Update page, which the same pill

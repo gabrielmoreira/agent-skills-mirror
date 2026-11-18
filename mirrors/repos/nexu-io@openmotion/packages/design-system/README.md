@@ -18,6 +18,7 @@ It is a private source package in the standalone root application. The visual wo
 | `index.js` | Shared brand identity, asset URLs, icon sprite and positive public-asset list. |
 | `metadata.js` | Localized titles, descriptions, favicon links and social-card metadata; shared by generated HTML and Studio. |
 | `provider-icons.js`, `providers/` | Local provider artwork, explicit identity mapping and complete source/license metadata. |
+| `platform-icons.js`, `platforms/`, `react/PlatformIcon.tsx` | Local destination artwork for platform choices, with source versions and licenses. |
 | `react/RemixIcons.tsx`, `react/IconGlyph.tsx`, `loading.ts` | Shared React icons and loading artwork behavior. |
 | `brand/` | [Brandkit](brand/BRANDKIT.md), [motion art direction](brand/MOTION_DESIGN.md), logos and loading artwork. |
 | `index.html`, `catalog.*`, `token-model.js` | Standalone visual workbench and browser-safe token metadata. |
@@ -67,4 +68,4 @@ The Library's old Brandkit and art-direction paths are navigation entries. Brand
 
 ## Acknowledgements
 
-The interface retains the OpenDesign source attribution in [tokens.json](tokens.json) and [logo provenance](opendesign-logo-SOURCE.md). Studio-specific recipes retain their Hyperframes source history and [license](../../studio/LICENSE). [Remix Icon notice](remix-icon-NOTICE.txt), [icon license](remix-icon-LICENSE.txt) and [font notices](fonts/NOTICES.txt) remain alongside the original assets. [Provider artwork notices](providers/NOTICE.md) preserve the MIT-licensed Lobe Icons and Cherry Studio UI sources and the existing editor-mark provenance. Tailwind is the existing root application's CSS compiler; this extraction adds no runtime dependency.
+The interface retains the OpenDesign source attribution in [tokens.json](tokens.json) and [logo provenance](opendesign-logo-SOURCE.md). Studio-specific recipes retain their Hyperframes source history and [license](../../studio/LICENSE). [Remix Icon notice](remix-icon-NOTICE.txt), [icon license](remix-icon-LICENSE.txt) and [font notices](fonts/NOTICES.txt) remain alongside the original assets. [Provider artwork notices](providers/NOTICE.md) preserve the MIT-licensed Lobe Icons and Cherry Studio UI sources and the existing editor-mark provenance. [Platform artwork notices](platforms/NOTICE.md) record destination-icon sources and licenses. Tailwind is the existing root application's CSS compiler; this extraction adds no runtime dependency.

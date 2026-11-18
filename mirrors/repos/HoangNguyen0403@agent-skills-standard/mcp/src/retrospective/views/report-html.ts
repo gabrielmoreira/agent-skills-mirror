@@ -1,5 +1,7 @@
 import type { LedgerImprovement } from "../improvements";
 import type { Claim, Ledger, LedgerAgent } from "../ledger";
+import type { CoverageInventory } from "../contracts";
+import type { PermissionFriction } from "../permission-friction";
 import { computeRates, type ReportContext, type SessionRates } from "../trend";
 import {
   escapeHtml,
@@ -98,7 +100,9 @@ export type LedgerPermissionCommand = {
   allow: number;
   deny: number;
   other: number;
-  unanswered: number;
+  unmatchedObservations?: number;
+  /** Accepted only when rendering a historical ledger from the prior schema. */
+  unanswered?: number;
 };
 
 export type LedgerPermissionRequests = {
@@ -110,6 +114,8 @@ export type LedgerPermissionRequests = {
   tools: LedgerPermissionRow[];
   programs: LedgerPermissionRow[];
   distinctPrograms: number;
+  commandCountsBasis?: "raw-observations-may-duplicate";
+  requestCountsBasis?: "deduplicated-events" | "raw-observations-may-duplicate";
   commands: LedgerPermissionCommand[];
   distinctCommands: number;
   commandsOmitted: number;
@@ -259,21 +265,29 @@ const DESTINATION_LABELS: Record<string, string> = {
   "provider-route-monitoring": "provider route monitoring",
   "session-linkage": "session linkage",
   "tracker-binding": "tracker binding",
+  "tool-setup": "tool setup",
+  "decision-review": "decision review",
 };
 
 const DECISION_BY_RULE: Record<string, string> = {
   "guardrail-answers":
-    "Decide: allowlist the repeated safe requests, or tighten what workers may ask for?",
+    "Decide: review repeated requests under the existing approval policy; counts alone do not establish safety or justify allowlisting?",
   "cost-concentration":
     "Decide: split the orchestrator session and hand reads and edits to workers, or accept the cost?",
   "unguarded-edits":
     "Decide: require a file lookup before edits in the worker brief?",
   "human-intervention":
-    "Decide: which asks and aborts the setup should answer without a human?",
+    "Decide: review ask-tool calls and aborted-stop observations before changing setup?",
+  "repeated-permission-requests":
+    "Decide: review repeated requests against the existing approval policy?",
   "agent-error-concentration":
     "Decide: check the provider route before the next run?",
   "lookup-misses":
     "Decide: fix the trigger words and file patterns of the skills these lookups missed?",
+  "failure-run":
+    "Decide: inspect and fix the repeated tool failure source?",
+  "decision-review-backlog":
+    "Decide: who reviews the agent-declared pending decisions before action?",
 };
 
 const UNKNOWN_BY_RULE: Record<string, string> = {
@@ -283,10 +297,13 @@ const UNKNOWN_BY_RULE: Record<string, string> = {
     "why the main kept the work and whether the spend was worth it",
   "unguarded-edits": "whether the edited files needed a skill",
   "human-intervention": "what each ask or abort was about",
+  "repeated-permission-requests":
+    "whether the repeated safe-category requests were the same command or were avoidable",
   "agent-error-concentration": "the error category behind each stop",
   "lookup-misses": "which file types the empty lookups were for",
+  "failure-run": "whether repeated tool failures share a root cause",
+  "decision-review-backlog": "whether a decision is approved or whether the label is accurate",
 };
-
 export function formatTokensCompact(tokens: number): string {
   if (!Number.isFinite(tokens) || tokens <= 0) return "0";
   if (tokens >= 1_000_000) {
@@ -314,19 +331,148 @@ function countOf(values: Claim["values"] | undefined, key: string): number {
   return typeof value === "number" && !Number.isNaN(value) ? value : 0;
 }
 
-function renderDelegationSegment(
-  ledger: Ledger,
-  coverageClaim: Claim | undefined,
-): string {
-  if (ledger.evidenceMode === "tracker-only") return "n/a";
-  const agentsCreated = coverageClaim
-    ? countOf(coverageClaim.values, "agentsCreated")
-    : ledger.counts.agentsCreated;
-  if (agentsCreated === 0) return "none created";
-  const agentsRead = coverageClaim
-    ? countOf(coverageClaim.values, "agentsRead")
-    : 0;
-  return `${agentsRead} of ${plural(agentsCreated, "created agent")} read`;
+function renderDelegationSegment(ledger: Ledger): string {
+  const treeCoverage = ledger.treeCoverage;
+  if (treeCoverage.state === "not-measured") return "tree not measured";
+  const taskProvenance =
+    "task counts are observed task-call attempts (not guaranteed successful)";
+  const hostProvenance =
+    treeCoverage.hostAgents.source === "agent-records"
+      ? "host counts are observed descendant agent records"
+      : "host counts are observed create_agent call attempts (not guaranteed successful)";
+  return `${treeCoverage.state} (${treeCoverage.agentsRead} of ${plural(
+    treeCoverage.agentsCreated,
+    "counted agent item",
+  )} read; ${taskProvenance}; ${hostProvenance})`;
+}
+
+function renderCoverageWarningHtml(ledger: ViewLedger): string {
+  const inventory = ledger.inventory ?? null;
+  if (inventory === null) {
+    return ledger.coverage === "partial"
+      ? '<p class="coverage-warning" role="status"><strong>Coverage warning:</strong> evidence coverage is partial; no session-file delegation completeness is claimed.</p>\n'
+      : "";
+  }
+  const gaps =
+    inventory.missing +
+    inventory.restricted +
+    inventory.unavailable +
+    inventory.remote +
+    inventory.unlinked;
+  if (
+    ledger.coverage === "complete" &&
+    gaps === 0 &&
+    inventory.read >= inventory.expected
+  ) {
+    return "";
+  }
+  const details: string[] = [];
+  if (inventory.missing > 0) details.push(`${inventory.missing} missing`);
+  if (inventory.restricted > 0)
+    details.push(`${inventory.restricted} restricted`);
+  if (inventory.unavailable > 0)
+    details.push(`${inventory.unavailable} unavailable`);
+  if (inventory.remote > 0) details.push(`${inventory.remote} remote`);
+  if (inventory.unlinked > 0)
+    details.push(`${inventory.unlinked} unlinked or unproven`);
+  const detailText = details.length > 0 ? ` (${details.join(", ")})` : "";
+  return `<p class="coverage-warning" role="status"><strong>Coverage warning:</strong> ${inventory.read} of ${plural(
+    inventory.expected,
+    "declared actor",
+  )} read${escapeHtml(detailText)}. Delegation completeness is not claimed.</p>\n`;
+}
+
+const ACTOR_STATE_LABELS: Record<string, string> = {
+  read: "read",
+  missing: "missing source",
+  restricted: "restricted",
+  unavailable: "unavailable",
+  "remote-not-authorized": "remote (not authorized)",
+  unlinked: "unlinked",
+};
+
+function renderDelegationRoster(
+  inventory: CoverageInventory | null,
+): RenderedSection | null {
+  if (inventory === null) return null;
+  let body =
+    "<p>Every declared actor, including ones that could not be read. A declared parent link is not host-authenticated lineage, and an unread actor's turns are unknown rather than zero.</p>\n";
+  body += `<p>Declaration: ${escapeHtml(inventory.provenance.replace(/-/g, " "))} (unverified) &middot; ${inventory.linked} linked &middot; ${inventory.read} read &middot; ${inventory.missing} missing &middot; ${inventory.restricted} restricted &middot; ${inventory.unavailable} unavailable &middot; ${inventory.remote} remote &middot; ${inventory.unlinked} unlinked.</p>\n`;
+  body += `<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Actor</th><th>Declared parent</th><th>State</th><th>Turns</th></tr>
+</thead>
+<tbody>\n`;
+  for (const actor of inventory.actors) {
+    const state = ACTOR_STATE_LABELS[actor.state] ?? actor.state;
+    const turns = actor.turns === null ? "unknown" : String(actor.turns);
+    body += `<tr><td>${escapeHtml(actor.label)}</td><td>${escapeHtml(actor.parentLabel ?? "root")}</td><td>${escapeHtml(state)}</td><td>${escapeHtml(turns)}</td></tr>\n`;
+  }
+  body += `</tbody>
+</table>
+</div>\n`;
+  return {
+    html: wrapCollapsed("<h3>Delegation roster</h3>", null, body, {
+      id: "sec-roster",
+      open: inventory.read < inventory.expected,
+    }),
+    nav: {
+      id: "sec-roster",
+      label: "Roster",
+      badge: `${inventory.read}/${inventory.expected}`,
+      alert: inventory.read < inventory.expected,
+    },
+  };
+}
+
+function renderPermissionFriction(
+  friction: PermissionFriction | null | undefined,
+): RenderedSection | null {
+  if (!friction) return null;
+  const optional = (value: number | null, unit: string): string =>
+    value === null ? "not measured" : `${value} ${unit}`;
+  let body = `<p>${plural(friction.requests, "request")} observed; ${friction.answered} answered, ${friction.unanswered} unanswered, ${plural(friction.repeatedRequests, "repeat request")} in the same tool category; safety and avoidability are unknown. Coverage: ${escapeHtml(friction.coverage)}.</p>\n`;
+  body += `<p>Human answers: ${escapeHtml(optional(friction.humanAnswers, ""))} &middot; orchestrator answers: ${escapeHtml(optional(friction.orchestratorAnswers, ""))} &middot; wait: ${escapeHtml(optional(friction.waitMs, "ms"))} across ${plural(friction.waitMeasuredRequests, "measured request")}.</p>\n`;
+  if (friction.byTool.length > 0) {
+    body += `<h4>By tool</h4>
+<div class="table-wrap">
+<table><thead><tr><th>Tool</th><th>Requests</th><th>Repeated</th></tr></thead><tbody>\n`;
+    for (const row of friction.byTool.slice(0, 15)) {
+      body += `<tr><td>${escapeHtml(row.tool)}</td><td>${row.requests}</td><td>${row.repeatedRequests}</td></tr>\n`;
+    }
+    body += `</tbody></table>
+</div>\n`;
+  }
+  if (friction.byAgent.length > 0) {
+    body += `<h4>By actor</h4>
+<div class="table-wrap">
+<table><thead><tr><th>Actor</th><th>Requests</th><th>Answered</th><th>Unanswered</th><th>Repeated</th></tr></thead><tbody>\n`;
+    for (const row of friction.byAgent.slice(0, 20)) {
+      body += `<tr><td>${escapeHtml(row.label)}</td><td>${row.requests}</td><td>${row.answered}</td><td>${row.unanswered}</td><td>${row.repeatedRequests}</td></tr>\n`;
+    }
+    body += `</tbody></table>
+</div>\n`;
+  }
+  if (friction.limitations.length > 0) {
+    body += `<h4>Limitations</h4>\n<ul>\n`;
+    for (const limitation of friction.limitations.slice(0, 10)) {
+      body += `<li>${escapeHtml(limitation)}</li>\n`;
+    }
+    body += `</ul>\n`;
+  }
+  return {
+    html: wrapCollapsed("<h3>Permission friction</h3>", null, body, {
+      id: "sec-friction",
+      open: false,
+    }),
+    nav: {
+      id: "sec-friction",
+      label: "Friction",
+      badge: String(friction.requests),
+      alert: friction.unanswered > 0,
+    },
+  };
 }
 
 function renderHeader(
@@ -374,7 +520,7 @@ function renderHeader(
   metaParts.push(`Coverage: ${escapeHtml(ledger.coverage)}`);
   metaParts.push(`Evidence: ${escapeHtml(evidenceStr)}`);
   metaParts.push(
-    `Delegation: ${escapeHtml(renderDelegationSegment(ledger, coverageClaim))}`,
+    `Tree: ${escapeHtml(renderDelegationSegment(ledger))}`,
   );
   metaParts.push(`Cutoff: ${escapeHtml(ledger.cutoff)}`);
 
@@ -383,7 +529,8 @@ function renderHeader(
     titleHtml = `<p class="title">Title: ${escapeHtml(ledger.label)} <span class="soft">(agent-supplied, unverified)</span></p>\n`;
   }
 
-  return `<h1>Agent retrospective</h1>\n${titleHtml}<p class="meta">${metaParts.join(" &middot; ")}</p>`;
+  const warning = renderCoverageWarningHtml(ledger);
+  return `<h1>Agent retrospective</h1>\n${warning}${titleHtml}<p class="meta">${metaParts.join(" &middot; ")}</p>`;
 }
 
 function renderBottomLine(
@@ -402,10 +549,12 @@ function renderBottomLine(
     const workersCount =
       (agentsList.length > 0 ? agentsList.length - 1 : 0) +
       (ledger.otherAgents?.count ?? 0);
-    const agentDetail =
-      created === 0
-        ? "no agents were created"
-        : `${observed} of ${plural(created, "created agent")}`;
+    const workerLabel =
+      ledger.inventory?.known === true ? "declared worker" : "estimated worker";
+    const agentDetail = `${observed} worker files read of ${plural(
+      created,
+      workerLabel,
+    )}`;
     bottomLineParts.push(
       `Observed: main + ${plural(workersCount, "worker")} (${agentDetail}).`,
     );
@@ -437,7 +586,7 @@ function renderBottomLine(
     const answers = countOf(permClaim.values, "answers");
     const deny = countOf(permClaim.values, "deny");
     bottomLineParts.push(
-      `${plural(answers, "permission answer")} (${deny} denied).`,
+      `${plural(answers, "recorded permission response attempt")} (${deny} requested deny).`,
     );
   }
 
@@ -479,7 +628,7 @@ function renderTiles(
     }
   }
 
-  // 2. Permission answers
+  // 2. Permission response attempts
   let permTileClass = "";
   let permAnswersFormatted = "0";
   let permDetailText = "none observed";
@@ -487,12 +636,24 @@ function renderTiles(
   if (permClaim) {
     const answers = countOf(permClaim.values, "answers");
     const deny = countOf(permClaim.values, "deny");
+    const other =
+      typeof permClaim.values.other === "number"
+        ? permClaim.values.other
+        : Math.max(
+            0,
+            answers -
+              countOf(permClaim.values, "allow") -
+              deny,
+          );
     const asks = countOf(permClaim.values, "askCalls");
     permAnswersFormatted = String(answers);
     if (answers === 0) {
       permDetailText = "none observed";
     } else {
-      permDetailText = `${deny} denied, ${asks} asks to a human`;
+      permDetailText = `${deny} requested deny, ${other} other, ${plural(
+        asks,
+        "ask-tool call",
+      )}`;
     }
     if (deny > 0) {
       permTileClass = "red";
@@ -534,12 +695,17 @@ function renderTiles(
   if (coverageClaim) {
     const created = countOf(coverageClaim.values, "agentsCreated");
     const observed = countOf(coverageClaim.values, "agentsRead");
+    const workerLabel =
+      ledger.inventory?.known === true ? "declared worker" : "estimated worker";
     if (created > 0) {
       coverageFormatted = `${observed} of ${created}`;
-      coverageDetailText = "created agents observed";
+      coverageDetailText = `worker files read of ${plural(created, workerLabel)}`;
     } else {
-      coverageFormatted = "none created";
-      coverageDetailText = "no agents to observe";
+      coverageFormatted = "n/a";
+      coverageDetailText =
+        ledger.inventory?.known === true
+          ? "no declared workers"
+          : "no estimated workers";
     }
     if (created > 0 && observed * 4 < created) {
       coverageTileClass = "red";
@@ -552,7 +718,7 @@ function renderTiles(
 
   return `<div class="tiles">
 <div class="tile${costClassAttr}"><span>Estimated cost</span><b>${escapeHtml(costTotalFormatted)}</b><small>${escapeHtml(costShareText)}</small></div>
-<div class="tile${permClassAttr}"><span>Permission answers</span><b>${escapeHtml(permAnswersFormatted)}</b><small>${escapeHtml(permDetailText)}</small></div>
+<div class="tile${permClassAttr}"><span>Permission response attempts</span><b>${escapeHtml(permAnswersFormatted)}</b><small>${escapeHtml(permDetailText)}</small></div>
 <div class="tile"><span>AGS lookups</span><b>${escapeHtml(lookupsCallsFormatted)}</b><small>${escapeHtml(lookupsDetailText)}</small></div>
 <div class="tile${covClassAttr}"><span>Coverage</span><b>${escapeHtml(coverageFormatted)}</b><small>${escapeHtml(coverageDetailText)}</small></div>
 </div>`;
@@ -589,11 +755,20 @@ function renderManagerImprovementCard(imp: LedgerImprovement): string {
   switch (imp.rule) {
     case "guardrail-answers": {
       const per100 = formatRate(val.per100Tenths ?? 0);
-      title = `Permission answers: ${val.answers ?? 0} (${val.allow ?? 0} allowed, ${val.deny ?? 0} denied)`;
-      saw = `the orchestrator answered ${val.answers ?? 0} permission requests; ${val.targetsAtLeast3 ?? 0} agents were answered 3 or more times; ${val.deny ?? 0} were denials.`;
+      // Older ledgers carry no `other` value on this improvement; derive it from
+      // the recorded partition so the category is not silently reported as zero.
+      const other =
+        typeof val.other === "number"
+          ? val.other
+          : Math.max(
+              0,
+              (val.answers ?? 0) - (val.allow ?? 0) - (val.deny ?? 0),
+            );
+      title = `Permission response attempts: ${val.answers ?? 0} (${val.allow ?? 0} requested allow, ${val.deny ?? 0} requested deny, ${other} other)`;
+      saw = `the report recorded ${val.answers ?? 0} respond_to_permission call attempts; answering actor and human provenance are not measured, and host application is not recorded; ${val.targetsAtLeast3 ?? 0} agents were the target of 3 or more recorded attempts; ${val.deny ?? 0} were requested denials.`;
       change =
-        "add repeated safe requests to the allowlist (allowed answers show setup gaps) and check what each denial asked for (denials show rule violations)";
-      metric = "permission answers per 100 turns";
+        "review repeated requested-allow entries and inspect each requested-deny entry under the existing approval policy; counts alone do not establish safety or justify allowlisting";
+      metric = "permission response attempts per 100 turns";
       valueStr = per100;
       break;
     }
@@ -628,12 +803,21 @@ function renderManagerImprovementCard(imp: LedgerImprovement): string {
     }
     case "human-intervention": {
       const per100 = formatRate(val.per100Tenths ?? 0);
-      title = `Human interventions: ${val.askCalls ?? 0} asks, ${val.abortedStops ?? 0} aborted stops`;
-      saw = `the agents asked a human or were stopped by one ${per100} times per 100 turns.`;
+      title = `Ask-tool calls: ${val.askCalls ?? 0} recorded calls, ${plural(val.abortedStops ?? 0, "aborted stop")}`;
+      saw = `combined ask-tool and aborted-stop observations were ${per100} per 100 turns.`;
       change =
-        "check which of those decisions the setup could take without asking";
-      metric = "asks and aborts per 100 turns";
+        "review ask-tool call and aborted-stop observations before changing setup";
+      metric = "combined ask-tool and aborted-stop observations per 100 turns";
       valueStr = per100;
+      break;
+    }
+    case "repeated-permission-requests": {
+      title = `${val.repeatedRequests ?? 0} of ${val.requests ?? 0} permission requests repeated a tool category`;
+      saw = `${val.answered ?? 0} were answered and ${val.unanswered ?? 0} unanswered; repeated requests share a tool category, not proven-identical commands; safety and avoidability are unknown.`;
+      change =
+        "review repeated requests against the existing approval policy; counts alone do not establish safety or justify allowlisting";
+      metric = "repeated tool-category request share";
+      valueStr = `${val.repeatedPercent ?? 0}%`;
       break;
     }
     case "agent-error-concentration": {
@@ -644,6 +828,22 @@ function renderManagerImprovementCard(imp: LedgerImprovement): string {
         "read the error category of those records before changing any routing";
       metric = "agents above half error turns";
       valueStr = `${agentsCount}`;
+      break;
+    }
+    case "failure-run": {
+      title = `${val.runs ?? 0} same-tool failure runs; longest ${val.longest ?? 0}`;
+      saw = `the longest consecutive error-result streak was ${val.longest ?? 0} for ${val.tool ?? "an unknown tool"}.`;
+      change = "inspect the tool setup and error category before changing routing";
+      metric = "longest same-tool error run";
+      valueStr = `${val.longest ?? 0}`;
+      break;
+    }
+    case "decision-review-backlog": {
+      title = `${val.defaultPendingReview ?? 0} agent-declared decisions pending review`;
+      saw = `${val.highImpactDefaultPendingReview ?? 0} were marked high impact. These records do not establish authorization.`;
+      change = "review the declared defaults before taking consequential action";
+      metric = "high-impact pending decisions";
+      valueStr = `${val.highImpactDefaultPendingReview ?? 0}`;
       break;
     }
     default:
@@ -689,6 +889,7 @@ function wrapCollapsed(
 
 function renderMaintainerImprovements(
   improvements: LedgerImprovement[] | undefined,
+  inventoryKnown: boolean,
 ): RenderedSection | null {
   const maintainerImps = (improvements ?? []).filter(
     (imp) => imp.audience === "maintainer",
@@ -698,11 +899,21 @@ function renderMaintainerImprovements(
   let body = '<ul class="mt">\n';
   for (const imp of maintainerImps) {
     if (imp.rule === "coverage-gap") {
-      const text = `${imp.values.unlinkedAgents ?? 0} of ${imp.values.agentsCreated ?? 0} created agents have no session file read; Paseo agent sessions cannot be linked from the session file alone (session-linkage).`;
+      const inventoryGaps = imp.values.inventoryGaps ?? 0;
+      const unlinkedAgents = imp.values.unlinkedAgents ?? 0;
+      const agentsCreated = imp.values.agentsCreated ?? 0;
+      const workerLabel = inventoryKnown ? "declared worker" : "estimated worker";
+      const text =
+        inventoryGaps > 0
+          ? `Declared inventory gap: ${plural(inventoryGaps, "entry unread or unlinked")}; created-agent linkage lower bound: ${unlinkedAgents} of ${agentsCreated} (session-linkage).`
+          : `${unlinkedAgents} of ${plural(agentsCreated, workerLabel)} have no session file read; Paseo agent sessions cannot be linked from the session file alone (session-linkage).`;
       body += `<li>${escapeHtml(text)}</li>\n`;
     } else if (imp.rule === "tracker-not-measured") {
       const text =
         "Server tracker numbers cover this process only, so lookups that matched nothing and bodies returned are not measured for this session (tracker-binding).";
+      body += `<li>${escapeHtml(text)}</li>\n`;
+    } else if (imp.rule === "permission-timing-unmeasured") {
+      const text = `${imp.values.answered ?? 0} permission requests were answered but no structured request/answer timestamp pair supports a wait measurement; wait time remains unknown, not zero (tracker-binding).`;
       body += `<li>${escapeHtml(text)}</li>\n`;
     }
   }
@@ -752,10 +963,20 @@ function renderPermissionRequests(
   const answeredWithoutRequest = permissionRequestsClaim
     ? countOf(permissionRequestsClaim.values, "answeredWithoutRequest")
     : permissionRequests.answeredWithoutRequest;
+  const other = permissionRequestsClaim
+    ? countOf(permissionRequestsClaim.values, "otherVerdict")
+    : permissionRequests.tools.reduce((sum, r) => sum + r.other, 0);
 
   let body =
-    "<p>What agents asked permission for, and what was answered. Commands are shown as recorded, after best-effort removal of secrets (tokens, keys, passwords, credentials in URLs). Review before sharing this report.</p>\n";
-  body += `<p>${plural(asked, "request")} from ${plural(agentsAsked, "agent")}; ${answered} answered (${allowed} allowed, ${denied} denied), ${unanswered} unanswered.</p>\n`;
+    "<p>Captured permission requests and their recorded response categories. Categories are observed request/response intents, not verified host enforcement. Commands are shown after best-effort removal of secrets (tokens, keys, passwords, credentials in URLs). Review before sharing this report.</p>\n";
+  if (permissionRequests.requestCountsBasis !== undefined) {
+    const requestBasis =
+      permissionRequests.requestCountsBasis === "deduplicated-events"
+        ? "With complete event capture, request totals and tool/program breakdowns deduplicate actor+request identities across nodes; the earliest valid timestamped response supplies each category (ties keep the first observed response)."
+        : "Event capture was incomplete, so request totals and tool/program breakdowns use raw observations and may include duplicates; cross-node matching is unavailable.";
+    body += `<p>${escapeHtml(requestBasis)}</p>\n`;
+  }
+  body += `<p>${plural(asked, "request")} from ${plural(agentsAsked, "agent")}; ${answered} with recorded responses (${allowed} requested allow, ${denied} requested deny, ${other} other), ${unanswered} unanswered.</p>\n`;
   body += `<h4>By tool</h4>
 <div class="table-wrap">
 <table>
@@ -763,8 +984,8 @@ function renderPermissionRequests(
 <tr>
 <th>Tool</th>
 <th>Asked</th>
-<th>Allowed</th>
-<th>Denied</th>
+<th>Requested allow</th>
+<th>Requested deny</th>
 <th>Other</th>
 <th>Unanswered</th>
 </tr>
@@ -784,11 +1005,11 @@ function renderPermissionRequests(
 <tr>
 <th>Program</th>
 <th>Asked</th>
-<th>Allowed</th>
-<th>Denied</th>
+<th>Requested allow</th>
+<th>Requested deny</th>
 <th>Other</th>
 <th>Unanswered</th>
-<th>Allowed share %</th>
+<th>Requested allow share %</th>
 </tr>
 </thead>
 <tbody>\n`;
@@ -810,7 +1031,7 @@ function renderPermissionRequests(
     const listStr = allowlistCandidates
       .map((name) => escapeHtml(name))
       .join(", ");
-    body += `<p>Programs with repeated allowed requests (5 or more, none denied) are allowlist candidates: ${listStr}.</p>\n`;
+    body += `<p>Programs with at least 5 requests, some requested allow entries, and no requested-deny entries are review candidates under the existing approval policy; counts alone do not establish safety or justify allowlisting: ${listStr}.</p>\n`;
   }
 
   const deniedPrograms: string[] = [];
@@ -822,28 +1043,31 @@ function renderPermissionRequests(
   }
   if (deniedPrograms.length > 0) {
     const listStr = deniedPrograms.map((name) => escapeHtml(name)).join(", ");
-    body += `<p>Denied requests show where the setup said no; read them before widening the allowlist: ${listStr}.</p>\n`;
+    body += `<p>Programs with recorded requested-deny entries identify commands to inspect before any allowlist change; whether the host enforced a denial is not recorded: ${listStr}.</p>\n`;
   }
   if (permissionRequests.commands && permissionRequests.commands.length > 0) {
-    body += `<h4>Requests to review</h4>
+    body += `<h4>Raw command observations</h4>
+<p>These per-node command rows always show raw observations and may differ from aggregate request totals. Unmatched counts describe observations, not unique unanswered requests.</p>
 <div class="table-wrap nowrap-first">
 <table>
 <thead>
 <tr>
 <th>Verdicts</th>
-<th>Asked</th>
+<th>Asked observations</th>
 <th>Tool</th>
 <th>Command</th>
 </tr>
 </thead>
 <tbody>\n`;
     for (const r of permissionRequests.commands) {
-      let verdicts = `${r.allow} allowed, ${r.deny} denied`;
+      let verdicts = `${r.allow} allow, ${r.deny} deny`;
       if (r.other > 0) {
         verdicts += `, ${r.other} other`;
       }
-      if (r.unanswered > 0) {
-        verdicts += `, ${r.unanswered} unanswered`;
+      const unmatchedObservations =
+        r.unmatchedObservations ?? r.unanswered ?? 0;
+      if (unmatchedObservations > 0) {
+        verdicts += `, ${unmatchedObservations} unmatched observations`;
       }
       const toolText =
         r.kind !== "tool"
@@ -859,7 +1083,7 @@ function renderPermissionRequests(
     if (
       permissionRequests.distinctCommands > permissionRequests.commands.length
     ) {
-      body += `<p>Showing ${permissionRequests.commands.length} of ${permissionRequests.distinctCommands} distinct requests; denied ones come first.</p>\n`;
+      body += `<p>Showing ${permissionRequests.commands.length} of ${permissionRequests.distinctCommands} distinct raw command observations; denied ones come first.</p>\n`;
     }
     if (permissionRequests.commandsOmitted > 0) {
       body += `<p>${permissionRequests.commandsOmitted} requests had no command text recorded.</p>\n`;
@@ -867,17 +1091,26 @@ function renderPermissionRequests(
   }
 
   if (answeredWithoutRequest > 0) {
-    body += `<p>${answeredWithoutRequest} answers had no matching request in this session file (answered through a pending-permissions list).</p>\n`;
+    const basisDescription =
+      permissionRequests.requestCountsBasis === "deduplicated-events"
+        ? "deduplicated request-count basis"
+        : permissionRequests.requestCountsBasis === "raw-observations-may-duplicate"
+          ? "raw observation basis (duplicates possible)"
+          : "reported request-count basis";
+    body += `<p>${plural(answeredWithoutRequest, "unmatched response request-ID entry", "unmatched response request-ID entries")} on the same ${basisDescription}; these do not represent unique unanswered requests.</p>\n`;
   }
 
   body +=
     "<p>Programs are the first word of the command (after wrappers such as rtk proxy and env). Redaction is best effort: check the commands before sharing this report.</p>\n";
 
-  const headline = `${plural(asked, "request")}, ${denied} denied, ${unanswered} unanswered`;
+  const headline = `${plural(
+    asked,
+    "request",
+  )}, ${denied} requested deny, ${other} other, ${unanswered} unanswered`;
   const shouldOpen = denied > 0 || unanswered > 0 || hasGuardrailAct;
   const badge =
     denied > 0
-      ? `${denied} denied`
+      ? `${denied} requested deny`
       : unanswered > 0
         ? `${unanswered} unanswered`
         : String(asked);
@@ -891,6 +1124,121 @@ function renderPermissionRequests(
       label: "Permissions",
       badge,
       alert: denied > 0 || unanswered > 0,
+    },
+  };
+}
+
+function renderSessionSignals(ledger: Ledger): RenderedSection | null {
+  const sections: string[] = [];
+  if (ledger.activity !== null) {
+    const activity = ledger.activity;
+    const attribution = activity.userRows.byAttribution.length > 0
+      ? `<ul>${activity.userRows.byAttribution.map((entry) => `<li>${escapeHtml(entry.key)}: ${entry.count}</li>`).join("")}</ul>`
+      : "<p>No attribution keys recorded.</p>";
+    const stops = activity.stopReasons.length > 0
+      ? `<ul>${activity.stopReasons.map((entry) => `<li>${escapeHtml(entry.reason)}: ${entry.count}</li>`).join("")}</ul>`
+      : "<p>No stop reasons recorded.</p>";
+    const activityRate =
+      activity.userRowsPer100TurnsTenths === null
+        ? "not measured"
+        : `${formatRate(activity.userRowsPer100TurnsTenths)} per 100 main turns`;
+    sections.push(
+      `<h4>Main-session user rows</h4><p>${activity.userRows.total} total; ${activity.userRows.steering} steering; ${activity.userRows.permissionNotifications} permission notifications. ${activityRate}.</p>${attribution}<h4>Tree stop reasons</h4>${stops}`,
+    );
+  } else {
+    sections.push("<h4>Main-session user rows</h4><p>Not measured.</p>");
+  }
+  if (ledger.failureRuns !== null) {
+    const rows = ledger.failureRuns.tools.map(
+      (entry) => `<tr><td>${escapeHtml(entry.tool)}</td><td>${entry.runs}</td><td>${entry.longest}</td></tr>`,
+    ).join("");
+    const truncationNote = ledger.failureRuns.truncated
+      ? " Partial measurement: counts are observed lower bounds."
+      : "";
+    sections.push(
+      `<h4>Consecutive same-tool failures</h4><p>Runs require at least ${ledger.failureRuns.minLength} consecutive error results. ${ledger.failureRuns.runs} runs total; longest ${ledger.failureRuns.longest === null ? "none" : `${ledger.failureRuns.longest.length} for ${escapeHtml(ledger.failureRuns.longest.tool)} (${escapeHtml(ledger.failureRuns.longest.agent)})`}.${truncationNote}</p><div class="table-wrap"><table><thead><tr><th>Tool</th><th>Runs</th><th>Longest</th></tr></thead><tbody>${rows}</tbody></table></div>`,
+    );
+  }
+  if (ledger.time !== null) {
+    const time = ledger.time;
+    const wall = time.wallSeconds === null ? "not measured" : `${time.wallSeconds}s`;
+    const latency = time.permissionLatency === null
+      ? "Not measured: no valid matched request/response pairs."
+      : `${time.permissionLatency.timed} matched pairs; median ${time.permissionLatency.medianSeconds}s; max ${time.permissionLatency.maxSeconds}s.`;
+    const mainTime = time.main === null
+      ? "Main-session idle timing: not measured."
+      : `Main-session idle gaps of at least ${time.main.idleGapMinSeconds}s: ${time.main.idleGaps}, ${time.main.idleSeconds}s total, longest ${time.main.longestGapSeconds}s.`;
+    sections.push(
+      `<h4>Time and waits</h4><p>${wall} wall time. ${mainTime} Permission response latency: ${latency}</p>`,
+    );
+  } else {
+    sections.push("<h4>Time and waits</h4><p>Not measured.</p>");
+  }
+  if (sections.length === 0) return null;
+  return {
+    html: wrapCollapsed(
+      "<h3>Session signals</h3>",
+      "activity, failures, and timing",
+      sections.join("\\n"),
+      { id: "sec-signals", open: false },
+    ),
+    nav: { id: "sec-signals", label: "Session signals" },
+  };
+}
+
+function renderDecisionRecords(ledger: Ledger): RenderedSection | null {
+  const decisions = ledger.decisions;
+  if (decisions === null) {
+    return {
+      html: wrapCollapsed(
+        "<h3>Decision records</h3>",
+        "not measured",
+        "<p>Decision recording was not measured for this session.</p>",
+        { id: "sec-decisions", open: false },
+      ),
+      nav: {
+        id: "sec-decisions",
+        label: "Decisions",
+        badge: "not measured",
+        alert: false,
+      },
+    };
+  }
+  const impacts = ["high", "medium", "low"] as const;
+  const rows = impacts.map((impact) => {
+    const count = decisions.byImpact[impact];
+    return `<tr><td>${impact}</td><td>${count.rule}</td><td>${count.defaultPendingReview}</td></tr>`;
+  }).join("");
+  const refs = decisions.ruleRefs
+    .map((entry) => `<tr><td>${escapeHtml(entry.ref)}</td><td>${entry.count}</td></tr>`)
+    .join("");
+  const impactRank = { high: 0, medium: 1, low: 2 } as const;
+  const pendingItems = [...decisions.items]
+    .filter((item) => item.basis === "default-pending-review")
+    .sort(
+      (a, b) =>
+        impactRank[a.impact] - impactRank[b.impact] || a.at.localeCompare(b.at),
+    )
+    .slice(0, 50)
+    .map((item) => `<li><strong>${escapeHtml(item.impact)}</strong>, ${escapeHtml(item.agent)}, ${escapeHtml(item.at)}: ${escapeHtml(item.label)}</li>`)
+    .join("");
+  const highPending = decisions.byImpact.high.defaultPendingReview;
+  const body = `<p>Agent-declared and unverified records. The tool does not approve actions or prove authorization. ${decisions.total} recorded; ${decisions.irreversible} marked irreversible; ${decisions.rejected} rejected; ${decisions.unconfirmed} unconfirmed.</p>
+<h4>Basis by impact</h4><div class="table-wrap"><table><thead><tr><th>Impact</th><th>Named rule</th><th>Pending-review default</th></tr></thead><tbody>${rows}</tbody></table></div>
+<h4>Named rules</h4>${refs.length > 0 ? `<div class="table-wrap"><table><thead><tr><th>Rule reference</th><th>Count</th></tr></thead><tbody>${refs}</tbody></table></div>` : "<p>No named-rule decisions.</p>"}
+<h4>Pending-review defaults (first 50)</h4>${pendingItems.length > 0 ? `<ol>${pendingItems}</ol>` : "<p>None recorded; unrecorded decisions are not counted.</p>"}<p>${decisions.itemsOmitted} decision items omitted by storage cap.</p>`;
+  return {
+    html: wrapCollapsed(
+      "<h3>Decision records</h3>",
+      `${decisions.total} agent-declared, unverified`,
+      body,
+      { id: "sec-decisions", open: highPending > 0 },
+    ),
+    nav: {
+      id: "sec-decisions",
+      label: "Decisions",
+      badge: String(decisions.total),
+      alert: highPending > 0,
     },
   };
 }
@@ -1431,7 +1779,7 @@ function renderTrend(
           : formatMoney(r.costCentsPer100Turns),
     },
     {
-      label: "Permission answers per 100 turns",
+      label: "Permission response attempts per 100 turns",
       formatter: (r) =>
         r.permissionAnswersPer100TurnsTenths === null ||
         r.permissionAnswersPer100TurnsTenths === undefined
@@ -1534,11 +1882,12 @@ function renderAgentsTable(
 <th>Kind</th>
 <th>Model</th>
 <th>Turns</th>
+<th>Active span</th>
 <th>Cost</th>
 <th>Cached/turn</th>
 <th>Compactions</th>
 <th>Tool errors/calls</th>
-<th>Permission answers</th>
+<th>Permission response attempts</th>
 </tr>
 </thead>
 <tbody>\n`;
@@ -1546,11 +1895,13 @@ function renderAgentsTable(
   const displayed = agents.slice(0, 12);
   for (const a of displayed) {
     const trClass = a.label === "main" ? ' class="main"' : "";
-    body += `<tr${trClass}><td>${escapeHtml(a.label)}</td><td>${escapeHtml(a.kind)}</td><td>${escapeHtml(a.model)}</td><td>${a.turns}</td><td>${escapeHtml(formatMoney(a.costCents))}</td><td>${escapeHtml(formatTokensK(a.cacheReadPerTurn))}</td><td>${a.compactions}</td><td>${a.toolErrors}/${a.toolCalls}</td><td>${a.permissionAnswers}</td></tr>\n`;
+    const activeSpan =
+      a.activeSeconds === null ? "n/a" : `${a.activeSeconds}s`;
+    body += `<tr${trClass}><td>${escapeHtml(a.label)}</td><td>${escapeHtml(a.kind)}</td><td>${escapeHtml(a.model)}</td><td>${a.turns}</td><td>${escapeHtml(activeSpan)}</td><td>${escapeHtml(formatMoney(a.costCents))}</td><td>${escapeHtml(formatTokensK(a.cacheReadPerTurn))}</td><td>${a.compactions}</td><td>${a.toolErrors}/${a.toolCalls}</td><td>${a.permissionAnswers}</td></tr>\n`;
   }
 
   if (otherAgents && otherAgents.count > 0) {
-    body += `<tr><td>${otherAgents.count} more agents</td><td>-</td><td>-</td><td>${otherAgents.turns}</td><td>${escapeHtml(formatMoney(otherAgents.costCents))}</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>\n`;
+    body += `<tr><td>${otherAgents.count} more agents</td><td>-</td><td>-</td><td>${otherAgents.turns}</td><td>-</td><td>${escapeHtml(formatMoney(otherAgents.costCents))}</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>\n`;
   }
 
   body += `</tbody>
@@ -1585,11 +1936,27 @@ function renderAgentsTable(
   };
 }
 
-function renderLimits(): RenderedSection {
-  const body = `<ul>
+function renderLimits(
+  inventory: CoverageInventory | null,
+  friction: PermissionFriction | null,
+): RenderedSection {
+  let body = `<ul>
 <li>Counts show where to look, not why.</li>
 <li>Cost is a price-table estimate; call-share attribution is an estimate.</li>
-<li>Agents without a read session file are not covered.</li>
+<li>Agents without a read session file are not covered.</li>`;
+  if (inventory !== null) {
+    body += `
+<li>Unread declared actors are gaps: their turns, usage and timing are unknown, not zero.</li>`;
+  }
+  if (friction !== null) {
+    if (friction.humanAnswers === null || friction.waitMs === null) {
+      body += `
+<li>Answerer provenance and wait time are shown only where structured evidence supports them; null means unknown.</li>`;
+    }
+    body += `
+<li>Repeated requests share a tool category, not proven-identical commands; safety and avoidability are unknown.</li>`;
+  }
+  body += `
 <li>The root session is not verified against the host.</li>
 <li>AGS lookups are counted, not whether the rules were followed.</li>
 <li>Commit counts and the branch come from git at report time.</li>
@@ -1617,6 +1984,7 @@ a:hover{text-decoration:underline}
 .nav-pill:hover{border-color:#0969da;color:#0969da;text-decoration:none}
 .nav-pill.alert{border-color:var(--red);color:var(--red);font-weight:600}
 .meta{color:var(--mute);font-size:13px;margin:6px 0 14px}
+.coverage-warning{background:#fff4e5;border:1px solid var(--amber);border-radius:8px;padding:8px 12px;margin:8px 0 14px;color:#5a3600;font-size:14px}
 .title{font-size:14px;margin:4px 0}
 .soft{color:var(--mute);font-size:12px}
 h1{font-size:22px;margin:6px 0}
@@ -1676,6 +2044,8 @@ export function renderReportHtml(
   context?: ReportContext,
 ): string {
   const vLedger = ledger as ViewLedger;
+  const inventory = vLedger.inventory ?? null;
+  const friction = vLedger.permissionFriction ?? null;
   const improvements = vLedger.improvements ?? [];
   const hasAct = (rule: string): boolean =>
     improvements.some((imp) => imp.rule === rule && imp.level === "act");
@@ -1715,11 +2085,15 @@ export function renderReportHtml(
   const doNextHtml = renderDoNext(vLedger.improvements);
 
   const sections = [
+    renderDelegationRoster(inventory),
     renderPermissionRequests(
       permReqs,
       permissionRequestsClaim,
       hasAct("guardrail-answers"),
     ),
+    renderPermissionFriction(friction),
+    renderSessionSignals(ledger),
+    renderDecisionRecords(ledger),
     renderOutcome(vLedger.outcome),
     renderTimeline(vLedger.days),
     renderCostAndModels(
@@ -1741,8 +2115,11 @@ export function renderReportHtml(
       coverageClaim,
       hasAct("agent-error-concentration") || hasAct("human-intervention"),
     ),
-    renderLimits(),
-    renderMaintainerImprovements(vLedger.improvements),
+    renderLimits(inventory, friction),
+    renderMaintainerImprovements(
+      vLedger.improvements,
+      vLedger.inventory?.known === true,
+    ),
   ].filter((sec): sec is RenderedSection => sec !== null);
 
   const topNavHtml = renderTopNav(

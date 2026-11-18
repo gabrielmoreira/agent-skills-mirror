@@ -15,6 +15,8 @@ Only `state: "completed"` and real `libraryAssets` confirm saved library candida
 
 ## Hand back to the calling workflow
 
+If setup interrupted the task, re-run provider inspection after confirmation and resume the original brief and selected assets; do not regenerate completed versions merely because account access changed.
+
 In the delivery reply, name every part that is not generated as planned (for example local TTS, code-synthesized music or user/retrieved media) so the user knows what they received. For a standalone asset request, report the pinned asset/version identity and available file location, provider/model/job identity, measured dimensions or duration, and any quality or review limitations.
 
-Inside a film workflow, continue with `openmotion_edit_project` using the refreshed `expectedRevision` and `expectedVersionId`. Generation produces candidate media, not a finished film: keep shot selection, native typography/layout, timeline choreography, Studio preview handoff and final audiovisual review in the active creative or production workflow. Generated assets never relax that workflow's own checks: segments using them pass the active workflow's applicable visual, text and measurement checks. In recreation, its [check and deliver](../../openmotion-recreate/references/verify.md) step defines which measurements gate generated shots.
+Inside a film workflow, continue with `openmotion_edit_project` using the refreshed `expectedRevision` and `expectedVersionId`. Generation produces candidate media, not a finished film: keep shot selection, native typography/layout, timeline choreography, Studio preview handoff and final audiovisual review in the active creative or production workflow. Generated assets never relax that workflow's own checks: segments using them pass the active workflow's applicable visual, text and measurement checks. The active workflow's delivery guidance defines which measurements gate generated shots.

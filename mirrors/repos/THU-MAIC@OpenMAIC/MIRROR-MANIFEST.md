@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 2 followed patterns, 59 file(s) materialized.
+Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 5 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 2 followed patterns, 59 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 59 |
+| Followed pats | 5 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,10 @@ Mirror of `THU-MAIC/OpenMAIC` — 26 default patterns, 2 followed patterns, 59 f
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
+- `MAINTAINING.md`
 - `.github/pull_request_template.md`
+- `.github/triage/README.md`
+- `.github/labels.md`
 
 ## File Index
 
@@ -117,8 +120,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
 | 56 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
 | 57 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |
-| 58 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 59 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 58 | → | [`.github/labels.md`](.github/labels.md) |
+| 59 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 60 | → | [`.github/triage/README.md`](.github/triage/README.md) |
+| 61 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 62 | → | [`MAINTAINING.md`](MAINTAINING.md) |
 
 ---
 

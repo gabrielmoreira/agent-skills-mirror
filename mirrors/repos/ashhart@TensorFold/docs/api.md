@@ -45,7 +45,7 @@ different scopes, or scopes a key the flags or environment already give, is refu
 
 | Scope | Routes |
 | --- | --- |
-| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/audio/speech`, `/v1/images/generations`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, `/v1/rerank` (also by PUT), `/v1/ocr`, and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices`; a WebSocket upgrade on GET `/v1/responses` or `/responses` |
+| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/apply-template`, `/v1/audio/speech`, `/v1/images/generations`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, `/v1/rerank` (also by PUT), `/v1/ocr`, and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices`; a WebSocket upgrade on GET `/v1/responses` or `/responses` |
 | `read` | GET `/metrics`, `/v1/metrics`, `/v1/load`, `/memory`, `/v1/memory`, `/stats`, `/dashboard`, `/v1/benchmark/manifest`, `/v1/models`, `/models`, `/v1/voices` |
 
 A scoped key reaches nothing else: not the stored Responses (GET or DELETE `/v1/responses/ID`), Recall, Sliding Weights,
@@ -82,7 +82,7 @@ Forwarded headers do not select the scheme or bypass either check.
 
 Each 403 names the refused header and its corresponding exception flag. Clients without an `Origin`, including curl,
 SDKs and the app, keep their existing requests with a valid Host. Content-Type is not required by these checks, so
-`curl -d` requests keep working. The server adds no CORS headers; these flags do not enable cross-origin browser reads.
+`curl -d` requests keep working. `--allowed-origin` adds no CORS headers and does not enable cross-origin browser reads.
 The header checks protect browser access and do not replace API keys. Trailing spaces or tabs in Host or Origin values
 are refused; clients should omit that outer whitespace.
 
@@ -95,6 +95,20 @@ For a trusted proxy name and web origin, for example:
 ```sh
 tensorfold-native serve MODEL --allowed-host inference.example --allowed-origin https://inference.example
 ```
+
+A browser page on another origin reads replies only from origins named with `--cors-origin ORIGIN` (repeatable, at
+most 64, the same `http(s)://HOST[:PORT]` form; no wildcard). Each one is also an allowed origin. A preflight
+(`OPTIONS` with `Access-Control-Request-Method`) from a listed origin is answered before keys are checked: 204 with
+`Access-Control-Allow-Origin` echoing that origin, `Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS`,
+`Access-Control-Max-Age: 600` and `Access-Control-Allow-Headers` naming `authorization`, `x-api-key`,
+`content-type`, `anthropic-version`, `anthropic-beta` and `anthropic-dangerous-direct-browser-access`, followed by any
+requested `x-stainless-*` header (the OpenAI and Anthropic browser SDKs send these; letters, digits, `-` and `_` after
+the prefix), lowercased. Another method or requested header refuses the whole preflight with 403. An unlisted origin
+gets the 403 above.
+A listed origin's request that passes the header checks gets `Access-Control-Allow-Origin` on its reply, key and
+scope refusals and SSE streams included; with the flag set, every reply past those checks carries `Vary: Origin`. Credentials mode
+is not offered (no `Access-Control-Allow-Credentials`): send the key in `Authorization` or `x-api-key`, which gated
+routes still require when keys are on. Without the flag no reply carries a CORS header.
 
 | Route | Behavior |
 | --- | --- |
@@ -111,6 +125,7 @@ tensorfold-native serve MODEL --allowed-host inference.example --allowed-origin 
 | `POST /v1/messages/count_tokens` | Render the same model prompt without generating |
 | `POST /tokenize`, `POST /v1/tokenize` | vLLM's: a `prompt`'s token IDs, or the IDs a chat request's `messages` render to |
 | `POST /detokenize`, `POST /v1/detokenize` | vLLM's: the text of `tokens`, special tokens included |
+| `POST /apply-template`, `POST /v1/apply-template` | `{"prompt": TEXT}`: the text a `/tokenize` body's `messages` render to (tools, `reasoning_effort`, `chat_template_kwargs`, `add_generation_prompt`, media expanded), special tokens included; no engine work |
 | `POST /v1/responses` | OpenAI's Responses API, run as the equivalent chat completion; streamed or non-streamed |
 | `GET /v1/responses` (WebSocket upgrade) | OpenAI's Responses [WebSocket mode](#websocket-mode): `response.create` events over one socket |
 | `GET /v1/responses/{id}`, `DELETE /v1/responses/{id}` | A stored response, or remove it |
@@ -121,6 +136,16 @@ tensorfold-native serve MODEL --allowed-host inference.example --allowed-origin 
 
 On MLX, a completions body containing a nonempty `messages` list uses chat handling. CUDA completions
 take a string `prompt` (`add_special_tokens`, default false) or a list of token IDs, run as given.
+
+A completions `prompt` that is a list of two or more strings (at most 64) runs each string as its own request,
+with the body's other fields (`max_tokens`, `seed`, `stop` and the rest) as that prompt alone would have them; `n`
+must still be 1. The reply has one choice a prompt, `index` in list order, each with the text, stop and `tensorfold`
+block that prompt alone gets, and `usage` sums every prompt's and every reply's tokens; the first refusal in list
+order is the reply. A stream sends each prompt's chunks with its `index`, then the finishes in list order, then one
+usage chunk when `stream_options.include_usage` is set (otherwise the last finish carries the summed usage). Up to
+eight prompts run at once, and one at a time under `--max-inflight` or `--max-inflight-per-key`, where the request
+holds one place. A one-string list, a list of token IDs, a list of token-ID lists and a mixed list keep their
+one-prompt meaning (lists inside are decoded and joined with a newline).
 
 `/tokenize` takes vLLM's fields: a `prompt` string (`add_special_tokens`, default true), or `messages` with the
 chat fields that shape the prompt (`tools`, `reasoning_effort`, `chat_template_kwargs`) and `add_generation_prompt`
@@ -761,9 +786,13 @@ token-level, budgeted, captured or left-recursive rules. The masks follow from x
 thinking on they start after the think end.
 
 HTTP 400 comes before any token for a malformed field, a grammar xgrammar cannot compile (with xgrammar's reason), a
-server without xgrammar (with the install command; on the native server, a server that cannot load `libtfgrammar`),
-a grammar sent with `tool_choice: "required"` or a named function. A reply whose
-grammar fails while decoding ends with HTTP 500 (an error event when streaming); the other requests go on.
+grammar over 512 KiB on the native server, a server without xgrammar (with the install command; on the native server, a
+server that cannot load `libtfgrammar`), a grammar sent with `tool_choice: "required"` or a named function. A sent grammar is measured as the server compiles it:
+a JSON schema or a list of choices as the server re-serializes it (which can differ from its size as sent), a regex or grammar as sent. Tools are
+measured by the grammar for one call to any of them, which holds each tool's name and parameter schema once (every
+tool's schema under `tool_choice: "required"` or a named function, the strict tools' under `"auto"`); the grammar for
+parallel calls repeats that call and is not measured again, and its 400 names `tools`. A reply whose grammar fails while
+decoding ends with HTTP 500 (an error event when streaming); the other requests go on.
 
 ## Reasoning
 
@@ -813,12 +842,24 @@ gives the template `clear_thinking` false on every render, and `TF_GLM_CLEAR_THI
 from @MiaAI-Lab's [#236](https://github.com/ashhart/TensorFold/pull/236); any value but 0 or 1 refuses to load. A
 request's `chat_template_kwargs.clear_thinking` (true or false) overrides the server's setting for that request, as the
 model card advises `true` for plain chat; any other value is a 400, and other families' templates never receive it.
+`true` keeps the reasoning after the last user message, so an autonomous tool loop keeps most of it; the
+[GLM-5.3-Flash recipe](recipes/glm-5.3-flash.md#long-agent-sessions) covers long agent sessions.
 
 A tool call written before the think block closes is the reply's tool call when the reply ends inside the block,
 on both backends; the reasoning stops where the call starts, and streamed reasoning never carries the call's markup.
 A complete call at the end of reasoning is also returned when the think-close marker follows and the answer is
 empty or whitespace. While streaming, those calls stay held until the reply ends. When the block closes, a call
 followed by more reasoning or a nonempty answer stays reasoning.
+
+A reply that ends at the model's own end token while its think block is still open, with no tool call in it, also
+answers with its reasoning (#3687): `content` repeats the text, which stays in `reasoning_content` as well, so
+`/v1/messages` gives a thinking block and then a text block, and `/v1/responses` a reasoning item and then a message.
+It applies only when the model ended the reply itself: not at a stop string, `max_tokens` or the loop guard, and not
+for a request with a forced tool call or structured output, which prose cannot satisfy. Streaming sends the answer as
+one content delta at the end, so the joined deltas equal the finished reply. The response carries
+`tensorfold.reasoning_recovered: true` and the server logs one line. Token ids, `token_sha256` and token counts are
+the model's own, unchanged; `logprobs` keeps those tokens under `reasoning_content`. A client that sends the reasoning
+back sends the text twice, which costs prompt tokens on the next turn.
 
 `thinking_budget` (the request's; absent or 0 takes `--thinking-budget`) replaces the reply's budget-th token,
 while it is still thinking, with a newline, the closing think marker and a blank line, then continues the answer.
@@ -1509,6 +1550,23 @@ Connect Claude Code using the ID from `/v1/models`:
 ```bash
 ANTHROPIC_BASE_URL=http://127.0.0.1:8080 ANTHROPIC_API_KEY=local claude --model local-model
 ```
+
+## Launch a coding agent
+
+`tensorfold launch <agent> [args...]` checks that a local server answers at `http://127.0.0.1:8080/v1`,
+names the model it found, then starts the agent with its API base URL and key set in the child process only.
+No agent settings or files in the home folder are changed. Arguments after the agent name pass through
+unchanged. Set `TENSORFOLD_LAUNCH_URL` to use another local server. Claude Code gets the server's root
+(`http://127.0.0.1:8080`), since it adds `/v1/messages` itself; the others get the `/v1` URL. The key is the first of
+`TENSORFOLD_API_KEY`'s keys when it is set, for a server started with keys, and `local` otherwise. An unknown agent
+is refused with the list of known names.
+
+| agent | base URL variable | key variable |
+|---|---|---|
+| `claude` | `ANTHROPIC_BASE_URL` | `ANTHROPIC_API_KEY` |
+| `codex` | `OPENAI_BASE_URL` | `OPENAI_API_KEY` |
+| `opencode` | `OPENAI_BASE_URL` | `OPENAI_API_KEY` |
+| `hermes` | `TENSORFOLD_BASE_URL` | `TENSORFOLD_API_KEY` |
 
 ## Ollama API
 

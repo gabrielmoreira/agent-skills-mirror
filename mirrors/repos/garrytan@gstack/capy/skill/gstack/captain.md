@@ -104,7 +104,8 @@ For an autoplan run, open the plan with `## ELI5` (5-10 plain sentences), then w
 gstack-owner-brief render --captain --out <run dir> --captain-name "<Captain name>"
 ```
 
-It prints a header line ("Decision needed … Reply **do it** …"), the `### ELI5` summary (on a run whose gate
+It prints a header line ("Decision needed … Reply **do it** …"), the plan's `### Day one` table, `### What it won't do yet`
+and the owner's words it follows (each when the plan has it), the `### ELI5` summary (on a run whose gate
 carries `eli5`), the four plan sections (each capped, with a pointer to the plan for the rest), and "What we need from you", one lettered
 line per choice in the ask format, closed by "do it", then a `### Cost` section (spent so far, worst case, and the estimate for
 the phases `rec` can reopen). The last line, "For the relaying agent", carries the run, `gate_rev`, `rec_hash` and the exact
@@ -149,7 +150,8 @@ Every PR you send READY on, and the READY report itself, has:
    evidence-ladder rung that fact reached.
 4. **Approvals.** `gstack-approvals render`.
 5. **Evidence.** Checks green at the head, gate or train results, flaky cases, and an `Unverified:` line:
-   each claim you did not check yourself and why, or `none`. You write this item; /ship does not.
+   each claim you did not check yourself and why, or `none`; `Failed or skipped:` and `Also changed:` lines too.
+   A controller asks for a missing one of the three, never refuses it. You write this item; /ship does not.
 
 The READY report attaches the key image (Capy message attachment), so the Captain can show it inline.
 /ship does items 1-4 when `GSTACK_CAPY=1` (its `capy-pr` section). Outside Capy, the PR body is unchanged.
@@ -168,3 +170,11 @@ take every reading (start, notes, close) from its own row of the root thread's `
 reason=budget_exhausted`, `status=incomplete`), the lane reports the BUDGET and RECOVER lines and asks the
 owner; it never raises the cap itself. The owner's answer runs the RECOVER line with
 `--approved-by <who> --words "<their words>"`, and `gstack-approvals add` records the same words.
+
+## 5. Asks to try a build
+
+An ask for the owner to try an app build, and any "v1 is ready" report, goes out only after the build clears
+`gstack-first-use` (`docs/first-use-check.md` in the checkout): an agent from another model family plays that exact
+build cold on the same kind of device and does the plan's first five day-one actions, with a screenshot or video of
+each. Send the text `gstack-first-use message` prints, unchanged; when it refuses, fix the build and replay instead of
+asking. Record the owner's score and words with `gstack-first-use score`, never in a PR or the repository.

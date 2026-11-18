@@ -20,6 +20,7 @@ import {
   type LookupStats,
 } from "../src/retrospective/aggregate";
 import { extractHostSkillId } from "../src/retrospective/server-tools";
+import { buildPermissionFriction } from "../src/retrospective/permission-friction";
 
 const MAIN: NodeKey = { hostId: "host-1", sessionId: "session-main" };
 const CODEX_NODE: NodeKey = {
@@ -121,10 +122,11 @@ async function aggregateRows(
   filename: string,
   rows: unknown[],
   format: "omp" | "codex" = "omp",
+  node: NodeKey = format === "omp" ? MAIN : CODEX_NODE,
 ): Promise<AggregatedSessionResult> {
   const filePath = await writeJsonl(root, filename, rows);
   const source = {
-    node: format === "omp" ? MAIN : CODEX_NODE,
+    node,
     format,
     absolutePath: filePath,
   };
@@ -133,6 +135,27 @@ async function aggregateRows(
     source,
     snapshot,
     DEFAULT_LIMITS,
+    new AbortController().signal,
+  );
+}
+
+async function aggregateRowsWithLimits(
+  root: string,
+  filename: string,
+  rows: unknown[],
+  limits: AggregateLimits,
+): Promise<AggregatedSessionResult> {
+  const filePath = await writeJsonl(root, filename, rows);
+  const source = {
+    node: MAIN,
+    format: "omp" as const,
+    absolutePath: filePath,
+  };
+  const snapshot = await captureSnapshot(source, 10_000_000);
+  return aggregateSession(
+    source,
+    snapshot,
+    limits,
     new AbortController().signal,
   );
 }
@@ -204,6 +227,436 @@ afterEach(async () => {
 });
 
 describe("retrospective aggregate pass", () => {
+  it("keeps both passes on the approved inode after its path is replaced", async () => {
+    const root = await temporaryRoot();
+    const approvedPath = path.join(root, "session.jsonl");
+    const movedPath = path.join(root, "approved-inode.jsonl");
+    const original = `${JSON.stringify({
+      type: "message",
+      id: "approved-assistant",
+      timestamp: "2026-10-01T10:00:00.000Z",
+      message: {
+        role: "assistant",
+        model: "provider/approved",
+        stopReason: "stop",
+        content: [],
+      },
+    })}\n`;
+    const replacement = `${JSON.stringify({
+      type: "message",
+      id: "outside-assistant",
+      timestamp: "2026-10-01T10:00:00.000Z",
+      message: {
+        role: "assistant",
+        model: "provider/outside",
+        stopReason: "error",
+        content: [],
+      },
+    })}\n`;
+    await fs.writeFile(approvedPath, original, "utf8");
+    const handle = await fs.open(approvedPath, "r");
+    try {
+      const source = { node: MAIN, format: "omp" as const, handle };
+      const snapshot = await captureSnapshot(source, 10_000_000);
+      expect(snapshot.prefixDigest).toBe(
+        crypto.createHash("sha256").update(original).digest("hex"),
+      );
+
+      await fs.rename(approvedPath, movedPath);
+      await fs.writeFile(approvedPath, replacement, "utf8");
+      const result = await aggregateSession(
+        source,
+        snapshot,
+        DEFAULT_LIMITS,
+        new AbortController().signal,
+      );
+
+      expect(result.assistantTurns).toBe(1);
+      expect(result.models).toEqual({ "provider/approved": 1 });
+      expect(result.stopReasons).toEqual({ stop: 1 });
+      expect(result.snapshot.prefixDigest).toBe(snapshot.prefixDigest);
+      expect((await handle.stat()).isFile()).toBe(true);
+    } finally {
+      await handle.close();
+    }
+  });
+  it("rejects a pinned host file whose matching digest carries another session identity", async () => {
+    const root = await temporaryRoot();
+    const filePath = await writeJsonl(root, "rewritten-session.jsonl", [
+      { type: "session", version: 3, id: "expected-session" },
+    ]);
+    const handle = await fs.open(filePath, "r+");
+    try {
+      const rewritten = `${JSON.stringify({
+        type: "session",
+        version: 3,
+        id: "replacement-session",
+      })}\n`;
+      await handle.truncate(0);
+      await handle.writeFile(rewritten, "utf8");
+
+      const source = {
+        node: { ...MAIN, sessionId: "expected-session" },
+        format: "omp" as const,
+        handle,
+        expectedSessionId: "expected-session",
+      };
+      const snapshot = await captureSnapshot(
+        { node: source.node, handle },
+        10_000_000,
+      );
+      expect(snapshot.prefixDigest).toBe(
+        crypto.createHash("sha256").update(rewritten).digest("hex"),
+      );
+      await expect(
+        aggregateSession(
+          source,
+          snapshot,
+          DEFAULT_LIMITS,
+          new AbortController().signal,
+        ),
+      ).rejects.toMatchObject({ code: "SOURCE_CHANGED" });
+      expect((await handle.stat()).isFile()).toBe(true);
+    } finally {
+      await handle.close();
+    }
+  });
+
+  it("accepts the expected OMP session identity from the hashed stream", async () => {
+    const root = await temporaryRoot();
+    const filePath = await writeJsonl(root, "expected-session.jsonl", [
+      { type: "session", version: 3, id: "expected-session" },
+    ]);
+    const handle = await fs.open(filePath, "r");
+    try {
+      const source = {
+        node: { ...MAIN, sessionId: "expected-session" },
+        format: "omp" as const,
+        handle,
+        expectedSessionId: "expected-session",
+      };
+      const snapshot = await captureSnapshot(
+        { node: source.node, handle },
+        10_000_000,
+      );
+      await expect(
+        aggregateSession(
+          source,
+          snapshot,
+          DEFAULT_LIMITS,
+          new AbortController().signal,
+        ),
+      ).resolves.toMatchObject({ coverage: "complete" });
+      expect((await handle.stat()).isFile()).toBe(true);
+    } finally {
+      await handle.close();
+    }
+  });
+
+  it("records agent-declared decisions, user activity, and consecutive tool failures", async () => {
+    const root = await temporaryRoot();
+    const decision = {
+      basis: "default-pending-review",
+      impact: "high",
+      reversible: false,
+      label: "Defer the irreversible change",
+    };
+    const rows = [
+      {
+        type: "message",
+        timestamp: "2026-10-01T10:00:00.000Z",
+        message: {
+          role: "user",
+          timestamp: "2026-10-01T10:00:00.000Z",
+          attribution: "human",
+          steering: true,
+          content: [{ type: "text", text: "Pause before applying." }],
+        },
+      },
+      ompAssistantRow({
+        messageId: "decision-and-failures",
+        timestamp: "2026-10-01T10:00:01.000Z",
+        calls: [
+          serverCall({
+            id: "decision-1",
+            tool: "record_decision",
+            extraArgs: { content: JSON.stringify(decision) },
+          }),
+          { id: "bash-1", name: "bash" },
+          { id: "bash-2", name: "bash" },
+          { id: "bash-3", name: "bash" },
+        ],
+      }),
+      {
+        type: "message",
+        timestamp: "2026-10-01T10:00:02.000Z",
+        message: {
+          role: "toolResult",
+          toolCallId: "decision-1",
+          toolName: "write",
+          content: [{ type: "text", text: "Decision recorded." }],
+        },
+      },
+      ...["bash-1", "bash-2", "bash-3"].map((toolCallId, index) => ({
+        type: "message",
+        timestamp: `2026-10-01T10:00:0${3 + index}.000Z`,
+        message: {
+          role: "toolResult",
+          toolCallId,
+          toolName: "bash",
+          isError: true,
+          content: [{ type: "text", text: "failed" }],
+        },
+      })),
+    ];
+    const result = await aggregateRows(root, "signals.jsonl", rows);
+    expect(result.activity?.steering).toBe(1);
+    expect(result.activity?.byAttribution).toEqual({ human: 1 });
+    expect(result.failureRuns?.bash).toEqual({ runs: 1, longest: 3 });
+    expect(result.decisions?.total).toBe(1);
+    expect(result.decisions?.byBasis.defaultPendingReview).toBe(1);
+    expect(result.decisions?.byImpact.high.defaultPendingReview).toBe(1);
+    expect(result.decisions?.irreversible).toBe(1);
+    expect(result.decisions?.accepted[0]).toMatchObject({
+      basis: "default-pending-review",
+      impact: "high",
+      reversible: false,
+      label: "Defer the irreversible change",
+    });
+  });
+
+  it("keeps failure counters prototype-safe and applies the structural signal grammar", async () => {
+    const root = await temporaryRoot();
+    const timestamp = "2026-10-01T10:00:00.000Z";
+    const permissionText = `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "11111111-aaaa-bbbb-cccc-dddddddddddd",
+  "requestId": "request-zero",
+  "request": {
+    "name": "bash",
+    "description": "Command: git status"
+  }
+}
+</permission-request>
+</paseo-system>`;
+    const rows = [
+      {
+        type: "message",
+        timestamp,
+        message: {
+          role: "user",
+          content: [{ type: "text", text: "permission-required appears in unrelated prose" }],
+        },
+      },
+      {
+        type: "message",
+        message: {
+          role: "user",
+          timestamp,
+          content: [{ type: "text", text: permissionText }],
+        },
+      },
+      ompAssistantRow({
+        messageId: "permission-answer",
+        timestamp,
+        calls: [
+          {
+            id: "permission-answer-call",
+            name: "respond_to_permission",
+            arguments: {
+              agentId: "11111111-aaaa-bbbb-cccc-dddddddddddd",
+              requestId: "request-zero",
+              response: { behavior: "allow" },
+            },
+          },
+        ],
+      }),
+      {
+        type: "message",
+        timestamp,
+        message: {
+          role: "toolResult",
+          toolCallId: "permission-answer-call",
+          toolName: "respond_to_permission",
+          isError: false,
+        },
+      },
+      {
+        type: "message",
+        timestamp,
+        message: {
+          role: "assistant",
+          stopReason: "host_notification",
+          content: [],
+        },
+      },
+      {
+        type: "message",
+        timestamp,
+        message: {
+          role: "assistant",
+          stopReason: "tool_use",
+          content: [],
+        },
+      },
+      {
+        type: "message",
+        timestamp,
+        message: {
+          role: "assistant",
+          stopReason: "invalid reason",
+          content: [],
+        },
+      },
+      ...["failure-1", "failure-2", "failure-3"].map((toolCallId) => ({
+        type: "message",
+        timestamp,
+        message: {
+          role: "toolResult",
+          toolCallId,
+          toolName: "__proto__",
+          isError: true,
+        },
+      })),
+    ];
+    const result = await aggregateRows(root, "signal-boundaries.jsonl", rows);
+    expect(result.activity?.permissionNotifications).toBe(1);
+    expect(result.permissionLatencySeconds).toEqual([0]);
+    expect(result.stopReasons).toMatchObject({
+      host_notification: 1,
+      tool_use: 1,
+      other: 1,
+    });
+    expect(Object.hasOwn(result.failureRuns ?? {}, "__proto__")).toBe(true);
+    expect(result.failureRuns?.["__proto__"]).toEqual({
+      runs: 1,
+      longest: 3,
+    });
+    expect(result.toolErrors["__proto__"]).toBe(3);
+  });
+
+  it("counts constructor rule references as data at node and tree scope", async () => {
+    const root = await temporaryRoot();
+    const at = "2026-10-01T10:00:00.000Z";
+    const decision = {
+      basis: "rule",
+      impact: "medium",
+      reversible: true,
+      ruleRef: "constructor",
+      label: "Use the named rule",
+    };
+    const result = await aggregateRows(root, "constructor-rule.jsonl", [
+      ompAssistantRow({
+        messageId: "constructor-decision",
+        timestamp: at,
+        calls: [
+          serverCall({
+            id: "constructor-decision",
+            tool: "record_decision",
+            extraArgs: { content: JSON.stringify(decision) },
+          }),
+        ],
+      }),
+      {
+        type: "message",
+        timestamp: at,
+        message: {
+          role: "toolResult",
+          toolCallId: "constructor-decision",
+          toolName: "write",
+          isError: false,
+        },
+      },
+    ]);
+
+    expect(Object.hasOwn(result.decisions?.ruleRefs ?? {}, "constructor")).toBe(true);
+    expect(result.decisions?.ruleRefs.constructor).toBe(1);
+    const tree = rollUp([result]);
+    expect(Object.hasOwn(tree.decisions?.ruleRefs ?? {}, "constructor")).toBe(true);
+    expect(tree.decisions?.ruleRefs.constructor).toBe(1);
+  });
+
+  it("marks node and roll-up failure-run caps as partial measurement", async () => {
+    const root = await temporaryRoot();
+    const rows = Array.from({ length: 10_001 }, (_, index) => ({
+      type: "message",
+      message: {
+        role: "toolResult",
+        toolName: `tool-${index}`,
+        isError: true,
+      },
+    }));
+    const result = await aggregateRows(root, "node-failure-cap.jsonl", rows);
+    expect(result.failureRunsTruncated).toBe(true);
+    expect(rollUp([result]).failureRunsTruncated).toBe(true);
+
+    const runs = Object.create(null) as Record<string, { runs: number; longest: number }>;
+    for (let index = 0; index < 10_001; index += 1) {
+      runs[`tool-${index}`] = { runs: 1, longest: 3 };
+    }
+    const rollupOnly = rollUp([
+      { ...result, failureRuns: runs, failureRunsTruncated: false },
+    ]);
+    expect(Object.keys(rollupOnly.failureRuns ?? {})).toHaveLength(10_000);
+    expect(rollupOnly.failureRunsTruncated).toBe(true);
+  });
+
+  it("retains high-priority decisions beyond both encounter-order caps", async () => {
+    const root = await temporaryRoot();
+    const rows: unknown[] = [];
+    for (let index = 0; index < 501; index += 1) {
+      const id = `decision-${index}`;
+      const at = new Date(Date.UTC(2026, 9, 1, 0, 0, index)).toISOString();
+      const priority = index === 500;
+      const decision = {
+        basis: priority ? "default-pending-review" : "rule",
+        impact: priority ? "high" : "low",
+        reversible: true,
+        ...(priority ? {} : { ruleRef: "existing-rule" }),
+        label: priority ? "High-priority late decision" : `Decision ${index}`,
+      };
+      rows.push(
+        ompAssistantRow({
+          messageId: `assistant-${id}`,
+          timestamp: at,
+          calls: [
+            serverCall({
+              id,
+              tool: "record_decision",
+              extraArgs: { content: JSON.stringify(decision) },
+            }),
+          ],
+        }),
+        {
+          type: "message",
+          timestamp: at,
+          message: {
+            role: "toolResult",
+            toolCallId: id,
+            toolName: "write",
+            isError: false,
+          },
+        },
+      );
+    }
+    const result = await aggregateRows(root, "decision-priority.jsonl", rows);
+    expect(result.decisions?.total).toBe(501);
+    expect(result.decisions?.accepted).toHaveLength(500);
+    expect(result.decisions?.accepted[0].label).toBe(
+      "High-priority late decision",
+    );
+
+    const tree = rollUp([result]);
+    expect(tree.decisions?.accepted).toHaveLength(200);
+    expect(tree.decisions?.accepted[0]).toMatchObject({
+      basis: "default-pending-review",
+      impact: "high",
+      label: "High-priority late decision",
+      nodeOrdinal: 0,
+    });
+  });
+
   it("computes exact known counts for a tiny OMP fixture", async () => {
     const root = await temporaryRoot();
     const filePath = await writeJsonl(root, "omp.jsonl", [
@@ -892,6 +1345,7 @@ describe("retrospective aggregate pass", () => {
       node: MAIN,
       format: "omp" as const,
       absolutePath: filePath,
+      expectedSessionId: MAIN.sessionId,
     };
     const snapshot = await captureSnapshot(source, 10_000_000);
     const result = await aggregateSession(
@@ -903,6 +1357,29 @@ describe("retrospective aggregate pass", () => {
 
     expect(result.coverage).toBe("partial");
     expect(result.partialReason).toBe("time-ceiling");
+  });
+
+  it("rejects a mismatched OMP session identity when maxMillis is 0", async () => {
+    const root = await temporaryRoot();
+    const filePath = await writeJsonl(root, "mismatched-time-ceiling.jsonl", [
+      { type: "session", version: 3, id: "replacement-session" },
+    ]);
+    const source = {
+      node: MAIN,
+      format: "omp" as const,
+      absolutePath: filePath,
+      expectedSessionId: MAIN.sessionId,
+    };
+    const snapshot = await captureSnapshot(source, 10_000_000);
+
+    await expect(
+      aggregateSession(
+        source,
+        snapshot,
+        { maxBytes: 10_000_000, maxMillis: 0 },
+        new AbortController().signal,
+      ),
+    ).rejects.toMatchObject({ code: "SOURCE_CHANGED" });
   });
 
   it("increments costUnknownTurns and leaves cost unchanged when cost is missing", async () => {
@@ -2924,7 +3401,7 @@ describe("retrospective aggregate pass", () => {
 
     expect(tree.nodes).toHaveLength(2);
 
-    expect(tree.nodes[0]).toEqual({
+    expect(tree.nodes[0]).toMatchObject({
       ordinal: 0,
       turns: 4,
       cost: 0.01,
@@ -2961,7 +3438,7 @@ describe("retrospective aggregate pass", () => {
       last: "2026-10-01T10:05:00.000Z",
     });
 
-    expect(tree.nodes[1]).toEqual({
+    expect(tree.nodes[1]).toMatchObject({
       ordinal: 1,
       turns: 2,
       cost: 0.005,
@@ -4829,6 +5306,722 @@ describe("retrospective aggregate pass", () => {
 
       expect(result.permissionRequests.commands).toEqual({});
       expect(result.permissionRequests.commandsOmitted).toBe(0);
+    });
+
+    it("records bounded event identity and structured timing without command text", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRows(root, "perm-events.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        {
+          type: "message",
+          timestamp: "2026-10-01T10:00:10.000Z",
+          message: {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "11111111-aaaa-bbbb-cccc-dddddddddddd",
+  "requestId": "req-events-1",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+              },
+            ],
+          },
+        },
+        {
+          type: "message",
+          timestamp: "2026-10-01T10:00:14.000Z",
+          message: {
+            role: "assistant",
+            model: "provider/model-a",
+            content: [
+              {
+                type: "toolCall",
+                id: "call-events-1",
+                name: "respond_to_permission",
+                arguments: {
+                  agentId: "11111111-aaaa-bbbb-cccc-dddddddddddd",
+                  requestId: "req-events-1",
+                  response: { behavior: "allow" },
+                },
+              },
+            ],
+          },
+        },
+        {
+          type: "message",
+          timestamp: "2026-10-01T10:00:20.000Z",
+          message: {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "22222222-aaaa-bbbb-cccc-dddddddddddd",
+  "requestId": "req-events-2",
+  "request": { "name": "read", "description": "Read file" }
+}
+</permission-request>
+</paseo-system>`,
+              },
+            ],
+          },
+        },
+      ]);
+
+      const events = result.permissionRequestEvents ?? [];
+      expect(events).toHaveLength(2);
+      expect(events[0]).toMatchObject({
+        actorKey: expect.stringMatching(/^id-[0-9a-f]{16}$/),
+        observedRequest: true,
+        tool: "bash",
+        verdict: "allow",
+        requestedAtMs: Date.parse("2026-10-01T10:00:10.000Z"),
+        answeredAtMs: Date.parse("2026-10-01T10:00:14.000Z"),
+      });
+      expect(events[1]).toMatchObject({
+        actorKey: expect.stringMatching(/^id-[0-9a-f]{16}$/),
+        observedRequest: true,
+        tool: "read",
+        verdict: null,
+        answeredAtMs: null,
+      });
+      expect(events[0].requestKey).not.toBe(events[1].requestKey);
+      expect(events[0].actorKey).not.toBe(events[1].actorKey);
+
+      const serialized = JSON.stringify(events);
+      expect(serialized).not.toContain("11111111-aaaa");
+      expect(serialized).not.toContain("git status");
+      expect(serialized).not.toContain("req-events-1");
+    });
+
+    it("counts one actor's replayed request once and keeps the earliest timestamp", async () => {
+      const root = await temporaryRoot();
+      const notification = (timestamp: string): Record<string, unknown> => ({
+        type: "message",
+        timestamp,
+        message: {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "66666666-aaaa-bbbb-cccc-dddddddddddd",
+  "requestId": "req-replayed",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+            },
+          ],
+        },
+      });
+
+      const result = await aggregateRows(root, "perm-replay.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        notification("2026-10-01T10:00:30.000Z"),
+        notification("2026-10-01T10:00:10.000Z"),
+      ]);
+
+      expect(result.permissionRequests.asked).toBe(1);
+      const events = result.permissionRequestEvents ?? [];
+      expect(events).toHaveLength(1);
+      expect(events[0].requestedAtMs).toBe(
+        Date.parse("2026-10-01T10:00:10.000Z"),
+      );
+    });
+
+    it("keeps distinct actors that reuse a request id distinct", async () => {
+      const root = await temporaryRoot();
+      const notification = (
+        timestamp: string,
+        agentId: string,
+      ): Record<string, unknown> => ({
+        type: "message",
+        timestamp,
+        message: {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "${agentId}",
+  "requestId": "req-shared",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+            },
+          ],
+        },
+      });
+
+      const result = await aggregateRows(root, "perm-shared-id.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        notification(
+          "2026-10-01T10:00:10.000Z",
+          "aaaaaaaa-1111-2222-3333-444444444444",
+        ),
+        notification(
+          "2026-10-01T10:00:20.000Z",
+          "aaaaaaaa-9999-8888-7777-666666666666",
+        ),
+      ]);
+
+      expect(result.permissionRequests.asked).toBe(2);
+      const events = result.permissionRequestEvents ?? [];
+      expect(events).toHaveLength(2);
+      expect(events[0].requestKey).not.toBe(events[1].requestKey);
+      expect(events[0].actorKey).not.toBe(events[1].actorKey);
+      expect(JSON.stringify(events)).not.toContain("aaaaaaaa");
+    });
+
+    it("carries event records through rollUp as copies", async () => {
+      const root = await temporaryRoot();
+      const first = await aggregateRows(root, "perm-roll-main.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        {
+          type: "message",
+          timestamp: "2026-10-01T10:00:10.000Z",
+          message: {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "77777777-aaaa-bbbb-cccc-dddddddddddd",
+  "requestId": "req-roll-1",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+              },
+            ],
+          },
+        },
+      ]);
+      const second = await aggregateRows(root, "perm-roll-child.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: "session-child",
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+      ]);
+
+      const tree = rollUp([first, second]);
+      expect(tree.nodes[0].permissionRequestEvents).toHaveLength(1);
+      expect(tree.nodes[1].permissionRequestEvents).toEqual([]);
+      expect(tree.nodes[0].permissionRequestEvents?.[0]).not.toBe(
+        first.permissionRequestEvents?.[0],
+      );
+    });
+
+    it.each(["split", "mirrored", "earliest", "instant"])(
+      "joins permission timing across nodes (%s)",
+      async (mode) => {
+      const root = await temporaryRoot();
+      const child: NodeKey = { hostId: "host-1", sessionId: "session-child" };
+      const notification = (timestamp: string): Record<string, unknown> => ({
+        type: "message",
+        timestamp,
+        message: {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "cccccccc-1111-2222-3333-444444444444",
+  "requestId": "req-join",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+            },
+          ],
+        },
+      });
+      const answer: Record<string, unknown> = {
+        type: "message",
+        timestamp: "2026-10-01T10:00:20.000Z",
+        message: {
+          role: "assistant",
+          model: "provider/model-a",
+          content: [
+            {
+              type: "toolCall",
+              id: "call-join-1",
+              name: "respond_to_permission",
+              arguments: {
+                agentId: "cccccccc-1111-2222-3333-444444444444",
+                requestId: "req-join",
+                response: { behavior: "allow" },
+              },
+            },
+          ],
+        },
+      };
+
+      const mainAggregate = await aggregateRows(
+        root,
+        "perm-join-main.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: MAIN.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          notification("2026-10-01T10:00:10.000Z"),
+          ...(mode === "mirrored" || mode === "earliest" ? [answer] : []),
+        ],
+        "omp",
+        MAIN,
+      );
+      const childAggregate = await aggregateRows(
+        root,
+        "perm-join-child.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: child.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          ...(mode === "mirrored"
+            ? [notification("2026-10-01T10:00:10.000Z")]
+            : []),
+          {
+            ...answer,
+            timestamp:
+              mode === "earliest"
+                ? "2026-10-01T10:00:15.000Z"
+                : mode === "instant"
+                  ? "2026-10-01T10:00:10.000Z"
+                  : "2026-10-01T10:00:20.000Z",
+          },
+        ],
+        "omp",
+        child,
+      );
+
+      const tree = rollUp([mainAggregate, childAggregate]);
+      const friction = buildPermissionFriction(tree);
+      const seconds = mode === "earliest" ? 5 : mode === "instant" ? 0 : 10;
+
+      expect(friction?.requests).toBe(1);
+      expect(friction?.answered).toBe(1);
+      expect(friction?.waitMs).toBe(seconds * 1000);
+      expect(friction?.waitMeasuredRequests).toBe(1);
+      expect(tree.permissionLatencySeconds).toEqual([seconds]);
+      expect(childAggregate.permissionRequests.asked).toBe(
+        mode === "mirrored" ? 1 : 0,
+      );
+      expect(childAggregate.permissionRequests.answeredWithoutRequest).toBe(
+        mode === "mirrored" ? 0 : 1,
+      );
+      },
+    );
+
+    it("never turns an answer-only observation into a phantom request", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRows(root, "perm-answer-only.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        {
+          type: "message",
+          timestamp: "2026-10-01T10:00:20.000Z",
+          message: {
+            role: "assistant",
+            model: "provider/model-a",
+            content: [
+              {
+                type: "toolCall",
+                id: "call-only-1",
+                name: "respond_to_permission",
+                arguments: {
+                  agentId: "dddddddd-1111-2222-3333-444444444444",
+                  requestId: "req-orphan-only",
+                  response: { behavior: "deny" },
+                },
+              },
+            ],
+          },
+        },
+      ]);
+
+      const friction = buildPermissionFriction(rollUp([result]));
+
+      expect(friction?.requests).toBe(0);
+      expect(friction?.answered).toBe(0);
+      expect(friction?.limitations.join(" ")).toContain(
+        "did not match any observed request",
+      );
+    });
+
+    it("keeps missing agent ids observation-scoped across nodes", async () => {
+      const root = await temporaryRoot();
+      const child: NodeKey = { hostId: "host-1", sessionId: "session-child" };
+      const anonymousNotification = (
+        timestamp: string,
+      ): Record<string, unknown> => ({
+        type: "message",
+        timestamp,
+        message: {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "requestId": "req-anonymous",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+            },
+          ],
+        },
+      });
+
+      const mainAggregate = await aggregateRows(
+        root,
+        "perm-anon-main.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: MAIN.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          anonymousNotification("2026-10-01T10:00:10.000Z"),
+        ],
+        "omp",
+        MAIN,
+      );
+      const childAggregate = await aggregateRows(
+        root,
+        "perm-anon-child.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: child.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          anonymousNotification("2026-10-01T10:00:10.000Z"),
+        ],
+        "omp",
+        child,
+      );
+
+      expect(mainAggregate.permissionRequestEvents?.[0]?.actorKey).not.toBe(
+        childAggregate.permissionRequestEvents?.[0]?.actorKey,
+      );
+
+      const friction = buildPermissionFriction(
+        rollUp([mainAggregate, childAggregate]),
+      );
+
+      expect(friction?.requests).toBe(2);
+      expect(friction?.limitations.join(" ")).toContain(
+        "no resolvable agent id",
+      );
+    });
+
+    it("selects the earliest observed answer record within one node", async () => {
+      const root = await temporaryRoot();
+      const answer = (
+        timestamp: string,
+        callId: string,
+        behavior: string,
+      ): Record<string, unknown> => ({
+        type: "message",
+        timestamp,
+        message: {
+          role: "assistant",
+          model: "provider/model-a",
+          content: [
+            {
+              type: "toolCall",
+              id: callId,
+              name: "respond_to_permission",
+              arguments: {
+                agentId: "eeeeeeee-1111-2222-3333-444444444444",
+                requestId: "req-repeat-answer",
+                response: { behavior },
+              },
+            },
+          ],
+        },
+      });
+
+      const result = await aggregateRows(root, "perm-repeat-answer.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        {
+          type: "message",
+          timestamp: "2026-10-01T10:00:10.000Z",
+          message: {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "eeeeeeee-1111-2222-3333-444444444444",
+  "requestId": "req-repeat-answer",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+              },
+            ],
+          },
+        },
+        answer("2026-10-01T10:00:40.000Z", "call-late-answer", "deny"),
+        answer("2026-10-01T10:00:20.000Z", "call-early-answer", "allow"),
+      ]);
+
+      const event = result.permissionRequestEvents?.[0];
+      expect(event?.verdict).toBe("allow");
+      expect(event?.answeredAtMs).toBe(Date.parse("2026-10-01T10:00:20.000Z"));
+    });
+
+    it("excludes post-cutoff rows from usage, turns, series and bounds", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRowsWithLimits(
+        root,
+        "perm-cutoff.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: MAIN.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          ompAssistantRow({
+            messageId: "m-in-window",
+            timestamp: "2026-10-01T10:00:10.000Z",
+            calls: [],
+            usage: {
+              input: 10,
+              output: 1,
+              cost: { total: 0.01 },
+            },
+          }),
+          ompAssistantRow({
+            messageId: "m-after-cutoff",
+            timestamp: "2026-10-01T10:00:30.000Z",
+            calls: [],
+            usage: {
+              input: 20,
+              output: 2,
+              cost: { total: 0.02 },
+            },
+          }),
+        ],
+        {
+          ...DEFAULT_LIMITS,
+          cutoffMs: Date.parse("2026-10-01T10:00:20.000Z"),
+        },
+      );
+
+      expect(result.assistantTurns).toBe(1);
+      expect(result.tokens.input).toBe(10);
+      expect(result.tokens.output).toBe(1);
+      expect(result.cost).toBeCloseTo(0.01);
+      expect(result.last).toBe("2026-10-01T10:00:10.000Z");
+      expect(
+        Object.values(result.series.byDayModel).reduce(
+          (sum, entry) => sum + entry.turns,
+          0,
+        ),
+      ).toBe(1);
+      expect(result.skippedLines).toBe(0);
+    });
+
+    it("omits untimed activity rows and marks the metric undercounted", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRowsWithLimits(
+        root,
+        "perm-cutoff-untimed.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: MAIN.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          {
+            type: "message",
+            message: {
+              role: "assistant",
+              model: "provider/model-a",
+              content: [],
+            },
+          },
+        ],
+        {
+          ...DEFAULT_LIMITS,
+          cutoffMs: Date.parse("2026-10-01T10:00:20.000Z"),
+        },
+      );
+
+      expect(result.assistantTurns).toBe(0);
+      expect(result.skippedLines).toBe(1);
+      expect(result.metricCompleteness.assistantTurns).toBe(
+        "may-undercount-by-skipped-lines",
+      );
+    });
+
+    it("keeps reading structural session metadata after the cutoff", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRowsWithLimits(
+        root,
+        "perm-cutoff-header.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: MAIN.sessionId,
+            cwd: "/tmp/cutoff-project",
+            timestamp: "2026-10-01T10:00:30.000Z",
+          },
+          ompAssistantRow({
+            messageId: "m-before-header",
+            timestamp: "2026-10-01T10:00:10.000Z",
+            calls: [],
+            usage: { input: 1, output: 1 },
+          }),
+        ],
+        {
+          ...DEFAULT_LIMITS,
+          cutoffMs: Date.parse("2026-10-01T10:00:20.000Z"),
+        },
+      );
+
+      expect(result.folder?.name).toBe("cutoff-project");
+      expect(result.first).toBe("2026-10-01T10:00:10.000Z");
+      expect(result.last).toBe("2026-10-01T10:00:10.000Z");
+      expect(result.assistantTurns).toBe(1);
+    });
+
+    it("drops post-cutoff permission observations entirely", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRowsWithLimits(
+        root,
+        "perm-cutoff-permissions.jsonl",
+        [
+          {
+            type: "session",
+            version: 3,
+            id: MAIN.sessionId,
+            timestamp: "2026-10-01T10:00:00.000Z",
+          },
+          {
+            type: "message",
+            timestamp: "2026-10-01T10:00:30.000Z",
+            message: {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: `<paseo-system event="permission-required">needs permission
+<permission-request>
+{
+  "agentId": "ffffffff-1111-2222-3333-444444444444",
+  "requestId": "req-after-cutoff",
+  "request": { "name": "bash", "description": "Command: git status" }
+}
+</permission-request>
+</paseo-system>`,
+                },
+              ],
+            },
+          },
+        ],
+        {
+          ...DEFAULT_LIMITS,
+          cutoffMs: Date.parse("2026-10-01T10:00:20.000Z"),
+        },
+      );
+
+      expect(result.permissionRequests.asked).toBe(0);
+      expect(result.permissionRequestEvents).toEqual([]);
+      expect(result.permissionCapture).toBe("captured");
+    });
+
+    it("keeps native behavior when no cutoff is supplied", async () => {
+      const root = await temporaryRoot();
+      const result = await aggregateRows(root, "perm-no-cutoff.jsonl", [
+        {
+          type: "session",
+          version: 3,
+          id: MAIN.sessionId,
+          timestamp: "2026-10-01T10:00:00.000Z",
+        },
+        ompAssistantRow({
+          messageId: "m-1",
+          timestamp: "2026-10-01T10:00:10.000Z",
+          calls: [],
+          usage: { input: 1, output: 1 },
+        }),
+        ompAssistantRow({
+          messageId: "m-2",
+          timestamp: "2026-10-01T10:00:30.000Z",
+          calls: [],
+          usage: { input: 2, output: 2 },
+        }),
+      ]);
+
+      expect(result.assistantTurns).toBe(2);
+      expect(result.skippedLines).toBe(0);
     });
   });
 });

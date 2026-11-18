@@ -2,6 +2,8 @@
 
 Read when competitor mode is selected. The root also requires `comparison.md`; retain each entity's own targeting and plan.
 
+Competitor mode uses the local engine only. Follow the research runbook's backend diagnosis before discovering peers. If it selects the hosted API, ask whether to run locally and wait for the user's choice before searching or planning.
+
 ### Competitor mode (`--competitors`)
 
 `--competitors` is a SKILL.md-level shortcut for vs-mode with auto-discovery. When host web search is available, YOU (the hosting reasoning model) do the discovery and Step 0.55, then invoke the web-search vs-topic path in `comparison.md`.
@@ -24,7 +26,7 @@ Read when competitor mode is selected. The root also requires `comparison.md`; r
 
 **Why --competitors-plan over --competitors-list on web-search hosts:** without per-entity handles/subs, peer sub-runs can produce visibly thinner evidence than the main topic. The Resolved Entities block in stdout makes the gap visible. Dashes on a host with web search mean Step 0.55 needs another pass; dashes on a host without it may mean no resolver was configured.
 
-**Engine-internal auto-resolve:** if the engine detects BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY, it runs its own per-entity `resolve.auto_resolve()` before each sub-run. A hosting model with web search does not need those keys for its own Step 0.55; hosts without web search and headless cron/CI runs use this engine fallback.
+**Engine-internal auto-resolve:** if the engine detects BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY, it runs its own per-entity `resolve.auto_resolve()` before each sub-run. A hosting model with web search does not need those keys for its own Step 0.55; hosts without web search and headless cron/CI runs use this engine fallback. When `EXA_API_KEY` is set and the topic resolved as a company, competitor discovery queries Exa's `company` category first (even if Brave is the general web backend) and fills any remaining slots from keyword SERPs. Person and artist topics skip that index.
 
 OpenRouter and Perplexity credentials do not enable engine auto-resolve or peer discovery. Their paid Perplexity source remains a separate opt-in. Without a supported search API key, use host web search or supply named peers; the engine's keyless general-web floor does not enable automatic peer discovery.
 

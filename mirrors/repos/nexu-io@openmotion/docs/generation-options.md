@@ -17,7 +17,7 @@ Checked on 2026-11-15 against the following official endpoint schemas and curren
 | `fal:fal-ai/flux/schnell` | Image size, output count, format, seed | [fal schema](https://fal.ai/models/fal-ai/flux/schnell/api) |
 | `fal:fal-ai/wan/v2.2-a14b/text-to-video` | Ratio, resolution, frames, frame rate, prompt expansion, negative prompt, seed | [fal schema](https://fal.ai/models/fal-ai/wan/v2.2-a14b/text-to-video/api) |
 | `fal:fal-ai/kokoro/american-english` | Voice and speed; spoken input uses `prompt` | [fal schema](https://fal.ai/models/fal-ai/kokoro/american-english/api) |
-| OpenDesign Cloud/account speech | Required voice ID | Current Cloud/account adapter contract |
+| OpenDesign Cloud/account speech | `elevenlabs-v3` and `byteplus-tts-2` offer voices checked against the media API, defaulting to the first; another non-empty voice ID for the same model is passed through unchecked. Other speech models require a voice ID | Current Cloud/account adapter contract |
 | OpenDesign account music | Optional whole-second duration | Connector `audio music --duration`; the catalogue publishes no range |
 
 These controls cover a maintained subset, not all models or all provider parameters. Custom model names and live catalogue labels do not establish wire compatibility. Provider-native types remain intact: Seedance duration is an integer, audio is a boolean, and Wan takes frames rather than a fabricated duration field. Local asset references are limited to image models that report `supportsImageReference`: the Codex image adapter and OpenDesign account image models whose catalogue publishes `edits`. No local-upload support is inferred from a model accepting remote reference URLs.

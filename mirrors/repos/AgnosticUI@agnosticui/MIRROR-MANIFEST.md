@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `AgnosticUI/agnosticui` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `AgnosticUI/agnosticui` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgnosticUI/agnosticui` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,10 +65,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/implement-ag-playbook/SKILL.md`](.claude/skills/implement-ag-playbook/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/implement-github-feature/SKILL.md`](.claude/skills/implement-github-feature/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/update-component-docs/SKILL.md`](.claude/skills/update-component-docs/SKILL.md) |
-| 7 | ✓ | [`v2/examples/lit-test/CLAUDE.md`](v2/examples/lit-test/CLAUDE.md) |
-| 8 | ✓ | [`v2/examples/react-test/.cursor/rules/agnosticui.mdc`](v2/examples/react-test/.cursor/rules/agnosticui.mdc) |
-| 9 | ✓ | [`v2/examples/react-test/CLAUDE.md`](v2/examples/react-test/CLAUDE.md) |
-| 10 | ✓ | [`v2/examples/vue-test/CLAUDE.md`](v2/examples/vue-test/CLAUDE.md) |
+| 7 | ✓ | [`v2/a2ui/catalog/SKILL.md`](v2/a2ui/catalog/SKILL.md) |
+| 8 | ✓ | [`v2/a2ui/renderers/lit/SKILL.md`](v2/a2ui/renderers/lit/SKILL.md) |
+| 9 | ✓ | [`v2/examples/lit-test/CLAUDE.md`](v2/examples/lit-test/CLAUDE.md) |
+| 10 | ✓ | [`v2/examples/react-test/.cursor/rules/agnosticui.mdc`](v2/examples/react-test/.cursor/rules/agnosticui.mdc) |
+| 11 | ✓ | [`v2/examples/react-test/CLAUDE.md`](v2/examples/react-test/CLAUDE.md) |
+| 12 | ✓ | [`v2/examples/vue-test/CLAUDE.md`](v2/examples/vue-test/CLAUDE.md) |
 
 ---
 

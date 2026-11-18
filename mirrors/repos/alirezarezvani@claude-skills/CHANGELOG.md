@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.14] - 2026-11-17 — mobile-release, cloud-finops and support-ops
+
+Three new plugins outside regulatory work. mobile-release gets an iOS or Android update through App Store and
+Google Play review and decides whether to pause or widen a staged rollout. cloud-finops reads a FOCUS cost
+export from AWS, Azure or Google Cloud for allocation gaps, commitment coverage and cost spikes. support-ops
+checks SLA attainment on a business-hours clock, schedules agents per interval with Erlang C and finds tickets
+to deflect. All three are stdlib-only and call no provider API. cinematic-shot-prompting is now installable on
+its own. No renames, so nothing needs a reinstall; `claude plugin update` picks up the new and changed plugins
+(engineering-advanced-skills, business-growth-skills).
+
+### Added
+- **mobile-release** (new `engineering/mobile-release` plugin, also in the engineering-advanced-skills bundle): gets an iOS or Android release through App Store and Google Play review, then rolls it out safely. Three deterministic stdlib scripts: `ios_privacy_manifest_check.py` (required-reason API use in Swift/Objective-C against PrivacyInfo.xcprivacy, with the valid reason codes per category, SDK-only codes, missing purpose strings and third-party SDKs that ship no manifest); `android_release_check.py` (Play's target API rule by form factor and date, `android:exported`, debuggable and cleartext flags, restricted permissions that need a Play Console declaration, and 16 KB page alignment of bundled native libraries read from the ELF headers); and `rollout_gate.py` (PROCEED, HOLD or HALT for the next staged or phased step from a one-sided two-proportion test against the previous release plus Play's bad-behavior thresholds). Ships the cs-mobile-release agent, `/cs-mobile-release` and `/cs-rollout-gate`, three cited references and a release checklist. Distinct from app-store-optimization, which ranks a listing.
+- **cloud-finops** (new `engineering/cloud-finops` plugin, also in the engineering-advanced-skills bundle): FinOps on a FOCUS cost export from any provider. `allocation_check.py` (allocation coverage against required tags, case-variant tags that split one owner, the largest unallocated resources, shared costs that need a split rule), `commitment_check.py` (savings plan and reservation utilization, coverage, effective savings rate, unused commitment cost and the uncovered daily floor to size a purchase), and `cost_anomaly.py` (robust median/MAD anomalies that must also clear a relative and an absolute floor, plus unit cost half over half). Ships the cs-finops-analyst agent, `/cs-finops-review` and `/cs-cost-spike`, three cited references and a review template. No provider API calls; it reads the export you give it.
+- **support-ops** (new `business-growth/support-ops` plugin, also in the business-growth-skills bundle): support operations for a helpdesk team. `sla_check.py` (first-response and resolution attainment on a business-hours clock with holidays, open tickets past target counted as misses, at-risk tickets, backlog age), `staffing_plan.py` (Erlang C agents per interval for phone and chat, workload plus backlog drain for email, shrinkage and occupancy caps, gaps against the roster) and `deflection_finder.py` (Pareto contact reasons labelled FIX_ROOT_CAUSE, DEFLECT, AUTOMATE or REVIEW). Ships the cs-support-ops-lead agent, `/cs-support-sla`, `/cs-support-staffing` and `/cs-support-deflection`, and three cited references.
+
+### Changed
+- Skill-router hooks (UserPromptSubmit, off with `SKILL_ROUTER=0`) now ship in the three new plugins and hint them from the engineering-advanced-skills and business-growth-skills bundles, for release, cloud-cost and support-queue questions the model would otherwise answer from memory.
+- Headline counters: skills 422 → 428 (3 standalone plugins plus their bundle copies), tools 841 → 861, references 949 → 967, agents 133 → 136, commands 178 → 185, plugins 117 → 120. `business-growth/CLAUDE.md` lists support-ops.
+- **cinematic-shot-prompting** is now its own marketplace plugin (`/plugin install cinematic-shot-prompting@claude-code-skills`), so you can install it without the full marketing-skills bundle. It stays in the bundle too.
+
+## [2.14.13] - 2026-11-17 — NIS2, DORA and readme-polish
+
+Two new EU cyber-compliance plugins for laws that already apply: nis2-readiness for NIS2 and the German
+NIS2UmsuCG (in force since 6 December 2025), and dora-readiness for DORA (applies since 17 January 2025). Both
+compute the reporting clocks from your own timestamps, refuse to guess when data is missing, and never submit
+anything for you. Also new: readme-polish from the community. No renames, so nothing needs a reinstall;
+`claude plugin update` picks up the new and changed plugins (ra-qm-skills, engineering-advanced-skills).
+
+### Added
+- **readme-polish** (new `engineering/readme-polish` plugin, also in the engineering-advanced-skills bundle): upgrades an existing README to the standard of the leading repos in its own category. It calibrates the presentation tier against 2-3 peer repos, runs a 15-second first-screen test, marks every claim true, stale or invented, rewrites the hero and hierarchy, and gates the result with `scripts/check_readme.py`, a stdlib-only lint for dead local links, placeholder badges, broken or non-ASCII anchors, oversized mermaid diagrams, wide tables and a missing first-screen install command. Thanks to @zhengqiuyang for #1145. We trimmed SKILL.md under 100 lines (component selection, anti-patterns and triggers moved into its references) and registered it as a standalone marketplace plugin.
+- **nis2-readiness** (new `ra-qm-team/nis2-readiness` plugin, also in the ra-qm-skills bundle): NIS2 (Directive 2022/2555) and the German NIS2UmsuCG, in force since 6 December 2025. Four deterministic stdlib scripts: `nis2_scope_classifier.py` (Annex I/II sector, Recommendation 2003/361 size, essential or important under Art 3, size-independent cases, jurisdiction under Art 26, registration under Art 27 and BSIG §33, DORA overlap); `nis2_incident_clock.py` (significance under Art 23(3) or Implementing Regulation 2024/2690 for digital providers, the 24 h early warning, 72 h notification and one-month final report, report content, informing recipients); `art21_gap_check.py` (30 ids across Arts 20, 21, 23 and 27, with the 2024/2690 Annex section behind each); and `eu_cyber_regime_router.py`, which lays the NIS2, DORA, CRA and GDPR reporting clocks for one event side by side. Ships the cs-nis2-officer agent, `/cs-nis2-readiness`, `/cs-nis2-report` and `/cs-eu-cyber-scope`, three cited references and an incident runbook.
+- **dora-readiness** (new `ra-qm-team/dora-readiness` plugin, also in the ra-qm-skills bundle): DORA (Regulation 2022/2554) for EU financial entities. Three deterministic stdlib scripts: `dora_scope_check.py` (the Art 2(1) entity types, Art 2(3) exclusions, the Art 16 simplified framework, microenterprises, NIS2 overlap, critical ICT provider oversight); `dora_incident_classifier.py` (major-incident classification under Delegated Regulation 2024/1772 Arts 6-9 including recurring incidents, and the 2025/301 clock: initial 4 h after classification and within 24 h of awareness, intermediate 72 h, final one month, with the weekend rule that credit institutions, CCPs, trading venues and NIS2 entities do not get); and `register_of_information_check.py` (provider LEI, the Art 30(2) and 30(3) contract terms, Art 28(8) exit plans, Art 28(4) risk assessment, Art 29 concentration and third-country risk). Ships the cs-dora-officer agent, `/cs-dora-readiness` and `/cs-dora-incident`, three cited references and a major-incident runbook. Not to be confused with DORA delivery metrics, which stay in vpe-advisor.
+
+### Changed
+- `ra-qm-team` bundle description no longer carries a skill count, and `ra-qm-team/CLAUDE.md` lists the standalone readiness plugins. Headline counters: skills 418 → 422, tools 827 → 841, references 937 → 949, agents 131 → 133, commands 173 → 178, plugins 114 → 116.
+
 ## [2.14.12] - 2026-11-16 — monetize, two math fixes, triage autonomy
 
 A patch release. New productivity plugin monetize, the cinematic-shot-prompting skill that reached `main` on

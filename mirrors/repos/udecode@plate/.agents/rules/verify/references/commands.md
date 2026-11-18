@@ -226,9 +226,13 @@ A type probe compiles through `node tooling/scripts/type-probe.mjs [--tree <chec
 
 A throwaway probe that claims source behavior prints which package files it loaded, so a run that loaded `dist` cannot pass as source proof. Run it from the package directory and pass the source-alias preload its `bunfig.toml` lists under `[test]`, such as `bun --preload ../../config/plite-source-aliases.ts <abs path>` from `packages/platejs`. Bun applies `[test]` preloads only to `bun test`, so a plain `bun run` resolves dependency packages such as `plitejs` from `dist`. Leave out `tooling/config/bunTestSetup.ts` and any preload that imports it, such as `config/plite-source-test-setup.ts`, because that file calls `afterEach`, which throws outside `bun test`. Import by absolute path as `AGENTS.md` says, and print the `require.cache` keys under `/packages/` that the import added, dependency packages included. A probe launched from a base or candidate worktree is the exception. There an absolute path into this checkout runs this checkout's code, so a base-versus-candidate comparison compares the checkout with itself. It imports packages by bare name from a file inside that worktree, such as in its ignored `.tmp/` folder, or takes the tree root as an argument and imports from it, and its printed keys must name that tree. Bun resolves a bare name from the probe file's own folder, whatever the working directory and preload. A bare-name probe in the run directory, which sits in the main checkout, therefore loads the main checkout's packages. A scratch file outside the repository cannot resolve bare package names, so it imports by path. A probe with JSX lives in the run directory, because Bun resolves the JSX runtime it injects from the probe's own folder, which no import path can redirect. A probe that needs a DOM and runs without a preload that registers one, such as `tooling/config/bunTestSetup.ts`, calls `GlobalRegistrator.register()` from `@happy-dom/global-registrator` first and then loads React DOM and the code under test with `await import(...)`. Static imports run before any statement, so a probe that loads Plite before the DOM exists runs its layout effects as passive effects and proves nothing about them.
 
+A mutant that swaps a source module through a Bun runtime plugin in a `--preload` file changes nothing when an earlier preload already imported that module, such as `config/plite-source-test-setup.ts`. List the mutant's preload first, as `bun test --preload <mutant preload> --preload ../../config/plite-source-test-setup.ts <test file>`, and confirm the mutant run fails a case the mutant breaks before citing it.
+
 A probe or test that checks a collapsed caret's formatting reads `editor.read((state) => state.marks())`, because `state.selection()` returns the selection without its pending marks, so a probe that reads `state.selection()?.marks` sees none even when the editor holds them.
 
 A `plitejs` React probe runs under Vitest instead, from a config in the run directory that merges `packages/plitejs/vitest.config.mjs`. The config imports `vitest/config` by the absolute path that `readlink -f packages/plitejs/node_modules/vitest` prints, followed by `/dist/config.js`. It sets `test.dir` to its own directory and `include` to the probe files. Run it from `packages/plitejs` as `pnpm exec vitest run --config <config> --reporter=verbose --silent=false`. The jsdom variant reuses `test/react/vitest-setup.ts`. A claim about DOM behavior that jsdom does not implement, such as visibility, `inert`, `showModal()`, slot assignment, layout or scrolling, needs the Chromium variant. That variant adds `test.browser` with a headless `chromium` instance and `provider: playwright()`, imported from the `@vitest/browser-playwright` that `packages/test` resolves. It also sets `server.fs.allow` to the repository and `resolve.dedupe` to `react`, `react-dom` and `@testing-library/react`, and uses its own setup file, which calls `installBrowserHandle()` and runs `cleanup()` in a global `afterEach`.
+
+Vitest moves every `vi.mock` call to the top of its file before any import runs, even one written inside an `if`, a function or a test. So a probe that mocks a module on one arm, such as a planted defect behind an environment flag, mocks it on every arm. Give each arm its own probe file, or call `vi.doMock` and then load the module with `await import(...)`, because `vi.doMock` stays where it is written.
 
 Default to source-first typecheck. Do not build packages just to run types.
 `pnpm typecheck` runs `tooling/scripts/typecheck.mjs`. It runs one
@@ -432,6 +436,36 @@ worktree in place when a directory on that path resolves elsewhere, through a
 symlink the base tracks or the helper's own `node_modules` link. The helper
 does not guard git metadata: a `--with` under `.git`, in any letter case, can
 point the worktree's git commands at another checkout.
+
+## Open a DOCX in Word
+
+Checking that Word opens an exported `.docx`, with no repair prompt and the
+right header and footer on each page, is not a manual test. In Claude Code an
+agent drives it through Word for the web in the built-in browser. Render the
+file with LibreOffice first (`soffice --headless --convert-to pdf`) for a quick
+check, then:
+
+1. Open `https://onedrive.live.com/my` in the built-in browser. The owner's
+   Microsoft sign-in persists in its profile. When OneDrive shows a sign-in
+   page, ask the owner once to sign in in the pane.
+2. Upload without the file picker, which the pane cannot drive. In
+   `javascript_tool`, decode the file from base64, wrap it in a `File`, add it
+   to a `DataTransfer` and dispatch `dragenter`, `dragover` and `drop` on the
+   file list. A drop on a folder row uploads into that folder. When the
+   base64 runs past about 10,000 characters, gzip the file first, unpack it in
+   the page with `DecompressionStream('gzip')` and compare its SHA-256 with the
+   local file's.
+3. Clicking a file opens Word in a new tab, which the pane blocks. Replace
+   `window.open` with a function that records its URL, click the file again,
+   and navigate to the recorded `Doc.aspx` URL with `action=view`.
+4. Word takes about 15 seconds to render. Scroll page by page and read each
+   footer inside the page. The number outside the page's right edge is Word's
+   page marker, not the footer.
+5. Tell the owner which files the run left in their OneDrive.
+
+This proves Word for the web only, so the limits name desktop Word as
+unchecked. A Codex session, or an expired sign-in with no owner to renew it,
+falls back to `AGENTS.md`'s Manual tests rule.
 
 ## Local install recovery
 

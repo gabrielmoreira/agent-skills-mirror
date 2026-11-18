@@ -2,9 +2,16 @@
 
 Read before submission or when resuming, recovering or regenerating a job. Apply the [entry authorization](../SKILL.md#provider-preference-and-authorization) before any paid request.
 
-## Provider request conversion
+## Provider references
 
-Provider guides show request fields as `openmotion_media_use` JSON; that shape applies only to existing project-direct jobs. For a new submission, convert it to the asset Tool: drop `provider` and `projectId`, prefix the model as `<provider>:<model>` (for example `fal:fal-ai/flux/schnell`), keep `modality`, `mode`, `prompt` and `parameters`, and poll the asset Tool with only the original `jobId`. Call `action: "reference"` with the selected provider ID from `inspect` and read only that provider's guide ([Atlas Cloud](../../openmotion-production/references/media-providers/atlascloud.md), [fal.ai](../../openmotion-production/references/media-providers/fal.md), [WaveSpeedAI](../../openmotion-production/references/media-providers/wavespeed.md), [OpenDesign Cloud](../../openmotion-production/references/media-providers/opendesign.md), [OpenDesign account](../../openmotion-production/references/media-providers/account.md) or [registered compatible APIs](../../openmotion-production/references/media-providers/compatible.md)) for endpoint rules, supported modes and parameter schemas.
+Call `action: "reference"` with the selected provider ID from `inspect`, or open that provider's guide below, and read only that guide for endpoint rules, supported modes and parameter schemas. Its request templates are `openmotion_assets_use` arguments; an existing project-direct job keeps its original route (step 5 below).
+
+- [fal.ai](providers/fal.md)
+- [Atlas Cloud](providers/atlascloud.md)
+- [WaveSpeedAI](providers/wavespeed.md)
+- [OpenDesign Cloud](providers/opendesign.md)
+- [OpenDesign account](providers/account.md)
+- [Registered compatible APIs](providers/compatible.md)
 
 ## Generate library assets and track the original job
 
@@ -20,4 +27,8 @@ Classify failures from the actual status, error code and stage before deciding t
 - **Provider key or permission rejection (`401` / `403`) vs upstream vendor auth (`upstream_provider_unauthenticated`)**: distinguish an invalid/unauthorized workspace or provider key from an upstream model vendor authentication issue behind a gateway.
 - **Unexposed route vs missing resource (`404`)**: distinguish a gateway origin where `/api/v1/media/*` is not deployed on that environment from an unknown model slug or expired remote task ID.
 - **Timeouts and interrupted polling**: distinguish submit timeout, status-poll timeout and media-download timeout. After an unknown outcome, query `action: "status"` on the original `jobId` (or replay the exact `requestId` with identical inputs) before proposing any new billable submission. Changing prompt, model or parameters requires a new `requestId`.
-- **Tell the user the next step in plain language**: a `401` / `403` marks the saved key rejected, so ask them to replace it in **Model providers** / **模型供应商**; an error whose text names balance, credit, quota or insufficient funds means topping up in that provider's own console; for any other failure, relay the provider's message briefly without guessing a cause. Keep assets that already finished and offer the same choices as for a missing kind for the failed part.
+- **Tell the user the next step in plain language**: for third-party BYOK, a credential-rejection `401` / `403` marks the saved key rejected, so ask them to replace it in **Model providers** / **模型供应商**; an error whose text names balance, credit, quota or insufficient funds means topping up in that provider's own console; for any other failure, relay the provider's message briefly without guessing a cause. Keep assets that already finished and offer the same choices as for a missing kind for the failed part.
+
+## OpenDesign account recovery
+
+For OpenDesign account failures, match the actual returned message as well as any exposed error code. “Your OpenDesign plan does not include this model” means review **Subscription & usage → Manage subscription** (**订阅与用量 → 管理订阅**) and upgrade Free/Go to **OpenDesign Plus or above**; an already eligible plan may still need another entitled model. “Your OpenDesign balance is too low” means check applicable credits and top-up options or manage the subscription, not automatically upgrade the tier. Other BYOK providers use their own console for top-ups. After setup confirmation, inspect again and continue the original request; inspect the original job before considering any new paid submission.

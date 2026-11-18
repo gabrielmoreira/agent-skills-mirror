@@ -14,7 +14,7 @@
 
 ## Present the latest preview without switching chats
 
-Before the first content write and after the saved batch, apply the [continuing-edit preview rules](native.md#continuing-edits). Reuse the same project/native tab; show it when the calling chat is active, otherwise queue it until the user returns. Confirm the latest version and live content before recording display evidence. Only an explicit show-now request permits switching back for this turn. Explicit background requests take precedence.
+Before the first content write and after the saved batch, apply the [continuing-edit preview rules](native.md#continuing-edits). Confirm the latest version and live content before recording display evidence. Only an explicit show-now request permits switching back for this turn. Explicit background requests take precedence.
 
 ## 基于当前工程修改
 

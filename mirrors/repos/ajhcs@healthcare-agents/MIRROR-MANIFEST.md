@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 121 file(s) materialized.
+Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 137 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 121 |
+| Files         | 137 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -166,20 +166,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 105 | ✓ | [`skills/healthcare-agents/references/roles/strategy-operations-consultant.md`](skills/healthcare-agents/references/roles/strategy-operations-consultant.md) |
 | 106 | ✓ | [`skills/healthcare-agents/references/roles/strategy-structural-improvement-consultant.md`](skills/healthcare-agents/references/roles/strategy-structural-improvement-consultant.md) |
 | 107 | ✓ | [`skills/healthcare-agents/references/workflow-index.json`](skills/healthcare-agents/references/workflow-index.json) |
-| 108 | ✓ | [`skills/healthcare-agents/SKILL.md`](skills/healthcare-agents/SKILL.md) |
-| 109 | ✓ | [`skills/healthcare-ambulatory-access-backlog/references/workflow.json`](skills/healthcare-ambulatory-access-backlog/references/workflow.json) |
-| 110 | ✓ | [`skills/healthcare-ambulatory-access-backlog/SKILL.md`](skills/healthcare-ambulatory-access-backlog/SKILL.md) |
-| 111 | ✓ | [`skills/healthcare-denial-spike-workup/references/workflow.json`](skills/healthcare-denial-spike-workup/references/workflow.json) |
-| 112 | ✓ | [`skills/healthcare-denial-spike-workup/SKILL.md`](skills/healthcare-denial-spike-workup/SKILL.md) |
-| 113 | ✓ | [`skills/healthcare-discharge-barrier-workplan/references/workflow.json`](skills/healthcare-discharge-barrier-workplan/references/workflow.json) |
-| 114 | ✓ | [`skills/healthcare-discharge-barrier-workplan/SKILL.md`](skills/healthcare-discharge-barrier-workplan/SKILL.md) |
-| 115 | ✓ | [`skills/healthcare-payer-contract-underpayment-review/references/workflow.json`](skills/healthcare-payer-contract-underpayment-review/references/workflow.json) |
-| 116 | ✓ | [`skills/healthcare-payer-contract-underpayment-review/SKILL.md`](skills/healthcare-payer-contract-underpayment-review/SKILL.md) |
-| 117 | ✓ | [`skills/healthcare-prior-authorization-appeal-workup/references/workflow.json`](skills/healthcare-prior-authorization-appeal-workup/references/workflow.json) |
-| 118 | ✓ | [`skills/healthcare-prior-authorization-appeal-workup/SKILL.md`](skills/healthcare-prior-authorization-appeal-workup/SKILL.md) |
-| 119 | ✓ | [`skills/healthcare-survey-readiness-gap-review/references/workflow.json`](skills/healthcare-survey-readiness-gap-review/references/workflow.json) |
-| 120 | ✓ | [`skills/healthcare-survey-readiness-gap-review/SKILL.md`](skills/healthcare-survey-readiness-gap-review/SKILL.md) |
-| 121 | ✓ | [`skills/healthcare-workflow-builder/SKILL.md`](skills/healthcare-workflow-builder/SKILL.md) |
+| 108 | ✓ | [`skills/healthcare-agents/references/workflows/ambulatory-access-backlog.json`](skills/healthcare-agents/references/workflows/ambulatory-access-backlog.json) |
+| 109 | ✓ | [`skills/healthcare-agents/references/workflows/clean-claim-rate-decline.json`](skills/healthcare-agents/references/workflows/clean-claim-rate-decline.json) |
+| 110 | ✓ | [`skills/healthcare-agents/references/workflows/clinical-dashboard-specification.json`](skills/healthcare-agents/references/workflows/clinical-dashboard-specification.json) |
+| 111 | ✓ | [`skills/healthcare-agents/references/workflows/denial-spike-workup.json`](skills/healthcare-agents/references/workflows/denial-spike-workup.json) |
+| 112 | ✓ | [`skills/healthcare-agents/references/workflows/discharge-barrier-workplan.json`](skills/healthcare-agents/references/workflows/discharge-barrier-workplan.json) |
+| 113 | ✓ | [`skills/healthcare-agents/references/workflows/ed-boarding-capacity-workup.json`](skills/healthcare-agents/references/workflows/ed-boarding-capacity-workup.json) |
+| 114 | ✓ | [`skills/healthcare-agents/references/workflows/emergency-preparedness-exercise-readiness.json`](skills/healthcare-agents/references/workflows/emergency-preparedness-exercise-readiness.json) |
+| 115 | ✓ | [`skills/healthcare-agents/references/workflows/hedis-stars-gap-closure-sprint.json`](skills/healthcare-agents/references/workflows/hedis-stars-gap-closure-sprint.json) |
+| 116 | ✓ | [`skills/healthcare-agents/references/workflows/hipaa-security-evidence-checklist.json`](skills/healthcare-agents/references/workflows/hipaa-security-evidence-checklist.json) |
+| 117 | ✓ | [`skills/healthcare-agents/references/workflows/hl7-fhir-interface-incident.json`](skills/healthcare-agents/references/workflows/hl7-fhir-interface-incident.json) |
+| 118 | ✓ | [`skills/healthcare-agents/references/workflows/patient-safety-rca2-workup.json`](skills/healthcare-agents/references/workflows/patient-safety-rca2-workup.json) |
+| 119 | ✓ | [`skills/healthcare-agents/references/workflows/payer-contract-underpayment-review.json`](skills/healthcare-agents/references/workflows/payer-contract-underpayment-review.json) |
+| 120 | ✓ | [`skills/healthcare-agents/references/workflows/pharmacy-contract-scorecard.json`](skills/healthcare-agents/references/workflows/pharmacy-contract-scorecard.json) |
+| 121 | ✓ | [`skills/healthcare-agents/references/workflows/prior-authorization-appeal-workup.json`](skills/healthcare-agents/references/workflows/prior-authorization-appeal-workup.json) |
+| 122 | ✓ | [`skills/healthcare-agents/references/workflows/survey-readiness-gap-review.json`](skills/healthcare-agents/references/workflows/survey-readiness-gap-review.json) |
+| 123 | ✓ | [`skills/healthcare-agents/references/workflows/value-based-care-downside-risk-readiness.json`](skills/healthcare-agents/references/workflows/value-based-care-downside-risk-readiness.json) |
+| 124 | ✓ | [`skills/healthcare-agents/SKILL.md`](skills/healthcare-agents/SKILL.md) |
+| 125 | ✓ | [`skills/healthcare-ambulatory-access-backlog/references/workflow.json`](skills/healthcare-ambulatory-access-backlog/references/workflow.json) |
+| 126 | ✓ | [`skills/healthcare-ambulatory-access-backlog/SKILL.md`](skills/healthcare-ambulatory-access-backlog/SKILL.md) |
+| 127 | ✓ | [`skills/healthcare-denial-spike-workup/references/workflow.json`](skills/healthcare-denial-spike-workup/references/workflow.json) |
+| 128 | ✓ | [`skills/healthcare-denial-spike-workup/SKILL.md`](skills/healthcare-denial-spike-workup/SKILL.md) |
+| 129 | ✓ | [`skills/healthcare-discharge-barrier-workplan/references/workflow.json`](skills/healthcare-discharge-barrier-workplan/references/workflow.json) |
+| 130 | ✓ | [`skills/healthcare-discharge-barrier-workplan/SKILL.md`](skills/healthcare-discharge-barrier-workplan/SKILL.md) |
+| 131 | ✓ | [`skills/healthcare-payer-contract-underpayment-review/references/workflow.json`](skills/healthcare-payer-contract-underpayment-review/references/workflow.json) |
+| 132 | ✓ | [`skills/healthcare-payer-contract-underpayment-review/SKILL.md`](skills/healthcare-payer-contract-underpayment-review/SKILL.md) |
+| 133 | ✓ | [`skills/healthcare-prior-authorization-appeal-workup/references/workflow.json`](skills/healthcare-prior-authorization-appeal-workup/references/workflow.json) |
+| 134 | ✓ | [`skills/healthcare-prior-authorization-appeal-workup/SKILL.md`](skills/healthcare-prior-authorization-appeal-workup/SKILL.md) |
+| 135 | ✓ | [`skills/healthcare-survey-readiness-gap-review/references/workflow.json`](skills/healthcare-survey-readiness-gap-review/references/workflow.json) |
+| 136 | ✓ | [`skills/healthcare-survey-readiness-gap-review/SKILL.md`](skills/healthcare-survey-readiness-gap-review/SKILL.md) |
+| 137 | ✓ | [`skills/healthcare-workflow-builder/SKILL.md`](skills/healthcare-workflow-builder/SKILL.md) |
 
 ---
 

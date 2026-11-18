@@ -34,6 +34,7 @@ If the host runs multiple instances, prepend `COLLIE_INSTANCE=<name>` to every v
 | **Multiplexers** | `collie mux list` · `collie mux list --json` | Every multiplexer this build can drive, which of them this machine has, which Collie instance drives each, and the command that starts one nobody drives ([which multiplexers this machine has](multiplexers.md#which-multiplexers-this-machine-has)) |
 | **WalkyTalky** | `collie walky who` · `collie walky send <address> <text>` · `collie walky reply <id> <text>` · `collie walky inbox` · `collie walky status <id>` · `collie walky off` · `collie walky on` | Message an agent session from a terminal, or from one agent to another ([WalkyTalky](walky-talky.md)) |
 | **Hill** | `collie hill post --title <t> --summary <s> --option <intent>=<label> [--image <path>[=<caption>]] ...` · `collie hill status <id>` · `collie hill withdraw <id>` · `collie hill list` · `collie hill clear` · `collie hill on\|off` | An agent puts one decision on the hill for you to answer, then follows it up. Up to four images (PNG, JPEG or WebP, 2 MB each) ride along by path; the bridge reads each file itself. The answer comes back as a WalkyTalky message. `collie hill post --help` prints every flag and the rules (M96). `collie hill off` switches the Hill off on this Collie, the same switch as Settings → Alerts → The Hill; `on` switches it back. On a crew member the post goes to the lead's Hill; exit 5 means the lead did not answer, and the same `--request-id` posts once; `collie hill clear` removes every closed decision and prints how many went, open ones stay, and the Answered group on the Hill page has the same Clear button with a second tap to confirm ([The Hill](hill.md), [Decisions from any machine](crew.md#decisions-from-any-machine)) |
+| **Local API** | `collie api` · `collie api <operation>` | Experimental: the local, read-only API a trick reads with `t.api`. It answers a trick's own run in this release, so `collie api <operation>` prints one line and reads nothing. `collie api` alone lists the operations and their flags ([The local API](#the-local-api-experimental)) |
 | **Tricks** | `collie trick list` · `collie trick add [<name> \| <https-url>[//<folder>][#<ref>]]` · `collie trick update <id>` · `collie trick remove <id>` · `collie trick on <id>` · `collie trick off <id>` · `collie trick auto <id> on\|off` · `collie trick init [--sh] [--dir <folder>] <id>` · `collie trick dev <folder\|id>` · `collie trick check [--run] [--json] <folder>` · `collie trick helper <id\|folder>` · `collie trick skill [<id>]` | Add a trick from a git repository, switch it on or off, and write one. A trick is a small program that adds parts to Collie. `add` with no source lists the official repository and adds nothing, and a trick stays off until `on`, which is your yes to its code and refuses in an agent's pane. `dev` runs a trick once and prints what the phone would draw, and `check` lists what its code does ([Tricks](tricks.md), [Write a trick](tricks-authoring.md)) |
 | **Theme check** | `collie theme check <file>...` · `collie theme check --json <file>...` | Check theme files with the app's own parser before you share them: one line per refusal and per contrast warning, the words Settings shows. Exits 0 when every file passes, 1 when one is refused, 2 on a usage error. `--shipped` accepts the id of a shipped theme. Reads only the files you name ([Check a theme before you share it](themes.md#check-a-theme-before-you-share-it)) |
 | **Theme brief** | `collie theme skill` · `collie theme --skill` | Print the brief for an AI agent that writes a theme: the steps, with `collie theme check`, and the sections of [Themes](themes.md) that list every key and word a theme file may use |
@@ -149,6 +150,112 @@ group the members under that machine's name, one line per instance.
 `unreachable`, `incompatible`, `unenrolled`, or `not-probed` under `--no-probe`. The list of what
 `tailscale serve` publishes left `collie status` in 1.25.0. Run `collie serve status` for it, or
 `collie status --verbose`.
+
+## The local API (experimental)
+
+A trick's run can list your agent sessions, read a screen and follow events, over a Unix socket, while tricks are switched on.
+
+```
+collie api
+```
+
+`collie api` alone lists the operations and their flags. In this release the local API answers a
+trick's own run and nothing else. Run by hand, `collie api <operation>` reads nothing, prints this
+one line and exits 3:
+
+```
+The local API answers a trick's own run in this release. A trick reads it with t.api.
+```
+
+A trick reads it with `t.api`, at the `access` it declares
+([Reading Collie through the local API](tricks-reference.md#reading-collie-through-the-local-api)).
+A reader for your own scripts comes later, with a key you make on purpose.
+
+| Operation | Flags | Trick level | What it answers |
+| --- | --- | --- | --- |
+| `hello` | `--token` | `see` | The first request on every connection, with the run's token. The API version, the Collie version, `experimental: true` and the operations offered at the token's level |
+| `sessions` | none | `see` | One row per agent session of this machine: `id`, `machine`, `agent`, `label`, `folder` (the folder name, never the path), `state`, `account` (a label) and `rev` |
+| `brief` | `--session` | `see` | One session's `state`, whether an ask is open, when its last turn ended and whether a draft is in its input box. No text |
+| `read` | `--session`, `--lines` | `read` | One session's screen as plain text, secrets masked and the length capped, with `truncated` |
+| `accounts` | none | `see` | Each agent account's `id`, `agent`, `label`, `kind`, `signedIn` and `running`. No email, plan or path |
+| `hill.list` | none | `see` | The open decisions on the Hill: `id`, `machine`, `sender`, `title`, `urgency` and `date`. No body |
+| `machines` | none | `see` | One row per machine of the Machines page, the lead first: `id`, `label` (a short name, never a full host name or an address), `reachable`, `version` and `load` (`cpu`, `memory`, `sessions`). No address, key or path |
+| `events` | `--after`, `--wait` | `see` | Up to 256 events after a cursor, and `next`, the cursor to ask from next. `--wait` holds the request for up to 25 seconds when there is no event |
+
+> **Experimental.** The names, the fields and the exit codes of the local API may change in a
+> later minor release. Treat the output as something to read today, not as a contract.
+
+**It is on while tricks are switched on.** The local API is on while tricks are switched on, on a
+machine where tricks run (not on a crew member that only follows its lead). When tricks go off,
+the bridge removes the socket and ends every open wait. Windows has no such socket.
+
+**It answers a trick's own run.** When Collie starts a run of a trick that declares `access`, it
+makes a random token for that run and puts it in the run's facts, beside the socket's path. Every
+connection opens with `hello` and that token, within 2 seconds. With no token, an unknown one, a
+dead one or no `hello` in time, the socket answers one error, `api.no_run_token`, and closes. The token dies when the run ends, when the
+trick or tricks are switched off, and when the bridge stops. It is never in the environment, on a
+command line, on disk or in a log line. The level the trick declares is the token's level, and the
+bridge checks it: a `see` token is refused `read` with `api.denied`.
+
+**What it is, in honest words.** The token keeps a program that only finds the socket out of this
+socket, and that is all it does. A program that runs as you can still read your sessions in other
+ways. It can read a pane through the multiplexer itself. It can read another program's memory, a
+trick's token included.
+
+It can also read Collie's local secret, the file `local-secret` in the Collie state directory. With
+that secret it reaches only five reads on the bridge's loopback address, and none of them returns a
+screen or a message. Collie does not stop the other ways. The socket is `api/sock` in
+the Collie state directory, mode 0600 inside a folder of mode 0700. It is closed to other users, to
+other machines and to pages in a browser, because it is a Unix socket and not a web address.
+
+**It only reads.** It cannot type, answer an ask or change anything. Apart from `read`, which
+returns the screen, an answer holds names and states and never a message or a decision's body.
+One field holds text an agent wrote: the `title` of a card in `hill.list`, cut to 120 characters.
+`read` masks secrets in the screen text, and the mask is best effort. It finds the secret shapes
+Collie knows, and a secret in another shape passes through.
+
+**Events are at least once.** Each machine has its own events, and there is no order across
+sessions. A program that resumes from an older cursor gets some events again, so it must be safe
+against a repeat: key on the event `id`. An event carries ids and states only, never text. The
+types are `session.status` (with `data.state`), `turn.end` and `ask.open`.
+
+Leave out `--after` to start at now. The bridge keeps the last 2048 events, up to one hour old, and
+two markers say when a program has missed some:
+
+- `gap` means the cursor is older than the events kept. Events were lost between them, so read
+  the state again with `sessions`.
+- `reset` means the cursor is from before the bridge last started, or is not a cursor. The
+  sessions may have moved, so read the state again with `sessions`.
+
+Either marker is followed by every event kept. One answer holds at most 256 events, so ask again
+from `next` until it holds fewer.
+
+**Session ids are opaque.** Copy an id from `sessions`, and never build one from a pane id. An
+id that names a session that has ended is refused with `api.session_unknown`. An id whose pane now
+holds another session is refused with `api.session_replaced`, once Collie has seen the pane gone.
+A multiplexer can reuse a pane id inside about 30 seconds, and until then the old id can still
+answer for the new session.
+
+The limits keep one program from crowding out the phone:
+
+| Limit | Value |
+| --- | --- |
+| Open `events` waits | 4 per connection, 16 in all |
+| Requests in flight on one connection | 8 |
+| Screen reads at once | 4, then `api.busy` with a retry hint |
+| Connections open | 32 |
+| One answer | 1 MiB; a larger one is `api.answer_too_large` |
+
+`collie api` exits with these codes:
+
+| Code | Meaning |
+| --- | --- |
+| 0 | `collie api` alone, or with `--help`: the list of operations |
+| 2 | The operation is not one of the list. Nothing was read |
+| 3 | Any operation of the list: the one line. Nothing was read |
+
+[ADR 0152](../.adr/0152-one-event-bus-and-a-local-read-only-api-that-exists-where-a-trick-runs.md)
+and [ADR 0155](../.adr/0155-the-local-api-answers-a-run-token.md) hold the reasons. A trick reacts to the same events with `on` ([Tricks](tricks.md)).
 
 ## Put `collie` on your PATH
 

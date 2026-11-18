@@ -1,6 +1,6 @@
 ---
 name: add-byok-provider
-description: Add or maintain a built-in BYOK media provider in the OpenMotion repository, including official API research, credentials, model discovery, generation adapters, editor configuration, provider references and verification. Use for contributor requests to integrate a supplier; ordinary media generation uses the existing production guidance.
+description: Add or maintain a built-in BYOK media provider in the OpenMotion repository, including official API research, credentials, model discovery, generation adapters, editor configuration, provider references and verification. Use for contributor requests to integrate a supplier; ordinary media generation uses the openmotion-media Skill.
 ---
 
 # Add a BYOK provider
@@ -32,8 +32,8 @@ Inspect these boundaries and update the ones the provider needs:
 | Model discovery | `gateway/catalog.ts`, `gateway/service.ts`, optionally `gateway/providers.ts` | Query the documented catalogue with the correct authentication. Normalize only supported media outputs; preserve pagination, caching and unavailable-catalogue warnings. Built-in fallback entries are optional examples, not a replacement for live discovery. |
 | Generation | `gateway/providers.ts`, or a focused provider module | Implement `ProviderAdapter.generate` and register it in `providerAdapters`. Reuse persisted jobs, progress/remoteId, validation, downloads and project import. |
 | Editor configuration | `gateway/settings.ts`, `studio/src/motion/ModelSettings.tsx` | Settings consumes registry metadata, including setup/reference links and endpoint editability. Reuse catalogue sync, capability filtering and the common default-model storage entry. Keep account authorization separate from provider API keys. Distinguish listed presets from implemented execution protocols. |
-| Reference delivery | `shared/workflow.ts`, `server.ts`, `gateway/media-use.ts` | Register the provider document under production resources and include its HTTP reference route. Confirm inspect/reference/models accept and return the new ID. |
-| User guidance | `skills/openmotion-production/references/media-providers/`, `references/materials.md` in that production Skill, relevant `docs/` | Maintain one provider reference, linked from shared material guidance and available through the Tool. |
+| Reference delivery | `shared/workflow.ts`, `server.ts`, `gateway/media-use.ts` | Register the provider document under media resources, plus the matching production alias kept for older clients, and include its HTTP reference route. Confirm inspect/reference/models accept and return the new ID. |
+| User guidance | `skills/openmotion-media/references/providers/`, `references/jobs.md` in that media Skill, relevant `docs/` | Maintain one provider reference, listed in the media job procedure and available through the Tool. |
 
 The public Tool already covers inspect/reference/models/generate/status/cancel. Reuse those actions; a supplier does not need its own MCP Tool or distributable Skill. Preserve the existing production routes and intentional UI visibility decisions. Tool and Skill lists come from their actual registries; do not introduce fixed quantity gates.
 
@@ -47,11 +47,11 @@ The public Tool already covers inspect/reference/models/generate/status/cancel. 
 
 ## Write the provider reference
 
-Create `skills/openmotion-production/references/media-providers/<provider-id>.md` and register it in the production workflow. Read one existing document, such as [Atlas](../../../skills/openmotion-production/references/media-providers/atlascloud.md), for the maintained shape; do not duplicate its supplier-specific facts.
+Create `skills/openmotion-media/references/providers/<provider-id>.md` and register it as described above. Read one existing document, such as [Atlas](../../../skills/openmotion-media/references/providers/atlascloud.md), for the maintained shape; do not duplicate its supplier-specific facts.
 
-Include key setup, authentication and model-list queries; Tool JSON templates for each supported modality; their exact HTTP endpoint/body mapping; polling/result retrieval; representative error codes with meaning, next action and retry boundaries; official source/model links and known integration limits. Distinguish Tool arguments from wire JSON, local job IDs from remote task IDs, and HTTP status from application/task codes. Mark unspecified behavior as unknown.
+Include key setup, authentication and model-list queries; `openmotion_assets_use` JSON templates for each supported modality; their exact HTTP endpoint/body mapping; polling/result retrieval; representative error codes with meaning, next action and retry boundaries; official source/model links and known integration limits. Distinguish Tool arguments from wire JSON, local job IDs from remote task IDs, and HTTP status from application/task codes. Mark unspecified behavior as unknown.
 
-Keep real keys and internal/private source material out of the document. Show environment placeholders in wire examples, and direct Agents through `openmotion_media_use` so the service owns credentials. Templates do not execute paid requests by themselves. Do not add this contributor Skill to `packagedSkills`, workflow resources or host installation lists.
+Keep real keys and internal/private source material out of the document. Put shell wire examples in this Skill's [wire examples](references/wire-examples.md), not in the product reference, using environment placeholders only. Direct Agents through the Tools so the service owns credentials. Templates do not execute paid requests by themselves. Do not add this contributor Skill to `packagedSkills`, workflow resources or host installation lists.
 
 ## Verify and hand over
 

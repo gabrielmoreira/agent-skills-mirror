@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/elephant-goldfish-model` — 26 default patterns, 1 followed patterns, 53 file(s) materialized.
+Mirror of `google/elephant-goldfish-model` — 26 default patterns, 1 followed patterns, 58 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/elephant-goldfish-model` — 26 default patterns, 1 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 53 |
+| Files         | 58 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,22 +96,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`skills/egm-drift-report/SKILL.md`](skills/egm-drift-report/SKILL.md) |
 | 36 | ✓ | [`skills/egm-drift-report/test_scenarios.yaml`](skills/egm-drift-report/test_scenarios.yaml) |
 | 37 | ✓ | [`skills/egm-drift-report/TEST.md`](skills/egm-drift-report/TEST.md) |
-| 38 | ✓ | [`skills/egm-resolve/agents/openai.yaml`](skills/egm-resolve/agents/openai.yaml) |
-| 39 | ✓ | [`skills/egm-resolve/assets/icon.svg`](skills/egm-resolve/assets/icon.svg) |
-| 40 | ✓ | [`skills/egm-resolve/SKILL.md`](skills/egm-resolve/SKILL.md) |
-| 41 | ✓ | [`skills/egm-resolve/test_scenarios.yaml`](skills/egm-resolve/test_scenarios.yaml) |
-| 42 | ✓ | [`skills/egm-resolve/TEST.md`](skills/egm-resolve/TEST.md) |
-| 43 | ✓ | [`skills/egm-review-loop/agents/openai.yaml`](skills/egm-review-loop/agents/openai.yaml) |
-| 44 | ✓ | [`skills/egm-review-loop/assets/icon.svg`](skills/egm-review-loop/assets/icon.svg) |
-| 45 | ✓ | [`skills/egm-review-loop/SKILL.md`](skills/egm-review-loop/SKILL.md) |
-| 46 | ✓ | [`skills/egm-review-loop/test_scenarios.yaml`](skills/egm-review-loop/test_scenarios.yaml) |
-| 47 | ✓ | [`skills/egm-review-loop/TEST.md`](skills/egm-review-loop/TEST.md) |
-| 48 | ✓ | [`skills/egm-review/agents/openai.yaml`](skills/egm-review/agents/openai.yaml) |
-| 49 | ✓ | [`skills/egm-review/assets/icon.svg`](skills/egm-review/assets/icon.svg) |
-| 50 | ✓ | [`skills/egm-review/SKILL.md`](skills/egm-review/SKILL.md) |
-| 51 | ✓ | [`skills/egm-review/test_scenarios.yaml`](skills/egm-review/test_scenarios.yaml) |
-| 52 | ✓ | [`skills/egm-review/TEST.md`](skills/egm-review/TEST.md) |
-| 53 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 38 | ✓ | [`skills/egm-lite/agents/openai.yaml`](skills/egm-lite/agents/openai.yaml) |
+| 39 | ✓ | [`skills/egm-lite/assets/icon.svg`](skills/egm-lite/assets/icon.svg) |
+| 40 | ✓ | [`skills/egm-lite/SKILL.md`](skills/egm-lite/SKILL.md) |
+| 41 | ✓ | [`skills/egm-lite/test_scenarios.yaml`](skills/egm-lite/test_scenarios.yaml) |
+| 42 | ✓ | [`skills/egm-lite/TEST.md`](skills/egm-lite/TEST.md) |
+| 43 | ✓ | [`skills/egm-resolve/agents/openai.yaml`](skills/egm-resolve/agents/openai.yaml) |
+| 44 | ✓ | [`skills/egm-resolve/assets/icon.svg`](skills/egm-resolve/assets/icon.svg) |
+| 45 | ✓ | [`skills/egm-resolve/SKILL.md`](skills/egm-resolve/SKILL.md) |
+| 46 | ✓ | [`skills/egm-resolve/test_scenarios.yaml`](skills/egm-resolve/test_scenarios.yaml) |
+| 47 | ✓ | [`skills/egm-resolve/TEST.md`](skills/egm-resolve/TEST.md) |
+| 48 | ✓ | [`skills/egm-review-loop/agents/openai.yaml`](skills/egm-review-loop/agents/openai.yaml) |
+| 49 | ✓ | [`skills/egm-review-loop/assets/icon.svg`](skills/egm-review-loop/assets/icon.svg) |
+| 50 | ✓ | [`skills/egm-review-loop/SKILL.md`](skills/egm-review-loop/SKILL.md) |
+| 51 | ✓ | [`skills/egm-review-loop/test_scenarios.yaml`](skills/egm-review-loop/test_scenarios.yaml) |
+| 52 | ✓ | [`skills/egm-review-loop/TEST.md`](skills/egm-review-loop/TEST.md) |
+| 53 | ✓ | [`skills/egm-review/agents/openai.yaml`](skills/egm-review/agents/openai.yaml) |
+| 54 | ✓ | [`skills/egm-review/assets/icon.svg`](skills/egm-review/assets/icon.svg) |
+| 55 | ✓ | [`skills/egm-review/SKILL.md`](skills/egm-review/SKILL.md) |
+| 56 | ✓ | [`skills/egm-review/test_scenarios.yaml`](skills/egm-review/test_scenarios.yaml) |
+| 57 | ✓ | [`skills/egm-review/TEST.md`](skills/egm-review/TEST.md) |
+| 58 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
 
 ---
 

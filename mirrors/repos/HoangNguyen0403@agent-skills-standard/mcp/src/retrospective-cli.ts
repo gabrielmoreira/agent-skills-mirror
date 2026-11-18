@@ -25,6 +25,8 @@ import {
 } from "./retrospective/consent";
 import { RetrospectiveError } from "./retrospective/errors";
 import { StoreError } from "./retrospective/store";
+import { runRetrospective } from "./retrospective/run";
+import { SessionTracker } from "./services/SessionTracker";
 import { lstatOrNull } from "./retrospective/platform-private";
 import {
   collectIndex,
@@ -45,18 +47,20 @@ export const USAGE = [
   "agent-skills-standard-mcp retrospective — local session retrospective (no model calls, no outbound requests).",
   "",
   "Usage:",
-  "  agent-skills-standard-mcp retrospective enable [--store-root <absolute>] [--source-root <absolute>]...",
+  "  agent-skills-standard-mcp retrospective enable [--store-root <absolute>] [--source-root <absolute>]... [--agent-record-root <absolute>]... [--no-agent-records]",
   "    --source-root is repeatable and replaces the default scanned roots",
-  "    (~/.omp/agent/sessions, ~/.codex/sessions). The prompt lists exactly which",
-  "    roots will be read, then separately discloses any local Claude Code or",
-  "    Gemini transcript folder by presence only (never read, enumerated, or",
-  "    consented, and not evidence that the provider is running). A --source-root",
-  "    that is, contains, or lies inside one of those folders is refused;",
-  "    discovered default roots get the same lexical and symlink-resolved check",
-  "    (path metadata only; no transcript content is read by that check). A path",
-  "    that cannot be resolved refuses with SOURCE_ROOT_CANONICALIZATION_FAILED.",
+  "    --agent-record-root is repeatable; without it, ~/.paseo/agents is proposed",
+  "    only when it is already a real directory. --no-agent-records opts out.",
+  "    The prompt lists exactly which roots will be read, then separately",
+  "    discloses any local Claude Code or Gemini transcript folder by presence",
+  "    only (never read, enumerated, or consented).",
   "  agent-skills-standard-mcp retrospective disable",
   "  agent-skills-standard-mcp retrospective index [--since YYYY-MM-DD] [--until YYYY-MM-DD] [--folder NAME]",
+  "  agent-skills-standard-mcp retrospective prepare --manifest <absolute>",
+  "    Reads exactly the declared manifest nodes that resolve inside a consented",
+  "    source root, then publishes a local summary, ledger and HTML report. A",
+  "    declared actor that is missing, restricted or unavailable stays a visible",
+  "    coverage gap. A manifest path outside the consented roots is refused.",
   "  agent-skills-standard-mcp retrospective consent-status",
   "",
   "Invoking `ags retrospective <cmd>` runs the same commands through the CLI.",
@@ -68,22 +72,26 @@ export const USAGE = [
   "2 usage error.",
 ].join("\n");
 
-type Command = "enable" | "disable" | "consent-status" | "index";
+type Command = "enable" | "disable" | "consent-status" | "index" | "prepare";
 
 const COMMANDS: readonly Command[] = [
   "enable",
   "disable",
   "consent-status",
   "index",
+  "prepare",
 ];
 
 const OPTIONS = {
   help: { type: "boolean", short: "h" },
   "store-root": { type: "string" },
   "source-root": { type: "string", multiple: true },
+  "agent-record-root": { type: "string", multiple: true },
+  "no-agent-records": { type: "boolean" },
   since: { type: "string" },
   until: { type: "string" },
   folder: { type: "string" },
+  manifest: { type: "string" },
 } as const;
 
 type ValueKey = keyof typeof OPTIONS;
@@ -91,10 +99,17 @@ type Values = { [K in ValueKey]?: string | boolean | string[] };
 
 /** A flag is accepted only by the command that documents it. */
 const ALLOWED: Record<Command, readonly ValueKey[]> = {
-  enable: ["store-root", "source-root", "help"],
+  enable: [
+    "store-root",
+    "source-root",
+    "agent-record-root",
+    "no-agent-records",
+    "help",
+  ],
   disable: ["help"],
   "consent-status": ["help"],
   index: ["since", "until", "folder", "help"],
+  prepare: ["manifest", "help"],
 };
 
 type TranscriptStoreCandidate = {
@@ -313,6 +328,99 @@ async function resolveAllowedSourceRoots(
   return roots;
 }
 
+async function resolveAllowedAgentRecordRoots(
+  values: Values,
+  home: string,
+  storeRoot: string,
+  sourceRoots: readonly string[],
+  platform: NodeJS.Platform,
+): Promise<string[]> {
+  const explicit = values["agent-record-root"];
+  const optedOut = values["no-agent-records"] === true;
+  if (optedOut && explicit !== undefined) {
+    throw new UsageError(
+      "--no-agent-records cannot be combined with --agent-record-root.",
+    );
+  }
+  if (optedOut) return [];
+
+  let candidates: string[];
+  if (explicit !== undefined) {
+    if (!Array.isArray(explicit) || explicit.length === 0) {
+      throw new UsageError("--agent-record-root requires at least one path.");
+    }
+    candidates = explicit;
+  } else {
+    const defaultRoot = path.normalize(path.join(home, ".paseo", "agents"));
+    const stats = await lstatOrNull(defaultRoot);
+    candidates =
+      stats?.isDirectory() === true && !stats.isSymbolicLink()
+        ? [defaultRoot]
+        : [];
+  }
+
+  const roots: string[] = [];
+  const canonicalRoots: string[] = [];
+  for (const root of candidates) {
+    if (typeof root !== "string" || !path.isAbsolute(root)) {
+      throw new UsageError("--agent-record-root must be an absolute path.");
+    }
+    const normalized = path.normalize(root);
+    const stats = await lstatOrNull(normalized);
+    if (!stats?.isDirectory() || stats.isSymbolicLink()) {
+      throw new UsageError("Agent-record root must be a real directory.");
+    }
+    const canonical = await canonicalOrSelf(normalized);
+    if (roots.includes(canonical) || canonicalRoots.includes(canonical)) {
+      throw new UsageError("Agent-record roots must be unique.");
+    }
+    roots.push(canonical);
+    canonicalRoots.push(canonical);
+  }
+
+  const compareRoots = [
+    { lexical: storeRoot, canonical: await canonicalOrSelf(storeRoot) },
+    ...await Promise.all(
+      sourceRoots.map(async (root) => ({
+        lexical: root,
+        canonical: await canonicalOrSelf(root),
+      })),
+    ),
+  ];
+  const isWin = platform === "win32";
+  for (let index = 0; index < roots.length; index += 1) {
+    const root = roots[index];
+    const canonical = canonicalRoots[index];
+    if (root === undefined || canonical === undefined) continue;
+    for (const other of compareRoots) {
+      if (
+        pathsOverlap(root, other.lexical, isWin) ||
+        pathsOverlap(canonical, other.canonical, isWin) ||
+        pathsOverlap(root, other.canonical, isWin) ||
+        pathsOverlap(canonical, other.lexical, isWin)
+      ) {
+        throw new Refusal("AGENT_RECORD_ROOT_OVERLAP");
+      }
+    }
+    for (let otherIndex = 0; otherIndex < index; otherIndex += 1) {
+      const other = roots[otherIndex];
+      const otherCanonical = canonicalRoots[otherIndex];
+      if (
+        other !== undefined &&
+        otherCanonical !== undefined &&
+        (pathsOverlap(root, other, isWin) ||
+          pathsOverlap(canonical, otherCanonical, isWin) ||
+          pathsOverlap(root, otherCanonical, isWin) ||
+          pathsOverlap(canonical, other, isWin))
+      ) {
+        throw new UsageError("Agent-record roots must not overlap.");
+      }
+    }
+  }
+  await assertRootsAvoidUnsupportedStores(roots, home);
+  return roots;
+}
+
 /** One `lstat` per candidate: metadata only, no enumeration and no read. */
 async function directoryExists(target: string): Promise<boolean> {
   try {
@@ -359,6 +467,13 @@ async function runEnable(
   }
 
   const allowedSourceRoots = await resolveAllowedSourceRoots(values, home);
+  const allowedAgentRecordRoots = await resolveAllowedAgentRecordRoots(
+    values,
+    home,
+    storeRoot,
+    allowedSourceRoots,
+    io.platform ?? process.platform,
+  );
   const unsupportedStores = await describeUnsupportedStores(home);
 
   const promptLines = [
@@ -367,6 +482,10 @@ async function runEnable(
     `Store root: ${storeRoot}`,
     "Allowed source roots (read after consent):",
     ...allowedSourceRoots.map((root) => `  - ${root}`),
+    "Allowed agent-record roots (read after consent):",
+    ...(allowedAgentRecordRoots.length > 0
+      ? allowedAgentRecordRoots.map((root) => `  - ${root}`)
+      : ["  - none"]),
   ];
   if (unsupportedStores.length > 0) {
     promptLines.push(
@@ -392,6 +511,7 @@ async function runEnable(
     grantedAt: new Date().toISOString(),
     storeRoot,
     allowedSourceRoots,
+    allowedAgentRecordRoots,
     storageRiskAcknowledged: true,
   };
 
@@ -414,6 +534,7 @@ async function runConsentStatus(io: CliIo): Promise<
       state: "enabled";
       storeRoot: string;
       allowedSourceRoots: string[];
+      allowedAgentRecordRoots: string[];
     }
   | {
       schemaVersion: 1;
@@ -429,6 +550,7 @@ async function runConsentStatus(io: CliIo): Promise<
       state: "enabled",
       storeRoot: consent.record.storeRoot,
       allowedSourceRoots: consent.record.allowedSourceRoots,
+      allowedAgentRecordRoots: consent.record.allowedAgentRecordRoots ?? [],
     };
   }
   return {
@@ -477,6 +599,55 @@ async function runIndex(values: Values, io: CliIo): Promise<unknown> {
   };
 }
 
+async function runPrepare(values: Values, io: CliIo): Promise<unknown> {
+  const manifest = values.manifest;
+  if (typeof manifest !== "string" || manifest.length === 0) {
+    throw new UsageError("--manifest requires an absolute path.");
+  }
+
+  const targetPath = consentFilePath(io.env, io.platform, io.home);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 120_000);
+  try {
+    const result = await runRetrospective(
+      {
+        tracker: new SessionTracker(),
+        workspace: process.cwd(),
+        consentPath: targetPath,
+        manifestPath: manifest,
+      },
+      controller.signal,
+    );
+    if (result.state === "prepared" || result.state === "already-prepared") {
+      return {
+        schemaVersion: 1,
+        state: result.state,
+        evidenceMode: result.evidenceMode,
+        artifactId: result.artifactId,
+        coverage: result.coverage,
+        fullyRead: result.fullyRead,
+        sessions: result.sessions,
+        counts: result.counts,
+        views: {
+          summary: result.viewPaths.summary,
+          ledger: result.viewPaths.ledger,
+          html: result.viewPaths.reportHtml,
+        },
+      };
+    }
+    if (result.state === "disabled") {
+      throw new Refusal("CONSENT_REQUIRED");
+    }
+    throw new Refusal(
+      "code" in result && typeof result.code === "string"
+        ? result.code
+        : "PREPARATION_FAILED",
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 async function dispatch(invocation: Invocation, io: CliIo): Promise<unknown> {
   switch (invocation.command) {
     case "enable":
@@ -487,6 +658,8 @@ async function dispatch(invocation: Invocation, io: CliIo): Promise<unknown> {
       return runConsentStatus(io);
     case "index":
       return runIndex(invocation.values, io);
+    case "prepare":
+      return runPrepare(invocation.values, io);
     default:
       throw new UsageError("A command is required.");
   }

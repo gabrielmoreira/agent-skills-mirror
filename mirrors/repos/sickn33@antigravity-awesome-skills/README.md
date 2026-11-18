@@ -1,9 +1,9 @@
-<!-- registry-sync: version=20.10.0; skills=2981; stars=49795; updated_at=2026-11-16T16:44:09+00:00 -->
+<!-- registry-sync: version=20.11.0; skills=3017; stars=49896; updated_at=2026-11-17T21:14:19+00:00 -->
 # Agentic Awesome Skills — AI Skills & AAS Core
 
 > **Find reusable instructions for your project, inspect their complete files, and keep an exact skill set you can review and reuse.**
 
-Agentic Awesome Skills is a library of 2,981+ installable `SKILL.md` playbooks for Claude Code, Codex, Cursor, Gemini CLI and other AI coding agents. AAS Core helps Codex or Claude search the complete local catalog, record the skills the agent chooses, and preview a plan you can inspect before changing a target. Core does not rank or recommend skills.
+Agentic Awesome Skills is a library of 3,017+ installable `SKILL.md` playbooks for Claude Code, Codex, Cursor, Gemini CLI and other AI coding agents. AAS Core helps Codex or Claude search the complete local catalog, record the skills the agent chooses, and preview a plan you can inspect before changing a target. Core does not rank or recommend skills.
 
 **Start here:** [Explore the skill catalog](https://aaskills.tech/core/) · [Codex setup](https://aaskills.tech/docs/codex-cli-skills/) · [Claude Code setup](https://aaskills.tech/docs/claude-code-skills/) · [Install or update without npm](#installation)
 
@@ -12,7 +12,7 @@ Agentic Awesome Skills is a library of 2,981+ installable `SKILL.md` playbooks f
 
 **Project identity:** Agentic Awesome Skills (AAS) was previously named **Antigravity Awesome Skills**. The official repository is [sickn33/agentic-awesome-skills](https://github.com/sickn33/agentic-awesome-skills), and the official website is [aaskills.tech](https://aaskills.tech/). Original code and tooling use MIT; original written content uses CC BY 4.0. Imported skills retain their own license and attribution requirements; see [License](#license).
 
-**Current release: V20.10.0.** AAS Core supports local catalog inspection, agent-owned selection, stack validation, and plan preview. Apply and recovery remain experimental. [Read the AAS Core preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v20.10.0/docs/users/aas-core.md) for setup and exact trust boundaries.
+**Current release: V20.11.0.** AAS Core supports local catalog inspection, agent-owned selection, stack validation, and plan preview. Apply and recovery remain experimental. [Read the AAS Core preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v20.11.0/docs/users/aas-core.md) for setup and exact trust boundaries.
 
 This README tracks `main`. Features listed under [Unreleased](CHANGELOG.md#unreleased) require a later release; the versioned guide describes the published package.
 
@@ -42,7 +42,7 @@ This is an independent community project, not affiliated with or endorsed by Goo
 - [Choose Your Tool](#choose-your-tool)
 - [Recommended Specialized Plugins](#recommended-specialized-plugins)
 - [Bundles & Workflows](#bundles--workflows)
-- [Browse 2,981+ Skills](#browse-2981-skills)
+- [Browse 3,017+ Skills](#browse-3017-skills)
 - [Troubleshooting](#troubleshooting)
 - [Stable Skills Manifest v1](#stable-skills-manifest-v1)
 - [Contributing](#contributing)
@@ -95,7 +95,7 @@ Codex or Claude inspects your project and chooses exact skills. Every current ca
 > [!IMPORTANT]
 > Structural and identity validity does not certify semantic fit, compatibility, setup correctness, operational safety, or safety to apply. Apply and recovery require experimental opt-in and remain outside the supported preview.
 
-The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifacts in browser memory without accessing your filesystem. See the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v20.10.0/docs/users/aas-core.md) for tool contracts, capability coverage, and limits.
+The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifacts in browser memory without accessing your filesystem. See the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v20.11.0/docs/users/aas-core.md) for tool contracts, capability coverage, and limits.
 
 ## Installation
 
@@ -108,8 +108,8 @@ With AAS Core already configured, use the [Core guide](docs/users/aas-core.md) t
 With [GitHub CLI](https://cli.github.com/) and `gh skill` available, preview and install one skill from the current release. This example uses Codex at user scope:
 
 ```sh
-gh skill preview sickn33/agentic-awesome-skills skills/brainstorming/SKILL.md@v20.10.0
-gh skill install sickn33/agentic-awesome-skills skills/brainstorming/SKILL.md --agent codex --scope user --pin v20.10.0
+gh skill preview sickn33/agentic-awesome-skills skills/brainstorming/SKILL.md@v20.11.0
+gh skill install sickn33/agentic-awesome-skills skills/brainstorming/SKILL.md --agent codex --scope user --pin v20.11.0
 ```
 
 To update a pinned skill, preview it at the newer release tag and repeat the install with that tag. See the [installation and update guide](docs/users/getting-started.md#install-and-update-without-npm) for other agents, switching from an npm install, downloading a ZIP, and updating a Git clone.
@@ -161,7 +161,7 @@ Bundles suggest related skills; workflows describe the order to use them. They a
 - [Workflows](docs/users/workflows.md) give ordered playbooks for planning, shipping, testing, and auditing; [workflow metadata](data/workflows.json) is available for integrations.
 - If too many installed skills overload Antigravity, follow the [selective activation guide](docs/users/agent-overload-recovery.md). For other hosts, preview a smaller exact install or use the installer's `--risk`, `--category`, and `--tags` filters.
 
-## Browse 2,981+ Skills
+## Browse 3,017+ Skills
 
 Explore the complete library in the [hosted catalog](https://aaskills.tech/) or [`CATALOG.md`](CATALOG.md). The canonical playbooks live in [`skills/`](skills/); [`skills_index.json`](skills_index.json) provides machine-readable discovery. Use [Getting Started](docs/users/getting-started.md) and [Usage](docs/users/usage.md) for first steps, or the [Workbench](https://aaskills.tech/workbench) to inspect a saved Core stack and plan in your browser.
 
@@ -169,7 +169,7 @@ For narrower comparisons, see [Claude Code skills](docs/users/best-claude-code-s
 
 ## Troubleshooting
 
-- [Core setup and trust boundaries](https://github.com/sickn33/agentic-awesome-skills/blob/v20.10.0/docs/users/aas-core.md)
+- [Core setup and trust boundaries](https://github.com/sickn33/agentic-awesome-skills/blob/v20.11.0/docs/users/aas-core.md)
 - [Installation and everyday use](docs/users/usage.md)
 - [Windows context and truncation recovery](docs/users/windows-truncation-recovery.md)
 - [Linux/macOS overload and selective activation](docs/users/agent-overload-recovery.md)
@@ -357,6 +357,7 @@ Key source families include:
 - **[datawebot/datawebot-mcp](https://github.com/datawebot/datawebot-mcp)**: Source for `datawebot`.
 - **[doomsday-network/doom-pay](https://github.com/doomsday-network/doom-pay)**: Source for `doom-pay`.
 - **[doomsday-network/doomsday](https://github.com/doomsday-network/doomsday)**: Source for `doomsday-escrow`.
+- **[e2e-inc/e2e](https://github.com/e2e-inc/e2e)**: Source for `e2e`.
 - **[f-o-x11/deed-page-skill](https://github.com/f-o-x11/deed-page-skill)**: Source for `deed-page`.
 - **[f-o-x11/perq-skill](https://github.com/f-o-x11/perq-skill)**: Source for `perq`.
 - **[faberlang/faber](https://github.com/faberlang/faber)**: Source for `faber-language`.
@@ -378,6 +379,7 @@ Key source families include:
 - **[vshulcz/deja-vu](https://github.com/vshulcz/deja-vu)**: Source for `deja-history`.
 - **[wassim-azi/agy-powerline](https://github.com/wassim-azi/agy-powerline)**: Source for `agy-powerline`.
 - **[webly-ai/webly-plugin](https://github.com/webly-ai/webly-plugin)**: Source for `webly`.
+- **[worktable/worktable-plugin](https://github.com/worktable/worktable-plugin)**: Source for `worktable-mcp`.
 
 </details>
 
@@ -678,6 +680,7 @@ Key source families include:
 - **[bartdudzic/keepmacawake](https://github.com/bartdudzic/keepmacawake)**: Source for `keepmacawake`.
 - **[benjitaylor/skills](https://github.com/benjitaylor/skills)**: Source for `stageshow`.
 - **[blockvectra/agent-quickstart](https://github.com/blockvectra/agent-quickstart)**: Source for `blockvectra-docs`.
+- **[boringmarketer/boring-marketing-skills](https://github.com/boringmarketer/boring-marketing-skills)**: Source for `boring-marketing-ads-incrementality-check`, `boring-marketing-ai-search`, `boring-marketing-audience-research`, `boring-marketing-brand-voice`, `boring-marketing-competitive-intel`, `boring-marketing-content-atomizer`, `boring-marketing-creative`, `boring-marketing-direct-response-copy`, `boring-marketing-email-sequences`, `boring-marketing-find-local-clients`, `boring-marketing-first-screen-check`, `boring-marketing-google-ads-tracking`, `boring-marketing-google-business-profile`, `boring-marketing-keyword-research`, `boring-marketing-landing-page`, `boring-marketing-lead-magnet`, `boring-marketing-local-seo-plan`, `boring-marketing-long-form-article`, `boring-marketing-meta-ads`, `boring-marketing-newsletter`, `boring-marketing-paid-ads`, `boring-marketing-performance-review`, `boring-marketing-pitch-the-fix`, `boring-marketing-positioning-angles`, `boring-marketing-programmatic-seo`, `boring-marketing-reviews`, `boring-marketing-seo-content`, `boring-marketing-service-area-pages`, `boring-marketing-site-audit`, `boring-marketing-social-content`, `boring-marketing-speed-to-lead`, `boring-marketing-start-here`.
 - **[bowmark-ai/skill](https://github.com/bowmark-ai/skill)**: Source for `bowmark`.
 - **[cclank/lanshu-create-ai-presenter-video](https://github.com/cclank/lanshu-create-ai-presenter-video)**: Source for `lanshu-create-ai-presenter-video`.
 - **[cis2042/ux3-product-design-harness](https://github.com/cis2042/ux3-product-design-harness)**: Source for `product-design-harness`.
@@ -721,11 +724,20 @@ Key source families include:
 
 ### Additional Sources
 
+- **[Product Metrics](https://github.com/product-metrics/skills)** — MIT skills for conversion tracking and profit-based advertising. The hosted OAuth MCP requires an account and some features require a subscription. Submitted by the Product Metrics team.
+- **[Fair Value Calculator](https://github.com/petz00711/fair-value-calculator-mcp)** — CC BY 4.0 skill for model-based stock valuation and comparisons. The hosted MCP uses OAuth and offers limited free access and a paid subscription. Submitted by a member of the Fair Value Calculator team.
+- **[PersonaXpand](https://github.com/hayat-nextoriainfotech/social-media-skills)** — MIT skills for drafting replies, triaging messages, and planning posts from supplied text. Sending or posting requires the hosted connector and approval of the exact text. Submitted by the Nextoria team.
+- **[Levea](https://github.com/brajendrak00068/agentic-ai-video-production)** — MIT skills for cloud video editing, captioning, reframing, and export. Connected editing sends media to the hosted service and needs OAuth or an API key. Submitted by the upstream repository owner.
+- **[Revenue Skills](https://github.com/moonetix/revenue-skills)** — MIT guidance on webhook design, ledgers, refunds, and payout safeguards. Review implementation and test against authorized fixtures. Submitted by the upstream maintainers.
+- **[CallForMe](https://github.com/callforme-tel/callforme)** — MIT skill for planning phone calls to businesses and reviewing the result. Dialing requires user approval, a connected account, and prepaid credit. Submitted by the CallForMe developer.
+
 - **[agent-cards/skill](https://github.com/agent-cards/skill)**: Manage prepaid virtual Visa cards for AI agents. Create cards, check balances, view credentials, close cards, and get support via MCP tools.
 - **[No Stairs Please MCP](https://nostairsplease.com/mcp)**: Hosted MCP for finding independent live-music venues, checking room and sound details, and planning tour routes. Connect a No Stairs Please account to access your plan’s venue details and manage saved Favorites.
 - **[HarborRank](https://github.com/harborrank/harborrank-skills)**: 18 SEO skills plus a hosted MCP server (OAuth) for keyword research, live Google SERPs and Maps rank grids, competitor and backlink data, rank tracking, site audits, AI search visibility, and read-only Search Console and Google Analytics. _Disclosure: added by the HarborRank team; HarborRank is a paid product with a 7-day free trial._
 - **[Senrelay (ContextCore)](https://github.com/qingsongcui/ContextCore)**: Local-first macOS workbench and Streamable HTTP MCP server for cross-agent session relay (`/contextcore` full-transcript paging), source-linked SQLite FTS5 memory, and unified MCP/Skills config management across Antigravity, Claude Code, Codex, Cursor, OMP, and OpenCode. ([Config Paths](https://senrelay.com/en/hosts.html))
 - **[Alpha Bazaar](https://github.com/alphabazaar/skills)**: Agent skill and Claude Code plugin, plus a hosted MCP server with one-click OAuth, that lets an agent publish paper-trading calls with its reasoning and keep a public, server-priced, attested track record. Free; paper trading only, not investment advice. _Disclosure: added by the Alpha Bazaar team._
+- **[ASOScan ASO Skills](https://github.com/ASOScan/aso-skills)**: 9 App Store Optimization skills plus a hosted MCP server (OAuth, `https://asoscan.com/mcp`) for keyword research and opportunities, rank history, competitor keywords, review insights and listing audits on the App Store and Google Play. aso-fundamentals and asoscan-setup work without an account; the data skills need an ASOScan API key. _Disclosure: added by the ASOScan team; ASOScan is a paid product with a 7-day free trial._
+- **[MCP Write Safety](https://github.com/isokron-ai/mcp-writecheck-action/tree/main/skills)**: Two Agent Skills for MCP tools that create, update or delete state: build rules for server authors and call rules for agents (conflicts, retries with idempotency keys, unknown outcomes, bulk writes), each tied to a requirement ID in the MCP Write-Safety Requirements (MWS 0.9). Apache-2.0. _Disclosure: added by the IsoKron team._
 
 </details>
 

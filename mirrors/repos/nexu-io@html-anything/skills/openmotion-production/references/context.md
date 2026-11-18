@@ -2,28 +2,23 @@
 
 各入口由宿主 Skill 匹配、用户指定或准确模板指引选中后，直接读取本页并继续本轮范围。共享规范放在 openmotion-production 目录中供所有入口引用，目录归属不要求先执行该 Skill。已有上下文继续有效。
 
-## 按本轮意图确定入口
+## 中途换入口
 
-Agent 结合当前目标、保持项与工程状态选择本轮入口；工程最初来自模板、原创还是复刻，不构成永久路线。
+Agent 结合当前目标、保持项与工程状态选择本轮入口；工程最初来自模板、原创还是复刻，不构成永久路线。各入口的适用范围见各自 Skill 说明，尚未选定时用 [production 入口的专业导航](../SKILL.md#专业导航与旧调用兼容)。明确的专业任务可直达；续作复用决定和已完成操作，任务范围变化时补齐新的方法，保持项继续有效。
 
-- 原创构思、大幅重编、局部动作或声画叙事重新设计、创作品质审片使用 director；局部创作只展开受影响范围。
-- 已有模板出片/适配使用 openmotion-template-to-video；参考重建本次作品、或只持有成片而无对应可编辑工程的内容修改使用 openmotion-recreate；明确交付可复用模板使用 openmotion-video-to-template。单纯风格灵感仍属于原创。
-- 在已有可编辑工程中按既定创作决定执行局部修改、替换已选素材/音乐、调音量、预览、技术检查、工程排错、导出与交付使用 production。
-- 换现成音乐与重新设计声音叙事按目标区分。画面锁定是保持项，两种任务都可能适用；不能仅凭“只改声音”决定入口。
+## 工具连接
 
-明确的专业任务可直达；旧 production/start 调用仍提供简短导航。续作复用决定和已完成操作，任务范围变化时补齐新的方法，保持项继续有效。
+视频任务在第一条相关回复里说明将用 OpenMotion 执行。宿主按需加载工具时，先用它的工具搜索找到已连接的 OpenMotion 工具。读过 Skill 只是拿到流程指引，实际发起宿主 MCP 调用后才能说用过工具。只要方案的请求可以只给方案、不建工程；用户继续制作时沿用该方案，用已连接的工具建工程并打开可编辑预览。
+
+OpenMotion 工具缺失或调用失败时，一发现就告诉用户连接状态和恢复办法，规划阶段也一样。创建或导入工作前，按 [连接诊断与恢复](production.md#tool-transport-and-workspace-readiness) 处理。等待恢复期间，可继续本轮范围内不依赖工具的规划。
 
 通过 npm 安装的平铺 Skill 可读取入口旁的 `openmotion-install.json`：`runtimeRoot` 指向应用和共享 `docs/`，不要从当前工程猜测服务路径。完整包或薄插件仍按其 `scope.json.runtimeRoot` / 已注册启动配置定位；五个入口的相对参考保持同一技能目录布局。
 
-For a video task, identify OpenMotion as the intended execution path in the first relevant response. Discover the host's connected OpenMotion tools, using its tool search when discovery is lazy. Reading a Skill establishes workflow guidance. Report actual tool use only after a host MCP call. A concept-only request may finish with a plan without creating a project. When the user proceeds to production, reuse that plan and use the connected tools for the project and editable preview.
+## OpenMotion 能力优先
 
-If OpenMotion tools are unavailable or fail, disclose the connection status and recovery action as soon as it is observed, including during planning. Apply the [connection diagnosis and recovery rules](production.md#tool-transport-and-workspace-readiness) before creating or importing work. Use the installed host/home identity, retain the actual connection error and verify recovery through a real read. For npm installs, setup's directAccess commands can call the same registered MCP in the current chat when native discovery is missing or stale; this does not prove native host reconnection. A separate CLI probe cannot confirm the current chat connection. Continue independent planning within the requested scope while connection recovery is pending.
+工程编写、时间线修改、预览和导出用 OpenMotion。素材缺口先按内容需要决定检索、生成还是原生图形，再按 [共享工具选择规则](materials.md#tool-selection-and-discovery) 选工具，包括何时用外部工具。
 
-## OpenMotion capability priority
-
-Prefer OpenMotion for operations its available capabilities can satisfy, including project authoring, timeline edits, preview and export. For material gaps, first choose retrieval, generation or native graphics from the content need, then apply the [shared tool-selection policy](materials.md#tool-selection-and-discovery). External tools, including other video-platform tools, can supply missing capabilities within the task's authorization.
-
-Read Hyperframes guidance within the [native engine boundary](native.md#engine-guidance-boundary): it supplies technical authoring and rendering constraints, while OpenMotion owns creative routing, material sourcing, provider setup and delivery.
+Hyperframes 指引只在 [原生引擎边界](native.md#engine-guidance-boundary) 内使用：它提供技术编写与渲染约束；创作选路、素材来源、供应商配置和交付由 OpenMotion 负责。
 
 ## 先补齐阅读缺口，再执行当前范围
 
@@ -44,8 +39,8 @@ Read Hyperframes guidance within the [native engine boundary](native.md#engine-g
 | 按既定声音决定执行或工程音轨调整，含画面锁定 | [声音执行与声画锚点](sound.md)、声音相关的 [审片](review.md)；不加载原创声音构思。需要新设计声音叙事时，由所选 director 入口按需读取声音设计参考。 |
 | 原样使用模板、不做修改 | Editor-only uses the [editable preview handoff](native.md#editable-preview-handoff). Explicit file delivery applies [delivery scope](production.md#delivery-scope), [source pinning](native.md#pin-source-for-independent-deliverables) and [verification scope](verification.md#verification-scope). The selected entry owns its sequence; no authoring/creative read is required solely to export. An edited project cannot reuse an old preview. |
 | 使用／适配可编辑模板，需要创建、编辑或渲染工程 | ID／来源尚未明确时读取 [模板能力说明](templates.md)；内容修改按影响审片，原样渲染按上面的文件交付范围执行，不因请求渲染而加载创作规范。 |
-| 明确要求视频转可复用模板 | 所选入口负责自己的分阶段读集并检查实际参考视频；按影响应用共享 [制作决策](decisions.md)、[审片](review.md) 与 [可移植工程](portable-project.md)。 |
-| 复刻视频 | [制作决策](decisions.md) 及实际参考视频；[复刻交付](../../openmotion-recreate/references/verify.md) 决定审片范围。默认创作使用导出的自动技术验证；明确要求审片、评估或画面修改时再读取 [审片](review.md)。 |
+| 明确要求视频转可复用模板 | 所选入口负责自己的分阶段读集；按 [参考视频读取与测量](reference-video.md) 检查实际参考视频；按影响应用共享 [制作决策](decisions.md)、[审片](review.md) 与 [可移植工程](portable-project.md)。 |
+| 复刻视频 | [参考视频读取与测量](reference-video.md)、[制作决策](decisions.md) 及实际参考视频；审片范围由所选入口的交付流程决定，明确要求审片、评估或画面修改时再读取 [审片](review.md)。 |
 | 局部文字／视觉修改或动态审片 | 审片；沿用已有结构，不补读整套原创流程 |
 | 修改已有内容，含声音、模板内容替换和大幅重编 | 追加 [共享修改流程](edit.md)；首次创作、仅查看／审片／导出无需因此加载 |
 | 制作／修改多段画面、截图、复现对象或状态延续 | 追加制作决策；多段模板草稿也适用，不能因使用默认内容省略 |
@@ -75,7 +70,7 @@ Read Hyperframes guidance within the [native engine boundary](native.md#engine-g
 
 ## 会话与产物归属
 
-操作工程时用 `openmotion_get_project({projectId})` 核对项目、sessionId 和当前版本；没有 projectId 时先查分页列表。独立新任务通过 `openmotion_create_project` 创建项目，可传已有 OpenMotion sessionId 归属。Original creation, reference-video recreation and editable-template production complete the [editable preview handoff](native.md#editable-preview-handoff) when the final requested video is complete and ready to preview. Existing-project content edits follow its [continuing-edit rules](native.md#continuing-edits) across all entries; other scopes open the GUI on request. 宿主聊天 ID 不自动等于 OpenMotion sessionId，未绑定时不能用全局最近项目猜测归属。
+操作工程时用 `openmotion_get_project({projectId})` 核对项目、sessionId 和当前版本；没有 projectId 时先查分页列表。独立新任务通过 `openmotion_create_project` 创建项目，可传已有 OpenMotion sessionId 归属。何时打开可编辑预览见 [Native 工程循环](native.md#project-loop) 第 6 步。宿主聊天 ID 不自动等于 OpenMotion sessionId，未绑定时不能用全局最近项目猜测归属。
 
 ## 一份上下文
 
@@ -85,7 +80,7 @@ Read Hyperframes guidance within the [native engine boundary](native.md#engine-g
 
 ## 共享质量，按职责应用
 
-For recreation, implement reference-grounded timing, content and state changes during authoring, then use the single focused preview pass in [recreation delivery](../../openmotion-recreate/references/verify.md). Detailed review and further visual repair follow the requested scope there. For the other routes, apply the review requirements below.
+声明自行负责交付与审片范围的入口，审片和导出都按该范围执行，包括它的预览检查和修复上限，不套用下面更宽的审片要求。其他入口按下面的要求审片；需要新渲染的导出或成片交付另读 [验证](verification.md)。
 
 Motion 质量是基础职责，不以用户是否说“丝滑”作为加载条件。模板也需要落实变化、接点和状态，不能只通过包装形式验收。声音用实际音轨检查，画面锁定时不得改动视觉内容。动态审片检查实际受影响区间及邻接关系，全片交付前检查全片；共享质量不意味着重新进入 director 完整创作流程。
 
@@ -95,9 +90,7 @@ Motion 质量是基础职责，不以用户是否说“丝滑”作为加载条�
 
 由当前 Agent 执行一次操作链；Skills 是同一任务的指导文档，不是互相调用的独立执行进程。进入另一份文档不会授权再次创建项目、应用模板、导入同一素材或发起相同导出。
 
-工程操作前读 [运行规范](production.md)；编写原生内容前读 [Native authoring](native.md) 及返回的固定版本引擎指南。确认活动项目和最新 revision，复用已有工程，只有任务确实需要时创建或切换项目。冲突时检查新源文件，不盲目重放旧写入。
-
-复刻导出按 [复刻交付](../../openmotion-recreate/references/verify.md) 执行；其他需要新渲染的导出/成片交付读 [验证](verification.md)。
+工程操作前读 [运行规范](production.md)；编写原生内容前读 [Native authoring](native.md) 及返回的固定版本引擎指南。复用已有工程，只有任务确实需要时创建或切换项目。
 
 已有适用的导出任务时先查询，不重复提交；验证依据须对应实际 revision 和文件。已确认内容默认停在编辑器交付；本次明确要求文件时按文件范围执行，明确要求 MP4 就包括导出和实际文件检查。 starter 默认停在可编辑草稿，但用户本次明确要求成片或导出时，以用户范围为准。
 
@@ -108,3 +101,5 @@ Motion 质量是基础职责，不以用户是否说“丝滑”作为加载条�
 - 本地链接与 MCP 读同一文件。MCP 返回 `documentId`、`contentHash`、`references`，用其定位与去重；未读、上下文已丢失或版本已变的内容仍需读取。
 - 占位入口只声明职责和现有工具路径，不代表成熟专业能力。可完成的工作继续推进；缺少的视频分析、素材或能力须明确说明，不伪造完成证据。
 - 分清创作审查、技术验证、正常速度播放和听看证据。读过规范或运行成功，均不能单独证明 Motion 质量。
+
+When generating, importing, deriving or organizing assets, read the shared [asset naming contract](materials.md#asset-naming) before assigning display names.

@@ -1,6 +1,6 @@
 # maxa-skills
 
-Public Claude Code plugin marketplace for the Maxa organization.
+Public plugin marketplace for the Maxa organization, for Claude Code, Codex and other agents that read Agent Skills.
 
 ## Available Plugins
 
@@ -17,6 +17,23 @@ Public Claude Code plugin marketplace for the Maxa organization.
 # Install a plugin
 /plugin install maxa-spec@maxa-skills
 ```
+
+### Codex and ChatGPT
+
+Codex reads this repository's `.agents/plugins/marketplace.json` catalog and the plugin's `.codex-plugin/plugin.json` manifest. It installs the same plugin and skills as Claude Code.
+
+```bash
+# Add the marketplace (once)
+codex plugin marketplace add maxa-ai/maxa-skills
+
+# Install (enabled immediately)
+codex plugin add maxa-spec@maxa-skills
+
+# Pull the latest version
+codex plugin marketplace upgrade maxa-skills
+```
+
+You can also install from `/plugins` in a Codex session. Start a new session to pick up a new install or update. The ChatGPT desktop app's Codex view uses the same install. Skills keep the `maxa-spec:` namespace: type `$` to pick one (for example `$maxa-spec:build-data-model`), or let Codex pick it from your request. The Codex IDE extension doesn't support plugins.
 
 ### Snowflake Cortex Code
 

@@ -88,7 +88,7 @@ Verify:
 4. Replay from the beginning after reaching the end.
 5. Inspect the final export's opening, each shot, boundaries and closing against the storyboard. Pay special attention to the last frame and source cuts.
 
-Final chat presentation follows the [bounded delivery call](production.md#final-video-delivery): invoke `openmotion_show_video` alone, with at most about 60 seconds of waiting. If no result returns, finish with the already verified MP4's absolute path and the pending presentation status. Do not inspect plugin source, create a custom player page or retry in a loop. Retain all actual-file playback checks above and their evidence status; this fallback neither completes missing checks nor confirms the editable editor's `record_display`.
+Follow [final-video route selection](production.md#choose-one-final-video-preview) for host-native playback or the optional MCP App. When the plugin is necessary, use its bounded call and plain-link timeout fallback; uncertainty must not produce a duplicate player. Retain all actual-file playback checks above and their evidence status; presentation does not complete missing checks or confirm the editable editor's `record_display`.
 
 Record the player/browser, time, file identity and observations. When accessible, also inspect media error/readiness state and surfaced console/runtime errors. Do not fabricate console access or report “zero errors” from an unobserved log.
 

@@ -4,10 +4,10 @@
 - **Date:** 2026-11-16
 - **Supersedes:** ADR 0054, ADR 0055, ADR 0056, ADR 0058, ADR 0059, ADR 0061, ADR 0076, ADR 0077, ADR 0078, ADR 0079, ADR 0098, ADR 0108, ADR 0133
 - **Retires:** ADR 0072 (rule in `web/src/lib/table-run.ts`)
-- **Trail:** the `/model` digit probe of ADR 0009, the owner's `/effort` slider of 2026-09-21, the
-  owner's asks to put a card down and to dock it in one place, the counsel on ADR 0078 (a six-row cut
-  of a write), issue #354 (bind the ticking rows), PR 397 and issues 412, 416, 455 (a grammar per pi
-  extension), issue #372, PR 336, the trouble tally of 2026-11-07. Files: `web/src/lib/harness/`
+- **Trail:** the `/model` digit probe of ADR 0009, the owner's `/effort` slider of 2026-09-21 and asks
+  to put a card down and dock it in one place, the counsel on ADR 0078 (a six-row cut of a write),
+  issue #354 (bind the ticking rows), PR 397, issues 412, 416, 455 (a grammar per pi extension), issue
+  #372, PR 336, the trouble tally of 2026-11-07. Files: `web/src/lib/harness/`
   (`menu-hints.ts`, `prompt-model.ts`, `conformance.ts`, `claude/`, `omp/`, `pi/`),
   `web/src/lib/prompt-action.ts`, `bridge/prompt-binding.ts`, `web/src/components/card-dock.tsx`
 
@@ -46,10 +46,9 @@ ADR 0080 (walk, read back, confirm) and ADR 0113 (the AskUserQuestion field) sta
    one direction, then the commit key. The pointed row shows `❯`, because a bare Enter takes it. The
    arrows go bound to the tapped screen; Enter goes only bound to a fresh read with the pointer on the
    tapped row. A grammar never shapes a plan to survive a race.
-6. **On omp's tool approval, a race never turns a denial into an approval.** On the clamped list of
-   omp 18.1 to 18.6, the first row commits as `Up, Enter` and the last as `Down, Enter`, so a desk arrow
-   between the bridge's read and its send cannot move the commit off the tapped edge row. On the
-   wrapping list of 18.12, Deny is the footer's own Escape, which denies from any row; a desk arrow can
+6. **On omp's tool approval, a race never turns a denial into an approval.** On the clamped list of omp 18.1 to 18.6, the first row
+   commits as `Up, Enter` and the last as `Down, Enter`, so a desk arrow between the bridge's read and its send cannot move the commit
+   off the tapped edge row. On the wrapping list of 18.12, Deny is the footer's own Escape, which denies from any row; a desk arrow can
    only move an approval to its neighbour.
 7. **A card shows what it binds, or declines.** The omp approval card carries every row of the command
    or the write; a body the agent cut, a hidden or bidi character or a clipped row declines. The omp
@@ -65,7 +64,8 @@ ADR 0080 (walk, read back, confirm) and ADR 0113 (the AskUserQuestion field) sta
    bind a pointer drawn as a style (`styledSignature`, ADR 0080). The bridge holds no grammar.
 10. **One dock, one card, a way to put it down.** Every card renders in one dock above the belt,
     outside every scroller, capped. A Terminal control shows the rows it replaced, for that dialog
-    only. The draft notice and held sends float over the mirror's bottom edge and move nothing.
+    only. The draft notice and held sends float over the mirror's bottom edge and move no footer row.
+    Chat and the mirror end above them, by one room shared with the model tag: the larger of the two, as a card covers the tag's corner.
 
 ## Today in the code
 
@@ -75,13 +75,16 @@ ADR 0080 (walk, read back, confirm) and ADR 0113 (the AskUserQuestion field) sta
   (`harness/conformance.ts`) checks over each adapter's own captures: every `menu` key round-trips
   through `menuKeyFor` and none is a digit; a notice card's keys are exactly the digits (letters under
   a `letters` head) its key block printed, in order; a walk is arrows of one direction then Enter, at
-  most one row on `["Enter"]`; every key is a valid Herdr key (`isValidHerdrKey`). It does not check
-  that any key but a notice's was printed: the whitelist passes d, b gets only the key check, the clears,
-  the sticky arrow and the declared key are outside `emittableKeys`. Recipes are reviewed per dialog.
-- Rule 3: a. `harness/claude/resume.ts`. b. `harness/claude/switch-model.ts`. c. `submitPromptFeedback`
+  most one row on `["Enter"]`; every key is a valid Herdr key (`isValidHerdrKey`). Since M102 spec 03
+  every key a lifted block can emit (`emittableKeySends`: plans, a walk's commit, the sticky arrow,
+  the clears, the declared key) is printed on its screen (`printedKeys`), an arrow its pointer
+  licenses, or an `UNPRINTED_KEY_EXCEPTIONS` entry for that harness; else it is an
+  `unprintedKeyFindings` line, run as an expected failure while it waits for a decision.
+- Rule 3: the closed list `UNPRINTED_KEY_EXCEPTIONS` (`harness/conformance.ts`), pinned at seven.
+  a. `harness/claude/resume.ts`. b. `harness/claude/switch-model.ts`. c. `submitPromptFeedback`
   (`web/src/lib/prompt-action.ts`, `grammar/PLAN_FEEDBACK_NOTES.md`). d. `harness/agy/artifact.ts`.
-  e. `commitKeysFor` (`harness/prompt-model.ts`), declared in `harness/omp/approval.ts` and
-  `harness/kiro/workspace-trust.ts`. f. `cancelKey` in each adapter's `index.ts`. g. `clearField`
+  e. `commitKeysFor` (`harness/prompt-model.ts`), declared in `harness/omp/approval.ts`,
+  `harness/kiro/workspace-trust.ts` and `harness/claude/first-run-theme.ts`. f. `cancelKey` in each adapter's `index.ts`. g. `clearField`
   (`web/src/lib/answer-field.ts`); the note clear (`web/src/lib/preview-action.ts`).
 - Rule 4: `MenuLeftRight.values`, `menusSameIdentity` (`harness/menu-model.ts`); `menu-block.tsx`.
 - Rule 5: `pointerWalk`; `splitWalk`, `sameKeysModuloWalk`, `identityDiff` (`harness/prompt-model.ts`);
@@ -96,20 +99,17 @@ ADR 0080 (walk, read back, confirm) and ADR 0113 (the AskUserQuestion field) sta
 - Rule 9: `DEFAULT_PROMPT_TAIL_LINES` = 6, `verifyPromptBinding` (`bridge/prompt-binding.ts`);
   `checkPromptBinding`, one read, text then style at the same place, `MAX_EXPECTED_PROMPT_CHARS` =
   32768 (`bridge/server.ts`); `tailLinesFor`, `MAX_TAIL_LINES` = 12 (`web/src/lib/tail-lines.ts`).
-- Rule 10: `CardDock` (55dvh, 40dvh with the keyboard up); `PromptPanel`, `rawMode`; `HeldCard`.
-
-## Recorded, not found in the code
-
-- ADR 0058 asked a record for each new unprinted key; 3b, 3c and 3d have none, so rule 3 is that list.
-- ADR 0053: a ritual re-runs the capture lab per Claude Code version. It is a ritual, not code.
+- Rule 10: `CardDock` (55dvh, 40dvh with the keyboard up); `PromptPanel`, `rawMode`; `HeldCard`; `useFloatingClear`, `bottomRoom`.
 
 ## Consequences
 
+- Not in the code: ADR 0058 asked a record per new unprinted key; 3b, 3c and 3d have none, so rule 3
+  is that list. ADR 0053's capture lab re-run per Claude Code version is a ritual, not code.
+
 - A walked tap costs one more read and can leave the pointer moved with nothing committed. A gap of
   milliseconds stays between the bridge's read and its send, except on a clamped edge row.
-- Uncaptured shapes (new presets, clipped footers) decline to ADR 0142's unread screen.
-- Revisit when a multiplexer gains a conditional send, or when a harness offers a structured answer
-  path (ADR 0024 decides whether Collie may take it).
+- Uncaptured shapes (new presets, clipped footers) decline to ADR 0142's unread screen. Revisit when
+  a multiplexer gains a conditional send, or a harness a structured answer path (ADR 0024 decides).
 
 ## What we tried before
 

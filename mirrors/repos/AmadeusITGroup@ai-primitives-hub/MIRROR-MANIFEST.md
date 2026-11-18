@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 29 followed patterns, 84 file(s) materialized.
+Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 29 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 29 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 29 |
-| Files         | 84 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,55 +122,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md`](docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md) |
 | 34 | ✓ | [`docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md`](docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md) |
 | 35 | ✓ | [`docs/contributor-guide/architecture/adr/0010-native-ports-and-adapters-security-scanning.md`](docs/contributor-guide/architecture/adr/0010-native-ports-and-adapters-security-scanning.md) |
-| 36 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/component.md`](docs/contributor-guide/architecture/library-centric-architecture/component.md) |
-| 37 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/container.md`](docs/contributor-guide/architecture/library-centric-architecture/container.md) |
-| 38 | ✓ | [`docs/contributor-guide/architecture/security-scanner.md`](docs/contributor-guide/architecture/security-scanner.md) |
-| 39 | ✓ | [`docs/contributor-guide/architecture/validation.md`](docs/contributor-guide/architecture/validation.md) |
-| 40 | ✓ | [`docs/contributor-guide/security-scanner-maintenance.md`](docs/contributor-guide/security-scanner-maintenance.md) |
-| 41 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
-| 42 | ✓ | [`docs/reference/security-scanner.md`](docs/reference/security-scanner.md) |
-| 43 | ✓ | [`docs/reference/settings.md`](docs/reference/settings.md) |
-| 44 | ✓ | [`github-actions/security-scan/README.md`](github-actions/security-scan/README.md) |
-| 45 | ✓ | [`lib/README.md`](lib/README.md) |
-| 46 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
-| 47 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
-| 48 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
-| 49 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
-| 50 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
-| 51 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
-| 52 | ✓ | [`packages/core/test/fixtures/security/README.md`](packages/core/test/fixtures/security/README.md) |
-| 53 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
-| 54 | ✓ | [`packages/infra/src/scaffolding/templates/README.md`](packages/infra/src/scaffolding/templates/README.md) |
-| 55 | ✓ | [`packages/README.md`](packages/README.md) |
-| 56 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
-| 57 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 58 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 59 | → | [`docs/author-guide/adding-profile-source-to-hub.md`](docs/author-guide/adding-profile-source-to-hub.md) |
-| 60 | → | [`docs/author-guide/creating-a-hub.md`](docs/author-guide/creating-a-hub.md) |
-| 61 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
-| 62 | → | [`docs/author-guide/publishing.md`](docs/author-guide/publishing.md) |
-| 63 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
-| 64 | → | [`docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md`](docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md) |
-| 65 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
-| 66 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
-| 67 | → | [`docs/contributor-guide/architecture/library-centric-architecture/codemap.md`](docs/contributor-guide/architecture/library-centric-architecture/codemap.md) |
-| 68 | → | [`docs/contributor-guide/architecture/library-centric-architecture/system-context.md`](docs/contributor-guide/architecture/library-centric-architecture/system-context.md) |
-| 69 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
-| 70 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
-| 71 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
-| 72 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
-| 73 | → | [`docs/README.md`](docs/README.md) |
-| 74 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 75 | → | [`docs/reference/hub-replication.md`](docs/reference/hub-replication.md) |
-| 76 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
-| 77 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
-| 78 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
-| 79 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
-| 80 | → | [`docs/user-guide/security-scanning.md`](docs/user-guide/security-scanning.md) |
-| 81 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
-| 82 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
-| 83 | → | [`README.md`](README.md) |
-| 84 | → | [`SECURITY.md`](SECURITY.md) |
+| 36 | ✓ | [`docs/contributor-guide/architecture/adr/0011-ai-primitives-hub-install-records.md`](docs/contributor-guide/architecture/adr/0011-ai-primitives-hub-install-records.md) |
+| 37 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/component.md`](docs/contributor-guide/architecture/library-centric-architecture/component.md) |
+| 38 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/container.md`](docs/contributor-guide/architecture/library-centric-architecture/container.md) |
+| 39 | ✓ | [`docs/contributor-guide/architecture/security-scanner.md`](docs/contributor-guide/architecture/security-scanner.md) |
+| 40 | ✓ | [`docs/contributor-guide/architecture/validation.md`](docs/contributor-guide/architecture/validation.md) |
+| 41 | ✓ | [`docs/contributor-guide/security-scanner-maintenance.md`](docs/contributor-guide/security-scanner-maintenance.md) |
+| 42 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
+| 43 | ✓ | [`docs/reference/security-scanner.md`](docs/reference/security-scanner.md) |
+| 44 | ✓ | [`docs/reference/settings.md`](docs/reference/settings.md) |
+| 45 | ✓ | [`github-actions/security-scan/README.md`](github-actions/security-scan/README.md) |
+| 46 | ✓ | [`lib/README.md`](lib/README.md) |
+| 47 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
+| 48 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
+| 49 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
+| 50 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
+| 51 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
+| 52 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
+| 53 | ✓ | [`packages/core/test/fixtures/security/README.md`](packages/core/test/fixtures/security/README.md) |
+| 54 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
+| 55 | ✓ | [`packages/infra/src/scaffolding/templates/README.md`](packages/infra/src/scaffolding/templates/README.md) |
+| 56 | ✓ | [`packages/README.md`](packages/README.md) |
+| 57 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
+| 58 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 59 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 60 | → | [`docs/author-guide/adding-profile-source-to-hub.md`](docs/author-guide/adding-profile-source-to-hub.md) |
+| 61 | → | [`docs/author-guide/creating-a-hub.md`](docs/author-guide/creating-a-hub.md) |
+| 62 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
+| 63 | → | [`docs/author-guide/publishing.md`](docs/author-guide/publishing.md) |
+| 64 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
+| 65 | → | [`docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md`](docs/contributor-guide/architecture/adr/0001-ports-and-adapters-for-cli-and-extension.md) |
+| 66 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
+| 67 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
+| 68 | → | [`docs/contributor-guide/architecture/library-centric-architecture/codemap.md`](docs/contributor-guide/architecture/library-centric-architecture/codemap.md) |
+| 69 | → | [`docs/contributor-guide/architecture/library-centric-architecture/system-context.md`](docs/contributor-guide/architecture/library-centric-architecture/system-context.md) |
+| 70 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
+| 71 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
+| 72 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
+| 73 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
+| 74 | → | [`docs/README.md`](docs/README.md) |
+| 75 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 76 | → | [`docs/reference/hub-replication.md`](docs/reference/hub-replication.md) |
+| 77 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
+| 78 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
+| 79 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
+| 80 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
+| 81 | → | [`docs/user-guide/security-scanning.md`](docs/user-guide/security-scanning.md) |
+| 82 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
+| 83 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
+| 84 | → | [`README.md`](README.md) |
+| 85 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

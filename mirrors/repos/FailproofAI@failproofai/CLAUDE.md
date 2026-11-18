@@ -1,0 +1,1385 @@
+# CLAUDE.md — Agent guidance for this repo
+
+## Environment
+
+- **Runtime:** bun (≥1.3.0) and Node.js (≥20.9.0) are both present.
+- **Docker CLI** is available. Use it to spin up clean containers that mimic real user
+  installs and validate every non-trivial change end-to-end before pushing.
+- **Package manager:** bun (`bun install`, `bun run <script>`). Do not use npm/yarn to
+  install deps locally.
+
+## Agent CLI integrations
+
+This repo does **not** run failproofai on itself: no agent CLI config in the tree
+registers failproofai hooks, and none should be added. Do **not** run
+`failproofai policies --install --scope project` (for any `--cli`) from inside this
+repo — it would write those project-scope hook configs into the working tree. The
+sections below document each CLI's hook surface as failproofai's installer writes it
+for users.
+
+### Codex hooks (`.codex/hooks.json`)
+
+Codex does **not** define an equivalent of `$CLAUDE_PROJECT_DIR` — its stdin payload
+exposes `cwd` but the hook command string runs before stdin is read. Codex hook
+commands are spawned with the project root as cwd (where `codex` was launched).
+
+The recommended Codex install is:
+```bash
+failproofai policies --install --cli codex --scope project
+```
+which writes a portable `npx -y failproofai --hook ... --cli codex` command.
+
+### Copilot hooks (`.github/hooks/failproofai.json`)
+
+Copilot's project-scope hook config lives under `.github/hooks/`, **not**
+`.copilot/` (the latter is the user-scope path). The schema is Copilot's
+"VS Code compatible" form: `version: 1`, PascalCase event names, and
+`bash` + `powershell` + `timeoutSec` per entry (Copilot uses seconds, not
+milliseconds, for its timeout field).
+
+Like Codex, Copilot does not expose a `$COPILOT_PROJECT_DIR` env var, and its
+hooks are spawned with the project root as cwd.
+
+The recommended Copilot install is:
+```bash
+failproofai policies --install --cli copilot --scope project
+```
+which writes a portable `npx -y failproofai --hook ... --cli copilot` command.
+
+**Stop block semantics** (verified against Copilot CLI 1.0.41, May 2026, via
+`~/.copilot/logs/process-*.log` and `~/.copilot/session-state/<id>/events.jsonl`):
+
+| Channel                                   | Effect                                                          |
+|-------------------------------------------|-----------------------------------------------------------------|
+| `{decision: "block", reason}` JSON stdout (exit 0) | ✅ Forces another turn — `reason` becomes the next-turn prompt |
+| Exit 2 + stderr (Claude convention)       | ❌ Logged as `[WARNING] Hook warning: ...`; agent does NOT retry |
+
+policy-evaluator.ts has a `cli === "copilot"` Stop branch that emits the
+JSON-block shape so the 5 `require-*-before-stop` builtins actually enforce
+on Copilot. Without this branch, the deny would be a user-visible warning
+only — the agent would stop without remediation. Same shape applies to
+SubagentStop (Copilot fires `subagentStop` when a subagent finishes; we
+subscribe to it for parity with `agentStop`).
+
+Ref: <https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-hooks-reference>
+
+**1.0.71 contract re-verification** (2026-07-16, live recorder-hook captures —
+Copilot's schema drifted since the 1.0.41 verification above):
+
+- **Config**: `hooks` must be an **object** keyed by event. Older installed
+  files were rejected wholesale (`[ERROR] Invalid hook configuration …: hooks
+  must be an object`) and the session ran **unhooked** — silently, no user-visible
+  warning. Reinstalling with the current `writeHookEntries` schema fixes it.
+- **Payloads**: the snake_case events (PreToolUse/PostToolUse/Stop/…) are
+  Claude-shaped and deliver `tool_name` **already canonical** (`Bash`, `Read`,
+  `Write`, `Edit`, `Grep`) — but the file tools use Copilot's own input keys:
+  Read `{path}`, Write `{path, file_text}`, Edit `{path, old_str, new_str}`.
+  `COPILOT_TOOL_INPUT_MAP` (keyed by canonical name) maps them to
+  `file_path`/`content`/`old_string`/`new_string`; without it a live `.env`
+  read passed block-env-files. Bash `{command}` and Grep `{pattern}` are canonical.
+- **`permissionRequest` is the camelCase exception**: `{hookName, sessionId,
+  timestamp:number, cwd, toolName:"bash" (lowercase), toolInput,
+  permissionSuggestions}`. `handler.ts` has a `cli === "copilot"` branch
+  normalizing `toolName`/`toolInput`/`sessionId`; the lowercase names go
+  through `COPILOT_TOOL_MAP` as before.
+- **Deny still works**: the Claude `{hookSpecificOutput:{permissionDecision:
+  "deny"}}` shape is honored on PreToolUse — verified live (`success:false,
+  code:"denied"` in session events; the sudo never ran). Stop gates
+  (`require-*-before-stop`) also verified firing + forcing retries on 1.0.71.
+- **Caveat**: in headless `copilot -p` runs from a fresh directory, the
+  project-scope `.github/hooks/*.json` file was NOT loaded (git repo or not);
+  the user-scope `~/.copilot/hooks/*.json` always loaded. Likely a
+  trusted-folder gate — treat user scope as the reliable enforcement point for
+  headless/CI usage until verified otherwise.
+
+### Cursor hooks (`.cursor/hooks.json`)
+
+Cursor's hook config goes at the
+project root under `.cursor/hooks.json` per the
+[Cursor docs](https://cursor.com/docs/hooks). The schema is Cursor's flat
+form: `version: 1`, camelCase event keys (`preToolUse`, `beforeSubmitPrompt`,
+…), and a flat array of `{type, command, timeout}` entries per event (no
+Claude-style `{hooks: [...]}` matcher wrapper). The handler canonicalizes
+camelCase → PascalCase via `CURSOR_EVENT_MAP` before policy lookup so the
+existing builtin policies fire unchanged.
+
+Like Codex and Copilot, Cursor does not expose a `$CURSOR_PROJECT_DIR` env
+var to the hook command line (only as a process env var inside the hook
+itself), and Cursor hooks are spawned with the project root as cwd.
+
+The recommended Cursor install is:
+```bash
+failproofai policies --install --cli cursor --scope project
+```
+which writes a portable `npx -y failproofai --hook ... --cli cursor` command.
+
+**Stop block semantics** (verified against cursor-agent docs as of 2026-05-08
+and live behavior):
+
+| Channel                                              | Effect                                                                                          |
+|------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| `{followup_message: "<text>"}` JSON stdout (exit 0)  | ✅ Forces another turn — text becomes next user message; capped at `loop_limit` (default 5)     |
+| `{permission: "deny", …}` JSON stdout (exit 0)       | ❌ Honored on tool events only — Stop falls through and agent stops cleanly                     |
+| Exit 2 + stderr (Claude convention)                  | ❌ Surfaced as warning but does NOT trigger retry                                                |
+
+policy-evaluator.ts has a `cli === "cursor" && eventType in {Stop, SubagentStop}`
+branch ahead of the generic Cursor flat-shape deny that emits the
+`{followup_message}` shape, so the 5 `require-*-before-stop` builtins
+actually enforce on Cursor. Same shape applies to SubagentStop (Cursor's
+`subagentStop` is a sibling of `stop`, same payload + response contract);
+we subscribe to it for parity with Copilot so custom policies subscribing
+to SubagentStop also enforce on Cursor subagent boundaries. The 5
+`require-*-before-stop` builtins still match `Stop` only by design —
+session-completion gates, not subagent-return gates.
+
+**Cloud Agents caveat:** Cursor Cloud Agent VMs do NOT run `stop` /
+`subagentStop` hooks (or `afterAgentResponse`) — confirmed via Cursor
+forum: <https://forum.cursor.com/t/cursor-cloud-agents-do-not-run-afteragentresponse-or-stop-hooks/159929>.
+This means failproofai cannot enforce Stop policies in Cursor Cloud Agent
+runs; the fix above only covers local Cursor sessions.
+
+Ref: <https://cursor.com/docs/hooks>
+
+### OpenCode hooks (`.opencode/`)
+
+failproofai's project-scope OpenCode (sst/opencode) install is a plugin
+registration: a generated plugin shim at `.opencode/plugins/failproofai.mjs`
+and a matching entry in `.opencode/opencode.json`'s `plugin: []` array.
+
+OpenCode's extensibility model is fundamentally different from Claude /
+Codex / Copilot / Cursor: it has **no external-command hook system**.
+Plugins are in-process JS/TS modules loaded by opencode at startup. The
+shim subprocess-calls the failproofai binary (`npx -y failproofai
+--hook ... --cli opencode`) and translates the binary's existing
+Claude-shape JSON response back into plugin semantics — `throw new
+Error(reason)` for deny, `client.session.prompt(...)` for instruct,
+no-op for allow.
+
+A subtle live-verified gotcha (opencode v1.14.33): plugins are **not**
+auto-discovered from `.opencode/plugins/`. They must be explicitly
+registered in `opencode.json`'s `plugin` array. The install command
+takes care of this, but if you hand-edit either file the other must
+agree.
+
+The recommended OpenCode install is:
+```bash
+failproofai policies --install --cli opencode --scope project
+```
+which writes a portable `npx -y failproofai --hook ... --cli opencode`
+command into the shim.
+
+### Pi hooks (`.pi/settings.json`)
+
+Pi (`@mariozechner/pi-coding-agent`) differs from the other four CLIs in two
+important ways:
+
+**Direct settings-file write, not subcommand-based.** Pi exposes
+`pi install <source> [-l]` and `pi remove <source> [-l]` for managing
+extensions, but failproofai writes `.pi/settings.json` directly — same pattern
+as `.cursor/hooks.json` and `.codex/hooks.json`. This keeps install/uninstall
+fast (no subprocess), works without `pi` on PATH, and stays consistent with
+the other four integrations.
+
+**Settings file paths** (verified empirically against pi-coding-agent
+v0.72.1):
+
+| Scope   | Path                                |
+|---------|-------------------------------------|
+| user    | `~/.pi/agent/settings.json`         |
+| project | `<cwd>/.pi/settings.json`           |
+
+Note: `~/.pi/settings.json` does NOT exist on a fresh install; user-scope
+settings live one level deeper under `~/.pi/agent/`.
+
+**Project-local trust (pi ≥0.80).** Newer Pi (verified against pi-coding-agent
+v0.80.3) no longer trusts a **project-local** `.pi/settings.json` by default:
+`pi list` gained a `--approve`/`-a` flag ("Trust project-local files for this
+command"), and without it project packages are silently ignored (`pi list`
+prints `No packages installed.`). User-scope packages
+(`~/.pi/agent/settings.json`) are always trusted. The live `pi list` roundtrip
+tests in `__tests__/e2e/hooks/pi-integration.e2e.test.ts` detect the installed
+Pi version and pass `--approve` only on ≥0.80 (older Pi trusts project files
+unconditionally and rejects the unknown flag), so they see the project-scope
+package failproofai's installer writes on either side of the cutoff.
+
+**Schema** is a flat string array — `{"packages": ["./relative/path", ...]}`.
+Each entry is a path Pi resolves relative to the directory containing
+`settings.json` (so `<cwd>/.pi/` for project scope).
+
+**The pi-extension package** ships inside the failproofai npm tarball at
+`pi-extension/` (sibling of `bin/`, `dist/`, etc.). Its `index.ts` is loaded
+by Pi at startup; the shim spawns `failproofai --hook <Event> --cli pi` per
+Pi event and translates Pi's `{toolName, input, ...}` event payload to the
+Claude-shape stdin JSON the handler expects. Pi spawns extensions with an
+undefined cwd contract, so the shim resolves the failproofai binary
+relatively from `import.meta.url`, NOT from `process.cwd()`.
+
+The recommended Pi install is:
+```bash
+failproofai policies --install --cli pi --scope project
+```
+which writes a `.pi/settings.json` referencing failproofai's bundled
+pi-extension.
+
+**Pi limitations vs. Claude semantics** (verified against pi-coding-agent
+v0.73.1 d.ts; the `pi-extension/` shim subscribes to 8 events but Pi's API
+caps what each handler can do):
+
+| Pi event             | → Claude event   | Veto / mutate?  | Notes |
+|----------------------|------------------|-----------------|-------|
+| `tool_call`          | PreToolUse       | ✅ block        | Full deny support via `{block, reason}`. |
+| `user_bash`          | PreToolUse       | ✅ block        | Full deny support. |
+| `input`              | UserPromptSubmit | ✅ block        | Full deny support. |
+| `session_start`      | SessionStart     | observation     | No return-value effect on Pi. |
+| `tool_result`        | PostToolUse      | observation     | `ToolResultEventResult` exposes `{content, details, isError}` for mutation but no `block`. PostToolUse is observation/sanitize anyway, matching Claude semantics. |
+| `agent_end`          | Stop             | shifted (next turn) | Pi's `AgentEndEvent` has no Result type — we cannot retry the same loop the way Claude's exit-2-from-Stop can. The shim captures any deny `reason` and stashes it keyed by sessionId for the next `before_agent_start` handler to drain. The 5 `require-*-before-stop` builtins thus enforce by gating the NEXT user turn's system prompt. Bounded by Pi process lifetime — same bound Claude has on exit-2-from-Stop. |
+| `before_agent_start` | (Pi-only handoff) | systemPrompt   | Drains any pending Stop deny captured at `agent_end`, returning `{systemPrompt: <event.systemPrompt> + "\n\n" + reason}` so the LLM sees the MANDATORY ACTION directive before its next turn. Multiple extensions chain. No injection when no block is pending. |
+| `session_shutdown`   | SessionEnd       | observation     | Symmetry only. Also clears any pending stop-block for the session id (every reason, not just `new`/`resume`/`fork`). |
+
+**Instruct (`additionalContext`) on Pi `tool_call`** — Pi's
+`ToolCallEventResult` shape is `{block?, reason?}` only; there's no
+first-class additional-context channel back to the agent. `policy-evaluator.ts`
+emits the right Pi-flat shape (`{permission: "allow", reason: "Instruction
+from failproofai: ..."}`), and the shim logs it to stderr, but Pi does NOT
+inject the instruction into the next LLM turn. A `context`-event injection
+workaround (queue the instruction in `tool_call`, drain in the next `context`
+handler by inserting a system message into `event.messages`) is feasible
+but deferred until upstream Pi adds a first-class channel.
+
+### Hermes hooks (`~/.hermes/config.yaml`)
+
+Hermes (hermes-agent) is a Slack/Telegram gateway. Hermes is a **dual-pillar** integration: an **audit** adapter
+(`src/audit/cli-adapters/hermes.ts`, reads `~/.hermes/state.db` directly) **and** a
+**live-hook** integration (`hermes` in `INTEGRATIONS`).
+
+Hermes enforcement uses the shipped **native Python plugin** under each profile's
+`plugins/failproofai/` directory. The profile's YAML config enables it through
+`plugins.enabled: [failproofai]`. `integrations.ts` symlinks that directory to the
+package's `hermes-plugin/` (Hermes' scan follows symlinks, so npm upgrades apply
+with no reinstall — the OpenClaw `plugins.load.paths` model), falls back to an
+atomic copy marked `.failproofai-managed` where a link cannot be created, replaces
+only a marked copy or a link into a FailproofAI `hermes-plugin/`, refuses anything
+else with the same name, and uses the `yaml` package's comment-preserving
+`Document` API for config changes. `failproofai update` migrates profiles already
+using FailproofAI (legacy shell hooks or a copy) to the link, gated on the daemon
+answering `policyEvaluation`; legacy shell hooks never run for Hermes cron jobs.
+
+Settings file paths:
+
+| Scope   | Path                        |
+|---------|-----------------------------|
+| user    | `~/.hermes/config.yaml`     |
+
+Hermes is **user-scope only** — there is no project config, so `getSettingsPath`
+ignores scope/cwd. Every default and named profile receives its own plugin link and
+enablement entry. Installed-state detection requires both the complete managed plugin
+directory and the config entry; a missing file, disabled plugin, newly-created profile,
+or leftover legacy shell hook is reported as unhealthy.
+
+The plugin talks directly to `failproofaid` over the existing owner-only Unix socket.
+The daemon relays a versioned `policyEvaluation` request to the warm TypeScript worker
+and returns a structured `policyResult` with `allow`, `deny`, or `instruct`, policy
+names, reason, matched policies, canonical tool name, and evaluation duration. The
+normal native path does not parse CLI stdout and does not spawn a process per event.
+
+The contract is pinned to upstream Hermes 0.21.3 / commit
+`4d55ca91656ac5f83e1506679b7f81e0238e5e16`: plugin manifest v2, `PluginState.data_dir`,
+keyword hook payloads, and `pre_tool_call` correlation IDs are all present there.
+Callbacks accept `**kwargs` for additive compatibility. Hermes 0.20.0 (2026.8.3) is
+supported too and verified live: its `PluginContext` lacks `get_config` and `state`
+(added in 0.20.1), and a `register()` that raised there was logged as "Failed to load
+plugin" and left **zero** hooks — every tool call unchecked. The plugin now falls back
+to reading `plugins.entries.<id>.settings` then `.config` through the host's
+`hermes_cli.config` loader, and to
+`get_hermes_home()/plugin-data/agent-plugin-failproofai-5296f299` (Hermes'
+`_portable_skill_namespace`) for the ledger, so an upgrade keeps the same `instructions.db`. `register()` never raises and registers each
+hook independently; a ledger that cannot open degrades only `instruct()`.
+
+**Platform independence & subagents.** The gateway is one Hermes process and
+`pre_tool_call` fires on the *tool event*, not the source — so a single install
+intercepts tool calls from **every platform (Slack/Telegram/cli/cron)** and Hermes's
+**internal subagents** uniformly, with no per-platform config. The payload's
+`source`/`chat_type`/`user_id` remain available for per-platform *rules*. Blind spot:
+processes Hermes spawns via the `terminal` tool run in a separate process, so their
+internal tool calls don't fire Hermes hooks — gate the *spawn* at `pre_tool_call`.
+
+**Per-event capability matrix:**
+
+| Hermes plugin hook | Canonical (`HERMES_EVENT_MAP`) | Effect | Notes |
+|--------------------|--------------------------------|--------|-------|
+| `pre_tool_call`    | `PreToolUse`                   | ✅ block | Deny always blocks. Instruct lets the call run and hands its reminder to the `tool_execution` middleware below; it blocks once only on a host without that middleware. |
+| `tool_execution` middleware | plugin-local      | annotate | Wraps the real call (`ctx.register_middleware`, unchanged in 0.20.0 / 0.21.x / main) and puts an instruct reminder at the START of the call's own result: first JSON key `failproof_policy_reminder`, else a leading `[FailproofAI policy reminder (...)]` line or text block. |
+| `post_tool_call`   | `PostToolUse`                  | observation | Return value is ignored by Hermes. |
+| `pre_llm_call`     | plugin-local                  | context | Adds the stable protocol hint (`failproof_policy_reminder` = operator rule on a call that ran, never to be quoted to the user; a FailproofAI block = do not run that action by any route; `FailproofAI policy guidance` = held once) to the current turn. |
+| `on_session_start` | `SessionStart`                 | observation | Forwarded to the evaluator. |
+| `on_session_end`   | `SessionEnd`                   | observation + cleanup | Forwarded, then clears that session's instruction ledger. |
+| `on_session_reset` / `on_session_finalize` | plugin-local | cleanup | Clears stale per-session retry state. |
+| `subagent_stop`    | `SubagentStop`                 | observation | Not a gate. |
+| `pre_verify`       | *(not installed)*              | none | Hermes exposes a bounded turn-end gate, but FailproofAI does not map it yet. |
+
+**`instruct()` delivery: a reminder on the result, not a block.** Blocking a
+correct call to deliver a reminder made the model treat it as an error and route
+around it (seen in unattended cron jobs on Hermes 0.20.0), so with the
+`tool_execution` middleware the call runs and the reminder is placed first in its
+result, where it also survives the 1,500-char head Hermes keeps of a large result.
+Where `pre_tool_call` runs relative to the middleware differs by path, and the
+plugin handles both: in the agent loop it runs INSIDE `next_call` (on 0.21.x on a
+hook worker thread that runs in a copy of the caller's context — so the frame stack
+is a `ContextVar`, not a thread-local); in `model_tools.handle_function_call`
+(`execute_code` inner calls, direct dispatch) it runs BEFORE the middleware, so the
+reminder is handed off by call identity (session, task, tool_call_id, tool, args
+digest) and claimed when the call's frame opens. `execute_code` inner calls
+(empty `tool_call_id`) hand their reminder to the outer `execute_code` result —
+the one the model reads — and leave their own result untouched, because the
+script may print, write or send it; only with no open outer frame does the inner
+result carry it. A model-issued call (a subagent's) never propagates to its parent.
+
+A reminder (same policy + reason) is attached once per Hermes session + turn
+(bounded LRU, claimed atomically so parallel calls cannot both take it). Hermes
+saves a result to a file past 15% of the model's context window (4 chars/token,
+clamped to 8,000–100,000; `read_file` never; `tools/budget_config.py`), so 8,000
+is only the floor. Past 7,500 chars the reminder is compacted to a bounded size
+(≤3 reminders, policy names ≤80 chars, reasons ≤160) and is always attached. An
+`execute_code` handoff expires after 60 s on read, and an allow/deny verdict for
+the same call drops any handoff an earlier, blocked identical call left. Observer hooks wait
+at most 2 s. No hook raises: `pre_tool_call` blocks on any
+internal error (0.20.0/0.21.x read a raise as ALLOW), observers log and return, and
+the middleware falls back to the plain result. `evaluation_timeout_ms` is one
+deadline for connect + send + read, capped at 25 s (0.21.x abandons a hook after
+30 s, then blocks every call for 60 s). `register()` writes `heartbeat.json` (pid,
+Hermes version, home, profile, plugin path/version, hooks + middleware accepted,
+`register_ok`) beside `instructions.db`.
+
+**Fallback: bounded block-once.** Only on a host with no `tool_execution`
+middleware: the first matching instruction in a
+profile/session/task/turn/policy scope (deliberately NOT the tool, so moving the
+work to `execute_code` is not held again) is persisted to the profile-local SQLite
+ledger before `pre_tool_call` returns a block. Re-entry with the same
+`api_request_id` remains blocked, which prevents sibling calls from consuming the
+permit. A later API request acknowledges the instruction and proceeds. At most two
+distinct instruction scopes may interrupt one turn by default. Missing correlation
+IDs or ledger failure fail open for advisory instructions so a broken ledger cannot
+deadlock Hermes; a real `deny()` remains a hard block. Evaluator or protocol failure
+defaults to fail closed and may be changed per profile with
+`plugins.entries.failproofai.settings.failure_mode: allow`.
+
+Install migrates only shell-hook entries carrying the FailproofAI marker or legacy
+`failproofai --hook` command. It preserves unrelated hooks and removes the old broad
+`hooks_auto_accept` setting only when no hook remains. The native plugin itself needs
+no shell-hook consent prompt.
+
+**Legacy shell-adapter findings (retained for migration context).** Three earlier
+claims were corrected against upstream `hermes-agent` @ `5771a6e`.
+`agent/shell_hooks.py:567-621`
+(`_parse_response`) is **event-gated**: it returns a verdict for `pre_tool_call` and
+`pre_verify` only, and falls through to `return None` for everything else. So:
+
+1. **`subagent_stop` was documented "✅ block" and is not one.** The parser never
+   returns a verdict for it, and the call site discards the return anyway
+   (`tools/delegate_tool.py:2677`, a bare `invoke_hook(...)`). Any customer policy
+   denying on SubagentStop had **zero** enforcement for as long as that row stood.
+2. **"Hermes has no turn-end `Stop` event" was false.** `pre_verify` is exactly that.
+   Upstream fires it once per turn when the agent has edited code and is about to
+   finish (`agent/conversation_loop.py:6754`); its parser accepts our Claude Stop
+   shape verbatim — `{decision:"block",reason}` reads as "block the stop", i.e. keep
+   going — and the reason is injected as a synthetic user message before the loop
+   re-enters (`conversation_loop.py:6774-6800`). Installing it is one entry in
+   `config.yaml`; it is a shell hook like the other five, no Python involved.
+
+   **We deliberately do not install it** (product decision, 2026-07-29). So
+   `HERMES_EVENT_MAP` emits no `Stop` and the 5 `require-*-before-stop` builtins
+   remain **inapplicable** on Hermes — but that is now a choice, not a platform
+   limit, and this is what it would buy if revisited. Three upstream conditions
+   would apply: it fires only on turns that landed `write_file`/`patch`
+   (`agent/tool_result_classification.py:9` — a `terminal`-only turn does not qualify,
+   so a chat-only gateway may never see it), it is capped at 3 nudges per turn
+   (`agent/verify_hooks.py:21`, operator-overridable), and on Hermes older than
+   ~2026-06-30 the config key fails `VALID_HOOKS` and is **warn-and-skipped silently**
+   (`agent/shell_hooks.py:325`).
+3. **"No additional-context channel" was false.** Native `pre_llm_call` callbacks
+   consume `{"context": str}`. The plugin uses that channel for a stable protocol
+   hint, while each concrete `instruct()` reason rides at the start of the tool
+   result through the `tool_execution` middleware (the blocked `pre_tool_call`
+   result only on a host without it).
+
+Hermes still lacks `UserPromptSubmit` (only per-LLM-call `pre_llm_call`),
+`PreCompact`/`Notification`, etc. In exchange it has capabilities others lack
+(`transform_tool_result`, `pre_gateway_dispatch`, `pre_llm_call`) — out of scope for now.
+
+The authoritative, machine-readable version of this table is now
+`src/hooks/enforcement-capability.ts`, which a test asserts against. Prefer it over this
+prose: this table is exactly the artifact that drifted.
+
+**Tool-input canonicalization.** `HERMES_TOOL_MAP` canonicalizes tool *names* and
+`HERMES_TOOL_INPUT_MAP` the *argument keys*. Verified against a live `~/.hermes/state.db`:
+`read_file`/`write_file`/`patch` deliver the file path as `path`, which we map to
+`file_path` so path/content builtins (`block-env-files`, `block-secrets-write`,
+`block-read-outside-cwd`) fire; `write_file`'s `content`, `patch`'s `old_string`/`new_string`,
+and `search_files`' `pattern`/`path` are already canonical (so Grep needs no entry), and
+`terminal`'s `command` is canonical too (Bash policies like `block-sudo` are live-verified).
+Hermes 0.21.x renamed `process`/`cronjob`/`todo` to `process_manage`/`cronjob_manage`/
+`todo_list`; the map sends the new names to what the old ones produce, so one policy
+matches both versions.
+
+For production users the recommended Hermes install is:
+```bash
+failproofai policies --install --cli hermes --scope user
+```
+
+### OpenClaw hooks (`~/.openclaw/openclaw.json`)
+
+OpenClaw (openclaw gateway) is a self-hosted assistant. OpenClaw is a **dual-pillar** integration: an **audit** adapter
+(`src/audit/cli-adapters/openclaw.ts`, reads `~/.openclaw/agents/<id>/sessions/*.jsonl`)
+**and** a **live-hook** integration (`openclaw` in `INTEGRATIONS`).
+
+**OpenClaw's enforcement surface is its IN-PROCESS PLUGIN hooks, not shell hooks.**
+OpenClaw has two extension surfaces: file-based **internal hooks**
+(`~/.openclaw/hooks/`) which are **observation-only and cannot block**, and typed
+**plugin hooks** (`api.on(name, handler, {priority, timeoutMs})`) which have
+block/cancel semantics. So — like OpenCode — failproofai ships a **plugin**
+(`openclaw-plugin/`, a static package like `pi-extension/`, shipped in the npm
+tarball via `package.json` "files") that asks `failproofaid` for each verdict and
+translates it. The install registers it in `~/.openclaw/openclaw.json` (JSON):
+
+- `plugins.load.paths[]` ← the shipped `openclaw-plugin/` dir (absolute path)
+- `plugins.entries.failproofai = { enabled: true, hooks: { allowConversationAccess: true } }`
+  (`allowConversationAccess` is required for the raw-conversation hooks
+  `before_agent_run` / `before_agent_finalize`; verified live)
+
+**User-scope only** — OpenClaw has no project config (workspace plugins are
+disabled by default), so `getSettingsPath` ignores scope/cwd. Uninstall only
+edits `openclaw.json`; it **never deletes the shipped plugin dir**.
+
+**The plugin talks to the daemon's socket; it never spawns the CLI.** OpenClaw ≥
+2026.9.6 imports plugins from a **captured copy**
+(`~/.openclaw/tmp/plugin-captures/<id>/…/node_modules/openclaw-plugin/`) holding only
+the plugin directory's files, so a CLI path derived from `import.meta.url`
+(`../dist/cli.mjs`) points at nothing there. The old shim spawned exactly that and
+read the spawn failure as allow — every tool call ran unchecked and no hook activity
+was recorded (verified live on 2026.10.5). So `openclaw-plugin/daemon-client.js`
+sends the same `hook` request `failproofai --hook <event> --cli openclaw` sends
+(crates/PROTOCOL.md: `hookEvent` = the raw OpenClaw event, `cli: "openclaw"`, the
+payload as `stdin`, the gateway profile's `openclaw.json` as `agentSettingsPath`)
+over the owner-only socket, like the Hermes plugin, and reads the same flat stdout
+verdict back. Every module in `openclaw-plugin/` imports only node built-ins and
+its siblings (a test copies the directory and loads it from the copy). Like Hermes
+it is **daemon-only** (`requiresHealthyDaemon`): install refuses without a daemon,
+and when no verdict comes back `before_tool_call` and `before_agent_run` **fail
+closed** (blocked, reason logged through `api.logger`) while `before_agent_finalize`
+does not force a revise — that cannot bring the daemon back and would only loop the
+turn. All I/O is async: the gateway is a long-running multi-channel process. It
+carries **no inline tool maps** (unlike the OpenCode/Pi shims) — it forwards raw
+event/tool names and a Claude-shaped stdin (`params→tool_input`,
+`toolName→tool_name`, `transcriptPath→transcript_path`,
+`stopHookActive→stop_hook_active`, `sessionKey→session_id`), and the worker
+canonicalizes via the `OPENCLAW_*` maps in `types.ts` (single source of truth).
+
+**Verdict mapping** (`policy-evaluator.ts` emits a flat Pi-style
+`{permission, reason}`; the shim maps per-hook):
+
+| OpenClaw plugin hook | Canonical (`OPENCLAW_EVENT_MAP`) | Veto / mutate? | Shim return on deny |
+|----------------------|----------------------------------|----------------|---------------------|
+| `before_tool_call`   | `PreToolUse`      | ✅ block  | `{block: true, blockReason}` |
+| `after_tool_call`    | `PostToolUse`     | observation | — |
+| `before_agent_run`   | `UserPromptSubmit`| ✅ block  | `{outcome: "block", reason}` |
+| `before_agent_finalize` | `Stop`         | ✅ revise | `{action: "revise", reason}` |
+| `session_start` / `session_end` | `SessionStart` / `SessionEnd` | observation | — |
+| `subagent_ended`     | `SubagentStop`    | observation only | — (cannot veto) |
+| `before_compaction`  | `PreCompact`      | observation | — |
+
+**`before_agent_finalize` is a real turn-end gate** (carries `transcriptPath` +
+`stopHookActive`, ≈ Claude's Stop payload), so the 5 `require-*-before-stop`
+builtins **enforce** on OpenClaw — a deny becomes a `{action:"revise"}` that
+re-runs the turn (unlike Hermes, which has no Stop event at all). **Instruct**
+on `PreToolUse` uses a model-visible `blockReason` to interrupt the first
+matching tool attempt, then permits retries from that session/policy for five
+minutes; other non-Stop events still degrade to allow + stderr note. On Stop it
+emits the MANDATORY-ACTION deny so the revise loop carries the directive.
+**Omitted hooks:** `agent_end` (would double-fire Stop) and
+`message_sending` (outbound-message cancel gate — an OpenClaw-only capability,
+deferred).
+
+**No headless consent prompt** (unlike Hermes, which needed `hooks_auto_accept`)
+— verified live: registering plugin hooks does not prompt on a headless gateway.
+
+**Setup gotcha worth knowing** (hit during live verification): a config
+`env.<PROVIDER>_API_KEY` is **not enough** to make a provider usable — the agent
+runtime only registers a provider once an **auth profile** exists
+(`openclaw models auth paste-api-key --provider <p>`); until then you get a
+misleading `Unknown model: <p>/<model>`. Also, a restrictive `plugins.allow`
+gates **bundled provider discovery** (`openclaw doctor --fix` sets
+`plugins.bundledDiscovery: "compat"`).
+
+**Audit pillar.** Sessions are real JSONL at
+`~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl` (UUID-named) + a
+`sessions.json` index keyed by sessionKey. Siblings `<uuid>.trajectory.jsonl`
+(OTel trace) and `.trajectory-path.json` are **ignored**. `OPENCLAW_HOME`
+overrides the home dir for tests. Transcript downloads stream the real file
+(no synthesis, unlike Hermes).
+
+For production users the recommended OpenClaw install is:
+```bash
+failproofai policies --install --cli openclaw --scope user
+```
+
+### Factory droid hooks (`~/.factory/hooks.json`)
+
+Factory's **droid** CLI is a **dual-pillar** integration (live hooks + audit),
+supporting **user + project** scope. Unlike Hermes/OpenClaw it uses a
+Claude/Codex-style **external shell-hook system** — the installed command is
+`npx -y failproofai --hook <event> --cli factory` (project scope).
+The entire contract below was **verified live against droid v0.171.0**.
+
+**Schema: event names at the TOP LEVEL — NO `"hooks"` wrapper.** The published
+docs are **wrong**: droid rejects a `{"hooks":{…}}` wrapper with
+`WARN Ignoring unknown hook event keys keys:["hooks"]`. The `hooks.json` file
+**is** the events object:
+
+```json
+{ "PreToolUse":  [ { "matcher": "*", "hooks": [ { "type": "command", "command": "…", "timeout": 30 } ] } ],
+  "PostToolUse": [ { "matcher": "*", "hooks": [ … ] } ],
+  "Stop":        [ { "hooks": [ … ] } ] }
+```
+
+Tool events (`PreToolUse`, `PostToolUse`) MUST include `"matcher": "*"` (matches
+all tools per the docs). Non-tool events use `{ "hooks": [ … ] }` with **no**
+matcher. `writeHookEntries` in `integrations.ts` branches on this; the file has
+**no** top-level wrapper key, so `removeHooksFromFile` / `hooksInstalledInSettings`
+iterate the top-level event keys directly.
+
+**Events** (`FACTORY_HOOK_EVENT_TYPES`, all PascalCase): `SessionStart`,
+`UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Notification`, `Stop`,
+`SubagentStop`, `PreCompact`, `SessionEnd`. Because they're already canonical
+there is **no `FACTORY_EVENT_MAP` and no `handler.ts` branch**. The stdin
+payload is Claude snake_case (`session_id`, `transcript_path`, `cwd`,
+`permission_mode`, `hook_event_name`, `tool_name`, `tool_input:{command,…}`), so
+**no payload normalization** is needed.
+
+**Tool-name canonicalization** (`FACTORY_TOOL_MAP`): `Execute→Bash`, `Read→Read`,
+`Edit→Edit`, `Create→Write`, `Grep→Grep`, `Glob→Glob`, `LS→LS`,
+`FetchUrl→WebFetch`, `WebSearch→WebSearch`, `TodoWrite→TodoWrite`, `Task→Task`.
+`tool_input.command` is already the canonical Bash key, so there is **no**
+`FACTORY_TOOL_INPUT_MAP`.
+
+**Deny contract = EXIT CODE 2 + reason on stderr** (NOT a JSON decision — droid
+ignores a `{decision:…}` object on tool events and drives blocking purely off
+exit code 2; verified live: `Hook returned exit code 2, throwing
+ToolExecutionControlError`). The **`Stop`** event is the exception — droid does
+**not** support exit-2 force-retry there, so we emit `{decision:"block",
+reason}` JSON on **stdout at exit 0** (docs: "if decision is block, Droid does
+not stop"). So `policy-evaluator.ts`'s `cli === "factory"` branch: Stop →
+exit 0 + `{decision:"block", reason: <MANDATORY ACTION text>}`; every other
+event (PreToolUse, PostToolUse, …) → exit 2 + the blocked message on stderr.
+`instruct()` degrades to allow + stderr note on non-Stop events (no
+additional-context channel), and to the Stop `{decision:"block"}` shape on Stop.
+
+**Audit pillar.** Sessions are real JSONL at
+`~/.factory/sessions/<encoded-cwd>/<sessionId>.jsonl` (Claude-style encoded-cwd
+folders, e.g. `-home-chetan`), one per session alongside a
+`<sessionId>.settings.json` sibling we **ignore**. JSONL lines:
+`{type:"session_start", id, cwd, …}` (carries cwd),
+`{type:"message", message:{role, content:[…], visibility}, timestamp, …}`,
+`{type:"compaction_state", …}`. `lib/factory-sessions.ts` (pure parser, cloned
+from the Claude/OpenClaw pattern) + `lib/factory-projects.ts` enumerate and
+parse them; `FACTORY_HOME` overrides the home dir for tests. Transcript
+downloads stream the real file (no synthesis).
+
+For production users the recommended Factory install is:
+```bash
+failproofai policies --install --cli factory --scope project
+```
+
+### Devin CLI hooks (`~/.config/devin/config.json` / `.devin/config.json`)
+
+Devin's CLI (Cognition) is a **dual-pillar** integration (live hooks + audit),
+supporting **user + project** scope. It is a **pure Claude-clone** — the entire
+contract below was **verified live against devin v3000.1.27** — so the
+Integration in `integrations.ts` mirrors `claudeCode` verbatim, changing only
+`getSettingsPath` and the `--cli devin` command flag.
+
+**Config lives under a Claude-style `"hooks"` key** (the file also holds
+`org_id`, `theme_mode`, etc., so `readSettings`/`writeSettings` use the
+merge-preserving `readJsonFile`/`writeJsonFile` helpers like Claude/Copilot):
+
+| Scope   | Path                              |
+|---------|-----------------------------------|
+| user    | `~/.config/devin/config.json`     |
+| project | `<cwd>/.devin/config.json`        |
+
+There is **no `local` scope**. Devin does not expose a `$DEVIN_PROJECT_DIR`; the
+installed command uses `"<binaryPath>" --hook <event> --cli devin` (user) /
+`npx -y failproofai --hook <event> --cli devin` (project). `buildHookEntry`
+emits `{type:"command", command, timeout:60, [FAILPROOFAI_HOOK_MARKER]:true}`
+— Devin reads Claude's seconds-based `timeout`.
+
+**Events** (`DEVIN_HOOK_EVENT_TYPES`, all PascalCase → **no `DEVIN_EVENT_MAP`,
+no `handler.ts` branch**): `SessionStart`, `UserPromptSubmit`, `PreToolUse`,
+`PostToolUse`, `PermissionRequest`, `Stop`, `SessionEnd`. The stdin payload is
+**pure Claude snake_case → no normalization**: PreToolUse `{hook_event_name,
+tool_name:"exec", tool_input:{command}, tool_use_id}`; PostToolUse adds
+`tool_response:{success, output, error}`; Stop `{stop_hook_active}`.
+
+**Tool-name canonicalization** (`DEVIN_TOOL_MAP`): `exec→Bash` only (the shell
+tool; `tool_input.command` is already the canonical Bash key, so there is **no**
+`DEVIN_TOOL_INPUT_MAP`). All other Devin tool names pass through unchanged.
+
+**Deny contract = `{"decision":"block","reason"}` JSON on stdout at exit 0**
+(VERIFIED live — the block overrode `--permission-mode dangerous`).
+`policy-evaluator.ts`'s `cli === "devin"` deny branch emits this shape for
+**every** event: non-Stop → `{decision:"block", reason: blockedMessage}`;
+Stop → `{decision:"block", reason: <MANDATORY ACTION text>}` (force-retry for the
+5 `require-*-before-stop` builtins). **Instruct**: Devin is Claude-compatible, so
+on Stop it emits the `{decision:"block"}` MANDATORY text, and every
+context-injection event falls through to the generic Claude
+`{hookSpecificOutput:{hookEventName, additionalContext}}` path.
+
+**Audit pillar** (VERIFIED): sessions live in SQLite at
+`~/.local/share/devin/cli/sessions.db`. The `sessions` table has one row per
+session **with a real `working_directory`** (so sessions group by project cwd
+like Claude, unlike cwd-less Hermes); `message_nodes.chat_message` is
+OpenAI-style JSON (`{role, content, tool_calls?:[{id, name, arguments}],
+tool_call_id?}`). `lib/devin-sessions.ts` (pure, unit-tested parser, cloned from
+the Hermes SQLite pattern) + `lib/devin-projects.ts` enumerate and parse them via
+the shared WAL-aware `lib/sqlite-reader.ts`; `resolve-transcript-path.ts` returns
+a `devin-db://<id>` virtual path (like opencode) and `download-session.ts`
+synthesizes a JSONL export. `DEVIN_HOME` (data dir) / `DEVIN_DB_PATH` (db file)
+override for tests.
+
+For production users the recommended Devin install is:
+```bash
+failproofai policies --install --cli devin --scope project
+```
+
+### Antigravity CLI hooks (`~/.gemini/config/hooks.json` / `.agents/hooks.json`)
+
+Antigravity (`agy`) is the 11th CLI — a **dual-pillar** integration (live-hook
+enforcement **and** audit) that, unlike Factory/Devin, has its **OWN** hook
+contract (NOT a Claude-clone). Verified **live against agy v1.1.2** (shipped
+docs at `~/.gemini/antigravity-cli/builtin/skills/agy-customizations/docs/hooks.md`).
+Binary probe: `agy`.
+
+**NAMED-hook schema.** `hooks.json`'s top-level key is a hook *name*
+(`"failproofai"`), whose value is an event→handlers map. Tool events
+(`PreToolUse`/`PostToolUse`) wrap handlers in a `{matcher, hooks:[…]}` group;
+non-tool events (`PreInvocation`/`Stop`) are **flat** arrays of handler objects:
+
+```json
+{ "failproofai": {
+    "PreToolUse":  [ { "matcher": "*", "hooks": [ { "type":"command", "command":"…", "timeout":30 } ] } ],
+    "PostToolUse": [ { "matcher": "*", "hooks": [ { "type":"command", "command":"…", "timeout":30 } ] } ],
+    "PreInvocation": [ { "type":"command", "command":"…", "timeout":30 } ],
+    "Stop":          [ { "type":"command", "command":"…", "timeout":30 } ] } }
+```
+
+`writeHookEntries`/`removeHooksFromFile`/`hooksInstalledInSettings` operate under
+`settings.failproofai`, handling both the wrapper (`{matcher,hooks:[]}`) and flat
+(`[{…}]`) shapes, and preserve any other named-hook keys (e.g. a user's
+`"lint-checker"`). Multiple named hooks merge; `"enabled": false` disables one.
+Settings paths:
+
+| Scope   | Path                          |
+|---------|-------------------------------|
+| user    | `~/.gemini/config/hooks.json` |
+| project | `<cwd>/.agents/hooks.json`    |
+
+No `local` scope. `timeout` is in **seconds** (30). Command: project
+`npx -y failproofai --hook <event> --cli antigravity`; user
+`"<binaryPath>" --hook <event> --cli antigravity`. `ANTIGRAVITY_HOOK_EVENT_TYPES`
+= `["PreToolUse","PostToolUse","PreInvocation","Stop"]`.
+
+**Event map.** `ANTIGRAVITY_EVENT_MAP`: `PreToolUse→PreToolUse`,
+`PostToolUse→PostToolUse`, `PreInvocation→UserPromptSubmit`, `Stop→Stop`. The
+`canonicalizeEventType` branch in `handler.ts` maps the `--hook` arg.
+
+**camelCase → snake_case normalization.** Antigravity pipes camelCase protojson.
+`handler.ts` normalizes it right after `JSON.parse` (before any canonicalization):
+`toolCall.{name,args}` → `tool_name`/`tool_input`, `conversationId` →
+`session_id`, `workspacePaths[0]` → `cwd`, `transcriptPath` → `transcript_path`.
+After that the existing extraction works. `run_command`'s args are PascalCase
+(`CommandLine`/`Cwd`) → `ANTIGRAVITY_TOOL_INPUT_MAP` (keyed by canonical `Bash`)
+maps them to `command`/`cwd`. Tool names via `ANTIGRAVITY_TOOL_MAP`
+(`run_command→Bash`, `read_file→Read`, `write_file→Write`, `edit_file→Edit` VERIFIED
+live against agy 1.4.12; unknown tools pass through). The file tools have moved once:
+1.4.9 and 1.4.12 deliver `read_file {Path}`, `write_file {Path, Content}` and
+`edit_file {Path, Target, Replacement}`, where earlier builds delivered `view_file
+{AbsolutePath}` and `write_to_file {TargetFile, CodeContent}`. Both spellings stay
+mapped. A missed tool **name** raises no error and passes through unchecked. A missed
+**key** on a known file tool is refused: `src/hooks/antigravity-path-guard.ts`, which
+`handler.ts` registers for this CLI whatever is enabled, denies a `Read`/`Write`/`Edit`
+with no `file_path`, because every path policy would otherwise have nothing to check
+and allow it. A session pause lifts it, as the way through until failproofai is updated,
+unless an enforcing Cloud policy is deployed, because Cloud policies keep running under a
+pause and would see no path either.
+
+**Response shapes (Antigravity's OWN — `policy-evaluator.ts` `cli === "antigravity"`):**
+
+| Case | Shape (exit 0) |
+|------|----------------|
+| Deny (tool/prompt events) | `{decision:"deny", reason}` |
+| Deny on `Stop` | `{decision:"continue", reason}` — `"continue"` re-enters the loop (how `require-*-before-stop` enforces) |
+| Instruct on `UserPromptSubmit` (canonical for `PreInvocation`) | `{injectSteps:[{ephemeralMessage:"Instruction from failproofai: …"}]}` |
+| Instruct on `Stop` | `{decision:"continue", reason}` |
+| Instruct on other events | stderr note only (degrade like Hermes) |
+
+**Audit pillar.** Plain-JSONL transcripts at
+`~/.gemini/antigravity-cli/brain/<conversationId>/.system_generated/logs/transcript_full.jsonl`
+(one step per line: `{step_index, source, type, status, created_at, content?,
+tool_calls?}`). `type` enum (uppercase): `USER_INPUT` → user message,
+`PLANNER_RESPONSE` (text and/or `tool_calls:[{name, args}]`) → assistant turn,
+`<TOOL>` (e.g. `RUN_COMMAND`, the uppercased tool name) → the result step paired
+back onto the matching `tool_use`, `CONVERSATION_HISTORY`/`CHECKPOINT` → skipped.
+The conversation index is SQLite at `conversation_summaries.db`
+(`conversation_summaries` table: `conversation_id, title, step_count,
+workspace_uris, last_modified_time, …`) — read via `lib/sqlite-reader.ts` for
+title/cwd enrichment, but the `brain/` transcripts are the source of truth for
+existence (the DB can be checkpointed empty). `workspace_uris` gives cwd →
+per-project grouping; when absent we recover cwd from the first `run_command`
+`Cwd` arg, else a synthetic `antigravity` project. `lib/antigravity-sessions.ts`
+(pure parser + `findAntigravityTranscript`) + `lib/antigravity-projects.ts` +
+`src/audit/cli-adapters/antigravity.ts`. `ANTIGRAVITY_HOME` overrides the home
+dir for tests.
+
+For production users the recommended Antigravity install is:
+```bash
+failproofai policies --install --cli antigravity --scope project
+```
+
+### VS Code agent hooks (covered by the `copilot` / `claude` integrations — no dedicated id)
+
+VS Code's built-in **Copilot Chat agent mode** (Preview, `github.copilot-chat`)
+ships its own lifecycle-hooks engine, but it is NOT a separate failproofai
+integration — it reuses hook-config paths failproofai already writes, so it's
+covered for free. Verified live against VS Code 1.127 (`github.copilot-chat`
+v0.55.0): the agent discovers and loads hook configs from **`.github/hooks/*.json`**,
+**`~/.copilot/hooks/*.json`**, and **`~/.claude/settings.json`** (governed by the
+`chat.hookFilesLocations` setting, whose default includes all three), using the
+Claude-shaped `{hookSpecificOutput:{permissionDecision:"deny",permissionDecisionReason}}`
+contract over a snake_case stdin payload.
+
+Those are exactly the paths the **`copilot`** integration
+(`.github/hooks/failproofai.json` project, `~/.copilot/hooks/failproofai.json`
+user) and the **`claude`** integration (`~/.claude/settings.json`) already write.
+So **`failproofai policies --install --cli copilot`** (or `--cli claude`) already
+enforces inside VS Code agent-mode sessions — no `vscode` id, no new code. (VS
+Code's logs were observed loading `failproofai.json` from both `[local] .github/hooks/`
+and `[user] ~/.copilot/hooks/` during a live probe.)
+
+**Caveat:** the hooks feature is a **Preview** and requires an active GitHub
+Copilot subscription + agent mode; the OpenAI ChatGPT / Claude Code VS Code
+extensions are separate runtimes (the Claude Code extension routes through
+failproofai's `claude` hooks in `~/.claude/settings.json` — also already covered).
+
+### Goose hooks (`~/.agents/plugins/failproofai/hooks/hooks.json`)
+
+Goose (codename goose, Block) is a **local, MCP-based** dev-agent — a
+**dual-pillar** integration (live hooks + audit) supporting **user + project**
+scope. The entire contract below was **verified live against goose v1.43.0**.
+
+**Enforcement uses Goose's "hooks" system — the cross-agent Open Plugins spec.**
+A plugin is a directory whose `hooks/hooks.json` wires shell commands into agent
+events; Goose **auto-discovers** any dir under `~/.agents/plugins/<name>/` (user)
+or `<cwd>/.agents/plugins/<name>/` (project) at startup and **self-registers** it
+into `~/.config/goose/config.yaml`. So the installer just **drops the plugin dir**
+(no config edit — simpler than OpenCode). The installed command is
+`npx -y failproofai --hook <event> --cli goose`.
+
+**Schema: an Open Plugins `hooks.json` WITH a top-level `"hooks"` wrapper** (unlike
+Factory, which has none), and **the matcher is OMITTED on every event** — a bare
+`"*"` is an **invalid regex that matches nothing** (verified live; omitted = match
+all). failproofai owns the entire `failproofai` plugin dir, so entries stay the
+clean `{type, command}` shape (**no `__failproofai_hook__` marker** — Goose parses
+this file); our hooks are identified by the `--cli goose` command substring.
+
+```json
+{ "hooks": {
+    "PreToolUse":  [ { "hooks": [ { "type": "command", "command": "…" } ] } ],
+    "PostToolUse": [ { "hooks": [ … ] } ],
+    "SessionStart":[ { "hooks": [ … ] } ] } }
+```
+
+**Events** (`GOOSE_HOOK_EVENT_TYPES`, all PascalCase → **no `GOOSE_EVENT_MAP`, no
+handler event branch**): `SessionStart`, `UserPromptSubmit`, `PreToolUse`,
+`PostToolUse`, `SessionEnd`. The stdin payload uses `event` (not
+`hook_event_name`) and `working_dir` (not `cwd`), so `handler.ts` normalizes
+`working_dir`→`cwd` for goose (a small block, like Antigravity); `tool_name` /
+`tool_input` are already canonical field names.
+
+**Deny contract = `{"decision":"block","reason"}` JSON on stdout at exit 0**, honored
+on **`PreToolUse` ONLY** (shipped goose ≥ **v1.37.0**, PR block/goose#9304; exit 2
+also blocks). Any other error/timeout → **fail-open** (allow). `PreToolUse` fires
+for the shell tool **and inside delegated subagents**, so it is the single
+sufficient deny point. Goose has **NO `Stop` event** (the 5
+`require-*-before-stop` builtins never fire for it — inapplicable, like Hermes) and
+does **not** honor deny on `UserPromptSubmit`/`PostToolUse` (observation only). So
+`policy-evaluator.ts`'s `cli === "goose"` deny branch emits the block JSON for
+every event (Goose honors it on PreToolUse, ignores it elsewhere — no Stop
+special-case). `instruct()` degrades to **allow + stderr note** (no
+additional-context channel — a non-block decision injects nothing).
+
+**Tool-name canonicalization** (`GOOSE_TOOL_MAP`): tool names arrive **both** bare
+(`shell→Bash`, `write→Write`, `edit→Edit`, `view→Read`, `read_image→Read`,
+`glob→Glob`, `grep→Grep`, `tree→LS`, `delegate→Task`) **and** `<ext>__<tool>`
+namespaced (`todo__todo_write→TodoWrite`); the map covers both, unknown tools pass
+through. **`GOOSE_TOOL_INPUT_MAP`** maps path-bearing tools' `path` (and
+read_image's `source`) → `file_path` so path builtins fire; shell's `command` is
+already canonical.
+
+**Audit pillar.** Sessions are SQLite at
+`~/.local/share/goose/sessions/sessions.db` (schema_version 15). `sessions` rows
+carry a real `working_dir`, so audit groups by project cwd like **Devin** (not
+grouped-by-source like Hermes); `messages.content_json` is a **Claude-style
+typed-block array** (`toolRequest`/`toolResponse`) parsed by `lib/goose-sessions.ts`
+(pure, unit-tested) + `lib/goose-projects.ts`. `session_type='hidden'`
+(`--no-session`) scratch runs are filtered. `GOOSE_HOME` / `GOOSE_DB_PATH` override
+the data dir for tests. Transcript downloads synthesize JSONL from the rows.
+
+**Provider gotcha** (not failproofai's concern, but hit during live verification):
+with the OS keyring disabled, goose reads the provider API key from the
+**environment** (`OPENAI_API_KEY`), **not** from `config.yaml` — the YAML key is
+ignored (`401 No api key passed in`).
+
+The recommended Goose install is:
+```bash
+failproofai policies --install --cli goose --scope project
+```
+
+## Workflow rules
+
+### One PR per branch
+Each local branch maps to exactly one PR. Before opening a PR, check with
+`gh pr list --head <branch>`. If one exists, push new commits to the same branch — never
+open a second PR for the same branch.
+
+### Branch must contain all commits from main
+Before pushing, verify your branch is up to date with `main`:
+
+```bash
+git fetch origin
+git log --oneline origin/main ^HEAD   # should print nothing
+```
+
+If it prints commits, rebase before pushing:
+
+```bash
+git rebase origin/main
+```
+
+Resolve any conflicts, then continue. Never push a branch that is missing commits from
+`main` — the PR diff will be polluted and CI may test against a stale base.
+
+### CI must be green after every commit you push
+After every `git push`, run `gh run watch` or poll `gh run list --limit 3` until all checks
+finish. If any job fails, **stop and fix it before continuing**. Never leave a red CI.
+
+`.github/workflows/ci.yml` runs these jobs on every push — all must pass:
+
+| Job | Command |
+|-----|---------|
+| quality | lint + tsc + version-consistency check (now also covers `Cargo.toml`'s workspace version against root `package.json` — the release tag the CLI builds its daemon download URL from is the npm version, and the binary at that URL reports the Cargo one) |
+| rust-quality | `cargo fmt --check` + `cargo clippy` + `cargo test --workspace`. `cargo test` spawns the real TS worker via `bun`, so the job installs bun too. (The steps stay gated on `crates/*/Cargo.toml` existing — a zero-member workspace hard-errors — but both crates are present now, so they all run for real.) |
+| test | `bun run test:run` (unit, 3 env configs) |
+| build | `bun run build` (Next.js + `dist/index.js` + `dist/cli.mjs` + `dist/worker.mjs`) |
+| test-e2e | `bun run test:e2e` |
+| docs | docs build/validation |
+| failproofai-ts-sdk | `sdk/typescript`, across four Node majors: `npm run typecheck` + `npm run lint` + `npm run build` + `vitest run`, then `npm pack` and a smoke test of the TARBALL — installed with `--omit=peer`, loaded from both ESM and CommonJS, events read back off disk, and the evaluator sandbox resolved through the package's own `./sandbox-worker` export. That last one cannot be exercised from inside the repo and is the difference between managed evaluations working and being refused. |
+
+A separate `.github/workflows/build-daemon.yml` ("Build failproofaid") cross-compiles the
+4 real `failproofaid` release binaries (linux-x64/arm64, darwin-x64/arm64), gzips each one
+and uploads it as an artifact — path-filtered to `crates/**`/`Cargo.*`/
+`rust-toolchain.toml` changes, so it doesn't run on every PR. It is a **reusable
+workflow**: `publish.yml` calls it and downloads those artifacts in the same run, which is
+how a release gets binaries built from the exact commit being published. It can also be
+triggered manually via `workflow_dispatch`. It's slower than `rust-quality` (real
+cross-compiles across 4 matrix legs, two of them real macOS runners) — don't expect it to
+finish inside a quick `gh run watch` poll; check back or use a longer timeout.
+
+### Enforcement routes through the daemon, and where it cannot
+
+On a machine that completed setup, **failproofaid is the only evaluator**. Setup requires
+the daemon, so `daemonConfigured` is true, and from there every way of not getting an
+answer denies — an unreachable socket *and* a protocol-version mismatch. There is no
+in-process fallback on that path: a second policy engine reachable by breaking the first
+is not a guarantee, and a machine where stopping one service silently disables every
+guardrail is not a guarded machine.
+
+The mismatch case denies with a message naming the version and `failproofai update`,
+because the remedy differs from "the daemon is down" and that difference is the whole
+value of telling them apart. The accepted cost: both sides hardcode `PROTOCOL_VERSION`,
+so the first time it is bumped a machine whose CLI updated via npm before its daemon did
+denies until `failproofai update` runs. `publish.yml` ships both from one commit and
+`daemonVersionSkew()` hints on every CLI command, so the window is bounded and announces
+itself.
+
+**In-process evaluation still exists**, reachable only when `daemonConfigured` is false —
+which means the machine is not yet set up. No hooks are installed then either, so
+nothing evaluates anything.
+
+**Unsupported platforms refuse setup, not degrade into it.** `isDaemonSupportedPlatform()`
+is linux + darwin only, and `failproofai config` checks it before drawing a single prompt:
+on anything else (Windows, today) it prints why and exits 1, writing nothing — no hooks
+installed, no `daemonConfigured` flag, no half-configured machine. This used to be a known
+gap — the wizard *skipped* the daemon requirement instead, so a Windows user completed
+setup, read as configured, and enforced in-process with no fail-closed guarantee at all.
+Refusing is the more honest failure: it says plainly that the platform isn't supported yet,
+rather than silently shipping a weaker guarantee than every other configured machine has.
+Revisit when failproofaid gains a Windows service target.
+
+### How the daemon is supervised
+
+The service is **system-scope, user-run**: `/etc/systemd/system/failproofaid@<user>.service`
+with `User=<user>` and `WantedBy=multi-user.target` (macOS: a `/Library/LaunchDaemons`
+plist with `UserName`). It starts at boot, needs no login, and survives logout.
+
+It was a systemd `--user` unit through 1.0.0-beta.0, and that is what forced the change: a
+user manager does not start at boot without `loginctl enable-linger` and stops with the
+last session, so the daemon died on logout — and because a daemon-configured machine
+**fails closed**, anything running without a login session (detached tmux, cron, a CI
+runner) then hit denials.
+
+Three consequences, all handled explicitly rather than assumed:
+
+- **Install needs root.** `canElevate()` checks `sudo -n` (or uid 0) *before* writing
+  anything; when it fails, the install writes nothing and returns the exact commands to
+  run, classified as `needs_root`. `sudo -n`, never interactive — a password prompt fired
+  from under the wizard's TUI is unreadable.
+- **A system unit has no login environment.** `resolveWorkerCommand()` uses
+  `process.execPath`, not a bare `node`: the single most common Node install is nvm, whose
+  binary lives under `~/.nvm/versions/node/*/bin` and is on no system PATH. A bare `node`
+  resolves when the wizard runs it and then fails inside the service, silently.
+- **The old user unit must go first.** `removeLegacyUserService()` runs on every install
+  and uninstall. It holds the same flock the new service needs, so leaving one behind means
+  the system unit starts, loses the singleton race, and the machine sits fail-closed
+  against a daemon that never came up.
+- **On Linux, systemd never starts a binary inside a home directory.** Fedora, RHEL, Rocky
+  and Alma run SELinux enforcing; a file under `/home` is `user_home_t`, and the targeted
+  policy gives systemd (`init_t`) no execute permission on it, so a unit pointing into
+  `~/.failproofai/bin` fails `203/EXEC` and `failproofai config` aborts at its last step.
+  `stageSystemBinary()` copies the binary as root to
+  `/opt/failproofai/<user>/bin/failproofaid-<version>` (labelled `bin_t` by the policy's
+  generic `/opt/(.*/)?bin` rule, re-applied with `restorecon`) and `ExecStart` points
+  there. The `~/.failproofai/bin` copy stays — version checks read it. Uninstall removes
+  the `/opt` copy; install prunes it to the current version plus one. macOS is unchanged.
+
+The unit is named per user (`failproofaid@alice`) so a second person on the same box cannot
+silently steal the first's service — every field in it is user-specific anyway (ExecStart
+under that user's `/opt/failproofai/<user>/bin`, HOME, the worker command). Reading status needs no
+privileges: `systemctl status failproofaid@<user>`, exposed as `daemonStatusCommand()`.
+
+### How the daemon binary reaches users
+
+The CLI tarball itself carries no binary — one tarball serves every platform — but the
+binary reaches a machine through **two** channels, and `ensureFailproofaidBinary()` in
+`daemon-service.ts` tries them in this order:
+
+**1. npm, as an optional dependency.** The four binaries publish as
+`@failproofai/failproofaid-<os>-<arch>` packages with `os`/`cpu` set, pinned in the root
+package's `optionalDependencies`, so `npm install failproofai` already brought down the one
+matching this machine and skipped the other three. `installFromNpmPackage()` copies it into
+place with no network at all — the only channel that works air-gapped or behind a proxy
+that blocks github.com. `npmPlatformBinaryPath()` anchors resolution at
+`FAILPROOFAI_PACKAGE_ROOT` (**not** `import.meta.url`, which does not survive the CJS
+bundle) and uses a **computed** specifier, or the bundler would try to resolve a package
+that is optional and absent on three machines out of four at build time.
+
+**2. The GitHub Release asset.** `failproofaid-<os>-<arch>.gz` plus a `SHA256SUMS` manifest,
+which `daemon-download.ts` fetches for this CLI's own version, verifying the SHA-256
+**before** decompressing. Covers installs that skipped optional dependencies, tarballs
+installed from disk, and anyone installing the daemon standalone. The URL is *constructed*
+from `package.json`'s version, never discovered — no API call, no `releases/latest`
+redirect, no rate limit, and no way to end up with a daemon built from different source than
+the CLI talking to it.
+
+Both channels land the file at `~/.failproofai/bin/failproofaid-<version>` through the same
+`installBinaryBytes()` — atomic rename, mode 0755, versioned filename (which avoids
+`ETXTBSY` against a running daemon and stops an upgrade from repointing a live service unit
+at a binary built from different source). On Linux the unit then runs a root-owned copy
+under `/opt/failproofai/<user>/bin` (see "How the daemon is supervised" — SELinux).
+**`ExecStart` never points into `node_modules`**:
+an `npm i -g failproofai@next` would silently swap the file under a running service, and an
+uninstall would delete it out from under an enabled unit that then crash-loops at every boot.
+
+Ordering in `publish.yml` is load-bearing in two places, both guarded by
+`__tests__/ci/release-pipeline.test.ts`: the four platform packages publish **before** the
+root package that pins them (an `optionalDependency` npm cannot resolve is a 404 in every
+install), and the release assets attach **before** the npm publish (or the package ships
+pointing at a tag whose binaries do not exist yet). `scripts/build-daemon-packages.mjs`
+generates and publishes the platform packages and writes the pins in the same invocation —
+they are injected at publish time, never committed, so a pin can never name a version that
+was not published and this repo's own `bun install --frozen-lockfile` keeps working.
+
+This is the second attempt at the npm half. The first shipped the pins and never published
+anything behind them (the daemon PR never touched `publish.yml`), so every install resolved
+four 404s — which is why the publish script **fails the release** rather than warning when a
+platform package cannot be published, and why the ordering above is a test rather than a
+convention.
+
+That same ordering is why **preflight refuses to start when the publish version is already on
+the registry**. A `workflow_dispatch` has no version input — the publish version is whatever
+`package.json` carries, and a feature branch's is routinely a version that shipped long ago —
+while the root package publishes last. Without the check, a burned version runs the whole
+cross-compile, attaches the assets, publishes the four platform packages, and only then takes
+`E403` on the root package, stranding four orphan platform versions that nothing pins and that
+npm's 72-hour window is the only way to remove. It is ungated on `dry_run` on purpose: a dry
+run that validated a release which cannot happen is not a useful dry run.
+
+Only the install path (`failproofai config`, global scope) does any of this.
+`resolveFailproofaidBinaryPath()` is a pure disk check — env override →
+`~/.failproofai/bin/failproofaid-<version>` → a locally-built `target/{release,debug}`
+binary — so the hook path can never block on the network. Two escape hatches:
+`FAILPROOFAI_NO_DOWNLOAD=1` (air-gapped: fail with a reason instead of reaching out, while
+an already-installed binary keeps working — it gates *fetching*, not the npm copy) and
+`FAILPROOFAI_DAEMON_BASE_URL` (an internal mirror, and what the tests point at a local HTTP
+server).
+
+The release also carries `failproofai-<version>.tgz`, the CLI's own npm tarball, packed by
+the `cli-tarball` job at the version being published and covered by the same `SHA256SUMS`.
+It is how you install the CLI without the registry (`npm i -g ./failproofai-<version>.tgz`),
+and it is attached on every release — that job is deliberately **not** gated on
+`has_daemon`.
+
+### Always add unit tests for new behaviour
+When you add or change logic, add a corresponding test in `__tests__/`. Never modify
+existing tests just to make them pass — if a test breaks, fix the code, not the test.
+Exception: updating a test that explicitly tests the value you're changing (e.g. a version
+string or an error message you intentionally changed).
+
+## Testing protocol
+
+### After every implementation change
+
+1. **Unit tests first** — fast, in-process:
+   ```bash
+   bun run test:run
+   ```
+
+2. **Local smoke test** — use the dev dist directly:
+   ```bash
+   bun build --target=node --format=cjs --outfile=dist/index.js src/index.ts
+   FAILPROOFAI_DIST_PATH=$(pwd)/dist failproofai p -i -c <policy-file>
+   ```
+
+3. **Docker clean-install test** — mimics a real `npm install -g` from scratch.
+   Use the `oven/bun:latest` image (bun pre-installed) with `--network=host`:
+
+   ```bash
+   # Pack without running the full build
+   npm pack --ignore-scripts
+
+   docker run --rm --network=host \
+     -v $(pwd)/failproofai-*.tgz:/pkg.tgz \
+     oven/bun:latest bash -c "
+       apt-get update -qq && apt-get install -y -qq nodejs npm 2>&1 | tail -2
+       npm install -g /pkg.tgz --ignore-scripts 2>&1 | tail -3
+       cat > /tmp/test-policy.mjs << 'EOF'
+   import { customPolicies, allow } from 'failproofai';
+   customPolicies.add({
+     name: 'smoke-test',
+     description: 'Smoke test',
+     match: { events: ['PreToolUse'] },
+     fn: async (ctx) => allow(),
+   });
+   EOF
+       failproofai --version
+       failproofai p -i -c /tmp/test-policy.mjs
+     "
+
+   rm failproofai-*.tgz
+   ```
+
+   Expected output includes `Validated 1 custom hook(s): smoke-test` and exit 0.
+
+4. **E2E tests** (before pushing):
+   ```bash
+   bun run test:e2e
+   ```
+
+### Regression areas to always check
+
+After any change to `src/hooks/`, verify these scenarios don't regress:
+
+| Scenario | How to check |
+|----------|-------------|
+| Custom policy with `from 'failproofai'` ESM import | Docker clean-install test above |
+| Custom policy with `require('failproofai')` CJS | Write a `.js` test file with `require` and run `p -i -c` |
+| Transitive local imports in custom policy | Use `examples/policies-advanced/index.js` |
+| Builtin policies still fire (no custom file) | `failproofai p -i` without `-c` |
+| `findDistIndex()` fallback when `FAILPROOFAI_DIST_PATH` unset | Unset the var and test |
+| `loadCustomHooks` fail-open (bad file path) | Pass a nonexistent file without `--strict` |
+
+## Project structure cheatsheet
+
+```
+bin/failproofai.mjs          Entry point (bun shebang); sets FAILPROOFAI_DIST_PATH
+bin/failproofai-worker.mjs   Warm-worker entrypoint; spawned by the Rust daemon, not a user
+bin/failproofaid-shim.mjs    `failproofaid` bin entry; execs the downloaded binary at
+                              ~/.failproofai/bin/failproofaid-<version> (hand invocation
+                              only — service units point at the binary directly)
+src/hooks/
+  custom-hooks-loader.ts     Orchestrates temp-file creation + dynamic import
+  loader-utils.ts            findDistIndex(), createEsmShim(), rewriteFileTree()
+  custom-hooks-registry.ts   globalThis registry shared between loader and handler
+  policy-helpers.ts          allow() / deny() / instruct()
+  handler.ts                 canonicalizeEventType() + evaluateHookEvent() (core logic,
+                              param-in/return-out) + handleHookEvent() (one-shot stdin/
+                              stdout wrapper called by both bin/failproofai.mjs and tests)
+  worker-server.ts           Listens on the daemon-spawned worker's Unix socket, serializes
+                              concurrent evaluateHookEvent() calls through one async queue
+  daemon-client.ts           isDaemonConfigured() + tryDaemonHook(). TWO budgets, not
+                              one: ~150ms to CONNECT (the "is anything listening" probe
+                              — a dead daemon must never add latency to a hook) and 30s
+                              for the RESPONSE once connected, matching worker.rs's own
+                              read timeout. They are separate because a timeout here is
+                              a DENY on a daemon-configured machine, and one 150ms
+                              budget over the whole roundtrip made a slow-but-correct
+                              evaluation (handler.ts allows 10s per custom policy;
+                              worker-server.ts serializes) indistinguishable from a dead
+                              daemon. See also the worker pre-warming note in worker.rs
+                              below, and the awaitTelemetryFlush note in handler.ts for
+                              a bug class that silently blew through the budget even
+                              when warm
+  daemon-download.ts         Both channels that put the binary on disk, sharing one
+                              installBinaryBytes() (atomic rename, 0755):
+                              installFromNpmPackage() copies it out of the
+                              @failproofai/failproofaid-<os>-<arch> optional dependency
+                              (no network — the air-gapped path), and
+                              downloadFailproofaidBinary() fetches the release asset for
+                              this version, SHA-256 verified before it is decompressed.
+                              Never throws; FAILPROOFAI_NO_DOWNLOAD /
+                              FAILPROOFAI_DAEMON_BASE_URL opt out of or redirect the
+                              download only
+  daemon-service.ts          installDaemonService()/uninstallDaemonService()/
+                              daemonServiceStatus()/setDaemonConfigured() — SYSTEM-scope
+                              systemd unit (/etc/systemd/system/failproofaid@<user>
+                              .service, User=<user>, WantedBy=multi-user.target) /
+                              launchd LaunchDaemon with UserName; root-installed via
+                              `sudo -n`, never root-run. Called
+                              directly by configure-wizard.ts, no public
+                              `failproofai daemon` subcommand. install waits for the
+                              service to reach AND HOLD a running state before
+                              reporting success (a Type=simple unit reports active the
+                              moment it forks, so one reading passes a daemon that died
+                              at startup), and uninstall clears daemonConfigured first
+                              and unconditionally — leaving that flag set with no daemon
+                              to reach denies every hook event on the machine, across
+                              all 11 CLIs, recoverable only by hand-editing
+                              ~/.failproofai/policies-config.json
+  manager.ts                 policies --install / --uninstall / list
+  harness-cli.ts             `failproofai harness add-path/remove-path/list` —
+                              edits collector.sources.<harness>.extra_paths in
+                              config.json and NOTHING else. The grammar, `~`
+                              expansion, overlap rejection and <label>-<agentId>
+                              namespacing all live in the daemon
+                              (crates/fpai-collect/src/extra_paths.rs); this side
+                              validates only the HARNESS NAME, because that is
+                              the one failure with no other detector — a typo'd
+                              key is valid JSON that captures nothing.
+                              FAILPROOFAI_<HARNESS>_EXTRA_PATHS (comma-separated)
+                              overrides the file per source, for containers.
+                              HARNESS_KEYS here and in main.rs are two
+                              hand-maintained copies of one list; a test reads
+                              the Rust source to keep them identical
+src/index.ts                 Public API entry point → compiled to dist/index.js
+dist/index.js                CJS bundle (built by `bun run build`; shipped in npm pkg)
+dist/cli.mjs                 Bundled bin/failproofai.mjs (bun run build:cli)
+dist/worker.mjs              Bundled bin/failproofai-worker.mjs (bun run build:worker) —
+                              plain Node can't resolve raw .ts specifiers, so the warm
+                              worker needs this bundle just like the CLI does
+Cargo.toml                   Rust workspace root (resolver "3", shared [workspace.package])
+crates/fpai-collect/src/extra_paths.rs
+                              Per-source extra capture paths: `label=path`
+                              grammar, folder-name label fallback, and the
+                              rejections that each prevent a SILENT failure — a
+                              path overlapping a default root is collected twice
+                              under two agent ids, and two entries sharing a
+                              label share a cursor directory whose whole map is
+                              written atomically, so both re-read from zero after
+                              every restart. Each accepted path becomes its OWN
+                              task (file_source / sqlite_harness in main.rs) with
+                              its own cursor dir and health key — Hermes reached
+                              this shape first, via per-profile databases. The
+                              <label>-<agentId> prefix is applied in
+                              SpoolWriter::push, never in an engine: a SQLite
+                              format derives its real id from the row and takes
+                              params.agent_id only as a fallback, so prefixing
+                              there namespaces just the sessions that failed to
+                              derive one
+crates/fpai-ipc/              Wire protocol shared by the daemon and its tests: length-
+                              prefixed JSON framing, protocolVersion envelope, peer-
+                              credential checks (see crates/PROTOCOL.md)
+crates/failproofaid/           The daemon binary — socket server + service lifecycle +
+                              worker supervision, zero policy logic
+  src/worker.rs               Spawns/supervises the warm worker subprocess; Worker::warm()
+                              pre-starts it off the accept-loop path right after the daemon
+                              binds its socket (main.rs) so the ~700ms Node cold start never
+                              lands on the critical path of a real hook call
+  src/server.rs                Unix socket accept loop, relays Hook requests to the worker
+  src/paths.rs                  ~/.failproofai/run/ layout (socket, worker socket, lock)
+  src/lock.rs                    Non-blocking flock() singleton guard
+                              (the four compiled binaries ship BOTH as
+                              @failproofai/failproofaid-<os>-<arch> npm packages and as
+                              GitHub Release assets — see "How the daemon binary reaches
+                              users")
+fp-cloud-cli/                      The `fp` CLI for FailproofAI Cloud (Python, uv, pytest).
+                              PyPI dist `fp-cloud-cli`; the installed command is `fp` —
+                              they differ because `fp` was taken on PyPI. Talks only
+                              to the Cloud dashboard's /api surface, never to the
+                              Rust server directly. NOT the same thing as the
+                              `failproofai` CLI this repo builds from bin/ + src/:
+                              that one enforces inside the agent loop, this one
+                              reads back what the loop did.
+  fp_cli/client.py            Pure query layer (no printing, no Typer) — the surface
+                              an MCP server would wrap
+  fp_cli/output.py            All rendering, incl. `_TOP_LEVEL_GROUPS`, the
+                              HAND-MAINTAINED top-level help table. A command missing
+                              from it is invisible in `fp help` forever; guarded by
+                              tests/test_help_table_coverage.py
+scripts/python-version.py    The release scheme for BOTH Python packages, and the
+                              only place it is written down — the two PyPI publish
+                              workflows call it rather than each restating the
+                              arithmetic. `resolve` reads a `_version.py` and emits
+                              what follows it; `write` moves it. Stdlib only, because
+                              it runs in the `preflight` job, which has no publishing
+                              identity precisely BECAUSE it installs nothing. See
+                              "Version bumps" below for the scheme itself
+sdk/python/                  The telemetry SDK (Python, uv, pytest). PyPI dist
+                              `failproofai-sdk`, imported as `failproofai_sdk`. The
+                              OTHER end of the pipe from fp-cloud-cli: this one is called
+                              BY the user's agent to record what it did, while fp-cloud-cli
+                              reads that back. Zero runtime dependencies, by policy —
+                              it installs into other people's agent processes, so any
+                              dependency we declare is a constraint they inherit.
+                              `sdk/` is a directory because more languages go beside
+                              `python/`, not inside it.
+  failproofai_sdk/_events.py  The 15 public event methods, and the `_pending` map that
+                              auto-computes duration_ms by pairing start/end events
+  failproofai_sdk/_schema.py  One dataclass per event type; `to_dict()` IS the wire
+                              format. Frozen byte-for-byte by tests/test_wire_format.py
+  failproofai_sdk/_writer.py  Background flush thread; publishes batches by writing
+                              `.tmp` and atomically renaming to `.jsonl`. Importing the
+                              package starts that thread — a documented side effect
+  failproofai_sdk/_resolver.py
+                              Where the spool lives. Mirrors customAgentsDir() in
+                              src/hooks/fp-home.ts and custom_agents_events_dir() in
+                              crates/fpai-collect/src/config.rs; all three must agree
+                              or the SDK writes where no daemon reads, with NO error
+                              on either side. tests/test_spool_contract.py checks the
+                              Rust and the TypeScript directly and never skips
+sdk/typescript/              The telemetry SDK (TypeScript, npm, vitest). npm package
+                              `@failproofai/sdk`. The same 15 events, wire format,
+                              spool directory and Evaluator v2 protocol as
+                              sdk/python — a fleet running both writes into one
+                              pipe. Zero runtime dependencies for the same reason,
+                              enforced by a test AND by scripts/finalize-build.mjs.
+                              Its OWN npm package: its own package-lock.json,
+                              tsconfig, eslint config and vitest config, excluded
+                              from the root tsconfig and the root eslint config so
+                              this project's dependency tree cannot decide whether
+                              that package's zero-dependency claim holds.
+  src/writer.ts               Interval flush, `unref`'d so importing the SDK never
+                              stops a script exiting; sync flush on `process.exit`.
+                              `renameSync` inside an otherwise-async write is
+                              load-bearing: it is what lets the exit path tell a
+                              durable chunk from an un-written one with no window
+  src/context.ts              AsyncLocalStorage, the analogue of Python's
+                              contextvars. The agent stack is a FROZEN array,
+                              replaced never mutated — a store object is shared by
+                              reference with every async branch below it
+  src/evaluator/expression.ts A restricted expression language, PARSED AND
+                              INTERPRETED. Not `eval`, not `node:vm`: JavaScript
+                              reaches arbitrary code through `x["constructor"]`,
+                              whose key is computed at runtime, so no source-level
+                              allowlist closes it and a vm context has its own
+                              `Function`. `readProperty` checks the ACTUAL key at
+                              the moment of the read; that is the boundary
+  src/evaluator/source.ts     The worker_threads sandbox around it — V8 heap
+                              limits, wall-clock terminate(), bounded result,
+                              concurrency cap. The RESOURCE bound, and it fails
+                              CLOSED: no sandbox means managed source is refused
+  scripts/release.mjs         The npm release scheme (`X.Y.Z-beta.N`), and the only
+                              place it is written down; the ts-sdk release workflow
+                              calls it. Node stdlib only, because it runs in the
+                              preflight job, which installs nothing precisely so no
+                              third-party code decides whether a release proceeds
+__tests__/                   Unit + e2e tests (vitest) — TypeScript only; the Python
+                              components' tests live in fp-cloud-cli/tests/ and
+                              sdk/python/tests/ and run under pytest, and the
+                              TypeScript SDK's live in sdk/typescript/test/ under
+                              its own vitest config
+examples/                    Sample custom policy files
+```
+
+## Changelog
+
+Every PR **must** include an update to `CHANGELOG.md`. Add your entry under the
+current `## <version> — <YYYY-MM-DD>` section at the top, where `<version>` matches
+`version` in `package.json` and `<YYYY-MM-DD>` is today's date. If that section
+does not exist yet, create it above the previous version's section. There is **no**
+`## Unreleased` section — entries always go under a dated, versioned heading, so
+each feature PR ships release-ready.
+
+Use the appropriate subsection:
+
+- **Features** for new functionality
+- **Fixes** for bug fixes
+- **Docs** for documentation-only changes
+- **Dependencies** for dependency bumps
+
+Each entry should be a single line: a short description followed by the PR number
+(e.g. `- Add foo support (#123)`).
+
+## Version bumps
+
+When bumping the version, update both root `package.json` and the
+`[workspace.package]` version in root `Cargo.toml`, then refresh `Cargo.lock`. The CLI and
+native daemon must report the same version. The CI version-consistency check also compares
+any `packages/*/package.json` files against root; that directory does not currently exist.
+`hermes-plugin/plugin.yaml`'s `version:` moves with them too (it is what `hermes plugins
+list` reports): `publish.yml` rewrites it in both "Set publish version" steps and in the
+post-release bump, and the same CI check compares it against root.
+
+That is the **npm** version, and it governs the CLI, the daemon and the Cargo workspace.
+The two Python packages version **independently of it and of each other** — `fp-cloud-cli` and
+`failproofai-sdk` share no version line with the npm package and never have. Do not move
+them to match it. Neither does `@failproofai/sdk`: it is a second npm package with its own
+line in `sdk/typescript/src/version.ts` and `sdk/typescript/package.json`, which
+`sdk/typescript/scripts/release.mjs` keeps in step and `__tests__/ci/ts-sdk-pipeline.test.ts`
+asserts agree.
+
+### The Python packages' scheme
+
+`scripts/python-version.py` is the single place it is written down, and both PyPI publish
+workflows call it. PyPI has no dist-tags, so unlike npm there is no movable `beta` pointer
+to publish behind: the PEP 440 pre-release marker in the version string **is** the channel,
+and it is permanent the moment it uploads.
+
+| from | next |
+|------|------|
+| beta `X.Y.ZbN` | `X.Y.Zb(N+1)` |
+| stable `X.Y.Z` | `X.Y.(Z+1)b0` |
+
+The same rule `publish.yml` applies to npm (`-beta.N`), spelled in PEP 440.
+
+**You normally edit nothing.** `preflight` resolves the version and refuses one PyPI has
+already taken; `bump` pushes the next one to `main` after a successful upload — the version
+line *and* a stub `## <version> — <date>` section opened by `scripts/changelog-open.py` in
+the same commit — so main is already sitting on the next beta, with a section to write
+entries into, when the previous release finishes. Both halves land together on purpose: a
+version with no section is what `scripts/changelog-section.py` refuses at release time, and
+because bump commits carry a skip-ci marker that state used to go red on the next unrelated
+PR rather than on itself. Hand-edit `<pkg>/_version.py` only to **leave** the current beta
+line — a stable cut (`0.0.1b4` → `0.0.1`), or a minor/major bump.
+
+Two things that will bite:
+
+- **Only canonical spellings are accepted.** `0.0.01b1`, `1.2.3-beta.1` and `v1.0.0` are
+  all legal PEP 440 and all store on PyPI as something else. Every consumer in the pipeline
+  compares version *strings* — the file, the wheel name, and the "is this published" query
+  — so the resolver refuses them and names what PyPI would have stored instead.
+- **An `rc`, a `.post` or a `.dev` publishes but does not auto-bump.** Nothing knows what
+  should follow it. The run warns and leaves main's version for you to set by hand.
+
+Both `pyproject.toml`s declare `dynamic = ["version"]`. That is load-bearing, not
+stylistic: it is why `uv.lock` records each project with **no** `version =` line, and so
+why `uv sync --locked` survives a bump commit. Giving either a static version would make
+every post-release CI run red, and nothing but
+`__tests__/ci/python-version-pipeline.test.ts` is looking for it.

@@ -1241,7 +1241,12 @@ const AIDetector = (() => {
   // Stock simplicity slogans from developer marketing. Adapted from
   // Simon Willison's LLM cliché highlighter.
   const DEV_BLOG_BOILERPLATE = [
-    /\bit\s+just\s+works\b(?!\s+out\b(?![-\s]+of[-\s]+the[-\s]+box\b))/gi,
+    // Separators inside "out of the box": ASCII hyphen or whitespace, plus the
+    // Unicode hyphens U+2010 and U+2011 and the en dash U+2013 that editors
+    // and autocorrect substitute for a hyphen (#140). The em dash and U+2015
+    // mark a break ("…works out—of the box office take…"), not a compound, and
+    // U+2012 is a figure dash for digit groups, so those stay excluded.
+    /\bit\s+just\s+works\b(?!\s+out\b(?![-\s‐‑–]+of[-\s‐‑–]+the[-\s‐‑–]+box\b))/gi,
     /\bzero[-\s]config(?:uration)?\b/gi,
     /\bsane\s+defaults\b/gi,
     /\b(?:hold|fit|fits|holds)\s+in\s+your\s+head\b/gi,
@@ -2172,8 +2177,9 @@ const AIDetector = (() => {
       suggestion: (match) => match.replace(/long-term/i, 'long term'),
     },
     {
-      pattern: /\b(?:functions?|functioned|functioning|operates?|operated|operating|runs?|ran|running|works?|worked|working)\s+out-of-the-box\b/gi,
-      suggestion: (match) => match.replace(/out-of-the-box/i, 'out of the box'),
+      // Hyphen: ASCII, U+2010, U+2011, or the en dash U+2013 (#140).
+      pattern: /\b(?:functions?|functioned|functioning|operates?|operated|operating|runs?|ran|running|works?|worked|working)\s+out[-‐‑–]of[-‐‑–]the[-‐‑–]box\b/gi,
+      suggestion: (match) => match.replace(/out[-‐‑–]of[-‐‑–]the[-‐‑–]box/i, 'out of the box'),
     },
   ];
 
@@ -2223,6 +2229,38 @@ const AIDetector = (() => {
 
   function getParagraphs(text) {
     return text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+  }
+
+  // A Markdown definition entry: optional list marker, then a bold lead term
+  // closed by a colon ("**Term:**" or "**Term**:") or followed by an em
+  // dash, plus any wrapped continuation lines up to a blank line, list item,
+  // bold lead, heading, or blockquote. Group 1 is the term. Used only to
+  // keep glossary entries out of the sentence-length uniformity sample.
+  const DEFINITION_ENTRY_RE = /^[ \t]*(?:(?:[-*+]|\d+[.)])[ \t]+)?\*\*([^*\n]+?):?\*\*(?:(?<=:\*\*)|[ \t]*[:—])[^\n]*(?:\n(?![ \t]*(?:$|[-*+][ \t]|\d+[.)][ \t]|\*\*|#|>))[^\n]*)*/gm;
+  // A glossary is at least this many entries with distinct terms. A label
+  // repeated as a lead ("**Note:**" on every line) is not a glossary term,
+  // and its lines stay in the sample.
+  const GLOSSARY_MIN_ENTRIES = 3;
+
+  // Text with glossary entries replaced by sentence breaks, or null when the
+  // text has no glossary.
+  function withoutGlossaryEntries(text) {
+    if (!text.includes('**')) return null;
+    const entries = [...text.matchAll(DEFINITION_ENTRY_RE)];
+    const counts = new Map();
+    for (const m of entries) {
+      const term = m[1].trim().toLowerCase();
+      counts.set(term, (counts.get(term) || 0) + 1);
+    }
+    const unique = entries.filter((m) => counts.get(m[1].trim().toLowerCase()) === 1);
+    if (unique.length < GLOSSARY_MIN_ENTRIES) return null;
+    let out = '';
+    let last = 0;
+    for (const m of unique) {
+      out += text.slice(last, m.index) + '.';
+      last = m.index + m[0].length;
+    }
+    return out + text.slice(last);
   }
 
   function getSentences(text) {
@@ -2647,7 +2685,24 @@ const AIDetector = (() => {
     // lead term and the dash — "- **Lingering-attention claims**
     // (`lingering-attention`) — the share-post frame…" is the same definition
     // typography as the bare form. Found by the self-scan (see PROOF.md, #67).
-    const SEPARATOR_DASH_RE = /^\s*(?:[-*+]|\d+[.)])\s+(?:\*\*[^*\n]+\*\*|\[[^\]\n]+\]\([^)\n]*\))(?:[ \t]*(?:\([^)\n]*\)|`[^`\n]+`))?[ \t]*—/gm;
+    // The leading indent is \s minus line terminators: a bare ^\s* under the
+    // m flag rescanned every following blank line from each line start, so a
+    // long run of U+2028/U+2029 (line terminators that \s also matches) took
+    // quadratic time. Every match still ends at the same dash, so the count is
+    // unchanged.
+    const SEPARATOR_DASH_RE = /^[^\S\n\r\u2028\u2029]*(?:[-*+]|\d+[.)])\s+(?:\*\*[^*\n]+\*\*|\[[^\]\n]+\]\([^)\n]*\))(?:[ \t]*(?:\([^)\n]*\)|`[^`\n]+`))?[ \t]*—/gm;
+    // The same typography in HTML source: an <li> that opens with a
+    // <strong>/<b> lead term or an <a> link of at most five words, then the
+    // dash (#351). A longer bold span is a clause, not a term. Only the
+    // first child of the item counts, so a prose dash later in a list item,
+    // or any dash outside <li>, still counts. `&mdash;` entities are never
+    // counted as em dashes, so they need no carve-out.
+    const SEPARATOR_DASH_HTML_RE = /^[ \t]*<li\b[^>\n]*>[ \t]*(?:<(strong|b)\b[^>\n]*>[ \t]*[^<\s]+(?:[ \t]+[^<\s]+){0,4}[ \t]*<\/\1>|<a\b[^>\n]*>[ \t]*[^<\s]+(?:[ \t]+[^<\s]+){0,4}[ \t]*<\/a>)(?:[ \t]*(?:\([^)\n]*\)|<code\b[^>\n]*>[^<\n]+<\/code>))?[ \t]*—/gim;
+    function countSeparatorDashes(value) {
+      return (value.match(SEPARATOR_DASH_RE) || []).length
+        + (value.match(SEPARATOR_DASH_HTML_RE) || []).length
+        + countVersionHeadingDashes(value);
+    }
 
     // Keep-a-Changelog version headings (`## [3.21.0] — 2026-07-30`) join a
     // label to a value exactly as a list separator does. Deliberately narrow:
@@ -2693,8 +2748,7 @@ const AIDetector = (() => {
     if (sourceMode === 'plain') {
       const hasCurly = /[“”‘’]/.test(text);
       const totalEmDashes = (text.match(/—/g) || []).length;
-      const separatorEmDashes = (text.match(SEPARATOR_DASH_RE) || []).length
-        + countVersionHeadingDashes(text);
+      const separatorEmDashes = countSeparatorDashes(text);
       const hasEmDash = totalEmDashes > separatorEmDashes;
       const oxfordHit = text.match(/\b\w+,\s+\w+,\s+and\s+\w+/g);
       const hasOxford = (oxfordHit?.length || 0) >= 1;
@@ -3019,8 +3073,7 @@ const AIDetector = (() => {
     // and still counts, as does a mid-sentence "**bold** — like this"
     // splice. Em dash only — the `--` substitute is never carved out.
     const rawEmDashCount = (text.match(/—|(?<=\s)--(?=\s|$)|(?<=^|\s)--(?=\s)/gm) || []).length;
-    const separatorDashCount = (text.match(SEPARATOR_DASH_RE) || []).length
-      + countVersionHeadingDashes(text);
+    const separatorDashCount = countSeparatorDashes(text);
     const emDashCount = rawEmDashCount - separatorDashCount;
     const emDashRate = emDashCount / (wordCount / 1000);
     if (emDashRate > 1) {
@@ -3033,8 +3086,15 @@ const AIDetector = (() => {
     }
 
     // ── 23. Sentence length uniformity ───────────────────────────
-    if (sentences.length >= 5) {
-      const lengths = sentences.map(s => countWords(s));
+    // Glossary entries ("**Term:** gloss", "- **Term** — gloss"; three or
+    // more distinct terms, wrapped lines included) are glossary typography: their lengths are parallel by convention, so
+    // they say nothing about prose rhythm. They leave the sample here and
+    // nowhere else; the five-sentence gate and the 0.25 threshold stay as
+    // they are, so prose around a glossary is still measured (#351).
+    const glosslessText = withoutGlossaryEntries(text);
+    const rhythmSentences = glosslessText === null ? sentences : getSentences(glosslessText);
+    if (rhythmSentences.length >= 5) {
+      const lengths = rhythmSentences.map(s => countWords(s));
       const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
       const variance = lengths.reduce((sum, l) => sum + Math.pow(l - avg, 2), 0) / lengths.length;
       const stdDev = Math.sqrt(variance);

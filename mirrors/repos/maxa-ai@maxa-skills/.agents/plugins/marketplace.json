@@ -1,0 +1,20 @@
+{
+  "name": "maxa-skills",
+  "interface": {
+    "displayName": "Maxa Skills"
+  },
+  "plugins": [
+    {
+      "name": "maxa-spec",
+      "source": {
+        "source": "local",
+        "path": "./plugins/maxa-spec"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

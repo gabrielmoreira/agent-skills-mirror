@@ -534,7 +534,7 @@ npx skills add ./skills --skill openmotion-director openmotion-production openmo
 }
 ```
 
-**十一个公开 MCP 工具**覆盖模板发现与详情、工程创建、读取、编辑、预览、媒体导入、导出、版本恢复与取消。共享工作流和引擎指引通过 MCP resources 提供。[工具契约](mcp-phase1-tools.md)
+**十六个公开 MCP 名称（含一个素材库兼容别名）**覆盖模板发现与详情、工程创建与读取、编辑、预览、媒体导入与 BYOK 生成、可复用素材版本、工程管理与 ZIP 分享、导出、版本恢复与取消。共享工作流和引擎指引通过 MCP resources 提供。[工具契约](mcp-phase1-tools.md)
 
 用 `openmotion_list_templates` 查找模板，`openmotion_get_template` 查看详情，再用 `openmotion_create_project` 创建可编辑副本。[模板目录](template-catalog.md)
 
@@ -639,7 +639,7 @@ MP4 + 可编辑源码 + 素材 + 版本和导出证据
 
 </details>
 
-BYOA 让 Agent 留在已有客户端，BYOK 连接受支持的模型账号。Studio 与本地服务管理工程，供应商凭据独立保存。一期公开 MCP 包含**十一个工具：九个工程工具与两个模板目录工具**；模型生成经 Studio 和本地 Gateway 使用，架构图不意味着公开 MCP 新增了生成或发布工具。
+BYOA 连接已有 Agent 客户端；素材工作区支持直接用模型生成和复用素材。BYOK 连接受支持的模型账号。Studio 与本地服务管理可编辑工程，供应商凭据不写入工程文件。一期公开 MCP 包含**十六个名称：九个工程工具、两个模板目录工具、一个工程归档工具、一个工程管理工具、一个 BYOK 媒体工具，以及同一素材库能力的两个名称**。先在 Studio 配置供应商密钥，再用 `openmotion_media_use` 发现模型、经本地 Gateway 生成媒体。用 `openmotion_assets_use`（`openmotion_assets` 仍兼容）上传、查看或生成可复用素材，保留版本，并把选定版本导入影片。[素材库指南](assets.md)。密钥留在服务内；公开 MCP 契约不包含发布。
 
 #### 技术栈与源码索引
 
@@ -721,9 +721,9 @@ BYOA 让 Agent 留在已有客户端，BYOK 连接受支持的模型账号。Stu
 
 [资源提交清单](../library/ENTRY_TEMPLATE.md) · [参与贡献](../CONTRIBUTING.md) · [反馈问题](https://github.com/nexu-io/openmotion/issues) · [贡献者](https://github.com/nexu-io/openmotion/graphs/contributors) · [媒体资料](media-kit.md)
 
-OpenMotion 独立官网将上线于 `open-design.ai/openmotion`。
+本仓库已从 `nexu-io/html-anything` 更名为 [`nexu-io/openmotion`](https://github.com/nexu-io/openmotion)。
 
-[OpenDesign 动效展示](https://open-design.ai/zh/motion/) · [OpenDesign Go](https://go.open-design.ai/?utm_source=github&utm_medium=referral&utm_campaign=openmotion&utm_content=readme_zh) · [Discord](https://discord.com/invite/M7NnHS9gNa) · [飞书群](https://applink.feishu.cn/client/chat/chatter/add_by_link?link_token=b6cs46dc-acb2-48ed-941d-c45642ead841) · [X @OpenDesignDevs](https://x.com/OpenDesignDevs) · [X @OpenDesignHQ](https://x.com/OpenDesignHQ) · [YouTube](https://www.youtube.com/channel/UChtshixMhvtgBWzoD9R_Qfg)
+[OpenMotion 官网](https://open-design.ai/zh/motion/) · [OpenDesign Go](https://go.open-design.ai/?utm_source=github&utm_medium=referral&utm_campaign=openmotion&utm_content=readme_zh) · [Discord](https://discord.com/invite/M7NnHS9gNa) · [飞书群](https://applink.feishu.cn/client/chat/chatter/add_by_link?link_token=b6cs46dc-acb2-48ed-941d-c45642ead841) · [X @OpenDesignDevs](https://x.com/OpenDesignDevs) · [X @OpenDesignHQ](https://x.com/OpenDesignHQ) · [YouTube](https://www.youtube.com/channel/UChtshixMhvtgBWzoD9R_Qfg)
 
 [**在 GitHub 上给 OpenMotion 点个 Star**](https://github.com/nexu-io/openmotion)
 
@@ -739,7 +739,7 @@ OpenMotion 采用 [Apache-2.0](../LICENSE)许可。第三方代码、模板、�
 
 | 来源 | 关联 |
 | --- | --- |
-| [OpenDesign](https://github.com/nexu-io/open-design) | 界面来源、资源结构和品牌方向；[设计体系](design-system.md) 和 [Motion 展示](https://open-design.ai/zh/motion/) |
+| [OpenDesign](https://github.com/nexu-io/open-design) | OpenMotion 的开发团队，负责界面设计、资源结构和品牌方向。[设计体系](design-system.md) 和 [Motion 展示](https://open-design.ai/zh/motion/) |
 | [Hyperframes](https://github.com/heygen-com/hyperframes) | HTML 视频合成、Studio 和渲染基础，固定为 0.9.7；创作者参考、外部改编演示与组件源码；[引擎说明](hyperframes.md)、[模板声明](../template-library/NOTICE.md) 和[目录来源](template-catalog.md) |
 | [MotionGit](https://motiongit.com/) / adunext | Kinetic Tech 源码以 Presenter Tech 打包；[许可与署名](../library/templates/presenter-tech/NOTICE.md) |
 | [Hypit](https://github.com/hypit-ai/hypit) | Agent 主导热门视频复刻与可编辑版本的灵感来源；未引入运行时 |
@@ -753,3 +753,14 @@ OpenMotion 采用 [Apache-2.0](../LICENSE)许可。第三方代码、模板、�
 [素材来源](readme/ASSETS.md) · [其他展示素材来源](readme/brand-showcase/README.md) · [字体声明](../web/design-system/fonts/NOTICES.txt) · [Studio 许可证](../studio/LICENSE)
 
 原 HTML Anything 应用保留在 [`legacy` 分支](https://github.com/nexu-io/openmotion/tree/legacy)。当前分支与分发边界参见[仓库迁移指南](repository-migration.md) 。
+
+## Star 历史趋势
+
+<a href="https://www.star-history.com/?repos=nexu-io%2Fopenmotion&amp;type=date">
+  <picture>
+    <source media="screen" srcset="https://raw.githubusercontent.com/nexu-io/openmotion/readme-charts/star-history.svg">
+    <img alt="OpenMotion 的 GitHub Star 历史趋势，每日更新" src="readme/star-history.svg">
+  </picture>
+</a>
+
+[离线快照](readme/star-history.svg)

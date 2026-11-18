@@ -296,7 +296,7 @@ def _probe_grok(config: Dict[str, Any]) -> BackendFinding:
                 status=health.MISSING,
                 requires=requires,
                 detail=f"grok is installed at {off_path} but that directory is not on this process's PATH",
-                prescription=f'add {off_path.parent} to PATH (e.g. export PATH="{off_path.parent}:$PATH")',
+                prescription=health.path_edit_prescription(str(off_path.parent), "grok"),
             )
         return BackendFinding(
             name="grok",
@@ -304,7 +304,7 @@ def _probe_grok(config: Dict[str, Any]) -> BackendFinding:
             requires=requires,
             detail="grok CLI not found on PATH",
             prescription=(
-                "install the Grok CLI: curl -fsSL https://x.ai/cli/install.sh | bash, "
+                "install the Grok CLI: npm install -g @xai-official/grok (or the installer at https://x.ai/cli/install.sh), "
                 "then run `grok login`"
             ),
         )

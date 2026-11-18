@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
+Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 1 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 9 |
+| Followed pats | 2 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 1 followed patterns, 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `integrations/runtime/compatibility.md`
+- `docs/plugin-development.zh.md`
 
 ## File Index
 
@@ -59,15 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`integrations/runtime/compatibility.zh.md`](integrations/runtime/compatibility.zh.md) |
-| 4 | ✓ | [`plugins/data-annotation/skills/labelu-data-annotation/SKILL.md`](plugins/data-annotation/skills/labelu-data-annotation/SKILL.md) |
-| 5 | ✓ | [`plugins/ipollowork-suite/AGENTS.md`](plugins/ipollowork-suite/AGENTS.md) |
-| 6 | ✓ | [`plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md`](plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md) |
-| 7 | ✓ | [`plugins/operation-recorder/skills/record-operations/SKILL.md`](plugins/operation-recorder/skills/record-operations/SKILL.md) |
-| 8 | ✓ | [`services/ipollowork/AGENTS.md`](services/ipollowork/AGENTS.md) |
-| 9 | → | [`integrations/runtime/compatibility.md`](integrations/runtime/compatibility.md) |
+| 1 | ✓ | [`.agents/skills/ipollowork-plugin-development/SKILL.md`](.agents/skills/ipollowork-plugin-development/SKILL.md) |
+| 2 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`integrations/runtime/compatibility.zh.md`](integrations/runtime/compatibility.zh.md) |
+| 5 | ✓ | [`plugins/data-annotation/skills/labelu-data-annotation/SKILL.md`](plugins/data-annotation/skills/labelu-data-annotation/SKILL.md) |
+| 6 | ✓ | [`plugins/ipollowork-suite/AGENTS.md`](plugins/ipollowork-suite/AGENTS.md) |
+| 7 | ✓ | [`plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md`](plugins/ipollowork-suite/vendor/dsh-im/src/channels/shared/AGENTS.md) |
+| 8 | ✓ | [`plugins/operation-recorder/skills/record-operations/SKILL.md`](plugins/operation-recorder/skills/record-operations/SKILL.md) |
+| 9 | ✓ | [`services/ipollowork/AGENTS.md`](services/ipollowork/AGENTS.md) |
+| 10 | → | [`docs/plugin-development.zh.md`](docs/plugin-development.zh.md) |
+| 11 | → | [`integrations/runtime/compatibility.md`](integrations/runtime/compatibility.md) |
 
 ---
 

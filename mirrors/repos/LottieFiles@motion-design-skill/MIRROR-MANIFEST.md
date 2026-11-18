@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `LottieFiles/motion-design-skill` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `LottieFiles/motion-design-skill` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LottieFiles/motion-design-skill` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,11 +71,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/motion-design/patterns/entrance-exit.md`](skills/motion-design/patterns/entrance-exit.md) |
 | 11 | ✓ | [`skills/motion-design/patterns/multi-element.md`](skills/motion-design/patterns/multi-element.md) |
 | 12 | ✓ | [`skills/motion-design/patterns/state-feedback.md`](skills/motion-design/patterns/state-feedback.md) |
-| 13 | ✓ | [`skills/motion-design/reference/property-selection.md`](skills/motion-design/reference/property-selection.md) |
-| 14 | ✓ | [`skills/motion-design/reference/quality-checklist.md`](skills/motion-design/reference/quality-checklist.md) |
-| 15 | ✓ | [`skills/motion-design/reference/timing-easing-tables.md`](skills/motion-design/reference/timing-easing-tables.md) |
-| 16 | ✓ | [`skills/motion-design/reference/troubleshooting.md`](skills/motion-design/reference/troubleshooting.md) |
-| 17 | ✓ | [`skills/motion-design/SKILL.md`](skills/motion-design/SKILL.md) |
+| 13 | ✓ | [`skills/motion-design/reference/export-and-render.md`](skills/motion-design/reference/export-and-render.md) |
+| 14 | ✓ | [`skills/motion-design/reference/property-selection.md`](skills/motion-design/reference/property-selection.md) |
+| 15 | ✓ | [`skills/motion-design/reference/quality-checklist.md`](skills/motion-design/reference/quality-checklist.md) |
+| 16 | ✓ | [`skills/motion-design/reference/timing-easing-tables.md`](skills/motion-design/reference/timing-easing-tables.md) |
+| 17 | ✓ | [`skills/motion-design/reference/troubleshooting.md`](skills/motion-design/reference/troubleshooting.md) |
+| 18 | ✓ | [`skills/motion-design/SKILL.md`](skills/motion-design/SKILL.md) |
 
 ---
 

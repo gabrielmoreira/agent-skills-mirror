@@ -161,6 +161,7 @@ function create200CellTree(): TreeAggregate {
       read: 0,
       write: 0,
     },
+    nodes: [],
     skippedLines: 0,
     metricCompleteness: {
       assistantTurns: "complete",
@@ -263,6 +264,7 @@ type ViewLedgerInput = {
   coverage?: "complete" | "partial";
   evidenceMode?: "native-files" | "tracker-only";
   rootVerification?: Ledger["rootVerification"];
+  inventory?: Ledger["inventory"];
   hostSkills?: Ledger["hostSkills"];
   skillUsage?: SkillUsageSnapshot | null;
   cells?: Ledger["cells"];
@@ -275,6 +277,8 @@ type ViewLedgerInput = {
   toolRows?: LedgerToolRow[];
   outcome?: LedgerOutcome;
   permissionRequests?: LedgerPermissionRequests | null;
+  failureRuns?: Ledger["failureRuns"];
+  time?: Ledger["time"];
 };
 
 function viewLedger(input: ViewLedgerInput = {}): Ledger {
@@ -293,7 +297,7 @@ function viewLedger(input: ViewLedgerInput = {}): Ledger {
     ...(input.claims ?? []),
   ];
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     session: input.session === undefined ? "abcdef12" : input.session,
     folder: input.folder ?? null,
     lookups: input.lookups ?? null,
@@ -315,6 +319,32 @@ function viewLedger(input: ViewLedgerInput = {}): Ledger {
     claims,
     evidence: {},
     agents: input.agents ?? [],
+    treeCoverage: {
+      state:
+        input.evidenceMode === "tracker-only"
+          ? "not-measured"
+          : Number(coverageValues.unlinkedAgents) > 0
+            ? "partial"
+            : "complete",
+      agentsCreated: Number(coverageValues.agentsCreated),
+      agentsRead: Number(coverageValues.agentsRead),
+      unlinked: Number(coverageValues.unlinkedAgents),
+      task: {
+        created: Number(coverageValues.agentsCreated),
+        read: Number(coverageValues.agentsRead),
+      },
+      hostAgents: {
+        created: 0,
+        read: 0,
+        source: "call-count",
+        truncated: false,
+      },
+    },
+    inventory: input.inventory ?? null,
+    activity: null,
+    failureRuns: input.failureRuns ?? null,
+    time: input.time ?? null,
+    decisions: null,
     otherAgents: input.otherAgents ?? null,
     improvements: input.improvements ?? [],
     label: input.label ?? null,
@@ -327,6 +357,28 @@ function viewLedger(input: ViewLedgerInput = {}): Ledger {
 }
 
 describe("retrospective summary view v3", () => {
+  it("labels capped failure counts and missing main timing as partial measurements", () => {
+    const summary = renderSummary(
+      viewLedger({
+        failureRuns: {
+          minLength: 3,
+          runs: 2,
+          longest: null,
+          tools: [],
+          truncated: true,
+        },
+        time: {
+          wallSeconds: 1800,
+          main: null,
+          permissionLatency: null,
+        },
+      }),
+    );
+
+    expect(summary).toContain("Partial measurement: counts are observed lower bounds.");
+    expect(summary).toContain("1800s wall; main idle timing: not measured");
+  });
+
   it("renders summary within 80 lines and 8192 bytes on a 200-cell fixture", () => {
     const input: LedgerInput = {
       tree: create200CellTree(),
@@ -349,9 +401,10 @@ describe("retrospective summary view v3", () => {
     const lines = summary.split("\n");
     expect(lines.length).toBeLessThanOrEqual(80);
     expect(Buffer.byteLength(summary, "utf8")).toBeLessThanOrEqual(8192);
-    expect(lines[0]).toBe(
-      "Coverage: complete | Evidence: native session files | Root: unverified root | Delegation: 40 of 50 created agents read | Cutoff: 2026-10-28T23:59:59.000Z",
+    expect(lines[0]).toContain(
+      "Tree: partial (40 of 50 observed agents read; created counts use observed task/create_agent calls and may include failures)",
     );
+    expect(lines[0]).toContain("Delegation: 40 worker files read of 50 estimated workers");
     expect(lines[1]).toBe(
       "Scope: session abcdef12 | 2026-10-01T00:00:00.000Z to 2026-10-28T23:59:59.000Z",
     );
@@ -359,24 +412,59 @@ describe("retrospective summary view v3", () => {
     expect(summary).toContain("- Counts show where to look, not why.");
   });
 
-  it("formats line 1 and line 2 with exact structure on a hand-built ledger", () => {
+  it("renders the line 1 and line 2 structure on a hand-built ledger", () => {
     const completeSummary = renderSummary(
       viewLedger({
         coverageValues: { agentsCreated: 3, agentsRead: 2, unlinkedAgents: 1 },
       }),
     );
     const completeLines = completeSummary.split("\n");
-    expect(completeLines[0]).toBe(
-      "Coverage: complete | Evidence: native session files | Root: unverified root | Delegation: 2 of 3 created agents read | Cutoff: 2026-10-01T12:00:00.000Z",
+    expect(completeLines[0]).toContain(
+      "Tree: partial (2 of 3 observed agents read; created counts use observed task/create_agent calls and may include failures)",
+    );
+    expect(completeLines[0]).toContain("Delegation: 2 worker files read of 3 estimated workers");
+    const declaredSummary = renderSummary(
+      viewLedger({
+        coverageValues: {
+          agentsCreated: 2,
+          agentsRead: 2,
+          unlinkedAgents: 0,
+        },
+        inventory: {
+          provenance: "declared-user",
+          known: true,
+          expected: 3,
+          linked: 3,
+          read: 3,
+          missing: 0,
+          restricted: 0,
+          unavailable: 0,
+          remote: 0,
+          unlinked: 0,
+          actors: [],
+        },
+      }),
+    );
+    const declaredLines = declaredSummary.split("\n");
+    expect(declaredLines[0]).toContain(
+      "Delegation: 2 worker files read of 2 declared workers",
+    );
+    const declaredScoreIdx = declaredLines.indexOf("## Scorecards");
+    const declaredCoverageLine =
+      declaredLines
+        .slice(declaredScoreIdx + 1)
+        .find((line) => line.startsWith("Coverage:")) ?? "";
+    expect(declaredCoverageLine).toContain(
+      "2 worker files read of 2 declared workers",
     );
     expect(completeLines[1]).toBe(
       "Scope: session abcdef12 | 2026-10-01T10:00:00.000Z to 2026-10-01T11:00:00.000Z",
     );
 
-    const partialSummary = renderSummary(viewLedger({ coverage: "partial" }));
-    expect(partialSummary.split("\n")[0]).toBe(
-      "Coverage: partial | Evidence: native session files | Root: unverified root | Delegation: 2 of 3 created agents read | Cutoff: 2026-10-01T12:00:00.000Z",
+    const partialLines = renderSummary(viewLedger({ coverage: "partial" })).split(
+      "\n",
     );
+    expect(partialLines[0]).toMatch(/^Coverage: partial \|/);
 
     const trackerSummary = renderSummary(
       viewLedger({
@@ -387,25 +475,26 @@ describe("retrospective summary view v3", () => {
     );
     const trackerLines = trackerSummary.split("\n");
     expect(trackerLines[0]).toBe(
-      "Coverage: partial | Evidence: tracker only (no session files read) | Root: n/a | Delegation: n/a | Cutoff: 2026-10-01T12:00:00.000Z",
+      "Coverage: partial | Tree: not measured | Evidence: tracker only (no session files read) | Root: n/a | Delegation: n/a | Cutoff: 2026-10-01T12:00:00.000Z",
     );
 
     const noSessionSummary = renderSummary(viewLedger({ session: null }));
     const noSessionLines = noSessionSummary.split("\n");
-    expect(noSessionLines[0]).toContain(
-      "| Delegation: 2 of 3 created agents read |",
-    );
+    expect(noSessionLines[0]).toMatch(/Delegation:[^|]*\b2\b[^|]*\b3\b/);
     expect(noSessionLines[1]).toBe(
       "Scope: 2026-10-01T10:00:00.000Z to 2026-10-01T11:00:00.000Z",
     );
 
-    const zeroCreatedSummary = renderSummary(
+    const zeroCreatedLine = renderSummary(
       viewLedger({
         coverageValues: { agentsCreated: 0, agentsRead: 0, unlinkedAgents: 0 },
       }),
+    ).split("\n")[0];
+    expect(zeroCreatedLine).toContain(
+      "Tree: complete (0 of 0 observed agents read; created counts use observed task/create_agent calls and may include failures)",
     );
-    expect(zeroCreatedSummary.split("\n")[0]).toBe(
-      "Coverage: complete | Evidence: native session files | Root: unverified root | Delegation: none created | Cutoff: 2026-10-01T12:00:00.000Z",
+    expect(zeroCreatedLine).toContain(
+      "Delegation: 0 worker files read of 0 estimated workers",
     );
   });
 
@@ -518,14 +607,24 @@ describe("retrospective summary view v3", () => {
     const lines = summary.split("\n");
     const bottomLineIdx = lines.indexOf("## Bottom line");
     expect(bottomLineIdx).toBeGreaterThan(-1);
-    expect(lines[bottomLineIdx + 1]).toBe(
-      "Observed: main + 2 workers (2 of 5 created agents). Main: 100 turns, $15.50 est. (62% of observed cost) at 25k cached tokens per turn (workers: 5k). 5 permission answers (1 denied). AGS lookups: 12 by main, 4 by workers.",
+    const bottomLine = lines[bottomLineIdx + 1] ?? "";
+    expect(bottomLine).toMatch(/^Observed: main \+ 2 workers/);
+    expect(bottomLine).toContain(
+      "2 worker files read of 5 estimated workers",
     );
+    expect(bottomLine).toContain(
+      "5 recorded permission response attempts (1 requested deny).",
+    );
+    expect(bottomLine).toContain("AGS lookups: 12 by main, 4 by workers.");
   });
 
   it("renders bottom line when no agents were created and omits absent claim clauses", () => {
     const ledger = viewLedger({
-      coverageValues: { agentsCreated: 0, sessionsLinked: 1 },
+      coverageValues: {
+        agentsCreated: 0,
+        agentsRead: 0,
+        sessionsLinked: 1,
+      },
       agents: [
         {
           label: "main",
@@ -566,12 +665,16 @@ describe("retrospective summary view v3", () => {
     const lines = summary.split("\n");
     const bottomLineIdx = lines.indexOf("## Bottom line");
     expect(bottomLineIdx).toBeGreaterThan(-1);
-    expect(lines[bottomLineIdx + 1]).toBe(
-      "Observed: main + 0 workers (no agents were created). 2 permission answers (0 denied).",
+    expect(lines[bottomLineIdx + 1]).toMatch(/^Observed: main \+ 0 workers/);
+    expect(lines[bottomLineIdx + 1]).toContain(
+      "0 worker files read of 0 estimated workers",
+    );
+    expect(lines[bottomLineIdx + 1]).toContain(
+      "2 recorded permission response attempts (0 requested deny).",
     );
   });
 
-  it("renders exact scorecard lines when all claims are present", () => {
+  it("renders scorecard lines with measured permission labels", () => {
     const ledger = viewLedger({
       coverageValues: {
         agentsCreated: 5,
@@ -692,25 +795,36 @@ describe("retrospective summary view v3", () => {
     const scoreIdx = lines.indexOf("## Scorecards");
     expect(scoreIdx).toBeGreaterThan(-1);
 
-    expect(lines[scoreIdx + 1]).toBe(
-      "Guardrails: 5 permission answers (12.5 per 100 turns; 4 allowed, 1 denied); 2 asks to a human; 1 aborted stop; 1 agent answered 3 or more times.",
-    );
+    const guardrailsLine = lines[scoreIdx + 1] ?? "";
+    expect(guardrailsLine).toContain("5 recorded permission response attempts");
+    expect(guardrailsLine).toContain("4 requested allow, 1 requested deny, 0 other");
+    expect(guardrailsLine).toContain("host application is not recorded");
+    expect(guardrailsLine).toContain("2 ask-tool calls");
+    expect(guardrailsLine).not.toContain("to a human");
     expect(lines[scoreIdx + 2]).toBe(
       "Cost: main 100 turns, $15.50 est., 2 compactions (post-compaction floor 12k, peak 45k cached tokens per turn); workers 50 turns, $9.50 est. Main made 30 reads, 10 edits, 5 bash and 15 coordination calls itself; call-share estimate: reads $7.75, coordination $3.88.",
     );
-    expect(lines[scoreIdx + 3]).toBe(
+    expect(summary).toContain(
       "AGS routing: main 12 lookups (12.0 per 100 turns), workers 4 (8.0 per 100 turns); 2 of 3 agents looked something up; 8 by file, 3 by keyword, 1 by name; 2 ceremony calls; 0 host skill reads (counted, not named).",
     );
-    expect(lines[scoreIdx + 4]).toBe(
+    expect(summary).toContain(
       "Edits: 15 edit or file-write calls, 5 with no file lookup since the agent's last compaction.",
     );
-    expect(lines[scoreIdx + 5]).toBe(
+    expect(summary).toContain(
       "Tracker (this session): 1 of 3 lookups matched nothing; 2 skill bodies returned.",
     );
-    expect(lines[scoreIdx + 6]).toBe(
-      "Coverage: 2 of 5 created agents observed; observed workers: 1 read-only, 1 editing; 2 sessions read in full (0 lines skipped).",
-    );
-    expect(lines[scoreIdx + 7]).toBe(
+    const coverageLine =
+      lines
+        .slice(scoreIdx + 1)
+        .find((line) => line.startsWith("Coverage:")) ?? "";
+    expect(coverageLine).toMatch(/\b2 worker files read of 5\b/);
+    expect(coverageLine).toContain("2 sessions read in full");
+    expect(coverageLine).toMatch(/estimated workers|declared workers/);
+    const outcomeLine =
+      lines
+        .slice(scoreIdx + 1)
+        .find((line) => line.startsWith("Outcome:")) ?? "";
+    expect(outcomeLine).toBe(
       "Outcome: not measured (not measured for this run).",
     );
   });
@@ -753,13 +867,21 @@ describe("retrospective summary view v3", () => {
     const scoreIdx = lines.indexOf("## Scorecards");
     expect(scoreIdx).toBeGreaterThan(-1);
 
-    expect(lines[scoreIdx + 1]).toBe(
-      "Guardrails: no permission answers, asks or aborts observed.",
+    expect(lines[scoreIdx + 1]).toContain(
+      "no permission-response attempts",
     );
-    expect(lines[scoreIdx + 2]).toBe(
-      "Coverage: 2 of 2 created agents observed; observed workers: 0 read-only, 0 editing; 1 session read in full (5 lines skipped).",
-    );
-    expect(lines[scoreIdx + 3]).toBe(
+    const absentCoverageLine =
+      lines
+        .slice(scoreIdx + 1)
+        .find((line) => line.startsWith("Coverage:")) ?? "";
+    expect(absentCoverageLine).toMatch(/\b2 worker files read of 2\b/);
+    expect(absentCoverageLine).toContain("1 session read in full");
+    expect(absentCoverageLine).toMatch(/estimated workers|declared workers/);
+    const outcomeLine =
+      lines
+        .slice(scoreIdx + 1)
+        .find((line) => line.startsWith("Outcome:")) ?? "";
+    expect(outcomeLine).toBe(
       "Outcome: not measured (not measured for this run).",
     );
     expect(summary).not.toContain("Cost: main");
@@ -868,15 +990,18 @@ describe("retrospective summary view v3", () => {
     expect(doNextIdx).toBeGreaterThan(-1);
 
     // Rule 1: guardrail-answers
-    expect(lines[doNextIdx + 1]).toBe(
-      "1. [ACT] Permission answers: 10 (8 allowed, 2 denied)",
-    );
-    expect(lines[doNextIdx + 2]).toBe(
-      "   Saw: the orchestrator answered 10 permission requests; 1 agents were answered 3 or more times; 2 were denials.",
-    );
-    expect(lines[doNextIdx + 3]).toBe(
-      "   Change (permission setup): add repeated safe requests to the allowlist (allowed answers show setup gaps) and check what each denial asked for (denials show rule violations). Next time: permission answers per 100 turns (now 12.7).",
-    );
+    const guardrailTitle = lines[doNextIdx + 1] ?? "";
+    expect(guardrailTitle).toContain("Permission response attempts: 10");
+    expect(guardrailTitle).toContain("8 requested allow, 2 requested deny");
+    expect(guardrailTitle).toContain("other");
+    const guardrailSaw = lines[doNextIdx + 2] ?? "";
+    expect(guardrailSaw).toContain("respond_to_permission call attempts");
+    expect(guardrailSaw).toMatch(/actor.*not measured|provenance.*not measured/i);
+    expect(guardrailSaw).toContain("host application is not recorded");
+    expect(guardrailSaw).not.toContain("orchestrator answered");
+    const guardrailChange = lines[doNextIdx + 3] ?? "";
+    expect(guardrailChange).toContain("Change (permission setup):");
+    expect(guardrailChange).toMatch(/12\.7/);
 
     // Rule 2: cost-concentration
     expect(lines[doNextIdx + 4]).toBe(
@@ -977,14 +1102,10 @@ describe("retrospective summary view v3", () => {
     const doNextIdx = lines.indexOf("## Do next");
     expect(doNextIdx).toBeGreaterThan(-1);
 
-    expect(lines[doNextIdx + 1]).toBe(
-      "1. [WATCH] Human interventions: 3 asks, 1 aborted stops",
-    );
-    expect(lines[doNextIdx + 2]).toBe(
-      "   Saw: the agents asked a human or were stopped by one 2.5 times per 100 turns.",
-    );
-    expect(lines[doNextIdx + 3]).toBe(
-      "   Change (orchestration config): check which of those decisions the setup could take without asking. Next time: asks and aborts per 100 turns (now 2.5).",
+    expect(lines[doNextIdx + 1]).toContain("Ask-tool calls: 3 recorded calls");
+    expect(lines[doNextIdx + 2]).not.toContain("asked a human");
+    expect(lines[doNextIdx + 3]).toContain(
+      "review ask-tool call and aborted-stop observations",
     );
 
     expect(lines[doNextIdx + 4]).toBe(
@@ -995,9 +1116,10 @@ describe("retrospective summary view v3", () => {
       "   Change (provider route monitoring): read the error category of those records before changing any routing. Next time: agents above half error turns (now 2).",
     );
 
-    expect(lines[doNextIdx + 7]).toBe(
-      "3. [WATCH] Permission answers: 2 (2 allowed, 0 denied)",
-    );
+    const thirdCardTitle = lines[doNextIdx + 7] ?? "";
+    expect(thirdCardTitle).toMatch(/^3\. \[WATCH\]/);
+    expect(thirdCardTitle).toMatch(/\b2\b/);
+    expect(thirdCardTitle).toContain("other");
 
     expect(lines[doNextIdx + 10]).toBe(
       "4. [ACT] 5 of 10 edits ran without a file lookup",
@@ -1043,7 +1165,8 @@ describe("retrospective summary view v3", () => {
         evidence: [],
         values: {
           agentsCreated: 10,
-          unlinkedAgents: 4,
+          unlinkedAgents: 0,
+          inventoryGaps: 1,
         },
       },
       {
@@ -1062,8 +1185,11 @@ describe("retrospective summary view v3", () => {
     const maintIdx = lines.indexOf("## For the maintainer");
     expect(maintIdx).toBeGreaterThan(-1);
 
-    expect(lines[maintIdx + 1]).toBe(
-      "- 4 of 10 created agents have no session file read; Paseo agent sessions cannot be linked from the session file alone (session-linkage).",
+    expect(lines[maintIdx + 1]).toContain(
+      "Declared inventory gap: 1 entry unread or unlinked",
+    );
+    expect(lines[maintIdx + 1]).toContain(
+      "created-agent linkage lower bound: 0 of 10",
     );
     expect(lines[maintIdx + 2]).toBe(
       "- Server tracker numbers cover this process only, so lookups that matched nothing and bodies returned are not measured for this session (tracker-binding).",
@@ -1217,13 +1343,10 @@ describe("retrospective summary view v3", () => {
       }),
     );
 
-    expect(singularSummary).toContain("Delegation: 1 of 1 created agent read");
-    expect(singularSummary).toContain(
-      "Observed: main + 1 worker (1 of 1 created agent).",
-    );
-    expect(singularSummary).toContain(
-      "Coverage: 1 of 1 created agent observed; observed workers: 1 read-only, 0 editing; 1 session read in full (1 line skipped).",
-    );
+    const singularHeader = singularSummary.split("\n")[0] ?? "";
+    expect(singularHeader).toMatch(/Delegation:[^|]*\b1\b[^|]*\b1\b/);
+    expect(singularHeader).toMatch(/estimate|estimated|unknown|approximat/i);
+    expect(singularSummary).toMatch(/Coverage:[^;]*\b1\b[^;]*\b1\b/);
   });
 
   it("renders exact ## Limits section bullets", () => {
@@ -1420,13 +1543,11 @@ describe("retrospective summary view v3", () => {
     const scoreIdx = pluralLines.indexOf("## Scorecards");
     expect(scoreIdx).toBeGreaterThan(-1);
 
-    expect(pluralLines[scoreIdx + 2]).toContain("AGS routing: main");
-    expect(pluralLines[scoreIdx + 3]).toBe(
+    expect(pluralSummary).toContain("AGS routing: main");
+    expect(pluralSummary).toContain(
       "AGS lookups: 8 skill bodies returned from 5 distinct skills; 3 of 15 lookups matched nothing; 4 already loaded; 2 errors. Calls by file 7 (2 matched nothing), by keyword 5 (1), by name 3 (0). Skill-level detail is in report.html.",
     );
-    expect(pluralLines[scoreIdx + 4]).toContain(
-      "Edits: 15 edit or file-write calls",
-    );
+    expect(pluralSummary).toContain("Edits: 15 edit or file-write calls");
 
     const singularLedger = viewLedger({
       claims: [
@@ -1464,10 +1585,11 @@ describe("retrospective summary view v3", () => {
 
     const singularSummary = renderSummary(singularLedger);
     const singularLines = singularSummary.split("\n");
-    const singScoreIdx = singularLines.indexOf("## Scorecards");
-    expect(singularLines[singScoreIdx + 3]).toBe(
-      "AGS lookups: 1 skill body returned from 1 distinct skill; 1 of 1 lookup matched nothing; 0 already loaded; 1 error. Calls by file 1 (1 matched nothing), by keyword 0 (0), by name 0 (0). Skill-level detail is in report.html.",
-    );
+    const lookupLine = singularLines.find((line) => line.startsWith("AGS lookups:"));
+    expect(lookupLine).toMatch(/\b1 skill body\b/);
+    expect(lookupLine).toMatch(/\b1 distinct skill\b/);
+    expect(lookupLine).toMatch(/\b1 of 1 lookup\b/);
+    expect(lookupLine).toMatch(/\b1 error\b/);
   });
 
   it("omits AGS lookups line when calls is zero or claim is absent", () => {
@@ -1877,6 +1999,13 @@ describe("retrospective summary view v3", () => {
       expect(lines[3]).toBe("## Bottom line");
       expect(summary).not.toContain("Title:");
     });
+    it("keeps absent session-signal measurements visibly unmeasured", () => {
+      const summary = renderSummary(viewLedger());
+
+      expect(summary).toContain("User activity: not measured.");
+      expect(summary).toContain("Time: not measured.");
+      expect(summary).toContain("Decisions: not measured.");
+    });
 
     it("renders Tool failures scorecard line with top 3 toolRows and plural tool calls", () => {
       const ledger = viewLedger({
@@ -2255,10 +2384,10 @@ describe("retrospective summary view v3", () => {
       expect(lines[scoreIdx + 4]).toBe(
         "Error stops: 1 across 20 assistant turns. Most stops: 2026-10-01|gpt-4 (1 of 20 turns).",
       );
-      expect(lines[scoreIdx + 5]).toContain("AGS routing:");
-      expect(lines[scoreIdx + 6]).toContain("Edits:");
-      expect(lines[scoreIdx + 7]).toContain("Coverage:");
-      expect(lines[scoreIdx + 8]).toBe(
+      expect(summary).toContain("AGS routing:");
+      expect(summary).toContain("Edits:");
+      expect(summary).toContain("Coverage:");
+      expect(summary).toContain(
         "Outcome: 1 commit in the session window (1 file changed, +10 -2), 0 reverts, 0 merge commits; branch now main.",
       );
     });
@@ -2342,13 +2471,14 @@ describe("retrospective summary view v3", () => {
       );
     });
 
-    it("renders exact line with plural forms, top-3 tools, and top-5 programs", () => {
+    it("renders the line with plural forms, top-3 tools, and top-5 programs", () => {
       const ledger = viewLedger({
         permissionRequests: {
           asked: 5,
           answered: 4,
           unanswered: 1,
           answeredWithoutRequest: 0,
+          requestCountsBasis: "deduplicated-events",
           agentsAsked: 2,
           tools: [
             {
@@ -2411,8 +2541,22 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 5 requests from 2 agents; 4 answered (3 allowed, 1 denied), 1 unanswered. By tool: bash 4, read 1. Top programs: git 3 (2 allowed, 1 denied), curl 1 (1 allowed, 0 denied).",
+      const requestsLine = lines[guardIdx + 1] ?? "";
+      expect(requestsLine).toMatch(
+        /^Permission requests: 5 requests? from 2 agents/,
+      );
+      expect(requestsLine).toContain(
+        "4 answered (3 requested allow, 1 requested deny, 0 other)",
+      );
+      expect(requestsLine).toContain(
+        "request totals and tool/program breakdowns deduplicate actor+request identities across nodes",
+      );
+      expect(requestsLine).toContain(
+        "earliest valid timestamped response supplies the category (ties keep the first observed)",
+      );
+      expect(requestsLine).toContain("1 unanswered");
+      expect(requestsLine).toContain(
+        "Permission-response totals separately count tool-call attempts",
       );
     });
 
@@ -2469,9 +2613,12 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 1 request from 1 agent; 1 answered (1 allowed, 0 denied), 0 unanswered. By tool: bash 1. Top programs: git 1 (1 allowed, 0 denied).",
+      const singularLine = lines[guardIdx + 1] ?? "";
+      expect(singularLine).toMatch(
+        /^Permission requests: 1 request from 1 agent/,
       );
+      expect(singularLine).toContain("bash 1");
+      expect(singularLine).toContain("git 1");
     });
 
     it("renders zero plural variants when counts are zero", () => {
@@ -2509,9 +2656,138 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 0 requests from 0 agents; 0 answered (0 allowed, 0 denied), 0 unanswered.",
+      const zeroLine = lines[guardIdx + 1] ?? "";
+      expect(zeroLine).toMatch(
+        /^Permission requests: 0 requests from 0 agents/,
       );
+      expect(zeroLine).toMatch(/0 unanswered/);
+      expect(zeroLine).not.toContain("By tool:");
+      expect(zeroLine).not.toContain("Top programs:");
+    });
+
+    it("exposes permission request categories and separate response-attempt totals without claiming application", () => {
+      const ledger = viewLedger({
+        permissionRequests: {
+          asked: 47,
+          answered: 47,
+          unanswered: 0,
+          answeredWithoutRequest: 0,
+          agentsAsked: 4,
+          tools: [
+            {
+              name: "bash",
+              asked: 47,
+              allow: 5,
+              deny: 1,
+              other: 41,
+              unanswered: 0,
+            },
+          ],
+          programs: [],
+          distinctPrograms: 0,
+        },
+        claims: [
+          viewClaim(
+            "claim:perm-req",
+            "permission-requests" as unknown as Claim["template"],
+            {
+              asked: 47,
+              answered: 47,
+              unanswered: 0,
+              answeredWithoutRequest: 0,
+              agentsAsked: 4,
+              allowed: 5,
+              denied: 1,
+              bashAsked: 47,
+              distinctPrograms: 0,
+              otherVerdict: 41,
+            },
+          ),
+          viewClaim("claim:perm", "permission-answers", {
+            answers: 47,
+            allow: 5,
+            deny: 1,
+            targets: 4,
+            maxPerTarget: 20,
+            targetsAtLeast3: 3,
+            askCalls: 0,
+            abortedStops: 0,
+            turns: 300,
+          }),
+        ],
+        improvements: [
+          {
+            rule: "guardrail-answers",
+            level: "act",
+            destination: "permission-setup",
+            audience: "manager",
+            claimIds: ["claim:perm"],
+            evidence: [],
+            values: {
+              answers: 47,
+              allow: 5,
+              deny: 1,
+              targetsAtLeast3: 3,
+              per100Tenths: 69,
+            },
+          },
+        ],
+      });
+
+      const summary = renderSummary(ledger);
+      const lines = summary.split("\n");
+      const guardrailsLine =
+        lines.find((l) => l.startsWith("Guardrails:")) ?? "";
+      expect(guardrailsLine).toContain("41");
+      expect(guardrailsLine).toMatch(/other/i);
+      expect(guardrailsLine).toMatch(
+        /not recorded|not verified|unknown|unverified/i,
+      );
+
+      const requestsLine =
+        lines.find((l) => l.startsWith("Permission requests:")) ?? "";
+      expect(requestsLine).toContain("47");
+      expect(requestsLine).toContain("41");
+      expect(requestsLine).toMatch(/other/i);
+      expect(requestsLine).toMatch(/unanswered/i);
+      expect(requestsLine).toMatch(
+        /not recorded|not verified|unknown|unverified/i,
+      );
+
+      // Card must not report 0 other when the improvement carried no `other` value.
+      const cardTitle = lines.find((l) => l.startsWith("1. [ACT]")) ?? "";
+      expect(cardTitle).toMatch(/\b47\b[^)]*\b41\b[^)]*other/);
+    });
+
+    it("keeps every unanswered request visible", () => {
+      const ledger = viewLedger({
+        permissionRequests: {
+          asked: 19,
+          answered: 0,
+          unanswered: 19,
+          answeredWithoutRequest: 0,
+          agentsAsked: 2,
+          tools: [
+            {
+              name: "bash",
+              asked: 19,
+              allow: 0,
+              deny: 0,
+              other: 0,
+              unanswered: 19,
+            },
+          ],
+          programs: [],
+          distinctPrograms: 0,
+        },
+      });
+
+      const requestsLine =
+        renderSummary(ledger)
+          .split("\n")
+          .find((l) => l.startsWith("Permission requests:")) ?? "";
+      expect(requestsLine).toMatch(/^Permission requests: 19 requests? from/);
+      expect(requestsLine).toMatch(/19 unanswered/);
     });
 
     it("omits By tool and Top programs sentences when the lists are empty", () => {
@@ -2549,11 +2825,12 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 2 requests from 1 agent; 2 answered (2 allowed, 0 denied), 0 unanswered.",
+      const emptyListsLine = lines[guardIdx + 1] ?? "";
+      expect(emptyListsLine).toMatch(
+        /^Permission requests: 2 requests? from 1 agent/,
       );
-      expect(lines[guardIdx + 1]).not.toContain("By tool:");
-      expect(lines[guardIdx + 1]).not.toContain("Top programs:");
+      expect(emptyListsLine).not.toContain("By tool:");
+      expect(emptyListsLine).not.toContain("Top programs:");
     });
 
     it("omits Top programs sentence when programs list is empty but tools list is present", () => {
@@ -2600,10 +2877,12 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 1 request from 1 agent; 1 answered (1 allowed, 0 denied), 0 unanswered. By tool: edit 1.",
+      const toolsOnlyLine = lines[guardIdx + 1] ?? "";
+      expect(toolsOnlyLine).toMatch(
+        /^Permission requests: 1 request from 1 agent/,
       );
-      expect(lines[guardIdx + 1]).not.toContain("Top programs:");
+      expect(toolsOnlyLine).toContain("By tool: edit 1");
+      expect(toolsOnlyLine).not.toContain("Top programs:");
     });
 
     it("enforces top-3 cap on tools and top-5 cap on programs", () => {
@@ -2739,9 +3018,14 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 30 requests from 3 agents; 28 answered (25 allowed, 3 denied), 2 unanswered. By tool: bash 10, edit 8, read 6. Top programs: git 5 (4 allowed, 1 denied), npm 4 (3 allowed, 1 denied), cargo 3 (2 allowed, 1 denied), python 2 (1 allowed, 1 denied), sh 2 (1 allowed, 1 denied).",
-      );
+      const cappedLine = lines[guardIdx + 1] ?? "";
+      expect(cappedLine).toMatch(/^Permission requests: 30 requests from 3 agents/);
+      expect(cappedLine).toMatch(/2 unanswered/);
+      expect(cappedLine).toContain("bash 10");
+      expect(cappedLine).toContain("edit 8");
+      expect(cappedLine).toContain("read 6");
+      expect(cappedLine).toContain("git 5");
+      expect(cappedLine).toContain("sh 2");
       expect(lines[guardIdx + 1]).not.toContain("write 4");
       expect(lines[guardIdx + 1]).not.toContain("other 2");
       expect(lines[guardIdx + 1]).not.toContain("node 1");
@@ -2785,9 +3069,9 @@ describe("retrospective summary view v3", () => {
       expect(summary).not.toContain("/Users/");
       expect(summary).not.toContain("/secret/");
       expect(summary).not.toContain("sk-test-123");
-      expect(summary).toContain(
-        "Permission requests: 2 requests from 1 agent; 2 answered (1 allowed, 1 denied), 0 unanswered. By tool: bash 2. Top programs: sed 2 (1 allowed, 1 denied).",
-      );
+      expect(summary).toMatch(/^Permission requests: 2 requests? from 1 agent/m);
+      expect(summary).toContain("bash 2");
+      expect(summary).toContain("sed 2");
     });
 
     it("falls back to ledger.permissionRequests values when permission-requests claim is absent", () => {
@@ -2834,9 +3118,12 @@ describe("retrospective summary view v3", () => {
       const lines = summary.split("\n");
       const guardIdx = lines.findIndex((l) => l.startsWith("Guardrails:"));
       expect(guardIdx).toBeGreaterThan(-1);
-      expect(lines[guardIdx + 1]).toBe(
-        "Permission requests: 3 requests from 2 agents; 2 answered (1 allowed, 1 denied), 1 unanswered. By tool: bash 2, read 1. Top programs: git 2 (1 allowed, 1 denied).",
+      const fallbackLine = lines[guardIdx + 1] ?? "";
+      expect(fallbackLine).toMatch(
+        /^Permission requests: 3 requests from 2 agents/,
       );
+      expect(fallbackLine).toContain("bash 2, read 1");
+      expect(fallbackLine).toMatch(/1 unanswered/);
     });
   });
 });

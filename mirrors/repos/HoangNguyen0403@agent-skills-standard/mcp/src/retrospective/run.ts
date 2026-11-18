@@ -9,11 +9,24 @@ import {
   rollUp,
   type AggregateLimits,
   type AggregatedSession,
+  type SourceLocation,
   type SourceSnapshot,
 } from "./aggregate";
 import { readConsent, type ConsentRecord } from "./consent";
-import type { ArtifactReceipt, NodeKey } from "./contracts";
+import type {
+  ActorState,
+  ArtifactReceipt,
+  CoverageActor,
+  CoverageInventory,
+  NodeKey,
+} from "./contracts";
+import { EVIDENCE_SEMANTICS_REVISION } from "./contracts";
 import { discoverSession, type DiscoveryLimits } from "./discovery";
+import {
+  readManifestFile,
+  resolveManifestNodes,
+  type ResolvedManifestNode,
+} from "./manifest-ingress";
 import {
   buildLedger,
   sanitizeLabel,
@@ -26,15 +39,26 @@ import { readGitOutcome } from "./outcome";
 import { loadPreviousReports, type SessionRates } from "./trend";
 import { prepareV2 } from "./prepare";
 import { RetrospectiveError } from "./errors";
+import type { ReadSource } from "./read-source";
 import { resolveArtifact, StoreError } from "./store";
 import { renderSummary } from "./views/summary";
 import { renderReportHtml } from "./views/report-html";
 import type { SessionTracker } from "../services/SessionTracker";
+import {
+  storedLedgerV2FieldsSchema,
+  type TreeCoverage,
+} from "./ledger-v2";
 
 export type RunDeps = {
   tracker: SessionTracker;
   workspace: string;
   consentPath?: string;
+  /**
+   * Explicit local preparation ingress. When set, the run reads exactly the
+   * declared manifest nodes (bounded by consent) instead of discovering a
+   * session from the tracker's observations.
+   */
+  manifestPath?: string;
   clock?: () => Date;
   limits?: Partial<AggregateLimits>;
   discoveryLimits?: Partial<DiscoveryLimits>;
@@ -244,16 +268,28 @@ const storedPermissionRowSchema = z.strictObject({
   unanswered: z.number().int().nonnegative(),
 });
 
-const storedPermissionCommandSchema = z.strictObject({
-  text: z.string(),
-  tool: z.string().min(1),
-  kind: z.string().min(1),
-  asked: z.number().int().nonnegative(),
-  allow: z.number().int().nonnegative(),
-  deny: z.number().int().nonnegative(),
-  other: z.number().int().nonnegative(),
-  unanswered: z.number().int().nonnegative(),
-});
+const storedPermissionCommandSchema = z.union([
+  z.strictObject({
+    text: z.string(),
+    tool: z.string().min(1),
+    kind: z.string().min(1),
+    asked: z.number().int().nonnegative(),
+    allow: z.number().int().nonnegative(),
+    deny: z.number().int().nonnegative(),
+    other: z.number().int().nonnegative(),
+    unmatchedObservations: z.number().int().nonnegative(),
+  }),
+  z.strictObject({
+    text: z.string(),
+    tool: z.string().min(1),
+    kind: z.string().min(1),
+    asked: z.number().int().nonnegative(),
+    allow: z.number().int().nonnegative(),
+    deny: z.number().int().nonnegative(),
+    other: z.number().int().nonnegative(),
+    unanswered: z.number().int().nonnegative(),
+  }),
+]);
 
 const storedPermissionRequestsSchema = z
   .strictObject({
@@ -268,8 +304,85 @@ const storedPermissionRequestsSchema = z
     commands: z.array(storedPermissionCommandSchema).max(50),
     distinctCommands: z.number().int().nonnegative(),
     commandsOmitted: z.number().int().nonnegative(),
+    commandCountsBasis: z.literal("raw-observations-may-duplicate").optional(),
+    requestCountsBasis: z
+      .enum(["deduplicated-events", "raw-observations-may-duplicate"])
+      .optional(),
   })
   .nullable();
+const storedPermissionFrictionSchema = z
+  .strictObject({
+    requests: z.number().int().nonnegative(),
+    answered: z.number().int().nonnegative(),
+    unanswered: z.number().int().nonnegative(),
+    repeatedRequests: z.number().int().nonnegative(),
+    humanAnswers: z.number().int().nonnegative().nullable(),
+    orchestratorAnswers: z.number().int().nonnegative().nullable(),
+    waitMs: z.number().int().nonnegative().nullable(),
+    waitMeasuredRequests: z.number().int().nonnegative(),
+    coverage: z.enum(["complete", "partial"]),
+    limitations: z.array(z.string().min(1)),
+    byAgent: z.array(
+      z.strictObject({
+        label: z.string().min(1),
+        requests: z.number().int().nonnegative(),
+        answered: z.number().int().nonnegative(),
+        unanswered: z.number().int().nonnegative(),
+        repeatedRequests: z.number().int().nonnegative(),
+      }),
+    ),
+    byTool: z.array(
+      z.strictObject({
+        tool: z.string().min(1),
+        requests: z.number().int().nonnegative(),
+        repeatedRequests: z.number().int().nonnegative(),
+      }),
+    ),
+  })
+  .nullable();
+
+const storedActorSchema = z.strictObject({
+  label: z.string().min(1).max(24),
+  parentLabel: z.string().min(1).max(24).nullable(),
+  disposition: z.enum([
+    "local-allowed",
+    "restricted",
+    "unavailable",
+    "remote-not-authorized",
+  ]),
+  state: z.enum([
+    "read",
+    "missing",
+    "restricted",
+    "unavailable",
+    "remote-not-authorized",
+    "unlinked",
+  ]),
+  token: z.string().regex(/^(?:[0-9a-f]{8}|unknown)$/),
+  turns: z.number().int().nonnegative().nullable(),
+});
+
+const storedInventorySchema = z
+  .strictObject({
+    provenance: z.enum([
+      "declared-user",
+      "declared-host",
+      "observed-native",
+      "none",
+    ]),
+    known: z.boolean(),
+    expected: z.number().int().nonnegative(),
+    linked: z.number().int().nonnegative(),
+    read: z.number().int().nonnegative(),
+    missing: z.number().int().nonnegative(),
+    restricted: z.number().int().nonnegative(),
+    unavailable: z.number().int().nonnegative(),
+    remote: z.number().int().nonnegative(),
+    unlinked: z.number().int().nonnegative(),
+    actors: z.array(storedActorSchema).max(128),
+  })
+  .nullable();
+
 const storedAgentSchema = z.strictObject({
   label: z.string().min(1),
   kind: z.enum(["read-only", "editing"]),
@@ -303,8 +416,10 @@ const storedImprovementSchema = z.strictObject({
     "unguarded-edits",
     "lookup-misses",
     "human-intervention",
+    "repeated-permission-requests",
     "agent-error-concentration",
     "coverage-gap",
+    "permission-timing-unmeasured",
     "tracker-not-measured",
   ]),
   level: z.enum(["act", "watch"]),
@@ -364,7 +479,7 @@ const storedLookupsSchema = z
   })
   .nullable();
 
-const storedLedgerSchema = z.strictObject({
+const storedLedgerV1Schema = z.strictObject({
   schemaVersion: z.literal(1),
   cutoff: z.string().min(1),
   session: z.string().min(1).nullable(),
@@ -390,6 +505,9 @@ const storedLedgerSchema = z.strictObject({
   toolRows: z.array(storedToolRowSchema),
   outcome: storedOutcomeSchema,
   permissionRequests: storedPermissionRequestsSchema,
+  /** Added after schemaVersion 1 shipped; absent in historical generations. */
+  permissionFriction: storedPermissionFrictionSchema.optional(),
+  inventory: storedInventorySchema.optional(),
   agents: z.array(storedAgentSchema),
   otherAgents: storedOtherAgentsSchema,
   improvements: z.array(storedImprovementSchema),
@@ -402,6 +520,59 @@ const storedLedgerSchema = z.strictObject({
     }),
   ),
 });
+
+const storedLedgerV2Schema = storedLedgerV1Schema
+  .omit({
+    schemaVersion: true,
+    agents: true,
+    claims: true,
+    improvements: true,
+  })
+  .extend({
+    schemaVersion: z.literal(2),
+    agents: z.array(
+      storedAgentSchema.extend({
+        activeSeconds: z.number().nonnegative().nullable(),
+      }),
+    ),
+    claims: z
+      .array(
+        storedClaimSchema.extend({
+          template: z.enum([
+            ...storedClaimSchema.shape.template.options,
+            "turn-activity",
+            "failure-runs",
+            "decisions",
+          ]),
+        }),
+      )
+      .min(1),
+    improvements: z.array(
+      storedImprovementSchema.extend({
+        rule: z.enum([
+          ...storedImprovementSchema.shape.rule.options,
+          "failure-run",
+          "decision-review-backlog",
+        ]),
+        destination: z.enum([
+          "permission-setup",
+          "orchestration-config",
+          "agent-routing",
+          "provider-route-monitoring",
+          "session-linkage",
+          "tracker-binding",
+          "tool-setup",
+          "decision-review",
+        ]),
+      }),
+    ),
+    ...storedLedgerV2FieldsSchema.shape,
+  });
+
+const storedLedgerSchema = z.union([
+  storedLedgerV1Schema,
+  storedLedgerV2Schema,
+]);
 
 type CommittedLedgerSummary = {
   coverage: "complete" | "partial";
@@ -478,7 +649,7 @@ async function readStoredLedgerText(ledgerPath: string): Promise<string> {
  * numbers that generation published. Any read, parse or shape problem fails
  * closed: never fall back to freshly recomputed numbers.
  */
-async function loadCommittedLedger(
+export async function loadCommittedLedger(
   ledgerPath: string,
 ): Promise<CommittedLedgerSummary> {
   let raw: string;
@@ -542,20 +713,26 @@ async function consentStillValid(
   const again = await readConsent(consentPath);
   if (again.state !== "enabled") return false;
   const next = again.record;
+  const originalAgentRoots = original.allowedAgentRecordRoots ?? [];
+  const nextAgentRoots = next.allowedAgentRecordRoots ?? [];
   if (
     next.grantedAt !== original.grantedAt ||
     next.storeRoot !== original.storeRoot ||
-    next.allowedSourceRoots.length !== original.allowedSourceRoots.length
+    next.allowedSourceRoots.length !== original.allowedSourceRoots.length ||
+    nextAgentRoots.length !== originalAgentRoots.length
   ) {
     return false;
   }
-  return next.allowedSourceRoots.every(
-    (root, index) => root === original.allowedSourceRoots[index],
+  return (
+    next.allowedSourceRoots.every(
+      (root, index) => root === original.allowedSourceRoots[index],
+    ) &&
+    nextAgentRoots.every((root, index) => root === originalAgentRoots[index])
   );
 }
 
 async function captureSnapshots(
-  nodeFiles: Array<{ node: NodeKey; absolutePath: string }>,
+  nodeFiles: Array<{ node: NodeKey } & SourceLocation>,
   maxBytes: number,
   signal: AbortSignal,
 ): Promise<SourceSnapshot[]> {
@@ -619,10 +796,395 @@ async function publishResult(args: {
   };
 }
 
+function nodeId(key: NodeKey): string {
+  return `${key.hostId}\u0000${key.sessionId}`;
+}
+
+function actorToken(sessionId: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(sessionId, "utf8")
+    .digest("hex")
+    .slice(0, 8);
+}
+
+function actorStateOf(
+  disposition: ResolvedManifestNode["disposition"],
+  read: boolean,
+): ActorState {
+  if (read) return "read";
+  if (disposition === "local-allowed") return "unavailable";
+  return disposition;
+}
+
+/**
+ * Builds the roster from declared nodes plus what was actually read. Unread
+ * actors keep `turns: null`; a missing file is never reported as a zero-turn
+ * worker, and an unlinked count is never folded into a named actor.
+ */
+function buildCoverageInventory(args: {
+  nodes: Array<{
+    key: NodeKey;
+    parent: NodeKey | null;
+    disposition: ResolvedManifestNode["disposition"];
+    label?: string | null;
+    /** Resolved read state; omitted for native discovery nodes. */
+    state?: ActorState;
+  }>;
+  readIds: Set<string>;
+  turnsById: Map<string, number>;
+  expected: number;
+  linked: number;
+  unlinked: number;
+  provenance: CoverageInventory["provenance"];
+  known: boolean;
+}): CoverageInventory {
+  const usedLabels = new Set<string>();
+  const actorLabels = new Map<string, string>();
+
+  const uniqueLabel = (desired: string, token: string): string => {
+    const base = desired.slice(0, 24);
+    if (!usedLabels.has(base)) {
+      usedLabels.add(base);
+      return base;
+    }
+    for (let index = 2; index < 1_000; index += 1) {
+      const suffix = `-${index}`;
+      const candidate = `${base.slice(0, 24 - suffix.length)}${suffix}`;
+      if (!usedLabels.has(candidate)) {
+        usedLabels.add(candidate);
+        return candidate;
+      }
+    }
+    const fallbackBase = `actor-${token}`.slice(0, 24);
+    let fallback = fallbackBase;
+    let attempt = 2;
+    while (usedLabels.has(fallback)) {
+      const suffix = `-${attempt}`;
+      fallback = `${fallbackBase.slice(0, 24 - suffix.length)}${suffix}`;
+      attempt += 1;
+    }
+    usedLabels.add(fallback);
+    return fallback;
+  };
+
+  for (const node of args.nodes) {
+    const token = actorToken(node.key.sessionId);
+    actorLabels.set(
+      nodeId(node.key),
+      uniqueLabel(
+        node.parent === null ? "main" : (node.label ?? `actor-${token}`),
+        token,
+      ),
+    );
+  }
+
+  const actors: CoverageActor[] = args.nodes.map((node) => {
+    const id = nodeId(node.key);
+    const read = args.readIds.has(id);
+    const token = actorToken(node.key.sessionId);
+    return {
+      label: actorLabels.get(id) ?? `actor-${token}`,
+      parentLabel:
+        node.parent === null
+          ? null
+          : (actorLabels.get(nodeId(node.parent)) ?? null),
+      disposition: node.disposition,
+      state: node.state ?? actorStateOf(node.disposition, read),
+      token,
+      turns: read ? (args.turnsById.get(id) ?? 0) : null,
+    };
+  });
+
+  const countState = (state: ActorState): number =>
+    actors.filter((actor) => actor.state === state).length;
+  return {
+    provenance: args.provenance,
+    known: args.known,
+    expected: args.expected,
+    linked: args.linked,
+    read: countState("read"),
+    missing: countState("missing"),
+    restricted: countState("restricted"),
+    unavailable: countState("unavailable"),
+    remote: countState("remote-not-authorized"),
+    unlinked: args.unlinked,
+    actors,
+  };
+}
+
+/**
+ * Checkpoint identity binds the declared inventory to the collected evidence.
+ * Manifest runs include each captured prefix identity so a historical baseline
+ * is immutable. Native runs keep the established substantive-event checkpoint
+ * for main (appended housekeeping rows do not republish) and add each linked
+ * child's file identity, so adding, removing or changing a child publishes new
+ * evidence.
+ */
+export function evidenceCheckpointId(args: {
+  mode: "manifest" | "native";
+  nodes: Array<{
+    key: NodeKey;
+    parent: NodeKey | null;
+    disposition: string;
+    label?: string | null;
+    format: string | null;
+    state: ActorState;
+  }>;
+  evidence: unknown;
+  unlinked: number;
+  declaredCheckpoint?: string;
+  effectiveCutoffMs?: number;
+}): string {
+  return crypto
+    .createHash("sha256")
+    .update(
+      JSON.stringify({
+        semantics: EVIDENCE_SEMANTICS_REVISION,
+        mode: args.mode,
+        declaredCheckpoint: args.declaredCheckpoint ?? null,
+        effectiveCutoffMs: args.effectiveCutoffMs ?? null,
+        nodes: args.nodes,
+        evidence: args.evidence,
+        unlinked: args.unlinked,
+      }),
+    )
+    .digest("hex")
+    .slice(0, 32);
+}
+
+async function runManifestPreparation(
+  deps: RunDeps,
+  consent: ConsentRecord,
+  signal: AbortSignal,
+): Promise<RunResult> {
+  if (deps.manifestPath === undefined) {
+    return { resultVersion: 1, state: "failed", code: "INVALID_MANIFEST" };
+  }
+  const manifest = await readManifestFile(
+    deps.manifestPath,
+    consent,
+    deps.platform ?? process.platform,
+    signal,
+  );
+  const preparation = await resolveManifestNodes(
+    manifest,
+    consent,
+    deps.platform ?? process.platform,
+    signal,
+  );
+  if (preparation.mainFile === null) {
+    return {
+      resultVersion: 1,
+      state: "failed",
+      code: "MAIN_SOURCE_UNAVAILABLE",
+    };
+  }
+  if (!(await consentStillValid(deps.consentPath, consent))) {
+    return { resultVersion: 1, state: "disabled" };
+  }
+
+  const mainNode = preparation.nodes.find(
+    (node) =>
+      node.key.hostId === manifest.main.hostId &&
+      node.key.sessionId === manifest.main.sessionId,
+  );
+  if (!mainNode || mainNode.state !== "readable") {
+    return {
+      resultVersion: 1,
+      state: "failed",
+      code: "MAIN_SOURCE_UNAVAILABLE",
+    };
+  }
+
+  const readable = preparation.nodes.filter(
+    (node): node is ResolvedManifestNode & { absolutePath: string } =>
+      node.state === "readable" && node.absolutePath !== null,
+  );
+  const ordered = [
+    mainNode as ResolvedManifestNode & { absolutePath: string },
+    ...readable.filter((node) => node !== mainNode),
+  ];
+
+  const effectiveLimits: AggregateLimits = {
+    maxBytes: deps.limits?.maxBytes ?? DEFAULT_AGGREGATE_LIMITS.maxBytes,
+    maxMillis: deps.limits?.maxMillis ?? DEFAULT_AGGREGATE_LIMITS.maxMillis,
+  };
+  const cutoffMs = Date.parse(manifest.cutoff);
+  if (Number.isFinite(cutoffMs)) effectiveLimits.cutoffMs = cutoffMs;
+  const deadline = Date.now() + effectiveLimits.maxMillis;
+
+  const snapshots = await captureSnapshots(
+    ordered.map((node) => ({
+      node: node.key,
+      absolutePath: node.absolutePath,
+    })),
+    effectiveLimits.maxBytes,
+    signal,
+  );
+  if (deps.afterSnapshot) await deps.afterSnapshot();
+  signal.throwIfAborted();
+
+  const aggregates: AggregatedSession[] = [];
+  const readIds = new Set<string>();
+  const turnsById = new Map<string, number>();
+  for (let index = 0; index < ordered.length; index += 1) {
+    signal.throwIfAborted();
+    const node = ordered[index];
+    const snapshot = snapshots[index];
+    const remainingMillis = Math.max(0, deadline - Date.now());
+    const aggregate = await aggregateSession(
+      {
+        node: node.key,
+        format: node.sourceFormat,
+        absolutePath: node.absolutePath,
+      },
+      snapshot,
+      {
+        maxBytes: effectiveLimits.maxBytes,
+        maxMillis: Math.min(remainingMillis, effectiveLimits.maxMillis),
+        ...(effectiveLimits.cutoffMs === undefined
+          ? {}
+          : { cutoffMs: effectiveLimits.cutoffMs }),
+      },
+      signal,
+    );
+    aggregates.push(aggregate);
+    readIds.add(nodeId(node.key));
+    turnsById.set(nodeId(node.key), aggregate.assistantTurns);
+  }
+
+  const tree = aggregates.length > 0 ? rollUp(aggregates) : null;
+  const checkpointId = evidenceCheckpointId({
+    mode: "manifest",
+    nodes: preparation.nodes.map((node) => ({
+      key: node.key,
+      parent: node.parent,
+      disposition: node.disposition,
+      label: node.label,
+      format: node.sourceFormat,
+      state:
+        node.state === "readable"
+          ? readIds.has(nodeId(node.key))
+            ? ("read" as const)
+            : ("unavailable" as const)
+          : node.state,
+    })),
+    evidence: snapshots.map((snapshot) => ({
+      hostId: snapshot.node.hostId,
+      sessionId: snapshot.node.sessionId,
+      bytes: snapshot.bytesCaptured,
+      digest: snapshot.prefixDigest,
+      parser: snapshot.parserVersion,
+    })),
+    unlinked: 0,
+    declaredCheckpoint: manifest.checkpointId,
+    effectiveCutoffMs: effectiveLimits.cutoffMs,
+  });
+  const cwdRaw =
+    aggregates[0] !== undefined &&
+    "cwdRaw" in aggregates[0] &&
+    typeof aggregates[0].cwdRaw === "string"
+      ? aggregates[0].cwdRaw
+      : null;
+  const outcome = await readGitOutcome(
+    {
+      cwd: cwdRaw,
+      from: tree?.first ?? manifest.cutoff,
+      to: tree?.last ?? manifest.cutoff,
+    },
+    signal,
+  );
+
+  const inventory = buildCoverageInventory({
+    nodes: preparation.nodes.map((node) => ({
+      key: node.key,
+      parent: node.parent,
+      disposition: node.disposition,
+      label: node.label,
+      state:
+        node.state === "readable"
+          ? readIds.has(nodeId(node.key))
+            ? ("read" as const)
+            : ("unavailable" as const)
+          : node.state,
+    })),
+    readIds,
+    turnsById,
+    expected: preparation.nodes.length,
+    linked: preparation.nodes.length,
+    unlinked: 0,
+    provenance: "declared-user",
+    known: true,
+  });
+
+  const ledgerInput: LedgerInput = {
+    tree,
+    mainSessionId: manifest.main.sessionId,
+    cutoff: manifest.cutoff,
+    evidenceMode: "native-files",
+    rootVerification: "unverified-root",
+    unlinkedAgents: 0,
+    agentsCreated: preparation.nodes.length,
+    sessionsLinked: preparation.nodes.length,
+    skillUsage: null,
+    trackerSince: null,
+    label: sanitizeLabel(deps.title),
+    outcome,
+    inventory,
+  };
+  let ledger = buildLedger(ledgerInput);
+  if (deps.tamperLedger) ledger = deps.tamperLedger(ledger);
+  const verifyResult = verifyLedger(ledger, ledgerInput);
+  if (!verifyResult.ok) {
+    return { resultVersion: 1, state: "failed", code: "LEDGER_INVALID" };
+  }
+
+  const summaryText = renderSummary(ledger);
+  const ledgerText = `${JSON.stringify(ledger)}\n`;
+  const htmlText = renderReportHtml(ledger, {
+    previous: [],
+    indexHref: "../../../../index.html",
+  });
+  if (deps.beforePublish) await deps.beforePublish();
+  signal.throwIfAborted();
+  if (!(await consentStillValid(deps.consentPath, consent))) {
+    return { resultVersion: 1, state: "disabled" };
+  }
+
+  const prep = await prepareV2(
+    {
+      root: consent.storeRoot,
+      main: manifest.main,
+      checkpointId,
+    },
+    {
+      summary: summaryText,
+      ledger: ledgerText,
+      reportHtml: htmlText,
+      status: ledger.coverage,
+    },
+    signal,
+  );
+
+  return await publishResult({
+    storeRoot: consent.storeRoot,
+    prep,
+    evidenceMode: "native-files",
+    computed: {
+      coverage: ledger.coverage,
+      fullyRead: tree?.fullyRead ?? 0,
+      sessions: tree?.sessions ?? 0,
+      counts: ledger.counts,
+    },
+  });
+}
+
 export async function runRetrospective(
   deps: RunDeps,
   signal: AbortSignal,
 ): Promise<RunResult> {
+  const sourceHandles = new Set<ReadSource>();
   try {
     // 1. Consent
     signal.throwIfAborted();
@@ -631,6 +1193,10 @@ export async function runRetrospective(
       return { resultVersion: 1, state: "disabled" };
     }
     const originalConsent = consent.record;
+
+    if (deps.manifestPath !== undefined) {
+      return await runManifestPreparation(deps, originalConsent, signal);
+    }
 
     // 2. Substantive check
     const summary = deps.tracker.summary();
@@ -655,6 +1221,7 @@ export async function runRetrospective(
       effectivePlatform,
       deps.discoveryLimits,
       signal,
+      sourceHandles,
     );
 
     signal.throwIfAborted();
@@ -682,7 +1249,9 @@ export async function runRetrospective(
       const eventCount = summary.toolCalls;
       const checkpointId = crypto
         .createHash("sha256")
-        .update(`tracker-only:${deps.workspace}:${startedAt}:${eventCount}`)
+        .update(
+          `${EVIDENCE_SEMANTICS_REVISION}:tracker-only:${deps.workspace}:${startedAt}:${eventCount}`,
+        )
         .digest("hex")
         .slice(0, 32);
 
@@ -765,26 +1334,77 @@ export async function runRetrospective(
       return { resultVersion: 1, state: "failed", code: "MAIN_NODE_MISSING" };
     }
 
-    const childFiles = discovery.childFiles.slice(
+    const childSessions = discovery.childSessions.slice(
       0,
       MAX_AGGREGATED_CHILD_FILES,
     );
-    const omittedChildFiles = discovery.childFiles.length - childFiles.length;
+    const omittedChildFiles =
+      discovery.childSessions.length - childSessions.length;
     const unlinkedAgents = discovery.unlinkedAgents + omittedChildFiles;
+    const taskAgentsRead = Math.min(
+      discovery.taskAgentsReadCount,
+      childSessions.length,
+    );
+    const hostAgentsRead = childSessions.length - taskAgentsRead;
+    const treeCoverage: Pick<TreeCoverage, "task" | "hostAgents"> = {
+      task: {
+        created: discovery.taskAgentsCreatedCount,
+        read: taskAgentsRead,
+      },
+      hostAgents: {
+        created: discovery.hostAgentsCreatedCount,
+        read: hostAgentsRead,
+        source: discovery.hostAgentsSource,
+        truncated:
+          discovery.hostAgentsTruncated ||
+          hostAgentsRead < discovery.hostAgentsReadCount,
+      },
+    };
 
-    // 1) Capture snapshot for all nodes
-    const nodeFiles: Array<{ node: NodeKey; absolutePath: string }> = [
-      { node: mainNode.key, absolutePath: discovery.mainFile },
-    ];
-    for (const childPath of childFiles) {
-      const childSessionId = path.basename(childPath, ".jsonl");
-      const childNode = discovery.manifest.nodes.find(
-        (n) => n.key.sessionId === childSessionId,
+    // Node identity comes from discovery's validated manifest, not the
+    // filename: host agent session files may carry opaque worker labels.
+    const mainPath = path.resolve(discovery.mainFile);
+    const mainHandle = discovery.sourceHandles.get(mainPath);
+    if (!mainHandle) {
+      throw new RetrospectiveError(
+        "NATIVE_SOURCE_UNAVAILABLE",
+        "Discovered main source handle is missing",
       );
-      const nodeKey = childNode
-        ? childNode.key
-        : { hostId: "local", sessionId: childSessionId };
-      nodeFiles.push({ node: nodeKey, absolutePath: childPath });
+    }
+    const nodeFiles: Array<{
+      node: NodeKey;
+      handle: ReadSource;
+      expectedSessionId: string;
+    }> = [
+      {
+        node: mainNode.key,
+        handle: mainHandle,
+        expectedSessionId: mainNode.key.sessionId,
+      },
+    ];
+    for (const child of childSessions) {
+      const resolvedPath = path.resolve(child.absolutePath);
+      const childNode = discovery.manifest.nodes.find(
+        (node) => node.source?.absolutePath === resolvedPath,
+      );
+      if (!childNode) {
+        throw new RetrospectiveError(
+          "NATIVE_SOURCE_UNAVAILABLE",
+          "Discovered child manifest node is missing",
+        );
+      }
+      const handle = discovery.sourceHandles.get(resolvedPath);
+      if (!handle) {
+        throw new RetrospectiveError(
+          "NATIVE_SOURCE_UNAVAILABLE",
+          "Discovered child source handle is missing",
+        );
+      }
+      nodeFiles.push({
+        node: childNode.key,
+        handle,
+        expectedSessionId: childNode.key.sessionId,
+      });
     }
 
     // Consent can be revoked or re-scoped while discovery runs: re-check before
@@ -814,8 +1434,14 @@ export async function runRetrospective(
       const remainingMillis = Math.max(0, deadline - Date.now());
       const nf = nodeFiles[i];
       const snap = snapshots[i];
+      const source = {
+        node: nf.node,
+        format: "omp" as const,
+        handle: nf.handle,
+        expectedSessionId: nf.expectedSessionId,
+      };
       const agg = await aggregateSession(
-        { node: nf.node, format: "omp", absolutePath: nf.absolutePath },
+        source,
         snap,
         {
           maxBytes: effectiveLimits.maxBytes,
@@ -828,7 +1454,34 @@ export async function runRetrospective(
 
     const tree = rollUp(aggregates);
     const mainKey = discovery.manifest.main;
-    const checkpointId = discovery.manifest.checkpointId;
+    const readIds = new Set<string>();
+    const turnsById = new Map<string, number>();
+    for (const aggregate of aggregates) {
+      readIds.add(nodeId(aggregate.node));
+      turnsById.set(nodeId(aggregate.node), aggregate.assistantTurns);
+    }
+    const checkpointId = evidenceCheckpointId({
+      mode: "native",
+      nodes: discovery.manifest.nodes.map((node) => ({
+        key: node.key,
+        parent: node.parent,
+        disposition: node.disposition,
+        label: node.label ?? null,
+        format: node.source?.format ?? null,
+        state: readIds.has(nodeId(node.key))
+          ? ("read" as const)
+          : ("unavailable" as const),
+      })),
+      evidence: {
+        mainCheckpoint: discovery.manifest.checkpointId,
+        children: childSessions.map((child) => ({
+          sessionId: child.sessionId,
+          size: child.size,
+          mtimeMs: child.mtimeMs,
+        })),
+      },
+      unlinked: unlinkedAgents,
+    });
 
     const firstAgg = aggregates[0];
     const cwdRaw =
@@ -844,19 +1497,45 @@ export async function runRetrospective(
       signal,
     );
 
+    const observedInventory = buildCoverageInventory({
+      nodes: discovery.manifest.nodes.map((node) => {
+        const state: ActorState = readIds.has(nodeId(node.key))
+          ? "read"
+          : "unavailable";
+        return {
+          key: node.key,
+          parent: node.parent,
+          disposition: node.disposition,
+          label: node.label,
+          state,
+        };
+      }),
+      readIds,
+      turnsById,
+      expected: discovery.manifest.nodes.length,
+      linked: discovery.manifest.nodes.length,
+      unlinked: unlinkedAgents,
+      provenance: "observed-native",
+      // Launch inventory is not authenticated or exhaustively observable from
+      // session files, so an observed roster never certifies completeness.
+      known: false,
+    });
+
     const ledgerInput: LedgerInput = {
       tree,
       mainSessionId: mainKey.sessionId,
       cutoff: discovery.manifest.cutoff,
       evidenceMode: "native-files",
-      rootVerification: "unverified-root",
       unlinkedAgents,
-      agentsCreated: discovery.childFiles.length + discovery.unlinkedAgents,
-      sessionsLinked: childFiles.length + 1,
+      agentsCreated: discovery.createdAgentsCount,
+      sessionsLinked: childSessions.length + 1,
+      treeCoverage,
       skillUsage,
+      rootVerification: "unverified-root",
       trackerSince: skillUsage !== null ? skillUsageSnapshot.since : null,
       label: sanitizeLabel(deps.title),
       outcome,
+      inventory: observedInventory,
     };
     let ledger = buildLedger(ledgerInput);
     if (deps.tamperLedger) {
@@ -937,5 +1616,12 @@ export async function runRetrospective(
       };
     }
     return { resultVersion: 1, state: "failed", code: "INTERNAL_ERROR" };
+  } finally {
+    await Promise.all(
+      [...sourceHandles].map((handle) =>
+        handle.close().catch(() => undefined),
+      ),
+    );
+    sourceHandles.clear();
   }
 }

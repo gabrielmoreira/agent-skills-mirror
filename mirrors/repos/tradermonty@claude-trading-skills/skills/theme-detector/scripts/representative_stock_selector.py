@@ -12,6 +12,7 @@ Selects representative stocks for market themes using a fallback chain:
 import csv
 import io
 import logging
+import math
 import time
 from typing import Optional
 
@@ -39,6 +40,10 @@ CAP_FILTER_MAP = {
     "small": "+Small (over $300mln)",
     "mid": "+Mid (over $2bln)",
 }
+
+FINVIZ_ELITE_EXPORT_URL = "https://elite.finviz.com/export/screener"
+# FINVIZ column ids: 1 Ticker, 6 Market Cap, 66 Change.
+FINVIZ_ELITE_EXPORT_COLUMNS = "1,6,66"
 
 # FINVIZ Elite URL filter codes
 CAP_ELITE_MAP = {
@@ -116,6 +121,37 @@ def _parse_market_cap(value) -> int:
         return int(float(s) * multiplier)
     except (ValueError, TypeError):
         return 0
+
+
+def _parse_elite_market_cap(value) -> int:
+    """Parse a FINVIZ Elite CSV Market Cap value to dollars.
+
+    The Elite export writes Market Cap as a plain number in millions of
+    dollars ("765.59" -> 765_590_000), unlike the public screener, which
+    returns suffixed strings. Suffixed values are still accepted and parsed
+    as-is, so a format change on FINVIZ's side cannot inflate them 1e6x.
+
+    "765.59"    -> 765_590_000
+    "1,234.5"   -> 1_234_500_000
+    "50.5B"     -> 50_500_000_000
+    "-" / None  -> 0 (unknown, same as the public parser)
+    """
+    if value is None:
+        return 0
+    s = str(value).strip().replace(",", "").upper()
+    if not s or s == "-":
+        return 0
+    if s[-1] in {"T", "B", "M"}:
+        return max(_parse_market_cap(s), 0)
+    try:
+        dollars = float(s) * 1_000_000
+    except ValueError:
+        return 0
+    # Checked after scaling: a huge finite input overflows to inf here, and
+    # int(inf) would raise and discard the whole industry fetch.
+    if not math.isfinite(dollars) or dollars < 0:
+        return 0
+    return int(round(dollars))
 
 
 def _parse_change(value) -> Optional[float]:
@@ -360,13 +396,19 @@ class RepresentativeStockSelector:
         cap_code = CAP_ELITE_MAP.get(self._min_cap, "cap_smallover")
         perf_code = "ta_perf2_4wdown" if is_bearish else "ta_perf2_4wup"
         filter_str = f"ind_{ind_code},{cap_code},sh_avgvol_o100,sh_price_o10,{perf_code}"
-        url = (
-            f"https://elite.finviz.com/export.ashx"
-            f"?v=151&f={filter_str}&ft=4&auth={self._finviz_elite_key}"
-        )
+        # From 2026-12-07 FINVIZ requires type= on /export/screener and stops
+        # applying saved custom columns, so pin Ticker, Market Cap, Change (#799).
+        params = {
+            "type": "stocks",
+            "v": "151",
+            "f": filter_str,
+            "c": FINVIZ_ELITE_EXPORT_COLUMNS,
+            "ft": "4",
+            "auth": self._finviz_elite_key,
+        }
 
         try:
-            resp = requests.get(url, timeout=15)
+            resp = requests.get(FINVIZ_ELITE_EXPORT_URL, params=params, timeout=15)
             if resp.status_code in (401, 403):
                 logger.warning("FINVIZ Elite auth failed (%s)", resp.status_code)
                 self._record_failure("elite")
@@ -375,7 +417,15 @@ class RepresentativeStockSelector:
                 self._record_failure("elite")
                 return []
 
-            reader = csv.DictReader(io.StringIO(resp.text))
+            reader = csv.DictReader(io.StringIO(resp.text.lstrip("\ufeff")))
+            missing = [c for c in ("Market Cap", "Change") if c not in (reader.fieldnames or [])]
+            if missing:
+                # Ranking would silently lose these factors; make the gap visible.
+                logger.warning(
+                    "FINVIZ Elite export for %s is missing column(s): %s",
+                    industry,
+                    ", ".join(missing),
+                )
             stocks: list[dict] = []
             for row in reader:
                 ticker = row.get("Ticker", "").strip()
@@ -385,7 +435,7 @@ class RepresentativeStockSelector:
                     {
                         "symbol": ticker,
                         "source": "finviz_elite",
-                        "market_cap": _parse_market_cap(row.get("Market Cap")),
+                        "market_cap": _parse_elite_market_cap(row.get("Market Cap")),
                         "change": _parse_change(row.get("Change")),
                         "volume": _parse_volume(row.get("Volume")),
                         "matched_industries": [industry],

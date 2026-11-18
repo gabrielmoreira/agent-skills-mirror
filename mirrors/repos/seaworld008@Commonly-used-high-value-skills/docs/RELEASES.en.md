@@ -6,7 +6,7 @@ This file summarizes the main changes in each release. Full notes for every rele
 
 ## Latest Release
 
-**v6.0.0 Portfolio Consolidation (2026-11-04)**: retires three duplicate entries (`skill-vetter` → `skill-security-auditor`, `github` → `github-ops`, `neon-postgres-egress-optimizer` → `neon-postgres`), rewrites `find-skills`, `link-checker` (now with a read-only checker script) and `figma` around real tools, and removes default `MEMORY.md`/cron writes. It also gives 46 skills trigger-based descriptions, runs a full upstream sync check, and upgrades Hermes Agent to v0.22.7. 293 skills across 16 categories. [Release notes](./releases/v6.0.0.md).
+**v6.2.0 Portfolio audit and evolving browser foundations (2026-11-18)**: combines the v6.1.0 audit of 293 skills and provenance/license repairs with agent-browser 0.43.0, DevTools and Playwright guidance. Adds priority foundation checks, ongoing drift tracking and reviewed baseline advancement to full maintenance and the weekly workflow. [Release notes](./releases/v6.2.0.md).
 
 When upgrading from an older version, use `--prune-retired` to clean up retired skills: it deletes only unchanged copies this installer owns and archives everything else.
 
@@ -15,6 +15,10 @@ npx github:seaworld008/Commonly-used-high-value-skills install --target codex --
 ```
 
 ## Recent Releases
+
+- [v6.1.0](./releases/v6.1.0.md) (2026-11-17): incorporated into v6.2.0; historical review evidence is retained.
+
+- [v6.0.0](./releases/v6.0.0.md) (2026-11-04): retired three duplicate entrypoints, retained 293 skills, and updated triggers, tool discovery and upstream checks.
 
 - [v5.0.0](./releases/v5.0.0.md) (2026-10-27): completes the full portfolio curation and adds `shadcn`, `security-model`, and `remotion-video`; `self-improving-agent` moves to `reflect-learn`.
 - [v4.3.0](./releases/v4.3.0.md) (2026-10-24): updates 4 curated skills and upgrades how behavior changes and wording tweaks are verified.

@@ -15,7 +15,7 @@ To contribute another template, use the [entry checklist](../ENTRY_TEMPLATE.md),
 
 ## Published motion guidance source
 
-Browse the [repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog) for unpacked text source, localized metadata and small local images. Larger images load from existing CMS links. Videos stay remote; source edits can be reviewed in PRs. These guidance examples remain separate from the four directly editable Studio projects.
+Browse the [repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog) for unpacked text source, localized metadata and small local images. Larger images load from existing CMS links. Videos stay remote; source edits can be reviewed in PRs. The catalog includes guidance examples and editable project candidates; each entry documents its actual source and verification status. The four bundled Studio projects remain separate.
 
 ## Presenter Tech · local template package
 

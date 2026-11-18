@@ -2,7 +2,7 @@
 
 All default public names use **OpenMotion**: plugin and MCP server `openmotion`, Tools `openmotion_*`, core Skills `openmotion-*`, and resources `openmotion://`. Only canonical Tools/resources are advertised by MCP discovery. The optional Library Skills use the same `openmotion-` prefix.
 
-Old `motion_*` / legacy `design_*` Tool names and `motion://` resource addresses remain accepted at the compatibility boundary. Retired Skill names are no longer shipped or callable: use the five `openmotion-*` production entries and the three canonical Library names. Library resources live only in canonical folders. From a checkout or full plugin ZIP, `node scripts/install-library-skill.mjs <openmotion-skill-name> <destination-skills-directory>` installs one Library Skill, reuses identical content and refuses to overwrite customized canonical folders. It removes only an unchanged retired Library forwarding folder verified by its complete file hashes; customized, extra-file and symlink folders are preserved and reported as `preservedLegacy` for manual review. Re-run the helper for each Library Skill previously installed separately. npm setup replaces owned bundles and removes obsolete flat entries belonging to the same host/home, with rollback on registration failure. Unowned entries and other installations are preserved; remove any separately installed old core entries manually after checking their contents. Refresh host Skill discovery and update saved invocations to canonical names. An existing `motion` MCP registration may still launch this runtime; new configurations register only `openmotion`.
+Old `motion_*` / legacy `design_*` Tool names and `motion://` resource addresses remain accepted at the compatibility boundary. Retired Skill names are no longer shipped or callable: use the five `openmotion-*` production entries and the four canonical Library names. Library resources live only in canonical folders. From a checkout or full plugin ZIP, `node scripts/install-library-skill.mjs <openmotion-skill-name> <destination-skills-directory>` installs one Library Skill, reuses identical content and refuses to overwrite customized canonical folders. It removes only an unchanged retired Library forwarding folder verified by its complete file hashes; customized, extra-file and symlink folders are preserved and reported as `preservedLegacy` for manual review. Re-run the helper for each Library Skill previously installed separately. npm setup replaces owned bundles and removes obsolete flat entries belonging to the same host/home, with rollback on registration failure. Unowned entries and other installations are preserved; remove any separately installed old core entries manually after checking their contents. Refresh host Skill discovery and update saved invocations to canonical names. An existing `motion` MCP registration may still launch this runtime; new configurations register only `openmotion`.
 
 Renaming does not change schemas, defaults, engine versions, permissions or project data formats. Internal request identities and telemetry keys retain their original names so retries cannot duplicate saved changes or exports. Compatible running backends are negotiated using either Tool spelling. See [installation and migration](npm-installation.md#public-names-and-compatibility). Generic terms such as motion graphics and motion blur remain animation terminology.
 
@@ -19,6 +19,8 @@ The [native engine boundary](../skills/openmotion-production/references/native.m
 新增可选 [`openmotion-design-remix`](../library/skills/openmotion-design-remix/SKILL.md)，提供六个固定源码 profile 的 Motion Design 说明、替换 preset、独立工程生成脚本和同步对比。它是 Library 内容，不自动注册到 MCP，也不改变五个核心制作入口。与普通 Brandkit 可分别选择安装；脚本只进行指定源码替换，不解释 Markdown 或重建任意视频。
 
 可选 [`presenter-story`](../library/skills/openmotion-presenter-story/SKILL.md) 提供三份真人口播 / Motion 设计配方：知识清单、工作流演示、产品讲解。它要求用自己的录制和实际语音时间码编排字幕、画中画与动效；展示媒体为目录里的上游原片及改编，不是新 Skill 的成片验收。它不包含人物素材或可执行模板，仍复用现有制作路线。
+
+可选 [`growth-teardown`](../library/skills/openmotion-growth-teardown/SKILL.md) 把「这家公司是怎么增长起来的」做成带出处的增长地图视频：按研究方法收集带日期的增长动作和指标点，写成 `growth.json`，再由脚本抓取真实证据画面并生成可编辑的九幕 HyperFrames 工程与同步配乐。它是 Library 内容，不注册为 MCP resource，也不改变五个核心制作入口。
 
 2026-11-06：五个入口统一为 motion- 前缀，视频转模板纳入一期插件、四宿主薄适配器与 MCP Resources。同时融合已评审的通用工程入口方案，保留原制作实现和导演质量参考；同时保留 main PR #28 的实际复刻流程、独立参考和测量脚本。历史多轮实验记录见下文，其证据不自动覆盖本次命名与分发变更。
 
@@ -53,7 +55,7 @@ Before material grouping, the recreation guidance distinguishes object motion, i
 
 按用户意图选路，不以视频文件格式代替意图判断。模板目录的 builtin 与可编辑 registry 进入 template；video-only reference 进入 recreate。参考只提供气质时仍为原创。既有模板工程的普通局部修改不重新应用模板。
 
-专业入口可由宿主 Skill 自动匹配、用户指定或准确模板指引直接选中，只读取共享 context 后继续，不返回 production 重做选路。局部创作/声音重新设计/创作品质审片由 director 承接；按既定决定修改、替换已选音乐、技术检查和仅导出由 production 承接；仅脚本或审片停在当前范围；共享质量参考不会要求重启 director 的完整创作流程。Skills 是同一 Agent 的文档，不是相互递归执行的独立进程。
+专业入口可由宿主 Skill 自动匹配、用户指定或准确模板指引直接选中，只读取共享 context 后继续，不返回 production 重做选路；各入口范围以其 Skill 说明和上表为准。仅脚本或审片停在当前范围；共享质量参考不会要求重启 director 的完整创作流程。Skills 是同一 Agent 的文档，不是相互递归执行的独立进程。
 
 An exact editable template with no requested content changes and explicit HTML/MP4 delivery uses the template route's [unchanged file-delivery branch](../skills/openmotion-template-to-video/references/unchanged-export.md), available at `openmotion://workflow/template/unchanged`. It preserves source and pins the version after required editor normalization, then coordinates export, packaging and bounded host presentation without reopening creative intake. Actual exported-file checks and the existing project, request and revision protections still apply; a display limitation is reported separately from verified file delivery.
 
@@ -98,11 +100,11 @@ A prior local trial used only “做一个哈利波特宣传片” in a fresh gp
 
 原创制作按任务读取动作脚本、动态表现和短句参考，无需用户额外说“Motion 感”。多段/截图/状态延续、声音设计和动态审片按职责加载相应参考。模板与复刻按影响复用相同标准，不强制换成原创叙事、固定动效或固定音乐结构。
 
-一期公开接口已收敛为 [14 个 openmotion_ 注册名](mcp-phase1-tools.md)（13 个领域能力，含素材库兼容别名）。旧 28 项实现只留内部兼容；读文件、任务查询及技术校验分别并入项目读取与导出流程。一期插件和四宿主薄适配器包含上述五个创作入口、支撑 Skill `openmotion-media` 及其参考，reference-video 仅保留源码兼容入口。核心 Skill 指引同步使用新契约；不新增制作引擎或自动复刻算法。
+一期公开接口已收敛为 [16 个 openmotion_ 注册名](mcp-phase1-tools.md)（15 项领域能力，含素材库兼容别名）。旧 28 项实现只留内部兼容；读文件、任务查询及技术校验分别并入项目读取与导出流程。一期插件和四宿主薄适配器包含上述五个创作入口、支撑 Skill `openmotion-media` 及其参考，reference-video 仅保留源码兼容入口：它只转到共享原生编写规范，不另立规则；确认源码安装、旧提示词和宿主配置都不再按名称调用它后，删除该目录，并同步 `tests/package.test.ts` 的核心目录清单。核心 Skill 指引同步使用新契约；不新增制作引擎或自动复刻算法。
 
 ## Shared production reading scope
 
-Common engineering rules live in production; selected creative entries own their sequence and creative design. The context's [scoped reading examples](../skills/openmotion-production/references/context.md#按范围收紧读集的例子) distinguish local wording edits, existing-music replacement and unchanged HTML/MP4 delivery. Registered references expose available documents, not a recursive mandatory read set. Typography/font resources, original action design and sound narrative design are conditional; technical checks, final-file playback and actual display evidence keep their existing requirements. Deterministic document/registry checks establish that these paths are available, not that every host Agent will follow them or that a film improved.
+Common engineering rules live in production; selected creative entries own their sequence and creative design. The context's [scoped reading examples](../skills/openmotion-production/references/context.md#按范围收紧读集的例子) distinguish local wording edits, existing-music replacement and unchanged HTML/MP4 delivery. Registered references expose available documents, not a recursive mandatory read set. Both reference-video routes share [reading and measuring a reference video](../skills/openmotion-production/references/reference-video.md) (`openmotion://workflow/production/reference`); each keeps its own intent judgement, record and delivery rules. Typography/font resources, original action design and sound narrative design are conditional; technical checks, final-file playback and actual display evidence keep their existing requirements. Deterministic document/registry checks establish that these paths are available, not that every host Agent will follow them or that a film improved.
 
 ## openmotion-recreate 能力扩展点
 
@@ -116,9 +118,9 @@ Common engineering rules live in production; selected creative entries own their
 | [production.md](../skills/openmotion-production/references/production.md) 第 3 条 | 生成前先按共享生成边界判断，再进入 openmotion-media | 与上一行同步修改 |
 | SKILL.md §5 Sound | 默认沿用原片音轨并重新对齐；念出原品牌的旁白在可生成且已同意时换成用户的台词，否则删除并说明 | — |
 | SKILL.md §5 原片作底层（用户自有成片只改几处细节） | 仅此情况可把原片放在时间线上并打补丁 | 支持实拍局部修改或分镜混排时扩展适用条件 |
-| [rebuild.md](../skills/openmotion-recreate/references/rebuild.md) 重建方式、[reconstruction.md](../skills/openmotion-recreate/references/reconstruction.md) 难画面分段重建、[verify.md](../skills/openmotion-recreate/references/verify.md) 与 `measure_frame.mjs` | 按代码重建的动态图形设计测量和对比 | 新画面类型需确认测量指标和取样是否仍适用 |
+| 共享 [reference-video.md](../skills/openmotion-production/references/reference-video.md) 参考读取、测量与可编辑表现（与视频转模版共用），[rebuild.md](../skills/openmotion-recreate/references/rebuild.md) 复刻自己的重建取舍、[reconstruction.md](../skills/openmotion-recreate/references/reconstruction.md) 难画面分段重建、[verify.md](../skills/openmotion-recreate/references/verify.md) 与 `measure_frame.mjs` | 按代码重建的动态图形设计测量和对比 | 新画面类型需确认测量指标和取样是否仍适用 |
 
-以下是交付底线，不随能力扩展放开：不得把整条原片、整帧序列或烘焙进背景的可编辑内容冒充重建（rebuild.md）；不交付在工程外修改的 MP4（SKILL.md §5）。
+以下是交付底线，不随能力扩展放开：不得把整条原片、整帧序列或烘焙进背景的可编辑内容冒充重建（reference-video.md）；不交付在工程外修改的 MP4（SKILL.md §5）。
 
 ## Tool 契约审计与宿主能力边界
 
@@ -192,4 +194,4 @@ MT05 原先同批补读/执行的问题未重现，但读取完整性未全面�
 
 ## BYOK media Skill and provider references
 
-`openmotion-media` remains the on-demand supporting Skill, with the five creative entry routes unchanged. Its single [generation boundary](../skills/openmotion-production/references/materials.md#generation-boundary) distinguishes native visuals from new speech/music needs. New assets use media_use discovery → assets_use generation/status → fixed-version inspection → explicit import_to_project → project read/edit. Standalone generation needs no carrier project. The old asset name and project-direct media_use jobs remain compatible; they are not a second recommended generation route. Credentials stay in settings, missing capabilities and alternatives are explained before spend, and further paid attempts need consent unless the approved plan already covers them.
+`openmotion-media` remains the on-demand supporting Skill, with the five creative entry routes unchanged. Its single [generation boundary](../skills/openmotion-production/references/materials.md#generation-boundary) distinguishes native visuals from new speech/music needs. New assets use media_use discovery → assets_use generation/status → fixed-version inspection → explicit import_to_project → project read/edit. Standalone generation needs no carrier project. Provider guides live in the media Skill (`openmotion://workflow/media/<provider ID>`, listed in its [job procedure](../skills/openmotion-media/references/jobs.md#provider-references)); the earlier `openmotion://workflow/production/<provider ID>` resources return the same bodies. The old asset name and project-direct media_use jobs remain compatible; they are not a second recommended generation route. Credentials stay in settings, missing capabilities and alternatives are explained before spend, and further paid attempts need consent unless the approved plan already covers them.

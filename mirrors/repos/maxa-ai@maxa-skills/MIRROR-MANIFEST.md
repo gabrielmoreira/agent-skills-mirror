@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `maxa-ai/maxa-skills` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
+Mirror of `maxa-ai/maxa-skills` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `maxa-ai/maxa-skills` — 26 default patterns, 1 followed patterns, 10
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`plugins/maxa-preflight/README.md`](plugins/maxa-preflight/README.md) |
-| 3 | ✓ | [`plugins/maxa-preflight/skills/date-filter-spec/SKILL.md`](plugins/maxa-preflight/skills/date-filter-spec/SKILL.md) |
-| 4 | ✓ | [`plugins/maxa-preflight/skills/guide/SKILL.md`](plugins/maxa-preflight/skills/guide/SKILL.md) |
-| 5 | ✓ | [`plugins/maxa-preflight/skills/install/SKILL.md`](plugins/maxa-preflight/skills/install/SKILL.md) |
-| 6 | ✓ | [`plugins/maxa-spec/README.md`](plugins/maxa-spec/README.md) |
-| 7 | ✓ | [`plugins/maxa-spec/skills/build-data-model/SKILL.md`](plugins/maxa-spec/skills/build-data-model/SKILL.md) |
-| 8 | ✓ | [`plugins/maxa-spec/skills/check-data-model/SKILL.md`](plugins/maxa-spec/skills/check-data-model/SKILL.md) |
-| 9 | ✓ | [`plugins/maxa-spec/skills/write-business-doc/SKILL.md`](plugins/maxa-spec/skills/write-business-doc/SKILL.md) |
-| 10 | → | [`README.md`](README.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`plugins/maxa-preflight/README.md`](plugins/maxa-preflight/README.md) |
+| 4 | ✓ | [`plugins/maxa-preflight/skills/date-filter-spec/SKILL.md`](plugins/maxa-preflight/skills/date-filter-spec/SKILL.md) |
+| 5 | ✓ | [`plugins/maxa-preflight/skills/guide/SKILL.md`](plugins/maxa-preflight/skills/guide/SKILL.md) |
+| 6 | ✓ | [`plugins/maxa-preflight/skills/install/SKILL.md`](plugins/maxa-preflight/skills/install/SKILL.md) |
+| 7 | ✓ | [`plugins/maxa-spec/README.md`](plugins/maxa-spec/README.md) |
+| 8 | ✓ | [`plugins/maxa-spec/skills/build-data-model/SKILL.md`](plugins/maxa-spec/skills/build-data-model/SKILL.md) |
+| 9 | ✓ | [`plugins/maxa-spec/skills/check-data-model/SKILL.md`](plugins/maxa-spec/skills/check-data-model/SKILL.md) |
+| 10 | ✓ | [`plugins/maxa-spec/skills/write-business-doc/SKILL.md`](plugins/maxa-spec/skills/write-business-doc/SKILL.md) |
+| 11 | → | [`README.md`](README.md) |
 
 ---
 

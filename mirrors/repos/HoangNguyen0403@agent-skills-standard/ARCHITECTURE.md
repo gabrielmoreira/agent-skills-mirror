@@ -160,10 +160,11 @@ Initiatives conducting evidence-led developer marketing can opt into the `market
 - **Assignment packets**: `task_brief.py <PLAN_FILE> <TASK_NUMBER> --assignment <ASSIGNMENT_JSON> [--out <BRIEF_FILE>]` publishes one standalone, validated packet. The assignment manifest (`schema_version: 1`) carries goal, owner, project domain, workspace root, plan digest, non-goals, authority, global invariants, owned paths, acceptance criteria, verification, required standards with revisions, source/dependency digests, output contract and limits. Validation happens before publication: exit `2` for invalid or stale prerequisites, exit `3` for absent/ambiguous task selection or output collision, exit `0` only after a packet exists. Default output is content-addressed under the resolved workspace so prior evidence is never replaced. Path containment uses local realpath checks; it is validation, not sandbox enforcement against a concurrent path swap.
 - **Lifecycle truth**: Cancellation and timeout are stopped states, not completion. Resume preserves the same task, authority and owned paths; a different task is a fresh dispatch. Independent acceptance requires a reviewer distinct from the implementer.
 - **Task economics**: `SessionJournal` records `taskId`/`parentTaskId` labels and optional `expectedActors`; a declared actor with no journal is listed missing by label, and failed, retried, interrupted and cancelled attempts remain in cohort accounting. Reasoning usage must declare `separate` or `included-in-output` semantics; an ambiguous declaration leaves cost `unavailable` instead of pricing it twice. Eval runs persist per-attempt `taskUsage`, and the generated report withholds monetary savings unless the actor inventory is complete, every lane is metered, the price resolves and both cohorts measure the same task. Fixture or synthetic traces never promote a native support claim.
+- **Dispatch observations (ADR-023)**: Per-worker routing evidence uses seven dispatch-scoped kinds (`dispatch`, `dispatch-round`, `dispatch-verdict`, `dispatch-acceptance`, `dispatch-end`, `dispatch-usage`, `dispatch-inventory`) in the existing `artifacts/metrics/delivery-observations.json`; change-level kinds and their indicators are untouched. Delegation records lifecycle events with `skills/common/common-subagent-driven-development/scripts/record_dispatch.py`, and `ags-mcp-dispatch-usage` imports host worker usage and orchestrator supervision through a host adapter (Paseo/OMP first) over `SessionJournal`, defaulting to dry run. Every writer shares one locked transaction (exclusive lock, locked re-read, atomic rename) and derives ids as `<kind>#` plus 32 hex of SHA-256 over the identity key. Host-recorded cost is copied, never priced; unknown stays `null`, and supervision turns with no recorded dispatch are reported unattributed.
 
 ### 3.4 Context-Aware Delegation and Capability Guidance
 
-Status: repository guidance. Tasks 1-3 source changes carry independent acceptance receipts, and the configured agent mirrors plus registry indices are regenerated from that source with per-file digest verification. Correction run2 was required: the first integration pass omitted both new common rows from the four installed host category indices while resource bytes matched; that pass was corrected by regenerating with the complete mirror inventory, and each host `common/_INDEX.md` now matches the canonical common index byte-for-byte with all 45 installed skill IDs. Evidence: `artifacts/context-aware-delegation/final-evidence/correction-run2/` (current status) and the earlier run1 records beside it (historical). The final acceptance outcome and any activation decision are recorded in that evidence set, not asserted here; nothing here activates a host runtime default or proves enforcement.
+Status: repository guidance; it activates no host runtime default and proves no enforcement. Tasks 1-3 source changes were reported to carry independent acceptance receipts, and the configured agent mirrors and registry indices were reported regenerated from that source with per-file digest verification. The first integration pass omitted both new common rows from the four installed host category indices while resource bytes matched; the corrected pass regenerated them from the complete mirror inventory. Those receipts are not retained in this checkout (history at `c60b42c11`), and the protocol's live comparison remains `not_run` because no experiment authorization exists.
 
 - **Placement decision (C1)**: `skills/common/common-subagent-driven-development/SKILL.md` §1 owns the placement contract: controlling host authority, then required independence or isolation, then coupling and verifiability, then economical eligible capability. A specialist label, workflow stage, file count or plan length is not a delegation benefit. Other workflows reference that section instead of restating a second table. Placement is a preparation decision recorded on the existing dispatch receipt; it is not an eighth lifecycle operation and adds no host API or schema field, so the seven semantic operations above stay unchanged. One implementation context is not one actor: a separate reviewer is still required, and coupled steps stay in one bounded worker when the host requires delegation.
 - **Capability and effort (C2)**: `skills/common/common-task-complexity-routing/references/routing-table.md#capability-and-effort-resolution` owns provider-neutral capability (`fast|standard|strong`) versus thinking-effort guidance, host-owned resolution, recovery routes and cost vocabulary. Explicit configured model, effort, mode and features are preserved; unsupported effort records `unsupported` plus what was applied. A capability hint is a hint, not account authorization. Dispatch receipts extend the existing handoff/receipt record with requested capability, actual configuration, effort support, selection reason, eligibility reference, budget availability and substitution reason; no telemetry store, pricing service or mandatory assignment field is added.
@@ -197,6 +198,119 @@ The opt-in `mcp-security-assessment` workflow (`.agents/workflows/mcp-security-a
 
 - **Coverage vs findings**: Category summaries (`MCP01`–`MCP10`, retaining `MCP06` Intent Flow Subversion as one category) score control-evidence coverage (`assessed`, `partial`, `not-assessed`, `not-applicable`) separately from canonical finding statuses (`confirmed`, `suspected`, `blocked`, `not-tested`, `false-positive`), with transport-aware auth rules (`stdio` vs remote HTTP), historical finding preservation across blocked retests, and no safe badges or numeric scores.
 - **Host & acceptance separation**: Markdown guidance does not supply host filesystem/network/process isolation or create-new no-clobber enforcement. Repository generation/local-consumer packaging parity is distinct from independent oracle grading and versioned native-host behavioral acceptance, which remain separately gated.
+
+### 3.7 Agent Review Trust (M1)
+
+M1 defines review procedure and delivery evidence; it does not change merge,
+release, or approval authority. The detailed contracts live in the
+[review protocol](skills/common/common-code-review/references/adversarial-review.md)
+and [delivery report](skills/common/common-subagent-driven-development/references/delivery-report.md);
+the [code-review workflow](.agents/workflows/code-review.md) links them for
+consumers.
+
+- **C2 gate declaration:** one unfenced, same-line `Gate / rollback` field
+  declares a named flag/version pin or `none: <reason>`, a nonempty control
+  invariant, rollback, and reversibility. `flag off` pairs with `gated`,
+  `revert` with `revertible`, and `one-way` with `one-way` plus a human
+  authorization reference. The declaration is not authenticated approval.
+- **C3 phases:** freeze the brief, cumulative diff, orchestrator-observed
+  deterministic receipt, source identity, and blind findings SHA-256 before
+  exposing author claims. Resume the same reviewer for reconciliation with
+  that frozen identity; unavailable resume blocks reconciliation, or a
+  replacement restarts the complete blind phase. Prompt sequencing is not
+  filesystem access control.
+- **Execution boundary:** reproduction is permitted only with verified
+  provenance, an orchestrator-published command, host-enforced isolation
+  without credentials or publication authority, default-deny egress, no
+  shared-worktree writes, and durable verifier-owned evidence. If any condition
+  is unknown, review stays static-only with an explicit gap. Never execute
+  author tests or commands in a privileged reviewer runtime.
+- **C4 report:** decision-first, report-local verdict and current-review
+  default `not-assessed; current human review applies`; record criterion
+  applicability/status, evidence references, human-attention coverage,
+  reproduction or its gap, findings, and residual risk. A report verdict,
+  lexical/structural check, or attention list grants no approval, narrows no
+  review authority, and proves no behavior. Unexecuted behavior remains
+  `NOT RUN`; no quality, trust, or savings uplift follows from lexical checks.
+
+### 3.8 Review Policy Gate Candidate (M2, C1/C5)
+
+The base-bound policy and read-only gate are candidate contracts, not
+authenticated authority or finalized acceptance. The detailed design is in
+[SRS-ART-05](docs/srs/srs-agent-review-trust.md#srs-art-05-base-bound-policy-classification-and-immutable-control-floors)
+and [SRS-ART-06](docs/srs/srs-agent-review-trust.md#srs-art-06-read-only-source-and-proof-identity).
+
+- **Classification:** the orchestrator independently selects and freezes a
+  full commit base before dispatch. Classification reads policy bytes and
+  digest from that base, never the candidate working tree. Missing policy or
+  map is `unclassified` and retains current human review; malformed policy is
+  distinct. Classes are `trunk | shared | leaf`; highest matching class wins,
+  unmatched paths are `shared`. Trunk controls include the selected policy,
+  canonical review policy, gate, recognized CODEOWNERS paths, and generated
+  integrity outputs such as `skills/metadata.json`. Trunk forces Centrality 2;
+  mixed changes take the strongest obligation. No hunk-review grant is active.
+- **Source identity:** read-only Git/filesystem evidence preserves actual HEAD,
+  base, index stages/modes/blob identities, and worktree bytes as separate
+  inputs. It unions base-to-HEAD, base-to-index, and base-to-filesystem changes,
+  including ignored and untracked source and both rename endpoints. Raw path
+  bytes are preserved in the identity. Exclude only the exact predeclared
+  artifact inventory; broad ignore, directory, or glob exclusions are not
+  source exclusions. Task 7's artifact/source-boundary correction is pending,
+  so this is the design contract, not a verified implementation claim.
+- **Gate result:** exit `0` means descriptive consistency only; `1` is a
+  named refusal; `2` is malformed input or unusable Git/policy input. No exit
+  authenticates actors, human approval, independence, chronology, isolation,
+  or host enforcement. Actor, grant, and chronology fields are declarations.
+  Report-only remains **ALWAYS DISABLED**, even with purported grants or
+  metrics; no report-only or hunk-review activation is part of this candidate.
+- **Verification boundary:** CI adds the Task 7 Python test directory beside
+  existing unit tests only. It does not run `review_gate.py check` as a
+  required policy check. Task 7 remains under correction and Task 8 policy
+  consumers remain in authoring; neither the gate nor this integration is
+  finally accepted here.
+
+### 3.9 Trust Measurements and Launch Audit (M3, C6)
+
+M3 adds optional trust observations and a medium/high-scope launch audit; neither
+changes existing delivery rows or grants release authority. Follow the
+[canonical trust schema](skills/common/common-sdlc-metrics/references/metrics-schema.md)
+and [launch audit contract](skills/common/common-project-verification/references/launch-audit.md).
+
+- **Trust observations:** the version-1 optional `trust` block holds records,
+  population manifests, and per-kind coverage. Exhaustive populations and
+  continuous applicable coverage are prerequisites for rates; agent-review
+  cohorts require complete first-approval history. Seed cohorts use assignments
+  and their evaluation cutoffs, independent of acceptance or merge. Missing
+  class remains `unknown`; structured tuple identities preserve scope and
+  conflicts. Reviewer configuration records actual provider/model/effort/mode/
+  features or `unknown`, never a requested profile. Missing or incomplete
+  coverage yields unavailable, not zero. Existing exports without `trust`
+  retain existing metrics while new trust rows are unavailable.
+- **Grant history:** `grant-reference` entries are historical declarations,
+  not authenticated grants or policy changes. A qualifying fresh escape may
+  emit `SUSPENSION_REQUIRED` with evidence references even when aggregate rates
+  are unavailable; this neither edits policy nor activates report-only.
+- **Launch audit:** apply only to medium/high work. Inventory the four canonical
+  lanes—journeys, abnormal states, changed hot-path performance, and
+  input/permission security—with requiredness, applicability, criteria, and
+  reasons. Required `FAIL` means audit `FAIL` and remediation; required
+  `NOT RUN` or missing proof means `BLOCKED`, never UAT as verified. Justified
+  `NOT APPLICABLE` is allowed. Low-tier and brief work gain no added audit
+  requirement. A declared rollout gate stages only under the existing bound
+  release-owner grant, with rollback rehearsal and smoke checks before
+  promotion; absent a gate, preserve the existing staging/smoke path.
+- **Evidence status:** Task 10's reconciled source receipt records 111 metrics
+  tests and the scoped consumer evidence; its CLI assertions found trust rows
+  unavailable for an uncovered fixture. Task 11 records 20/20 finite controls
+  and live model behavior `NOT RUN`; Task 12 records 19 structural tests and no
+  live launch/release proof. See the
+  [Task 10 reconciliation](artifacts/agent-review-trust/m3/task-10-reconciled-v3.md),
+  [Task 10 CLI assertions](artifacts/agent-review-trust/m3/task-10-parent-cli-assertions-v3.json),
+  [Task 11 reconciliation](artifacts/agent-review-trust/m3/task-11-reconciled-v4.md),
+  and [Task 12 reconciliation](artifacts/agent-review-trust/m3/task-12-reconciled-v2.md).
+  These are scoped source/structural evidence, not trust calibration, measured
+  trust rates, recall, quality or savings uplift, live evaluation, or release
+  behavior. This documentation checkpoint is not final integration acceptance.
 
 ## 4. Hook-Based Transparency
 
@@ -283,13 +397,13 @@ Lexical assertions are routing/content smoke checks, not semantic design evaluat
 
 The opt-in retrospective is **local-first by construction** and lives in the existing `agent-skills-standard-mcp` package, not in a new service or repository.
 
-- **Core in the MCP package**: strict versioned contracts, bounded discovery/collection from the consented session roots, deterministic local aggregation, verified claim ledgers, static-template HTML and markdown rendering, and a private owner-only generation store. Public surfaces are the three stdio-only MCP tools and the `ags retrospective` CLI command (`enable`/`disable`/`status` for opt-in, `index` for cross-session HTML index generation; JSON-only stdout, code-only JSON errors; running the MCP package).
+- **Core in the MCP package**: strict versioned contracts, bounded discovery/collection from the consented session roots, deterministic local aggregation, verified claim ledgers, static-template HTML and markdown rendering, and a private owner-only generation store. Public surfaces are the three stdio-only MCP tools and the `ags retrospective` CLI command (`enable`/`disable`/`status` for opt-in, `index` for cross-session HTML index generation, and source-level `prepare --manifest` for explicit consent-bound preparation; JSON-only stdout, code-only JSON errors; running the MCP package).
 - **MCP tool surface**: `prepare_retrospective`, `get_retrospective_status`, and `prepare_retrospective_index` are registered only when the transport is stdio; they are absent on SSE and on the HTTP server, which pins `transport: "sse"` in `createMcpHttpApp`. `prepare_retrospective` accepts an optional `title` input (max 200 chars, displayed as "agent-supplied, unverified") and is for the orchestrator or an unassigned agent — a worker holding an assignment packet must not call it; `get_retrospective_status` answers consent state only; `prepare_retrospective_index` accepts optional `since`, `until`, and `folder` (max 120 chars) and writes `<storeRoot>/index.html` across stored sessions (it is a housekeeping tool and does not advance the substantive nudge counter). Tool results carry state, numbers, artifact ids or artifact paths (`summary.md`, `ledger.json`, `report.html`, or `<storeRoot>/index.html`) — never transcript text or report bodies.
-- **Consent boundary**: one-time human opt-in in an interactive terminal; an agent cannot grant it (no terminal, no flag, no tool). The owner-only consent file (consent text version 2) is read fail-closed — missing, empty, malformed, unknown keys, relative paths, wrong version (including version 1 records), group/other readable, symlink and non-regular each count as disabled (reasons `missing`, `invalid`, `permissive`, `symlink`, `version`). Session files yield, beyond timestamps and usage numbers, session and parent session ids, model identifiers, assistant stop reasons, tool names and tool-call ids, the tool name of this server's own `write xd://mcp__agent_skills_standard_<tool>` calls, sanitized skill ids of `read skill://...` calls, and `<permission-request>` records inside `permission-required` notification messages (opaque request id, tool, kind, command text with linear-time best-effort secret redaction bounded at 2000 chars, joined to `respond_to_permission` verdicts). Git outcome reads commit and file counts via safe `execFile` inside the session folder (outside listed source roots; commit messages, file names, and hashes are never stored). Message text, reasoning, tool arguments (other than allowlisted structural fields) and tool output are never read or retained; revoking consent mid-run stops reads and publication.
-- **Aggregation, ledger and verifier**: one bounded streaming pass per session file over a fixed prefix whose digest is re-checked — a source changed after the snapshot fails closed — producing turn, error-stop, token, price-table estimated dollar cost, tool-call, skill-usage, permission-answer, permission-request, and git outcome counts plus a claim ledger of fixed-template observations (`coverage`, `error-stop-exposure`, `skill-usage`, `skill-trigger-timing`, `host-skill-reads`, `tool-errors`, `permission-answers`, `cost-drivers`, `routing-order`, `ags-lookups`, `session-outcome`, `permission-requests`). A deterministic verifier must accept the ledger before anything is published; otherwise the run returns `failed` and publishes nothing. Publication writes three artifacts in the v2 layout: `summary.md` (short, model-safe: no skill names or ids, no command text), `ledger.json` (verified facts, claims, and evidence ids), and `report.html` (self-contained, model-free, script-free HTML with inline CSS, CSP `default-src 'none'; style-src 'unsafe-inline'`, all dynamic text escaped; checked structurally, not visually) alongside `generation.json`. Older two-file v2 generations and ledgers lacking new fields fail closed with `STORED_LEDGER_INVALID`; earlier v1 generations stay readable and deletable via the store API and are never rewritten. Cross-session indexing (`ags retrospective index`, `prepare_retrospective_index`) enumerates stored v2 ledgers, filters by date (UTC report-end day; default 30 days, max 366 days, up to 200 sessions newest first) and exact folder, and atomically writes owner-only `<storeRoot>/index.html` (mode 0600, script-free, CSP `default-src 'none'; style-src 'unsafe-inline'`, all dynamic text escaped; checked structurally, not visually) with summary tiles, an open "Recurring problems" table with fixed owners, and native `<details>` monthly sections linking to each session's `report.html`. It reads zero session files, runs no git commands, and contains no command text.
+- **Consent boundary**: one-time human opt-in in an interactive terminal; agents cannot grant machine consent. Consent text version 5 permits optional agent-record roots separately from transcript roots; versions 1–4 require human re-consent. Owner-only consent remains fail-closed for malformed, permissive, symlinked, wrong-version or non-regular files. Only allowlisted structural fields are collected; decision arguments are bounded and validated, and permission commands use bounded best-effort redaction. Four Paseo record fields are retained: `id`, `provider`, `persistence.sessionId`, and `labels["paseo.parent-agent-id"]`. Arbitrary message bodies, reasoning and tool output remain excluded; revocation stops reads and publication.
+- **Aggregation, ledger and verifier**: bounded streaming reads verify a captured prefix digest and expected session identity. Native workers require a valid header and their own declared parent; directory proximity is not lineage. Consent-bound host records supply separately verified descendant edges. Schema version 2 separates file and tree coverage and adds activity, failure-run, time and agent-declared decision evidence; unavailable measurement is null, never zero. The actor inventory preserves unread actors with unknown turns, while deduplicated permission friction retains nullable timing/provenance. A deterministic verifier gates publication of `summary.md`, `ledger.json` and script-free, escaped `report.html` with `generation.json`. Historical schema-1/2 ledgers remain readable without rewriting; missing inventory/friction/diagnostic fields are unmeasured, while malformed data fails closed. Evidence-semantics revisions distinguish checkpoints after counting changes. The local index reads stored ledgers, not source sessions. These source contracts establish neither live adoption nor model efficacy.
 - **Analysis boundary**: local deterministic rules only — no hosted analyzer, no local-model call, no scheduler, and no background learner. The MCP path makes zero model calls and zero network requests. A workflow never generates the report; no workflow calls `prepare_retrospective`. Evidence is untrusted data: transcript-supplied paths, links and commands are never executed, fetched or followed.
 - **Host surfaces and boundary**: the MCP tools and the `ags retrospective` CLI command are the surfaces; there are no host adapter packages. OMP and Paseo hosts are supported as session sources read by the MCP-native engine. Storage-risk acknowledgement is recorded in the consent record, and the store root is validated against repository trees.
-- **Adoption boundary**: Nothing writes skills, workflows, memory, routing or adoption state; approval, implementation and verification remain separate authorized steps.
+- **Native packaging boundary**: the unreleased native secure-ingress candidate uses explicit per-target package assets and CI builds for Darwin arm64/x64 and GNU/Linux glibc arm64/x64. Native compilation is not an install/startup action and the runtime does not download binaries. The configured target list does not establish that artifacts are available or verified; Gate-C platform/package execution remains pending.
 
 The store is the only persistent artifact: private generations under a user-configured root with manual deletion. Source transcripts are read-only and coverage gaps stay explicit rather than implied complete.
 
@@ -505,3 +619,10 @@ _Date: 2026-11-05_
 4. **Exact Formal AC Compatibility**: Widen formal AC validation to `/^AC-\d{2,}$/` in `scripts/outcome/schema.ts` and `scripts/trace/types.ts`. Old three-digit identifiers remain valid; all other grammars and non-AC prefixes remain unchanged. Exact-string token identity is preserved without aliases, numeric normalization, or renumbering (AC-01 and AC-001 remain distinct nodes).
 5. **Publication Provenance**: Selected skill resources and workflow references reach consumers only through the existing generation coordinator (`pnpm generate-indices`), which derives indices, category `_INDEX.md` files and native host exports from canonical source. Hand-written native mirrors, checkout-relative skill paths in consumed guidance, and project-private recipes in registry packages remain prohibited; source publication is not runtime activation.
 **Reason**: Agents rediscovering application operations on every task cause high token burn and risk false verification or unsafe shared-instance driving. Portable guidance and project-owned kits enable reproducible verification while preserving strict separation between technical verification and human release authority. Narrow AC compatibility allows two-digit canonical criteria from approved designs to participate in machine trace without degrading identity precision.
+
+### ADR-023: Dispatch Observations As A Separate Event Family
+
+_Date: 2026-11-17_
+**Decision**: Add seven dispatch-scoped kinds to the existing delivery observation file, leaving existing kinds and indicators untouched. A skill-bundled helper records lifecycle events; an MCP-package importer reads host usage through a host adapter and `SessionJournal`'s bounded parser. All writers use one locked transaction and hashed, collision-checked event ids.
+**Reason**: Routing between models needs per-worker rounds, acceptance and supervision cost; the delivery contract records changes, not workers, and reusing change-level kinds collides on identity and distorts existing indicators.
+**Consequences**: One store with two cohorts linked only by `change_id`; billed `cost` and host-recorded `dispatch-usage` stay separate; the MCP server stays read-only toward consumer repositories, and only the separate importer CLI writes, on explicit `--write`; the Python helper is a second, partial validator bounded by a parity test against the metrics reader. Evidence is observational and supports no causal model-quality claim.

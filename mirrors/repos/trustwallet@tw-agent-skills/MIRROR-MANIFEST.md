@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trustwallet/tw-agent-skills` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `trustwallet/tw-agent-skills` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trustwallet/tw-agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,16 +81,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`skills/wallet/references/erc8004.md`](skills/wallet/references/erc8004.md) |
 | 21 | ✓ | [`skills/wallet/references/erc8183.md`](skills/wallet/references/erc8183.md) |
 | 22 | ✓ | [`skills/wallet/references/history.md`](skills/wallet/references/history.md) |
-| 23 | ✓ | [`skills/wallet/references/market.md`](skills/wallet/references/market.md) |
-| 24 | ✓ | [`skills/wallet/references/onramp.md`](skills/wallet/references/onramp.md) |
-| 25 | ✓ | [`skills/wallet/references/send.md`](skills/wallet/references/send.md) |
-| 26 | ✓ | [`skills/wallet/references/setup.md`](skills/wallet/references/setup.md) |
-| 27 | ✓ | [`skills/wallet/references/swap.md`](skills/wallet/references/swap.md) |
-| 28 | ✓ | [`skills/wallet/references/token-risk.md`](skills/wallet/references/token-risk.md) |
-| 29 | ✓ | [`skills/wallet/references/wallet.md`](skills/wallet/references/wallet.md) |
-| 30 | ✓ | [`skills/wallet/references/x402.md`](skills/wallet/references/x402.md) |
-| 31 | ✓ | [`skills/wallet/SKILL.md`](skills/wallet/SKILL.md) |
-| 32 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 23 | ✓ | [`skills/wallet/references/limits.md`](skills/wallet/references/limits.md) |
+| 24 | ✓ | [`skills/wallet/references/market.md`](skills/wallet/references/market.md) |
+| 25 | ✓ | [`skills/wallet/references/onramp.md`](skills/wallet/references/onramp.md) |
+| 26 | ✓ | [`skills/wallet/references/send.md`](skills/wallet/references/send.md) |
+| 27 | ✓ | [`skills/wallet/references/setup.md`](skills/wallet/references/setup.md) |
+| 28 | ✓ | [`skills/wallet/references/swap.md`](skills/wallet/references/swap.md) |
+| 29 | ✓ | [`skills/wallet/references/token-risk.md`](skills/wallet/references/token-risk.md) |
+| 30 | ✓ | [`skills/wallet/references/wallet.md`](skills/wallet/references/wallet.md) |
+| 31 | ✓ | [`skills/wallet/references/x402.md`](skills/wallet/references/x402.md) |
+| 32 | ✓ | [`skills/wallet/SKILL.md`](skills/wallet/SKILL.md) |
+| 33 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
 
 ---
 

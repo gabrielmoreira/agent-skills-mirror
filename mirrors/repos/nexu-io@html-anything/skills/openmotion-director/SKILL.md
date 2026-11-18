@@ -29,7 +29,7 @@ Use OpenMotion for an original video on the user's topic, including a request to
 
 ## 接入与共享职责
 
-首次触发本 Skill 时先读取 [共享上下文](../openmotion-production/references/context.md)，按其清单补齐本次所需正文，并记录已读文档。复用已有决定，不返回 production 重新选路。下文各阶段的“读取”均指补齐缺口：正文仍在上下文时直接应用，不再重复 `cat` 或请求同一工作流；阶段切换不是重读理由。已有片的修改或重编应用 [共享修改流程](../openmotion-production/references/edit.md)，原创以外的局部任务仅展开相关范围。进入实现前确保已读 [运行规范](../openmotion-production/references/production.md)、[Native authoring](../openmotion-production/references/native.md) 及工具返回的固定版本引擎指南；补读结果先返回模型，后续调用再执行依赖操作。导出或成片交付时补读 [验证](../openmotion-production/references/verification.md)。这些是工程接入要求，不替代下面的创作判断。
+首次触发本 Skill 时先读取 [共享上下文](../openmotion-production/references/context.md)，按其清单补齐本次所需正文，并记录已读文档。复用已有决定，不返回 production 重新选路。下文各阶段的“读取”均指补齐缺口：正文仍在上下文时直接应用，不再重复 `cat` 或请求同一工作流；阶段切换不是重读理由。已有片的修改或重编应用 [共享修改流程](../openmotion-production/references/edit.md)，原创以外的局部任务仅展开相关范围。进入实现前确保已读 [运行规范](../openmotion-production/references/production.md)、[Native authoring](../openmotion-production/references/native.md) 及工具返回的固定版本引擎指南。导出或成片交付时补读 [验证](../openmotion-production/references/verification.md)。这些是工程接入要求，不替代下面的创作判断。
 
 MCP-only 使用 resources/read `openmotion://workflow/director/start` 读取本页，按链接读取共享及质量参考，复用仍完整可用的正文。
 
@@ -45,7 +45,9 @@ Typography: before choosing faces for new text, redesigning text hierarchy or ad
 
 需要选择、获取或替换素材时读取 [共享素材规范](../openmotion-production/references/materials.md)。现有主视觉质感不足，或任务含截图、跨段复现、多段落及展示感问题时，另按需读取 [制作决策与状态延续](../openmotion-production/references/decisions.md)，落实材料与动作、占时及状态复用的关系。
 
-按共享的 [生成边界](../openmotion-production/references/materials.md#generation-boundary) 判断是否进入素材生成。
+按共享的 [生成边界](../openmotion-production/references/materials.md#generation-boundary) 判断是否进入素材生成；需要 AIGC 时由 [openmotion-media](../openmotion-media/SKILL.md) 检查可用通道。
+
+进入素材生成时，生成只升级动态影片，不替代它。先按完全不生成的情况规划影片：动作脚本中的关键视觉事件、主体变化、场景切换、镜头运动与转场（例如描线产品逐步组装、扫描或识别节拍、场景切换、logo 收束）。再选出这份计划中由生成素材升级的元素：代码绘制的产品换成做同样动作的写实渲染或抠图，平面背景换成背景板，占位换成实拍画面；素材清单由这些职责得出。不能为放进生成图而删减或简化已规划的视觉事件，也不能让一张主视觉图撑起整部片子。请求能动起来的素材：干净或可去除背景上的主体、分离的背景板或光效层、为推、摇和视差留出的画幅、不同状态或角度。按每张生成静帧在计划中的职责给它相应动作，与该镜头的原生元素配合；有意的停留和安静镜头仍然成立。剪辑与重音跟随已选定的语音和音乐时间。预览前对照原生计划检查：每个计划的视觉事件都在，遮掉生成像素后仍能读作完整的动态影片。
 
 已有成片或审片反馈时，先看实际问题区间，把仍未解决的现象与保留的有效部分作为本次创作输入；不要把用户指出的展示感缩减成几个接点或字号问题。
 
@@ -103,7 +105,7 @@ Typography: before choosing faces for new text, redesigning text hierarchy or ad
 
 根据实际素材、配音与布局调整时间，更新脚本中受影响的决定。脚本是工作记录，不是禁止修改的预设。
 
-Once this turn's final video HTML and assets are complete and ready for preview, complete the [editable preview handoff](../openmotion-production/references/native.md#editable-preview-handoff) automatically, before final export or delivery. Keep intermediate authoring silent; present the final chat video only after its verified MP4 export through the shared production workflow.
+最终视频就绪后按 [可编辑预览交接](../openmotion-production/references/native.md#editable-preview-handoff) 打开编辑器，再导出，并按 [成片交付](../openmotion-production/references/production.md#final-video-delivery) 在对话中展示成片。
 
 ### 5. 观看、修正、交付
 
@@ -113,7 +115,7 @@ Once this turn's final video HTML and assets are complete and ready for preview,
 
 对用户点名的质量问题，审片记录必须影响下一步：仍存在就修正相应创作决定并复验，或如实报告未达标及具体限制。技术错误修复与创作修正分开记录，不能因字号/布局检查用完精力而把主要表达问题标为完成。已有规则反复失效时，查实现表示与实际审片证据，优先调整共享状态、时间结构或材料策略，不机械追加同义规则。
 
-编辑器中打开的可编辑工程就是交付物，“做一支片”“make a film/video”这类请求也一样。只有用户明确要 MP4、视频文件、下载或导出时，才复制并给出 MP4 路径；否则导出只用于自检，不复制、链接或附上 MP4 等文件。按用户范围补充必要的脚本与已知限制。标清占位素材、概念演示和未验证内容。渲染成功不是内容验收，静态截图不能证明运动流畅。
+完成创作后保留可编辑工程，并按 [共享成片展示规则](../openmotion-production/references/production.md#choose-one-final-video-preview) 选择一次成片预览；不以用户另行要求下载作为展示条件。额外拷贝和下载入口按已确认的交付范围补充。按用户范围补充必要的脚本与已知限制。标清占位素材、概念演示和未验证内容。渲染成功不是内容验收，静态截图不能证明运动流畅。
 
 ## 防止模板塑造所有作品
 

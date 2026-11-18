@@ -1,5 +1,7 @@
 import type { LedgerImprovement } from "../improvements";
 import type { Claim, Ledger } from "../ledger";
+import type { CoverageInventory } from "../contracts";
+import type { PermissionFriction } from "../permission-friction";
 import { formatMoney, formatRate, formatTokensK, plural } from "./format";
 const MAX_SUMMARY_LINES = 80;
 const MAX_SUMMARY_BYTES = 8192;
@@ -20,6 +22,7 @@ export type LedgerAgent = {
   agsLookups: number;
   permissionAnswers: number;
   model: string;
+  activeSeconds: number | null;
 };
 
 export type OtherAgentsSummary = {
@@ -85,6 +88,7 @@ export type LedgerPermissionRequests = {
   tools: LedgerPermissionRow[];
   programs: LedgerPermissionRow[];
   distinctPrograms: number;
+  requestCountsBasis?: "deduplicated-events" | "raw-observations-may-duplicate";
 };
 
 type ViewLedger = Ledger & {
@@ -113,6 +117,8 @@ const DESTINATION_LABELS: Record<string, string> = {
   "provider-route-monitoring": "provider route monitoring",
   "session-linkage": "session linkage",
   "tracker-binding": "tracker binding",
+  "tool-setup": "tool setup",
+  "decision-review": "decision review",
 };
 const OUTCOME_UNAVAILABLE_REASONS: Record<
   "folder-missing" | "not-a-repo" | "git-error" | "not-measured",
@@ -147,11 +153,15 @@ function renderDelegationSegment(
   const agentsCreated = coverageClaim
     ? countOf(coverageClaim.values, "agentsCreated")
     : ledger.counts.agentsCreated;
-  if (agentsCreated === 0) return "none created";
   const agentsRead = coverageClaim
     ? countOf(coverageClaim.values, "agentsRead")
     : 0;
-  return `${agentsRead} of ${plural(agentsCreated, "created agent")} read`;
+  const workerLabel =
+    ledger.inventory?.known === true ? "declared worker" : "estimated worker";
+  return `${plural(agentsRead, "worker file")} read of ${plural(
+    agentsCreated,
+    workerLabel,
+  )}`;
 }
 
 function renderManagerImprovement(imp: LedgerImprovement, k: number): string[] {
@@ -168,10 +178,19 @@ function renderManagerImprovement(imp: LedgerImprovement, k: number): string[] {
   switch (imp.rule) {
     case "guardrail-answers": {
       const per100 = formatRate(val.per100Tenths ?? 0);
-      title = `Permission answers: ${val.answers ?? 0} (${val.allow ?? 0} allowed, ${val.deny ?? 0} denied)`;
-      saw = `the orchestrator answered ${val.answers ?? 0} permission requests; ${val.targetsAtLeast3 ?? 0} agents were answered 3 or more times; ${val.deny ?? 0} were denials.`;
-      change = `add repeated safe requests to the allowlist (allowed answers show setup gaps) and check what each denial asked for (denials show rule violations)`;
-      metric = "permission answers per 100 turns";
+      // Older ledgers carry no `other` value on this improvement; derive it from
+      // the recorded partition so the category is not silently reported as zero.
+      const other =
+        typeof val.other === "number"
+          ? val.other
+          : Math.max(
+              0,
+              (val.answers ?? 0) - (val.allow ?? 0) - (val.deny ?? 0),
+            );
+      title = `Permission response attempts: ${val.answers ?? 0} (${val.allow ?? 0} requested allow, ${val.deny ?? 0} requested deny, ${other} other)`;
+      saw = `the report recorded ${val.answers ?? 0} respond_to_permission call attempts; answering actor and human provenance are not measured, and host application is not recorded; ${val.targetsAtLeast3 ?? 0} agents were the target of 3 or more recorded attempts; ${val.deny ?? 0} were requested denials.`;
+      change = `review repeated requested-allow entries and inspect each requested-deny entry under the existing approval policy; counts alone do not establish safety or justify allowlisting`;
+      metric = "permission response attempts per 100 turns";
       valueStr = per100;
       break;
     }
@@ -195,11 +214,19 @@ function renderManagerImprovement(imp: LedgerImprovement, k: number): string[] {
     }
     case "human-intervention": {
       const per100 = formatRate(val.per100Tenths ?? 0);
-      title = `Human interventions: ${val.askCalls ?? 0} asks, ${val.abortedStops ?? 0} aborted stops`;
-      saw = `the agents asked a human or were stopped by one ${per100} times per 100 turns.`;
-      change = `check which of those decisions the setup could take without asking`;
-      metric = "asks and aborts per 100 turns";
+      title = `Ask-tool calls: ${val.askCalls ?? 0} recorded calls, ${plural(val.abortedStops ?? 0, "aborted stop")}`;
+      saw = `combined ask-tool and aborted-stop observations were ${per100} per 100 turns.`;
+      change = `review ask-tool call and aborted-stop observations before changing setup`;
+      metric = "combined ask-tool and aborted-stop observations per 100 turns";
       valueStr = per100;
+      break;
+    }
+    case "repeated-permission-requests": {
+      title = `${val.repeatedRequests ?? 0} of ${val.requests ?? 0} permission requests repeated a tool category`;
+      saw = `${val.answered ?? 0} were answered and ${val.unanswered ?? 0} unanswered; repeated requests share a tool category, not proven-identical commands; safety and avoidability are unknown.`;
+      change = `review repeated requests against the existing approval policy; counts alone do not establish safety or justify allowlisting`;
+      metric = "repeated tool-category request share";
+      valueStr = `${val.repeatedPercent ?? 0}%`;
       break;
     }
     case "agent-error-concentration": {
@@ -219,6 +246,22 @@ function renderManagerImprovement(imp: LedgerImprovement, k: number): string[] {
       valueStr = `${val.percent ?? 0}%`;
       break;
     }
+    case "failure-run": {
+      title = `${val.runs ?? 0} same-tool failure runs; longest ${val.longest ?? 0}`;
+      saw = `the longest consecutive error-result streak was ${val.longest ?? 0} for ${val.tool ?? "an unknown tool"}.`;
+      change = `inspect the tool setup and error category before changing routing`;
+      metric = "longest same-tool error run";
+      valueStr = `${val.longest ?? 0}`;
+      break;
+    }
+    case "decision-review-backlog": {
+      title = `${val.defaultPendingReview ?? 0} agent-declared decisions pending review`;
+      saw = `${val.highImpactDefaultPendingReview ?? 0} pending decisions were marked high impact.`;
+      change = `review the declared defaults; these records do not establish authorization`;
+      metric = "high-impact pending decisions";
+      valueStr = `${val.highImpactDefaultPendingReview ?? 0}`;
+      break;
+    }
     default: {
       return [];
     }
@@ -231,12 +274,23 @@ function renderManagerImprovement(imp: LedgerImprovement, k: number): string[] {
   ];
 }
 
-function renderMaintainerImprovement(imp: LedgerImprovement): string | null {
+function renderMaintainerImprovement(
+  imp: LedgerImprovement,
+  inventoryKnown: boolean,
+): string | null {
   switch (imp.rule) {
-    case "coverage-gap":
-      return `- ${imp.values.unlinkedAgents ?? 0} of ${imp.values.agentsCreated ?? 0} created agents have no session file read; Paseo agent sessions cannot be linked from the session file alone (session-linkage).`;
+    case "coverage-gap": {
+      const inventoryGaps = imp.values.inventoryGaps ?? 0;
+      if (inventoryGaps > 0) {
+        return `- Declared inventory gap: ${plural(inventoryGaps, "entry unread or unlinked")}; created-agent linkage lower bound: ${imp.values.unlinkedAgents ?? 0} of ${imp.values.agentsCreated ?? 0} (session-linkage).`;
+      }
+      const workerLabel = inventoryKnown ? "declared worker" : "estimated worker";
+      return `- ${imp.values.unlinkedAgents ?? 0} of ${plural(imp.values.agentsCreated ?? 0, workerLabel)} have no session file read; Paseo agent sessions cannot be linked from the session file alone (session-linkage).`;
+    }
     case "tracker-not-measured":
       return `- Server tracker numbers cover this process only, so lookups that matched nothing and bodies returned are not measured for this session (tracker-binding).`;
+    case "permission-timing-unmeasured":
+      return `- ${imp.values.answered ?? 0} permission requests were answered but no structured request/answer timestamp pair supports a wait measurement; wait time remains unknown, not zero (tracker-binding).`;
     default:
       return null;
   }
@@ -295,11 +349,30 @@ function renderPermissionRequestsLine(
   const denied = permReqClaim
     ? countOf(permReqClaim.values, "denied")
     : pr.tools.reduce((sum, t) => sum + t.deny, 0);
-
+  const other = permReqClaim
+    ? countOf(permReqClaim.values, "otherVerdict")
+    : pr.tools.reduce((sum, t) => sum + t.other, 0);
+  const unmatchedAnswers = permReqClaim
+    ? countOf(permReqClaim.values, "answeredWithoutRequest")
+    : pr.answeredWithoutRequest;
+  const basis =
+    pr.requestCountsBasis === "deduplicated-events"
+      ? "request totals and tool/program breakdowns deduplicate actor+request identities across nodes; the earliest valid timestamped response supplies the category (ties keep the first observed)"
+      : pr.requestCountsBasis === "raw-observations-may-duplicate"
+        ? "event capture is incomplete, so request totals and tool/program breakdowns use raw observations and may duplicate"
+        : "request-count basis not recorded";
   let line = `Permission requests: ${plural(asked, "request")} from ${plural(
     agentsAsked,
     "agent",
-  )}; ${answered} answered (${allowed} allowed, ${denied} denied), ${unanswered} unanswered.`;
+  )}; ${answered} answered (${allowed} requested allow, ${denied} requested deny, ${other} other), ${unanswered} unanswered; ${basis}. Permission-response totals separately count tool-call attempts.`;
+
+  if (unmatchedAnswers > 0) {
+    line += ` ${plural(
+      unmatchedAnswers,
+      "unmatched response request-ID entry",
+      "unmatched response request-ID entries",
+    )} use the same request-count basis; they do not represent unique unanswered requests.`;
+  }
 
   if (pr.tools && pr.tools.length > 0) {
     const topTools = pr.tools.slice(0, 3);
@@ -310,7 +383,8 @@ function renderPermissionRequestsLine(
   if (pr.programs && pr.programs.length > 0) {
     const topPrograms = pr.programs.slice(0, 5);
     const progParts = topPrograms.map(
-      (p) => `${p.name} ${p.asked} (${p.allow} allowed, ${p.deny} denied)`,
+      (p) =>
+        `${p.name} ${p.asked} (${p.allow} requested allow, ${p.deny} requested deny)`,
     );
     line += ` Top programs: ${progParts.join(", ")}.`;
   }
@@ -318,8 +392,99 @@ function renderPermissionRequestsLine(
   return line;
 }
 
+function renderCoverageWarning(
+  coverage: "complete" | "partial",
+  inventory: CoverageInventory | null,
+): string | null {
+  if (inventory === null) {
+    return coverage === "partial"
+      ? "Warning: evidence coverage is partial; no session-file delegation completeness is claimed."
+      : null;
+  }
+  const gaps =
+    inventory.missing +
+    inventory.restricted +
+    inventory.unavailable +
+    inventory.remote +
+    inventory.unlinked;
+  if (
+    coverage === "complete" &&
+    gaps === 0 &&
+    inventory.read >= inventory.expected
+  ) {
+    return null;
+  }
+  const details: string[] = [];
+  if (inventory.missing > 0) details.push(`${inventory.missing} missing`);
+  if (inventory.restricted > 0)
+    details.push(`${inventory.restricted} restricted`);
+  if (inventory.unavailable > 0)
+    details.push(`${inventory.unavailable} unavailable`);
+  if (inventory.remote > 0) details.push(`${inventory.remote} remote`);
+  if (inventory.unlinked > 0)
+    details.push(`${inventory.unlinked} unlinked or unproven`);
+  const detailText = details.length > 0 ? ` (${details.join(", ")})` : "";
+  return `Warning: evidence coverage is partial — ${inventory.read} of ${plural(
+    inventory.expected,
+    "declared actor",
+  )} read${detailText}. Delegation completeness is not claimed.`;
+}
+
+const ACTOR_STATE_LABELS: Record<string, string> = {
+  read: "read",
+  missing: "missing source",
+  restricted: "restricted",
+  unavailable: "unavailable",
+  "remote-not-authorized": "remote (not authorized)",
+  unlinked: "unlinked",
+};
+
+function renderRosterLines(inventory: CoverageInventory): string[] {
+  const lines: string[] = ["## Delegation"];
+  const provenance = inventory.provenance.replace(/-/g, " ");
+  lines.push(
+    `Roster (${provenance} declaration, unverified host lineage): ${inventory.linked} linked, ${inventory.read} read, ${inventory.missing} missing, ${inventory.restricted} restricted, ${inventory.unavailable} unavailable, ${inventory.remote} remote, ${inventory.unlinked} unlinked.`,
+  );
+  const shown = inventory.actors.slice(0, 12);
+  for (const actor of shown) {
+    const state = ACTOR_STATE_LABELS[actor.state] ?? actor.state;
+    const parent = actor.parentLabel === null ? "root" : actor.parentLabel;
+    const turns =
+      actor.turns === null ? "turns unknown" : plural(actor.turns, "turn");
+    lines.push(`- ${actor.label} (parent ${parent}): ${state}; ${turns}.`);
+  }
+  const omitted = inventory.actors.length - shown.length;
+  if (omitted > 0) {
+    lines.push(
+      `- ${omitted} more declared actors are not shown; the full roster is in report.html.`,
+    );
+  }
+  return lines;
+}
+
+function renderFrictionLine(friction: PermissionFriction): string {
+  const parts = [
+    `Permission friction: ${plural(friction.requests, "request")} observed; ${friction.answered} answered, ${friction.unanswered} unanswered, ${plural(friction.repeatedRequests, "repeat request")} in the same tool category; safety and avoidability are unknown.`,
+  ];
+  if (friction.humanAnswers !== null) {
+    parts.push(`Human answers: ${friction.humanAnswers}.`);
+  }
+  if (friction.orchestratorAnswers !== null) {
+    parts.push(`Orchestrator answers: ${friction.orchestratorAnswers}.`);
+  }
+  if (friction.waitMs !== null) {
+    parts.push(
+      `Waited ${friction.waitMs} ms across ${plural(friction.waitMeasuredRequests, "measured request")}.`,
+    );
+  }
+  parts.push(`Coverage: ${friction.coverage}.`);
+  return parts.join(" ");
+}
+
 function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
   const lines: string[] = [];
+  const inventory = ledger.inventory ?? null;
+  const friction = ledger.permissionFriction ?? null;
 
   const evidenceStr =
     ledger.evidenceMode === "tracker-only"
@@ -345,9 +510,15 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     (c) => (c.template as string) === "ags-lookups",
   );
 
+  const treeCoverage = ledger.treeCoverage;
+  const treeHeader =
+    treeCoverage.state === "not-measured"
+      ? "Tree: not measured"
+      : `Tree: ${treeCoverage.state} (${treeCoverage.agentsRead} of ${treeCoverage.agentsCreated} observed agents read; created counts use observed task/create_agent calls and may include failures)`;
+
   // Line 1: Header
   lines.push(
-    `Coverage: ${ledger.coverage} | Evidence: ${evidenceStr} | Root: ${rootStr} | Delegation: ${renderDelegationSegment(
+    `Coverage: ${ledger.coverage} | ${treeHeader} | Evidence: ${evidenceStr} | Root: ${rootStr} | Delegation: ${renderDelegationSegment(
       ledger,
       coverageClaim,
     )} | Cutoff: ${ledger.cutoff}`,
@@ -372,6 +543,18 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     lines.push(`Title: ${ledger.label} (agent-supplied, unverified)`);
   }
 
+  // Coverage warning first: it qualifies every number that follows.
+  const warning = renderCoverageWarning(ledger.coverage, inventory);
+  if (warning !== null) {
+    lines.push("");
+    lines.push(warning);
+  }
+
+  if (inventory !== null) {
+    lines.push("");
+    lines.push(...renderRosterLines(inventory));
+  }
+
   // ## Bottom line
   lines.push("");
   lines.push("## Bottom line");
@@ -386,10 +569,12 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     const workersCount =
       (agentsList.length > 0 ? agentsList.length - 1 : 0) +
       (ledger.otherAgents?.count ?? 0);
-    const agentDetail =
-      created === 0
-        ? "no agents were created"
-        : `${observed} of ${plural(created, "created agent")}`;
+    const workerLabel =
+      ledger.inventory?.known === true ? "declared worker" : "estimated worker";
+    const agentDetail = `${observed} worker files read of ${plural(
+      created,
+      workerLabel,
+    )}`;
     bottomLineParts.push(
       `Observed: main + ${plural(workersCount, "worker")} (${agentDetail}).`,
     );
@@ -418,12 +603,12 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     );
   }
 
-  // Clause 3: Permission answers (permission-answers)
+  // Clause 3: Permission response attempts (permission-answers)
   if (permClaim) {
     const answers = countOf(permClaim.values, "answers");
     const deny = countOf(permClaim.values, "deny");
     bottomLineParts.push(
-      `${plural(answers, "permission answer")} (${deny} denied).`,
+      `${plural(answers, "recorded permission response attempt")} (${deny} requested deny).`,
     );
   }
 
@@ -444,11 +629,14 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
   lines.push("");
   lines.push("## Scorecards");
 
-  // Guardrails scorecard line
   if (permClaim) {
     const answers = countOf(permClaim.values, "answers");
     const allow = countOf(permClaim.values, "allow");
     const deny = countOf(permClaim.values, "deny");
+    const other =
+      typeof permClaim.values.other === "number"
+        ? permClaim.values.other
+        : Math.max(0, answers - allow - deny);
     const askCalls = countOf(permClaim.values, "askCalls");
     const abortedStops = countOf(permClaim.values, "abortedStops");
     const targetsAtLeast3 = countOf(permClaim.values, "targetsAtLeast3");
@@ -456,15 +644,23 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     const per100Tenths = turns > 0 ? Math.round((answers * 1000) / turns) : 0;
     const per100 = formatRate(per100Tenths);
     lines.push(
-      `Guardrails: ${plural(answers, "permission answer")} (${per100} per 100 turns; ${allow} allowed, ${deny} denied); ${plural(askCalls, "ask")} to a human; ${plural(abortedStops, "aborted stop")}; ${plural(targetsAtLeast3, "agent")} answered 3 or more times.`,
+      `Guardrails: ${plural(
+        answers,
+        "recorded permission response attempt",
+      )} (${per100} per 100 turns; ${allow} requested allow, ${deny} requested deny, ${other} other; host application is not recorded); ${plural(askCalls, "ask-tool call")}; ${plural(abortedStops, "aborted stop")}; ${targetsAtLeast3} agents were the target of 3 or more recorded response attempts.`,
     );
   } else {
-    lines.push("Guardrails: no permission answers, asks or aborts observed.");
+    lines.push(
+      "Guardrails: no permission-response attempts, ask-tool calls or aborted stops observed.",
+    );
   }
 
   // Permission requests scorecard line
   if (ledger.permissionRequests != null) {
     lines.push(renderPermissionRequestsLine(ledger, ledger.permissionRequests));
+  }
+  if (friction != null) {
+    lines.push(renderFrictionLine(friction));
   }
 
   // Cost scorecard line
@@ -546,6 +742,54 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
       }
       lines.push(line);
     }
+  }
+
+  if (ledger.activity !== null) {
+    const rows = ledger.activity.userRows;
+    const attribution = rows.byAttribution
+      .slice(0, 8)
+      .map((entry) => `${entry.key} ${entry.count}`)
+      .join(", ");
+    const activityRate =
+      ledger.activity.userRowsPer100TurnsTenths === null
+        ? "not measured"
+        : `${(ledger.activity.userRowsPer100TurnsTenths / 10).toFixed(1)} per 100 main turns`;
+    lines.push(
+      `User rows: ${rows.total}; ${rows.steering} steering; ${rows.permissionNotifications} permission notifications${attribution ? `; attribution ${attribution}` : ""}; ${activityRate}.`,
+    );
+  } else {
+    lines.push("User activity: not measured.");
+  }
+  if (ledger.failureRuns !== null) {
+    const topRuns = ledger.failureRuns.tools
+      .slice(0, 3)
+      .map((entry) => `${entry.tool} ${entry.runs} run(s), longest ${entry.longest}`)
+      .join("; ");
+    const truncationNote = ledger.failureRuns.truncated
+      ? " Partial measurement: counts are observed lower bounds."
+      : "";
+    lines.push(
+      `Same-tool failure runs (minimum ${ledger.failureRuns.minLength}): ${ledger.failureRuns.runs}${topRuns ? `; ${topRuns}` : ""}.${truncationNote}`,
+    );
+  }
+  if (ledger.time !== null) {
+    const timed = ledger.time.permissionLatency;
+    const mainTime = ledger.time.main === null
+      ? "main idle timing: not measured"
+      : `main idle gaps >=${ledger.time.main.idleGapMinSeconds}s: ${ledger.time.main.idleGaps} (${ledger.time.main.idleSeconds}s total)`;
+    lines.push(
+      `Time: ${ledger.time.wallSeconds === null ? "not measured" : `${ledger.time.wallSeconds}s`} wall; ${mainTime}; permission response timing: ${timed === null ? "not measured" : `${timed.timed} matched, median ${timed.medianSeconds}s, max ${timed.maxSeconds}s`}.`,
+    );
+  } else {
+    lines.push("Time: not measured.");
+  }
+  if (ledger.decisions !== null) {
+    const d = ledger.decisions;
+    lines.push(
+      `Decisions (agent-declared and unverified): ${d.total}; rule ${d.byBasis.rule}, pending-review default ${d.byBasis.defaultPendingReview}; high-impact defaults pending ${d.byImpact.high.defaultPendingReview}; ${d.rejected} rejected, ${d.unconfirmed} unconfirmed. Labels are in the detailed report only.`,
+    );
+  } else {
+    lines.push("Decisions: not measured.");
   }
 
   // AGS routing scorecard lines
@@ -639,7 +883,10 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     const files = countOf(coverageClaim.values, "sessions");
     const skipped = countOf(coverageClaim.values, "skippedLines");
     lines.push(
-      `Coverage: ${observed} of ${plural(created, "created agent")} observed; observed workers: ${n} read-only, ${m} editing; ${plural(files, "session")} read in full (${plural(skipped, "line")} skipped).`,
+      `Coverage: ${observed} worker files read of ${plural(
+        created,
+        ledger.inventory?.known === true ? "declared worker" : "estimated worker",
+      )}; observed workers: ${n} read-only, ${m} editing; ${plural(files, "session")} read in full (${plural(skipped, "line")} skipped).`,
     );
   }
   // Outcome scorecard line
@@ -699,7 +946,10 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     lines.push("");
     lines.push("## For the maintainer");
     for (const imp of selectedMaintainer) {
-      const bullet = renderMaintainerImprovement(imp);
+      const bullet = renderMaintainerImprovement(
+        imp,
+        ledger.inventory?.known === true,
+      );
       if (bullet) lines.push(bullet);
     }
   }
@@ -712,6 +962,21 @@ function renderLines(ledger: ViewLedger, options: RenderOptions): string[] {
     "- Cost is a price-table estimate; call-share attribution is an estimate.",
   );
   lines.push("- Agents without a read session file are not covered.");
+  if (inventory !== null) {
+    lines.push(
+      "- Unread declared actors are gaps: their turns, usage and timing are unknown, not zero.",
+    );
+  }
+  if (friction !== null) {
+    if (friction.humanAnswers === null || friction.waitMs === null) {
+      lines.push(
+        "- Answerer provenance and wait time are shown only where structured evidence supports them; null means unknown.",
+      );
+    }
+    lines.push(
+      "- Repeated requests share a tool category, not proven-identical commands; safety and avoidability are unknown.",
+    );
+  }
   lines.push("- The root session is not verified against the host.");
   lines.push("- AGS lookups are counted, not whether the rules were followed.");
 

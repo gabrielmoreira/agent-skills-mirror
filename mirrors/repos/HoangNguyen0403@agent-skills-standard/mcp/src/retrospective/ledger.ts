@@ -12,11 +12,25 @@ import { MAX_COMMAND_CHARS } from "./permission-requests";
 
 export { LOOKUP_TOOLS, type LookupToolName };
 import type { NodeKey } from "./contracts";
+import type { CoverageInventory } from "./contracts";
+import {
+  buildPermissionFriction,
+  deduplicatePermissionEvents,
+  type PermissionFriction,
+} from "./permission-friction";
 import {
   deriveImprovements,
   type ImprovementInput,
   type LedgerImprovement,
+  IMPROVEMENT_THRESHOLDS,
 } from "./improvements";
+import type {
+  LedgerActivity,
+  LedgerDecisions,
+  LedgerFailureRuns,
+  LedgerTime,
+  TreeCoverage,
+} from "./ledger-v2";
 
 export type EvidenceId = string;
 export type ClaimTemplateId =
@@ -34,8 +48,11 @@ export type ClaimTemplateId =
   | "cost-drivers"
   | "routing-order"
   | "ags-lookups"
-  | "session-outcome"
-  | "permission-requests";
+  | "permission-requests"
+  | "turn-activity"
+  | "decisions"
+  | "failure-runs"
+  | "session-outcome";
 export type LedgerFolder = { name: string; parent: string | null };
 export type LedgerLookupTool = {
   tool: LookupToolName;
@@ -129,7 +146,7 @@ export type LedgerPermissionCommand = {
   allow: number;
   deny: number;
   other: number;
-  unanswered: number;
+  unmatchedObservations: number;
 };
 
 export type LedgerPermissionRequests = {
@@ -138,12 +155,16 @@ export type LedgerPermissionRequests = {
   unanswered: number;
   answeredWithoutRequest: number;
   agentsAsked: number;
-  tools: LedgerPermissionRow[]; // at most 10, by asked desc then name asc
-  programs: LedgerPermissionRow[]; // at most 15, by asked desc then name asc ("other" is listed like any program)
-  distinctPrograms: number; // number of keys in the merged programs map before the cut
-  commands: LedgerPermissionCommand[]; // at most 50, rows with deny > 0 first, then asked desc, then text asc, then tool asc
-  distinctCommands: number; // merged distinct count before the cut
-  commandsOmitted: number; // sum of node commandsOmitted only
+  tools: LedgerPermissionRow[];
+  programs: LedgerPermissionRow[];
+  distinctPrograms: number;
+  commands: LedgerPermissionCommand[];
+  distinctCommands: number;
+  commandsOmitted: number;
+  /** Whether request, tool, and program tallies use shared event identities. */
+  requestCountsBasis: "deduplicated-events" | "raw-observations-may-duplicate";
+  /** Raw per-node command observations; the same request may appear more than once. */
+  commandCountsBasis: "raw-observations-may-duplicate";
 };
 
 export type LedgerInput = {
@@ -156,12 +177,19 @@ export type LedgerInput = {
   unlinkedAgents: number;
   agentsCreated: number;
   sessionsLinked: number;
+  /** Source-linked task/host counts when discovery can separate them. */
+  treeCoverage?: Pick<TreeCoverage, "task" | "hostAgents">;
   /** Counts-only skill lookup snapshot from this server process. */
   skillUsage: SkillUsageSnapshot | null;
   /** Server tracker start timestamp (`skillUsageSnapshot.since`), null when no skill usage. */
   trackerSince: string | null;
   label: string | null;
   outcome: LedgerOutcome;
+  /**
+   * Declared or observed actor inventory. Omitted or `null` for a run with no
+   * declared roster (tracker-only, and older direct fixtures).
+   */
+  inventory?: CoverageInventory | null;
 };
 
 export type LedgerCounts = {
@@ -206,16 +234,17 @@ export type LedgerAgent = {
   agsLookups: number;
   permissionAnswers: number;
   model: string;
+  activeSeconds: number | null;
 };
 
 export type Ledger = {
-  schemaVersion: 1;
-  cutoff: string;
+  schemaVersion: 2;
   /**
    * First eight characters of the bound main session id, a stable hashed label
    * when it is not a safe identifier, or null for a tracker-only run.
    */
   session: string | null;
+  cutoff: string;
   evidenceMode: LedgerInput["evidenceMode"];
   rootVerification: LedgerInput["rootVerification"];
   coverage: "complete" | "partial";
@@ -237,7 +266,16 @@ export type Ledger = {
   toolRows: LedgerToolRow[];
   outcome: LedgerOutcome;
   permissionRequests: LedgerPermissionRequests | null;
+  /** Deduplicated permission friction; null when no permission evidence exists. */
+  permissionFriction: PermissionFriction | null;
+  /** Actor roster and read coverage; null only for tracker-only runs. */
+  inventory: CoverageInventory | null;
   agents: LedgerAgent[];
+  treeCoverage: TreeCoverage;
+  activity: LedgerActivity | null;
+  failureRuns: LedgerFailureRuns | null;
+  time: LedgerTime | null;
+  decisions: LedgerDecisions | null;
   otherAgents: { count: number; turns: number; costCents: number } | null;
   improvements: LedgerImprovement[];
   claims: Claim[];
@@ -258,6 +296,9 @@ const SAFE_MODEL_REGEX = /^[A-Za-z0-9._:/@+-]{1,64}$/;
 const SAFE_DAY_REGEX = /^(\d{4}-\d{2}-\d{2}|unknown-day)$/;
 /** Registry skill ids are `category/skill`; the tracker emits the same shape. */
 const SAFE_SKILL_ID_REGEX = /^[A-Za-z0-9._:/@+-]{1,96}$/;
+/** Declared report aliases and hashed identity tokens in the actor roster. */
+const SAFE_ACTOR_LABEL_REGEX = /^[A-Za-z0-9][A-Za-z0-9 ._-]{0,23}$/;
+const SAFE_ACTOR_TOKEN_REGEX = /^(?:[0-9a-f]{8}|unknown)$/;
 /** Host skill ids are path-derived; anything outside this shape is hashed. */
 const SAFE_HOST_SKILL_ID_REGEX = /^[A-Za-z0-9][A-Za-z0-9._/-]{0,95}$/;
 /** Host skill ids carried in `hostSkills.top`. */
@@ -914,15 +955,90 @@ function buildLedgerPermissionRequests(
           allow: 0,
           deny: 0,
           other: 0,
-          unanswered: 0,
+          unmatchedObservations: 0,
         };
         existing.asked += tally.asked ?? 0;
         existing.allow += tally.allow ?? 0;
         existing.deny += tally.deny ?? 0;
         existing.other += tally.other ?? 0;
-        existing.unanswered += tally.unanswered ?? 0;
+        existing.unmatchedObservations += tally.unanswered ?? 0;
         mergedCommands.set(key, existing);
       }
+    }
+  }
+  const permissionEvents = deduplicatePermissionEvents(tree);
+  const eventEvidenceComplete = tree.nodes.every(
+    (node) =>
+      node.permissionCapture === "captured" &&
+      node.permissionRequestEvents !== undefined &&
+      node.permissionRequestEvents.length >=
+        node.permissionRequests.asked +
+          node.permissionRequests.answeredWithoutRequest,
+  );
+  if (eventEvidenceComplete) {
+    totalAsked = 0;
+    totalAnswered = 0;
+    totalAnsweredWithoutRequest = 0;
+    mergedTools.clear();
+    mergedPrograms.clear();
+    const actors = new Set<string>();
+    for (const event of permissionEvents) {
+      if (!event.observedRequest) {
+        if (event.verdict !== null) totalAnsweredWithoutRequest += 1;
+        continue;
+      }
+      totalAsked += 1;
+      actors.add(event.actorKey);
+      const tool = SAFE_PERMISSION_NAME_REGEX.test(event.tool)
+        ? event.tool
+        : "other";
+      const program =
+        event.program !== null && SAFE_PERMISSION_NAME_REGEX.test(event.program)
+          ? event.program
+          : null;
+      const toolTally = mergedTools.get(tool) ?? {
+        asked: 0,
+        allow: 0,
+        deny: 0,
+        other: 0,
+        unanswered: 0,
+      };
+      const programTally =
+        program === null
+          ? null
+          : (mergedPrograms.get(program) ?? {
+              asked: 0,
+              allow: 0,
+              deny: 0,
+              other: 0,
+              unanswered: 0,
+            });
+      toolTally.asked += 1;
+      if (programTally !== null) programTally.asked += 1;
+      if (event.verdict === "allow") {
+        toolTally.allow += 1;
+        if (programTally !== null) programTally.allow += 1;
+        totalAnswered += 1;
+      } else if (event.verdict === "deny") {
+        toolTally.deny += 1;
+        if (programTally !== null) programTally.deny += 1;
+        totalAnswered += 1;
+      } else if (event.verdict === "other") {
+        toolTally.other += 1;
+        if (programTally !== null) programTally.other += 1;
+        totalAnswered += 1;
+      }
+      mergedTools.set(tool, toolTally);
+      if (program !== null && programTally !== null) {
+        mergedPrograms.set(program, programTally);
+      }
+    }
+    totalAgentsAsked = actors.size;
+    for (const tally of [...mergedTools.values(), ...mergedPrograms.values()]) {
+      tally.unanswered = Math.max(
+        0,
+        tally.asked - tally.allow - tally.deny - tally.other,
+      );
     }
   }
 
@@ -988,6 +1104,10 @@ function buildLedgerPermissionRequests(
       tools,
       programs,
       distinctPrograms,
+      requestCountsBasis: eventEvidenceComplete
+        ? "deduplicated-events"
+        : "raw-observations-may-duplicate",
+      commandCountsBasis: "raw-observations-may-duplicate",
       commands,
       distinctCommands,
       commandsOmitted: totalCommandsOmitted,
@@ -1136,10 +1256,23 @@ function buildLedgerLookups(nodes: NodeUsage[]): LedgerLookups {
 
 export function buildLedger(input: LedgerInput): Ledger {
   const tree = input.tree;
+  const inventory = input.inventory ?? null;
+  // Declared but unread or unlinked actors are an evidence gap, not a complete
+  // delegation. Unknown inventory never certifies completeness either.
+  const inventoryIncomplete =
+    inventory !== null &&
+    (!inventory.known ||
+      inventory.read < inventory.expected ||
+      inventory.missing > 0 ||
+      inventory.restricted > 0 ||
+      inventory.unavailable > 0 ||
+      inventory.remote > 0 ||
+      inventory.unlinked > 0);
   const isPartial =
     tree === null ||
     tree.coverage === "partial" ||
-    input.evidenceMode === "tracker-only";
+    input.evidenceMode === "tracker-only" ||
+    inventoryIncomplete;
   const overallCoverage: "complete" | "partial" = isPartial
     ? "partial"
     : "complete";
@@ -1173,16 +1306,62 @@ export function buildLedger(input: LedgerInput): Ledger {
   const permBuildResult = buildLedgerPermissionRequests(tree);
   const permissionRequests =
     permBuildResult !== null ? permBuildResult.permissionRequests : null;
+  const permissionFriction = buildPermissionFriction(tree, {
+    scopeIncomplete: inventoryIncomplete,
+  });
   const allCells = collectCells(tree);
   // Claim-referenced cells may be appended past the cap before evidence is added.
   const cells = [...allCells].sort(compareCellTurns).slice(0, MAX_CELLS);
   const sessions = tree ? tree.sessions : 0;
   const fullyRead = tree ? tree.fullyRead : 0;
   const skippedLines = tree ? tree.skippedLines : 0;
-  const agentsCreated = input.agentsCreated;
-  const sessionsLinked = input.sessionsLinked;
-  const unlinkedAgents = input.unlinkedAgents;
+  // Coverage claim counts created workers, excluding main; the roster includes it.
+  const agentsCreated = inventory
+    ? inventory.known
+      ? Math.max(0, inventory.expected - 1)
+      : Math.max(input.agentsCreated, inventory.unlinked)
+    : input.agentsCreated;
+  const sessionsLinked = inventory
+    ? Math.max(0, inventory.linked - 1)
+    : input.sessionsLinked;
+  const unlinkedAgents = inventory ? inventory.unlinked : input.unlinkedAgents;
+  const agentsRead = inventory
+    ? Math.max(0, inventory.read - 1)
+    : Math.max(0, agentsCreated - unlinkedAgents);
   const skillUsage = copySkillUsage(input.skillUsage);
+  const sourceTreeCoverage = input.treeCoverage ?? {
+    task: {
+      created: agentsCreated,
+      read: Math.max(0, agentsCreated - unlinkedAgents),
+    },
+    hostAgents: {
+      created: 0,
+      read: 0,
+      source: "call-count" as const,
+      truncated: false,
+    },
+  };
+  const treeUnlinked =
+    Math.max(0, sourceTreeCoverage.task.created - sourceTreeCoverage.task.read) +
+    Math.max(0, sourceTreeCoverage.hostAgents.created - sourceTreeCoverage.hostAgents.read);
+  const treeCoverage: TreeCoverage = {
+    state:
+      input.evidenceMode === "tracker-only"
+        ? "not-measured"
+        : tree === null ||
+            treeUnlinked > 0 ||
+            unlinkedAgents > 0 ||
+            sourceTreeCoverage.hostAgents.truncated
+          ? "partial"
+          : "complete",
+    agentsCreated:
+      sourceTreeCoverage.task.created + sourceTreeCoverage.hostAgents.created,
+    agentsRead:
+      sourceTreeCoverage.task.read + sourceTreeCoverage.hostAgents.read,
+    unlinked: treeUnlinked,
+    task: { ...sourceTreeCoverage.task },
+    hostAgents: { ...sourceTreeCoverage.hostAgents },
+  };
   const hostSkills = buildHostSkills(tree);
   const mainSkillNode: NodeSkillLoad | null =
     tree === null || tree.skillLoad.nodes.length === 0
@@ -1196,8 +1375,16 @@ export function buildLedger(input: LedgerInput): Ledger {
     agentsCreated,
     sessionsLinked,
     unlinkedAgents,
-    agentsRead: Math.max(0, agentsCreated - unlinkedAgents),
+    agentsRead,
   };
+  if (inventory !== null) {
+    coverageValues.inventoryKnown = inventory.known ? 1 : 0;
+    coverageValues.inventoryProvenance = inventory.provenance;
+    coverageValues.restrictedActors = inventory.restricted;
+    coverageValues.unavailableActors = inventory.unavailable;
+    coverageValues.remoteActors = inventory.remote;
+    coverageValues.missingActors = inventory.missing;
+  }
 
   const treeErrorStops =
     tree === null
@@ -1241,6 +1428,38 @@ export function buildLedger(input: LedgerInput): Ledger {
     scope,
     coverage: overallCoverage,
     supporting: coverageSupporting,
+    contradicting: [],
+    basedOn: [],
+  });
+
+  const delegationValues: Record<string, number | string> = {
+    agentsCreated: treeCoverage.agentsCreated,
+    agentsRead: treeCoverage.agentsRead,
+    unlinkedAgents: treeCoverage.unlinked,
+    taskCreated: treeCoverage.task.created,
+    taskRead: treeCoverage.task.read,
+    hostAgentsCreated: treeCoverage.hostAgents.created,
+    hostAgentsRead: treeCoverage.hostAgents.read,
+  };
+  const delegationSupporting: EvidenceId[] = [];
+  addClaimValueEvidence(
+    "delegation-accounting",
+    delegationValues,
+    delegationSupporting,
+    evidence,
+  );
+  claims.push({
+    id: computeClaimId("delegation-accounting", scope, delegationSupporting),
+    type: "observation",
+    template: "delegation-accounting",
+    values: delegationValues,
+    scope,
+    denominator: {
+      count: treeCoverage.agentsCreated,
+      unit: "observed creation calls; unsuccessful calls may be included",
+    },
+    coverage: overallCoverage,
+    supporting: delegationSupporting,
     contradicting: [],
     basedOn: [],
   });
@@ -1633,8 +1852,286 @@ export function buildLedger(input: LedgerInput): Ledger {
       });
     }
   }
-
   const rawNodes = tree?.nodes ?? [];
+  const agentLabelsByOrdinal = new Map<number, string>(
+    rawNodes.map((node) => [
+      node.ordinal,
+      node.ordinal === 0 ? "main" : `worker-${node.ordinal}`,
+    ]),
+  );
+  const mainNode = rawNodes.find((node) => node.ordinal === 0);
+  const activity: LedgerActivity | null =
+    tree?.activity === undefined || mainNode === undefined
+      ? null
+      : (() => {
+          const attributionCounts = new Map<string, number>();
+          for (const [rawKey, count] of Object.entries(
+            tree.activity.userRows.byAttribution,
+          )) {
+            if (!Number.isSafeInteger(count) || count < 0) continue;
+            const key = /^[a-z][a-z0-9_-]{0,31}$/.test(rawKey)
+              ? rawKey
+              : "other";
+            attributionCounts.set(
+              key,
+              (attributionCounts.get(key) ?? 0) + count,
+            );
+          }
+          const byAttribution = [...attributionCounts]
+            .map(([key, count]) => ({ key, count }))
+            .sort((a, b) => b.count - a.count || a.key.localeCompare(b.key))
+            .slice(0, 256);
+          const stopCounts = new Map<string, number>();
+          for (const [rawReason, count] of Object.entries(
+            tree.activity.stopReasons,
+          )) {
+            if (!Number.isSafeInteger(count) || count <= 0) continue;
+            const reason = /^[A-Za-z0-9._:-]{1,48}$/.test(rawReason)
+              ? rawReason
+              : "other";
+            stopCounts.set(reason, (stopCounts.get(reason) ?? 0) + count);
+          }
+          const stopRows = [...stopCounts]
+            .filter(([reason]) => reason !== "other")
+            .map(([reason, count]) => ({ reason, count }))
+            .sort(
+              (a, b) =>
+                b.count - a.count || a.reason.localeCompare(b.reason),
+            );
+          const top = stopRows.slice(0, 8);
+          const other =
+            (stopCounts.get("other") ?? 0) +
+            stopRows.slice(8).reduce((sum, entry) => sum + entry.count, 0);
+          if (other > 0) top.push({ reason: "other", count: other });
+          return {
+            userRows: {
+              total: tree.activity.userRows.total,
+              steering: tree.activity.userRows.steering,
+              permissionNotifications:
+                tree.activity.userRows.permissionNotifications,
+              byAttribution,
+            },
+            userRowsPer100TurnsTenths:
+              mainNode.turns > 0
+                ? Math.round(
+                    (tree.activity.userRows.total * 1000) / mainNode.turns,
+                  )
+                : null,
+            stopReasons: top,
+          };
+        })();
+  const failureEntries = Object.entries(tree?.failureRuns ?? {})
+    .map(([tool, value]) => ({
+      tool: sanitizeToolName(tool),
+      runs: value.runs,
+      longest: value.longest,
+      agent:
+        value.agentOrdinal === undefined
+          ? value.agent ?? "other"
+          : agentLabelsByOrdinal.get(value.agentOrdinal) ?? "other",
+    }))
+    .filter((entry) => entry.runs > 0 && entry.longest > 0)
+    .sort((a, b) => b.runs - a.runs || b.longest - a.longest || a.tool.localeCompare(b.tool));
+  const totalFailureRuns = failureEntries.reduce((sum, entry) => sum + entry.runs, 0);
+  const longestFailure = [...failureEntries].sort(
+    (a, b) => b.longest - a.longest || a.tool.localeCompare(b.tool),
+  )[0];
+  const failureRuns: LedgerFailureRuns | null =
+    tree === null || tree.failureRuns === undefined
+      ? null
+      : {
+          minLength: IMPROVEMENT_THRESHOLDS.FAILURE_RUN_MIN_LENGTH,
+          runs: totalFailureRuns,
+          longest:
+            longestFailure === undefined
+              ? null
+              : {
+                  length: longestFailure.longest,
+                  tool: longestFailure.tool,
+                  agent: longestFailure.agent,
+                },
+          tools: failureEntries.slice(0, 5).map(({ tool, runs, longest }) => ({
+            tool,
+            runs,
+            longest,
+          })),
+          truncated: tree.failureRunsTruncated === true,
+        };
+  const idleGapMinSeconds = IMPROVEMENT_THRESHOLDS.IDLE_GAP_MIN_SECONDS;
+  const mainGaps = (tree?.idleGaps ?? []).filter(
+    (seconds) =>
+      Number.isSafeInteger(seconds) && seconds >= idleGapMinSeconds,
+  );
+  const latencies = [...(tree?.permissionLatencySeconds ?? [])]
+    .filter((seconds) => Number.isSafeInteger(seconds) && seconds >= 0)
+    .sort((a, b) => a - b);
+  const permissionLatency =
+    latencies.length === 0
+      ? null
+      : {
+          timed: latencies.length,
+          medianSeconds:
+            latencies.length % 2 === 1
+              ? latencies[(latencies.length - 1) / 2]
+              : Math.floor(
+                  (latencies[latencies.length / 2 - 1] +
+                    latencies[latencies.length / 2]) /
+                    2,
+                ),
+          maxSeconds: latencies[latencies.length - 1],
+        };
+  const hasTimeEvidence =
+    tree !== null &&
+    (tree.first !== null ||
+      tree.last !== null ||
+      mainGaps.length > 0 ||
+      latencies.length > 0);
+  const time: LedgerTime | null =
+    !hasTimeEvidence
+      ? null
+      : {
+          wallSeconds:
+            tree !== null && tree.first !== null && tree.last !== null
+              ? Math.max(
+                  0,
+                  Math.floor(
+                    (Date.parse(tree.last) - Date.parse(tree.first)) / 1000,
+                  ),
+                )
+              : null,
+          main:
+            mainNode !== undefined &&
+            (mainNode.first !== null || mainNode.last !== null)
+              ? {
+                  idleGapMinSeconds,
+                  idleGaps: mainGaps.length,
+                  longestGapSeconds:
+                    mainGaps.length > 0 ? Math.max(...mainGaps) : 0,
+                  idleSeconds: mainGaps.reduce((sum, seconds) => sum + seconds, 0),
+                }
+              : null,
+          permissionLatency,
+        };
+  const decisionCounts = tree?.decisions;
+  const decisionItems = (decisionCounts?.accepted ?? []).map((item) => {
+    const { nodeOrdinal, agent, ...storedItem } = item;
+    return {
+      ...storedItem,
+      agent:
+        nodeOrdinal === undefined
+          ? agent ?? "main"
+          : agentLabelsByOrdinal.get(nodeOrdinal) ?? "other",
+    };
+  });
+  const decisionRefs = Object.entries(decisionCounts?.ruleRefs ?? {})
+    .map(([ref, count]) => ({ ref, count }))
+    .sort((a, b) => b.count - a.count || a.ref.localeCompare(b.ref));
+  const topDecisionRefs = decisionRefs.slice(0, 20);
+  const decisions: LedgerDecisions | null =
+    decisionCounts == null
+      ? null
+      : {
+          total: decisionCounts.total,
+          byBasis: { ...decisionCounts.byBasis },
+          byImpact: {
+            high: { ...decisionCounts.byImpact.high },
+            medium: { ...decisionCounts.byImpact.medium },
+            low: { ...decisionCounts.byImpact.low },
+          },
+          irreversible: decisionCounts.irreversible,
+          rejected: decisionCounts.rejected,
+          unconfirmed: decisionCounts.unconfirmed,
+          ruleRefs: topDecisionRefs,
+          otherRuleRefs:
+            (decisionCounts.otherRuleRefs ?? 0) +
+            decisionRefs
+              .slice(20)
+              .reduce((sum, entry) => sum + entry.count, 0),
+          items: decisionItems,
+          itemsOmitted: Math.max(0, decisionCounts.total - decisionItems.length),
+        };
+  if (activity !== null) {
+    const values: Record<string, number | string> = {
+      userRows: activity.userRows.total,
+      steering: activity.userRows.steering,
+      permissionNotifications: activity.userRows.permissionNotifications,
+      stopReasonKinds: activity.stopReasons.length,
+    };
+    if (activity.userRowsPer100TurnsTenths !== null) {
+      values.userRowsPer100TurnsTenths = activity.userRowsPer100TurnsTenths;
+    }
+    const supporting = ["agg:tree:userRows", "agg:tree:stopReasons"];
+    evidence["agg:tree:userRows"] = { kind: "aggregate", value: activity.userRows.total };
+    evidence["agg:tree:stopReasons"] = {
+      kind: "aggregate",
+      value: values.stopReasonKinds,
+    };
+    addClaimValueEvidence("turn-activity", values, supporting, evidence);
+    claims.push({
+      id: computeClaimId("turn-activity", scope, supporting),
+      type: "observation",
+      template: "turn-activity",
+      values,
+      scope,
+      coverage: overallCoverage,
+      supporting,
+      contradicting: [],
+      basedOn: [],
+    });
+  }
+  if (failureRuns !== null) {
+    const values = {
+      runs: failureRuns.runs,
+      minLength: failureRuns.minLength,
+      longest: failureRuns.longest?.length ?? 0,
+      distinctTools: failureRuns.tools.length,
+    };
+    const supporting = ["agg:tree:failureRuns"];
+    evidence["agg:tree:failureRuns"] = {
+      kind: "aggregate",
+      value: failureRuns.runs,
+    };
+    addClaimValueEvidence("failure-runs", values, supporting, evidence);
+    claims.push({
+      id: computeClaimId("failure-runs", scope, supporting),
+      type: "observation",
+      template: "failure-runs",
+      values,
+      scope,
+      coverage: overallCoverage,
+      supporting,
+      contradicting: [],
+      basedOn: [],
+    });
+  }
+  if (decisions !== null) {
+    const values = {
+      total: decisions.total,
+      defaultPendingReview: decisions.byBasis.defaultPendingReview,
+      highImpactDefaultPendingReview: decisions.byImpact.high.defaultPendingReview,
+      irreversible: decisions.irreversible,
+      rejected: decisions.rejected,
+      unconfirmed: decisions.unconfirmed,
+    };
+    const supporting = ["agg:tree:decisions"];
+    evidence["agg:tree:decisions"] = {
+      kind: "aggregate",
+      value: decisions.total,
+    };
+    addClaimValueEvidence("decisions", values, supporting, evidence);
+    claims.push({
+      id: computeClaimId("decisions", scope, supporting),
+      type: "observation",
+      template: "decisions",
+      values,
+      scope,
+      coverage: overallCoverage,
+      supporting,
+      contradicting: [],
+      basedOn: [],
+    });
+  }
+
   const agents: LedgerAgent[] = [];
   let otherAgents: { count: number; turns: number; costCents: number } | null =
     null;
@@ -1653,6 +2150,15 @@ export function buildLedger(input: LedgerInput): Ledger {
     });
 
     const createAgent = (node: NodeUsage, label: string): LedgerAgent => {
+      const firstMillis = node.first === null ? null : Date.parse(node.first);
+      const lastMillis = node.last === null ? null : Date.parse(node.last);
+      const activeSeconds =
+        firstMillis !== null &&
+        lastMillis !== null &&
+        Number.isFinite(firstMillis) &&
+        Number.isFinite(lastMillis)
+          ? Math.max(0, Math.floor((lastMillis - firstMillis) / 1000))
+          : null;
       const editEpisodes = node.routing?.editEpisodes ?? 0;
       const bashCalls = node.toolCallsByName?.bash ?? 0;
       const isEditing = editEpisodes > 0 || bashCalls > 0;
@@ -1689,15 +2195,24 @@ export function buildLedger(input: LedgerInput): Ledger {
         readCalls,
         agsLookups,
         permissionAnswers,
+        activeSeconds,
         model,
       };
     };
 
-    const mainAgent = createAgent(mainNode, "main");
+    const mainAgent = createAgent(
+      mainNode,
+      agentLabelsByOrdinal.get(mainNode.ordinal) ?? "other",
+    );
     const listedWorkers: LedgerAgent[] = [];
     const cappedWorkers = sortedWorkers.slice(0, 50);
-    for (let i = 0; i < cappedWorkers.length; i += 1) {
-      listedWorkers.push(createAgent(cappedWorkers[i], `worker-${i + 1}`));
+    for (const worker of cappedWorkers) {
+      listedWorkers.push(
+        createAgent(
+          worker,
+          agentLabelsByOrdinal.get(worker.ordinal) ?? "other",
+        ),
+      );
     }
 
     agents.push(mainAgent, ...listedWorkers);
@@ -2142,7 +2657,12 @@ export function buildLedger(input: LedgerInput): Ledger {
     })),
     agentsCreated,
     unlinkedAgents,
+    inventoryGaps:
+      inventory === null
+        ? 0
+        : Math.max(0, inventory.expected - inventory.read, inventory.unlinked),
     trackerWindow,
+    permissionFriction,
   };
 
   const improvements = deriveImprovements(improvementInput);
@@ -2368,9 +2888,9 @@ export function buildLedger(input: LedgerInput): Ledger {
         kind: "aggregate",
         value: row.other,
       };
-      evidence[`agg:permreq:command:${index}:unanswered`] = {
+      evidence[`agg:permreq:command:${index}:unmatchedObservations`] = {
         kind: "aggregate",
-        value: row.unanswered,
+        value: row.unmatchedObservations,
       };
     }
   }
@@ -2393,7 +2913,7 @@ export function buildLedger(input: LedgerInput): Ledger {
   };
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     cutoff: input.cutoff,
     session,
     evidenceMode: input.evidenceMode,
@@ -2411,7 +2931,14 @@ export function buildLedger(input: LedgerInput): Ledger {
     toolRows,
     outcome,
     permissionRequests,
+    permissionFriction,
+    inventory,
     agents,
+    treeCoverage,
+    activity,
+    failureRuns,
+    time,
+    decisions,
     otherAgents,
     improvements,
     claims,
@@ -2764,7 +3291,7 @@ export function checkClaimRules(ledger: Ledger): LedgerProblemCode[] {
               cmd?.allow,
               cmd?.deny,
               cmd?.other,
-              cmd?.unanswered,
+              cmd?.unmatchedObservations,
             ].some(
               (val) =>
                 typeof val !== "number" || !Number.isFinite(val) || val < 0,
@@ -2801,6 +3328,23 @@ export function verifyLedger(
   if (ledger.coverage !== expected.coverage) {
     problems.add("BAD_COVERAGE");
   }
+
+  if (
+    JSON.stringify(ledger.treeCoverage) !==
+    JSON.stringify(expected.treeCoverage)
+  ) {
+    problems.add("NUMBER_MISMATCH");
+  }
+  if (
+    JSON.stringify(ledger.activity) !== JSON.stringify(expected.activity) ||
+    JSON.stringify(ledger.failureRuns) !==
+      JSON.stringify(expected.failureRuns) ||
+    JSON.stringify(ledger.time) !== JSON.stringify(expected.time) ||
+    JSON.stringify(ledger.decisions) !== JSON.stringify(expected.decisions)
+  ) {
+    problems.add("NUMBER_MISMATCH");
+  }
+
 
   for (const claim of ledger.claims) {
     const expClaim = expected.claims.find((c) => c.template === claim.template);
@@ -2990,6 +3534,29 @@ export function verifyLedger(
     JSON.stringify(expected.permissionRequests)
   ) {
     problems.add("NUMBER_MISMATCH");
+  }
+
+  if (
+    JSON.stringify(ledger.permissionFriction) !==
+    JSON.stringify(expected.permissionFriction)
+  ) {
+    problems.add("NUMBER_MISMATCH");
+  }
+
+  if (JSON.stringify(ledger.inventory) !== JSON.stringify(expected.inventory)) {
+    problems.add("NUMBER_MISMATCH");
+  }
+  if (ledger.inventory !== null && Array.isArray(ledger.inventory.actors)) {
+    for (const actor of ledger.inventory.actors) {
+      if (
+        typeof actor?.label !== "string" ||
+        !SAFE_ACTOR_LABEL_REGEX.test(actor.label) ||
+        typeof actor.token !== "string" ||
+        !SAFE_ACTOR_TOKEN_REGEX.test(actor.token)
+      ) {
+        problems.add("UNSAFE_VALUE");
+      }
+    }
   }
 
   if (ledger.label !== expected.label) {

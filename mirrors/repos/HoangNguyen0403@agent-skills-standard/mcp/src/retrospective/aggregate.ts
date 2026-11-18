@@ -1,17 +1,59 @@
+import type { DecisionInput } from "./decision-contract";
+import { sanitizeDecisionLabel } from "./decision-contract";
+import { IMPROVEMENT_THRESHOLDS } from "./improvements";
 import { constants } from "node:fs";
-import { open, type FileHandle } from "node:fs/promises";
+import { open } from "node:fs/promises";
+import type { ReadSource } from "./read-source";
 import crypto from "node:crypto";
-import type { Readable } from "node:stream";
 import { DEFAULT_LIMITS, type NodeKey } from "./contracts";
 import { RetrospectiveError } from "./errors";
 import {
   SERVER_HOUSEKEEPING_TOOLS,
   SKILL_LOAD_TOOLS,
+  extractDecisionArgs,
   extractHostSkillId,
   extractServerToolName,
 } from "./server-tools";
 import { parseLookupResult } from "./lookup-results";
-import { parsePermissionRequestMessage } from "./permission-requests";
+import { deduplicatePermissionEvents } from "./permission-friction";
+import {
+  parsePermissionRequestMessage,
+  permissionActorKey,
+  permissionRequestIdentity,
+} from "./permission-requests";
+const SOURCE_READ_CHUNK_BYTES = 64 * 1024;
+const MAX_FAILURE_TRACKED_TOOLS = 10_000;
+const MAX_NODE_DECISIONS = 500;
+const MAX_TREE_DECISIONS = 200;
+
+function retainPrioritizedDecision<
+  T extends {
+    at: string;
+    basis: "rule" | "default-pending-review";
+    impact: "high" | "medium" | "low";
+  },
+>(items: T[], candidate: T, limit: number): void {
+  const impactRank = { high: 0, medium: 1, low: 2 } as const;
+  const compare = (left: T, right: T): number => {
+    const leftPending = left.basis === "default-pending-review";
+    const rightPending = right.basis === "default-pending-review";
+    if (leftPending !== rightPending) return leftPending ? -1 : 1;
+    const impactOrder = impactRank[left.impact] - impactRank[right.impact];
+    if (impactOrder !== 0) return impactOrder;
+    return left.at.localeCompare(right.at);
+  };
+  let low = 0;
+  let high = items.length;
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2);
+    if (compare(items[middle], candidate) <= 0) low = middle + 1;
+    else high = middle;
+  }
+  if (low >= limit && items.length >= limit) return;
+  items.splice(low, 0, candidate);
+  if (items.length > limit) items.pop();
+}
+
 
 export const LOOKUP_TOOLS = [
   "load_skills_for_files",
@@ -211,6 +253,31 @@ export type PermissionRequestStats = {
   commandsOmitted: number;
 };
 
+/**
+ * One observed permission request or answer with its internal join key and
+ * structured timing. `requestKey` joins every observation of the same
+ * actor+request, including a request seen in one session node and its answer in
+ * another. `actorKey` and `requestKey` are internal dedup support and are never
+ * emitted in a friction summary. No command text, prompt or path is carried
+ * here; those stay in `PermissionRequestStats`.
+ */
+export type PermissionRequestEvent = {
+  /** sha256(actorKey + "\u0000" + requestId) prefix; internal dedup key only. */
+  requestKey: string;
+  /** Full-id-derived or observation-scoped actor key; internal only. */
+  actorKey: string;
+  /** False for an answer observation whose request was not seen in its node. */
+  observedRequest: boolean;
+  tool: string;
+  program: string | null;
+  kind: string;
+  /** Epoch millis of the notification row, or null when no supported timestamp exists. */
+  requestedAtMs: number | null;
+  /** Epoch millis of the row carrying an answer record, or null. */
+  answeredAtMs: number | null;
+  verdict: "allow" | "deny" | "other" | null;
+};
+
 export function createEmptyPermissionRequestStats(): PermissionRequestStats {
   return {
     asked: 0,
@@ -302,12 +369,60 @@ export type SessionAggregate = {
   skillLoad: SessionSkillLoad;
   permissionAnswers: PermissionAnswers;
   permissionRequests: PermissionRequestStats;
+  /**
+   * Bounded event-level permission records (see `PermissionRequestEvent`).
+   * Optional so older fixtures and Codex-shaped aggregates stay valid; absent
+   * means no event capture, which friction reporting treats as partial.
+   */
+  permissionRequestEvents?: PermissionRequestEvent[];
+  /**
+   * Whether this format's permission ingress is measured at all. A zero count
+   * is only a measured zero when this is "captured".
+   */
+  permissionCapture?: "captured" | "unsupported";
+  activity?: {
+    steering: number;
+    permissionNotifications: number;
+    byAttribution: Record<string, number>;
+  };
+  failureRuns?: Record<string, { runs: number; longest: number }>;
+  failureRunsTruncated?: boolean;
+  idleGaps?: number[];
+  permissionLatencySeconds?: number[];
+  decisions?: {
+    accepted: Array<{
+      at: string;
+      agent?: string;
+      nodeOrdinal?: number;
+      basis: "rule" | "default-pending-review";
+      impact: "high" | "medium" | "low";
+      reversible: boolean;
+      ruleRef: string | null;
+      label: string;
+    }>;
+    total: number;
+    byBasis: { rule: number; defaultPendingReview: number };
+    byImpact: {
+      high: { rule: number; defaultPendingReview: number };
+      medium: { rule: number; defaultPendingReview: number };
+      low: { rule: number; defaultPendingReview: number };
+    };
+    ruleRefs: Record<string, number>;
+    irreversible: number;
+    otherRuleRefs: number;
+    rejected: number;
+    unconfirmed: number;
+  };
   context: ContextStats;
   routing: RoutingOrder;
   lookups: LookupStats;
   folder: FolderLabel | null;
   coverage: "complete" | "partial";
-  partialReason?: "size-ceiling" | "time-ceiling" | "unreadable-lines";
+  partialReason?:
+    | "size-ceiling"
+    | "time-ceiling"
+    | "unreadable-lines"
+    | "unknown-time-exclusions";
   skippedLines: number;
 };
 
@@ -341,6 +456,12 @@ export type MetricCompleteness = Record<
 export type AggregateLimits = {
   maxBytes: number;
   maxMillis: number;
+  /**
+   * Optional inclusive upper bound (epoch millis). Rows carrying a parseable
+   * row timestamp after it are excluded before any aggregation; activity rows
+   * without one are omitted as unknown rather than assumed inside the window.
+   */
+  cutoffMs?: number;
 };
 
 export type NodeUsage = {
@@ -364,19 +485,38 @@ export type NodeUsage = {
   models: Record<string, number>;
   permissionAnswers: PermissionAnswers;
   permissionRequests: PermissionRequestStats;
+  /** Event-level permission records for this node; absent when none were captured. */
+  permissionRequestEvents?: PermissionRequestEvent[];
+  /** Permission ingress support for this node; absent on older captures. */
+  permissionCapture?: "captured" | "unsupported";
   context: ContextStats;
   routing: RoutingOrder;
   lookups: LookupStats;
   skillLoadCalls: number; // node.skillLoad.skillLoadCalls (0 when not measured)
   first: string | null;
   last: string | null;
+  activity?: {
+    userRows: number;
+    steering: number;
+    permissionNotifications: number;
+    byAttribution: Record<string, number>;
+  };
+  failureRuns?: Record<string, { runs: number; longest: number }>;
+  failureRunsTruncated?: boolean;
+  idleGaps?: number[];
+  permissionLatencySeconds?: number[];
+  decisions?: NonNullable<SessionAggregate["decisions"]>;
 };
 
 export type TreeAggregate = {
   sessions: number;
   fullyRead: number;
   coverage: "complete" | "partial";
-  partialReason?: "size-ceiling" | "time-ceiling" | "unreadable-lines";
+  partialReason?:
+    | "size-ceiling"
+    | "time-ceiling"
+    | "unreadable-lines"
+    | "unknown-time-exclusions";
   first: string | null;
   last: string | null;
   assistantTurns: number;
@@ -409,6 +549,15 @@ export type TreeAggregate = {
   skippedLines: number;
   metricCompleteness: MetricCompleteness;
   series: JointSeries;
+  activity?: {
+    userRows: { total: number; steering: number; permissionNotifications: number; byAttribution: Record<string, number> };
+    stopReasons: Record<string, number>;
+  };
+  failureRuns?: Record<string, { runs: number; longest: number; agentOrdinal?: number; agent?: string }>;
+  failureRunsTruncated?: boolean;
+  idleGaps?: number[];
+  permissionLatencySeconds?: number[];
+  decisions?: NonNullable<SessionAggregate["decisions"]>;
 };
 
 /** One session aggregate plus the joint series and per-metric completeness rollUp consumes. */
@@ -434,6 +583,8 @@ export const MAX_TREE_NODES = 64;
 const VALID_TARGET_ID = /^[A-Za-z0-9-]{8,128}$/;
 const MAX_PERMISSION_TARGET_KEYS = 20;
 const MAX_REQUEST_VERDICTS_CAP = 20_000;
+// Event-level records kept per node; beyond this the node reports partial friction.
+const MAX_PERMISSION_EVENTS = 1_000;
 const MAX_DISTINCT_AGENTS_CAP = 500;
 const MAX_TOOL_TALLY_KEYS = 20;
 const MAX_PROGRAM_TALLY_KEYS = 60;
@@ -492,7 +643,10 @@ function buildPermissionRequestStats(
       command: string | null;
     }
   >,
-  verdicts: Map<string, "allow" | "deny" | "other">,
+  verdicts: Map<
+    string,
+    { verdict: "allow" | "deny" | "other"; answeredAtMs: number | null }
+  >,
 ): PermissionRequestStats {
   const tools: Record<string, PermissionRequestTally> = {};
   const programs: Record<string, PermissionRequestTally> = {};
@@ -511,7 +665,7 @@ function buildPermissionRequestStats(
     let verdictKey: "allow" | "deny" | "other" | "unanswered";
     if (verdict !== undefined) {
       answered += 1;
-      verdictKey = verdict;
+      verdictKey = verdict.verdict;
     } else {
       verdictKey = "unanswered";
     }
@@ -710,10 +864,21 @@ function recordBoundedMap(
     return;
   }
   if (Object.keys(map).length >= MAX_MAP_KEYS) {
-    map["other"] = (map["other"] ?? 0) + increment;
+    const other = (Object.hasOwn(map, "other") ? map.other : 0) + increment;
+    Object.defineProperty(map, "other", {
+      value: other,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
     return;
   }
-  map[key] = increment;
+  Object.defineProperty(map, key, {
+    value: increment,
+    enumerable: true,
+    configurable: true,
+    writable: true,
+  });
 }
 
 function recordJointEntry(
@@ -756,17 +921,26 @@ function recordJointEntry(
   entry.outputTokens += outputTokens;
   entry.cacheReadTokens += cacheReadTokens;
 }
+export type SourceLocation =
+  | { absolutePath: string; handle?: never }
+  | { handle: ReadSource; absolutePath?: never };
 
 export async function captureSnapshot(
-  source: { node: NodeKey; absolutePath: string },
+  source: { node: NodeKey } & SourceLocation,
   maxBytes: number,
 ): Promise<SourceSnapshot> {
-  if (!Number.isFinite(maxBytes) || maxBytes < 0) {
+  if (!Number.isSafeInteger(maxBytes) || maxBytes < 0) {
     throw new RangeError("maxBytes must be a nonnegative integer");
   }
-  let handle: FileHandle | undefined;
+  const ownsHandle = source.absolutePath !== undefined;
+  const handle =
+    source.absolutePath !== undefined
+      ? await open(source.absolutePath, READ_FLAGS)
+      : source.handle;
+  if (handle === undefined) {
+    throw new RetrospectiveError("SOURCE_UNAVAILABLE", "Source handle is missing");
+  }
   try {
-    handle = await open(source.absolutePath, READ_FLAGS);
     const stats = await handle.stat();
     if (!stats.isFile()) {
       throw new RetrospectiveError(
@@ -775,20 +949,19 @@ export async function captureSnapshot(
       );
     }
     const fileSize = Number(stats.size);
-    const bytesCaptured = Math.max(0, Math.min(fileSize, maxBytes));
+    const requestedBytes = Math.max(0, Math.min(fileSize, maxBytes));
+    let bytesCaptured = 0;
     const hash = crypto.createHash("sha256");
+    const buffer = Buffer.allocUnsafe(
+      Math.min(SOURCE_READ_CHUNK_BYTES, requestedBytes),
+    );
 
-    if (bytesCaptured > 0) {
-      const stream = handle.createReadStream({
-        autoClose: false,
-        start: 0,
-        end: bytesCaptured - 1,
-      });
-      stream.on("error", () => undefined);
-      for await (const chunk of stream) {
-        const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-        hash.update(buffer);
-      }
+    while (bytesCaptured < requestedBytes) {
+      const length = Math.min(buffer.length, requestedBytes - bytesCaptured);
+      const { bytesRead } = await handle.read(buffer, 0, length, bytesCaptured);
+      if (bytesRead === 0) break;
+      hash.update(buffer.subarray(0, bytesRead));
+      bytesCaptured += bytesRead;
     }
 
     const prefixDigest = hash.digest("hex");
@@ -799,12 +972,16 @@ export async function captureSnapshot(
       parserVersion: AGGREGATE_PARSER_VERSION,
     };
   } finally {
-    await handle?.close().catch(() => undefined);
+    if (ownsHandle) await handle?.close().catch(() => undefined);
   }
 }
 
 export async function aggregateSession(
-  source: { node: NodeKey; format: "omp" | "codex"; absolutePath: string },
+  source: {
+    node: NodeKey;
+    format: "omp" | "codex";
+    expectedSessionId?: string;
+  } & SourceLocation,
   snapshot: SourceSnapshot,
   limits: AggregateLimits,
   signal: AbortSignal,
@@ -812,16 +989,23 @@ export async function aggregateSession(
   if (signal.aborted) {
     throw new RetrospectiveError("ABORTED", "Aggregate pass was aborted");
   }
+  const cutoffMs = limits.cutoffMs;
+  if (cutoffMs !== undefined && (!Number.isFinite(cutoffMs) || cutoffMs < 0)) {
+    throw new RangeError("cutoffMs must be a nonnegative finite number");
+  }
 
-  let handle: FileHandle | undefined;
-  let stream: Readable | undefined;
-  const abortHandler = (): void => {
-    stream?.destroy();
-  };
-  signal.addEventListener("abort", abortHandler, { once: true });
-
+  let ownedHandle: ReadSource | undefined;
   try {
-    handle = await open(source.absolutePath, READ_FLAGS);
+    const handle =
+      source.absolutePath !== undefined
+        ? (ownedHandle = await open(source.absolutePath, READ_FLAGS))
+        : source.handle;
+    if (handle === undefined) {
+      throw new RetrospectiveError(
+        "SOURCE_UNAVAILABLE",
+        "Source handle is missing",
+      );
+    }
     if (signal.aborted) {
       throw new RetrospectiveError("ABORTED", "Aggregate pass was aborted");
     }
@@ -875,6 +1059,7 @@ export async function aggregateSession(
     // Non-housekeeping tool calls seen so far, in file order.
     let callsSeen = 0;
     let skippedLines = 0;
+    let unknownTimeExclusions = false;
     const series: JointSeries = { byDayModel: {} };
     const permissionAnswers: PermissionAnswers = {
       allow: 0,
@@ -883,17 +1068,60 @@ export async function aggregateSession(
       byTarget: {},
       untrackedTargets: 0,
     };
+    const permissionScope = `${source.node.hostId}\u0000${source.node.sessionId}`;
     const permissionRequestsMap = new Map<
       string,
       {
+        requestId: string;
         tool: string;
         program: string | null;
         agent: string;
+        actorKey: string;
         kind: string;
         command: string | null;
+        requestedAtMs: number | null;
       }
     >();
-    const permissionVerdictsMap = new Map<string, "allow" | "deny" | "other">();
+    const permissionVerdictsMap = new Map<
+      string,
+      {
+        verdict: "allow" | "deny" | "other";
+        answeredAtMs: number | null;
+        actorKey: string;
+      }
+    >();
+    const permissionLatencySeconds: number[] = [];
+    const activity = {
+      steering: 0,
+      permissionNotifications: 0,
+      byAttribution: {} as Record<string, number>,
+    };
+    const idleGaps: number[] = [];
+    let priorRowMillis: number | null = null;
+    const failureRuns = new Map<
+      string,
+      { runs: number; longest: number; streak: number }
+    >();
+    const pendingDecisions = new Map<string, {
+      input: DecisionInput;
+      at: string;
+    }>();
+    const completedDecisionIds = new Set<string>();
+    const decisions: NonNullable<SessionAggregate["decisions"]> = {
+      accepted: [],
+      total: 0,
+      byBasis: { rule: 0, defaultPendingReview: 0 },
+      byImpact: {
+        high: { rule: 0, defaultPendingReview: 0 },
+        medium: { rule: 0, defaultPendingReview: 0 },
+        low: { rule: 0, defaultPendingReview: 0 },
+      },
+      irreversible: 0,
+      ruleRefs: Object.create(null) as Record<string, number>,
+      otherRuleRefs: 0,
+      rejected: 0,
+      unconfirmed: 0,
+    };
     const context: ContextStats = {
       maxCacheRead: 0,
       postCompactionTurns: 0,
@@ -906,6 +1134,8 @@ export async function aggregateSession(
     let filesLookupSeen = false;
     let afterCompaction = false;
 
+    let expectedSessionHeaderSeen = false;
+    let expectedSessionHeaderMismatch = false;
     let currentModel: string | undefined;
     // Codex turn accounting is a conservative assumption pending real Codex fixtures.
     let codexTurnOpen = false;
@@ -931,8 +1161,111 @@ export async function aggregateSession(
       }
     };
 
-    const processOmpRow = (row: Record<string, unknown>): void => {
-      updateTimestamps(row.timestamp);
+    let failureRunsTruncated = false;
+    const recordFailureResult = (tool: string, isError: boolean): void => {
+      let summary = failureRuns.get(tool);
+      if (!isError) {
+        if (summary) summary.streak = 0;
+        return;
+      }
+      if (summary === undefined) {
+        if (failureRuns.size >= MAX_FAILURE_TRACKED_TOOLS) {
+          failureRunsTruncated = true;
+          return;
+        }
+        summary = { runs: 0, longest: 0, streak: 0 };
+        failureRuns.set(tool, summary);
+      }
+      summary.streak += 1;
+      summary.longest = Math.max(summary.longest, summary.streak);
+      if (summary.streak === IMPROVEMENT_THRESHOLDS.FAILURE_RUN_MIN_LENGTH) {
+        summary.runs += 1;
+      }
+    };
+
+    const recordDecisionCall = (
+      name: unknown,
+      args: unknown,
+      id: unknown,
+      at: string | null,
+    ): void => {
+      if (name !== "record_decision" && extractServerToolName(name, args) !== "record_decision") {
+        return;
+      }
+      if (typeof id !== "string" || id.length === 0 || pendingDecisions.size >= 64) {
+        decisions.rejected += 1;
+        return;
+      }
+      if (completedDecisionIds.has(id) || pendingDecisions.has(id)) return;
+      const input = extractDecisionArgs(name, args);
+      if (input === null || at === null) {
+        decisions.rejected += 1;
+        return;
+      }
+      pendingDecisions.set(id, { input, at });
+    };
+
+    const finishDecisionCall = (
+      id: unknown,
+      isError: boolean,
+      at: string | null,
+    ): void => {
+      if (typeof id !== "string") return;
+      const pending = pendingDecisions.get(id);
+      if (!pending || completedDecisionIds.has(id)) return;
+      pendingDecisions.delete(id);
+      completedDecisionIds.add(id);
+      if (completedDecisionIds.size > 64) {
+        const oldest = completedDecisionIds.values().next().value;
+        if (oldest !== undefined) completedDecisionIds.delete(oldest);
+      }
+      if (isError || at === null) {
+        decisions.rejected += 1;
+        return;
+      }
+      const label = sanitizeDecisionLabel(pending.input.label);
+      if (label.length === 0) {
+        decisions.rejected += 1;
+        return;
+      }
+      decisions.total += 1;
+      const basisKey =
+        pending.input.basis === "rule" ? "rule" : "defaultPendingReview";
+      decisions.byBasis[basisKey] += 1;
+      decisions.byImpact[pending.input.impact][basisKey] += 1;
+      if (!pending.input.reversible) decisions.irreversible += 1;
+      if (pending.input.ruleRef !== undefined) {
+        if (
+          Object.hasOwn(decisions.ruleRefs, pending.input.ruleRef) ||
+          Object.keys(decisions.ruleRefs).length < 500
+        ) {
+          decisions.ruleRefs[pending.input.ruleRef] =
+            (Object.hasOwn(decisions.ruleRefs, pending.input.ruleRef)
+              ? decisions.ruleRefs[pending.input.ruleRef]
+              : 0) + 1;
+        } else {
+          decisions.otherRuleRefs += 1;
+        }
+      }
+      retainPrioritizedDecision(
+        decisions.accepted,
+        {
+          at,
+          basis: pending.input.basis,
+          impact: pending.input.impact,
+          reversible: pending.input.reversible,
+          ruleRef: pending.input.ruleRef ?? null,
+          label,
+        },
+        MAX_NODE_DECISIONS,
+      );
+    };
+
+    const processOmpRow = (
+      row: Record<string, unknown>,
+      recordTimestamps: boolean,
+    ): void => {
+      if (recordTimestamps) updateTimestamps(row.timestamp);
       if (row.type === "session") {
         if (typeof row.cwd === "string") {
           folder = folderLabel(row.cwd);
@@ -1017,26 +1350,51 @@ export async function aggregateSession(
 
       if (row.type === "message" && isObject(row.message)) {
         const msg = row.message;
-        updateTimestamps(msg.timestamp);
+        if (recordTimestamps) updateTimestamps(msg.timestamp);
 
         if (msg.role === "user") {
           userMessages += 1;
+          if (msg.steering === true) activity.steering += 1;
+          const rawAttribution = typeof msg.attribution === "string" ? msg.attribution : "other";
+          const attribution = /^[a-z][a-z0-9_-]{0,31}$/.test(rawAttribution) ? rawAttribution : "other";
+          recordBoundedMap(activity.byAttribution, attribution);
           const text = extractTextContent(msg.content);
           if (text.includes("permission-required")) {
             const parsed = parsePermissionRequestMessage(text);
-            if (
-              parsed !== null &&
-              (permissionRequestsMap.size < MAX_REQUEST_VERDICTS_CAP ||
-                permissionRequestsMap.has(parsed.requestId))
-            ) {
-              if (!permissionRequestsMap.has(parsed.requestId)) {
-                permissionRequestsMap.set(parsed.requestId, {
-                  tool: parsed.tool,
-                  program: parsed.program,
-                  agent: parsed.agent,
-                  kind: parsed.kind,
-                  command: parsed.command,
-                });
+            if (parsed !== null) {
+              activity.permissionNotifications += 1;
+              const actorKey =
+                parsed.actorKey ??
+                permissionActorKey(undefined, permissionScope);
+              const identity = permissionRequestIdentity(
+                actorKey,
+                parsed.requestId,
+              );
+              if (
+                permissionRequestsMap.size < MAX_REQUEST_VERDICTS_CAP ||
+                permissionRequestsMap.has(identity)
+              ) {
+                const requestedAtMs =
+                  toEpochMillis(msg.timestamp) ?? toEpochMillis(row.timestamp);
+                const existing = permissionRequestsMap.get(identity);
+                if (existing === undefined) {
+                  permissionRequestsMap.set(identity, {
+                    requestId: parsed.requestId,
+                    tool: parsed.tool,
+                    program: parsed.program,
+                    agent: parsed.agent,
+                    actorKey,
+                    kind: parsed.kind,
+                    command: parsed.command,
+                    requestedAtMs,
+                  });
+                } else if (
+                  requestedAtMs !== null &&
+                  (existing.requestedAtMs === null ||
+                    requestedAtMs < existing.requestedAtMs)
+                ) {
+                  existing.requestedAtMs = requestedAtMs;
+                }
               }
             }
           }
@@ -1070,6 +1428,15 @@ export async function aggregateSession(
               recordBoundedMap(toolErrors, toolName);
             }
           }
+          if (toolName) {
+            recordFailureResult(toolName, msg.isError === true);
+          }
+          const resultMillis = toEpochMillis(msg.timestamp ?? row.timestamp);
+          finishDecisionCall(
+            toolCallId,
+            msg.isError === true,
+            resultMillis === null ? null : new Date(resultMillis).toISOString(),
+          );
 
           if (toolCallId && lookupCallTool.has(toolCallId)) {
             const lookupTool = lookupCallTool.get(toolCallId)!;
@@ -1123,10 +1490,14 @@ export async function aggregateSession(
                 : (currentModel ?? "unknown-model");
           recordBoundedMap(models, modelName);
 
+          const rawStopReason =
+            typeof msg.stopReason === "string" ? msg.stopReason : undefined;
           const stopReason =
-            typeof msg.stopReason === "string"
-              ? boundIdentifier(msg.stopReason)
-              : undefined;
+            rawStopReason === undefined
+              ? undefined
+              : /^[A-Za-z0-9._:-]{1,48}$/.test(rawStopReason)
+                ? rawStopReason
+                : "other";
           if (stopReason) {
             recordBoundedMap(stopReasons, stopReason);
           }
@@ -1307,6 +1678,13 @@ export async function aggregateSession(
                       : typeof part.toolName === "string"
                         ? part.toolName
                         : undefined;
+                  const decisionMillis = toEpochMillis(msg.timestamp ?? row.timestamp);
+                  recordDecisionCall(
+                    callName,
+                    part.arguments,
+                    toolCallId,
+                    decisionMillis === null ? null : new Date(decisionMillis).toISOString(),
+                  );
 
                   if (isEditEpisodeCall(callName, part.arguments, serverTool)) {
                     routing.editEpisodes += 1;
@@ -1358,11 +1736,36 @@ export async function aggregateSession(
                       typeof args.requestId === "string" &&
                       /^[A-Za-z0-9-]{1,64}$/.test(args.requestId)
                     ) {
+                      const actorKey = permissionActorKey(
+                        args.agentId,
+                        permissionScope,
+                      );
+                      const identity = permissionRequestIdentity(
+                        actorKey,
+                        args.requestId,
+                      );
                       if (
                         permissionVerdictsMap.size < MAX_REQUEST_VERDICTS_CAP ||
-                        permissionVerdictsMap.has(args.requestId)
+                        permissionVerdictsMap.has(identity)
                       ) {
-                        permissionVerdictsMap.set(args.requestId, behavior);
+                        const answeredAtMs =
+                          toEpochMillis(msg.timestamp) ??
+                          toEpochMillis(row.timestamp);
+                        const existing = permissionVerdictsMap.get(identity);
+                        // One selection rule everywhere: the earliest valid
+                        // observed answer record wins; ties keep the first seen.
+                        const shouldReplace =
+                          existing === undefined ||
+                          (answeredAtMs !== null &&
+                            (existing.answeredAtMs === null ||
+                              answeredAtMs < existing.answeredAtMs));
+                        if (shouldReplace) {
+                          permissionVerdictsMap.set(identity, {
+                            verdict: behavior,
+                            answeredAtMs,
+                            actorKey,
+                          });
+                        }
                       }
                     }
                   }
@@ -1374,8 +1777,11 @@ export async function aggregateSession(
       }
     };
 
-    const processCodexRow = (row: Record<string, unknown>): void => {
-      updateTimestamps(row.timestamp);
+    const processCodexRow = (
+      row: Record<string, unknown>,
+      recordTimestamps: boolean,
+    ): void => {
+      if (recordTimestamps) updateTimestamps(row.timestamp);
 
       if (row.type === "turn_context" && isObject(row.payload)) {
         if (typeof row.payload.model === "string") {
@@ -1457,6 +1863,15 @@ export async function aggregateSession(
               : typeof payload.call_id === "string"
                 ? payload.call_id
                 : undefined;
+          const callArguments =
+            payload.arguments ?? payload.args ?? fnObj?.arguments;
+          const decisionMillis = toEpochMillis(row.timestamp);
+          recordDecisionCall(
+            toolName,
+            callArguments,
+            toolCallId,
+            decisionMillis === null ? null : new Date(decisionMillis).toISOString(),
+          );
           if (toolName) {
             if (toolCallId) {
               if (!seenToolCallIds.has(toolCallId)) {
@@ -1500,6 +1915,14 @@ export async function aggregateSession(
               recordBoundedMap(toolErrors, toolName);
             }
           }
+          const isError = payload.is_error === true || payload.error !== undefined;
+          if (toolName) recordFailureResult(toolName, isError);
+          const resultMillis = toEpochMillis(row.timestamp);
+          finishDecisionCall(
+            toolCallId,
+            isError,
+            resultMillis === null ? null : new Date(resultMillis).toISOString(),
+          );
           return;
         }
 
@@ -1640,55 +2063,103 @@ export async function aggregateSession(
         skippedLines += 1;
         return;
       }
+      let recordTimestamps = true;
+      if (cutoffMs !== undefined) {
+        const rowMillis = toEpochMillis(row.timestamp);
+        const isStructuralHeader =
+          source.format === "omp"
+            ? row.type === "session" || (row.type === "title" && row.v === 1)
+            : row.type === "session_meta";
+        if (rowMillis === null || rowMillis > cutoffMs) {
+          if (!isStructuralHeader) {
+            // Unknown-time activity is omitted rather than assumed inside the
+            // window; after-cutoff activity is outside the authorized window.
+            if (rowMillis === null) {
+              skippedLines += 1;
+              unknownTimeExclusions = true;
+            }
+            return;
+          }
+          recordTimestamps = false;
+        }
+      }
+      if (recordTimestamps) {
+        const timestamp =
+          row.timestamp ??
+          (isObject(row.message) ? row.message.timestamp : undefined);
+        const millis = toEpochMillis(timestamp);
+        if (millis !== null) {
+          if (priorRowMillis !== null && millis >= priorRowMillis) {
+            const gapSeconds = Math.floor((millis - priorRowMillis) / 1000);
+            if (gapSeconds >= IMPROVEMENT_THRESHOLDS.IDLE_GAP_MIN_SECONDS) {
+              idleGaps.push(gapSeconds);
+            }
+          }
+          priorRowMillis = millis;
+        }
+      }
       if (source.format === "omp") {
-        processOmpRow(row);
+        processOmpRow(row, recordTimestamps);
       } else {
-        processCodexRow(row);
+        processCodexRow(row, recordTimestamps);
       }
     };
 
     const processLineBuffer = (buf: Buffer): void => {
-      if (timeCeiling) return;
       const text = buf.toString("utf8").trim();
       if (!text) return;
       let row: unknown;
       try {
         row = JSON.parse(text);
       } catch {
-        skippedLines += 1;
+        if (!timeCeiling) skippedLines += 1;
         return;
       }
+      if (
+        source.format === "omp" &&
+        source.expectedSessionId !== undefined &&
+        isObject(row) &&
+        row.type === "session"
+      ) {
+        if (row.id === source.expectedSessionId) {
+          expectedSessionHeaderSeen = true;
+        } else {
+          expectedSessionHeaderMismatch = true;
+        }
+      }
+      if (timeCeiling) return;
       processRow(row);
     };
 
     if (snapshot.bytesCaptured > 0) {
-      stream = handle.createReadStream({
-        autoClose: false,
-        start: 0,
-        end: snapshot.bytesCaptured - 1,
-      });
-      stream.on("error", () => undefined);
-
       let parts: Buffer[] = [];
       let currentLength = 0;
       let tooLong = false;
       const lineLimit = DEFAULT_LIMITS.lineBytes;
+      const buffer = Buffer.allocUnsafe(
+        Math.min(SOURCE_READ_CHUNK_BYTES, snapshot.bytesCaptured),
+      );
+      let position = 0;
 
-      for await (const chunk of stream) {
+      while (position < snapshot.bytesCaptured) {
         if (signal.aborted) {
           throw new RetrospectiveError("ABORTED", "Aggregate pass was aborted");
         }
-        const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-        hash.update(buffer);
+        const length = Math.min(buffer.length, snapshot.bytesCaptured - position);
+        const { bytesRead } = await handle.read(buffer, 0, length, position);
+        if (bytesRead === 0) break;
+        position += bytesRead;
+        const chunk = buffer.subarray(0, bytesRead);
+        hash.update(chunk);
 
         if (!timeCeiling && Date.now() - startedAt >= limits.maxMillis) {
           timeCeiling = true;
         }
 
         let start = 0;
-        for (let index = 0; index < buffer.length; index += 1) {
-          if (buffer[index] !== 0x0a) continue;
-          const segment = buffer.subarray(start, index);
+        for (let index = 0; index < chunk.length; index += 1) {
+          if (chunk[index] !== 0x0a) continue;
+          const segment = chunk.subarray(start, index);
           start = index + 1;
 
           if (tooLong) {
@@ -1714,15 +2185,15 @@ export async function aggregateSession(
           processLineBuffer(lineBuf);
         }
 
-        if (start < buffer.length) {
-          const remainder = buffer.subarray(start);
+        if (start < chunk.length) {
+          const remainder = chunk.subarray(start);
           if (!tooLong) {
             if (currentLength + remainder.length > lineLimit) {
               tooLong = true;
               parts = [];
               currentLength = 0;
             } else {
-              parts.push(remainder);
+              parts.push(Buffer.from(remainder));
               currentLength += remainder.length;
             }
           }
@@ -1748,11 +2219,23 @@ export async function aggregateSession(
         "Source file changed after snapshot was captured",
       );
     }
+    if (
+      source.expectedSessionId !== undefined &&
+      (!expectedSessionHeaderSeen || expectedSessionHeaderMismatch)
+    ) {
+      throw new RetrospectiveError(
+        "SOURCE_CHANGED",
+        "Source session identity does not match the expected session",
+      );
+    }
 
     let coverage: "complete" | "partial" = "complete";
     let partialReason:
-      "size-ceiling" | "time-ceiling" | "unreadable-lines" | undefined =
-      undefined;
+      | "size-ceiling"
+      | "time-ceiling"
+      | "unreadable-lines"
+      | "unknown-time-exclusions"
+      | undefined = undefined;
 
     if (sizeCeiling) {
       coverage = "partial";
@@ -1760,8 +2243,12 @@ export async function aggregateSession(
     } else if (timeCeiling) {
       coverage = "partial";
       partialReason = "time-ceiling";
+    } else if (unknownTimeExclusions) {
+      coverage = "partial";
+      partialReason = "unknown-time-exclusions";
     }
 
+    decisions.unconfirmed += pendingDecisions.size;
     const permissionRequests: PermissionRequestStats =
       source.format === "codex"
         ? createEmptyPermissionRequestStats()
@@ -1769,6 +2256,69 @@ export async function aggregateSession(
             permissionRequestsMap,
             permissionVerdictsMap,
           );
+
+    for (const [identity, request] of permissionRequestsMap) {
+      const answeredAtMs = permissionVerdictsMap.get(identity)?.answeredAtMs;
+      if (
+        request.requestedAtMs !== null &&
+        answeredAtMs !== undefined &&
+        answeredAtMs !== null &&
+        answeredAtMs >= request.requestedAtMs
+      ) {
+        permissionLatencySeconds.push(
+          Math.round((answeredAtMs - request.requestedAtMs) / 1000),
+        );
+      }
+    }
+    // Event-level records are capped independently of the stats maps; a node
+    // that exceeds the cap reports partial coverage instead of silently
+    // dropping observations from friction counts. Answer observations without
+    // their request are retained so another node's request can join them.
+    const permissionRequestEvents: PermissionRequestEvent[] = [];
+    if (source.format === "omp") {
+      const requestKeys = new Set<string>();
+      for (const [identity, req] of permissionRequestsMap) {
+        if (permissionRequestEvents.length >= MAX_PERMISSION_EVENTS) break;
+        const answer = permissionVerdictsMap.get(identity);
+        const requestKey = crypto
+          .createHash("sha256")
+          .update(identity)
+          .digest("hex")
+          .slice(0, 16);
+        requestKeys.add(requestKey);
+        permissionRequestEvents.push({
+          requestKey,
+          actorKey: req.actorKey,
+          observedRequest: true,
+          tool: req.tool,
+          program: req.program,
+          kind: req.kind,
+          requestedAtMs: req.requestedAtMs,
+          answeredAtMs: answer?.answeredAtMs ?? null,
+          verdict: answer?.verdict ?? null,
+        });
+      }
+      for (const [identity, answer] of permissionVerdictsMap) {
+        if (permissionRequestEvents.length >= MAX_PERMISSION_EVENTS) break;
+        const requestKey = crypto
+          .createHash("sha256")
+          .update(identity)
+          .digest("hex")
+          .slice(0, 16);
+        if (requestKeys.has(requestKey)) continue;
+        permissionRequestEvents.push({
+          requestKey,
+          actorKey: answer.actorKey,
+          observedRequest: false,
+          tool: "other",
+          program: null,
+          kind: "other",
+          requestedAtMs: null,
+          answeredAtMs: answer.answeredAtMs,
+          verdict: answer.verdict,
+        });
+      }
+    }
 
     const completenessStatus =
       skippedLines > 0 ? "may-undercount-by-skipped-lines" : "complete";
@@ -1791,6 +2341,13 @@ export async function aggregateSession(
       // documented non-measurement rather than a skipped-line undercount.
       skillLoad: source.format === "omp" ? completenessStatus : "complete",
     };
+    const failureRunRecord = Object.create(null) as Record<
+      string,
+      { runs: number; longest: number }
+    >;
+    for (const [tool, value] of failureRuns) {
+      failureRunRecord[tool] = { runs: value.runs, longest: value.longest };
+    }
 
     return {
       node: { ...source.node },
@@ -1816,6 +2373,14 @@ export async function aggregateSession(
       permissionAnswers,
       context,
       permissionRequests,
+      permissionRequestEvents,
+      permissionCapture: source.format === "omp" ? "captured" : "unsupported",
+      activity,
+      failureRuns: failureRunRecord,
+      failureRunsTruncated,
+      idleGaps,
+      permissionLatencySeconds,
+      decisions,
       routing,
       lookups,
       folder,
@@ -1835,9 +2400,7 @@ export async function aggregateSession(
     }
     throw error;
   } finally {
-    signal.removeEventListener("abort", abortHandler);
-    stream?.destroy();
-    await handle?.close().catch(() => undefined);
+    await ownedHandle?.close().catch(() => undefined);
   }
 }
 
@@ -1878,7 +2441,28 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
   let skippedLines = 0;
   const series: JointSeries = { byDayModel: {} };
   const metricCompleteness: MetricCompleteness = {};
-
+  const failureRuns = new Map<
+    string,
+    { runs: number; longest: number; agentOrdinal: number }
+  >();
+  const idleGaps: number[] = [];
+  const permissionLatencySeconds: number[] = [];
+  let failureRunsTruncated = false;
+  const decisions: NonNullable<SessionAggregate["decisions"]> = {
+    accepted: [],
+    total: 0,
+    byBasis: { rule: 0, defaultPendingReview: 0 },
+    byImpact: {
+      high: { rule: 0, defaultPendingReview: 0 },
+      medium: { rule: 0, defaultPendingReview: 0 },
+      low: { rule: 0, defaultPendingReview: 0 },
+    },
+    irreversible: 0,
+    ruleRefs: Object.create(null) as Record<string, number>,
+    otherRuleRefs: 0,
+    rejected: 0,
+    unconfirmed: 0,
+  };
   for (const [index, agg] of aggregates.entries()) {
     if (agg.coverage === "complete") {
       fullyRead += 1;
@@ -1944,6 +2528,50 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
     } else {
       omittedSkillLoadNodes += 1;
     }
+    for (const [tool, value] of Object.entries(agg.failureRuns ?? {})) {
+      let current = failureRuns.get(tool);
+      if (current === undefined) {
+        if (failureRuns.size >= MAX_FAILURE_TRACKED_TOOLS) {
+          failureRunsTruncated = true;
+          continue;
+        }
+        current = { runs: 0, longest: 0, agentOrdinal: index };
+        failureRuns.set(tool, current);
+      }
+      current.runs += value.runs;
+      if (value.longest > current.longest) {
+        current.longest = value.longest;
+        current.agentOrdinal = index;
+      }
+    }
+    if (agg.failureRunsTruncated === true) failureRunsTruncated = true;
+    if (index === 0) idleGaps.push(...(agg.idleGaps ?? []));
+    if (agg.decisions) {
+      decisions.total += agg.decisions.total;
+      decisions.byBasis.rule += agg.decisions.byBasis.rule;
+      decisions.byBasis.defaultPendingReview +=
+        agg.decisions.byBasis.defaultPendingReview;
+      for (const impact of ["high", "medium", "low"] as const) {
+        decisions.byImpact[impact].rule += agg.decisions.byImpact[impact].rule;
+        decisions.byImpact[impact].defaultPendingReview +=
+          agg.decisions.byImpact[impact].defaultPendingReview;
+      }
+      decisions.irreversible += agg.decisions.irreversible;
+      for (const [ref, count] of Object.entries(agg.decisions.ruleRefs)) {
+        decisions.ruleRefs[ref] =
+          (Object.hasOwn(decisions.ruleRefs, ref) ? decisions.ruleRefs[ref] : 0) + count;
+      }
+      decisions.otherRuleRefs += agg.decisions.otherRuleRefs;
+      decisions.rejected += agg.decisions.rejected;
+      decisions.unconfirmed += agg.decisions.unconfirmed;
+      for (const item of agg.decisions.accepted) {
+        retainPrioritizedDecision(
+          decisions.accepted,
+          { ...item, nodeOrdinal: index },
+          MAX_TREE_DECISIONS,
+        );
+      }
+    }
     if (nodes.length < MAX_TREE_NODES) {
       nodes.push({
         ordinal: index,
@@ -1973,6 +2601,16 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
           untrackedTargets: agg.permissionAnswers.untrackedTargets,
         },
         permissionRequests: clonePermissionRequestStats(agg.permissionRequests),
+        ...(agg.permissionRequestEvents !== undefined
+          ? {
+              permissionRequestEvents: agg.permissionRequestEvents.map(
+                (event) => ({ ...event }),
+              ),
+            }
+          : {}),
+        ...(agg.permissionCapture !== undefined
+          ? { permissionCapture: agg.permissionCapture }
+          : {}),
         context: { ...agg.context },
         routing: { ...agg.routing },
         lookups: cloneLookupStats(agg.lookups),
@@ -1981,6 +2619,16 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
           : 0,
         first: agg.first,
         last: agg.last,
+        activity: {
+          userRows: agg.userMessages,
+          steering: agg.activity?.steering ?? 0,
+          permissionNotifications: agg.activity?.permissionNotifications ?? 0,
+          byAttribution: { ...(agg.activity?.byAttribution ?? {}) },
+        },
+        failureRuns: { ...(agg.failureRuns ?? {}) },
+        idleGaps: [...(agg.idleGaps ?? [])],
+        permissionLatencySeconds: [...(agg.permissionLatencySeconds ?? [])],
+        decisions: agg.decisions,
       });
     }
     for (const [k, v] of Object.entries(agg.metricCompleteness)) {
@@ -2012,8 +2660,11 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
   }
 
   let partialReason:
-    "size-ceiling" | "time-ceiling" | "unreadable-lines" | undefined =
-    undefined;
+    | "size-ceiling"
+    | "time-ceiling"
+    | "unreadable-lines"
+    | "unknown-time-exclusions"
+    | undefined = undefined;
 
   if (hasPartial) {
     const reasons = new Set(
@@ -2025,10 +2676,23 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
       partialReason = "time-ceiling";
     } else if (reasons.has("unreadable-lines")) {
       partialReason = "unreadable-lines";
+    } else if (reasons.has("unknown-time-exclusions")) {
+      partialReason = "unknown-time-exclusions";
     }
   }
 
-  return {
+  const failureRunRecord = Object.create(null) as Record<
+    string,
+    { runs: number; longest: number; agentOrdinal: number }
+  >;
+  for (const [tool, value] of failureRuns) {
+    failureRunRecord[tool] = {
+      runs: value.runs,
+      longest: value.longest,
+      agentOrdinal: value.agentOrdinal,
+    };
+  }
+  const tree: TreeAggregate = {
     sessions: aggregates.length,
     fullyRead,
     coverage: hasPartial ? "partial" : "complete",
@@ -2055,5 +2719,35 @@ export function rollUp(aggregates: AggregatedSession[]): TreeAggregate {
     skippedLines,
     metricCompleteness,
     series,
+    activity: aggregates.length > 0
+      ? {
+          userRows: {
+            total: aggregates[0].userMessages,
+            steering: aggregates[0].activity?.steering ?? 0,
+            permissionNotifications: aggregates[0].activity?.permissionNotifications ?? 0,
+            byAttribution: { ...(aggregates[0].activity?.byAttribution ?? {}) },
+          },
+          stopReasons: { ...stopReasons },
+        }
+      : undefined,
+    failureRuns: failureRunRecord,
+    failureRunsTruncated,
+    idleGaps,
+    permissionLatencySeconds,
+    decisions,
   };
+  for (const event of deduplicatePermissionEvents(tree)) {
+    if (
+      event.observedRequest &&
+      event.verdict !== null &&
+      event.requestedAtMs !== null &&
+      event.answeredAtMs !== null &&
+      event.answeredAtMs >= event.requestedAtMs
+    ) {
+      permissionLatencySeconds.push(
+        Math.round((event.answeredAtMs - event.requestedAtMs) / 1000),
+      );
+    }
+  }
+  return tree;
 }

@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 7 followed patterns, 77 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 8 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 7 followed patterns, 77
 | Ref Type      | `branch` |
 | Ref           | `next` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 77 |
+| Followed pats | 8 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 7 followed patterns, 77
 - `GLOSSARY.md`
 - `CONTRIBUTING.md`
 - `.github/SECURITY.md`
+- `tools/oxlint/effect/UPSTREAM.md`
 - `docs/CONTRIBUTING.md`
 - `ts/docs/internal/release.md`
 - `python/docs/release.md`
@@ -141,7 +142,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
 | 75 | → | [`GLOSSARY.md`](GLOSSARY.md) |
 | 76 | → | [`python/docs/release.md`](python/docs/release.md) |
-| 77 | → | [`ts/docs/internal/release.md`](ts/docs/internal/release.md) |
+| 77 | → | [`tools/oxlint/effect/UPSTREAM.md`](tools/oxlint/effect/UPSTREAM.md) |
+| 78 | → | [`ts/docs/internal/release.md`](ts/docs/internal/release.md) |
 
 ---
 

@@ -1,0 +1,84 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved. -->
+
+# Documentation
+
+Long-form documentation for SkillEvaluator. Pages are authored in MDX and
+published to <https://docs.nvidia.com/skills/skillevaluator>. This page is the human
+quickstart; [`AGENTS.md`](AGENTS.md) holds the detailed authoring rules (MDX
+gotchas, link conventions, page-adding checklist) for both AI agents and
+contributors making non-trivial edits.
+
+## Layout
+
+- `index.mdx` — landing page and three-tier overview
+- `quickstart.mdx` — check a bundled example with the installed CLI
+- `installation.mdx` — shared pip, uv, and GitHub installation paths and verification
+- `installation-options.mdx` — upgrades, Docker, release differences, extras, and scanner setup
+- `configuration.mdx` — providers, embeddings, and Tier 3 credential roles
+- `tier1-validation.mdx` — first static run, report, and next steps
+- `tier1-reference.mdx` — detailed checks, policies, scanners, and exit semantics
+- `tier2-deduplication.mdx` — choose a scope, run deduplication, and read findings
+- `tier2-reference.mdx` — chunking, catalogs, thresholds, algorithms, and limits
+- `tier3-live-evaluation.mdx` — first live comparison, from model setup to report
+- `prepare-dataset.mdx` — author, generate, review, and validate cases before trials
+- `tier3-run-options.mdx` — choose an agent and attempt count for reviewed cases
+- `tier3-run-reference.mdx` — staging contracts, run settings, budgets, and repeat comparisons
+- `tier3-runtime.mdx` — runtime contracts, backend compatibility, and troubleshooting
+- `tier3-grading.mdx` — judges, evidence budgets, retries, and fallback models
+- `tier3-results.mdx` — scores, applicability, verdicts, and incomplete results
+- `tier3-experiments.mdx` — skill interactions and activation validation
+- `eval-datasets.mdx` — the `evals/` contract, dataset generation, run policy
+- `agents-and-sandboxes.mdx` — agents, environment backends, local mode, readiness
+- `custom-graders.mdx` — bring-your-own graders and native Harbor tasks
+- `reports.mdx` — report formats, scores, and the results-on-disk contract
+- `performance-dashboard.mdx` — compare saved Tier 3 scores and resource use
+- `benchmark-rollout.mdx` — regenerating and promoting `BENCHMARK.md` cards
+- `github-actions.mdx` — reusable skill checks and optional hosted PR feedback
+- `cli-onboarding.mdx` — install the CLI, automate GitHub setup and open an optional test PR
+- `repository-integration.mdx` — choose GitHub or GitLab for skill checks; pre-commit hooks
+- `gitlab-ci.mdx` — reusable skill checks and downloadable GitLab reports
+- `advanced-ci.mdx` — secondary opt-in prerequisites and all-tier reference
+- `ci-integration.mdx` — exit codes, GitHub Actions recipe, progressive adoption
+- `cli-reference.mdx` — every command and flag
+- `environment-variables.mdx` — variable-by-variable inventory
+- `developer-guide.mdx` — contributor setup, tests, and docs workflow
+
+Navigation order and slugs are defined in [`../fern/docs.yml`](../fern/docs.yml).
+
+## Build Locally
+
+You only need to build locally if you are editing the documentation. The site is
+published automatically from `main` via the Fern GitHub integration.
+
+Prerequisites: Node.js 22+ and npm 10+ (the versions the Fern CLI requires).
+
+```bash
+# Install the pinned Fern CLI from the committed lockfile
+npm ci --prefix fern --ignore-scripts --omit=optional
+
+# From the repo root, preview the site with live reload
+./fern/node_modules/.bin/fern docs dev
+
+# Validate the docs configuration and links
+./fern/node_modules/.bin/fern check
+```
+
+`fern docs dev` serves the site at <http://localhost:3000> and reloads on changes
+to `.mdx` files or `fern/docs.yml`.
+
+## Authoring Notes
+
+- New pages must be added to the `navigation` section of
+  [`../fern/docs.yml`](../fern/docs.yml); otherwise they will not appear in the
+  site.
+- In published MDX pages, use site paths such as
+  `/skills/skillevaluator/configuration` for other documentation pages. File-relative
+  `.mdx` links are not resolved by Fern; see the
+  [official link format](https://buildwithfern.com/learn/docs/writing-content/markdown-basics#link-format).
+  The Fern 5.121.0 local preview returned HTTP 400 for those `.mdx` page URLs.
+  Keep images, YAML `path:` values and
+  repository-only Markdown links relative to their source files.
+- The Fern version is pinned in
+  [`../fern/fern.config.json`](../fern/fern.config.json); bump it intentionally
+  rather than as a side effect.

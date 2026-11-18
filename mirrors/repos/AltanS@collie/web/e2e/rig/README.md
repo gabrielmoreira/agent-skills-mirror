@@ -136,11 +136,11 @@ last column names. Cases 12 to 15, 19 to 21, 34 and 35 run on the crew leg only 
 | 18 | An address of a pane that closed. A second Claude starts, `who` prints its address with a token, and its pane closes. After the bridge's 30 s sweep another Claude starts. A message to the old `#token` address is refused, and the new pane gets nothing. Herdr does not give a closed pane's id to the next pane, so the refusal is `no such pane` here. `pane replaced` needs a multiplexer that reuses ids (tmux, zellij), and the unit tests carry it | claude | `walky.spec.ts` |
 | 19 | Crew leg. Member to lead. pi on the member runs `collie walky who` (which asks its lead and lists its space on every machine), then sends to Claude's address on the lead, taken from the lead's `who` and put in the prompt. Claude's pane gets the one-line nudge with no body, reads it with `collie walky inbox <id>` and replies. The member's `collie walky status <id>` says `delivered` (the lead pushed the outcome back), and the lead's status of the reply says `delivered` (the member's report). Case 13 is the mirror image | claude (lead), pi (member) | `walky-crew.spec.ts` |
 | 20 | Crew leg. Walky talky off on the member. The member's bridge restarts with `COLLIE_WALKY=off`. Claude on the lead sends to pi and reads `not sent: off`; the lead's status says `refused (off)`; pi's pane gets nothing. The Crew page's message to that machine (the sheet's "Send to" set to it) draws the receipt row `rig-member/all` with `not sent: off`, and the member counts the refusals in its own `refusals.json`. The lead's "Not sent on this machine" line counts only the lead's own refusals, so it stays empty. The member then restarts without the setting and is reachable | claude (lead), pi (member) | `walky-crew.spec.ts` |
-| 21 | Crew leg. The pair limit. A throwaway Claude on the lead sends seven messages to pi on the member through the CLI (`collie walky send` with that pane's markers). pi's box holds a draft, so the first six are held (`accepted`, and the lead reads the reason `draft present` from the member's report) and cost no model turn. Each send waits the CLI's 15 seconds for an outcome, so the six take about 90 seconds. The seventh is refused `pair limit` on the lead and never dialled, and the draft is untouched. The draft stays at the end: clearing it would type the six. Cases 34 and 35 follow it and leave the draft alone, and the rig takes the holds down with it | claude (lead), pi (member) | `walky-crew.spec.ts` |
+| 21 | Crew leg. The pair limit. A throwaway Claude on the lead sends thirteen messages to pi on the member through the CLI (`collie walky send` with that pane's markers). pi's box holds a draft, so the first twelve are held (`accepted`, and the lead reads the reason `draft present` from the member's report) and cost no model turn. Each send waits the CLI's 15 seconds for an outcome, so the twelve take about 180 seconds. The thirteenth is refused `pair limit` on the lead and never dialled, and the draft is untouched. The draft stays at the end: clearing it would type the twelve. Cases 34 and 35 follow it and leave the draft alone, and the rig takes the holds down with it | claude (lead), pi (member) | `walky-crew.spec.ts` |
 | 22 | Model from the belt over a draft. A word typed into Claude's box outside the phone is a draft. The belt's Model is refused `draft_present`, and the phone offers Replace and Cancel, no Add, with the notice "Replace it, or cancel". One tap on Replace empties the box and sends `/model`: the picker opens on the pane and as a card on the phone, and the draft is gone. Escape outside the phone closes the picker. No model turn | claude | `claude.spec.ts` |
 | 23 | A held message cancelled by its sender (M62 spec 03). The operator's message over a draft is held (`accepted`, `draft present`). In the pane's Messages sheet the held row carries Cancel; a tap ends it as `inbox-only` with the reason `cancelled by sender`, the draft is untouched, and nothing is typed once the box is cleared | claude | `walky.spec.ts` |
 | 24 | A held message dropped by the pane's owner (M62 spec 03). A second Claude sends through the CLI over a draft, so the message is an agent's and held. The phone shows "1 message waits while you type" above the box; a tap opens the Messages sheet on it, Drop ends it as `inbox-only` with the reason `dropped by the pane's owner`, the mark goes, and nothing is typed once the box is cleared | claude | `walky.spec.ts` |
-| 25 | Stop a running pi turn (M68, ADR 0116). A long numbered list streams (180 items), so the turn runs for tens of seconds. The belt shows Stop. The first tap arms it: the button reads "Stop?" and nothing is posted. The second tap posts one abort request, and the bridge presses pi's interrupt key as a person's tap. The receipt says `stopped`, the notice "Stopped." shows under the box, and the box reads free within 5 s. One model turn. | pi | `stop.spec.ts` |
+| 25 | Stop a running pi turn (M68, ADR 0116). A long numbered list streams (180 items), so the turn runs for tens of seconds. The belt shows Stop. A short tap stops nothing: the button reads "Hold" and nothing is posted. A hold of two seconds posts one abort request, and the bridge presses pi's interrupt key as a person's tap. The receipt says `stopped`, the notice "Stopped." shows under the box, and the box reads free within 5 s. One model turn. | pi | `stop.spec.ts` |
 | 26 | Steer while working (M69). A bash call counts to 40 over 40 s (the lab's long turn, 2026-10-23). The operator types a line, holds Send and taps the Steer row. The receipt says `steered`, the phone says "Steered: the agent takes it after its current step." within 5 s, and the turn still runs right after, because a steer is taken after the current tool call in the same turn. The note says whether the agent answered the line | pi | `steer.spec.ts` |
 | 27 | Steer while working (Codex): case 26 on Codex, with the profile's `steerDelayMs` (1000) added to the 5 s window. Not built: this rig starts claude, pi and omp only, and a Codex harness needs a binary, a login seed, an entry in `harnesses.ts`, and a column in the nightly's table. `steer.spec.ts` carries the helper and its `steerDelayMs` parameter, so the case is one test line once the harness exists | none yet | `steer.spec.ts` |
 | 28 | Clear a draft from the Keys board (ADR 0116). A word is typed into pi's box outside the phone (the keys route, as case 22 types one) and never sent, so the Surface reads `draft` and the Keys board's Clear button is enabled. One tap posts one `POST /api/pane/:id/clear`, and the bridge presses pi's clear key as a person's tap. The receipt says `cleared`, the notice "Box cleared." shows under the box, the box reads free within 5 s and the word is gone from the screen. No prompt is sent: zero model turns, nothing on OpenRouter | pi | `clear.spec.ts` |
@@ -159,7 +159,7 @@ runs on, and only for the cases of its own leg (`scenarioApplies` in `scenarios.
 the request the Crew page's "Message all agents" sheet posts, to prove the fan-out on the solo rig;
 the sheet itself, tapped on the Crew page, is proved on the crew leg (case 12). Cases 8 and 9 use the
 `collie walky` verbs inside the agent: each harness starts with a `collie` first on PATH that runs this
-checkout's CLI (`harnesses.ts`), and with the walky talky skill in its scratch config. Claude's scratch
+checkout's CLI (`harnesses.ts`), and with the walky talky skill in its scratch config (the text a default install gives, Hill off). Claude's scratch
 settings allow `Bash(collie walky:*)`, so the verbs ask no permission.
 
 ## The crew leg
@@ -501,9 +501,16 @@ which Claude puts in front of the next prompt, whichever case sends it.
 **The tier.** The global setup reads each harness's `--version` and picks one tier for the run:
 
 - **replay**: `cassettes/<harness>/<version>/meta.json` lists this leg, with the same model and the same
-  walky talky skill text (`cli/skills/walky-talky.md`, by hash). The stub answers every model call from
+  walky talky skill text (the key is the hash of the rendered text with the Hill switch off, the text
+  the agents read, see below). The stub answers every model call from
   the recordings, with their recorded pacing. It has no path to OpenRouter on this tier. The harness gets
   a dummy key, its start script does not open the key file, pi gets no `auth.json` and omp no `agent.db`.
+- **The skill text and its key.** The rig gives every agent what a default install gives: the product's own
+  render of `cli/skills/walky-talky.md` (`cli/skill-render.ts`, the function `renderWalkySkill` calls) with
+  the Hill switch off, the command `collie` and the version `rig`. `replay/skill-text.ts` holds it:
+  `rigSkillText()` is the text `writeWalkySkill` writes (Claude's skill file, pi's `AGENTS.md` block), and
+  `skillHash()` is the one key, the first 16 hex of its sha256. `tier.ts` and `nightly.ts` both use it. Text
+  that only the Hill part holds moves no key, and a change to the template's other words re-records every case.
 - **live**: there is no recording for this version, model or skill text. The stub passes each call on to
   OpenRouter (pi, omp) or Anthropic (Claude) with the harness's own key or login and records it, so the
   next run replays. Without a key file, pi and omp record nothing and their turn scenarios are "not
@@ -622,7 +629,11 @@ for pi and omp, the subscription for Claude.
 - The operator's bridges, from inside a harness. Each harness starts with `COLLIE_STATE_DIR` set to
   the rig's state dir. So a `collie walky` that an agent runs in a rig pane reaches the rig's bridge
   first. Without it, the CLI looks for bridges in the hook target registry under the real home. The
-  rig's bridge is not listed there, because it registers under its own HOME.
+  rig's bridge is not listed there, because it registers under its own HOME. The harness's `collie` shim
+  also sets the machine's own config folder, instance, port, `COLLIE_SKILL_SYNC=off` and the bridge's
+  scratch HOME, so the CLI never reads the operator's `.env` and never goes on to a live bridge after the
+  rig's bridge answers "not here" (the trick-flow lab, 2026-11-16). The rig's bridges run with
+  `COLLIE_SKILL_SYNC=off` too, so a Hill switch never rewrites a skill file.
 - The operator's agent config. Each harness gets a scratch config under
   `~/.cache/collie-lab/browser-leg-state/harness/<id>/`. Only what it needs is copied there at
   0600: Claude's OAuth file without its refresh token (a dummy login when Claude replays), and pi's `auth.json` only when there is no key

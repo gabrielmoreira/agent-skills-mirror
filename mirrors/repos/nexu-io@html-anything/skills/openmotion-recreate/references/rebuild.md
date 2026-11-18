@@ -1,51 +1,18 @@
-# Read, measure and rebuild the reference
+# Rebuild the reference
 
-This page carries the reconstruction method for openmotion-recreate. The host Agent writes native source and saves it through the project Tools. During default creation, use reference observations to plan and implement the complete film, then follow [export and requested review](verify.md). Default creation uses the single focused preview pass defined in delivery. Detailed unit validation and further visual repair apply to explicitly requested review or revision. Source analysis and material preparation belong to authoring.
+This page carries openmotion-recreate's rebuilding decisions. Reading the reference, measuring it, choosing an editable representation and checking fidelity follow the shared [reference reading and measurement](../../openmotion-production/references/reference-video.md) method. The host Agent writes native source and saves it through the project Tools. During default creation, use reference observations to plan and implement the complete film, then follow [export and requested review](verify.md). Default creation uses the single focused preview pass defined in delivery. Detailed unit validation and further visual repair apply to explicitly requested review or revision. Source analysis and material preparation belong to authoring.
 
 ## Read the whole reference
 
-For a link, obtain a local decodable copy using the host's available capabilities; no particular downloader is a prerequisite. Keep the URL and the file's checksum. If the video cannot be obtained or decoded, report that specific blocker instead of guessing from a cover or description.
-
-Read the reference as a whole before choosing an implementation. Inspect representative frames and consecutive frames around every cut, entrance, exit and transition. Explain what persists, enters, changes, holds and exits; keep an object's identity across cuts when it is the same object. Learn from observable behaviour rather than guessing the original author's code. A one-per-second overview is for navigation only and is never evidence of motion: it drops 1–3 frame differences, entry directions, blur and flashes at cuts.
-
-For fast montages, inventory distinct shots and brief events from consecutive decoded-frame chunks through the passage before assigning units. The CLI's `measure frames --range` and `--events` can thin long windows according to `--max`. Check `every_nth_frame` for range output and the `thinned` notices on event strips. Shorten the windows or raise `--max` until the frames needed for this inventory are consecutive. Keep each brief shot's visible peak and entry/exit frames in its local comparison.
-
-When an interaction changes the scene, identify both the actor and the affected content. Inspect the state before contact, the response during the action and the settled result. For a pointer dragging a module, reconstruct the module following the pointer, neighboring modules making room and the final ordering; animating the pointer alone or sliding one module over a stationary neighbor does not reproduce the interaction. Keep these coupled changes together in the editable timing model.
-
-If decoding, frame extraction or seeking fails, recover the media tools using the runtime paths in the Skill's project step, or use another available method that exposes the required frames. Confirm the actual timestamps and inspect the resulting images; a successful command or a screenshot of an unverified playback position does not establish coverage. Keep any unresolved interval or detail explicitly unverified, and continue work that does not depend on it. Report a concrete blocker if the missing evidence cannot be recovered; do not silently replace it with an approximation.
+[Obtain](../../openmotion-production/references/reference-video.md#obtain-the-reference) and [read the whole reference](../../openmotion-production/references/reference-video.md#read-the-whole-reference) before choosing an implementation. This route has no separate analysis stage: the observations feed authoring directly. Keep source observations, unverified intervals and their reasons in the project's existing working notes.
 
 ## Measure with the pinned CLI
 
-Run `node <hyperframesCli> measure …` with the `hyperframesCli` path from `openmotion_get_project`. These commands answer specific questions; running every one is not mandatory. Write images into a working directory outside the live project with `--out`, then read them.
-
-| Question | Command | Use |
-|---|---|---|
-| Canvas, fps, duration | `measure probe <ref>` | Root `data-width`, `data-height`, `data-fps`, `data-duration`. Keep rational rates such as `30000/1001`; use the picture duration, not a longer audio container |
-| Hard cuts | `measure cuts <ref>` | First draft of the segmentation; verify each candidate against adjacent source frames |
-| What changes when | `measure events <ref> --map --out <dir>` | Appearance, disappearance, holds, sound onsets and beats |
-| Frame samples | `measure frames <ref> --range a,b --roi x,y,w,h --max 16 --out <dir>` | Entry direction and style, on-screen change, exit, edge treatment |
-| Motion curve | `measure curve <ref> --start a --end b --roi x,y,w,h` | Start, end, duration, overshoot and the closest GSAP ease; a starting estimate |
-| Text size | `measure ink <ref> --at t --roi x,y,w,h` | Ink width and height to match type scale |
-| Background and colour | `measure look <ref> --at t --grid 8x6` | Gradient direction and light-to-dark falloff |
-| Crop an asset | `measure extract <ref> --at t --roi x,y,w,h --out <dir>/logo.png` | Photos, screenshots, logos from their largest, sharpest frame; then import |
-
-Also look for texture where the reference has it: how much a back layer blurs and darkens, how bright the highlights are, and the direction and length of motion blur on fast frames. Reproduce what is there; do not add effects for polish.
+Run the [shared measurements](../../openmotion-production/references/reference-video.md#measure-specific-questions) with the `hyperframesCli` path from `openmotion_get_project` for the recreation project. Media tools and this Skill's own helpers locate Node and FFmpeg through the [shared runtime paths](../../openmotion-production/references/reference-video.md#locate-the-pinned-cli-and-media-tools). Import extracted photos, screenshots and logos with `openmotion_import_assets`.
 
 ## Choose an editable representation
 
-Choose source and component boundaries through shared behaviour. Objects sharing geometry, state, layout or motion can form one SVG, Canvas, Three.js scene or native composition; independent contributions can stay separate. There is no requirement for one clip per object, one composition per cut, one tween per move or a fixed number of poses. Keep relative scene time distinct from the root timeline.
-
-Choose the representation from the appearance and behavior that make each region recognizable. Use clear source views and adjacent frames to obtain visible bounds, texture, typical and extreme feature sizes, motion direction and travel, holds and event timing. Keep these observations with the responsible source controls in existing implementation notes. Fit the complete mechanism from this evidence in the first implementation.
-
-A stationary boundary can contain scrolling content, changing illumination or a deforming surface. Preserve recovered texture with local-coordinate transport, masks, aligned content fields or deformation, according to that source behavior. Derive procedural marks from observed shape, size, spacing, colour and exposure. Carry these properties through movement and transitions. A material crop has a source position and visible pixel bounds. Preserve its crop offset and transparent padding when placing, scaling and reusing it in scene coordinates.
-
-Keep content the user will change easy to locate: wording, brand, images, named objects and their motion. Use meaningful source names and declare common edits as root variables so the Studio Variables panel shows them. Variables are shortcuts, not an editing whitelist.
-
-Use code for controlled text, geometry and motion. Consider supplied or recovered photos, artwork, rendered imagery, environment detail, logos, screenshots and textures as local spatial materials when their appearance stays unchanged. Compare recoverable material and proposed geometry at a clear pose, including contour, surface detail and surrounding structure, before choosing the representation. Drive observed changes with editable paths, masks, camera, deformation or content controls, and check the newly exposed areas. Choose 2D, perspective layers or real 3D according to the observed behaviour and the needed edits. Canvas/WebGL follows the pinned runtime's seek and readiness contract: derive the picture from input time and settings, including deterministic randomness, so the same time always renders the same frame.
-
-For small objects whose shape carries meaning, inspect a close crop before choosing the geometry. Match the silhouette, concavities, orientation, proportions, stroke and attachment to nearby labels, not just the colour and bounding box. For example, a mouse pointer with an inset is not a solid triangle; rotating the triangle cannot restore the missing contour. Use an editable vector path or the appropriate local asset when a CSS primitive cannot represent the observed shape. Check repeated instances and changed states against the reference.
-
-Do not pass off playback of the entire reference, a full-frame image sequence, editable content baked into a background, or an unadaptable per-frame contour transcription as a rebuild. Time-driven functions, loops, arrays, simulations and shape interpolation are valid when the content stays reasonably editable.
+Apply the shared [editable representation](../../openmotion-production/references/reference-video.md#choose-an-editable-representation) rules and build the user's requested version directly in it. Keep observations with the responsible source controls in existing implementation notes, and fit the complete mechanism from this evidence in the first implementation.
 
 ## Establish a difficult visual system
 
@@ -55,14 +22,10 @@ Dense multi-shot work, unfamiliar visual mechanisms and movement under requested
 
 - Images, footage and sound go through `openmotion_import_assets` (PNG, JPEG, WebP, GIF, MP4, WebM, WAV, MP3, OGG, FLAC, AAC, M4A). Import does not place media on the timeline; reference the returned path.
 - SVG logos and vector artwork are text: save them with `openmotion_edit_project`.
-- Preserve type character (geometric shapes, contrast, x-height, terminals). Import an available permitted font through `openmotion_import_assets`, retain its license and use the returned actual metadata and relative @font-face CSS. The [curated catalog](../../openmotion-production/references/fonts.md) can supply a candidate when it fits the reference; record any substitution.
-- When replaceable text uses distinctive lettering (pixel, stencil, wide or hand-built wordmark), make any new word settable in that same style: the closest face of the same kind, or lettering built so other words can be set with it. Vectorising only the reference's own word leaves every later edit in a plain fallback font.
-- Keep requested editable wording as addressable text. A calligraphic logo can be an image or vector asset instead.
+- Fonts follow the shared [text and fonts](../../openmotion-production/references/reference-video.md#text-and-fonts) rules. Import a permitted font through `openmotion_import_assets`, retain its license and use the returned actual metadata and relative @font-face CSS. Record any substitution in the working notes.
 
 ## Rebuild and compare while working
 
-For an explicitly requested visual revision, compare affected frames with the reference. Fix concrete issues such as omitted content, wrong text, broken assets and incorrect timing. When two consecutive fixes for the same issue do not visibly reduce the difference at the same moment, change the approach once; if that also fails, record the issue and move on.
+Hard-cut verification and edit dependencies from the shared [fidelity checks](../../openmotion-production/references/reference-video.md#check-fidelity-and-edit-dependencies) apply during default creation. Comparison during default creation stays within the single focused preview pass in [delivery](verify.md#1-default-delivery).
 
-Verify hard cuts against adjacent source frames. Restore a missing original hard cut unless the user requested a change; do not accept accidental smoothing or a detector's false positive as intended behaviour.
-
-When an image changes, inspect its crop, masks and coupled effects. When wording changes, inspect wrapping and reading time. When a scene's duration changes, update dependent scene starts and media timing. When a brand or named object appears several times, check all relevant appearances.
+An explicitly requested visual revision follows [requested review or revision](verify.md#3-requested-visual-review-or-revision).

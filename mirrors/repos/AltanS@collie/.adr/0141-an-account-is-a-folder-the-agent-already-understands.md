@@ -99,3 +99,28 @@ and pi with kind `own`.
   sign-in field.
 - Revisit when an agent ships a profile switch of its own that keeps one history (omp has one today),
   or when a shared kind for Codex, pi or Grok has a lab test behind it.
+
+## Addendum (2026-11-16): an account shows who is signed in (M101 spec 04)
+
+The bridge now asks the agent's own status command who is signed in (`claude auth status`, an optional
+`status` field of the adapter with a pure parser). It still opens no login file. Only a sign-in flag, the
+email and the plan leave the parser; the identity is kept in memory, refreshed in the background after
+60 s, goes to the phone in the Accounts list, and is never on disk, in the audit log or in a log line. The
+command runs only in a folder where the agent has run before (one of the adapter's `status.needs` names
+exists, Claude: `.claude.json`), because elsewhere it would create the agent's state file first. "Sign in
+again" on a signed-in account adds the adapter's `signInAgainArgs` (Claude: `/login`). Codex, pi and Grok
+have no such field: their status commands name no account.
+
+## Addendum (2026-11-16): Change login moves an account to another login with the agent's own sign-in
+
+"Change login" on a signed-in account runs the same sign-in start as "Sign in again" (same launch, gate
+and audit line); only the agent's own sign-in changes a login, and the bridge still opens no login file.
+Two optional adapter fields say what the phone may promise: `reachesRunningSessions` (Claude Code only,
+from its code: a running session reloads a changed login before each request) and `signInHosts`, the
+exact hosts whose `https:` sign-in address the phone opens with one button; any other address is text to
+copy. The list counts each account's running sessions (`running`, a sign-in session left out). The phone
+ends the sign-in session and reads the identity again; the result is what the agent then says.
+
+## Addendum (2026-11-17): the app and the docs call an account a profile
+
+2026-11-17: the app and the docs call an account a profile; code and wire names stay.

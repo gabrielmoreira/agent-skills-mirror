@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 12 followed patterns, 36 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 12 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 12 followed patterns, 36
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 36 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,30 +82,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`examples/plugins/hello-panel/README.md`](examples/plugins/hello-panel/README.md) |
 | 11 | ✓ | [`examples/plugins/schedule-pulse/README.md`](examples/plugins/schedule-pulse/README.md) |
 | 12 | ✓ | [`examples/plugins/triage-notify/README.md`](examples/plugins/triage-notify/README.md) |
-| 13 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
-| 14 | ✓ | [`packages/views/test/README.md`](packages/views/test/README.md) |
-| 15 | ✓ | [`scripts/brand/README.md`](scripts/brand/README.md) |
-| 16 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
-| 17 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
-| 18 | ✓ | [`server/cmd/qoder-runtime/README.md`](server/cmd/qoder-runtime/README.md) |
-| 19 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
-| 20 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
-| 21 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
-| 22 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
-| 23 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
-| 24 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
-| 25 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 26 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 27 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
-| 28 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
-| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 30 | → | [`README.ja.md`](README.ja.md) |
-| 31 | → | [`README.md`](README.md) |
-| 32 | → | [`README.zh.md`](README.zh.md) |
-| 33 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
-| 34 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
-| 35 | → | [`VISION.md`](VISION.md) |
-| 36 | → | [`VISION.zh.md`](VISION.zh.md) |
+| 13 | ✓ | [`packages/ee/README.md`](packages/ee/README.md) |
+| 14 | ✓ | [`packages/plugin-sdk/README.md`](packages/plugin-sdk/README.md) |
+| 15 | ✓ | [`packages/views/test/README.md`](packages/views/test/README.md) |
+| 16 | ✓ | [`scripts/brand/README.md`](scripts/brand/README.md) |
+| 17 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
+| 18 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
+| 19 | ✓ | [`server/cmd/qoder-runtime/README.md`](server/cmd/qoder-runtime/README.md) |
+| 20 | ✓ | [`server/ee/README.md`](server/ee/README.md) |
+| 21 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
+| 22 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
+| 23 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
+| 24 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
+| 25 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
+| 26 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
+| 27 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 28 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 29 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
+| 30 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
+| 31 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 32 | → | [`README.ja.md`](README.ja.md) |
+| 33 | → | [`README.md`](README.md) |
+| 34 | → | [`README.zh.md`](README.zh.md) |
+| 35 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
+| 36 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
+| 37 | → | [`VISION.md`](VISION.md) |
+| 38 | → | [`VISION.zh.md`](VISION.zh.md) |
 
 ---
 

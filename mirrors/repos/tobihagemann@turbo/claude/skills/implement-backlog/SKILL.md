@@ -45,7 +45,7 @@ Improvements drift: files get renamed, code gets refactored, issues get fixed as
 
 ### Reuse an Earlier Validation
 
-Before validating, note the root of the checkout whose code this step reads (`git rev-parse --show-toplevel`) and its commit (`git rev-parse --short HEAD`). The **path check** for a commit and a set of repo-relative paths passes when `git -C <root> diff --quiet <commit> -- <paths>` exits 0 and `git -C <root> ls-files --others --exclude-standard -- <paths>` prints nothing.
+Before validating, note the root of the checkout whose code this step reads (`git rev-parse --show-toplevel`). When that checkout has the default branch checked out (resolve it with `gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'`), run `git -C <root> fetch` and fast-forward that branch to its upstream with `git -C <root> merge --ff-only @{upstream}`. When any of these commands fails, report it and validate the checkout as it stands. Then note its commit (`git -C <root> rev-parse --short HEAD`). The **path check** for a commit and a set of repo-relative paths passes when `git -C <root> diff --quiet <commit> -- <paths>` exits 0 and `git -C <root> ls-files --others --exclude-standard -- <paths>` prints nothing.
 
 For each entry carrying a **Validated** line, run the path check with its recorded commit and paths, and run each command nested under it from that root. When the path check passes and every command prints its recorded output, whatever its exit status, classify the entry with its recorded verdict and skip the rest of this step for it. Otherwise, including when a command cannot run, validate the entry in full.
 
@@ -178,12 +178,12 @@ State the chosen lane before continuing with the reference file.
 
 ## Step 6: Prune Working-Set Entries from the Backlog
 
-When this session runs inside a linked worktree (where `git rev-parse --git-dir` differs from `--git-common-dir`), use `AskUserQuestion` to offer two options: leave the worktree and prune from the main checkout, listed first and labeled `(Recommended)`, or stay in the worktree.
+When this session runs inside a linked worktree (where `git rev-parse --git-dir` differs from `--git-common-dir`), use `AskUserQuestion` to offer two options: leave the worktree and prune from the main checkout, or stay in the worktree. List leaving first and label it `(Recommended)`. While the branch's pull request is open (`gh pr view <branch> --json state`), list staying first and label it `(Recommended)` instead.
 
 - **Leave** — Leave with the ExitWorktree tool (`action: "keep"`). When it reports that no worktree session is active, take the Stay path instead. Otherwise:
   1. Resolve the default branch with `gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name'`. Fast-forward the main checkout's local default branch to `origin/<default-branch>` without switching the branch the main checkout has checked out. When the fast-forward fails, report it and leave that branch as it is.
-  2. When the worktree's commits are on `origin/<default-branch>` (`git merge-base --is-ancestor <branch> origin/<default-branch>`) or its branch has a pull request (`gh pr view <branch> --json state`), remove the worktree with `git worktree remove <path>`. When git refuses over files this session copied in from the main checkout, delete those copies and remove it again. Otherwise keep the worktree, without `--force`.
-  3. Delete the branch with `git branch -d <branch>` when its commits are on `origin/<default-branch>`. Keep it when it carries a pull request or when git refuses.
+  2. When the worktree's commits are on `origin/<default-branch>` (`git merge-base --is-ancestor <branch> origin/<default-branch>`) or its branch's pull request is merged (`gh pr view <branch> --json state,headRefOid`), remove the worktree with `git worktree remove <path>`. When git refuses over files this session copied in from the main checkout, delete those copies and remove it again. Otherwise keep the worktree, without `--force`.
+  3. Delete the branch with `git branch -d <branch>` when its commits are on `origin/<default-branch>`, or with `git branch -D <branch>` when its pull request is merged and the branch's tip is that pull request's `headRefOid`. Keep it otherwise, or when git refuses.
   4. Report what was kept, then continue with the rest of this step from the main checkout.
 - **Stay** — List every edit the rest of this step would make to the backlog, and print each entry `/backlog` could not persist from the worktree, so both can be applied from a session that can write to the main checkout. Skip the rest of this step, then use the TaskList tool and proceed to any remaining task.
 

@@ -45,6 +45,14 @@ All sizes above use decimal MB/GB. The initial import preserves published IDs, o
 
 For a new entry, no CMS URL or `sourceArchive` is required. Create `template.json`, `TEMPLATE.md`, `source/motion.md`, `source/manifest.json` and `source/preview.html`; register its stable ID in `catalog.json` and provide every locale slot. Keep guide-only entries' project file lists empty until actual executable project files are supplied and verified through the existing contract.
 
+## Contribute editable project files
+
+Add or edit the unpacked project under `<id>/source/`, retaining its relative asset paths and licenses. Register the files needed to create the project in `template.json.entry.files`, using each file's `path` relative to `source/`, `bytes` and `sha256`. Include `index.html` for an HTML-editable project. Keep localized file-list overrides aligned if present. Refresh `source/manifest.json` with `npm run templates:manifest -- <id>`; this records source identities but does not update `entry.files` for you.
+
+Repository and hosted entries do not require a `url` on each project file, an `indexUrl`, a `projectFileUrl` ZIP download or a new `sourceArchive`. Do not upload revised source or ZIPs to `r.open-design.ai` to complete a repository contribution. Existing CMS links can remain for imported content, but changing source does not require publishing replacements there. Tests of repository/hosted contributions should verify registered paths, hashes and copying from the selected source; only CMS-mode tests require CMS file URLs.
+
+Validate through local Studio and MCP using the checkout files; fetch optional LFS media first when needed. After final review, maintainers use **Prepare and merge PR** to transfer eligible media and merge the prepared PR. After merge, main synchronization publishes registered source files and hosted metadata automatically. It does not generate a replacement CMS ZIP or publish the website's CMS catalog.
+
 ## Contribute media without CMS access
 
 Add media under `<id>/source/assets/` and reference it by a relative path from the template's HTML/Markdown. No CMS or S3 account is required. Keep small images/fonts at most 100 KB in ordinary Git. For a larger file, commit the actual file (at most 50 MiB), or use the existing LFS path under `assets/lfs/`. Refresh the source manifest and open the original PR normally. Optional `template.json.localMedia` selects a logical preview/poster path:
@@ -65,7 +73,7 @@ git lfs pull --include="library/templates/catalog/<id>/source/assets/lfs/**" --e
 
 ## Checks and budgets
 
-The final tree permits source text at most 1 MiB, ordinary images/fonts at most 100 KB, catalog Git content at most 128 MiB, media at most 50 MiB per file and 150 MiB total assets per template. Metadata, manifests, small assets, LFS pointers/attributes and remote identities must agree. Archives, generated output, symlinks, disguised binary source and unregistered files fail validation. A transferred asset must not also remain in Git.
+The final tree permits source text at most 1 MiB, ordinary images/fonts at most 100 KB, media at most 50 MiB per file and 150 MiB total assets per template. The repository-wide ordinary Git total has an advisory target of 128 MiB; exceeding it reports a warning without blocking the PR or media preparation. There is no separate catalog-wide total cap. Metadata, manifests, small assets, LFS pointers/attributes and remote identities must agree. Archives, generated output, symlinks, disguised binary source and unregistered files fail validation. A transferred asset must not also remain in Git.
 
 CI validates the final merge tree without media downloads or upload credentials, and requires Squash-only repository settings. Local checks with an explicit base SHA still provide a stricter intermediate-history audit. Technical checks do not replace rights review, actual media playback or visual acceptance. Configuring branch protection remains a separate repository decision.
 
@@ -73,7 +81,9 @@ CI validates the final merge tree without media downloads or upload credentials,
 
 `npm run templates:export -- .artifacts/catalog-candidate.json` reconstructs the public CMS publication shape from repository metadata, including all eleven locales, ordering and collection facets. The initial export was deeply compared with the public snapshot for all 286 entries.
 
-Export writes a file only. The imported publication identity remains for comparison; changed content requires a new identity through the normal content workflow. CMS publication remains an internal maintainer operation, never a prerequisite for contributing or locally previewing a template. When publishing through the current CMS-backed website/install channel, package reviewed source, upload it through the existing CMS file workflow, update `sourceArchive` plus affected localized download URLs/hashes, then publish and check the resulting catalog with the existing website/plugin workflow. A metadata export does not prove that edited source has been uploaded.
+Export writes a file only; it does not upload source or publish either catalog. Repository contributions use the automatic hosted publication described below and need no CMS upload. The imported publication identity remains for comparison.
+
+Only when a website CMS update is explicitly requested, an internal maintainer packages the reviewed source, uploads it through the existing CMS file workflow, updates `sourceArchive` plus affected localized download URLs/hashes, and publishes a new CMS content revision. Explicit CMS-mode clients continue to use those published downloads. This separate website operation is not a prerequisite for merging a repository template PR, local preview or hosted NPM project creation.
 
 Source Studio and MCP consume repository edits locally. NPM installations without this catalog consume the latest published `main` catalog through OpenMotion's R2-backed CDN, while the website continues to consume the active CMS publication; their DEV/prod selection and caching remain in place. A trusted main-branch workflow publishes the catalog pointer after merges. Merging repository source does not publish CMS content or change the installed application. The complete catalog and development tools are excluded from the positive application distribution list, so NPM installation does not include the additional 104 MB. Only small identity records for curated onboarding references ship with the presentation. Source detection requires catalog.json, so these partial records do not switch NPM installations away from hosted mode.
 

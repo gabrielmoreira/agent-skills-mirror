@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **macos-load-doctor** (`daymade-macos` v1.34.13): Diagnose repeated stages within a necessary job and verify scanner verdicts and the consumer's result.
+- **read-claude-code-history** (`daymade-claude-code` v5.2.7): Explain incremental discovery, fingerprinting and FTS maintenance, with disposable refresh checks.
+- **auto-repo-setup** (`auto-repo-setup` v2.2.4): Reuse completed push findings and resume at the blocked stage.
+- **claude-code-hooks** (`daymade-claude-code` v5.2.8): Verify scan reuse through the real hook launcher and observe which stages are skipped.
+- **transcript-fixer** (`daymade-audio` v1.65.4 → v1.65.5): Bound each human verdict to its exact file, queue row and occurrences; stop after required delivery instead of sweeping unrelated historical backlog.
+- `git-safety-net` v1.28.12: Document the metadata prefilter and fresh content checks for worktree recovery.
+- `daymade-macos` v1.34.12: Distinguish controlled file-check replays from attribution of a live CPU incident.
+- `daymade-skill` v1.81.3: Add a writable-memory-map counterexample for reviewing metadata-keyed file digest reuse.
+
+- **ghostty-use** (v1.15.1 → v1.15.2): Persist deployment freshness in failed and timed-out watcher health records, and route observer upgrade/freshness acceptance to the owning SOP.
+- **Worktree retirement helper** (`git-safety-net` v1.28.11): Skip hashing a potential recovery copy when its type, permissions, or size already differs from the source.
+
+- **prior-work-retrieval / read-claude-code-history** (`daymade-claude-code` v5.2.5): Document receipt reuse for current-task follow-ups and the routine incremental index refresh.
+
+- **frontend-visual-qa v1.21.52**: Verify that a reader stays open when the ordinary list and reader use different identifiers for the same record.
+- **asr-transcribe-to-text** (`daymade-audio` v1.65.4): Align command help with registered refresh and offline generation.
+
+- **ghostty-use** (v1.15.0 → v1.15.1): Require temporary watcher deployment sources to be rebound to the maintained primary checkout and verified through a completed native round before retirement.
+- **macos-watchdog** (`daymade-macos` v1.34.9 → v1.34.10): Bind observer health claims to exact completed attempts and distinguish one successful round from permanent future health.
+- **Worktree retirement helper** (`git-safety-net` v1.28.9 → v1.28.10): Prefer fixed task recovery refs over moving base branches in actively written shared repositories, with fail-closed checkpoint preparation after ref movement.
+- **frontend-visual-qa v1.21.51**: Verify nested message actions through the opened original and check deep links and search on real large lists.
+- **asr-transcribe-to-text** (`daymade-audio` v1.65.3): Document shared and standalone audit output and how to recover source-bound browser reviews before retiring a page.
+
+- **tunnel-doctor** (v1.17.19 → v1.18.0): Add read-only SSH transfer preflight with current LAN/Tailscale underlay, trusted identity, observed socket, bounded sample and exact-command evidence. Publish interception limits and unknown recovery.
+- **local-codex** (`daymade-codex` v2.4.15 → v2.4.16): Reuse verified release artifacts, preflight cross-machine package transfers and check the installer’s complete layout before adoption.
+- **github-ops v1.17.2**: Preserve concurrent changelog additions during integration, scope the follow-up review to the changed inputs, and keep local uncommitted entries during supported synchronization.
+
+- **prior-work-retrieval** (`daymade-claude-code` v5.2.2 → v5.2.3): Keep current-code and cache follow-ups and generated messages from rearming retrieval. Skip receipt reads for ordinary prompts and preserve explicit history requests after closed machine envelopes.
+- **claude-code-hooks** (`daymade-claude-code` v5.2.3 → v5.2.4): Route recurring transfer-path failures to one evidence owner and require historical recall, healthy cases and native remediation verification.
+
+- **asr-transcribe-to-text** (`daymade-audio` v1.65.1 → v1.65.2): Use the installed shared viewer to generate offline pages for unregistered ASR projects. Preserve an existing legacy page for review export and retain standalone generation on installations without a shared viewer.
+
+- **ghostty-use** (v1.14.2 → v1.15.0): Restore recorded relative tab order and tab-level custom titles while preserving unrelated live sessions and external selection. Automatic backups now publish title/order changes, retain the last captured layout across capture failures and refresh its provenance after recovery.
+- **macos-load-doctor** (`daymade-macos` v1.34.10 → v1.34.11) adds guidance for recognizing duplicate scheduled workloads across hosts and verifying service continuity and desktop interaction after intervention.
+- **macos-watchdog** (`daymade-macos` v1.34.8 → v1.34.9): Require byte-copy observers to prove source-to-install freshness through managed-file hashes and a completed native round, rather than treating healthy source or an install receipt as deployment evidence.
+- **read-claude-code-history** (`daymade-claude-code` v5.2.0 → v5.2.1): Limit ordinary full-text maintenance to added, changed or removed sessions. Bind postings and stored injection cleanup to the writer, tokenizer and current prefix policy.
+- **prior-work-retrieval** (`daymade-claude-code` v5.1.25 → v5.2.0): Require task-specific filesystem scope before launching search or Git freshness probes. Keep out-of-scope sources visible as coverage gaps; preserve scoped searches, indexed adapters and manual verification.
+- **macos-watchdog** (`daymade-macos` v1.34.7 → v1.34.8): Distinguish closed writers from complete captures, preserve interrupted batches and retry cleared recovery blockers without reusing startup proof for live children.
+- **debugging-network-issues** (v1.12.3 → v1.12.4): Accept collector recovery through fresh post-fault work, destination-verified custody and the deployed monitoring consumer while retaining historical gaps.
+
+- **prior-work-retrieval** (`daymade-claude-code` v5.1.24 → v5.1.25): Limit each ripgrep adapter to one worker and select the globally ranked top candidates without sorting the full candidate set. Preserve full search coverage, path enumeration and source integrity checks.
+
+- **Sparse worktree retirement** (`git-safety-net` v1.28.8 → v1.28.9): Accept proven absent, skipped filtered files in sparse checkouts while preserving refusal for materialized payloads, indirect paths and unproven omissions.
+- **audio-router** (`daymade-audio` v1.65.0 → v1.65.1): Point result acceptance to the configured daudio owner instead of maintaining a second definition; align repository workflow entry points.
+
+- **macos-load-doctor / macos-watchdog** (`daymade-macos` v1.34.6 → v1.34.7): Explain process activity by business task and lifecycle evidence; preserve stateful shared workloads and verify the effective background job separately from its UI.
+- **claude-code-hooks** (`daymade-claude-code` v5.1.23 → v5.1.24): Audit hot-path cost by actual trigger frequency while preserving verdicts, authoritative rereads, input-bound check reuse and deployed-consumer verification.
+- **read-claude-code-history** (`daymade-claude-code` v5.1.22 → v5.1.23): Pure BM25 returns this same lexical order directly; oversampling only contributes candidates when there is a vector leg to fuse with it.
+- **read-claude-code-history** (`daymade-claude-code` v5.2.1 → v5.2.2): Reuse discovery metadata and verified content digests for unchanged session files during incremental indexing.
+
 - **audio-router / transcript-fixer** (`daymade-audio` v1.64.2 → v1.65.0): Guide configured deployments through independent thin SDKs and distinguish self-introduction, address and quotation before speaker identity writes.
 - **skill-creator** (`daymade-skill` v1.81.1 → v1.81.2): Check actual installed consumer bindings and exercise optional-dependency imports through the repository runner.
 
@@ -3509,6 +3559,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **git-safety-net v1.28.8 / auto-repo-setup v2.2.3 / peer-message v1.27.2 / daymade-macos v1.34.5**: Keep hook-dependency preparation, staged-set inspection and peer receipt rules in their canonical SOPs, resolve sparse setup across plugin boundaries, and remove derived payload-example summaries.
 
 - **skill-creator** (`daymade-skill` v1.81.0 → v1.81.1): Verify schema-2 evidence against its recorded integration base while recomputing the original review, receipt and distribution; retain current-main checks when creating a rebind and distinguish exact source review from current PR admission.
+
+- **tunnel-doctor v1.18.1**: Read transfer limits and proof expiry from the executable owner and its result instead of maintaining copied parameter values in the SOP.
+- **claude-code-hooks** (`daymade-claude-code` v5.2.6): Verify changed shared-runtime fields and helper bindings through registered capture and projection consumers before producer activation.
 
 ## [1.82.0] - 2026-07-07
 

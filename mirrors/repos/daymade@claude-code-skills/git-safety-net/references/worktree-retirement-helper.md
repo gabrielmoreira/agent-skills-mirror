@@ -22,6 +22,14 @@ python3 "$SKILL_ROOT/scripts/git_prepare_worktree_retirement.py" verify-current 
   --out "<same-external-evidence-directory>"
 ```
 
+In an actively written shared repository, prefer a fixed task recovery ref over
+a moving branch such as `refs/heads/main` as `--base-ref`. Create it only for
+the exact authorized target after the content-containment check. The helper
+freezes that ref's object ID, and later movement of the selected ref makes
+`verify-current` fail closed. If a moving base changes, preserve the existing
+evidence and prepare a new checkpoint against a newly verified fixed ref; do not
+edit the old checkpoint.
+
 Read `state.json`'s `snapshot.root_carrier`: `retained-ref` means the selected ref reaches
 every root HEAD/reflog commit being retired and needs no root-history pack. A ref at HEAD
 is insufficient when the reflog holds a unique commit outside HEAD's ancestry; the helper
@@ -55,6 +63,13 @@ disabled state is frozen, and per-worktree `config.worktree` bytes are preserved
 Changing either later blocks current verification; other extensions, includes and
 promisor settings still require manual handling.
 
+Sparse checkouts may omit tracked files with content filters: the helper accepts
+only paths that Git marks `skip-worktree`, with sparse checkout enabled, no
+physical file and no symlink along the omitted path. It does not fetch or smudge
+these files. A materialized filtered file, a dangling link or an unproven omission
+still requires manual preservation; `skip-worktree` alone is not permission to
+discard a payload. `verify-current` repeats the same checks before retirement.
+
 An `lfs` directory in a retiring Git/admin directory is supported only when `lstat`
 identifies a real, empty directory. Its presence and mode are frozen in metadata
 and preserved for recovery. Missing and empty remain distinct; later creation,
@@ -64,9 +79,14 @@ manual handling. This exception does not support an LFS object store or bypass
 the tracked-content-filter gate.
 
 All ignored paths, entry types, modes, sizes, file hashes and symlink targets are
-frozen. Byte-identical entries at the same relative primary path use that retained
-carrier; other entries are copied with their relative paths. To exclude a known
-rebuildable directory, add an exact target-relative declaration, repeated on resume:
+frozen. A primary-path candidate with different type, mode or size cannot retain
+a regular file. Read and hash its contents only if these checks match. Reuse a
+byte-identical candidate and copy the source if it differs. A missing path,
+non-directory ancestor or symlink loop also leaves the source to be copied.
+An access error that pathlib reports is an error, not evidence of absence.
+The preparation recheck and standalone `verify-current` read source bytes again.
+To exclude a known rebuildable directory, add an exact target-relative
+declaration, repeated on resume:
 
 ```text
 --rebuildable 'node_modules=pnpm install --frozen-lockfile from tracked package.json and pnpm-lock.yaml'
