@@ -289,9 +289,9 @@ markitdown /tmp/diagram.pdf > diagram.md
 # Step 1: Convert to PNG
 libreoffice --headless --convert-to png diagram.vsdx --outdir /tmp
 
-# Step 2: OCR with markitdown (requires markitdown[all])
-pip install 'markitdown[all]'
-markitdown /tmp/diagram.png > diagram.md
+# Step 2: OCR through the markitdown-ocr plugin (needs an LLM client)
+pip install markitdown-ocr openai
+python scripts/convert.py /tmp/diagram.png --ocr --llm-model <model> -o diagram.md
 ```
 
 ### Python automation
@@ -399,14 +399,17 @@ print(mpp_xml_to_markdown("project.xml"))
 
 ---
 
-## Images (.png, .jpg) — OCR via markitdown
+## Images (.png, .jpg) — OCR via the markitdown-ocr plugin
+
+Plain `MarkItDown()` returns only EXIF metadata (plus an LLM caption when `llm_client` is given), not the text in the image. The OCR plugin (`pip install markitdown-ocr`) needs `llm_client`; without it the OCR is skipped silently.
 
 ### Basic OCR conversion
 
 ```python
 from markitdown import MarkItDown
+from openai import OpenAI
 
-md = MarkItDown()
+md = MarkItDown(enable_plugins=True, llm_client=OpenAI(), llm_model="<model>")
 result = md.convert("scanned_document.png")
 print(result.text_content)
 ```
@@ -416,8 +419,9 @@ print(result.text_content)
 ```python
 from markitdown import MarkItDown
 from pathlib import Path
+from openai import OpenAI
 
-md = MarkItDown()
+md = MarkItDown(enable_plugins=True, llm_client=OpenAI(), llm_model="<model>")
 image_dir = Path("scanned_pages")
 
 for img in sorted(image_dir.glob("*.png")):
@@ -533,7 +537,7 @@ from markitdown import MarkItDown
 from pathlib import Path
 from datetime import datetime
 
-SUPPORTED = {".docx", ".doc", ".xlsx", ".xls", ".csv", ".pptx", ".ppt", ".pdf", ".html", ".epub", ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".mp3", ".wav", ".m4a", ".ipynb", ".zip", ".msg"}
+SUPPORTED = {".docx", ".xlsx", ".xls", ".csv", ".pptx", ".pdf", ".html", ".epub", ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".mp3", ".wav", ".m4a", ".ipynb", ".zip", ".msg"}
 
 def batch_convert(input_dir: str, output_dir: str | None = None):
     md = MarkItDown()

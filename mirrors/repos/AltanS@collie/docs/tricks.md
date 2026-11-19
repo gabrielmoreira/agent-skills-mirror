@@ -3,7 +3,7 @@
 A trick adds its own parts to ColliePWA on your phone: a count, a question, or a whole screen.
 
 Tricks are experimental. They may change, lose settings, or be withdrawn in a patch release. They are
-off until you switch them on at the top of Settings → Tricks, or with `collie tricks on`. See
+off until you switch them on in Settings → Experiments, or with `collie tricks on`. See
 [Switch tricks on or off](#switch-tricks-on-or-off).
 
 Collie is a web app for your phone. It lets you watch and answer the AI coding agents that run in the
@@ -31,7 +31,7 @@ everything:
 
 ## Where a trick can show
 
-A trick can show in eight places on the phone, and nowhere else.
+A trick can show in seven places on the phone, and nowhere else. It can also post to the Hill.
 
 A place is a spot on the phone where a trick can show (a surface). Collie owns every place. A trick
 names the places it wants in its manifest, and its parts appear there, drawn by the phone with
@@ -39,13 +39,19 @@ Collie's own look.
 
 - **Six places take a program's parts.** On the Dashboard: a tile in the strip at the top, a row
   under Tricks that opens the trick's own Page, and an item in the bottom bar. In an agent
-  session: a chip in the status line, a mark at the end of the Belt, and rows in the session's
-  settings.
+  session: a chip at the left end of the status line, a mark at the end of the Belt, and rows in the
+  session's settings.
 - **The agent view is the seventh.** It is a view of one agent session, beside Terminal and Chat, and
   that session's own agent draws it.
-- **The Hill is the eighth, and it ships with Collie.** It is the page of questions that wait for you,
+- **The Hill is not a place, it ships with Collie.** It is the page of questions that wait for you,
   and an experiment: off until you switch it on in Settings → Experiments. A trick posts a question
   there, a Decision, and does not list the Hill in its `places`.
+
+![Three phone screens, the Dashboard, a session and a session's settings sheet, with the seven places of a trick numbered.](images/tricks/places.png)
+
+In the picture, on the Dashboard: 1 the tile, 2 the row of the trick's Page, 3 the bottom bar item. In a
+session: 4 the status chip, 5 the mark on the Belt, 6 the agent view beside Terminal and Chat. In the
+session's settings: 7 the trick's rows.
 
 The [Places](tricks-reference.md#places) section of the reference describes each place: where it
 shows, what it takes, what a tap does, its limits and an example.
@@ -58,6 +64,8 @@ A part for a place that this Collie does not know is left out, with a note, and 
 show. So a trick written for a newer Collie still works on an older one.
 
 ### Session settings rows
+
+![A session's settings sheet, with a trick's rows in a group of its own after Collie's rows.](images/tricks/place-menu.png)
 
 A trick can add rows to the settings of an agent session, the sheet that opens from the session's
 ⋮ button. Its rows come after Collie's own rows and Close, in a group of their own under "From the
@@ -82,7 +90,7 @@ reference.
 A trick is a program that prints parts, or rules for an agent that draws a screen.
 
 - **A program trick** is a small program on your machine. The bridge runs it on a timer, or when you
-  tap. It prints what to show, and Collie draws it in the five places and on the Hill. Its folder
+  tap. It prints what to show, and Collie draws it in its six places and on the Hill. Its folder
   holds `trick.toml` and the program.
 - **An agent view** is rules for the agent of one session. The agent answers you by drawing one
   screen, in that session's agent view. Its folder holds `trick.toml` and `rules.md`, and no program.
@@ -342,7 +350,8 @@ every yes for you, and it tells you plainly what it found in the code.
   and 64 KiB, runs only the code you said yes to, and searches the code for six risky things.
 - **Your tap decides** Add, and the switch: a trick is off until you switch it on. It also decides
   each new version, each Decision and each view.
-- **Your job** is to read the code, or to ask a session to read it for you.
+- **Your job** is to judge the code: read it, or ask a session to read it for you. The yes does not
+  wait for that. It is a hold of 1.5 seconds, so that it is never a stray tap.
 
 ### Official and community tricks
 
@@ -422,15 +431,17 @@ collie tricks status
 ```
 
 Tricks as a whole have one switch for each machine, and it is off until you switch it on. On the phone
-it is the first card in Settings → Tricks. Settings → Experiments lists Tricks too, and its row opens
-that page. The switch holds for the machine, on every phone at once. A trick's program runs as you on
+it is the **Tricks** card in Settings → Experiments, under the card for the Hill. While the switch is
+on, Settings has a **Tricks** row that opens the list of your tricks. While it is off, that row is
+gone, and a link to Settings → Tricks opens Settings → Experiments. The switch holds for the machine,
+on every phone at once. A trick's program runs as you on
 this machine.
 
 While tricks are off, no trick runs and none draws a part, in any place. No agent view opens, and no
 trick asks on the Hill. A Decision that a trick asked before stays open but hidden, and it is back
 when tricks are on again. `collie trick add`, `collie trick update` and `collie trick propose` answer
-that tricks are off and where to switch them on. The list of tricks stays, so you can read each one
-before you switch.
+that tricks are off and where to switch them on. `collie trick list` still lists your tricks, so you
+can read each one before you switch.
 
 Each trick keeps its own switch. Tricks on does not switch on any trick, and tricks off does not
 switch any trick off: a trick that was on runs again once tricks are on. On a Windows machine the
@@ -475,8 +486,9 @@ A card asks "Use the new version of `<name>`?". It is on the [Hill](hill.md), an
 under **Waiting for your yes**, where the trick's row opens it too, with the Hill on or off. It shows the files that changed
 and any new power the version asks for. You have three options:
 
-- **Use the new version** approves the code on the card, and the trick runs it.
-- **Use it and stop asking** does the same, and switches on "Take changes without asking". It is
+- **Hold to use** approves the code on the card, and the trick runs it. Keep a finger on it for three
+  seconds; with a keyboard, press it twice.
+- **Hold to use and stop asking** does the same, and switches on "Take changes without asking". It is
   offered only when the version asks for no new power.
 - **Keep the old version** declines it. Collie does not offer that version again.
 
@@ -525,7 +537,7 @@ Tricks to open it.
 
 - **The top** holds the trick's name, its one-line description and its longer text, then "Written by
   the trick's author. Collie did not check it."
-- **What it does** holds only facts Collie knows: "Draws in: ...", the files it reads, the
+- **What it does** holds only facts Collie knows: "It shows in: ...", the files it reads, the
   environment names it asks for, the warnings of the text search, and a view's rules, shown whole.
 - **Where it comes from** says "From owner/repo @ 3f2a91c" for a trick added from a repository, or
   "Added on this machine." A trick from a repository has a link to it, with the host shown in full.
@@ -567,7 +579,7 @@ collie trick propose ~/work/disk-space
 
 A card appears with the whole code on it: on your Hill, or in Settings → Tricks under **Waiting for
 your yes** while the Hill is off. Collie never recommends "Switch it on": your
-own reading is the check. Nothing of the trick runs before your yes. Collie offers an agent no way to
+own judgement is the check. The yes is a hold of 1.5 seconds. Nothing of the trick runs before your yes. Collie offers an agent no way to
 switch a trick on. A program that runs as you can still do it.
 
 An agent can propose a program trick. It cannot propose a trick that carries a view or rules: an
@@ -602,7 +614,7 @@ Most problems show in the trick's row in Settings → Tricks, or in `collie tric
 
 | What you see | What it means and what to do |
 | --- | --- |
-| "Tricks are switched off on this machine; ..." | Tricks as a whole are off. Switch them on at the top of Settings → Tricks, or run `collie tricks on` |
+| "Tricks are switched off on this machine; ..." | Tricks as a whole are off. Switch them on in Settings → Experiments, or run `collie tricks on` |
 | "This trick cannot run. ..." | `trick.toml` has an error, and the rest of the line says which. Run `collie trick check <folder>` and fix each line it prints |
 | "Part of this trick is not shown. ..." | The trick runs, but Collie refused one part of what it printed, for example a status line over its length. The rest of the line says which. Run `collie trick dev <folder>` to see each refusal |
 | "A new version waits for your yes." | The folder moved past the approved copy. Tap the line to open its card, or run `collie trick on <id>` |

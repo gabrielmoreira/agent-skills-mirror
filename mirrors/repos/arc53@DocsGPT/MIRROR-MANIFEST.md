@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 20 file(s) materialized.
+Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `arc53/DocsGPT` — 26 default patterns, 6 followed patterns, 20 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,25 +65,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/triage/README.md`](.github/triage/README.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`deployment/k8s/optional-mongo/README.md`](deployment/k8s/optional-mongo/README.md) |
-| 4 | ✓ | [`deployment/sandbox/README.md`](deployment/sandbox/README.md) |
-| 5 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 6 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
-| 7 | ✓ | [`docsgpt/connectors/presets/mcp/README.md`](docsgpt/connectors/presets/mcp/README.md) |
-| 8 | ✓ | [`docsgpt/core/models/README.md`](docsgpt/core/models/README.md) |
-| 9 | ✓ | [`extensions/chatwoot/README.md`](extensions/chatwoot/README.md) |
-| 10 | ✓ | [`extensions/react-widget/README.md`](extensions/react-widget/README.md) |
-| 11 | ✓ | [`frontend/PATTERNS.md`](frontend/PATTERNS.md) |
-| 12 | ✓ | [`scripts/e2e/mock_llm_fixtures/README.md`](scripts/e2e/mock_llm_fixtures/README.md) |
-| 13 | ✓ | [`tests/fixtures/many_attachments/README.md`](tests/fixtures/many_attachments/README.md) |
-| 14 | ✓ | [`tests/fuzz/README.md`](tests/fuzz/README.md) |
-| 15 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 17 | → | [`docs/README.md`](docs/README.md) |
-| 18 | → | [`frontend/DESIGN.md`](frontend/DESIGN.md) |
-| 19 | → | [`README.md`](README.md) |
-| 20 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
+| 2 | ✓ | [`.oss-scanner/README.md`](.oss-scanner/README.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`deployment/k8s/optional-mongo/README.md`](deployment/k8s/optional-mongo/README.md) |
+| 5 | ✓ | [`deployment/sandbox/README.md`](deployment/sandbox/README.md) |
+| 6 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 7 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 8 | ✓ | [`docsgpt/connectors/presets/mcp/README.md`](docsgpt/connectors/presets/mcp/README.md) |
+| 9 | ✓ | [`docsgpt/core/models/README.md`](docsgpt/core/models/README.md) |
+| 10 | ✓ | [`extensions/chatwoot/README.md`](extensions/chatwoot/README.md) |
+| 11 | ✓ | [`extensions/react-widget/README.md`](extensions/react-widget/README.md) |
+| 12 | ✓ | [`frontend/PATTERNS.md`](frontend/PATTERNS.md) |
+| 13 | ✓ | [`scripts/e2e/mock_llm_fixtures/README.md`](scripts/e2e/mock_llm_fixtures/README.md) |
+| 14 | ✓ | [`tests/fixtures/many_attachments/README.md`](tests/fixtures/many_attachments/README.md) |
+| 15 | ✓ | [`tests/fuzz/README.md`](tests/fuzz/README.md) |
+| 16 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 18 | → | [`docs/README.md`](docs/README.md) |
+| 19 | → | [`frontend/DESIGN.md`](frontend/DESIGN.md) |
+| 20 | → | [`README.md`](README.md) |
+| 21 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
 
 ---
 

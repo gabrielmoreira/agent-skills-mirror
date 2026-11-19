@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sergebulaev/linkedin-skills` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
+Mirror of `sergebulaev/linkedin-skills` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sergebulaev/linkedin-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 73 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,37 +101,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`skills/linkedin-humanizer/references/rules-explainer.md`](skills/linkedin-humanizer/references/rules-explainer.md) |
 | 41 | ✓ | [`skills/linkedin-humanizer/references/scrub-rules.md`](skills/linkedin-humanizer/references/scrub-rules.md) |
 | 42 | ✓ | [`skills/linkedin-humanizer/references/tier-rationale.md`](skills/linkedin-humanizer/references/tier-rationale.md) |
-| 43 | ✓ | [`skills/linkedin-humanizer/references/voice-fingerprint.md`](skills/linkedin-humanizer/references/voice-fingerprint.md) |
-| 44 | ✓ | [`skills/linkedin-humanizer/scripts/detectors.env.example`](skills/linkedin-humanizer/scripts/detectors.env.example) |
-| 45 | ✓ | [`skills/linkedin-humanizer/scripts/test_detectors.py`](skills/linkedin-humanizer/scripts/test_detectors.py) |
-| 46 | ✓ | [`skills/linkedin-humanizer/SKILL.md`](skills/linkedin-humanizer/SKILL.md) |
-| 47 | ✓ | [`skills/linkedin-humanizer/sub-skills/detector-tester.md`](skills/linkedin-humanizer/sub-skills/detector-tester.md) |
-| 48 | ✓ | [`skills/linkedin-humanizer/sub-skills/emoji-detector.md`](skills/linkedin-humanizer/sub-skills/emoji-detector.md) |
-| 49 | ✓ | [`skills/linkedin-humanizer/sub-skills/illustration.md`](skills/linkedin-humanizer/sub-skills/illustration.md) |
-| 50 | ✓ | [`skills/linkedin-humanizer/sub-skills/post-audit.md`](skills/linkedin-humanizer/sub-skills/post-audit.md) |
-| 51 | ✓ | [`skills/linkedin-humanizer/sub-skills/rules-explainer.md`](skills/linkedin-humanizer/sub-skills/rules-explainer.md) |
-| 52 | ✓ | [`skills/linkedin-humanizer/sub-skills/voice-profile.md`](skills/linkedin-humanizer/sub-skills/voice-profile.md) |
-| 53 | ✓ | [`skills/linkedin-interviewer/references/question-bank.md`](skills/linkedin-interviewer/references/question-bank.md) |
-| 54 | ✓ | [`skills/linkedin-interviewer/SKILL.md`](skills/linkedin-interviewer/SKILL.md) |
-| 55 | ✓ | [`skills/linkedin-post-writer/references/algorithm-heuristics.md`](skills/linkedin-post-writer/references/algorithm-heuristics.md) |
-| 56 | ✓ | [`skills/linkedin-post-writer/references/hook-formulas.md`](skills/linkedin-post-writer/references/hook-formulas.md) |
-| 57 | ✓ | [`skills/linkedin-post-writer/references/humanizer-checklist.md`](skills/linkedin-post-writer/references/humanizer-checklist.md) |
-| 58 | ✓ | [`skills/linkedin-post-writer/SKILL.md`](skills/linkedin-post-writer/SKILL.md) |
-| 59 | ✓ | [`skills/linkedin-profile-optimizer/references/about-section-templates.md`](skills/linkedin-profile-optimizer/references/about-section-templates.md) |
-| 60 | ✓ | [`skills/linkedin-profile-optimizer/references/banner-photo-specs.md`](skills/linkedin-profile-optimizer/references/banner-photo-specs.md) |
-| 61 | ✓ | [`skills/linkedin-profile-optimizer/references/experience-skills-rules.md`](skills/linkedin-profile-optimizer/references/experience-skills-rules.md) |
-| 62 | ✓ | [`skills/linkedin-profile-optimizer/references/featured-section-playbook.md`](skills/linkedin-profile-optimizer/references/featured-section-playbook.md) |
-| 63 | ✓ | [`skills/linkedin-profile-optimizer/references/profile-headline-formulas.md`](skills/linkedin-profile-optimizer/references/profile-headline-formulas.md) |
-| 64 | ✓ | [`skills/linkedin-profile-optimizer/SKILL.md`](skills/linkedin-profile-optimizer/SKILL.md) |
-| 65 | ✓ | [`skills/linkedin-reply-handler/references/examples.md`](skills/linkedin-reply-handler/references/examples.md) |
-| 66 | ✓ | [`skills/linkedin-reply-handler/references/filtering-rules.md`](skills/linkedin-reply-handler/references/filtering-rules.md) |
-| 67 | ✓ | [`skills/linkedin-reply-handler/references/reply-templates.md`](skills/linkedin-reply-handler/references/reply-templates.md) |
-| 68 | ✓ | [`skills/linkedin-reply-handler/references/threading-rules.md`](skills/linkedin-reply-handler/references/threading-rules.md) |
-| 69 | ✓ | [`skills/linkedin-reply-handler/SKILL.md`](skills/linkedin-reply-handler/SKILL.md) |
-| 70 | ✓ | [`skills/linkedin-repurposer/SKILL.md`](skills/linkedin-repurposer/SKILL.md) |
-| 71 | ✓ | [`skills/linkedin-thread-monitor/references/output-spec.md`](skills/linkedin-thread-monitor/references/output-spec.md) |
-| 72 | ✓ | [`skills/linkedin-thread-monitor/references/thread-timing.md`](skills/linkedin-thread-monitor/references/thread-timing.md) |
-| 73 | ✓ | [`skills/linkedin-thread-monitor/SKILL.md`](skills/linkedin-thread-monitor/SKILL.md) |
+| 43 | ✓ | [`skills/linkedin-humanizer/references/v3-changes.md`](skills/linkedin-humanizer/references/v3-changes.md) |
+| 44 | ✓ | [`skills/linkedin-humanizer/references/voice-fingerprint.md`](skills/linkedin-humanizer/references/voice-fingerprint.md) |
+| 45 | ✓ | [`skills/linkedin-humanizer/scripts/detectors.env.example`](skills/linkedin-humanizer/scripts/detectors.env.example) |
+| 46 | ✓ | [`skills/linkedin-humanizer/scripts/test_detectors.py`](skills/linkedin-humanizer/scripts/test_detectors.py) |
+| 47 | ✓ | [`skills/linkedin-humanizer/SKILL.md`](skills/linkedin-humanizer/SKILL.md) |
+| 48 | ✓ | [`skills/linkedin-humanizer/sub-skills/detector-tester.md`](skills/linkedin-humanizer/sub-skills/detector-tester.md) |
+| 49 | ✓ | [`skills/linkedin-humanizer/sub-skills/emoji-detector.md`](skills/linkedin-humanizer/sub-skills/emoji-detector.md) |
+| 50 | ✓ | [`skills/linkedin-humanizer/sub-skills/illustration.md`](skills/linkedin-humanizer/sub-skills/illustration.md) |
+| 51 | ✓ | [`skills/linkedin-humanizer/sub-skills/post-audit.md`](skills/linkedin-humanizer/sub-skills/post-audit.md) |
+| 52 | ✓ | [`skills/linkedin-humanizer/sub-skills/rules-explainer.md`](skills/linkedin-humanizer/sub-skills/rules-explainer.md) |
+| 53 | ✓ | [`skills/linkedin-humanizer/sub-skills/voice-profile.md`](skills/linkedin-humanizer/sub-skills/voice-profile.md) |
+| 54 | ✓ | [`skills/linkedin-interviewer/references/question-bank.md`](skills/linkedin-interviewer/references/question-bank.md) |
+| 55 | ✓ | [`skills/linkedin-interviewer/SKILL.md`](skills/linkedin-interviewer/SKILL.md) |
+| 56 | ✓ | [`skills/linkedin-post-writer/references/algorithm-heuristics.md`](skills/linkedin-post-writer/references/algorithm-heuristics.md) |
+| 57 | ✓ | [`skills/linkedin-post-writer/references/hook-formulas.md`](skills/linkedin-post-writer/references/hook-formulas.md) |
+| 58 | ✓ | [`skills/linkedin-post-writer/references/humanizer-checklist.md`](skills/linkedin-post-writer/references/humanizer-checklist.md) |
+| 59 | ✓ | [`skills/linkedin-post-writer/references/reach-caveats-2026.md`](skills/linkedin-post-writer/references/reach-caveats-2026.md) |
+| 60 | ✓ | [`skills/linkedin-post-writer/SKILL.md`](skills/linkedin-post-writer/SKILL.md) |
+| 61 | ✓ | [`skills/linkedin-profile-optimizer/references/about-section-templates.md`](skills/linkedin-profile-optimizer/references/about-section-templates.md) |
+| 62 | ✓ | [`skills/linkedin-profile-optimizer/references/banner-photo-specs.md`](skills/linkedin-profile-optimizer/references/banner-photo-specs.md) |
+| 63 | ✓ | [`skills/linkedin-profile-optimizer/references/experience-skills-rules.md`](skills/linkedin-profile-optimizer/references/experience-skills-rules.md) |
+| 64 | ✓ | [`skills/linkedin-profile-optimizer/references/featured-section-playbook.md`](skills/linkedin-profile-optimizer/references/featured-section-playbook.md) |
+| 65 | ✓ | [`skills/linkedin-profile-optimizer/references/profile-headline-formulas.md`](skills/linkedin-profile-optimizer/references/profile-headline-formulas.md) |
+| 66 | ✓ | [`skills/linkedin-profile-optimizer/SKILL.md`](skills/linkedin-profile-optimizer/SKILL.md) |
+| 67 | ✓ | [`skills/linkedin-reply-handler/references/examples.md`](skills/linkedin-reply-handler/references/examples.md) |
+| 68 | ✓ | [`skills/linkedin-reply-handler/references/filtering-rules.md`](skills/linkedin-reply-handler/references/filtering-rules.md) |
+| 69 | ✓ | [`skills/linkedin-reply-handler/references/reply-templates.md`](skills/linkedin-reply-handler/references/reply-templates.md) |
+| 70 | ✓ | [`skills/linkedin-reply-handler/references/threading-rules.md`](skills/linkedin-reply-handler/references/threading-rules.md) |
+| 71 | ✓ | [`skills/linkedin-reply-handler/SKILL.md`](skills/linkedin-reply-handler/SKILL.md) |
+| 72 | ✓ | [`skills/linkedin-repurposer/SKILL.md`](skills/linkedin-repurposer/SKILL.md) |
+| 73 | ✓ | [`skills/linkedin-thread-monitor/references/output-spec.md`](skills/linkedin-thread-monitor/references/output-spec.md) |
+| 74 | ✓ | [`skills/linkedin-thread-monitor/references/thread-timing.md`](skills/linkedin-thread-monitor/references/thread-timing.md) |
+| 75 | ✓ | [`skills/linkedin-thread-monitor/SKILL.md`](skills/linkedin-thread-monitor/SKILL.md) |
 
 ---
 

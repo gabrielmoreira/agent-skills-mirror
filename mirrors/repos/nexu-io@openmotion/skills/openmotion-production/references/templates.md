@@ -1,6 +1,6 @@
 # Native template catalog capabilities
 
-Shared catalog capability reference; read when the selected route needs templates. This page does not restart intake or require original productions to choose a template. Reuse an already selected ID and scope. Editable builtin/registry sources belong to openmotion-template-to-video; video-only references belong to openmotion-recreate. Both routes are implemented. Creating a reusable template from a video is a separate openmotion-video-to-template task, chosen only for that requested deliverable.
+Shared catalog capability reference; read when the selected route needs templates. This page does not restart intake or require original productions to choose a template. Reuse an already selected ID and scope. Editable builtin/Prism sources belong to openmotion-template-to-video; video-only references and catalog guidance packages without editable project files (`hasHtmlProject: false`, returned with `workflowGuide.workflow: "recreate"`) belong to openmotion-recreate. Both routes are implemented. Creating a reusable template from a video is a separate openmotion-video-to-template task, chosen only for that requested deliverable.
 
 ## Browsing and recommendations
 

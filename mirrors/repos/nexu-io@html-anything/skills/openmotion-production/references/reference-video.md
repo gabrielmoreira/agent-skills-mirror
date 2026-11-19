@@ -6,6 +6,8 @@ This is the shared method for entries that rebuild an actual reference video. It
 
 For a link, obtain a local decodable copy using the host's available capabilities; no particular downloader is a prerequisite. Keep the URL and the file's checksum. Links and local files then take the same route. If the video cannot be obtained or decoded, report that specific blocker instead of guessing from a cover, thumbnail or description. A cover image or an unreachable link is not a viewed video; never claim to have watched it.
 
+A catalog guidance package returned by `openmotion_get_template` without editable project files links its reference video in the instructions; obtain that video as above. Its motionDocument and the `manifest.json`, `timeline.json`, `tracks.json` and `style.json` files in its source (local paths for repository entries, the Studio `/api/template-source/<id>/<file>` route for hosted ones) record canvas, fps, stages, palette, objects and sampled tracks, each marked with a status such as fitted, inferred or unknown. Start from fitted values instead of measuring them again and treat inferred or unknown values as hints; confirm either against decoded frames where a decision depends on it. The decoded video stays authoritative.
+
 ## Read the whole reference
 
 Read the reference as a whole before choosing an implementation. Inspect representative frames and consecutive frames around every cut, entrance, exit and transition. Explain what persists, enters, changes, holds and exits; keep an object's identity across cuts when it is the same object.

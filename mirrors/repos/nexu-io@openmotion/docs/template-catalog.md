@@ -91,7 +91,7 @@ MCP 接入与模板库使用同一弹框中的一张滚动页面。整体接入�
 ## Agent 复刻
 
 1. 卡片只复制一句提示、一个链接和精确模板 ID，链接为 `/connect/guide?host=...&template=...`。详细步骤放在链接中，未知 ID 返回错误，不回退到其他示例。
-2. Agent 读取指引 URL 中的实际来源、准确 ID、kind 和路线。`builtin` / 可编辑 `registry` 进入 openmotion-template-to-video；视频 `reference` 进入已实现的 openmotion-recreate；明确要求可复用模板时进入 openmotion-video-to-template。通过本地 Skill 或对应 MCP Resources 读取正文和共享 context，不回总入口重新选模板。旧版本未开放模板详情 Tool；当前版本使用 openmotion_get_template。
+2. Agent 读取指引 URL 中的实际来源、准确 ID、kind 和路线。`builtin` / 可编辑 `prism` 进入 openmotion-template-to-video；视频 `reference` 及其他没有可编辑工程的条目进入已实现的 openmotion-recreate；明确要求可复用模板时进入 openmotion-video-to-template。通过本地 Skill 或对应 MCP Resources 读取正文和共享 context，不回总入口重新选模板。旧版本未开放模板详情 Tool；当前版本使用 openmotion_get_template。
 3. 外部参考由宿主 Agent 实际分析视频或源码，导入支持的素材，并通过 `openmotion_edit_project` 携带 projectId、requestId、expectedRevision 和 expectedVersionId 写原生 Hyperframes HTML compositions 与可 seek 的 GSAP 动画。Tool 不替 Agent 分析视频或自动执行远程源码。
 4. The four local `kind=builtin` templates use `openmotion_create_project` with projectType=template, templateId, requestId, title and requirements to create independent projects. External IDs never map to an arbitrary local example.
 5. 检查 lint/timeline/info 与实际预览，保留可继续编辑的工程。不将原视频整段放入时间轴就宣称复刻完成；只有用户要求时才导出并验证成片。

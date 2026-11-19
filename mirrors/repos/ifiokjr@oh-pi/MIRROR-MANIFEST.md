@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 7 file(s) materialized.
+Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 7 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,13 +61,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`packages/monopi__skills/skills/btw/SKILL.md`](packages/monopi__skills/skills/btw/SKILL.md) |
-| 3 | ✓ | [`packages/monopi__skills/skills/debug-helper/SKILL.md`](packages/monopi__skills/skills/debug-helper/SKILL.md) |
-| 4 | ✓ | [`packages/monopi__skills/skills/nushell/SKILL.md`](packages/monopi__skills/skills/nushell/SKILL.md) |
-| 5 | → | [`docs/agent-rules/engineering.md`](docs/agent-rules/engineering.md) |
-| 6 | → | [`docs/agent-rules/git-and-pr-workflow.md`](docs/agent-rules/git-and-pr-workflow.md) |
-| 7 | → | [`docs/agent-rules/packaging-and-release.md`](docs/agent-rules/packaging-and-release.md) |
+| 1 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
+| 2 | ✓ | [`.cursor/install.sh`](.cursor/install.sh) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`packages/monopi__skills/skills/btw/SKILL.md`](packages/monopi__skills/skills/btw/SKILL.md) |
+| 5 | ✓ | [`packages/monopi__skills/skills/debug-helper/SKILL.md`](packages/monopi__skills/skills/debug-helper/SKILL.md) |
+| 6 | ✓ | [`packages/monopi__skills/skills/nushell/SKILL.md`](packages/monopi__skills/skills/nushell/SKILL.md) |
+| 7 | → | [`docs/agent-rules/engineering.md`](docs/agent-rules/engineering.md) |
+| 8 | → | [`docs/agent-rules/git-and-pr-workflow.md`](docs/agent-rules/git-and-pr-workflow.md) |
+| 9 | → | [`docs/agent-rules/packaging-and-release.md`](docs/agent-rules/packaging-and-release.md) |
 
 ---
 

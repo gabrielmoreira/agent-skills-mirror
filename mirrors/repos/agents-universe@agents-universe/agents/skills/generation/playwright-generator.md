@@ -1,0 +1,157 @@
+---
+slug: "generation/playwright-generator"
+description:
+  zh-CN: "经 test_generator 工具将结构化用例转换为可执行的 Playwright 脚本"
+  en-US: "Convert structured test cases into executable Playwright scripts via the test_generator tool"
+---
+
+# Skill: Playwright Generator
+
+If `workflows/test-artifact-and-jira-conventions.workflow.md` is not loaded for the current task, read it first.
+
+## Triggers
+
+- The QA agent reaches Step 7 of `workflows/automation-workflow-playbook.workflow.md` (single-issue closed loop). Load this skill **unconditionally at Step 7** — "entering a `generate-spec` stage" is not a precondition; the step number is.
+- A structured test design (test cases with title, steps, expected results) exists or is being finalized from the design comment / test card.
+
+## Generation
+
+Call the `test_generator` tool — it generates executable Playwright specs directly:
+
+```json
+test_generator(
+  operation="generate_spec",
+  issue_key="PROJ-456",
+  test_cases=[{"title": "...", "steps": ["..."], "expected_results": ["..."]}, ...]
+)
+```
+
+The tool performs the following automatically:
+
+1. Writes one spec file at `tests/generated/{slug}.spec.ts`, where `{slug}` is the issue key lowercased with non-alphanumeric characters replaced by `-` (e.g. `PROJ-456` → `proj-456.spec.ts`).
+2. Creates the `tests/` scaffold if missing (`package.json` with `@playwright/test`, `playwright.config.ts`, `auth.setup.ts`, `tsconfig.json`), and upgrades `playwright.config.ts` in place when it is still an untouched earlier version of the generator's own file. Anything that was edited by hand is left alone.
+3. Adds a focused npm script `test:{slug}` to `tests/package.json` (e.g. `test:proj-456`).
+4. Generates a **self-contained** spec: imports only `@playwright/test`, groups cases with `test.describe('{issue_key}')`, and renders each case as a `test(...)` block with step actions and assertions. There is no framework runtime wrapper — do not import anything from `src/orchestration` or call functions like `runGeneratedCase`; they do not exist.
+
+Never hand-write a `.spec.ts` — the generator is the only way to create one. Editing selectors or resolving TODOs in a generated file is fine; structural changes mean regenerating with new test cases.
+
+## Completion Contract — Step 7 Is Done Only When
+
+1. **First run vs re-run.** `tests/generated/{issue-key slug}.spec.ts` missing → first run; generation is mandatory unless the playbook §6 exceptions apply (user-trimmed scope, zero automatable cases, pure API-kind card — each of which must be declared in the reply). File present → re-run: reuse it as-is when the design is unchanged; delete the file first and regenerate when the design changed or `scaffold_updates` reported an upgrade — the tool hard-refuses to overwrite (returns `error: Spec file already exists and was not overwritten`), and that refusal means "apply the re-run decision", not "generation failed".
+2. **`error` responses are never silent.** On any `{"error": ...}`: do not execute, do not write back, do not report success. `issue_key`/`test_cases`/stringified-case/`Invalid output_dir` errors → correct the input and retry at least once. An error that survives the retry → quote it verbatim in the final reply and mark Step 7 failed.
+3. **Done check.** Before reporting Step 7 complete: the response contains `file_path`, the file exists (`filesystem`), and the user-facing summary names the relative path (`tests/generated/<slug>.spec.ts`).
+
+## Run Shape
+
+The scaffold signs in **once per run** (`auth.setup.ts` stores the session, the chromium project hands it to every spec), so cases do not log in themselves and the spec carries no login helper. Consequences:
+
+- A case that signs in, signs out, switches user, or checks permissions is detected from its title and steps and is run **signed out**, signing in itself. That is deliberate — the session is what such a case exercises.
+- Pass `include_login=false` only when the cases need no session at all (public pages); they then run with an explicitly signed-out context.
+- Cases in one spec **run in parallel**, so one case may not depend on another's effects. A step sequence that only makes sense as a continuation belongs in a single case.
+- The tool reports `scaffold_updates` when it created or upgraded something — read it, because the spec shape follows the config version. A spec generated before that upgrade still signs in inside every case: delete it and generate again rather than re-running it.
+- A run with no credentials (`APP_USERNAME`/`APP_PASSWORD` unset) skips the sign-in and the cases that need it, and still runs the rest — not a failure to work around.
+
+## Generation Principles
+
+1. Each test case in `test_cases` maps to one `test()` block; the filename comes from `issue_key` — no manual filename suffix.
+2. Provide `steps` as natural-language actions ("navigate to ...", "click ...", "fill ...", "select ..."); the tool converts them into best-effort Playwright actions. Review the generated spec and tighten selectors where the heuristic falls short. A step about what the page *shows* is not automatable and is emitted as a TODO — put those in `expected_results` instead.
+3. Provide `expected_results` as expectations ("... is visible", "URL contains ...", "text contains ...") so the tool can emit assertions.
+4. Set `output_dir` only when the project convention differs from `tests/generated`.
+
+## Upload Scenarios
+
+Upload steps are generated for real (`setInputFiles`), never as a `waitForTimeout`
+placeholder — a step that uploads nothing passes green and proves nothing. Declare
+each payload on its case under `uploads`:
+
+```json
+test_generator(
+  operation="generate_spec",
+  issue_key="PROJ-456",
+  test_cases=[{
+    "title": "Import orders from CSV",
+    "steps": ["Navigate to /orders/import", "Upload the orders.csv file", "Click Import"],
+    "uploads": [{"filename": "orders.csv", "content": "id,total\n1,42\n"}]
+  }]
+)
+```
+
+Three ways to supply a payload, in order of preference:
+
+1. **Generated inline** (`content` for text, `content_base64` for bytes) — the
+   spec carries its own data, so it cannot rot when a file moves. 512KB per
+   payload, 5 uploads per case. This is the default choice for a fixture the
+   test itself can synthesize.
+2. **Existing asset** (`fixture_path: "fixtures/orders.xlsx"`) — for large or
+   byte-exact files. The path is relative to `tests/` (the runner's cwd is
+   always `tests/`, so never use `__dirname` — the specs are ESM).
+3. **`needs_path: true`** — only when the widget needs a real filesystem path;
+   the spec writes the payload to `test.info().outputPath()` first.
+
+Other keys: `selector` (defaults to `input[type=file]`), `via_chooser: true`
+when a button opens the native picker instead of a visible input, `mime_type`
+(inferred from the filename when omitted).
+
+If an upload step has no payload queued, the generator emits a real
+`setInputFiles('input[type=file]', 'fixtures/<name>')` with a TODO — the test
+fails until the fixture exists, which is the point. Never "fix" it by deleting
+the call.
+
+Upload assertions belong in `expected_results` ("the upload progress bar is
+visible", "the imported row count is 1") — the generator cannot infer them.
+
+## Selector Strategy (Reference Knowledge)
+
+Read `knowledge/{project}/ui-patterns.md`. If it already records a commonly used selector pattern for the page, reuse it directly:
+
+```typescript
+// ui-patterns.md record: on the order page, the submit button uses the Chinese UI label `提交订单`
+await page.getByRole('button', { name: '提交订单' }).click();
+```
+
+If knowledge does not contain the selector yet, generate a TODO comment:
+
+```typescript
+// TODO: add selector - refer to ui-patterns.md
+await page.locator('[data-testid="???"]').click();
+```
+
+## Tool Choice (read before executing)
+
+Two different things both involve Playwright — pick the channel by artifact type, never by habit:
+
+| What you have | Correct channel | Wrong channel |
+|---|---|---|
+| A `.spec.ts` generated by `test_generator` (TypeScript, needs the `@playwright/test` runner) | **Platform server-side channel** `POST /api/projects/{project_id}/playwright/specs/{slug}/run` when reachable; otherwise agent-side `shell` `npm run test:{slug}` | `code_executor(language="python-playwright")` — it runs **Python**, cannot execute TypeScript specs |
+| A browser automation / probing / screenshot script you write ad hoc (Python) | `code_executor(language="python-playwright")` (Playwright Python API: goto / click / fill / screenshot / evaluate; subprocess + network allowed) | `shell` node/python one-liners, or the server-side spec channel |
+
+Rules:
+
+1. **`.spec.ts` never goes to `code_executor`** — a TypeScript spec is not a Python script; handing it to `code_executor` fails or silently does nothing.
+2. **Python browser scripts never go to `shell`** — use `code_executor(language="python-playwright")`, which is the sandboxed browser-automation channel (120s timeout, Playwright Python preinstalled). Do not write `node`/`python` browser probes through the `shell` tool.
+3. **Shell's only Playwright use is the `.spec.ts` fallback** in command priority 2–3 below (it self-installs dependencies and browsers first, the same setup the server channel runs). Ad-hoc browser probes never go through shell — they are Python-channel only.
+
+## Execution
+
+Run from the project `tests/` directory, where the local `package.json`, `package-lock.json`, and `playwright.config.ts` are authoritative; the project must declare and install the local `@playwright/test` package, which generated specs import directly.
+
+Command priority (use the first that applies):
+
+1. **Platform server-side channel** — `POST /api/projects/{project_id}/playwright/specs/{slug}/run` (body `{"env": {"APP_*": "..."}}`; `APP_*`-prefixed keys only, values ≤ 500 chars). It returns a `run_id` asynchronously; poll `GET /api/scripts/runs/{run_id}` for status and output. The server pins `cwd` to the project `tests/` directory, runs the same `test:{slug}` npm script with sandboxed env, and kills the process tree on timeout. The scheduler's `playwright` target uses this same channel. Prefer it whenever the platform API is reachable from the current environment — it avoids agent-side npm/network issues entirely.
+2. **Agent-side shell fallback** — `shell(command="npm run test:{slug}", cwd="tests")` — **last resort only**: use when the server-side channel is unreachable (local-only development, no platform API access). It runs the same `test:{slug}` npm script through the shell tool's shared setup path (dependency install + browser preflight, the same code the server runs), but still lacks the server channel's target-reachability probe, run-scoped artifact/report redirection, and 540s budget.
+3. `shell(command="npm test -- generated/{slug}.spec.ts", cwd="tests")` — for any spec without a dedicated script; still only under priority 2's condition.
+4. `shell(command="npm run typecheck", cwd="tests")` — verify TypeScript before running.
+
+Never drive Playwright by hand through shell: no bare `npx playwright test`, no hand-written `node`/`npx` Playwright driver scripts. They bypass the `test:{slug}` npm script's reporter/output/env conventions — exactly the habit that produced missing-browser failures. Even with the self-healing preflight, shell stays fallback-only.
+
+Evidence: the scaffold sets `video` and `trace` to `retain-on-failure`, so a
+failed case leaves `tests/test-results/**/{video.webm,trace.zip}` — attach those
+to the test card. A **passing** scenario that still needs a recording is captured
+with `browser_playwright(operation="record_start"/"record_stop")`; a spec run
+keeps no video for it.
+
+Credentials for login flows: inject via `env` (server-side channel) or `env_refs` (agent-side shell) — `APP_USERNAME` / `APP_PASSWORD` resolved from the vault; non-secret values (e.g. `APP_BASE_URL`) go inline.
+
+## Learning Feedback
+
+If the user manually adjusts selectors or flow after generation, extract those edits and update `ui-patterns.md` so the process forms a positive feedback loop.

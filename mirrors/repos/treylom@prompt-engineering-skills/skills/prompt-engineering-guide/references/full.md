@@ -19,7 +19,7 @@ updated: 2026-07-21
 
 | 영역 | 이 파일에서 볼 위치 |
 |------|-------------------|
-| GPT 5.x~6 (**GPT-6 Sol = 기본**, 2026-09-22~) | 모델별 프롬프트 전략 → GPT-6 Astra·GPT-6 Sol·GPT-6 Luna / GPT-5.6 / 5.5 / 5.2 / legacy XML — GPT-6 규칙 = `skills/gpt-5.6-prompt-enhancement/references/full.md` GPT-6 절 |
+| GPT 5.x~6.2 (**GPT-6.2 Sol = 기본**, 2026-11-17~) | 모델별 프롬프트 전략 → GPT-6.2 Astra·GPT-6.2 Sol / GPT-6 Astra·GPT-6 Sol·GPT-6 Luna / GPT-5.6 / 5.5 / 5.2 / legacy XML — GPT-6.2 · GPT-6 규칙 = `skills/gpt-5.6-prompt-enhancement/references/full.md` GPT-6.2 절 · GPT-6 절 |
 | Claude (**Opus 5.5 = 기본**, 2026-09-22~ · Fable 5.2 · Fable 5.1 · Opus 5 · Opus 4.8 · Fable 5 · Sonnet 5 / 구세대 4.x) | 모델별 프롬프트 전략 → Claude 및 통합 부록의 Claude 전략 |
 | Gemini / Veo / 이미지 | Gemini, Nano Banana, 이미지/동영상 통합 부록 |
 | 리서치 / 팩트체크 | 목적별 추가 블록, 글쓰기/리서치 개요, 리서치 통합 부록 |
@@ -555,7 +555,7 @@ Fonts: San Serif, Inter, Geist, Mona Sans, IBM Plex Sans, Manrope
 
 ### GPT-5.5 (Outcome-First Markdown — 2026-04 공식)
 
-> 🆕 **GPT 기본 모델 = GPT-6 Sol** (2026-09-22~ · 직전 기본 = GPT-5.6 Sol). GPT-6 Astra·GPT-6 Sol·GPT-6 Luna와 GPT-5.6 의 최신 프롬프팅 규칙 = `skills/gpt-5.6-prompt-enhancement/references/full.md`. 아래 GPT-5.5 내용은 계보 보존.
+> 🆕 **GPT 기본 모델 = GPT-6.2 Sol** (2026-11-17~ · 직전 기본 = GPT-6 Sol · 그 전 = GPT-5.6 Sol). GPT-6.2 Astra·GPT-6.2 Sol, GPT-6 Astra·GPT-6 Sol·GPT-6 Luna와 GPT-5.6 의 최신 프롬프팅 규칙 = `skills/gpt-5.6-prompt-enhancement/references/full.md`. 아래 GPT-5.5 내용은 계보 보존.
 
 GPT-5.5는 **outcome-first markdown 6섹션** 구조를 권장합니다. GPT-5.4의 process-heavy XML 12블록 stack과 다른 패턴이며, 모델이 이미 효율적인 추론·도구 사용·검증을 내장하고 있어 짧은 destination + success criteria 만으로 충분합니다.
 
@@ -618,6 +618,8 @@ Role:
 | 중간 복잡도 분석/추출 | `medium` |
 | 장기 코딩, 다단 검증 | `high` |
 | 안전·법률·금융 고위험 | `xhigh` |
+
+> GPT-6.2 Astra·Sol 은 이 표가 아니라 공식 가이드 원문 *"Start with `medium` for a new integration. If you currently use `none` or `minimal`, use `low` instead."* 를 따른다 — `skills/gpt-5.6-prompt-enhancement/references/full.md` «GPT-6.2 Astra · Sol» 절.
 
 #### Anti-Patterns (회피)
 
@@ -1763,7 +1765,7 @@ operation = client.models.generate_videos(
 | `prompt-engineering-guide` | 컨텍스트 엔지니어링 원칙 |
 | `ce-context-fundamentals` | 기본 원칙 (시스템 프롬프트 구조화) |
 | `ce-context-optimization` | 최적화 기법 (토큰 효율성) |
-| `prompt-engineering-guide` | GPT 5.x~6 통합 — **GPT-6 Sol = 기본**(2026-09-22~) + lean outcome-first(GPT-5.6 Sol, 직전 기본) + outcome-first(5.5) + legacy XML stack(5.4/5.2) |
+| `prompt-engineering-guide` | GPT 5.x~6.2 통합 — **GPT-6.2 Sol = 기본**(2026-11-17~) + GPT-6 Sol(직전 기본) + lean outcome-first(GPT-5.6 Sol, 그 전 기본) + outcome-first(5.5) + legacy XML stack(5.4/5.2) |
 | `prompt-engineering-guide` | Claude 프롬프트 전략 — 현행(**Opus 5.5 = 기본** · Fable 5.2 · Fable 5.1 · Opus 5 · Opus 4.8 · Fable 5 · Sonnet 5) + 구세대(Opus 4.5/4.6/4.7, Sonnet 4.5/4.6, Haiku 4.5) |
 | `prompt-engineering-guide` | Gemini 3 프롬프트 전략 (NB2 포함) |
 | `prompt-engineering-guide` | 이미지 생성 프롬프트 가이드 (공냥이 @specal1849 자료 기반) |
@@ -1954,7 +1956,7 @@ operation = client.models.generate_videos(
 
 ### GPT-5.5 프롬프트 향상 스킬 (Outcome-First + Legacy XML)
 
-> 🆕 **GPT 기본 모델 = GPT-6 Sol** (2026-09-22~ · 직전 기본 = GPT-5.6 Sol): 최신 규칙은 `skills/gpt-5.6-prompt-enhancement/references/full.md`(GPT-6 절 · 5.6 본문) 참조. 아래 5.5 내용은 legacy 계보 보존.
+> 🆕 **GPT 기본 모델 = GPT-6.2 Sol** (2026-11-17~ · 직전 기본 = GPT-6 Sol · 그 전 = GPT-5.6 Sol): 최신 규칙은 `skills/gpt-5.6-prompt-enhancement/references/full.md`(GPT-6.2 절 · GPT-6 절 · 5.6 본문) 참조. 아래 5.5 내용은 legacy 계보 보존.
 > **Version**: 1.1.0 | **Updated**: 2026-04-30
 > **Source**: [OpenAI GPT-5.5 Prompt Guidance (2026-04)](https://developers.openai.com/api/docs/guides/prompt-guidance?model=gpt-5.5)
 > **Scope**: GPT 5.x 구세대 통합 — outcome-first markdown(5.5) + legacy XML stack(5.4/5.2 명시 시). GPTs/Gems 첨부파일 10개 한도 대응으로 단일 파일에 통합.

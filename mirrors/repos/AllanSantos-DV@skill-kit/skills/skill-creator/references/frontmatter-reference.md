@@ -116,7 +116,7 @@ license: MIT
 
 ```yaml
 metadata:
-  author: allan-santos
+  author: your-name
   tags:
     - devops
     - containers
@@ -140,7 +140,7 @@ compatibility:
   - copilot-chat
 license: MIT
 metadata:
-  author: allan-santos
+  author: your-name
   tags:
     - devops
     - docker

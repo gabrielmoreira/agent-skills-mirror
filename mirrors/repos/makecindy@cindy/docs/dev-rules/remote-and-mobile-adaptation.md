@@ -7,6 +7,50 @@
 > `apps/desktop/src/main/{remote-agent,remote-ssh}/**`、`apps/desktop/src/main/remote-desktop*/**`、
 > `apps/mobile/src/remote-desktop/**`、`apps/desktop/src/preload/preload.ts`
 
+## 远程 Agent 控制请求与发送取消（2026-11-18）
+
+`maker:remote-agent:v1` 按请求内容区分优先级：发送、插话、停止、关闭以及内联交互／回调／错误回复
+复用已有交互名额；上传、执行环境帧、HTTP 回复与长轮询仍走普通名额。不扩大并发、排队、字节或
+超时上限。普通等待队列满时，空闲的交互名额仍可立即使用；接收端准入与结果 outbox 使用同一判据。
+不解压或读取上传载荷来决定优先级；不认识的请求保持普通优先级，实际授权与校验仍由原处理器负责。
+Agent-Net 会话入口同样按载荷做准入分类，并把这些请求放进控制通道，不能仅修改 Device Link 入口。
+模型目录、Agent 能力、可用 Agent 与安装状态读取使用已有后台配额（活动 4、等待 96），避免预读
+占满普通请求名额；两种传输使用同一判据。实际目录响应与权限检查不变，前台模型／上下文操作和
+导航读取仍走原有普通名额，不因目录预读借用交互预留容量。
+
+远程发送在 Device Link 真正派发前复核任务生命周期、取消信号和 Stop 代次，取消后不迟到投递旧消息。
+此检查使用本地 `beforeDispatch` 回调，两种传输均在出队后、创建请求前执行；同区和跨区分享都透传。
+它不在回包后执行，已发送的输入保留真实结果，不能因随后取消而误报未发送。账号／授权的 `preSend`
+和回包归属检查继续独立执行。以上回调不进入 wire payload。
+发送锁的等待者可由原输入取消信号结束；它的占位仍等待前驱结算，避免后继越过尚未结束的持有者。
+已取得锁的操作必须完成真实清理再释放，不用超时竞速放行仍在运行的写操作。原重启栅栏与 watchdog 保留。
+
+故障半径：① 只处理当前目标的准入和当前输入取消；② 不重建共享连接、不新增写入重试或重放、不恢复
+已结束任务；③ 同设备其它输入继续按原 FIFO／优先级与容量运行。未取得对方原始日志时，不能据截图
+把任何一次 300 秒锁告警认定为这些缺陷。这里只证明可控复现，不代替现场事故归因。
+
+实现与回归：`invokePolicy.ts`、`invokeScheduler.test.ts`、`client.test.ts`、Desktop
+`deviceLinkDispatch.test.ts`、`runClientReply.test.ts`、`sendToSessionLock.test.ts` 与
+`orcaModelSelectionIntent.test.ts`，以及 `agentNetSessionLinks.test.ts`、`remoteInvokeSendGuard.test.ts`、
+`providerShareCrossRegion.test.ts`。沿用原业务载荷与 relay 帧，自建中转仅透传，无需升级服务端。
+混合版本保持通信兼容；单端升级只改善该端调度，旧端继续原有准入行为。
+
+## 远程慢请求的两端诊断（2026-11-18）
+
+`maker:create-session` 在被控端要等 Agent 真正起来才回结果。Codex 的 `thread/start` 会先等
+一次上游预热请求，实测两次各约 40 秒，同机当天 Codex 建会话中位数 8 秒、14 次超过 30 秒、
+最长 71 秒；控制端等待预算已放宽到 2 分钟（见协议契约表 `INVOKE_TIMEOUT_OVERRIDES_MS`）。
+当时两端日志对不上：被控端结果被丢弃时不留记录，控制端也不记晚到的结果。
+
+被控端对超过慢阈值的请求追加记录结果去向：`slow result handed off`（已交给链路或离线队列，
+带 `accepted`）或 `slow result dropped reason=link-reset`（执行期间链路被重置，结果按既有语义
+丢弃）。控制端对已结束等待后才到的结果记录 `late invoke-result`。Codex 的 `thread/start ok`
+带上 `elapsedMs`，把上游预热与 app-server 启动分开。
+
+故障半径：① 只追加 debug／info 日志，不改变结果发送、丢弃、重试或断链恢复；② 日志只含
+截短的请求 id 与设备引用，不含参数或结果内容；③ 慢阈值沿用既有 `slow execution`，不新增高频
+日志。自建中转只转发原消息，不需升级。验证入口：Device Link `invokePolicy.test.ts`。
+
 ## 弱网下的备用截图与视频恢复（2026-11-15）
 
 备用截图仍走原有远程桌面请求，发送端将 JPEG 压到 64 KiB 以内；base64 与回复包装
@@ -393,7 +437,7 @@ WebSocket；不关 WebSocket、不复位对端、不清队列，切换期间丢�
 2026-11-16 起没有单独的开关（用户确认）：`apps/desktop/src/main/device-link/index.ts` 一直包着这一层，会话只在 Agent-Net 的主连接上，
 所以「Agent-Net (Beta)」关着（默认）时没有会话，每个调用原样交给 Device Link，行为不变；打开以后两台都宣告了会话能力的同账号 Desktop 走会话。
 调用方超时后，被控端不再执行还没交给业务的这条请求（取消先到，或请求比时限晚到，见[协议记录](protocol-compatibility/agent-net-session.md)「超时」）。
-接口翻译在 `agentNetSessionLinks.ts`，按对端选路在 `agentNetSessionRouting.ts`。一个对端只走一条路：本机控制对端时，会话可用、
+接口翻译在 `packages/agent-net/src/session/sessionLinks.ts`，按对端选路在 `packages/agent-net/src/session/sessionRouting.ts`。一个对端只走一条路：本机控制对端时，会话可用、
 Device Link 上这个对端的链路没就绪、不等恢复、没有待发消息，建链和所有调用（包括不需要建链的列表、探测）都走会话，直到关链或会话断掉；
 Device Link 上有活着的链路时照旧走 Device Link，那上面已确认的请求要等它重建后补回结果。对端控制本机时跟着对端选的路，结果按请求来的那条路回去。
 2026-11-15 两台电脑隔离验收时发现并修正：只按「在途请求」挡会话时几乎从不走会话；列表与探测先经 Device Link 发出时，
@@ -422,7 +466,7 @@ Device Link 上有活着的链路时照旧走 Device Link，那上面已确认�
   现在两条连接合并，任一条在线即在线（`RoutedDeviceLinkClient.onPresenceChanged`）。
 - **改设备名**：官方中转上设备也在 Agent-Net 目录里时先在 Agent-Net 上改（列表合并时那边的名字优先）。
 - **删设备**：各台电脑按本账号 Device Link 设备列表不认、不列出被删的设备，本机删完马上不认，别处（手机、网页、旧版）删的最晚
-  5 分钟内不认（`agentNetMembership.ts`，[协议记录](protocol-compatibility/agent-net-device-removal.md)）。主干 2026-11-17 起官方网络上删除时
+  5 分钟内不认（`packages/agent-net/src/membership.ts`，[协议记录](protocol-compatibility/agent-net-device-removal.md)）。主干 2026-11-17 起官方网络上删除时
   还会在 Device Link 接受删除后撤销它的 Agent-Net 身份（`deviceLinkApi.ts`）；官方撤销之后那台设备重新登录也回不到 Agent-Net
   （`DEVICE_REENROLLMENT_REQUIRES_APPROVAL`），Device Link 照常恢复。
 - **共享任务重启后的推送**：会话上的建链原来总报同一个流标识，主人电脑重启后来源代次不前进；现在每个会话一个标识。
@@ -487,7 +531,7 @@ the session generation for its offline event」与「hands the control direction
 Device Link 链路等恢复时不改走会话、空闲时建链前的调用也走会话、结果按来路回去、身份比较仍成立、刚连上时等会话且只在宽限期内等、
 还没连接时先拨在线的对端（不在线的不拨、拨不了的不等满）、对方签名开着 Agent-Net 时的重开等它的会话（没有会话层的旧版不等满）；去掉对应处理时失败。
 `packages/device-link/src/__tests__/routedClient.test.ts`「lets the host re-open a peer that prefers the main connection on its own channel」验证钩子接手与退回主连接，
-不提供钩子时原有用例不变。新旧版本、没打开 Agent-Net 的电脑与手机不宣告会话能力，照旧走 Device Link；跨账号见下。
+不提供钩子时原有用例不变。新旧版本、没打开 Agent-Net 的电脑不宣告会话能力，照旧走 Device Link；手机见下文「手机」，跨账号见下。
 Node Host 打开 Agent-Net 后用同一套会话层与选路（`apps/host/src/device-link.ts`，身份与节点在 Electron 无关的
 `apps/desktop/src/main/device-link/agentNetNode.ts`）。它加入过 Agent-Net 以后，同账号的电脑认得它、要求旧版链路带它签的
 传输方式声明，所以 Host 关着 Agent-Net 时也用存下的身份签「现在没开」（和 Desktop 一样）；从没加入过的 Host 不签，对端也不要求。
@@ -517,6 +561,14 @@ while off」（过期后仍签「没开」；对端不收过期证书的「开�
 `agentNetSharing.test.ts`「lets a cross-account session through only where the routed client accepts that resource」验证停用、已退出、
 登记被收回的资源没有会话，没登记的只认主连接，去掉任一处登记时失败。2026-11-16 两个账号的两台电脑隔离验收共享任务：受邀者第一次建链等了 91 毫秒拿到会话，
 打开、读历史、发消息、回复实时推回都走会话；主人移出成员的同一秒两端会话作废。
+
+**手机（2026-11-18）。** 手机在 `apps/mobile/src/device-link/DeviceLinkContext.tsx` 用同一套会话层与选路，但只在这台手机能用
+Agent-Net 时（开关开着，或路由只走 Agent-Net）：这时业务拿到的是 `routeSessionPeers` 的 `PeerLinks`，原来的 `RoutedDeviceLinkClient`
+留作 `routed`。没开 Agent-Net 时业务直接拿 `routed`，不经会话层，和原来一样；开关一变客户端整个重建（偏好代次在 effect 依赖里）。按身份比连接的地方（各连接的代次、补回未完成回复、
+按连接列对端、跨账号与分享连接的上线）用 `routed`，因为对会话上的跨账号对端选路层给的是那条分享连接的视图。分享连接绑在 `routed` 上。
+会话断了又回来（`reopenLink`）时，按 Device Link 单个对端传输重置的同一流程恢复这个对端。故障半径三问：① 会话断开不是这台电脑离线
+的证据，只作废这个对端的建链缓存与订阅确认；② 只排这一个对端的恢复，不重连共享连接，不动别的对端与在线状态；③ 一个对端的会话
+出错不关别的对端的会话，也不关主连接与分享连接。
 
 ### 共享连接静默与请求隔离
 
@@ -568,6 +620,45 @@ relay 以 close 1013 `inbound backpressure` 主动断连，此时任何「立即
 保留签名、路由范围和物理写入检查；可分片但无法单帧发送的结果继续返回 `BACKPRESSURE`，由上层 outbox
 等可靠分片容量恢复。绕行不新建可靠副本或重试器，因此不保证断网期间交付，也不代替 1013
 拥塞恢复。自建中转原有 kind / dst 转发及设备签名已支持该格式，无需升级中转。
+
+官方中转以 `1012 / service restart` 关闭时，Desktop 与 Mobile 首次重连错开至 1–5 秒，
+并沿用更长的既有退避。握手成功后 10 秒内，可靠 relay 帧共用已有的按 peer 发送预算，
+握手、ACK 和可用的直连通道照常推进。仅处理被关闭的连接，重发沿用原序号和有效期。
+路由修复的其他 `1012` 原因和自建中转现有的 `1001` 停机沿用普通退避。
+分享主机重新上线时，桌面额度条错开空视图的首轮重试，同一分享仍合并在途读取。已通过直连读到额度时继续每五秒复核权限。
+客户端以已有脱敏标签汇总 relay 首发帧、重放帧和发送前超时，出现重放或未发送超时才输出汇总。
+
+1013 后的共享帧预算不能仅因在线满 15 分钟而解除：在线可能只是节流正在生效。
+`CongestionSendBudget` 保留最近一次预算拒绝的单调时刻；既有稳定计时器到点时，须同时满足
+过去一个稳定窗口没有预算拒绝、可发送 peer 无待确认／待发送的 relay 可靠消息、socket 已降到低水位。
+仍有积压或 socket 压力时延续原窗口，队列已空但近期曾被限速时只等剩余安静时间；满足后
+清除拥塞连击与预算，恢复普通吞吐。断链 peer 的暂存结果及直连已写出的 pending 不计入当前 relay 积压，ACK 与控制帧
+继续绕过数据预算。不新增业务轮询、请求重放或超时预算。
+故障半径：① 证据是共享 relay 的聚合背压；② 只延续该连接的现有发送节流，不重建连接或
+重置单个 peer；③ `client.test.ts` 用默认 15 分钟和假时间覆盖积压／刚排空两种边界，
+一端静默时另一端仍能完成前台请求，并验证压力消退后恢复普通吞吐。旧端帧格式、能力位和
+自建中转转发、签名均不变，自建中转无需升级；互通仍由 `@cindy/device-link-relay interop` 验证。
+
+Desktop 的供应商组原生 Codex 配额卡片与任务配额投影虽然使用不同镜像，仍须共享同一账号的
+在途 `maker:usage:codex-rate-limits` RPC，直到底层读取真正结束；不把每个视图的 pending 当成全局去重。
+共享键包含持有者代次、设备、供应商与后台优先级，身份清空推送立即退休该键，迟到结果由各镜像的
+既有身份／版本栅栏丢弃。只共享在途读取，不增加缓存、定时器、重试或写操作重放；旧端快照回退保持原契约。
+`useRemoteDeviceUsage.test.ts` 经真实 Hook 验证跨视图一次读取、慢 peer 隔离及身份清空／A→B→A 边界。
+
+组成员账号列表的变化通知、轮询和重连同样不能各自堆一条新查询。`useGroupMemberAccounts` 将
+真实在途 RPC 保留到结束，同一观察范围最多标记一次最新补读；重连／可见性导致 effect 重建时，
+同身份仍先等原 RPC，再补读最新列表。变化通知已经取代的旧回包不显示，暂停／移除账号不被短暂恢复。
+持有者代次、目标电脑或供应商变化不复用旧读取；隐藏、收起／卸载及身份变化取消旧观察者的补读。
+`GroupMemberQuota.test.tsx` 覆盖变化突发与轮询叠加、多个恢复事件、慢 peer 隔离和上述停止边界。
+
+远程 Agent 的 push／工具回包遇到 `BACKPRESSURE` 时，同一执行端的各 run 不能各按自己的
+固定退避时间整批重发。每个共享 peer poller 持有一个交付 gate：正常首发保持并发；明确背压后，
+仅一个在途 RPC 探测可用容量，失败沿原 500ms～5s 范围共同退避，实际成功回包后逐项排空等待交付，
+队列清空再恢复普通并发。退避使用单调时钟，不因校时回退延长。不同 peer 各自恢复，open／call／
+停止等业务入口不经过此 gate；原 seq、requestId、uploadId、30 次交付上限和单次 RPC 超时不变。
+反向请求的取消资格保留到回包交付结束，取消或任务关闭移除尚未放行的交付，不丢掉其它 run 的队列。
+`runClientReply.test.ts` 经真实客户端验证共享探测、工具回包／push 协调、独立 peer、正常吞吐、
+取消、原载荷复用与重试上限；此机制不证明最初的共享连接过载只有一个来源。
 
 判例：#1187（2026-07-31）引入「可靠重试耗尽 → 强拆整条 relay 连接」，wire 向后兼容、
 单测全绿、多轮 review 通过，上线后一台休眠手机反复把同账号所有设备（含桌面↔桌面）
@@ -1356,7 +1447,18 @@ Debug 仍可追加两层细节：
 同一消息的每次执行在 Git 操作之前写入独立、不可覆盖的派发意图，保存点以可选的
 `X-Cindy-Attempt` trailer 绑定该标识。回退逐个核对所选消息的全部意图，基线与缺口标记均
 写入失败也能识别，后续成功不能抹掉中间失败。意图落盘也占用上述 8 秒预算；意图无法
-写入或超时时拒绝本次派发，迟到写入只能留下保守缺口，不能重新发送。意图写成之后的
+写入失败或超时时拒绝本次派发，不在保存点内部立即重试。只有本机预算产生的 typed 超时
+（`SnapshotOperationDeadlineError`，不按报错文字判断）才可由尚未接受的调度输入交给
+定时任务自动续跑：沿用原 run 与 accepted 回调，经共享恢复守卫批准并退避后创建新的
+隐藏恢复输入。恢复输入使用新 clientId，通过 retrySourceClientId 关联原消息；原可见
+用户行保留，恢复输入另存带 autoResume 标记的隐藏用户行。若恢复输入的准备再次失败，
+本轮即收口，不循环重试；通用恢复守卫的 5 次上限不代表快照准备会重试 5 次。
+退避沿用共享守卫（首档基准 3 秒、±25% 抖动、封顶 20 秒），期间受聊天 Stop 与定时
+任务暂停／删除约束；暂停／删除
+会以取消而不是超时结束仍在等待的保存点。权限或存储错误、已接受或发送结果不明的输入
+不走此恢复；最终失败时把真实原因交回本轮 runner。派发前失败复用 scheduler bridge 的
+`onPersistedFailure` 回执；其它已被自动恢复接管的失败保留原运行回调，不按丢弃提前结束。
+迟到写入只能留下保守缺口，不能重新发送。意图写成之后的
 Git 故障仍按原约定继续发送。这是安全降级与无法确认派发记录两类失败的区别。
 
 意图仅存 UUID 和消息锚点，位于当前账号的
@@ -1446,8 +1548,9 @@ Git 元数据查询可以成批并发，不能仅按总查询数推断耗时；�
 在启动阶段第一次遇到未短路的插件清单 `fs/getMetadata` 时，沿该目录向上最多 64 层，
 为三种清单提前发送普通原生查询（最多 192 条，已知不存在的虚拟路径仍由旧短路排除）。
 复用既有 poll/push 批次、路径投影和原生 sandbox，不添加协议字段、方法或能力。
-只有原生 `-32004` 才能回答同连接、同参数／sandbox 的后续元数据查询；已有文件、权限错误、
-未知路径及超出预算的路径继续按原查询处理。不缓存文件内容或成功元数据。
+只有原生 `-32004` 才能缓存并回答同连接、同参数／sandbox 的后续元数据查询；已在等待该次
+查询的原请求直接消费原生成功或错误回包，避免丢弃后再发相同 RPC。成功元数据与权限错误不缓存，
+后续请求、未知路径及超出预算的路径继续按原查询处理。不缓存文件内容。
 启动结束、出现写操作／启动进程时停止复用并释放等待中的原查询；连接关闭时清理。
 内部查询 ID 与原生 ID 隔离，迟到的内部回复不能送给 Codex。每条连接只提前查询一次。
 请求的 16 KiB 优化预算不用于回复解析，否则较大错误回复会漏消费内部 ID，并使原查询继续等待。

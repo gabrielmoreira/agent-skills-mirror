@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 31 fi
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,9 +87,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`mcp/register.go`](mcp/register.go) |
 | 27 | ✓ | [`mcp/router_test.go`](mcp/router_test.go) |
 | 28 | ✓ | [`mcp/router.go`](mcp/router.go) |
-| 29 | ✓ | [`mcp/service_tokens_test.go`](mcp/service_tokens_test.go) |
-| 30 | ✓ | [`mcp/service_tokens.go`](mcp/service_tokens.go) |
-| 31 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
+| 29 | ✓ | [`mcp/secret_reference_read_only_security_test.go`](mcp/secret_reference_read_only_security_test.go) |
+| 30 | ✓ | [`mcp/service_tokens_test.go`](mcp/service_tokens_test.go) |
+| 31 | ✓ | [`mcp/service_tokens.go`](mcp/service_tokens.go) |
+| 32 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
 
 ---
 

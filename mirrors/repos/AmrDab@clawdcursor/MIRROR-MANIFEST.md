@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmrDab/clawdcursor` — 26 default patterns, 8 followed patterns, 13 file(s) materialized.
+Mirror of `AmrDab/clawdcursor` — 26 default patterns, 9 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 8 followed patterns, 13 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 13 |
+| Followed pats | 9 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 8 followed patterns, 13 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `eval/own-window/REPORT-windows.md`
 - `bench/README.md`
 - `SECURITY.md`
 - `docs/telemetry.md`
@@ -68,17 +69,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
 | 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 3 | ✓ | [`native/README.md`](native/README.md) |
-| 4 | ✓ | [`SKILL.md`](SKILL.md) |
-| 5 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
-| 6 | → | [`bench/README.md`](bench/README.md) |
-| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 9 | → | [`docs/MACOS-SETUP.md`](docs/MACOS-SETUP.md) |
-| 10 | → | [`docs/pill-host.md`](docs/pill-host.md) |
-| 11 | → | [`docs/telemetry.md`](docs/telemetry.md) |
-| 12 | → | [`README.md`](README.md) |
-| 13 | → | [`SECURITY.md`](SECURITY.md) |
+| 3 | ✓ | [`eval/own-window/README.md`](eval/own-window/README.md) |
+| 4 | ✓ | [`native/README.md`](native/README.md) |
+| 5 | ✓ | [`SKILL.md`](SKILL.md) |
+| 6 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
+| 7 | → | [`bench/README.md`](bench/README.md) |
+| 8 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`docs/MACOS-SETUP.md`](docs/MACOS-SETUP.md) |
+| 11 | → | [`docs/pill-host.md`](docs/pill-host.md) |
+| 12 | → | [`docs/telemetry.md`](docs/telemetry.md) |
+| 13 | → | [`eval/own-window/REPORT-windows.md`](eval/own-window/REPORT-windows.md) |
+| 14 | → | [`README.md`](README.md) |
+| 15 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

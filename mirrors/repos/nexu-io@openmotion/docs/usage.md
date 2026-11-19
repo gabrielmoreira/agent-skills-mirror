@@ -19,7 +19,7 @@ openmotion 0.6.2 是面向 Agent 的本地创作工作区与 Codex 插件，一�
 
 地址栏支持直接输入 `baidu.com`、前进、后退、刷新和停止；网页由独立本地 Chromium 承载，支持点击、滚动与文字输入，切回 Motion 仍保留编辑状态。需要本机 Chrome / Chromium，或设置 `MOTION_BROWSER_PATH` / `HYPERFRAMES_BROWSER_PATH`。网站音频、文件上传/下载管理等当前边界见 [浏览器运行架构](browser-runtime.md)。
 
-产品名为 openmotion，已有工作区界面保留 OpenDesign 标识。产品内会话、模板、媒体生成与通用 API 继续保留；当前一期给宿主 Agent 的公开 MCP 只含下方 11 个 openmotion_ Tool，未公开的产品能力不因此删除。
+产品名为 openmotion，已有工作区界面保留 OpenDesign 标识。产品内会话、模板、媒体生成与通用 API 继续保留；当前一期给宿主 Agent 的公开 MCP 只含下方 16 个注册的 openmotion_ Tool 名称（含 1 个兼容别名），未公开的产品能力不因此删除。
 
 MCP 打开预览、创建产物、应用/复刻模板时，`previewUrl` 默认包含 `embed=1`，Codex 等宿主直接打开完整地址即可只显示编辑器，隐藏侧栏、会话和产品浏览器外框。`sessionUrl` 或显式 `embedded=false` 返回完整工作区；空会话仍显示会话入口。也可分别配置 `sidebar=0`、`conversation=0`。这些视图使用同一会话与产物。完整接口、失败语义与后续模式扩展见 [会话技术架构](session-architecture.md)。
 
@@ -35,7 +35,7 @@ Studio 与 MCP 共用这套模型和任务服务。云 Key 的填写不等于已
 
 ## 一期 MCP 发布范围
 
-[一期 11 Tool 契约与实现范围](mcp-phase1-tools.md)固定公开名称、输入返回、内容版本与裁剪边界。源码和默认构建均为 phase1，仅暴露这 11 项；`npm run package:phase1` 导出一期插件 ZIP。已补齐契约适配，复用现有 Studio/渲染器，五个随包 Skill 的调用指引同步迁移。内部 legacy 实现保留供兼容回归。
+[一期 Tool 契约与实现范围](mcp-phase1-tools.md)固定公开名称、输入返回、内容版本与裁剪边界。源码和默认构建均为 phase1，仅暴露这 16 个注册名；`npm run package:phase1` 导出一期插件 ZIP。已补齐契约适配，复用现有 Studio/渲染器，五个随包 Skill 的调用指引同步迁移。内部 legacy 实现保留供兼容回归。
 
 ## 产品与文档
 
@@ -75,7 +75,7 @@ openmotion 围绕已有 Agent 用户的产品演示、参考复刻、动态图�
 
 ### 安装完成后的引导（Codex / Agent）
 
-All Agent installation entries share the [installation-success reply rules](install-onboarding.md#installation-success-reply). Briefly confirm installation and open the template library with `openmotion_open_preview({target:"templates"})`, or setup's `onboarding.preview.previewUrl` before native discovery. Report the actual presentation result; do not create a placeholder project. Keep technical verification internal. Missing or stale native tools can use `onboarding.directAccess` under its installed transport and policy checks, without requesting a restart or a new chat by default.
+All Agent installation entries share the [installation-success reply rules](install.md#installation-success-reply). Briefly confirm installation and open the template library with `openmotion_open_preview({target:"templates"})`, or setup's `onboarding.preview.previewUrl` before native discovery. Report the actual presentation result; do not create a placeholder project. Keep technical verification internal. Missing or stale native tools can use `onboarding.directAccess` under its installed transport and policy checks, without requesting a restart or a new chat by default.
 
 ### 首次体验默认规则
 
@@ -127,11 +127,13 @@ npm start
 
 Open the printed `studioUrl` or `previewUrl`; do not assume port 4173. `npm start` and MCP share the existing startup logic and reuse a compatible service for the same workspace. macOS selects a port dynamically; other platforms try `PORT` (default 4173) and the next nine ports, skipping occupied ones. The service remains in the background after the launcher exits. Project links use `/?project=<id>` or `/#project/<id>` at the returned origin. Hyperframes uses a separate loopback port; OpenMotion proxies its APIs, file events and preview requests while serving its own editor. Compositions remain in isolated preview iframes. `npm run dev` retains the direct foreground server entry for development.
 
+To run the Studio, MCP and export in a container instead, follow the [Docker deployment guide](../deploy/README.md). The image carries Node.js, Chromium, FFmpeg/ffprobe and CJK fonts; Compose publishes the port on the host's `127.0.0.1` only, and the server's Host and Origin checks are unchanged. The server listens on loopback unless `MOTION_BIND_HOST` is `0.0.0.0` or `::`; the Studio has no sign-in, so keep the published port on loopback.
+
 ## Agent 工具
 
 仓库 Agent 从 [AGENTS.md](../AGENTS.md) 进入，Claude Code 同时读取 [CLAUDE.md](../CLAUDE.md)。按本轮意图直达专业入口：原创/大幅重编进入 [openmotion-director v1.4.5](../skills/openmotion-director/SKILL.md)，已有模板出片或适配进入 [openmotion-template-to-video](../skills/openmotion-template-to-video/SKILL.md)，参考视频复刻进入 [openmotion-recreate](../skills/openmotion-recreate/SKILL.md)（先读用户资料、最多问一次，用现有九个 Tool 在可编辑工程中重建，导出片对照原片测量后，交付在编辑器中打开的工程；规则与测量脚本随该 Skill 分发）。明确要求视频转可复用模板或 ZIP 时，单独进入 [openmotion-video-to-template](../skills/openmotion-video-to-template/SKILL.md)。[openmotion-production](../skills/openmotion-production/SKILL.md) 承接既定决定下的工程修改、预览、技术检查、排错与导出；重新设计局部动作或声音仍可直达 director。已有内容的修改统一复用 [edit 流程](../skills/openmotion-production/references/edit.md)，核对保持项及后续延续；首次补读的结果须先返回模型，再执行依赖操作。
 
-仅有 MCP 时通过 resources/list 与 resources/read 读取 `openmotion://workflow/production/start`；已选专业入口直接读对应路线，无需重新选路。固定引擎指南为 `openmotion://engine/SKILL.md`。详见 [Skill 路由](skills.md)。一期包含 openmotion-production、openmotion-director、openmotion-template-to-video、openmotion-recreate、openmotion-video-to-template 五个入口及参考。MCP workflow 短 ID 依次为 production/director/template/recreate/video-to-template；reference-video 仅留源码兼容入口。
+仅有 MCP 时通过 resources/list 与 resources/read 读取 `openmotion://workflow/production/start`；已选专业入口直接读对应路线，无需重新选路。固定引擎指南为 `openmotion://engine/SKILL.md`。详见 [Skill 路由](skills.md)。一期包含 openmotion-production、openmotion-director、openmotion-template-to-video、openmotion-recreate、openmotion-video-to-template 五个入口及参考。MCP workflow 短 ID 依次为 production/director/template/recreate/video-to-template。
 
 共享上下文列出各范围的必读依赖，Agent 只补齐尚未读取的正文，并复用同一份已读记录。这个约定不等于工具强制执行；七份 Motion 质量参考保持原有内容与风格边界。
 
@@ -214,7 +216,7 @@ npm run package:plugin
 
 `npm run dev` 先构建编辑器再启动服务；只改前端后可运行 `npm run build:studio` 并刷新页面。`npm run test:studio` 运行上游单元/DOM 回归与宿主集成测试；`npm run typecheck:studio` 检查前端类型；`npm run design:check` 检查主题变量与对比度。`check` 校验清单、版本、锁定依赖、技能入口、服务 TypeScript 语法及设计规范。测试覆盖原生源文件共享、并发 revision、路径隔离、旧工程迁移、Studio 编辑数据快照、真实 stdio MCP、原生 Studio HTTP 接口、完整目录与同源版本、封面筛选、短指令与参数化指南、四个官方模板的打开/编辑/切换/保留和带音轨的真实 MP4 渲染。没有 FFmpeg 或 Chrome 的机器会跳过渲染集成测试；PR CI 的 phase1-package-e2e 独立任务安装 Chromium、FFmpeg/ffprobe，重新构建并隔离安装真实ZIP，自动跑全部11个Tool；依赖缺失或测试失败直接标红，日志与MP4证据保留14天。合并阻断须同时启用main的必需状态检查，配置与边界见[测试覆盖](mcp-phase1-tools.md#测试代码与ci范围)。
 
-打包产物为 `dist/openmotion-0.6.3-phase1.zip`，包含编辑器构建产物、设计系统与字体许可、原生模板、完整目录与已校验封面、技能、lockfile、AGENTS.md、CLAUDE.md 和产品文档，排除个人媒体、草稿、node_modules 和原生程序。`bash scripts/install-motion.command` 可注册并安装本地插件，并按 Codex 实际解析的启动配置验证 MCP 握手；它不会重启 Codex。代码改动和打包不会自动替换用户已安装的插件版本。
+打包产物为 `dist/openmotion-<version>-phase1.zip`，包含编辑器构建产物、设计系统与字体许可、原生模板、完整目录与已校验封面、技能、lockfile、AGENTS.md、CLAUDE.md 和产品文档，排除个人媒体、草稿、node_modules 和原生程序。`bash scripts/install-motion.command` 可注册并安装本地插件，并按 Codex 实际解析的启动配置验证 MCP 握手；它不会重启 Codex。代码改动和打包不会自动替换用户已安装的插件版本。
 
 主要实现：`hyperframes.ts` 管理锁定的上游 CLI 与 Studio 进程；`workspace.ts` 管理原生文件、迁移和快照；`server.ts` 提供薄壳与后台任务；`mcp.ts` 向 Agent 暴露工具；`template-library.ts` 创建官方模板的可编辑副本，`template-catalog.ts` 提供完整参考目录及热度；`editor-server.ts` 提供自有编辑器资源并流式转发原生 API；`studio/src/motion/` 是我们的界面入口，`packages/design-system/` 是共享设计规范。`shared/legacy.ts` 仅用于读取旧版工程。
 
@@ -224,7 +226,7 @@ Hyperframes 使用 Apache-2.0 许可证，依赖从 npm 官方包安装；其源
 
 ## Template production and reuse
 
-The phase-one plugin and all four local host adapters ship the five canonical motion-* Skills, including openmotion-template-to-video and openmotion-video-to-template. Existing workflow IDs remain stable; MCP Resources expose the same guidance and supporting references. The eleven public Tools do not provide video comparison, reference downloading/analysis or ZIP packaging: these require available host capabilities. Legacy comparison handlers stay internal. Native HyperFrames source, local assets, previews and editing notes remain portable; human review decides visual acceptance.
+The phase-one plugin and all four local host adapters ship the five canonical motion-* Skills, including openmotion-template-to-video and openmotion-video-to-template. Existing workflow IDs remain stable; MCP Resources expose the same guidance and supporting references. The sixteen registered public Tool names do not provide video comparison, reference downloading/analysis or template ZIP packaging: these require available host capabilities. Legacy comparison handlers stay internal. Native HyperFrames source, local assets, previews and editing notes remain portable; human review decides visual acceptance.
 
 The plugin name, install script, data directory and Studio ports are the team base, unchanged by this extension. See [scope](motion-extension-scope.md).
 

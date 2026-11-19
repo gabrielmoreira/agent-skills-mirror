@@ -259,6 +259,14 @@ oracle in the kernel's fp32 order whose silu may move by exp's error, and the do
 DeepSeek-only copy of Kimi K3's chains with the full E8M0 scale range) against its bytes (also over the release's real
 FP4 expert bytes), each with four controls. The copied plan and combine (`tf_dsv41_route_plan`, `tf_dsv41_xp_combine`)
 are checked end to end through the GPU's own plan, and every launch is recorded for gate 5.
+Metal also checks DeepSeek V4.1's FP8 rows tile (`fp8_tile.metal`, `tf_dsv41_fp8_tile_*`), which runs decode launches
+of 6 to 16 rows on simdgroup MMA: one registration replaces `tf_dsv41_fp8_w*` run one row a launch and must be
+bit-equal to it at every shape of its shapes gate (the seven release projections and every row count from 1 to 16),
+beside f32, bf16, forced-form and release-fixture registrations against float64. A probe holds the tile byte-equal to
+the row kernel one row a launch on every dense FP8 shape the decode forward runs, f32 and bf16, rows 1 to 16 from row 0
+and 1 to 15 from row 1 at every form, the 16/17 seam and a three-launch batch, with NaN and Inf planted. Four controls
+go red: non-finite inputs flushed, group and slice roots added in a chain, group roots rounded to fp16, and writes past
+its output.
 The row-split seam's four kernels (`pair_rows.metal`, launched by `pair_rows.zig`) move bf16 frames, never sums:
 `pair_stage` copies this rank's half of a frame row into the slot the relay sends, and `pair_gather` writes both halves
 of every row, its own natively and the peer's from the relayed frame. `pair_argmax` flags a row whose logits are not
@@ -281,7 +289,7 @@ the once-rounded ones, each checked on its residual and its output, with four co
 bit-equal to them) and top-k, the latent top-k's decode form (bit-equal to `tf_super_topk`), the latent combine and
 shared add over bf16 share sums (bit-equal to `tf_super_combine` and `tf_super_moe_out` over the fp32 shares), the
 Mamba scan of a verify window (its host twin's bytes), qmm_group's cluster tile, lane_gemv and its split-K form (both
-bit-equal to it), the split-K form segmented over projections of one input (bit-equal to `decode()` on each), prompt16's FP4 tile with bf16 and fp32 out, qmmf's FP4 tiles with fp32 out (K slices met in a
+bit-equal to it), the split-K form segmented over projections of one input (bit-equal to `decode()` on each), prompt16's FP4 tile with bf16 and fp32 out and its gate/up SwiGLU pair (bit-equal to two lean products then `tf_q35_mlp_act`; controls: gate and up swapped, the gate's scale one fp32 ulp up), qmmf's FP4 tiles with fp32 out (K slices met in a
 cluster, fused, or by `reduce_kernel<true>`), the checkpoint math's FP8 128-row prompt tiles (both slice meetings,
 bit-equal to the 64-row tiles) and NVFP4 experts: the decode-sized forms and the prompt tiles (up to down's NVFP4
 rows, fp32 down and the down summing two width shares, each bit-equal to the kernels it replaces; sm_120 up), and the
@@ -439,6 +447,12 @@ Older SMs build main's loop, and their records are main's.
 CUDA also checks MOSS-Image's glue (`moss_image.cu`: the norm, plain and modulated; q/k norm and rotary into packed
 rows; situ; the gated add), each output within float64's range at its torch bf16 points (five controls, each dropping
 one point), and `vision_kernel` at head dim 128 against `contract_attn.zig`'s float64 reference (`moss-contract`).
+
+CUDA also checks Nemotron 3.5 Transcribe's audio encoder glue (`nemo_audio.cu`: log-mel frames, their per-feature
+normalisation, q/k norm and rotary in both stacks' forms, the speaker head's taps, ReLU and predictions, and the fusion
+of the two branches), each output within float64's range at its bf16 points, and its head-64 attention against
+`contract_attn.zig`'s float64 reference (`audio-contract`; eight controls built from `nemo_audio.cuh` with one thing
+dropped each).
 
 CPU: Qwen3.5-2B's affine projection (4 bits, groups of 64, `cpu_kernels.zig`) at the widths the 2B calls it, one row
 to a 128-row prompt chunk, registered once for each chain count of its projection classes (16; 32 for the delta rule's

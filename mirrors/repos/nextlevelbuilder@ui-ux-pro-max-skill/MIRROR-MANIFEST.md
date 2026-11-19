@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nextlevelbuilder/ui-ux-pro-max-skill` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `nextlevelbuilder/ui-ux-pro-max-skill` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nextlevelbuilder/ui-ux-pro-max-skill` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,21 +59,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/banner-design/SKILL.md`](.claude/skills/banner-design/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/brand/SKILL.md`](.claude/skills/brand/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/design-system/SKILL.md`](.claude/skills/design-system/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/design/SKILL.md`](.claude/skills/design/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/slides/SKILL.md`](.claude/skills/slides/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/ui-styling/SKILL.md`](.claude/skills/ui-styling/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/ui-ux-pro-max/SKILL.md`](.claude/skills/ui-ux-pro-max/SKILL.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`cli/assets/skills/banner-design/SKILL.md`](cli/assets/skills/banner-design/SKILL.md) |
-| 10 | ✓ | [`cli/assets/skills/brand/SKILL.md`](cli/assets/skills/brand/SKILL.md) |
-| 11 | ✓ | [`cli/assets/skills/design-system/SKILL.md`](cli/assets/skills/design-system/SKILL.md) |
-| 12 | ✓ | [`cli/assets/skills/design/SKILL.md`](cli/assets/skills/design/SKILL.md) |
-| 13 | ✓ | [`cli/assets/skills/slides/SKILL.md`](cli/assets/skills/slides/SKILL.md) |
-| 14 | ✓ | [`cli/assets/skills/ui-styling/SKILL.md`](cli/assets/skills/ui-styling/SKILL.md) |
-| 15 | ✓ | [`stack/CLAUDE.md`](stack/CLAUDE.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.claude/skills/banner-design/SKILL.md`](.claude/skills/banner-design/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/brand/SKILL.md`](.claude/skills/brand/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/design-system/SKILL.md`](.claude/skills/design-system/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/design/SKILL.md`](.claude/skills/design/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/slides/SKILL.md`](.claude/skills/slides/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/ui-styling/SKILL.md`](.claude/skills/ui-styling/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/ui-ux-pro-max/SKILL.md`](.claude/skills/ui-ux-pro-max/SKILL.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`cli/assets/skills/banner-design/SKILL.md`](cli/assets/skills/banner-design/SKILL.md) |
+| 11 | ✓ | [`cli/assets/skills/brand/SKILL.md`](cli/assets/skills/brand/SKILL.md) |
+| 12 | ✓ | [`cli/assets/skills/design-system/SKILL.md`](cli/assets/skills/design-system/SKILL.md) |
+| 13 | ✓ | [`cli/assets/skills/design/SKILL.md`](cli/assets/skills/design/SKILL.md) |
+| 14 | ✓ | [`cli/assets/skills/slides/SKILL.md`](cli/assets/skills/slides/SKILL.md) |
+| 15 | ✓ | [`cli/assets/skills/ui-styling/SKILL.md`](cli/assets/skills/ui-styling/SKILL.md) |
+| 16 | ✓ | [`stack/CLAUDE.md`](stack/CLAUDE.md) |
 
 ---
 

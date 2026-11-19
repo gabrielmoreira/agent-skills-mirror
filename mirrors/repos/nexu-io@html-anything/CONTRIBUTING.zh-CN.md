@@ -19,6 +19,10 @@
 
 ## PR 流程
 
+PR review follow-up: [author checklist](CONTRIBUTING.md#follow-through-on-review) · [Agent instructions](AGENTS.md#repository-pr-review-follow-up).
+
+Automatic follow-up: [Agent prompt and monitoring guidance](CONTRIBUTING.md#automatic-follow-up-with-an-agent).
+
 从仓库根目录开发，先读 [AGENTS.md](AGENTS.md)、[产品架构](docs/product/architecture.md) 和相关专题。使用 CI 固定的 Node 版本；依赖变更需同步维护 `package-lock.json` 与 `scripts/runtime-lock.json`。
 
 提交 PR 前按[本地验证指引](AGENTS.md#local-validation)选择检查，并说明实际运行的检查。Studio 单测用 `npm run test:studio`。模型创作与人工视觉验收单独记录，不覆盖真实工程或日常宿主配置。

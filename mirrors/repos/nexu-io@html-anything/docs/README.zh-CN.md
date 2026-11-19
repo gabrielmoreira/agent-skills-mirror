@@ -59,17 +59,17 @@ OpenMotion 是一个**由 AI Agent 驱动的全栈视频创作工作台**，也�
 复制下面的指令，发给你的本地 Agent，即可从源码安装 OpenMotion：
 
 ```text
-阅读 https://github.com/nexu-io/openmotion/blob/main/install.md，按照指南在当前 Agent 中安装并连接 OpenMotion。
+阅读 https://github.com/nexu-io/openmotion/blob/main/docs/install.md，按照指南在当前 Agent 中安装并连接 OpenMotion。
 ```
 
-安装完成后，Agent 会打开本地模板库并推荐一个模板，确认选择后再创建工程。[源码安装指南](../install.md)
+安装完成后，Agent 会打开本地模板库并推荐一个模板，确认选择后再创建工程。[源码安装指南](install.md)
 
 ### 安装已发布的 npm 应用（可选）
 
 上方源码安装仍是仓库安装的默认方式。如需明确选择包含预构建 Studio 及已配置在线模板库的已发布应用，请复制下面的指令，发给你的本地 Agent：
 
 ```text
-阅读 https://github.com/nexu-io/openmotion/blob/main/docs/install.md，按照指南在当前的 Agent 中安装并连接已发布的 npm 应用。
+阅读 https://releases.open-design.ai/motion，按照指南在当前的 Agent 中安装并连接已发布的 npm 应用。
 ```
 
 [已发布应用的安装与版本通道选择](install.md)。已发布的版本可能落后于当前检出的源码。
@@ -499,11 +499,17 @@ bash scripts/install-motion.command
 
 插件与 MCP 服务名称为 `openmotion`；Tools、Skills 与资源分别使用 `openmotion_*`、`openmotion-*` 和 `openmotion://`。旧 Tool 和资源名称保留兼容；旧 Skill 入口已移除，请使用 `openmotion-*`，升级后刷新宿主 Skill 列表。[命名与安装兼容说明](npm-installation.md#public-names-and-compatibility)
 
-在 checkout 中发现并安装五个核心工作流，使用 [Skills CLI](https://github.com/vercel-labs/skills):
+从 GitHub 发现主 Skill 和专业工作流，使用 [Skills CLI](https://github.com/vercel-labs/skills):
+
+主入口是 [openmotion](https://github.com/nexu-io/openmotion/blob/main/skills/openmotion/SKILL.md)。可单独安装后，让 Agent 使用 OpenMotion 完成 Studio、运行时与 MCP 接入；已有安装会复用。Skills CLI 本身只安装说明文件。
 
 ```sh
-npx skills add ./skills --list
-npx skills add ./skills --skill openmotion-director openmotion-production openmotion-template-to-video openmotion-recreate openmotion-video-to-template
+npx skills add nexu-io/openmotion --skill openmotion
+```
+
+```sh
+npx skills add nexu-io/openmotion --list
+npx skills add nexu-io/openmotion --skill openmotion-director openmotion-production openmotion-template-to-video openmotion-recreate openmotion-video-to-template
 ```
 
 这只复制指引，不安装运行时或注册 MCP。保持共享文档可用并单独连接应用，或使用上面的一体化本地安装器。

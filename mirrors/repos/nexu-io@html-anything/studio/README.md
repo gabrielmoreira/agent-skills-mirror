@@ -58,3 +58,7 @@ command. `npm test` exercises native APIs, MCP, project switching, shared files
 and real video rendering when Chrome and FFmpeg are available.
 
 See `../docs/editor-fork.md` for the integration boundaries.
+
+## Acknowledgements
+
+Timeline placement and drag snapping come from [OpenReel Video](https://github.com/Augani/openreel-video) at `367d7e90b61b5181f9861b852bb8b9d7a7d2954a`. Copyright © 2024–2026 Augustus Otu and Contributors, MIT License. The complete upstream notice is retained in `src/player/components/openreel/timelinePlacement.ts`, `src/player/components/openreel/calculateSnap.ts`, and the compiled Studio bundle. Motion keeps its composition, linked-edit and persistence contracts.

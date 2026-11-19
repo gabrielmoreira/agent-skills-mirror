@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kaomei/stickman-video-director` — 26 default patterns, 0 followed patterns, 1929 file(s) materialized.
+Mirror of `kaomei/stickman-video-director` — 26 default patterns, 0 followed patterns, 1930 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kaomei/stickman-video-director` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1929 |
+| Files         | 1930 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1914,80 +1914,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1853 | ✓ | [`skills/directing-stickman-videos/scripts/b7-review.mjs`](skills/directing-stickman-videos/scripts/b7-review.mjs) |
 | 1854 | ✓ | [`skills/directing-stickman-videos/scripts/canonical-json.mjs`](skills/directing-stickman-videos/scripts/canonical-json.mjs) |
 | 1855 | ✓ | [`skills/directing-stickman-videos/scripts/character-explainer.mjs`](skills/directing-stickman-videos/scripts/character-explainer.mjs) |
-| 1856 | ✓ | [`skills/directing-stickman-videos/scripts/gemini-media.mjs`](skills/directing-stickman-videos/scripts/gemini-media.mjs) |
-| 1857 | ✓ | [`skills/directing-stickman-videos/SKILL.md`](skills/directing-stickman-videos/SKILL.md) |
-| 1858 | ✓ | [`skills/directing-stickman-videos/tests/audio-bed-coverage.test.mjs`](skills/directing-stickman-videos/tests/audio-bed-coverage.test.mjs) |
-| 1859 | ✓ | [`skills/directing-stickman-videos/tests/audio-library.test.mjs`](skills/directing-stickman-videos/tests/audio-library.test.mjs) |
-| 1860 | ✓ | [`skills/directing-stickman-videos/tests/b-delivery-completeness.test.mjs`](skills/directing-stickman-videos/tests/b-delivery-completeness.test.mjs) |
-| 1861 | ✓ | [`skills/directing-stickman-videos/tests/b-style-motion-windows.test.mjs`](skills/directing-stickman-videos/tests/b-style-motion-windows.test.mjs) |
-| 1862 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait-cache.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait-cache.test.mjs) |
-| 1863 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait-paint.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait-paint.test.mjs) |
-| 1864 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait-scope.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait-scope.test.mjs) |
-| 1865 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait.test.mjs) |
-| 1866 | ✓ | [`skills/directing-stickman-videos/tests/b-style-quality.test.mjs`](skills/directing-stickman-videos/tests/b-style-quality.test.mjs) |
-| 1867 | ✓ | [`skills/directing-stickman-videos/tests/b-style-reference-cli.test.mjs`](skills/directing-stickman-videos/tests/b-style-reference-cli.test.mjs) |
-| 1868 | ✓ | [`skills/directing-stickman-videos/tests/b-style-reference-review.test.mjs`](skills/directing-stickman-videos/tests/b-style-reference-review.test.mjs) |
-| 1869 | ✓ | [`skills/directing-stickman-videos/tests/b-style-workflow.test.mjs`](skills/directing-stickman-videos/tests/b-style-workflow.test.mjs) |
-| 1870 | ✓ | [`skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs`](skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs) |
-| 1871 | ✓ | [`skills/directing-stickman-videos/tests/b3-runtime.test.mjs`](skills/directing-stickman-videos/tests/b3-runtime.test.mjs) |
-| 1872 | ✓ | [`skills/directing-stickman-videos/tests/b3-semantic-motion.test.mjs`](skills/directing-stickman-videos/tests/b3-semantic-motion.test.mjs) |
-| 1873 | ✓ | [`skills/directing-stickman-videos/tests/b4-asset-origin.test.mjs`](skills/directing-stickman-videos/tests/b4-asset-origin.test.mjs) |
-| 1874 | ✓ | [`skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs) |
-| 1875 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs) |
-| 1876 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs) |
-| 1877 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-runtime.test.mjs) |
-| 1878 | ✓ | [`skills/directing-stickman-videos/tests/b4-picture-review.test.mjs`](skills/directing-stickman-videos/tests/b4-picture-review.test.mjs) |
-| 1879 | ✓ | [`skills/directing-stickman-videos/tests/b4-portrait-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-portrait-runtime.test.mjs) |
-| 1880 | ✓ | [`skills/directing-stickman-videos/tests/b4-production-check.test.mjs`](skills/directing-stickman-videos/tests/b4-production-check.test.mjs) |
-| 1881 | ✓ | [`skills/directing-stickman-videos/tests/b4-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-runtime.test.mjs) |
-| 1882 | ✓ | [`skills/directing-stickman-videos/tests/b4-style-lock.test.mjs`](skills/directing-stickman-videos/tests/b4-style-lock.test.mjs) |
-| 1883 | ✓ | [`skills/directing-stickman-videos/tests/b4-typography-review.test.mjs`](skills/directing-stickman-videos/tests/b4-typography-review.test.mjs) |
-| 1884 | ✓ | [`skills/directing-stickman-videos/tests/b4-typography-scope.test.mjs`](skills/directing-stickman-videos/tests/b4-typography-scope.test.mjs) |
-| 1885 | ✓ | [`skills/directing-stickman-videos/tests/b5-art-init.test.mjs`](skills/directing-stickman-videos/tests/b5-art-init.test.mjs) |
-| 1886 | ✓ | [`skills/directing-stickman-videos/tests/b5-art-kit.test.cjs`](skills/directing-stickman-videos/tests/b5-art-kit.test.cjs) |
-| 1887 | ✓ | [`skills/directing-stickman-videos/tests/b5-example-verifier.test.mjs`](skills/directing-stickman-videos/tests/b5-example-verifier.test.mjs) |
-| 1888 | ✓ | [`skills/directing-stickman-videos/tests/b5-first-entry-template.test.mjs`](skills/directing-stickman-videos/tests/b5-first-entry-template.test.mjs) |
-| 1889 | ✓ | [`skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs`](skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs) |
-| 1890 | ✓ | [`skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs`](skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs) |
-| 1891 | ✓ | [`skills/directing-stickman-videos/tests/b5-png-review-gate.test.mjs`](skills/directing-stickman-videos/tests/b5-png-review-gate.test.mjs) |
-| 1892 | ✓ | [`skills/directing-stickman-videos/tests/b5-preview-gate.test.mjs`](skills/directing-stickman-videos/tests/b5-preview-gate.test.mjs) |
-| 1893 | ✓ | [`skills/directing-stickman-videos/tests/b5-production-quality.test.mjs`](skills/directing-stickman-videos/tests/b5-production-quality.test.mjs) |
-| 1894 | ✓ | [`skills/directing-stickman-videos/tests/b5-reference-study.test.mjs`](skills/directing-stickman-videos/tests/b5-reference-study.test.mjs) |
-| 1895 | ✓ | [`skills/directing-stickman-videos/tests/b5-visual-review.test.mjs`](skills/directing-stickman-videos/tests/b5-visual-review.test.mjs) |
-| 1896 | ✓ | [`skills/directing-stickman-videos/tests/b5-windows-paths.test.mjs`](skills/directing-stickman-videos/tests/b5-windows-paths.test.mjs) |
-| 1897 | ✓ | [`skills/directing-stickman-videos/tests/b6_actions_test.py`](skills/directing-stickman-videos/tests/b6_actions_test.py) |
-| 1898 | ✓ | [`skills/directing-stickman-videos/tests/b6_asset_isolation_test.py`](skills/directing-stickman-videos/tests/b6_asset_isolation_test.py) |
-| 1899 | ✓ | [`skills/directing-stickman-videos/tests/b6_caption_test.py`](skills/directing-stickman-videos/tests/b6_caption_test.py) |
-| 1900 | ✓ | [`skills/directing-stickman-videos/tests/b6_character_preflight_test.py`](skills/directing-stickman-videos/tests/b6_character_preflight_test.py) |
-| 1901 | ✓ | [`skills/directing-stickman-videos/tests/b6_helper_trust_test.py`](skills/directing-stickman-videos/tests/b6_helper_trust_test.py) |
-| 1902 | ✓ | [`skills/directing-stickman-videos/tests/b6_hong_kong_test.py`](skills/directing-stickman-videos/tests/b6_hong_kong_test.py) |
-| 1903 | ✓ | [`skills/directing-stickman-videos/tests/b6_iteration_test.py`](skills/directing-stickman-videos/tests/b6_iteration_test.py) |
-| 1904 | ✓ | [`skills/directing-stickman-videos/tests/b6_motion_review_test.py`](skills/directing-stickman-videos/tests/b6_motion_review_test.py) |
-| 1905 | ✓ | [`skills/directing-stickman-videos/tests/b6_production_test.py`](skills/directing-stickman-videos/tests/b6_production_test.py) |
-| 1906 | ✓ | [`skills/directing-stickman-videos/tests/b6_puppet_test.py`](skills/directing-stickman-videos/tests/b6_puppet_test.py) |
-| 1907 | ✓ | [`skills/directing-stickman-videos/tests/b6_resource_paths_test.py`](skills/directing-stickman-videos/tests/b6_resource_paths_test.py) |
-| 1908 | ✓ | [`skills/directing-stickman-videos/tests/b6_space_test.py`](skills/directing-stickman-videos/tests/b6_space_test.py) |
-| 1909 | ✓ | [`skills/directing-stickman-videos/tests/b6_speed_workflow_test.py`](skills/directing-stickman-videos/tests/b6_speed_workflow_test.py) |
-| 1910 | ✓ | [`skills/directing-stickman-videos/tests/b6_test_fonts.py`](skills/directing-stickman-videos/tests/b6_test_fonts.py) |
-| 1911 | ✓ | [`skills/directing-stickman-videos/tests/b6-fonts.test.mjs`](skills/directing-stickman-videos/tests/b6-fonts.test.mjs) |
-| 1912 | ✓ | [`skills/directing-stickman-videos/tests/b6-hong-kong.test.mjs`](skills/directing-stickman-videos/tests/b6-hong-kong.test.mjs) |
-| 1913 | ✓ | [`skills/directing-stickman-videos/tests/b6-production.test.mjs`](skills/directing-stickman-videos/tests/b6-production.test.mjs) |
-| 1914 | ✓ | [`skills/directing-stickman-videos/tests/b6-runtime.test.mjs`](skills/directing-stickman-videos/tests/b6-runtime.test.mjs) |
-| 1915 | ✓ | [`skills/directing-stickman-videos/tests/b7_pixel_primitives_test.py`](skills/directing-stickman-videos/tests/b7_pixel_primitives_test.py) |
-| 1916 | ✓ | [`skills/directing-stickman-videos/tests/b7_reflective_ending_test.py`](skills/directing-stickman-videos/tests/b7_reflective_ending_test.py) |
-| 1917 | ✓ | [`skills/directing-stickman-videos/tests/b7-reference-pack.test.mjs`](skills/directing-stickman-videos/tests/b7-reference-pack.test.mjs) |
-| 1918 | ✓ | [`skills/directing-stickman-videos/tests/b7-review.test.mjs`](skills/directing-stickman-videos/tests/b7-review.test.mjs) |
-| 1919 | ✓ | [`skills/directing-stickman-videos/tests/character-explainer.test.mjs`](skills/directing-stickman-videos/tests/character-explainer.test.mjs) |
-| 1920 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json) |
-| 1921 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json) |
-| 1922 | ✓ | [`skills/directing-stickman-videos/tests/helpers/b5-png-review-fixture.mjs`](skills/directing-stickman-videos/tests/helpers/b5-png-review-fixture.mjs) |
-| 1923 | ✓ | [`skills/directing-stickman-videos/tests/helpers/b5-rehearsal-fixture.mjs`](skills/directing-stickman-videos/tests/helpers/b5-rehearsal-fixture.mjs) |
-| 1924 | ✓ | [`skills/directing-stickman-videos/tests/helpers/reference-review.mjs`](skills/directing-stickman-videos/tests/helpers/reference-review.mjs) |
-| 1925 | ✓ | [`skills/directing-stickman-videos/tests/provider-routing.test.mjs`](skills/directing-stickman-videos/tests/provider-routing.test.mjs) |
-| 1926 | ✓ | [`skills/directing-stickman-videos/tests/runtime.test.mjs`](skills/directing-stickman-videos/tests/runtime.test.mjs) |
-| 1927 | ✓ | [`skills/directing-stickman-videos/tests/test_a6_references.py`](skills/directing-stickman-videos/tests/test_a6_references.py) |
-| 1928 | ✓ | [`tests/scenarios/b5-left-stage-motion.md`](tests/scenarios/b5-left-stage-motion.md) |
-| 1929 | ✓ | [`tests/scenarios/voice-continuity.md`](tests/scenarios/voice-continuity.md) |
+| 1856 | ✓ | [`skills/directing-stickman-videos/scripts/file-sha256.mjs`](skills/directing-stickman-videos/scripts/file-sha256.mjs) |
+| 1857 | ✓ | [`skills/directing-stickman-videos/scripts/gemini-media.mjs`](skills/directing-stickman-videos/scripts/gemini-media.mjs) |
+| 1858 | ✓ | [`skills/directing-stickman-videos/SKILL.md`](skills/directing-stickman-videos/SKILL.md) |
+| 1859 | ✓ | [`skills/directing-stickman-videos/tests/audio-bed-coverage.test.mjs`](skills/directing-stickman-videos/tests/audio-bed-coverage.test.mjs) |
+| 1860 | ✓ | [`skills/directing-stickman-videos/tests/audio-library.test.mjs`](skills/directing-stickman-videos/tests/audio-library.test.mjs) |
+| 1861 | ✓ | [`skills/directing-stickman-videos/tests/b-delivery-completeness.test.mjs`](skills/directing-stickman-videos/tests/b-delivery-completeness.test.mjs) |
+| 1862 | ✓ | [`skills/directing-stickman-videos/tests/b-style-motion-windows.test.mjs`](skills/directing-stickman-videos/tests/b-style-motion-windows.test.mjs) |
+| 1863 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait-cache.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait-cache.test.mjs) |
+| 1864 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait-paint.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait-paint.test.mjs) |
+| 1865 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait-scope.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait-scope.test.mjs) |
+| 1866 | ✓ | [`skills/directing-stickman-videos/tests/b-style-portrait.test.mjs`](skills/directing-stickman-videos/tests/b-style-portrait.test.mjs) |
+| 1867 | ✓ | [`skills/directing-stickman-videos/tests/b-style-quality.test.mjs`](skills/directing-stickman-videos/tests/b-style-quality.test.mjs) |
+| 1868 | ✓ | [`skills/directing-stickman-videos/tests/b-style-reference-cli.test.mjs`](skills/directing-stickman-videos/tests/b-style-reference-cli.test.mjs) |
+| 1869 | ✓ | [`skills/directing-stickman-videos/tests/b-style-reference-review.test.mjs`](skills/directing-stickman-videos/tests/b-style-reference-review.test.mjs) |
+| 1870 | ✓ | [`skills/directing-stickman-videos/tests/b-style-workflow.test.mjs`](skills/directing-stickman-videos/tests/b-style-workflow.test.mjs) |
+| 1871 | ✓ | [`skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs`](skills/directing-stickman-videos/tests/b3-reference-pack.test.mjs) |
+| 1872 | ✓ | [`skills/directing-stickman-videos/tests/b3-runtime.test.mjs`](skills/directing-stickman-videos/tests/b3-runtime.test.mjs) |
+| 1873 | ✓ | [`skills/directing-stickman-videos/tests/b3-semantic-motion.test.mjs`](skills/directing-stickman-videos/tests/b3-semantic-motion.test.mjs) |
+| 1874 | ✓ | [`skills/directing-stickman-videos/tests/b4-asset-origin.test.mjs`](skills/directing-stickman-videos/tests/b4-asset-origin.test.mjs) |
+| 1875 | ✓ | [`skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-audio-policy.test.mjs) |
+| 1876 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-audio-check.test.mjs) |
+| 1877 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-policy.test.mjs) |
+| 1878 | ✓ | [`skills/directing-stickman-videos/tests/b4-opening-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-opening-runtime.test.mjs) |
+| 1879 | ✓ | [`skills/directing-stickman-videos/tests/b4-picture-review.test.mjs`](skills/directing-stickman-videos/tests/b4-picture-review.test.mjs) |
+| 1880 | ✓ | [`skills/directing-stickman-videos/tests/b4-portrait-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-portrait-runtime.test.mjs) |
+| 1881 | ✓ | [`skills/directing-stickman-videos/tests/b4-production-check.test.mjs`](skills/directing-stickman-videos/tests/b4-production-check.test.mjs) |
+| 1882 | ✓ | [`skills/directing-stickman-videos/tests/b4-runtime.test.mjs`](skills/directing-stickman-videos/tests/b4-runtime.test.mjs) |
+| 1883 | ✓ | [`skills/directing-stickman-videos/tests/b4-style-lock.test.mjs`](skills/directing-stickman-videos/tests/b4-style-lock.test.mjs) |
+| 1884 | ✓ | [`skills/directing-stickman-videos/tests/b4-typography-review.test.mjs`](skills/directing-stickman-videos/tests/b4-typography-review.test.mjs) |
+| 1885 | ✓ | [`skills/directing-stickman-videos/tests/b4-typography-scope.test.mjs`](skills/directing-stickman-videos/tests/b4-typography-scope.test.mjs) |
+| 1886 | ✓ | [`skills/directing-stickman-videos/tests/b5-art-init.test.mjs`](skills/directing-stickman-videos/tests/b5-art-init.test.mjs) |
+| 1887 | ✓ | [`skills/directing-stickman-videos/tests/b5-art-kit.test.cjs`](skills/directing-stickman-videos/tests/b5-art-kit.test.cjs) |
+| 1888 | ✓ | [`skills/directing-stickman-videos/tests/b5-example-verifier.test.mjs`](skills/directing-stickman-videos/tests/b5-example-verifier.test.mjs) |
+| 1889 | ✓ | [`skills/directing-stickman-videos/tests/b5-first-entry-template.test.mjs`](skills/directing-stickman-videos/tests/b5-first-entry-template.test.mjs) |
+| 1890 | ✓ | [`skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs`](skills/directing-stickman-videos/tests/b5-left-stage-contract.test.mjs) |
+| 1891 | ✓ | [`skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs`](skills/directing-stickman-videos/tests/b5-local-baseline.test.mjs) |
+| 1892 | ✓ | [`skills/directing-stickman-videos/tests/b5-png-review-gate.test.mjs`](skills/directing-stickman-videos/tests/b5-png-review-gate.test.mjs) |
+| 1893 | ✓ | [`skills/directing-stickman-videos/tests/b5-preview-gate.test.mjs`](skills/directing-stickman-videos/tests/b5-preview-gate.test.mjs) |
+| 1894 | ✓ | [`skills/directing-stickman-videos/tests/b5-production-quality.test.mjs`](skills/directing-stickman-videos/tests/b5-production-quality.test.mjs) |
+| 1895 | ✓ | [`skills/directing-stickman-videos/tests/b5-reference-study.test.mjs`](skills/directing-stickman-videos/tests/b5-reference-study.test.mjs) |
+| 1896 | ✓ | [`skills/directing-stickman-videos/tests/b5-visual-review.test.mjs`](skills/directing-stickman-videos/tests/b5-visual-review.test.mjs) |
+| 1897 | ✓ | [`skills/directing-stickman-videos/tests/b5-windows-paths.test.mjs`](skills/directing-stickman-videos/tests/b5-windows-paths.test.mjs) |
+| 1898 | ✓ | [`skills/directing-stickman-videos/tests/b6_actions_test.py`](skills/directing-stickman-videos/tests/b6_actions_test.py) |
+| 1899 | ✓ | [`skills/directing-stickman-videos/tests/b6_asset_isolation_test.py`](skills/directing-stickman-videos/tests/b6_asset_isolation_test.py) |
+| 1900 | ✓ | [`skills/directing-stickman-videos/tests/b6_caption_test.py`](skills/directing-stickman-videos/tests/b6_caption_test.py) |
+| 1901 | ✓ | [`skills/directing-stickman-videos/tests/b6_character_preflight_test.py`](skills/directing-stickman-videos/tests/b6_character_preflight_test.py) |
+| 1902 | ✓ | [`skills/directing-stickman-videos/tests/b6_helper_trust_test.py`](skills/directing-stickman-videos/tests/b6_helper_trust_test.py) |
+| 1903 | ✓ | [`skills/directing-stickman-videos/tests/b6_hong_kong_test.py`](skills/directing-stickman-videos/tests/b6_hong_kong_test.py) |
+| 1904 | ✓ | [`skills/directing-stickman-videos/tests/b6_iteration_test.py`](skills/directing-stickman-videos/tests/b6_iteration_test.py) |
+| 1905 | ✓ | [`skills/directing-stickman-videos/tests/b6_motion_review_test.py`](skills/directing-stickman-videos/tests/b6_motion_review_test.py) |
+| 1906 | ✓ | [`skills/directing-stickman-videos/tests/b6_production_test.py`](skills/directing-stickman-videos/tests/b6_production_test.py) |
+| 1907 | ✓ | [`skills/directing-stickman-videos/tests/b6_puppet_test.py`](skills/directing-stickman-videos/tests/b6_puppet_test.py) |
+| 1908 | ✓ | [`skills/directing-stickman-videos/tests/b6_resource_paths_test.py`](skills/directing-stickman-videos/tests/b6_resource_paths_test.py) |
+| 1909 | ✓ | [`skills/directing-stickman-videos/tests/b6_space_test.py`](skills/directing-stickman-videos/tests/b6_space_test.py) |
+| 1910 | ✓ | [`skills/directing-stickman-videos/tests/b6_speed_workflow_test.py`](skills/directing-stickman-videos/tests/b6_speed_workflow_test.py) |
+| 1911 | ✓ | [`skills/directing-stickman-videos/tests/b6_test_fonts.py`](skills/directing-stickman-videos/tests/b6_test_fonts.py) |
+| 1912 | ✓ | [`skills/directing-stickman-videos/tests/b6-fonts.test.mjs`](skills/directing-stickman-videos/tests/b6-fonts.test.mjs) |
+| 1913 | ✓ | [`skills/directing-stickman-videos/tests/b6-hong-kong.test.mjs`](skills/directing-stickman-videos/tests/b6-hong-kong.test.mjs) |
+| 1914 | ✓ | [`skills/directing-stickman-videos/tests/b6-production.test.mjs`](skills/directing-stickman-videos/tests/b6-production.test.mjs) |
+| 1915 | ✓ | [`skills/directing-stickman-videos/tests/b6-runtime.test.mjs`](skills/directing-stickman-videos/tests/b6-runtime.test.mjs) |
+| 1916 | ✓ | [`skills/directing-stickman-videos/tests/b7_pixel_primitives_test.py`](skills/directing-stickman-videos/tests/b7_pixel_primitives_test.py) |
+| 1917 | ✓ | [`skills/directing-stickman-videos/tests/b7_reflective_ending_test.py`](skills/directing-stickman-videos/tests/b7_reflective_ending_test.py) |
+| 1918 | ✓ | [`skills/directing-stickman-videos/tests/b7-reference-pack.test.mjs`](skills/directing-stickman-videos/tests/b7-reference-pack.test.mjs) |
+| 1919 | ✓ | [`skills/directing-stickman-videos/tests/b7-review.test.mjs`](skills/directing-stickman-videos/tests/b7-review.test.mjs) |
+| 1920 | ✓ | [`skills/directing-stickman-videos/tests/character-explainer.test.mjs`](skills/directing-stickman-videos/tests/character-explainer.test.mjs) |
+| 1921 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-coastal-station.plan.json) |
+| 1922 | ✓ | [`skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json`](skills/directing-stickman-videos/tests/fixtures/a6-night-library.plan.json) |
+| 1923 | ✓ | [`skills/directing-stickman-videos/tests/helpers/b5-png-review-fixture.mjs`](skills/directing-stickman-videos/tests/helpers/b5-png-review-fixture.mjs) |
+| 1924 | ✓ | [`skills/directing-stickman-videos/tests/helpers/b5-rehearsal-fixture.mjs`](skills/directing-stickman-videos/tests/helpers/b5-rehearsal-fixture.mjs) |
+| 1925 | ✓ | [`skills/directing-stickman-videos/tests/helpers/reference-review.mjs`](skills/directing-stickman-videos/tests/helpers/reference-review.mjs) |
+| 1926 | ✓ | [`skills/directing-stickman-videos/tests/provider-routing.test.mjs`](skills/directing-stickman-videos/tests/provider-routing.test.mjs) |
+| 1927 | ✓ | [`skills/directing-stickman-videos/tests/runtime.test.mjs`](skills/directing-stickman-videos/tests/runtime.test.mjs) |
+| 1928 | ✓ | [`skills/directing-stickman-videos/tests/test_a6_references.py`](skills/directing-stickman-videos/tests/test_a6_references.py) |
+| 1929 | ✓ | [`tests/scenarios/b5-left-stage-motion.md`](tests/scenarios/b5-left-stage-motion.md) |
+| 1930 | ✓ | [`tests/scenarios/voice-continuity.md`](tests/scenarios/voice-continuity.md) |
 
 ---
 

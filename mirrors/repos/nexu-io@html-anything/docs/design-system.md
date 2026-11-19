@@ -20,7 +20,7 @@ Collapsible navigation uses explicit `data-collapsed` state for geometry and vis
 | --- | --- | --- |
 | `apps/web/src/styles/tokens.css` | `packages/design-system/tokens.json` → `tokens.css` | 双主题灰阶、品牌色、中性主操作、圆角与阴影 |
 | `apps/web/src/styles/base.css` | `base.css`、`fonts.css` 与 Studio 主题适配层 | Albert Sans 字体体系、中性键盘焦点；保留 Motion 字号、字重主体、行高和尺寸 |
-| `apps/web/src/styles/material.css` | `packages/design-system/material.css` | 菜单/Popover 磨砂材质、弹窗统一遮罩、减少透明度和不支持滤镜时的降级 |
+| `apps/web/src/styles/material.css` | `packages/design-system/material.css` | Opaque menu/Popover surfaces, uniform modal scrims without blur, and reduced-transparency support |
 | `packages/components/src/button.module.css` | `controls.css`、Studio `Button.tsx` 视觉钩子与 `packages/design-system/studio/adapter.css` | 中性主按钮、悬停与禁用视觉；保留原尺寸和事件 |
 | `packages/components/src/form-controls.module.css` | `controls.css`、Studio `Input.tsx` 共享视觉钩子 | 面板底色与中性焦点；保留可见键盘焦点及错误状态 |
 | `packages/components/src/dialog.module.css` | `material.css` | 实色浮层、12px 圆角、阴影和遮罩；保留定位、宽高、层级及关闭逻辑 |
@@ -28,6 +28,8 @@ Collapsible navigation uses explicit `data-collapsed` state for geometry and vis
 采用按语义映射的样式迁移，不引入 OD React 组件包。OD 的 body 字重 600 与紧凑行高不全局照搬，以免改变 Motion 的文本换行和布局。共享设计变量仍以 JSON 为唯一真源，生成 CSS；材质降级变量集中在 `material.css`。产品流程见 [产品架构](product/architecture.md)。
 
 ## 视觉规范
+
+Product UI uses opaque, solid theme surfaces aligned with the shared controls. Menus and Popovers use `--motion-raised` through the common floating material recipe; do not introduce frosted glass, translucent content backgrounds or background blur. Modal scrims can dim the page with a uniform tint without blur. This rule does not alter authored video, imported artwork or their visual effects.
 
 Functional editor icons use Remix Icon 4.9.1, matching the [reference icon catalog](https://open-design-system-leon.leon-wcl.chatgpt.site/#/icons). Original vector paths are bundled in `packages/design-system/icons.svg`, with the upstream license and notice beside it. `packages/design-system/react/RemixIcons.tsx` provides the shared React interface and legacy-name mappings, with `studio/src/icons/RemixIcons.tsx` as a forwarding entry; `MotionIcon` uses the same vectors. React consumers inline the package-owned glyphs into their SVGs, with an explicit 24×24 viewBox and currentColor, so native-dialog controls remain visible when a sprite request would fail or the runtime disconnects. Static HTML can continue using the shared sprite URL. Brand avatars use the paired asset-logo background/ink tokens, providing a stable light backing for transparent source logos in either theme. Controls default to line icons; play/pause and explicit filled states retain distinct glyphs. Brand artwork and timeline drawing geometry remain separate. MVP side-panel tabs and the preview title use text without icons. A tab strip with only one panel shows a plain heading without a selected underline. Selected tabs use the strong neutral text token, semibold weight and a 2px neutral underline. Enabled toolbar toggles use the same strong text on an inset neutral background; inactive and disabled controls retain separate contrast levels.
 

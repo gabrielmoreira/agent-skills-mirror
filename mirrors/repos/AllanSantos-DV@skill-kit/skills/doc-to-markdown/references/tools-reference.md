@@ -8,17 +8,17 @@ Detailed comparison of all tools referenced in the skill. Use this to decide whi
 
 ### markitdown (Microsoft)
 
-- **Install**: `pip install markitdown` or `pip install 'markitdown[all]'`
+- **Install**: `pip install markitdown` or `pip install 'markitdown[all]'` (optional format dependencies, no OCR; check `markitdown --version`, `[all]` may resolve to an old version)
 - **Type**: Python library + CLI
 - **License**: MIT
 - **Repository**: https://github.com/microsoft/markitdown
 
-**Supported formats**: .docx, .doc, .xlsx, .xls, .csv, .pptx, .ppt, .pdf, .html, .htm, .epub, .zip, .png/.jpg/.jpeg/.gif/.bmp/.tiff (OCR), .mp3/.wav/.m4a (transcription), .ipynb, .msg, .xml (RSS/ATOM feeds)
+**Supported formats**: .docx, .xlsx, .xls (needs `[xls]`), .csv, .pptx, .pdf, .html, .htm, .epub, .zip, .png/.jpg/.jpeg/.gif/.bmp/.tiff (EXIF; text needs the OCR plugin), .mp3/.wav/.m4a (transcription), .ipynb, .msg, .xml (RSS/ATOM feeds)
 
 | Aspect | Detail |
 |--------|--------|
 | Strengths | Purpose-built for LLM consumption; single tool covers most Office formats; active Microsoft maintenance; CLI for quick use + Python API for integration |
-| Weaknesses | OCR requires `[all]` extra deps; no Visio or .mpp support; table output can be rough for complex spreadsheets; limited control over output formatting |
+| Weaknesses | no .doc or .ppt; OCR needs the separate `markitdown-ocr` plugin and an LLM client; no Visio or .mpp support; table output can be rough for complex spreadsheets; limited control over output formatting |
 | Best for | General-purpose document → Markdown conversion; batch processing; CI/CD pipelines |
 | Avoid when | You need fine-grained control over table formatting, or the source is Visio/MS Project |
 
@@ -183,7 +183,7 @@ for page in doc:
 | Strengths | Best-in-class table extraction from PDFs; precise text positioning; MIT license; visual debugging tools |
 | Weaknesses | Slower than PyMuPDF; doesn't handle scanned/image PDFs; no OCR |
 | Best for | PDFs with tables (financial reports, invoices, data sheets) |
-| Avoid when | PDF is scanned/image-based (use PyMuPDF + OCR or markitdown[all]) |
+| Avoid when | PDF is scanned/image-based (use PyMuPDF + OCR or the markitdown-ocr plugin) |
 
 ```python
 import pdfplumber
@@ -215,7 +215,7 @@ There is no reliable open-source Visio-to-Markdown converter. All approaches inv
 | Approach | Steps | Quality |
 |----------|-------|---------|
 | LibreOffice headless | `.vsdx` → PDF → markitdown | Medium — loses connector semantics |
-| LibreOffice + OCR | `.vsdx` → PNG → markitdown[all] (OCR) | Low-Medium — text extraction only |
+| LibreOffice + OCR | `.vsdx` → PNG → markitdown-ocr plugin (OCR) | Low-Medium — text extraction only |
 | Manual export | User exports as SVG/PDF from Visio → convert | Best available |
 | PPTX export | User re-saves as .pptx → python-pptx | Medium — if diagram is simple |
 
@@ -459,4 +459,4 @@ libreoffice --headless --convert-to csv file.xlsx
 2. **Is the output quality acceptable?** → Yes → Done
 3. **No** → Check the fallback tool for that format in the mapping table
 4. **Is it Visio or MS Project?** → Use the specific cascade documented in SKILL.md
-5. **Is it a legacy format (.doc, .ppt, .xls)?** → Try markitdown first, then LibreOffice headless → modern format → markitdown
+5. **Is it a legacy format (.doc, .ppt, .xls)?** → .xls: markitdown with `[xls]`; .doc and .ppt: LibreOffice headless → modern format → markitdown

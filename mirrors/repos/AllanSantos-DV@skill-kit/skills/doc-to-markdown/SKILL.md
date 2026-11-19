@@ -17,9 +17,11 @@ You are helping a developer convert binary or non-LLM-readable document formats 
 # Basic install
 pip install markitdown
 
-# Full install (includes OCR, all optional deps)
+# All optional format dependencies (no OCR by itself)
 pip install 'markitdown[all]'
 ```
+
+`[all]` can resolve to an old version because one of its extras pulls a pre-release. Check with `markitdown --version`, then install the explicit extras (`'markitdown[docx,pptx,xlsx,xls,pdf]'`) or run `pip install -U markitdown`.
 
 ### Verify installation
 
@@ -32,7 +34,7 @@ markitdown --help
 | Script | pip install | System |
 |--------|-----------|--------|
 | `convert.py` | `markitdown` | — |
-| `convert.py` (OCR) | `markitdown[all]` | — |
+| `convert.py --ocr` | `markitdown markitdown-ocr openai` | LLM API key |
 | `convert.py --tool pdfplumber` | `pdfplumber` | — |
 | `convert.py --tool mammoth` | `mammoth` | — |
 | `convert.py --tool mpxj` | `mpxj jpype1` | Java 11+ |
@@ -76,17 +78,17 @@ Use this table to determine the conversion approach:
 | Format | Extensions | Primary Tool | Fallback Tools |
 |--------|-----------|-------------|----------------|
 | Word | .docx | markitdown | mammoth (Node.js), pandoc |
-| Word (legacy) | .doc | markitdown | LibreOffice headless → .docx → markitdown |
-| Excel | .xlsx, .xls | markitdown | pandas `.to_markdown()`, openpyxl |
+| Word (legacy) | .doc | _not supported_ (markitdown has no .doc converter) | LibreOffice headless → .docx → markitdown |
+| Excel | .xlsx, .xls | markitdown (.xls only through xlrd: `markitdown[xls]`) | pandas `.to_markdown()`, openpyxl |
 | CSV | .csv | markitdown | pandas `.to_markdown()`, direct parse |
 | PowerPoint | .pptx | markitdown | python-pptx (slide-by-slide extraction) |
-| PowerPoint (legacy) | .ppt | markitdown | LibreOffice headless → .pptx → markitdown |
+| PowerPoint (legacy) | .ppt | _not supported_ (markitdown has no .ppt converter) | LibreOffice headless → .pptx → markitdown |
 | PDF | .pdf | markitdown | PyMuPDF (fitz), pdfplumber (tables), pdf-parse (Node.js) |
 | Visio | .vsd, .vsdx | _not supported_ | LibreOffice headless → SVG/PDF → OCR, or export to PPTX → python-pptx |
 | MS Project | .mpp, .mspdi, .mpx | mpxj (via convert.py) | Export to CSV → markitdown |
 | HTML | .html, .htm | markitdown | pandoc, BeautifulSoup |
 | EPUB | .epub | markitdown | pandoc |
-| Images (OCR) | .png, .jpg, .jpeg, .gif, .bmp, .tiff | markitdown (`[all]`) | pytesseract, EasyOCR |
+| Images | .png, .jpg, .jpeg, .gif, .bmp, .tiff | markitdown (EXIF only; text needs OCR, see Images) | pytesseract, EasyOCR |
 | Audio | .mp3, .wav, .m4a | markitdown (`[all]`) | Whisper (OpenAI), SpeechRecognition |
 | Jupyter Notebook | .ipynb | markitdown | nbconvert (`jupyter nbconvert --to markdown`) |
 | ZIP Archive | .zip | markitdown | Python zipfile + per-file conversion |
@@ -103,7 +105,7 @@ For a single file, use the CLI:
 markitdown path/to/file.docx > output.md
 ```
 
-This works for: `.docx`, `.xlsx`, `.pptx`, `.pdf`, `.html`, `.epub`, `.csv`, `.xls`
+This works for: `.docx`, `.xlsx`, `.pptx`, `.pdf`, `.html`, `.epub`, `.csv`, and `.xls` (through xlrd, `markitdown[xls]`). Legacy `.doc` and `.ppt` are not read: convert them with LibreOffice first.
 
 ### Programmatic (Python API)
 
@@ -142,10 +144,10 @@ def convert_with_metadata(input_path: str, output_path: str | None = None) -> st
 
 #### Word (.doc, .docx)
 
-Use markitdown directly. If output has formatting issues:
+Use markitdown directly for .docx. If output has formatting issues:
 1. Try mammoth for .docx — it produces cleaner HTML-to-Markdown for complex layouts
 2. Try pandoc: `pandoc -f docx -t markdown file.docx -o output.md`
-3. For legacy .doc: convert to .docx first via LibreOffice headless if markitdown fails:
+3. Legacy .doc is not read by markitdown: convert it to .docx first via LibreOffice headless:
    ```bash
    libreoffice --headless --convert-to docx file.doc
    markitdown file.docx > output.md
@@ -174,7 +176,7 @@ print(df.to_markdown(index=False))
 
 #### PowerPoint (.ppt, .pptx)
 
-markitdown extracts text slide-by-slide. If you need structured extraction with slide titles:
+markitdown extracts text slide-by-slide from .pptx; for legacy .ppt convert first (`libreoffice --headless --convert-to pptx file.ppt`). If you need structured extraction with slide titles:
 
 ```python
 from pptx import Presentation
@@ -221,11 +223,10 @@ No direct Python converter exists. Use this cascade:
    libreoffice --headless --convert-to pdf diagram.vsdx
    markitdown diagram.pdf > output.md
    ```
-3. **OCR route**: Convert to image, then use markitdown with OCR support:
+3. **OCR route**: Convert to image, then OCR it (see Images for the OCR plugin and its LLM client):
    ```bash
    libreoffice --headless --convert-to png diagram.vsdx
-   pip install 'markitdown[all]'
-   markitdown diagram.png > output.md
+   python scripts/convert.py diagram.png --ocr --llm-model <model> -o output.md
    ```
 
 Always warn the user: Visio conversion is lossy. Complex diagrams with connectors and swimlanes will lose structural information. Suggest Mermaid diagrams as the target representation if the user needs to preserve diagram logic.
@@ -246,15 +247,17 @@ If Java is not available, ask the user to:
 
 #### Images (.png, .jpg, .jpeg, .gif, .bmp, .tiff)
 
-Requires the full install: `pip install 'markitdown[all]'`
+Without a plugin, markitdown turns an image into its EXIF metadata plus a caption; the caption is written by an LLM and exists only when `llm_client` and `llm_model` are given. It does not extract the text in the image.
 
-markitdown uses OCR to extract text from images. Best results with:
+Text in images needs the optional OCR plugin: `pip install markitdown-ocr`, then `MarkItDown(enable_plugins=True, llm_client=..., llm_model=...)`. Without `llm_client` the plugin loads but the OCR is skipped silently, so the output looks converted with no text in it. The bundled script does this with `python scripts/convert.py scan.png --ocr --llm-model <model>` (OpenAI client, needs `openai` and `OPENAI_API_KEY`) and fails loud when something is missing.
+
+Best OCR results with:
 - High-resolution images (300+ DPI)
 - Clean, printed text (not handwriting)
 - Good contrast between text and background
 
 ```bash
-markitdown scan.png > output.md
+python scripts/convert.py scan.png --ocr --llm-model <model> -o output.md
 ```
 
 If OCR quality is poor, suggest the user try preprocessing the image (increase contrast, deskew) or use a dedicated OCR tool like Tesseract directly.
@@ -329,7 +332,7 @@ from markitdown import MarkItDown
 from pathlib import Path
 from datetime import datetime
 
-SUPPORTED = {".docx", ".doc", ".xlsx", ".xls", ".csv", ".pptx", ".ppt", ".pdf", ".html", ".epub", ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".mp3", ".wav", ".m4a", ".ipynb", ".zip", ".msg"}
+SUPPORTED = {".docx", ".xlsx", ".xls", ".csv", ".pptx", ".pdf", ".html", ".epub", ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".mp3", ".wav", ".m4a", ".ipynb", ".zip", ".msg"}
 
 def batch_convert(input_dir: str, output_dir: str | None = None):
     md = MarkItDown()
@@ -383,7 +386,7 @@ After conversion, apply these cleanup steps when output quality matters:
 1. **Strip excessive whitespace**: Collapse 3+ consecutive blank lines to 2
 2. **Normalize headings**: Ensure heading levels are sequential (no jumping from `#` to `###`)
 3. **Add frontmatter**: Include `source`, `converted` date, and optionally `format` fields
-4. **Handle images**: markitdown with `[all]` uses OCR to describe images as alt-text. Without OCR, images appear as empty image references — warn the user about this
+4. **Handle images**: markitdown gives EXIF plus an optional LLM caption, not the text inside; real OCR needs the `markitdown-ocr` plugin with an LLM client and is skipped silently without it — warn the user about this
 5. **Table cleanup**: markitdown sometimes produces tables with misaligned columns — advise using a Markdown formatter if tables look broken
 
 ## When the User Asks for Help
@@ -398,7 +401,7 @@ After conversion, apply these cleanup steps when output quality matters:
 
 - **"How do I convert an .mpp file?"** → Explain mpxj option (requires JVM) or suggest exporting from MS Project as CSV/XML first. Provide the appropriate parsing code.
 
-- **"Can I convert images/scanned documents?"** → Yes, run `python scripts/convert.py scan.png --ocr -o output.md`. Requires `pip install 'markitdown[all]'` for OCR. Quality depends on image resolution and text clarity.
+- **"Can I convert images/scanned documents?"** → Yes, run `python scripts/convert.py scan.png --ocr --llm-model <model> -o output.md`. Requires `pip install markitdown-ocr openai` and an LLM API key; plain markitdown gives only EXIF and a caption. Quality depends on image resolution and text clarity.
 
 - **"Can I transcribe audio to Markdown?"** → Yes, run `python scripts/convert.py meeting.mp3 -o transcript.md`. Requires `pip install 'markitdown[all]'` for speech-to-text. For long files (> 30 min), warn about processing time. For better quality, suggest OpenAI Whisper.
 
@@ -418,7 +421,7 @@ For troubleshooting common issues, see [troubleshooting.md](./references/trouble
 | Convert a single file (scripted) | convert.py | `python scripts/convert.py file.docx -o output.md` |
 | Batch-convert a directory | batch_convert.py | `python scripts/batch_convert.py ./docs -o ./md_output -r` |
 | Extract tables from PDF/Excel | extract_tables.py | `python scripts/extract_tables.py report.pdf` |
-| Convert with OCR (images) | markitdown[all] | `pip install 'markitdown[all]' && markitdown scan.png > out.md` |
+| Convert with OCR (images) | markitdown-ocr + LLM client | `pip install markitdown-ocr openai && python scripts/convert.py scan.png --ocr --llm-model <model>` |
 | Transcribe audio | markitdown[all] | `pip install 'markitdown[all]' && markitdown meeting.mp3 > out.md` |
 | Convert legacy .doc/.ppt | LibreOffice → markitdown | `libreoffice --headless --convert-to docx file.doc && markitdown file.docx > out.md` |
 | Convert Visio diagram | LibreOffice → PDF → markitdown | `libreoffice --headless --convert-to pdf diagram.vsdx && markitdown diagram.pdf > out.md` |

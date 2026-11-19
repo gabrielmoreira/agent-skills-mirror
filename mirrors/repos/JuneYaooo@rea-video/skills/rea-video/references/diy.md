@@ -16,5 +16,5 @@
 
 1. 按分镜表（`report.md` 的镜头号和时长）把素材对应到镜头。一条长素材覆盖多个镜头时，先用 ffmpeg 按动作切开；拿不准对应关系时给用户看截图确认。
 2. 写进 `out/ref/remake/mine.json`：`{"results": {"<镜头号>": {"video": "<素材绝对路径>"}, ...}}`。手动生成的「生成单元」视频覆盖多个镜头时，写成 `{"G2": {"unit": "G2", "shots": [4, 5, 6], "video": "<路径>", "trim_to": <单元秒数>}}`，`remake` 会按原片切点拆回各个镜头。
-3. `rea-video remake out/ref`：每段素材整段变速塞进原镜头时长（最多快 3 倍、慢 1.25 倍，超出部分再裁），切点和原片对齐，没填的镜头暂时用原片占位，声音沿用原片；输出 `remake/remake.mp4`、左右对比的 `remake/compare.mp4` 和 `remake/status.md`。告诉用户哪些镜头还是原片占位、声音还要换。只想拼不想重画代码镜头时用 `rea-video assemble out/ref/breakdown.json <results.json 路径>`。
+3. `rea-video remake out/ref`：每段素材按动作对上原片这一镜的节奏塞进原镜头时长（动作起止、高点落在原片的时间上；最多快 3 倍、慢 1.25 倍，超出部分再裁；没什么动作的素材整段匀速变速），切点按原片帧号对齐、不会越拼越偏，没填的镜头暂时用原片占位，声音沿用原片；输出 `remake/remake.mp4`、左右对比的 `remake/compare.mp4` 和 `remake/status.md`。告诉用户哪些镜头还是原片占位、声音还要换。只想拼不想重画代码镜头时用 `rea-video assemble out/ref/breakdown.json <results.json 路径>`。
    - 字幕叠回（`remake` 默认叠，`assemble` 要加 `--overlays`）：把测得的字幕 / 花字 / 标题按原样式叠到换掉的镜头上（原片占位的镜头本来就有字，不重复叠）。字体是通用无衬线体，颜色和底框是测量值，可能和原片有出入；贴纸只在 `assemble_log.json` 的 `stickers_to_add` 里列出来，要自己找素材贴。

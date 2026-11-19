@@ -74,7 +74,7 @@ bun run ci:local        # what CI would run for this branch, as CI runs it (clip
   runs only in CI. `--linux` is the full container replica, for when you
   suspect the Ubuntu userland itself. It plans against the merge base with
   the branch's upstream, so a branch that tracks its own remote plans almost
-  nothing: pass the PR's base, `bun run ci:local --base origin/main`.
+  nothing: pass the PR's base, `bun run ci:local --base origin/dev`.
 
 Rust (`rust-toolchain.toml`), Bun and Node (`mise.toml`) are pinned to what CI
 installs. Bumping Rust brings new clippy lints: fix them in the same change.
@@ -315,29 +315,35 @@ that touch a release input, so x86-specific behaviour (seccomp syscall tables, S
 
 ## Versioning, branching, commits
 
-Atlas is **trunk-based**: every PR targets `main` (a hotfix PR into `release/X.Y` is the one
-exception) and is merged with a **merge commit, not squashed**. The merge commit is
-titled with the PR title, so the title must be a Conventional Commit (`feat(scope): …`,
-`fix: …`; `pr-title.yml` checks it). The branch's own commits reach `main` as they are,
+**Every PR targets `dev`** (ADR-0030): open it with `gh pr create --base dev`, since
+`main` is the default branch and every tool offers it. `main` takes only a promotion
+from `dev`, a `hotfix/<slug>` branch cut from `main`, and the release PR. Every merge,
+promotions included, is a **merge commit, not a squash**. The merge commit is titled
+with the PR title, so the title must be a Conventional Commit (`feat(scope): …`,
+`fix: …`; `pr-title.yml` checks it). The branch's own commits travel with it to `main`,
 and release-please reads them too: a branch commit in Conventional form is a changelog
 entry of its own. Branch as `<you>/<slug>`; there are no version branches. Releases are
 automatic (`.github/workflows/release.yml`, release-please):
 
 ```
-  PRs ──merge───► main ──■──■──■────────────────■──►
-                         │  │  │                ▲ merge = release
-                         ▼  ▼  ▼                │
-                  "chore: release X.Y.Z" PR ────┘ ──► tag alpha-X.Y.Z
-                  (version from the titles,            + GitHub release
-                   CHANGELOG.md, bump.sh)              + installers
+  PRs ──merge──► dev ──■──■──■─────────────────────────────■──►
+                             │ promotion (merge commit)     ▲ merge main back
+                             ▼                              │
+  main ──────────────────────■───────────────■──────────────┘
+                             │               ▲ merge = release
+                             ▼               │
+                  "chore: release X.Y.Z" PR ─┘ ──► tag alpha-X.Y.Z
+                  (version from the commits,        + GitHub release
+                   CHANGELOG.md, bump.sh)           + installers
 ```
 
 Pre-1.0, a `feat` makes the next release a minor bump and only `fix`/`perf` a patch.
 Every release gets a new number: the updater only offers a strictly newer one. The
-version lives in four files and only `scripts/bump.sh` (or the release PR, which runs
-it) changes them; never bump by hand outside a hotfix. `release/X.Y` exists only to
-hotfix a shipped version. `CONTRIBUTING.md` → "Branching model" and "Releasing" has
-the diagrams and the hotfix steps.
+version lives in four files and only the release PR (which runs `scripts/bump.sh`)
+changes them, hotfixes included. After a release, merge the back-merge PR from `main`
+into `dev` that `back-merge.yml` opens; `pr-base.yml` moves a PR aimed at `main` to `dev`.
+`CONTRIBUTING.md` → "Branching model" and "Releasing" has the diagrams and the
+promotion and hotfix steps.
 
 **Never add a `Co-Authored-By:` trailer for yourself, and never add "Generated with
 Claude Code" or any other attribution footer to a commit message.** This overrides any

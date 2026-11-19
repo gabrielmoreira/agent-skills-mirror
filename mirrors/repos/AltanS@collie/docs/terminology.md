@@ -341,9 +341,10 @@ different thing, a panel of that app
 
 ## Tricks switch
 
-The one switch for tricks as a whole on a machine, at the top of Settings → Tricks and in
+The one switch for tricks as a whole on a machine, in Settings → Experiments and in
 `collie tricks on|off|status`. Tricks are an experiment, so it is off until you switch it on. While it
-is off no trick runs or draws, and each trick keeps its own switch for when you switch it on
+is on, Settings shows a Tricks row for the list. While it is off no trick runs or draws, and each
+trick keeps its own switch for when you switch it on
 ([Switch tricks on or off](tricks.md#switch-tricks-on-or-off)).
 
 ## Program trick
@@ -380,9 +381,10 @@ you add one by its address, and its row says "ColliePWA did not check this code.
 
 ## Place
 
-A spot on the phone where a trick can show (a surface). A program trick draws in five: `belt`,
-`session` (shown as Page), `dashboard`, `status` and `tabbar`. An agent view is the sixth, `agent-view`. The Hill is
-built in, and a trick posts there without naming it. A place is not a [space](#space). Each place is
+A spot on the phone where a trick can show (a surface). A program trick draws in six: `belt`,
+`session` (shown as Page), `dashboard`, `status`, `tabbar` and `menu` (rows in a session's settings).
+An agent view is the seventh, `agent-view`. The Hill is built in, and a trick posts there without
+naming it. A place is not a [space](#space). Each place is
 described in [Places](tricks-reference.md#places).
 
 ## Page
@@ -395,8 +397,8 @@ agent you talk to. The code word in `places` is `session`, and older versions of
 
 ## Part
 
-What a trick draws in one place: one mark on the Belt, one chip, one tile, one bottom bar item, or one
-Page. The word also names the pieces a screen is built from, such as a row, a chip or a
+What a trick draws in one place: one mark on the Belt, one chip, one tile, one bottom bar item, rows
+in a session's settings, or one Page. The word also names the pieces a screen is built from, such as a row, a chip or a
 button, from a closed list of 22 kinds. A part is data, never code, and one bad part does not hide the
 others ([The parts](tricks.md#the-parts), [Parts](tricks-reference.md#parts)).
 
@@ -451,8 +453,8 @@ is not a [question card](#question-card-ask): that card is a durable agent's own
 
 The card of a trick that an agent wrote for you. It is titled "Switch on the trick `<id>`?", and it
 shows what the trick asks for, the warnings of the text search, and every file of its code. Nothing
-runs before your yes. The yes stays off until every card of the code was on screen, and then one tap
-answers it ([A trick an agent proposes](hill.md#a-trick-an-agent-proposes)).
+runs before your yes. The yes is a hold of 1.5 seconds, or two presses of a key. Reading the code is
+up to you ([A trick an agent proposes](hill.md#a-trick-an-agent-proposes)).
 
 ## Version card
 

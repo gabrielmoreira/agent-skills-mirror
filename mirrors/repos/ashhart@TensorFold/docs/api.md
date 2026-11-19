@@ -45,7 +45,7 @@ different scopes, or scopes a key the flags or environment already give, is refu
 
 | Scope | Routes |
 | --- | --- |
-| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/apply-template`, `/v1/audio/speech`, `/v1/images/generations`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, `/v1/rerank` (also by PUT), `/v1/ocr`, and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices`; a WebSocket upgrade on GET `/v1/responses` or `/responses` |
+| `inference` | POST `/v1/chat/completions`, `/v1/completions`, `/v1/responses`, `/v1/messages`, `/v1/messages/count_tokens`, `/v1/tokenize`, `/v1/detokenize`, `/v1/apply-template`, `/v1/audio/speech`, `/v1/images/generations`, `/v1/embeddings`, `/v1/decisions`, `/v1/systemone`, `/score`, `/v1/score`, `/v2/rerank`, `/v1/rerank` (also by PUT), `/v1/ocr`, and the same paths without `/v1` where the server has them; GET `/v1/models`, `/models`, `/v1/voices`; a WebSocket upgrade on GET `/v1/responses` or `/responses` |
 | `read` | GET `/metrics`, `/v1/metrics`, `/v1/load`, `/memory`, `/v1/memory`, `/stats`, `/dashboard`, `/v1/benchmark/manifest`, `/v1/models`, `/models`, `/v1/voices` |
 
 A scoped key reaches nothing else: not the stored Responses (GET or DELETE `/v1/responses/ID`), Recall, Sliding Weights,
@@ -129,6 +129,10 @@ routes still require when keys are on. Without the flag no reply carries a CORS 
 | `POST /v1/responses` | OpenAI's Responses API, run as the equivalent chat completion; streamed or non-streamed |
 | `GET /v1/responses` (WebSocket upgrade) | OpenAI's Responses [WebSocket mode](#websocket-mode): `response.create` events over one socket |
 | `GET /v1/responses/{id}`, `DELETE /v1/responses/{id}` | A stored response, or remove it |
+| `POST /v1/responses/{id}/cancel` | Cancel a [background response](#background-responses) that is queued or running |
+| `POST /score`, `POST /v1/score` | Text-pair scores in request order, using the configured reranker |
+| `POST /rerank`, `POST /v1/rerank` | Ranked documents; a `texts` body selects the TEI response shape |
+| `POST /v2/rerank` | Cohere-style ranked `results` over the same score hook |
 | `POST /v1/decisions` | Choice, score, and yes/no probabilities from the next-token logits; no text is generated |
 | `POST /v1/imprint/resume` | How much of a chat body's conversation resumes, and from where ([on disk](#conversations-on-disk)) |
 | `POST /v1/imprint/load` | A chat body's conversation state read from disk into RAM now |
@@ -217,6 +221,41 @@ instruction as plain text (text that spells a special token stays text). The sco
 context window before the first is scored, so a refused request costs no GPU work; a prompt past the window (with a
 `max_length` above it) returns HTTP 400 with `code` `context_length_exceeded`. An image or video part returns HTTP
 400. Errors use the server's envelope, as on every route: `{"error": {"message", "type"}}`.
+
+### Score and rerank compatibility shapes
+
+These translations use the same configured reranker, query/document template, yes/no label tokens and score or
+decision hook described above. They add no engine or model support. Other models return HTTP 400, and an engine
+without either scoring hook returns a named refusal. The routes require the `inference` key scope. Only the
+existing `/rerank` and `/v1/rerank` aliases also accept PUT.
+
+| Request | Response |
+| --- | --- |
+| `/score` or `/v1/score`: `{"text_1":"query","text_2":["a","b"]}` | A list object whose `data` entries contain `index`, `object:"score"` and `score`, in input order; also `id`, `created`, `model` and token `usage` |
+| `/rerank` or `/v1/rerank`: `{"query":"q","texts":["a","b"]}` | TEI-style array of `{index,score}`, best first; `return_text:true` adds `text` |
+| `/v2/rerank`: `{"query":"q","documents":["a","b"]}` | `{id,results:[{index,relevance_score}],meta:{api_version:{version:"2"}}}` |
+
+`/score` accepts strings or non-empty string lists on either side. Equal-length lists are paired; one item on
+either side broadcasts to the other list. Unequal longer lists are refused. Every pair is validated before any
+inference. Scores are the existing sigmoid(yes minus no), not generation log probabilities. Pair-scoring requests
+return every pair; rerank-only fields such as `top_n` or `return_documents` are refused there.
+
+A `texts` body with no `documents` selects the TEI shape; a `documents` body at `/rerank` or `/v1/rerank` keeps the
+existing response and defaults. Both new rerank shapes return the same scores as that response, best first, equal
+scores in request order, and `index` is the input's position in the request. Both take a positive integer `top_n`
+(an extension on TEI, whose request has none), capped to the number of inputs. TEI inputs are strings;
+`return_documents:true` is also taken as `return_text`. TEI `raw_scores:true` returns the label logit difference
+(yes minus no) the score is the sigmoid of, sorted by that value before `top_n`, so scores that round to 1 still
+rank. Cohere's v2 request takes string documents and returns `index` and `relevance_score` only; `{"text":...}`
+objects and `return_documents:true` (Cohere v1's fields) are also taken, the latter adding a `document` object that
+wraps a string as `{"text":...}` and returns a supplied object as sent.
+
+`model`, when given on the new shapes, must name this server or an alias. `instruction`/`instruct` and `max_length`
+use the existing reranker semantics. TEI does not truncate unless `truncate:true`; only right truncation is
+supported (`truncation_direction:"Right"`). Pair scoring also refuses an over-limit prompt by default; a positive
+`truncate_prompt_tokens` explicitly sets its truncation cap, and cannot be combined with `max_length`. The normal
+context-window check still applies. Cohere-style requests retain the reranker's default right truncation cap.
+`rank_fields`, `max_tokens_per_doc` and `priority` are refused by name. No vendor billing units are invented.
 
 ## OCR
 
@@ -739,6 +778,18 @@ backend mask hook. A missing library or grammar compilation error is also refuse
 
 The native GLM CUDA backend also supports token grammars, gathering vocabulary rows before rank 0 masks and draws.
 
+A native grammar request waits at most 2,000 ms for its compile. This holds for every format, including JSON objects
+and schemas, regexes, choices, EBNF and the structural tags of tool calls. Past that the request gets HTTP 400 naming
+the limit, for example `response_format: the grammar cannot be enforced: grammar compilation exceeds the 2000 ms time
+limit`. Each model compiles at most 4 grammars at once, outside any lock other requests take, so one slow schema does
+not hold up other requests' grammars. A request that finds all 4 busy waits for one within the same 2,000 ms, then
+gets HTTP 400 naming both limits. Identical requests share one compile. A grammar compiled before is served from the
+cache with the same bytes. The last 8 that finished in time need no compile slot, and the rest come from xgrammar's
+own 256 MiB cache. xgrammar cannot stop a compile once it has started, so an abandoned one runs on in the background
+and keeps its slot until it returns. The grammar it finishes goes into xgrammar's cache, and the same request sent
+after that is served. An invalid grammar is refused with xgrammar's reason, as before. These limits are separate from
+`grammar_budget`, which bounds the tokens a constrained reply needs to complete.
+
 ### Strict tools under `tool_choice: "auto"`
 
 With tools offered and `tool_choice` omitted or `"auto"`, a tool marked `"strict": true` inside `function` is held
@@ -1016,6 +1067,29 @@ The reply is written once every picture has finished. A refusal, a failed genera
 and returns that error with no pictures. A client that disconnects cancels the current picture, and the later
 pictures are never submitted.
 
+## Image generation streams
+
+With `stream: true`, on an engine that reports its denoising steps, the route answers `text/event-stream`. After
+each step it sends `image_generation.progress` with `index` (the picture, from 0), `seed`, `step` (from 1) and
+`total_steps`; when the picture is done, `image_generation.completed` carries its `b64_json` PNG, `index` and
+`seed`. With `n` above 1 the pictures follow one another on the same stream, each counting its own steps, and one
+`data: [DONE]` ends it. Each event's `type` is its event name, OpenAI's for the completed picture and the previews.
+
+`preview_interval: N`, an integer from 1 through `steps` sent with `stream: true` to an engine that makes previews,
+adds `image_generation.partial_image` after every Nth step's progress event. Its `b64_json` is a separate PNG of at
+most 128 pixels a side and 81,920 bytes, with `width`, `height`, `step`, `total_steps`, `index`, `seed` and
+`partial_image_index` (from 0). Previews do not change the picture: the final PNG bytes are the same with or without
+`stream` and `preview_interval`, and no preview is made unless one is asked for. For example,
+`{"model":"m","prompt":"A red kite","seed":42,"steps":8,"stream":true,"preview_interval":2}` sends progress for
+steps 1 to 8, previews after steps 2, 4, 6 and 8, then the picture.
+
+A request without `stream`, or with `stream: false`, gets the whole JSON reply as before. `stream` on an engine
+without step progress, `preview_interval` without `stream` or on an engine without previews, and a value out of
+range are HTTP 400 before anything is submitted. A refusal before the stream starts is the usual HTTP error; once it
+has started, a failure is an `error` event holding OpenAI's error object, then `data: [DONE]`, and the pictures
+already completed stay sent. A client that disconnects, or a write that fails, cancels the picture at its next step,
+and no later picture is submitted.
+
 ## Embeddings
 
 `POST /v1/embeddings` takes OpenAI's body: `input` is one text, a list of texts, one list of token IDs or a list of
@@ -1132,6 +1206,13 @@ An engine that keeps no prompt states leaves all three out.
 
 The native `--dashboard` flag adds a self-contained `/dashboard` page and its `/stats` JSON snapshot; both routes
 return 404 when the flag is off, and the page polls once per second without adding access-log noise.
+
+[packaging/grafana/tensorfold-engine.json](../packaging/grafana/tensorfold-engine.json) is a Grafana dashboard over
+these families: TTFT and TPOT quantiles, the per-request decode rate, running and waiting requests,
+`kv_cache_usage_ratio`, drafts accepted over drafted, cached over total prompt tokens, `prompt_cache_bytes` against
+its budget, process and device memory, and admission refusals. Import it, pick a Prometheus data source, and choose
+instances by their scrape `instance` label. A panel whose family the server leaves out stays empty. A host test fails
+when a query names a family `metrics.zig` does not write.
 
 ### Scheduler load
 
@@ -1309,17 +1390,18 @@ deleted and its tokens are prefilled, and a write cut off midway leaves nothing 
 needs `--spill-gib` or `--learn-conversations`. With `--learn-conversations` too, every state is still written
 behind, a staged write survives eviction of its RAM entry, and the cap is the smaller of `--learn-gib` and
 `--spill-gib`. `--learn-min-free-gib` and `--learn-daily-gib` apply to spilled states as well. The same four Mac
-families take both flags, and so do three CUDA ones; the others refuse them at startup. Without either flag nothing
-changes, and the routes below stay off. `TENSORFOLD_ROWS_SYNC=1` selects the previous synchronous writer for
-comparisons; its block and state files have the same bytes. That comparison writer retains blocking I/O; the bounded
-disk wait uses the threaded writer. `TF_IMPRINT_VERIFY=1` reads threaded writes back against their owned staging before
-publication.
+families take both flags, and so do Nemotron, the Qwen hybrids, Flash Next, Gemma 4, Dory and Spark2.5 on CUDA; the
+others refuse them at startup. Without either flag nothing changes, and the routes below stay off.
+`TENSORFOLD_ROWS_SYNC=1` selects the previous synchronous writer for comparisons; its block and state files have the
+same bytes. That comparison writer retains blocking I/O; the bounded disk wait uses the threaded writer.
+`TF_IMPRINT_VERIFY=1` reads threaded writes back against their owned staging before publication.
 
-On CUDA, Nemotron, the Qwen3.5 hybrids and Flash Next take `--spill-gib` and `--checkpoint-slots` with the same store
-and cap as a Mac. At an eviction the engine thread stages a copy of the state into host memory, waiting for the GPU
-work that produced it, then releases its RAM entry and goes on; the I/O thread writes and fsyncs the copy while the
-engine decodes. Staging holds at most 1 GiB and eight jobs: a state whose new bytes (rows neither on disk nor being
-written) do not fit what is free is not saved, so one past 1 GiB never is, and a later request for it prefills. When the
+On CUDA, Nemotron, the Qwen3.5 hybrids, Flash Next, Gemma 4, Dory and Spark2.5 take `--spill-gib` and
+`--checkpoint-slots` with the same store and cap as a Mac. At an eviction the engine thread stages a copy of the state
+into host memory, waiting for the GPU work that produced it, then releases its RAM entry and goes on; the I/O thread
+writes and fsyncs the copy while the engine decodes. Staging holds at most 1 GiB and eight jobs; for Gemma 4, Dory and
+Spark2.5 it holds one whole state at the served window, within the RAM cache's budget. A state whose new bytes (rows
+neither on disk nor being written) do not fit what is free is not saved, and a later request for it prefills. When the
 engine closes, at a planned stop (SIGTERM or SIGINT) or an idle unload, it saves the states still in RAM, newest first,
 within the same disk cap and 20-second stop budget. While other streams run, a queued request whose state is on disk has
 it read ahead on an I/O thread, as described above.
@@ -1457,7 +1539,7 @@ prompt cache resumes the shared prefix as it does for chat. `store: false` keeps
 response.
 
 HTTP 400 refuses what this server does not run: built-in tools (web search, file search, computer use and the
-others), `background`, `conversation`, `prompt` templates, `context_management`, `truncation: "auto"`, file IDs and
+others), `conversation`, `prompt` templates, `context_management`, `truncation: "auto"`, file IDs and
 remote file URLs (`input_file` parts with inline `file_data` run on a model started with `--vision --vision-pdf`),
 `item_reference` items, encrypted reasoning items, and a `previous_response_id` that is not stored.
 `include` takes a list of OpenAI's names. `message.output_text.logprobs` asks for logprobs where the engine has them
@@ -1466,6 +1548,35 @@ remote file URLs (`input_file` parts with inline `file_data` run on a model star
 `message.input_image.image_url`, `message.output_text.logprobs`, `reasoning.encrypted_content`,
 `web_search_call.action.sources` and `web_search_call.results`. Any other name, or a value that is not a list of
 strings, is refused.
+
+### Background responses
+
+`background: true` answers the POST at once with the response object, `status: "queued"`, `background: true` and no
+output; the reply is generated after the POST returns, and leaving the connection does not cancel it.
+`GET /v1/responses/{id}` polls it: `queued`, then `in_progress` (output stays empty while it runs), then the
+finished response as a request sent without `background` returns it: `completed`, `incomplete`, `failed` or
+`cancelled`. The reply runs through the same chat path as that request, so the same body and seed give the same
+tokens. A finished background response is an ordinary stored response: `previous_response_id` continues it (one still
+running is refused), and it is kept, evicted and lost on restart as every stored response is.
+
+`POST /v1/responses/{id}/cancel` (or `/responses/{id}/cancel`) cancels a queued or running one. A running reply ends
+as [Cancel a request](#cancel-a-request) ends it, with the text it had; the route waits up to 2 s for that end and
+answers 200 with the response, `status: "cancelled"`. `POST /v1/requests/{id}/cancel` with the same `resp_` id does
+the same. A second cancel answers the cancelled response again, a background response that has already ended
+otherwise answers 400, as does a response not created with `background`, and an unknown id 404.
+`DELETE /v1/responses/{id}` on a running one stops it, and nothing of it is kept.
+
+`background: true` needs `store: true` (the default) and refuses `stream: true`: there is no event stream to start
+or resume (a GET of a background response with `stream=true`, as `starting_after` resumes one, answers 400), so poll
+instead. It is an HTTP request only; a Responses socket refuses it, and a true value that is not a boolean, such as
+`1`, is refused. At most 64 background responses are queued or running at once on a server, 16 for one API key,
+holding 256 MiB of copied requests in all; past those a create answers 429 `background_limit_exceeded` before any
+work starts. Each keeps its request's place under `--max-inflight` until it is stored, and a stop gives it the drain
+window any request in progress gets.
+
+Stored responses are the server's, so with API keys only a full or `[admin]` key may create, poll or cancel one; a
+scoped key gets 403 (see [Key scopes](#key-scopes)). A server without keys takes the response's id, 128 random bits,
+as the right to read, cancel or delete it, as it does for `GET` and `DELETE`.
 
 ### WebSocket mode
 

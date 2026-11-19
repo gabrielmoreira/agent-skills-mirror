@@ -47,12 +47,15 @@ it, so `headless` keeps its BLOCK semantics.
   `timing: analytics skipped (...)` instead of writing to a disk that vanishes.
   Point `GSTACK_STATE_ROOT` at a durable directory when you want cross-run
   history (see [state-root.md](state-root.md)).
-- **The autoplan publication guard is named, not faked.** On hosts that do not
-  execute Claude Code hooks, and in every unattended session, `gstack-skill-start`
-  prints `autoplan guard: not enforced by this host; publication order is
-  unverified (GUARD_NOT_INSTALLED)` once. `gstack-artifact validate` requires
-  that line in an unattended run's `review-record.md`. Claude Code's
-  deny-on-absent behavior is unchanged.
+- **The autoplan publication guard is named, not faked.** `gstack-skill-start`
+  prints one guard line for /autoplan, chosen by host, not by session kind. On
+  Claude Code with the hook declared in `autoplan/SKILL.md` it prints
+  `autoplan guard: enforced by Claude Code's /autoplan hook ... (GUARD_ENFORCED)`,
+  because the hook denies phase entry there in unattended sessions too. On hosts
+  that do not execute Claude Code hooks it prints `autoplan guard: not enforced
+  by this host; publication order is unverified (GUARD_NOT_INSTALLED)`.
+  `gstack-artifact validate` requires one of the two in an unattended run's
+  `review-record.md`. Claude Code's deny-on-absent behavior is unchanged.
 
 An unknown `GSTACK_SESSION_KIND` value coerces to `interactive` and says so:
 `SESSION_KIND: interactive (unknown kind '<x>')`.
@@ -67,8 +70,11 @@ GSTACK_RESULT: skill=<name> status=<status> run=<dir>
 
 `status` is one of `complete`, `reviewed`, `gate_pending`, `incomplete`,
 `interrupted` or `refused`; `run` is where the run's record is. `/autoplan`
-always ends `gate_pending` when it reaches the final gate, because the gate is
-written and never approved. `/autoplan --ceo-only` ends `reviewed`: it runs the
+ends `gate_pending` when it reaches the final gate with no owner reply, because
+the session never approves the gate on its own judgment; when the owner's own
+reply is relayed to it, the session records it with `gstack-autoplan answer
+--by agent:<id> --owner-reply-file <file>` (see the driver steps below).
+`/autoplan --ceo-only` ends `reviewed`: it runs the
 CEO phase alone, asks nothing, writes no gate and approves nothing (see
 [CEO-only runs](#ceo-only-runs)). Pure queries (`gstack-artifact schema`,
 `gstack-gate render`) print no result line.
@@ -166,6 +172,33 @@ the handoff section. When the run committed anything (a CHANGELOG entry,
 generated tests), the parent pushes those commits itself, then reruns the
 receipt write, the body post and `result` at the pushed head: a receipt for an
 unpushed head is `QUEUE_RECEIPT_STALE` to the queue.
+
+<a id="push-line"></a>
+### The push line: `PUSH:`
+
+Step 17's `gstack-ship-release push` (early or final) always ends with exactly
+one line saying whether the branch reached the remote, so a parent, a report or
+an outside probe can tell that `/ship` pushed without looking for a
+`git push` call:
+
+```
+PUSH: pushed remote=origin ref=<branch> head=<full sha>
+PUSH: already_pushed remote=origin ref=<branch> head=<full sha>
+PUSH: failed reason=<code>
+```
+
+`pushed` means this run's `git push` updated the branch; `already_pushed`
+means the remote branch already pointed at HEAD, so nothing was sent. `failed`
+means nothing was pushed, with one of three codes:
+[`PUSH_REFUSED`](troubleshooting.md#push-refused) (a check stopped it before
+`git push` ran), [`PUSH_REJECTED`](troubleshooting.md#push-rejected)
+(non-fast-forward, or the remote refused the update) and
+[`PUSH_GIT_FAILED`](troubleshooting.md#push-git-failed) (git could not read
+the remote, or `git push` failed on authentication, a hook or the network).
+The line is the last one printed, after any `STOP:` or `NEXT:` line, on
+stdout (stderr for a usage error), and the exit status keeps its meaning: 0
+for `pushed` and `already_pushed`, 3 for a stop, 2 for a usage error. Match
+`^PUSH: (pushed|already_pushed) ` for "this run's branch is on the remote".
 
 ### The review loop's counters
 
@@ -357,6 +390,29 @@ owner's own words: nothing a person wrote leaves without their click (GST-1243).
   `gstack-artifact validate --public <pub> --private <dir>/run.json` runs the
   same scan, renderings included, on an existing copy.
 
+## Starting a child agent: type the skill first
+
+When a parent starts another agent to run a gstack skill, the child's prompt
+opens with the skill command typed the way a person types it, for example
+`/ship --continue <brief>`, and everything else comes after it. Claude Code
+expands a skill only when the prompt starts with `/<skill>`. A prompt such as
+"Load gstack. … Run /ship …" reaches the model as plain text, and the model
+then has to decide on its own to load the skill. In gstack-evals#366, Opus 5.5
+found a skill from its description in 0 of 60 unattended sessions, while a
+typed command put the skill's text in front of it in 60 of 60.
+
+- **Use the installed name.** With `skill_prefix: true` the command is
+  `/gstack-<skill>`; a typed name that isn't installed expands to nothing.
+- **No Skill tool needed.** Claude Code expands a typed command itself, without
+  a Skill tool call, so the child's `--allowedTools` doesn't have to list
+  `Skill` for this.
+- **Hosts that don't expand a typed skill**, such as a Capy subagent, get the
+  skill's SKILL.md path to read instead.
+
+`gstack-ship-budget launch` (`lib/ship-handoff.ts`), the token-capped /ship
+child on Claude Code, follows this rule, and `test/ship-budget.test.ts`
+checks its prompt.
+
 ## How a parent consumes a run
 
 1. **Decide whether the run finished.** For an `/autoplan` run directory,
@@ -368,8 +424,14 @@ owner's own words: nothing a person wrote leaves without their click (GST-1243).
    terminal outcome, every listed artifact exists inside the run directory with
    the recorded hash, every JSONL file parses row by row against its schema with
    run-bound unique ids, task dependencies and finding references resolve
-   without cycles, `counts` agree with the files, and (unattended) the guard
-   line is present. Otherwise it exits `1` with one error line per problem and
+   without cycles, `counts` agree with the files, (unattended) the guard
+   line is present, and gstack-autoplan wrote the run: `run.json` carries
+   the fields it writes on every run (`host: gstack-autoplan`, `plan_input`
+   and the rest, `ARTIFACT_NOT_AUTOPLAN_RUN`) and agrees with its
+   `attempts.jsonl` journal, its bound review outputs and its checkpoint
+   (`ARTIFACT_JOURNAL_MISMATCH`). `gstack-artifact ack` runs the same
+   check. A public copy (`validate --public`) carries no journal and is
+   checked against its private run's digests instead. Otherwise it exits `1` with one error line per problem and
    `ARTIFACT_INVALID: <n> error(s)`; `--json` returns the same as
    `{ valid, run, status, run_dir, errors[] }`. A run that was interrupted shows up here as
    `ARTIFACT_RUN_INTERRUPTED`, never as a partial success.
@@ -959,8 +1021,13 @@ line, on an ephemeral state root.
 
 ## Reference run
 
-`test/fixtures/multi-agent-wave/reference-run/` is a complete unattended
-`/autoplan` run (the one that produced this wave's plan) and validates clean.
+`test/fixtures/multi-agent-wave/reference-run/` is the hand-written run
+that produced this wave's plan, from before `gstack-autoplan` existed. It
+pins the structural contract (`validateRun` passes it), but
+`gstack-artifact validate` refuses it with `ARTIFACT_NOT_AUTOPLAN_RUN`: it
+has no `plan_input` and no journal, because no gstack-autoplan wrote it. Copy
+a run gstack-autoplan wrote, never this one, when you need a run that
+validates.
 `test/fixtures/multi-agent-wave/INCIDENTS.md` records what went wrong while it
 was produced by hand and which validator rule now catches each incident.
 

@@ -21,6 +21,33 @@ For published motion guidance source and locale metadata, use the [catalog contr
 
 ## PR workflow
 
+### Follow through on review
+
+Opening a PR starts the review cycle. The author is responsible for following up on comments, checks and conflicts until the change is ready or a clear blocker is reported. This applies to code, templates, media and Skills, including PRs created by an Agent.
+
+1. Read every unresolved review thread and the latest CI results. Verify each claim against the current code or contribution before changing it; automated feedback can be wrong.
+2. Fix confirmed issues, run the applicable checks, and push follow-up commits. Reply on each thread with the fix, commit and validation. If you disagree, explain the evidence and proposed outcome instead of ignoring the comment.
+3. Resolve addressed threads when your permissions allow. A resolved thread must have a verified outcome; do not mark unanswered feedback resolved just to clear a merge warning. If you cannot resolve it or a disagreement remains, explain what still needs the reviewer.
+4. Fix failing required checks and merge conflicts. After a fix push, re-request review from reviewers who already reviewed the PR and have not reviewed the new commit, when your permissions allow; otherwise report that re-review is pending. A reply alone does not re-request review.
+5. Before reporting review follow-up complete, refresh the PR state and report remaining threads, CI, conflicts or pending re-review. Green CI alone does not mean the review is complete or authorize merging or publishing.
+
+Agents follow the same process through [Repository PR review follow-up](AGENTS.md#repository-pr-review-follow-up). Authors can use any suitable PR interface; installing a particular Skill is not required.
+
+### Automatic follow-up with an Agent
+
+Ask your Agent to keep the review loop active while waiting for CI or comments. Claude Code can use `Monitor` when that tool is available in the session; other clients can use their monitor/wait tools or a lightweight session wait. The [Agent waiting guidance](AGENTS.md#automatic-waiting-during-pr-follow-up) covers state changes, CI aggregation and session lifetime.
+
+```text
+Keep following PR_URL through CI and review in this session. Use an available
+monitor/wait tool, or wait for PR state changes in-session. Verify new feedback,
+fix confirmed issues and required CI/conflicts, push validated changes, reply and
+resolve addressed threads, and re-request prior reviewers when permitted.
+Continue until the review follow-up is ready or a concrete blocker needs me.
+Report the latest state. Do not merge or publish.
+```
+
+Replace `PR_URL` with your PR link. A promise to keep watching is not a running monitor: ask the Agent to identify the active mechanism and its lifetime. Closing a session stops session-only waiting; unattended tracking needs a separately configured durable runner.
+
 ### Submit a video with your Agent
 
 Share your video, reference or editable project with your Agent and paste this brief:

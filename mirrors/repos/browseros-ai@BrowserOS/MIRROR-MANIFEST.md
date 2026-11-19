@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,8 +73,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`packages/browseros-agent/CLAUDE.md`](packages/browseros-agent/CLAUDE.md) |
 | 13 | ✓ | [`packages/browseros-agent/crates/neo-sdk/AGENTS.md`](packages/browseros-agent/crates/neo-sdk/AGENTS.md) |
 | 14 | ✓ | [`packages/browseros-agent/crates/neo-sdk/CLAUDE.md`](packages/browseros-agent/crates/neo-sdk/CLAUDE.md) |
-| 15 | ✓ | [`packages/browseros-agent/resources/skills/browserclaw/SKILL.md`](packages/browseros-agent/resources/skills/browserclaw/SKILL.md) |
-| 16 | ✓ | [`skills/browseros-neo/SKILL.md`](skills/browseros-neo/SKILL.md) |
+| 15 | ✓ | [`packages/browseros-agent/crates/neo-sdk/neo-server/docker/AGENTS.md`](packages/browseros-agent/crates/neo-sdk/neo-server/docker/AGENTS.md) |
+| 16 | ✓ | [`packages/browseros-agent/crates/neo-sdk/neo-server/docker/CLAUDE.md`](packages/browseros-agent/crates/neo-sdk/neo-server/docker/CLAUDE.md) |
+| 17 | ✓ | [`packages/browseros-agent/resources/skills/browserclaw/SKILL.md`](packages/browseros-agent/resources/skills/browserclaw/SKILL.md) |
+| 18 | ✓ | [`skills/browseros-neo/SKILL.md`](skills/browseros-neo/SKILL.md) |
 
 ---
 

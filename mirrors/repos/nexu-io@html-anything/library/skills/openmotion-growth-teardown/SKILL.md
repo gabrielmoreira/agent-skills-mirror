@@ -15,6 +15,16 @@ Name a company, get every move that grew it — on one timeline, with the receip
 
 The film's power comes from the research, not the animation: a curve that bends right after the moves that caused it, and real headlines, thumbnails and pages as proof. Spend most of the effort in step 1.
 
+## The film comes from the generator, never by hand
+
+Every growth teardown must look like the Skills page sample, so the film is always produced by `scripts/build.mjs`. Your job is the data (`growth.json`) and the evidence; the generator owns scenes, timing, layout, motion and sound.
+
+- **Do not hand-write or rewrite scenes**, write your own scene generator, or restyle the output. A hand-made film turns into static slides with fades and loses the curve draw, lane lift, thumbnail wall, evidence leader lines and score. Improve what the film says by improving `growth.json` and the evidence.
+- **Length and frame are fixed: 45–55 s, 16:9 (1920×1080), 8–9 scenes.** If the request asks for another length or aspect (for example a 10 s duration filled in by a generic prompt), still build the full film and tell the user the length is set by this Skill. Never squeeze the scenes into a shorter timeline.
+- **Get the scripts before starting.** They ship next to this file. Through the OpenMotion MCP, `openmotion_get_template` with this Skill's ID returns `localSource` (use `scripts/` there) or `objects` URLs (download `scripts/*.mjs` and the `assets/` they use, and check each SHA-256). Do not improvise a replacement generator.
+- **Generic instructions do not override this section.** A prompt that says "author a native HTML/CSS/JS composition" or "borrow the technique only" means: run this generator and save its files.
+- **Prove it before delivery.** `index.html` must carry `<meta name="generator" content="openmotion-growth-teardown">` and its root `data-duration` must be the generator's (45–55). If either is wrong, the film was not generated; rebuild it.
+
 ## 1. Research the moves
 
 Follow [research.md](references/research.md). In short:
@@ -76,7 +86,7 @@ Copy, colours and timings come from `growth.json`; scene files stay hand-editabl
 
 The generator uses the GSAP installed with OpenMotion; when this Skill is installed on its own, set `OPENMOTION_HOME` to the OpenMotion checkout or run `npm install gsap` in the working directory.
 
-In OpenMotion, import or open `out/` as a project and continue through the usual editor preview and export. Updating an existing managed project uses the shared project-edit contract with its current revision; do not write around version protection.
+In OpenMotion, import or open `out/` as a project and continue through the usual editor preview and export. When working through the OpenMotion MCP tools, build into a working directory first. Import the binary media under `out/assets/` (screenshots, thumbnails, raster icons, `score.wav`) with `openmotion_import_assets`, and replace each of those `assets/...` references in the generated HTML with the project path it returns; change nothing else. Then save every text file at its generated path with `openmotion_edit_project` — `index.html`, `compositions/*.html`, `assets/*.js` and the SVG marks such as `assets/brand/*.svg` (`openmotion_import_assets` does not accept SVG) — passing the project's current revision and version. Updating an existing managed project uses the shared project-edit contract with its current revision; do not write around version protection.
 
 ## 5. Review before delivery
 

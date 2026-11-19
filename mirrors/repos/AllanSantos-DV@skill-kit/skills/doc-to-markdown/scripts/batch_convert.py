@@ -9,9 +9,11 @@ Usage:
     python batch_convert.py ./docs --dry-run                      # preview what would be converted
     python batch_convert.py ./docs --overwrite                    # overwrite existing .md files
 
-Supported formats: .docx, .doc, .xlsx, .xls, .csv, .pptx, .ppt, .pdf, .html, .epub,
-    .png, .jpg, .jpeg, .gif, .bmp, .tiff, .mp3, .wav, .m4a, .ipynb, .zip, .msg,
+Supported formats: .docx, .xlsx, .xls (needs markitdown[xls]), .csv, .pptx, .pdf, .html,
+    .epub, .png, .jpg, .jpeg, .gif, .bmp, .tiff, .mp3, .wav, .m4a, .ipynb, .zip, .msg,
     .mpp, .mspdi, .mpx (MS Project — requires Java 11+)
+Legacy .doc and .ppt are not read by markitdown: convert them first with
+    libreoffice --headless --convert-to docx|pptx <file>
 Requires: pip install markitdown (or pip install 'markitdown[all]' for OCR)
 """
 
@@ -23,8 +25,8 @@ from datetime import datetime
 from pathlib import Path
 
 SUPPORTED_EXTENSIONS = {
-    ".docx", ".doc", ".xlsx", ".xls", ".csv",
-    ".pptx", ".ppt", ".pdf", ".html", ".htm", ".epub",
+    ".docx", ".xlsx", ".xls", ".csv",
+    ".pptx", ".pdf", ".html", ".htm", ".epub",
     ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff",
     ".mp3", ".wav", ".m4a",
     ".ipynb", ".zip", ".msg",

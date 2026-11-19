@@ -510,6 +510,13 @@ machine's turns with an image anywhere in their messages start as `-p`
 then, and text alone is still the interactive mode's. When the redo can't
 run (Off meanwhile, the client gone) the failure is a 400, not a 502
 (`bridgeFailed`), so neither the client nor the fallback asks it again.
+An account Anthropic turned off (its organization disabled, a 400 or
+403; on hold, which Claude Code says with no status and `bridgeFailed`
+gives a 403; subscription sign-in turned off for the organization; a
+flagged account that "can't receive replies from Claude", a 403) is
+read as restricted (`claudeAccountOff`, gateway-routing): it rests until
+an appeal and the request goes on to the next account or member
+(`TestClaudeAccountOffMovesToNextAccount`).
 `claude_tui_unpasted_test.go` holds each case, and
 `TestShimPaddedImageTakenWithoutMarks` the padded paste on a console that
 drops the marks.
@@ -772,6 +779,40 @@ a quiet variable set in magpie's environment or in their Claude Code's
 `settings.json` env is given to the run as they set it, and the run then
 reads no flags. An interactive run sends Claude Code's quota request as it
 starts, right before the turn's own. `TestClaudeRunReadsItsFlags` holds it.
+
+A turn's run also waits on magpie's MCP calls for as long as the caller's
+tool takes (`claudeToolWaitVars`): `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS=0`
+and `CLAUDE_CODE_MCP_TOOL_IDLE_TIMEOUT=0`. The caller runs the tools and
+has its own timeouts. Interactive Claude Code 2.1.322 otherwise moves a call
+still running after 120s to the background ("is still running after 120s.
+It was moved to the background as task …") and its model goes on without
+the result. The result then reaches the run while the model's next step is
+being written, and the caller's turn got a reply with `finish_reason:
+tool_calls` and no calls in it. The run went on making calls no client was
+shown, each moved to the background 120s later, until it was killed (Pi:
+29 such replies in 1341 turns after a tool of over 120s, none in 38735
+after a shorter one). Claude Code also aborts a call that sent nothing for
+30 minutes ("sent no response or progress for 1800s"). Measured on
+`claude -p` 2.1.322 with a stdio tool that sleeps (`-p` backgrounds only
+with `CLAUDE_AUTO_BACKGROUND_TASKS=1`, interactive mode always): a 4s
+background limit moves a 15s call to the background, `0` gets its result;
+a 5s idle limit aborts a 70s call at the 30s check, `0` gets its result. A
+value set in magpie's environment stays. `TestClaudeRunWaitsOnToolCalls`
+holds it, by -p and by the interactive mode, and
+`TestClaudeToolWaitVarsReachWSL` that a run in WSL is handed them.
+
+The same move delayed an answer. Pi's `ask_user_question` waited on its
+user past 120s, was moved to the background, and the model wrote a bash
+call past it that no client runs. The user's answer reached the run at once
+but the model only once the bash call was moved to the background too, its
+own 120s later (~113s after the answer, FunnyPartMent on X). Measured on
+2.1.316 against a fake Anthropic API and a stdio tool that takes 10s: with
+a 3s limit (interactive mode) or 8s (`-p`) the second call was written and
+the result came only as a task notification once that call was moved too;
+with `0` the model had the call's own result at 10.0s, by both, and no
+second call was made. `0` also turns off the move Claude Code makes to hand over a message
+that arrived mid-call (`isMcpCallMovableWithoutTimer` reads the same
+value).
 
 The helper still takes a typed `/usage`, and nothing of magpie's sends it
 now: it is told `{"type":"command","command":"/usage"}`, types it, waits for the
@@ -1868,8 +1909,17 @@ hold it.
   turn](#a-run-that-ended-during-a-turn-6528)), and when a saved session
   is discarded (`removeSession`).
   `sweepSessions` removes those a stopped gateway left in magpie's own
-  work folder's project, once older than `idleLongest`; a caller's folder
+  work folder's project, once older than `idleLongest` plus a minute; a caller's folder
   is never swept (`clientWorkDir`).
+  A session still in the persisted shelf, the in-memory shelf, an active run,
+  or the transfer from shelf to run (`resuming`) is protected. This includes
+  quota waits longer than an hour. `loadShelf` removes the file and publishes
+  its entries under `shelfFileMu`, which the sweep's snapshot holds too;
+  the bridge lock is taken for the shelf alone, never across the file's
+  reads. An
+  unreadable or unknown-version shelf skips the destructive sweep.
+  `TestClaudeSweepKeepsQuotaSessions`, `TestClaudeSweepUnknownShelfLeavesFiles`.
+
 - Claude Code's temp files for the session, the images it was given:
   `<CLAUDE_CODE_TMPDIR or /tmp>/claude-<uid>/<work project>/<session>`
   (`claudeTempDir`, not on Windows). They are removed with the session
@@ -2209,6 +2259,25 @@ and the turn is told whole to a new run, as after a crash (no file is
 written then). A conversation a client rewrote (`looseTurn`) is not kept,
 and a run in a turn or parked on tool results at the stop is not either.
 `TestClaudeIdleRunSurvivesARestart`, `TestClaudeShelfFileUnreadableFallsBackToReplay`.
+
+The successor can accept before the old gateway saves this file. Before
+starting a Claude subscription turn, `awaitPredecessorSessions` waits for
+`GET /_magpie/claude-ready` on the private callback socket. The old gateway
+answers only after `abortAll` has saved and ended its runs, which follows
+every request it holds, of any provider. The wait is bounded by
+`predecessorWait` (90s, inside Claude Code's ten minutes for a reply): past
+it, or on a failed wait, the turn goes on as it did before the wait, a
+replay, and no later turn waits (`errPredecessorSlow`,
+`TestClaudeHandoverWaitIsBounded`); `loadShelf` still reads a shelf written
+later, at the next turn no session is found for. Only a caller gone
+returns an error. Other providers and MCP callbacks continue. A removed socket means the old
+process has finished; a 404 permits older versions without this endpoint,
+whose handover retains the previous race.
+`TestClaudeHandoverWaitsForSavedSession` checks the resumed turn;
+`TestClaudeHandoverReadiness` and `TestClaudeHandoverReadinessCompatibility`
+check readiness, cancellation and older predecessors. Web/serve signal
+exits and desktop shutdown now wait for this gateway shutdown too (see
+[GUI shell](gui-shell.md#a-restart-to-update-hands-the-gateway-over)).
 
 ### A turn refused for the account's limit
 

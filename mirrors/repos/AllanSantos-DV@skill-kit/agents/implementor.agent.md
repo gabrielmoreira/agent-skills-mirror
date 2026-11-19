@@ -15,9 +15,13 @@ handoffs:
     prompt: "Review the implementation above. Verify that the changes match the validated plan, check for missed edge cases, and confirm the quality checklist passes."
     send: false
 hooks:
+  PreToolUse:
+    - type: command
+      command: "node hooks/pre-commit-guard.js --hook-origin=skill-kit"
+      timeout: 10
   Stop:
     - type: command
-      command: "node hooks/stop-checklist.js"
+      command: "node hooks/stop-checklist.js --hook-origin=skill-kit"
       timeout: 10
 ---
 

@@ -78,12 +78,27 @@ and refuses empty or over-long text, an unknown kind and a bad scope
 [internal/gateway/memory_mcp.go](../../internal/gateway/memory_mcp.go):
 `memory_search`, `memory_save`, `memory_forget`, `memory_context`, Streamable HTTP at
 `MemoryMCPPath` (`/mcp/magpie/memory`), served like the search server
-(`serveMCP`) but to the agents on this computer alone, as the hub gives it
-(`HereOnly`): memory is what is known about this computer's user, and its
-digest goes into every agent's instructions here, so another computer's
-gateway key (which may be a friend's, and may use every MCP server unless
-it is held to some) and a web page, even one Settings lists, are turned
-away (`TestMemoryMCPGuarded`).
+(`serveMCP`) but to the agents on this computer, and to another
+computer's only by a gateway key the user let use it, as the hub gives it
+(`HereOnly`, `HubServer.Memory`; `memoryReaches`): memory is what is known
+about this computer's user, and its digest goes into every agent's
+instructions here, so any other gateway key (which may be a friend's, and
+may use every MCP server unless it is held to some) and a web page, even
+one Settings lists, are turned away (`TestMemoryMCPGuarded`).
+
+- A key is let use it with `access.Key.Memory`: the key's ··· › Advanced ›
+  Magpie Memory on the Gateway page, or `magpie gateway-key memory <id> on`
+  (Niapyaya on X: an agent on a remote machine adding memories). As
+  `Admin`, only a key the user made can have it (`memoryOf`): never the
+  sharing key, a read-only or Browser key, nor an issued or expiring one
+  (`TestMemoryKey`). Read-only takes it away; the management API can't set
+  it. From elsewhere it answers only while magpie is shared
+  (`sharedWith`), and never to a page by `hubFromPage` (an Origin,
+  `Sec-Fetch-Site`, a `Mozilla/` agent), not `fromBrowser`, as Node's
+  fetch, the MCP SDK's transport, sends `Sec-Fetch-Mode`
+  (`TestMemoryMCPToAKeyGivenIt`, `TestHubGivesMemoryToAKeyLetUseIt`). Such
+  a caller has no folder here (`memoryCaller`), so it saves globally or
+  names a project by its key.
 
 - The Library offers it in the market as `magpie-memory`
   ([market.go](../../internal/library/market.go)), run as
@@ -110,6 +125,15 @@ away (`TestMemoryMCPGuarded`).
   the project, and how each was found, as text and `structuredContent`
   (`TestMemoryMCPProjectArgumentAndContext`).
 - A save through MCP is active at once, origin `agent`.
+- A project's rules go to the project's files: `memory_save`'s description
+  says a project's rule, convention or fact belongs in its instruction
+  files or docs when it keeps them, and a new save of the caller's project
+  (any kind but profile and preference), or a global rule or procedure,
+  made where the project's root holds one of `projectInstructionFiles`
+  (AGENTS.md, CLAUDE.md, GEMINI.md, .github/copilot-instructions.md,
+  .cursorrules) ends with a note naming the files found and asking the
+  agent to offer to write it there (`projectFilesNote`,
+  `TestMemorySavePointsProjectRulesToItsFiles`). The save itself is kept.
 
 ### Other memory services
 
@@ -131,8 +155,18 @@ after adding.
 [internal/memory/digest.go](../../internal/memory/digest.go) renders one
 digest per scope within a budget (global 4000, project 1500, agent 1000,
 the whole 8000 characters), pinned and longer-lived kinds first, no memory
-cut in the middle. The text goes to every agent's vendor: it names neither
-magpie nor any vendor.
+cut in the middle. A memory written in several lines keeps them, in its
+file, the digest and `memory_search`: the lines after the first are
+indented under its item (`memory.Indented`; _meouwu on X,
+`TestMultiLineMemoryKeepsItsLines`, `TestMemorySearchKeepsTheLines`). The
+dream's and distillation's lists for the model still run each memory into
+one line, which their replies are read by; the user's own memories are
+never rewritten from them (`Fixed`). The text goes to every agent's
+vendor: it names neither magpie nor any vendor. Its header puts the project's own instruction files
+(AGENTS.md and the like) and docs first: where a memory disagrees with
+them the agent follows the files and says which memory is out of date, and
+a project's rule or fact belongs in its files, memory keeping what holds
+across projects (flying_crp on X, `TestDigestDefersToTheProjectsFiles`).
 
 The digest changes only when published, so an agent's instructions — and
 the prompt cache built on them — change mid-session only then
@@ -164,6 +198,9 @@ agents ticked under Instructions, unless `Instructions.NoMemory`
 A reply after a change carries `problem` when publishing the digest
 failed. The tab is in [plugins/library/client.js](../../internal/gui/assets/plugins/library/client.js)
 (`renderMemory`), tested by `internal/gui/tests/library-memory.test.cjs`.
+A memory's row, folded, shows its first line and an ellipsis when more
+follow (`firstLine`, suggestions too); open, it shows every line as written
+(`library-memory-lines.test.cjs`).
 Its Select puts a box on each memory listed: a click picks one, a
 Shift-click the range from the last one clicked, ↑ ↓ move between the
 boxes (Shift picks as it goes), ⌘A / Ctrl+A picks every one shown, Escape
@@ -214,7 +251,9 @@ further (`State.Since`), unless a range is picked.
   tools, no reasoning), cut to 24k characters keeping the head and the
   tail, plus the memories already kept for that project, under neutral
   instructions that name neither magpie nor the vendor
-  (`TestWhatIsSent`, `TestLongConversationCut`).
+  (`TestWhatIsSent`, `TestLongConversationCut`). They leave a project's
+  rules and conventions to its own instruction files and docs, and drop
+  what disagrees with them.
 - The request goes through the gateway this process serves
   (`distillComplete`), as `x-api-key: magpie-memory`, so it is routed,
   masked and counted in Usage under the agent `memory`

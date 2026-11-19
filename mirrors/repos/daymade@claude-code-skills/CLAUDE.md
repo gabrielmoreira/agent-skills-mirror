@@ -542,6 +542,8 @@ For memory pressure or suspected child-process leaks, enter that Skill's
 [memory evidence](daymade-macos/macos-load-doctor/SKILL.md#memory-evidence) before attributing the cause.
 For a confirmed hot preservation or verification script, use
 [measurement controls](daymade-macos/macos-load-doctor/references/incident-playbook.md#measurement-controls).
+For repeated work inside or across scheduled jobs, use the
+[duplicate-work procedure](daymade-macos/macos-load-doctor/references/incident-playbook.md#duplicate-scheduled-work).
 The observation contract above owns delayed-sampling acceptance; keep its tests
 and the diagnostic stop conditions in those Skills.
 For changed operating defaults or thresholds in an already-required review,
@@ -703,7 +705,7 @@ For input appended after an operation's current-thread request, use [read-codex-
 
 For conversation-backup health checks or recent unfinished-request inventories, follow
 [`local-conversation-history`](daymade-claude-code/local-conversation-history/SKILL.md).
-For scheduled history refresh or index recovery, use
+For scheduled history refresh, repeat-read investigations, or index recovery, use
 [build and refresh](daymade-claude-code/read-claude-code-history/references/hybrid_history_recall.md#build-and-refresh).
 
 For the latest Codex conversation about a topic across continuations, enter
@@ -1096,7 +1098,7 @@ claiming the whole checkout is current.
 
 For divergent local `main`, recovery-material selection or branch/worktree retirement,
 follow [git-safety-net](git-safety-net/SKILL.md).
-For named linked-worktree retirement, follow the
+For named linked-worktree retirement, including a materialized Git LFS file, follow the
 [worktree retirement procedure](git-safety-net/references/merge_verification.md#worktree-retirement--prove-the-checkout-is-disposable-before-removal)
 for preparation, recovery and current-state verification.
 If local Skill release receipts reference the review checkout being retired, first use

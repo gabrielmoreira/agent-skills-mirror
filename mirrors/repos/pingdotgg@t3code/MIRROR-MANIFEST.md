@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pingdotgg/t3code` — 26 default patterns, 5 followed patterns, 77 file(s) materialized.
+Mirror of `pingdotgg/t3code` — 26 default patterns, 10 followed patterns, 83 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `pingdotgg/t3code` — 26 default patterns, 5 followed patterns, 77 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 77 |
+| Followed pats | 10 |
+| Files         | 83 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,11 @@ Mirror of `pingdotgg/t3code` — 26 default patterns, 5 followed patterns, 77 fi
 - `evals/README.md`
 - `docs/internals/effect-services.md`
 - `docs/internals/web-ui.md`
+- `SECURITY.md`
+- `.github/SECURITY.md`
+- `docs/internals/environment-auth.md`
+- `docs/internals/t3-connect.md`
+- `docs/internals/remote.md`
 
 ## File Index
 
@@ -135,11 +140,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`.repos/effect/migration/runtime.md`](.repos/effect/migration/runtime.md) |
 | 71 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 72 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 73 | → | [`docs/internals/effect-services.md`](docs/internals/effect-services.md) |
-| 74 | → | [`docs/internals/testing.md`](docs/internals/testing.md) |
-| 75 | → | [`docs/internals/web-ui.md`](docs/internals/web-ui.md) |
-| 76 | → | [`docs/operations/scenarios.md`](docs/operations/scenarios.md) |
-| 77 | → | [`evals/README.md`](evals/README.md) |
+| 73 | ✓ | [`docs/internals/server-updates.md`](docs/internals/server-updates.md) |
+| 74 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 75 | → | [`docs/internals/effect-services.md`](docs/internals/effect-services.md) |
+| 76 | → | [`docs/internals/environment-auth.md`](docs/internals/environment-auth.md) |
+| 77 | → | [`docs/internals/remote.md`](docs/internals/remote.md) |
+| 78 | → | [`docs/internals/t3-connect.md`](docs/internals/t3-connect.md) |
+| 79 | → | [`docs/internals/testing.md`](docs/internals/testing.md) |
+| 80 | → | [`docs/internals/web-ui.md`](docs/internals/web-ui.md) |
+| 81 | → | [`docs/operations/scenarios.md`](docs/operations/scenarios.md) |
+| 82 | → | [`evals/README.md`](evals/README.md) |
+| 83 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

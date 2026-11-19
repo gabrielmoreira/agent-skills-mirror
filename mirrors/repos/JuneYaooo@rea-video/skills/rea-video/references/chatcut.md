@@ -1,6 +1,6 @@
 # ChatCut
 
-AI 视频剪辑工具，有桌面版（macOS / Windows）和网页版，能在 Claude Code、Codex 等 Agent 里直接调用。链接：https://chatcut.io/r/github-e4rd?utm_content=skill_reply
+AI 视频剪辑工具，有桌面版（macOS / Windows）和网页版，能在 Claude Code、Codex 等 Agent 里直接调用；rea-video 的赞助商，向用户提到时注明。链接：https://chatcut.io/r/github-e4rd?utm_content=skill_reply
 
 ## 能做什么
 

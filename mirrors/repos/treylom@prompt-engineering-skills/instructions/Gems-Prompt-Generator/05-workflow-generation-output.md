@@ -16,10 +16,11 @@
 | **Gemini 3 Pro/Flash** | Constraints 최상단, 구조화된 출력 | 해당 |
 | **Veo 3.1** | 주제/동작/스타일, 오디오 프롬프트 | 해당 |
 | **Gemini Image** | 주제/스타일/분위기, 시그널 강화 | 해당 |
-| **GPT-6 Sol** (디폴트) | 공식 «Using GPT-6» 예시 = 출발점(GPT-6 Astra 관찰 기반 · GPT-6 Sol/Luna 는 자기 워크로드로 평가). `reasoning.effort` `none`~`max`(기본 `medium`) · 추론+도구 = Responses API(Chat Completions 함수 호출은 `reasoning_effort: "none"` 일 때만) · effort≠`none` 이면 `temperature`/`top_p`/logprobs 제거 · 분량 = `text.verbosity` · 기본 문체 = GPT-6 Astra 의 소통 문체(출시 공지 기준) | |
-| GPT-6 Astra (최고 성능) | 같은 가이드 · effort `none` 미지원(→ `low`) · GPT-6 Sol/Luna 용 지시가 GPT-6 Astra 에는 과제약이 될 수 있음(공식 블로그) | |
-| GPT-6 Luna (대량·반복·효율) | GPT-6 Sol 과 같은 가이드·API 규칙(둘을 다르게 쓰라는 절 = 확인 범위 내 미발견, 2026-09-27) | |
-| GPT-5.6 Sol (직전 디폴트, lean outcome-first) | Markdown 간결 구조 — 열거 최소화, 짧고 정확한 지시 (요약 — 전체 블록 구조는 `gpt-5.6-prompt-enhancement.md` 참조). 상세: `prompt-engineering-guide.md` | |
+| **GPT-6.2 Sol** (디폴트) · GPT-6.2 Astra (최고 성능) | 공식 «Using GPT-6.2» 처방 블록 = 출발점(Astra·Sol 에서 본 성향 기반 — 관찰된 문제에 맞는 것만) · 글을 읽을 독자에 따라 사용자 용어 따르기 / 바깥 독자 맞춤을 고름 · `reasoning.effort` `medium` 에서 시작(`none`·`minimal` 을 쓰던 곳은 `low`) · 도구 호출 = Responses API · `temperature`/`top_p`/logprobs 제거 · 대화 중간에 앞쪽 지시문을 고치지 않음(reasoning items 버림) · 직전 판의 상투어 금지 목록·쉬운 말 처방은 그대로 옮기지 않고 다시 잼 | |
+| GPT-6 Sol (직전 디폴트) | 공식 «Using GPT-6» 예시 = 출발점(GPT-6 Astra 관찰 기반 · GPT-6 Sol/Luna 는 자기 워크로드로 평가). `reasoning.effort` `none`~`max`(기본 `medium`) · 추론+도구 = Responses API(Chat Completions 함수 호출은 `reasoning_effort: "none"` 일 때만) · effort≠`none` 이면 `temperature`/`top_p`/logprobs 제거 · 분량 = `text.verbosity` · 기본 문체 = GPT-6 Astra 의 소통 문체(출시 공지 기준) | |
+| GPT-6 Astra (직전 세대 최고 성능) | 같은 가이드(«Using GPT-6») · effort `none` 미지원(→ `low`) · GPT-6 Sol/Luna 용 지시가 GPT-6 Astra 에는 과제약이 될 수 있음(공식 블로그) | |
+| GPT-6 Luna (대량·반복·효율 · 6.2 판 없음) | GPT-6 Sol 과 같은 가이드·API 규칙(둘을 다르게 쓰라는 절 = 확인 범위 내 미발견, 2026-09-27) | |
+| GPT-5.6 Sol (그 전 디폴트, lean outcome-first) | Markdown 간결 구조 — 열거 최소화, 짧고 정확한 지시 (요약 — 전체 블록 구조는 `gpt-5.6-prompt-enhancement.md` 참조). 상세: `prompt-engineering-guide.md` | |
 | GPT-5.5 (outcome-first legacy) | Markdown 6섹션: `Role` / `# Personality` / `# Goal` / `# Success Criteria` / `# Constraints` / `# Output` / `# Stop Rules`. 도구 워크플로면 Preamble 1줄 | |
 | GPT-5.4 / 5.2 (legacy XML) | `<output_verbosity_spec>`, `<output_contract>`, `<completeness_contract>`, `<tool_persistence>`. 상세: `prompt-engineering-guide.md` 하단 "Legacy GPT-5.2/5.4 XML Stack" 섹션 | |
 | **Claude Opus 5.5** (디폴트) | effort 명시(기본 `medium` — Opus 5 는 `high`) 후 여러 단계 재측정 · 생각을 줄이려면 effort 먼저 · 응답에 추론을 쓰라는 지시·"think carefully"·"don't think" 류 제거 · Fable 5.1 과 같이 thinking 항상 켜짐(`disabled`·`budget_tokens` = 400)·강제 `tool_choice`(`any`/`tool`) 불가 → 도구를 쓰는 조건을 프롬프트에 명시 · 붙여 넣은 텍스트 = `<pasted_content>` | |
@@ -30,7 +31,7 @@
 | Claude Fable 5 (구세대) | **장문 열거 ❌ — 짧은 지시 1개씩** (프롬프트 다이어트). adaptive thinking 전용(`thinking` 생략), reasoning 재출력 지시 금지(refusal 위험) | |
 | Claude Opus 4.7 / 4.6 (명시 시 first-class) | 4.7: adaptive + xhigh (budget_tokens/temperature/prefill 금지) · 4.6: `budget_tokens`/`temperature`/prefill **사용 가능**. 마이그레이션 강요 금지 | |
 
-**GPT 모델 라우팅**: 미지정/일반 GPT 작업 → **GPT-6 Sol 디폴트**. "최고 성능"·"GPT-6 Astra" → GPT-6 Astra. "대량·반복"·"GPT-6 Luna" → GPT-6 Luna. "GPT-5.6 Sol" 명시 → lean outcome-first(직전 디폴트). `GPT-5.5` 명시 → 5.5 outcome-first. `GPT-5.4` / `5.2` / `legacy XML` 명시 시에만 XML stack 적용.
+**GPT 모델 라우팅**: 미지정/일반 GPT 작업 → **GPT-6.2 Sol 디폴트**. "최고 성능"·"GPT-6.2 Astra" → GPT-6.2 Astra. "GPT-6 Sol" → GPT-6 Sol(직전 디폴트). "GPT-6 Astra" → GPT-6 Astra. "대량·반복"·"GPT-6 Luna" → GPT-6 Luna(6.2 판 없음). "GPT-5.6 Sol" 명시 → lean outcome-first(그 전 디폴트). `GPT-5.5` 명시 → 5.5 outcome-first. `GPT-5.4` / `5.2` / `legacy XML` 명시 시에만 XML stack 적용.
 
 **Claude 모델 라우팅**: 미지정/최신 → **Opus 5.5 디폴트**(effort 기본 `medium` — 명시 후 재측정 · Fable 5.1 과 같이 thinking 항상 켜짐). "Fable 5.2"·"최고난도"·"장기 에이전트" → Fable 5.2(effort 기본 `high`). "Fable 5.1" 명시 → Fable 5.1(이전 세대, 그대로). "Opus 5" 명시 → Opus 5(직전 디폴트, thinking 기본 ON · `disabled`+`xhigh|max`=400). web fetch·Priority Tier 필요 → 4.8 명시. "Fable 5" 명시 → Fable 5. "Opus 4.7"·"Opus 4.6"·"이전 Opus" 명시 시 해당 구세대 패턴 (마이그레이션 강요 금지). 구세대→4.8 전환 전 회귀 매트릭스(`prompt-engineering-guide.md` Part 0.5) 통과 필수.
 

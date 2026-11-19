@@ -99,8 +99,12 @@ export function planB4Picture(p) {
   return {schema:1,status:'planned',scope:'picture only',delivery_ready:false,author_id:spec.author_id,width:p.width,height:p.height,fps:p.fps,scope_start:0,scope_end:end,shots,...(p.height>p.width?{viewing_profile:'portrait-phone'}:{}),limits:LIMITS};
 }
 
+// One scratch canvas per snapshot size. Creating a new native canvas for every
+// sampled frame grew memory by megabytes per frame on long films (issue #129).
+const snapshotCanvases=new Map();
 function snapshot(canvas,width=320) {
-  const {createCanvas}=canvasAPI(),c=createCanvas(width,Math.round(width*canvas.height/canvas.width));
+  const {createCanvas}=canvasAPI(),height=Math.round(width*canvas.height/canvas.width),key=width+'x'+height;
+  let c=snapshotCanvases.get(key); if(!c)snapshotCanvases.set(key,c=createCanvas(width,height)); else c.getContext('2d').clearRect(0,0,width,height);
   c.getContext('2d').drawImage(canvas,0,0,c.width,c.height);
   return {width:c.width,height:c.height,data:c.getContext('2d').getImageData(0,0,c.width,c.height).data};
 }
@@ -141,12 +145,16 @@ function registration(a,b) {
   return {original,best,ratio:best/Math.max(original,EPS),transform};
 }
 
-export function checkB4PicturePaint(p,{draw,picture}) {
+// A generator, so the async variant can yield to the event loop after every shot
+// and native canvas memory is reclaimed during long films (issue #129).
+function* picturePaintShots(p,{draw,picture}) {
   const plan=planB4Picture(p);if(!plan)return null;
   need(typeof draw==='function'&&typeof picture==='function','full and picture-only painters are required');
   const metrics=[];
   for(const s of plan.shots) {
     const t=k=>s.frame_indices[k]/p.fps,opts={focusIds:s.layer_ids,principalMotionOnly:true,freezeAncestorsAt:t('before')};
+    const first=s.frame_indices.before,last=s.frame_indices.after,indices=[...new Set(Array.from({length:7},(_,i)=>Math.round(first+(last-first)*i/6)))];
+    yield [...PHASES.map(t), ...indices.map(i=>i/p.fps)];
     const states=Object.fromEntries(PHASES.map(k=>[k,snapshot(picture(t(k),opts))]));
     const empty=snapshot(picture(t('after'),{focusIds:['__b4_picture_empty__'],principalMotionOnly:true}));
     const full=Object.fromEntries(PHASES.map(k=>[k,snapshot(draw(t(k)))]));
@@ -169,7 +177,6 @@ export function checkB4PicturePaint(p,{draw,picture}) {
       need(Math.min(mid_from_before.mean,mid_from_after.mean)>=Math.max(.0008,change.mean*.12),'shot '+s.shot+' has no visible intermediate picture state; hard switching static images is not animated action');
       const composite=diff(visible.before,visible.after,s.region),composite_hold=diff(visible.before,visible.hold,s.region);
       need(composite.mean>=change.mean*.45&&composite.fraction>=change.fraction*.35&&composite_hold.mean>=held.mean*.45,'shot '+s.shot+' local image motion is obscured in the final composition; moving text/overlays cannot supply it');
-      const first=s.frame_indices.before,last=s.frame_indices.after,indices=[...new Set(Array.from({length:7},(_,i)=>Math.round(first+(last-first)*i/6)))];
       const series=indices.map(i=>snapshot(picture(i/p.fps,opts))),steps=series.slice(1).map((x,i)=>diff(series[i],x,s.region));
       need(steps.filter(d=>d.mean>=Math.max(.0004,change.mean*.04)).length>=2&&Math.max(...steps.map(x=>x.mean))<=Math.max(change.mean*.8,.003),'shot '+s.shot+' needs a continuous local transition, not a one-frame static cut');
       let global_registration;
@@ -180,6 +187,20 @@ export function checkB4PicturePaint(p,{draw,picture}) {
   }
   return {status:'paint_diagnostic_pass',diagnostic_status:'technical_only',review_status:'pending_independent_review',scope:'picture only',delivery_ready:false,plan,metrics,limits:LIMITS};
 }
+export function checkB4PicturePaint(p,options) {
+  const shots=picturePaintShots(p,options);let step;
+  while(!(step=shots.next()).done);
+  return step.value;
+}
+export async function checkB4PicturePaintAsync(p,options) {
+  const shots=picturePaintShots(p,options);let step;
+  while(!(step=shots.next()).done) {
+    await options.draw.prepare?.(step.value);
+    await options.picture.prepare?.(step.value);
+    await new Promise(setImmediate);
+  }
+  return step.value;
+}
 
 function probeSource(p,source,ffprobe) {
   const m=JSON.parse(command(ffprobe,['-v','error','-show_streams','-show_format','-of','json',source])),v=m.streams.find(s=>s.codec_type==='video'),[n,d]=String(v?.avg_frame_rate).split('/').map(Number);
@@ -188,7 +209,7 @@ function probeSource(p,source,ffprobe) {
   return {width:v.width,height:v.height,fps:p.fps,duration:Number(v.duration??m.format.duration)};
 }
 async function checkFile(p,source,draw,picture,ffmpeg) {
-  const diagnostic=checkB4PicturePaint(p,{draw,picture}),plan=diagnostic.plan,{createCanvas,loadImage}=canvasAPI();
+  const diagnostic=await checkB4PicturePaintAsync(p,{draw,picture}),plan=diagnostic.plan,{createCanvas,loadImage}=canvasAPI();
   // Decode to RGB before resizing, then use the same Canvas sampler as the
   // authored frame (also used by typography review). YUV-first scaling or a
   // different resize kernel can misclassify dense colored ink as render drift.
@@ -200,17 +221,22 @@ async function checkFile(p,source,draw,picture,ffmpeg) {
     need(raw.length===count*bytes,'actual output must contain every frame in the submitted scope');
     for(let j=0;j<count;j++) {
       pixels.data.set(raw.subarray(j*bytes,(j+1)*bytes));ctx.putImageData(pixels,0,0);
-      const i=start+j,actual=snapshot(decoded,width),expected=snapshot(draw(i/p.fps),width),d=diff(actual,expected);
+      const i=start+j;
+      await draw.prepare?.([i/p.fps]);
+      const actual=snapshot(decoded,width),expected=snapshot(draw(i/p.fps),width),d=diff(actual,expected);
       need(d.mean<=.03&&d.fraction<=.09,'exported frame '+i+' does not match current authored composition');max_mean=Math.max(max_mean,d.mean);
       const s=plan.shots.find(s=>i>=s.clip_start_frame&&i<s.clip_end_frame);
       if(s){const local=diff(actual,expected,s.region);need(local.mean<=.04&&local.fraction<=.18,'exported picture frame '+i+' differs in shot '+s.shot);}
     }
+    await new Promise(setImmediate); // let native canvas memory be reclaimed between decode chunks (issue #129)
   }
   const phase_matches=[];
   // Substitute only the selected picture difference over the current composed
   // background. Codec tolerance must not permit freezing a subtle local action.
   for(const s of plan.shots.filter(s=>s.kind!=='motivated_hold'))for(const [phase,next] of [['before','mid'],['mid','after'],['hold','before']]) {
     const t=s.frame_indices[phase]/p.fps,otherT=s.frame_indices[next]/p.fps,opts={focusIds:s.layer_ids,principalMotionOnly:true,freezeAncestorsAt:s.frame_indices.before/p.fps};
+    await draw.prepare?.([t]);
+    await picture.prepare?.([t,otherT]);
     const actual=snapshot(await loadImage(command(ffmpeg,['-v','error','-ss',String(t),'-i',source,'-frames:v','1','-c:v','png','-threads:v','1','-f','image2pipe','pipe:1']))),authored=snapshot(draw(t)),isolated=snapshot(picture(t,opts)),other=snapshot(picture(otherT,opts));
     let currentError=0,alternativeError=0,count=0;
     const r=s.region,x0=Math.floor(r.x/4),y0=Math.floor(r.y/4),x1=Math.min(actual.width,Math.ceil((r.x+r.w)/4)),y1=Math.min(actual.height,Math.ceil((r.y+r.h)/4));

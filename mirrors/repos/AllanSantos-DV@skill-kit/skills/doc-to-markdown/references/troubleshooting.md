@@ -20,7 +20,7 @@ Common issues encountered during document-to-Markdown conversion and their solut
    .venv\Scripts\activate     # Windows
    pip install markitdown
    ```
-4. For `markitdown[all]` failures, install base first, then optional deps:
+4. For `markitdown[all]` failures, install base first, then optional deps (`[all]` can resolve to an old version because of a pre-release extra: check `markitdown --version`, or install explicit extras such as `'markitdown[docx,pptx,xlsx,pdf]'`, or `pip install -U markitdown`):
    ```bash
    pip install markitdown
    pip install 'markitdown[all]'
@@ -31,7 +31,7 @@ Common issues encountered during document-to-Markdown conversion and their solut
 **Symptom**: Image-based content is not extracted; empty output for scanned PDFs or images.
 
 **Solutions**:
-1. Install with OCR support: `pip install 'markitdown[all]'`
+1. Install the OCR plugin: `pip install markitdown-ocr openai`, then pass `enable_plugins=True` with `llm_client` and `llm_model` (or use `python scripts/convert.py --ocr --llm-model <model>`). Without `llm_client` the OCR is skipped silently
 2. Verify Tesseract is available: `tesseract --version`
 3. On Windows, install Tesseract separately and add to PATH
 4. On Linux: `apt install tesseract-ocr`
@@ -108,7 +108,7 @@ Common issues encountered during document-to-Markdown conversion and their solut
 **Symptom**: Output contains `![](image1.png)` but no actual image content.
 
 **Solutions**:
-1. Use `markitdown[all]` for OCR-based image descriptions
+1. Use the `markitdown-ocr` plugin with an LLM client for text in images
 2. Use pandoc with `--extract-media`:
    ```bash
    pandoc -f docx -t gfm --extract-media=./media file.docx -o output.md
@@ -165,9 +165,9 @@ Common issues encountered during document-to-Markdown conversion and their solut
 **Symptom**: markitdown returns blank or very little text from a PDF.
 
 **Solutions**:
-1. The PDF is likely image-based (scanned). Install OCR:
+1. The PDF is likely image-based (scanned). Install the OCR plugin and give it an LLM client:
    ```bash
-   pip install 'markitdown[all]'
+   pip install markitdown-ocr openai
    ```
 2. Use PyMuPDF with OCR:
    ```python

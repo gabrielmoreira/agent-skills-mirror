@@ -90,15 +90,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/adr-skill/scripts/bootstrap_adr.js`](skills/adr-skill/scripts/bootstrap_adr.js) |
 | 30 | ✓ | [`skills/adr-skill/scripts/new_adr.js`](skills/adr-skill/scripts/new_adr.js) |
 | 31 | ✓ | [`skills/adr-skill/SKILL.md`](skills/adr-skill/SKILL.md) |
-| 32 | ✓ | [`skills/capture-api-response-test-fixture/SKILL.md`](skills/capture-api-response-test-fixture/SKILL.md) |
-| 33 | ✓ | [`skills/develop-ai-functions-example/SKILL.md`](skills/develop-ai-functions-example/SKILL.md) |
-| 34 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
-| 35 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
-| 36 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
-| 37 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
-| 38 | ✓ | [`skills/update-harness-dependencies/SKILL.md`](skills/update-harness-dependencies/SKILL.md) |
-| 39 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
-| 40 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 32 | ✓ | [`skills/ai-sdk/SKILL.md`](skills/ai-sdk/SKILL.md) |
+| 33 | ✓ | [`skills/capture-api-response-test-fixture/SKILL.md`](skills/capture-api-response-test-fixture/SKILL.md) |
+| 34 | ✓ | [`skills/develop-ai-functions-example/SKILL.md`](skills/develop-ai-functions-example/SKILL.md) |
+| 35 | ✓ | [`skills/list-npm-package-content/scripts/list-package-files.sh`](skills/list-npm-package-content/scripts/list-package-files.sh) |
+| 36 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
+| 37 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
+| 38 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
+| 39 | ✓ | [`skills/update-harness-dependencies/SKILL.md`](skills/update-harness-dependencies/SKILL.md) |
+| 40 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
 | 41 | → | [`contributing/secure-url-handling.md`](contributing/secure-url-handling.md) |
 
 ---

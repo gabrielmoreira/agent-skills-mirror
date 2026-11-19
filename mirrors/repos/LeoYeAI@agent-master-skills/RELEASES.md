@@ -3,6 +3,18 @@
 每次更新的详细发布说明。
 
 
+## v0.22.13 — 2026-11-19
+
+### 🚀 日更：新增 1 个 Skills，总计 3227
+
+来源：头部技能仓库（obra/superpowers、addyosmani/agent-skills、wshobson/agents 等），按质量规则筛选（SKILL.md 800B-30KB、完整 YAML 元数据、有效 description）。
+
+#### 部分新增亮点（前 30 个）
+- `accessibility-engineering` — Audits existing interfaces for WCAG 2.2 AA conformance and remediates the violations found. Use when auditing a page or 
+
+---
+
+
 ## v0.22.12 — 2026-11-18
 
 ### 🚀 日更：新增 6 个 Skills，总计 3226

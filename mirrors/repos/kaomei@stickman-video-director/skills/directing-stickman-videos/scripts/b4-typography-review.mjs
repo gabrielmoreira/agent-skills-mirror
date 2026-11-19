@@ -143,9 +143,13 @@ export function planB4Typography(p) {
 
 const diagnosticMoments=plan=>[...plan.moments,...plan.caption_diagnostics];
 
+// One scratch canvas per snapshot size. Creating a new native canvas for every
+// sampled frame grew memory by megabytes per frame on long films (issue #129).
+const snapshotCanvases=new Map();
 function snapshot(canvas, width=320) {
-  const {createCanvas}=canvasAPI();
-  const c=createCanvas(width,Math.round(width*canvas.height/canvas.width)); c.getContext('2d').drawImage(canvas,0,0,c.width,c.height);
+  const {createCanvas}=canvasAPI(),height=Math.round(width*canvas.height/canvas.width),key=width+'x'+height;
+  let c=snapshotCanvases.get(key); if(!c)snapshotCanvases.set(key,c=createCanvas(width,height)); else c.getContext('2d').clearRect(0,0,width,height);
+  c.getContext('2d').drawImage(canvas,0,0,c.width,c.height);
   return {width:c.width,height:c.height,data:c.getContext('2d').getImageData(0,0,c.width,c.height).data};
 }
 function diff(a,b,r) {
@@ -154,11 +158,14 @@ function diff(a,b,r) {
   for(let j=y;j<y+h;j++) for(let i=x;i<x+w;i++) {const n=(j*a.width+i)*4,d=(Math.abs(a.data[n]-b.data[n])+Math.abs(a.data[n+1]-b.data[n+1])+Math.abs(a.data[n+2]-b.data[n+2]))/(3*255);sum+=d;if(d>.035)changed++;}
   return {mean:sum/(w*h),fraction:changed/(w*h)};
 }
-export function checkB4TypographyPaint(p,{draw}) {
+// A generator, so the async variant can yield to the event loop after every moment
+// and native canvas memory is reclaimed during long films (issue #129).
+function* typographyPaintMoments(p,{draw}) {
   const plan=planB4Typography(p); if(!plan)return null;
   need(typeof draw==='function','authored painter is required'); const metrics=[];
   for(const m of diagnosticMoments(plan)) {
     const at=k=>m.frame_indices[k]/p.fps;
+    yield PHASES.map(at);
     const frames=Object.fromEntries(PHASES.map(k=>[k,snapshot(draw(at(k),{focusIds:m.layer_ids}))]));
     const without=snapshot(draw(at('settled'),{focusIds:['__b4_typography_empty__']}));
     const ink=diff(frames.settled,without,m.region),entry_mid=diff(frames.entry,frames.mid,m.region),mid_settled=diff(frames.mid,frames.settled,m.region);
@@ -182,6 +189,19 @@ export function checkB4TypographyPaint(p,{draw}) {
   }
   return {status:'paint_diagnostic_pass',plan,metrics,limits:LIMITS};
 }
+export function checkB4TypographyPaint(p,options) {
+  const moments=typographyPaintMoments(p,options);let step;
+  while(!(step=moments.next()).done);
+  return step.value;
+}
+export async function checkB4TypographyPaintAsync(p,options) {
+  const moments=typographyPaintMoments(p,options);let step;
+  while(!(step=moments.next()).done) {
+    await options.draw.prepare?.(step.value);
+    await new Promise(setImmediate);
+  }
+  return step.value;
+}
 
 function probeSource(p,source,ffprobe) {
   const m=JSON.parse(command(ffprobe,['-v','error','-show_streams','-show_format','-of','json',source]));const v=m.streams.find(s=>s.codec_type==='video');
@@ -192,7 +212,7 @@ function probeSource(p,source,ffprobe) {
 }
 async function checkFile(p,source,draw,ffmpeg) {
   const {loadImage,createCanvas}=canvasAPI();
-  const diagnostic=checkB4TypographyPaint(p,{draw}),plan=diagnostic.plan,width=Math.min(160,Math.max(1,Math.round(160*p.width/p.height))),height=Math.round(width*p.height/p.width),n=Math.ceil(plan.scope_end*p.fps-EPS);
+  const diagnostic=await checkB4TypographyPaintAsync(p,{draw}),plan=diagnostic.plan,width=Math.min(160,Math.max(1,Math.round(160*p.width/p.height))),height=Math.round(width*p.height/p.width),n=Math.ceil(plan.scope_end*p.fps-EPS);
   // Decode native pixels, then downsample both sides with the same Canvas
   // kernel. Mixing FFmpeg bilinear with Canvas filtering falsely flags dense
   // portrait glyph edges; changing the tolerance would hide real differences.
@@ -204,12 +224,15 @@ async function checkFile(p,source,draw,ffmpeg) {
     need(raw.length===count*sourceFrameBytes,'actual output must contain every current final-video frame');
     for(let j=0;j<count;j++) {
     decodedPixels.data.set(raw.subarray(j*sourceFrameBytes,(j+1)*sourceFrameBytes));decodedContext.putImageData(decodedPixels,0,0);
-    const i=start+j,actual=snapshot(decoded,width),authored=snapshot(draw(i/p.fps),width),d=diff(actual,authored,{x:0,y:0,w:1280,h:1280*p.height/p.width});
+    const i=start+j;
+    await draw.prepare?.([i/p.fps]);
+    const actual=snapshot(decoded,width),authored=snapshot(draw(i/p.fps),width),d=diff(actual,authored,{x:0,y:0,w:1280,h:1280*p.height/p.width});
     need(d.mean<=.03&&d.fraction<=.09,'exported frame '+i+' does not match current authored composition');max_mean=Math.max(max_mean,d.mean);
     for(const m of diagnosticMoments(plan)) if(i>=m.clip_start_frame&&i<m.clip_end_frame) {
       const local=diff(actual,authored,m.region);need(local.mean<=.04&&local.fraction<=.18,'exported typography frame '+i+' differs for '+m.id);
     }
     }
+    await new Promise(setImmediate); // let native canvas memory be reclaimed between decode chunks (issue #129)
   }
   // A broad codec tolerance alone would allow stripping a subtle settle. Test
   // the glyph pixels that distinguish each phase from its next authored phase.
@@ -218,6 +241,7 @@ async function checkFile(p,source,draw,ffmpeg) {
   const phase_matches=[];
   for(const m of diagnosticMoments(plan).filter(m=>m.kind!=='environment_marking')) for(const [phase,next] of [['entry','mid'],['mid','settled']]) {
     const t=m.frame_indices[phase]/p.fps,actualImage=await loadImage(command(ffmpeg,['-v','error','-ss',String(t),'-i',source,'-frames:v','1','-c:v','png','-threads:v','1','-f','image2pipe','pipe:1']));
+    await draw.prepare?.([t,m.frame_indices[next]/p.fps]);
     const actual=snapshot(actualImage),authored=snapshot(draw(t)),isolated=snapshot(draw(t,{focusIds:m.layer_ids})),other=snapshot(draw(m.frame_indices[next]/p.fps,{focusIds:m.layer_ids}));
     let currentError=0,alternativeError=0,count=0;
     const r=m.region,x0=Math.floor(r.x/4),y0=Math.floor(r.y/4),x1=Math.min(actual.width,Math.ceil((r.x+r.w)/4)),y1=Math.min(actual.height,Math.ceil((r.y+r.h)/4));

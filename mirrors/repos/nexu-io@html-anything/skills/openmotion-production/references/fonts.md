@@ -29,7 +29,7 @@ node --experimental-strip-types <runtime>/scripts/font-specimen.ts <request.json
 
 Source installations resolve the parser from their installed dependencies. For an extracted plugin whose dependencies live separately, append `--runtime-root <existing-locked-runtime>`: the directory containing the `node_modules` used by `hyperframesCli` in project details. This selects an already installed parser; it does not install dependencies or acquire fonts.
 
-Supply JSON in this shape, replacing the example copy, dimensions, roles and candidates with this task's inputs. `sourcePath` is a selected `files[].sourcePath` from preparation; `licensePath` is the same preparation's returned path. All resource paths must be absolute. Prepare each candidate at the role's weight first.
+Supply JSON in this shape, replacing the example copy, dimensions, roles and candidates with this task's inputs. `sourcePath` is a selected `files[].sourcePath` from preparation; `licensePath` is the same preparation's returned path and must sit in the same directory as the font file, because import rejects a licence from another folder with `FONT_LICENSE_NOT_BESIDE_FONT`. All resource paths must be absolute. Prepare each candidate at the role's weight first.
 
 ```json
 {
@@ -64,6 +64,8 @@ Open `index.html` with a host browser, wait for its supplied-font load status, t
 ## Use the normal project write boundary
 
 For managed projects, pass the returned `importItems` to `openmotion_import_assets` with the explicit projectId and a fresh requestId. Keep itemIds for retries. The Tool parses real font bytes, copies the optional license into the same version and returns actual metadata and project-relative `fontFaceCss`. Font-only imports do not require FFmpeg. This does not place text or edit a composition.
+
+Every family named in a composition's `font-family` needs an `@font-face` unless the font check resolves it automatically; otherwise preview and export stop with `font_family_without_font_face`. OS-bundled faces with no downloadable file, such as PingFang SC, Hiragino Sans GB or Microsoft YaHei in Brand Kit `tokens.css` stacks, are declared with `@font-face{font-family:'PingFang SC';src:local('PingFang SC')}`; a generator Skill that omits this is fixed in its script, not by hand-editing its output.
 
 Read the project's new revision/version, then save the needed @font-face and text styling through `openmotion_edit_project`. Returned CSS paths are relative to the project root; adjust relative URLs when authoring a stylesheet in a nested folder. Follow [Typography](typography.md) for real-copy, mixed-language and rendered-face checks.
 

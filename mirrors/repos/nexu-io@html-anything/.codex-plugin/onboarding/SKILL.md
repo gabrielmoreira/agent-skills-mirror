@@ -5,7 +5,7 @@ description: Show the welcome and three embedded project-preview cards; accept a
 
 # OpenMotion onboarding
 
-Follow the [shared installation contract](../../docs/install-onboarding.md#installation-success-reply). Open the library and deliver the maintained welcome followed by the prepared self-contained HTML cards. These are silent project renders, not original reference films. Accept automatic current-chat MCP activation independently; registration, a later connected chat and an independent probe do not prove it.
+Follow the [shared installation contract](../../docs/install.md#installation-success-reply). Open the library and deliver the maintained welcome followed by the prepared self-contained HTML cards. These are silent project renders, not original reference films. Accept automatic current-chat MCP activation independently; registration, a later connected chat and an independent probe do not prove it.
 
 1. **Reuse setup.** Preserve its application, workspace, language and frozen three-of-four selection. If setup supplied no result, run the installed `node --experimental-strip-types scripts/install-onboarding.mjs` once with the connection's workspace and request language. Never reinstall or enqueue a user message.
 2. **Check connection only as needed.** Reuse a successful same-chat workspace read from `hostHandoff.hostSessionVerified`; otherwise use a working native `openmotion_get_project` once. Registration or a separate process probe does not prove current-chat activation. If setup queued a refresh, finish this tool step and run the saved recovery command once; do not reload again. An unavailable host control path does not block prepared HTML delivery. Read the contract's automatic-activation section only for a connection failure; do not scan sockets, change security or restart the host.
@@ -16,4 +16,4 @@ If neither card route is displayable, use the maintained three-paragraph `welcom
 
 The four-entry pool stays unchanged. Only the selected three prebuilt videos, posters and metadata enter the document. Original reference media stay in the separate native adapter. A readable prepared file does not prove visible delivery.
 
-Use `zh`, `en`, `ja`, `ko`, `fr`, `es` or `pt` from the latest user request, otherwise `en`. Recreate prepares an unsent draft through a negotiated host extension, or copies the brief with a floating Toast. Only the user-sent brief authorizes creation/export. Continue an accepted recommendation through [accepted template selection](../../docs/install-onboarding.md#accepted-template-selection).
+Use `zh`, `en`, `ja`, `ko`, `fr`, `es` or `pt` from the latest user request, otherwise `en`. Recreate prepares an unsent draft through a negotiated host extension, or copies the brief with a floating Toast. Only the user-sent brief authorizes creation/export. Continue an accepted recommendation through [accepted template selection](../../docs/install.md#accepted-template-selection).

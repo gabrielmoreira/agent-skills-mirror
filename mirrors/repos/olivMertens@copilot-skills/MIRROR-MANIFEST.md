@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `olivMertens/copilot-skills` — 26 default patterns, 1 followed patterns, 45 file(s) materialized.
+Mirror of `olivMertens/copilot-skills` — 26 default patterns, 1 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `olivMertens/copilot-skills` — 26 default patterns, 1 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 45 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,17 +93,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`skills/hyperframes-video/references/cli-and-composition.txt`](skills/hyperframes-video/references/cli-and-composition.txt) |
 | 33 | ✓ | [`skills/hyperframes-video/references/storyboard-and-visuals.txt`](skills/hyperframes-video/references/storyboard-and-visuals.txt) |
 | 34 | ✓ | [`skills/hyperframes-video/SKILL.md`](skills/hyperframes-video/SKILL.md) |
-| 35 | ✓ | [`skills/linkedin-post/references/linkedin-playbook.md`](skills/linkedin-post/references/linkedin-playbook.md) |
-| 36 | ✓ | [`skills/linkedin-post/references/questionnaire.md`](skills/linkedin-post/references/questionnaire.md) |
-| 37 | ✓ | [`skills/linkedin-post/references/tone-and-voice.md`](skills/linkedin-post/references/tone-and-voice.md) |
-| 38 | ✓ | [`skills/linkedin-post/SKILL.md`](skills/linkedin-post/SKILL.md) |
-| 39 | ✓ | [`skills/reveal-slide-builder/assets/diagram-walkthrough-example.html`](skills/reveal-slide-builder/assets/diagram-walkthrough-example.html) |
-| 40 | ✓ | [`skills/reveal-slide-builder/assets/diagram-walkthrough.css`](skills/reveal-slide-builder/assets/diagram-walkthrough.css) |
-| 41 | ✓ | [`skills/reveal-slide-builder/assets/diagram-walkthrough.js`](skills/reveal-slide-builder/assets/diagram-walkthrough.js) |
-| 42 | ✓ | [`skills/reveal-slide-builder/README.md`](skills/reveal-slide-builder/README.md) |
-| 43 | ✓ | [`skills/reveal-slide-builder/references/diagram-walkthrough.md`](skills/reveal-slide-builder/references/diagram-walkthrough.md) |
-| 44 | ✓ | [`skills/reveal-slide-builder/SKILL.md`](skills/reveal-slide-builder/SKILL.md) |
-| 45 | → | [`README.md`](README.md) |
+| 35 | ✓ | [`skills/interactive-workshop-deck/assets/preview-population.png`](skills/interactive-workshop-deck/assets/preview-population.png) |
+| 36 | ✓ | [`skills/interactive-workshop-deck/assets/preview-simulation.png`](skills/interactive-workshop-deck/assets/preview-simulation.png) |
+| 37 | ✓ | [`skills/interactive-workshop-deck/assets/starter.html`](skills/interactive-workshop-deck/assets/starter.html) |
+| 38 | ✓ | [`skills/interactive-workshop-deck/evals/evals.json`](skills/interactive-workshop-deck/evals/evals.json) |
+| 39 | ✓ | [`skills/interactive-workshop-deck/references/adaptation-workflow.md`](skills/interactive-workshop-deck/references/adaptation-workflow.md) |
+| 40 | ✓ | [`skills/interactive-workshop-deck/references/customization-questionnaire.md`](skills/interactive-workshop-deck/references/customization-questionnaire.md) |
+| 41 | ✓ | [`skills/interactive-workshop-deck/references/slide-patterns.md`](skills/interactive-workshop-deck/references/slide-patterns.md) |
+| 42 | ✓ | [`skills/interactive-workshop-deck/SKILL.md`](skills/interactive-workshop-deck/SKILL.md) |
+| 43 | ✓ | [`skills/linkedin-post/references/linkedin-playbook.md`](skills/linkedin-post/references/linkedin-playbook.md) |
+| 44 | ✓ | [`skills/linkedin-post/references/questionnaire.md`](skills/linkedin-post/references/questionnaire.md) |
+| 45 | ✓ | [`skills/linkedin-post/references/tone-and-voice.md`](skills/linkedin-post/references/tone-and-voice.md) |
+| 46 | ✓ | [`skills/linkedin-post/SKILL.md`](skills/linkedin-post/SKILL.md) |
+| 47 | ✓ | [`skills/reveal-slide-builder/assets/diagram-walkthrough-example.html`](skills/reveal-slide-builder/assets/diagram-walkthrough-example.html) |
+| 48 | ✓ | [`skills/reveal-slide-builder/assets/diagram-walkthrough.css`](skills/reveal-slide-builder/assets/diagram-walkthrough.css) |
+| 49 | ✓ | [`skills/reveal-slide-builder/assets/diagram-walkthrough.js`](skills/reveal-slide-builder/assets/diagram-walkthrough.js) |
+| 50 | ✓ | [`skills/reveal-slide-builder/README.md`](skills/reveal-slide-builder/README.md) |
+| 51 | ✓ | [`skills/reveal-slide-builder/references/diagram-walkthrough.md`](skills/reveal-slide-builder/references/diagram-walkthrough.md) |
+| 52 | ✓ | [`skills/reveal-slide-builder/SKILL.md`](skills/reveal-slide-builder/SKILL.md) |
+| 53 | → | [`README.md`](README.md) |
 
 ---
 

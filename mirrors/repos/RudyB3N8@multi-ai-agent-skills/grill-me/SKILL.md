@@ -11,6 +11,16 @@ Elle fusionne le meilleur de l'exploration d'alternatives (Design Thinking) et d
 
 ---
 
+## Contrat de réutilisation de la méthode
+
+La méthode contradictoire réunit les instructions d'inspection, de cadrage, d'exploration des choix, de questionnement et de synthèse. Une compétence peut la réutiliser en adaptant son interlocuteur et sa restitution, sans reprendre les suites de planification ou d'implémentation propres à `grill-me`. Pour une utilisation directe de `grill-me`, l'interview et la validation explicite par l'utilisateur restent inchangées.
+
+La compétence [grill-agent](../grill-agent/SKILL.md), lorsqu'elle est installée, utilise la méthode actuelle avec ses propres adaptations : l'agent principal est interrogé, le relecteur reste en lecture seule et ne passe pas au mode Plan.
+
+Lors d'une évolution de `grill-me`, conserve la possibilité d'identifier et de réutiliser cette méthode selon sa finalité, indépendamment du titre, de l'ordre ou de la numérotation des étapes. Les améliorations compatibles de la méthode doivent aussi bénéficier à ses utilisations adaptées. Si une modification rompt ce contrat, vérifie et adapte `grill-agent` dans le même changement lorsqu'il est disponible ; sinon, signale la rupture. L'absence de `grill-agent` ne bloque pas l'utilisation de `grill-me`.
+
+---
+
 ## RÈGLE FONDAMENTALE : ZÉRO CODE SANS ALIGNEMENT VALIDÉ
 
 Tu as l'interdiction formelle d'écrire, de modifier du code source, de lancer des commandes destructrices ou d'initialiser des composants **AVANT** d'avoir mené l'interview à son terme et obtenu la validation claire et explicite de l'utilisateur sur le design final.
@@ -70,10 +80,30 @@ Une fois les décisions arrêtées :
    - Composants impactés et fichiers cibles identifiés.
 2. Demande la validation explicite de l'utilisateur.
 
-### Étape 5 : Transition vers le plan d'implémentation
-Dès que l'utilisateur confirme son accord :
-- Ne commence pas à coder à l'aveugle.
-- Invite l'utilisateur à lancer le mode de Planification natif de son outil pour découper l'implémentation en sous-tâches :
-  - **Sous Google Antigravity :** Propose d'enchaîner avec la commande `/plan`.
-  - **Sous GitHub Copilot :** Propose de basculer en mode `Plan`.
-  - **Sous OpenAI ChatGPT / Codex :** Propose d'invoquer `$plan`.
+### Étape 5 : Suite adaptée et planification conditionnelle
+
+Après la validation explicite du design, détermine si une mise en œuvre est souhaitée et si une planification supplémentaire apporte une réelle valeur. Propose le mode Plan lorsque la complexité, les dépendances, les risques ou le besoin de revue justifient un découpage ; explique brièvement pourquoi et laisse l'utilisateur choisir.
+
+Ne propose pas de changer de mode pour une simple discussion, une modification évidente ou un plan existant déjà suffisant, sauf demande explicite de l'utilisateur. Si le mode Plan est déjà actif, élabore ou poursuis le plan si nécessaire, sans demander de le réactiver.
+
+La validation du design ne vaut pas, à elle seule, demande d'implémentation. Si la réalisation a été expressément demandée, respecte cette demande et les permissions de l'environnement ; sinon, termine par la synthèse sans modifier de fichiers.
+
+**Lorsque le mode Plan est pertinent :**
+1. Identifie l'outil et son interface ; ne suppose pas que les mêmes commandes existent dans toutes les interfaces.
+2. Indique uniquement les étapes correspondant à l'interface utilisée, en t'appuyant sur les indications ci-dessous. Demande de reprendre les décisions validées dans le plan.
+3. Si l'interface ou la disponibilité du mode est incertaine, demande la précision nécessaire ou consulte la documentation officielle ; n'invente pas de commande. Les libellés et raccourcis peuvent varier selon la version.
+
+| Outil et interface | Activation |
+| :--- | :--- |
+| **GitHub Copilot app** | Dans la session, ouvre le sélecteur de mode sous la zone de saisie et choisis **Plan**. [Documentation GitHub](https://docs.github.com/en/copilot/how-tos/github-copilot-app/agent-sessions#choosing-a-session-mode). |
+| **GitHub Copilot dans un IDE compatible** | Ouvre Copilot Chat et choisis **Plan** dans le sélecteur d'agents en bas du panneau. [Documentation GitHub](https://docs.github.com/en/copilot/how-tos/copilot-in-your-ide/use-copilot-agents/use-plan-mode). |
+| **GitHub Copilot CLI interactif** | Dans la zone de saisie, appuie sur **Maj+Tab** jusqu'au mode **Plan**. [Documentation GitHub](https://docs.github.com/en/copilot/concepts/copilot-surfaces/copilot-cli). |
+| **Google Antigravity app ou IDE** | Dans le panneau de l'agent, ouvre le sélecteur de mode et choisis **Planning**. [Documentation Google](https://antigravity.google/docs/ide/agent-side-panel). |
+| **Google Antigravity CLI interactif** | Dans la zone de saisie, appuie sur **Maj+Tab** jusqu'à **plan**, puis vérifie l'indicateur de mode. [Documentation Google](https://antigravity.google/docs/cli/modes). |
+| **Codex app** | Dans la zone de saisie, tape `/plan` puis valide pour basculer en mode Plan. [Documentation OpenAI](https://learn.chatgpt.com/docs/reference/slash-commands). |
+| **Codex CLI interactif** | Dans la zone de saisie, tape `/plan` puis valide, ou utilise **Maj+Tab** jusqu'au mode Plan. [Documentation OpenAI](https://learn.chatgpt.com/guides/best-practices). |
+| **Autre interface Codex** | Vérifie si son sélecteur propose **Plan** et consulte sa documentation ; ne présume pas que les commandes de l'application ou du CLI y sont disponibles. |
+| **Claude Code (CLI, VS Code ou JetBrains)** | Utilise **Maj+Tab** jusqu'au mode **Plan** ou préfixe la demande de planification par `/plan`. En CLI, une session peut aussi démarrer avec `claude --permission-mode plan`. [Documentation Anthropic](https://code.claude.com/docs/en/permission-modes). |
+| **Autre interface Claude** | Ne présume pas qu'elle expose le mode de Claude Code ; vérifie son sélecteur et sa documentation officielle avant d'indiquer une méthode. |
+
+Sous Antigravity, préviens que la politique de revue des artefacts **Always proceed** peut poursuivre automatiquement ; si une validation manuelle est nécessaire, indique l'option **Request review** dans les paramètres de l'agent, lorsqu'elle est disponible. [Documentation Google](https://antigravity.google/docs/artifact-review).

@@ -1,6 +1,6 @@
 # First-run template experience
 
-Read for an accepted first-run template recommendation (including a curated reference that continues through recreation) or a submitted recommendation-card brief. Initial installation reply rules and few-shots remain in `docs/install-onboarding.md`, section “Installation-success reply”; this procedure resumes creation after consent.
+Read for an accepted first-run template recommendation (including a curated reference that continues through recreation) or a submitted recommendation-card brief. Initial installation reply rules and few-shots remain in `docs/install.md`, section “Installation-success reply”; this procedure resumes creation after consent.
 
 ## First-run experience defaults
 

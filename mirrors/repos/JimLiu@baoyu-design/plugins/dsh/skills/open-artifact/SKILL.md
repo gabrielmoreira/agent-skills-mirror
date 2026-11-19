@@ -1,16 +1,17 @@
 ---
 name: open-artifact
-description: Make a new artifact of one Open Artifact type (design, slides, whiteboard, design-system, …) with the Artifact tool. The person types `/open-artifact <type> <what to make>`.
+description: Make a new artifact of one Open Artifact type (design, slides, whiteboard, sheets, data, docs, design-system, …) with the Artifact tool. The person types `/open-artifact <type> <what to make>`.
 ---
 
 # Make an artifact: `/open-artifact <type> <what to make>`
 
 The person started this message with `/open-artifact`. The first word after it is the **type id** of the artifact to make
-(`design`, `slides`, `whiteboard`, `design-system`, …); the rest of the message is what they want in it.
+(`design`, `slides`, `whiteboard`, `sheets`, `data`, `docs`, `design-system`, …); the rest of the message is what they want in it.
 
 1. Take the type id from the first word. If there is none, or it is not one of the installed types listed below, ask
    which type they want (list the installed ones) and stop until they answer. Words like "deck" or "presentation"
-   mean `slides`; "canvas", "UI" or "mockup" mean `design`; "board" means `whiteboard`.
+   mean `slides`; "canvas", "UI" or "mockup" mean `design`; "board" means `whiteboard`; "dashboard", "report",
+   "metrics" or "chart" mean `data`; "spreadsheet", "workbook" or "budget" mean `sheets`; "doc", "document", "write-up", "proposal", "memo" or "notes" mean `docs`; "brand", "tokens" or "design system" mean `design-system`.
 2. If the request needs details only the person has (the topic, the content, the brand) and the message gives none,
    ask in one short question. Otherwise go ahead.
 3. Create it: `Artifact {action: "publish", type_url: "open-artifact://type/<type id>", title: "<a short title>", open: "after_first_write"}`.

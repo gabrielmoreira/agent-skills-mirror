@@ -52,6 +52,14 @@ answers where one exists (`Thanks @handle (#147).`), and with **no commit hash**
 exist yet, and the release commit adds it. The lead is what the GitHub Release page prints, so
 write it as the sentence an operator reads there. Do not touch the three version files.
 
+**Write every bullet for a person who has not read the code.** Crisp and short, but with context:
+the bold lead says the result a person sees, and the detail says in one or two sentences why it
+matters to them. A new concept gets one plain sentence of what it is and why a person would want it
+the first time it appears (what a trick is, before any bullet that uses the word), and later bullets
+build on it. Never a bare term the reader has not met, never a file, function, wire field, test or
+milestone name. (Altan, 2026-11-18, after the 1.29.0 section shipped at about 410 lines and opened
+with "a trick can let a session's own agent draw one screen", before it said what a trick is.)
+
 **A release needs something to ship.** Before you cut one, read `git log --oneline <last tag>..HEAD`.
 If the range holds only docs, tests and chores, do not release: the docs go out with the next real
 release or on the docs line (below), and the site's docs sync follows either. A docs-only release makes every self-updating lane
@@ -65,7 +73,12 @@ release. 1.14.2 was cut this way on 2026-09-28.
    - **PATCH** (`0.2.0 → 0.2.1`): nothing to learn. Bug fixes, internal refactors, and small
      additions that build on an existing verb or screen and change nothing about how you already
      use Collie: a QR printed beside the pairing code, an extra column in `devices list`, a new
-     flag with a safe default. The phone folds a patch-only delta into its weekly update digest
+     flag with a safe default. **A PATCH also carries additions to a feature that is still
+     experimental**: one that is off until switched on in Settings, Experiments, or that its docs
+     mark as an experiment, such as tricks and the Hill. A new place, part, manifest key or right
+     for such a feature is a patch, and `docs/tricks.md` already tells trick authors that tricks
+     may change in a patch release (Altan, 2026-11-18). A fix still must not break a trick that
+     works today without saying so in the changelog. The phone folds a patch-only delta into its weekly update digest
      (`DIGEST_PATCH_WINDOW_MS` in `bridge/update.ts`); the in-app band shows it at once.
 
      **An urgent patch keeps the daily cadence.** A patch the operator must take today, data loss, a
@@ -88,7 +101,8 @@ release. 1.14.2 was cut this way on 2026-09-28.
 
    - **MINOR** (`0.2.0 → 0.3.0`): something to learn, or worth hearing about today. A new verb,
      a new page, a new crew capability, a changed default, anything that earns its own section
-     in `docs/`. The phone nudges within a day.
+     in `docs/`. An experimental feature becomes a minor when it leaves Experiments, or when an
+     addition to it changes a surface that is not experimental. The phone nudges within a day.
    - **MAJOR** (`0.2.0 → 1.0.0`): the operator must change something. A config key renamed or
      removed, a contract broken, a workflow that used to work and now does not.
 
@@ -100,6 +114,20 @@ release. 1.14.2 was cut this way on 2026-09-28.
    line's short commit hash** in the link format
    `([abc1234](https://github.com/AltanS/collie/commit/abc1234))`. Clean up the section: merge
    or reorder lines as needed, and delete entries for changes reverted before release.
+
+   **Then rewrite the section for its reader, not for its history.** The Unreleased list is a log in
+   landing order; the release section is a summary. Write it for a person on the previous Stable
+   release: a fix or a reshape of something only an Edge build had folds into that feature's bullet,
+   because a Stable reader never saw the broken state. Merge related bullets into one per feature,
+   put a feature's intro bullet before its details, and lead each group with what matters most to
+   operators. A minor release lands at about 25 to 35 bullets, a patch at a handful. The style rule
+   above holds for every bullet.
+3b. **Show the operator a preview of the release notes, and wait for a yes.** Build the release page
+   body from the new section with `scripts/release-notes.ts` (the same code `release.yml` runs),
+   render it together with the section, serve it where the operator can open it on the phone, and
+   give the URL. The tag waits for the operator's explicit yes to the text. A green CI, a review or
+   a counsel verdict is not that yes. Text fixes go into the release commit, and the preview is
+   built again.
 4. **Re-create an empty `## [Unreleased]` heading above it.**
 5. **Bump `flake.lock` if it is to move at all** — in this commit and no other. The input is
    pinned by revision, so a bump is two edits: the `rev` in `flake.nix`, then `nix flake lock` to
@@ -227,11 +255,11 @@ push until the release is out.
 
 **The GitHub Release page is built, not written.** `release.yml` runs
 `scripts/release-notes.ts` over `CHANGELOG.md` and hands the result to `gh release create`. The
-order on the page is the reader's, not the file's: **`## Update` first and unfolded**, because a
-phone arrives here from the in-app banner to copy one command and must not have to open anything
-to see it; then `## What changed`, the bold lead of every bullet in that version's section, one
+page opens with `## What changed`, the bold lead of every bullet in that version's section, one
 line each, under its group's name; then a link to the section itself for the commits and a compare
-link; then the by-hand verify recipe, the one block that sits in a `<details>`.
+link; then the by-hand verify recipe, the one block that sits in a `<details>`. It carries no update
+commands (Altan, 2026-11-18): `docs/upgrading.md` keeps them, and the in-app update band shows its
+own. An Edge build's page opens with one line that says it is an Edge build.
 
 The compare link's other end is a **real tag, asked of git** (`git describe --tags` on the tagged
 commit's parent), never derived from a CHANGELOG heading: betas 33 to 41 have headings and no tags,

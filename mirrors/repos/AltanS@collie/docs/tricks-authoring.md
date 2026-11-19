@@ -3,7 +3,7 @@
 A trick is a folder: a manifest, and a program or a rules file. This page builds one of each.
 
 Tricks are experimental. They may change, lose settings, or be withdrawn in a patch release. They are
-off until you switch them on at the top of Settings → Tricks, or with `collie tricks on`
+off until you switch them on in Settings → Experiments, or with `collie tricks on`
 ([Switch tricks on or off](tricks.md#switch-tricks-on-or-off)). `collie trick dev` and
 `collie trick check --run` run a folder once in your terminal with tricks off too.
 
@@ -194,6 +194,10 @@ A tap runs the program with the row's `intent` and the session in `from.session`
 also has `value`, `"on"` or `"off"`, the state the person asked for. The phone never flips the
 switch itself, so print the new `on` in the answer. A label that reads like one of Collie's own rows
 is refused, never cut.
+
+A `belt` mark sits at the end of the scrolling strip, off screen until the person scrolls; the fixed block at the
+right is Collie's own. In the facts, `cwd` is the pane's folder. A workspace folder can hold several
+repositories; look inside it.
 
 Add `sessions` to a `menu` part or a `belt` mark to show it only in those sessions, by the facts'
 session ids. Collie binds each id to the pane and the conversation that are open now. A pane id that

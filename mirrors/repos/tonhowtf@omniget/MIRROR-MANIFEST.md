@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tonhowtf/omniget` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `tonhowtf/omniget` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tonhowtf/omniget` — 26 default patterns, 0 followed patterns, 3 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`claude-plugin/omniget/skills/omniget-fetch/SKILL.md`](claude-plugin/omniget/skills/omniget-fetch/SKILL.md) |
-| 2 | ✓ | [`claude-plugin/omniget/skills/omniget-transcribe/SKILL.md`](claude-plugin/omniget/skills/omniget-transcribe/SKILL.md) |
-| 3 | ✓ | [`llms.txt`](llms.txt) |
+| 1 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

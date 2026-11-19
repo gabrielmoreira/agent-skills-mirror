@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 89 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 89 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 89 |
+| Files         | 90 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -126,28 +126,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 65 | ✓ | [`frontend/src/AppBuilder/CodeBuilder/Elements/AGENTS.md`](frontend/src/AppBuilder/CodeBuilder/Elements/AGENTS.md) |
 | 66 | ✓ | [`frontend/src/AppBuilder/RightSideBar/Inspector/Components/LibraryComponent/AGENTS.md`](frontend/src/AppBuilder/RightSideBar/Inspector/Components/LibraryComponent/AGENTS.md) |
 | 67 | ✓ | [`marketplace/AGENTS.md`](marketplace/AGENTS.md) |
-| 68 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
-| 69 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
-| 70 | ✓ | [`server/src/modules/app-environments/AGENTS.md`](server/src/modules/app-environments/AGENTS.md) |
-| 71 | ✓ | [`server/src/modules/app-validation/AGENTS.md`](server/src/modules/app-validation/AGENTS.md) |
-| 72 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
-| 73 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
-| 74 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
-| 75 | ✓ | [`server/src/modules/builtin-packs/AGENTS.md`](server/src/modules/builtin-packs/AGENTS.md) |
-| 76 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
-| 77 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
-| 78 | ✓ | [`server/src/modules/folder-data-sources/AGENTS.md`](server/src/modules/folder-data-sources/AGENTS.md) |
-| 79 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
-| 80 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
-| 81 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
-| 82 | ✓ | [`server/src/modules/mcp-oauth/AGENTS.md`](server/src/modules/mcp-oauth/AGENTS.md) |
-| 83 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
-| 84 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
-| 85 | ✓ | [`server/src/modules/ssrf/AGENTS.md`](server/src/modules/ssrf/AGENTS.md) |
-| 86 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
-| 87 | ✓ | [`server/src/modules/tooljet-db/AGENTS.md`](server/src/modules/tooljet-db/AGENTS.md) |
-| 88 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
-| 89 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
+| 68 | ✓ | [`packs/AGENTS.md`](packs/AGENTS.md) |
+| 69 | ✓ | [`server/AGENTS.md`](server/AGENTS.md) |
+| 70 | ✓ | [`server/CLAUDE.md`](server/CLAUDE.md) |
+| 71 | ✓ | [`server/src/modules/app-environments/AGENTS.md`](server/src/modules/app-environments/AGENTS.md) |
+| 72 | ✓ | [`server/src/modules/app-validation/AGENTS.md`](server/src/modules/app-validation/AGENTS.md) |
+| 73 | ✓ | [`server/src/modules/app/AGENTS.md`](server/src/modules/app/AGENTS.md) |
+| 74 | ✓ | [`server/src/modules/apps/AGENTS.md`](server/src/modules/apps/AGENTS.md) |
+| 75 | ✓ | [`server/src/modules/auth/AGENTS.md`](server/src/modules/auth/AGENTS.md) |
+| 76 | ✓ | [`server/src/modules/builtin-packs/AGENTS.md`](server/src/modules/builtin-packs/AGENTS.md) |
+| 77 | ✓ | [`server/src/modules/data-queries/AGENTS.md`](server/src/modules/data-queries/AGENTS.md) |
+| 78 | ✓ | [`server/src/modules/data-sources/AGENTS.md`](server/src/modules/data-sources/AGENTS.md) |
+| 79 | ✓ | [`server/src/modules/folder-data-sources/AGENTS.md`](server/src/modules/folder-data-sources/AGENTS.md) |
+| 80 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
+| 81 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
+| 82 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
+| 83 | ✓ | [`server/src/modules/mcp-oauth/AGENTS.md`](server/src/modules/mcp-oauth/AGENTS.md) |
+| 84 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
+| 85 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
+| 86 | ✓ | [`server/src/modules/ssrf/AGENTS.md`](server/src/modules/ssrf/AGENTS.md) |
+| 87 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
+| 88 | ✓ | [`server/src/modules/tooljet-db/AGENTS.md`](server/src/modules/tooljet-db/AGENTS.md) |
+| 89 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
+| 90 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
 
 ---
 

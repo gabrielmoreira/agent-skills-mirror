@@ -33,16 +33,16 @@ At each Human Checkpoint, `@Orchestrator` presents a natural technical briefing 
 
 1. **Checkpoint 0 (Candidate Algorithm Gate) `[CHECKPOINT: S0 -> C0]`:**
    - Deliverable: `[RESEARCH.md](./RESEARCH.md)` authored directly by `@Researcher`.
-   - Prompt: *"Reply `/approve` to authorize the transition to the next stage, or `/reset` to start over."*
+   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
 2. **Checkpoint 1 (Specification Manifest Gate) `[CHECKPOINT: S1 -> C1]`:**
    - Deliverable: `[manifest.json](./manifest.json)` authored directly by `@Researcher` and validated against `[schema.json](../technical-perception/schema.json)` (highlighting any `"epistemic_status": "assumption"` claims propagated from `<uncertain>` / `<illegible/>` OCR provenance).
-   - Prompt: *"Reply `/approve` to authorize the transition to the next stage, or `/reset` to start over."*
+   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
 3. **Checkpoint 2 (Formal Mapping Gate) `[CHECKPOINT: S2 -> C2]`:**
    - Deliverable: `[mapping.json](./mapping.json)` authored directly by `@Formalist` conforming to `[mapping_schema.json](../formal-mapping/mapping_schema.json)`.
-   - Prompt: *"Reply `/approve` to authorize the transition to the next stage, or `/reset` to start over."*
+   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
 4. **Checkpoint 3 (Verification Sign-Off Gate) `[CHECKPOINT: S4 -> C3]`:**
    - Deliverable: `[VERIFICATION.md](./VERIFICATION.md)` authored directly by `@Auditor`.
-   - Prompt: *"Reply `/approve` to authorize the transition to the next stage, or `/reset` to start over."*
+   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
 
 *Contractual Commands:*
 - `/approve` (or `/approve <target>`): Advances past an active Human Checkpoint. Conversational phrases ("looks good", "proceed", "yes") are rejected.

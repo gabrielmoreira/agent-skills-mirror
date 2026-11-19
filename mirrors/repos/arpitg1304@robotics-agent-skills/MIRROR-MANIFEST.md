@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `arpitg1304/robotics-agent-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `arpitg1304/robotics-agent-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `arpitg1304/robotics-agent-skills` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`skills/docker-ros2-development/SKILL.md`](skills/docker-ros2-development/SKILL.md) |
-| 2 | ✓ | [`skills/robot-bringup/SKILL.md`](skills/robot-bringup/SKILL.md) |
-| 3 | ✓ | [`skills/robot-perception/SKILL.md`](skills/robot-perception/SKILL.md) |
-| 4 | ✓ | [`skills/robotics-design-patterns/SKILL.md`](skills/robotics-design-patterns/SKILL.md) |
-| 5 | ✓ | [`skills/robotics-security/SKILL.md`](skills/robotics-security/SKILL.md) |
-| 6 | ✓ | [`skills/robotics-software-principles/SKILL.md`](skills/robotics-software-principles/SKILL.md) |
-| 7 | ✓ | [`skills/robotics-testing/SKILL.md`](skills/robotics-testing/SKILL.md) |
-| 8 | ✓ | [`skills/ros1/SKILL.md`](skills/ros1/SKILL.md) |
-| 9 | ✓ | [`skills/ros2-web-integration/SKILL.md`](skills/ros2-web-integration/SKILL.md) |
-| 10 | ✓ | [`skills/ros2/SKILL.md`](skills/ros2/SKILL.md) |
+| 2 | ✓ | [`skills/robot-app-harness/SKILL.md`](skills/robot-app-harness/SKILL.md) |
+| 3 | ✓ | [`skills/robot-bringup/SKILL.md`](skills/robot-bringup/SKILL.md) |
+| 4 | ✓ | [`skills/robot-perception/SKILL.md`](skills/robot-perception/SKILL.md) |
+| 5 | ✓ | [`skills/robotics-design-patterns/SKILL.md`](skills/robotics-design-patterns/SKILL.md) |
+| 6 | ✓ | [`skills/robotics-security/SKILL.md`](skills/robotics-security/SKILL.md) |
+| 7 | ✓ | [`skills/robotics-software-principles/SKILL.md`](skills/robotics-software-principles/SKILL.md) |
+| 8 | ✓ | [`skills/robotics-testing/SKILL.md`](skills/robotics-testing/SKILL.md) |
+| 9 | ✓ | [`skills/ros1/SKILL.md`](skills/ros1/SKILL.md) |
+| 10 | ✓ | [`skills/ros2-web-integration/SKILL.md`](skills/ros2-web-integration/SKILL.md) |
+| 11 | ✓ | [`skills/ros2/SKILL.md`](skills/ros2/SKILL.md) |
 
 ---
 

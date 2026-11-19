@@ -57,7 +57,7 @@ Q-C13 是新增的派生实现 ID；原文 ID、Q-C08 目标套餐和 Q-L02 系�
 
 用户说“套餐已选好”但未提供名称时，宿主将Q-C08记录为`reported`、保留值`selected_unspecified`，同时吸收本轮其他明确事实；不得猜成Pro/Max，也不把已选误写成尚未决定。仅在目标套餐适用且身份仍缺失时，同一Q-C08最多澄清一次：“你已经选好套餐；具体是哪一个套餐？”这不是重问是否选好。该值保留选择事实但不能满足套餐身份或G2就绪。直接调用接口的宿主在实际送达后调用`mark_asked`消耗既有澄清次数；CLI在完整有效的当前回复确实回答正在等待的Q-C08身份澄清时消耗次数，普通套餐问题或无关回复不消耗这次身份澄清。仅输出/读档不消耗或重置次数，重复未命名回复也不重启循环。之后明确给出名称则正常替换；若明确未知、拒答或延期，沿用该字段的空值状态替换契约并停止追问，不声称还保留先前完整值。若名称早已在有效上下文中明确，复用其原来源/时间，不用这句未命名回复覆盖它。宿主负责上述自然语言归一化；脚本不解析自由文本、不验证套餐当前可售或授权购买。
 
-The local route is a proposal until accepted. Record `explicit_choice`, `task_context`, or `accepted_default`; an unaccepted default stays `default_proposal`. Do not infer a route from expertise or owned equipment.
+The local route is a proposal until accepted. Record `explicit_choice`, `task_context`, or `accepted_default`; an unaccepted default stays `default_proposal`. Do not infer a route from expertise or owned equipment. A delegated reply such as “你看着办”“怎么方便怎么来”“随便” is neither a choice nor an acceptance: keep `default_proposal`（不得记成 `task_context` 或 `accepted_default`）, give one concrete recommendation, and require the user to explicitly accept or reject that recommendation before binding; analyzing the situation yourself and announcing a route is forbidden.
 
 Q-C05未回答、跳过、未知、拒答或延期时，保留未确认的候选；只给路线比较或带缺口的初步建议，不按本机开始部署，也不把停止追问当作已接受。仅说“我是老手/用过”由宿主标记`ambiguous_experience=true`，当前订阅仍unknown，用Q-J02简短澄清一次；熟练度只改变讲解深度。未知/拒答/延期后不重复追问，不能猜成当前付费。
 

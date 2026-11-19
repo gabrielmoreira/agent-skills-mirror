@@ -7,7 +7,7 @@ ref: v3
 
 # Mirror Manifest
 
-Mirror of `nocobase/nocobase` — 26 default patterns, 13 followed patterns, 286 file(s) materialized.
+Mirror of `nocobase/nocobase` — 26 default patterns, 13 followed patterns, 285 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nocobase/nocobase` — 26 default patterns, 13 followed patterns, 286
 | Ref           | `v3` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 286 |
+| Files         | 285 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -340,23 +340,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 267 | ✓ | [`ui-library/registry/lifecycle/workflow-management/README.md`](ui-library/registry/lifecycle/workflow-management/README.md) |
 | 268 | ✓ | [`ui-library/registry/notification/notification-logs-ui/README.md`](ui-library/registry/notification/notification-logs-ui/README.md) |
 | 269 | ✓ | [`ui-library/registry/projects/issue-detail/README.md`](ui-library/registry/projects/issue-detail/README.md) |
-| 270 | ✓ | [`ui-library/registry/projects/plan-card/README.md`](ui-library/registry/projects/plan-card/README.md) |
-| 271 | ✓ | [`ui-library/registry/projects/project-detail/README.md`](ui-library/registry/projects/project-detail/README.md) |
-| 272 | ✓ | [`ui-library/registry/projects/README.md`](ui-library/registry/projects/README.md) |
-| 273 | ✓ | [`ui-library/registry/task-center/README.md`](ui-library/registry/task-center/README.md) |
-| 274 | → | [`.changeset/README.md`](.changeset/README.md) |
-| 275 | → | [`README.de-DE.md`](README.de-DE.md) |
-| 276 | → | [`README.es-ES.md`](README.es-ES.md) |
-| 277 | → | [`README.fr-FR.md`](README.fr-FR.md) |
-| 278 | → | [`README.id-ID.md`](README.id-ID.md) |
-| 279 | → | [`README.ja-JP.md`](README.ja-JP.md) |
-| 280 | → | [`README.ko-KR.md`](README.ko-KR.md) |
-| 281 | → | [`README.md`](README.md) |
-| 282 | → | [`README.pt-BR.md`](README.pt-BR.md) |
-| 283 | → | [`README.ru-RU.md`](README.ru-RU.md) |
-| 284 | → | [`README.vi-VN.md`](README.vi-VN.md) |
-| 285 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 286 | → | [`README.zh-TW.md`](README.zh-TW.md) |
+| 270 | ✓ | [`ui-library/registry/projects/project-detail/README.md`](ui-library/registry/projects/project-detail/README.md) |
+| 271 | ✓ | [`ui-library/registry/projects/README.md`](ui-library/registry/projects/README.md) |
+| 272 | ✓ | [`ui-library/registry/task-center/README.md`](ui-library/registry/task-center/README.md) |
+| 273 | → | [`.changeset/README.md`](.changeset/README.md) |
+| 274 | → | [`README.de-DE.md`](README.de-DE.md) |
+| 275 | → | [`README.es-ES.md`](README.es-ES.md) |
+| 276 | → | [`README.fr-FR.md`](README.fr-FR.md) |
+| 277 | → | [`README.id-ID.md`](README.id-ID.md) |
+| 278 | → | [`README.ja-JP.md`](README.ja-JP.md) |
+| 279 | → | [`README.ko-KR.md`](README.ko-KR.md) |
+| 280 | → | [`README.md`](README.md) |
+| 281 | → | [`README.pt-BR.md`](README.pt-BR.md) |
+| 282 | → | [`README.ru-RU.md`](README.ru-RU.md) |
+| 283 | → | [`README.vi-VN.md`](README.vi-VN.md) |
+| 284 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 285 | → | [`README.zh-TW.md`](README.zh-TW.md) |
 
 ---
 

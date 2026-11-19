@@ -474,6 +474,15 @@ back every line after it, and the log moves in bursts.
   can't explain a silence.
 - Seen 1× (2026-11-15).
 
+**A new GUI test file runs the guard tests that read every GUI file.**
+- 265217bf4, a10ac7bb0 and e5c0c23de (11-18) each added a test file
+  with `page.setDefaultTimeout(5000)` and no 60s navigation timeout, and
+  ran only their own file. nav-timeout.test.cjs (#4787's guard) failed
+  CI's cli job from cf20df721 for ~2h until 2acc2660e.
+- Run `node --test internal/gui/tests/nav-timeout.test.cjs` and the
+  other whole-folder guards with any new file there.
+- Seen 1× (2026-11-18).
+
 **A suite's log is kept whole until its reds are named.**
 - 5b12407e8 (10-17) piped a full run through tail, lost which
   internal/gateway test failed at 2559s, and shipped with an unnamed red.
@@ -1257,6 +1266,11 @@ standards since 10-18, widened to a worktree and its logs. See
 - **A record is written once its run has ended** (10-17, 10-28,
   11-18). On 11-18 97e0ecdaa was pushed with the GUI suite at 3736
   tests and 127 red, "the rest" of them left to another session.
+  f4b202030 (11-18) said "running on mica at push time; result goes on
+  #6034", and v0.1.4408 was tagged on it. The result came 40 minutes
+  later with internal/dirent (#7031) and an internal/gui test (#7032)
+  red, both "pass alone": the tag shipped past two reds no one had
+  looked at.
 - **One full suite runs on a machine at a time** (10-16, 10-17, 11-16).
   On 11-16 64c426158 ran the GUI suite on mica beside another session's
   full suite, was pushed with it still running, and named its 90 reds by

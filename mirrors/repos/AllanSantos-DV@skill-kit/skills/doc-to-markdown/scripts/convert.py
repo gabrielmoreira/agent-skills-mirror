@@ -5,15 +5,18 @@ Usage:
     python convert.py document.docx                    # prints to stdout
     python convert.py document.docx -o output.md       # saves to file
     python convert.py report.pdf --tool pdfplumber      # force specific tool
-    python convert.py scan.png --ocr                    # OCR mode
+    python convert.py scan.png --ocr --llm-model gpt-4o # OCR plugin (needs OPENAI_API_KEY)
     python convert.py file.docx --no-frontmatter        # skip YAML header
     python convert.py project.mpp -o project.md         # MS Project
     python convert.py project.mpp --tool mpxj           # force mpxj
 
-Supported formats: .docx, .doc, .xlsx, .xls, .csv, .pptx, .ppt, .pdf, .html, .epub,
-    .png, .jpg, .jpeg, .gif, .bmp, .tiff, .mp3, .wav, .m4a, .ipynb, .zip, .msg,
+Supported formats: .docx, .xlsx, .xls (needs markitdown[xls]), .csv, .pptx, .pdf, .html,
+    .epub, .png, .jpg, .jpeg, .gif, .bmp, .tiff, .mp3, .wav, .m4a, .ipynb, .zip, .msg,
     .mpp, .mspdi, .mpx (MS Project — requires Java 11+)
-Requires: pip install markitdown (or pip install 'markitdown[all]' for OCR)
+Legacy .doc and .ppt are not read by markitdown: convert them first with
+    libreoffice --headless --convert-to docx|pptx <file>
+Requires: pip install markitdown. OCR (--ocr) needs pip install markitdown-ocr openai
+    and --llm-model; without an LLM client the OCR plugin skips images silently.
 """
 
 from __future__ import annotations
@@ -27,8 +30,8 @@ from datetime import datetime
 from pathlib import Path
 
 SUPPORTED_EXTENSIONS = {
-    ".docx", ".doc", ".xlsx", ".xls", ".csv",
-    ".pptx", ".ppt", ".pdf", ".html", ".htm", ".epub",
+    ".docx", ".xlsx", ".xls", ".csv",
+    ".pptx", ".pdf", ".html", ".htm", ".epub",
     ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff",
     ".mp3", ".wav", ".m4a",
     ".ipynb", ".zip", ".msg",
@@ -38,20 +41,32 @@ SUPPORTED_EXTENSIONS = {
 TOOL_CHOICES = ["markitdown", "pandoc", "pdfplumber", "mammoth", "mpxj"]
 
 
-def convert_markitdown(input_path: Path, *, enable_ocr: bool = False) -> str:
+def convert_markitdown(
+    input_path: Path, *, enable_ocr: bool = False, llm_model: str | None = None
+) -> str:
+    """Convert with markitdown; with ``enable_ocr`` load the markitdown-ocr plugin.
+
+    The plugin skips OCR silently when no LLM client is given, so this fails
+    loud if the plugin, the openai client or the model name is missing.
+    """
     try:
         from markitdown import MarkItDown
     except ImportError:
-        pkg = "'markitdown[all]'" if enable_ocr else "markitdown"
-        print(f"Error: markitdown is not installed. Run: pip install {pkg}", file=sys.stderr)
+        print("Error: markitdown is not installed. Run: pip install markitdown", file=sys.stderr)
         sys.exit(1)
 
     kwargs: dict = {}
     if enable_ocr:
+        if not llm_model:
+            print("Error: --ocr needs --llm-model (the OCR plugin runs on an LLM client).", file=sys.stderr)
+            sys.exit(1)
         try:
-            kwargs["enable_llm_extraction"] = False  # OCR only, no LLM
-        except Exception:
-            pass
+            import markitdown_ocr  # noqa: F401
+            from openai import OpenAI
+        except ImportError as e:
+            print(f"Error: {e.name} is not installed. Run: pip install markitdown-ocr openai", file=sys.stderr)
+            sys.exit(1)
+        kwargs = {"enable_plugins": True, "llm_client": OpenAI(), "llm_model": llm_model}
 
     md = MarkItDown(**kwargs)
     result = md.convert(str(input_path))
@@ -428,7 +443,10 @@ def main() -> None:
     )
     parser.add_argument(
         "--ocr", action="store_true",
-        help="Enable OCR for images/scanned documents (requires markitdown[all])",
+        help="OCR images/scanned documents via the markitdown-ocr plugin (requires --llm-model)",
+    )
+    parser.add_argument(
+        "--llm-model", help="LLM model name used by the OCR plugin (OpenAI client, OPENAI_API_KEY)",
     )
     args = parser.parse_args()
 
@@ -450,7 +468,7 @@ def main() -> None:
     tool = args.tool or detect_tool(input_path)
 
     converters = {
-        "markitdown": lambda: convert_markitdown(input_path, enable_ocr=args.ocr),
+        "markitdown": lambda: convert_markitdown(input_path, enable_ocr=args.ocr, llm_model=args.llm_model),
         "pdfplumber": lambda: convert_pdfplumber(input_path),
         "pandoc": lambda: convert_pandoc(input_path),
         "mammoth": lambda: convert_mammoth(input_path),

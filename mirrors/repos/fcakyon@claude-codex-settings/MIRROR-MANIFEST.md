@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 126 file(s) materialized.
+Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 128 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 126 |
+| Files         | 128 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -129,62 +129,64 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`plugins/livekit-skills/skills/running-livekit-simulations/SKILL.md`](plugins/livekit-skills/skills/running-livekit-simulations/SKILL.md) |
 | 69 | ✓ | [`plugins/livekit-skills/skills/testing-livekit-agents/SKILL.md`](plugins/livekit-skills/skills/testing-livekit-agents/SKILL.md) |
 | 70 | ✓ | [`plugins/livekit-skills/skills/writing-livekit-scenarios/SKILL.md`](plugins/livekit-skills/skills/writing-livekit-scenarios/SKILL.md) |
-| 71 | ✓ | [`plugins/mongodb-skills/skills/mongodb-atlas-stream-processing/SKILL.md`](plugins/mongodb-skills/skills/mongodb-atlas-stream-processing/SKILL.md) |
-| 72 | ✓ | [`plugins/mongodb-skills/skills/mongodb-connection/SKILL.md`](plugins/mongodb-skills/skills/mongodb-connection/SKILL.md) |
-| 73 | ✓ | [`plugins/mongodb-skills/skills/mongodb-mcp-setup/SKILL.md`](plugins/mongodb-skills/skills/mongodb-mcp-setup/SKILL.md) |
-| 74 | ✓ | [`plugins/mongodb-skills/skills/mongodb-natural-language-querying/SKILL.md`](plugins/mongodb-skills/skills/mongodb-natural-language-querying/SKILL.md) |
-| 75 | ✓ | [`plugins/mongodb-skills/skills/mongodb-query-optimizer/SKILL.md`](plugins/mongodb-skills/skills/mongodb-query-optimizer/SKILL.md) |
-| 76 | ✓ | [`plugins/mongodb-skills/skills/mongodb-schema-design/SKILL.md`](plugins/mongodb-skills/skills/mongodb-schema-design/SKILL.md) |
-| 77 | ✓ | [`plugins/mongodb-skills/skills/mongodb-search-and-ai/SKILL.md`](plugins/mongodb-skills/skills/mongodb-search-and-ai/SKILL.md) |
-| 78 | ✓ | [`plugins/openai-office-skills/skills/doc/SKILL.md`](plugins/openai-office-skills/skills/doc/SKILL.md) |
-| 79 | ✓ | [`plugins/openai-office-skills/skills/pdf/SKILL.md`](plugins/openai-office-skills/skills/pdf/SKILL.md) |
-| 80 | ✓ | [`plugins/openai-office-skills/skills/slides/SKILL.md`](plugins/openai-office-skills/skills/slides/SKILL.md) |
-| 81 | ✓ | [`plugins/openai-office-skills/skills/spreadsheet/SKILL.md`](plugins/openai-office-skills/skills/spreadsheet/SKILL.md) |
-| 82 | ✓ | [`plugins/openobserve-skills/skills/openobserve-api/SKILL.md`](plugins/openobserve-skills/skills/openobserve-api/SKILL.md) |
-| 83 | ✓ | [`plugins/openship-skills/skills/openship-config/SKILL.md`](plugins/openship-skills/skills/openship-config/SKILL.md) |
-| 84 | ✓ | [`plugins/openship-skills/skills/openship-deploy/SKILL.md`](plugins/openship-skills/skills/openship-deploy/SKILL.md) |
-| 85 | ✓ | [`plugins/overleaf-skills/skills/review-overleaf/SKILL.md`](plugins/overleaf-skills/skills/review-overleaf/SKILL.md) |
-| 86 | ✓ | [`plugins/overleaf-skills/skills/setup/SKILL.md`](plugins/overleaf-skills/skills/setup/SKILL.md) |
-| 87 | ✓ | [`plugins/paper-search-tools/skills/paper-search-usage/SKILL.md`](plugins/paper-search-tools/skills/paper-search-usage/SKILL.md) |
-| 88 | ✓ | [`plugins/paper-search-tools/skills/setup/SKILL.md`](plugins/paper-search-tools/skills/setup/SKILL.md) |
-| 89 | ✓ | [`plugins/polar-skills/skills/polar-billing/SKILL.md`](plugins/polar-skills/skills/polar-billing/SKILL.md) |
-| 90 | ✓ | [`plugins/polar-skills/skills/polar-local-environment/SKILL.md`](plugins/polar-skills/skills/polar-local-environment/SKILL.md) |
-| 91 | ✓ | [`plugins/python-skills/skills/python-guidelines/SKILL.md`](plugins/python-skills/skills/python-guidelines/SKILL.md) |
-| 92 | ✓ | [`plugins/qa/skills/run-qa/SKILL.md`](plugins/qa/skills/run-qa/SKILL.md) |
-| 93 | ✓ | [`plugins/qa/skills/setup/SKILL.md`](plugins/qa/skills/setup/SKILL.md) |
-| 94 | ✓ | [`plugins/react-skills/skills/composition-patterns/SKILL.md`](plugins/react-skills/skills/composition-patterns/SKILL.md) |
-| 95 | ✓ | [`plugins/react-skills/skills/react-best-practices/SKILL.md`](plugins/react-skills/skills/react-best-practices/SKILL.md) |
-| 96 | ✓ | [`plugins/react-skills/skills/react-native-skills/SKILL.md`](plugins/react-skills/skills/react-native-skills/SKILL.md) |
-| 97 | ✓ | [`plugins/react-skills/skills/react-view-transitions/SKILL.md`](plugins/react-skills/skills/react-view-transitions/SKILL.md) |
-| 98 | ✓ | [`plugins/react-skills/skills/web-design-guidelines/SKILL.md`](plugins/react-skills/skills/web-design-guidelines/SKILL.md) |
-| 99 | ✓ | [`plugins/reusable-app-components/skills/app-auth/SKILL.md`](plugins/reusable-app-components/skills/app-auth/SKILL.md) |
-| 100 | ✓ | [`plugins/reusable-app-components/skills/email-design/SKILL.md`](plugins/reusable-app-components/skills/email-design/SKILL.md) |
-| 101 | ✓ | [`plugins/reusable-app-components/skills/opendesk-support/SKILL.md`](plugins/reusable-app-components/skills/opendesk-support/SKILL.md) |
-| 102 | ✓ | [`plugins/seo-skills/skills/programmatic-seo/SKILL.md`](plugins/seo-skills/skills/programmatic-seo/SKILL.md) |
-| 103 | ✓ | [`plugins/seo-skills/skills/schema/SKILL.md`](plugins/seo-skills/skills/schema/SKILL.md) |
-| 104 | ✓ | [`plugins/seo-skills/skills/seo-audit/SKILL.md`](plugins/seo-skills/skills/seo-audit/SKILL.md) |
-| 105 | ✓ | [`plugins/seo-skills/skills/site-architecture/SKILL.md`](plugins/seo-skills/skills/site-architecture/SKILL.md) |
-| 106 | ✓ | [`plugins/simplify/skills/simplify/SKILL.md`](plugins/simplify/skills/simplify/SKILL.md) |
-| 107 | ✓ | [`plugins/stripe-skills/skills/connect-recommend/SKILL.md`](plugins/stripe-skills/skills/connect-recommend/SKILL.md) |
-| 108 | ✓ | [`plugins/stripe-skills/skills/connect-required-verification-information/SKILL.md`](plugins/stripe-skills/skills/connect-required-verification-information/SKILL.md) |
-| 109 | ✓ | [`plugins/stripe-skills/skills/metronome/SKILL.md`](plugins/stripe-skills/skills/metronome/SKILL.md) |
-| 110 | ✓ | [`plugins/stripe-skills/skills/stripe-apps/SKILL.md`](plugins/stripe-skills/skills/stripe-apps/SKILL.md) |
-| 111 | ✓ | [`plugins/stripe-skills/skills/stripe-best-practices/SKILL.md`](plugins/stripe-skills/skills/stripe-best-practices/SKILL.md) |
-| 112 | ✓ | [`plugins/stripe-skills/skills/stripe-docs/SKILL.md`](plugins/stripe-skills/skills/stripe-docs/SKILL.md) |
-| 113 | ✓ | [`plugins/stripe-skills/skills/stripe-projects/SKILL.md`](plugins/stripe-skills/skills/stripe-projects/SKILL.md) |
-| 114 | ✓ | [`plugins/stripe-skills/skills/upgrade-stripe/SKILL.md`](plugins/stripe-skills/skills/upgrade-stripe/SKILL.md) |
-| 115 | ✓ | [`plugins/supabase-skills/skills/supabase-cli/SKILL.md`](plugins/supabase-skills/skills/supabase-cli/SKILL.md) |
-| 116 | ✓ | [`plugins/supabase-skills/skills/supabase-js/SKILL.md`](plugins/supabase-skills/skills/supabase-js/SKILL.md) |
-| 117 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
-| 118 | ✓ | [`plugins/supabase-skills/skills/supabase/SKILL.md`](plugins/supabase-skills/skills/supabase/SKILL.md) |
-| 119 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
-| 120 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
-| 121 | ✓ | [`plugins/test-audit/skills/test-audit/SKILL.md`](plugins/test-audit/skills/test-audit/SKILL.md) |
-| 122 | ✓ | [`plugins/typescript-skills/skills/typescript-best-practices/SKILL.md`](plugins/typescript-skills/skills/typescript-best-practices/SKILL.md) |
-| 123 | ✓ | [`plugins/ultralytics-branding/skills/ultralytics-branding/SKILL.md`](plugins/ultralytics-branding/skills/ultralytics-branding/SKILL.md) |
-| 124 | ✓ | [`plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md`](plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md) |
-| 125 | ✓ | [`plugins/ultralytics-dev/skills/yolo-training/SKILL.md`](plugins/ultralytics-dev/skills/yolo-training/SKILL.md) |
-| 126 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
+| 71 | ✓ | [`plugins/modern-web-guidance/skills/chrome-extensions/SKILL.md`](plugins/modern-web-guidance/skills/chrome-extensions/SKILL.md) |
+| 72 | ✓ | [`plugins/modern-web-guidance/skills/modern-web-guidance/SKILL.md`](plugins/modern-web-guidance/skills/modern-web-guidance/SKILL.md) |
+| 73 | ✓ | [`plugins/mongodb-skills/skills/mongodb-atlas-stream-processing/SKILL.md`](plugins/mongodb-skills/skills/mongodb-atlas-stream-processing/SKILL.md) |
+| 74 | ✓ | [`plugins/mongodb-skills/skills/mongodb-connection/SKILL.md`](plugins/mongodb-skills/skills/mongodb-connection/SKILL.md) |
+| 75 | ✓ | [`plugins/mongodb-skills/skills/mongodb-mcp-setup/SKILL.md`](plugins/mongodb-skills/skills/mongodb-mcp-setup/SKILL.md) |
+| 76 | ✓ | [`plugins/mongodb-skills/skills/mongodb-natural-language-querying/SKILL.md`](plugins/mongodb-skills/skills/mongodb-natural-language-querying/SKILL.md) |
+| 77 | ✓ | [`plugins/mongodb-skills/skills/mongodb-query-optimizer/SKILL.md`](plugins/mongodb-skills/skills/mongodb-query-optimizer/SKILL.md) |
+| 78 | ✓ | [`plugins/mongodb-skills/skills/mongodb-schema-design/SKILL.md`](plugins/mongodb-skills/skills/mongodb-schema-design/SKILL.md) |
+| 79 | ✓ | [`plugins/mongodb-skills/skills/mongodb-search-and-ai/SKILL.md`](plugins/mongodb-skills/skills/mongodb-search-and-ai/SKILL.md) |
+| 80 | ✓ | [`plugins/openai-office-skills/skills/doc/SKILL.md`](plugins/openai-office-skills/skills/doc/SKILL.md) |
+| 81 | ✓ | [`plugins/openai-office-skills/skills/pdf/SKILL.md`](plugins/openai-office-skills/skills/pdf/SKILL.md) |
+| 82 | ✓ | [`plugins/openai-office-skills/skills/slides/SKILL.md`](plugins/openai-office-skills/skills/slides/SKILL.md) |
+| 83 | ✓ | [`plugins/openai-office-skills/skills/spreadsheet/SKILL.md`](plugins/openai-office-skills/skills/spreadsheet/SKILL.md) |
+| 84 | ✓ | [`plugins/openobserve-skills/skills/openobserve-api/SKILL.md`](plugins/openobserve-skills/skills/openobserve-api/SKILL.md) |
+| 85 | ✓ | [`plugins/openship-skills/skills/openship-config/SKILL.md`](plugins/openship-skills/skills/openship-config/SKILL.md) |
+| 86 | ✓ | [`plugins/openship-skills/skills/openship-deploy/SKILL.md`](plugins/openship-skills/skills/openship-deploy/SKILL.md) |
+| 87 | ✓ | [`plugins/overleaf-skills/skills/review-overleaf/SKILL.md`](plugins/overleaf-skills/skills/review-overleaf/SKILL.md) |
+| 88 | ✓ | [`plugins/overleaf-skills/skills/setup/SKILL.md`](plugins/overleaf-skills/skills/setup/SKILL.md) |
+| 89 | ✓ | [`plugins/paper-search-tools/skills/paper-search-usage/SKILL.md`](plugins/paper-search-tools/skills/paper-search-usage/SKILL.md) |
+| 90 | ✓ | [`plugins/paper-search-tools/skills/setup/SKILL.md`](plugins/paper-search-tools/skills/setup/SKILL.md) |
+| 91 | ✓ | [`plugins/polar-skills/skills/polar-billing/SKILL.md`](plugins/polar-skills/skills/polar-billing/SKILL.md) |
+| 92 | ✓ | [`plugins/polar-skills/skills/polar-local-environment/SKILL.md`](plugins/polar-skills/skills/polar-local-environment/SKILL.md) |
+| 93 | ✓ | [`plugins/python-skills/skills/python-guidelines/SKILL.md`](plugins/python-skills/skills/python-guidelines/SKILL.md) |
+| 94 | ✓ | [`plugins/qa/skills/run-qa/SKILL.md`](plugins/qa/skills/run-qa/SKILL.md) |
+| 95 | ✓ | [`plugins/qa/skills/setup/SKILL.md`](plugins/qa/skills/setup/SKILL.md) |
+| 96 | ✓ | [`plugins/react-skills/skills/composition-patterns/SKILL.md`](plugins/react-skills/skills/composition-patterns/SKILL.md) |
+| 97 | ✓ | [`plugins/react-skills/skills/react-best-practices/SKILL.md`](plugins/react-skills/skills/react-best-practices/SKILL.md) |
+| 98 | ✓ | [`plugins/react-skills/skills/react-native-skills/SKILL.md`](plugins/react-skills/skills/react-native-skills/SKILL.md) |
+| 99 | ✓ | [`plugins/react-skills/skills/react-view-transitions/SKILL.md`](plugins/react-skills/skills/react-view-transitions/SKILL.md) |
+| 100 | ✓ | [`plugins/react-skills/skills/web-design-guidelines/SKILL.md`](plugins/react-skills/skills/web-design-guidelines/SKILL.md) |
+| 101 | ✓ | [`plugins/reusable-app-components/skills/app-auth/SKILL.md`](plugins/reusable-app-components/skills/app-auth/SKILL.md) |
+| 102 | ✓ | [`plugins/reusable-app-components/skills/email-design/SKILL.md`](plugins/reusable-app-components/skills/email-design/SKILL.md) |
+| 103 | ✓ | [`plugins/reusable-app-components/skills/opendesk-support/SKILL.md`](plugins/reusable-app-components/skills/opendesk-support/SKILL.md) |
+| 104 | ✓ | [`plugins/seo-skills/skills/programmatic-seo/SKILL.md`](plugins/seo-skills/skills/programmatic-seo/SKILL.md) |
+| 105 | ✓ | [`plugins/seo-skills/skills/schema/SKILL.md`](plugins/seo-skills/skills/schema/SKILL.md) |
+| 106 | ✓ | [`plugins/seo-skills/skills/seo-audit/SKILL.md`](plugins/seo-skills/skills/seo-audit/SKILL.md) |
+| 107 | ✓ | [`plugins/seo-skills/skills/site-architecture/SKILL.md`](plugins/seo-skills/skills/site-architecture/SKILL.md) |
+| 108 | ✓ | [`plugins/simplify/skills/simplify/SKILL.md`](plugins/simplify/skills/simplify/SKILL.md) |
+| 109 | ✓ | [`plugins/stripe-skills/skills/connect-recommend/SKILL.md`](plugins/stripe-skills/skills/connect-recommend/SKILL.md) |
+| 110 | ✓ | [`plugins/stripe-skills/skills/connect-required-verification-information/SKILL.md`](plugins/stripe-skills/skills/connect-required-verification-information/SKILL.md) |
+| 111 | ✓ | [`plugins/stripe-skills/skills/metronome/SKILL.md`](plugins/stripe-skills/skills/metronome/SKILL.md) |
+| 112 | ✓ | [`plugins/stripe-skills/skills/stripe-apps/SKILL.md`](plugins/stripe-skills/skills/stripe-apps/SKILL.md) |
+| 113 | ✓ | [`plugins/stripe-skills/skills/stripe-best-practices/SKILL.md`](plugins/stripe-skills/skills/stripe-best-practices/SKILL.md) |
+| 114 | ✓ | [`plugins/stripe-skills/skills/stripe-docs/SKILL.md`](plugins/stripe-skills/skills/stripe-docs/SKILL.md) |
+| 115 | ✓ | [`plugins/stripe-skills/skills/stripe-projects/SKILL.md`](plugins/stripe-skills/skills/stripe-projects/SKILL.md) |
+| 116 | ✓ | [`plugins/stripe-skills/skills/upgrade-stripe/SKILL.md`](plugins/stripe-skills/skills/upgrade-stripe/SKILL.md) |
+| 117 | ✓ | [`plugins/supabase-skills/skills/supabase-cli/SKILL.md`](plugins/supabase-skills/skills/supabase-cli/SKILL.md) |
+| 118 | ✓ | [`plugins/supabase-skills/skills/supabase-js/SKILL.md`](plugins/supabase-skills/skills/supabase-js/SKILL.md) |
+| 119 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
+| 120 | ✓ | [`plugins/supabase-skills/skills/supabase/SKILL.md`](plugins/supabase-skills/skills/supabase/SKILL.md) |
+| 121 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
+| 122 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
+| 123 | ✓ | [`plugins/test-audit/skills/test-audit/SKILL.md`](plugins/test-audit/skills/test-audit/SKILL.md) |
+| 124 | ✓ | [`plugins/typescript-skills/skills/typescript-best-practices/SKILL.md`](plugins/typescript-skills/skills/typescript-best-practices/SKILL.md) |
+| 125 | ✓ | [`plugins/ultralytics-branding/skills/ultralytics-branding/SKILL.md`](plugins/ultralytics-branding/skills/ultralytics-branding/SKILL.md) |
+| 126 | ✓ | [`plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md`](plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md) |
+| 127 | ✓ | [`plugins/ultralytics-dev/skills/yolo-training/SKILL.md`](plugins/ultralytics-dev/skills/yolo-training/SKILL.md) |
+| 128 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
 
 ---
 

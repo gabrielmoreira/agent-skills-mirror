@@ -385,11 +385,11 @@ references:
 
 ## 3. 모델별 최적화
 
-> 🆕 **현행 라인업 (2026-07 · 디폴트 표기 2026-09-27 갱신)**: 팩트체크 고정 = **GPT-5.6 Thinking** · 웹 리서치 1순위 = **Claude Opus 4.8 Search**. GPT 현행 디폴트 = GPT-6 Sol(2026-09-22~ · 직전 디폴트 GPT-5.6 Sol = lean outcome-first Markdown) — 블록 구조·GPT-6 규칙은 `skills/gpt-5.6-prompt-enhancement/references/full.md` 참조.
+> 🆕 **현행 라인업 (2026-07 · 디폴트 표기 2026-11-18 갱신)**: 팩트체크 고정 = **GPT-5.6 Thinking** · 웹 리서치 1순위 = **Claude Opus 4.8 Search**. GPT 현행 디폴트 = GPT-6.2 Sol(2026-11-17~ · 직전 디폴트 GPT-6 Sol · 그 전 GPT-5.6 Sol = lean outcome-first Markdown) — 블록 구조·GPT-6.2 · GPT-6 규칙은 `skills/gpt-5.6-prompt-enhancement/references/full.md` 참조.
 
 ### 3.1 GPT 최적화 (구 GPT-5.2 XML 스타일 — 참고 보존)
 
-> 아래 XML 템플릿은 5.2 세대 스타일. GPT-5.2 Search 는 검색 용도로 여전히 현역이나, 텍스트 리서치 디폴트는 GPT-6 Sol(위 포인터 · 직전 GPT-5.6 Sol).
+> 아래 XML 템플릿은 5.2 세대 스타일. GPT-5.2 Search 는 검색 용도로 여전히 현역이나, 텍스트 리서치 디폴트는 GPT-6.2 Sol(위 포인터 · 직전 GPT-6 Sol · 그 전 GPT-5.6 Sol).
 
 ```xml
 <system_prompt>

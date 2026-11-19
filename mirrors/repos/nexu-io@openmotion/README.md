@@ -56,20 +56,28 @@ OpenMotion is a **full-stack agentic video** studio and an **open-source alterna
 
 ### Install in your agent
 
+Install the main Skill with the [Skills CLI](https://github.com/vercel-labs/skills):
+
+```sh
+npx skills add nexu-io/openmotion --skill openmotion
+```
+
+Then ask your agent: **Use OpenMotion to install and connect the local Studio and MCP, then help me make a video.** The Skill completes the source setup below when needed and reuses an existing workspace. Installing the Skill alone copies instructions; it does not yet install Studio or connect MCP.
+
 Copy this instruction into your local agent to set up OpenMotion from source:
 
 ```text
-Read https://github.com/nexu-io/openmotion/blob/main/install.md and follow the instructions to install and connect OpenMotion in the current agent.
+Read https://github.com/nexu-io/openmotion/blob/main/docs/install.md and follow the instructions to install and connect OpenMotion in the current agent.
 ```
 
-After setup, the agent opens the local template library and shows the welcome followed by three project-preview cards in a self-contained HTML document. Each installation samples three distinct entries from the curated pool of four. The complete silent previews and posters are bundled, so this display does not wait for native MCP reload or fetch remote reference films. Native original-reference playback remains available separately and requires internet access. The library opens once using the opening tool's result, with no extra page or playback audit. An opening failure is reported with a usable link and does not invalidate installation. Automatic current-chat MCP activation is assessed independently. Preview a card, choose **Recreate template**, then send your brief to start creating. [Source installation guide](install.md) · [Onboarding selection](docs/install-onboarding.md#maintained-recommendation-selection)
+After setup, the agent opens the local template library and shows the welcome followed by three project-preview cards in a self-contained HTML document. Each installation samples three distinct entries from the curated pool of four. The complete silent previews and posters are bundled, so this display does not wait for native MCP reload or fetch remote reference films. Native original-reference playback remains available separately and requires internet access. The library opens once using the opening tool's result, with no extra page or playback audit. An opening failure is reported with a usable link and does not invalidate installation. Automatic current-chat MCP activation is assessed independently. Preview a card, choose **Recreate template**, then send your brief to start creating. [Source installation guide](docs/install.md) · [Onboarding selection](docs/install.md#maintained-recommendation-selection)
 
 ### Install the published npm app (optional)
 
 Source setup above remains the default for repository installation. To explicitly choose the published application with prebuilt Studio and its configured online catalog, copy this instruction into your local agent:
 
 ```text
-Read https://github.com/nexu-io/openmotion/blob/main/docs/install.md and follow the instructions to install and connect the published npm application in the current agent.
+Read https://releases.open-design.ai/motion and follow the instructions to install and connect the published npm application in the current agent.
 ```
 
 [Published application installation and channel selection](docs/install.md). Published versions can lag behind this checkout.
@@ -451,7 +459,7 @@ When choosing or replacing media, creation workflows share a [material sourcing 
 
 For agent-led installation, use the [installation instruction above](#quick-start). To run from source, follow the steps below.
 
-After a successful Agent-led installation, open the editor's template library in the current conversation, without creating a project. Browse and preview first; choose **Open and edit** to create an independent editable copy. Setup provides a direct library link even before the chat reloads MCP. See the [installation reply rules](docs/install-onboarding.md#installation-success-reply).
+After a successful Agent-led installation, open the editor's template library in the current conversation, without creating a project. Browse and preview first; choose **Open and edit** to create an independent editable copy. Setup provides a direct library link even before the chat reloads MCP. See the [installation reply rules](docs/install.md#installation-success-reply).
 
 During video creation and editing, the chat stays free of preview areas. OpenMotion presents the editable Studio when the final video is ready to preview, then shows [one final-video preview](docs/inline-video.md) after MP4 export and verification. Host-native playback takes priority; Codex embeds the video in the final reply. The optional MCP App player is used only when the host cannot preview the video, never alongside another preview of the same export. Native-host acceptance of an installed build remains separate.
 
@@ -509,19 +517,20 @@ To start from a video instead, supply your reference and use the [recreation bri
 
 ##### Skills, MCP and CLI
 
-The plugin and MCP server are named `openmotion`; Tools, Skills and resources use `openmotion_*`, `openmotion-*` and `openmotion://`. Old Tool/resource names remain compatibility aliases; retired Skill entries are removed. Use `openmotion-*` Skill names and refresh host discovery after upgrading. See [naming and installation compatibility](docs/npm-installation.md#public-names-and-compatibility).
+The main Skill, plugin and MCP server are named `openmotion`; Tools, specialist Skills and resources use `openmotion_*`, `openmotion-*` and `openmotion://`. Old Tool/resource names remain compatibility aliases; retired Skill entries are removed. Use `openmotion` or `openmotion-*` Skill names and refresh host discovery after upgrading. See [naming and installation compatibility](docs/npm-installation.md#public-names-and-compatibility).
 
-From the checkout, discover and install the five core workflows with the [Skills CLI](https://github.com/vercel-labs/skills):
+Discover the main Skill and optional specialist workflows from GitHub with the [Skills CLI](https://github.com/vercel-labs/skills):
 
 ```sh
-npx skills add ./skills --list
-npx skills add ./skills --skill openmotion-director openmotion-production openmotion-template-to-video openmotion-recreate openmotion-video-to-template
+npx skills add nexu-io/openmotion --list
+npx skills add nexu-io/openmotion --skill openmotion-director openmotion-production openmotion-template-to-video openmotion-recreate openmotion-video-to-template
 ```
 
 This copies instructions; it does not install the runtime or register MCP. Keep the shared documentation available and connect the app separately, or use the integrated local installer above.
 
 | Skill | Use it for |
 | --- | --- |
+| [openmotion](https://github.com/nexu-io/openmotion/blob/main/skills/openmotion/SKILL.md) | Setup, first use and selecting the right video workflow |
 | [openmotion-recreate](skills/openmotion-recreate/SKILL.md) | Reconstructing a reference video and comparing the result |
 | [openmotion-template-to-video](skills/openmotion-template-to-video/SKILL.md) | Adapting an existing editable template |
 | [openmotion-director](skills/openmotion-director/SKILL.md) | Original films, narrative, movement, sound and creative review |

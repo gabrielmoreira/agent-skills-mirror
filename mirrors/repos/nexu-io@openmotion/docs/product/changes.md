@@ -1,5 +1,44 @@
 # 公开变更记录
 
+## 2026-11-18: Add the Design Styles library Skill
+
+- Add optional [`openmotion-design-styles`](../../library/skills/openmotion-design-styles/SKILL.md): 21 design-style cards and 2 layout cards (palette, open-licensed typefaces, five rules, signature motion, what to avoid, render tier) that an Agent applies to the user's content as a short HyperFrames film.
+- `scripts/style.mjs` lists and shows cards, checks a `plan.json` (known style, palette-only colours, headline length, a motion move per scene, OpenMotion end credit) and downloads glyph-subset fonts for the plan and composition text.
+- Films carry the OpenMotion wordmark in the opening and a "Made with OpenMotion" credit; the Skill ships an unchanged copy of the two design-system brand files.
+- Style topics were studied from guanmo-ai/design-style; the Skill's text is original and copies no prompts, code, images, music or films from it.
+- The Studio Skills page lists it third, linked to the upstream repository; its cover is an excerpt of the upstream promo film, credited in `docs/readme/ASSETS.md`. Library content only: not registered as an MCP resource. Sample runs: Swiss Style (English launch), Neo-Brutalism (product walkthrough) and Ink Wash (Chinese, Canvas).
+
+## 2026-11-18: Add the primary OpenMotion Skill
+
+- Add the standalone `openmotion` Skill for installation and first use, followed by the existing specialist workflows through MCP resources. Preserve source-first setup, existing workspaces and the maintained onboarding.
+- Install the public entry through pinned official Skills CLI on supported default host profiles. Reuse existing official entries, preserve telemetry opt-outs and report optional failures independently of runtime installation.
+- Move Codex npm workflow bundles to `openmotion-workflows`, with transactional migration only for matching installer-owned legacy bundles. Generate the outer npm helper as JavaScript for execution inside `node_modules`.
+- Verify workspace identity through filesystem aliases during MCP diagnostics, installed CLI calls and same-chat onboarding recovery; a different workspace remains rejected.
+- Simplify user-facing commands to `npx skills add`, retaining the pinned CLI for automatic installation. Execute the public-entry helper through aliased checkout paths and defer installation over legacy Codex bundles with explicit migration guidance.
+- Keep the five creative routes, MCP operations and runtime specialist distribution unchanged. skills.sh listing/counts and target-host onboarding remain separate verification boundaries.
+
+## 2026-11-18: Run OpenMotion locally in a container
+
+- Add [`deploy/`](../../deploy/README.md) with a Dockerfile, a Compose file and a guide. The image is built from the checkout and carries Node.js 26.11.1, Debian's Chromium and FFmpeg/ffprobe, and CJK fonts; projects and exports live in a named volume at `MOTION_DATA_DIR=/data`.
+- Add `MOTION_BIND_HOST`, which accepts `127.0.0.1` (default), `0.0.0.0` and `::`; a specific interface address is rejected because the readiness probe and returned URLs use `127.0.0.1`. The image sets `0.0.0.0` so Compose can publish the port, and Compose publishes it on the host's loopback address only. That publication is the access boundary: the Host and Origin checks are unchanged and protect a local browser from other websites, but they are not authentication. This is a local deployment and does not add remote access.
+- Agents connect with `docker exec -i openmotion node --experimental-strip-types mcp.ts`, which reuses the running service and data directory. Paths passed to MCP tools are container paths.
+- Compose identifies the container for Studio's MCP handbook; copied host commands and downloaded client configurations use `docker exec`, preserve the workspace and point setup instructions at the Docker guide.
+- Known limits: the Studio's web browser tab cannot start Chromium with its sandbox in an unprivileged container; Linux has no pinned native runtime target, so the image does not use the versions in `scripts/runtime-lock.json`. The image is not published and is outside the npm and plugin distribution lists.
+- Validation on arm64 (Colima) and x86_64 (Debian 12 virtual machine): image build, Studio load without console or request errors, MCP tool listing and project read through `docker exec`, a 37.3 s 1920×1080 export of the sample project with automatic technical verification passed, 403 for a foreign Host and for a cross-origin write, and data retained across a restart (restart checked on arm64).
+## 2026-11-17: Optional DSH workspace plugin
+
+- Package a source-checkout integration as an installable `openmotion-dsh` tarball. Enabling it starts/reuses local OpenMotion and connects DSH's native MCP adapter to the same project data.
+- Add project/template browsing, embedded Brand Kits/Assets and a native Studio tab alongside Agent chat. Focus mode preserves the mounted editor; narrow windows switch between editor and conversation.
+- Keep DSH dependencies optional, model configuration in DSH, runtime state outside the checkout and standalone Studio navigation intact. No npm publication or release-workflow change.
+- New-project handoff remains manual; validation distinguishes plugin installation, browser layout and read-only model/tool calls from video creation/export acceptance. See `integrations/dsh/README.md` in the source checkout.
+
+## 2026-11-17: Add 96 single-style library Skills and their Skills-page cards
+
+- Add 96 Library Skills, one written style recipe each: 10 talking-head overlays, 15 narrated explainers, 35 product promos, 12 product-ad and shopping styles, 10 brand and cover pieces, 2 motion effects and 12 editing methods. Each states its look, motion rules with timings, required inputs, what to avoid and review checks; skills that need generated stills or clips route discovery through `openmotion_media_use` and generation through `openmotion_assets_use` with consent.
+- The Studio Skills page lists all 96 as cards with an 8-second OpenMotion sample cover (rendered with HyperFrames, under 450 KB each) and localized copy in all 11 languages. Three categories are added (Talking-head, Product ads, Editing) and the analytics `skill_category` enum is extended to match. Talking-head cards follow the first two cards (Remove the AI look, Growth Teardown).
+- All are recipes/drafts: covers are OpenMotion samples with invented content, not runs on user material, and no executable template is claimed.
+- The standalone installer, the positive distribution list and package tests include the new Skills; `npm run check` validates Library Skill frontmatter.
+
 ## 2026-11-17: Add the Growth Teardown library Skill
 
 - Add optional [`openmotion-growth-teardown`](../../library/skills/openmotion-growth-teardown/SKILL.md): name a company, research its dated growth moves and metric points with sources, and generate an editable nine-scene HyperFrames film (map, three plays with real evidence, plays to copy).

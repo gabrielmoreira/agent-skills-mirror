@@ -1,0 +1,1 @@
+Generated copies of `packages/design-system/brand/openmotion-logo.svg` and `loading-mark.svg` for standalone installs of this Skill. Edit the originals, then run `npm run design:tokens` to refresh these copies; `npm run check` fails when they drift.

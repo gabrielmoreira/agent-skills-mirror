@@ -90,6 +90,21 @@ technical export can also close the same run with `host_run_delivered`. A failed
 cancelled export emits the corresponding host terminal event. These events do not
 claim a run boundary when the host did not provide a work-round ID.
 
+### Video generation, editing and export conversion
+
+`work_generation_stage` records `started`, `generated`, `edited` and `exported` with the same `work_id`, `project_id` and installation identity. The native work round owns the occurrence times. A deterministic event ID per work/stage deduplicates retry delivery, and work mutations use a cross-process lock.
+
+- `started` is emitted when a generation work round begins, before authoring. Export-only playback sets `generation:false`.
+- `generated` is emitted by `openmotion_open_preview(action=complete_generation)` immediately after the Agent produces the requested native video artifact. This action reads the current artifact, checks its version, authored content change, duration and native lint, and records completion independently of saving, preview or export. Direct filesystem authoring follows the same path.
+- `edited` is the first successful manual content edit or history step in Studio after generation. It is associated using the event's project and occurrence time. Project/asset renames, failed changes, Agent writes and asset-manager-only operations are excluded. The built-in project emits its fixed `project` identity alongside managed project UUIDs.
+- `exported` is the first successful export of that work. MCP uses the job's frozen work identity. Studio binds the most recent generated round of the same project when accepting a render and observes the persisted native completion in the backend, including when the tab closes. An unfinished newer generation prevents borrowing an earlier completion.
+
+Subsequent manual adjustments remain part of the same generated work until another generation round begins. A completed export keeps its original work even when another round starts. Generation version/revision identify the original completed artifact. Existing editor-save and asset-generation events retain their own meanings.
+
+For an observation date D in Asia/Shanghai, the daily cohort contains installations that began a generation on D-1. Each attempt has 24 hours from its start. Distinct installations with a generated artifact divide by distinct initiating installations. Distinct installations that subsequently edited the same generated work divide by generated installations. Export conversion uses that same denominator. Editing is optional for export. Weekly sets are unioned across seven start-date cohorts before division.
+
+Historical clients and work rounds without this protocol remain unavailable. The report should show “暂无数据” for uncovered dates and mixed-coverage weeks. Empty generated denominators mean no eligible sample. Generation failures with observed starts can yield a genuine 0% generation rate. Deployment of new clients and confirmation of event collection establish the reporting coverage date.
+
 Quality evidence is explicit. Technical export, preview visibility and recorded
 content review each emit `check_required` and `check_completed` with a version,
 checklist, checker type and bounded evidence reference. A technical export check
@@ -99,6 +114,27 @@ correctness incidents and recovery evidence use `incident_confirmed` and
 `recovery_recorded`; ordinary task failures are not incidents.
 
 ## Identity, properties and privacy
+
+`account_sign_in_result` reports each finished OpenDesign connector attempt with
+`source_product=openmotion`, `source_detail=openmotion_editor_login`, and an
+`entry_id` / `entry_occurred_at` pair created when the editor starts sign-in.
+Attempts replaced within that sign-in retain the entry pair while their
+`attempt_id` changes. A new explicit sign-in creates a new entry pair. Success
+is reported only after the connector completes credential acceptance and the
+local account setup finishes; browser opening or approval alone is not success.
+Successful completion also reports the confirmed account ID as `amr_user_id`,
+so account counts can deduplicate across installations and join AMR account facts.
+Failures and cancellations omit that ID. The existing collection controls apply;
+`distinct_id` remains the installation ID, without identify/alias or person merging.
+Email, names, activation URLs, authorization codes and credentials are omitted.
+These fields describe the local OM result; AMR handoff attribution is separate.
+
+The account and subscription settings' **Manage subscription** link carries
+`od_origin=openmotion`, `od_entry_source=openmotion_manage_subscription`, and a
+fresh `od_entry_id` / UTC `od_entry_at` for each primary or middle click. The link
+retains `billing=plan` and contains no account, installation or credential data.
+AMR must accept the OpenMotion origin and entry source in its attribution
+validation before these parameters can reach its subscription/payment events.
 
 One random `installation_id` UUID is persisted atomically in `tracking/identity.json`
 under each owned data directory, outside projects and versioned application caches.
@@ -138,8 +174,8 @@ WHERE timestamp >= now() - INTERVAL 2 DAY
 
 This measures OS-device identities, not people or immutable physical hardware. Shared
 machines count once, a person on two machines counts twice, cloned OS identifiers can
-collide, and an OS reinstall can change Windows/Linux identifiers. No account identity,
-MAC address, raw platform identifier or probabilistic fingerprint is sent. The package can
+collide, and an OS reinstall can change Windows/Linux identifiers. Device context contains
+no account identity, MAC address, raw platform identifier or probabilistic fingerprint. The package can
 initialize an identity with a validated source label; existing identities retain
 their first source. Landing-page attribution and installer `--source` plumbing are
 a separate change. Unknown source remains null.
@@ -199,15 +235,90 @@ cannot replace an existing association. A manually opened, expired, evicted or
 restarted page context reports `unknown`. No global last-used-host attribution is
 used. These tokens are metadata references, not authorization credentials.
 
+Provider-settings handoffs (`openmotion_open_preview` with `target=providers`)
+emit the MCP-only `provider_setup_opened` event on successful stdio MCP calls
+and append the validated `entry_from` parameter (`agent_providers` by default, or
+`agent_media_signed_out`, `agent_media_upgrade_free`, `agent_media_upgrade_go`,
+`agent_media_balance_low`, `agent_media_key_rejected`, `agent_media_handbook`) to
+the returned `previewUrl`. WebMCP/non-MCP HTTP calls neither emit
+`provider_setup_opened` nor attach `entry_from` to `previewUrl`, keeping funnel
+denominators and numerators aligned. Studio Settings propagates only recognized
+`entry_from` values onto Settings `page_view` and Settings `ui_click` events
+(including `account` sign-in and manage-subscription clicks) while inside
+Settings, and clears `entry_from` when navigating out of Settings (including to
+`brand-kit`, `mcp`, `assets`, `skills`, or the editor). Unknown `entry` values
+are rejected with `INVALID_ARGUMENT` on MCP calls, while Studio drops
+unrecognized URL `entry_from` values; neither side accepts prompts, account IDs
+or credentials.
+
 The research sources are the [supported MCP lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle),
 [Codex's MCP client](https://github.com/openai/codex/blob/main/codex-rs/rmcp-client/src/utils.rs)
 and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/mcp/mcp-client/src/connection.ts).
 
+## Brand-story discovery and reuse
+
+The opt-in `brandStoriesPreview=1` template-library surface reuses the existing
+Studio transport, closed registry and installation-wide privacy controls. It does
+not add an SDK, identity, endpoint or automatic production-statistics refresh.
+`template_series_*` areas describe curated template brand series; they are distinct
+from the Brand Kit page's `brand_*` areas and catalogue IDs.
+
+| Question / signal | Event and tuple | Reporting unit |
+| --- | --- | --- |
+| Was a series card seen? | `surface_view / template_series_card / card` | At least 50% visible for one uninterrupted second, visible tab, uncovered library; once per list result set and series. Returning from detail does not count it again. |
+| Which entry opened it? | `ui_click / template_series_card / open_detail` | One activation, with a fresh `series_view_id`; opening need not imply a qualified prior exposure. |
+| Did posting history appear? | `surface_view / template_series_detail / detail` | Once per series view when its native dialog is open, visible and uncovered. |
+| Which work was inspected? | `surface_view / template_series_work / detail` | Initial selected work and each actual selected-work change; returning from an overlaid detail does not add one. It means visible selection, not video load or completed viewing. |
+| What helped browsing and learning? | `ui_click / template_series_detail` | Intentional `select_work`, `select_chapter`, `filter_option`, `browse_timeline`, `expand_learning`, `compare_brands`, `open_detail`, `view_repository` or `close_detail` handlers. Same-work activation is a no-op; drag reports once on release. Hover and video progress are not formal analytics. |
+| Was an instruction copied? | `ui_click / template_series_detail / start_use` and existing `template_instruction_copy_result` | One `copy_attempt_id` joins click and result. `clipboard_written` is success; `manual_fallback_shown` is manual recovery, `failed` means instruction preparation failed. Recreate-and-submit remains a distinct `template_action`/`instruction_kind`. |
+| Was motion.md handed to the browser? | `ui_click / template_series_detail / download_guide` and existing `resource_download_result` | One `download_attempt_id`; `browser_save_requested` does not prove a file reached disk, `fetch_failed` carries only a bounded error code. |
+
+Every series signal carries an opaque, deterministic 64-bit catalogue-label hash
+(`series_id`, not a display name), result-set UUID `series_list_id`, entry
+`series_placement=discovery|top100`, one-based `series_position`, `series_rank` and
+`series_work_count`. Position counts template and series cards, excluding the intro;
+rank counts series cards only. Search, sort and filter counts capture the list at
+entry. A changed search/filter/sort receives its own list ID, reused on return to the
+same result set within one library visit. A new library visit starts new IDs.
+Renaming a catalogue label changes its series identity; this is not a user ID.
+
+Discovery carries `ranking_policy=works59-ctr41-v1` and
+`ranking_snapshot=ctr-20261118-v2`; TOP100 carries `catalog-v1` and no popularity
+snapshot. These identify the shipped rule and fixed input, not a live rank service.
+They do not change the confirmed sampling or 10–14-template spacing.
+
+Work signals use existing `template_id` with the one-based `series_work_position`
+within the opened collection’s chronology, regardless of its in-dialog purpose filter. Chapter clicks
+use one-based `chapter_index`, never chapter text/timestamps. Learning sections use
+`adapt|habits`; browse intent uses `browse_method=arrow|drag` and optional
+`direction=previous|next`. Purposes reuse the bounded catalogue `filter_value` slug.
+Names, titles, notes, instructions, URLs, raw errors and private materials are not
+sent. Authoring scenes without a series-view context do not report these actions.
+
+Opening a work's full detail reports the ordinary detail view exactly once, with
+its own `detail_view_id` plus the same series attribution and
+`series_surface=template_detail`. It does not manufacture a `template_card` click.
+Direct timeline actions use `series_surface=timeline` without inventing a template
+detail view. Existing detail copy/download/instruction/link signals inherit the
+series source, including subsequent related/previous/next details until closed.
+Ordinary catalogue entries retain their existing fields and meaning.
+
+For series CTR, join qualified card exposure to later `open_detail` by collection
+identity, entry and `series_list_id` under the agreed analysis window. Copy intent,
+copy result, browser download handoff and completed creation are separate stages;
+these events do not prove that a user sent a prompt or produced a usable video.
+Exclude `env=test` and test-run UUIDs from production analysis. The review proxy on
+56820 deliberately disables collection; marked ingestion tests use a separate
+backend/data directory. Deterministic coverage lives in
+`brandStoryTracking.test.ts`, `TemplateLibraryDialog.test.tsx`,
+`tracking.test.ts` and `tests/brand-story-tracking.test.ts`.
+
 ## Implemented signals and limits
 
 - All registered phase-one stdio tools: accepted start and observed finish, including
-  early-return catalog tools, input rejection, partial import and idempotent replay.
-- All nineteen page WebMCP tools: `webmcp_tool_started` and
+  early-return catalog tools, the two negotiated presentation tools, input rejection,
+  partial import and idempotent replay.
+- All twenty-one page WebMCP tools: `webmcp_tool_started` and
   `webmcp_tool_finished`, correlated by a fresh `call_id` per invocation, with
   the public `tool_name`, `transport=webmcp`, observed `outcome` and bounded
   `duration_ms`. These are browser-call measurements, separate from stdio MCP
@@ -218,15 +329,14 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
   reply into a cancelled operation. Arguments, results, handles, paths and raw errors are
   excluded. Host Agent fields retain their existing page-handoff meaning; the
   transport marker does not identify the calling browser agent.
-- Asset call action: `mcp_tool_started/finished` and
-  `webmcp_tool_started/finished` include an optional closed `action` category for
-  asset tools: `list`, `get`, `import`, `update`, `generate`, `jobs`, `status`,
-  `cancel`, `import_to_project`, `read`. The shared extractor ignores other tools,
-  missing/malformed actions and unknown values; no raw arguments or media are sent.
-  The action is captured once at invocation start and retained on finish, including
-  failure and input rejection. Stdio keeps `tool_name=motion_assets` for both public
-  asset names; WebMCP keeps their public names. Historical events without action
-  remain valid and cannot be backfilled. Registration has no action.
+- Tool dimensions: `mcp_tool_started/finished` and `webmcp_tool_started/finished`
+  carry allowlisted actions for assets, media discovery, preview, export request,
+  archive and project management. Preview also has `target`. Missing actions mean
+  `open` for preview and `request` for export; invalid values are omitted.
+  A failed call can carry `error_code` and schema-declared `invalid_field` and
+  `validation_rule`, with array indices collapsed and unknown keys bucketed.
+  Both stdio asset names still use `tool_name=motion_assets`; WebMCP uses the
+  original public name. Older events may omit these dimensions.
   To measure `read`, filter `product=openmotion`, exclude `env=test`, select the
   appropriate `*_tool_finished` event and `action=read`: count distinct `call_id`
   for observed calls, divide successful calls (`outcome=success`) by all observed
@@ -237,6 +347,15 @@ and [DSH's client declaration](https://github.com/deepseek-ai/deepseek-harness/b
   Browser and stdio are separate transports; do not sum starts and finishes or add
   domain-result events to call counts. This measures observed call outcomes, not
   paid generation completion, human media acceptance or guaranteed billing usage.
+- For MCP exports, use `export_request_result` to measure submission and join its
+  `job_id` to `export_result` for the one terminal worker record. A failed terminal
+  job has a bounded `failure_stage` and `error_code`, including interrupted or
+  expired jobs. Polling success means the read worked. Studio UI exports use their
+  existing separate pipeline.
+- `asset_import_result` includes requested, added, reused and failed item counts when
+  a batch result is available. `asset_import_item_failure` reports one count per
+  allowlisted failure category per committed request. Sum its `failed_count` to
+  break down item failures, keeping it separate from call-level outcomes.
 - WebMCP registration: `webmcp_registration_result` records one result per
   attempted tool registration (`success`, `failure` or `cancelled`), including
   validation/duplicate refusals and teardown cancellation. Use this event for

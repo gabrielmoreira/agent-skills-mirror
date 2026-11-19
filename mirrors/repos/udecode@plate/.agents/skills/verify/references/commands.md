@@ -20,6 +20,7 @@ bun test ./packages/platejs/<file>.test.ts --test-name-pattern "<pattern>"
 Rules:
 
 - To run a whole folder of `platejs` or `plitejs` tests, run its partition, such as `pnpm --filter platejs run test:partition:docx-import`. A partition gives each file that calls `mock.module` its own process. `pnpm --filter platejs test -- <folder>` and `bun test <folder>` run every file in one process, so those mocks leak into the other files: one DOCX run failed 74 tests this way, at `HEAD` too. `pnpm test <path>` skips both packages and exits 1 with `No tests matched`.
+- Run an `apps/www` Bun spec with `pnpm test apps/www/<path>` from the root, which passes the root `bunfig.toml`'s preloads. `apps/www` has no `bunfig.toml`, so `bun test` run there loads no DOM and every case that renders fails with `document is not defined`.
 - `pnpm check:plite:dev` is the normal affected development lane.
 - Add `--dry-run` to inspect its exact proof selection. Local changes and
   `PLITE_CHECK_BASE=<ref>` use the same planner as Plite CI. Planner or runner
@@ -158,9 +159,7 @@ Rules:
   For `@platejs/test`, select `test:react`, `test:dom`, or a named partition;
   focused arguments through its aggregate `test` do not select those runners;
 - `pnpm plite:release:packages` builds and checks packed artifacts through
-  `tooling/scripts/check-plite-release-artifacts.mjs`; `pnpm entrypoint:sizes`
-  runs only its entrypoint size budget, as `pnpm check`'s `entrypoint-sizes`
-  step does. The managed
+  `tooling/scripts/check-plite-release-artifacts.mjs`. The managed
   `tests/plite-browser/runtime-entrypoints.test.ts` drives `/runtime-entrypoints`
   for client imports. These runners derive membership from the DAG; type-only
   exports retain their separate proof scope;

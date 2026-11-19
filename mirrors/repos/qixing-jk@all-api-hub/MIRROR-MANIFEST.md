@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 30 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 9 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 30 |
+| Followed pats | 9 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,7 +55,9 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 7 followed patterns, 
 - `docs/agents/product.md`
 - `docs/agents/storage.md`
 - `docs/agents/i18n.md`
-- `CONTRIBUTING.md`
+- `docs/development/setup.md`
+- `docs/development/testing.md`
+- `e2e/README.md`
 - `docs/agents/task-acceptance.md`
 - `.husky/README.md`
 
@@ -88,13 +90,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`.agents/skills/sponsor-catalog/SKILL.md`](.agents/skills/sponsor-catalog/SKILL.md) |
 | 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 24 | → | [`.husky/README.md`](.husky/README.md) |
-| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 24 | ✓ | [`docs/development/ci-and-releases.md`](docs/development/ci-and-releases.md) |
+| 25 | → | [`.husky/README.md`](.husky/README.md) |
 | 26 | → | [`docs/agents/i18n.md`](docs/agents/i18n.md) |
 | 27 | → | [`docs/agents/product.md`](docs/agents/product.md) |
 | 28 | → | [`docs/agents/site-integrations.md`](docs/agents/site-integrations.md) |
 | 29 | → | [`docs/agents/storage.md`](docs/agents/storage.md) |
 | 30 | → | [`docs/agents/task-acceptance.md`](docs/agents/task-acceptance.md) |
+| 31 | → | [`docs/development/setup.md`](docs/development/setup.md) |
+| 32 | → | [`docs/development/testing.md`](docs/development/testing.md) |
+| 33 | → | [`e2e/README.md`](e2e/README.md) |
 
 ---
 

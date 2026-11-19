@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langfuse/langfuse` — 26 default patterns, 0 followed patterns, 198 file(s) materialized.
+Mirror of `langfuse/langfuse` — 26 default patterns, 0 followed patterns, 202 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langfuse/langfuse` — 26 default patterns, 0 followed patterns, 198 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 198 |
+| Files         | 202 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -241,22 +241,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 180 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
 | 181 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 182 | ✓ | [`ai-gateway/AGENTS.md`](ai-gateway/AGENTS.md) |
-| 183 | ✓ | [`ee/AGENTS.md`](ee/AGENTS.md) |
-| 184 | ✓ | [`packages/langfuse-skills/halo/langfuse/SKILL.md`](packages/langfuse-skills/halo/langfuse/SKILL.md) |
-| 185 | ✓ | [`packages/native/AGENTS.md`](packages/native/AGENTS.md) |
-| 186 | ✓ | [`packages/shared/AGENTS.md`](packages/shared/AGENTS.md) |
-| 187 | ✓ | [`packages/shared/scripts/seeder/AGENTS.md`](packages/shared/scripts/seeder/AGENTS.md) |
-| 188 | ✓ | [`web/.agents/skills/vercel-composition-patterns/AGENTS.md`](web/.agents/skills/vercel-composition-patterns/AGENTS.md) |
-| 189 | ✓ | [`web/.agents/skills/vercel-composition-patterns/SKILL.md`](web/.agents/skills/vercel-composition-patterns/SKILL.md) |
-| 190 | ✓ | [`web/.agents/skills/vercel-react-best-practices/AGENTS.md`](web/.agents/skills/vercel-react-best-practices/AGENTS.md) |
-| 191 | ✓ | [`web/.agents/skills/vercel-react-best-practices/SKILL.md`](web/.agents/skills/vercel-react-best-practices/SKILL.md) |
-| 192 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 193 | ✓ | [`web/src/features/ai-gateway/AGENTS.md`](web/src/features/ai-gateway/AGENTS.md) |
-| 194 | ✓ | [`web/src/features/ai-gateway/components/GatewayApiKeysPage/components/SetupInstructions/fns/agentSetupInstructions/AGENTS.md`](web/src/features/ai-gateway/components/GatewayApiKeysPage/components/SetupInstructions/fns/agentSetupInstructions/AGENTS.md) |
-| 195 | ✓ | [`web/src/features/evals/AGENTS.md`](web/src/features/evals/AGENTS.md) |
-| 196 | ✓ | [`web/src/features/evals/v2/AGENTS.md`](web/src/features/evals/v2/AGENTS.md) |
-| 197 | ✓ | [`web/src/features/slack/AGENTS.md`](web/src/features/slack/AGENTS.md) |
-| 198 | ✓ | [`worker/AGENTS.md`](worker/AGENTS.md) |
+| 183 | ✓ | [`ai-gateway/src/providers/usage/AGENTS.md`](ai-gateway/src/providers/usage/AGENTS.md) |
+| 184 | ✓ | [`ai-gateway/src/spend/AGENTS.md`](ai-gateway/src/spend/AGENTS.md) |
+| 185 | ✓ | [`ee/AGENTS.md`](ee/AGENTS.md) |
+| 186 | ✓ | [`packages/langfuse-skills/halo/langfuse/SKILL.md`](packages/langfuse-skills/halo/langfuse/SKILL.md) |
+| 187 | ✓ | [`packages/native/AGENTS.md`](packages/native/AGENTS.md) |
+| 188 | ✓ | [`packages/shared/AGENTS.md`](packages/shared/AGENTS.md) |
+| 189 | ✓ | [`packages/shared/scripts/seeder/AGENTS.md`](packages/shared/scripts/seeder/AGENTS.md) |
+| 190 | ✓ | [`packages/shared/src/server/ingestion/AGENTS.md`](packages/shared/src/server/ingestion/AGENTS.md) |
+| 191 | ✓ | [`packages/shared/src/server/pricing-tiers/AGENTS.md`](packages/shared/src/server/pricing-tiers/AGENTS.md) |
+| 192 | ✓ | [`web/.agents/skills/vercel-composition-patterns/AGENTS.md`](web/.agents/skills/vercel-composition-patterns/AGENTS.md) |
+| 193 | ✓ | [`web/.agents/skills/vercel-composition-patterns/SKILL.md`](web/.agents/skills/vercel-composition-patterns/SKILL.md) |
+| 194 | ✓ | [`web/.agents/skills/vercel-react-best-practices/AGENTS.md`](web/.agents/skills/vercel-react-best-practices/AGENTS.md) |
+| 195 | ✓ | [`web/.agents/skills/vercel-react-best-practices/SKILL.md`](web/.agents/skills/vercel-react-best-practices/SKILL.md) |
+| 196 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 197 | ✓ | [`web/src/features/ai-gateway/AGENTS.md`](web/src/features/ai-gateway/AGENTS.md) |
+| 198 | ✓ | [`web/src/features/ai-gateway/components/GatewayApiKeysPage/components/SetupInstructions/fns/agentSetupInstructions/AGENTS.md`](web/src/features/ai-gateway/components/GatewayApiKeysPage/components/SetupInstructions/fns/agentSetupInstructions/AGENTS.md) |
+| 199 | ✓ | [`web/src/features/evals/AGENTS.md`](web/src/features/evals/AGENTS.md) |
+| 200 | ✓ | [`web/src/features/evals/v2/AGENTS.md`](web/src/features/evals/v2/AGENTS.md) |
+| 201 | ✓ | [`web/src/features/slack/AGENTS.md`](web/src/features/slack/AGENTS.md) |
+| 202 | ✓ | [`worker/AGENTS.md`](worker/AGENTS.md) |
 
 ---
 

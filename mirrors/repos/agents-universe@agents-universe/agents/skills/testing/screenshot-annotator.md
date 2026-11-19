@@ -1,0 +1,146 @@
+---
+slug: "testing/screenshot-annotator"
+description:
+  zh-CN: "在测试截图上标注重点区域，输出在 Jira 中易于阅读的高亮证据图"
+  en-US: "Annotate focus areas on test screenshots and output highlighted evidence images that are easy to read in Jira"
+---
+
+# Skill: Screenshot Annotator
+
+If `workflows/test-artifact-and-jira-conventions.workflow.md` is not loaded for the current task, read it first.
+
+## Trigger Conditions
+
+- The execution result needs screenshots uploaded to a Jira test card.
+- A single screenshot contains multiple information points and the assertion focus may not be obvious.
+- A defect ticket or test card needs to emphasize a specific button, status, field, or error message.
+
+## Goal
+
+Without altering the original screenshot, generate an annotated screenshot that marks focus areas with **hollow** highlight boxes (outline only, no fill), adds a short label per area, and adds a note at the bottom explaining why each highlighted area matters. The box must never obscure the content it points at.
+
+## Style Rules (hollow marks, tight boxes)
+
+1. **Hollow boxes** — boxes are drawn as outlines only; they must never fill/cover the UI underneath. `image_annotator` implements hollow outlines automatically; do not request translucent fills.
+2. **Tight rectangles** — each box should hug the element: element bounding box plus at most 5–10 px of margin. A box that is much larger than the element is a defect, not an annotation.
+3. **1–4 areas max** — mark only the most important regions; never cover the whole image with marks.
+4. **Short labels** — label = element name or the assertion result in a few characters. Put the proof in the label (e.g. `已选择数量 3`), the explanation in `detail`.
+5. Never keep placeholder labels such as `Focus 1/2/3` or placeholder notes such as `补充这里为什么是关注重点。` in a final annotated screenshot.
+
+## Input Convention
+
+First generate a JSON file describing the focus areas on the screenshot.
+The example below intentionally keeps literal Chinese UI anchors such as `已选择数量` and `批量通过按钮`, because they may be the exact strings visible in the screenshot:
+
+```json
+{
+  "title": "PROJ-123 batch selection issue",
+  "subtitle": "Highlight the unchanged selected count and the still-disabled bulk action button",
+  "focusAreas": [
+    {
+      "x": 118,
+      "y": 640,
+      "width": 220,
+      "height": 60,
+      "label": "已选择数量",
+      "detail": "The UI still shows 0 items after clicking the list checkbox"
+    },
+    {
+      "x": 860,
+      "y": 630,
+      "width": 260,
+      "height": 72,
+      "label": "批量通过按钮",
+      "detail": "The button remains disabled after selection"
+    }
+  ]
+}
+```
+
+Field descriptions:
+
+- `title`: optional title shown at the top of the image.
+- `subtitle`: optional supplemental note shown at the top.
+- `focusAreas`: at least one focus area.
+- `x/y/width/height`: pixel coordinates with the top-left corner of the original image as the origin.
+- `xPct/yPct/widthPct/heightPct`: percentage coordinates in the range `0-100`, suitable for reuse across different resolutions.
+- `label`: the short title for that area.
+- `detail`: optional explanation of why that area matters.
+- `color`: optional custom highlight color.
+
+## Getting Accurate Coordinates (measure, never guess)
+
+The #1 cause of misplaced marks is guessed coordinates. The tool renders boxes at the exact coordinates you pass - if a box looks misplaced, the coordinates were wrong, not the renderer. Measure real element bounds instead:
+
+1. Keep the page in the same state as the screenshot (do not scroll, do not click anything).
+2. Call `browser_playwright` with `operation="bounding_box"` and the element selector. It returns BOTH coordinate systems:
+   - `viewport` — for screenshots taken with `full_page=false`
+   - `fullPage` — for screenshots taken with `full_page=true` (y includes scrollY)
+3. Use the matching values directly as `x/y/width/height` in `image_annotator` (optionally add 3–6 px margin). For percent units: `xPct = rect.x / imageWidth * 100`, same for the rest.
+4. After annotating, verify alignment: the box outline should hug the element with a few px of margin. If it misses, re-measure - do not nudge coordinates by hand.
+5. If the selector is not stable, take a fresh screenshot first and measure against that same capture.
+
+Worked example (measure -> annotate):
+
+```json
+browser_playwright(operation="bounding_box", selector=".bulk-action-btn")
+// -> bounding_box.fullPage = {x: 860, y: 620, width: 260, height: 72}
+
+image_annotator(image_path="<screenshot.png>", focus_areas=[
+  {"x": 857, "y": 617, "width": 266, "height": 78, "label": "批量通过按钮", "detail": "..."}
+])
+```
+
+Never derive coordinates from a mental model of the page ("the button is roughly at 40% width") - always measure.
+
+## Tool Calls
+
+```json
+browser_playwright(operation="bounding_box", selector="<target-element>")
+focus_template(image_path="<source-screenshot>", count=2, units="percent", title="<text>", subtitle="<text>")
+image_annotator(image_path="<source-screenshot>", title="<text>", subtitle="<text>", focus_areas=[
+  {"x": 857, "y": 617, "width": 266, "height": 78, "label": "Area 1", "detail": "Why this matters"}
+])
+```
+
+Use `focus_template` first to read the image size and generate a template, then adjust the rectangle coordinates — this avoids writing the full JSON from scratch. `units="percent"` generates a percentage-based coordinate template suitable for reuse across resolutions.
+
+Do not use the raw template output directly: `focus_template` only creates placeholder boxes with labels like `Focus 1`. Before calling `image_annotator`, replace placeholders with real labels, real assertion notes, and reviewed coordinates (see Getting Accurate Coordinates above).
+
+If `output_path` is omitted in `image_annotator`, it defaults to writing `*-annotated.png` in the same directory as the original file.
+
+## Usage Principles
+
+1. Preserve the original image and output the annotated image separately.
+2. Mark only the 1 to 4 most important regions; do not fill the entire image with markup.
+3. Boxes are hollow outlines and must be tight around the element; never use oversized boxes or filled overlays that hide the UI.
+4. Keep labels short and explanations concrete; prioritize assertion points and abnormal points.
+5. Never keep placeholder labels such as `Focus 1/2/3` or placeholder notes such as `补充这里为什么是关注重点。` in a final annotated screenshot.
+6. To prove the expected result, write the result in the label; to prove a defect, write the abnormal symptom in the label.
+7. When uploading to Jira, prefer attaching the annotated version first; if there may be dispute, also attach the original image.
+8. If the screenshot may be reused across different resolutions, prefer a percentage-coordinate template.
+9. If the screenshot is a full-page capture, remember to add `window.scrollY` to element y coordinates (see Getting Accurate Coordinates).
+
+## Recording Evidence
+
+A recording complements screenshots; it does not replace them.
+
+- Record with `browser_playwright(operation="record_start")` / `record_stop(filename="<case-id>-<scenario-slug>")`, and stop it in the same turn or the video is discarded. Name it at record time — nothing can rename the file afterwards. A spec run already keeps `tests/test-results/**/video.webm` and `trace.zip` for failed cases.
+- **Do not annotate a video.** There is no frame-stable way to place focus boxes, and an annotated clip is no longer the raw record a reviewer needs. The pairing is: screenshots carry the annotated proof of each assertion point, the recording carries the flow between them.
+- Keep clips short and stop them right after the scenario — they are attached to Jira under a 50MB cap, and a long clip of idle waiting helps nobody.
+- Name the file after the scenario (`record_stop(filename="<case-id>-<scenario-slug>")`); it is uploaded from `.tmp/media/{conversation_id}/`, matching `testing/jira-test-case-manager`'s evidence rules.
+- If a case genuinely needs a focus point inside a video, append a still frame extracted from it — annotate the frame, not the clip.
+
+## Recommended Output Paths
+
+- Original image: `tests/generated/artifacts/<issue>/<case-id>-<scenario-slug>.png`
+- Annotated image: `tests/generated/artifacts/<issue>/<case-id>-<scenario-slug>-annotated.png`
+- Recording: `.tmp/media/{conversation_id}/<case-id>-<scenario-slug>.webm` (named by `record_stop`)
+
+## Example Flow
+
+After the Playwright run: obtain the original screenshot, read it and confirm the focus points, read the real element bounds from the browser, generate the focus JSON file, call `image_annotator` to generate the annotated image, then upload the annotated image to the Jira test card or Bug.
+
+## Learning Feedback
+
+If a project repeatedly uses the same types of screenshot focus points, for example `审批状态标签` (approval status badge), `底部批量操作区` (bottom bulk-action area), or `错误提示弹窗` (error-message modal), persist that experience into `knowledge/{project}/ui-patterns.md` or `test-patterns.md` so it can be reused directly later.

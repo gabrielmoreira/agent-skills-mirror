@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 292 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 294 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 292 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 292 |
+| Files         | 294 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -303,54 +303,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 242 | ✓ | [`.agents/test/infra/database/FG-INFRA-DATABASE-002-startup-index-sync.md`](.agents/test/infra/database/FG-INFRA-DATABASE-002-startup-index-sync.md) |
 | 243 | ✓ | [`.agents/test/infra/runtime/FG-INFRA-RUNTIME-001-chat-lease-fault-recovery.md`](.agents/test/infra/runtime/FG-INFRA-RUNTIME-001-chat-lease-fault-recovery.md) |
 | 244 | ✓ | [`.agents/test/infra/runtime/FG-INFRA-RUNTIME-002-customuid-sandbox-identity.md`](.agents/test/infra/runtime/FG-INFRA-RUNTIME-002-customuid-sandbox-identity.md) |
-| 245 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md) |
-| 246 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs) |
-| 247 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md) |
-| 248 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs) |
-| 249 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md) |
-| 250 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs) |
-| 251 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-001-upcoming-deprecation-state.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-001-upcoming-deprecation-state.md) |
-| 252 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-002-deprecation-plan-creation.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-002-deprecation-plan-creation.md) |
-| 253 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-003-deprecation-audience-and-delivery.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-003-deprecation-audience-and-delivery.md) |
-| 254 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-004-deprecation-recovery-and-termination.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-004-deprecation-recovery-and-termination.md) |
-| 255 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-005-deprecation-cutoff.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-005-deprecation-cutoff.md) |
-| 256 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md) |
-| 257 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md) |
-| 258 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs) |
-| 259 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-moderation-records-write-permission-isolation.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-moderation-records-write-permission-isolation.md) |
-| 260 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-toolset-reference-version-authorization.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-toolset-reference-version-authorization.md) |
-| 261 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md`](.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md) |
-| 262 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs`](.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs) |
-| 263 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-002-root-cross-team-switch-and-management.md`](.agents/test/permission/team/FG-PERMISSION-TEAM-002-root-cross-team-switch-and-management.md) |
-| 264 | ✓ | [`.agents/test/playwright.config.ts`](.agents/test/playwright.config.ts) |
-| 265 | ✓ | [`.agents/test/retired-ids.md`](.agents/test/retired-ids.md) |
-| 266 | ✓ | [`.agents/test/support/app-key-lifecycle-service.mjs`](.agents/test/support/app-key-lifecycle-service.mjs) |
-| 267 | ✓ | [`.agents/test/support/app-key-service.mjs`](.agents/test/support/app-key-service.mjs) |
-| 268 | ✓ | [`.agents/test/support/app-key.mjs`](.agents/test/support/app-key.mjs) |
-| 269 | ✓ | [`.agents/test/support/chat.mjs`](.agents/test/support/chat.mjs) |
-| 270 | ✓ | [`.agents/test/support/controlled-clock.cjs`](.agents/test/support/controlled-clock.cjs) |
-| 271 | ✓ | [`.agents/test/support/environment.mjs`](.agents/test/support/environment.mjs) |
-| 272 | ✓ | [`.agents/test/support/fixtures.example.json`](.agents/test/support/fixtures.example.json) |
-| 273 | ✓ | [`.agents/test/support/gate.mjs`](.agents/test/support/gate.mjs) |
-| 274 | ✓ | [`.agents/test/support/history.mjs`](.agents/test/support/history.mjs) |
-| 275 | ✓ | [`.agents/test/support/private.mjs`](.agents/test/support/private.mjs) |
-| 276 | ✓ | [`.agents/test/support/redis-proxy.mjs`](.agents/test/support/redis-proxy.mjs) |
-| 277 | ✓ | [`.agents/test/support/runtime.mjs`](.agents/test/support/runtime.mjs) |
-| 278 | ✓ | [`.agents/test/support/runtime.selftest.mjs`](.agents/test/support/runtime.selftest.mjs) |
-| 279 | ✓ | [`.agents/test/support/scenario.mjs`](.agents/test/support/scenario.mjs) |
-| 280 | ✓ | [`.agents/test/support/stream.mjs`](.agents/test/support/stream.mjs) |
-| 281 | ✓ | [`.agents/test/support/stream.selftest.mjs`](.agents/test/support/stream.selftest.mjs) |
-| 282 | ✓ | [`.agents/test/support/toolset-fixture.mjs`](.agents/test/support/toolset-fixture.mjs) |
-| 283 | ✓ | [`.agents/test/support/toolset-fixture.selftest.mjs`](.agents/test/support/toolset-fixture.selftest.mjs) |
-| 284 | ✓ | [`.agents/test/tool/system-plugin/FG-TOOL-SYSTEM-PLUGIN-001-moderation-plugin-policy-and-marketplace.md`](.agents/test/tool/system-plugin/FG-TOOL-SYSTEM-PLUGIN-001-moderation-plugin-policy-and-marketplace.md) |
-| 285 | ✓ | [`.agents/test/tsconfig.json`](.agents/test/tsconfig.json) |
-| 286 | ✓ | [`.agents/test/wallet/usage/FG-WALLET-USAGE-001-stt-billing.md`](.agents/test/wallet/usage/FG-WALLET-USAGE-001-stt-billing.md) |
-| 287 | ✓ | [`.agents/test/workflow/connection-rules.md`](.agents/test/workflow/connection-rules.md) |
-| 288 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 289 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 290 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
-| 291 | ✓ | [`document/app/llms.txt/route.ts`](document/app/llms.txt/route.ts) |
-| 292 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
+| 245 | ✓ | [`.agents/test/infra/storage/FG-INFRA-STORAGE-001-active-file-preview-isolation.md`](.agents/test/infra/storage/FG-INFRA-STORAGE-001-active-file-preview-isolation.md) |
+| 246 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001-customuid-identity-and-authorization.md) |
+| 247 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-001.mjs) |
+| 248 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002-app-key-management.md) |
+| 249 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-002.mjs) |
+| 250 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003-chat-integration-docs.md) |
+| 251 | ✓ | [`.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs`](.agents/test/integration/openapi/FG-INTEGRATION-OPENAPI-003.mjs) |
+| 252 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-001-upcoming-deprecation-state.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-001-upcoming-deprecation-state.md) |
+| 253 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-002-deprecation-plan-creation.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-002-deprecation-plan-creation.md) |
+| 254 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-003-deprecation-audience-and-delivery.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-003-deprecation-audience-and-delivery.md) |
+| 255 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-004-deprecation-recovery-and-termination.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-004-deprecation-recovery-and-termination.md) |
+| 256 | ✓ | [`.agents/test/model/management/FG-MODEL-MANAGEMENT-005-deprecation-cutoff.md`](.agents/test/model/management/FG-MODEL-MANAGEMENT-005-deprecation-cutoff.md) |
+| 257 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-001-mcp-share-source-access.md) |
+| 258 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002-app-key-application-grant.md) |
+| 259 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-002.mjs) |
+| 260 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-moderation-records-write-permission-isolation.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-moderation-records-write-permission-isolation.md) |
+| 261 | ✓ | [`.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-toolset-reference-version-authorization.md`](.agents/test/permission/resource/FG-PERMISSION-RESOURCE-003-toolset-reference-version-authorization.md) |
+| 262 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md`](.agents/test/permission/team/FG-PERMISSION-TEAM-001-app-key-handover-lifecycle.md) |
+| 263 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs`](.agents/test/permission/team/FG-PERMISSION-TEAM-001.mjs) |
+| 264 | ✓ | [`.agents/test/permission/team/FG-PERMISSION-TEAM-002-root-cross-team-switch-and-management.md`](.agents/test/permission/team/FG-PERMISSION-TEAM-002-root-cross-team-switch-and-management.md) |
+| 265 | ✓ | [`.agents/test/playwright.config.ts`](.agents/test/playwright.config.ts) |
+| 266 | ✓ | [`.agents/test/retired-ids.md`](.agents/test/retired-ids.md) |
+| 267 | ✓ | [`.agents/test/support/app-key-lifecycle-service.mjs`](.agents/test/support/app-key-lifecycle-service.mjs) |
+| 268 | ✓ | [`.agents/test/support/app-key-service.mjs`](.agents/test/support/app-key-service.mjs) |
+| 269 | ✓ | [`.agents/test/support/app-key.mjs`](.agents/test/support/app-key.mjs) |
+| 270 | ✓ | [`.agents/test/support/chat.mjs`](.agents/test/support/chat.mjs) |
+| 271 | ✓ | [`.agents/test/support/controlled-clock.cjs`](.agents/test/support/controlled-clock.cjs) |
+| 272 | ✓ | [`.agents/test/support/environment.mjs`](.agents/test/support/environment.mjs) |
+| 273 | ✓ | [`.agents/test/support/fixtures.example.json`](.agents/test/support/fixtures.example.json) |
+| 274 | ✓ | [`.agents/test/support/gate.mjs`](.agents/test/support/gate.mjs) |
+| 275 | ✓ | [`.agents/test/support/history.mjs`](.agents/test/support/history.mjs) |
+| 276 | ✓ | [`.agents/test/support/private.mjs`](.agents/test/support/private.mjs) |
+| 277 | ✓ | [`.agents/test/support/redis-proxy.mjs`](.agents/test/support/redis-proxy.mjs) |
+| 278 | ✓ | [`.agents/test/support/runtime.mjs`](.agents/test/support/runtime.mjs) |
+| 279 | ✓ | [`.agents/test/support/runtime.selftest.mjs`](.agents/test/support/runtime.selftest.mjs) |
+| 280 | ✓ | [`.agents/test/support/scenario.mjs`](.agents/test/support/scenario.mjs) |
+| 281 | ✓ | [`.agents/test/support/stream.mjs`](.agents/test/support/stream.mjs) |
+| 282 | ✓ | [`.agents/test/support/stream.selftest.mjs`](.agents/test/support/stream.selftest.mjs) |
+| 283 | ✓ | [`.agents/test/support/toolset-fixture.mjs`](.agents/test/support/toolset-fixture.mjs) |
+| 284 | ✓ | [`.agents/test/support/toolset-fixture.selftest.mjs`](.agents/test/support/toolset-fixture.selftest.mjs) |
+| 285 | ✓ | [`.agents/test/tool/system-plugin/FG-TOOL-SYSTEM-PLUGIN-001-moderation-plugin-policy-and-marketplace.md`](.agents/test/tool/system-plugin/FG-TOOL-SYSTEM-PLUGIN-001-moderation-plugin-policy-and-marketplace.md) |
+| 286 | ✓ | [`.agents/test/tsconfig.json`](.agents/test/tsconfig.json) |
+| 287 | ✓ | [`.agents/test/wallet/usage/FG-WALLET-USAGE-001-stt-billing.md`](.agents/test/wallet/usage/FG-WALLET-USAGE-001-stt-billing.md) |
+| 288 | ✓ | [`.agents/test/workflow/connection-rules.md`](.agents/test/workflow/connection-rules.md) |
+| 289 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 290 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 291 | ✓ | [`cli/skills/workflow-build/SKILL.md`](cli/skills/workflow-build/SKILL.md) |
+| 292 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 293 | ✓ | [`document/app/llms.txt/route.ts`](document/app/llms.txt/route.ts) |
+| 294 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
 
 ---
 

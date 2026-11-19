@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedesignproject/agent-skills` — 26 default patterns, 0 followed patterns, 91 file(s) materialized.
+Mirror of `thedesignproject/agent-skills` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedesignproject/agent-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 91 |
+| Files         | 98 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -141,15 +141,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 80 | ✓ | [`skills/prompt-engineer/references/structured-outputs.md`](skills/prompt-engineer/references/structured-outputs.md) |
 | 81 | ✓ | [`skills/prompt-engineer/references/system-prompts.md`](skills/prompt-engineer/references/system-prompts.md) |
 | 82 | ✓ | [`skills/prompt-engineer/SKILL.md`](skills/prompt-engineer/SKILL.md) |
-| 83 | ✓ | [`skills/ux-audit/SKILL.md`](skills/ux-audit/SKILL.md) |
-| 84 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
-| 85 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
-| 86 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
-| 87 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
-| 88 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
-| 89 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
-| 90 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 91 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 83 | ✓ | [`skills/setup-chromatic/agents/openai.yaml`](skills/setup-chromatic/agents/openai.yaml) |
+| 84 | ✓ | [`skills/setup-chromatic/references/ci-and-verification.md`](skills/setup-chromatic/references/ci-and-verification.md) |
+| 85 | ✓ | [`skills/setup-chromatic/references/mcp-and-login.md`](skills/setup-chromatic/references/mcp-and-login.md) |
+| 86 | ✓ | [`skills/setup-chromatic/references/restart-handoff.md`](skills/setup-chromatic/references/restart-handoff.md) |
+| 87 | ✓ | [`skills/setup-chromatic/references/screens.md`](skills/setup-chromatic/references/screens.md) |
+| 88 | ✓ | [`skills/setup-chromatic/references/storybook.md`](skills/setup-chromatic/references/storybook.md) |
+| 89 | ✓ | [`skills/setup-chromatic/SKILL.md`](skills/setup-chromatic/SKILL.md) |
+| 90 | ✓ | [`skills/ux-audit/SKILL.md`](skills/ux-audit/SKILL.md) |
+| 91 | ✓ | [`skills/web-design-guidelines/SKILL.md`](skills/web-design-guidelines/SKILL.md) |
+| 92 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
+| 93 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
+| 94 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
+| 95 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
+| 96 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
+| 97 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 98 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

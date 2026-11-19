@@ -22,7 +22,7 @@ The local agent gallery and setup buttons use client marks from the [source icon
 
 ## Skills page covers
 
-The Skills page bundles short screen recordings from `studio/src/motion/skill-covers/` (MP4 plus a JPEG poster each). The skill detail shows each cover's source next to the upstream repository. Other covers are hotlinked from the upstream pages named in `studio/src/motion/skillCatalog.ts`.
+The Skills page bundles its local covers from `studio/src/motion/skill-covers/`: short screen recordings (MP4 plus a JPEG poster each) and two unchanged upstream GIFs. The skill detail shows each cover's source next to the upstream repository. Other covers are hotlinked from the upstream pages named in `studio/src/motion/skillCatalog.ts`.
 
 | Cover | Source and license |
 | --- | --- |
@@ -30,7 +30,14 @@ The Skills page bundles short screen recordings from `studio/src/motion/skill-co
 | babylon-js | Rendered with [Babylon.js](https://github.com/BabylonJS/Babylon.js) (Apache-2.0). Model *AntiqueCamera* by UX3D, CC0, from [KhronosGroup/glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets). |
 | lume | Recording of the [LUME](https://lume.io/) demo (LUME, MIT). |
 | proton | Recording of the [Proton fireworks example](https://drawcall.github.io/Proton/examples/sparks/firework/fireworks.html) (Proton, MIT). |
-| gifenc, motion-canvas, ola, shifty, two-js, tween-js, konva, blender | OpenMotion samples made for this page with each library; no third-party footage. |
+| motionmaxxing | The upstream [before/after comparison](https://github.com/Tejashmakwana/motionmaxxing/blob/main/docs/media/spotify-comparison.mp4) and its [poster](https://github.com/Tejashmakwana/motionmaxxing/blob/main/docs/media/spotify-poster.jpg) (motionmaxxing, Apache-2.0). Each 16:9 panel is scaled whole into its half of a 1280 × 720 frame for the before/after split; no content is cropped or repainted. |
+| anime-js | Unchanged upstream [usage example GIF](https://github.com/juliangarnier/anime/blob/master/assets/images/usage-example-result.gif) (Anime.js, MIT). |
+| lottie-web | Unchanged upstream [Example1 GIF](https://github.com/airbnb/lottie-web/blob/master/gifs/Example1.gif) (Lottie Web, MIT). |
+| openmotion-design-styles | Excerpt of the upstream [design-style promo film](https://github.com/guanmo-ai/design-style/blob/main/promo/design-style-promo.mp4) by Guanmo ([@guanmo_ai](https://x.com/guanmo_ai)). The repository states no licence; its README allows sharing the films with credit. Two passages (1.65–3.25 s and 3.95–8.05 s) are joined, the bottom 108 px of the 1080 px frame, including the whole caption strip, is cropped (16:9 kept) and playback is slowed to 0.7×; no frames are repainted. |
+| anatomy-reveal | The upstream [espresso-machine demo film](https://github.com/annnguyentt/anatomy-reveal-skill/blob/main/demo/espresso-machine.mp4) by annnguyentt (Anatomy Reveal, MIT). The 9:16 film is scaled whole to 405 × 720 and shown three times side by side on a 16:9 frame of its own paper colour (#E7E2D7), each copy offset by 3.3 s and looped, so macro, exploded and assembled shots play at once; nothing is cropped or repainted. |
+| anatomy | Four upstream README stills ([raptor-engine-firing](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/raptor-engine-firing.webp), [raptor-engine-apart](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/raptor-engine-apart.webp), [turning-dial](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/turning-dial.webp), [ripple-tank](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/ripple-tank.webp)) by Ryan (Anatomy, MIT). Each is scaled whole onto a 16:9 frame of its own background colour, held 2.4 s and joined with 0.5 s crossfades; nothing is cropped or repainted. |
+| hairline | The upstream [hero GIF](https://github.com/lucasmarkes/hairline/blob/main/assets/hero.gif) by Lucas Markes (hairline, MIT), first 8.9 s, scaled from 800 × 450 to 1280 × 720 and re-encoded as MP4; nothing is cropped or repainted. |
+| gifenc, motion-canvas, ola, shifty, two-js, tween-js, konva, blender, motion-design-skill | OpenMotion samples made for this page with each library; no third-party footage. |
 
 ## Asset inventory
 

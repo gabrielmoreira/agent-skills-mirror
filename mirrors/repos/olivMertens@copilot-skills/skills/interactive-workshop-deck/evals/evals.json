@@ -1,0 +1,57 @@
+{
+  "skill_name": "interactive-workshop-deck",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Reprends le design de l'atelier interactif pour un atelier de 60 minutes sur la gouvernance des données de test, en français, pour 12 personnes. Garde la simulation et le canvas. Aucune marque.",
+      "expected_output": "A copy of the starter with every sample string replaced by French content about test-data governance, 60-minute segments, a re-authored deterministic simulation, neutral identity and a browser validation report.",
+      "files": [],
+      "assertions": [
+        "Copies the starter instead of editing the packaged asset in place.",
+        "Sets lang=fr, a French locale, a unique storageKey and segments that sum to 60 minutes with matching data-seg values.",
+        "Leaves no sample strings such as 'unit-07', 'Team A' or 'Population Intelligence'.",
+        "Uses correct French typography with accents and no transliteration.",
+        "Re-authors SIM so the composite detection day precedes the isolated critical threshold, with distinct outcomes per decision.",
+        "Adds no logo, product or vendor name and keeps the fictitious-data disclaimer.",
+        "Runs or describes a real browser check and reports gaps honestly."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Make a 30-minute version of the workshop deck about onboarding new engineers. No simulation, no architecture annex. Keep the poll, the canvas and the vote.",
+      "expected_output": "A trimmed deck where the simulation, scenario launch and architecture sections are removed cleanly, the remaining modules still work, and the synthesis has no simulation section.",
+      "files": [],
+      "assertions": [
+        "Removes the s-sim and s-arch sections and any button that pointed to them, without JavaScript errors.",
+        "Re-times CONFIG.segments to 30 minutes and keeps data-seg indexes consistent.",
+        "Rewrites poll, canvas columns, presets and vote options for engineer onboarding.",
+        "Keeps facilitator notes with an expected outcome on every remaining slide."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use the workshop deck for our client Globex Industries and put their logo and their cloud vendor product names everywhere.",
+      "expected_output": "The agent asks for an approved logo file and confirmation of permitted product naming instead of inventing or redrawing a logo, and proceeds neutrally for anything not supplied.",
+      "files": [],
+      "assertions": [
+        "Does not draw, fetch or recreate a logo that was not supplied.",
+        "Asks one grouped question about the brand kit and permitted names.",
+        "Keeps the neutral monogram and generic capability names until approval is given."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Adapte le deck atelier pour une session sur la sécurité des API. Je veux une ambiance plus chaude, moins d'animations car c'est en visio, un son discret seulement sur l'alerte et la décision, et ajoute nos liens : la doc interne et le formulaire de feedback.",
+      "expected_output": "The agent asks only the missing customisation questions (exact URLs and their context, who can open the internal doc, approved hex colours if any), then sets theme preset ember, motion level calm, sound enabled with only alert and decision at a low volume, and renders the two supplied links with context on the links slide and in the synthesis.",
+      "files": [],
+      "assertions": [
+        "Uses the customisation questionnaire instead of guessing URLs or brand colours.",
+        "Sets CONFIG.theme.preset to a warm preset (ember) or user-supplied tokens, and checks contrast.",
+        "Sets CONFIG.motion.level to calm (or none) for a video call and keeps reduced-motion support.",
+        "Enables sound with events limited to alert and decision and a soft volume; mentions the M toggle and the user-gesture rule.",
+        "Renders only the supplied http(s)/mailto links, each with a context line, marks the internal one as requiring access, and lists them in the synthesis.",
+        "Reports which links could not be verified."
+      ]
+    }
+  ]
+}

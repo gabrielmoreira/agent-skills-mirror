@@ -1,6 +1,6 @@
 ---
 name: open-artifact
-description: Make an Open Artifact (a slide deck, a design canvas, a whiteboard, …) as a folder of files that opens as a live local page where the person views, edits, comments and exports, with their comments coming back to you. Use when the person types `/open-artifact <type> <what to make>`, or asks for something they will look at closely, keep, change, comment on or present - a presentation, pitch or talk deck; app screens, a mockup, a landing page, a poster, flyer or graphic, or "a few options" to look at; a brainstorm or retro board, a flowchart or an architecture sketch - or asks to keep or share a diagram you drew. Not for answers read once, code, or a file in a format they named.
+description: Make an Open Artifact (a slide deck, a design canvas, a whiteboard, a data dashboard, a doc, …) as a folder of files that opens as a live local page where the person views, edits, comments and exports, with their comments coming back to you. Use when the person types `/open-artifact <type> <what to make>`, or asks for something they will look at closely, keep, change, comment on or present - a presentation, pitch or talk deck; app screens, a mockup, a landing page, a poster, flyer or graphic, or "a few options" to look at; a brainstorm or retro board, a flowchart or an architecture sketch; a dashboard, metrics page, KPI tracker or recurring report from their data; a document, report, proposal, plan, spec, memo, notes or other writing to keep, share or comment on - or asks to keep or share a diagram you drew. Not for answers read once, code, or a file in a format they named.
 argument-hint: <type> <what to make>
 ---
 
@@ -43,17 +43,24 @@ Decide this before you make anything. When the person typed `/open-artifact <typ
     landing page, a poster, flyer or other piece to print, a graphic → `design`;
   - a brainstorm or retro board, a flowchart, an architecture sketch (boxes, arrows and stickies to rearrange
     together), or a diagram too big to draw in a reply → `whiteboard`;
+  - a dashboard, metrics page, KPI tracker, scorecard, data visualization or recurring report: charts, numbers and
+    tables worked out from their data (a CSV, JSON or text file, a live query on one of their MCP connectors, or a
+    calculation) → `data`;
+  - a spreadsheet, workbook, budget, list of records, schedule or financial model: cells and formulas they and
+    you both fill in → `sheets`;
+  - a document to keep, share, comment on or export (a report, proposal, plan, spec, memo, meeting notes, a guide,
+    a resume or letter), even when they will send it as Word or PDF → `docs`;
   - a brand or design system recorded for use in other artifacts (colors, type, spacing, components) →
-    `design-system`, when it is installed. The person's existing design systems are artifacts of that type: when
+    `design-system`. The person's existing design systems are artifacts of that type: when
     they say "use our brand" or name one, find it with `Artifact {action: "list", type: "design-system", scope: "all"}`
     and read it before you design.
-  - Anything else (a document, a spreadsheet, a task list, a dashboard, …) goes to an artifact only when a type for
+  - Anything else (a task list, …) goes to an artifact only when a type for
     it is installed: `Artifact {action: "list", scope: "types"}` tells you, quickly; check it silently. If none is,
     do it the usual way: a reply, or a file.
 - **A type by name.** "Make this in slides", "put it on a whiteboard" mean that type, not a look to imitate in some
   other format. Pick the type that fits what they are making, usually the one they named.
 - **How it leaves later is not a file format.** Emailed, printed, presented or uploaded: the person exports from the
-  page (a deck as PDF, PPTX, HTML or PNG; a design as PNG, JPEG, PDF or HTML; a board as PNG; other types list theirs
+  page (a deck as PDF, PPTX, HTML or PNG; a design as PNG, JPEG, PDF or HTML; a board as PNG; a dashboard as PDF, HTML or JSON; other types list theirs
   in `exports`). Make a plain file instead only when the person names the format ("a .pptx file", "a Keynote file"),
   says the result goes into their own code or site, or no type fits. Code is always a file.
 - **What the type cannot do.** When they ask for something the type cannot give, still make it from the type and say
@@ -90,10 +97,14 @@ that alone is no reason to refuse an artifact they asked for.
 
 1. **Type.** Take the type id from the first word after `/open-artifact`, or from the request (see above). The
    built-in types are `design` (a canvas of HTML artboards: screens, mockups, prototypes, diagrams), `slides` (a
-   1920×1080 deck with speaker notes) and `whiteboard` (a board of stickies, shapes and arrows). Words like "deck" or
-   "presentation" mean `slides`; "canvas", "UI" or "mockup" mean `design`; "board" means `whiteboard`. Any other word
-   (`design-system`, …) may be a type installed on this computer: run `Artifact {action: "list", scope: "types"}` and
-   use it if it is there. With no type word, `Artifact {action: "quickstart", intent: "<what they asked for>"}`
+   1920×1080 deck with speaker notes), `whiteboard` (a board of stickies, shapes and arrows), `sheets` (a
+   workbook of cells, formulas, tables and charts), `data` (a dashboard
+   or report of charts, numbers and tables from their data), `docs` (a doc of tabs: headings, text, lists, tables,
+   pictures, with comments and suggestions) and `design-system` (a brand book of tokens, type,
+   components and assets that designs and decks install). Words like "deck" or "presentation" mean `slides`;
+   "canvas", "UI" or "mockup" mean `design`; "board" means `whiteboard`; "dashboard", "report", "metrics" or "chart"
+   mean `data`; "spreadsheet", "workbook" or "budget" mean `sheets`; "doc", "document", "write-up", "proposal", "memo" or "notes" mean `docs`; "brand", "tokens" or "design system" mean `design-system`. Any other word may be a type installed on
+   this computer: run `Artifact {action: "list", scope: "types"}` and use it if it is there. With no type word, `Artifact {action: "quickstart", intent: "<what they asked for>"}`
    recommends one, and its `related` lists the person's artifacts that type builds on (such as their design
    systems): when one fits, read it with `Artifact {action: "read", url}` and use it; when several could and the
    person did not say which, ask. If the first word is not a listed type, or nothing fits, ask which one they want,

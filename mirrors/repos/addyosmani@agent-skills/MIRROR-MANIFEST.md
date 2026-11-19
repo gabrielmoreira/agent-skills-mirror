@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 44 file(s) materialized.
+Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 44 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,48 +63,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`agents/code-reviewer.md`](agents/code-reviewer.md) |
-| 4 | ✓ | [`agents/security-auditor.md`](agents/security-auditor.md) |
-| 5 | ✓ | [`agents/test-engineer.md`](agents/test-engineer.md) |
-| 6 | ✓ | [`agents/web-performance-auditor.md`](agents/web-performance-auditor.md) |
-| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`docs/advanced-per-agent-configuration.md`](docs/advanced-per-agent-configuration.md) |
-| 9 | ✓ | [`skills/api-and-interface-design/SKILL.md`](skills/api-and-interface-design/SKILL.md) |
-| 10 | ✓ | [`skills/browser-testing-with-devtools/SKILL.md`](skills/browser-testing-with-devtools/SKILL.md) |
-| 11 | ✓ | [`skills/ci-cd-and-automation/SKILL.md`](skills/ci-cd-and-automation/SKILL.md) |
-| 12 | ✓ | [`skills/code-review-and-quality/SKILL.md`](skills/code-review-and-quality/SKILL.md) |
-| 13 | ✓ | [`skills/code-simplification/SKILL.md`](skills/code-simplification/SKILL.md) |
-| 14 | ✓ | [`skills/constraint-driven-development/references/floor-guard.md`](skills/constraint-driven-development/references/floor-guard.md) |
-| 15 | ✓ | [`skills/constraint-driven-development/scripts/quality-gate.mjs`](skills/constraint-driven-development/scripts/quality-gate.mjs) |
-| 16 | ✓ | [`skills/constraint-driven-development/SKILL.md`](skills/constraint-driven-development/SKILL.md) |
-| 17 | ✓ | [`skills/context-engineering/SKILL.md`](skills/context-engineering/SKILL.md) |
-| 18 | ✓ | [`skills/debugging-and-error-recovery/SKILL.md`](skills/debugging-and-error-recovery/SKILL.md) |
-| 19 | ✓ | [`skills/deprecation-and-migration/SKILL.md`](skills/deprecation-and-migration/SKILL.md) |
-| 20 | ✓ | [`skills/documentation-and-adrs/SKILL.md`](skills/documentation-and-adrs/SKILL.md) |
-| 21 | ✓ | [`skills/doubt-driven-development/SKILL.md`](skills/doubt-driven-development/SKILL.md) |
-| 22 | ✓ | [`skills/frontend-ui-engineering/SKILL.md`](skills/frontend-ui-engineering/SKILL.md) |
-| 23 | ✓ | [`skills/git-workflow-and-versioning/SKILL.md`](skills/git-workflow-and-versioning/SKILL.md) |
-| 24 | ✓ | [`skills/idea-refine/examples.md`](skills/idea-refine/examples.md) |
-| 25 | ✓ | [`skills/idea-refine/frameworks.md`](skills/idea-refine/frameworks.md) |
-| 26 | ✓ | [`skills/idea-refine/refinement-criteria.md`](skills/idea-refine/refinement-criteria.md) |
-| 27 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
-| 28 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
-| 29 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
-| 30 | ✓ | [`skills/interview-me/SKILL.md`](skills/interview-me/SKILL.md) |
-| 31 | ✓ | [`skills/observability-and-instrumentation/SKILL.md`](skills/observability-and-instrumentation/SKILL.md) |
-| 32 | ✓ | [`skills/performance-optimization/references/optimization-patterns.md`](skills/performance-optimization/references/optimization-patterns.md) |
-| 33 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
-| 34 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
-| 35 | ✓ | [`skills/security-and-hardening/references/hardening-patterns.md`](skills/security-and-hardening/references/hardening-patterns.md) |
-| 36 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
-| 37 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
-| 38 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
-| 39 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
-| 40 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 41 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
-| 42 | → | [`docs/agents.md`](docs/agents.md) |
-| 43 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 44 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
+| 3 | ✓ | [`agents/accessibility-auditor.md`](agents/accessibility-auditor.md) |
+| 4 | ✓ | [`agents/code-reviewer.md`](agents/code-reviewer.md) |
+| 5 | ✓ | [`agents/security-auditor.md`](agents/security-auditor.md) |
+| 6 | ✓ | [`agents/test-engineer.md`](agents/test-engineer.md) |
+| 7 | ✓ | [`agents/web-performance-auditor.md`](agents/web-performance-auditor.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`docs/advanced-per-agent-configuration.md`](docs/advanced-per-agent-configuration.md) |
+| 10 | ✓ | [`skills/accessibility-engineering/scripts/audit-a11y.sh`](skills/accessibility-engineering/scripts/audit-a11y.sh) |
+| 11 | ✓ | [`skills/accessibility-engineering/SKILL.md`](skills/accessibility-engineering/SKILL.md) |
+| 12 | ✓ | [`skills/api-and-interface-design/SKILL.md`](skills/api-and-interface-design/SKILL.md) |
+| 13 | ✓ | [`skills/browser-testing-with-devtools/SKILL.md`](skills/browser-testing-with-devtools/SKILL.md) |
+| 14 | ✓ | [`skills/ci-cd-and-automation/SKILL.md`](skills/ci-cd-and-automation/SKILL.md) |
+| 15 | ✓ | [`skills/code-review-and-quality/SKILL.md`](skills/code-review-and-quality/SKILL.md) |
+| 16 | ✓ | [`skills/code-simplification/SKILL.md`](skills/code-simplification/SKILL.md) |
+| 17 | ✓ | [`skills/constraint-driven-development/references/floor-guard.md`](skills/constraint-driven-development/references/floor-guard.md) |
+| 18 | ✓ | [`skills/constraint-driven-development/scripts/quality-gate.mjs`](skills/constraint-driven-development/scripts/quality-gate.mjs) |
+| 19 | ✓ | [`skills/constraint-driven-development/SKILL.md`](skills/constraint-driven-development/SKILL.md) |
+| 20 | ✓ | [`skills/context-engineering/SKILL.md`](skills/context-engineering/SKILL.md) |
+| 21 | ✓ | [`skills/debugging-and-error-recovery/SKILL.md`](skills/debugging-and-error-recovery/SKILL.md) |
+| 22 | ✓ | [`skills/deprecation-and-migration/SKILL.md`](skills/deprecation-and-migration/SKILL.md) |
+| 23 | ✓ | [`skills/documentation-and-adrs/SKILL.md`](skills/documentation-and-adrs/SKILL.md) |
+| 24 | ✓ | [`skills/doubt-driven-development/SKILL.md`](skills/doubt-driven-development/SKILL.md) |
+| 25 | ✓ | [`skills/frontend-ui-engineering/SKILL.md`](skills/frontend-ui-engineering/SKILL.md) |
+| 26 | ✓ | [`skills/git-workflow-and-versioning/SKILL.md`](skills/git-workflow-and-versioning/SKILL.md) |
+| 27 | ✓ | [`skills/idea-refine/examples.md`](skills/idea-refine/examples.md) |
+| 28 | ✓ | [`skills/idea-refine/frameworks.md`](skills/idea-refine/frameworks.md) |
+| 29 | ✓ | [`skills/idea-refine/refinement-criteria.md`](skills/idea-refine/refinement-criteria.md) |
+| 30 | ✓ | [`skills/idea-refine/scripts/idea-refine.sh`](skills/idea-refine/scripts/idea-refine.sh) |
+| 31 | ✓ | [`skills/idea-refine/SKILL.md`](skills/idea-refine/SKILL.md) |
+| 32 | ✓ | [`skills/incremental-implementation/SKILL.md`](skills/incremental-implementation/SKILL.md) |
+| 33 | ✓ | [`skills/interview-me/SKILL.md`](skills/interview-me/SKILL.md) |
+| 34 | ✓ | [`skills/observability-and-instrumentation/SKILL.md`](skills/observability-and-instrumentation/SKILL.md) |
+| 35 | ✓ | [`skills/performance-optimization/references/optimization-patterns.md`](skills/performance-optimization/references/optimization-patterns.md) |
+| 36 | ✓ | [`skills/performance-optimization/SKILL.md`](skills/performance-optimization/SKILL.md) |
+| 37 | ✓ | [`skills/planning-and-task-breakdown/SKILL.md`](skills/planning-and-task-breakdown/SKILL.md) |
+| 38 | ✓ | [`skills/security-and-hardening/references/hardening-patterns.md`](skills/security-and-hardening/references/hardening-patterns.md) |
+| 39 | ✓ | [`skills/security-and-hardening/SKILL.md`](skills/security-and-hardening/SKILL.md) |
+| 40 | ✓ | [`skills/shipping-and-launch/SKILL.md`](skills/shipping-and-launch/SKILL.md) |
+| 41 | ✓ | [`skills/source-driven-development/SKILL.md`](skills/source-driven-development/SKILL.md) |
+| 42 | ✓ | [`skills/spec-driven-development/SKILL.md`](skills/spec-driven-development/SKILL.md) |
+| 43 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 44 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
+| 45 | → | [`docs/agents.md`](docs/agents.md) |
+| 46 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 47 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
 
 ---
 

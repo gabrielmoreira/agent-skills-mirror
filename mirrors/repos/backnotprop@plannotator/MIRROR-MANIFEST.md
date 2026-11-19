@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `backnotprop/plannotator` — 26 default patterns, 12 followed patterns, 55 file(s) materialized.
+Mirror of `backnotprop/plannotator` — 26 default patterns, 13 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 12 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 55 |
+| Followed pats | 13 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Mirror of `backnotprop/plannotator` — 26 default patterns, 12 followed pattern
 - `docs/agent-guides/inbox.md`
 - `docs/agent-guides/server-and-storage.md`
 - `docs/agent-guides/guides-and-shared-ui.md`
+- `docs/agent-guides/mobile.md`
 
 ## File Index
 
@@ -120,11 +121,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | → | [`docs/agent-guides/guides-and-shared-ui.md`](docs/agent-guides/guides-and-shared-ui.md) |
 | 49 | → | [`docs/agent-guides/inbox-machines.md`](docs/agent-guides/inbox-machines.md) |
 | 50 | → | [`docs/agent-guides/inbox.md`](docs/agent-guides/inbox.md) |
-| 51 | → | [`docs/agent-guides/opencode-t3-and-codex.md`](docs/agent-guides/opencode-t3-and-codex.md) |
-| 52 | → | [`docs/agent-guides/plan-review.md`](docs/agent-guides/plan-review.md) |
-| 53 | → | [`docs/agent-guides/project-and-development.md`](docs/agent-guides/project-and-development.md) |
-| 54 | → | [`docs/agent-guides/server-and-storage.md`](docs/agent-guides/server-and-storage.md) |
-| 55 | → | [`packages/ui/README.md`](packages/ui/README.md) |
+| 51 | → | [`docs/agent-guides/mobile.md`](docs/agent-guides/mobile.md) |
+| 52 | → | [`docs/agent-guides/opencode-t3-and-codex.md`](docs/agent-guides/opencode-t3-and-codex.md) |
+| 53 | → | [`docs/agent-guides/plan-review.md`](docs/agent-guides/plan-review.md) |
+| 54 | → | [`docs/agent-guides/project-and-development.md`](docs/agent-guides/project-and-development.md) |
+| 55 | → | [`docs/agent-guides/server-and-storage.md`](docs/agent-guides/server-and-storage.md) |
+| 56 | → | [`packages/ui/README.md`](packages/ui/README.md) |
 
 ---
 

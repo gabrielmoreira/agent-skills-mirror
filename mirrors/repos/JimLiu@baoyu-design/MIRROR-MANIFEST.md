@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 7 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,13 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`artifact-types/design-system/SKILL.md`](artifact-types/design-system/SKILL.md) |
-| 2 | ✓ | [`artifact-types/design/SKILL.md`](artifact-types/design/SKILL.md) |
-| 3 | ✓ | [`artifact-types/slides/SKILL.md`](artifact-types/slides/SKILL.md) |
-| 4 | ✓ | [`artifact-types/whiteboard/SKILL.md`](artifact-types/whiteboard/SKILL.md) |
-| 5 | ✓ | [`plugins/dsh/skills/open-artifact/SKILL.md`](plugins/dsh/skills/open-artifact/SKILL.md) |
-| 6 | ✓ | [`skills/open-artifact/scripts/open-artifact.mjs`](skills/open-artifact/scripts/open-artifact.mjs) |
-| 7 | ✓ | [`skills/open-artifact/SKILL.md`](skills/open-artifact/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`artifact-types/data/SKILL.md`](artifact-types/data/SKILL.md) |
+| 3 | ✓ | [`artifact-types/design-system/SKILL.md`](artifact-types/design-system/SKILL.md) |
+| 4 | ✓ | [`artifact-types/design/SKILL.md`](artifact-types/design/SKILL.md) |
+| 5 | ✓ | [`artifact-types/docs/SKILL.md`](artifact-types/docs/SKILL.md) |
+| 6 | ✓ | [`artifact-types/sheets/SKILL.md`](artifact-types/sheets/SKILL.md) |
+| 7 | ✓ | [`artifact-types/slides/SKILL.md`](artifact-types/slides/SKILL.md) |
+| 8 | ✓ | [`artifact-types/whiteboard/SKILL.md`](artifact-types/whiteboard/SKILL.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`plugins/dsh/skills/open-artifact/SKILL.md`](plugins/dsh/skills/open-artifact/SKILL.md) |
+| 11 | ✓ | [`skills/open-artifact/scripts/open-artifact.mjs`](skills/open-artifact/scripts/open-artifact.mjs) |
+| 12 | ✓ | [`skills/open-artifact/SKILL.md`](skills/open-artifact/SKILL.md) |
 
 ---
 

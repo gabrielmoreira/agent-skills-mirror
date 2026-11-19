@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `RudyB3N8/multi-ai-agent-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `RudyB3N8/multi-ai-agent-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `RudyB3N8/multi-ai-agent-skills` — 26 default patterns, 0 followed p
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agents-md-generator/SKILL.md`](agents-md-generator/SKILL.md) |
-| 2 | ✓ | [`aura-build-assistant/SKILL.md`](aura-build-assistant/SKILL.md) |
-| 3 | ✓ | [`createur-de-competences/examples/code-reviewer/SKILL.md`](createur-de-competences/examples/code-reviewer/SKILL.md) |
-| 4 | ✓ | [`createur-de-competences/SKILL.md`](createur-de-competences/SKILL.md) |
-| 5 | ✓ | [`grill-me/SKILL.md`](grill-me/SKILL.md) |
-| 6 | ✓ | [`ui-ux-pro-max/SKILL.md`](ui-ux-pro-max/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`aura-build-assistant/SKILL.md`](aura-build-assistant/SKILL.md) |
+| 4 | ✓ | [`createur-de-competences/examples/code-reviewer/SKILL.md`](createur-de-competences/examples/code-reviewer/SKILL.md) |
+| 5 | ✓ | [`createur-de-competences/SKILL.md`](createur-de-competences/SKILL.md) |
+| 6 | ✓ | [`grill-agent/SKILL.md`](grill-agent/SKILL.md) |
+| 7 | ✓ | [`grill-me/SKILL.md`](grill-me/SKILL.md) |
+| 8 | ✓ | [`ui-ux-pro-max/SKILL.md`](ui-ux-pro-max/SKILL.md) |
 
 ---
 

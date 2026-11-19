@@ -1,8 +1,10 @@
 # Motion releases: build, test, publish
 
-> Repository installation defaults to the [source guide](../install.md). Published npm installation is an explicit alternative through the [application guide](install.md). Candidate builds, publication and snapshot recovery use the manual [release workflow](release-workflows.md); merging changes does not publish a package or update hosted guides.
+> Repository installation defaults to the [source guide](install.md). Published npm installation is an explicit alternative through the [application guide](install.md). Candidate builds, publication and snapshot recovery use the manual [release workflow](release-workflows.md); merging changes does not publish an npm application package or update hosted application installation guides.
 
 Use two manual Actions entries: **Motion candidate build**, then **Motion npm publication**, in `nexu-io/openmotion` on `main`. The daily flow is **build → optional local testing → manual publish**. Neither entry runs on pushes, PR merges, tags or a schedule. Merging a workflow change does not publish a package or configure npm permissions. Daily development branches from the latest `origin/main` and PRs target `main`.
+
+The optional [DSH workspace plugin](../integrations/dsh/README.md#distribution-maintenance) follows the same candidate/publication flow. Candidate builds check, pack and scan a plugin at the frozen source and application version, then seal it with the application. Publication uploads those exact bytes and advances the matching `integrations/dsh/stable/latest.json` or `integrations/dsh/test/latest.json` only after application publication succeeds. The independent **DSH integration** workflow retains PR artifacts and updates only the main development entry. The plugin still needs a built source runtime; this does not publish a separate npm plugin package. Existing candidates without DSH retain their original release behavior.
 
 | Operator step | Automated work |
 | --- | --- |
@@ -22,9 +24,9 @@ Keep these control files together:
 
 - `.github/workflows/motion-candidate.yml`, `motion-publish-test.yml`, `motion-publication-recovery.yml` and `motion-install-check.yml` (read-only manual rechecks).
 - `.github/scripts/motion-release.mjs`, `motion-scan.mjs`, `motion-registry.mjs`, `motion-registry-smoke.mjs`, `motion-release-notes.mjs`, `publish-install-guide.mjs` and `.github/gitleaks.toml`.
-- `scripts/runtime-assets.mjs`, `release-version.mjs`, `install-guide.mjs`, `docs/install-onboarding.md`, `docs/templates/npm-install.md`, `docs/templates/release-record.md` and `docs/templates/candidate-install.md`.
+- `scripts/runtime-assets.mjs`, `release-version.mjs`, `install-guide.mjs`, `docs/install.md`, `docs/templates/release-record.md` and `docs/templates/candidate-install.md`.
 
-The generator's two documentation inputs are `docs/templates/npm-install.md` (the published guide template) and `docs/install-onboarding.md` (inlined as the installation-success contract). The short `docs/install.md` in the source repository routes explicitly selected npm installations to the published stable or test guide; editing it does not change a generated guide or the default source route.
+`docs/install.md` is the single maintained source for source setup, the main Skill installation, npm setup and onboarding. `scripts/install-guide.mjs` omits its marked source-only blocks and fills the released npm identity before publication. The root `install.md` and former onboarding URL only forward to this guide; they contain no separate installation rules.
 
 Protect changes to the trusted control files and `main`; keep default-branch registration aligned. There is no `motion-test-publish` GitHub Environment prerequisite or Review deployments step in this version.
 
@@ -126,6 +128,8 @@ A same-repository PR changing this workflow, registry helpers or their tests run
 Stable uses the prod paths above and npm `latest`; test keeps the DEV paths and npm `test`. Existing legacy `/versions/<version>/install.md` objects remain immutable.
 
 Successful test and stable publication update the same fixed URL, `https://releases.open-design.ai/open-motion/templates/releases/catalog.json`, without an npm version in its path. Each new promoted release replaces that catalog after all its source objects and snapshot metadata upload successfully. The snapshot step checks out the verified candidate's `sourceCommit` and fetches only catalog LFS objects. Content-addressed resources and commit snapshots remain immutable internally. Snapshot-only recovery and superseded releases upload/verify snapshots without changing the shared release catalog. Release publication does not move `templates/main/catalog.json`: NPM runtime discovery continues to follow that latest main catalog independently of the installed software version. The website retains its CMS source.
+
+New candidates containing DSH use schema 4 and also archive the matching `openmotion-dsh-<version>.tgz`, `dsh-plugin.json` and `dsh-package-scan.json`. Plugin metadata records the exact source commit, version, checksum, byte length and supported host. Archive-only recovery and superseded publication verify immutable plugin objects without changing stable/test pointers. Schema-2/3 candidates remain readable; no plugin is rebuilt for them.
 
 Each version archives the exact tgz, manifests, generated blank acceptance checklist, both installation guides, scans, sealed candidate notes when present, candidate identity, the schema-2 release record; later platform reports are retained as Actions artifacts. The release record contains package/source identity and the manual operator authorization; it does not claim independent review or attest private test results. Completed private acceptance material is never uploaded. `test-promotion.json` retains the prior tag, exact package, promotion outcome. The immutable release record includes channel verification and template environment. Test marks native checks as post-publication; stable records both matching native reports and their hashes as `passed-before-latest`. These reports explicitly retain unrun model/human checks. Snapshot recovery preserves a prior immutable release record while retaining its own fresh operator authorization in its attempt artifact.
 

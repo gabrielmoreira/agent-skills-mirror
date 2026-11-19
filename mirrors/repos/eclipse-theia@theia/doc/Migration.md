@@ -1,0 +1,812 @@
+# Migration Guide
+
+## Description
+
+The following guide highlights potential migration steps necessary during `theia` upgrades discovered when adopting the framework.
+Please see the latest version (`master`) for the most up-to-date information. Please contribute any issues you experienced when upgrading to a newer version of Theia to this document, even for previous releases.
+
+## Guide
+
+### General
+
+_Loading indicator no longer delays the `ready` state_:
+
+`FrontendApplication.start()` no longer waits for the loading indicator (the `.theia-preload` element) to fade out and be removed before the application state becomes `ready`.
+`revealShell()` now resolves as soon as the fade-out starts; the indicator is removed from the DOM in the background once its CSS `transition-duration` has elapsed, through the new `removeStartupIndicator()` method.
+The default fade-out was shortened from 0.8 s to 0.15 s.
+Everything that waits for `ready` (plugin views, the getting-started editor, the Electron splash screen) now runs while the indicator is still fading out.
+Code that assumed that the `.theia-preload` element is gone when `ready` is reached should wait for its removal instead, e.g. with a `MutationObserver`, or override `revealShell()` to restore the previous behavior.
+
+_AI Configuration View_:
+
+The AI Configuration view (`@theia/ai-ide`) has been reworked from a tabbed dock panel into a master–detail tree driven by a new public contribution point, `AiConfigurationCategory`.
+
+- **New package dependency edges:** `@theia/ai-ide` and `@theia/ai-mcp` now depend on `@theia/ai-core-ui`, which hosts the contribution point (`AiConfigurationCategory`, `AiConfigurationCategoryRegistry`), the shared selection model (`AiConfigurationSelectionModel`), and the shared page primitives (`AiSettingsRow`, `AiConfigurationSection`, `SinglePageCategoryRenderer`, `CollectionCategoryRenderer`, …). If you consume the AI configuration UI, add `@theia/ai-core-ui` to your dependencies. `@theia/ai-core-ui` itself now depends on `@theia/preferences`, for the Settings UI's "Open settings.json" command (`PreferencesCommands.OPEN_PREFERENCES_JSON_TOOLBAR`) that the setting rows delegate to for complex values.
+- **Removed widgets:** the per-tab widgets and their `WidgetFactory` registrations were removed — `AIAgentConfigurationWidget`, `AIVariableConfigurationWidget`, `ModelAliasesConfigurationWidget`, `AIToolsConfigurationWidget`, `AISkillsConfigurationWidget`, `AITokenUsageConfigurationWidget`, `AIPromptFragmentsConfigurationWidget` (all `@theia/ai-ide`) and `AIMCPConfigurationWidget` (`@theia/ai-mcp`). The dead base classes (`AIConfigurationBaseWidget`, `AICardGridConfigurationWidget`, `AI{List,Table,Hierarchical}ConfigurationWidget`) were removed as well. Each surface now lives in an `AiConfigurationCategory` contribution with a renderer built from the shared primitives.
+- **Removed components and API:** the widget-era building blocks `ConfigurationSection`, `ExpandableSection` and `PromptVariantRenderer` (`template-settings-renderer.tsx`) were removed from `@theia/ai-ide`; use `AiConfigurationSection` and `VariantSetCard` from `@theia/ai-core-ui` instead. The icon-only buttons of the view share one primitive now, `AiConfigurationIconButton`, so the CSS classes `.ai-variant-action-button` and `.ai-configuration-value-row-copy` were replaced by `.ai-configuration-icon-button`. `MCPServerEditor.openEditServer` was dropped from the interface — the MCP server category owns the edit flow now; `openAddServer` and `installFromEntry` are unchanged.
+- **Adding custom categories:** adopters that added their own AI configuration tabs should now register an `AiConfigurationCategory` (bind it to the `AiConfigurationCategory` service identifier). Set `contributed: true` to have it grouped under "Contributed by extensions". See `examples/api-samples` (`SampleChatToolbarConfigurationCategory`) for a minimal end-to-end example.
+- **Selection:** category/item navigation now routes through `AiConfigurationSelectionModel` (`@theia/ai-core-ui`). `AIConfigurationSelectionService` (`@theia/ai-ide`) is retained for the agent/alias domain events it still carries.
+- **Stable entry points:** the command ids `aiConfiguration:open` (`OPEN_AI_CONFIG_VIEW`) and `aiConfiguration:openTools` (`OPEN_AI_CONFIG_VIEW_TOOLS`) and the chat-view toolbar button are unchanged. `OPEN_AI_CONFIG_VIEW(tabId)` still accepts the legacy per-tab widget ids and maps them onto the corresponding category ids.
+
+_Dynamic Model Discovery (Anthropic, Google, OpenAI)_:
+
+`@theia/ai-anthropic`, `@theia/ai-google` and `@theia/ai-openai` now discover the available models dynamically from each provider's models endpoint (`/v1/models`, `/v1beta/models`, `/v1/models`) instead of registering a curated list. As a result the following preferences have been **removed**:
+
+- `ai-features.anthropic.AnthropicModels`
+- `ai-features.google.models`
+- `ai-features.openAiOfficial.officialOpenAiModels`
+
+Models appear automatically once an API key is configured, so there is nothing to migrate for the common case. If you relied on those preferences to pin a specific set of models, note that:
+
+- Models are fetched on startup, on API-key change, and via the manual refresh in the provider's node of the Models configuration category, which also shows the discovery status (fetching / updated / cached / error / no API key / manual) and lists the models with the release date the provider reported. Discoveries are cached to `<configDir>/model-snapshots/<provider>-models.json` and reused when a later fetch fails, so the models stay usable offline.
+- Custom-endpoint preferences (`ai-features.anthropicCustom.customAnthropicModels`, `ai-features.openAiCustom.customOpenAiModels`) are unchanged: they do not necessarily target the official provider, so they keep their manual entries.
+- Anthropic and OpenAI report one entry per release (`claude-opus-5-20260401`, `claude-opus-5-20251120`, …). Every release is registered, plus the undated id (`claude-opus-5`) that the providers accept as an alias for the newest one — the id the built-in model aliases reference and the one that does not change from under a configuration when the provider ships an update. Gemini ids carry no release date, so nothing is added for Google. GitHub Copilot no longer drops a dated release when its family is also offered, for the same reason.
+- What keeps those lists out of the way is that **the AI chat input's model picker shows the favorite models rather than all of them**: up to five automatically featured models per provider, plus the ones checked for the provider in the AI Configuration view (kept in `ai-features.modelSettings.favoriteModels` as fully qualified ids). Nothing else is restricted: an agent's model and a model alias are still picked from every discovered model, grouped per provider on their own pages, and the picker ends with an entry that opens the page where its contents are decided, so a short list is not mistaken for all there is.
+- Featured are the undated ids a provider offers, ranked by release date, then by a `-latest` pointer the provider maintains at the current model of a family, then by the version in the id. The pointer only decides where there are no dates to go by (Gemini): a provider that reports release dates dates its pointers as well. What the model aliases name plays no part in it: an alias is a curated list of its own, naming the model a purpose should use, which is a different question from which models are worth offering in the picker. The set is derived from each discovery rather than stored, so a model released tomorrow is offered the day it appears.
+- Both directions are the user's to override, and only the override is stored: unchecking a model that is shown by default adds it to `ai-features.modelSettings.hiddenModels`, checking any other model adds it to `ai-features.modelSettings.favoriteModels`. A model nobody touched appears in neither list, and a model a successful discovery no longer offers is dropped from both.
+- A `-latest` id, which a provider maintains as a pointer at the current model of a family (`gemini-flash-latest`), ranks ahead of the ids that carry a version, since it resolves to the newest by definition and has no version of its own to compare. A provider that knows better nominates its models outright, through `DiscoveredModel.featured`: GitHub Copilot serves several vendors under one provider, so it fills its five vendor by vendor: `auto`, then the newest model of each of Anthropic, OpenAI and Google, then the next of each in turn, rather than letting a ranking pick five models of whichever vendor numbers its models highest. The rest of what Copilot carries stays registered and selectable, just not preselected.
+- A model that a successful discovery no longer offers is dropped from the favorites, while a cached or failed discovery leaves them alone. The models of a provider that does not participate in discovery (a manually configured one, or a custom endpoint) are all shown, since listing them was the choice already.
+- The model lists — the Model Discovery section, the chat input's model selector, an agent's model dropdown and an alias' model selector — put the most recently released model first, grouped per provider where they span several. The release date comes from the provider (`LanguageModelMetaData.released`, new); Gemini reports none, so Google's models stay in alphabetical order.
+- Built-in model aliases stay code-defined. A `defaultModelId` that discovery does not produce is simply skipped when the alias resolves, as before.
+- OpenAI's endpoint lists every model type without capability metadata, so non-chat models (audio/image/embedding/moderation/computer-use/live/`-instruct`/…) are filtered out heuristically and per-model capabilities still come from the built-in defaults. Google's is filtered the same way, to the `gemini-*` chat models: what it also carries is either not chat (image, speech, embedding), answers through an agentic API of its own (deep research, computer use), or belongs to another family (Gemma, LearnLM). Since Gemini ids carry no release date, the ranking falls back to the numbers in them, and a parameter count like `gemma-3-27b-it` would otherwise read as the newest model there is. It reports no display name either; every model is therefore listed by id, with the name (and, for Google, the description) the provider reports shown beneath it where there is one.
+- The discovered list can be replaced with an explicit one per provider: `ai-features.anthropic.modelOverrides`, `ai-features.google.modelOverrides` and `ai-features.openAiOfficial.modelOverrides`. Empty (the default) means the models are discovered; listing model ids registers exactly those and skips discovery entirely, the same semantics as the existing `ai-features.copilot.modelOverrides`. This is how a catalogue is pinned against provider changes, and how models are named when the list endpoint cannot be reached at all.
+- **Behaviour change:** when a key comes from an environment variable (`ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`/`GEMINI_API_KEY`, `OPENAI_API_KEY`) rather than the preference, it is no longer used automatically. Theia asks for a one-time confirmation first; grant it via the prompt or by setting `ai-features.<provider>.allowEnvironmentApiKey` to `true`.
+- `@theia/ai-copilot` now reports its discovery through the same surface, so its provider page shows what the Copilot CLI returned, whether the list call failed, and which of its models the chat input shows. Signing in is Copilot's equivalent of setting an API key, so a missing sign-in is reported as a missing credential rather than as a failed call — badged "Not signed in" rather than "No API key", with a button that runs the sign-in command and no refresh to press, since nothing can be fetched until it is signed in. A provider whose credential is established by a command names it in `ModelDiscoveryStatus.action`, and one whose credential is not an API key names the badge in `ModelDiscoveryStatus.stateLabel`.
+- Adopters adding their own discovering provider extend `DiscoveringProviderContribution` (`@theia/ai-core/lib/browser`), which runs the discovery: it queues the runs, registers what came back, unregisters what vanished, gates an environment key behind the consent and reports all of it to `ModelDiscoveryStatusService`. A provider supplies its id, its manager, the two preferences it reads, its messages, and how a discovered model becomes a model description; anything else it does (a custom endpoint, a proxy) goes into `initializeProvider` and `handlePreferenceChange`. On the backend, `ModelDiscoveryFetcher` and `ModelSnapshotStore` (`@theia/ai-core/lib/node`) provide a fetch that retries a transient failure and keeps its result as an offline snapshot, and `DiscoveredModels` (`@theia/ai-core/lib/common`) collapses release-pinned ids. `FavoriteModelsService` (`@theia/ai-core/lib/browser`) decides which of the discovered models the chat input offers.
+
+_Electron launch-argument forwarding APIs_:
+
+Forwarding a second launch's CLI arguments to the new window added a few APIs that adopters implementing the affected extension points need to be aware of. The new APIs are `@experimental` and will likely receive breaking changes:
+
+- `TheiaCoreAPI.WindowMetadata` (the Electron preload API, `@theia/core/lib/electron-common/electron-api`) gained an optional `launchArgs?: LaunchArguments` member, carrying the parsed CLI options of a forwarded launch. It is filled in synchronously by the preload script over the existing `CHANNEL_WC_METADATA` channel, which now answers with the whole metadata object instead of just the `webContents` id. Adopters with a custom preload must return `{ webcontentId, launchArgs }` from that channel.
+- `ElectronMainApplicationContribution` gained an optional `claimsWindow?(args: LaunchArguments): MaybePromise<boolean>` hook. A contribution returning `true` opens an empty window for that launch instead of restoring the last workspace, since the window is about to be replaced by whatever the contribution attaches to. `@theia/dev-container` uses this to claim `--attach-container` launches, from a new `electronMain` entry point (`lib/electron-main/dev-container-electron-main-module`) that adopters assembling their extension list manually must include.
+- New replaceable service `WindowLaunchArgs` (interface + symbol, `@theia/core/lib/browser/window/window-launch-args`) exposes those options to the frontend synchronously, and the new contribution point `RemoteCliArgsContribution` (`@theia/core/lib/common/remote-cli-args-contribution`) lets extensions contribute extra CLI arguments to a remote backend.
+
+_ESBuild_:
+
+Theia bundles the application (frontend+backend) with [`ESBuild`](https://esbuild.github.io/). The `webpack` bundling option was removed in 1.75.0, see [v1.75.0](#v1750). Deleting `webpack.config.js` generates an `esbuild.mjs` file upon the next build; bundling instructions you added to `webpack.config.js` need to be migrated to the ESBuild based bundler.
+
+Note that as a part of this change, the `@theia/native-webpack-plugin` dependency has been renamed to `@theia/bundle-plugin`.
+
+The generated ESBuild configuration includes a `sourceMapPathsPlugin` that rewrites the `sources` field of emitted source maps to absolute `file://` URLs. This makes browser and Node debug launch configurations work without any custom `webRoot` or `sourceMapPathOverrides`: a minimal Chrome launch like
+
+```json
+{
+    "name": "Launch Browser Frontend",
+    "type": "chrome",
+    "request": "launch",
+    "url": "http://localhost:3000/"
+}
+```
+
+is sufficient to bind breakpoints in the original sources. If you have a customized `esbuild.mjs` that is not automatically regenerated (because the `gen-esbuild` import was removed), either regenerate it (delete `esbuild.mjs` and rerun `theia build`) or manually add `sourceMapPathsPlugin()` from `@theia/bundle-plugin` to the `plugins` array of each build target. The plugin is a no-op when source maps are disabled (production builds).
+
+_Builtin Extension Pack_:
+
+If you are using the [`eclipse-theia.builtin-extension-pack@1.79.0`](https://open-vsx.org/extension/eclipse-theia/builtin-extension-pack) extension pack you may need to include the [`ms-vscode.js-debug`](https://open-vsx.org/extension/ms-vscode/js-debug) and [`ms-vscode.js-debug-companion`](https://open-vsx.org/extension/ms-vscode/js-debug-companion) plugins for JavaScript debug support.
+There was an issue when the publishing of the pack which excluded these necessary builtins.
+
+For example, in your application's `package.json`:
+
+```json
+"theiaPlugins": {
+  "eclipse-theia.builtin-extension-pack": "https://open-vsx.org/api/eclipse-theia/builtin-extension-pack/1.79.0/file/eclipse-theia.builtin-extension-pack-1.79.0.vsix",
+  "ms-vscode.js-debug": "https://open-vsx.org/api/ms-vscode/js-debug/1.78.0/file/ms-vscode.js-debug-1.78.0.vsix",
+  "ms-vscode.js-debug-companion": "https://open-vsx.org/api/ms-vscode/js-debug-companion/1.1.2/file/ms-vscode.js-debug-companion-1.1.2.vsix"
+}
+```
+
+_msgpackr_:
+
+If you're experiencing [`maximum callstack exceeded`](https://github.com/eclipse-theia/theia/issues/12499) errors you may need to downgrade the version of `msgpackr` pulled using a [yarn resolution](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/).
+
+```
+rpc-message-encoder.ts:151 Uncaught (in promise) Error: Error during encoding: 'Maximum call stack size exceeded'
+    at MsgPackMessageEncoder.encode (rpc-message-encoder.ts:151:23)
+    at MsgPackMessageEncoder.request (rpc-message-encoder.ts:137:14)
+    at RpcProtocol.sendRequest (rpc-protocol.ts:161:22)
+    at proxy-handler.ts:74:45
+```
+
+For the best results follow the version used and tested by the framework.
+
+For example:
+
+```json
+"resolutions": {
+    "**/msgpackr": "1.8.3"
+}
+```
+
+_socket.io-parser_:
+
+Prior to [`v1.31.1`](https://github.com/eclipse-theia/theia/releases/tag/v1.31.1), a [resolution](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) might be necessary to work-around a recently discovered [critical vulnerability](https://security.snyk.io/vuln/SNYK-JS-SOCKETIOPARSER-3091012) in one of our runtime dependencies [socket.io-parser](https://github.com/socketio/socket.io-parser).
+
+For example:
+
+```json
+"resolutions": {
+    "**/socket.io": "^4.5.3",
+    "**/socket.io-client": "^4.5.3"
+}
+```
+
+_Terminal Shell Integration Scripts_:
+
+The `@theia/terminal` package now includes shell integration scripts for Bash and Zsh (`packages/terminal/src/node/shell-integrations/`). These scripts are used at runtime by `ShellIntegrationInjector` to inject shell integration into terminal sessions, enabling features such as command history tracking and command separators.
+
+For **browser** applications, the generated bundler configuration automatically copies these scripts to `lib/backend/shell-integrations/`.
+
+For **Electron** applications that use custom packaging (e.g. `electron-builder`, `electron-forge`), you must ensure the `shell-integrations` directory is included in your packaged distribution. The scripts must be accessible relative to the compiled `ShellIntegrationInjector` module at `lib/backend/shell-integrations/`. If these files are missing, terminal shell integration will silently fail to activate.
+
+For example, in an `electron-builder` configuration, ensure the `lib/backend/shell-integrations` directory is included via the `files` pattern:
+
+```json
+{
+  "files": [
+    "lib/**/*",
+    "src-gen/**/*"
+  ]
+}
+```
+
+The `lib/**/*` glob already covers `lib/backend/shell-integrations/`. If you use a more restrictive `files` pattern, make sure `lib/backend/shell-integrations/**/*` is explicitly included, as `ShellIntegrationInjector` resolves these scripts relative to `__dirname` (i.e. `lib/backend/`).
+
+_Bundled files in asar-packaged Electron applications_:
+
+Applications packaged with `asar: true` store their files inside `app.asar`, which only the application itself can read. Processes that Theia spawns therefore cannot use the files in the archive: the shells cannot source the terminal shell integration scripts, and `child_process.spawn` cannot execute the ripgrep binary that `@theia/bundle-plugin` copies to `lib/backend/native/`. Since `1.77.0` the application handles this: `BundledResourceProvider` (`@theia/core/lib/node`) extracts such files from the archive into the configuration directory (`~/.theia/bundled-resources/` by default) when they are first needed, and cleans up the copies of earlier versions. No packaging change is required.
+
+Extraction can be avoided by unpacking the files at packaging time. The provider prefers the unpacked files over its own copy whenever they are complete. With `electron-builder`:
+
+```yaml
+asar: true
+asarUnpack:
+  - "**/lib/backend/shell-integrations/**"
+  - "**/lib/backend/native/**"
+```
+
+Use `BundledResourceProvider.resolveExternalPath(path)` for any other bundled file that is handed to a process outside of the application, such as a script or a helper executable. This also applies to code of your own that spawns the `rgPath` exported by `@vscode/ripgrep`: in the bundle, `rgPath` points to `app.asar.unpacked` only if the binary was unpacked, and into the archive otherwise.
+
+If you worked around the ripgrep problem by overriding the `@vscode/ripgrep` replacement in your own esbuild configuration, that override is no longer needed.
+
+### v1.78.0
+
+#### Electron: the backend resolves the login shell environment [#18204](https://github.com/eclipse-theia/theia/pull/18204)
+
+The generated `electron-main.js` no longer runs `fix-path` before the Electron main process starts, which blocked the start for as long as the user's interactive login shell took to initialize. Instead, the backend runs the login shell once it has started, in parallel with the window and the frontend bundle, and applies the shell's `PATH` to its own `process.env`, from where every process it spawns inherits it.
+
+Until the environment is known, the backend holds the channel of every service that a frontend opens on its connection, so that terminals, tasks, debug adapters, local MCP servers and whatever else runs the user's tools see the resolved environment without waiting for it. Services that the frontend needs in order to start up, and that start no processes, are declared independent of the shell environment and are not held: those of `@theia/core`, `@theia/filesystem`, `@theia/workspace`, `@theia/preferences` and the plugin metadata services of `@theia/plugin-ext`. The plugin host itself is forked once the environment is known, while the plugin metadata is served at once. The resolution is skipped in browser deployments, on Windows and in a backend that the login shell being resolved has started.
+
+What changes for adopters:
+
+- A backend service that the frontend needs to start up, and that starts no processes, should be declared independent of the shell environment, otherwise the workbench waits for the login shell on macOS and Linux: `new RpcConnectionHandler(path, factory, { independentOfShellEnvironment: true })`, `bindBackendService(path, Service, undefined, { independentOfShellEnvironment: true })` or `messagingService.registerChannelHandler(path, handler, { independentOfShellEnvironment: true })`. A service that starts processes must not be declared independent. Frontend services bound with `bindFrontendService` are never held. At the `debug` log level, the backend logs `Held the channel '<path>' for <n> ms until the login shell environment was resolved.` for every channel it held, which shows what to declare.
+- `RpcConnectionHandler` takes an options object (`RpcConnectionHandlerOptions`) as its third argument; a proxy factory constructor passed there is still accepted.
+- The Electron main process keeps the environment of the GUI application. Main-process code that spawns the user's tools has to resolve the `PATH` itself, for example with `@theia/electron/shared/fix-path`, which stays available.
+- Backend code that spawns processes on its own before any frontend connects, for example in `BackendApplicationContribution.onStart()`, has to await `ShellEnvironmentServer.whenResolved()` (`@theia/core/lib/common/shell-environment`) before spawning. The headless plugin host, which `@theia/plugin-ext-headless` forks on its own, is started by `HostedPluginServerImpl` once the environment is known; `HostedPluginServerImpl.whenPluginServerStarted()` settles when it has been forked. Code that serves the requests of a held service needs no change.
+- `EnvVariablesServerImpl` reads `process.env` on every request instead of a snapshot taken when it was created, so that the `PATH` of the login shell is reported; its `envs` field is a getter now, and `getValue` answers from it like `getVariables`. The service is not held, as the frontend needs the configuration directory to start, so a frontend that asks for a variable before the login shell has answered gets the `PATH` of the GUI application; it used to get the `fix-path`-ed `PATH` at any time. The `${env:...}` variable of `@theia/variable-resolver` waits for the login shell before it reads, so that a task or launch configuration started early does not pass the `PATH` of the GUI application to its process. A frontend service of your own that passes variables to a process should await `ShellEnvironmentServer.whenResolved()` likewise; the frontend proxy is bound in Electron applications only, so inject it `@optional()`.
+- The login shell runs with `THEIA_RESOLVING_ENVIRONMENT=1` in its environment, which dotfiles can check to skip prompts or programs that would keep the shell from exiting. A shell that does not answer within the new `application.shellEnvironmentResolutionTimeout` preference, 10 seconds by default, is killed, the environment is left as it is, and the user is notified. The preference takes effect at the next start.
+
+### v1.77.0
+
+#### TypeScript 6.0 [#18100](https://github.com/eclipse-theia/theia/pull/18100)
+
+Theia is built with TypeScript 6.0.x. Adopters that only consume Theia's declaration files are not required to upgrade immediately: declarations emitted by TypeScript 6 remain consumable by TypeScript 5.9. Upgrading is recommended so that applications and extensions use the same compiler behavior as the framework.
+
+When adopting TypeScript 6 or replicating Theia's `configs/base.tsconfig.json` settings, review these compiler changes:
+
+- `module` and `moduleResolution` are now `NodeNext` (see [Theia packages are ES modules](#theia-packages-are-es-modules)), which honors package `exports`; deep imports into paths that a dependency does not export will fail. TypeScript 6 deprecates the previous `node` / `node10` resolution mode.
+- TypeScript 6 defaults `types` to an empty array. Add the ambient types your project requires, typically `"types": ["node"]`; Theia's shared configuration includes Node and Mocha because package tests live next to their sources.
+- TypeScript 6 defaults `strict` to `true`. Theia currently sets `strict: false` explicitly and retains its existing individual strictness flags.
+- Remove `downlevelIteration`; TypeScript 6 reports the option as deprecated even when it is disabled.
+- TypeScript 6 defaults `noUncheckedSideEffectImports` to `true`. Theia sets it to `false` because extensions import CSS for side effects without shared module declarations. Adopters can instead declare their side-effect modules, such as `*.css`.
+- `esModuleInterop` is always enabled. Callable or constructable CommonJS modules must use default imports (`import express from 'express'`) rather than namespace imports. The emitted JavaScript uses the `tslib` `__importStar` and `__importDefault` helpers, so every published extension that emits those helpers must declare `tslib` in `dependencies` rather than relying on workspace hoisting.
+- Theia's emitted declarations can now contain default imports of `export =` modules. Consumers need `esModuleInterop`, `allowSyntheticDefaultImports`, or `skipLibCheck` when compiling those declarations.
+- `TreeProps.viewProps` and `TreeWidget.ViewProps` no longer accept the inherited HTML `width`, `height`, or `rows` properties. The tree widget owns those values and the public types now omit them from the forwarded `react-virtuoso` props.
+
+To make the IDE use the workspace compiler, add `"typescript.tsdk": "node_modules/typescript/lib"` to workspace settings when the IDE's bundled TypeScript is older than 6.
+
+The shared ESLint configuration no longer uses `@typescript-eslint/eslint-plugin-tslint`, `tslint`, or `eslint-plugin-deprecation`. Adopters extending `configs/*.eslintrc.json` need typescript-eslint v8, `@stylistic/eslint-plugin` v3, `eslint-plugin-jsdoc`, and the `@theia/eslint-plugin` `file-header` rule. The former TSLint `typedef: call-signature` check is now the `@theia/explicit-return-type` rule of `@theia/eslint-plugin`, and the space-after-asterisk part of TSLint `jsdoc-format` is now its `@theia/jsdoc-space-after-asterisk` rule. A file that intentionally uses a different license header must place `/* eslint-disable @theia/file-header */` on line 1 because the rule reports at line 1.
+
+#### Physical printable-key bindings
+
+##### User keymaps
+
+Printable keybinding tokens now identify logical characters on the active keyboard layout. Existing `keymaps.json` files and keybinding strings remain parseable, so no file-format migration is required. Shift in an authored logical-character stroke is absorbed when it produces the character; otherwise it remains a command modifier.
+
+Latin letters that the active layout does not produce on its base or Shift layer fall back to their US key position, matching VS Code so common shortcuts continue working on non-Latin layouts. This fallback applies to letters only; digits and punctuation always follow the logical character. The recorder stores the Latin fallback letter in this case: pressing Ctrl and the physical `V` key on a Russian layout records `ctrl+v`, not `ctrl+м`.
+
+Bindings that intentionally target a physical position must use explicit scan-code syntax. For example, replace a position-dependent `ctrl+[` binding with `ctrl+[BracketLeft]`. Reserved logical characters can be authored with `[char:0x...]`, such as `ctrl+[char:0x2B]` for logical `+`. The recorder stores non-printable keys, Space and numpad keys by name (for example `delete`, `f1`, `space` and `add`; numpad digits as `1`…`9`, like the top-row digits); `[ScanCode]` is reserved for printable keys without a committed character. On macOS, the recorder stores Option as the `alt` command modifier rather than the character it produces: Option+Shift+P records `shift+alt+p`, not `∏`.
+
+Available printable bindings now follow their logical characters. For example, German `ctrl+[` resolves to physical `Ctrl+AltGr+8` instead of the US `BracketLeft` position. On Windows, AltGr is reported as Ctrl+Alt, so the AltGr layer consumes both Ctrl and Alt: bindings that combine `ctrl` or `alt` with an AltGr-layer character, such as German `ctrl+[`, `ctrl+]` and `ctrl+\` (including Monaco defaults), are inactive. On macOS, the same applies to `alt` (Option) with an Option-layer character: German `cmd+alt+[` and `cmd+alt+]` (Monaco fold/unfold), which previously worked positionally as Cmd+Option+Ü and Cmd+Option++, are inactive. To keep such a shortcut, use `ctrl+[BracketLeft]`, set `"keyboard.dispatch": "keyCode"`, or choose a binding that does not require AltGr. Logical characters unavailable on the active layout remain loaded and visible but inactive; the same applies when authored Shift is a command modifier but the character requires an AltGr layer that consumes Shift. Theia no longer silently maps these bindings to a different key combination.
+
+Set `"keyboard.dispatch": "keyCode"` to restore positional key-code dispatch globally if the logical behavior changes existing shortcuts unexpectedly. Character-only tokens such as `ü` or `[char:0x...]` are inactive in this mode because they have no positional key code. See [`packages/keymaps/README.md`](../packages/keymaps/README.md) for the complete logical-character, scan-code, character-token, inactive-binding, and Windows AltGr recorder grammar.
+
+##### Adopter APIs
+
+- `KeyboardLayout` gained `latinFallbackByCode`; `KeyboardLayoutService.getLatinLetterFallback(key)` exposes it. Subclasses replacing `transformNativeLayout()` must call the protected `KeyboardLayoutService.addMissingLatinLetterCandidates()` method to keep Latin-letter shortcuts working on non-Latin layouts.
+- `isPrintableKey` and `isPrintableCharacter` are exported from `@theia/core/lib/common/keys`; the protected `KeyboardLayoutService` helpers of the same names were removed.
+- Replace consumers of `KeyboardLayout.key2KeyCode` with `candidatesByCharacter` or `candidatesByFoldedCharacter`. Each `KeyboardLayoutCandidate` provides the physical `key`, logical `character`, and required `layoutModifiers`. Subclasses of `KeyboardLayoutService` that overrode the removed protected `transformKeyCode()` or `getCharacterIndex()` methods must move their logic to `resolveKeyCode()` and candidate lookup.
+- Pass the normalized keyboard input as the second argument to `KeyboardLayoutService.validateKeyCode`.
+- Review `KeyCode` consumers: `equals()` requires the same physical key and `dispatchString()`, character-only values are not modifier-only, and `toString()` preserves authored spelling. Use `dispatchString()` when a runtime match identity is required.
+- Update `KeybindingRegistry.matchKeybinding()` consumers from `match.binding` to `match.runtime.binding`; the resolved sequence is available as `match.runtime.sequence`. Pass resolved sequences (`resolveKeybinding(binding)`) or runtime interpretations to `matchKeybinding()`; raw `KeySequence.parse()` output is no longer guaranteed to match under `keyboard.dispatch: 'code'`. Subclasses that override chord handling must replace the protected `keySequence` field with `keySequenceCandidates`. Protected keybinding-tree values are runtime records containing the original scoped binding and its resolved sequence, rather than `ScopedKeybinding[]`.
+- Pass an explicit `'logical'` or `'physical'` form to `AcceleratorSource.getAccelerator`. Browser UI uses logical labels, while Electron native menus require physical accelerators.
+#### Theia packages are ES modules
+
+The runtime packages (`packages/*`) are now published as ES modules: their `package.json` declares `"type": "module"` and an `exports` map, and `lib` contains ES modules.
+The build tooling in `dev-packages` (e.g. `@theia/cli`, `@theia/application-manager`, `@theia/application-package`) is still CommonJS.
+
+**Imports keep working.** The `exports` maps keep every path importable that was importable before, including deep imports without an extension
+(`@theia/core/lib/browser/widgets/widget`), barrel directories (`@theia/core/lib/browser`), JSON files (`@theia/core/lib/common/i18n/nls.metadata.json`)
+and the re-exports in `@theia/core/shared/*`.
+Within a package that is an ES module, relative imports need an extension though, as Node requires them: `import { X } from './x.js'`.
+
+**Keep importing shared libraries through `@theia/core/shared/*`** (and `@theia/electron/shared/*`), e.g. `@theia/core/shared/inversify` rather than `inversify`.
+Dual packages like `inversify` ship a CommonJS and an ES module entry point. The re-export loads the one Theia uses, whereas a CommonJS extension that imports
+`inversify` directly loads the CommonJS entry, a second copy of the library whose `Container` and decorators are not interchangeable with Theia's.
+
+**Extensions written as CommonJS** continue to work with the bundled application, as esbuild handles both formats.
+To run their code unbundled with Node, e.g. in unit tests, Node 24 loads the Theia ES modules with `require()` as long as they don't use top-level `await`.
+To convert an extension to an ES module, the codemods used for Theia itself can be a starting point: `scripts/esm/to-esm.mjs` adds the extensions to imports
+and converts `import x = require('...')`, `__dirname` and `__filename`, and `scripts/esm/package-exports.mjs` generates an `exports` map like the ones of the Theia packages.
+The generated map covers the modules and the JSON files below `lib`; a package that copies other assets into `lib` (e.g. `.wasm` or `.html` files)
+has to pass their extensions with `--lib-assets=json,wasm,html`, as the catch-all pattern of the map only resolves modules.
+
+**Behavioral differences of ES modules** that may affect code of adopters:
+
+- The exports of ES modules cannot be replaced, so `sinon.stub(module, 'name')` on a namespace import (`import * as module from '...'`) fails.
+  Stub a method of a service instead. `isWindows` and `isOSX` of `@theia/core/lib/common/os` can be overridden with `stubOS` of `@theia/core/lib/common/test/stub-os`.
+- Imports are evaluated before the code of the importing module. Code that has to run first, like enabling JSDOM in a test, has to be in a module of its own that is imported first,
+  or the modules depending on it have to be loaded with `await import(...)`. Theia's test setup enables JSDOM before the imports of specs that call `enableJSDOM()`.
+- Node detects the named exports of a CommonJS module statically, which fails for modules that create their exports dynamically (e.g. `fs-extra`, `chalk`, `iconv-lite`).
+  Import such modules as a whole with a default import (`import fs from 'fs-extra'`). The re-exports in `@theia/core/shared/*` list their named exports explicitly, so both kinds of imports work for them.
+- `require`, `module`, `exports`, `__dirname` and `__filename` are not defined. Use `import.meta.dirname`, `import.meta.filename` and `createRequire(import.meta.url)` instead.
+- A class that is accessed before the module declaring it has been evaluated throws a `ReferenceError`, where it was `undefined` before. With `emitDecoratorMetadata`, the type of every decorated property is accessed
+  when the class is declared, which fails for classes of modules in an import cycle, even if the injection itself uses a `LazyServiceIdentifier`. Theia no longer emits decorator metadata;
+  if you compile your extensions as ES modules, disable `emitDecoratorMetadata` as well and use `@inject` for all constructor parameters.
+
+**Bundling:** the generated entry points in `src-gen` are ES modules, and the backend and the Electron main process are bundled as ES modules into `lib/backend`, which contains a `package.json` declaring `"type": "module"`.
+The Electron preload script and the frontend are still bundled as classic scripts. Customizations in `esbuild.mjs` that relied on `require` or `module.exports` in the generated entry points need to be adapted.
+The `exposeModulePlugin` of `@theia/bundle-plugin` exposes the namespace of ES modules on `window.theia`, so `window.theia['@theia/core/lib/common/uri'].default` is the `URI` class as before.
+
+**Plugins** are not affected: both CommonJS and ES module plugins are supported, including ES modules importing `vscode` or `@theia/plugin`.
+
+### v1.76.0
+
+#### GitHub Copilot is served through the Copilot CLI
+
+`@theia/ai-copilot` no longer talks to the Copilot REST API with a GitHub OAuth token of its own. All requests are served by
+the official GitHub Copilot CLI, which is launched as a background process on the machine running the backend and spoken to
+over the Copilot SDK.
+
+The reason is that GitHub grants access to the Copilot models per OAuth application. The application the previous integration
+used is not entitled for the current lineup, so it only ever saw a small legacy subset of the models regardless of the user's
+subscription. The Copilot CLI is entitled, so routing through it makes the current models available.
+
+The integration is experimental, and its preferences are marked as such in the settings UI: it is under development and its
+API and preferences are subject to change or removal.
+
+**For users:** the Copilot CLI has to be available on the machine running the backend, for example through
+`npm install -g @github/copilot`. It is looked up in the installation of the application, on the `PATH` and in the global `npm`
+directory; the new `ai-features.copilot.executablePath` preference (or the `COPILOT_CLI_PATH` environment variable of the
+backend) points at it when it is installed elsewhere. A packaged application cannot rely on carrying the CLI itself, since it
+is a platform-specific binary that cannot be executed from inside an application archive.
+
+The sign-in of the previous version cannot be carried over, because it belongs to that other OAuth application. It is removed
+from the credential store on first start, and a notification asks for a new sign-in. Nothing else has to be done: the sign-in
+dialog works as before, and it now signs the Copilot CLI in on the user's behalf. Signing out removes the credentials of the
+application again and never touches the system keyring entries of other tools or a sign-in of the GitHub CLI.
+
+**For adopters:** the following API has been removed.
+
+- `CopilotOAuthConfig` and `DEFAULT_COPILOT_OAUTH_CONFIG`. Configuring an own OAuth application no longer has an effect, since
+  the sign-in is performed by the Copilot CLI. Remove any rebinding of the symbol.
+- `CopilotLanguageModel`, `getCopilotApiBaseUrl` and `COPILOT_API_BASE_URL`, together with the REST transport they belonged to.
+  Copilot models are now instances of `CopilotSdkLanguageModel`.
+- `CopilotModelDescription.enableStreaming` and `CopilotModelDescription.supportsStructuredOutput`. Requests always stream, and
+  structured output is not available on this path.
+- `CopilotAuthService.initiateDeviceFlow`, `pollForToken` and `getAccessToken`. The sign-in is now driven with `startSignIn`,
+  `waitForSignIn` and `cancelSignIn`, since the CLI performs and polls the flow itself, and the resulting token is not exposed.
+
+`CopilotAuthService.setExecutablePath` has been added, so that the frontend can hand the configured location of the CLI to the
+backend, which cannot read preferences itself. Adopters implementing the interface from scratch have to provide it; the
+lookup itself is `CopilotCliLocator` and can be rebound.
+
+`@github/copilot-sdk` is deliberately **not** a dependency of this extension, not even a development one. The package depends
+on the CLI, which would put a large proprietary binary into the dependency tree and the lockfile of every application that
+includes `@theia/ai-copilot`, and a packaged application cannot execute it from inside its archive anyway. The CLI carries its
+own copy of the SDK, and `CopilotSdkLoader` loads it from the CLI that is going to serve the requests. An installed
+`@github/copilot-sdk` is used when the CLI does not carry one, so an application that does depend on the package keeps working.
+The part of the SDK API this integration uses is mirrored in `copilot-sdk-types.ts`, which records the SDK version it was taken
+from and how to update it.
+
+Two consequences are worth planning for. The CLI is a prerequisite on the backend host rather than something the application
+ships, so a distribution should either install it or tell its users to. And because the CLI runs on the backend host with one
+process per frontend connection, this integration is not suitable for multi-user backend deployments, where every connected
+frontend would share a single identity.
+
+Three behavioural details for adopters who look closely: the system prompt of a Theia agent is now the system message of the
+Copilot session, replacing the agent instructions the CLI would use, instead of being prepended to the user prompt. The
+runtime is pointed at a Copilot home below Theia's configuration directory, so requests sent from Theia no longer appear among
+the conversations the user started with their own CLI, and the session of a request is deleted once it has been answered. And
+the runtime is configured without the ambient behaviour of the CLI: only the tools of the request are available, and
+instructions and skills found on the host, the memory and session stores, host git operations and plugins are off, since
+Theia drives the conversation itself.
+
+#### Removal of deprecated @theia/preview extension from Theia codebase [#18001](https://github.com/eclipse-theia/theia/pull/18001)
+
+The `@theia/preview` extension has been completely removed from the Theia codebase.
+This extension was deprecated and stopped being published in v1.73.0.
+
+If your application still depends on `@theia/preview`, migrate to the built-in VS Code Markdown extension (`vscode.markdown-language-features`), which provides the same feature set and is actively maintained. Remove any references to `@theia/preview` from your application's dependencies and ensure the VS Code Markdown extension is included in your application, either through the builtin extension pack or by explicitly adding it to your plugins configuration.
+
+Gone with the extension are the `preview.openByDefault` preference, the `preview:open` and `preview.open.source` commands, and the `PreviewUri`, `PreviewHandler`, `PreviewHandlerProvider`, `PreviewWidget`, `PreviewContribution`, `PreviewCommands`, `MarkdownPreviewHandler` and `PreviewLinkNormalizer` API. The VS Code Markdown extension contributes `markdown.showPreview`, `markdown.showPreviewToSide` and the `markdown.preview.*` preferences in their place.
+
+#### Browser-only config directory moved to `/.theia` [#17966](https://github.com/eclipse-theia/theia/pull/17966)
+
+The browser-only `EnvVariablesServer` stub (`packages/core/src/browser-only/frontend-only-application-module.ts`) previously returned an empty string for `getConfigDirUri()`. `new URI('')` resolves to `file:///`, so in browser-only mode the config directory was effectively the root of the OPFS file system, and every consumer wrote its state there, alongside the user's workspace directories. `getConfigDirUri()` now returns `file:///.theia`, matching the backend's default `.theia` configuration folder (the `configurationFolder` property).
+
+As a side effect, `CommonFrontendContribution` registers a UTF-8 encoding override with `parent: new URI(configDirUri)`. Because that parent used to be `file:///`, the override applied to the entire file tree in browser-only mode. It is now correctly scoped to `/.theia`, matching backend behavior.
+
+**End-user-facing:**
+
+- Existing browser-only deployments have their state at the OPFS root. This is not migrated automatically: after upgrading, Theia looks under `/.theia`, finds nothing, and behaves as a fresh install for that state. Affected data:
+  - `settings.json` and `keymaps.json`
+  - untitled workspace files and the recent workspaces list
+  - workspace metadata
+  - AI stores: chat sessions, prompt customizations, skills, sketched tools
+- Files outside `/.theia` are no longer forced to UTF-8 encoding.
+
+**Adopter-facing:**
+
+- If you need to preserve existing user data, copy the entries listed above from the OPFS root into `/.theia` on first run after upgrading.
+- Do not rely on the old blanket UTF-8 encoding override applying outside the config directory.
+
+### v1.75.0
+
+#### React 19 and the automatic JSX runtime
+
+Theia now requires `react`/`react-dom` `^19` and React 18 is no longer supported.
+The `@theia/core` peer dependency ranges for `react`, `react-dom`, `@types/react`, and `@types/react-dom` are narrowed to `^19.0.0`, so all four need to be bumped.
+Since v1.74.0 `react`/`react-dom` are peer dependencies instead of direct dependencies of `@theia/core`.
+Thus, depending on your package manager and its settings, you might need to add them as explicit dependencies of your product.
+
+Upgrading React itself is covered by the [React 19 upgrade guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide).
+The change most likely to affect extension code is that `useRef` no longer has a zero-argument overload, so `React.useRef<T | undefined>()` becomes `React.useRef<T | undefined>(undefined)`.
+
+All Theia packages are now compiled with the automatic JSX runtime:
+
+```json
+"jsx": "react-jsx",
+"jsxImportSource": "@theia/core/shared/react"
+```
+
+`@theia/core/shared/react/jsx-runtime` and `@theia/core/shared/react/jsx-dev-runtime` are new re-exports, so the generated JSX calls still resolve to the single React instance shared by `@theia/core`.
+The only exception is `@theia/core`: it cannot import its own re-export, so `packages/core/tsconfig.json` overrides `jsxImportSource` with `react`, which resolves to the same module.
+
+Adopters do not have to switch, but if you want the same setup in your own extensions:
+
+- set `jsx` and `jsxImportSource` as above in your `tsconfig.json` (if you use `jsx: "react-jsxdev"`, the `jsx-dev-runtime` re-export is used instead)
+- remove `import * as React from '@theia/core/shared/react'` from files that only needed it for JSX. Keep the import wherever `React.*` types or APIs are used (`React.ReactNode`, `React.FC`, `React.MouseEvent`, hooks, …). With `noUnusedLocals` enabled the compiler reports the now-obsolete imports.
+
+#### Removal of the webpack bundler
+
+The `webpack` bundling option has been removed, `theia build` now always bundles with [esbuild](https://esbuild.github.io/). esbuild has been the default bundler since 1.72.0 for applications without a `webpack.config.js`, and 1.74.0 announced the removal of webpack.
+
+Applications that already build with esbuild are unaffected. Applications that still have a `webpack.config.js` get an `esbuild.mjs` generated on their next build; the leftover `webpack.config.js` is ignored and reported with a warning. Port any customization to `esbuild.mjs` and delete the `webpack.config.js`; the generated `gen-webpack.config.js` and `gen-webpack.node.config.js` are removed by `theia clean`.
+
+In detail:
+
+- `theia build` no longer reads `webpack.config.js` and no longer generates `gen-webpack.config.js` / `gen-webpack.node.config.js`.
+- `theia build [webpack-args...]` is now `theia build [bundler-args...]`; arguments are forwarded to the generated `esbuild.mjs` instead of the webpack CLI. `--webpack-help` remains as a deprecated alias of the new `--bundler-help`.
+- `@theia/bundle-plugin` no longer exports `NativeWebpackPlugin` and `MonacoWebpackPlugin` and no longer depends on `webpack`. The esbuild equivalents are `nativeDependenciesPlugin()` and `monacoNlsPlugin()`.
+- `@theia/application-manager/lib/expose-loader` has been removed. Use `exposeModulePlugin()` from `@theia/bundle-plugin` instead, as shown in [`examples/browser/esbuild.mjs`](../examples/browser/esbuild.mjs).
+- `@theia/application-manager` no longer depends on `webpack`, `webpack-cli`, `copy-webpack-plugin`, `compression-webpack-plugin`, `mini-css-extract-plugin`, `css-loader`, `style-loader`, `ignore-loader`, `source-map-loader`, `node-loader`, `string-replace-loader`, `umd-compat-loader`, `path-browserify` and `buffer`, nor on the packages that only the webpack setup pulled in: `babel-loader`, `worker-loader`, `@babel/*`, `source-map` and `source-map-support`. If your own build relies on any of these being installed transitively, declare them in your application's `devDependencies`.
+
+If you cannot migrate yet, stay on Theia 1.74.x or vendor the webpack setup into your own repository. The last generated configurations are in [`bundler-generator.ts`](https://github.com/eclipse-theia/theia/blob/v1.74.1/dev-packages/application-manager/src/generator/bundler-generator.ts) (`compileWebpackConfig` and `compileNodeWebpackConfig`), the plugins in [`webpack-plugin.ts`](https://github.com/eclipse-theia/theia/blob/v1.74.1/dev-packages/bundle-plugin/src/webpack-plugin.ts) and [`monaco-webpack-plugins.ts`](https://github.com/eclipse-theia/theia/blob/v1.74.1/dev-packages/bundle-plugin/src/monaco-webpack-plugins.ts), and the expose loader in [`expose-loader.ts`](https://github.com/eclipse-theia/theia/blob/v1.74.1/dev-packages/application-manager/src/expose-loader.ts). In that case you also have to declare `webpack`, `webpack-cli`, `terser-webpack-plugin` and the loaders listed above yourself.
+
+#### Pre-compressed frontend assets with esbuild
+
+Theia's backend serves a `<file>.gz` sibling instead of the original file whenever one exists and the client accepts `gzip`. This used to be produced by webpack's `CompressionPlugin`; it is now produced by the new `compressAssetsPlugin()` from `@theia/bundle-plugin`, which the generated esbuild browser configuration includes.
+
+The `--static-compression` flag of `theia build` keeps working, but its default changed: compression is only enabled for browser applications built with `--mode production`. Development and watch rebuilds therefore stay fast, and Electron applications, which load the frontend from their local backend over loopback, no longer carry compressed copies in the packaged application. Pass `--static-compression` or `--no-static-compression` to override.
+
+Whenever an asset is not compressed, the plugin removes its `.gz` file of a previous build. A development build therefore cannot leave the assets of an earlier production build behind for the backend to serve.
+
+### v1.74.0
+
+#### Deprecation of @theia/ai-vercel-ai package
+
+The `@theia/ai-vercel-ai` package has been marked as deprecated and is no longer published on npm. It will be removed from the Theia codebase after a deprecation period. The package only wrapped OpenAI and Anthropic models, both of which are already covered by the dedicated `@theia/ai-openai` and `@theia/ai-anthropic` providers with first-class support.
+
+If your application depends on `@theia/ai-vercel-ai`, migrate as follows:
+
+- **OpenAI models**: use `@theia/ai-openai`. Move `ai-features.vercelAi.openaiApiKey` to `ai-features.openAiOfficial.openAiApiKey`; the models themselves are discovered from the provider (see _Dynamic Model Discovery_ above).
+- **Anthropic models**: use `@theia/ai-anthropic`. Move `ai-features.vercelAi.anthropicApiKey` to `ai-features.anthropic.AnthropicApiKey`; the models themselves are discovered from the provider (see _Dynamic Model Discovery_ above).
+- **Custom endpoints** (`ai-features.vercelAi.customModels`): split entries by their `provider` field into the matching provider-specific preference:
+  - `provider: 'openai'` → `ai-features.openAiCustom.customOpenAiModels`
+  - `provider: 'anthropic'` → `ai-features.anthropicCustom.customAnthropicModels`
+
+The dedicated provider preferences offer the same fields plus additional ones (e.g. Azure `apiVersion`/`deployment`, `useResponseApi`, `reasoningSupport` for OpenAI; `useCaching`, `maxRetries` for Anthropic).
+
+#### `AiConfigurationService` for reading/writing AI preferences
+
+A new framework API, `AiConfigurationService` (`@theia/ai-core`), wraps `PreferenceService` for `ai-features.*` preferences and is the intended extension point for reading/writing AI configuration.
+
+**Adopter-facing:**
+
+- Prefer `AiConfigurationService` over `PreferenceService` for `ai-features.*` keys in frontend code. Its `get`/`inspect` are workspace-trust-aware (workspace/folder values are suppressed while the workspace is untrusted); writes (`set`/`update`) are never gated by trust.
+- **Behavior change:** the AI terminal's shell-command allowlist/denylist (`ai-features.terminal.shellCommand{Allowlist,Denylist}`) are now read trust-aware via `AiConfigurationService`. Previously they were read with a raw `PreferenceService.get`, so an untrusted workspace could contribute allowlist entries. Now workspace/folder-scoped entries are suppressed until the workspace is trusted (an untrusted workspace can no longer widen the shell allowlist). User- and default-scoped entries are unaffected.
+
+### v1.73.0
+
+#### Custom agents reorganized into per-agent folders [#17523](https://github.com/eclipse-theia/theia/pull/17523)
+
+Custom agents are no longer stored in a single `customAgents.yml` per scope. Each agent now lives in its own folder, `<scope>/agents/<id>/agent.md`, with YAML frontmatter (`name`, `description`, `defaultLLM`, `showInChat`) and the prompt body below it, matching the existing `SKILL.md` pattern (scopes are the workspace `.prompts/` directory and `~/.theia/prompt-templates`).
+
+**End-user-facing:**
+
+- When an existing `customAgents.yml` is found, Theia asks before migrating it to the new layout: a notification offers **Migrate** or **Don't Show Again**. Nothing is written until you choose **Migrate**, which avoids unexpected file changes (for example in a workspace under version control). Declining is safe: legacy `customAgents.yml` files keep being loaded so agents continue to work, and you are asked again next session until you either migrate or dismiss the prompt for good with **Don't Show Again** (remembered in local storage, not a setting). After a successful migration the `customAgents.yml` is renamed to `customAgents.yml.bak` (never deleted); restoring it is a matter of renaming the `.bak` back by hand. The migration can also be triggered at any time from the command palette via `AI: Re-run custom-agent migration`.
+- Prompts stored as a YAML _folded_ block scalar (`prompt: >-`) keep their markdown heading structure: the folded scalar would otherwise merge each heading into the following paragraph (e.g. `## Task Your task is ...`), so migration and runtime loading preserve the original line breaks instead. If an earlier Theia version already migrated such an agent with merged headings, the generated `agent.md` is corrected automatically on the next migration, but only when you have not edited it since (the corrected content is rewritten from `customAgents.yml.bak`; user-modified files are left untouched).
+- The default prompt-override file created by "Edit prompt" changed from `<agent-name>_prompt.prompttemplate` to `prompt.prompttemplate` inside the agent folder. Existing sibling `<agent-name>_prompt*.prompttemplate` files are moved into the agent folder during migration.
+
+**Adopter-facing:**
+
+- `PromptFragmentCustomizationService` gained the required methods `createCustomAgentFile`, `migrateCustomAgentsYaml` and `hasPendingCustomAgentMigration`. If you implement this interface directly, you must provide them. The `migrateCustomAgentsYaml()` report objects also carry a `corrected` count in addition to the migration counts.
+- `PromptFragmentCustomizationService.getCustomAgentsLocations()` now returns `CustomAgentsLocation[]`. Each element gained a required `kind: 'agents-dir' | 'legacy-yaml'` field, and the result interleaves per-agent `agents/` directory entries with legacy `customAgents.yml` entries (one of each per scope). Code that previously iterated the result assuming only `customAgents.yml` files should branch on `kind` instead.
+
+#### Custom agents default to the `.agents` workspace folder
+
+Custom agents are now scanned from both the `.agents/` and `.prompts/` folders of each workspace root, independent of the `ai-features.promptTemplates.WorkspaceTemplateDirectories` preference. `.agents/` is preferred and is the default location for newly created agents (matching the skills convention introduced in [#17553](https://github.com/eclipse-theia/theia/pull/17553)); `.prompts/agents/` continues to be discovered for backward compatibility.
+
+**End-user-facing:**
+
+- New custom agents are created under `.agents/agents/<id>/agent.md` by default. Existing agents under `.prompts/agents/` keep working and are still listed as a creation location.
+
+**Adopter-facing:**
+
+- `PromptFragmentCustomizationProperties` gained an optional `agentDirectoryPaths` field carrying the absolute parent directories scanned for custom agents. The `.agents`/`.prompts` parents are exported as `CUSTOM_AGENT_WORKSPACE_DIRECTORIES`.
+
+### v1.70.0
+
+#### Removal of deprecated @theia/git extension from Theia codebase [#17148](https://github.com/eclipse-theia/theia/pull/17148)
+
+The `@theia/git` extension has been completely removed from the Theia codebase.
+This extension was deprecated since v1.58.0 and stopped being published in v1.61.0.
+
+If your application still depends on `@theia/git`, you must migrate to the built-in VS Code Git extension, which provides the same feature set and is actively maintained. Remove any references to `@theia/git` from your application's dependencies and ensure the VS Code Git extension is included in your application, either through the builtin extension pack or by explicitly adding it to your plugins configuration.
+
+### v1.65.0
+
+#### Browser-only Filesystem Improvements [#16187](https://github.com/eclipse-theia/theia/pull/16187)
+
+Browser-only filesystem refactored to use OPFS API with web workers.
+
+Key changes:
+
+- `OPFSFileSystemProvider` completely rewritten - extensions inheriting from old implementation need alignment
+- `FileUploadService` moved from `@theia/filesystem/lib/browser/file-upload-service` to `@theia/filesystem/lib/common/upload/file-upload`, now bound with symbol key and separate `FileUploadServiceImpl`
+- `FileDownloadService` moved from `file-download-data.ts` to `file-download.ts`, now bound with symbol key and separate `FileDownloadServiceImpl`
+- `NodeFileUploadService` moved from `src/node/node-file-upload-service.ts` to `src/node/upload/node-file-upload-service.ts`
+- `OPFSInitialization.getRootDirectory()` returns `Promise<string> | string` instead of `Promise<FileSystemDirectoryHandle>` - Just return the root of your filesystem as a string instead of the directory handle
+
+#### Make Preferences available in the backend [#16017](https://github.com/eclipse-theia/theia/pull/16017)
+
+The PR makes preferences support available in the backend. Only default and user preferences can be accessed in the backend. The API has changed in the following ways:
+- Many files have been moved from the "browser" folder to the "common" folder. Imports will have to be adapted
+- `PreferenceSchemaProvider` has been replaced by two separate `PreferenceSchemaServiceImpl` (and corresponding interface) and `DefaultsPreferenceProvider` classes.
+- Preference schema typing has been simplified: a preference schema is no longer extending IJSONSchema and typing has been adapted to strictly
+use Theia types (for example for scopes) and a straight-forward extension of standard IJSONSchema for properties. This means schemas from VS Code (contributed) must be converted to Theia format.
+- PrefenceSchemaService separates between adding a schema and registering a default override for a property. Also, the service uses explicit override identifiers instead of encoding the override in the preference key. The service strictly distinguishes between preference schema and the derived JSON Schema for preference files. `JSONValue` is used instead of `any` where applicable. Schema properties must be added before overrides are registered.
+`PreferenceSchemaService` now has the concept of`validScopes`. In the backend, only`Default` and `User` can be used. As a consequence, a preference provider for a particular preference scope might not be bound. Do not inject a preference provider with `@inject(PreferenceProvider) @named(<preference scope>)`, inject and use `PreferenceProviderProvider` instead.
+- `PreferenceContribution` now has a `initSchema()` method in addition to the declarative Schema contribution. It is used to register overrides.
+
+### v1.62.0
+
+#### Refactor menu nodes [#14676](https://github.com/eclipse-theia/theia/pull/14676)
+
+This PR makes menu nodes and tab toolbar items into active object instead of pure data descriptors. This means they can polymorphically handle concerns like enablement, visibility, command execution and rendering. This keeps concerns like conversion of parameters out of the general tool bar and menu handling code. In this way, we could get rid of the MenuCommandExecutor and MenuCommandAdapter infrastructure.
+If you are simply registering toolbar items and menus, little will change for you as a Theia adopter. Mainly, some of the paremeter types have changed in menu-model-registry.ts. Menu registration has been simplified in that an independent submenu is simply a menu that is registered under a path that does not start with the MAIN_MENU_BAR prefix.
+If you override any of the toolbar or menu related implementations in your product, the biggest change will be that some functionality is now delegated to the menu and too bar item implementations. If this breaks your use case, please let us know.
+
+### v1.38.0
+
+#### Inversify 6.0
+
+With Inversify 6, the library has introduced a strict split between sync and async dependency injection contexts.
+Theia uses the sync dependency injection context, and therefore no async dependencies cannot be used as dependencies in Theia.
+
+This might require a few changes in your Theia extensions, if you've been using async dependencies before. These include:
+
+1. Injecting promises directly into services
+2. Classes with `@postConstruct` methods which return a `Promise` instance.
+
+In order to work around 1., you can just wrap the promise inside of a function:
+
+```diff
+const PromiseSymbol = Symbol();
+const promise = startLongRunningOperation();
+
+-bind(PromiseSymbol).toConstantValue(promise);
++bind(PromiseSymbol).toConstantValue(() => promise);
+```
+
+The newly bound function needs to be handled appropriately at the injection side.
+
+For 2., `@postConstruct` methods can be refactored into a sync and an async method:
+
+```diff
+-@postConstruct()
+-protected async init(): Promise<void> {
+-  await longRunningOperation();
+-}
++@postConstruct()
++protected init(): void {
++  this.doInit();
++}
++
++protected async doInit(): Promise<void> {
++  await longRunningOperation();
++}
+```
+
+Note that this release includes a few breaking changes that also perform this refactoring on our own classes.
+If you've been overriding some of these `init()` methods, it might make sense to override `doInit()` instead.
+
+### v1.37.0
+
+#### Disabled node integration and added context isolation flag in Electron renderer
+
+This also means that `electron-remote` can no longer be used in components in `electron-frontend` or `electron-common`. In order to use electron-related functionality from the browser, you need to expose an API via a preload script (see <https://www.electronjs.org/docs/latest/tutorial/context-isolation>). To achieve this from a Theia extension, you need to follow these steps:
+
+1. Define the API interface and declare an API variable on the global `window` variable. See `packages/filesystem/electron-common/electron-api.ts` for an example
+2. Write a preload script module that implements the API on the renderer ("browser") side and exposes the API via `exposeInMainWorld`. You'll need to expose the API in an exported function called `preload()`. See `packages/filesystem/electron-browser/preload.ts` for an example.
+3. Declare a `theiaExtensions` entry pointing to the preload script like so:
+
+```
+"theiaExtensions": [
+    {
+      "preload": "lib/electron-browser/preload",
+```
+
+See `/packages/filesystem/package.json` for an example
+
+1. Implement the API on the electron-main side by contributing a `ElectronMainApplicationContribution`. See `packages/filesystem/electron-main/electron-api-main.ts` for an example. If you don't have a module contributing to the electron-main application, you may have to declare it in your package.json.
+
+```
+"theiaExtensions": [
+  {
+    "preload": "lib/electron-browser/preload",
+    "electronMain": "lib/electron-main/electron-main-module"
+  }
+```
+
+If you are using NodeJS API in your electron browser-side code you will also have to move the code outside of the renderer process, for example
+by setting up an API like described above, or, for example, by using a back-end service.
+
+### v1.35.0
+
+#### Drop support for `Node 14`
+
+The framework no longer supports `Node 14` in order to better support plugins targeting the default supported VS Code API of `1.68.1`.
+It is always possible to build using the `yarn --ignore-engines` workaround, but we advise against it.
+
+### v1.32.0
+
+#### Removal of `CircularDependencyPlugin`
+
+We no longer enforce usage of the `CircularDependencyPlugin` in the generated webpack configuration. This plugin previously informed users of any non-fatal circular dependencies in their JavaScript imports.
+Note that Theia adopters can enable the plugin again by manually adding `circular-dependency-plugin` as a dev dependency and adding the following snippet to their `webpack.config.js` file.
+
+```js
+config[0].module.plugins.push(new CircularDependencyPlugin({
+    exclude: /(node_modules)[\\\\|\/]./,
+    failOnError: false
+}));
+```
+
+### v1.30.0
+
+#### lerna 5.5.4
+
+The `lerna` dev-dependency was upgraded one major versions, to v5.5.4. This removes a few high and severe known vulnerabilities from our development environment. See the [PR](https://github.com/eclipse-theia/theia/pull/11738) for more details.
+
+The upgrade was smooth in this repo, but it's possible that Theia developers/extenders, that are potentially using `lerna` differently, might need to do some adaptations.
+
+### v1.29.0
+
+#### React 18 update
+
+The `react` and `react-dom` dependencies were upgraded to version 18. Some relevant changes include:
+
+- `ReactDOM.render` is now deprecated and is replaced by `createRoot` from `react-dom/client`
+- the new API no longer supports render callbacks
+- updates in promises, setTimeout, event handlers are automatically batched
+- the dependency `react-virtualized` has been removed in favor of `react-virtuoso`
+
+### v1.24.0
+
+#### node-gyp 8.4.1
+
+The `electron-rebuild` dependency was upgraded which in turn upgraded `node-gyp` to `v8.4.1`.
+This version of `node-gyp` does not support **Python2** (which is EOL) so **Python3** is necessary during the build.
+
+#### From WebSocket to Socket.io
+
+This is a very important change to how Theia sends and receives messages with its backend.
+
+This new Socket.io protocol will try to establish a WebSocket connection whenever possible, but it may also
+setup HTTP polling. It may even try to connect through HTTP before attempting WebSocket.
+
+Make sure your network configurations support both WebSockets and/or HTTP polling.
+
+### Monaco 1.65.2
+
+This version updates the Monaco code used in Theia to the state of VSCode 1.65.2, and it changes the way that code is consumed from ASM modules loaded and put on the
+`window.monaco` object to ESM modules built into the bundle using Webpack.
+
+#### ASM to ESM
+
+Two kinds of changes may be required to consume Monaco using ESM modules.
+
+- If your application uses its own Webpack config rather than that generated by the @theia/dev-packages, you
+will need to update that config to remove the `CopyWebpackPlugin` formerly used to place Monaco
+code in the build folder and to build a separate entrypoint for the `editor.worker`. See [the changes here](https://github.com/eclipse-theia/theia/pull/10736/files#diff-b4677f3ff57d8b952eeefc10493ed3600d2737f9b5c9b0630b172472acb9c3a2)
+- If your application uses its own frontend generator, you should modify the code that generates the `index.html` to load the `script` containing the bundle into the `body` element rather than the head. See [changes here](https://github.com/eclipse-theia/theia/pull/10947/files)
+- References to the `window.monaco` object should be replaced with imports from `@theia/monaco-editor-core`. In most cases, simply adding an import `import * as monaco from
+'@theia/monaco-editor-core'` will suffice. More complex use cases may require imports from specific parts of Monaco. Please see
+[the PR](https://github.com/eclipse-theia/theia/pull/10736) for details, and please post any questions or problems there.
+
+Using ESM modules, it is now possible to follow imports to definitions and to the Monaco source code. This should aid in tracking down issues related to changes in Monaco discussed
+below.
+
+#### Changes to Monaco
+
+The Monaco API has changed in significant ways since the last uplift. One of the most significant is the handling of overrides to services instantiated by Monaco.
+
+- The style of service access `monaco.StaticServices.<ServiceName>.get()` is no longer available. Instead, use `StaticServices.get(<ServiceIdentifier>)` with a service
+identifier imported from `@theia/monaco-editor-core`.
+- Any service overrides that should be used for all instantiations in Monaco should be passed to the first call of `StaticServices.initialize`. The first call is used to set the
+services for all subsequent calls. Overrides passed to subsequent calls to `StaticServices.initialize` will be ignored. To change the overrides used, please override
+[`MonacoFrontendApplicationContribution.initialize`](https://github.com/eclipse-theia/theia/pull/10736/files#diff-99d13bb12b3c33ada58d66291db38b8b9f61883822b08b228f0ebf30b457a85d).
+- Services that should be used for a particular instantiation must be passed to a child of the global `IInstantiationService`. See `MonacoEditor.getInstantiationWithOverrides`
+for an example.
+
+Other changes include a number of changes of name from `mode` -> `language` and changes of interface. Please consult [the PR](https://github.com/eclipse-theia/theia/pull/10736) or
+the Monaco source code included with `@theia/monaco-editor-core`.
+
+#### Breaking changes in Theia
+
+Please see the CHANGELOG for details of changes to Theia interfaces.
+
+### v1.23.0
+
+#### TypeScript 4.5.5
+
+If you are using TypeScript <= 4.5.5 and you encounter issues when building your Theia application because your compiler fails to parse our type definitions,
+then you should upgrade to TypeScript >= 4.5.5.
+
+#### Socket.io
+
+If you are deploying multiple Theia nodes behind a load balancer, you will have to enable sticky-sessions,
+as it is now required by the new WebSocket implementation using Socket.io protocol.
+
+For more details, see the socket.io documentation about [using multiple nodes](https://socket.io/docs/v4/using-multiple-nodes/#enabling-sticky-session).
+
+### v1.22.0
+
+#### Resolutions
+
+Due to a [colors.js](https://github.com/Marak/colors.js) issue, a [resolution](https://classic.yarnpkg.com/lang/en/docs/selective-version-resolutions/) may be necessary for your application in order to work around the problem:
+
+For example:
+
+```json
+"resolutions": {
+    "**/colors": "<=1.4.0"
+}
+```
+
+#### Electron Update
+
+Electron got updated from 9 to 15, this might involve some modifications in your code based on the new APIs.
+
+See Electron's [documentation](https://github.com/electron/electron/tree/15-x-y/docs).
+
+Most notably the `electron.remote` API got deprecated and replaced with a `@electron/remote` package.
+
+Theia makes use of that package and re-exports it as `@theia/core/electron-shared/@electron/remote`.
+
+See `@theia/core` re-exports [documentation](../packages/core/README.md#re-exports).
+
+Lastly, Electron must now be defined in your application's `package.json` under `devDependencies`.
+
+`theia build` will automatically add the entry and prompt you to re-install your dependencies when out of sync.
+
+### v1.21.0
+
+#### Frontend Source Maps
+
+The frontend's source map naming changed. If you had something like the following in your debug configurations:
+
+```json
+      "sourceMapPathOverrides": {
+        "webpack://@theia/example-electron/*": "${workspaceFolder}/examples/electron/*"
+      }
+```
+
+You can delete this whole block and replace it by the following:
+
+```json
+      "webRoot": "${workspaceFolder}/examples/electron"
+```
+
+### v1.17.0
+
+#### ES2017
+
+- Theia was updated to ES2017
+  - es5 VS Code extensions and Theia plugins are still supported
+  - If you require an es5 codebase you should be able to transpile back to es5 using webpack
+  - The following code transpiles back to an es2015 codebase:
+
+    ```
+    config.module.rules.push({
+        test: /\.js$/,
+        use: {
+            loader: 'babel-loader',
+            options: {
+                presets: [['@babel/preset-env', { targets: { chrome: '58', ie: '11' } }]],
+            }
+        }
+    });
+    ```
+
+  - Replace the targets with the ones that are needed for your use case
+  - Make sure to use `inversify@5.1.1`. Theia requires `inversify@^5.0.1` which means that `5.1.1` is compatible,
+    but your lockfile might reference an older version.
+
+### v1.16.0
+
+[Release](https://github.com/eclipse-theia/theia/releases/tag/v1.16.0)
+
+- N/A.
+
+### v1.15.0
+
+[Release](https://github.com/eclipse-theia/theia/releases/tag/v1.15.0)
+
+#### Keytar
+
+- [`keytar`](https://github.com/atom/node-keytar) was added as a dependency for the secrets API. It may require `libsecret` in your particular distribution to be functional:
+  - Debian/Ubuntu: `sudo apt-get install libsecret-1-dev`
+  - Red Hat-based: `sudo yum install libsecret-devel`
+  - Arch Linux: `sudo pacman -S libsecret`
+  - Alpine: `apk add libsecret-dev`
+- It is possible that a `yarn resolution` is necessary for `keytar` to work on older distributions (the fix was added in `1.16.0` by downgrading the dependency version):
+
+  ```json
+  "resolutions": {
+    "**/keytar": "7.6.0",
+  }
+  ```
+
+- `keytar` uses [`prebuild-install`](https://github.com/prebuild/prebuild-install) to download prebuilt binaries. If you are experiencing issues where some shared libraries are missing from the system it was originally built upon, you can tell `prebuild-install` to build the native extension locally by setting the environment variable before performing `yarn`:
+
+  ```sh
+  # either:
+  export npm_config_build_from_source=true
+  yarn
+  # or:
+  npm_config_build_from_source=true yarn
+  ```
+
+#### Webpack
+
+- The version of webpack was upgraded from 4 to 5 and may require additional shims to work properly given an application's particular setup.
+- The `webpack` dependency may need to be updated if there are errors when performing a `production` build of the application due to a bogus `webpack-sources` dependency. The valid `webpack` version includes `^5.36.2 <5.47.0`. If necessary, you can use a `yarn resolution` to fix the issue:
+
+  ```json
+  "resolutions": {
+    "**/webpack": "5.46.0",
+  }
+  ```
