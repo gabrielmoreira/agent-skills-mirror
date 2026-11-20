@@ -17,10 +17,10 @@ binary (or, for a library, one pure Rust crate). CLIs, HTTP servers and librarie
 Languages: TypeScript/JavaScript, Python, C, Go, Ruby, Java. The language is detected; `--lang`
 overrides it. The steps are the same everywhere; only the bridge differs (napi-rs or wasm for
 TS, PyO3, a C ABI, cgo, a magnus extension, JNI), and the original's callers keep their API.
-PHP is in preview: `analyze`, and for a whole app `app record`, `app replay` and
+For PHP: `analyze`, and for a whole app `app record`, `app replay` and
 `app front-door` (CLIs, and servers run with `php -S 127.0.0.1:{port} router.php`); `bridge` does not
-take PHP units yet, so tell the user before planning a PHP port past the front door. C# is in
-preview the same way: record a built app (`dotnet out/app.dll`, servers with
+take PHP units yet, so tell the user before planning a PHP port past the front door. C# works
+the same way: record a built app (`dotnet out/app.dll`, servers with
 `--urls http://127.0.0.1:{port}`); `bridge` does not take C# units yet.
 
 Tools: the `rust-anything` CLI, or the same steps as MCP tools (`rust-anything mcp`): `profile`,
@@ -88,7 +88,11 @@ a signature in `port.rs`, run `rust-anything refresh <crate>`.
 - Read each risk the plan lists for the unit, at its `file:line`, before writing code.
 - String offsets: JS and Java index UTF-16 code units, Rust UTF-8 bytes: use `src/utf16.rs`.
 - Errors: return `Err("TypeName: message")`; it becomes that exception in Python, Ruby and Java,
-  and the `error` text in Go.
+  and the `error` text in Go. Inside `port.rs`, a small error enum is clearer; turn it into that
+  string only in the exported function.
+- Letters and digits: Rust's `char::is_alphanumeric` takes more than Java's
+  `Character.isLetterOrDigit` (letters and decimal digits, per UTF-16 unit, so nothing beyond
+  U+FFFF) or Python's `str.isalpha` (letters only). Match the original's rule by general category.
 - Numbers in Python and Ruby: ints that the original passes through must come back as ints;
   in Python ports use `crate::pynum::Num` for int-or-float, not `serde_json::Value`.
 - C: inputs recorded as `crash:` are undefined behavior; any result passes.
@@ -100,7 +104,10 @@ a signature in `port.rs`, run `rust-anything refresh <crate>`.
   for real text the patterns see, record it with `--inputs`, and set `unicode(false)` or spell out
   ASCII classes (`[A-Za-z0-9_]`) where the original's `\w` is ASCII-only (JS without `u`, Java).
 - No `unsafe`. If truly needed: minimal, isolated, with a `// SAFETY:` comment.
-- Add Rust unit tests in `port.rs` for the cases you reason about.
+- Add Rust unit tests in `port.rs` for the cases you reason about. `cargo test` passing with no
+  tests proves nothing: the recorded cases are the proof.
+- To silence a lint, use `#[expect(lint, reason = "...")]`, not `#[allow]`, so it is flagged once
+  it no longer applies.
 
 ## 2b. Batch a hot loop
 
@@ -129,6 +136,8 @@ Close the batch when done in Go and Java (finalizers are only a fallback).
   pre-sized `String`, avoid intermediate copies. Keep `diff` passing.
 - Items and other arguments: numbers, booleans and strings (Ruby: any value); results: numbers,
   booleans or strings. Not for C.
+- Batch crates allocate with mimalloc, which is built from C. Pass `--allocator rusty_alloc` to
+  `bridge` if the target has no C compiler.
 
 ## 3. Prove it
 
@@ -143,7 +152,9 @@ intended (the user wants the port to fix a bug of the original), ask the user fi
 line per case to `<crate>/known-diffs.jsonl`: `{"fn", "args", "actual", "reason"}`, with `fn`,
 `args` and `actual` copied from `diff --json`. That case then passes only with exactly that result,
 and `gate` fails once it no longer differs, so remove the line then. If `gate` says the recording
-is stale, the original changed: record again before porting further.
+is stale, the original changed: record again before porting further. After pulling upstream
+changes, run `rust-anything map` (the `map` tool): every port marked changed needs `record`, then
+`diff`, and the new mismatches are what changed upstream.
 
 When `diff` says the port is stalled (its `trend.stalled`: three changes to `port.rs` in a row
 gained no matching case), stop editing. Show the user the remaining mismatches and ask: they may
@@ -182,7 +193,7 @@ fmt, clippy with warnings as errors, cargo tests, `unsafe` only with SAFETY comm
 reached by a recorded failing case (add one with `record --inputs` when gate names it), no
 `unwrap`, `expect` or `panic!` in a function whose original returns an error (return `Err`; for a
 state the original also treats as impossible, a `// INFALLIBLE: <why>` comment), the port at most
-3x the original's lines (over that, use the crates `analyze` lists and fold repeated code), the
+3x the original's lines plus 50 for imports and signatures (over that, use the crates `analyze` lists and fold repeated code), the
 module builds, every export present, every recorded case matches. A Rust panic never matches a
 recorded error: return `Err` where the original throws.
 

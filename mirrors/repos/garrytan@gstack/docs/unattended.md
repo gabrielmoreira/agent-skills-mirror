@@ -7,12 +7,21 @@ kind changes, which files a run writes, how the parent decides whether the run
 finished, and how it reads the result without reading any markdown.
 
 The session kinds are: `interactive` (a human answers prompts), `headless`
-(`GSTACK_HEADLESS`, `CI`, the eval harness; a question BLOCKs), `spawned`
+(`GSTACK_HEADLESS`, `CI`, the eval harness, `codex exec`; a question BLOCKs), `spawned`
 (an orchestrator subagent; the recommended option is auto-chosen) and
 `unattended` (this page). `unattended` is honored only as the explicit
 `GSTACK_SESSION_KIND=unattended` override, which outranks `GSTACK_HEADLESS`
 so a parent can drive a run inside CI. Nothing in the test or eval harness sets
 it, so `headless` keeps its BLOCK semantics.
+
+On Codex CLI, `gstack-session-kind` reports `headless` for a skill started
+under `codex exec` (or its alias `codex e`, or `codex review`) and
+`interactive` in the Codex TUI. Codex gives tool shells the same environment
+(`CODEX_THREAD_ID`, `CODEX_CI=1`, no TTY) in both, so the helper reads the
+subcommand of the nearest `codex` process instead: exec runs tool shells
+itself, and the TUI runs them under its `codex app-server` daemon. Conductor's
+markers still win, as they do for Claude Code. A Codex run that a parent agent
+drives still sets `GSTACK_SESSION_KIND=unattended` itself.
 
 ## What the session kind changes
 
@@ -1081,8 +1090,13 @@ for that read. Every other PR skips it: the run's own audit is the review. The
 run's final report ends with an `Attention` section that opens with `reviewed
 by <model>` (risk class) or `self-audited` (every other PR) on its own line
 and lists each flag against its rows; `No flags` is a valid body, a missing
-opening line is not. `gstack-ship-queue ready` prints the stub with the right
-opening line for the receipt it bound. `decisions.jsonl` stays the typed record `gstack-artifact` validates; the
+opening line is not. The reader's read is a trail row with phase `trail-read`
+whose decision names the reader (`gstack-decision-trail <file> trail-read
+"openai/gpt-6.2-sol (Subagent 4)" <why> <evidence> <flags>`).
+`gstack-ship-queue ready --trail <file>` prints the opening line from that row
+for a risk-class receipt, or `MISSING: cross-family trail read` when the trail
+has none, and one `TRIAL_MERGES` line per open PR that shares a file, from
+`git merge-tree` at both heads. `decisions.jsonl` stays the typed record `gstack-artifact` validates; the
 trail is the plain one a person reads, and `column -s$'\t' -t decisions.tsv`
 renders it in a terminal.
 

@@ -86,6 +86,14 @@ Platform type-name fallbacks are localized for the eleven Studio interface langu
 
 复用现有简报、动作脚本或素材记录，保留实际采用文件、来源、用途及重要限制，无需另建必填表。材料与具体动作、占时和跨段状态的配合，按需应用[制作决策与状态延续](decisions.md)。
 
+## Replacing existing shots
+
+Apply this when a template adaptation, recreation or edit generates media to replace shots that already exist in the source film.
+
+When the request names which shots to replace, check each shot against that description and replace only the shots that clearly match. A shot that only partly fits, such as a product, tag or packaging close-up showing only hands or sleeves when the request replaces people, stays outside the request: keep the original shot and fix old brand names, logos or text on it in place with native cover, crop or overlay layers. Offering and approving generated replacements for them follows the [media authorization](../../openmotion-media/SKILL.md#provider-preference-and-authorization).
+
+Write each replacement's generation input from the original shot. Look at its frames first, then keep its setting and background, lighting, shot size and camera angle, number and placement of people, action, camera movement and duration, changing only what the user asked to change. A description of the new subject, such as "outdoor hardshell jackets", changes the subject, not the setting; move the shot to a new location only when the user asks. Match the shot's role and composition, not its exact pixels or a real person's identity. Compare the result with the original shot on these points before using it.
+
 ## Recorded speech, transcript review and captions
 
-For speech-led material, follow the [transcript workflow](../../../docs/transcripts.md) for source discovery, recognition, correction and editable captions through `openmotion_assets_use`. The [compatible API reference](../../openmotion-media/references/providers/compatible.md#speech-to-text-and-editable-captions) owns transcription provider setup and wire behavior. Continue composition edits and delivery through the existing native workflow.
+For existing speech-led material, follow the [transcript workflow](../../../docs/transcripts.md) for source discovery, recognition, correction and editable captions through `openmotion_assets_use`. The [compatible API reference](../../openmotion-media/references/providers/compatible.md#speech-to-text-and-editable-captions) owns transcription provider setup and wire behavior. When a film also needs newly generated TTS voiceover or script-led captions (and the screen does not already carry those lines as synchronized display typography), follow [narration and editable captions](sound.md#配音与可编辑字幕协同) to bind real timing and keep captions editable. Continue composition edits and delivery through the existing native workflow.

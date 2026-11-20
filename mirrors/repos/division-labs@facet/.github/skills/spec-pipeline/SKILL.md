@@ -33,19 +33,20 @@ At each Human Checkpoint, `@Orchestrator` presents a natural technical briefing 
 
 1. **Checkpoint 0 (Candidate Algorithm Gate) `[CHECKPOINT: S0 -> C0]`:**
    - Deliverable: `[RESEARCH.md](./RESEARCH.md)` authored directly by `@Researcher`.
-   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
+   - Prompt: *"Ask a question about this stage, reply `/approve` to continue, or `/reset` to start over."*
 2. **Checkpoint 1 (Specification Manifest Gate) `[CHECKPOINT: S1 -> C1]`:**
    - Deliverable: `[manifest.json](./manifest.json)` authored directly by `@Researcher` and validated against `[schema.json](../technical-perception/schema.json)` (highlighting any `"epistemic_status": "assumption"` claims propagated from `<uncertain>` / `<illegible/>` OCR provenance).
-   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
+   - Prompt: *"Ask a question about this stage, reply `/approve` to continue, or `/reset` to start over."*
 3. **Checkpoint 2 (Formal Mapping Gate) `[CHECKPOINT: S2 -> C2]`:**
    - Deliverable: `[mapping.json](./mapping.json)` authored directly by `@Formalist` conforming to `[mapping_schema.json](../formal-mapping/mapping_schema.json)`.
-   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
+   - Prompt: *"Ask a question about this stage, reply `/approve` to continue, or `/reset` to start over."*
 4. **Checkpoint 3 (Verification Sign-Off Gate) `[CHECKPOINT: S4 -> C3]`:**
    - Deliverable: `[VERIFICATION.md](./VERIFICATION.md)` authored directly by `@Auditor`.
-   - Prompt: *"Reply `/approve` to continue to the next stage, or `/reset` to start over."*
+   - Prompt: *"Ask a question about this stage, reply `/approve` to continue, or `/reset` to start over."*
 
 *Contractual Commands:*
-- `/approve` (or `/approve <target>`): Advances past an active Human Checkpoint. Conversational phrases ("looks good", "proceed", "yes") are rejected.
+- `/approve` (or `/approve <target>`): Advances past an active Human Checkpoint. Conversational phrases ("looks good", "proceed", "yes") are rejected; questions about the active deliverable are answered read-only without advancing state.
+- `/status`: Returns an instant zero-tool status pulse showing the active stage, repair counter, and SHA-256 artifact seals.
 - `/reset`: Snapshots any in-progress artifacts (including `SOURCE_OCR.md` if present) to `specs/<slug>/` and resets the workspace root.
 - `/add-source <domain_or_url>` (or `/add-source --workspace <domain_or_url>`, or bare `/add-source` to list): Adds a research domain to the approved `web_fetch` registry ([approved_sources.json](../../hooks/approved_sources.json) + `~/.copilot/approved_sources.local.json`).
 

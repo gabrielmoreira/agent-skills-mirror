@@ -157,8 +157,9 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   or redirects, a five-second elapsed deadline, a 512 KiB reply cap and a
   20,000-character draft cap. Masked fields send nothing; code, commands,
   image tokens and paste chips are excluded. No automatic server installation
-  or startup, silent rewrite or submission. Accept/skip is explicit per issue;
-  accepted edits use `Composer.replace` and its normal undo. Only `tui/app.py`
+  or startup, silent rewrite or submission. Replacement and local dictionary
+  changes are explicit per issue; accepted edits use `Composer.replace` and its
+  normal undo. Only `tui/app.py`
   may import the client, pinned by
   `NoNetworkClientInSource.test_local_proofreader_import_surface_and_owner` in
   `tests/test_handoff_safety_contract_enforcement.py`.
@@ -215,7 +216,10 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   Hermes cron job runs it on Hermes' interpreter before the judging step. It is
   stdlib only and read-only: GETs to Slack `auth.test` and
   `conversations.history`, or Discord `/users/@me` and
-  `/channels/{id}/messages`, nothing posted, edited or joined. Hermes strips bot
+  `/channels/{id}/messages`, nothing posted, edited or joined. Its Slack-only
+  brief mode (the omher briefing, `"mode": "brief"`) also GETs
+  `users.conversations`, `conversations.members`, `conversations.replies` and
+  `users.info`, and reads its own job's Hermes run records. Hermes strips bot
   tokens from a cron script's environment, so it reads exactly
   `SLACK_BOT_TOKEN` or `DISCORD_BOT_TOKEN` by key name: from the environment
   first, else that key from `$HERMES_HOME/.env`. It never prints or stores it
@@ -229,7 +233,12 @@ and evidence obvious to a reviewer reading the PR without the chat history.
   gateway, not an execution surface: it relays only what the person types,
   answers no request on their behalf, and makes no model call; the one switch
   it makes on its own is the session's model, at a turn boundary, when Hermes'
-  configured default model moved (owner, 2026-10-25). Its gateway
+  configured default model moved (owner, 2026-10-25). The one prompt it sends
+  that the person did not type is OMH's fixed onboarding prompt
+  (`src/tui/onboarding.py`), once, in a new session, only under `omh --onboard
+  model-setup`; the accepted last question of an interactive `omh setup` is
+  its only automatic caller, and a person may run it themselves (owner,
+  2026-11-18). Its gateway
   child, `src/tui/attach/gateway_attach.py`, runs on Hermes' interpreter under
   INVARIANT 2's `HERMES_INTERPRETER_SCRIPTS` allow list. Inside a herdr pane
   only, gated on the same pane environment (`HERDR_ENV=1`, `HERDR_PANE_ID`)

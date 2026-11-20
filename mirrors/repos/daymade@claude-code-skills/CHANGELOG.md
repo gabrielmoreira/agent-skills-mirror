@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **claude-md-progressive-disclosurer** (`daymade-claude-code` v5.2.11): Document Antigravity (`agy`) global rule paths (`~/.gemini/config/GEMINI.md` and `rules/*.md`), the 24,000-byte per-file truncation cap, 20,000-token aggregate rules budget, and fresh `agy -p` readback verification.
+- **macos-watchdog & macos-cleaner** (`daymade-macos` v1.34.15 → v1.34.16): Document nvm `node` bin fallback in LaunchAgent `PATH`, bounded self-retirement & deadlock hints for one-off progress timers, BuildKit parent-child eviction dependencies, and Finder AppleScript `-1728` failures on dot-hidden paths.
+- **macos-watchdog** (`daymade-macos` v1.34.15): Document `WatchPaths` self-triggering write/prune loops and `ThrottleInterval` noise starvation caveats.
+- `daymade-claude-code` v5.2.10: Make `DISABLE_AUTOUPDATER` optional in `claude-switch-models-setup` docs and active third-party templates so native auto-updates work without Anthropic account login; cross-reference Antigravity transcript collection in `read-claude-code-history`.
+- `daymade-skill` v1.82.0: Add Agent-native category/bounded lookup to `skills-search`, adaptive hot/cold multi-host evolution (including Antigravity and verified Claude 2.1.x plugin override boundaries) to `skill-governance`, and local automation/MCP/LaunchAgent guardrails to `skill-creator`.
+- **macos-watchdog** (`daymade-macos` v1.34.13 → v1.34.14): Document building explicit minimal `PATH` entries in LaunchAgent plists instead of snapshotting installer shell `PATH`, and add the 0-Token state-transition health monitor pattern with readback-gated alerting.
+- **lark-cli-router** (`lark-cli-router` v1.0.4 → v1.0.5): Document verifying response wrapper field names (`im +messages-mget` returns `data.messages`, not `data.items`) and inspecting Bitable `+field-list` / allowing brief eventual consistency before unified `+record-list` readback.
+- `terraform-skill` v1.5.17: Verify application relocation through the destination host, shared gateway and authenticated user journey. Reuse a verified running image for placement-only moves.
 - `git-safety-net` v1.29.1: Route materialized Git LFS files through manual preservation and repeat the payload proof before worktree removal.
 - `peer-message` v1.27.5: Use the indexed Codex thread ID lookup before display-name matching and keep exact addresses bound to archived threads for reads.
 - `git-safety-net` v1.29.0: Verify that materialized Git LFS files have matching pointers and payloads retained before retiring a worktree.
@@ -15,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **read-claude-code-history** (`daymade-claude-code` v5.2.7): Explain incremental discovery, fingerprinting and FTS maintenance, with disposable refresh checks.
 - **auto-repo-setup** (`auto-repo-setup` v2.2.4): Reuse completed push findings and resume at the blocked stage.
 - **claude-code-hooks** (`daymade-claude-code` v5.2.8): Verify scan reuse through the real hook launcher and observe which stages are skipped.
+- **transcript-fixer** (`daymade-audio` v1.65.5 → v1.65.6): Adjudicate a dictionary direction that contradicts pending review rows before the next sweep; keep the occurrence pending rather than letting Stage 1's automatic application settle a reversed verdict.
 - **transcript-fixer** (`daymade-audio` v1.65.4 → v1.65.5): Bound each human verdict to its exact file, queue row and occurrences; stop after required delivery instead of sweeping unrelated historical backlog.
 - `git-safety-net` v1.28.12: Document the metadata prefilter and fresh content checks for worktree recovery.
 - `daymade-macos` v1.34.12: Distinguish controlled file-check replays from attribution of a live CPU incident.

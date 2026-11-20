@@ -18,12 +18,17 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
 Keep internal development reports, research notes, and integration playbooks
 in the ignored `internal-docs/` directory. `docs/` is the public website.
 
-## Concurrent tasks and worktrees
+## Main branch workflow
 
-- Use a separate worktree for each independent task. Resume an existing task in
-  its current worktree and record the branch and pre-existing changes before editing.
-- Record file ownership when agents collaborate on the same task. Coordinate any
-  shared-file edits before applying them.
+- Work directly on the checkout of `main` by default. Use one development
+  workflow per project. Create a development branch, separate worktree, or
+  parallel chat only when the user explicitly requests it.
+- Before editing, check the current branch and existing changes. Preserve any
+  work already in progress. If access or existing changes block work on
+  `main`, report the specific blocker.
+- Commit authorized changes directly to `main`. When pushing or releasing,
+  confirm the intended commits are on `origin/main`. Integrate any intended
+  changes still on other branches or worktrees before delivery.
 - Stage explicit task-owned paths and inspect the staged diff before committing.
   Each commit must contain the changes for its stated task.
 
@@ -192,6 +197,19 @@ clippy/test, not optional.
 - Passive account-loading failures must preserve cached rows and must not open
   a blocking dialog. Explicit login, refresh, apply, and delete failures remain
   visible. Include these expectations in navigation regression tests.
+
+## Release scope and worktrees
+
+- Before tagging a release, reconcile the requested release scope with the
+  active task and linked chats or worktrees. List each intended fix with its
+  source branch and commit, including completed fixes still on local branches.
+- Integrate the intended fixes onto current `origin/main` before tagging.
+  For each fix, record its commit on main, including the resulting commit if
+  cherry-picked or rebased. Surface any intended fix that cannot be included
+  before publishing.
+- Check that every recorded commit is an ancestor of the exact release tag
+  with `git merge-base --is-ancestor <commit> <tag>`. Confirm the packaging
+  run builds that tag's commit and include the verified scope in the handoff.
 
 ## Commit policy
 

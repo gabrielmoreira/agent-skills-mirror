@@ -19,7 +19,7 @@ openmotion 0.6.2 是面向 Agent 的本地创作工作区与 Codex 插件，一�
 
 地址栏支持直接输入 `baidu.com`、前进、后退、刷新和停止；网页由独立本地 Chromium 承载，支持点击、滚动与文字输入，切回 Motion 仍保留编辑状态。需要本机 Chrome / Chromium，或设置 `MOTION_BROWSER_PATH` / `HYPERFRAMES_BROWSER_PATH`。网站音频、文件上传/下载管理等当前边界见 [浏览器运行架构](browser-runtime.md)。
 
-产品名为 openmotion，已有工作区界面保留 OpenDesign 标识。产品内会话、模板、媒体生成与通用 API 继续保留；当前一期给宿主 Agent 的公开 MCP 只含下方 16 个注册的 openmotion_ Tool 名称（含 1 个兼容别名），未公开的产品能力不因此删除。
+产品名为 openmotion，已有工作区界面保留 OpenDesign 标识。产品内会话、模板、媒体生成与通用 API 继续保留；当前一期给宿主 Agent 的公开 MCP 只含下方 18 个注册的 openmotion_ Tool 名称（含 1 个兼容别名），未公开的产品能力不因此删除。
 
 MCP 打开预览、创建产物、应用/复刻模板时，`previewUrl` 默认包含 `embed=1`，Codex 等宿主直接打开完整地址即可只显示编辑器，隐藏侧栏、会话和产品浏览器外框。`sessionUrl` 或显式 `embedded=false` 返回完整工作区；空会话仍显示会话入口。也可分别配置 `sidebar=0`、`conversation=0`。这些视图使用同一会话与产物。完整接口、失败语义与后续模式扩展见 [会话技术架构](session-architecture.md)。
 
@@ -35,7 +35,7 @@ Studio 与 MCP 共用这套模型和任务服务。云 Key 的填写不等于已
 
 ## 一期 MCP 发布范围
 
-[一期 Tool 契约与实现范围](mcp-phase1-tools.md)固定公开名称、输入返回、内容版本与裁剪边界。源码和默认构建均为 phase1，仅暴露这 16 个注册名；`npm run package:phase1` 导出一期插件 ZIP。已补齐契约适配，复用现有 Studio/渲染器，五个随包 Skill 的调用指引同步迁移。内部 legacy 实现保留供兼容回归。
+[一期 Tool 契约与实现范围](mcp-phase1-tools.md)固定公开名称、输入返回、内容版本与裁剪边界。源码和默认构建均为 phase1，仅暴露这 18 个注册名；`npm run package:phase1` 导出一期插件 ZIP。已补齐契约适配，复用现有 Studio/渲染器，五个随包 Skill 的调用指引同步迁移。内部 legacy 实现保留供兼容回归。
 
 ## 产品与文档
 
@@ -127,6 +127,16 @@ npm start
 
 Open the printed `studioUrl` or `previewUrl`; do not assume port 4173. `npm start` and MCP share the existing startup logic and reuse a compatible service for the same workspace. macOS selects a port dynamically; other platforms try `PORT` (default 4173) and the next nine ports, skipping occupied ones. The service remains in the background after the launcher exits. Project links use `/?project=<id>` or `/#project/<id>` at the returned origin. Hyperframes uses a separate loopback port; OpenMotion proxies its APIs, file events and preview requests while serving its own editor. Compositions remain in isolated preview iframes. `npm run dev` retains the direct foreground server entry for development.
 
+For frontend hot updates, build Studio once and start its backend with `npm start`. Then pass the printed `previewUrl` to a separate local development server:
+
+```sh
+OPENMOTION_STUDIO_BACKEND=http://127.0.0.1:4173 npm run studio:dev
+```
+
+Use the URL printed by Vite to open Studio. It loads React source with Fast Refresh and forwards Studio APIs, file events and preview media to the selected backend. Use an isolated `MOTION_DATA_DIR` when starting the backend for a disposable test project. Edits in the development tab save to that backend. Browser preferences belong to the development URL, and changes across a React refresh boundary may reload the page.
+
+To inspect component adoption, add `debug=ui` to the Studio URL query (before the `#`). Open **UI inspector**, then select a component to outline its instances. Dashed outlines identify native buttons and ranges outside registered components. Counts include controls mounted in the Studio document, including hidden panels. Drag the launcher or focus it and use the arrow keys to move it. Closing the inspector removes the launcher until you reload this URL.
+
 To run the Studio, MCP and export in a container instead, follow the [Docker deployment guide](../deploy/README.md). The image carries Node.js, Chromium, FFmpeg/ffprobe and CJK fonts; Compose publishes the port on the host's `127.0.0.1` only, and the server's Host and Origin checks are unchanged. The server listens on loopback unless `MOTION_BIND_HOST` is `0.0.0.0` or `::`; the Studio has no sign-in, so keep the published port on loopback.
 
 ## Agent 工具
@@ -194,7 +204,11 @@ node --experimental-strip-types scripts/verify-export.ts /absolute/path/final.mp
 
 ## 视频转模板与模板出片
 
-视频转模板入口仅在要求可复用模板时使用，要求原样重建尽量匹配参考画面、构图、运动和节奏；素材与源码保持可编辑。原样使用模板时在编辑器里打开即完成，不渲染、不比对。制作时对照原片；打包后另外检查 ZIP 解压到别处能独立渲染，不缺文件、字体和素材，帧率、帧数、时长和预览一致；不做逐帧像素比对，不为肉眼看不出的差异返工。具体规范见 [模板制作验证](../skills/openmotion-video-to-template/references/verify.md)。视频转模板时不向用户提问，由 Agent 自行选择最贴近原片的方案并记录在模板内唯一的说明文件 `TEMPLATE.md`；常用修改声明为变量，在 Studio Variables 面板修改；交付回复只给预览、模板、原片对照、能改什么和与原片的差异，技术检查写在 `TEMPLATE.md`；用模板生成视频时，缺少品牌、产品、价格、图片等只有用户能提供的内容，或要求有明显歧义时，Agent 会一次性提问。openmotion-video-to-template 不承接普通视频复刻或直接混入修改要求；普通复刻由 openmotion-recreate 实现，已有模板的修改由 openmotion-template-to-video 处理。
+视频转模板入口用于交付可复用模板。重建尽量匹配参考画面、构图、运动和节奏，保留可编辑的素材与源码。Agent 自行决定常规创作取舍，不询问创作偏好，并将取舍写入模板内唯一的说明文件 `TEMPLATE.md`。需要付费生成且计划批次尚未获授权时，在提交请求前集中确认一次。常用修改在 Studio Variables 面板提供变量。
+
+制作时对照原片。打包后解压到另一目录重渲染，检查文件、字体和素材是否齐全，以及帧率、帧数、时长和可见画面是否与预览一致。检查方法见 [模板制作验证](../skills/openmotion-video-to-template/references/verify.md)。交付包括预览、模板、原片对照、可改内容和剩余差异，技术检查写入 `TEMPLATE.md`。
+
+用已有模板出片或修改时选择 `openmotion-template-to-video`。原样打开模板用编辑器预览。按原样交付本地 ZIP 或文件夹的 MP4 时，可使用包内与工程匹配的预览。缺少用户才能提供的品牌、产品、价格、图片等信息，或需求有明显歧义时集中提问。普通参考视频复刻由 `openmotion-recreate` 交付。
 
 ## 多 Agent 薄适配器
 
@@ -226,7 +240,7 @@ Hyperframes 使用 Apache-2.0 许可证，依赖从 npm 官方包安装；其源
 
 ## Template production and reuse
 
-The phase-one plugin and all four local host adapters ship the five canonical motion-* Skills, including openmotion-template-to-video and openmotion-video-to-template. Existing workflow IDs remain stable; MCP Resources expose the same guidance and supporting references. The sixteen registered public Tool names do not provide video comparison, reference downloading/analysis or template ZIP packaging: these require available host capabilities. Legacy comparison handlers stay internal. Native HyperFrames source, local assets, previews and editing notes remain portable; human review decides visual acceptance.
+The phase-one plugin and all four local host adapters ship the five canonical motion-* Skills, including openmotion-template-to-video and openmotion-video-to-template. Existing workflow IDs remain stable; MCP Resources expose the same guidance and supporting references. The eighteen registered public Tool names do not provide video comparison, reference downloading/analysis or template ZIP packaging: these require available host capabilities. Legacy comparison handlers stay internal. Native HyperFrames source, local assets, previews and editing notes remain portable; human review decides visual acceptance.
 
 The plugin name, install script, data directory and Studio ports are the team base, unchanged by this extension. See [scope](motion-extension-scope.md).
 

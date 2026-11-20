@@ -1,0 +1,3 @@
+# Native Codex agents
+
+Modes: status (empty default), list, create, improve, review and sync. Resolve free-form prompt targets, inventory standalone `*.toml` roles, and follow the complete native SKILL.md plus its colocated schema/template/discovery/context/sync references. Required strings are name, description and developer_instructions; optional settings use current Codex configuration keys. Main owns native delegation, user decisions and independent review. Installed/generated definitions are read-only here; author project/personal TOMLs or their authoritative generator. No sibling skill or foreign hook schema is required.

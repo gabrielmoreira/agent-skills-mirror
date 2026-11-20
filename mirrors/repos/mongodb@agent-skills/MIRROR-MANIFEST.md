@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
+Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 7
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 73 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,8 +130,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`skills/mongodb-search-and-ai/references/vector-search.md`](skills/mongodb-search-and-ai/references/vector-search.md) |
 | 70 | ✓ | [`skills/mongodb-search-and-ai/scripts/quickstart_complete.py`](skills/mongodb-search-and-ai/scripts/quickstart_complete.py) |
 | 71 | ✓ | [`skills/mongodb-search-and-ai/SKILL.md`](skills/mongodb-search-and-ai/SKILL.md) |
-| 72 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
-| 73 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
+| 72 | ✓ | [`skills/mongodb/references/ephemeral-clusters.md`](skills/mongodb/references/ephemeral-clusters.md) |
+| 73 | ✓ | [`skills/mongodb/scripts/create-ephemeral.sh`](skills/mongodb/scripts/create-ephemeral.sh) |
+| 74 | ✓ | [`skills/mongodb/SKILL.md`](skills/mongodb/SKILL.md) |
+| 75 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
+| 76 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
 
 ---
 

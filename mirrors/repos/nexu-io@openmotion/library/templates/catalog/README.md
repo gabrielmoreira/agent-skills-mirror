@@ -355,6 +355,7 @@ See [the contribution and publication workflow](../../../docs/template-repositor
 | [One grid, changing worlds](motion-fe6852d3-cd2e-43f1-924e-c130b1935937/TEMPLATE.md) | Uniqode | V399 |
 | [Particle phrase](motion-de5c331a-48e6-4bdb-98da-597d76fa3d77/TEMPLATE.md) | Uniqode | V400 |
 | [Typeface to currency](motion-9b6b2260-e3cc-4db4-9e0d-cc9a35057ac5/TEMPLATE.md) | Wise | V401 |
+| [Orbit Launch](motion-orbit-launch/TEMPLATE.md) | OpenMotion | original |
 
 ## Acknowledgements
 

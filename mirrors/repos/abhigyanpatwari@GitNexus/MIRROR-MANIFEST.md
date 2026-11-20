@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 24 followed patterns, 138 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 26 followed patterns, 140 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 24 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 138 |
+| Followed pats | 26 |
+| Files         | 140 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,8 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 24 followed patter
 - `CONTRIBUTING.md`
 - `ARCHITECTURE.md`
 - `docs/languages/objective-c-provider.md`
+- `docs/languages/r-provider.md`
+- `docs/languages/r-ingestion-gaps.md`
 - `pr-swarm-review/orchestration.md`
 - `pr-swarm-review/README.md`
 - `RUNBOOK.md`
@@ -203,23 +205,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 119 | → | [`docs/deployment.md`](docs/deployment.md) |
 | 120 | → | [`docs/editor-setup.md`](docs/editor-setup.md) |
 | 121 | → | [`docs/languages/objective-c-provider.md`](docs/languages/objective-c-provider.md) |
-| 122 | → | [`docs/languages/README.md`](docs/languages/README.md) |
-| 123 | → | [`docs/languages/receiver-resolution-audit.md`](docs/languages/receiver-resolution-audit.md) |
-| 124 | → | [`docs/mcp-reference.md`](docs/mcp-reference.md) |
-| 125 | → | [`docs/wiki-generation.md`](docs/wiki-generation.md) |
-| 126 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
-| 127 | → | [`gitnexus/bench/receiver-resolution/BASELINE.md`](gitnexus/bench/receiver-resolution/BASELINE.md) |
-| 128 | → | [`gitnexus/prebuilds/bundled/README.md`](gitnexus/prebuilds/bundled/README.md) |
-| 129 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 130 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 131 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 132 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 133 | → | [`README.md`](README.md) |
-| 134 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 135 | → | [`SECURITY.md`](SECURITY.md) |
-| 136 | → | [`TESTING.md`](TESTING.md) |
-| 137 | → | [`type-resolution-roadmap.md`](type-resolution-roadmap.md) |
-| 138 | → | [`type-resolution-system.md`](type-resolution-system.md) |
+| 122 | → | [`docs/languages/r-ingestion-gaps.md`](docs/languages/r-ingestion-gaps.md) |
+| 123 | → | [`docs/languages/r-provider.md`](docs/languages/r-provider.md) |
+| 124 | → | [`docs/languages/README.md`](docs/languages/README.md) |
+| 125 | → | [`docs/languages/receiver-resolution-audit.md`](docs/languages/receiver-resolution-audit.md) |
+| 126 | → | [`docs/mcp-reference.md`](docs/mcp-reference.md) |
+| 127 | → | [`docs/wiki-generation.md`](docs/wiki-generation.md) |
+| 128 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
+| 129 | → | [`gitnexus/bench/receiver-resolution/BASELINE.md`](gitnexus/bench/receiver-resolution/BASELINE.md) |
+| 130 | → | [`gitnexus/prebuilds/bundled/README.md`](gitnexus/prebuilds/bundled/README.md) |
+| 131 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 132 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 133 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 134 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 135 | → | [`README.md`](README.md) |
+| 136 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 137 | → | [`SECURITY.md`](SECURITY.md) |
+| 138 | → | [`TESTING.md`](TESTING.md) |
+| 139 | → | [`type-resolution-roadmap.md`](type-resolution-roadmap.md) |
+| 140 | → | [`type-resolution-system.md`](type-resolution-system.md) |
 
 ---
 

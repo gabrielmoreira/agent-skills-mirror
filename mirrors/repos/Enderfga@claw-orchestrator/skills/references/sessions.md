@@ -54,7 +54,7 @@ const result = await manager.sendMessage('my-task', 'Fix the auth bug', {
 console.log(result.output);
 ```
 
-Sends to one session run one at a time: a second `sendMessage()` waits for the first to finish. `plan` puts a plan-only instruction in front of the message and leaves the permission mode unchanged; start the session with `sandboxMode: 'read-only'` to enforce it. The result carries `output`, the engine's resume id as `sessionId`, `error` when the engine reported the turn as failed, and `permissionDenials` / `images` when the turn had any.
+Sends to one session run one at a time: a second `sendMessage()` waits for the first to finish. On the engines that start one process per message (Codex, Antigravity, Grok, OpenCode and one-shot custom engines), a send that times out returns at once, but its process is only asked to stop: the session stays busy until that process has exited, and the next send waits for it. A process still running 5 seconds after the timeout gets SIGKILL; if it still has not exited 2 seconds later, the next send fails instead of starting a second process beside it. A process counts as running until its output closes, so one whose own children are still running keeps the session busy; SIGKILL reaches the process itself, not those children. `plan` puts a plan-only instruction in front of the message and leaves the permission mode unchanged; start the session with `sandboxMode: 'read-only'` to enforce it. The result carries `output`, the engine's resume id as `sessionId`, `error` when the engine reported the turn as failed, and `permissionDenials` / `images` when the turn had any.
 
 `SendOptions` also accepts `parentRunId`, `nodeKind` and `taskKind`, all stamped onto the turn's run ledger row ([observability.md](./observability.md)). `taskKind` is caller-declared and never inferred from the prompt.
 
@@ -127,9 +127,13 @@ tool calls — the new agent sees the replies that described the work, and the w
 the framing tells it to check before relying on anything the history describes.
 
 **When it is too long.** Up to `maxChars` (default 240,000 characters, ~60k tokens; minimum 4,000)
-the whole conversation is sent. Past that, the opening request is kept, the newest turns fill what
-is left, and one line records how many turns in between were left out: the request says what the
-work is for, the newest turns say where it stands, and the middle is what the workspace can answer.
+the whole conversation is sent. Past that, the opening request and the newest turn are kept, then the
+user turns in between, newest first (each up to 2,000 characters), then the assistant replies, newest
+first, and each run of turns left out is marked with a line saying how many it held. The request
+says what the work is for and the newest turn where it stands; a user turn may be a correction the
+new agent must not lose, while what a reply did is in the workspace. User turns are left out only
+when they alone do not fit. The per-session record itself is bounded (1,000,000 characters) and
+drops old replies before old user turns in the same way.
 
 **A fork, not a move.** The two sessions go their separate ways. The new one starts from the
 source's record, so handing it off again carries the whole conversation rather than only its own

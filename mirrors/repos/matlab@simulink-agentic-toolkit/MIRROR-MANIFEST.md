@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,41 +74,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills-catalog/control-systems/simulink-linearize/SKILL.md`](skills-catalog/control-systems/simulink-linearize/SKILL.md) |
 | 14 | ✓ | [`skills-catalog/model-based-design-core/arranging-simulink-layouts/SKILL.md`](skills-catalog/model-based-design-core/arranging-simulink-layouts/SKILL.md) |
 | 15 | ✓ | [`skills-catalog/model-based-design-core/building-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/building-simulink-models/SKILL.md) |
-| 16 | ✓ | [`skills-catalog/model-based-design-core/configuring-block-policy/SKILL.md`](skills-catalog/model-based-design-core/configuring-block-policy/SKILL.md) |
-| 17 | ✓ | [`skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md`](skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md) |
-| 18 | ✓ | [`skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md`](skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md) |
-| 19 | ✓ | [`skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md`](skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md) |
-| 20 | ✓ | [`skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md`](skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md) |
-| 21 | ✓ | [`skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md) |
-| 22 | ✓ | [`skills-catalog/model-based-design-core/simulink-curating-library-kg/SKILL.md`](skills-catalog/model-based-design-core/simulink-curating-library-kg/SKILL.md) |
-| 23 | ✓ | [`skills-catalog/model-based-design-core/simulink-sanitize-model/SKILL.md`](skills-catalog/model-based-design-core/simulink-sanitize-model/SKILL.md) |
-| 24 | ✓ | [`skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md`](skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md) |
-| 25 | ✓ | [`skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md`](skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md) |
+| 16 | ✓ | [`skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md`](skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md) |
+| 17 | ✓ | [`skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md`](skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md) |
+| 18 | ✓ | [`skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md`](skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md) |
+| 19 | ✓ | [`skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md`](skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md) |
+| 20 | ✓ | [`skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md) |
+| 21 | ✓ | [`skills-catalog/model-based-design-core/simulink-curating-library-kg/SKILL.md`](skills-catalog/model-based-design-core/simulink-curating-library-kg/SKILL.md) |
+| 22 | ✓ | [`skills-catalog/model-based-design-core/simulink-sanitize-model/SKILL.md`](skills-catalog/model-based-design-core/simulink-sanitize-model/SKILL.md) |
+| 23 | ✓ | [`skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md`](skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md) |
+| 24 | ✓ | [`skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md`](skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md) |
+| 25 | ✓ | [`skills-catalog/model-based-design-core/stateflow-apply-layout/SKILL.md`](skills-catalog/model-based-design-core/stateflow-apply-layout/SKILL.md) |
 | 26 | ✓ | [`skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md`](skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md) |
 | 27 | ✓ | [`skills-catalog/model-based-system-engineering/simulink-manage-variant-configuration/SKILL.md`](skills-catalog/model-based-system-engineering/simulink-manage-variant-configuration/SKILL.md) |
-| 28 | ✓ | [`skills-catalog/physical-modeling/simscape-write-ssc/SKILL.md`](skills-catalog/physical-modeling/simscape-write-ssc/SKILL.md) |
-| 29 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-model/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-model/SKILL.md) |
-| 30 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-target/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-target/SKILL.md) |
-| 31 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-instrument-real-time-application/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-instrument-real-time-application/SKILL.md) |
-| 32 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-run-real-time-application/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-run-real-time-application/SKILL.md) |
-| 33 | ✓ | [`skills-catalog/signal-processing/simulink-streaming-dsp/SKILL.md`](skills-catalog/signal-processing/simulink-streaming-dsp/SKILL.md) |
-| 34 | ✓ | [`skills-catalog/simulink-block-and-blockset-authoring/simulink-create-block-icon/SKILL.md`](skills-catalog/simulink-block-and-blockset-authoring/simulink-create-block-icon/SKILL.md) |
-| 35 | ✓ | [`skills-catalog/simulink-environment-fundamentals/finding-simulink-examples/SKILL.md`](skills-catalog/simulink-environment-fundamentals/finding-simulink-examples/SKILL.md) |
-| 36 | ✓ | [`skills-catalog/simulink-modeling/simulink-integrate-python-code/SKILL.md`](skills-catalog/simulink-modeling/simulink-integrate-python-code/SKILL.md) |
-| 37 | ✓ | [`skills-catalog/simulink-modeling/simulink-use-c-function-block/SKILL.md`](skills-catalog/simulink-modeling/simulink-use-c-function-block/SKILL.md) |
-| 38 | ✓ | [`skills-catalog/simulink-simulation/authoring-simulink-inputs/SKILL.md`](skills-catalog/simulink-simulation/authoring-simulink-inputs/SKILL.md) |
-| 39 | ✓ | [`skills-catalog/simulink-simulation/create-sdi-run/SKILL.md`](skills-catalog/simulink-simulation/create-sdi-run/SKILL.md) |
-| 40 | ✓ | [`skills-catalog/simulink-simulation/simulink-check-rapid-accelerator-compatibility/SKILL.md`](skills-catalog/simulink-simulation/simulink-check-rapid-accelerator-compatibility/SKILL.md) |
-| 41 | ✓ | [`skills-catalog/simulink-simulation/simulink-run-parallel-simulations/SKILL.md`](skills-catalog/simulink-simulation/simulink-run-parallel-simulations/SKILL.md) |
-| 42 | ✓ | [`skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md`](skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md) |
-| 43 | ✓ | [`skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md`](skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md) |
-| 44 | ✓ | [`skills-catalog/verification-validation-and-test/fix-sldv-incompatibility/SKILL.md`](skills-catalog/verification-validation-and-test/fix-sldv-incompatibility/SKILL.md) |
-| 45 | ✓ | [`skills-catalog/verification-validation-and-test/inject-faults/SKILL.md`](skills-catalog/verification-validation-and-test/inject-faults/SKILL.md) |
-| 46 | ✓ | [`skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md`](skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md) |
-| 47 | ✓ | [`skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md`](skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md) |
-| 48 | ✓ | [`skills-catalog/verification-validation-and-test/simulink-collect-metrics/SKILL.md`](skills-catalog/verification-validation-and-test/simulink-collect-metrics/SKILL.md) |
-| 49 | ✓ | [`skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md`](skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md) |
-| 50 | ✓ | [`skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md`](skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md) |
+| 28 | ✓ | [`skills-catalog/physical-modeling/simscape-diagnose-simulation-error/SKILL.md`](skills-catalog/physical-modeling/simscape-diagnose-simulation-error/SKILL.md) |
+| 29 | ✓ | [`skills-catalog/physical-modeling/simscape-write-ssc/SKILL.md`](skills-catalog/physical-modeling/simscape-write-ssc/SKILL.md) |
+| 30 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-model/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-model/SKILL.md) |
+| 31 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-target/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-configure-real-time-target/SKILL.md) |
+| 32 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-instrument-real-time-application/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-instrument-real-time-application/SKILL.md) |
+| 33 | ✓ | [`skills-catalog/real-time-simulation-and-testing/simulink-run-real-time-application/SKILL.md`](skills-catalog/real-time-simulation-and-testing/simulink-run-real-time-application/SKILL.md) |
+| 34 | ✓ | [`skills-catalog/signal-processing/simulink-streaming-dsp/SKILL.md`](skills-catalog/signal-processing/simulink-streaming-dsp/SKILL.md) |
+| 35 | ✓ | [`skills-catalog/simulink-block-and-blockset-authoring/simulink-create-block-icon/SKILL.md`](skills-catalog/simulink-block-and-blockset-authoring/simulink-create-block-icon/SKILL.md) |
+| 36 | ✓ | [`skills-catalog/simulink-environment-fundamentals/finding-simulink-examples/SKILL.md`](skills-catalog/simulink-environment-fundamentals/finding-simulink-examples/SKILL.md) |
+| 37 | ✓ | [`skills-catalog/simulink-modeling/simulink-integrate-python-code/SKILL.md`](skills-catalog/simulink-modeling/simulink-integrate-python-code/SKILL.md) |
+| 38 | ✓ | [`skills-catalog/simulink-modeling/simulink-use-c-function-block/SKILL.md`](skills-catalog/simulink-modeling/simulink-use-c-function-block/SKILL.md) |
+| 39 | ✓ | [`skills-catalog/simulink-simulation/authoring-simulink-inputs/SKILL.md`](skills-catalog/simulink-simulation/authoring-simulink-inputs/SKILL.md) |
+| 40 | ✓ | [`skills-catalog/simulink-simulation/create-sdi-run/SKILL.md`](skills-catalog/simulink-simulation/create-sdi-run/SKILL.md) |
+| 41 | ✓ | [`skills-catalog/simulink-simulation/simulink-check-rapid-accelerator-compatibility/SKILL.md`](skills-catalog/simulink-simulation/simulink-check-rapid-accelerator-compatibility/SKILL.md) |
+| 42 | ✓ | [`skills-catalog/simulink-simulation/simulink-run-parallel-simulations/SKILL.md`](skills-catalog/simulink-simulation/simulink-run-parallel-simulations/SKILL.md) |
+| 43 | ✓ | [`skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md`](skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md) |
+| 44 | ✓ | [`skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md`](skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md) |
+| 45 | ✓ | [`skills-catalog/verification-validation-and-test/fix-sldv-incompatibility/SKILL.md`](skills-catalog/verification-validation-and-test/fix-sldv-incompatibility/SKILL.md) |
+| 46 | ✓ | [`skills-catalog/verification-validation-and-test/inject-faults/SKILL.md`](skills-catalog/verification-validation-and-test/inject-faults/SKILL.md) |
+| 47 | ✓ | [`skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md`](skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md) |
+| 48 | ✓ | [`skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md`](skills-catalog/verification-validation-and-test/resolve-design-errors/SKILL.md) |
+| 49 | ✓ | [`skills-catalog/verification-validation-and-test/simulink-collect-metrics/SKILL.md`](skills-catalog/verification-validation-and-test/simulink-collect-metrics/SKILL.md) |
+| 50 | ✓ | [`skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md`](skills-catalog/verification-validation-and-test/simulink-explain-missing-coverage/SKILL.md) |
+| 51 | ✓ | [`skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md`](skills-catalog/verification-validation-and-test/testing-simulink-models/SKILL.md) |
 
 ---
 

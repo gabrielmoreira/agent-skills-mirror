@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.6] - 2026-11-19
+
+### 🐛 修复
+
+- **Codex 模式的 hook 不再被静默跳过** — codex-cli 0.129 起，没在 `/hooks` 里信任过的 hook 不会运行，`codex exec` 下跳过时没有任何提示，新装的 Codex 模式因此不会注入工作流提示。`ccg codex-mode install` 现在为 CCG 自己的 `ccg-workflow.py` 写入信任记录（`~/.codex/config.toml` 的 `[hooks.state]`），等同于在 `/hooks` 里点了信任，不碰其他 hook。如果以后 codex 改了校验方式，这条 hook 会显示为已修改，在 `/hooks` 里再信任一次即可。
+- **不再覆盖你的 `~/.codex/hooks.json`** — 以前安装会整份覆盖、卸载会整份删除，用户自己配的 hook 会被冲掉。现在安装改为合并，CCG 的 hook 追加在最后；卸载只移除 CCG 那条和它的信任记录，文件里没有别的内容时才删除。
+
+### ✨ 新功能
+
+- **`ccg doctor` 检查 Codex hook 信任** — 未信任时给出警告，并提示重新运行 `ccg codex-mode install` 或在 Codex 里用 `/hooks` 信任。
+
+### 🔄 变更
+
+- 依赖小版本升级：ansis 4.5、fs-extra 11.4、smol-toml 1.9、i18next-fs-backend 2.7、tsx 4.23。Binary 仍为 `5.16.1`。
+
+## [3.7.5] - 2026-11-19
+
+### 🐛 修复
+
+- **Antigravity 工具被拒时报出原因**（#172）— agy 1.5.10 在无人值守模式下拒绝工具时，返回 `status: SUCCESS`、空的 `response` 和 `denied_actions` 列表，3.7.4 仍只报 `completed without agent_message output`。现在报 `agy failed: permission denied in headless mode: <操作>`，并提示用 `--skip-permissions` 或 `CODEAGENT_AGY_SETTINGS` 放行。只有整次调用没有任何输出时才算失败；被拒后仍给出回答的调用照常成功。
+- **spec 系列后台调用的超时**（#173）— `spec-research` / `spec-plan` / `spec-impl` / `spec-review` 的 8 处后台调用 `timeout` 从 `300000`（5 分钟）改为 `3600000`（60 分钟），与其余模板一致，长任务不会再被 5 分钟上限截断。
+
+### 🔄 变更
+
+- **Binary `5.16.0` → `5.16.1`**。感谢 @Overbaker 提交 #172 / #173。
+
 ## [3.7.4] - 2026-11-02
 
 ### 🔒 安全

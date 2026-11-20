@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `samugit83/redamon` — 26 default patterns, 1 followed patterns, 85 file(s) materialized.
+Mirror of `samugit83/redamon` — 26 default patterns, 1 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `samugit83/redamon` — 26 default patterns, 1 followed patterns, 85 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 85 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,22 +128,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 67 | ✓ | [`skills/graph-db-writes/SKILL.md`](skills/graph-db-writes/SKILL.md) |
 | 68 | ✓ | [`skills/llm-provider-integration/SKILL.md`](skills/llm-provider-integration/SKILL.md) |
 | 69 | ✓ | [`skills/mcp-server-tools/SKILL.md`](skills/mcp-server-tools/SKILL.md) |
-| 70 | ✓ | [`skills/orchestrator-container-spawn/SKILL.md`](skills/orchestrator-container-spawn/SKILL.md) |
-| 71 | ✓ | [`skills/plugin-platform/SKILL.md`](skills/plugin-platform/SKILL.md) |
-| 72 | ✓ | [`skills/priority-board-triage/SKILL.md`](skills/priority-board-triage/SKILL.md) |
-| 73 | ✓ | [`skills/project-settings-cascade/SKILL.md`](skills/project-settings-cascade/SKILL.md) |
-| 74 | ✓ | [`skills/rbac-authz/SKILL.md`](skills/rbac-authz/SKILL.md) |
-| 75 | ✓ | [`skills/recon-ai-enrichment/SKILL.md`](skills/recon-ai-enrichment/SKILL.md) |
-| 76 | ✓ | [`skills/recon-tool-integration/SKILL.md`](skills/recon-tool-integration/SKILL.md) |
-| 77 | ✓ | [`skills/redamon-testing/SKILL.md`](skills/redamon-testing/SKILL.md) |
-| 78 | ✓ | [`skills/skill-sync/assets/citation-check.sh`](skills/skill-sync/assets/citation-check.sh) |
-| 79 | ✓ | [`skills/skill-sync/assets/drift-audit.sh`](skills/skill-sync/assets/drift-audit.sh) |
-| 80 | ✓ | [`skills/skill-sync/assets/sync.sh`](skills/skill-sync/assets/sync.sh) |
-| 81 | ✓ | [`skills/supply-chain-scan/SKILL.md`](skills/supply-chain-scan/SKILL.md) |
-| 82 | ✓ | [`skills/traffic-capture/SKILL.md`](skills/traffic-capture/SKILL.md) |
-| 83 | ✓ | [`webapp/AGENTS.md`](webapp/AGENTS.md) |
-| 84 | ✓ | [`webapp/CLAUDE.md`](webapp/CLAUDE.md) |
-| 85 | → | [`docs/readmes/skills_management/SKILLS_MANAGEMENT.md`](docs/readmes/skills_management/SKILLS_MANAGEMENT.md) |
+| 70 | ✓ | [`skills/navigator/SKILL.md`](skills/navigator/SKILL.md) |
+| 71 | ✓ | [`skills/orchestrator-container-spawn/SKILL.md`](skills/orchestrator-container-spawn/SKILL.md) |
+| 72 | ✓ | [`skills/plugin-platform/SKILL.md`](skills/plugin-platform/SKILL.md) |
+| 73 | ✓ | [`skills/priority-board-triage/SKILL.md`](skills/priority-board-triage/SKILL.md) |
+| 74 | ✓ | [`skills/project-settings-cascade/SKILL.md`](skills/project-settings-cascade/SKILL.md) |
+| 75 | ✓ | [`skills/rbac-authz/SKILL.md`](skills/rbac-authz/SKILL.md) |
+| 76 | ✓ | [`skills/recon-ai-enrichment/SKILL.md`](skills/recon-ai-enrichment/SKILL.md) |
+| 77 | ✓ | [`skills/recon-tool-integration/SKILL.md`](skills/recon-tool-integration/SKILL.md) |
+| 78 | ✓ | [`skills/redamon-testing/SKILL.md`](skills/redamon-testing/SKILL.md) |
+| 79 | ✓ | [`skills/skill-sync/assets/citation-check.sh`](skills/skill-sync/assets/citation-check.sh) |
+| 80 | ✓ | [`skills/skill-sync/assets/drift-audit.sh`](skills/skill-sync/assets/drift-audit.sh) |
+| 81 | ✓ | [`skills/skill-sync/assets/sync.sh`](skills/skill-sync/assets/sync.sh) |
+| 82 | ✓ | [`skills/supply-chain-scan/SKILL.md`](skills/supply-chain-scan/SKILL.md) |
+| 83 | ✓ | [`skills/tradecraft-library/SKILL.md`](skills/tradecraft-library/SKILL.md) |
+| 84 | ✓ | [`skills/traffic-capture/SKILL.md`](skills/traffic-capture/SKILL.md) |
+| 85 | ✓ | [`webapp/AGENTS.md`](webapp/AGENTS.md) |
+| 86 | ✓ | [`webapp/CLAUDE.md`](webapp/CLAUDE.md) |
+| 87 | → | [`docs/readmes/skills_management/SKILLS_MANAGEMENT.md`](docs/readmes/skills_management/SKILLS_MANAGEMENT.md) |
 
 ---
 

@@ -1,10 +1,10 @@
 # 本地测试包：默认 npm，完整 ZIP 备用
 
-当前源码位于 仓库根目录；下列模块命令在该目录执行。活动工作流在仓库根目录 `.github/workflows/ci.yml`，发布保持关闭。迁移基线及历史验收范围见[迁移说明](repository-migration.md)。
+下列命令在仓库根目录执行。日常测试包由仓库根目录的 `.github/workflows/ci.yml` 构建。迁移基线及历史验收范围见[迁移说明](repository-migration.md)。
 
 MCP 公开入口由包内 `shared/mcp-release.json` 固化，详见[一期注册清单](mcp-phase1-tools.md)。`build <target> <release-version> [legacy|phase1]` 将 profile 和工具名写入 `release.json`；默认沿用源码的 phase1，公开11个 motion_ Tool 并包含5个配套 Skill。缺注册时在创建 staging／ZIP 前失败；本次验证的插件 ZIP 不等于各平台完整原生包已重新验收。
 
-本流程服务于团队试装和问题复现；当前只有测试渠道，尚未启用正式包或自动升级。编辑器和模板业务使用同一份源码。完整包同时包含模型网关 gateway/；供应商 Key 和本机 Agent 登录仍由用户配置，不随包分发。
+本流程服务于团队试装和问题复现。编辑器和模板业务使用同一份源码。完整包同时包含模型网关 gateway/；供应商 Key 和本机 Agent 登录仍由用户配置，不随包分发。
 
 ## 手动构建
 
@@ -17,11 +17,11 @@ MCP 公开入口由包内 `shared/mcp-release.json` 固化，详见[一期注册
 | `npm`（默认） | Application npm `.tgz` with embedded app/manifest, plus external archive, release record and SHA256 | 目标机按应用 lockfile 安装 npm 依赖；首次需要时下载固定原生工具 |
 | `full`（备用） | Mac arm64 / Windows x64 完整 ZIP、SHA256、`release-<target>.json` | 内置目标平台 Node、生产依赖和原生工具 |
 
-Ordinary builds retain candidate installation-guide artifacts for review; they do not publish npm, Release or R2 objects. Separate manual guide publication follows the release guide; 两种格式误勾 `publish` 均会失败。本地构建的制品位于 `dist/`，The tgz alone is sufficient for setup; adjacent application/manifest files are evidence and an explicit-manifest fallback. See [installation](npm-installation.md) and [test/stable acceptance](release-guide.md).
+Ordinary builds retain candidate installation-guide artifacts for review; they do not publish npm, Release or R2 objects. 正式候选包和发布流程见[发布手册](release-workflows.md)。两种格式误勾 `publish` 均会失败。本地构建的制品位于 `dist/`，The tgz alone is sufficient for setup; adjacent application/manifest files are evidence and an explicit-manifest fallback. See [installation](npm-installation.md) and [test/stable acceptance](release-guide.md).
 
-Explicit builds accept stable `MAJOR.MINOR.PATCH` or `MAJOR.MINOR.PATCH-test.N[.N]`. The shared helper selects next-patch `test.<run>.<attempt>` (for example, 0.6.3 → 0.6.4-test.42.1). The separate [Motion candidate build](release-workflows.md#1-build) runs from `main` and uses short workflow-counter versions when version is empty, for example `0.6.4-test.7` (rerun `0.6.4-test.7.2`); ordinary check builds retain their workflow-local numbering. Candidate publication uses the accepted version unchanged. All embedded identities agree; output directories cannot be overwritten and source versions do not change. Explicit test npm builds default to DEV and candidate; stable npm builds default to prod and stage. Unversioned and channel/environment-mismatched builds remain private. The backup ZIP builder still defaults to prod unless explicitly selected. Publication remains disabled.
+Explicit builds accept stable `MAJOR.MINOR.PATCH` or `MAJOR.MINOR.PATCH-test.N[.N]`. The shared helper selects next-patch `test.<run>.<attempt>` (for example, 0.6.3 → 0.6.4-test.42.1). [Motion package and release](release-workflows.md#1-build) runs from `main`. In `mode=prepublish`, a blank test version uses a short workflow-counter version, for example `0.6.4-test.7` (rerun `0.6.4-test.7.2`). Ordinary check builds retain their workflow-local numbering. To publish a retained candidate, select `mode=publish` and enter its exact version and `candidate_run_id`. All embedded identities agree; output directories cannot be overwritten and source versions do not change. Explicit test npm builds default to DEV and candidate; stable npm builds default to prod and stage. Unversioned and channel/environment-mismatched builds remain private. The backup ZIP builder defaults to prod.
 
-PR / main 工作流执行清单、类型、Studio 构建与回归、安装/打包测试，以及逐一调用全部 16 个公开注册 Tool 名的真实 ZIP E2E。Linux 是组装与测试环境，不是已支持的用户运行平台。Mac / Windows 的最终安装和真实出片仍须在对应系统验收；当前 本仓库工作流没有 Windows 或 Mac 原生验收 job，不把产包成功写成通过。
+PR / main 工作流执行清单、类型、Studio 构建与回归、安装/打包测试，以及逐一调用全部 18 个公开注册 Tool 名的真实 ZIP E2E。Linux 是组装与测试环境，不是已支持的用户运行平台。发布工作流在 macOS 和 Windows 验证 npm 候选包安装。完整 ZIP 的最终试装和真实出片仍需在对应系统验收。
 
 ## 固定运行时
 

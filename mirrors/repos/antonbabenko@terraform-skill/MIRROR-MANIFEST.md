@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`skills/terraform-skill/references/ci-cd-workflows.md`](skills/terraform-skill/references/ci-cd-workflows.md) |
 | 3 | ✓ | [`skills/terraform-skill/references/code-intelligence-lsp.md`](skills/terraform-skill/references/code-intelligence-lsp.md) |
 | 4 | ✓ | [`skills/terraform-skill/references/code-patterns.md`](skills/terraform-skill/references/code-patterns.md) |

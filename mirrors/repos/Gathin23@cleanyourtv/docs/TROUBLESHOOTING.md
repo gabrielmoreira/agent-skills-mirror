@@ -1447,6 +1447,16 @@ turned off in Settings stays off.
   it. Set `settings_key_clear_task` (with `settings_key_panel` off) and add 139 to `settings_key_scancodes`:
   Settings replaces that page and Back goes Home. The shell cannot disable a single receiver, so this is the
   route without root.
+- **Menu opens only Picture and Sound once the launcher is Home** (Philips 70PUS7906/12, `PH0M_EA_T32`,
+  Android TV 11, `TPM215E_R.101.000.198.158`, [#3753](https://github.com/Gathin23/cleanyourtv/issues/3753)):
+  with the stock Google TV home in front, the remote's Menu button opens the full Settings; with the launcher
+  as Home it opens only "App preferences" with Picture and Sound. `com.mediatek.tv.service` takes the key
+  (`KEYCODE_MENU`, scancode 139) and its `SettingsAction.launchSettings` opens the full Settings
+  (`FLAG=LUNCHER_APP`) only when the top task is `com.google.android.tvlauncher` (or the retail demo
+  `fusion.android.tv.demo`); for any other package it sends `FLAG=OTHER_APP`, the Picture and Sound page.
+  The package name is hard-coded in the firmware and the key never reaches the launcher (with
+  `settings_key_keycodes: [82]` the log shows only the firmware's `START ... MainSettings` from uid 1000), so
+  no config key fixes it. Use the Settings gear on Home or a Settings tile for the full Settings.
 - **The list still names the helper but `accessibility_enabled` is `0`**, so nothing is bound and the
   button does nothing (not the force stop below): on a TCL C6K Pro (`G08`, Android 14,
   [#1047](https://github.com/Gathin23/cleanyourtv/issues/1047)) a reboot left
@@ -2048,6 +2058,27 @@ To undo it, set it back to `0`. Three things came up on the same set once the TV
 With these in place, a device that starts while another is on screen takes over the input, and the TV sends the
 first device `<Standby>` itself. Not checked: other TCL boards, and whether the Shield turns the TV off when it
 sleeps.
+
+## Bluetooth headphones connect, but the sound stays on the soundbar or the speakers (TCL)
+
+Headphones pair and connect, and the sound keeps playing through the soundbar or the TV's speakers. Seen on a TCL
+55C805 (G08, `G08_4K_GB`, Google TV 14, `UTT2.250416.001 AU04`) with a soundbar on eARC. TCL's own Sound output
+choice decides where the sound goes, ahead of Android's routing, and on **Auto**, the default, it picks eARC when a
+soundbar answers and the TV's speakers otherwise, never Bluetooth. The choice is a global setting, which
+`system_server` applies at once:
+
+```sh
+tools/tv.py 'settings get global tcl_device_out_type'
+#   1 Auto, 4 Bluetooth, 16 eARC: the values the TV's Sound output menu writes
+```
+
+Choosing Bluetooth in that menu, or `tools/tv.py 'settings put global tcl_device_out_type 4'`, sends the sound to
+the headphones. It does not come back by itself: with the headphones switched off and the output still on
+Bluetooth, the TV says "this type of device is not connected. Please choose another device to output sound" until
+Auto (`1`) is chosen again. An app can switch it as headphones connect and disconnect, but writing the setting needs
+`WRITE_SECURE_SETTINGS`, which only ADB can grant (`pm grant <package> android.permission.WRITE_SECURE_SETTINGS`).
+Standby drops the headphones' Bluetooth link, so with such an app the sound is back on Auto when the TV comes back
+on. Not checked: what standby leaves the output on without one, the menu's other choices, and other TCL boards.
 
 ## Moonlight: two controllers both drive player 1, or a DualSense button opens the exit prompt
 

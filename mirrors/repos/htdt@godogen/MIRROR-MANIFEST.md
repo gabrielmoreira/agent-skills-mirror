@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `htdt/godogen` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `htdt/godogen` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `htdt/godogen` — 26 default patterns, 0 followed patterns, 4 file(s)
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`asset-gen/SKILL.md`](asset-gen/SKILL.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`prompts/runtime.md`](prompts/runtime.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/asset-gen/api.md`](skills/asset-gen/api.md) |
+| 4 | ✓ | [`skills/asset-gen/motion.md`](skills/asset-gen/motion.md) |
+| 5 | ✓ | [`skills/asset-gen/scripts/asset_gen.py`](skills/asset-gen/scripts/asset_gen.py) |
+| 6 | ✓ | [`skills/asset-gen/scripts/find_loop_frame.py`](skills/asset-gen/scripts/find_loop_frame.py) |
+| 7 | ✓ | [`skills/asset-gen/scripts/grid_slice.py`](skills/asset-gen/scripts/grid_slice.py) |
+| 8 | ✓ | [`skills/asset-gen/scripts/loop_audio.py`](skills/asset-gen/scripts/loop_audio.py) |
+| 9 | ✓ | [`skills/asset-gen/scripts/requirements.txt`](skills/asset-gen/scripts/requirements.txt) |
+| 10 | ✓ | [`skills/asset-gen/SKILL.md`](skills/asset-gen/SKILL.md) |
+| 11 | ✓ | [`skills/engine-guide/babylon.md`](skills/engine-guide/babylon.md) |
+| 12 | ✓ | [`skills/engine-guide/bevy.md`](skills/engine-guide/bevy.md) |
+| 13 | ✓ | [`skills/engine-guide/godot-gdscript.md`](skills/engine-guide/godot-gdscript.md) |
+| 14 | ✓ | [`skills/engine-guide/godot.md`](skills/engine-guide/godot.md) |
+| 15 | ✓ | [`skills/engine-guide/html.md`](skills/engine-guide/html.md) |
+| 16 | ✓ | [`skills/engine-guide/setup.md`](skills/engine-guide/setup.md) |
+| 17 | ✓ | [`skills/engine-guide/SKILL.md`](skills/engine-guide/SKILL.md) |
+| 18 | ✓ | [`skills/engine-guide/threejs.md`](skills/engine-guide/threejs.md) |
 
 ---
 

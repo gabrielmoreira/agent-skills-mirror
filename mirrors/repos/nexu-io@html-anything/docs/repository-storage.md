@@ -79,6 +79,8 @@ For a read-only local preview of the plan, use `npm run media:prepare -- <PR-num
 
 Catalog search and MCP detail read local source and return the public preview/poster URL. They do not download media in the background. HTML and Markdown use public asset URLs. Reading the logical source asset through the local API downloads and verifies its bounded body.
 
+For Skill cards, the registered URL in `repository-media.json` takes precedence. Existing clips without a registry entry use their [pinned public source snapshot](../studio/skill-cover-attribution.md). New clips go through **Prepare and merge PR** to receive a registered URL. If the preview host is unreachable, Studio displays the bundled WebP poster.
+
 Other optional media retains its local logical path in `repository-media.json`. Fetch one scope or the complete legacy set:
 
 ```sh
@@ -87,11 +89,14 @@ npm run media:pull -- library/skills/openmotion-design-remix
 # Recover original README artwork at its recorded local paths.
 npm run media:pull -- docs/readme
 
-# Restore every registered optional file for full bundles/resource verification.
+# Fetch a prepared Skill preview for local editing.
+npm run media:pull -- studio/src/motion/skill-covers/example.mp4
+
+# Restore registered media used by full bundles and resource verification.
 npm run media:pull
 ```
 
-Only those registered files are downloaded, with size/hash verification and atomic replacement. These commands do not fetch all catalog media. Legacy files still in LFS need the scoped pulls above. Full bundles and resource verification explicitly fetch both stores; npm application packages exclude showcase and optional Library payloads.
+Only those registered files are downloaded, with size/hash verification and atomic replacement. Skill card animations are excluded from an unscoped pull because Studio loads them on demand. These commands do not fetch all catalog media. Legacy files still in LFS need the scoped pulls above. Full bundles and resource verification explicitly fetch both stores; npm application packages exclude showcase and optional Library payloads.
 
 ### Checks and history
 

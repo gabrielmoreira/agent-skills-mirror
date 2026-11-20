@@ -540,7 +540,7 @@ npx skills add nexu-io/openmotion --skill openmotion-director openmotion-product
 }
 ```
 
-**十六个公开 MCP 名称（含一个素材库兼容别名）**覆盖模板发现与详情、工程创建与读取、编辑、预览、媒体导入与 BYOK 生成、可复用素材版本、工程管理与 ZIP 分享、导出、版本恢复与取消。共享工作流和引擎指引通过 MCP resources 提供。[工具契约](mcp-phase1-tools.md)
+**十八个公开 MCP 名称（含一个素材库兼容别名）**覆盖模板发现与详情、Skill 发现与读取、工程创建与读取、编辑、预览、媒体导入与 BYOK 生成、可复用素材版本、工程管理与 ZIP 分享、导出、版本恢复与取消。共享工作流和引擎指引通过 MCP resources 提供。[工具契约](mcp-phase1-tools.md)
 
 用 `openmotion_list_templates` 查找模板，`openmotion_get_template` 查看详情，再用 `openmotion_create_project` 创建可编辑副本。[模板目录](template-catalog.md)
 
@@ -645,7 +645,7 @@ MP4 + 可编辑源码 + 素材 + 版本和导出证据
 
 </details>
 
-BYOA 连接已有 Agent 客户端；素材工作区支持直接用模型生成和复用素材。BYOK 连接受支持的模型账号。Studio 与本地服务管理可编辑工程，供应商凭据不写入工程文件。一期公开 MCP 包含**十六个名称：九个工程工具、两个模板目录工具、一个工程归档工具、一个工程管理工具、一个 BYOK 媒体工具，以及同一素材库能力的两个名称**。先在 Studio 配置供应商密钥，再用 `openmotion_media_use` 发现模型、经本地 Gateway 生成媒体。用 `openmotion_assets_use`（`openmotion_assets` 仍兼容）上传、查看或生成可复用素材，保留版本，并把选定版本导入影片。[素材库指南](assets.md)。密钥留在服务内；公开 MCP 契约不包含发布。
+BYOA 连接已有 Agent 客户端；素材工作区支持直接用模型生成和复用素材。BYOK 连接受支持的模型账号。Studio 与本地服务管理可编辑工程，供应商凭据不写入工程文件。一期公开 MCP 包含**十八个名称：九个工程工具、两个模板目录工具、两个 Skill 库工具、一个工程归档工具、一个工程管理工具、一个 BYOK 媒体工具，以及同一素材库能力的两个名称**。先在 Studio 配置供应商密钥，再用 `openmotion_media_use` 发现模型、经本地 Gateway 生成媒体。用 `openmotion_assets_use`（`openmotion_assets` 仍兼容）上传、查看或生成可复用素材，保留版本，并把选定版本导入影片。[素材库指南](assets.md)。密钥留在服务内；公开 MCP 契约不包含发布。
 
 #### 技术栈与源码索引
 

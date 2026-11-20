@@ -71,7 +71,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 47 followed patterns, 
 - `docs/ui/overview.md`
 - `docs/realtime/deployment.md`
 - `docs/workspace.md`
-- `src/pydantic_clai2/README.md`
+- `src/pydantic_ai_pax/README.md`
 - `docs/durable_execution/overview.md`
 - `docs/deferred-tools.md`
 - `docs/capabilities/web-fetch.md`
@@ -95,7 +95,7 @@ Mirror of `pydantic/pydantic-ai` — 26 default patterns, 47 followed patterns, 
 - `docs/harness/modal-sandbox.md`
 - `docs/harness/sprites-sandbox.md`
 - `docs/harness/daytona-sandbox.md`
-- `src/pydantic_clai2/PLUGINS.md`
+- `src/pydantic_ai_pax/PLUGINS.md`
 - `docs/harness/subagents.md`
 - `docs/harness/peers.md`
 
@@ -362,9 +362,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 255 | ✓ | [`src/pydantic_ai_harness/CLAUDE.md`](src/pydantic_ai_harness/CLAUDE.md) |
 | 256 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/migrating-deep-agents-to-pydantic-ai-harness/SKILL.md) |
 | 257 | ✓ | [`src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md`](src/pydantic_ai_harness/pydantic_ai_harness/.agents/skills/pydantic-ai-harness/SKILL.md) |
-| 258 | ✓ | [`src/pydantic_clai2/AGENTS.md`](src/pydantic_clai2/AGENTS.md) |
-| 259 | ✓ | [`src/pydantic_clai2/CLAUDE.md`](src/pydantic_clai2/CLAUDE.md) |
-| 260 | ✓ | [`src/pydantic_clai2/MODEL_SETTINGS_AUDIT.md`](src/pydantic_clai2/MODEL_SETTINGS_AUDIT.md) |
+| 258 | ✓ | [`src/pydantic_ai_pax/AGENTS.md`](src/pydantic_ai_pax/AGENTS.md) |
+| 259 | ✓ | [`src/pydantic_ai_pax/CLAUDE.md`](src/pydantic_ai_pax/CLAUDE.md) |
+| 260 | ✓ | [`src/pydantic_ai_pax/MODEL_SETTINGS_AUDIT.md`](src/pydantic_ai_pax/MODEL_SETTINGS_AUDIT.md) |
 | 261 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 | 262 | ✓ | [`tests/benchmarks/AGENTS.md`](tests/benchmarks/AGENTS.md) |
 | 263 | ✓ | [`tests/benchmarks/CLAUDE.md`](tests/benchmarks/CLAUDE.md) |
@@ -416,8 +416,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 309 | → | [`docs/version-policy.md`](docs/version-policy.md) |
 | 310 | → | [`docs/web.md`](docs/web.md) |
 | 311 | → | [`docs/workspace.md`](docs/workspace.md) |
-| 312 | → | [`src/pydantic_clai2/PLUGINS.md`](src/pydantic_clai2/PLUGINS.md) |
-| 313 | → | [`src/pydantic_clai2/README.md`](src/pydantic_clai2/README.md) |
+| 312 | → | [`src/pydantic_ai_pax/PLUGINS.md`](src/pydantic_ai_pax/PLUGINS.md) |
+| 313 | → | [`src/pydantic_ai_pax/README.md`](src/pydantic_ai_pax/README.md) |
 | 314 | → | [`THREAT_MODEL.md`](THREAT_MODEL.md) |
 
 ---

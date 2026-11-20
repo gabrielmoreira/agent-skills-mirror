@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `metalbear-co/mirrord` — 26 default patterns, 3 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 22 |
+| Followed pats | 3 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 2
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `STYLE.md`
+- `xtask/README.md`
 
 ## File Index
 
@@ -60,27 +62,104 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`mirrord/config/AGENTS.md`](mirrord/config/AGENTS.md) |
-| 3 | ✓ | [`mirrord/mcp/AGENTS.md`](mirrord/mcp/AGENTS.md) |
-| 4 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-beyond/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-beyond/SKILL.md) |
-| 5 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-chaos/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-chaos/SKILL.md) |
-| 6 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-ci/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-ci/SKILL.md) |
-| 7 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-config/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-config/SKILL.md) |
-| 8 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-db-branching/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-db-branching/SKILL.md) |
-| 9 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-header-propagation/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-header-propagation/SKILL.md) |
-| 10 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-kafka/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-kafka/SKILL.md) |
-| 11 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-operator/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-operator/SKILL.md) |
-| 12 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-prev-env/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-prev-env/SKILL.md) |
-| 13 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-propagation-discovery/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-propagation-discovery/SKILL.md) |
-| 14 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-quickstart/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-quickstart/SKILL.md) |
-| 15 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-temporal/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-temporal/SKILL.md) |
-| 16 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-up/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-up/SKILL.md) |
-| 17 | ✓ | [`mirrord/operator-websocket/AGENTS.md`](mirrord/operator-websocket/AGENTS.md) |
-| 18 | ✓ | [`mirrord/operator/AGENTS.md`](mirrord/operator/AGENTS.md) |
-| 19 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
-| 20 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
-| 21 | ✓ | [`mirrord/up/AGENTS.md`](mirrord/up/AGENTS.md) |
-| 22 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 2 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 3 | ✓ | [`mirrord/agent/CONTRIBUTING.md`](mirrord/agent/CONTRIBUTING.md) |
+| 4 | ✓ | [`mirrord/config/AGENTS.md`](mirrord/config/AGENTS.md) |
+| 5 | ✓ | [`mirrord/mcp/AGENTS.md`](mirrord/mcp/AGENTS.md) |
+| 6 | ✓ | [`mirrord/operator-websocket/AGENTS.md`](mirrord/operator-websocket/AGENTS.md) |
+| 7 | ✓ | [`mirrord/operator/AGENTS.md`](mirrord/operator/AGENTS.md) |
+| 8 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
+| 9 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
+| 10 | ✓ | [`mirrord/up/AGENTS.md`](mirrord/up/AGENTS.md) |
+| 11 | ✓ | [`skills/.agents/plugins/marketplace.json`](skills/.agents/plugins/marketplace.json) |
+| 12 | ✓ | [`skills/.claude-plugin/icon.png`](skills/.claude-plugin/icon.png) |
+| 13 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
+| 14 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 15 | ✓ | [`skills/.codex-plugin/plugin.json`](skills/.codex-plugin/plugin.json) |
+| 16 | ✓ | [`skills/.cursor-plugin/plugin.json`](skills/.cursor-plugin/plugin.json) |
+| 17 | ✓ | [`skills/.github/CODEOWNERS`](skills/.github/CODEOWNERS) |
+| 18 | ✓ | [`skills/.github/docs-sync-prompt.md`](skills/.github/docs-sync-prompt.md) |
+| 19 | ✓ | [`skills/.github/docs-sync-sha`](skills/.github/docs-sync-sha) |
+| 20 | ✓ | [`skills/.github/scripts/bump_skill_version.py`](skills/.github/scripts/bump_skill_version.py) |
+| 21 | ✓ | [`skills/.github/scripts/check_fence_tags.py`](skills/.github/scripts/check_fence_tags.py) |
+| 22 | ✓ | [`skills/.github/scripts/requirements.txt`](skills/.github/scripts/requirements.txt) |
+| 23 | ✓ | [`skills/.github/scripts/test_check_fence_tags.py`](skills/.github/scripts/test_check_fence_tags.py) |
+| 24 | ✓ | [`skills/.github/workflows/check-fence-tags.yml`](skills/.github/workflows/check-fence-tags.yml) |
+| 25 | ✓ | [`skills/.github/workflows/docs-sync.yml`](skills/.github/workflows/docs-sync.yml) |
+| 26 | ✓ | [`skills/.github/workflows/update-references.yml`](skills/.github/workflows/update-references.yml) |
+| 27 | ✓ | [`skills/.gitignore`](skills/.gitignore) |
+| 28 | ✓ | [`skills/.greptile/config.json`](skills/.greptile/config.json) |
+| 29 | ✓ | [`skills/.greptile/files.json`](skills/.greptile/files.json) |
+| 30 | ✓ | [`skills/.pr_agent.toml`](skills/.pr_agent.toml) |
+| 31 | ✓ | [`skills/AGENTS.md`](skills/AGENTS.md) |
+| 32 | ✓ | [`skills/assets/mirrord-agent-skills.png`](skills/assets/mirrord-agent-skills.png) |
+| 33 | ✓ | [`skills/assets/mirrord-icon.png`](skills/assets/mirrord-icon.png) |
+| 34 | ✓ | [`skills/assets/mirrord-logo-square.png`](skills/assets/mirrord-logo-square.png) |
+| 35 | ✓ | [`skills/assets/mirrord-logo-square.svg`](skills/assets/mirrord-logo-square.svg) |
+| 36 | ✓ | [`skills/CONTRIBUTING.md`](skills/CONTRIBUTING.md) |
+| 37 | ✓ | [`skills/install.sh`](skills/install.sh) |
+| 38 | ✓ | [`skills/LICENSE`](skills/LICENSE) |
+| 39 | ✓ | [`skills/ports/cline/.clinerules`](skills/ports/cline/.clinerules) |
+| 40 | ✓ | [`skills/ports/github-copilot/copilot-instructions.md`](skills/ports/github-copilot/copilot-instructions.md) |
+| 41 | ✓ | [`skills/ports/README.md`](skills/ports/README.md) |
+| 42 | ✓ | [`skills/README.md`](skills/README.md) |
+| 43 | ✓ | [`skills/skills/mirrord-beyond/README.md`](skills/skills/mirrord-beyond/README.md) |
+| 44 | ✓ | [`skills/skills/mirrord-beyond/references/ecs-setup.md`](skills/skills/mirrord-beyond/references/ecs-setup.md) |
+| 45 | ✓ | [`skills/skills/mirrord-beyond/references/troubleshooting.md`](skills/skills/mirrord-beyond/references/troubleshooting.md) |
+| 46 | ✓ | [`skills/skills/mirrord-beyond/SKILL.md`](skills/skills/mirrord-beyond/SKILL.md) |
+| 47 | ✓ | [`skills/skills/mirrord-chaos/README.md`](skills/skills/mirrord-chaos/README.md) |
+| 48 | ✓ | [`skills/skills/mirrord-chaos/SKILL.md`](skills/skills/mirrord-chaos/SKILL.md) |
+| 49 | ✓ | [`skills/skills/mirrord-ci/README.md`](skills/skills/mirrord-ci/README.md) |
+| 50 | ✓ | [`skills/skills/mirrord-ci/references/troubleshooting.md`](skills/skills/mirrord-ci/references/troubleshooting.md) |
+| 51 | ✓ | [`skills/skills/mirrord-ci/SKILL.md`](skills/skills/mirrord-ci/SKILL.md) |
+| 52 | ✓ | [`skills/skills/mirrord-config/README.md`](skills/skills/mirrord-config/README.md) |
+| 53 | ✓ | [`skills/skills/mirrord-config/references/configuration.md`](skills/skills/mirrord-config/references/configuration.md) |
+| 54 | ✓ | [`skills/skills/mirrord-config/references/fs-mode-internals.md`](skills/skills/mirrord-config/references/fs-mode-internals.md) |
+| 55 | ✓ | [`skills/skills/mirrord-config/references/schema.json`](skills/skills/mirrord-config/references/schema.json) |
+| 56 | ✓ | [`skills/skills/mirrord-config/SKILL.md`](skills/skills/mirrord-config/SKILL.md) |
+| 57 | ✓ | [`skills/skills/mirrord-db-branching/README.md`](skills/skills/mirrord-db-branching/README.md) |
+| 58 | ✓ | [`skills/skills/mirrord-db-branching/references/troubleshooting.md`](skills/skills/mirrord-db-branching/references/troubleshooting.md) |
+| 59 | ✓ | [`skills/skills/mirrord-db-branching/SKILL.md`](skills/skills/mirrord-db-branching/SKILL.md) |
+| 60 | ✓ | [`skills/skills/mirrord-header-propagation/README.md`](skills/skills/mirrord-header-propagation/README.md) |
+| 61 | ✓ | [`skills/skills/mirrord-header-propagation/references/libraries.md`](skills/skills/mirrord-header-propagation/references/libraries.md) |
+| 62 | ✓ | [`skills/skills/mirrord-header-propagation/references/propagation-layer.md`](skills/skills/mirrord-header-propagation/references/propagation-layer.md) |
+| 63 | ✓ | [`skills/skills/mirrord-header-propagation/references/storage-handoffs.md`](skills/skills/mirrord-header-propagation/references/storage-handoffs.md) |
+| 64 | ✓ | [`skills/skills/mirrord-header-propagation/SKILL.md`](skills/skills/mirrord-header-propagation/SKILL.md) |
+| 65 | ✓ | [`skills/skills/mirrord-kafka/references/kafka-client-config-crd.md`](skills/skills/mirrord-kafka/references/kafka-client-config-crd.md) |
+| 66 | ✓ | [`skills/skills/mirrord-kafka/references/kafka-topics-consumer-crd.md`](skills/skills/mirrord-kafka/references/kafka-topics-consumer-crd.md) |
+| 67 | ✓ | [`skills/skills/mirrord-kafka/references/known-issues.md`](skills/skills/mirrord-kafka/references/known-issues.md) |
+| 68 | ✓ | [`skills/skills/mirrord-kafka/references/mirrord-property-list-crd.md`](skills/skills/mirrord-kafka/references/mirrord-property-list-crd.md) |
+| 69 | ✓ | [`skills/skills/mirrord-kafka/references/mirrord-split-config-crd.md`](skills/skills/mirrord-kafka/references/mirrord-split-config-crd.md) |
+| 70 | ✓ | [`skills/skills/mirrord-kafka/SKILL.md`](skills/skills/mirrord-kafka/SKILL.md) |
+| 71 | ✓ | [`skills/skills/mirrord-operator/README.md`](skills/skills/mirrord-operator/README.md) |
+| 72 | ✓ | [`skills/skills/mirrord-operator/references/helm-values.md`](skills/skills/mirrord-operator/references/helm-values.md) |
+| 73 | ✓ | [`skills/skills/mirrord-operator/references/troubleshooting.md`](skills/skills/mirrord-operator/references/troubleshooting.md) |
+| 74 | ✓ | [`skills/skills/mirrord-operator/references/values.yaml`](skills/skills/mirrord-operator/references/values.yaml) |
+| 75 | ✓ | [`skills/skills/mirrord-operator/SKILL.md`](skills/skills/mirrord-operator/SKILL.md) |
+| 76 | ✓ | [`skills/skills/mirrord-prev-env/README.md`](skills/skills/mirrord-prev-env/README.md) |
+| 77 | ✓ | [`skills/skills/mirrord-prev-env/SKILL.md`](skills/skills/mirrord-prev-env/SKILL.md) |
+| 78 | ✓ | [`skills/skills/mirrord-propagation-discovery/README.md`](skills/skills/mirrord-propagation-discovery/README.md) |
+| 79 | ✓ | [`skills/skills/mirrord-propagation-discovery/references/carriers.md`](skills/skills/mirrord-propagation-discovery/references/carriers.md) |
+| 80 | ✓ | [`skills/skills/mirrord-propagation-discovery/references/filter-recipes.md`](skills/skills/mirrord-propagation-discovery/references/filter-recipes.md) |
+| 81 | ✓ | [`skills/skills/mirrord-propagation-discovery/references/identifier-catalog.md`](skills/skills/mirrord-propagation-discovery/references/identifier-catalog.md) |
+| 82 | ✓ | [`skills/skills/mirrord-propagation-discovery/references/reading-dumps.md`](skills/skills/mirrord-propagation-discovery/references/reading-dumps.md) |
+| 83 | ✓ | [`skills/skills/mirrord-propagation-discovery/references/report-template.md`](skills/skills/mirrord-propagation-discovery/references/report-template.md) |
+| 84 | ✓ | [`skills/skills/mirrord-propagation-discovery/scripts/dump_stats.py`](skills/skills/mirrord-propagation-discovery/scripts/dump_stats.py) |
+| 85 | ✓ | [`skills/skills/mirrord-propagation-discovery/scripts/request_recorder.py`](skills/skills/mirrord-propagation-discovery/scripts/request_recorder.py) |
+| 86 | ✓ | [`skills/skills/mirrord-propagation-discovery/SKILL.md`](skills/skills/mirrord-propagation-discovery/SKILL.md) |
+| 87 | ✓ | [`skills/skills/mirrord-quickstart/README.md`](skills/skills/mirrord-quickstart/README.md) |
+| 88 | ✓ | [`skills/skills/mirrord-quickstart/SKILL.md`](skills/skills/mirrord-quickstart/SKILL.md) |
+| 89 | ✓ | [`skills/skills/mirrord-temporal/README.md`](skills/skills/mirrord-temporal/README.md) |
+| 90 | ✓ | [`skills/skills/mirrord-temporal/references/temporal-property-list.md`](skills/skills/mirrord-temporal/references/temporal-property-list.md) |
+| 91 | ✓ | [`skills/skills/mirrord-temporal/references/temporal-split-config.md`](skills/skills/mirrord-temporal/references/temporal-split-config.md) |
+| 92 | ✓ | [`skills/skills/mirrord-temporal/SKILL.md`](skills/skills/mirrord-temporal/SKILL.md) |
+| 93 | ✓ | [`skills/skills/mirrord-up/README.md`](skills/skills/mirrord-up/README.md) |
+| 94 | ✓ | [`skills/skills/mirrord-up/references/schema.json`](skills/skills/mirrord-up/references/schema.json) |
+| 95 | ✓ | [`skills/skills/mirrord-up/SKILL.md`](skills/skills/mirrord-up/SKILL.md) |
+| 96 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 97 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 98 | → | [`STYLE.md`](STYLE.md) |
+| 99 | → | [`xtask/README.md`](xtask/README.md) |
 
 ---
 

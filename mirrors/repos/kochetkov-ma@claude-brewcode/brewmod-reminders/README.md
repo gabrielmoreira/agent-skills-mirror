@@ -1,0 +1,81 @@
+<!-- Stable deep link, shared outside the repo: #demo. Keep the id. -->
+<p align="center">
+  <a id="demo"></a><img src="../assets/brewmods/reminders.gif" width="800" alt="Claude Code terminal: a reminder is created in one sentence and saved at once. In a later session the band shows it as fired, the first prompt gets a one-line heads-up from Claude, and **1 runs it and closes it.">
+  <br><sub>Recorded in a real Claude Code 2.1.306 session, sped up where the title bar shows ⏩.</sub>
+</p>
+
+<h1 align="center">Reminders</h1>
+
+<p align="center">Say what to remember and when. It is a Markdown file, it fires on time, and nothing runs until you say so.</p>
+
+<p align="center">
+  <a href="https://github.com/kochetkov-ma/claude-brewcode/stargazers"><img src="https://badgen.net/github/stars/kochetkov-ma/claude-brewcode?icon=github&label=stars" alt="GitHub stars"></a>
+  <img src="https://img.shields.io/badge/Claude_Code-2.1.301%2B-d97706" alt="Requires Claude Code 2.1.301+">
+  <img src="https://img.shields.io/badge/type-mod-8b5cf6" alt="Claude Code mod">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
+</p>
+
+> Part of the [brewcode mods](../README.md#claude-code-mods), next to [brewmod-placeholders](../brewmod-placeholders/) and [brewmod-plan-effort](../brewmod-plan-effort/).
+
+## What it is
+
+`CronCreate` and `/loop` die with the session. A reminder here is a plain Markdown file in the project (`.claude/scheduled/`) or global (every project of your Claude profile). Say it in one sentence, it is saved at once, and any later session shows it when it fires. Nothing runs on its own.
+
+## Install
+
+> **Update Claude Code first:** the mods need Claude Code 2.1.301 or newer (`claude --version`, then `claude update` and restart). The mods use the hooks module API, which is early access.
+
+```bash
+claude plugin marketplace add https://github.com/kochetkov-ma/claude-brewcode && claude plugin install brewmod-reminders@claude-brewcode
+```
+
+Then run `/reload-plugins`. Requires Node.js 14.13.1 or newer. Update with `/brewtools:plugin-update`.
+
+The launcher `hooks/run-node.sh` takes the first usable Node.js, in this order: every absolute `PATH` entry; nvm (`$NVM_DIR`, then `~/.nvm`: default alias, then newest compatible install); Volta (`$VOLTA_HOME/bin/node`, then `~/.volta/bin/node`); fnm (roots `$FNM_DIR`, `~/Library/Application Support/fnm`, `${XDG_DATA_HOME:-~/.local/share}/fnm`, `~/.fnm`: `aliases/default`, then newest compatible install in `node-versions`); `/opt/homebrew/bin/node`; `/opt/homebrew/opt/node@*`; `/usr/local/bin/node`; `/usr/local/opt/node@*`; `~/.local/bin/node`. Each candidate gets a 1 s version probe, then it is killed and skipped; there is no overall limit. `X.Y.Z` and `X.Y.Z-suffix` versions count when the numeric part is 14.13.1 or newer.
+
+If none is usable, the launcher exits 0 with no output, the hook is skipped, and one line per plugin per UTC day goes to `<config dir>/logs/brewmod-node.log` (`<config dir>` is `CLAUDE_CONFIG_DIR`, default `~/.claude`). These hooks run on `UserPromptSubmit` and `SessionStart` after compaction (`compact`).
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `Executable not found in $PATH: node` | `/brewtools:plugin-update` itself needs Node, so run `claude plugin marketplace update claude-brewcode && claude plugin update brewmod-reminders@claude-brewcode` in a terminal, then `/reload-plugins` to load the launcher. If Node.js is still unavailable, install nvm if needed, then run `nvm install --lts && nvm alias default node`, then reload the plugins again. |
+
+## Timeline
+
+```text
+Wed 16:10  "remind me tomorrow at 9 to check the prod logs and show me errors"
+           -> saved at once, kind: action
+Thu 09:00  it fires. Session closed: nothing happens yet
+Thu 09:20  you open a session -> band "reminders · 1 fired"
+Thu 09:21  your first prompt -> Claude opens its reply with one line about it
+Thu 09:22  **1 -> Claude runs it, closes it with a one-line result -> band gone
+Next hour  no repeat line; a newly fired reminder is announced at once
+```
+
+Every reminder needs a time or "someday"; if you give none, Claude asks once ("When should it fire?").
+
+## Kinds
+
+- **action**: Claude does the work when you run it ("check the prod logs"), then closes it.
+- **note**: only reminds you ("build the CSV export"); shown in full, closed once shown.
+- **someday**: no date, never fires; listed only when you ask (`/remind someday`, the `**` and `**?` pickers).
+
+## Commands
+
+| Command | Result |
+|---------|--------|
+| `/remind` | Fired reminders, numbered like the band |
+| `**` | Picker of fired and someday reminders, last row `**?`; Enter on a bare `**` in the terminal prints the `/remind all` list (Remote Control and SDK prompts pass through to Claude) |
+| `**1` | Run the first fired reminder (`**1 **2` runs several) |
+| `**?` | Every reminder by state, tagged project or global; Enter in the terminal prints the `/remind all` list plus the 10 newest closed |
+| `**<id>` / `**project:<id>` / `**global:<id>` | Run one by id; the scoped form picks the copy when the id exists in both folders |
+| `/remind all` | Fired, Waiting and Someday |
+| `/remind snooze <N\|id> <when>` | New time (`+2h`, `tomorrow 9:00`, `fri 14:00`) |
+| `/remind help` | Summary, folders, desktop alert state |
+
+All commands, settings (`prefix`, `cooldownMinutes`, `notify`, git mode), file format (closed items deleted after 30 days; with `git` set to `commit` or `commit-push`, expired project files are kept and Claude is asked to delete and commit them) and tools: [full docs](https://doc-claude.brewcode.app/mods/reminders/).
+
+[Project page](https://brewcode.app/mods/reminders/) | [Source](https://github.com/kochetkov-ma/claude-brewcode/tree/main/brewmod-reminders) | [All mods](../README.md#claude-code-mods) | [Release notes](../RELEASE-NOTES.md)
+
+Author: Maksim Kochetkov | License: MIT

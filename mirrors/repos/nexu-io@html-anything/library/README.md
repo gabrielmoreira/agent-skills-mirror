@@ -6,7 +6,7 @@
 
 | Collection | Start here | What belongs here |
 | --- | --- | --- |
-| **🧠 Skills** | [Growth Teardown](skills/openmotion-growth-teardown/SKILL.md) · [Design Styles](skills/openmotion-design-styles/SKILL.md) · [Presenter Story](skills/openmotion-presenter-story/SKILL.md) · [Motion Design Remix](skills/openmotion-design-remix/SKILL.md) · [Style recipes](#style-recipes) · [Brandkit preparation](skills/openmotion-brandkit/SKILL.md) | A focused, reusable method in `SKILL.md`, with examples and references when needed. |
+| **🧠 Skills** | [Growth Teardown](skills/openmotion-growth-teardown/SKILL.md) · [Design Styles](skills/openmotion-design-styles/SKILL.md) · [Sale Promo](skills/openmotion-sale-promo/SKILL.md) · [Sale Countdown](skills/openmotion-sale-countdown/SKILL.md) · [Sale Carousel](skills/openmotion-sale-carousel/SKILL.md) · [Presenter Story](skills/openmotion-presenter-story/SKILL.md) · [Motion Design Remix](skills/openmotion-design-remix/SKILL.md) · [Style recipes](#style-recipes) · [Brandkit preparation](skills/openmotion-brandkit/SKILL.md) | A focused, reusable method in `SKILL.md`, with examples and references when needed. |
 | **🎞️ Templates** | [Studio starting points](templates/README.md) · [Presenter Tech](templates/presenter-tech/README.md) | A complete project, preview and adaptation instructions. |
 | **🧩 Motion components** | [Title reveal recipe](components/title-reveal/README.md) | A reusable title, transition, chart or scene with a clear timing and editing contract. |
 | **🎨 Motion design systems** | [Ink & Water](design-systems/ink-water/MOTION_DESIGN.md) | `MOTION_DESIGN.md`: typography, composition, pacing, movement and sound decisions. |
@@ -17,6 +17,9 @@
 library/
 ├── skills/openmotion-growth-teardown/          → company growth research → sourced growth-map film
 ├── skills/openmotion-design-styles/            → 21 named design styles + 2 layouts → a film in that style
+├── skills/openmotion-sale-promo/               → one sale offer → exact was/now promo film
+├── skills/openmotion-sale-countdown/           → true days or hours left → rolling-number sale teaser
+├── skills/openmotion-sale-carousel/            → 3–7 sale products → carousel reel with end grid
 ├── skills/openmotion-presenter-story/          → three presenter / motion recipes
 ├── skills/openmotion-design-remix/             → six source / remix profiles
 ├── skills/openmotion-highlighter-notes/ …       → 96 single-style recipes (see below)
@@ -67,6 +70,7 @@ npx skills add ./library/skills --skill openmotion-design-remix
 npx skills add ./library/skills --skill openmotion-presenter-story
 npx skills add ./library/skills --skill openmotion-growth-teardown
 npx skills add ./library/skills --skill openmotion-design-styles
+npx skills add ./library/skills --skill openmotion-sale-promo
 npx skills add ./library/skills --skill openmotion-spec-sheet
 ```
 
@@ -76,9 +80,9 @@ For standalone installation or upgrade, use an explicit skills directory:
 node scripts/install-library-skill.mjs openmotion-design-remix /absolute/path/to/host/skills
 ```
 
-The helper accepts only the one hundred and one canonical `openmotion-*` Library names listed in this page. It reuses identical content and refuses to overwrite customized canonical folders. On upgrade, it removes an old forwarding folder only when every file matches the shipped original by hash. Customized folders, extra files and symlinks are preserved and reported in `preservedLegacy` for manual review. Run it for each installed Library Skill, then refresh host Skill discovery. Old Skill invocations are removed; update saved prompts and paths to canonical names.
+The helper accepts only the one hundred and four canonical `openmotion-*` Library names listed in this page. It reuses identical content and refuses to overwrite customized canonical folders. On upgrade, it removes an old forwarding folder only when every file matches the shipped original by hash. Customized folders, extra files and symlinks are preserved and reported in `preservedLegacy` for manual review. Run it for each installed Library Skill, then refresh host Skill discovery. Old Skill invocations are removed; update saved prompts and paths to canonical names.
 
-This library is browsable source today. It is not automatically imported into Studio or registered as MCP resources. The five core production Skills remain in [`skills/`](../skills/); the optional library Skills supply brand context, presenter-story design recipes, a growth-teardown research-to-film method, a design-style library of 21 styles and 2 layouts, 96 single-style recipes or a specific source-remix method and do not add core production routes. The [Studio catalog](../docs/template-catalog.md) and [viewing references](../docs/collections/README.md) retain their existing sources and behavior.
+This library is browsable source today. It is not automatically imported into Studio or registered as MCP resources. The five core production Skills remain in [`skills/`](../skills/); the optional library Skills supply brand context, presenter-story design recipes, a growth-teardown research-to-film method, a design-style library of 21 styles and 2 layouts, three holiday-sale generators (promo, countdown, carousel), 96 single-style recipes or a specific source-remix method and do not add core production routes. The [Studio catalog](../docs/template-catalog.md) and [viewing references](../docs/collections/README.md) retain their existing sources and behavior.
 
 <a id="contribute-one-useful-thing"></a>
 

@@ -36,7 +36,7 @@ Hyperframes 指引只在 [原生引擎边界](native.md#engine-guidance-boundary
 | 依据 [生成边界](materials.md#generation-boundary) 确认需要生成素材 | 按需读取 [openmotion-media](../../openmotion-media/SKILL.md) |
 | Selecting/replacing fonts, changing text hierarchy, or diagnosing typography | [Typography](typography.md); preserve the selected route and established identity. Local edits cover affected text only; unchanged preview/export and audio-only work do not trigger selection. |
 | 原创新片／大幅重编 | 所选 director 入口负责自己的创作读集；实际受影响内容应用共享 [审片](review.md)。 |
-| 按既定声音决定执行或工程音轨调整，含画面锁定 | [声音执行与声画锚点](sound.md)、声音相关的 [审片](review.md)；不加载原创声音构思。需要新设计声音叙事时，由所选 director 入口按需读取声音设计参考。 |
+| 按既定声音决定执行或工程音轨调整，含配音字幕协同与画面锁定 | [声音执行与配音字幕协同](sound.md)、声音相关的 [审片](review.md)；不加载原创声音构思。需要新设计声音叙事时，由所选 director 入口按需读取声音设计参考。 |
 | 原样使用模板、不做修改 | Editor-only uses the [editable preview handoff](native.md#editable-preview-handoff). Explicit file delivery applies [delivery scope](production.md#delivery-scope), [source pinning](native.md#pin-source-for-independent-deliverables) and [verification scope](verification.md#verification-scope). The selected entry owns its sequence; no authoring/creative read is required solely to export. An edited project cannot reuse an old preview. |
 | 使用／适配可编辑模板，需要创建、编辑或渲染工程 | ID／来源尚未明确时读取 [模板能力说明](templates.md)；内容修改按影响审片，原样渲染按上面的文件交付范围执行，不因请求渲染而加载创作规范。 |
 | 明确要求视频转可复用模板 | 所选入口负责自己的分阶段读集；按 [参考视频读取与测量](reference-video.md) 检查实际参考视频；按影响应用共享 [制作决策](decisions.md)、[审片](review.md) 与 [可移植工程](portable-project.md)。 |

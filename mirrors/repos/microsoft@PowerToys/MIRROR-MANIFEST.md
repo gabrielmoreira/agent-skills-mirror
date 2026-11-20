@@ -56,8 +56,8 @@ Mirror of `microsoft/PowerToys` — 26 default patterns, 11 followed patterns, 6
 - `doc/devdocs/development/style.md`
 - `doc/devdocs/development/logging.md`
 - `tools/build/BUILD-GUIDELINES.md`
-- `doc/devdocs/tools/fuzzingtesting.md`
 - `doc/devdocs/development/ui-tests.md`
+- `doc/devdocs/tools/fuzzingtesting.md`
 - `doc/devdocs/core/runner.md`
 - `doc/devdocs/core/settings/readme.md`
 - `doc/devdocs/modules/interface.md`

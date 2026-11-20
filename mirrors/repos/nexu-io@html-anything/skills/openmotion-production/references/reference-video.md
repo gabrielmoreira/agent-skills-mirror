@@ -12,6 +12,8 @@ A catalog guidance package returned by `openmotion_get_template` without editabl
 
 Read the reference as a whole before choosing an implementation. Inspect representative frames and consecutive frames around every cut, entrance, exit and transition. Explain what persists, enters, changes, holds and exits; keep an object's identity across cuts when it is the same object.
 
+Keep extracted sound as a local file and use a supported player or dedicated file-based audio analyzer for listening. For model-side listening, require documented audio-input support for the active model and connection before sending an audio attachment. A tool's audio-output helper only describes that tool's output. Keep encoded audio, including base64, out of shell and generic tool results. If model audio input is unavailable or unknown, use `measure events --map` for candidate cues and compare decoded audio for precise onset or offset checks. Continue the visual and timing work and record the listening status using the [shared audiovisual evidence rules](verification.md#verification-scope).
+
 At each change, read four things: where an element comes from and how (pop, scale, fade, type, word by word, wipe); how it changes on screen (colour, fill, counting, morphing); how it leaves; and whether its edges are solid, stroked, gradient or glowing.
 
 A one-per-second or half-second overview is for navigation only and is never evidence of motion: it drops 1–3 frame differences, entry directions, blur and flashes at cuts. Judging motion requires consecutive native frames of that range.
@@ -25,6 +27,8 @@ If decoding, frame extraction or seeking fails, recover the media tools through 
 ## Locate the pinned CLI and media tools
 
 Measurement uses the pinned native CLI: `node <hyperframesCli> measure …`. For a managed project, `openmotion_get_project({projectId})` returns `hyperframesCli` and `authoringGuide`; resources/read `openmotion://engine/SKILL.md` returns the guide without opening Studio. These commands require host shell and file capabilities.
+
+For an independent folder, resolve the native CLI and guide from the active OpenMotion installation. Use the full plugin's registered working directory or the installed adapter's recorded `runtimeRoot`. Confirm `node_modules/hyperframes/bin/hyperframes.mjs` and `node_modules/hyperframes/dist/skills/hyperframes/SKILL.md` there before authoring.
 
 Commands you run yourself (`node <hyperframesCli>`, an entry's measurement helper, `ffmpeg`) use `node` and `ffmpeg` from `PATH`. The self-contained package does not put them on `PATH`: its directory is the one holding `node_modules/hyperframes` in the `hyperframesCli` path, with Node at `runtime/node/bin/node` (Windows `runtime\node\node.exe`) and FFmpeg/ffprobe in `runtime/media/bin`. For an npm installation there is no bundled `runtime/` directory: the application root is the directory containing `node_modules/hyperframes`, and `scripts/npm-runtime.mjs` exports `ensureNativeRuntime(appRoot)` and `nativeConfiguration(appRoot)`. Prepare through the former when needed; the latter returns `paths.HYPERFRAMES_FFMPEG_PATH` and `paths.HYPERFRAMES_FFPROBE_PATH` for the verified cache. Pass these as environment variables to measurement helpers or direct media commands. When neither is available, record the affected check as blocked with the reason; never as passed.
 

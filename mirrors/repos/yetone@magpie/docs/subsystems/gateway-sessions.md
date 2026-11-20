@@ -295,6 +295,18 @@ call magpie had routed was counted again as a local session's whatever
 provider id ZCode wrote beside it (nori_tsukiji on X). Verification:
 `TestZCodeCallsPairWithTheGatewaysRecords`.
 
+Pairing needs the tokens and end time to agree, so a routed call they don't
+(a try the gateway and ZCode count differently) was still listed twice. A
+call whose provider is the gateway is left out of ZCode's calls before any
+pairing: the id magpie writes (`magpie`), and any provider the user added by
+hand whose base URL in `config.json` or `provider_config.json` is this
+machine (loopback, `localhost`, one of its addresses) at the gateway's port
+(`zcodeGateway`, `gatewayBase`; jiangshangmuyun on X: "new-provider" at
+`127.0.0.1:3425`, one call listed as "new-provider · Local session" among
+the gateway's rows). It reads the configuration as it is now, as
+`workbuddyGateway` does. Verification: `TestZCodeHandAddedGatewayProvider`,
+`TestGatewayBase`.
+
 The Claude subscription bridge's own Claude Code runs save their sessions
 in a Claude folder the readers list (the user's own, or a saved account's
 under `claude-accounts`), often in the caller's project. They aren't the
@@ -369,7 +381,7 @@ list the session), and `HasGatewayConversations` counts it.
 Implementation: [`internal/sessions/gateway_delete.go`](../../internal/sessions/gateway_delete.go),
 `Restore` in [`internal/sessions/manage.go`](../../internal/sessions/manage.go), and
 [`internal/gui/sessions_manage.go`](../../internal/gui/sessions_manage.go).
-An agent whose sessions magpie cannot delete (OpenCode, Cline, Grok, Kimi, Hermes:
+An agent whose sessions magpie cannot delete (OpenCode, Cline, Kimi, Hermes:
 rows in the agent's own database or store) and whose command is no longer on
 PATH (`cliGone`) is forgettable (_SekiBetu_ on X): its rows get Delete, which
 only hides them through the same hidden list (`sessions.Forget`, trash note
@@ -377,6 +389,36 @@ marked `forgot`; the agent's own files are not touched), and no Resume
 (`resumeFor`). Restore unhides. With the command installed nothing changes.
 Tests: `TestUninstalledAgentSessionsAreForgotten`,
 `TestManageDeleteOfAnUninstalledAgentTakesItOffTheList`, `sessions-forget.test.cjs`.
+Grok Build's sessions are deletable too (#3003 asked; #4595 had them listed
+with no Delete): a session is its folder, so `sessions.Delete` moves the whole
+of it under `<GROK_HOME>/sessions/<url-encoded cwd>/<id>/` — `updates.jsonl`,
+`summary.json`, the locks and the `terminal/` output Grok Build writes beside
+them — and its subagents' folders, which are folders of their own beside it
+and which `grokFiles` folds into the session it ran in. What is outside them
+stays: another session's folder, the `prompt_history.jsonl` of the cwd, and
+the index. Grok Build also copies each session's text into
+`<GROK_HOME>/sessions/session_search.sqlite` (`session_docs`, one row a
+session, over the FTS5 `session_docs_fts` its own triggers keep in step), so
+that file is the one copy of the text a folder delete would leave behind and
+its search would go on finding: `grokSearchRowsDrop` deletes the session's
+row and its subagents', waiting on Grok's own write lock
+(`BEGIN IMMEDIATE`, busy timeout 5 s), before any file is moved. A row that
+can't be taken out stops the delete, so the session stays whole rather than
+half gone; no index, or one without those tables, deletes as before. The rows
+are kept, every column as Grok Build had them, in the trash entry's
+`grok_search.json` (not in the note the Trash page lists, the text can be
+large); Restore puts them back (`INSERT OR IGNORE`, so a row Grok Build wrote
+again meanwhile is kept, and an index that can't be written doesn't stop the
+restore), and a delete that fails after dropping them puts them back too.
+Implementation:
+[`grok_search.go`](../../internal/sessions/grok_search.go), the `grok` branch
+of `sessionPaths` and `Delete` in
+[`manage.go`](../../internal/sessions/manage.go); tests
+`TestGrokDeleteRestore`, `TestGrokDeleteLeavesTheSessionWhenItsIndexRowCantGo`,
+`TestGrokSearchRowsDrop`, `TestGrokSearchRowsComeBackWhole` and
+`TestGrokSessionDeleteOnThePage`. The schema (session_docs: session_id, cwd,
+updated_at, title, content, content_hash; some versions add an offset column)
+was read from Grok Build 1.0.67's own index and binary.
 A deleted Codex session also leaves the Codex app's list (zhuddan on Discord).
 The app (ChatGPT.app's Codex, 26.x) lists threads from its own catalog,
 `<CODEX_HOME>/sqlite/codex.db` (`codex-dev.db` for a non-prod build), table
@@ -1011,6 +1053,15 @@ picks it up from any folder; when agy is set to use magpie it is the
 agent's launch command (the gateway's variables and `--model`) with
 `--conversation` after it (`sessions.AgyStart`, set by package agent).
 Subagents (`parent_conversation_id`) and agy in WSL are not read.
+agy's calls are also read from the profile T3 Code gives each of its
+Antigravity instances (`t3AgyDirs`): T3 Code runs `agy acp --gemini-dir
+<profile> --app-data-dir antigravity-acp` on the instance's own Google
+sign-in, the profile under `<T3 Code's folder>/userdata/providers/antigravity/`
+(or `dev/…` for its dev server; the folder is `$T3CODE_HOME` or `~/.t3`,
+`appdir.T3Code`), and those requests go to Google, not through the gateway
+(zzzkl on X; `TestAgyCallsInT3Code`, on what agy 1.5.10 wrote run that way).
+`Found` lists agy for those folders too. The Sessions page doesn't list
+them: `agy --conversation` would look in agy's own folder.
 Verification: `TestAgySessions`, `TestAgyTitleLater`, `TestAgyGrows`,
 `TestAgyTranscript`, `TestAgyFolder`, `TestAgyRowOnly`, on conversations agy 1.3.5 and 1.4.7
 wrote in a sandbox.

@@ -1,6 +1,6 @@
 # Repository-managed motion templates
 
-The source of 286 published motion guidance templates lives in [the repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog): guides, HTML examples, code, measurements and small images. Larger images use existing public CMS rendition links. Reference videos and duplicate ZIP downloads keep their public CMS URLs. These existing links are migration inputs, not a requirement to upload new contributions to CMS. Contributors can add their own media without CMS access; maintainers transfer final media to public storage once before Squash merge. Git LFS is also accepted as an input. Viewing existing linked images requires internet access.
+The source of 287 published motion guidance templates lives in [the repository catalog](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog): guides, HTML examples, code, measurements and small images. Larger images use existing public CMS rendition links. Reference videos and duplicate ZIP downloads keep their public CMS URLs. These existing links are migration inputs, not a requirement to upload new contributions to CMS. Contributors can add their own media without CMS access; maintainers transfer final media to public storage once before Squash merge. Git LFS is also accepted as an input. Viewing existing linked images requires internet access.
 
 ## Run from a local clone
 
@@ -79,7 +79,7 @@ CI validates the final merge tree without media downloads or upload credentials,
 
 ## Source to publication
 
-`npm run templates:export -- .artifacts/catalog-candidate.json` reconstructs the public CMS publication shape from repository metadata, including all eleven locales, ordering and collection facets. The initial export was deeply compared with the public snapshot for all 286 entries.
+`npm run templates:export -- .artifacts/catalog-candidate.json` reconstructs the public CMS publication shape from repository metadata, including all eleven locales, ordering and collection facets. The initial export was deeply compared with the public snapshot for all 286 entries imported at the time; the catalog has since grown to 287.
 
 Export writes a file only; it does not upload source or publish either catalog. Repository contributions use the automatic hosted publication described below and need no CMS upload. The imported publication identity remains for comparison.
 

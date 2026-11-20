@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenByteInc/QuantDinger` — 26 default patterns, 74 followed patterns, 109 file(s) materialized.
+Mirror of `OpenByteInc/QuantDinger` — 26 default patterns, 75 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `OpenByteInc/QuantDinger` — 26 default patterns, 74 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 74 |
-| Files         | 109 |
+| Followed pats | 75 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `OpenByteInc/QuantDinger` — 26 default patterns, 74 followed pattern
 - `docs/architecture/API_CONVENTIONS.md`
 - `README.md`
 - `README_CN.md`
+- `CONTRIBUTING.md`
 - `docs/architecture/PROCESS_ROLES_AND_TASKS.md`
 - `docs/architecture/ARCHITECTURE.md`
 - `docs/architecture/CONCURRENCY_MODEL.md`
@@ -101,7 +102,6 @@ Mirror of `OpenByteInc/QuantDinger` — 26 default patterns, 74 followed pattern
 - `docs/deployment/ERROR_KNOWLEDGE_BASE.md`
 - `docs/api/README.md`
 - `docs/architecture/DOCUMENTATION_MAINTENANCE.md`
-- `CONTRIBUTING.md`
 - `ROADMAP.md`
 - `TRADEMARKS.md`
 - `CONTRIBUTORS.md`
@@ -120,6 +120,7 @@ Mirror of `OpenByteInc/QuantDinger` — 26 default patterns, 74 followed pattern
 - `docs/deployment/CONFIGURATION_REFERENCE_CN.md`
 - `docs/deployment/BACKUP_RESTORE_MIGRATION_CN.md`
 - `docs/deployment/UPGRADE_ROLLBACK_CN.md`
+- `docs/trading/LIVE_TRADING_SAFETY_CN.md`
 - `docs/deployment/INTEGRATION_GUIDE_CN.md`
 - `docs/deployment/ERROR_KNOWLEDGE_BASE_CN.md`
 - `docs/architecture/DOCUMENTATION_MAINTENANCE_CN.md`
@@ -166,81 +167,85 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`docs/getting-started/FIRST_RUN.md`](docs/getting-started/FIRST_RUN.md) |
 | 33 | ✓ | [`docs/security/README_CN.md`](docs/security/README_CN.md) |
 | 34 | ✓ | [`docs/security/README.md`](docs/security/README.md) |
-| 35 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 36 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 37 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 38 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
-| 39 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
-| 40 | → | [`docs/agent/AGENT_QUICKSTART.md`](docs/agent/AGENT_QUICKSTART.md) |
-| 41 | → | [`docs/agent/MCP_SETUP.md`](docs/agent/MCP_SETUP.md) |
-| 42 | → | [`docs/agent/README.md`](docs/agent/README.md) |
-| 43 | → | [`docs/api/README.md`](docs/api/README.md) |
-| 44 | → | [`docs/architecture/API_CONVENTIONS.md`](docs/architecture/API_CONVENTIONS.md) |
-| 45 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
-| 46 | → | [`docs/architecture/CONCURRENCY_MODEL.md`](docs/architecture/CONCURRENCY_MODEL.md) |
-| 47 | → | [`docs/architecture/DOCUMENTATION_MAINTENANCE_CN.md`](docs/architecture/DOCUMENTATION_MAINTENANCE_CN.md) |
-| 48 | → | [`docs/architecture/DOCUMENTATION_MAINTENANCE.md`](docs/architecture/DOCUMENTATION_MAINTENANCE.md) |
-| 49 | → | [`docs/architecture/EXTENSION_GUIDE.md`](docs/architecture/EXTENSION_GUIDE.md) |
-| 50 | → | [`docs/architecture/MODULE_BOUNDARIES.md`](docs/architecture/MODULE_BOUNDARIES.md) |
-| 51 | → | [`docs/architecture/PROCESS_ROLES_AND_TASKS.md`](docs/architecture/PROCESS_ROLES_AND_TASKS.md) |
-| 52 | → | [`docs/architecture/README.md`](docs/architecture/README.md) |
-| 53 | → | [`docs/architecture/V6_HYPERSCALE_ARCHITECTURE_PLAN.md`](docs/architecture/V6_HYPERSCALE_ARCHITECTURE_PLAN.md) |
-| 54 | → | [`docs/compliance/LICENSE_COMPLIANCE_PROCEDURE.md`](docs/compliance/LICENSE_COMPLIANCE_PROCEDURE.md) |
-| 55 | → | [`docs/compliance/README.md`](docs/compliance/README.md) |
-| 56 | → | [`docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_CN.md`](docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_CN.md) |
-| 57 | → | [`docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_EN.md`](docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_EN.md) |
-| 58 | → | [`docs/deployment/AWS_MARKETPLACE_DEPLOYMENT_CN.md`](docs/deployment/AWS_MARKETPLACE_DEPLOYMENT_CN.md) |
-| 59 | → | [`docs/deployment/AWS_MARKETPLACE_DEPLOYMENT.md`](docs/deployment/AWS_MARKETPLACE_DEPLOYMENT.md) |
-| 60 | → | [`docs/deployment/BACKUP_RESTORE_MIGRATION_CN.md`](docs/deployment/BACKUP_RESTORE_MIGRATION_CN.md) |
-| 61 | → | [`docs/deployment/BACKUP_RESTORE_MIGRATION.md`](docs/deployment/BACKUP_RESTORE_MIGRATION.md) |
-| 62 | → | [`docs/deployment/CLOUD_DEPLOYMENT_CN.md`](docs/deployment/CLOUD_DEPLOYMENT_CN.md) |
-| 63 | → | [`docs/deployment/CLOUD_DEPLOYMENT_EN.md`](docs/deployment/CLOUD_DEPLOYMENT_EN.md) |
-| 64 | → | [`docs/deployment/CONFIGURATION_REFERENCE_CN.md`](docs/deployment/CONFIGURATION_REFERENCE_CN.md) |
-| 65 | → | [`docs/deployment/CONFIGURATION_REFERENCE.md`](docs/deployment/CONFIGURATION_REFERENCE.md) |
-| 66 | → | [`docs/deployment/DISTRIBUTED_RUNTIME_SCALING_CN.md`](docs/deployment/DISTRIBUTED_RUNTIME_SCALING_CN.md) |
-| 67 | → | [`docs/deployment/DISTRIBUTED_RUNTIME_SCALING.md`](docs/deployment/DISTRIBUTED_RUNTIME_SCALING.md) |
-| 68 | → | [`docs/deployment/ERROR_KNOWLEDGE_BASE_CN.md`](docs/deployment/ERROR_KNOWLEDGE_BASE_CN.md) |
-| 69 | → | [`docs/deployment/ERROR_KNOWLEDGE_BASE.md`](docs/deployment/ERROR_KNOWLEDGE_BASE.md) |
-| 70 | → | [`docs/deployment/INSTALL_TROUBLESHOOTING_CN.md`](docs/deployment/INSTALL_TROUBLESHOOTING_CN.md) |
-| 71 | → | [`docs/deployment/INSTALL_TROUBLESHOOTING.md`](docs/deployment/INSTALL_TROUBLESHOOTING.md) |
-| 72 | → | [`docs/deployment/INSTALLATION_FAQ_CN.md`](docs/deployment/INSTALLATION_FAQ_CN.md) |
-| 73 | → | [`docs/deployment/INSTALLATION_FAQ.md`](docs/deployment/INSTALLATION_FAQ.md) |
-| 74 | → | [`docs/deployment/INTEGRATION_GUIDE_CN.md`](docs/deployment/INTEGRATION_GUIDE_CN.md) |
-| 75 | → | [`docs/deployment/INTEGRATION_GUIDE.md`](docs/deployment/INTEGRATION_GUIDE.md) |
-| 76 | → | [`docs/deployment/LINUX_MACOS_INSTALLATION_CN.md`](docs/deployment/LINUX_MACOS_INSTALLATION_CN.md) |
-| 77 | → | [`docs/deployment/LINUX_MACOS_INSTALLATION.md`](docs/deployment/LINUX_MACOS_INSTALLATION.md) |
-| 78 | → | [`docs/deployment/MOBILE_CLIENT_DEPLOYMENT_CN.md`](docs/deployment/MOBILE_CLIENT_DEPLOYMENT_CN.md) |
-| 79 | → | [`docs/deployment/MOBILE_CLIENT_DEPLOYMENT.md`](docs/deployment/MOBILE_CLIENT_DEPLOYMENT.md) |
-| 80 | → | [`docs/deployment/OBSERVABILITY.md`](docs/deployment/OBSERVABILITY.md) |
-| 81 | → | [`docs/deployment/PRODUCTION_HARDENING.md`](docs/deployment/PRODUCTION_HARDENING.md) |
-| 82 | → | [`docs/deployment/SAAS_DEPLOYMENT_CN.md`](docs/deployment/SAAS_DEPLOYMENT_CN.md) |
-| 83 | → | [`docs/deployment/SAAS_DEPLOYMENT.md`](docs/deployment/SAAS_DEPLOYMENT.md) |
-| 84 | → | [`docs/deployment/UPGRADE_ROLLBACK_CN.md`](docs/deployment/UPGRADE_ROLLBACK_CN.md) |
-| 85 | → | [`docs/deployment/UPGRADE_ROLLBACK.md`](docs/deployment/UPGRADE_ROLLBACK.md) |
-| 86 | → | [`docs/deployment/WINDOWS_INSTALLATION_CN.md`](docs/deployment/WINDOWS_INSTALLATION_CN.md) |
-| 87 | → | [`docs/deployment/WINDOWS_INSTALLATION.md`](docs/deployment/WINDOWS_INSTALLATION.md) |
-| 88 | → | [`docs/getting-started/INSTALLATION_CN.md`](docs/getting-started/INSTALLATION_CN.md) |
-| 89 | → | [`docs/getting-started/INSTALLATION.md`](docs/getting-started/INSTALLATION.md) |
-| 90 | → | [`docs/getting-started/POST_INSTALL_SETUP_CN.md`](docs/getting-started/POST_INSTALL_SETUP_CN.md) |
-| 91 | → | [`docs/getting-started/POST_INSTALL_SETUP.md`](docs/getting-started/POST_INSTALL_SETUP.md) |
-| 92 | → | [`docs/getting-started/QUICKSTART_30_MINUTES_CN.md`](docs/getting-started/QUICKSTART_30_MINUTES_CN.md) |
-| 93 | → | [`docs/getting-started/QUICKSTART_30_MINUTES.md`](docs/getting-started/QUICKSTART_30_MINUTES.md) |
-| 94 | → | [`docs/getting-started/TESTING.md`](docs/getting-started/TESTING.md) |
-| 95 | → | [`docs/README.md`](docs/README.md) |
-| 96 | → | [`docs/security/DEPENDENCY_POLICY.md`](docs/security/DEPENDENCY_POLICY.md) |
-| 97 | → | [`docs/security/SECURE_DEVELOPMENT.md`](docs/security/SECURE_DEVELOPMENT.md) |
-| 98 | → | [`docs/security/SECURITY_ASSESSMENT.md`](docs/security/SECURITY_ASSESSMENT.md) |
-| 99 | → | [`docs/trading/INDICATOR_DEV_GUIDE.md`](docs/trading/INDICATOR_DEV_GUIDE.md) |
-| 100 | → | [`docs/trading/LIVE_TRADING_SAFETY.md`](docs/trading/LIVE_TRADING_SAFETY.md) |
-| 101 | → | [`docs/trading/STRATEGY_DEV_GUIDE.md`](docs/trading/STRATEGY_DEV_GUIDE.md) |
-| 102 | → | [`GOVERNANCE.md`](GOVERNANCE.md) |
-| 103 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 104 | → | [`mcp_server/README.md`](mcp_server/README.md) |
-| 105 | → | [`README_CN.md`](README_CN.md) |
-| 106 | → | [`README.md`](README.md) |
-| 107 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 108 | → | [`SECURITY.md`](SECURITY.md) |
-| 109 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 35 | ✓ | [`library/indicators/README.md`](library/indicators/README.md) |
+| 36 | ✓ | [`library/README.md`](library/README.md) |
+| 37 | ✓ | [`library/strategies/README.md`](library/strategies/README.md) |
+| 38 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 39 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 40 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 41 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
+| 42 | → | [`DEVELOPMENT.md`](DEVELOPMENT.md) |
+| 43 | → | [`docs/agent/AGENT_QUICKSTART.md`](docs/agent/AGENT_QUICKSTART.md) |
+| 44 | → | [`docs/agent/MCP_SETUP.md`](docs/agent/MCP_SETUP.md) |
+| 45 | → | [`docs/agent/README.md`](docs/agent/README.md) |
+| 46 | → | [`docs/api/README.md`](docs/api/README.md) |
+| 47 | → | [`docs/architecture/API_CONVENTIONS.md`](docs/architecture/API_CONVENTIONS.md) |
+| 48 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
+| 49 | → | [`docs/architecture/CONCURRENCY_MODEL.md`](docs/architecture/CONCURRENCY_MODEL.md) |
+| 50 | → | [`docs/architecture/DOCUMENTATION_MAINTENANCE_CN.md`](docs/architecture/DOCUMENTATION_MAINTENANCE_CN.md) |
+| 51 | → | [`docs/architecture/DOCUMENTATION_MAINTENANCE.md`](docs/architecture/DOCUMENTATION_MAINTENANCE.md) |
+| 52 | → | [`docs/architecture/EXTENSION_GUIDE.md`](docs/architecture/EXTENSION_GUIDE.md) |
+| 53 | → | [`docs/architecture/MODULE_BOUNDARIES.md`](docs/architecture/MODULE_BOUNDARIES.md) |
+| 54 | → | [`docs/architecture/PROCESS_ROLES_AND_TASKS.md`](docs/architecture/PROCESS_ROLES_AND_TASKS.md) |
+| 55 | → | [`docs/architecture/README.md`](docs/architecture/README.md) |
+| 56 | → | [`docs/architecture/V6_HYPERSCALE_ARCHITECTURE_PLAN.md`](docs/architecture/V6_HYPERSCALE_ARCHITECTURE_PLAN.md) |
+| 57 | → | [`docs/compliance/LICENSE_COMPLIANCE_PROCEDURE.md`](docs/compliance/LICENSE_COMPLIANCE_PROCEDURE.md) |
+| 58 | → | [`docs/compliance/README.md`](docs/compliance/README.md) |
+| 59 | → | [`docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_CN.md`](docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_CN.md) |
+| 60 | → | [`docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_EN.md`](docs/deployment/ADMIN_AND_SETTINGS_TROUBLESHOOTING_EN.md) |
+| 61 | → | [`docs/deployment/AWS_MARKETPLACE_DEPLOYMENT_CN.md`](docs/deployment/AWS_MARKETPLACE_DEPLOYMENT_CN.md) |
+| 62 | → | [`docs/deployment/AWS_MARKETPLACE_DEPLOYMENT.md`](docs/deployment/AWS_MARKETPLACE_DEPLOYMENT.md) |
+| 63 | → | [`docs/deployment/BACKUP_RESTORE_MIGRATION_CN.md`](docs/deployment/BACKUP_RESTORE_MIGRATION_CN.md) |
+| 64 | → | [`docs/deployment/BACKUP_RESTORE_MIGRATION.md`](docs/deployment/BACKUP_RESTORE_MIGRATION.md) |
+| 65 | → | [`docs/deployment/CLOUD_DEPLOYMENT_CN.md`](docs/deployment/CLOUD_DEPLOYMENT_CN.md) |
+| 66 | → | [`docs/deployment/CLOUD_DEPLOYMENT_EN.md`](docs/deployment/CLOUD_DEPLOYMENT_EN.md) |
+| 67 | → | [`docs/deployment/CONFIGURATION_REFERENCE_CN.md`](docs/deployment/CONFIGURATION_REFERENCE_CN.md) |
+| 68 | → | [`docs/deployment/CONFIGURATION_REFERENCE.md`](docs/deployment/CONFIGURATION_REFERENCE.md) |
+| 69 | → | [`docs/deployment/DISTRIBUTED_RUNTIME_SCALING_CN.md`](docs/deployment/DISTRIBUTED_RUNTIME_SCALING_CN.md) |
+| 70 | → | [`docs/deployment/DISTRIBUTED_RUNTIME_SCALING.md`](docs/deployment/DISTRIBUTED_RUNTIME_SCALING.md) |
+| 71 | → | [`docs/deployment/ERROR_KNOWLEDGE_BASE_CN.md`](docs/deployment/ERROR_KNOWLEDGE_BASE_CN.md) |
+| 72 | → | [`docs/deployment/ERROR_KNOWLEDGE_BASE.md`](docs/deployment/ERROR_KNOWLEDGE_BASE.md) |
+| 73 | → | [`docs/deployment/INSTALL_TROUBLESHOOTING_CN.md`](docs/deployment/INSTALL_TROUBLESHOOTING_CN.md) |
+| 74 | → | [`docs/deployment/INSTALL_TROUBLESHOOTING.md`](docs/deployment/INSTALL_TROUBLESHOOTING.md) |
+| 75 | → | [`docs/deployment/INSTALLATION_FAQ_CN.md`](docs/deployment/INSTALLATION_FAQ_CN.md) |
+| 76 | → | [`docs/deployment/INSTALLATION_FAQ.md`](docs/deployment/INSTALLATION_FAQ.md) |
+| 77 | → | [`docs/deployment/INTEGRATION_GUIDE_CN.md`](docs/deployment/INTEGRATION_GUIDE_CN.md) |
+| 78 | → | [`docs/deployment/INTEGRATION_GUIDE.md`](docs/deployment/INTEGRATION_GUIDE.md) |
+| 79 | → | [`docs/deployment/LINUX_MACOS_INSTALLATION_CN.md`](docs/deployment/LINUX_MACOS_INSTALLATION_CN.md) |
+| 80 | → | [`docs/deployment/LINUX_MACOS_INSTALLATION.md`](docs/deployment/LINUX_MACOS_INSTALLATION.md) |
+| 81 | → | [`docs/deployment/MOBILE_CLIENT_DEPLOYMENT_CN.md`](docs/deployment/MOBILE_CLIENT_DEPLOYMENT_CN.md) |
+| 82 | → | [`docs/deployment/MOBILE_CLIENT_DEPLOYMENT.md`](docs/deployment/MOBILE_CLIENT_DEPLOYMENT.md) |
+| 83 | → | [`docs/deployment/OBSERVABILITY.md`](docs/deployment/OBSERVABILITY.md) |
+| 84 | → | [`docs/deployment/PRODUCTION_HARDENING.md`](docs/deployment/PRODUCTION_HARDENING.md) |
+| 85 | → | [`docs/deployment/SAAS_DEPLOYMENT_CN.md`](docs/deployment/SAAS_DEPLOYMENT_CN.md) |
+| 86 | → | [`docs/deployment/SAAS_DEPLOYMENT.md`](docs/deployment/SAAS_DEPLOYMENT.md) |
+| 87 | → | [`docs/deployment/UPGRADE_ROLLBACK_CN.md`](docs/deployment/UPGRADE_ROLLBACK_CN.md) |
+| 88 | → | [`docs/deployment/UPGRADE_ROLLBACK.md`](docs/deployment/UPGRADE_ROLLBACK.md) |
+| 89 | → | [`docs/deployment/WINDOWS_INSTALLATION_CN.md`](docs/deployment/WINDOWS_INSTALLATION_CN.md) |
+| 90 | → | [`docs/deployment/WINDOWS_INSTALLATION.md`](docs/deployment/WINDOWS_INSTALLATION.md) |
+| 91 | → | [`docs/getting-started/INSTALLATION_CN.md`](docs/getting-started/INSTALLATION_CN.md) |
+| 92 | → | [`docs/getting-started/INSTALLATION.md`](docs/getting-started/INSTALLATION.md) |
+| 93 | → | [`docs/getting-started/POST_INSTALL_SETUP_CN.md`](docs/getting-started/POST_INSTALL_SETUP_CN.md) |
+| 94 | → | [`docs/getting-started/POST_INSTALL_SETUP.md`](docs/getting-started/POST_INSTALL_SETUP.md) |
+| 95 | → | [`docs/getting-started/QUICKSTART_30_MINUTES_CN.md`](docs/getting-started/QUICKSTART_30_MINUTES_CN.md) |
+| 96 | → | [`docs/getting-started/QUICKSTART_30_MINUTES.md`](docs/getting-started/QUICKSTART_30_MINUTES.md) |
+| 97 | → | [`docs/getting-started/TESTING.md`](docs/getting-started/TESTING.md) |
+| 98 | → | [`docs/README.md`](docs/README.md) |
+| 99 | → | [`docs/security/DEPENDENCY_POLICY.md`](docs/security/DEPENDENCY_POLICY.md) |
+| 100 | → | [`docs/security/SECURE_DEVELOPMENT.md`](docs/security/SECURE_DEVELOPMENT.md) |
+| 101 | → | [`docs/security/SECURITY_ASSESSMENT.md`](docs/security/SECURITY_ASSESSMENT.md) |
+| 102 | → | [`docs/trading/INDICATOR_DEV_GUIDE.md`](docs/trading/INDICATOR_DEV_GUIDE.md) |
+| 103 | → | [`docs/trading/LIVE_TRADING_SAFETY_CN.md`](docs/trading/LIVE_TRADING_SAFETY_CN.md) |
+| 104 | → | [`docs/trading/LIVE_TRADING_SAFETY.md`](docs/trading/LIVE_TRADING_SAFETY.md) |
+| 105 | → | [`docs/trading/STRATEGY_DEV_GUIDE.md`](docs/trading/STRATEGY_DEV_GUIDE.md) |
+| 106 | → | [`GOVERNANCE.md`](GOVERNANCE.md) |
+| 107 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 108 | → | [`mcp_server/README.md`](mcp_server/README.md) |
+| 109 | → | [`README_CN.md`](README_CN.md) |
+| 110 | → | [`README.md`](README.md) |
+| 111 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 112 | → | [`SECURITY.md`](SECURITY.md) |
+| 113 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
 
 ---
 

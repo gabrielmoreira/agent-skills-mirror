@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `volcengine/OpenViking` — 26 default patterns, 16 followed patterns, 228 file(s) materialized.
+Mirror of `volcengine/OpenViking` — 26 default patterns, 16 followed patterns, 229 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `volcengine/OpenViking` — 26 default patterns, 16 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 16 |
-| Files         | 228 |
+| Files         | 229 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -279,29 +279,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 203 | ✓ | [`tests/gateway/README.md`](tests/gateway/README.md) |
 | 204 | ✓ | [`tests/oc2ov_test/README.md`](tests/oc2ov_test/README.md) |
 | 205 | ✓ | [`tests/README.md`](tests/README.md) |
-| 206 | ✓ | [`third_party/leveldb-1.23/CONTRIBUTING.md`](third_party/leveldb-1.23/CONTRIBUTING.md) |
-| 207 | ✓ | [`third_party/leveldb-1.23/port/README.md`](third_party/leveldb-1.23/port/README.md) |
-| 208 | ✓ | [`third_party/leveldb-1.23/README.md`](third_party/leveldb-1.23/README.md) |
-| 209 | ✓ | [`third_party/spdlog-1.14.1/README.md`](third_party/spdlog-1.14.1/README.md) |
-| 210 | ✓ | [`web-studio/CONTRIBUTING_CN.md`](web-studio/CONTRIBUTING_CN.md) |
-| 211 | ✓ | [`web-studio/CONTRIBUTING.md`](web-studio/CONTRIBUTING.md) |
-| 212 | ✓ | [`web-studio/README_CN.md`](web-studio/README_CN.md) |
-| 213 | → | [`benchmark/README.md`](benchmark/README.md) |
-| 214 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 215 | → | [`docs/repository/CONTRIBUTING_CN.md`](docs/repository/CONTRIBUTING_CN.md) |
-| 216 | → | [`docs/repository/CONTRIBUTING_JA.md`](docs/repository/CONTRIBUTING_JA.md) |
-| 217 | → | [`docs/repository/LOGGING.md`](docs/repository/LOGGING.md) |
-| 218 | → | [`docs/repository/README_CN.md`](docs/repository/README_CN.md) |
-| 219 | → | [`docs/repository/README_JA.md`](docs/repository/README_JA.md) |
-| 220 | → | [`docs/repository/RELEASE_CN.md`](docs/repository/RELEASE_CN.md) |
-| 221 | → | [`docs/repository/RELEASE.md`](docs/repository/RELEASE.md) |
-| 222 | → | [`integrations/frameworks/README.md`](integrations/frameworks/README.md) |
-| 223 | → | [`README.md`](README.md) |
-| 224 | → | [`sdk/go/README.md`](sdk/go/README.md) |
-| 225 | → | [`sdk/python/README.md`](sdk/python/README.md) |
-| 226 | → | [`sdk/typescript/README.md`](sdk/typescript/README.md) |
-| 227 | → | [`SECURITY.md`](SECURITY.md) |
-| 228 | → | [`web-studio/README.md`](web-studio/README.md) |
+| 206 | ✓ | [`tests/server/offline/README.md`](tests/server/offline/README.md) |
+| 207 | ✓ | [`third_party/leveldb-1.23/CONTRIBUTING.md`](third_party/leveldb-1.23/CONTRIBUTING.md) |
+| 208 | ✓ | [`third_party/leveldb-1.23/port/README.md`](third_party/leveldb-1.23/port/README.md) |
+| 209 | ✓ | [`third_party/leveldb-1.23/README.md`](third_party/leveldb-1.23/README.md) |
+| 210 | ✓ | [`third_party/spdlog-1.14.1/README.md`](third_party/spdlog-1.14.1/README.md) |
+| 211 | ✓ | [`web-studio/CONTRIBUTING_CN.md`](web-studio/CONTRIBUTING_CN.md) |
+| 212 | ✓ | [`web-studio/CONTRIBUTING.md`](web-studio/CONTRIBUTING.md) |
+| 213 | ✓ | [`web-studio/README_CN.md`](web-studio/README_CN.md) |
+| 214 | → | [`benchmark/README.md`](benchmark/README.md) |
+| 215 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 216 | → | [`docs/repository/CONTRIBUTING_CN.md`](docs/repository/CONTRIBUTING_CN.md) |
+| 217 | → | [`docs/repository/CONTRIBUTING_JA.md`](docs/repository/CONTRIBUTING_JA.md) |
+| 218 | → | [`docs/repository/LOGGING.md`](docs/repository/LOGGING.md) |
+| 219 | → | [`docs/repository/README_CN.md`](docs/repository/README_CN.md) |
+| 220 | → | [`docs/repository/README_JA.md`](docs/repository/README_JA.md) |
+| 221 | → | [`docs/repository/RELEASE_CN.md`](docs/repository/RELEASE_CN.md) |
+| 222 | → | [`docs/repository/RELEASE.md`](docs/repository/RELEASE.md) |
+| 223 | → | [`integrations/frameworks/README.md`](integrations/frameworks/README.md) |
+| 224 | → | [`README.md`](README.md) |
+| 225 | → | [`sdk/go/README.md`](sdk/go/README.md) |
+| 226 | → | [`sdk/python/README.md`](sdk/python/README.md) |
+| 227 | → | [`sdk/typescript/README.md`](sdk/typescript/README.md) |
+| 228 | → | [`SECURITY.md`](SECURITY.md) |
+| 229 | → | [`web-studio/README.md`](web-studio/README.md) |
 
 ---
 

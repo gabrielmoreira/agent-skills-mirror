@@ -53,7 +53,7 @@ This is a product-guided Agent workflow built from the existing editor and publi
 
 ## Public operations and storage
 
-Use `openmotion_assets_use` with `action: "transcript"` and nested `transcript` arguments. The tool inventory remains sixteen registered names.
+Use `openmotion_assets_use` with `action: "transcript"` and nested `transcript` arguments. The tool inventory remains eighteen registered names.
 
 | Command | Inputs and result |
 | --- | --- |

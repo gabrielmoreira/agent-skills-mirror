@@ -23,8 +23,8 @@ When comparing:
 
 - Compare the same actual timestamps, including content, wording, composition, motion, pacing and missing stretches.
 - Open the relevant source/rendered frames; optional similarity diagnostics only locate differences, never define visual acceptance.
-- Verify detected cuts against adjacent source frames, then inspect rendered boundaries. Restore missing original hard cuts; automatic candidates can be false positives.
-- Check duration, retained sound and audio offset through actual media evidence. Technical audio presence does not prove the right content or synchronization.
+- Verify detected cuts against adjacent source frames, then inspect rendered boundaries. Restore missing original hard cuts; automatic candidates can be false positives. Before packaging, run `measure cuts` on both the reference and the rendered preview and pair each verified reference cut with a rendered cut within about three frames. Inspect every unpaired cut on both sides: restore it, or list its time and what the viewer sees instead under `Differences from the original`. Fast collage and montage passages lose quick cuts most often.
+- Check duration, retained sound and audio offset through actual media evidence. A stream can contain only silence; inspect decoded audio before choosing the export mode and verify the actual content and synchronization when sound is present. At a cut, cue or narration anchor that depends on precise timing, compare its position in the decoded source and final file; container timestamps alone do not establish alignment. Record listening separately from decoded timing using the [shared audiovisual evidence rules](../../openmotion-production/references/verification.md#verification-scope). For mixed-media shots, compare representative start, action and cut frames for product/subject continuity and for the intended layering and readability. Check narration against the actual voice and caption timing when present.
 
 Fix locatable issues relevant to the request, then re-export the changed source. Use the cause and expected benefit to choose a further correction, a different approach or delivery with a clear limitation. Repeating an unproductive change is not progress; there is no fixed number of permitted rounds. A limitation note does not turn an unresolved defect into a passed check. For reference-to-rebuild comparison, similarity scores locate differences; humans decide visual acceptance. The package self-containment check is below.
 
@@ -37,13 +37,13 @@ Fix locatable issues relevant to the request, then re-export the changed source.
 
 Follow the [portable project contract](../../openmotion-production/references/portable-project.md). Deliver the complete project directory or ZIP with source, required assets, preview, cover and `TEMPLATE.md`. Rendering must not require a local template ID, custom `template.json` or a custom registration tool.
 
-Check that intended content and motion remain reasonably editable. A whole reference video, full-frame sequence or unadaptable contour transcription is not a substitute for that work; ordinary time-driven arrays and functions are allowed. Keep optional root variables as convenient edits, not the only allowed changes. Check local file references and required Studio manifests before packaging.
+Check that intended content and motion remain reasonably editable. A whole reference video, full-frame sequence or unadaptable contour transcription is not a substitute for that work; ordinary time-driven arrays and functions are allowed. Keep optional root variables as convenient edits, not the only allowed changes. Check local file references and required Studio manifests before packaging. For mixed media, render one representative edit from a separate copy: change visible copy independently of its footage and, where the template promises a replaceable media slot, substitute its asset and verify crop, timing and unaffected overlays. For a product or brand that repeats, verify the edit at each affected shot, including marks on the product itself. Do not send an unchanged render or this local edit back to a generation model.
 
 `preview.mp4` must come from exactly the source being delivered. If source changes after export, re-export before packaging.
 
 ## 4. Verify the delivered copy
 
-This checks that the ZIP works on its own, so later edits can render. It is not a pixel comparison: an unchanged request is served by delivering `preview.mp4` itself.
+This checks that the ZIP works on its own, so later edits can render. It is not a pixel comparison or a new model run: `preview.mp4` is the packaged baseline, while unchanged reuse follows the selected template workflow.
 
 Unpack the ZIP into another directory. Do not use a registered template ID or read files back from the original working project. Run the pinned native CLI there; consult its help for the runtime's supported options. For HyperFrames 0.9.7:
 
@@ -56,6 +56,8 @@ node /absolute/path/to/hyperframes/bin/hyperframes.mjs render /absolute/path/to/
 - A few representative frames look like the preview.
 
 Do not compare every frame, and do not spend repair rounds on pixel differences that are not visible (for example GPU antialiasing). Fix a failed render, a missing file or a visible difference. Record the result in `TEMPLATE.md` as passed, failed or not run.
+
+Run `node <runtimeRoot>/scripts/lint-project.mjs <runtimeRoot> <unpackedDirectory>` on the unpacked copy for every template, because later template use imports it into Studio; structural errors there are delivery failures. When the handoff includes Studio import, also validate the exact ZIP in an isolated workspace using the [native ZIP import flow](../../openmotion-production/references/portable-project.md#import-a-native-zip-into-studio). Import has its own native validation. If the linter or import rejects nested timeline media, use top-level timed layers or the pinned guide's native sub-compositions, then rerender and repackage the corrected source. Record the import and version-read results separately from the unpacked render.
 
 This is a self-containment check, not independent-agent proof. Do not claim an independent test happened inside the creating session.
 

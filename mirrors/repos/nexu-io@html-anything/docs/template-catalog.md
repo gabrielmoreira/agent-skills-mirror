@@ -41,7 +41,7 @@ DEV 的默认工作区另加 `-dev`，与线上后台进程、工程和缓存分
 
 ### MCP
 
-`openmotion_list_templates({})` returns `indexPath`, `total`, `catalogVersion`, `source` and an optional warning. The absolute JSONL index contains template ID, name, summary, category, tags, duration and kind. Repository rows also include `localSource` paths. Search this file locally with grep/jq/scripts; the Tool accepts no query or pagination arguments and does not put the complete catalog into model context. Index filenames include the catalog version.
+`openmotion_list_templates({})` returns `indexPath`, `total`, `catalogVersion`, `source` and an optional warning. The absolute JSONL index contains template ID, name, summary, category, tags, duration and kind. Rows marked `shortForm: true` match the short-form discovery collection; Studio also requires a cover to display a work. Repository rows also include `localSource` paths. Search this file locally with grep/jq/scripts; the Tool accepts no query or pagination arguments and does not put the complete catalog into model context. Index filenames include the catalog version.
 
 `openmotion_get_template({templateId})` returns one template's metadata, version, file list and instructions. For repository entries it reads local `TEMPLATE.md`, returns `motionDocument={path, content}` and absolute `localSource` paths, without requiring a running backend. A known ID can be requested directly. File paths require a client on the same filesystem. Imported guidance remains distinct from a complete editable project.
 

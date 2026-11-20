@@ -34,9 +34,21 @@ containing the cursor, or the immediately preceding issue at its exact end when
 none contains it. Without fresh results it remembers this explicit intent for
 the exact snapshot; editing or changing owner cancels it. Without an issue at
 the cursor it shows a local hint. Enter explicitly accepts the selected replacement
-after the 300 ms arming guard; Skip and Esc leave text unchanged. Each action
-closes review without advancing elsewhere. Each accepted edit uses
-Composer.replace and its existing undo. No action submits a prompt.
+after the 300 ms arming guard; Cancel and Esc leave text unchanged. A spelling
+issue on one word of letters (accented forms included; a word with an
+apostrophe or hyphen such as `don't` or `e-mail` gets no dictionary action) can
+be added to the private `proofread/dictionary.txt` under the OMH home; without
+an OMH home there is no dictionary. Saved words hide spelling marks, not
+grammar marks, and a correction overlapping a spelling keeps its own mark and
+replacements. Alt+P on the saved spelling offers removal without changing the
+draft. The dictionary is read and saved on a short-lived background thread,
+never on the key or paint path: the first check reads it, later results reread
+it only when the file changed (another window's save included), a save rereads
+under its lock before an atomic replacement, and a file or lock that is not a
+regular file is refused without waiting. A failed save says so on the info line
+and leaves the file and ordinary corrections as they were. Each action closes
+review without advancing elsewhere. Each accepted edit uses Composer.replace
+and its existing undo. No action submits a prompt.
 Unavailable servers leave the draft untouched and produce a quiet inline status,
 with retries backing off from 5 to at most 30 seconds; Alt+P retries immediately.
 One in-flight request finishes before the latest eligible generation is checked.
@@ -124,6 +136,24 @@ one session it stops Hermes asking about commands that match. An approval's
 last row, "no, and tell Hermes what to do instead", sends the explicit deny at
 once, interrupts nothing, and then opens the composer for what the person tells
 Hermes instead; Esc there sends nothing more.
+
+The one prompt it sends that the person did not type is the onboarding prompt.
+It goes only when `omh` was launched with `--onboard model-setup`. The accepted
+"Set up your models now?" question at the end of an interactive `omh setup` is
+its only automatic caller (setup opens the TUI as a child process and waits for
+it); a person may also run `omh --onboard model-setup` themselves, which sends
+the same fixed prompt.
+The flag is for a bare launch in a new session: it is refused beside `--resume`
+or `--continue` or with a subcommand, and it skips the last-session question and
+the what's-new notice. The text is the fixed, packaged one in
+`src/tui/onboarding.py` (English, Korean, Japanese or Chinese by the `OMH_LANG`
+setup passed on), sent once through the same submit path a typed prompt takes,
+so it is echoed, queued and checked against the default model like any other.
+It is never sent on a resume, a reconnect, a gateway restart or a session
+switch, and `/new` starts a session without it. `OMH_TUI_ONBOARD` and
+`OMH_TUI_ONBOARD_LANG` are `OMH_TUI_` names, so they never reach the gateway.
+Everything after that first turn is the person's own: Hermes asks, the person
+answers, and every approval and secret request stays theirs to answer.
 
 When the person attaches an image, it also sends `image.render` once for that
 image, naming only the path Hermes staged and answered, to draw a preview under
@@ -254,6 +284,14 @@ child, act on that agent, and only on the person's keypress: `x` interrupts it
 (`subagent.steer`) with text the person then types and sends; the TUI never
 interrupts, steers or answers for a subagent on its own.
 
+The waiting row above the composer between turns (`src/tui/wait_kinds.py`)
+names what the session waits on from what the TUI already holds, read-only:
+the words of a background process's command as Hermes' `processes.json`
+records it, the first watch pattern of the `terminal` result Hermes sent as
+it started the process, and the delegation graph's lane fields (state,
+category, role, model, the run's name) the HUD read. It reads no other file,
+runs nothing it names, sends nothing, and never reads what the model said.
+
 ## Shell commands, rewind and mouse
 
 A line the person sends that starts with `!` is their own shell command: the
@@ -344,7 +382,9 @@ and `O_NONBLOCK`), keeps its bytes in memory and nowhere else, and has
 Hermes let go of it (`image.detach`). A prompt that goes with the image
 stages those bytes again through Hermes' `image.attach_bytes`, the call
 Hermes' own remote clients use, and nothing else is staged until Hermes has
-taken them. The explicit `/omh-model` save also edits the person's existing
+taken them. Proofreading's dictionary, `<omh_home>/proofread/dictionary.txt`
+(mode 0600, at most 64 KiB) and its `.dictionary.txt.lock` sidecar, is written
+only by an explicit Add or Remove ([Proofreading](#proofreading)). The explicit `/omh-model` save also edits the person's existing
 `routing/identities.json` under the active OMH home: only the chosen identities'
 `model_chain` and `enabled` fields change. Its per-file atomic replacement
 preserves existing prompt strings and unrelated profiles, including invalid

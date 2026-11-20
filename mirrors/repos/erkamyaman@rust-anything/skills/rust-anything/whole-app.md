@@ -22,6 +22,11 @@ A session **claims** one unit in the map before it starts, ports that unit, and 
 with its gate and replay results. A claimed unit belongs to its session: pick another. A new
 session starts by reading `MAP.md`, then `HANDOFF.md` when there is one.
 
+`rust-anything map --write` generates `rust/PORT_MAP.md` from the crates themselves: functions in
+Rust and kept in the original, cases, last `diff`, glue that still falls back, units not ported,
+and ports whose original changed upstream. Run it at each checkpoint and check `MAP.md` against
+it; the generated file is the measured state, `MAP.md` is the plan and the claims.
+
 ## 1. Grill the user
 
 Interview the user until every decision the port depends on is settled. Map them as a **design
@@ -118,8 +123,11 @@ app's documented examples, `--inputs` for the tests, workloads and error paths y
 traps, two runs, `--normalize` for named noise. A CLI's cases are trycmd files in
 `rust/app-cases/`. For a server add `--http`: the command starts it, taking its port from `PORT`
 or `{port}` (`--port` if it is fixed), and requests come from `curl` lines in its docs and
-`--inputs` (`{"method", "path", "headers", "body"}`), stored in `rust/app-cases/http/`. Then
-`rust-anything app replay <repo>`: the original must pass 100%.
+`--inputs` (`{"method", "path", "headers", "body"}`), stored in `rust/app-cases/http/`. If the
+app sends email, calls webhooks or APIs, or writes a database, record those too: `--effects
+http,smtp` (and `--effect-env VAR=KIND` for its own URL or mail settings), `--db-reset` and
+`--db-dump` for the database. Ask the user for the reset and dump commands when the database is
+not a local file. Then `rust-anything app replay <repo>`: the original must pass 100%.
 
 ## 4. Build the front door
 

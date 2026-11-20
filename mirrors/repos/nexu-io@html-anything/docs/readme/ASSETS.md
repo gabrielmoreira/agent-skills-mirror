@@ -22,7 +22,7 @@ The local agent gallery and setup buttons use client marks from the [source icon
 
 ## Skills page covers
 
-The Skills page bundles its local covers from `studio/src/motion/skill-covers/`: short screen recordings (MP4 plus a JPEG poster each) and two unchanged upstream GIFs. The skill detail shows each cover's source next to the upstream repository. Other covers are hotlinked from the upstream pages named in `studio/src/motion/skillCatalog.ts`.
+The Skills page bundles static WebP posters from `studio/src/motion/skill-covers/`. Screen recordings and upstream GIFs load on demand from their [public source snapshot](../../studio/skill-cover-attribution.md), the media registry or the upstream URL in `studio/src/motion/skillCatalog.ts`. Each Skill detail shows its cover source.
 
 | Cover | Source and license |
 | --- | --- |
@@ -34,6 +34,9 @@ The Skills page bundles its local covers from `studio/src/motion/skill-covers/`:
 | anime-js | Unchanged upstream [usage example GIF](https://github.com/juliangarnier/anime/blob/master/assets/images/usage-example-result.gif) (Anime.js, MIT). |
 | lottie-web | Unchanged upstream [Example1 GIF](https://github.com/airbnb/lottie-web/blob/master/gifs/Example1.gif) (Lottie Web, MIT). |
 | openmotion-design-styles | Excerpt of the upstream [design-style promo film](https://github.com/guanmo-ai/design-style/blob/main/promo/design-style-promo.mp4) by Guanmo ([@guanmo_ai](https://x.com/guanmo_ai)). The repository states no licence; its README allows sharing the films with credit. Two passages (1.65–3.25 s and 3.95–8.05 s) are joined, the bottom 108 px of the 1080 px frame, including the whole caption strip, is cropped (16:9 kept) and playback is slowed to 0.7×; no frames are repainted. |
+| openmotion-sale-promo | OpenMotion sample rendered by the Skill itself (16:9, 0.3–9.2 s). The product photo is a sample image generated for this demo (no real brand or product). |
+| openmotion-sale-countdown | OpenMotion sample rendered by the Skill itself (16:9, 0.8–9.5 s). Product photos are sample images generated for this demo (no real brand or product). |
+| openmotion-sale-carousel | OpenMotion sample rendered by the Skill itself (1.3–10.2 s). Product photos are sample images generated for this demo with an image model (no real brand or product). |
 | anatomy-reveal | The upstream [espresso-machine demo film](https://github.com/annnguyentt/anatomy-reveal-skill/blob/main/demo/espresso-machine.mp4) by annnguyentt (Anatomy Reveal, MIT). The 9:16 film is scaled whole to 405 × 720 and shown three times side by side on a 16:9 frame of its own paper colour (#E7E2D7), each copy offset by 3.3 s and looped, so macro, exploded and assembled shots play at once; nothing is cropped or repainted. |
 | anatomy | Four upstream README stills ([raptor-engine-firing](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/raptor-engine-firing.webp), [raptor-engine-apart](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/raptor-engine-apart.webp), [turning-dial](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/turning-dial.webp), [ripple-tank](https://github.com/wheresryan22/anatomy/blob/main/.github/assets/ripple-tank.webp)) by Ryan (Anatomy, MIT). Each is scaled whole onto a 16:9 frame of its own background colour, held 2.4 s and joined with 0.5 s crossfades; nothing is cropped or repainted. |
 | hairline | The upstream [hero GIF](https://github.com/lucasmarkes/hairline/blob/main/assets/hero.gif) by Lucas Markes (hairline, MIT), first 8.9 s, scaled from 800 × 450 to 1280 × 720 and re-encoded as MP4; nothing is cropped or repainted. |

@@ -78,9 +78,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
 | 18 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 | 19 | ✓ | [`ee/apps/openwork-ios/AGENTS.md`](ee/apps/openwork-ios/AGENTS.md) |
-| 20 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
-| 21 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
-| 22 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 20 | ✓ | [`examples/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](examples/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 21 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
+| 22 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
 
 ---
 

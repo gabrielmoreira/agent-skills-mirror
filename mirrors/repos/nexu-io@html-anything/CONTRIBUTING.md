@@ -13,11 +13,29 @@ Designers, creators, prompt authors and engineers are all welcome. The [OpenMoti
 | A motion component | `library/components/<name>/` | Source or a labeled recipe, timing, inputs, editable choices and review notes. |
 | A motion design system | `library/design-systems/<name>/MOTION_DESIGN.md` | Visual language, pacing, movement, sound, references and review criteria. |
 | A Brandkit | `library/brandkits/<name>/BRANDKIT.md` | Confirmed facts, copy, identity, asset locations and permission notes. |
+| A Studio UI component | [packages/design-system/components](packages/design-system/components/README.md) | States, semantic tokens, an interactive example and a product usage. |
 | Runtime / editor / agent support | Existing modules linked in the [architecture](docs/product/architecture.md) | A reproducible case, focused change and checks for the affected boundary. |
 
 Use the [entry checklist](library/ENTRY_TEMPLATE.md), link the new entry from its collection, and preserve sources and licenses. Label references, recipes and editable examples accurately. Adding a folder does not register it in Studio, the MCP workflow registry or the default five-Skill installation. Packaging uses an explicit file list.
 
 For published motion guidance source and locale metadata, use the [catalog contribution loop](https://github.com/nexu-io/openmotion/tree/main/library/templates/catalog#change-a-template). Stage changes before running the storage-policy check. New media needs no CMS account; maintainers prepare final media on the original PR before Squash merge.
+
+## Media in the default npm package
+
+A Skill card can ship a small static WebP poster. For optional animation, add
+`studio/src/motion/skill-covers/<name>.mp4` (or WebM/GIF) to the same PR and
+use `skillCover('<name>')` in `skillCatalog.ts` (pass the format for WebM/GIF).
+Vite development can preview the draft media. The existing
+[Prepare and merge PR workflow](docs/repository-storage.md#prepare-final-pr-media-before-merging)
+uploads the clip and records its immutable URL. The storage check names any clip
+awaiting preparation. If replacing a previously prepared clip, stage the new bytes
+with `git add -f`. Include media attribution with the source.
+
+The distribution job reports the actual compressed default npm package and the
+largest file and directory changes. Growth of 1 MiB raises a warning. The default
+package has a 24 MiB budget. If a feature needs new offline media, list its
+runtime purpose beside its path in `scripts/distribution.ts` and review any
+necessary budget change in the same PR.
 
 ## PR workflow
 
@@ -119,6 +137,8 @@ For an agent contribution: read the entry and sources, make the requested change
 Use the PR Actions summary to review new duplicate fragments and unused code or dependencies. The report is advisory. When a confirmed issue needs a separate change, link its source PR from a GitHub issue labeled `maintainability`, describe the impact, and assign an owner. Review open follow-ups in the existing engineering review. Promote repeat findings to a required check only after the rule is explicit and historical PRs show that the check detects it reliably.
 
 Only deliberately public documentation belongs here. Do not commit credentials, internal links, private plans, workstation paths or user projects. Distribution uses the positive list in `scripts/distribution.ts`; newly shipped files require an explicit decision. Preserve all upstream attribution and license notices. Do not add telemetry or publish a package without a separate decision.
+
+Keep the base install focused on runtime files. Serve demo and preview video on demand when feasible, and explain any offline requirement in the PR. If a change adds assets, dependencies or build configuration, inspect the final npm tarball and fill in **Install package impact**. Vite URL imports, asset globs and `public/` copies can add files to the shipped Studio build without changing the distribution list.
 
 Contributions are licensed under the repository's [Apache-2.0 license](LICENSE); vendored components retain their own terms. This migration branch is for review only and must not be merged or published automatically.
 

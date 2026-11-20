@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kajisho5/ffmpeg-skill` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `kajisho5/ffmpeg-skill` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kajisho5/ffmpeg-skill` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,12 +71,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.claude/skills/mcp-server-design/SKILL.md`](.claude/skills/mcp-server-design/SKILL.md) |
 | 11 | ✓ | [`.claude/skills/release-management/SKILL.md`](.claude/skills/release-management/SKILL.md) |
 | 12 | ✓ | [`.claude/skills/reproducing-ci-locally/SKILL.md`](.claude/skills/reproducing-ci-locally/SKILL.md) |
-| 13 | ✓ | [`.claude/skills/sibling-sweep/SKILL.md`](.claude/skills/sibling-sweep/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/verifying-external-behavior/SKILL.md`](.claude/skills/verifying-external-behavior/SKILL.md) |
-| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 16 | ✓ | [`mcp/server.py`](mcp/server.py) |
-| 17 | ✓ | [`SKILL.md`](SKILL.md) |
-| 18 | ✓ | [`skills/ffmpeg-skill/SKILL.md`](skills/ffmpeg-skill/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/review-page-ui/SKILL.md`](.claude/skills/review-page-ui/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/sibling-sweep/SKILL.md`](.claude/skills/sibling-sweep/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/verifying-external-behavior/SKILL.md`](.claude/skills/verifying-external-behavior/SKILL.md) |
+| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`mcp/server.py`](mcp/server.py) |
+| 18 | ✓ | [`SKILL.md`](SKILL.md) |
+| 19 | ✓ | [`skills/ffmpeg-skill/SKILL.md`](skills/ffmpeg-skill/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 # Unchanged template file export
 
-Use this branch when the user selects an editable template, accepts its existing content/assets/timing/specification, and requests HTML/project files or MP4. Empty additional requirements mean the selected sample defaults. A new brand, supplied replacement material, copy edit, sound change or new output specification returns to the template edit flow. A request to browse/open only remains editor-only.
+Use this branch when the user selects an editable catalog template, accepts its existing content/assets/timing/specification, and requests HTML/project files or MP4. Empty additional requirements mean the selected sample defaults. A new brand, supplied replacement material, copy edit, sound change or new output specification returns to the template edit flow. A request to browse/open only remains editor-only.
 
 ## Read once, then execute
 

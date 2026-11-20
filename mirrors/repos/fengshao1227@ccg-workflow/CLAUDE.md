@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-11-02 (v3.7.4)
+**Last Updated**: 2026-11-19 (v3.7.6)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,17 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-11-19 (v3.7.6)
+- 🐛 **Codex hook 信任**：codex-cli ≥0.129 不运行未在 `/hooks` 信任的非托管 hook，`codex exec` 下静默跳过（0.170.0 实测），CCG Codex 模式的 `ccg-workflow.py` 因此默认不生效。新文件 `src/utils/codex-hook-trust.ts` 在安装时只为 CCG 的 handler 写 `[hooks.state."<hooks.json 原生绝对路径>:user_prompt_submit:<组>:<handler>"] trusted_hash`。hash = sha256(按 key 排序的紧凑 JSON `{event_name, hooks:[{type,command,timeout(缺省600),async,statusMessage?}]}`)，已和 0.170 的 `hooks/list` 逐字对上，测试里锁了这个基准值。⚠ key 按位置，所以 CCG 的组永远追加在最后；Windows 上 key 用反斜杠路径，未实测。codex 改归一化规则时会显示 modified，用户在 `/hooks` 再信任一次即可（openai/codex#58011）。
+- 🐛 **hooks.json 合并**：安装从整份覆盖改为合并，卸载只撤 CCG 的组和信任记录。
+- ✨ **doctor**：新增 `codex.hook-trust`（warn）。
+- 🔄 依赖小版本升级（tsx 带进新的 esbuild，lockfile 改动较大属正常）。Binary 仍 `5.16.1`。
+
+### 2026-11-19 (v3.7.5)
+- 🐛 **agy 工具被拒（#172）**：agy 1.5.10 被拒时给 `status: SUCCESS` + 空 `response` + `result.denied_actions[]`，3.7.4 只看 status/error，仍报「没输出」。`parseAntigravityStream` 现在把它转成 failure。executor 只在 message 为空时用 failure（`executor.go` 里 `if message == ""`），被拒后照样作答的轮次不受影响。
+- 🐛 **spec 系列后台超时（#173）**：8 处 `timeout: 300000` → `3600000`，和其余 37 处后台调用对齐。⚠ PR 说后台 `timeout` 到点会杀进程，本机 Claude Code 实测 3 秒 timeout 的后台命令跑满了 8 秒，没复现，按一致性合入。
+- 🔄 **Binary `5.16.0` → `5.16.1`**。#174（`build-binaries.yml` 只在 main 触发）改的是 workflow 文件，Mac 上 gh token 没有 `workflow` scope 合不了，不在本版。
 
 ### 2026-11-02 (v3.7.4)
 - 🔒 **Web UI 收紧（#171）**：`net.Listen` 改绑 `127.0.0.1:0`（原 `:0` 绑全部网卡，局域网实测可无认证读 `/api/sessions`）；`requireLocalHost` 校验 Host 防 DNS rebinding；删 `/api/stream` 的 CORS `*`；任务文本改 `textContent`，修 `innerHTML` XSS。新增 `CODEAGENT_BROWSER=builtin`。

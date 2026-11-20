@@ -1,0 +1,7149 @@
+# Release Notes
+
+---
+
+## v6.13.1 (2026-11-19)
+
+> Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- Publishing a site now uses the same checked archive settings even when your system has its own ZIP defaults.
+- A relative archive path now resolves from the folder where you run the archive helper.
+
+---
+
+## v6.13.0 (2026-11-19)
+
+> Docs: [Publish with BrewPage](https://doc-claude.brewcode.app/brewdoc/skills/publish/) · [Codex CLI placeholder setup](https://github.com/kochetkov-ma/claude-brewcode/blob/v6.13.0/brewmod-placeholders/codex/README.md)
+
+**What changed for you**
+
+- Ask the BrewPage skill for a local draft, publish supplied material as-is, or update a specific publication in place. Updates to page content keep the reader link and saved visitor answers.
+- Publish anonymously or choose an authorized account through a compatible BrewPage MCP client. The bundled runner can publish directly when the host lacks a suitable MCP tool and the selected owner is supported.
+- Codex CLI users can opt in to a placeholder picker in the Ctrl+G external editor and attach context with the native submit hook.
+
+---
+
+## v6.12.13 (2026-11-17)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- Ask Claude for a form, poll, RSVP or guestbook page and it publishes it ready to save what visitors enter, in one step. Before, you had to turn this on afterwards in the management link.
+- You read every answer in the Data tab of the management link, as before.
+
+### brewdoc, skills/brewpage-publish, openclaw/brewpage-publish
+
+#### Features
+
+- **`--state JSON`:** the publish script sends the Page data config with the page (`{"content", "state"}` JSON body) or the site (multipart `state` field); `{}` turns it on with defaults. A value that is not one JSON object, or a JSON/plain-file upload, is refused before anything is uploaded.
+- **Skill text:** form, poll, RSVP and "save visitor answers" triggers; a Page data step names the `https://brewpage.app/js/state.js` tag, the templates list and the Data tab. The older two-step note now covers only pages published without page data.
+
+#### Docs
+
+- **Docs page:** `--state` in the command and options, Page data in one step; the MCP install line pins `brewpage-mcp@2.0.0`.
+
+---
+
+## v6.12.12 (2026-11-11)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- Published pages can now save what their visitors enter (game progress, form answers, guestbook messages, votes) with no backend of your own.
+- The publish skill explains how: give the page its own address, then turn page data on in the management link's Data tab, where you also read and download what visitors saved.
+
+### brewdoc, skills/brewpage-publish
+
+#### Docs
+
+- **Page data:** a note in `SKILL.md`, the READMEs and the docs page: `state.js` and `bp.state()`, turning page data on (Data tab or owner `PATCH /api/{ns}/{id}/state`), where saving works, storage per page. Same note in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies.
+- **Docs page:** the MCP install line pins `brewpage-mcp@1.19.0`.
+
+---
+
+## v6.12.11 (2026-11-10)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- After publishing, Claude gives you the page link and the management link. The management link is private: anyone who has it can edit or delete the page.
+- The owner token still goes to the local history file. Claude shows it when you ask. Neither the token nor the management link is posted publicly (public page, repo, shared channel).
+- If the history file cannot be written after the page is already live, you get the link, the management link and the token right away, so the page is never left without them.
+
+### brewdoc, skills/brewpage-publish
+
+#### Fixed
+
+- **`brewpage-run.sh publish`:** after `OK <url>` the script prints `MANAGE: <management link>` when the server returned one. A failed history write prints `FAILED: published but owner token could not be saved securely`, then `URL:`, `MANAGE:` and `OWNER TOKEN:` lines.
+- **Skill instructions:** the rule that kept the owner token out of the conversation is replaced by the rule above, in `SKILL.md`, the READMEs and the docs page. Same change in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` (`OpenClaw/1.0.10`) copies.
+- **Docs page:** the MCP install line pins `brewpage-mcp@1.18.1`.
+
+---
+
+## v6.12.10 (2026-11-05)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- An HTML file in another encoding is no longer refused. It uploads as a file with its bytes untouched. This replaces the refusal added in v6.12.9.
+- The standalone `brewpage-publish` skill and its OpenClaw copy now publish `.md` and `.markdown` files as rendered pages, as `brewdoc:publish` does. They used to be stored as raw files.
+
+### brewdoc, skills/brewpage-publish
+
+#### Fixed
+
+- **`brewpage-run.sh publish`:** a non-UTF-8 `.html`, `.htm`, `.md` or `.markdown` file goes by multipart `POST /api/files`. UTF-8 files stay on `POST /api/html`.
+- **Markdown paths:** `.md` and `.markdown` match in any letter case. A caller naming `file` with such a path lands on `POST /api/html?format=markdown`.
+
+---
+
+## v6.12.9 (2026-11-05)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- Publishing a `.html` or `.htm` file now gives you a real web page in any namespace, with or without a password. It used to be stored as a file.
+- Publishing text that is a whole HTML document (it starts with `<!doctype html` or `<html`) now renders as that page. Any other text is still treated as Markdown.
+
+### brewdoc, skills/brewpage-publish
+
+#### Fixed
+
+- **`brewpage-run.sh probe`:** new type `html-file` for `.html`/`.htm`, any letter case. A `.md` file and every other file keep their route.
+- **`brewpage-run.sh publish`:** `html-file` posts to `/api/html?format=html`. A caller naming `file` or `html` with a `.html`/`.htm` path lands on the same route, so the page never reaches `/api/files`.
+- **Inline and staged text:** a whole HTML document goes `format=html`, everything else `format=markdown`.
+- **Non-UTF-8 HTML files:** refused before upload, because the JSON body would silently replace their bytes.
+
+---
+
+## v6.12.8 (2026-11-02)
+
+> Docs: [Node runtime](https://doc-claude.brewcode.app/mods/overview/#node-runtime) | [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [installation](https://doc-claude.brewcode.app/installation/) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [reminders](https://doc-claude.brewcode.app/mods/reminders/)
+
+**What changed for you**
+
+- brewcode and brewtools hooks now find Node.js the same way the mods do, so a runtime outside Claude Code's `PATH` no longer breaks them.
+- **Without a usable Node.js, these hooks are skipped silently:** the brewcode session banner and post-compaction re-anchor, and the brewtools HARD wall notice. You get no error, only one line per plugin per UTC day in `<config dir>/logs/brewmod-node.log` (`<config dir>` is `CLAUDE_CONFIG_DIR`, default `~/.claude`). `hardmode-guard` does not use the launcher and is unaffected.
+- A hung `node` no longer stalls a hook's lookup: each candidate gets 1 s, then it is killed and the next one is tried.
+
+### brewcode, brewtools, brewmod-placeholders, brewmod-plan-effort, brewmod-reminders
+
+#### Fixed
+
+- **`hooks/run-node.sh`:** byte-identical in all five plugins. brewcode and brewtools `hooks.json` now start every hook through `/bin/sh` and this launcher.
+- **Lookup order, first usable wins:** every absolute `PATH` entry; nvm (`$NVM_DIR`, then `~/.nvm`: default alias, then newest compatible install); Volta (`$VOLTA_HOME/bin/node`, then `~/.volta/bin/node`); fnm (roots `$FNM_DIR`, `~/Library/Application Support/fnm`, `${XDG_DATA_HOME:-~/.local/share}/fnm`, `~/.fnm`: `aliases/default`, then newest compatible install in `node-versions`); `/opt/homebrew/bin/node`; `/opt/homebrew/opt/node@*`; `/usr/local/bin/node`; `/usr/local/opt/node@*`; `~/.local/bin/node`.
+- **Probe:** 1 s per candidate, then killed and skipped; no overall limit.
+- **Versions:** minimum 14.13.1; `X.Y.Z` and `X.Y.Z-suffix` are accepted when the numeric part qualifies.
+- **No Node:** exit 0, no output, hook skipped, one log line per plugin per UTC day.
+
+### Release gates
+
+#### Added
+
+- **`validate-release.sh`:** runs the launcher suite and the new `check-hook-targets.mjs`, which fails when a marketplace plugin's `hooks.json` targets a file it does not ship.
+- **`check-shards.sh`:** every `node --test` file must also be in the manual Tests workflow.
+
+#### Docs
+
+- The log path now reads `<config dir>/logs/brewmod-node.log` everywhere; `brewmod-reminders` tells you to update through `claude plugin` commands when Node is missing, since `/brewtools:plugin-update` needs Node itself; nvm install hints say nvm must be installed first.
+
+---
+
+## v6.12.7 (2026-11-02)
+
+> Docs: [mods overview](https://doc-claude.brewcode.app/mods/overview/#node-runtime) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [reminders](https://doc-claude.brewcode.app/mods/reminders/)
+
+**What changed for you**
+
+- The three mods now find Node.js automatically, including installations managed by nvm, Volta and fnm. Their command hooks need Node.js 14.13.1 or newer.
+- If Node.js is missing, too old or unusable, the command hooks skip quietly. An installation hint is recorded in `~/.claude/logs/brewmod-node.log` (`$CLAUDE_CONFIG_DIR/logs/` when that is set) at most once per plugin per day.
+
+### brewmod-placeholders, brewmod-plan-effort, brewmod-reminders
+
+#### Fixed
+
+- **Command hooks:** a shell launcher checks Node.js on `PATH`, then nvm, Volta, fnm and common installation paths, so a runtime outside Claude Code's `PATH` can still run the hook.
+- **Regression coverage and docs:** launcher tests cover runtime discovery and quiet skipping; installation and troubleshooting docs explain the minimum runtime and daily diagnostic log.
+
+---
+
+## v6.12.6 (2026-11-02)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) now names itself to brewpage.app on every request (`ClaudeCode/6.12.6 (+https://brewpage.app)`), and the delete and update commands it shows you carry the same User-Agent. Publishing works as before.
+- Safer local history: the owner-token file is created private and checked to be ignored by Git before anything uploads; a failed check stops the publish instead of carrying on.
+- Site uploads send exactly what you approved: a directory is copied to a private snapshot before packing, approval is tied to the reviewed archive bytes, unusual file paths are quoted safely, and a cancelled pack leaves nothing behind.
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** one `BP_UA` in `scripts/brewpage-lib.sh` is sent by every curl (`bp_post` creates, `limits`, sites; the duplicate sites header is gone); the history-file header, `SKILL.md`, READMEs and the docs page show it on DELETE/PUT/limits commands. `bump-version.sh` keeps `ClaudeCode/<version>` in step with the release. Same change in the standalone `skills/brewpage-publish` (`ClaudeCode/6.12.6`) and `openclaw/brewpage-publish` (`OpenClaw/1.0.9`) copies.
+- **publish:** history is created mode 600, its Git ignore protection is verified as effective, failed Git safety checks and unanswered privacy choices fail closed, and merge capabilities the user does not own are never saved.
+- **publish:** directory input is snapshotted before packing, archive approval is bound to the reviewed bytes, multipart upload paths are quoted, and cancelled packs are cleaned up.
+
+#### Changed
+
+- **publish:** docs describe history safety, privacy choices, profile retention limits, the current owner hosting API, and that a body `format` on `/api/html` is honoured and wins over the query.
+
+---
+
+## v6.12.5 (2026-10-25)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) no longer promises an in-place update for every publication. Old publications (made before 5 October 2026) are read-only and answer `409 OLD_PUBLICATION_READ_ONLY`; the skill now says to publish anew and report the new URL and owner token. Newer publications still update in place.
+- The namespace question now spells out what `public` gives you (public pages, sites and files are listed in the public gallery and the sitemap, so Google, Bing and AI search can find and index them: for anything meant to be found or shared) and that anyone can read it, so no secrets or personal data. Private stays the default: unlisted and not indexed, but the link still opens it.
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** the history-file header (types now include `files`) and the "Update a site" note state: Old publications (made before 5 October 2026) are read-only: `409 OLD_PUBLICATION_READ_ONLY`; publish anew; report the new URL and owner token. Same change in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies, the OpenClaw README and the docs page. Scripts still only `POST`; no new commands.
+
+#### Changed
+
+- **publish:** Step 4 namespace question (all three copies), READMEs and the docs page describe `public` with its benefits (including the brewpage.app domain address for public pages) and its read-by-anyone warning, and private (default) briefly. The OpenClaw copy now defaults to the suggested private slug like the other copies (it defaulted to `public`) and adds the unlisted-link hint after a private publish.
+
+---
+
+## v6.12.4 (2026-10-25)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) checks that `zip` and `unzip` are installed by looking them up on `PATH` instead of running them, so skill security scanners (ClawHub) no longer read the check as shell execution.
+- Publishing works exactly as before: the `zip`/`unzip` runs that build and verify the archive are unchanged.
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** `scripts/publish.mjs` `requireTool()` resolves the binary on `PATH` (`fs.accessSync` X_OK, regular file, `PATHEXT` on Windows) instead of `spawnSync(bin, ['-h'])`; same `<tool> required` failure. Same change in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies (OpenClaw skill 1.0.3 on ClawHub). The `zip`/`unzip` runs that build and verify the archive are unchanged.
+
+---
+
+## v6.12.3 (2026-10-25)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- After a publish, [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) adds an optional sign-in line for [account.brewpage.app](https://account.brewpage.app) (free, Google or any email). A profile lets you manage publications and token history, extend publication retention up to 90 days, and optionally mint owner tokens without an expiry. Publications still expire.
+- Publishing still needs no account, and Claude never asks you to sign in.
+
+### brewdoc
+
+#### Changed
+
+- **publish:** Step 7 success output (page and site) adds the optional `account.brewpage.app` sign-in line after the owner-token line; the skill mentions it only as optional and never asks the user to sign in. Same change in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies and all three READMEs. Scripts unchanged.
+
+---
+
+## v6.12.2 (2026-10-23)
+
+> Docs: [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [reminders](https://doc-claude.brewcode.app/mods/reminders/)
+
+**What changed for you**
+
+- The hook, skill, agent and mod authoring agents now follow Claude Code 2.1.309. [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) picks where a hook belongs (settings, plugin, skill or agent frontmatter, mod) and no longer suggests an inject-context template that auto-approves the tool call.
+- [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) validation catches three more mistakes: `SKILL.md` not starting with `---` on line 1, an unquoted description with `: ` or ` #` (warning), and a name with a trailing or double hyphen.
+- [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) knows which permission mode a subagent really gets, and [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) reads references re-checked on 2.1.309. See the [agents skill](https://doc-claude.brewcode.app/brewcode/skills/agents/).
+- The three brewcode mods ([placeholders](https://doc-claude.brewcode.app/mods/placeholders/), [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/), [reminders](https://doc-claude.brewcode.app/mods/reminders/)) start their bundled hook scripts without a shell. Nothing changes in how they behave.
+
+### brewcode
+
+#### Changed
+
+- **hook-creator:** reference version 2.1.309; new "Where and when" table (goal -> declaration location -> hook type); declaration-locations matrix in `hooks-types-config.md`; `args: []` selects exec form for a directly executable script; the PreToolUse inject-context template drops `permissionDecision: allow`; refs `hooks-events`, `hooks-io-contract`, `hooks-env`, `hooks-changes` re-verified.
+- **skill-creator / `validate-skill.sh`:** new checks: opening `---` must be line 1 (fail), name must be `a-z`/`0-9` words joined by single hyphens (fail on trailing or double hyphen), unquoted description holding `: ` or ` #` (warning); `${CLAUDE_EFFORT}` recognized as a load-time substitution token; refs `frontmatter-fields`, `execution-model`, `activation-and-troubleshooting`, `design-patterns` re-verified.
+- **agent-creator:** subagent `permissionMode` matrix (the main session's mode decides), fork mode on by default in the terminal since 2.1.232 and in `-p`, SDK, desktop and VS Code since 2.1.302, empty `tools:` launches with no tools; changes table extended to 2.1.309; known-issues rows for a file without `name` or without `---` on line 1, the 15,000-token description warning and agent hot-reload.
+- **mod-creator:** refs `verified_on` 2.1.309; `mods-patterns` documents the `.state/` rendezvous (old cache dir kept 14 days, new root starts empty after `/reload-plugins`) and the exec-form hook example.
+
+### brewmod-placeholders
+
+#### Changed
+
+- **hooks.json:** bundled command hooks use exec form (`"command": "node"` plus `"args": ["${CLAUDE_PLUGIN_ROOT}/hooks/inject.mjs"]`) instead of a shell string. No behaviour change.
+
+### brewmod-plan-effort
+
+#### Changed
+
+- **hooks.json:** bundled command hooks use exec form (`"command": "node"` plus `"args": ["${CLAUDE_PLUGIN_ROOT}/hooks/mode.mjs"]`) instead of a shell string. No behaviour change.
+
+### brewmod-reminders
+
+#### Changed
+
+- **hooks.json:** bundled command hooks use exec form (`"command": "node"` plus `"args": ["${CLAUDE_PLUGIN_ROOT}/hooks/remind.mjs"]`) instead of a shell string. No behaviour change.
+
+## v6.12.1 (2026-10-22)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- The [publish docs](https://doc-claude.brewcode.app/brewdoc/skills/publish/) now say how BrewPage compares with GitHub Pages, Netlify Drop, Tiiny Host and others: see [brewpage.app/compare](https://brewpage.app/compare).
+- BrewPage needs no account and keeps pages for 1 to 30 days. The standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies carry the same [publish docs](https://doc-claude.brewcode.app/brewdoc/skills/publish/) link.
+
+### brewdoc
+
+#### Changed
+
+- **publish:** the docs link the BrewPage comparison hub. Same change in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies.
+
+## v6.12.0 (2026-10-22)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+**What changed for you**
+
+- `/brewdoc:publish` knows BrewPage's upload limits (25 MB per request; a site holds 200 files, 5 MB per file, 20 MB total) and looks up the current values before it publishes a big site. Ask it, or run `curl -s https://brewpage.app/api/limits`. See [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/).
+- A site's entry page is picked the way the server picks it: root `index.html`, else the shallowest page. `--entry <file>` overrides it.
+- The root `.well-known/` folder is kept in the upload, extension-less files included (for example `apple-app-site-association`). Other hidden files and system files such as `.DS_Store` are dropped.
+- A rejected upload shows the server's reason (`HTTP <status>: <message>`). After a successful upload, the server's `NOTICE:` lines say what it skipped or adjusted.
+
+### brewdoc
+
+#### Changed
+
+- **publish:** `limits` is a read-only lookup of the server's current values, run by the skill for a big site; pre-checks drop system and hidden entries, keep the root `.well-known/` (extension-less files included) and require at least one `.html`; entry by the server rule (`--entry` > root `index.html` > shallowest `.html`); `FAILED:` carries the HTTP status and message, `NOTICE:` lines follow an `OK` line. Same change in the standalone `skills/brewpage-publish` and `openclaw/brewpage-publish` copies.
+
+## v6.11.1 (2026-10-21)
+
+> Docs: [reminders](https://doc-claude.brewcode.app/mods/reminders/)
+
+**What changed for you**
+
+- Type `**?` to see every reminder by state: fired, running, waiting, someday and the 10 newest closed, each row tagged `project` or `global`. See [pick and run](https://doc-claude.brewcode.app/mods/reminders/) and [watch it work](https://doc-claude.brewcode.app/mods/reminders/#demo).
+- Plain `**` always ends with a `**?  all reminders · project + global` row, and says `no reminders · ask Claude "remind me ..."` when there are none, so an empty list no longer looks like a broken picker.
+- Press Enter on a bare `**` or `**?` in the terminal to print the full list without a Claude turn.
+- The `keepDays` setting is gone from `/config`: closed reminders are kept 30 days.
+
+![Claude Code terminal: the reminders band with the new footer, **? lists every reminder by state with project tags, then **1 runs the fired one](https://brewcode.app/mods/reminders.gif)
+
+### brewmod-reminders
+
+#### Added
+
+- **`**?` picker:** sections with counts (fired `**N`, running, waiting, someday, unreadable, history capped at 10 plus `+N more · /remind history`); open rows insert `**<id>`, an id open in both folders inserts `**project:<id>` / `**global:<id>`. Band footer: `** to pick · **? all · /remind snooze · done`.
+- **bare Enter:** `**` prints `/remind all`, `**?` adds the history; terminal prompts only, Remote Control and SDK prompts pass through to Claude. The prompt box keeps keys typed right after Enter.
+
+#### Changed
+
+- **settings:** `/config` rows are `prefix`, `cooldownMinutes`, `notify`; closed reminders are deleted after 30 days (with `git` set in `.claude/reminders.json`, Claude is asked to delete and commit expired project files).
+
+## v6.11.0 (2026-10-21)
+
+> Docs: [reminders](https://doc-claude.brewcode.app/mods/reminders/) | [mods overview](https://doc-claude.brewcode.app/mods/overview/) | [installation](https://doc-claude.brewcode.app/installation/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [quick start](https://doc-claude.brewcode.app/quickstart/) | [full setup](https://doc-claude.brewcode.app/full-setup/) | [recommended flow](https://doc-claude.brewcode.app/recommended-flow/) | [license](https://doc-claude.brewcode.app/license/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [getting started](https://doc-claude.brewcode.app/getting-started/) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/)
+
+**What changed for you**
+
+- New mod `brewmod-reminders`: say "remind me tomorrow at 9 to check the prod logs" (or type `/remind <your words>`) and the reminder is saved at once as a Markdown file in your repo, so it survives the session. A reminder with no time gets one question, "When should it fire?"; "someday" keeps it undated. See [reminders](https://doc-claude.brewcode.app/mods/reminders/) and [watch it work](https://doc-claude.brewcode.app/mods/reminders/#demo).
+- The band above the prompt shows only reminders that have fired, at most 3 numbered rows: press `1`-`3` on an empty prompt, or type `**` to pick (`**1` runs the first), then Enter. An action reminder (`▶`) is run by Claude and closed with a one-line result; a note (`✎`) is only shown and closed; a someday item never fires and appears only when you ask (`/remind all`, `/remind someday`, the `**` picker).
+- Claude opens its reply to your next prompt with one line about what fired, at most once per hour (a newly fired reminder is mentioned at once). Nothing runs unasked, and headless runs (`claude -p`, CI) get no offer. An open session also shows a toast and a desktop alert when a reminder fires.
+- Install it with `claude plugin marketplace update claude-brewcode && claude plugin install brewmod-reminders@claude-brewcode` (Claude Code 2.1.301 or newer), or let `/brewtools:plugin-update` offer it. The update command now covers the third mod too: see [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/).
+- The expert agents (`skill-creator`, `hook-creator`, `agent-creator`, `mod-creator`) know the skill-scoped hooks of Claude Code 2.1.306 and the current mod reference, so skills, hooks and mods they build match it.
+
+![Claude Code terminal: say remind me in 1 min to run the test suite, it is saved at once; when it fires the band shows 1 fired, Claude opens its reply with one line about it, pick it with **1, Claude runs the tests and closes it](https://brewcode.app/mods/reminders.gif)
+
+### brewmod-reminders
+
+#### Added
+
+- **band and offer:** band header `reminders · N fired`, keys `1`-`3`; nothing fired, no band. The toast and, with `notify` on, the desktop alert (terminals with a notification channel) arrive within about a minute of the due time. Claude's one line repeats at most once per `cooldownMinutes`.
+- **kinds and pick:** a missing `kind:` reads as action; someday is `someday_<slug>.md` with `due: none`. `**<id>` runs an item by id, `**1 only the last hour` adds your words; the prefix is configurable.
+- **/remind and tools:** saves at once, no preview. `/remind` prints the fired reminders; `all [project|global] [today|tomorrow|week|+Nd|+Nw|until YYYY-MM-DD]`. `history`, `someday`, `done`, `cancel`, `snooze`, `reopen` act directly; `run`, `edit` and other text go to Claude. `add_reminder`, `list_reminders` and `update_reminder` write without a permission prompt.
+- **scopes and config:** `project` (default, `<project>/.claude/scheduled/`) and `global` (`${CLAUDE_CONFIG_DIR:-~/.claude}/reminders/`, never put in git). `/config` rows: `prefix` (`**`), `cooldownMinutes` (60), `notify` (on), `keepDays` (30, closed items are then deleted). `.claude/reminders.json` `{"git": "off" | "commit" | "commit-push"}` (default `off`) tells Claude to commit only that item file; the mod never runs git.
+- **safety:** a claim stops a second open session from running the same item (6 h TTL); `claude -p`, CI, the SDK, subagents and `/`-prefixed prompts get no offer; proven live on a Team seat with Claude Code 2.1.306. Details: [reminders](https://doc-claude.brewcode.app/mods/reminders/).
+
+### brewcode
+
+#### Changed
+
+- **skill-creator, hook-creator, agent-creator:** carry the skill-scoped hooks facts of 2.1.306: a `hooks:` block in `SKILL.md` lives for the rest of the session, `once: true` works only in skills, and `${CLAUDE_SKILL_DIR}` and a braced `${CLAUDE_PLUGIN_ROOT}` are not substituted in hook commands, so write `"$CLAUDE_PLUGIN_ROOT"`. See [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/), [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) and [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/).
+- **mod-creator and mods references:** refreshed to Claude Code 2.1.306 with the official Mods reference cited, the Team-seat live evidence and the mod-load floors. See [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/).
+
+### brewtools
+
+#### Changed
+
+- **plugin-update:** knows `brewmod-reminders`: it updates it with the other mods, offers it once when missing, and its manual chain lists it. The release train is now 7 packages: brewcode, brewdoc, brewtools, brewui and the mods `brewmod-placeholders`, `brewmod-plan-effort`, `brewmod-reminders`. See [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/).
+
+---
+
+## v6.10.0 (2026-10-17)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [mods overview](https://doc-claude.brewcode.app/mods/overview/) | [recommended flow](https://doc-claude.brewcode.app/recommended-flow/) | [getting started](https://doc-claude.brewcode.app/getting-started/) | [installation](https://doc-claude.brewcode.app/installation/) | [quick start](https://doc-claude.brewcode.app/quickstart/) | [full setup](https://doc-claude.brewcode.app/full-setup/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [license](https://doc-claude.brewcode.app/license/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [setup-upgrader](https://doc-claude.brewcode.app/brewcode/agents/setup-upgrader/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [brewdoc skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the mods need Claude Code 2.1.301 or newer. Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- `/brewtools:plugin-update` now does the whole update in one run: it updates every installed plugin and mod without asking, prints versions before and after, what changed for you and the next steps, and asks once whether to install the mods and plugins you are missing (`brewmod-placeholders` first). See [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) and [watch the whole update run](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/#demo).
+- New: `/brewcode:setup-status upgrade` brings the setups generated in a project up to date in one run. After the update and `/reload-plugins`, type it in each project: it upgrades every stale setup it may run for you, one subagent at a time, stops at the first problem, never commits, and lists the few commands left for you. Approve the prompts for its writes into `.claude/` (asked in `default` and `acceptEdits` mode, denied in `dontAsk`). See [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/).
+- New: `/brewdoc:my-claude refresh` regenerates the installation guides that are older than your brewdoc, asks nothing and keeps the old files; the guide now also lists your installed plugins and mods. See [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/).
+- New recording of `brewmod-placeholders`: pick `++r`, read the band, send, and the review finds database bugs; then add `++db` in one line and use it with `++m` in plan mode. Watch it at [#demo](https://doc-claude.brewcode.app/mods/placeholders/#demo).
+- Every skill, agent and hook entry file now carries an MIT license marker, and each plugin ships its `LICENSE`. Reuse keeps the copyright notice and credits the project: see the [license](https://doc-claude.brewcode.app/license/).
+
+![Claude Code terminal: ++r from the placeholder list, the band shows the text Claude receives, the review finds three DB bugs, then ++db is saved and used with ++m in plan mode](https://brewcode.app/mods/placeholders.gif)
+
+### brewcode
+
+#### Added
+
+- **setup-upgrader:** an internal agent that `/brewcode:setup-status upgrade` spawns, one per stale setup. It runs that setup's own `upgrade` without questions, writes only inside the setup's own paths and makes no git write. brewcode ships 7 agents, the four plugins 10. See [setup-upgrader](https://doc-claude.brewcode.app/brewcode/agents/setup-upgrader/).
+- **setup-status upgrade:** a second mode next to `report`, the default. After each agent it re-checks the setup: the re-check is the verdict, not the agent's claim. It runs one upgrade per team and per installed scope and lists the commands left to you in stage order, with a reason per row. `install`, `enable`, `uninstall`, `purge`, `--force` and a re-copy over an edited file are never run for you; a disabled setup whose files differ from the plugin's copy is listed as "diff it first". When the session still runs an older brewcode than the one installed, it prints `RELOAD-NEEDED loaded=X installed=Y scope=S`, refuses to upgrade and asks you to run `/reload-plugins` first. See [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/).
+- **--unattended:** the flag `setup-status upgrade` passes to ten setups, all but `convention-setup` (here `semble-setup`, `superreview-setup`, `teams-setup`). Nothing is asked: every question takes its decline branch and the item stays pending, and nothing is committed. `teams-setup` runs only its plumbing (migration, re-copied scripts, restamp, verify); tuning stays interactive. `superreview-setup` promotes its new `.template-baseline/` only when nothing is pending and `validate` passes; otherwise the new templates stay staged and the run ends `partial`.
+
+#### Fixed
+
+- **scope check:** the check that `setup-status upgrade` runs around every row (shipped with `teams-setup`, `task-board-setup` and `memory-sync-setup`) now sees new files under `.claude/` even when a global gitignore ignores that folder; before, a write there went unnoticed. It also ignores the runtime files that hooks, Claude Code and other sessions write there (`logs/`, `plans/`, `reports/`, `tmp/`, `worktrees/`, `settings.local.json` and similar), so they no longer count as a write outside the setup.
+- **teams-setup:** `upgrade`, `enable` and `disable` restamp the `team.md` header together with the cells `verify` checks against it (the `Agent defaults` date and version, the `intent-guard` row), so `verify` passes right after. Team and agent names with accented letters are rejected on every shell, including bash 3.2 under a UTF-8 locale.
+
+### brewtools
+
+#### Added
+
+- **--unattended:** `agent-deadline-setup`, `agent-return-setup`, `agent-router-setup`, `manager-setup` and `task-board-setup` take the flag `setup-status upgrade` sets. The three `agent-*` setups skip a setup you uninstalled (its config is kept) and a `settings.json` that is invalid, and say which. `agent-deadline-setup` and `agent-return-setup` need exactly one of `project` or `global` in the prompt, else they skip with `no scope token`. `manager-setup` skips with `no wall installed`. `task-board-setup` reports `partial` when it leaves edits for you.
+
+#### Changed
+
+- **plugin-update modes:** `update` (default), `check` and `all`. The old default `interactive` mode, with its question per phase, the optional token-cost table and the auto-update and prune questions are gone; the report prints the auto-update hint instead. `update` updates every outdated plugin and mod in every scope without asking, and asks only when offers exist. `check` changes nothing and asks nothing. `all` is `update` plus every offer, the rows of other marketplaces and a `claude plugin prune` of orphaned auto-installed dependencies (once per installed scope), without asking.
+- **plugin-update report:** a title (`brewcode updated: N of M components`, `brewcode is current` or a failure count), a table of versions before and after per plugin and mod, `What changed for you` from the `RELEASE-NOTES.md` of your local marketplace copy (3 bullets per version, 10 in total, never the network) and numbered next steps: `/reload-plugins` first, then `/brewcode:setup-status upgrade` (in every project listed), then `/brewdoc:my-claude refresh` when an installation guide is out of date. When that copy has no notes for the newest versions, the report says `Notes for versions after X are not in your local marketplace copy yet` and links the release notes.
+- **plugin-update offers:** one question at most, two questions in it: `Install the missing mods?` (`brewmod-placeholders` first; a user of the old codewords sees that it replaces them) and `Install the missing plugins?` (up to 3, else `Install all N`), each with `Skip`. Mods are offered only on Claude Code 2.1.301 or newer; below it, or when its version cannot be read, a line says to update Claude Code first. It never runs `/reload-plugins`, installs a mod outside the offer or patches settings.
+- **plugin-update, offline and failures:** when the latest versions cannot be read, the title is `latest versions unknown (offline?)` (`check`: `check: latest versions unknown`) and the cells say `latest unknown`, never `is current`. A failed marketplace refresh or prune prints a red line, an unreadable plugin list gives `update result unknown (plugin list unreadable)` with `not verified` cells, and an install whose project folder is gone shows `orphan install` and does not count as failed.
+
+#### Fixed
+
+- **manager-setup:** `purge` in a project without `.claude/` reports that nothing existed and succeeds; before, it waited five seconds on a lock it could not create and then aborted.
+- **task-board-setup:** the leftover-placeholder check scans only the 15 files the generator emits, so task cards that quote `${{ secrets.X }}` no longer fail `install` or `upgrade`.
+
+### brewdoc
+
+#### Added
+
+- **my-claude refresh:** `/brewdoc:my-claude refresh` (also `update`, `regenerate`) regenerates each guide that is older than the installed brewdoc, has no version or still holds unfilled `{...}` placeholders, into a new dated file with its INDEX row updated and the old file kept. It asks nothing. Research guides are regenerated only when you name their slug; guides whose file is gone are only reported; with nothing stale it writes nothing.
+- **my-claude guide:** the internal guide has a "Plugins and mods" section from `claude plugin list --json` (mods first, `brewmod-placeholders` first), a Summary row and a "Keeping this current" section with the four update commands.
+- **--unattended:** `docsync-setup` and `memory-sync-setup` take the flag `setup-status upgrade` sets. `docsync-setup` skips with `not installed` or `wrapped by <launcher>` and upgrades a disabled install without enabling it.
+
+### brewmod-placeholders
+
+#### Changed
+
+- **docs:** the README embeds the new recording under `#demo`.
+
+### repo
+
+#### Added
+
+- **license:** `SKILL.md` frontmatter carries `license: MIT`; agents, hook scripts (also the hook assets a setup copies into a project) and the mods' hook modules carry an SPDX and copyright comment; each plugin and mod ships its `LICENSE`. Validate fails a file without its marker. License lines alone never make `/brewcode:setup-status` call an installed hook copy modified. The README License section names the copyright holder.
+- **recordings:** `placeholders.gif` re-recorded from a new story; new light and dark `hub-mini` GIFs with stills for reduced motion, shown in the README through a `<picture>`, with the full `hub.gif` one link away; `plan-effort-bottle.gif` re-rendered; `placeholders-full-text-bottle.gif` removed; new `update-flow.gif` (with a still) of a real update from 6.9.6 to 6.10.0: `/brewtools:plugin-update`, `/reload-plugins`, then `/brewcode:setup-status upgrade`, at `https://doc-claude.brewcode.app/brewmods/update-flow.gif`.
+
+#### Changed
+
+- **update chain:** the README, UPDATE.md and the update prompt in each GitHub release describe the chain `/brewtools:plugin-update`, `/reload-plugins`, then `/brewcode:setup-status upgrade` in each project. UPDATE.md tells an LLM to use the "What changed for you" part of the plugin-update report, and that the file grants no permission to run a skill: both commands run only when the user's message names them, otherwise the user types them.
+
+### docs
+
+#### Added
+
+- **pages:** the `setup-upgrader` page, listed under brewcode agents in the navigation, and a rewritten `setup-status` page: report and upgrade, the left-to-you table and how the upgrade stays safe.
+
+#### Changed
+
+- **update chain:** the FAQ shows the four update commands as a table; the installation, getting started, quick start, full setup and Recommended flow pages, the plugin READMEs and the pages of the changed commands describe the new commands, and the agent counts follow.
+
+### docs site
+
+#### Changed
+
+- **update prompt and notice:** the install prompt in update mode for `all`, `brewcode`, `brewdoc` and `brewtools` ends with `/reload-plugins`, then asks you to type `/brewcode:setup-status upgrade` in each project (the model is told not to run it); the update notice at the bottom of a page shows the same chain.
+- **mods overview:** the page shows the small hub GIF under `#demo`.
+
+---
+
+## v6.9.6 (2026-10-16)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [mods overview](https://doc-claude.brewcode.app/mods/overview/) | [recommended flow](https://doc-claude.brewcode.app/recommended-flow/) | [getting started](https://doc-claude.brewcode.app/getting-started/) | [installation](https://doc-claude.brewcode.app/installation/) | [quick start](https://doc-claude.brewcode.app/quickstart/) | [full setup](https://doc-claude.brewcode.app/full-setup/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [license](https://doc-claude.brewcode.app/license/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [agents skill](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [review](https://doc-claude.brewcode.app/brewcode/skills/review/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/) | [brewdoc skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | [brewtools agents](https://doc-claude.brewcode.app/brewtools/agents/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [brewui agents](https://doc-claude.brewcode.app/brewui/agents/) | [brewui overview](https://doc-claude.brewcode.app/brewui/overview/) | [brewui skills](https://doc-claude.brewcode.app/brewui/skills/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the mods need Claude Code 2.1.301 or newer. Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- On a small terminal the `brewmod-placeholders` band no longer pushes the top of your screen out of view: at 80x24 it waits until the suggestion list has closed before it grows. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- The demo recordings of both mods are new: real Claude Code screens, terminal only, usage first. The placeholders recording goes from typing `++` to sending `++r`, then saves your own placeholder and shows plan mode and `++/`. Link someone straight to a recording: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/#demo), [full text](https://doc-claude.brewcode.app/mods/placeholders/#full-text-demo), [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/#demo).
+- New [Recommended flow](https://doc-claude.brewcode.app/recommended-flow/) page: five steps from install to a reviewed, shared change. [UPDATE.md](https://github.com/kochetkov-ma/claude-brewcode/blob/main/UPDATE.md) holds the install and update steps for you and for an LLM, and [llms.txt](https://doc-claude.brewcode.app/llms.txt) indexes the docs for LLMs.
+- Every GitHub release now ends with a copy-paste prompt that updates you to the latest release and explains what changed since the version you had. Update commands take one plugin name per call: `claude plugin update` ignores a second name without an error.
+- `brewmod-placeholders`, the flagship mod, is listed first wherever the two mods appear: README, docs navigation, marketplace, install and update commands. The README and the docs pages are rewritten in plainer language, and wrong counts and claims found in review are corrected.
+
+![Claude Code terminal, real session: typing ++ opens the placeholder list, Tab inserts ++r, the band shows the lines Claude receives and Enter sends; /placeholders saves your own placeholder, then plan mode and ++/](https://brewcode.app/mods/placeholders.gif)
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.6).
+
+More: [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/) · [Recommended flow](https://doc-claude.brewcode.app/recommended-flow/)
+
+### brewmod-placeholders
+
+#### Fixed
+
+- **band at 80x24:** the band waits for the typeahead menu to close before it grows. A menu that closes on a token the typeahead still answers (`++r?`) stays counted as open until that answer arrives, then the real focus goes out. Before, the band grew under the menu's last rows and the top of a 24-row screen scrolled away for good.
+- **band hold:** after the typeahead menu closes, the band keeps its small, menu-capped layout only until the mod's own empty typeahead answer arrives, or for at most 300 ms. A history recall (Up) shows the full band at once, Esc followed by a caret move onto a token no longer leaves the band small, and undo keeps the hold; in bash (`!`) mode the band stays small, because the mod cannot see that mode.
+
+#### Changed
+
+- **docs:** the page and the README carry the new recordings under the stable anchors `#demo` and `#full-text-demo`; the README opens with a looping ASCII fermenter. The page's codewords notice links to Install instead of repeating the command, and "Update Claude Code first" sits above the install command.
+
+### brewmod-plan-effort
+
+#### Changed
+
+- **docs:** the page and the README carry the new recording under `#demo`, with "Update Claude Code first" and a restart step above the install command; the README opens with a looping ASCII fermenter. "Good to know" is a plain section instead of a Callout.
+
+### brewcode
+
+#### Fixed
+
+- **setup-status:** the wording says which setup skills spawn subagents: `convention-setup`, `teams-setup`, `superreview-setup`, `memory-sync-setup` and `task-board-setup` fan out, `agent-deadline-setup`, `agent-return-setup` and `agent-router-setup` spawn a `hook-creator`, and `semble-setup`, `docsync-setup` and `manager-setup` spawn none (it said every setup skill fans out subagents).
+- **agent-creator:** a long Bash call runs up to `BASH_MAX_TIMEOUT_MS`, 10 minutes by default (it said 25 minutes).
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** the namespace and file-path checks now reject uppercase and accented letters such as `My` and `é` on macOS with a UTF-8 locale, the same as on Linux; bash 3.2 there used to let them through. A test pins this under `en_US.UTF-8`.
+
+### brewtools
+
+#### Changed
+
+- **plugin-update:** it lists and updates `brewmod-placeholders` before `brewmod-plan-effort`; it still never installs a mod. Its README updates one name per call.
+
+#### Fixed
+
+- **fetch-latest-versions.sh:** the release-tag fallback makes one `gh` call per run instead of up to 6 (the cached tag was lost in a subshell); the new `suite-fetch-fallback.mjs` pins it.
+
+### repo
+
+#### Added
+
+- **UPDATE.md:** install and update steps for you and for an LLM, what to tell the user after an update, and first steps in a project. After `claude update` the LLM stops and asks you to restart Claude Code and paste the prompt again.
+- **Recommended flow:** the page `/recommended-flow/` (five steps, diagram, one task from start to finish), listed under Introduction in the docs navigation, plus a README section.
+- **llms.txt:** `web/docs/public/llms.txt`, an index of the docs for LLMs with the Claude Code 2.1.301 requirement.
+- **recordings:** `placeholders.gif`, `placeholders-full-text.gif` and `plan-effort.gif` re-recorded (2.81 MB, 0.96 MB and 0.50 MB; were 3.39, 3.07 and 3.01 MB), each with a still and a bottle GIF (0.43-0.44 MB each) in `assets/brewmods/`; sources and `record-gifs.mjs --check` in `assets/brewmods/src/`.
+- **Callout check:** `check-links.sh` fails on a fenced code block or `<pre>` inside `<Callout>`; the rule is `astro-avoid` #15. Validate CI runs it over all docs pages, and `.claude/skills/docs/tests/run.sh` pins its cases.
+
+#### Changed
+
+- **release workflow:** `release.yml` starts only on `vX.Y.Z` tags, so docs-only tags such as `v3.4.24-docs` no longer produce a failed Release run. The extract step rejects any other tag, stops with `::error::.github/release-footer.md not found` when the footer is missing, and replaces every `__TAG__` in the footer with the release tag. `suite-provenance.mjs` runs the step the way Actions does (`bash -e`, no pipefail) and covers these cases.
+- **release footer:** every release body ends with an "Update with Claude" prompt that updates to the latest release (its tag or newer) and reads the release notes of every version newer than yours, update commands with one name per call, and the install commands.
+- **order:** `brewmod-placeholders` comes before `brewmod-plan-effort` in `marketplace.json`, the update and cache scripts, the `plugin-update` lists, `InstallPrompt`, the mods list and navigation, and `AGENTS.md`.
+- **APPROACHES.md:** a new Mods section (hooks module, bundled command hooks, mode files, the placeholders and plan-effort pieces); counts corrected to 3 semble hook files and 4 settings entries, 9 shipped agents, 7 agents at `maxTurns` 80 and 2 at 60, and `## Scope Fit` in 6 of 9.
+
+### docs
+
+#### Changed
+
+- **README and plugin READMEs:** "Install in 30 seconds" and "Already installed? Update" follow the order marketplace, placeholders, plan-effort, brewcode, brewdoc, brewtools, brewui; the brewcode, brewdoc, brewtools and brewui READMEs install the whole suite, mods included, behind "Update Claude Code first".
+- **wording:** README, UPDATE.md, APPROACHES.md, release notes and the docs pages are rewritten in plainer language.
+- **install prompts:** `InstallPrompt plugin="all"` checks `claude --version` (2.1.301 or newer, else `claude update` and a restart) and installs the two mods before the four plugins, one name per call; the installation, getting-started, quickstart, full-setup and FAQ pages show the same order with "Update Claude Code first" above every mod install command.
+
+#### Fixed
+
+- **counts and claims:** the creator suite is 120 checks (was 99); `/superreview` QUICK runs the mechanical gates and `intent-guard`, and the invented 2/3 agreement rule is gone; a long Bash call can run up to 10 minutes; semble, manager, agent-deadline, agent-return and agent-router default to `status` and convention to `install`; `md-to-pdf` has 3 suites and 21 checks; the FAQ cache-path example uses `<version>`; the license page has its heading back.
+
+### docs site
+
+#### Changed
+
+- **mod recordings:** they use the full content width with no height cap, and the `#demo` and `#full-text-demo` links clear the sticky header.
+
+---
+
+## v6.9.5 (2026-10-16)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the mods need Claude Code 2.1.301 or newer. Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- `+++` now works in every mode. In a normal prompt Claude sets up one recurring check for the session (a cron, hourly unless you say otherwise) that re-reads your goal and keeps the task from drifting. In plan mode it adds that check to the plan as a step instead. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- Placeholders come in two kinds only. `<name>.md` is sent in every mode; an optional `<name>.plan.md` adds more text in plan mode. If one of your own files used `when: plan`, it is now sent in every mode: run `/placeholders status` to see which files changed.
+- Plan mode looks the same in both mods. The plan-mode band, the plan text it shows and the `brewmod-plan-effort` row are drawn in Claude Code's own plan-mode teal (the row was yellow). See [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/).
+- The band now appears at once after you accept a suggestion with Tab or Enter, recall history or undo. `/placeholders` typed right after launch waits until the mod is ready.
+
+![Claude Code plan mode: Shift+Tab into plan mode, then a teal plan-effort row above the prompt](https://brewcode.app/mods/plan-effort.gif)
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.5).
+
+More: [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/) · [plan-effort on brewcode.app](https://brewcode.app/mods/plan-effort/)
+
+### brewmod-placeholders
+
+#### Fixed
+
+- **band after accept:** the band shows at once after a typeahead accept (Tab/Enter), a history recall or an undo.
+- **`/placeholders` at launch:** run right after launch, it waits for the mod tools.
+- **remove/save:** refuse to leave a plan part that would then be sent in every mode.
+- **empty plan part:** adds nothing in the band, status and show.
+- **warnings:** the legacy plan warning names the real brewtools file; a shadowed file is warned as not sent.
+
+#### Changed
+
+- **two kinds only:** `<name>.md` is sent in every mode; an optional `<name>.plan.md` (`plan: add`) adds its text in plan mode. Plan-only, not-plan and replace are removed; old files load as every-mode or an addition, with one status warning per file.
+- **`+++` in every mode:** outside plan mode it creates one anti-drift cron for the current task; in plan mode it plans the cron as an execution step. The anti-drift text lives only in `+++` (removed from `m.plan.md`).
+- **plan-mode colour:** plan-mode items are drawn in Claude Code's plan-mode colour (teal); the sent plan text is bold.
+- **help/status:** short two-kind texts.
+
+### brewmod-plan-effort
+
+#### Changed
+
+- **plan-mode row:** drawn in Claude Code's plan-mode colour (was yellow).
+
+### brewtools
+
+#### Changed
+
+- **manager-setup / task-board-setup docs:** `+++` works in every mode.
+
+---
+
+## v6.9.4 (2026-10-16)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [mods overview](https://doc-claude.brewcode.app/mods/overview/) | [installation](https://doc-claude.brewcode.app/installation/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the mods need Claude Code 2.1.301 or newer. Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`. This release raised the minimum for both mods.
+
+- The band above your prompt is easier to read: placeholder names are blue and bold, the text Claude receives is bright and bold, hint actions are brighter and underlined, and labels stay grey. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- In fullscreen plan mode the band no longer overflows under the plan-effort row.
+- When a text is too long for the band, its last row tells you how to get all of it: `... K more lines · whole text: /placeholders show ++m or ++m? alone [Enter]`.
+- `brewmod-plan-effort` does not disturb the prompt cache. Measured on Claude Code 2.1.301: 15 requests per run, 0 cache misses with and without the mod, `xhigh` on all 6 plan-mode requests. See [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/).
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.4).
+
+Watch how it works: [GIF of the full-text flow](https://brewcode.app/mods/placeholders-full-text.gif) · [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/)
+
+Hotfix: the `brewmod-placeholders` band fits its slot in fullscreen plan mode and reads clearer; `brewmod-plan-effort` hands the band one row less.
+
+### brewmod-placeholders
+
+#### Changed
+
+- **band colours:** placeholder tokens are blue and bold; the text Claude receives is bright and bold; hint actions are brighter and underlined; labels stay grey.
+- **cut row:** reads `... K more lines · whole text: /placeholders show ++m or ++m? alone [Enter]` where the `++m?` hand-off runs, else the show command alone.
+
+#### Fixed
+
+- **fullscreen plan mode:** the band no longer overflows under the plan-effort row.
+- **redraw:** the band redraws once the mod tools register, so a band drawn at startup gains the `++m?` hand-off.
+
+### brewmod-plan-effort
+
+#### Fixed
+
+- **plan-mode row:** passes one row less (`maxRows - 1`) to the band beneath it.
+
+#### Changed
+
+- **docs:** prompt-cache measurement on Claude Code 2.1.301: 15 requests per run, 0 cache misses with and without the mod, `xhigh` on all 6 plan-mode requests.
+
+### repo
+
+#### Changed
+
+- **requirement:** both mods now declare Claude Code 2.1.301+ (their `plugin.json` descriptions); Validate CI pins Claude Code 2.1.301.
+
+---
+
+## v6.9.3 (2026-10-16)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [mods overview](https://doc-claude.brewcode.app/mods/overview/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- Put the caret on a token such as `++m` and the band shows exactly the lines Claude receives, in plain colour; labels and notes are dim. A cut text ends with `... K more lines · whole text: /placeholders show ++m`, and a token with a plan-mode part adds `not sent now · plan mode adds N lines`. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- In plan mode, `brewmod-plan-effort` shows a yellow row after your first prompt: `plan mode · effort xhigh for this mode · change: /plan-effort <level>`. It disappears when you leave plan mode (Shift+Tab), and the toast `plan mode · effort raised to xhigh` repeats on every plan visit. The row has been plan-mode teal since v6.9.5. See [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/).
+- The `Show text` button is gone because its key sequence differed per terminal. Move the caret onto the token, type `?` after it, or run `/placeholders show ++m` instead.
+- Smaller fixes: the `?` hint appears only where it really shows the whole text, the second Enter runs `/placeholders show`, the band redraws when a turn reveals plan mode, and rows from other mods stay visible above the band.
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.3).
+
+Watch how it works: [placeholders band (GIF)](https://brewcode.app/mods/placeholders-full-text.gif) · [plan-mode row (GIF)](https://brewcode.app/mods/plan-effort.gif)
+
+Hotfix: the `brewmod-placeholders` focus band shows exactly what Claude receives now, and `brewmod-plan-effort` shows a yellow row while plan mode raises the effort.
+
+### brewmod-placeholders
+
+#### Changed
+
+- **focus band:** with the caret on a token the band reads `++m` with a dim `· Claude receives these lines now:` label, then the sent text in plain colour. A cut text ends with `... K more lines · whole text: /placeholders show ++m`; a token with a plan-mode part adds `not sent now · plan mode adds N lines`; the foot reads `close: move the caret off ++m · send as typed: ++/`.
+- **colour rule:** text Claude receives now is the band's only non-dim content (its header bold); labels, tags, notes and feet are dim.
+- **hint texts:** the status hint, help text, `placeholders_help` tool description and prefix warnings are reworded to match the band.
+
+#### Removed
+
+- **Show text button:** removed with its `ctrl+x → tab → enter` keys (the keys differ per terminal); caret focus, `?` and `/placeholders show` cover it.
+
+#### Fixed
+
+- **`?` hint:** reads `type ? after ++r to see all` and appears only when `?` really shows the whole text.
+- **`/placeholders show` fill:** no typeahead row after the fill, so the second Enter runs the command.
+- **other mods:** their rows stay visible above the band; the band shrinks by their height.
+- **plan mode:** the band redraws when a turn reveals plan mode, not at the next key.
+- **budget:** the plan note is counted in the band's row budget.
+- **`K more lines`:** counts hidden text lines, not wrapped rows.
+
+### brewmod-plan-effort
+
+#### Added
+
+- **plan-mode row:** a yellow row `plan mode · effort xhigh for this mode · change: /plan-effort <level>` appears after the first prompt in plan mode and is gone on leaving it (Shift+Tab).
+
+#### Changed
+
+- **toast:** `plan mode · effort raised to xhigh`, shown again on each plan visit.
+- **help/status:** new help head and `mode now` texts.
+
+### repo
+
+#### Changed
+
+- **docs GIFs:** new `placeholders-full-text.gif`; `placeholders.gif` and `plan-effort.gif` re-recorded from real screens.
+
+---
+
+## v6.9.2 (2026-10-16)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [getting started](https://doc-claude.brewcode.app/getting-started/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- You can read what a token sends before you send it. Put the caret on a token such as `++r` and the band shows its text (up to 15 rows). If the menu cuts it, type `?` right after the token (`++r?`) and press Enter: the box fills with `/placeholders show ++r`, and a second Enter prints the whole text. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- `/placeholders show ++r ++m`, `list` and `help` answer at once with no Claude turn, and so does a plain "show" request in English or Russian.
+- Saving your own placeholder now asks where to keep it: Global (all projects, recommended) or Project. Claude asks once before every save or remove, and the confirm reads `Save ++db as drafted?`.
+- A placeholder can have a plan-mode part: `<name>.plan.md` with `plan: add` adds text in plan mode only. `++/` sends a message exactly as typed, with nothing expanded.
+- The plan-effort docs now say how to enter plan mode: `Shift+Tab` twice from the default mode (`manual mode on` → `accept edits on` → `plan mode on`), or `/plan`. See [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/).
+
+![Claude Code prompt: type ++m, then ?, then Enter, and the whole placeholder text is printed in the chat](https://brewcode.app/mods/placeholders-full-text.gif)
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.2).
+
+More: [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/) · [console GIF with `++r`](https://brewcode.app/mods/placeholders.gif)
+
+Hotfix: `brewmod-placeholders` shows what a token sends, answers `show`, `list` and `help` instantly, and gets plan-mode parts and a save scope. The mod and docs pages are rewritten.
+
+### brewmod-placeholders
+
+#### Added
+
+- **band text:** with the caret on a token the band shows its text (up to 15 rows; `++r?` for more when the menu caps it). A message of only `++r?` fills `/placeholders show ++r`; Enter again prints it.
+- **instant answers:** `/placeholders show ++r ++m`, `list`, `help` and natural RU/EN "show" wording are answered at once, with no Claude turn.
+- **escape:** `++/` (alias `++\`) sends a message exactly as typed.
+- **save scope:** `global` or `project` (default global). One `Where` question, Global recommended; the confirm reads `Save ++db as drafted?` (the layer shows in the `Where` question and in the result line `saved ++db (global): ~/.claude/placeholders/db.md`).
+- **ask first:** Claude asks once before every save or remove, even for an explicit request; only a remove of a name with no files skips the question.
+- **plan-mode parts:** `<name>.plan.md` with `plan: add` adds text in plan mode only. Shown as `plan +` and `plan mode adds:`. A plan part can be removed on its own.
+- **`placeholders_help` tool:** the mod's help is available to Claude as a tool.
+- **plan mode in the band:** `· plan mode`, plus an honest `· sent in plan mode` note until the first prompt confirms the mode.
+
+#### Changed
+
+- **`m.plan.md`:** the shipped file is now an addition (`plan: add`), so a user's `m.md` override flows into plan mode. Plan-mode `++m` output is byte-identical.
+- **band:** it shows source lines exactly as sent.
+- **paths:** saved and removed files are shown as `~/.claude/placeholders/<file>`.
+- **tool descriptions:** they use the configured prefix.
+- **launch in `~`:** the one folder counts as global.
+
+#### Fixed
+
+- **plan mode:** an empty body silences a token there too; `show` prints the header actually sent.
+- **9000-char cap:** it never splits an emoji (surrogate pair).
+- **band:** the budget never overflows.
+- **save:** `when: always` is written explicitly.
+- **attachments:** messages with attachments are skipped by the first-prompt check.
+
+### brewmod-plan-effort
+
+#### Changed
+
+- **docs:** plan mode is entered by `Shift+Tab` twice from the default mode (`manual mode on` → `accept edits on` → `plan mode on`), or `/plan`.
+
+### repo
+
+#### Changed
+
+- **mod README:** rewritten with examples, normal vs plan mode and keys on macOS.
+- **docs site:** one migration notice on the home page and the mod pages.
+- **GitHub releases:** bodies end with the plugin and mod install commands and docs links (`.github/release-footer.md`).
+
+---
+
+## v6.9.1 (2026-10-15)
+
+> Docs: [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [brewcode agents skill](https://doc-claude.brewcode.app/brewcode/skills/agents/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- If you update a plugin while Claude Code is running, the placeholders mod no longer calls `++m`, `++r` and the others `unknown placeholder`. The band and one toast say `plugin files removed (updated?) · run /reload-plugins`, and inline placeholders keep working. After any plugin update, run `/reload-plugins`. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- To change the text of a placeholder, run `/placeholders change <name>` or describe the change in plain words after `/placeholders` (for example `/placeholders make ++r shorter`). The docs and `manager-setup` point there instead of the removed `/placeholders edit`.
+- `/placeholders show ++r`, which prints a token's whole text, is now documented.
+- Docs site: caution callouts use burnt orange, pages are about 103 KB lighter, the stray scrollbar in callouts is gone, and the sitemap no longer lists the redirecting `/`.
+- For maintainers building from source: the cache cleaner no longer deletes a plugin version a running session still uses. Installs through `claude plugin update` were never affected.
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.1).
+
+Watch how it works: [console GIF with `++r`](https://brewcode.app/mods/placeholders.gif) · [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/)
+
+Patch release: `brewmod-placeholders` survives a plugin update under a running session, the maintainer cache cleaner stops deleting versions in use, and the docs site and Codex mirror get link and style fixes.
+
+### brewmod-placeholders
+
+#### Fixed
+
+- **plugin files removed:** when the plugin's files vanish under a running session (a plugin update), built-in tokens are no longer marked `unknown placeholder`. The band and one toast say `plugin files removed (updated?) · run /reload-plugins`, and inline placeholders keep working.
+- **dialog tools:** they fail open again (`tool.call` returns an error result instead of throwing).
+- **band:** it redraws on every detection path (registry refresh in the typeahead, files-gone flips).
+
+#### Changed
+
+- **`Show text  ctrl+x → tab → enter` button:** arrows mark a key sequence. 1-2 tokens get the 3-line preview, and the button also appears there when the preview cuts a body; 3+ tokens show names until `Show text`.
+- **docs:** `/placeholders show ++r` is documented.
+
+### brewcode
+
+#### Changed
+
+- **mod-creator:** the key-hint rule uses arrows (`Show text  ctrl+x → tab → enter`).
+- **mod references:** `mods-{api,changes,lifecycle,patterns}.md` add the deleted-plugin-root pattern, the 1-2 token band button rule and the `prompt.change` floor limitation (a Tab-accepted row leaves the band one key behind).
+
+### brewtools
+
+#### Fixed
+
+- **manager-setup:** a request to change codeword text routes to the mod's free-text `/placeholders change <name>`; the removed `/placeholders edit` was named before.
+- **plugin-update docs:** the status markers are shown as quoted skill output.
+
+### repo
+
+#### Fixed
+
+- **`clean-plugin-cache.sh`:** it never deletes a cached version a running session still uses. It honours Claude Code's `.in_use/<pid>` entries and a 14-day `.orphaned_at` grace (by marker mtime, matching Claude Code), skips `.linking-*` temp dirs, and exits 2 on an unreadable `installed_plugins.json`.
+- **v6.9.0 incident:** at the v6.9.0 release the old cleaner deleted 6.8.0 under running maintainer sessions, so mods, hooks and agents stopped working there until `/reload-plugins`. The cleaner is a maintainer-only script, called only by `update-plugin.sh`; consumer installs through `claude plugin update` were not affected.
+
+### codex
+
+#### Fixed
+
+- **mirror READMEs:** relative image and link paths are recomputed per destination; 4 demo GIFs and the md-to-pdf install link were broken on GitHub. The validator now checks every relative link.
+
+### docs site
+
+#### Fixed
+
+- **caution callouts:** they use the palette's burnt orange `#D9531E` instead of rose.
+- **Tailwind:** CSS is loaded once instead of twice (about 103 KB less per page).
+- **callouts:** a stray scrollbar is gone.
+- **sitemap:** it no longer lists the redirecting `/`.
+- **stale references:** the Codewords and manager-setup pages no longer name the removed `/placeholders edit`; they point to the mod's free-text dialog (for example `/placeholders make ++r shorter`).
+
+#### Changed
+
+- **navigation:** the "moved" labels are gone; the Codewords page is a plain pointer to the mod.
+
+---
+
+## v6.9.0 (2026-10-15)
+
+> Docs: [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [brewcode/skills agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [review](https://doc-claude.brewcode.app/brewcode/skills/review/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [brewcode/skills skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/) | [brewdoc skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | [brewtools agents](https://doc-claude.brewcode.app/brewtools/agents/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [brewui overview](https://doc-claude.brewcode.app/brewui/overview/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [full-setup](https://doc-claude.brewcode.app/full-setup/) | [getting-started](https://doc-claude.brewcode.app/getting-started/) | [installation](https://doc-claude.brewcode.app/installation/) | [Mods overview](https://doc-claude.brewcode.app/mods/overview/) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [quickstart](https://doc-claude.brewcode.app/quickstart/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- `/placeholders` and `/plan-effort` open with a status. Run either one with no arguments to see what is active; `/plan-effort max` (or `medium`, `high`, `xhigh`) sets the plan-mode level, the same as the `planEffort` row in `/config`. See [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/).
+- To add or change a placeholder, describe it after `/placeholders` (for example `/placeholders add ++ship: ...`). Claude saves it after one confirmation. The old `show`, `add`, `edit` and `rm` subcommands are gone. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- With one or two tokens in your prompt, the band above it now shows their text right away. Each mod keeps a single option: `prefix` for placeholders and `planEffort` for plan-effort; the colour options, `warnUnknown` and `statusLine` are removed.
+- The plan-effort toast reads `plan mode: effort <level> · /plan-effort to change` once per plan visit.
+- The docs are half the size (1.09 MB to 0.55 MB) with technical details under spoilers, and the docs site has a new look: a collapsible sidebar, Mods second in the navigation, and six animated terminal demos.
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.9.0).
+
+Watch how it works: [console GIF with `++r`](https://brewcode.app/mods/placeholders.gif) · [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/)
+
+Minor release: the mod commands open with a status, the docs are cut by half, and the docs site gets a new shell.
+
+### brewmod-placeholders
+
+#### Added
+
+- **`/placeholders`:** no args, `status`, `help` or `list` shows the status. Any other text hands off to a Claude dialog that saves through the mod tools `list_placeholders`, `save_placeholder` (refuses symlinks and non-plain files) and `remove_placeholder` (own layers only), with one confirm and no permission prompt.
+- **band:** 1-2 tokens auto-expand; 3+ tokens show a `Show text  ctrl+x · tab · enter` button; a footer reads `add or change: /placeholders`.
+
+#### Changed
+
+- **config:** `userConfig` is trimmed to `prefix`; the colours and `warnUnknown` are removed. Unknown tokens still warn.
+
+#### Removed
+
+- **subcommands:** `show`, `add`, `edit` and `rm` (use `/placeholders <request>`).
+
+### brewmod-plan-effort
+
+#### Added
+
+- **`/plan-effort`:** no args, `status` or `help` prints the status plus usage; `<medium|high|xhigh|max>` sets the `planEffort` /config row through `$.config.set` (under `-p` it points to /config).
+- **plan-mode toast:** `plan mode: effort <level> · /plan-effort to change`, once per plan visit.
+
+#### Changed
+
+- **config:** `userConfig` is trimmed to `planEffort`; `statusLine` is removed.
+- **verification:** live on Claude Code 2.1.300 on a Max and a Team-org profile: a subagent keeps its own effort, a rejected plan keeps the raise, an approved plan returns to the session effort.
+
+### brewcode
+
+#### Changed
+
+- **mod-creator:** the references gain verified facts: status-first commands, own config, the deferred `$.prompt.submit` hand-off, mod tools, toast vs status, and the hard rule that key hints are proven live.
+- **docs cut 49%:** all plugin, skill, agent and repo docs go from 1.09 MB to 0.55 MB; technical details move under spoilers. Canonical homes: Delegation (`/brewcode/skills/#delegation`), scope guard, artifact metadata. Every plugin doc links back to the mods.
+
+### brewtools
+
+#### Fixed
+
+- **manager-setup docs:** the guard denies known exec flags and binaries outside the allowlist; it does not deny every unknown flag. The v6.0.0 note that said otherwise was wrong.
+- **content fixes:** `ssh` limits and `context-slim` restore facts corrected.
+
+### brewdoc
+
+#### Fixed
+
+- **my-claude:** the docs state the default mode correctly: INTERNAL.
+
+### docs site
+
+#### Added
+
+- **icons:** Lucide icon system; decorative emoji removed.
+- **`SourceLink`:** a GitHub button after the hero on key pages.
+- **navigation:** desktop sidebar collapse, sticky sidebar, Mods section second in the nav with its own soft-green identity.
+- **demos:** six animated terminal GIFs (superreview, skill-creator, semble, teams-setup, text-optimize, task-board-setup), served at `/demos/` through a build copy step.
+
+#### Fixed
+
+- **page scripts:** they never ran, because `astro:page-load` does not fire without ClientRouter (copy buttons, TOC highlight).
+- **mods docs:** the three mod pages are rewritten.
+
+---
+
+## v6.8.0 (2026-10-15)
+
+> Docs: [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [Full Setup](https://doc-claude.brewcode.app/full-setup/) | [Getting Started](https://doc-claude.brewcode.app/getting-started/) | [Installation](https://doc-claude.brewcode.app/installation/) | [Mods overview](https://doc-claude.brewcode.app/mods/overview/) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- The codewords `++m`, `++a`, `++r`, `++rr` and `+++` now come from `brewmod-placeholders`, not from brewtools. If they stopped working after the brewtools update, install the mod: `claude plugin install brewmod-placeholders@claude-brewcode`. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- Update brewtools and the mods together: brewtools 6.7.x next to the new mod injects each block twice.
+- Your own override files (`.claude/brewtools/manager/prompts/` and `<config>/manager/prompts/`) keep working through the mod's legacy layer.
+- Both mods now run a bundled command hook, so they keep working on Team organizations, where Claude Code's built-in security layer bypasses a mod's own hooks. Verified on Claude Code 2.1.300; Enterprise is expected to work but was not tested. `node` must be on your PATH. See the [mods overview](https://doc-claude.brewcode.app/mods/overview/).
+
+Update: `/brewtools:plugin-update`, or the update prompt at the end of the [release page](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v6.8.0).
+
+Watch how it works: [console GIF with `++r`](https://brewcode.app/mods/placeholders.gif) · [prompt placeholders on brewcode.app](https://brewcode.app/mods/placeholders/)
+
+Minor release: the codewords move from brewtools to `brewmod-placeholders`, and both mods now run bundled command hooks so they work on Team organizations (Enterprise expected, not tested). Placeholders injects context through `hooks/inject.mjs`; plan-effort only writes a state file through `hooks/mode.mjs`.
+
+**Migration:**
+
+- Codewords (`++m`, `++a`, `++rr`, `++r`, `+++`) now need `brewmod-placeholders` on Claude Code 2.1.292+: `claude plugin install brewmod-placeholders@claude-brewcode`.
+- Update brewtools and the mods together: brewtools 6.7.x next to the new mod injects each block twice.
+- Existing override files (`.claude/brewtools/manager/prompts/`, `<config>/manager/prompts/`) keep working through the mod's legacy layer.
+- On Claude Code below 2.1.292, upgrade Claude Code first, or skip the brewtools update and stay on 6.7.1 (the plugin-update flow updates the whole train).
+- Codex is unchanged.
+
+### brewtools
+
+#### Removed
+
+- **codeword hook:** `hooks/manager-prompt.mjs`, `hooks/lib/manager-prompts.mjs` and the `UserPromptSubmit` entry in `hooks/hooks.json`.
+- **manager-setup codewords:** the codeword layer, the `edit` mode, the 6 prompt references (`architect`, `cron-plan`, `full`, `planmode`, `review-double`, `review-regression`) and the hook's `UserPromptSubmit` test fixtures (`ups-agent-message.json`, `ups-task-notification.json`). `manager-setup` is now the opt-in hard wall plus the task-tools env merge; `status` points to `brewmod-placeholders`.
+
+#### Changed
+
+- **descriptions:** the `plugin.json` description now says "manager hard-wall guard" instead of "manager codewords" (matches `marketplace.json`). `brewtools/README.md`, `skills/task-board-setup/README.md` (`+++` credited to the mod) and `skills/context-slim/references/mcp-advice.md` point to `brewmod-placeholders`.
+
+### brewmod-placeholders
+
+#### Fixed
+
+- **Team orgs:** the bundled command hook `hooks/inject.mjs` (a plain `hooks.json` command entry) is the only context injector. Claude Code's builtin security layer bypasses the `classic.*` hooks of a user-installed mod on those orgs; a bundled command hook still runs. Verified on Claude Code 2.1.300 on a Team-org and a Max profile, with `--plugin-dir` and installed copies; Enterprise was not run.
+- **hook resilience:** the state-file prune skips one bad entry instead of stopping, regular files only, and removes orphan tmp files; an unreadable user layer is skipped (an unreadable default still throws); a failed state write removes its tmp file.
+
+#### Changed
+
+- **module scope:** the hooks module keeps highlight, typeahead, the preview band, `/placeholders` and inline expansion.
+- **requirements:** `node` on PATH; hook timeout 5 s.
+- **defaults:** default bodies are frozen to the v6.7.0 spec; CI checks them with `check-defaults.mjs` and `inject-parity.mjs` (golden vectors against the TypeScript lib).
+
+### brewmod-plan-effort
+
+#### Fixed
+
+- **Team orgs:** plan mode is detected by the bundled command hook `hooks/mode.mjs`, which writes a state file that `turn.step` reads, so the effort raise works where the module's `classic.*` hooks are bypassed (Team orgs; Enterprise not tested). Requires `node`.
+- **hook resilience:** orphan state tmp files are pruned, the session id is validated before the state file is read, one bad entry no longer stops the prune, a failed state write removes its tmp file, hook timeout 5 s.
+
+### brewcode
+
+#### Changed
+
+- **mod-creator:** the agent and its references cover the org-managed bypass and the bundled command-hook patterns.
+
+### repo
+
+#### Changed
+
+- **Validate CI:** `check-defaults.mjs` and `inject-parity.mjs` replace the `extract-defaults --check` and `gen-golden --check` gates; CI also runs `node --test brewmod-plan-effort/tests/mode.test.mjs`.
+- **README:** registered hook commands 4 -> 3, the mods section covers the bundled command hooks and the `node` requirement.
+- **APPROACHES.md:** codewords documented as coming from `brewmod-placeholders`.
+- **.gitignore:** `brewmod-*/.state/`.
+
+### codex
+
+#### Changed
+
+- **generator:** reads `cron-plan` from the `brewmod-placeholders` default; the mirror is unchanged.
+
+### docs
+
+#### Changed
+
+- **pages:** the 13 pages in the Docs line (brewtools manager pages, codewords stub, mods pages, mod-creator agent page), plus brewcode.app/mods/ promo links and hook counts.
+
+---
+
+## v6.7.1 (2026-10-15)
+
+> Docs: [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- No plugin or mod behaviour changed in this patch.
+- The docs site now sends a strict Content-Security-Policy on every response, so a page runs only the site's own scripts. The GitHub badge shows the version and star count rendered at build time, so your browser no longer calls `api.github.com`.
+- The [mod-creator page](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) now matches what the agent does.
+- The marketplace descriptions of `brewui`, `brewmod-placeholders` and `brewmod-plan-effort` match their `plugin.json`.
+
+New to the mods? [Prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/) · [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/) · [console GIF with `++r`](https://brewcode.app/mods/placeholders.gif) · [mods on brewcode.app](https://brewcode.app/mods/)
+
+Patch release: a strict Content-Security-Policy on the docs site, a corrected mod-creator page, and v6.7.0 post-release fixes to `update-plugin.sh` and the marketplace descriptions.
+
+### docs
+
+#### Added
+
+- **Content-Security-Policy:** the docs site sends a strict policy on every response, error pages included: `default-src 'none'`; `script-src 'self' 'wasm-unsafe-eval'` (the second source is for the search WebAssembly); no inline scripts; `object-src 'none'`; `frame-ancestors 'none'`; styles from `'self'` and Google Fonts, inline style attributes only.
+
+#### Changed
+
+- **docs markup:** the GitHub badge script and the font `onload` handler are gone (the font stylesheet is a plain `<link>`), and `assetsInlineLimit: 0` keeps Vite from inlining assets.
+- **GitHub badge:** version and star count are rendered at build time, so the browser never calls `api.github.com`. One stars fetch per build with a 5 s cap; on failure the stars are left out.
+
+#### Fixed
+
+- **mod-creator page:** the page now matches the agent on fail-open handling (no blanket try/catch), the Step 0 drift-check exit codes and `VERSION` line, and when the maintainer self-update runs.
+
+### repo
+
+#### Added
+
+- **check-csp.mjs:** scans the built docs `dist/` against the policy in `web/docs/deploy/docs.Caddyfile` (inline scripts and handlers, `javascript:` URLs, foreign origins, every `srcset` candidate) and checks that the image `Caddyfile` carries the identical policy. `check-csp.test.mjs` adds 26 positive and negative cases. Both run in the Validate workflow after a docs build.
+- **deploy-docs:** a "Verify CSP header" step compares the live header with `docs.Caddyfile` after deploy (5 attempts). It is skipped for redeploys of a SHA that predates the policy.
+
+#### Changed
+
+- **docs Caddyfiles:** `deploy/docs.Caddyfile` shares one `security_headers` snippet between the site and `handle_errors`; the image `Caddyfile` policy is synced with it.
+- **verify-deploy.sh:** after the build-info check, requires a `content-security-policy` header on the live site (3 attempts, `curl -m 15`).
+
+#### Fixed
+
+- **APPROACHES.md:** the brewmod-placeholders rows describe the shipped hooks module and its definition files instead of the v6.7.0 scaffold stub.
+- **update-plugin.sh:** `all` aborts with rc 1 and no plugin changed when `claude plugin list` fails; it no longer reinstalls `brewui` and both mods into a profile that never had them (`--dry-run` reports the abort with rc 0).
+- **update-plugin.sh output:** project-scope WARN lines go to stderr instead of being parsed as project rows, and a failed project-scope update now logs the command's real exit code (it always logged `exit 0`).
+- **update-plugin tests:** `suite-project-scope.mjs` covers the list failure for `all` (real and dry run), the stderr warnings and the exit code.
+- **marketplace.json:** the descriptions of `brewui`, `brewmod-placeholders` and `brewmod-plan-effort` match their `plugin.json`.
+
+---
+
+## v6.7.0 (2026-10-15)
+
+> Docs: [Mods overview](https://doc-claude.brewcode.app/mods/overview/) | [placeholders](https://doc-claude.brewcode.app/mods/placeholders/) | [plan-effort](https://doc-claude.brewcode.app/mods/plan-effort/) | [mod-creator](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [brewcode skills/agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/) | [brewdoc skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [brewui overview](https://doc-claude.brewcode.app/brewui/overview/) | [Quick Start](https://doc-claude.brewcode.app/quickstart/) | [Getting Started](https://doc-claude.brewcode.app/getting-started/) | [Installation](https://doc-claude.brewcode.app/installation/) | [Full Setup](https://doc-claude.brewcode.app/full-setup/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [License](https://doc-claude.brewcode.app/license/)
+
+**What changed for you**
+
+❗ **Update Claude Code first:** the current mods need Claude Code 2.1.301 or newer (this release needed 2.1.292+ for placeholders and 2.1.287+ for plan-effort). Run `claude update`, restart Claude Code (exit, then run `claude`), and check with `claude --version`.
+
+- Two Claude Code mods are new, so the release train grows from four plugins to six. A mod is a small add-on that hooks into the Claude Code prompt box and its turns.
+- `brewmod-placeholders` gives you prompt shortcuts. Type `++r` (or `++m`, `++a`, `++rr`, `+++`) in a prompt and Claude gets a saved instruction block as hidden context for that turn; your prompt stays as typed. Known tokens are highlighted while you type, `++` opens suggestions, and you can write your own placeholders as one Markdown file each. Install: `claude plugin install brewmod-placeholders@claude-brewcode`. See [prompt placeholders](https://doc-claude.brewcode.app/mods/placeholders/).
+- `brewmod-plan-effort` makes Claude think harder while it plans. In plan mode the main loop runs at `xhigh` effort (you can set `medium`, `high`, `xhigh` or `max`); outside plan mode your own effort applies, and nothing needs undoing after you approve the plan. Install: `claude plugin install brewmod-plan-effort@claude-brewcode`. See [plan-mode effort](https://doc-claude.brewcode.app/mods/plan-effort/).
+- Already use `++m` or `++r` from brewtools? In this release the mod and brewtools 6.7.0 together inject each token exactly once. Since v6.8.0 the codewords live only in the mod, so update brewtools to 6.8.0 or newer: brewtools 6.7.x next to a current mod injects each block twice.
+- For builders: the new `mod-creator` agent creates, tests and ships mods ([docs](https://doc-claude.brewcode.app/brewcode/agents/mod-creator/)), and `/brewtools:plugin-update` now also updates installed mods.
+
+![Claude Code prompt: type ++ to open the placeholder list, pick ++r, and read the text Claude receives (placeholders mod as it looks today)](https://brewcode.app/mods/placeholders.gif)
+
+The GIF shows the placeholders mod as it looks today. Plan-effort in action: [plan-effort GIF](https://brewcode.app/mods/plan-effort.gif).
+
+More: [Mods overview](https://doc-claude.brewcode.app/mods/overview/) · [placeholders on brewcode.app](https://brewcode.app/mods/placeholders/) · [plan-effort on brewcode.app](https://brewcode.app/mods/plan-effort/)
+
+First release of the brewcode mods: two Claude Code mods (TypeScript hooks modules) and the `mod-creator` agent that builds them. The release train grows from four plugins to six, all on one version. This release required Claude Code 2.1.292+ (placeholders) and 2.1.287+ (plan-effort); both mods need 2.1.301+ since v6.9.4.
+
+### brewmod-placeholders
+
+#### Added
+
+- **new mod:** requires Claude Code 2.1.292+. Typed `++` placeholders (`++m`, `++a`, `++r`, `++rr`, `+++`) add an instruction block as hidden context for the turn; the token stays in your prompt. Install: `claude plugin install brewmod-placeholders@claude-brewcode`.
+- **prompt box:** live highlight of known and unknown tokens, typeahead after the prefix, a preview band above the prompt, and a toast naming unknown tokens on submit (the prompt is sent unchanged).
+- **your own placeholders:** one Markdown file per placeholder, layered project > global > plugin defaults, with the brewtools override paths (`.claude/brewtools/manager/prompts/` in the project, `manager/prompts/` in the config dir) read through each default's `legacy` key.
+- **inline insert:** `insert: inline` replaces the token with the block text in the prompt. Works only with `when: always` and only for prompts typed in the composer, bridge or SDK, not for slash commands.
+- **`/placeholders`:** `list`, `show`, `add`, `edit`, `rm` (`--global` for the user layer).
+- **brewtools parity:** the default set is byte-identical to the brewtools codewords, checked by a parity golden and a drift check in CI. With brewtools 6.7.0 also installed, each token is injected exactly once: the mod drops the brewtools block of every token it resolves. v6.8.0 removed this de-duplication together with the brewtools codewords.
+- **options:** `prefix` (default `++`), `knownColor`, `unknownColor`, `warnUnknown` (default `true`).
+- **limitations:** a token inserted with `Tab` or a recalled history entry shows no highlight until the next keystroke; drafts over 20,000 characters get no highlight or band; org-managed installs may skip the classic hooks (context expansion and the toast then do not run).
+
+### brewmod-plan-effort
+
+#### Added
+
+- **new mod:** requires Claude Code 2.1.287+. While Claude Code is in plan mode the main loop runs at `planEffort` (default `xhigh`; options `medium`, `high`, `xhigh`, `max`) instead of your session effort. Install: `claude plugin install brewmod-plan-effort@claude-brewcode`.
+- **how:** in plan mode each main-loop request below `planEffort` is raised at `turn.step`; requests already at or above it, numeric or absent efforts and every subagent request pass through untouched. The `/effort` session setting is never written, so nothing needs undoing after the plan is approved.
+- **status:** `plan: <level>` is pinned in the status area while a request is raised; the `statusLine` option (default `true`) turns it off.
+
+### brewcode
+
+#### Added
+
+- **mod-creator agent:** creates, tests and ships Claude Code mods. Every run starts with a drift check of its references against the types file of the running Claude Code build.
+- **mods reference pack:** `mods-lifecycle`, `mods-api`, `mods-patterns`, `mods-testing` and `mods-changes` in `skills/agents/references/`, each stamped with the Claude Code build it was verified on.
+- **mods-ref-check.mjs:** compares the symbol index of the references with the live types file; exit 0 clean, 1 drift, 2 error. Covered by a new `skills/agents/tests/run.sh` suite in CI.
+
+### brewtools
+
+#### Changed
+
+- **plugin-update:** checks and updates `brewmod-placeholders` and `brewmod-plan-effort` when they are installed (status row, version fetch, update set). It never installs a mod; a mod that is not installed is reported as not installed.
+- **deploy:** `references/release-best-practices.md` covers the two mod manifests and the `### brewmod-placeholders` / `### brewmod-plan-effort` release-notes sections.
+
+### repo
+
+#### Added
+
+- **assets:** hero GIFs and banners in `assets/brewmods/`.
+
+#### Changed
+
+- **release train:** `bump-version.sh` bumps and verifies six plugin manifests, and checks every `marketplace.json` entry by name instead of by array index.
+- **update-plugin.sh:** accepts all six plugin names, with `update-brewmod-placeholders.sh` and `update-brewmod-plan-effort.sh` wrappers.
+- **update-plugin.sh update path:** runs `claude plugin update` in place and keeps your plugin options and disabled state; the uninstall and reinstall fallback restores both.
+- **clean-plugin-cache.sh:** prunes the mods' caches too.
+- **CI:** `validate.yml` runs `claude plugin validate --strict` and `claude plugin test` on every `brewmod-*`, plus the placeholders defaults and parity-golden drift checks. The release body lists the install commands for both mods.
+
+### codex
+
+#### Added
+
+- **Claude-only mod-creator files:** `generate-compat.mjs` and `validate-compat.mjs` keep the mods references (`mods-*.md`) and the `skills/agents/scripts/` and `tests/` directories out of the Codex mirror; mods are Claude Code only.
+
+### docs
+
+#### Added
+
+- **Mods section:** overview, placeholders and plan-effort pages on the docs site, and a mod-creator agent page.
+- **repo README:** "Claude Code mods" section with install commands and demos.
+- **mod READMEs:** `brewmod-placeholders/README.md` and `brewmod-plan-effort/README.md`.
+- **install prompt:** `InstallPrompt` accepts the `brewmod-placeholders` and `brewmod-plan-effort` plugin ids.
+- **plugin READMEs:** brewcode, brewdoc, brewtools and brewui end with a "See also: Claude Code mods" link.
+
+#### Changed
+
+- **cross-links:** the plugin overviews, getting-started, installation, quickstart, faq, full-setup, prompt-injection and the license page now mention the mods.
+
+---
+
+## v6.6.2 (2026-10-14)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+Fix-only hotfix: `/brewdoc:publish` no longer loses output of large-site manifests.
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** large-site manifests are no longer cut short: `publish.mjs` called `process.exit()` right after printing instead of setting `process.exitCode`, which killed pending stdout writes when the manifest exceeded the 64 KB pipe and the reader was slow; the `SENSITIVE:` confirmation lines could be lost (exit code stayed 0/2).
+- **publish tests:** slow-reader case compares full stdout, crash-safe suite (FAIL line + summary on any error), FAIL lines capped so CI logs stay readable, smaller fixtures.
+
+### standalone skills
+
+#### Fixed
+
+- **brewpage-publish:** the same fix in `skills/brewpage-publish` and `openclaw/brewpage-publish`.
+
+---
+
+## v6.6.1 (2026-10-14)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+Fix-only hotfix: `/brewdoc:publish` accepts sites with long file lists, and `verify-providers.sh` survives huge non-JSON error pages.
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** a site with a long file list no longer fails with "archive failed its integrity check": `unzip` output exceeded Node's 1 MB child buffer; the buffer is now 64 MB and the check runs `unzip -tq`.
+- **publish:** zip/unzip failures name the real cause (`zip failed (EPIPE)`, `killed by SIGNAL`, `archive could not be checked`) instead of "zip exited 0".
+- **publish tests:** deterministic zip fakes (read stdin like `zip -@`), new EPIPE, signal and large-site cases.
+
+### standalone skills
+
+#### Fixed
+
+- **brewpage-publish:** the same `publish.mjs` fixes in `skills/brewpage-publish` and `openclaw/brewpage-publish`.
+
+### brewtools
+
+#### Fixed
+
+- **provider-switch:** `verify-providers.sh` no longer aborts with exit 141 (no `STATUS` line, remaining providers skipped in `all` mode) when a provider returns a non-JSON error page over ~64 KB (`head -c` replaced by `cut -c`).
+- **provider-switch tests:** the fake curl reads its config stdin like real `curl -K -` (CI flake); the runner fails clearly when zsh is missing.
+
+---
+
+## v6.6.0 (2026-10-14)
+
+> Docs: [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/)
+
+> Docs: [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> Docs: [overview](https://doc-claude.brewcode.app/brewtools/overview/) | [skills](https://doc-claude.brewcode.app/brewtools/skills/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/)
+
+> Docs: [Quick Start](https://doc-claude.brewcode.app/quickstart/) | [Getting Started](https://doc-claude.brewcode.app/getting-started/) | [Full Setup](https://doc-claude.brewcode.app/full-setup/) | [FAQ](https://doc-claude.brewcode.app/faq/)
+
+`/brewtools:text-optimize` and `/brewtools:text-human` are now model-invocable like `/brewdoc:publish`; 24 of 27 skills stay user-only.
+
+### brewtools
+
+#### Changed
+
+- **text-optimize:** `disable-model-invocation: false`; `allowed-tools` is scoped to one rule, `Bash(bash ${CLAUDE_SKILL_DIR}/scripts/text-guard.sh *)`. Runs fired by Claude need named targets: empty args stop with "no target". Edits to your files follow your permission mode.
+- **text-optimizer agent:** the `checkpoint` command now has the exact shape of that rule, so it runs unprompted under the skill.
+- **text-human:** `disable-model-invocation: false`, read-only tools only (`Read, Grep, Glob, Agent, AskUserQuestion`). Edits follow your permission mode; empty input asks once, headless runs stop with "nothing to humanize".
+- **task-board-setup:** runs `text-optimize` itself after approval instead of printing commands; the P5 verify body moved to `references/12-verify-report.md`.
+- **permissions:** headless and `dontAsk` runs need the allow rules `Skill(brewtools:text-optimize *)` and `Skill(brewtools:text-human *)`.
+
+### brewcode
+
+#### Changed
+
+- **convention-setup, rules, teams-setup, e2e, skill-creator, agent-creator:** invoke `text-optimize` through `Skill` instead of hand-running its workflow; with brewtools absent the pass is skipped and reported.
+- **invariant:** 24 of 27 skills are user-only, three exceptions (`brewdoc:publish`, `brewtools:text-optimize`, `brewtools:text-human`); `suite-creator-contract` tests the exception list.
+- **teams-setup:** SKILL.md split into references, behaviour unchanged.
+
+### standalone skills
+
+#### Fixed
+
+- **brewpage-publish:** `skills/brewpage-publish` and `openclaw/brewpage-publish` ship their own `scripts/` (ported from brewdoc publish).
+- **shell injection:** JSON and directory paths no longer reach the shell unescaped.
+- **password:** now an absolute file path; it was silently dropped before.
+- **text:** heredoc truncation and text over 8,000 characters fixed.
+- **history:** file mode 600, git-ignored at the project root.
+- **upload safety:** site allowlist with `--confirmed`, ZIP inspection.
+- **skills/ copy:** one scoped Bash rule, `disable-model-invocation: false` explicit.
+
+### docs
+
+#### Fixed
+
+- **invocation pages:** updated to 24 of 27 with three exceptions.
+- **text-optimize, text-human:** pages gain Invocation and Permissions rows.
+
+---
+
+## v6.5.9 (2026-10-13)
+
+> Docs: [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/)
+
+> Docs: [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+> Docs: [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/)
+
+> Docs: [Quick Start](https://doc-claude.brewcode.app/quickstart/) | [Full Setup](https://doc-claude.brewcode.app/full-setup/) | [FAQ](https://doc-claude.brewcode.app/faq/)
+
+Docs-only release: commands, flags and code samples on the docs site now render exactly as written.
+
+### docs
+
+#### Fixed
+
+- **code rendering:** `--flags` showed as a dash and straight quotes turned curly inside JSX `<code>` elements (Astro smartypants) on 16 pages; the text is now backtick code.
+- **entities in code:** HTML entities inside backtick code rendered literally (`&lt;ref&gt;` shown as text) on the skills and teams-setup pages; they now use the raw characters.
+- **check-links.sh:** fails on both patterns (JSX `<code>` with `--`, `...`, `'` or `"`; entities inside backtick code); rule row 11 added to `astro-avoid.md`.
+
+---
+
+## v6.5.8 (2026-10-13)
+
+> Docs: [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/)
+
+> Docs: [overview](https://doc-claude.brewcode.app/brewdoc/overview/) | [skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+> Docs: [FAQ](https://doc-claude.brewcode.app/faq/)
+
+`/brewdoc:publish` is now model-invocable: ask Claude to "publish this" or "share a link" mid-task and it runs the skill, with no Bash or Write permission prompts.
+
+### brewdoc
+
+#### Fixed
+
+- **publish:** a password file must be an absolute path (`FAILED: password file must be an absolute path`); the check runs before any run is touched.
+- **publish:** staged text survives a bad password file (missing, wrong type, invalid password), and a retry publishes it.
+- **publish:** a run dir that fails the private-dir check right after creation is discarded instead of leaked.
+
+#### Changed
+
+- **publish:** `disable-model-invocation: false`. Claude can fire the skill on its own when you ask to publish or share content; typing `/brewdoc:publish` still works. The other 26 distributed skills stay user-invoked only.
+- **publish:** every shell step runs through one entry script, `scripts/brewpage-run.sh` (`probe`, `stage`, `publish`, `cleanup`), covered by a single scoped rule `Bash(bash ${CLAUDE_SKILL_DIR}/scripts/brewpage-run.sh *)`. The bare `Bash` and `Write` grants are gone, so no Bash or Write prompts appear, headless runs included.
+- **publish:** a password file is passed with `--password-file`, long text is staged in chunks (`stage`) to stay under the command-length limit, and a flagged site is uploaded only after the same command is re-run with `--confirmed`.
+- **publish:** when Claude fires the skill, Claude Code still asks for the `Skill` call itself in default mode. Headless and `dontAsk` runs need the allow rule `Skill(brewdoc:publish *)`.
+
+### brewcode
+
+#### Changed
+
+- **skill-creator, agent-creator, skills:** the agents and skill references state `brewdoc:publish` as the sole exception to the user-only policy (`DMI: false`, scoped `allowed-tools`); `skills:` preloading in agents works for it.
+- **tests:** `suite-skill` pins the exact publish frontmatter and requires every bash fence to match the allowed rule; `suite-creator-contract` checks the publish exception in skill-creator.
+
+### docs
+
+#### Fixed
+
+- **English-only pages:** rendered docs pages are English-only again. Russian trigger words on the skills, agents, rules, e2e and superreview-setup pages are replaced with English equivalents; Russian prompts still work.
+
+---
+
+## v6.5.7 (2026-10-13)
+
+> Docs: [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/)
+
+> Docs: [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> Docs: [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/)
+
+Setup checks stop failing healthy projects: agents owned by another generator, large teams, scoped rules and run snapshots no longer raise false errors.
+
+### brewcode
+
+#### Fixed
+
+- **teams-setup:** an agent owned by another generator (`task-tracker` from task-board-setup) is never claimed, restamped, moved by `enable`/`disable` or deleted; `verify-team.sh` reports it as a `FOREIGN` warning instead of failing the team, and `upgrade` drops its roster row.
+- **teams-setup:** the `team.md` ceiling (2800 chars / 700 tokens) now applies up to 13 domain agents and grows by 80 chars / 20 tokens per extra agent, as documented; before, verify failed every larger team.
+- **setup-status:** a manager project with only `state.json` reads `missing` with command `install` instead of prescribing an `upgrade` that aborts; the teams row ignores foreign agents when deciding `disabled`.
+- **rules:** a main rule file with `paths:` frontmatter gets a warning, not a validation error; the scoping is kept.
+
+### brewdoc
+
+#### Fixed
+
+- **memory-sync-setup:** surface counts skip `.claude/reports/` and `.claude/worktrees/`, and `surface_files` is always the script's own count, so `status` no longer reports a false STALE.
+
+### brewtools
+
+#### Fixed
+
+- **manager-setup:** `status` reports `installed` and `guardPresent`, and recommends `install` instead of `upgrade` when no wall was ever installed.
+
+---
+
+## v6.5.6 (2026-10-13)
+
+> Docs: [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/)
+
+> Docs: [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> Docs: [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/)
+
+Setup skills recognise launcher-wrapped hook registrations instead of duplicating them, and generator upgrades are fenced to their own paths.
+
+### brewcode
+
+#### Fixed
+
+- **setup-status, semble-setup:** a launcher-wrapped, `command`-only hook registration is kept, never duplicated, and reported as `current (custom)` (the semble row adds `customCount`); before, semble read the shell form as stale and `merge` purged the wrapper and appended a copy.
+- **convention-setup:** a `.claude/convention/` dir holding only hand-written docs reads `missing (hand-written docs present)` instead of stale; every doc is counted, and only generated ones make the state partial.
+- **teams-setup, superreview-setup:** `upgrade` runs a scope gate (`scope-guard.sh`) that fails with `OUTSIDE <path>` on any change outside the setup's own paths.
+
+### brewdoc
+
+#### Fixed
+
+- **docsync-setup:** a wrapped hook registration is kept and skipped on merge instead of being removed and replaced.
+- **memory-sync-setup:** `upgrade` runs the same scope gate and fails on any change outside the setup's own paths.
+
+### brewtools
+
+#### Fixed
+
+- **agent-router-setup, agent-deadline-setup, agent-return-setup:** wrapped registrations are recognised by the probes and kept; before, they counted as legacy or args-only matches and `upgrade` added a duplicate. `status` reports the wrapped count.
+- **manager-setup:** the registration predicates match on command and args.
+- **task-board-setup:** control files with no frontmatter get a marker line and can reach `current`; the methodology section is matched by title, so it no longer patches on every upgrade.
+- **task-board-setup:** the task-tracker description is at most 100 characters, matching the teams limit (triggers and examples moved to `## When to use`); a longer legacy description is patched.
+- **task-board-setup:** a headless `upgrade` with skipped patches withholds the restamp and reports `PARTIAL`, so setup-status keeps the row stale.
+- **task-board-setup:** `upgrade` runs the scope gate and fails on any change outside the setup's own paths.
+
+---
+
+## v6.5.5 (2026-10-13)
+
+> Docs: [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/)
+
+> Docs: [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> Docs: [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/)
+
+A pipefail SIGPIPE sweep across skill scripts, a CI Validate run cut from 14-17 min to about 1.7 min, and a Codex installer that keeps user state.
+
+### brewcode
+
+#### Fixed
+
+- **superreview-setup:** the metadata frontmatter gate (`printf | grep -q` under `pipefail`) hit SIGPIPE on an early match and reported a present key as missing, so `upgrade` sometimes restamped `intent-guard.md` for no reason. It now uses a here-string.
+- **agents:** the hook template `rm -rf` check used the same pipe, so a large or multi-line command was not denied (200 KB repro: 0/10 denies before, 10/10 after).
+- **rules:** the prefix gate raced the same way and passed a multi-line prefix; it now matches the whole string with `[[ =~ ]]`.
+- **semble-setup:** `sc_semble_tool_version` could blank a found version, because an early `awk exit` SIGPIPEd `uv tool list`; awk now drains its input.
+
+### brewdoc
+
+#### Fixed
+
+- **memory-sync-setup:** `generate.sh` aborted on `awk exit` SIGPIPE in a pipeline; it now uses a here-string.
+
+### brewtools
+
+#### Fixed
+
+- **context-slim:** `context-guard.sh` aborted on `head -1` SIGPIPE once output passed the pipe buffer, and skipped a restored file in the byte check; it now uses `sed -n 1p` and a here-string.
+- **deploy:** `gh-env-check.sh` aborted on `gh --version | head -1` and reported a false `GHCR_ACCESS=no`; the `workflow-templates.md` digest step aborted when `docker inspect` listed 2 or more RepoDigests (awk now drains).
+- **provider-switch:** `verify-providers.sh` reported a false provider failure on a multi-line reply.
+- **ssh:** `server-discover.sh` held the caller's stdout until the full deadline even on success, because the orphaned timer `sleep` kept the pipe; the timer now detaches from stdio and is reaped. A hung `ssh` child also held the pipe after the deadline; the child now leads its own process group and the deadline kills the group.
+
+### repo
+
+#### Fixed
+
+- **codex:** `install-update.mjs` keeps disabled plugins disabled and the user's agent TOML keys (such as `model`), updates installs in place with exact rollback, and no longer rolls back a fresh install: Codex reports the `+codex` version suffix and the installer expected the bare version.
+- **codex:** the `validate-compat` task-board artifact check uses paths relative to the repo root, so a checkout under a `.claude/` directory (worktrees) passes.
+- **ci:** the `deploy-docs.yml` image digest step no longer aborts on SIGPIPE when an image has 2 or more RepoDigests.
+
+#### Changed
+
+- **ci:** Validate runs in about 1.7 min instead of 14-17 min: 12 parallel suite shards, a memoized tokenizer for the teams profile suite, pip/npm/tokenizer caches, and a shard coverage gate (`check-shards.sh`) that fails on an unsharded suite. Duplicate `.codex/plugins` dist-copy runs were dropped (covered by `validate-compat`).
+- **ci:** every GitHub Action is pinned to its exact latest version (for example `actions/checkout@v7.0.1`).
+- **codex:** 213 lines of unreachable generator code removed from `generate-compat.mjs`; generated output is unchanged.
+
+---
+
+## v6.5.4 (2026-10-13)
+
+> Docs: [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/)
+
+> Docs: [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> Docs: [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/)
+
+Compression pass 2 of model-loaded skill text, plus a setup-status split and a CI scan fix.
+
+### brewcode
+
+#### Changed
+
+- **setup-status:** `SKILL.md` split into 3 on-demand references (`phase1-probes.md`, `phase2-stamps.md`, `task-tools-offer.md`), 1146 -> 483 lines; behaviour unchanged.
+- **superreview-setup:** new scratch rule: one private `mktemp -d` per run, never `/tmp` directly, never a glob-picked temp dir.
+- **semble-setup:** Step 0 no longer claims `CLAUDE_PLUGIN_ROOT` is unset in skill bash blocks.
+
+### brewdoc
+
+#### Fixed
+
+- **memory-sync-setup:** the Phase 4 check accepts nested agents (`.claude/agents/**/*.md`), not only top-level files.
+
+### brewtools
+
+#### Fixed
+
+- **task-board-setup:** a P5.5 paragraph followed by `---` rendered as a setext heading; a blank line now separates them.
+
+### All plugins
+
+#### Changed
+
+- **compression pass 2:** lossless trim of model-loaded `SKILL.md` and reference text in 17 skills; typical cut is 4% of bytes per changed file, up to 16%.
+
+### repo
+
+#### Fixed
+
+- **semgrep.yml:** CI runs the pinned `semgrep/semgrep:1.180.0` image with `p/javascript` and `p/secrets`; the archived `semgrep-action@v1` ran no scan and was a silent no-op.
+- **Codex:** `install-update.mjs` retires 5 more obsolete agent files (`brewcode-architect`, `-developer`, `-reviewer`, `-tester`, `brewdoc-bd-auto-sync-processor`).
+
+---
+
+## v6.5.3 (2026-10-13)
+
+> Docs: [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+> Docs: [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/)
+
+> Docs: [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/)
+
+Fixes for defects found after the 6.5.2 rollout.
+
+### brewcode
+
+#### Fixed
+
+- **superreview-setup:** `upgrade` restamps a legacy stamped generated agent (intent-guard) that fails the metadata check; the body is byte-guarded and any mismatch aborts.
+- **setup-status:** a disabled row with files behind gets `upgrade` (keeps it disabled); teams, superreview, task-board and memory-sync get `enable`, `upgrade`, `disable`.
+- **setup-status:** fences run inline or through `fence-run.sh`, which uses a private 0700 temp dir removed on exit instead of shared `/tmp` files.
+
+### brewdoc
+
+#### Fixed
+
+- **md-to-pdf:** TEST mode writes its PDF into a private temp dir removed on exit, not the fixed `/tmp/md-to-pdf-test-<engine>.pdf`.
+
+### brewtools
+
+#### Fixed
+
+- **context-slim:** the keep-catalog locale fixture uses a private temp dir instead of the fixed `/tmp/cyr.txt`.
+- **deploy:** the release workflow template writes the release body to `$RUNNER_TEMP`, and the draft-release notes go through stdin, not `/tmp/notes.md`.
+
+### repo
+
+#### Fixed
+
+- **release.yml:** the release body is written to $RUNNER_TEMP instead of /tmp.
+
+---
+
+## v6.5.2 (2026-10-13)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/)
+
+> Docs: [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+> Docs: [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/)
+
+Fixes for defects found in the final review of the 6.5.1 rollout.
+
+### brewcode
+
+#### Fixed
+
+- **semble-setup:** a hand-edited rule is report-only: the skill never edits or merges it. It reports `diff -u` and `upgrade --force`, and only an explicit `--force` replaces the rule.
+- **semble-setup:** `permissions` reads project, local and profile settings plus `mcp__semble_code[__*]`; `install` no longer copies a tool that any layer grants into tracked `settings.json`.
+- **semble-setup:** an unstamped hand-edited rule is `partial` (was `ready`); new `guidance.ruleStampStale`. Agent-patch-only gaps route to `upgrade`, not `install`.
+- **semble-setup:** `.bak.<epoch>` backups are mode 0600; the newest 3 per file are kept and each pruned one is named on stderr.
+- **setup-status:** row 2 follows the same verdict as `semble-status` (`permissionsWired`, `ruleStampStale`, report-only route for an edited rule), via `semble-row.mjs`.
+- **setup-status:** a stamp-only delta between plugin asset and installed copy reads `current (restamp pending)`, not `modified`.
+- **setup-status:** agent-deadline, agent-return and agent-router configs are compared with the hook that parses them, not the runbook header.
+- **setup-status:** a new `CLIMB-START` line sits beside `GOVERNING`.
+- **all plugins:** every root walk (hooks, installers, ROOT lines, guards, state CLIs, history-file root) skips HOME and a profile directory's parent; a `.git` there still counts.
+
+### brewtools
+
+#### Fixed
+
+- **plugin-update:** `project`/`local` installs update via `(cd "<projectPath>" && claude plugin update <id> --scope <scope>)`; a missing `projectPath` is an orphan install, nothing runs.
+- **agent-deadline-setup, agent-return-setup, agent-router-setup:** a config is `current` when its `content_version` equals the parsing hook's CV; status adds `contract_content_version` / `contract`.
+- **agent-router-setup:** the tier-2 judge prompt is compared without its `brewcode-meta` stamp line, so a release no longer marks strict installs `legacy`.
+- **agent-router-setup:** `upgrade` replaces a judge with an `agent-router:` status message instead of adding a second one.
+
+### repo
+
+#### Fixed
+
+- **maintainer scripts:** `update-plugin.sh` updates `project` and `local` installs from each `projectPath` before the prune, and `clean-plugin-cache.sh` prints the exact command for each pinning row.
+- **maintainer scripts:** `update-plugin.sh`, `update-*.sh`, `clean-plugin-cache.sh` and `tests/` are tracked in git, and CI runs their suite via `validate.yml`.
+
+---
+
+## v6.5.1 (2026-10-13)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+> Docs: [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> Docs: [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/)
+
+Fixes for defects found while rolling out 6.5.0.
+
+### brewcode
+
+#### Fixed
+
+- **semble-setup:** hook entries in `settings.json` use the portable `${CLAUDE_PROJECT_DIR}/.claude/hooks/...` path; an absolute 6.5.0 entry shows as `drifted` (`guidance.absoluteCount`); `nextStep` and `setup-status` prescribe `upgrade`, which rewrites it in place.
+- **semble-setup:** an existing repo `.gitignore` rule covering `.claude/` is respected, so no duplicate line is appended; per-machine excludes do not count.
+- **semble-setup:** `status`, `cache info` and `project audit` no longer fail on a cache with a very large file list (E2BIG / stack overflow); output is unchanged.
+- **semble-setup:** `add` and `repair` write no `state.json` outside a project (new `--no-state`); `checkpoint` there exits 3. The upward root walk in the scripts and the hooks skips HOME and a profile directory's parent; `CLAUDE_PROJECT_DIR`, the git toplevel and the `PWD` fallback still resolve as before.
+- **semble-setup:** an index-only `partial` points to `resume`; a hand-edited rule gets a diff / merge / `upgrade --force` route, not a plain `upgrade`.
+- **semble-setup:** `project candidates` honours `.gitignore` and `.sembleignore` the way semble does, so excluded mirrors are no longer proposed.
+- **setup-status:** an orphaned project config that still governs a global install gets `purge project`, never `upgrade`.
+- **setup-status:** the `GOVERNING` line for agent-deadline / agent-return follows each guard's config climb (nearest valid project config, then globals).
+
+### brewdoc
+
+#### Fixed
+
+- **memory-sync-setup:** `validate` checks only the skill's own `references/*.md` citations, not another folder's; `scan` reads YAML block-list `paths:` from the frontmatter.
+
+### brewtools
+
+#### Fixed
+
+- **agent-return-setup / agent-deadline-setup:** `status` prints `governing_config`, `governing_scope` and `orphan_config`, resolved like the guards (deadline climbs from the cwd, agent-return from the session dir); `uninstall project` warns when the kept project config still governs the global hooks, and `purge project` is the fix.
+- **deploy:** the docs-service template logs in to GHCR with the job token (before the server pull and rollback pull) in a private `DOCKER_CONFIG`, deleted on exit; the shared `~/.docker/config.json` is never touched.
+
+### repo
+
+#### Fixed
+
+- **docs deploy:** `deploy-docs.yml` (job-token GHCR login added in PR #15) now runs that login in a private `DOCKER_CONFIG` as well, same as the brewtools `deploy` template.
+
+---
+
+## v6.5.0 (2026-10-12)
+
+> Docs: [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/)
+
+> Docs: [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/)
+
+> Docs: [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+> Docs: [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+> Docs: [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/)
+
+Claude Code 2.1.296 / Claude 5.5 refresh across all four plugins.
+
+### brewcode
+
+#### Changed
+
+- **Hooks:** brewcode registers 2 SessionStart hooks (`session-start`, `compact-recall`). The forced-eval / role-recall prompt reminder and `lib/reminder.mjs` are removed, in the Codex mirror too. The plan lookup follows `CLAUDE_CONFIG_DIR` and the effective `plansDirectory`.
+- **compact-recall:** the `plan-latest` rung counts only a `LATEST.md` symlink the plugin made itself.
+- **agents / skills / rules:** an empty prompt runs `status`; the menu opens only on request, as 2 questions of 2-4 options.
+- **agent-creator / skill-creator / hook-creator:** no `Agent` tool; references checked through 2.1.296; plugin agents must pass `claude plugin validate`.
+- **hook-creator:** a `command` or `http` hard gate gets `onFailure: "block"` (Claude Code 2.1.295+).
+- **bash-expert:** `maxTurns: 80` and a Scope Fit section. **bc-rules-organizer:** spawned by `rules` and `convention-setup`; rule frontmatter uses `paths` only.
+- **setup-status:** artifact states `current`, `stale (installed X, plugin Y)` and `modified (stamp current, bytes differ)`; task-tools verdict follows the settings layers. The table gains `Installed` and `Plugin` columns, hook registrations are checked one by one, the semble MCP pin is reported per Claude Code profile, and the task-tools merge takes the shared `settings.json.lock`.
+- **semble-setup:** pin 0.6.2; the CLAUDE.md marker block is refreshed in place; the routing line sends symbols to LSP.
+- **semble-setup:** `semble-prefetch.mjs` (UserPromptSubmit) and `semble-reminder.mjs` (PreToolUse `Bash|Grep`) are retired: a same-profile A/B test measured no gain. `install`, `upgrade` and `uninstall` delete the files, markers and settings rows, no manual step; 3 live hooks, 4 settings rows (`hooks <n>/4`).
+- **semble-setup:** the upgrade is version-aware: a byte-pristine prior-release rule or `.sembleignore` is upgraded automatically, a user-modified copy is kept, `--force` backs it up first.
+- **semble-setup:** the session and subagent hooks check the `semble_code` registration of the active profile (without it the subagent hook stays quiet and the session hook points to `/brewcode:semble-setup status`); hook wiring applies live, no new session; install from a subdirectory targets the session start directory, not the git root; `uninstall` deletes a `settings.json` that held only semble entries, plus an empty `.claude/`, and `purge` deletes its own MCP rollback backups.
+- **convention-setup:** `purge` is marked destructive, so a keyword tie asks before acting.
+- **teams-setup / e2e:** prompt-first arguments; `e2e` can read the prompt from stdin.
+- **superreview-setup:** the agent roster scan is recursive, so nested agent folders are included (also in `validate`); `enable` / `disable` report that a running session picks the change up without a restart.
+
+#### Fixed
+
+- **semble-setup:** `purge` removes only this project's cache entry.
+- **teams-setup / provider-switch:** argument capture is safe under `/bin/bash` 3.2.
+
+### brewdoc
+
+#### Changed
+
+- **docsync-setup:** state is one append-only `state-<session_id>.jsonl` log per session; install and uninstall take the shared `settings.json.lock` and write no `.bak`; hooks apply in the running session; `uninstall` keeps `.claude/docsync/`, `purge` deletes it; the gate re-arms for a doc only after it is edited again, and blocks once per ask. The Stop gate lets Claude sync a stale doc on its own and asks first only before deleting or wholesale rewriting content. `/brewdoc:docsync-setup` `sync` still asks which listed docs to sync before it touches any. `CLAUDE.md`, `CLAUDE.local.md` and `AGENTS.md` are never tracked or gated.
+- **memory-sync-setup:** the agent audit reads nested agent folders; other setups' marker blocks are preserved.
+- **md-to-pdf:** the engine is chosen before the dependency check, and a config save merges into the project file, so engine and style saves keep each other. Pinned installs reportlab 5.0.1, markdown 3.11, pygments 2.21.0, weasyprint 70.0.
+- **my-claude:** counts the 33 current hook events.
+
+#### Fixed
+
+- **publish:** run directory lives under `$TMPDIR`, outside the protected `.claude/` path.
+- **md-to-pdf:** the reportlab engine resolves a relative image against the document's folder first, like weasyprint; the working directory is only a fallback.
+
+### brewtools
+
+#### Changed
+
+- **agent-return-setup:** defaults 2500 / 6000 tokens; configurable `reportDir` and `readOnlyAgentTypes`; a third registration, `PreToolUse` on `SubagentHandback`, covers auto mode.
+- **agent-deadline-setup:** `SubagentHandback` stays allowed in the finalization set; a `SubagentStop` mark restarts the clock when the agent resumes more than 5 minutes later.
+- **agent-router-setup:** tier 2 pins no model (Claude Code's default small model, `claude-haiku-5-5` on 2.1.296, verified live there); a heartbeat entry feeds `--judge-health`; installer CLI adds `--probe` and `--purge-state`.
+- **manager-setup:** codewords inject only on their keyword (an armed wall injects nothing per prompt); the wall registers with `onFailure: "block"` (needs Claude Code >= 2.1.295; older CLIs ignore the field and stay fail-open); the allow list adds LSP, Workflow, EnterWorktree / ExitWorktree, TaskStop, ScheduleWakeup and WaitForMcpServers; `Monitor` follows the Bash rule; changes apply live, no `/reload`; global prompt overrides live in `<config dir>/manager/prompts/<mode>.md`, and `purge` removes all six.
+- **deploy:** workflow templates pin `ubuntu-24.04`; production deploys accept release-tag builds only; deploy-admin watches every CI run for the pushed SHA.
+- **provider-switch:** supports `ANTHROPIC_DEFAULT_FABLE_MODEL`; the OpenRouter pick is `anthropic/claude-opus-5.5`.
+- **text-optimize:** blocks owned by another setup are kept and reported as `managed by <setup>`; rule C.2 now removes "think step by step" prompts instead of limiting the word "think".
+- **ssh:** a Lockout Guard gate (allow-new, `sshd -t`, reload, prove a new session, then deny-old) precedes any sshd, port or firewall change; delegation prefers the project `ssh-admin` agent and falls back to `brewtools:ssh-admin`.
+- **context-slim:** `verify` takes `--ledger`, which accepts a missing token only when a ledger row covers it and its survivor still carries it; a global copy of a git-tracked project file is kept and reported as a pair.
+- **task-board-setup:** the generated skill lists board files with `find` through Bash, not an unmatched glob that aborts under zsh.
+- **plugin-update:** `check` ends with a reload notice.
+
+#### Fixed
+
+- **agent-deadline-setup / agent-return-setup / agent-router-setup:** `uninstall` and `purge` delete a `settings.json` that held only their entry, remove an emptied hooks directory and, on `purge`, an emptied `.claude/`.
+- **manager-setup:** `uninstall` deletes a `settings.local.json` left empty; `purge` also removes an emptied `.claude/brewtools/` and `.claude/`.
+- **secrets-scan:** "Add to .gitignore" also runs `git rm --cached`, so a tracked file is untracked.
+- **provider-switch:** key files readable by group or world are refused.
+
+### repo
+
+#### Changed
+
+- **Docs site:** production deploys only `v*.*.*` tag builds; the test compose requires an exact `DOCS_TAG`; the image uses node 24.21.0 and caddy 2.11.7.
+- **CI:** workflows run on `ubuntu-24.04`; the validators workflow checks skills, fences and install blocks.
+
+---
+
+## v6.4.0 (2026-10-05)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/)
+
+### brewdoc
+
+#### Changed
+
+- **Publishing** supports optional `--delivery-mode path|subdomain` across Brewdoc, the standalone skill and OpenClaw. Omitting it uses server defaults; each upload preserves the exact canonical link and effective delivery mode returned by the server.
+- **New sites** use one dedicated subdomain for the entry page and assets. Existing publications retain their links and behavior.
+- **New password-protected links** stay clean without password query parameters. Browser readers unlock through `unlock.brewpage.app`; API reads use `X-Password`.
+
+#### Fixed
+
+- **Directory packaging** stops before upload when ZIP creation fails or produces an empty or corrupt archive. Brewdoc also validates supplied ZIPs before upload.
+
+---
+
+## v6.3.0 (2026-09-30)
+
+> Docs: [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [prompt injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [full setup](https://doc-claude.brewcode.app/full-setup/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/)
+
+> Docs: [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [rules organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [SSH](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [agent-deadline](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | [memory-sync](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [docsync](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/)
+
+### brewcode
+
+#### Changed
+
+- **`convention-setup`** replaces the convention command with a setup lifecycle: `status`, `install`, `upgrade`, `enable`, `disable`, `uninstall`, `purge`. It captures coding, testing and architecture patterns, then installs reversible loading guidance. `setup-status` includes it after search foundation and before teams and review setup.
+- **Creator agents and references** refreshed against official Claude Code documentation and changelog through 2.1.285. Skill invocation and tool permissions, agent forks and plugin fields, hook payloads, event-specific blocking and asynchronous behavior now follow the current contracts. Repository authoring policies remain explicit and separate from runtime capabilities.
+- **All eight shipped agents** now use clearer scope, caller-decision, return and partial-result/checkpoint contracts. Main owns optimizer dispatch and snapshot-backed acceptance.
+
+#### Fixed
+
+- **Intent review** honors latest explicit user amendments. An unreadable governing request makes the review `INCOMPLETE`, even with passing mechanical gates and no findings; read-only guards hand evidence to the coordinator.
+
+### brewtools
+
+#### Added
+
+- **Domain and per-task methodology** in task-board setup: review strategy, verified test commands, acceptance evidence and bounded base work units. The board remains the status authority; the task graph keeps all unfinished entries and the latest 10 completed entries, with older evidence preserved in task records.
+- **Unique session anti-drift cron** for each active top-level task, created by the main session's `task-board` flow. Default cadence is hourly, with a user-selected cadence or opt-out. Each delivered tick rereads methodology and goal, collects active-agent updates, reconciles the graph and checks drift before a compact report of time, tick number, elapsed work, progress, remaining work and blockers or questions. Completion or cancellation stops and verifies removal of the timer. Session/runtime limits apply; unavailable scheduling is reported.
+- **Bare `+++` in Plan mode** injects the methodology, graph and cron planning steps. Scheduling and file changes wait until execution; the codeword adds no cron directive outside Plan mode.
+
+#### Changed
+
+- **Instructions and text optimization** tightened through duplicate removal, contradiction checks and compression while retaining scope, prohibitions, examples and validation requirements. Recovery preserves concurrent edits and reports unverified results.
+
+#### Fixed
+
+- **Context slimming** inventories nested rules and linked instruction references accurately; safe recovery preserves concurrent edits and reports refused restoration.
+- **Provider switching** verifies every selected OpenRouter catalog ID before writing and preserves existing choices. Qwen setup matches region, workspace and billing product; structured request data prevents prompt-derived shell injection. Pricing references replace stale cost and benchmark promises.
+- **SSH and deployment** keep secrets out of command arguments, require explicit authority for external changes, and preserve partial-result evidence. Release sequences stop on a failed Git step rather than reporting success after a failed push.
+- **Text humanization** preserves meaningful private/test contracts, fixture assumptions, BDD comments and lint/type/security directives. Cosmetic cleanup cannot change debug output, APIs or suppressions; ticket removal needs proof of fabrication and failed real resolution.
+- **Deadline and return setup** distinguish turn limits from time budgets, retain partial-result checkpoints and separate content drift from deliberate disabled state.
+
+#### Removed
+
+- Obsolete brevity hooks, their setup, assets, runtime registrations and public documentation. The suite now contains 27 skills, 8 agents and 6 registered hook commands.
+
+### brewdoc
+
+#### Fixed
+
+- **Docsync install/upgrade** validates before writes, preserves existing settings backups and session files, and restores individual failed writes without overwriting concurrent edits.
+- **Memory sync** inventories rules recursively and honors user-narrowed writes across batches, references, salvage and self-sync. Verification excludes secret values and uses minimum necessary evidence.
+- **Publishing** isolates each run's inputs and cleanup. Explicit no-password mode ignores stale password files; protected uploads use an existing local password file without exposing its contents in chat or command arguments.
+
+---
+
+## v6.2.0 (2026-09-12)
+
+> Docs: [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> All 8 plugin agents rewritten for Claude Code 2.1.269 and the Claude 5 family prompting guidance (role -> Return contract -> Scope/Never -> procedure; short bodies, reference catalogs on disk); creators teach the current formats (20 skill fields, 17 agent fields incl. `experimental.cacheTtl`, 33 hook events incl. `PreModelSwitch`/`PostModelSwitch`, corrected exit-code semantics); text-optimizer gained a prompt-quality (PQ) pass; memory-sync-setup ships `prompting-guide.md` (Claude + OpenAI/Codex rules) and a prompt-quality step; hook reminders trimmed and throttled.
+
+### brewcode
+
+#### Added
+
+- **`skills/agents/references/`** — 11 on-demand reference files backing `agent-creator`/`hook-creator` (context/execution, frontmatter fields, known issues, scope/tools, template, hooks changes/env/events/io-contract/templates/types-config)
+- **4 new `skills/skills/references/*.md`** — `activation-and-troubleshooting`, `design-patterns`, `execution-model`, `frontmatter-fields`
+- **`validate-skill.sh` checks 11-14** — unknown frontmatter key (warn), top-level `once:` (fail), non-builtin `agent:` (warn), UTF-8 BOM (fail)
+- **`hooks/tests/suite-forced-eval.mjs`** — new contract suite for the `forced-eval.mjs` hook
+
+#### Changed
+
+- **Agent bodies cut to the Claude 5 prompting shape**: `agent-creator` 633→128 lines, `hook-creator` 851→107, `skill-creator` 897→147, `bc-rules-organizer` 305→184 (all with Delegation/Scope Fit guardrails); `bash-expert` tightened to 188 lines
+- **`forced-eval.mjs`** now fires on the 1st prompt then every 10th (session-keyed counter, meta-replies skipped); `[ROLE]`/`[SPLIT]`/`[BRANCH]` text shrunk 636→472 chars
+
+#### Fixed
+
+- **`validate-skill.sh`** frontmatter extraction reopened on body `---` dividers
+- Agent contract suite now covers 44 checks
+
+### brewtools
+
+#### Changed
+
+- **`text-optimizer` + `text-optimize` references** gained a PQ.1-PQ.13 prompt-quality pass, sharpened lossless guard, per-mode stop condition, measured examples
+- **`ssh-admin`/`deploy-admin`/`text-optimizer`** prompts tightened (all safety rows kept; `deploy-admin`'s `HOST:` envelope field restored)
+- **`manager-setup`** codeword blocks (`full`/`architect`/`planmode`/`review-double`/`review-regression`) ~40% shorter; `planmode` now embeds the 6-step protocol
+- **`task-board-setup`** Codex mirror: durable generator override for the AGENTS.md loading claim (`TEXT_OVERRIDES` in `.codex/scripts/generate-compat.mjs`)
+
+### brewdoc
+
+#### Added
+
+- **`memory-sync-setup/references/prompting-guide.md`** — 18 merged Claude 5 + OpenAI/Codex rules, lossless guard, verdict table; shipped into the generated `/memory-sync`
+
+#### Changed
+
+- **Generated skill runs a prompt-quality step** — NORMAL: fix only alongside fact/dedup edits; HARD: rewrite all — now 5 emitted files / 4 references
+
+> Local references refreshed (not tracked): `user/references/` gained `PROMPTING-REFERENCE.md` and `PROMPTING-REFERENCE-OPENAI.md`; SKILL/AGENT/HOOKS references moved to 2.1.269.
+
+---
+
+## v6.1.4 (2026-08-16)
+
+> Docs: [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/)
+
+> The router's `Agent` guard was denying spawns it had no business denying, and then denying the retry too. This patch makes a deny require evidence — that the named agent actually covers the intent, that the intent was actually stated rather than merely alluded to — and gives the caller a way out when it still gets it wrong.
+
+### brewtools
+
+#### Fixed
+
+- **A project agent outranks a plugin specialist only if it COVERS the intent.** `brewcode:skill-creator`, `agent-creator`, `hook-creator` and `bash-expert` used to lose the route to whatever scored highest, so an unrelated project agent with a few keyword hits hijacked skill authoring. Coverage is now tested per intent by a `domain` regex against the candidate's own frontmatter — score alone no longer wins
+- **Intent signals split into STRONG and WEAK; only STRONG may deny.** Real authoring wording denies; a bare mention of `SKILL.md`, `.claude/agents/`, `hooks.json`, an event name or a shebang is WEAK and nudges only — quoting a path is not a request to write one
+- **Authoring phrasings with a word between verb and noun are recognised again.** `Add a PreToolUse hook…`, `Create a slash command…` and `Create a new brewtools skill` were silently missed by the adjacency-only match and routed nowhere
+- **Roster scoring strikes each agent's own name out of the text before scoring it.** An agent quoted in a prompt as a config value scored on its own name — it could win the route outright, pad the runner-up's margin, or head the nudge list. The strike-out is skipped when the agent declares that name in its own `Triggers:`
+- **Strong intents behind a negation are suppressed.** `do not`, `never`, `how to` and `instead of` preceding the verb no longer read as a request to do it
+- **The anti-loop marker is keyed on the task DESCRIPTION, not the whole prompt body.** A retry that rewrote the prompt produced a new key and got denied a second time; keying on the description makes the retry pass as intended
+- **A weak signal coinciding with roster candidates emits ONE merged message.** Two separate messages for the same spawn were possible
+
+#### Added
+
+- **Explicit escape hatch: `agent-router: override` anywhere in the spawn text** (`allow` and `skip` accepted too). Matched on untruncated text and advertised in the deny message itself, so a false deny is self-recoverable without touching config
+
+---
+
+## v6.1.3 (2026-08-16)
+
+> Docs: [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+
+#### Fixed
+
+- **`manager-setup` no longer arms the HARD delegation wall automatically on `install`/`enable`/`hard-one-shot`.** Arming now requires an explicit `AskUserQuestion` confirmation or the user's own prompt naming "hard wall"/"хард уолл" plus an enable/arm verb — plain `install` or autonomy phrasing ("decide for me") no longer sets `state.hard=true`. Declining `install` still installs the guard files disarmed; declining `enable`/`hard-one-shot` aborts with nothing changed
+
+---
+
+## v6.1.2 (2026-08-16)
+
+> Docs: [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+### brewcode
+
+#### Changed
+
+- **`setup-status`'s run-list is now grouped into 6 dependency-aware stages instead of a flat `partial -> stale -> missing` order.** `fix global drift -> search foundation -> agent root -> agent consumers -> process layer -> docs last`, each with an emoji header, reflecting that several setups consume what `teams-setup` creates or run better once `semble-setup`'s index exists
+
+---
+
+## v6.1.1 (2026-08-16)
+
+> Docs: [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/)
+
+> Final round on the HARD-wall MCP classifier. v6.1.0 made it default-deny; this patch closes the ways a write tool could still read as a pure read — a compound name, an ambiguous verb on the wrong kind of server, and a write verb eaten by the server-name subtraction — and adds the escape hatch for the false denies that a default-deny rule inevitably produces.
+
+### brewtools
+
+#### Fixed
+
+- **MCP classification is fail-closed per token, not per substring.** The read test matched anywhere in the tool name, so a compound write name carried its own alibi: `search_and_replace`, `search_replace`, `list_and_rename` and `get_and_apply_patch` all matched a read verb and passed in `balanced`. Every token of the tool segment is now checked in isolation, so a compound name is only a read when all of its parts are
+- **Ambiguous verbs (`query`, `resolve`) count as reads only in a docs/reference name.** `query-docs` and `resolve-library-id` pass; `mcp__sqlite__query` (arbitrary SQL) and `mcp__linear__resolve_issue` (closes an issue) deny — the same verb is a read on a documentation server and a write on a database or an issue tracker
+- **The write-verb check runs BEFORE the server-name tokens are subtracted.** Subtracting first deleted the evidence: `mcp__email-send__send_and_get_status` lost `send` to the server name `email-send` and classified as a clean read
+- **New optional `mcpAllow` state key — the supported recovery path from a false deny.** Exact tool names or a `mcp__server__*` prefix, `balanced` only, accepted by one shared grammar in both `hooks/hardmode-guard.mjs` and `hooks/lib/manager-state.mjs`, so the runtime filter and the validator can no longer disagree
+
+#### Changed
+
+- **`manager-setup` test suite grown from 44 to 100 checks** — `brewtools/skills/manager-setup/tests/suite.mjs`, covering each compound-name case, both ambiguous verbs on both kinds of server, the subtraction-order regression and the `mcpAllow` grammar on both sides
+
+---
+
+## v6.1.0 (2026-08-16)
+
+> Docs: [context-slim](https://doc-claude.brewcode.app/brewtools/skills/context-slim/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> One new skill and a round of guard repairs. `context-slim` attacks the cost nobody sees on an invoice — the CLAUDE.md, rules, agent descriptions and hook text that are re-sent on every single request. The rest of the release closes states the toggle/install guards could reach but not describe: an agent owned by two teams, a member that is both live and parked, a parked install silently destroyed by a re-emit.
+
+### brewtools
+
+#### Added
+
+- **`/brewtools:context-slim` — compresses the permanent context surface.** Project and global `CLAUDE.md`, `.claude/rules/**`, agent descriptions, hook-injected text and memory files, cut by three levers: cross-layer dedup (the same fact stated in a rule, an agent and CLAUDE.md survives once, in the layer that owns it), removal of what the model already knows by default, and deep per-file compression. Nothing that carries information is allowed to move — exact values, keys, paths, version pins and prohibitions survive byte-exact or the run rolls back whole and reports FAILED
+- Modes `measure` (default, read-only — token weight per layer, no writes) | `preview` | `slim` | `hard` | `bodies` | `restore`, flags `--target=N%`, `--global`, `--memory`, `--noask`, plus a positional timestamp for `restore`. Every decision rule lives in `references/` (keep/drop catalogs, dedup arbitration, contradiction and language policy, measurement, MCP advice), with `scripts/context-scan.sh` measuring and `scripts/context-guard.sh` verifying that the protected values are still there
+
+#### Fixed
+
+- **HARD-wall MCP classification is default-deny.** The read-only test ran an unanchored read-verb regex minus a write-verb denylist, so `mcp__x__search_and_replace` matched `search`, missed the denylist and was allowed; a denylist only ever lists the verbs someone already thought of. Every token of the tool segment must now be individually known-safe with a read verb among them, so `replace`/`rename`/`apply` deny without being enumerated. Classification reads the TOOL segment only — a server named `search` could otherwise launder `mcp__search__destroy_all`
+- **Ambiguous verbs (`query`, `resolve`) read on a docs server and WRITE on a database or issue tracker** (`mcp__sqlite__query` runs arbitrary SQL, `mcp__linear__resolve` closes an issue). They now count as reads only when every other token is a documentation qualifier, so `query_table` and `resolve_issue` deny while `query-docs` and `resolve-library-id` pass
+- **A hand-written `{"mcpAllow":["mcp__*"]}` allowed every MCP tool.** The runtime filter was a bare `startsWith('mcp__')` while the helper CLI rejected the same value; both sides now derive from one grammar, and a malformed `mcpAllow` degrades to deny instead of to a broken state
+
+### brewcode
+
+#### Fixed
+
+- **`teams-setup` rejects an agent name another team already owns.** Two teams listing one name shared a single file: one team's `upgrade` rewrote the other's member, and the other's `uninstall` was then blocked by the ownership check, leaving an undeletable roster row. New `scripts/agent-owners.sh` is consulted at variant time and again on the final roster before the first spawn; `intent-guard` stays shared by design
+- **A member that is both live and parked (`{name}.md` + `{name}.md.disabled`) now refuses in BOTH directions.** `toggle-team.sh` probes the whole roster before it moves anything, so a collision on the last member can no longer leave a team half-toggled, and it prints `CONFLICT:` with both bodies byte-intact; `verify-team.sh` fails on the same state
+- **`upgrade` refuses a parked member** instead of writing the live path and creating the dual copy the guards exist to prevent
+- **`setup-status` reports `CONFLICT`** for that state — it previously read a live+parked member as plain `LIVE` — and the reading outranks every other teams row
+- **`superreview-setup` sweeps per-stack references left by an earlier emit.** Switching stacks kept both refs installed forever, with the abandoned one restamped by every later upgrade as though current. Ownership is read off the file's own frontmatter key, never a historical name list, so a user file that merely mentions the marker survives
+
+### brewdoc
+
+#### Fixed
+
+- **`memory-sync-setup` no longer destroys a parked install.** The emit guard keyed on `SKILL.md` alone, so an install parked as `SKILL.md.disabled` looked absent and the whole-dir replace overwrote the parked body together with every SELF-SYNC hand-edit in it
+
+### docs
+
+#### Fixed
+
+- **Skill counts corrected across the docs** — 28 skills in the suite, 14 in brewtools (both were stated one short)
+- Three TypeScript errors in the docs site: the `resetStyles`/`processTerm` Pagefind options missing from the minimal `env.d.ts` declaration, and two unchecked version reads in `github.ts`
+
+---
+
+## v6.0.0 (2026-08-16)
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [brewcode:agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [brewcode:skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/)
+
+> A correctness release. An audit of all four plugins produced 122 findings; every one was re-verified against a Claude Code 2.1.233 source snapshot, fixed across four waves, reviewed, then re-checked by mutation testing and repaired again. The theme is that the guards, the secret handling and the agent instructions were all written against an older Claude Code and against the happy path -- a guard that could not parse its input let the command through, a provider test put an API key on the `curl` command line where `ps` shows it, and the creator agents taught hook and agent APIs that 2.1.233 no longer has. Nothing here changes how you invoke anything; a lot here changes what happens when something goes wrong. Test suites now cover the parts that had none.
+
+### brewtools
+
+#### Fixed
+
+- **`manager-setup` HARD wall is now an allowlist, not a blocklist.** The guard vets each command against a permitted set of binaries and, per binary, a permitted set of flags -- an unknown binary or an unrecognised flag is denied instead of falling through. Unparseable stdin now fails CLOSED: a hook that cannot read what it is guarding blocks rather than approves
+- **Four wall bypasses closed:** `git diff --output=<file>` (writes a file through a read verb), `git branch -D` (destructive under a read-shaped command), `gh issue comment --body` (writes to a remote), and `find -fprint0` (writes a file through a search binary)
+- **Secrets no longer appear in process arguments.** The `provider-switch` Z.ai connectivity test passed the API key as a `curl` argv element, visible to any `ps` on the machine; it now feeds the whole request config on stdin via `curl -s -K -`. The OpenRouter model list stopped sending a bearer token to a public, unauthenticated endpoint
+- **`deploy-admin` no longer reports on the wrong CI run.** It correlated a run by reading the newest rows of `gh run list`, which returns whatever ran most recently -- a concurrent workflow or a colleague's push could be reported as your deploy. It now correlates by `headSha` and follows the run with `gh run watch --exit-status`
+- **`deploy` safety rules state the rollback truth:** a pushed tag has NO rollback. The previous wording implied one existed
+- `md-to-pdf`, `text-optimize`, `secrets-scan`, `ssh` and `deploy` shell paths hardened against unquoted expansion, missing-dependency fall-through and partial-failure-reported-as-success
+
+#### Changed
+
+- **`AskUserQuestion` is gone from every subagent in 2.1.233**, so agents that asked for approval mid-run silently stalled. `ssh-admin`, `deploy-admin` and the generated `ssh`/`deploy` agent templates now emit an `## APPROVAL REQUIRED` envelope in their return and stop, leaving the decision with the caller
+- `agent-return-setup`, `agent-router-setup` and `manager-setup` assets re-verified against 2.1.233 hook payloads
+
+#### Added
+
+- Test suites for `deploy`, `ssh`, `secrets-scan`, `provider-switch` and `text-optimize` (guard fixtures + lossless/lossy rule fixtures), plus shared libraries (`deploy/scripts/lib/deploy-common.sh`, `provider-switch/scripts/read-secret.sh`, `secrets-scan/scripts/`) that the suites exercise directly
+
+### brewcode
+
+#### Fixed
+
+- **Creator agents corrected against Claude Code 2.1.233.** `hook-creator`, `agent-creator` and `skill-creator` taught a hook-event roster, handler types, `SessionStart` sources (including `fork`), and `StopFailure`/`Notification` payload type lists that no longer matched the runtime. The **200-subagent cap was removed upstream in 2.1.224** and is no longer stated as a limit
+- **`semble-setup` reindex no longer destroys the index it just built.** When the final `mv` of the staged index failed, the staged copy was deleted and the project was left with nothing; it is now kept and its path printed so the move can be finished by hand
+- **`teams-setup`: `toggle-team.sh disable` no longer reports success while every agent stays live.** A failed park left the roster active and the exit code green
+- **`session-start.mjs` no longer follows a symlinked `.claude/plans` out of the project root** -- a symlink there could redirect hook writes to an arbitrary path
+- **`compact-recall.mjs` recovers a plan that predates the transcript.** A new `.claude/plans/LATEST.md` rung sits in the degradation ladder, so a plan written before the scanned window is still re-anchored after a compaction instead of degrading to intent-only
+
+#### Added
+
+- **`agents/tests/suite-creator-contract.mjs`** -- a 27-check contract suite pinning what the creator agents claim about the Claude Code API, so the next upstream change fails a test instead of silently teaching a stale API
+- `hooks/tests/` covering `session-start.mjs`, and `skills/teams-setup/tests/` covering the toggle/verify scripts
+
+### brewdoc
+
+#### Fixed
+
+- **`publish` site-from-directory actually publishes now.** It produced a 0-byte archive and uploaded it, so the returned URL served nothing
+- **The site archive no longer sweeps in secrets.** `.env` and `.git/config` were included in the uploaded bundle
+- **Concurrent `md-to-pdf` conversions no longer overwrite each other's temp files** -- two conversions in the same session could produce one corrupt PDF
+- The worktree/submodule `.gitignore` guard was fixed: it misread a worktree or submodule checkout and skipped the check
+- `--quiet` removed from `md_to_pdf.py` -- it was documented but had never done anything
+
+#### Added
+
+- `publish/scripts/` (`brewpage-lib.sh`, `publish.mjs`) extracted from the skill body, with `publish/tests/` covering archive building, inspection and the skill flow; test suites added for `md-to-pdf` and `docsync-setup`
+
+### codex
+
+#### Fixed
+
+- **`generate-compat.mjs` emitted mirrored files that could not parse.** After handling the `${...}`/`$...` forms it ran a blanket `CLAUDE_PROJECT_DIR` -> project-root substitution that also rewrote bare JS identifiers and object keys (`delete env.<project-root>;`) and produced an invalid shell parameter expansion (`${<project-root>:-}`). The substitution is now context-split: path-prefixed forms keep the project-root placeholder, a bare identifier is an env-var NAME and becomes `CODEX_PROJECT_DIR`, matching the existing `CLAUDE_CODE_SESSION_ID` -> `CODEX_SESSION_ID` precedent
+- **Mirrored `teams-setup` test suites crashed before their first assertion** -- `IG_REL` was rewritten to `.codex/agents/` but the `mkdirSync` above it was not
+- **Mirrored `text-optimize` suite asserted an agent Markdown file the mirror never ships** and expected a fixture under its pre-rename name
+- **`validate-compat.mjs` failed on build artifacts.** The resource walker now skips `__pycache__`, `node_modules`, `.DS_Store` and `*.pyc`; the differs-from-canonical comparison itself is unchanged
+- **`buildDistribution` did not copy `agents/`,** aborting the dist copy of one test script
+
+---
+
+## v5.7.0 (2026-08-15)
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/)
+
+> After a compaction the main session drifts: the role frame, the plan reference and the task graph are all gone from context, so it stops delegating and starts a NEW task graph over work that already had one. `forced-eval.mjs` cannot cover this — it fires on `UserPromptSubmit`, and an auto-compaction mid-turn has no prompt. The only channel that reaches the model after a compact is a `SessionStart` hook with `matcher: "compact"` writing `hookSpecificOutput.additionalContext` (`PostCompact` stdout is UI-only). Two hooks now use it, and SessionStart results accumulate across hooks rather than overwriting each other.
+
+### brewcode
+
+#### Added
+
+- **`hooks/role-recall.mjs`** (`SessionStart`, matcher `compact`) — re-injects the manager-role frame that the summary collapsed. Unconditional, stateless, 3 lines; shares the exact `forced-eval` text so the two can never drift
+- **`hooks/compact-recall.mjs`** (`SessionStart`, matcher `compact`) — re-anchors plan, original intent and the EXISTING task graph. Scans only this session's transcript with `Buffer.lastIndexOf` (no JSONL parsing): ~6 ms scan on an 8.13 MB transcript, ~30 ms full process wall clock. Four-branch degradation ladder — `plan-file` (plan exists on disk -> read it) -> `plan-missing` (path recorded but the file was pruned) -> `plan-in-summary` (plan mode ran, no file; never claims the plan was approved, since plan-mode markers are stamped on ENTERING plan mode) -> `intent` (re-read the user's original task from the summary). On `source === "compact"` it ALWAYS injects; every failure path degrades to the intent fragment, never to silence and never to another session's plan. When the transcript holds a `TaskCreate`, a `[TASKS]` fragment orders `TaskList` and forbids creating a new graph — the built-in task reminder lags several turns and can show empty
+- **`hooks/lib/reminder.mjs`** — the single normative copy of the manager-role / split / branch reminder text, imported by both `forced-eval.mjs` and `role-recall.mjs`
+- `hooks/lib/utils.mjs`: `capText()` + `TEXT_CHANNEL_CAP` — shared cap for injected text channels
+
+#### Changed
+
+- `forced-eval.mjs` now imports its reminder text from `hooks/lib/reminder.mjs` and `capText` from `hooks/lib/utils.mjs`. Injected bytes are unchanged (verified byte-identical), only the source of truth moved
+- Docs updated across every level for the six-file / four-registered-hook reality: brewcode hooks page, brewcode overview, plugin README, `docs/file-tree.md`, `docs/commands.md`, repo README, `brewdoc/docs/hooks.md` comparison table (dropped the removed `BC_PLUGIN_ROOT` injection row and the stale "skill activation" label), and `APPROACHES.md`
+
+### brewtools
+
+#### Fixed
+
+- **`agent-router-setup` staleness detection now uses `content_version`.** Status compares the INSTALLED hook's header against the plugin template, and the config's `content_version` against the `assets/INSTALL.md` header — so a plugin release that did not touch the router no longer reports the install stale. `version` is demoted to informational provenance
+- "Effective" redefined and documented: a missing config file means ON with defaults, and `stale=yes` is still effective. Re-install is idempotent but not inert
+- An omitted `subagent_type` on an `Agent` call is normalized to `general-purpose` instead of falling through unrouted
+
+---
+
+## v5.6.1 (2026-08-14)
+
+> Docs: [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/)
+
+### brewtools
+
+#### Fixed
+
+### brewcode
+
+#### Changed
+
+- `hook-creator` now advises `additionalContext` over `updatedInput` for instruction injection — `updatedInput` is last-wins between parallel hooks, `additionalContext` accumulates
+
+---
+
+## v5.6.0 (2026-08-13)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> `setup-status` reported every installed setup "stale/needs re-verification" on every plugin version bump, even when that setup's actual generator logic hadn't changed — `version` alone can't distinguish a real content change from a release that only touched unrelated files. A second field, `content_version`, now rides alongside it on every stamped artifact: `version` is provenance (which release touched this install), `content_version` is the last release in which the artifact's tracked content actually changed. `bump-version.sh` computes it automatically per artifact by diffing against the git tag matching its previous `content_version`, metadata stripped, byte-for-byte.
+
+### brewcode
+
+#### Added
+
+- **`content_version` field** on every baked artifact stamp (byte-copied assets, hand-maintained shipped agents, `artifact-metadata.md` itself) — computed by `bump-version.sh`'s new `strip_meta_for_diff()`/`content_version_for()`, preserved across a release when the artifact's body is unchanged, advanced to the new version otherwise
+- `setup-status/references/artifact-metadata.md` rewritten as the canonical five-field spec (`doc_type, version, content_version, generated_by, last_updated`), key order and required-fields-by-mechanism table
+- `semble-setup`, `teams-setup`, `superreview-setup`, `e2e` generator scripts and status checks now read and report `content_version` alongside `version`
+
+#### Fixed
+
+- **`setup-status` false-staleness signal.** A setup whose generator/content logic hadn't actually changed since it was installed no longer flags "needs re-verification" on every unrelated plugin release
+
+### brewdoc
+
+#### Added
+
+- `docsync-setup`, `memory-sync-setup`, `md-to-pdf` emitted artifacts and generators now stamp and check `content_version` the same way as brewcode's setups
+
+### brewtools
+
+#### Added
+
+- `manager-setup`'s `writeState()` (`hooks/lib/manager-state.mjs`), `agent-deadline-setup`, `agent-return-setup`, `agent-router-setup`, `task-board-setup` now stamp and check `content_version` on their installed artifacts, following the same contract
+
+---
+
+## v5.5.3 (2026-08-11)
+
+> Docs: [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+> The hard wall told main-session Write/Edit/Bash apart from subagent calls by `agent_id || agent_type`. On Claude Code 2.1.228 the main thread of a `claude --agent <name>` session carries `agent_type` but no `agent_id`, so that OR read the main thread as a subagent and let everything through.
+
+### brewtools
+
+#### Fixed
+
+- **hard wall: `claude --agent <name>` sessions are no longer exempt.** `hardmode-guard.mjs` now decides main-vs-subagent on `agent_id` alone. With the wall armed, a session started as `claude --agent <name>` used to bypass it entirely — every Write, Edit and Bash from its main thread ran undenied. Its main thread is now walled like any other main session. Genuine subagents always carry `agent_id` and keep running unrestricted, as before. The header contract and the provenance note in the hook, and `references/hard.md`, state the new rule
+- **first tests for the guard.** `brewtools/skills/manager-setup/tests/suite.mjs` — 8 cases covering main-thread deny, subagent pass-through, the `agent_type`-only regression, a disarmed wall, a missing state file and malformed stdin. Run with `node brewtools/skills/manager-setup/tests/suite.mjs`
+
+---
+
+## v5.5.2 (2026-08-10)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/)
+
+> The `semble-first` rule carries `paths: ["**/*"]`, so it is auto-loaded into every request of every session in the repo it is installed in — its length is a per-prompt tax, not a one-off cost. It had grown to 111 lines / 4634 bytes by accretion. It ships at 39 lines / 1727 bytes now, with a hard budget and a test that holds it there.
+
+### brewcode
+
+#### Changed
+
+- **`semble-first` rule compressed ~3x** — 111 lines / 4634 B -> 39 lines / 1727 B (711 -> 232 words). Every load-bearing fact survives: both tool names, `repo` mandatory on both (absolute project root or `https://` URL, never inferred), the result fields with "no `line` field — open at `start_line`", the `find_related` param shape, the one-search workflow and `max_snippet_lines=null`, the semble-vs-`rg` split with its 8/9 and 2/5 scores, the never-indexed suffixes with `.json` called out as load-bearing, and the dedup / no-watcher / `--content` cache-thrash traps. What went is section headings, the second JSON example and the paragraphs that argued the doctrine instead of stating it
+- **The rule now has a size budget, enforced by test.** `SKILL.md` §3.3b sets a hard ≤45 lines / ≤2000 B cap and makes it a ratchet — a new fact displaces an old one, exceeding the cap means cutting, never raising it. Rationale and measurement narrative belong in `references/engine-landscape.md`. New `suite-hooks` check **J9** asserts lines, bytes and a no-fact-lost list, so the file cannot regrow by accretion again
+- **`suite-hooks` check B4 matches facts, not sentences.** It pinned exact prose (`'## Keep using rg / Grep for'`, `'Semble has no background watcher.'`), so every rewording of a file that lives under a compression budget turned it red for no defect
+
+---
+
+## v5.5.1 (2026-08-10)
+
+> Docs: [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+> `disable-model-invocation: true` is the right answer for the 27 distributed skills — 27 model-visible descriptions would be a permanent token tax. It is the wrong answer for a skill a generator writes into your repo: that skill exists to be reached, and `/memory-sync` was the one emit still carrying the flag, invisible to the model that was supposed to call it. The flag now belongs to distributed `-setup` skills only, and the generator enforces that on every install, upgrade and validate.
+
+### brewdoc
+
+#### Fixed
+
+- **The emitted `/memory-sync` is model-invocable.** `references/SKILL.md.template` no longer bakes `disable-model-invocation: true`, so Claude can fire the skill mid-plan and prose triggers ("sync memory", "обнови память") resolve. The `-setup` skill itself is unchanged — still `user-invocable: true` **and** `disable-model-invocation: true`, still typed by hand
+
+#### Changed
+
+- **`upgrade` migrates a legacy install without a re-emit.** `generate.sh restamp` — the mandatory last step of `upgrade` — now DELETES a surviving `disable-model-invocation` key from an already-installed `SKILL.md` and prints a `REMOVED:` line. Nothing else in the body moves; hand-edits and SELF-SYNC changes survive
+- **`generate.sh validate` check (5)** hard-fails when the emitted frontmatter carries `disable-model-invocation`, so a hand-edit or a stale template can never quietly hide the skill again
+
+### brewcode
+
+#### Changed
+
+- **`superreview-setup`** carries a normative guard: `disable-model-invocation` MUST NOT be set on the emitted `superreview` skill. Behavior is unchanged — that emit was already model-invocable; the rule is now written down where the generator can be read
+- **`setup-status`**: the `.md` frontmatter example in `references/artifact-metadata.md` no longer shows the key, and a normative sentence states that a generated artifact stays model-invocable and that the flag belongs only to distributed `-setup` skills
+
+### brewtools
+
+#### Changed
+
+- **`task-board-setup`**: the same guard on the emitted `task-board` skill, matching the one `task-spec` already carried. Both emits were already model-invocable; nothing about the deployed board changes
+
+---
+
+## v5.5.0 (2026-08-10)
+
+> Docs: [agent-return-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-return-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/)
+
+> A subagent's last message is the only thing its caller ever reads, and nothing sized it. Agents returned whole files, whole diffs, whole transcripts — the caller paid for all of it and used three lines. This release gives the return a budget: a new opt-in setup enforces one at runtime, and every shipped agent, every generated agent and every agent template now carries a single Return Contract section that says what the last message is for.
+
+### brewtools
+
+#### Added
+
+- **`/brewtools:agent-return-setup` — a size budget on every subagent's final return.** Two registered hooks and one shared module, installed to the project or to `~/.claude`: a `SubagentStart` contract hook injects the budget as `additionalContext` before the agent starts, and a `SubagentStop` guard sizes the finished return and can send it back once. Canonical modes `status | install | upgrade | enable | disable | uninstall | purge`, plus `[pass] [file]` thresholds. Opt-in — not registered in `brewtools/hooks/hooks.json`, nothing changes until you install it
+- **Three tiers, two numbers.** Return `<= passTokens` (default 1000) passes; `passTokens < t <= fileTokens` (default 2500) comes back with an order to compress; `> fileTokens` comes back with an order to write the content to a file and return the path. Size is `chars / 4`, so it costs nothing to compute
+- **Blocked AT MOST ONCE per agent.** `stop_hook_active` is checked before anything else, so a second oversized return is allowed through rather than looped on — a budget that can deadlock an agent is worse than no budget
+- **Config `<scope>/.claude/agent-return.json`, opt-in polarity.** `ENABLED = !!CONFIG && CONFIG.enabled === true` — an absent, key-less or unparsable config injects no contract and sizes no return. Project config wins; a malformed project config falls back to the global one. Ships with a 136-case verification suite and an `INSTALL.md` runbook whose config block hard-fails on `passTokens >= fileTokens` and verifies every write by reading it back
+
+#### Changed
+
+- **`text-optimizer`, `ssh-admin` and `deploy-admin`** each replaced their own output rules with one Return Contract section: what the last message is for, what never goes in it, and where a large artifact goes instead
+
+### brewcode
+
+#### Changed
+
+- **`agent-creator`, `skill-creator`, `hook-creator`, `bash-expert` and `bc-rules-organizer`** carry the same Return Contract section, and `agent-creator`'s generated-agent template now emits it — every agent it writes is born with the contract
+- **`teams-setup`**: generated domain agents are born with the contract, and `verify-team.sh` WARNs on a roster member that predates it, pointing at `/brewcode:teams-setup upgrade`
+- **`superreview-setup`**: the `intent-guard` template carries the contract, and `validate_emit` warns on a pre-existing install whose `intent-guard.md` predates it
+- **`setup-status` probes the new setup as roster row 11** — three `.mjs` present (only two are ever registered; `agent-return-budget.mjs` is a shared module and a settings ref to it is a defect), both settings entries, and `agent-return.json`'s `enabled` + stamp trio, in both scopes. Every hardcoded count moved with it: 10 setups -> 11, 17 stamp carrier lines -> 21, the brewtools group 11 -> 15. `1/3` or `2/3` hook files is `partial`, not `stale` — ESM resolves imports before evaluating, so one missing sibling makes both hooks exit 1 on every spawn
+
+---
+
+## v5.4.0 (2026-08-10)
+
+> Docs: [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/)
+
+> Nobody types keys. Skills whose arguments were positional (`/task-spec AUTH-4 design`) were unusable in practice — the user writes a sentence, and the skill answered with a usage error or guessed silently. Every skill in all four plugins, plus every skill a `-setup` generator emits, now takes a free-form RU/EN prompt in position 1, resolves its mode and scope from that prompt by one documented algorithm, asks at most one clarifying question, and prints a fixed 5-field PLAN block before it touches anything.
+
+### brewcode
+
+#### Added
+
+- **Prompt contract — one normative spec, `skills/skills/references/prompt-contract.md`.** Six sections: the hint shape (`argument-hint: "[prompt] [<mode1>|<mode2>|...] [<extras>]"`, prompt always optional, strictly additive to hints that already worked), the required mode keyword table (`Mode | EN keywords | RU keywords | Mutates?`), the 6-step resolution algorithm, the PLAN block, the exemption list, and paste-in boilerplate. Shared by `/brewcode:skills`, `brewcode:skill-creator` and every generator template
+- **Resolution is deterministic, not vibes.** Strip flags -> an explicit mode token anywhere wins outright -> otherwise score modes by distinct whole-word EN/RU keyword hits -> tie-breaks in fixed order (destructive tie asks, read-only beats mutating, else first keyword in the prompt, all-zero -> the documented default). Empty arguments take the default and ask nothing when the run is read-only. Prose that parses as neither mode nor id nor path is input to mine, never an error
+- **`PLAN — <plugin>:<skill>` block, 5 literal labels (`INPUT / MODE / SCOPE / DO / RESULT`), printed once before the first action.** `MODE` always carries why it was chosen, `SCOPE` names real paths and real targets. A missing block, or one printed after work began, is a defect the validator reports
+- **`validate-skill.sh` checks 7-10** — hint present and prompt-first (applies to exempt skills too), `## Prompt contract` section present, PLAN header plus all five labels, and mode table carrying `Mutates?` and at least one Cyrillic keyword whenever the hint declares 2+ modes. Sweep result: 32/32 skills pass
+
+#### Fixed
+
+- **Body extraction in `validate-skill.sh` dropped whole chunks.** A range-negation `sed` paired later `---` horizontal rules with each other, so `e2e`, `teams-setup` and `superreview-setup` failed the new body checks against a mutilated body. Extraction now starts one line after the frontmatter's closing delimiter
+- **The mode-table detector audited the wrong table.** Anchoring on "mode"+"keyword" matched ordinary prose rows (`ssh`'s "keyword matching is simple"); it now anchors on a header carrying both `keyword` and `mutates`, and searches the skill's own `references/*.md` as well — `semble-setup` keeps its routing table there by design
+- **Hint mode-detection false positives** on target and flag alternation (`[<plugin>|<skill>]`, `<text|file_path>`, `[-q|--quorum [G-]N-M]`) — those are targets and flags, not modes, and no longer demand a table
+- **`superreview-setup`** verb table said `Writes?` where the contract fixes `Mutates?`; **`semble-setup`** described the plan output but never showed the literal block; **`claude-plugin-guide`** (the sole exemption) had no `argument-hint` at all — it now declares `[prompt]` and skips only the table and PLAN checks
+- **PLAN header drift:** three workspace skills emitted a wrong namespace (`PLAN — brewcode:docs` for a project-local skill) and the task-board family emitted `PLAN --` instead of an em dash. Both normalized, including the generator's own gate
+- **`.codex` mirror:** the hand-authored `brewcode/rules` body declared no modes, so mode parity against the new prompt-first hint failed the whole `bump-version.sh` run; the embedded body now documents prompt-first resolution. Unused `body` binding in `generateAgent()` removed
+
+#### Changed
+
+- **All 26 distributed skills + 6 workspace skills** carry a prompt-first `argument-hint` and an inlined `## Prompt contract` section. Inlined rather than cross-referenced on purpose: a brewtools or brewdoc skill cannot reliably read a path inside the brewcode plugin
+- **`skill-creator`, `/brewcode:skills` (create / improve / review / sync) and `review-prompt.md` checks 25-28** now require the contract of every new or reviewed skill
+- **Root `CLAUDE.md`** gained the normative Prompt-contract block with its re-verify one-liner
+
+### brewtools
+
+#### Fixed
+
+- **`task-spec` — the defect that started this.** Its hint was `<TASK_ID> [full|design|refresh]`, so a sentence became a task id. An argument is now taken as an id only when it matches the id pattern; otherwise the prose is mined for an id-shaped token, then matched against task titles and slugs, then falls through to the existing in-progress/todo WIP discovery. Mode comes from bilingual keywords, and the PLAN block prints after id, mode and domains resolve. Ground-truth STOPs stay unsuppressed under `-n`
+- **`task-board`** takes a prompt ahead of `view | add | move | backlog | groom`, with a keyword table and a `## Guards` section
+- **`task-board-setup` phase P5 gates its own output** — a bash check asserting each emitted skill's hint starts with `[prompt]` and its body contains the PLAN header
+
+### brewdoc
+
+#### Changed
+
+- **`memory-sync-setup` template** emits the contract into the project-local `/memory-sync` skill, `{{LANG}}`-parameterised: labels stay literal ASCII, values follow the project language
+
+---
+
+## v5.3.2 (2026-08-10)
+
+> Docs: [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/)
+
+> Every skill in all four plugins showed up twice-namespaced in the picker — `/brewcode:brewcode:e2e`. The prefix was baked into frontmatter back in the v2.x era; Claude Code prepends the plugin name on its own, so the two stacked. All 26 names are now bare and equal to their directory, and the validator refuses to let the prefix come back.
+
+### brewcode
+
+#### Fixed
+
+- **Skill frontmatter `name` is bare again — all 26 skills across brewcode, brewdoc, brewtools.** Each `SKILL.md` carried `name: <plugin>:<skill>`, and CC prefixes the plugin name itself, so the skill picker rendered `/brewcode:brewcode:e2e`, `/brewtools:brewtools:ssh` and so on for every skill in the marketplace. Agents never had the defect (`name: agent-creator` -> `brewcode:agent-creator`); only skills did, since v2.0.73. Names now match their directory exactly — invocation paths (`/brewcode:e2e`) are unchanged from what the docs always claimed
+- **`validate-skill.sh` enforces it.** The name check accepted `prefix:kebab-case` by design; it now hard-fails on any `plugin:` prefix (naming the bare replacement), on a non-kebab name, and on a name that differs from the directory it lives in. Directory resolution goes through `cd && pwd`, so validating `.` from inside a skill dir no longer reports a false mismatch
+- **`.claude/skills/brewcode-review`** frontmatter said `brewcode:review` while the directory said `brewcode-review` — the workspace-local skill now matches its directory too
+
+#### Changed
+
+- **Naming rule documented where skills are authored:** `skill-creator` frontmatter reference and checklist, `skills/references/review-prompt.md` check #3, and the root `CLAUDE.md` Skills invariant block, which now carries the one-line re-verify loop over all 26 files
+
+---
+
+## v5.3.1 (2026-08-09)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+> One field decided whether a telemetry record said `main` or `sub`, and it was the wrong field. Both hooks now read `agent_id`, the one CC documents for the purpose, and every record they label `sub` carries the id that decided it — so the label is checkable rather than trusted. Pre-fix records are quarantined and counted, not deleted.
+
+### brewcode
+
+#### Fixed
+
+- **`agentOf()` reads `agent_id`, not `agent_type` — in `semble-stats.mjs` AND `semble-reminder.mjs`.** CC 2.1.226 sets `agent_type` on the main thread of an `--agent` session as well as inside a subagent; `agent_id` is present **only** inside a subagent. Testing `agent_type` therefore filed every main-thread call of an `--agent` session under `sub`. The reminder carried the same defect as the stats hook and is fixed the same way
+- **`sub` records now stamp the deciding `aid`** (raw `agent_id`, capped at 64 chars). It doubles as the join key to the `agent_id` the `SubagentStart` hook already logs, which is what makes a delivery claim joinable instead of asserted
+- **Pre-fix telemetry is quarantined, not dropped.** `semble-status.sh` counts stats records labelled `sub` with no `aid` into `report.legacyAgent` and prints a `suspect:` line when it is non-zero, so every main/sub number reads as an upper bound on `sub`. The records stay in every denominator
+
+#### Changed
+
+- **The reminder's injected text regained its scope hint** — `semble: wrong tool. mcp__semble_code__search repo="<cwd>" first. (exact/-l stays rg)`, 36 tokens ready and 42 cold, up from 29/36. The gate is a heuristic and was caught mis-tuned once (camelCase suppression silenced plain TypeScript phrase queries); four words of escape hatch are cheap insurance against a misfire pushing the model off a grep that was right
+- **Storage-gap figure re-measured and reconciled across the docs.** Recounted against `~/.claude/projects/**/subagents/*.jsonl`: **92 `hook_additional_context` attachments, all of them `SubagentStart`, across 852 subagent files, zero `PreToolUse`** — superseding the two stale snapshots ("82 across 436 files" and "52 of 52 across 451 files") that were measured earlier and had drifted apart. Still a storage gap, not a delivery gap
+- **The `agentOf()` defect is described precisely** — it mislabels *the main thread of an `--agent` session*, not main-thread records in general. Narrowed in `README.md`, `assets/INSTALL.md` and the docs site
+
+---
+
+## v5.3.0 (2026-08-09)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+> This release is mostly measurement, and an adversarial re-audit of that measurement retracted part of it. The reminder hook was retuned from "fires often, advises badly" to "fires rarely, advises correctly" — and then fired **zero** times across 59 Bash calls, none of which had the shape it fires on. The hypothesis that a contradicting `CLAUDE.md` suppresses semble adoption was A/B tested and **refuted**. What was proven is separated below from what was merely built; four published numbers are withdrawn or restated under **Corrections**.
+
+### brewcode
+
+#### Corrections
+
+> Four numbers first published in this section do not survive an adversarial re-audit. They are withdrawn here rather than quietly adjusted, and the bullets that carried them have been rewritten in place.
+
+- **WITHDRAWN — "control conversion without a nudge was 8/59".** Unreproducible. Re-derived with the scoring script's own rule — a semble call within the next 3 tool uses after a non-fired gate — the value is **0 in arm A (0/32) and 0 in arm B (0/27)**. The published 8 was the count of `mcp__semble_code__search` calls in arm A, the very same 8 as the first-tool figure, over a denominator it never shared. Nothing replaces it: the design contains no arm without a semble instruction, so it cannot support a control claim at all
+- **WITHDRAWN as evidence — "8 of 8 subagents opened with semble as their first tool … never as tool 0 … the routing win comes from the subagent briefing and the rule file".** The 8/8 is a tautology and the sentence after it is false. Every spawn prompt the main agent wrote, in **both** arms, carried the literal instruction `Method: start with ONE mcp__semble_code__search (repo = that absolute root, top_k=5, max_snippet_lines=10)`. The hook-free arm B scored **6 of 6** first-tool semble — 14/14 combined, identical with and without the hook. The count stands as a count; the causal claim does not. The brief's effect on tool choice is **UNTESTED**
+- **RESTATED — "fired 0 times in 59 evaluated search calls".** 59 is every **Bash tool call** across both arms: the matcher is `Bash|Grep`, so a gate row is written for every Bash call regardless of content. Composition: **13** contained no search binary at all (`cd`, `ls -R`, `cat -n`, `sed -n`, `wc`), **13** were `find` (filename enumeration, suppressed by design), **33** were `rg`/`grep` with a single-token identifier pattern (suppressed by design), and **0** were the multi-word behaviour phrase the gate fires on. "0 fires" is arithmetically true and is evidence neither of a broken hook nor of a valuable one
+- **WITHDRAWN — "90.6% of search traffic is subagent traffic (3084 sub / 321 main)".** Computed from a telemetry field that is broken: `agentOf()` in `semble-stats.mjs` mislabels main-thread records as `sub` — in a fresh 7-session run **all 126** stats records came out `sub`, including known main-thread calls. Historical telemetry cannot be corrected retroactively, so there is no adjusted percentage to print
+
+**The A/B had no clean arm.** Arm B removed 1 of 8 semble channels. Still live in it: the fixture's `CLAUDE.md` semble block, the fixture's concept-to-directory map (which on its own defeats the vocabulary-mismatch premise), the SessionStart hook, the UserPromptSubmit prefetch (it injects the answer's ranked `file:line` into context and fired in 4 of 7 sessions), the MCP server description, `semble-first.md`, and the spawn prompt. **3 of the 4 prompts also leaked the answer's exact identifier** (`ceiling` — verbatim the identifier on the planted-defect line; `flush`; `allowance`/`standing`/`withdrawn`), so a plain `rg` lands on the answer.
+
+**What survives is delivery**, verified per registration on 7 real sessions plus a 525-transcript live corpus:
+
+- `SessionStart` — delivers, 4/4 arm A and 3/3 arm B
+- `UserPromptSubmit` prefetch — delivers, 2/2 and 2/2 of the prompts where its gate fired; correctly silent on the 3 it declined
+- `SubagentStart` — delivers, 8/8 arm A and **0/6 arm B**, a clean negative control proving the registration is what puts the text there; corroborated 36/36 across the live corpus over 6 agent types
+- `PostToolUse` / `PostToolUseFailure` — inject nothing by design, accounting only: **unobservable**, never scored as a failure
+- `PreToolUse` reminder — 0 fires in these runs. In the live corpus, 26 historical fires (8 main, 18 sub); the single main-session fire **is** recorded in the transcript, while the 12 sub fires carrying a `tool_use_id` join to **0 of 12** transcript records. Subagent transcript files persist `SubagentStart` hook records only — 52 of 52 `hook_additional_context` across 451 subagent files, zero `PreToolUse` of any kind. That is a **storage** gap; delivery into a subagent was proven separately in-band, and the two are not the same finding
+
+#### Measured
+
+- **Delivery inside a subagent is PROVEN, not assumed.** Every prior release described `PreToolUse` delivery inside a subagent as unobservable. It is not: an agent captured its own injection in-band, joined to the hook's telemetry record by `tool_use_id`, `agent:"sub"`. Subagent transcripts store only `SubagentStart` attachments — 82 across 436 files, zero `PreToolUse` — which is a **storage** gap, not a delivery gap. Every doc claiming otherwise has been corrected
+- **The channel proven to DELIVER is `SubagentStart`.** Its text reached 8 of 8 subagents with the registration installed and **0 of 6** with it removed — a clean negative control that the registration, and nothing else, is what puts the text into a subagent's context; corroborated 36/36 across a 525-transcript live corpus over 6 agent types. This is a delivery result and not a routing result: both arms' spawn prompts told the subagent to open with semble, so first-tool behaviour was 14/14 either way and the brief's effect on tool choice is untested
+- **Gate precision, 80 real commands hand-labelled independently.** Of the 40 the 5.2.3 gate fired on and the new gate suppresses, **37 are genuinely exact or exhaustive lookups where grep is the right tool** (1 behavioural, 2 ambiguous) — so roughly 95% of the old gate's injections were wrong advice. Of the 40 commands both gates suppress, **zero** were behavioural: no false negatives are hiding in the suppressed set
+
+#### Negative results
+
+- **The documentation-conflict hypothesis is REFUTED.** The theory was that a root `CLAUDE.md` contradicting the semble-first rule suppresses adoption, since a root `CLAUDE.md` outranks a `.claude/rules/` file. A/B: with the contradiction present, 5 semble calls / 14 searches = 36%; with it removed, 4 / 18 = 22%. Fisher exact two-sided **p = 0.45, n = 32** — and the "clean" arm was nominally **worse**. The conflict detector shipped in this release therefore has **no measured justification** as a conversion fix; it is kept only because removing a false statement is correct on its own merits. Every doc that sold it as a conversion fix has been rewritten
+- **The retuned reminder fired 0 times in 59 Bash calls** across 7 sessions on a code-heavy TypeScript fixture — and none of those 59 was the multi-word behaviour phrase the gate fires on (13 no search binary, 13 `find`, 33 single-token `rg`/`grep`). Conversion after a nudge is therefore **undefined (0/0)** — no release may print a conversion percentage for this channel, and there is no control figure either. Rule of three puts the 95% upper bound on the fire rate over that traffic mix at **5.1%**; banking enough nudges for a conversion test needs roughly 680 comparable calls, about 80 sessions
+
+#### Changed
+
+- **`semble-reminder.mjs` default `reminderEvery` 5 -> 1.** It now fires on every eligible search rather than every fifth. Still configurable in `.claude/semble/state.json`; the counter at `.claude/semble/reminder.json` stays project-global and survives sessions, it simply throttles nothing until a user raises N
+- **The injected text shrank from 65 tokens to 36** (42 while the index is cold) — `semble: wrong tool. mcp__semble_code__search repo="<cwd>" first. (exact/-l stays rg)`, with `first call builds the index; ` prepended inside the same parenthetical until the index is ready. A correction, not an explanation: the parameters the `semble-first` rule and the subagent brief already carry are no longer repeated, and the scope clause is kept so a heuristic misfire cannot push the model off a grep that was right
+- **The gate is now high-specificity.** Suppressors: a single-word pattern, a pattern under 8 characters, `-l`/`-c`/`-o`/`--files`, `-F`/`-w`, any `find`/`bfs`, a pattern containing `/`, a filename-shaped token (checked per token, not on the whole pattern), regex metacharacters, ALL-CAPS, the phrases "every/all/how many/list the", a binary reading a pipe, `| wc/sort/uniq/cut/awk`, and any mention of `semble`. Code-literal shapes split in two: `#:=<>`, backtick, `~@%` suppress unconditionally, while snake_case, an intra-word hyphen and camelCase suppress **only** when no token is a plain lowercase word — so `rateLimit config` and `max_retries setting` still fire on a TypeScript codebase
+- **Replayed on identical historical input** — 2543 recorded search calls: the pre-5.2.3 gate let 230 through and fired 32; the 5.2.3 gate 1024 / 204; this one **14 / 14**
+
+#### Added
+
+- **Installer conflict detector** — `sg_conflict_scan()` + `do_claudemd_conflicts()` in `semble-guidance.sh`, wired into `install` after `do_claudemd`. It scans the **root** `CLAUDE.md` only, outside the semble markers, for directives that contradict semble-first. A line that **denies** semantic search is removed even when it also scopes the tool; a line that merely puts grep/Bash/rg **first** is removed unless the same line scopes the tool to exact identifiers / regexes / paths / exhaustive enumeration, which is the skill's own correct guidance and is never touched or even reported; a line that merely mentions a search tool is reported and left. Whole lines only, never a clause — the confirmed instance mixes a true fact with a false one in one sentence. The whole file is backed up to a timestamped `.bak` first and every cut is echoed verbatim, so re-adding a true half is a paste. `SEMBLE_DRY_RUN=1` prints without writing. See the negative result above: this feature has no measured effect on tool choice
+
+#### Fixed
+
+- **Docs reconciled against the code.** `semble-setup.mdx` carried `N = 5`, an "every fifth search" callout, the superseded 5.2.3 gate replay numbers, and a cost table (188 tokens per injection, 189 per subagent injection, 20/20 and 4/4 delivery) that no longer describes anything shipped. `README.md` carried a stale per-channel conversion table (reminder 2/10 sessions, explore 1/7). `assets/INSTALL.md` still called the reminder "throttled", documented no cadence at all, said nothing about a scan that can delete lines from a user's `CLAUDE.md`, and closed on "not yet measured" for a measurement that now exists. All corrected
+- **This repo's own `CLAUDE.md` lost a duplicated `## Code Search` section** asserting that native `Grep`/`Glob` are no-ops on this macOS build. They are gated, not removed — naming them in `--allowedTools`, a permission rule or an agent's `tools:` frontmatter re-arms them
+
+---
+
+## v5.2.4 (2026-08-09)
+
+> Docs: [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/)
+
+> Three helper functions lived as copies in two hook assets each, and the copies had drifted apart — behaviour depended on which hook reached the code first. All three pairs reconciled onto the correct version.
+
+### brewtools
+
+#### Fixed
+
+- **`pruneStale()` in `agent-router.mjs` followed planted symlinks.** The `agent-deadline-guard.mjs` copy `lstat`s each entry and unlinks a non-directory outright; the router copy fell straight through to a recursive `rmSync`, which would delete *through* a symlink planted in the state directory. The defensive branch is now in both, and the owner check applies only to real directories
+- **`safeSegment()` in `agent-router.mjs` returned `null` for a numeric session id.** The `agent-deadline` copies coerce finite numbers to a string; the router did not, so a numeric id produced no segment at all. Coercion ported over — a numeric session id is a real input, not an edge case
+
+### brewdoc
+
+#### Fixed
+
+- **`recordTouched()` rewrote state on every touch for a consumer that never read it.** `docsync-track.mjs` re-wrote the entry each time while `docsync-watch.mjs` early-returned when the path was already recorded. The consumer settles it: `docsync-gate.mjs:128` iterates `st.touched` as bare path strings and re-reads freshness from the file itself at gate time (`docsync-gate.mjs:132-138`), so no touch timestamp is ever read — neither the first nor the latest. `track` now dedupes like `watch`, dropping an atomic state rewrite per touched file
+
+---
+
+## v5.2.3 (2026-08-09)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/)
+
+### brewcode
+
+#### Fixed
+
+- **semble-setup telemetry:** the `PostToolUseFailure` registration fired correctly but its records were byte-identical to `PostToolUse` ones. `semble-stats.mjs` read the event name, used it as a guard, then discarded it — only the semble-MCP `call` branch derived `ok` from it, while the `open` and `search` branches wrote nothing about success or failure. Both now carry `fail: true` on a failure; the key is omitted on success, so existing records stay byte-compatible and the log does not grow.
+- **semble-setup prefetch conversion metric:** a Read that FAILED still emitted an `open` record for a path it never opened. Since conversion is measured as "an injected path was subsequently opened", every failed Read of an injected path counted as a conversion and inflated the number. Failed opens are now marked and excludable.
+
+---
+
+## v5.2.2 (2026-08-09)
+
+> Docs: [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+> A duplication audit across all 26 skills. Most of what it found was deliberate structure, not redundancy — the entries below are the cases where it found a real defect.
+
+### brewcode
+
+#### Fixed
+
+- **Three scripts stamped a placeholder version instead of hard-failing.** `convention/scripts/convention.sh`, `rules/scripts/rules.sh` and `teams-setup/scripts/verify-team.sh` fell back to `unknown` (or a literal `X.Y.Z`) when the version could not be resolved from `plugin.json`, and stamped it unguarded — the exact failure their five sibling scripts carry a comment warning about, because `sort -V` then reports a confident `AHEAD unknown > X.Y.Z` and staleness detection inverts. All three now use the reference gate and hard-fail. `memory-sync-setup/scripts/generate.sh` is untouched: its `unknown` is a guarded sentinel, checked before use
+
+### brewdoc
+
+#### Fixed
+
+- **`hooks/lib/utils.mjs` was a dead, drifting copy** of `brewtools/hooks/lib/utils.mjs`. brewdoc registers no hooks (`hooks.json` is `{"hooks":{}}`) and nothing imported it — verified zero importers before removal. Deleted; a stale second copy of a logger can no longer be mistaken for the live one
+- **`README.md` claimed neither brewdoc setup skill implements `enable`/`disable`.** Both do, and have since v5.1.0 — `docs/commands.md:25` already said so. The sentence and both Arguments cells now match the skills' own `argument-hint`
+
+---
+
+## v5.2.1 (2026-08-09)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/)
+
+### brewcode
+
+#### Fixed
+
+- **The cache-staleness check was lying on every project.** Both readers compared `metadata.content_type` against a hardcoded `"code,config"` — a literal left over from before the corpus gained `docs`, while the server actually runs `--content code docs config` (sorted: `code,config,docs`). Every project therefore reported `cache: ... | mismatch`, and since that check returns early, the file-mtime freshness loop behind it never ran: `fresh`/`stale` was dead code in practice. The expected set now derives from `SEMBLE_CONTENT_ARGS` in `scripts/lib/semble-common.sh` through a new `sc_content_set_csv()` helper, so the two can no longer drift. Live proof: the status line went from `mismatch` to a genuine `stale`
+- **`semble-project.sh` carried an invalid inline shellcheck directive at line 249** that aborted shellcheck's parse of the whole file — and of everything sourced through it. Removed; the file and its dependencies lint again
+- **Coverage:** `tests/suite-core.mjs` gains 6 assertions pinning the derived content set, 329 -> 335, all 7 suites green
+- **End-to-end hook delivery re-validated** against a 26-file fixture project on CC 2.1.226: 5 of the 6 registrations delivered at 100% — SessionStart 3/3, UserPromptSubmit 1/1, PreToolUse 1/1 (joined by `tool_use_id`), SubagentStart 2/2 (joined by `agent_id`), PostToolUse 18 records with no delivery by design. `PostToolUseFailure` had no failure to fire on in the window, so it is unproven rather than failed. Zero emitted-but-undelivered payloads
+
+---
+
+## v5.2.0 (2026-08-09)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [full-setup](https://doc-claude.brewcode.app/full-setup/)
+
+### brewcode
+
+#### Added
+
+- **semble-setup: the two advisory hooks are back, and this time delivery is proven rather than assumed.** `semble-reminder.mjs` returns on `PreToolUse` with the single matcher `Bash|Grep`; `semble-subagent.mjs` is new and replaces `semble-explore.mjs` on `SubagentStart`. The want-table goes from **3 hook files / 4 settings entries to 5 files / 6 entries**, all still `timeout: 5` (seconds), and status now prints `hooks <n>/6 wired`
+- **`semble-subagent.mjs` carries NO `matcher` key at all.** An absent matcher is what matches every agent type — `"*"` would have been wrong. `semble-explore.mjs` was pinned to `agent_type === 'Explore'` and reached exactly one of them; the replacement was verified live on `Explore`, `Plan` and `general-purpose`, all three quoting the injected text back verbatim
+- **The reminder counter is PROJECT-GLOBAL and survives across sessions.** It is not per-session state: a fresh session inherits the residual phase, so the nudge may land on the very first search or only on the fifth. "Every fifth search" is a property of the project, not of the session — documented on the skill page, in `SKILL.md` and in the README
+
+#### Fixed
+
+- **The v5.0.0 retirement rationale was withdrawn: `0/18` measured nothing.** The claim was "0 of 18 conversion on the main channel with delivery independently confirmed". The reminder hook fired **zero times** across those 18 sessions — its own `isExactIntent` gate, self-described as biased to silence, suppressed 74 of 113 evaluations, 37 were `disabled` and 2 throttled, for a lifetime rate of 14 nudges in 2718 evaluations (0.52%). The denominator 18 counted trial *sessions*, not deliveries. `0/11` on the subagent channel WAS a real measurement, but of a single agent type and of text that undercut itself with the phrase "this is a reminder, not a block". The delivery channel itself was never broken: in the CC 2.1.226 binary `PreToolUse` and `SubagentStart` both accept `additionalContext` in the zod union and both reach the model over the same unfiltered path
+- **Cadence replaces the throttle.** The 600-second timer and its `.claude/semble/.reminder-ts` marker are retired for good. The hook now fires on every Nth **eligible** search, `N = state.reminderEvery` (default 5), counted in `.claude/semble/reminder.json` with an atomic write and a reset on corruption. Ineligible calls never advance the counter
+- **The gate keeps only the strong suppressors** — `-l`/`-L`/`-c`/`-o` and their long forms, `output_mode: files_with_matches|count` on the native `Grep`, `find`/`bfs` filename predicates, a pattern containing `/`, a filename-shaped pattern. Suppression on regex metacharacters, `-F`/`-w`, piping into `wc`/`sort` and short patterns is gone. Replayed on the real historical stream of 2543 recorded search calls: the old gate let 229 through and fired 32; the new one lets 1023 through and fires 204
+- **Conversion is now reported per source, not pooled.** `conversion.bySource` splits `session`/`reminder`/`subagent`/`prefetch`/`explore`, each with its own explicit `measure` (`injected-path-opened` for prefetch, `semble-call-after` for the rest). The old single denominator let 126 `SessionStart` firings drown every other channel. A channel that never fired prints `0/0` instead of vanishing — `0/0` is "never delivered", `0/N` is "delivered and ignored", and only the second is evidence about the advice
+- **`install` stages every hook asset before wiring it.** The asset is copied to a temporary path, `node --check`ed there, and only then moved into place; `prune_want_table()` drops any row whose file did not land. A corrupt asset can no longer be installed and registered in `settings.json`
+- **The settings merge is a reconcile, not an append.** `wanted` is keyed on (event, matcher, path) triples, so a v1-shaped repo has its `SubagentStart`/`Explore` row **replaced** rather than left beside the new one, and its two `PreToolUse` rows (`Bash`, `Grep`) collapse into the single `Bash|Grep` row
+- **`.gitignore` gets the directory `.claude/semble/`, not one marker file.** `telemetry.jsonl` (verbatim shell commands and distilled prompt text, trimmed at 2 MB), `state.json` and `reminder.json` all live there and were previously uncovered
+- **`semble-prefetch.mjs` argv order corrected** — options first, then `--`, then `query cwd`. A leading-dash one-token query was parsed by argparse as an option, failed, and armed the 600-second cooldown. A completed-but-empty search now writes the marker too, so `no-hits` arms the 30-second throttle and never the cooldown
+- **Documentation reconciled at every level against the six-entry world** — `semble-setup.mdx`, `setup-status.mdx`, `full-setup.mdx`, both skill READMEs, `references/output-contract.md` (printed verbatim on every invocation, so its `n/4` legend shipped to the user on each run), `references/hooks-roadmap.md`, `assets/INSTALL.md`, `brewcode/docs/file-tree.md`, and the stale header comments in `semble-guidance.sh`, `semble-state.sh` and `semble-reminder.mjs` (which still claimed it was registered twice)
+- **`references/output-contract.md` and the MDX examples now print lines the code can actually emit** — the `agents:` status line was missing the `need patch` field that `semble-status.sh` always writes, and its example numbers contradicted their own Actions text
+- **v5.1.0's `setup-status` state list named two verdicts that never existed.** `stale (drift)` and `stale (behind X.Y.Z)` were invented; the four real qualifiers are `stale (X.Y.Z -> A.B.C)`, `stale (legacy stamp)`, `stale (legacy, unstamped)` and `stale (bytes drifted)`. That line in the v5.1.0 body was corrected in place rather than left to mislead
+- **`.codex/` mirror generator made shell- and extension-aware.** `/brewcode:x` was blanket-rewritten to `$brewcode:x` including inside `.sh` assets running under `set -eu`, so the mirrored `superreview-setup/generate.sh` died on `uninstall` with an unbound variable and reported `EXIT_CODE=0` — a false success. The mirror's agent count also globbed `-name "*.md"` while codex agents are `.toml`, so it always counted 0 and always printed the DEGRADED warning
+
+#### Changed
+
+- **`suite-integration.mjs` covers all five hook assets** on both the install and the removal path. It previously asserted only three, so an install that silently stopped copying `semble-reminder.mjs` or `semble-subagent.mjs` passed green. Suite total is now 1727 assertions across 7 suites
+
+---
+
+## v5.1.0 (2026-08-09)
+
+> Docs: [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | [brewtools prompt injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [md-to-pdf](https://doc-claude.brewcode.app/brewdoc/skills/md-to-pdf/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [full-setup](https://doc-claude.brewcode.app/full-setup/)
+
+> **Two themes.** First, `semble-setup` stops nagging and starts fetching: the two advisory hooks that never once produced a search are deleted, and a prefetch hook that injects real file paths takes their place. Second, every generated and shipped artifact in the suite carries the same four metadata keys — and, more to the point, every `upgrade` can now actually *clear* the stale verdict it is prescribed for. Before this release five setups reported `stale` forever after a successful `upgrade`, and a semble install still shaped like v1 reported `ready` with `nextStep: none`, so nobody mid-migration was ever told to migrate.
+
+### Action required for existing installs
+
+| If you have | Do this | Why |
+|-------------|---------|-----|
+| `semble-setup` installed in a project | `/brewcode:semble-setup install` once, per project | Migrates you off the two retired hooks and reconciles the settings entries. **There is no manual step** — `install` deletes `semble-reminder.mjs`/`semble-explore.mjs`, purges their settings rows and wires the three live hooks |
+| a `semble-setup` install and disk to reclaim | `rm -rf ~/Library/Caches/semble` by hand | Pre-5.0.1 prefetch runs left a stray cache root there, tens of MB depending on repo size. No mode deletes it; the supported cache lives elsewhere |
+| `manager-setup`, `task-board-setup`, `superreview-setup`, `memory-sync-setup` or `e2e` installed | run that skill's `upgrade` once | Each one's `upgrade` used to leave the version stamp untouched, so `setup-status` reported `stale` after a successful upgrade, forever. All five now restamp unconditionally |
+| `docsync-setup` installed | `/brewdoc:docsync-setup upgrade` | Writes the three provenance keys into `config.json` — the only place `setup-status` can read a docsync version from. `enabled`, `threshold_days` and `exclude` are preserved verbatim, so a disabled install stays disabled |
+| `agent-deadline-setup` or `agent-router-setup` installed | run that skill's `upgrade` once, per scope | Their configs (`.claude/agent-deadline.json`, `.claude/brewtools/agent-router.json`) gain the three provenance keys in this release. A pre-5.1 config has none, so `status` and `setup-status` report it as unknown/`stale`; only a writing mode (`upgrade`) adds them. Behaviour keys are read back and preserved |
+| a `superreview-setup` install | `/brewcode:superreview-setup upgrade` | Repairs retroactively: the stack reference is now derived from the installed tree instead of falling back to `python.md` on every project |
+| a team from `teams-setup` | nothing to do | `enable`/`disable` are new capabilities, not migrations. Running `upgrade` back-fills a pre-5.0 `team.md` header if you want the version columns |
+
+### all plugins
+
+#### Added
+
+- **Unified artifact metadata.** Four canonical field names, one order, everywhere: `doc_type` (`llm` | `user` | `skip`, unquoted, `.md` frontmatter only, never in JSON), `version "X.Y.Z"`, `generated_by "<plugin>:<skill>"`, `last_updated "YYYY-MM-DD"` — the last three always quoted, in that order, after the file's own keys. JSON artifacts carry the same three keys as top-level snake_case, in every writing mode, without `doc_type`
+- **Five metadata carriers, one vocabulary.** JSON top-level keys; `.md` YAML frontmatter; a `// brewcode-meta:` / `# brewcode-meta:` one-liner on line 2 of byte-copied `.mjs`/`.sh`; a header table (`| Version |`, `| Generated by |`, `| Last update |`) in `team.md`; `<!-- brewcode-meta: ... -->` on line 1 of byte-copied `.md`
+- **Versions always come from `.claude-plugin/plugin.json`** — never hardcoded, never written as the literal `unknown`. Two mechanisms, mutually exclusive per file: baked at release (30 assets in `bump-version.sh`'s `STAMPED_FILES`) or substituted at install (exactly three single-brace tokens `{PLUGIN_VERSION}`, `{GENERATED_BY}`, `{LAST_UPDATED}`). A file uses one or the other, never both
+- **Six version writers in two shapes.** Four refuse to write at all when the version will not resolve (`teams-setup`/`e2e` `detect-mode.sh`, `superreview-setup/generate.sh`, `semble-common.sh`) rather than stamp a fake. Two use a sentinel: `memory-sync-setup/generate.sh` treats `unknown` as an internal marker and hard-fails on it before writing; `brewtools/hooks/lib/manager-state.mjs` omits the `version` key instead of failing, because it is the off-switch for the manager HARD wall and an abort would lock the user behind an enabled wall
+- **Version stamps for teams and agents.** `team.md` carries `| Version |` in its header table, `detect-mode.sh` prints the resolved `PLUGIN_VERSION`, and `setup-status` reads it back. The 8 shipped plugin agents — `brewcode/agents/{agent-creator,bash-expert,bc-rules-organizer,hook-creator,skill-creator}.md` and `brewtools/agents/{deploy-admin,ssh-admin,text-optimizer}.md` — are baked at release as 8 of the 9 `fmd` entries in `STAMPED_FILES` (the ninth is `setup-status/references/artifact-metadata.md`), while the generated `intent-guard` takes the other mechanism and is substituted at install from the `{PLUGIN_VERSION}`/`{GENERATED_BY}`/`{LAST_UPDATED}` tokens in `references/intent-guard.md.template`
+- **`references/artifact-metadata.md` under `setup-status` is the normative document** (715 lines, 9 sections): the four fields, the five carriers, the three mechanisms, the writer/reader split, and an explicit exemption list so audits stop re-flagging the artifacts that are unstamped on purpose (`agent-router-setup/assets/judge-prompt.md`, the task-board `SPEC_TEMPLATE.md`/`DESIGN_TEMPLATE.md`, the user-authored manager prompts, and the `.codex/` mirror pinned at `4.0.6+codex.<cachebuster>`)
+
+#### Changed
+
+- **Version resolution is split by role.** A writer resolves from `.claude-plugin/plugin.json` **by self-location** — a cache path is forbidden — and aborts rather than stamping `unknown`; a reader takes the cache-dir basename first, then that root's manifest. Thirteen retired field spellings and eight retired placeholder spellings are tabulated so they stop reappearing
+- **Skill Bash blocks resolve the plugin root from `CLAUDE_SKILL_DIR`, not `CLAUDE_PLUGIN_ROOT`.** The old `ROOT="${CLAUDE_PLUGIN_ROOT:-...}"` prelude could never work: the token is a prompt-level text substitution, is never exported into a skill's Bash tool, and a brace-modifier form is not matched by the substitution regex at all — so the expression reached the shell verbatim, the fallback always won, and the script named the *installed* plugin. A `--plugin-dir` dev run resolved to the wrong root every time. Replaced by `$SD/../../.claude-plugin/plugin.json` with a cache glob as last resort and an explicit empty-root abort
+
+#### Fixed
+
+- **A whole defect class: a remedy that could not clear its own verdict.** Every earlier release verified that an artifact is stamped at install; none verified that the stamp can ever change. Five of the ten `-setup` skills reported `stale` and prescribed `upgrade`, and `upgrade` could not fix it. `memory-sync-setup` was a closed loop whose only documented exit destroyed the user's own edits. All ten now close the loop: install at X, bump, `stale`, `upgrade`, `current`, with the artifact body byte-identical and a second `upgrade` idempotent. The new normative rule is that **a remedy must be able to clear the verdict it follows**, and `setup-status` names the findings that have no clearing mode instead of pairing them with a command that cannot help
+
+### brewcode
+
+#### Removed
+
+- **semble-setup: the two advisory hooks are deleted, not deprecated.** `semble-reminder.mjs` (349 lines, PreToolUse on `Bash`/`Grep` plus a UserPromptSubmit row) and `semble-explore.mjs` (150 lines, SubagentStart on `Explore`) both told the model it *should* search semantically. Delivery was verified independently — the text reached the model every time. Conversion was **0 of 18** on the main channel and **0 of 11** on the subagent channel. Not "low"; zero. Advice that is delivered and ignored is a token cost with no output, so both were removed rather than tuned
+
+#### Added
+
+- **semble-setup: `assets/semble-prefetch.mjs` (UserPromptSubmit) replaces them by doing the search itself.** It gates on the prompt, distils a query from it, runs `uvx --from 'semble[mcp]==0.5.4' semble search ... -k 3 --max-snippet-lines 0` and injects the top three `file_path:start_line` candidates with their provenance and a directive — **paths only, no snippets**. The snippet-carrying arm was measured and rejected: it converted 2 of 6 and produced *zero* tool calls in 2 of 6 sessions, i.e. the model answered from the snippet. Paths-only converted 5 of 6 and used fewer tool calls than control in 5 of 6 questions
+- **semble-setup: what prefetch buys, measured, and what it does not.** All 18 answers were correct in all three arms. Prefetch buys turns and citation precision; it does **not** buy correctness. The gate (lexical INTENT/DOMAIN/REPOREF signals with SELF/LITERAL/ENUM/TASKREF suppressors, RU+EN) fires on 36% of 61 real user prompts at precision 55% / recall 71% / F1 0.62. The query distiller lifts hit@3 to 11 of 16 from 9 of 16 and MRR to 0.674 from 0.398 (paired: 8 wins, 3 losses, 5 ties)
+- **semble-setup: prefetch is bounded by construction** — 30 s throttle, 3 s search timeout, 10 min cooldown after a miss (60 s after a timeout), `SIGKILL` on overrun, and a cold-index short-circuit that spawns no child at all (`why=cold-index`, keyed on `chunks.json`/`metadata.json`/`bm25_index`/`semantic_index`). The repo hash is always recomputed from `realpath(cwd)` and never trusted from `state.json`
+- **semble-setup: `assets/semble-stats.mjs` (PostToolUse + PostToolUseFailure) — a telemetry observer.** It always returns `{}` and changes nothing; it appends to `.claude/semble/telemetry.jsonl`, counting semble calls against search-shaped `Bash`/`Grep`/`Glob` use (grep/egrep/fgrep/ugrep/rg/ag/ack/find/bfs) and `Read` opens. The want-table is now **three hook files wired as four settings entries**, all at `timeout: 5` (seconds)
+- **semble-setup: `semble-status.sh --section telemetry`** (with `--sid ID` / `--last N`, deliberately excluded from `all`) reports gate/prefetch/nudge/call/search/open counters, prefetch conversion at session and path level, ms median and max, and the share of search-shaped tool use that went through semble
+- **semble-setup: a managed `.sembleignore`.** New `assets/sembleignore.template` (196 lines) plus `semble-guidance.sh install --part ignore`. It excludes Claude Code scratch dirs (`.claude/tmp/`, `reports/`, `backups/`, `logs/`, `semble/`, `projects/`, `history/`) while deliberately keeping `.claude/{skills,agents,rules,commands,hooks,scripts,tasks}` indexed, plus build caches semble misses, vendored trees, generated bundles, ~50 binary suffixes and 15 lockfiles
+- **semble-setup: `semble-project.sh candidates` measures the repo instead of guessing.** Duplicate trees (>= 5 files, >= 90% duplicated, >= 1% weight), heavy dirs (>= 15%) and heavy files (>= 3%), from exact `index/chunks.json` counts when an index exists and byte share otherwise. `--part ignore` appends the result **commented out** in a delimited block that only ever grows, so the user decides what to exclude. On this workspace (3203 files scanned): `/.codex/` at 13.6% with 102 of 107 files byte-identical to `brewtools`, `RELEASE-NOTES.md` at 5.6% — three mirrors of one plugin tree were 2202 chunks taking 15 of 80 result slots across 16 queries, and a 24k-line changelog was 503 chunks taking 9 of 80
+- **setup-status: a stamp reader (Phase 2a).** A `STAMPS` heredoc of `plugin|path|expected-owner` drives 17 carrier lines across all ten setups, with two hard assertions (`TOTAL == 17`, per-plugin 3 brewcode / 11 brewtools / 3 brewdoc) so a silently dropped row fails the dashboard instead of reporting `CURRENT`. Verdicts: `PLACEHLD`, `LEGACY-FMT`, `LEGACY-NONE`, `BEHIND`, `AHEAD`, `CURRENT`, `OWNER-WRONG` (another skill's name is on the file), `OWNER-NONE`. A `.disabled` filename is retried automatically; only `version` and `generated_by` are read
+- **setup-status: Phase 1b probes all ten setups**, not five, with a mechanism column and a `no-key` third token. It documents the opposite `enabled`-key defaults explicitly — `agent-deadline` is opt-in (absent key = inert) while `docsync`/`agent-router` are opt-out (absent key = enabled; `manager` has no `enabled` key at all — its off-switch is `.hard` in `.claude/brewtools/manager/state.json`) — which is exactly the asymmetry a dashboard gets backwards
+- **teams-setup: `scripts/toggle-team.sh <team> <enable|disable> [--dry-run]`** backs the canonical `enable`/`disable`. It parses the `## Agents` table, parks members as `<name>.md.disabled`, and skips `intent-guard` (`SKIP:intent-guard (shared with superreview-setup)`) so the review-only member stays live. Prints `WOULD:`/`MOVED:`/`NOOP:`/`MISSING:` plus counters, and exits 1 when a member has neither spelling on disk
+- **superreview-setup: the canonical set is complete** — `enable | disable | uninstall | purge` added to `generate.sh` and the verb-routing table. `enable`/`disable` park `SKILL.md` <-> `SKILL.md.disabled`, keeping `references/`, `.template-baseline/` and `intent-guard.md` on disk; `purge` additionally deletes `.claude/reports/*_superreview/`. `intent-guard` survives all seven verbs
+- **rules: `create-specialized <prefix> [paths]` takes an explicit `paths` glob.** `default_paths_for_prefix()` supplies curated globs for test/e2e/doc/ci/sql/api/ui/infra prefixes and a prefix-derived guess otherwise, printed with a confirm-me warning; `SKILL.md` requires an `AskUserQuestion` about the repo slice first. `["**/*"]` is hard-refused — a "specialized" rule matching everything auto-loads into every request, which is the opposite of specialized
+- **rules: `validate` checks frontmatter**, not just the table header — `paths`, `description`, unquoted `doc_type: llm`, quoted `version` X.Y.Z, quoted `last_updated` YYYY-MM-DD, plus the repo-wide-paths rejection
+- **convention: `check_doc()` fails a doc that exists but has no frontmatter** or is missing a metadata key, naming the key on stderr. `setup` now returns `{path, version, generated_by, last_updated}`
+
+#### Changed
+
+- **semble-setup: the pin moves `0.5.2` -> `0.5.4`.** No re-index is forced: `cache_version` is still `1`, and an index built by `0.5.2` was read by `0.5.4` and back with every file under `<key>/index/` byte-identical and `metadata.json.time` unchanged. `src/semble/index/` and `src/semble/mcp.py` are byte-identical between the two sdists, so the corpus, the ignore handling, the cache key and both MCP tool shapes are unchanged
+- **semble-setup: the pin-resolvability probe is `semble --version`, selected by the pin.** `--version`/`-V` reached semble's CLI dispatch set in `0.5.4`, costs the same (0.26 s warm, 2.5 s cold) and prints the resolved `X.Y.Z`, so the probe proves *which* build was served rather than merely that something resolved. `sc_semble_probe_arg` keeps the always-safe `--help` for any `SEMBLE_PIN_VERSION` below `0.5.4`, where `--version` is unrecognised argv and starts the blocking stdio server
+- **semble-setup: never write a `!` negation line into `.sembleignore`.** semble 0.5.4's `file_walker.py` has a negation bypass: a `!` line whose pattern ends in a file extension sets the walker's `found` flag and the extension filter is skipped entirely. That is how one negated `package-lock.json` (552 chunks, 5.9% of the index) and two negated `.png` files (143 chunks of decoded binary) reached an index. The lever the template uses instead is ordering — `.sembleignore` is concatenated *after* `.gitignore` and the last match wins, so a plain re-ignore line beats a `.gitignore` negation without tripping the bypass. The shipped template contains no `!` lines and its per-repo section ships empty
+- **semble-setup: the settings merge reconciles instead of appending.** `SG_WANT_TABLE` (`event, matcher, script, timeout`) is the single source of truth; stale entries are purged on the `(event, matcher, path)` triple, an emptied event is deleted rather than left as a `"PreToolUse": []` husk, and `semble-guidance.sh` tracks all five basenames it has ever owned against the three live ones
+- **semble-setup: the advertised corpus matches reality.** The report and the injected CLAUDE.md block printed a stale `corpus: code config`; the actual `SEMBLE_CONTENT_ARGS` has been `code docs config` and did not change here — what changed is that the docs stopped misreporting it, which is why nobody knew markdown was searchable. `uncovered:` now names `.json/.json5/.csv/.tsv/.psv` (no content type reaches them) and `.mdx/.txt` (absent from `_EXTENSION_TO_LANGUAGE`), and `references/language-coverage.md` records the decision to keep `config`: 53 of 9307 chunks (0.57%) across 40 files, it made two benchmark questions answerable, and it is not what pulled the lockfile in
+- **semble-setup: `assets/semble-first.md.template` carries a measured tool-selection table** — semble wins behaviour and vocabulary-mismatch questions 8 of 9, loses exhaustive enumeration 2 of 5, `rg` wins exact identifiers — and states that `.json`'s absence is load-bearing and that semble does not deduplicate an identical file committed at several paths
+- **semble-setup: `sc_timeout_watch` measures its deadline on wall clock** (`$SECONDS`) instead of summed sleeps, so it can no longer fire early; it now fires within `[secs, secs+1)` with a <= 250 ms poll and a 100 ms TERM->KILL grace
+- **semble-setup: the awaiting-reload message stopped being wrong.** `semble-session.mjs` used to tell you to run `resume` first; semantic search is usable immediately, so it prints the exact `mcp__semble_code__search` call and warns that the first call rebuilds the index
+- **semble-setup: managed-file install/remove refactored** onto generic `install_managed`/`remove_managed` with `meta` and `metaline` strip modes, adding a metadata-only re-sync that needs no `--force` and no backup, collapsing a net-zero-byte change to `unchanged`, and simulating `--part ignore` dry-runs against a temp dir so they never announce a phantom change
+- **setup-status: the `installed (version unknown)` state is retired.** Its replacements are specific: `stale (X.Y.Z -> A.B.C)`, `stale (legacy stamp)`, `stale (legacy, unstamped)`, `stale (bytes drifted)`, plus a distinct `version unknown (plugin asset missing)` for the case where the comparison source itself is absent
+- **setup-status: Phase 3 classify rewritten from 7 rules to 11, with `disabled` evaluated ahead of `missing`** — a deliberately parked mechanism was being reported as absent
+- **setup-status: the report leads with a count** (`N of 10 setups are behind the installed plugin`), gains a Version column with explicit formats (`X.Y.Z`, `X.Y.Z -> A.B.C`, `legacy -> A.B.C`, `unstamped -> A.B.C`, `--`), a mandatory closing run-list, and a *Remedy check* clause on every roster row naming the code that proves that row's `upgrade` restamps. Phase 0's version probes carry `|| true` so `set -euo pipefail` cannot abort the whole dashboard
+- **superreview-setup: `upgrade` restamps unconditionally.** A `_restamp_meta()` loop runs over every live artifact after the delta report instead of being gated on IDENTICAL/DIFFERS. It refreshes only version/generated_by/last_updated, preserves an existing `doc_type`, seeds `doc_type: llm` when absent, and byte-compares the body. `GENERATED_AT` is retired for `{PLUGIN_VERSION}`/`{GENERATED_BY}`/`{LAST_UPDATED}`, none env-overridable, with a hard failure on a non-`X.Y.Z` version
+- **superreview-setup: the intent-guard state machine migrates instead of re-emitting.** `_ig_usable` becomes `_ig_kind()` returning ABSENT/BROKEN/CURRENT/LEGACY/FOREIGN, and a new `_ig_migrate()` restamps a LEGACY agent in place — four frontmatter keys plus the tail anchor from the substituted template, body preserved, four post-conditions that abort on failure — printing `INTENT_GUARD: MIGRATED <path>`. `validate` now iterates every `references/*.md` rather than a fixed four-file list and treats LEGACY as an error
+- **teams-setup: `verify-team.sh` learns two states it could not see.** A metadata layer (`check_agent_meta()`: conforming / malformed / pre-standard, where pre-standard is a WARN not a FAIL) plus per-agent `DISABLED`/`MISSING` verdicts, a `DISABLED_AGENTS:N` line and `VERIFY: PASS (team DISABLED ...)`. `detect-mode.sh` accepts all seven canonical verbs and resolves the version by self-location, hard-failing rather than stamping `unknown`
+- **e2e: staleness is `config.version != PLUGIN_VERSION`,** not `lastSetup > 30 days`. `config.json` drops `lastSetup` for the three provenance keys; a missing stamp reports `stale (legacy, unstamped)` and never `unknown`. Every written artifact — config, `e2e-rules.md`, the `e2e-*` agents, `e2e-conventions.md` — carries the four keys, and a new unconditional re-stamp step touches metadata only, leaving bodies byte-identical
+- **skills: the metadata contract renames `updated:` to `last_updated:`** and bans `updated`/`updatedAt`/`lastUpdated`, pointing at `setup-status/references/artifact-metadata.md` section 8
+
+#### Fixed
+
+- **semble-setup: a v1-shaped install reported `ready` with `nextStep: none`.** The verdict now downgrades `ready` -> `partial` when a retired hook is still on disk, when a stale settings entry survives, or when `wired !== want`, and the human line prints `hooks n/<wantCount> wired`. A second, independent downgrade covers stale artifact stamps (`artifacts at X, plugin at Y` -> run `upgrade`). Until this release the dashboard actively told people mid-migration that they had nothing to do
+- **semble-setup: `upgrade` always reported `changed`** on a zero delta; a second project on the same machine never got a `state.json` at all, because the MCP server is user-scoped and the script short-circuited on it; and `status` showed no version. `upgrade` now has an unconditional project half, and `semble-mcp.sh add` writes the per-project checkpoint itself when the user-scope registration is already correct
+- **semble-setup: a pipx or venv install was mislabelled `uvx-ephemeral`** — `sc_semble_tool_version` falls back to `semble --version` (5 s bound) when `uv tool list` reports nothing but a `semble` is on PATH
+- **semble-setup: `sc_plugin_version()` hard-fails instead of stamping a placeholder,** and `sc_state_patch` migrates `lastVerifiedAt` -> `last_verified_at` (date only) and drops `updatedAt`
+- **semble-setup: stale upstream citations refreshed against the `0.5.4` source** — `clear index` is `_clear_indexes` at `cli.py:147-163`, the savings CLI is `cli.py:166,252,280`, and `semble clear orphans` (new in `0.5.4`, `cli.py:176-199`) is documented as narrower but still not per-repo
+- **setup-status read every healthy semble project as `stale`.** `.sembleignore` was in the byte-comparison set even though the installer appends a candidates block to it after copying. The only prescribed remedy was `--force`, which destroyed the user's own exclusions. It is out of the comparison set; its presence is still checked and its stamp is still read
+- **setup-status: runtime state is barred from the `STAMPS` table,** and `session-start.mjs`'s TTL marker was renamed `checkedAt` -> `fetchedAtMs` so ephemeral runtime state can no longer trip the legacy-format detector. Old caches simply miss and refetch
+- **superreview-setup `upgrade` re-stamped the wrong stack reference.** `STACK_REF` fell back to its default on every project, so `python.md` was restamped whatever the project was and the real stack reference stayed on the old version forever. The stack is now derived from the installed tree, so an existing install is repaired retroactively
+- **superreview-setup restored a deleted artifact from the *substituted* copy,** silently baking placeholder defaults (`this project`, `general-purpose`) into a live file — and `validate` passed it. Restoration now copies the raw template and says so (`MISSING -> restored RAW`)
+- **superreview-setup: a `${HOME}` in a Phase 3 evidence command destroyed the tailoring.** `{[A-Z_]+}` matches the `{HOME}` inside `${HOME}`, so `_scan_tokens()` classified a perfectly good tailored agent as BROKEN and **recreated it**. Fixed as strip-then-match (`sed 's/\${[A-Z_][A-Z_]*}//g'` first). The same false positive is fixed in `teams-setup/SKILL.md` Step 2, where the `CORRUPT` verdict prescribes `rm -f` and a re-emit — there a false positive deleted a hand-tailored agent
+- **teams-setup Step 4 could never pass.** `grep -c 'TEMPLATE HEADER'` also matched the prose that legitimately names the marker, so every healthy install hit the STOP gate and re-ran Step 3. Both counts are now anchored (`^<!-- TEMPLATE HEADER`, `grep -cF '<!-- SEEDED-DEFAULT:'`)
+- **teams-setup: purging a *disabled* team left its whole roster on disk.** `cleanup-flow.md`'s delete and purge now `rm -f` both `.claude/agents/{name}.md` and `{name}.md.disabled`
+- **rules / convention templates:** `avoid.md.template` and `best-practice.md.template` gain `{PATHS}`, `{DESCRIPTION}`, `{TITLE}` and the four metadata tokens, substituted by a new `render_template()` — previously a plain `cp` plus a single `sed` on the H1
+
+#### Known issues
+
+- **semble-setup on Alpine/musl:** `semble 0.5.4` replaces `tree-sitter` + `tree-sitter-language-pack` with `semble-grammars>=0.1.2`, which publishes **wheels only** — macOS x86_64/arm64, manylinux2014 x86_64/aarch64, win amd64/arm64. There is no sdist and no musllinux wheel, so on a musl host the install hard-fails where `0.5.2` could still build from source. glibc Linux, macOS and Windows are unaffected; use a glibc image. `install` now diagnoses this explicitly instead of failing opaquely
+
+### brewtools
+
+#### Added
+
+- **task-board-setup: `enable` / `disable`.** Phase PE parks `.claude/agents/task-tracker.md`, `.claude/skills/task-board/SKILL.md`, `.claude/skills/task-spec/SKILL.md` and `.claude/rules/tasks.md` as `*.disabled`; `.claude/features/**` is untouched and `enable` re-runs no analysis. `status` gains `machinery: enabled|DISABLED|mixed` and prints `off <path> (parked as ...)` instead of `MISS`. `create`/`update`/`cleanup` join the retired-alias list
+- **task-board-setup: nine generated artifacts carry the four metadata keys** — `board.md`, `TRACKER.md`, `INDEX.md`, `PROGRESS.md`, `backlog/README.md`, `task-tracker.md`, `tasks.md` and both generated `SKILL.md` files. `TASK_TEMPLATE.md` and the task cards stay unstamped on purpose: frontmatter there would be inherited by every derived card
+- **agent-deadline-setup / agent-router-setup / manager-setup: config and state files carry `version` / `generated_by` / `last_updated`,** written on `install`, `upgrade`, `enable`, `disable` (and both `level` operations for the router), with post-write verification that aborts on a mismatch. `status` prints the config version against the plugin version and a `stale` verdict
+- **deploy / ssh: the generated `deploy-admin.md` and `ssh-admin.md` agents get metadata frontmatter,** plus a leftover-placeholder gate that greps both `{{...}}` and `{PLUGIN_VERSION|GENERATED_BY|LAST_UPDATED}`
+
+#### Changed
+
+- **agent-router-setup: `status` renames `level` to `level_recorded` and pairs it with `tier2_refs`.** The docs now say plainly that `level` is enforced by nothing and that `tier2_refs` is the authority on whether the LLM judge fires, with an instruction to report the mismatch rather than paper over it
+- **manager-setup: `upgrade` stops claiming `stateUntouched`.** It calls `writeState('project', {})` to restamp the metadata trio only, and reports `armStatePreserved` and `stateRestamped` separately; `hard`/`level` still merge through verbatim
+- **task-board-setup: placeholder verification greps both brace families** (`\{\{` and `\{(PLUGIN_VERSION|GENERATED_BY|LAST_UPDATED)\}`) — the old `grep -rn '{{'` passed a file holding an unresolved single-brace token. `uninstall`/`purge` and the partial guard now account for `.disabled` twins
+- **text-human:** usage examples quote `<text>`; no behaviour change
+
+#### Fixed
+
+- **manager-setup: the documented HARD-wall off-switch silently did nothing on a symlinked path.** `manager-state.mjs` compared raw `process.argv[1]` against `import.meta.url`; on macOS, where `/var` is a symlink to `/private/var`, the direct-invocation check never matched, so `manager-state.mjs set hard=false` exited 0 and wrote nothing. argv[1] is now `realpathSync`'d first
+- **manager-setup / task-board-setup: `upgrade` reported success and left the stamp behind.** task-board's stopped at U1 with `no-op, spec layer already installed`; manager's re-copied the guard but never touched `state.json`, which is the first thing `setup-status` reads. Both prescribed an `upgrade` that could not clear the `stale` it produced. task-board gains an always-run restamp step (U5b) plus a U6 stamp gate and a `restamped` report bucket; manager restamps through `writeState`
+- **manager-setup stamped the date in UTC** — a day early anywhere west of UTC after roughly 17:00 local, and that date then fed the staleness comparison. Local `YYYY-MM-DD` now, in `manager-state.mjs` and in the `INSTALL.md` blocks
+- **manager-state.mjs: `writeState` omits `version` with a stderr note rather than stamping `unknown`,** and never aborts — aborting would leave a user behind an armed wall with no exit. `resolveState` passes unknown project-file keys through and drops the legacy `doc_type` on read as well as write
+- **agent-router.mjs: the once-per-deny marker hashed `${root} ${text}` with a space separator,** so a different root/text split could collide. Now NUL-separated
+- **deploy-admin and ssh-admin shipped a literal, never-substituted `<!-- last-updated: TIMESTAMP -->` trailer.** Removed, replaced by real frontmatter; `text-optimizer` gained the same frontmatter
+- **deploy: the post-release step ran `bash <POST_SCRIPT>` with the literal angle brackets.** It now assigns `POST_SCRIPT="..."` and runs `bash "$POST_SCRIPT"`
+
+### brewdoc
+
+#### Added
+
+- **docsync-setup: `enable` / `disable`** flip one `enabled` key in `.claude/docsync/config.json`. All three hooks re-read it per invocation and return empty immediately, so the pause takes effect with no session restart while `settings.json`, the hook files, `state.json` and every `last_updated` stay exactly where they are
+- **docsync-setup: `config.json` leads with three provenance keys,** which is what `/brewcode:setup-status` reads a docsync version from; install aborts if the version cannot be resolved. The hooks carry a `brewcode-meta` stamp on line 2 so an installed copy can be `cmp`'d byte-for-byte against the plugin's
+- **memory-sync-setup: `enable` / `disable` / `purge` / `restamp`.** `enable`/`disable` rename `SKILL.md` <-> `SKILL.md.disabled` — the roster reappears next session and the three references plus every SELF-SYNC hand-edit stay byte-identical. `purge` deletes the whole `.claude/skills/memory-sync/` plus any `.memory-sync-emit.*` staging left by a crashed emit; `uninstall` is now manifest-scoped and lists user-added files under `KEPT:`
+- **memory-sync-setup: `status` reports what it actually found** — `PLUGIN_VERSION`, `INSTALLED=yes|parked|no`, `STAMP_FORMAT=frontmatter|legacy|none`, the five metadata values, a `PARKED - ` verdict prefix and a `STALE-LEGACY (n drifts)` verdict for pre-5.0 tail stamps
+- **my-claude: every generated `.md` under `.claude/brewdoc/my-claude/` opens with provenance frontmatter,** version resolved from the manifest; regeneration refreshes the three quoted values and preserves a hand-set `doc_type`
+
+#### Changed
+
+- **docsync-setup: the Stop gate re-applies scope and reports undated docs.** `exclude` globs and `doc_type: skip` are evaluated again at gate time, so marking a doc `skip` mid-session silences it; and the gate lists `no last_updated: ...` separately from `stale (>Nd): ...` instead of skipping dateless files
+- **docsync-setup: frontmatter convention settled** — `last_updated` and `sync_procedure` quoted, `doc_type` bare; documents in either spelling keep parsing. `upgrade` refreshes only the three provenance keys, preserving `enabled`, `threshold_days` and `exclude` verbatim, so a disabled install stays disabled, and first-run detection gains `INSTALLED (DISABLED)` as a third state that `install` refuses to overwrite
+- **memory-sync-setup: provenance moved from a tail HTML comment to YAML frontmatter** (five keys, written by an awk stamper), and the stamped version is the brewdoc plugin version resolved from the manifest instead of a hardcoded `VERSION="1.0.0"`. `validate` fails on a stale stamp and names `restamp` as the remedy — explicitly not `emit`, not `MEMORY_SYNC_FORCE=1`
+- **memory-sync-setup: the generated `/memory-sync` skill ships `disable-model-invocation: true`,** matching the rest of the suite
+- **md-to-pdf: `.claude/md-to-pdf.config.json` writes carry the three provenance keys** on both the engine-choice and styles paths, through an explicit writer with JSON validation
+
+#### Fixed
+
+- **memory-sync-setup: an install one version behind had no route to a fresh stamp.** `upgrade` refreshed the tables, `validate` then hard-failed on the stale version, and the only documented escape was `MEMORY_SYNC_FORCE=1 emit` — which destroys exactly the SELF-SYNC hand-edits `upgrade` exists to preserve. `restamp` closes the loop: it diffs the body before and after and refuses to write unless the only change is the metadata keys
+- **memory-sync-setup: `upgrade` never re-copied the three emitted references,** so `setup-status`' `cmp` reported DIFFERS forever with no mode that could clear it. `refresh_refs` re-copies where provably lossless (`REF RECOPIED:`), restores a missing one, and reports `REF DIFFERS:` rather than overwriting otherwise. A pre-5.0 tail stamp is parsed and migrated in the same call
+- **docsync-setup: a doc that is only read and carries no `last_updated` produced no signal at all** — the watch hook is silent by design and the gate skipped dateless files. It is now listed by the gate. Separately, `doc_type` was a raw string compare, so an unrecognised or differently cased value was not normalised; all three hooks share `docTypeOf()` (trim, lowercase, absent/unknown -> `user`, only `skip` removes a file)
+- **docsync-setup: `frontmatter` mode omitted `sync_procedure`,** so it produced documents that `sync` could not follow; and `enable`/`disable` demanded the metadata trio be byte-identical instead of adding it when absent
+- **md-to-pdf: the styles path rewrote the config wholesale and silently dropped the saved `engine` and `pygments_theme`,** resetting the engine choice on every style change. The new merge carries them over
+
+### docs and Codex mirror
+
+#### Changed
+
+- **`semble-setup.mdx`, `setup-status.mdx` and `full-setup.mdx` reconciled** against the retired hook pair, the three live hooks wired as four entries, the new verdict downgrades and the metadata standard
+- **`references/output-contract.md` corrected** — pin `0.5.4` in three places, the `hooks n/4 wired` legend rewritten to the four current entries, `corpus:` and `uncovered:` fixed. `references/hooks-roadmap.md` marks its on-disk-state section OBSOLETE, naming `SG_WANT_TABLE` plus `assets/INSTALL.md` as the source of truth; `references/engine-landscape.md` closes its stale-pin defect and records the bidirectional `0.5.2` <-> `0.5.4` cache compatibility
+- **`.gitignore`:** the semble marker line follows the hook rename, `.claude/semble/.reminder-ts` -> `.prefetch-ts`
+
+#### Fixed
+
+- **Codex mode parity was worse than measured.** `manager-setup` documented three retired aliases (`on`, `off`, `reset`), `task-board-setup` documented none of the seven canonical modes. Both are at parity, and `validate-compat.mjs` gains a mode-parity gate: a canonical mode declared in a source `argument-hint` and missing from the Codex variant now fails validation
+
+---
+
+## v5.0.0 (2026-08-08)
+
+> Docs: [setup-status](https://doc-claude.brewcode.app/brewcode/skills/setup-status/) | [superreview-setup](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams-setup](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [semble-setup](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [task-board-setup](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [manager-setup](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [agent-deadline-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [agent-router-setup](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [docsync-setup](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [memory-sync-setup](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [full-setup](https://doc-claude.brewcode.app/full-setup/) | [faq](https://doc-claude.brewcode.app/faq/)
+
+> **BREAKING.** Ten skills were renamed and one was deleted. There are no back-compat aliases — an old command name is simply not found. Migrate with the table below.
+
+> **This release also carries a review-and-fix pass over every skill, agent and script in the suite.** Several of the bugs it found were *silent* failures that shipped for multiple releases: a mechanism reported itself as working while doing nothing, or did something other than what it told you. If you have existing installs, three of them affect you directly and are called out under **Action required** below.
+
+### Action required for existing installs
+
+| If you have | Do this | Why |
+|-------------|---------|-----|
+| `manager-setup` installed in a project | `/brewtools:manager-setup upgrade` once, per project | The disarm command changed shape and now needs a `manager-state.mjs` helper copied into the project. `upgrade` backfills it and preserves `hard`/`level` exactly. Without it, disarming fails with `Cannot find module` |
+| a page published with `/brewdoc:publish` and a password | treat it as public; delete and republish | The password header was never actually sent. See brewdoc Fixed |
+| a team created by `/brewcode:teams` or `teams-setup` | `/brewcode:teams-setup upgrade <name>` | Existing teams self-heal: the dead trace variable is repaired, so `trace.jsonl` starts recording and `upgrade` stops proposing to delete every agent as inactive |
+
+### Migration
+
+| Old | New |
+|-----|-----|
+| `/brewcode:teams` | `/brewcode:teams-setup` |
+| `/brewcode:semble` | `/brewcode:semble-setup` |
+| `/brewcode:superreview` | `/brewcode:superreview-setup` |
+| `/brewtools:task-board-init` | `/brewtools:task-board-setup` |
+| `/brewtools:agent-deadline` | `/brewtools:agent-deadline-setup` |
+| `/brewtools:agent-router` | `/brewtools:agent-router-setup` |
+| `/brewtools:manager` | `/brewtools:manager-setup` |
+| `/brewdoc:memory-sync-init` | `/brewdoc:memory-sync-setup` |
+| `/brewdoc:docsync` | `/brewdoc:docsync-setup` |
+| `/brewdoc:guide` | deleted — use [doc-claude.brewcode.app](https://doc-claude.brewcode.app/getting-started/) |
+| any `init` / `on` / `setup` / `create` argument | `install` |
+| any `off` argument | `disable` |
+| any `remove` / `cleanup` argument | `uninstall` (or `purge` to also drop config/state) |
+| any `reset` argument | `purge` then `install` |
+| any `update` argument | `upgrade` |
+| `/brewcode:e2e setup` | `/brewcode:e2e install` |
+| `/brewtools:provider-switch setup` | `/brewtools:provider-switch install` |
+
+### all plugins
+
+#### Changed
+- **The `-setup` suffix now means something.** A skill carries `-setup` when it **installs a mechanism** and you afterwards use what it produced — a generated skill, a hook, an MCP server — not the skill itself. Recurring tools you invoke every day (`text-optimize`, `publish`, `convention`, `rules`, `e2e`) keep bare names. Ten skills were renamed to match: directory, `name:` frontmatter and command string moved together, with no aliases left behind. This is deliberate: an alias would have kept the old vocabulary alive in muscle memory and in every LLM's prior, which is exactly what the rename exists to end
+- **One mode vocabulary across every setup skill,** in this exact order: `status | install | upgrade | enable | disable | uninstall | purge`. No argument means `status` when the mechanism is installed and `install` when it is not. One deliberate exception: `semble-setup` always defaults to `status`, because a bare invocation must never kick off a machine-level package install. Removed aliases: `init, on, off, setup, remove, reset, create, update, cleanup`. Skill-specific verbs survive but now come **after** the canonical set — `semble-setup`: `reindex`/`optimize`/`resume`; `agent-router-setup`: `level fast|strict`; `manager-setup`: `level strict|balanced` and `edit`; `docsync-setup`: `sync`/`reread`/`frontmatter`; `teams-setup` keeps its `[name]` positional
+- **Frontmatter is uniform across all 26 skills:** keys `name, description, user-invocable, disable-model-invocation, argument-hint, allowed-tools, model` in that order, `allowed-tools` always in bracket-list form, and `disable-model-invocation` always written out
+- **All 26 distributed skills are now `user-invocable: true` + `disable-model-invocation: true`, without exception.** They run only when you type `/plugin:skill`; the model never sees their descriptions and never auto-activates one. This is a deliberate design decision about context cost, not a side effect of the frontmatter normalization. A model-visible skill description is paid for in *every* request, forever, purely to stay discoverable — 26 of them is a permanent tax on the context window of every conversation you have. And these skills do not want auto-activation anyway: the ten `-setup` skills are interactive generators that write real files into your repo after asking you real questions, and the recurring tools are things you point at a scope you choose, at a moment you choose. The practical consequence is worth stating plainly: asking "can you sync my docs?" will not trigger `/brewdoc:docsync-setup`. Type the command; tab completion after `/` lists what is installed
+
+### brewcode
+
+#### Fixed
+- **`/brewcode:teams-setup purge` installed a team literally named "purge".** `purge` was not a recognized mode, and the unrecognized argument fell through to the `[name]` positional — so the destructive verb quietly ran an interactive install of a team called `purge`, complete with generated agents. `purge` is now implemented (it removes the team plus its archive, trace and state), and `enable`/`disable` are rejected with an error instead of falling through the same way: a team either exists on disk or it does not, there is no armed state to flip
+- **Generated team agents traced through a dead variable,** so `trace.jsonl` was always empty. Nothing consumed the trace except `upgrade`'s activity analysis, which read the empty file and concluded every agent in the team was inactive — then proposed deleting all of them. Fixed at the source; **existing teams self-heal on `/brewcode:teams-setup upgrade <name>`**
+- **`/brewcode:e2e`'s five generated agents were dead on arrival.** The generator read its agent definitions through a dead variable inside a STOP-if-missing check, so the read returned nothing and generation stopped — every generated agent was empty. Its config also persisted a `plugin://` path that resolves to nothing outside the generating session, so a config written on Monday was unusable on Tuesday. Rules now live at a real project path, `.claude/e2e/e2e-rules.md`
+- **`/brewcode:skills`' `list-skills.sh` was blind to every plugin skill** — it enumerated only project-local ones, so `status`, `list` and `review` all under-reported by the entire plugin surface. Separately, the skill carried two contradicting description-length limits (150-250 characters in one place, `<=120` in another); resolved to **`<=120`**
+- **`/brewcode:convention`'s `conventions` mode overwrote `.claude/rules/`** despite being documented, in the same file, as the mode that leaves rules alone. Anyone running it to refresh conventions lost hand-written rules. It now skips them, as documented
+- **`/brewcode:rules`' `create-specialized` wrote nothing on macOS.** It used bash 4 syntax against the bash 3.2 that ships with macOS; the failure was not surfaced, so the mode reported success and produced no files
+- **`skill-creator` agent advertised three built-in agents that do not exist** — `developer`, `tester`, `reviewer`. Generated skills therefore named subagents that could never be resolved, and the failure only appeared later, at the generated skill's first run. Removed; generated skills now name agents that exist
+- **`hook-creator` agent taught `matcher: "Task"` into downstream projects.** Every hook it generated for subagent events carried a matcher that does not match, so those hooks never fired in the projects it was used on
+
+#### Added
+- **`/brewcode:setup-status` — a read-only cross-plugin dashboard.** It reports which setup skills are installed, stale, partial or missing in the current project and prints the exact command to run for each. It never runs any of them, and that is the design: every setup is an interactive generator that spawns a fan of subagents, so firing several inside one session degrades all of them. Takes an optional plugin or skill filter; no argument gives the full report
+
+#### Changed
+- **`teams` -> `teams-setup`, `semble` -> `semble-setup`, `superreview` -> `superreview-setup`,** each with the canonical mode set. `semble-setup` is the sole no-arg-defaults-to-`status` skill in the suite
+- **`/brewcode:e2e setup` is now `/brewcode:e2e install`.** `e2e` keeps its bare name — it is a recurring tool, not an installer — but its one installer-shaped verb joins the shared vocabulary
+
+### brewtools
+
+#### Fixed
+- **`manager-setup`: the HARD wall could not be disarmed from the main session, and its one exemption was a code-execution hole.** Both halves are closed. The wall blocks `Write`/`Edit`/`Bash` in the main session, so the documented exit — itself a `Bash` call — was denied by the very thing it was meant to exit; the wall was a trap you could only leave by editing state files the wall also protected. The exit is now exactly one command shape, `node <ABS project root>/.claude/brewtools/manager/manager-state.mjs set hard=false`, and `install`/`upgrade` copy that helper into the project so it needs no path resolution. Separately, the old exemption matched loosely enough to execute arbitrary code: it is now granted only when the command starts with `node `, the FIRST argument after `node` is that exact helper path (a `manager-state.mjs` substring elsewhere does not count), and the remainder is the helper's own CLI — with no shell operator outside quotes, no `$` expansion, and no `node` eval flag (`-e`/`--eval`/`-p`/`--print`/`--input-type`/`--require`/`--import`/`--loader`). A `BT_ROOT=` prelude, an `&& echo` tail, a `|| echo` or a `test -f` each turn the exemption off. **Existing installs must run `/brewtools:manager-setup upgrade` once** to get the helper; it never calls `writeState`, so an armed wall stays armed and a disarmed one stays disarmed
+- **`manager-setup`: `ALWAYS_ALLOW` audited.** Plan-mode sessions were trapped — the tools a plan-mode session needs were not on the list, so the wall blocked the session's own workflow. Task-tracking tools were unreachable for the same reason, which is perverse in a mechanism whose whole point is delegation and tracking. Both classes are now allowed
+- **`deploy`'s release mode hardcoded this repo's private tooling.** The generic release path referenced scripts and paths that exist only in claude-brewcode, so it was unusable in any other project — the exact repos it is meant for. Removed. Three script-level aborts fixed alongside it
+- **`provider-switch`: the API key was passed as an argv value,** which puts it in the process table for every user on the machine and in shell history. It is no longer passed as an argument. `remove-key` left the key behind in `~/.zshrc.bak`, world-readable, so "removing" a key published it instead — the backup is now handled properly. `sed -i ''` (a macOS-only spelling) silently misbehaved on Linux and is fixed. `model-check` was unreachable code. `KEY_DEEPSEEK` added
+- **`secrets-scan` really filters the file list it claimed to have filtered.** The filter was documented and computed, then the unfiltered list was scanned
+- **`text-human`'s `mixed` flow loaded no rules at all** — it ran with an empty rule set and reported success
+- **`deploy-admin` agent shipped 5 unsubstituted `{{PLACEHOLDER}}` tokens** in live prose sections, not in template blocks, so the agent was instructing itself with literal placeholder text
+
+#### Changed
+- **`task-board-init` -> `task-board-setup`, `agent-deadline` -> `agent-deadline-setup`, `agent-router` -> `agent-router-setup`, `manager` -> `manager-setup`.** `manager-setup`'s HARD wall loses `on`/`off`/`reset` for `enable`/`disable`/`purge`; `level strict|balanced` and `edit` are unaffected. The `++m`/`++a`/`++rr`/`++r` codewords are hook-driven and independent of the skill name — they keep working untouched
+- **`/brewtools:provider-switch setup` is now `/brewtools:provider-switch install`.** The skill keeps its bare name: switching providers is something you do repeatedly, not once
+
+### brewdoc
+
+#### Fixed
+- **`/brewdoc:publish` published password-protected pages with no password.** Every curl block referenced `"${PASS_H[@]}"`, an array built from a `$PASSWORD` variable that was never assigned anywhere: the password was resolved interactively in conversation, and each Bash call is a fresh shell, so the header expanded to nothing. The page went out **unprotected** while the skill reported a password back to you — undetectable except by opening the link logged out. All five upload blocks now use a `{password_header}` placeholder that the model substitutes before running (restoring the convention the ancestor skill used), with a mandatory substitution rule at the end of the password step: substitute `-H "X-Password: <pass>"`, or delete the line, and never report a password you did not substitute. **Pages published protected by an earlier version are public** — delete them with their owner token and republish. Also added: `command -v jq` gates on every block (plus `command -v zip` on the site-directory path) so a missing tool aborts instead of half-publishing, and the failure branch no longer echoes the response body, which can contain an `ownerToken`
+- **`/brewdoc:my-claude` spawned an agent that does not exist.** Both the internal and the research mode validated their output by spawning `reviewer` — the step that guaranteed "no invented file names" — and no `reviewer` agent exists in any plugin, in the project, or in the built-in set. The validation step therefore never ran, on either path, which is precisely the step whose absence lets invented paths reach the final document. It now uses `Explore` for the read-only path-existence checks and `general-purpose` for the research-mode source re-check, which needs `WebFetch`/`WebSearch`. Separately, `${BD_PLUGIN_DATA}/my-claude/` was offered as an output directory in both `SKILL.md` and `README.md`; nothing has set that variable since v4.0.0, so a run taking that branch created and wrote into a literal directory named `${BD_PLUGIN_DATA}`. Project-relative `.claude/brewdoc/my-claude/` is now the only supported target
+
+#### Removed
+- **`/brewdoc:guide` deleted.** The interactive in-session tutorial was a worse copy of [doc-claude.brewcode.app](https://doc-claude.brewcode.app/getting-started/), and it kept drifting — v4.10.0 had to fix a killer-flow topic still teaching skills removed several releases earlier. The site is the single source now. Its pipeline dependency inside the repo-local `/docs` skill went with it: Phase 5.5 (Guide sync) and `references/guide-update.md` are gone
+
+#### Changed
+- **`memory-sync-init` -> `memory-sync-setup`, `docsync` -> `docsync-setup`,** both on the canonical mode set
+- **`docsync-setup` and `memory-sync-setup` were the last two skills the model could still reach for on its own.** Both rewrite project memory or install hooks, so being model-invocable was a real hazard, not just a context cost. They now match the rest of the suite (see the suite-wide entry under **all plugins**)
+
+### docs
+
+#### Changed
+- **Every doc surface follows the rename:** the root `README.md` and `CLAUDE.md`, all four plugin READMEs, the per-skill READMEs, the Astro pages under `web/docs/src/content/docs/**` and `navigation.ts`. Page URLs moved with the skills — `/brewtools/skills/task-board-init/` is now `/brewtools/skills/task-board-setup/`, and so on for all ten. The `-setup` naming rule and the canonical mode vocabulary are documented once, where the skill tables are introduced
+- **Counts corrected to the post-rename tree:** brewcode 9 skills / 5 agents / 2 hooks, brewdoc 5 / 0 / 0, brewtools 12 / 3 / 2, brewui 0. Suite total stays 26 skills and 8 agents — brewcode gained `setup-status`, brewdoc lost `guide`
+- **[Full Setup](https://doc-claude.brewcode.app/full-setup/) reconciled against the fix wave** and rewritten to answer *why* the setups are run by hand, one at a time: each asks real questions, spawns many subagents, and creates a lot of files, so each wants its own session. Every recommended command now carries a concrete prompt rather than a bare skill name. New sections cover the six `setup-status` verdicts and why `disabled` outranks `partial`/`stale`, `teams-setup`'s `purge` and its rejection of `enable`/`disable`, and how to get back out of the manager wall including the `upgrade` that existing installs need
+- **The user-invoked-only invariant is documented once and cross-linked** — a new [FAQ entry](https://doc-claude.brewcode.app/faq/#auto-invoke) explains the context-cost reasoning, with pointers from the root `README`, `CLAUDE.md`, the brewdoc surfaces and Full Setup
+
+---
+
+## v4.10.1 (2026-08-08)
+
+> Docs: [memory-sync-init](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+### brewdoc
+
+#### Fixed
+- **`memory-sync-init` HARD depth no longer deletes a rule file.** A `paths:` entry pointing at a tree that no longer exists is now `DANGLING`: the dead entry is dropped from the frontmatter list and reported, and the rule file itself is never removed. Path resolution requires **both** probes to come back empty before a verdict is issued — `git ls-files -- ':(glob)<pattern>'` (the `:(glob)` magic stops git's `*` from crossing `/`, unlike a Claude Code `paths:` glob) and a filesystem `find`, so a git-ignored tree no longer reads as dead. Verdicts are per entry, not per file: `OK | TOO_BROAD | TOO_NARROW | DANGLING | MISSING | CORRECTLY_GLOBAL`, and an existing `paths:` key is never stripped
+- **PASS B precedence was ambiguous.** The Borderline table now explicitly **overrides** the obvious-knowledge discriminator, and the "inverts the project default" class is stated as a KEEP. The deletion unit is the whole rule — its numbered row plus every continuation line — not a single line. A file cut by more than half is reported with its `lines_before`/`lines_after` ratio
+- **Non-growth vs. PASS A frontmatter repair contradicted each other.** PASS A's shrink-only carve-out for repairing `paths:` is now stated at all four sites that assert non-growth, and the ordering check accepts Phase 2 appends and HARD drops while still requiring surviving numbered ids to keep their number and relative order
+- **`agent-audit` read every agent as dead** in any repo whose `.gitignore` hides `.claude/` — the ownership probe used `git ls-files`. It now probes the filesystem. Implied-but-unnamed tools and unverifiable command steps are reported, not silently stripped
+- **`generate.sh` emit was not atomic.** A mid-emit failure left a half install that every later emit refused, pushing the user toward the destructive `MEMORY_SYNC_FORCE=1`. Emit now stages into a `mktemp -d` inside `.claude/skills/` and lands with a single `rm -rf && mv`
+- **Command injection in `generate.sh`:** the skills counter passed a skill-directory name through `eval`; a directory named `x'$(...)'y` executed. Fixed by passing real arguments. Also: repo root resolves via `git rev-parse --show-toplevel` (or `MEMORY_SYNC_ROOT`), branch derivation walks `origin/HEAD` -> any remote HEAD -> a sole local branch -> `UNDERIVABLE`, `status` scans the reference files too and prints an identical key set whether or not the skill is installed, and scalars are flattened of newlines before substitution
+- **Emitted skill self-sync covered 2 of 3 references** — `memory-guide.md` was excluded. `memory-guide.md` itself claimed NARROW-to-BROAD ordering (it is BROAD-to-NARROW), and global user-level memory is now marked OUT OF SCOPE: reported, never edited
+
+#### Changed
+- **docs:** the `memory-sync-init` page was written against a 3-file draft. It now documents the four emitted files, the six phases (GATHER, SYNC, VERIFY, SELF-SYNC, PROPOSE, REPORT), the twelve AI-filled blocks, a generator tool list without `Write`, `status` actually running `generate.sh status`, and a new **Depth: NORMAL vs HARD** section
+
+---
+
+## v4.10.0 (2026-08-08)
+
+> Docs: [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [memory-sync-init](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+### brewcode
+
+#### Removed
+- **`/brewcode:spec` deleted.** The plugin-level spec skill is gone; the project-generated `/task-spec` emitted by `/brewtools:task-board-init` replaces it and is strictly better — it knows the board, the task ids and the domain agent roster. Everything worth keeping was ported (see brewtools below). `brewcode/docs/flow.md` went with it — the file documented nothing else
+
+#### Added
+- **`superreview upgrade`:** a preserve-hand-edits re-generation path. `emit` now refuses on a live install (exit 1, `already installed`) instead of silently overwriting; `SUPERREVIEW_FORCE=1` is the destructive override. `upgrade` stages a fresh emit into `.claude/skills/superreview/.upgrade-staging/`, writes no live file, and reports per asset `IDENTICAL | DIFFERS (n template line(s)) | MISSING -> restored (NEEDS PHASE 3)`. `emit` now also saves pristine templates to `.claude/skills/superreview/.template-baseline/`, so `upgrade` diffs the genuine old->new **template** delta rather than flagging normal project tailoring as a difference; an install predating the baseline reports `NO BASELINE - full diff, tailoring included`. Both directories carry a `.gitignore` containing `*` and produce no git noise
+- **`superreview` emitted `Phase 4b - SELF-SYNC`:** after a review completes, the emitted skill corrects itself from data it already has in context — routing-table roster refresh, gate repair, scope baseline, shared-surface append. `EXTENDED` depth only, coordinator only, never inside a subagent. Gate repair fires only when a gate reported `not run` **and** a `command -v` re-test proves the binary is genuinely absent, so a missing toolchain no longer gets misfiled as a missing gate. Non-growth is measured, not asserted: before/after `wc -l` with a printed delta. A carve-out separates facts (correctable) from scope decisions (never rewritten without user instruction). Re-tailoring domain experts and adding drift rows to `intent-guard.md` are printed proposals, never auto-writes
+- **Etalon-first in generated agents:** `/brewcode:teams` and `/brewcode:e2e` agents whose domain writes code, scripts, SQL, schemas or infra now carry — before writing a class, module or test, find the closest well-built existing one in the repo (checking `.claude/convention/*` first) and take its principles, **ADDITIVE to conventions/rules/docs, never a replacement**. Gated exactly like the Scope Fit block, so review-only and docs-only agents do not receive it. `brewcode:agent-creator` emits the same line under the same condition
+- **`/brewcode:skills` and `/brewcode:agents` auto-sync:** after a `create` or `improve` completes, the existing `sync` engine is dispatched scoped to the newly written artifact only — no full-roster sweep, no second specialist spawn. The coordinator applies the verdicts itself; the non-growth prime directive still holds. Reports `sync: no drift` when clean
+
+### brewtools
+
+#### Added
+- **`task-board-init` session progress:** `.claude/features/PROGRESS.md` is created at init in both `SPEC_MODE` states — `Updated`, `In flight`, `Moved since last update`, `Blocked`, `Next`. It tracks the **session's** progress against the board, not the tasks themselves. The injection mechanism is the auto-loaded `.claude/rules/tasks.md` (scoped to `.claude/features/**`), not a hook: in plan mode any plan touching a task must carry an explicit final step to update it. The `task-tracker` agent no longer only creates tasks — it rewrites the five fields from the board on every run, recreating the file if absent
+- **`task-board-init` gate `G5`, close-time spec staleness:** when a task closes, the tracker reuses the two spec documents gate `G2` already has open and reconciles the task's `## Scope` `in` ids against the spec's `## Scope coverage`. A `draft` status or an uncovered/partial id emits `SPEC STALE: <ID> …` plus `NEXT: run /task-spec <ID> refresh`. Report-only: it never spawns, never writes a spec document, never touches `## Scope coverage`, never blocks the close. When the board's `progress` count reaches zero it emits `NEXT: run /brewtools:task-board-init <path> upgrade` — only on boards that already carry the spec layer, since `upgrade` forces `SPEC_MODE=on`
+- **Generated `/task-spec`, everything worth keeping from the deleted `/brewcode:spec`:** a clarify pass **before** research with a fixed Scope / Constraints / Edge-cases question table, whose answers are injected into every architect spawn as already-settled context; a size advisory that proposes splitting but defers the split to `task-tracker`, which owns the board; a `-n` / `--noask` non-interactive flag suppressing exactly three interactive points (clarify pass, open-questions batch, review escalation) and explicitly **not** the ambiguous-task-id or missing-`## Scope` stops, which fail loud; a bounded self-review fix loop — find, independently verify, then fix-and-re-review while blockers or majors remain, capped at 3 iterations then escalated to the user; a structured final report block replacing the old prose summary; a four-link agent-resolution chain (team > project > plugin > system) reading `.claude/teams/team.md`, with re-delegation on refusal capped at 2 retries; and `Original requirements` (verbatim) plus `User Q&A` sections in the emitted spec template
+- **Etalon-first in `++m`, plan-mode `++m` and `++a`:** every spawn brief that writes code or tests must make the agent find the closest well-built counterpart in the repo and follow its principles — **in addition to conventions/rules/docs, never instead**. The three copies of the sentence are byte-identical by construction
+
+#### Fixed
+- **`task-board-init upgrade` no longer double-inserts:** the spec layer and the session-progress layer are now two independent MARK/insert sets. Previously a board that already had the spec layer but lacked `PROGRESS.md` failed the combined marker check and re-inserted every already-present spec block. A fresh init and an upgrade now converge on the same final state, verified for all three starting states
+- **`--noask` scope was overstated:** it claimed to suppress every question while two blocking stops still asked
+- **`++a` had no additive clause** — the architect directive stated the etalon rule without "additive to conventions/rules/docs", the exact misreading the rule exists to prevent
+
+### brewdoc
+
+#### Removed
+- **`/brewdoc:memory` deleted,** superseded by `/brewdoc:memory-sync-init`, which generates a project-local `memory-sync` skill instead of syncing memory from inside the plugin
+
+#### Fixed
+- **`brewdoc/docs/commands.md` documented 2 of 6 skills** — `docsync`, `guide`, `md-to-pdf` and `publish` were missing entirely
+
+### docs
+
+#### Fixed
+- **A skill that no longer exists was still fully documented:** the `/brewdoc:memory` page, its navigation entry, its rows in the brewdoc skills table and overview, and four cross-reference cards pointing at it
+- **Wrong counts across the suite:** brewcode was published as 9 skills / 10 agents / 9 hooks (actual 8 / 5 / 2), brewtools as 11 skills (actual 12), brewdoc as 7 skills at version 4.2.4 (actual 6 at the current version). Corrected in the root README, all four plugin READMEs, `CLAUDE.md`, `brewcode/docs/file-tree.md`, and the getting-started, quickstart, faq, overview and per-plugin skills pages
+- **Two skills were missing from their own rosters:** `brewcode:semble` from four lists, `brewtools:agent-router` from the brewtools skills table (which claimed 12 rows and had 11)
+- **`brewdoc:guide` killer-flow topic** still taught `spec -> /brewcode:plan -> /brewcode:start`; `plan` and `start` were removed long ago. Rewritten around the real flow
+
+---
+
+## v4.9.0 (2026-08-08)
+
+> Docs: [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [memory-sync-init](https://doc-claude.brewcode.app/brewdoc/skills/memory-sync-setup/)
+
+### brewcode
+
+#### Added
+- **`intent-guard`:** a new generated agent, an anti-drift review pass comparing what was ASKED against what was DELIVERED. Read-only, invoked explicitly at review time only, never during development. Sources are ranked in a five-tier hierarchy — external/original sources (tracker ticket, Slack thread, quoted requirements, the user's own words) outrank a local spec, a plan/task board, project policy (`CLAUDE.md`, rules) and the session transcript, in that order, with each finding labelled by its tier. Evidence is deliberately cheap: session transcript, file/directory names, `git diff --stat`, `git log`, manifest diffs — never a full source-file read. Twelve named drift classes (`intent#scope`, `intent#scale`, `intent#indirection`, `intent#files`, `intent#tests`, `intent#deps`, `intent#arch`, `intent#policy`, `intent#skip`, `intent#artifacts`, `intent#naming`, `intent#conflict`) are open-ended examples, not a closed checklist. Its `description` is deliberately short so it never competes for auto-activation. It is generated into the user's own project — it does not ship inside the plugin bundle
+- **`superreview` DEPTH axis:** every emitted skill now resolves `QUICK` (default) vs `EXTENDED` semantically from the user's prompt — no flag, no CLI token. `QUICK` runs `intent-guard` plus the mechanical gates in a single spawn; `EXTENDED` adds the full domain-expert fan-out, scope passes and adversarial validation. `intent-guard` runs at both depths. New `generate.sh emit-agent` subcommand is the single writer of `.claude/agents/intent-guard.md` (shared with `teams`), create-or-reuse, printing exactly one `INTENT_GUARD: CREATED <path>` / `INTENT_GUARD: REUSE <path>` line on stdout. Seeded blocks carry an `UNTAILORED` marker until adapted to the project
+- **`teams` + intent-guard:** every generated team gets `intent-guard` as a fixed review-only member, outside the Minimal/Balanced/Maximum agent counts (those count domain agents only). An existing agent is reused rather than recreated; `teams` calls superreview's `emit-agent` rather than authoring its own copy. `intent-guard` is excluded from the reviewer role, from implementation ownership and from the cleanup sweep. `verify-team.sh` warns instead of failing on teams created before this change
+
+#### Fixed
+- **expert-count / routing gate:** now matches a whole markdown-table cell or an explicit `subagent_type=NAME`, not a bare substring anywhere in the file — a substring match was crediting agents that were merely mentioned, not actually routed to
+- **`intent-guard.md` self-healing:** a corrupt or placeholder-laden `.claude/agents/intent-guard.md` (empty, missing `name: intent-guard` frontmatter, or unresolved `{PLACEHOLDER}` tokens) is now recreated from the template instead of silently reused as-is
+
+### brewtools
+
+#### Added
+- **`task-board-init` `SPEC_MODE`:** optional per-task product spec + design spec layer. Non-trivial tasks additionally get `specs/<ID>-spec.md` + `specs/<ID>-design.md`, a `spec:` frontmatter field, and a generated `task-spec` skill with a mandatory domain-architect fan-out, a coverage gate and a blocking open-questions close gate before a task can start. A new Step-1 domain-agent inventory pass feeds the fan-out. A new `upgrade` directive retrofits the spec layer onto an already-deployed board — strictly additive, gated per file, never renumbers or rewrites existing rows. `SPEC_MODE=off` (the default question's other answer) stays byte-identical to the pre-spec generator
+
+### brewdoc
+
+#### Added
+- **`memory-sync-init`:** a new generator skill. It analyzes a target project and writes a self-contained, project-local `.claude/skills/memory-sync/` — the skill that keeps instruction memory (`CLAUDE.md`, rules, conventions, agent and skill rosters) truthful against the code, rather than syncing memory itself. The emitted skill diffs memory against `session` (default), a branch, a commit range, recent N commits, or the whole tree; repairs facts first, then dedup, then compression, under a non-growth rule (every file ends `<=` its original line count); runs disjoint batches in parallel, one bounded agent per batch, all spawned in one message; independently re-verifies every added/fixed/removed fact against the code, never via the agent that wrote it; and re-audits agents against current best practice on every run, not just fact-checks them
+
+### docs
+
+#### Changed
+- **superreview, teams, task-board-init pages:** updated for the `intent-guard` agent, the `QUICK`/`EXTENDED` depth axis, and `SPEC_MODE`
+- **memory-sync-init page:** new
+
+---
+
+## v4.8.1 (2026-08-07)
+
+> Docs: [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/)
+
+### brewcode
+
+#### Added
+- **`cli` / `version` frontmatter contract:** both keys documented as OPTIONAL-but-mandatory-in-their-case across `skill-creator` agent and the `skills` authoring skill (FM Reference, checklist, common mistakes, review-prompt checks 23-24). `cli` names the command(s) a skill owns when the invocation isn't spelled like the skill directory name (e.g. `fitness-nutrition` invoked as `fit`); a fixed denylist blocks claiming a generic command (`sh`, `bash`, `ls`, `curl`, `git`, ...) and `cli` must never be inferred from `allowed-tools`. `version` is a free-form, non-semver change signal: bump it whenever a skill's behaviour lives outside its own directory (a binary on PATH, a wrapper baked into an image, a remote service), since editing that behaviour leaves the directory byte-identical and any consumer watching the dir's content hash sees nothing. `updated:` is a human-facing date only and does not substitute. This closes the plugin-side half of the skill-staleness contract: a host orchestrator on the consuming side detects a skill's content change by hash and tells a running agent its cached copy is stale — it needs both keys authored correctly to do that
+
+---
+
+## v4.8.0 (2026-08-06)
+
+> Docs: [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [semble](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/) | [agent-router](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [agent-deadline](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/)
+
+### brewcode
+
+#### Changed
+- **`hook-creator` agent (759 -> 622 lines):** facts refreshed to CC 2.1.223 — 31 hook events (was 27/25), 5 hook types incl. `http` and `mcp_tool`, `timeout` unit is seconds with per-event floors, managed/enterprise settings are now documented as HIGHEST precedence (was wrongly documented as lowest), new `async`/`asyncRewake`/`shell` fields, v2.1.195 hyphen matcher exact-match, v2.1.207 shell-interpolation change, v2.1.214 `dir/**` glob breaking change, managed-only settings keys `disableAllHooks`/`allowManagedHooksOnly`/`allowedHttpHookUrls`
+- **`agent-creator` agent (599 -> 517 lines):** new discovery section — subagents load by walking UP from cwd to repo root scanning every `.claude/agents/`, so an agent under `<repo>/<module>/.claude/agents/` is invisible to a session launched at repo root; recursive subfolders, `name:` is identity, closest-to-cwd wins on collision. Background-by-default since v2.1.198, nested spawn depth default 3 (not 5), `effort` low/medium/high/xhigh/max, 8 color values, `isolation: worktree` only, `name:` rejects `:` since v2.1.218, `TeamCreate`/`TeamDelete` removed v2.1.178
+- **`skill-creator` agent (1054 -> 730 lines):** fabricated `once` frontmatter key removed, description caps corrected to 1024/1536 (not 120/250), listing budget is a dynamic 1% via `skillListingBudgetFraction`, reserved names only `anthropic`/`claude`, project/user skill now overrides a bundled skill, `context: fork` runs background by default since v2.1.218, nested `<subdir>:skill` namespacing and symlinks supported, model alias `fable` -> canonical `claude-fable-5`
+- **`.claude/skills/claude-plugin-guide` (project setup docs):** `npm` marketplace source is fully implemented, `pip` source never existed and was removed, `git-subdir` source documented, 13 plugin.json/marketplace fields added, hook catalog replaced by a pointer to the canonical list
+- **repo-wide:** `Task` -> `Agent` tool rename across 22 agent/skill frontmatter files; semble version markers and agent-deadline runbook bumped to 2.1.223
+
+#### Added
+- **`user/features/CLAUDE-CODE-AUTHORING-UPDATE-2.1.223.md`:** verified source-of-truth doc used for every fact change in this release, plus refreshed `HOOKS-REFERENCE.md`, `CLAUDE-SKILL-DIR-GUIDE.md`, `CLAUDE-CODE-SETTINGS-GUIDE.md`
+
+### brewtools
+
+#### Changed
+- **`agent-router`, `agent-deadline`:** version markers and referenced CC facts bumped to 2.1.223 alongside the brewcode authoring stack refresh
+
+---
+
+## v4.7.1 (2026-08-06)
+
+> Docs: [agent-router](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/)
+
+### brewtools
+
+#### Fixed
+- **agent-router:** an agent the router redirects TO can never be an agent the router flags. `neverFlag` now seeds with `brewcode:agent-creator`, `brewcode:skill-creator`, `brewcode:hook-creator`, `brewcode:bash-expert` — spawning one of them is by definition already the right expert. Made structural rather than a hardcoded list: `normalizeConfig` unions `neverFlag` with every `expert` in the effective `intents` table, so a custom `intents` entry exempts its own expert automatically. Tier-2 judge prompt short-circuits on the same set. The install runbook writes the full 8-entry list — a short list there would silently override the code default. 65 tests, all green
+
+> Docs: [agent-router](https://doc-claude.brewcode.app/brewtools/skills/agent-router-setup/) | [agent-deadline](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [semble](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/)
+
+### brewtools
+
+#### Added
+- **`/brewtools:agent-router` (EXPERIMENTAL):** installer skill for a project-local `PreToolUse` hook on matcher `Agent`. When the main loop spawns a generic subagent type for a task a real expert owns, the spawn is denied and the expert is named; when the fit is only uncertain the hook appends a nudge instead; otherwise it stays silent. Modes `status | install | level fast | level strict | disable | enable | uninstall | purge`, all idempotent, foreign hooks never touched. Config at `<project>/.claude/brewtools/agent-router.json` (`enabled, level, genericTypes, neverFlag, minScore, margin, intents`)
+  - **tier 1** (default, `level fast`): deterministic Node script, zero tokens, ~69 ms median including node startup; scores the project roster in `.claude/agents/` against the task text and routes to a plugin specialist (`skill-creator` / `agent-creator` / `hook-creator` / `bash-expert`) when no project agent fits. A project agent always beats a plugin specialist
+  - **tier 2** (opt-in, `level strict`): `type: "agent"` hook, model `claude-haiku-4-5-20251001`, adjudicates ambiguous picks. Wired and installed/stripped correctly, but **not yet behaviorally verified** — treat as untested. Tier 1 cannot gate it: all matching `PreToolUse` hooks run in parallel and none can skip another, which is why tier 2 is opt-in rather than triggered-on-doubt
+  - fails open everywhere — bad input, unparsable config, missing roster, unwritable tmp all allow the spawn. Anti-loop guard keyed by (project root, session, normalized task text) so a deny can never deadlock the model: a repeat becomes a notice
+  - not registered in `brewtools/hooks/hooks.json`; nothing is installed until the skill is run. 55 tests, all green
+
+#### Fixed
+- **hook `timeout` units:** Claude Code hook `timeout` is **seconds**, not milliseconds (default 600). `brewtools/hooks/hooks.json` shipped `2000`/`3000` — 33 and 50 minute ceilings instead of 2 s and 3 s. Now `2`/`3`. Same bug fixed in the `manager` hard-wall installer (`5000` -> `5`) and in the `agent-deadline` runbook (guard `5000` -> `5`, cleanup `3000` -> `3`, both `want=[...]` verify arrays and the prose rationale)
+
+### brewcode
+
+#### Fixed
+- **hook `timeout` units:** `brewcode/hooks/hooks.json` `1000`/`3000` -> `2`/`3` (seconds). `semble` runbook, `semble-guidance.sh` verify/repair arrays and the hook contract tests corrected from `5000` to `5`
+
+---
+
+## v4.6.0 (2026-08-05)
+
+> Docs: [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | spec | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [agent-deadline](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | guide | memory
+
+### brewcode
+
+#### Removed
+- **generic agents:** `developer`, `architect`, `reviewer`, `tester` deleted. Every project generates its own agents in `.claude/agents/` (via `/brewcode:teams create`), so the generic four were dead weight that competed with the real specialists. brewcode now ships 5: `agent-creator`, `skill-creator`, `hook-creator`, `bash-expert`, `bc-rules-organizer`
+- **docs:** the 4 agent pages and their navigation entries removed; agent counts corrected across README, brewcode README, guide catalog and ASCII diagram (12/9 -> 8/5)
+
+#### Changed
+- **agent selection:** every internal spawn that named a generic agent now resolves to "the project's agent from `.claude/agents/`, else `general-purpose`" — `skills`, `agents`, `rules` (`review` mode), `spec` (research fan-out + review gate), `teams` (C5/C7/C9 quorum), `convention` (P2 `Explore` x10, P3 `Plan`, P4 writers), `e2e` (`e2e-architect` / `e2e-reviewer` instead of the plugin pair), `brewdoc:memory` sync, `brewtools:text-human` mixed flow, `brewtools:task-board-init` analysis agent A (`Plan`)
+- **agent-creator:** new step 6 — emit two guardrail blocks verbatim into every generated agent. `Output Discipline` is unconditional; `Scope Fit` only for agents whose domain writes code/scripts/SQL/schemas/infra/config. Both added to the definition-of-done checklist; agent-creator applies `Output Discipline` to its own report (agent paths + validation verdict, not full bodies)
+- **teams agent-template:** generated agents carry `Output Discipline` on completion (decide what the MAIN session needs, return verdict + `file:line`, bulk output -> `.claude/reports/<ts>_<name>/`, return the path) and a `Scope Fit` block that agent-creator strips for research/docs/review-only agents
+- **teams:** agent priority table reworded — plugin level is now "plugin specialist", fallback is `Explore` / `Plan` / `general-purpose`
+
+### brewtools
+
+#### Changed
+- **manager `++m`:** protocol step 6 — once ALL code is written (not per-piece), file one recommended final task to simplify the whole written code and strip over-engineering, delegated like any other task
+- **manager `++r` / `++rr`:** a simplification pass ("over-engineered? simpler?") runs before the review proper
+- **task-board-init:** generated `task-tracker` agent gained an `Output discipline` section (verdict + task ids + `file:line`; no BRD/task-body/backlog dumps; bulk -> `.claude/reports/<ts>_<name>/`) plus a matching checklist item; analysis agent A is now `Plan`
+- **agent-deadline:** `byAgentType` examples repointed from the deleted `brewcode:developer` to `brewtools:text-optimizer`
+
+### codex
+
+#### Fixed
+- **generate-compat.mjs:** the generator is the source of truth for the Codex mirror and had drifted — regenerating silently reverted the v4.5.1/v4.5.2 manager content. Restored and updated, so the mirror now carries bounded-unit sizing, the six-field brief, the branch rule, the simplification step, and the v4.6.0 output-discipline/scope-fit templates
+- **mirror sync:** `.codex/plugins/**` and the per-plugin `.codex/**` trees regenerated — catches up superreview (incl. the new `references/scope.md.template`), text-optimize, text-human, agents, teams and task-board-init content that had drifted out of the mirror
+
+#### Changed
+- **agents:** managed Codex agent TOMLs 9 -> 4 (`agent-creator`, `bash-expert`, `hook-creator` for brewcode plus the brewdoc/brewtools set); `install-update.mjs` and `validate-compat.mjs` counts updated
+- **prompts:** Codex `PROMPT_CONTEXT` replaced the old `[SKILL?]`/`[HINT]` pair with `[ROLE]` / `[SPLIT]` / `[BRANCH]`, matching the Claude `forced-eval` hook; brewtools SessionStart context now states the bounded-unit rule
+- **forced-eval:** `$`-prefixed prompts are no longer skipped
+
+---
+
+## v4.5.3 (2026-08-02)
+
+> Docs: [semble](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/)
+
+### brewcode
+
+#### Fixed
+- **semble state:** `phase` self-heals from `absent` for `awaiting_reload|verifying|ready` — it writes the canonical init document at `prereq_ready`, then walks the legal chain hop by hop, each hop validated as usual; the legality table is unchanged, so `absent -> ready` is still not a pair and `absent -> disabled` is still refused
+- **semble state:** the second project in a session died at close-out with `illegal phase transition absent -> ready` — `init` only ran when MCP registration mutated, and registration is user-scoped, so every project after the first got `unchanged` and never had a state file
+- **semble state:** `complete` took one step, so a close-out passing the whole list failed with `unknown step: prereq mcp permissions guidance agents warm smoke`; it now accepts several steps as multiple arguments or as one whitespace-separated string
+- **semble state:** an unknown step token now names itself and writes nothing (exit 2) instead of being partially applied
+- **semble skill:** step 4.3 printed a shell variable and so reported `completed:` steps that were never recorded; it now reads the state file back and prints what is actually there
+
+#### Changed
+- **semble state:** `--json` for `phase` gained `healed` and `walked`; `complete` gained `steps`. Single-step `complete` is byte-compatible with before
+- **semble docs:** README notes Codebase Memory MCP as a possible future companion — not integrated, not installed
+
+---
+
+## v4.5.2 (2026-08-02)
+
+> Docs: [semble](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/)
+
+### brewcode
+
+#### Added
+- **semble install:** new `coreutils` subcommand runs `brew install coreutils` to provide `gtimeout` on macOS; `all` now runs check -> uv -> coreutils -> semble
+- **semble report:** new `timeout` key — `{backend, path, bounded, coreutils:{status,reason,changed}}`; `bounded` is always `true`
+- **semble env:** `SEMBLE_TIMEOUT_BIN` seam to point at a specific timeout binary; `SP_SEARCH_TIMEOUT` is now overridable
+
+#### Fixed
+- **semble timeout:** `sc_timeout` is unconditionally bounded — `timeout`, else `gtimeout`, else a pure-bash watchdog that kills the whole process group and returns 124
+- **semble search:** `sp_run_search` kept its 600 s bound when no timeout binary is present, instead of silently running unbounded
+- **semble guidance:** `semble-guidance.sh` JSON output was missing its trailing newline
+- **semble skill:** step 3 offers the coreutils install from the report instead of gating on exit 4, so it is no longer silently skipped
+- **semble tests:** `suite-hooks` ran `runNode` with cwd at the repo root and read the developer's real `.claude/semble/state.json`
+
+#### Changed
+- **semble install:** coreutils is optional and soft — no brew, a failed brew, `SEMBLE_NO_NETWORK`, `SEMBLE_DRY_RUN` or a missing `--yes` inside `all` all yield status ok and exit 0; only a direct `coreutils` without `--yes` exits 4
+
+---
+
+## v4.5.1 (2026-08-02)
+
+> Docs: [brewcode/hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewtools/prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewcode
+
+#### Added
+- **forced-eval hook:** new `[BRANCH]` line — `Stay on the current branch; none chosen -> main. No explicit branch/PR instruction -> work on main and take over ALL workspace changes, incl. from other sessions.` A branch or PR is opt-in and stated by the user, never inferred; without it a session owns the whole working tree, including edits left by other sessions
+
+#### Changed
+- **forced-eval hook:** `[SPLIT]` now bounds a unit by time as well as size (`1 deliverable, ~5 files, ~20 min`) and states the fan-out rule explicitly — a dependency must be a REAL data handoff, else parallel. Payload is 3 lines, still far under the 9K cap
+- **codex mirror:** `.codex/hooks/lib/prompt-cadence.mjs` carries the same `[SPLIT]` widening and the new `[BRANCH]` line
+
+### brewtools
+
+#### Changed
+- **manager `full` + `planmode` blocks (`++m`):** two new paragraphs — widest fan-out (a dependency must be a REAL data handoff, else parallel; size a unit to ~20 min of agent work, longer -> split again) and the branch rule (current branch, none chosen -> main, no explicit branch/PR -> take over all workspace changes). Same additions in the `.codex` manager mirrors
+
+---
+
+## v4.5.0 (2026-08-02)
+
+> Docs: [semble](https://doc-claude.brewcode.app/brewcode/skills/semble-setup/)
+
+### brewcode
+
+#### Added
+- **semble skill:** `/brewcode:semble` installs and configures the Semble semantic code-search MCP server for any project — prompt-driven lifecycle (status, setup, resume, enable, disable, reindex, warm, optimize, update, remove, purge), routes free-text RU/EN, empty input defaults to read-only status
+- **install:** no Homebrew formula exists for Semble, so setup installs `uv` via brew and runs the exact pin `uvx --from 'semble[mcp]==0.5.2' semble --content code config`; a confirmation gate precedes any machine-level install
+- **mcp:** registers `semble_code` at user scope with an absolute `SEMBLE_CACHE_LOCATION`; code and docs cache roots are isolated from the first release — docs is reserved, not registered
+- **adoption:** a `semble-first` project rule, a SessionStart hook and an advisory-only PreToolUse search reminder that never blocks exact `rg`/Grep searches; project agents' `tools:` allowlists get both MCP tool names
+- **reload boundary:** setup writes a checkpoint before the MCP mutation and stops, because a newly registered MCP server is unusable until a new Claude Code session; `resume` continues at verification
+- **limits:** no watcher/daemon exists; `.html`/`.htm` and `.json`/`.json5`/`.csv`/`.tsv`/`.psv` are not in the code corpus; both MCP tools require an absolute `repo` argument and return `start_line`/`end_line` (there is no `line` field)
+
+---
+
+## v4.4.0 (2026-08-02)
+
+> **grepai removed.** The `/brewcode:grepai` skill, the `bc-grepai-configurator` agent, the two project hooks it self-installed, the `grepai-first` rule template and every "use `grepai_search` first" instruction across all four plugins are gone. Every place that pointed at semantic search now points at the Bash search path (`grep`->ugrep, `find`->bfs, `rg`) that this macOS Claude Code build actually has. brewcode is now **8 skills / 9 agents**.
+
+> Docs: [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | spec | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | architect | developer | reviewer | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | guide | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [getting-started](https://doc-claude.brewcode.app/getting-started/) | [installation](https://doc-claude.brewcode.app/installation/) | [quickstart](https://doc-claude.brewcode.app/quickstart/)
+
+### brewcode
+
+#### Removed
+- **grepai skill:** `skills/grepai/` deleted whole — SKILL.md, README, `config.yaml.example`, 14 shell scripts, `scripts/lib/index-common.sh`, and the two hook assets (`grepai-session.mjs`, `grepai-reminder.mjs`) it installed into consumer projects
+- **bc-grepai-configurator:** the internal config-generating agent is gone; agent roster 10 -> 9
+- **docs + template:** `docs/grepai.md` and `templates/rules/grepai-first.md.template` deleted
+- **hooks:** `bc-grepai-configurator` dropped from the system-agent allowlist in `hooks/lib/utils.mjs`
+
+#### Changed
+- **architect / reviewer agents:** reuse-first discovery and the "similar exists?" check now run through Bash (`grep`/`rg`/`find`) instead of `grepai_search`. The instruction survives — only the tool changed
+- **convention skill:** discovery step moved to Bash search + Read; the "grepai unavailable" error row is gone
+- **superreview:** Phase 1 exploration, the emitted `SKILL.md.template` search-first rule, the generated report's "Search tool used" field and the TypeScript/React hook-existence check all retargeted to `rg`/`grep`/`git ls-files`
+- **skill-creator / agent-creator:** "grepai injection" generalised to "hook context injection" — the claim was always about UserPromptSubmit context, not about grepai
+- **docs:** `docs/commands.md` renumbered (grepai was command 2), `docs/file-tree.md` statistics recounted — 9 agents, 8 skills, 9 scripts, 2 templates, 5 docs
+
+### brewdoc
+
+#### Changed
+- **guide:** grepai removed from the skills catalog (brewcode 9 -> 8), the agents catalog (15 -> 12 plugin agents), the advanced-topics list (section 1 deleted, 2-4 renumbered), the installation smoke test (now `/brewcode:skills status`) and the overview workflow. The Plugin Suite ASCII diagram was redrawn rather than line-deleted; brewui, which was missing entirely, is now shown
+
+### brewtools
+
+#### Changed
+- **text-human:** the semantic-search block in the java/python/typescript references is gone; the grep block is promoted from "fallback" to the primary pattern
+
+### repo
+
+#### Changed
+- **docs site:** `brewcode/skills/grepai.mdx` deleted, nav entry removed, 6 dead links to `/brewcode/skills/grepai/` fixed, and Ollama + bge-m3 dropped from the installation prerequisites — they were only ever needed as grepai's embedder. All counts and card grids recomputed; `npm run build` green, 57 pages
+- **rules:** `.claude/rules/grepai-first.md` deleted; the `last_index_time` entry in `avoid.md` went with it (the lesson was purely about grepai's own YAML)
+- **codex compat:** `.codex/scripts/generate-compat.mjs` no longer enumerates or generates the grepai skill mirror (-132 lines), so regeneration cannot reintroduce it
+
+---
+
+## v4.3.0 (2026-08-02)
+
+> Repo-wide prompt audit (delegation contract, scope guards, dead-weight removal) **plus** subagent resource limits: verified frontmatter contract, calibrated `maxTurns` across all agents, and the new `agent-deadline` skill — a soft wall-clock deadline that forces a subagent to finalize instead of being killed.
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | spec | grepai | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | developer | tester | reviewer | architect | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [bash-expert](https://doc-claude.brewcode.app/brewcode/agents/bash-expert/) | memory | [docsync](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/) | guide | [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/) | [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [secrets-scan](https://doc-claude.brewcode.app/brewtools/skills/secrets-scan/) | [ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [agent-deadline](https://doc-claude.brewcode.app/brewtools/skills/agent-deadline-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/)
+
+### brewcode
+
+#### Added
+- **skills:** `## Delegation` section in every subagent-spawning skill (spec, skills, agents, rules, teams) — names the failure mode ("a big task handed to one agent = an agent gone for an hour"), caps one subagent at ONE bounded unit (one deliverable, ~<=5 files, ~<=10 steps), and requires a six-field spawn brief: GOAL / ROLE / SCOPE / CONTEXT / CONSUMER / DONE
+- **superreview:** the emitted `references/SKILL.md.template` carries the same Delegation block, so every generated project-local review skill inherits the contract in the user's repo
+- **agents:** `## Scope guard` in all 8 shipped agents (developer, tester, reviewer, architect, skill-creator, agent-creator, hook-creator, bash-expert) — size the task before starting; beyond one bounded unit, STOP and return a split proposal of 2-N subtasks with scope and suggested owner instead of grinding for an hour
+- **agents:** every agent now carries an explicit `maxTurns` (developer 120, hook/skill/agent-creator 80, reviewer/architect/tester/bash-expert/bc-* 60) plus a role-specific `## Checkpointing` section. Values are calibrated from real subagent transcripts in this repo (observed runs of 12-51 turns at ~10-20 s/turn), sized at ~2-3x a typical run: `maxTurns` is a runaway backstop, not a budget — a tight limit loses the agent's final report, so it always ships paired with checkpointing
+- **agent-creator:** new `SA Resource Limits` section — no wall-clock timeout for a subagent exists anywhere (not frontmatter, not `settings.json`, not an env var); table of what actually bounds one (`CLAUDE_CODE_MAX_TURNS`, `API_TIMEOUT_MS`, `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`, concurrency/session/spawn-depth caps, token caps); `maxTurns` exhaustion behavior (files persist, final report is lost); which hooks fire inside a subagent loop; partial-result recovery via the subagent transcript, `TaskOutput`/`TaskStop`/`SendMessage`. Plus a definition of *turn* (one inference + its tool calls; parallel calls in one message count as one)
+
+#### Fixed
+- **agent-creator:** the documented frontmatter contract was inverted and actively harmful. It claimed `effort`/`maxTurns`/`disallowedTools` were "plugin agents only" and told authors to move an agent into plugin scope to make them work. Verified against both agent parsers in the Claude Code v2.1.220 binary, the truth is the reverse: those keys (plus `memory`, `background`, `model`, `skills`) work in **both** scopes, while `permissionMode`/`hooks`/`mcpServers` are the ones ignored in *plugin* agents — the loader emits `Plugin agent file <path> sets <key>, which is ignored for plugin agents` for each. Also documents the previously unlisted keys `skills`, `memory`, `background`, `initialPrompt`, `observer`, `observerMessage`, `observeSubagents`, `isolation: remote` (last five local-only) and the `name` constraints (no leading `-`, no `:`). `isolation` demoted to low priority — not a default
+- **agents:** removed the dead keys the contract fix exposed — `mcpServers: [grepai]` from architect/developer/reviewer/bc-grepai-configurator and `permissionMode` from bc-grepai-configurator/bc-rules-organizer/ssh-admin/deploy-admin. Every one was silently ignored and logged a warning at load; `mcpServers` in particular never granted these agents grepai (they inherit the session's MCP servers instead)
+
+#### Changed
+- **forced-eval hook:** payload is now the delegation pair only — `[ROLE]` expert-first manager + new `[SPLIT]` bounded-unit/context-handoff line. The `[SKILL?]` skill-activation nudge is gone (modern models pick skills unaided), and the `/`-prefix skip went with it: a slash command can still carry a task worth delegating, so the reminder fires there too. Meta-reply skip list (yes/no/ok/number/single letter) unchanged
+- **grepai:** skill description gained `Triggers:` for LLM auto-invocation; install/reindex/init scripts trimmed
+- **reviewer agent:** description gained `Triggers: review code, code review, review PR, check architecture, approve changes`
+
+#### Removed
+- **agents + skills:** ~1300 net lines of dead weight — stack-detection tables, SOLID/clean-code lectures, and generic command tables the model already knows
+
+### brewdoc
+
+#### Added
+- **memory, my-claude:** `## Delegation` section with the six-field spawn brief
+
+#### Changed
+- **docsync, guide, publish:** prompt text trimmed; behavior and modes unchanged
+
+### brewtools
+
+#### Added
+- **agent-deadline (NEW skill):** soft wall-clock deadline for subagents. Claude Code has no subagent timeout, and `maxTurns` simply aborts the agent and discards its final report — this installs two hooks that force finalization instead. `PreToolUse` warns the agent once at 80% of its budget, blocks everything but the finalization tools at 100%, and past `hardStopRatio` (default 2x) narrows the allowance to `Write`/`Edit`; `SubagentStop` reaps the state. Modes: `status` (default), `install`, `disable`, `enable`, `uninstall`, `purge`; project or global scope; default budget 20 min with optional per-`agent_type` overrides. **Opt-in** — installing the plugin does not enable it. Fail-open by construction: any hook error passes the call through. Honest limit, stated on the page: this is *not* a timeout — elapsed time is sampled only at tool-call boundaries, so a subagent stuck inside one 25-minute `Bash` is invisible until the next call (`BASH_MAX_TIMEOUT_MS` is the mitigation). 169 tests
+- **manager:** the `++m` / `++a` / `++rr` / `++r` reference blocks now name the failure mode and carry the six-field spawn brief (GOAL / ROLE / SCOPE / CONTEXT / CONSUMER / DONE). Codewords themselves unchanged
+- **task-board-init:** `## Delegation` section, mirrored into the emitted `references/03-task-board-skill.md` so generated task-board skills inherit it
+- **text-human:** per-block Delegation contract for the mixed flow
+- **agents:** `## Scope guard` in text-optimizer, ssh-admin, deploy-admin — ssh-admin and deploy-admin additionally split per host, repo, and environment
+
+#### Fixed
+- **task-board-init:** frontmatter `name:` was bare `task-board-init`, missing the `brewtools:` prefix
+- **text-human:** frontmatter was invalid YAML (unquoted `description`/`argument-hint` containing `--` and `:`); both now quoted
+- **provider-switch:** `Task` added to `allowed-tools` — phase P9 spawns 5 Tasks and previously could not
+
+#### Changed
+- **manager:** skill description 604 -> 231 chars, triggers preserved
+- **ssh, deploy, secrets-scan, text-optimize, plugin-update:** generic `gh` / `docker` / `systemd` command tables and stack-detection boilerplate removed
+
+## v4.2.4 (2026-07-30)
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/)
+
+### brewcode
+#### Changed
+- **forced-eval:** `[ROLE]` line rewritten to expert-first delegation — `Manager: scan agents (project .claude/agents/ first) — expert for this domain exists -> delegate regardless of size; no expert or trivial one-off -> self.`
+#### Removed
+- **forced-eval:** `[HINT] Delegate heavy implementation...` line — "heavy" let domain tasks (ssh, deploy, CI) self-execute even when a project expert agent existed; the trigger is now expert match, not task size
+
+## v4.2.3 (2026-07-24)
+
+> Docs: [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/)
+
+### brewtools
+#### Added
+- **text-optimize:** new rule category A - Aggressive Lossy (A.1 line fusion, A.2 low-value word drop, A.3 aggressive paraphrase, A.4 common-knowledge elision) — deep/max only; 52 rules / 8 categories (was 48/7)
+- **text-optimize:** loss ledger for A.2/A.4 drops; verification label `elided-known` for A.4 counts against the >=95% gate, A.2 is gate-neutral
+- **text-optimizer agent:** aggressive lossy pass wired into deep/max compress, verify labels, report loss ledger
+#### Changed
+- **docs:** rule counts 48 -> 52 across repo/plugin/skill READMEs + docs site pages; standalone sksh copy skills/text-optimizer synced
+
+## v4.2.2 (2026-07-20)
+
+> Docs: [task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | bc-grepai-configurator
+
+### brewtools
+
+#### Changed
+- **task-board-init:** generated task-tracker agent pinned to model: sonnet
+
+### brewcode
+
+#### Changed
+- **bc-grepai-configurator:** model inherit -> sonnet
+
+---
+
+## v4.2.1 (2026-07-20)
+
+> Docs: [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/)
+
+### brewtools
+
+#### Changed
+- **docs:** text-optimize and text-optimizer pages updated for v4.2.0 — five modes incl. opt-in max (`-x`/`--max`), 48 rules across 7 categories, new Deduplication category D.1-D.6, L.1-L.8, per-mode verification gates (standard >=98%, deep >=95%, max >=95% + 100% sub-gate on numbers/names/negations/scope), dedup pass step in the agent flow
+- **docs:** agent page now lists the `Bash` tool and the correct `${CLAUDE_PLUGIN_ROOT}` reference path (was a stale `$BT_PLUGIN_ROOT`)
+- **docs:** repo README and brewtools README rule count 30+ -> 48, added `-s`/`-x` usage examples and agent documentation links
+
+#### Fixed
+- **docs:** 32 MDX pages linked to bare plugin slugs (`/brewtools/`, `/brewcode/`, `/brewdoc/`) that return 404 — all now point at `/{plugin}/overview/`
+- **docs:** removed unused `Badge` imports, converted over-long flow paragraphs into mode/rounds/gate tables, escaped globs, GitHub file links use `/blob/`
+
+### brewdoc
+
+#### Changed
+- **guide:** skills catalog row for `/brewtools:text-optimize` refreshed (5 modes, smart dedup, up to 4x)
+
+---
+
+## v4.2.0 (2026-07-20)
+
+> Docs: [text-optimize](https://doc-claude.brewcode.app/brewtools/skills/text-optimize/) | [text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/)
+
+### brewtools
+
+#### Added
+- **dedup:** new Deduplication rule category D.1-D.6 in `rules-review.md` — exact/near/cross-format duplicate merge (most-specific variant wins), emphasis cap <=2 per document (full form early + <=1-line echo at end, 3+ collapse to 2), cross-file SSOT dedup with pointer + 1-line summary, wrong-merge guard (different scope/numbers/conditions = different facts). Rule count 42 -> 48, 7 categories
+- **loss-budget:** per-mode Loss Budget table — light/medium 100% lossless, standard >=98%, deep >=95%, max >=95% + 100% sub-gate on numbers/names/negations/scope qualifiers; dedup-merged facts count as preserved ((kept+merged)/total)
+- **verification:** fact-inventory protocol at all verified modes; medium gains a self-check; max now runs 2 independent rounds — claim inventory (one predicate per claim) + self-QA probe (10-20 questions); dedup ledger with lost/distorted/merged loss-list labels
+- **compression:** sentence-level zero-loss pruning + structure-aware compression (standard); Redundancy Factoring (phrase-DICT, path-prefix hoisting, header echo removal, number normalization) + LLMLingua-2 token-class keep/drop heuristics (deep); Chain-of-Density final pass B4 (max); emphasis-inflation downgrade + anti-laziness booster deletion (C.7/T.6)
+- **agent:** text-optimizer agent gains `-x`/`--max` mode (opt-in), Step 3a dedup pass, 7-row verification table
+- **tests:** `test-optimize.sh` 34 -> 44 checks (D category, `-x` flag, Max/Dedup/Loss Budget sections, L.1-L.8)
+
+#### Fixed
+- **skill:** removed stale `$BT_PLUGIN_ROOT` / `pre-task.mjs` references from SKILL.md orchestration (native `${CLAUDE_PLUGIN_ROOT}` substitution)
+- **markdown:** escaped raw `|` inside backticked code spans in table cells (GFM cell splits) across rules-review, deep/max-compression
+- **standalone:** `skills/text-optimizer` synced — L.8, C.7/C.8/T.10 surfaced in SKILL.md, D category, dedup pass, loss budget, v2.16.0; category table corrected to sum 48
+
+## v4.1.0 (2026-07-19)
+
+> New **`/brewdoc:docsync`** skill replaces the retired `auto-sync`. docsync is a user-run, project-scoped generator: point it at any repo and it installs three project-local hooks (`docsync-track` on Write/Edit/MultiEdit, `docsync-watch` on Read, `docsync-gate` on Stop) plus config into `.claude/`, then tracks documentation staleness by the `last_updated` frontmatter date. When docs you touched this session are stale, the Stop hook blocks once and asks (via AskUserQuestion) whether to sync — never auto-syncs without confirmation. Prompt-driven modes (no rigid flags): `init`, `status`, `sync [--all]`, `reread`, `frontmatter`, `uninstall`. Frontmatter schema: `doc_type` (llm|user|skip), `last_updated`, `sync_procedure`. The settings.json merge is non-clobbering (backup + abort-on-parse-fail + BOM-tolerant), hook paths use `$CLAUDE_PROJECT_DIR` for portability, and `uninstall` removes only docsync entries while preserving foreign hooks — verified against fresh, existing-hooks, and corrupt-settings projects.
+
+> The legacy `auto-sync` skill, its `bd-auto-sync-processor` agent, the old `auto-sync:*` frontmatter tag mechanism (swept from ~44 files), and the skill-creator template injection were removed completely.
+
+> Docs: [docsync](https://doc-claude.brewcode.app/brewdoc/skills/docsync-setup/) | [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/)
+
+### brewdoc
+#### Added
+- **docsync:** new hook-driven doc-staleness tracker with init/status/sync/reread/frontmatter/uninstall modes, project-local install, and confirm-before-sync gate
+#### Removed
+- **auto-sync:** retired the skill + `bd-auto-sync-processor` agent + `auto-sync:*` frontmatter tags across the suite; replaced by docsync
+
+---
+
+## v4.0.6 (2026-07-18)
+
+> Infra: production moved off the decommissioned Contabo VPS to Fornex (79.132.136.83, Ubuntu 24.04.4 LTS). The docs site doc-claude.brewcode.app was redeployed on the new host with no plugin behavior changes. SSH reference docs and the eurodns skill example were repointed to the new server IP.
+
+### brewtools
+#### Changed
+- **ssh:** best-practices `HostName` example repointed to the new Fornex server IP (79.132.136.83)
+
+---
+
+## v4.0.5 (2026-07-05)
+
+> New Manager codeword `++a` (Architecture-first). `++a` is a third independent codeword group alongside `++m` (manager) and `++rr`/`++r` (review): it injects a `[DIRECTIVE: ARCHITECTURE-FIRST]` block that forces an architecture pass before implementation — design fitting the project's existing architecture/patterns/rules, robust + scalable + simple (no over-engineering), reuse-first, clean seams. Mode-agnostic (same block in normal and plan mode; in plan mode it is written into the plan) and combinable with `++m`/`++rr`/`++r`.
+
+> Docs: [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+### brewtools
+#### Added
+- **manager:** `++a` codeword — Architecture-first directive. Independent third group (combines with `++m` and the review group); injects `references/architect.md` (`[DIRECTIVE: ARCHITECTURE-FIRST]`); mode-agnostic, written into the plan in plan mode. Hook detection + injection order manager -> architect -> review; `architect` added to `VALID_MODES`
+
+#### Changed
+
+---
+
+## v4.0.4 (2026-07-05)
+
+> Strengthens Manager mode so the role survives the plan/exit boundary. The plan-mode block now forces the role INTO the plan itself (PREAMBLE restating `[ROLE: MANAGER]` + protocol, explicit `STEP 0` = re-assume role + build the whole TaskGraph + delegate on exit), because the injected hook context dies when plan mode ends while the plan document persists. Both `full` and `planmode` prompt blocks recompacted (~35% shorter) without losing meaning. brewcode's `forced-eval` reminder gains a standing `[ROLE]` manager delegation line.
+
+> Docs: [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+#### Changed
+- **manager:** `planmode` block now bakes the manager role into the plan — PREAMBLE (role + 5-step protocol verbatim) and a literal `STEP 0` (re-assume MANAGER, create the ENTIRE TaskGraph, then delegate) as the first implementation action; fixes the role evaporating on plan exit
+- **manager:** `full` + `planmode` prompt blocks recompacted (~35% fewer lines), same protocol and visceral framing preserved
+
+### brewcode
+#### Changed
+- **forced-eval:** always-on UserPromptSubmit reminder now appends a standing `[ROLE] You are the manager — delegate, do not implement directly.` line alongside the existing `[SKILL?]`/`[HINT]` payload
+
+---
+
+## v4.0.3 (2026-07-01)
+
+> Restricts side-effect or config-mutating skills across brewcode/brewdoc/brewtools to user-only invocation (`disable-model-invocation: true`) (create agent/skill/team, generate spec/e2e/convention docs, sync rules, optimize memory, document installation, manager mode, plugin-update, provider-switch, task-board-init, guide) no longer auto-trigger from LLM description matching; still callable via `/plugin:skill`.
+
+> Docs: [agents](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [rules](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | spec | [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | guide | memory | [my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/) | [task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/)
+
+### brewcode
+#### Changed
+- **agents, convention, e2e, rules, skills, spec, teams:** added `disable-model-invocation: true` — user-invoked only, no more LLM auto-trigger on generic trigger words
+
+### brewdoc
+#### Changed
+- **guide, memory, my-claude:** added `disable-model-invocation: true` — user-invoked only
+
+### brewtools
+#### Changed
+- **manager, plugin-update, provider-switch, task-board-init:** added `disable-model-invocation: true` — user-invoked only, prevents accidental config/hook/provider mutation from ambiguous LLM-detected triggers
+
+---
+
+## v4.0.1 (2026-06-30)
+
+> Docs-only follow-up to v4.0.0 — purges leftover v3.19.0 task-system documentation debt from the site so docs match the real plugin.
+
+> Docs: [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [agents](https://doc-claude.brewcode.app/brewcode/agents/) | grepai | [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [getting-started](https://doc-claude.brewcode.app/getting-started/) | [quickstart](https://doc-claude.brewcode.app/quickstart/) | [installation](https://doc-claude.brewcode.app/installation/)
+
+### docs
+#### Removed
+- **workflow page:** deleted `brewcode/workflow.mdx` (described the removed KNOWLEDGE/plan/start/handoff pipeline) + its `navigation.ts` entry
+- **dead skill/agent refs:** purged all links to removed skills (`/brewcode:setup`, `/brewcode:plan`, `/brewcode:start`, `/brewcode:standards-review`, `/brewcode:teardown`) and removed agents (`bc-coordinator`, `bc-knowledge-manager`) across getting-started, quickstart, installation, overview, agents, and skill/agent pages
+- **task-system framing:** removed dead KNOWLEDGE auto-accumulation / post-task / coordinator-loop / "infinite task" descriptions
+#### Changed
+- **brewcode counts reconciled:** 9 skills (spec, grepai, convention, rules, superreview, skills, agents, teams, e2e), 10 agents, 2 hooks; suite total 4 hooks
+- **grepai:** documented self-install behavior on its MDX page
+- **superreview:** now documented as the generator of the project-tailored deep-review skill (review + standards merged)
+
+---
+
+## v4.0.0 (2026-06-30)
+
+> **MAJOR / breaking** — injection-hook architecture removed across all plugins; plugin-root now resolved natively via `${CLAUDE_PLUGIN_ROOT}`.
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | grepai | [superreview](https://doc-claude.brewcode.app/brewcode/skills/superreview-setup/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | brewdoc hooks | brewtools hooks | [manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewcode
+#### Removed
+- **pre-task.mjs:** deleted; entire family-roots injection machinery removed (`hooks/lib/family-roots.mjs`, `.claude/scripts/check-family-roots.sh` + bump-version drift guard)
+- **dead mode system:** `getActiveMode`, `modes.json`, `[MODE:]`/`[EFFORT: terse-light]` injections, SID/teams injection all removed; `getActiveMode` dropped from `hooks/lib/utils.mjs`
+- **grepai always-on hooks:** `grepai-session.mjs` + `grepai-reminder.mjs` deregistered from `hooks.json`; orphan sources deleted
+- **skills/skills:** Mode Switcher skill-generation pattern removed
+#### Changed
+- **plugin-root (breaking):** resolved NATIVELY via `${CLAUDE_PLUGIN_ROOT}` substituted in each agent `.md` at Task spawn — no more hook injection of `BC_PLUGIN_ROOT`; all agents converted
+- **forced-eval.mjs:** stripped of mode/effort/plugin-root injection — now injects only the constant `[SKILL?]` reminder
+- **session-start.mjs:** keeps version-check + plan-symlink + permission tag; mode/effort/root injection removed
+- brewcode now registers exactly 2 hooks (forced-eval, session-start)
+#### Added
+- **grepai self-install:** self-contained assets (`skills/grepai/assets/{grepai-session.mjs,grepai-reminder.mjs,INSTALL.md}`); `/brewcode:grepai` detects + installs hooks into project `.claude/grepai/hooks/` and merges into `.claude/settings.json` (jq + python3, no clobber), default project scope, reports
+- **superreview** skill (+ docs page)
+
+### brewdoc
+#### Removed
+- **pre-task.mjs + lib/family-roots.mjs:** deleted — brewdoc now ships ZERO hooks (`hooks.json` is `{"hooks":{}}`)
+#### Changed
+- **bd-auto-sync-processor:** resolves its root natively via `${CLAUDE_PLUGIN_ROOT}`
+
+### brewtools
+#### Removed
+- **pre-task.mjs + lib/family-roots.mjs:** deleted
+- **skills debate, skill-toggle, agent-toggle:** removed entirely (incl. `_shared/toggle`)
+#### Changed
+- **session-start.mjs:** stripped of `BT_PLUGIN_ROOT` injection + session-id display (manager HARD-wall awareness kept)
+- brewtools registers 2 hooks (session-start, manager-prompt)
+
+### docs
+#### Changed
+- root `CLAUDE.md`, all plugin READMEs, `brewcode/docs/*`, `brewdoc/docs/hooks.md`, `web/docs` MDX (hooks/overview/grepai/skills/agents) and `brewdoc/skills/guide/references/*` updated to new hook inventory + native `${CLAUDE_PLUGIN_ROOT}` + grepai self-install + Mode Switcher removal
+
+---
+
+## v3.19.5 (2026-06-29)
+
+### brewcode
+#### Removed
+- **session-start.mjs:** dead lock-detection block removed (injected stale bc-coordinator/PLAN.md instructions)
+- **utils.mjs:** 16 dead task/lock exported functions removed (backed deleted hooks)
+- **docs:** remaining plan/start/KNOWLEDGE/PLAN.md stale refs cleaned from commands.md, file-tree.md, README.md
+
+---
+
+## v3.19.4 (2026-06-29)
+
+### brewcode
+#### Removed
+- **lib/knowledge.mjs:** deleted (orphaned, zero imports)
+- **KNOWLEDGE.jsonl.template + brewcode.config.json knowledge settings:** removed from setup
+- **report templates:** brewcode/templates/reports/ deleted (only consumer was bc-coordinator)
+- **session-start.mjs:** PLAN.md/KNOWLEDGE.jsonl handoff injection removed
+- **utils.mjs:** DEFAULT_CONFIG.knowledge block + validateConfig knowledge checks removed
+- all remaining stale references to deleted hooks (post-task, pre-compact, stop) cleaned from docs
+
+---
+
+## v3.19.3 (2026-06-29)
+
+### brewcode
+#### Removed
+- **bc-coordinator, bc-knowledge-manager agents:** removed (coupled to deleted start skill)
+- **setup templates:** PLAN.md.template + phase templates removed; setup now generates SPEC + KNOWLEDGE templates only
+- **hooks:** post-task.mjs, pre-compact.mjs, stop.mjs deleted (dead start/coordinator flow); hooks.json PostToolUse/PreCompact/Stop entries removed; pre-task.mjs stripped of lock/KNOWLEDGE injection; utils.mjs isCoordinator() + coordinator system-agent entries removed
+- **docs/hooks.md:** removed (entirely about start/coordinator flow)
+- all remaining /brewcode:plan and /brewcode:start references purged from agents, README, docs, setup skill
+
+---
+
+## v3.19.2 (2026-06-29)
+
+### brewcode
+#### Removed
+- **teardown skill:** brewcode:teardown removed
+
+---
+
+## v3.19.1 (2026-06-29)
+
+> Docs: [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | setup skill | [convention-setup](https://doc-claude.brewcode.app/brewcode/skills/convention-setup/) | [e2e skill](https://doc-claude.brewcode.app/brewcode/skills/e2e/) | [rules skill](https://doc-claude.brewcode.app/brewcode/skills/rules/) | [skills skill](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [agents skill](https://doc-claude.brewcode.app/brewcode/skills/agents/) | [teams skill](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | teardown skill | standards-review skill
+
+> Partial revert of v3.19.0: only `plan` + `start` stay removed. Everything else the strip removed is restored.
+
+### brewcode
+#### Restored
+- **skills (9):** setup, convention, e2e, rules, skills, agents, teams, teardown, standards-review — re-added; brewcode now ships 11 skills (these + spec + grepai)
+- **internal agents:** bc-coordinator, bc-knowledge-manager, bc-rules-organizer
+- **hooks:** pre-task.mjs, post-task.mjs, pre-compact.mjs, stop.mjs + lib/knowledge.mjs; session-start.mjs / utils.mjs task/lock/KNOWLEDGE logic
+- **templates:** reports/ and skills/review/ template dirs
+- **internal docs:** brewcode/docs/{flow,hooks,commands}.md
+
+#### Removed
+- **plan + start skills:** stay stripped — infinite task-execution flow retired; spec hands off to the `developer` agent
+
+---
+
+## v3.19.0 (2026-06-29)
+
+> Docs: [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | spec skill | grepai skill
+
+### brewcode
+#### Removed
+- **task execution system:** stripped plan, start, setup, rules, convention, teardown, teams, standards-review, skills, agents, e2e (11 skills removed; 2 kept: spec + grepai)
+- **internal agents:** bc-coordinator, bc-knowledge-manager, bc-rules-organizer removed
+- **task-system hooks:** pre-task.mjs, post-task.mjs, pre-compact.mjs, stop.mjs removed
+- **lib/knowledge.mjs:** removed
+- **utils.mjs:** task/lock functions removed; also dropped dead `knowledge`/`agents.system` config and `isSystemAgent`
+- **session-start.mjs:** KNOWLEDGE.jsonl + lock-file handoff logic stripped
+- **templates:** reports/ and skills/ template dirs removed
+- **internal docs:** brewcode/docs/{flow,hooks,commands}.md deleted; file-tree.md + grepai.md rewritten to current state
+
+#### Changed
+- **brewcode reframed:** lean skill + prompt-injection toolkit (spec authoring + semantic code search via grepai)
+- **spec skill:** no longer depends on `/brewcode:setup` templates or `/brewcode:plan`; hands the finished SPEC to the `developer` agent
+- **grepai docs:** injection points updated for macOS CC (PreToolUse:Bash; native Grep/Glob removed)
+
+---
+
+## v3.18.4 (2026-06-27)
+
+> Docs: [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/)
+
+> Native Grep/Glob tools were removed on the macOS Claude Code build (v2.1.117+); code search now runs through Bash (shadow `grep`->ugrep, `find`->bfs, `rg`). Agents that search MUST list `Bash` in their `tools:`.
+
+### brewcode
+#### Fixed
+- **agent-creator:** added `Bash` to `tools:` — could no longer grep/find without it on macOS CC builds.
+
+### brewdoc
+#### Fixed
+- **bd-auto-sync-processor:** added `Bash` to `tools:` — search now works on macOS CC builds.
+
+### brewtools
+#### Fixed
+- **text-optimizer:** added `Bash` to `tools:` — search now works on macOS CC builds.
+
+---
+
+## v3.18.3 (2026-06-27)
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/overview/)
+
+### brewcode
+
+#### Fixed
+- **grepai-reminder hook:** retargeted from dead `PreToolUse:Glob|Grep` to `PreToolUse:Bash`. Native Grep/Glob tools were removed on the macOS Claude Code build -- code search now runs through Bash (shadow `grep`->ugrep, `find`->bfs, `rg`). The hook now gates on a search-command regex (grep/egrep/fgrep/ugrep/rg/ag/ack/find/bfs) so the grepai reminder still fires only on actual searches; `.grepai/index.gob` guard + 60s throttle preserved.
+
+---
+
+## v3.18.2 (2026-06-27)
+
+> Docs: [brewui overview](https://doc-claude.brewcode.app/brewui/overview/)
+
+Brewui no longer ships any hooks -- they were dead weight (brewui has no skills/agents and never registered hooks in its manifest).
+
+### brewui
+
+#### Removed
+- **hooks:** deleted the entire `brewui/hooks/` directory (`hooks.json`, `session-start.mjs`, `pre-task.mjs`, `lib/utils.mjs`). brewui registered no hooks in `plugin.json`, so these files were inert. `BU_PLUGIN_ROOT` is no longer injected (nothing consumed it). Docs scrubbed accordingly (brewui overview, brewui skills page, brewdoc guide hook catalog).
+
+---
+
+## v3.18.1 (2026-06-27)
+
+> Docs: [brewtools prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+The `manager-prompt.mjs` hook now injects BOTH codeword groups (manager + review) together instead of only the first match.
+
+### brewtools
+
+#### Fixed
+- **manager hook:** the `manager-prompt.mjs` UserPromptSubmit hook injected only the FIRST matched codeword, so typing both a manager codeword (`++m`/`++mp`) and a review codeword (`++r`/`++rr`) in one prompt silently dropped the review block. Now the two groups are detected independently and BOTH blocks are injected together (manager first, then review), regardless of how many codewords are typed. Longer prefixes still win within each group (`++mp`>`++m`, `++rr`>`++r`).
+
+---
+
+## v3.18.0 (2026-06-27)
+
+> Docs: [brewui overview](https://doc-claude.brewcode.app/brewui/overview/) | [brewui skills](https://doc-claude.brewcode.app/brewui/skills/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | brewdoc auto-sync
+
+Documentation sync to reality: internal agents hidden from public docs, brewui shipped as an empty-but-installable placeholder, and skill/agent counts recomputed across all doc levels. Skill total is now 32; shipped agents 16.
+
+### brewui
+
+#### Changed
+- **plugin:** now ships as an empty, installable placeholder for future UI/visual/creative tools. The `image-gen` skill was removed and `skills/` is empty. Installing brewui still registers its hooks and reserves the `/brewui:*` namespace, with no commands yet.
+- **docs:** overview, skills, and agents pages rewritten to a "coming soon" placeholder; README, plugin manifest, and marketplace entry updated to the placeholder description.
+
+### brewcode
+
+#### Changed
+- **agents:** `bc-coordinator`, `bc-knowledge-manager`, `bc-grepai-configurator`, and `bc-rules-organizer` are now documented as internal (spawned only by skills and hooks). Their dedicated doc pages were removed; summary tables, navigation, the architecture overview, and the README mark them internal with no deep links.
+- **docs:** removed a spurious `/brewcode:debate` row from the skill tables (debate is a brewtools skill); the brewcode skill count stays 13 and the suite total is recomputed to 32.
+
+### brewdoc
+
+#### Changed
+- **agents:** `bd-auto-sync-processor` documented as internal across the README, overview, the auto-sync skill page, and the guide catalog.
+
+### brewtools
+
+#### Changed
+- **skill-toggle:** running example updated from the removed `brewui:image-gen` to the existing `brewdoc:md-to-pdf`.
+
+---
+
+## v3.17.0 (2026-06-27)
+
+> Docs: [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewtools manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+Hook modernization for Claude Code SDK 2.1.195. All changes are backward-compatible and presence-guarded -- zero behavior regression.
+
+### brewcode
+
+#### Changed
+- **hooks:** `session-start` now logs `permission_mode` for audit and bounds its `additionalContext` to ~9K (10K disk-spill safety threshold, CC 2.1.174). `pre-task` skips KNOWLEDGE injection when `permission_mode === 'plan'`. `forced-eval` bounds its `additionalContext` to ~9K.
+
+#### Fixed
+- **post-task:** hardened subagent-failure detection to read `tool_result ?? tool_response` -- the legacy field stays primary (zero regression) while future-proofing against the documented SDK field rename.
+
+### brewtools
+
+#### Changed
+- **hooks:** `session-start` logs `permission_mode`. `manager-prompt` bounds injected `additionalContext` to ~9K at both output sites (codeword detection + HARD-wall logic UNCHANGED). `hardmode-guard` re-verified on 2026-06-27 that the `agent_id`/`agent_type` main-vs-subagent discriminator still HOLDS on CC 2.1.195 (defensive comment added).
+
+### brewui
+
+#### Changed
+- **hooks:** `session-start` logs `permission_mode`.
+
+---
+
+## v3.16.6 (2026-06-27)
+
+> Docs: [hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [brewcode hooks](https://doc-claude.brewcode.app/brewcode/hooks/)
+
+### brewcode
+
+#### Changed
+- **docs:** hooks reference synced to Claude Code 2.1.195 (empirically verified). Documented all **5 hook entry types** -- added the previously-missing `mcp_tool` (invokes + awaits a configured MCP server tool; `server`/`tool`/`input` with `${...}` interpolation; returned text parsed as command-style stdout JSON), and **corrected `prompt`/`agent`** to allow/block **gates** (LLM evaluates allow vs block+reason; their text is NOT injected into model context) rather than context injectors. Clarified `http` (POSTs full payload via axios, blocks for JSON response; user-prompt field named `prompt`). Added control facts: hooks cannot select/change the model; `updatedInput` rewrites tool args on PreToolUse only (silently ignored on UserPromptSubmit). `pre-task`/`post-task` matchers shown as `Task|Agent`.
+
+---
+
+## v3.16.5 (2026-06-18)
+
+`brewdoc:publish` now auto-renders Markdown files as styled pages. A `.md`/`.markdown` file path is published via `/api/html?format=markdown` (pretty rendered) instead of `/api/files` (raw download). All other file types are unchanged — only Markdown files switch to the rendered path.
+
+---
+
+## v3.16.4 (2026-06-17)
+
+Provider-switch model-data accuracy pass: refreshed every provider model in the docs, not just GLM. Updated to Claude Opus 4.8, corrected GPT-5.5 to native OpenAI API (was mislabeled OpenRouter-only) and added GPT-5.5 Codex, set GLM-5.2 to 1M context with SWE-bench Pro 62.1% (self-reported) and dropped the unverified "#1" claim, and fixed MiniMax to MiniMax-M3 (1M). All vendor SWE-bench figures now carry a "(self-reported)" label since independent leaderboards had not yet listed the newest 2026 models.
+
+---
+
+## v3.16.3 (2026-06-17)
+
+Hotfix: finalizes the mobile horizontal-overflow fix.
+
+- Moved the wide SWE-bench comparison table out of the DaisyUI `.alert` callout on the provider-switch page so it renders as a plain table that scrolls horizontally within itself, eliminating page-level overflow at mobile widths. Verified at 390px (page scrollWidth == viewport width).
+
+---
+
+## v3.16.2 (2026-06-17)
+
+Hotfix: completes the mobile horizontal-overflow fix from v3.16.1.
+
+- Wide tables inside DaisyUI `.alert` callouts (e.g. the provider-switch SWE-bench table) now scroll within the callout instead of forcing page-level horizontal overflow at mobile widths.
+
+---
+
+## v3.16.1 (2026-06-17)
+
+Docs-only release: full 3-level documentation sync.
+
+- Reconciled skill/agent/hook counts across all docs to ground truth (33 skills, 16 agents, 9 lifecycle hooks).
+- Fixed provider-switch web-doc alias: `claudedeepseek` -> `claudeds` (matches the real skill alias).
+- Fixed mobile horizontal-overflow on documentation pages (DaisyUI `.alert` grid now uses `minmax(0, 1fr)` + `min-width: 0`).
+- Removed final GLM/Z.ai residue (`cogview`) from image-gen provider discovery.
+
+---
+
+## v3.16.0 (2026-06-17)
+
+### brewui
+
+#### Changed
+- **provider-switch model refresh:** updated the model catalog -- GLM bumped to GLM 5.2, Qwen to Qwen 3.7-plus, MiniMax to MiniMax-M3; DeepSeek stays on deepseek-v4-pro (unchanged); OpenRouter catalog refreshed.
+
+#### Removed
+- **complete GLM Vision removal:** dropped the `glm-design-to-code` skill, the `glm-zai-specialist` and `glm-openrouter-specialist` agents, the `glm-design-to-code-trial`, and the Z.ai provider from image-gen.
+
+---
+
+## v3.15.0 (2026-06-14)
+
+> Docs: [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [brewtools prompt-injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+### brewtools
+
+#### Added
+- **manager:** two new prompt-injection codewords. `++rr` (Regression Review) injects anti-regression review discipline -- after each significant phase, review for no-regression + project standard + correctness, two-phase review->double-check->fix, with a mandatory final cross-review at task end. `++r` (Review) injects a lighter two-phase multi-agent review (review->double-check->fix) after each significant change. Both are codeword-only (no ambient/HARD-wall injection); detection order is `++mp` -> `++m` -> `++rr` -> `++r` (longest-prefix first).
+
+#### Changed
+- **manager docs:** every codeword table across all doc levels (manager skill page, prompt-injection concept page, SKILL.md, READMEs, CLAUDE.md) now carries a plain-English decode for all four codewords (`++m` = Manager, `++mp` = Manager for Plan, `++rr` = Regression Review, `++r` = Review).
+
+---
+
+## v3.14.5 (2026-06-14)
+
+> Docs: [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+
+#### Fixed
+- **docs:** removed Russian text that had leaked into rendered examples and trigger tables on the manager page -- all examples and invocations are now English. The skill still accepts Russian natural language; that is now noted in one English line pointing to the skill's SKILL.md for the full RU+EN trigger list. Repo-wide sweep confirms zero Cyrillic in any docs MDX.
+
+---
+
+## v3.14.4 (2026-06-14)
+
+> Docs: [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+
+#### Changed
+- **docs (manager):** surfaced the HARD wall for non-technical readers -- new visible "The HARD wall" section with a plain-language Callout, a concrete blocked-edit example (main session tries to edit a file -> blocked with a deny message -> delegates to a subagent that has full freedom), and an at-a-glance allowed/blocked table. Deep mechanics remain in the technical spoiler.
+
+---
+
+## v3.14.3 (2026-06-14)
+
+> Docs: [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/) | [Prompt Injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+### brewtools
+
+#### Changed
+- **docs (manager):** rewrote the manager page user-first. The top now shows only the essentials -- a plain-language intro, a highlighted before/after example (you type `++m <task>` -> Claude receives an injected Manager contract + your task), simple codeword and everyday-command tables. All deep technical detail (HARD wall internals, tool buckets, strict/balanced, prompt-resolution chains, scopes, full intent reference) moved under collapsible `<details>` spoilers so a non-technical reader can ignore it.
+
+---
+
+## v3.14.2 (2026-06-14)
+
+> Docs: [Prompt Injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/)
+
+### docs-site
+
+#### Fixed
+- **Tabs component:** tab panels now initialize on direct page loads, not only on view-transition navigations. The init logic was extracted into `initTabs()` and is invoked immediately AND on `astro:page-load` (idempotent via the `dataset.initialized` guard). Previously, on a hard load the tab group never hydrated -- both panels rendered stacked and tab switching was inert. Fixes the Tabs on the new Prompt Injection page plus installation and brewcode overview.
+
+---
+
+## v3.14.1 (2026-06-14)
+
+> Docs: [Prompt Injection](https://doc-claude.brewcode.app/brewtools/prompt-injection/) | [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+
+#### Added
+- **docs:** new "Prompt Injection" concept page explaining the `++m`/`++mp` codeword mechanism -- how the `UserPromptSubmit` hook injects a full Manager operating contract via `additionalContext` (invisible to the user, fully in the model's context), the prompt-resolution fallback chain, and the codeword/HARD-wall trigger table. Two-way cross-links with the manager skill page.
+
+#### Fixed
+- **docs:** deduped brewtools skill sidebar `order` frontmatter (3119 collision -> unique 3120-3125).
+
+---
+
+## v3.14.0 (2026-06-14)
+
+> Docs: [brewtools:task-board-init](https://doc-claude.brewcode.app/brewtools/skills/task-board-setup/) | [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+
+#### Added
+- **task-board-init:** generator skill that deploys a self-contained file-based Kanban into ANY target repo via multi-agent analysis. Four steps: (1) multi-agent repo analysis -> domains/id-prefixes, source-path exclusions, release style, doc language (confirmed via AskUserQuestion); (2) generates a parametrized `.claude/agents/task-tracker.md` curator; (3) generates an on-demand `.claude/skills/task-board/` dashboard (view/add/move/backlog/groom, delegates heavy passes to task-tracker); (4) writes a paths-scoped `.claude/rules/tasks.md` (board canonical, folder==status, lifecycle, + run-task-tracker-at-task-start rule kept out of CLAUDE.md), scaffolds `.claude/features/**`, and runs a multi-agent doc sweep that migrates legacy backlog/feature docs into the board. Mirrors the brewpage-app/yasna-bot etalons.
+
+#### Changed
+- **docs:** full 4-level documentation pass for task-board-init (new MDX page, navigation.ts, plugin + repo README, guide catalog) and manager (clarified hard-one-shot auto-revert + manager-run no-wall-toggle distinction).
+
+---
+
+## v3.13.0 (2026-06-14)
+
+> Docs: [brewtools:manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+### brewtools
+
+#### Added
+- **manager:** HARD Delegation Mode — opt-in PreToolUse wall installed per-project via `/brewtools:manager on`. Blocks Write/Edit/NotebookEdit/WebFetch/MCP-write and mutating Bash in the main session; subagents stay free (agent_id linchpin). Self-contained guard (zero plugin imports), fail-open.
+- **manager:** new intents `on` (install+arm), `off` (disarm, state-only), `uninstall` (deregister), `level <strict|balanced>` (Bash/WebSearch/MCP policy). Install-once + state-gate: guard registered in `.claude/settings.local.json`, runtime-gated by project `state.json {hard, level}`. Wall is PROJECT-ONLY.
+- **manager:** session-start banner `⛔ MANAGER HARD wall ON` when armed.
+
+#### Changed
+- **manager:** `++m`/`++mp` codewords now ALWAYS fire (removed the `enabled` state gate); when the wall is armed the Manager (full) block also auto-injects every turn. `status` rewritten as the main explainer (codewords + wall state + level + toggle).
+
+#### Notes
+- Migration: legacy `state.json {enabled}` is ignored; the wall defaults OFF (opt-in). Re-run `/brewtools:manager on` to arm.
+
+---
+
+## v3.12.3 (2026-06-14)
+
+> Docs: [brewcode/hooks](https://doc-claude.brewcode.app/brewcode/hooks/)
+
+> **Theme:** doc-accuracy follow-up to v3.12.2 — the public hooks page still described `forced-eval` via the old `updatedInput` channel. Found by a project-wide final review that otherwise confirmed all 15 hooks, agents, and manifests are clean.
+
+### brewcode
+
+#### Changed
+- **Docs match code:** the `brewcode/hooks` MDX page documented `forced-eval` as emitting `updatedInput` and "returning the modified prompt" — wrong since v3.12.2. Corrected to `additionalContext` (UserPromptSubmit cannot rewrite the prompt), and the payload description updated to the current default (`[SKILL?]` skill-check always-on + light `[HINT]`; full Manager mode on-demand via `++m`).
+- **Guide tightened:** `topic-customization` no longer implies UserPromptSubmit can transform the prompt, and scopes `updatedInput` to PreToolUse/PermissionRequest.
+
+> Final-review result: no remaining hook output-channel bugs across brewcode/brewdoc/brewtools/brewui; `hook-creator`/`agent-creator` agent guidance verified authoritative; all hook registrations and custom user hooks valid.
+
+---
+
+## v3.12.2 (2026-06-14)
+
+> Docs: [brewcode/agents/hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/)
+
+> **Theme:** fix a silent `UserPromptSubmit` hook bug found via live debug-log analysis, and correct the hook-creator agent's output-channel guidance so the bug can't recur.
+
+### brewcode
+
+#### Fixed
+- **`forced-eval.mjs` skill-activation hook now actually reaches the model.** It injected its `[SKILL?]` skill-check reminder via `updatedInput.prompt`, which Claude Code 2.1.x **silently ignores on `UserPromptSubmit`** (confirmed in a live debug log: `unrecognized keys (ignored): updatedInput`). Migrated to the supported `hookSpecificOutput.additionalContext` channel — the reminder now lands every turn. All skip logic (slash-commands, meta-replies, empty prompts) and the effort-level prefix are preserved.
+- **Softer default reminder.** The hook's default (no active mode) no longer asserts a hard always-on `[DELEGATE] You are a MANAGER … never implement directly`; it now emits a light `[HINT]` to prefer delegation, with full Manager framing left to the on-demand `++m` codeword (`brewtools:manager`). Removes redundancy with the manager skill and global instructions.
+
+#### Changed
+- **`hook-creator` agent corrected.** Its per-event output-channel reference was inaccurate (implied `updatedInput` was a general context channel). Replaced with an authoritative per-event matrix: `additionalContext` for SessionStart/UserPromptSubmit/PreToolUse/PostToolUse, `updatedInput` only for PreToolUse/PermissionRequest, `updatedToolOutput` for PostToolUse, and `Stop`/`SubagentStop` accept `additionalContext` since CC 2.1.163 — preventing this class of bug in generated hooks. An audit of all 15 hooks across the four plugins confirmed no other channel violations.
+
+---
+
+## v3.12.1 (2026-06-13)
+
+> Docs: [brewtools/skills/manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+> **Theme:** multi-agent review hardening of v3.12.0 `brewtools:manager` — security + correctness fixes and repo-wide count consistency.
+
+### brewtools
+
+#### Fixed
+- **Path-traversal guard:** `resolvePromptPath` (and `resolvePrompt`) now validate `scope` and `mode` against an allowlist before building a filesystem path — closes a traversal vector reachable via the skill's `edit`/`reset` actions (which call `unlinkSync`/`writeFileSync`).
+- **Lock safety:** `writeState` now throws instead of writing unlocked if the lock was not acquired, and `releaseLock` never unlinks a lock it does not own. Same guard applied to the shared `_shared/toggle/deny.mjs` (agent-toggle) which carried the identical latent bug.
+- **Codeword anchoring:** `++m`/`++mp` now match only as standalone tokens (anchored regex), so prompts like `++money` or `x++mx` no longer trigger Manager injection. `++mp`-before-`++m` ordering preserved.
+- **Override robustness:** the prompt-text extractor accepts both ` ``` ` and `~~~` fences, and the skill's `edit` action seeds overrides un-wrapped — fixing silent truncation when an override contained a backtick fence.
+- **Honest mode state:** invalid `mode` in a state file is clamped to `full`; `status` now labels the stored mode as an informational default (the codeword alone selects the injected block) instead of an inert "active mode".
+
+#### Changed
+- **Count consistency:** corrected stale skill/agent/hook counts across `brewtools/README.md` (version + skills), root `README.md` (brewtools 12 skills, missing rows added), `getting-started.mdx`, `brewtools/skills.mdx` (reconciled to all 12 skills incl. manager), `installation.mdx` (suite aggregate), the guide hook catalog (brewtools 3 hooks + `manager-prompt.mjs`), and project `CLAUDE.md`.
+
+---
+
+## v3.12.0 (2026-06-13)
+
+> Docs: [brewtools/skills/manager](https://doc-claude.brewcode.app/brewtools/skills/manager-setup/)
+
+> **Theme:** new `brewtools:manager` skill + a `UserPromptSubmit` hook that turns a short codeword into an on-demand, auto-injected "delegate-everything" Manager prompt — controllable by natural language, editable, and surviving plugin updates.
+
+### brewtools
+
+#### Added
+- **`brewtools:manager` skill** — intent-driven control plane (RU+EN) for Manager mode. Turns natural language into `on` / `off` / `status` / `mode <full|planmode>` / `edit` / `reset` (with `--scope project|global`), and runs any bare prompt as an inline Manager (builds a TaskGraph, delegates to the best-matching agent). `status` prints the live state and the exact English block injected for each codeword.
+- **`UserPromptSubmit` hook (`manager-prompt.mjs`)** — detects a codeword anywhere in the prompt and injects the matching Manager block via `additionalContext` for the same turn: `++m` -> full Manager block, `++mp` -> full + Plan Mode addon (`++mp` is tested before `++m` to avoid prefix collision). State-gated (`enabled !== false`), zero overhead when off or no codeword, and fully fail-safe — any error injects nothing and never breaks the prompt.
+- **Editable, update-proof prompts.** State resolves project (`.claude/brewtools/manager/state.json`) -> global (`~/.claude/manager/state.json`) -> default `{enabled:true, mode:"full"}`. Prompt text resolves project override -> global override -> plugin default (`references/{full,planmode}.md`). Global writes go through bundled Node helpers (atomic lock + tmp + rename) since `~/.claude/*` is protected for the Write/Edit tools.
+
+## v3.11.0 (2026-06-12)
+
+> Docs: [brewtools/skills/text-human](https://doc-claude.brewcode.app/brewtools/skills/text-human/)
+
+> **Theme:** rebuild `brewtools:text-human` from a code-only cleaner into a universal, context-aware, flow-based humanizer backed by web-researched and adversarially-validated pattern catalogs.
+
+### brewtools
+
+#### Changed
+- **text-human is now universal:** works on source code, comments, docstrings/JavaDoc, technical docs, commits/PRs, published articles, and reddit/chat text -- not just code. A greedy flow-detection phase picks ONE of five domain flows from context (prompt + extension + content sniff) and announces it: `code`, `docs`, `social`, `article`, `mixed`.
+- **Two-pass model:** PASS 1 strips validated AI tells, tiered by reliability -- HIGH-tier acts on a single hit, MED-tier acts only on co-occurring density, and behaviour-changing items (hallucinated refs, fabricated tickets, try/except-everything) are surfaced for review and never auto-edited. PASS 2 injects register-fit human style, gated per domain.
+- **Hard guards:** human-injection is OFF for code / API docs / formal-contract; a global guard forbids injecting typos, errors, or fabricated references in any flow. Positioned honestly as "removes AI surface artifacts and fits register" -- it does not claim to detect authorship.
+- **Universal arguments:** accepts a path, commit hash, folder, free-text prompt, path + prompt, or no args. The prompt both selects/overrides the flow and adds custom rules.
+
+#### Added
+- **Validated pattern catalogs** (`reference/ai-patterns.md`, `reference/human-patterns.md`) and five flow references (`reference/flows/{code,docs,social,article,mixed}.md`). Catalogs are sourced from corpus studies, Wikipedia AI-cleanup consensus, and practitioner research, then filtered to drop high-false-positive folklore (em-dash, rule-of-three, smart quotes, "too clean" code). The existing per-language references (java/python/typescript) are retained and used by the `code` flow.
+
+---
+
+## v3.10.0 (2026-06-11)
+
+> Docs: [brewcode/agents/skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [brewcode/agents/agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | [brewcode/agents/hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [brewcode/hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [brewtools/skills/plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [faq](https://doc-claude.brewcode.app/faq/) | [installation](https://doc-claude.brewcode.app/installation/)
+
+> **Theme:** sync the plugin suite with Claude Code 2.1.144-2.1.173 — remove false platform claims, document new features, shorten skill/agent descriptions, and deep-compress LLM-facing docs.
+
+### repo
+
+#### Fixed
+- **plugin list claim was false:** the suite documented that `claude plugin list` does not exist. It has existed since CC 2.1.163. `brewtools:plugin-update` now uses `claude plugin list --json` as the **primary** discovery path (objects: `id, version, scope, enabled, installPath, installedAt, lastUpdated, mcpServers?`; `version` may be `"unknown"`; prefix `unset CLAUDECODE &&` inside a session). `discover-plugins.sh` is kept as the **fallback** for CC < 2.1.163. Fixed in SKILL.md, references, README, `faq.mdx`, `installation.mdx`, and the plugin-update MDX page.
+- **"subagents cannot spawn subagents" was false:** CC 2.1.172 allows nesting up to 5 levels. Corrected in `CLAUDE.md`, `agent-creator`, `skill-creator`, guide refs, and MDX. Framed correctly: CC allows it, but the **brewcode workflow** still requires spawning from the main conversation (the 2-step report protocol binds the lock to one session and delivers report/coordinator instructions there; nested spawns bypass session binding, KNOWLEDGE injection, and the coordinator loop).
+- **"Stop additionalContext does nothing" was false:** Stop and SubagentStop hooks support `hookSpecificOutput.additionalContext` since CC 2.1.163. Corrected in `hook-creator` and `hooks.mdx`.
+
+### brewcode
+
+#### Added
+- **CC 2.1.144-2.1.173 platform facts** across creator agents: `disallowed-tools` skill frontmatter (2.1.152), `/reload-skills` (2.1.152), root-level `SKILL.md` with no `skills/` subdir (2.1.142), `MessageDisplay` hook event (2.1.152), SessionStart `reloadSkills` / `sessionTitle` outputs (2.1.152), `--safe-mode` / `CLAUDE_CODE_SAFE_MODE` and `disableBundledSkills` / `CLAUDE_CODE_DISABLE_BUNDLED_SKILLS` (2.1.169), post-session hook (2.1.169, self-hosted runner only — NOT a hooks.json event), and **Fable 5** (`claude-fable-5`, Mythos-class above Opus, CC 2.1.170) added to agent model lists.
+- **session-start hook sets sessionTitle:** `session-start.mjs` now sets `hookSpecificOutput.sessionTitle` to the active brewcode task name when a task lock exists (CC 2.1.152; ignored by older CC).
+
+#### Changed
+- **Shorter skill/agent descriptions:** every skill description trimmed to <= 120 chars (optimal ~100) and every agent description to <= 100 chars (optimal ~80), keeping the strongest distinct trigger keywords (EN + RU where present). `<example>` blocks removed from creator-agent frontmatter. The skill/agent generators (skill-creator, agent-creator, `skills`, `agents`, `teams`, `setup`, `e2e`) now emit descriptions within these caps.
+
+### Optimization
+
+#### Changed
+- **Deep/standard token compression of LLM-facing docs.** Top files compressed (chars, deep batch + key agents):
+
+| File | Before | After | Saved |
+|------|--------|-------|-------|
+| brewcode/docs/flow.md | ~72.3K | ~57.5K | -20% |
+| brewcode/docs/grepai.md | ~49.2K | ~16.8K | -66% |
+| brewcode/docs/commands.md | ~39.4K | ~17.5K | -55% |
+| brewcode/docs/hooks.md | ~30.7K | ~12.5K | -58% |
+| brewcode/agents/skill-creator.md | ~50.8K | ~38.6K | -25% |
+| brewcode/agents/hook-creator.md | ~44.8K | ~26.2K | -43% |
+| brewcode/agents/agent-creator.md | ~30.1K | ~21.8K | -23% |
+| brewui/skills/glm-design-to-code/SKILL.md | ~34.4K | ~21.5K | -37% |
+
+  Plus standard-mode passes on the remaining top-25 + Phase 1-2 touched files. Deep+key set: ~430.9K -> ~330.8K chars (~25K tokens, **-23%**). Frontmatter and all facts preserved; every compressed file passed a comprehension gate (32/32 questions) and path-existence check.
+
+### Next (deferred)
+- `MessageDisplay` hook adoption in brewcode hooks (2.1.152) — documented, not yet wired.
+- Nested subagents inside the brewcode workflow (2.1.172) — requires session-aware lock handling in `pre-task.mjs`/`post-task.mjs` first.
+
+---
+
+## v3.9.2 (2026-05-16)
+
+### repo
+
+#### Fixed
+- **version sync restored:** v3.9.1 was tagged with only `brewdoc/.claude-plugin/plugin.json` bumped to 3.9.1; the other 5 version files (brewcode/brewtools/brewui `plugin.json`, `.claude-plugin/marketplace.json`, `brewcode/package.json`) stayed on 3.9.0, breaking the cross-plugin version check used by `/brewtools:plugin-update`. v3.9.2 re-runs `bump-version.sh` so all 6 JSON files share one version. No code changes in any plugin — version-sync release only.
+
+---
+
+## v3.9.1 (2026-05-15)
+
+### brewdoc
+
+#### Changed
+- **publish skill — owner-token semantics:** `brewdoc/skills/publish/SKILL.md` HEADER comment in 5 history-file scaffolds now reads `Owner tokens allow delete (no in-place PUT for sites; html/json/kv support PUT). Keep this file private.` (was `Owner tokens allow update/delete. ...`). AI agents reading the prior wording inferred `PUT /api/sites/{ns}/{id}` exists and hit 405; the corrected text disambiguates which resources accept PUT.
+
+---
+
+## v3.9.0 (2026-05-12)
+
+> Docs: brewcode/skills/start | brewcode/agents/reviewer | brewcode/agents/architect | brewcode/agents/developer | [brewtools/skills/plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/)
+
+### brewcode
+
+#### Added
+- **effort.level propagation:** `pre-task.mjs` and `forced-eval.mjs` now read effort.level from session state and prepend an idempotent `[EFFORT: <level> | MODE: terse-<variant>]` line to delegated prompts. Downstream subagents inherit the parent's effort budget without explicit relay.
+- **`/goal` anchor in start:** `brewcode/skills/start/SKILL.md` Step 2 now anchors the user-stated goal as `/goal` for stable reference across phases and handoffs.
+- **CRITICAL: PRESERVE handoff emphasis:** `pre-compact.mjs` writes handoff blocks with `CRITICAL: PRESERVE` prefix; the summarizer empirically retains prefixed content at higher fidelity. Wording softened to avoid alarmist tone while keeping the emphasis hook.
+- **❌ CRITICAL KNOWLEDGE prefix:** `pre-task.mjs` prefixes injected KNOWLEDGE entries with `❌ CRITICAL:` for `❌` priority items, improving recall in long contexts.
+- **mcpServers frontmatter (CLI-direct fallback):** `reviewer.md`, `architect.md`, `developer.md`, `bc-grepai-configurator.md` now declare `mcpServers: [grepai]` so the agent inherits the MCP server even when launched via CLI-direct flow (bypassing the parent session's auto-load).
+
+### brewtools
+
+#### Added
+- **plugin-update Phase 2b (token-details table):** `plugin-update/SKILL.md` adds a per-plugin token-cost table populated from `claude plugin --help` exit-code precheck; degrades gracefully if `--help` is unavailable on the running CC version.
+- **plugin-update Phase 5b (prune):** post-update prune of stale plugin cache versions, gated by the same `--help` precheck. No-op on unsupported CC versions.
+
+### docs
+
+#### Added
+- **agent/skill/hook-creator MDX:** worktree.baseRef and bypassPermissions callouts added to `web/docs/src/content/docs/brewcode/agents/{agent,skill,hook}-creator.mdx` clarifying baseRef pin semantics and the bypassPermissions guard interplay.
+
+### Notes
+- **v3.8.0 Migration & Rollback corrected post-release:** the project-scope backup path (`<cwd>/.claude/brewtools/toggle-state.json.bak.pre-migration-<TS>`) was added, and the unverified `claude plugin update --version` flag was replaced with a marketplace tag-ref pin (`marketplace add ...#vX.Y.Z`). No code change in v3.8.0; doc-only correction applied before this release.
+
+---
+
+## v3.8.0 (2026-05-12)
+
+> Docs: brewtools/skills/skill-toggle | brewcode/skills/grepai | brewcode/skills/teardown
+
+### All plugins
+
+#### Fixed
+- **hooks.json exec form (CRITICAL):** all four plugins (`brewcode`, `brewdoc`, `brewtools`, `brewui`) had `hooks.json` entries using the broken dual `command`+`args` form which Claude Code 2.1.139 silently ignored. Converted every entry to the proper exec form: `"command":"node","args":["${CLAUDE_PLUGIN_ROOT}/hooks/<file>.mjs"]`. Restores SessionStart, PreToolUse, PostToolUse, PreCompact, Stop hook dispatch across the suite.
+
+### brewtools
+
+#### Added
+- **skill-toggle settings.json migration (CC 2.1.115+):** skill enable/disable now uses the official `~/.claude/settings.json` `skillOverrides` mechanism instead of file-rename (`SKILL.md` ⇄ `_SKILL.md`). Atomic writes (`tmp + fsync + rename`), lock-file identity check (PID + start-time), stale-lock recovery on crashed sessions. Survives plugin updates without filesystem mutation.
+- **reapply-disables embedded migrator:** one-shot SessionStart migrator detects legacy `toggle-state.json` skill entries and rewrites them into `skillOverrides`. Writes pre-migration backup `toggle-state.json.bak.pre-migration-<TS>` BEFORE any deletion. Idempotent — no-op on subsequent sessions.
+
+#### Changed
+- **skill-toggle helpers:** new `helpers/` directory consolidating settings.json read/write, lock management, and migration probes.
+
+### brewcode
+
+#### Added
+- **grepai `alwaysLoad:true`:** `mcp-check.sh` now sets `alwaysLoad:true` on the grepai MCP server via CLI-first / JSON-patch fallback (handles both `claude mcp` CLI presence and direct settings.json editing). Ensures grepai is hot at session-start without manual `/mcp` invocation.
+- **teardown `--full` mode (CC 2.1.115+):** `claude project purge` integration with inline `PURGE` confirmation prompt, Claude Code version probe (`claude --version`), and partial-recoverability backup. Removes plugin data + project state in one atomic flow when user explicitly opts in.
+
+#### Changed
+- **teardown SKILL.md:** documents `--full` flag, version-gate behavior, and recovery path.
+
+#### Migration & Rollback
+- **Auto-migration:** On first SessionStart after upgrade, brewtools `reapply-disables` hook migrates legacy `toggle-state.json` skill entries to `~/.claude/settings.json` `skillOverrides`. A backup is written to `toggle-state.json.bak.pre-migration-<TS>` BEFORE deletion.
+- **Backup locations (BOTH scopes):**
+  - Global scope: `~/.claude/plugins/data/brewtools-claude-brewcode/toggle-state.json.bak.pre-migration-<TS>`
+  - Project scope: `<cwd>/.claude/brewtools/toggle-state.json.bak.pre-migration-<TS>` (one per project that had local skill disables)
+- **Downgrade to v3.7.x — steps:**
+  1. Restore the pre-migration backup in whichever scope(s) you used: `cp toggle-state.json.bak.pre-migration-<TS> toggle-state.json` at the matching path above.
+  2. (Optional) Manually remove the now-stale `skillOverrides` block from `~/.claude/settings.json` — v3.7.x ignores it, but the entries persist and may confuse future migrations or audits.
+  3. Re-pin to v3.7.19 by re-adding the marketplace at the tag ref: `claude plugin marketplace remove claude-brewcode && claude plugin marketplace add https://github.com/kochetkov-ma/claude-brewcode.git#v3.7.19 && claude plugin update brewtools@claude-brewcode` (the `--version` flag on `claude plugin update` is not a verified subcommand option — use the marketplace tag-ref pin instead).
+- **agent-toggle unaffected** — agent state still uses file-rename approach.
+
+---
+
+## v3.7.19 (2026-05-12)
+
+> Docs: [brewtools/plugin](https://doc-claude.brewcode.app/brewtools/overview/)
+
+### brewtools
+
+#### Fixed
+- **plugin schema:** removed `config` block from `plugin.json` (Claude Code 2.1.139 dropped support; was a BLOCKER causing schema validation to fail).
+- **docs:** updated fallback-chain documentation in MDX and SKILL.md to reflect removed plugin.json config block.
+
+---
+
+## v3.7.18 (2026-05-12)
+
+> Docs: brewcode:setup
+
+### brewcode
+#### Fixed
+- **setup.sh:** `bash setup.sh review` (and `collect_agents` for global/plugin agents) aborted with rc=1 on the happy path under `set -euo pipefail`. The trailing filter pipelines at L164 (placeholder-warning filter) and L240/241/255/258 (agent-frontmatter `grep | head | sed | tr | xargs`) returned rc=1 when there was nothing to filter (no unresolved placeholders, no `name:`/`description:` line), `pipefail` propagated through `$(...)`, and the bare assignment tripped errexit. Appended `|| true` to each pipeline. Downstream `[ -n "$_unresolved" ]` / `[ -n "$name" ]` already gate on empty result; defense-in-depth `test -f .../SKILL.md` at L183 still catches missing output. Completes v3.7.15 direction.
+
+---
+
+## v3.7.17 (2026-05-01)
+
+> Docs: [brewdoc:publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+### brewdoc
+#### Fixed
+- **publish docs:** TTL default in `publish.mdx` (L15, L78) and `README.md` (4 occurrences) said `5 days` — server truth is `15` (verified vs `brewpage-app application.yml: default-ttl-days: 15`). Aligned with SKILL.md fixed in v3.7.16.
+#### Added
+- **publish docs:** "Companion tools" CardGrid section on the publish skill page — links to `brewpage-mcp` (npm MCP server, multi-file support), OpenAPI Scalar spec at `kochetkov-ma.github.io/brewpage-openapi`, and the REST API base at `brewpage.app/api`. Lets users discover non-Claude-Code paths to BrewPage Sites API.
+
+---
+
+## v3.7.16 (2026-05-01)
+
+> Docs: [brewdoc:publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+### brewdoc
+#### Fixed
+- **publish:** `$PASS_H` was defined as a single line OUTSIDE bash code fences while referenced INSIDE 5 separate curl blocks — each block ran in its own shell, so the variable was empty and password protection silently dropped on every upload. Replaced with per-block `PASS_H=()` bash-array definition and `"${PASS_H[@]}"` quoted expansion in curl. Also fixed embedded-quote bug in the original `echo "-H \"X-Password: ...\""` form (curl rejects the literal-quoted single arg).
+- **publish:** TTL default corrected from `5` (stale doc) to `15` to match server config (`brewpage-app application.yml: default-ttl-days: 15`). Aligned in mode rules and limits sections.
+- **publish:** mode-detection rule tightened — explicit `ZIP → SITE / Directory → SITE / Single file → FILE` and explicit fail-loud on directory with no `.html` (no silent guess).
+#### Changed
+- **publish:** trimmed redundant intro/duplicate notes (User-Agent note, duplicated ownerToken warning, etc.) to keep SKILL.md within line budget after PASS_H array additions across 5 blocks.
+
+---
+
+## v3.7.15 (2026-04-29)
+
+> Docs: brewcode:setup | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/)
+
+### brewcode
+#### Fixed
+- **setup.sh:** placeholder warning now excludes known runtime placeholders (`{TIMESTAMP}`, `{CONFIRMED_FINDINGS_JSON}`, etc.) — previously every setup run emitted spurious "unresolved placeholders" warning even when all setup-time vars were resolved
+- **README.md:** `bc-rules-organizer` agent table row corrected from `sonnet` to `haiku` (was inconsistent with the actual agent frontmatter changed in v3.7.14)
+#### Changed
+- **setup.sh:** added inline comment documenting single-line constraint on env vars passed to `copy_review_skill` (newlines in values break sed line-by-line substitution)
+
+---
+
+## v3.7.14 (2026-04-29)
+
+> Docs: brewcode:setup | [bc-rules-organizer](https://doc-claude.brewcode.app/brewcode/agents/bc-rules-organizer/) | bc-coordinator
+
+### brewcode
+#### Fixed
+- **bc-rules-organizer:** model downgraded `sonnet` → `haiku` — Sonnet inherited 1M context from parent session, triggering `/extra-usage` gate on Pro/Max OAuth accounts; Haiku is sufficient for rules classification
+- **bc-coordinator:** finalize mode now verifies artifact files exist on disk before building FINAL.md index; missing files marked `❌ missing`, status downgraded to `failed` (was silently ignored)
+- **setup:** `copy_review_skill` replaced `cp` with `sed` substitution — 13 setup-time placeholders (`{DETECTED_TECH}`, `{AGENT_COUNT}`, etc.) are now resolved at copy time; unresolved-placeholder warning added; sed delimiter switched from `|` to `\x01` to avoid collision with markdown table values
+- **setup SKILL.md:** ToolSearch preflight added at two sites (Phase 0 Step 2.5 + Phase 5) to load deferred `AskUserQuestion` schema (required for Claude Code v2.1.107+)
+#### Changed
+- **README:** version field corrected from stale `3.4.29` to current `3.7.14`
+- **bump-version.sh:** now also updates `brewcode/README.md` version table row and verifies it in the summary
+
+---
+
+## v3.7.13 (2026-04-29)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch:** DeepSeek alias renamed from `claudedeepseek` to `claudeds` (shorter, consistent with "Claude DS" naming)
+
+---
+
+## v3.7.12 (2026-04-24)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch docs:** top callout now includes a full SWE-bench snapshot table (Verified + Pro columns) for April 2026. Reflects GPT-5.5 (released April 23) as the new #1 on Verified at 88.7%; Opus 4.7 still wins Pro at 64.3%.
+- **provider-switch docs:** DeepSeek V4 card — concrete scores added: Verified 80.6%, Pro 55.4%. "Top open-source SWE-bench" simplified to "Top open-source".
+- **provider-switch docs:** OpenRouter card — now explicitly mentions GPT-5.5, GPT-5.3 Codex, Gemini 3.1 Pro as routable via `claudeor`.
+
+---
+
+## v3.7.11 (2026-04-24)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch docs:** added [SWE-bench Verified leaderboard](https://www.swebench.com/) link in the top "NEW DeepSeek" callout (with current top-3 scores) and in the DeepSeek card. Lets readers cross-check model rankings against the canonical source before switching providers.
+
+---
+
+## v3.7.10 (2026-04-24)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch docs:** top "NEW — DeepSeek V4" callout announcing the April 24 priority addition. Highlights 1.6T MoE, 1M context, thinking modes, verified 90% cache discount, no compat flags.
+- **provider-switch docs:** SWE-bench badges realigned with actual April 2026 leaderboards. GLM "#1 SWE-bench" -> "Strong coding perf" (Opus 4.7 leads at 87.6%). DeepSeek V4 tagged "Top open-source SWE-bench".
+- **provider-switch docs:** all four alt providers now marked "Cache verified". DeepSeek V4 — automatic 90% discount, DeepSeek API docs. Qwen — implicit 20% / explicit 10% per Alibaba billing. GLM — native backend auto-cache. MiniMax — documented pricing/TTL. Cost-per-request table updated with DeepSeek cached row.
+
+---
+
+## v3.7.9 (2026-04-24)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Added
+- **provider-switch:** DeepSeek V4 as priority default provider. New reference `references/deepseek.md`. Endpoint `https://api.deepseek.com/anthropic`, model `deepseek-v4-pro` (1.6T MoE, 1M context). Alias `claudedeepseek`, key var `DEEPSEEK_API_KEY`. No compatibility flags required (DeepSeek silently ignores `anthropic-beta`/`anthropic-version`). Verified via live API call (HTTP 200).
+- **provider-switch:** new mode keywords `deepseek|ds|dpsk|дипсик` -> `provider-deepseek`. Updated `detect-mode.sh`, `check-status.sh` (new `ALIAS_DEEPSEEK`/`KEY_DEEPSEEK` fields, `api.deepseek.com` -> provider=deepseek mapping), `verify-providers.sh` (new `run_deepseek`).
+
+#### Fixed
+- **provider-switch/verify-providers.sh:** replaced `source ~/.zshrc` (failed under bash with `set -euo pipefail` when zshrc contained zsh-only syntax) with `grep ^export` + `eval` for API-key vars only. Script no longer aborts before reaching curl.
+
+---
+
+## v3.7.8 (2026-04-23)
+
+> Docs: plugin hooks internals — no user-facing skill/agent doc changes.
+
+### All plugins
+#### Changed
+- **Unified logging directory:** all plugin hook logs now land in `.claude/logs/{plugin}.log` (brewcode, brewdoc, brewtools, brewui). Previously brewtools/brewui wrote `.claude/brewtools.log` / `.claude/brewui.log` in the `.claude/` root; brewcode wrote `.claude/tasks/logs/brewcode.log`; brewdoc had no file logging. Single gitignored directory for all four.
+- **Shared log-level config:** single source of truth is `.claude/tasks/cfg/brewcode.config.json` -> `logging.level` (already used by brewcode). brewdoc/brewtools/brewui now read the same file. Override via env `BREWCODE_LOG_LEVEL`. Precedence: env > config > `info`. Levels: `error|warn|info|debug|trace`.
+- **brewdoc:** gained file logging (was stderr-only) and stderr format aligned with other plugins (no leading level tag).
+- **teardown.sh:** removes `.claude/logs/` (new unified dir) on brewcode teardown.
+
+---
+
+## v3.7.7 (2026-04-22)
+
+> Docs: brewtools:agent-toggle | brewtools:skill-toggle | brewui:glm-design-to-code | brewui:image-gen | [brewtools:text-optimizer](https://doc-claude.brewcode.app/brewtools/agents/text-optimizer/) | brewui:glm-zai-specialist | [brewcode:hook-creator](https://doc-claude.brewcode.app/brewcode/agents/hook-creator/) | [brewcode:skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | [brewcode:agent-creator](https://doc-claude.brewcode.app/brewcode/agents/agent-creator/) | brewcode:tester | brewcode:developer
+
+### brewtools
+#### Changed
+- **agent-toggle / skill-toggle (SKILL.md):** descriptions compressed ~255 -> ~45 tokens each. English-only triggers.
+- **text-optimizer (agent):** description tuned to ~170 tokens - kept 2 examples since it is a frequently invoked agent.
+- **session-start hook:** dropped redundant `brewtools: active | session: X` line from `additionalContext` (retained in `systemMessage` UI log). Saves ~30 tokens per session.
+
+### brewui
+#### Changed
+- **glm-design-to-code / image-gen (SKILL.md):** descriptions compressed ~55% each. English-only triggers.
+- **glm-zai-specialist (agent):** description compressed ~247 -> ~50 tokens.
+- **session-start hook:** same cleanup as brewtools - removed `active | session:` line from `additionalContext`.
+
+### brewcode
+#### Changed
+- **hook-creator / skill-creator / agent-creator (agents):** descriptions tuned to ~180 tokens each with 2 high-signal examples - these agents are frequently invoked so examples retained intentionally.
+- **tester / developer (agents):** descriptions compressed ~35%, example blocks removed (triggers already convey intent).
+- **skill-creator / agent-creator:** new "Description Budget" section enforces <=100 tok (skills) / <=150 tok (agents) default, English-only triggers, <=1 example for future creations.
+- **skills/skills/SKILL.md / skills/agents/SKILL.md:** creation flows now carry the same description-budget rule inline.
+
+---
+
+## v3.7.3 (2026-04-19)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Added
+- **provider-switch:** compatibility flags table added to SKILL.md — documents required `CLAUDE_ENABLE_BYTE_WATCHDOG=0` and `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` flags per provider
+- **provider-switch (Z.ai/GLM):** reference file now includes compatibility flags in documentation and alias template
+- **provider-switch (MiniMax):** reference file now includes compatibility flags in documentation and alias template
+- **provider-switch (Qwen/DashScope):** reference file now includes `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` in documentation and alias template
+
+### brewdoc / brewpage-publish
+#### Changed
+- **publish:** improved URL handling and verification flow
+
+---
+
+## v3.7.2 (2026-04-18)
+
+> Docs: [brewdoc:publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+### brewdoc
+#### Fixed
+- **publish (SITE):** strip trailing slash from `.link` returned by `/api/sites` — appending `/` routes to brewpage.app's own landing page instead of the uploaded site, and the JS redirect that rescues the no-slash form does not fire for the slash-dir form. URL is now stored and printed exactly as-is.
+- **publish (SITE):** output now includes an explicit warning not to append a trailing slash when sharing the URL.
+- **publish (SITE):** Notes clarified that `curl`-based verification is unreliable for SITE uploads (BrewPage landing serves a browser-only JS redirect) — use Playwright/browser_navigate or fetch `<url>/index.html` explicitly.
+
+---
+
+## v3.7.1 (2026-04-17)
+
+> Docs: [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [brewdoc skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [brewui skills](https://doc-claude.brewcode.app/brewui/skills/)
+
+### brewcode / brewdoc / brewtools / brewui
+#### Changed
+- **docs:** simplified H1 headings on all 48 skill/agent pages — name + optional 2–4 word subtitle, no invented slogans
+- **docs:** removed all Russian text (рецепт/рецепты/скиллы/субагенты) from every MDX page
+- **docs:** removed brewery metaphor (Recipe=Skill, Ingredients=KNOWLEDGE) from all doc rules and agent instructions
+
+---
+
+## v3.7.0 (2026-04-17)
+
+> Docs: [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [brewcode agents](https://doc-claude.brewcode.app/brewcode/agents/) | [brewtools skills](https://doc-claude.brewcode.app/brewtools/skills/) | [brewdoc skills](https://doc-claude.brewcode.app/brewdoc/skills/) | [brewui skills](https://doc-claude.brewcode.app/brewui/skills/)
+
+### brewcode / brewdoc / brewtools / brewui
+#### Changed
+- **docs:** full rewrite of all 45 legacy skill/agent MDX pages on the site to the new user-first etalon format. Every page now leads with one-line headline, Callout context, Quick reference table, When to use, Examples (≤8 line blocks), and a visual Flow timeline via `<Steps>`. All bash/code internals moved into collapsed `<details>` spoilers so new users get an onboarding-friendly surface while technical readers still have full reference on demand.
+- **docs:** standardized section ordering and cross-link `<CardGrid>` at the bottom of every page. Fixed MDX parser issues (brace/tilde/angle-bracket escaping) across the tree.
+
+---
+
+## v3.6.2 (2026-04-16)
+
+> Docs: skill-toggle | agent-toggle
+
+### brewtools
+#### Added
+- **skill-toggle / agent-toggle:** interactive flow when invoked without explicit args. Phase I1 asks op (`status`/`disable`/`enable`/`list`), Phase I2 prints the full catalog as a single space-separated line of `plugin:name` tokens for Ctrl+F search, Phase I3 resolves + confirms once only if ambiguous (fuzzy phrase, duplicate name), Phase I4 always ends with a current-status dump. Explicit commands (`disable brewui:image-gen`) skip the flow entirely.
+- **shared reference:** `brewtools/skills/_shared/toggle/interactive-flow.md` — full spec with decision matrix and anti-patterns, linked from both SKILL.md files.
+
+---
+
+## v3.6.1 (2026-04-16)
+
+> Docs: skill-toggle | agent-toggle
+
+### brewtools
+#### Fixed
+- **docs:** `skill-toggle` and `agent-toggle` MDX pages rewritten in English to match site language (v3.6.0 shipped them in Russian).
+
+---
+
+## v3.6.0 (2026-04-16)
+
+> Docs: skill-toggle | agent-toggle
+
+### brewtools
+#### Added
+- **skill-toggle:** disable/enable individual plugin skills by renaming `SKILL.md` ⇄ `_SKILL.md` in the plugin cache. Two-tier scope (global `$BT_PLUGIN_DATA/toggle-state.json` + project `<cwd>/.claude/brewtools/toggle-state.json`, project overrides global). Operations: `disable`, `enable`, `status`, `list`, `reapply`, `prune`. Addresses targets as `plugin:name` (e.g. `brewui:image-gen`).
+- **agent-toggle:** symmetric skill for agents — renames `<name>.md` ⇄ `_<name>.md` under `agents/`. Same operations and scope model.
+- **reapply-disables SessionStart hook:** re-applies disables on the latest plugin version after `claude plugin update` (new version dir ⇒ entry files reappear). Early-exit <500ms on empty state; reports drift (`plugin_not_installed`, `file_missing`) via `additionalContext`.
+- **shared toggle library:** `skills/_shared/toggle/{state,cache,apply}.mjs` — atomic tmp+rename state writes, semver-latest selection across all marketplaces, idempotent rename primitives.
+
+Workaround for upstream [#47747](https://github.com/anthropics/claude-code/issues/47747), [#22345](https://github.com/anthropics/claude-code/issues/22345) (no native per-skill/agent disable).
+
+---
+
+## v3.5.2 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Added
+- **provider-switch:** prompt caching documentation — new Spoiler section on docs page with provider support table, MiniMax verified cache pricing, cost comparison
+- **provider-switch:** MiniMax card badge `Prompt Cache` — verified Anthropic-style prompt caching with documented pricing, response fields, TTL
+- **provider-switch:** MiniMax reference file — added "Prompt Caching (Verified)" section: cache read $0.06/M (80% savings), write $0.375/M, TTL 5 min, min 512 tokens
+
+---
+
+## v3.5.1 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Fixed
+- **provider-switch:** detect-mode.sh — fuzzy typo matching before status fallback (`model-cehck` → `model-check`, `setuo` → `setup`, etc.)
+- **provider-switch:** model-check mode — all 5 diagnostic questions sent in single prompt; model answers itself, user sees only Q&A table + verdict
+
+---
+
+## v3.5.0 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch:** unified alias template — all providers now use `ANTHROPIC_AUTH_TOKEN` + `ANTHROPIC_API_KEY=""` (Bearer token + OAuth block). Z.ai switched from x-api-key to Bearer (verified both work)
+- **provider-switch:** new `verify` mode — tests all configured tokens against endpoints with HTTP status report
+- **provider-switch:** new `model-check` mode — 5 diagnostic questions to identify which model is responding (runs inside provider session)
+- **provider-switch:** Qwen Singapore region requirement — callout, step-by-step key generation, format validation (`sk-ws-` = wrong region)
+- **provider-switch:** updated docs — MDX page, skill README, plugin README with new modes and Qwen instructions
+
+---
+
+## v3.4.82 (2026-04-12)
+
+### brewtools
+#### Fixed
+- **provider-switch:** fixed all provider dashboard links — Z.ai: z.ai/subscribe, Qwen: bailian.console.alibabacloud.com, MiniMax: platform.minimax.io. All English, all verified in browser with Login/Sign Up buttons.
+
+---
+
+## v3.4.81 (2026-04-12)
+
+### docs
+#### Fixed
+- **Spoiler component:** tables inside collapsed Spoiler now have horizontal scroll on mobile (`overflow-x: auto`). Prevents wide tables from breaking page layout.
+
+---
+
+## v3.4.80 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch docs:** complete page redesign — marketing-first structure. Problem/solution hero, weekly timeline visualization, cost comparison cards, prominent alias showcase, 3-step setup, provider cards with sign-up links. Technical details collapsed in Spoiler. Mobile-optimized, 102 lines vs 163 before.
+
+---
+
+## v3.4.79 (2026-04-12)
+
+> Docs: [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Fixed
+- **docs audit:** added missing provider-switch to CLAUDE.md skills table, overview.mdx (card + command + architecture tree), fixed stale README version (3.4.73 → 3.4.78). All 5 doc levels now consistent: 8 skills, 3 agents across filesystem, README, navigation.ts, MDX, guide catalog.
+
+---
+
+## v3.4.78 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **provider-switch:** removed claude-max alias (unnecessary — open new terminal instead), no-dash alias names (claudeglm, claudeqwen, claudeminimax, claudeor), aliases launch claude automatically (one command), alias name customizable via AskUserQuestion during setup.
+- **docs:** updated README and MDX to reflect all alias changes across all doc levels.
+
+---
+
+## v3.4.77 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Changed
+- **docs:** provider-switch — single top model for all roles, updated OpenRouter model list (removed stale free models, added validated custom ID flow), corrected provider tables in README and MDX.
+
+---
+
+## v3.4.76 (2026-04-12)
+
+### brewtools
+#### Fixed
+- **provider-switch:** single top model for all 3 Claude Code roles (opus/sonnet/haiku). Never split across weaker models. GLM = glm-5.1 everywhere, Qwen = qwen3.6-plus[1m] everywhere, OpenRouter = one user-selected model everywhere.
+
+---
+
+## v3.4.75 (2026-04-12)
+
+### brewtools
+#### Added
+- **provider-switch:** hidden `update` mode for maintainer — spawns per-provider research agents, fetches latest models/pricing from official sources, diffs against current references, applies updates. Auto-sync frontmatter on all 5 provider reference files. Update protocol reference with per-provider sources and live test templates.
+
+---
+
+## v3.4.74 (2026-04-12)
+
+> Docs: [provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Added
+- **docs:** full documentation for `/brewtools:provider-switch` — skill README, Astro MDX page, navigation.ts entry, plugin README row, guide catalog row. Quorum-reviewed (3 agents, 11 findings, 4 confirmed + fixed).
+
+---
+
+## v3.4.73 (2026-04-12)
+
+> Docs: [brewtools:provider-switch](https://doc-claude.brewcode.app/brewtools/skills/provider-switch/)
+
+### brewtools
+#### Added
+- **provider-switch skill:** new skill `/brewtools:provider-switch` — configure Claude Code alternative API providers (Z.ai/GLM, Qwen/DashScope, MiniMax, OpenRouter). Interactive setup via AskUserQuestion: language selection (EN/RU/PT), provider selection, API key input, model selection for OpenRouter. Creates isolated shell aliases in ~/.zshrc with backup. Modes: status, setup, help, provider-specific. 6 reference files + 3 scripts.
+
+### brewcode
+#### Changed
+- **agents:** added protected-path v3.4.70 warnings to agent-creator, hook-creator, skill-creator agents — document Write restrictions for `~/.claude/*` paths.
+
+---
+
+## v3.4.72 (2026-04-11)
+
+> Docs: [getting-started](https://doc-claude.brewcode.app/) | [installation](https://doc-claude.brewcode.app/installation/) | [quickstart](https://doc-claude.brewcode.app/quickstart/)
+
+### docs
+#### Fixed
+- **external link targeting:** Added `rehype-external-links` plugin to `astro.config.mjs` — all markdown/MDX links with absolute `http(s)://` URLs now automatically get `target="_blank" rel="noopener noreferrer"`. Internal relative links (`/path/`) open in the same tab.
+- **Card.astro link targeting:** Overlay (`absolute inset-0`) and title `<a>` now detect external hrefs via `/^https?:\/\//` and apply `target="_blank" rel="noopener noreferrer"` only when the href points to a different domain. Internal hrefs open in the same tab.
+
+---
+
+## v3.4.71 (2026-04-11)
+
+> Docs: [getting-started](https://doc-claude.brewcode.app/) | [installation](https://doc-claude.brewcode.app/installation/)
+
+### docs
+#### Fixed
+- **Card broken layout:** `Card.astro` rendered as `<a>` when `href` is set, causing nested `<a>` tags when slot content contained markdown links. Browser closed outer anchor early — card icon/title separated from description and content leaked outside the card. Fixed with stretched-link overlay pattern: card is now always a `div`; an `absolute inset-0 z-0` anchor covers the full card surface; slot content gets `relative z-[1]` so inner links intercept clicks correctly.
+- **getting-started, installation:** restored inline links (`setup`, `spec`, `plan`, `start`) inside Quick Start card — they were the trigger for the layout bug but are correct content; fix is in the component, not the content.
+
+---
+
+## v3.4.70 (2026-04-11)
+
+> Docs: [brewdoc:my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/) | brewdoc:guide | brewdoc:auto-sync
+
+### brewdoc
+#### Fixed
+- **hook parity:** `brewdoc/hooks/pre-task.mjs` now injects `BD_PLUGIN_DATA=${CLAUDE_PLUGIN_DATA}` into subagent prompts, matching the pattern already used by brewcode/brewtools/brewui hooks. Previously brewdoc only exposed `BD_PLUGIN_ROOT`, breaking parity.
+- **skill outputs migrated to project-relative paths:** `/brewdoc:my-claude`, `/brewdoc:guide`, and `/brewdoc:auto-sync` now write to `.claude/brewdoc/` and `.claude/auto-sync/` inside the target project instead of `~/.claude/brewdoc/` / `~/.claude/auto-sync/`. Reason: Claude Code's protected-path policy blocks Write to `~/.claude/*` in every permission mode, including `bypassPermissions`. The hook-based permission layer runs AFTER the protected-path check, so no whitelist can override it. Verified empirically in headless `claude -p`.
+- **legacy read-only fallback:** my-claude documents a one-shot merge from `~/.claude/brewdoc/INDEX.jsonl` into the new project INDEX when the new location is empty. Legacy file is never written.
+- **guide progress path:** `brewdoc/skills/guide/scripts/progress.sh` now prefers `${CLAUDE_PROJECT_DIR:-.}/.claude/brewdoc/guide-progress.json` and falls back to `${BD_PLUGIN_DATA:-$HOME/.claude/brewdoc}/guide-progress.json` only when the project dir is not writable.
+
+### brewcode
+#### Changed
+- **permission-guard.sh whitelist:** project-local `.claude/brewdoc/` and `.claude/auto-sync/` added to both the `is_allowed_path()` helper (Bash tool) and the Edit/Write/MultiEdit case statement, mirroring the existing pattern for `.claude/tasks/`, `.claude/reports/`, etc.
+
+### Known limitation
+- `$CLAUDE_PLUGIN_DATA` (persistent plugin-state directory, `~/.claude/plugins/data/<plugin-id>/`) is **not usable as a Write target in headless `claude -p`** due to the harness protected-path policy. PermissionRequest hooks cannot override — the check happens earlier in the pipeline. Until Anthropic relaxes this for `~/.claude/plugins/data/`, all skill outputs must target project-relative paths. Workaround documented per-skill; feedback filed upstream.
+
+---
+
+## v3.4.69 (2026-04-11)
+
+> Docs: [brewdoc:my-claude](https://doc-claude.brewcode.app/brewdoc/skills/my-claude/)
+
+### brewdoc
+#### Changed
+- **my-claude:** repositioned as extended alternative to built-in `/team-onboarding` (new in Claude Code 2.1.101). Added "vs /team-onboarding" section, updated description to emphasize web research, EXTERNAL/RESEARCH modes, and citation tracking.
+
+### Compatibility
+- **Claude Code 2.1.101:** verified — subagent MCP tool inheritance fix benefits `bc-coordinator` and other Task-spawned agents (none of our agents currently reference MCP tools directly, so no silent regressions). `context: fork` skills (`brewcode:setup`, `brewcode:teardown`) confirmed — neither declares an `agent:` field, so the 2.1.101 frontmatter fix is a no-op for us. Settings resilience to unknown hook events benefits users running older vs newer Claude Code versions.
+- **Claude Code 2.1.98:** Bash permission hardening verified compatible — all skills use plain compound patterns (`cmd && echo "✅" || echo "❌"`), no env-var prefix bypasses, no `/dev/tcp/` redirects, no backslash-escaped flags.
+- **Monitor tool (2.1.98):** evaluated as simplification opportunity for `brewcode:start` polling loop. Deferred — current flow uses single-pass `bc-coordinator` delegation, not polling, so Monitor doesn't cleanly replace existing logic.
+
+---
+
+## v3.4.68 (2026-04-11)
+
+> Docs: [review (dynamic)](https://doc-claude.brewcode.app/brewcode/skills/review/) | setup | debate
+
+### docs
+#### Added
+- **New page: `/brewcode/skills/review/` — the dynamic per-project review skill.** Until now this skill was mentioned but undocumented on the site (because it's generated into each target project by `/brewcode:setup`, not shipped with the plugin). New page covers: overview and clean distinction vs `/brewcode:standards-review`; full 7-phase pipeline (codebase study → group formation → parallel review → quorum collection → DoubleCheck → optional Critic + DoubleCheck-Critic → report); parameter reference (`-q N-M`, `-q G-N-M`, `-c/--critic`, default `-q 3-2`); quorum semantics (±5 line tolerance, ≥0.6 semantic similarity, merge rules); generation flow (Phase 3.5 of setup, 8 template placeholders, output in `.claude/skills/brewcode-review/`); tech-specific check tabs for Java/Spring, Node/TS, Python, Go; cross-links to setup, standards-review, reviewer agent, and brewtools/debate `--review` flag.
+- **Navigation:** `review (dynamic)` added to the Brewcode → Skills sidebar as a 14th entry under standards-review.
+- **Cross-links added:** quickstart.mdx (Project setup Result list → `/brewcode/skills/review/`), brewcode/skills/setup.mdx (Phase 4 Templates table + Verification table row), brewcode/skills.mdx (summary table adds a ★ "review (dynamic)" row + card + description paragraph), brewtools/skills/debate.mdx (Phase 8 bullet and `--review` flag table entry now link to the new page).
+
+---
+
+## v3.4.67 (2026-04-11)
+
+> Docs: [doc site](https://doc-claude.brewcode.app/)
+
+### docs
+#### Added
+- **Cross-entity linking across the whole site.** Ran five parallel agents over the MDX content to convert plain-text skill/agent mentions into active Markdown links, including cross-plugin references (e.g. brewdoc `my-claude` → brewcode `reviewer` agent, brewtools `deploy` → `deploy-admin` agent + `ssh` skill, brewui `glm-design-to-code` reviews → agents). Roughly **80 new links across 37 MDX files**, covering every plugin's overview/skills/agents pages plus Getting Started / Installation / Quickstart / FAQ. Rules: first occurrence per H2 section, never inside code fences, never self-linking. Link style is plain Markdown — Tailwind prose handles hover underline, no custom classes or colors.
+- **Broken-link sweep:** full dist HTML scanned — 0 broken internal links out of 63 unique URLs.
+
+#### Fixed
+- **`/brewcode:review` vs `/brewcode:standards-review` disambiguation.** `/brewcode:review` is a **per-project dynamic skill** created by `/brewcode:setup`, not a static page. One sub-agent incorrectly linked it to a non-existent `/brewcode/skills/review/` URL. Reverted all `/brewcode:review` mentions to plain inline code (no link) in `brewtools/skills/debate.mdx` and `brewcode/skills/setup.mdx`.
+
+---
+
+## v3.4.66 (2026-04-11)
+
+### docs
+#### Changed
+- **Search ranking — body downweighted to 0.2.** v3.4.65 boosted titles via weight 10 + 30× duplication, but BM25 TF-saturation capped the score so pages with dozens of body mentions of common words ("start", "spec") still out-ranked the actual skill pages. Added a `data-pagefind-weight="0.2"` wrapper around the whole article slot (via `display: contents` div so prose layout is unchanged). Net effect: title boost is ~50× stronger than body prose, which lets `/brewcode/skills/start/`, `/brewcode/skills/spec/` etc. beat pages that mention those words many times.
+
+---
+
+## v3.4.65 (2026-04-11)
+
+### docs
+#### Fixed
+- **Search result labels corrupted by title-boost span.** v3.4.63's title boost used `data-pagefind-meta="title"` on the duplicated span, which told Pagefind "this element IS the page title" — so result labels showed as `"Agent Creator Agent Creator Agent Creator …"` 10×. Removed the `meta` attribute; Pagefind now falls back to the `<h1>` heading for the real title. Bumped title duplicates from 10× to 30× to further push BM25 term-frequency on title-matching queries.
+
+---
+
+## v3.4.64 (2026-04-11)
+
+> Docs: [Quickstart](https://doc-claude.brewcode.app/quickstart/) | [Brewdoc Skills](https://doc-claude.brewcode.app/brewdoc/skills/)
+
+### docs
+#### Fixed
+- **Steps component — nested list numbering corruption.** `Steps.astro` used `.steps-timeline :global(li)` which matched **every** descendant `<li>`, so any `<ul>`/`<ol>` inside a step body (e.g. the "Result: file list" in Quickstart Step 1) was treated as a continuation step — complete with circle counter, timeline bar, and broken grid layout. Rewrote the selector to direct-child only (`:global(.steps-timeline > li)`), explicitly restored `list-style: disc/decimal` + `display: list-item` for nested `ul`/`ol`/`li`, and added counter-reset so only top-level steps increment. Quickstart timeline now renders cleanly: "1 Project setup" with a bulleted file list inside, no fake steps 2–5.
+- **Steps grid layout** — title and body paragraph selectors tightened to direct children so nested prose keeps normal prose styling.
+
+#### Changed
+- **Brewdoc sidebar structure aligned with other plugins.** Brewdoc skill pages previously lived flat under `/brewdoc/<skill>/` (auto-sync, my-claude, memory, md-to-pdf, publish, guide), while brewcode/brewtools/brewui use `/<plugin>/skills/<skill>/` with a dedicated **Skills** sidebar group. Moved all 6 brewdoc skill pages into `content/docs/brewdoc/skills/`, added `brewdoc/skills.mdx` index page, updated `navigation.ts` to use a `Skills` children group, fixed 15+ internal links in `brewdoc/overview.mdx` and cross-page cards. All 65 pages build clean.
+
+### rules
+#### Added
+- `.claude/rules/astro-avoid.md` — four new rules (#8–#10) covering Steps component nesting semantics, the direct-child selector fix history, and the plugin-skills directory convention. Agents editing MDX will pick them up via the `web/**/*.mdx` path glob.
+
+---
+
+## v3.4.63 (2026-04-11)
+
+> Docs: [Introduction](https://doc-claude.brewcode.app/getting-started/)
+
+### docs
+#### Changed
+- **Search ranking — title boost amplified to ~100×:** v3.4.62 added `data-pagefind-weight="10"` on a single sr-only title element, but Pagefind's max weight (10) + one heading match still lost to pages with many body mentions of the same word. Verified on live site: `"start"` put the actual `/brewcode:start` skill page at rank 7, behind Agent Creator, Hook Creator, Guide, etc. Fix: duplicate the page title 10× inside the weighted sr-only element (`{Array(10).fill(title).join(' ')}`), yielding an effective ~100× BM25 boost. Title-matching pages should now consistently rank first.
+
+## v3.4.62 (2026-04-11)
+
+> Docs: [Introduction](https://doc-claude.brewcode.app/getting-started/)
+
+### docs
+#### Changed
+- **Search ranking — titles boosted 10×:** Pagefind previously ranked pages by raw BM25 across body content, so typing `"start"` surfaced every page that mentioned "start" in prose before the actual `/brewcode:start` skill page. Added an `sr-only` element inside `<article data-pagefind-body>` in `DocsLayout.astro` with `data-pagefind-weight="10"` and `data-pagefind-meta="title"` holding the page title. Result: page whose title matches the query ranks above body-only hits. Verified test cases: `start`, `plan`, `debate`, `image` all surface their respective skill/agent pages first.
+
+---
+
+## v3.4.61 (2026-04-11)
+
+> Docs: [Introduction](https://doc-claude.brewcode.app/getting-started/) | [Quickstart](https://doc-claude.brewcode.app/quickstart/)
+
+### docs
+#### Fixed
+- **Card icons:** `<Card icon="image">`, `<Card icon="plus">`, and `<Card icon="warning">` rendered the literal words "image", "plus", "warning" in the UI (visible on the Introduction page for `brewui`), because `Card.astro`'s `iconMap` was a strict whitelist that fell through to `rawIcon` on miss. Root cause + remediation:
+  - Extended `iconMap` to 65 entries — added `image 🖼️`, `plus ➕`, `warning ⚠️`, plus 30 more common icons (bell, bolt, bug, calendar, clock, cloud, database, gear, globe, graph, hammer, key, label, magic, megaphone, note, phone, pin, refresh, robot, scroll, shieldCheck, ship, target, test, tool, trophy, zap, …) so future pages have breathing room.
+  - Unknown icon names now render a **deterministic fallback** (hash → stable pick from the map) **and** log `console.warn` in build + browser, instead of leaking raw text into prose. A missing icon is visible and noisy without breaking the page.
+  - Verified by independent re-scan: 38/38 icon names used across content are now present in `iconMap` — zero missing.
+
+### rules
+#### Added
+- `.claude/rules/astro-avoid.md#5,#6,#7` — new path-scoped rules (now covering `web/**/*.mdx`) that explicitly forbid unlisted `Card` icons and raw exotic emoji in MDX, and require adding to `iconMap` before use. Agents touching Astro/MDX pages will pick this up automatically via the glob.
+
+---
+
+## v3.4.60 (2026-04-11)
+
+> Docs: [doc site](https://doc-claude.brewcode.app/)
+
+### docs
+#### Changed
+- **Search highlights:** Pagefind default `<mark>` background was saturated browser-yellow, visually harsh against the dark theme. Overridden in `<style is:global>` to `oklch(var(--p) / 0.22)` — soft DaisyUI primary tint, inherit text color, 2px padding + radius. Stays on-brand and legible without shouting.
+
+---
+
+## v3.4.59 (2026-04-11)
+
+> Docs: [Introduction](https://doc-claude.brewcode.app/getting-started/)
+
+### docs
+#### Changed
+- **Introduction page:** restructured to lead with the pitch, not the install command. Install prompt moved into a prominent `<Spoiler title="📦 How to install Brewcode — click to expand install instructions">` block below the feature cards and plugin matrix, so first-time readers see "what is this" before "how to set it up". Added a "Four plugins, one suite" card grid as the headline section; refreshed counts to 28 skills / 18 agents.
+
+---
+
+## v3.4.58 (2026-04-11)
+
+> Docs: [doc site](https://doc-claude.brewcode.app/)
+
+### docs
+#### Fixed
+- **Search styling:** Pagefind UI was rendering raw/unstyled (browser-default input outline, bare "Clear" button, no result separators) because `@pagefind/default-ui/css/ui.css` was never imported. Added explicit `import '@pagefind/default-ui/css/ui.css'` in `Search.astro` script so Vite bundles the stylesheet; DaisyUI token overrides in `<style is:global>` still apply on top.
+- **Header logo wrap on mobile:** DaisyUI `.btn` defaults to `flex-wrap: wrap`, so "Brewcode Docs" text wrapped under the logo image on narrow viewports, pushing the whole header onto two rows. Added `flex-nowrap whitespace-nowrap min-w-0` + `shrink-0` on logo img + `truncate` on label; also `min-w-0` on the flex-1 Logo wrapper in `Header.astro` so child can shrink.
+
+---
+
+## v3.4.57 (2026-04-11)
+
+> Docs: [doc site](https://doc-claude.brewcode.app/)
+
+### docs
+#### Fixed
+- **Search:** docs search was completely non-functional — `Search.astro` listened only to `astro:page-load`, but the project does not enable Astro ViewTransitions, so neither PagefindUI nor button/shortcut handlers ever initialized. Rewrote client init to use `DOMContentLoaded`/immediate branch, split button listeners from the lazy `@pagefind/default-ui` import so clicks work before Pagefind loads, and added a `processTerm` query normalizer (lowercase, strip diacritics, strip punctuation, collapse whitespace) so `"GLM-design, to code!"` matches `"glm design to code"`. Cmd/Ctrl+K toggle and Escape close restored.
+- **Search CSS:** switched Pagefind CSS variables to DaisyUI `oklch(var(--p/--bc/--b2/--b3))` tokens and added `--pagefind-ui-scale: 0.9` below 640px for mobile modal sizing.
+- **GitHubBadge mobile:** star badge was hidden entirely on `<640px` (`hidden sm:inline-flex`). Added a compact mobile variant (`inline-flex sm:hidden`) with the GitHub Octocat icon + star count, tappable to the repo. A single `fetch` now updates both desktop and mobile counters.
+
+---
+
+## v3.4.56 (2026-04-10)
+
+> Docs: [FAQ](https://doc-claude.brewcode.app/faq/)
+
+### docs
+#### Fixed
+- **FAQ:** restored right-side Table of Contents for spoiler-only layout. New `tocItems` frontmatter field on docs schema lets pages declare TOC entries explicitly when content uses components instead of markdown headings; merged into `[...id].astro` heading list. FAQ now lists 8 questions in TOC, each anchor opens the matching `<Spoiler>` automatically.
+
+#### Changed
+- **Spoiler component:** accepts `id` prop, rendered on the `<details>` element. Auto-open script simplified — hash directly targets the spoiler element, scrolls into view smoothly, works via `DOMContentLoaded` fallback (project does not enable Astro ViewTransitions).
+- **TableOfContents:** IntersectionObserver now also watches `details.spoiler[id]` so the active TOC item highlights as users scroll past spoilers.
+- **FAQ:** removed `## Question` markdown headings — questions live solely in `<Spoiler title="...">`. Cleaner layout, no duplicated text above each spoiler.
+
+---
+
+## v3.4.55 (2026-04-10)
+
+> Docs: [FAQ](https://doc-claude.brewcode.app/faq/) | [installation](https://doc-claude.brewcode.app/installation/) | [brewcode overview](https://doc-claude.brewcode.app/brewcode/overview/) | [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/) | [brewdoc overview](https://doc-claude.brewcode.app/brewdoc/overview/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/) | [brewui overview](https://doc-claude.brewcode.app/brewui/overview/)
+
+### docs
+#### Added
+- **FAQ:** new spoiler "My install is too old — the skill isn't available" with bootstrap prompt for very old installs. First question now leads with the skill (Callout) and falls back to the prompt block. Every skill mention is an active link to its doc page.
+
+#### Changed
+- **FAQ:** "Shortcut" prose lines extracted into green `<Callout type="tip">` blocks pointing to `/brewtools:plugin-update`. Install/update prompts now have explanatory intro and post-install Callout pointing to the skill.
+- **installation:** `/brewcode:setup` and `/brewtools:plugin-update` mentions converted to active links to their skill pages.
+- **brewcode/overview:** Card and Tab content links `/brewcode:setup`, `/brewcode:start`, `/brewcode:standards-review`, `/brewcode:teams` to skill pages.
+- **brewcode/skills:** summary table — both the `Skill` and `Command` columns are now links to the per-skill page.
+- **brewdoc/overview, brewtools/overview, brewui/overview:** Commands tables — every skill cell is an active link.
+
+---
+
+## v3.4.54 (2026-04-10)
+
+> Docs: guide | [FAQ](https://doc-claude.brewcode.app/faq/)
+
+### brewdoc
+#### Changed
+- **guide:** refresh reference topics to current suite state — 4 plugins, 28 skills, 18 agents. Added `/brewtools:plugin-update` row to skills catalog, hooks subsection listing all 12 shipped hooks in `topic-customization.md`, renamed "Three Plugins Overview" → "Four Plugins Overview" across SKILL.md, welcome menu, overview/installation/agents-catalog/skills-catalog topic files. Fixed stale counts: Brewtools Skills (6 → 7), Plugin Agents (17 → 18), Skills Catalog menu (27 → 28).
+- **guide README:** updated descriptions to include brewui, corrected skill/agent counts.
+
+### docs
+#### Added
+- **Spoiler component:** collapsible `<details>`-based spoiler with animated chevron, hover state, and accessible focus outline — usable in any MDX page.
+- **FAQ page:** all 7 questions wrapped in collapsed spoilers so users can scan titles and expand only what they need. Added intro hint "Click any question to expand the answer."
+
+#### Changed
+- **brewdoc/guide page:** synced with skill changes — "Four Plugins Overview", all 4 plugins, all 28 skills, all 18 agents.
+
+---
+
+## v3.4.53 (2026-04-10)
+
+> Docs: [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [brewtools overview](https://doc-claude.brewcode.app/brewtools/overview/)
+
+### brewtools
+#### Added
+- **plugin-update:** skill-level `README.md` with Quick Start, Modes, Examples, Discovery Method, Tips.
+
+#### Changed
+- **README.md:** refresh skills table (3 → 7 entries), agents table (1 → 3), architecture tree, quick start, docs links, header tagline, stats.
+
+### docs
+#### Changed
+- **brewtools/skills/plugin-update:** expanded page — accurate 6-phase Steps flow, full `Quick reference`, status-table example, Troubleshooting table, embedded `InstallPrompt` update prompt, explicit reload Callout, warning about non-existent `claude plugin list` CLI.
+- **brewtools/overview:** add plugin-update card to skills grid, Commands table row, architecture tree entry.
+
+---
+
+## v3.4.52 (2026-04-10)
+
+> Docs: [plugin-update](https://doc-claude.brewcode.app/brewtools/skills/plugin-update/) | [FAQ](https://doc-claude.brewcode.app/faq/) | [installation](https://doc-claude.brewcode.app/installation/) | guide
+
+### brewtools
+#### Added
+- **plugin-update:** new skill — checks installed plugins, installs missing brewcode plugins, updates outdated ones, reports versions. Interactive (default) or args `check|update|all`. Uses filesystem discovery (not `claude plugin list`, which does not exist).
+
+### brewdoc
+#### Changed
+- **guide:** Phase 0.5 plugin freshness check — offers to update outdated/missing brewcode plugins before starting the guide.
+
+### docs
+#### Added
+- **FAQ:** new page answering top install/update questions with copy-paste prompts
+- **Header:** FAQ button between Search and GitHub badge
+- **InstallPrompt component:** shared MDX component rendering coercive install/update prompts on every plugin overview and installation page
+- **UpdateNotice component:** footer callout on every skill page pointing to `/brewtools:plugin-update`
+
+#### Changed
+- **installation:** promote Updating section, add Callouts, tag `--plugin-dir` as developers-only
+
+### README
+#### Added
+- **Install in 30 seconds:** copyable install/update prompts at top of root README and each per-plugin README
+- Fix missing `brewui` row and update skill counts
+
+### 🔄 How to update brewcode plugins
+
+Paste this prompt into a Claude Code session (it forces Claude to run the full command chain):
+
+~~~
+Execute these commands in this session, one by one, show full output for each, do not skip any:
+
+1. claude plugin marketplace update claude-brewcode
+2. claude plugin update brewcode@claude-brewcode
+3. claude plugin update brewdoc@claude-brewcode
+4. claude plugin update brewtools@claude-brewcode
+5. claude plugin update brewui@claude-brewcode
+
+After all 5 commands succeed, run `/reload-plugins` (or type `exit` then `claude` to restart). Do not summarize — run the commands now.
+~~~
+
+Or, if brewtools is already installed, just run `/brewtools:plugin-update`.
+
+---
+
+## v3.4.51 (2026-04-09)
+
+> Docs: [e2e](https://doc-claude.brewcode.app/brewcode/skills/e2e/)
+
+### docs
+#### Fixed
+- **e2e page:** timeline (Steps) broken — replaced markdown numbered lists with explicit JSX `<li>` elements
+
+---
+
+## v3.4.50 (2026-04-09)
+
+> Docs: debate | [brewtools](https://doc-claude.brewcode.app/brewtools/overview/) | [brewcode skills](https://doc-claude.brewcode.app/brewcode/skills/)
+
+### brewcode
+#### Changed
+- **skills:** moved debate to brewtools plugin (13 skills remaining)
+- **docs:** removed all "moved" stub pages (10 files deleted)
+
+### brewtools
+#### Added
+- **skills:** debate — multi-agent evidence-based debate orchestrator (moved from brewcode, now 6 skills)
+
+### docs
+#### Added
+- **all pages:** GitHub link cards on all 60 doc pages (Latest Release + View on GitHub)
+- **overview pages:** installation guide quick-reference cards
+#### Changed
+- **navigation:** cleaned up all "(Moved)" entries
+- **all pages:** updated plugin counts to 4 plugins, 27 skills, 17 agents
+- **guide:** updated to cover all 4 plugins including brewui
+#### Fixed
+- **license:** corrected author name to Maksim Kochetkov
+- **debate:** fixed /brewtools:review → /brewcode:review references
+- **imports:** removed all unused MDX component imports
+
+---
+
+## v3.4.49 (2026-04-08)
+
+> Docs: brewui image-gen
+
+### brewui
+#### Changed
+- **image-gen:** unified anti-slop strategy — merged forbidden patterns, story-first methodology, and style constraints into a single `anti-slop.md` reference
+
+---
+
+## v3.4.48 (2026-04-07)
+
+> Docs: [brewcode](https://doc-claude.brewcode.app/brewcode/overview/)
+
+### brewui
+#### Changed
+- **docs:** added copyright notice © 2026 to docs site footer
+
+---
+
+## v3.4.47 (2026-04-07)
+
+> Docs: [brewtools ssh](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [brewtools deploy](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | brewui glm-design-to-code | [brewtools ssh-admin](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | [brewtools deploy-admin](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/) | brewui glm-openrouter-specialist | brewui glm-zai-specialist
+
+### brewcode
+#### Changed
+- **skills:** moved `glm-design-to-code` to brewui plugin (visual/creative tools)
+- **skills:** moved `ssh` and `deploy` to brewtools plugin (universal utilities)
+- **agents:** moved `glm-openrouter-specialist` and `glm-zai-specialist` to brewui
+- **agents:** moved `ssh-admin` and `deploy-admin` to brewtools
+- **docs:** old brewcode pages replaced with redirect stubs pointing to new locations
+
+### brewtools
+#### Added
+- **skills:** `ssh` -- SSH server management (moved from brewcode)
+- **skills:** `deploy` -- GitHub Actions deployment (moved from brewcode)
+- **agents:** `ssh-admin` -- SSH server administrator (moved from brewcode)
+- **agents:** `deploy-admin` -- GitHub Actions administrator (moved from brewcode)
+- **hooks:** `pre-task.mjs` -- injects `BT_PLUGIN_ROOT` into subagent prompts
+
+### brewui
+#### Added
+- **skills:** `glm-design-to-code` -- GLM vision design-to-code (moved from brewcode)
+- **agents:** `glm-openrouter-specialist` -- OpenRouter API routing (moved from brewcode)
+- **agents:** `glm-zai-specialist` -- Z.ai GLM API expert (moved from brewcode)
+- **hooks:** `pre-task.mjs` -- injects `BU_PLUGIN_ROOT` into subagent prompts
+
+---
+
+## v3.4.46 (2026-04-07)
+
+> Docs: [deploy skill](https://doc-claude.brewcode.app/brewtools/skills/deploy/) | [deploy-admin agent](https://doc-claude.brewcode.app/brewtools/agents/deploy-admin/)
+
+### brewcode
+#### Added
+- **deploy skill:** GitHub Actions deployment -- workflows, releases, GHCR, CI/CD with safety gates
+- **deploy skill:** 6 modes: setup, create, release, deploy, monitor, update-agent
+- **deploy skill:** 4 scripts: detect-mode, gh-env-check, workflow-discover, deploy-local-ops (CLAUDE.local.md CRUD)
+- **deploy skill:** Safety classification: READ/CREATE (free), MODIFY/SERVICE (confirm), DELETE/PRIVILEGE (always confirm)
+- **deploy skill:** 4 workflow templates: Build+Push GHCR, Deploy VPS, Release, Security Scan
+- **deploy skill:** CLAUDE.local.md GitHub Config + Workflows sections (coexists with SSH sections)
+- **deploy skill:** Dynamic deploy-admin agent generation from template with live workflow data
+- **deploy skill:** SSH skill integration for VPS deploy targets and health checks
+- **deploy-admin agent:** GitHub Actions and deployment agent with live workflow inventory, release flow, Docker/GHCR patterns
+
+---
+
+## v3.4.45 (2026-04-07)
+
+> Docs: image-gen
+
+### brewui
+#### Changed
+- **image-gen:** Z.ai provider upgraded from CogView-4 to GLM-image (flagship model, top-tier quality, same $0.015/image)
+- **image-gen:** Z.ai endpoint migrated from `open.bigmodel.cn` to `api.z.ai`
+- **image-gen:** Default Z.ai size updated to 1280x1280 with custom size support (512-2048px, multiples of 32)
+- **image-gen:** Docs page updated with GLM-image promotional badge and Z.ai docs link
+
+---
+
+## v3.4.44 (2026-04-07)
+
+> Docs: [ssh skill](https://doc-claude.brewcode.app/brewtools/skills/ssh/) | [ssh-admin agent](https://doc-claude.brewcode.app/brewtools/agents/ssh-admin/) | image-gen
+
+### brewcode
+#### Added
+- **ssh skill:** Remote server management -- connect, configure, deploy, administer Linux servers with safety gates
+- **ssh skill:** 5 modes: setup, connect, configure, execute, update-agent
+- **ssh skill:** 4 scripts: detect-mode, ssh-env-check, server-discover, claude-local-ops (CLAUDE.local.md CRUD)
+- **ssh skill:** Safety classification: READ/CREATE (free), MODIFY/SERVICE (confirm), DELETE/PRIVILEGE (always confirm)
+- **ssh skill:** Server auto-discovery: OS, kernel, Docker, containers, disks, services, ports
+- **ssh skill:** CLAUDE.local.md persistent config (gitignored) with server inventory
+- **ssh skill:** Dynamic ssh-admin agent generation from template with live server data
+- **ssh skill:** Robustness: fail-fast, loop protection (max retries), timeouts, manual fallback strategy
+- **ssh-admin agent:** Linux server administrator -- SSH, Docker, Compose, systemd, Caddy/Nginx, security hardening
+
+### brewui
+#### Changed
+- **image-gen:** Added Brewpage publish tip for remote/headless image viewing
+
+---
+
+## v3.4.43 (2026-04-07)
+
+> Docs: [brewui overview](https://doc-claude.brewcode.app/brewui/overview/) | image-gen
+
+### brewui (NEW PLUGIN)
+#### Added
+- **brewui plugin:** New plugin for UI/visual/creative tools
+- **image-gen:** AI image generation via 5 providers (Gemini Imagen 4, OpenRouter Gemini 2.5 Flash, OpenRouter GPT-5, Z.ai CogView-4, OpenAI DALL-E 3)
+- **anti-slop:** Style-aware prompt engineering (photo, illustration, art)
+- **multi-mode:** generate, edit, config, update
+
+---
+
+## v3.4.42 (2026-04-06)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+### brewdoc
+#### Added
+- **publish:** Multi-file site upload support — directories and ZIP archives via `/api/sites` endpoint
+- **publish:** `--entry <filename>` argument for custom entry point override
+- **publish:** SITE content type with auto-detection (directory → ZIP + upload, `.zip` → direct upload)
+- **publish:** Entry file auto-detection: `--entry` flag > `index.html` > first `.html` alphabetically
+- **publish:** Site pre-publish stats showing file count, total size, and detected entry file
+- **publish:** History table extended with Type column (`html`, `json`, `file`, `site (N files)`)
+
+---
+
+## v3.4.41 (2026-04-06)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+### brewdoc
+#### Changed
+- **publish:** Reverted model from sonnet back to haiku for publish skill
+
+---
+
+## v3.4.39 (2026-04-06)
+
+> Docs: [publish](https://doc-claude.brewcode.app/brewdoc/skills/publish/)
+
+### brewdoc
+#### Changed
+- **publish:** Atomic token handling — ownerToken never in conversation output, saved directly to history file
+- **publish:** Namespace auto-suggestion generates meaningful slugs from content context (e.g. `api-docs`, `pricing`)
+
+---
+
+## v3.4.37 (2026-04-06)
+
+> Docs: [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [hooks](https://doc-claude.brewcode.app/brewcode/hooks/) | [agents](https://doc-claude.brewcode.app/brewcode/agents/) | auto-sync
+
+### brewcode
+#### Fixed
+- **agents:** Added `*_PLUGIN_ROOT` guard to `glm-zai-specialist`, `glm-openrouter-specialist`, `bc-coordinator` — stop with clear error if plugin root missing from prompt context
+- **docs:** CLAUDE.md Architecture table — matcher updated to `PreToolUse:Task|Agent`
+
+#### Changed
+- **rules:** `best-practice.md` — added release docs links requirement (#8), autonomous release flow (#9), plugin root guard pattern (#10)
+- **release process:** CLAUDE.md Version Sync — autonomous commit/push/deploy, mandatory `> Docs:` links in RELEASE-NOTES.md
+
+### brewdoc
+#### Fixed
+- **agents:** Added `BD_PLUGIN_ROOT` guard to `bd-auto-sync-processor` — stop with clear error if plugin root missing
+
+---
+
+## v3.4.36 (2026-04-06)
+
+> Docs: [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [hooks](https://doc-claude.brewcode.app/brewcode/hooks/)
+
+### brewcode
+#### Fixed
+- **hooks:** `hooks.json` matcher `"Task"` changed to `"Task|Agent"` — pre-task.mjs and post-task.mjs now fire on Agent tool calls (renamed from Task in Claude Code ~v2.1.63)
+- **teams:** Agent template `agent-template.md` — trace-ops.sh calls made optional (1 attempt max, skip silently on failure). Agents no longer hang when `BC_PLUGIN_ROOT` is unavailable as shell env var
+- **teams:** `BC_PLUGIN_ROOT` usage clarified as prompt-injected plain text, not shell env var — agents instructed to read value from prompt context and substitute literally
+
+---
+
+## v3.4.35 (2026-04-06)
+
+> Docs: [teams](https://doc-claude.brewcode.app/brewcode/skills/teams-setup/) | [skills](https://doc-claude.brewcode.app/brewcode/skills/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/) | guide
+
+### brewcode
+#### Changed
+- **teams:** Added Review and Fix Pipeline (C5-C9) after agent creation — 3 parallel quorum reviewers, 2/3 consensus filter, verification, fix critical/important issues, re-verify with max 2 retry cycles. Flags: `--skip-review`, `--review`
+
+### docs
+#### Changed
+- **skills overview:** Added Lifecycle timeline, Skill Management cross-refs, Independent Skills cards
+- **skills skill:** Removed large bash scripts, added Cards for modes, Steps for 7-phase workflow, Tabs for details
+- **skill-creator:** Added CardGrid for Skill Anatomy and Design Patterns, Steps for creation process, See Also cross-refs
+- **guide:** Fixed Steps div wrappers, added domain CardGrid, Steps for How It Works flow
+- **publish:** Fixed Steps div wrappers
+- **Card component:** Extended iconMap with heart, money, library, fire, handshake, rocket, package
+- **all pages:** Replaced raw emoji hex codes with named icons across getting-started, quickstart, installation, debate
+
+#### Added
+- **README sync:** All 28 README files synced with docs site (root, 3 plugins, 21 skills)
+
+### chore
+- `.gitignore`: ignore `*.png` and `.playwright-mcp/`, untracked stale screenshots
+
+---
+
+## v3.4.29 (2026-04-06)
+
+> Docs: [skills](https://doc-claude.brewcode.app/brewcode/skills/skills/) | [skill-creator](https://doc-claude.brewcode.app/brewcode/agents/skill-creator/)
+
+### brewcode
+#### Changed
+- **skills:** Unified create/up flow with 7-phase pipeline (Discovery → User Interaction → Create/Improve → Validate → Review → E2E Testing → Summary). Added testing depth selection (Quick/Standard/Deep), review orchestration (Simple/Quorum with DoubleCheck verification), E2E testing via `claude -p`, and structured summary reports
+- **skill-creator:** Added Step 5.7 (unit test generation for scripts/), Step 5.8 (README generation from template), pre-filled values support, Bash tool in agent toolset
+- **permission-guard:** Added `.claude/teams/` and `.claude/memory/` to auto-allowed directories
+
+#### Added
+- **skills/references:** 4 new templates — `review-prompt.md` (quality review checklist), `e2e-template.md` (E2E test scenarios), `readme-template.md` (skill README with auto-sync), `summary-template.md` (Phase 6 report)
+
+---
+
+## v3.4.28 (2026-04-05)
+
+> Docs: debate
+
+### brewcode
+#### Added
+- **debate:** New `/brewcode:debate` skill — evidence-based multi-agent debate orchestration with Discovery phase (parallel codebase + web research before every debate), 3 modes (Challenge, Strategy, Critic), dynamic agent generation (2-5 agents), mandatory source citations for all arguments, sequential debates with JSONL logging, secretary summaries, and judge decisions
+
+---
+
+## v3.4.26 (2026-04-04)
+
+> Docs: glm-design-to-code
+
+### brewcode
+#### Added
+- **glm-design-to-code-trial:** Standalone trial skill for `npx skills` distribution (README.md + SKILL.md)
+- **gitignore:** `d2c-output/` excluded from repo (generated test artifact)
+
+---
+
+## v3.4.25 (2026-04-04)
+
+> Docs: glm-design-to-code
+
+### brewcode
+#### Added
+- **glm-design-to-code:** Smart intent detection — Opus auto-classifies user intent (reproduce, creative, enhance, modify, convert) from prompt text
+- **glm-design-to-code:** Dual input for HTML — screenshots HTML file and sends both image + HTML source to GLM for better conversion
+- **glm-design-to-code:** Custom instruction support — `GLM_INSTRUCTION` passed to scripts as param 8, replaces hardcoded prompts
+
+#### Changed
+- **glm-design-to-code:** Profile prompts are now quality-only (no intent coupling) — `profile-max.md`, `profile-optimal.md`, `profile-efficient.md`
+- **glm-design-to-code:** `glm-build-request.sh` — params 8 (instruction) + 9 (html_source), rawfile for user_text, dual jq template
+- **glm-design-to-code:** `glm-build-text-request.sh` — param 8 (instruction), rawfile for user_text (ARG_MAX safety)
+- **glm-design-to-code:** Resolved Configuration table shows Intent, Instruction, Dual Input rows
+- **glm-design-to-code:** Step 3 payload routing: 5-way table (image/html-dual/html-text/text/url)
+
+---
+
+## v3.4.24 (2026-04-03)
+
+> Docs: glm-design-to-code
+
+### brewcode
+#### Changed
+- **glm-design-to-code:** Removed `disable-model-invocation` — skill now auto-triggers on natural phrases ("convert screenshot to code", "turn design into React")
+- **glm-design-to-code:** Optimized description for LLM auto-invocation (3 natural examples, explicit "external GLM API" signal)
+- **glm-design-to-code:** Mandatory resolved configuration output before every API call (all modes: CREATE, REVIEW, FIX)
+- **glm-design-to-code:** Parameter priority: prompt flags > inline text > `.env` > defaults; raw text scanning for inline keys and model names
+- **glm-design-to-code:** `--model` auto-prefix `z-ai/` for OpenRouter, auto-strip for Z.ai
+
+---
+
+## v3.4.23 (2026-04-03)
+
+> Docs: glm-design-to-code
+
+### brewcode
+#### Fixed
+- **glm-design-to-code:** Context window corrected to 202K (was 128K) across SKILL.md, README, docs
+- **glm-design-to-code:** Replaced phantom model `glm-4.5-air:free` with `glm-4.6v-flash` in key validation
+- **glm-design-to-code:** Standardized pricing across all documentation ($0.01-0.08 range by profile)
+- **glm-design-to-code:** API key flow now validates before saving to `.env` (prevents invalid key persistence)
+- **glm-design-to-code:** Split API key provider choice and key entry into separate AskUserQuestion steps
+- **glm-design-to-code:** Settings dialog now loops for multiple changes before confirming
+- **glm-design-to-code:** REVIEW mode uses parsed `RESULT_IMAGE` instead of hardcoded path
+- **Scripts:** All 6 scripts now have +x execute permissions
+- **Scripts:** `glm-request.sh` curl timeout increased to 600s for large payloads
+- **Scripts:** `glm-request.sh` adds `HTTP-Referer` and `X-Title` headers for OpenRouter requests
+- **Scripts:** `glm-extract.sh` allows spaces in output directory paths
+- **Scripts:** `glm-extract.sh` awk `system()` call now quotes directory paths
+- **Scripts:** `glm-verify.sh` background timer PID tracked and cleaned up on `--kill`
+
+### docs
+#### Enhanced
+- **glm-design-to-code.mdx:** Added Design2Code Benchmark Comparison section (GLM-5V-Turbo 94.8 vs Claude Opus 4.6 77.3)
+- **glm-design-to-code.mdx:** Added Our Research Results section with per-framework Tabs (HTML 9.5, React 8.0, Flutter 9.0)
+- **glm-design-to-code.mdx:** Added External Resources CardGrid (Z.ai docs, OpenRouter, BenchLM, The Decoder)
+- **glm-design-to-code.mdx:** Expanded Pipeline Flow Steps to 7 detailed steps
+- **glm-design-to-code.mdx:** Updated GLM Models table context window to 202K
+
+---
+
+## v3.4.22 (2026-04-03)
+
+### brewcode
+#### Added
+- **New skill:** `glm-design-to-code` — GLM vision model-powered design-to-code generator
+  - Three modes: CREATE (any input to code: screenshots, text descriptions, HTML, URLs), REVIEW (compare original vs result), FIX (apply feedback)
+  - Supports HTML/CSS, React 18, Flutter Web, custom frameworks
+  - Three quality profiles: maximum (pixel-perfect), optimal (balanced), efficient (fast)
+  - Dual provider support: Z.ai (direct) and OpenRouter
+  - Full pipeline: argument parsing, API key setup, payload build, API request, file extraction, build, verification
+  - Scripts: parse-args.sh, glm-build-request.sh, glm-build-text-request.sh, glm-request.sh, glm-extract.sh, glm-verify.sh
+- **Updated agents:** `glm-zai-specialist`, `glm-openrouter-specialist` — migrated script paths to plugin directory
+
+---
+
+## v3.4.21 (2026-04-03)
+
+### docs
+#### Added
+- **`/brewdoc:guide` docs page** — guide.mdx with 9 topics, 3 domains, progress tracking, environment health check
+- Updated brewdoc overview.mdx: 6 skills, guide card + command row + directory tree entry
+- Updated navigation.ts: guide link in Brewdoc section
+
+---
+
+## v3.4.20 (2026-04-02)
+
+### brewdoc
+#### Added
+- **`/brewdoc:guide` skill** — interactive teaching skill for the brewcode plugin suite: 9 topics across 3 domains (Getting Started, Core Workflow, Mastery), haiku-powered, progress tracking with JSON persistence, multilingual (EN/RU/PT), environment validation, section-by-section delivery with AskUserQuestion navigation
+- **Guide scripts** — `validate.sh` (docs site, GitHub releases, installed versions, auto-update status), `progress.sh` (CRUD for guide progress JSON at `~/.claude/brewdoc/`)
+- **11 reference files** — welcome banner + menu, ASCII architecture diagrams, 9 topic files covering all 22+ skills, 14+ agents, 9 hooks, killer flow pipeline, dynamic teams, customization, project integration, and power features
+
+---
+
+## v3.4.19 (2026-04-02)
+
+### brewcode
+#### Added
+- **`/brewcode:e2e` skill** — full-cycle E2E testing orchestration: 6 modes (setup, create, update, review, rules, status), 5 runtime agents created via agent-creator, BDD scenarios with YAML frontmatter, layered test architecture (stack-agnostic), quorum review (3 reviewers, 2/3 consensus), MAX_CYCLES=3 review loops
+- **E2E references** — `e2e-rules.md` (24 rules, 6 categories), `e2e-architecture.md` (layered diagram + 4-stack mapping), `agent-template.md` (Rules Loading + Self-Check protocols), 6 mode flow files
+- **`detect-mode.sh`** — POSIX sh argument parser for e2e skill (6 keywords, smart default: status if agents exist, setup otherwise)
+
+### docs
+#### Updated
+- New `/brewcode/skills/e2e` docs page with modes, agents, architecture, quorum review
+- Updated skills.mdx (13 skills), overview.mdx (13 skills, e2e in directory tree + Components), navigation.ts
+
+---
+
+## v3.4.17 (2026-04-02)
+
+### brewpage-publish
+#### Fixed
+- **Security: W007 Insecure Credential Handling** — ownerToken no longer appears in conversation output; curl + jq parsing + history save now execute atomically inside a single bash block; LLM only sees the published URL; password column removed from history table
+
+---
+
+## v3.4.16 (2026-04-02)
+
+### brewcode
+#### Changed
+- **Merged `/brewcode:install` into `/brewcode:setup`** — prerequisites check (brew, coreutils, jq, grepai) now runs automatically as Phase 0 before project analysis; if all required tools are present, Phase 0 is skipped silently; interactive prompts via AskUserQuestion for missing components and optional grepai install
+
+#### Removed
+- **`/brewcode:install` skill** — deleted; all functionality absorbed by `/brewcode:setup` Phase 0
+
+---
+
+## v3.4.15 (2026-04-02)
+
+### brewcode
+#### Changed
+- **Teams: session-scoped trace system** — replaced 3 Markdown files (`tracking.md`, `issues.md`, `insights.md`) with single `trace.jsonl`; write via `trace-ops.sh add` (Bash append, ~96% token savings vs Edit); cursor-based incremental reads for `update` mode
+- **`trace-ops.sh`** — new POSIX sh utility: `add` (JSONL append), `read` (jq/grep filter), `cursor` (incremental bookmark), `migrate` (Markdown-to-JSONL conversion with `.bak` backup)
+- **SID injection in `pre-task.mjs`** — session ID (8 chars) auto-injected into all agent prompts when `.claude/teams/` exists
+- **`verify-team.sh`** — checks `trace.jsonl` instead of 3 MD files; detects legacy files and suggests migration
+
+---
+
+## v3.4.14 (2026-04-02)
+
+### brewcode
+#### Added
+- **`/brewcode:teams`** — new skill: creates and manages dynamic teams of domain-specific agents; modes: `create`, `update`, `status`, `cleanup`; generates agent roster with tracking framework in `.claude/teams/`
+- **Mode Switcher** — skills can toggle persistent session-level behavioral modes via `brewcode.state.json`; hooks inject mode instructions on every event (`forced-eval.mjs`, `session-start.mjs`, `pre-task.mjs`)
+- **`getActiveMode()` utility** in `hooks/lib/utils.mjs` — reads active mode and loads instructions from `modes/{name}.md`
+- **`brewcode/modes/` directory** — mode instruction files; ships with `manager.md` default
+- **Mode Switcher design pattern** added to `skill-creator` agent and `hook-creator` agent
+- **Step 2.5** in `/brewcode:skills create` — auto-detects mode-switching intent and suggests Mode Switcher pattern
+- **Dynamic Agent Resolution** in `/brewcode:plan` — checks `.claude/teams/` roster before plugin agents; priority: team > project > plugin > system
+
+#### Changed
+- `hook-creator` agent: updated to Claude Code v2.1.89+ — added `PermissionDenied` event (26 events total), `defer` support in PreToolUse, `retry` response for PermissionDenied
+
+### brewtools
+#### Added
+- **NEW plugin** — universal text utilities extracted from brewcode
+- Skills: `text-optimize`, `text-human`, `secrets-scan`
+- Agent: `text-optimizer`
+- `BT_PLUGIN_ROOT` injected by SessionStart hook
+- Install: `claude plugin install brewtools@claude-brewcode`
+
+### brewcode (removed)
+- `text-optimize`, `text-human`, `secrets-scan` skills — moved to brewtools
+- `text-optimizer` agent — moved to brewtools
+- Fallback added to `convention/SKILL.md` P5 when brewtools not installed
+
+---
+
+## v3.4.13 (2026-04-01)
+
+### docs
+#### Fixed
+- Steps timeline layout on publish docs page
+
+---
+
+## v3.4.12 (2026-03-31)
+
+### docs
+#### Fixed
+- Steps alignment on brewpage/publish page — removed Badge tags and div wrappers
+
+---
+
+## v3.4.11 (2026-03-31)
+
+### brewdoc
+#### Added
+- **brewpage skill** — publish text, markdown, JSON, or files to brewpage.app; interactive namespace + password selection; owner token saved to `.claude/brewpage-history.md`; model: haiku
+
+### skills (marketplace)
+#### Added
+- **brewpage skill** — standalone marketplace skill with advertising footer; same functionality as brewdoc:brewpage
+
+### docs
+#### Added
+- **brewdoc/brewpage** docs page — full documentation with Steps, content-type table, namespace/password sections, owner token & history
+- **brewpage.app** link and Callout on the brewpage docs page
+
+#### Changed
+- brewdoc overview updated: 5 skills, brewpage card, command row
+
+---
+
+## v3.4.10 (2026-03-31)
+
+### brewcode
+#### Added
+- **15 individual skill pages** -- full content from SKILL.md sources (setup, spec, plan, start, convention, rules, grepai, install, teardown, text-optimize, text-human, standards-review, skills, agents, secrets-scan)
+- **13 individual agent pages** -- full system prompt content (developer, tester, reviewer, architect, skill-creator, agent-creator, hook-creator, text-optimizer, bash-expert, bc-coordinator, bc-knowledge-manager, bc-grepai-configurator, bc-rules-organizer)
+- **permission-guard hook** documented in hooks page (9th hook)
+
+### brewdoc
+#### Added
+- **my-claude dedicated page** -- moved from inline section in overview to standalone page
+
+### docs
+#### Changed
+- **Collapsible sidebar** -- Skills (15) and Agents (13) groups with `<details>/<summary>`, auto-expand on current page
+- **Index pages** -- skills.mdx and agents.mdx converted from Tabs to CardGrid links
+- **Site expanded** from 12 to 41 content pages (29 new)
+
+---
+
+## v3.4.9 (2026-03-31)
+
+### brewcode
+#### Changed
+- **hook-creator agent** -- synced with HOOKS-REFERENCE: 14 to 25 events, version history, lifecycle diagrams, channel reliability matrix, expanded matcher patterns, output schemas, async recommendations
+- **agent-creator agent** -- synced with AGENT-REFERENCE: added `initialPrompt`, `isolation`, `mcpServers`, `color`, `memory` fields; 10 bugs table; version history; architectural limitations; expanded validation checklist (6 to 12 items); debugging section
+- **skill-creator agent** -- synced with SKILL-REFERENCE: 10 bugs table; version history; `effort` max value; `CLAUDE_SKILL_DIR` version fix (v2.1.69 to v2.1.71); 250-char description truncation; `once` field; architectural limitations
+- **permission-guard hook** -- added Bash tool to PermissionRequest matcher; network/dangerous command blocklist; restricted `rm` to safe dirs; added `.claude/tmp/`, `/tmp/`, `/private/tmp/` to allowed paths
+
+#### Added
+- **Reference auto-sync dependents** -- `dependents` field in reference frontmatter for cascading updates to creator agents
+- **Downstream tracking** -- each reference document now lists dependent plugin artifacts
+
+---
+
+## v3.4.8 (2026-03-30)
+
+### brewcode
+#### Added
+- **permission-guard hook** -- PermissionRequest hook auto-allows Edit/Write for project `.claude/` subdirectories (tasks, reports, rules, skills, scripts, agents, hooks, private, convention, plans, settings, TASK.md, CLAUDE.md). Global `~/.claude/` excluded
+- **forced-eval hook** -- added `[DELEGATE]` manager reminder to UserPromptSubmit alongside existing skill check
+
+---
+
+## v3.4.6 (2026-03-13)
+
+### brewdoc
+#### Changed
+- **memory skill** — support for `autoMemoryDirectory` from `.claude/settings.json` instead of hardcoded legacy path
+
+### Other
+- `.gitignore` — added `.claude/memory/`
+
+---
+
+## v3.4.5 (2026-03-12)
+
+### brewcode
+#### Changed
+- **skill-creator agent** — added Skill Design Patterns section: Progressive Disclosure, Reference Splitting, Agents-as-References, Dynamic Context, Context Fork, Executable Bash, Skill Chaining, Background Knowledge, Pushy Description, Preloaded Skills
+
+---
+
+## v3.4.4 (2026-03-06)
+
+### brewcode
+#### Fixed
+- **Silent remote version check failure** -- no message shown when GitHub API check times out (previously showed "(remote check failed)")
+
+---
+
+## v3.4.2 (2026-03-05)
+
+Main changes in [v3.4.0](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v3.4.0).
+
+### brewcode
+#### Added
+- **Claude Code version check** -- session-start hook also checks npm registry for newer Claude Code CLI version
+- **Version notifications in UI** -- update messages now shown in `systemMessage` (visible to user), not just `additionalContext`
+
+#### Changed
+- **Version checks run in parallel** -- brewcode + Claude Code checks via `Promise.all` for minimal latency
+- **Regex version parsing** -- `claude -v` output parsed with `\d+\.\d+\.\d+` regex instead of split
+
+---
+
+## v3.4.1 (2026-03-05)
+
+Patch release. Main changes in [v3.4.0](https://github.com/kochetkov-ma/claude-brewcode/releases/tag/v3.4.0).
+
+### brewcode
+#### Fixed
+- **CI workflows** -- codeql, semgrep, gitleaks now run only on branch push/PR, not on version tags
+
+---
+
+## v3.4.0 (2026-03-05)
+
+### brewcode
+#### Added
+- **Version check on session start** -- `session-start.mjs` checks GitHub latest release; shows update notification if newer version available, fallback link on timeout/error
+
+#### Changed
+- **Skills migrated to `${CLAUDE_SKILL_DIR}`** -- convention, grepai, install, rules, teardown skills now use `${CLAUDE_SKILL_DIR}/scripts/...` instead of relative `scripts/...` paths
+- **skill-creator agent** -- documented `${CLAUDE_SKILL_DIR}` variable, updated resource path resolution section, added common mistakes
+- **bash-expert agent** -- updated plugin path guidance to distinguish `${CLAUDE_SKILL_DIR}` (skills) vs `$BC_PLUGIN_ROOT` (agents)
+- **hooks.md** -- updated path resolution table with `${CLAUDE_SKILL_DIR}` context
+
+#### Fixed
+- **pre-task.mjs** -- grepai detection now checks `index.gob` existence, not just `.grepai/` directory
+
+---
+
+## v3.3.2 (2026-03-05)
+
+### brewcode
+#### Added
+- **brewcode:convention skill** -- Deep project analyzer that extracts etalon classes, patterns, and architecture by layer
+  - 4 modes: `full`, `conventions`, `rules`, `paths <p1,p2>`
+  - 20-layer analysis framework (14 main + 6 test) with multi-stack support
+  - 10 parallel agents for layer analysis → etalon selection → 3 convention docs generation
+  - Interactive rules extraction with batched AskUserQuestion flow
+  - CLAUDE.md update with etalon quick-reference table
+  - POSIX-compliant `convention.sh` script for stack detection, scanning, validation
+- **brewcode:agents skill** -- Interactive agent creation and improvement orchestrator
+  - Create mode: 3-question interactive setup (scope, model, CLAUDE.md update)
+  - Improve mode: improve existing agent by name or path
+  - Delegates to `agent-creator` agent for quality agent generation
+  - Applies `text-optimize` after creation/improvement
+  - Optional CLAUDE.md agents table update
+- **bump-version.sh** -- Single command to bump version across all 4 JSON files
+
+#### Changed
+- Updated CLAUDE.md: Version Sync section now uses `bump-version.sh`, Update flow includes CLI commands
+
+#### Fixed
+- **release.yml** -- `git branch --contains` unreliable on detached HEAD; replaced with `git merge-base --is-ancestor`
+- **gitleaks.yml** -- SARIF upload/artifact steps now skip when `results.sarif` not produced
+- `convention.sh`: dotnet monorepo module detection (`.sln`/`.csproj` in `has_build_file()`)
+
+### brewdoc
+#### Changed
+- **session-start hook removed** -- brewdoc no longer injects `BD_PLUGIN_ROOT` at session start
+- **pre-task hook retained** -- `BD_PLUGIN_ROOT` still injected into subagent prompts for `bd-auto-sync-processor`
+- **Skills use relative paths** -- `my-claude` uses plain relative paths; `md-to-pdf` and `auto-sync` bash commands use `${CLAUDE_SKILL_DIR}`
+- Updated `docs/hooks.md`: rewritten to reflect 1 hook (was 2)
+- Updated `README.md`, `docs/commands.md`: removed stale `BD_PLUGIN_ROOT` references
+- Version unified with brewcode suite (was 1.1.1)
+
+#### Fixed
+- **AskUserQuestion compliance** -- `skills/my-claude/SKILL.md`: added `AskUserQuestion` to `allowed-tools`, INDEX update prompt rewritten with explicit header/question/options
+
+---
+
+## v3.0.2 (2026-02-28)
+
+### brewcode
+#### Fixed
+- **AskUserQuestion compliance** -- Added `AskUserQuestion` to `allowed-tools` / `tools` in all files that require user interaction
+  - `skills/text-human/SKILL.md` -- missing tool + explicit instructions at lines 31, 35
+  - `skills/grepai/SKILL.md` -- missing tool + Mode: prompt rewritten with 4-option AskUserQuestion
+  - `skills/start/SKILL.md` -- missing tool in escalation path (3 fails)
+  - `skills/skills/SKILL.md` -- `create` mode now asks invocation type before spawning skill-creator
+  - `agents/skill-creator.md` -- clarified foreground-only context for AskUserQuestion
+  - `agents/agent-creator.md` -- missing tool added to `tools:`
+
+---
+
+## v3.0.1 (2026-02-28) -- Failure Path & Deadlock Fixes
+
+### brewcode
+#### Fixed
+
+- **post-task.mjs** -- branched success/failure messages: on failure, instructs retry/escalate instead of "write report + call coordinator" (P1-1 critical)
+- **start/SKILL.md** -- failure cascade to transitive dependents when escalation exhausted; deadlock detection safety net in execution loop (P1-2 critical)
+- **start/SKILL.md** -- persist failure to KNOWLEDGE.jsonl before retry for post-compact context (P1-3 critical)
+- **start/SKILL.md** -- fixed "ISSUES_TABLE from coordinator output" -> "from verification report" (P1-4)
+- **stop.mjs** -- catch block no longer deletes lock on transient error; preserves lock for recovery (P1-5)
+- **bc-coordinator.md, PLAN.md.template** -- documented Task API as source of truth; fixed misleading terminal status docs (P1-6)
+- **start/SKILL.md** -- added is_error guard for coordinator call: log warning, proceed to TaskUpdate (P1-7)
+- **start/SKILL.md** -- moved phase-to-TaskID mapping from NOTE to explicit Sub-step 4a (P1-8)
+- **stop.mjs** -- added defense-in-depth comment for redundant validateTaskPath (P1-9)
+- **pre-compact.mjs** -- changed artifact validation log level from warn -> debug with "(agent may still be executing)" (P1-10)
+- **pre-compact.mjs** -- fixed terminal status check: `=== 'finished'` -> `TERMINAL_STATUSES.has()` (regression fix from review)
+- **bc-coordinator.md** -- finalize mode now accepts `status` parameter ("finished" default, "failed" for deadlock/cascade)
+
+#### Updated Files
+
+- `brewcode/hooks/post-task.mjs`
+- `brewcode/hooks/stop.mjs`
+- `brewcode/hooks/pre-compact.mjs`
+- `brewcode/agents/bc-coordinator.md`
+- `brewcode/skills/start/SKILL.md`
+- `brewcode/skills/setup/templates/PLAN.md.template`
+
+---
+
+## v3.0.0 (2026-02-28) -- Task API Architecture
+
+### brewcode
+#### Breaking Changes
+
+- **PLAN.md format** -- new 3-line header (status, current_phase, total_phases)
+- **Phase details** -- moved from inline PLAN.md to `phases/` directory
+- **Re-run `/brewcode:setup`** to get new templates
+
+#### Added
+
+- **Task API integration** -- TaskCreate/TaskUpdate/TaskList for phase management
+- **`phases/` directory** -- individual phase files for agents (`1-research.md`, `1V-verify-research.md`, `FR-final-review.md`, etc.)
+- **Phase Registry table** -- slim overview in PLAN.md for manager (replaces inline phase details)
+- **Parallel execution** -- tasks in same Parallel group spawn simultaneously via multiple TaskCreate calls
+- **Lighter coordinator** -- bc-coordinator now handles knowledge extraction + report verification only
+- **Fix phase protocol** -- automatic `{N}F-fix-{name}.md` file generation on verification failure
+- **`phase.md.template`** -- execution phase template
+- **`phase-verify.md.template`** -- verification phase template
+- **`phase-fix.md.template`** -- fix phase template (dynamic)
+- **`phase-final-review.md.template`** -- final review template
+
+#### Changed
+
+- **pre-task.mjs** -- v3 task context injection (phase file reminder for agents)
+- **post-task.mjs** -- Task API instructions for manager
+- **pre-compact.mjs** -- v3-aware handoff message
+- **session-start.mjs** -- Task API reminder on active v3 task
+- **plan/SKILL.md** -- generates `phases/` directory alongside slim PLAN.md
+- **start/SKILL.md** -- uses Task API instead of reading phases inline; manager never reads `phases/` files
+- **docs/commands.md** -- updated plan and start sections for v3
+- **docs/file-tree.md** -- added `phases/` directory to task structure
+- **README.md** -- v3 flow description, updated task structure
+
+#### Backward Compatibility
+
+- v2 tasks continue working (parseTask fallback, hooks detect v3 via `phases/` directory presence)
+- No changes to: SPEC skill, KNOWLEDGE format, grepai hooks, review skill, teardown skill
+
+---
+
+## v2.16.4 (2026-02-28)
+
+### brewcode
+#### Added
+
+- **bc-knowledge-manager** -- new `prune-rules` mode: removes avoids/best-practice entries from KNOWLEDGE.jsonl after export to rules, leaves only info entries
+- **start/SKILL.md** -- Step 5 (Complete): added mandatory `bc-knowledge-manager` call with `prune-rules` mode after `brewcode:rules`
+
+#### Changed
+
+- **docs/flow.md** -- added section g) KNOWLEDGE Pipeline with full lifecycle diagram
+- **docs/commands.md** -- `/brewcode:start` section supplemented with "KNOWLEDGE -> Rules (automatic)" subsection
+- **skills/start/README.md** -- steps 7-8 describe actualization and cleanup of KNOWLEDGE
+- **README.md** (root) -- "Knowledge lifecycle" section describes accumulation and conversion of KNOWLEDGE
+
+---
+
+## v2.16.3 (2026-02-28)
+
+### brewcode
+#### Added
+
+- **standards-review SKILL.md** -- Phase 0: asks user via `AskUserQuestion` before analysis -- whether to run `/simplify` at the end or not
+- **standards-review SKILL.md** -- Phase 7: conditional `Skill(simplify)` invocation after report if user chose "Yes"
+- **standards-review SKILL.md** -- added `AskUserQuestion` and `Skill` to `allowed-tools`
+
+---
+
+## v2.16.2 (2026-02-28)
+
+### brewcode
+#### Fixed
+
+- **spec SKILL.md** -- Feature Splitting Check now numbered as step 2.5 in the ordered workflow instead of a floating section
+- **spec SKILL.md** -- reviewer loop capped at MAX 3 iterations with user escalation
+- **SPEC-creation.md** -- added Scope row to Consolidation Rules table
+- **SPEC-creation.md** -- fixed timing estimate from "3 turns" to "5-8 turns depending on review iterations"
+- **SPEC-creation.md** -- fixed `Task(agent=...)` to `Task(subagent_type=...)` for Claude Code Task tool API consistency
+- **plan SKILL.md** -- fixed `subagent_type="reviewer"` to `subagent_type="brewcode:reviewer"` in traceability check (Step 7)
+- **plan SKILL.md** -- added Lightweight Plan Review step (2 agents, 2/2 consensus) to Plan Mode workflow
+- **plan SKILL.md** -- clarified KNOWLEDGE.jsonl creation as 0-byte empty file with explicit `touch` command
+- **plan SKILL.md** -- added gap remediation instruction after traceability check (Step 7)
+
+---
+
+## v2.16.1 (2026-02-28)
+
+### brewcode
+#### Added
+
+- **SPEC.md.template** -- added Success Metrics, Non-Functional Requirements, and Acceptance Criteria sections
+  - Success Metrics: measurable targets with how-to-measure column
+  - NFR: Performance, Security, Scalability, Reliability with specific targets
+  - Acceptance Criteria: Given/When/Then format for verifiable conditions
+- **spec SKILL.md** -- enhanced requirements gathering and feature splitting
+  - Expanded from 1-4 to 3-7 questions, batched up to 4 per AskUserQuestion call
+  - 5 mandatory question categories: Scope, NFR, Acceptance Criteria, Constraints, Edge cases
+  - Feature Splitting Check: auto-suggests task split when scope >3 areas or >12 phases
+  - Added NFR/Quality row to partition research areas table
+- **SPEC-creation.md** -- added NFR category, AC consolidation guidance, updated example partition
+- **PLAN.md.template** -- added Technology Choices section (decision, rationale, alternatives)
+- **plan SKILL.md** -- improved quorum review and traceability
+  - Mixed quorum: Plan + architect + reviewer (replaces 3x Plan agents)
+  - Technology Choices substep (5.5) for documenting non-trivial decisions
+  - Traceability check: Scope items, Acceptance Criteria, NFR all mapped to phases
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/setup/templates/SPEC.md.template` | +3 sections: Success Metrics, NFR, Acceptance Criteria |
+| `skills/spec/SKILL.md` | Enhanced questions, feature splitting, NFR/Quality area |
+| `skills/spec/references/SPEC-creation.md` | NFR category, AC guidance, updated example |
+| `skills/plan/SKILL.md` | Mixed quorum, tech choices step, traceability |
+| `skills/setup/templates/PLAN.md.template` | +Technology Choices section |
+| `plugin.json` | Version 2.16.0 -> 2.16.1 |
+
+---
+
+## v2.16.0 (2026-02-28)
+
+### brewcode
+#### Removed
+
+- **`brewcode:auto-sync` skill** -- moved to dedicated `brewdoc` plugin
+- **`bd-auto-sync-processor` agent** -- moved to `brewdoc` plugin
+
+#### Notes
+
+- Users of `/brewcode:auto-sync` should install `brewdoc` plugin and use `/brewdoc:auto-sync`
+
+### brewdoc
+#### New Skills
+- `brewdoc:md-to-pdf` -- Markdown to PDF converter with dual engine support (reportlab/weasyprint), style customization, test mode, dependency management
+
+#### Initial Release (v1.0.0)
+
+- `brewdoc:auto-sync` -- Universal documentation sync (moved from brewcode)
+- `brewdoc:my-claude` -- Generate Claude Code installation docs
+- `brewdoc:memory` -- Optimize Claude Code memory files interactively
+
+---
+
+## v2.15.7 (2026-02-26)
+
+### brewcode
+#### Fixed
+
+- **plugin.json** -- removed explicit `"hooks": "./hooks/hooks.json"` from manifest
+  - `hooks/hooks.json` is auto-discovered by Claude Code, explicit declaration caused duplicate loading error
+  - Error: "Duplicate hooks file detected: ./hooks/hooks.json resolves to already-loaded file"
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `plugin.json` | Removed `hooks` field (auto-discovered) |
+
+---
+
+## v2.15.6 (2026-02-21)
+
+### brewcode
+#### Changed
+
+- **agent-creator agent** -- added "Reference-Aware Skills" section
+  - Guidance for agents spawned from skills with `references/` directories
+  - Size-based approach: <50 lines inline into prompt, >50 lines use `$BC_PLUGIN_ROOT` path
+- **skill-creator agent** -- added "Reference Splitting Strategy" section
+  - When to split references into per-mode files (criteria & thresholds)
+  - Loading patterns: conditional (lazy), unconditional single, unconditional multi
+  - 3-step pattern template (detect -> read -> validate)
+  - New anti-pattern: "All references loaded unconditionally in multi-mode skill"
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/agent-creator.md` | Reference-Aware Skills section |
+| `agents/skill-creator.md` | Reference Splitting Strategy section, loading patterns, anti-pattern |
+
+---
+
+## v2.15.5 (2026-02-20)
+
+### brewcode
+#### Changed
+
+- **auto-sync** -- `<auto-sync-override>` body block replaced with frontmatter field `auto-sync-override:` (multiline YAML)
+- **bd-auto-sync-processor** -- reads override from frontmatter; optionally synthesizes and writes `auto-sync-override:` to frontmatter when not defined by prompt or file body
+- **sync-doc/agent/skill/rule** -- `preserve:` references updated to frontmatter field
+- **skills skill** -- renamed from `skillsup` to `skills` for naming consistency
+
+---
+
+## [2.15.4] - 2026-02-19
+
+### brewcode
+#### Added
+
+- **spec/plan SKILL.md** -- `-n`/`--noask` flag to skip all user questions and auto-approve defaults
+  - `spec`: skips AskUserQuestion in requirements gathering and SPEC validation steps
+  - `plan`: skips phase-split presentation and review result confirmation
+  - Argument hint updated: `[-n] <description>` for spec, `[-n] [task-dir|SPEC.md|plan-file]` for plan
+
+#### Fixed
+
+- **auto-sync review fixes** -- 11 issues resolved from code review
+  - C10: Removed dead code in `index-ops.sh` (macOS date detection, both branches identical)
+  - C3: Agent description "sub-agents" -> "direct tool calls" in `bd-auto-sync-processor.md`
+  - C16: Override wording "augment (not replace)" -> "augment or selectively override"
+  - C18: Fixed misleading coordinator comment (post-task.mjs skip note)
+  - C7: Removed NEXT ACTION section (no task directory for standalone auto-sync)
+  - C4: Replaced unreachable `claude-code-guide` references with `Grep` across 6 files
+  - C5: INDEX update now conditional on error status (errors skip update for retry)
+  - C17: Added `preserve:` override guidance to all 5 instruction files
+  - C2: Wired optimize flag end-to-end (SKILL.md -> agent -> instructions)
+  - PLUGIN_ROOT: Fixed input format -- `{plugin_root}` -> `$BC_PLUGIN_ROOT` (hook-injected)
+  - Tool column: Removed stale `Explore (...)` wrapper from 5 instruction files
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/bd-auto-sync-processor.md` | 7 fixes: description, trust table, override, coordinator, NEXT ACTION, optimize, PLUGIN_ROOT |
+| `skills/auto-sync/SKILL.md` | Error-conditional INDEX update, optimize flag pass-through |
+| `skills/auto-sync/scripts/index-ops.sh` | Dead code removal |
+| `skills/auto-sync/instructions/sync-skill.md` | Tool names, preserve guidance |
+| `skills/auto-sync/instructions/sync-agent.md` | Tool names, preserve guidance |
+| `skills/auto-sync/instructions/sync-config.md` | Tool names, preserve guidance |
+| `skills/auto-sync/instructions/sync-doc.md` | Tool names, preserve guidance |
+| `skills/auto-sync/instructions/sync-rule.md` | Tool names, preserve guidance |
+
+---
+
+## [2.15.3] - 2026-02-18
+
+### brewcode
+#### Fixed
+
+- **update-plugin.sh** -- `claude plugin` commands reset stdout in non-TTY
+  - Output buffered to `/tmp/brewcode-update.log` via `tee`
+  - Uninstall+install flow when cache is missing (`update` skips reinstall)
+  - Version match check (plugin.json <-> marketplace.json) before start
+  - Filesystem verification after install (cache dir + file count)
+  - `jq` for JSON parsing instead of fragile `grep+sed`
+- **clean-plugin-cache.sh** -- added `--all` flag for full cache wipe
+  - Fixed `${@}` crash with `set -u` when no arguments passed
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `.claude/scripts/update-plugin.sh` | Log buffering, uninstall+install, jq, verification |
+| `.claude/scripts/clean-plugin-cache.sh` | `--all` flag, `set -euo pipefail`, ERR trap |
+
+---
+
+## [2.15.2] - 2026-02-18
+
+### brewcode
+#### Changed
+
+- **Documentation** -- translated all docs from Russian to English
+  - `INSTALL.md`, `README.md`, `grepai.md` -- full translation
+  - `docs/commands.md`, `docs/file-tree.md`, `docs/flow.md`, `docs/hooks.md` -- full translation
+- **README.md** -- added 6 missing skills to commands table
+  - `mcp-config`, `secrets-scan`, `skillsup`, `standards-review`, `text-optimize`, `text-human`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `README.md` | Added missing skills, fixed doc link text |
+| `brewcode/INSTALL.md` | RU -> EN |
+| `brewcode/README.md` | RU -> EN |
+| `brewcode/docs/commands.md` | RU -> EN |
+| `brewcode/docs/file-tree.md` | RU -> EN |
+| `brewcode/docs/flow.md` | RU -> EN |
+| `brewcode/docs/hooks.md` | RU -> EN |
+| `brewcode/grepai.md` | RU -> EN |
+
+---
+
+## [2.15.1] - 2026-02-16
+
+### brewcode
+#### Added
+
+- **forced-eval hook** -- auto-skill activation via plugin hooks
+  - `hooks/forced-eval.mjs` -- UserPromptSubmit hook (84% skill activation rate)
+  - Reminder: `[SKILL?] Check available skills. If one matches this request, use Skill tool before responding.`
+  - No manual installation required -- works automatically with plugin
+
+#### Changed
+
+- **skillsup skill** -- removed `setup` mode (hook now in plugin)
+  - Modes: `list`, `up`, `create` (was: `list`, `setup`, `up`, `create`)
+
+#### Removed
+
+- `skillsup/scripts/install-hook.sh` -- moved to plugin hooks
+- `skillsup/references/forced-eval-hook.mjs` -- moved to plugin hooks
+- `setup/references/forced-eval-hook.mjs` -- not needed (plugin hook)
+- Phase 5 from setup skill -- hook installation not needed
+
+---
+
+## [2.15.0] - 2026-02-15
+
+### brewcode
+#### Changed
+
+- **Distribution** -- plugin renamed `focus-task` -> `brewcode`, marketplace re-registered
+  - `repository` URL fixed: `user/` -> `kochetkov-ma/`
+  - Added `homepage`, `author.url`, `tags`, `metadata` block to marketplace.json
+  - Removed placeholder `owner.email`
+- **CLAUDE.md** -- added Distribution section, fixed skills count (10 -> 15)
+- **update-plugin.sh** -- fixed path `plugins/brewcode/` -> `brewcode/`
+- **claude-plugin-guide skill** -- major update (v2.0.0)
+  - Fixed: `agents` field IS supported in plugin.json
+  - Added: all 14 hook events, hook types (command/prompt/agent)
+  - Added: auto-update, team config, marketplace restrictions
+  - Updated: official docs URLs (code.claude.com)
+
+#### Files
+
+- `.claude-plugin/marketplace.json` -- full metadata, correct URLs
+- `brewcode/.claude-plugin/plugin.json` -- added homepage, author.url
+- `.claude/scripts/update-plugin.sh` -- fixed version path
+- `.claude/skills/claude-plugin-guide/SKILL.md` -- v2.0.0
+- `CLAUDE.md` -- Distribution section
+
+---
+
+## [2.14.3] - 2026-02-13
+
+### brewcode
+#### Changed
+
+- **auto-sync skill** -- excluded managed directories from auto-scan
+  - `rules/`, `agents/`, `skills/` no longer scanned in PROJECT/GLOBAL modes
+  - Explicit path required: `/brewcode:auto-sync .claude/rules`
+  - Prevents unintended mass updates to structured content
+
+#### Files
+
+- `skills/auto-sync/SKILL.md` -- added managed directories documentation
+- `skills/auto-sync/scripts/discover.sh` -- added exclusion logic
+
+---
+
+## [2.14.2] - 2026-02-13
+
+### brewcode
+#### Changed
+
+- **text-optimize skill** -- description converted to one-line format
+  - Matches agent description style: `"Optimizes text/docs for LLM efficiency. Triggers: ..."`
+  - Removed multi-line `|` YAML block, replaced with single quoted string
+
+#### Files
+
+- `skills/text-optimize/SKILL.md` -- description field
+
+---
+
+## [2.14.1] - 2026-02-13
+
+### brewcode
+#### Changed
+
+- **skill-creator agent** -- description rules tightened
+  - ONE line only (no multiline `|` in YAML)
+  - 150-300 chars limit (was 1024)
+  - Template: `[What it does]. Use when - [scenarios]. Trigger keywords - [keywords].`
+  - `Triggers -` section dropped (saves ~80 chars)
+  - All examples updated to single-line format
+  - Validation checklists updated
+
+#### Files
+
+- `agents/skill-creator.md` -- 10 edits across description rules, template, examples, validation
+
+---
+
+## [2.14.0] - 2026-02-13
+
+### brewcode
+#### Added
+
+- **text-optimize rules** -- 4 new rules from multi-agent research (8 parallel agents)
+  - S.7: Consistent Terminology -- one term per concept, no synonyms. Source: agent-skills best-practices (official)
+  - S.8: One-Level Reference Depth -- no ref chaining A->B->C. Source: agent-skills best-practices (official)
+  - P.5: Instruction Order (Anchoring) -- critical constraints first. Source: ACM FAT 2025 (peer-reviewed)
+  - P.6: Default Over Options -- recommend one default, exceptions only. Source: agent-skills best-practices (official)
+  - 2 new anti-patterns: overloading single prompts, over-focusing on wording
+  - Total rules: 27 -> 31 (27 verified, 4 conditional)
+
+#### Changed
+
+- **text-optimizer agent** -- Step 0 validation rewritten
+  - Removed Bash `test -f` (agent doesn't have Bash tool)
+  - Now uses Read tool + header verification (`## C - Claude Behavior`, `## Summary`)
+  - Explicit stop condition if read fails or headers missing
+- **text-optimizer agent** -- Step 2 rule ranges updated (S.1-S.8, P.1-P.6)
+- **text-optimize SKILL.md** -- Rule ID Quick Reference, ID-to-Rule Mapping, Mode-to-Rules updated for new rules
+
+#### Files
+
+- `skills/text-optimize/references/rules-review.md` -- +4 rules, +2 anti-patterns, +1 source
+- `skills/text-optimize/SKILL.md` -- updated tables and mappings
+- `agents/text-optimizer.md` -- Step 0 rewrite, Step 2 range update
+
+---
+
+## [2.13.2] - 2026-02-13
+
+### brewcode
+#### Fixed
+
+- **skill-creator agent** -- path resolution rules clarified
+  - Added `CRITICAL: USE RELATIVE PATHS!` warning
+  - Direct calls (Read, Bash in SKILL.md) -> relative paths (`scripts/foo.sh`)
+  - Exception: passing path to agent via Task tool -> use `$BC_PLUGIN_ROOT`
+  - Table with NEVER / ALWAYS examples
+
+- **skillsup skill** -- fixed absolute paths bug
+  - Changed `$BC_PLUGIN_ROOT/skills/skillsup/scripts/...` -> `scripts/...`
+  - 3 bash commands now use relative paths
+
+#### Files
+
+- `agents/skill-creator.md` -- Resource Path Resolution section rewritten
+- `skills/skillsup/SKILL.md` -- relative paths for bash commands
+
+---
+
+## [2.13.1] - 2026-02-13
+
+### brewcode
+#### Changed
+
+- **skill-creator agent** -- invocation type awareness
+  - Added `AskUserQuestion` tool for clarifying who invokes skill
+  - User-only skills (`disable-model-invocation: true`) get simple one-liner description
+  - LLM-invocable skills require full trigger optimization
+  - Decision table: user-only vs LLM-only vs both
+
+- **skillsup skill** -- simplified description
+  - One-liner description (user-invocable only, no triggers needed)
+  - Added `AskUserQuestion` to allowed-tools
+
+#### Files
+
+- `agents/skill-creator.md` -- invocation type section, description optimization split
+- `skills/skillsup/SKILL.md` -- simplified frontmatter
+
+---
+
+## [2.13.0] - 2026-02-13
+
+### brewcode
+#### Added
+
+- **skillsup skill** -- skill management with 84% activation rate
+  - `list` mode: scan global/project/plugin skills as markdown table
+  - `setup` mode: install forced-eval hook (UserPromptSubmit) + settings.json
+  - `up` mode: improve skills via skill-creator agent (parallel for folders)
+  - `create` mode: research (Explore + WebSearch) then create skill
+  - Shorthand: `/skillsup <path>` defaults to `up` mode
+  - Based on Scott Spence forced-eval technique
+
+#### Files
+
+- `skills/skillsup/SKILL.md` -- main skill with 4 modes
+- `skills/skillsup/README.md` -- documentation
+- `skills/skillsup/scripts/list-skills.sh` -- scans 3 locations
+- `skills/skillsup/scripts/install-hook.sh` -- installs hook + updates settings
+- `skills/skillsup/references/forced-eval-hook.mjs` -- UserPromptSubmit hook
+
+---
+
+## [2.12.4] - 2026-02-13
+
+### brewcode
+#### Changed
+
+- **skill-creator agent** -- major update for activation reliability
+  - Added "Activation Reality" section: 20-50% baseline rate, GitHub issues
+  - Added "Criticality Strategy": Critical -> slash command (100%), Important -> optimized (50-72%)
+  - Added "Description Optimization": trigger keywords pattern, "Use when:" template
+  - Added "Activation Checklist" in validation step
+  - Added "Troubleshooting Activation" section with debug steps
+  - Updated all examples with optimized descriptions
+  - Verified all GitHub issues are OPEN: #10768, #13919, #15136, #9716
+  - Removed closed/duplicate issues: #12679, #4182, #17283
+
+#### Sources
+
+- [#10768 - Intent Matching Broken](https://github.com/anthropics/claude-code/issues/10768)
+- [#13919 - Context loss](https://github.com/anthropics/claude-code/issues/13919)
+- [#15136 - Fails to invoke](https://github.com/anthropics/claude-code/issues/15136)
+
+---
+
+## [2.12.3] - 2026-02-12
+
+### brewcode
+#### Changed
+
+- **Skill path normalization** -- all skills now use relative paths
+  - Removed unreliable `$FT_PLUGIN` variable (bash isolation issues)
+  - Removed non-existent `$CLAUDE_PLUGIN_ROOT` references
+  - Removed cache path hacks (`ls -vd ~/.claude/plugins/cache/...`)
+  - Skills reference own resources via relative paths: `scripts/`, `references/`
+
+- **Agent path normalization** -- agents use injected `$BC_PLUGIN_ROOT`
+  - Removed `{PLUGIN_ROOT}` placeholders from agent docs
+  - Agents receive `BC_PLUGIN_ROOT` via pre-task.mjs injection
+  - Fixed bc-coordinator.md and bash-expert.md
+
+- **File reorganization** -- templates moved to skill directories
+  - `scripts/teardown.sh` -> `skills/teardown/scripts/teardown.sh`
+  - `templates/SPEC-creation.md` -> `skills/spec/references/SPEC-creation.md`
+  - `templates/*.template` (4 files) -> `skills/setup/templates/`
+  - `setup.sh` updated to use new `SETUP_TEMPLATES` path
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/teardown/SKILL.md` | Relative `scripts/teardown.sh` |
+| `skills/text-optimize/SKILL.md` | `$BC_PLUGIN_ROOT` + context instruction |
+| `skills/standards-review/SKILL.md` | Relative `references/` paths |
+| `skills/grepai/SKILL.md` | Relative paths (13 scripts) + agent context |
+| `skills/setup/SKILL.md` | Relative paths (7 scripts) + agent context |
+| `skills/spec/SKILL.md` | Agent context instructions |
+| `skills/plan/SKILL.md` | Agent context instructions |
+| `skills/auto-sync/SKILL.md` | Relative paths + agent context |
+| `skills/rules/SKILL.md` | Relative paths + agent context |
+| `skills/text-human/SKILL.md` | Agent context instructions |
+| `skills/install/SKILL.md` | Relative paths (8 scripts) |
+| `skills/setup/scripts/setup.sh` | `SETUP_TEMPLATES` variable |
+| `agents/bc-coordinator.md` | `$BC_PLUGIN_ROOT` for templates |
+| `agents/bash-expert.md` | `$BC_PLUGIN_ROOT` instructions |
+
+---
+
+## [2.12.2] - 2026-02-12
+
+### brewcode
+#### Added
+
+- **skill-creator agent** -- "Resource Path Resolution" section
+  - Documents that skills receive base directory at execution
+  - Relative paths to resources (references/, scripts/, assets/) resolve automatically
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/skill-creator.md` | Added Resource Path Resolution section |
+
+---
+
+## [2.12.1] - 2026-02-12
+
+### brewcode
+#### Added
+
+- **BC_PLUGIN_ROOT injection** -- plugin root path available to skills and agents
+  - `session-start.mjs`: injects `BC_PLUGIN_ROOT` into `additionalContext` for main conversation
+  - `pre-task.mjs`: injects `BC_PLUGIN_ROOT` as first injection for ALL subagents
+  - Enables skills to reference plugin files: `$BC_PLUGIN_ROOT/skills/text-optimize/references/...`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `hooks/session-start.mjs` | `BC_PLUGIN_ROOT` in additionalContext |
+| `hooks/pre-task.mjs` | `BC_PLUGIN_ROOT` injection for all agents |
+| `docs/hooks.md` | "BC_PLUGIN_ROOT variable" section |
+| `CLAUDE.md` | "Plugin Variables" section |
+
+---
+
+## [2.12.0] - 2026-02-11
+
+### brewcode
+#### Fixed
+
+- **Skill frontmatter** -- removed invalid `context: session` from 5 skills
+  - auto-sync, grepai, spec, plan, start -- now use inline mode (required for Task tool)
+
+- **EXECUTE markers** -- added missing markers to bash blocks
+  - auto-sync: 3 blocks in sync phase (Setup INDEX, discover.sh, index-ops.sh)
+  - secrets-scan: Phase 1 setup block
+
+- **STOP conditions** -- added after critical bash blocks
+  - secrets-scan: `> **STOP if ERROR** -- must run in git repository`
+
+- **text-optimize** -- fixed `subagent_type: "brewcode:text-optimizer"` -> `"text-optimizer"`
+
+#### Added
+
+- **spec/references/SPEC-creation.md** -- parallel research instructions and consolidation rules (125 lines)
+- **scripts/teardown.sh** -- restored plugin-level cleanup script
+
+#### Changed
+
+- **spec/SKILL.md** -- references updated to `references/SPEC-creation.md`
+- **teardown** -- script moved from skill directory to `brewcode/scripts/`
+
+#### Structure Improvements
+
+| Skill | Before | After |
+|-------|--------|-------|
+| spec | 78% | 90% |
+| auto-sync | 85% | 100% |
+| secrets-scan | 71% | 97% |
+| teardown | 60% | 90% |
+
+---
+
+## [2.10.0] - 2026-02-11
+
+### brewcode
+#### Added
+
+- **Agent documentation enriched** -- 3 agents updated with official plugin-dev content
+
+| Agent | New Sections | Examples |
+|-------|--------------|----------|
+| `agent-creator.md` | Agent Architect Process (6 steps), System Prompt Patterns (4 archetypes), Color Semantics, Triggering Examples Guide | code-reviewer, test-generator, doc-generator, security-analyzer |
+| `skill-creator.md` | Official Six-Step Creation Process, Word Budget (1,500-2,000), Scripts Design guidance | commit, pr-review, codebase-qa, deploy |
+| `hook-creator.md` | 10 Hook Patterns (Official), Advanced Techniques (Multi-Stage, State Sharing, Caching), Hook Type Selection, Lifecycle Note | Security Gate, Test Enforcement, Context Injection, Tool Logger |
+
+#### Changed
+
+- **skill-creator.md** -- Creation Process section rewritten to Official Six-Step format
+  - Step 2: Plan Reusable Contents (scripts, reference docs, assets)
+  - Step 5: Validate and Test with detailed checklist
+  - Word budget: 1,500-2,000 words target
+
+#### Sources
+
+- `claude-plugins-official/plugins/plugin-dev/skills/agent-development/`
+- `claude-plugins-official/plugins/plugin-dev/skills/skill-development/`
+- `claude-plugins-official/plugins/plugin-dev/skills/hook-development/`
+
+---
+
+## [2.9.5] - 2026-02-11
+
+### brewcode
+#### Fixed
+
+- **setup SKILL.md Phase 5** -- explicit instructions to use script output verbatim
+  - Added CRITICAL warning: DO NOT add agents manually
+  - Step 1: clarified output is ready-to-insert content
+  - Step 4: must read `/tmp/agents-section.md` and use EXACT content
+  - Prevents LLM from ignoring script output and adding internal agents
+
+---
+
+## [2.9.4] - 2026-02-11
+
+### brewcode
+#### Changed
+
+- **setup.sh `agents` mode** -- excludes internal plugin agents from listing
+  - Internal agents (bc-coordinator, bc-grepai-configurator, bc-knowledge-manager) not shown
+  - These agents are only called by the plugin itself, not by users
+
+#### Updated Files
+
+- `skills/setup/scripts/setup.sh` -- INTERNAL_AGENTS filter added
+
+---
+
+## [2.9.2] - 2026-02-11
+
+### brewcode
+#### Added
+
+- **setup.sh `agents` mode** -- collects agents for CLAUDE.md update
+  - Outputs LLM-optimized table with 3 columns: Name, Scope, Purpose
+  - Collects: system agents (hardcoded), global (~/.claude/agents/), plugin (PLUGIN_ROOT/agents/)
+  - Purpose truncated to 5 words for token efficiency
+- **SKILL.md Phase 5** -- Update Global CLAUDE.md Agents
+  - Collects agents via `setup.sh agents`
+  - LLM analyzes existing CLAUDE.md to find agent sections
+  - User confirmation before replacement
+  - Edit-based replacement preserves non-agent content
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/setup/scripts/setup.sh` | Added `collect_agents()` function, `agents` mode |
+| `skills/setup/SKILL.md` | Added Phase 5 with 4 steps |
+
+---
+
+## [2.9.1] - 2026-02-10
+
+### brewcode
+#### Fixed
+
+- **hooks.md** -- synchronized handoff entry type documentation
+  - `writeHandoffEntry()` uses `"t":"check"` for priority during compactification
+  - Documentation incorrectly stated `"t":"info"`
+
+---
+
+## [2.9.0] - 2026-02-10
+
+### brewcode
+#### Added
+
+- **bc-rules-organizer agent** -- plugin agent for rules organization
+  - Moved from global `~/.claude/agents/rules-organizer.md` to plugin `agents/bc-rules-organizer.md`
+  - Added `Bash` tool, `permissionMode: acceptEdits`
+  - Aligned table formats with rules skill: `| # | Avoid | Instead | Why |`, `| # | Practice | Context | Source |`
+  - Numbered entries, max 20 rows, semantic deduplication, specialized `{prefix}-*.md` files
+
+#### Changed
+
+- **Rules skill -> delegator** -- skill delegates all work to `bc-rules-organizer` agent
+  - Removed `context: session` (inline, can spawn agents via Task)
+  - `allowed-tools`: `Read, Write, Edit, Glob, Grep, Bash` -> `Read, Bash, Task`
+  - Skill handles: mode detection, knowledge preparation, agent spawn
+  - Agent handles: extraction, optimization, file creation, validation
+- **Removed `rules-organizer` from global agents** -- no longer in system agents list
+  - Updated `hooks/lib/utils.mjs`, `templates/brewcode.config.json.template`, `docs/hooks.md`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/bc-rules-organizer.md` | NEW -- moved from global, `ft-` prefix, Bash tool |
+| `skills/rules/SKILL.md` | Rewrite: thin delegator to bc-rules-organizer |
+| `hooks/lib/utils.mjs` | Removed `rules-organizer` from system agents |
+| `templates/brewcode.config.json.template` | Removed `rules-organizer` from agents |
+| `docs/hooks.md` | Removed `rules-organizer` from default agents |
+
+---
+
+## [2.8.0] - 2026-02-10
+
+### brewcode
+#### Added
+
+- **Rules skill enhanced** -- 4 modes for flexible rule management
+  - `session` -- Extract from conversation context (default)
+  - `file` -- Extract from KNOWLEDGE.jsonl file
+  - `prompt` -- Targeted update with instruction (`/brewcode:rules <path> <prompt>`)
+  - `list` -- Show all existing rule files
+- **Specialized rule files** -- prefix-based rules for domain separation
+  - Pattern: `{prefix}-avoid.md`, `{prefix}-best-practice.md`
+  - Examples: `test-avoid.md`, `sql-best-practice.md`, `security-avoid.md`
+  - Auto-created when prompt mode detects target domain
+
+#### Changed
+
+- **rules.sh** -- added `list_rules()` and `create_specialized()` functions
+- **SKILL.md** -- updated `argument_hint: "[mode] [path] [prompt]"`, new mode detection table
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/rules/SKILL.md` | 4 modes, specialized files docs, prompt mode logic |
+| `skills/rules/scripts/rules.sh` | `list_rules()`, `create_specialized()`, updated validation |
+
+---
+
+## [2.7.2] - 2026-02-09
+
+### brewcode
+#### Fixed
+
+- **Hook message routing** -- fixed `systemMessage` vs `additionalContext` across 4 hooks
+  - `session-start.mjs`: added `systemMessage` with plugin path + session ID for user console
+  - `grepai-session.mjs`: moved "USE grepai_search FIRST" from `systemMessage` to `additionalContext`
+  - `pre-compact.mjs`: replaced `<ft-handoff>` XML block with short status in `systemMessage`
+  - `stop.mjs`: split block `reason` (user) from `additionalContext` (Claude instructions)
+- **docs/hooks.md** -- 16 discrepancies fixed via multi-agent verification
+  - Removed undocumented session mapping feature (4 references)
+  - Fixed post-task timeout: 30s -> 5s (matched hooks.json)
+  - Fixed all post-task prompts: `systemMessage` -> `additionalContext`
+  - Added PID-file detection for watch/mcp-serve (v2.7.0 feature)
+  - Added grepai-reminder 60s throttle documentation
+  - Updated role detection patterns (added qa, sdet, auditor, engineer, builder, fixer)
+  - Removed `cat` field from KNOWLEDGE.jsonl format (removed in v2.7.0)
+  - Fixed TASK.md -> PLAN.md in stop block message and lifecycle diagram
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `hooks/session-start.mjs` | Added `systemMessage` with plugin path |
+| `hooks/grepai-session.mjs` | Reminder -> `additionalContext` |
+| `hooks/pre-compact.mjs` | Short status instead of XML block |
+| `hooks/stop.mjs` | Split reason/additionalContext |
+| `docs/hooks.md` | 16 fixes across all sections |
+
+---
+
+## [2.7.1] - 2026-02-09
+
+### brewcode
+#### Fixed
+
+- **Review skill `context: fork` -> `session`** -- review template had `context: fork` which prevents Task tool usage; review is built entirely on parallel agent spawning via Task tool, so `fork` made it non-functional
+  - File: `templates/skills/review/SKILL.md.template`
+
+---
+
+## [2.7.0] - 2026-02-09
+
+### brewcode
+#### Added
+
+- **docs/ directory** -- 4 comprehensive documentation files extracted from README.md
+  - `commands.md`, `file-tree.md`, `flow.md`, `hooks.md` (~166KB total)
+- **llm-text-rules.md** -- shared LLM text rules for auto-sync instructions (DRY)
+- **HOOKS-REFERENCE.md** -- Claude Code hooks reference (`user/features/`)
+- **Security hardening** -- path traversal protection, atomic lock/state writes, bind race detection
+  - `validateTaskPath()`, `createLock()` with tmp+rename pattern
+  - Lock schema validation with auto-cleanup of corrupted locks
+- **Config recursion guard** -- prevents infinite loop in `loadConfig()` via `_loadingConfig` flag
+- **Deep merge for nested config** -- `knowledge.validation`, `agents.system` properly merged
+- **Grepai reminder throttling** -- max once per 60s via `.grepai/.reminder-ts`
+- **PID-file-based process detection** -- `watch.pid`/`mcp-serve.pid` before pgrep fallback
+- **Expanded status model** -- `cancelled`, `error` statuses in bc-coordinator; `handoff` at init
+- **Handoff-after-compact context** -- session-start injects re-read instruction on compact source
+- **Teardown confirmation** -- `AskUserQuestion` prompt for non-dry-run teardown
+- **`<instructions>` tags** -- added to spec, plan, start SKILL.md for proper skill boundaries
+
+#### Changed
+
+- **README.md rewritten** -- 836 -> 101 lines; detailed docs moved to `docs/`
+- **KNOWLEDGE.jsonl schema simplified** -- removed `cat` (category) and `scope` fields
+- **MANIFEST.md eliminated** -- all references removed from coordinator, templates, hooks
+- **Scope-aware retention removed** -- flat `maxEntries=100` replaces global:50/task:20 split
+- **Compact threshold** -- 50% -> 80% of maxEntries
+- **Hook output routing** -- multiple hooks switched to `hookSpecificOutput.additionalContext`
+- **SessionStart hooks split** -- session-start.mjs and grepai-session.mjs run independently
+- **Phase detection improved** -- h2/h3 support, excludes verification phases, checkbox counting
+- **Constraint injection expanded** -- ALL constraints for every non-system agent; expanded role regex
+- **Shell script hardening** -- `set -euo pipefail`, `command -v` replacing `which`, curl timeouts
+- **bc-coordinator** -- simplified status updates, removed MANIFEST, `cat` field removed
+- **bc-knowledge-manager** -- removed scope/categories, dedup key 100 chars, maxEntries 100
+- **Config simplified** -- removed `autoCompactThreshold`, `retention`, `stop.maxAttempts`
+- **PLAN.md.template** -- simplified metadata, added `r` (R&D) iteration type, removed MANIFEST
+- **SPEC.md.template** -- added Scope section, simplified headers
+- **Rule templates** -- removed `description:` from YAML frontmatter
+- **package.json** -- version synced to 2.7.0, author name corrected
+- **install.sh** -- `|| true` for version extractions, `mktemp` for temp files
+
+#### Fixed
+
+- **Config recursion infinite loop** -- `log -> shouldLog -> getLogLevel -> loadConfig -> log`
+- **Config cache never populated** -- `cachedConfigCwd` placed after unreachable validation
+- **Shallow config merge** -- nested keys (`knowledge.validation`, `agents.system`) lost
+- **Lock bind race condition** -- atomic tmp+rename with ownership verification
+- **State file corruption** -- `saveState()` now uses atomic writes
+- **Path traversal in TASK.md** -- rejects `..`, anchors regex
+- **stop.mjs crash** -- `typeof` guard on `session_id`, error handler cleans lock
+- **stop.mjs references TASK.md** -- corrected to PLAN.md
+- **pre-compact null task** -- added null check for `parseTask()` return
+- **install.sh pipeline failures** -- `|| true` prevents silent exits under `set -euo pipefail`
+- **grepai index error swallowed** -- now reports "error" and logs warning
+
+#### Removed
+
+- **`templates/hooks/grepai-session.mjs.template`** -- built-in hook replaces template
+- **`templates/reports/MANIFEST.md.template`** -- MANIFEST concept removed
+- **`templates/review-report.md.template`** -- review reporting simplified
+- **6 exported functions** -- `extractStatus`, `findCurrentPhase`, `writeSessionInfo`, `getTaskDirFromSession`, `classifyScope`, `appendKnowledgeValidated`
+- **`cat`/`scope` fields** from KNOWLEDGE.jsonl schema
+- **Config keys** -- `autoCompactThreshold`, `retention`, `stop.maxAttempts`, `removeOrphansAfterDays`
+- **`.claude/tasks/specs/` directory** creation in setup.sh
+
+#### Breaking Changes
+
+- KNOWLEDGE.jsonl: `cat` and `scope` fields no longer written (existing entries tolerated)
+- MANIFEST.md no longer created/maintained
+- 6 functions removed from public API (validateEntry, classifyScope, etc.)
+- `getReportsDir()` signature: `cwd` parameter removed
+
+---
+
+## [2.6.0] - 2026-02-08
+
+### brewcode
+#### Added
+
+- **2-stage creation flow** -- `spec` -> `plan` (replaces monolithic `create`)
+  - `/brewcode:spec` -- Creates SPEC through research + AskUserQuestion interaction
+  - `/brewcode:plan` -- Creates PLAN from SPEC or Plan Mode file with user approval
+  - `/brewcode:create` -- **Removed** (use `spec` + `plan` separately)
+- **User interaction during creation** -- AskUserQuestion for clarifying scope, validating decisions
+- **Task directory structure** -- All task files grouped in `{TS}_{NAME}_task/` directory
+- **Session mapping** -- `sessions/{session_id}.info` for O(1) task lookup
+- **Per-task lock** -- `.lock` inside task directory (was global `cfg/.brewcode.lock`)
+
+#### Breaking Changes
+
+- Task files moved from flat `.claude/tasks/` to `.claude/tasks/{TS}_{NAME}_task/`
+- `TASK.md` renamed to `PLAN.md`
+- SPEC moved from `specs/` to task directory
+- `KNOWLEDGE.jsonl` moved to task directory
+- Reports directory renamed to `artifacts/` inside task directory
+- Phase directory naming: `phase_{P}/iter_{N}_{type}/` -> `{P}-{N}{T}/`
+- `TASK.md.template` renamed to `PLAN.md.template`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/spec/SKILL.md` | NEW -- spec creation skill (7-step workflow) |
+| `skills/plan/SKILL.md` | NEW -- plan creation skill (dual input: SPEC/Plan Mode) |
+| `skills/create/` | **Removed** (replaced by spec + plan) |
+| `templates/PLAN.md.template` | NEW -- renamed from TASK.md.template |
+| `templates/SPEC.md.template` | Rewrite: analytical format (91 -> 42 lines) |
+| `templates/SPEC-creation.md` | Updated paths and section names |
+| `hooks/lib/utils.mjs` | Major refactor: 5 new functions, per-task lock |
+| `hooks/pre-compact.mjs` | Compact phase dirs, artifacts/ |
+| `hooks/stop.mjs` | Per-task lock path |
+| `hooks/session-start.mjs` | Session mapping |
+| `hooks/pre-task.mjs` | Absolute path fix for knowledge |
+| `agents/bc-coordinator.md` | Artifacts paths, PLAN.md refs |
+| `agents/bd-auto-sync-processor.md` | Artifacts path |
+| `templates/reports/MANIFEST.md.template` | **Removed** |
+| `templates/reports/FINAL.md.template` | Artifacts index |
+| `templates/instructions-template.md` | Full path migration |
+| `templates/rules/post-agent-protocol.md.template` | Path glob fix |
+| `skills/start/SKILL.md` | PLAN.md, artifacts paths |
+| `skills/setup/SKILL.md` | PLAN.md.template refs |
+| `skills/setup/scripts/setup.sh` | PLAN.md.template sync |
+| `skills/teardown/SKILL.md` | Task dir structure |
+| `skills/teardown/teardown.sh` | Task dir references |
+| `README.md` | Full path migration (20+ refs) |
+
+#### Migration
+
+Existing tasks are not automatically migrated. New tasks use the new structure.
+Run `/brewcode:setup` to update adapted templates.
+
+---
+
+## [2.5.0] - 2026-02-08
+
+### brewcode
+#### Changed
+
+- **Auto-sync INDEX v2** -- simplified from 8 fields to 4 (`p`, `t`, `u`, `pr`)
+  - Removed: `m` (mtime), `h` (hash), `v` (version), `s` (status)
+  - Dates: ISO8601 -> `YYYY-MM-DD`
+  - Protocol values: `default`/`custom` -> `default`/`override`
+  - New type: `config` (for `CLAUDE.md` files)
+- **Auto-sync instructions system** -- type-specific sync instructions
+  - New: `instructions/sync-{skill,agent,doc,rule,config}.md` -- per-type verification checklists and research directions
+  - Processor loads instructions dynamically instead of hardcoded logic
+  - `<auto-sync-protocol>` -> `<auto-sync-override>` with 3 fields: `sources`, `focus`, `preserve`
+- **Auto-sync SKILL.md rewrite** -- simplified phases, added `-o`/`--optimize` flag
+  - `context: fork` -> `context: session` (access to conversation context)
+  - Added `Skill` to allowed-tools
+  - INIT mode simplified (no custom protocol prompt generation)
+- **bd-auto-sync-processor rewrite** -- 364 -> 135 lines (-63%)
+  - Removed `Task` tool dependency -- direct Glob/Grep/Read/WebFetch calls
+  - Loads per-type instruction files for verification checklist
+  - Model: opus -> sonnet
+- **bc-coordinator: inline compaction** -- removed `Task` tool from agent tools
+  - Auto-compact now inline: read -> dedupe -> sort -> trim -> write
+  - No longer spawns bc-knowledge-manager for compaction
+- **bc-grepai-configurator: direct tool calls** -- removed `Task` tool dependency
+  - Phase 2: Explore agents -> direct Glob/Grep/Read calls
+- **Skills context: `fork` -> `session`** -- auto-sync, create, grepai skills now run in session context
+- **detect-mode.sh: FLAGS support** -- 3-field output `MODE|ARG|FLAGS`, `-o`/`--optimize` flag
+- **index-ops.sh simplified** -- removed `query`, `hash`, `mtime` commands; added `threshold_date` helper; macOS/Linux date compatibility
+- **Review skill: Critic mode** -- new `-c`/`--critic` flag for Devil's Advocate phase
+  - Phase 5.5 Critic + Phase 5.75 DoubleCheck Critic
+  - P0 priority for verified critic findings
+  - Auto-enable via keywords: critic
+  - Visual ASCII workflow diagrams in README
+
+#### Added
+
+- `skills/auto-sync/instructions/` -- 5 type-specific instruction files
+- `autoSync` config section -- `intervalDays`, `retention`, `optimize`, `parallelAgents`
+- Validation for `autoSync` numeric fields in `utils.mjs`
+
+#### Fixed
+
+- **Agent name typo** -- `prompt-optimizer` -> `text-optimizer` in config and hooks
+- **Removed stale PROTOCOL_REMINDER** -- pre-agent priming string removed from `pre-task.mjs`
+
+#### Removed
+
+- `skills/auto-sync/references/doc-types.md` (replaced by instructions/)
+- `skills/auto-sync/references/protocol-default.md` (replaced by instructions/)
+- `user/CLAUDE-CODE-RELEASES-2025-2026.md`
+- `user/CLAUDE-CODE-TASK-MANAGER-GUIDE.md`
+- `user/CONTEXT-INJECTION-GUIDE.md`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/auto-sync/SKILL.md` | Rewrite: simplified phases, `-o` flag, `context: session` |
+| `skills/auto-sync/README.md` | Updated to match new INDEX format and override block |
+| `skills/auto-sync/scripts/detect-mode.sh` | 3-field output with FLAGS |
+| `skills/auto-sync/scripts/discover.sh` | Updated type detection |
+| `skills/auto-sync/scripts/index-ops.sh` | Simplified commands, date compat |
+| `agents/bd-auto-sync-processor.md` | Rewrite: direct tools, instruction loading |
+| `agents/bc-coordinator.md` | Inline compaction, removed Task tool |
+| `agents/bc-grepai-configurator.md` | Direct tool calls, removed Task tool |
+| `hooks/lib/utils.mjs` | `autoSync` config, agent name fix |
+| `hooks/pre-task.mjs` | Removed PROTOCOL_REMINDER |
+| `skills/create/SKILL.md` | `context: fork` -> `session` |
+| `skills/grepai/SKILL.md` | `context: fork` -> `session` |
+| `templates/auto-sync/INDEX.jsonl.template` | 4-field format |
+| `templates/brewcode.config.json.template` | `autoSync` section |
+| `templates/skills/review/SKILL.md.template` | Critic phase, argument-hint |
+| `templates/skills/review/references/agent-prompt.md` | Critic prompt |
+| `templates/skills/review/references/report-template.md` | P0 priority section |
+| `README.md` | Critic mode docs, workflow diagrams |
+
+---
+
+## [2.4.1] - 2026-02-06
+
+### brewcode
+#### Fixed
+- **C1: Role detection false positive** -- `name.includes('arch')` -> `name.includes('architect')` in `pre-task.mjs`
+  - "search", "research", "archive" no longer misclassified as DEV role
+- **C2: INIT casing bug** -- sed now strips first word unconditionally (was `[Ii]nit` only)
+  - `INIT path.md` and `iNiT path.md` now correctly output `INIT|path.md`
+- **H1: Stale `/brewcode:doc` in CLAUDE.md** -- replaced with `/brewcode:auto-sync`
+- **H2: Phantom `sync` mode in description** -- replaced with actual 6 modes
+- **M1: Bare `init` error** -- `detect-mode.sh` now exits with error for `init` without path
+- **M2: Phase ordering** -- STATUS/INIT phases moved before Phase 1 Setup in SKILL.md
+- **M3: Agent count** -- README.md updated to 4 agents (added bd-auto-sync-processor)
+- **M4: Historical accuracy** -- [2.3.0] modes list shows original values with note
+- **M5: `ARGS_HERE` placeholder** -- replaced with `$ARGUMENTS` in SKILL.md
+- **L1: Dead code** -- collapsed identical if/else FILE detection branches
+- **L2: discover.sh JSON bug** -- replaced pipe subshell with sed (comma separator fix)
+- **L3: Invalid hex hash** -- `d4e5f6g7` -> `d4e5f607` in INDEX.jsonl.template
+- **L4: Related docs** -- added auto-sync skill and bd-auto-sync-processor agent links
+
+---
+
+## [2.4.0] - 2026-02-06
+
+### brewcode
+#### Changed
+- **Auto-sync modes** -- removed CREATE mode, added STATUS + INIT
+  - Removed: `create skill`, `create agent`, `create doc` modes
+  - Added: `status` -- diagnostic report of INDEX state + non-indexed files
+  - Added: `init <path> [prompt]` -- add auto-sync tag + custom protocol to existing document
+  - INIT supports LLM-optimized `<auto-sync-protocol>` block generation
+  - Phases renumbered: 6 -> 5 (CREATE phase removed)
+  - Modes: `status`, `init`, `global`, `project` (default), `file`, `folder`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/auto-sync/SKILL.md` | Removed Phase 2 CREATE, added STATUS + INIT phases, renumbered |
+| `skills/auto-sync/scripts/detect-mode.sh` | Removed CREATE detection, added STATUS + INIT |
+| `skills/auto-sync/README.md` | Updated docs, flow diagram, phase numbering |
+| `README.md` | Updated auto-sync description and mode table |
+| `RELEASE-NOTES.md` | Updated modes list |
+
+---
+
+## [2.3.1] - 2026-02-05
+
+### brewcode
+#### Changed
+- **Auto-tagging** -- `/brewcode:auto-sync` adds `auto-sync: enabled` to .md files
+  - PROJECT/FOLDER/GLOBAL modes find ALL .md files and tag them
+  - SKILL.md/agent.md -> YAML frontmatter
+  - Other .md -> `<!-- auto-sync:enabled -->` after title
+  - No manual migration required
+
+---
+
+## [2.3.0] - 2026-02-05
+
+### brewcode
+#### Features
+- **KILLER FEATURE**: `/brewcode:auto-sync` - Universal documentation system
+  - Replaces `/brewcode:doc`
+  - Modes (v2.3.0): `create skill|agent|doc`, `sync`, `global`, `project`, `path` (CREATE removed in 2.4.0)
+  - LLM-optimized JSONL INDEX for tracking documents
+  - Auto-detects document types (skill, agent, doc, rule)
+  - Parallel processing with `bd-auto-sync-processor` agent
+  - Custom protocols via `<auto-sync-protocol>` block
+  - Stale detection (7 days threshold)
+
+#### Added
+- `bd-auto-sync-processor` agent for document processing
+- INDEX.jsonl.template for tracking synced documents
+- Scripts: `discover.sh`, `index-ops.sh`, `detect-mode.sh`
+- References: `protocol-default.md`, `doc-types.md`
+
+#### Removed
+- `/brewcode:doc` skill (replaced by `/brewcode:auto-sync`)
+
+#### Migration
+If you were using `/brewcode:doc`, use `/brewcode:auto-sync` instead:
+- `/brewcode:doc update` -> `/brewcode:auto-sync`
+- `/brewcode:doc sync` -> `/brewcode:auto-sync`
+
+---
+
+## v2.2.0 (2026-02-04)
+
+### brewcode
+#### Added
+
+- **Role-based constraint injection** -- auto-injection of constraints into agent prompts
+  - New tags in TASK.md: `<!-- ALL -->`, `<!-- DEV -->`, `<!-- TEST -->`, `<!-- REVIEW -->`
+  - `pre-task.mjs`: role detection by agent name (developer->DEV, tester->TEST, reviewer->REVIEW)
+  - Constraints injected at prompt start before execution
+
+- **Knowledge validation** -- filter useless entries
+  - Blocklist: "Working on...", "Let me...", "Looks good", "Phase N", etc.
+  - Min 15 chars, technical density check
+  - `validateEntry()`, `appendKnowledge()` (with validation)
+
+- **Scope-aware retention** -- separate global/task storage
+  - Auto-classification: avoids->global, handoff->task, arch/config/api->global
+  - Compaction retains: global:50, task:20 entries
+
+#### Changed
+
+| File | Change |
+|------|--------|
+| `TASK.md.template` | Added Role Constraints section with examples |
+| `brewcode.config.json.template` | `knowledge.validation`: enabled, blocklist, densityCheck; `knowledge.retention`: global:50, task:20; `constraints.enabled`: true |
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `hooks/pre-task.mjs` | Role detection, constraint injection |
+| `hooks/lib/knowledge.mjs` | validateEntry, appendKnowledge, localCompact |
+| `templates/TASK.md.template` | Role Constraints section |
+| `templates/brewcode.config.json.template` | validation, retention, constraints |
+| `agents/bc-coordinator.md` | Updated for constraints |
+| `agents/bc-knowledge-manager.md` | Scope documentation |
+
+---
+
+## v2.1.2 (2026-02-02)
+
+### brewcode
+#### Changed
+
+- **Review skill consolidation** -- removed duplicate, kept only template
+  - Removed: `skills/review/` (static version)
+  - Kept: `templates/skills/review/SKILL.md.template` (generated)
+  - Added: `templates/skills/review/references/` (agent-prompt.md, report-template.md)
+  - Updated: SKILL.md.template (+quorum algorithm, matching/merge rules, DoubleCheck prompt, error handling)
+  - Updated: setup.sh (copies references/)
+  - Updated: README.md (link to template)
+
+---
+
+## v2.1.1 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **Agent triggers YAML** -- replaced `Trigger:` with `Triggers -` in agent descriptions
+  - bc-coordinator.md, bc-knowledge-manager.md
+  - Colon in value broke YAML parsing
+
+---
+
+## v2.1.0 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **Documentation sync** -- major documentation update
+  - README.md: PostToolUse hook, NEXT ACTION protocol, hook matrix (7 hooks)
+  - CLAUDE.md: hook documentation, skill namespacing table
+  - grepai.md: line refs, timeout info
+  - user/coordinator.md: complete rewrite with NEXT ACTION
+
+- **Template namespacing** -- skill names in templates
+  - `templates/skills/review/SKILL.md.template`: `brewcode:review`
+  - `templates/review-report.md.template`: `brewcode:review`
+
+- **Protocol terminology** -- unified `WRITE report -> CALL bc-coordinator`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `README.md` | PostToolUse, NEXT ACTION, hook matrix |
+| `grepai.md` | line refs `:24`, timeout `(1s)` |
+| `templates/skills/review/SKILL.md.template` | `name: brewcode:review` |
+| `templates/review-report.md.template` | `brewcode:review` footer |
+| `skills/review/references/report-template.md` | `brewcode:review` |
+| `CLAUDE.md` (root) | 7 hooks documentation |
+
+---
+
+## v2.0.73 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **Skill namespacing** -- added remaining skills
+  - `create` -> `brewcode:create`
+  - `doc` -> `brewcode:doc`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/create/SKILL.md` | name: `brewcode:create` |
+| `skills/doc/SKILL.md` | name: `brewcode:doc` |
+
+---
+
+## v2.0.72 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **Skill namespacing** -- unified skill names with namespace `brewcode:`
+  - `review` -> `brewcode:review`
+  - `rules` -> `brewcode:rules`
+  - `start` -> `brewcode:start`
+- **Skill descriptions** -- formatting
+  - Removed colons after "Triggers" in all skills
+  - Simplified argument-hint for `doc` and `rules`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/review/SKILL.md` | name: `brewcode:review` |
+| `skills/rules/SKILL.md` | name: `brewcode:rules`, argument-hint |
+| `skills/start/SKILL.md` | name: `brewcode:start` |
+| `skills/create/SKILL.md` | triggers formatting |
+| `skills/doc/SKILL.md` | triggers formatting, argument-hint |
+
+---
+
+## v2.0.71 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **Skill argument hints** -- improved argument hints
+  - `doc`: description lists modes `Modes - create, update, analyze, sync, all`
+  - `doc`: argument-hint simplified to `[create|update|analyze|sync] <path>`
+  - `rules`: argument-hint shows session mode `[<path>] (empty = session mode)`
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/doc/SKILL.md` | description + argument-hint |
+| `skills/rules/SKILL.md` | argument-hint |
+
+---
+
+## v2.0.68 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **skills/install/SKILL.md** -- Output Rules for correct display
+  - Added Output Rules section: show FULL output, preserve tables
+  - Each phase has `-> Show:` and `-> Explain:` hints
+  - Phase 5 skipped if grepai already installed
+
+---
+
+## v2.0.67 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **Plugin installation** -- version bump to apply pending changes from v2.0.66
+
+---
+
+## v2.0.66 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **skills/install/SKILL.md** -- token optimization (-42%)
+  - Added triggers: "install brewcode", "setup prerequisites"
+  - Replaced verbose JSON with compact tables
+- **skills/install/scripts/install.sh** -- improved summary
+  - New format: `| Component | Status | Installed | Latest |`
+  - Shows installed AND latest available version
+  - Logs performed actions (Actions Performed)
+  - Helper functions: `log_action()`, `clear_actions()`
+
+#### Removed
+
+- **skills/install/scripts/** -- removed 8 duplicate scripts (all in install.sh)
+
+---
+
+## v2.0.65 (2026-02-01)
+
+### brewcode
+#### Added
+
+- **skills/install** -- new interactive plugin installer
+  - Single script `install.sh` with parameters (state, required, grepai, etc.)
+  - AskUserQuestion for optional components (ollama, grepai)
+  - Required timeout symlink with confirmation
+  - Helper functions: `ollama_running()`, `wait_for_ollama()`, `get_grepai_versions()`
+
+#### Fixed
+
+| File | Fix |
+|------|-----|
+| `grepai/upgrade.sh` | `grepai --version` -> `grepai version` |
+| `grepai/infra-check.sh` | `grepai --version` -> `grepai version` |
+| `bc-grepai-configurator.md` | `grepai --version` -> `grepai version` |
+
+- **install.sh** -- security & reliability fixes:
+  - curl with `--connect-timeout 2 --max-time 5`
+  - `NONINTERACTIVE=1` for Homebrew
+  - Retry loop for ollama start (10 attempts)
+  - Guard for `ollama list` (check `command -v ollama`)
+  - Symlink safety check (do not overwrite regular files)
+  - Version fallback `${VER:-unknown}`
+
+#### Changed
+
+- **grepai skill** -- removed `install` mode, now separate skill `/install`
+- **detect-mode.sh** -- removed `install` mode from grepai
+
+---
+
+## v2.0.64 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **grepai-reminder.mjs** -- added async/stdin pattern
+  - Reads `input.cwd` from stdin instead of `process.cwd()`
+  - Added try/catch with `output({})` on errors
+  - Consistency with other hooks (grepai-session, pre-task)
+
+- **grepai-session.mjs** -- added MCP server check
+  - New function `checkMcpServer()` checks `grepai mcp-serve`
+  - `additionalContext` injected only if MCP server available
+  - Prevents useless grepai_search calls
+
+- **mcp-check.sh** -- 4 security/reliability fixes
+  - `mkdir -p` before creating settings.json
+  - `trap 'rm -f "$TMP_FILE"' EXIT` for temp file cleanup
+  - Path injection fix: path via `os.environ['SETTINGS_FILE']`
+  - JSON validation after each write
+
+- **create-rule.sh** -- fallback frontmatter fix
+  - `globs:` -> `paths:` (Claude Code format)
+  - Removed `alwaysApply:` (Cursor-only field)
+
+- **grepai.md** -- documentation frontmatter fix
+  - 3 places: `globs:` -> `paths:`, `alwaysApply:` -> removed
+
+- **SKILL.md** -- simplified ARGS instruction
+  - Removed confusing `ARGS_HERE` placeholder
+  - Direct use of `$ARGUMENTS`
+
+#### Changed
+
+- **All 12 grepai scripts** -- added `set -euo pipefail`
+  - detect-mode.sh, infra-check.sh, init-index.sh, start.sh, stop.sh
+  - reindex.sh, optimize.sh, upgrade.sh, status.sh, verify.sh
+  - create-rule.sh, mcp-check.sh
+
+---
+
+## v2.0.63 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **pre-task.mjs** -- removed `systemMessage` from UI
+  - grepai reminder and knowledge injection in agent prompts works as before
+  - Logging to `brewcode.log` preserved
+  - UI no longer shows "brewcode: grepai: injected"
+
+---
+
+## v2.0.62 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **create-rule.sh** -- grepai rule always rewritten from template
+  - Removed file existence check
+  - Each `/brewcode:grepai setup` updates rule to current version
+
+---
+
+## v2.0.61 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **pre-task.mjs** -- grepai reminder injected for ALL agents
+  - Previously Explore, Plan, Bash, etc. were in system agents list -> skipped
+  - Now: grepai reminder -> ALL agents, knowledge injection -> only non-system
+  - Fixed syntax (unclosed if block)
+
+---
+
+## v2.0.60 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **pre-task.mjs** -- critical JSON structure fix
+  - `updatedInput` moved inside `hookSpecificOutput` (per docs)
+  - Added `permissionDecision: 'allow'` to apply changes
+  - Without this fix, injection into agent prompts did NOT work
+
+---
+
+## v2.0.59 (2026-02-01)
+
+### brewcode
+#### Fixed
+
+- **Hooks use correct fields** -- fixed per Claude Code docs
+  - `systemMessage` -> shown to user
+  - `additionalContext` -> goes to Claude context
+  - For agents: reminder injected in `updatedInput.prompt`
+- **grepai-session.mjs** -- `hookSpecificOutput.additionalContext` for SessionStart
+- **grepai-reminder.mjs** -- `hookSpecificOutput.additionalContext` for PreToolUse Glob/Grep
+- **pre-task.mjs** -- reminder in agent prompt (not in parent's additionalContext)
+
+---
+
+## v2.0.58 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **grepai reminder everywhere** -- single imperative message
+  - `grepai: USE grepai_search FIRST for code exploration`
+- **grepai-session.mjs** -- reminder at session start (when grepai ready)
+- **pre-task.mjs** -- reminder for ALL agents (Explore, developer, etc.)
+- **grepai-reminder.mjs** -- strengthened: `consider` -> `USE FIRST`
+- **create-rule.sh** -- adds Code Search section to project CLAUDE.md
+
+---
+
+## v2.0.57 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **grepai-reminder.mjs** -- systemMessage instead of console.log
+  - Claude now sees reminder in context
+  - Message: `grepai MCP available -- consider FIRST!`
+
+---
+
+## v2.0.56 (2026-02-01)
+
+### brewcode
+#### Changed
+
+- **mcp-check.sh** -- automatic `allowedTools` setup for grepai
+  - Adds `mcp__grepai__*` to `~/.claude/settings.json`
+  - Removes `[destructive]` prompts for read-only tools
+- **grepai-first.md.template** -- shortened and improved
+  - Removed duplication with MCP descriptions
+  - Added inline call->response examples
+  - Reference to MCP: "Params -> MCP descriptions"
+- **status.sh, verify.sh** -- show Permissions status
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/grepai/scripts/mcp-check.sh` | allowedTools auto-config |
+| `skills/grepai/scripts/status.sh` | Permissions status |
+| `skills/grepai/scripts/verify.sh` | Permissions check |
+| `skills/grepai/SKILL.md` | Phase 2 docs |
+| `templates/rules/grepai-first.md.template` | inline examples, no MCP duplication |
+
+---
+
+## v2.0.55 (2026-01-31)
+
+### brewcode
+#### Changed
+
+- **setup.sh** -- `grepai-first.md` synced on every setup
+  - Uses `sync_template` (updates if changed)
+  - No manual deletion needed for updates
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/setup/scripts/setup.sh` | sync grepai-first.md on setup |
+
+---
+
+## v2.0.54 (2026-01-31)
+
+### brewcode
+#### Changed
+
+- **grepai-first.md.template** -- complete rewrite
+  - Tools table with params `limit?`, `compact?`
+  - `<examples>` with JSON responses for search/callers/graph
+  - Table `limit + compact` -> response -> workflow
+  - Removed obvious content (Grep/Glob -- Claude knows)
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `templates/rules/grepai-first.md.template` | search types, compact mode, examples |
+
+---
+
+## v2.0.53 (2026-01-31)
+
+### brewcode
+#### Added
+
+- **grepai-reminder hook** -- PreToolUse hook for Glob/Grep tools
+  - Reminds Claude to prefer `grepai_search` when `.grepai/` exists
+  - Debug logging via `log()` utility
+  - Non-blocking (exit 0), soft reminder only
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `hooks/grepai-reminder.mjs` | New hook script |
+| `hooks/hooks.json` | Added PreToolUse matcher for `Glob\|Grep` |
+
+---
+
+## v2.0.52 (2026-01-31)
+
+### brewcode
+#### Fixed
+
+- **grepai indexing uses `grepai watch`** -- `grepai init` does NOT build index, only creates config
+  - `reindex.sh`: complete rewrite -- uses `grepai watch`, polls for "Initial scan complete"
+  - `init-index.sh`: rewritten -- uses `grepai watch`, skips if index exists
+  - Added .grepai directory validation to init-index.sh
+  - Dynamic timeouts based on file count (2 min to 60 min)
+
+#### Changed
+
+- **Log paths** -- all scripts use `.grepai/logs/grepai-watch.log`
+- **Documentation** -- updated SKILL.md and bc-grepai-configurator.md with correct `grepai watch` references
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/grepai/scripts/reindex.sh` | Complete rewrite for `grepai watch` |
+| `skills/grepai/scripts/init-index.sh` | Rewritten with validation |
+| `skills/grepai/SKILL.md` | Updated log paths, watch references |
+| `agents/bc-grepai-configurator.md` | Updated Phase 5, troubleshooting |
+
+---
+
+## v2.0.51 (2026-01-31)
+
+### brewcode
+#### Fixed
+
+- **reindex.sh index.gob wait** -- wait up to 30s for index.gob after watch starts
+  - Fixes race condition where "index.gob missing" shown before watch creates it
+  - Shows progress: "Waiting for index.gob (watch is building)..."
+
+---
+
+## v2.0.50 (2026-01-31)
+
+### brewcode
+#### Fixed
+
+- **grepai indexing synchronous** -- scripts wait for `grepai init` to complete before starting watch
+  - `init-index.sh`: runs init synchronously with `tee` to log, then starts watch
+  - `reindex.sh`: same fix -- waits for init, logs to `.grepai/logs/grepai-init.log`
+  - `SKILL.md`: updated warnings to reflect synchronous behavior
+  - `bc-grepai-configurator.md`: updated Phase 5 indexing notes
+
+#### Changed
+
+- **Log output** -- init progress goes to `.grepai/logs/grepai-init.log` with timestamps
+- **Duration tracking** -- scripts show actual indexing time on completion
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/grepai/scripts/init-index.sh` | Synchronous init with logging |
+| `skills/grepai/scripts/reindex.sh` | Synchronous init with logging |
+| `skills/grepai/SKILL.md` | Updated async->sync warnings |
+| `agents/bc-grepai-configurator.md` | Updated Phase 5 notes |
+
+---
+
+## v2.0.49 (2026-01-31)
+
+### brewcode
+#### Added
+
+- **grepai gitignore docs** -- documented gitignore behavior and limitations
+  - `bc-grepai-configurator.md`: new "## gitignore Behavior" section
+  - Explains 3 layers: global gitignore -> local -> config.yaml `ignore:`
+  - Workarounds table, diagnostic commands
+  - Updated Phase 2 agent #5 to check global gitignore
+
+- **grepai indexing time estimates** -- scripts show file count and ETA
+  - `init-index.sh`: counts files, shows ETA, background indexing notice
+  - `reindex.sh`: same improvements
+  - `status.sh`: shows "indexing in progress" from log activity
+  - `SKILL.md`: warnings after Phase 4 and reindex mode
+  - `bc-grepai-configurator.md`: indexing time table in Phase 5
+
+#### Changed
+
+- **grepai-first.md** -- added Limitations section (gitignore behavior)
+- **CLAUDE.md** -- added "### Limitations (gitignore)" in grepai section
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/bc-grepai-configurator.md` | gitignore docs, indexing time table |
+| `skills/grepai/SKILL.md` | async indexing warnings |
+| `skills/grepai/scripts/init-index.sh` | file count, ETA, progress commands |
+| `skills/grepai/scripts/reindex.sh` | file count, ETA, progress commands |
+| `skills/grepai/scripts/status.sh` | indexing progress detection |
+| `.claude/rules/grepai-first.md` | gitignore limitations |
+| `CLAUDE.md` | gitignore limitations |
+
+---
+
+## v2.0.47 (2026-01-31)
+
+### brewcode
+#### Removed
+
+- **Symlinks** -- removed all symlink-related functionality
+  - Claude Code fixed plugin skill display ([#18949](https://github.com/anthropics/claude-code/issues/18949))
+  - Removed Phase 5 (Enable Autocomplete) from `/brewcode:setup`
+  - Removed `link` mode from setup skill
+  - Removed symlink creation from `setup.sh`
+  - Removed symlink removal from `/brewcode:teardown`
+
+#### Changed
+
+- **Skill triggers** -- updated to colon syntax
+  - `/brewcode-*` -> `/brewcode:*` (plugin namespace)
+  - `brewcode-review` directory remains for project-local skill
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/setup/SKILL.md` | Removed Phase 5, link mode, symlink output |
+| `skills/setup/scripts/setup.sh` | Removed `symlinks` mode and functions |
+| `skills/teardown/SKILL.md` | Removed symlink mentions |
+| `skills/teardown/teardown.sh` | Removed symlink removal loop |
+| `skills/review/SKILL.md` | Updated trigger to `:review` |
+| `skills/doc/SKILL.md` | Updated trigger to `:doc` |
+| `agents/bc-coordinator.md` | Updated skill references |
+| `templates/instructions-template.md` | Updated all skill references |
+| `README.md` | Removed symlink references, updated examples |
+| `CLAUDE.md` | Updated `/brewcode:setup` description |
+
+---
+
+## v2.0.46 (2026-01-31)
+
+### brewcode
+#### Fixed
+
+- **status.sh** -- version detection for grepai CLI
+  - Fixed: `grepai version` (subcommand) instead of `--version` (flag)
+  - Fixed: macOS compatibility (removed `timeout` command)
+  - Shows: `grepai: v0.25.0 (brew: v0.24.1)`
+
+---
+
+## v2.0.45 (2026-01-31)
+
+### brewcode
+#### Added
+
+- **grepai skill** -- `upgrade` mode for CLI updates via Homebrew
+  - `scripts/upgrade.sh` -- version check + brew upgrade
+  - Keywords: upgrade, brew
+- **status.sh** -- version comparison (current vs latest)
+  - Shows `v0.23.0 (v0.24.0 available)` when outdated
+
+#### Changed
+
+- **bc-grepai-configurator** -- optimized for LLM (-32% tokens)
+  - Fixed MCP paths (`~/.claude.json` instead of `~/.claude/mcp.json`)
+  - Added `compact` param to `grepai_trace_graph`
+  - Added MCP Integration phase (Phase 4)
+- **grepai-first.md.template** -- improved clarity
+  - Fixed `--compact` syntax (was `compact:true`)
+  - Added WebSearch row to decision table
+  - Removed unverified "3-7 words" guideline
+- **grepai-session.mjs** -- Windows compatibility
+  - Added platform check for `pgrep` (macOS/Linux only)
+  - Documented limitation in header comment
+- **SKILL.md** -- removed unused `Glob` from allowed-tools
+
+#### Fixed
+
+- **init-index.sh** -- added explicit `exit 0`
+- **detect-mode.sh** -- added `(unrecognized text) -> prompt` to Mode Reference
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/bc-grepai-configurator.md` | MCP paths, trace params, -32% tokens |
+| `templates/rules/grepai-first.md.template` | --compact, WebSearch, clarity |
+| `skills/grepai/SKILL.md` | upgrade mode, allowed-tools |
+| `skills/grepai/scripts/upgrade.sh` | NEW -- brew upgrade |
+| `skills/grepai/scripts/status.sh` | version comparison |
+| `skills/grepai/scripts/detect-mode.sh` | upgrade keywords |
+| `skills/grepai/scripts/init-index.sh` | exit 0 |
+| `hooks/grepai-session.mjs` | Windows check |
+
+---
+
+## v2.0.44 (2026-01-30)
+
+### brewcode
+#### Added
+
+- **bc-grepai-configurator** -- added "Supported File Extensions" section
+  - Full list of 50+ extensions from [`indexer/scanner.go`](https://github.com/yoanbernabeu/grepai/blob/main/indexer/scanner.go)
+  - Explicit `.mjs`/`.cjs`/`.mts`/`.cts` NOT supported warning
+  - Auto-excluded files list (minified, bundles, binaries, >1MB)
+
+#### Changed
+
+- **bc-grepai-configurator** -- updated `.mjs` constraint with source link to scanner.go
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `agents/bc-grepai-configurator.md` | Added extensions table, source links |
+
+---
+
+## v2.0.43 (2026-01-30)
+
+### brewcode
+#### Added
+
+- **Setup `link` mode** -- quick symlink refresh without full setup
+  - Usage: `/brewcode:setup link`
+  - Use after plugin update to refresh `~/.claude/skills/brewcode-*` symlinks
+- **RELEASE-NOTES.md** -- changelog with format and protocol
+
+#### Changed
+
+- **CLAUDE.md** -- added requirement to update RELEASE-NOTES.md before plugin version bump
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/setup/SKILL.md` | Added `link` mode with Mode Detection section |
+| `RELEASE-NOTES.md` | New file |
+
+---
+
+## v2.0.42 (2026-01-30)
+
+### brewcode
+#### Fixed
+
+- **Rules frontmatter documentation** -- corrected invalid fields
+  - `globs` -> NOT supported (was incorrectly used)
+  - `alwaysApply` -> NOT supported (Cursor field, not Claude Code)
+  - `paths` -> Only valid field for conditional loading
+
+#### Updated Files
+
+| File | Change |
+|------|--------|
+| `skills/rules/SKILL.md` | Added frontmatter reference section |
+| `agents/bc-knowledge-manager.md` | Added rules frontmatter reference |
+
+#### Known Issues
+
+- **Bug #16299**: Lazy loading not working -- all rules load at session start regardless of `paths`
+  - Source: [github.com/anthropics/claude-code/issues/16299](https://github.com/anthropics/claude-code/issues/16299)
+
+#### Documentation Sources
+
+| Topic | URL |
+|-------|-----|
+| Official Rules Docs | [code.claude.com/docs/en/memory](https://code.claude.com/docs/en/memory.md#path-specific-rules) |
+| YAML Syntax Fix | [Issue #13905](https://github.com/anthropics/claude-code/issues/13905) |
+| Lazy Loading Bug | [Issue #16299](https://github.com/anthropics/claude-code/issues/16299) |
+
+---
+
+## v2.0.41 and earlier
+
+See git history for previous changes.
+
+---
+
+## Format
+
+```
+## vX.Y.Z (YYYY-MM-DD)
+
+### Added | Changed | Fixed | Removed | Deprecated | Security
+
+- **Feature/Component** -- description
+  - Details if needed
+
+### Updated Files (optional)
+### Known Issues (optional)
+### Breaking Changes (if any)
+```
+
+## Protocol
+
+| Rule | Description |
+|------|-------------|
+| **Versioning** | SemVer: MAJOR.MINOR.PATCH |
+| **MAJOR** | Breaking changes, incompatible API |
+| **MINOR** | New features, backward compatible |
+| **PATCH** | Bug fixes, documentation |
+| **Order** | Newest first |
+| **Sources** | Link to issues/docs when relevant |

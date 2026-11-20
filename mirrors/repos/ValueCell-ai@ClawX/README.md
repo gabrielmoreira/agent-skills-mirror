@@ -142,6 +142,13 @@ The wizard preselects your system language when it is supported, and falls back 
 
 ### Upgrading existing OpenClaw data
 
+On Windows, upgrade repair uses the bundled npm and moves the legacy image model setting to `agents.defaults.mediaModels.image`. If you are already on 0.7.0 and startup reports `spawn npm.cmd ENOENT` or flags `imageGenerationModel` as unrecognized, follow these steps.
+
+1. Quit ClawX from the system tray. Back up your OpenClaw state directory (normally `%USERPROFILE%\.openclaw`), including the existing databases and migration backups.
+2. Open `openclaw.json` in the state directory. If `agents.defaults` contains `imageGenerationModel`, check `mediaModels.image` in the main file and any `$include` references. Keep a configured model where it is defined. If a local `image: null` hides a model from an included file, remove that local entry to use the included model and its options. If the effective value is still missing or `null`, set `mediaModels.image` to the complete legacy model value, including any `primary`, `fallbacks`, and `timeoutMs`. Remove `imageGenerationModel` from the file that defines it and preserve the other media settings.
+3. Using the same Windows account, open PowerShell in the folder containing `ClawX.exe`. Run `npm.cmd --version`. If Windows cannot find it, add a Node.js installation with npm to your PATH, then open a new PowerShell window in that folder and check again. Doctor may need access to the npm registry to install a configured provider such as DeepSeek.
+4. In the PowerShell window where npm reported its version, run `.\ClawX.exe`. Let the automatic Doctor repair finish and check that the Gateway is ready. If it still fails, open **Settings → Advanced → Developer → Run Doctor Fix**. Once the repair succeeds, restart the Gateway and confirm it is ready.
+
 On Windows, upgrade cleanup recognizes both drive-letter and network plugin paths left by older installations. Missing or bundled plugin paths are removed from legacy load lists; existing external plugins and relative package references are retained.
 
 For valid ClawX 0.6.1 multi-Agent configurations, upgrade preserves each Agent's effective workspace and the recorded default Agent's responsibilities. Agent settings, later Agent edits, and workspace preparation use the same runtime path rules; explicitly configured external workspaces keep their paths.
@@ -162,11 +169,15 @@ Extensions restoring runtime credentials follow the same upgrade order: preserve
 
 Legacy scheduled tasks can recover their inference account from the verified pre-migration snapshot before scheduled dispatch, after community or enterprise credentials have been restored. Recovery preserves task IDs, schedules, delivery settings and model inheritance, and requires the original account. Synchronizing unchanged credentials retains existing authorizations. Missing, ambiguous or changed accounts are reported instead of silently selecting another account. When a remote model disappears, tasks can use configured fallback models within the original provider and account; explicit model locks and disabled fallback remain in force. See [scheduled-task migration and validation limits](harness/reference/cron-inference-upgrade.md).
 
+When upgrading on Windows, ClawX recognizes scheduled scripts in the active cron store that start a background worker and return. ClawX runs the original command and waits for its Windows Job to finish. A custom timeout such as 600 seconds still applies to the worker. An old startup-only timeout becomes one hour when the full worker budget is unknown.
+
 Gateway startup also works when no scheduled-task migration evidence is needed. Optional unset launch values are omitted before creating the process, preventing the upgrade-time `Invalid value for env` failure. See the [diagnosis and validation](harness/reference/gateway-undefined-launch-env-20261111.md).
 
 During app quit, session writes and queued starts are cancelled. ACP and the managed Gateway stop before extensions remove their temporary runtime credentials; encrypted login state remains available for the next launch. All shutdown work shares the existing timeout.
 
 The official Discord, Feishu and WhatsApp dependencies match `2026.10.10`. WeCom moves to `2026.10.30` for the current configuration API; DingTalk stays at `0.8.26` and Weixin at `2.4.10`. Existing Feishu migration behavior remains unchanged.
+
+When the Gateway queues an outgoing attachment, it checks the account, channel and agent defaults in that order and uses the first configured size limit. If none is set, it allows 20 MiB for WeCom and DingTalk, 30 MiB for Feishu and 100 MiB for Weixin. Upgrades apply these defaults automatically. The connector still enforces its own upload limits for each file type.
 
 Two channel plugins change providers with OpenClaw 2026.10.5, and ClawX migrates both before the first Gateway start. QQ Bot moves from `@openclaw/qqbot` to Tencent QQBot 2.0 (`@tencent-connect/openclaw-qqbot`, plugin id `openclaw-qqbot`). Its default account moves to the top level of `channels.qqbot`. Open DM access stays open, using the approval marker `openclaw:approval-disabled`. QQ Bot configs with approval, secret-file or group command policies are left for OpenClaw Doctor. Feishu moves from `@larksuite/openclaw-lark` to the official `@openclaw/feishu`, with the same app credentials. The official plugin provides 14 Feishu tools instead of 39: calendar, task, user OAuth, sheet and search tools are no longer available.
 

@@ -240,12 +240,11 @@ function landedVerdict(facts) {
 export const classifyWorktree = (facts) => usageVerdict(facts) ?? cleanupVerdict(facts);
 
 export function classifyCache(facts) {
-  const name = basename(facts.path);
   if (facts.held === null) return ['keep', 'lsof could not tell whether a server holds it'];
   if (facts.held) return ['keep', 'a running server holds its lock'];
+  if (facts.inMain && isDevCache(facts.path) && facts.hoursIdle < WEEK) return ['keep', "the main checkout's next dev reads its cache back after a restart"];
   if (isBuildPart(facts.path)) return facts.hoursIdle < 24 ? ['keep', 'used in the last day'] : ['safe', 'next dev or next build recreates it, and nothing used it for a day'];
   if (facts.production && facts.hoursIdle < WEEK) return ['keep', 'a production build used this week, which next start may serve'];
-  if (PORT_CACHE.test(name) && facts.hoursIdle < WEEK) return ['keep', 'the next dev server on its port reuses it'];
   if (facts.hoursIdle < 1) return ['keep', 'written in the last hour'];
   return ['safe', 'no server holds it'];
 }
@@ -422,6 +421,8 @@ function findCaches(root, depth, worktrees) {
 
 const isBuildPart = (path) => BUILD_PARTS.includes(basename(path)) && BUILD_OUTPUT.test(basename(dirname(path)));
 
+const isDevCache = (path) => PORT_CACHE.test(basename(path)) || (basename(path) === 'dev' && isBuildPart(path));
+
 // next start serves a build output's own files, so only its dev and cache
 // folders, which Next recreates, can go.
 const cacheRows = (path) => (BUILD_OUTPUT.test(basename(path)) ? BUILD_PARTS.map((part) => join(path, part)).filter(existsSync) : [path]);
@@ -439,8 +440,8 @@ function cacheMtime(path) {
   return newestMtime([path, ...children, ...children.flatMap(entriesOf), join(dirname(path), 'BUILD_ID'), ...cacheLocks(path)]);
 }
 
-function cacheFacts(path, now) {
-  return { path, held: held(cacheLocks(path)), production: existsSync(join(path, 'BUILD_ID')), hoursIdle: (now - cacheMtime(path)) / HOUR };
+function cacheFacts(path, now, inMain) {
+  return { path, inMain, held: held(cacheLocks(path)), production: existsSync(join(path, 'BUILD_ID')), hoursIdle: (now - cacheMtime(path)) / HOUR };
 }
 
 function sessionFor(path, sessions) {
@@ -806,9 +807,10 @@ export function scan({ repo, sessions = [], sizes = true, now = Date.now() }) {
   }
   const goes = items.filter((item) => item.kind === 'worktree' && item.verdict === 'safe').map((item) => item.path);
   const roots = [main, ...context.worktrees.filter((entry) => existsSync(entry.path) && !goes.includes(entry.path)).map((entry) => entry.path)];
-  for (const path of new Set(roots.flatMap((root) => findCaches(root, 3, context.worktrees)).flatMap(cacheRows))) {
-    const [verdict, reason] = classifyCache(cacheFacts(path, now));
-    items.push({ kind: 'cache', path, verdict, reason, bytes: sizes ? sizeOf(path) : null });
+  const caches = new Map(roots.flatMap((root) => findCaches(root, 3, context.worktrees).flatMap(cacheRows).map((path) => [path, root === main])));
+  for (const [path, inMain] of caches) {
+    const [verdict, reason] = classifyCache(cacheFacts(path, now, inMain));
+    items.push({ kind: 'cache', path, inMain, verdict, reason, bytes: sizes ? sizeOf(path) : null });
   }
   items.push(...databaseItems({ main, worktrees: context.worktrees, now }));
   return { main, items };
@@ -951,7 +953,7 @@ export function deleteSafe({ repo, sessions = [], now = Date.now() }) {
       continue;
     }
     item.bytes = sizeOf(item.path);
-    const [verdict, reason] = item.kind === 'cache' ? classifyCache(cacheFacts(item.path, Date.now())) : rejudgeWorktree(repo, main, sessions, item.path);
+    const [verdict, reason] = item.kind === 'cache' ? classifyCache(cacheFacts(item.path, Date.now(), item.inMain)) : rejudgeWorktree(repo, main, sessions, item.path);
     if (verdict !== 'safe') {
       Object.assign(item, { verdict, reason: `kept at removal: ${reason}` });
       continue;
@@ -1091,7 +1093,7 @@ export function brief({ repo, now = Date.now(), days = 3 }) {
   }).length;
   const caches = findCaches(main, 3, worktrees).flatMap(cacheRows).filter((path) => {
     const mtime = cacheMtime(path);
-    return stale(mtime) && classifyCache({ path, held: false, production: existsSync(join(path, 'BUILD_ID')), hoursIdle: (now - mtime) / HOUR })[0] === 'safe';
+    return stale(mtime) && classifyCache({ path, inMain: true, held: false, production: existsSync(join(path, 'BUILD_ID')), hoursIdle: (now - mtime) / HOUR })[0] === 'safe';
   }).length;
   if (idle + caches === 0) return '';
   return `cleanup: ${idle} worktrees and ${caches} Next cache folders here show no git or cache writes for ${days} days; /cleanup removes the ones nothing uses and lists the rest.`;

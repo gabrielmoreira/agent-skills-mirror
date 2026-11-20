@@ -1,6 +1,6 @@
 # Local Agents
 
-Settings → Local Agents lists CLI clients independently of model providers. Choose an Agent, open its official download guide when missing, complete sign-in in its own terminal, refresh its models, and select the Agent/model to use. Default Agent & models and the header model selector share the saved default. Media model defaults remain independent of the Agent that edits the project.
+Settings → Local Agents lists CLI clients independently of model providers. Choose an Agent, open its official download guide when missing, complete sign-in in its own terminal, refresh its models, and select the Agent/model to use. Settings → Default Agent & models also shows the saved Agent and model. Media model defaults remain independent of the Agent that edits the project.
 
 The registry contains Codex, Claude Code, Kimi Code, OpenCode, Gemini CLI, Cursor Agent, GitHub Copilot CLI, DeepSeek Harness, Qwen Code, Pi, Hermes, Antigravity, Kiro CLI, Kilo Code, Mistral Vibe, Amp, Devin, Grok Build, CodeBuddy Code, Qoder CLI, Trae CLI, MiMo Code, Aider, AtomCode, DeepSeek TUI, DeepSeek Reasonix, OpenClaude, Cline and IBM Bob. Availability depends on the installed CLI version and platform. Desktop model servers are not Agent clients.
 

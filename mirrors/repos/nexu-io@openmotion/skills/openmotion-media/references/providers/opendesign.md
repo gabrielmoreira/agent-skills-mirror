@@ -1,6 +1,6 @@
 # OpenDesign Cloud media
 
-Based on the Cloud media API contract; reviewed 2026-11-17. This is a test-stage contract. Sections: discovery, request templates, polling, errors, boundaries.
+Based on the Cloud media API contract; reviewed 2026-11-17. This is a test-stage contract. Sections: discovery, video model choice, request templates, polling, errors, boundaries.
 
 ## Setup and discovery
 
@@ -17,6 +17,10 @@ Discovery calls the authenticated `GET /api/v1/media/models` on the dashboard AP
 The catalogue is bound to the configured key and API origin. Use `action: "models"` with `refresh: true` or Settings → Sync models to refresh it. Explicit `capabilities.edits: false` disables image references; absent or malformed values mean unknown and remain disabled. Refreshing never submits a generation request. Model names and generic image-input metadata do not establish editing access.
 
 Cloud catalogue kinds `audio_speech` and `audio_music` both appear as `modality: "audio"`, with `mode: "text-to-speech"` and `mode: "text-to-audio"` respectively. Legacy `audio` entries retain speech behavior. Use the discovered model's mode; a vendor name alone does not establish whether it generates speech or music.
+
+## Choosing a video model
+
+When the user has not named a video model and discovery lists both `wan-2.7` and `doubao-seedance-2-5-260628`, use `wan-2.7` for every clip whose duration, resolution and ratio it lists; in OpenMotion trials it finished short clips faster and failed less often. Use Seedance for a clip that needs a longer duration or an option only Seedance lists (at review: Wan 2–15 s, Seedance 4–30 s, with 480p and 21:9 only on Seedance). Read the current values from the catalogue. When a confirmed remote failure leaves a clip to regenerate within the approved retries, switch to the other model only when its current catalogue supports the clip's full duration, resolution and ratio and the user's approval covers that model; otherwise retry on the same model or report the limitation, without changing the requested clip.
 
 ## Request templates
 

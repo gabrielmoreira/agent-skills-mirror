@@ -265,6 +265,14 @@ Key security boundaries and risks:
   ([above](#pair-a-device--the-write-credential)), so revoke a lost phone at once. The built-in
   idle lock merely blanks an unattended screen and provides no actual security boundary
   ([ADR 0007](../.adr/0007-the-idle-lock-is-a-pause-not-a-gate.md)).
+- **Every machine of a crew is trusted in full.** A [crew](crew.md) is for machines that are all
+  yours. The lead drives the terminals of every member, so whoever controls the lead controls every
+  machine of the crew. A member drives only its own terminals, but its agents can send WalkyTalky
+  messages to agent sessions on your other machines, and an agent that acts on such a message acts
+  with your rights there ([WalkyTalky](#walkytalky)). So treat a crew machine that was taken over as
+  a crew that was taken over. Join only a machine that you would give a shell on the others. When you
+  lose one, run `collie crew remove <member>` and then `collie crew rotate` on the lead, and change
+  the keys that agents on the other machines can read.
 - **All local system users can reach the port.** Standard terminal multiplexer sockets (`tmux`,
   `zellij`, `herdr`) use filesystem permissions to restrict access to other local users. Collie
   listens on a local TCP port, which exposes it to every local UID. Reads need the pairing token,
@@ -319,6 +327,14 @@ Key security boundaries and risks:
   shell pane, and each one-off command, in `sent.jsonl` in the state folder (mode 0600). A paired
   device can read it, as it can read the panes. Some secrets are still kept
   ([Sent: the shell lines you sent](#sent-the-shell-lines-you-sent)).
+- **A phone whose reply box sits below its screen reports the screen heights.** The phone sends one
+  record of whole numbers (the heights of the screen and of the box, whether the app is installed,
+  whether the keyboard is open) and three words (what woke the check, what the height fix did, the
+  kind of session). It sends no text, no session name, no pane id and no address, at most one record
+  a minute and twenty in a page's life. The bridge keeps each record, with the time, its version and
+  the device's name, in `diag-composer.jsonl` in the state folder (mode 0600), the newest 500 lines
+  or 256 KB. Nothing leaves the machine, and a paired device can send it, as it can read the panes.
+  Delete the file to forget the records.
 - **A single instance exposes all Herdr sessions.** By default, one Collie process fronts every
   Herdr session discovered under Herdr's configuration root, including sandbox sessions
   ([Multi-session](configure.md#multi-session)).
@@ -583,8 +599,9 @@ If the lead cannot read a member's answer to mask it, it does not pass the answe
 shows that read as failed, as it does for a member it cannot reach.
 
 A push notification names a pane by its session name, in this order: the pane's label in Collie, a
-name you set in the harness (Claude Code's `/rename`, pi's `/name`), the title the agent gave its
-session in its own log, or a one-pane tab's name. A pane with none of these is called by its harness,
+name you set in the harness (Claude Code's `/rename`, pi's `/name`), a one-pane tab's name, or the
+title the agent gave its session in its own log. A name a person set always comes before one the agent
+wrote. A pane with none of these is called by its harness,
 for example `claude`. A push never uses the terminal title, which any program in the pane can set
 with an escape sequence.
 

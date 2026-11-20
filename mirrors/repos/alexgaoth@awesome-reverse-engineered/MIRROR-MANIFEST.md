@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alexgaoth/awesome-reverse-engineered` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `alexgaoth/awesome-reverse-engineered` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alexgaoth/awesome-reverse-engineered` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,7 +64,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`mcp/re_index.py`](mcp/re_index.py) |
 | 4 | ✓ | [`mcp/README.md`](mcp/README.md) |
 | 5 | ✓ | [`mcp/reverse_engineered_mcp.py`](mcp/reverse_engineered_mcp.py) |
-| 6 | ✓ | [`plugin/skills/find-reverse-engineered/SKILL.md`](plugin/skills/find-reverse-engineered/SKILL.md) |
+| 6 | ✓ | [`mcp/server.json`](mcp/server.json) |
+| 7 | ✓ | [`plugin/skills/find-reverse-engineered/SKILL.md`](plugin/skills/find-reverse-engineered/SKILL.md) |
 
 ---
 

@@ -739,8 +739,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 657 | ✓ | [`skills/create-blobster/references/design-guide.md`](skills/create-blobster/references/design-guide.md) |
 | 658 | ✓ | [`skills/create-blobster/scripts/cli.mjs`](skills/create-blobster/scripts/cli.mjs) |
 | 659 | ✓ | [`skills/create-blobster/SKILL.md`](skills/create-blobster/SKILL.md) |
-| 660 | ✓ | [`skills/create-template/references/draft-format.md`](skills/create-template/references/draft-format.md) |
-| 661 | ✓ | [`skills/create-template/scripts/cli.mjs`](skills/create-template/scripts/cli.mjs) |
+| 660 | ✓ | [`skills/create-template/scripts/cli.mjs`](skills/create-template/scripts/cli.mjs) |
+| 661 | ✓ | [`skills/create-template/scripts/inventory.mjs`](skills/create-template/scripts/inventory.mjs) |
 | 662 | ✓ | [`skills/create-template/SKILL.md`](skills/create-template/SKILL.md) |
 | 663 | ✓ | [`skills/creative-project/SKILL.md`](skills/creative-project/SKILL.md) |
 | 664 | ✓ | [`skills/diagram-maker/references/excalidraw-patterns.md`](skills/diagram-maker/references/excalidraw-patterns.md) |

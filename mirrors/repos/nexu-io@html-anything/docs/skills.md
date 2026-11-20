@@ -24,6 +24,8 @@ The [native engine boundary](../skills/openmotion-production/references/native.m
 
 可选 [`design-styles`](../library/skills/openmotion-design-styles/SKILL.md) 是设计风格库：21 张风格卡（包豪斯、瑞士国际主义、构成主义、孟菲斯、新粗野主义、装饰艺术、水墨、新浪潮等）和 2 张布局卡（便当盒、瀑布流），每张写明色板、开源字体、五条规则、标志性动法和要避免的做法。Agent 选卡后写 `plan.json`，由 `scripts/style.mjs check` 校验颜色、文字长度、动法和片尾署名，再用 `fonts` 按画面文字下载子集字体，最后按风格规则搭 HyperFrames 工程。它是 Library 内容，不注册为 MCP resource，也不改变五个核心制作入口。
 
+可选节日大促三件套：[`sale-promo`](../library/skills/openmotion-sale-promo/SKILL.md) 把一个优惠做成 10 或 15 秒促销短片（折扣大字 → 原价划线后新价落定 → 优惠码与真实截止时间 → 行动按钮）；[`sale-countdown`](../library/skills/openmotion-sale-countdown/SKILL.md) 用发布时间和开售或截止时间算出真实剩余天数或小时，做巨型数字倒计时预告（商品浮在数字前）；[`sale-carousel`](../library/skills/openmotion-sale-carousel/SKILL.md) 把 3～7 个促销商品做成 3D 封面流轮播、最后扇形收齐的视频。三者的价格、折扣率和剩余时间都由脚本从原始数据算出，`--check` 会拒绝自相矛盾的价格、已过期的截止时间和放不下的文字；默认 9:16，也可出 4:5、1:1、16:9。做法参考 MIT 许可的 iart-ai 开源 Skill，按 OpenMotion 的 HTML 工程重写。它们是 Library 内容，不自动注册到 MCP。
+
 可选的 96 个单风格配方 Skill 各提供一种画面风格或剪辑方法，清单见 [Library 风格配方](../library/README.zh-CN.md#style-recipes)。每个都在 Studio Skills 页有一张卡片和一支 OpenMotion 样片封面；配方本身尚无可执行模板或用户素材实跑对比；它们不注册 MCP，也不改变核心制作入口。
 
 2026-11-06：五个入口统一为 motion- 前缀，视频转模板纳入一期插件、四宿主薄适配器与 MCP Resources。同时融合已评审的通用工程入口方案，保留原制作实现和导演质量参考；同时保留 main PR #28 的实际复刻流程、独立参考和测量脚本。历史多轮实验记录见下文，其证据不自动覆盖本次命名与分发变更。
@@ -32,7 +34,7 @@ The [native engine boundary](../skills/openmotion-production/references/native.m
 
 Director and its existing quality references now cover concrete visual events, joint material/motion design, recognizable action windows, representative prototypes and reuse of accepted implementations. Shared intake/runtime guidance covers scoped material acquisition; edit and verification own timing-evidence invalidation and evidence classification. No Skill, Resource section, public Tool or media service is added.
 
-The current five-route contract with sixteen registered Tool names (one compatibility alias), editor-first handoff, requested-export behavior and distribution layout remain unchanged. This guidance does not establish cross-task creative reliability or native audiovisual model-review capability. See [the director guide](openmotion-director.md). Version-specific statements below describe their historical snapshots.
+The current five-route contract with eighteen registered Tool names (one compatibility alias), editor-first handoff, requested-export behavior and distribution layout remain unchanged. This guidance does not establish cross-task creative reliability or native audiovisual model-review capability. See [the director guide](openmotion-director.md). Version-specific statements below describe their historical snapshots.
 
 ## Reference reconstruction guidance
 
@@ -107,7 +109,7 @@ A prior local trial used only “做一个哈利波特宣传片” in a fresh gp
 
 原创制作按任务读取动作脚本、动态表现和短句参考，无需用户额外说“Motion 感”。多段/截图/状态延续、声音设计和动态审片按职责加载相应参考。模板与复刻按影响复用相同标准，不强制换成原创叙事、固定动效或固定音乐结构。
 
-一期公开接口已收敛为 [16 个 openmotion_ 注册名](mcp-phase1-tools.md)（15 项领域能力，含素材库兼容别名）。旧 28 项实现只留内部兼容；读文件、任务查询及技术校验分别并入项目读取与导出流程。一期插件和四宿主薄适配器包含上述五个创作入口、支撑 Skill `openmotion-media` 及其参考；源码中原有的 reference-video 兼容入口已在确认无源码安装、提示词或宿主配置按名称调用后删除。核心 Skill 指引同步使用新契约；不新增制作引擎或自动复刻算法。
+一期公开接口已收敛为 [18 个 openmotion_ 注册名](mcp-phase1-tools.md)（17 项领域能力，含素材库兼容别名）。旧 28 项实现只留内部兼容；读文件、任务查询及技术校验分别并入项目读取与导出流程。一期插件和四宿主薄适配器包含上述五个创作入口、支撑 Skill `openmotion-media` 及其参考；源码中原有的 reference-video 兼容入口已在确认无源码安装、提示词或宿主配置按名称调用后删除。核心 Skill 指引同步使用新契约；不新增制作引擎或自动复刻算法。
 
 ## Shared production reading scope
 
@@ -205,6 +207,16 @@ MT05 原先同批补读/执行的问题未重现，但读取完整性未全面�
 
 ## Discover library Skills through MCP
 
-Library Skills are discoverable through `openmotion_list_templates`: `total` still counts templates and `skillTotal` counts the appended rows; `catalogVersion` stays the template catalog identity. Search the JSONL rows with `kind: "skill"` by title, description or scenario tags, then call `openmotion_get_template(templateId)` using the directory ID. Skill details return the complete `SKILL.md` in `instructions` and `motionDocument.content`, plus a relative file inventory (including references, scripts and assets). Repository mode includes an absolute `localSource` directory. Hosted/npm mode reads embedded instructions and inventory from the published main catalog without claiming local files exist; `objects` lists every supporting file with its path, bytes and SHA-256 and a URL in the same content-addressed object store as template sources, so the Agent can download and verify what SKILL.md references. CMS mode retains its existing template-only behavior and does not expose library Skills.
+Library Skills have their own tools. `openmotion_list_skills` takes no arguments and returns `indexPath` (local JSONL, one row per Skill with `skillId`, title, description, tags and optional repository/license/localSource), `total` and `skillVersion`; it covers every Skill in `library/skills`, installed in the host or not. Search the file, then call `openmotion_get_skill(skillId)`: it returns the complete `SKILL.md` in `instructions` and `motionDocument.content`, plus a relative file inventory (including references, scripts and assets). Repository mode includes an absolute `localSource` directory. Hosted/npm mode reads embedded instructions and inventory from the published main catalog without claiming local files exist; `objects` lists every supporting file with its path, bytes and SHA-256 and a URL in the same content-addressed object store as template sources, so the Agent downloads and verifies only what SKILL.md references. CMS mode returns no Skills. Skills installed in the host Agent keep working through the host without these tools.
 
-Follow `SKILL.md` and use existing tools such as `openmotion_create_project(projectType="natural_language")` when needed. Skills are not editable template projects: template creation and `openmotion_apply_template` reject Skill IDs. Studio template galleries, website/plugin template lists and onboarding recommendations remain template-only. No MCP tool is added.
+Follow `SKILL.md` and use existing tools such as `openmotion_create_project(projectType="natural_language")` when needed. Skills are not editable template projects: template indexes do not list them, and `openmotion_get_template`, template creation and `openmotion_apply_template` reject Skill IDs with a pointer to `openmotion_get_skill`. Studio template galleries, website/plugin template lists and onboarding recommendations remain template-only.
+
+### When Agents call the Skill tools
+
+The MCP `initialize` instructions and the `openmotion_list_skills` description carry the same timing rule (`skillDiscoveryGuide` in `shared/workflow-entry.js`):
+
+- **Call it** when the user asks which Skill, technique or recipe fits a video (for example de-AI copy, long-to-short clips, a growth teardown, a product launch or a holiday sale), asks to see or recommend Skills, or describes a recurring video format before an approach is chosen. This last case is deliberately more proactive than template browsing, which only recommends when asked.
+- **Recommend, then wait**: search the index by scenario and usually offer two or three Skills (one if only one fits; never pad), each with its title and a one-line reason (the `skillId` stays with the Agent for its `openmotion_get_skill` call and is not shown to the user); the user chooses unless they asked the Agent to proceed. Then read the choice with `openmotion_get_skill` and follow its SKILL.md.
+- **Installed Skills first**: Skills already installed in the host stay the first choice and need no listing.
+- **No side effects**: listing, recommending or reading a Skill does not authorize project creation, downloads or export.
+

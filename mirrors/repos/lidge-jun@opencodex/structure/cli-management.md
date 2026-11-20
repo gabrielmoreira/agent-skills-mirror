@@ -123,6 +123,8 @@ live and latest durable rows are captured under the same mutation lock as deleti
 
 ## Account policy and runtime-setting results
 
+`ocx account probe google-antigravity` sends the management probe for the whole roster or resolves one account ID or alias through the passive Antigravity account list. `ocx models discover` requests a provider’s live-model refresh and reports the resulting arrival state or the recorded failure during cooldown. Both use the same endpoints as the dashboard.
+
 `src/cli/account-policy.ts` and `src/cli/account-policy-dto.ts` use the selected runtime's supported pool fields and validated roster. `src/cli/account-target.ts` shares pure selection precedence with the existing async helper; new policy writers never use the legacy transport fallback. Per-account threshold, one/all paid-credit permission, display preference and quota-window activation remain distinct operations. Reset-grant status is a typed GET with possible upstream status work; consumption/session acquisition is not exposed.
 
 `ocx account use-remaining openai <id-or-main> on|off|status` in `src/cli/account-policy.ts` resolves the selected runtime's roster and validates the authenticated API receipt, including the effective thresholds. It controls the [remaining included-quota preference](providers/openai-accounts.md#main-account-policy-observations), which is separate from paid-credit permission; status is read-only, and account selection is a separate command.
@@ -142,6 +144,9 @@ For Codex pool login with `--code -`, the start response determines whether code
 ## Integration inspection, recovery and maintenance
 
 `src/cli/capabilities-integrations.ts` declares `commandcode restore` and its dedicated restore/preview routes separately from generic integration restore. Its generated operating reference preserves the client-bound command, supported flags, and refusal on older proxies without those routes.
+
+The same capability catalog declares `connect antigravity` and `connect agy` separately. Only the
+[Antigravity desktop app connection](clients/antigravity-gateway.md#target-and-the-secret-rule) accepts `--model`.
 
 `src/cli/integration-input.ts` shares pure profile paths/validation and owns exact optional Droid-map/fingerprint and [export naming](clients/export-model-names.md) grammar. `src/cli/integration-preview.ts` handles explicit preview and new-option writes; `src/cli/integration-plan-dto.ts` validates value-free plans without runtime imports from GUI/planner/writer code. The original direct mutation bodies remain when new options are absent. Refused and no-op previews are completed observations; stale commits return a re-preview instruction without adopting a replacement token. The server owns coordinated binding and writes.
 

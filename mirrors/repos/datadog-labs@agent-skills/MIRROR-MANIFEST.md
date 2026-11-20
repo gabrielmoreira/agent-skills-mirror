@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 81 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,35 +111,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`dd-browser-sdk/upgrade-v5/SKILL.md`](dd-browser-sdk/upgrade-v5/SKILL.md) |
 | 51 | ✓ | [`dd-browser-sdk/upgrade-v6/SKILL.md`](dd-browser-sdk/upgrade-v6/SKILL.md) |
 | 52 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
-| 53 | ✓ | [`dd-confluent-cloud-integration/SKILL.md`](dd-confluent-cloud-integration/SKILL.md) |
-| 54 | ✓ | [`dd-dbm-rds-postgres/SKILL.md`](dd-dbm-rds-postgres/SKILL.md) |
-| 55 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
-| 56 | ✓ | [`dd-gcp-ccm/SKILL.md`](dd-gcp-ccm/SKILL.md) |
-| 57 | ✓ | [`dd-gcp-integration/SKILL.md`](dd-gcp-integration/SKILL.md) |
-| 58 | ✓ | [`dd-gcp-log-forwarding/SKILL.md`](dd-gcp-log-forwarding/SKILL.md) |
-| 59 | ✓ | [`dd-github-copilot-onboarding/SKILL.md`](dd-github-copilot-onboarding/SKILL.md) |
-| 60 | ✓ | [`dd-github-costs-onboarding/SKILL.md`](dd-github-costs-onboarding/SKILL.md) |
-| 61 | ✓ | [`dd-github-onboarding/SKILL.md`](dd-github-onboarding/SKILL.md) |
-| 62 | ✓ | [`dd-instrument-error-tracking/SKILL.md`](dd-instrument-error-tracking/SKILL.md) |
-| 63 | ✓ | [`dd-instrument-llmo/SKILL.md`](dd-instrument-llmo/SKILL.md) |
-| 64 | ✓ | [`dd-instrument-product-analytics/SKILL.md`](dd-instrument-product-analytics/SKILL.md) |
-| 65 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
-| 66 | ✓ | [`dd-instrument-test-optimization/SKILL.md`](dd-instrument-test-optimization/SKILL.md) |
-| 67 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 68 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 69 | ✓ | [`dd-nebius-integration/SKILL.md`](dd-nebius-integration/SKILL.md) |
-| 70 | ✓ | [`dd-oci-ccm/SKILL.md`](dd-oci-ccm/SKILL.md) |
-| 71 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
-| 72 | ✓ | [`dd-openai-onboarding/SKILL.md`](dd-openai-onboarding/SKILL.md) |
-| 73 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
-| 74 | ✓ | [`dd-pagerduty-onboarding/SKILL.md`](dd-pagerduty-onboarding/SKILL.md) |
-| 75 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
-| 76 | ✓ | [`dd-profiler-setup/SKILL.md`](dd-profiler-setup/SKILL.md) |
-| 77 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 78 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 79 | ✓ | [`dd-slack-integration/SKILL.md`](dd-slack-integration/SKILL.md) |
-| 80 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 81 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 53 | ✓ | [`dd-coding-agent-mcp/SKILL.md`](dd-coding-agent-mcp/SKILL.md) |
+| 54 | ✓ | [`dd-confluent-cloud-integration/SKILL.md`](dd-confluent-cloud-integration/SKILL.md) |
+| 55 | ✓ | [`dd-dbm-rds-postgres/SKILL.md`](dd-dbm-rds-postgres/SKILL.md) |
+| 56 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
+| 57 | ✓ | [`dd-gcp-ccm/SKILL.md`](dd-gcp-ccm/SKILL.md) |
+| 58 | ✓ | [`dd-gcp-integration/SKILL.md`](dd-gcp-integration/SKILL.md) |
+| 59 | ✓ | [`dd-gcp-log-forwarding/SKILL.md`](dd-gcp-log-forwarding/SKILL.md) |
+| 60 | ✓ | [`dd-git-tagging/SKILL.md`](dd-git-tagging/SKILL.md) |
+| 61 | ✓ | [`dd-github-copilot-onboarding/SKILL.md`](dd-github-copilot-onboarding/SKILL.md) |
+| 62 | ✓ | [`dd-github-costs-onboarding/SKILL.md`](dd-github-costs-onboarding/SKILL.md) |
+| 63 | ✓ | [`dd-github-onboarding/SKILL.md`](dd-github-onboarding/SKILL.md) |
+| 64 | ✓ | [`dd-instrument-error-tracking/SKILL.md`](dd-instrument-error-tracking/SKILL.md) |
+| 65 | ✓ | [`dd-instrument-llmo/SKILL.md`](dd-instrument-llmo/SKILL.md) |
+| 66 | ✓ | [`dd-instrument-product-analytics/SKILL.md`](dd-instrument-product-analytics/SKILL.md) |
+| 67 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
+| 68 | ✓ | [`dd-instrument-shipdog/SKILL.md`](dd-instrument-shipdog/SKILL.md) |
+| 69 | ✓ | [`dd-instrument-test-optimization/SKILL.md`](dd-instrument-test-optimization/SKILL.md) |
+| 70 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 71 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 72 | ✓ | [`dd-nebius-integration/SKILL.md`](dd-nebius-integration/SKILL.md) |
+| 73 | ✓ | [`dd-oci-ccm/SKILL.md`](dd-oci-ccm/SKILL.md) |
+| 74 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
+| 75 | ✓ | [`dd-openai-onboarding/SKILL.md`](dd-openai-onboarding/SKILL.md) |
+| 76 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
+| 77 | ✓ | [`dd-pagerduty-onboarding/SKILL.md`](dd-pagerduty-onboarding/SKILL.md) |
+| 78 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
+| 79 | ✓ | [`dd-profiler-setup/SKILL.md`](dd-profiler-setup/SKILL.md) |
+| 80 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 81 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 82 | ✓ | [`dd-slack-integration/SKILL.md`](dd-slack-integration/SKILL.md) |
+| 83 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 84 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `eclipse-theia/theia` — 26 default patterns, 10 followed patterns, 15 file(s) materialized.
+Mirror of `eclipse-theia/theia` — 26 default patterns, 10 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eclipse-theia/theia` — 26 default patterns, 10 followed patterns, 1
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 15 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,20 +69,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/update-default-models/SKILL.md`](.agents/skills/update-default-models/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`doc/coding-guidelines.md`](doc/coding-guidelines.md) |
-| 5 | ✓ | [`doc/Testing.md`](doc/Testing.md) |
-| 6 | → | [`doc/api-management.md`](doc/api-management.md) |
-| 7 | → | [`doc/api-testing.md`](doc/api-testing.md) |
-| 8 | → | [`doc/code-organization.md`](doc/code-organization.md) |
-| 9 | → | [`doc/Developing.md`](doc/Developing.md) |
-| 10 | → | [`doc/lockfile-maintenance.md`](doc/lockfile-maintenance.md) |
-| 11 | → | [`doc/Migration.md`](doc/Migration.md) |
-| 12 | → | [`doc/Publishing.md`](doc/Publishing.md) |
-| 13 | → | [`doc/pull-requests.md`](doc/pull-requests.md) |
-| 14 | → | [`doc/runtime-policy.md`](doc/runtime-policy.md) |
-| 15 | → | [`doc/vscode-usage.md`](doc/vscode-usage.md) |
+| 2 | ✓ | [`.agents/skills/update-dependency/deps/_template/GUIDE.md`](.agents/skills/update-dependency/deps/_template/GUIDE.md) |
+| 3 | ✓ | [`.agents/skills/update-dependency/deps/ai-sdks/GUIDE.md`](.agents/skills/update-dependency/deps/ai-sdks/GUIDE.md) |
+| 4 | ✓ | [`.agents/skills/update-dependency/deps/electron/GUIDE.md`](.agents/skills/update-dependency/deps/electron/GUIDE.md) |
+| 5 | ✓ | [`.agents/skills/update-dependency/deps/monaco/GUIDE.md`](.agents/skills/update-dependency/deps/monaco/GUIDE.md) |
+| 6 | ✓ | [`.agents/skills/update-dependency/deps/nodejs/GUIDE.md`](.agents/skills/update-dependency/deps/nodejs/GUIDE.md) |
+| 7 | ✓ | [`.agents/skills/update-dependency/deps/npm-upgrade/GUIDE.md`](.agents/skills/update-dependency/deps/npm-upgrade/GUIDE.md) |
+| 8 | ✓ | [`.agents/skills/update-dependency/deps/react/GUIDE.md`](.agents/skills/update-dependency/deps/react/GUIDE.md) |
+| 9 | ✓ | [`.agents/skills/update-dependency/deps/typescript/GUIDE.md`](.agents/skills/update-dependency/deps/typescript/GUIDE.md) |
+| 10 | ✓ | [`.agents/skills/update-dependency/deps/vulnerabilities/GUIDE.md`](.agents/skills/update-dependency/deps/vulnerabilities/GUIDE.md) |
+| 11 | ✓ | [`.agents/skills/update-dependency/SKILL.md`](.agents/skills/update-dependency/SKILL.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 14 | ✓ | [`doc/coding-guidelines.md`](doc/coding-guidelines.md) |
+| 15 | ✓ | [`doc/Testing.md`](doc/Testing.md) |
+| 16 | → | [`doc/api-management.md`](doc/api-management.md) |
+| 17 | → | [`doc/api-testing.md`](doc/api-testing.md) |
+| 18 | → | [`doc/code-organization.md`](doc/code-organization.md) |
+| 19 | → | [`doc/Developing.md`](doc/Developing.md) |
+| 20 | → | [`doc/lockfile-maintenance.md`](doc/lockfile-maintenance.md) |
+| 21 | → | [`doc/Migration.md`](doc/Migration.md) |
+| 22 | → | [`doc/Publishing.md`](doc/Publishing.md) |
+| 23 | → | [`doc/pull-requests.md`](doc/pull-requests.md) |
+| 24 | → | [`doc/runtime-policy.md`](doc/runtime-policy.md) |
+| 25 | → | [`doc/vscode-usage.md`](doc/vscode-usage.md) |
 
 ---
 

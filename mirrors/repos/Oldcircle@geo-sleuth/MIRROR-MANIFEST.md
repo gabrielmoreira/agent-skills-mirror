@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Oldcircle/geo-sleuth` — 26 default patterns, 0 followed patterns, 104 file(s) materialized.
+Mirror of `Oldcircle/geo-sleuth` — 26 default patterns, 0 followed patterns, 117 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Oldcircle/geo-sleuth` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 104 |
+| Files         | 117 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,62 +107,75 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`skills/geo-sleuth/regions/kr/data/plates.json`](skills/geo-sleuth/regions/kr/data/plates.json) |
 | 47 | ✓ | [`skills/geo-sleuth/regions/kr/region.json`](skills/geo-sleuth/regions/kr/region.json) |
 | 48 | ✓ | [`skills/geo-sleuth/regions/kr/tests.json`](skills/geo-sleuth/regions/kr/tests.json) |
-| 49 | ✓ | [`skills/geo-sleuth/regions/lk/clues.md`](skills/geo-sleuth/regions/lk/clues.md) |
-| 50 | ✓ | [`skills/geo-sleuth/regions/lk/data/admin.json`](skills/geo-sleuth/regions/lk/data/admin.json) |
-| 51 | ✓ | [`skills/geo-sleuth/regions/lk/data/area_codes.json`](skills/geo-sleuth/regions/lk/data/area_codes.json) |
-| 52 | ✓ | [`skills/geo-sleuth/regions/lk/data/plates.json`](skills/geo-sleuth/regions/lk/data/plates.json) |
-| 53 | ✓ | [`skills/geo-sleuth/regions/lk/region.json`](skills/geo-sleuth/regions/lk/region.json) |
-| 54 | ✓ | [`skills/geo-sleuth/regions/lk/tests.json`](skills/geo-sleuth/regions/lk/tests.json) |
-| 55 | ✓ | [`skills/geo-sleuth/regions/mm/clues.md`](skills/geo-sleuth/regions/mm/clues.md) |
-| 56 | ✓ | [`skills/geo-sleuth/regions/mm/region.json`](skills/geo-sleuth/regions/mm/region.json) |
-| 57 | ✓ | [`skills/geo-sleuth/regions/mx/clues.md`](skills/geo-sleuth/regions/mx/clues.md) |
-| 58 | ✓ | [`skills/geo-sleuth/regions/mx/region.json`](skills/geo-sleuth/regions/mx/region.json) |
-| 59 | ✓ | [`skills/geo-sleuth/regions/nz/clues.md`](skills/geo-sleuth/regions/nz/clues.md) |
-| 60 | ✓ | [`skills/geo-sleuth/regions/nz/region.json`](skills/geo-sleuth/regions/nz/region.json) |
-| 61 | ✓ | [`skills/geo-sleuth/regions/README.md`](skills/geo-sleuth/regions/README.md) |
-| 62 | ✓ | [`skills/geo-sleuth/regions/tr/clues.md`](skills/geo-sleuth/regions/tr/clues.md) |
-| 63 | ✓ | [`skills/geo-sleuth/regions/tr/data/admin.json`](skills/geo-sleuth/regions/tr/data/admin.json) |
-| 64 | ✓ | [`skills/geo-sleuth/regions/tr/data/area_codes.json`](skills/geo-sleuth/regions/tr/data/area_codes.json) |
-| 65 | ✓ | [`skills/geo-sleuth/regions/tr/data/plates.json`](skills/geo-sleuth/regions/tr/data/plates.json) |
-| 66 | ✓ | [`skills/geo-sleuth/regions/tr/region.json`](skills/geo-sleuth/regions/tr/region.json) |
-| 67 | ✓ | [`skills/geo-sleuth/regions/tr/tests.json`](skills/geo-sleuth/regions/tr/tests.json) |
-| 68 | ✓ | [`skills/geo-sleuth/regions/us/clues.md`](skills/geo-sleuth/regions/us/clues.md) |
-| 69 | ✓ | [`skills/geo-sleuth/regions/us/region.json`](skills/geo-sleuth/regions/us/region.json) |
-| 70 | ✓ | [`skills/geo-sleuth/scripts/_browser.py`](skills/geo-sleuth/scripts/_browser.py) |
-| 71 | ✓ | [`skills/geo-sleuth/scripts/_device.py`](skills/geo-sleuth/scripts/_device.py) |
-| 72 | ✓ | [`skills/geo-sleuth/scripts/_image.py`](skills/geo-sleuth/scripts/_image.py) |
-| 73 | ✓ | [`skills/geo-sleuth/scripts/_net.py`](skills/geo-sleuth/scripts/_net.py) |
-| 74 | ✓ | [`skills/geo-sleuth/scripts/baidu_pano.py`](skills/geo-sleuth/scripts/baidu_pano.py) |
-| 75 | ✓ | [`skills/geo-sleuth/scripts/board.py`](skills/geo-sleuth/scripts/board.py) |
-| 76 | ✓ | [`skills/geo-sleuth/scripts/clues.py`](skills/geo-sleuth/scripts/clues.py) |
-| 77 | ✓ | [`skills/geo-sleuth/scripts/doctor.py`](skills/geo-sleuth/scripts/doctor.py) |
-| 78 | ✓ | [`skills/geo-sleuth/scripts/evidence.py`](skills/geo-sleuth/scripts/evidence.py) |
-| 79 | ✓ | [`skills/geo-sleuth/scripts/exif.py`](skills/geo-sleuth/scripts/exif.py) |
-| 80 | ✓ | [`skills/geo-sleuth/scripts/gazetteer.py`](skills/geo-sleuth/scripts/gazetteer.py) |
-| 81 | ✓ | [`skills/geo-sleuth/scripts/geo.py`](skills/geo-sleuth/scripts/geo.py) |
-| 82 | ✓ | [`skills/geo-sleuth/scripts/gsv.py`](skills/geo-sleuth/scripts/gsv.py) |
-| 83 | ✓ | [`skills/geo-sleuth/scripts/imgprep.py`](skills/geo-sleuth/scripts/imgprep.py) |
-| 84 | ✓ | [`skills/geo-sleuth/scripts/intake.py`](skills/geo-sleuth/scripts/intake.py) |
-| 85 | ✓ | [`skills/geo-sleuth/scripts/match.py`](skills/geo-sleuth/scripts/match.py) |
-| 86 | ✓ | [`skills/geo-sleuth/scripts/ocr.py`](skills/geo-sleuth/scripts/ocr.py) |
-| 87 | ✓ | [`skills/geo-sleuth/scripts/osm.py`](skills/geo-sleuth/scripts/osm.py) |
-| 88 | ✓ | [`skills/geo-sleuth/scripts/poi.py`](skills/geo-sleuth/scripts/poi.py) |
-| 89 | ✓ | [`skills/geo-sleuth/scripts/pose.py`](skills/geo-sleuth/scripts/pose.py) |
-| 90 | ✓ | [`skills/geo-sleuth/scripts/refresh.py`](skills/geo-sleuth/scripts/refresh.py) |
-| 91 | ✓ | [`skills/geo-sleuth/scripts/regions.py`](skills/geo-sleuth/scripts/regions.py) |
-| 92 | ✓ | [`skills/geo-sleuth/scripts/revimg.py`](skills/geo-sleuth/scripts/revimg.py) |
-| 93 | ✓ | [`skills/geo-sleuth/scripts/sat_scan.py`](skills/geo-sleuth/scripts/sat_scan.py) |
-| 94 | ✓ | [`skills/geo-sleuth/scripts/sun.py`](skills/geo-sleuth/scripts/sun.py) |
-| 95 | ✓ | [`skills/geo-sleuth/scripts/terrain.py`](skills/geo-sleuth/scripts/terrain.py) |
-| 96 | ✓ | [`skills/geo-sleuth/scripts/tiles.py`](skills/geo-sleuth/scripts/tiles.py) |
-| 97 | ✓ | [`skills/geo-sleuth/SKILL.md`](skills/geo-sleuth/SKILL.md) |
-| 98 | ✓ | [`skills/geo-sleuth/tests/test_board.py`](skills/geo-sleuth/tests/test_board.py) |
-| 99 | ✓ | [`skills/geo-sleuth/tests/test_gazetteer.py`](skills/geo-sleuth/tests/test_gazetteer.py) |
-| 100 | ✓ | [`skills/geo-sleuth/tests/test_match.py`](skills/geo-sleuth/tests/test_match.py) |
-| 101 | ✓ | [`skills/geo-sleuth/tests/test_regions.py`](skills/geo-sleuth/tests/test_regions.py) |
-| 102 | ✓ | [`skills/geo-sleuth/tests/test_runtime.py`](skills/geo-sleuth/tests/test_runtime.py) |
-| 103 | ✓ | [`skills/geo-sleuth/tests/test_sun.py`](skills/geo-sleuth/tests/test_sun.py) |
-| 104 | ✓ | [`skills/geo-sleuth/tests/test_terrain.py`](skills/geo-sleuth/tests/test_terrain.py) |
+| 49 | ✓ | [`skills/geo-sleuth/regions/kz/clues.md`](skills/geo-sleuth/regions/kz/clues.md) |
+| 50 | ✓ | [`skills/geo-sleuth/regions/kz/data/admin.json`](skills/geo-sleuth/regions/kz/data/admin.json) |
+| 51 | ✓ | [`skills/geo-sleuth/regions/kz/data/area_codes.json`](skills/geo-sleuth/regions/kz/data/area_codes.json) |
+| 52 | ✓ | [`skills/geo-sleuth/regions/kz/data/plates.json`](skills/geo-sleuth/regions/kz/data/plates.json) |
+| 53 | ✓ | [`skills/geo-sleuth/regions/kz/region.json`](skills/geo-sleuth/regions/kz/region.json) |
+| 54 | ✓ | [`skills/geo-sleuth/regions/kz/tests.json`](skills/geo-sleuth/regions/kz/tests.json) |
+| 55 | ✓ | [`skills/geo-sleuth/regions/lk/clues.md`](skills/geo-sleuth/regions/lk/clues.md) |
+| 56 | ✓ | [`skills/geo-sleuth/regions/lk/data/admin.json`](skills/geo-sleuth/regions/lk/data/admin.json) |
+| 57 | ✓ | [`skills/geo-sleuth/regions/lk/data/area_codes.json`](skills/geo-sleuth/regions/lk/data/area_codes.json) |
+| 58 | ✓ | [`skills/geo-sleuth/regions/lk/data/plates.json`](skills/geo-sleuth/regions/lk/data/plates.json) |
+| 59 | ✓ | [`skills/geo-sleuth/regions/lk/region.json`](skills/geo-sleuth/regions/lk/region.json) |
+| 60 | ✓ | [`skills/geo-sleuth/regions/lk/tests.json`](skills/geo-sleuth/regions/lk/tests.json) |
+| 61 | ✓ | [`skills/geo-sleuth/regions/mm/clues.md`](skills/geo-sleuth/regions/mm/clues.md) |
+| 62 | ✓ | [`skills/geo-sleuth/regions/mm/region.json`](skills/geo-sleuth/regions/mm/region.json) |
+| 63 | ✓ | [`skills/geo-sleuth/regions/mx/clues.md`](skills/geo-sleuth/regions/mx/clues.md) |
+| 64 | ✓ | [`skills/geo-sleuth/regions/mx/region.json`](skills/geo-sleuth/regions/mx/region.json) |
+| 65 | ✓ | [`skills/geo-sleuth/regions/nz/clues.md`](skills/geo-sleuth/regions/nz/clues.md) |
+| 66 | ✓ | [`skills/geo-sleuth/regions/nz/region.json`](skills/geo-sleuth/regions/nz/region.json) |
+| 67 | ✓ | [`skills/geo-sleuth/regions/README.md`](skills/geo-sleuth/regions/README.md) |
+| 68 | ✓ | [`skills/geo-sleuth/regions/tj/clues.md`](skills/geo-sleuth/regions/tj/clues.md) |
+| 69 | ✓ | [`skills/geo-sleuth/regions/tj/data/admin.json`](skills/geo-sleuth/regions/tj/data/admin.json) |
+| 70 | ✓ | [`skills/geo-sleuth/regions/tj/data/area_codes.json`](skills/geo-sleuth/regions/tj/data/area_codes.json) |
+| 71 | ✓ | [`skills/geo-sleuth/regions/tj/data/plates_1996.json`](skills/geo-sleuth/regions/tj/data/plates_1996.json) |
+| 72 | ✓ | [`skills/geo-sleuth/regions/tj/data/plates.json`](skills/geo-sleuth/regions/tj/data/plates.json) |
+| 73 | ✓ | [`skills/geo-sleuth/regions/tj/region.json`](skills/geo-sleuth/regions/tj/region.json) |
+| 74 | ✓ | [`skills/geo-sleuth/regions/tj/tests.json`](skills/geo-sleuth/regions/tj/tests.json) |
+| 75 | ✓ | [`skills/geo-sleuth/regions/tr/clues.md`](skills/geo-sleuth/regions/tr/clues.md) |
+| 76 | ✓ | [`skills/geo-sleuth/regions/tr/data/admin.json`](skills/geo-sleuth/regions/tr/data/admin.json) |
+| 77 | ✓ | [`skills/geo-sleuth/regions/tr/data/area_codes.json`](skills/geo-sleuth/regions/tr/data/area_codes.json) |
+| 78 | ✓ | [`skills/geo-sleuth/regions/tr/data/plates.json`](skills/geo-sleuth/regions/tr/data/plates.json) |
+| 79 | ✓ | [`skills/geo-sleuth/regions/tr/region.json`](skills/geo-sleuth/regions/tr/region.json) |
+| 80 | ✓ | [`skills/geo-sleuth/regions/tr/tests.json`](skills/geo-sleuth/regions/tr/tests.json) |
+| 81 | ✓ | [`skills/geo-sleuth/regions/us/clues.md`](skills/geo-sleuth/regions/us/clues.md) |
+| 82 | ✓ | [`skills/geo-sleuth/regions/us/region.json`](skills/geo-sleuth/regions/us/region.json) |
+| 83 | ✓ | [`skills/geo-sleuth/scripts/_browser.py`](skills/geo-sleuth/scripts/_browser.py) |
+| 84 | ✓ | [`skills/geo-sleuth/scripts/_device.py`](skills/geo-sleuth/scripts/_device.py) |
+| 85 | ✓ | [`skills/geo-sleuth/scripts/_image.py`](skills/geo-sleuth/scripts/_image.py) |
+| 86 | ✓ | [`skills/geo-sleuth/scripts/_net.py`](skills/geo-sleuth/scripts/_net.py) |
+| 87 | ✓ | [`skills/geo-sleuth/scripts/baidu_pano.py`](skills/geo-sleuth/scripts/baidu_pano.py) |
+| 88 | ✓ | [`skills/geo-sleuth/scripts/board.py`](skills/geo-sleuth/scripts/board.py) |
+| 89 | ✓ | [`skills/geo-sleuth/scripts/clues.py`](skills/geo-sleuth/scripts/clues.py) |
+| 90 | ✓ | [`skills/geo-sleuth/scripts/doctor.py`](skills/geo-sleuth/scripts/doctor.py) |
+| 91 | ✓ | [`skills/geo-sleuth/scripts/evidence.py`](skills/geo-sleuth/scripts/evidence.py) |
+| 92 | ✓ | [`skills/geo-sleuth/scripts/exif.py`](skills/geo-sleuth/scripts/exif.py) |
+| 93 | ✓ | [`skills/geo-sleuth/scripts/gazetteer.py`](skills/geo-sleuth/scripts/gazetteer.py) |
+| 94 | ✓ | [`skills/geo-sleuth/scripts/geo.py`](skills/geo-sleuth/scripts/geo.py) |
+| 95 | ✓ | [`skills/geo-sleuth/scripts/gsv.py`](skills/geo-sleuth/scripts/gsv.py) |
+| 96 | ✓ | [`skills/geo-sleuth/scripts/imgprep.py`](skills/geo-sleuth/scripts/imgprep.py) |
+| 97 | ✓ | [`skills/geo-sleuth/scripts/intake.py`](skills/geo-sleuth/scripts/intake.py) |
+| 98 | ✓ | [`skills/geo-sleuth/scripts/match.py`](skills/geo-sleuth/scripts/match.py) |
+| 99 | ✓ | [`skills/geo-sleuth/scripts/ocr.py`](skills/geo-sleuth/scripts/ocr.py) |
+| 100 | ✓ | [`skills/geo-sleuth/scripts/osm.py`](skills/geo-sleuth/scripts/osm.py) |
+| 101 | ✓ | [`skills/geo-sleuth/scripts/poi.py`](skills/geo-sleuth/scripts/poi.py) |
+| 102 | ✓ | [`skills/geo-sleuth/scripts/pose.py`](skills/geo-sleuth/scripts/pose.py) |
+| 103 | ✓ | [`skills/geo-sleuth/scripts/refresh.py`](skills/geo-sleuth/scripts/refresh.py) |
+| 104 | ✓ | [`skills/geo-sleuth/scripts/regions.py`](skills/geo-sleuth/scripts/regions.py) |
+| 105 | ✓ | [`skills/geo-sleuth/scripts/revimg.py`](skills/geo-sleuth/scripts/revimg.py) |
+| 106 | ✓ | [`skills/geo-sleuth/scripts/sat_scan.py`](skills/geo-sleuth/scripts/sat_scan.py) |
+| 107 | ✓ | [`skills/geo-sleuth/scripts/sun.py`](skills/geo-sleuth/scripts/sun.py) |
+| 108 | ✓ | [`skills/geo-sleuth/scripts/terrain.py`](skills/geo-sleuth/scripts/terrain.py) |
+| 109 | ✓ | [`skills/geo-sleuth/scripts/tiles.py`](skills/geo-sleuth/scripts/tiles.py) |
+| 110 | ✓ | [`skills/geo-sleuth/SKILL.md`](skills/geo-sleuth/SKILL.md) |
+| 111 | ✓ | [`skills/geo-sleuth/tests/test_board.py`](skills/geo-sleuth/tests/test_board.py) |
+| 112 | ✓ | [`skills/geo-sleuth/tests/test_gazetteer.py`](skills/geo-sleuth/tests/test_gazetteer.py) |
+| 113 | ✓ | [`skills/geo-sleuth/tests/test_match.py`](skills/geo-sleuth/tests/test_match.py) |
+| 114 | ✓ | [`skills/geo-sleuth/tests/test_regions.py`](skills/geo-sleuth/tests/test_regions.py) |
+| 115 | ✓ | [`skills/geo-sleuth/tests/test_runtime.py`](skills/geo-sleuth/tests/test_runtime.py) |
+| 116 | ✓ | [`skills/geo-sleuth/tests/test_sun.py`](skills/geo-sleuth/tests/test_sun.py) |
+| 117 | ✓ | [`skills/geo-sleuth/tests/test_terrain.py`](skills/geo-sleuth/tests/test_terrain.py) |
 
 ---
 

@@ -67,10 +67,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
-| 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 3 | ✓ | [`eval/own-window/README.md`](eval/own-window/README.md) |
-| 4 | ✓ | [`native/README.md`](native/README.md) |
+| 1 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 2 | ✓ | [`eval/own-window/README.md`](eval/own-window/README.md) |
+| 3 | ✓ | [`native/README.md`](native/README.md) |
+| 4 | ✓ | [`notes/internal/README.md`](notes/internal/README.md) |
 | 5 | ✓ | [`SKILL.md`](SKILL.md) |
 | 6 | ✓ | [`skills/clawdcursor/SKILL.md`](skills/clawdcursor/SKILL.md) |
 | 7 | → | [`bench/README.md`](bench/README.md) |

@@ -191,6 +191,8 @@ Default inline cards embed prebuilt project previews from `mcp-ui/template-recom
 
 Cards show the selected reference's localized `original.promotionalUseCases` value in a persistent top-left media badge, without a field-name prefix. This purpose category stays visible while the video plays and at narrow widths; the bottom-right preview action remains separate. Empty/missing values are omitted. The category does not use the separate `visualPresentation` field or infer a value from the title. The shared design-system media-label recipe supplies its translucent surface and typography.
 
+<!-- openmotion-utm-source-supported -->
+
 ## Choose the selected host's setup command
 
 The commands below show normal installations. For test candidates, apply the separate configuration/profile, home, data and Skills paths from the [platform recipes]({{DETAILS_URL}}) first. Run only the selected row.

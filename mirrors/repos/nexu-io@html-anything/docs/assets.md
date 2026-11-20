@@ -49,7 +49,7 @@ Call `openmotion_assets_use` with `action: "read"`, `assetId` and `versionId`. `
 
 HTTP returns version metadata, measured preview metadata and typed `content`. Stdio MCP and WebMCP return the same media in native image/audio content blocks and keep base64 out of `structuredContent` and its text summary. The embedded Codex runner forwards image/audio data URLs using its app-server content types and persists only metadata, never media base64, in tool messages. Host support determines whether media can actually be interpreted or played; a successful read is not evidence of human listening or visual acceptance.
 
-Both names are registered, so the public profile has sixteen names for fifteen domain capabilities. The tool-wide annotation remains `readOnlyHint:false` because other actions modify state or generate media. New calls do not silently fall back to an older authority that advertises only the old contract; refresh/upgrade discovery and the owning backend together when needed, preserving workspace data and active jobs.
+Both names are registered, so the public profile has eighteen names for seventeen domain capabilities. The tool-wide annotation remains `readOnlyHint:false` because other actions modify state or generate media. New calls do not silently fall back to an older authority that advertises only the old contract; refresh/upgrade discovery and the owning backend together when needed, preserving workspace data and active jobs.
 
 ## Conversations
 

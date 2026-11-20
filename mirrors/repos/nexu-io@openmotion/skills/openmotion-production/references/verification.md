@@ -31,6 +31,8 @@ Inspect actual representative frames from every shot, the first/last frames, nei
 
 These are evidence-based checks, not a ban on gradients, symmetry or stillness. Native HTML/CSS/GSAP supports varied typography and layout; judge actual readability and relevance. Use the pinned guide and concrete previews for effects instead of assuming every possible animation works.
 
+When the deliverable includes spoken narration and captions, also confirm that cue copy matches the final script, cue intervals match actual speech windows (from provider timing metadata, `ffprobe` / `silencedetect`, or audible preview playback), captions stay clear of focal UI, display titles and end cards in preview or rendered frames, and `caption_tracks` confirms a populated managed editable caption track (`kind: "caption"` and `cueCount > 0`) rather than baked pixels.
+
 ## 2. Defect and repair record
 
 Record each actionable defect in `reviews/findings.md`:

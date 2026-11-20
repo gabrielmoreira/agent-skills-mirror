@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `erkamyaman/rust-anything` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `erkamyaman/rust-anything` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `erkamyaman/rust-anything` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/rust-anything/SKILL.md`](skills/rust-anything/SKILL.md) |
-| 3 | ✓ | [`skills/rust-anything/whole-app.md`](skills/rust-anything/whole-app.md) |
+| 2 | ✓ | [`directory/skills/rust-anything/SKILL.md`](directory/skills/rust-anything/SKILL.md) |
+| 3 | ✓ | [`directory/skills/rust-anything/whole-app.md`](directory/skills/rust-anything/whole-app.md) |
+| 4 | ✓ | [`plugin/skills/rust-anything/SKILL.md`](plugin/skills/rust-anything/SKILL.md) |
+| 5 | ✓ | [`plugin/skills/rust-anything/whole-app.md`](plugin/skills/rust-anything/whole-app.md) |
+| 6 | ✓ | [`skills/rust-anything/SKILL.md`](skills/rust-anything/SKILL.md) |
+| 7 | ✓ | [`skills/rust-anything/whole-app.md`](skills/rust-anything/whole-app.md) |
 
 ---
 
